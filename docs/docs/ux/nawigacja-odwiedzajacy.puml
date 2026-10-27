@@ -27,7 +27,7 @@ skinparam note {
 state "V5 Pomoc" as V5
 state "V1 Mapa kampusu" as V1
 state "V2 Karta budynku" as V2
-state "V3 Zaplanuj wizytę" as V3
+state "V3 Którędy wejść" as V3
 state "Pasek dolny\nna V1, V2, V3, V5, L2" as PASEK <<stan>>
 state "L1 Prośba o logowanie" as L1
 state "L2 Konto" as L2
@@ -47,10 +47,10 @@ state "V4 Zgłoszenie szybkie" as V4 {
 
 [*] --> V5 : pierwsze\nuruchomienie
 [*] --> V1 : kolejne\nuruchomienie
-V5 --> V1 : „Zacznij”, „Pomiń”
+V5 --> V1 : „Zacznij”,\n„Pomiń instrukcję”
 V1 --> V2 : budynek, wynik\nwyszukiwania, bariera
 V2 --> V1 : „Wstecz”\n(budynek zaznaczony)
-V2 --> V3 : „Zaplanuj wizytę”
+V2 --> V3 : „Sprawdź,\nktórędy wejść”
 V3 --> V2 : „Wstecz”
 
 PASEK --> V1 : „Mapa”
@@ -77,9 +77,9 @@ WWW --> K1 : po zalogowaniu\nalbo rejestracji z V4
 WWW --> L2 : po zalogowaniu\nz „Konto”
 L1 --> V1 : „Nie teraz”;\nbrak sieci: „Wróć do mapy”
 
-L2 --> V1 : „Wyloguj”
+L2 --> V1 : „Wyloguj się”
 L2 --> WZ : „Wycofaj zgodę”
-WZ --> L2 : „Anuluj”
+WZ --> L2 : „Zostaw zgodę”
 WZ --> V1 : „Wycofaj zgodę”\n(wylogowanie)
 L2 --> KL : „Informacja\no danych\nosobowych”
 KL --> L2 : „Wstecz”
