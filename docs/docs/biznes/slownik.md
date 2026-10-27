@@ -70,16 +70,16 @@ Terminy są w mianowniku liczby pojedynczej. Nazwy ról piszemy wielką literą.
 | TB-5 | wejście i drzwi | urządzenie poza zasięgiem | domofon, czytnik kart lub przycisk otwierania wyżej niż 110 cm | Standard PWr 5.4 |
 | TB-6 | komunikacja pionowa | schody bez poręczy | brak poręczy po obu stronach albo poręcz nie wychodzi poza pierwszy i ostatni stopień | Standard PWr 4.3, 8 |
 | TB-7 | komunikacja pionowa | stopnie na piętrze | różnica wysokości wewnątrz piętra bez pochylni lub podnośnika, np. półpiętro | Standard PWr 5.2; deklaracja A-1 |
-| TB-8 | komunikacja pionowa | brak windy | budynek nie ma windy albo winda nie dociera na dane piętro | Standard PWr 9; ustawa z 19 lipca 2019 r., art. 6 pkt 1 |
+| TB-8 | komunikacja pionowa | brak windy | budynek nie ma windy albo winda nie dociera na dane piętro | Standard PWr 9; ustawa z 19 lipca 2019 r., art. 6 pkt 1 lit. b |
 | TB-9 | komunikacja pionowa | niesprawna winda | winda jest, ale nie działa albo jest wyłączona | Standard PWr 9.1 |
 | TB-10 | komunikacja pionowa | winda nieprzystosowana | kabina za mała dla wózka, przyciski wyżej niż 110 cm lub bez alfabetu Braille'a, drzwi zamykają się za szybko | Standard PWr 9.1, 9.2 |
 | TB-11 | komunikacja pionowa | pochylnia nieprzystosowana | pochylnia zbyt stroma (na zewnątrz ponad 6 %), śliska albo bez oznaczenia początku i końca | Standard PWr 1, 5.2 |
-| TB-12 | komunikacja pionowa | podnośnik wymagający pomocy | podnośnik lub platforma schodowa nie działa, wymaga klucza, karty albo obsługi przez pracownika | Standard PWr 4.2 |
+| TB-12 | komunikacja pionowa | podnośnik wymagający pomocy | podnośnik lub platforma schodowa nie działa, wymaga klucza, karty albo obsługi przez pracownika | Standard PWr 4.2, 9.4 |
 | TB-13 | komunikacja pozioma | próg | próg, listwa lub wycieraczka wystaje ponad 2 cm | Standard PWr 4.4, 5.3 |
 | TB-14 | komunikacja pozioma | wąskie przejście | przejście węższe niż 90 cm albo zastawione meblami lub sprzętem | Standard PWr 3, 5.2, 5.6 |
 | TB-15 | komunikacja pozioma | przeszkoda w przejściu | element wystaje ze ściany ponad 10 cm albo przestrzeń pod schodami jest niezabezpieczona | Standard PWr 5.2, 8 |
 | TB-16 | komunikacja pozioma | nawierzchnia | nierówna kostka, szczeliny ponad 5 mm, duży spadek albo śliska posadzka | Standard PWr 1, 5.1 |
-| TB-17 | komunikacja pozioma | krawężnik | wysoki krawężnik bez obniżenia na trasie pieszej, np. od miejsca parkingowego do chodnika | Standard PWr 2 |
+| TB-17 | komunikacja pozioma | krawężnik | wysoki krawężnik bez obniżenia na trasie pieszej, np. od miejsca parkingowego do chodnika | Standard PWr 1, 2 |
 | TB-18 | toalety | brak toalety dostępnej | na piętrze nie ma toalety dla osób z niepełnosprawnościami | Standard PWr 6 |
 | TB-19 | toalety | toaleta nieprzystosowana | za mało miejsca na wózek, brak uchwytów przy misce, umywalka lub przyciski poza zasięgiem | Standard PWr 6 |
 | TB-20 | toalety | toaleta niedostępna w praktyce | toaleta dostępna zamknięta na klucz, zastawiona albo z barierą na dojściu (hipoteza) | Standard PWr 6 |
@@ -97,13 +97,13 @@ Wartości liczbowe pochodzą ze Standardu PWr dla budynków nowych i remontowany
 
 ## Skala uciążliwości
 
-| Poziom | Nazwa | Kryterium | Przykład |
+| Stopień | Nazwa | Kryterium | Przykład |
 | --- | --- | --- | --- |
-| 1 | utrudnienie | Większość osób pokona barierę samodzielnie, ale z dodatkowym wysiłkiem lub ryzykiem. | Brak kontrastu na krawędzi stopni (TB-23), brak numerów sal (TB-21). |
-| 2 | poważne utrudnienie | Część osób pokona barierę tylko z pomocą innej osoby albo urządzenia obsługiwanego przez pracownika. | Próg 4 cm (TB-13), platforma schodowa na klucz (TB-12). |
-| 3 | blokada | Część osób nie skorzysta z tego miejsca wcale albo tylko przez przenoszenie. | Schody przy wejściu bez pochylni (TB-1), niesprawna jedyna winda (TB-9). |
+| 1 | utrudnienie | Osoba, dla której bariera jest najtrudniejsza, pokona ją samodzielnie, ale z dodatkowym wysiłkiem lub ryzykiem. | Brak kontrastu na krawędzi stopni (TB-23), brak numerów sal (TB-21). |
+| 2 | poważne utrudnienie | Ta osoba pokona barierę tylko z pomocą: innej osoby, która jej nie przenosi, albo urządzenia obsługiwanego przez pracownika. | Próg 4 cm (TB-13), platforma schodowa na klucz (TB-12). |
+| 3 | blokada | Ta osoba nie pokona bariery wcale albo tylko wtedy, gdy ktoś ją przeniesie. | Schody przy wejściu bez pochylni (TB-1), niesprawna jedyna winda (TB-9). |
 
-Uciążliwość oceniamy z perspektywy osoby, dla której bariera jest najtrudniejsza. Opisuje ona barierę w jej miejscu. Inne wejście do budynku nie obniża uciążliwości, tylko pojawia się na karcie budynku jako wejście dostępne. Kryteria są hipotezą do potwierdzenia w wywiadach.
+Uciążliwość opisuje barierę w jej miejscu. Inne wejście do budynku nie obniża uciążliwości, tylko pojawia się na karcie budynku jako wejście dostępne. Kryteria są hipotezą do potwierdzenia w wywiadach.
 
 ## Źródła
 
