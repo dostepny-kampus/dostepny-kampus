@@ -90,7 +90,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
     Oraz autorem nowego zgłoszenia jest ten Zbierający
     Oraz poprzednie zgłoszenie nadal jest przyjęte i widoczne na mapie
 
-  @US8.4 @BR-19 @do-ustalenia
+  @US8.4 @BR-19
   Scenariusz: Inny Zbierający niż autor zgłasza usunięcie bariery
     # punkt startu (np. karta budynku) ustalany w fazie B
     Zakładając, że zgłoszenie TB-9 „niesprawna winda” na piętrze budynku C-13 jest przyjęte, a jego autorem jest inna osoba
