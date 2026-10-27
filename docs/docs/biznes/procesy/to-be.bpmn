@@ -240,7 +240,7 @@
       <bpmn:incoming>Flow_B05</bpmn:incoming>
       <bpmn:outgoing>Flow_B06</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:serviceTask id="Task_T19" name="T19 Ustaw „odrzucone”, pokaż powód autorowi">
+    <bpmn:serviceTask id="Task_T19" name="T19 Ustaw „odrzucone”, pokaż powód Zbierającemu">
       <bpmn:incoming>Flow_B06</bpmn:incoming>
       <bpmn:outgoing>Flow_B07</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -316,7 +316,7 @@
       <bpmn:text>Zgłoszenie szybkie: Weryfikator ustala typ i uciążliwość</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:textAnnotation id="Note_Powod">
-      <bpmn:text>Powód odrzucenia obowiązkowy; autor może poprawić (BR-3)</bpmn:text>
+      <bpmn:text>Powód odrzucenia obowiązkowy; Zbierający może poprawić (BR-3)</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Assoc_Note_Szybkie" sourceRef="Note_Szybkie" targetRef="Task_T16" />
     <bpmn:association id="Assoc_Note_Powod" sourceRef="Note_Powod" targetRef="Task_T18" />
@@ -384,6 +384,11 @@
     <bpmn:serviceTask id="Task_T28" name="T28 Utwórz plik: przyjęte, bez autora">
       <bpmn:incoming>Flow_C07</bpmn:incoming>
       <bpmn:outgoing>Flow_C08</bpmn:outgoing>
+      <bpmn:property id="Property_Task_T28" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataIn_T28">
+        <bpmn:sourceRef>DataStore_Przyjete_C</bpmn:sourceRef>
+        <bpmn:targetRef>Property_Task_T28</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
     </bpmn:serviceTask>
     <bpmn:manualTask id="Task_T29" name="T29 Otwórz plik w QGIS">
       <bpmn:incoming>Flow_C08</bpmn:incoming>
@@ -396,6 +401,7 @@
       <bpmn:incoming>Flow_C10</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:dataStoreReference id="DataStore_Postep" name="Postęp inwentaryzacji" dataStoreRef="Store_Postep" />
+    <bpmn:dataStoreReference id="DataStore_Przyjete_C" name="Zgłoszenia przyjęte" dataStoreRef="Store_Zgloszenia" />
     <bpmn:sequenceFlow id="Flow_C01" sourceRef="Start_Pietro" targetRef="Task_T24" />
     <bpmn:sequenceFlow id="Flow_C02" sourceRef="Task_T24" targetRef="Task_T25" />
     <bpmn:sequenceFlow id="Flow_C03" sourceRef="Task_T25" targetRef="End_Postep" />
@@ -1003,6 +1009,16 @@
       <bpmndi:BPMNEdge id="DataIn_T26_di" bpmnElement="DataIn_T26">
         <di:waypoint x="500" y="1672" />
         <di:waypoint x="500" y="1745" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DataStore_Przyjete_C_di" bpmnElement="DataStore_Przyjete_C">
+        <dc:Bounds x="905" y="1635" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="960" y="1652" width="110" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataIn_T28_di" bpmnElement="DataIn_T28">
+        <di:waypoint x="930" y="1635" />
+        <di:waypoint x="930" y="1605" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
