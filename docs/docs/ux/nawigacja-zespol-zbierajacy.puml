@@ -1,0 +1,54 @@
+@startuml
+!pragma layout smetana
+hide empty description
+skinparam defaultFontSize 14
+skinparam ArrowColor #444444
+skinparam ArrowFontSize 12
+skinparam state {
+  BackgroundColor #F2F2F2
+  BorderColor #444444
+  FontStyle bold
+}
+skinparam state<<stan>> {
+  BackgroundColor #FFFFFF
+  BorderColor #444444
+  FontStyle normal
+}
+
+state "V1 Mapa kampusu" as V1
+state "V2 Karta budynku\n(przyciski tylko RO-ZBI)" as V2
+state "L2 Konto\n(czynności RO-ZBI)" as L2
+state "C1 Pomiar pozycji" as C1
+state "C2 Formularz zgłoszenia" as C2
+state "C3 Moje zgłoszenia" as C3
+state "C4 Synchronizacja\ni wybór wersji" as C4
+state "C5 Piętra obejrzane" as C5
+state "C6 Zmiana oznaczenia\nwejścia" as C6
+state "C7 Usunięcie bariery" as C7
+
+[*] --> V1 : start aplikacji
+V1 --> V2 : budynek
+V1 --> L2 : „Konto”\n(pasek dolny)
+
+L2 --> C1 : „Nowe zgłoszenie\nz pomiarem”
+L2 --> C3 : „Moje zgłoszenia”
+
+V2 --> C6 : „Zmień oznaczenie”
+V2 --> C7 : „Bariery już nie ma”
+V2 --> C2 : „Popraw zgłoszenie”
+V2 --> C5 : „Piętra obejrzane”
+
+C1 --> C2 : „Dalej”
+C2 --> C1 : „Zmień miejsce”
+C2 --> C3 : „Zapisz”
+
+C3 --> C1 : „Nowe zgłoszenie”;\nnieaktualne po\nusunięciu bariery
+C3 --> C2 : zgłoszenie do poprawy;\n„Wyślij ponownie\ndo bieżącego”
+C3 --> C6 : zmiana oznaczenia\ndo poprawy; „Wyślij\nponownie do bieżącego”
+C3 --> C7 : „bariera usunięta”\ndo poprawy
+C3 --> C4 : „wybierz wersję”;\nstan synchronizacji
+
+C4 --> C3 : wybór wersji;\n„Zdecyduję później”
+C6 --> C3 : „Wyślij do\nsprawdzenia”
+C7 --> C3 : „Wyślij do\nsprawdzenia”
+@enduml
