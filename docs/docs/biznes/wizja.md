@@ -40,12 +40,12 @@ Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 o
 | ID | Cel | Miara i próg | Potrzeba |
 | --- | --- | --- | --- |
 | M-1 | Budynki szczegółowe zinwentaryzowane | 5 z 5 budynków (A-1, B-1, C-13, D-1, D-2) obejrzanych na miejscu; każde wejście z danych PWr ma status „dostępne / niedostępne” | N1, N9 |
-| M-2 | Dokładna pozycja bariery | po 30 s uśredniania błąd < 1 m względem punktów kontrolnych, na ≥ 10 punktach na zewnątrz budynków | N5 |
-| M-3 | Aplikacja wygodna dla grupy docelowej | wynik SUS ≥ 70 w badaniu z ≥ 5 użytkownikami z grupy docelowej | N4 |
-| M-4 | Szybkie znalezienie dostępnego wejścia | ≥ 4 z 5 uczestników znajduje dostępne wejście w ≤ 3 dotknięciach od mapy (US3) | N1 |
-| M-5 | Dane gotowe dla GIS | plik GeoJSON otwiera się w QGIS bez błędów; CSV ma współrzędne w układzie PUWG 1992 (US13) | N9 |
-| M-6 | Praca bez sieci bez utraty danych | 0 utraconych wpisów: wpisy zapisane bez sieci trafiają na serwer po jej powrocie (US9) | N6, N7 |
-| M-7 | Publikowane są tylko sprawdzone bariery | 100 % barier widocznych dla Odwiedzającego ma status „zaakceptowana” (US1) | N2, N8 |
+| M-2 | Dokładna pozycja bariery | cel w terenie otwartym: po 30 s uśredniania mediana błędu poziomego < 1 m; sprawdzamy ≥ 10 pomiarami nad punktami kontrolnymi (NFR-1). To cel, nie gwarancja | N5 |
+| M-3 | Aplikacja wygodna dla grupy docelowej | średni wynik SUS ≥ 68 w badaniu z ≥ 5 użytkownikami z grupy docelowej (NFR-26) | N4 |
+| M-4 | Szybkie znalezienie dostępnego wejścia | ≥ 4 z 5 uczestników samodzielnie znajduje dostępne wejście do wskazanego budynku w ≤ 3 dotknięciach od mapy (US3 AC2) | N1 |
+| M-5 | Dane gotowe dla GIS | plik GeoJSON w WGS84 otwiera się w QGIS bez błędów; CSV ma współrzędne w układzie PUWG 1992 (US13 AC1, AC2) | N9 |
+| M-6 | Praca bez sieci bez utraty danych | w teście ≥ 20 zgłoszeń zapisanych bez sieci: po jej powrocie 100 % trafia na serwer bez działania użytkownika (US9 AC2) | N6, N7 |
+| M-7 | Publikowane są tylko sprawdzone bariery | 100 % barier widocznych dla Odwiedzającego to zgłoszenia przyjęte przez Weryfikatora (US1 AC3) | N2, N8 |
 
 ## Zakres
 
