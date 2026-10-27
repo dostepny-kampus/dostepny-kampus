@@ -14,12 +14,12 @@ Pani Halina idzie na wykład w C-13, w którym nigdy nie była. Cel: dotrzeć be
 | Etap | Czynność | Myśli i odczucia (dziś → z aplikacją) | Dziś | Z aplikacją | Ryzyko |
 | --- | --- | --- | --- | --- | --- |
 | J1-1 | dowiaduje się o wykładzie otwartym | „Chętnie pójdę, ale nie znam budynku” (4 → 4) | — | — | niskie |
-| J1-2 | instaluje i pierwszy raz otwiera aplikację | „Czy dam radę? Nie chcę nic zepsuć” (— → 3) | — | V5: instrukcja, którą można pominąć i otworzyć ponownie (US5.1) | średnie |
+| J1-2 | instaluje i pierwszy raz otwiera aplikację | „Czy to będzie proste? Czy trafię w przyciski?” (— → 3) | — | V5: instrukcja, którą można pominąć i otworzyć ponownie (US5.1) | średnie |
 | J1-3 | szuka C-13 | „Gdzie to w ogóle jest?” (2 → 4) | P-2 | V1: wyszukiwanie po symbolu w każdej pisowni, bez logowania (US1.1, US1.2); lista zamiast gestów na mapie (NFR-19) | średnie |
 | J1-4 | sprawdza, którym wejściem wejdzie bez schodów | „Którędy mam wejść?” (2 → 4) | P-1, P-9 | V3 „Zaplanuj wizytę” w ≤ 3 dotknięciach (US3.2); V2: oznaczenie każdego wejścia tekstem i ikoną (US2.1) | **wysokie** |
 | J1-5 | ocenia, czy informacja jest aktualna | „Czy to jeszcze prawda?” (2 → 4) | P-3, P-4 | V2: data i źródło oznaczenia wejścia (US17.3), zdjęcie i data weryfikacji bariery (US2.2) | średnie |
 | J1-6 | sprawdza windę i toaletę na piętrze wykładu | „Czy winda działa?” (1 → 3) | P-5 | V2: przełącznik pięter i plan piętra z windami i toaletami (US16.1) | **wysokie** |
-| J1-7 | dojeżdża i szuka wskazanego wejścia | „Czy to na pewno tu?” (2 → 3) | P-9 | V2: wejście na mapie i zdjęcie; nawigacja po trasie jest poza zakresem | średnie |
+| J1-7 | dojeżdża i szuka wskazanego wejścia | „Czy to na pewno tu?” (2 → 3) | P-9 | V2: wejście na planie piętra z oznaczeniem tekstem i ikoną (US16.1, US2.1); nawigacja po trasie jest poza zakresem | średnie |
 | J1-8 | trafia na przeszkodę, np. nieczynną windę | „I co teraz? Komu to powiedzieć?” (1 → 2) | P-5, P-6 | V4: zdjęcie, grupa barier, wysłanie (US4.1, US4.3); bez sieci zgłoszenie czeka w telefonie (US4.2) | **wysokie** |
 | J1-9 | widzi potwierdzenie po wysłaniu | „Dobrze, ktoś to sprawdzi” (2 → 4) | P-6 | V4: potwierdzenie, że zgłoszenie trafi do weryfikacji (US4.4) | niskie |
 
@@ -31,7 +31,7 @@ Pani Halina idzie na wykład w C-13, w którym nigdy nie była. Cel: dotrzeć be
 | J1-6 | mały plan piętra i przełącznik pięter wymagają precyzji; aplikacja nie zna awarii, której nikt nie zgłosił | cele dotyku ≥ 48 dp (NFR-17), powiększona czcionka bez ucinania (NFR-20); zgłoszona bariera przy windzie ma zdjęcie i datę weryfikacji (US2.2) |
 | J1-8 | stres przed budynkiem, laska w jednej ręce, słońce na ekranie; przed zdjęciem prośba o logowanie (US14.2) | duże przyciski grup barier (US4.3), brak limitu czasu (NFR-23); logowanie to najsłabszy punkt ścieżki |
 
-Etap J1-8 ma najniższą ocenę także z aplikacją. Logowanie chroni dane przed spamem (BR-2), ale dla PE-1 jest dodatkowym krokiem w najgorszym momencie.
+Etap J1-8 ma najniższą ocenę także z aplikacją. Logowanie chroni dane przed spamem (BR-8), ale dla PE-1 jest dodatkowym krokiem w najgorszym momencie.
 
 Czy persona w ogóle zgłosi barierę, sprawdzą pytania 4.6 i 4.8 scenariusza.
 
