@@ -35,7 +35,7 @@ Poziom ryzyka: **wysoki** 6–9 (przegląd co tydzień), **średni** 3–4 (prze
 | R-18 | Zgłoszenie utknęło u Weryfikatora. Zgłoszenie w weryfikacji obsługuje tylko Weryfikator, który je wziął (BR-11), a zwolnienia zgłoszenia w MVP nie ma. Nieobecny Weryfikator blokuje publikację bariery. | zespół | 2 | 2 | 4 | Ograniczamy: na przeglądzie sprintu zespół przegląda zgłoszenia „w weryfikacji”. Weryfikator zwalnia zgłoszenie, którego nie skończy (zwolnienie zgłoszenia, dziś poza MVP). Po pierwszym sprincie z weryfikacją oceniamy, czy zwolnienie zgłoszenia trzeba dodać. | Na przeglądzie sprintu Weryfikator ma zgłoszenie „w weryfikacji” dłużej niż 3 dni robocze. Liczba zgłoszeń czekających w K1 rośnie przez tydzień. |
 | R-19 | Za mało osób z rolą RO-WER. Nikt nie weryfikuje własnego zgłoszenia (BR-4), więc zgłoszenia jedynego Weryfikatora czekają bez końca. Krok 5 demo wymaga przyjęcia zgłoszenia przez inną osobę. | zespół | 2 | 3 | 6 | Ograniczamy: obaj członkowie zespołu mają rolę RO-WER. Na pokaz przygotowujemy osobne konto demo Weryfikatora. | Na początku sprintu z weryfikacją mniej niż dwie osoby mają rolę RO-WER. |
 
-Numer R-15 jest wolny: to ryzyko połączyliśmy z R-7.
+Numer 15 w rejestrze jest wolny: to ryzyko połączyliśmy z R-7.
 
 ## Macierz ryzyk
 
