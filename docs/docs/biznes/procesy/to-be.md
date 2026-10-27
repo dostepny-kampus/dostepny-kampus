@@ -48,7 +48,7 @@ Zapis „V2 → C5” w kolumnie „Ekran” znaczy, że krok zaczyna się na V2
 | T20 | Odwiedzający / Gość niezalogowany | Znajduje budynek na mapie albo na liście po symbolu budynku, bez logowania (US1.1, US1.2, NFR-19) | P-2 | N1, N4 | V1 |
 | T21 | Odwiedzający / Gość niezalogowany | Otwiera kartę budynku: wejścia z oznaczeniem, jego datą i źródłem, windy, zgłoszenia przyjęte ze zdjęciami (US2.1, US2.2, US17.3, BR-6) | P-1, P-4, P-8 | N1, N2 | V2 |
 | T22 | Odwiedzający / Gość niezalogowany | W budynku szczegółowym wybiera piętro i ogląda plan piętra; w budynku podstawowym planu nie ma (US16.1, US16.2, BR-G1) | P-9 | N1 | V2 |
-| T23 | Odwiedzający / Gość niezalogowany | W „Zaplanuj wizytę” sprawdza, które wejście jest wejściem dostępnym (US3.1, US3.2) | P-2, P-9 | N1 | V3 |
+| T23 | Odwiedzający / Gość niezalogowany | W „Którędy wejść” sprawdza, które wejście jest wejściem dostępnym (US3.1, US3.2) | P-2, P-9 | N1 | V3 |
 | T24 | Zbierający | Oznacza piętro obejrzane; w budynku podstawowym oznacza cały budynek (US15.1, BR-20) | P-3 | N9 | V2 → C5 |
 | T24a | Zbierający | Cofa własny znacznik piętra obejrzanego (US15.2, BR-20) | P-3 | N9 | V2 → C5 |
 | T24b | System | Zapisuje znacznik albo jego cofnięcie w telefonie i wysyła po powrocie sieci, tak samo, jak zgłoszenie w T10–T11 (US15.3, BR-20) | — | N6 | C4 |

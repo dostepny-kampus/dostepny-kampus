@@ -9,24 +9,26 @@ Strona pokazuje, dokąd prowadzi każda czynność na ekranach z [wymagań do ek
 | Prostokąt pogrubiony | ekran z ID z listy ekranów |
 | Prostokąt zwykły | stan ekranu, który zmienia dalszą drogę, np. brak zgody na lokalizację |
 | Prostokąt kursywą | miejsce poza aplikacją: przeglądarka, ustawienia telefonu, pobrane pliki |
-| Strzałka z podpisem | czynność, która prowadzi dalej; podpis w cudzysłowie to robocza etykieta przycisku |
+| Strzałka z podpisem | czynność, która prowadzi dalej; podpis w cudzysłowie to napis przycisku ze [słownika użytkownika](slownik-uzytkownika.md) |
 | „Pasek dolny” | jeden węzeł zamiast czterech strzałek z każdego z ekranów V1, V2, V3, V5 i L2 |
 
 „Wstecz” jest na każdym ekranie poza V1 i wraca do poprzedniego ekranu (wymagania wspólne, NFR-15). Wysłany formularz znika z historii „Wstecz” (P2). Diagramy pokazują „Wstecz” tylko tam, gdzie cel nie jest oczywisty. „Zalogowani” w tabelach to RO-ODW i role pracownicze (BR-1).
 
-Czwarta pozycja paska dolnego to „Konto”, a osoby z rolą pracowniczą widzą na niej „Moja praca” (nazwa robocza, B6). Obie prowadzą do L2 (P1).
+Czwarta pozycja paska dolnego to „Konto”, a osoby z rolą pracowniczą widzą na niej „Konto i praca” ([słownik użytkownika](slownik-uzytkownika.md#nazwa-wejscia)). Obie prowadzą do L2 (P1).
 
 ## Gość i Odwiedzający
 
 ![Diagram przejść Gościa i Odwiedzającego: V1, V2, V3, V4 z krokami, V5, L1, L2](../_generated/nawigacja-odwiedzajacy.svg)
 
-Główna droga to V1, V2, V3 i z powrotem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”. Po zalogowaniu wraca do kroku 1 V4 albo trafia do L2 (P3).
+Główna droga to V1, V2, V3 i z powrotem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]).
+
+Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”. Po zalogowaniu wraca do kroku 1 V4 albo trafia do L2 (P3).
 
 ## Zbierający
 
 ![Diagram przejść Zbierającego: V2, L2 i ekrany C1–C7](../_generated/nawigacja-zespol-zbierajacy.svg)
 
-Zbierający zaczyna pracę w dwóch miejscach. Pomiar i listę zgłoszeń otwiera z L2 („Moja praca”), a zmiany przy budynku (C2, C5, C6, C7) z karty budynku V2. Każdy zapis i wysłanie kończy się na C3, a „Wstecz” z C3 wraca tam, skąd zaczęła się praca (P2).
+Zbierający zaczyna pracę w dwóch miejscach. Pomiar i listę zgłoszeń otwiera z L2 („Konto i praca”), a zmiany przy budynku (C2, C5, C6, C7) z karty budynku V2. Każdy zapis i wysłanie kończy się na C3, a „Wstecz” z C3 wraca tam, skąd zaczęła się praca (P2).
 
 ## Weryfikator i Koordynator
 
@@ -48,7 +50,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | pasek dolny | „Pomoc” | V5 | wszystkie | US5.1 |
 | pasek dolny | „Konto” | L1 | RO-GOS | US14 |
 | pasek dolny | „Konto” | L2 | RO-ODW | US14.1, US14.3 |
-| pasek dolny | „Moja praca” (nazwa robocza, B6) | L2, na górze lista czynności | role pracownicze | US14.1, P1 |
+| pasek dolny | „Konto i praca” | L2, na górze sekcja „Twoja praca” | role pracownicze | US14.1, P1 |
 | każdy ekran poza V1 | „Wstecz” | poprzedni ekran | wszystkie | NFR-15 |
 | ekran po wysłaniu formularza: C3, R1, V4 potwierdzenie | „Wstecz” | ekran, z którego zaczęła się praca: L2, V2 albo ekran sprzed V4 | zalogowani | NFR-15, P2 |
 
@@ -56,15 +58,15 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 
 | Z ekranu | Czynność | Do ekranu | Rola | AC/BR |
 | --- | --- | --- | --- | --- |
-| V1 | wybór wyniku w polu „Symbol budynku” | V2 | wszystkie | US1.1 |
+| V1 | wybór wyniku w polu „Wpisz symbol budynku, np. C-13” | V2 | wszystkie | US1.1 |
 | V1 | dotknięcie konturu budynku | V2 | wszystkie | US2, US3.2 |
-| V1 | przełącznik „Mapa / Lista budynków” | V1, lista | wszystkie | NFR-19 |
+| V1 | przełącznik „Mapa” i „Lista budynków” | V1, lista | wszystkie | NFR-19 |
 | V1 | dotknięcie budynku na liście | V2 | wszystkie | US2, US3.2 |
 | V1 | dotknięcie bariery | V2 budynku bariery | wszystkie | US1.3, US10.6 |
 | V1 | napis „© OpenStreetMap contributors” | strona praw autorskich OSM | wszystkie | NFR-37 |
 | V1, stan „brak wyniku” | „Lista budynków” | V1, lista | wszystkie | UC1 3a |
 | V2 | przełącznik pięter | V2, plan piętra | wszystkie | US16.1 |
-| V2 | „Zaplanuj wizytę” | V3 | wszystkie | US3, US3.2 |
+| V2 | „Sprawdź, którędy wejść” | V3 | wszystkie | US3, US3.2 |
 | V2 | „Wstecz” | V1 z zaznaczonym budynkiem | wszystkie | US1.1 |
 | V2, stan „budynku nie ma w telefonie” | „Spróbuj ponownie” | V2 | wszystkie | NFR-10 |
 | V2, stan „błąd zdjęcia” | „Spróbuj ponownie” | V2 | wszystkie | NFR-50 |
@@ -78,19 +80,22 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V4, stan „zgoda tylko przybliżona” | „Wróć do mapy” | V1 | zalogowani | BR-8 |
 | V4, stan „lokalizacja wyłączona” | „Otwórz ustawienia” | ustawienia telefonu | zalogowani | UC7 4c |
 | V4, stan „lokalizacja wyłączona” | „Wróć do mapy” | V1 | zalogowani | UC7 4c |
-| V4, krok 1 | „Zrób zdjęcie”, „Zrób ponownie” | aparat, potem krok 2 | zalogowani | US4.1, BR-8 |
-| V4, krok 2 | wybór grupy barier | V4, krok 3 | zalogowani | US4.3 |
+| V4, krok 1 | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | aparat, potem krok 2 | zalogowani | US4.1, BR-8 |
+| V4, krok 2 | wybór grupy barier, np. „Schody i windy” | V4, krok 3 | zalogowani | US4.3 |
 | V4, krok 2 | „Wstecz” | V4, krok 1; zdjęcie zostaje | zalogowani | US4.1 |
+| V4, krok 1, zdjęcie zrobione | „Wstecz” | V4, stan „potwierdzenie rezygnacji” | zalogowani | UC7 1b |
 | V4, krok 3 | „Wstecz” | V4, krok 2; zdjęcie i grupa zostają | zalogowani | US4.1 |
 | V4, krok 3 | „Wyślij” | V4, potwierdzenie | zalogowani | US4.1, US4.4 |
-| V4, krok 3, brak sieci | „Wyślij” | V4, potwierdzenie „zapisane w telefonie” | zalogowani | US4.2, UC7 7a |
+| V4, krok 3, brak sieci | „Wyślij” | V4, potwierdzenie „Zapisaliśmy zdjęcie w telefonie” | zalogowani | US4.2, UC7 7a |
 | V4, krok 3 | telefon nie ustalił pozycji | V4, stan „brak pozycji” | zalogowani | UC7 4c |
 | V4, stan „brak pozycji” | „Spróbuj ponownie” | V4, krok 3 | zalogowani | UC7 4c |
-| V4, stan „brak pozycji” | „Anuluj zgłoszenie” | V1; zgłoszenie nie powstaje | zalogowani | UC7 4c, UC7 1b |
+| V4, stan „brak pozycji” | „Zrezygnuj” | V4, stan „potwierdzenie rezygnacji” | zalogowani | UC7 4c |
+| V4, stan „potwierdzenie rezygnacji” | „Tak, zrezygnuj” | po „Zrezygnuj”: V1; po „Wstecz” z kroku 1: ekran sprzed V4; zdjęcie usunięte, zgłoszenie nie powstaje | zalogowani | UC7 1b |
+| V4, stan „potwierdzenie rezygnacji” | „Wróć do zdjęcia” | stan „brak pozycji” albo krok 1, skąd osoba przyszła; zdjęcie i grupa zostają | zalogowani | UC7 4c |
 | V4, potwierdzenie | „Wróć do mapy” | V1 | zalogowani | US4.4 |
 | V5 | „Dalej” | następny krok V5 | wszystkie | US5.1 |
 | V5, ostatni krok | „Zacznij” | V1 | wszystkie | US5.1 |
-| V5 | „Pomiń” | V1 | wszystkie | US5.1 |
+| V5 | „Pomiń instrukcję” | V1 | wszystkie | US5.1 |
 
 ### Przejścia: logowanie i konto
 
@@ -104,7 +109,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | L1, stan „brak sieci” | „Wróć do mapy” | V1 | RO-GOS | UC6 1a |
 | L1, stan „błąd” | „Spróbuj ponownie” | strona logowania w przeglądarce | RO-GOS | US14 |
 | L1, stan „błąd” | „Nie teraz” | V1 | RO-GOS | UC7 1b |
-| L2 | „Nowe zgłoszenie z pomiarem” | C1 | RO-ZBI | US6, US14.1 |
+| L2 | „Zmierz i zgłoś barierę” | C1 | RO-ZBI | US6, US14.1 |
 | L2 | „Moje zgłoszenia” | C3 | RO-ZBI | US8, US14.1 |
 | L2 | „Zgłoszenia do sprawdzenia” | R1 | RO-WER | US10, US14.1 |
 | L2 | „Postęp inwentaryzacji” | K1 | RO-KOO | US11, US14.1 |
@@ -114,17 +119,17 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | L2, stan „Klauzula informacyjna” | „Wstecz” | L2 | zalogowani | NFR-30 |
 | L2 | „Wycofaj zgodę” | L2, potwierdzenie | zalogowani | NFR-29, NFR-30 |
 | L2, potwierdzenie wycofania | „Wycofaj zgodę” | wylogowanie, V1 | zalogowani | NFR-29 |
-| L2, potwierdzenie wycofania | „Anuluj” | L2 | zalogowani | NFR-29 |
-| L2 | „Wyloguj” | V1 | zalogowani | macierz: profil i wylogowanie |
+| L2, potwierdzenie wycofania | „Zostaw zgodę” | L2 | zalogowani | NFR-29 |
+| L2 | „Wyloguj się” | V1 | zalogowani | macierz: profil i wylogowanie |
 
 ### Przejścia: Zbierający
 
 | Z ekranu | Czynność | Do ekranu | Rola | AC/BR |
 | --- | --- | --- | --- | --- |
 | V2 | „Zmień oznaczenie” przy wejściu | C6 | RO-ZBI | US17.2, BR-24 |
-| V2 | „Bariery już nie ma” | C7 | RO-ZBI | US8.4, BR-19 |
+| V2 | „Zgłoś, że bariery nie ma” | C7 | RO-ZBI | US8.4, BR-19 |
 | V2 | „Popraw zgłoszenie” | C2 | RO-ZBI | BR-3, BR-18 |
-| V2 | „Piętra obejrzane” | C5 | RO-ZBI | US15.1 |
+| V2 | „Oznacz obejrzane piętra” | C5 | RO-ZBI | US15.1 |
 | C1 | „Powtórz pomiar” | C1, początek pomiaru | RO-ZBI | UC8 2a, NFR-23 |
 | C1 | „Dalej” | C2 | RO-ZBI | US6 |
 | C1, stany zgody na lokalizację | jak w V4; po odmowie „Otwórz ustawienia” | ustawienia telefonu | RO-ZBI | NFR-27 |
@@ -133,21 +138,21 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | C2 | dodanie zdjęcia | aparat | RO-ZBI | US7.1, NFR-25 |
 | C2 | „Zapisz” | C3 | RO-ZBI | BR-7 |
 | C2, błąd walidacji | „Zapisz” bez wymaganego pola | C2, komunikat przy polu | RO-ZBI | US7.1, US7.3 |
-| C3 | znak „wybierz wersję” | C4 | RO-ZBI | US9.3 |
+| C3 | znak „Dwie wersje: wybierz jedną” | C4 | RO-ZBI | US9.3 |
 | C3 | stan synchronizacji, np. „Czeka na wysłanie: 3” | C4 | RO-ZBI | US9.1 |
 | C3 | dotknięcie zgłoszenia przed decyzją albo odrzuconego | C2 | RO-ZBI | US8.3, BR-3 |
 | C3 | to samo przy zmianie oznaczenia wejścia | C6 | RO-ZBI | US17.2 |
 | C3 | to samo przy „bariera usunięta” | C7 | RO-ZBI | US8.4 |
-| C3 | „Wyślij ponownie do bieżącego zgłoszenia” | C2 | RO-ZBI | BR-23 |
+| C3 | „Wyślij do aktualnego zgłoszenia” | C2 | RO-ZBI | BR-23 |
 | C3 | to samo przy zmianie oznaczenia wejścia | C6 | RO-ZBI | BR-23, BR-24 |
-| C3 | przy „nieaktualne” po usunięciu bariery: nowe zgłoszenie | C1 | RO-ZBI | BR-23 |
-| C3 | „Nowe zgłoszenie”, także w stanie pustym | C1 | RO-ZBI | US6 |
+| C3 | przy „nieaktualne” po usunięciu bariery: „Zmierz i zgłoś barierę” | C1 | RO-ZBI | BR-23 |
+| C3 | „Zmierz i zgłoś barierę”, także w stanie pustym | C1 | RO-ZBI | US6 |
 | C3, stan „błąd” | „Spróbuj ponownie” | C3 | RO-ZBI | NFR-50 |
 | C4 | „Synchronizuj teraz” | C4 | RO-ZBI | US9.2 |
 | C4, konflikt | „Zostaw moją wersję”, „Weź wersję z serwera” | C3 | RO-ZBI | US9.3, BR-10 |
 | C4, konflikt | „Zdecyduję później” | C3 | RO-ZBI | BR-10 |
 | C5 | „Oznacz jako obejrzane” | C5, nowy stan | RO-ZBI | US15.1 |
-| C5 | „Cofnij” przy własnym znaczniku | C5, nowy stan | RO-ZBI | US15.2 |
+| C5 | „Cofnij znacznik” przy własnym znaczniku | C5, nowy stan | RO-ZBI | US15.2 |
 | C5, stan „błąd zapisu” | „Spróbuj ponownie” | C5 | RO-ZBI | NFR-7 |
 | C6 | zdjęcie wejścia | aparat | RO-ZBI | US17.2, BR-24 |
 | C6 | „Wyślij do sprawdzenia” | C3 | RO-ZBI | US17.2 |
@@ -158,7 +163,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 
 | Z ekranu | Czynność | Do ekranu | Rola | AC/BR |
 | --- | --- | --- | --- | --- |
-| R1 | przełącznik „Lista / Mapa” | R1 | RO-WER | NFR-19 |
+| R1 | przełącznik „Lista” i „Mapa” | R1 | RO-WER | NFR-19 |
 | R1 | „Weź do sprawdzenia” | R2 | RO-WER | US10.4, BR-11 |
 | R1 | „Weź do sprawdzenia”, zgłoszenie już zajęte | R1, komunikat, zgłoszenie znika | RO-WER | UC14 2a, BR-11 |
 | R1 | zgłoszenie z sekcji „Wzięte przeze mnie” | R2 | RO-WER | BR-11, UC14 2b |
@@ -169,12 +174,12 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | K1 | dotknięcie budynku | C5 | RO-KOO | US11.3 |
 | K1 | „Odśwież” | K1 | RO-KOO | US11.2 |
 | C5 | „Cofnij znacznik” | C5, potwierdzenie | RO-KOO | US11.3, BR-20 |
-| C5, potwierdzenie | „Cofnij” | C5 z nowym stanem | RO-KOO | US11.3 |
-| C5, potwierdzenie | „Anuluj” | C5 | RO-KOO | BR-20 |
+| C5, potwierdzenie | „Cofnij znacznik” | C5 z nowym stanem | RO-KOO | US11.3 |
+| C5, potwierdzenie | „Zostaw znacznik” | C5 | RO-KOO | BR-20 |
 | C5 | „Wstecz” | K1 | RO-KOO | US11.3 |
 | K2 | „Wyślij zaproszenie” | K2, potwierdzenie | RO-KOO | US12.1, US12.2 |
 | K3 | „Pobierz plik” | K3, stan „sukces”; plik w pobranych plikach telefonu | RO-KOO | US13 |
-| R1, K1, K2, K3, stan „brak sieci” | „Spróbuj ponownie” | ten sam ekran | RO-WER, RO-KOO | NFR-50 |
+| R1, K1, K2, K3, stan „brak sieci” albo „błąd serwera” | „Spróbuj ponownie” | ten sam ekran | RO-WER, RO-KOO | NFR-50 |
 | R1, R2, K1, K2, K3, stan „brak uprawnień” | „Wróć do mapy” | V1 | RO-WER, RO-KOO | US14.1 |
 
 ## Kontrole
@@ -184,7 +189,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | Najwyżej 3 dotknięcia od mapy do wejścia dostępnego (US3.2) | spełnione | najkrótsza droga: 1 dotknięcie do V2, 2 do V3; od otwarcia aplikacji przy pierwszym uruchomieniu do 4 |
 | Ekran osiągalny dla roli z uprawnieniem | spełnione | 19 z 19 ekranów |
 | Ekran nieosiągalny dla roli bez uprawnienia | spełnione | brak przejścia z ekranu innej roli |
-| Powrót do punktu startu z każdego ekranu | spełnione | najwyżej 3 dotknięcia; po wysłaniu formularza dzięki P2 |
+| Powrót do punktu startu z każdego ekranu | spełnione | najwyżej 3 dotknięcia; po wysłaniu formularza dzięki P2. Wyjątek: kroki 2 i 3 V4 po zdjęciu, do 5 dotknięć, bo rezygnacja ze zdjęcia wymaga potwierdzenia |
 | Brak ślepych zaułków | spełnione | każdy przycisk ma cel; rozbieżności 2–4 rozstrzygnięte |
 
 ### Liczba dotknięć do wejścia dostępnego
@@ -195,13 +200,13 @@ Wejście jest wskazane już na V2, bo karta podaje oznaczenie każdego wejścia 
 
 | Ścieżka | Dotknięcia do V2 | Dotknięcia do V3 | Wynik |
 | --- | --- | --- | --- |
-| A. V1: kontur budynku, „Zaplanuj wizytę” | 1 | 2 | spełnione |
-| B. V1: bariera na mapie, „Zaplanuj wizytę” | 1 | 2 | spełnione |
-| C. V1: pole „Symbol budynku”, litery, wynik, „Zaplanuj wizytę” | 2 | 3 | spełnione, na progu |
-| D. V1 z TalkBack: „Mapa / Lista budynków”, budynek, „Zaplanuj wizytę” | 2 | 3 | spełnione, na progu |
-| E. Pierwsze uruchomienie: V5 „Pomiń”, potem A | 2 | 3 | spełnione |
-| F. Pierwsze uruchomienie: V5 „Pomiń”, potem C albo D | 3 | 4 | do V3 ponad próg |
-| G. Brak wyniku: pole, litery, „Lista budynków”, budynek, „Zaplanuj wizytę” | 3 | 4 | droga po błędzie, ponad próg |
+| A. V1: kontur budynku, „Sprawdź, którędy wejść” | 1 | 2 | spełnione |
+| B. V1: bariera na mapie, „Sprawdź, którędy wejść” | 1 | 2 | spełnione |
+| C. V1: pole symbolu budynku, litery, wynik, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
+| D. V1 z TalkBack: „Lista budynków”, budynek, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
+| E. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem A | 2 | 3 | spełnione |
+| F. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem C albo D | 3 | 4 | do V3 ponad próg |
+| G. Brak wyniku: pole, litery, „Lista budynków”, budynek, „Sprawdź, którędy wejść” | 3 | 4 | droga po błędzie, ponad próg |
 
 Kryterium liczy dotknięcia od mapy, więc ścieżki E i F się w nim mieszczą. Jeśli liczyć od otwarcia aplikacji, ścieżka F przekracza próg tylko przy pierwszym uruchomieniu i tylko do V3.
 
@@ -209,29 +214,29 @@ Osoba z TalkBack ma zawsze drogę D, czyli dokładnie 3 dotknięcia. Test miary 
 
 ### Dostęp ról do ekranów
 
-✔ — ekran osiągalny; ✖ — w aplikacji nie ma do niego drogi. Liczba w nawiasie to najmniejsza liczba dotknięć od V1. Przypisy odsyłają do przypisów macierzy uprawnień. „Konto” w kolumnie „Droga” oznacza dla ról pracowniczych pozycję „Moja praca” (P1).
+✔ — ekran osiągalny; ✖ — w aplikacji nie ma do niego drogi. Liczba w nawiasie to najmniejsza liczba dotknięć od V1. Przypisy odsyłają do przypisów macierzy uprawnień. Role pracownicze widzą czwartą pozycję paska jako „Konto i praca” (P1).
 
 | Ekran | RO-GOS | RO-ODW | RO-ZBI | RO-WER | RO-KOO | Droga | Zgodne z macierzą |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | V1 | ✔ | ✔ | ✔ | ✔ | ✔ | start (0) | tak |
 | V2 | ✔ | ✔ | ✔ | ✔ | ✔ | budynek (1) | tak |
-| V3 | ✔ | ✔ | ✔ | ✔ | ✔ | budynek, „Zaplanuj wizytę” (2) | tak |
+| V3 | ✔ | ✔ | ✔ | ✔ | ✔ | budynek, „Sprawdź, którędy wejść” (2) | tak |
 | V4 | ✖ | ✔ | ✔ | ✔ | ✔ | „Zgłoś barierę” (1); Gość trafia do L1 | tak, przypis 2 |
 | V5 | ✔ | ✔ | ✔ | ✔ | ✔ | „Pomoc” (1) | tak |
 | L1 | ✔ | ✖ | ✖ | ✖ | ✖ | „Konto” albo „Zgłoś barierę” (1) | tak, US14.2 |
-| L2 | ✖ | ✔ | ✔ | ✔ | ✔ | „Konto” (1) | tak |
-| C1 | ✖ | ✖ | ✔ | ✖ | ✖ | „Konto”, „Nowe zgłoszenie z pomiarem” (2) | tak |
+| L2 | ✖ | ✔ | ✔ | ✔ | ✔ | „Konto” albo „Konto i praca” (1) | tak |
+| C1 | ✖ | ✖ | ✔ | ✖ | ✖ | „Konto i praca”, „Zmierz i zgłoś barierę” (2) | tak |
 | C2 | ✖ | ✖ | ✔ | ✖ | ✖ | budynek, „Popraw zgłoszenie” (2) | tak |
-| C3 | ✖ | ✖ | ✔ | ✖ | ✖ | „Konto”, „Moje zgłoszenia” (2) | tak, przypis 3 |
-| C4 | ✖ | ✖ | ✔ | ✖ | ✖ | „Konto”, „Moje zgłoszenia”, stan synchronizacji (3) | tak; „Wysyłka po powrocie sieci” innych ról działa w tle, bez C4 |
-| C5 | ✖ | ✖ | ✔ | ✖ | ✔ | RO-ZBI: budynek, „Piętra obejrzane” (2); RO-KOO: „Konto”, „Postęp inwentaryzacji”, budynek (3) | tak |
+| C3 | ✖ | ✖ | ✔ | ✖ | ✖ | „Konto i praca”, „Moje zgłoszenia” (2) | tak, przypis 3 |
+| C4 | ✖ | ✖ | ✔ | ✖ | ✖ | „Konto i praca”, „Moje zgłoszenia”, stan synchronizacji (3) | tak; „Wysyłka po powrocie sieci” innych ról działa w tle, bez C4 |
+| C5 | ✖ | ✖ | ✔ | ✖ | ✔ | RO-ZBI: budynek, „Oznacz obejrzane piętra” (2); RO-KOO: „Konto i praca”, „Postęp inwentaryzacji”, budynek (3) | tak |
 | C6 | ✖ | ✖ | ✔ | ✖ | ✖ | budynek, „Zmień oznaczenie” (2) | tak |
-| C7 | ✖ | ✖ | ✔ | ✖ | ✖ | budynek, „Bariery już nie ma” (2) | tak |
-| R1 | ✖ | ✖ | ✖ | ✔ | ✖ | „Konto”, „Zgłoszenia do sprawdzenia” (2) | tak |
+| C7 | ✖ | ✖ | ✔ | ✖ | ✖ | budynek, „Zgłoś, że bariery nie ma” (2) | tak |
+| R1 | ✖ | ✖ | ✖ | ✔ | ✖ | „Konto i praca”, „Zgłoszenia do sprawdzenia” (2) | tak |
 | R2 | ✖ | ✖ | ✖ | ✔ | ✖ | jak R1, „Weź do sprawdzenia” (3) | tak |
-| K1 | ✖ | ✖ | ✖ | ✖ | ✔ | „Konto”, „Postęp inwentaryzacji” (2) | tak |
-| K2 | ✖ | ✖ | ✖ | ✖ | ✔ | „Konto”, „Zaproś osobę” (2) | tak |
-| K3 | ✖ | ✖ | ✖ | ✖ | ✔ | „Konto”, „Pobierz eksport” (2) | tak |
+| K1 | ✖ | ✖ | ✖ | ✖ | ✔ | „Konto i praca”, „Postęp inwentaryzacji” (2) | tak |
+| K2 | ✖ | ✖ | ✖ | ✖ | ✔ | „Konto i praca”, „Zaproś osobę” (2) | tak |
+| K3 | ✖ | ✖ | ✖ | ✖ | ✔ | „Konto i praca”, „Pobierz eksport” (2) | tak |
 
 Nieosiągalność wynika z tabeli przejść. Do ekranów C, R i K prowadzą tylko: czynności L2 według roli (US14.1), przyciski Zbierającego na V2 i przejścia w obrębie jednej roli.
 
@@ -246,9 +251,10 @@ Punkt startu każdej roli to V1, bo od niej zaczyna się aplikacja. Pasek dolny 
 | V2, V5, L2 | „Mapa” albo „Wstecz” | 1 |
 | V3 | „Mapa” | 1 |
 | V4, stany zgody | „Wróć do mapy” | 1 |
-| V4, krok 1 | „Wstecz” do ekranu wyjścia, potem „Mapa”, jeśli to nie V1 | 1–2 |
-| V4, kroki 2 i 3 | „Wstecz” do kroku 1, potem jak z kroku 1 | 2–4 |
+| V4, krok 1 | „Wstecz” do ekranu wyjścia (po zdjęciu z „Tak, zrezygnuj”), potem „Mapa”, jeśli to nie V1 | 1–3 |
+| V4, kroki 2 i 3 | „Wstecz” do kroku 1, potem jak z kroku 1 | 3–5 |
 | V4, potwierdzenie | „Wróć do mapy” | 1 |
+| V4, potwierdzenie rezygnacji | „Tak, zrezygnuj” | 1 |
 | L1 | „Nie teraz” | 1 |
 | C1, C3, R1, K1, K2, K3 | „Wstecz” do L2, „Mapa” | 2 |
 | C5 (RO-ZBI), C6, C7, C2 z V2 | „Wstecz” do V2, „Mapa” | 2 |
@@ -268,7 +274,7 @@ Punkt startu każdej roli to V1, bo od niej zaczyna się aplikacja. Pasek dolny 
 | V1, stan „brak sieci przy pierwszym uruchomieniu” | celowe czekanie: mapa wczyta się sama po powrocie sieci (NFR-11) |
 | K2 i K3 po sukcesie | celowy koniec czynności; potwierdzenie na tym samym ekranie, dalej „Wstecz” |
 | Przeglądarka, ustawienia telefonu, aparat, pobrane pliki | poza aplikacją; powrót przyciskiem „Wstecz” telefonu |
-| V4, „Anuluj zgłoszenie” | prowadzi do V1 (rozbieżność 2, rozstrzygnięta) |
+| V4, „Zrezygnuj” | po potwierdzeniu prowadzi do V1 (rozbieżność 2, rozstrzygnięta); „Wróć do zdjęcia” wraca do stanu „brak pozycji” |
 | L2, potwierdzone „Wycofaj zgodę” | prowadzi do V1 (rozbieżność 3, rozstrzygnięta) |
 
 ## Rozbieżności w wymaganiach ekranów
@@ -278,8 +284,8 @@ Wszystkie rozbieżności są rozstrzygnięte i wpisane w [wymaganiach do ekranó
 | Nr | Miejsce | Rozbieżność | Rozstrzygnięcie |
 | --- | --- | --- | --- |
 | 1 | V3 | Pole „Czynność główna” mówiło, że jedyna czynność to „Wstecz”, a wymagania wspólne dają V3 pasek dolny. | Pasek zostaje (WCAG 3.2.3); czynność główna: „Wstecz” i pasek dolny. |
-| 2 | V4, stan „brak pozycji” | „Anuluj zgłoszenie” nie miało ekranu docelowego. | V1; zgłoszenie nie powstaje, jak w UC7 1b. |
-| 3 | L2, potwierdzenie wycofania zgody | Po „Wycofaj zgodę” osoba jest wylogowana, ale ekran docelowy nie był podany. | V1, jak po „Wyloguj” (NFR-29). |
+| 2 | V4, stan „brak pozycji” | „Anuluj zgłoszenie” (dziś „Zrezygnuj”) nie miało ekranu docelowego. | V1 po potwierdzeniu; zgłoszenie nie powstaje, jak w UC7 1b. |
+| 3 | L2, potwierdzenie wycofania zgody | Po „Wycofaj zgodę” osoba jest wylogowana, ale ekran docelowy nie był podany. | V1, jak po „Wyloguj się” (NFR-29). |
 | 4 | L2 | „Informacja o danych osobowych” prowadziła do „treści klauzuli” bez ID ekranu i bez stanu L2. | Stan L2 „Klauzula informacyjna”, bez nowego ID, bo NFR-30 wymaga klauzuli w profilu. |
 | 5 | C1, stany zgody | „Jak w V4” przenosiło też „Wróć do mapy”, choć C1 otwiera się z L2, C2 albo C3. | Bez „Wróć do mapy”; rezygnacja przez „Wstecz” (NFR-15). |
 | 6 | V2, V3, V5, L2 | Tabele elementów nie miały wiersza „Pasek dolny”. | Wiersz dopisany na każdym z tych ekranów. |
@@ -292,9 +298,9 @@ Propozycje P1, P2 i P3 są przyjęte i wpisane w sekcji „Decyzje fazy B” [wy
 
 Dziś cała praca Zbierającego, Weryfikatora i Koordynatora poza kartą budynku zaczyna się w L2 „Konto”. Osoba szukająca „Moich zgłoszeń” nie skojarzy ich z kontem.
 
-**Propozycja.** Czwarta pozycja paska dolnego zostaje w tym samym miejscu i dalej prowadzi do L2. Osoba z co najmniej jedną rolą pracowniczą widzi na niej nazwę mówiącą o pracy: „Moja praca” (nazwa robocza, B6).
+**Propozycja.** Czwarta pozycja paska dolnego zostaje w tym samym miejscu i dalej prowadzi do L2. Osoba z co najmniej jedną rolą pracowniczą widzi na niej nazwę mówiącą o pracy: „Konto i praca”.
 
-L2 zaczyna się wtedy listą „Twoje czynności”, a dane konta, klauzula i „Wyloguj” są niżej. Gość i Odwiedzający widzą „Konto” bez zmian.
+L2 zaczyna się wtedy sekcją „Twoja praca”, a dane konta, klauzula i „Wyloguj się” są niżej. Gość i Odwiedzający widzą „Konto” bez zmian.
 
 | Argument | Odwołanie |
 | --- | --- |
@@ -308,11 +314,11 @@ L2 zaczyna się wtedy listą „Twoje czynności”, a dane konta, klauzula i �
 
 | Odrzucony wariant | Dlaczego |
 | --- | --- |
-| Piąta pozycja „Moja praca” obok „Konto” | dwie pozycje do jednego ekranu, mniejsze cele dotyku |
+| Piąta pozycja dla pracy obok „Konto” | dwie pozycje do jednego ekranu, mniejsze cele dotyku |
 | Osobny ekran pracy wydzielony z L2 | nowe ID i podział L2 bez kryterium (decyzja 16) |
 | Czynności ról na mapie V1 | mapa ma jedną czynność główną, a L2 celowo jest listą przycisków, nie kafelkami |
 
-Ostateczną nazwę pozycji ustali słownik użytkownika (B6). Musi ona objąć też dane konta, bo L2 dalej je zawiera. Zmiana objęła wiersz „Pasek dolny” w wymaganiach wspólnych i kolejność elementów L2.
+Nazwę wybrał [słownik użytkownika](slownik-uzytkownika.md#nazwa-wejscia) (B6). „Konto i praca” obejmuje też dane konta, bo L2 dalej je zawiera. Zmiana objęła wiersz „Pasek dolny” w wymaganiach wspólnych i kolejność elementów L2.
 
 ### P2. Wysłany formularz znika z historii „Wstecz”
 

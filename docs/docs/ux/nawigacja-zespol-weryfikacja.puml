@@ -26,7 +26,7 @@ skinparam note {
 }
 
 state "V1 Mapa kampusu" as V1
-state "L2 Konto / Moja praca\n(czynności RO-WER, RO-KOO)" as L2
+state "L2 Konto i praca\n(czynności RO-WER, RO-KOO)" as L2
 state "R1 Kolejka weryfikacji" as R1
 state "R2 Sprawdzenie zgłoszenia" as R2
 state "K1 Postęp inwentaryzacji" as K1
@@ -38,8 +38,8 @@ state "Pobrane pliki\ntelefonu" as PLIK <<poza>>
 state "Brak uprawnień\n(R1, R2, K1, K2, K3)" as BU <<stan>>
 
 [*] --> V1 : start aplikacji
-V1 --> L2 : „Moja praca”\n(pasek dolny)
-L2 --> V1 : „Wyloguj”
+V1 --> L2 : „Konto i praca”\n(pasek dolny)
+L2 --> V1 : „Wyloguj się”
 
 L2 --> R1 : RO-WER: „Zgłoszenia\ndo sprawdzenia”
 R1 --> R2 : „Weź do sprawdzenia”;\n„Wzięte przeze mnie”
@@ -56,7 +56,7 @@ L2 --> K3 : RO-KOO:\n„Pobierz eksport”
 K1 --> C5 : dotknięcie\nbudynku
 C5 --> K1 : „Wstecz”
 C5 --> PC : „Cofnij znacznik”
-PC --> C5 : „Cofnij” (nowy stan),\n„Anuluj”
+PC --> C5 : „Cofnij znacznik”\n(nowy stan),\n„Zostaw znacznik”
 K3 --> PLIK : „Pobierz plik”
 
 BU --> V1 : „Wróć do mapy”

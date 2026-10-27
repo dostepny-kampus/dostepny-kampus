@@ -144,7 +144,7 @@ Uprawnienia każdej roli podaje macierz na stronie [Role i uprawnienia](../bizne
 | Kroki TO-BE | przed T7 | T20–T23 | T7–T10 | T1–T6 | T6a, T6b, T10–T13, T19 | T14–T19 | T24–T29 |
 | **Musi być (MVP)** | US14 logowanie | US1 wyszukiwanie<br>US2 karta budynku<br>US17 oznaczenie wejścia | US4 zgłoszenie szybkie | US6 pomiar bez US6.3, US6.5<br>US7 formularz | US8 statusy, „bariera usunięta”<br>US17.2 zmiana oznaczenia wejścia<br>US9 synchronizacja | US10 z podobnymi zgłoszeniami | US15 piętro obejrzane<br>US11 postęp<br>US13 eksport |
 | **— linia MVP —** | | | | | | | |
-| **Powinno być** | US5 pomoc | US3 „Zaplanuj wizytę”<br>US16 plan piętra | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | — | US12 zaproszenie |
+| **Powinno być** | US5 pomoc | US3 „Którędy wejść”<br>US16 plan piętra | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | — | US12 zaproszenie |
 | **Może być** | wersja angielska, tryb ciemny | kolejne budynki szczegółowe, dane z deklaracji dostępności | — | — | — | — | — |
 
 Kolumny idą w kolejności korzystania z aplikacji, od Gościa niezalogowanego do Koordynatora. Kroki TO-BE każdej aktywności podaje drugi wiersz. Wiersze nad linią MVP muszą działać na pokazie. Pozycje „Może być” nie mają jeszcze historyjek; dostaną je, gdy wejdą do planu sprintu.
