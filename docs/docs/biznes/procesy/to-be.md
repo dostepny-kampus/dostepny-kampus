@@ -37,10 +37,10 @@ Pule A i B łączy sygnał „Zgłoszenie w kolejce”. Magazyn „Zgłoszenia p
 | T17 | System | Ustawia „przyjęte” i od razu publikuje barierę na mapie i karcie budynku, ze zdjęciem i datą weryfikacji (US1.3, US2.2) | P-1, P-3, P-4, P-7 | N1, N2 | V1, V2 |
 | T18 | Weryfikator | Odrzuca duplikat albo błędne zgłoszenie i podaje powód odrzucenia (US10.2) | P-8 | N8 | R2 |
 | T19 | System | Ustawia „odrzucone”; Zbierający widzi powód i może poprawić zgłoszenie (US8.1, BR-3) | P-6 | N8 | C3 |
-| T20 | Odwiedzający / Gość | Znajduje budynek na mapie albo na liście po symbolu budynku, bez logowania (US1.1, US1.2, NFR-19) | P-2 | N1, N4 | V1 |
-| T21 | Odwiedzający / Gość | Otwiera kartę budynku: wejścia, windy, zgłoszenia przyjęte ze zdjęciami (US2.1, US2.2, BR-6) | P-1, P-4, P-8 | N1, N2 | V2 |
-| T22 | Odwiedzający / Gość | W budynku szczegółowym wybiera piętro i ogląda plan piętra; w budynku podstawowym planu nie ma (BR-G1) | P-9 | N1 | V2 |
-| T23 | Odwiedzający / Gość | W „Zaplanuj wizytę” sprawdza, które wejście jest wejściem dostępnym (US3.1, US3.2) | P-2, P-9 | N1 | V3 |
+| T20 | Odwiedzający / Gość niezalogowany | Znajduje budynek na mapie albo na liście po symbolu budynku, bez logowania (US1.1, US1.2, NFR-19) | P-2 | N1, N4 | V1 |
+| T21 | Odwiedzający / Gość niezalogowany | Otwiera kartę budynku: wejścia, windy, zgłoszenia przyjęte ze zdjęciami (US2.1, US2.2, BR-6) | P-1, P-4, P-8 | N1, N2 | V2 |
+| T22 | Odwiedzający / Gość niezalogowany | W budynku szczegółowym wybiera piętro i ogląda plan piętra; w budynku podstawowym planu nie ma (BR-G1) | P-9 | N1 | V2 |
+| T23 | Odwiedzający / Gość niezalogowany | W „Zaplanuj wizytę” sprawdza, które wejście jest wejściem dostępnym (US3.1, US3.2) | P-2, P-9 | N1 | V3 |
 | T24 | Zbierający | Oznacza piętro obejrzane; w budynku podstawowym oznacza cały budynek | P-3 | N9 | C1 (do ustalenia w fazie B) |
 | T25 | System | Przelicza postęp inwentaryzacji budynku: odsetek pięter obejrzanych, zgłoszenia czekające i przyjęte | P-3 | N9 | K1 |
 | T26 | Koordynator | Sprawdza postęp inwentaryzacji według budynków (US11.1) | P-3 | N9 | K1 |
@@ -58,7 +58,7 @@ Gość niezalogowany wykonuje T20–T23 bez konta. Zgłoszenie szybkie (T7–T9)
 | P-2 Brak mapy przy deklaracjach | Mapa obejmuje wszystkie budynki PWr: 5 szczegółowych i pozostałe jako podstawowe (T20, T23). | Plany pięter mają tylko budynki szczegółowe. Deklaracje PWr nadal nie odsyłają do mapy. |
 | P-3 Rzadkie aktualizacje | Bariera trafia na mapę zaraz po weryfikacji (T11, T17). Koordynator widzi piętra obejrzane (T24–T26). | Aktualność zależy od obchodów i liczby Weryfikatorów. System nie wyznacza terminu ponownego obejrzenia. |
 | P-4 Data bez szczegółów | Każde zgłoszenie przyjęte ma własną datę weryfikacji i zdjęcie (T17, T21). | Brak zgłoszeń nie znaczy „brak barier”. Czy karta budynku pokaże datę obejrzenia piętra, ustalimy w fazie B. |
-| P-5 Brak informacji o bieżących awariach | Odwiedzający zgłasza np. niesprawną windę w 3 krokach (T7–T9). | Zgłoszenie czeka na weryfikację, więc informacja nie jest natychmiastowa. Proces nie ma kroku „bariera usunięta” (do ustalenia w regułach). |
+| P-5 Brak informacji o bieżących awariach | Odwiedzający zgłasza np. niesprawną windę w 3 krokach (T7–T9). Po naprawie Zbierający wysyła zmianę zgłoszenia przyjętego z oznaczeniem „bariera usunięta” (BR-3, T6–T13). Po weryfikacji (T14–T17) bariera znika z mapy i zostaje w historii. | Zgłoszenie i usunięcie czekają na weryfikację, więc informacja nie jest natychmiastowa. Odwiedzający nie oznacza usunięcia bariery; robi to Zbierający. |
 | P-6 Wniosek formalny, a jego los niewidoczny | Zgłoszenie szybkie to 3 kroki bez formularza wniosku (T7–T9). Zgłoszenie ma status od „lokalne” do „przyjęte” lub „odrzucone” (T10, T13, T19). Zgłoszenia przyjęte są publiczne (T17). | Odwiedzający nie ma listy własnych zgłoszeń, więc nie widzi statusu ani powodu odrzucenia (do sprawdzenia w wywiadach). Zgłoszenie w aplikacji nie jest wnioskiem o zapewnienie dostępności z ustawy. |
 | P-7 Wniosek nie aktualizuje deklaracji | Zgłoszenie po weryfikacji od razu zmienia mapę i kartę budynku (T17). | Aplikacja nie zmienia deklaracji na stronie PWr. Eksport (T28) może być dla niej materiałem (hipoteza). |
 | P-8 Niespójne i rozproszone dane | Jedno źródło danych: podobne zgłoszenia (T15), decyzja Weryfikatora (T16–T18), eksport jednego zbioru (T28). | Rozbieżności w istniejących deklaracjach PWr zostają; aplikacja ich nie importuje. |

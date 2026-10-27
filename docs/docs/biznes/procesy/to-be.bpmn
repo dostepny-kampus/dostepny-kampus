@@ -204,7 +204,7 @@
         <bpmn:flowNodeRef>Task_T17</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>End_Opublikowane</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_B_Gosc" name="Odwiedzający / Gość">
+      <bpmn:lane id="Lane_B_Gosc" name="Odwiedzający / Gość niezalogowany">
         <bpmn:flowNodeRef>Start_Wizyta</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_T20</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_T21</bpmn:flowNodeRef>
@@ -320,6 +320,10 @@
     </bpmn:textAnnotation>
     <bpmn:association id="Assoc_Note_Szybkie" sourceRef="Note_Szybkie" targetRef="Task_T16" />
     <bpmn:association id="Assoc_Note_Powod" sourceRef="Note_Powod" targetRef="Task_T18" />
+    <bpmn:textAnnotation id="Note_Usunieta">
+      <bpmn:text>Zmiana „bariera usunięta” (BR-3): po przyjęciu bariera znika z mapy, zostaje w historii</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Note_Usunieta" sourceRef="Note_Usunieta" targetRef="End_Opublikowane" />
   </bpmn:process>
 
   <bpmn:process id="Process_Koordynacja" isExecutable="false">
@@ -860,6 +864,13 @@
       <bpmndi:BPMNEdge id="Assoc_Note_Szybkie_di" bpmnElement="Assoc_Note_Szybkie">
         <di:waypoint x="660" y="682" />
         <di:waypoint x="660" y="715" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Note_Usunieta_di" bpmnElement="Note_Usunieta">
+        <dc:Bounds x="1170" y="970" width="290" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Assoc_Note_Usunieta_di" bpmnElement="Assoc_Note_Usunieta">
+        <di:waypoint x="1170" y="990" />
+        <di:waypoint x="1118" y="990" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Assoc_Note_Powod_di" bpmnElement="Assoc_Note_Powod">
         <di:waypoint x="990" y="682" />
