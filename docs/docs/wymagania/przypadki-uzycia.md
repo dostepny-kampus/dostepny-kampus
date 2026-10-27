@@ -38,7 +38,7 @@ QGIS nie jest aktorem. Koordynator otwiera w nim plik eksportu poza systemem, a 
 | UC9 | Śledzenie i poprawa własnych zgłoszeń | Zbierający | US8.1, US8.2, US8.3 | C3 | Musi być |
 | UC10 | Synchronizacja z serwerem | Zbierający | US9.1, US9.2, US4.2 | C4 | Musi być |
 | UC11 | Wybór wersji przy konflikcie | Zbierający | US9.3 | C4 | Musi być |
-| UC12 | Zgłoszenie usunięcia bariery | Zbierający | US8.4, US10.6 | C3, C2 (do ustalenia w fazie B) | Musi być |
+| UC12 | Zgłoszenie usunięcia bariery | Zbierający | US8.4, US10.6 | V2, C3 | Musi być |
 | UC13 | Oznaczenie piętra obejrzanego | Zbierający | US15 | C1 (do ustalenia w fazie B) | Musi być |
 | UC14 | Weryfikacja zgłoszenia | Weryfikator | US10 | R1, R2 | Musi być; US10.1 — Powinno być |
 | UC15 | Przegląd postępu inwentaryzacji | Koordynator | US11 | K1 | Musi być |
@@ -175,16 +175,16 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Warunki wstępne | Weryfikator jest zalogowany z rolą RO-WER. W kolejce są zgłoszenia „wysłane”, których nie jest autorem (BR-4). Jest połączenie z serwerem. |
 | Wyzwalacz | Weryfikator otwiera kolejkę weryfikacji. |
 | Warunki końcowe | Zgłoszenie jest przyjęte i widoczne na mapie, odrzucone z powodem albo wraca do kolejki. |
-| Odwołania | US10.1…US10.6, BR-3…BR-5, BR-11…BR-19, NFR-25, T14–T19 |
+| Odwołania | US10.1…US10.6, BR-3, BR-4, BR-5, BR-11, BR-13…BR-19, BR-23, NFR-25, T14–T19 |
 
 #### Przepływ główny UC14
 
-1. Weryfikator otwiera kolejkę jako listę i mapę. Własnych zgłoszeń w niej nie widzi (US10.5).
+1. Weryfikator otwiera kolejkę jako listę i mapę. Nie widzi w niej własnych zgłoszeń ani własnych zmian „bariera usunięta” (US10.5).
 2. Weryfikator bierze zgłoszenie.
 3. System ustawia status „w weryfikacji” i usuwa zgłoszenie z kolejki innych Weryfikatorów (US10.4, BR-11).
 4. System pokazuje dane, zdjęcie, rolę i pseudonim autora (BR-5). Pokazuje też podobne zgłoszenia w promieniu 10 m: typ, zdjęcie i odległość (US10.1, BR-13).
 5. Weryfikator porównuje zgłoszenie z podobnymi. W demo podobne zgłoszenie 5 m dalej opisuje inną barierę, więc to nie duplikat.
-6. Weryfikator zasłania na zdjęciu twarze i tablice rejestracyjne, jeśli są (NFR-25).
+6. Weryfikator zasłania na zdjęciu twarze i tablice rejestracyjne, jeśli są. To część przyjęcia i nie tworzy nowej wersji (BR-15, NFR-25).
 7. Weryfikator przyjmuje zgłoszenie.
 8. System ustawia status „przyjęte”. Bariera od razu pojawia się na mapie i karcie budynku ze zdjęciem i datą weryfikacji (BR-17, US2.2).
 
@@ -197,7 +197,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | 5a | Zgłoszenie szybkie | Weryfikator ustala typ bariery i uciążliwość. Bez nich przyjęcie jest niemożliwe (US10.3, BR-14). |
 | 5b | Duplikat | Weryfikator odrzuca zgłoszenie i w powodzie odrzucenia wskazuje wcześniejsze zgłoszenie (BR-13). Dalej według wiersza 7a. |
 | 5c | Błąd w zgłoszeniu z pomiaru precyzyjnego | Weryfikator nie poprawia typu, uciążliwości ani miejsca. Odrzuca zgłoszenie z powodem (BR-15). Dalej według wiersza 7a. |
-| 5d | Weryfikator nie podejmie decyzji | Zwalnia zgłoszenie; wraca ono do kolejki ze statusem „wysłane” (BR-12). |
+| 5d | Zmiana dotyczy zgłoszenia, które już jest archiwalne | Inna równoległa zmiana została przyjęta wcześniej. Weryfikator odrzuca tę zmianę z powodem „nieaktualne” (BR-23). Dalej według wiersza 7a. |
 | 5e | Autor w tym czasie edytuje zgłoszenie | Powstaje nowa wersja; Weryfikator decyduje o nowej, nie o starej (BR-3). |
 | 7a | Odrzucenie | Weryfikator podaje powód odrzucenia; bez niego odrzucić się nie da (US10.2, BR-16). Status „odrzucone”, a autor widzi powód w UC9. |
 | 7b | Zgłoszenie „bariera usunięta” | Po przyjęciu bariera znika z mapy i karty budynku, oba zgłoszenia stają się archiwalne (US10.6, BR-19). |
@@ -277,7 +277,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Warunki wstępne | Zbierający ma co najmniej jedno własne zgłoszenie. |
 | Wyzwalacz | Zbierający otwiera listę swoich zgłoszeń. |
 | Przepływ główny | 1. System pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte albo odrzucone (US8.1, US8.2). <br> 2. Zbierający otwiera zgłoszenie odrzucone i czyta powód odrzucenia (BR-16). <br> 3. Poprawia zgłoszenie i wysyła je ponownie przez UC10 (US8.3, BR-3). |
-| Alternatywy i wyjątki | 2a. Zgłoszenie przed decyzją Weryfikatora: Zbierający je edytuje; powstaje nowa wersja (BR-3). <br> 2b. Serwer ma inną wersję: UC11. <br> 2c. Zgłoszenie przyjęte: zmiana tworzy nowe zgłoszenie, które znów przechodzi weryfikację (BR-18). Usunięcie bariery opisuje UC12. |
+| Alternatywy i wyjątki | 2a. Zgłoszenie przed decyzją Weryfikatora: Zbierający je edytuje; powstaje nowa wersja (BR-3). <br> 2b. Serwer ma inną wersję: UC11. <br> 2c. Zgłoszenie przyjęte: zmianę zaczyna się z karty budynku i tworzy ona nowe zgłoszenie, które znów przechodzi weryfikację (BR-18). Usunięcie bariery opisuje UC12. |
 | Warunki końcowe | Poprawione zgłoszenie czeka w kolejce ze statusem „wysłane”. |
 | Odwołania | US8.1…US8.3, BR-3, BR-16, BR-18, NFR-21, T19 |
 
@@ -293,7 +293,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Punkt rozszerzenia | „Inna wersja na serwerze” — wybór wersji (UC11). |
 | Alternatywy i wyjątki | 1a. Brak sieci: wskaźnik braku sieci, zgłoszenie czeka ze statusem „lokalne” (US9.1). <br> 1b. W telefonie zostaje mniej niż 100 MB: ostrzeżenie (NFR-7). <br> 2a. Połączenie przerwane: ponowienie nie tworzy drugiego zgłoszenia (NFR-8). <br> 2b. Awaria serwera: zgłoszenia czekają w kolejce (NFR-50). |
 | Warunki końcowe | Kolejka w telefonie jest pusta albo czeka na sieć; nic nie zginęło. |
-| Odwołania | US4.2, US9.1, US9.2, US8.2, BR-9, BR-20, NFR-5…NFR-8, NFR-50, T10, T11, T13 |
+| Odwołania | US4.2, US9.1, US9.2, US8.2, US15.3, BR-9, BR-20, NFR-5…NFR-8, NFR-50, T10, T11, T13 |
 
 ### Wybór wersji przy konflikcie (UC11)
 
@@ -314,10 +314,10 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Cel | Naprawiona bariera, np. winda, znika z mapy po weryfikacji (N2). |
 | Aktor | Dowolny Zbierający, nie tylko autor zgłoszenia (BR-19). |
 | Warunki wstępne | Bariera ma zgłoszenie przyjęte. Zbierający na miejscu widzi, że jej już nie ma. |
-| Przepływ główny | 1. Zbierający otwiera zgłoszenie przyjęte; miejsce na ekranie do ustalenia w fazie B. <br> 2. Wybiera „bariera usunięta” i robi nowe zdjęcie miejsca. <br> 3. Typ, miejsce i piętro przechodzą z poprzedniego zgłoszenia (BR-19). <br> 4. Nowe zgłoszenie trafia na serwer przez UC10 ze statusem „wysłane” (US8.4). <br> 5. Bariera zostaje na mapie do decyzji Weryfikatora (US8.4). |
-| Alternatywy i wyjątki | 5a. Weryfikator, który nie złożył zgłoszenia, przyjmuje je (UC14): bariera znika z mapy, karty budynku i eksportu (US10.6, BR-22). <br> 5b. Weryfikator odrzuca zgłoszenie: na mapie zostaje poprzednie zgłoszenie (BR-18). |
+| Przepływ główny | 1. Zbierający otwiera kartę budynku i wybiera zgłoszenie przyjęte (US8.4). <br> 2. Wybiera „bariera usunięta” i robi nowe zdjęcie miejsca. <br> 3. Typ, miejsce i piętro przechodzą z poprzedniego zgłoszenia (BR-19). <br> 4. Nowe zgłoszenie przechodzi te same statusy co każde zgłoszenie: od „lokalne” przez UC10 do „wysłane” (US8.4). <br> 5. Bariera zostaje na mapie do decyzji Weryfikatora (US8.4). |
+| Alternatywy i wyjątki | 5a. Weryfikator, który nie złożył zgłoszenia, przyjmuje je (UC14): bariera znika z mapy, karty budynku i eksportu (US10.6, BR-22). <br> 5b. Weryfikator odrzuca zgłoszenie: na mapie zostaje poprzednie zgłoszenie (BR-18). <br> 5c. Ktoś wcześniej przyjął inną zmianę tego zgłoszenia: odrzucenie z powodem „nieaktualne”. Zbierający może wysłać zmianę ponownie do bieżącego zgłoszenia (BR-23). |
 | Warunki końcowe | Po przyjęciu oba zgłoszenia są archiwalne i zostają w historii (BR-19). |
-| Odwołania | US8.4, US10.6, BR-3, BR-4, BR-18, BR-19, BR-22, T6–T17 |
+| Odwołania | US8.4, US10.5, US10.6, BR-3, BR-4, BR-18, BR-19, BR-22, BR-23, T6–T17 |
 
 Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Reguły biznesowe](../biznes/reguly.md), „Poza MVP”).
 
@@ -328,10 +328,10 @@ Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Regu�
 | Cel | Postęp inwentaryzacji odpowiada temu, co zespół naprawdę obszedł. |
 | Aktor | Zbierający. |
 | Warunki wstępne | Zbierający obszedł całe piętro albo cały budynek podstawowy. |
-| Przepływ główny | 1. W budynku szczegółowym Zbierający oznacza wybrane piętro jako obejrzane (US15.1). <br> 2. Znacznik zapisuje się w telefonie, także bez sieci, i trafia na serwer przez UC10 (BR-20). <br> 3. System od razu przelicza postęp budynku (US11.2, BR-21). |
-| Alternatywy i wyjątki | 1a. Budynek podstawowy: Zbierający oznacza cały budynek jako „obejrzany” (US15.1). <br> 1b. Błędny znacznik: cofa go Zbierający, który go postawił; inny Zbierający nie może (US15.2). Koordynator cofa znacznik w UC15. |
+| Przepływ główny | 1. W budynku szczegółowym Zbierający oznacza wybrane piętro jako obejrzane (US15.1). <br> 2. Znacznik zapisuje się w telefonie, także bez sieci, i trafia na serwer przez UC10 (US15.3, BR-20). <br> 3. Gdy znacznik dotrze na serwer, postęp budynku pokazuje nową wartość (US11.2, BR-21). |
+| Alternatywy i wyjątki | 1a. Budynek podstawowy: Zbierający oznacza cały budynek jako „obejrzany” (US15.1). <br> 1b. Błędny znacznik: cofa go Zbierający, który go postawił; inny Zbierający nie może (US15.2). Koordynator cofa znacznik w UC15. <br> 1c. Brak sieci: znacznik i jego cofnięcie czekają w telefonie i wysyłają się same (US15.3). |
 | Warunki końcowe | Postęp budynku pokazuje nową wartość, np. 4 z 5 pięter. |
-| Odwołania | US15.1, US15.2, US11.2, BR-20, BR-21, T24, T25 |
+| Odwołania | US15.1…US15.3, US11.2, BR-20, BR-21, T24, T25 |
 
 ### Przegląd postępu inwentaryzacji (UC15)
 
@@ -341,7 +341,7 @@ Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Regu�
 | Aktor | Koordynator. |
 | Warunki wstępne | Koordynator jest zalogowany z rolą RO-KOO; jest połączenie z serwerem. |
 | Przepływ główny | 1. Koordynator otwiera postęp według budynków. <br> 2. System pokazuje odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy) (US11.1, BR-21). <br> 3. Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. W demo A-1: 4 z 5 pięter, 80 %. |
-| Alternatywy i wyjątki | 2a. Znacznik jest błędny: Koordynator cofa go niezależnie od autora (US11.3, BR-20). Postęp od razu się zmienia (US11.2). <br> 2b. Zgłoszenia lokalne i poza budynkiem nie wchodzą do postępu (BR-21). <br> W1. Awaria serwera: postęp czeka na powrót serwera (NFR-50). |
+| Alternatywy i wyjątki | 2a. Znacznik jest błędny: Koordynator cofa go niezależnie od autora (US11.3, BR-20). Postęp pokazuje nową wartość (US11.2). <br> 2b. Zgłoszenia lokalne i poza budynkiem nie wchodzą do postępu (BR-21). <br> W1. Awaria serwera: postęp czeka na powrót serwera (NFR-50). |
 | Warunki końcowe | Koordynator zna postęp; po cofnięciu znacznika postęp jest przeliczony. |
 | Odwołania | US11.1…US11.3, BR-20, BR-21, NFR-50, T26 |
 
