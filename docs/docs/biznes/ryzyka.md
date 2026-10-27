@@ -41,14 +41,14 @@ Komórka podaje ocenę P×W, poziom słowem i identyfikatory ryzyk. Kolor tylko 
 ```mermaid
 block-beta
   columns 4
-  naroznik["<span style='color:#000'>P \ W</span>"] w1["<span style='color:#000'>W 1 drobny</span>"] w2["<span style='color:#000'>W 2 średni</span>"] w3["<span style='color:#000'>W 3 krytyczny</span>"]
-  p3["<span style='color:#000'>P 3 prawie pewne</span>"] c31["<span style='color:#000'>3 średni: R-15</span>"] c32["<span style='color:#000'>6 wysoki: R-4, R-5, R-7, R-9</span>"] c33["<span style='color:#000'>9 wysoki: R-1, R-2, R-3</span>"]
-  p2["<span style='color:#000'>P 2 możliwe</span>"] c21["<span style='color:#000'>2 niski: R-16</span>"] c22["<span style='color:#000'>4 średni: R-11, R-12, R-13, R-14</span>"] c23["<span style='color:#000'>6 wysoki: R-6, R-8, R-10</span>"]
-  p1["<span style='color:#000'>P 1 mało prawdopodobne</span>"] c11["<span style='color:#000'>1 niski: brak</span>"] c12["<span style='color:#000'>2 niski: R-17</span>"] c13["<span style='color:#000'>3 średni: brak</span>"]
-  classDef naglowek fill:#e8e8e8,stroke:#555,color:#000
-  classDef wysoki fill:#f4b6b6,stroke:#555,color:#000
-  classDef sredni fill:#f7e3a1,stroke:#555,color:#000
-  classDef niski fill:#c8e6c9,stroke:#555,color:#000
+  naroznik["P \ W"] w1["W 1 drobny"] w2["W 2 istotny"] w3["W 3 krytyczny"]
+  p3["P 3 prawie pewne"] c31["3 średni: R-15"] c32["6 wysoki: R-4, R-5, R-7, R-9"] c33["9 wysoki: R-1, R-2, R-3"]
+  p2["P 2 możliwe"] c21["2 niski: R-16"] c22["4 średni: R-11, R-12, R-13, R-14"] c23["6 wysoki: R-6, R-8, R-10"]
+  p1["P 1 mało prawdopodobne"] c11["1 niski: brak"] c12["2 niski: R-17"] c13["3 średni: brak"]
+  classDef naglowek fill:#9e9e9e,fill-opacity:0.25,stroke:#888
+  classDef wysoki fill:#e53935,fill-opacity:0.35,stroke:#888
+  classDef sredni fill:#fbc02d,fill-opacity:0.35,stroke:#888
+  classDef niski fill:#43a047,fill-opacity:0.35,stroke:#888
   class naroznik,w1,w2,w3,p3,p2,p1 naglowek
   class c33,c32,c23 wysoki
   class c31,c22,c13 sredni
