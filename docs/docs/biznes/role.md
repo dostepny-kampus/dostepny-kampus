@@ -16,7 +16,7 @@ Pierwszego Koordynatora nadaje administrator usługi logowania, bo inaczej nikt 
 
 ## Macierz uprawnień
 
-Legenda: ✔ — wolno; ✖ — nie wolno; **własne** — tylko zgłoszenia, których osoba jest autorem. Kolumny ról pracowniczych zawierają już uprawnienia RO-ODW, a osoba z kilkoma takimi rolami ma ich sumę (BR-1).
+Legenda: ✔ — wolno; ✖ — nie wolno; **własne** — tylko zgłoszenia, których osoba jest autorem. Kolumny ról pracowniczych zawierają już uprawnienia RO-ODW, a osoba z kilkoma takimi rolami ma ich sumę (BR-1), widoczną w jej profilu.
 
 | Czynność | Ekran, US | RO-GOS | RO-ODW | RO-ZBI | RO-WER | RO-KOO |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -64,7 +64,6 @@ Brak uprawnienia działa na dwóch poziomach (US14): aplikacja nie pokazuje ekra
 | BR-4 | Nikt nie weryfikuje własnego zgłoszenia, nawet jeśli ma role RO-ZBI i RO-WER. | Zasada czterech oczu: błędu autora nie wyłapie ten sam autor (N8). |
 | BR-5 | Weryfikator nie widzi imienia ani e-maila autora, tylko jego rolę i pseudonim. Powiązanie z kontem zna tylko serwer. | Do decyzji wystarczą dane, zdjęcie i rola autora. To minimalizacja danych z RODO, art. 5 ust. 1 lit. c. Pseudonim pozwala zauważyć powtarzający się spam. |
 | BR-6 | Gość i RO-ODW widzą tylko bariery przyjęte. Eksport też zawiera tylko bariery przyjęte, bez danych autora. | Niesprawdzona informacja wprowadzałaby w błąd osobę planującą wizytę (US1 AC3, N2). Dane poza systemem nie mogą zawierać danych osobowych. |
-| BR-7 | Koordynator nie podejmuje decyzji weryfikacyjnych, jeśli nie ma roli RO-WER. | Rozdział obowiązków: kto rozlicza postęp, ten nie zawyża go własnymi decyzjami. W małym zespole Koordynator może mieć też RO-WER, ale wtedy widać to w jego profilu. |
 
 **Skutek BR-4:** zespół potrzebuje co najmniej dwóch osób z rolą RO-WER. Inaczej zgłoszenia jedynego weryfikatora czekają bez końca.
 
