@@ -293,4 +293,4 @@ Jeśli rozmówca może, poproś o pokazanie formularza albo notatek z obchodu be
 - L. Kane, „Usability for Older Adults: Challenges and Changes”, NN/g: <https://www.nngroup.com/articles/usability-for-senior-citizens/>
 - „Seniorzy na PWr – ruszyła Politechnika Trzeciego Wieku”, PWr, 9.10.2025: <https://pwr.edu.pl/uczelnia/aktualnosci/seniorzy-na-pwr-ruszyla-politechnika-trzeciego-wieku-13912.html>
 - „Affinity Diagramming for Collaboratively Sorting UX Findings and Design Ideas”, NN/g: <https://www.nngroup.com/articles/affinity-diagram/>
-- Rozporządzenie (UE) 2016/679 (RODO), tekst skonsolidowany, UODO: <https://uodo.gov.pl/pl/404/539>
+- Rozporządzenie (UE) 2016/679 (RODO), tekst skonsolidowany, UODO: <https://uodo.gov.pl/pl/404/539> (PDF: <https://uodo.gov.pl/pl/file/1460>; art. 4 pkt 15, 6, 7, 9, 13)
