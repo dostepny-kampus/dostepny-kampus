@@ -9,13 +9,15 @@ Skala odczuć: 1 — bardzo źle, 2 — źle, 3 — obojętnie, 4 — dobrze, 5 
 
 ## J1 — planuję wizytę (PE-1)
 
-Pani Halina idzie na wykład w C-13, w którym nigdy nie była. Cel: dotrzeć bez schodów i bez proszenia o pomoc.
+Pani Halina idzie na wykład w A-1, w którym nigdy nie była. Cel: dotrzeć bez schodów i bez proszenia o pomoc.
+
+Wywiad sprawdza to samo zadanie na C-13 (część 5 scenariusza). Mapa pokazuje A-1, bo tam wejście główne ma schody, a dostępne jest inne wejście ([P-9](../biznes/procesy/as-is.md#problemy-as-is)).
 
 | Etap | Czynność | Myśli i odczucia (dziś → z aplikacją) | Dziś | Z aplikacją | Ryzyko |
 | --- | --- | --- | --- | --- | --- |
 | J1-1 | dowiaduje się o wykładzie otwartym | „Chętnie pójdę, ale nie znam budynku” (4 → 4) | — | — | niskie |
 | J1-2 | instaluje i pierwszy raz otwiera aplikację | „Czy to będzie proste? Czy trafię w przyciski?” (— → 3) | — | V5: instrukcja, którą można pominąć i otworzyć ponownie (US5.1) | średnie |
-| J1-3 | szuka C-13 | „Gdzie to w ogóle jest?” (2 → 4) | P-2 | V1: wyszukiwanie po symbolu w każdej pisowni, bez logowania (US1.1, US1.2); lista zamiast gestów na mapie (NFR-19) | średnie |
+| J1-3 | szuka A-1 | „Gdzie to w ogóle jest?” (2 → 4) | P-2 | V1: wyszukiwanie po symbolu w każdej pisowni, bez logowania (US1.1, US1.2); lista zamiast gestów na mapie (NFR-19) | średnie |
 | J1-4 | sprawdza, którym wejściem wejdzie bez schodów | „Którędy mam wejść?” (2 → 4) | P-1, P-9 | V3 „Zaplanuj wizytę” w ≤ 3 dotknięciach (US3.2); V2: oznaczenie każdego wejścia tekstem i ikoną (US2.1) | **wysokie** |
 | J1-5 | ocenia, czy informacja jest aktualna | „Czy to jeszcze prawda?” (2 → 4) | P-3, P-4 | V2: data i źródło oznaczenia wejścia (US17.3), zdjęcie i data weryfikacji bariery (US2.2) | średnie |
 | J1-6 | sprawdza windę i toaletę na piętrze wykładu | „Czy winda działa?” (1 → 3) | P-5 | V2: przełącznik pięter i plan piętra z windami i toaletami (US16.1) | **wysokie** |

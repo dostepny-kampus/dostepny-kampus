@@ -18,7 +18,7 @@ PE-1 reprezentuje grupę docelową kursu, więc jej potrzeby mają pierwszeństw
 | Cecha | Opis |
 | --- | --- |
 | Wiek | 72 lata |
-| Kontekst | emerytka z Wrocławia, słuchaczka Politechniki Trzeciego Wieku, programu PWr dla osób 60+ [1]. Pierwszy raz idzie na wykład do C-13 |
+| Kontekst | emerytka z Wrocławia, słuchaczka Politechniki Trzeciego Wieku, programu PWr dla osób 60+ [1]. Pierwszy raz idzie na wykład do A-1 |
 | Sprzęt | smartfon z Androidem z powiększoną czcionką w ustawieniach; okulary do czytania |
 | Umiejętności cyfrowe | dzwoni, wysyła zdjęcia rodzinie, szuka w wyszukiwarce; w znanych aplikacjach radzi sobie pewnie. W nowej myli się przy małych przyciskach i niejasnych komunikatach, a winę przypisuje sobie |
 | Wzrok | słabo czyta drobny i blady tekst, zwłaszcza w słońcu |
@@ -47,7 +47,7 @@ PE-1 reprezentuje grupę docelową kursu, więc jej potrzeby mają pierwszeństw
 | obsługa przy słabym wzroku i niepewnych dłoniach (N4) | US5, US4.3; NFR-17, NFR-19, NFR-20, NFR-23 | V5, wszystkie |
 | zgłoszenie bariery bez trudnego formularza (N3), potrzeba poboczna | US4, US14.2 | V4 |
 
-**Scenariusz dnia:** W poniedziałek wieczorem pani Halina sprawdza w telefonie budynek C-13 przed czwartkowym wykładem. Chce znaleźć wejście bez schodów i wiedzieć, czy ktoś je niedawno sprawdzał. W czwartek jedzie tramwajem i idzie prosto do wskazanego wejścia. Jeśli winda nie działa, chce o tym komuś powiedzieć jednym zdjęciem, bez wypełniania formularza.
+**Scenariusz dnia:** W poniedziałek wieczorem pani Halina sprawdza w telefonie budynek A-1 przed czwartkowym wykładem. Chce znaleźć wejście bez schodów i wiedzieć, czy ktoś je niedawno sprawdzał. W czwartek jedzie tramwajem i idzie prosto do wskazanego wejścia. Jeśli winda nie działa, chce o tym komuś powiedzieć jednym zdjęciem, bez wypełniania formularza.
 
 ## PE-2 Kuba — Zbierający na obchodzie (hipoteza, do potwierdzenia w wywiadach)
 
