@@ -1,0 +1,53 @@
+# Wyjątki LanguageTool dla scripts/lang.py.
+# Linia „reguła: ID” wyłącza regułę. Każda inna niepusta linia to słowo (wielkość liter bez znaczenia).
+# Terminy z kolumny „Termin” w docs/biznes/slownik.md są pomijane automatycznie.
+
+# Reguły
+reguła: WHITESPACE_RULE
+reguła: NIETYPOWA_KOMBINACJA_DUZYCH_I_MALYCH_LITER
+
+# Skróty i jednostki
+CI
+sp
+pt
+px
+dp
+
+# Nazwy własne, produkty i formaty
+ArcGIS
+QGIS
+GeoJSON
+OpenStreetMap
+ODbL
+USOS
+Connect
+Geoportal
+Geoportalu
+arc42
+PWr
+
+# Terminy techniczne
+utrzymywalność
+ortofotomapa
+ortofotomapy
+ortofotomapie
+półstrukturyzowany
+półstrukturyzowanego
+półstrukturyzowane
+share-alike
+contributors
+
+# Angielskie nazwy charakterystyk ISO/IEC 25010 podawane w nawiasach
+functional
+suitability
+reliability
+performance
+efficiency
+interaction
+capability
+security
+compatibility
+flexibility
+maintainability
+safety
+usability

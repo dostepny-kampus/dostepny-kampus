@@ -10,16 +10,22 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from check_ids import ID_BODY
+
 REPO = Path(__file__).resolve().parent.parent
 GLOSSARY = REPO / "docs" / "biznes" / "slownik.md"
+IGNORE_FILE = REPO / "scripts" / "lang-ignore.txt"
+IGNORE_RULE_PREFIX = "reguła:"
 LANGUAGE = "pl-PL"
 SEGMENT_GAP = "\n\n"
-ID_RE = re.compile(r"(?<![\w-])(?:US\d+\.\d+|US\d+|UC\d+|BR-G\d+|BR-\d+|NFR-\d+|TB-\d+|R-\d+|M-\d+|N\d+)(?![\w-])")
+ID_RE = re.compile(rf"(?<![\w-])(?:{ID_BODY})(?![\w-])")
 CODE = re.compile(r"(?<![\w-])(?:[A-ZĄĆĘŁŃÓŚŹŻ]{1,6}-?\d+(?:\.\d+)*|[A-Z]{1,6}-[A-Z]{2,})(?![\w-])")
 PLACEHOLDER = "X"
 ACRONYM_MAX = 6
 FENCE = re.compile(r"^\s*(```|~~~)")
 HEADING = re.compile(r"^#{1,6}\s+")
+HEADING_LEVEL = re.compile(r"^(#{1,6})\s")
+SOURCES_HEADING = re.compile(r"^#{1,6}\s+(?:Źródła|Bibliografia|Literatura)\s*$", re.IGNORECASE)
 LIST_MARKER = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s+(?:\[[ xX]\]\s+)?")
 QUOTE = re.compile(r"^\s*>\s?")
 SEPARATOR_CELL = re.compile(r"^:?-{3,}:?$")
@@ -29,6 +35,10 @@ LINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")
 REF_LINK = re.compile(r"\[([^\]]*)\]\[[^\]]*\]")
 FOOTNOTE = re.compile(r"\[\^[^\]]+\]")
 URL = re.compile(r"<?https?://[^\s>)]+>?")
+FILE_OR_DOMAIN = re.compile(
+    r"(?<![\w.])[\w-]+(?:\.[\w-]+)*\.(?:pl|com|org|net|eu|io|edu|gov|pdf|md|ya?ml|json|geojson|csv|png|svg|bpmn|puml)(?![\w.])",
+    re.IGNORECASE,
+)
 INLINE_CODE = re.compile(r"`[^`]*`")
 HTML = re.compile(r"<!--.*?-->|<[^>]+>")
 ATTR_LIST = re.compile(r"\{[:#.][^}]*\}")
@@ -36,7 +46,6 @@ EMPHASIS = re.compile(r"\*\*|__|(?<!\w)[*_]|[*_](?!\w)")
 SPACES = re.compile(r"[ \t]{2,}")
 SPACE_BEFORE_PUNCT = re.compile(r"\s+([,.;:!?)])")
 FRAGMENT_RULES = frozenset({"UPPERCASE_SENTENCE_START", "PUNCTUATION_PARAGRAPH_END"})
-DEFAULT_DISABLED = frozenset({"WHITESPACE_RULE", "NIETYPOWA_KOMBINACJA_DUZYCH_I_MALYCH_LITER"})
 MATRIX_START = "<!-- macierz:start -->"
 MATRIX_END = "<!-- macierz:end -->"
 
@@ -67,8 +76,8 @@ class Issue:
 def strip_inline(text: str) -> str:
     """Usuwa z linii elementy, których nie sprawdza się językowo: kod, obrazy, adresy, HTML; z linków zostaje tekst.
 
-    Gwarantuje: ID i kody (np. US1.2, BR-G1, V3, A-1, R-GOS) są zastąpione słowem PLACEHOLDER, by nie psuć
-    interpunkcji; wynik nie ma podwójnych spacji ani spacji przed znakami interpunkcyjnymi.
+    Gwarantuje: ID, kody (np. US1.2, BR-G1, V3, A-1, RO-GOS), nazwy plików i domen są zastąpione słowem
+    PLACEHOLDER, by nie psuć interpunkcji; wynik nie ma podwójnych spacji ani spacji przed znakami interpunkcyjnymi.
     """
     for pattern, repl in (
         (INLINE_CODE, " "),
@@ -77,6 +86,7 @@ def strip_inline(text: str) -> str:
         (REF_LINK, r"\1"),
         (FOOTNOTE, ""),
         (URL, " "),
+        (FILE_OR_DOMAIN, PLACEHOLDER),
         (HTML, " "),
         (ATTR_LIST, " "),
         (ID_RE, PLACEHOLDER),
@@ -117,19 +127,36 @@ def line_segments(number: int, line: str) -> list[Segment]:
 
 
 def extract_segments(text: str) -> list[Segment]:
-    """Zwraca segmenty z całego dokumentu z pominięciem front matter, bloków kodu i wygenerowanego bloku macierzy."""
+    """Zwraca segmenty z całego dokumentu z pominięciem front matter, bloków kodu, wygenerowanego bloku macierzy
+    i sekcji „Źródła” (tytuły źródeł są w języku oryginału)."""
     lines = text.splitlines()
     start = front_matter_end(lines)
     segments: list[Segment] = []
     in_code = in_matrix = False
+    sources: int | None = None
     for number, line in enumerate(lines[start:], start=start + 1):
         if FENCE.match(line):
             in_code = not in_code
         elif MATRIX_START in line or MATRIX_END in line:
             in_matrix = MATRIX_START in line
         elif not (in_code or in_matrix):
-            segments += line_segments(number, line)
+            sources = sources_level(line, sources)
+            segments += line_segments(number, line) if sources is None else []
     return segments
+
+
+def sources_level(line: str, current: int | None) -> int | None:
+    """Zwraca poziom nagłówka otwartej sekcji źródeł po przeczytaniu `line` albo None poza taką sekcją.
+
+    Gwarantuje: sekcja trwa do najbliższego nagłówka tego samego lub wyższego poziomu.
+    """
+    heading = HEADING_LEVEL.match(line)
+    if not heading:
+        return current
+    level = len(heading.group(1))
+    if current is not None and level > current:
+        return current
+    return level if SOURCES_HEADING.match(line) else None
 
 
 def front_matter_end(lines: list[str]) -> int:
@@ -169,6 +196,25 @@ def glossary_words(path: Path) -> list[str]:
     return sorted(words)
 
 
+def load_ignore(path: Path) -> tuple[frozenset[str], list[str]]:
+    """Zwraca (reguły, słowa) z pliku wyjątków LanguageTool.
+
+    Wymaga: UTF-8; linia `reguła: ID` wyłącza regułę, linia od `#` to opis, każda inna niepusta linia to słowo.
+    Gwarantuje: brak pliku daje puste zbiory. Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
+    """
+    if not path.is_file():
+        return frozenset(), []
+    rules: set[str] = set()
+    words: list[str] = []
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if line.lower().startswith(IGNORE_RULE_PREFIX):
+            rules.add(line[len(IGNORE_RULE_PREFIX) :].strip())
+        elif line and not line.startswith("#"):
+            words.append(line)
+    return frozenset(rules), words
+
+
 def match_attr(match: Any, *names: str) -> Any:
     """Zwraca pierwszy istniejący atrybut obiektu dopasowania (zgodność nazw między wersjami language_tool_python)."""
     for name in names:
@@ -182,7 +228,7 @@ def check_file(tool: Any, path: Path, disabled: frozenset[str], known: frozenset
 
     Wymaga: działającego obiektu LanguageTool. Gwarantuje: reguły z `disabled` są pomijane, a reguły typowe dla
     zdań (wielka litera, kropka na końcu) nie są zgłaszane dla komórek tabel, punktów list i nagłówków;
-    błędy, których fragmentem jest słowo z `known` (terminy słownika), są pomijane.
+    błędy, których fragmentem jest słowo z `known` (małe litery: terminy słownika i wyjątki), są pomijane.
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
     segments = extract_segments(path.read_text(encoding="utf-8"))
@@ -203,9 +249,9 @@ def check_file(tool: Any, path: Path, disabled: frozenset[str], known: frozenset
 
 
 def is_ignored(rule: str, excerpt: str, segment: Segment, disabled: frozenset[str], known: frozenset[str]) -> bool:
-    """Zwraca True dla dopasowań do pominięcia: reguła wyłączona, termin słownika, sam zastępnik ID,
-    skrótowiec wielkimi literami w regule pisowni albo reguła zdaniowa we fragmencie (komórka, punkt, nagłówek)."""
-    if rule in disabled or excerpt in known:
+    """Zwraca True dla dopasowań do pominięcia: reguła wyłączona, termin słownika lub wyjątek (bez względu na wielkość
+    liter), sam zastępnik ID, skrótowiec wielkimi literami w regule pisowni albo reguła zdaniowa we fragmencie."""
+    if rule in disabled or excerpt.lower() in known:
         return True
     if not re.sub(rf"{PLACEHOLDER}|[\W_]", "", excerpt):
         return True
@@ -233,18 +279,19 @@ def open_tool(extra_words: list[str]) -> Any:
     return language_tool_python.LanguageTool(LANGUAGE, new_spellings=extra_words or None, new_spellings_persist=False)
 
 
-def run(paths: list[Path], disabled: frozenset[str]) -> list[Issue]:
+def run(paths: list[Path], disabled: frozenset[str], extra_words: list[str]) -> list[Issue]:
     """Sprawdza pliki z `paths` (pomijając nieistniejące) i zwraca wszystkie błędy.
 
-    Wyjątki: jak open_tool i check_file.
+    Gwarantuje: terminy słownika i `extra_words` nie są zgłaszane. Wyjątki: jak open_tool i check_file.
     """
     files = [p for p in paths if p.is_file()]
     if not files:
         return []
-    known = glossary_words(GLOSSARY)
-    tool = open_tool(known)
+    words = glossary_words(GLOSSARY) + extra_words
+    known = frozenset(w.lower() for w in words)
+    tool = open_tool(words)
     try:
-        return [issue for path in files for issue in check_file(tool, path, disabled, frozenset(known))]
+        return [issue for path in files for issue in check_file(tool, path, disabled, known)]
     finally:
         tool.close()
 
@@ -254,6 +301,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Sprawdza polszczyznę w plikach .md przez lokalny LanguageTool.")
     parser.add_argument("files", nargs="*", type=Path, help="pliki .md do sprawdzenia")
     parser.add_argument("--disable", default="", help="dodatkowe reguły do pominięcia, rozdzielone przecinkami")
+    parser.add_argument("--ignore-file", type=Path, default=IGNORE_FILE, help="plik wyjątków (reguły i słowa)")
     return parser.parse_args(argv)
 
 
@@ -263,9 +311,10 @@ def main(argv: list[str] | None = None) -> int:
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8", errors="replace")
     args = parse_args(argv)
-    disabled = DEFAULT_DISABLED | {r.strip() for r in args.disable.split(",") if r.strip()}
     try:
-        issues = run(args.files, frozenset(disabled))
+        rules, words = load_ignore(args.ignore_file)
+        disabled = rules | {r.strip() for r in args.disable.split(",") if r.strip()}
+        issues = run(args.files, frozenset(disabled), words)
     except Exception as exc:
         print(f"lang: BŁĄD LanguageTool: {exc}", file=sys.stderr)
         return 2
