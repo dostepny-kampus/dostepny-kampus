@@ -114,6 +114,7 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 | Każde wejście: nazwa, oznaczenie „Dostępne”, „Niedostępne” albo „Brak danych” tekstem i ikoną | dane | US2.1, US17.1, NFR-21 | — |
 | Przy wejściu: data i źródło oznaczenia, „Sprawdzone na miejscu 12.11.2026” (obchód) albo „Z map i opisów, stan z 1.10.2026” (import) | dane | US17.3, BR-24, PW-3 | — |
 | Zgłoszenia przyjęte pod nagłówkiem „Bariery w budynku”: typ bariery, uciążliwość, zdjęcie, data weryfikacji jako „Sprawdzone 12.11.2026” | dane | US2.2, BR-17, NFR-21, PW-3 | — |
+| Typ bariery nazwą z klasyfikacji, np. „niesprawna winda”. Gość i Odwiedzający widzą zamiast TB-20, TB-22 i TB-28 napisy „toaleta zamknięta, zastawiona lub trudna do dojścia”, „brak planu dotykowego lub głosowego”, „brak obniżonej lady lub miejsca dla wózka”. Ten sam napis jest na V1 i V3. | dane | BR-7, słownik użytkownika | — |
 | Przełącznik pięter: „Piętro:” i etykiety z danych PWr (budynek szczegółowy) | czynność | US16.1 | plan na tym ekranie |
 | „Plan piętra”: windy, schody, toalety, wejścia, zgłoszenia przyjęte | dane | US16.1 | — |
 | Podpis „Źródło: Politechnika Wrocławska” pod planem | dane | NFR-40 | — |
@@ -151,7 +152,7 @@ Dostępność i osoby starsze: oznaczenie wejścia jest pierwszą informacją pr
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Nagłówek „Którędy wejść do C-13” | dane | US3, PW-2 | — |
-| Zdanie z odpowiedzią, np. „Budynek A-1 ma wejście dostępne: »nazwa wejścia z danych«.” | dane | US3, US3.1 | — |
+| Zdanie z odpowiedzią, np. „Budynek A-1 ma wejście dostępne: »nazwa wejścia«.”; nazwa wejścia pochodzi z danych | dane | US3, US3.1 | — |
 | Każde wejście dostępne: nazwa, oznaczenie tekstem i ikoną | dane | US2.1, NFR-21 | — |
 | Przy wejściu: data i źródło oznaczenia | dane | US17.3 | — |
 | Zgłoszenia przyjęte przy tym wejściu ze zdjęciem i datą weryfikacji jako „Sprawdzone 12.11.2026” | dane | US2.2, UC4 4c, PW-3 | — |
