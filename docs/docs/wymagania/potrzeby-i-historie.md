@@ -35,13 +35,13 @@ Numery pytań pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md). W
 | US11 | K1 | N9 | Musi być | Jako Koordynator, chcę widzieć postęp inwentaryzacji według budynków, aby wiedzieć, gdzie trzeba jeszcze pójść. |
 | US12 | K2 | N9 | Powinno być | Jako Koordynator, chcę zaprosić osobę z wybraną rolą, aby dołączyła do inwentaryzacji bez pomocy administratora. |
 | US13 | K3 | N9 | Musi być | Jako Koordynator, chcę pobrać eksport, aby otworzyć zgłoszenia przyjęte w QGIS. |
-| US14 | logowanie (wspólne) | N3, N8 | Musi być | Jako Odwiedzający lub osoba z rolą pracowniczą, chcę się zalogować, aby korzystać z czynności mojej roli. |
+| US14 | logowanie (wspólne) | N2, N8 | Musi być | Jako Odwiedzający lub osoba z rolą pracowniczą, chcę się zalogować, aby korzystać z czynności mojej roli. |
 | US15 | C1 (do ustalenia w fazie B) | N6, N9 | Musi być | Jako Zbierający, chcę oznaczyć piętro obejrzane, aby postęp inwentaryzacji odpowiadał stanowi obchodu. |
 | US16 | V2 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać piętro budynku szczegółowego, aby zobaczyć na planie piętra windy, toalety i bariery. |
 
 Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. Historyjki „Musi być” tworzą MVP.
 
-- **US14 jest historyjką umożliwiającą.** Logowanie nie ma własnej potrzeby, więc wiążemy je z potrzebami, dla których istnieją konta. Przy N3 konto chroni zgłoszenia szybkie przed spamem. Przy N8 o publikacji decyduje tylko osoba z rolą nadaną przez Koordynatora (BR-2).
+- **US14 jest historyjką umożliwiającą US4 i US6–US13.** Logowanie nie ma własnej potrzeby, a dla N3 jest dodatkowym krokiem. Konto służy N2 i N8: chroni dane przed spamem, a o publikacji decyduje tylko osoba z rolą nadaną przez Koordynatora (BR-2).
 - **US15 i US16 to nowe historyjki.** US15 daje podstawę postępu z US11, US16 opisuje plan piętra w budynkach szczegółowych.
 
 ## Kryteria: Gość niezalogowany i Odwiedzający
