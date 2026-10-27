@@ -80,7 +80,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | typ „brak planu tyflograficznego” (TB-22) | „brak planu dotykowego lub głosowego” | Gość, Odwiedzający | „Tyflograficzny” to słowo specjalistów. | 2.3, 5.1 |
 | typ „niedostępne miejsce obsługi” (TB-28) | „brak obniżonej lady lub miejsca dla wózka” | Gość, Odwiedzający | Słowo „niedostępne” zostaje dla wejścia. | 2.3 |
 | uciążliwość 1 „utrudnienie” | „Utrudnienie” | wszystkie | bez zmian | 2.3, 4.2 |
-| uciążliwość 2 „poważne utrudnienie” | „Potrzebna pomoc” | wszystkie | Kryterium stopnia 2 to „tylko z pomocą”. Słowo „poważne” każdy rozumie inaczej. | 2.4, 4.2 |
+| uciążliwość 2 „poważne utrudnienie” | „Tylko z pomocą” | wszystkie | Dosłownie z kryterium stopnia 2. Brzmi jak warunek, a nie jak wezwanie pomocy albo przycisk „Pomoc”. Słowo „poważne” każdy rozumie inaczej. | 2.4, 4.2 |
 | uciążliwość 3 „blokada” | „Blokada” | wszystkie | bez zmian; krótkie i jednoznaczne | 4.2 |
 | przełącznik pięter | „Piętro:” i etykiety z danych PWr | wszystkie | Bez słowa „przełącznik”. | 6.3 |
 | plan piętra | „Plan piętra” | wszystkie | bez zmian | 6.3 |
@@ -107,6 +107,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | zgoda na lokalizację | „Pozwól na lokalizację”, „Pozwól na dokładną lokalizację” | Odwiedzający, Zbierający | Słowo „lokalizacja” widać w prośbie systemu i w ustawieniach telefonu (hipoteza, do sprawdzenia na telefonie testowym). | 3.2, 3.3 |
 | „Otwórz ustawienia” | „Otwórz ustawienia” | Odwiedzający, Zbierający | bez zmian | 3.3 |
 | instrukcja V5 (nagłówek) | „Jak korzystać z aplikacji” | wszystkie | Mówi, czego dotyczy pomoc. | 4.7 |
+| objaśnienie „Dostępne” (V5) | zdanie z katalogu komunikatów (V5, zdanie o wejściu) | wszystkie | PE-1 szuka „wejścia bez schodów”, a samo „Dostępne” można odczytać jako „otwarte”. Zdanie objaśnia słowo raz, bez zmiany napisu (PW-15). | 4.1, 4.2, część 5 |
 | „Dalej”, „Zacznij” | „Dalej”, „Zacznij” | wszystkie | bez zmian | 4.7 |
 | „Pomiń” | „Pomiń instrukcję” | wszystkie | Samo „Pomiń” nie mówi, co się pominie. | 4.7 |
 
@@ -141,7 +142,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | korekta ręczna | „Korekta ręczna” | Zbierający, Weryfikator | bez zmian | 10.2 |
 | „Zmień miejsce”, „Powtórz pomiar”, „Dalej”, „Zapisz” | bez zmian | Zbierający | Czasowniki są już krótkie. | 10.2 |
 | typ bariery (C2) | „Typ bariery” | Zbierający, Weryfikator | bez zmian | 10.2 |
-| uciążliwość (C2, R2) | „Uciążliwość” i wartości „Utrudnienie”, „Potrzebna pomoc”, „Blokada” z opisem | Zbierający, Weryfikator | Te same wartości, które widzi Odwiedzający. | 10.2, 10.5 |
+| uciążliwość (C2, R2) | „Uciążliwość” i wartości „Utrudnienie”, „Tylko z pomocą”, „Blokada” z opisem | Zbierający, Weryfikator | Te same wartości, które widzi Odwiedzający. | 10.2, 10.5 |
 | „półpiętro” | „Półpiętro” | Zbierający | bez zmian | 10.2 |
 | status „lokalne” | „W telefonie” | Zbierający | Odpowiada na pytanie PE-2, czy zgłoszenie dotarło. | 10.3 |
 | statusy „wysłane”, „w weryfikacji”, „przyjęte”, „odrzucone”, „archiwalne” | „Wysłane”, „W weryfikacji”, „Przyjęte”, „Odrzucone”, „Archiwalne” | Zbierający | Krótkie pojęcia dokumentacji. | 10.3, 10.5 |
@@ -229,6 +230,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | V4, potwierdzenie bez internetu | „Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet.” | „Wróć do mapy” | PW-5 |
 | V4, za mało miejsca | „W telefonie brakuje miejsca, więc nie zapisaliśmy zdjęcia bariery. Usuń niepotrzebne zdjęcia albo filmy i spróbuj ponownie.” | „Spróbuj ponownie” | PW-5 |
 | V5, zdanie o koncie | „Aby zgłosić barierę, potrzebne jest konto. Możesz je założyć teraz w »Konto«.” | „Dalej”, „Pomiń instrukcję” | PW-5 |
+| V5, zdanie o wejściu | „Napis »Dostępne« przy wejściu znaczy, że wejdziesz bez pokonywania stopni: z poziomu chodnika, pochylnią albo podnośnikiem.” | „Dalej”, „Pomiń instrukcję” | PW-15 |
 
 ### Logowanie i konto
 
@@ -308,7 +310,7 @@ Ikony pochodzą z zestawu OpenIconic dostępnego w PlantUML Salt [3], [4]. Każd
 | oznaczenie „niedostępne” | `x` | „Niedostępne” | krzyżyk, czyli „nie” |
 | oznaczenie „brak danych” | `minus` | „Brak danych” | kreska jak w pustej rubryce formularza; inna niż krzyżyk (US17.1) |
 | uciążliwość 1 | `warning` | „Utrudnienie” | trójkąt jak drogowy znak ostrzegawczy: uważaj |
-| uciążliwość 2 | `people` | „Potrzebna pomoc” | dwie osoby: przejdziesz z drugą osobą |
+| uciążliwość 2 | `people` | „Tylko z pomocą” | dwie osoby: przejdziesz z drugą osobą |
 | uciążliwość 3 | `ban` | „Blokada” | koło z kreską jak znak zakazu: tędy nie |
 | przycisk zdjęcia (V4, C2, C6, C7) | `camera-slr` | „Zrób zdjęcie” | aparat; ta sama ikona co „Zgłoś barierę” |
 | status „lokalne” | `phone` | „W telefonie” | kształt telefonu: zgłoszenie jest tylko w nim |
@@ -336,7 +338,7 @@ Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk,
 | --- | --- | --- | --- | --- |
 | V1 Mapa kampusu | 17 | 6 | 35% | wskaźnik sieci, uciążliwość, pasek (4) |
 | V2 Budynek | 18 | 7 | 39% | wskaźnik sieci, oznaczenie, uciążliwość, pasek (4) |
-| V3 Którędy wejść | 15 | 7 | 47% | wskaźnik sieci, oznaczenie, uciążliwość, pasek (4) |
+| V3 Którędy wejść (stan zwykły) | 15 | 7 | 47% | wskaźnik sieci, oznaczenie, uciążliwość, pasek (4) |
 | V4 Zgłoś barierę | 20 | 2 | 10% | wskaźnik sieci, „Zrób zdjęcie” |
 | V5 Jak korzystać z aplikacji | 12 | 5 | 42% | wskaźnik sieci, pasek (4) |
 | L1 Konto (Gość) | 8 | 1 | 13% | wskaźnik sieci |
@@ -355,7 +357,18 @@ Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk,
 | K3 Pobierz eksport | 6 | 1 | 17% | wskaźnik sieci |
 | **Razem** | **242** | **58** | **24%** | — |
 
-Wynik: ikony ma 24% elementów w całej aplikacji. Najwięcej ma V3, 47%, czyli poniżej progu 50%. Na V3 próg trzyma tylko „Wstecz” bez ikony, więc nowa ikona na tym ekranie wymaga usunięcia innej.
+Tabela liczy każdy ekran w stanie typowym: bez sieci, z jednym wejściem i jedną barierą. V3 ma mało treści, więc jego udział zależy od stanu:
+
+| Stan V3 | Elementy | Z ikoną | Udział | Elementy z ikoną |
+| --- | --- | --- | --- | --- |
+| zwykły: 1 wejście dostępne, 1 bariera, bez sieci | 15 | 7 | 47% | wskaźnik sieci, oznaczenie, uciążliwość, pasek (4) |
+| 1 wejście dostępne bez barier, bez sieci | 11 | 6 | 55% | wskaźnik sieci, oznaczenie, pasek (4) |
+| brak wejścia dostępnego albo brak danych, z siecią | 7 | 4 | 57% | pasek (4) |
+| brak wejścia dostępnego albo brak danych, bez sieci | 8 | 5 | 63% | wskaźnik sieci, pasek (4) |
+
+Limit kursu, najwyżej 50% ikon, mierzymy dla całego interfejsu i dla typowego stanu każdego ekranu. Cały interfejs ma 24%, a najwięcej w stanie typowym ma V3, 47%. Stany V3 powyżej 50% to świadomy wyjątek.
+
+Oznaczenie wejścia i wskaźnik sieci zawsze mają tekst i ikonę (NFR-21, kryterium WCAG „Use of Color” [5]). Pasek dolny wygląda tak samo na każdym ekranie. Nie usuwamy tych ikon, żeby zmieścić się w limicie, bo każda stoi obok tekstu i tekst niesie znaczenie sam.
 
 ## Nazwa wejścia do pracy zespołu {#nazwa-wejscia}
 
@@ -387,8 +400,9 @@ Strona [wymagań do ekranów](wymagania-ekranow.md) zostaje bez zmian. Poniższe
 | PW-10 | stany wspólne, V2, V3, C2, C3, C4, R1, R2, K2 | komunikaty z 3 zdaniami albo bez rady, co zrobić | treść według katalogu komunikatów; „Spróbuj ponownie” także przy błędzie serwera | zasada „co się stało i co zrobić” w 2 zdaniach |
 | PW-11 | wymagania wspólne, C5, K1 | ikona przy „Wstecz” nieopisana; „nieobejrzane” tekstem i ikoną | „Wstecz” bez ikony; „Nieobejrzane” bez ikony, „Obejrzane” z ikoną `task` | próg 50% na V3; NFR-21 nie obejmuje znacznika |
 | PW-12 | V2, L2, C3, C4, C5, C7 | „Nowe zgłoszenie z pomiarem”, „Nowe zgłoszenie”, „Bariery już nie ma”, „Piętra obejrzane”, „Cofnij”, „lokalne”. Konflikt bez napisu o skutku, „Anuluj” w C5. | „Zmierz i zgłoś barierę”, „Zgłoś, że bariery nie ma”, „Oznacz obejrzane piętra”, „Cofnij znacznik”, „W telefonie”. Napis „Druga wersja zostanie usunięta.”, „Zostaw znacznik”. | czasownik na przycisku; skutek przed decyzją |
-| PW-13 | V1, V2, V3, C2, R2 | uciążliwość 1–3 bez napisów | „Utrudnienie”, „Potrzebna pomoc”, „Blokada” dla wszystkich ról | słowa z kryteriów skali uciążliwości |
+| PW-13 | V1, V2, V3, C2, R2 | uciążliwość 1–3 bez napisów | „Utrudnienie”, „Tylko z pomocą”, „Blokada” dla wszystkich ról | słowa z kryteriów skali uciążliwości |
 | PW-14 | C3, L2, R1, K2, K3 | „Wyślij ponownie do bieżącego zgłoszenia”, „Wyloguj”. Nagłówki „Kolejka weryfikacji”, „Zaproszenie”, „Eksport”. | „Wyślij do aktualnego zgłoszenia”, „Wyloguj się”. Nagłówki „Zgłoszenia do sprawdzenia”, „Zaproś osobę”, „Pobierz eksport”. | nagłówek równy napisowi przycisku |
+| PW-15 | V5 | instrukcja bez objaśnienia oznaczenia wejścia | zdanie z katalogu komunikatów: „Napis »Dostępne« przy wejściu znaczy, że wejdziesz bez pokonywania stopni…” | „Dostępne” bez objaśnienia można odczytać jako „otwarte”; definicja wejścia dostępnego ze słownika pojęć |
 
 ## Źródła
 
