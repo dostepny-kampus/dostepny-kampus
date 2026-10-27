@@ -33,7 +33,7 @@ QGIS nie jest aktorem. Koordynator otwiera w nim plik eksportu poza systemem, a 
 | UC3 | Przegląd planu piętra | Gość niezalogowany | US16 | V2 | Powinno być |
 | UC4 | Wyszukanie wejścia dostępnego | Gość niezalogowany | US3 | V3 | Powinno być |
 | UC5 | Instrukcja i pomoc | Gość niezalogowany | US5 | V5 | Powinno być |
-| UC6 | Logowanie i rejestracja | Gość niezalogowany | US14 | wspólny | Musi być |
+| UC6 | Logowanie i rejestracja | Gość niezalogowany | US14 | L1, L2 | Musi być |
 | UC7 | Zgłoszenie szybkie | Odwiedzający | US4 | V4 | Musi być |
 | UC8 | Pomiar precyzyjny i zapis zgłoszenia | Zbierający | US6, US7 | C1, C2 | Musi być; US6.3 i US6.5 — Powinno być |
 | UC9 | Śledzenie i poprawa własnych zgłoszeń | Zbierający | US8.1, US8.2, US8.3 | C3 | Musi być |

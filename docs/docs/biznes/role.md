@@ -27,7 +27,7 @@ Legenda: ✔ — wolno; ✖ — nie wolno; **własne** — tylko zgłoszenia i z
 | Zgłoszenie szybkie | V4, US4 | ✖ ² | ✔ | ✔ | ✔ | ✔ |
 | Pomiar precyzyjny z uśrednianiem GNSS i formularz | C1–C2, US6, US7 | ✖ | ✖ | ✔ | ✖ | ✖ |
 | Lista zgłoszeń ze statusami | C3, US8 | ✖ | ✖ ³ | własne | ✖ | ✖ |
-| Edycja zgłoszenia | C3, US8.3 | ✖ | ✖ | własne ⁴ | ✖ | ✖ |
+| Edycja zgłoszenia | C3, C2, V2, US8.3 | ✖ | ✖ | własne ⁴ | ✖ | ✖ |
 | Wysyłka po powrocie sieci | C4, US4, US9 | ✖ | własne | własne | własne | własne |
 | Wybór wersji przy konflikcie | C4, US9 | ✖ | ✖ | własne | ✖ | ✖ |
 | Zmiana „bariera usunięta” zgłoszenia przyjętego ⁸ | V2, C7, C3, US8.4 | ✖ | ✖ | ✔ także cudze | ✖ | ✖ |
@@ -43,7 +43,7 @@ Legenda: ✔ — wolno; ✖ — nie wolno; **własne** — tylko zgłoszenia i z
 | Widok zgłoszeń niezweryfikowanych | R1, C3, K1 | ✖ | ✖ | własne | ✔ | tylko liczby (K1) |
 | Widok zgłoszeń odrzuconych | C3 | ✖ | ✖ | własne z powodem | ✖ | ✖ |
 | Dane osobowe autora zgłoszenia ⁷ | R2 | ✖ | ✖ | własne | ✖ | ✖ |
-| Profil i wylogowanie | wspólne | ✖ | ✔ | ✔ | ✔ | ✔ |
+| Profil i wylogowanie | L2 | ✖ | ✔ | ✔ | ✔ | ✔ |
 
 Brak uprawnienia działa na dwóch poziomach (US14): aplikacja nie pokazuje ekranu, a serwer odrzuca żądanie.
 
