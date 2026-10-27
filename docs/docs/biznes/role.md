@@ -1,6 +1,6 @@
 # Role i uprawnienia
 
-Strona opisuje, kto korzysta z systemu i co wolno każdej roli. Ekrany V1…K3 i historyjki US1…US16 pochodzą z opisu produktu. Cykl życia zgłoszenia opisuje strona [Reguły biznesowe](reguly.md).
+Strona opisuje, kto korzysta z systemu i co wolno każdej roli. Ekrany V1…K3 i historyjki US1…US17 pochodzą z opisu produktu. Cykl życia zgłoszenia opisuje strona [Reguły biznesowe](reguly.md).
 
 ## Role
 
@@ -21,7 +21,7 @@ Legenda: ✔ — wolno; ✖ — nie wolno; **własne** — tylko zgłoszenia i z
 | Czynność | Ekran, US | RO-GOS | RO-ODW | RO-ZBI | RO-WER | RO-KOO |
 | --- | --- | --- | --- | --- | --- | --- |
 | Mapa kampusu i wyszukiwanie budynku | V1, US1 | ✔ | ✔ | ✔ | ✔ | ✔ |
-| Karta budynku ze zgłoszeniami przyjętymi | V2, US2 | ✔ | ✔ | ✔ | ✔ | ✔ |
+| Karta budynku ze zgłoszeniami przyjętymi i oznaczeniami wejść | V2, US2, US17.1, US17.3 | ✔ | ✔ | ✔ | ✔ | ✔ |
 | Plan piętra z przełącznikiem pięter ¹ | V2, C1, US16 | ✔ | ✔ | ✔ | ✔ | ✔ |
 | „Zaplanuj wizytę”, pomoc | V3, V5, US3, US5 | ✔ | ✔ | ✔ | ✔ | ✔ |
 | Zgłoszenie szybkie | V4, US4 | ✖ ² | ✔ | ✔ | ✔ | ✔ |
@@ -31,10 +31,11 @@ Legenda: ✔ — wolno; ✖ — nie wolno; **własne** — tylko zgłoszenia i z
 | Wysyłka po powrocie sieci | C4, US4, US9 | ✖ | własne | własne | własne | własne |
 | Wybór wersji przy konflikcie | C4, US9 | ✖ | ✖ | własne | ✖ | ✖ |
 | Zmiana „bariera usunięta” zgłoszenia przyjętego ⁸ | V2, C3, US8.4 | ✖ | ✖ | ✔ także cudze | ✖ | ✖ |
+| Zmiana oznaczenia wejścia ¹⁰ | V2 i ekran zmiany (faza B), US17.2 | ✖ | ✖ | ✔ każde wejście | ✖ | ✖ |
 | Znacznik piętra obejrzanego ⁹ | C1 (faza B), US15.1 | ✖ | ✖ | ✔ | ✖ | ✖ |
 | Cofnięcie znacznika piętra obejrzanego | C1 (faza B), K1, US15.2, US11.3 | ✖ | ✖ | własne | ✖ | ✔ także cudze |
 | Kolejka weryfikacji | R1, US10 | ✖ | ✖ | ✖ | ✔ | ✖ |
-| Decyzja: przyjęcie lub odrzucenie z powodem | R2, US10 | ✖ | ✖ | ✖ | ✔ poza własnymi, tylko wzięte przez siebie (BR-4, BR-11) | ✖ |
+| Decyzja: przyjęcie lub odrzucenie z powodem | R2, US10, US17.2 | ✖ | ✖ | ✖ | ✔ poza własnymi, tylko wzięte przez siebie (BR-4, BR-11) | ✖ |
 | Weryfikacja własnego zgłoszenia | R2 | ✖ | ✖ | ✖ | ✖ ⁵ | ✖ |
 | Postęp inwentaryzacji według budynków | K1, US11 | ✖ | ✖ | ✖ | ✖ | ✔ |
 | Zaproszenie osoby z rolą | K2, US12 | ✖ | ✖ | ✖ | ✖ | ✔ |
@@ -57,6 +58,7 @@ Brak uprawnienia działa na dwóch poziomach (US14): aplikacja nie pokazuje ekra
 7. Imię, e-mail, identyfikator konta. Weryfikator widzi tylko rolę autora i pseudonim, np. „Autor 17” (BR-5).
 8. Zmiana to nowe zgłoszenie, a nie edycja cudzego, więc może ją złożyć każdy Zbierający (BR-19). Sprawdza ją Weryfikator, który jej nie złożył (BR-4, US10.5). Punkt startu z karty budynku ustalimy w fazie B.
 9. W budynku podstawowym znacznik dotyczy całego budynku. Ekran ustalimy w fazie B, a znacznik działa bez sieci (BR-20, US15.3).
+10. Zmiana oznaczenia wejścia to zgłoszenie z nowym zdjęciem, a nie edycja danych budynku, więc złoży ją każdy Zbierający (BR-24). Sprawdza ją Weryfikator, który jej nie złożył (BR-4, US10.5). Ekran zmiany ustalimy w fazie B.
 
 ## Zasady ról
 
