@@ -49,6 +49,7 @@ Uprawnienia opisuje [macierz ról](../biznes/role.md). Potrzeby N1–N9 to hipot
 | --- | --- | --- | --- | --- |
 | V1 | Mapa kampusu, wyszukiwanie budynku po symbolu | wszyscy | US1 | Musi być |
 | V2 | Karta budynku: wejścia, windy, bariery ze zdjęciem i datą | wszyscy | US2 | Musi być |
+| V2 | Oznaczenie wejścia: dostępne, niedostępne albo brak danych, z datą i źródłem; zmiana na obchodzie | wszyscy; zmiana: Zbierający | US17 | Musi być |
 | V2 | Plan piętra z przełącznikiem pięter (5 budynków szczegółowych) | wszyscy | US16 | Powinno być |
 | V3 | „Zaplanuj wizytę”: które wejście jest dostępne | wszyscy | US3 | Powinno być |
 | V4 | Zgłoszenie szybkie: zdjęcie, grupa barier, pozycja | Odwiedzający | US4 | Musi być |
@@ -57,7 +58,7 @@ Uprawnienia opisuje [macierz ról](../biznes/role.md). Potrzeby N1–N9 to hipot
 | C2 | Formularz: typ bariery, uciążliwość 1–3, zdjęcie, piętro | Zbierający | US7 | Musi być |
 | C3 | Moje zgłoszenia ze statusami | Zbierający | US8 | Musi być |
 | C4 | Synchronizacja po pracy offline, wybór wersji przy konflikcie | Zbierający | US9 | Musi być |
-| R1, R2 | Kolejka weryfikacji, decyzja z powodem, podobne zgłoszenia w promieniu 10 m | Weryfikator | US10 | Musi być (podobne: Powinno być) |
+| R1, R2 | Kolejka weryfikacji, decyzja z powodem, podobne zgłoszenia w promieniu 10 m | Weryfikator | US10 | Musi być |
 | K1 | Postęp inwentaryzacji według budynków | Koordynator | US11 | Musi być |
 | K2 | Zaproszenie osoby z rolą | Koordynator | US12 | Powinno być |
 | K3 | Eksport GeoJSON (WGS84) i CSV (PUWG 1992) | Koordynator | US13 | Musi być |
@@ -136,10 +137,10 @@ CI działa w GitHub Actions. Osobne przepływy obejmują kontrakt API, serwer, a
 | Sprint | Cel | Najważniejsze zadania |
 | --- | --- | --- |
 | S1 | fundament, CI, dane | analiza i dokumentacja, szkielet repozytorium, kontrakt API v0, kontrola PR, szkielety serwera i aplikacji z linterami, eksport budynków z OSM, makiety low-fi |
-| S2 | UI, nawigacja, model danych | model i geometria, system projektowy, nawigacja z rolami, mapa z konturami, baza lokalna, import budynków do bazy |
+| S2 | UI, nawigacja, model danych | model i geometria, system projektowy, nawigacja z rolami, mapa z konturami, baza lokalna, import budynków z oznaczeniami wejść do bazy |
 | S3 | serwer i API | budynki i podpowiedź budynku, zgłoszenia z wersją, zdjęcia, klient API, repozytoria danych |
 | S4 | logika dziedziny | uśrednianie pozycji, PUWG 1992, ekran pomiaru z mapą nieba, formularz ze zdjęciem, podobne zgłoszenia |
-| S5 | logowanie, role, offline | usługa logowania i role, zaproszenia, logowanie w aplikacji, kolejka offline, ekran konfliktu, weryfikacja |
+| S5 | logowanie, role, offline | usługa logowania i role, zaproszenia, logowanie w aplikacji, kolejka offline, ekran konfliktu, weryfikacja, zmiana oznaczenia wejścia |
 | S6 | eksport, UX, testy, pokaz | eksport GeoJSON i CSV, ekran postępu, tryb demo z nagraną trasą, dostępność, badanie SUS |
 
 Na prezentację końcową działa scenariusz z sekcji 2: pomiar offline, weryfikacja z powodem i eksport otwierany w QGIS. Do tego ekran wyboru wersji przy konflikcie, zielone CI i raport z badania SUS (NFR-24).

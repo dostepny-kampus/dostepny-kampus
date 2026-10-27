@@ -21,16 +21,16 @@ state "przyjęte" as P
 state "odrzucone" as O
 state "archiwalne" as A
 
-[*] --> L : Zbierający, Odwiedzający:\nzapis w telefonie (BR-7, BR-8)
+[*] --> L : Zbierający, Odwiedzający:\nzapis w telefonie\n(BR-7, BR-8, BR-24)
 L --> W : system: serwer\npotwierdził odbiór (BR-9)
 W --> V : Weryfikator:\nbierze (BR-4, BR-11)
 V --> P : Weryfikator:\nprzyjęcie\n(BR-14, BR-15, BR-23)
-V --> O : Weryfikator:\nodrzucenie z powodem\n(BR-13, BR-16, BR-23)
-O --> W : Zbierający (autor):\npoprawka i ponowne\nwysłanie (BR-3);\n„nieaktualne” do\nbieżącego (BR-23)
+V --> O : Weryfikator:\nodrzucenie z powodem\n(BR-13, BR-16,\nBR-23, BR-24)
+O --> W : Zbierający (autor):\npoprawka i ponowne\nwysłanie (BR-3);\n„nieaktualne” do\nbieżącego (BR-23, BR-24)
 O --> [*] : system: usunięcie\npo 90 dniach (NFR-29)
 P --> A : system: przyjęto zmianę\nlub „bariera usunięta”\n(BR-18, BR-19)
 P --> P : zmiana = nowe\nzgłoszenie (BR-18)
-V --> A : Weryfikator:\nprzyjęcie\n„bariera usunięta”\n(BR-19)
+V --> A : Weryfikator:\nprzyjęcie\n„bariera usunięta”\nlub zmiany\noznaczenia wejścia\n(BR-19, BR-24)
 
 note left of P
   Zmiana przyjętego =

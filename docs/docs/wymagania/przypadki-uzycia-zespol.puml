@@ -30,6 +30,7 @@ rectangle "Dostępny Kampus" {
   usecase "UC9\nŚledzenie i poprawa\nwłasnych zgłoszeń" as UC9
   usecase "UC12\nZgłoszenie\nusunięcia bariery" as UC12
   usecase "UC13\nOznaczenie\npiętra obejrzanego" as UC13
+  usecase "UC18\nZmiana oznaczenia\nwejścia" as UC18
   usecase "UC10\nSynchronizacja\nz serwerem" as UC10
   usecase "UC11\nWybór wersji\nprzy konflikcie" as UC11
   usecase "UC14\nWeryfikacja zgłoszenia" as UC14
@@ -42,6 +43,7 @@ ZBI -- UC8
 ZBI -- UC9
 ZBI -- UC12
 ZBI -- UC13
+ZBI -- UC18
 ZBI -- UC10
 WER -- UC14
 KOO -- UC15
@@ -52,6 +54,7 @@ UC8 ..> UC10 : <<include>>
 UC9 ..> UC10 : <<include>>
 UC12 ..> UC10 : <<include>>
 UC13 ..> UC10 : <<include>>
+UC18 ..> UC10 : <<include>>
 UC10 <.. UC11 : <<extend>>\ninna wersja\nna serwerze
 
 UC16 -- UL
