@@ -66,6 +66,7 @@ ZG --> V1 : „Wróć do mapy”
 K1 --> K2 : „Zrób zdjęcie”
 K2 --> K3 : wybór grupy
 K2 --> K1 : „Wstecz”
+K1 --> PR : „Wstecz”\n(zdjęcie\nzrobione)
 K3 --> K2 : „Wstecz”
 K3 --> POT : „Wyślij”;\nbez sieci: zapis\nw telefonie
 K3 --> BP : telefon nie\nustalił pozycji
@@ -86,6 +87,13 @@ WZ --> L2 : „Zostaw zgodę”
 WZ --> V1 : „Wycofaj zgodę”\n(wylogowanie)
 L2 --> KL : „Informacja\no danych\nosobowych”
 KL --> L2 : „Wstecz”
+
+note right of PR
+  Po „Wstecz” z kroku 1:
+  „Tak, zrezygnuj” wraca do
+  ekranu sprzed V4, „Wróć do
+  zdjęcia” do kroku 1.
+end note
 
 note bottom of POT
   „Wstecz” z potwierdzenia

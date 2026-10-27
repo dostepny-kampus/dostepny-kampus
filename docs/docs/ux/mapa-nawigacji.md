@@ -83,14 +83,15 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V4, krok 1 | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | aparat, potem krok 2 | zalogowani | US4.1, BR-8 |
 | V4, krok 2 | wybór grupy barier, np. „Schody i windy” | V4, krok 3 | zalogowani | US4.3 |
 | V4, krok 2 | „Wstecz” | V4, krok 1; zdjęcie zostaje | zalogowani | US4.1 |
+| V4, krok 1, zdjęcie zrobione | „Wstecz” | V4, stan „potwierdzenie rezygnacji” | zalogowani | UC7 1b |
 | V4, krok 3 | „Wstecz” | V4, krok 2; zdjęcie i grupa zostają | zalogowani | US4.1 |
 | V4, krok 3 | „Wyślij” | V4, potwierdzenie | zalogowani | US4.1, US4.4 |
 | V4, krok 3, brak sieci | „Wyślij” | V4, potwierdzenie „Zapisaliśmy zdjęcie w telefonie” | zalogowani | US4.2, UC7 7a |
 | V4, krok 3 | telefon nie ustalił pozycji | V4, stan „brak pozycji” | zalogowani | UC7 4c |
 | V4, stan „brak pozycji” | „Spróbuj ponownie” | V4, krok 3 | zalogowani | UC7 4c |
 | V4, stan „brak pozycji” | „Zrezygnuj” | V4, stan „potwierdzenie rezygnacji” | zalogowani | UC7 4c |
-| V4, stan „potwierdzenie rezygnacji” | „Tak, zrezygnuj” | V1; zdjęcie usunięte, zgłoszenie nie powstaje | zalogowani | UC7 1b |
-| V4, stan „potwierdzenie rezygnacji” | „Wróć do zdjęcia” | V4, stan „brak pozycji”; zdjęcie i grupa zostają | zalogowani | UC7 4c |
+| V4, stan „potwierdzenie rezygnacji” | „Tak, zrezygnuj” | po „Zrezygnuj”: V1; po „Wstecz” z kroku 1: ekran sprzed V4; zdjęcie usunięte, zgłoszenie nie powstaje | zalogowani | UC7 1b |
+| V4, stan „potwierdzenie rezygnacji” | „Wróć do zdjęcia” | stan „brak pozycji” albo krok 1, skąd osoba przyszła; zdjęcie i grupa zostają | zalogowani | UC7 4c |
 | V4, potwierdzenie | „Wróć do mapy” | V1 | zalogowani | US4.4 |
 | V5 | „Dalej” | następny krok V5 | wszystkie | US5.1 |
 | V5, ostatni krok | „Zacznij” | V1 | wszystkie | US5.1 |
@@ -188,7 +189,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | Najwyżej 3 dotknięcia od mapy do wejścia dostępnego (US3.2) | spełnione | najkrótsza droga: 1 dotknięcie do V2, 2 do V3; od otwarcia aplikacji przy pierwszym uruchomieniu do 4 |
 | Ekran osiągalny dla roli z uprawnieniem | spełnione | 19 z 19 ekranów |
 | Ekran nieosiągalny dla roli bez uprawnienia | spełnione | brak przejścia z ekranu innej roli |
-| Powrót do punktu startu z każdego ekranu | spełnione | najwyżej 3 dotknięcia; po wysłaniu formularza dzięki P2 |
+| Powrót do punktu startu z każdego ekranu | spełnione | najwyżej 3 dotknięcia; po wysłaniu formularza dzięki P2. Wyjątek: kroki 2 i 3 V4 po zdjęciu, do 5 dotknięć, bo rezygnacja ze zdjęcia wymaga potwierdzenia |
 | Brak ślepych zaułków | spełnione | każdy przycisk ma cel; rozbieżności 2–4 rozstrzygnięte |
 
 ### Liczba dotknięć do wejścia dostępnego
@@ -250,8 +251,8 @@ Punkt startu każdej roli to V1, bo od niej zaczyna się aplikacja. Pasek dolny 
 | V2, V5, L2 | „Mapa” albo „Wstecz” | 1 |
 | V3 | „Mapa” | 1 |
 | V4, stany zgody | „Wróć do mapy” | 1 |
-| V4, krok 1 | „Wstecz” do ekranu wyjścia, potem „Mapa”, jeśli to nie V1 | 1–2 |
-| V4, kroki 2 i 3 | „Wstecz” do kroku 1, potem jak z kroku 1 | 2–4 |
+| V4, krok 1 | „Wstecz” do ekranu wyjścia (po zdjęciu z „Tak, zrezygnuj”), potem „Mapa”, jeśli to nie V1 | 1–3 |
+| V4, kroki 2 i 3 | „Wstecz” do kroku 1, potem jak z kroku 1 | 3–5 |
 | V4, potwierdzenie | „Wróć do mapy” | 1 |
 | V4, potwierdzenie rezygnacji | „Tak, zrezygnuj” | 1 |
 | L1 | „Nie teraz” | 1 |
