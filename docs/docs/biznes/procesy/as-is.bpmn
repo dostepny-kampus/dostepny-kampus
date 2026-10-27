@@ -13,7 +13,7 @@
 
   <bpmn:process id="Process_AsIs" isExecutable="false">
     <bpmn:laneSet id="LaneSet_AsIs">
-      <bpmn:lane id="Lane_Osoba" name="Osoba ze szczególnymi potrzebami / odwiedzający">
+      <bpmn:lane id="Lane_Osoba" name="Osoba ze szczególnymi potrzebami">
         <bpmn:flowNodeRef>Start_Bariera</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_W1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_W4</bpmn:flowNodeRef>
@@ -59,7 +59,7 @@
       <bpmn:incoming>Flow_W2</bpmn:incoming>
       <bpmn:outgoing>Flow_W3</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_W4" name="W4 Odpowiedź do wnioskodawcy">
+    <bpmn:task id="Task_W4" name="W4 Otrzymanie odpowiedzi">
       <bpmn:incoming>Flow_W3</bpmn:incoming>
       <bpmn:outgoing>Flow_W4</bpmn:outgoing>
     </bpmn:task>
@@ -89,7 +89,7 @@
     <bpmn:sequenceFlow id="Flow_W5" sourceRef="Task_W5" targetRef="End_Skarga" />
 
     <!-- Ścieżka I: inwentaryzacja i deklaracja budynku -->
-    <bpmn:startEvent id="Start_Opis" name="Nowy budynek lub zmiana (rzadko)">
+    <bpmn:startEvent id="Start_Opis" name="Nowy budynek lub zmiana">
       <bpmn:outgoing>Flow_I0</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:task id="Task_I1" name="I1 Ankieta dla administratorów obiektów">
@@ -314,10 +314,10 @@
         <di:waypoint x="630" y="410" /><di:waypoint x="630" y="390" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Note_Daty_di" bpmnElement="Note_Daty">
-        <dc:Bounds x="700" y="615" width="230" height="44" />
+        <dc:Bounds x="520" y="775" width="300" height="44" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Assoc_Daty_di" bpmnElement="Assoc_Daty">
-        <di:waypoint x="860" y="659" /><di:waypoint x="925" y="765" />
+        <di:waypoint x="820" y="797" /><di:waypoint x="900" y="802" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Note_Kanaly_di" bpmnElement="Note_Kanaly">
         <dc:Bounds x="130" y="780" width="330" height="50" />
