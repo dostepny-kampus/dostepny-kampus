@@ -49,6 +49,7 @@ KOO -- UC16
 KOO -- UC17
 
 UC8 ..> UC10 : <<include>>
+UC9 ..> UC10 : <<include>>
 UC12 ..> UC10 : <<include>>
 UC13 ..> UC10 : <<include>>
 UC10 <.. UC11 : <<extend>>\ninna wersja\nna serwerze
