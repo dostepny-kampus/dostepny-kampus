@@ -1,0 +1,283 @@
+' Wspólne fragmenty makiet low-fi „Dostępny Kampus” (PlantUML Salt).
+' Rozszerzenie .iuml: scripts/render.py nie renderuje tego pliku osobno.
+'
+' Użycie w makiecie docs/ux/makiety/m-<ekran>-<nazwa>[-<stan>].puml:
+'
+'   (wiersz otwierający blok Salt)
+'   !include _wspolne.iuml
+'   $ekran_poczatek()
+'   $naglowek("Budynek A-1")
+'   ...treść ekranu...
+'   $pasek_dolny_konto()
+'   $ekran_koniec()
+'   (wiersz zamykający blok Salt)
+'
+' Napisy i ikony pochodzą ze słownika użytkownika (docs/ux/slownik-uzytkownika.md).
+' Zmiana napisu albo ikony: najpierw słownik, potem ten plik, nigdy sama makieta.
+
+' ---------- Ramka telefonu: stała szerokość i skala ----------
+
+' Najwięcej znaków w wierszu tekstu. Wiersz tekstu 12 px w ramce 240 px
+' odpowiada tekstowi 18 sp na ekranie 360 dp (NFR-20: duży tekst).
+!$DK_MAKS = 34
+' Liczba spacji o stałej szerokości (U+2007) w niewidocznym wierszu ramki.
+!$DK_RAMKA = 236
+
+' Zwraca $n spacji o stałej szerokości. Zwykłe spacje Salt obcina.
+!function $dk_spacje($n)
+!local $s = ""
+!local $i = 0
+!while $i < $n
+!$s = $s + %chr(8199)
+!$i = $i + 1
+!endwhile
+!return $s
+!endfunction
+
+' Otwiera ramkę ekranu. Pierwszy wiersz jest niewidoczny i ustala szerokość.
+!procedure $ekran_poczatek()
+scale 2
+{+
+<size:2>$dk_spacje($DK_RAMKA)</size>
+!endprocedure
+
+' Zamyka ramkę ekranu.
+!procedure $ekran_koniec()
+}
+!endprocedure
+
+' ---------- Tekst ----------
+
+' Tekst zawinięty do $DK_MAKS znaków w wierszu, łamany na spacjach.
+' $styl: "" (zwykły), "b" (pogrubiony) albo "i" (kursywa: zastępnik treści).
+!procedure $tekst($t, $styl="")
+!local $r = $t
+!local $c = 0
+!while %strlen($r) > $DK_MAKS
+!$c = $DK_MAKS
+!while (%substr($r, $c, 1) != " ") && ($c > 0)
+!$c = $c - 1
+!endwhile
+!if $c == 0
+!$c = $DK_MAKS
+!endif
+!if $styl == ""
+%substr($r, 0, $c)
+!else
+<$styl>%substr($r, 0, $c)</$styl>
+!endif
+!$r = %substr($r, $c + 1)
+!endwhile
+!if $styl == ""
+$r
+!else
+<$styl>$r</$styl>
+!endif
+!endprocedure
+
+' Nagłówek sekcji na ekranie, np. „Bariery w budynku”.
+!procedure $sekcja($t)
+..
+<b>$t</b>
+!endprocedure
+
+' Zastępnik obrazu (zdjęcie, plan, mapa): ramka z opisem w kursywie i nawiasach.
+!procedure $obraz($opis)
+{+
+.
+$tekst("[" + $opis + "]", "i")
+.
+}
+!endprocedure
+
+' ---------- Przyciski ----------
+
+' Napis przycisku dopełniony spacjami do szerokości ramki.
+!function $dk_przycisk($t, $ikona, $zapas)
+!local $dl = %strlen($t) + $zapas
+!if $ikona != ""
+!$dl = $dl + 3
+!endif
+!local $pol = ($DK_MAKS - $dl) / 2
+!if $pol < 0
+!$pol = 0
+!endif
+!local $w = $t
+!if $ikona != ""
+!$w = "<&" + $ikona + "> " + $t
+!endif
+!return $dk_spacje($pol) + $w + $dk_spacje($pol)
+!endfunction
+
+' Czynność główna ekranu: pełna szerokość, pogrubiona (NFR-21: wyróżnienie
+' położeniem i rozmiarem, nie kolorem). Jedna na ekranie.
+!procedure $przycisk_glowny($t, $ikona="")
+[<b>$dk_przycisk($t, $ikona, 6)</b>]
+!endprocedure
+
+' Zwykła czynność: pełna szerokość, zwykła czcionka.
+!procedure $przycisk($t, $ikona="")
+[$dk_przycisk($t, $ikona, 6)]
+!endprocedure
+
+' ---------- Nagłówek ekranu ----------
+
+' Nagłówek z „Wstecz” (słowo bez ikony, zawsze w tym samym miejscu) i tytułem.
+' $podtytul: drugi wiersz, np. nazwa budynku z danych na V2.
+!procedure $naglowek($tytul, $podtytul="")
+{ [Wstecz] | <b>$tytul</b> }
+!if $podtytul != ""
+$podtytul
+!endif
+--
+!endprocedure
+
+' Nagłówek bez „Wstecz” — tylko V1, ekran startowy.
+!procedure $naglowek_startowy($tytul)
+<b>$tytul</b>
+--
+!endprocedure
+
+' ---------- Wskaźnik braku internetu ----------
+
+' Pod nagłówkiem. $dopisek dla Gościa i Odwiedzającego: "Dane z 12.11.2026",
+' dla Zbierającego: "Ostatnia synchronizacja: 12.11.2026, 10:42".
+!procedure $brak_internetu($dopisek="")
+{+
+<&wifi> <b>Brak internetu</b>
+!if $dopisek != ""
+$tekst($dopisek)
+!endif
+}
+!endprocedure
+
+' ---------- Pasek dolny ----------
+
+' Cztery pozycje: ikona nad napisem. Tylko na V1, V2, V3, V5 i L2.
+' Napis „Konto” jest dopełniony do długości „Konto i praca”, więc pasek ma
+' tę samą szerokość dla wszystkich ról.
+!procedure $dk_pasek($konto, $dopelnienie)
+!local $d = $dk_spacje(1)
+!local $k = $konto + $dk_spacje($dopelnienie)
+--
+{# {<&map>
+Mapa$d} | {<&camera-slr>
+Zgłoś barierę$d} | {<&question-mark>
+Pomoc$d} | {<&person>
+$k$d} }
+!endprocedure
+
+' Gość i Odwiedzający.
+!procedure $pasek_dolny_konto()
+$dk_pasek("Konto", 6)
+!endprocedure
+
+' Osoba z co najmniej jedną rolą pracowniczą (PW-1).
+!procedure $pasek_dolny_praca()
+$dk_pasek("Konto i praca", 0)
+!endprocedure
+
+' ---------- Komunikat stanu ----------
+
+' Ramka: co się stało i co zrobić (najwyżej 2 zdania), pod nią przyciski
+' tej samej wielkości, jeden pod drugim. Treść z katalogu komunikatów.
+!procedure $komunikat($tresc, $p1="", $p2="")
+{+
+$tekst($tresc)
+!if $p1 != ""
+$przycisk($p1)
+!endif
+!if $p2 != ""
+$przycisk($p2)
+!endif
+}
+!endprocedure
+
+' ---------- Oznaczenia: zawsze tekst i ikona (NFR-21) ----------
+
+' Oznaczenie wejścia.
+!function $dostepne()
+!return "<&check> Dostępne"
+!endfunction
+!function $niedostepne()
+!return "<&x> Niedostępne"
+!endfunction
+!function $brak_danych()
+!return "<&minus> Brak danych"
+!endfunction
+
+' Uciążliwość bariery (PW-13).
+!function $utrudnienie()
+!return "<&warning> Utrudnienie"
+!endfunction
+!function $tylko_z_pomoca()
+!return "<&people> Tylko z pomocą"
+!endfunction
+!function $blokada()
+!return "<&ban> Blokada"
+!endfunction
+
+' Status zgłoszenia (role zespołu).
+!function $w_telefonie()
+!return "<&phone> W telefonie"
+!endfunction
+!function $wyslane()
+!return "<&data-transfer-upload> Wysłane"
+!endfunction
+!function $w_weryfikacji()
+!return "<&eye> W weryfikacji"
+!endfunction
+!function $przyjete()
+!return "<&circle-check> Przyjęte"
+!endfunction
+!function $odrzucone()
+!return "<&circle-x> Odrzucone"
+!endfunction
+!function $archiwalne()
+!return "<&box> Archiwalne"
+!endfunction
+
+' Znacznik piętra (C5) i budynku podstawowego (K1). Forma „nie…” bez ikony (PW-11).
+!function $obejrzane()
+!return "<&task> Obejrzane"
+!endfunction
+!function $nieobejrzane()
+!return "Nieobejrzane"
+!endfunction
+!function $obejrzany()
+!return "<&task> Obejrzany"
+!endfunction
+!function $nieobejrzany()
+!return "Nieobejrzany"
+!endfunction
+
+' ---------- Szablony pozycji listy ----------
+
+' Wejście: oznaczenie jako pierwsza informacja, tuż pod nim data i źródło
+' (US17.3). $akcja tylko dla Zbierającego: "Zmień oznaczenie".
+!procedure $wejscie($oznaczenie, $nazwa, $zrodlo, $akcja="")
+{+
+<b>$oznaczenie</b>: $nazwa
+$tekst($zrodlo)
+!if $akcja != ""
+$przycisk($akcja)
+!endif
+}
+!endprocedure
+
+' Ogólna pozycja listy: tytuł, oznaczenie (tekst i ikona), dopisek, przycisk.
+' Bardziej złożoną pozycję składa się ręcznie w ramce {+ ... }.
+!procedure $pozycja($tytul, $oznaczenie="", $dopisek="", $akcja="")
+{+
+$tekst($tytul, "b")
+!if $oznaczenie != ""
+$oznaczenie
+!endif
+!if $dopisek != ""
+$tekst($dopisek)
+!endif
+!if $akcja != ""
+$przycisk($akcja)
+!endif
+}
+!endprocedure
