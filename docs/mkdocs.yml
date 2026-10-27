@@ -69,5 +69,7 @@ nav:
       - Macierz śledzenia: wymagania/sledzenie.md
   - UX:
       - Scenariusz wywiadu: ux/scenariusz-wywiadu.md
+      - Persony: ux/persony.md
+      - Mapy ścieżki: ux/journey.md
   - Raporty:
       - Tydzień 2: raporty/tydzien-2.md
