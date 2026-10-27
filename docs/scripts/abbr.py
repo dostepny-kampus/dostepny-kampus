@@ -103,7 +103,7 @@ def generate(glossary: Path, output: Path) -> int:
     """Generuje plik skrótów `output` ze słownika `glossary` i zwraca liczbę terminów.
 
     Gwarantuje: brak słownika daje pusty plik wynikowy (bez błędu); plik jest zapisywany tylko przy zmianie treści.
-    Wyjątki: OSError przy problemach z zapisem.
+    Wyjątki: OSError przy problemach z odczytem lub zapisem, UnicodeDecodeError przy słowniku spoza UTF-8.
     """
     text = glossary.read_text(encoding="utf-8") if glossary.is_file() else ""
     pairs = parse_glossary(text)
@@ -124,14 +124,14 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Punkt wejścia. Zwraca 0 przy sukcesie, 1 przy błędzie zapisu."""
+    """Punkt wejścia. Zwraca 0 przy sukcesie, 1 przy błędzie odczytu słownika lub zapisu wyniku."""
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8", errors="replace")
     args = parse_args(argv)
     try:
         count = generate(args.glossary, args.out)
-    except OSError as exc:
+    except (OSError, UnicodeDecodeError) as exc:
         print(f"abbr: BŁĄD: {exc}", file=sys.stderr)
         return 1
     print(f"abbr: OK ({count} terminów -> {args.out.name})")
