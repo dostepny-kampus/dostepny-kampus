@@ -202,7 +202,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | 5c | Błąd w zgłoszeniu z pomiaru precyzyjnego | Weryfikator nie poprawia typu, uciążliwości ani miejsca. Odrzuca zgłoszenie z powodem (BR-15). Dalej według wiersza 7a. |
 | 5d | Zmiana dotyczy zgłoszenia, które już jest archiwalne | Inna równoległa zmiana została przyjęta wcześniej. Weryfikator odrzuca tę zmianę z powodem „nieaktualne” (BR-23). Dalej według wiersza 7a. |
 | 5e | Autor w tym czasie edytuje zgłoszenie | Powstaje nowa wersja; Weryfikator decyduje o nowej, nie o starej (BR-3). |
-| 5f | Zmiana oznaczenia wejścia | Weryfikator porównuje nowe zdjęcie wejścia z oznaczeniem i widzi obecne oznaczenie z datą i źródłem. Typu ani uciążliwości nie ustala (BR-24). |
+| 5f | Zmiana oznaczenia wejścia | Weryfikator porównuje nowe zdjęcie wejścia z oznaczeniem i widzi obecne oznaczenie z datą i źródłem. Typu ani uciążliwości nie ustala. Oznaczenia nie zmienia; gdy zdjęcie mu przeczy, odrzuca zmianę z powodem według wiersza 7a (BR-24). |
 | 7a | Odrzucenie | Weryfikator podaje powód odrzucenia; bez niego odrzucić się nie da (US10.2, BR-16). Status „odrzucone”, a autor widzi powód w UC9. |
 | 7b | Zgłoszenie „bariera usunięta” | Po przyjęciu bariera znika z mapy i karty budynku, oba zgłoszenia stają się archiwalne (US10.6, BR-19). |
 | 7c | Zmiana zgłoszenia przyjętego | Po przyjęciu poprzednie zgłoszenie staje się archiwalne i znika z mapy (BR-18). |
