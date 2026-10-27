@@ -63,14 +63,14 @@ Brak uprawnienia działa na dwóch poziomach (US14): aplikacja nie pokazuje ekra
 
 | ID | Zasada | Dlaczego |
 | --- | --- | --- |
-| BR-1 | Jedna osoba może mieć kilka ról. Każde zalogowane konto ma uprawnienia RO-ODW, role pracownicze się sumują. | Zespół jest mały: koordynator często też weryfikuje, a zbierający jest też odwiedzającym. Osobne konta na każdą rolę to zbędny kłopot. |
+| BR-1 | Jedna osoba może mieć kilka ról. Każde zalogowane konto ma uprawnienia RO-ODW, role pracownicze się sumują. | Zespół jest mały: Koordynator często też weryfikuje, a Zbierający jest też Odwiedzającym. Osobne konta na każdą rolę to zbędny kłopot. |
 | BR-2 | Role pracownicze nadaje tylko Koordynator (K2). Zaproszenie na e-mail istniejącego konta dodaje mu rolę. | Rolę z wpływem na publikację dostaje tylko osoba znana Koordynatorowi. Samodzielna rejestracja daje tylko RO-ODW. |
-| BR-3 | Zbierający edytuje własne zgłoszenie do decyzji weryfikatora. Zmiana przyjętego zgłoszenia to nowe zgłoszenie, które znów przechodzi weryfikację. Odrzucone można poprawić i wysłać ponownie. | Opublikowana bariera zawsze ma za sobą weryfikację (N2, N8). Edycja w trakcie przeglądu tworzy nową wersję, a konflikt rozwiązuje US9.3. Weryfikator decyduje wtedy o nowej wersji, nie o starej (N7). |
+| BR-3 | Zbierający edytuje własne zgłoszenie do decyzji Weryfikatora. Zmiana przyjętego zgłoszenia to nowe zgłoszenie, które znów przechodzi weryfikację. Odrzucone można poprawić i wysłać ponownie. | Opublikowana bariera zawsze ma za sobą weryfikację (N2, N8). Edycja w trakcie przeglądu tworzy nową wersję, a konflikt rozwiązuje US9.3. Weryfikator decyduje wtedy o nowej wersji, nie o starej (N7). |
 | BR-4 | Nikt nie weryfikuje własnego zgłoszenia, nawet jeśli ma role RO-ZBI i RO-WER. | Zasada czterech oczu: błędu autora nie wyłapie ten sam autor (N8). |
 | BR-5 | Weryfikator nie widzi imienia ani e-maila autora, tylko jego rolę i pseudonim. Powiązanie z kontem zna tylko serwer. | Do decyzji wystarczą dane, zdjęcie i rola autora. To minimalizacja danych z RODO, art. 5 ust. 1 lit. c. Pseudonim pozwala zauważyć powtarzający się spam. |
 | BR-6 | Gość i RO-ODW widzą tylko zgłoszenia przyjęte. Eksport też zawiera tylko zgłoszenia przyjęte, bez danych autora. | Niesprawdzona informacja wprowadzałaby w błąd osobę planującą wizytę (US1.3, N2). Dane poza systemem nie mogą zawierać danych osobowych. |
 
-**Skutek BR-4:** zespół potrzebuje co najmniej dwóch osób z rolą RO-WER. Inaczej zgłoszenia jedynego weryfikatora czekają bez końca.
+**Skutek BR-4:** zespół potrzebuje co najmniej dwóch osób z rolą RO-WER. Inaczej zgłoszenia jedynego Weryfikatora czekają bez końca.
 
 ## Źródła
 
