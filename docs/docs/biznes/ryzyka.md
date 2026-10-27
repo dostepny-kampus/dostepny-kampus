@@ -35,7 +35,7 @@ Poziom ryzyka: **wysoki** 6–9 (przegląd co tydzień), **średni** 3–4 (prze
 
 ## Macierz ryzyk
 
-Komórka podaje ocenę P×W, poziom słowem i identyfikatory ryzyk. Kolor tylko powtarza poziom.
+Komórka podaje ocenę P×W, poziom słowem i identyfikatory ryzyk. Odcień jednego koloru tylko powtarza poziom: im mocniejszy kolor, tym wyższe ryzyko.
 
 ```mermaid
 block-beta
@@ -44,10 +44,10 @@ block-beta
   p3["P 3 prawie pewne"] c31["3 średni: brak"] c32["6 wysoki: R-4, R-5, R-7, R-9"] c33["9 wysoki: R-1, R-2, R-3"]
   p2["P 2 możliwe"] c21["2 niski: R-16"] c22["4 średni: R-11, R-12, R-13, R-14"] c23["6 wysoki: R-6, R-8, R-10"]
   p1["P 1 mało prawdopodobne"] c11["1 niski: brak"] c12["2 niski: R-17"] c13["3 średni: brak"]
-  classDef naglowek fill:#9e9e9e,fill-opacity:0.25,stroke:#888
-  classDef wysoki fill:#e53935,fill-opacity:0.35,stroke:#888
-  classDef sredni fill:#fbc02d,fill-opacity:0.35,stroke:#888
-  classDef niski fill:#43a047,fill-opacity:0.35,stroke:#888
+  classDef naglowek fill:none,stroke:#888
+  classDef wysoki fill:#1e88e5,fill-opacity:0.7,stroke:#888
+  classDef sredni fill:#1e88e5,fill-opacity:0.38,stroke:#888
+  classDef niski fill:#1e88e5,fill-opacity:0.12,stroke:#888
   class naroznik,w1,w2,w3,p3,p2,p1 naglowek
   class c33,c32,c23 wysoki
   class c31,c22,c13 sredni
