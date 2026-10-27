@@ -21,6 +21,7 @@ UC_RE = re.compile(r"^UC\d+$")
 N_RE = re.compile(r"^N\d+$")
 HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
 FENCE = re.compile(r"^\s*(```|~~~)")
+MERMAID_FENCE = re.compile(r"^\s*(```|~~~)\s*mermaid(?![\w-])")
 LINK_TARGET = re.compile(r"\]\([^)]*\)")
 URL = re.compile(r"https?://\S+")
 INLINE_CODE = re.compile(r"`[^`]*`")
@@ -129,21 +130,32 @@ def table_cells(line: str) -> list[str] | None:
 
 
 def markdown_lines(text: str) -> list[tuple[int, str]]:
-    """Zwraca (numer linii, linia) bez bloków kodu, front matter i bloku macierzy wygenerowanego przez ten skrypt."""
+    """Zwraca (numer linii, linia) bez bloków kodu, front matter i bloku macierzy wygenerowanego przez ten skrypt.
+
+    Gwarantuje: treść bloków ```mermaid jest zwracana, bo diagram jest częścią strony i jego odwołania się sprawdza.
+    """
     result: list[tuple[int, str]] = []
-    in_code = in_matrix = False
+    fence = "text"
+    in_matrix = False
     lines = text.splitlines()
     start = front_matter_end(lines)
     for number, line in enumerate(lines[start:], start=start + 1):
         if FENCE.match(line):
-            in_code = not in_code
+            fence = next_fence(line, fence)
         elif MATRIX_START in line:
             in_matrix = True
         elif MATRIX_END in line:
             in_matrix = False
-        elif not (in_code or in_matrix):
+        elif not (fence == "code" or in_matrix):
             result.append((number, line))
     return result
+
+
+def next_fence(line: str, current: str) -> str:
+    """Zwraca stan po linii ogrodzenia bloku: „text” (poza blokiem), „mermaid” albo „code”."""
+    if current != "text":
+        return "text"
+    return "mermaid" if MERMAID_FENCE.match(line) else "code"
 
 
 def front_matter_end(lines: list[str]) -> int:
