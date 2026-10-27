@@ -1,6 +1,6 @@
 # Słownik pojęć
 
-Jedno pojęcie ma jedną nazwę. Aplikacja, kod i dokumenty używają tylko nazw z kolumny „Termin”.
+Jedno pojęcie ma jedną nazwę. Kod i dokumenty używają tylko nazw z kolumny „Termin”. Napisy w aplikacji ustala [słownik użytkownika](../ux/slownik-uzytkownika.md).
 
 ## Pojęcia
 
