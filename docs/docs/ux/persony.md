@@ -47,7 +47,7 @@ PE-1 reprezentuje grupę docelową kursu, więc jej potrzeby mają pierwszeństw
 | obsługa przy słabym wzroku i niepewnych dłoniach (N4) | US5, US4.3; NFR-17, NFR-19, NFR-20 | V5, wszystkie |
 | zgłoszenie bariery bez trudnego formularza (N3), potrzeba poboczna | US4, US14.2 | V4 |
 
-**Scenariusz dnia:** W poniedziałek wieczorem pani Halina sprawdza w telefonie budynek C-13, bo w czwartek ma tam wykład. Szuka wejścia bez schodów i chce wiedzieć, czy ktoś je niedawno sprawdzał. W czwartek jedzie tramwajem i idzie prosto do wskazanego wejścia. Jeśli winda nie działa, chce o tym komuś powiedzieć jednym zdjęciem, bez wypełniania formularza.
+**Scenariusz dnia:** W poniedziałek wieczorem pani Halina sprawdza w telefonie budynek C-13 przed czwartkowym wykładem. Chce znaleźć wejście bez schodów i wiedzieć, czy ktoś je niedawno sprawdzał. W czwartek jedzie tramwajem i idzie prosto do wskazanego wejścia. Jeśli winda nie działa, chce o tym komuś powiedzieć jednym zdjęciem, bez wypełniania formularza.
 
 ## PE-2 Kuba — Zbierający na obchodzie (hipoteza, do potwierdzenia w wywiadach)
 

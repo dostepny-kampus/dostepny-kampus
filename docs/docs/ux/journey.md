@@ -78,7 +78,7 @@ journey
 | J2-3 | uśrednia pozycję przy barierze, poprawia punkt przy ścianie | „Pozycja skacze o kilka metrów” (2 → 3) | P-9 | C1: 30 s uśredniania, podpowiedź budynku, korekta ręczna na mapie (US6.1, US6.2, US6.4) | średnie: zły punkt utrudnia znalezienie bariery na planie |
 | J2-4 | wybiera typ bariery, uciążliwość i piętro, dodaje zdjęcie | „Szybciej, ręka mi drętwieje” (2 → 3) | P-1 | C2: obowiązkowy typ, uciążliwość i zdjęcie (US7.1, US7.2) | niskie: zdjęcie buduje zaufanie PE-1 (N2) |
 | J2-5 | zapisuje zgłoszenia w piwnicy bez zasięgu | „Czy to się nie zgubi?” (1 → 4) | — | C4: wskaźnik braku sieci, status „lokalne” (US9.1) | — |
-| J2-6 | oznacza piętro jako obejrzane | „Jedno piętro mniej” (— → 4) | — | C1, oznaczenie piętra; ekran ustali faza B (US15.1, US15.3) | niskie: postęp pokazuje, które dane są pełne |
+| J2-6 | oznacza piętro jako obejrzane | „Jedno piętro mniej” (— → 4) | — | C1, oznaczenie piętra; ekran ustali faza B (US15.1, US15.3) | niskie: postęp pokazuje budynki z pełnymi danymi |
 | J2-7 | na karcie widzi barierę już usuniętą | „Ta pochylnia jest już naprawiona” (2 → 3) | P-3, P-7 | V2 → zmiana „bariera usunięta” (US8.4); punkt startu ustali faza B | średnie: do decyzji Weryfikatora PE-1 widzi nieaktualną barierę |
 | J2-8 | po powrocie sieci zgłoszenia wysyłają się same; przy konflikcie wybiera wersję | „Która wersja jest dobra?” (1 → 3) | — | C4: synchronizacja bez działania (US9.2), wybór wersji (US9.3) | — |
 | J2-9 | sprawdza statusy, poprawia odrzucone zgłoszenie | „Co mam poprawić?” (2 → 4) | P-6 | C3: status i powód odrzucenia (US8.1, US8.3) | — |
