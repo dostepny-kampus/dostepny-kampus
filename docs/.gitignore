@@ -3,3 +3,4 @@ node_modules/
 docs/_generated/
 __pycache__/
 *.pyc
+docs/includes/slownik-skroty.md
