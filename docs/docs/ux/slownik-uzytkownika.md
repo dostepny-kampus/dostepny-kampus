@@ -146,7 +146,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | „Wyślij ponownie do bieżącego zgłoszenia” | „Wyślij do aktualnego zgłoszenia” | Zbierający | Krócej i bez słowa „ponownie”, które sugeruje to samo zgłoszenie. | 10.4 |
 | synchronizacja (nagłówek C4, „Synchronizuj teraz”) | „Synchronizacja”, „Synchronizuj teraz” | Zbierający | Krótkie pojęcie dokumentacji. | 10.3 |
 | „Czeka na wysłanie: 3” | bez zmian | Zbierający | — | 10.3 |
-| „Zostaw moją wersję”, „Weź wersję z serwera” | bez zmian; pod nimi „Druga wersja zostanie usunięta.” | Zbierający | Skutek widać przed decyzją (recenzja B3, Nielsen 5). | 10.4 |
+| „Zostaw moją wersję”, „Weź wersję z serwera” | bez zmian; pod nimi skutek według katalogu komunikatów (C4, konflikt) | Zbierający | Skutek widać przed decyzją (recenzja B3, Nielsen 5). | 10.4 |
 | „Zdecyduję później” | bez zmian | Zbierający | — | 10.4 |
 | piętro obejrzane (przycisk „Piętra obejrzane” na V2) | „Oznacz obejrzane piętra” | Zbierający | Czasownik na przycisku. | 10.7 |
 | nagłówek C5 | „Obejrzane piętra” | Zbierający, Koordynator | bez zmian treści | 10.7 |
@@ -179,7 +179,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 
 ## Katalog komunikatów (hipoteza, do potwierdzenia w wywiadach)
 
-Każdy komunikat stanu z [wymagań do ekranów](wymagania-ekranow.md) w ostatecznym brzmieniu. Kolumna „Zmiana” odsyła do propozycji PW, gdy treść różni się od wymagań.
+Każdy komunikat stanu z [wymagań do ekranów](wymagania-ekranow.md) w ostatecznym brzmieniu. Kolumna „Zmiana” odsyła do propozycji PW, gdy treść różni się od wymagań. Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym. Przy komunikatach o zaufaniu do danych słuchamy słów z pytań 4.3 i 4.4.
 
 ### Wszystkie ekrany
 
@@ -205,8 +205,8 @@ Każdy komunikat stanu z [wymagań do ekranów](wymagania-ekranow.md) w ostatecz
 | V2, budynku nie ma w telefonie | „Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.” | „Spróbuj ponownie” | PW-4 |
 | V2, błąd zdjęcia | „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” | „Spróbuj ponownie” | PW-10 |
 | V3, jest wejście dostępne | „Budynek A-1 ma wejście dostępne: »nazwa wejścia«.” | — | — |
-| V3, brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Bariery przy każdym wejściu znajdziesz w opisie budynku.” | — | PW-10 |
-| V3, brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne: brak danych o 2 z 3 wejść. Każde wejście z datą znajdziesz w opisie budynku.” | — | PW-10 |
+| V3, brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Wróć do opisu budynku, aby zobaczyć bariery przy każdym wejściu.” | — | PW-10 |
+| V3, brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne: brak danych o 2 z 3 wejść. Wróć do opisu budynku, aby zobaczyć każde wejście z datą.” | — | PW-10 |
 | V4, krok 1 | „Nie fotografuj twarzy ani tablic rejestracyjnych.” | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | PW-8 |
 | V4, krok 3 | „Dołączymy miejsce, w którym teraz stoisz.” | „Wyślij” | — |
 | V4, brak zgody na lokalizację | „Aby wysłać zdjęcie bariery, potrzebujemy jej miejsca. Sprawdzimy je tylko teraz i nie będziemy Cię śledzić.” | „Pozwól na lokalizację”, „Wróć do mapy” | PW-5 |
@@ -215,7 +215,7 @@ Każdy komunikat stanu z [wymagań do ekranów](wymagania-ekranow.md) w ostatecz
 | V4, lokalizacja wyłączona | „Lokalizacja w telefonie jest wyłączona. Włącz ją, aby wysłać zdjęcie bariery.” | „Otwórz ustawienia”, „Wróć do mapy” | PW-5 |
 | V4, ustalanie miejsca | „Ustalamy, gdzie jesteś…” | „Wyślij” czeka | PW-9 |
 | V4, brak pozycji | „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” | „Spróbuj ponownie”, „Zrezygnuj” | PW-5 |
-| V4, potwierdzenie | „Dziękujemy. Sprawdzimy zdjęcie, zanim bariera pojawi się na mapie.” | „Wróć do mapy” | PW-5 |
+| V4, potwierdzenie | „Dziękujemy. Sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.” | „Wróć do mapy” | PW-5 |
 | V4, potwierdzenie bez internetu | „Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet.” | „Wróć do mapy” | PW-5 |
 | V4, za mało miejsca | „W telefonie brakuje miejsca, więc nie zapisaliśmy zdjęcia bariery. Usuń niepotrzebne zdjęcia albo filmy i spróbuj ponownie.” | „Spróbuj ponownie” | PW-5 |
 | V5, zdanie o koncie | „Aby zgłosić barierę, potrzebne jest konto. Możesz je założyć teraz w »Konto«.” | „Dalej”, „Pomiń instrukcję” | PW-5 |
@@ -224,12 +224,12 @@ Każdy komunikat stanu z [wymagań do ekranów](wymagania-ekranow.md) w ostatecz
 
 | Ekran i stan | Komunikat | Przyciski | Zmiana |
 | --- | --- | --- | --- |
-| L1, zwykły | „Aby zgłosić barierę, potrzebne jest konto. Dzięki kontom na mapę nie trafiają fałszywe informacje.” | „Zaloguj się”, „Załóż konto”, „Nie teraz” | PW-5 |
+| L1, zwykły | „Aby zgłosić barierę, potrzebne jest konto. Konto chroni mapę przed fałszywymi informacjami.” | „Zaloguj się”, „Załóż konto”, „Nie teraz” | PW-5 |
 | L1, wejście z V4 | „Po zalogowaniu od razu zrobisz zdjęcie. Całość to 3 krótkie kroki.” | jak wyżej | PW-5 |
 | L1, brak sieci | „Logowanie wymaga internetu. Mapa i opisy budynków działają bez niego.” | „Wróć do mapy” | PW-4 |
 | L1, błąd | „Logowanie się nie udało albo zostało przerwane. Sprawdź internet i spróbuj ponownie.” | „Spróbuj ponownie”, „Nie teraz” | — |
 | strona logowania, blokada konta | „Konto jest chwilowo zablokowane po kilku błędnych hasłach. Spróbuj ponownie później.” | — | — |
-| L2, potwierdzenie wycofania zgody | „Wylogujemy Cię i w ciągu miesiąca usuniemy Twoje dane osobowe. Wysłane bariery zostaną w aplikacji bez Twoich danych.” | „Wycofaj zgodę”, „Zostaw zgodę” | PW-5 |
+| L2, potwierdzenie wycofania zgody | „Wylogujemy Cię i w ciągu miesiąca usuniemy Twoje dane osobowe. Wysłane zdjęcia barier zostaną, ale bez Twoich danych.” | „Wycofaj zgodę”, „Zostaw zgodę” | PW-5 |
 
 ### Zbierający
 
@@ -249,7 +249,7 @@ Każdy komunikat stanu z [wymagań do ekranów](wymagania-ekranow.md) w ostatecz
 | C4, brak sieci | „Brak internetu. Wyślemy wszystko sami, gdy internet wróci.” | — | — |
 | C4, błąd serwera | „Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później.” | — | — |
 | C4, mało miejsca | „W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia.” | — | PW-10 |
-| C4, konflikt | „Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.” | „Zostaw moją wersję”, „Weź wersję z serwera”, „Zdecyduję później” | PW-12 |
+| C4, konflikt | „Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.” Przy zgłoszeniu przyjętym drugie zdanie: „Przyjęte zgłoszenie zostanie, a Twoja wersja, jeśli ją wybierzesz, trafi do sprawdzenia jako nowe.” (UC11 3b) | „Zostaw moją wersję”, „Weź wersję z serwera”, „Zdecyduję później” | PW-12 |
 | C5, potwierdzenie cofnięcia | „Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.” | „Cofnij znacznik”, „Zostaw znacznik” | PW-12 |
 | C5, brak sieci | „Znacznik zapisany w telefonie. Wyślemy go, gdy wróci internet.” | — | — |
 | C5, błąd zapisu | „Nie udało się zapisać znacznika w telefonie. Spróbuj ponownie, a jeśli to nie pomoże, zwolnij miejsce.” | „Spróbuj ponownie” | — |
