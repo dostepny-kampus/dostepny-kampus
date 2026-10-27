@@ -56,8 +56,8 @@ Nie budujemy gotowego systemu dla całego kampusu. Pięć budynków opracowujemy
 
 | Poziom | Gdzie | Co działa |
 | --- | --- | --- |
-| 1. Szczegółowy | A-1, B-1, C-13, D-1, D-2 | plan piętra z wyborem kondygnacji; windy, schody, toalety i wejścia z danych PWr; bariera jako punkt na planie; obchód i sprawdzenie na miejscu |
-| 2. Podstawowy | pozostałe budynki PWr | obrys budynku, wejścia z OpenStreetMap, karta budynku z barierami; numer piętra wpisywany ręcznie |
+| 1. Szczegółowy | A-1, B-1, C-13, D-1, D-2 | plan piętra z przełącznikiem pięter; windy, schody, toalety i wejścia z danych PWr; bariera jako punkt na planie; obchód i sprawdzenie na miejscu |
+| 2. Podstawowy | pozostałe budynki PWr | kontur budynku, wejścia z OpenStreetMap, karta budynku z barierami; numer piętra wpisywany ręcznie |
 | 3. Poza budynkami | teren kampusu i okolica | bariera przypięta do punktu na ulicy, np. krawężnik, pochylnia, chodnik |
 
 Zachowanie na poziomach 2 i 3 opisują reguły BR-G1…BR-G4 na stronie [Reguły biznesowe](reguly.md). Lista budynków szczegółowych to ustawienie, więc kolejny budynek można dodać bez zmian w aplikacji.
