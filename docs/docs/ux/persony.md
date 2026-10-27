@@ -7,7 +7,7 @@ Persona to fikcyjna, ale realistyczna postać, która reprezentuje grupę użytk
 
 | Persona | Rola | Kim jest | Potrzeby | Ekrany |
 | --- | --- | --- | --- | --- |
-| PE-1 Pani Halina | RO-GOS, potem RO-ODW | osoba starsza, pierwszy raz idzie do budynku uczelni | N1, N2, N4, N3 | V1–V5 |
+| PE-1 Pani Halina | RO-GOS, potem RO-ODW | osoba starsza, pierwszy raz idzie do nieznanego budynku uczelni | N1, N2, N4, N3 | V1–V5 |
 | PE-2 Kuba | RO-ZBI | student prowadzący obchód budynku | N5, N6, N7 | V2, C1–C4 |
 | PE-3 Marta | RO-WER i RO-KOO (BR-1) | pracowniczka uczelni sprawdzająca zgłoszenia i prowadząca inwentaryzację | N8, N9, N7, N2 | R1, R2, K1–K3 |
 
@@ -19,8 +19,8 @@ PE-1 reprezentuje grupę docelową kursu, więc jej potrzeby mają pierwszeństw
 | --- | --- |
 | Wiek | 72 lata |
 | Kontekst | emerytka z Wrocławia, słuchaczka Politechniki Trzeciego Wieku, programu PWr dla osób 60+ [1]. Pierwszy raz idzie na wykład do C-13 |
-| Sprzęt | smartfon z Androidem, duża czcionka ustawiona przez wnuczkę; okulary do czytania |
-| Umiejętności cyfrowe | dzwoni, wysyła zdjęcia rodzinie, szuka w wyszukiwarce; nowej aplikacji uczy się powoli i boi się, że coś „zepsuje” |
+| Sprzęt | smartfon z Androidem z powiększoną czcionką w ustawieniach; okulary do czytania |
+| Umiejętności cyfrowe | dzwoni, wysyła zdjęcia rodzinie, szuka w wyszukiwarce; w znanych aplikacjach radzi sobie pewnie, w nowej myli się przy małych przyciskach i niejasnych komunikatach, a winę przypisuje sobie |
 | Wzrok | słabo czyta drobny i blady tekst, zwłaszcza w słońcu |
 | Dłonie | lekkie drżenie; chybia małe przyciski, nie lubi przeciągania i rozsuwania palcami |
 | Poruszanie się | chodzi z laską; schody bez poręczy i długie dystanse ją męczą |
@@ -44,7 +44,7 @@ PE-1 reprezentuje grupę docelową kursu, więc jej potrzeby mają pierwszeństw
 | --- | --- | --- |
 | wejście bez barier (N1) | US1, US2, US3, US16, US17 | V1, V2, V3 |
 | zaufanie do informacji (N2) | US2.2, US17.3 | V2 |
-| obsługa przy słabym wzroku i niepewnych dłoniach (N4) | US5, US4.3; NFR-17, NFR-19, NFR-20 | V5, wszystkie |
+| obsługa przy słabym wzroku i niepewnych dłoniach (N4) | US5, US4.3; NFR-17, NFR-19, NFR-20, NFR-23 | V5, wszystkie |
 | zgłoszenie bariery bez trudnego formularza (N3), potrzeba poboczna | US4, US14.2 | V4 |
 
 **Scenariusz dnia:** W poniedziałek wieczorem pani Halina sprawdza w telefonie budynek C-13 przed czwartkowym wykładem. Chce znaleźć wejście bez schodów i wiedzieć, czy ktoś je niedawno sprawdzał. W czwartek jedzie tramwajem i idzie prosto do wskazanego wejścia. Jeśli winda nie działa, chce o tym komuś powiedzieć jednym zdjęciem, bez wypełniania formularza.
@@ -107,7 +107,7 @@ PE-1 reprezentuje grupę docelową kursu, więc jej potrzeby mają pierwszeństw
 
 **Frustracje:**
 
-- dwa zgłoszenia tej samej bariery od różnych osób (P-8);
+- dwa zgłoszenia tej samej bariery od różnych osób (N8, US10.1);
 - zdjęcia z twarzami przechodniów (NFR-25);
 - zgłoszenie szybkie bez typu bariery i uciążliwości (US10.3);
 - dane w kilku miejscach, które sobie przeczą (P-8).
@@ -125,7 +125,7 @@ PE-1 reprezentuje grupę docelową kursu, więc jej potrzeby mają pierwszeństw
 
 ## Co sprawdzimy w wywiadzie
 
-Numery pytań pochodzą ze [scenariusza wywiadu](scenariusz-wywiadu.md). Część 10 jest opcjonalna, więc PE-2 i PE-3 mogą zostać hipotezami dłużej niż PE-1.
+Numery pytań pochodzą ze [scenariusza wywiadu](scenariusz-wywiadu.md). Sekcja 10 jest opcjonalna, więc PE-2 i PE-3 mogą zostać hipotezami dłużej niż PE-1.
 
 | Persona | Założenie do sprawdzenia | Pytania |
 | --- | --- | --- |
