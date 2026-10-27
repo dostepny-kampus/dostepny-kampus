@@ -47,7 +47,7 @@ Tor „System” obejmuje aplikację i serwer razem. Kroki z literą, np. T6a, t
 | T23 | Odwiedzający / Gość niezalogowany | W „Zaplanuj wizytę” sprawdza, które wejście jest wejściem dostępnym (US3.1, US3.2) | P-2, P-9 | N1 | V3 |
 | T24 | Zbierający | Oznacza piętro obejrzane; w budynku podstawowym oznacza cały budynek (US15.1, BR-20) | P-3 | N9 | C1 (do ustalenia w fazie B) |
 | T24a | Zbierający | Cofa własny znacznik piętra obejrzanego (US15.2, BR-20) | P-3 | N9 | C1 (do ustalenia w fazie B) |
-| T24b | System | Zapisuje znacznik albo jego cofnięcie w telefonie i wysyła po powrocie sieci, tak samo jak zgłoszenie w T10–T11 (US15.3, BR-20) | — | N6 | C4 |
+| T24b | System | Zapisuje znacznik albo jego cofnięcie w telefonie i wysyła po powrocie sieci, tak samo, jak zgłoszenie w T10–T11 (US15.3, BR-20) | — | N6 | C4 |
 | T25 | System | Po odbiorze przez serwer przelicza postęp inwentaryzacji budynku: odsetek pięter obejrzanych, zgłoszenia czekające i przyjęte. Przelicza go także po zmianie statusu zgłoszenia (T13, T17, T17a, T19) | P-3 | N9 | K1 |
 | T26 | Koordynator | Sprawdza postęp inwentaryzacji według budynków (US11.1) | P-3 | N9 | K1 |
 | T26a | Koordynator | Cofa błędny znacznik dowolnego Zbierającego (US11.3, BR-20) | P-3 | N9 | K1 |
