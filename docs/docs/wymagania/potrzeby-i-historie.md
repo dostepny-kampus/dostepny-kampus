@@ -77,10 +77,10 @@ Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego 
 | US7.1 | Bez typu bariery, uciążliwości 1–3 i zdjęcia zgłoszenia nie da się zapisać. | — |
 | US7.2 | W budynku szczegółowym piętro wybiera się z etykiet z danych PWr. W budynku podstawowym wpisuje się liczbę całkowitą, z dopiskiem „półpiętro” lub bez. | BR-G1 |
 | US7.3 | Przy typie TB-29 „inna bariera” opis jest obowiązkowy. | TB-29 |
-| US8.1 | Lista pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte albo odrzucone. Odrzucone ma powód odrzucenia. | NFR-21 |
+| US8.1 | Lista pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte, odrzucone albo archiwalne. Odrzucone ma powód odrzucenia. | NFR-21, BR-18 |
 | US8.2 | Status „wysłane” pojawia się dopiero wtedy, gdy zgłoszenie czeka w kolejce na serwerze. Status „w weryfikacji” pojawia się, gdy wziął je Weryfikator. | US10.4 |
 | US8.3 | Zgłoszenie przed decyzją Weryfikatora można edytować. Odrzucone można poprawić i wysłać ponownie. | BR-3 |
-| US8.4 | Każdy Zbierający, także inny niż autor, zaczyna z karty budynku zmianę zgłoszenia przyjętego z oznaczeniem „bariera usunięta”. Zmiana przechodzi te same statusy co zgłoszenie, a bariera zostaje na mapie do decyzji Weryfikatora. | BR-3, US10.6, decyzja 33 |
+| US8.4 | Każdy Zbierający, także inny niż autor, zaczyna z karty budynku zmianę zgłoszenia przyjętego z oznaczeniem „bariera usunięta”. Zmiana przechodzi te same statusy co zgłoszenie i po synchronizacji ma status „wysłane”. Bariera zostaje na mapie do decyzji Weryfikatora. | BR-3, US10.6, decyzja 33 |
 | US9.1 | Bez sieci aplikacja pokazuje wskaźnik braku sieci, a nowe zgłoszenie czeka w kolejce ze statusem „lokalne”. | NFR-5, NFR-7 |
 | US9.2 | Po powrocie sieci synchronizacja rusza bez działania użytkownika. | NFR-6, NFR-8 |
 | US9.3 | Przy konflikcie wersji aplikacja pokazuje obie wersje, a wybór należy do Zbierającego: własna albo z serwera. Żadna zmiana nie znika po cichu. | NFR-9, BR-3 |
