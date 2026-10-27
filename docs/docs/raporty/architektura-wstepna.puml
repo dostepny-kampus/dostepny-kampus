@@ -1,0 +1,54 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontSize 13
+skinparam ArrowColor #2B5A8C
+skinparam ArrowFontSize 12
+skinparam componentStyle rectangle
+skinparam rectangle {
+  BackgroundColor #EEF4FB
+  BorderColor #2B5A8C
+}
+skinparam database {
+  BackgroundColor #EEF4FB
+  BorderColor #2B5A8C
+}
+skinparam cloud {
+  BackgroundColor #F4F4F4
+  BorderColor #777777
+}
+skinparam actor {
+  BorderColor #2B5A8C
+}
+left to right direction
+
+actor "Użytkownicy\n(4 role)" as U
+
+rectangle "Aplikacja mobilna (Android)\nKotlin, Jetpack Compose\nbaza lokalna i kolejka offline\nmapa MapLibre" as APP
+
+rectangle "Usługa logowania\nKeycloak\nkonta, role, rejestracja" as KC
+
+rectangle "Serwer (REST API)\nSpring Boot, Java 21\nkontrakt OpenAPI" as SRV
+
+database "Baza danych przestrzennych\nPostgreSQL + PostGIS\nbudynki, plany pięter, zgłoszenia" as DB
+
+database "Magazyn zdjęć\nMinIO (S3)" as S3
+
+cloud "Źródła danych o budynkach" as SRC {
+  rectangle "OpenStreetMap\nkontury budynków\n(jednorazowy eksport)" as OSM
+  rectangle "Plany pięter PWr\nArcGIS Online" as ARC
+  rectangle "USOS API\nnumery sal" as USOS
+}
+
+cloud "Podkład mapy OSM\n(tylko online)" as TILES
+
+U --> APP : korzysta
+APP --> KC : logowanie\nOAuth 2.0 + PKCE
+APP --> SRV : HTTPS + token\nsynchronizacja
+APP --> TILES : kafelki
+SRV --> KC : sprawdzenie tokenu,\nzaproszenia
+SRV --> DB : zapytania\nprzestrzenne
+SRV --> S3 : zdjęcia
+OSM --> DB : import\nprzy wdrożeniu
+ARC --> DB : import\nprzy wdrożeniu
+USOS --> DB : import\nprzy wdrożeniu
+@enduml
