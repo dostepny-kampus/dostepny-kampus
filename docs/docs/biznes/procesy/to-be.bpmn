@@ -298,7 +298,7 @@
     <bpmn:endEvent id="End_Usunieta" name="Bariera zniknęła z mapy">
       <bpmn:incoming>Flow_B20</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:serviceTask id="Task_T17b" name="T17b Zgłoszenie „archiwalne”, nowe oznaczenie wejścia z datą i źródłem">
+    <bpmn:serviceTask id="Task_T17b" name="T17b Ustaw „archiwalne”, nowe oznaczenie wejścia">
       <bpmn:incoming>Flow_B21</bpmn:incoming>
       <bpmn:outgoing>Flow_B22</bpmn:outgoing>
       <bpmn:dataOutputAssociation id="DataOut_T17b_Wejscia">
