@@ -12,7 +12,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Oraz telefon ma sieć
       Oraz w budynku <budynek> nie ma jeszcze żadnego znacznika
       Jeżeli w budynku <budynek> oznaczy <co>
-      Wtedy postęp budynku <budynek> pokazuje <wynik>
+      Wtedy postęp budynku <budynek> liczony na serwerze to <wynik>
 
       Przykłady:
         | budynek | co                                 | wynik                    |
@@ -46,7 +46,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Oraz telefon nie ma sieci
       Jeżeli Zbierający <czynność>
       Wtedy zmiana znacznika czeka w telefonie na synchronizację
-      Oraz postęp budynku A-1 pokazuje nadal 3 z 5 pięter
+      Oraz postęp budynku A-1 liczony na serwerze to nadal 3 z 5 pięter
 
       Przykłady:
         | czynność                                             |
@@ -59,7 +59,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Oraz bez sieci <czynność>
       Jeżeli sieć wróci
       Wtedy zmiana znacznika dociera na serwer bez działania Zbierającego
-      Oraz postęp budynku A-1 pokazuje <po> z 5 pięter
+      Oraz postęp budynku A-1 liczony na serwerze to <po> z 5 pięter
 
       Przykłady:
         | czynność                                              | po |

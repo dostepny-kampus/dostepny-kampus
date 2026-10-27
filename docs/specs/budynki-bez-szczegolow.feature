@@ -31,7 +31,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | „1,5”                       | nie zapisuje się z piętrem „1,5”                       |
 
     @US6.4 @BR-G2
-    Szablon scenariusza: Korekta punktu na mapie w budynku podstawowym i poza budynkiem
+    Szablon scenariusza: Korekta punktu na mapie w każdym budynku i poza budynkiem
       Zakładając, że Zbierający skończył uśrednianie pozycji <miejsce>
       Jeżeli przesunie punkt bariery na mapie
       Wtedy zgłoszenie ma nowe położenie punktu
@@ -40,6 +40,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
       Przykłady:
         | miejsce                                         |
         | w budynku B-4                                   |
+        | w budynku szczegółowym A-1                      |
         | na chodniku przed wejściem głównym A-1          |
 
     Szablon scenariusza: W budynku podstawowym zgłoszenie można złożyć zawsze

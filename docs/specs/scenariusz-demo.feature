@@ -13,7 +13,7 @@ Funkcja: Scenariusz demo w budynku A-1
   @US6.1 @US6.2 @US7.1 @US9.2 @US10.1 @US2.1 @US11.1 @US13.1
   Scenariusz: Schody przy wejściu głównym A-1 od pomiaru do eksportu
     Zakładając, że Zbierający przy wejściu głównym A-1 po 30 s uśredniania pozycji potwierdza podpowiedziany budynek A-1
-    Jeżeli zapisze zgłoszenie TB-1 „schody przy wejściu” z uciążliwością 3 i zdjęciem, gdy telefon w piwnicy A-1 nie ma sieci
+    Jeżeli zapisze zgłoszenie TB-1 „schody przy wejściu” z uciążliwością 3 i zdjęciem, gdy telefon nie ma sieci
     Oraz zgłoszenie wyśle się samo po powrocie sieci
     Oraz Weryfikator zobaczy zgłoszenie TB-13 jako podobne zgłoszenie 5 m dalej i przyjmie zgłoszenie TB-1
     Wtedy Odwiedzający widzi na karcie budynku A-1 wejście główne „niedostępne” ze schodami i inne wejście „dostępne”
