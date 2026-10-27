@@ -21,6 +21,19 @@ Funkcja: Logowanie, role i zaproszenia
       | Koordynatora   | pomiar precyzyjny         |
       | Koordynatora   | kolejka weryfikacji       |
 
+  @US14.1 @BR-19 @BR-20
+  Szablon scenariusza: Znacznik piętra i zmianę „bariera usunięta” składa tylko Zbierający
+    Zakładając, że osoba jest zalogowana tylko z rolą <rola>
+    Jeżeli przejrzy dostępne ekrany aplikacji
+    Wtedy nie widzi czynności „<czynność>”
+    Oraz próba wykonania czynności „<czynność>” z pominięciem aplikacji jest odrzucona
+
+    Przykłady:
+      | rola           | czynność                       |
+      | Koordynatora   | znacznik piętra obejrzanego    |
+      | Weryfikatora   | zmiana »bariera usunięta«      |
+      | Odwiedzającego | zmiana »bariera usunięta«      |
+
   @US14.1 @BR-3
   Scenariusz: Zbierający nie edytuje cudzego zgłoszenia
     Zakładając, że Zbierający wysłał zgłoszenie TB-13 „próg” w budynku C-13
