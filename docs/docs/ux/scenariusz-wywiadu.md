@@ -237,10 +237,11 @@ Zapisuj cytat słowami uczestnika, a swoją interpretację tylko w kolumnie „O
 | --- | --- |
 | Potwierdzona | połowa uczestników lub więcej mówi o niej albo ją pokazuje bez podpowiedzi |
 | Zmieniona | potrzeba istnieje, ale ma inną treść, inny priorytet albo inną grupę |
+| Niepewna | mówi o niej mniej niż połowa uczestników, nikt jej nie przeczy; sprawdzamy ją ponownie w etapach 4 i 7 kursu |
 | Odrzucona | nikt jej nie potwierdza albo większość jej przeczy |
 | Nowa | temat bez N, obecny u min. 2 uczestników; dostaje kolejny numer N10… |
 
-| N | Status | Dowód (P…, nr pytania) | Nowe brzmienie, jeśli zmieniona | Skutek dla funkcji |
+| N | Status (potwierdzona / zmieniona / niepewna / odrzucona / nowa) | Dowód (P…, nr pytania) | Nowe brzmienie, jeśli zmieniona | Skutek dla funkcji |
 | --- | --- | --- | --- | --- |
 | N1 | | | | |
 | N2 | | | | |
