@@ -1,0 +1,63 @@
+@startuml
+!pragma layout smetana
+hide empty description
+skinparam defaultFontSize 14
+skinparam ArrowColor #444444
+skinparam ArrowFontSize 12
+skinparam state {
+  BackgroundColor #F2F2F2
+  BorderColor #444444
+  FontStyle bold
+}
+skinparam state<<stan>> {
+  BackgroundColor #FFFFFF
+  BorderColor #444444
+  FontStyle normal
+}
+skinparam state<<poza>> {
+  BackgroundColor #FFFFFF
+  BorderColor #888888
+  FontStyle italic
+}
+
+skinparam note {
+  BackgroundColor #FFFFFF
+  BorderColor #888888
+}
+
+state "V1 Mapa kampusu" as V1
+state "L2 Konto / Moja praca\n(czynności RO-WER, RO-KOO)" as L2
+state "R1 Kolejka weryfikacji" as R1
+state "R2 Sprawdzenie zgłoszenia" as R2
+state "K1 Postęp inwentaryzacji" as K1
+state "C5 Piętra obejrzane\n(tylko cofanie)" as C5
+state "Potwierdzenie\ncofnięcia" as PC <<stan>>
+state "K2 Zaproszenie" as K2
+state "K3 Eksport" as K3
+state "Pobrane pliki\ntelefonu" as PLIK <<poza>>
+state "Brak uprawnień\n(R1, R2, K1, K2, K3)" as BU <<stan>>
+
+[*] --> V1 : start aplikacji
+V1 --> L2 : „Moja praca”\n(pasek dolny)
+L2 --> V1 : „Wyloguj”
+
+L2 --> R1 : RO-WER: „Zgłoszenia\ndo sprawdzenia”
+R1 --> R2 : „Weź do sprawdzenia”;\n„Wzięte przeze mnie”
+R2 --> R1 : „Przyjmij”, „Odrzuć”
+
+note left of R2
+  Po decyzji „Wstecz”
+  z R1 wraca do L2.
+end note
+
+L2 --> K1 : RO-KOO: „Postęp\ninwentaryzacji”
+L2 --> K2 : RO-KOO:\n„Zaproś osobę”
+L2 --> K3 : RO-KOO:\n„Pobierz eksport”
+K1 --> C5 : dotknięcie\nbudynku
+C5 --> K1 : „Wstecz”
+C5 --> PC : „Cofnij znacznik”
+PC --> C5 : „Cofnij” (nowy stan),\n„Anuluj”
+K3 --> PLIK : „Pobierz plik”
+
+BU --> V1 : „Wróć do mapy”
+@enduml
