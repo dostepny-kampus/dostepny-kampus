@@ -156,7 +156,7 @@ Droga z mapy: dotknięcie budynku (V2), „Zaplanuj wizytę” (V3). To 2 dotkni
 | --- | --- |
 | Zwykły | zdanie z odpowiedzią i wejścia dostępne |
 | Brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Wszystkie wejścia są oznaczone jako niedostępne. Sprawdź bariery przy wejściach na karcie budynku.” (US3.1, UC4 4a) |
-| Brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne. Nie mamy danych o 2 z 3 wejść. Datę i źródło każdego wejścia zobaczysz na karcie budynku.” Liczby zależą od budynku, także gdy danych brak o wszystkich wejściach (UC4 4b, US17.1) |
+| Brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne. Nie mamy danych o 2 z 3 wejść. Datę i źródło każdego wejścia zobaczysz na karcie budynku.” Liczby zależą od budynku, także wtedy, gdy danych brak o wszystkich wejściach (UC4 4b, US17.1) |
 | Brak sieci | dane z telefonu z napisem „Dane z 12.11.2026” (NFR-10) |
 
 Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu, a nie samym brakiem wyniku (US3.1). TalkBack czyta je jako pierwsze (NFR-18).
@@ -686,7 +686,7 @@ Mapa ścieżki osoby starszej pokazuje, że logowanie przed zdjęciem przerywa z
 | Wariant | Co się zmienia | Za | Przeciw |
 | --- | --- | --- | --- |
 | A. Bez zmian (wybrany, decyzja 38) | US14.2 zostaje: logowanie przed zdjęciem, ze środkami z V4. | Osoba nie robi zdjęcia, które może się nie wysłać. Brak nowych reguł. | Przy pierwszym zgłoszeniu bariera może zniknąć z oczu, zanim osoba się zaloguje. |
-| B. Logowanie przed wysłaniem | Gość robi zdjęcie i wybiera grupę, a logowanie pojawia się przy „Wyślij”. Zdjęcie czeka w telefonie. Wymaga zmiany US14.2, BR-8, UC7 1a i 3 scenariuszy `@US14.2`. | Zdjęcie powstaje, gdy bariera jest przed osobą. | Niezalogowany telefon trzyma zdjęcie bez konta; rezygnacja z logowania wyrzuca wykonaną pracę. |
+| B. Logowanie przed wysłaniem | Gość robi zdjęcie i wybiera grupę, a logowanie pojawia się przy „Wyślij”. Zdjęcie czeka w telefonie. Wymaga zmiany US14.2, BR-8, UC7 1a i trzech scenariuszy `@US14.2`. | Zdjęcie powstaje, gdy bariera jest przed osobą. | Niezalogowany telefon trzyma zdjęcie bez konta; rezygnacja z logowania wyrzuca wykonaną pracę. |
 
 Jeśli test pokaże rezygnacje przy L1, wracamy do wariantu B.
 
