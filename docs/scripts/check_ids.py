@@ -1,4 +1,4 @@
-"""Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB) i macierz śledzenia. Author: Vladyslav Yevkov. Version: 0.1.0. Copyright (c) 2026 Vladyslav Yevkov."""
+"""Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB) i macierz śledzenia. Author: Vladyslav Yevkov. Version: 0.2.0. Copyright (c) 2026 Vladyslav Yevkov."""
 
 from __future__ import annotations
 
@@ -19,6 +19,7 @@ AC_RE = re.compile(r"^US\d+\.\d+$")
 US_RE = re.compile(r"^US\d+$")
 UC_RE = re.compile(r"^UC\d+$")
 N_RE = re.compile(r"^N\d+$")
+BR_RE = re.compile(r"^BR-G?\d+$")
 HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
 FENCE = re.compile(r"^\s*(```|~~~)")
 MERMAID_FENCE = re.compile(r"^\s*(```|~~~)\s*mermaid(?![\w-])")
@@ -31,8 +32,10 @@ SEPARATOR_CELL = re.compile(r"^:?-{3,}:?$")
 TAG_RE = re.compile(r"@([\w.\-]+)")
 CLASS_PART = re.compile(r"\d+|(?<=RO-)[A-Z]+")
 PARTIAL_NOTE = " (klasa ID jeszcze bez definicji)"
-MATRIX_START = "<!-- macierz:start -->"
-MATRIX_END = "<!-- macierz:end -->"
+BLOCK_NAMES = ("podsumowanie", "potrzeby", "macierz", "reguly", "dziury")
+BLOCK_MARKER = re.compile(r"<!-- ([a-z]+):(start|end) -->")
+VALE_OFF = "<!-- vale off -->"
+VALE_ON = "<!-- vale on -->"
 FEATURE_KEYWORDS = ("Feature", "Funkcja", "Funkcjonalność", "Właściwość", "Aspekt", "Potrzeba biznesowa")
 RULE_KEYWORDS = ("Rule", "Reguła", "Zasada")
 SCENARIO_KEYWORDS = ("Scenario Outline", "Scenario Template", "Scenario", "Example", "Scenariusz", "Szablon scenariusza", "Przykład")
@@ -67,6 +70,7 @@ class Corpus:
     legacy_ac: list[tuple[str, Location]] = field(default_factory=list)
     links: dict[str, set[str]] = field(default_factory=lambda: defaultdict(set))
     scenarios: dict[str, list[Scenario]] = field(default_factory=lambda: defaultdict(list))
+    all_scenarios: list[Scenario] = field(default_factory=list)
     feature_files: int = 0
 
     def link(self, owner: str, other: str) -> None:
@@ -130,23 +134,22 @@ def table_cells(line: str) -> list[str] | None:
 
 
 def markdown_lines(text: str) -> list[tuple[int, str]]:
-    """Zwraca (numer linii, linia) bez bloków kodu, front matter i bloku macierzy wygenerowanego przez ten skrypt.
+    """Zwraca (numer linii, linia) bez bloków kodu, front matter i bloków wygenerowanych przez ten skrypt (BLOCK_NAMES).
 
     Gwarantuje: treść bloków ```mermaid jest zwracana, bo diagram jest częścią strony i jego odwołania się sprawdza.
     """
     result: list[tuple[int, str]] = []
     fence = "text"
-    in_matrix = False
+    in_block = False
     lines = text.splitlines()
     start = front_matter_end(lines)
     for number, line in enumerate(lines[start:], start=start + 1):
+        marker = BLOCK_MARKER.search(line)
         if FENCE.match(line):
             fence = next_fence(line, fence)
-        elif MATRIX_START in line:
-            in_matrix = True
-        elif MATRIX_END in line:
-            in_matrix = False
-        elif not (fence == "code" or in_matrix):
+        elif marker and marker.group(1) in BLOCK_NAMES:
+            in_block = marker.group(2) == "start"
+        elif not (fence == "code" or in_block):
             result.append((number, line))
     return result
 
@@ -270,6 +273,7 @@ def scan_feature(path: Path, corpus: Corpus) -> None:
             rule_tags = tags
         elif (name := keyword_of(line, SCENARIO_KEYWORDS)) is not None:
             scenario = Scenario(name or "(bez nazwy)", Location(rel, number))
+            corpus.all_scenarios.append(scenario)
             for tag in dict.fromkeys(feature_tags + rule_tags + tags):
                 corpus.scenarios[tag].append(scenario)
 
@@ -310,30 +314,68 @@ def error_level(corpus: Corpus, required: str, partial: bool) -> tuple[str, str]
 
 
 def check(corpus: Corpus, partial: bool = False) -> list[Finding]:
-    """Zwraca wyniki kontroli: niezdefiniowane odwołania, US bez N, AC bez scenariusza, UC bez US, wielokrotne definicje
-    i kryteria w starym formacie „ACn” (decyzja 30: kryteria zapisuje się jako USx.y).
+    """Zwraca wyniki kontroli: niezdefiniowane odwołania, US bez N, AC i BR bez scenariusza, UC bez US, wielokrotne
+    definicje, kryteria w starym formacie „ACn” (decyzja 30: kryteria zapisuje się jako USx.y) i pozostałe dziury
+    śledzenia (patrz untraced).
 
-    Gwarantuje: AC bez scenariusza jest „BŁĘDEM” tylko wtedy, gdy istnieje choć jeden plik .feature; inaczej „UWAGĄ”.
+    Gwarantuje: AC i BR bez scenariusza są „BŁĘDEM” tylko wtedy, gdy istnieje choć jeden plik .feature; inaczej „UWAGĄ”.
     W trybie `partial` błędy zależne od klasy ID bez żadnej definicji są „UWAGAMI” (patrz error_level).
+    Każda dziura z trace_gaps daje tu wynik, więc strona śledzenia z dziurami nie przejdzie kontroli `--strict`.
     """
-    findings = undefined_references(corpus, partial) + legacy_criteria(corpus)
+    findings = undefined_references(corpus, partial) + legacy_criteria(corpus) + untraced(corpus, partial)
     defined = sorted(corpus.definitions, key=natural_key)
     first = {i: str(corpus.definitions[i][0]) for i in defined}
     ac_level = "BŁĄD" if corpus.feature_files else "UWAGA"
     for ident in defined:
-        neighbours = corpus.links.get(ident, set())
-        if US_RE.match(ident) and not any(N_RE.match(n) for n in neighbours):
+        if US_RE.match(ident) and not has_need(corpus, ident):
             level, note = error_level(corpus, "N#", partial)
             findings.append(Finding(level, first[ident], f"{ident}: historyjka bez potrzeby N{note}"))
         if AC_RE.match(ident) and not corpus.scenarios.get(ident):
             findings.append(Finding(ac_level, first[ident], f"{ident}: kryterium bez scenariusza (tag @{ident})"))
-        if UC_RE.match(ident) and not any(US_RE.match(n) or AC_RE.match(n) for n in neighbours):
+        if BR_RE.match(ident) and not corpus.scenarios.get(ident):
+            findings.append(Finding(ac_level, first[ident], f"{ident}: reguła bez scenariusza (tag @{ident})"))
+        if UC_RE.match(ident) and not has_story(corpus, ident):
             level, note = error_level(corpus, "US#", partial)
             findings.append(Finding(level, first[ident], f"{ident}: przypadek użycia bez historyjki US{note}"))
         if len(corpus.definitions[ident]) > 1:
             places = ", ".join(str(loc) for loc in corpus.definitions[ident][1:])
             findings.append(Finding("UWAGA", first[ident], f"{ident}: zdefiniowane ponownie w {places}"))
     return findings
+
+
+def untraced(corpus: Corpus, partial: bool = False) -> list[Finding]:
+    """Zwraca błędy dla N bez US, US bez AC i scenariuszy bez tagu kryterium USx.y ani reguły BR.
+
+    Gwarantuje: scenariusz bez takiego tagu jest zawsze „BŁĘDEM”; N bez US i US bez AC są „UWAGAMI” tylko
+    w trybie `partial`, gdy klasa US# albo US#.# nie ma jeszcze definicji (patrz error_level).
+    """
+    findings: list[Finding] = []
+    for need in defined_ids(corpus, N_RE):
+        if not neighbours_matching(corpus, need, US_RE):
+            level, note = error_level(corpus, "US#", partial)
+            findings.append(Finding(level, str(corpus.definitions[need][0]), f"{need}: potrzeba bez historyjki US{note}"))
+    for us in defined_ids(corpus, US_RE):
+        if not criteria_of(corpus, us):
+            level, note = error_level(corpus, "US#.#", partial)
+            findings.append(Finding(level, str(corpus.definitions[us][0]), f"{us}: historyjka bez kryteriów akceptacji{note}"))
+    served = served_scenarios(corpus)
+    message = "scenariusz bez tagu kryterium USx.y i reguły BR"
+    return findings + [Finding("BŁĄD", str(s.location), f"{message}: {s.name}") for s in corpus.all_scenarios if s not in served]
+
+
+def served_scenarios(corpus: Corpus) -> set[Scenario]:
+    """Zwraca scenariusze z tagiem kryterium USx.y albo reguły BR (także odziedziczonym z funkcji lub reguły)."""
+    return {s for tag, items in corpus.scenarios.items() if AC_RE.match(tag) or BR_RE.match(tag) for s in items}
+
+
+def has_need(corpus: Corpus, us: str) -> bool:
+    """Zwraca True, gdy historyjka `us` jest powiązana z co najmniej jedną potrzebą N."""
+    return any(N_RE.match(n) for n in corpus.links.get(us, set()))
+
+
+def has_story(corpus: Corpus, uc: str) -> bool:
+    """Zwraca True, gdy przypadek użycia `uc` jest powiązany z historyjką US albo z jej kryterium."""
+    return any(US_RE.match(n) or AC_RE.match(n) for n in corpus.links.get(uc, set()))
 
 
 def undefined_references(corpus: Corpus, partial: bool = False) -> list[Finding]:
@@ -359,51 +401,120 @@ def neighbours_matching(corpus: Corpus, ident: str, pattern: re.Pattern[str]) ->
     return sorted(found, key=natural_key)
 
 
+def defined_ids(corpus: Corpus, pattern: re.Pattern[str]) -> list[str]:
+    """Zwraca posortowane zdefiniowane ID pasujące do `pattern`."""
+    return sorted((i for i in corpus.definitions if pattern.match(i)), key=natural_key)
+
+
+def criteria_of(corpus: Corpus, us: str) -> list[str]:
+    """Zwraca posortowane kryteria akceptacji historyjki `us`."""
+    return [ac for ac in defined_ids(corpus, AC_RE) if parent_us(ac) == us]
+
+
+def need_rows(corpus: Corpus) -> list[list[str]]:
+    """Zwraca wiersze tabeli [N, historyjki]; potrzeba bez historyjki ma „—”."""
+    return [[n, join(neighbours_matching(corpus, n, US_RE))] for n in defined_ids(corpus, N_RE)]
+
+
 def matrix_rows(corpus: Corpus) -> list[list[str]]:
-    """Zwraca wiersze macierzy [N, US, AC, UC, scenariusze]; jeden wiersz na AC (albo na US/N bez dzieci).
+    """Zwraca wiersze macierzy [N, US, AC, UC, scenariusze]; jeden wiersz na AC albo na US bez AC.
 
-    Gwarantuje: każda zdefiniowana N i US pojawia się co najmniej raz; US bez N mają „—” w kolumnie N.
+    Gwarantuje: każda zdefiniowana US pojawia się co najmniej raz, w kolejności numerów; kolumna N wymienia
+    wszystkie potrzeby historyjki, a US bez N ma w niej „—”. Kolumna UC łączy przypadki historyjki i kryterium.
     """
-    defined = sorted(corpus.definitions, key=natural_key)
-    stories = [i for i in defined if US_RE.match(i)]
     rows: list[list[str]] = []
-    for need in (i for i in defined if N_RE.match(i)):
-        linked = neighbours_matching(corpus, need, US_RE)
-        rows += [r for us in linked for r in story_rows(corpus, need, us)] or [[need, "—", "—", "—", "—"]]
-    for us in stories:
-        if not neighbours_matching(corpus, us, N_RE):
-            rows += story_rows(corpus, "—", us)
+    for us in defined_ids(corpus, US_RE):
+        needs = join(neighbours_matching(corpus, us, N_RE))
+        story_ucs = set(neighbours_matching(corpus, us, UC_RE))
+        criteria = criteria_of(corpus, us)
+        if not criteria:
+            rows.append([needs, us, "—", join(sorted(story_ucs, key=natural_key)), scenario_list(corpus, us)])
+        for ac in criteria:
+            ucs = sorted(story_ucs | set(neighbours_matching(corpus, ac, UC_RE)), key=natural_key)
+            rows.append([needs, us, ac, join(ucs), scenario_list(corpus, ac)])
     return rows
 
 
-def story_rows(corpus: Corpus, need: str, us: str) -> list[list[str]]:
-    """Zwraca wiersze macierzy dla jednej historyjki: po jednym na każde jej AC albo jeden, gdy AC brak."""
-    criteria = sorted((i for i in corpus.definitions if AC_RE.match(i) and parent_us(i) == us), key=natural_key)
-    story_ucs = set(neighbours_matching(corpus, us, UC_RE))
-    if not criteria:
-        return [[need, us, "—", join(sorted(story_ucs, key=natural_key)), scenario_list(corpus, us)]]
-    rows = []
-    for ac in criteria:
-        ucs = sorted(story_ucs | set(neighbours_matching(corpus, ac, UC_RE)), key=natural_key)
-        rows.append([need, us, ac, join(ucs), scenario_list(corpus, ac)])
-    return rows
+def rule_rows(corpus: Corpus) -> list[list[str]]:
+    """Zwraca wiersze tabeli pokrycia reguł [BR, scenariusze]: najpierw BR-n, potem BR-G*, według numerów."""
+    return [[br, scenario_list(corpus, br)] for br in defined_ids(corpus, BR_RE)]
 
 
-def join(items: list[str]) -> str:
-    """Łączy elementy przecinkami; pusta lista daje „—”."""
-    return ", ".join(items) if items else "—"
+def trace_gaps(corpus: Corpus) -> list[list[str]]:
+    """Zwraca dziury śledzenia [miejsce, opis]: N bez US, US bez N, US bez AC, AC bez scenariusza, UC bez US,
+    BR bez scenariusza i scenariusz bez tagu kryterium USx.y ani reguły BR (nie służy żadnemu wymaganiu).
+
+    Gwarantuje: kolejność grup jak w tym opisie, w grupie według numerów ID; dla scenariusza miejscem jest
+    plik i numer linii.
+    """
+    gaps = [[n, "potrzeba bez historyjki"] for n in defined_ids(corpus, N_RE) if not neighbours_matching(corpus, n, US_RE)]
+    for us in defined_ids(corpus, US_RE):
+        if not has_need(corpus, us):
+            gaps.append([us, "historyjka bez potrzeby"])
+        if not criteria_of(corpus, us):
+            gaps.append([us, "historyjka bez kryteriów akceptacji"])
+    gaps += [[ac, "kryterium bez scenariusza"] for ac in defined_ids(corpus, AC_RE) if not corpus.scenarios.get(ac)]
+    gaps += [[uc, "przypadek użycia bez historyjki"] for uc in defined_ids(corpus, UC_RE) if not has_story(corpus, uc)]
+    gaps += [[br, "reguła bez scenariusza"] for br in defined_ids(corpus, BR_RE) if not corpus.scenarios.get(br)]
+    served = served_scenarios(corpus)
+    gaps +=[[str(s.location), f"scenariusz bez kryterium i reguły: {s.name}"] for s in corpus.all_scenarios if s not in served]
+    return gaps
+
+
+def summary_rows(corpus: Corpus, gaps: list[list[str]]) -> list[list[str]]:
+    """Zwraca wiersze podsumowania [element, liczba] wyliczone z korpusu i listy dziur `gaps` (patrz trace_gaps)."""
+    counts = [
+        ("Potrzeby (N)", len(defined_ids(corpus, N_RE))),
+        ("Historyjki (US)", len(defined_ids(corpus, US_RE))),
+        ("Kryteria akceptacji (USx.y)", len(defined_ids(corpus, AC_RE))),
+        ("Przypadki użycia (UC)", len(defined_ids(corpus, UC_RE))),
+        ("Reguły biznesowe (BR)", len(defined_ids(corpus, BR_RE))),
+        ("Scenariusze", len(corpus.all_scenarios)),
+        ("Dziury", len(gaps)),
+    ]
+    return [[name, str(count)] for name, count in counts]
+
+
+def join(items: list[str], separator: str = ", ") -> str:
+    """Łączy elementy separatorem; pusta lista daje „—”."""
+    return separator.join(items) if items else "—"
 
 
 def scenario_list(corpus: Corpus, ident: str) -> str:
-    """Zwraca listę scenariuszy oznaczonych tagiem `ident` w postaci „nazwa (plik.feature)” albo „—”."""
-    items = [f"{s.name} ({Path(s.location.path).name})" for s in corpus.scenarios.get(ident, [])]
-    return join([i.replace("|", "\\|") for i in items])
+    """Zwraca scenariusze z tagiem `ident` jako „nazwa (`plik.feature`)” rozdzielone znacznikiem `<br>` albo „—”.
+
+    Gwarantuje: nazwa pliku jest kodem w linii, więc skróty ze słownika nie podkreślają w niej słów.
+    """
+    items = [f"{s.name} (`{Path(s.location.path).name}`)" for s in corpus.scenarios.get(ident, [])]
+    return join([i.replace("|", "\\|") for i in items], "<br>")
 
 
-def render_matrix(corpus: Corpus) -> str:
-    """Zwraca blok Markdown z tabelą macierzy otoczony znacznikami MATRIX_START i MATRIX_END."""
-    header = ["Potrzeba", "Historyjka", "Kryterium", "Przypadek użycia", "Scenariusz"]
-    return "\n".join([MATRIX_START, "", *aligned_table(header, matrix_rows(corpus)), "", MATRIX_END]) + "\n"
+def block_markers(name: str) -> tuple[str, str]:
+    """Zwraca znaczniki początku i końca bloku `name`, np. `<!-- macierz:start -->`."""
+    return f"<!-- {name}:start -->", f"<!-- {name}:end -->"
+
+
+def wrap_block(name: str, lines: list[str]) -> str:
+    """Zwraca linie `lines` otoczone znacznikami bloku `name` i wyłączeniem Vale.
+
+    Gwarantuje: Vale nie sprawdza treści bloku, bo to lista nazw scenariuszy i ID, a nie zdania; tekst pisany
+    ręcznie poza blokami Vale sprawdza nadal.
+    """
+    start, end = block_markers(name)
+    return "\n".join([start, VALE_OFF, "", *lines, "", VALE_ON, end]) + "\n"
+
+
+def render_blocks(corpus: Corpus) -> dict[str, str]:
+    """Zwraca wygenerowane bloki strony śledzenia (nazwa → blok ze znacznikami) w kolejności BLOCK_NAMES."""
+    gaps = trace_gaps(corpus)
+    bodies = {
+        "podsumowanie": aligned_table(["Element", "Liczba"], summary_rows(corpus, gaps)),
+        "potrzeby": aligned_table(["Potrzeba", "Historyjki"], need_rows(corpus)),
+        "macierz": aligned_table(["N", "US", "AC", "UC", "Scenariusz"], matrix_rows(corpus)),
+        "reguly": aligned_table(["Reguła", "Scenariusz"], rule_rows(corpus)),
+        "dziury": aligned_table(["Miejsce", "Dziura"], gaps) if gaps else ["Brak dziur."],
+    }
+    return {name: wrap_block(name, bodies[name]) for name in BLOCK_NAMES}
 
 
 def aligned_table(header: list[str], rows: list[list[str]]) -> list[str]:
@@ -417,23 +528,53 @@ def table_line(cells: list[str], widths: list[int]) -> str:
     return "| " + " | ".join(c.ljust(w) for c, w in zip(cells, widths)) + " |"
 
 
-def write_matrix(target: Path, block: str) -> None:
-    """Zapisuje blok macierzy do `target`.
+def updated_content(current: str, blocks: dict[str, str]) -> str:
+    """Zwraca treść pliku po wstawieniu bloków `blocks` (nazwa → blok ze znacznikami).
 
-    Gwarantuje: istniejący blok między znacznikami jest zastępowany; plik bez znaczników dostaje blok na końcu;
-    brakujący plik zawiera tylko blok. Reszta treści pliku pozostaje bez zmian.
-    Wyjątki: OSError przy błędzie zapisu.
+    Gwarantuje: istniejący blok między swoimi znacznikami jest zastępowany; blok, którego znaczników brak,
+    jest dopisywany na końcu; pusta treść daje same bloki. Reszta treści pozostaje bez zmian.
+    """
+    content = current
+    for name, block in blocks.items():
+        start_marker, end_marker = block_markers(name)
+        start, end = content.find(start_marker), content.find(end_marker)
+        if 0 <= start < end:
+            content = content[:start] + block.rstrip("\n") + content[end + len(end_marker) :]
+        elif content:
+            content = content.rstrip("\n") + "\n\n" + block
+        else:
+            content = block
+    return content
+
+
+def write_matrix(target: Path, blocks: dict[str, str]) -> None:
+    """Zapisuje bloki do `target` według updated_content; brakujący plik zawiera tylko bloki.
+
+    Wyjątki: OSError przy błędzie odczytu albo zapisu.
     """
     current = target.read_text(encoding="utf-8") if target.is_file() else ""
-    start, end = current.find(MATRIX_START), current.find(MATRIX_END)
-    if 0 <= start < end:
-        content = current[:start] + block.rstrip("\n") + current[end + len(MATRIX_END) :]
-    elif current:
-        content = current.rstrip("\n") + "\n\n" + block
-    else:
-        content = block
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(content, encoding="utf-8", newline="\n")
+    target.write_text(updated_content(current, blocks), encoding="utf-8", newline="\n")
+
+
+def matrix_is_current(target: Path, blocks: dict[str, str]) -> bool:
+    """Zwraca True, gdy plik `target` istnieje i jego bloki są takie jak `blocks` (końce linii CRLF/LF bez znaczenia).
+
+    Wyjątki: OSError przy błędzie odczytu.
+    """
+    if not target.is_file():
+        return False
+    current = target.read_text(encoding="utf-8")
+    return current == updated_content(current, blocks)
+
+
+def report_matrix_state(target: Path, current: bool) -> int:
+    """Wypisuje wynik kontroli aktualności macierzy w `target` i zwraca kod wyjścia: 0 aktualna, 1 nieaktualna."""
+    if current:
+        print(f"check_ids: macierz w {target} jest aktualna")
+        return 0
+    print(f"check_ids: BŁĄD: macierz w {target} jest nieaktualna; odśwież: python scripts/check_ids.py --matrix {target}")
+    return 1
 
 
 def print_report(corpus: Corpus, findings: list[Finding]) -> None:
@@ -453,22 +594,30 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Kontrola ID w docs/**/*.md i specs/**/*.feature.")
     parser.add_argument("--docs", type=Path, default=REPO / "docs", help="katalog dokumentacji")
     parser.add_argument("--specs", type=Path, default=REPO / "specs", help="katalog plików .feature")
-    parser.add_argument("--matrix", type=Path, help="zapisz macierz N → US → AC → UC → scenariusz do pliku")
+    target = parser.add_mutually_exclusive_group()
+    target.add_argument("--matrix", type=Path, help="zapisz macierz N → US → AC → UC → scenariusz do pliku")
+    target.add_argument("--check-matrix", type=Path, help="tylko sprawdź, czy macierz w pliku jest aktualna")
     parser.add_argument("--strict", action="store_true", help="kod wyjścia 1, gdy są błędy")
     parser.add_argument("--partial", action="store_true", help="błędy klas ID bez żadnej definicji jako uwagi")
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Punkt wejścia. Zwraca 1 przy błędach w trybie --strict, 2 przy błędzie odczytu/zapisu, w pozostałych razach 0."""
+    """Punkt wejścia. Zwraca 1 przy błędach w trybie --strict, 2 przy błędzie odczytu/zapisu, w pozostałych razach 0.
+
+    Gwarantuje: z --check-matrix tylko porównuje macierz w pliku z wygenerowaną z bieżących dokumentów, bez raportu
+    kontroli ID; zwraca 0, gdy jest aktualna, 1, gdy jest nieaktualna albo pliku brak, 2 przy błędzie odczytu.
+    """
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8", errors="replace")
     args = parse_args(argv)
     try:
         corpus = collect(args.docs, args.specs)
+        if args.check_matrix:
+            return report_matrix_state(args.check_matrix, matrix_is_current(args.check_matrix, render_blocks(corpus)))
         if args.matrix:
-            write_matrix(args.matrix, render_matrix(corpus))
+            write_matrix(args.matrix, render_blocks(corpus))
             print(f"check_ids: macierz zapisana do {args.matrix}")
     except (OSError, UnicodeDecodeError) as exc:
         print(f"check_ids: BŁĄD: {exc}", file=sys.stderr)

@@ -1,4 +1,4 @@
-"""Dostępny Kampus — pełna kontrola repozytorium dokumentacji (render, skróty, Vale, markdownlint, LanguageTool, ID, MkDocs). Author: Vladyslav Yevkov. Version: 0.1.0. Copyright (c) 2026 Vladyslav Yevkov."""
+"""Dostępny Kampus — pełna kontrola repozytorium dokumentacji (render, skróty, Vale, markdownlint, LanguageTool, ID, macierz śledzenia, MkDocs). Author: Vladyslav Yevkov. Version: 0.2.0. Copyright (c) 2026 Vladyslav Yevkov."""
 
 from __future__ import annotations
 
@@ -26,6 +26,7 @@ SCRIPTS = REPO / "scripts"
 DOCS = REPO / "docs"
 CONFIG = REPO / "mkdocs.yml"
 SITE = REPO / "site"
+MATRIX_PAGE = DOCS / "wymagania" / "sledzenie.md"
 DEFAULT_VALE = Path("tools/vale/vale.exe")
 EXCLUDED_DIRS = ("includes", "_generated")
 SCREEN_WIDTHS = (1280, 390)
@@ -184,6 +185,23 @@ def step_check_ids(options: Options) -> StepResult:
         return StepResult("check_ids", FAIL, f"błędów {errors}, kod {code}")
     warnings = int(summary.group(2)) if summary else 0
     return StepResult("check_ids", WARN, f"uwag {warnings}") if warnings else StepResult("check_ids", PASS)
+
+
+def step_matrix(options: Options) -> StepResult:
+    """Krok: aktualność macierzy śledzenia (scripts/check_ids.py --check-matrix docs/wymagania/sledzenie.md).
+
+    Gwarantuje: macierz różna od wygenerowanej z bieżących dokumentów daje FAIL z poleceniem odświeżenia;
+    brak strony daje SKIP w trybie --partial, a FAIL w pełnej kontroli; błąd odczytu daje FAIL z kodem wyjścia.
+    """
+    page = MATRIX_PAGE.relative_to(REPO).as_posix()
+    if options.partial and not MATRIX_PAGE.is_file():
+        return StepResult("matrix", SKIP, f"brak {page}")
+    code, _ = run_command(python_script("check_ids.py", "--check-matrix", page))
+    if code == 0:
+        return StepResult("matrix", PASS)
+    if code != 1:
+        return StepResult("matrix", FAIL, f"błąd odczytu, kod {code}")
+    return StepResult("matrix", FAIL, f"nieaktualna, odśwież: python scripts/check_ids.py --matrix {page}")
 
 
 def tagged_loader() -> type[yaml.SafeLoader]:
@@ -399,6 +417,7 @@ def run_steps(options: Options) -> list[StepResult]:
         ("markdownlint", step_markdownlint),
         ("lang", lambda: step_lang(options)),
         ("check_ids", lambda: step_check_ids(options)),
+        ("matrix", lambda: step_matrix(options)),
         ("mkdocs", lambda: step_mkdocs(options)),
     ]
     if options.screens:
