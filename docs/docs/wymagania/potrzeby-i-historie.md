@@ -38,11 +38,13 @@ Numery pytań pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md). W
 | US14 | logowanie (wspólne) | N2, N8 | Musi być | Jako Odwiedzający lub osoba z rolą pracowniczą, chcę się zalogować, aby korzystać z czynności mojej roli. |
 | US15 | C1 (do ustalenia w fazie B) | N6, N9 | Musi być | Jako Zbierający, chcę oznaczyć piętro obejrzane, aby postęp inwentaryzacji odpowiadał stanowi obchodu. |
 | US16 | V2 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać piętro budynku szczegółowego, aby zobaczyć na planie piętra windy, toalety i bariery. |
+| US17 | V2; ekran zmiany (do ustalenia w fazie B) | N1, N2 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę widzieć przy każdym wejściu aktualne oznaczenie z datą i źródłem, aby wiedzieć, czy mogę mu ufać. |
 
 Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. Historyjki „Musi być” tworzą MVP.
 
 - **US14 jest historyjką umożliwiającą US4 i US6–US13.** Logowanie nie ma własnej potrzeby, a dla N3 jest dodatkowym krokiem. Konto służy N2 i N8: chroni dane przed spamem, a o publikacji decyduje tylko osoba z rolą nadaną przez Koordynatora (BR-2).
 - **US15 i US16 to nowe historyjki.** US15 daje podstawę postępu z US11, US16 opisuje plan piętra w budynkach szczegółowych.
+- **US17 to nowa historyjka (decyzja 36).** Oznaczenie wejścia ma trzy wartości, a Zbierający zmienia je na obchodzie (US17.2). Dlatego US2.1 dopuszcza „brak danych”.
 
 ## Kryteria: Gość niezalogowany i Odwiedzający
 
@@ -51,7 +53,7 @@ Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. 
 | US1.1 | Wyszukanie „C13”, „c-13” i „C-13” znajduje budynek C-13. | — |
 | US1.2 | Mapa kampusu i wyszukiwanie działają bez logowania. | RO-GOS |
 | US1.3 | Na mapie są tylko zgłoszenia przyjęte. | BR-6 |
-| US2.1 | Każde wejście ma oznaczenie „dostępne” albo „niedostępne” tekstem i ikoną, nie tylko kolorem. | NFR-21 |
+| US2.1 | Każde wejście ma jedno z trzech oznaczeń: „dostępne”, „niedostępne” albo „brak danych”, tekstem i ikoną, nie tylko kolorem. | NFR-21, US17.1 |
 | US2.2 | Każde zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę weryfikacji. | BR-6 |
 | US3.1 | Gdy budynek nie ma wejścia dostępnego, ekran mówi to wprost zdaniem, a nie samym brakiem wyniku. | — |
 | US3.2 | Od mapy do wskazania wejścia dostępnego są najwyżej 3 dotknięcia. | M-4 |
@@ -109,9 +111,19 @@ Ręczną korektę punktu opisują dwa kryteria: na planie piętra i na mapie. Ko
 | US13.2 | Plik CSV ma współrzędne w PUWG 1992 (EPSG:2180) i otwiera się w QGIS jako warstwa punktów. | NFR-43 |
 | US13.3 | Eksport zawiera tylko bariery bieżące ze zgłoszeń przyjętych, bez barier usuniętych i bez danych autora. | BR-6, NFR-38, decyzja 33 |
 
-US10.1 to lista podobnych zgłoszeń, czyli możliwych duplikatów, więc ma priorytet „Powinno być”. Bez niej Weryfikator nadal przyjmuje i odrzuca zgłoszenia.
+US10.1 to lista podobnych zgłoszeń, czyli możliwych duplikatów. Ma priorytet „Musi być”, bo bez niej Weryfikator nie odsieje duplikatów (N8). Pokaz w A-1 opiera się na podobnym zgłoszeniu 5 m dalej (decyzja 37).
 
 Usunięcie bariery nie ma osobnego procesu ani formularza. Przechodzi tę samą drogę co każda zmiana zgłoszenia przyjętego (BR-3), więc mapa nie pokazuje już naprawionej windy (N2).
+
+## Kryteria: oznaczenie wejścia
+
+| AC | Kryterium | Odwołania |
+| --- | --- | --- |
+| US17.1 | Przy imporcie budynków wejście dostaje oznaczenie „dostępne” albo „niedostępne” z danych PWr albo OpenStreetMap. Wejście bez takich danych ma oznaczenie „brak danych” tekstem i ikoną. | BR-24, NFR-21 |
+| US17.2 | Zbierający na obchodzie składa zmianę oznaczenia wejścia z nowym zdjęciem. Sprawdza ją inny Weryfikator, a po przyjęciu nowe oznaczenie widać na karcie budynku. | BR-4, BR-24 |
+| US17.3 | Przy każdym wejściu widać datę i źródło oznaczenia: „import” albo „obchód”. | BR-24 |
+
+Zmiana oznaczenia wejścia to zgłoszenie, więc przechodzi te same statusy co każde zgłoszenie. Po przyjęciu jest od razu archiwalna, tak jak „bariera usunięta” (BR-24).
 
 ## Kryteria: logowanie
 
@@ -128,10 +140,10 @@ Uprawnienia każdej roli podaje macierz na stronie [Role i uprawnienia](../bizne
 | Aktywność | Zacząć korzystać | Sprawdzić budynek | Zgłosić barierę szybko | Zmierzyć i opisać barierę | Wysłać i śledzić zgłoszenia | Zweryfikować zgłoszenie | Prowadzić inwentaryzację |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Kto | każda rola | RO-GOS, RO-ODW | RO-ODW | RO-ZBI | RO-ZBI | RO-WER | RO-ZBI, RO-KOO |
-| Kroki TO-BE | przed T7 | T20–T23 | T7–T10 | T1–T6 | T10–T13, T19 | T14–T19 | T24–T29 |
-| **Musi być (MVP)** | US14 logowanie | US1 wyszukiwanie<br>US2 karta budynku | US4 zgłoszenie szybkie | US6 pomiar bez US6.3, US6.5<br>US7 formularz | US8 statusy, „bariera usunięta”<br>US9 synchronizacja | US10 bez US10.1 | US15 piętro obejrzane<br>US11 postęp<br>US13 eksport |
+| Kroki TO-BE | przed T7 | T20–T23 | T7–T10 | T1–T6 | T6a, T6b, T10–T13, T19 | T14–T19 | T24–T29 |
+| **Musi być (MVP)** | US14 logowanie | US1 wyszukiwanie<br>US2 karta budynku<br>US17 oznaczenie wejścia | US4 zgłoszenie szybkie | US6 pomiar bez US6.3, US6.5<br>US7 formularz | US8 statusy, „bariera usunięta”<br>US17.2 zmiana oznaczenia wejścia<br>US9 synchronizacja | US10 z podobnymi zgłoszeniami | US15 piętro obejrzane<br>US11 postęp<br>US13 eksport |
 | **— linia MVP —** | | | | | | | |
-| **Powinno być** | US5 pomoc | US3 „Zaplanuj wizytę”<br>US16 plan piętra | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | US10.1 podobne zgłoszenia | US12 zaproszenie |
+| **Powinno być** | US5 pomoc | US3 „Zaplanuj wizytę”<br>US16 plan piętra | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | — | US12 zaproszenie |
 | **Może być** | wersja angielska, tryb ciemny | kolejne budynki szczegółowe, dane z deklaracji dostępności | — | — | — | — | — |
 
 Kolumny idą w kolejności korzystania z aplikacji, od Gościa niezalogowanego do Koordynatora. Kroki TO-BE każdej aktywności podaje drugi wiersz. Wiersze nad linią MVP muszą działać na pokazie. Pozycje „Może być” nie mają jeszcze historyjek; dostaną je, gdy wejdą do planu sprintu.
