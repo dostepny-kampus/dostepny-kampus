@@ -76,7 +76,7 @@ Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej czę�
 1. Senior otwiera aplikację; mapa kampusu pokazuje kontury budynków.
 2. Senior wybiera budynek A-1 na mapie albo wyszukuje go po symbolu budynku (jak w UC1).
 3. Senior wybiera „Zaplanuj wizytę”.
-4. System pokazuje wejście dostępne i bariery przyjęte przy tym wejściu. Oznaczenie ma tekst i ikonę, nie tylko kolor (US2.1).
+4. System pokazuje wejście dostępne i zgłoszenia przyjęte przy tym wejściu. Oznaczenie ma tekst i ikonę, nie tylko kolor (US2.1).
 5. W A-1 senior czyta, że wejście główne ma schody, a wejście dostępne to inne wejście [1], [2].
 
 Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie prowadzi trasą do wejścia, bo nawigacja jest poza zakresem.

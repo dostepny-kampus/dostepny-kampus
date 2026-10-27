@@ -60,7 +60,7 @@ Odległość, od której nie proponujemy budynku (BR-G4), ustalimy w fazie imple
 
 ![Diagram statusów zgłoszenia: lokalne, wysłane, w weryfikacji, przyjęte, odrzucone, archiwalne](../_generated/cykl-zgloszenia.svg)
 
-Statusy od „lokalne” do „odrzucone” pochodzą ze słownika i US8.1, a status „archiwalne” wynika z decyzji 32. Każde zgłoszenie, także szybkie, przechodzi te same statusy. W MVP (minimalnej wersji produktu) widzi je tylko Zbierający na liście własnych zgłoszeń (C3).
+Statusy pochodzą ze słownika i US8.1. Każde zgłoszenie, także szybkie, przechodzi te same statusy. W MVP (minimalnej wersji produktu) widzi je tylko Zbierający na liście własnych zgłoszeń (C3).
 
 ### Przejścia
 
