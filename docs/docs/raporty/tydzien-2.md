@@ -39,7 +39,7 @@ Uczelnia dostaje sprawdzone dane o barierach w formacie GIS.
 | Odwiedzający (RO-ODW) | osoba starsza, np. słuchacz Politechniki Trzeciego Wieku [6], gość uczelni | jak Gość, a po rejestracji zgłasza barierę w 3 krokach | N1–N4 |
 | Zbierający (RO-ZBI) | student lub pracownik prowadzący obchód | dokładnie zaznacza barierę na miejscu, także bez sieci | N5–N7 |
 | Weryfikator (RO-WER) | pracownik uczelni | przyjmuje lub odrzuca zgłoszenia, wyłapuje duplikaty | N7, N8 |
-| Koordynator (RO-KOO) | kierownik inwentaryzacji | śledzi postęp, zaprasza ludzi, eksportuje dane do QGIS | N9 |
+| Koordynator (RO-KOO) | osoba prowadząca inwentaryzację | śledzi postęp, zaprasza ludzi, eksportuje dane do QGIS | N9 |
 
 Uprawnienia opisuje [macierz ról](../biznes/role.md). Potrzeby N1–N9 to hipotezy. Sprawdzamy je w wywiadach według [scenariusza wywiadu](../ux/scenariusz-wywiadu.md).
 
@@ -49,7 +49,7 @@ Uprawnienia opisuje [macierz ról](../biznes/role.md). Potrzeby N1–N9 to hipot
 | --- | --- | --- | --- | --- |
 | V1 | Mapa kampusu, wyszukiwanie budynku po symbolu | wszyscy | US1 | Musi być |
 | V2 | Karta budynku: wejścia, windy, bariery ze zdjęciem i datą | wszyscy | US2 | Musi być |
-| V2 | Plan piętra z wyborem kondygnacji (5 budynków szczegółowych) | wszyscy | US16 | Powinno być |
+| V2 | Plan piętra z przełącznikiem pięter (5 budynków szczegółowych) | wszyscy | US16 | Powinno być |
 | V3 | „Zaplanuj wizytę”: które wejście jest dostępne | wszyscy | US3 | Powinno być |
 | V4 | Zgłoszenie szybkie: zdjęcie, grupa barier, pozycja | Odwiedzający | US4 | Musi być |
 | V5 | Pomoc i instrukcja przy pierwszym uruchomieniu | wszyscy | US5 | Powinno być |

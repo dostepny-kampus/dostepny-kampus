@@ -56,7 +56,7 @@ Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej czę�
 | 4 | UC10 | Zgłoszenie z piwnicy bez sieci wysyła się samo po powrocie sieci |
 | 5 | UC14 | Podobne zgłoszenie 5 m dalej to nie duplikat; Weryfikator przyjmuje zgłoszenie |
 | 6 | UC4 (z UC1, UC2) | Senior widzi, że wejście główne ma schody, a wejście dostępne to inne wejście [1], [2] |
-| 7 | UC13, UC15, UC17 | 4 z 5 pięter obejrzanych (80 %) i eksport do QGIS |
+| 7 | UC13, UC15, UC17 | 4 z 5 pięter obejrzanych (80%) i eksport do QGIS |
 
 ## Kluczowe przypadki użycia
 
@@ -76,7 +76,7 @@ Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej czę�
 1. Senior otwiera aplikację; mapa kampusu pokazuje kontury budynków.
 2. Senior wybiera budynek A-1 na mapie albo wyszukuje go po symbolu budynku (jak w UC1).
 3. Senior wybiera „Zaplanuj wizytę”.
-4. System pokazuje wejście dostępne i bariery przyjęte przy tym wejściu. Oznaczenie ma tekst i ikonę, nie tylko kolor (US2.1).
+4. System pokazuje wejście dostępne i zgłoszenia przyjęte przy tym wejściu. Oznaczenie ma tekst i ikonę, nie tylko kolor (US2.1).
 5. W A-1 senior czyta, że wejście główne ma schody, a wejście dostępne to inne wejście [1], [2].
 
 Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie prowadzi trasą do wejścia, bo nawigacja jest poza zakresem.
@@ -279,8 +279,8 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Aktor | Zbierający. |
 | Warunki wstępne | Zbierający ma co najmniej jedno własne zgłoszenie. |
 | Wyzwalacz | Zbierający otwiera listę swoich zgłoszeń. |
-| Przepływ główny | 1. System pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte albo odrzucone (US8.1, US8.2). <br> 2. Zbierający otwiera zgłoszenie odrzucone i czyta powód odrzucenia (BR-16). <br> 3. Poprawia zgłoszenie i wysyła je ponownie przez UC10 (US8.3, BR-3). |
-| Alternatywy i wyjątki | 2a. Zgłoszenie przed decyzją Weryfikatora: Zbierający je edytuje; powstaje nowa wersja (BR-3). <br> 2b. Serwer ma inną wersję: UC11. <br> 2c. Zgłoszenie przyjęte: zmianę zaczyna się z karty budynku (do ustalenia w fazie B) i tworzy ona nowe zgłoszenie, które znów przechodzi weryfikację (BR-18). Usunięcie bariery opisuje UC12. <br> 2d. Powód odrzucenia „nieaktualne”: ktoś wcześniej przyjął inną zmianę tego zgłoszenia. Zbierający wysyła zmianę ponownie do bieżącego zgłoszenia (BR-23). |
+| Przepływ główny | 1. System pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte, odrzucone albo archiwalne (US8.1, US8.2). <br> 2. Zbierający otwiera zgłoszenie odrzucone i czyta powód odrzucenia (BR-16). <br> 3. Poprawia zgłoszenie i wysyła je ponownie przez UC10 (US8.3, BR-3). |
+| Alternatywy i wyjątki | 2a. Zgłoszenie przed decyzją Weryfikatora: Zbierający je edytuje; powstaje nowa wersja (BR-3). <br> 2b. Serwer ma inną wersję: UC11. <br> 2c. Zgłoszenie przyjęte: zmianę zaczyna się z karty budynku (do ustalenia w fazie B) i tworzy ona nowe zgłoszenie, które znów przechodzi weryfikację (BR-18). Usunięcie bariery opisuje UC12. <br> 2d. Powód odrzucenia „nieaktualne”: ktoś wcześniej przyjął inną zmianę tego zgłoszenia. Zbierający wysyła zmianę ponownie do bieżącego zgłoszenia (BR-23). <br> 2e. Powód „nieaktualne”, a wcześniej przyjęta zmiana to „bariera usunięta”: bieżącego zgłoszenia już nie ma. Jeśli bariera nadal istnieje, Zbierający składa nowe zgłoszenie przez UC8, nie zmianę (BR-23). |
 | Warunki końcowe | Poprawione zgłoszenie czeka w kolejce ze statusem „wysłane”. |
 | Odwołania | US8.1…US8.3, BR-3, BR-16, BR-18, BR-23, NFR-21, T19 |
 
@@ -318,7 +318,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Aktor | Dowolny Zbierający, nie tylko autor zgłoszenia (BR-19). |
 | Warunki wstępne | Bariera ma zgłoszenie przyjęte. Zbierający na miejscu widzi, że jej już nie ma. |
 | Przepływ główny | 1. Zbierający otwiera kartę budynku i wybiera zgłoszenie przyjęte (US8.4). <br> 2. Wybiera „bariera usunięta” i robi nowe zdjęcie miejsca. <br> 3. Typ, miejsce i piętro przechodzą z poprzedniego zgłoszenia (BR-19). <br> 4. Nowe zgłoszenie przechodzi te same statusy co każde zgłoszenie: od „lokalne” przez UC10 do „wysłane” (US8.4). <br> 5. Bariera zostaje na mapie do decyzji Weryfikatora (US8.4). |
-| Alternatywy i wyjątki | 5a. Weryfikator, który nie złożył zgłoszenia, przyjmuje je (UC14): bariera znika z mapy, karty budynku i eksportu (US10.6, BR-22). <br> 5b. Weryfikator odrzuca zgłoszenie: na mapie zostaje poprzednie zgłoszenie (BR-18). <br> 5c. Ktoś wcześniej przyjął inną zmianę tego zgłoszenia: odrzucenie z powodem „nieaktualne”. Zbierający może wysłać zmianę ponownie do bieżącego zgłoszenia (BR-23). |
+| Alternatywy i wyjątki | 5a. Weryfikator, który nie złożył zgłoszenia, przyjmuje je (UC14): bariera znika z mapy, karty budynku i eksportu (US10.6, BR-22). <br> 5b. Weryfikator odrzuca zgłoszenie: na mapie zostaje poprzednie zgłoszenie (BR-18). <br> 5c. Ktoś wcześniej przyjął inną zmianę tego zgłoszenia: odrzucenie z powodem „nieaktualne”. Zbierający może wysłać zmianę ponownie do bieżącego zgłoszenia (BR-23). <br> 5d. Wcześniej przyjęta zmiana to też „bariera usunięta”: odrzucenie z powodem „nieaktualne”, bo bariery już nie ma na mapie. Bieżącego zgłoszenia nie ma, więc ponowne wysłanie nie jest potrzebne (BR-23). |
 | Warunki końcowe | Po przyjęciu oba zgłoszenia są archiwalne i zostają w historii (BR-19). |
 | Odwołania | US8.4, US10.5, US10.6, BR-3, BR-4, BR-18, BR-19, BR-22, BR-23, T6, T10–T17 |
 
@@ -343,7 +343,7 @@ Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Regu�
 | Cel | Koordynator wie, gdzie zespół musi jeszcze pójść. |
 | Aktor | Koordynator. |
 | Warunki wstępne | Koordynator jest zalogowany z rolą RO-KOO; jest połączenie z serwerem. |
-| Przepływ główny | 1. Koordynator otwiera postęp według budynków. <br> 2. System pokazuje odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy) (US11.1, BR-21). <br> 3. Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. W demo A-1: 4 z 5 pięter, 80 %. |
+| Przepływ główny | 1. Koordynator otwiera postęp według budynków. <br> 2. System pokazuje odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy) (US11.1, BR-21). <br> 3. Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. W demo A-1: 4 z 5 pięter, 80%. |
 | Alternatywy i wyjątki | 2a. Znacznik jest błędny: Koordynator cofa go niezależnie od autora (US11.3, BR-20). Postęp pokazuje nową wartość (US11.2). <br> 2b. Zgłoszenia lokalne i poza budynkiem nie wchodzą do postępu (BR-21). <br> 1a. Awaria serwera: postęp czeka na powrót serwera (NFR-50). |
 | Warunki końcowe | Koordynator zna postęp; po cofnięciu znacznika postęp jest przeliczony. |
 | Odwołania | US11.1…US11.3, BR-20, BR-21, NFR-50, T26 |
