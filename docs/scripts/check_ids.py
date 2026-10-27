@@ -34,6 +34,8 @@ CLASS_PART = re.compile(r"\d+|(?<=RO-)[A-Z]+")
 PARTIAL_NOTE = " (klasa ID jeszcze bez definicji)"
 BLOCK_NAMES = ("podsumowanie", "potrzeby", "macierz", "reguly", "dziury")
 BLOCK_MARKER = re.compile(r"<!-- ([a-z]+):(start|end) -->")
+VALE_OFF = "<!-- vale off -->"
+VALE_ON = "<!-- vale on -->"
 FEATURE_KEYWORDS = ("Feature", "Funkcja", "Funkcjonalność", "Właściwość", "Aspekt", "Potrzeba biznesowa")
 RULE_KEYWORDS = ("Rule", "Reguła", "Zasada")
 SCENARIO_KEYWORDS = ("Scenario Outline", "Scenario Template", "Scenario", "Example", "Scenariusz", "Szablon scenariusza", "Przykład")
@@ -452,8 +454,8 @@ def join(items: list[str], separator: str = ", ") -> str:
 
 
 def scenario_list(corpus: Corpus, ident: str) -> str:
-    """Zwraca scenariusze z tagiem `ident` jako „nazwa (`plik.feature`)” rozdzielone znacznikiem `<br>` albo „—”."""
-    items = [f"{s.name} (`{Path(s.location.path).name}`)" for s in corpus.scenarios.get(ident, [])]
+    """Zwraca scenariusze z tagiem `ident` jako „nazwa (plik.feature)” rozdzielone znacznikiem `<br>` albo „—”."""
+    items = [f"{s.name} ({Path(s.location.path).name})" for s in corpus.scenarios.get(ident, [])]
     return join([i.replace("|", "\\|") for i in items], "<br>")
 
 
@@ -463,9 +465,13 @@ def block_markers(name: str) -> tuple[str, str]:
 
 
 def wrap_block(name: str, lines: list[str]) -> str:
-    """Zwraca linie `lines` otoczone pustymi liniami i znacznikami bloku `name`."""
+    """Zwraca linie `lines` otoczone znacznikami bloku `name` i wyłączeniem Vale.
+
+    Gwarantuje: Vale nie sprawdza treści bloku, bo to lista nazw scenariuszy i ID, a nie zdania; tekst pisany
+    ręcznie poza blokami Vale sprawdza nadal.
+    """
     start, end = block_markers(name)
-    return "\n".join([start, "", *lines, "", end]) + "\n"
+    return "\n".join([start, VALE_OFF, "", *lines, "", VALE_ON, end]) + "\n"
 
 
 def render_blocks(corpus: Corpus) -> dict[str, str]:
@@ -474,7 +480,7 @@ def render_blocks(corpus: Corpus) -> dict[str, str]:
     bodies = {
         "podsumowanie": aligned_table(["Element", "Liczba"], summary_rows(corpus)),
         "potrzeby": aligned_table(["Potrzeba", "Historyjki"], need_rows(corpus)),
-        "macierz": aligned_table(["Potrzeba", "Historyjka", "Kryterium", "Przypadek użycia", "Scenariusz"], matrix_rows(corpus)),
+        "macierz": aligned_table(["N", "US", "AC", "UC", "Scenariusz"], matrix_rows(corpus)),
         "reguly": aligned_table(["Reguła", "Scenariusz"], rule_rows(corpus)),
         "dziury": aligned_table(["Miejsce", "Dziura"], gaps) if gaps else ["Brak dziur."],
     }
