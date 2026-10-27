@@ -49,6 +49,7 @@ Uprawnienia opisuje [macierz ról](../biznes/role.md). Potrzeby N1–N9 to hipot
 | --- | --- | --- | --- | --- |
 | V1 | Mapa kampusu, wyszukiwanie budynku po symbolu | wszyscy | US1 | Musi być |
 | V2 | Karta budynku: wejścia, windy, bariery ze zdjęciem i datą | wszyscy | US2 | Musi być |
+| V2 | Oznaczenie wejścia: dostępne, niedostępne albo brak danych, z datą i źródłem; zmiana na obchodzie | wszyscy; zmiana: Zbierający | US17 | Musi być |
 | V2 | Plan piętra z przełącznikiem pięter (5 budynków szczegółowych) | wszyscy | US16 | Powinno być |
 | V3 | „Zaplanuj wizytę”: które wejście jest dostępne | wszyscy | US3 | Powinno być |
 | V4 | Zgłoszenie szybkie: zdjęcie, grupa barier, pozycja | Odwiedzający | US4 | Musi być |
@@ -57,7 +58,7 @@ Uprawnienia opisuje [macierz ról](../biznes/role.md). Potrzeby N1–N9 to hipot
 | C2 | Formularz: typ bariery, uciążliwość 1–3, zdjęcie, piętro | Zbierający | US7 | Musi być |
 | C3 | Moje zgłoszenia ze statusami | Zbierający | US8 | Musi być |
 | C4 | Synchronizacja po pracy offline, wybór wersji przy konflikcie | Zbierający | US9 | Musi być |
-| R1, R2 | Kolejka weryfikacji, decyzja z powodem, podobne zgłoszenia w promieniu 10 m | Weryfikator | US10 | Musi być (podobne: Powinno być) |
+| R1, R2 | Kolejka weryfikacji, decyzja z powodem, podobne zgłoszenia w promieniu 10 m | Weryfikator | US10 | Musi być |
 | K1 | Postęp inwentaryzacji według budynków | Koordynator | US11 | Musi być |
 | K2 | Zaproszenie osoby z rolą | Koordynator | US12 | Powinno być |
 | K3 | Eksport GeoJSON (WGS84) i CSV (PUWG 1992) | Koordynator | US13 | Musi być |
