@@ -1,0 +1,12 @@
+@startsalt
+' V4 Zgłoszenie szybkie, potwierdzenie bez internetu: zdjęcie czeka w telefonie (US4.2, UC7 7a).
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Zgłoś barierę")
+$brak_internetu()
+.
+$tekst("Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet.")
+.
+$przycisk_glowny("Wróć do mapy")
+$ekran_koniec()
+@endsalt

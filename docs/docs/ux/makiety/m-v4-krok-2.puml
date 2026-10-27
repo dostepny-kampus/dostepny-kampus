@@ -1,0 +1,17 @@
+@startsalt
+' V4 Zgłoszenie szybkie, krok 2 z 3: grupa barier, 6 przycisków bez ikon (PW-7).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek("Zgłoś barierę")
+$numer_kroku("Krok 2 z 3")
+.
+<b>Czego dotyczy bariera?</b>
+$przycisk("Wejście i drzwi")
+$przycisk("Schody i windy")
+$przycisk("Przejścia i chodniki")
+$przycisk("Toalety")
+$przycisk("Napisy i oznaczenia")
+$przycisk("Coś innego")
+$ekran_koniec()
+@endsalt

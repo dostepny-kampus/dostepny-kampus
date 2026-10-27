@@ -1,0 +1,8 @@
+@startsalt
+' V4 Zgłoszenie szybkie, zgoda tylko na przybliżoną lokalizację (BR-8, BR-14).
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Zgłoś barierę")
+$komunikat("Telefon podaje tylko przybliżone miejsce, a to za mało, by wskazać barierę. Pozwól na dokładną lokalizację.", "Pozwól na dokładną lokalizację", "Wróć do mapy")
+$ekran_koniec()
+@endsalt
