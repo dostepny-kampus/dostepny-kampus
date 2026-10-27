@@ -77,7 +77,8 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | odrzuci podpowiedź budynku    | jest „poza budynkiem”   |
 
     Scenariusz: Zgłoszenie szybkie poza konturem budynku zapisuje się bez błędu
-      Zakładając, że Odwiedzający jest zalogowany i stoi na chodniku przed wejściem głównym A-1
+      Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+      Oraz stoi na chodniku przed wejściem głównym A-1, poza konturem budynku
       Jeżeli wyśle zgłoszenie szybkie z grupą barier „komunikacja pozioma”
       Wtedy zgłoszenie zapisuje się z bieżącą pozycją
       Ale aplikacja nie pokazuje komunikatu o błędzie
@@ -114,7 +115,8 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
     @do-ustalenia
     Scenariusz: Mapa działa daleko od budynków PWr
       # próg ustalany w fazie C
-      Zakładając, że Odwiedzający stoi przy kampusie dalej od budynków PWr niż próg propozycji budynku
+      Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+      Oraz stoi przy kampusie dalej od budynków PWr niż próg propozycji budynku
       Jeżeli otworzy mapę kampusu
       Wtedy widzi mapę z konturami budynków PWr
       Oraz może złożyć zgłoszenie szybkie
