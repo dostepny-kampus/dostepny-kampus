@@ -283,6 +283,70 @@ Każdy komunikat stanu z [wymagań do ekranów](wymagania-ekranow.md) w ostatecz
 | K3, sukces | „Plik zapisany w pobranych plikach.” | — | — |
 | K3, informacja | „Plik zawiera tylko obecne, sprawdzone bariery, bez danych autorów.” | „Pobierz plik” | — |
 
+## Metafory i ikony
+
+Ikony pochodzą z zestawu OpenIconic dostępnego w PlantUML Salt [3], [4]. Każda ikona stoi obok tekstu, a tekst niesie znaczenie sam. Kolor nie niesie znaczenia (NFR-21) [5].
+
+| Element | Ikona (nazwa z OpenIconic) | Tekst obok | Metafora / dlaczego zrozumiała |
+| --- | --- | --- | --- |
+| pasek dolny: mapa | `map` | „Mapa” | składana mapa papierowa |
+| pasek dolny: zgłoszenie | `camera-slr` | „Zgłoś barierę” | zgłoszenie zaczyna się od zdjęcia (US4.1) |
+| pasek dolny: pomoc | `question-mark` | „Pomoc” | znak zapytania, czyli „mam pytanie” |
+| pasek dolny: konto | `person` | „Konto” albo „Konto i praca” | sylwetka, czyli „ja”; ta sama ikona dla obu napisów |
+| wskaźnik braku sieci | `wifi` | „Brak internetu” | znak internetu znany z telefonu i kawiarni (hipoteza) |
+| oznaczenie „dostępne” | `check` | „Dostępne” | ptaszek, czyli „tak, da się” |
+| oznaczenie „niedostępne” | `x` | „Niedostępne” | krzyżyk, czyli „nie” |
+| oznaczenie „brak danych” | `minus` | „Brak danych” | kreska jak w pustej rubryce formularza; inna niż krzyżyk (US17.1) |
+| uciążliwość 1 | `warning` | „Utrudnienie” | trójkąt jak drogowy znak ostrzegawczy: uważaj |
+| uciążliwość 2 | `people` | „Potrzebna pomoc” | dwie osoby: przejdziesz z drugą osobą |
+| uciążliwość 3 | `ban` | „Blokada” | koło z kreską jak znak zakazu: tędy nie |
+| przycisk zdjęcia (V4, C2, C6, C7) | `camera-slr` | „Zrób zdjęcie” | aparat; ta sama ikona co „Zgłoś barierę” |
+| status „lokalne” | `tablet` | „W telefonie” | kształt telefonu: zgłoszenie jest tylko w nim |
+| status „wysłane” | `data-transfer-upload` | „Wysłane” | strzałka w górę: poszło dalej |
+| status „w weryfikacji” | `eye` | „W weryfikacji” | oko: ktoś teraz ogląda |
+| status „przyjęte” | `circle-check` | „Przyjęte” | ptaszek w kole: decyzja na tak |
+| status „odrzucone” | `circle-x` | „Odrzucone” | krzyżyk w kole: decyzja na nie |
+| status „archiwalne” | `box` | „Archiwalne” | pudło na stare dokumenty |
+| znacznik „obejrzane” | `task` | „Obejrzane” | odhaczona pozycja na liście kontrolnej |
+
+Zasady ikon:
+
+| Zasada | Skutek |
+| --- | --- |
+| Jedna ikona ma jedno znaczenie. | `question-mark` oznacza tylko pomoc, dlatego „Brak danych” ma `minus`. Lupa nie występuje, bo kojarzy się z wyszukiwaniem. |
+| Ikona tylko tam, gdzie wymaga jej NFR-21 albo wymagania wspólne, oraz na pasku dolnym. | Status, oznaczenie wejścia, uciążliwość, znacznik i wskaźnik sieci mają ikonę. Pasek dolny ma ikony, bo widać go na 5 ekranach i osoba uczy się ich raz. „Zrób zdjęcie” powtarza ikonę paska. |
+| Reszta elementów jest bez ikony. | „Wstecz”, przyciski mapy, 6 grup barier, wszystkie przyciski czynności, „Nieobejrzane”. Słowo jest dla PE-1 jaśniejsze niż strzałka albo symbol [6]. |
+| Grupy barier w V4 są bez ikon. | OpenIconic nie ma ikon toalety, drzwi ani chodnika, a ikona na siłę myli. US4.3 wymaga tylko dużych przycisków (PW-7). |
+
+### Udział ikon
+
+Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk, pole albo oznaczenie. Trzy wartości oznaczenia wejścia to jeden element. Pasek dolny to 4 elementy, a nagłówek, „Wstecz” i wskaźnik sieci liczymy na każdym ekranie, na którym są.
+
+| Ekran | Elementy | Z ikoną | Udział | Elementy z ikoną |
+| --- | --- | --- | --- | --- |
+| V1 Mapa kampusu | 17 | 6 | 35% | wskaźnik sieci, uciążliwość, pasek (4) |
+| V2 Budynek | 18 | 7 | 39% | wskaźnik sieci, oznaczenie, uciążliwość, pasek (4) |
+| V3 Którędy wejść | 15 | 7 | 47% | wskaźnik sieci, oznaczenie, uciążliwość, pasek (4) |
+| V4 Zgłoś barierę | 20 | 2 | 10% | wskaźnik sieci, „Zrób zdjęcie” |
+| V5 Jak korzystać z aplikacji | 12 | 5 | 42% | wskaźnik sieci, pasek (4) |
+| L1 Konto (Gość) | 8 | 1 | 13% | wskaźnik sieci |
+| L2 Konto i praca (wszystkie role) | 18 | 5 | 28% | wskaźnik sieci, pasek (4) |
+| C1 Pomiar pozycji | 19 | 1 | 5% | wskaźnik sieci |
+| C2 Formularz zgłoszenia | 13 | 3 | 23% | wskaźnik sieci, uciążliwość, „Zrób zdjęcie” |
+| C3 Moje zgłoszenia | 13 | 2 | 15% | wskaźnik sieci, status |
+| C4 Synchronizacja | 12 | 1 | 8% | wskaźnik sieci |
+| C5 Obejrzane piętra | 10 | 2 | 20% | wskaźnik sieci, znacznik |
+| C6 Zmień oznaczenie wejścia | 12 | 5 | 42% | wskaźnik sieci, obecne oznaczenie, „Dostępne”, „Niedostępne”, „Zrób zdjęcie” |
+| C7 Zgłoś, że bariery nie ma | 8 | 2 | 25% | wskaźnik sieci, „Zrób zdjęcie” |
+| R1 Zgłoszenia do sprawdzenia | 8 | 1 | 13% | wskaźnik sieci |
+| R2 Sprawdzenie zgłoszenia | 16 | 4 | 25% | wskaźnik sieci, uciążliwość, status podobnych, oznaczenie |
+| K1 Postęp inwentaryzacji | 11 | 2 | 18% | wskaźnik sieci, znacznik |
+| K2 Zaproś osobę | 6 | 1 | 17% | wskaźnik sieci |
+| K3 Pobierz eksport | 6 | 1 | 17% | wskaźnik sieci |
+| **Razem** | **242** | **58** | **24%** | — |
+
+Wynik: ikony ma 24% elementów w całej aplikacji. Najwięcej ma V3, 47%, czyli poniżej progu 50%. Na V3 próg trzyma tylko „Wstecz” bez ikony, więc nowa ikona na tym ekranie wymaga usunięcia innej.
+
 ## Źródła
 
 1. Treść komunikatów o błędach: co się stało i jak to naprawić (Nielsen Norman Group): <https://www.nngroup.com/articles/error-message-guidelines/>
