@@ -5,28 +5,11 @@
 
 Mapa ścieżki pokazuje, co persona robi, myśli i czuje na każdym etapie zadania. Kolumna „Dziś” podaje problem z [procesu AS-IS](../biznes/procesy/as-is.md), kolumna „Z aplikacją” — ekran i historyjkę, które go rozwiązują.
 
-Skala odczuć: 1 — bardzo źle, 2 — źle, 3 — obojętnie, 4 — dobrze, 5 — bardzo dobrze. Diagram pokazuje ocenę z aplikacją. Ryzyko dla osoby starszej: **wysokie**, średnie, niskie.
+Skala odczuć: 1 — bardzo źle, 2 — źle, 3 — obojętnie, 4 — dobrze, 5 — bardzo dobrze. Każdy etap ma dwie oceny: dziś i z aplikacją. Ryzyko dla osoby starszej: **wysokie**, średnie, niskie.
 
 ## J1 — planuję wizytę (PE-1)
 
 Pani Halina idzie na wykład w C-13, w którym nigdy nie była. Cel: dotrzeć bez schodów i bez proszenia o pomoc.
-
-```mermaid
-journey
-  title J1 Planuję wizytę w C-13 (ocena z aplikacją)
-  section W domu
-    J1-1 Dowiaduje się o wykładzie: 4: Halina
-    J1-2 Pierwszy raz otwiera aplikację: 3: Halina
-    J1-3 Szuka budynku C-13: 4: Halina
-    J1-4 Sprawdza, którym wejściem wejdzie: 4: Halina
-    J1-5 Ocenia, czy informacja jest aktualna: 4: Halina
-    J1-6 Sprawdza windę i toaletę na piętrze: 3: Halina
-  section W drodze
-    J1-7 Dochodzi do wejścia: 3: Halina
-  section Na miejscu
-    J1-8 Trafia na przeszkodę: 2: Halina
-    J1-9 Widzi potwierdzenie zgłoszenia: 4: Halina
-```
 
 | Etap | Czynność | Myśli i odczucia (dziś → z aplikacją) | Dziś | Z aplikacją | Ryzyko |
 | --- | --- | --- | --- | --- | --- |
@@ -54,23 +37,6 @@ Etap J1-8 ma najniższą ocenę także z aplikacją. Logowanie chroni dane przed
 
 Kuba obchodzi budynek szczegółowy A-1 piętro po piętrze. Cel: zapisać każdą barierę dokładnie i nie stracić niczego bez sieci.
 
-```mermaid
-journey
-  title J2 Obchód budynku A-1 (ocena z aplikacją)
-  section Przed budynkiem
-    J2-1 Loguje się i otwiera kartę A-1: 4: Kuba
-    J2-2 Sprawdza oznaczenia wejść: 4: Kuba
-  section W budynku
-    J2-3 Mierzy pozycję bariery: 3: Kuba
-    J2-4 Opisuje barierę: 3: Kuba
-    J2-5 Pracuje w piwnicy bez sieci: 4: Kuba
-    J2-6 Oznacza piętro jako obejrzane: 4: Kuba
-    J2-7 Widzi barierę, której już nie ma: 3: Kuba
-  section Po obchodzie
-    J2-8 Synchronizuje zgłoszenia: 3: Kuba
-    J2-9 Sprawdza statusy i poprawia odrzucone: 4: Kuba
-```
-
 | Etap | Czynność | Myśli i odczucia (dziś → z aplikacją) | Dziś | Z aplikacją | Skutek dla osoby starszej |
 | --- | --- | --- | --- | --- | --- |
 | J2-1 | loguje się kontem z rolą z zaproszenia i otwiera kartę A-1 | „Mam dziś dwa piętra do zrobienia” (3 → 4) | — | logowanie (US14, US12.1); V2 karta budynku | — |
@@ -88,6 +54,5 @@ Największe ryzyko dla osoby starszej w J2 to etap J2-2. Oznaczenie wejścia z o
 ## Źródła
 
 1. S. Gibbons, „Journey Mapping 101”, NN/g: <https://www.nngroup.com/articles/journey-mapping-101/>
-2. Składnia diagramu `journey`, Mermaid: <https://mermaid.js.org/syntax/userJourney.html>
 
 Dostęp do źródeł: 27.10.2026.
