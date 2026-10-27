@@ -103,3 +103,31 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
         | zgłoszenie „lokalne” z budynku A-1 w telefonie Zbierającego     |
         | zgłoszenie „archiwalne” w budynku A-1                           |
         | zgłoszenie przyjęte „poza budynkiem” 5 m od wejścia głównego A-1 |
+
+  @BR-24
+  Reguła: Postęp pokazuje wejścia budynku szczegółowego potwierdzone na obchodzie
+
+    Założenia:
+      Zakładając, że Koordynator jest zalogowany z rolą Koordynatora
+      # Dane testowe, a nie stan faktyczny budynku A-1.
+      Oraz budynek A-1 ma w danych testowych 6 wejść
+
+    @US11.4
+    Szablon scenariusza: Liczba wejść ze źródłem „obchód” w budynku szczegółowym
+      Zakładając, że liczba wejść A-1 ze źródłem oznaczenia „obchód” to <obchód>, a pozostałe mają źródło „import”
+      Oraz liczba wejść A-1 ze zmianą oznaczenia czekającą na decyzję Weryfikatora to <czeka>
+      Jeżeli Koordynator otworzy postęp inwentaryzacji
+      Wtedy przy budynku A-1 widzi „Wejścia potwierdzone na obchodzie: <obchód> z 6”
+
+      Przykłady:
+        | obchód | czeka |
+        | 0      | 0     |
+        | 4      | 0     |
+        | 4      | 2     |
+        | 6      | 0     |
+
+    @US11.4
+    Scenariusz: Przyjęta zmiana oznaczenia wejścia zwiększa liczbę wejść potwierdzonych
+      Zakładając, że 4 wejścia A-1 mają oznaczenie ze źródłem „obchód”
+      Jeżeli Weryfikator przyjmie zmianę oznaczenia jednego z pozostałych wejść A-1
+      Wtedy przy budynku A-1 Koordynator widzi „Wejścia potwierdzone na obchodzie: 5 z 6”
