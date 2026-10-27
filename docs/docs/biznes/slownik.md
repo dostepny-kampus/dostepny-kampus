@@ -98,7 +98,7 @@ Terminy są w mianowniku liczby pojedynczej. Nazwy ról piszemy wielką literą.
 | TB-8 | komunikacja pionowa | brak windy | budynek nie ma windy albo winda nie dociera na dane piętro | Standard PWr 9; ustawa z 19 lipca 2019 r., art. 6 pkt 1 lit. b |
 | TB-9 | komunikacja pionowa | niesprawna winda | winda jest, ale nie działa albo jest wyłączona | Standard PWr 9.1 |
 | TB-10 | komunikacja pionowa | winda nieprzystosowana | kabina za mała dla wózka, przyciski wyżej niż 110 cm lub bez alfabetu Braille'a, drzwi zamykają się za szybko | Standard PWr 9.1, 9.2 |
-| TB-11 | komunikacja pionowa | pochylnia nieprzystosowana | pochylnia zbyt stroma (na zewnątrz ponad 6 %), śliska albo bez oznaczenia początku i końca | Standard PWr 1, 5.2 |
+| TB-11 | komunikacja pionowa | pochylnia nieprzystosowana | pochylnia zbyt stroma (na zewnątrz ponad 6%), śliska albo bez oznaczenia początku i końca | Standard PWr 1, 5.2 |
 | TB-12 | komunikacja pionowa | podnośnik wymagający pomocy | podnośnik lub platforma schodowa nie działa, wymaga klucza, karty albo obsługi przez pracownika | Standard PWr 4.2, 9.4 |
 | TB-13 | komunikacja pozioma | próg | próg, listwa lub wycieraczka wystaje ponad 2 cm | Standard PWr 4.4, 5.3 |
 | TB-14 | komunikacja pozioma | wąskie przejście | przejście węższe niż 90 cm albo zastawione meblami lub sprzętem | Standard PWr 3, 5.2, 5.6 |

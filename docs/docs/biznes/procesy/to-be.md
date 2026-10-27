@@ -86,7 +86,7 @@ Gość niezalogowany wykonuje T20–T23 bez konta. Zgłoszenie szybkie (T7–T9)
 | 4 | W piwnicy nie ma sieci. Zgłoszenie czeka w telefonie i wysyła się samo po powrocie sieci. | T10, T11, T13 |
 | 5 | Weryfikator widzi podobne zgłoszenie 5 m dalej, uznaje, że to nie duplikat, i przyjmuje zgłoszenie. | T14–T17 |
 | 6 | Słuchacz Politechniki Trzeciego Wieku otwiera A-1: wejście główne ma schody, wejście dostępne to inne wejście [1], [2]. | T20, T21, T23 |
-| 7 | Koordynator widzi w A-1 4 z 5 pięter obejrzanych (80 %) i pobiera eksport do QGIS. Piętra oznaczył wcześniej Zbierający. | T24–T29 |
+| 7 | Koordynator widzi w A-1 4 z 5 pięter obejrzanych (80%) i pobiera eksport do QGIS. Piętra oznaczył wcześniej Zbierający. | T24–T29 |
 
 Kandydatów na nowe reguły biznesowe z tego procesu nie numerujemy tutaj. Numery nada strona reguł biznesowych.
 

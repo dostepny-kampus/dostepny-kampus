@@ -56,7 +56,7 @@ Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej czę�
 | 4 | UC10 | Zgłoszenie z piwnicy bez sieci wysyła się samo po powrocie sieci |
 | 5 | UC14 | Podobne zgłoszenie 5 m dalej to nie duplikat; Weryfikator przyjmuje zgłoszenie |
 | 6 | UC4 (z UC1, UC2) | Senior widzi, że wejście główne ma schody, a wejście dostępne to inne wejście [1], [2] |
-| 7 | UC13, UC15, UC17 | 4 z 5 pięter obejrzanych (80 %) i eksport do QGIS |
+| 7 | UC13, UC15, UC17 | 4 z 5 pięter obejrzanych (80%) i eksport do QGIS |
 
 ## Kluczowe przypadki użycia
 
@@ -343,7 +343,7 @@ Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Regu�
 | Cel | Koordynator wie, gdzie zespół musi jeszcze pójść. |
 | Aktor | Koordynator. |
 | Warunki wstępne | Koordynator jest zalogowany z rolą RO-KOO; jest połączenie z serwerem. |
-| Przepływ główny | 1. Koordynator otwiera postęp według budynków. <br> 2. System pokazuje odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy) (US11.1, BR-21). <br> 3. Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. W demo A-1: 4 z 5 pięter, 80 %. |
+| Przepływ główny | 1. Koordynator otwiera postęp według budynków. <br> 2. System pokazuje odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy) (US11.1, BR-21). <br> 3. Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. W demo A-1: 4 z 5 pięter, 80%. |
 | Alternatywy i wyjątki | 2a. Znacznik jest błędny: Koordynator cofa go niezależnie od autora (US11.3, BR-20). Postęp pokazuje nową wartość (US11.2). <br> 2b. Zgłoszenia lokalne i poza budynkiem nie wchodzą do postępu (BR-21). <br> 1a. Awaria serwera: postęp czeka na powrót serwera (NFR-50). |
 | Warunki końcowe | Koordynator zna postęp; po cofnięciu znacznika postęp jest przeliczony. |
 | Odwołania | US11.1…US11.3, BR-20, BR-21, NFR-50, T26 |

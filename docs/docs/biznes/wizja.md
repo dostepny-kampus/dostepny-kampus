@@ -47,8 +47,8 @@ Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 o
 | M-3 | Aplikacja wygodna dla grupy docelowej | średni wynik SUS ≥ 68 w badaniu z ≥ 5 użytkownikami z grupy docelowej (NFR-24) | N4 |
 | M-4 | Szybkie znalezienie dostępnego wejścia | ≥ 4 z 5 uczestników samodzielnie znajduje dostępne wejście do wskazanego budynku w ≤ 3 dotknięciach od mapy (US3.2) | N1 |
 | M-5 | Dane gotowe dla GIS | plik GeoJSON w WGS84 otwiera się w QGIS bez błędów; CSV ma współrzędne w układzie PUWG 1992 (US13.1, US13.2) | N9 |
-| M-6 | Praca bez sieci bez utraty danych | w teście ≥ 20 zgłoszeń zapisanych bez sieci: po jej powrocie 100 % trafia na serwer bez działania użytkownika (US9.2) | N6, N7 |
-| M-7 | Publikowane są tylko sprawdzone bariery | 100 % barier widocznych dla Odwiedzającego to zgłoszenia przyjęte przez Weryfikatora (US1.3) | N2, N8 |
+| M-6 | Praca bez sieci bez utraty danych | w teście ≥ 20 zgłoszeń zapisanych bez sieci: po jej powrocie 100% trafia na serwer bez działania użytkownika (US9.2) | N6, N7 |
+| M-7 | Publikowane są tylko sprawdzone bariery | 100% barier widocznych dla Odwiedzającego to zgłoszenia przyjęte przez Weryfikatora (US1.3) | N2, N8 |
 
 ## Zakres
 
