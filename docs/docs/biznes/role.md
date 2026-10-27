@@ -27,13 +27,13 @@ Legenda: ✔ — wolno; ✖ — nie wolno; **własne** — tylko zgłoszenia i z
 | Zgłoszenie szybkie | V4, US4 | ✖ ² | ✔ | ✔ | ✔ | ✔ |
 | Pomiar precyzyjny z uśrednianiem GNSS i formularz | C1–C2, US6, US7 | ✖ | ✖ | ✔ | ✖ | ✖ |
 | Lista zgłoszeń ze statusami | C3, US8 | ✖ | ✖ ³ | własne | ✖ | ✖ |
-| Edycja zgłoszenia | C3, US8.3 | ✖ | ✖ | własne ⁴ | ✖ | ✖ |
+| Edycja zgłoszenia | C3, C2, V2, US8.3 | ✖ | ✖ | własne ⁴ | ✖ | ✖ |
 | Wysyłka po powrocie sieci | C4, US4, US9 | ✖ | własne | własne | własne | własne |
 | Wybór wersji przy konflikcie | C4, US9 | ✖ | ✖ | własne | ✖ | ✖ |
-| Zmiana „bariera usunięta” zgłoszenia przyjętego ⁸ | V2, C3, US8.4 | ✖ | ✖ | ✔ także cudze | ✖ | ✖ |
-| Zmiana oznaczenia wejścia ¹⁰ | V2 i ekran zmiany (faza B), US17.2 | ✖ | ✖ | ✔ każde wejście | ✖ | ✖ |
-| Znacznik piętra obejrzanego ⁹ | C1 (faza B), US15.1 | ✖ | ✖ | ✔ | ✖ | ✖ |
-| Cofnięcie znacznika piętra obejrzanego | C1 (faza B), K1, US15.2, US11.3 | ✖ | ✖ | własne | ✖ | ✔ także cudze |
+| Zmiana „bariera usunięta” zgłoszenia przyjętego ⁸ | V2, C7, C3, US8.4 | ✖ | ✖ | ✔ także cudze | ✖ | ✖ |
+| Zmiana oznaczenia wejścia ¹⁰ | V2, C6, US17.2 | ✖ | ✖ | ✔ każde wejście | ✖ | ✖ |
+| Znacznik piętra obejrzanego ⁹ | C5, US15.1 | ✖ | ✖ | ✔ | ✖ | ✖ |
+| Cofnięcie znacznika piętra obejrzanego | C5, K1, US15.2, US11.3 | ✖ | ✖ | własne | ✖ | ✔ także cudze |
 | Kolejka weryfikacji | R1, US10 | ✖ | ✖ | ✖ | ✔ | ✖ |
 | Decyzja: przyjęcie lub odrzucenie z powodem | R2, US10, US17.2 | ✖ | ✖ | ✖ | ✔ poza własnymi, tylko wzięte przez siebie (BR-4, BR-11) | ✖ |
 | Weryfikacja własnego zgłoszenia | R2 | ✖ | ✖ | ✖ | ✖ ⁵ | ✖ |
@@ -43,7 +43,7 @@ Legenda: ✔ — wolno; ✖ — nie wolno; **własne** — tylko zgłoszenia i z
 | Widok zgłoszeń niezweryfikowanych | R1, C3, K1 | ✖ | ✖ | własne | ✔ | tylko liczby (K1) |
 | Widok zgłoszeń odrzuconych | C3 | ✖ | ✖ | własne z powodem | ✖ | ✖ |
 | Dane osobowe autora zgłoszenia ⁷ | R2 | ✖ | ✖ | własne | ✖ | ✖ |
-| Profil i wylogowanie | wspólne | ✖ | ✔ | ✔ | ✔ | ✔ |
+| Profil i wylogowanie | L2 | ✖ | ✔ | ✔ | ✔ | ✔ |
 
 Brak uprawnienia działa na dwóch poziomach (US14): aplikacja nie pokazuje ekranu, a serwer odrzuca żądanie.
 
@@ -56,9 +56,9 @@ Brak uprawnienia działa na dwóch poziomach (US14): aplikacja nie pokazuje ekra
 5. Zasada czterech oczu (BR-4).
 6. Eksport zawiera tylko bieżące zgłoszenia przyjęte i nie zawiera danych autora (BR-6, BR-22).
 7. Imię, e-mail, identyfikator konta. Weryfikator widzi tylko rolę autora i pseudonim, np. „Autor 17” (BR-5).
-8. Zmiana to nowe zgłoszenie, a nie edycja cudzego, więc może ją złożyć każdy Zbierający (BR-19). Sprawdza ją Weryfikator, który jej nie złożył (BR-4, US10.5). Punkt startu z karty budynku ustalimy w fazie B.
-9. W budynku podstawowym znacznik dotyczy całego budynku. Ekran ustalimy w fazie B, a znacznik działa bez sieci (BR-20, US15.3).
-10. Zmiana oznaczenia wejścia to zgłoszenie z nowym zdjęciem, a nie edycja danych budynku, więc złoży ją każdy Zbierający (BR-24). Sprawdza ją Weryfikator, który jej nie złożył (BR-4, US10.5). Ekran zmiany ustalimy w fazie B.
+8. Zmiana to nowe zgłoszenie, a nie edycja cudzego, więc może ją złożyć każdy Zbierający (BR-19). Sprawdza ją Weryfikator, który jej nie złożył (BR-4, US10.5). Zbierający zaczyna ją na karcie budynku przyciskiem przy zgłoszeniu przyjętym; Gość i Odwiedzający tego przycisku nie widzą.
+9. W budynku podstawowym znacznik dotyczy całego budynku. Zbierający stawia go na liście pięter otwieranej z karty budynku, a Koordynator cofa go z postępu. Znacznik działa bez sieci (BR-20, US15.3).
+10. Zmiana oznaczenia wejścia to zgłoszenie z nowym zdjęciem, a nie edycja danych budynku, więc złoży ją każdy Zbierający (BR-24). Sprawdza ją Weryfikator, który jej nie złożył (BR-4, US10.5). Zbierający zaczyna ją na karcie budynku przyciskiem przy wejściu.
 
 ## Zasady ról
 

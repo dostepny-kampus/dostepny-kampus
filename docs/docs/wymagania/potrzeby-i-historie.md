@@ -29,16 +29,16 @@ Numery pytań pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md). W
 | US5 | V5 | N4 | Powinno być | Jako Gość niezalogowany, który pierwszy raz otwiera aplikację, chcę krótką instrukcję, aby się nie zgubić. |
 | US6 | C1 | N5 | Musi być | Jako Zbierający, chcę uśrednić pozycję i wskazać budynek, aby miejsce bariery było dokładne. |
 | US7 | C2 | N5 | Musi być | Jako Zbierający, chcę wypełnić formularz zgłoszenia, aby opisać barierę. |
-| US8 | C3; zmiana z karty budynku V2 (do ustalenia w fazie B) | N6 | Musi być | Jako Zbierający, chcę widzieć status każdego mojego zgłoszenia, aby wiedzieć, co dotarło, a co trzeba poprawić. |
+| US8 | C3; zmiana zgłoszenia przyjętego z karty budynku V2: C2, C7 | N6 | Musi być | Jako Zbierający, chcę widzieć status każdego mojego zgłoszenia, aby wiedzieć, co dotarło, a co trzeba poprawić. |
 | US9 | C4 | N6, N7 | Musi być | Jako Zbierający, chcę synchronizacji po pracy w trybie offline, aby nie stracić zgłoszeń i nie nadpisać wcześniejszej zmiany zapisanej na serwerze. |
 | US10 | R1, R2 | N2, N7, N8 | Musi być | Jako Weryfikator, chcę sprawdzić zgłoszenie i zobaczyć podobne zgłoszenia, aby nie przepuścić błędu ani duplikatu. |
 | US11 | K1 | N9 | Musi być | Jako Koordynator, chcę widzieć postęp inwentaryzacji według budynków, aby wiedzieć, gdzie trzeba jeszcze pójść. |
 | US12 | K2 | N9 | Powinno być | Jako Koordynator, chcę zaprosić osobę z wybraną rolą, aby dołączyła do inwentaryzacji bez pomocy administratora. |
 | US13 | K3 | N9 | Musi być | Jako Koordynator, chcę pobrać eksport, aby otworzyć zgłoszenia przyjęte w QGIS. |
-| US14 | logowanie (wspólne) | N2, N8 | Musi być | Jako Odwiedzający lub osoba z rolą pracowniczą, chcę się zalogować, aby korzystać z czynności mojej roli. |
-| US15 | C1 (do ustalenia w fazie B) | N6, N9 | Musi być | Jako Zbierający, chcę oznaczyć piętro obejrzane, aby postęp inwentaryzacji odpowiadał stanowi obchodu. |
+| US14 | L1, L2 | N2, N8 | Musi być | Jako Odwiedzający lub osoba z rolą pracowniczą, chcę się zalogować, aby korzystać z czynności mojej roli. |
+| US15 | C5 (z V2 i K1) | N6, N9 | Musi być | Jako Zbierający, chcę oznaczyć piętro obejrzane, aby postęp inwentaryzacji odpowiadał stanowi obchodu. |
 | US16 | V2 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać piętro budynku szczegółowego, aby zobaczyć na planie piętra windy, toalety i bariery. |
-| US17 | V2; ekran zmiany (do ustalenia w fazie B) | N1, N2 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę widzieć przy każdym wejściu aktualne oznaczenie z datą i źródłem, aby wiedzieć, czy mogę mu ufać. |
+| US17 | V2, V3; zmiana: C6 | N1, N2 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę widzieć przy każdym wejściu aktualne oznaczenie z datą i źródłem, aby wiedzieć, czy mogę mu ufać. |
 
 Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. Historyjki „Musi być” tworzą MVP.
 
@@ -82,7 +82,7 @@ Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego 
 | US8.1 | Lista pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte, odrzucone albo archiwalne. Odrzucone ma powód odrzucenia. | NFR-21, BR-18 |
 | US8.2 | Status „wysłane” pojawia się dopiero wtedy, gdy zgłoszenie czeka w kolejce na serwerze. Status „w weryfikacji” pojawia się, gdy wziął je Weryfikator. | US10.4 |
 | US8.3 | Zgłoszenie przed decyzją Weryfikatora można edytować. Odrzucone można poprawić i wysłać ponownie. | BR-3 |
-| US8.4 | Każdy Zbierający, także inny niż autor, zaczyna z karty budynku zmianę zgłoszenia przyjętego z oznaczeniem „bariera usunięta” (punkt startu do ustalenia w fazie B). Do decyzji Weryfikatora zmiana przechodzi te same statusy co zgłoszenie i po synchronizacji ma status „wysłane”. Po przyjęciu jest od razu archiwalna (US10.6). Bariera zostaje na mapie do decyzji Weryfikatora. | BR-3, US10.6, decyzja 33 |
+| US8.4 | Każdy Zbierający, także inny niż autor, zaczyna na karcie budynku, przy wybranym zgłoszeniu przyjętym, zmianę z oznaczeniem „bariera usunięta”. Do decyzji Weryfikatora zmiana przechodzi te same statusy co zgłoszenie i po synchronizacji ma status „wysłane”. Po przyjęciu jest od razu archiwalna (US10.6). Bariera zostaje na mapie do decyzji Weryfikatora. | BR-3, US10.6, decyzja 33 |
 | US9.1 | Bez sieci aplikacja pokazuje wskaźnik braku sieci, a nowe zgłoszenie czeka w kolejce ze statusem „lokalne”. | NFR-5, NFR-7 |
 | US9.2 | Po powrocie sieci synchronizacja rusza bez działania użytkownika. | NFR-6, NFR-8 |
 | US9.3 | Przy konflikcie wersji aplikacja pokazuje obie wersje, a wybór należy do Zbierającego: własna albo z serwera. Żadna zmiana nie znika po cichu. | NFR-9, BR-3 |
@@ -105,6 +105,7 @@ Ręczną korektę punktu opisują dwa kryteria: na planie piętra i na mapie. Ko
 | US11.1 | Dla każdego budynku widać odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy). Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. | US15.1 |
 | US11.2 | Gdy znacznik piętra obejrzanego albo jego cofnięcie dotrze na serwer, postęp budynku pokazuje nową wartość, np. 4 z 5 pięter, czyli 80 procent. | US15.3 |
 | US11.3 | Koordynator cofa znacznik piętra obejrzanego postawiony przez dowolnego Zbierającego. | decyzja 32 |
+| US11.4 | Dla każdego budynku szczegółowego widać liczbę wejść ze źródłem oznaczenia „obchód” wśród wszystkich jego wejść, np. „Wejścia potwierdzone na obchodzie: 4 z 6”. | BR-24, M-1, decyzja 38 |
 | US12.1 | Po zaproszeniu osoba z podanym adresem e-mail loguje się i ma wybraną rolę. | BR-2 |
 | US12.2 | Zaproszenie na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają. | BR-1, BR-2 |
 | US13.1 | Plik GeoJSON otwiera się w QGIS bez ustawiania układu współrzędnych i ma współrzędne w WGS84. | NFR-43 |

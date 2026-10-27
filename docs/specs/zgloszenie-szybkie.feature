@@ -34,20 +34,39 @@ Funkcja: Zgłoszenie szybkie
       | zdjęcia       |
       | grupy barier  |
 
-  @do-ustalenia
-  Szablon scenariusza: Zgłoszenia szybkiego bez bieżącej pozycji nie da się wysłać
-    # Reakcja aplikacji jest ustalana w fazie B (UC7, 2a i 4c); scenariusz sprawdza tylko brak wysyłki.
+  @US4.1
+  Scenariusz: Bez zgody na lokalizację aparat się nie otwiera
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
-    Oraz <przyczyna>
+    Oraz aplikacja nie ma zgody na lokalizację
+    Jeżeli wybierze zgłoszenie szybkie
+    Oraz odmówi zgody na lokalizację
+    Wtedy aparat się nie otwiera
+    Oraz widzi komunikat, że bez lokalizacji zgłoszenia nie da się wysłać
+    Oraz widzi przycisk otwierający ustawienia telefonu
+    Ale zgłoszenie nie powstaje
+
+  @US4.1
+  Scenariusz: Bez bieżącej pozycji zgłoszenie czeka na ponowną próbę
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz telefon nie ustala bieżącej pozycji
     Jeżeli zrobi zdjęcie bariery
     Oraz wybierze grupę barier „wejście i drzwi”
     Oraz spróbuje wysłać zgłoszenie
     Wtedy zgłoszenie nie zostaje wysłane
+    Oraz zgłoszenie nie zapisuje się w telefonie do późniejszej wysyłki
+    Oraz widzi komunikat, że telefon nie ustalił miejsca, z radą, co zrobić
+    Oraz zdjęcie i grupa barier zostają do ponownej próby
 
-    Przykłady:
-      | przyczyna                             |
-      | aplikacja nie ma zgody na lokalizację |
-      | telefon nie ustala bieżącej pozycji   |
+  @US4.1
+  Scenariusz: Pozycja ustalona przy ponownej próbie pozwala wysłać zgłoszenie
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz zrobił zdjęcie bariery i wybrał grupę barier „wejście i drzwi”
+    Oraz widzi komunikat, że telefon nie ustalił miejsca
+    Oraz telefon ma sieć
+    Jeżeli telefon ustali bieżącą pozycję
+    Oraz Odwiedzający wybierze ponowną próbę
+    Wtedy zgłoszenie zostaje wysłane z tym samym zdjęciem, grupą barier i bieżącą pozycją
+    Oraz Odwiedzający widzi potwierdzenie, że zgłoszenie trafi do weryfikacji
 
   @BR-14
   Szablon scenariusza: Budynek zgłoszenia szybkiego przypisuje system, a piętro zostaje puste
