@@ -203,6 +203,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | 5d | Zmiana dotyczy zgłoszenia, które już jest archiwalne | Inna równoległa zmiana została przyjęta wcześniej. Weryfikator odrzuca tę zmianę z powodem „nieaktualne” (BR-23). Dalej według wiersza 7a. |
 | 5e | Autor w tym czasie edytuje zgłoszenie | Powstaje nowa wersja; Weryfikator decyduje o nowej, nie o starej (BR-3). |
 | 5f | Zmiana oznaczenia wejścia | Weryfikator porównuje nowe zdjęcie wejścia z oznaczeniem i widzi obecne oznaczenie z datą i źródłem. Typu ani uciążliwości nie ustala. Oznaczenia nie zmienia; gdy zdjęcie mu przeczy, odrzuca zmianę z powodem według wiersza 7a (BR-24). |
+| 5g | Inną zmianę oznaczenia tego samego wejścia przyjęto wcześniej | Weryfikator odrzuca tę zmianę z powodem „nieaktualne”. Zbierający może ją wysłać ponownie wobec bieżącego oznaczenia (BR-23, BR-24). Dalej według wiersza 7a. |
 | 7a | Odrzucenie | Weryfikator podaje powód odrzucenia; bez niego odrzucić się nie da (US10.2, BR-16). Status „odrzucone”, a autor widzi powód w UC9. |
 | 7b | Zgłoszenie „bariera usunięta” | Po przyjęciu bariera znika z mapy i karty budynku, oba zgłoszenia stają się archiwalne (US10.6, BR-19). |
 | 7c | Zmiana zgłoszenia przyjętego | Po przyjęciu poprzednie zgłoszenie staje się archiwalne i znika z mapy (BR-18). |
@@ -347,9 +348,9 @@ Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Regu�
 | Warunki wstępne | Zbierający jest zalogowany z rolą RO-ZBI i stoi przy wejściu budynku. |
 | Wyzwalacz | Oznaczenie wejścia nie zgadza się ze stanem na miejscu, ma wartość „brak danych” albo pochodzi z importu. |
 | Przepływ główny | 1. Zbierający wybiera wejście budynku; ekran zmiany do ustalenia w fazie B. <br> 2. Wybiera „dostępne” albo „niedostępne” i robi nowe zdjęcie wejścia (US17.2). <br> 3. System zapisuje zgłoszenie zmiany oznaczenia w telefonie ze statusem „lokalne” i wysyła je przez UC10. <br> 4. Weryfikator, który go nie złożył, sprawdza je w UC14 (BR-4). <br> 5. Po przyjęciu wejście ma nowe oznaczenie, datę przyjęcia i źródło „obchód” (US17.2, US17.3). |
-| Alternatywy i wyjątki | 2a. Oznaczenie zgadza się ze stanem na miejscu: Zbierający wybiera to samo oznaczenie, a po przyjęciu zmienia się tylko data i źródło (BR-24). <br> 2b. Brak zdjęcia: zgłoszenia nie da się zapisać (BR-24). <br> 3a. Brak sieci: zgłoszenie czeka w telefonie ze statusem „lokalne” (US9.1, BR-9). <br> 5a. Weryfikator odrzuca zmianę z powodem: oznaczenie wejścia się nie zmienia, a Zbierający widzi powód w UC9 (BR-16, BR-24). |
+| Alternatywy i wyjątki | 2a. Oznaczenie zgadza się ze stanem na miejscu: Zbierający wybiera to samo oznaczenie, a po przyjęciu zmienia się tylko data i źródło (BR-24). <br> 2b. Brak zdjęcia: zgłoszenia nie da się zapisać (BR-24). <br> 3a. Brak sieci: zgłoszenie czeka w telefonie ze statusem „lokalne” (US9.1, BR-9). <br> 5a. Weryfikator odrzuca zmianę z powodem: oznaczenie wejścia się nie zmienia, a Zbierający widzi powód w UC9 (BR-16, BR-24). <br> 5b. Inną zmianę tego wejścia przyjęto wcześniej: Weryfikator odrzuca tę zmianę z powodem „nieaktualne”, a Zbierający może ją wysłać ponownie wobec bieżącego oznaczenia (UC14 5g, BR-24). |
 | Warunki końcowe | Po przyjęciu zgłoszenie jest archiwalne, a karta budynku pokazuje nowe oznaczenie z datą i źródłem. |
-| Odwołania | US17.2, US17.3, US10.5, BR-4, BR-9, BR-16, BR-24, T6b, T10–T16, T17b |
+| Odwołania | US17.2, US17.3, US10.5, BR-4, BR-9, BR-16, BR-23, BR-24, T6b, T10–T16, T17b |
 
 Odwiedzający nie zmienia oznaczenia wejścia, bo zmianę sprawdza się zdjęciem z obchodu ([Role i uprawnienia](../biznes/role.md)).
 
