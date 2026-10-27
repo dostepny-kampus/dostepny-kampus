@@ -29,9 +29,10 @@ Szukamy potrzeb, a nie oceny gotowego projektu, dlatego podstawą jest wywiad in
 | --- | --- |
 | Wiek | 60 lat lub więcej |
 | Związek z kampusem | odwiedza kampus PWr lub mógłby go odwiedzić (wykład otwarty, wydarzenie, sprawa na uczelni, wizyta u bliskich) |
+| Przykład grupy | słuchacze Politechniki Trzeciego Wieku — programu PWr dla osób 60+ (ok. 200 słuchaczy od października 2025) |
 | Telefon | korzysta z telefonu komórkowego; min. połowa uczestników używa smartfona |
-| Mobilność (opcjonalnie) | min. 1 osoba w całej próbie porusza się z trudem (laska, balkonik, wózek) albo słabo widzi |
-| Wykluczenie | studenci i pracownicy PWr, osoby znające projekt, członkowie zespołu |
+| Mobilność (opcjonalnie) | min. 1 osoba w całej próbie porusza się z trudem (laska, balkonik, wózek) albo słabo widzi — według tego, co sama mówi |
+| Wykluczenie | studenci i pracownicy PWr, osoby znające projekt, członkowie zespołu; słuchacze Politechniki Trzeciego Wieku nie są wykluczeni |
 
 - Każdy członek zespołu rekrutuje osobiście 2 osoby z własnego otoczenia, np. przez znajomych, klub seniora albo uniwersytet trzeciego wieku.
 - Bliska rodzina członka zespołu tylko wtedy, gdy brak innych chętnych. Zaznacz to w arkuszu (ryzyko uprzejmych odpowiedzi).
@@ -131,6 +132,7 @@ Prowadzący czyta:
 - Nie pomagaj i nie podpowiadaj. Gdy uczestnik milknie, powiedz tylko: „O czym Pan/Pani teraz myśli?”.
 - Gdy uczestnik utknie na dłużej niż 1 minutę, zapytaj: „Co by Pan/Pani zrobił(a) teraz?”.
 - Uczestnik bez smartfona opowiada, co zrobiłby krok po kroku.
+- Jeśli uczestnik zna już C-13, podaj inny budynek, w którym nie był, np. D-1.
 
 | Co obserwujesz | Weryfikuje |
 | --- | --- |
@@ -263,5 +265,6 @@ Jeśli rozmówca może, poproś o pokazanie formularza albo notatek z obchodu be
 - „Avoid Leading Questions to Get Better Insights from Participants”, NN/g: <https://www.nngroup.com/articles/leading-questions/>
 - „Thinking Aloud: The #1 Usability Tool”, NN/g: <https://www.nngroup.com/articles/thinking-aloud-the-1-usability-tool/>
 - L. Kane, „Usability for Older Adults: Challenges and Changes”, NN/g: <https://www.nngroup.com/articles/usability-for-senior-citizens/>
+- „Seniorzy na PWr – ruszyła Politechnika Trzeciego Wieku”, PWr, 9.10.2025: <https://pwr.edu.pl/uczelnia/aktualnosci/seniorzy-na-pwr-ruszyla-politechnika-trzeciego-wieku-13912.html>
 - „Affinity Diagramming for Collaboratively Sorting UX Findings and Design Ideas”, NN/g: <https://www.nngroup.com/articles/affinity-diagram/>
 - Rozporządzenie (UE) 2016/679 (RODO), tekst skonsolidowany, UODO: <https://uodo.gov.pl/pl/404/539>
