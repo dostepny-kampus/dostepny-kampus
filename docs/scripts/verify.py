@@ -171,18 +171,19 @@ def step_lang(options: Options) -> StepResult:
 
 
 def step_check_ids(options: Options) -> StepResult:
-    """Krok: kontrola ID (scripts/check_ids.py --strict); w trybie --partial błędy dają WARN zamiast FAIL.
+    """Krok: kontrola ID (scripts/check_ids.py --strict, w trybie --partial także --partial).
 
-    Gwarantuje: same uwagi (bez błędów) dają WARN.
+    Gwarantuje: każdy błąd daje FAIL; same uwagi dają WARN. W trybie --partial błędy klas ID, które nie mają
+    jeszcze żadnej definicji (strona jeszcze nie powstała), check_ids zgłasza jako uwagi.
     """
-    code, output = run_command(python_script("check_ids.py", "--strict"), capture=True)
+    flags = ["--strict", "--partial"] if options.partial else ["--strict"]
+    code, output = run_command(python_script("check_ids.py", *flags), capture=True)
     summary = CHECK_IDS_SUMMARY.search(output)
-    if code == 0:
-        warnings = int(summary.group(2)) if summary else 0
-        return StepResult("check_ids", WARN, f"uwag {warnings}") if warnings else StepResult("check_ids", PASS)
-    if code == 1 and options.partial:
-        return StepResult("check_ids", WARN, "błędy ID (dokumenty powstają stopniowo)")
-    return StepResult("check_ids", FAIL, f"kod {code}")
+    if code != 0:
+        errors = summary.group(1) if summary else "?"
+        return StepResult("check_ids", FAIL, f"błędów {errors}, kod {code}")
+    warnings = int(summary.group(2)) if summary else 0
+    return StepResult("check_ids", WARN, f"uwag {warnings}") if warnings else StepResult("check_ids", PASS)
 
 
 def tagged_loader() -> type[yaml.SafeLoader]:

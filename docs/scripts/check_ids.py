@@ -28,6 +28,8 @@ HTML_COMMENT = re.compile(r"<!--.*?-->")
 LEADING_NOISE = re.compile(r"^[\s*_\[`<>]*(?:<[^>]+>)?[\s*_\[`]*")
 SEPARATOR_CELL = re.compile(r"^:?-{3,}:?$")
 TAG_RE = re.compile(r"@([\w.\-]+)")
+CLASS_PART = re.compile(r"\d+|(?<=RO-)[A-Z]+")
+PARTIAL_NOTE = " (klasa ID jeszcze bez definicji)"
 MATRIX_START = "<!-- macierz:start -->"
 MATRIX_END = "<!-- macierz:end -->"
 FEATURE_KEYWORDS = ("Feature", "Funkcja", "Funkcjonalność", "Właściwość", "Aspekt", "Potrzeba biznesowa")
@@ -279,38 +281,58 @@ def parent_us(ac: str) -> str:
     return ac.split(".", 1)[0]
 
 
-def check(corpus: Corpus) -> list[Finding]:
+def id_class(identifier: str) -> str:
+    """Zwraca klasę ID z liczbami zastąpionymi znakiem `#` (US3.2 → US#.#, BR-G1 → BR-G#, RO-GOS → RO-#)."""
+    return CLASS_PART.sub("#", identifier)
+
+
+def error_level(corpus: Corpus, required: str, partial: bool) -> tuple[str, str]:
+    """Zwraca (poziom, dopisek) dla błędu, którego usunięcie wymaga definicji klasy `required`.
+
+    Gwarantuje: w trybie `partial` błąd staje się „UWAGĄ” tylko wtedy, gdy klasa `required` nie ma jeszcze
+    żadnej definicji (jej strona nie istnieje); w każdym innym razie pozostaje „BŁĘDEM”.
+    """
+    if partial and all(id_class(i) != required for i in corpus.definitions):
+        return "UWAGA", PARTIAL_NOTE
+    return "BŁĄD", ""
+
+
+def check(corpus: Corpus, partial: bool = False) -> list[Finding]:
     """Zwraca wyniki kontroli: niezdefiniowane odwołania, US bez N, AC bez scenariusza, UC bez US, wielokrotne definicje
     i kryteria w starym formacie „ACn” (decyzja 30: kryteria zapisuje się jako USx.y).
 
     Gwarantuje: AC bez scenariusza jest „BŁĘDEM” tylko wtedy, gdy istnieje choć jeden plik .feature; inaczej „UWAGĄ”.
+    W trybie `partial` błędy zależne od klasy ID bez żadnej definicji są „UWAGAMI” (patrz error_level).
     """
-    findings = undefined_references(corpus) + legacy_criteria(corpus)
+    findings = undefined_references(corpus, partial) + legacy_criteria(corpus)
     defined = sorted(corpus.definitions, key=natural_key)
     first = {i: str(corpus.definitions[i][0]) for i in defined}
     ac_level = "BŁĄD" if corpus.feature_files else "UWAGA"
     for ident in defined:
         neighbours = corpus.links.get(ident, set())
         if US_RE.match(ident) and not any(N_RE.match(n) for n in neighbours):
-            findings.append(Finding("BŁĄD", first[ident], f"{ident}: historyjka bez potrzeby N"))
+            level, note = error_level(corpus, "N#", partial)
+            findings.append(Finding(level, first[ident], f"{ident}: historyjka bez potrzeby N{note}"))
         if AC_RE.match(ident) and not corpus.scenarios.get(ident):
             findings.append(Finding(ac_level, first[ident], f"{ident}: kryterium bez scenariusza (tag @{ident})"))
         if UC_RE.match(ident) and not any(US_RE.match(n) or AC_RE.match(n) for n in neighbours):
-            findings.append(Finding("BŁĄD", first[ident], f"{ident}: przypadek użycia bez historyjki US"))
+            level, note = error_level(corpus, "US#", partial)
+            findings.append(Finding(level, first[ident], f"{ident}: przypadek użycia bez historyjki US{note}"))
         if len(corpus.definitions[ident]) > 1:
             places = ", ".join(str(loc) for loc in corpus.definitions[ident][1:])
             findings.append(Finding("UWAGA", first[ident], f"{ident}: zdefiniowane ponownie w {places}"))
     return findings
 
 
-def undefined_references(corpus: Corpus) -> list[Finding]:
-    """Zwraca błędy dla odwołań do ID bez definicji (każde miejsce osobno, bez powtórzeń)."""
+def undefined_references(corpus: Corpus, partial: bool = False) -> list[Finding]:
+    """Zwraca błędy dla odwołań do ID bez definicji (każde miejsce osobno, bez powtórzeń); poziom jak w error_level."""
     seen: set[tuple[str, Location]] = set()
     findings: list[Finding] = []
     for ref, location in corpus.references:
         if ref not in corpus.definitions and (ref, location) not in seen:
             seen.add((ref, location))
-            findings.append(Finding("BŁĄD", str(location), f"odwołanie do niezdefiniowanego ID: {ref}"))
+            level, note = error_level(corpus, id_class(ref), partial)
+            findings.append(Finding(level, str(location), f"odwołanie do niezdefiniowanego ID: {ref}{note}"))
     return findings
 
 
@@ -421,6 +443,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--specs", type=Path, default=REPO / "specs", help="katalog plików .feature")
     parser.add_argument("--matrix", type=Path, help="zapisz macierz N → US → AC → UC → scenariusz do pliku")
     parser.add_argument("--strict", action="store_true", help="kod wyjścia 1, gdy są błędy")
+    parser.add_argument("--partial", action="store_true", help="błędy klas ID bez żadnej definicji jako uwagi")
     return parser.parse_args(argv)
 
 
@@ -438,7 +461,7 @@ def main(argv: list[str] | None = None) -> int:
     except (OSError, UnicodeDecodeError) as exc:
         print(f"check_ids: BŁĄD: {exc}", file=sys.stderr)
         return 2
-    findings = check(corpus)
+    findings = check(corpus, args.partial)
     print_report(corpus, findings)
     has_errors = any(f.level == "BŁĄD" for f in findings)
     return 1 if args.strict and has_errors else 0
