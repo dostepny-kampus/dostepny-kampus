@@ -191,7 +191,7 @@ def step_matrix(options: Options) -> StepResult:
     """Krok: aktualność macierzy śledzenia (scripts/check_ids.py --check-matrix docs/wymagania/sledzenie.md).
 
     Gwarantuje: macierz różna od wygenerowanej z bieżących dokumentów daje FAIL z poleceniem odświeżenia;
-    brak strony daje SKIP w trybie --partial, a FAIL w pełnej kontroli.
+    brak strony daje SKIP w trybie --partial, a FAIL w pełnej kontroli; błąd odczytu daje FAIL z kodem wyjścia.
     """
     page = MATRIX_PAGE.relative_to(REPO).as_posix()
     if options.partial and not MATRIX_PAGE.is_file():
@@ -199,6 +199,8 @@ def step_matrix(options: Options) -> StepResult:
     code, _ = run_command(python_script("check_ids.py", "--check-matrix", page))
     if code == 0:
         return StepResult("matrix", PASS)
+    if code != 1:
+        return StepResult("matrix", FAIL, f"błąd odczytu, kod {code}")
     return StepResult("matrix", FAIL, f"nieaktualna, odśwież: python scripts/check_ids.py --matrix {page}")
 
 
