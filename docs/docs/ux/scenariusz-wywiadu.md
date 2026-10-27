@@ -239,7 +239,7 @@ Zapisuj cytat słowami uczestnika, a swoją interpretację tylko w kolumnie „O
 | Zmieniona | potrzeba istnieje, ale ma inną treść, inny priorytet albo inną grupę |
 | Niepewna | mówi o niej mniej niż połowa uczestników, nikt jej nie przeczy; sprawdzamy ją ponownie w etapach 4 i 7 kursu |
 | Odrzucona | nikt jej nie potwierdza albo większość jej przeczy |
-| Nowa | temat bez N, obecny u min. 2 uczestników; dostaje kolejny numer N10… |
+| Nowa | temat bez N, obecny u min. 2 uczestników; dostaje kolejny wolny numer N |
 
 | N | Status (potwierdzona / zmieniona / niepewna / odrzucona / nowa) | Dowód (P…, nr pytania) | Nowe brzmienie, jeśli zmieniona | Skutek dla funkcji |
 | --- | --- | --- | --- | --- |
@@ -248,7 +248,7 @@ Zapisuj cytat słowami uczestnika, a swoją interpretację tylko w kolumnie „O
 | N3 | | | | |
 | N4 | | | | |
 | N5–N9 | (opcjonalnie, sekcja 10) | | | |
-| N10… | nowa | | | |
+| Nowa potrzeba | nowa | | | |
 
 Zmienioną albo odrzuconą potrzebę zespół zgłasza do poprawy dokumentów przed implementacją. Funkcja odrzuconej potrzeby idzie do ponownej oceny.
 
