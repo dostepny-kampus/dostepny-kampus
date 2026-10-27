@@ -20,10 +20,9 @@ Wybór wersji własnej działa jak zwykła edycja w obecnym statusie na serwerze
 | ID | Reguła | Dlaczego | Źródło |
 | --- | --- | --- | --- |
 | BR-11 | Zgłoszenie w weryfikacji obsługuje tylko Weryfikator, który je wziął. Inny Weryfikator nie może go wziąć ani podjąć decyzji. | Dwie osoby nie sprawdzają tego samego zgłoszenia i nie podejmują sprzecznych decyzji (N7, N8). | US10.4, decyzja 29, T14, T15 |
-| BR-12 | Weryfikator może zwolnić wzięte zgłoszenie bez decyzji. Zgłoszenie wraca do kolejki ze statusem „wysłane”. | Bez tego zgłoszenie nieobecnego Weryfikatora czekałoby bez końca. | wniosek z BR-11 (propozycja zespołu) |
 | BR-13 | Weryfikator widzi podobne zgłoszenia w promieniu 10 m: wysłane, w weryfikacji i przyjęte, z każdego piętra. System sam nie odrzuca ani nie łączy zgłoszeń. Duplikat Weryfikator odrzuca, wskazując wcześniejsze zgłoszenie w powodzie odrzucenia. | O duplikacie decyduje człowiek: bariera 5 m dalej może być inna (scenariusz demo w A-1). Piętro widać przy zgłoszeniu. | US10.1, T15, T16, słownik (duplikat, podobne zgłoszenie) |
 | BR-14 | Zgłoszenia szybkiego nie można przyjąć, dopóki Weryfikator nie ustali typu bariery i uciążliwości. Typ może należeć do innej grupy barier niż wybrana przez Odwiedzającego. | Mapa pokazuje typ i uciążliwość każdej bariery, a grupa od Odwiedzającego to tylko podpowiedź. | US10.3, decyzja 29, T16 |
-| BR-15 | Weryfikator nie zmienia typu, uciążliwości ani miejsca w zgłoszeniu z pomiaru precyzyjnego. Błąd oznacza odrzucenie z powodem, a Zbierający poprawia zgłoszenie. Wyjątek: zasłonięcie twarzy i tablic na zdjęciu (NFR-25). | Treść zgłoszenia zmienia tylko autor, więc nie ma konfliktu wersji z Weryfikatorem (N7). | słownik (Weryfikator), BR-3 |
+| BR-15 | Weryfikator nie zmienia typu, uciążliwości ani miejsca w zgłoszeniu z pomiaru precyzyjnego. Błąd oznacza odrzucenie z powodem, a Zbierający poprawia zgłoszenie. Zasłonięcie twarzy i tablic na zdjęciu (NFR-25) jest częścią przyjęcia i nie tworzy nowej wersji. | Konflikt wersji powstaje tylko między wersjami Zbierającego, a ekran C4 zostaje jedynym miejscem wyboru (N7). Gdy Zbierający wyśle nową wersję w trakcie weryfikacji, Weryfikator decyduje o nowej (BR-3). | słownik (Weryfikator, konflikt wersji), BR-3, NFR-25 |
 | BR-16 | Odrzucenie bez powodu odrzucenia jest niemożliwe. Zbierający widzi powód przy własnym zgłoszeniu na liście zgłoszeń. | Autor wie, co poprawić, i może wysłać zgłoszenie ponownie (BR-3). | US10.2, US8.1, T18, T19 |
 
 Przyjęcie wymaga też, by Weryfikator oceniał aktualną wersję zgłoszenia (BR-3) i nie był jego autorem (BR-4).
@@ -38,6 +37,7 @@ Przyjęcie wymaga też, by Weryfikator oceniał aktualną wersję zgłoszenia (B
 | BR-20 | Piętro obejrzane oznacza tylko Zbierający. W budynku podstawowym znacznik „obejrzany” dotyczy całego budynku. Znacznik cofa Zbierający, który go postawił, albo Koordynator. Znacznik i jego cofnięcie działają bez sieci i czekają w telefonie na synchronizację tak samo jak zgłoszenie (BR-9). | Błędny znacznik zawyża postęp inwentaryzacji, więc trzeba go móc cofnąć. Obchód piwnic odbywa się bez sieci (N6). | US15.1, US15.2, US11.3, decyzja 29, decyzja 32, decyzja 33, T24 |
 | BR-21 | Postęp budynku szczegółowego to odsetek pięter obejrzanych wśród pięter z danych PWr. Budynek podstawowy ma znacznik „obejrzany / nie”. Obok są liczby zgłoszeń czekających (wysłane, w weryfikacji) i przyjętych. | Koordynator mierzy postęp tym samym miernikiem w każdym budynku (N9). Przykład: A-1, 4 z 5 pięter, czyli 80 %. | US11.1, US11.2, decyzja 29, T25, T26 |
 | BR-22 | Eksport zawiera tylko bieżące zgłoszenia przyjęte. Zgłoszenia archiwalne, czyli bariery usunięte i wersje zastąpione, do niego nie trafiają. Doprecyzowuje BR-6. | Dane w QGIS mają pokazywać obecny stan barier, a nie historię (N9). | US13.3, decyzja 29, decyzja 33, T28, BR-6 |
+| BR-23 | Dwie równoległe zmiany tego samego zgłoszenia przyjętego to osobne zgłoszenia. Weryfikator widzi drugą zmianę jako podobne zgłoszenie. Po przyjęciu jednej z nich drugiej nie można przyjąć bez zmian, bo dotyczy zgłoszenia archiwalnego. Weryfikator odrzuca ją z powodem „nieaktualne”, a Zbierający może ją wysłać ponownie do bieżącego zgłoszenia. | Przyjęcie nieaktualnej zmiany cofnęłoby na mapie wcześniejszą zmianę albo usunięcie bariery (N2, N7). | US10.1, decyzja 33, BR-3, BR-18, BR-19 |
 
 Zgłoszenie archiwalne nie jest widoczne na mapie, na karcie budynku ani w eksporcie (BR-22). Nie liczy się też do zgłoszeń przyjętych w postępie (BR-21). Kto i gdzie przegląda historię, ustalimy w fazie projektowania interfejsu.
 
@@ -71,12 +71,11 @@ Statusy od „lokalne” do „odrzucone” pochodzą ze słownika i US8.1, a st
 | lokalne | wysłane | system | serwer potwierdził odbiór (BR-9) |
 | wysłane | wysłane | Zbierający (autor) | edycja tworzy nową wersję (BR-3); przy innej wersji na serwerze — BR-10 |
 | wysłane | w weryfikacji | Weryfikator | nie jest autorem (BR-4); zgłoszenia nie wziął nikt inny (BR-11) |
-| w weryfikacji | wysłane | Weryfikator, który wziął | zwolnienie bez decyzji (BR-12) |
 | w weryfikacji | w weryfikacji | Zbierający (autor) | edycja tworzy nową wersję; Weryfikator decyduje o nowej (BR-3, BR-10) |
-| w weryfikacji | przyjęte | Weryfikator, który wziął | aktualna wersja (BR-3); w zgłoszeniu szybkim typ i uciążliwość (BR-14); zdjęcie według NFR-25; widoczne od razu (BR-17) |
-| w weryfikacji | odrzucone | Weryfikator, który wziął | powód odrzucenia (BR-16); przy duplikacie wskazanie wcześniejszego zgłoszenia (BR-13) |
+| w weryfikacji | przyjęte | Weryfikator, który wziął | aktualna wersja (BR-3); w zgłoszeniu szybkim typ i uciążliwość (BR-14). Zasłonięcie na zdjęciu nie tworzy nowej wersji (BR-15, NFR-25). Zmiana nie dotyczy zgłoszenia archiwalnego (BR-23). Widoczne od razu (BR-17) |
+| w weryfikacji | odrzucone | Weryfikator, który wziął | powód odrzucenia (BR-16); przy duplikacie wskazanie wcześniejszego zgłoszenia (BR-13); zmiana zgłoszenia już archiwalnego z powodem „nieaktualne” (BR-23) |
 | w weryfikacji | archiwalne | Weryfikator, który wziął | przyjęcie zgłoszenia „bariera usunięta”; Weryfikator nie jest jego autorem (BR-4); bariera znika z mapy i eksportu (BR-19, BR-22) |
-| odrzucone | wysłane | Zbierający (autor) | poprawka i ponowne wysłanie (BR-3); Odwiedzający nie edytuje zgłoszeń szybkich |
+| odrzucone | wysłane | Zbierający (autor) | poprawka i ponowne wysłanie (BR-3), zmiana „nieaktualne” do bieżącego zgłoszenia (BR-23); Odwiedzający nie edytuje zgłoszeń szybkich |
 | odrzucone | — | system | usunięcie po 90 dniach (NFR-29) |
 | przyjęte | przyjęte | Zbierający (autor); przy „bariera usunięta” dowolny Zbierający | zmiana tworzy nowe zgłoszenie od statusu „lokalne”; status poprzedniego zgłoszenia się nie zmienia (BR-18) |
 | przyjęte | archiwalne | system | przyjęto zmianę tego zgłoszenia albo zgłoszenie „bariera usunięta” (BR-18, BR-19, US10.6) |
@@ -88,6 +87,7 @@ Status „archiwalne” jest końcowy: zgłoszenie nie wraca na mapę i nie jest
 | Temat | Co jest w MVP | Dlaczego nie więcej | Źródło |
 | --- | --- | --- | --- |
 | Status zgłoszenia szybkiego dla Odwiedzającego | Odwiedzający nie widzi statusu ani listy swoich zgłoszeń. Lista statusów (US8.1) jest tylko dla Zbierającego. | Potrzebę sprawdzimy w wywiadach. | decyzja 32, [przypis 3](role.md#przypisy) |
+| Zwolnienie zgłoszenia bez decyzji | Zgłoszenie w weryfikacji obsługuje do decyzji Weryfikator, który je wziął (BR-11). Zwolnienia nie ma, a numer 12 wśród reguł zostaje wolny. | Nieobecny Weryfikator i tak nie zwolni zgłoszenia. To ryzyko jest na stronie [Ryzyka](ryzyka.md). | BR-11 |
 | Usunięcie bariery przez Odwiedzającego | Usunięcie zgłasza tylko Zbierający (BR-19). Odwiedzający nie ma takiej ścieżki. | Odwiedzający nie edytuje zgłoszeń, więc nie ma ścieżki zmiany według BR-3. | decyzja 32, [macierz uprawnień](role.md#macierz-uprawnien) |
 
 ## Źródła
