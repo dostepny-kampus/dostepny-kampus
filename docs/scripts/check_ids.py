@@ -454,8 +454,11 @@ def join(items: list[str], separator: str = ", ") -> str:
 
 
 def scenario_list(corpus: Corpus, ident: str) -> str:
-    """Zwraca scenariusze z tagiem `ident` jako „nazwa (plik.feature)” rozdzielone znacznikiem `<br>` albo „—”."""
-    items = [f"{s.name} ({Path(s.location.path).name})" for s in corpus.scenarios.get(ident, [])]
+    """Zwraca scenariusze z tagiem `ident` jako „nazwa (`plik.feature`)” rozdzielone znacznikiem `<br>` albo „—”.
+
+    Gwarantuje: nazwa pliku jest kodem w linii, więc skróty ze słownika nie podkreślają w niej słów.
+    """
+    items = [f"{s.name} (`{Path(s.location.path).name}`)" for s in corpus.scenarios.get(ident, [])]
     return join([i.replace("|", "\\|") for i in items], "<br>")
 
 
