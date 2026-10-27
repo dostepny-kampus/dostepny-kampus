@@ -333,7 +333,7 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Ładowanie — szukanie satelitów | „Szukam satelitów. Na otwartej przestrzeni pomiar jest dokładniejszy.” (NFR-1) |
 | Daleko od budynków PWr | „Poza budynkiem”, bez podpowiedzi i bez komunikatu o błędzie (BR-G4, NFR-49) |
 | Budynek podstawowy | bez korekty na planie; korekta na mapie działa (US6.4, BR-G1) |
-| Brak zgody na lokalizację | jak w V4: prośba o zgodę, a po odmowie „Otwórz ustawienia” (NFR-27) |
+| Brak zgody, zgoda tylko przybliżona albo lokalizacja wyłączona | jak w V4: prośba o zgodę albo o dokładną lokalizację, a po odmowie „Otwórz ustawienia” (NFR-27) |
 | Brak sieci | pomiar i podpowiedź działają; mapa bez podkładu (NFR-4, NFR-39) |
 
 Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykresem (NFR-18). Uśrednianie można przerwać i powtórzyć bez limitu (NFR-23).
@@ -453,7 +453,7 @@ Dostępność: w pionie wersje stoją jedna pod drugą, w poziomie obok siebie, 
 | Przy znaczniku w telefonie: „czeka na wysłanie” | dane | US15.3 | — |
 | Zbierający: „Oznacz jako obejrzane” przy wierszu bez znacznika | czynność główna | US15.1 | — |
 | Zbierający: „Cofnij” tylko przy własnym znaczniku | czynność | US15.2 | — |
-| Koordynator: „Cofnij znacznik” przy każdym znaczniku, z potwierdzeniem | czynność główna | US11.3, BR-20 | K1 po potwierdzeniu |
+| Koordynator: „Cofnij znacznik” przy każdym znaczniku, z potwierdzeniem | czynność główna | US11.3, BR-20 | C5 z nowym stanem; do K1 przez „Wstecz” |
 
 C5 otwiera Zbierający z karty budynku (V2), a Koordynator z postępu (K1). Koordynator nie stawia znaczników (BR-20), więc nie widzi „Oznacz jako obejrzane”.
 
