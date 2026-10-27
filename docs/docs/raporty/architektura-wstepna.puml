@@ -21,7 +21,7 @@ skinparam actor {
 }
 left to right direction
 
-actor "Użytkownicy\n(4 role)" as U
+actor "Użytkownicy\n(5 ról)" as U
 
 rectangle "Aplikacja mobilna (Android)\nKotlin, Jetpack Compose\nbaza lokalna i kolejka offline\nmapa MapLibre" as APP
 
