@@ -21,9 +21,9 @@ Każde wymaganie ma miarę i sposób sprawdzenia. Dopisek „(próg zespołu)”
 
 | ID | Kategoria | Wymaganie | Miara / próg | Jak sprawdzamy | Źródło potrzeby |
 | --- | --- | --- | --- | --- | --- |
-| NFR-1 | Dokładność pozycji | Pozycja bariery na zewnątrz jest dokładna po 30 s uśredniania pozycji. | Mediana błędu poziomego < 1 m (cel z N5, do potwierdzenia pomiarem). Żaden pomiar > 3 m (próg zespołu). | 10 pomiarów w terenie otwartym nad punktem o znanych współrzędnych (punkt osnowy albo wyraźny narożnik na ortofotomapie z Geoportalu). | N5, US6.1, [33] |
+| NFR-1 | Dokładność pozycji | Pozycja bariery w terenie otwartym jest dokładna po 30 s uśredniania pozycji. | Mediana błędu poziomego < 1 m (cel z N5, do potwierdzenia pomiarem). Żaden pomiar > 3 m (próg zespołu). | 10 pomiarów w terenie otwartym nad punktem o znanych współrzędnych (punkt osnowy albo wyraźny narożnik na ortofotomapie z Geoportalu). | N5, US6.1, [33] |
 | NFR-2 | Dokładność pozycji | Ekran C1 pokazuje szacowaną dokładność pozycji i liczbę satelitów według systemów. Wartość jest opisana jako szacunek, nie gwarancja. | Odświeżanie co ≤ 1 s (próg zespołu). Przy wartości widnieje informacja, że to szacunek. | Obserwacja ekranu C1 na telefonie referencyjnym, porównanie z wynikiem NFR-1. | US6.1; system podaje promień ufności 68% [9] |
-| NFR-3 | Dokładność pozycji | Wewnątrz budynku pozycję z GNSS poprawia się ręcznie: na planie piętra (budynek szczegółowy) albo na mapie (budynek podstawowy). | Ręczna korekta dostępna zawsze. Zgłoszenie po korekcie ma oznaczenie „korekta ręczna”. | Scenariusze US6.3 i US6.4 w budynku A-1 i w budynku podstawowym. | US6.3, US6.4, BR-G1; błąd przy ścianie 5–15 m (hipoteza) |
+| NFR-3 | Dokładność pozycji | Wewnątrz budynku pozycję z GNSS poprawia się ręcznie: na mapie w każdym budynku, a w budynku szczegółowym także na planie piętra. | Ręczna korekta dostępna zawsze. Zgłoszenie po korekcie ma oznaczenie „korekta ręczna”. | Scenariusze US6.3 i US6.4 w budynku A-1 i w budynku podstawowym. | US6.3, US6.4, BR-G1; błąd przy ścianie 5–15 m (hipoteza) |
 | NFR-4 | Dokładność pozycji | Podpowiedź najbliższego budynku działa bez sieci. | Podpowiedź ≤ 2 s od końca uśredniania, w trybie samolotowym (próg zespołu). | Test na telefonie referencyjnym w trybie samolotowym przy 5 budynkach szczegółowych. | US6.2, N6 |
 
 ## Praca offline i synchronizacja
@@ -61,7 +61,7 @@ Aplikacja dotyczy barier dla osób z niepełnosprawnościami, więc sama musi by
 | NFR-21 | Dostępność UI | Informacja nie jest przekazywana wyłącznie kolorem. | Status zgłoszenia, wejście dostępne i uciążliwość bariery 1–3 mają tekst i ikonę lub kształt. | Przegląd ekranów w trybie odcieni szarości. | N4, US2.1, WCAG 1.4.1 [3] |
 | NFR-22 | Dostępność UI | Aplikacja działa w orientacji pionowej i poziomej. | 100% ekranów w obu orientacjach bez utraty treści. | Przegląd ekranów po obrocie telefonu. | N4, WCAG 1.3.4 [3] |
 | NFR-23 | Dostępność UI | Brak limitów czasu na odpowiedź użytkownika. | 0 akcji przerywanych przez upływ czasu. Uśrednianie 30 s można przerwać i powtórzyć. | Przegląd ścieżek US1–US9. | N4, WCAG 2.2.1 [3] |
-| NFR-24 | Użyteczność | Seniorzy i Zbierający oceniają aplikację co najmniej przeciętnie. | Średni wynik SUS ≥ 68 przy ≥ 5 użytkownikach. | Ankieta SUS po teście z myśleniem na głos. | N4, [32] |
+| NFR-24 | Użyteczność | Osoby starsze z grupy docelowej oceniają aplikację co najmniej przeciętnie. Zbierający nie biorą udziału w tym teście. | Średni wynik SUS ≥ 68 przy ≥ 5 uczestnikach z grupy docelowej (M-3). | Ankieta SUS po teście z myśleniem na głos. | N4, [32] |
 
 ## RODO
 
@@ -69,7 +69,7 @@ Rozporządzenie RODO [14] zalicza dane o lokalizacji do danych osobowych (art. 4
 
 | ID | Kategoria | Wymaganie | Miara / próg | Jak sprawdzamy | Źródło potrzeby |
 | --- | --- | --- | --- | --- | --- |
-| NFR-25 | RODO | Zdjęcia w zgłoszeniach przyjętych nie pokazują rozpoznawalnych twarzy ani tablic rejestracyjnych. Weryfikator zasłania je albo odrzuca zdjęcie. | 0 rozpoznawalnych twarzy i tablic w zdjęciach zgłoszeń przyjętych. Przypomnienie przy robieniu zdjęcia. | Punkt listy kontrolnej R2, przegląd 20 losowych zdjęć zgłoszeń przyjętych. | RODO art. 5 ust. 1 lit. c [14], wizerunek: art. 81 prawa autorskiego [15]; tablice (do potwierdzenia) |
+| NFR-25 | RODO | Zdjęcia w zgłoszeniach przyjętych nie pokazują rozpoznawalnych twarzy ani tablic rejestracyjnych. Weryfikator zasłania je albo odrzuca zgłoszenie z powodem (BR-15, BR-16). | 0 rozpoznawalnych twarzy i tablic w zdjęciach zgłoszeń przyjętych. Przypomnienie przy robieniu zdjęcia. | Punkt listy kontrolnej R2, przegląd 20 losowych zdjęć zgłoszeń przyjętych. | RODO art. 5 ust. 1 lit. c [14], wizerunek: art. 81 prawa autorskiego [15]; tablice (do potwierdzenia) |
 | NFR-26 | RODO | Serwer usuwa metadane zdjęcia (miejsce, model telefonu, czas) przed udostępnieniem. | 0 znaczników lokalizacji w pobranych zdjęciach. | Pobranie 20 zdjęć i odczyt metadanych. | RODO art. 5 ust. 1 lit. c, art. 25 [14] |
 | NFR-27 | RODO | Aplikacja pobiera lokalizację tylko na ekranie, przy pomiarze precyzyjnym (C1) lub zgłoszeniu szybkim (V4). Nie zapisuje śladu ruchu. | Brak uprawnienia do lokalizacji w tle. 0 zapisanych pozycji poza punktem bariery. | Przegląd uprawnień w ustawieniach telefonu, przegląd danych na serwerze. | RODO art. 4 pkt 1, art. 5 ust. 1 lit. c [14], [12] |
 | NFR-28 | RODO | O autorze serwer przechowuje tylko identyfikator konta, nazwę wyświetlaną i rolę. E-mail i hasło zostają w Usłudze logowania. | 0 danych autora w odpowiedziach publicznych. 0 zewnętrznych narzędzi analitycznych i reklamowych. | Test kontraktu publicznych odpowiedzi, przegląd zależności aplikacji. | RODO art. 5 ust. 1 lit. c, art. 25 [14], US1.2 |
@@ -119,7 +119,7 @@ Rozporządzenie RODO [14] zalicza dane o lokalizacji do danych osobowych (art. 4
 | --- | --- | --- | --- | --- | --- |
 | NFR-48 | Odporność | Budynek bez planów pięter — brak danych albo nieudany import — działa jako budynek podstawowy (BR-G1, BR-G3). | 100% budynków podstawowych otwiera kartę i przyjmuje zgłoszenie bez błędu. Przy uszkodzonych danych 1 z 5 budynków szczegółowych pozostałe 4 mają plany, a import kończy się raportem. | Scenariusze BR-G1 i BR-G3, automatyczny przegląd kart wszystkich budynków, import z celowo uszkodzonymi danymi. | BR-G1, BR-G3, N3 |
 | NFR-49 | Odporność | Punkt poza konturem budynku, także daleko od budynków PWr, to stan normalny (BR-G2, BR-G4). | 0 komunikatów błędu. Propozycja najbliższego budynku, którą można odrzucić. Daleko od budynków PWr zgłoszenie zapisuje się jako „poza budynkiem”. | Scenariusze BR-G2 (punkt między budynkami) i BR-G4 (punkt na ulicy obok kampusu). | BR-G2, BR-G4, N3, N5 |
-| NFR-50 | Odporność | Awaria serwera lub źródeł zewnętrznych (podkład OSM, ArcGIS PWr, USOS) nie zatrzymuje aplikacji. Aplikacja pokazuje dane z telefonu, a zgłoszenia czekają w kolejce. Dane źródeł są importowane przy wdrożeniu. | 0 awarii aplikacji. Ścieżki US1, US2 i US4 przechodzą. Brak podkładu nie blokuje konturów i list. Komunikat bez żargonu technicznego. | Test z wyłączonym serwerem i z zablokowanym dostępem do źródeł zewnętrznych. | N1, N6, NFR-5, NFR-39, decyzja 17 |
+| NFR-50 | Odporność | Awaria serwera lub źródeł zewnętrznych (podkład OSM, ArcGIS PWr) nie zatrzymuje aplikacji. Aplikacja pokazuje dane z telefonu, a zgłoszenia czekają w kolejce. Dane źródeł są importowane przy wdrożeniu. | 0 awarii aplikacji. Ścieżki US1, US2 i US4 przechodzą. Brak podkładu nie blokuje konturów i list. Komunikat bez żargonu technicznego. | Test z wyłączonym serwerem i z zablokowanym dostępem do źródeł zewnętrznych. | N1, N6, NFR-5, NFR-39, decyzja 17 |
 
 ## Źródła
 
