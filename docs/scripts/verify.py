@@ -19,7 +19,7 @@ from typing import Any, Callable, Iterator
 
 import yaml
 
-from render import node_modules_dir
+from render import kill_tree, node_modules_dir
 
 REPO = Path(__file__).resolve().parent.parent
 SCRIPTS = REPO / "scripts"
@@ -30,6 +30,9 @@ DEFAULT_VALE = Path("tools/vale/vale.exe")
 EXCLUDED_DIRS = ("includes", "_generated")
 SCREEN_WIDTHS = (1280, 390)
 SCREEN_HEIGHT = 900
+STEP_TIMEOUT_S = 900
+TIMEOUT_CODE = 124
+CHECK_IDS_SUMMARY = re.compile(r"check_ids: błędów (\d+), uwag (\d+)")
 LINK_NOT_FOUND = re.compile(r"Doc file '([^']+)' contains a link (?:to )?'([^']+)'.*not found")
 PASS, FAIL, WARN, SKIP = "PASS", "FAIL", "WARN", "SKIP"
 
@@ -53,19 +56,31 @@ class Options:
     screens: Path | None
 
 
-def run_command(cmd: list[str], capture: bool = False) -> tuple[int, str]:
+def run_command(cmd: list[str], capture: bool = False, timeout_s: int = STEP_TIMEOUT_S) -> tuple[int, str]:
     """Uruchamia polecenie w katalogu repozytorium i zwraca (kod wyjścia, wyjście).
 
     Gwarantuje: bez `capture` wyjście trafia na bieżąco na konsolę, a zwracany tekst jest pusty;
     z `capture` wyjście jest zwracane i również wypisywane. Brak programu daje kod 127 i komunikat.
+    Po `timeout_s` sekundach albo po Ctrl+C całe drzewo procesów jest zabijane; przekroczenie czasu daje kod 124.
     """
+    pipe = subprocess.PIPE if capture else None
     try:
-        if not capture:
-            return subprocess.run(cmd, cwd=REPO, check=False).returncode, ""
-        proc = subprocess.run(cmd, cwd=REPO, check=False, capture_output=True, text=True, encoding="utf-8", errors="replace")
+        proc = subprocess.Popen(
+            cmd, cwd=REPO, stdout=pipe, stderr=subprocess.STDOUT if capture else None,
+            text=True, encoding="utf-8", errors="replace", start_new_session=os.name != "nt",
+        )
     except FileNotFoundError:
         return 127, f"nie znaleziono programu: {cmd[0]}"
-    output = proc.stdout + proc.stderr
+    try:
+        output = proc.communicate(timeout=timeout_s)[0] or ""
+    except subprocess.TimeoutExpired:
+        kill_tree(proc)
+        proc.communicate()
+        print(f"verify: przekroczono limit {timeout_s} s: {Path(cmd[0]).name}")
+        return TIMEOUT_CODE, ""
+    except KeyboardInterrupt:
+        kill_tree(proc)
+        raise
     print(output, end="" if output.endswith("\n") or not output else "\n")
     return proc.returncode, output
 
@@ -140,21 +155,31 @@ def lang_targets(options: Options) -> list[Path]:
 
 
 def step_lang(options: Options) -> StepResult:
-    """Krok: LanguageTool (scripts/lang.py) dla plików z lang_targets."""
+    """Krok: LanguageTool (scripts/lang.py) dla plików z lang_targets.
+
+    Gwarantuje: nigdy nie daje FAIL; znaleziska i niedziałający LanguageTool dają WARN, bo to podpowiedzi,
+    a fałszywe alarmy wyłącza się w scripts/lang-ignore.txt.
+    """
     files = lang_targets(options)
     if not files:
         return StepResult("lang", SKIP, "brak zmienionych lub podanych plików .md")
     code, _ = run_command(python_script("lang.py", *[str(f) for f in files]))
-    status = {0: PASS, 1: FAIL}.get(code, FAIL)
-    detail = f"{len(files)} plików" + ("" if code == 0 else " — błędy językowe" if code == 1 else " — LanguageTool nie działa")
-    return StepResult("lang", status, detail)
+    if code == 0:
+        return StepResult("lang", PASS, f"{len(files)} plików")
+    reason = "znaleziska językowe (lista wyżej)" if code == 1 else f"LanguageTool nie działa, kod {code}"
+    return StepResult("lang", WARN, f"{len(files)} plików — {reason}")
 
 
 def step_check_ids(options: Options) -> StepResult:
-    """Krok: kontrola ID (scripts/check_ids.py --strict); w trybie --partial błędy dają WARN zamiast FAIL."""
-    code, _ = run_command(python_script("check_ids.py", "--strict"))
+    """Krok: kontrola ID (scripts/check_ids.py --strict); w trybie --partial błędy dają WARN zamiast FAIL.
+
+    Gwarantuje: same uwagi (bez błędów) dają WARN.
+    """
+    code, output = run_command(python_script("check_ids.py", "--strict"), capture=True)
+    summary = CHECK_IDS_SUMMARY.search(output)
     if code == 0:
-        return StepResult("check_ids", PASS)
+        warnings = int(summary.group(2)) if summary else 0
+        return StepResult("check_ids", WARN, f"uwag {warnings}") if warnings else StepResult("check_ids", PASS)
     if code == 1 and options.partial:
         return StepResult("check_ids", WARN, "błędy ID (dokumenty powstają stopniowo)")
     return StepResult("check_ids", FAIL, f"kod {code}")
@@ -362,24 +387,35 @@ def step_screens(out_dir: Path) -> StepResult:
 
 
 def run_steps(options: Options) -> list[StepResult]:
-    """Uruchamia wszystkie kroki po kolei (także po porażce wcześniejszego) i zwraca ich wyniki."""
-    steps: list[Callable[[], StepResult]] = [
-        step_render,
-        step_abbr,
-        step_vale,
-        step_markdownlint,
-        lambda: step_lang(options),
-        lambda: step_check_ids(options),
-        lambda: step_mkdocs(options),
+    """Uruchamia wszystkie kroki po kolei (także po porażce lub wyjątku wcześniejszego) i zwraca ich wyniki.
+
+    Gwarantuje: nieoczekiwany wyjątek kroku daje FAIL tego kroku zamiast przerwania całej kontroli.
+    """
+    steps: list[tuple[str, Callable[[], StepResult]]] = [
+        ("render", step_render),
+        ("abbr", step_abbr),
+        ("vale", step_vale),
+        ("markdownlint", step_markdownlint),
+        ("lang", lambda: step_lang(options)),
+        ("check_ids", lambda: step_check_ids(options)),
+        ("mkdocs", lambda: step_mkdocs(options)),
     ]
     if options.screens:
-        steps.append(lambda: step_screens(options.screens))
+        steps.append(("screens", lambda: step_screens(options.screens)))
     results = []
-    for step in steps:
-        result = step()
+    for name, step in steps:
+        result = run_step(name, step)
         print(f"verify: {result.name}: {result.status} {result.detail}".rstrip())
         results.append(result)
     return results
+
+
+def run_step(name: str, step: Callable[[], StepResult]) -> StepResult:
+    """Wykonuje jeden krok i zwraca jego wynik; wyjątek (poza Ctrl+C) zamienia na FAIL z opisem."""
+    try:
+        return step()
+    except Exception as exc:
+        return StepResult(name, FAIL, f"wyjątek: {type(exc).__name__}: {exc}")
 
 
 def print_summary(results: list[StepResult]) -> None:

@@ -11,6 +11,7 @@ import sys
 import tempfile
 from collections import Counter
 from pathlib import Path
+from typing import Any
 
 REPO = Path(__file__).resolve().parent.parent
 MAIN_REPO = Path(".")
@@ -70,7 +71,7 @@ def is_fresh(source: Path, out_dir: Path) -> bool:
     return all(o.exists() and o.stat().st_mtime >= source.stat().st_mtime for o in outputs)
 
 
-def kill_tree(proc: subprocess.Popen[bytes]) -> None:
+def kill_tree(proc: subprocess.Popen[Any]) -> None:
     """Kończy proces wraz z potomkami (np. Chromium uruchomionym przez Node)."""
     if os.name == "nt":
         subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)], capture_output=True, check=False)
@@ -81,7 +82,7 @@ def kill_tree(proc: subprocess.Popen[bytes]) -> None:
 def run_with_timeout(cmd: list[str], timeout_s: int, cwd: Path) -> tuple[int, str]:
     """Uruchamia polecenie i zwraca (kod wyjścia, połączone stdout+stderr).
 
-    Gwarantuje: po przekroczeniu `timeout_s` całe drzewo procesów zostaje zabite.
+    Gwarantuje: po przekroczeniu `timeout_s` albo po Ctrl+C całe drzewo procesów zostaje zabite.
     Wyjątki: RenderError przy przekroczeniu czasu lub braku programu.
     """
     flags = subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
@@ -102,6 +103,9 @@ def run_with_timeout(cmd: list[str], timeout_s: int, cwd: Path) -> tuple[int, st
         kill_tree(proc)
         proc.communicate()
         raise RenderError(f"przekroczono limit {timeout_s} s: {' '.join(cmd[:3])} …") from exc
+    except KeyboardInterrupt:
+        kill_tree(proc)
+        raise
     return proc.returncode, out.decode("utf-8", errors="replace")
 
 
