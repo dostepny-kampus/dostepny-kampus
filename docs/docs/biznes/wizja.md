@@ -31,7 +31,7 @@ Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 o
 | Osoby starsze odwiedzające kampus, np. słuchacze Politechniki Trzeciego Wieku (od 2025 r., ok. 200 osób w wieku 60+, biuro w C-13) [6], [7] | Odwiedzający | N1, N2, N3, N4 | przed wyjściem z domu wie, którym wejściem wejdzie do budynku |
 | Osoby z ograniczoną mobilnością, goście uczelni | Odwiedzający | N1, N2, N3 | informację o wejściach, windach i barierach w jednym miejscu |
 | Student lub pracownik uczelni prowadzący obchód | Zbierający | N5, N6, N7 | dokładne zaznaczenie bariery na miejscu, także bez zasięgu sieci |
-| Pracownik sprawdzający zgłoszenia | Weryfikator | N7, N8 | kolejkę zgłoszeń z podpowiedzią możliwych duplikatów |
+| Pracownik uczelni weryfikujący zgłoszenia | Weryfikator | N7, N8 | kolejkę zgłoszeń z podpowiedzią możliwych duplikatów |
 | Kierownik inwentaryzacji | Koordynator | N9 | postęp w każdym budynku i eksport danych do QGIS |
 | Dział Dostępności PWr [8] | brak (tylko interesariusz) | aktualne dane o barierach (hipoteza) | materiał do deklaracji i raportu; na tym etapie bez kontaktu z działem |
 
@@ -49,7 +49,7 @@ Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 o
 
 ## Zakres
 
-Nie budujemy gotowego systemu dla całego kampusu. Pięć budynków opracowujemy szczegółowo, a reszta działa w trybie podstawowym i nigdy nie przestaje działać.
+Nie budujemy gotowego systemu dla całego kampusu. Pięć budynków opracowujemy szczegółowo. Pozostałe budynki i teren kampusu obsługujemy prościej, ale zgłoszenie bariery działa zawsze.
 
 | Poziom | Gdzie | Co działa |
 | --- | --- | --- |
