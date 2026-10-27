@@ -8,48 +8,63 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
 
     @US15.1
     Szablon scenariusza: Oznaczenie piętra albo budynku jako obejrzanego
-      Zakładając, że Zbierający jest zalogowany i ma sieć
+      Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
+      Oraz telefon ma sieć
+      Oraz w budynku <budynek> nic nie jest jeszcze oznaczone jako obejrzane
       Jeżeli w budynku <budynek> oznaczy <co>
-      Wtedy w postępie budynku <budynek> widać <wynik>
+      Wtedy postęp budynku <budynek> pokazuje <wynik>
 
       Przykłady:
         | budynek | co                                 | wynik                    |
-        | A-1     | jedno z 5 pięter jako obejrzane    | 1 z 5 pięter obejrzanych |
-        | B-1     | jedno z 7 pięter jako obejrzane    | 1 z 7 pięter obejrzanych |
+        | A-1     | jedno z 5 pięter jako obejrzane    | 1 z 5 pięter             |
+        | B-1     | jedno z 7 pięter jako obejrzane    | 1 z 7 pięter             |
         | B-4     | cały budynek jako „obejrzany”      | znacznik „obejrzany”     |
 
     @US15.2
     Scenariusz: Zbierający cofa własny znacznik
-      Zakładając, że Zbierająca oznaczyła piętro budynku A-1 jako obejrzane
+      Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
       Jeżeli cofnie to oznaczenie
       Wtedy piętro nie jest już obejrzane
 
     @US15.2
     Scenariusz: Inny Zbierający nie cofnie cudzego znacznika
-      Zakładając, że Zbierająca oznaczyła piętro budynku A-1 jako obejrzane
+      Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
       Jeżeli inny Zbierający spróbuje cofnąć to oznaczenie
       Wtedy próba jest odrzucona
       Oraz piętro jest nadal obejrzane
 
     @US11.3
     Scenariusz: Koordynator cofa znacznik dowolnego Zbierającego
-      Zakładając, że Zbierająca oznaczyła piętro budynku A-1 jako obejrzane
+      Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
       Jeżeli Koordynator cofnie to oznaczenie
       Wtedy piętro nie jest już obejrzane
       Oraz postęp budynku A-1 pokazuje o jedno piętro obejrzane mniej
 
     @US15.3 @BR-9
     Szablon scenariusza: Znacznik i jego cofnięcie bez sieci czekają w telefonie
-      Zakładając, że Zbierający jest w piwnicy budynku A-1, gdzie nie ma sieci
-      Jeżeli <czynność>
-      Wtedy zmiana czeka w telefonie, a postęp budynku A-1 się nie zmienia
-      Oraz po powrocie sieci zmiana wysyła się bez działania Zbierającego
-      Oraz postęp budynku A-1 pokazuje nową wartość
+      Zakładając, że Zbierający oznaczył 3 z 5 pięter budynku A-1 jako obejrzane
+      Oraz telefon nie ma sieci
+      Jeżeli Zbierający <czynność>
+      Wtedy zmiana znacznika czeka w telefonie na synchronizację
+      Oraz postęp budynku A-1 pokazuje nadal 3 z 5 pięter
 
       Przykłady:
-        | czynność                                               |
-        | oznaczy piwnicę jako obejrzaną                         |
-        | cofnie swoje wcześniejsze oznaczenie piwnicy           |
+        | czynność                                             |
+        | oznaczy kolejne piętro jako obejrzane                |
+        | cofnie swoje oznaczenie jednego z obejrzanych pięter |
+
+    @US15.3 @BR-9
+    Szablon scenariusza: Po powrocie sieci znacznik i jego cofnięcie wysyłają się same
+      Zakładając, że Zbierający oznaczył 3 z 5 pięter budynku A-1 jako obejrzane
+      Oraz bez sieci <czynność>
+      Jeżeli sieć wróci
+      Wtedy zmiana znacznika dociera na serwer bez działania Zbierającego
+      Oraz postęp budynku A-1 pokazuje <po> z 5 pięter
+
+      Przykłady:
+        | czynność                                              | po |
+        | oznaczył kolejne piętro jako obejrzane                | 4  |
+        | cofnął swoje oznaczenie jednego z obejrzanych pięter  | 2  |
 
   @BR-21
   Reguła: Postęp budynku liczy się tym samym miernikiem w każdym budynku
