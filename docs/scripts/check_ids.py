@@ -1,4 +1,4 @@
-"""Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, M, TB) i macierz śledzenia. Author: Vladyslav Yevkov. Version: 0.1.0. Copyright (c) 2026 Vladyslav Yevkov."""
+"""Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB) i macierz śledzenia. Author: Vladyslav Yevkov. Version: 0.1.0. Copyright (c) 2026 Vladyslav Yevkov."""
 
 from __future__ import annotations
 
@@ -10,8 +10,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-ID_BODY = r"US\d+\.\d+|US\d+|UC\d+|BR-G\d+|BR-\d+|NFR-\d+|TB-\d+|R-\d+|M-\d+|N\d+"
-ID_RE = re.compile(rf"(?<![\w-])(?:{ID_BODY})(?![\w-]|\.\d)")
+ID_BODY = r"US\d+\.\d+|US\d+|UC\d+|BR-G\d+|BR-\d+|NFR-\d+|TB-\d+|RO-[A-Z]{3}|R-\d+|M-\d+|N\d+"
+ID_RE = re.compile(rf"(?<![\w-])(?:{ID_BODY})(?![\w°-]|\.\d)")
+DEFINITION_END = re.compile(r"[\s:.*_\]`]|$")
+LEGACY_AC = re.compile(r"(?<![\w-])AC\d+(?![\w-])")
 ID_FULL = re.compile(rf"(?:{ID_BODY})")
 AC_RE = re.compile(r"^US\d+\.\d+$")
 US_RE = re.compile(r"^US\d+$")
@@ -59,6 +61,7 @@ class Corpus:
 
     definitions: dict[str, list[Location]] = field(default_factory=lambda: defaultdict(list))
     references: list[tuple[str, Location]] = field(default_factory=list)
+    legacy_ac: list[tuple[str, Location]] = field(default_factory=list)
     links: dict[str, set[str]] = field(default_factory=lambda: defaultdict(set))
     scenarios: dict[str, list[Scenario]] = field(default_factory=lambda: defaultdict(list))
     feature_files: int = 0
@@ -100,9 +103,16 @@ def clean_line(line: str) -> str:
 
 
 def leading_id(text: str) -> str | None:
-    """Zwraca ID stojące na początku tekstu (po formatowaniu Markdown) albo None."""
-    match = ID_RE.match(LEADING_NOISE.sub("", text, count=1))
-    return match.group(0) if match else None
+    """Zwraca ID stojące na początku tekstu (po formatowaniu Markdown) albo None.
+
+    Gwarantuje: po ID jest koniec tekstu, odstęp, dwukropek, kropka albo znacznik formatowania;
+    zakres („N5–N9”), wyliczenie („N1, N2”) i ciąg dalszy („N10…”) nie dają ID, bo nie są definicją.
+    """
+    body = LEADING_NOISE.sub("", text, count=1)
+    match = ID_RE.match(body)
+    if not match or not DEFINITION_END.match(body, match.end()):
+        return None
+    return match.group(0)
 
 
 def table_cells(line: str) -> list[str] | None:
@@ -164,6 +174,7 @@ def scan_markdown(path: Path, corpus: Corpus) -> None:
         owner = scan_table_row(cells, location, [s for _, s in sections], corpus) if cells else None
         refs_text = " ".join(cells[1:]) if cells and owner else line
         record_references(refs_text, location, [owner] + [s for _, s in sections], corpus)
+        corpus.legacy_ac += [(m.group(0), location) for m in LEGACY_AC.finditer(line)]
 
 
 def scan_heading(heading: re.Match[str], location: Location, sections: list[tuple[int, str | None]], corpus: Corpus) -> None:
@@ -269,11 +280,12 @@ def parent_us(ac: str) -> str:
 
 
 def check(corpus: Corpus) -> list[Finding]:
-    """Zwraca wyniki kontroli: niezdefiniowane odwołania, US bez N, AC bez scenariusza, UC bez US, wielokrotne definicje.
+    """Zwraca wyniki kontroli: niezdefiniowane odwołania, US bez N, AC bez scenariusza, UC bez US, wielokrotne definicje
+    i kryteria w starym formacie „ACn” (decyzja 30: kryteria zapisuje się jako USx.y).
 
     Gwarantuje: AC bez scenariusza jest „BŁĘDEM” tylko wtedy, gdy istnieje choć jeden plik .feature; inaczej „UWAGĄ”.
     """
-    findings = undefined_references(corpus)
+    findings = undefined_references(corpus) + legacy_criteria(corpus)
     defined = sorted(corpus.definitions, key=natural_key)
     first = {i: str(corpus.definitions[i][0]) for i in defined}
     ac_level = "BŁĄD" if corpus.feature_files else "UWAGA"
@@ -300,6 +312,11 @@ def undefined_references(corpus: Corpus) -> list[Finding]:
             seen.add((ref, location))
             findings.append(Finding("BŁĄD", str(location), f"odwołanie do niezdefiniowanego ID: {ref}"))
     return findings
+
+
+def legacy_criteria(corpus: Corpus) -> list[Finding]:
+    """Zwraca uwagi dla odwołań do kryteriów w starym formacie „US9 AC3” zamiast „US9.3”."""
+    return [Finding("UWAGA", str(loc), f"{ac}: stary format kryterium, zapisz jako USx.y") for ac, loc in corpus.legacy_ac]
 
 
 def neighbours_matching(corpus: Corpus, ident: str, pattern: re.Pattern[str]) -> list[str]:
