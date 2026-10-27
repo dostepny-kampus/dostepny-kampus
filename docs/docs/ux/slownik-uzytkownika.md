@@ -368,7 +368,7 @@ Tabela liczy każdy ekran w stanie typowym: bez sieci, z jednym wejściem i jedn
 
 Limit kursu, najwyżej 50% ikon, mierzymy dla całego interfejsu i dla typowego stanu każdego ekranu. Cały interfejs ma 24%, a najwięcej w stanie typowym ma V3, 47%. Stany V3 powyżej 50% to świadomy wyjątek.
 
-Oznaczenie wejścia i wskaźnik sieci zawsze mają tekst i ikonę (NFR-21, kryterium WCAG „Use of Color” [5]). Pasek dolny wygląda tak samo na każdym ekranie. Nie usuwamy tych ikon, żeby zmieścić się w limicie, bo każda stoi obok tekstu i tekst niesie znaczenie sam.
+Oznaczenie wejścia i wskaźnik sieci zawsze mają tekst i ikonę (NFR-21 i kryterium WCAG o użyciu koloru [5]). Pasek dolny wygląda tak samo na każdym ekranie. Nie usuwamy tych ikon, żeby zmieścić się w limicie, bo każda stoi obok tekstu i tekst niesie znaczenie sam.
 
 ## Nazwa wejścia do pracy zespołu {#nazwa-wejscia}
 
