@@ -14,7 +14,7 @@ Etykiety przycisków i treść komunikatów w cudzysłowie są robocze. Ostatecz
 | V4 | Zgłoszenie szybkie | RO-ODW i role pracownicze; RO-GOS przechodzi do L1 | US4, US14.2 | — |
 | V5 | Pomoc | wszystkie | US5 | — |
 | L1 | Prośba o logowanie | RO-GOS | US14.2, US14.3 | tak |
-| L2 | Konto | RO-ODW i role pracownicze | US14.1, US14.3 | tak |
+| L2 | Konto; dla ról pracowniczych „Moja praca” (nazwa robocza, B6) | RO-ODW i role pracownicze | US14.1, US14.3 | tak |
 | C1 | Pomiar pozycji | RO-ZBI | US6 | — |
 | C2 | Formularz zgłoszenia | RO-ZBI | US7, US8.3 | — |
 | C3 | Moje zgłoszenia | RO-ZBI, tylko własne | US8, US9.1 | — |
@@ -38,7 +38,7 @@ Dotyczą każdego ekranu. Przy ekranach podajemy tylko to, co do nich dochodzi.
 | --- | --- |
 | Nagłówek z nazwą ekranu i przyciskiem „Wstecz”, zawsze widocznym w tym samym miejscu. Wyjątek: V1 jako ekran startowy. | zasada dla osób starszych, NFR-15 (WCAG 3.2.3) [1] |
 | Wskaźnik braku sieci tekstem i ikoną. Gdy dane pochodzą z telefonu, obok jest data ostatniej synchronizacji. | US9.1, NFR-10, NFR-21 |
-| Pasek dolny na V1, V2, V3, V5 i L2: „Mapa” (V1), „Zgłoś barierę” (V4), „Pomoc” (V5), „Konto” (L1 albo L2). Na formularzach i krokach zgłoszenia paska nie ma. | US1, US4, US5.1, US14 |
+| Pasek dolny na V1, V2, V3, V5 i L2: „Mapa” (V1), „Zgłoś barierę” (V4), „Pomoc” (V5), „Konto” (L1 albo L2). Osoba z co najmniej jedną rolą pracowniczą widzi na czwartej pozycji, w tym samym miejscu, nazwę „Moja praca” (nazwa robocza, B6); pozycja prowadzi do L2. Na formularzach i krokach zgłoszenia paska nie ma. | US1, US4, US5.1, US14, US14.1; [mapa nawigacji](mapa-nawigacji.md), P1 |
 | Jedna czynność główna na ekranie, wyróżniona położeniem i rozmiarem, nie kolorem. | NFR-21, zasada dla osób starszych |
 | Cel dotyku co najmniej 48 × 48 dp. | NFR-17 |
 | Kontrast tekstu, ikon statusu, ramek pól i fokusu według progów NFR-16. | NFR-16 |
@@ -50,6 +50,7 @@ Dotyczą każdego ekranu. Przy ekranach podajemy tylko to, co do nich dochodzi.
 | Brak limitów czasu na odpowiedź użytkownika. | NFR-23 |
 | Komunikat o błędzie mówi, co się stało i co zrobić, bez żargonu technicznego. | NFR-15 (WCAG 3.3.1, 3.3.3) [1], NFR-50 [2] |
 | Bez wymaganej roli ekranu nie ma w aplikacji, a serwer odrzuca żądanie. | US14.1, NFR-33 |
+| Po wysłaniu, zapisie albo decyzji formularz i kroki przed nim znikają z historii „Wstecz”. Dotyczy to V4 po „Wyślij”, C1 i C2 po „Zapisz”, C6 i C7 po „Wyślij do sprawdzenia”, C4 po wyborze wersji i R2 po decyzji. „Wstecz” z ekranu, który się wtedy otwiera, wraca tam, skąd zaczęła się praca, np. z C3 do L2 albo V2, z R1 do L2. | NFR-15 (WCAG 3.2.3) [1], zasada dla osób starszych; [mapa nawigacji](mapa-nawigacji.md), P2 |
 
 Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, R2, K1, K2, K3). L1 ma własne stany, bez słowa „serwer”:
 
@@ -119,6 +120,7 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 | Zbierający: „Bariery już nie ma” przy każdym zgłoszeniu przyjętym | czynność | US8.4, BR-19 | C7 |
 | Zbierający: „Popraw zgłoszenie” przy własnym zgłoszeniu przyjętym i przy każdym przyjętym zgłoszeniu szybkim | czynność | BR-3, BR-18 | C2 |
 | Zbierający: „Piętra obejrzane” dla całego budynku | czynność | US15.1 | C5 |
+| Pasek dolny | czynność | wymagania wspólne | V1, V4, V5, L1 / L2 |
 
 Bariery z planu piętra są też na liście pod planem, więc TalkBack nie potrzebuje planu (NFR-19). Gość i Odwiedzający nie widzą przycisków Zbierającego, więc ich karta jest krótka.
 
@@ -141,7 +143,7 @@ Dostępność i osoby starsze: oznaczenie wejścia jest pierwszą informacją pr
 | Cel | Osoba wie, którym wejściem wejdzie do budynku bez barier, albo wie, że takiego wejścia nie ma. |
 | Role | wszystkie, bez logowania |
 | Realizuje | US3.1, US3.2, US2.1, US2.2, US17.3 |
-| Czynność główna | brak; ekran odpowiada na jedno pytanie, jedyna czynność to „Wstecz” (V2) |
+| Czynność główna | brak; ekran odpowiada na jedno pytanie, a dalej prowadzą tylko „Wstecz” (V2) i pasek dolny |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -149,6 +151,7 @@ Dostępność i osoby starsze: oznaczenie wejścia jest pierwszą informacją pr
 | Każde wejście dostępne: nazwa, oznaczenie tekstem i ikoną | dane | US2.1, NFR-21 | — |
 | Przy wejściu: data i źródło oznaczenia | dane | US17.3 | — |
 | Zgłoszenia przyjęte przy tym wejściu ze zdjęciem i datą weryfikacji | dane | US2.2, UC4 4c | — |
+| Pasek dolny | czynność | wymagania wspólne | V1, V4, V5, L1 / L2 |
 
 Droga z mapy: dotknięcie budynku (V2), „Zaplanuj wizytę” (V3). To 2 dotknięcia, a próg US3.2 to 3.
 
@@ -193,11 +196,13 @@ Aplikacja nie pyta o typ bariery, uciążliwość, budynek ani piętro (US4.3, B
 | Zgoda tylko na przybliżoną lokalizację | przed aparatem: „Telefon podaje tylko przybliżone miejsce, a to za mało, by wskazać barierę. Pozwól na dokładną lokalizację.” Przyciski „Pozwól na dokładną lokalizację” i „Wróć do mapy” (BR-8, BR-14) [3] |
 | Lokalizacja wyłączona w telefonie | „Lokalizacja w telefonie jest wyłączona. Włącz ją, aby wysłać zgłoszenie.” Przyciski „Otwórz ustawienia” i „Wróć do mapy” (UC7 4c) |
 | Ładowanie — pozycja jeszcze nieznana w kroku 3 | „Ustalam miejsce bariery…”; „Wyślij” czeka, aż telefon poda pozycję albo zgłosi, że jej nie ustali. Aplikacja nie przerywa zgłoszenia upływem czasu (NFR-23) |
-| Brak pozycji | telefon zgłosił, że nie ustali pozycji: „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” Przyciski „Spróbuj ponownie” i „Anuluj zgłoszenie”. Zdjęcie i grupa zostają (UC7 4c) |
+| Brak pozycji | telefon zgłosił, że nie ustali pozycji: „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” Przyciski „Spróbuj ponownie” i „Anuluj zgłoszenie”. Zdjęcie i grupa zostają do ponownej próby (UC7 4c). „Anuluj zgłoszenie” wraca do mapy (V1), a zgłoszenie nie powstaje, jak przy rezygnacji z logowania (UC7 1b) |
 | Brak sieci | potwierdzenie: „Zgłoszenie zapisane w telefonie. Wyślemy je, gdy wróci internet, i trafi do sprawdzenia.” (US4.2, UC7 7a) |
 | Błąd zapisu | „Za mało miejsca w telefonie, więc zgłoszenie się nie zapisało. Usuń niepotrzebne zdjęcia albo filmy i spróbuj ponownie.” Zdjęcie i grupa zostają (NFR-5, NFR-7) |
 
 Dostępność i osoby starsze: każdy krok ma jedną czynność, a przyciski grup wypełniają szerokość ekranu (US4.3, NFR-17). Odwiedzający nie traci zdjęcia przy braku pozycji ani przy błędzie. „Wstecz” w krokach 2 i 3 wraca o krok, a zdjęcie i grupa zostają.
+
+„Wstecz” z potwierdzenia wraca do ekranu, z którego otwarto V4, a nie do kroku 3 (wymagania wspólne).
 
 #### Jak ograniczamy przerwanie przez logowanie
 
@@ -230,6 +235,7 @@ Zostaje jedno przerwanie przy pierwszym zgłoszeniu. Warianty kolejności opisuj
 | Zdanie w instrukcji: „Do zgłoszenia bariery potrzebne jest konto. Możesz je założyć teraz w »Konto«.” | dane | US5.1, US14.2 | — |
 | „Dalej”, a w ostatnim kroku „Zacznij” | czynność główna | US5.1 | następny krok albo V1 |
 | „Pomiń” | czynność | US5.1 | V1 |
+| Pasek dolny | czynność | wymagania wspólne | V1, V4, L1 / L2 |
 
 | Stan | Co widać |
 | --- | --- |
@@ -253,11 +259,13 @@ Treść instrukcji jest w telefonie, więc ekran nie ma stanu braku sieci. Dost�
 | --- | --- | --- | --- |
 | Zdanie „Zgłoszenie bariery wymaga konta. Konto chroni mapę przed fałszywymi zgłoszeniami.” | dane | US14.2, BR-8 | — |
 | Przy wejściu z V4: „Po zalogowaniu od razu zrobisz zdjęcie. Całe zgłoszenie to 3 kroki.” | dane | US14.2, US4.1 | — |
-| „Zaloguj się” | czynność główna | US14, NFR-31 | strona Usługi logowania w przeglądarce systemowej, potem ekran, z którego przyszła osoba |
-| „Załóż konto” | czynność | US14.3, NFR-30 | rejestracja w przeglądarce z klauzulą informacyjną |
+| „Zaloguj się” | czynność główna | US14, NFR-31 | strona Usługi logowania w przeglądarce systemowej; po zalogowaniu z V4 krok 1 V4, z „Konto” L2 |
+| „Załóż konto” | czynność | US14.3, NFR-30 | rejestracja w przeglądarce z klauzulą informacyjną; potem jak po zalogowaniu |
 | „Nie teraz” | czynność | UC7 1b | V1 |
 
 Pola hasła w aplikacji nie ma (NFR-31). Po zalogowaniu z V4 aplikacja otwiera aparat w kroku 1 (US14.2).
+
+Po zalogowaniu albo rejestracji z „Konto” otwiera się L2 z rolami i czynnościami (UC6 krok 3, US12.1).
 
 | Stan | Co widać |
 | --- | --- |
@@ -275,11 +283,10 @@ Dostępność i osoby starsze: strona logowania w przeglądarce też spełnia WC
 | Cel | Zalogowana osoba widzi swoje role i przechodzi do czynności swojej roli. |
 | Role | RO-ODW i role pracownicze |
 | Realizuje | US14.1, US14.3 |
-| Czynność główna | rola pracownicza: wybór czynności; RO-ODW: brak czynności roli, ekran ma tylko dane konta |
+| Czynność główna | rola pracownicza: wybór czynności z listy na górze ekranu; RO-ODW: brak czynności roli, ekran ma tylko dane konta |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Nazwa wyświetlana i lista ról, np. „Odwiedzający, Zbierający” | dane | BR-1, US14.3 | — |
 | „Twoje czynności”: tylko czynności posiadanych ról | czynność główna | US14.1, BR-1 | — |
 | Zbierający: „Nowe zgłoszenie z pomiarem” | czynność | US6 | C1 |
 | Zbierający: „Moje zgłoszenia” | czynność | US8 | C3 |
@@ -287,20 +294,23 @@ Dostępność i osoby starsze: strona logowania w przeglądarce też spełnia WC
 | Koordynator: „Postęp inwentaryzacji” | czynność | US11 | K1 |
 | Koordynator: „Zaproś osobę” | czynność | US12 | K2 |
 | Koordynator: „Pobierz eksport” | czynność | US13 | K3 |
-| „Informacja o danych osobowych” | czynność | NFR-30 | treść klauzuli |
-| „Wycofaj zgodę” | czynność | NFR-30, NFR-29 | potwierdzenie |
+| Nazwa wyświetlana i lista ról, np. „Odwiedzający, Zbierający” | dane | BR-1, US14.3 | — |
+| „Informacja o danych osobowych” | czynność | NFR-30 | stan „Klauzula informacyjna” na tym ekranie |
+| „Wycofaj zgodę” | czynność | NFR-30, NFR-29 | potwierdzenie; po potwierdzeniu V1 |
 | „Wyloguj” | czynność | macierz uprawnień | V1 |
+| Pasek dolny | czynność | wymagania wspólne | V1, V4, V5 |
 
-Lista czynności to zwykła lista przycisków z tekstem, a nie kafelki.
+Kolejność od góry: lista czynności ról, dane konta, klauzula, „Wycofaj zgodę”, „Wyloguj”. Osoba z rolą pracowniczą otwiera L2 głównie po to, by pracować, więc czynności są pierwsze. Lista czynności to zwykła lista przycisków z tekstem, a nie kafelki.
 
 | Stan | Co widać |
 | --- | --- |
 | Zwykły — Odwiedzający | dane konta, klauzula, „Wycofaj zgodę”, „Wyloguj”; bez listy czynności (US14.3) |
-| Zwykły — rola pracownicza | dane konta i lista czynności ról |
-| Potwierdzenie wycofania zgody | „Po wycofaniu zgody wylogujemy Cię, a Twoje dane osobowe usuniemy w ciągu miesiąca. Zgłoszenia zostaną bez autora.” Przyciski „Wycofaj zgodę” i „Anuluj” (NFR-29) |
+| Zwykły — rola pracownicza | na górze lista czynności ról, pod nią dane konta, klauzula, „Wycofaj zgodę” i „Wyloguj” |
+| Klauzula informacyjna | treść klauzuli informacyjnej z podstawą przetwarzania, ta sama co przy rejestracji; „Wstecz” wraca do zwykłego stanu L2 (NFR-30) |
+| Potwierdzenie wycofania zgody | „Po wycofaniu zgody wylogujemy Cię, a Twoje dane osobowe usuniemy w ciągu miesiąca. Zgłoszenia zostaną bez autora.” Przyciski „Wycofaj zgodę” i „Anuluj”. Po potwierdzeniu osoba jest wylogowana, a aplikacja otwiera V1, jak po „Wyloguj” (NFR-29) |
 | Brak sieci | role z ostatniego logowania; ekrany czynności pokazują własne stany braku sieci |
 
-Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: „Konto”, „Informacja o danych osobowych” (NFR-30).
+Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: „Konto” (u ról pracowniczych „Moja praca”), „Informacja o danych osobowych” (NFR-30). Klauzula jest stanem L2, a nie osobnym ekranem, bo NFR-30 wymaga jej w profilu.
 
 ## Zbierający
 
@@ -333,7 +343,7 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Ładowanie — szukanie satelitów | „Szukam satelitów. Na otwartej przestrzeni pomiar jest dokładniejszy.” (NFR-1) |
 | Daleko od budynków PWr | „Poza budynkiem”, bez podpowiedzi i bez komunikatu o błędzie (BR-G4, NFR-49) |
 | Budynek podstawowy | bez korekty na planie; korekta na mapie działa (US6.4, BR-G1) |
-| Brak zgody, zgoda tylko przybliżona albo lokalizacja wyłączona | jak w V4: prośba o zgodę albo o dokładną lokalizację, a po odmowie „Otwórz ustawienia” (NFR-27) |
+| Brak zgody, zgoda tylko przybliżona albo lokalizacja wyłączona | jak w V4: prośba o zgodę albo o dokładną lokalizację, a po odmowie „Otwórz ustawienia” (NFR-27). Bez przycisku „Wróć do mapy”: rezygnacja przez „Wstecz” do ekranu, z którego otwarto C1, czyli L2, C2 albo C3 (NFR-15) |
 | Brak sieci | pomiar i podpowiedź działają; mapa bez podkładu (NFR-4, NFR-39) |
 
 Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykresem (NFR-18). Uśrednianie można przerwać i powtórzyć bez limitu (NFR-23).
@@ -678,6 +688,10 @@ Stanu pustego nie ma: lista budynków pochodzi z importu, a 0% to zwykła warto�
 | Znak „zmiana czeka na wysłanie” (reguły, cykl życia) | Dodatkowy znak przy zgłoszeniu na C3, obok statusu. | Status się nie zmienia, a Zbierający musi wiedzieć, że edycja jest tylko w telefonie (BR-9). |
 | Odczyt miary M-1 (decyzja 38) | W K1 przy budynku szczegółowym wiersz „Wejścia potwierdzone na obchodzie: x z y” i kryterium US11.4. | Bez tego M-1 nie da się zmierzyć z jednego ekranu. Dane już są: każde wejście ma źródło oznaczenia (BR-24). |
 | Moment logowania (decyzja 38) | US14.2 bez zmian: logowanie przed zdjęciem, a przerwanie łagodzą środki z V4 i L1. | Zmianę kolejności sprawdzimy dopiero w teście z osobami starszymi. |
+| Wejście do pracy ról pracowniczych (mapa nawigacji, P1) | Czwarta pozycja paska dolnego dalej prowadzi do L2. Osoba z rolą pracowniczą widzi na niej „Moja praca” (nazwa robocza, B6), a L2 zaczyna się listą czynności. Gość i Odwiedzający widzą „Konto” bez zmian. | Osoba szukająca „Moich zgłoszeń” nie skojarzy ich z kontem. Bez nowego ekranu i bez piątej pozycji liczba dotknięć, cele dotyku (NFR-17) i droga do klauzuli (NFR-30) się nie zmieniają. Jedna osoba widzi zawsze tę samą nazwę w tym samym miejscu (WCAG 3.2.3, 3.2.4). |
+| Historia „Wstecz” po wysłaniu (mapa nawigacji, P2) | Wysłany, zapisany albo rozstrzygnięty formularz znika z historii „Wstecz” (wymagania wspólne). | Bez tego powrót do mapy z C3 wymaga do 5 dotknięć, a osoba widzi formularz, który już wysłała. Z potwierdzenia V4 nie da się też wrócić do kroku 3 i wysłać zgłoszenia drugi raz. |
+| Ekran po zalogowaniu (mapa nawigacji, P3) | Z V4: krok 1 V4. Z „Konto”: L2. | Po zalogowaniu aplikacja pokazuje czynności ról osoby (UC6 krok 3). Osoba zaproszona przez Koordynatora od razu widzi swoje role (US12.1). |
+| Przyciski bez ekranu docelowego (V4, L2) | „Anuluj zgłoszenie” w stanie „brak pozycji” i potwierdzone „Wycofaj zgodę” prowadzą do V1. „Informacja o danych osobowych” otwiera stan L2 „Klauzula informacyjna”. | Rezygnacja ze zgłoszenia działa jak w UC7 1b, a wycofanie zgody wylogowuje jak „Wyloguj” (NFR-29). NFR-30 wymaga klauzuli w profilu, więc nie potrzeba nowego ID. |
 
 ## Moment logowania
 
@@ -733,7 +747,7 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | | US11.2 | K1 | przeliczenie robi serwer |
 | | US11.3 | K1, C5 | cofnięcie z potwierdzeniem |
 | | US11.4 | K1 | wejścia ze źródłem „obchód”; liczbę liczy serwer |
-| Zaproszenie | US12.1 | K2, L1 | zaproszona osoba loguje się przez L1 albo L2 |
+| Zaproszenie | US12.1 | K2, L1, L2 | zaproszona osoba loguje się przez L1 i widzi swoje role w L2 |
 | | US12.2 | K2 | komunikat „konto istnieje” |
 | Eksport | US13.1 | K3 | wybór formatu; treść pliku bez ekranu |
 | | US13.2 | K3 | wybór formatu; treść pliku bez ekranu |
