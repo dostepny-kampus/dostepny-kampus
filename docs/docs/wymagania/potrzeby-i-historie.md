@@ -85,8 +85,8 @@ Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego 
 | US9.2 | Po powrocie sieci synchronizacja rusza bez działania użytkownika. | NFR-6, NFR-8 |
 | US9.3 | Przy konflikcie wersji aplikacja pokazuje obie wersje, a wybór należy do Zbierającego: własna albo z serwera. Żadna zmiana nie znika po cichu. | NFR-9, BR-3 |
 | US15.1 | W budynku szczegółowym Zbierający oznacza wybrane piętro jako obejrzane. W budynku podstawowym oznacza cały budynek jako „obejrzany”. | US11.1 |
-| US15.2 | Oznaczenie cofa Zbierający, który je ustawił. Inny Zbierający nie może go cofnąć. | US11.3 |
-| US15.3 | Bez sieci oznaczenie i jego cofnięcie czekają w telefonie jak zgłoszenie i wysyłają się same po powrocie sieci. | NFR-5, NFR-6, decyzja 33 |
+| US15.2 | Znacznik cofa Zbierający, który go postawił. Inny Zbierający nie może go cofnąć. | US11.3 |
+| US15.3 | Bez sieci znacznik i jego cofnięcie czekają w telefonie jak zgłoszenie i wysyłają się same po powrocie sieci. | NFR-5, NFR-6, decyzja 33 |
 
 Ręczną korektę punktu opisują dwa kryteria: na planie piętra i na mapie. Korekta na planie działa tylko w budynku szczegółowym, więc ma priorytet „Powinno być”, podobnie jak mapa nieba. W MVP punkt poprawia się na mapie.
 
@@ -101,8 +101,8 @@ Ręczną korektę punktu opisują dwa kryteria: na planie piętra i na mapie. Ko
 | US10.5 | Weryfikator nie widzi w kolejce własnych zgłoszeń ani zmian „bariera usunięta”, które sam złożył. | BR-4, decyzja 33 |
 | US10.6 | Po przyjęciu zmiany „bariera usunięta” bariera znika z mapy i karty budynku. Zgłoszenie zostaje w systemie z tym oznaczeniem. | US1.3, decyzja 32 |
 | US11.1 | Dla każdego budynku widać odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy). Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. | US15.1 |
-| US11.2 | Gdy oznaczenie piętra obejrzanego albo jego cofnięcie dotrze na serwer, postęp budynku pokazuje nową wartość, np. 4 z 5 pięter, czyli 80 procent. | US15.3 |
-| US11.3 | Koordynator cofa oznaczenie piętra obejrzanego ustawione przez dowolnego Zbierającego. | decyzja 32 |
+| US11.2 | Gdy znacznik piętra obejrzanego albo jego cofnięcie dotrze na serwer, postęp budynku pokazuje nową wartość, np. 4 z 5 pięter, czyli 80 procent. | US15.3 |
+| US11.3 | Koordynator cofa znacznik piętra obejrzanego postawiony przez dowolnego Zbierającego. | decyzja 32 |
 | US12.1 | Po zaproszeniu osoba z podanym adresem e-mail loguje się i ma wybraną rolę. | BR-2 |
 | US12.2 | Zaproszenie na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają. | BR-1, BR-2 |
 | US13.1 | Plik GeoJSON otwiera się w QGIS bez ustawiania układu współrzędnych i ma współrzędne w WGS84. | NFR-43 |

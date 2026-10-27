@@ -16,7 +16,7 @@ Pierwszego Koordynatora nadaje administrator usługi logowania, bo inaczej nikt 
 
 ## Macierz uprawnień
 
-Legenda: ✔ — wolno; ✖ — nie wolno; **własne** — tylko zgłoszenia i oznaczenia piętra obejrzanego, których osoba jest autorem. Kolumny ról pracowniczych zawierają już uprawnienia RO-ODW, a osoba z kilkoma takimi rolami ma ich sumę (BR-1), widoczną w jej profilu.
+Legenda: ✔ — wolno; ✖ — nie wolno; **własne** — tylko zgłoszenia i znaczniki piętra obejrzanego, których osoba jest autorem. Kolumny ról pracowniczych zawierają już uprawnienia RO-ODW, a osoba z kilkoma takimi rolami ma ich sumę (BR-1), widoczną w jej profilu.
 
 | Czynność | Ekran, US | RO-GOS | RO-ODW | RO-ZBI | RO-WER | RO-KOO |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -31,8 +31,8 @@ Legenda: ✔ — wolno; ✖ — nie wolno; **własne** — tylko zgłoszenia i o
 | Wysyłka po powrocie sieci | C4, US4, US9 | ✖ | własne | własne | własne | własne |
 | Wybór wersji przy konflikcie | C4, US9 | ✖ | ✖ | własne | ✖ | ✖ |
 | Zmiana „bariera usunięta” zgłoszenia przyjętego ⁹ | V2, C3, US8.4 | ✖ | ✖ | ✔ także cudze | ✖ | ✖ |
-| Oznaczenie piętra obejrzanego ¹⁰ | C1, US15.1 | ✖ | ✖ | ✔ | ✖ | ✖ |
-| Cofnięcie oznaczenia piętra obejrzanego | C1, K1, US15.2, US11.3 | ✖ | ✖ | własne | ✖ | ✔ także cudze |
+| Znacznik piętra obejrzanego ¹⁰ | C1, US15.1 | ✖ | ✖ | ✔ | ✖ | ✖ |
+| Cofnięcie znacznika piętra obejrzanego | C1, K1, US15.2, US11.3 | ✖ | ✖ | własne | ✖ | ✔ także cudze |
 | Kolejka weryfikacji | R1, US10 | ✖ | ✖ | ✖ | ✔ | ✖ |
 | Decyzja: przyjęcie lub odrzucenie z powodem | R2, US10 | ✖ | ✖ | ✖ | ✔ poza własnymi | ✖ |
 | Weryfikacja własnego zgłoszenia | R2 | ✖ | ✖ | ✖ | ✖ ⁵ | ✖ |
@@ -57,7 +57,7 @@ Brak uprawnienia działa na dwóch poziomach (US14): aplikacja nie pokazuje ekra
 7. Podpowiedź pokazuje typ i położenie zgłoszeń w pobliżu, bez autora. Zbierający nie zapisuje drugi raz tej samej bariery.
 8. Imię, e-mail, identyfikator konta. Weryfikator widzi tylko rolę autora i pseudonim, np. „Autor 17” (BR-5).
 9. Zmiana to nowe zgłoszenie, a nie edycja cudzego, więc może ją złożyć każdy Zbierający (BR-19). Sprawdza ją Weryfikator, który jej nie złożył (BR-4, US10.5). Punkt startu z karty budynku ustalimy w fazie B.
-10. W budynku podstawowym oznaczenie dotyczy całego budynku. Ekran oznaczenia ustalimy w fazie B, a oznaczenie działa bez sieci (BR-20, US15.3).
+10. W budynku podstawowym znacznik dotyczy całego budynku. Ekran ustalimy w fazie B, a znacznik działa bez sieci (BR-20, US15.3).
 
 ## Zasady ról
 
