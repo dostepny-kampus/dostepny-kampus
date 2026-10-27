@@ -1,0 +1,10 @@
+@startsalt
+' V2 Karta budynku, brak sieci i budynku nie ma jeszcze w telefonie (NFR-10).
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Budynek <i>[symbol]</i>")
+$brak_internetu()
+$komunikat("Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.", "Spróbuj ponownie")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt
