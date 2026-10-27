@@ -297,7 +297,7 @@ Ikony pochodzą z zestawu OpenIconic dostępnego w PlantUML Salt [3], [4]. Każd
 
 | Element | Ikona (nazwa z OpenIconic) | Tekst obok | Metafora / dlaczego zrozumiała |
 | --- | --- | --- | --- |
-| pasek dolny: mapa | `map` | „Mapa” | składana mapa papierowa |
+| pasek dolny: mapa | `map` | „Mapa” | plan w ramce ze znacznikiem miejsca, jak w aplikacjach map |
 | pasek dolny: zgłoszenie | `camera-slr` | „Zgłoś barierę” | zgłoszenie zaczyna się od zdjęcia (US4.1) |
 | pasek dolny: pomoc | `question-mark` | „Pomoc” | znak zapytania, czyli „mam pytanie” |
 | pasek dolny: konto | `person` | „Konto” albo „Konto i praca” | sylwetka, czyli „ja”; ta sama ikona dla obu napisów |
@@ -309,7 +309,7 @@ Ikony pochodzą z zestawu OpenIconic dostępnego w PlantUML Salt [3], [4]. Każd
 | uciążliwość 2 | `people` | „Potrzebna pomoc” | dwie osoby: przejdziesz z drugą osobą |
 | uciążliwość 3 | `ban` | „Blokada” | koło z kreską jak znak zakazu: tędy nie |
 | przycisk zdjęcia (V4, C2, C6, C7) | `camera-slr` | „Zrób zdjęcie” | aparat; ta sama ikona co „Zgłoś barierę” |
-| status „lokalne” | `tablet` | „W telefonie” | kształt telefonu: zgłoszenie jest tylko w nim |
+| status „lokalne” | `phone` | „W telefonie” | kształt telefonu: zgłoszenie jest tylko w nim |
 | status „wysłane” | `data-transfer-upload` | „Wysłane” | strzałka w górę: poszło dalej |
 | status „w weryfikacji” | `eye` | „W weryfikacji” | oko: ktoś teraz ogląda |
 | status „przyjęte” | `circle-check` | „Przyjęte” | ptaszek w kole: decyzja na tak |
@@ -338,7 +338,7 @@ Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk,
 | V4 Zgłoś barierę | 20 | 2 | 10% | wskaźnik sieci, „Zrób zdjęcie” |
 | V5 Jak korzystać z aplikacji | 12 | 5 | 42% | wskaźnik sieci, pasek (4) |
 | L1 Konto (Gość) | 8 | 1 | 13% | wskaźnik sieci |
-| L2 Konto i praca (wszystkie role) | 18 | 5 | 28% | wskaźnik sieci, pasek (4) |
+| L2 Konto albo Konto i praca (wszystkie role) | 18 | 5 | 28% | wskaźnik sieci, pasek (4) |
 | C1 Pomiar pozycji | 19 | 1 | 5% | wskaźnik sieci |
 | C2 Formularz zgłoszenia | 13 | 3 | 23% | wskaźnik sieci, uciążliwość, „Zrób zdjęcie” |
 | C3 Moje zgłoszenia | 13 | 2 | 15% | wskaźnik sieci, status |
