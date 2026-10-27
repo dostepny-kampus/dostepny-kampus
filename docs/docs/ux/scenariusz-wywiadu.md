@@ -5,7 +5,7 @@
 | Cel | Sprawdzić hipotezy N1–N4 (Odwiedzający) i poznać kontekst użycia |
 | Metody | Wywiad pogłębiony (półstrukturyzowany) + krótka obserwacja zadaniowa |
 | Uczestnicy | Osoby 60+, min. 2 na członka zespołu (4–6 wywiadów) |
-| Czas | ≈ 30 min na osobę |
+| Czas | ≈ 30 min na osobę + 10 min rezerwy (wolne tempo, zgoda pisemna) |
 | Prowadzą | Członkowie zespołu: prowadzący i, jeśli to możliwe, notujący |
 | Wynik | Arkusze notatek P1…P6 i tabela wniosków dla N1–N4 |
 | Opcja | 1 wywiad z osobą zbierającą dane (N5–N9), sekcja 10 |
@@ -65,19 +65,22 @@ Prowadzący czyta tekst powoli i daje wydruk do ręki.
 
 Odpowiedzi zapisz w nagłówku arkusza. Brak zgody na nagranie nie wyklucza rozmowy. Podstawa prawna to zgoda uczestnika (RODO, artykuł 6 ustęp 1 litera a oraz artykuł 7).
 
-## 5. Przebieg (≈ 30 min)
+## 5. Przebieg (≈ 30 min + rezerwa)
 
 | Część | Czas | Co robimy | Weryfikuje |
 | --- | --- | --- | --- |
-| 0. Powitanie i zgoda | 0:00–0:02 | sekcja 4 | — |
-| 1. Rozgrzewka | 0:02–0:05 | kim jest uczestnik | kontekst |
+| 0. Powitanie i zgoda | 0:00–0:03 | sekcja 4 | — |
+| 1. Rozgrzewka | 0:03–0:05 | kim jest uczestnik | kontekst |
 | 2. Wizyty w budynkach publicznych | 0:05–0:11 | ostatnie prawdziwe wizyty | N1, N2, N3 |
 | 3. Korzystanie z telefonu | 0:11–0:15 | codzienne użycie | N3, N4 |
 | 4. Pytania do hipotez | 0:15–0:22 | po kolei N1–N4 | N1–N4 |
 | 5. Zadanie „wykład w C-13” | 0:22–0:28 | obserwacja z głośnym myśleniem | N1, N2, N4 |
 | 6. Zakończenie | 0:28–0:30 | priorytety, podziękowanie | N1–N4 |
 
-„Kontekst” oznacza dane do opisu użytkownika i środowiska użycia (persony, etap 3). Gdy uczestnik się męczy, pomiń część pytań z części 4. Nigdy nie pomijaj części 5.
+„Kontekst” oznacza dane do opisu użytkownika i środowiska użycia (persony, etap 3).
+
+- Gdy uczestnik się męczy albo brakuje czasu, pomijaj kolejno pytania 4.2, 4.6, 4.8 i 4.4 — pokrywają je częściowo części 2, 3 i 5.
+- Nigdy nie pomijaj części 5.
 
 ### Część 1. Rozgrzewka
 
@@ -94,8 +97,8 @@ Odpowiedzi zapisz w nagłówku arkusza. Brak zgody na nagranie nie wyklucza rozm
 | 2.1 | Proszę przypomnieć sobie ostatnią wizytę w budynku, w którym był(a) Pan/Pani pierwszy raz. Jak to wyglądało, od wyjścia z domu? | Co było dalej? | N1 |
 | 2.2 | Co Pan/Pani robi przed taką wizytą? Skąd bierze Pan/Pani informacje? | Któremu źródłu ufa Pan/Pani najbardziej? Dlaczego? | N1, N2 |
 | 2.3 | Co przy wejściu i w środku było łatwe, a co trudne? | Proszę opowiedzieć więcej. | N1 |
-| 2.4 | Jak Pan/Pani sobie wtedy poradził(a)? Czy ktoś pomógł? | Czy powiedział(a) Pan/Pani komuś o trudności? | N1, N3 |
-| 2.5 | Jeśli zdarzyło się, że opis miejsca nie zgadzał się z tym, co Pan/Pani zastał(a) — proszę o tym opowiedzieć. | Co Pan/Pani wtedy zrobił(a)? | N2 |
+| 2.4 | Jak Pan/Pani sobie wtedy poradził(a)? | Kto był wtedy obok? Co było potem z tą trudnością? | N1, N3 |
+| 2.5 | Jak to, czego dowiedział(a) się Pan/Pani przed wizytą, miało się do tego, co Pan/Pani zastał(a) na miejscu? | Proszę podać przykład. | N2 |
 
 ### Część 3. Korzystanie z telefonu
 
@@ -103,7 +106,7 @@ Odpowiedzi zapisz w nagłówku arkusza. Brak zgody na nagranie nie wyklucza rozm
 | --- | --- | --- | --- |
 | 3.1 | Do czego używa Pan/Pani telefonu w zwykłym tygodniu? | Co robi Pan/Pani najczęściej? | N4 |
 | 3.2 | Co w telefonie przychodzi łatwo, a co wymaga więcej wysiłku? | Proszę pokazać przykład. | N4 |
-| 3.3 | Czy coś zmienił(a) Pan/Pani w telefonie, żeby było wygodniej? | Kto to ustawił? | N4 |
+| 3.3 | Proszę pokazać, jak ma Pan/Pani ustawiony telefon: ekran główny, wielkość liter. | Kto to ustawiał? | N4 |
 | 3.4 | Jak wygląda wysłanie komuś zdjęcia z telefonu? Proszę opowiedzieć o ostatnim razie. | Ile to trwało? | N3, N4 |
 
 Obserwuj, nie pytaj: wielkość liter na ekranie, okulary, telefon w jednej czy w dwóch rękach, trafianie w przyciski.
@@ -113,10 +116,10 @@ Obserwuj, nie pytaj: wielkość liter na ekranie, okulary, telefon w jednej czy 
 | Nr | Pytanie | Dopytanie | Weryfikuje |
 | --- | --- | --- | --- |
 | 4.1 | Ma Pan/Pani pójść do budynku, którego Pan/Pani nie zna. Co chciał(a)by Pan/Pani wiedzieć przed wyjściem z domu? | Co z tego jest najważniejsze? | N1 |
-| 4.2 | Co Pan/Pani robi, gdy przy wejściu są schody albo ciężkie drzwi? | Jak szuka Pan/Pani innej drogi? | N1 |
+| 4.2 | Proszę opowiedzieć o sytuacji, gdy samo wejście do budynku sprawiło kłopot Panu/Pani albo komuś, z kim Pan/Pani był(a). | Co Pan/Pani wtedy zrobił(a)? | N1 |
 | 4.3 | Skąd Pan/Pani wie, że informacji o jakimś miejscu można wierzyć? | Co budzi Pana/Pani wątpliwości? | N2 |
 | 4.4 | Co musiał(a)by Pan/Pani zobaczyć w opisie budynku, żeby mu zaufać? | Dlaczego właśnie to? | N2 |
-| 4.5 | Gdy zauważy Pan/Pani przeszkodę, np. zepsutą windę, co Pan/Pani zwykle robi? | Komu Pan/Pani o tym mówi? | N3 |
+| 4.5 | Proszę przypomnieć sobie ostatnią przeszkodę w budynku, np. zepsutą windę. Co Pan/Pani wtedy zrobił(a)? | Co było dalej? | N3 |
 | 4.6 | Jak chciał(a)by Pan/Pani przekazać taką informację, jeśli w ogóle? | Ile czasu mógłby/mogłaby Pan/Pani na to poświęcić? | N3 |
 | 4.7 | Które aplikacje albo strony są dla Pana/Pani najwygodniejsze? Co je takimi czyni? | Proszę pokazać jedną z nich. | N4 |
 | 4.8 | Kiedy rezygnuje Pan/Pani z aplikacji albo strony? | Proszę opowiedzieć o ostatnim razie. | N4 |
@@ -144,7 +147,7 @@ Prowadzący czyta:
 
 | Nr | Pytanie po zadaniu | Weryfikuje |
 | --- | --- | --- |
-| 5.1 | Czego zabrakło, żeby czuć się pewnie przed wyjściem? | N1, N2 |
+| 5.1 | Jak pewnie czuje się Pan/Pani teraz przed takim wyjściem? Od czego to zależy? | N1, N2 |
 | 5.2 | Co by Pan/Pani zrobił(a), gdyby na miejscu wejście było zamknięte? | N1, N3 |
 
 ### Część 6. Zakończenie
