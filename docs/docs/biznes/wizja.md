@@ -13,9 +13,11 @@
 | Serwis dostepnosc.pwr.edu.pl publikuje deklaracje dostępności 67 budynków, każdą na osobnej podstronie | [4] |
 | Deklaracja to tekst z nagłówkami, bez mapy i zdjęć. Przykład: deklarację C-13 zaktualizowano w marcu 2024 | [5] |
 
-Dane o dostępności istnieją, ale są rozproszone po kilkudziesięciu stronach tekstu. Serwis nie ma mapy, która pokaże dostępne wejście do konkretnego budynku. Przykład: do A-1 osoba na wózku wejdzie tylko wejściem innym niż główne [9]. Osoba starsza albo osoba na wózku nie sprawdzi tego wygodnie na telefonie przed wizytą (hipoteza N1).
+Dane o dostępności istnieją, ale są rozproszone i nieaktualne. PWr ma Cyfrowy Przewodnik z Interaktywną Mapą Kampusu: 25 budynków, w tym A-1, B-1, C-13, D-1 i D-2 [10], [11]. Plany pięter mapa pokazuje tylko dla wybranych budynków [11].
 
-Według naszego rozpoznania inwentaryzację prowadzi się obchodem z papierowym formularzem, a wynik trafia do tekstu deklaracji (do potwierdzenia w wywiadach). Taki tryb utrudnia częste aktualizacje.
+Deklaracje budynków nie odsyłają ani do Przewodnika, ani do mapy [4]. Dane mapy pochodzą z semestru zimowego 2022/2023, a deklaracje z marca 2024 [4], [11]. Żaden kanał nie pokazuje bieżącego stanu barier, takiego jak niesprawna winda: aktualności Przewodnika są puste [12]. Osoba na wózku nie sprawdzi więc przed wizytą, czy na trasie przez dostępne wejście do A-1 [9] wszystko działa (hipoteza N1, N2).
+
+Plan PWr na lata 2025–2028 opisuje zbieranie danych z ankiet administratorów obiektów i z audytów eksperckich z dokumentacją fotograficzną [13]. Zdjęć nie ma w żadnej deklaracji, a 66 z 67 deklaracji ma datę „marzec 2024” [4]. Dane aktualizuje się więc rzadko. Szczegóły opisuje [Proces AS-IS](procesy/as-is.md).
 
 ## Cel projektu
 
@@ -78,5 +80,9 @@ Zachowanie na poziomach 2 i 3 opisują reguły BR-G1…BR-G4 na stronie [Reguły
 7. Politechnika Trzeciego Wieku, kontakt: <https://ptw.pwr.edu.pl/kontakt>
 8. Dostępność na PWr, Dział Dostępności: <https://dostepnosc.pwr.edu.pl/>
 9. Stan dostosowania obiektów PWr na dzień 01.01.2025, kampus główny: <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/stan-dostosowania-obiektow-pwr-na-dzien-01-01-2025/kampus-glowny-pwr-na-dzien-01-01-2025>
+10. Cyfrowy Przewodnik PWr, lista 25 budynków: <https://przewodnik.pwr.edu.pl/pl/budynki>
+11. Interaktywna Mapa Kampusu PWr (25 budynków, dane z semestru zimowego 2022/2023, plany wybranych budynków): <https://mapakampusu.pwr.edu.pl/>
+12. Cyfrowy Przewodnik PWr, Aktualności: <https://przewodnik.pwr.edu.pl/pl/aktualnosci>
+13. Plan działania na rzecz poprawy dostępności osobom ze szczególnymi potrzebami na lata 2025–2028, PWr (tabela 1 poz. 2–3): <https://bip.pwr.edu.pl/d/gGBUKOTtQKxVvBFh6GDxYBxZIQX14QU8OS39DQQpVVm8QRQxpXhsJFXkSGQcBBxNZBUREenlUWx8/plan_poprawy_dostepnosci_2025-28.pdf>
 
 Dostęp do źródeł: 27.10.2026.
