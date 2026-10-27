@@ -1,7 +1,7 @@
 # language: pl
 @BR-24
 Funkcja: Oznaczenie wejścia
-  Przy każdym wejściu widać, czy jest dostępne, oraz datę i źródło oznaczenia (N1, N2).
+  Przy każdym wejściu widać oznaczenie „dostępne”, „niedostępne” albo „brak danych” z datą i źródłem (N1, N2).
   Zbierający zmienia oznaczenie na obchodzie, a zmianę sprawdza inny Weryfikator (N8).
 
   Założenia:
