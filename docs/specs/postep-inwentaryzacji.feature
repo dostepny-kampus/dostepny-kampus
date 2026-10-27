@@ -10,7 +10,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
     Szablon scenariusza: Oznaczenie piętra albo budynku jako obejrzanego
       Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
       Oraz telefon ma sieć
-      Oraz w budynku <budynek> nic nie jest jeszcze oznaczone jako obejrzane
+      Oraz w budynku <budynek> nie ma jeszcze żadnego znacznika
       Jeżeli w budynku <budynek> oznaczy <co>
       Wtedy postęp budynku <budynek> pokazuje <wynik>
 
@@ -23,20 +23,20 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
     @US15.2
     Scenariusz: Zbierający cofa własny znacznik
       Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
-      Jeżeli cofnie to oznaczenie
+      Jeżeli cofnie ten znacznik
       Wtedy piętro nie jest już obejrzane
 
     @US15.2
     Scenariusz: Inny Zbierający nie cofnie cudzego znacznika
       Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
-      Jeżeli inny Zbierający spróbuje cofnąć to oznaczenie
+      Jeżeli inny Zbierający spróbuje cofnąć ten znacznik
       Wtedy próba jest odrzucona
       Oraz piętro jest nadal obejrzane
 
     @US11.3
     Scenariusz: Koordynator cofa znacznik dowolnego Zbierającego
       Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
-      Jeżeli Koordynator cofnie to oznaczenie
+      Jeżeli Koordynator cofnie ten znacznik
       Wtedy piętro nie jest już obejrzane
       Oraz postęp budynku A-1 pokazuje o jedno piętro obejrzane mniej
 
@@ -51,7 +51,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Przykłady:
         | czynność                                             |
         | oznaczy kolejne piętro jako obejrzane                |
-        | cofnie swoje oznaczenie jednego z obejrzanych pięter |
+        | cofnie swój znacznik jednego z obejrzanych pięter    |
 
     @US15.3 @BR-9
     Szablon scenariusza: Po powrocie sieci znacznik i jego cofnięcie wysyłają się same
@@ -64,7 +64,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Przykłady:
         | czynność                                              | po |
         | oznaczył kolejne piętro jako obejrzane                | 4  |
-        | cofnął swoje oznaczenie jednego z obejrzanych pięter  | 2  |
+        | cofnął swój znacznik jednego z obejrzanych pięter     | 2  |
 
   @BR-21
   Reguła: Postęp budynku liczy się tym samym miernikiem w każdym budynku
@@ -88,9 +88,9 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
 
       Przykłady:
         | przed | zmiana                                   | po | procent |
-        | 3     | oznaczenie kolejnego piętra obejrzanego  | 4  | 80      |
-        | 4     | cofnięcie oznaczenia jednego piętra      | 3  | 60      |
-        | 4     | drugie oznaczenie już obejrzanego piętra | 4  | 80      |
+        | 3     | znacznik kolejnego piętra obejrzanego    | 4  | 80      |
+        | 4     | cofnięcie znacznika jednego piętra       | 3  | 60      |
+        | 4     | drugi znacznik już obejrzanego piętra    | 4  | 80      |
 
     Szablon scenariusza: Do postępu nie wchodzą zgłoszenia nieznane serwerowi, archiwalne ani poza budynkiem
       Zakładając, że przy budynku A-1 są 4 zgłoszenia przyjęte
