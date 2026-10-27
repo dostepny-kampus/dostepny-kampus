@@ -76,9 +76,9 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | data weryfikacji | „Sprawdzone 12.11.2026” | wszystkie | „Weryfikacja” to żargon, a data budzi zaufanie (N2). | 2.5, 4.4, 5.1 |
 | zgłoszenie przyjęte (listy na V1–V3) | nagłówek „Bariery w budynku”, w wierszu typ bariery | Gość, Odwiedzający | Osoba widzi bariery, a nie zgłoszenia. | 2.3, 4.5 |
 | typ bariery | nazwa z klasyfikacji, np. „niesprawna winda” | wszystkie | Nazwy są potoczne. Wyjątki są w 3 wierszach niżej. | 2.3, 4.2 |
-| TB-20 „toaleta niedostępna w praktyce” | „toaleta zamknięta, zastawiona lub trudna do dojścia” | Gość, Odwiedzający | Słowo „niedostępne” zostaje dla wejścia. | 2.3 |
-| TB-22 „brak planu tyflograficznego” | „brak planu dotykowego lub głosowego” | Gość, Odwiedzający | „Tyflograficzny” to słowo specjalistów. | 2.3, 5.1 |
-| TB-28 „niedostępne miejsce obsługi” | „brak obniżonej lady lub miejsca dla wózka” | Gość, Odwiedzający | Słowo „niedostępne” zostaje dla wejścia. | 2.3 |
+| typ „toaleta niedostępna w praktyce” (TB-20) | „toaleta zamknięta, zastawiona lub trudna do dojścia” | Gość, Odwiedzający | Słowo „niedostępne” zostaje dla wejścia. | 2.3 |
+| typ „brak planu tyflograficznego” (TB-22) | „brak planu dotykowego lub głosowego” | Gość, Odwiedzający | „Tyflograficzny” to słowo specjalistów. | 2.3, 5.1 |
+| typ „niedostępne miejsce obsługi” (TB-28) | „brak obniżonej lady lub miejsca dla wózka” | Gość, Odwiedzający | Słowo „niedostępne” zostaje dla wejścia. | 2.3 |
 | uciążliwość 1 „utrudnienie” | „Utrudnienie” | wszystkie | bez zmian | 2.3, 4.2 |
 | uciążliwość 2 „poważne utrudnienie” | „Potrzebna pomoc” | wszystkie | Kryterium stopnia 2 to „tylko z pomocą”. Słowo „poważne” każdy rozumie inaczej. | 2.4, 4.2 |
 | uciążliwość 3 „blokada” | „Blokada” | wszystkie | bez zmian; krótkie i jednoznaczne | 4.2 |
