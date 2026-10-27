@@ -177,6 +177,112 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | eksport | przycisk i nagłówek K3 „Pobierz eksport”, przycisk „Pobierz plik” | Koordynator | Krótkie pojęcie dokumentacji. | 10.6 |
 | formaty eksportu | „GeoJSON (WGS84)”, „CSV (PUWG 1992, EPSG:2180)” | Koordynator | Tych nazw używa QGIS. | 10.6 |
 
+## Katalog komunikatów (hipoteza, do potwierdzenia w wywiadach)
+
+Każdy komunikat stanu z [wymagań do ekranów](wymagania-ekranow.md) w ostatecznym brzmieniu. Kolumna „Zmiana” odsyła do propozycji PW, gdy treść różni się od wymagań.
+
+### Wszystkie ekrany
+
+| Ekran i stan | Komunikat | Przyciski | Zmiana |
+| --- | --- | --- | --- |
+| każdy ekran, brak sieci | „Brak internetu.” Obok, gdy dane są z telefonu: „Dane z 12.11.2026.” | — | PW-4 |
+| ekrany R1, R2, K1–K3, brak sieci | „Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.” | „Spróbuj ponownie” | — |
+| ekrany R1, R2, K1–K3, błąd serwera | „Serwer chwilowo nie odpowiada, a dane w telefonie są bezpieczne. Spróbuj ponownie za kilka minut.” | „Spróbuj ponownie” | PW-10 |
+| ekrany R1, R2, K1–K3, brak uprawnień | „Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.” | „Wróć do mapy” | PW-10 |
+
+### Gość i Odwiedzający
+
+| Ekran i stan | Komunikat | Przyciski | Zmiana |
+| --- | --- | --- | --- |
+| V1, ładowanie | „Wczytujemy mapę kampusu…” | — | PW-9 |
+| V1, brak wyniku | „Nie znaleźliśmy budynku »X«. Sprawdź symbol, np. C-13, albo wybierz budynek z listy.” | „Lista budynków” | PW-9 |
+| V1, brak sieci przy pierwszym otwarciu | „Pierwsze otwarcie aplikacji wymaga internetu. Połącz się z internetem, a mapa wczyta się sama.” | — | PW-4 |
+| V1, brak mapy ulic | „Mapa ulic chwilowo się nie wczytuje. Budynki i bariery nadal możesz oglądać.” | — | — |
+| V2, ładowanie zdjęcia | „Wczytujemy zdjęcie…” | — | PW-9 |
+| V2, brak barier | „Nie mamy jeszcze sprawdzonych barier w tym budynku. To nie znaczy, że barier tu nie ma.” | — | PW-6 |
+| V2, brak planu (budynek podstawowy) | „Nie mamy planu pięter tego budynku. Bariery są na liście niżej.” | — | PW-6 |
+| V2, zdjęcie bez internetu | „Zdjęcie zobaczysz po połączeniu z internetem.” | — | PW-6 |
+| V2, budynku nie ma w telefonie | „Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.” | „Spróbuj ponownie” | PW-4 |
+| V2, błąd zdjęcia | „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” | „Spróbuj ponownie” | PW-10 |
+| V3, jest wejście dostępne | „Budynek A-1 ma wejście dostępne: »nazwa wejścia«.” | — | — |
+| V3, brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Bariery przy każdym wejściu znajdziesz w opisie budynku.” | — | PW-10 |
+| V3, brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne: brak danych o 2 z 3 wejść. Każde wejście z datą znajdziesz w opisie budynku.” | — | PW-10 |
+| V4, krok 1 | „Nie fotografuj twarzy ani tablic rejestracyjnych.” | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | PW-8 |
+| V4, krok 3 | „Dołączymy miejsce, w którym teraz stoisz.” | „Wyślij” | — |
+| V4, brak zgody na lokalizację | „Aby wysłać zdjęcie bariery, potrzebujemy jej miejsca. Sprawdzimy je tylko teraz i nie będziemy Cię śledzić.” | „Pozwól na lokalizację”, „Wróć do mapy” | PW-5 |
+| V4, odmowa zgody | „Bez lokalizacji nie wyślesz zdjęcia bariery. Możesz ją włączyć w ustawieniach telefonu.” | „Otwórz ustawienia”, „Wróć do mapy” | PW-5 |
+| V4, zgoda tylko przybliżona | „Telefon podaje tylko przybliżone miejsce, a to za mało, by wskazać barierę. Pozwól na dokładną lokalizację.” | „Pozwól na dokładną lokalizację”, „Wróć do mapy” | — |
+| V4, lokalizacja wyłączona | „Lokalizacja w telefonie jest wyłączona. Włącz ją, aby wysłać zdjęcie bariery.” | „Otwórz ustawienia”, „Wróć do mapy” | PW-5 |
+| V4, ustalanie miejsca | „Ustalamy, gdzie jesteś…” | „Wyślij” czeka | PW-9 |
+| V4, brak pozycji | „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” | „Spróbuj ponownie”, „Zrezygnuj” | PW-5 |
+| V4, potwierdzenie | „Dziękujemy. Sprawdzimy zdjęcie, zanim bariera pojawi się na mapie.” | „Wróć do mapy” | PW-5 |
+| V4, potwierdzenie bez internetu | „Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet.” | „Wróć do mapy” | PW-5 |
+| V4, za mało miejsca | „W telefonie brakuje miejsca, więc nie zapisaliśmy zdjęcia bariery. Usuń niepotrzebne zdjęcia albo filmy i spróbuj ponownie.” | „Spróbuj ponownie” | PW-5 |
+| V5, zdanie o koncie | „Aby zgłosić barierę, potrzebne jest konto. Możesz je założyć teraz w »Konto«.” | „Dalej”, „Pomiń instrukcję” | PW-5 |
+
+### Logowanie i konto
+
+| Ekran i stan | Komunikat | Przyciski | Zmiana |
+| --- | --- | --- | --- |
+| L1, zwykły | „Aby zgłosić barierę, potrzebne jest konto. Dzięki kontom na mapę nie trafiają fałszywe informacje.” | „Zaloguj się”, „Załóż konto”, „Nie teraz” | PW-5 |
+| L1, wejście z V4 | „Po zalogowaniu od razu zrobisz zdjęcie. Całość to 3 krótkie kroki.” | jak wyżej | PW-5 |
+| L1, brak sieci | „Logowanie wymaga internetu. Mapa i opisy budynków działają bez niego.” | „Wróć do mapy” | PW-4 |
+| L1, błąd | „Logowanie się nie udało albo zostało przerwane. Sprawdź internet i spróbuj ponownie.” | „Spróbuj ponownie”, „Nie teraz” | — |
+| strona logowania, blokada konta | „Konto jest chwilowo zablokowane po kilku błędnych hasłach. Spróbuj ponownie później.” | — | — |
+| L2, potwierdzenie wycofania zgody | „Wylogujemy Cię i w ciągu miesiąca usuniemy Twoje dane osobowe. Wysłane bariery zostaną w aplikacji bez Twoich danych.” | „Wycofaj zgodę”, „Zostaw zgodę” | PW-5 |
+
+### Zbierający
+
+| Ekran i stan | Komunikat | Przyciski | Zmiana |
+| --- | --- | --- | --- |
+| C1, szukanie satelitów | „Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.” | „Powtórz pomiar” | PW-9 |
+| C1, zgody na lokalizację | jak w V4, z końcówką „aby zapisać miejsce bariery” | jak w V4 | — |
+| C2, zmiana zgłoszenia przyjętego | „Zapis utworzy nowe zgłoszenie, które znów sprawdzi Weryfikator.” | „Zapisz” | — |
+| C2, błąd walidacji | „Brakuje typu bariery. Uzupełnij to pole, aby zapisać.” | — | PW-10 |
+| C2, C6, C7, za mało miejsca | „Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.” | „Spróbuj ponownie” | — |
+| C3, pusty | „Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.” | „Zmierz i zgłoś barierę” | PW-12 |
+| C3, ładowanie | „Sprawdzamy statusy…” | — | PW-9 |
+| C3, błąd | „Nie udało się sprawdzić statusów, ale zgłoszenia są bezpieczne w telefonie. Spróbuj ponownie za chwilę.” | „Spróbuj ponownie” | PW-10 |
+| C3, nieaktualne po usunięciu bariery | „Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.” | „Zmierz i zgłoś barierę” | PW-12 |
+| C4, pusty | „Wszystko wysłane. Ostatnia synchronizacja: 12.11.2026, 10:42.” | — | — |
+| C4, wysyłanie | „Wysyłamy 2 z 5…” | — | PW-9 |
+| C4, brak sieci | „Brak internetu. Wyślemy wszystko sami, gdy internet wróci.” | — | — |
+| C4, błąd serwera | „Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później.” | — | — |
+| C4, mało miejsca | „W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia.” | — | PW-10 |
+| C4, konflikt | „Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.” | „Zostaw moją wersję”, „Weź wersję z serwera”, „Zdecyduję później” | PW-12 |
+| C5, potwierdzenie cofnięcia | „Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.” | „Cofnij znacznik”, „Zostaw znacznik” | PW-12 |
+| C5, brak sieci | „Znacznik zapisany w telefonie. Wyślemy go, gdy wróci internet.” | — | — |
+| C5, błąd zapisu | „Nie udało się zapisać znacznika w telefonie. Spróbuj ponownie, a jeśli to nie pomoże, zwolnij miejsce.” | „Spróbuj ponownie” | — |
+| C6, wybór obecnej wartości | „Potwierdzasz obecne oznaczenie. Zmieni się data i źródło.” | — | — |
+| C6, informacja | „Zmianę sprawdzi inna osoba. Do tego czasu karta budynku pokazuje obecne oznaczenie.” | „Wyślij do sprawdzenia” | — |
+| C6, błąd walidacji | „Dodaj zdjęcie wejścia, aby wysłać zmianę.” albo „Wybierz: dostępne czy niedostępne.” | — | — |
+| C6, brak sieci | „Zmiana zapisana w telefonie. Wyślemy ją, gdy wróci internet.” | — | — |
+| C7, informacja | „Bariera zostanie na mapie, dopóki Weryfikator nie sprawdzi zgłoszenia.” | „Wyślij do sprawdzenia” | — |
+| C7, błąd walidacji | „Dodaj zdjęcie miejsca, aby wysłać zgłoszenie.” | — | — |
+| C7, brak sieci | „Zgłoszenie zapisane w telefonie. Wyślemy je, gdy wróci internet.” | — | — |
+
+### Weryfikator i Koordynator
+
+| Ekran i stan | Komunikat | Przyciski | Zmiana |
+| --- | --- | --- | --- |
+| R1, pusty | „Nie ma zgłoszeń do sprawdzenia. Zajrzyj tu później.” | — | PW-10 |
+| R1, ładowanie | „Wczytujemy zgłoszenia…” | — | PW-9 |
+| R1, zgłoszenie zajęte | „Ktoś inny wziął już to zgłoszenie. Wybierz inne.” | — | — |
+| R2, brak podobnych | „W promieniu 10 m nie ma podobnych zgłoszeń.” | — | — |
+| R2, ładowanie zdjęcia | „Wczytujemy zdjęcie…” | — | PW-9 |
+| R2, błąd przy przyjęciu | „Ustal typ bariery i uciążliwość, aby przyjąć zgłoszenie.” | — | — |
+| R2, błąd przy odrzuceniu | „Podaj powód odrzucenia, aby autor wiedział, co poprawić.” | — | — |
+| R2, nowa wersja | „Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.” | — | PW-10 |
+| R2, brak sieci | „Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«. Połącz się z internetem i podejmij decyzję ponownie.” | — | PW-10 |
+| K1, ładowanie | „Wczytujemy postęp…” | — | PW-9 |
+| K2, sukces | „Zaproszenie wysłane na podany adres.” | — | — |
+| K2, konto istnieje | „To konto już istnieje. Dodaliśmy mu rolę Weryfikatora, dotychczasowe role zostają.” | — | — |
+| K2, błąd walidacji | „Adres e-mail jest niepełny, np. brakuje znaku @. Popraw go i wyślij ponownie.” albo „Wybierz rolę.” | — | PW-10 |
+| K3, ładowanie | „Przygotowujemy plik…” | — | PW-9 |
+| K3, pusty | „Nie ma jeszcze przyjętych barier. Pobrany plik będzie pusty.” | „Pobierz plik” | — |
+| K3, sukces | „Plik zapisany w pobranych plikach.” | — | — |
+| K3, informacja | „Plik zawiera tylko obecne, sprawdzone bariery, bez danych autorów.” | „Pobierz plik” | — |
+
 ## Źródła
 
 1. Treść komunikatów o błędach: co się stało i jak to naprawić (Nielsen Norman Group): <https://www.nngroup.com/articles/error-message-guidelines/>
