@@ -1,0 +1,15 @@
+@startsalt
+' V1 Mapa kampusu, brak sieci: kontury i bariery z telefonu, bez mapy ulic.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$brak_internetu("Dane z <i>[data]</i>")
+$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$przelacznik_mapa("mapa")
+$mapa_kampusu("kontury budynków z symbolami i bariery z telefonu, bez mapy ulic")
+$przyciski_mapy()
+$osm()
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

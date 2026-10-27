@@ -1,0 +1,15 @@
+@startsalt
+' V1 Mapa kampusu, stan pusty: brak wyniku wyszukiwania (UC1 3a).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("[wpisany tekst]")
+$komunikat("Nie znaleźliśmy budynku »<i>[tekst]</i>«. Sprawdź symbol, np. C-13, albo wybierz budynek z listy.", "Lista budynków")
+$przelacznik_mapa("mapa")
+$mapa_kampusu("mapa ulic OpenStreetMap, kontury budynków z symbolami, bariery")
+$przyciski_mapy()
+$osm()
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt
