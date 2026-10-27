@@ -12,7 +12,7 @@ Diagram ma trzy pule. Każda pula to osobny proces z torami ról, które w nim d
 - **B. Weryfikacja, publikacja i przeglądanie** — kolejka i decyzja Weryfikatora (T14–T19), przeglądanie mapy przez Odwiedzającego lub Gościa niezalogowanego (T20–T23);
 - **C. Koordynacja inwentaryzacji** — piętro obejrzane (T24–T25), postęp inwentaryzacji i eksport (T26–T29).
 
-Pule A i B łączy sygnał „Zgłoszenie w kolejce”. Magazyn „Zgłoszenia przyjęte” łączy publikację z mapą, a magazyn „Postęp inwentaryzacji” łączy Zbierającego z Koordynatorem. Tor „System” obejmuje aplikację i serwer razem.
+Pule A i B łączy sygnał „Zgłoszenie w kolejce”. Magazyn „Zgłoszenia przyjęte” łączy publikację z mapą i eksportem, a magazyn „Postęp inwentaryzacji” łączy Zbierającego z Koordynatorem. Tor „System” obejmuje aplikację i serwer razem.
 
 ## Kroki procesu
 
@@ -33,7 +33,7 @@ Pule A i B łączy sygnał „Zgłoszenie w kolejce”. Magazyn „Zgłoszenia p
 | T13 | System | Przyjmuje zgłoszenie na serwerze ze statusem „wysłane” i dodaje je do kolejki | P-6 | N6, N8 | C3 |
 | T14 | Weryfikator | Bierze zgłoszenie z kolejki; własnych zgłoszeń nie dostaje (BR-4) | P-7 | N8 | R1 |
 | T15 | System | Ustawia status „w weryfikacji”, więc drugi Weryfikator go nie weźmie; wyszukuje podobne zgłoszenia w promieniu 10 m (US10.1) | P-8 | N7, N8 | R2 |
-| T16 | Weryfikator | Sprawdza dane, zdjęcie i podobne zgłoszenia; w zgłoszeniu szybkim ustala typ bariery i uciążliwość (BR-5, NFR-25) | P-8 | N8 | R2 |
+| T16 | Weryfikator | Sprawdza dane, zdjęcie i podobne zgłoszenia; autora widzi tylko jako pseudonim (BR-5); zasłania twarze i tablice rejestracyjne (NFR-25); w zgłoszeniu szybkim ustala typ bariery i uciążliwość | P-8 | N8 | R2 |
 | T17 | System | Ustawia „przyjęte” i od razu publikuje barierę na mapie i karcie budynku, ze zdjęciem i datą weryfikacji (US1.3, US2.2) | P-1, P-3, P-4, P-7 | N1, N2 | V1, V2 |
 | T18 | Weryfikator | Odrzuca duplikat albo błędne zgłoszenie i podaje powód odrzucenia (US10.2) | P-8 | N8 | R2 |
 | T19 | System | Ustawia „odrzucone”; Zbierający widzi powód i może poprawić zgłoszenie (US8.1, BR-3) | P-6 | N8 | C3 |
@@ -59,7 +59,7 @@ Gość niezalogowany wykonuje T20–T23 bez konta. Zgłoszenie szybkie (T7–T9)
 | P-3 Rzadkie aktualizacje | Bariera trafia na mapę zaraz po weryfikacji (T11, T17). Koordynator widzi piętra obejrzane (T24–T26). | Aktualność zależy od obchodów i liczby Weryfikatorów. System nie wyznacza terminu ponownego obejrzenia. |
 | P-4 Data bez szczegółów | Każde zgłoszenie przyjęte ma własną datę weryfikacji i zdjęcie (T17, T21). | Brak zgłoszeń nie znaczy „brak barier”. Czy karta budynku pokaże datę obejrzenia piętra, ustalimy w fazie B. |
 | P-5 Brak informacji o bieżących awariach | Odwiedzający zgłasza np. niesprawną windę w 3 krokach (T7–T9). | Zgłoszenie czeka na weryfikację, więc informacja nie jest natychmiastowa. Proces nie ma kroku „bariera usunięta” (do ustalenia w regułach). |
-| P-6 Zgłoszenia niewidoczne publicznie | Zgłoszenie ma status od „lokalne” do „przyjęte” lub „odrzucone” (T10, T13, T19). Zgłoszenia przyjęte są publiczne (T17). | Odwiedzający nie ma listy własnych zgłoszeń (do sprawdzenia w wywiadach). Zgłoszenie w aplikacji nie jest wnioskiem o zapewnienie dostępności z ustawy. |
+| P-6 Wniosek formalny, a jego los niewidoczny | Zgłoszenie szybkie to 3 kroki bez formularza wniosku (T7–T9). Zgłoszenie ma status od „lokalne” do „przyjęte” lub „odrzucone” (T10, T13, T19). Zgłoszenia przyjęte są publiczne (T17). | Odwiedzający nie ma listy własnych zgłoszeń, więc nie widzi statusu ani powodu odrzucenia (do sprawdzenia w wywiadach). Zgłoszenie w aplikacji nie jest wnioskiem o zapewnienie dostępności z ustawy. |
 | P-7 Wniosek nie aktualizuje deklaracji | Zgłoszenie po weryfikacji od razu zmienia mapę i kartę budynku (T17). | Aplikacja nie zmienia deklaracji na stronie PWr. Eksport (T28) może być dla niej materiałem (hipoteza). |
 | P-8 Niespójne i rozproszone dane | Jedno źródło danych: podobne zgłoszenia (T15), decyzja Weryfikatora (T16–T18), eksport jednego zbioru (T28). | Rozbieżności w istniejących deklaracjach PWr zostają; aplikacja ich nie importuje. |
 | P-9 Lokalizacja bariery tylko słowami | Współrzędne z uśredniania pozycji, budynek, piętro i punkt na planie piętra (T2–T6, T22). | Dokładność poniżej 1 m to cel na zewnątrz (NFR-1). W budynku punkt poprawia się ręcznie (NFR-3). |
@@ -85,13 +85,14 @@ Gość niezalogowany wykonuje T20–T23 bez konta. Zgłoszenie szybkie (T7–T9)
 | 3 | Aplikacja podpowiada A-1. Zbierająca potwierdza i wybiera TB-1 „schody przy wejściu”, uciążliwość 3, robi zdjęcie. | T3, T5, T6 |
 | 4 | W piwnicy nie ma sieci. Zgłoszenie czeka w telefonie i wysyła się samo po powrocie sieci. | T10, T11, T13 |
 | 5 | Weryfikator widzi podobne zgłoszenie 5 m dalej, uznaje, że to nie duplikat, i przyjmuje zgłoszenie. | T14–T17 |
-| 6 | Słuchacz Politechniki Trzeciego Wieku otwiera A-1: wejście główne ma schody, wejście dostępne to inne wejście [1]. | T20, T21, T23 |
-| 7 | Koordynator widzi w A-1 4 z 5 pięter obejrzanych (80 %) i pobiera eksport do QGIS. | T26–T29 |
+| 6 | Słuchacz Politechniki Trzeciego Wieku otwiera A-1: wejście główne ma schody, wejście dostępne to inne wejście [1], [2]. | T20, T21, T23 |
+| 7 | Koordynator widzi w A-1 4 z 5 pięter obejrzanych (80 %) i pobiera eksport do QGIS. Piętra oznaczył wcześniej Zbierający. | T24–T29 |
 
 Kandydatów na nowe reguły biznesowe z tego procesu nie numerujemy tutaj. Numery nada strona reguł biznesowych.
 
 ## Źródła
 
-1. Stan dostosowania obiektów PWr na dzień 01.01.2025, kampus główny (A-1: dostosowane tylko wejście inne niż główne): <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/stan-dostosowania-obiektow-pwr-na-dzien-01-01-2025/kampus-glowny-pwr-na-dzien-01-01-2025>
+1. Stan dostosowania obiektów PWr na dzień 01.01.2025, kampus główny (A-1, dostosowane wejście: „Tak (inne)”): <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/stan-dostosowania-obiektow-pwr-na-dzien-01-01-2025/kampus-glowny-pwr-na-dzien-01-01-2025>
+2. Deklaracja dostępności budynku A-1 (wejście główne ze schodami, wejście dostępne z tyłu budynku): <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/deklaracje-dostepnosci-budynkow/budynki-a/a1>
 
 Dostęp do źródeł: 27.10.2026.
