@@ -16,6 +16,7 @@ Przypadki użycia dzielimy na dwa diagramy, bo jeden byłby nieczytelny. Pierwsz
 
 Jak czytać diagramy:
 
+- **Linia ciągła** łączy aktora z przypadkiem, w którym uczestniczy.
 - **Strzałka z pustym grotem** to dziedziczenie ról. Odwiedzający może wszystko, co Gość niezalogowany. Role pracownicze mają też uprawnienia Odwiedzającego (BR-1).
 - **«include»** — przypadek zawsze wykonuje dołączony przypadek. Każde zgłoszenie i znacznik piętra trafiają na serwer przez UC10.
 - **«extend»** — przypadek rozszerza inny tylko pod warunkiem z etykiety. Plan piętra (UC3) jest tylko w budynku szczegółowym, a wybór wersji (UC11) tylko przy konflikcie wersji.
@@ -66,7 +67,7 @@ Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej czę�
 | Cel | Osoba przed wyjściem z domu wie, którym wejściem dostanie się do budynku bez stopni. |
 | Aktor | Gość niezalogowany; tak samo Odwiedzający i role pracownicze. |
 | Warunki wstępne | Brak. Logowanie nie jest potrzebne (US1.2). |
-| Wyzwalacz | Senior planuje wizytę, np. zajęcia Politechniki Trzeciego Wieku w A-1. |
+| Wyzwalacz | Senior planuje wizytę w A-1, np. jako słuchacz Politechniki Trzeciego Wieku. |
 | Warunki końcowe | Osoba zna wejście dostępne albo wie, że go nie ma. System niczego nie zapisuje. |
 | Odwołania | US3.1, US3.2, US2.1, US2.2, BR-6, NFR-10, NFR-17…NFR-21, NFR-39, T20, T21, T23 |
 
@@ -174,7 +175,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Aktor | Weryfikator. |
 | Warunki wstępne | Weryfikator jest zalogowany z rolą RO-WER. W kolejce są zgłoszenia „wysłane”, których nie jest autorem (BR-4). Jest połączenie z serwerem. |
 | Wyzwalacz | Weryfikator otwiera kolejkę weryfikacji. |
-| Warunki końcowe | Zgłoszenie jest przyjęte i widoczne na mapie, odrzucone z powodem albo wraca do kolejki. |
+| Warunki końcowe | Zgłoszenie jest przyjęte i widoczne na mapie albo odrzucone z powodem. Po przyjęciu zmiany „bariera usunięta” oba zgłoszenia są archiwalne. |
 | Odwołania | US10.1…US10.6, BR-3, BR-4, BR-5, BR-11, BR-13…BR-19, BR-23, NFR-25, T14–T19 |
 
 #### Przepływ główny UC14
@@ -194,6 +195,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | --- | --- | --- |
 | 1a | Brak sieci albo awaria serwera | Kolejka się nie otwiera. Aplikacja mówi to bez żargonu technicznego (NFR-50). |
 | 2a | Inny Weryfikator wziął zgłoszenie chwilę wcześniej | Zgłoszenie znika z kolejki; nie da się go wziąć drugi raz (BR-11). |
+| 2b | Weryfikator przerywa pracę przed decyzją | Zgłoszenie zostaje „w weryfikacji” u tego Weryfikatora; zwolnienia nie ma (BR-11, [Reguły biznesowe](../biznes/reguly.md), „Poza MVP”). |
 | 5a | Zgłoszenie szybkie | Weryfikator ustala typ bariery i uciążliwość. Bez nich przyjęcie jest niemożliwe (US10.3, BR-14). |
 | 5b | Duplikat | Weryfikator odrzuca zgłoszenie i w powodzie odrzucenia wskazuje wcześniejsze zgłoszenie (BR-13). Dalej według wiersza 7a. |
 | 5c | Błąd w zgłoszeniu z pomiaru precyzyjnego | Weryfikator nie poprawia typu, uciążliwości ani miejsca. Odrzuca zgłoszenie z powodem (BR-15). Dalej według wiersza 7a. |
@@ -264,9 +266,9 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Warunki wstępne | Jest połączenie z siecią. |
 | Wyzwalacz | Osoba wybiera logowanie albo aplikacja prosi o nie w UC7 (US14.2). |
 | Przepływ główny | 1. Aplikacja przekazuje osobę do Usługi logowania; w aplikacji nie ma pola hasła (NFR-31). <br> 2. Osoba podaje e-mail i hasło. <br> 3. Aplikacja pokazuje czynności wszystkich ról osoby (BR-1, US14.1). |
-| Alternatywy i wyjątki | 2a. Rejestracja: przed założeniem konta osoba widzi klauzulę informacyjną (NFR-30). Nowe konto ma tylko uprawnienia Odwiedzającego (US14.3, BR-2). <br> 2b. Osoba z zaproszenia loguje się i ma rolę nadaną przez Koordynatora (US12.1). <br> 2c. Pięć błędnych haseł: czasowa blokada konta (NFR-32). <br> 3a. Brak roli do czynności: aplikacja nie pokazuje ekranu, a serwer odrzuca próbę (US14.1, NFR-33). |
+| Alternatywy i wyjątki | 1a. Brak sieci: aplikacja mówi bez żargonu technicznego, że logowanie wymaga sieci. Mapa i karty budynków działają dalej (NFR-10, NFR-50). <br> 2a. Rejestracja: przed założeniem konta osoba widzi klauzulę informacyjną (NFR-30). Nowe konto ma tylko uprawnienia Odwiedzającego (US14.3, BR-2). <br> 2b. Osoba z zaproszenia loguje się i ma rolę nadaną przez Koordynatora (US12.1). <br> 2c. Pięć błędnych haseł: czasowa blokada konta (NFR-32). <br> 3a. Brak roli do czynności: aplikacja nie pokazuje ekranu, a serwer odrzuca próbę (US14.1, NFR-33). |
 | Warunki końcowe | Osoba jest zalogowana z uprawnieniami swoich ról. |
-| Odwołania | US14.1…US14.3, US12.1, BR-1, BR-2, NFR-15, NFR-28, NFR-30…NFR-33 |
+| Odwołania | US14.1…US14.3, US12.1, BR-1, BR-2, NFR-10, NFR-15, NFR-28, NFR-30…NFR-33, NFR-50 |
 
 ### Śledzenie i poprawa własnych zgłoszeń (UC9)
 
@@ -277,9 +279,9 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Warunki wstępne | Zbierający ma co najmniej jedno własne zgłoszenie. |
 | Wyzwalacz | Zbierający otwiera listę swoich zgłoszeń. |
 | Przepływ główny | 1. System pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte albo odrzucone (US8.1, US8.2). <br> 2. Zbierający otwiera zgłoszenie odrzucone i czyta powód odrzucenia (BR-16). <br> 3. Poprawia zgłoszenie i wysyła je ponownie przez UC10 (US8.3, BR-3). |
-| Alternatywy i wyjątki | 2a. Zgłoszenie przed decyzją Weryfikatora: Zbierający je edytuje; powstaje nowa wersja (BR-3). <br> 2b. Serwer ma inną wersję: UC11. <br> 2c. Zgłoszenie przyjęte: zmianę zaczyna się z karty budynku i tworzy ona nowe zgłoszenie, które znów przechodzi weryfikację (BR-18). Usunięcie bariery opisuje UC12. |
+| Alternatywy i wyjątki | 2a. Zgłoszenie przed decyzją Weryfikatora: Zbierający je edytuje; powstaje nowa wersja (BR-3). <br> 2b. Serwer ma inną wersję: UC11. <br> 2c. Zgłoszenie przyjęte: zmianę zaczyna się z karty budynku (do ustalenia w fazie B) i tworzy ona nowe zgłoszenie, które znów przechodzi weryfikację (BR-18). Usunięcie bariery opisuje UC12. <br> 2d. Powód odrzucenia „nieaktualne”: ktoś wcześniej przyjął inną zmianę tego zgłoszenia. Zbierający wysyła zmianę ponownie do bieżącego zgłoszenia (BR-23). |
 | Warunki końcowe | Poprawione zgłoszenie czeka w kolejce ze statusem „wysłane”. |
-| Odwołania | US8.1…US8.3, BR-3, BR-16, BR-18, NFR-21, T19 |
+| Odwołania | US8.1…US8.3, BR-3, BR-16, BR-18, BR-23, NFR-21, T19 |
 
 ### Synchronizacja z serwerem (UC10)
 
@@ -303,7 +305,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Aktor | Zbierający. |
 | Warunki wstępne | Zbierający zmienił zgłoszenie, a serwer ma już inną jego wersję, np. z drugiego telefonu (rozszerza UC10). |
 | Przepływ główny | 1. Aplikacja pokazuje obie wersje obok siebie (US9.3). <br> 2. Zbierający wybiera wersję własną albo z serwera. <br> 3. Wersja własna działa jak zwykła edycja w obecnym statusie na serwerze (BR-10). |
-| Alternatywy i wyjątki | 2a. Zbierający odkłada wybór: zmiana czeka w telefonie (BR-10). <br> 3a. Zgłoszenie było przyjęte: wersja własna tworzy nowe zgłoszenie (BR-18). |
+| Alternatywy i wyjątki | 2a. Zbierający odkłada wybór: zmiana czeka w telefonie (BR-10). <br> 3a. Zgłoszenie było odrzucone: wersja własna wraca do kolejki ze statusem „wysłane” (BR-10). <br> 3b. Zgłoszenie było przyjęte: wersja własna tworzy nowe zgłoszenie (BR-18). |
 | Warunki końcowe | Na serwerze jest wersja wybrana przez Zbierającego. |
 | Odwołania | US9.3, BR-3, BR-10, BR-18, NFR-9, T12 |
 
@@ -317,7 +319,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Przepływ główny | 1. Zbierający otwiera kartę budynku i wybiera zgłoszenie przyjęte (US8.4). <br> 2. Wybiera „bariera usunięta” i robi nowe zdjęcie miejsca. <br> 3. Typ, miejsce i piętro przechodzą z poprzedniego zgłoszenia (BR-19). <br> 4. Nowe zgłoszenie przechodzi te same statusy co każde zgłoszenie: od „lokalne” przez UC10 do „wysłane” (US8.4). <br> 5. Bariera zostaje na mapie do decyzji Weryfikatora (US8.4). |
 | Alternatywy i wyjątki | 5a. Weryfikator, który nie złożył zgłoszenia, przyjmuje je (UC14): bariera znika z mapy, karty budynku i eksportu (US10.6, BR-22). <br> 5b. Weryfikator odrzuca zgłoszenie: na mapie zostaje poprzednie zgłoszenie (BR-18). <br> 5c. Ktoś wcześniej przyjął inną zmianę tego zgłoszenia: odrzucenie z powodem „nieaktualne”. Zbierający może wysłać zmianę ponownie do bieżącego zgłoszenia (BR-23). |
 | Warunki końcowe | Po przyjęciu oba zgłoszenia są archiwalne i zostają w historii (BR-19). |
-| Odwołania | US8.4, US10.5, US10.6, BR-3, BR-4, BR-18, BR-19, BR-22, BR-23, T6–T17 |
+| Odwołania | US8.4, US10.5, US10.6, BR-3, BR-4, BR-18, BR-19, BR-22, BR-23, T6, T10–T17 |
 
 Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Reguły biznesowe](../biznes/reguly.md), „Poza MVP”).
 
@@ -341,7 +343,7 @@ Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Regu�
 | Aktor | Koordynator. |
 | Warunki wstępne | Koordynator jest zalogowany z rolą RO-KOO; jest połączenie z serwerem. |
 | Przepływ główny | 1. Koordynator otwiera postęp według budynków. <br> 2. System pokazuje odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy) (US11.1, BR-21). <br> 3. Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. W demo A-1: 4 z 5 pięter, 80 %. |
-| Alternatywy i wyjątki | 2a. Znacznik jest błędny: Koordynator cofa go niezależnie od autora (US11.3, BR-20). Postęp pokazuje nową wartość (US11.2). <br> 2b. Zgłoszenia lokalne i poza budynkiem nie wchodzą do postępu (BR-21). <br> W1. Awaria serwera: postęp czeka na powrót serwera (NFR-50). |
+| Alternatywy i wyjątki | 2a. Znacznik jest błędny: Koordynator cofa go niezależnie od autora (US11.3, BR-20). Postęp pokazuje nową wartość (US11.2). <br> 2b. Zgłoszenia lokalne i poza budynkiem nie wchodzą do postępu (BR-21). <br> 1a. Awaria serwera: postęp czeka na powrót serwera (NFR-50). |
 | Warunki końcowe | Koordynator zna postęp; po cofnięciu znacznika postęp jest przeliczony. |
 | Odwołania | US11.1…US11.3, BR-20, BR-21, NFR-50, T26 |
 
@@ -353,9 +355,11 @@ Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Regu�
 | Aktor | Koordynator; drugorzędny: Usługa logowania. |
 | Warunki wstępne | Koordynator jest zalogowany z rolą RO-KOO. Pierwszego Koordynatora nadaje administrator usługi logowania. |
 | Przepływ główny | 1. Koordynator wpisuje adres e-mail i wybiera rolę. <br> 2. System przekazuje zaproszenie do Usługi logowania. <br> 3. Osoba loguje się (UC6) i ma wybraną rolę (US12.1, BR-2). |
-| Alternatywy i wyjątki | 1a. Adres należy do istniejącego konta: konto dostaje nową rolę, dotychczasowe zostają (US12.2, BR-1). <br> 1b. Funkcja niegotowa: rolę nadaje ręcznie administrator usługi logowania (rozwiązanie zapasowe z opisu produktu). |
+| Alternatywy i wyjątki | 1a. Adres należy do istniejącego konta: konto dostaje nową rolę, dotychczasowe zostają (US12.2, BR-1). |
 | Warunki końcowe | Osoba ma konto z wybraną rolą. |
 | Odwołania | US12.1, US12.2, BR-1, BR-2 |
+
+Gdy zaproszenie nie będzie gotowe na pokaz, rolę nada ręcznie administrator usługi logowania. To rozwiązanie zapasowe projektu z opisu produktu, a nie przebieg przypadku użycia.
 
 ### Eksport do QGIS (UC17)
 
