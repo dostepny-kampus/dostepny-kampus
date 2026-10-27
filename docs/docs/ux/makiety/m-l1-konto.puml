@@ -1,0 +1,15 @@
+@startsalt
+' L1 Prośba o logowanie, stan zwykły, wejście z V4 (zdanie o 3 krokach).
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Konto")
+.
+$tekst("Aby zgłosić barierę, potrzebne jest konto. Konto chroni mapę przed fałszywymi informacjami.")
+.
+$tekst("Po zalogowaniu od razu zrobisz zdjęcie. Całość to 3 krótkie kroki.")
+.
+$przycisk_glowny("Zaloguj się")
+$przycisk("Załóż konto")
+$przycisk("Nie teraz")
+$ekran_koniec()
+@endsalt

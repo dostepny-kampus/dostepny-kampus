@@ -1,0 +1,14 @@
+@startsalt
+' L2 Konto, stan zwykły, Odwiedzający: bez sekcji „Twoja praca” (US14.3).
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Konto")
+<i>[nazwa wyświetlana]</i>
+Twoje role: Odwiedzający
+..
+$przycisk("Informacja o danych osobowych")
+$przycisk("Wycofaj zgodę")
+$przycisk("Wyloguj się")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

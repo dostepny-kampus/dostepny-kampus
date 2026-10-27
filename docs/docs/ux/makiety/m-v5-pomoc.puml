@@ -1,0 +1,15 @@
+@startsalt
+' V5 Pomoc: krok instrukcji z objaśnieniem napisu „Dostępne” (PW-15).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek("Jak korzystać z aplikacji")
+$numer_kroku("Krok <i>[n]</i> z <i>[liczba]</i>")
+.
+$tekst("Napis »Dostępne« przy wejściu znaczy, że wejdziesz bez pokonywania stopni: z poziomu chodnika, pochylnią albo podnośnikiem.")
+.
+$przycisk_glowny("Dalej")
+$przycisk("Pomiń instrukcję")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt
