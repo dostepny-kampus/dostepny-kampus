@@ -102,10 +102,11 @@ Funkcja: Oznaczenie wejścia
       Oraz próba przyjęcia tej zmiany przez pierwszego Weryfikatora z pominięciem aplikacji jest odrzucona
       Ale drugi Weryfikator widzi tę zmianę w swojej kolejce
 
-    @US17.2 @US17.3
-    Scenariusz: Później przyjęta zmiana tego samego wejścia zastępuje wcześniejszą
+    @US17.2 @BR-23
+    Scenariusz: Po przyjęciu jednej zmiany wejścia drugą czekającą odrzuca się jako „nieaktualne”
       Zakładając, że Zbierający wysłał zmianę oznaczenia wejścia bocznego B-4 na „dostępne”
       Oraz inny Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne”
-      Jeżeli pierwszy Weryfikator 12.11.2026 przyjmie zmianę na „dostępne”
-      Oraz drugi Weryfikator 13.11.2026 przyjmie zmianę na „niedostępne”
-      Wtedy wejście boczne B-4 ma oznaczenie „niedostępne” z datą 13.11.2026 i źródłem „obchód”
+      Oraz pierwszy Weryfikator 12.11.2026 przyjął zmianę na „dostępne”
+      Jeżeli drugi Weryfikator weźmie zmianę na „niedostępne” i odrzuci ją z powodem „nieaktualne”
+      Wtedy inny Zbierający widzi tę zmianę ze statusem „odrzucone” i powodem odrzucenia „nieaktualne”
+      Oraz wejście boczne B-4 ma oznaczenie „dostępne” z datą 12.11.2026 i źródłem „obchód”
