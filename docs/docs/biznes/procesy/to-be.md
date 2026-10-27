@@ -16,6 +16,8 @@ Pule A i B łączy sygnał „Zgłoszenie w kolejce”. Magazyn „Zgłoszenia p
 
 Tor „System” obejmuje aplikację i serwer razem. Kroki z literą, np. T6a, to odgałęzienia kroku o tym samym numerze.
 
+Zapis „V2 → C5” w kolumnie „Ekran” znaczy, że krok zaczyna się na V2 i prowadzi do C5.
+
 ## Kroki procesu
 
 | Krok | Kto | Co | Rozwiązuje problem (P-…) | Potrzeba (N…) | Ekran (V…/C…/R…/K…) |
@@ -68,7 +70,7 @@ Oznaczenia wejść powstają przy imporcie budynków, zanim proces się zacznie:
 | P-1 Informacja tylko tekstowa | Każde zgłoszenie ma zdjęcie (T6, T7). Bariery widać na mapie, karcie budynku i planie piętra (T17, T21, T22). | Deklaracje dostępności PWr zostają tekstowe; aplikacja ich nie zastępuje. |
 | P-2 Brak mapy przy deklaracjach | Mapa obejmuje wszystkie budynki PWr z konturem w OpenStreetMap: 5 szczegółowych i pozostałe jako podstawowe (T20, T23). | Plany pięter mają tylko budynki szczegółowe. Deklaracje PWr nadal nie odsyłają do mapy. |
 | P-3 Rzadkie aktualizacje | Bariera trafia na mapę zaraz po weryfikacji (T17). Koordynator widzi piętra obejrzane (T24–T26). Oznaczenie wejścia zmienia się po obchodzie i weryfikacji (T6b, T17b). | Aktualność zależy od obchodów i liczby Weryfikatorów. System nie wyznacza terminu ponownego obejrzenia. |
-| P-4 Data bez szczegółów | Każde zgłoszenie przyjęte ma własną datę weryfikacji i zdjęcie (T17, T21). Oznaczenie wejścia ma datę i źródło: import albo obchód (T17b, T21). | Brak zgłoszeń nie znaczy „brak barier”; karta budynku (V2) mówi to wprost. Karta nie pokazuje daty obejrzenia piętra, a znaczniki pięter widać tylko na C5. |
+| P-4 Data bez szczegółów | Każde zgłoszenie przyjęte ma własną datę weryfikacji i zdjęcie (T17, T21). Oznaczenie wejścia ma datę i źródło: import albo obchód (T17b, T21). | Brak zgłoszeń nie znaczy „brak barier”; pusta karta budynku (V2) mówi to wprost. Przy windzie i piętrze bez zgłoszenia karta nie podaje daty sprawdzenia. Piętra obejrzane, bez daty, widzą tylko Zbierający i Koordynator (C5, K1). Oznaczenie wejścia podaje źródło, ale nie osobę, która je sprawdziła. |
 | P-5 Brak informacji o bieżących awariach | Odwiedzający zgłasza np. niesprawną windę w 3 krokach (T7–T9). Po naprawie dowolny Zbierający wysyła zmianę zgłoszenia przyjętego z oznaczeniem „bariera usunięta” (BR-19, T6a, T10–T13). Po przyjęciu (T14–T16, T17a) bariera znika z mapy i zostaje w historii. | Zgłoszenie i usunięcie czekają na weryfikację, więc informacja nie jest natychmiastowa. Odwiedzający nie oznacza usunięcia bariery; robi to Zbierający. |
 | P-6 Wniosek formalny, a jego los niewidoczny | Zgłoszenie szybkie to 3 kroki bez formularza wniosku (T7–T9). Zgłoszenia przyjęte są publiczne (T17). | Odwiedzający nie ma listy własnych zgłoszeń, więc nie widzi statusu ani powodu odrzucenia (do sprawdzenia w wywiadach). Zgłoszenie w aplikacji nie jest wnioskiem o zapewnienie dostępności z ustawy. |
 | P-7 Wniosek nie aktualizuje deklaracji | Zgłoszenie po weryfikacji od razu zmienia mapę i kartę budynku (T17). | Aplikacja nie zmienia deklaracji na stronie PWr. Eksport (T28) może być dla niej materiałem (hipoteza). |
