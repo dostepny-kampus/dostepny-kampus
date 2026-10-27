@@ -53,16 +53,20 @@ Funkcja: Zgłoszenie szybkie
     Oraz wybierze grupę barier „wejście i drzwi”
     Oraz spróbuje wysłać zgłoszenie
     Wtedy zgłoszenie nie zostaje wysłane
+    Oraz zgłoszenie nie zapisuje się w telefonie do późniejszej wysyłki
     Oraz widzi komunikat, że telefon nie ustalił miejsca, z radą, co zrobić
     Oraz zdjęcie i grupa barier zostają do ponownej próby
 
   @US4.1
   Scenariusz: Pozycja ustalona przy ponownej próbie pozwala wysłać zgłoszenie
-    Zakładając, że Odwiedzający zrobił zdjęcie bariery i wybrał grupę barier „wejście i drzwi”
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz zrobił zdjęcie bariery i wybrał grupę barier „wejście i drzwi”
     Oraz widzi komunikat, że telefon nie ustalił miejsca
+    Oraz telefon ma sieć
     Jeżeli telefon ustali bieżącą pozycję
     Oraz Odwiedzający wybierze ponowną próbę
-    Wtedy zgłoszenie zostaje wysłane z tym samym zdjęciem i grupą barier
+    Wtedy zgłoszenie zostaje wysłane z tym samym zdjęciem, grupą barier i bieżącą pozycją
+    Oraz Odwiedzający widzi potwierdzenie, że zgłoszenie trafi do weryfikacji
 
   @BR-14
   Szablon scenariusza: Budynek zgłoszenia szybkiego przypisuje system, a piętro zostaje puste

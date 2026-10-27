@@ -122,7 +122,7 @@ Aplikacja nie pyta o typ bariery ani uciążliwość; ustala je Weryfikator w UC
 | --- | --- | --- |
 | 1a | Gość niezalogowany wybiera zgłoszenie szybkie | Przed zdjęciem aplikacja prosi o logowanie albo rejestrację (US14.2, UC6). Po zalogowaniu wraca do kroku 2. |
 | 1b | Gość rezygnuje z logowania | Zgłoszenie nie powstaje, a aplikacja wraca do mapy. |
-| 2a | Brak zgody na lokalizację | Bez pozycji zgłoszenia nie da się wysłać (BR-8, NFR-27). Aplikacja prosi o zgodę przed aparatem. Po odmowie mówi, że bez lokalizacji zgłoszenia nie wyśle, i proponuje ustawienia telefonu. Aparat się nie otwiera, więc Odwiedzający nie robi zdjęcia na próżno. |
+| 2a | Brak zgody na lokalizację | Bez pozycji zgłoszenia nie da się wysłać (BR-8, NFR-27). Aplikacja prosi o zgodę przed aparatem. Po odmowie mówi, że bez lokalizacji zgłoszenia nie wyśle, i proponuje ustawienia telefonu. Aparat się nie otwiera, więc Odwiedzający nie robi zdjęcia na próżno. Przy zgodzie tylko na przybliżoną lokalizację aplikacja prosi o dokładną, bo przybliżona nie wskaże budynku (BR-14). |
 | 4a | Pozycja poza konturem budynku | Zgłoszenie zapisuje się z pozycją, bez komunikatu o błędzie (BR-G2, BR-G4, NFR-49). |
 | 4b | Budynek podstawowy | Zgłoszenie działa tak samo, jak w budynku szczegółowym (BR-G1). |
 | 4c | Telefon nie ustala pozycji | Bez pozycji zgłoszenia nie da się wysłać (BR-8). Aplikacja szuka pozycji od wejścia na ekran, bez limitu czasu (NFR-23). Gdy przy wysłaniu jej brak, radzi podejść do okna albo wyjść na zewnątrz. Zdjęcie i grupa zostają do ponownej próby. Wyłączoną lokalizację w telefonie aplikacja wskazuje razem z przyciskiem do ustawień. |
