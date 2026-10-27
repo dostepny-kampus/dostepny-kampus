@@ -9,10 +9,11 @@
 | Podmiot publiczny musi zapewnić m.in. przestrzenie komunikacyjne bez barier, dostęp do wszystkich pomieszczeń i informację o ich rozkładzie (art. 4 ust. 1 i art. 6 pkt 1 ustawy) | [1], [2] |
 | Co 4 lata, do 31 marca, podmiot publiczny przekazuje raport o stanie zapewniania dostępności i publikuje go w BIP (art. 11 ust. 1) | [1], [2] |
 | PWr złożyła taki raport. Stan na 1.01.2021: 94 budynki; w 42 przestrzenie komunikacyjne bez barier, w 38 dostęp do wszystkich pomieszczeń | [3] |
+| Stan na 1.01.2025, kampus główny: 44 budynki, w tym 27 z pełnym dostępem i 5 bez dostosowanego wejścia. W 13, m.in. A-1, dostosowane jest tylko wejście inne niż główne | [9] |
 | Serwis dostepnosc.pwr.edu.pl publikuje deklaracje dostępności 67 budynków, każdą na osobnej podstronie | [4] |
 | Deklaracja to tekst z nagłówkami, bez mapy i zdjęć. Przykład: deklarację C-13 zaktualizowano w marcu 2024 | [5] |
 
-Dane o dostępności istnieją, ale są rozproszone po kilkudziesięciu stronach tekstu. Serwis nie ma mapy, która pokaże dostępne wejście do konkretnego budynku. Osoba starsza albo osoba na wózku nie sprawdzi tego wygodnie na telefonie przed wizytą (hipoteza N1).
+Dane o dostępności istnieją, ale są rozproszone po kilkudziesięciu stronach tekstu. Serwis nie ma mapy, która pokaże dostępne wejście do konkretnego budynku. Przykład: do A-1 osoba na wózku wejdzie tylko wejściem innym niż główne [9]. Osoba starsza albo osoba na wózku nie sprawdzi tego wygodnie na telefonie przed wizytą (hipoteza N1).
 
 Według naszego rozpoznania inwentaryzację prowadzi się obchodem z papierowym formularzem, a wynik trafia do tekstu deklaracji (do potwierdzenia w wywiadach). Taki tryb utrudnia częste aktualizacje.
 
@@ -76,5 +77,6 @@ Zachowanie na poziomach 2 i 3 opisują reguły BR-G1…BR-G4 na stronie [Reguły
 6. „Seniorzy na PWr. Ruszyła Politechnika Trzeciego Wieku”: <https://pwr.edu.pl/uczelnia/aktualnosci/seniorzy-na-pwr-ruszyla-politechnika-trzeciego-wieku-13912.html>
 7. Politechnika Trzeciego Wieku, kontakt: <https://ptw.pwr.edu.pl/kontakt>
 8. Dostępność na PWr, Dział Dostępności: <https://dostepnosc.pwr.edu.pl/>
+9. Stan dostosowania obiektów PWr na dzień 01.01.2025, kampus główny: <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/stan-dostosowania-obiektow-pwr-na-dzien-01-01-2025/kampus-glowny-pwr-na-dzien-01-01-2025>
 
 Dostęp do źródeł: 27.10.2026.
