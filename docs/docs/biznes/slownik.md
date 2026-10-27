@@ -81,6 +81,7 @@ Jedno pojęcie ma jedną nazwę. Aplikacja, kod i dokumenty używają tylko nazw
 | zgłoszenie przyjęte | Zgłoszenie po pozytywnej weryfikacji; tylko takie zgłoszenia widzi Odwiedzający na mapie. | Zakazane: zatwierdzone, potwierdzone, zaakceptowane, opublikowane. |
 | zgłoszenie szybkie | Zgłoszenie Odwiedzającego w najwyżej 3 krokach: zdjęcie, bieżąca pozycja i grupa barier; typ i uciążliwość ustala Weryfikator. | Nie mylić z: pomiar precyzyjny. Zakazane: szybki raport, zgłoszenie uproszczone, sygnał. |
 | znacznik | Zapis, że piętro budynku szczegółowego jest piętrem obejrzanym albo że budynek podstawowy jest „obejrzany”; stawia go Zbierający, a cofa on sam albo Koordynator (BR-20). | Nie mylić z: oznaczenie zgłoszenia, np. „korekta ręczna”; znacznik dźwiękowy (TB-22). Dopuszczalne dla czynności: oznaczenie piętra obejrzanego. Zakazane: oznaczenie (w znaczeniu zapisu), flaga, ptaszek, checkbox. |
+| zwolnienie zgłoszenia | Oddanie wziętego zgłoszenia do kolejki weryfikacji bez decyzji; poza MVP, zgłoszenie w weryfikacji obsługuje do decyzji ten sam Weryfikator (BR-11, R-18). | Nie mylić z: odrzucenie zgłoszenia. Zakazane: oddanie zgłoszenia, cofnięcie do kolejki. |
 
 Terminy są w mianowniku liczby pojedynczej. Nazwy ról piszemy wielką literą. Nowe pojęcie trafia do tabeli przed pierwszym użyciem w innym dokumencie.
 

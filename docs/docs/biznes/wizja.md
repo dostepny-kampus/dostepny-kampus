@@ -35,7 +35,7 @@ Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 o
 | Osoby z ograniczoną mobilnością, goście uczelni | Odwiedzający | N1, N2, N3 | informację o wejściach, windach i barierach w jednym miejscu |
 | Student lub pracownik uczelni prowadzący obchód | Zbierający | N5, N6, N7 | dokładne zaznaczenie bariery na miejscu, także bez zasięgu sieci |
 | Pracownik uczelni weryfikujący zgłoszenia | Weryfikator | N7, N8 | kolejkę zgłoszeń z podpowiedzią możliwych duplikatów |
-| Kierownik inwentaryzacji | Koordynator | N9 | postęp w każdym budynku i eksport danych do QGIS |
+| Osoba prowadząca inwentaryzację | Koordynator | N9 | postęp w każdym budynku i eksport danych do QGIS |
 | Dział Dostępności PWr [8] | brak (tylko interesariusz) | aktualne dane o barierach (hipoteza) | materiał do deklaracji i raportu; na tym etapie bez kontaktu z działem |
 
 ## Mierzalne cele
