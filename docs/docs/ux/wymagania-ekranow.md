@@ -212,7 +212,7 @@ US14.2 wymaga logowania przed zdjęciem, czyli w środku zadania. W granicach ob
 | Konto można założyć wcześniej, w spokojnej chwili: „Konto” na pasku dolnym prowadzi do L1. Instrukcja V5 mówi o tym jednym zdaniem. | US5.1, US14 |
 | „Nie teraz” wraca do mapy bez komunikatu o błędzie i bez utraty danych. | UC7 1b |
 
-Zostaje jedno przerwanie przy pierwszym zgłoszeniu. Zmianę kolejności opisujemy w sekcji [do decyzji orkiestratora](#do-decyzji-orkiestratora-moment-logowania).
+Zostaje jedno przerwanie przy pierwszym zgłoszeniu. Warianty kolejności opisuje sekcja [Moment logowania](#moment-logowania).
 
 ### V5 Pomoc
 
@@ -591,7 +591,7 @@ Dostępność: podobne zgłoszenia mają odległość tekstem, np. „5 m”, a 
 | --- | --- |
 | Cel | Koordynator wie, gdzie zespół musi jeszcze pójść. |
 | Role | RO-KOO |
-| Realizuje | US11.1, US11.2, US11.3 |
+| Realizuje | US11.1, US11.2, US11.3, US11.4 |
 | Czynność główna | dotknięcie budynku — otwarcie jego pięter |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
@@ -600,10 +600,11 @@ Dostępność: podobne zgłoszenia mają odległość tekstem, np. „5 m”, a 
 | Budynek szczegółowy: „4 z 5 pięter, 80%” | dane | US11.1, US11.2, BR-21 | — |
 | Budynek podstawowy: „obejrzany” albo „nieobejrzany” tekstem i ikoną | dane | US11.1, NFR-21 | — |
 | Liczby: „czeka na sprawdzenie” i „przyjęte” | dane | US11.1, BR-21 | — |
+| Budynek szczegółowy: „Wejścia potwierdzone na obchodzie: 4 z 6” | dane | US11.4, BR-24 | — |
 | Dotknięcie budynku | czynność główna | US11.3 | C5 |
 | „Odśwież” | czynność | US11.2 | — |
 
-Sortowania ani filtrów nie ma, bo nie wynikają z żadnego kryterium (decyzja 16). Wiersz o wejściach dla miary M-1 czeka na decyzję, patrz [niżej](#do-decyzji-orkiestratora-odczyt-miary-m-1).
+Sortowania ani filtrów nie ma, bo nie wynikają z żadnego kryterium (decyzja 16). Wiersz o wejściach pozwala odczytać miarę M-1 z [wizji](../biznes/wizja.md) bez liczenia na kartach budynków (decyzja 38). Wejście liczy się dopiero po przyjęciu zmiany oznaczenia, bo wtedy dostaje źródło „obchód” (BR-24).
 
 | Stan | Co widać |
 | --- | --- |
@@ -675,29 +676,19 @@ Stanu pustego nie ma: lista budynków pochodzi z importu, a 0% to zwykła warto�
 | Karta bez zgłoszeń przyjętych (UC2 2a) | Zdanie, że brak zgłoszeń nie znaczy braku barier. | Wynika z P-4 procesu TO-BE: pusta lista nie może brzmieć jak „wszystko dostępne” (N2). |
 | Eksport bez zgłoszeń przyjętych (UC17 2a) | Komunikat, a pobranie pustego pliku działa. | Pusty plik GeoJSON jest poprawny (NFR-43) i nie wymaga osobnej reguły na serwerze. |
 | Znak „zmiana czeka na wysłanie” (reguły, cykl życia) | Dodatkowy znak przy zgłoszeniu na C3, obok statusu. | Status się nie zmienia, a Zbierający musi wiedzieć, że edycja jest tylko w telefonie (BR-9). |
+| Odczyt miary M-1 (decyzja 38) | W K1 przy budynku szczegółowym wiersz „Wejścia potwierdzone na obchodzie: x z y” i kryterium US11.4. | Bez tego M-1 nie da się zmierzyć z jednego ekranu. Dane już są: każde wejście ma źródło oznaczenia (BR-24). |
+| Moment logowania (decyzja 38) | US14.2 bez zmian: logowanie przed zdjęciem, a przerwanie łagodzą środki z V4 i L1. | Zmianę kolejności sprawdzimy dopiero w teście z osobami starszymi. |
 
-## Do decyzji orkiestratora: odczyt miary M-1
+## Moment logowania
 
-Miara M-1 z [wizji](../biznes/wizja.md) wymaga 100% wejść budynków szczegółowych ze źródłem „obchód”. K1 pokazuje tylko piętra i liczby zgłoszeń, więc Koordynator nie odczyta tej miary z jednego ekranu. Wizji nie zmieniamy.
-
-| Wariant | Co się zmienia | Za | Przeciw |
-| --- | --- | --- | --- |
-| A. Wiersz w K1 (zalecany) | W K1 przy budynku szczegółowym wiersz „Wejścia potwierdzone na obchodzie: 4 z 6”. Potrzebne nowe kryterium `US11.4`, scenariusz i dopisek w BR-21. | Dane już są: każde wejście ma źródło (BR-24). Służy też US11, bo wejście bez obchodu to miejsce, gdzie trzeba jeszcze pójść. | Nowy element K1; decyzja 34 odrzuciła nowe pola K1, choć przy innym problemie. |
-| B. Odczyt z kart V2 | Bez zmian w ekranach. Koordynator liczy wejścia ze źródłem „obchód” na 5 kartach budynków (US17.3). | Zero nowego zakresu. | Ręczne liczenie kilkudziesięciu wejść; łatwo o pomyłkę przy pomiarze sukcesu. |
-| C. Zmiana miary | M-1 liczy tylko piętra obejrzane. | K1 wystarcza bez zmian. | Wymaga zmiany wizji i decyzji 36; nie zalecamy. |
-
-Proponowane brzmienie kryterium dla wariantu A: „`US11.4` — Dla każdego budynku szczegółowego widać liczbę wejść ze źródłem »obchód« wśród wszystkich jego wejść.” Do decyzji makieta K1 nie ma tego wiersza.
-
-## Do decyzji orkiestratora: moment logowania
-
-Mapa ścieżki osoby starszej pokazuje, że logowanie przed zdjęciem przerywa zadanie w najgorszym momencie. Środki z V4 zmniejszają to przerwanie, ale go nie usuwają. Obecne kryteria zostawiamy bez zmian.
+Mapa ścieżki osoby starszej pokazuje, że logowanie przed zdjęciem przerywa zadanie w najgorszym momencie. Środki z V4 zmniejszają to przerwanie, ale go nie usuwają. Decyzja 38 zostawia US14.2 bez zmian do testu z osobami starszymi.
 
 | Wariant | Co się zmienia | Za | Przeciw |
 | --- | --- | --- | --- |
-| A. Bez zmian (zalecany na teraz) | US14.2 zostaje: logowanie przed zdjęciem, ze środkami z V4. | Osoba nie robi zdjęcia, które może się nie wysłać. Brak nowych reguł. | Przy pierwszym zgłoszeniu bariera może zniknąć z oczu, zanim osoba się zaloguje. |
+| A. Bez zmian (wybrany, decyzja 38) | US14.2 zostaje: logowanie przed zdjęciem, ze środkami z V4. | Osoba nie robi zdjęcia, które może się nie wysłać. Brak nowych reguł. | Przy pierwszym zgłoszeniu bariera może zniknąć z oczu, zanim osoba się zaloguje. |
 | B. Logowanie przed wysłaniem | Gość robi zdjęcie i wybiera grupę, a logowanie pojawia się przy „Wyślij”. Zdjęcie czeka w telefonie. Wymaga zmiany US14.2, BR-8, UC7 1a i 3 scenariuszy `@US14.2`. | Zdjęcie powstaje, gdy bariera jest przed osobą. | Niezalogowany telefon trzyma zdjęcie bez konta; rezygnacja z logowania wyrzuca wykonaną pracę. |
 
-Zalecamy wariant A do czasu wywiadów i testu z osobami starszymi. Jeśli test pokaże rezygnacje przy L1, wracamy do wariantu B.
+Jeśli test pokaże rezygnacje przy L1, wracamy do wariantu B.
 
 ## Pokrycie kryteriów
 
@@ -741,6 +732,7 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | Postęp | US11.1 | K1 | — |
 | | US11.2 | K1 | przeliczenie robi serwer |
 | | US11.3 | K1, C5 | cofnięcie z potwierdzeniem |
+| | US11.4 | K1 | wejścia ze źródłem „obchód”; liczbę liczy serwer |
 | Zaproszenie | US12.1 | K2, L1 | zaproszona osoba loguje się przez L1 albo L2 |
 | | US12.2 | K2 | komunikat „konto istnieje” |
 | Eksport | US13.1 | K3 | wybór formatu; treść pliku bez ekranu |
@@ -758,7 +750,7 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | | US17.2 | V2, C6, R2, C3 | start, zmiana, sprawdzenie, status |
 | | US17.3 | V2, V3, C6, R2 | data i źródło |
 
-Wszystkie 52 kryteria mają ekran. Kryteria w całości serwerowe nie występują: każde ma co najmniej widoczny skutek.
+Wszystkie 53 kryteria mają ekran. Kryteria w całości serwerowe nie występują: każde ma co najmniej widoczny skutek.
 
 ## Źródła
 

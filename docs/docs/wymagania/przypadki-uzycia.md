@@ -361,10 +361,10 @@ Odwiedzający nie zmienia oznaczenia wejścia, bo zmianę sprawdza się zdjęcie
 | Cel | Koordynator wie, gdzie zespół musi jeszcze pójść. |
 | Aktor | Koordynator. |
 | Warunki wstępne | Koordynator jest zalogowany z rolą RO-KOO. |
-| Przepływ główny | 1. Koordynator otwiera postęp według budynków. <br> 2. System pokazuje odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy) (US11.1, BR-21). <br> 3. Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. W demo A-1: 4 z 5 pięter, 80%. |
+| Przepływ główny | 1. Koordynator otwiera postęp według budynków. <br> 2. System pokazuje odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy) (US11.1, BR-21). <br> 3. Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. W demo A-1: 4 z 5 pięter, 80%. <br> 4. Przy budynku szczegółowym system pokazuje też liczbę wejść potwierdzonych na obchodzie, np. 4 z 6 (US11.4, BR-24). |
 | Alternatywy i wyjątki | 2a. Znacznik jest błędny: Koordynator cofa go niezależnie od autora (US11.3, BR-20). Postęp pokazuje nową wartość (US11.2). <br> 2b. Zgłoszenia lokalne i poza budynkiem nie wchodzą do postępu (BR-21). <br> 1a. Awaria serwera: postęp czeka na powrót serwera (NFR-50). |
 | Warunki końcowe | Koordynator zna postęp; po cofnięciu znacznika postęp jest przeliczony. |
-| Odwołania | US11.1…US11.3, BR-20, BR-21, NFR-50, T26, T26a |
+| Odwołania | US11.1…US11.4, BR-20, BR-21, BR-24, NFR-50, T26, T26a |
 
 ### Zaproszenie osoby z rolą (UC16)
 
