@@ -6,13 +6,14 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   Założenia:
     Zakładając, że w aplikacji są budynki szczegółowe A-1, B-1, C-13, D-1 i D-2
     Oraz budynek A-1 ma 6 wejść, z których wejście główne ma schody, a wejściem dostępnym jest inne wejście
+    # Dane testowe dla US3.1, a nie stan faktyczny budynku B-4.
+    Oraz w danych testowych budynek podstawowy B-4 ma wejścia wyłącznie z oznaczeniem „niedostępne”
 
   @US1.1
   Szablon scenariusza: Wyszukanie budynku po symbolu w różnym zapisie
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli wyszuka „<zapis>”
-    Wtedy pierwszym wynikiem jest budynek C-13
-    Oraz po wybraniu wyniku mapa pokazuje kontur budynku C-13
+    Wtedy widzi budynek C-13 w wynikach wyszukiwania
 
     Przykłady:
       | zapis |
@@ -68,8 +69,9 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
 
   @US3.1
   Scenariusz: Brak wejścia dostępnego jest powiedziany wprost
-    Zakładając, że w danych budynku B-4 żadne wejście nie jest wejściem dostępnym
-    Jeżeli Gość niezalogowany otworzy „Zaplanuj wizytę” dla budynku B-4
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
+    Jeżeli dotknie budynku B-4
+    Oraz wybierze „Zaplanuj wizytę”
     Wtedy widzi zdanie, że budynek B-4 nie ma wejścia dostępnego
     Ale ekran nie jest pusty i nie pokazuje samego braku wyniku
 
