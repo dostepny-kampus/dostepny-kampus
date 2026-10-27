@@ -275,7 +275,7 @@ Ten wywiad nie zastępuje wywiadów z osobami 60+. Do wymaganej liczby uczestnik
 | --- | --- | --- |
 | 10.1 | Proszę opisać krok po kroku ostatni przegląd budynku. | N5, N6, N9 |
 | 10.2 | Jak zapisujecie, gdzie dokładnie jest bariera? Co się dzieje, gdy opis jest nieprecyzyjny? | N5 |
-| 10.3 | Jak wygląda praca w miejscach bez zasięgu? | N6 |
+| 10.3 | Na czym zapisujecie dane w terenie? Jak wygląda praca w miejscach bez zasięgu? | N6 |
 | 10.4 | Jak kilka osób dzieli się pracą w jednym budynku? Co się dzieje, gdy dwie osoby opiszą to samo? | N7, N8 |
 | 10.5 | Kto sprawdza dane przed publikacją? Jakie błędy się zdarzają? | N8 |
 | 10.6 | Kto korzysta z wyników i w jakiej postaci? | N9 |
