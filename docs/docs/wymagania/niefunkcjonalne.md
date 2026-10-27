@@ -21,7 +21,7 @@ Każde wymaganie ma miarę i sposób sprawdzenia. Jeśli kolumna „Źródło po
 
 | ID | Kategoria | Wymaganie | Miara / próg | Jak sprawdzamy | Źródło potrzeby |
 | --- | --- | --- | --- | --- | --- |
-| NFR-1 | Dokładność pozycji | Pozycja bariery na zewnątrz jest dokładna po 30 s uśredniania. | Mediana błędu poziomego < 1 m, żaden pomiar > 3 m. Cel do potwierdzenia pomiarem. | 10 pomiarów nad punktem o znanych współrzędnych (np. punkt osnowy z Geoportalu) w terenie otwartym. | N5, US6 AC1, [33] |
+| NFR-1 | Dokładność pozycji | Pozycja bariery na zewnątrz jest dokładna po 30 s uśredniania. | Mediana błędu poziomego < 1 m, żaden pomiar > 3 m. Cel do potwierdzenia pomiarem. | 10 pomiarów w terenie otwartym nad punktem o znanych współrzędnych (punkt osnowy albo wyraźny narożnik na ortofotomapie z Geoportalu). | N5, US6 AC1, [33] |
 | NFR-2 | Dokładność pozycji | Ekran C1 pokazuje szacowaną dokładność i liczbę satelitów według systemów. Wartość jest opisana jako szacunek, nie gwarancja. | Odświeżanie co ≤ 1 s. Przy wartości widnieje informacja, że to szacunek. | Obserwacja ekranu C1 na telefonie referencyjnym, porównanie z wynikiem NFR-1. | US6 AC1; system podaje promień ufności 68 % [9] |
 | NFR-3 | Dokładność pozycji | Wewnątrz budynku pozycję satelitarną poprawia się ręcznie: na planie piętra (poziom 1) albo na mapie (poziom 2). | Ręczna korekta dostępna zawsze. Zapis po korekcie ma oznaczenie „korekta ręczna”. | Scenariusz US6 AC3 w budynku A-1 i w budynku bez planu. | US6 AC3, BR-G1; błąd przy ścianie 5–15 m (hipoteza) |
 | NFR-4 | Dokładność pozycji | Podpowiedź najbliższego budynku działa bez sieci. | Podpowiedź ≤ 2 s od końca uśredniania, w trybie samolotowym. | Test na telefonie referencyjnym w trybie samolotowym przy 5 budynkach szczegółowych. | US6 AC2, N6 |
@@ -31,7 +31,7 @@ Każde wymaganie ma miarę i sposób sprawdzenia. Jeśli kolumna „Źródło po
 | ID | Kategoria | Wymaganie | Miara / próg | Jak sprawdzamy | Źródło potrzeby |
 | --- | --- | --- | --- | --- | --- |
 | NFR-5 | Offline | Zapis i zdjęcie zapisane w telefonie przetrwają zamknięcie aplikacji, wymuszone zatrzymanie i restart telefonu. | 0 utraconych zapisów na 50. | 50 zapisów ze zdjęciem bez sieci, zatrzymanie aplikacji, restart, powrót sieci, porównanie z serwerem. | N6, US4 AC2, US9 AC1 |
-| NFR-6 | Synchronizacja | Po powrocie sieci kolejka wysyła się sama. | ≤ 60 s, gdy aplikacja jest na ekranie. ≤ 15 min w tle (hipoteza: system może opóźniać pracę w tle [11]). | Pomiar czasu od włączenia sieci do statusu „wysłano” w C3. | N6, US9 AC2 |
+| NFR-6 | Synchronizacja | Po powrocie sieci kolejka wysyła się sama. | ≤ 60 s, gdy aplikacja jest na ekranie. W tle — w oknie pracy wyznaczonym przez system [11], najpóźniej przy następnym otwarciu aplikacji. | Pomiar czasu od włączenia sieci do statusu „wysłane” w C3; w tle — status po ponownym otwarciu. | N6, US9 AC2 |
 | NFR-7 | Offline | Kolejka do wysłania mieści pracę kilku dni terenowych. | ≥ 200 zapisów z jednym zdjęciem każdy. Ostrzeżenie, gdy w telefonie zostaje < 100 MB. | Test z 200 zapisami bez sieci, potem pełna wysyłka. | N6 |
 | NFR-8 | Synchronizacja | Ponowna wysyłka tej samej operacji nie tworzy drugiego zapisu. | 0 duplikatów przy 20 przerwanych wysyłkach. | Przerwanie połączenia w trakcie wysyłki, ponowienie, liczenie zapisów na serwerze. | N6, N8 |
 | NFR-9 | Synchronizacja | Konflikt wersji nigdy nie kończy się cichym nadpisaniem. | 100 % konfliktów trafia na ekran wyboru wersji (C4). | Równoległa edycja tego samego zapisu z dwóch telefonów. | N7, US9 AC3 |
@@ -53,9 +53,9 @@ Aplikacja dotyczy barier dla osób z niepełnosprawnościami, więc sama musi by
 
 | ID | Kategoria | Wymaganie | Miara / próg | Jak sprawdzamy | Źródło potrzeby |
 | --- | --- | --- | --- | --- | --- |
-| NFR-16 | Dostępność UI | Tekst ma wystarczający kontrast z tłem. | ≥ 4,5:1; tekst ≥ 18 sp lub pogrubiony ≥ 14 sp: ≥ 3:1. | Automatyczny skaner dostępności na każdym ekranie, kontrola par kolorów w tokenach. | N4, WCAG 1.4.3 [3], [6] |
+| NFR-16 | Dostępność UI | Tekst ma wystarczający kontrast z tłem. | ≥ 4,5:1; tylko tekst duży (18 pt albo pogrubiony 14 pt z WCAG, przeliczone na ≥ 24 sp albo pogrubiony ≥ 19 sp): ≥ 3:1. | Automatyczny skaner dostępności na każdym ekranie, kontrola par kolorów w palecie. | N4, WCAG 1.4.3 [3]; próg Androida 18 sp [6] jest łagodniejszy niż WCAG, więc go nie stosujemy |
 | NFR-17 | Dostępność UI | Ikony statusu, ramki pól i wskaźnik fokusu są widoczne. | Kontrast ≥ 3:1. | Skaner dostępności, ręczny przegląd ikon statusu. | N4, WCAG 1.4.11 [3] |
-| NFR-18 | Dostępność UI | Elementy dotykowe są duże. | Cel dotyku ≥ 48 × 48 dp. To więcej niż 44 px z kryterium AAA WCAG 2.5.5. | Skaner dostępności na każdym ekranie. | N4, [6], WCAG 2.5.5 [3] |
+| NFR-18 | Dostępność UI | Elementy dotykowe są duże. | Cel dotyku ≥ 48 × 48 dp. To więcej niż 44 px z kryterium AAA WCAG 2.5.5. | Skaner dostępności na każdym ekranie. | N4, wytyczne Androida [6]; WCAG 2.1 AA nie stawia tu progu |
 | NFR-19 | Dostępność UI | Każdy element interaktywny ma po polsku nazwę, rolę i stan dla czytnika ekranu TalkBack. | 100 % elementów z etykietą. Ścieżki US1–US5 przechodzone wyłącznie z TalkBack. | Skaner dostępności i ręczny przegląd z TalkBack. | N4, WCAG 1.1.1 i 4.1.2 [3], [4] |
 | NFR-20 | Dostępność UI | Informacja z mapy jest dostępna także jako lista budynków i barier. | Każdy budynek i bariera z V1 osiągalne z listy. | Ścieżka US1 z TalkBack bez dotykania mapy. | N1, N4, WCAG 1.1.1 [3] |
 | NFR-21 | Dostępność UI | Interfejs działa przy powiększonej czcionce. | Przy 200 % (Android 14+) brak uciętego tekstu i nakładania, wszystkie funkcje osiągalne. Na starszych wersjach — przy maksimum systemu. | Przegląd wszystkich ekranów przy 200 %, testy zrzutów ekranu. | N4, WCAG 1.4.4 [3], [7] |
@@ -75,7 +75,7 @@ Rozporządzenie RODO [14] zalicza dane o lokalizacji do danych osobowych (art. 4
 | NFR-28 | RODO | Serwer usuwa metadane zdjęcia (miejsce, model telefonu, czas) przed udostępnieniem. | 0 znaczników lokalizacji w pobranych zdjęciach. | Pobranie 20 zdjęć i odczyt metadanych. | RODO art. 5 ust. 1 lit. c, art. 25 [14] |
 | NFR-29 | RODO | Aplikacja pobiera lokalizację tylko na ekranie, przy ustalaniu pozycji (C1) lub zgłoszeniu (V4). Nie zapisuje śladu ruchu. | Brak uprawnienia do lokalizacji w tle. 0 zapisanych pozycji poza punktem bariery. | Przegląd uprawnień w ustawieniach telefonu, przegląd danych na serwerze. | RODO art. 4 pkt 1, art. 5 ust. 1 lit. c [14], [12] |
 | NFR-30 | RODO | O autorze serwer przechowuje tylko identyfikator konta, nazwę wyświetlaną i rolę. E-mail i hasło zostają u dostawcy tożsamości. | 0 danych autora w odpowiedziach publicznych. 0 zewnętrznych narzędzi analitycznych i reklamowych. | Test kontraktu publicznych odpowiedzi, przegląd zależności aplikacji. | RODO art. 5 ust. 1 lit. c, art. 25 [14], US1 AC2 |
-| NFR-31 | RODO | Dane są przechowywane tylko tak długo, jak to potrzebne. | Odrzucone zapisy i ich zdjęcia: usunięcie po 90 dniach (do potwierdzenia). Usunięcie konta: dane osobowe usunięte w ≤ 30 dni, bariery zostają bez autora. | Test usuwania z przesuniętą datą, test usunięcia konta. | RODO art. 5 ust. 1 lit. e, art. 12 ust. 3, art. 17 [14] |
+| NFR-31 | RODO | Dane są przechowywane tylko tak długo, jak to potrzebne. | Odrzucone zapisy i ich zdjęcia: usunięcie po 90 dniach (do potwierdzenia). Żądanie usunięcia danych osobowych: realizacja ≤ 1 miesiąc, także ręcznie przez administratora; bariery zostają bez autora. | Test usuwania z przesuniętą datą, usunięcie konta testowego. | RODO art. 5 ust. 1 lit. e, art. 12 ust. 3, art. 17 [14] |
 | NFR-32 | RODO | Przed założeniem konta użytkownik widzi klauzulę informacyjną i podstawę przetwarzania. | Klauzula przed rejestracją i w profilu (≤ 2 dotknięcia). Zgodę można wycofać. | Przejście ścieżki rejestracji i profilu. | RODO art. 6, 7 ust. 3, 13 [14]; podstawa: zgoda w projekcie studenckim, zadanie publiczne po wdrożeniu w PWr (do potwierdzenia) |
 
 ## Bezpieczeństwo
@@ -84,7 +84,7 @@ Rozporządzenie RODO [14] zalicza dane o lokalizacji do danych osobowych (art. 4
 | --- | --- | --- | --- | --- | --- |
 | NFR-33 | Bezpieczeństwo | Logowanie odbywa się standardem OAuth 2.0 i OpenID Connect, z kodem autoryzacji i PKCE, w przeglądarce systemowej. | 0 pól hasła w aplikacji. | Przegląd ekranów, test ścieżki logowania. | US14, decyzja 7, [16], [17], [18], [19] |
 | NFR-34 | Bezpieczeństwo | Konto jest chronione przed odgadywaniem hasła. | Po 5 nieudanych próbach blokada czasowa konta. | Test 6 błędnych logowań. | [23] |
-| NFR-35 | Bezpieczeństwo | Serwer sprawdza rolę przy każdym niepublicznym żądaniu. | Brak roli: odpowiedź 403. Macierz operacja × rola pokryta testami w 100 %. | Testy kontraktu dla każdej operacji i roli. | US14 AC1, OWASP API5:2023 [21] |
+| NFR-35 | Bezpieczeństwo | Serwer sprawdza rolę przy każdym niepublicznym żądaniu. | Brak roli albo cudze zgłoszenie przy uprawnieniu „własne”: odpowiedź 403. Macierz operacja × rola pokryta testami w 100 %. | Testy kontraktu dla każdej operacji i roli. | US14 AC1, OWASP API1:2023 i API5:2023 [21] |
 | NFR-36 | Bezpieczeństwo | Publiczne operacje (bez logowania) mają limit liczby żądań. | ≤ 60 żądań/min z jednego adresu; powyżej: 429 z czasem ponowienia. Zdjęcie ≤ 5 MB. | Test serii żądań i zbyt dużego pliku. | OWASP API4:2023 [21], [20] |
 | NFR-37 | Bezpieczeństwo | Aplikacja i repozytorium nie zawierają sekretów. Aplikacja jest klientem publicznym. | 0 sekretów w pakiecie aplikacji i w historii repozytorium. | Skan sekretów w CI przy każdym PR, przegląd konfiguracji klienta. | [18] §8.5, [22], decyzja 6 |
 | NFR-38 | Bezpieczeństwo | Tokeny są przechowywane w zaszyfrowanym magazynie systemu i nie trafiają do logów. | 0 tokenów w logach z pełnej ścieżki testowej. | Przegląd logów po teście, przegląd magazynu danych. | [22] |
@@ -96,7 +96,7 @@ Rozporządzenie RODO [14] zalicza dane o lokalizacji do danych osobowych (art. 4
 | --- | --- | --- | --- | --- | --- |
 | NFR-40 | Licencje | Atrybucja OpenStreetMap jest stale widoczna na mapie, z odnośnikiem do strony praw autorskich. Jest też w plikach eksportu. | Napis „© OpenStreetMap contributors” na 100 % ekranów z mapą (V1, C1, R1), nieukryty. | Przegląd ekranów i plików eksportu. | ODbL [24], [25], [26] |
 | NFR-41 | Licencje | Bariery są osobną warstwą, powiązaną z budynkiem tylko symbolem. | 0 geometrii budynków z OSM w eksporcie barier. | Przegląd plików eksportu. | ODbL share-alike [24]; interpretacja (do potwierdzenia) |
-| NFR-42 | Licencje | Podkład mapy z serwerów OSM jest używany zgodnie z ich polityką. Bez sieci mapa pokazuje kontury i bariery z danych aplikacji. | Własny identyfikator aplikacji w żądaniach, pamięć podręczna ≥ 7 dni, 0 masowych pobrań. | Przegląd żądań do serwera kafelków, test w trybie samolotowym. | [27] |
+| NFR-42 | Licencje | Podkład mapy z serwerów OSM jest używany tylko online, zgodnie z ich polityką. Bez sieci mapa pokazuje kontury, plany pięter i bariery z danych aplikacji. | Własny identyfikator aplikacji w żądaniach. Pamięć podręczna według nagłówków serwera, bez nich ≥ 7 dni. 0 pobrań z wyprzedzeniem i do użytku offline. | Przegląd żądań do serwera kafelków, test w trybie samolotowym. | [27], decyzja 27 |
 | NFR-43 | Licencje | Plan piętra i karta budynku podają źródło danych PWr. Fakty z deklaracji dostępności są podane własnymi słowami, z odnośnikiem. | Podpis „Źródło: Politechnika Wrocławska” na 100 % widoków planu. | Przegląd ekranów V2 i C1 dla 5 budynków szczegółowych. | decyzje 15 i 17, [34] |
 | NFR-44 | Licencje | Dane planów PWr nie trafiają do publicznego repozytorium. Repozytorium zawiera tylko skrypt importu. | 0 plików z danymi planów w historii repozytorium. | Kontrola w CI przy każdym PR. | decyzje 15 i 17 |
 
@@ -104,9 +104,9 @@ Rozporządzenie RODO [14] zalicza dane o lokalizacji do danych osobowych (art. 4
 
 | ID | Kategoria | Wymaganie | Miara / próg | Jak sprawdzamy | Źródło potrzeby |
 | --- | --- | --- | --- | --- | --- |
-| NFR-45 | Przenośność | Aplikacja działa od Androida 8.0 (API 26) do wersji docelowej (API 36). | Około 96 % urządzeń z Androidem (dane z kwietnia 2026). | Testy w CI na emulatorach z wersją minimalną i docelową, telefon referencyjny. | N4, N5, [10], [13] |
+| NFR-45 | Przenośność | Aplikacja działa od Androida 8.0 (API 26) do wersji docelowej (API 36). | Instalacja i ścieżki US1–US4 działają na API 26 i API 36. | Testy w CI na emulatorach z wersją minimalną i docelową, telefon referencyjny. | N4, N5, decyzja 28; ok. 96 % urządzeń w kwietniu 2026 [13]; stan satelitów od API 24 [10] |
 | NFR-46 | Przenośność | Interfejs jest po polsku. Teksty są oddzielone od kodu, więc angielski można dodać bez zmian w logice. | 100 % tekstów po polsku, 0 tekstów zapisanych w kodzie. Daty w formacie polskim. | Analiza statyczna w CI, przegląd ekranów. | N4, produkt §6 |
-| NFR-47 | Zgodność | Eksport otwiera się w QGIS bez ręcznego ustawiania układu współrzędnych. | GeoJSON zgodny z RFC 7946 (WGS84). CSV ze współrzędnymi EPSG:2180. | Walidacja pliku GeoJSON, otwarcie obu plików w QGIS. | N9, US13, [30], [31] |
+| NFR-47 | Zgodność | Eksport jest poprawny technicznie i czytelny w QGIS. | GeoJSON przechodzi walidację RFC 7946 i otwiera się bez ustawiania układu. CSV otwiera się po wskazaniu EPSG:2180. Oba pliki w UTF-8, polskie znaki bez zniekształceń. | Walidacja pliku GeoJSON, otwarcie obu plików w QGIS. | N9, US13 AC1–AC2, [30], [31] |
 
 ## Utrzymywalność
 
