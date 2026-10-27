@@ -7,7 +7,7 @@
 | Uczestnicy | Osoby 60+, min. 2 na członka zespołu (4–6 wywiadów) |
 | Czas | ≈ 30 min na osobę + 10 min rezerwy (wolne tempo, zgoda pisemna) |
 | Prowadzą | Członkowie zespołu: prowadzący i, jeśli to możliwe, notujący |
-| Wynik | Arkusze notatek P1…P6 i tabela wniosków dla N1–N4 |
+| Wynik | Arkusze notatek U1…U6 i tabela wniosków dla N1–N4 |
 | Opcja | 1 wywiad z osobą zbierającą dane (N5–N9), sekcja 10 |
 
 Hipotezy N1–N9 opisuje strona [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md). Wywiady to wymaganie etapu 2 kursu „Projektowanie doświadczeń użytkownika”. Wyniki zasilają persony i historyjki w etapie 3.
@@ -197,7 +197,7 @@ Nagłówek (1 arkusz na uczestnika):
 
 | Pole | Wpis |
 | --- | --- |
-| Uczestnik | P_ |
+| Uczestnik | U_ |
 | Data, prowadzący, notujący | _ (inicjały) |
 | Przedział wieku | 60–69 / 70–79 / 80+ |
 | Smartfon | tak / nie |
@@ -241,7 +241,7 @@ Zapisuj cytat słowami uczestnika, a swoją interpretację tylko w kolumnie „O
 | Odrzucona | nikt jej nie potwierdza albo większość jej przeczy |
 | Nowa | temat bez N, obecny u min. 2 uczestników; dostaje kolejny wolny numer N |
 
-| N | Status (potwierdzona / zmieniona / niepewna / odrzucona / nowa) | Dowód (P…, nr pytania) | Nowe brzmienie, jeśli zmieniona | Skutek dla funkcji |
+| N | Status (potwierdzona / zmieniona / niepewna / odrzucona / nowa) | Dowód (U…, nr pytania) | Nowe brzmienie, jeśli zmieniona | Skutek dla funkcji |
 | --- | --- | --- | --- | --- |
 | N1 | | | | |
 | N2 | | | | |
@@ -292,6 +292,6 @@ Jeśli rozmówca może, poproś o pokazanie formularza albo notatek z obchodu be
 - „Avoid Leading Questions to Get Better Insights from Participants”, NN/g: <https://www.nngroup.com/articles/leading-questions/>
 - „Thinking Aloud: The #1 Usability Tool”, NN/g: <https://www.nngroup.com/articles/thinking-aloud-the-1-usability-tool/>
 - L. Kane, „Usability for Older Adults: Challenges and Changes”, NN/g: <https://www.nngroup.com/articles/usability-for-senior-citizens/>
-- „Seniorzy na PWr – ruszyła Politechnika Trzeciego Wieku”, PWr, 9.10.2025: <https://pwr.edu.pl/uczelnia/aktualnosci/seniorzy-na-pwr-ruszyla-politechnika-trzeciego-wieku-13912.html>
+- „Historyczna inauguracja. Ruszyła Politechnika Trzeciego Wieku”, PWr, 9.10.2025: <https://pwr.edu.pl/uczelnia/aktualnosci/seniorzy-na-pwr-ruszyla-politechnika-trzeciego-wieku-13912.html>
 - „Affinity Diagramming for Collaboratively Sorting UX Findings and Design Ideas”, NN/g: <https://www.nngroup.com/articles/affinity-diagram/>
 - Rozporządzenie (UE) 2016/679 (RODO), tekst skonsolidowany, UODO: <https://uodo.gov.pl/pl/404/539> (PDF: <https://uodo.gov.pl/pl/file/1460>; art. 4 pkt 15, 6, 7, 9, 13)
