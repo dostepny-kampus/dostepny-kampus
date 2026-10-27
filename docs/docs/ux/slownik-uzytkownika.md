@@ -3,7 +3,7 @@
 !!! warning "Napisy to hipoteza, do potwierdzenia w wywiadach"
     Wszystkie napisy i komunikaty na tej stronie to propozycje zespołu. Sprawdzimy je w wywiadach ze [scenariusza](scenariusz-wywiadu.md) i w prototypie papierowym, a potem poprawimy.
 
-Strona zamienia pojęcia dokumentacji na napisy w aplikacji. Gość i Odwiedzający dostają słowa zrozumiałe dla osoby starszej, bo dla nich projektujemy najpierw ([PE-1](persony.md)). Role zespołu mogą widzieć krótkie pojęcia z [słownika pojęć](../biznes/slownik.md).
+Strona zamienia pojęcia dokumentacji na napisy w aplikacji. Gość i Odwiedzający dostają słowa zrozumiałe dla osoby starszej, bo dla nich projektujemy najpierw ([PE-1](persony.md)). Role zespołu mogą widzieć krótkie pojęcia ze [słownika pojęć](../biznes/slownik.md).
 
 Słownik pojęć zostaje źródłem nazw w dokumentach i w kodzie. Ta strona ustala tylko to, co osoba czyta na ekranie. Robocze etykiety pochodzą z [wymagań do ekranów](wymagania-ekranow.md), a zmiany w nich zbiera sekcja [Propozycje do wymagań ekranów](#propozycje).
 
@@ -14,7 +14,7 @@ Słownik pojęć zostaje źródłem nazw w dokumentach i w kodzie. Ta strona ust
 | Przycisk czynności zaczyna się od czasownika w trybie rozkazującym. | „Zrób zdjęcie”, „Sprawdź, którędy wejść” | Osoba wie, co się stanie po dotknięciu. |
 | Przycisk do listy albo ekranu nosi nazwę tego miejsca, taką jak nagłówek ekranu docelowego. | „Moje zgłoszenia” prowadzi do ekranu „Moje zgłoszenia” | Osoba sprawdza, czy trafiła tam, gdzie chciała (NFR-15, WCAG 3.2.4). |
 | Wyjątki od trybu rozkazującego to utarte zwroty rezygnacji i przejścia. | „Nie teraz”, „Dalej”, „Zdecyduję później” | Brzmią naturalnie, a forma rozkazująca byłaby sztuczna. |
-| Aplikacja mówi o sobie „my”, do osoby „Ty”, z wielkiej litery w zaimkach. | „Wyślemy je, gdy wróci internet.” | Jeden głos na wszystkich ekranach. |
+| Aplikacja mówi o sobie „my”, do osoby „Ty”, a zaimki pisze wielką literą. | „Wyślemy je, gdy wróci internet.” | Jeden głos na wszystkich ekranach. |
 | Komunikat mówi, co się stało i co zrobić, w najwyżej 2 krótkich zdaniach. | „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” | NFR-15 (WCAG 3.3.1, 3.3.3), NFR-50 [1] |
 | Komunikat nie obwinia osoby. | „Nie znaleźliśmy budynku” zamiast „Błędny symbol” | PE-1 przypisuje winę sobie i rezygnuje [2]. |
 | Dla Gościa i Odwiedzającego nie ma żargonu technicznego. | „Brak internetu” zamiast „tryb offline” | Lista zakazanych słów jest w tabeli niżej. |
@@ -68,7 +68,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | karta budynku (nagłówek V2) | „Budynek C-13” i nazwa z danych | wszystkie | Osoba szuka budynku, a nie „karty”. | 4.4 |
 | karta budynku (w zdaniach) | „opis budynku” | Gość, Odwiedzający | Tego słowa używa pytanie 4.4 scenariusza. „Karta” kojarzy się z kartą płatniczą (hipoteza). | 4.4 |
 | oznaczenie wejścia „dostępne” | „Dostępne” | wszystkie | Słowo z kryterium US2.1, krótkie. „Bez schodów” byłoby nieprawdą przy wejściu z podnośnikiem (recenzja B3, uwaga 12). | 4.1, 4.2, część 5 |
-| oznaczenie wejścia „niedostępne” | „Niedostępne” | wszystkie | Para do „Dostępne”. To słowo nie pada w innym znaczeniu. | 4.1, 4.2 |
+| oznaczenie wejścia „niedostępne” | „Niedostępne” | wszystkie | Przeciwieństwo „Dostępne”. To słowo nie pada w innym znaczeniu. | 4.1, 4.2 |
 | oznaczenie wejścia „brak danych” | „Brak danych” | wszystkie | Mówi uczciwie, że nie wiemy, i różni się od „Niedostępne” (US17.1). | 4.3, 4.4 |
 | wejście dostępne (zdanie na V3) | „Budynek A-1 ma wejście dostępne: »nazwa wejścia«.” | wszystkie | bez zmian; zdanie powtarza słowo z oznaczenia | 4.1 |
 | źródło oznaczenia „obchód” z datą | „Sprawdzone na miejscu 12.11.2026” | wszystkie | Mówi, że ktoś tam był. To buduje zaufanie (N2). | 2.5, 4.3, 4.4 |
@@ -116,7 +116,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | rezygnacja z logowania | „Nie teraz” | Gość | bez zmian; nie brzmi jak błąd | 4.8 |
 | nagłówek L2 | „Konto” albo „Konto i praca” | Odwiedzający; role pracownicze | Nagłówek powtarza napis z paska. | 6.3 |
 | rola, lista ról | „Twoje role: Odwiedzający, Zbierający” | wszystkie zalogowane | bez zmian | 10.1 |
-| „Twoje czynności” | „Twoja praca” | role pracownicze | „Czynności” brzmi urzędowo. To para do „Konto i praca”. | 10.1 |
+| „Twoje czynności” | „Twoja praca” | role pracownicze | „Czynności” brzmi urzędowo. Napis pasuje do „Konto i praca”. | 10.1 |
 | klauzula informacyjna | „Informacja o danych osobowych” | wszystkie zalogowane | bez zmian | 6.3 |
 | wycofanie zgody | „Wycofaj zgodę”; w potwierdzeniu „Zostaw zgodę” zamiast „Anuluj” | wszystkie zalogowane | Oba przyciski mówią o skutku, więc „Anuluj” nie myli. | 6.3 |
 | „Wyloguj” | „Wyloguj się” | wszystkie zalogowane | Ta sama forma co „Zaloguj się”. | 6.3 |
