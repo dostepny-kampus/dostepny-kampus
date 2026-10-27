@@ -315,12 +315,14 @@ def error_level(corpus: Corpus, required: str, partial: bool) -> tuple[str, str]
 
 def check(corpus: Corpus, partial: bool = False) -> list[Finding]:
     """Zwraca wyniki kontroli: niezdefiniowane odwołania, US bez N, AC i BR bez scenariusza, UC bez US, wielokrotne
-    definicje i kryteria w starym formacie „ACn” (decyzja 30: kryteria zapisuje się jako USx.y).
+    definicje, kryteria w starym formacie „ACn” (decyzja 30: kryteria zapisuje się jako USx.y) i pozostałe dziury
+    śledzenia (patrz untraced).
 
     Gwarantuje: AC i BR bez scenariusza są „BŁĘDEM” tylko wtedy, gdy istnieje choć jeden plik .feature; inaczej „UWAGĄ”.
     W trybie `partial` błędy zależne od klasy ID bez żadnej definicji są „UWAGAMI” (patrz error_level).
+    Każda dziura z trace_gaps daje tu wynik, więc strona śledzenia z dziurami nie przejdzie kontroli `--strict`.
     """
-    findings = undefined_references(corpus, partial) + legacy_criteria(corpus)
+    findings = undefined_references(corpus, partial) + legacy_criteria(corpus) + untraced(corpus, partial)
     defined = sorted(corpus.definitions, key=natural_key)
     first = {i: str(corpus.definitions[i][0]) for i in defined}
     ac_level = "BŁĄD" if corpus.feature_files else "UWAGA"
@@ -339,6 +341,31 @@ def check(corpus: Corpus, partial: bool = False) -> list[Finding]:
             places = ", ".join(str(loc) for loc in corpus.definitions[ident][1:])
             findings.append(Finding("UWAGA", first[ident], f"{ident}: zdefiniowane ponownie w {places}"))
     return findings
+
+
+def untraced(corpus: Corpus, partial: bool = False) -> list[Finding]:
+    """Zwraca błędy dla N bez US, US bez AC i scenariuszy bez tagu kryterium USx.y ani reguły BR.
+
+    Gwarantuje: scenariusz bez takiego tagu jest zawsze „BŁĘDEM”; N bez US i US bez AC są „UWAGAMI” tylko
+    w trybie `partial`, gdy klasa US# albo US#.# nie ma jeszcze definicji (patrz error_level).
+    """
+    findings: list[Finding] = []
+    for need in defined_ids(corpus, N_RE):
+        if not neighbours_matching(corpus, need, US_RE):
+            level, note = error_level(corpus, "US#", partial)
+            findings.append(Finding(level, str(corpus.definitions[need][0]), f"{need}: potrzeba bez historyjki US{note}"))
+    for us in defined_ids(corpus, US_RE):
+        if not criteria_of(corpus, us):
+            level, note = error_level(corpus, "US#.#", partial)
+            findings.append(Finding(level, str(corpus.definitions[us][0]), f"{us}: historyjka bez kryteriów akceptacji{note}"))
+    served = served_scenarios(corpus)
+    message = "scenariusz bez tagu kryterium USx.y i reguły BR"
+    return findings + [Finding("BŁĄD", str(s.location), f"{message}: {s.name}") for s in corpus.all_scenarios if s not in served]
+
+
+def served_scenarios(corpus: Corpus) -> set[Scenario]:
+    """Zwraca scenariusze z tagiem kryterium USx.y albo reguły BR (także odziedziczonym z funkcji lub reguły)."""
+    return {s for tag, items in corpus.scenarios.items() if AC_RE.match(tag) or BR_RE.match(tag) for s in items}
 
 
 def has_need(corpus: Corpus, us: str) -> bool:
@@ -429,13 +456,13 @@ def trace_gaps(corpus: Corpus) -> list[list[str]]:
     gaps += [[ac, "kryterium bez scenariusza"] for ac in defined_ids(corpus, AC_RE) if not corpus.scenarios.get(ac)]
     gaps += [[uc, "przypadek użycia bez historyjki"] for uc in defined_ids(corpus, UC_RE) if not has_story(corpus, uc)]
     gaps += [[br, "reguła bez scenariusza"] for br in defined_ids(corpus, BR_RE) if not corpus.scenarios.get(br)]
-    served = {s for tag, items in corpus.scenarios.items() if AC_RE.match(tag) or BR_RE.match(tag) for s in items}
-    gaps += [[str(s.location), f"scenariusz bez kryterium i reguły: {s.name}"] for s in corpus.all_scenarios if s not in served]
+    served = served_scenarios(corpus)
+    gaps +=[[str(s.location), f"scenariusz bez kryterium i reguły: {s.name}"] for s in corpus.all_scenarios if s not in served]
     return gaps
 
 
-def summary_rows(corpus: Corpus) -> list[list[str]]:
-    """Zwraca wiersze podsumowania [element, liczba] wyliczone z korpusu."""
+def summary_rows(corpus: Corpus, gaps: list[list[str]]) -> list[list[str]]:
+    """Zwraca wiersze podsumowania [element, liczba] wyliczone z korpusu i listy dziur `gaps` (patrz trace_gaps)."""
     counts = [
         ("Potrzeby (N)", len(defined_ids(corpus, N_RE))),
         ("Historyjki (US)", len(defined_ids(corpus, US_RE))),
@@ -443,7 +470,7 @@ def summary_rows(corpus: Corpus) -> list[list[str]]:
         ("Przypadki użycia (UC)", len(defined_ids(corpus, UC_RE))),
         ("Reguły biznesowe (BR)", len(defined_ids(corpus, BR_RE))),
         ("Scenariusze", len(corpus.all_scenarios)),
-        ("Dziury", len(trace_gaps(corpus))),
+        ("Dziury", len(gaps)),
     ]
     return [[name, str(count)] for name, count in counts]
 
@@ -481,7 +508,7 @@ def render_blocks(corpus: Corpus) -> dict[str, str]:
     """Zwraca wygenerowane bloki strony śledzenia (nazwa → blok ze znacznikami) w kolejności BLOCK_NAMES."""
     gaps = trace_gaps(corpus)
     bodies = {
-        "podsumowanie": aligned_table(["Element", "Liczba"], summary_rows(corpus)),
+        "podsumowanie": aligned_table(["Element", "Liczba"], summary_rows(corpus, gaps)),
         "potrzeby": aligned_table(["Potrzeba", "Historyjki"], need_rows(corpus)),
         "macierz": aligned_table(["N", "US", "AC", "UC", "Scenariusz"], matrix_rows(corpus)),
         "reguly": aligned_table(["Reguła", "Scenariusz"], rule_rows(corpus)),
