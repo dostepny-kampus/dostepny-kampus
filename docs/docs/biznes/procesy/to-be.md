@@ -33,7 +33,7 @@ Pule A i B łączy sygnał „Zgłoszenie w kolejce”. Magazyn „Zgłoszenia p
 | T13 | System | Przyjmuje zgłoszenie na serwerze ze statusem „wysłane” i dodaje je do kolejki | P-6 | N6, N8 | C3 |
 | T14 | Weryfikator | Bierze zgłoszenie z kolejki; własnych zgłoszeń nie dostaje (BR-4) | P-7 | N8 | R1 |
 | T15 | System | Ustawia status „w weryfikacji”, więc drugi Weryfikator go nie weźmie; wyszukuje podobne zgłoszenia w promieniu 10 m (US10.1) | P-8 | N7, N8 | R2 |
-| T16 | Weryfikator | Sprawdza dane, zdjęcie i podobne zgłoszenia; autora widzi tylko jako pseudonim (BR-5); zasłania twarze i tablice rejestracyjne (NFR-25); w zgłoszeniu szybkim ustala typ bariery i uciążliwość | P-8 | N8 | R2 |
+| T16 | Weryfikator | Sprawdza dane, zdjęcie i podobne zgłoszenia; autora zna tylko z pseudonimu (BR-5). Zasłania twarze i tablice rejestracyjne (NFR-25). W zgłoszeniu szybkim ustala typ bariery i uciążliwość | P-8 | N8 | R2 |
 | T17 | System | Ustawia „przyjęte” i od razu publikuje barierę na mapie i karcie budynku, ze zdjęciem i datą weryfikacji (US1.3, US2.2) | P-1, P-3, P-4, P-7 | N1, N2 | V1, V2 |
 | T18 | Weryfikator | Odrzuca duplikat albo błędne zgłoszenie i podaje powód odrzucenia (US10.2) | P-8 | N8 | R2 |
 | T19 | System | Ustawia „odrzucone”; Zbierający widzi powód i może poprawić zgłoszenie (US8.1, BR-3) | P-6 | N8 | C3 |
