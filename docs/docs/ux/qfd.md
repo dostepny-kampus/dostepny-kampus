@@ -44,7 +44,7 @@ Związki N ↔ US pochodzą z tabeli historyjek i z [macierzy śledzenia](../wym
 | 9 | US9 | N6 | US9.1 i US9.2: kolejka bez sieci i samoczynna synchronizacja. |
 | 9 | US9 | N7 | US9.3: konflikt pokazuje obie wersje, nic nie znika po cichu. |
 | 3 | US10 | N2 | Weryfikacja jest podstawą zaufania (M-7), ale Odwiedzający widzi ją przez US2.2. |
-| 3 | US10 | N7 | US10.4: zgłoszenie wzięte znika z kolejki pozostałych Weryfikatorów; to jedno z sześciu kryteriów. |
+| 3 | US10 | N7 | US10.4: zgłoszenie wzięte znika z kolejki pozostałych Weryfikatorów. To zapobiega równoczesnej edycji, ale żadne kryterium nie sprawdza nadpisania. |
 | 9 | US10 | N8 | US10.1 i US10.2: podobne zgłoszenia w promieniu 10 m i odrzucenie z powodem. |
 | 9 | US11 | N9 | US11.1: postęp każdego budynku. |
 | 3 | US12 | N9 | Zaproszenie buduje zespół, ale nie pokazuje postępu ani nie eksportuje danych. |
@@ -106,10 +106,10 @@ Udział to ważność podzielona przez 657, zaokrąglona do 0,1 punktu procentow
 
 ## Wnioski
 
-1. **US3 „Zaplanuj wizytę” jest na 7. miejscu, choć ma priorytet „Powinno być”.** Cel M-4 mierzy US3.2, a N1 ma najwyższą wagę. Propozycja do decyzji właściciela projektu: utrzymać priorytet, jeśli karta budynku (US2, US17) pokaże wejście dostępne w 3 dotknięciach od mapy. W przeciwnym razie podnieść US3 do „Musi być”.
+1. **US3 „Zaplanuj wizytę” jest na 7. miejscu, choć ma priorytet „Powinno być”.** Cel M-4 mierzy US3.2, a N1 ma najwyższą wagę. Propozycja do decyzji właściciela projektu: utrzymać priorytet, jeśli karta budynku (US2, US17) pokaże wejście dostępne w 3 dotknięciach od mapy. Wtedy M-4 trzeba odnieść do US2 i US17; w przeciwnym razie podnieść US3 do „Musi być”.
 2. **US7, US8 i US1 mają niski wynik, bo QFD liczy tylko wkład bezpośredni.** Bez formularza (US7) nie ma danych o barierach, a bez wyszukiwania (US1) nie ma ścieżki do karty budynku. Priorytet MoSCoW uwzględnia zależności i scenariusz pokazu, więc go nie zmieniamy. QFD nie zastępuje priorytetów, tylko pokazuje, skąd bierze się wartość dla użytkownika.
-3. **US8 może mieć niedoszacowany związek z N2.** Zmiana „bariera usunięta” (US8.4) usuwa z mapy naprawioną barierę, a tekst pod kryteriami wiąże to z N2. Tabela historyjek nie wiąże jednak US8 z N2, więc macierz tego nie liczy. Propozycja: rozważyć dopisanie N2 do US8 na stronie historyjek (poza zakresem tej strony).
-4. **N4 ma wagę 5, a w macierzy tylko jeden silny związek (US4).** Potrzebę N4 realizują głównie wymagania przekrojowe NFR-15…NFR-24, obecne na każdym ekranie. Dlatego wymagania ekranów i makiety fazy B sprawdzają dostępność na każdym ekranie, a nie tylko w historyjkach z N4.
+3. **US8 może mieć niedoszacowany związek z N2.** Zbierający zaczyna zmianę „bariera usunięta” w US8.4, a po jej przyjęciu bariera znika z mapy (US10.6), co tekst pod kryteriami wiąże z N2. Macierz liczy N2 tylko po stronie Weryfikatora (US10), bo tabela historyjek nie wiąże US8 z N2. Propozycja: rozważyć dopisanie N2 do US8 na stronie historyjek (poza zakresem tej strony).
+4. **N4 ma wagę 5, a w macierzy tylko jeden silny związek (US4).** Potrzebę N4 realizują głównie wymagania przekrojowe NFR-15…NFR-24, obecne na każdym ekranie. Dlatego wymagania ekranów i makiety fazy B mają sprawdzać dostępność na każdym ekranie, a nie tylko w historyjkach z N4.
 5. **Wynik zależy od wag pod kurs UX.** US6, US11 i US13 są w środku rankingu, bo N5 i N9 mają wagę 3. Dla kursu Mobilne, gdzie pomiar GNSS i eksport są rdzeniem, te wagi byłyby wyższe. Ranking warto przeliczyć po wywiadach, gdy wagi N1–N4 przestaną być hipotezą (R-7).
 
 ## Źródła
