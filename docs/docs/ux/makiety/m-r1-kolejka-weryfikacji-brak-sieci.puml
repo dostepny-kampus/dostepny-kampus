@@ -1,0 +1,10 @@
+@startsalt
+' R1 Kolejka weryfikacji, stan wspólny "brak sieci". Ten sam układ mają R2 przy otwarciu,
+' K1, K2 i K3, a także stany "błąd serwera" i "brak uprawnień" z inną treścią komunikatu.
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Zgłoszenia do sprawdzenia")
+$brak_internetu()
+$komunikat("Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.", "Spróbuj ponownie")
+$ekran_koniec()
+@endsalt
