@@ -12,9 +12,9 @@ Strona prowadzi od potrzeby użytkownika do sprawdzalnego kryterium: potrzeba N 
 | N4 | RO-GOS, RO-ODW | Korzystać z aplikacji przy słabym wzroku i niepewnych dłoniach. | hipoteza; pytania 3.1–3.4, 4.7–4.8 |
 | N5 | RO-ZBI | Szybko i dokładnie, poniżej 1 m, zapisać miejsce bariery. | hipoteza; wywiad opcjonalny, pytanie 10.2 |
 | N6 | RO-ZBI | Pracować tam, gdzie nie ma sieci, i nie tracić danych. | hipoteza; wywiad opcjonalny, pytanie 10.3 |
-| N7 | RO-ZBI, RO-WER | Przy równoczesnej pracy nie nadpisać cudzej pracy. | hipoteza; wywiad opcjonalny, pytanie 10.4 |
+| N7 | RO-ZBI, RO-WER | Przy równoczesnej edycji nie nadpisać cudzej pracy. | hipoteza; wywiad opcjonalny, pytanie 10.4 |
 | N8 | RO-WER | Odsiać błędy i duplikaty przed publikacją. | hipoteza; wywiad opcjonalny, pytania 10.4–10.5 |
-| N9 | RO-KOO | Widzieć postęp inwentaryzacji i przekazywać dane do QGIS. | hipoteza; wywiad opcjonalny, pytanie 10.1 |
+| N9 | RO-KOO | Widzieć postęp inwentaryzacji i przekazywać dane do QGIS. | hipoteza; wywiad opcjonalny, pytania 10.1, 10.6–10.7 |
 
 Numery pytań pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md). Wywiady z osobami 60+ sprawdzają N1–N4, a wywiad ze Zbierającym jest opcjonalny. Potrzeba niepotwierdzona w wywiadach kieruje swoje historyjki do przeglądu (R-7).
 
@@ -36,7 +36,7 @@ Numery pytań pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md). W
 | US12 | K2 | N9 | Powinno być | Jako Koordynator, chcę zaprosić osobę z wybraną rolą, aby dołączyła do inwentaryzacji bez pomocy administratora. |
 | US13 | K3 | N9 | Musi być | Jako Koordynator, chcę pobrać eksport, aby otworzyć zgłoszenia przyjęte w QGIS. |
 | US14 | logowanie (wspólne) | N3, N8 | Musi być | Jako Odwiedzający lub osoba z rolą pracowniczą, chcę się zalogować, aby korzystać z czynności mojej roli. |
-| US15 | C1 (do ustalenia w fazie B) | N9 | Musi być | Jako Zbierający, chcę oznaczyć piętro obejrzane, aby postęp inwentaryzacji odpowiadał stanowi obchodu. |
+| US15 | C1 (do ustalenia w fazie B) | N6, N9 | Musi być | Jako Zbierający, chcę oznaczyć piętro obejrzane, aby postęp inwentaryzacji odpowiadał stanowi obchodu. |
 | US16 | V2 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać piętro budynku szczegółowego, aby zobaczyć na planie piętra windy, toalety i bariery. |
 
 Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. Historyjki „Musi być” tworzą MVP.
@@ -72,7 +72,7 @@ Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego 
 | US6.1 | Uśrednianie pozycji trwa 30 s. Na ekranie widać dokładność pozycji i liczbę satelitów osobno dla każdego systemu GNSS. | NFR-1, NFR-2, NFR-23 |
 | US6.2 | Aplikacja podpowiada najbliższy budynek. Zbierający go potwierdza, wybiera inny albo zostawia „poza budynkiem”. | NFR-4, BR-G2, BR-G4 |
 | US6.3 | W budynku szczegółowym Zbierający przesuwa punkt na planie wybranego piętra. Zgłoszenie dostaje oznaczenie „korekta ręczna”. | NFR-3 |
-| US6.4 | W budynku podstawowym i poza budynkiem Zbierający przesuwa punkt na mapie. Zgłoszenie dostaje oznaczenie „korekta ręczna”. | NFR-3, BR-G1 |
+| US6.4 | W budynku podstawowym i poza budynkiem Zbierający przesuwa punkt na mapie. Zgłoszenie dostaje oznaczenie „korekta ręczna”. | NFR-3, BR-G1, BR-G2 |
 | US6.5 | Ekran pomiaru pokazuje mapę nieba z położeniem satelitów; system każdego satelity jest rozróżniony nie tylko kolorem. | NFR-21 |
 | US7.1 | Bez typu bariery, uciążliwości 1–3 i zdjęcia zgłoszenia nie da się zapisać. | — |
 | US7.2 | W budynku szczegółowym piętro wybiera się z etykiet z danych PWr. W budynku podstawowym wpisuje się liczbę całkowitą, z dopiskiem „półpiętro” lub bez. | BR-G1 |
@@ -80,12 +80,13 @@ Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego 
 | US8.1 | Lista pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte albo odrzucone. Odrzucone ma powód odrzucenia. | NFR-21 |
 | US8.2 | Status „wysłane” pojawia się dopiero wtedy, gdy zgłoszenie czeka w kolejce na serwerze. Status „w weryfikacji” pojawia się, gdy wziął je Weryfikator. | US10.4 |
 | US8.3 | Zgłoszenie przed decyzją Weryfikatora można edytować. Odrzucone można poprawić i wysłać ponownie. | BR-3 |
-| US8.4 | Do zgłoszenia przyjętego Zbierający składa zmianę z oznaczeniem „bariera usunięta”. Zmiana ma status „wysłane”, a bariera zostaje na mapie do decyzji Weryfikatora. | BR-3, US10.6 |
+| US8.4 | Do zgłoszenia przyjętego każdy Zbierający, także inny niż autor, składa zmianę z oznaczeniem „bariera usunięta”. Zmiana przechodzi te same statusy co zgłoszenie, a bariera zostaje na mapie do decyzji Weryfikatora. | BR-3, US10.6, decyzja 33 |
 | US9.1 | Bez sieci aplikacja pokazuje wskaźnik braku sieci, a nowe zgłoszenie czeka w kolejce ze statusem „lokalne”. | NFR-5, NFR-7 |
 | US9.2 | Po powrocie sieci synchronizacja rusza bez działania użytkownika. | NFR-6, NFR-8 |
 | US9.3 | Przy konflikcie wersji aplikacja pokazuje obie wersje, a wybór należy do Zbierającego: własna albo z serwera. Żadna zmiana nie znika po cichu. | NFR-9, BR-3 |
 | US15.1 | W budynku szczegółowym Zbierający oznacza wybrane piętro jako obejrzane. W budynku podstawowym oznacza cały budynek jako „obejrzany”. | US11.1 |
 | US15.2 | Oznaczenie cofa Zbierający, który je ustawił. Inny Zbierający nie może go cofnąć. | US11.3 |
+| US15.3 | Bez sieci oznaczenie i jego cofnięcie czekają w telefonie jak zgłoszenie i wysyłają się same po powrocie sieci. | NFR-5, NFR-6, decyzja 33 |
 
 Ręczną korektę punktu opisują dwa kryteria: na planie piętra i na mapie. Korekta na planie działa tylko w budynku szczegółowym, więc ma priorytet „Powinno być”, podobnie jak mapa nieba. W MVP punkt poprawia się na mapie.
 
@@ -97,16 +98,16 @@ Ręczną korektę punktu opisują dwa kryteria: na planie piętra i na mapie. Ko
 | US10.2 | Odrzucenie, także duplikatu, jest niemożliwe bez powodu odrzucenia. | — |
 | US10.3 | Zgłoszenia szybkiego nie da się przyjąć, zanim Weryfikator nie ustali typu bariery i uciążliwości. | decyzja 29 |
 | US10.4 | Zgłoszenie wzięte przez Weryfikatora ma status „w weryfikacji” i znika z kolejki pozostałych Weryfikatorów. | decyzja 29 |
-| US10.5 | Weryfikator nie widzi w kolejce własnych zgłoszeń. | BR-4 |
+| US10.5 | Weryfikator nie widzi w kolejce własnych zgłoszeń ani zmian „bariera usunięta”, które sam złożył. | BR-4, decyzja 33 |
 | US10.6 | Po przyjęciu zmiany „bariera usunięta” bariera znika z mapy i karty budynku. Zgłoszenie zostaje w systemie z tym oznaczeniem. | US1.3, decyzja 32 |
 | US11.1 | Dla każdego budynku widać odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy). Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. | US15.1 |
-| US11.2 | Po oznaczeniu albo cofnięciu piętra obejrzanego postęp budynku od razu pokazuje nową wartość, np. 4 z 5 pięter, czyli 80 procent. | — |
+| US11.2 | Gdy oznaczenie piętra obejrzanego albo jego cofnięcie dotrze na serwer, postęp budynku pokazuje nową wartość, np. 4 z 5 pięter, czyli 80 procent. | US15.3 |
 | US11.3 | Koordynator cofa oznaczenie piętra obejrzanego ustawione przez dowolnego Zbierającego. | decyzja 32 |
 | US12.1 | Po zaproszeniu osoba z podanym adresem e-mail loguje się i ma wybraną rolę. | BR-2 |
 | US12.2 | Zaproszenie na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają. | BR-1, BR-2 |
 | US13.1 | Plik GeoJSON otwiera się w QGIS bez ustawiania układu współrzędnych i ma współrzędne w WGS84. | NFR-43 |
 | US13.2 | Plik CSV ma współrzędne w PUWG 1992 (EPSG:2180) i otwiera się w QGIS jako warstwa punktów. | NFR-43 |
-| US13.3 | Eksport zawiera tylko zgłoszenia przyjęte, bez danych autora. | BR-6, NFR-38 |
+| US13.3 | Eksport zawiera tylko bariery bieżące ze zgłoszeń przyjętych, bez barier usuniętych i bez danych autora. | BR-6, NFR-38, decyzja 33 |
 
 US10.1 to podpowiedź duplikatów, więc ma priorytet „Powinno być”. Bez niej Weryfikator nadal przyjmuje i odrzuca zgłoszenia.
 
@@ -133,7 +134,7 @@ Uprawnienia każdej roli podaje macierz na stronie [Role i uprawnienia](../bizne
 | **Powinno być** | US5 pomoc | US3 „Zaplanuj wizytę”<br>US16 plan piętra | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | US10.1 podobne zgłoszenia | US12 zaproszenie |
 | **Może być** | wersja angielska, tryb ciemny | kolejne budynki szczegółowe, dane z deklaracji dostępności | — | — | — | — | — |
 
-Kolumny idą w kolejności procesu TO-BE, od lewej do prawej. Wiersze nad linią MVP muszą działać na pokazie. Pozycje „Może być” nie mają jeszcze historyjek; dostaną je, gdy wejdą do planu sprintu.
+Kolumny idą w kolejności korzystania z aplikacji, od Gościa niezalogowanego do Koordynatora. Kroki TO-BE każdej aktywności podaje drugi wiersz. Wiersze nad linią MVP muszą działać na pokazie. Pozycje „Może być” nie mają jeszcze historyjek; dostaną je, gdy wejdą do planu sprintu.
 
 **Nie tym razem:** nawigacja po trasie (także w budynkach), iOS, Google Play, sztuczna inteligencja, czat, powiadomienia push, osobny proces usuwania bariery, lista własnych zgłoszeń Odwiedzającego.
 
