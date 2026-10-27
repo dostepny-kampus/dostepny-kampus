@@ -1,0 +1,92 @@
+@startuml
+!pragma layout smetana
+hide empty description
+skinparam defaultFontSize 14
+skinparam ArrowColor #444444
+skinparam ArrowFontSize 12
+skinparam state {
+  BackgroundColor #F2F2F2
+  BorderColor #444444
+  FontStyle bold
+}
+skinparam state<<poza>> {
+  BackgroundColor #FFFFFF
+  BorderColor #888888
+  FontStyle italic
+}
+skinparam state<<stan>> {
+  BackgroundColor #FFFFFF
+  BorderColor #444444
+  FontStyle normal
+}
+skinparam note {
+  BackgroundColor #FFFFFF
+  BorderColor #888888
+}
+
+state "V5 Pomoc" as V5
+state "V1 Mapa kampusu" as V1
+state "V2 Karta budynku" as V2
+state "V3 Zaplanuj wizytę" as V3
+state "Pasek dolny\nna V1, V2, V3, V5, L2" as PASEK <<stan>>
+state "L1 Prośba o logowanie" as L1
+state "L2 Konto" as L2
+state "Wycofanie zgody:\npotwierdzenie" as WZ <<stan>>
+state "Strona logowania\nw przeglądarce" as WWW <<poza>>
+state "Ustawienia telefonu" as UST <<poza>>
+
+state "V4 Zgłoszenie szybkie" as V4 {
+  state "Zgoda na lokalizację:\nbrak, przybliżona,\nodmowa, wyłączona" as ZG <<stan>>
+  state "Krok 1 z 3\nzdjęcie" as K1
+  state "Krok 2 z 3\ngrupa barier" as K2
+  state "Krok 3 z 3\nwysłanie" as K3
+  state "Brak pozycji\n(anulowanie zgłoszenia:\ncel nieopisany)" as BP <<stan>>
+  state "Potwierdzenie" as POT
+}
+
+[*] --> V5 : pierwsze\nuruchomienie
+[*] --> V1 : kolejne\nuruchomienie
+V5 --> V1 : „Zacznij”, „Pomiń”
+V1 --> V2 : budynek, wynik\nwyszukiwania, bariera
+V2 --> V1 : „Wstecz”\n(budynek zaznaczony)
+V2 --> V3 : „Zaplanuj wizytę”
+V3 --> V2 : „Wstecz”
+
+PASEK --> V1 : „Mapa”
+PASEK --> V5 : „Pomoc”
+PASEK --> ZG : „Zgłoś barierę”\n(zalogowani)
+PASEK --> L1 : „Zgłoś barierę”,\n„Konto” (Gość)
+PASEK --> L2 : „Konto”\n(zalogowani)
+
+ZG --> K1 : „Pozwól na\nlokalizację”
+ZG --> UST : „Otwórz\nustawienia”
+ZG --> V1 : „Wróć do mapy”
+K1 --> K2 : „Zrób zdjęcie”
+K2 --> K3 : wybór grupy
+K2 --> K1 : „Wstecz”
+K3 --> K2 : „Wstecz”
+K3 --> POT : „Wyślij”;\nbez sieci: zapis\nw telefonie
+K3 --> BP : telefon nie\nustalił pozycji
+BP --> K3 : „Spróbuj\nponownie”
+POT --> V1 : „Wróć do mapy”
+
+L1 --> WWW : „Zaloguj się”,\n„Załóż konto”
+WWW --> K1 : po zalogowaniu\nalbo rejestracji z V4
+L1 --> V1 : „Nie teraz”;\nbrak sieci: „Wróć do mapy”
+
+L2 --> V1 : „Wyloguj”
+L2 --> WZ : „Wycofaj zgodę”
+WZ --> L2 : „Anuluj”
+
+note bottom of WWW
+  Poza wejściem z V4 logowanie
+  wraca na ekran, z którego
+  przyszła osoba.
+end note
+
+note bottom of WZ
+  „Wycofaj zgodę” po potwierdzeniu
+  wylogowuje; ekran docelowy
+  nieopisany.
+end note
+@enduml
