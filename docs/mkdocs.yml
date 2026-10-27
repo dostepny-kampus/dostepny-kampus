@@ -69,5 +69,7 @@ nav:
       - Macierz śledzenia: wymagania/sledzenie.md
   - UX:
       - Scenariusz wywiadu: ux/scenariusz-wywiadu.md
+      - Analiza SWOT: ux/swot.md
+      - QFD — potrzeby a funkcje: ux/qfd.md
   - Raporty:
       - Tydzień 2: raporty/tydzien-2.md
