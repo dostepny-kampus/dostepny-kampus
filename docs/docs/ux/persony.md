@@ -18,7 +18,7 @@ PE-1 reprezentuje grupę docelową kursu, więc jej potrzeby mają pierwszeństw
 | Cecha | Opis |
 | --- | --- |
 | Wiek | 72 lata |
-| Kontekst | emerytka z Wrocławia, od tego semestru słuchaczka Politechniki Trzeciego Wieku, programu PWr dla osób 60+ [1], [2]. Pierwszy raz idzie na wykład do C-13 |
+| Kontekst | emerytka z Wrocławia, słuchaczka Politechniki Trzeciego Wieku, programu PWr dla osób 60+ [1]. Pierwszy raz idzie na wykład do C-13 |
 | Sprzęt | smartfon z Androidem, duża czcionka ustawiona przez wnuczkę; okulary do czytania |
 | Umiejętności cyfrowe | dzwoni, wysyła zdjęcia rodzinie, szuka w wyszukiwarce; nowej aplikacji uczy się powoli i boi się, że coś „zepsuje” |
 | Wzrok | słabo czyta drobny i blady tekst, zwłaszcza w słońcu |
@@ -149,8 +149,7 @@ Założenie potwierdzone według reguł z sekcji 8 scenariusza zostaje w personi
 ## Źródła
 
 1. „Historyczna inauguracja. Ruszyła Politechnika Trzeciego Wieku”, PWr: <https://pwr.edu.pl/uczelnia/aktualnosci/seniorzy-na-pwr-ruszyla-politechnika-trzeciego-wieku-13912.html>
-2. Politechnika Trzeciego Wieku, kontakt: <https://ptw.pwr.edu.pl/kontakt>
-3. P. Laubheimer, „3 Persona Types: Lightweight, Qualitative, and Statistical”, NN/g (persony prototypowe jako hipotezy): <https://www.nngroup.com/articles/persona-types/>
-4. L. Kane, „Usability for Older Adults: Challenges and Changes”, NN/g: <https://www.nngroup.com/articles/usability-for-senior-citizens/>
+2. P. Laubheimer, „3 Persona Types: Lightweight, Qualitative, and Statistical”, NN/g (persony prototypowe jako hipotezy): <https://www.nngroup.com/articles/persona-types/>
+3. L. Kane, „Usability for Older Adults: Challenges and Changes”, NN/g: <https://www.nngroup.com/articles/usability-for-senior-citizens/>
 
 Dostęp do źródeł: 27.10.2026.
