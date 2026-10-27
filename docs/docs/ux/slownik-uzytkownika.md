@@ -13,7 +13,7 @@ Słownik pojęć zostaje źródłem nazw w dokumentach i w kodzie. Ta strona ust
 | --- | --- | --- |
 | Przycisk czynności zaczyna się od czasownika w trybie rozkazującym. | „Zrób zdjęcie”, „Sprawdź, którędy wejść” | Osoba wie, co się stanie po dotknięciu. |
 | Przycisk do listy albo ekranu nosi nazwę tego miejsca, taką jak nagłówek ekranu docelowego. | „Moje zgłoszenia” prowadzi do ekranu „Moje zgłoszenia” | Osoba sprawdza, czy trafiła tam, gdzie chciała (NFR-15, WCAG 3.2.4). |
-| Wyjątki od trybu rozkazującego to utarte zwroty rezygnacji i przejścia. | „Nie teraz”, „Dalej”, „Zdecyduję później” | Brzmią naturalnie, a forma rozkazująca byłaby sztuczna. |
+| Wyjątki od trybu rozkazującego to utarte zwroty rezygnacji i przejścia, kierunki przesuwania mapy i odpowiedzi na pytanie z ekranu. | „Nie teraz”, „Dalej”, „Zdecyduję później”, „W górę”, „Poza budynkiem”, „Coś innego” | Brzmią naturalnie, a forma rozkazująca byłaby sztuczna. |
 | Aplikacja mówi o sobie „my”, do osoby „Ty”, a zaimki pisze wielką literą. | „Wyślemy je, gdy wróci internet.” | Jeden głos na wszystkich ekranach. |
 | Komunikat mówi, co się stało i co zrobić, w najwyżej 2 krótkich zdaniach. | „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” | NFR-15 (WCAG 3.3.1, 3.3.3), NFR-50 [1] |
 | Komunikat nie obwinia osoby. | „Nie znaleźliśmy budynku” zamiast „Błędny symbol” | PE-1 przypisuje winę sobie i rezygnuje [2]. |
@@ -75,12 +75,16 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | źródło oznaczenia „import” z datą | „Z map i opisów, stan z 1.10.2026” | wszystkie | Import bierze dane z planów PWr i z OpenStreetMap. „Dane uczelni” byłyby nieprawdą przy OpenStreetMap (recenzja B3, uwaga 23). | 2.2, 4.3 |
 | data weryfikacji | „Sprawdzone 12.11.2026” | wszystkie | „Weryfikacja” to żargon, a data budzi zaufanie (N2). | 2.5, 4.4, 5.1 |
 | zgłoszenie przyjęte (listy na V1–V3) | nagłówek „Bariery w budynku”, w wierszu typ bariery | Gość, Odwiedzający | Osoba widzi bariery, a nie zgłoszenia. | 2.3, 4.5 |
-| typ bariery | nazwa z klasyfikacji, np. „niesprawna winda” | wszystkie | Nazwy są potoczne. Wyjątek TB-22 opisuje opis PR (propozycja dla słownika pojęć). | 2.3, 4.2 |
+| typ bariery | nazwa z klasyfikacji, np. „niesprawna winda” | wszystkie | Nazwy są potoczne. Wyjątki są w 3 wierszach niżej. | 2.3, 4.2 |
+| TB-20 „toaleta niedostępna w praktyce” | „toaleta zamknięta, zastawiona lub trudna do dojścia” | Gość, Odwiedzający | Słowo „niedostępne” zostaje dla wejścia. | 2.3 |
+| TB-22 „brak planu tyflograficznego” | „brak planu dotykowego lub głosowego” | Gość, Odwiedzający | „Tyflograficzny” to słowo specjalistów. | 2.3, 5.1 |
+| TB-28 „niedostępne miejsce obsługi” | „brak obniżonej lady lub miejsca dla wózka” | Gość, Odwiedzający | Słowo „niedostępne” zostaje dla wejścia. | 2.3 |
 | uciążliwość 1 „utrudnienie” | „Utrudnienie” | wszystkie | bez zmian | 2.3, 4.2 |
 | uciążliwość 2 „poważne utrudnienie” | „Potrzebna pomoc” | wszystkie | Kryterium stopnia 2 to „tylko z pomocą”. Słowo „poważne” każdy rozumie inaczej. | 2.4, 4.2 |
 | uciążliwość 3 „blokada” | „Blokada” | wszystkie | bez zmian; krótkie i jednoznaczne | 4.2 |
 | przełącznik pięter | „Piętro:” i etykiety z danych PWr | wszystkie | Bez słowa „przełącznik”. | 6.3 |
 | plan piętra | „Plan piętra” | wszystkie | bez zmian | 6.3 |
+| podpis pod planem (NFR-40) | „Źródło: Politechnika Wrocławska” | wszystkie | bez zmian; mówi, skąd jest plan | 2.2 |
 | budynek podstawowy (napis na V2) | „Nie mamy planu pięter tego budynku.” | wszystkie | Słowo „niedostępny” zostaje dla wejścia. | 6.3 |
 | „Zaplanuj wizytę” (US3) | „Sprawdź, którędy wejść” | wszystkie | „Zaplanuj wizytę” brzmi jak rezerwacja terminu. Ekran odpowiada na pytanie o wejście. | 2.1, 2.2, 4.1 |
 | nagłówek V3 | „Którędy wejść do C-13” | wszystkie | Nagłówek powtarza napis przycisku. | 4.1, część 5 |
@@ -143,6 +147,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | statusy „wysłane”, „w weryfikacji”, „przyjęte”, „odrzucone”, „archiwalne” | „Wysłane”, „W weryfikacji”, „Przyjęte”, „Odrzucone”, „Archiwalne” | Zbierający | Krótkie pojęcia dokumentacji. | 10.3, 10.5 |
 | znak „zmiana czeka na wysłanie” | „Zmiana czeka na wysłanie” | Zbierający | bez zmian | 10.3 |
 | konflikt wersji („wybierz wersję”) | „Dwie wersje: wybierz jedną” | Zbierający | Mówi, co się stało i co zrobić. | 10.4 |
+| pole różniące się w konflikcie | „Inna wartość” | Zbierający | bez zmian; różnicę widać bez koloru (NFR-21) | 10.4 |
 | „Wyślij ponownie do bieżącego zgłoszenia” | „Wyślij do aktualnego zgłoszenia” | Zbierający | Krócej i bez słowa „ponownie”, które sugeruje to samo zgłoszenie. | 10.4 |
 | synchronizacja (nagłówek C4, „Synchronizuj teraz”) | „Synchronizacja”, „Synchronizuj teraz” | Zbierający | Krótkie pojęcie dokumentacji. | 10.3 |
 | „Czeka na wysłanie: 3” | bez zmian | Zbierający | — | 10.3 |
@@ -151,6 +156,9 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | piętro obejrzane (przycisk „Piętra obejrzane” na V2) | „Oznacz obejrzane piętra” | Zbierający | Czasownik na przycisku. | 10.7 |
 | nagłówek C5 | „Obejrzane piętra” | Zbierający, Koordynator | bez zmian treści | 10.7 |
 | znacznik „obejrzane” / „nieobejrzane” | „Obejrzane”, „Nieobejrzane” | Zbierający, Koordynator | bez zmian | 10.7 |
+| wiersz budynku podstawowego (C5) | „Cały budynek” | Zbierający, Koordynator | bez zmian | 10.7 |
+| znacznik w telefonie (C5) | „Czeka na wysłanie” | Zbierający | Te same słowa co „Czeka na wysłanie: 3” na C3. | 10.3 |
+| budynek podstawowy w K1 | „Obejrzany”, „Nieobejrzany” | Koordynator | Forma dla budynku; ikona jak przy znaczniku. | 10.7 |
 | „Twój znacznik”, „znacznik innej osoby” | „Twój znacznik”, „Znacznik innej osoby” | Zbierający | bez zmian | 10.4 |
 | „Oznacz jako obejrzane” | bez zmian | Zbierający | — | 10.7 |
 | „Cofnij” (Zbierający) i „Cofnij znacznik” (Koordynator) | „Cofnij znacznik” dla obu ról | Zbierający, Koordynator | Ta sama czynność ma ten sam napis. | 10.7 |
@@ -175,7 +183,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | zaproszenie | przycisk i nagłówek K2 „Zaproś osobę”, przycisk „Wyślij zaproszenie” | Koordynator | Nagłówek powtarza napis przycisku z L2. | 10.4 |
 | pola K2 | „Adres e-mail”, „Rola” | Koordynator | bez zmian | 10.4 |
 | eksport | przycisk i nagłówek K3 „Pobierz eksport”, przycisk „Pobierz plik” | Koordynator | Krótkie pojęcie dokumentacji. | 10.6 |
-| formaty eksportu | „GeoJSON (WGS84)”, „CSV (PUWG 1992, EPSG:2180)” | Koordynator | Tych nazw używa QGIS. | 10.6 |
+| formaty eksportu | „GeoJSON (WGS84)”, „CSV (PUWG 1992, EPSG:2180)” | Koordynator | Format i kod EPSG pozwalają otworzyć plik w QGIS bez zgadywania układu. | 10.6 |
 
 ## Katalog komunikatów (hipoteza, do potwierdzenia w wywiadach)
 
