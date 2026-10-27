@@ -51,7 +51,7 @@ Związki N ↔ US pochodzą z tabeli historyjek i z [macierzy śledzenia](../wym
 | 9 | US13 | N9 | US13.1 i US13.2: pliki otwierają się w QGIS. |
 | 3 | US14 | N2 | Historyjka umożliwiająca: o publikacji decyduje osoba z nadaną rolą (BR-2). |
 | 3 | US14 | N8 | Historyjka umożliwiająca: konto chroni dane przed spamem. |
-| 9 | US15 | N6 | US15.3: znacznik bez sieci czeka w telefonie i wysyła się sam, jak zgłoszenie w US9.1 i US9.2. |
+| 9 | US15 | N6 | US15.3: znacznik bez sieci czeka w telefonie i wysyła się sam jak zgłoszenie w US9.1 i US9.2. |
 | 9 | US15 | N9 | US15.1: znacznik piętra obejrzanego jest podstawą postępu z US11.1. |
 | 3 | US16 | N1 | Plan piętra pokazuje windy i toalety w środku, a nie wybór wejścia z zewnątrz. |
 | 9 | US17 | N1 | US17.1: oznaczenie każdego wejścia. |
