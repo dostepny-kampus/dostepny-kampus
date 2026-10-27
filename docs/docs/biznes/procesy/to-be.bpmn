@@ -1,0 +1,1036 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_ToBe"
+                  targetNamespace="https://dostepny-kampus.example/bpmn/to-be">
+
+  <bpmn:signal id="Signal_Kolejka" name="Zgłoszenie w kolejce" />
+  <bpmn:dataStore id="Store_Zgloszenia" name="Zgłoszenia przyjęte" />
+  <bpmn:dataStore id="Store_Postep" name="Postęp inwentaryzacji" />
+
+  <bpmn:collaboration id="Collaboration_ToBe">
+    <bpmn:participant id="Participant_Zglaszanie" name="A. Zgłaszanie bariery" processRef="Process_Zglaszanie" />
+    <bpmn:participant id="Participant_Weryfikacja" name="B. Weryfikacja, publikacja i przeglądanie" processRef="Process_Weryfikacja" />
+    <bpmn:participant id="Participant_Koordynacja" name="C. Koordynacja inwentaryzacji" processRef="Process_Koordynacja" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_Zglaszanie" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Process_Zglaszanie">
+      <bpmn:lane id="Lane_A_Zbierajacy" name="Zbierający">
+        <bpmn:flowNodeRef>Start_Pomiar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T12</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_A_System" name="System (aplikacja i serwer)">
+        <bpmn:flowNodeRef>Task_T2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Kontur</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Kontur_Merge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T9</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Zapis_Merge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T10</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Siec</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_Siec</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Siec_Merge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T11</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Konflikt</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T13</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Kolejka</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_A_Odwiedzajacy" name="Odwiedzający">
+        <bpmn:flowNodeRef>Start_Szybkie</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T7</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T8</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Pomiar" name="Bariera zauważona">
+      <bpmn:outgoing>Flow_A01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_T1" name="T1 Rozpocznij pomiar precyzyjny">
+      <bpmn:incoming>Flow_A01</bpmn:incoming>
+      <bpmn:outgoing>Flow_A02</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_T2" name="T2 Uśrednij pozycję przez 30 s">
+      <bpmn:incoming>Flow_A02</bpmn:incoming>
+      <bpmn:outgoing>Flow_A03</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_Kontur" name="Punkt w konturze budynku?">
+      <bpmn:incoming>Flow_A03</bpmn:incoming>
+      <bpmn:outgoing>Flow_A04</bpmn:outgoing>
+      <bpmn:outgoing>Flow_A05</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_T3" name="T3 Podpowiedz najbliższy budynek">
+      <bpmn:incoming>Flow_A04</bpmn:incoming>
+      <bpmn:outgoing>Flow_A06</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_T4" name="T4 Oznacz „poza budynkiem”">
+      <bpmn:incoming>Flow_A05</bpmn:incoming>
+      <bpmn:outgoing>Flow_A07</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_Kontur_Merge">
+      <bpmn:incoming>Flow_A06</bpmn:incoming>
+      <bpmn:incoming>Flow_A07</bpmn:incoming>
+      <bpmn:outgoing>Flow_A08</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_T5" name="T5 Potwierdź budynek, popraw punkt">
+      <bpmn:incoming>Flow_A08</bpmn:incoming>
+      <bpmn:outgoing>Flow_A09</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_T6" name="T6 Wypełnij formularz i zrób zdjęcie">
+      <bpmn:incoming>Flow_A09</bpmn:incoming>
+      <bpmn:outgoing>Flow_A10</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:startEvent id="Start_Szybkie" name="Bariera zauważona">
+      <bpmn:outgoing>Flow_A11</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_T7" name="T7 Zrób zdjęcie bariery">
+      <bpmn:incoming>Flow_A11</bpmn:incoming>
+      <bpmn:outgoing>Flow_A12</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_T8" name="T8 Wybierz grupę barier">
+      <bpmn:incoming>Flow_A12</bpmn:incoming>
+      <bpmn:outgoing>Flow_A13</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_T9" name="T9 Dołącz bieżącą pozycję">
+      <bpmn:incoming>Flow_A13</bpmn:incoming>
+      <bpmn:outgoing>Flow_A14</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_Zapis_Merge">
+      <bpmn:incoming>Flow_A10</bpmn:incoming>
+      <bpmn:incoming>Flow_A14</bpmn:incoming>
+      <bpmn:outgoing>Flow_A15</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_T10" name="T10 Zapisz w telefonie (lokalne)">
+      <bpmn:incoming>Flow_A15</bpmn:incoming>
+      <bpmn:outgoing>Flow_A16</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_Siec" name="Sieć dostępna?">
+      <bpmn:incoming>Flow_A16</bpmn:incoming>
+      <bpmn:outgoing>Flow_A17</bpmn:outgoing>
+      <bpmn:outgoing>Flow_A18</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:intermediateCatchEvent id="Event_Siec" name="Sieć wróciła">
+      <bpmn:incoming>Flow_A18</bpmn:incoming>
+      <bpmn:outgoing>Flow_A19</bpmn:outgoing>
+      <bpmn:conditionalEventDefinition id="CondDef_Event_Siec">
+        <bpmn:condition xsi:type="bpmn:tFormalExpression">Sieć dostępna</bpmn:condition>
+      </bpmn:conditionalEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:exclusiveGateway id="Gateway_Siec_Merge">
+      <bpmn:incoming>Flow_A17</bpmn:incoming>
+      <bpmn:incoming>Flow_A19</bpmn:incoming>
+      <bpmn:outgoing>Flow_A20</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_T11" name="T11 Synchronizuj">
+      <bpmn:incoming>Flow_A20</bpmn:incoming>
+      <bpmn:incoming>Flow_A23</bpmn:incoming>
+      <bpmn:outgoing>Flow_A21</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_Konflikt" name="Konflikt wersji?">
+      <bpmn:incoming>Flow_A21</bpmn:incoming>
+      <bpmn:outgoing>Flow_A22</bpmn:outgoing>
+      <bpmn:outgoing>Flow_A24</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_T12" name="T12 Wybierz wersję">
+      <bpmn:incoming>Flow_A22</bpmn:incoming>
+      <bpmn:outgoing>Flow_A23</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_T13" name="T13 Przyjmij na serwerze (wysłane)">
+      <bpmn:incoming>Flow_A24</bpmn:incoming>
+      <bpmn:outgoing>Flow_A25</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Kolejka" name="Zgłoszenie w kolejce">
+      <bpmn:incoming>Flow_A25</bpmn:incoming>
+      <bpmn:signalEventDefinition id="SigDef_End_Kolejka" signalRef="Signal_Kolejka" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_A01" sourceRef="Start_Pomiar" targetRef="Task_T1" />
+    <bpmn:sequenceFlow id="Flow_A02" sourceRef="Task_T1" targetRef="Task_T2" />
+    <bpmn:sequenceFlow id="Flow_A03" sourceRef="Task_T2" targetRef="Gateway_Kontur" />
+    <bpmn:sequenceFlow id="Flow_A04" name="tak" sourceRef="Gateway_Kontur" targetRef="Task_T3" />
+    <bpmn:sequenceFlow id="Flow_A05" name="nie" sourceRef="Gateway_Kontur" targetRef="Task_T4" />
+    <bpmn:sequenceFlow id="Flow_A06" sourceRef="Task_T3" targetRef="Gateway_Kontur_Merge" />
+    <bpmn:sequenceFlow id="Flow_A07" sourceRef="Task_T4" targetRef="Gateway_Kontur_Merge" />
+    <bpmn:sequenceFlow id="Flow_A08" sourceRef="Gateway_Kontur_Merge" targetRef="Task_T5" />
+    <bpmn:sequenceFlow id="Flow_A09" sourceRef="Task_T5" targetRef="Task_T6" />
+    <bpmn:sequenceFlow id="Flow_A10" sourceRef="Task_T6" targetRef="Gateway_Zapis_Merge" />
+    <bpmn:sequenceFlow id="Flow_A11" sourceRef="Start_Szybkie" targetRef="Task_T7" />
+    <bpmn:sequenceFlow id="Flow_A12" sourceRef="Task_T7" targetRef="Task_T8" />
+    <bpmn:sequenceFlow id="Flow_A13" sourceRef="Task_T8" targetRef="Task_T9" />
+    <bpmn:sequenceFlow id="Flow_A14" sourceRef="Task_T9" targetRef="Gateway_Zapis_Merge" />
+    <bpmn:sequenceFlow id="Flow_A15" sourceRef="Gateway_Zapis_Merge" targetRef="Task_T10" />
+    <bpmn:sequenceFlow id="Flow_A16" sourceRef="Task_T10" targetRef="Gateway_Siec" />
+    <bpmn:sequenceFlow id="Flow_A17" name="tak" sourceRef="Gateway_Siec" targetRef="Gateway_Siec_Merge" />
+    <bpmn:sequenceFlow id="Flow_A18" name="nie" sourceRef="Gateway_Siec" targetRef="Event_Siec" />
+    <bpmn:sequenceFlow id="Flow_A19" sourceRef="Event_Siec" targetRef="Gateway_Siec_Merge" />
+    <bpmn:sequenceFlow id="Flow_A20" sourceRef="Gateway_Siec_Merge" targetRef="Task_T11" />
+    <bpmn:sequenceFlow id="Flow_A21" sourceRef="Task_T11" targetRef="Gateway_Konflikt" />
+    <bpmn:sequenceFlow id="Flow_A22" name="tak" sourceRef="Gateway_Konflikt" targetRef="Task_T12" />
+    <bpmn:sequenceFlow id="Flow_A23" sourceRef="Task_T12" targetRef="Task_T11" />
+    <bpmn:sequenceFlow id="Flow_A24" name="nie" sourceRef="Gateway_Konflikt" targetRef="Task_T13" />
+    <bpmn:sequenceFlow id="Flow_A25" sourceRef="Task_T13" targetRef="End_Kolejka" />
+    <bpmn:textAnnotation id="Note_Konflikt">
+      <bpmn:text>Konflikt możliwy przy edycji zgłoszenia (BR-3)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_Offline">
+      <bpmn:text>Tryb offline: zgłoszenie czeka w telefonie (NFR-5, NFR-6)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_PozaBudynkiem">
+      <bpmn:text>Stan normalny; podpowiedź najbliższego budynku (BR-G2, BR-G4)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Note_Konflikt" sourceRef="Note_Konflikt" targetRef="Gateway_Konflikt" />
+    <bpmn:association id="Assoc_Note_Offline" sourceRef="Note_Offline" targetRef="Event_Siec" />
+    <bpmn:association id="Assoc_Note_PozaBudynkiem" sourceRef="Note_PozaBudynkiem" targetRef="Task_T4" />
+  </bpmn:process>
+
+  <bpmn:process id="Process_Weryfikacja" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Process_Weryfikacja">
+      <bpmn:lane id="Lane_B_Weryfikator" name="Weryfikator">
+        <bpmn:flowNodeRef>Task_T14</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T16</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Decyzja</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T18</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_B_System" name="System (aplikacja i serwer)">
+        <bpmn:flowNodeRef>Start_Kolejka</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T15</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T19</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Odrzucone</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T17</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Opublikowane</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_B_Gosc" name="Odwiedzający / Gość niezalogowany">
+        <bpmn:flowNodeRef>Start_Wizyta</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T20</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T21</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Szczegolowy</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T22</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Szczegolowy_Merge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T23</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Wizyta</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Kolejka" name="Zgłoszenie w kolejce">
+      <bpmn:outgoing>Flow_B01</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SigDef_Start_Kolejka" signalRef="Signal_Kolejka" />
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_T14" name="T14 Weź zgłoszenie z kolejki">
+      <bpmn:incoming>Flow_B01</bpmn:incoming>
+      <bpmn:outgoing>Flow_B02</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_T15" name="T15 Ustaw „w weryfikacji”, znajdź podobne">
+      <bpmn:incoming>Flow_B02</bpmn:incoming>
+      <bpmn:outgoing>Flow_B03</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Task_T16" name="T16 Sprawdź dane, zdjęcie i podobne">
+      <bpmn:incoming>Flow_B03</bpmn:incoming>
+      <bpmn:outgoing>Flow_B04</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_Decyzja" name="Poprawne i nie duplikat?">
+      <bpmn:incoming>Flow_B04</bpmn:incoming>
+      <bpmn:outgoing>Flow_B05</bpmn:outgoing>
+      <bpmn:outgoing>Flow_B08</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_T18" name="T18 Odrzuć z powodem">
+      <bpmn:incoming>Flow_B05</bpmn:incoming>
+      <bpmn:outgoing>Flow_B06</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_T19" name="T19 Ustaw „odrzucone”, pokaż powód Zbierającemu">
+      <bpmn:incoming>Flow_B06</bpmn:incoming>
+      <bpmn:outgoing>Flow_B07</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Odrzucone" name="Zgłoszenie odrzucone">
+      <bpmn:incoming>Flow_B07</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_T17" name="T17 Ustaw „przyjęte”, opublikuj na mapie">
+      <bpmn:incoming>Flow_B08</bpmn:incoming>
+      <bpmn:outgoing>Flow_B09</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOut_T17">
+        <bpmn:targetRef>DataStore_Przyjete</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Opublikowane" name="Bariera na mapie">
+      <bpmn:incoming>Flow_B09</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="Start_Wizyta" name="Planuje wizytę">
+      <bpmn:outgoing>Flow_B10</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_T20" name="T20 Znajdź budynek na mapie">
+      <bpmn:incoming>Flow_B10</bpmn:incoming>
+      <bpmn:outgoing>Flow_B11</bpmn:outgoing>
+      <bpmn:property id="Property_Task_T20" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataIn_T20">
+        <bpmn:sourceRef>DataStore_Przyjete</bpmn:sourceRef>
+        <bpmn:targetRef>Property_Task_T20</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_T21" name="T21 Otwórz kartę budynku">
+      <bpmn:incoming>Flow_B11</bpmn:incoming>
+      <bpmn:outgoing>Flow_B12</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_Szczegolowy" name="Budynek szczegółowy?">
+      <bpmn:incoming>Flow_B12</bpmn:incoming>
+      <bpmn:outgoing>Flow_B13</bpmn:outgoing>
+      <bpmn:outgoing>Flow_B15</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_T22" name="T22 Wybierz piętro, obejrzyj plan">
+      <bpmn:incoming>Flow_B13</bpmn:incoming>
+      <bpmn:outgoing>Flow_B14</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_Szczegolowy_Merge">
+      <bpmn:incoming>Flow_B14</bpmn:incoming>
+      <bpmn:incoming>Flow_B15</bpmn:incoming>
+      <bpmn:outgoing>Flow_B16</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_T23" name="T23 Sprawdź wejście dostępne">
+      <bpmn:incoming>Flow_B16</bpmn:incoming>
+      <bpmn:outgoing>Flow_B17</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_Wizyta" name="Wie, którym wejściem wejść">
+      <bpmn:incoming>Flow_B17</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataStoreReference id="DataStore_Przyjete" name="Zgłoszenia przyjęte" dataStoreRef="Store_Zgloszenia" />
+    <bpmn:sequenceFlow id="Flow_B01" sourceRef="Start_Kolejka" targetRef="Task_T14" />
+    <bpmn:sequenceFlow id="Flow_B02" sourceRef="Task_T14" targetRef="Task_T15" />
+    <bpmn:sequenceFlow id="Flow_B03" sourceRef="Task_T15" targetRef="Task_T16" />
+    <bpmn:sequenceFlow id="Flow_B04" sourceRef="Task_T16" targetRef="Gateway_Decyzja" />
+    <bpmn:sequenceFlow id="Flow_B05" name="nie: duplikat lub błąd" sourceRef="Gateway_Decyzja" targetRef="Task_T18" />
+    <bpmn:sequenceFlow id="Flow_B06" sourceRef="Task_T18" targetRef="Task_T19" />
+    <bpmn:sequenceFlow id="Flow_B07" sourceRef="Task_T19" targetRef="End_Odrzucone" />
+    <bpmn:sequenceFlow id="Flow_B08" name="tak" sourceRef="Gateway_Decyzja" targetRef="Task_T17" />
+    <bpmn:sequenceFlow id="Flow_B09" sourceRef="Task_T17" targetRef="End_Opublikowane" />
+    <bpmn:sequenceFlow id="Flow_B10" sourceRef="Start_Wizyta" targetRef="Task_T20" />
+    <bpmn:sequenceFlow id="Flow_B11" sourceRef="Task_T20" targetRef="Task_T21" />
+    <bpmn:sequenceFlow id="Flow_B12" sourceRef="Task_T21" targetRef="Gateway_Szczegolowy" />
+    <bpmn:sequenceFlow id="Flow_B13" name="tak" sourceRef="Gateway_Szczegolowy" targetRef="Task_T22" />
+    <bpmn:sequenceFlow id="Flow_B14" sourceRef="Task_T22" targetRef="Gateway_Szczegolowy_Merge" />
+    <bpmn:sequenceFlow id="Flow_B15" name="nie (BR-G1)" sourceRef="Gateway_Szczegolowy" targetRef="Gateway_Szczegolowy_Merge" />
+    <bpmn:sequenceFlow id="Flow_B16" sourceRef="Gateway_Szczegolowy_Merge" targetRef="Task_T23" />
+    <bpmn:sequenceFlow id="Flow_B17" sourceRef="Task_T23" targetRef="End_Wizyta" />
+    <bpmn:textAnnotation id="Note_Szybkie">
+      <bpmn:text>Zgłoszenie szybkie: Weryfikator ustala typ i uciążliwość</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_Powod">
+      <bpmn:text>Powód odrzucenia obowiązkowy; Zbierający może poprawić (BR-3)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Note_Szybkie" sourceRef="Note_Szybkie" targetRef="Task_T16" />
+    <bpmn:association id="Assoc_Note_Powod" sourceRef="Note_Powod" targetRef="Task_T18" />
+    <bpmn:textAnnotation id="Note_Usunieta">
+      <bpmn:text>Zmiana „bariera usunięta” (BR-3): po przyjęciu bariera znika z mapy, zostaje w historii</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Note_Usunieta" sourceRef="Note_Usunieta" targetRef="End_Opublikowane" />
+  </bpmn:process>
+
+  <bpmn:process id="Process_Koordynacja" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Process_Koordynacja">
+      <bpmn:lane id="Lane_C_Zbierajacy" name="Zbierający">
+        <bpmn:flowNodeRef>Start_Pietro</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T24</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_C_System" name="System (aplikacja i serwer)">
+        <bpmn:flowNodeRef>Task_T25</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Postep</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T28</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_C_Koordynator" name="Koordynator">
+        <bpmn:flowNodeRef>Start_Planowanie</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T26</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Eksport</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T27</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_T29</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_QGIS</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Trwa</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Pietro" name="Piętro przejrzane w całości">
+      <bpmn:outgoing>Flow_C01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_T24" name="T24 Oznacz piętro obejrzane">
+      <bpmn:incoming>Flow_C01</bpmn:incoming>
+      <bpmn:outgoing>Flow_C02</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_T25" name="T25 Przelicz postęp budynku">
+      <bpmn:incoming>Flow_C02</bpmn:incoming>
+      <bpmn:outgoing>Flow_C03</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOut_T25">
+        <bpmn:targetRef>DataStore_Postep</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Postep" name="Postęp zaktualizowany">
+      <bpmn:incoming>Flow_C03</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="Start_Planowanie" name="Planowanie obchodów">
+      <bpmn:outgoing>Flow_C04</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_T26" name="T26 Sprawdź postęp według budynków">
+      <bpmn:incoming>Flow_C04</bpmn:incoming>
+      <bpmn:outgoing>Flow_C05</bpmn:outgoing>
+      <bpmn:property id="Property_Task_T26" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataIn_T26">
+        <bpmn:sourceRef>DataStore_Postep</bpmn:sourceRef>
+        <bpmn:targetRef>Property_Task_T26</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_Eksport" name="Dane do przekazania?">
+      <bpmn:incoming>Flow_C05</bpmn:incoming>
+      <bpmn:outgoing>Flow_C06</bpmn:outgoing>
+      <bpmn:outgoing>Flow_C10</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_T27" name="T27 Zamów eksport GeoJSON lub CSV">
+      <bpmn:incoming>Flow_C06</bpmn:incoming>
+      <bpmn:outgoing>Flow_C07</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_T28" name="T28 Utwórz plik: przyjęte, bez autora">
+      <bpmn:incoming>Flow_C07</bpmn:incoming>
+      <bpmn:outgoing>Flow_C08</bpmn:outgoing>
+      <bpmn:property id="Property_Task_T28" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataIn_T28">
+        <bpmn:sourceRef>DataStore_Przyjete_C</bpmn:sourceRef>
+        <bpmn:targetRef>Property_Task_T28</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:manualTask id="Task_T29" name="T29 Otwórz plik w QGIS">
+      <bpmn:incoming>Flow_C08</bpmn:incoming>
+      <bpmn:outgoing>Flow_C09</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:endEvent id="End_QGIS" name="Dane w QGIS">
+      <bpmn:incoming>Flow_C09</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_Trwa" name="Inwentaryzacja trwa">
+      <bpmn:incoming>Flow_C10</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataStoreReference id="DataStore_Postep" name="Postęp inwentaryzacji" dataStoreRef="Store_Postep" />
+    <bpmn:dataStoreReference id="DataStore_Przyjete_C" name="Zgłoszenia przyjęte" dataStoreRef="Store_Zgloszenia" />
+    <bpmn:sequenceFlow id="Flow_C01" sourceRef="Start_Pietro" targetRef="Task_T24" />
+    <bpmn:sequenceFlow id="Flow_C02" sourceRef="Task_T24" targetRef="Task_T25" />
+    <bpmn:sequenceFlow id="Flow_C03" sourceRef="Task_T25" targetRef="End_Postep" />
+    <bpmn:sequenceFlow id="Flow_C04" sourceRef="Start_Planowanie" targetRef="Task_T26" />
+    <bpmn:sequenceFlow id="Flow_C05" sourceRef="Task_T26" targetRef="Gateway_Eksport" />
+    <bpmn:sequenceFlow id="Flow_C06" name="tak" sourceRef="Gateway_Eksport" targetRef="Task_T27" />
+    <bpmn:sequenceFlow id="Flow_C07" sourceRef="Task_T27" targetRef="Task_T28" />
+    <bpmn:sequenceFlow id="Flow_C08" sourceRef="Task_T28" targetRef="Task_T29" />
+    <bpmn:sequenceFlow id="Flow_C09" sourceRef="Task_T29" targetRef="End_QGIS" />
+    <bpmn:sequenceFlow id="Flow_C10" name="nie" sourceRef="Gateway_Eksport" targetRef="End_Trwa" />
+    <bpmn:textAnnotation id="Note_Podstawowy">
+      <bpmn:text>Budynek podstawowy: znacznik „obejrzany” dla całego budynku</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Note_Podstawowy" sourceRef="Note_Podstawowy" targetRef="Task_T24" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="Diagram_ToBe">
+    <bpmndi:BPMNPlane id="Plane_ToBe" bpmnElement="Collaboration_ToBe">
+      <bpmndi:BPMNShape id="Participant_Zglaszanie_di" bpmnElement="Participant_Zglaszanie" isHorizontal="true">
+        <dc:Bounds x="100" y="60" width="2280" height="520" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_A_Zbierajacy_di" bpmnElement="Lane_A_Zbierajacy" isHorizontal="true">
+        <dc:Bounds x="130" y="60" width="2250" height="150" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_A_System_di" bpmnElement="Lane_A_System" isHorizontal="true">
+        <dc:Bounds x="130" y="210" width="2250" height="230" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_A_Odwiedzajacy_di" bpmnElement="Lane_A_Odwiedzajacy" isHorizontal="true">
+        <dc:Bounds x="130" y="440" width="2250" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Pomiar_di" bpmnElement="Start_Pomiar">
+        <dc:Bounds x="202" y="117" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="170" y="157" width="100" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T1_di" bpmnElement="Task_T1">
+        <dc:Bounds x="280" y="95" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T2_di" bpmnElement="Task_T2">
+        <dc:Bounds x="440" y="240" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Kontur_di" bpmnElement="Gateway_Kontur" isMarkerVisible="true">
+        <dc:Bounds x="605" y="255" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="570" y="221" width="120" height="30" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T3_di" bpmnElement="Task_T3">
+        <dc:Bounds x="700" y="240" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T4_di" bpmnElement="Task_T4">
+        <dc:Bounds x="700" y="335" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Kontur_Merge_di" bpmnElement="Gateway_Kontur_Merge" isMarkerVisible="true">
+        <dc:Bounds x="865" y="255" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T5_di" bpmnElement="Task_T5">
+        <dc:Bounds x="960" y="95" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T6_di" bpmnElement="Task_T6">
+        <dc:Bounds x="1120" y="95" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Szybkie_di" bpmnElement="Start_Szybkie">
+        <dc:Bounds x="202" y="482" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="170" y="522" width="100" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T7_di" bpmnElement="Task_T7">
+        <dc:Bounds x="280" y="460" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T8_di" bpmnElement="Task_T8">
+        <dc:Bounds x="440" y="460" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T9_di" bpmnElement="Task_T9">
+        <dc:Bounds x="1120" y="335" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Zapis_Merge_di" bpmnElement="Gateway_Zapis_Merge" isMarkerVisible="true">
+        <dc:Bounds x="1285" y="255" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T10_di" bpmnElement="Task_T10">
+        <dc:Bounds x="1380" y="240" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Siec_di" bpmnElement="Gateway_Siec" isMarkerVisible="true">
+        <dc:Bounds x="1545" y="255" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1510" y="221" width="120" height="30" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_Siec_di" bpmnElement="Event_Siec">
+        <dc:Bounds x="1662" y="357" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1630" y="325" width="100" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Siec_Merge_di" bpmnElement="Gateway_Siec_Merge" isMarkerVisible="true">
+        <dc:Bounds x="1765" y="255" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T11_di" bpmnElement="Task_T11">
+        <dc:Bounds x="1860" y="240" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Konflikt_di" bpmnElement="Gateway_Konflikt" isMarkerVisible="true">
+        <dc:Bounds x="2025" y="255" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1990" y="309" width="120" height="30" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T12_di" bpmnElement="Task_T12">
+        <dc:Bounds x="1990" y="95" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T13_di" bpmnElement="Task_T13">
+        <dc:Bounds x="2120" y="240" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Kolejka_di" bpmnElement="End_Kolejka">
+        <dc:Bounds x="2292" y="262" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2265" y="302" width="90" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_Konflikt_di" bpmnElement="Note_Konflikt">
+        <dc:Bounds x="2140" y="82" width="210" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_Offline_di" bpmnElement="Note_Offline">
+        <dc:Bounds x="1600" y="450" width="230" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_PozaBudynkiem_di" bpmnElement="Note_PozaBudynkiem">
+        <dc:Bounds x="700" y="452" width="420" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_A01_di" bpmnElement="Flow_A01">
+        <di:waypoint x="238" y="135" />
+        <di:waypoint x="280" y="135" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A02_di" bpmnElement="Flow_A02">
+        <di:waypoint x="400" y="135" />
+        <di:waypoint x="500" y="135" />
+        <di:waypoint x="500" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A03_di" bpmnElement="Flow_A03">
+        <di:waypoint x="560" y="280" />
+        <di:waypoint x="605" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A04_di" bpmnElement="Flow_A04">
+        <di:waypoint x="655" y="280" />
+        <di:waypoint x="700" y="280" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="652" y="260" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A05_di" bpmnElement="Flow_A05">
+        <di:waypoint x="630" y="305" />
+        <di:waypoint x="630" y="375" />
+        <di:waypoint x="700" y="375" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="638" y="320" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A06_di" bpmnElement="Flow_A06">
+        <di:waypoint x="820" y="280" />
+        <di:waypoint x="865" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A07_di" bpmnElement="Flow_A07">
+        <di:waypoint x="820" y="375" />
+        <di:waypoint x="890" y="375" />
+        <di:waypoint x="890" y="305" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A08_di" bpmnElement="Flow_A08">
+        <di:waypoint x="890" y="255" />
+        <di:waypoint x="890" y="135" />
+        <di:waypoint x="960" y="135" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A09_di" bpmnElement="Flow_A09">
+        <di:waypoint x="1080" y="135" />
+        <di:waypoint x="1120" y="135" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A10_di" bpmnElement="Flow_A10">
+        <di:waypoint x="1240" y="135" />
+        <di:waypoint x="1310" y="135" />
+        <di:waypoint x="1310" y="255" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A11_di" bpmnElement="Flow_A11">
+        <di:waypoint x="238" y="500" />
+        <di:waypoint x="280" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A12_di" bpmnElement="Flow_A12">
+        <di:waypoint x="400" y="500" />
+        <di:waypoint x="440" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A13_di" bpmnElement="Flow_A13">
+        <di:waypoint x="560" y="500" />
+        <di:waypoint x="1180" y="500" />
+        <di:waypoint x="1180" y="415" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A14_di" bpmnElement="Flow_A14">
+        <di:waypoint x="1240" y="375" />
+        <di:waypoint x="1310" y="375" />
+        <di:waypoint x="1310" y="305" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A15_di" bpmnElement="Flow_A15">
+        <di:waypoint x="1335" y="280" />
+        <di:waypoint x="1380" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A16_di" bpmnElement="Flow_A16">
+        <di:waypoint x="1500" y="280" />
+        <di:waypoint x="1545" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A17_di" bpmnElement="Flow_A17">
+        <di:waypoint x="1595" y="280" />
+        <di:waypoint x="1765" y="280" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1600" y="260" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A18_di" bpmnElement="Flow_A18">
+        <di:waypoint x="1570" y="305" />
+        <di:waypoint x="1570" y="375" />
+        <di:waypoint x="1662" y="375" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1578" y="320" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A19_di" bpmnElement="Flow_A19">
+        <di:waypoint x="1698" y="375" />
+        <di:waypoint x="1790" y="375" />
+        <di:waypoint x="1790" y="305" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A20_di" bpmnElement="Flow_A20">
+        <di:waypoint x="1815" y="280" />
+        <di:waypoint x="1860" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A21_di" bpmnElement="Flow_A21">
+        <di:waypoint x="1980" y="280" />
+        <di:waypoint x="2025" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A22_di" bpmnElement="Flow_A22">
+        <di:waypoint x="2050" y="255" />
+        <di:waypoint x="2050" y="175" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2058" y="210" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A23_di" bpmnElement="Flow_A23">
+        <di:waypoint x="1990" y="135" />
+        <di:waypoint x="1920" y="135" />
+        <di:waypoint x="1920" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A24_di" bpmnElement="Flow_A24">
+        <di:waypoint x="2075" y="280" />
+        <di:waypoint x="2120" y="280" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2080" y="260" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A25_di" bpmnElement="Flow_A25">
+        <di:waypoint x="2240" y="280" />
+        <di:waypoint x="2292" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Note_Konflikt_di" bpmnElement="Assoc_Note_Konflikt">
+        <di:waypoint x="2180" y="122" />
+        <di:waypoint x="2062" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Note_Offline_di" bpmnElement="Assoc_Note_Offline">
+        <di:waypoint x="1680" y="450" />
+        <di:waypoint x="1680" y="393" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Note_PozaBudynkiem_di" bpmnElement="Assoc_Note_PozaBudynkiem">
+        <di:waypoint x="760" y="452" />
+        <di:waypoint x="760" y="415" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Weryfikacja_di" bpmnElement="Participant_Weryfikacja" isHorizontal="true">
+        <dc:Bounds x="100" y="630" width="1760" height="670" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_B_Weryfikator_di" bpmnElement="Lane_B_Weryfikator" isHorizontal="true">
+        <dc:Bounds x="130" y="630" width="1730" height="190" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_B_System_di" bpmnElement="Lane_B_System" isHorizontal="true">
+        <dc:Bounds x="130" y="820" width="1730" height="290" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_B_Gosc_di" bpmnElement="Lane_B_Gosc" isHorizontal="true">
+        <dc:Bounds x="130" y="1110" width="1730" height="190" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Kolejka_di" bpmnElement="Start_Kolejka">
+        <dc:Bounds x="202" y="872" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="175" y="912" width="90" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T14_di" bpmnElement="Task_T14">
+        <dc:Bounds x="280" y="715" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T15_di" bpmnElement="Task_T15">
+        <dc:Bounds x="440" y="850" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T16_di" bpmnElement="Task_T16">
+        <dc:Bounds x="600" y="715" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Decyzja_di" bpmnElement="Gateway_Decyzja" isMarkerVisible="true">
+        <dc:Bounds x="775" y="730" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="745" y="696" width="110" height="30" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T18_di" bpmnElement="Task_T18">
+        <dc:Bounds x="930" y="715" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T19_di" bpmnElement="Task_T19">
+        <dc:Bounds x="1090" y="850" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Odrzucone_di" bpmnElement="End_Odrzucone">
+        <dc:Bounds x="1272" y="872" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1245" y="912" width="90" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T17_di" bpmnElement="Task_T17">
+        <dc:Bounds x="880" y="950" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Opublikowane_di" bpmnElement="End_Opublikowane">
+        <dc:Bounds x="1082" y="972" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1055" y="1012" width="90" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Wizyta_di" bpmnElement="Start_Wizyta">
+        <dc:Bounds x="792" y="1167" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="765" y="1207" width="90" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T20_di" bpmnElement="Task_T20">
+        <dc:Bounds x="880" y="1145" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T21_di" bpmnElement="Task_T21">
+        <dc:Bounds x="1040" y="1145" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Szczegolowy_di" bpmnElement="Gateway_Szczegolowy" isMarkerVisible="true">
+        <dc:Bounds x="1215" y="1160" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1180" y="1126" width="120" height="30" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T22_di" bpmnElement="Task_T22">
+        <dc:Bounds x="1310" y="1145" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Szczegolowy_Merge_di" bpmnElement="Gateway_Szczegolowy_Merge" isMarkerVisible="true">
+        <dc:Bounds x="1475" y="1160" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T23_di" bpmnElement="Task_T23">
+        <dc:Bounds x="1570" y="1145" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Wizyta_di" bpmnElement="End_Wizyta">
+        <dc:Bounds x="1742" y="1167" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1710" y="1207" width="100" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStore_Przyjete_di" bpmnElement="DataStore_Przyjete">
+        <dc:Bounds x="915" y="1047" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="970" y="1064" width="110" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_Szybkie_di" bpmnElement="Note_Szybkie">
+        <dc:Bounds x="580" y="642" width="230" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_Powod_di" bpmnElement="Note_Powod">
+        <dc:Bounds x="930" y="642" width="250" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_B01_di" bpmnElement="Flow_B01">
+        <di:waypoint x="238" y="890" />
+        <di:waypoint x="340" y="890" />
+        <di:waypoint x="340" y="795" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B02_di" bpmnElement="Flow_B02">
+        <di:waypoint x="400" y="755" />
+        <di:waypoint x="500" y="755" />
+        <di:waypoint x="500" y="850" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B03_di" bpmnElement="Flow_B03">
+        <di:waypoint x="560" y="890" />
+        <di:waypoint x="660" y="890" />
+        <di:waypoint x="660" y="795" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B04_di" bpmnElement="Flow_B04">
+        <di:waypoint x="720" y="755" />
+        <di:waypoint x="775" y="755" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B05_di" bpmnElement="Flow_B05">
+        <di:waypoint x="825" y="755" />
+        <di:waypoint x="930" y="755" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="830" y="761" width="96" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B06_di" bpmnElement="Flow_B06">
+        <di:waypoint x="1050" y="755" />
+        <di:waypoint x="1150" y="755" />
+        <di:waypoint x="1150" y="850" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B07_di" bpmnElement="Flow_B07">
+        <di:waypoint x="1210" y="890" />
+        <di:waypoint x="1272" y="890" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B08_di" bpmnElement="Flow_B08">
+        <di:waypoint x="800" y="780" />
+        <di:waypoint x="800" y="990" />
+        <di:waypoint x="880" y="990" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="806" y="956" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B09_di" bpmnElement="Flow_B09">
+        <di:waypoint x="1000" y="990" />
+        <di:waypoint x="1082" y="990" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B10_di" bpmnElement="Flow_B10">
+        <di:waypoint x="828" y="1185" />
+        <di:waypoint x="880" y="1185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B11_di" bpmnElement="Flow_B11">
+        <di:waypoint x="1000" y="1185" />
+        <di:waypoint x="1040" y="1185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B12_di" bpmnElement="Flow_B12">
+        <di:waypoint x="1160" y="1185" />
+        <di:waypoint x="1215" y="1185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B13_di" bpmnElement="Flow_B13">
+        <di:waypoint x="1265" y="1185" />
+        <di:waypoint x="1310" y="1185" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1262" y="1165" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B14_di" bpmnElement="Flow_B14">
+        <di:waypoint x="1430" y="1185" />
+        <di:waypoint x="1475" y="1185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B15_di" bpmnElement="Flow_B15">
+        <di:waypoint x="1240" y="1210" />
+        <di:waypoint x="1240" y="1267" />
+        <di:waypoint x="1500" y="1267" />
+        <di:waypoint x="1500" y="1210" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1330" y="1249" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B16_di" bpmnElement="Flow_B16">
+        <di:waypoint x="1525" y="1185" />
+        <di:waypoint x="1570" y="1185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_B17_di" bpmnElement="Flow_B17">
+        <di:waypoint x="1690" y="1185" />
+        <di:waypoint x="1742" y="1185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Note_Szybkie_di" bpmnElement="Assoc_Note_Szybkie">
+        <di:waypoint x="660" y="682" />
+        <di:waypoint x="660" y="715" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Note_Usunieta_di" bpmnElement="Note_Usunieta">
+        <dc:Bounds x="1170" y="970" width="290" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Assoc_Note_Usunieta_di" bpmnElement="Assoc_Note_Usunieta">
+        <di:waypoint x="1170" y="990" />
+        <di:waypoint x="1118" y="990" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Note_Powod_di" bpmnElement="Assoc_Note_Powod">
+        <di:waypoint x="990" y="682" />
+        <di:waypoint x="990" y="715" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOut_T17_di" bpmnElement="DataOut_T17">
+        <di:waypoint x="940" y="1030" />
+        <di:waypoint x="940" y="1047" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataIn_T20_di" bpmnElement="DataIn_T20">
+        <di:waypoint x="940" y="1097" />
+        <di:waypoint x="940" y="1145" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Koordynacja_di" bpmnElement="Participant_Koordynacja" isHorizontal="true">
+        <dc:Bounds x="100" y="1350" width="1200" height="550" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_C_Zbierajacy_di" bpmnElement="Lane_C_Zbierajacy" isHorizontal="true">
+        <dc:Bounds x="130" y="1350" width="1170" height="150" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_C_System_di" bpmnElement="Lane_C_System" isHorizontal="true">
+        <dc:Bounds x="130" y="1500" width="1170" height="210" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_C_Koordynator_di" bpmnElement="Lane_C_Koordynator" isHorizontal="true">
+        <dc:Bounds x="130" y="1710" width="1170" height="190" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Pietro_di" bpmnElement="Start_Pietro">
+        <dc:Bounds x="202" y="1417" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="175" y="1457" width="90" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T24_di" bpmnElement="Task_T24">
+        <dc:Bounds x="280" y="1395" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T25_di" bpmnElement="Task_T25">
+        <dc:Bounds x="440" y="1525" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Postep_di" bpmnElement="End_Postep">
+        <dc:Bounds x="622" y="1547" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="595" y="1587" width="90" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Planowanie_di" bpmnElement="Start_Planowanie">
+        <dc:Bounds x="362" y="1767" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="335" y="1807" width="90" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T26_di" bpmnElement="Task_T26">
+        <dc:Bounds x="440" y="1745" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Eksport_di" bpmnElement="Gateway_Eksport" isMarkerVisible="true">
+        <dc:Bounds x="615" y="1760" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="580" y="1726" width="120" height="30" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T27_di" bpmnElement="Task_T27">
+        <dc:Bounds x="710" y="1745" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T28_di" bpmnElement="Task_T28">
+        <dc:Bounds x="870" y="1525" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_T29_di" bpmnElement="Task_T29">
+        <dc:Bounds x="1030" y="1745" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_QGIS_di" bpmnElement="End_QGIS">
+        <dc:Bounds x="1202" y="1767" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1175" y="1807" width="90" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Trwa_di" bpmnElement="End_Trwa">
+        <dc:Bounds x="752" y="1847" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="794" y="1855" width="120" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStore_Postep_di" bpmnElement="DataStore_Postep">
+        <dc:Bounds x="475" y="1622" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="530" y="1639" width="110" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_Podstawowy_di" bpmnElement="Note_Podstawowy">
+        <dc:Bounds x="530" y="1372" width="260" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_C01_di" bpmnElement="Flow_C01">
+        <di:waypoint x="238" y="1435" />
+        <di:waypoint x="280" y="1435" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C02_di" bpmnElement="Flow_C02">
+        <di:waypoint x="400" y="1435" />
+        <di:waypoint x="500" y="1435" />
+        <di:waypoint x="500" y="1525" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C03_di" bpmnElement="Flow_C03">
+        <di:waypoint x="560" y="1565" />
+        <di:waypoint x="622" y="1565" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C04_di" bpmnElement="Flow_C04">
+        <di:waypoint x="398" y="1785" />
+        <di:waypoint x="440" y="1785" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C05_di" bpmnElement="Flow_C05">
+        <di:waypoint x="560" y="1785" />
+        <di:waypoint x="615" y="1785" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C06_di" bpmnElement="Flow_C06">
+        <di:waypoint x="665" y="1785" />
+        <di:waypoint x="710" y="1785" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="662" y="1765" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C07_di" bpmnElement="Flow_C07">
+        <di:waypoint x="770" y="1745" />
+        <di:waypoint x="770" y="1565" />
+        <di:waypoint x="870" y="1565" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C08_di" bpmnElement="Flow_C08">
+        <di:waypoint x="990" y="1565" />
+        <di:waypoint x="1090" y="1565" />
+        <di:waypoint x="1090" y="1745" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C09_di" bpmnElement="Flow_C09">
+        <di:waypoint x="1150" y="1785" />
+        <di:waypoint x="1202" y="1785" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C10_di" bpmnElement="Flow_C10">
+        <di:waypoint x="640" y="1810" />
+        <di:waypoint x="640" y="1865" />
+        <di:waypoint x="752" y="1865" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="648" y="1821" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Note_Podstawowy_di" bpmnElement="Assoc_Note_Podstawowy">
+        <di:waypoint x="530" y="1412" />
+        <di:waypoint x="400" y="1412" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOut_T25_di" bpmnElement="DataOut_T25">
+        <di:waypoint x="500" y="1605" />
+        <di:waypoint x="500" y="1622" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataIn_T26_di" bpmnElement="DataIn_T26">
+        <di:waypoint x="500" y="1672" />
+        <di:waypoint x="500" y="1745" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DataStore_Przyjete_C_di" bpmnElement="DataStore_Przyjete_C">
+        <dc:Bounds x="905" y="1635" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="960" y="1652" width="110" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataIn_T28_di" bpmnElement="DataIn_T28">
+        <di:waypoint x="930" y="1635" />
+        <di:waypoint x="930" y="1605" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
