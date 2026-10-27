@@ -41,29 +41,51 @@ Szukamy potrzeb, a nie oceny gotowego projektu, dlatego podstawą jest wywiad in
 ## 3. Przygotowanie
 
 - Przeprowadź 1 wywiad próbny z kimkolwiek z otoczenia. Popraw pytania, które budzą wątpliwości.
-- Wydrukuj arkusz notatek. Dla uczestnika miej wydruk zgody dużą czcionką (min. 16 pt).
+- Wydrukuj arkusz notatek i 2 egzemplarze zgody dużą czcionką (min. 16 pt). Podpisany zostaje u prowadzącego, drugi z kontaktem dostaje uczestnik.
 - Wybierz ciche miejsce z dobrym światłem. Uczestnik ma przy sobie własny telefon i okulary, jeśli ich używa.
 - Nie pokazuj szkiców aplikacji ani nazwy projektu. Pytamy o potrzeby, nie o nasz pomysł.
+- Arkusze, kartki zgody i nagrania trzymaj poza repozytorium projektu i poza wspólną chmurą. Do dokumentacji trafia tylko tabela wniosków z numerami P.
 
-## 4. Zgoda uczestnika (do odczytania)
+## 4. Zgoda uczestnika (do odczytania i podpisu)
 
 Prowadzący czyta tekst powoli i daje wydruk do ręki.
 
 > Dzień dobry. Nazywam się [imię] i studiuję na Politechnice Wrocławskiej. W projekcie na zajęciach badamy, jak osoby starsze planują wizyty w budynkach uczelni.
 >
-> Rozmowa potrwa około 30 minut. Nie ma dobrych ani złych odpowiedzi. Nie sprawdzamy Pana/Pani, tylko nasze pomysły.
+> Rozmowa potrwa około 30 minut, najwyżej 40. Nie ma dobrych ani złych odpowiedzi. Nie sprawdzamy Pana/Pani, tylko nasze pomysły.
 >
 > Udział jest dobrowolny. Może Pan/Pani nie odpowiadać na pytanie albo przerwać w każdej chwili, bez podawania powodu. Może Pan/Pani także wycofać zgodę po rozmowie.
 >
-> Nie zapisujemy imienia, nazwiska ani adresu. W notatkach będzie Pan/Pani oznaczony/oznaczona jako „uczestnik” z numerem. Cytaty w raporcie nie pozwolą Pana/Pani rozpoznać.
+> W notatkach nie zapisujemy imienia, nazwiska ani adresu. Będzie Pan/Pani oznaczony/oznaczona jako „uczestnik” z numerem. Cytaty w raporcie nie pozwolą Pana/Pani rozpoznać.
 >
-> Nie pytamy o choroby ani diagnozy. Notatki służą tylko do tego projektu i usuniemy je po zakończeniu semestru.
+> Nie pytamy o choroby ani diagnozy. Jeśli sam(a) Pan/Pani wspomni o trudnościach z chodzeniem albo wzrokiem, zapiszemy to krótko, tylko za Pana/Pani zgodą.
+>
+> Notatki służą tylko do tego projektu i usuniemy je po zakończeniu semestru. Może Pan/Pani poprosić o wgląd w notatki, ich poprawienie lub usunięcie. Może Pan/Pani też złożyć skargę do Prezesa Urzędu Ochrony Danych Osobowych.
 >
 > Kontakt: [imię i nazwisko], [uczelniany adres e-mail].
 >
-> Czy zgadza się Pan/Pani na rozmowę? Czy zgadza się Pan/Pani na nagranie dźwięku, które usuniemy po spisaniu notatek?
+> Proszę zaznaczyć na kartce, na co się Pan/Pani zgadza.
 
-Odpowiedzi zapisz w nagłówku arkusza. Brak zgody na nagranie nie wyklucza rozmowy. Podstawa prawna to zgoda uczestnika (RODO, artykuł 6 ustęp 1 litera a oraz artykuł 7).
+Na wydruku pod tekstem:
+
+| Zgadzam się na | Tak | Nie |
+| --- | --- | --- |
+| rozmowę i notatki bez imienia i nazwiska | ☐ | ☐ |
+| krótki zapis trudności z chodzeniem lub wzrokiem, o których sam(a) powiem | ☐ | ☐ |
+| nagranie dźwięku, usunięte po spisaniu notatek | ☐ | ☐ |
+| Data i podpis | | |
+
+- Uczestnik zaznacza odpowiedzi i podpisuje. Gdy nie chce lub nie może podpisać, prowadzący wpisuje „zgoda ustna” z datą, a notujący to potwierdza.
+- Podpisaną kartkę trzymaj osobno od arkusza. Łączy je tylko numer P, potrzebny, gdy uczestnik wycofa zgodę. Kartkę usuń razem z notatkami.
+- Odpowiedzi przepisz do nagłówka arkusza. Brak zgody na nagranie albo na zapis trudności nie wyklucza rozmowy.
+
+| Dane | Podstawa (RODO) |
+| --- | --- |
+| rozmowa, notatki, nagranie | zgoda: art. 6 ust. 1 lit. a i art. 7 |
+| trudności z chodzeniem lub wzrokiem | dane dotyczące zdrowia (art. 4 pkt 15), więc wyraźna zgoda: art. 9 ust. 2 lit. a |
+| treść informacji dla uczestnika | art. 13: kto zbiera dane, cel, czas przechowywania, prawa, skarga |
+
+Zgodę trzeba umieć wykazać (art. 7 ust. 1). Dlatego podpis na kartce jest bezpieczniejszy niż sama notatka prowadzącego.
 
 ## 5. Przebieg (≈ 30 min + rezerwa)
 
@@ -158,7 +180,7 @@ Prowadzący czyta:
 | 6.2 | Czy jest coś ważnego, o co nie zapytałem/zapytałam? | N1–N4, nowe potrzeby |
 | 6.3 | Czy zgodzi się Pan/Pani na drugą krótką rozmowę, gdy pokażemy szkic aplikacji? | — (etap 4) |
 
-Podziękuj. Kontakt do ponownej rozmowy zapisz w osobnym miejscu, nigdy w arkuszu.
+Podziękuj. Kontakt do ponownej rozmowy zapisz tylko za zgodą, w osobnym miejscu, nigdy w arkuszu. Usuń go po etapie 4.
 
 ### Zasady prowadzenia
 
@@ -167,6 +189,7 @@ Podziękuj. Kontakt do ponownej rozmowy zapisz w osobnym miejscu, nigdy w arkusz
 - Dopytuj neutralnie: „Proszę powiedzieć więcej”, „Dlaczego?”, „Co było dalej?”.
 - Nie oceniaj odpowiedzi i nie tłumacz się z pomysłu.
 - Pytaj o konkretne, minione sytuacje, a nie o opinie „na ogół”.
+- Gdy uczestnik pokazuje telefon, nie fotografuj ani nie nagrywaj ekranu. Prywatnych treści z ekranu nie notuj.
 
 ## 6. Arkusz notatek
 
@@ -178,9 +201,9 @@ Nagłówek (1 arkusz na uczestnika):
 | Data, prowadzący, notujący | _ (inicjały) |
 | Przedział wieku | 60–69 / 70–79 / 80+ |
 | Smartfon | tak / nie |
-| Trudności z poruszaniem się lub wzrokiem | tylko to, co uczestnik sam powiedział, bez diagnoz |
+| Trudności z poruszaniem się lub wzrokiem | tylko przy zgodzie na zapis; krótko to, co uczestnik sam powiedział, bez diagnoz |
 | Rodzina członka zespołu | tak / nie |
-| Zgoda na rozmowę / na nagranie | tak / nie — tak / nie |
+| Zgoda: rozmowa / zapis trudności / nagranie | tak / nie — tak / nie — tak / nie |
 
 Notatki:
 
