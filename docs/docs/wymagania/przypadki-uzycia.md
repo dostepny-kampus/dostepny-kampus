@@ -121,9 +121,10 @@ Aplikacja nie pyta o typ bariery ani uciążliwość; ustala je Weryfikator w UC
 | --- | --- | --- |
 | 1a | Gość niezalogowany wybiera zgłoszenie szybkie | Przed zdjęciem aplikacja prosi o logowanie albo rejestrację (US14.2, UC6). Po zalogowaniu wraca do kroku 2. |
 | 1b | Gość rezygnuje z logowania | Zgłoszenie nie powstaje, a aplikacja wraca do mapy. |
+| 2a | Brak zgody na lokalizację | Bez pozycji zgłoszenia nie da się wysłać (BR-8, NFR-27). Reakcja aplikacji do ustalenia w fazie B. |
 | 4a | Pozycja poza konturem budynku | Zgłoszenie zapisuje się z pozycją, bez komunikatu o błędzie (BR-G2, BR-G4, NFR-49). |
 | 4b | Budynek podstawowy | Zgłoszenie działa tak samo, jak w budynku szczegółowym (BR-G1). |
-| 4c | Telefon nie ustala pozycji | Zachowanie do ustalenia w fazie B. |
+| 4c | Telefon nie ustala pozycji | Bez pozycji zgłoszenia nie da się wysłać (BR-8). Reakcja aplikacji do ustalenia w fazie B. |
 | 5a | Żadna grupa nie pasuje | Odwiedzający wybiera grupę „inne”. Weryfikator ustali typ, także z innej grupy (BR-14). |
 | 7a | Brak sieci | Zgłoszenie czeka w telefonie i wysyła się samo po powrocie sieci (US4.2, BR-9). Potwierdzenie mówi, że wysyłka nastąpi później. |
 | 7b | Aplikacja zamknięta albo telefon zrestartowany przed wysyłką | Zgłoszenie i zdjęcie zostają w telefonie (NFR-5). |
