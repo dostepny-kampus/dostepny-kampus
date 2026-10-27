@@ -187,7 +187,9 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 
 ## Katalog komunikatów (hipoteza, do potwierdzenia w wywiadach)
 
-Każdy komunikat stanu z [wymagań do ekranów](wymagania-ekranow.md) w ostatecznym brzmieniu. Kolumna „Zmiana” odsyła do propozycji PW, gdy treść różni się od wymagań. Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym. Przy komunikatach o zaufaniu do danych słuchamy słów z pytań 4.3 i 4.4.
+Każdy komunikat stanu z [wymagań do ekranów](wymagania-ekranow.md) w ostatecznym brzmieniu. Kolumna „Zmiana” odsyła do propozycji PW, gdy treść różni się od wymagań.
+
+Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym, a przy komunikatach o zaufaniu słuchamy słów z pytań 4.3 i 4.4.
 
 ### Wszystkie ekrany
 
