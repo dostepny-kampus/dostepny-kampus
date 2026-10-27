@@ -137,10 +137,10 @@ CI działa w GitHub Actions. Osobne przepływy obejmują kontrakt API, serwer, a
 | Sprint | Cel | Najważniejsze zadania |
 | --- | --- | --- |
 | S1 | fundament, CI, dane | analiza i dokumentacja, szkielet repozytorium, kontrakt API v0, kontrola PR, szkielety serwera i aplikacji z linterami, eksport budynków z OSM, makiety low-fi |
-| S2 | UI, nawigacja, model danych | model i geometria, system projektowy, nawigacja z rolami, mapa z konturami, baza lokalna, import budynków do bazy |
+| S2 | UI, nawigacja, model danych | model i geometria, system projektowy, nawigacja z rolami, mapa z konturami, baza lokalna, import budynków z oznaczeniami wejść do bazy |
 | S3 | serwer i API | budynki i podpowiedź budynku, zgłoszenia z wersją, zdjęcia, klient API, repozytoria danych |
 | S4 | logika dziedziny | uśrednianie pozycji, PUWG 1992, ekran pomiaru z mapą nieba, formularz ze zdjęciem, podobne zgłoszenia |
-| S5 | logowanie, role, offline | usługa logowania i role, zaproszenia, logowanie w aplikacji, kolejka offline, ekran konfliktu, weryfikacja |
+| S5 | logowanie, role, offline | usługa logowania i role, zaproszenia, logowanie w aplikacji, kolejka offline, ekran konfliktu, weryfikacja, zmiana oznaczenia wejścia |
 | S6 | eksport, UX, testy, pokaz | eksport GeoJSON i CSV, ekran postępu, tryb demo z nagraną trasą, dostępność, badanie SUS |
 
 Na prezentację końcową działa scenariusz z sekcji 2: pomiar offline, weryfikacja z powodem i eksport otwierany w QGIS. Do tego ekran wyboru wersji przy konflikcie, zielone CI i raport z badania SUS (NFR-24).
