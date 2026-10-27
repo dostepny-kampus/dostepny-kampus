@@ -32,17 +32,23 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   @US1.3 @BR-6
   Szablon scenariusza: Na mapie są tylko zgłoszenia przyjęte
     Zakładając, że przy wejściu głównym A-1 jest zgłoszenie TB-1 „schody przy wejściu” ze statusem „<status>”
-    Jeżeli Odwiedzający otworzy mapę kampusu przy budynku A-1
+    Jeżeli <osoba> otworzy mapę kampusu przy budynku A-1
     Wtedy to zgłoszenie <widoczność> na mapie
 
     Przykłady:
-      | status        | widoczność          |
-      | lokalne       | nie jest widoczne   |
-      | wysłane       | nie jest widoczne   |
-      | w weryfikacji | nie jest widoczne   |
-      | odrzucone     | nie jest widoczne   |
-      | archiwalne    | nie jest widoczne   |
-      | przyjęte      | jest widoczne       |
+      | osoba              | status        | widoczność          |
+      | Gość niezalogowany | lokalne       | nie jest widoczne   |
+      | Gość niezalogowany | wysłane       | nie jest widoczne   |
+      | Gość niezalogowany | w weryfikacji | nie jest widoczne   |
+      | Gość niezalogowany | odrzucone     | nie jest widoczne   |
+      | Gość niezalogowany | archiwalne    | nie jest widoczne   |
+      | Gość niezalogowany | przyjęte      | jest widoczne       |
+      | Odwiedzający       | lokalne       | nie jest widoczne   |
+      | Odwiedzający       | wysłane       | nie jest widoczne   |
+      | Odwiedzający       | w weryfikacji | nie jest widoczne   |
+      | Odwiedzający       | odrzucone     | nie jest widoczne   |
+      | Odwiedzający       | archiwalne    | nie jest widoczne   |
+      | Odwiedzający       | przyjęte      | jest widoczne       |
 
   @US2.1
   Scenariusz: Wejście ma oznaczenie tekstem i ikoną, nie tylko kolorem
