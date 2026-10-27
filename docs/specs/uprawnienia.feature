@@ -23,10 +23,10 @@ Funkcja: Logowanie, role i zaproszenia
 
   @US14.1 @BR-3
   Scenariusz: Zbierający nie edytuje cudzego zgłoszenia
-    Zakładając, że Zbierająca wysłała zgłoszenie TB-13 „próg” w budynku C-13
+    Zakładając, że Zbierający wysłał zgłoszenie TB-13 „próg” w budynku C-13
     Jeżeli inny Zbierający spróbuje zmienić uciążliwość w tym zgłoszeniu z pominięciem aplikacji
     Wtedy próba jest odrzucona
-    Oraz zgłoszenie ma nadal uciążliwość nadaną przez autorkę
+    Oraz zgłoszenie ma nadal uciążliwość nadaną przez autora
 
   @US14.3 @BR-1 @BR-2
   Scenariusz: Samodzielna rejestracja daje tylko uprawnienia Odwiedzającego
