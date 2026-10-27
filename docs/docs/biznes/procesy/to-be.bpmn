@@ -277,6 +277,9 @@
     <bpmn:serviceTask id="Task_T17a" name="T17a Oba zgłoszenia „archiwalne”, usuń barierę z mapy">
       <bpmn:incoming>Flow_B18</bpmn:incoming>
       <bpmn:outgoing>Flow_B20</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOut_T17a_Postep">
+        <bpmn:targetRef>DataStore_Postep_B</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
     </bpmn:serviceTask>
     <bpmn:endEvent id="End_Usunieta" name="Bariera zniknęła z mapy">
       <bpmn:incoming>Flow_B20</bpmn:incoming>
@@ -1015,6 +1018,13 @@
         <di:waypoint x="990" y="1130" />
         <di:waypoint x="1350" y="1130" />
         <di:waypoint x="1350" y="1050" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOut_T17a_Postep_di" bpmnElement="DataOut_T17a_Postep">
+        <di:waypoint x="975" y="930" />
+        <di:waypoint x="975" y="943" />
+        <di:waypoint x="1160" y="943" />
+        <di:waypoint x="1160" y="1045" />
+        <di:waypoint x="1325" y="1045" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DataOut_T19_Postep_di" bpmnElement="DataOut_T19_Postep">
         <di:waypoint x="1240" y="930" />
