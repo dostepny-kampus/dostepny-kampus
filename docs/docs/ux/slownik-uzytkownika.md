@@ -16,7 +16,7 @@ Słownik pojęć zostaje źródłem nazw w dokumentach i w kodzie. Ta strona ust
 | Wyjątki od trybu rozkazującego to utarte zwroty rezygnacji i przejścia, kierunki przesuwania mapy i odpowiedzi na pytanie z ekranu. | „Nie teraz”, „Dalej”, „Zdecyduję później”, „W górę”, „Poza budynkiem”, „Coś innego” | Brzmią naturalnie, a forma rozkazująca byłaby sztuczna. |
 | Aplikacja mówi o sobie „my”, do osoby „Ty”, a zaimki pisze wielką literą. | „Wyślemy je, gdy wróci internet.” | Jeden głos na wszystkich ekranach. |
 | Komunikat mówi, co się stało i co zrobić, w najwyżej 2 krótkich zdaniach. | „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” | NFR-15 (WCAG 3.3.1, 3.3.3), NFR-50 [1] |
-| Komunikat nie obwinia osoby. | „Nie znaleźliśmy budynku” zamiast „Błędny symbol” | PE-1 przypisuje winę sobie i rezygnuje [2]. |
+| Komunikat nie obwinia osoby. | „Nie znaleźliśmy budynku” zamiast „Błędny symbol” | PE-1 przypisuje winę sobie i rezygnuje ([persony](persony.md)), a obwinianie siebie to częsta reakcja użytkowników [2]. |
 | Dla Gościa i Odwiedzającego nie ma żargonu technicznego. | „Brak internetu” zamiast „tryb offline” | Lista zakazanych słów jest w tabeli niżej. |
 | Bez anglicyzmów. | „Plik”, „Pobierz” | Wyjątek: „© OpenStreetMap contributors”, bo podpis wymaga NFR-37. |
 | Jedno słowo ma jedno znaczenie w całej aplikacji. | „niedostępne” tylko o wejściu | Osoba nie myli wejścia z brakiem planu albo zdjęcia. |
