@@ -31,6 +31,7 @@ state "V3 Zaplanuj wizytę" as V3
 state "Pasek dolny\nna V1, V2, V3, V5, L2" as PASEK <<stan>>
 state "L1 Prośba o logowanie" as L1
 state "L2 Konto" as L2
+state "Klauzula\ninformacyjna" as KL <<stan>>
 state "Wycofanie zgody:\npotwierdzenie" as WZ <<stan>>
 state "Strona logowania\nw przeglądarce" as WWW <<poza>>
 state "Ustawienia telefonu" as UST <<poza>>
@@ -40,7 +41,7 @@ state "V4 Zgłoszenie szybkie" as V4 {
   state "Krok 1 z 3\nzdjęcie" as K1
   state "Krok 2 z 3\ngrupa barier" as K2
   state "Krok 3 z 3\nwysłanie" as K3
-  state "Brak pozycji\n(anulowanie zgłoszenia:\ncel nieopisany)" as BP <<stan>>
+  state "Brak pozycji" as BP <<stan>>
   state "Potwierdzenie" as POT
 }
 
@@ -56,7 +57,7 @@ PASEK --> V1 : „Mapa”
 PASEK --> V5 : „Pomoc”
 PASEK --> ZG : „Zgłoś barierę”\n(zalogowani)
 PASEK --> L1 : „Zgłoś barierę”,\n„Konto” (Gość)
-PASEK --> L2 : „Konto”\n(zalogowani)
+PASEK --> L2 : „Konto”; role\npracownicze:\n„Moja praca”
 
 ZG --> K1 : zgoda jest\nalbo „Pozwól na\nlokalizację”
 ZG --> UST : „Otwórz\nustawienia”
@@ -68,25 +69,24 @@ K3 --> K2 : „Wstecz”
 K3 --> POT : „Wyślij”;\nbez sieci: zapis\nw telefonie
 K3 --> BP : telefon nie\nustalił pozycji
 BP --> K3 : „Spróbuj\nponownie”
+BP --> V1 : „Anuluj\nzgłoszenie”
 POT --> V1 : „Wróć do mapy”
 
 L1 --> WWW : „Zaloguj się”,\n„Załóż konto”
 WWW --> K1 : po zalogowaniu\nalbo rejestracji z V4
+WWW --> L2 : po zalogowaniu\nz „Konto”
 L1 --> V1 : „Nie teraz”;\nbrak sieci: „Wróć do mapy”
 
 L2 --> V1 : „Wyloguj”
 L2 --> WZ : „Wycofaj zgodę”
 WZ --> L2 : „Anuluj”
+WZ --> V1 : „Wycofaj zgodę”\n(wylogowanie)
+L2 --> KL : „Informacja\no danych\nosobowych”
+KL --> L2 : „Wstecz”
 
-note bottom of WWW
-  Poza wejściem z V4 logowanie
-  wraca na ekran, z którego
-  przyszła osoba.
-end note
-
-note bottom of WZ
-  „Wycofaj zgodę” po potwierdzeniu
-  wylogowuje; ekran docelowy
-  nieopisany.
+note bottom of POT
+  „Wstecz” z potwierdzenia
+  wraca do ekranu sprzed V4,
+  nie do kroku 3.
 end note
 @enduml

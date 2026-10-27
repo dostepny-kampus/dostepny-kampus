@@ -15,9 +15,14 @@ skinparam state<<stan>> {
   FontStyle normal
 }
 
+skinparam note {
+  BackgroundColor #FFFFFF
+  BorderColor #888888
+}
+
 state "V1 Mapa kampusu" as V1
 state "V2 Karta budynku\n(przyciski tylko RO-ZBI)" as V2
-state "L2 Konto\n(czynności RO-ZBI)" as L2
+state "L2 Konto / Moja praca\n(czynności RO-ZBI)" as L2
 state "C1 Pomiar pozycji" as C1
 state "C2 Formularz zgłoszenia" as C2
 state "C3 Moje zgłoszenia" as C3
@@ -28,7 +33,7 @@ state "C7 Usunięcie bariery" as C7
 
 [*] --> V1 : start aplikacji
 V1 --> V2 : budynek
-V1 --> L2 : „Konto”\n(pasek dolny)
+V1 --> L2 : „Moja praca”\n(pasek dolny)
 
 L2 --> C1 : „Nowe zgłoszenie\nz pomiarem”
 L2 --> C3 : „Moje zgłoszenia”
@@ -51,4 +56,10 @@ C3 --> C4 : „wybierz wersję”;\nstan synchronizacji
 C4 --> C3 : wybór wersji;\n„Zdecyduję później”
 C6 --> C3 : „Wyślij do\nsprawdzenia”
 C7 --> C3 : „Wyślij do\nsprawdzenia”
+
+note left of C3
+  Po zapisie formularz znika
+  z historii: „Wstecz” z C3
+  wraca do L2 albo V2.
+end note
 @enduml
