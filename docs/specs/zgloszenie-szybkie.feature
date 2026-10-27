@@ -34,6 +34,7 @@ Funkcja: Zgłoszenie szybkie
       | zdjęcia       |
       | grupy barier  |
 
+  @do-ustalenia
   Szablon scenariusza: Zgłoszenia szybkiego bez bieżącej pozycji nie da się wysłać
     # Reakcja aplikacji jest ustalana w fazie B (UC7, 2a i 4c); scenariusz sprawdza tylko brak wysyłki.
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -47,6 +48,20 @@ Funkcja: Zgłoszenie szybkie
       | przyczyna                             |
       | aplikacja nie ma zgody na lokalizację |
       | telefon nie ustala bieżącej pozycji   |
+
+  @BR-14
+  Szablon scenariusza: Budynek zgłoszenia szybkiego przypisuje system, a piętro zostaje puste
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz stoi <miejsce>
+    Jeżeli wyśle zgłoszenie szybkie z grupą barier „wejście i drzwi”
+    Wtedy zgłoszenie <budynek>
+    Oraz zgłoszenie nie ma piętra
+    Ale aplikacja nie pyta o budynek ani o piętro
+
+    Przykłady:
+      | miejsce                                                        | budynek               |
+      | w budynku C-13                                                 | ma budynek C-13       |
+      | na chodniku przed wejściem głównym A-1, poza konturem budynku  | jest „poza budynkiem” |
 
   @US4.2 @BR-9
   Scenariusz: Zgłoszenie szybkie bez sieci zapisuje się w telefonie

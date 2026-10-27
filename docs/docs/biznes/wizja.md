@@ -13,7 +13,7 @@
 | Serwis dostepnosc.pwr.edu.pl publikuje deklaracje dostępności 67 budynków, każdą na osobnej podstronie | [4] |
 | Deklaracja to tekst z nagłówkami, bez mapy i zdjęć. Przykład: deklarację C-13 zaktualizowano w marcu 2024 | [5] |
 
-Dane o dostępności istnieją, ale są rozproszone i nieaktualne. PWr ma Cyfrowy Przewodnik z Interaktywną Mapą Kampusu: 25 budynków, w tym A-1, B-1, C-13, D-1 i D-2 [10], [11]. Plany pięter mapa pokazuje tylko dla wybranych budynków [11].
+Dane o dostępności istnieją, ale są rozproszone i nieaktualne. PWr ma Cyfrowy Przewodnik z opisami 25 budynków, w tym A-1, B-1, C-13, D-1 i D-2 [10]. Jego Interaktywna Mapa Kampusu pokazuje położenie wybranych budynków i plany pięter wybranych budynków [10], [11].
 
 Deklaracje budynków nie odsyłają ani do Przewodnika, ani do mapy [4]. Dane mapy pochodzą z semestru zimowego 2022/2023, a deklaracje z marca 2024 [4], [11]. Żaden kanał nie pokazuje bieżącego stanu barier, takiego jak niesprawna winda: aktualności Przewodnika są puste [12]. Osoba na wózku nie sprawdzi więc przed wizytą, czy na trasie przez dostępne wejście do A-1 [9] wszystko działa (hipoteza N1, N2).
 
@@ -32,9 +32,9 @@ Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 o
 | Interesariusz | Rola w systemie | Czego potrzebuje | Co zyskuje |
 | --- | --- | --- | --- |
 | Osoby starsze odwiedzające kampus, np. słuchacze Politechniki Trzeciego Wieku (od 2025 r., ok. 200 osób w wieku 60+, biuro w C-13) [6], [7] | Odwiedzający | N1, N2, N3, N4 | przed wyjściem z domu wie, którym wejściem wejdzie do budynku |
-| Osoby z ograniczoną mobilnością, goście uczelni | Odwiedzający | N1, N2, N3 | informację o wejściach, windach i barierach w jednym miejscu |
+| Osoby z ograniczoną mobilnością, osoby odwiedzające uczelnię | Odwiedzający | N1, N2, N3 | informację o wejściach, windach i barierach w jednym miejscu |
 | Student lub pracownik uczelni prowadzący obchód | Zbierający | N5, N6, N7 | dokładne zaznaczenie bariery na miejscu, także bez zasięgu sieci |
-| Pracownik uczelni weryfikujący zgłoszenia | Weryfikator | N7, N8 | kolejkę zgłoszeń z podpowiedzią możliwych duplikatów |
+| Pracownik uczelni weryfikujący zgłoszenia | Weryfikator | N7, N8 | kolejkę zgłoszeń z podobnymi zgłoszeniami, czyli możliwymi duplikatami |
 | Osoba prowadząca inwentaryzację | Koordynator | N9 | postęp w każdym budynku i eksport danych do QGIS |
 | Dział Dostępności PWr [8] | brak (tylko interesariusz) | aktualne dane o barierach (hipoteza) | materiał do deklaracji i raportu; na tym etapie bez kontaktu z działem |
 
@@ -42,13 +42,14 @@ Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 o
 
 | ID | Cel | Miara i próg | Potrzeba |
 | --- | --- | --- | --- |
-| M-1 | Budynki szczegółowe zinwentaryzowane | 5 z 5 budynków (A-1, B-1, C-13, D-1, D-2) obejrzanych na miejscu; każde wejście z danych PWr ma status „dostępne / niedostępne” | N1, N9 |
+| M-1 | Budynki szczegółowe obejrzane | 5 z 5 budynków (A-1, B-1, C-13, D-1, D-2) obejrzanych na miejscu; każde wejście z danych PWr ma status „dostępne / niedostępne” | N1, N9 |
 | M-2 | Dokładna pozycja bariery | cel w terenie otwartym: po 30 s uśredniania mediana błędu poziomego < 1 m; sprawdzamy ≥ 10 pomiarami nad punktami kontrolnymi (NFR-1). To cel, nie gwarancja | N5 |
 | M-3 | Aplikacja wygodna dla grupy docelowej | średni wynik SUS ≥ 68 w badaniu z ≥ 5 użytkownikami z grupy docelowej (NFR-24) | N4 |
 | M-4 | Szybkie znalezienie dostępnego wejścia | ≥ 4 z 5 uczestników samodzielnie znajduje dostępne wejście do wskazanego budynku w ≤ 3 dotknięciach od mapy (US3.2) | N1 |
 | M-5 | Dane gotowe dla GIS | plik GeoJSON w WGS84 otwiera się w QGIS bez błędów; CSV ma współrzędne w układzie PUWG 1992 (US13.1, US13.2) | N9 |
 | M-6 | Praca bez sieci bez utraty danych | w teście ≥ 20 zgłoszeń zapisanych bez sieci: po jej powrocie 100% trafia na serwer bez działania użytkownika (US9.2) | N6, N7 |
 | M-7 | Publikowane są tylko sprawdzone bariery | 100% barier widocznych dla Odwiedzającego to zgłoszenia przyjęte przez Weryfikatora (US1.3) | N2, N8 |
+| M-8 | Świeże dane o barierach | mediana czasu od statusu „wysłane” do decyzji Weryfikatora ≤ 3 dni robocze w okresie obchodu; mierzymy z dat statusów zgłoszeń | N2, N8 |
 
 ## Zakres
 
@@ -76,12 +77,12 @@ Zachowanie na poziomach 2 i 3 opisują reguły BR-G1…BR-G4 na stronie [Reguły
 3. Raport PWr o stanie zapewniania dostępności, stan na 1.01.2021: <https://bip.pwr.edu.pl/fcp/uGBUKOQtTKlQhbx08SlkTVxZeUTgtCgg9ACFDC0RFT3lBG1gnBVcoFW8SBDRKHg/4/public/bip/raport_29032021_wersja_dostepna.pdf>
 4. Deklaracje dostępności budynków PWr: <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/deklaracje-dostepnosci-budynkow>
 5. Deklaracja dostępności budynku C-13: <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/deklaracje-dostepnosci-budynkow/budynki-c/c13>
-6. „Seniorzy na PWr. Ruszyła Politechnika Trzeciego Wieku”: <https://pwr.edu.pl/uczelnia/aktualnosci/seniorzy-na-pwr-ruszyla-politechnika-trzeciego-wieku-13912.html>
+6. „Historyczna inauguracja. Ruszyła Politechnika Trzeciego Wieku”: <https://pwr.edu.pl/uczelnia/aktualnosci/seniorzy-na-pwr-ruszyla-politechnika-trzeciego-wieku-13912.html>
 7. Politechnika Trzeciego Wieku, kontakt: <https://ptw.pwr.edu.pl/kontakt>
 8. Dostępność na PWr, Dział Dostępności: <https://dostepnosc.pwr.edu.pl/>
 9. Stan dostosowania obiektów PWr na dzień 01.01.2025, kampus główny: <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/stan-dostosowania-obiektow-pwr-na-dzien-01-01-2025/kampus-glowny-pwr-na-dzien-01-01-2025>
-10. Cyfrowy Przewodnik PWr, lista 25 budynków: <https://przewodnik.pwr.edu.pl/pl/budynki>
-11. Interaktywna Mapa Kampusu PWr (25 budynków, dane z semestru zimowego 2022/2023, plany wybranych budynków): <https://mapakampusu.pwr.edu.pl/>
+10. Cyfrowy Przewodnik PWr, lista 25 budynków i opis Interaktywnej Mapy Kampusu: <https://przewodnik.pwr.edu.pl/pl/budynki>
+11. Interaktywna Mapa Kampusu PWr (położenie wybranych budynków, plany pięter wybranych budynków, dane z semestru zimowego 2022/2023): <https://mapakampusu.pwr.edu.pl/>
 12. Cyfrowy Przewodnik PWr, Aktualności: <https://przewodnik.pwr.edu.pl/pl/aktualnosci>
 13. Plan działania na rzecz poprawy dostępności osobom ze szczególnymi potrzebami na lata 2025–2028, PWr (tabela 1 poz. 2–3): <https://bip.pwr.edu.pl/d/gGBUKOTtQKxVvBFh6GDxYBxZIQX14QU8OS39DQQpVVm8QRQxpXhsJFXkSGQcBBxNZBUREenlUWx8/plan_poprawy_dostepnosci_2025-28.pdf>
 

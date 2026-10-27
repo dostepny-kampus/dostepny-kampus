@@ -36,7 +36,7 @@ database "Magazyn zdjęć\nMinIO (S3)" as S3
 cloud "Źródła danych o budynkach" as SRC {
   rectangle "OpenStreetMap\nkontury budynków\n(jednorazowy eksport)" as OSM
   rectangle "Plany pięter PWr\nArcGIS Online" as ARC
-  rectangle "USOS API\nnumery sal" as USOS
+  rectangle "USOS API (poza MVP)\nnumery sal" as USOS
 }
 
 cloud "Podkład mapy OSM\n(tylko online)" as TILES
@@ -50,5 +50,5 @@ SRV --> DB : zapytania\nprzestrzenne
 SRV --> S3 : zdjęcia
 OSM --> DB : import\nprzy wdrożeniu
 ARC --> DB : import\nprzy wdrożeniu
-USOS --> DB : import\nprzy wdrożeniu
+USOS ..> DB : poza MVP
 @enduml

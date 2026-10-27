@@ -20,7 +20,7 @@ Szczegóły każdej sekcji są w dokumentacji projektu. Raport podaje skrót i o
 | Podmiot publiczny zapewnia dostępność architektoniczną i co 4 lata raportuje jej stan. | [1] |
 | Na 1.01.2025 kampus główny PWr ma 44 budynki. W 13, m.in. A-1, dostosowane jest tylko wejście inne niż główne. | [3] |
 | Informację publikuje 67 deklaracji budynków: sam tekst, bez mapy i zdjęć. 66 z 67 ma datę „marzec 2024”. | [2] |
-| Cyfrowy Przewodnik z Interaktywną Mapą Kampusu opisuje 25 budynków. Dane mapy pochodzą z semestru zimowego 2022/2023. | [4] |
+| Cyfrowy Przewodnik opisuje 25 budynków. Jego Interaktywna Mapa Kampusu pokazuje położenie i plany pięter wybranych budynków, z danymi z semestru zimowego 2022/2023. | [4], [8] |
 | Żaden kanał nie pokazuje bieżących awarii, np. niesprawnej windy. Aktualności Cyfrowego Przewodnika są puste. | [5] |
 
 Dane o dostępności istnieją, ale są rozproszone i rzadko aktualizowane. Osoba na wózku nie sprawdzi przed wizytą, którym wejściem wejdzie do budynku i czy winda działa. Pełny opis dzisiejszego procesu i problemów P-1…P-9 jest na stronie [Proces AS-IS](../biznes/procesy/as-is.md).
@@ -36,7 +36,7 @@ Uczelnia dostaje sprawdzone dane o barierach w formacie GIS.
 | Rola | Kto | Co robi w aplikacji | Potrzeby |
 | --- | --- | --- | --- |
 | Gość niezalogowany (RO-GOS) | każdy, bez konta | przegląda mapę, karty budynków i dostępne wejścia | N1, N2, N4 |
-| Odwiedzający (RO-ODW) | osoba starsza, np. słuchacz Politechniki Trzeciego Wieku [6], gość uczelni | jak Gość, a po rejestracji zgłasza barierę w 3 krokach | N1–N4 |
+| Odwiedzający (RO-ODW) | osoba starsza, np. słuchacz Politechniki Trzeciego Wieku [6], osoba odwiedzająca uczelnię | jak Gość, a po rejestracji zgłasza barierę w 3 krokach | N1–N4 |
 | Zbierający (RO-ZBI) | student lub pracownik prowadzący obchód | dokładnie zaznacza barierę na miejscu, także bez sieci | N5–N7 |
 | Weryfikator (RO-WER) | pracownik uczelni | przyjmuje lub odrzuca zgłoszenia, wyłapuje duplikaty | N7, N8 |
 | Koordynator (RO-KOO) | osoba prowadząca inwentaryzację | śledzi postęp, zaprasza ludzi, eksportuje dane do QGIS | N9 |
@@ -65,13 +65,13 @@ Uprawnienia opisuje [macierz ról](../biznes/role.md). Potrzeby N1–N9 to hipot
 
 Historyjki „Musi być” tworzą MVP. Kryteria akceptacji każdej historyjki są na stronie [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md).
 
-- **Może być:** wersja angielska, tryb ciemny, kolejne budynki szczegółowe.
-- **Nie tym razem:** nawigacja po trasie, iOS, Google Play, czat, powiadomienia push.
+- **Może być:** wersja angielska, tryb ciemny, kolejne budynki szczegółowe, dane z deklaracji dostępności.
+- **Nie tym razem:** nawigacja po trasie, iOS, Google Play, sztuczna inteligencja, czat, powiadomienia push.
 
 ### Scenariusz demo w budynku A-1
 
 1. Zbierająca przy wejściu głównym A-1 widzi schody bez pochylni i zaczyna zgłoszenie (US6).
-2. Przez 30 s uśredniania widać satelity według systemów, a dokładność spada z około 6 m poniżej 1 m (cel NFR-1).
+2. Przez 30 s uśredniania widać satelity według systemów, a dokładność pozycji się poprawia. W trybie demo z nagraną trasą spada z około 6 m poniżej 1 m; cel NFR-1 dotyczy terenu otwartego.
 3. Aplikacja podpowiada A-1, Zbierająca potwierdza, wybiera typ i uciążliwość 3, robi zdjęcie (US7).
 4. W piwnicy nie ma sieci: zgłoszenie czeka w telefonie i wysyła się samo po powrocie sieci (US9).
 5. Weryfikator widzi podobne zgłoszenie 5 m dalej, uznaje, że to nie duplikat, i przyjmuje zgłoszenie (US10).
@@ -125,7 +125,7 @@ Używamy tylko gotowych, rygorystycznych zestawów reguł, bez własnych progów
 | --- | --- |
 | Java (serwer) | qulice (Checkstyle, PMD, Error Prone), NullAway, ArchUnit, Spring Modulith |
 | Kotlin (aplikacja) | detekt ze wszystkimi regułami, ktlint_official, compose-rules, Android Lint, Konsist |
-| Oba moduły | SonarCloud z bramką „Sonar way”; pokrycie testami ≥ 80% linii i ≥ 70% gałęzi |
+| Oba moduły | SonarCloud z bramką jakości „Sonar way” |
 | Kontrakt API | Redocly lint, oasdiff (zmiana łamiąca zgodność blokuje scalenie) |
 | Dokumentacja | Vale, markdownlint, kontrola identyfikatorów, budowanie MkDocs w trybie strict |
 
@@ -138,7 +138,7 @@ CI działa w GitHub Actions. Osobne przepływy obejmują kontrakt API, serwer, a
 | S1 | fundament, CI, dane | analiza i dokumentacja, szkielet repozytorium, kontrakt API v0, kontrola PR, szkielety serwera i aplikacji z linterami, eksport budynków z OSM, makiety low-fi |
 | S2 | UI, nawigacja, model danych | model i geometria, system projektowy, nawigacja z rolami, mapa z konturami, baza lokalna, import budynków do bazy |
 | S3 | serwer i API | budynki i podpowiedź budynku, zgłoszenia z wersją, zdjęcia, klient API, repozytoria danych |
-| S4 | logika dziedziny | uśrednianie pozycji, PUWG 1992, ekran pomiaru z mapą nieba, formularz ze zdjęciem, podpowiedź duplikatów |
+| S4 | logika dziedziny | uśrednianie pozycji, PUWG 1992, ekran pomiaru z mapą nieba, formularz ze zdjęciem, podobne zgłoszenia |
 | S5 | logowanie, role, offline | usługa logowania i role, zaproszenia, logowanie w aplikacji, kolejka offline, ekran konfliktu, weryfikacja |
 | S6 | eksport, UX, testy, pokaz | eksport GeoJSON i CSV, ekran postępu, tryb demo z nagraną trasą, dostępność, badanie SUS |
 
@@ -163,7 +163,8 @@ Pełny rejestr z sygnałami ostrzegawczymi jest na stronie [Ryzyka](../biznes/ry
 3. Stan dostosowania obiektów PWr na dzień 01.01.2025, kampus główny: <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/stan-dostosowania-obiektow-pwr-na-dzien-01-01-2025/kampus-glowny-pwr-na-dzien-01-01-2025>
 4. Interaktywna Mapa Kampusu PWr: <https://mapakampusu.pwr.edu.pl/>
 5. Cyfrowy Przewodnik PWr, Aktualności: <https://przewodnik.pwr.edu.pl/pl/aktualnosci>
-6. „Seniorzy na PWr. Ruszyła Politechnika Trzeciego Wieku”: <https://pwr.edu.pl/uczelnia/aktualnosci/seniorzy-na-pwr-ruszyla-politechnika-trzeciego-wieku-13912.html>
+6. „Historyczna inauguracja. Ruszyła Politechnika Trzeciego Wieku”: <https://pwr.edu.pl/uczelnia/aktualnosci/seniorzy-na-pwr-ruszyla-politechnika-trzeciego-wieku-13912.html>
 7. Programy studiów WIT PWr, karta przedmiotu W04IST-SM0302G: <https://wit.pwr.edu.pl/studenci/programy-studiow/2024-2025-studia-ii-stopnia>
+8. Cyfrowy Przewodnik PWr, lista 25 budynków i opis Interaktywnej Mapy Kampusu: <https://przewodnik.pwr.edu.pl/pl/budynki>
 
 Dostęp do źródeł: 27.10.2026.

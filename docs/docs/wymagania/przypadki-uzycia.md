@@ -53,9 +53,9 @@ Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej czę�
 | Krok demo | Przypadek użycia | Co pokazuje |
 | --- | --- | --- |
 | 1–3 | UC8 | Pomiar precyzyjny przy wejściu głównym A-1, typ TB-1, uciążliwość 3, zdjęcie |
-| 4 | UC10 | Zgłoszenie z piwnicy bez sieci wysyła się samo po powrocie sieci |
+| 4 | UC10 | Zgłoszenie zapisane bez sieci, np. w piwnicy, wysyła się samo po powrocie sieci |
 | 5 | UC14 | Podobne zgłoszenie 5 m dalej to nie duplikat; Weryfikator przyjmuje zgłoszenie |
-| 6 | UC4 (z UC1, UC2) | Senior widzi, że wejście główne ma schody, a wejście dostępne to inne wejście [1], [2] |
+| 6 | UC2 (z UC1); opcjonalnie UC4 | Senior widzi, że wejście główne ma schody, a wejście dostępne to inne wejście [1], [2] |
 | 7 | UC13, UC15, UC17 | 4 z 5 pięter obejrzanych (80%) i eksport do QGIS |
 
 ## Kluczowe przypadki użycia
@@ -73,11 +73,11 @@ Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej czę�
 
 #### Przepływ główny UC4
 
-1. Senior otwiera aplikację; mapa kampusu pokazuje kontury budynków.
-2. Senior wybiera budynek A-1 na mapie albo wyszukuje go po symbolu budynku (jak w UC1).
-3. Senior wybiera „Zaplanuj wizytę”.
+1. Gość niezalogowany otwiera aplikację; mapa kampusu pokazuje kontury budynków.
+2. Gość niezalogowany wybiera budynek A-1 na mapie albo wyszukuje go po symbolu budynku (jak w UC1).
+3. Gość niezalogowany wybiera „Zaplanuj wizytę”.
 4. System pokazuje wejście dostępne i zgłoszenia przyjęte przy tym wejściu. Oznaczenie ma tekst i ikonę, nie tylko kolor (US2.1).
-5. W A-1 senior czyta, że wejście główne ma schody, a wejście dostępne to inne wejście [1], [2].
+5. W A-1 Gość niezalogowany czyta, że wejście główne ma schody, a wejście dostępne to inne wejście [1], [2].
 
 Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie prowadzi trasą do wejścia, bo nawigacja jest poza zakresem.
 
@@ -86,7 +86,7 @@ Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie pr
 | Krok | Warunek | Przebieg |
 | --- | --- | --- |
 | 1a | Brak sieci | Aplikacja pokazuje ostatnio pobrane budynki i bariery z datą synchronizacji, bez podkładu OpenStreetMap (NFR-10, NFR-39). |
-| 2a | Senior korzysta z czytnika ekranu | Wybiera budynek z listy zamiast z mapy (NFR-18, NFR-19). |
+| 2a | Gość niezalogowany korzysta z czytnika ekranu | Wybiera budynek z listy zamiast z mapy (NFR-18, NFR-19). |
 | 4a | Budynek nie ma wejścia dostępnego | Ekran mówi to wprost zdaniem, a nie pustym wynikiem (US3.1). |
 | 4b | Brak danych o dostępności wejść, np. w budynku podstawowym | Ekran mówi, że danych brak, a nie że wejścia nie ma (do ustalenia w fazie B). |
 | 4c | Przy wejściu dostępnym jest bariera przyjęta, np. niesprawny podnośnik | Ekran pokazuje ją przy wejściu ze zdjęciem i datą weryfikacji (US2.2). |
@@ -97,7 +97,7 @@ Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie pr
 | --- | --- |
 | Cel | Odwiedzający przekazuje informację o nowej barierze w najwyżej 3 krokach, bez formularza. |
 | Aktor | Odwiedzający; tak samo role pracownicze. |
-| Warunki wstępne | Odwiedzający jest zalogowany (BR-8). Aplikacja ma zgodę na lokalizację przy otwartym ekranie (NFR-27). |
+| Warunki wstępne | Odwiedzający jest zalogowany (BR-8). |
 | Wyzwalacz | Odwiedzający widzi barierę, np. niesprawną windę, i wybiera zgłoszenie szybkie. |
 | Warunki końcowe | Zgłoszenie czeka w telefonie ze statusem „lokalne” albo na serwerze ze statusem „wysłane”. Na mapie pojawi się dopiero po przyjęciu (BR-6). |
 | Odwołania | US4.1…US4.4, US14.2, BR-6, BR-8, BR-9, BR-14, BR-G1, BR-G2, BR-G4, NFR-5, NFR-6, NFR-14, NFR-17, NFR-25, NFR-27, NFR-49, T7–T10 |
@@ -107,7 +107,7 @@ Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie pr
 1. Odwiedzający wybiera zgłoszenie szybkie.
 2. Aplikacja otwiera aparat i przypomina, by nie fotografować twarzy ani tablic rejestracyjnych (NFR-25).
 3. Odwiedzający robi zdjęcie bariery. To krok 1 z 3.
-4. Aplikacja sama dołącza bieżącą pozycję telefonu, bez uśredniania (US4.1).
+4. Aplikacja sama dołącza bieżącą pozycję telefonu, bez uśredniania, za zgodą na lokalizację przy otwartym ekranie (US4.1, NFR-27).
 5. Odwiedzający wybiera jedną z 6 grup barier dużym przyciskiem. To krok 2 z 3 (US4.3).
 6. Odwiedzający wysyła zgłoszenie. To krok 3 z 3.
 7. Aplikacja zapisuje zgłoszenie w telefonie ze statusem „lokalne” i wysyła je przez UC10.
@@ -133,7 +133,7 @@ Aplikacja nie pyta o typ bariery ani uciążliwość; ustala je Weryfikator w UC
 
 | Pole | Opis |
 | --- | --- |
-| Cel | Zbierający zapisuje barierę z miejscem dokładnym poniżej 1 m, budynkiem, piętrem i zdjęciem. |
+| Cel | Zbierający zapisuje barierę z budynkiem, piętrem, zdjęciem i miejscem dokładnym według NFR-1 w terenie otwartym albo poprawionym ręcznie (NFR-3). |
 | Aktor | Zbierający. |
 | Warunki wstępne | Zbierający jest zalogowany z rolą RO-ZBI (US14.1). Stoi przy barierze. Sieć nie jest potrzebna (NFR-4). |
 | Wyzwalacz | Zbierająca przy wejściu głównym A-1 widzi schody bez pochylni i wybiera „Nowe zgłoszenie”. |
@@ -160,7 +160,6 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | 2a | Zbierający chce powtórzyć pomiar | Przerywa uśrednianie i zaczyna od nowa; aplikacja nie ma limitu czasu (NFR-23). |
 | 3a | Punkt poza konturem budynku | Stan „poza budynkiem”, bez komunikatu o błędzie. System proponuje najbliższy budynek; Zbierający go wybiera albo odrzuca (BR-G2, US6.2). |
 | 3b | Punkt daleko od budynków PWr | System nie proponuje budynku. Zgłoszenie zapisuje się jako „poza budynkiem”, bez piętra (BR-G4). |
-| 3c | W pobliżu są zgłoszenia innych osób | Podpowiedź duplikatów pokazuje ich typ i położenie, więc Zbierający nie zapisuje drugi raz tej samej bariery. Moment pokazania do ustalenia w fazie B ([macierz uprawnień](../biznes/role.md#przypisy), przypis 7). |
 | 4a | Podpowiedź wskazuje zły budynek | Zbierający wybiera inny budynek (US6.2). |
 | 4b | Pozycja z GNSS jest niedokładna, np. przy ścianie | Zbierający przesuwa punkt na planie piętra (US6.3) albo na mapie (US6.4). Zgłoszenie dostaje oznaczenie „korekta ręczna” (NFR-3). |
 | 5a | Budynek podstawowy, także po nieudanym imporcie planów | Przełącznika pięter nie ma, widać napis „Plan piętra niedostępny dla tego budynku”. Zbierający wpisuje liczbę, opcjonalnie z dopiskiem „półpiętro” (BR-G1, BR-G3). |
@@ -174,7 +173,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | --- | --- |
 | Cel | Na mapę trafiają tylko sprawdzone bariery, bez błędów i duplikatów. |
 | Aktor | Weryfikator. |
-| Warunki wstępne | Weryfikator jest zalogowany z rolą RO-WER. W kolejce są zgłoszenia „wysłane”, których nie jest autorem (BR-4). Jest połączenie z serwerem. |
+| Warunki wstępne | Weryfikator jest zalogowany z rolą RO-WER. W kolejce są zgłoszenia „wysłane”, których nie jest autorem (BR-4). |
 | Wyzwalacz | Weryfikator otwiera kolejkę weryfikacji. |
 | Warunki końcowe | Zgłoszenie jest przyjęte i widoczne na mapie albo odrzucone z powodem. Po przyjęciu zmiany „bariera usunięta” oba zgłoszenia są archiwalne. |
 | Odwołania | US10.1…US10.6, BR-3, BR-4, BR-5, BR-11, BR-13…BR-19, BR-23, NFR-25, T14–T19 |
@@ -264,7 +263,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | --- | --- |
 | Cel | Osoba korzysta z czynności swojej roli. |
 | Aktor | Gość niezalogowany; drugorzędny: Usługa logowania. |
-| Warunki wstępne | Jest połączenie z siecią. |
+| Warunki wstępne | Brak; logowanie wymaga sieci (1a). |
 | Wyzwalacz | Osoba wybiera logowanie albo aplikacja prosi o nie w UC7 (US14.2). |
 | Przepływ główny | 1. Aplikacja przekazuje osobę do Usługi logowania; w aplikacji nie ma pola hasła (NFR-31). <br> 2. Osoba podaje e-mail i hasło. <br> 3. Aplikacja pokazuje czynności wszystkich ról osoby (BR-1, US14.1). |
 | Alternatywy i wyjątki | 1a. Brak sieci: aplikacja mówi bez żargonu technicznego, że logowanie wymaga sieci. Mapa i karty budynków działają dalej (NFR-10, NFR-50). <br> 2a. Rejestracja: przed założeniem konta osoba widzi klauzulę informacyjną (NFR-30). Nowe konto ma tylko uprawnienia Odwiedzającego (US14.3, BR-2). <br> 2b. Osoba z zaproszenia loguje się i ma rolę nadaną przez Koordynatora (US12.1). <br> 2c. Pięć błędnych haseł: czasowa blokada konta (NFR-32). <br> 3a. Brak roli do czynności: aplikacja nie pokazuje ekranu, a serwer odrzuca próbę (US14.1, NFR-33). |
@@ -280,7 +279,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Warunki wstępne | Zbierający ma co najmniej jedno własne zgłoszenie. |
 | Wyzwalacz | Zbierający otwiera listę swoich zgłoszeń. |
 | Przepływ główny | 1. System pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte, odrzucone albo archiwalne (US8.1, US8.2). <br> 2. Zbierający otwiera zgłoszenie odrzucone i czyta powód odrzucenia (BR-16). <br> 3. Poprawia zgłoszenie i wysyła je ponownie przez UC10 (US8.3, BR-3). |
-| Alternatywy i wyjątki | 2a. Zgłoszenie przed decyzją Weryfikatora: Zbierający je edytuje; powstaje nowa wersja (BR-3). <br> 2b. Serwer ma inną wersję: UC11. <br> 2c. Zgłoszenie przyjęte: zmianę zaczyna się z karty budynku (do ustalenia w fazie B) i tworzy ona nowe zgłoszenie, które znów przechodzi weryfikację (BR-18). Usunięcie bariery opisuje UC12. <br> 2d. Powód odrzucenia „nieaktualne”: ktoś wcześniej przyjął inną zmianę tego zgłoszenia. Zbierający wysyła zmianę ponownie do bieżącego zgłoszenia (BR-23). <br> 2e. Powód „nieaktualne”, a wcześniej przyjęta zmiana to „bariera usunięta”: bieżącego zgłoszenia już nie ma. Jeśli bariera nadal istnieje, Zbierający składa nowe zgłoszenie przez UC8, nie zmianę (BR-23). |
+| Alternatywy i wyjątki | 2a. Zgłoszenie przed decyzją Weryfikatora: Zbierający je edytuje; powstaje nowa wersja (BR-3). <br> 2b. Serwer ma inną wersję: UC11. <br> 2c. Zgłoszenie przyjęte: zmianę zaczyna się z karty budynku (do ustalenia w fazie B) i tworzy ona nowe zgłoszenie, które znów przechodzi weryfikację (BR-18). Przyjęte zgłoszenie szybkie zmienia w ten sam sposób dowolny Zbierający (BR-18). Usunięcie bariery opisuje UC12. <br> 2d. Powód odrzucenia „nieaktualne”: ktoś wcześniej przyjął inną zmianę tego zgłoszenia. Zbierający wysyła zmianę ponownie do bieżącego zgłoszenia (BR-23). <br> 2e. Powód „nieaktualne”, a wcześniej przyjęta zmiana to „bariera usunięta”: bieżącego zgłoszenia już nie ma. Jeśli bariera nadal istnieje, Zbierający składa nowe zgłoszenie przez UC8, nie zmianę (BR-23). |
 | Warunki końcowe | Poprawione zgłoszenie czeka w kolejce ze statusem „wysłane”. |
 | Odwołania | US8.1…US8.3, BR-3, BR-16, BR-18, BR-23, NFR-21, T19 |
 
@@ -289,7 +288,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Pole | Opis |
 | --- | --- |
 | Cel | Zgłoszenia i znaczniki z telefonu docierają na serwer bez strat i bez powtórzeń. |
-| Aktor | Zbierający; dołączany przez UC7, UC8, UC12 i UC13, więc działa też dla Odwiedzającego. |
+| Aktor | Zbierający; dołączany przez UC7, UC8, UC9, UC12 i UC13, więc działa też dla Odwiedzającego. |
 | Warunki wstępne | W telefonie czekają zgłoszenia albo znaczniki pięter. |
 | Wyzwalacz | Powrót sieci albo wybór „Synchronizuj”. |
 | Przepływ główny | 1. Aplikacja wykrywa sieć i sama rusza z synchronizacją (US9.2, NFR-6). <br> 2. Wysyła zgłoszenia i znaczniki z kolejki. <br> 3. Po potwierdzeniu odbioru przez serwer zgłoszenie dostaje status „wysłane” (BR-9, US8.2). <br> 4. Aplikacja pobiera zmiany z serwera. |
@@ -317,10 +316,10 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Cel | Naprawiona bariera, np. winda, znika z mapy po weryfikacji (N2). |
 | Aktor | Dowolny Zbierający, nie tylko autor zgłoszenia (BR-19). |
 | Warunki wstępne | Bariera ma zgłoszenie przyjęte. Zbierający na miejscu widzi, że jej już nie ma. |
-| Przepływ główny | 1. Zbierający otwiera kartę budynku i wybiera zgłoszenie przyjęte (US8.4). <br> 2. Wybiera „bariera usunięta” i robi nowe zdjęcie miejsca. <br> 3. Typ, miejsce i piętro przechodzą z poprzedniego zgłoszenia (BR-19). <br> 4. Nowe zgłoszenie przechodzi te same statusy co każde zgłoszenie: od „lokalne” przez UC10 do „wysłane” (US8.4). <br> 5. Bariera zostaje na mapie do decyzji Weryfikatora (US8.4). |
+| Przepływ główny | 1. Zbierający otwiera kartę budynku i wybiera zgłoszenie przyjęte; punkt startu do ustalenia w fazie B (US8.4). <br> 2. Wybiera „bariera usunięta” i robi nowe zdjęcie miejsca. <br> 3. Typ, miejsce i piętro przechodzą z poprzedniego zgłoszenia, a uciążliwość nie jest wymagana (BR-19). <br> 4. Nowe zgłoszenie przechodzi te same statusy co każde zgłoszenie: od „lokalne” przez UC10 do „wysłane” (US8.4). <br> 5. Bariera zostaje na mapie do decyzji Weryfikatora (US8.4). |
 | Alternatywy i wyjątki | 5a. Weryfikator, który nie złożył zgłoszenia, przyjmuje je (UC14): bariera znika z mapy, karty budynku i eksportu (US10.6, BR-22). <br> 5b. Weryfikator odrzuca zgłoszenie: na mapie zostaje poprzednie zgłoszenie (BR-18). <br> 5c. Ktoś wcześniej przyjął inną zmianę tego zgłoszenia: odrzucenie z powodem „nieaktualne”. Zbierający może wysłać zmianę ponownie do bieżącego zgłoszenia (BR-23). <br> 5d. Wcześniej przyjęta zmiana to też „bariera usunięta”: odrzucenie z powodem „nieaktualne”, bo bariery już nie ma na mapie. Bieżącego zgłoszenia nie ma, więc ponowne wysłanie nie jest potrzebne (BR-23). |
 | Warunki końcowe | Po przyjęciu oba zgłoszenia są archiwalne i zostają w historii (BR-19). |
-| Odwołania | US8.4, US10.5, US10.6, BR-3, BR-4, BR-18, BR-19, BR-22, BR-23, T6, T10–T17 |
+| Odwołania | US8.4, US10.5, US10.6, BR-3, BR-4, BR-7, BR-18, BR-19, BR-22, BR-23, T6a, T10–T16, T17a |
 
 Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Reguły biznesowe](../biznes/reguly.md), „Poza MVP”).
 
@@ -334,7 +333,7 @@ Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Regu�
 | Przepływ główny | 1. W budynku szczegółowym Zbierający oznacza wybrane piętro jako obejrzane (US15.1). <br> 2. Znacznik zapisuje się w telefonie, także bez sieci, i trafia na serwer przez UC10 (US15.3, BR-20). <br> 3. Gdy znacznik dotrze na serwer, postęp budynku pokazuje nową wartość (US11.2, BR-21). |
 | Alternatywy i wyjątki | 1a. Budynek podstawowy: Zbierający oznacza cały budynek jako „obejrzany” (US15.1). <br> 1b. Błędny znacznik: cofa go Zbierający, który go postawił; inny Zbierający nie może (US15.2). Koordynator cofa znacznik w UC15. <br> 1c. Brak sieci: znacznik i jego cofnięcie czekają w telefonie i wysyłają się same (US15.3). |
 | Warunki końcowe | Postęp budynku pokazuje nową wartość, np. 4 z 5 pięter. |
-| Odwołania | US15.1…US15.3, US11.2, BR-20, BR-21, T24, T25 |
+| Odwołania | US15.1…US15.3, US11.2, BR-20, BR-21, T24, T24a, T24b, T25 |
 
 ### Przegląd postępu inwentaryzacji (UC15)
 
@@ -342,11 +341,11 @@ Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Regu�
 | --- | --- |
 | Cel | Koordynator wie, gdzie zespół musi jeszcze pójść. |
 | Aktor | Koordynator. |
-| Warunki wstępne | Koordynator jest zalogowany z rolą RO-KOO; jest połączenie z serwerem. |
+| Warunki wstępne | Koordynator jest zalogowany z rolą RO-KOO. |
 | Przepływ główny | 1. Koordynator otwiera postęp według budynków. <br> 2. System pokazuje odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy) (US11.1, BR-21). <br> 3. Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. W demo A-1: 4 z 5 pięter, 80%. |
 | Alternatywy i wyjątki | 2a. Znacznik jest błędny: Koordynator cofa go niezależnie od autora (US11.3, BR-20). Postęp pokazuje nową wartość (US11.2). <br> 2b. Zgłoszenia lokalne i poza budynkiem nie wchodzą do postępu (BR-21). <br> 1a. Awaria serwera: postęp czeka na powrót serwera (NFR-50). |
 | Warunki końcowe | Koordynator zna postęp; po cofnięciu znacznika postęp jest przeliczony. |
-| Odwołania | US11.1…US11.3, BR-20, BR-21, NFR-50, T26 |
+| Odwołania | US11.1…US11.3, BR-20, BR-21, NFR-50, T26, T26a |
 
 ### Zaproszenie osoby z rolą (UC16)
 
@@ -368,7 +367,7 @@ Gdy zaproszenie nie będzie gotowe na pokaz, rolę nada ręcznie administrator u
 | --- | --- |
 | Cel | Koordynator przekazuje aktualny stan barier do analizy w QGIS. |
 | Aktor | Koordynator. |
-| Warunki wstępne | Koordynator jest zalogowany z rolą RO-KOO; jest połączenie z serwerem. |
+| Warunki wstępne | Koordynator jest zalogowany z rolą RO-KOO. |
 | Przepływ główny | 1. Koordynator wybiera format: GeoJSON albo CSV. <br> 2. System tworzy plik z bieżących zgłoszeń przyjętych, bez danych autora (US13.3, BR-22). <br> 3. GeoJSON ma współrzędne w WGS84, CSV w PUWG 1992 (US13.1, US13.2). <br> 4. Koordynator pobiera plik i otwiera go w QGIS poza systemem (T29). |
 | Alternatywy i wyjątki | 1a. Awaria serwera: eksport czeka na powrót serwera (NFR-50). <br> 2a. Brak zgłoszeń przyjętych: zachowanie do ustalenia w fazie B. |
 | Warunki końcowe | Plik zawiera tylko bieżące bariery, z atrybucją OpenStreetMap, bez konturów budynków (NFR-37, NFR-38). |

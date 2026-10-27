@@ -12,7 +12,7 @@ Strona prowadzi od potrzeby użytkownika do sprawdzalnego kryterium: potrzeba N 
 | N4 | RO-GOS, RO-ODW | Korzystać z aplikacji przy słabym wzroku i niepewnych dłoniach. | hipoteza; pytania 3.1–3.4, 4.7–4.8 |
 | N5 | RO-ZBI | Szybko i dokładnie, poniżej 1 m, zapisać miejsce bariery. | hipoteza; wywiad opcjonalny, pytanie 10.2 |
 | N6 | RO-ZBI | Pracować tam, gdzie nie ma sieci, i nie tracić danych. | hipoteza; wywiad opcjonalny, pytanie 10.3 |
-| N7 | RO-ZBI, RO-WER | Przy równoczesnej edycji nie nadpisać cudzej pracy. | hipoteza; wywiad opcjonalny, pytanie 10.4 |
+| N7 | RO-ZBI, RO-WER | Przy równoczesnej edycji nie nadpisać wcześniejszej zmiany zapisanej na serwerze. | hipoteza; wywiad opcjonalny, pytanie 10.4 |
 | N8 | RO-WER | Odsiać błędy i duplikaty przed publikacją. | hipoteza; wywiad opcjonalny, pytania 10.4–10.5 |
 | N9 | RO-KOO | Widzieć postęp inwentaryzacji i przekazywać dane do QGIS. | hipoteza; wywiad opcjonalny, pytania 10.1, 10.6–10.7 |
 
@@ -30,7 +30,7 @@ Numery pytań pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md). W
 | US6 | C1 | N5 | Musi być | Jako Zbierający, chcę uśrednić pozycję i wskazać budynek, aby miejsce bariery było dokładne. |
 | US7 | C2 | N5 | Musi być | Jako Zbierający, chcę wypełnić formularz zgłoszenia, aby opisać barierę. |
 | US8 | C3; zmiana z karty budynku V2 (do ustalenia w fazie B) | N6 | Musi być | Jako Zbierający, chcę widzieć status każdego mojego zgłoszenia, aby wiedzieć, co dotarło, a co trzeba poprawić. |
-| US9 | C4 | N6, N7 | Musi być | Jako Zbierający, chcę synchronizacji po pracy w trybie offline, aby nie stracić zgłoszeń i nie nadpisać cudzych zmian. |
+| US9 | C4 | N6, N7 | Musi być | Jako Zbierający, chcę synchronizacji po pracy w trybie offline, aby nie stracić zgłoszeń i nie nadpisać wcześniejszej zmiany zapisanej na serwerze. |
 | US10 | R1, R2 | N2, N7, N8 | Musi być | Jako Weryfikator, chcę sprawdzić zgłoszenie i zobaczyć podobne zgłoszenia, aby nie przepuścić błędu ani duplikatu. |
 | US11 | K1 | N9 | Musi być | Jako Koordynator, chcę widzieć postęp inwentaryzacji według budynków, aby wiedzieć, gdzie trzeba jeszcze pójść. |
 | US12 | K2 | N9 | Powinno być | Jako Koordynator, chcę zaprosić osobę z wybraną rolą, aby dołączyła do inwentaryzacji bez pomocy administratora. |
@@ -70,9 +70,9 @@ Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego 
 | AC | Kryterium | Odwołania |
 | --- | --- | --- |
 | US6.1 | Uśrednianie pozycji trwa 30 s. Na ekranie widać dokładność pozycji i liczbę satelitów osobno dla każdego systemu GNSS. | NFR-1, NFR-2, NFR-23 |
-| US6.2 | Aplikacja podpowiada najbliższy budynek. Zbierający go potwierdza, wybiera inny albo zostawia „poza budynkiem”. | NFR-4, BR-G2, BR-G4 |
+| US6.2 | Aplikacja podpowiada najbliższy budynek, chyba że punkt jest daleko od budynków PWr (BR-G4). Zbierający go potwierdza, wybiera inny albo zostawia „poza budynkiem”. | NFR-4, BR-G2, BR-G4 |
 | US6.3 | W budynku szczegółowym Zbierający przesuwa punkt na planie wybranego piętra. Zgłoszenie dostaje oznaczenie „korekta ręczna”. | NFR-3 |
-| US6.4 | W budynku podstawowym i poza budynkiem Zbierający przesuwa punkt na mapie. Zgłoszenie dostaje oznaczenie „korekta ręczna”. | NFR-3, BR-G1, BR-G2 |
+| US6.4 | W każdym budynku i poza budynkiem Zbierający przesuwa punkt na mapie. Zgłoszenie dostaje oznaczenie „korekta ręczna”. | NFR-3, BR-G1, BR-G2 |
 | US6.5 | Ekran pomiaru pokazuje mapę nieba z położeniem satelitów; system każdego satelity jest rozróżniony nie tylko kolorem. | NFR-21 |
 | US7.1 | Bez typu bariery, uciążliwości 1–3 i zdjęcia zgłoszenia nie da się zapisać. | — |
 | US7.2 | W budynku szczegółowym piętro wybiera się z etykiet z danych PWr. W budynku podstawowym wpisuje się liczbę całkowitą, z dopiskiem „półpiętro” lub bez. | BR-G1 |
@@ -80,7 +80,7 @@ Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego 
 | US8.1 | Lista pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte, odrzucone albo archiwalne. Odrzucone ma powód odrzucenia. | NFR-21, BR-18 |
 | US8.2 | Status „wysłane” pojawia się dopiero wtedy, gdy zgłoszenie czeka w kolejce na serwerze. Status „w weryfikacji” pojawia się, gdy wziął je Weryfikator. | US10.4 |
 | US8.3 | Zgłoszenie przed decyzją Weryfikatora można edytować. Odrzucone można poprawić i wysłać ponownie. | BR-3 |
-| US8.4 | Każdy Zbierający, także inny niż autor, zaczyna z karty budynku zmianę zgłoszenia przyjętego z oznaczeniem „bariera usunięta”. Zmiana przechodzi te same statusy co zgłoszenie i po synchronizacji ma status „wysłane”. Bariera zostaje na mapie do decyzji Weryfikatora. | BR-3, US10.6, decyzja 33 |
+| US8.4 | Każdy Zbierający, także inny niż autor, zaczyna z karty budynku zmianę zgłoszenia przyjętego z oznaczeniem „bariera usunięta” (punkt startu do ustalenia w fazie B). Do decyzji Weryfikatora zmiana przechodzi te same statusy co zgłoszenie i po synchronizacji ma status „wysłane”. Po przyjęciu jest od razu archiwalna (US10.6). Bariera zostaje na mapie do decyzji Weryfikatora. | BR-3, US10.6, decyzja 33 |
 | US9.1 | Bez sieci aplikacja pokazuje wskaźnik braku sieci, a nowe zgłoszenie czeka w kolejce ze statusem „lokalne”. | NFR-5, NFR-7 |
 | US9.2 | Po powrocie sieci synchronizacja rusza bez działania użytkownika. | NFR-6, NFR-8 |
 | US9.3 | Przy konflikcie wersji aplikacja pokazuje obie wersje, a wybór należy do Zbierającego: własna albo z serwera. Żadna zmiana nie znika po cichu. | NFR-9, BR-3 |
@@ -109,7 +109,7 @@ Ręczną korektę punktu opisują dwa kryteria: na planie piętra i na mapie. Ko
 | US13.2 | Plik CSV ma współrzędne w PUWG 1992 (EPSG:2180) i otwiera się w QGIS jako warstwa punktów. | NFR-43 |
 | US13.3 | Eksport zawiera tylko bariery bieżące ze zgłoszeń przyjętych, bez barier usuniętych i bez danych autora. | BR-6, NFR-38, decyzja 33 |
 
-US10.1 to podpowiedź duplikatów, więc ma priorytet „Powinno być”. Bez niej Weryfikator nadal przyjmuje i odrzuca zgłoszenia.
+US10.1 to lista podobnych zgłoszeń, czyli możliwych duplikatów, więc ma priorytet „Powinno być”. Bez niej Weryfikator nadal przyjmuje i odrzuca zgłoszenia.
 
 Usunięcie bariery nie ma osobnego procesu ani formularza. Przechodzi tę samą drogę co każda zmiana zgłoszenia przyjętego (BR-3), więc mapa nie pokazuje już naprawionej windy (N2).
 
