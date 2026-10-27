@@ -12,7 +12,7 @@ Przypadki użycia dzielimy na dwa diagramy, bo jeden byłby nieczytelny. Pierwsz
 
 ### Inwentaryzacja barier
 
-![Diagram przypadków użycia Zbierającego, Weryfikatora i Koordynatora: UC8–UC17](../_generated/przypadki-uzycia-zespol.svg)
+![Diagram przypadków użycia Zbierającego, Weryfikatora i Koordynatora: UC8–UC18](../_generated/przypadki-uzycia-zespol.svg)
 
 Jak czytać diagramy:
 
@@ -29,7 +29,7 @@ QGIS nie jest aktorem. Koordynator otwiera w nim plik eksportu poza systemem, a 
 | UC | Nazwa | Aktor główny | US | Ekran | Priorytet |
 | --- | --- | --- | --- | --- | --- |
 | UC1 | Wyszukanie budynku | Gość niezalogowany | US1 | V1 | Musi być |
-| UC2 | Przegląd karty budynku | Gość niezalogowany | US2 | V2 | Musi być |
+| UC2 | Przegląd karty budynku | Gość niezalogowany | US2, US17.1, US17.3 | V2 | Musi być |
 | UC3 | Przegląd planu piętra | Gość niezalogowany | US16 | V2 | Powinno być |
 | UC4 | Wyszukanie wejścia dostępnego | Gość niezalogowany | US3 | V3 | Powinno być |
 | UC5 | Instrukcja i pomoc | Gość niezalogowany | US5 | V5 | Powinno być |
@@ -41,12 +41,13 @@ QGIS nie jest aktorem. Koordynator otwiera w nim plik eksportu poza systemem, a 
 | UC11 | Wybór wersji przy konflikcie | Zbierający | US9.3 | C4 | Musi być |
 | UC12 | Zgłoszenie usunięcia bariery | Zbierający | US8.4, US10.6 | V2, C3 | Musi być |
 | UC13 | Oznaczenie piętra obejrzanego | Zbierający | US15 | C1 (do ustalenia w fazie B) | Musi być |
-| UC14 | Weryfikacja zgłoszenia | Weryfikator | US10 | R1, R2 | Musi być; US10.1 — Powinno być |
+| UC14 | Weryfikacja zgłoszenia | Weryfikator | US10 | R1, R2 | Musi być |
 | UC15 | Przegląd postępu inwentaryzacji | Koordynator | US11 | K1 | Musi być |
 | UC16 | Zaproszenie osoby z rolą | Koordynator | US12 | K2 | Powinno być |
 | UC17 | Eksport do QGIS | Koordynator | US13 | K3 | Musi być |
+| UC18 | Zmiana oznaczenia wejścia | Zbierający | US17.2 | V2 i ekran zmiany (do ustalenia w fazie B) | Musi być |
 
-Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej część, konkretne kryteria. Priorytet pochodzi z historyjek. Każda historyjka US1…US16 ma co najmniej jeden przypadek użycia, także umożliwiająca US14.
+Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej część, konkretne kryteria. Priorytet pochodzi z historyjek. Każda historyjka US1…US17 ma co najmniej jeden przypadek użycia, także umożliwiająca US14.
 
 ## Scenariusz demo w budynku A-1
 
@@ -69,14 +70,14 @@ Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej czę�
 | Warunki wstępne | Brak. Logowanie nie jest potrzebne (US1.2). |
 | Wyzwalacz | Senior planuje wizytę w A-1, np. jako słuchacz Politechniki Trzeciego Wieku. |
 | Warunki końcowe | Osoba zna wejście dostępne albo wie, że go nie ma. System niczego nie zapisuje. |
-| Odwołania | US3.1, US3.2, US2.1, US2.2, BR-6, NFR-10, NFR-17…NFR-21, NFR-39, T20, T21, T23 |
+| Odwołania | US3.1, US3.2, US2.1, US2.2, US17.1, US17.3, BR-6, BR-24, NFR-10, NFR-17…NFR-21, NFR-39, T20, T21, T23 |
 
 #### Przepływ główny UC4
 
 1. Gość niezalogowany otwiera aplikację; mapa kampusu pokazuje kontury budynków.
 2. Gość niezalogowany wybiera budynek A-1 na mapie albo wyszukuje go po symbolu budynku (jak w UC1).
 3. Gość niezalogowany wybiera „Zaplanuj wizytę”.
-4. System pokazuje wejście dostępne i zgłoszenia przyjęte przy tym wejściu. Oznaczenie ma tekst i ikonę, nie tylko kolor (US2.1).
+4. System pokazuje wejście dostępne i zgłoszenia przyjęte przy tym wejściu. Oznaczenie ma tekst i ikonę, nie tylko kolor (US2.1). Przy wejściu widać datę i źródło oznaczenia (US17.3).
 5. W A-1 Gość niezalogowany czyta, że wejście główne ma schody, a wejście dostępne to inne wejście [1], [2].
 
 Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie prowadzi trasą do wejścia, bo nawigacja jest poza zakresem.
@@ -87,8 +88,8 @@ Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie pr
 | --- | --- | --- |
 | 1a | Brak sieci | Aplikacja pokazuje ostatnio pobrane budynki i bariery z datą synchronizacji, bez podkładu OpenStreetMap (NFR-10, NFR-39). |
 | 2a | Gość niezalogowany korzysta z czytnika ekranu | Wybiera budynek z listy zamiast z mapy (NFR-18, NFR-19). |
-| 4a | Budynek nie ma wejścia dostępnego | Ekran mówi to wprost zdaniem, a nie pustym wynikiem (US3.1). |
-| 4b | Brak danych o dostępności wejść, np. w budynku podstawowym | Ekran mówi, że danych brak, a nie że wejścia nie ma (do ustalenia w fazie B). |
+| 4a | Każde wejście ma oznaczenie „niedostępne” | Ekran mówi wprost zdaniem, że budynek nie ma wejścia dostępnego, a nie pokazuje pustego wyniku (US3.1). |
+| 4b | Żadne wejście nie ma oznaczenia „dostępne”, a co najmniej jedno ma „brak danych”, np. w budynku podstawowym | Ekran mówi, że o tych wejściach danych brak, a nie że wejścia dostępnego nie ma (US2.1, US17.1). Treść zdania do ustalenia w fazie B. |
 | 4c | Przy wejściu dostępnym jest bariera przyjęta, np. niesprawny podnośnik | Ekran pokazuje ją przy wejściu ze zdjęciem i datą weryfikacji (US2.2). |
 
 ### Zgłoszenie szybkie (UC7)
@@ -175,12 +176,12 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Aktor | Weryfikator. |
 | Warunki wstępne | Weryfikator jest zalogowany z rolą RO-WER. W kolejce są zgłoszenia „wysłane”, których nie jest autorem (BR-4). |
 | Wyzwalacz | Weryfikator otwiera kolejkę weryfikacji. |
-| Warunki końcowe | Zgłoszenie jest przyjęte i widoczne na mapie albo odrzucone z powodem. Po przyjęciu zmiany „bariera usunięta” oba zgłoszenia są archiwalne. |
-| Odwołania | US10.1…US10.6, BR-3, BR-4, BR-5, BR-11, BR-13…BR-19, BR-23, NFR-25, T14–T19 |
+| Warunki końcowe | Zgłoszenie jest przyjęte i widoczne na mapie albo odrzucone z powodem. Po przyjęciu zmiany „bariera usunięta” oba zgłoszenia są archiwalne. Po przyjęciu zmiany oznaczenia wejścia wejście ma nowe oznaczenie. |
+| Odwołania | US10.1…US10.6, US17.2, BR-3, BR-4, BR-5, BR-11, BR-13…BR-19, BR-23, BR-24, NFR-25, T14–T19, T17b |
 
 #### Przepływ główny UC14
 
-1. Weryfikator otwiera kolejkę jako listę i mapę. Nie widzi w niej własnych zgłoszeń ani własnych zmian „bariera usunięta” (US10.5).
+1. Weryfikator otwiera kolejkę jako listę i mapę. Nie widzi w niej własnych zgłoszeń, także własnych zmian „bariera usunięta” i zmian oznaczenia wejścia (US10.5).
 2. Weryfikator bierze zgłoszenie.
 3. System ustawia status „w weryfikacji” i usuwa zgłoszenie z kolejki innych Weryfikatorów (US10.4, BR-11).
 4. System pokazuje dane, zdjęcie, rolę i pseudonim autora (BR-5). Pokazuje też podobne zgłoszenia w promieniu 10 m: typ, zdjęcie i odległość (US10.1, BR-13).
@@ -201,9 +202,11 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | 5c | Błąd w zgłoszeniu z pomiaru precyzyjnego | Weryfikator nie poprawia typu, uciążliwości ani miejsca. Odrzuca zgłoszenie z powodem (BR-15). Dalej według wiersza 7a. |
 | 5d | Zmiana dotyczy zgłoszenia, które już jest archiwalne | Inna równoległa zmiana została przyjęta wcześniej. Weryfikator odrzuca tę zmianę z powodem „nieaktualne” (BR-23). Dalej według wiersza 7a. |
 | 5e | Autor w tym czasie edytuje zgłoszenie | Powstaje nowa wersja; Weryfikator decyduje o nowej, nie o starej (BR-3). |
+| 5f | Zmiana oznaczenia wejścia | Weryfikator porównuje nowe zdjęcie wejścia z oznaczeniem i widzi obecne oznaczenie z datą i źródłem. Typu ani uciążliwości nie ustala (BR-24). |
 | 7a | Odrzucenie | Weryfikator podaje powód odrzucenia; bez niego odrzucić się nie da (US10.2, BR-16). Status „odrzucone”, a autor widzi powód w UC9. |
 | 7b | Zgłoszenie „bariera usunięta” | Po przyjęciu bariera znika z mapy i karty budynku, oba zgłoszenia stają się archiwalne (US10.6, BR-19). |
 | 7c | Zmiana zgłoszenia przyjętego | Po przyjęciu poprzednie zgłoszenie staje się archiwalne i znika z mapy (BR-18). |
+| 7d | Zmiana oznaczenia wejścia | Po przyjęciu zgłoszenie staje się archiwalne, a wejście ma nowe oznaczenie, datę przyjęcia i źródło „obchód” (US17.2, US17.3, BR-24). |
 
 ## Pozostałe przypadki użycia
 
@@ -228,11 +231,11 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Aktor | Gość niezalogowany. |
 | Warunki wstępne | Osoba wybrała budynek (UC1 albo dotknięcie konturu na mapie). |
 | Wyzwalacz | Osoba otwiera kartę budynku. |
-| Przepływ główny | 1. System pokazuje wejścia z oznaczeniem „dostępne” albo „niedostępne” tekstem i ikoną (US2.1). <br> 2. Pokazuje windy i zgłoszenia przyjęte ze zdjęciem i datą weryfikacji (US2.2, BR-17). <br> 3. Tekst pojawia się od razu, zdjęcia doczytują się później (NFR-12). |
+| Przepływ główny | 1. System pokazuje wejścia z oznaczeniem „dostępne”, „niedostępne” albo „brak danych” tekstem i ikoną, z datą i źródłem oznaczenia (US2.1, US17.3). <br> 2. Pokazuje windy i zgłoszenia przyjęte ze zdjęciem i datą weryfikacji (US2.2, BR-17). <br> 3. Tekst pojawia się od razu, zdjęcia doczytują się później (NFR-12). |
 | Punkt rozszerzenia | „Budynek szczegółowy” — wybór piętra i plan piętra (UC3). |
-| Alternatywy i wyjątki | 1a. Brak sieci: karta wcześniej otwartego budynku z datą synchronizacji (NFR-10). <br> 1b. Budynek podstawowy: karta działa, planu piętra nie ma (BR-G1). <br> 2a. Brak zgłoszeń przyjętych: nie znaczy to „brak barier”; sposób pokazania do ustalenia w fazie B. |
+| Alternatywy i wyjątki | 1a. Brak sieci: karta wcześniej otwartego budynku z datą synchronizacji (NFR-10). <br> 1b. Budynek podstawowy: karta działa, planu piętra nie ma (BR-G1). <br> 1c. Import nie dał danych o wejściu: oznaczenie „brak danych”, a nie „niedostępne” (US17.1, BR-24). <br> 2a. Brak zgłoszeń przyjętych: nie znaczy to „brak barier”; sposób pokazania do ustalenia w fazie B. |
 | Warunki końcowe | Osoba zna stan budynku; system niczego nie zapisuje. |
-| Odwołania | US2.1, US2.2, BR-6, BR-17, BR-G1, NFR-10, NFR-12, NFR-21, T21 |
+| Odwołania | US2.1, US2.2, US17.1, US17.3, BR-6, BR-17, BR-24, BR-G1, NFR-10, NFR-12, NFR-21, T21 |
 
 ### Przegląd planu piętra (UC3)
 
@@ -288,7 +291,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Pole | Opis |
 | --- | --- |
 | Cel | Zgłoszenia i znaczniki z telefonu docierają na serwer bez strat i bez powtórzeń. |
-| Aktor | Zbierający; dołączany przez UC7, UC8, UC9, UC12 i UC13, więc działa też dla Odwiedzającego. |
+| Aktor | Zbierający; dołączany przez UC7, UC8, UC9, UC12, UC13 i UC18, więc działa też dla Odwiedzającego. |
 | Warunki wstępne | W telefonie czekają zgłoszenia albo znaczniki pięter. |
 | Wyzwalacz | Powrót sieci albo wybór „Synchronizuj”. |
 | Przepływ główny | 1. Aplikacja wykrywa sieć i sama rusza z synchronizacją (US9.2, NFR-6). <br> 2. Wysyła zgłoszenia i znaczniki z kolejki. <br> 3. Po potwierdzeniu odbioru przez serwer zgłoszenie dostaje status „wysłane” (BR-9, US8.2). <br> 4. Aplikacja pobiera zmiany z serwera. |
@@ -334,6 +337,21 @@ Odwiedzający nie zgłasza usunięcia bariery, bo nie edytuje zgłoszeń ([Regu�
 | Alternatywy i wyjątki | 1a. Budynek podstawowy: Zbierający oznacza cały budynek jako „obejrzany” (US15.1). <br> 1b. Błędny znacznik: cofa go Zbierający, który go postawił; inny Zbierający nie może (US15.2). Koordynator cofa znacznik w UC15. <br> 1c. Brak sieci: znacznik i jego cofnięcie czekają w telefonie i wysyłają się same (US15.3). |
 | Warunki końcowe | Postęp budynku pokazuje nową wartość, np. 4 z 5 pięter. |
 | Odwołania | US15.1…US15.3, US11.2, BR-20, BR-21, T24, T24a, T24b, T25 |
+
+### Zmiana oznaczenia wejścia (UC18)
+
+| Pole | Opis |
+| --- | --- |
+| Cel | Oznaczenie wejścia na karcie budynku odpowiada temu, co Zbierający widział na obchodzie (N1, N2). |
+| Aktor | Dowolny Zbierający (BR-24). |
+| Warunki wstępne | Zbierający jest zalogowany z rolą RO-ZBI i stoi przy wejściu budynku. |
+| Wyzwalacz | Oznaczenie wejścia nie zgadza się ze stanem na miejscu, ma wartość „brak danych” albo pochodzi z importu. |
+| Przepływ główny | 1. Zbierający wybiera wejście budynku; ekran zmiany do ustalenia w fazie B. <br> 2. Wybiera „dostępne” albo „niedostępne” i robi nowe zdjęcie wejścia (US17.2). <br> 3. System zapisuje zgłoszenie zmiany oznaczenia w telefonie ze statusem „lokalne” i wysyła je przez UC10. <br> 4. Weryfikator, który go nie złożył, sprawdza je w UC14 (BR-4). <br> 5. Po przyjęciu wejście ma nowe oznaczenie, datę przyjęcia i źródło „obchód” (US17.2, US17.3). |
+| Alternatywy i wyjątki | 2a. Oznaczenie zgadza się ze stanem na miejscu: Zbierający wybiera to samo oznaczenie, a po przyjęciu zmienia się tylko data i źródło (BR-24). <br> 2b. Brak zdjęcia: zgłoszenia nie da się zapisać (BR-24). <br> 3a. Brak sieci: zgłoszenie czeka w telefonie ze statusem „lokalne” (US9.1, BR-9). <br> 5a. Weryfikator odrzuca zmianę z powodem: oznaczenie wejścia się nie zmienia, a Zbierający widzi powód w UC9 (BR-16, BR-24). |
+| Warunki końcowe | Po przyjęciu zgłoszenie jest archiwalne, a karta budynku pokazuje nowe oznaczenie z datą i źródłem. |
+| Odwołania | US17.2, US17.3, US10.5, BR-4, BR-9, BR-16, BR-24, T6b, T10–T16, T17b |
+
+Odwiedzający nie zmienia oznaczenia wejścia, bo zmianę sprawdza się zdjęciem z obchodu ([Role i uprawnienia](../biznes/role.md)).
 
 ### Przegląd postępu inwentaryzacji (UC15)
 
