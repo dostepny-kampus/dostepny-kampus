@@ -6,13 +6,13 @@
 
 | Fakt | Źródło |
 | --- | --- |
-| Podmiot publiczny musi zapewnić m.in. przestrzenie komunikacyjne bez barier, dostęp do wszystkich pomieszczeń i informację o ich rozkładzie (art. 6 pkt 1 ustawy) | [1], [2] |
+| Podmiot publiczny musi zapewnić m.in. przestrzenie komunikacyjne bez barier, dostęp do wszystkich pomieszczeń i informację o ich rozkładzie (art. 4 ust. 1 i art. 6 pkt 1 ustawy) | [1], [2] |
 | Co 4 lata, do 31 marca, podmiot publiczny przekazuje raport o stanie zapewniania dostępności i publikuje go w BIP (art. 11 ust. 1) | [1], [2] |
-| PWr złożyła taki raport. Stan na 1.01.2021: 94 budynki, bez barier komunikacyjnych 42, dostęp do wszystkich pomieszczeń 38 | [3] |
+| PWr złożyła taki raport. Stan na 1.01.2021: 94 budynki; w 42 przestrzenie komunikacyjne bez barier, w 38 dostęp do wszystkich pomieszczeń | [3] |
 | Serwis dostepnosc.pwr.edu.pl publikuje deklaracje dostępności 67 budynków, każdą na osobnej podstronie | [4] |
 | Deklaracja to tekst z nagłówkami, bez mapy i zdjęć. Przykład: deklarację C-13 zaktualizowano w marcu 2024 | [5] |
 
-Dane o dostępności istnieją, ale są rozproszone po kilkudziesięciu stronach tekstu. Nie ma mapy, która pokaże dostępne wejście do konkretnego budynku. Osoba starsza albo osoba na wózku nie sprawdzi tego wygodnie na telefonie przed wizytą (hipoteza N1).
+Dane o dostępności istnieją, ale są rozproszone po kilkudziesięciu stronach tekstu. Serwis nie ma mapy, która pokaże dostępne wejście do konkretnego budynku. Osoba starsza albo osoba na wózku nie sprawdzi tego wygodnie na telefonie przed wizytą (hipoteza N1).
 
 Według naszego rozpoznania inwentaryzację prowadzi się obchodem z papierowym formularzem, a wynik trafia do tekstu deklaracji (do potwierdzenia w wywiadach). Taki tryb utrudnia częste aktualizacje.
 
@@ -20,7 +20,7 @@ Według naszego rozpoznania inwentaryzację prowadzi się obchodem z papierowym 
 
 > Chcemy rozwiązać problem rozproszonej informacji o barierach na kampusie PWr dotyczący grupy osób starszych i z ograniczoną mobilnością po to, aby planowały wizytę bez przeszkód.
 
-Druga strona to uczelnia. Dostaje sprawdzone dane o barierach w formacie GIS, przydatne do deklaracji i raportu o stanie dostępności.
+Druga strona to uczelnia. Dostaje sprawdzone dane o barierach w formacie GIS, przydatne do deklaracji i raportu o stanie dostępności (hipoteza).
 
 ## Interesariusze
 
@@ -69,7 +69,7 @@ Zachowanie na poziomach 2 i 3 opisują reguły BR-G1…BR-G4 na stronie [Reguły
 ## Źródła
 
 1. Ustawa z dnia 19 lipca 2019 r. o zapewnianiu dostępności osobom ze szczególnymi potrzebami, Dz.U. 2019 poz. 1696, tekst jednolity Dz.U. 2024 poz. 1411 — metryka aktu: <https://api.sejm.gov.pl/eli/acts/DU/2019/1696>
-2. Tekst ogłoszony ustawy (art. 3, 6, 11): <https://eli.gov.pl/eli/DU/2019/1696/ogl/pol/pdf>
+2. Tekst ogłoszony ustawy (art. 3, 4, 6, 11): <https://eli.gov.pl/eli/DU/2019/1696/ogl/pol/pdf>
 3. Raport PWr o stanie zapewniania dostępności, stan na 1.01.2021: <https://bip.pwr.edu.pl/fcp/uGBUKOQtTKlQhbx08SlkTVxZeUTgtCgg9ACFDC0RFT3lBG1gnBVcoFW8SBDRKHg/4/public/bip/raport_29032021_wersja_dostepna.pdf>
 4. Deklaracje dostępności budynków PWr: <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/deklaracje-dostepnosci-budynkow>
 5. Deklaracja dostępności budynku C-13: <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/deklaracje-dostepnosci-budynkow/budynki-c/c13>
