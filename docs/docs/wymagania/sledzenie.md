@@ -2,8 +2,8 @@
 
 Macierz pokazuje, z czego wynika każde wymaganie: potrzeba N → historyjka US → kryterium akceptacji USx.y → przypadek użycia UC → scenariusz. Dzięki niej widać, że nie ma historyjki bez potrzeby ani kryterium bez scenariusza. W kolejnych fazach do łańcucha dojdą zadania, PR, kod i testy.
 
-!!! warning "Treść generowana — nie edytuj ręcznie"
-    Tabele i liczby na tej stronie tworzy skrypt z bieżących dokumentów i plików `.feature`. Po zmianie dokumentów odśwież je poleceniem `python scripts/check_ids.py --matrix docs/wymagania/sledzenie.md`. Kontrola `python scripts/verify.py` kończy się błędem, gdy zapisana macierz różni się od wygenerowanej.
+!!! warning "Tabele generowane — nie edytuj ich ręcznie"
+    Tabelę „Jak czytać” pisze się ręcznie. Pozostałe tabele i liczby tworzy skrypt z bieżących dokumentów i plików `.feature`. Po zmianie dokumentów odśwież je poleceniem `python scripts/check_ids.py --matrix docs/wymagania/sledzenie.md`. Kontrola `python scripts/verify.py` kończy się błędem, gdy zapisana macierz różni się od wygenerowanej.
 
 ## Jak czytać
 
@@ -163,7 +163,7 @@ Dziura to brak ogniwa w łańcuchu. Skrypt szuka siedmiu rodzajów:
 - reguła bez scenariusza;
 - scenariusz bez tagu kryterium i reguły, czyli taki, który nie sprawdza żadnego wymagania.
 
-Pusta lista spełnia warunek końca fazy A: zero dziur.
+Każda dziura jest błędem kontroli `python scripts/verify.py`. Pusta lista spełnia warunek końca fazy A: zero dziur.
 
 <!-- dziury:start -->
 <!-- vale off -->
