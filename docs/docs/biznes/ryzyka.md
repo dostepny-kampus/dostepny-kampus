@@ -30,6 +30,7 @@ Poziom ryzyka: **wysoki** 6–9 (przegląd co tydzień), **średni** 3–4 (prze
 | R-12 | Ciężki serwer uwierzytelniania na darmowym hostingu. Dokumentacja zakłada około 1,25 GB RAM na instancję, najmniejsza darmowa maszyna ma 1 GB. Inny darmowy hosting usypia usługę po 15 minutach. | technologia | 2 | 2 | 4 | Ograniczamy: pokaz uruchamiamy na laptopie. Adres publiczny tylko na maszynie z co najmniej 2 GB RAM. Rezerwa: konta zakładane ręcznie przez administratora. | Serwer restartuje się z braku pamięci. Logowanie trwa ponad 10 s. |
 | R-13 | ODbL share-alike. Opublikowany zbiór „kontury OSM + nasze bariery” może przejąć licencję ODbL. | prawo | 2 | 2 | 4 | Ograniczamy: podpis „© OpenStreetMap contributors” w aplikacji i eksporcie. Bariery to osobna warstwa powiązana tylko kodem budynku. Kontury w eksporcie zostają na ODbL. | Plan publikacji jednego połączonego pliku. Brak podpisu OSM na mapie lub w eksporcie. |
 | R-14 | Niejasne prawa do planów pięter PWr. Pole licencji w usłudze ArcGIS jest puste. | prawo | 2 | 2 | 4 | Unikamy: planów nie publikujemy w repozytorium. Pobiera je skrypt przy wdrożeniu, a aplikacja podaje źródło PWr. | PWr ustala licencję planów albo zgłasza zastrzeżenia do ich użycia. |
+| R-18 | Zgłoszenie utknęło u Weryfikatora. Zgłoszenie w weryfikacji obsługuje tylko Weryfikator, który je wziął (BR-11), a zwolnienia zgłoszenia w MVP nie ma. Nieobecny Weryfikator blokuje publikację bariery. | zespół | 2 | 2 | 4 | Ograniczamy: Koordynator przegląda liczbę zgłoszeń czekających w K1 i pyta Weryfikatora o zaległe. Po pierwszym sprincie z weryfikacją oceniamy ponownie, czy potrzebne jest zwolnienie zgłoszenia. | Zgłoszenie ma status „w weryfikacji” dłużej niż 3 dni robocze. Liczba zgłoszeń czekających w K1 rośnie przez tydzień. |
 | R-16 | Limit 300 linii na zmianę utrudnia oddanie zamkniętej funkcji. | harmonogram | 2 | 1 | 2 | Ograniczamy: przy planowaniu sprintu duże funkcje dzielimy na pionowe, działające części. | Zmiana odrzucona przez limit. Zadanie dzielone dopiero w trakcie pracy. |
 | R-17 | Członkowie zespołu omijają reguły repozytorium. | zespół | 1 | 2 | 2 | Unikamy: reguły gałęzi i automatyczne kontrole obowiązują wszystkich, także właściciela. | Próba zapisu do chronionej gałęzi. Zmiana bez zielonych kontroli. |
 
@@ -42,7 +43,7 @@ block-beta
   columns 4
   naroznik["P \ W"] w1["W 1 drobny"] w2["W 2 istotny"] w3["W 3 krytyczny"]
   p3["P 3 prawie pewne"] c31["3 średni: brak"] c32["6 wysoki: R-4, R-5, R-7, R-9"] c33["9 wysoki: R-1, R-2, R-3"]
-  p2["P 2 możliwe"] c21["2 niski: R-16"] c22["4 średni: R-11, R-12, R-13, R-14"] c23["6 wysoki: R-6, R-8, R-10"]
+  p2["P 2 możliwe"] c21["2 niski: R-16"] c22["4 średni: R-11, R-12, R-13, R-14, R-18"] c23["6 wysoki: R-6, R-8, R-10"]
   p1["P 1 mało prawdopodobne"] c11["1 niski: brak"] c12["2 niski: R-17"] c13["3 średni: brak"]
   classDef naglowek fill:none,stroke:#888
   classDef wysoki fill:#1e88e5,fill-opacity:0.7,stroke:#888
