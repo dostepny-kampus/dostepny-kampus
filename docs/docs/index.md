@@ -9,7 +9,7 @@
 | Odwiedzający | osoby starsze, osoby z ograniczoną mobilnością, goście | sprawdza dostępne wejścia i bariery przed wizytą, zgłasza nową barierę |
 | Zbierający | student lub pracownik uczelni | dokładnie zaznacza bariery na miejscu, także bez sieci |
 | Weryfikator | pracownik uczelni | przyjmuje albo odrzuca zgłoszenia, wskazuje duplikaty |
-| Koordynator | kierownik inwentaryzacji | śledzi postęp i eksportuje dane do QGIS |
+| Koordynator | osoba prowadząca inwentaryzację | śledzi postęp i eksportuje dane do QGIS |
 
 ## Gdzie czego szukać
 
