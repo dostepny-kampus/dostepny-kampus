@@ -31,7 +31,9 @@ Pani Halina idzie na wykład w C-13, w którym nigdy nie była. Cel: dotrzeć be
 | J1-6 | mały plan piętra i przełącznik pięter wymagają precyzji; aplikacja nie zna awarii, której nikt nie zgłosił | cele dotyku ≥ 48 dp (NFR-17), powiększona czcionka bez ucinania (NFR-20); zgłoszona bariera przy windzie ma zdjęcie i datę weryfikacji (US2.2) |
 | J1-8 | stres przed budynkiem, laska w jednej ręce, słońce na ekranie; przed zdjęciem prośba o logowanie (US14.2) | duże przyciski grup barier (US4.3), brak limitu czasu (NFR-23); logowanie to najsłabszy punkt ścieżki |
 
-Etap J1-8 ma najniższą ocenę także z aplikacją. Logowanie chroni dane przed spamem (BR-2), ale dla PE-1 jest dodatkowym krokiem w najgorszym momencie. Pytania 4.6 i 4.8 scenariusza sprawdzą, czy persona w ogóle zgłosi barierę.
+Etap J1-8 ma najniższą ocenę także z aplikacją. Logowanie chroni dane przed spamem (BR-2), ale dla PE-1 jest dodatkowym krokiem w najgorszym momencie.
+
+Czy persona w ogóle zgłosi barierę, sprawdzą pytania 4.6 i 4.8 scenariusza.
 
 ## J2 — obchód budynku (PE-2)
 
