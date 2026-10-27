@@ -2,7 +2,7 @@
 
 Strona opisuje każdy ekran, zanim powstanie makieta. Element ekranu istnieje tylko wtedy, gdy wynika z kryterium akceptacji, reguły albo wymagania niefunkcjonalnego (decyzja 16). Historyjki i kryteria są na stronie [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md), uprawnienia w [macierzy ról](../biznes/role.md#macierz-uprawnien).
 
-Etykiety przycisków i treść komunikatów w cudzysłowach są robocze. Ostateczne słowa ustali słownik użytkownika. Kolumna „Dokąd” podaje ekran docelowy i jest wejściem do mapy nawigacji.
+Etykiety przycisków i treść komunikatów w cudzysłowie są robocze. Ostateczne słowa ustali słownik użytkownika. Kolumna „Dokąd” podaje ekran docelowy i jest wejściem do mapy nawigacji.
 
 ## Lista ekranów
 
@@ -48,7 +48,7 @@ Dotyczą każdego ekranu. Przy ekranach podajemy tylko to, co do nich dochodzi.
 | Każda czynność wykonywana gestem, np. przesunięcie mapy albo punktu, ma odpowiednik w przyciskach. | NFR-15 (WCAG 2.5.1) [1] |
 | Ekran działa w orientacji pionowej i poziomej. | NFR-22 |
 | Brak limitów czasu na odpowiedź użytkownika. | NFR-23 |
-| Komunikat błędu mówi, co się stało i co zrobić, bez żargonu technicznego. | NFR-15 (WCAG 3.3.1, 3.3.3) [1], NFR-50 [2] |
+| Komunikat o błędzie mówi, co się stało i co zrobić, bez żargonu technicznego. | NFR-15 (WCAG 3.3.1, 3.3.3) [1], NFR-50 [2] |
 | Bez wymaganej roli ekranu nie ma w aplikacji, a serwer odrzuca żądanie. | US14.1, NFR-33 |
 
 Stany wspólne dla ekranów, które potrzebują serwera (R1, R2, K1, K2, K3, L1):
@@ -235,7 +235,7 @@ Zostaje jedno przerwanie przy pierwszym zgłoszeniu. Zmianę kolejności opisuje
 | Pierwsze uruchomienie | instrukcja otwiera się sama przed V1 (US5.1) |
 | Otwarcie z pomocy | ta sama instrukcja z paska dolnego; nie otwiera się już sama (US5.1) |
 
-Treść instrukcji jest w telefonie, więc ekran nie ma stanu braku sieci. Dostępność i osoby starsze: przejście dalej przyciskiem, nie przesunięciem palca (NFR-15, WCAG 2.5.1); brak automatycznego przewijania (NFR-23).
+Treść instrukcji jest w telefonie, więc ekran nie ma stanu braku sieci. Dostępność i osoby starsze: przejście dalej przyciskiem zamiast przesunięcia palcem (NFR-15, WCAG 2.5.1); brak automatycznego przewijania (NFR-23).
 
 ## Logowanie i konto
 
@@ -265,7 +265,7 @@ Pola hasła w aplikacji nie ma (NFR-31). Po zalogowaniu z V4 aplikacja otwiera a
 | Błąd | „Nie udało się zalogować. Spróbuj ponownie.” Przycisk „Spróbuj ponownie” |
 | Blokada konta | „Konto jest chwilowo zablokowane po kilku błędnych hasłach. Spróbuj ponownie później.” (NFR-32) |
 
-Dostępność i osoby starsze: strona logowania w przeglądarce też spełnia WCAG 2.1 AA (NFR-15). „Nie teraz” jest równie duże jak „Zaloguj się”, więc rezygnacja nie wymaga szukania.
+Dostępność i osoby starsze: strona logowania w przeglądarce też spełnia WCAG 2.1 AA (NFR-15). „Nie teraz” jest tak samo duże, jak „Zaloguj się”, więc rezygnacja nie wymaga szukania.
 
 ### L2 Konto
 
@@ -418,7 +418,7 @@ Dostępność: status jest słowem, a ikona go tylko wzmacnia (NFR-21). TalkBack
 | Data ostatniej synchronizacji | dane | NFR-10 | — |
 | „Synchronizuj teraz”; synchronizacja i tak rusza sama | czynność | UC10, US9.2 | — |
 | Ostrzeżenie „W telefonie zostało mniej niż 100 MB” | dane | NFR-7 | — |
-| Konflikt: wersja własna i wersja z serwera naraz, pole różniące się oznaczone słowem „różni się” | dane | US9.3, NFR-21 | — |
+| Konflikt: wersja własna i wersja z serwera naraz, przy polu różniącym się napis „inna wartość” | dane | US9.3, NFR-21 | — |
 | „Zostaw moją wersję” i „Weź wersję z serwera” | czynność główna | US9.3, BR-10 | C3 |
 | „Zdecyduję później”; zmiana czeka w telefonie | czynność | BR-10 | C3 |
 
@@ -552,7 +552,7 @@ Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia we
 | Pole | Treść |
 | --- | --- |
 | Cel | Weryfikator przyjmuje zgłoszenie albo odrzuca je z powodem, bez przepuszczenia błędu i duplikatu. |
-| Role | RO-WER, tylko zgłoszenia wzięte przez siebie i nie własne (BR-4, BR-11) |
+| Role | RO-WER, tylko cudze zgłoszenia wzięte przez siebie (BR-4, BR-11) |
 | Realizuje | US10.1, US10.2, US10.3, US10.6, US17.2 |
 | Czynność główna | „Przyjmij” |
 
