@@ -29,7 +29,7 @@ Numery pytań pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md). W
 | US5 | V5 | N4 | Powinno być | Jako Gość niezalogowany, który pierwszy raz otwiera aplikację, chcę krótką instrukcję, aby się nie zgubić. |
 | US6 | C1 | N5 | Musi być | Jako Zbierający, chcę uśrednić pozycję i wskazać budynek, aby miejsce bariery było dokładne. |
 | US7 | C2 | N5 | Musi być | Jako Zbierający, chcę wypełnić formularz zgłoszenia, aby opisać barierę. |
-| US8 | C3 | N6 | Musi być | Jako Zbierający, chcę widzieć status każdego mojego zgłoszenia, aby wiedzieć, co dotarło, a co trzeba poprawić. |
+| US8 | C3; zmiana z karty budynku V2 (do ustalenia w fazie B) | N6 | Musi być | Jako Zbierający, chcę widzieć status każdego mojego zgłoszenia, aby wiedzieć, co dotarło, a co trzeba poprawić. |
 | US9 | C4 | N6, N7 | Musi być | Jako Zbierający, chcę synchronizacji po pracy w trybie offline, aby nie stracić zgłoszeń i nie nadpisać cudzych zmian. |
 | US10 | R1, R2 | N2, N7, N8 | Musi być | Jako Weryfikator, chcę sprawdzić zgłoszenie i zobaczyć podobne zgłoszenia, aby nie przepuścić błędu ani duplikatu. |
 | US11 | K1 | N9 | Musi być | Jako Koordynator, chcę widzieć postęp inwentaryzacji według budynków, aby wiedzieć, gdzie trzeba jeszcze pójść. |
@@ -80,7 +80,7 @@ Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego 
 | US8.1 | Lista pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte albo odrzucone. Odrzucone ma powód odrzucenia. | NFR-21 |
 | US8.2 | Status „wysłane” pojawia się dopiero wtedy, gdy zgłoszenie czeka w kolejce na serwerze. Status „w weryfikacji” pojawia się, gdy wziął je Weryfikator. | US10.4 |
 | US8.3 | Zgłoszenie przed decyzją Weryfikatora można edytować. Odrzucone można poprawić i wysłać ponownie. | BR-3 |
-| US8.4 | Do zgłoszenia przyjętego każdy Zbierający, także inny niż autor, składa zmianę z oznaczeniem „bariera usunięta”. Zmiana przechodzi te same statusy co zgłoszenie, a bariera zostaje na mapie do decyzji Weryfikatora. | BR-3, US10.6, decyzja 33 |
+| US8.4 | Każdy Zbierający, także inny niż autor, zaczyna z karty budynku zmianę zgłoszenia przyjętego z oznaczeniem „bariera usunięta”. Zmiana przechodzi te same statusy co zgłoszenie, a bariera zostaje na mapie do decyzji Weryfikatora. | BR-3, US10.6, decyzja 33 |
 | US9.1 | Bez sieci aplikacja pokazuje wskaźnik braku sieci, a nowe zgłoszenie czeka w kolejce ze statusem „lokalne”. | NFR-5, NFR-7 |
 | US9.2 | Po powrocie sieci synchronizacja rusza bez działania użytkownika. | NFR-6, NFR-8 |
 | US9.3 | Przy konflikcie wersji aplikacja pokazuje obie wersje, a wybór należy do Zbierającego: własna albo z serwera. Żadna zmiana nie znika po cichu. | NFR-9, BR-3 |
