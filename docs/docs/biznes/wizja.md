@@ -35,7 +35,7 @@ Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 o
 | Osoby z ograniczoną mobilnością, goście uczelni | Odwiedzający | N1, N2, N3 | informację o wejściach, windach i barierach w jednym miejscu |
 | Student lub pracownik uczelni prowadzący obchód | Zbierający | N5, N6, N7 | dokładne zaznaczenie bariery na miejscu, także bez zasięgu sieci |
 | Pracownik uczelni weryfikujący zgłoszenia | Weryfikator | N7, N8 | kolejkę zgłoszeń z podpowiedzią możliwych duplikatów |
-| Kierownik inwentaryzacji | Koordynator | N9 | postęp w każdym budynku i eksport danych do QGIS |
+| Osoba prowadząca inwentaryzację | Koordynator | N9 | postęp w każdym budynku i eksport danych do QGIS |
 | Dział Dostępności PWr [8] | brak (tylko interesariusz) | aktualne dane o barierach (hipoteza) | materiał do deklaracji i raportu; na tym etapie bez kontaktu z działem |
 
 ## Mierzalne cele
@@ -44,11 +44,11 @@ Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 o
 | --- | --- | --- | --- |
 | M-1 | Budynki szczegółowe zinwentaryzowane | 5 z 5 budynków (A-1, B-1, C-13, D-1, D-2) obejrzanych na miejscu; każde wejście z danych PWr ma status „dostępne / niedostępne” | N1, N9 |
 | M-2 | Dokładna pozycja bariery | cel w terenie otwartym: po 30 s uśredniania mediana błędu poziomego < 1 m; sprawdzamy ≥ 10 pomiarami nad punktami kontrolnymi (NFR-1). To cel, nie gwarancja | N5 |
-| M-3 | Aplikacja wygodna dla grupy docelowej | średni wynik SUS ≥ 68 w badaniu z ≥ 5 użytkownikami z grupy docelowej (NFR-26) | N4 |
-| M-4 | Szybkie znalezienie dostępnego wejścia | ≥ 4 z 5 uczestników samodzielnie znajduje dostępne wejście do wskazanego budynku w ≤ 3 dotknięciach od mapy (US3 AC2) | N1 |
-| M-5 | Dane gotowe dla GIS | plik GeoJSON w WGS84 otwiera się w QGIS bez błędów; CSV ma współrzędne w układzie PUWG 1992 (US13 AC1, AC2) | N9 |
-| M-6 | Praca bez sieci bez utraty danych | w teście ≥ 20 zgłoszeń zapisanych bez sieci: po jej powrocie 100 % trafia na serwer bez działania użytkownika (US9 AC2) | N6, N7 |
-| M-7 | Publikowane są tylko sprawdzone bariery | 100 % barier widocznych dla Odwiedzającego to zgłoszenia przyjęte przez Weryfikatora (US1 AC3) | N2, N8 |
+| M-3 | Aplikacja wygodna dla grupy docelowej | średni wynik SUS ≥ 68 w badaniu z ≥ 5 użytkownikami z grupy docelowej (NFR-24) | N4 |
+| M-4 | Szybkie znalezienie dostępnego wejścia | ≥ 4 z 5 uczestników samodzielnie znajduje dostępne wejście do wskazanego budynku w ≤ 3 dotknięciach od mapy (US3.2) | N1 |
+| M-5 | Dane gotowe dla GIS | plik GeoJSON w WGS84 otwiera się w QGIS bez błędów; CSV ma współrzędne w układzie PUWG 1992 (US13.1, US13.2) | N9 |
+| M-6 | Praca bez sieci bez utraty danych | w teście ≥ 20 zgłoszeń zapisanych bez sieci: po jej powrocie 100% trafia na serwer bez działania użytkownika (US9.2) | N6, N7 |
+| M-7 | Publikowane są tylko sprawdzone bariery | 100% barier widocznych dla Odwiedzającego to zgłoszenia przyjęte przez Weryfikatora (US1.3) | N2, N8 |
 
 ## Zakres
 
@@ -56,8 +56,8 @@ Nie budujemy gotowego systemu dla całego kampusu. Pięć budynków opracowujemy
 
 | Poziom | Gdzie | Co działa |
 | --- | --- | --- |
-| 1. Szczegółowy | A-1, B-1, C-13, D-1, D-2 | plan piętra z wyborem kondygnacji; windy, schody, toalety i wejścia z danych PWr; bariera jako punkt na planie; obchód i sprawdzenie na miejscu |
-| 2. Podstawowy | pozostałe budynki PWr | obrys budynku, wejścia z OpenStreetMap, karta budynku z barierami; numer piętra wpisywany ręcznie |
+| 1. Szczegółowy | A-1, B-1, C-13, D-1, D-2 | plan piętra z przełącznikiem pięter; windy, schody, toalety i wejścia z danych PWr; bariera jako punkt na planie; obchód i sprawdzenie na miejscu |
+| 2. Podstawowy | pozostałe budynki PWr | kontur budynku, wejścia z OpenStreetMap, karta budynku z barierami; numer piętra wpisywany ręcznie |
 | 3. Poza budynkami | teren kampusu i okolica | bariera przypięta do punktu na ulicy, np. krawężnik, pochylnia, chodnik |
 
 Zachowanie na poziomach 2 i 3 opisują reguły BR-G1…BR-G4 na stronie [Reguły biznesowe](reguly.md). Lista budynków szczegółowych to ustawienie, więc kolejny budynek można dodać bez zmian w aplikacji.
