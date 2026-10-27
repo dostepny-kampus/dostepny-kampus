@@ -27,7 +27,11 @@ Kolejność kroków I1–I5 to hipoteza. Plan [13] wymienia ankiety, audyty i de
 | Cyfrowy Przewodnik PWr (projekt „Politechnika Nowych Szans”, 2019–2023) | 25 budynków, w tym A-1, B-1, C-13, D-1, D-2 | opisy wejść, wind, toalet, zdjęcia | istotna aktualizacja serwisu: 11.12.2023 | [18], [19], [21], [23] |
 | Interaktywna Mapa Kampusu, część Przewodnika | położenie wszystkich budynków, plany pięter wybranych | mapa i plany pięter | dane z semestru zimowego 2022/2023; aktualizuje koło naukowe GIS | [22] |
 
-Deklaracja dostępności strony musi zawierać informację lub link o dostępności architektonicznej siedziby (art. 10 ust. 4 pkt 6) [2]. Deklaracje stron PWr spełniają to linkiem do deklaracji budynków, np. deklaracja Przewodnika [23]. Deklarację strony przegląda się co roku do 31 marca (art. 11) [2].
+Skąd deklaracje budynków:
+
+- deklaracja dostępności strony musi zawierać informację lub link o dostępności architektonicznej siedziby (art. 10 ust. 4 pkt 6) [2];
+- deklaracje stron PWr spełniają ten wymóg linkiem do deklaracji budynków, np. deklaracja Przewodnika [23];
+- deklarację strony przegląda się co roku do 31 marca (art. 11) [2].
 
 ## Kroki procesu
 
