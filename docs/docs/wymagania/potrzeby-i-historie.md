@@ -123,7 +123,7 @@ Usunięcie bariery nie ma osobnego procesu ani formularza. Przechodzi tę samą 
 | US17.2 | Zbierający na obchodzie składa zmianę oznaczenia wejścia z nowym zdjęciem. Sprawdza ją inny Weryfikator, a po przyjęciu nowe oznaczenie widać na karcie budynku. | BR-4, BR-24 |
 | US17.3 | Przy każdym wejściu widać datę i źródło oznaczenia: „import” albo „obchód”. | BR-24 |
 
-Zmiana oznaczenia wejścia to zgłoszenie, więc przechodzi te same statusy co każde zgłoszenie. Po przyjęciu jest od razu archiwalna, tak jak „bariera usunięta” (BR-24).
+Zmiana oznaczenia wejścia to zgłoszenie, więc przechodzi te same statusy co każde zgłoszenie. Po przyjęciu jest od razu archiwalna, podobnie jak „bariera usunięta” (BR-24).
 
 ## Kryteria: logowanie
 

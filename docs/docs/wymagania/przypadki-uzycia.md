@@ -45,7 +45,7 @@ QGIS nie jest aktorem. Koordynator otwiera w nim plik eksportu poza systemem, a 
 | UC15 | Przegląd postępu inwentaryzacji | Koordynator | US11 | K1 | Musi być |
 | UC16 | Zaproszenie osoby z rolą | Koordynator | US12 | K2 | Powinno być |
 | UC17 | Eksport do QGIS | Koordynator | US13 | K3 | Musi być |
-| UC18 | Zmiana oznaczenia wejścia | Zbierający | US17.2 | V2 i ekran zmiany (do ustalenia w fazie B) | Musi być |
+| UC18 | Zmiana oznaczenia wejścia | Zbierający | US17.2, US17.3 | V2 i ekran zmiany (do ustalenia w fazie B) | Musi być |
 
 Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej część, konkretne kryteria. Priorytet pochodzi z historyjek. Każda historyjka US1…US17 ma co najmniej jeden przypadek użycia, także umożliwiająca US14.
 
