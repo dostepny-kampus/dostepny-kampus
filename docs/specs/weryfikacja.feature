@@ -215,44 +215,44 @@ Funkcja: Weryfikacja zgłoszeń
 
     @US10.1
     Scenariusz: Druga równoległa zmiana jest widoczna jako podobne zgłoszenie
-      Zakładając, że dwóch Zbierających wysłało niezależnie zmiany przyjętego zgłoszenia TB-9 „niesprawna winda” w budynku D-2
-      Jeżeli pierwszy Weryfikator weźmie pierwszą zmianę
-      Wtedy na liście podobnych zgłoszeń widzi drugą zmianę
+      Zakładając, że autor przyjętego zgłoszenia TB-9 „niesprawna winda” w budynku D-2 wysłał zmianę z uciążliwością 2, a inny Zbierający niezależnie wysłał zmianę „bariera usunięta” tego zgłoszenia
+      Jeżeli pierwszy Weryfikator weźmie zmianę autora
+      Wtedy na liście podobnych zgłoszeń widzi zmianę „bariera usunięta”
 
     Szablon scenariusza: Zmiany zgłoszenia archiwalnego nie da się przyjąć
-      Zakładając, że dwóch Zbierających wysłało niezależnie zmiany przyjętego zgłoszenia TB-9 „niesprawna winda” w budynku D-2
-      Oraz drugi Weryfikator przyjął pierwszą zmianę <pierwsza zmiana>
-      Oraz pierwszy Weryfikator wziął drugą zmianę
-      Jeżeli spróbuje przyjąć drugą zmianę
-      Wtedy druga zmiana nie zostaje przyjęta
+      Zakładając, że autor przyjętego zgłoszenia TB-9 „niesprawna winda” w budynku D-2 wysłał zmianę z uciążliwością 2, a inny Zbierający niezależnie wysłał zmianę „bariera usunięta” tego zgłoszenia
+      Oraz drugi Weryfikator przyjął <przyjęta zmiana>
+      Oraz pierwszy Weryfikator wziął <druga zmiana>
+      Jeżeli spróbuje ją przyjąć
+      Wtedy ta zmiana nie zostaje przyjęta
       Oraz <stan mapy>
 
       Przykłady:
-        | pierwsza zmiana                     | stan mapy                                            |
-        | z uciążliwością 2                   | na mapie jest tylko bariera TB-9 z uciążliwością 2   |
-        | z oznaczeniem „bariera usunięta”    | niesprawnej windy nie ma na mapie                    |
+        | przyjęta zmiana                    | druga zmiana               | stan mapy                                            |
+        | zmianę autora z uciążliwością 2    | zmianę „bariera usunięta”  | na mapie jest tylko bariera TB-9 z uciążliwością 2   |
+        | zmianę „bariera usunięta”          | zmianę autora              | niesprawnej windy nie ma na mapie                    |
 
     Szablon scenariusza: Zmianę zgłoszenia archiwalnego Weryfikator odrzuca z powodem „nieaktualne”
-      Zakładając, że dwóch Zbierających wysłało niezależnie zmiany przyjętego zgłoszenia TB-9 „niesprawna winda” w budynku D-2
-      Oraz drugi Weryfikator przyjął pierwszą zmianę <pierwsza zmiana>
-      Oraz pierwszy Weryfikator wziął drugą zmianę
-      Jeżeli odrzuci drugą zmianę z powodem „nieaktualne”
-      Wtedy autor widzi zgłoszenie ze statusem „odrzucone” i powodem odrzucenia „nieaktualne”
+      Zakładając, że autor przyjętego zgłoszenia TB-9 „niesprawna winda” w budynku D-2 wysłał zmianę z uciążliwością 2, a inny Zbierający niezależnie wysłał zmianę „bariera usunięta” tego zgłoszenia
+      Oraz drugi Weryfikator przyjął <przyjęta zmiana>
+      Oraz pierwszy Weryfikator wziął <druga zmiana>
+      Jeżeli odrzuci ją z powodem „nieaktualne”
+      Wtedy osoba, która złożyła tę zmianę, widzi ją ze statusem „odrzucone” i powodem odrzucenia „nieaktualne”
 
       Przykłady:
-        | pierwsza zmiana                     |
-        | z uciążliwością 2                   |
-        | z oznaczeniem „bariera usunięta”    |
+        | przyjęta zmiana                    | druga zmiana               |
+        | zmianę autora z uciążliwością 2    | zmianę „bariera usunięta”  |
+        | zmianę „bariera usunięta”          | zmianę autora              |
 
-    Scenariusz: Zmianę odrzuconą jako „nieaktualne” autor wysyła ponownie do bieżącego zgłoszenia
-      Zakładając, że zmianę Zbierającego w zgłoszeniu TB-9 „niesprawna winda” w budynku D-2 odrzucono z powodem „nieaktualne”, bo wcześniej przyjęto zmianę z uciążliwością 2
-      Jeżeli Zbierający wyśle swoją zmianę ponownie
+    Scenariusz: Zmianę odrzuconą jako „nieaktualne” Zbierający wysyła ponownie do bieżącego zgłoszenia
+      Zakładając, że zmianę „bariera usunięta” innego Zbierającego niż autor zgłoszenia TB-9 „niesprawna winda” w budynku D-2 odrzucono z powodem „nieaktualne”, bo wcześniej przyjęto zmianę autora z uciążliwością 2
+      Jeżeli ten Zbierający wyśle swoją zmianę ponownie
       Wtedy zmiana jest powiązana z bieżącym zgłoszeniem TB-9 z uciążliwością 2
       Oraz zmiana ma status „wysłane”
 
     Scenariusz: Po przyjęciu „bariera usunięta” barierę, która nadal istnieje, zgłasza się od nowa
-      Zakładając, że zmianę Zbierającego w zgłoszeniu TB-9 „niesprawna winda” w budynku D-2 odrzucono z powodem „nieaktualne”, bo wcześniej przyjęto zmianę z oznaczeniem „bariera usunięta”
+      Zakładając, że zmianę autora zgłoszenia TB-9 „niesprawna winda” w budynku D-2 odrzucono z powodem „nieaktualne”, bo wcześniej przyjęto zmianę „bariera usunięta” innego Zbierającego
       Oraz winda nadal nie działa
-      Jeżeli Zbierający złoży nowe zgłoszenie TB-9 „niesprawna winda” w budynku D-2
+      Jeżeli autor złoży nowe zgłoszenie TB-9 „niesprawna winda” w budynku D-2
       Wtedy powstaje nowe zgłoszenie ze statusem „lokalne”
       Ale nowe zgłoszenie nie jest zmianą żadnego zgłoszenia archiwalnego
