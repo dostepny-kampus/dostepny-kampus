@@ -40,7 +40,9 @@ Przyjęcie wymaga też, by Weryfikator oceniał aktualną wersję zgłoszenia (B
 | BR-23 | Dwie równoległe zmiany tego samego zgłoszenia przyjętego to osobne zgłoszenia. Weryfikator widzi drugą zmianę jako podobne zgłoszenie. Po przyjęciu jednej z nich drugiej nie można przyjąć bez zmian, bo dotyczy zgłoszenia archiwalnego. Weryfikator odrzuca ją z powodem „nieaktualne”, a Zbierający może ją wysłać ponownie do bieżącego zgłoszenia. Gdy przyjęta zmiana to „bariera usunięta”, drugą Weryfikator też odrzuca jako „nieaktualne”, a jeśli bariera nadal istnieje, Zbierający składa nowe zgłoszenie, nie zmianę. | Przyjęcie nieaktualnej zmiany cofnęłoby na mapie wcześniejszą zmianę albo usunięcie bariery (N2, N7). | US10.1, decyzja 33, BR-3, BR-18, BR-19 |
 | BR-24 | Każde wejście ma jedno oznaczenie: „dostępne”, „niedostępne” albo „brak danych”, z datą i źródłem. Import nadaje oznaczenie z danych PWr albo OpenStreetMap ze źródłem „import”; wejście bez takich danych dostaje „brak danych”. Zmianę oznaczenia składa dowolny Zbierający jako zgłoszenie z oznaczeniem „dostępne” albo „niedostępne” i nowym zdjęciem wejścia. Może nią też potwierdzić dotychczasowe oznaczenie. Sprawdza ją Weryfikator, który jej nie złożył (BR-4). Wybranego oznaczenia nie zmienia: gdy zdjęcie mu przeczy, odrzuca zmianę z powodem (BR-16). Po przyjęciu zgłoszenie jest archiwalne, a wejście ma nowe oznaczenie, datę przyjęcia i źródło „obchód”. Po odrzuceniu oznaczenie się nie zmienia. Gdy na to samo wejście czekają dwie zmiany, po przyjęciu jednej Weryfikator odrzuca drugą z powodem „nieaktualne”, jak w BR-23. Zbierający może ją wysłać ponownie wobec bieżącego oznaczenia. | Bez obchodu oznaczenie wejścia starzeje się tak samo, jak deklaracje PWr (P-3). Data i źródło mówią, w jakim stopniu można ufać oznaczeniu (N1, N2). | US2.1, US17.1, US17.2, US17.3, decyzja 36, BR-4, BR-23, T6b, T17b |
 
-Zgłoszenie archiwalne nie jest widoczne na mapie, na karcie budynku ani w eksporcie (BR-22). Nie liczy się też do zgłoszeń przyjętych w postępie (BR-21). Kto i gdzie przegląda historię, ustalimy w fazie projektowania interfejsu.
+Zgłoszenie archiwalne nie jest widoczne na mapie, na karcie budynku ani w eksporcie (BR-22). Nie liczy się też do zgłoszeń przyjętych w postępie (BR-21).
+
+Osobnego ekranu historii nie ma. Zbierający widzi własne zgłoszenia archiwalne na liście C3. Weryfikator przy „bariera usunięta” widzi zdjęcie zgłoszenia, które zmiana zastąpi (R2), ale nie starsze wersje.
 
 Postęp przelicza się po każdej zmianie znacznika i statusu, także po cofnięciu znacznika (BR-20). Piętro jest obejrzane albo nie, więc drugi znacznik tego samego piętra nie zmienia postępu. Zgłoszenia lokalne i niewysłane znaczniki nie wchodzą do postępu, bo serwer ich jeszcze nie zna.
 
@@ -83,7 +85,7 @@ Statusy pochodzą ze słownika i US8.1. Każde zgłoszenie, także szybkie i zmi
 
 Status „archiwalne” jest końcowy: zgłoszenie nie wraca na mapę i nie jest usuwane po 90 dniach.
 
-Niewysłana edycja nie zmienia statusu. Lista zgłoszeń (C3) pokazuje przy zgłoszeniu dodatkowo znak „zmiana czeka na wysłanie”; szczegół ustalimy w fazie B.
+Niewysłana edycja nie zmienia statusu. Lista zgłoszeń (C3) pokazuje przy zgłoszeniu znak „zmiana czeka na wysłanie” obok niezmienionego statusu, by Zbierający wiedział, że edycja jest tylko w telefonie (BR-9).
 
 ## Poza MVP
 
@@ -92,10 +94,12 @@ Niewysłana edycja nie zmienia statusu. Lista zgłoszeń (C3) pokazuje przy zgł
 | Status zgłoszenia szybkiego dla Odwiedzającego | Odwiedzający nie widzi statusu ani listy swoich zgłoszeń. Lista statusów (US8.1) jest tylko dla Zbierającego. | Potrzebę sprawdzimy w wywiadach. | decyzja 32, [przypis 3](role.md#przypisy) |
 | Zwolnienie zgłoszenia bez decyzji | Zgłoszenie w weryfikacji obsługuje do decyzji Weryfikator, który je wziął (BR-11). Zwolnienia nie ma, a numer 12 wśród reguł zostaje wolny. | Nieobecny Weryfikator i tak nie zwolni zgłoszenia. To ryzyko jest na stronie [Ryzyka](ryzyka.md). | BR-11 |
 | Usunięcie bariery przez Odwiedzającego | Usunięcie zgłasza tylko Zbierający (BR-19). Odwiedzający nie ma takiej ścieżki. | Odwiedzający nie edytuje zgłoszeń, więc nie ma ścieżki zmiany według BR-3. | decyzja 32, [macierz uprawnień](role.md#macierz-uprawnien) |
+| Przegląd pełnej historii bariery | Zbierający widzi własne zgłoszenia archiwalne na C3, a Weryfikator zdjęcie zastępowanego zgłoszenia na R2. | Przegląd wszystkich wersji bariery poza C3 i R2 nie ma kryterium akceptacji, więc jest poza MVP (decyzja 16). | decyzja 16, BR-18, [wymagania do ekranów](../ux/wymagania-ekranow.md) |
 
 ## Źródła
 
-- Decyzje zespołu nr 26, 29, 30, 32, 33 i 36 (dziennik decyzji projektu).
+- Decyzje zespołu nr 16, 26, 29, 30, 32, 33 i 36 (dziennik decyzji projektu).
+- [Wymagania do ekranów](../ux/wymagania-ekranow.md) — ekrany C3 i R2, decyzje fazy B.
 - Opis produktu: §5 (bufor budynku), §6a (poziomy szczegółowości, BR-G1…BR-G4) i §8 (potrzeby, historyjki, kryteria akceptacji).
 - [Role i uprawnienia](role.md) — BR-1…BR-6, macierz uprawnień, przypisy 2 i 3.
 - [Słownik pojęć](slownik.md) — statusy zgłoszenia, klasyfikacja barier.

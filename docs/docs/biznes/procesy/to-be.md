@@ -16,6 +16,8 @@ Pule A i B łączy sygnał „Zgłoszenie w kolejce”. Magazyn „Zgłoszenia p
 
 Tor „System” obejmuje aplikację i serwer razem. Kroki z literą, np. T6a, to odgałęzienia kroku o tym samym numerze.
 
+Zapis „V2 → C5” w kolumnie „Ekran” znaczy, że krok zaczyna się na V2 i prowadzi do C5.
+
 ## Kroki procesu
 
 | Krok | Kto | Co | Rozwiązuje problem (P-…) | Potrzeba (N…) | Ekran (V…/C…/R…/K…) |
@@ -26,8 +28,8 @@ Tor „System” obejmuje aplikację i serwer razem. Kroki z literą, np. T6a, t
 | T4 | System | Punkt poza konturem: oznacza „poza budynkiem” i proponuje najbliższy budynek (BR-G2); daleko od budynków PWr — bez propozycji (BR-G4) | P-9 | N5 | C1 |
 | T5 | Zbierający | Potwierdza albo zmienia budynek, poprawia punkt na planie piętra lub na mapie (US6.2, US6.3, US6.4, NFR-3, BR-G1) | P-9 | N5 | C1 |
 | T6 | Zbierający | Wybiera typ bariery i uciążliwość, podaje piętro, robi zdjęcie, dopisuje opis (US7.1, US7.2) | P-1, P-9 | N5 | C2 |
-| T6a | Zbierający | Zaczyna zmianę zgłoszenia przyjętego albo oznacza „bariera usunięta” i robi nowe zdjęcie. Zmianę składa autor, a przy zgłoszeniu szybkim i „bariera usunięta” dowolny Zbierający. Przy „bariera usunięta” typ, miejsce i piętro przechodzą z poprzedniego zgłoszenia (US8.4, BR-18, BR-19) | P-5 | N2 | V2, C3 (do ustalenia w fazie B) |
-| T6b | Zbierający | Na obchodzie składa zmianę oznaczenia wejścia: wybiera „dostępne” albo „niedostępne” i robi nowe zdjęcie wejścia. Może też potwierdzić dotychczasowe oznaczenie. Zmianę składa dowolny Zbierający (US17.2, BR-24) | P-3 | N1, N2 | V2 i ekran zmiany (do ustalenia w fazie B) |
+| T6a | Zbierający | Zaczyna zmianę zgłoszenia przyjętego albo oznacza „bariera usunięta” i robi nowe zdjęcie. Zmianę składa autor, a przy zgłoszeniu szybkim i „bariera usunięta” dowolny Zbierający. Przy „bariera usunięta” typ, miejsce i piętro przechodzą z poprzedniego zgłoszenia (US8.4, BR-18, BR-19) | P-5 | N2 | V2 → C2 (zmiana), V2 → C7 („bariera usunięta”) |
+| T6b | Zbierający | Na obchodzie składa zmianę oznaczenia wejścia: wybiera „dostępne” albo „niedostępne” i robi nowe zdjęcie wejścia. Może też potwierdzić dotychczasowe oznaczenie. Zmianę składa dowolny Zbierający (US17.2, BR-24) | P-3 | N1, N2 | V2 → C6 |
 | T7 | Odwiedzający | Robi zdjęcie bariery | P-1, P-5, P-6 | N3, N4 | V4 |
 | T8 | Odwiedzający | Wybiera grupę barier jednym z 6 dużych przycisków; całe zgłoszenie szybkie to najwyżej 3 kroki (US4.1) | P-5, P-6 | N3, N4 | V4 |
 | T9 | System | Dołącza bieżącą pozycję telefonu, bez uśredniania. Budynek przypisuje z konturu, w którym leży pozycja; poza konturem zgłoszenie jest „poza budynkiem”. Piętro zostaje puste (BR-14) | P-6, P-9 | N3 | V4 |
@@ -47,12 +49,12 @@ Tor „System” obejmuje aplikację i serwer razem. Kroki z literą, np. T6a, t
 | T21 | Odwiedzający / Gość niezalogowany | Otwiera kartę budynku: wejścia z oznaczeniem, jego datą i źródłem, windy, zgłoszenia przyjęte ze zdjęciami (US2.1, US2.2, US17.3, BR-6) | P-1, P-4, P-8 | N1, N2 | V2 |
 | T22 | Odwiedzający / Gość niezalogowany | W budynku szczegółowym wybiera piętro i ogląda plan piętra; w budynku podstawowym planu nie ma (US16.1, US16.2, BR-G1) | P-9 | N1 | V2 |
 | T23 | Odwiedzający / Gość niezalogowany | W „Zaplanuj wizytę” sprawdza, które wejście jest wejściem dostępnym (US3.1, US3.2) | P-2, P-9 | N1 | V3 |
-| T24 | Zbierający | Oznacza piętro obejrzane; w budynku podstawowym oznacza cały budynek (US15.1, BR-20) | P-3 | N9 | C1 (do ustalenia w fazie B) |
-| T24a | Zbierający | Cofa własny znacznik piętra obejrzanego (US15.2, BR-20) | P-3 | N9 | C1 (do ustalenia w fazie B) |
+| T24 | Zbierający | Oznacza piętro obejrzane; w budynku podstawowym oznacza cały budynek (US15.1, BR-20) | P-3 | N9 | V2 → C5 |
+| T24a | Zbierający | Cofa własny znacznik piętra obejrzanego (US15.2, BR-20) | P-3 | N9 | V2 → C5 |
 | T24b | System | Zapisuje znacznik albo jego cofnięcie w telefonie i wysyła po powrocie sieci, tak samo, jak zgłoszenie w T10–T11 (US15.3, BR-20) | — | N6 | C4 |
 | T25 | System | Po odbiorze przez serwer przelicza postęp inwentaryzacji budynku: odsetek pięter obejrzanych, zgłoszenia czekające i przyjęte. Przelicza go także po zmianie statusu zgłoszenia (T13, T17, T17a, T17b, T19) | P-3 | N9 | K1 |
 | T26 | Koordynator | Sprawdza postęp inwentaryzacji według budynków (US11.1) | P-3 | N9 | K1 |
-| T26a | Koordynator | Cofa błędny znacznik dowolnego Zbierającego (US11.3, BR-20) | P-3 | N9 | K1 |
+| T26a | Koordynator | Cofa błędny znacznik dowolnego Zbierającego (US11.3, BR-20) | P-3 | N9 | K1 → C5 |
 | T27 | Koordynator | Zamawia eksport GeoJSON albo CSV | P-8 | N9 | K3 |
 | T28 | System | Tworzy plik tylko z bieżących zgłoszeń przyjętych, bez danych autora; GeoJSON w WGS84, CSV w PUWG 1992 (US13.1, US13.2, US13.3, BR-6, BR-22) | P-8 | N9 | K3 |
 | T29 | Koordynator | Otwiera plik w QGIS; to krok poza systemem | P-8 | N9 | — |
@@ -68,7 +70,7 @@ Oznaczenia wejść powstają przy imporcie budynków, zanim proces się zacznie:
 | P-1 Informacja tylko tekstowa | Każde zgłoszenie ma zdjęcie (T6, T7). Bariery widać na mapie, karcie budynku i planie piętra (T17, T21, T22). | Deklaracje dostępności PWr zostają tekstowe; aplikacja ich nie zastępuje. |
 | P-2 Brak mapy przy deklaracjach | Mapa obejmuje wszystkie budynki PWr z konturem w OpenStreetMap: 5 szczegółowych i pozostałe jako podstawowe (T20, T23). | Plany pięter mają tylko budynki szczegółowe. Deklaracje PWr nadal nie odsyłają do mapy. |
 | P-3 Rzadkie aktualizacje | Bariera trafia na mapę zaraz po weryfikacji (T17). Koordynator widzi piętra obejrzane (T24–T26). Oznaczenie wejścia zmienia się po obchodzie i weryfikacji (T6b, T17b). | Aktualność zależy od obchodów i liczby Weryfikatorów. System nie wyznacza terminu ponownego obejrzenia. |
-| P-4 Data bez szczegółów | Każde zgłoszenie przyjęte ma własną datę weryfikacji i zdjęcie (T17, T21). Oznaczenie wejścia ma datę i źródło: import albo obchód (T17b, T21). | Brak zgłoszeń nie znaczy „brak barier”. Czy karta budynku pokaże datę obejrzenia piętra, ustalimy w fazie B. |
+| P-4 Data bez szczegółów | Każde zgłoszenie przyjęte ma własną datę weryfikacji i zdjęcie (T17, T21). Oznaczenie wejścia ma datę i źródło: import albo obchód (T17b, T21). | Brak zgłoszeń nie znaczy „brak barier”; pusta karta budynku (V2) mówi to wprost. Przy windzie i piętrze bez zgłoszenia karta nie podaje daty sprawdzenia. Piętra obejrzane, bez daty, widzą tylko Zbierający i Koordynator (C5, K1). Oznaczenie wejścia podaje źródło, ale nie osobę, która je sprawdziła. |
 | P-5 Brak informacji o bieżących awariach | Odwiedzający zgłasza np. niesprawną windę w 3 krokach (T7–T9). Po naprawie dowolny Zbierający wysyła zmianę zgłoszenia przyjętego z oznaczeniem „bariera usunięta” (BR-19, T6a, T10–T13). Po przyjęciu (T14–T16, T17a) bariera znika z mapy i zostaje w historii. | Zgłoszenie i usunięcie czekają na weryfikację, więc informacja nie jest natychmiastowa. Odwiedzający nie oznacza usunięcia bariery; robi to Zbierający. |
 | P-6 Wniosek formalny, a jego los niewidoczny | Zgłoszenie szybkie to 3 kroki bez formularza wniosku (T7–T9). Zgłoszenia przyjęte są publiczne (T17). | Odwiedzający nie ma listy własnych zgłoszeń, więc nie widzi statusu ani powodu odrzucenia (do sprawdzenia w wywiadach). Zgłoszenie w aplikacji nie jest wnioskiem o zapewnienie dostępności z ustawy. |
 | P-7 Wniosek nie aktualizuje deklaracji | Zgłoszenie po weryfikacji od razu zmienia mapę i kartę budynku (T17). | Aplikacja nie zmienia deklaracji na stronie PWr. Eksport (T28) może być dla niej materiałem (hipoteza). |
