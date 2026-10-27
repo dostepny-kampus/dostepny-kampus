@@ -1,0 +1,28 @@
+@startsalt
+' Katalog fragmentów z _wspolne.iuml — podgląd dla autorów makiet.
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Tytuł ekranu", "podtytuł (opcjonalny)")
+$brak_internetu("Dane z <i>[data]</i>")
+$brak_internetu("Ostatnia synchronizacja: <i>[data]</i>, <i>[godzina]</i>")
+$sekcja("Oznaczenie wejścia")
+$wejscie($dostepne(), "Wejście główne", "Sprawdzone na miejscu <i>[data]</i>")
+$wejscie($niedostepne(), "Wejście boczne", "Z map i opisów, stan z <i>[data]</i>", "Zmień oznaczenie")
+$sekcja("Pozycja listy")
+$pozycja("niesprawna winda", $blokada(), "Sprawdzone <i>[data]</i>")
+$sekcja("Oznaczenia")
+{ $dostepne() | $niedostepne() | $brak_danych() }
+{ $utrudnienie() | $tylko_z_pomoca() | $blokada() }
+{ $w_telefonie() | $wyslane() | $w_weryfikacji() }
+{ $przyjete() | $odrzucone() | $archiwalne() }
+{ $obejrzane() | $nieobejrzane() }
+$sekcja("Komunikat stanu")
+$komunikat("Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.", "Spróbuj ponownie")
+$sekcja("Przyciski")
+$przycisk_glowny("Czynność główna")
+$przycisk("Zrób zdjęcie", "camera-slr")
+$przycisk("Zwykła czynność")
+$pasek_dolny_konto()
+$pasek_dolny_praca()
+$ekran_koniec()
+@endsalt
