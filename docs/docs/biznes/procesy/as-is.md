@@ -25,7 +25,7 @@ Kolejność kroków I1–I5 to hipoteza. Plan [13] wymienia ankiety, audyty i de
 | Tabela „Stan dostosowania obiektów PWr na dzień 01.01.2025” | 44 budynki kampusu głównego | tabela: 4 kryteria i uwagi | 01.01.2025 | [10] |
 | Raport o stanie zapewniania dostępności w BIP | 77 budynków | formularz ustawowy, PDF | stan na 1.01.2025 | [11], [12] |
 | Cyfrowy Przewodnik PWr (projekt „Politechnika Nowych Szans”, 2019–2023) | 25 budynków, w tym A-1, B-1, C-13, D-1, D-2 | opisy wejść, wind, toalet, zdjęcia | istotna aktualizacja serwisu: 11.12.2023 | [18], [19], [21], [23] |
-| Interaktywna Mapa Kampusu, część Przewodnika | położenie wszystkich budynków, plany pięter wybranych | mapa i plany pięter | dane z semestru zimowego 2022/2023; aktualizuje koło naukowe GIS | [22] |
+| Interaktywna Mapa Kampusu, część Przewodnika | położenie wybranych budynków, plany pięter wybranych budynków | mapa i plany pięter | dane z semestru zimowego 2022/2023; aktualizuje koło naukowe GIS | [18], [22] |
 
 Skąd deklaracje budynków:
 

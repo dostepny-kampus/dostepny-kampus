@@ -165,7 +165,7 @@
     </bpmn:textAnnotation>
     <bpmn:association id="Assoc_Daty" sourceRef="Note_Daty" targetRef="Task_I5" />
     <bpmn:textAnnotation id="Note_Kanaly">
-      <bpmn:text>Osobny kanał: Cyfrowy Przewodnik i mapa kampusu (25 budynków, dane 2022/23)</bpmn:text>
+      <bpmn:text>Osobny kanał: Przewodnik (opisy 25 budynków) i jego mapa (wybrane budynki, dane 2022/23)</bpmn:text>
     </bpmn:textAnnotation>
   </bpmn:process>
 

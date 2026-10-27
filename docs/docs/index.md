@@ -6,7 +6,8 @@
 
 | Rola | Kto | Po co korzysta |
 | --- | --- | --- |
-| Odwiedzający | osoby starsze, osoby z ograniczoną mobilnością, goście | sprawdza dostępne wejścia i bariery przed wizytą, zgłasza nową barierę |
+| Gość niezalogowany | każdy, kto otworzył aplikację bez konta | sprawdza dostępne wejścia i bariery przed wizytą |
+| Odwiedzający | osoby starsze, osoby z ograniczoną mobilnością, osoby odwiedzające uczelnię | robi to samo co Gość niezalogowany, a po rejestracji zgłasza nową barierę |
 | Zbierający | student lub pracownik uczelni | dokładnie zaznacza bariery na miejscu, także bez sieci |
 | Weryfikator | pracownik uczelni | przyjmuje albo odrzuca zgłoszenia, wskazuje duplikaty |
 | Koordynator | osoba prowadząca inwentaryzację | śledzi postęp i eksportuje dane do QGIS |
