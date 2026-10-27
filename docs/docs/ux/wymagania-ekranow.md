@@ -39,8 +39,8 @@ Dotyczą każdego ekranu. Przy ekranach podajemy tylko to, co do nich dochodzi.
 | Wymaganie | Odwołanie |
 | --- | --- |
 | Nagłówek z nazwą ekranu i przyciskiem „Wstecz” bez ikony, zawsze widocznym w tym samym miejscu. Wyjątek: V1 jako ekran startowy. | zasada dla osób starszych, NFR-15 (WCAG 3.2.3) [1] |
-| Wskaźnik braku sieci: napis „Brak internetu” i ikona. Gdy dane pochodzą z telefonu, obok jest napis „Dane z 12.11.2026”, a u Zbierającego „Ostatnia synchronizacja: 12.11.2026, 10:42”. | US9.1, NFR-10, NFR-21; PW-4 |
-| Pasek dolny na V1, V2, V3, V5 i L2: „Mapa” (V1), „Zgłoś barierę” (V4), „Pomoc” (V5), „Konto” (L1 albo L2). Osoba z co najmniej jedną rolą pracowniczą widzi na czwartej pozycji, w tym samym miejscu, napis „Konto i praca” ([słownik użytkownika](slownik-uzytkownika.md#nazwa-wejscia), PW-1); pozycja prowadzi do L2. Na formularzach i krokach zgłoszenia paska nie ma. | US1, US4, US5.1, US14, US14.1; [mapa nawigacji](mapa-nawigacji.md), P1 |
+| Wskaźnik braku sieci: napis „Brak internetu” i ikona. Gdy dane pochodzą z telefonu, obok jest napis „Dane z 12.11.2026”. Zbierający widzi zamiast niego „Ostatnia synchronizacja: 12.11.2026, 10:42”. | US9.1, NFR-10, NFR-21; PW-4 |
+| Pasek dolny na V1, V2, V3, V5 i L2: „Mapa” (V1), „Zgłoś barierę” (V4), „Pomoc” (V5), „Konto” (L1 albo L2). Osoba z co najmniej jedną rolą pracowniczą widzi na czwartej pozycji, w tym samym miejscu, napis „Konto i praca” (PW-1). Pozycja prowadzi do L2. Na formularzach i krokach zgłoszenia paska nie ma. | US1, US4, US5.1, US14, US14.1; [mapa nawigacji](mapa-nawigacji.md), P1 |
 | Jedna czynność główna na ekranie, wyróżniona położeniem i rozmiarem, nie kolorem. | NFR-21, zasada dla osób starszych |
 | Cel dotyku co najmniej 48 × 48 dp. | NFR-17 |
 | Kontrast tekstu, ikon statusu, ramek pól i fokusu według progów NFR-16. | NFR-16 |
@@ -114,7 +114,7 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 | Każde wejście: nazwa, oznaczenie „Dostępne”, „Niedostępne” albo „Brak danych” tekstem i ikoną | dane | US2.1, US17.1, NFR-21 | — |
 | Przy wejściu: data i źródło oznaczenia, „Sprawdzone na miejscu 12.11.2026” (obchód) albo „Z map i opisów, stan z 1.10.2026” (import) | dane | US17.3, BR-24, PW-3 | — |
 | Zgłoszenia przyjęte pod nagłówkiem „Bariery w budynku”: typ bariery, uciążliwość, zdjęcie, data weryfikacji jako „Sprawdzone 12.11.2026” | dane | US2.2, BR-17, NFR-21, PW-3 | — |
-| Typ bariery nazwą z klasyfikacji, np. „niesprawna winda”. Gość i Odwiedzający widzą zamiast TB-20, TB-22 i TB-28 napisy „toaleta zamknięta, zastawiona lub trudna do dojścia”, „brak planu dotykowego lub głosowego”, „brak obniżonej lady lub miejsca dla wózka”. Ten sam napis jest na V1 i V3. | dane | BR-7, słownik użytkownika | — |
+| Typ bariery nazwą z klasyfikacji, np. „niesprawna winda”. Gość i Odwiedzający widzą prostsze napisy trzech typów. TB-20: „toaleta zamknięta, zastawiona lub trudna do dojścia”. TB-22: „brak planu dotykowego lub głosowego”. TB-28: „brak obniżonej lady lub miejsca dla wózka”. Te same napisy są na V1 i V3. | dane | BR-7, słownik użytkownika | — |
 | Przełącznik pięter: „Piętro:” i etykiety z danych PWr (budynek szczegółowy) | czynność | US16.1 | plan na tym ekranie |
 | „Plan piętra”: windy, schody, toalety, wejścia, zgłoszenia przyjęte | dane | US16.1 | — |
 | Podpis „Źródło: Politechnika Wrocławska” pod planem | dane | NFR-40 | — |
@@ -251,7 +251,9 @@ Zostaje jedno przerwanie przy pierwszym zgłoszeniu. Warianty kolejności opisuj
 | Pierwsze uruchomienie | instrukcja otwiera się sama przed V1 (US5.1) |
 | Otwarcie z pomocy | ta sama instrukcja z paska dolnego; nie otwiera się już sama (US5.1) |
 
-Zdanie o napisie „Dostępne” objaśnia go raz, bo osoba starsza może odczytać to słowo jako „otwarte” (recenzja B6, spór 19). Treść instrukcji jest w telefonie, więc ekran nie ma stanu braku sieci. Dostępność i osoby starsze: przejście dalej przyciskiem zamiast przesunięcia palcem (NFR-15, WCAG 2.5.1); brak automatycznego przewijania (NFR-23).
+Zdanie o napisie „Dostępne” objaśnia go raz, bo osoba starsza może odczytać to słowo jako „otwarte” (recenzja B6, spór 19).
+
+Treść instrukcji jest w telefonie, więc ekran nie ma stanu braku sieci. Dostępność i osoby starsze: przejście dalej przyciskiem zamiast przesunięcia palcem (NFR-15, WCAG 2.5.1); brak automatycznego przewijania (NFR-23).
 
 ## Logowanie i konto
 
