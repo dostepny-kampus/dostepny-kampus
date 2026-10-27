@@ -1,0 +1,10 @@
+{
+  "name": "dostepny-kampus-docs",
+  "version": "0.1.0",
+  "private": true,
+  "author": "Vladyslav Yevkov",
+  "description": "Dokumentacja projektu Dostępny Kampus",
+  "scripts": {
+    "lint:md": "markdownlint-cli2"
+  }
+}

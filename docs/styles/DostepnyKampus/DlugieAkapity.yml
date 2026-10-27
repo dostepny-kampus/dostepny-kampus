@@ -1,0 +1,6 @@
+extends: occurrence
+message: "Akapit ma więcej niż 4 zdania. Skróć go albo zamień na listę lub tabelę."
+level: error
+scope: paragraph
+max: 4
+token: '[^.!?]+[.!?]'

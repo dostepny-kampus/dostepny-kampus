@@ -1,0 +1,14 @@
+config:
+  default: true
+  MD013: false
+  MD033:
+    allowed_elements: [div, span, br, figure, figcaption, abbr]
+  MD041: true
+  MD046:
+    style: fenced
+globs:
+  - "docs/**/*.md"
+ignores:
+  - "docs/includes/**"
+  - "site/**"
+  - "node_modules/**"

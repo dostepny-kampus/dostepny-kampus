@@ -1,0 +1,73 @@
+site_name: Dostępny Kampus — dokumentacja
+site_description: Inwentaryzacja barier architektonicznych na kampusie Politechniki Wrocławskiej
+site_author: Vladyslav Yevkov
+copyright: Copyright &copy; 2026 Vladyslav Yevkov
+docs_dir: docs
+strict: true
+
+theme:
+  name: material
+  language: pl
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - search.highlight
+    - content.tabs.link
+    - content.tooltips
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Tryb ciemny
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Tryb jasny
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets:
+      auto_append:
+        - docs/includes/slownik-skroty.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+exclude_docs: |
+  includes/
+
+nav:
+  - Start: index.md
+  - Biznes:
+      - Wizja: biznes/wizja.md
+      - Role i uprawnienia: biznes/role.md
+      - Słownik pojęć: biznes/slownik.md
+      - Proces AS-IS: biznes/procesy/as-is.md
+      - Proces TO-BE: biznes/procesy/to-be.md
+      - Reguły biznesowe: biznes/reguly.md
+      - Ryzyka: biznes/ryzyka.md
+  - Wymagania:
+      - Potrzeby i historyjki: wymagania/potrzeby-i-historie.md
+      - Przypadki użycia: wymagania/przypadki-uzycia.md
+      - Wymagania niefunkcjonalne: wymagania/niefunkcjonalne.md
+      - Macierz śledzenia: wymagania/sledzenie.md
+  - UX:
+      - Scenariusz wywiadu: ux/scenariusz-wywiadu.md
+  - Raporty:
+      - Tydzień 2: raporty/tydzien-2.md

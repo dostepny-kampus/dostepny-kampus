@@ -1,0 +1,24 @@
+extends: existence
+message: "'%s' nic nie wnosi. Usuń albo napisz konkretnie."
+level: error
+ignorecase: true
+tokens:
+  - w celu
+  - w zakresie
+  - w ramach
+  - na chwilę obecną
+  - w dniu dzisiejszym
+  - de facto
+  - tak naprawdę
+  - generalnie
+  - w zasadzie
+  - jak wiadomo
+  - należy zaznaczyć
+  - warto podkreślić
+  - warto zauważyć
+  - kompleksow\w*
+  - innowacyjn\w*
+  - nowoczesn\w*
+  - intuicyjn\w*
+  - przyjazn\w* dla użytkownika
+  - szeroko pojęt\w*
