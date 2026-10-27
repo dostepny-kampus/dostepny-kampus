@@ -86,7 +86,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | plan piętra | „Plan piętra” | wszystkie | bez zmian | 6.3 |
 | podpis pod planem (NFR-40) | „Źródło: Politechnika Wrocławska” | wszystkie | bez zmian; mówi, skąd jest plan | 2.2 |
 | budynek podstawowy (napis na V2) | „Nie mamy planu pięter tego budynku.” | wszystkie | Słowo „niedostępny” zostaje dla wejścia. | 6.3 |
-| „Zaplanuj wizytę” (US3) | „Sprawdź, którędy wejść” | wszystkie | „Zaplanuj wizytę” brzmi jak rezerwacja terminu. Ekran odpowiada na pytanie o wejście. | 2.1, 2.2, 4.1 |
+| przycisk do ekranu V3 (US3) | „Sprawdź, którędy wejść” | wszystkie | Dawna robocza nazwa brzmiała jak rezerwacja terminu. Ekran odpowiada na pytanie o wejście. | 2.1, 2.2, 4.1 |
 | nagłówek V3 | „Którędy wejść do C-13” | wszystkie | Nagłówek powtarza napis przycisku. | 4.1, część 5 |
 | zgłoszenie szybkie (nagłówek V4) | „Zgłoś barierę” | Odwiedzający | Ten sam napis co na pasku. | 4.6 |
 | zgłoszenie (rzeczownik w komunikatach) | „zdjęcie bariery”, „bariera” | Gość, Odwiedzający | Osoba robi zdjęcie i to widzi. Plan fazy B zakazuje tu słowa „zgłoszenie”. | 3.4, 4.6 |
@@ -385,12 +385,12 @@ Decyzja: „Konto i praca” widzi każda osoba z co najmniej jedną rolą praco
 
 ## Propozycje do wymagań ekranów {#propozycje}
 
-Strona [wymagań do ekranów](wymagania-ekranow.md) zostaje bez zmian. Poniższe zmiany wprowadzi jej właściciel.
+Propozycje PW-1…PW-15 są wprowadzone w [wymaganiach do ekranów](wymagania-ekranow.md) w brzmieniu po recenzji. Kolumna „Przed zmianą” pokazuje stan wymagań sprzed fali B6.
 
-| Nr | Ekran | Teraz w wymaganiach | Propozycja | Dlaczego |
+| Nr | Ekran | Przed zmianą | Propozycja | Dlaczego |
 | --- | --- | --- | --- | --- |
 | PW-1 | pasek dolny, L2 | „Konto” dla wszystkich ról | „Konto i praca” dla ról pracowniczych; sekcja L2 „Twoja praca” zamiast „Twoje czynności” | spór z recenzji, uwaga 24 |
-| PW-2 | V2, V3 | „Zaplanuj wizytę”; nazwa robocza V3 „Zaplanuj wizytę” | przycisk „Sprawdź, którędy wejść”, nagłówek V3 „Którędy wejść do C-13” | „Zaplanuj wizytę” brzmi jak rezerwacja terminu |
+| PW-2 | V2, V3 | dawna nazwa przycisku i ekranu V3 | przycisk „Sprawdź, którędy wejść”, nagłówek V3 „Którędy wejść do C-13” | dawna nazwa brzmiała jak rezerwacja terminu |
 | PW-3 | V2, V3, C6, K1 | źródło „import” albo „obchód”; data weryfikacji bez słowa; K1 „Wejścia potwierdzone na obchodzie” | „Z map i opisów, stan z …”, „Sprawdzone na miejscu …”, „Sprawdzone …”; K1 „Wejścia sprawdzone na miejscu: x z y” | recenzja B3, uwaga 23; te same słowa dla Odwiedzającego i Koordynatora |
 | PW-4 | wymagania wspólne, V1, V2, L1 | wskaźnik braku sieci bez napisu; „Do pierwszego uruchomienia”; „karta budynku” w komunikatach | „Brak internetu”; „Pierwsze otwarcie aplikacji”; „opis budynku” | żargon dla osoby starszej |
 | PW-5 | V4, V5, L1, L2 | rzeczownik „zgłoszenie” w komunikatach; „Anuluj zgłoszenie”; „Anuluj” w potwierdzeniu wycofania zgody | „zdjęcie bariery”, „bariera”; „Zrezygnuj”; „Zostaw zgodę”; treść według katalogu komunikatów | plan fazy B: bez słowa „zgłoszenie” dla Odwiedzającego |

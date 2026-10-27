@@ -730,7 +730,7 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | | US1.3 | V1, V2 | tylko zgłoszenia przyjęte |
 | Karta budynku | US2.1 | V2, V3 | oznaczenie tekstem i ikoną |
 | | US2.2 | V2, V3 | zdjęcie i data weryfikacji |
-| Zaplanuj wizytę | US3.1 | V3 | stan „brak wejścia dostępnego” |
+| Którędy wejść | US3.1 | V3 | stan „brak wejścia dostępnego” |
 | | US3.2 | V1, V2, V3 | 2 dotknięcia |
 | Zgłoszenie szybkie | US4.1 | V4 | 3 kroki, pozycja sama |
 | | US4.2 | V4 | potwierdzenie bez sieci; wysyłka w tle bez ekranu |

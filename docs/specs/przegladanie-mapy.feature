@@ -69,7 +69,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   Scenariusz: Wejście dostępne najwyżej 3 dotknięcia od mapy
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli dotknie budynku A-1
-    Oraz wybierze „Zaplanuj wizytę”
+    Oraz wybierze „Sprawdź, którędy wejść”
     Wtedy widzi wejście dostępne budynku A-1
     Oraz od mapy wykonał najwyżej 3 dotknięcia
 
@@ -77,7 +77,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   Scenariusz: Brak wejścia dostępnego jest powiedziany wprost
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli dotknie budynku B-4
-    Oraz wybierze „Zaplanuj wizytę”
+    Oraz wybierze „Sprawdź, którędy wejść”
     Wtedy widzi zdanie, że budynek B-4 nie ma wejścia dostępnego
     Ale ekran nie jest pusty i nie pokazuje samego braku wyniku
 

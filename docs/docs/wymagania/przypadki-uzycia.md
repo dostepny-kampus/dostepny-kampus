@@ -76,7 +76,7 @@ Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej czę�
 
 1. Gość niezalogowany otwiera aplikację; mapa kampusu pokazuje kontury budynków.
 2. Gość niezalogowany wybiera budynek A-1 na mapie albo wyszukuje go po symbolu budynku (jak w UC1).
-3. Gość niezalogowany wybiera „Zaplanuj wizytę”.
+3. Gość niezalogowany wybiera „Sprawdź, którędy wejść”.
 4. System pokazuje wejście dostępne i zgłoszenia przyjęte przy tym wejściu. Oznaczenie ma tekst i ikonę, nie tylko kolor (US2.1). Przy wejściu widać datę i źródło oznaczenia (US17.3).
 5. W A-1 Gość niezalogowany czyta, że wejście główne ma schody, a wejście dostępne to inne wejście [1], [2].
 

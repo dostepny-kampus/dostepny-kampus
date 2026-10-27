@@ -18,7 +18,7 @@ Wywiad sprawdza to samo zadanie na C-13 (część 5 scenariusza). Mapa pokazuje 
 | J1-1 | dowiaduje się o wykładzie otwartym | „Chętnie pójdę, ale nie znam budynku” (4 → 4) | — | — | niskie |
 | J1-2 | instaluje i pierwszy raz otwiera aplikację | „Czy to będzie proste? Czy trafię w przyciski?” (— → 3) | — | V5: instrukcja, którą można pominąć i otworzyć ponownie (US5.1) | średnie |
 | J1-3 | szuka A-1 | „Gdzie to w ogóle jest?” (2 → 4) | P-2 | V1: wyszukiwanie po symbolu w każdej pisowni, bez logowania (US1.1, US1.2); lista zamiast gestów na mapie (NFR-19) | średnie |
-| J1-4 | sprawdza, którym wejściem wejdzie bez schodów | „Którędy mam wejść?” (2 → 4) | P-1, P-9 | V3 „Zaplanuj wizytę” w ≤ 3 dotknięciach (US3.2); V2: oznaczenie każdego wejścia tekstem i ikoną (US2.1) | **wysokie** |
+| J1-4 | sprawdza, którym wejściem wejdzie bez schodów | „Którędy mam wejść?” (2 → 4) | P-1, P-9 | V3 „Którędy wejść” w ≤ 3 dotknięciach (US3.2); V2: oznaczenie każdego wejścia tekstem i ikoną (US2.1) | **wysokie** |
 | J1-5 | ocenia, czy informacja jest aktualna | „Czy to jeszcze prawda?” (2 → 4) | P-3, P-4 | V2: data i źródło oznaczenia wejścia (US17.3), zdjęcie i data weryfikacji bariery (US2.2) | średnie |
 | J1-6 | sprawdza windę i toaletę na piętrze wykładu | „Czy winda działa?” (1 → 3) | P-5 | V2: przełącznik pięter i plan piętra z windami i toaletami (US16.1) | **wysokie** |
 | J1-7 | dojeżdża i szuka wskazanego wejścia | „Czy to na pewno tu?” (2 → 3) | P-9 | V2: wejście na planie piętra z oznaczeniem tekstem i ikoną (US16.1, US2.1); nawigacja po trasie jest poza zakresem | średnie |

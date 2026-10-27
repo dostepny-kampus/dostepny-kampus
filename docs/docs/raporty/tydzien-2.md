@@ -51,7 +51,7 @@ Uprawnienia opisuje [macierz ról](../biznes/role.md). Potrzeby N1–N9 to hipot
 | V2 | Karta budynku: wejścia, windy, bariery ze zdjęciem i datą | wszyscy | US2 | Musi być |
 | V2 | Oznaczenie wejścia: dostępne, niedostępne albo brak danych, z datą i źródłem; zmiana na obchodzie | wszyscy; zmiana: Zbierający | US17 | Musi być |
 | V2 | Plan piętra z przełącznikiem pięter (5 budynków szczegółowych) | wszyscy | US16 | Powinno być |
-| V3 | „Zaplanuj wizytę”: które wejście jest dostępne | wszyscy | US3 | Powinno być |
+| V3 | „Którędy wejść”: które wejście jest dostępne | wszyscy | US3 | Powinno być |
 | V4 | Zgłoszenie szybkie: zdjęcie, grupa barier, pozycja | Odwiedzający | US4 | Musi być |
 | V5 | Pomoc i instrukcja przy pierwszym uruchomieniu | wszyscy | US5 | Powinno być |
 | C1 | Pomiar precyzyjny: uśrednianie GNSS przez 30 s, podpowiedź budynku, piętro obejrzane | Zbierający | US6, US15 | Musi być (mapa nieba: Powinno być) |

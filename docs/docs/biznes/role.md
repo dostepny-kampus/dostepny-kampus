@@ -23,7 +23,7 @@ Legenda: ✔ — wolno; ✖ — nie wolno; **własne** — tylko zgłoszenia i z
 | Mapa kampusu i wyszukiwanie budynku | V1, US1 | ✔ | ✔ | ✔ | ✔ | ✔ |
 | Karta budynku ze zgłoszeniami przyjętymi i oznaczeniami wejść | V2, US2, US17.1, US17.3 | ✔ | ✔ | ✔ | ✔ | ✔ |
 | Plan piętra z przełącznikiem pięter ¹ | V2, C1, US16 | ✔ | ✔ | ✔ | ✔ | ✔ |
-| „Zaplanuj wizytę”, pomoc | V3, V5, US3, US5 | ✔ | ✔ | ✔ | ✔ | ✔ |
+| „Którędy wejść”, pomoc | V3, V5, US3, US5 | ✔ | ✔ | ✔ | ✔ | ✔ |
 | Zgłoszenie szybkie | V4, US4 | ✖ ² | ✔ | ✔ | ✔ | ✔ |
 | Pomiar precyzyjny z uśrednianiem GNSS i formularz | C1–C2, US6, US7 | ✖ | ✖ | ✔ | ✖ | ✖ |
 | Lista zgłoszeń ze statusami | C3, US8 | ✖ | ✖ ³ | własne | ✖ | ✖ |
