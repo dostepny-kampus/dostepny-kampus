@@ -28,19 +28,20 @@ Wybór wersji własnej działa jak zwykła edycja w obecnym statusie na serwerze
 
 Przyjęcie wymaga też, by Weryfikator oceniał aktualną wersję zgłoszenia (BR-3) i nie był jego autorem (BR-4).
 
-## Publikacja i postęp inwentaryzacji
+## Publikacja, postęp inwentaryzacji i eksport
 
 | ID | Reguła | Dlaczego | Źródło |
 | --- | --- | --- | --- |
 | BR-17 | Zgłoszenie przyjęte jest widoczne na mapie i karcie budynku od chwili decyzji, bez osobnego kroku publikacji. Pokazuje zdjęcie i datę weryfikacji, czyli datę przyjęcia. | Osoba planująca wizytę widzi świeżą informację i wie, kiedy ją sprawdzono (N1, N2). | US2.2, T17, BR-6 |
 | BR-18 | Zmiana zgłoszenia przyjętego to nowe zgłoszenie powiązane z poprzednim. Po jego przyjęciu poprzednie dostaje status „archiwalne”: znika z mapy i zostaje w historii. Po odrzuceniu na mapie zostaje poprzednie. | Na mapie nie ma dwóch wersji tej samej bariery ani wersji bez weryfikacji (N2). | BR-3, BR-6 |
-| BR-19 | Zbierający zgłasza usunięcie bariery jako zmianę zgłoszenia przyjętego, z oznaczeniem „bariera usunięta” i nowym zdjęciem miejsca. Typ, miejsce i piętro przechodzą z poprzedniego zgłoszenia. Po przyjęciu oba zgłoszenia są archiwalne. | Naprawiona winda nie może wisieć na mapie bez końca, bo podważa zaufanie do danych (N2). Usunięcie też przechodzi weryfikację (N8). | decyzja 32, BR-3, TO-BE (P-5) |
-| BR-20 | Piętro obejrzane oznacza tylko Zbierający. W budynku podstawowym znacznik „obejrzany” dotyczy całego budynku. Znacznik cofa Zbierający, który go postawił, albo Koordynator. | Błędny znacznik zawyża postęp inwentaryzacji, więc trzeba go móc cofnąć. | decyzja 29, decyzja 32, T24 |
+| BR-19 | Usunięcie bariery zgłasza dowolny Zbierający, nie tylko autor: zmianą zgłoszenia przyjętego z oznaczeniem „bariera usunięta” i nowym zdjęciem miejsca. Typ, miejsce i piętro przechodzą z poprzedniego zgłoszenia. Sprawdza je Weryfikator, który go nie złożył (BR-4). Po przyjęciu oba zgłoszenia są archiwalne. | Naprawiona winda nie może wisieć na mapie bez końca, bo podważa zaufanie do danych (N2). Autor mógł odejść z zespołu, a usunięcie też przechodzi weryfikację (N8). | US8.4, US10.6, decyzja 32, decyzja 33, BR-3, TO-BE (P-5) |
+| BR-20 | Piętro obejrzane oznacza tylko Zbierający. W budynku podstawowym znacznik „obejrzany” dotyczy całego budynku. Znacznik cofa Zbierający, który go postawił, albo Koordynator. Znacznik i jego cofnięcie działają bez sieci i czekają w telefonie na synchronizację tak samo jak zgłoszenie (BR-9). | Błędny znacznik zawyża postęp inwentaryzacji, więc trzeba go móc cofnąć. Obchód piwnic odbywa się bez sieci (N6). | US15, decyzja 29, decyzja 32, decyzja 33, T24 |
 | BR-21 | Postęp budynku szczegółowego to odsetek pięter obejrzanych wśród pięter z danych PWr. Budynek podstawowy ma znacznik „obejrzany / nie”. Obok są liczby zgłoszeń czekających (wysłane, w weryfikacji) i przyjętych. | Koordynator mierzy postęp tym samym miernikiem w każdym budynku (N9). Przykład: A-1, 4 z 5 pięter, czyli 80 %. | US11.1, decyzja 29, T25, T26 |
+| BR-22 | Eksport zawiera tylko bieżące zgłoszenia przyjęte. Zgłoszenia archiwalne, czyli bariery usunięte i wersje zastąpione, do niego nie trafiają. Doprecyzowuje BR-6. | Dane w QGIS mają pokazywać obecny stan barier, a nie historię (N9). | US13.1, decyzja 33, T28, BR-6 |
 
-Zgłoszenie archiwalne nie jest widoczne na mapie, na karcie budynku ani w eksporcie (BR-6). Nie liczy się też do zgłoszeń przyjętych w postępie (BR-21). Kto i gdzie przegląda historię, ustalimy w fazie projektowania interfejsu.
+Zgłoszenie archiwalne nie jest widoczne na mapie, na karcie budynku ani w eksporcie (BR-22). Nie liczy się też do zgłoszeń przyjętych w postępie (BR-21). Kto i gdzie przegląda historię, ustalimy w fazie projektowania interfejsu.
 
-Postęp przelicza się po każdej zmianie znacznika i statusu, także po cofnięciu znacznika (BR-20). Zgłoszenia lokalne nie wchodzą do postępu, bo serwer ich jeszcze nie zna.
+Postęp przelicza się po każdej zmianie znacznika i statusu, także po cofnięciu znacznika (BR-20). Zgłoszenia lokalne i niewysłane znaczniki nie wchodzą do postępu, bo serwer ich jeszcze nie zna.
 
 ## Reguły „nic się nie psuje”
 
@@ -74,11 +75,11 @@ Statusy od „lokalne” do „odrzucone” pochodzą ze słownika i US8.1, a st
 | w weryfikacji | w weryfikacji | Zbierający (autor) | edycja tworzy nową wersję; Weryfikator decyduje o nowej (BR-3, BR-10) |
 | w weryfikacji | przyjęte | Weryfikator, który wziął | aktualna wersja (BR-3); w zgłoszeniu szybkim typ i uciążliwość (BR-14); zdjęcie według NFR-25; widoczne od razu (BR-17) |
 | w weryfikacji | odrzucone | Weryfikator, który wziął | powód odrzucenia (BR-16); przy duplikacie wskazanie wcześniejszego zgłoszenia (BR-13) |
-| w weryfikacji | archiwalne | Weryfikator, który wziął | przyjęcie zgłoszenia „bariera usunięta”; bariera znika z mapy (BR-19) |
+| w weryfikacji | archiwalne | Weryfikator, który wziął | przyjęcie zgłoszenia „bariera usunięta”; Weryfikator nie jest jego autorem (BR-4); bariera znika z mapy i eksportu (BR-19, BR-22) |
 | odrzucone | wysłane | Zbierający (autor) | poprawka i ponowne wysłanie (BR-3); Odwiedzający nie edytuje zgłoszeń szybkich |
 | odrzucone | — | system | usunięcie po 90 dniach (NFR-29) |
-| przyjęte | przyjęte | Zbierający (autor) | zmiana tworzy nowe zgłoszenie od statusu „lokalne”; status poprzedniego zgłoszenia się nie zmienia (BR-18) |
-| przyjęte | archiwalne | system | przyjęto zmianę tego zgłoszenia albo zgłoszenie „bariera usunięta” (BR-18, BR-19) |
+| przyjęte | przyjęte | Zbierający (autor); przy „bariera usunięta” dowolny Zbierający | zmiana tworzy nowe zgłoszenie od statusu „lokalne”; status poprzedniego zgłoszenia się nie zmienia (BR-18) |
+| przyjęte | archiwalne | system | przyjęto zmianę tego zgłoszenia albo zgłoszenie „bariera usunięta” (BR-18, BR-19, US10.6) |
 
 Status „archiwalne” jest końcowy: zgłoszenie nie wraca na mapę i nie jest usuwane po 90 dniach.
 
@@ -91,9 +92,10 @@ Status „archiwalne” jest końcowy: zgłoszenie nie wraca na mapę i nie jest
 
 ## Źródła
 
-- Decyzje zespołu nr 26, 29, 30 i 32 (dziennik decyzji projektu).
+- Decyzje zespołu nr 26, 29, 30, 32 i 33 (dziennik decyzji projektu).
 - Opis produktu: §6a (poziomy szczegółowości, BR-G1…BR-G4) i §8 (potrzeby, historyjki, kryteria akceptacji).
 - [Role i uprawnienia](role.md) — BR-1…BR-6, macierz uprawnień, przypisy 2 i 3.
 - [Słownik pojęć](slownik.md) — statusy zgłoszenia, klasyfikacja barier.
 - [Proces TO-BE](procesy/to-be.md) — kroki T1…T29.
+- [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md) — US8.4, US10.6, US15 (oznaczanie piętra obejrzanego).
 - [Wymagania niefunkcjonalne](../wymagania/niefunkcjonalne.md) — NFR-3, NFR-5…NFR-9, NFR-25, NFR-29, NFR-45, NFR-47…NFR-49.
