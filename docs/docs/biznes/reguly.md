@@ -40,7 +40,7 @@ Przyjęcie wymaga też, by Weryfikator oceniał aktualną wersję zgłoszenia (B
 | BR-23 | Dwie równoległe zmiany tego samego zgłoszenia przyjętego to osobne zgłoszenia. Weryfikator widzi drugą zmianę jako podobne zgłoszenie. Po przyjęciu jednej z nich drugiej nie można przyjąć bez zmian, bo dotyczy zgłoszenia archiwalnego. Weryfikator odrzuca ją z powodem „nieaktualne”, a Zbierający może ją wysłać ponownie do bieżącego zgłoszenia. Gdy przyjęta zmiana to „bariera usunięta”, drugą Weryfikator też odrzuca jako „nieaktualne”, a jeśli bariera nadal istnieje, Zbierający składa nowe zgłoszenie, nie zmianę. | Przyjęcie nieaktualnej zmiany cofnęłoby na mapie wcześniejszą zmianę albo usunięcie bariery (N2, N7). | US10.1, decyzja 33, BR-3, BR-18, BR-19 |
 | BR-24 | Każde wejście ma jedno oznaczenie: „dostępne”, „niedostępne” albo „brak danych”, z datą i źródłem. Import nadaje oznaczenie z danych PWr albo OpenStreetMap ze źródłem „import”; wejście bez takich danych dostaje „brak danych”. Zmianę oznaczenia składa dowolny Zbierający jako zgłoszenie z oznaczeniem „dostępne” albo „niedostępne” i nowym zdjęciem wejścia. Może nią też potwierdzić dotychczasowe oznaczenie. Sprawdza ją Weryfikator, który jej nie złożył (BR-4). Wybranego oznaczenia nie zmienia: gdy zdjęcie mu przeczy, odrzuca zmianę z powodem (BR-16). Po przyjęciu zgłoszenie jest archiwalne, a wejście ma nowe oznaczenie, datę przyjęcia i źródło „obchód”. Po odrzuceniu oznaczenie się nie zmienia. Gdy na to samo wejście czekają dwie zmiany, po przyjęciu jednej Weryfikator odrzuca drugą z powodem „nieaktualne”, jak w BR-23. Zbierający może ją wysłać ponownie wobec bieżącego oznaczenia. | Bez obchodu oznaczenie wejścia starzeje się tak samo, jak deklaracje PWr (P-3). Data i źródło mówią, w jakim stopniu można ufać oznaczeniu (N1, N2). | US2.1, US17.1, US17.2, US17.3, decyzja 36, BR-4, BR-23, T6b, T17b |
 
-Zgłoszenie archiwalne nie jest widoczne na mapie, na karcie budynku ani w eksporcie (BR-22). Nie liczy się też do zgłoszeń przyjętych w postępie (BR-21). Kto i gdzie przegląda historię, ustalimy w fazie projektowania interfejsu.
+Zgłoszenie archiwalne nie jest widoczne na mapie, na karcie budynku ani w eksporcie (BR-22). Nie liczy się też do zgłoszeń przyjętych w postępie (BR-21). Osobnego ekranu historii nie ma. Zbierający widzi własne zgłoszenia archiwalne na liście C3, a Weryfikator przy „bariera usunięta” widzi zdjęcie poprzedniego zgłoszenia (R2).
 
 Postęp przelicza się po każdej zmianie znacznika i statusu, także po cofnięciu znacznika (BR-20). Piętro jest obejrzane albo nie, więc drugi znacznik tego samego piętra nie zmienia postępu. Zgłoszenia lokalne i niewysłane znaczniki nie wchodzą do postępu, bo serwer ich jeszcze nie zna.
 
@@ -83,7 +83,7 @@ Statusy pochodzą ze słownika i US8.1. Każde zgłoszenie, także szybkie i zmi
 
 Status „archiwalne” jest końcowy: zgłoszenie nie wraca na mapę i nie jest usuwane po 90 dniach.
 
-Niewysłana edycja nie zmienia statusu. Lista zgłoszeń (C3) pokazuje przy zgłoszeniu dodatkowo znak „zmiana czeka na wysłanie”; szczegół ustalimy w fazie B.
+Niewysłana edycja nie zmienia statusu. Lista zgłoszeń (C3) pokazuje przy zgłoszeniu znak „zmiana czeka na wysłanie” obok niezmienionego statusu, by Zbierający wiedział, że edycja jest tylko w telefonie (BR-9).
 
 ## Poza MVP
 
