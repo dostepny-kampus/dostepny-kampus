@@ -22,7 +22,7 @@ Pule A i B łączy sygnał „Zgłoszenie w kolejce”. Magazyn „Zgłoszenia p
 | T2 | System | Uśrednia pozycję przez 30 s, pokazuje dokładność pozycji i liczbę satelitów według systemów (US6.1, NFR-1, NFR-2) | P-9 | N5 | C1 |
 | T3 | System | Punkt w konturze budynku: podpowiada najbliższy budynek, także bez sieci (US6.2, NFR-4) | P-9 | N5, N6 | C1 |
 | T4 | System | Punkt poza konturem: oznacza „poza budynkiem” i proponuje najbliższy budynek do wyboru (BR-G2, BR-G4) | P-9 | N5 | C1 |
-| T5 | Zbierający | Potwierdza albo zmienia budynek, poprawia punkt na planie piętra lub na mapie (US6.2, US6.3, NFR-3, BR-G1) | P-9 | N5 | C1 |
+| T5 | Zbierający | Potwierdza albo zmienia budynek, poprawia punkt na planie piętra lub na mapie (US6.2, US6.3, US6.4, NFR-3, BR-G1) | P-9 | N5 | C1 |
 | T6 | Zbierający | Wybiera typ bariery i uciążliwość, podaje piętro, robi zdjęcie, dopisuje opis (US7.1, US7.2) | P-1, P-9 | N5 | C2 |
 | T7 | Odwiedzający | Robi zdjęcie bariery | P-1, P-5, P-6 | N3, N4 | V4 |
 | T8 | Odwiedzający | Wybiera grupę barier jednym z 6 dużych przycisków; całe zgłoszenie szybkie to najwyżej 3 kroki (US4.1) | P-5, P-6 | N3, N4 | V4 |
@@ -39,13 +39,13 @@ Pule A i B łączy sygnał „Zgłoszenie w kolejce”. Magazyn „Zgłoszenia p
 | T19 | System | Ustawia „odrzucone”; Zbierający widzi powód i może poprawić zgłoszenie (US8.1, BR-3) | P-6 | N8 | C3 |
 | T20 | Odwiedzający / Gość niezalogowany | Znajduje budynek na mapie albo na liście po symbolu budynku, bez logowania (US1.1, US1.2, NFR-19) | P-2 | N1, N4 | V1 |
 | T21 | Odwiedzający / Gość niezalogowany | Otwiera kartę budynku: wejścia, windy, zgłoszenia przyjęte ze zdjęciami (US2.1, US2.2, BR-6) | P-1, P-4, P-8 | N1, N2 | V2 |
-| T22 | Odwiedzający / Gość niezalogowany | W budynku szczegółowym wybiera piętro i ogląda plan piętra; w budynku podstawowym planu nie ma (BR-G1) | P-9 | N1 | V2 |
+| T22 | Odwiedzający / Gość niezalogowany | W budynku szczegółowym wybiera piętro i ogląda plan piętra; w budynku podstawowym planu nie ma (US16.1, US16.2, BR-G1) | P-9 | N1 | V2 |
 | T23 | Odwiedzający / Gość niezalogowany | W „Zaplanuj wizytę” sprawdza, które wejście jest wejściem dostępnym (US3.1, US3.2) | P-2, P-9 | N1 | V3 |
-| T24 | Zbierający | Oznacza piętro obejrzane; w budynku podstawowym oznacza cały budynek | P-3 | N9 | C1 (do ustalenia w fazie B) |
+| T24 | Zbierający | Oznacza piętro obejrzane; w budynku podstawowym oznacza cały budynek (US15.1, BR-20) | P-3 | N9 | C1 (do ustalenia w fazie B) |
 | T25 | System | Przelicza postęp inwentaryzacji budynku: odsetek pięter obejrzanych, zgłoszenia czekające i przyjęte | P-3 | N9 | K1 |
 | T26 | Koordynator | Sprawdza postęp inwentaryzacji według budynków (US11.1) | P-3 | N9 | K1 |
 | T27 | Koordynator | Zamawia eksport GeoJSON albo CSV | P-8 | N9 | K3 |
-| T28 | System | Tworzy plik tylko ze zgłoszeń przyjętych, bez danych autora; GeoJSON w WGS84, CSV w PUWG 1992 (US13.1, US13.2, BR-6) | P-8 | N9 | K3 |
+| T28 | System | Tworzy plik tylko z bieżących zgłoszeń przyjętych, bez danych autora; GeoJSON w WGS84, CSV w PUWG 1992 (US13.1, US13.2, US13.3, BR-6, BR-22) | P-8 | N9 | K3 |
 | T29 | Koordynator | Otwiera plik w QGIS; to krok poza systemem | P-8 | N9 | — |
 
 Gość niezalogowany wykonuje T20–T23 bez konta. Zgłoszenie szybkie (T7–T9) wymaga konta Odwiedzającego, a uprawnienia ról opisuje strona [Role i uprawnienia](../role.md).
