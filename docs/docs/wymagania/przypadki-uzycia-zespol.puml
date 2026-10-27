@@ -38,20 +38,20 @@ rectangle "Dostępny Kampus" {
   usecase "UC17\nEksport do QGIS" as UC17
 }
 
-ZBI --> UC8
-ZBI --> UC9
-ZBI --> UC12
-ZBI --> UC13
-ZBI --> UC10
-WER --> UC14
-KOO --> UC15
-KOO --> UC16
-KOO --> UC17
+ZBI -- UC8
+ZBI -- UC9
+ZBI -- UC12
+ZBI -- UC13
+ZBI -- UC10
+WER -- UC14
+KOO -- UC15
+KOO -- UC16
+KOO -- UC17
 
 UC8 ..> UC10 : <<include>>
 UC12 ..> UC10 : <<include>>
 UC13 ..> UC10 : <<include>>
 UC10 <.. UC11 : <<extend>>\ninna wersja\nna serwerze
 
-UC16 --> UL
+UC16 -- UL
 @enduml

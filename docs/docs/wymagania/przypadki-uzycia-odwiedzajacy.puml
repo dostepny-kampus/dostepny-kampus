@@ -32,15 +32,15 @@ rectangle "Dostępny Kampus" {
   usecase "UC10\nSynchronizacja\nz serwerem" as UC10
 }
 
-GOS --> UC1
-GOS --> UC2
-GOS --> UC4
-GOS --> UC5
-GOS --> UC6
-ODW --> UC7
+GOS -- UC1
+GOS -- UC2
+GOS -- UC4
+GOS -- UC5
+GOS -- UC6
+ODW -- UC7
 
 UC2 <.. UC3 : <<extend>>\nbudynek\nszczegółowy
 UC7 ..> UC10 : <<include>>
 
-UC6 --> UL
+UC6 -- UL
 @enduml
