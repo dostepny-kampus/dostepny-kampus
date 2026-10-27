@@ -18,7 +18,7 @@ Strona pokazuje, dokąd prowadzi każda czynność na ekranach z [wymagań do ek
 
 ![Diagram przejść Gościa i Odwiedzającego: V1, V2, V3, V4 z krokami, V5, L1, L2](../_generated/nawigacja-odwiedzajacy.svg)
 
-Główna droga to V1, V2, V3 i z powrotem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Gość trafia do L1 zarówno z „Zgłoś barierę”, jak i z „Konto”.
+Główna droga to V1, V2, V3 i z powrotem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”.
 
 ## Zbierający
 
@@ -175,13 +175,13 @@ Weryfikator krąży między R1 i R2. Koordynator otwiera K1, K2 i K3 z L2, a z K
 
 | Kontrola | Wynik | Uwagi |
 | --- | --- | --- |
-| US3.2: najwyżej 3 dotknięcia od mapy do wejścia dostępnego | spełnione | najkrótsza droga: 1 dotknięcie do V2, 2 do V3; od otwarcia aplikacji przy pierwszym uruchomieniu do 4 |
+| Najwyżej 3 dotknięcia od mapy do wejścia dostępnego (US3.2) | spełnione | najkrótsza droga: 1 dotknięcie do V2, 2 do V3; od otwarcia aplikacji przy pierwszym uruchomieniu do 4 |
 | Ekran osiągalny dla roli z uprawnieniem | spełnione | 19 z 19 ekranów |
 | Ekran nieosiągalny dla roli bez uprawnienia | spełnione | brak przejścia z ekranu innej roli |
 | Powrót do punktu startu z każdego ekranu | spełnione | najwyżej 3 dotknięcia, jeśli spełniona jest propozycja P2 |
 | Brak ślepych zaułków | spełnione z uwagami | 2 przyciski bez opisanego celu: rozbieżności 2 i 3 |
 
-### US3.2: liczba dotknięć
+### Liczba dotknięć do wejścia dostępnego
 
 Liczymy dotknięcie, które uruchamia element; przy TalkBack to podwójne dotknięcie. Nie liczymy pisania liter, przesuwania mapy i listy ani ruchu fokusu TalkBack.
 
