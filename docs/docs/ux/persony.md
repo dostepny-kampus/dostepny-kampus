@@ -20,7 +20,7 @@ PE-1 reprezentuje grupę docelową kursu, więc jej potrzeby mają pierwszeństw
 | Wiek | 72 lata |
 | Kontekst | emerytka z Wrocławia, słuchaczka Politechniki Trzeciego Wieku, programu PWr dla osób 60+ [1]. Pierwszy raz idzie na wykład do C-13 |
 | Sprzęt | smartfon z Androidem z powiększoną czcionką w ustawieniach; okulary do czytania |
-| Umiejętności cyfrowe | dzwoni, wysyła zdjęcia rodzinie, szuka w wyszukiwarce; w znanych aplikacjach radzi sobie pewnie, w nowej myli się przy małych przyciskach i niejasnych komunikatach, a winę przypisuje sobie |
+| Umiejętności cyfrowe | dzwoni, wysyła zdjęcia rodzinie, szuka w wyszukiwarce; w znanych aplikacjach radzi sobie pewnie. W nowej myli się przy małych przyciskach i niejasnych komunikatach, a winę przypisuje sobie |
 | Wzrok | słabo czyta drobny i blady tekst, zwłaszcza w słońcu |
 | Dłonie | lekkie drżenie; chybia małe przyciski, nie lubi przeciągania i rozsuwania palcami |
 | Poruszanie się | chodzi z laską; schody bez poręczy i długie dystanse ją męczą |
