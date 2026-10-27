@@ -28,7 +28,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | „2”                         | ma piętro 2                                            |
         | „-1”                        | ma piętro -1                                           |
         | „1” z dopiskiem „półpiętro” | ma piętro 1 z dopiskiem „półpiętro”                    |
-        | „1,5”                       | nie zapisuje się, a aplikacja prosi o liczbę całkowitą |
+        | „1,5”                       | nie zapisuje się z piętrem „1,5”                       |
 
     @US6.4 @BR-G2
     Szablon scenariusza: Korekta punktu na mapie w budynku podstawowym i poza budynkiem
@@ -43,15 +43,16 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | na chodniku przed wejściem głównym A-1          |
 
     Szablon scenariusza: W budynku podstawowym zgłoszenie można złożyć zawsze
-      Zakładając, że <osoba> jest zalogowany i stoi w budynku B-4
+      Zakładając, że <osoba> jest zalogowany z rolą <rola>
+      Oraz stoi w budynku B-4
       Jeżeli złoży <zgłoszenie> z kompletem wymaganych danych
       Wtedy zgłoszenie zapisuje się bez komunikatu o błędzie
       Oraz zgłoszenie ma budynek B-4
 
       Przykłady:
-        | osoba         | zgłoszenie                                            |
-        | Odwiedzający  | zgłoszenie szybkie z grupą barier „wejście i drzwi”   |
-        | Zbierający    | zgłoszenie TB-13 „próg” z piętrem 0                   |
+        | osoba         | rola            | zgłoszenie                                            |
+        | Odwiedzający  | Odwiedzającego  | zgłoszenie szybkie z grupą barier „wejście i drzwi”   |
+        | Zbierający    | Zbierającego    | zgłoszenie TB-13 „próg” z piętrem 0                   |
 
   @BR-G2
   Reguła: Punkt poza konturem budynku to stan „Poza budynkiem”, a nie błąd
@@ -61,18 +62,19 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
       Zakładając, że Zbierający stoi na chodniku przed wejściem głównym A-1, poza konturem budynku
       Jeżeli skończy uśrednianie pozycji
       Wtedy widzi stan „Poza budynkiem” bez komunikatu o błędzie
-      Oraz aplikacja proponuje budynek A-1
+      Oraz aplikacja podpowiada budynek A-1
 
     @US6.2
     Szablon scenariusza: Propozycję najbliższego budynku można wybrać albo odrzucić
-      Zakładając, że po pomiarze na chodniku przed wejściem głównym A-1 aplikacja proponuje budynek A-1
+      Zakładając, że Zbierający stoi na chodniku przed wejściem głównym A-1, poza konturem budynku
+      Oraz po uśrednianiu pozycji aplikacja podpowiada budynek A-1
       Jeżeli Zbierający <decyzja>
-      Wtedy zgłoszenie ma miejsce „<miejsce>”
+      Wtedy zgłoszenie <wynik>
 
       Przykłady:
-        | decyzja                   | miejsce         |
-        | wybierze budynek A-1      | A-1             |
-        | odrzuci propozycję        | poza budynkiem  |
+        | decyzja                       | wynik                   |
+        | wybierze budynek A-1          | ma budynek A-1          |
+        | odrzuci podpowiedź budynku    | jest „poza budynkiem”   |
 
     Scenariusz: Zgłoszenie szybkie poza konturem budynku zapisuje się bez błędu
       Zakładając, że Odwiedzający jest zalogowany i stoi na chodniku przed wejściem głównym A-1
@@ -94,20 +96,24 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
     Scenariusz: Zgłoszenie w budynku po nieudanym imporcie planów
       Zakładając, że import planów pięter budynku B-1 się nie udał
       Jeżeli Zbierający złoży zgłoszenie w budynku B-1 i wpisze piętro 3
-      Wtedy zgłoszenie zapisuje się z budynkiem B-1 i piętrem 3
+      Wtedy zgłoszenie ma budynek B-1
+      Oraz zgłoszenie ma piętro 3
 
   @BR-G4
   Reguła: Daleko od budynków PWr zgłoszenie zapisuje się jako „poza budynkiem”
 
-    @US6.2
+    @US6.2 @do-ustalenia
     Scenariusz: Pomiar daleko od budynków PWr nie dostaje propozycji budynku
+      # próg ustalany w fazie C
       Zakładając, że Zbierający stoi przy kampusie dalej od budynków PWr niż próg propozycji budynku
       Jeżeli skończy uśrednianie pozycji i zapisze zgłoszenie TB-17 „krawężnik”
-      Wtedy aplikacja nie proponuje żadnego budynku
-      Oraz zgłoszenie zapisuje się jako „poza budynkiem”, bez piętra
+      Wtedy aplikacja nie podpowiada żadnego budynku
+      Oraz zgłoszenie jest „poza budynkiem”, bez piętra
       Ale aplikacja nie pokazuje komunikatu o błędzie
 
+    @do-ustalenia
     Scenariusz: Mapa działa daleko od budynków PWr
+      # próg ustalany w fazie C
       Zakładając, że Odwiedzający stoi przy kampusie dalej od budynków PWr niż próg propozycji budynku
       Jeżeli otworzy mapę kampusu
       Wtedy widzi mapę z konturami budynków PWr
