@@ -44,7 +44,7 @@ Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 o
 | --- | --- | --- | --- |
 | M-1 | Budynki szczegółowe zinwentaryzowane | 5 z 5 budynków (A-1, B-1, C-13, D-1, D-2) obejrzanych na miejscu; każde wejście z danych PWr ma status „dostępne / niedostępne” | N1, N9 |
 | M-2 | Dokładna pozycja bariery | cel w terenie otwartym: po 30 s uśredniania mediana błędu poziomego < 1 m; sprawdzamy ≥ 10 pomiarami nad punktami kontrolnymi (NFR-1). To cel, nie gwarancja | N5 |
-| M-3 | Aplikacja wygodna dla grupy docelowej | średni wynik SUS ≥ 68 w badaniu z ≥ 5 użytkownikami z grupy docelowej (NFR-26) | N4 |
+| M-3 | Aplikacja wygodna dla grupy docelowej | średni wynik SUS ≥ 68 w badaniu z ≥ 5 użytkownikami z grupy docelowej (NFR-24) | N4 |
 | M-4 | Szybkie znalezienie dostępnego wejścia | ≥ 4 z 5 uczestników samodzielnie znajduje dostępne wejście do wskazanego budynku w ≤ 3 dotknięciach od mapy (US3.2) | N1 |
 | M-5 | Dane gotowe dla GIS | plik GeoJSON w WGS84 otwiera się w QGIS bez błędów; CSV ma współrzędne w układzie PUWG 1992 (US13.1, US13.2) | N9 |
 | M-6 | Praca bez sieci bez utraty danych | w teście ≥ 20 zgłoszeń zapisanych bez sieci: po jej powrocie 100 % trafia na serwer bez działania użytkownika (US9.2) | N6, N7 |
