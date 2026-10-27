@@ -1,4 +1,4 @@
-"""Dostępny Kampus — kontrola języka polskiego (LanguageTool, pl-PL) w plikach Markdown. Author: Vladyslav Yevkov. Version: 0.1.0. Copyright (c) 2026 Vladyslav Yevkov."""
+"""Dostępny Kampus — kontrola języka polskiego (LanguageTool, pl-PL) w plikach Markdown. Author: Vladyslav Yevkov. Version: 0.1.1. Copyright (c) 2026 Vladyslav Yevkov."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from check_ids import ID_BODY
+from check_ids import BLOCK_MARKER, BLOCK_NAMES, ID_BODY
 
 REPO = Path(__file__).resolve().parent.parent
 GLOSSARY = REPO / "docs" / "biznes" / "slownik.md"
@@ -46,8 +46,6 @@ EMPHASIS = re.compile(r"\*\*|__|(?<!\w)[*_]|[*_](?!\w)")
 SPACES = re.compile(r"[ \t]{2,}")
 SPACE_BEFORE_PUNCT = re.compile(r"\s+([,.;:!?)])")
 FRAGMENT_RULES = frozenset({"UPPERCASE_SENTENCE_START", "PUNCTUATION_PARAGRAPH_END"})
-MATRIX_START = "<!-- macierz:start -->"
-MATRIX_END = "<!-- macierz:end -->"
 
 
 @dataclass(frozen=True)
@@ -127,19 +125,20 @@ def line_segments(number: int, line: str) -> list[Segment]:
 
 
 def extract_segments(text: str) -> list[Segment]:
-    """Zwraca segmenty z całego dokumentu z pominięciem front matter, bloków kodu, wygenerowanego bloku macierzy
-    i sekcji „Źródła” (tytuły źródeł są w języku oryginału)."""
+    """Zwraca segmenty z całego dokumentu z pominięciem front matter, bloków kodu, bloków wygenerowanych przez
+    check_ids (macierz śledzenia) i sekcji „Źródła” (tytuły źródeł są w języku oryginału)."""
     lines = text.splitlines()
     start = front_matter_end(lines)
     segments: list[Segment] = []
-    in_code = in_matrix = False
+    in_code = in_block = False
     sources: int | None = None
     for number, line in enumerate(lines[start:], start=start + 1):
+        marker = BLOCK_MARKER.search(line)
         if FENCE.match(line):
             in_code = not in_code
-        elif MATRIX_START in line or MATRIX_END in line:
-            in_matrix = MATRIX_START in line
-        elif not (in_code or in_matrix):
+        elif marker and marker.group(1) in BLOCK_NAMES:
+            in_block = marker.group(2) == "start"
+        elif not (in_code or in_block):
             sources = sources_level(line, sources)
             segments += line_segments(number, line) if sources is None else []
     return segments
