@@ -57,7 +57,7 @@ PASEK --> V1 : „Mapa”
 PASEK --> V5 : „Pomoc”
 PASEK --> ZG : „Zgłoś barierę”\n(zalogowani)
 PASEK --> L1 : „Zgłoś barierę”,\n„Konto” (Gość)
-PASEK --> L2 : „Konto”; role\npracownicze:\n„Moja praca”
+PASEK --> L2 : „Konto”; role\npracownicze:\n„Konto i praca”
 
 ZG --> K1 : zgoda jest\nalbo „Pozwól na\nlokalizację”
 ZG --> UST : „Otwórz\nustawienia”

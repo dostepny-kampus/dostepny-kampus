@@ -14,7 +14,7 @@ Strona pokazuje, dokąd prowadzi każda czynność na ekranach z [wymagań do ek
 
 „Wstecz” jest na każdym ekranie poza V1 i wraca do poprzedniego ekranu (wymagania wspólne, NFR-15). Wysłany formularz znika z historii „Wstecz” (P2). Diagramy pokazują „Wstecz” tylko tam, gdzie cel nie jest oczywisty. „Zalogowani” w tabelach to RO-ODW i role pracownicze (BR-1).
 
-Czwarta pozycja paska dolnego to „Konto”, a osoby z rolą pracowniczą widzą na niej „Moja praca” (nazwa robocza, B6). Obie prowadzą do L2 (P1).
+Czwarta pozycja paska dolnego to „Konto”, a osoby z rolą pracowniczą widzą na niej „Konto i praca” ([słownik użytkownika](slownik-uzytkownika.md#nazwa-wejscia)). Obie prowadzą do L2 (P1).
 
 ## Gość i Odwiedzający
 
@@ -26,7 +26,7 @@ Główna droga to V1, V2, V3 i z powrotem. Zgłoszenie szybkie V4 ma trzy kroki,
 
 ![Diagram przejść Zbierającego: V2, L2 i ekrany C1–C7](../_generated/nawigacja-zespol-zbierajacy.svg)
 
-Zbierający zaczyna pracę w dwóch miejscach. Pomiar i listę zgłoszeń otwiera z L2 („Moja praca”), a zmiany przy budynku (C2, C5, C6, C7) z karty budynku V2. Każdy zapis i wysłanie kończy się na C3, a „Wstecz” z C3 wraca tam, skąd zaczęła się praca (P2).
+Zbierający zaczyna pracę w dwóch miejscach. Pomiar i listę zgłoszeń otwiera z L2 („Konto i praca”), a zmiany przy budynku (C2, C5, C6, C7) z karty budynku V2. Każdy zapis i wysłanie kończy się na C3, a „Wstecz” z C3 wraca tam, skąd zaczęła się praca (P2).
 
 ## Weryfikator i Koordynator
 
@@ -48,7 +48,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | pasek dolny | „Pomoc” | V5 | wszystkie | US5.1 |
 | pasek dolny | „Konto” | L1 | RO-GOS | US14 |
 | pasek dolny | „Konto” | L2 | RO-ODW | US14.1, US14.3 |
-| pasek dolny | „Moja praca” (nazwa robocza, B6) | L2, na górze lista czynności | role pracownicze | US14.1, P1 |
+| pasek dolny | „Konto i praca” | L2, na górze sekcja „Twoja praca” | role pracownicze | US14.1, P1 |
 | każdy ekran poza V1 | „Wstecz” | poprzedni ekran | wszystkie | NFR-15 |
 | ekran po wysłaniu formularza: C3, R1, V4 potwierdzenie | „Wstecz” | ekran, z którego zaczęła się praca: L2, V2 albo ekran sprzed V4 | zalogowani | NFR-15, P2 |
 
@@ -209,7 +209,7 @@ Osoba z TalkBack ma zawsze drogę D, czyli dokładnie 3 dotknięcia. Test miary 
 
 ### Dostęp ról do ekranów
 
-✔ — ekran osiągalny; ✖ — w aplikacji nie ma do niego drogi. Liczba w nawiasie to najmniejsza liczba dotknięć od V1. Przypisy odsyłają do przypisów macierzy uprawnień. „Konto” w kolumnie „Droga” oznacza dla ról pracowniczych pozycję „Moja praca” (P1).
+✔ — ekran osiągalny; ✖ — w aplikacji nie ma do niego drogi. Liczba w nawiasie to najmniejsza liczba dotknięć od V1. Przypisy odsyłają do przypisów macierzy uprawnień. Role pracownicze widzą czwartą pozycję paska jako „Konto i praca” (P1).
 
 | Ekran | RO-GOS | RO-ODW | RO-ZBI | RO-WER | RO-KOO | Droga | Zgodne z macierzą |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -219,19 +219,19 @@ Osoba z TalkBack ma zawsze drogę D, czyli dokładnie 3 dotknięcia. Test miary 
 | V4 | ✖ | ✔ | ✔ | ✔ | ✔ | „Zgłoś barierę” (1); Gość trafia do L1 | tak, przypis 2 |
 | V5 | ✔ | ✔ | ✔ | ✔ | ✔ | „Pomoc” (1) | tak |
 | L1 | ✔ | ✖ | ✖ | ✖ | ✖ | „Konto” albo „Zgłoś barierę” (1) | tak, US14.2 |
-| L2 | ✖ | ✔ | ✔ | ✔ | ✔ | „Konto” (1) | tak |
-| C1 | ✖ | ✖ | ✔ | ✖ | ✖ | „Konto”, „Nowe zgłoszenie z pomiarem” (2) | tak |
+| L2 | ✖ | ✔ | ✔ | ✔ | ✔ | „Konto” albo „Konto i praca” (1) | tak |
+| C1 | ✖ | ✖ | ✔ | ✖ | ✖ | „Konto i praca”, „Nowe zgłoszenie z pomiarem” (2) | tak |
 | C2 | ✖ | ✖ | ✔ | ✖ | ✖ | budynek, „Popraw zgłoszenie” (2) | tak |
-| C3 | ✖ | ✖ | ✔ | ✖ | ✖ | „Konto”, „Moje zgłoszenia” (2) | tak, przypis 3 |
-| C4 | ✖ | ✖ | ✔ | ✖ | ✖ | „Konto”, „Moje zgłoszenia”, stan synchronizacji (3) | tak; „Wysyłka po powrocie sieci” innych ról działa w tle, bez C4 |
-| C5 | ✖ | ✖ | ✔ | ✖ | ✔ | RO-ZBI: budynek, „Piętra obejrzane” (2); RO-KOO: „Konto”, „Postęp inwentaryzacji”, budynek (3) | tak |
+| C3 | ✖ | ✖ | ✔ | ✖ | ✖ | „Konto i praca”, „Moje zgłoszenia” (2) | tak, przypis 3 |
+| C4 | ✖ | ✖ | ✔ | ✖ | ✖ | „Konto i praca”, „Moje zgłoszenia”, stan synchronizacji (3) | tak; „Wysyłka po powrocie sieci” innych ról działa w tle, bez C4 |
+| C5 | ✖ | ✖ | ✔ | ✖ | ✔ | RO-ZBI: budynek, „Piętra obejrzane” (2); RO-KOO: „Konto i praca”, „Postęp inwentaryzacji”, budynek (3) | tak |
 | C6 | ✖ | ✖ | ✔ | ✖ | ✖ | budynek, „Zmień oznaczenie” (2) | tak |
 | C7 | ✖ | ✖ | ✔ | ✖ | ✖ | budynek, „Bariery już nie ma” (2) | tak |
-| R1 | ✖ | ✖ | ✖ | ✔ | ✖ | „Konto”, „Zgłoszenia do sprawdzenia” (2) | tak |
+| R1 | ✖ | ✖ | ✖ | ✔ | ✖ | „Konto i praca”, „Zgłoszenia do sprawdzenia” (2) | tak |
 | R2 | ✖ | ✖ | ✖ | ✔ | ✖ | jak R1, „Weź do sprawdzenia” (3) | tak |
-| K1 | ✖ | ✖ | ✖ | ✖ | ✔ | „Konto”, „Postęp inwentaryzacji” (2) | tak |
-| K2 | ✖ | ✖ | ✖ | ✖ | ✔ | „Konto”, „Zaproś osobę” (2) | tak |
-| K3 | ✖ | ✖ | ✖ | ✖ | ✔ | „Konto”, „Pobierz eksport” (2) | tak |
+| K1 | ✖ | ✖ | ✖ | ✖ | ✔ | „Konto i praca”, „Postęp inwentaryzacji” (2) | tak |
+| K2 | ✖ | ✖ | ✖ | ✖ | ✔ | „Konto i praca”, „Zaproś osobę” (2) | tak |
+| K3 | ✖ | ✖ | ✖ | ✖ | ✔ | „Konto i praca”, „Pobierz eksport” (2) | tak |
 
 Nieosiągalność wynika z tabeli przejść. Do ekranów C, R i K prowadzą tylko: czynności L2 według roli (US14.1), przyciski Zbierającego na V2 i przejścia w obrębie jednej roli.
 
@@ -292,7 +292,7 @@ Propozycje P1, P2 i P3 są przyjęte i wpisane w sekcji „Decyzje fazy B” [wy
 
 Dziś cała praca Zbierającego, Weryfikatora i Koordynatora poza kartą budynku zaczyna się w L2 „Konto”. Osoba szukająca „Moich zgłoszeń” nie skojarzy ich z kontem.
 
-**Propozycja.** Czwarta pozycja paska dolnego zostaje w tym samym miejscu i dalej prowadzi do L2. Osoba z co najmniej jedną rolą pracowniczą widzi na niej nazwę mówiącą o pracy: „Moja praca” (nazwa robocza, B6).
+**Propozycja.** Czwarta pozycja paska dolnego zostaje w tym samym miejscu i dalej prowadzi do L2. Osoba z co najmniej jedną rolą pracowniczą widzi na niej nazwę mówiącą o pracy: „Konto i praca”.
 
 L2 zaczyna się wtedy listą „Twoje czynności”, a dane konta, klauzula i „Wyloguj” są niżej. Gość i Odwiedzający widzą „Konto” bez zmian.
 
@@ -308,11 +308,11 @@ L2 zaczyna się wtedy listą „Twoje czynności”, a dane konta, klauzula i �
 
 | Odrzucony wariant | Dlaczego |
 | --- | --- |
-| Piąta pozycja „Moja praca” obok „Konto” | dwie pozycje do jednego ekranu, mniejsze cele dotyku |
+| Piąta pozycja dla pracy obok „Konto” | dwie pozycje do jednego ekranu, mniejsze cele dotyku |
 | Osobny ekran pracy wydzielony z L2 | nowe ID i podział L2 bez kryterium (decyzja 16) |
 | Czynności ról na mapie V1 | mapa ma jedną czynność główną, a L2 celowo jest listą przycisków, nie kafelkami |
 
-Ostateczną nazwę pozycji ustali słownik użytkownika (B6). Musi ona objąć też dane konta, bo L2 dalej je zawiera. Zmiana objęła wiersz „Pasek dolny” w wymaganiach wspólnych i kolejność elementów L2.
+Nazwę wybrał [słownik użytkownika](slownik-uzytkownika.md#nazwa-wejscia) (B6). „Konto i praca” obejmuje też dane konta, bo L2 dalej je zawiera. Zmiana objęła wiersz „Pasek dolny” w wymaganiach wspólnych i kolejność elementów L2.
 
 ### P2. Wysłany formularz znika z historii „Wstecz”
 
