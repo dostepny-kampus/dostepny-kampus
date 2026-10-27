@@ -6,7 +6,8 @@ Funkcja: Zgłoszenie szybkie
 
   @US4.1
   Scenariusz: Zgłoszenie szybkie w 3 krokach z pozycją dołączoną automatycznie
-    Zakładając, że Odwiedzający jest zalogowany i stoi przy niesprawnej windzie w budynku D-2
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz stoi przy niesprawnej windzie w budynku D-2
     Jeżeli zrobi zdjęcie windy
     Oraz wybierze grupę barier „komunikacja pionowa”
     Oraz wyśle zgłoszenie
@@ -23,34 +24,57 @@ Funkcja: Zgłoszenie szybkie
 
   @US4.1 @US4.3
   Szablon scenariusza: Zgłoszenia szybkiego nie da się wysłać bez zdjęcia albo grupy barier
-    Zakładając, że Odwiedzający jest zalogowany i zaczął zgłoszenie szybkie w budynku C-13
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz zaczął zgłoszenie szybkie w budynku C-13
     Jeżeli spróbuje wysłać zgłoszenie bez <brak>
     Wtedy zgłoszenie nie zostaje wysłane
-    Oraz aplikacja mówi, że brakuje <brak>
 
     Przykłady:
       | brak          |
       | zdjęcia       |
       | grupy barier  |
 
+  Szablon scenariusza: Zgłoszenia szybkiego bez bieżącej pozycji nie da się wysłać
+    # Reakcja aplikacji jest ustalana w fazie B (UC7, 2a i 4c); scenariusz sprawdza tylko brak wysyłki.
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz <przyczyna>
+    Jeżeli zrobi zdjęcie bariery
+    Oraz wybierze grupę barier „wejście i drzwi”
+    Oraz spróbuje wysłać zgłoszenie
+    Wtedy zgłoszenie nie zostaje wysłane
+
+    Przykłady:
+      | przyczyna                             |
+      | aplikacja nie ma zgody na lokalizację |
+      | telefon nie ustala bieżącej pozycji   |
+
   @US4.2 @BR-9
-  Scenariusz: Zgłoszenie szybkie bez sieci czeka w telefonie i wysyła się samo
-    Zakładając, że Odwiedzający jest w piwnicy budynku A-1, gdzie nie ma sieci
+  Scenariusz: Zgłoszenie szybkie bez sieci zapisuje się w telefonie
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz telefon nie ma sieci
     Jeżeli wyśle zgłoszenie szybkie z grupą barier „komunikacja pozioma”
     Wtedy zgłoszenie zapisuje się w telefonie
-    Oraz po powrocie sieci zgłoszenie wysyła się bez działania Odwiedzającego
+
+  @US4.2 @BR-9
+  Scenariusz: Zgłoszenie szybkie zapisane bez sieci wysyła się samo po powrocie sieci
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz w telefonie czeka zgłoszenie szybkie zapisane bez sieci
+    Jeżeli sieć wróci
+    Wtedy zgłoszenie dociera na serwer bez działania Odwiedzającego
     Oraz na serwerze jest dokładnie jedno takie zgłoszenie
 
   @US4.4
   Scenariusz: Potwierdzenie po wysłaniu bez dalszego statusu
-    Zakładając, że Odwiedzający jest zalogowany i ma sieć
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz telefon ma sieć
     Jeżeli wyśle zgłoszenie szybkie z grupą barier „toalety”
     Wtedy widzi potwierdzenie, że zgłoszenie trafi do weryfikacji
     Ale aplikacja nie pokazuje mu listy jego zgłoszeń ani ich statusów
 
   @US4.4 @US4.2
   Scenariusz: Potwierdzenie bez sieci mówi o późniejszej wysyłce
-    Zakładając, że Odwiedzający jest zalogowany, a telefon nie ma sieci
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz telefon nie ma sieci
     Jeżeli wyśle zgłoszenie szybkie z grupą barier „inne”
     Wtedy widzi potwierdzenie, że zgłoszenie wyśle się po powrocie sieci i trafi do weryfikacji
 
