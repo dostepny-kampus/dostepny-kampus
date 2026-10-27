@@ -347,6 +347,39 @@ Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk,
 
 Wynik: ikony ma 24% elementów w całej aplikacji. Najwięcej ma V3, 47%, czyli poniżej progu 50%. Na V3 próg trzyma tylko „Wstecz” bez ikony, więc nowa ikona na tym ekranie wymaga usunięcia innej.
 
+## Nazwa wejścia do pracy zespołu {#nazwa-wejscia}
+
+Recenzja wymagań do ekranów (uwaga 24, spór) wskazała, że cała praca Zbierającego, Weryfikatora i Koordynatora zaczyna się w „Konto”. Osoba szukająca „Moich zgłoszeń” nie skojarzy ich z kontem. Strukturę nawigacji ocenia osobno mapa nawigacji (zadanie B4), a ta sekcja wybiera tylko nazwę.
+
+| Wariant | Za | Przeciw |
+| --- | --- | --- |
+| „Konto” (bez zmian) | Jedna nazwa dla wszystkich ról. | Praca ról zespołu jest ukryta pod nazwą, która jej nie zapowiada (Nielsen 2, 6). |
+| „Moja praca” | Nazywa główną czynność ról zespołu na L2. | Ukrywa „Wyloguj się” i „Informację o danych osobowych”. Zmienia drogę do klauzuli „Konto, Informacja o danych osobowych” (NFR-30). |
+| **„Konto i praca” (wybrany)** | Zaczyna się od „Konto”, więc instrukcja V5 i droga do klauzuli zostają prawdziwe. Słowo „praca” zapowiada czynności ról. | Dłuższy napis, ale tej samej długości co „Zgłoś barierę” (13 znaków), więc pasek się nie zmienia. |
+
+Decyzja: „Konto i praca” widzi każda osoba z co najmniej jedną rolą pracowniczą, na pasku dolnym i w nagłówku L2. Gość i Odwiedzający widzą „Konto”. Ikona `person` zostaje ta sama, więc pasek wygląda tak samo dla wszystkich ról. Sekcja na L2 nazywa się „Twoja praca”.
+
+## Propozycje do wymagań ekranów {#propozycje}
+
+Strona [wymagań do ekranów](wymagania-ekranow.md) zostaje bez zmian. Poniższe zmiany wprowadzi jej właściciel.
+
+| Nr | Ekran | Teraz w wymaganiach | Propozycja | Dlaczego |
+| --- | --- | --- | --- | --- |
+| PW-1 | pasek dolny, L2 | „Konto” dla wszystkich ról | „Konto i praca” dla ról pracowniczych; sekcja L2 „Twoja praca” zamiast „Twoje czynności” | spór z recenzji, uwaga 24 |
+| PW-2 | V2, V3 | „Zaplanuj wizytę”; nazwa robocza V3 „Zaplanuj wizytę” | przycisk „Sprawdź, którędy wejść”, nagłówek V3 „Którędy wejść do C-13” | „Zaplanuj wizytę” brzmi jak rezerwacja terminu |
+| PW-3 | V2, V3, C6, K1 | źródło „import” albo „obchód”; data weryfikacji bez słowa; K1 „Wejścia potwierdzone na obchodzie” | „Z map i opisów, stan z …”, „Sprawdzone na miejscu …”, „Sprawdzone …”; K1 „Wejścia sprawdzone na miejscu: x z y” | recenzja B3, uwaga 23; te same słowa dla Odwiedzającego i Koordynatora |
+| PW-4 | wymagania wspólne, V1, V2, L1 | wskaźnik braku sieci bez napisu; „Do pierwszego uruchomienia”; „karta budynku” w komunikatach | „Brak internetu”; „Pierwsze otwarcie aplikacji”; „opis budynku” | żargon dla osoby starszej |
+| PW-5 | V4, V5, L1, L2 | rzeczownik „zgłoszenie” w komunikatach; „Anuluj zgłoszenie”; „Anuluj” w potwierdzeniu wycofania zgody | „zdjęcie bariery”, „bariera”; „Zrezygnuj”; „Zostaw zgodę”; treść według katalogu komunikatów | plan fazy B: bez słowa „zgłoszenie” dla Odwiedzającego |
+| PW-6 | V2 | „Plan piętra niedostępny dla tego budynku”, „Zdjęcie niedostępne bez internetu”, zdanie o barierach „którą sprawdziliśmy” | „Nie mamy planu pięter tego budynku. Bariery są na liście niżej.”, „Zdjęcie zobaczysz po połączeniu z internetem.”, „Nie mamy jeszcze sprawdzonych barier w tym budynku…” | słowo „niedostępne” tylko o wejściu; prostsze zdanie |
+| PW-7 | V4 | 6 przycisków grup barier z tekstem i ikoną; nazwy grup z klasyfikacji | pytanie „Czego dotyczy bariera?”, nazwy „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego”, bez ikon | NFR-21 nie obejmuje grup; brak trafnych ikon; próg 50% |
+| PW-8 | V4, C2, C6, C7, V1, V5 | „Zrób ponownie”; „+” i „−”; pole „Symbol budynku”; „Pomiń” | „Zrób nowe zdjęcie”; „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo”; „Wpisz symbol budynku, np. C-13”; „Pomiń instrukcję” | napis mówi, co się stanie |
+| PW-9 | V1, V2, V4, C1, C3, C4, R1, R2, K1, K3 | ładowanie w 1. osobie liczby pojedynczej, np. „Wczytuję”, „Ustalam”; „Nie znaleziono” | 1. osoba liczby mnogiej: „Wczytujemy”, „Ustalamy, gdzie jesteś”, „Nie znaleźliśmy” | jeden głos aplikacji, jak w „Wyślemy”, „Dziękujemy” |
+| PW-10 | stany wspólne, V2, V3, C2, C3, C4, R1, R2, K2 | komunikaty z 3 zdaniami albo bez rady, co zrobić | treść według katalogu komunikatów; „Spróbuj ponownie” także przy błędzie serwera | zasada „co się stało i co zrobić” w 2 zdaniach |
+| PW-11 | wymagania wspólne, C5, K1 | ikona przy „Wstecz” nieopisana; „nieobejrzane” tekstem i ikoną | „Wstecz” bez ikony; „Nieobejrzane” bez ikony, „Obejrzane” z ikoną `task` | próg 50% na V3; NFR-21 nie obejmuje znacznika |
+| PW-12 | V2, L2, C3, C4, C5, C7 | „Nowe zgłoszenie z pomiarem”, „Nowe zgłoszenie”, „Bariery już nie ma”, „Piętra obejrzane”, „Cofnij”, „lokalne”. Konflikt bez napisu o skutku, „Anuluj” w C5. | „Zmierz i zgłoś barierę”, „Zgłoś, że bariery nie ma”, „Oznacz obejrzane piętra”, „Cofnij znacznik”, „W telefonie”. Napis „Druga wersja zostanie usunięta.”, „Zostaw znacznik”. | czasownik na przycisku; skutek przed decyzją |
+| PW-13 | V1, V2, V3, C2, R2 | uciążliwość 1–3 bez napisów | „Utrudnienie”, „Potrzebna pomoc”, „Blokada” dla wszystkich ról | słowa z kryteriów skali uciążliwości |
+| PW-14 | C3, L2, R1, K2, K3 | „Wyślij ponownie do bieżącego zgłoszenia”, „Wyloguj”. Nagłówki „Kolejka weryfikacji”, „Zaproszenie”, „Eksport”. | „Wyślij do aktualnego zgłoszenia”, „Wyloguj się”. Nagłówki „Zgłoszenia do sprawdzenia”, „Zaproś osobę”, „Pobierz eksport”. | nagłówek równy napisowi przycisku |
+
 ## Źródła
 
 1. Treść komunikatów o błędach: co się stało i jak to naprawić (Nielsen Norman Group): <https://www.nngroup.com/articles/error-message-guidelines/>
