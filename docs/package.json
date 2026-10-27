@@ -6,5 +6,9 @@
   "description": "Dokumentacja projektu Dostępny Kampus",
   "scripts": {
     "lint:md": "markdownlint-cli2"
+  },
+  "devDependencies": {
+    "bpmn-to-image": "^0.10.0",
+    "markdownlint-cli2": "^0.24.0"
   }
 }
