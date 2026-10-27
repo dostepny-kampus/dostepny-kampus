@@ -26,17 +26,19 @@ L --> W : system: serwer\npotwierdził odbiór (BR-9)
 W --> V : Weryfikator:\nbierze (BR-4, BR-11)
 V --> P : Weryfikator:\nprzyjęcie\n(BR-14, BR-15, BR-23)
 V --> O : Weryfikator:\nodrzucenie z powodem\n(BR-13, BR-16, BR-23)
-O --> W : Zbierający (autor):\npoprawka i ponowne\nwysłanie (BR-3)
+O --> W : Zbierający (autor):\npoprawka i ponowne\nwysłanie (BR-3);\n„nieaktualne” do\nbieżącego (BR-23)
 O --> [*] : system: usunięcie\npo 90 dniach (NFR-29)
 P --> A : system: przyjęto zmianę\nlub „bariera usunięta”\n(BR-18, BR-19)
+P --> P : zmiana = nowe\nzgłoszenie (BR-18)
 V --> A : Weryfikator:\nprzyjęcie\n„bariera usunięta”\n(BR-19)
 
 note left of P
   Zmiana przyjętego =
   nowe zgłoszenie
   od statusu „lokalne” (BR-18).
-  „Bariera usunięta”:
-  dowolny Zbierający (BR-19).
+  Zgłoszenie szybkie
+  i „bariera usunięta”:
+  dowolny Zbierający (BR-18, BR-19).
 end note
 
 note bottom of A
