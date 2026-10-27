@@ -20,6 +20,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
       | w weryfikacji |
       | przyjęte      |
       | odrzucone     |
+      | archiwalne    |
 
   @US8.1 @BR-16
   Scenariusz: Zgłoszenie odrzucone pokazuje powód odrzucenia
@@ -74,10 +75,26 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
     Wtedy powstaje nowe zgłoszenie powiązane z poprzednim, ze statusem „lokalne”
     Oraz poprzednie zgłoszenie nadal jest przyjęte i widoczne na mapie
 
-  @US8.4 @BR-19
-  Scenariusz: Inny Zbierający niż autor zgłasza usunięcie bariery z karty budynku
+  @BR-3 @BR-18
+  Scenariusz: Zwykłą zmianę przyjętego zgłoszenia z pomiaru precyzyjnego składa tylko autor
+    Zakładając, że przyjęte zgłoszenie TB-13 „próg” w C-13 z pomiaru precyzyjnego złożył inny Zbierający
+    Jeżeli Zbierający spróbuje zmienić jego uciążliwość z pominięciem aplikacji
+    Wtedy próba jest odrzucona
+    Oraz nie powstaje nowe zgłoszenie
+
+  @BR-18
+  Scenariusz: Przyjęte zgłoszenie szybkie zmienia dowolny Zbierający
+    Zakładając, że przyjęte zgłoszenie szybkie Odwiedzającego w budynku C-13 ma typ TB-13 „próg” i uciążliwość 1
+    Jeżeli Zbierający, który nie jest autorem tego zgłoszenia, zmieni uciążliwość na 2
+    Wtedy powstaje nowe zgłoszenie powiązane z poprzednim, ze statusem „lokalne”
+    Oraz autorem nowego zgłoszenia jest ten Zbierający
+    Oraz poprzednie zgłoszenie nadal jest przyjęte i widoczne na mapie
+
+  @US8.4 @BR-19 @do-ustalenia
+  Scenariusz: Inny Zbierający niż autor zgłasza usunięcie bariery
+    # punkt startu (np. karta budynku) ustalany w fazie B
     Zakładając, że zgłoszenie TB-9 „niesprawna winda” na piętrze budynku C-13 jest przyjęte, a jego autorem jest inna osoba
-    Jeżeli Zbierający otworzy kartę budynku C-13 i wybierze zmianę tego zgłoszenia z oznaczeniem „bariera usunięta”
+    Jeżeli Zbierający wybierze zmianę tego zgłoszenia z oznaczeniem „bariera usunięta”
     Oraz zrobi nowe zdjęcie sprawnej windy i wyśle zmianę przy dostępnej sieci
     Wtedy powstaje zgłoszenie „bariera usunięta” z typem, miejscem i piętrem poprzedniego zgłoszenia
     Oraz na liście Zbierającego to zgłoszenie ma status „wysłane”
@@ -88,3 +105,11 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
     Zakładając, że Zbierający zaczął zmianę zgłoszenia przyjętego TB-9 „niesprawna winda” z oznaczeniem „bariera usunięta”
     Jeżeli spróbuje wysłać zmianę bez nowego zdjęcia miejsca
     Wtedy zgłoszenie nie zostaje wysłane
+
+  @US8.4 @BR-19 @BR-7
+  Scenariusz: Zgłoszenie „bariera usunięta” zapisuje się bez uciążliwości
+    Zakładając, że Zbierający zaczął zmianę zgłoszenia przyjętego TB-9 „niesprawna winda” z oznaczeniem „bariera usunięta”
+    Oraz zrobił nowe zdjęcie miejsca
+    Jeżeli zapisze zmianę bez podania uciążliwości
+    Wtedy zgłoszenie „bariera usunięta” zapisuje się ze statusem „lokalne”
+    Ale aplikacja nie wymaga uciążliwości
