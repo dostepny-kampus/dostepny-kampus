@@ -49,6 +49,8 @@ scale 2
 ' ---------- Tekst ----------
 
 ' Tekst zawinięty do $DK_MAKS znaków w wierszu, łamany na spacjach.
+' Zastępnik w tekście pisz bez spacji w środku, np. <i>[data]</i>,
+' bo łamanie wiersza w środku znacznika <i> psuje kursywę.
 ' $styl: "" (zwykły), "b" (pogrubiony) albo "i" (kursywa: zastępnik treści).
 !procedure $tekst($t, $styl="")
 !local $r = $t
@@ -254,11 +256,12 @@ $przycisk($p2)
 ' ---------- Szablony pozycji listy ----------
 
 ' Wejście: oznaczenie jako pierwsza informacja, tuż pod nim data i źródło
-' (US17.3). $akcja tylko dla Zbierającego: "Zmień oznaczenie".
+' (US17.3). $zrodlo bez zawijania: najwyżej 34 widoczne znaki.
+' $akcja tylko dla Zbierającego: "Zmień oznaczenie".
 !procedure $wejscie($oznaczenie, $nazwa, $zrodlo, $akcja="")
 {+
 <b>$oznaczenie</b>: $nazwa
-$tekst($zrodlo)
+$zrodlo
 !if $akcja != ""
 $przycisk($akcja)
 !endif

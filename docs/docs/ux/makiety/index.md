@@ -14,11 +14,12 @@ Makiety low-fi pokazują układ i treść każdego ekranu z [wymagań do ekranó
 | Fragmenty | Nagłówek, wskaźnik braku internetu, pasek dolny, komunikat stanu, oznaczenia i przyciski tylko z fragmentów. Ręczna kopia rozjeżdża się przy pierwszej zmianie słownika. |
 | Szerokość | Ramka ma 266 px, skala 2, więc każdy PNG ma 532 px szerokości. Szerszy PNG znaczy, że jakiś wiersz wychodzi poza ekran telefonu. |
 | Tekst | Wiersz ma najwyżej 34 znaki: tyle mieści tekst 18 sp na ekranie 360 dp. Dłuższy tekst zawija `$tekst("…")`. |
-| Wysokość | Makieta pokazuje cały przewijany ekran: nagłówek na górze, pasek dolny na dole. Salt nie odwzorowuje wysokości, więc cel dotyku 48 dp (NFR-17) obowiązuje każdy przycisk niezależnie od rysunku. |
+| Wysokość | Makieta pokazuje cały przewijany ekran: nagłówek na górze, pasek dolny na dole. |
+| Cel dotyku | Salt nie oddaje wysokości 48 dp (NFR-17). Makiety sprawdzają proporcje i obecność celu, a wysokość celu sprawdza faza C: podgląd ekranu i test dostępności. |
 | Ikony | Tylko ikony z tabeli „Metafory i ikony” słownika użytkownika, zawsze z tekstem obok, przez funkcje fragmentów. `[X]` w Salt to pole wyboru, a nie ikona statusu. |
 | Kolor | Bez koloru: nie używamy `<color>` ani `<back>`. Czynność główna jest pogrubiona i ma pełną szerokość (`$przycisk_glowny`). |
 | Zastępniki | Zdjęcie, plan, mapę i dane z bazy rysujemy kursywą w nawiasach, np. „[zdjęcie bariery]”. To nie są napisy aplikacji. |
-| Przykłady | Budynek A-1, daty 12.11.2026 i 1.10.2026, jak w słowniku użytkownika. |
+| Przykłady | Budynek A-1 z wejściami jak w deklaracji dostępności [1]. Dane przykładowe nie mogą przeczyć faktom. Daty, nazwy i etykiety, których nie znamy, są zastępnikami, np. „[data]”. W argumencie `$tekst` zastępnik nie ma spacji w środku. |
 | Strona | Obraz `../../_generated/<nazwa>.svg`, a pod nim tabela „Element → AC/BR/NFR” z odwołaniami z wymagań do ekranów. |
 | Render | `python scripts/render.py`. Skrypt sprawdza tylko datę plików `.puml`, więc po zmianie `_wspolne.iuml` uruchamiamy go z `--force`. |
 
@@ -30,7 +31,7 @@ Plik `_wspolne.iuml` ma rozszerzenie `.iuml`, więc skrypt `render.py` nie trakt
 | --- | --- | --- |
 | `$naglowek("Tytuł", "podtytuł")` | „Wstecz” bez ikony i tytuł ekranu; podtytuł opcjonalny | wymagania wspólne, NFR-15 |
 | `$naglowek_startowy("Mapa kampusu")` | sam tytuł, tylko na V1 | wymagania wspólne |
-| `$brak_internetu("Dane z 12.11.2026")` | „Brak internetu” z ikoną i dopiskiem o wieku danych; bez argumentu sam napis | US9.1, NFR-10, NFR-21 |
+| `$brak_internetu("Dane z <i>[data]</i>")` | „Brak internetu” z ikoną i dopiskiem o wieku danych; bez argumentu sam napis | US9.1, NFR-10, NFR-21 |
 | `$pasek_dolny_konto()` | „Mapa”, „Zgłoś barierę”, „Pomoc”, „Konto” | wymagania wspólne, US14 |
 | `$pasek_dolny_praca()` | to samo z „Konto i praca” | wymagania wspólne, US14.1 |
 | `$komunikat("Treść.", "Przycisk")` | ramka z komunikatem i najwyżej dwoma przyciskami tej samej wielkości | NFR-15, NFR-50 |
@@ -80,21 +81,31 @@ Każda grupa ma własną stronę z makietami. Strony powstaną w kolejnym kroku 
 
 Stan zwykły, budynek szczegółowy, Gość niezalogowany. Budynek A-1 ma trzy wejścia, po jednym w każdym oznaczeniu.
 
+Wejście główne ma schody, a dostępne jest wejście z tyłu budynku, bramą od ulicy Norwida [1]. Trzecie wejście to przykład oznaczenia „Brak danych”.
+
 ![Makieta V2 Karta budynku: nagłówek Budynek A-1, trzy wejścia z oznaczeniami Dostępne, Niedostępne i Brak danych, przycisk Sprawdź, którędy wejść, wybór piętra, plan piętra, dwie bariery i pasek dolny](../../_generated/m-v2-karta-budynku.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Wstecz” i nagłówek „Budynek A-1” | US2, NFR-15 (wymagania wspólne) |
 | Nazwa budynku z danych, zastępnik | US2 |
-| Wejście: oznaczenie tekstem i ikoną na początku, potem nazwa wejścia | US2.1, US17.1, NFR-21 |
+| Wejście: oznaczenie tekstem i ikoną na początku, potem nazwa wejścia; „Wejście główne” niedostępne, „Wejście od ul. Norwida” dostępne [1] | US2.1, US17.1, NFR-21 |
 | „Brak danych” z ikoną `minus`, inną niż `x` przy „Niedostępne” | US17.1 |
-| Pod oznaczeniem data i źródło: „Sprawdzone na miejscu 12.11.2026”, „Z map i opisów, stan z 1.10.2026” | US17.3, BR-24 |
+| Pod oznaczeniem data i źródło: „Sprawdzone na miejscu [data]”, „Z map i opisów, stan z [data]” | US17.3, BR-24 |
 | „Sprawdź, którędy wejść”: czynność główna, pogrubiona, na pełną szerokość, zaraz pod wejściami | US3, US3.2, NFR-21 |
-| „Piętro:” z wyborem pięter; wybrane piętro widać po kształcie pola, etykiety są przykładem | US16.1, NFR-21 |
-| „Plan piętra”, zastępnik planu | US16.1 |
+| „Piętro:” i pięć pól wyboru, jak w przykładzie BR-21; etykiety z danych PWr jako zastępniki; wybrane piętro widać po kształcie pola | US16.1, BR-21, NFR-21 |
+| „Plan piętra”, zastępnik planu wybranego piętra | US16.1 |
 | „Źródło: Politechnika Wrocławska” pod planem | NFR-40 |
-| „Bariery w budynku”: typ, uciążliwość tekstem i ikoną, zdjęcie, „Sprawdzone 12.11.2026” | US2.2, BR-17, NFR-21 |
+| „Bariery w budynku”: typ, uciążliwość tekstem i ikoną, zdjęcie, „Sprawdzone [data]”; pierwsza bariera to schody przy wejściu głównym (TB-1, „Blokada”) [1] | US2.2, BR-17, NFR-21 |
 | Typ „brak planu dotykowego lub głosowego”, napis TB-22 dla Gościa i Odwiedzającego | BR-7 |
 | Pasek dolny z „Konto” | US1, US4, US5.1, US14 (wymagania wspólne) |
 
 Gość nie widzi przycisków Zbierającego, więc karta jest krótka (US14.1). Wariant dla RO-ZBI to osobny plik z dopiskiem `-zbierajacy`. Wskaźnik braku internetu pojawia się dopiero w stanie braku sieci.
+
+## Źródła
+
+1. Deklaracja dostępności budynku A-1 (wejście główne ze schodami, wejście dostępne z tyłu budynku, bramą od strony K.C. Norwida): <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/deklaracje-dostepnosci-budynkow/budynki-a/a1>
+2. PlantUML Salt: <https://plantuml.com/salt>
+3. Preprocesor PlantUML: <https://plantuml.com/preprocessing>
+
+Dostęp do źródeł: 28.10.2026.

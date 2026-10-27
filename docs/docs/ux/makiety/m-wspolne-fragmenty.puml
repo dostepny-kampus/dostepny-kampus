@@ -3,13 +3,13 @@
 !include _wspolne.iuml
 $ekran_poczatek()
 $naglowek("Tytuł ekranu", "podtytuł (opcjonalny)")
-$brak_internetu("Dane z 12.11.2026")
-$brak_internetu("Ostatnia synchronizacja: 12.11.2026, 10:42")
+$brak_internetu("Dane z <i>[data]</i>")
+$brak_internetu("Ostatnia synchronizacja: <i>[data]</i>, <i>[godzina]</i>")
 $sekcja("Oznaczenie wejścia")
-$wejscie($dostepne(), "Wejście główne", "Sprawdzone na miejscu 12.11.2026")
-$wejscie($niedostepne(), "Wejście boczne", "Z map i opisów, stan z 1.10.2026", "Zmień oznaczenie")
+$wejscie($dostepne(), "Wejście główne", "Sprawdzone na miejscu <i>[data]</i>")
+$wejscie($niedostepne(), "Wejście boczne", "Z map i opisów, stan z <i>[data]</i>", "Zmień oznaczenie")
 $sekcja("Pozycja listy")
-$pozycja("niesprawna winda", $blokada(), "Sprawdzone 12.11.2026")
+$pozycja("niesprawna winda", $blokada(), "Sprawdzone <i>[data]</i>")
 $sekcja("Oznaczenia")
 { $dostepne() | $niedostepne() | $brak_danych() }
 { $utrudnienie() | $tylko_z_pomoca() | $blokada() }

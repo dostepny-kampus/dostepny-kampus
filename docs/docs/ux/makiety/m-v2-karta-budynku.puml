@@ -4,27 +4,28 @@
 !include _wspolne.iuml
 $ekran_poczatek()
 $naglowek("Budynek A-1", "<i>[nazwa budynku z danych]</i>")
-$wejscie($dostepne(), "Wejście główne", "Sprawdzone na miejscu 12.11.2026")
-$wejscie($niedostepne(), "Wejście boczne", "Z map i opisów, stan z 1.10.2026")
-$wejscie($brak_danych(), "Wejście od dziedzińca", "Z map i opisów, stan z 1.10.2026")
+$wejscie($niedostepne(), "Wejście główne", "Sprawdzone na miejscu <i>[data]</i>")
+$wejscie($dostepne(), "Wejście od ul. Norwida", "Z map i opisów, stan z <i>[data]</i>")
+$wejscie($brak_danych(), "<i>[nazwa wejścia z danych]</i>", "Z map i opisów, stan z <i>[data]</i>")
 $przycisk_glowny("Sprawdź, którędy wejść")
 ..
-{ Piętro: | ( ) 0$dk_spacje(3) | (X) 1$dk_spacje(3) | ( ) 2 }
+Piętro:
+{ ( ) <i>[1]</i>$dk_spacje(2) | (X) <i>[2]</i>$dk_spacje(2) | ( ) <i>[3]</i>$dk_spacje(2) | ( ) <i>[4]</i>$dk_spacje(2) | ( ) <i>[5]</i> }
 <b>Plan piętra</b>
-$obraz("plan piętra 1: windy, schody, toalety, wejścia, bariery")
+$obraz("plan wybranego piętra: windy, schody, toalety, wejścia, bariery")
 Źródło: Politechnika Wrocławska
 $sekcja("Bariery w budynku")
 {+
-<b>niesprawna winda</b>
-$tylko_z_pomoca()
+<b>schody przy wejściu</b>
+$blokada()
 $obraz("zdjęcie bariery")
-Sprawdzone 12.11.2026
+Sprawdzone <i>[data]</i>
 }
 {+
 $tekst("brak planu dotykowego lub głosowego", "b")
 $utrudnienie()
 $obraz("zdjęcie bariery")
-Sprawdzone 12.11.2026
+Sprawdzone <i>[data]</i>
 }
 $pasek_dolny_konto()
 $ekran_koniec()
