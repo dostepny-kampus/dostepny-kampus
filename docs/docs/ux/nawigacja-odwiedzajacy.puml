@@ -42,6 +42,7 @@ state "V4 Zgłoszenie szybkie" as V4 {
   state "Krok 2 z 3\ngrupa barier" as K2
   state "Krok 3 z 3\nwysłanie" as K3
   state "Brak pozycji" as BP <<stan>>
+  state "Potwierdzenie\nrezygnacji" as PR <<stan>>
   state "Potwierdzenie" as POT
 }
 
@@ -69,7 +70,9 @@ K3 --> K2 : „Wstecz”
 K3 --> POT : „Wyślij”;\nbez sieci: zapis\nw telefonie
 K3 --> BP : telefon nie\nustalił pozycji
 BP --> K3 : „Spróbuj\nponownie”
-BP --> V1 : „Anuluj\nzgłoszenie”
+BP --> PR : „Zrezygnuj”
+PR --> BP : „Wróć do\nzdjęcia”
+PR --> V1 : „Tak,\nzrezygnuj”
 POT --> V1 : „Wróć do mapy”
 
 L1 --> WWW : „Zaloguj się”,\n„Załóż konto”

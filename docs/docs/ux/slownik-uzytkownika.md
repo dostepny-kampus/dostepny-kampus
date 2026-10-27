@@ -226,6 +226,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | V4, lokalizacja wyłączona | „Lokalizacja w telefonie jest wyłączona. Włącz ją, aby wysłać zdjęcie bariery.” | „Otwórz ustawienia”, „Wróć do mapy” | PW-5 |
 | V4, ustalanie miejsca | „Ustalamy, gdzie jesteś…” | „Wyślij” czeka | PW-9 |
 | V4, brak pozycji | „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” | „Spróbuj ponownie”, „Zrezygnuj” | PW-5 |
+| V4, potwierdzenie rezygnacji | „Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy. Aby je zachować, wróć do zdjęcia i spróbuj ponownie.” | „Tak, zrezygnuj”, „Wróć do zdjęcia” | nowy; recenzja B4, uwaga 17 |
 | V4, potwierdzenie | „Dziękujemy. Sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.” | „Wróć do mapy” | PW-5 |
 | V4, potwierdzenie bez internetu | „Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet.” | „Wróć do mapy” | PW-5 |
 | V4, za mało miejsca | „W telefonie brakuje miejsca, więc nie zapisaliśmy zdjęcia bariery. Usuń niepotrzebne zdjęcia albo filmy i spróbuj ponownie.” | „Spróbuj ponownie” | PW-5 |

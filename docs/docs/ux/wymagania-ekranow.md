@@ -201,11 +201,12 @@ Aplikacja nie pyta o typ bariery, uciążliwość, budynek ani piętro (US4.3, B
 | Zgoda tylko na przybliżoną lokalizację | przed aparatem: „Telefon podaje tylko przybliżone miejsce, a to za mało, by wskazać barierę. Pozwól na dokładną lokalizację.” Przyciski „Pozwól na dokładną lokalizację” i „Wróć do mapy” (BR-8, BR-14) [3] |
 | Lokalizacja wyłączona w telefonie | „Lokalizacja w telefonie jest wyłączona. Włącz ją, aby wysłać zdjęcie bariery.” Przyciski „Otwórz ustawienia” i „Wróć do mapy” (UC7 4c) |
 | Ładowanie — pozycja jeszcze nieznana w kroku 3 | „Ustalamy, gdzie jesteś…”; „Wyślij” czeka, aż telefon poda pozycję albo zgłosi, że jej nie ustali. Aplikacja nie przerywa zgłoszenia upływem czasu (NFR-23) |
-| Brak pozycji | telefon zgłosił, że nie ustali pozycji: „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” Przyciski „Spróbuj ponownie” i „Anuluj zgłoszenie”. Zdjęcie i grupa zostają do ponownej próby (UC7 4c). „Anuluj zgłoszenie” wraca do mapy (V1), a zgłoszenie nie powstaje, jak przy rezygnacji z logowania (UC7 1b) |
+| Brak pozycji | telefon zgłosił, że nie ustali pozycji: „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” Przyciski „Spróbuj ponownie” i „Zrezygnuj” (PW-5). Zdjęcie i grupa zostają do ponownej próby (UC7 4c). „Zrezygnuj” otwiera potwierdzenie rezygnacji |
+| Potwierdzenie rezygnacji | przed usunięciem zrobionego zdjęcia: „Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy. Aby je zachować, wróć do zdjęcia i spróbuj ponownie.” Przyciski „Tak, zrezygnuj” i „Wróć do zdjęcia”, tej samej wielkości. „Tak, zrezygnuj” wraca do mapy (V1), a zgłoszenie nie powstaje, jak przy rezygnacji z logowania (UC7 1b). „Wróć do zdjęcia” wraca do stanu „brak pozycji”, a zdjęcie i grupa zostają (heurystyki Nielsena 3 i 5 [5]; recenzja B4, uwaga 17) |
 | Brak sieci | potwierdzenie: „Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet.” Przycisk „Wróć do mapy” (US4.2, UC7 7a) |
 | Błąd zapisu | „W telefonie brakuje miejsca, więc nie zapisaliśmy zdjęcia bariery. Usuń niepotrzebne zdjęcia albo filmy i spróbuj ponownie.” Przycisk „Spróbuj ponownie”. Zdjęcie i grupa zostają (NFR-5, NFR-7) |
 
-Dostępność i osoby starsze: każdy krok ma jedną czynność, a przyciski grup wypełniają szerokość ekranu (US4.3, NFR-17). Odwiedzający nie traci zdjęcia przy braku pozycji ani przy błędzie. „Wstecz” w krokach 2 i 3 wraca o krok, a zdjęcie i grupa zostają.
+Dostępność i osoby starsze: każdy krok ma jedną czynność, a przyciski grup wypełniają szerokość ekranu (US4.3, NFR-17). Odwiedzający nie traci zdjęcia przy braku pozycji ani przy błędzie, a zdjęcie znika dopiero po potwierdzeniu rezygnacji. „Wstecz” w krokach 2 i 3 wraca o krok, a zdjęcie i grupa zostają.
 
 „Wstecz” z potwierdzenia wraca do ekranu, z którego otwarto V4, a nie do kroku 3 (wymagania wspólne).
 
@@ -701,7 +702,8 @@ Stanu pustego nie ma: lista budynków pochodzi z importu, a 0% to zwykła warto�
 | Wejście do pracy ról pracowniczych (mapa nawigacji, P1) | Czwarta pozycja paska dolnego dalej prowadzi do L2. Osoba z rolą pracowniczą widzi na niej „Konto i praca” (słownik użytkownika, PW-1), a L2 zaczyna się sekcją „Twoja praca”. Gość i Odwiedzający widzą „Konto” bez zmian. | Osoba szukająca „Moich zgłoszeń” nie skojarzy ich z kontem. Bez nowego ekranu i bez piątej pozycji liczba dotknięć, cele dotyku (NFR-17) i droga do klauzuli (NFR-30) się nie zmieniają. Jedna osoba widzi zawsze tę samą nazwę w tym samym miejscu (WCAG 3.2.3, 3.2.4). |
 | Historia „Wstecz” po wysłaniu (mapa nawigacji, P2) | Wysłany, zapisany albo rozstrzygnięty formularz znika z historii „Wstecz” (wymagania wspólne). | Bez tego powrót do mapy z C3 wymaga do 5 dotknięć, a osoba widzi formularz, który już wysłała. Z potwierdzenia V4 nie da się też wrócić do kroku 3 i wysłać zgłoszenia drugi raz. |
 | Ekran po zalogowaniu (mapa nawigacji, P3) | Z V4: krok 1 V4. Z „Konto”: L2. | Po zalogowaniu aplikacja pokazuje czynności ról osoby (UC6 krok 3). Osoba zaproszona przez Koordynatora od razu widzi swoje role (US12.1). |
-| Przyciski bez ekranu docelowego (V4, L2) | „Anuluj zgłoszenie” w stanie „brak pozycji” i potwierdzone „Wycofaj zgodę” prowadzą do V1. „Informacja o danych osobowych” otwiera stan L2 „Klauzula informacyjna”. | Rezygnacja ze zgłoszenia działa jak w UC7 1b, a wycofanie zgody wylogowuje jak „Wyloguj” (NFR-29). NFR-30 wymaga klauzuli w profilu, więc nie potrzeba nowego ID. |
+| Przyciski bez ekranu docelowego (V4, L2) | Potwierdzone „Zrezygnuj” w stanie „brak pozycji” i potwierdzone „Wycofaj zgodę” prowadzą do V1. „Informacja o danych osobowych” otwiera stan L2 „Klauzula informacyjna”. | Rezygnacja ze zgłoszenia działa jak w UC7 1b, a wycofanie zgody wylogowuje jak „Wyloguj się” (NFR-29). NFR-30 wymaga klauzuli w profilu, więc nie potrzeba nowego ID. |
+| Rezygnacja ze zdjęcia w V4 (recenzja B4, uwaga 17) | „Zrezygnuj” w stanie „brak pozycji” najpierw pyta o potwierdzenie: stan „Potwierdzenie rezygnacji” z przyciskami „Tak, zrezygnuj” i „Wróć do zdjęcia”. | Przypadkowe dotknięcie nie usuwa zdjęcia bez cofnięcia (heurystyka Nielsena 5), a osoba może wycofać się z decyzji (heurystyka 3) [5]. Pytanie nie ma limitu czasu (NFR-23). |
 
 ## Moment logowania
 
@@ -782,6 +784,7 @@ Wszystkie 53 kryteria mają ekran. Kryteria w całości serwerowe nie występuj�
 2. Treść komunikatów o błędach: co się stało i jak to naprawić (Nielsen Norman Group): <https://www.nngroup.com/articles/error-message-guidelines/>
 3. Android: lokalizacja przybliżona i dokładna, prośba o dokładną lokalizację: <https://developer.android.com/develop/sensors-and-location/location/permissions>
 4. Android: prośba o uprawnienie w kontekście, wyjaśnienie z możliwością rezygnacji, odmowa bez ponawiania: <https://developer.android.com/training/permissions/requesting>
+5. Nielsen J., 10 Usability Heuristics for User Interface Design (Nielsen Norman Group): <https://www.nngroup.com/articles/ten-usability-heuristics/>
 
 Wewnętrzne źródła: [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md), [Przypadki użycia](../wymagania/przypadki-uzycia.md), [Role i uprawnienia](../biznes/role.md), [Reguły biznesowe](../biznes/reguly.md), [Wymagania niefunkcjonalne](../wymagania/niefunkcjonalne.md), [Wizja](../biznes/wizja.md).
 

@@ -20,7 +20,7 @@ Czwarta pozycja paska dolnego to „Konto”, a osoby z rolą pracowniczą widz�
 
 ![Diagram przejść Gościa i Odwiedzającego: V1, V2, V3, V4 z krokami, V5, L1, L2](../_generated/nawigacja-odwiedzajacy.svg)
 
-Główna droga to V1, V2, V3 i z powrotem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”. Po zalogowaniu wraca do kroku 1 V4 albo trafia do L2 (P3).
+Główna droga to V1, V2, V3 i z powrotem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]). Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”. Po zalogowaniu wraca do kroku 1 V4 albo trafia do L2 (P3).
 
 ## Zbierający
 
@@ -86,7 +86,9 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V4, krok 3, brak sieci | „Wyślij” | V4, potwierdzenie „Zapisaliśmy zdjęcie w telefonie” | zalogowani | US4.2, UC7 7a |
 | V4, krok 3 | telefon nie ustalił pozycji | V4, stan „brak pozycji” | zalogowani | UC7 4c |
 | V4, stan „brak pozycji” | „Spróbuj ponownie” | V4, krok 3 | zalogowani | UC7 4c |
-| V4, stan „brak pozycji” | „Anuluj zgłoszenie” | V1; zgłoszenie nie powstaje | zalogowani | UC7 4c, UC7 1b |
+| V4, stan „brak pozycji” | „Zrezygnuj” | V4, stan „potwierdzenie rezygnacji” | zalogowani | UC7 4c |
+| V4, stan „potwierdzenie rezygnacji” | „Tak, zrezygnuj” | V1; zdjęcie usunięte, zgłoszenie nie powstaje | zalogowani | UC7 1b |
+| V4, stan „potwierdzenie rezygnacji” | „Wróć do zdjęcia” | V4, stan „brak pozycji”; zdjęcie i grupa zostają | zalogowani | UC7 4c |
 | V4, potwierdzenie | „Wróć do mapy” | V1 | zalogowani | US4.4 |
 | V5 | „Dalej” | następny krok V5 | wszystkie | US5.1 |
 | V5, ostatni krok | „Zacznij” | V1 | wszystkie | US5.1 |
@@ -249,6 +251,7 @@ Punkt startu każdej roli to V1, bo od niej zaczyna się aplikacja. Pasek dolny 
 | V4, krok 1 | „Wstecz” do ekranu wyjścia, potem „Mapa”, jeśli to nie V1 | 1–2 |
 | V4, kroki 2 i 3 | „Wstecz” do kroku 1, potem jak z kroku 1 | 2–4 |
 | V4, potwierdzenie | „Wróć do mapy” | 1 |
+| V4, potwierdzenie rezygnacji | „Tak, zrezygnuj” | 1 |
 | L1 | „Nie teraz” | 1 |
 | C1, C3, R1, K1, K2, K3 | „Wstecz” do L2, „Mapa” | 2 |
 | C5 (RO-ZBI), C6, C7, C2 z V2 | „Wstecz” do V2, „Mapa” | 2 |
@@ -268,7 +271,7 @@ Punkt startu każdej roli to V1, bo od niej zaczyna się aplikacja. Pasek dolny 
 | V1, stan „brak sieci przy pierwszym uruchomieniu” | celowe czekanie: mapa wczyta się sama po powrocie sieci (NFR-11) |
 | K2 i K3 po sukcesie | celowy koniec czynności; potwierdzenie na tym samym ekranie, dalej „Wstecz” |
 | Przeglądarka, ustawienia telefonu, aparat, pobrane pliki | poza aplikacją; powrót przyciskiem „Wstecz” telefonu |
-| V4, „Anuluj zgłoszenie” | prowadzi do V1 (rozbieżność 2, rozstrzygnięta) |
+| V4, „Zrezygnuj” | po potwierdzeniu prowadzi do V1 (rozbieżność 2, rozstrzygnięta); „Wróć do zdjęcia” wraca do stanu „brak pozycji” |
 | L2, potwierdzone „Wycofaj zgodę” | prowadzi do V1 (rozbieżność 3, rozstrzygnięta) |
 
 ## Rozbieżności w wymaganiach ekranów
@@ -278,7 +281,7 @@ Wszystkie rozbieżności są rozstrzygnięte i wpisane w [wymaganiach do ekranó
 | Nr | Miejsce | Rozbieżność | Rozstrzygnięcie |
 | --- | --- | --- | --- |
 | 1 | V3 | Pole „Czynność główna” mówiło, że jedyna czynność to „Wstecz”, a wymagania wspólne dają V3 pasek dolny. | Pasek zostaje (WCAG 3.2.3); czynność główna: „Wstecz” i pasek dolny. |
-| 2 | V4, stan „brak pozycji” | „Anuluj zgłoszenie” nie miało ekranu docelowego. | V1; zgłoszenie nie powstaje, jak w UC7 1b. |
+| 2 | V4, stan „brak pozycji” | „Anuluj zgłoszenie” (dziś „Zrezygnuj”) nie miało ekranu docelowego. | V1 po potwierdzeniu; zgłoszenie nie powstaje, jak w UC7 1b. |
 | 3 | L2, potwierdzenie wycofania zgody | Po „Wycofaj zgodę” osoba jest wylogowana, ale ekran docelowy nie był podany. | V1, jak po „Wyloguj się” (NFR-29). |
 | 4 | L2 | „Informacja o danych osobowych” prowadziła do „treści klauzuli” bez ID ekranu i bez stanu L2. | Stan L2 „Klauzula informacyjna”, bez nowego ID, bo NFR-30 wymaga klauzuli w profilu. |
 | 5 | C1, stany zgody | „Jak w V4” przenosiło też „Wróć do mapy”, choć C1 otwiera się z L2, C2 albo C3. | Bez „Wróć do mapy”; rezygnacja przez „Wstecz” (NFR-15). |
