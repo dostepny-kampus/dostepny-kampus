@@ -115,10 +115,10 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 | Podpis „Źródło: Politechnika Wrocławska” pod planem | dane | NFR-40 | — |
 | Napis „Plan piętra niedostępny dla tego budynku” (budynek podstawowy) | dane | US16.2, BR-G1 | — |
 | Przycisk „Zaplanuj wizytę” | czynność główna | US3, US3.2 | V3 |
-| RO-ZBI: „Zmień oznaczenie” przy każdym wejściu | czynność | US17.2, BR-24 | C6 |
-| RO-ZBI: „Bariery już nie ma” przy każdym zgłoszeniu przyjętym | czynność | US8.4, BR-19 | C7 |
-| RO-ZBI: „Popraw zgłoszenie” przy własnym zgłoszeniu przyjętym i przy każdym przyjętym zgłoszeniu szybkim | czynność | BR-3, BR-18 | C2 |
-| RO-ZBI: „Piętra obejrzane” dla całego budynku | czynność | US15.1 | C5 |
+| Zbierający: „Zmień oznaczenie” przy każdym wejściu | czynność | US17.2, BR-24 | C6 |
+| Zbierający: „Bariery już nie ma” przy każdym zgłoszeniu przyjętym | czynność | US8.4, BR-19 | C7 |
+| Zbierający: „Popraw zgłoszenie” przy własnym zgłoszeniu przyjętym i przy każdym przyjętym zgłoszeniu szybkim | czynność | BR-3, BR-18 | C2 |
+| Zbierający: „Piętra obejrzane” dla całego budynku | czynność | US15.1 | C5 |
 
 Bariery z planu piętra są też na liście pod planem, więc TalkBack nie potrzebuje planu (NFR-19). Gość i Odwiedzający nie widzą przycisków Zbierającego, więc ich karta jest krótka.
 
@@ -280,12 +280,12 @@ Dostępność i osoby starsze: strona logowania w przeglądarce też spełnia WC
 | --- | --- | --- | --- |
 | Nazwa wyświetlana i lista ról, np. „Odwiedzający, Zbierający” | dane | BR-1, US14.3 | — |
 | „Twoje czynności”: tylko czynności posiadanych ról | czynność główna | US14.1, BR-1 | — |
-| RO-ZBI: „Nowe zgłoszenie z pomiarem” | czynność | US6 | C1 |
-| RO-ZBI: „Moje zgłoszenia” | czynność | US8 | C3 |
-| RO-WER: „Zgłoszenia do sprawdzenia” | czynność | US10 | R1 |
-| RO-KOO: „Postęp inwentaryzacji” | czynność | US11 | K1 |
-| RO-KOO: „Zaproś osobę” | czynność | US12 | K2 |
-| RO-KOO: „Pobierz eksport” | czynność | US13 | K3 |
+| Zbierający: „Nowe zgłoszenie z pomiarem” | czynność | US6 | C1 |
+| Zbierający: „Moje zgłoszenia” | czynność | US8 | C3 |
+| Weryfikator: „Zgłoszenia do sprawdzenia” | czynność | US10 | R1 |
+| Koordynator: „Postęp inwentaryzacji” | czynność | US11 | K1 |
+| Koordynator: „Zaproś osobę” | czynność | US12 | K2 |
+| Koordynator: „Pobierz eksport” | czynność | US13 | K3 |
 | „Informacja o danych osobowych” | czynność | NFR-30 | treść klauzuli |
 | „Wycofaj zgodę” | czynność | NFR-30, NFR-29 | potwierdzenie |
 | „Wyloguj” | czynność | macierz uprawnień | V1 |
@@ -450,9 +450,9 @@ Dostępność: w pionie wersje stoją jedna pod drugą, w poziomie obok siebie, 
 | Przy wierszu: „obejrzane” albo „nieobejrzane” tekstem i ikoną | dane | US15.1, NFR-21 | — |
 | Przy znaczniku: „Twój znacznik” albo „znacznik innej osoby” | dane | US15.2 | — |
 | Przy znaczniku w telefonie: „czeka na wysłanie” | dane | US15.3 | — |
-| RO-ZBI: „Oznacz jako obejrzane” przy wierszu bez znacznika | czynność główna | US15.1 | — |
-| RO-ZBI: „Cofnij” tylko przy własnym znaczniku | czynność | US15.2 | — |
-| RO-KOO: „Cofnij znacznik” przy każdym znaczniku, z potwierdzeniem | czynność główna | US11.3, BR-20 | K1 po potwierdzeniu |
+| Zbierający: „Oznacz jako obejrzane” przy wierszu bez znacznika | czynność główna | US15.1 | — |
+| Zbierający: „Cofnij” tylko przy własnym znaczniku | czynność | US15.2 | — |
+| Koordynator: „Cofnij znacznik” przy każdym znaczniku, z potwierdzeniem | czynność główna | US11.3, BR-20 | K1 po potwierdzeniu |
 
 C5 otwiera Zbierający z karty budynku (V2), a Koordynator z postępu (K1). Koordynator nie stawia znaczników (BR-20), więc nie widzi „Oznacz jako obejrzane”.
 
@@ -681,11 +681,11 @@ Miara M-1 z [wizji](../biznes/wizja.md) wymaga 100% wejść budynków szczegół
 
 | Wariant | Co się zmienia | Za | Przeciw |
 | --- | --- | --- | --- |
-| A. Wiersz w K1 (zalecany) | W K1 przy budynku szczegółowym wiersz „Wejścia potwierdzone na obchodzie: 4 z 6”. Potrzebne nowe kryterium US11.4, scenariusz i dopisek w BR-21. | Dane już są: każde wejście ma źródło (BR-24). Służy też US11, bo wejście bez obchodu to miejsce, gdzie trzeba jeszcze pójść. | Nowy element K1; decyzja 34 odrzuciła nowe pola K1, choć przy innym problemie. |
+| A. Wiersz w K1 (zalecany) | W K1 przy budynku szczegółowym wiersz „Wejścia potwierdzone na obchodzie: 4 z 6”. Potrzebne nowe kryterium `US11.4`, scenariusz i dopisek w BR-21. | Dane już są: każde wejście ma źródło (BR-24). Służy też US11, bo wejście bez obchodu to miejsce, gdzie trzeba jeszcze pójść. | Nowy element K1; decyzja 34 odrzuciła nowe pola K1, choć przy innym problemie. |
 | B. Odczyt z kart V2 | Bez zmian w ekranach. Koordynator liczy wejścia ze źródłem „obchód” na 5 kartach budynków (US17.3). | Zero nowego zakresu. | Ręczne liczenie kilkudziesięciu wejść; łatwo o pomyłkę przy pomiarze sukcesu. |
 | C. Zmiana miary | M-1 liczy tylko piętra obejrzane. | K1 wystarcza bez zmian. | Wymaga zmiany wizji i decyzji 36; nie zalecamy. |
 
-Proponowane brzmienie kryterium dla wariantu A: „US11.4 — Dla każdego budynku szczegółowego widać liczbę wejść ze źródłem »obchód« wśród wszystkich jego wejść.” Do decyzji makieta K1 nie ma tego wiersza.
+Proponowane brzmienie kryterium dla wariantu A: „`US11.4` — Dla każdego budynku szczegółowego widać liczbę wejść ze źródłem »obchód« wśród wszystkich jego wejść.” Do decyzji makieta K1 nie ma tego wiersza.
 
 ## Do decyzji orkiestratora: logowanie po zdjęciu
 
