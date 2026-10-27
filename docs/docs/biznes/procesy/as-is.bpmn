@@ -8,42 +8,15 @@
                   targetNamespace="https://dostepny-kampus.example/bpmn/as-is">
 
   <bpmn:collaboration id="Collaboration_AsIs">
+    <bpmn:participant id="Participant_Osoba" name="Osoba ze szczególnymi potrzebami" processRef="Process_Osoba" />
     <bpmn:participant id="Participant_PWr" name="PWr: informacja o dostępności architektonicznej (AS-IS)" processRef="Process_AsIs" />
+    <bpmn:messageFlow id="Msg_Wniosek" name="wniosek" sourceRef="Task_W1" targetRef="Start_Wniosek" />
+    <bpmn:messageFlow id="Msg_Odpowiedz" name="odpowiedź" sourceRef="Task_W3" targetRef="Task_W4" />
+    <bpmn:messageFlow id="Msg_Skarga" name="skarga" sourceRef="Task_W5" targetRef="Participant_PWr" />
   </bpmn:collaboration>
 
-  <bpmn:process id="Process_AsIs" isExecutable="false">
-    <bpmn:laneSet id="LaneSet_AsIs">
-      <bpmn:lane id="Lane_Osoba" name="Osoba ze szczególnymi potrzebami">
-        <bpmn:flowNodeRef>Start_Bariera</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_W1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_W4</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Gateway_Zapewniona</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_W5</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>End_Zamknieta</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>End_Skarga</bpmn:flowNodeRef>
-      </bpmn:lane>
-      <bpmn:lane id="Lane_Koordynator" name="Koordynator ds. dostępności PWr (Dział Dostępności)">
-        <bpmn:flowNodeRef>Task_W2</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_W3</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Start_Opis</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_I1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_I3</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_I4</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Start_Raport</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_R1</bpmn:flowNodeRef>
-      </bpmn:lane>
-      <bpmn:lane id="Lane_Administracja" name="Administracja (administrator obiektu)">
-        <bpmn:flowNodeRef>Task_I2</bpmn:flowNodeRef>
-      </bpmn:lane>
-      <bpmn:lane id="Lane_Strona" name="Strona dostępności PWr / BIP">
-        <bpmn:flowNodeRef>Task_I5</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>End_Deklaracja</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_R2</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>End_Raport</bpmn:flowNodeRef>
-      </bpmn:lane>
-    </bpmn:laneSet>
-
-    <!-- Ścieżka W: wniosek o zapewnienie dostępności -->
+  <!-- Pula osoby: ścieżka W po stronie wnioskodawcy -->
+  <bpmn:process id="Process_Osoba" isExecutable="false">
     <bpmn:startEvent id="Start_Bariera" name="Bariera w budynku">
       <bpmn:outgoing>Flow_W0</bpmn:outgoing>
     </bpmn:startEvent>
@@ -51,16 +24,8 @@
       <bpmn:incoming>Flow_W0</bpmn:incoming>
       <bpmn:outgoing>Flow_W1</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_W2" name="W2 Rozpatrzenie wniosku">
-      <bpmn:incoming>Flow_W1</bpmn:incoming>
-      <bpmn:outgoing>Flow_W2</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:task id="Task_W3" name="W3 Zapewnienie dostępności lub dostępu alternatywnego">
-      <bpmn:incoming>Flow_W2</bpmn:incoming>
-      <bpmn:outgoing>Flow_W3</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:task id="Task_W4" name="W4 Otrzymanie odpowiedzi">
-      <bpmn:incoming>Flow_W3</bpmn:incoming>
+      <bpmn:incoming>Flow_W1</bpmn:incoming>
       <bpmn:outgoing>Flow_W4</bpmn:outgoing>
     </bpmn:task>
     <bpmn:exclusiveGateway id="Gateway_Zapewniona" name="Dostępność zapewniona?">
@@ -80,13 +45,59 @@
     </bpmn:endEvent>
 
     <bpmn:sequenceFlow id="Flow_W0" sourceRef="Start_Bariera" targetRef="Task_W1" />
-    <bpmn:sequenceFlow id="Flow_W1" sourceRef="Task_W1" targetRef="Task_W2" />
-    <bpmn:sequenceFlow id="Flow_W2" sourceRef="Task_W2" targetRef="Task_W3" />
-    <bpmn:sequenceFlow id="Flow_W3" sourceRef="Task_W3" targetRef="Task_W4" />
+    <bpmn:sequenceFlow id="Flow_W1" sourceRef="Task_W1" targetRef="Task_W4" />
     <bpmn:sequenceFlow id="Flow_W4" sourceRef="Task_W4" targetRef="Gateway_Zapewniona" />
     <bpmn:sequenceFlow id="Flow_Tak" name="tak" sourceRef="Gateway_Zapewniona" targetRef="End_Zamknieta" />
     <bpmn:sequenceFlow id="Flow_Nie" name="nie" sourceRef="Gateway_Zapewniona" targetRef="Task_W5" />
     <bpmn:sequenceFlow id="Flow_W5" sourceRef="Task_W5" targetRef="End_Skarga" />
+  </bpmn:process>
+
+  <!-- Pula PWr: ścieżki I, R i obsługa wniosku W -->
+  <bpmn:process id="Process_AsIs" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_AsIs">
+      <bpmn:lane id="Lane_Koordynator" name="Koordynator ds. dostępności PWr (Dział Dostępności)">
+        <bpmn:flowNodeRef>Start_Wniosek</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_W2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_W3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Wniosek</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Start_Opis</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_I1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_I3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_I4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Start_Raport</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_R1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Administracja" name="Administracja (administrator obiektu)">
+        <bpmn:flowNodeRef>Task_I2</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Strona" name="Strona dostępności PWr / BIP">
+        <bpmn:flowNodeRef>Task_I5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Deklaracja</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_R2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Raport</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <!-- Ścieżka W: obsługa wniosku -->
+    <bpmn:startEvent id="Start_Wniosek" name="Wniosek wpłynął">
+      <bpmn:outgoing>Flow_Wa</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Msg_Def_Wniosek" />
+    </bpmn:startEvent>
+    <bpmn:task id="Task_W2" name="W2 Rozpatrzenie wniosku">
+      <bpmn:incoming>Flow_Wa</bpmn:incoming>
+      <bpmn:outgoing>Flow_W2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_W3" name="W3 Zapewnienie dostępności lub dostępu alternatywnego">
+      <bpmn:incoming>Flow_W2</bpmn:incoming>
+      <bpmn:outgoing>Flow_Wb</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_Wniosek" name="Wniosek rozpatrzony">
+      <bpmn:incoming>Flow_Wb</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_Wa" sourceRef="Start_Wniosek" targetRef="Task_W2" />
+    <bpmn:sequenceFlow id="Flow_W2" sourceRef="Task_W2" targetRef="Task_W3" />
+    <bpmn:sequenceFlow id="Flow_Wb" sourceRef="Task_W3" targetRef="End_Wniosek" />
 
     <!-- Ścieżka I: inwentaryzacja i deklaracja budynku -->
     <bpmn:startEvent id="Start_Opis" name="Nowy budynek lub zmiana">
@@ -160,23 +171,24 @@
 
   <bpmndi:BPMNDiagram id="Diagram_AsIs">
     <bpmndi:BPMNPlane id="Plane_AsIs" bpmnElement="Collaboration_AsIs">
-      <bpmndi:BPMNShape id="Participant_PWr_di" bpmnElement="Participant_PWr" isHorizontal="true">
-        <dc:Bounds x="40" y="40" width="1400" height="850" />
+      <!-- Pule i tory -->
+      <bpmndi:BPMNShape id="Participant_Osoba_di" bpmnElement="Participant_Osoba" isHorizontal="true">
+        <dc:Bounds x="40" y="40" width="1400" height="230" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_Osoba_di" bpmnElement="Lane_Osoba" isHorizontal="true">
-        <dc:Bounds x="70" y="40" width="1370" height="240" />
+      <bpmndi:BPMNShape id="Participant_PWr_di" bpmnElement="Participant_PWr" isHorizontal="true">
+        <dc:Bounds x="40" y="300" width="1400" height="610" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Koordynator_di" bpmnElement="Lane_Koordynator" isHorizontal="true">
-        <dc:Bounds x="70" y="280" width="1370" height="300" />
+        <dc:Bounds x="70" y="300" width="1370" height="300" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Administracja_di" bpmnElement="Lane_Administracja" isHorizontal="true">
-        <dc:Bounds x="70" y="580" width="1370" height="140" />
+        <dc:Bounds x="70" y="600" width="1370" height="140" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_Strona_di" bpmnElement="Lane_Strona" isHorizontal="true">
-        <dc:Bounds x="70" y="720" width="1370" height="170" />
+        <dc:Bounds x="70" y="740" width="1370" height="170" />
       </bpmndi:BPMNShape>
 
-      <!-- W -->
+      <!-- W: pula osoby -->
       <bpmndi:BPMNShape id="Start_Bariera_di" bpmnElement="Start_Bariera">
         <dc:Bounds x="132" y="82" width="36" height="36" />
         <bpmndi:BPMNLabel><dc:Bounds x="105" y="124" width="90" height="27" /></bpmndi:BPMNLabel>
@@ -184,14 +196,8 @@
       <bpmndi:BPMNShape id="Task_W1_di" bpmnElement="Task_W1">
         <dc:Bounds x="220" y="60" width="140" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_W2_di" bpmnElement="Task_W2">
-        <dc:Bounds x="390" y="310" width="140" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_W3_di" bpmnElement="Task_W3">
-        <dc:Bounds x="560" y="310" width="140" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_W4_di" bpmnElement="Task_W4">
-        <dc:Bounds x="730" y="60" width="140" height="80" />
+        <dc:Bounds x="580" y="60" width="140" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_Zapewniona_di" bpmnElement="Gateway_Zapewniona" isMarkerVisible="true">
         <dc:Bounds x="905" y="75" width="50" height="50" />
@@ -213,16 +219,10 @@
         <di:waypoint x="168" y="100" /><di:waypoint x="220" y="100" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_W1_di" bpmnElement="Flow_W1">
-        <di:waypoint x="360" y="100" /><di:waypoint x="460" y="100" /><di:waypoint x="460" y="310" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_W2_di" bpmnElement="Flow_W2">
-        <di:waypoint x="530" y="350" /><di:waypoint x="560" y="350" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_W3_di" bpmnElement="Flow_W3">
-        <di:waypoint x="700" y="350" /><di:waypoint x="800" y="350" /><di:waypoint x="800" y="140" />
+        <di:waypoint x="360" y="100" /><di:waypoint x="580" y="100" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_W4_di" bpmnElement="Flow_W4">
-        <di:waypoint x="870" y="100" /><di:waypoint x="905" y="100" />
+        <di:waypoint x="720" y="100" /><di:waypoint x="905" y="100" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_Tak_di" bpmnElement="Flow_Tak">
         <di:waypoint x="955" y="100" /><di:waypoint x="1222" y="100" />
@@ -236,91 +236,131 @@
         <di:waypoint x="1150" y="190" /><di:waypoint x="1222" y="190" />
       </bpmndi:BPMNEdge>
 
+      <!-- W: pula PWr -->
+      <bpmndi:BPMNShape id="Start_Wniosek_di" bpmnElement="Start_Wniosek">
+        <dc:Bounds x="312" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="285" y="414" width="90" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_W2_di" bpmnElement="Task_W2">
+        <dc:Bounds x="390" y="350" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_W3_di" bpmnElement="Task_W3">
+        <dc:Bounds x="560" y="350" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Wniosek_di" bpmnElement="End_Wniosek">
+        <dc:Bounds x="752" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="725" y="414" width="90" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_Wa_di" bpmnElement="Flow_Wa">
+        <di:waypoint x="348" y="390" /><di:waypoint x="390" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W2_di" bpmnElement="Flow_W2">
+        <di:waypoint x="530" y="390" /><di:waypoint x="560" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Wb_di" bpmnElement="Flow_Wb">
+        <di:waypoint x="700" y="390" /><di:waypoint x="752" y="390" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Przepływy wiadomości -->
+      <bpmndi:BPMNEdge id="Msg_Wniosek_di" bpmnElement="Msg_Wniosek">
+        <di:waypoint x="330" y="140" /><di:waypoint x="330" y="372" />
+        <bpmndi:BPMNLabel><dc:Bounds x="338" y="278" width="50" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Msg_Odpowiedz_di" bpmnElement="Msg_Odpowiedz">
+        <di:waypoint x="650" y="350" /><di:waypoint x="650" y="140" />
+        <bpmndi:BPMNLabel><dc:Bounds x="658" y="278" width="60" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Msg_Skarga_di" bpmnElement="Msg_Skarga">
+        <di:waypoint x="1080" y="230" /><di:waypoint x="1080" y="300" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1088" y="278" width="40" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
       <!-- I -->
       <bpmndi:BPMNShape id="Start_Opis_di" bpmnElement="Start_Opis">
-        <dc:Bounds x="132" y="492" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="100" y="534" width="100" height="27" /></bpmndi:BPMNLabel>
+        <dc:Bounds x="132" y="512" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="100" y="554" width="100" height="27" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_I1_di" bpmnElement="Task_I1">
-        <dc:Bounds x="220" y="470" width="140" height="80" />
+        <dc:Bounds x="220" y="490" width="140" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_I2_di" bpmnElement="Task_I2">
-        <dc:Bounds x="390" y="610" width="140" height="80" />
+        <dc:Bounds x="390" y="630" width="140" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_I3_di" bpmnElement="Task_I3">
-        <dc:Bounds x="560" y="470" width="140" height="80" />
+        <dc:Bounds x="560" y="490" width="140" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_I4_di" bpmnElement="Task_I4">
-        <dc:Bounds x="730" y="470" width="140" height="80" />
+        <dc:Bounds x="730" y="490" width="140" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_I5_di" bpmnElement="Task_I5">
-        <dc:Bounds x="900" y="765" width="140" height="80" />
+        <dc:Bounds x="900" y="785" width="140" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_Deklaracja_di" bpmnElement="End_Deklaracja">
-        <dc:Bounds x="1072" y="787" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1045" y="829" width="90" height="27" /></bpmndi:BPMNLabel>
+        <dc:Bounds x="1072" y="807" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1045" y="849" width="90" height="27" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNEdge id="Flow_I0_di" bpmnElement="Flow_I0">
-        <di:waypoint x="168" y="510" /><di:waypoint x="220" y="510" />
+        <di:waypoint x="168" y="530" /><di:waypoint x="220" y="530" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_I1_di" bpmnElement="Flow_I1">
-        <di:waypoint x="360" y="510" /><di:waypoint x="460" y="510" /><di:waypoint x="460" y="610" />
+        <di:waypoint x="360" y="530" /><di:waypoint x="460" y="530" /><di:waypoint x="460" y="630" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_I2_di" bpmnElement="Flow_I2">
-        <di:waypoint x="530" y="650" /><di:waypoint x="630" y="650" /><di:waypoint x="630" y="550" />
+        <di:waypoint x="530" y="670" /><di:waypoint x="630" y="670" /><di:waypoint x="630" y="570" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_I3_di" bpmnElement="Flow_I3">
-        <di:waypoint x="700" y="510" /><di:waypoint x="730" y="510" />
+        <di:waypoint x="700" y="530" /><di:waypoint x="730" y="530" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_I4_di" bpmnElement="Flow_I4">
-        <di:waypoint x="870" y="510" /><di:waypoint x="970" y="510" /><di:waypoint x="970" y="765" />
+        <di:waypoint x="870" y="530" /><di:waypoint x="970" y="530" /><di:waypoint x="970" y="785" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_I5_di" bpmnElement="Flow_I5">
-        <di:waypoint x="1040" y="805" /><di:waypoint x="1072" y="805" />
+        <di:waypoint x="1040" y="825" /><di:waypoint x="1072" y="825" />
       </bpmndi:BPMNEdge>
 
       <!-- R -->
       <bpmndi:BPMNShape id="Start_Raport_di" bpmnElement="Start_Raport">
-        <dc:Bounds x="1112" y="492" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1080" y="534" width="100" height="27" /></bpmndi:BPMNLabel>
+        <dc:Bounds x="1112" y="512" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1080" y="554" width="100" height="27" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_R1_di" bpmnElement="Task_R1">
-        <dc:Bounds x="1190" y="470" width="140" height="80" />
+        <dc:Bounds x="1190" y="490" width="140" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Task_R2_di" bpmnElement="Task_R2">
-        <dc:Bounds x="1190" y="765" width="140" height="80" />
+        <dc:Bounds x="1190" y="785" width="140" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_Raport_di" bpmnElement="End_Raport">
-        <dc:Bounds x="1367" y="787" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1340" y="829" width="90" height="27" /></bpmndi:BPMNLabel>
+        <dc:Bounds x="1367" y="807" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1340" y="849" width="90" height="27" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNEdge id="Flow_R0_di" bpmnElement="Flow_R0">
-        <di:waypoint x="1148" y="510" /><di:waypoint x="1190" y="510" />
+        <di:waypoint x="1148" y="530" /><di:waypoint x="1190" y="530" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_R1_di" bpmnElement="Flow_R1">
-        <di:waypoint x="1260" y="550" /><di:waypoint x="1260" y="765" />
+        <di:waypoint x="1260" y="570" /><di:waypoint x="1260" y="785" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_R2_di" bpmnElement="Flow_R2">
-        <di:waypoint x="1330" y="805" /><di:waypoint x="1367" y="805" />
+        <di:waypoint x="1330" y="825" /><di:waypoint x="1367" y="825" />
       </bpmndi:BPMNEdge>
 
       <!-- Adnotacje -->
       <bpmndi:BPMNShape id="Note_Wnioski_di" bpmnElement="Note_Wnioski">
-        <dc:Bounds x="560" y="410" width="300" height="44" />
+        <dc:Bounds x="560" y="442" width="300" height="40" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Assoc_Wnioski_di" bpmnElement="Assoc_Wnioski">
-        <di:waypoint x="630" y="410" /><di:waypoint x="630" y="390" />
+        <di:waypoint x="630" y="442" /><di:waypoint x="630" y="430" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Note_Daty_di" bpmnElement="Note_Daty">
-        <dc:Bounds x="520" y="775" width="300" height="44" />
+        <dc:Bounds x="520" y="795" width="300" height="44" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Assoc_Daty_di" bpmnElement="Assoc_Daty">
-        <di:waypoint x="820" y="797" /><di:waypoint x="900" y="802" />
+        <di:waypoint x="820" y="817" /><di:waypoint x="900" y="822" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Note_Kanaly_di" bpmnElement="Note_Kanaly">
-        <dc:Bounds x="130" y="780" width="330" height="50" />
+        <dc:Bounds x="130" y="800" width="330" height="50" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
