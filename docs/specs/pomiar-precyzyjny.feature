@@ -9,6 +9,7 @@ Funkcja: Pomiar precyzyjny i formularz zgłoszenia
 
   @US6.1
   Scenariusz: Uśrednianie pozycji trwa 30 s i pokazuje dane o satelitach
+    Zakładając, że telefon odbiera satelity GPS, Galileo i GLONASS
     Jeżeli Zbierający zacznie nowe zgłoszenie
     Wtedy aplikacja uśrednia pozycję przez 30 s
     Oraz pokazuje dokładność pozycji w metrach z informacją, że to szacunek
@@ -20,19 +21,18 @@ Funkcja: Pomiar precyzyjny i formularz zgłoszenia
     Jeżeli Zbierający przerwie uśrednianie
     Oraz zacznie je ponownie
     Wtedy uśrednianie trwa znowu pełne 30 s
-    Ale aplikacja nie kończy pomiaru sama z powodu upływu czasu
 
   @US6.2
   Szablon scenariusza: Zbierający decyduje o podpowiedzianym budynku
     Zakładając, że po uśrednianiu pozycji aplikacja podpowiada budynek A-1
     Jeżeli Zbierający <decyzja>
-    Wtedy zgłoszenie ma miejsce „<miejsce>”
+    Wtedy zgłoszenie <wynik>
 
     Przykłady:
-      | decyzja                       | miejsce         |
-      | potwierdzi budynek A-1        | A-1             |
-      | wybierze budynek B-1          | B-1             |
-      | zostawi „poza budynkiem”      | poza budynkiem  |
+      | decyzja                       | wynik                   |
+      | potwierdzi budynek A-1        | ma budynek A-1          |
+      | wybierze budynek B-1          | ma budynek B-1          |
+      | zostawi „poza budynkiem”      | jest „poza budynkiem”   |
 
   @US6.2
   Scenariusz: Podpowiedź budynku działa bez sieci
@@ -79,7 +79,7 @@ Funkcja: Pomiar precyzyjny i formularz zgłoszenia
     Zakładając, że Zbierający wybrał TB-1 „schody przy wejściu”, uciążliwość 3 i zrobił zdjęcie
     Jeżeli spróbuje zapisać zgłoszenie dla budynku A-1 bez piętra
     Wtedy zgłoszenie nie zostaje zapisane
-    Oraz aplikacja wskazuje brakujące piętro
+    Oraz aplikacja wskazuje brakujące pole „piętro”
 
   @US7.1 @BR-7
   Scenariusz: Kompletne zgłoszenie zapisuje się ze statusem „lokalne”
@@ -93,11 +93,11 @@ Funkcja: Pomiar precyzyjny i formularz zgłoszenia
     Zakładając, że Zbierający wybrał TB-29 „inna bariera”, uciążliwość 2, piętro i zrobił zdjęcie
     Jeżeli spróbuje zapisać zgłoszenie z pustym opisem
     Wtedy zgłoszenie nie zostaje zapisane
-    Oraz aplikacja prosi o opis bariery
+    Oraz aplikacja wskazuje brakujące pole „opis”
 
   @US7.3 @BR-7
   Scenariusz: Typ TB-29 „inna bariera” z opisem zapisuje się
     Zakładając, że Zbierający wybrał TB-29 „inna bariera”, uciążliwość 2, piętro i zrobił zdjęcie
     Jeżeli wpisze opis „Na długim korytarzu nie ma gdzie usiąść i odpocząć”
     Oraz zapisze zgłoszenie
-    Wtedy zgłoszenie zapisuje się ze statusem „lokalne”
+    Wtedy zgłoszenie zapisuje się w telefonie ze statusem „lokalne”
