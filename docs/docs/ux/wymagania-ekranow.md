@@ -211,7 +211,7 @@ US14.2 wymaga logowania przed zdjęciem, czyli w środku zadania. W granicach ob
 | Konto można założyć wcześniej, w spokojnej chwili: „Konto” na pasku dolnym prowadzi do L1. Instrukcja V5 mówi o tym jednym zdaniem. | US5.1, US14 |
 | „Nie teraz” wraca do mapy bez komunikatu o błędzie i bez utraty danych. | UC7 1b |
 
-Zostaje jedno przerwanie przy pierwszym zgłoszeniu. Zmianę kolejności opisujemy w sekcji [do decyzji orkiestratora](#do-decyzji-orkiestratora-logowanie-po-zdjęciu).
+Zostaje jedno przerwanie przy pierwszym zgłoszeniu. Zmianę kolejności opisujemy w sekcji [do decyzji orkiestratora](#do-decyzji-orkiestratora-moment-logowania).
 
 ### V5 Pomoc
 
@@ -385,7 +385,7 @@ Dostępność: błąd walidacji jest tekstem przy polu i w podsumowaniu, a fokus
 | Rodzaj: zgłoszenie, „bariera usunięta” albo zmiana oznaczenia wejścia | dane | US8.4, US17.2 | — |
 | Jeden status tekstem i ikoną: lokalne, wysłane, w weryfikacji, przyjęte, odrzucone, archiwalne | dane | US8.1, US8.2, NFR-21 | — |
 | Przy odrzuconym: powód odrzucenia | dane | US8.1, BR-16 | — |
-| Znak „zmiana czeka na wysłanie” przy niewysłanej edycji | dane | BR-9, [cykl życia](../biznes/reguly.md#cykl-zycia-zgloszenia) | — |
+| Znak „zmiana czeka na wysłanie” przy niewysłanej edycji | dane | BR-9, [reguły, cykl życia zgłoszenia](../biznes/reguly.md) | — |
 | Znak „wybierz wersję” przy konflikcie | czynność | US9.3 | C4 |
 | Dotknięcie zgłoszenia przed decyzją albo odrzuconego | czynność główna | US8.3, BR-3 | C2 |
 | Przy powodzie „nieaktualne”: „Wyślij ponownie do bieżącego zgłoszenia” | czynność | BR-23 | C2 |
@@ -687,7 +687,7 @@ Miara M-1 z [wizji](../biznes/wizja.md) wymaga 100% wejść budynków szczegół
 
 Proponowane brzmienie kryterium dla wariantu A: „`US11.4` — Dla każdego budynku szczegółowego widać liczbę wejść ze źródłem »obchód« wśród wszystkich jego wejść.” Do decyzji makieta K1 nie ma tego wiersza.
 
-## Do decyzji orkiestratora: logowanie po zdjęciu
+## Do decyzji orkiestratora: moment logowania
 
 Mapa ścieżki osoby starszej pokazuje, że logowanie przed zdjęciem przerywa zadanie w najgorszym momencie. Środki z V4 zmniejszają to przerwanie, ale go nie usuwają. Obecne kryteria zostawiamy bez zmian.
 
