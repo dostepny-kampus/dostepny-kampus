@@ -1,0 +1,46 @@
+@startuml
+!pragma layout smetana
+left to right direction
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #1F4E79
+}
+skinparam rectangle {
+  BorderColor #1F4E79
+}
+
+title Przeglądanie kampusu i zgłoszenie szybkie
+
+actor "Gość\nniezalogowany\n(RO-GOS)" as GOS
+actor "Odwiedzający\n(RO-ODW)" as ODW
+actor "Usługa\nlogowania" as UL <<system>>
+
+GOS <|-- ODW
+
+rectangle "Dostępny Kampus" {
+  usecase "UC1\nWyszukanie budynku" as UC1
+  usecase "UC2\nPrzegląd karty budynku" as UC2
+  usecase "UC3\nPrzegląd planu piętra" as UC3
+  usecase "UC4\nWyszukanie\nwejścia dostępnego" as UC4
+  usecase "UC5\nInstrukcja i pomoc" as UC5
+  usecase "UC6\nLogowanie i rejestracja" as UC6
+  usecase "UC7\nZgłoszenie szybkie" as UC7
+  usecase "UC10\nSynchronizacja\nz serwerem" as UC10
+}
+
+GOS -- UC1
+GOS -- UC2
+GOS -- UC4
+GOS -- UC5
+GOS -- UC6
+ODW -- UC7
+
+UC2 <.. UC3 : <<extend>>\nbudynek\nszczegółowy
+UC7 ..> UC10 : <<include>>
+
+UC6 -- UL
+@enduml
