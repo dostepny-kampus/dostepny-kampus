@@ -13,18 +13,18 @@ Makiety low-fi pokazują układ i treść każdego ekranu z [wymagań do ekranó
 | Blok | `@startsalt` bez nazwy, potem `!include _wspolne.iuml`. Treść ekranu stoi między `$ekran_poczatek()` i `$ekran_koniec()`. |
 | Fragmenty | Nagłówek, wskaźnik braku internetu, pasek dolny, komunikat stanu, oznaczenia i przyciski tylko z fragmentów. Ręczna kopia rozjeżdża się przy pierwszej zmianie słownika. |
 | Szerokość | Ramka ma 266 px, skala 2, więc każdy PNG ma 532 px szerokości. Szerszy PNG znaczy, że jakiś wiersz wychodzi poza ekran telefonu. |
-| Tekst | Wiersz ma najwyżej 34 znaki, jak tekst 18 sp na ekranie 360 dp. Dłuższy tekst zawija `$tekst("…")`. |
+| Tekst | Wiersz ma najwyżej 34 znaki: tyle mieści tekst 18 sp na ekranie 360 dp. Dłuższy tekst zawija `$tekst("…")`. |
 | Wysokość | Makieta pokazuje cały przewijany ekran: nagłówek na górze, pasek dolny na dole. Salt nie odwzorowuje wysokości, więc cel dotyku 48 dp (NFR-17) obowiązuje każdy przycisk niezależnie od rysunku. |
 | Ikony | Tylko ikony z tabeli „Metafory i ikony” słownika użytkownika, zawsze z tekstem obok, przez funkcje fragmentów. `[X]` w Salt to pole wyboru, a nie ikona statusu. |
 | Kolor | Bez koloru: nie używamy `<color>` ani `<back>`. Czynność główna jest pogrubiona i ma pełną szerokość (`$przycisk_glowny`). |
 | Zastępniki | Zdjęcie, plan, mapę i dane z bazy rysujemy kursywą w nawiasach, np. „[zdjęcie bariery]”. To nie są napisy aplikacji. |
 | Przykłady | Budynek A-1, daty 12.11.2026 i 1.10.2026, jak w słowniku użytkownika. |
 | Strona | Obraz `../../_generated/<nazwa>.svg`, a pod nim tabela „Element → AC/BR/NFR” z odwołaniami z wymagań do ekranów. |
-| Render | `python scripts/render.py`. Render sprawdza tylko datę plików `.puml`, więc po zmianie `_wspolne.iuml` uruchamiamy go z `--force`. |
+| Render | `python scripts/render.py`. Skrypt sprawdza tylko datę plików `.puml`, więc po zmianie `_wspolne.iuml` uruchamiamy go z `--force`. |
 
 ## Fragmenty wspólne
 
-Plik `_wspolne.iuml` ma rozszerzenie `.iuml`, więc render nie traktuje go jak osobnego diagramu. Procedury PlantUML (`!procedure`, `!function`) działają wewnątrz `@startsalt`, co sprawdziliśmy w wersji 1.2026.9.
+Plik `_wspolne.iuml` ma rozszerzenie `.iuml`, więc skrypt `render.py` nie traktuje go jak osobnego diagramu. Procedury PlantUML (`!procedure`, `!function`) działają wewnątrz `@startsalt`, co sprawdziliśmy w wersji 1.2026.9.
 
 | Fragment | Co rysuje | Odwołanie |
 | --- | --- | --- |
@@ -46,7 +46,7 @@ Katalog to podgląd fragmentów dla autorów, a nie ekran aplikacji. Trzy pułap
 
 | Pułapka | Skutek | Jak unikać |
 | --- | --- | --- |
-| Słowa `@startsalt` albo `@endsalt` w pliku dołączanym, nawet w komentarzu | PlantUML bierze tylko tekst między nimi i render kończy się błędem | nie wpisywać ich w `_wspolne.iuml` |
+| Słowa `@startsalt` albo `@endsalt` w pliku dołączanym, nawet w komentarzu | PlantUML bierze tylko tekst między nimi i zgłasza błąd | nie wpisywać ich w `_wspolne.iuml` |
 | Parametr procedury o nazwie innej procedury, np. `$przycisk` | wywołanie trafia w parametr, a nie w procedurę | nazwy parametrów inne niż nazwy procedur |
 | Pionowa kreska w tekście | Salt dzieli wiersz na komórki | nie używać jej w napisach |
 
