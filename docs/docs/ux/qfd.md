@@ -51,7 +51,7 @@ Związki N ↔ US pochodzą z tabeli historyjek i z [macierzy śledzenia](../wym
 | 9 | US13 | N9 | US13.1 i US13.2: pliki otwierają się w QGIS. |
 | 3 | US14 | N2 | Historyjka umożliwiająca: o publikacji decyduje osoba z nadaną rolą (BR-2). |
 | 3 | US14 | N8 | Historyjka umożliwiająca: konto chroni dane przed spamem. |
-| 3 | US15 | N6 | US15.3: znacznik czeka w telefonie bez sieci, ale celem historyjki jest postęp. |
+| 9 | US15 | N6 | US15.3: znacznik bez sieci czeka w telefonie i wysyła się sam, jak zgłoszenie w US9.1 i US9.2. |
 | 9 | US15 | N9 | US15.1: znacznik piętra obejrzanego jest podstawą postępu z US11.1. |
 | 3 | US16 | N1 | Plan piętra pokazuje windy i toalety w środku, a nie wybór wejścia z zewnątrz. |
 | 9 | US17 | N1 | US17.1: oznaczenie każdego wejścia. |
@@ -70,43 +70,43 @@ Puste pole oznacza brak związku. W wierszu „Priorytet” M to „Musi być”
 | Łatwe zgłoszenie (N3) | 3 | | | | 9 | | | | | | | | | | | | | |
 | Wzrok i dłonie (N4) | 5 | 1 | 1 | 1 | 9 | 3 | | | | | | | | | | | | |
 | Miejsce poniżej 1 m (N5) | 3 | | | | | | 9 | 3 | | | | | | | | | | |
-| Praca bez sieci (N6) | 4 | | | | | | | | 3 | 9 | | | | | | 3 | | |
+| Praca bez sieci (N6) | 4 | | | | | | | | 3 | 9 | | | | | | 9 | | |
 | Bez nadpisania (N7) | 3 | | | | | | | | | 9 | 3 | | | | | | | |
 | Odsiew błędów (N8) | 4 | | | | | | | | | | 9 | | | | 3 | | | |
 | Postęp i QGIS (N9) | 3 | | | | | | | | | | | 9 | 3 | 9 | | 9 | | |
-| **Ważność techniczna** | | **20** | **86** | **50** | **72** | **15** | **27** | **9** | **12** | **63** | **57** | **27** | **9** | **27** | **24** | **39** | **15** | **81** |
-| Miejsce | | 12 | 1 | 6 | 3 | 13 | 8 | 16 | 15 | 4 | 5 | 8 | 16 | 8 | 11 | 7 | 13 | 2 |
+| **Ważność techniczna** | | **20** | **86** | **50** | **72** | **15** | **27** | **9** | **12** | **63** | **57** | **27** | **9** | **27** | **24** | **63** | **15** | **81** |
+| Miejsce | | 12 | 1 | 7 | 3 | 13 | 8 | 16 | 15 | 4 | 6 | 8 | 16 | 8 | 11 | 4 | 13 | 2 |
 | Priorytet | | M | M | P | M | P | M | M | M | M | M | M | P | M | M | M | P | M |
 
-Przykład dla US2: 5 × 9 + 4 × 9 + 5 × 1 = 86. Suma ważności wszystkich historyjek wynosi 633.
+Przykład dla US2: 5 × 9 + 4 × 9 + 5 × 1 = 86. Suma ważności wszystkich historyjek wynosi 657.
 
 ## Ranking a priorytety
 
 | Miejsce | Historyjka | Ważność | Udział | Priorytet | Zgodność rankingu z priorytetem |
 | --- | --- | --- | --- | --- | --- |
-| 1 | US2 | 86 | 13,6% | Musi być | zgodny |
-| 2 | US17 | 81 | 12,8% | Musi być | zgodny |
-| 3 | US4 | 72 | 11,4% | Musi być | zgodny |
-| 4 | US9 | 63 | 10,0% | Musi być | zgodny |
-| 5 | US10 | 57 | 9,0% | Musi być | zgodny |
-| 6 | US3 | 50 | 7,9% | Powinno być | **rozbieżność**: wyżej niż 8 historyjek „Musi być” |
-| 7 | US15 | 39 | 6,2% | Musi być | zgodny |
-| 8 | US6 | 27 | 4,3% | Musi być | zgodny (waga N5 zależy od kursu) |
-| 8 | US11 | 27 | 4,3% | Musi być | zgodny (waga N9 zależy od kursu) |
-| 8 | US13 | 27 | 4,3% | Musi być | zgodny (waga N9 zależy od kursu) |
-| 11 | US14 | 24 | 3,8% | Musi być | historyjka umożliwiająca |
-| 12 | US1 | 20 | 3,2% | Musi być | **rozbieżność**: poniżej US3 |
-| 13 | US5 | 15 | 2,4% | Powinno być | zgodny |
-| 13 | US16 | 15 | 2,4% | Powinno być | zgodny |
-| 15 | US8 | 12 | 1,9% | Musi być | **rozbieżność**: przedostatnie miejsce |
+| 1 | US2 | 86 | 13,1% | Musi być | zgodny |
+| 2 | US17 | 81 | 12,3% | Musi być | zgodny |
+| 3 | US4 | 72 | 11,0% | Musi być | zgodny |
+| 4 | US9 | 63 | 9,6% | Musi być | zgodny |
+| 4 | US15 | 63 | 9,6% | Musi być | zgodny |
+| 6 | US10 | 57 | 8,7% | Musi być | zgodny |
+| 7 | US3 | 50 | 7,6% | Powinno być | **rozbieżność**: wyżej niż 7 historyjek „Musi być” |
+| 8 | US6 | 27 | 4,1% | Musi być | zgodny (waga N5 zależy od kursu) |
+| 8 | US11 | 27 | 4,1% | Musi być | zgodny (waga N9 zależy od kursu) |
+| 8 | US13 | 27 | 4,1% | Musi być | zgodny (waga N9 zależy od kursu) |
+| 11 | US14 | 24 | 3,7% | Musi być | historyjka umożliwiająca |
+| 12 | US1 | 20 | 3,0% | Musi być | **rozbieżność**: poniżej US3 |
+| 13 | US5 | 15 | 2,3% | Powinno być | zgodny |
+| 13 | US16 | 15 | 2,3% | Powinno być | zgodny |
+| 15 | US8 | 12 | 1,8% | Musi być | **rozbieżność**: przedostatnie miejsce |
 | 16 | US7 | 9 | 1,4% | Musi być | **rozbieżność**: ostatnie miejsce |
 | 16 | US12 | 9 | 1,4% | Powinno być | zgodny |
 
-Udział to ważność podzielona przez 633, zaokrąglona do 0,1 punktu procentowego. Równe wyniki dzielą miejsce.
+Udział to ważność podzielona przez 657, zaokrąglona do 0,1 punktu procentowego. Równe wyniki dzielą miejsce.
 
 ## Wnioski
 
-1. **US3 „Zaplanuj wizytę” jest na 6. miejscu, choć ma priorytet „Powinno być”.** Cel M-4 mierzy US3.2, a N1 ma najwyższą wagę. Propozycja do decyzji właściciela projektu: utrzymać priorytet, jeśli karta budynku (US2, US17) pokaże wejście dostępne w 3 dotknięciach od mapy. W przeciwnym razie podnieść US3 do „Musi być”.
+1. **US3 „Zaplanuj wizytę” jest na 7. miejscu, choć ma priorytet „Powinno być”.** Cel M-4 mierzy US3.2, a N1 ma najwyższą wagę. Propozycja do decyzji właściciela projektu: utrzymać priorytet, jeśli karta budynku (US2, US17) pokaże wejście dostępne w 3 dotknięciach od mapy. W przeciwnym razie podnieść US3 do „Musi być”.
 2. **US7, US8 i US1 mają niski wynik, bo QFD liczy tylko wkład bezpośredni.** Bez formularza (US7) nie ma danych o barierach, a bez wyszukiwania (US1) nie ma ścieżki do karty budynku. Priorytet MoSCoW uwzględnia zależności i scenariusz pokazu, więc go nie zmieniamy. QFD nie zastępuje priorytetów, tylko pokazuje, skąd bierze się wartość dla użytkownika.
 3. **US8 może mieć niedoszacowany związek z N2.** Zmiana „bariera usunięta” (US8.4) usuwa z mapy naprawioną barierę, a tekst pod kryteriami wiąże to z N2. Tabela historyjek nie wiąże jednak US8 z N2, więc macierz tego nie liczy. Propozycja: rozważyć dopisanie N2 do US8 na stronie historyjek (poza zakresem tej strony).
 4. **N4 ma wagę 5, a w macierzy tylko jeden silny związek (US4).** Potrzebę N4 realizują głównie wymagania przekrojowe NFR-15…NFR-24, obecne na każdym ekranie. Dlatego wymagania ekranów i makiety fazy B sprawdzają dostępność na każdym ekranie, a nie tylko w historyjkach z N4.
