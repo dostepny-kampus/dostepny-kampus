@@ -6,11 +6,11 @@ Jedno pojęcie ma jedną nazwę. Aplikacja, kod i dokumenty używają tylko nazw
 
 | Termin | Definicja | Nie mylić z / synonimy zakazane |
 | --- | --- | --- |
-| bariera | Przeszkoda lub ograniczenie w budynku albo w jego otoczeniu, które utrudnia lub uniemożliwia osobie ze szczególnymi potrzebami dotarcie do miejsca lub skorzystanie z niego (por. ustawa z 19 lipca 2019 r., art. 2 pkt 1). | Nie mylić z: zgłoszenie. Zakazane: przeszkoda, problem, utrudnienie, usterka, obiekt. |
+| bariera | Przeszkoda lub ograniczenie w budynku albo w jego otoczeniu, które utrudnia lub uniemożliwia osobie ze szczególnymi potrzebami dotarcie do miejsca lub skorzystanie z niego (por. ustawa z 19 lipca 2019 r., art. 2 pkt 1). | Nie mylić z: zgłoszenie. Zakazane: problem, usterka, obiekt. |
 | budynek podstawowy | Budynek PWr bez planów pięter w aplikacji, który ma kontur, wejścia i kartę budynku, a piętro zgłoszenia wpisuje się ręcznie. | Nie mylić z: budynek szczegółowy. Zakazane: budynek uproszczony, zwykły, niepełny. |
 | budynek szczegółowy | Budynek z planami pięter z danych PWr, sprawdzany przez zespół na miejscu; na start A-1, B-1, C-13, D-1 i D-2. | Nie mylić z: budynek podstawowy. Zakazane: budynek detalowy, pełny, pilotażowy, „top-5”. |
 | CSV | Tekstowy plik tabelaryczny, który otwiera arkusz kalkulacyjny i QGIS; w eksporcie zawiera współrzędne PUWG 1992. | Zakazane: Excel, arkusz (jako nazwa formatu). |
-| deklaracja dostępności | Opis dostępności strony, aplikacji lub siedziby podmiotu publicznego (art. 10 ustawy o dostępności cyfrowej); na PWr to opis każdego budynku. | Nie mylić z: raport o stanie zapewniania dostępności (ustawa z 19 lipca 2019 r., art. 11), certyfikat dostępności, plan poprawy dostępności. Zakazane: audyt, opis budynku. |
+| deklaracja dostępności | Opis dostępności strony, aplikacji lub siedziby podmiotu publicznego (art. 10 ustawy o dostępności cyfrowej); na PWr to opis każdego budynku. | Nie mylić z: raport o stanie zapewniania dostępności (ustawa z 19 lipca 2019 r., art. 11), certyfikat dostępności, plan poprawy dostępności. Zakazane: audyt. |
 | dokładność pozycji | Szacowana w metrach odległość, w jakiej od wyznaczonego punktu leży rzeczywiste miejsce bariery; cel to poniżej 1 m. | Nie mylić z: pomiar precyzyjny. Zakazane: precyzja, błąd GPS, rozrzut, accuracy. |
 | duplikat | Zgłoszenie, które według Weryfikatora opisuje tę samą barierę co wcześniejsze zgłoszenie. | Nie mylić z: podobne zgłoszenie, konflikt wersji. Zakazane: dubel, kopia, powtórzenie. |
 | eksport | Pobranie przez Koordynatora zgłoszeń przyjętych jako pliku GeoJSON lub CSV do otwarcia w QGIS. | Nie mylić z: synchronizacja. Zakazane: raport, zrzut, kopia zapasowa, wydruk. |
@@ -32,28 +32,27 @@ Jedno pojęcie ma jedną nazwę. Aplikacja, kod i dokumenty używają tylko nazw
 | podobne zgłoszenie | Zgłoszenie leżące w promieniu 10 m od sprawdzanego, pokazywane Weryfikatorowi jako możliwy duplikat. | Nie mylić z: duplikat (o duplikacie decyduje Weryfikator). Zakazane: zgłoszenie sąsiednie, kandydat na duplikat. |
 | pomiar precyzyjny | Ustalenie miejsca bariery przez Zbierającego: uśrednianie pozycji, wybór budynku i w razie potrzeby ręczna korekta punktu na mapie. | Nie mylić z: zgłoszenie szybkie, dokładność pozycji. Zakazane: pomiar dokładny, namiar, lokalizacja GPS. |
 | postęp inwentaryzacji | Dla każdego budynku odsetek pięter obejrzanych albo znacznik „obejrzany” (budynek podstawowy) oraz liczba zgłoszeń czekających na weryfikację i przyjętych. | Zakazane: statystyki, progres, stan prac, raport. |
-| poza budynkiem | Położenie bariery poza konturem każdego budynku PWr, np. krawężnik na chodniku; to stan normalny, nie błąd. | Zakazane: na zewnątrz, teren, outdoor, błąd lokalizacji. |
+| powód odrzucenia | Obowiązkowe krótkie uzasadnienie, które Weryfikator podaje przy odrzuceniu zgłoszenia. | Zakazane: przyczyna odrzucenia, komentarz, uwaga. |
+| poza budynkiem | Położenie bariery poza konturem każdego budynku PWr, np. krawężnik na chodniku; to stan normalny, nie błąd. | Zakazane: na zewnątrz, outdoor, błąd lokalizacji. |
 | poziom szczegółowości | Jeden z trzech sposobów obsługi miejsca w aplikacji: budynek szczegółowy, budynek podstawowy albo poza budynkiem. | Nie mylić z: uciążliwość bariery. Zakazane: poziom detali, poziom opracowania, tier. |
-| przyczyna odrzucenia | Obowiązkowe krótkie uzasadnienie, które Weryfikator podaje przy odrzuceniu zgłoszenia. | Zakazane: powód, komentarz, uwaga. |
 | PUWG 1992 | Państwowy płaski układ współrzędnych w metrach dla map Polski (EPSG:2180, w przepisach PL-1992); w nim jest eksport CSV. | Nie mylić z: PUWG 2000 (EPSG:2176–2179). Zakazane: układ 92. |
 | PWr | Politechnika Wrocławska. | Zakazane: PWR, Polibuda. |
 | QGIS | Bezpłatny program do przeglądania i analizy danych mapowych, w którym Koordynator otwiera eksport. | Zakazane: GIS jako nazwa programu. |
 | rola | Zestaw czynności dostępnych dla osoby w aplikacji: RO-GOS, RO-ODW, RO-ZBI, RO-WER albo RO-KOO. | Nie mylić z: uprawnienie (jedna czynność z macierzy uprawnień). Zakazane: typ konta, grupa, poziom dostępu. |
 | status zgłoszenia | Etap obsługi zgłoszenia: lokalne (tylko w telefonie), wysłane (na serwerze w kolejce), w weryfikacji (wzięte przez jednego Weryfikatora), przyjęte albo odrzucone. | Zakazane: stan, faza, oczekujące, nowe, zatwierdzone. |
 | symbol budynku | Oznaczenie budynku PWr z litery i numeru, zapisywane z dywizem, np. C-13. | Zakazane: numer budynku, kod, ref, sygnatura. |
-| synchronizacja | Wymiana danych między telefonem a serwerem: wysłanie zgłoszeń zapisanych w telefonie i pobranie zmian z serwera. | Nie mylić z: eksport. Zakazane: upload, wysyłka, odświeżanie, sync. |
+| synchronizacja | Wymiana danych między telefonem a serwerem: wysłanie zgłoszeń zapisanych w telefonie i pobranie zmian z serwera. | Nie mylić z: eksport. Zakazane: upload, odświeżanie, sync. |
 | tryb offline | Praca aplikacji bez internetu, w której zgłoszenia zapisują się w telefonie i czekają na synchronizację. | Zakazane: tryb samolotowy, tryb lokalny, tryb bez sieci. |
 | typ bariery | Pozycja z klasyfikacji barier (TB-1…TB-29) wybierana w zgłoszeniu. | Nie mylić z: grupa barier. Zakazane: kategoria, rodzaj, klasa. |
-| uciążliwość bariery | Ocena w skali 1–3, jak bardzo bariera utrudnia skorzystanie z miejsca, gdzie 3 oznacza blokadę. | Nie mylić z: poziom szczegółowości. Zakazane: ocena, waga, priorytet, ważność, severity. |
+| uciążliwość bariery | Stopień w skali 1–3, jak bardzo bariera utrudnia skorzystanie z miejsca, gdzie 3 oznacza blokadę. | Nie mylić z: poziom szczegółowości. Zakazane: ocena, waga, priorytet, ważność, severity. |
 | uśrednianie pozycji | Zbieranie przez 30 sekund odczytów położenia z GNSS i wyznaczenie z nich jednego, dokładniejszego punktu. | Nie mylić z: dokładność pozycji. Zakazane: kalibracja, uśrednianie GPS, fix. |
 | wejście dostępne | Wejście, przez które osoba na wózku dostanie się do budynku bez pokonywania stopni: z poziomu terenu, pochylnią lub podnośnikiem. | Nie mylić z: wejście główne. Zakazane: wejście dla niepełnosprawnych, wejście przystosowane, wejście bez barier. |
 | wejście główne | Podstawowe wejście do budynku, którym wchodzi większość osób; nie musi być wejściem dostępnym. | Nie mylić z: wejście dostępne. Zakazane: wejście frontowe, wejście reprezentacyjne. |
-| weryfikacja | Sprawdzenie zgłoszenia przez Weryfikatora zakończone przyjęciem albo odrzuceniem z przyczyną odrzucenia. | Nie mylić z: pomiar precyzyjny. Zakazane: moderacja, akceptacja, recenzja, zatwierdzanie. |
+| weryfikacja | Sprawdzenie zgłoszenia przez Weryfikatora zakończone przyjęciem albo odrzuceniem z powodem odrzucenia. | Nie mylić z: pomiar precyzyjny. Zakazane: moderacja, akceptacja, recenzja, zatwierdzanie. |
 | Weryfikator | Rola RO-WER: pracownik, który przyjmuje albo odrzuca zgłoszenia, wskazuje duplikaty i ustala typ oraz uciążliwość zgłoszeń szybkich. | Zakazane: moderator, recenzent, sprawdzający, kontroler. |
 | WGS84 | Światowy układ współrzędnych geograficznych w stopniach, używany przez GNSS i mapy internetowe (EPSG:4326); w nim jest eksport GeoJSON. | Nie mylić z: PUWG 1992. Zakazane: współrzędne GPS, układ GPS. |
 | zaproszenie | Wpisanie przez Koordynatora adresu e-mail i roli, po którym ta osoba dostaje konto z tą rolą. | Nie mylić z: rejestracja (Odwiedzający zakłada konto sam). Zakazane: dodanie użytkownika, invite. |
 | Zbierający | Rola RO-ZBI: student lub pracownik, który na miejscu wykonuje pomiar precyzyjny i składa zgłoszenia, także w trybie offline. | Zakazane: zbieracz, inwentaryzator, ankieter, kolektor. |
-| zdjęcie | Fotografia bariery dołączona do zgłoszenia, wymagana w każdym zgłoszeniu. | Zakazane: foto, fotka, obraz, załącznik. |
 | zgłoszenie | Informacja w systemie o jednej barierze: typ, uciążliwość, miejsce, piętro, zdjęcie i opis. | Nie mylić z: bariera. Zakazane: raport, obiekt, wpis, rekord, punkt, ticket. |
 | zgłoszenie przyjęte | Zgłoszenie po pozytywnej weryfikacji; tylko takie zgłoszenia widzi Odwiedzający na mapie. | Zakazane: zatwierdzone, potwierdzone, zaakceptowane, opublikowane. |
 | zgłoszenie szybkie | Zgłoszenie Odwiedzającego w najwyżej 3 krokach: zdjęcie, bieżąca pozycja i grupa barier; typ i uciążliwość ustala Weryfikator. | Nie mylić z: pomiar precyzyjny. Zakazane: szybki raport, zgłoszenie uproszczone, sygnał. |
