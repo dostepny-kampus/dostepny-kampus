@@ -51,18 +51,22 @@ Czynność główna: wybór budynku z listy. Ten sam ekran C1, bez nowego identy
 
 ### Korekta w budynku szczegółowym
 
-![Makieta C1 po potwierdzeniu budynku A-1: wybór piętra, plan piętra z punktem i źródłem, przyciski przesuwania na planie, mapa z tym samym punktem i własne przyciski przesuwania, napis Korekta ręczna i Dalej](../../_generated/m-c1-pomiar-pozycji-korekta.svg)
+![Makieta C1 po potwierdzeniu budynku A-1: napis Korekta ręczna, przełącznik z wybranym Plan piętra obok Mapa, wybór piętra, plan piętra z punktem i źródłem, jeden zestaw przycisków przesuwania na planie i Dalej](../../_generated/m-c1-pomiar-pozycji-korekta.svg)
 
-Czynność główna: „Dalej”.
+Czynność główna: „Dalej”. Plan i mapa dzielą jedną powierzchnię, więc ekran ma jeden zestaw przycisków przesuwania.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Budynek A-1” po potwierdzeniu i „Wybierz inny” | US6.2 |
 | „Korekta ręczna” po przesunięciu punktu | US6.3, US6.4 |
+| Przełącznik „Plan piętra” i „Mapa”, jak „Mapa / Lista” na R1; w budynku szczegółowym wybrany jest „Plan piętra”, co widać po kształcie pola | US6.3, US6.4, NFR-21 |
 | „Piętro:” i 5 etykiet z danych PWr, plan wybranego piętra | US6.3, US16.1 |
 | „Źródło: Politechnika Wrocławska” pod planem | NFR-40 |
-| „Przesuń punkt na planie:” z czterema przyciskami | US6.3, NFR-3, NFR-15 |
-| Mapa z tym samym punktem i „Przesuń punkt na mapie:” | US6.4, NFR-3 |
+| „Przesuń punkt na planie:” z czterema przyciskami, jedynymi na ekranie | US6.3, NFR-3, NFR-15 |
+
+| Wariant bez osobnej makiety | Co widać |
+| --- | --- |
+| Wybrana „Mapa” | w miejscu wyboru piętra, planu i podpisu PWr mapa z tym samym punktem i podpisem „© OpenStreetMap contributors” w ramce (US6.4, NFR-37). Ten blok rysuje makieta „Po pomiarze: podpowiedź budynku”. Te same cztery przyciski mają podpis „Przesuń punkt na mapie:”. Wybrane piętro zostaje po powrocie do planu. |
 
 ### Szukanie satelitów
 
@@ -230,7 +234,7 @@ Czynność główna: „Synchronizuj teraz”; synchronizacja i tak rusza sama.
 
 ### Konflikt wersji
 
-![Makieta C4 z konfliktem: komunikat Dwie wersje, wybierz jedną, ramka Moja wersja z uciążliwością Tylko z pomocą i napisem Inna wartość oraz przyciskiem Zostaw moją wersję, ramka Wersja z serwera z uciążliwością Blokada i przyciskiem Weź wersję z serwera, na dole Zdecyduję później](../../_generated/m-c4-synchronizacja-konflikt.svg)
+![Makieta C4 z konfliktem: komunikat Dwie wersje, wybierz jedną, napis Różni się: uciążliwość, ramka Moja wersja z pogrubioną uciążliwością Tylko z pomocą i przyciskiem Zostaw moją wersję, ramka Wersja z serwera z pogrubioną uciążliwością Blokada i przyciskiem Weź wersję z serwera, na dole Zdecyduję później](../../_generated/m-c4-synchronizacja-konflikt.svg)
 
 Czynność główna: wybór wersji — „Zostaw moją wersję” albo „Weź wersję z serwera”, oba przyciski tej samej wagi.
 
@@ -238,7 +242,7 @@ Czynność główna: wybór wersji — „Zostaw moją wersję” albo „Weź w
 | --- | --- |
 | „Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.” | US9.3, BR-10, PW-12 |
 | Obie wersje jedna pod drugą; uciążliwość 2 i 3 jak w scenariuszu `@US9.3` | US9.3, NFR-20, NFR-22 |
-| „Inna wartość” przy polu, które się różni | US9.3, NFR-21 |
+| „Różni się: uciążliwość” pod komunikatem, nad obiema wersjami; w obu wersjach pole „Uciążliwość:” pogrubione. Przy innym polu napis podaje jego nazwę, np. „Różni się: [pole]”, a przy kilku polach „Różnią się: [pole], [pole]” | US9.3, NFR-21 |
 | Przycisk wyboru pod każdą wersją | US9.3, BR-10 |
 | „Zdecyduję później”: zmiana czeka w telefonie | BR-10 |
 

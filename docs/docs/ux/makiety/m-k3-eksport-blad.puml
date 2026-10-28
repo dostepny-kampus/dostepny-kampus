@@ -9,6 +9,6 @@ $naglowek("Pobierz eksport")
 (X) CSV (PUWG 1992, EPSG:2180)
 ..
 $tekst("Plik zawiera tylko obecne, sprawdzone bariery, bez danych autorów.")
-$komunikat("Serwer chwilowo nie odpowiada, a dane w telefonie są bezpieczne. Spróbuj ponownie za kilka minut.", "Spróbuj ponownie")
+$komunikat("Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut.", "Spróbuj ponownie")
 $ekran_koniec()
 @endsalt

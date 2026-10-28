@@ -8,11 +8,14 @@
 ' $powod: "" (nic nie wybrano), "Duplikat" albo "Nieaktualne". Przy „Duplikat” lista
 ' „Wcześniejsze zgłoszenie:” z podobnymi zgłoszeniami (BR-13). „Inny powód” ma pole
 ' z etykietą widoczną zawsze, więc osoba wie, co i dla kogo wpisać (BR-16).
-!procedure $r2_decyzja($powod="")
+' $z_duplikatem: 0 przy zmianie oznaczenia wejścia. Duplikat to zgłoszenie tej samej bariery
+' (słownik pojęć, BR-13), a zmianę oznaczenia odrzuca się z opisem albo jako „nieaktualne” (BR-24).
+!procedure $r2_decyzja($powod="", $z_duplikatem=1)
 ..
 $przycisk_glowny("Przyjmij")
 <b>Powód odrzucenia</b>
-!if $powod == "Duplikat"
+!if $z_duplikatem == 0
+!elseif $powod == "Duplikat"
 (X) Duplikat
 {
 $dk_spacje(3) | Wcześniejsze zgłoszenie:

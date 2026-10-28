@@ -141,7 +141,8 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | podpowiedź budynku | „Czy to budynek C-13?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | Zbierający | Pytanie zamiast słowa „podpowiedź”. | 10.2 |
 | lista budynków po „Wybierz inny” (C1) | „Wybierz budynek”, „Najbliżej punktu, od najbliższego:”, przyciski „Budynek A-1” | Zbierający | Ten sam zapis budynku co na liście V1. | 10.2 |
 | korekta ręczna | „Korekta ręczna” | Zbierający, Weryfikator | bez zmian | 10.2 |
-| przesunięcie punktu przyciskami (C1) | „Przesuń punkt na mapie:”, „Przesuń punkt na planie:” i „W górę”, „W dół”, „W lewo”, „W prawo” | Zbierający | Odpowiednik przeciągania punktu (NFR-15). Kierunki te same co przy mapie (PW-8). | 10.2 |
+| przełącznik „Plan piętra / Mapa” (C1, budynek szczegółowy) | „Plan piętra”, „Mapa” | Zbierający | Ten sam przełącznik co „Mapa / Lista” na V1 i R1. Jedna powierzchnia i jeden zestaw przycisków skracają ekran. | 10.2 |
+| przesunięcie punktu przyciskami (C1) | „Przesuń punkt na mapie:”, „Przesuń punkt na planie:” i „W górę”, „W dół”, „W lewo”, „W prawo” | Zbierający | Odpowiednik przeciągania punktu (NFR-15). Kierunki te same co przy mapie (PW-8). Podpis zależy od widoku wybranego przełącznikiem. | 10.2 |
 | nagłówki sekcji C1 i C2 | „Miejsce bariery”, „Piętro”, „Zdjęcie”, „Opis” | Zbierający | Krótki rzeczownik nad grupą pól. | 10.2 |
 | „Zmień miejsce”, „Powtórz pomiar”, „Dalej”, „Zapisz” | bez zmian | Zbierający | Czasowniki są już krótkie. | 10.2 |
 | typ bariery (C2) | „Typ bariery” | Zbierający, Weryfikator | bez zmian | 10.2 |
@@ -159,7 +160,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | znak „zmiana czeka na wysłanie” | „Zmiana czeka na wysłanie” | Zbierający | bez zmian | 10.3 |
 | powód odrzucenia i rodzaj zmiany (C3) | „Powód odrzucenia:”, „Zmiana oznaczenia wejścia” | Zbierający | Te same słowa co pole „Powód odrzucenia” w R2 i nagłówek C6. | 10.3 |
 | konflikt wersji („wybierz wersję”) | „Dwie wersje: wybierz jedną” | Zbierający | Mówi, co się stało i co zrobić. | 10.4 |
-| pole różniące się w konflikcie | „Inna wartość” | Zbierający | bez zmian; różnicę widać bez koloru (NFR-21) | 10.4 |
+| pole różniące się w konflikcie | „Różni się: [pole]”, np. „Różni się: uciążliwość”, nad obiema wersjami; przy kilku polach „Różnią się: [pole], [pole]” | Zbierający | Mówi, które pole się różni, tym samym wzorem co „Zmienione: uciążliwość” na R2; różnicę widać bez koloru (NFR-21). | 10.4 |
 | wersje w konflikcie (C4) | nagłówki „Moja wersja”, „Wersja z serwera” | Zbierający | Te same słowa co w przyciskach wyboru wersji. | 10.4 |
 | podział kolejki (C4) | „2 zgłoszenia i 1 znacznik piętra” | Zbierający | Mówi, co dokładnie czeka na wysłanie. | 10.3 |
 | „Wyślij ponownie do bieżącego zgłoszenia” | „Wyślij ponownie”, a nad przyciskiem zdanie z katalogu komunikatów (C3, nieaktualne) | Zbierający | Krótki napis mieści się na przycisku w jednym wierszu. Zdanie nad nim mówi, że zmiana trafi do aktualnej wersji, a nie do tego samego zgłoszenia. | 10.4 |
@@ -188,14 +189,14 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | przełącznik „Mapa / Lista” (R1) | „Mapa”, „Lista” | Weryfikator | Ta sama kolejność co na V1; zaznaczony jest widok domyślny, na R1 lista. | 10.5 |
 | nagłówek R2 | „Sprawdzenie zgłoszenia” | Weryfikator | bez zmian | 10.5 |
 | podobne zgłoszenie | „Podobne zgłoszenia do 10 m” | Weryfikator | Krócej niż „w promieniu 10 m”. | 10.4 |
-| duplikat, „nieaktualne” | „Duplikat”, „Nieaktualne” | Weryfikator | bez zmian | 10.4 |
+| duplikat, „nieaktualne” | „Duplikat”, „Nieaktualne”; przy zmianie oznaczenia wejścia bez „Duplikat” | Weryfikator | bez zmian; duplikat to zgłoszenie tej samej bariery, a zmiana oznaczenia wejścia nie opisuje bariery (BR-24) | 10.4 |
 | własny powód odrzucenia (R2) | opcja „Inny powód”, pole „Opisz powód dla autora” | Weryfikator | Etykieta mówi, co wpisać i dla kogo (recenzja B5). | 10.5 |
 | status poprzedniego zgłoszenia (R2, „bariera usunięta”) | „Poprzednie zgłoszenie:” i status, np. „Archiwalne” | Weryfikator | Bez statusu nie widać, że zmiana jest nieaktualna (BR-23). | 10.5 |
 | oznaczenie wejścia od wysłania zmiany (R2) | „Bez zmian od wysłania” z ikoną `link-intact`, „Zmienione po wysłaniu” z ikoną `link-broken` | Weryfikator | Mówi, czy zmiana dotyczy obecnego oznaczenia (BR-24). | 10.5 |
 | zmienione pola nowej wersji (R2) | „Zmienione: uciążliwość” | Weryfikator | Weryfikator nie szuka różnicy sam (BR-3). | 10.5 |
 | „Przyjmij”, „Odrzuć”, powód odrzucenia | „Przyjmij”, „Odrzuć”, pole „Powód odrzucenia” | Weryfikator | bez zmian | 10.5 |
 | zasłonięcie twarzy albo tablicy | „Zasłoń twarz lub tablicę” | Weryfikator | Czasownik na przycisku. | 10.5 |
-| pseudonim autora | „Autor: Zbierający, Autor 17”; przy zgłoszeniu szybkim „Autor: Odwiedzający, Autor 23” | Weryfikator | Rola i pseudonim bez danych osobowych (BR-5). | 10.5 |
+| pseudonim autora | „Autor: Zbierający, Autor [nr]”; przy zgłoszeniu szybkim „Autor: Odwiedzający, Autor [nr]” | Weryfikator | Rola i pseudonim bez danych osobowych (BR-5). Numer pseudonimu jest zastępnikiem, bo nadaje go system. | 10.5 |
 | rodzaj zgłoszenia (R1, R2) | „Zgłoszenie z pomiaru”, „Zgłoszenie szybkie”, „Bariery już nie ma”, „Zmiana oznaczenia wejścia” | Weryfikator | Rodzaj mówi, czy typ i uciążliwość trzeba ustalić (BR-14, BR-15). Dwa ostatnie napisy są te same co na C3. | 10.5 |
 | data wysłania w kolejce (R1) | „Wysłane 12.11.2026” | Weryfikator | To samo słowo co status „Wysłane” u Zbierającego. | 10.5 |
 | etykiety danych zgłoszenia (R2) | „Czego dotyczy:”, „Miejsce:”, „Obecne oznaczenie:”, „Wybrane oznaczenie:”, „Wcześniejsze zgłoszenie:” | Weryfikator | Krótka etykieta przed wartością z danych. „Czego dotyczy” powtarza pytanie z kroku 2 V4. | 10.5 |
@@ -223,7 +224,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | --- | --- | --- | --- |
 | każdy ekran, brak sieci | „Brak internetu.” Obok, gdy dane są z telefonu: „Dane z 12.11.2026.” | — | PW-4 |
 | ekrany R1, R2, K1–K3, brak sieci | „Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.” | „Spróbuj ponownie” | — |
-| ekrany R1, R2, K1–K3, błąd serwera | „Serwer chwilowo nie odpowiada, a dane w telefonie są bezpieczne. Spróbuj ponownie za kilka minut.” | „Spróbuj ponownie” | PW-10 |
+| ekrany R1, R2, K1–K3, błąd serwera | „Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut.” | „Spróbuj ponownie” | PW-10 |
 | ekrany R1, R2, K1–K3, brak uprawnień | „Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.” | „Wróć do mapy” | PW-10 |
 
 ### Gość i Odwiedzający
