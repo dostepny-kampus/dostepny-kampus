@@ -4,30 +4,29 @@ Kontury budynków Politechniki Wrocławskiej i wejścia na ich obrysie, pobrane 
 
 | Ścieżka | Co zawiera |
 | --- | --- |
-| `buildings/<symbol>.geojson` | jeden budynek, np. `C-13.geojson` |
-| `buildings/index.json` | spis budynków i atrybucja źródła |
+| `buildings/pwr-buildings.geojson` | wszystkie kontury i wejścia w jednym pliku |
 | `buildings/LICENSE` | nota licencyjna ODbL dla danych |
 | `scripts/export_buildings.py` | skrypt eksportu z Overpass API |
 | `requirements.txt` | zależności skryptu z dokładnymi wersjami |
 
 Stan eksportu z 28.10.2026: 95 symboli budynków, 95 konturów z OSM i 72 wejścia, w tym 1 z tagiem `wheelchair`.
 
-## Format plików
+## Format pliku
 
-Każdy plik budynku to `FeatureCollection` w GeoJSON (RFC 7946, EPSG:4326). Współrzędne mają 7 miejsc po przecinku (około 1 cm).
+Plik to jeden `FeatureCollection` w GeoJSON (RFC 7946, EPSG:4326), gotowy jako jedno źródło mapy. Współrzędne mają 7 miejsc po przecinku (około 1 cm). Pola `source`, `license` i `attribution` na poziomie kolekcji podają źródło danych.
 
-| Obiekt | Geometria | Właściwości |
+| `kind` | Geometria | Pozostałe właściwości |
 | --- | --- | --- |
-| kontur | `Polygon` albo `MultiPolygon` | `symbol` (np. `C-13`), `name` (tag `name` z OSM albo `null`), `osm_id` (np. `way/101124650`) |
-| wejście | `Point` | `osm_id`, `entrance` (np. `main`, `yes`), `ref`, `wheelchair` (`yes`, `no`, `limited` albo `null`) |
+| `building` | `Polygon` albo `MultiPolygon` | `symbols` (np. `["C-13"]`), `name` (tag `name` z OSM albo `null`), `osm_id` (np. `way/101124650`) |
+| `entrance` | `Point` | `symbols`, `osm_id`, `entrance` (np. `main`, `yes`), `ref`, `wheelchair` (`yes`, `no`, `limited` albo `null`) |
 
-Kontury są pierwsze, wejścia po nich, każda grupa posortowana po `osm_id`. Plik `index.json` podaje dla każdego symbolu nazwę, plik, listę `osm_ids` i liczbę wejść.
+Każdy obiekt OSM występuje raz. Kontury są pierwsze, wejścia po nich, każda grupa posortowana po `osm_id`. Lista `symbols` jest posortowana naturalnie (`A-2` przed `A-10`).
 
 Przypadki szczególne:
 
-- jeden obiekt OSM z dwoma symbolami (tag `ref` = `C3;C4`) trafia do obu plików, `C-3` i `C-4`;
-- dwa obiekty OSM z tym samym symbolem (np. `H-14`) dają dwa kontury w jednym pliku;
-- wejście na wspólnej ścianie sąsiednich budynków należy do obu plików.
+- obiekt OSM z dwoma symbolami (tag `ref` = `C3;C4`) ma `symbols` = `["C-3", "C-4"]`;
+- dwa obiekty OSM z tym samym symbolem (np. `H-14`) to dwa kontury z tym samym `symbols`;
+- wejście na wspólnej ścianie sąsiednich budynków ma symbole obu budynków (np. `["C-1", "C-3", "C-4"]`).
 
 ## Skąd są dane
 
@@ -57,9 +56,9 @@ python -m venv .venv
 .venv/bin/python data/scripts/export_buildings.py
 ```
 
-W systemie Windows zamiast `.venv/bin/` wpisujemy `.venv\Scripts\`. Skrypt nadpisuje pliki w `buildings/` i usuwa pliki budynków, których nie ma już w OSM. Wynik jest powtarzalny: te same dane OSM dają identyczne pliki, więc `git diff` pokazuje tylko prawdziwe zmiany w mapie.
+W systemie Windows zamiast `.venv/bin/` wpisujemy `.venv\Scripts\`. Skrypt nadpisuje `buildings/pwr-buildings.geojson`. Wynik jest powtarzalny: te same dane OSM dają identyczny plik, więc `git diff` pokazuje tylko prawdziwe zmiany w mapie.
 
-Opcja `--input <plik.json>` przetwarza zapisaną odpowiedź Overpass bez nowego zapytania. Publiczny serwer Overpass ma limity, dlatego skrypt nie ponawia zapytań, a odpowiedź z błędem wykonania (pole `remark`) przerywa go bez zmiany plików. Uruchamiamy go ręcznie, gdy chcemy odświeżyć dane, a wynik zapisujemy w repozytorium.
+Opcja `--input <plik.json>` przetwarza zapisaną odpowiedź Overpass bez nowego zapytania. Publiczny serwer Overpass ma limity, dlatego skrypt nie ponawia zapytań, a odpowiedź z błędem wykonania (pole `remark`) przerywa go bez zmiany pliku. Uruchamiamy go ręcznie, gdy chcemy odświeżyć dane, a wynik zapisujemy w repozytorium.
 
 ## Źródła
 
