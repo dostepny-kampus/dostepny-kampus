@@ -109,10 +109,11 @@ def git_lines(*args: str) -> list[str]:
 def changed_doc_files() -> list[Path]:
     """Zwraca pliki dokumentacji zmienione względem punktu odejścia od `main` (commity, zmiany robocze i nowe pliki).
 
-    Gwarantuje: tylko istniejące pliki z doc_files(); bez gałęzi `main` porównuje z HEAD.
+    Gwarantuje: tylko istniejące pliki z doc_files(); bez gałęzi `main` porównuje z HEAD; działa także, gdy
+    dokumentacja jest podkatalogiem repozytorium (ścieżki względne do katalogu dokumentacji).
     """
     base = (git_lines("merge-base", "HEAD", "main") or ["HEAD"])[0]
-    names = git_lines("diff", "--name-only", "--diff-filter=d", base) + git_lines("ls-files", "--others", "--exclude-standard")
+    names = git_lines("diff", "--name-only", "--relative", "--diff-filter=d", base) + git_lines("ls-files", "--others", "--exclude-standard")
     candidates = {(REPO / n).resolve() for n in names}
     return [p for p in doc_files() if p.resolve() in candidates]
 
