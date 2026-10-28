@@ -1,0 +1,68 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "symbol": "A-7",
+        "name": "A-7",
+        "osm_id": "way/101127253"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              17.0620652,
+              51.1082751
+            ],
+            [
+              17.0619696,
+              51.1083074
+            ],
+            [
+              17.0619264,
+              51.1082565
+            ],
+            [
+              17.0619164,
+              51.1082447
+            ],
+            [
+              17.0619057,
+              51.108232
+            ],
+            [
+              17.0618621,
+              51.1081807
+            ],
+            [
+              17.0619581,
+              51.1081485
+            ],
+            [
+              17.0620652,
+              51.1082751
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "node/13151513134",
+        "entrance": "main",
+        "ref": null,
+        "wheelchair": null
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.0619164,
+          51.1082447
+        ]
+      }
+    }
+  ]
+}

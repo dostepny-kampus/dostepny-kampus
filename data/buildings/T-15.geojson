@@ -1,0 +1,108 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "symbol": "T-15",
+        "name": "T-15 \"Hades\"",
+        "osm_id": "way/101141734"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              17.0848636,
+              51.1032717
+            ],
+            [
+              17.0845788,
+              51.1033044
+            ],
+            [
+              17.0845317,
+              51.1031436
+            ],
+            [
+              17.084527,
+              51.1031278
+            ],
+            [
+              17.0845158,
+              51.1030897
+            ],
+            [
+              17.0844834,
+              51.102981
+            ],
+            [
+              17.0847662,
+              51.1029485
+            ],
+            [
+              17.0848097,
+              51.1030913
+            ],
+            [
+              17.0848413,
+              51.1031972
+            ],
+            [
+              17.0848636,
+              51.1032717
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "node/11309546340",
+        "entrance": "service",
+        "ref": null,
+        "wheelchair": null
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.0848097,
+          51.1030913
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "node/11309546342",
+        "entrance": "service",
+        "ref": null,
+        "wheelchair": null
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.0848413,
+          51.1031972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "node/11423879790",
+        "entrance": "main",
+        "ref": null,
+        "wheelchair": null
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.084527,
+          51.1031278
+        ]
+      }
+    }
+  ]
+}

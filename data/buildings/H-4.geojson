@@ -1,0 +1,124 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "symbol": "H-4",
+        "name": "H-4",
+        "osm_id": "way/101133295"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              17.0542919,
+              51.1088077
+            ],
+            [
+              17.0544698,
+              51.1085818
+            ],
+            [
+              17.0545109,
+              51.1085296
+            ],
+            [
+              17.0547339,
+              51.1085959
+            ],
+            [
+              17.0546982,
+              51.1086427
+            ],
+            [
+              17.0546701,
+              51.1086796
+            ],
+            [
+              17.0546391,
+              51.1086703
+            ],
+            [
+              17.0545826,
+              51.1087457
+            ],
+            [
+              17.054602,
+              51.108752
+            ],
+            [
+              17.0545857,
+              51.1087737
+            ],
+            [
+              17.0545691,
+              51.1087958
+            ],
+            [
+              17.0545466,
+              51.1087886
+            ],
+            [
+              17.0544878,
+              51.108866
+            ],
+            [
+              17.0542919,
+              51.1088077
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "node/4340934421",
+        "entrance": "service",
+        "ref": null,
+        "wheelchair": null
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.0546982,
+          51.1086427
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "node/4340934434",
+        "entrance": "yes",
+        "ref": null,
+        "wheelchair": null
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.0545857,
+          51.1087737
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "node/7310257910",
+        "entrance": "main",
+        "ref": null,
+        "wheelchair": null
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.0544698,
+          51.1085818
+        ]
+      }
+    }
+  ]
+}
