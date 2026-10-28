@@ -265,8 +265,8 @@ siatka_dp: 4
 odstepy:
   xs:
     dp: 4
-    uzycie: odstęp ikony od napisu
-    zrodlo: siatka 4 dp
+    uzycie: odstęp ikony od napisu pod nią w pasku dolnym
+    zrodlo: styl „Karta miejsca”
   s:
     dp: 8
     uzycie: odstęp między chipami i między ikoną a napisem w chipie
@@ -276,9 +276,9 @@ odstepy:
     uzycie: margines boczny ekranu, wcięcie treści w kontenerze grupy, odstęp pozycji w grupie
     zrodlo: konwencje makiet, styl „Karta miejsca”
   l:
-    dp: 24
+    dp: 28             # odstęp nad nagłówkiem grupy, np. „Wejścia”, „Piętra”
     uzycie: odstęp między grupami arkusza
-    zrodlo: siatka 4 dp
+    zrodlo: styl „Karta miejsca”
 
 cele_dotyku:
   minimum:
