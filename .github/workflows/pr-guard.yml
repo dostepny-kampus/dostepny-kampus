@@ -112,3 +112,13 @@ jobs:
             MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, EPL-2.0, MPL-2.0, ISC,
             0BSD, PSF-2.0, Python-2.0
           allow-dependencies-licenses: pkg:pypi/language-tool-python, pkg:npm/bpmn-js, pkg:maven/org.junit.jupiter/junit-jupiter-api, pkg:maven/org.springframework.modulith/spring-modulith-core, pkg:maven/org.springframework.modulith/spring-modulith-docs, pkg:maven/com.tngtech.archunit/archunit
+
+  naglowki:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Sprawdź nagłówek autorski w plikach z kodem
+        run: bash .github/scripts/naglowki.sh
