@@ -39,7 +39,7 @@ state "Ustawienia telefonu" as UST <<poza>>
 state "V4 Zgłoszenie szybkie" as V4 {
   state "Sprawdzenie zgody\nna lokalizację: brak,\nprzybliżona, odmowa,\nwyłączona" as ZG <<stan>>
   state "Krok 1 z 3\nzdjęcie" as K1
-  state "Krok 2 z 3\ngrupa barier" as K2
+  state "Krok 2 z 3\ngrupa barier,\nw budynku piętro" as K2
   state "Krok 3 z 3\nwysłanie" as K3
   state "Brak pozycji" as BP <<stan>>
   state "Potwierdzenie\nrezygnacji" as PR <<stan>>

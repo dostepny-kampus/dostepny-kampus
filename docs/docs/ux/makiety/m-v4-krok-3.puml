@@ -1,5 +1,5 @@
 @startsalt
-' V4 Zgłoszenie szybkie, krok 3 z 3: miniatura, grupa, miejsce, „Wyślij”.
+' V4 Zgłoszenie szybkie, krok 3 z 3: miniatura, grupa, piętro (US4.5), miejsce, „Wyślij”.
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
@@ -8,6 +8,8 @@ $numer_kroku("Krok 3 z 3")
 $obraz("miniatura zdjęcia")
 Czego dotyczy bariera?
 <b>Schody i windy</b>
+Na którym piętrze?
+<b>2</b>
 ..
 $tekst("Dołączymy miejsce, w którym teraz stoisz.")
 $przycisk_glowny("Wyślij")

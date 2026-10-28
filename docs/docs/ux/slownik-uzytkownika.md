@@ -101,6 +101,9 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | grupa „toalety” | „Toalety” | Odwiedzający | bez zmian | 2.3 |
 | grupa „orientacja i informacja” | „Napisy i oznaczenia” | Odwiedzający | „Orientacja” to słowo z przepisów. | 2.3, 5.1 |
 | grupa „inne” | „Coś innego” | Odwiedzający | Brzmi jak odpowiedź na pytanie z kroku 2. | 4.5 |
+| piętro (pytanie w kroku 2, US4.5) | „Na którym piętrze?” | Odwiedzający | Pytanie zamiast samego słowa „piętro”. | 4.5 |
+| puste piętro (odpowiedź w kroku 2) | „Nie wiem” | Odwiedzający | Odpowiedź na pytanie z ekranu; nie zmusza do zgadywania. | 4.5 |
+| piętro 0 w budynku podstawowym (krok 2) | „Parter” | Odwiedzający | Osoba starsza nie liczy pięter od zera. W budynku szczegółowym są etykiety z danych PWr. | 4.5 |
 | bieżąca pozycja (krok 3) | „Dołączymy miejsce, w którym teraz stoisz.” | Odwiedzający | bez zmian | 3.4 |
 | „Wyślij” | „Wyślij” | Odwiedzający | bez zmian | 3.4 |
 | „Anuluj zgłoszenie” | „Zrezygnuj” | Odwiedzający | Bez rzeczownika „zgłoszenie”. | 4.8 |
