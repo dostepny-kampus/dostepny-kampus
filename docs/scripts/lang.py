@@ -1,4 +1,4 @@
-"""Dostępny Kampus — kontrola języka polskiego (LanguageTool, pl-PL) w plikach Markdown. Author: Vladyslav Yevkov. Version: 0.1.1. Copyright (c) 2026 Vladyslav Yevkov."""
+"""Dostępny Kampus — kontrola języka polskiego (LanguageTool, pl-PL) w plikach Markdown. Author: Vladyslav Yevkov. Version: 0.2.0. Copyright (c) 2026 Vladyslav Yevkov."""
 
 from __future__ import annotations
 
@@ -14,6 +14,8 @@ from check_ids import BLOCK_MARKER, BLOCK_NAMES, ID_BODY
 
 REPO = Path(__file__).resolve().parent.parent
 GLOSSARY = REPO / "docs" / "biznes" / "slownik.md"
+REPORTS = REPO / "docs" / "raporty"
+REPORT_HEADER = ["Pole", "Wartość"]
 IGNORE_FILE = REPO / "scripts" / "lang-ignore.txt"
 IGNORE_RULE_PREFIX = "reguła:"
 LANGUAGE = "pl-PL"
@@ -124,16 +126,32 @@ def line_segments(number: int, line: str) -> list[Segment]:
     return [Segment(number, text, fragment) for text, fragment in parts if re.search(r"\w", text)]
 
 
-def extract_segments(text: str) -> list[Segment]:
+def header_table(lines: list[str], start: int) -> range:
+    """Zwraca zakres indeksów linii tabeli nagłówkowej raportu (pierwsza tabela pliku z nagłówkiem „| Pole | Wartość |”)
+    albo pusty zakres, gdy pierwsza tabela ma inny nagłówek lub tabeli nie ma."""
+    first = next((i for i in range(start, len(lines)) if table_cells(lines[i]) is not None), None)
+    if first is None or table_cells(lines[first]) != REPORT_HEADER:
+        return range(0)
+    end = next((i for i in range(first, len(lines)) if table_cells(lines[i]) is None), len(lines))
+    return range(first, end)
+
+
+def extract_segments(text: str, skip_header: bool = False) -> list[Segment]:
     """Zwraca segmenty z całego dokumentu z pominięciem front matter, bloków kodu, bloków wygenerowanych przez
-    check_ids (macierz śledzenia) i sekcji „Źródła” (tytuły źródeł są w języku oryginału)."""
+    check_ids (macierz śledzenia) i sekcji „Źródła” (tytuły źródeł są w języku oryginału).
+
+    Gwarantuje: przy `skip_header` pomija też tabelę nagłówkową raportu (nazwiska, kurs, data; zob. header_table).
+    """
     lines = text.splitlines()
     start = front_matter_end(lines)
+    skipped = header_table(lines, start) if skip_header else range(0)
     segments: list[Segment] = []
     in_code = in_block = False
     sources: int | None = None
     for number, line in enumerate(lines[start:], start=start + 1):
         marker = BLOCK_MARKER.search(line)
+        if number - 1 in skipped:
+            continue
         if FENCE.match(line):
             in_code = not in_code
         elif marker and marker.group(1) in BLOCK_NAMES:
@@ -225,12 +243,13 @@ def match_attr(match: Any, *names: str) -> Any:
 def check_file(tool: Any, path: Path, disabled: frozenset[str], known: frozenset[str]) -> list[Issue]:
     """Sprawdza jeden plik i zwraca listę błędów z numerami linii źródła.
 
-    Wymaga: działającego obiektu LanguageTool. Gwarantuje: reguły z `disabled` są pomijane, a reguły typowe dla
+    Wymaga: działającego obiektu LanguageTool. Gwarantuje: w raportach tabela nagłówkowa jest pominięta; reguły z
+    `disabled` są pomijane, a reguły typowe dla
     zdań (wielka litera, kropka na końcu) nie są zgłaszane dla komórek tabel, punktów list i nagłówków;
     błędy, których fragmentem jest słowo z `known` (małe litery: terminy słownika i wyjątki), są pomijane.
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
-    segments = extract_segments(path.read_text(encoding="utf-8"))
+    segments = extract_segments(path.read_text(encoding="utf-8"), is_report(path))
     if not segments:
         return []
     text, offsets = join_segments(segments)
@@ -257,6 +276,11 @@ def is_ignored(rule: str, excerpt: str, segment: Segment, disabled: frozenset[st
     if rule.startswith("MORFOLOGIK") and excerpt.isupper() and len(excerpt) <= ACRONYM_MAX:
         return True
     return segment.fragment and rule in FRAGMENT_RULES
+
+
+def is_report(path: Path) -> bool:
+    """Zwraca True dla stron raportów (docs/raporty/*.md), których tabela nagłówkowa nie podlega kontroli języka."""
+    return path.resolve().parent == REPORTS.resolve()
 
 
 def display_path(path: Path) -> str:
