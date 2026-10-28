@@ -22,7 +22,7 @@ Każda zasada wynika z wymagań albo z person. Grupa docelowa kursu to osoby sta
 | Daltonizm nie odbiera czytelności. | Protanopia i deuteranopia zacierają różnicę między czerwonym a zielonym, a niebieski zostaje czytelny. Skrypt liczy kontrast każdej pary także po symulacji obu typów [4]. | NFR-16, NFR-21 |
 | Tekst ma kontrast co najmniej 7:1, a nie 4,5:1. | Próg poziomu AAA dla każdego tekstu, także drugorzędnego i błędu. Skrypt odrzuca próg niższy niż w NFR-16. | WCAG 1.4.6 [1], [2]; PE-1, PE-2, PE-3 |
 | Ramki, ikony i fokus mają kontrast co najmniej 3:1. | `outline` i `primary` są widoczną granicą pola, ramki i przycisku. Obramowanie ma 2 dp. | NFR-16, WCAG 1.4.11 [1] |
-| Błąd przy polu nie jest statusem. | Ciemna czerwień `error` służy tylko tekstowi błędu i ramce pola z błędem. Błąd zawsze opisuje tekst, a tekst jest pogrubiony. | NFR-15 (WCAG 3.3.1), NFR-21 |
+| Błąd przy polu nie jest statusem. | Ciemna czerwień `error` służy tylko błędowi walidacji: tekstowi przy polu i nad formularzem oraz ramce pola. Pogrubiony tekst mówi, co się stało i co zrobić. Czerwień nigdy nie oznacza statusu, oznaczenia wejścia ani uciążliwości. Błąd serwera, zapisu i brak internetu to zwykły komunikat, bez czerwieni. | NFR-15 (WCAG 3.3.1), NFR-21, wymagania wspólne fazy B |
 | Ciemny motyw dobieramy osobno. | Tło jest ciemnoszare zamiast czarnego, tekst jasnoszary zamiast białego, a akcent jaśniejszy i mniej nasycony. Każda para ma w ciemnym motywie własny wynik kontrastu. | Material, motyw ciemny [6] |
 | Kolory systemowe z tapety są wyłączone. | Aplikacja nie przejmuje barw z tapety telefonu (Android 12+), bo nie znamy ich kontrastu [8]. | NFR-16 |
 
@@ -31,6 +31,10 @@ PE-1 słabo czyta drobny i blady tekst, zwłaszcza w słońcu, a PE-2 pracuje pr
 ## Kolory
 
 Nazwy ról pochodzą z Material 3 [5]. Plik zawiera tylko role, których potrzebują ekrany z makiet. Kwadrat obok wartości to próbka koloru.
+
+Plik nie ma koloru stanu nieaktywnego. Na makietach żaden przycisk nie jest wyszarzony: przycisk zawsze działa, a brakujące dane wyjaśnia błąd przy polu (C2, C6).
+
+Fokus klawiatury pokazuje ramka `primary` (WCAG 2.4.7), a ramkę fokusu TalkBack rysuje system.
 
 <!-- kolory:start -->
 <!-- vale off -->
@@ -84,11 +88,13 @@ Wzór pochodzi z WCAG: współczynnik to `(L1 + 0,05) / (L2 + 0,05)`. L1 to lumi
 <!-- vale on -->
 <!-- kontrast:end -->
 
-Kontroli skryptem nie podlega mapa: znaczniki barier leżą na obrazie podkładu OpenStreetMap. Znacznik ma kształt i napis (NFR-21), a jego kontrast z podkładem sprawdza faza C na zrzutach ekranu.
+Kontroli skryptem nie podlega mapa ani plan piętra: znaczniki barier leżą na obrazie podkładu OpenStreetMap albo planu PWr. Znacznik ma kształt i napis (NFR-21), a jego kontrast z podkładem sprawdza faza C na zrzutach ekranu. Mapę nieba na C1 rysuje aplikacja, więc używa tylko ról z pliku, a system satelity rozróżnia kształt i podpis (US6.5).
 
 ## Typografia
 
 Rozmiary podajemy w sp, więc tekst rośnie razem z ustawieniem czcionki w telefonie, do 200% (NFR-20). Krój jest systemowy: PE-1 zachowuje czcionkę ustawioną w telefonie, a aplikacja nie dołącza pliku czcionki.
+
+Napisy paska dolnego mają 16 sp i mogą zawinąć się do dwóch wierszy pod ikoną, np. „Zgłoś barierę” i „Konto i praca”. Faza C sprawdza na zrzutach ekranu, czy przy 200% żaden napis paska nie jest ucięty (NFR-20).
 
 | Reguła | Wartość | Źródło |
 | --- | --- | --- |
