@@ -22,7 +22,7 @@ $przycisk("Toaleta dostosowana")
 !endprocedure
 
 ' Wejście na karcie: oznaczenie, przy wejściu zalecanym „Zalecane” z piętrem (BR-25),
-' nazwa, opis z danych, „Pokaż na mapie” tylko przy zalecanym i „Zgłoś problem”.
+' nazwa, opis z danych, „Pokaż na mapie” tylko przy zalecanym i „Zgłoś barierę przy tym wejściu”.
 ' $zrodlo: data i źródło przy wejściu, gdy nie są wspólne dla wszystkich (BR-24).
 ' $akcja tylko dla Zbierającego: "Zmień oznaczenie".
 !procedure $wejscie_karty($oznaczenie, $nazwa, $zalecane="", $zrodlo="", $akcja="")
@@ -36,7 +36,7 @@ $zrodlo
 !if $zalecane != ""
 $przycisk("Pokaż na mapie")
 !endif
-$przycisk("Zgłoś problem")
+$przycisk("Zgłoś barierę przy tym wejściu")
 !if $akcja != ""
 $przycisk($akcja)
 !endif
