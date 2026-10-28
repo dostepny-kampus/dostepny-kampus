@@ -1,0 +1,23 @@
+comments:
+  AbsentOrWrongFileLicense:
+    licenseTemplate: |
+      /*
+       * Dostępny Kampus
+       * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+       * SPDX-License-Identifier: MIT
+       */
+
+ktlint:
+  code_style: 'ktlint_official'
+  FunctionName:
+    # Dubluje naming>FunctionNaming, a w detekt nie ma opcji pominięcia @Composable,
+    # którą wymaga dokumentacja compose-rules. Nazwy funkcji sprawdza FunctionNaming.
+    active: false
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+
+complexity:
+  LongParameterList:
+    ignoreAnnotated: ['Composable']
