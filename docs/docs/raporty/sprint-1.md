@@ -68,13 +68,13 @@ Pięć ekranów doszło względem raportu „Tydzień 2”: L1, L2 (US14), C5 (U
 
 ### Wybrane makiety
 
-| V1 Mapa kampusu | V2 Karta budynku | V3 Którędy wejść |
+| V1: Mapa kampusu | V2: Karta budynku | V3: Którędy wejść |
 | --- | --- | --- |
-| ![Makieta V1: pole symbolu budynku, przełącznik Mapa i Lista budynków, mapa z oznaczeniami barier, przyciski przesuwania mapy, pasek dolny](../_generated/m-v1-mapa.png){ width="210" } | ![Makieta V2: budynek A-1, trzy wejścia z oznaczeniami Niedostępne, Dostępne i Brak danych, przycisk Sprawdź, którędy wejść, wybór piętra, plan piętra, bariery](../_generated/m-v2-karta-budynku.png){ width="210" } | ![Makieta V3: zdanie o wejściu dostępnym do A-1, wejście z oznaczeniem, bariera ze zdjęciem](../_generated/m-v3-ktoredy-wejsc.png){ width="210" } |
+| ![Makieta V1: pole symbolu budynku, przełącznik Mapa i Lista budynków, mapa z oznaczeniami barier, przyciski przesuwania mapy, pasek dolny](../_generated/m-v1-mapa.png){: width="210" } | ![Makieta V2: budynek A-1, trzy wejścia z oznaczeniami Niedostępne, Dostępne i Brak danych, przycisk Sprawdź, którędy wejść, wybór piętra, plan piętra, bariery](../_generated/m-v2-karta-budynku.png){: width="210" } | ![Makieta V3: zdanie o wejściu dostępnym do A-1, wejście z oznaczeniem, bariera ze zdjęciem](../_generated/m-v3-ktoredy-wejsc.png){: width="210" } |
 
-| V4 Zgłoszenie szybkie, krok 1 | C1 Pomiar pozycji | R2 Sprawdzenie zgłoszenia |
+| V4: Zgłoszenie szybkie, krok 1 | C1: Pomiar pozycji | R2: Sprawdzenie zgłoszenia |
 | --- | --- | --- |
-| ![Makieta V4 krok 1 z 3: przypomnienie, by nie fotografować twarzy i tablic, przycisk Zrób zdjęcie](../_generated/m-v4-krok-1.png){ width="210" } | ![Makieta C1: czas do końca pomiaru, dokładność, liczba satelitów według systemów, mapa nieba, przycisk Powtórz pomiar](../_generated/m-c1-pomiar-pozycji.png){ width="210" } | ![Makieta R2: zgłoszenie z pomiaru ze zdjęciem, podobne zgłoszenia do 10 m, przycisk Przyjmij, powody odrzucenia, przycisk Odrzuć](../_generated/m-r2-sprawdzenie-zgloszenia.png){ width="210" } |
+| ![Makieta V4 krok 1 z 3: przypomnienie, by nie fotografować twarzy i tablic, przycisk Zrób zdjęcie](../_generated/m-v4-krok-1.png){: width="210" } | ![Makieta C1: czas do końca pomiaru, dokładność, liczba satelitów według systemów, mapa nieba, przycisk Powtórz pomiar](../_generated/m-c1-pomiar-pozycji.png){: width="210" } | ![Makieta R2: zgłoszenie z pomiaru ze zdjęciem, podobne zgłoszenia do 10 m, przycisk Przyjmij, powody odrzucenia, przycisk Odrzuć](../_generated/m-r2-sprawdzenie-zgloszenia.png){: width="210" } |
 
 | Ekran | Na co zwrócić uwagę | Odwołanie |
 | --- | --- | --- |
