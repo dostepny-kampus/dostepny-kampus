@@ -9,7 +9,7 @@ Funkcja: Zgłoszenie szybkie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz stoi przy niesprawnej windzie w budynku D-2
     Jeżeli zrobi zdjęcie windy
-    Oraz wybierze grupę barier „komunikacja pionowa”
+    Oraz wybierze grupę barier „komunikacja pionowa” i piętro, na którym stoi
     Oraz wyśle zgłoszenie
     Wtedy zgłoszenie powstaje po 3 krokach
     Oraz ma dołączoną bieżącą pozycję telefonu, o którą aplikacja nie pytała
@@ -91,11 +91,11 @@ Funkcja: Zgłoszenie szybkie
     Oraz to nadal krok 2 z 3
 
     Przykłady:
-      | miejsce                              | grupa                 | pytanie                                                 |
-      | w budynku D-2                        | „komunikacja pionowa” | widzi pytanie o piętro z etykietami pięter z danych PWr |
-      | w budynku B-4                        | „toalety”             | widzi pytanie o piętro z przyciskami parter, 1, 2       |
-      | w budynku C-13                       | „inne”                | przechodzi do kroku 3 bez pytania o piętro              |
-      | na chodniku przed A-1, poza konturem | „komunikacja pozioma” | przechodzi do kroku 3 bez pytania o piętro              |
+      | miejsce                              | grupa                 | pytanie                                                                   |
+      | w budynku D-2                        | „komunikacja pionowa” | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
+      | w budynku B-4                        | „toalety”             | widzi pytanie o piętro z „Nie wiem” i przyciskami „Parter”, „1”, „2”      |
+      | w budynku C-13                       | „inne”                | przechodzi do kroku 3 bez pytania o piętro                                |
+      | na chodniku przed A-1, poza konturem | „komunikacja pozioma” | przechodzi do kroku 3 bez pytania o piętro                                |
 
   @US4.5
   Scenariusz: Odpowiedź „Nie wiem” zostawia piętro puste i pozwala wysłać zgłoszenie
@@ -114,6 +114,16 @@ Funkcja: Zgłoszenie szybkie
     Jeżeli wybierze piętro 2
     Oraz wyśle zgłoszenie
     Wtedy zgłoszenie ma budynek B-4 i piętro 2
+
+  @US4.5 @BR-14
+  Scenariusz: Pozycja poza konturem przy wysłaniu zostawia piętro puste
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz wybrał grupę barier „komunikacja pozioma”, zanim telefon ustalił bieżącą pozycję
+    Oraz na pytanie o piętro wybrał „1”
+    Jeżeli telefon ustali pozycję na chodniku przed A-1, poza konturem budynku
+    Oraz Odwiedzający wyśle zgłoszenie
+    Wtedy zgłoszenie jest „poza budynkiem”
+    Oraz zgłoszenie nie ma piętra
 
   @US4.2 @BR-9
   Scenariusz: Zgłoszenie szybkie bez sieci zapisuje się w telefonie
