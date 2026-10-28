@@ -1,6 +1,7 @@
 @startsalt
 ' L2 Konto i praca, stan zwykły, osoba z rolami RO-ZBI i RO-KOO: na górze „Twoja praca”.
 !include _wspolne.iuml
+!include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Konto i praca")
 <b>Twoja praca</b>

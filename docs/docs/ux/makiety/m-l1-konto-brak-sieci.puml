@@ -1,6 +1,7 @@
 @startsalt
 ' L1 Prośba o logowanie, brak sieci (UC6 1a).
 !include _wspolne.iuml
+!include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Konto")
 $brak_internetu()

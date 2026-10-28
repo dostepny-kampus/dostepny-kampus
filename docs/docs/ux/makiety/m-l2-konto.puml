@@ -1,6 +1,7 @@
 @startsalt
 ' L2 Konto, stan zwykły, Odwiedzający: bez sekcji „Twoja praca” (US14.3).
 !include _wspolne.iuml
+!include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Konto")
 <i>[nazwa wyświetlana]</i>

@@ -1,6 +1,7 @@
 @startsalt
 ' V4 Zgłoszenie szybkie, potwierdzenie wysłania (US4.4).
 !include _wspolne.iuml
+!include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Zgłoś barierę")
 .

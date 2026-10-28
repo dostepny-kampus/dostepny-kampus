@@ -1,6 +1,7 @@
 @startsalt
 ' V2 Karta budynku, stan pusty: brak sprawdzonych barier (UC2 2a), budynek szczegółowy.
 !include _wspolne.iuml
+!include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Budynek <i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
 $wejscie($dostepne(), "<i>[nazwa wejścia z danych]</i>", "Sprawdzone na miejscu <i>[data]</i>")

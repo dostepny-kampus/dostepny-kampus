@@ -1,6 +1,7 @@
 @startsalt
 ' V2 Karta budynku, stan zwykły, budynek podstawowy (BR-G1): bez planu pięter.
 !include _wspolne.iuml
+!include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Budynek <i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
 $wejscie($dostepne(), "<i>[nazwa wejścia z danych]</i>", "Z map i opisów, stan z <i>[data]</i>")

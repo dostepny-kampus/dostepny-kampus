@@ -1,6 +1,7 @@
 @startsalt
 ' V4 Zgłoszenie szybkie, potwierdzenie rezygnacji przed usunięciem zdjęcia (UC7 1b).
 !include _wspolne.iuml
+!include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Zgłoś barierę")
 $komunikat("Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy. Aby je zachować, wybierz »Wróć do zdjęcia«.", "Tak, zrezygnuj", "Wróć do zdjęcia")

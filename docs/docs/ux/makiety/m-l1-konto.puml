@@ -1,6 +1,7 @@
 @startsalt
 ' L1 Prośba o logowanie, stan zwykły, wejście z V4 (zdanie o 3 krokach).
 !include _wspolne.iuml
+!include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Konto")
 .

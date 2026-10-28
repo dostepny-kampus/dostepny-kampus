@@ -1,4 +1,4 @@
-' Fragmenty makiet grupy „odwiedzający” (V1, V4, V5), których brak w _wspolne.iuml.
+' Fragmenty makiet grupy „odwiedzający” (V1–V5, L1, L2), których brak w _wspolne.iuml.
 ' Rozszerzenie .iuml: scripts/render.py nie renderuje tego pliku osobno.
 ' Dołączać po _wspolne.iuml, bo korzysta z jego funkcji.
 ' Propozycja: przenieść do _wspolne.iuml, gdy użyją ich inne grupy.
@@ -50,3 +50,32 @@ $blokada()$dk_spacje(6)$utrudnienie()
 !procedure $numer_kroku($t)
 <b>$t</b>
 !endprocedure
+
+' ---------- Poprawka szerokości przycisków ----------
+' Zastępuje $dk_przycisk z _wspolne.iuml, więc działa w $przycisk,
+' $przycisk_glowny i $komunikat. Propozycja: przenieść do _wspolne.iuml.
+' Salt liczy szerokość przycisku jak dla pisma o stałej szerokości:
+' 8 px na znak, także na spację U+2007 (zmierzone na PNG). Stara wersja
+' dzieliła dopełnienie na pół z obcięciem, więc napis o nieparzystej
+' długości dostawał o jedną spację mniej, a napis dłuższy niż 28 znaków
+' poszerzał przycisk. Tu każdy przycisk ma $DK_PRZYCISK znaków: tyle ma
+' najdłuższy napis grupy („Pozwól na dokładną lokalizację”). Dopełnienie
+' jest liczone łącznie: po lewej połowa z obcięciem, po prawej reszta.
+' $zapas zostaje w podpisie dla zgodności z _wspolne.iuml i nie działa.
+!$DK_PRZYCISK = 30
+!function $dk_przycisk($t, $ikona, $zapas)
+!local $dl = %strlen($t)
+!if $ikona != ""
+!$dl = $dl + 3
+!endif
+!local $dop = $DK_PRZYCISK - $dl
+!if $dop < 0
+!$dop = 0
+!endif
+!local $lewo = $dop / 2
+!local $w = $t
+!if $ikona != ""
+!$w = "<&" + $ikona + "> " + $t
+!endif
+!return $dk_spacje($lewo) + $w + $dk_spacje($dop - $lewo)
+!endfunction
