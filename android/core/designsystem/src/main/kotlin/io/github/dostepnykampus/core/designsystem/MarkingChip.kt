@@ -27,10 +27,8 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.vector.PathParser
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.dostepnykampus.core.model.EntranceMarking
 
 private const val ICON_VIEWPORT = 24f
@@ -117,9 +115,7 @@ fun MarkingChip(marking: EntranceMarking, modifier: Modifier = Modifier) {
 private fun MarkingIcon(look: MarkingLook, shapeColor: Color, markColor: Color) {
     val shape = remember(look) { PathParser().parsePathString(look.shape).toPath() }
     val mark = remember(look) { PathParser().parsePathString(look.mark).toPath() }
-    val iconSp = Ikony.rozmiar.value
-    val iconSize = with(LocalDensity.current) { iconSp.sp.toDp() }
-    Canvas(modifier = Modifier.size(iconSize)) {
+    Canvas(modifier = Modifier.size(iconSizeLikeText())) {
         scale(scale = size.minDimension / ICON_VIEWPORT, pivot = Offset.Zero) {
             drawPath(path = shape, color = shapeColor)
             drawPath(
