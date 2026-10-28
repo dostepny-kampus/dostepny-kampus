@@ -35,8 +35,9 @@ wersja: 1
 #     jaśniejsza: mapa → arkusz i tło ekranu → pasek i pole → kontener grupy. Akcent
 #     jest przygaszony, żeby nie świecił; mapa ma barwy nocne, bez jasnego morskiego.
 #   * W ciemnym motywie przycisk wypełniony ma tło `primaryContainer`, napis
-#     `onPrimaryContainer` i ramkę 1 dp `primary`. Jasny `primary` jako tło świeciłby.
-#     Przycisk tonalny (`secondaryContainer`) jest szary, mniej nasycony i bez ramki.
+#     `onPrimaryContainer` i ramkę 2 dp `primary` (`obramowania.wypelniony`). Jasny
+#     `primary` jako tło świeciłby. Przycisk tonalny (`secondaryContainer`) jest szary,
+#     mniej nasycony i bez ramki, a gruba ramka odróżnia czynność główną także bez koloru.
 # ---------------------------------------------------------------------------
 kolory:
   surface:
@@ -107,7 +108,7 @@ kolory:
   primary:
     jasny: "#004E5E"   # ciemny morski: jedyny kolor akcentu
     ciemny: "#ACD6E2"  # jasny i mało nasycony; w ciemnym motywie tylko tekst i ramki, bo jako tło świeci
-    uzycie: symbol budynku, jedyny przycisk wypełniony na ekranie (w ciemnym motywie jego ramka), przyciski tekstowe („Zgłoś barierę przy tym wejściu”, „Pokaż na planie”), wskaźnik fokusu
+    uzycie: symbol budynku, jedyny przycisk wypełniony na tym ekranie (w ciemnym motywie jego ramka), przyciski tekstowe („Zgłoś barierę przy wejściu”, „Pokaż na planie”), wskaźnik fokusu
     zrodlo: wymagania wspólne (czynność główna), NFR-16
   onPrimary:
     jasny: "#FFFFFF"
@@ -116,12 +117,12 @@ kolory:
     zrodlo: NFR-16
   primaryContainer:
     jasny: "#C3E9F6"   # tylko to, co wybrane: osoba widzi, gdzie jest
-    ciemny: "#1E5262"  # przygaszony morski: przycisk widać, ale nie świeci
-    uzycie: wybrane piętro, wybrany widok i pozycja paska dolnego, plakietka budynku; w ciemnym motywie tło przycisku wypełnionego z ramką 1 dp `primary`
+    ciemny: "#0C5970"  # nasycony ciemny morski: przycisk wypełniony odcina się od tonalnego, ale nie świeci
+    uzycie: wybrane piętro, wybrany widok i pozycja paska dolnego, plakietka budynku; w ciemnym motywie tło przycisku wypełnionego z ramką 2 dp `primary`
     zrodlo: styl „Karta miejsca”
   onPrimaryContainer:
     jasny: "#001F27"
-    ciemny: "#F2FAFC"
+    ciemny: "#F6FCFD"  # najciemniejszy ton z ≥ 7:1 do #0C5970 także po symulacji daltonizmu
     uzycie: napis na wybranym elemencie i obwódka 2 dp wybranego piętra; w ciemnym motywie napis przycisku wypełnionego
     zrodlo: NFR-16
   secondaryContainer:
@@ -207,7 +208,7 @@ kontrast:
     - {kolor: primary, tlo: surfaceContainer, rodzaj: tekst, gdzie: "symbol budynku na arkuszu"}
     - {kolor: primary, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "przyciski tekstowe w kontenerach grup"}
     - {kolor: primary, tlo: surface, rodzaj: tekst, gdzie: "„Wstecz”, przycisk obrysowany"}
-    - {kolor: onPrimary, tlo: primary, rodzaj: tekst, gdzie: "przycisk wypełniony"}
+    - {kolor: onPrimary, tlo: primary, rodzaj: tekst, gdzie: "przycisk wypełniony (jasny)"}
     - {kolor: onPrimaryContainer, tlo: primaryContainer, rodzaj: tekst, gdzie: "wybrane piętro, plakietka budynku, przycisk wypełniony (ciemny)"}
     - {kolor: onSecondaryContainer, tlo: secondaryContainer, rodzaj: tekst, gdzie: "przycisk tonalny"}
     - {kolor: onStatusDostepneContainer, tlo: statusDostepneContainer, rodzaj: tekst, gdzie: "„Dostępne” i koło ze znakiem ✓"}
@@ -319,7 +320,7 @@ odstepy:
 cele_dotyku:
   minimum:
     dp: 48
-    uzycie: najmniejszy cel dotyku, np. przycisk tekstowy „Zgłoś barierę przy tym wejściu”, chip, kontrolka mapy, piętro w przełączniku
+    uzycie: najmniejszy cel dotyku, np. przyciski „Zgłoś barierę przy wejściu”, chipy, strzałki przesuwania mapy, piętra w przełączniku
     zrodlo: NFR-17
   przycisk:
     dp: 56             # zapas ponad 48 dp: PE-1 ma lekkie drżenie dłoni i chybia małe przyciski
@@ -347,6 +348,10 @@ obramowania:
     dp: 2              # pola i opcje dotyka się w terenie, w słońcu (PE-1, PE-2): granica ma być widoczna także przy odblasku
     uzycie: obramowanie pól tekstowych (wyszukiwanie, formularze C1–C4), ramek opcji do wyboru i segmentów przełącznika pięter
     zrodlo: NFR-16 (WCAG 1.4.11), PE-1, PE-2, decyzja 50
+  wypelniony:
+    dp: 2              # w ciemnym motywie tło przycisku wypełnionego ma jasność bliską tonalnemu
+    uzycie: ramka przycisku wypełnionego w ciemnym motywie, w kolorze `primary`
+    zrodlo: NFR-16 (WCAG 1.4.11), NFR-21
   wybrane:
     dp: 2
     uzycie: obwódka wybranego piętra w przełączniku, w kolorze `onPrimaryContainer`
@@ -393,7 +398,7 @@ wysokosci:
   kontrolki_mapy:
     dp: 3              # Material 3, poziom 2
     obwodka_ciemny: "#454E53"
-    uzycie: pływające kontrolki mapy (+/−, położenie, przełącznik pięter, legenda, „Wstecz”), nagłówek z polem wyszukiwania (V1)
+    uzycie: pływające kontrolki mapy („Powiększ”, „Pomniejsz”, strzałki przesuwania, „ⓘ”, przełącznik pięter, legenda, „Wstecz”), nagłówek z polem wyszukiwania (V1)
     zrodlo: styl „Karta miejsca”
   pasek_czynnosci:
     dp: 6              # Material 3, poziom 3; cień pada w górę
