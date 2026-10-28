@@ -1,0 +1,136 @@
+openapi: 3.1.0
+info:
+  title: Dostępny Kampus API
+  version: 0.1.0
+  description: |
+    Kontrakt v0 serwera aplikacji Dostępny Kampus. Kod serwera i klienta Android powstaje z tego pliku.
+
+    - Geometrie są w GeoJSON (RFC 7946), współrzędne w WGS84 (EPSG:4326), w kolejności: długość, szerokość.
+    - Błędy mają postać `application/problem+json` (RFC 9457).
+    - Operacje publiczne mają `security: []`. Pozostałe wymagają tokenu z Usługi logowania i roli podanej przy operacji.
+
+    Identyfikatory są po angielsku. Każdy odpowiada jednemu terminowi słownika pojęć:
+
+    | Identyfikator | Termin słownika |
+    | --- | --- |
+    | `symbol` | symbol budynku |
+    | `outline` | kontur budynku |
+    | `detailLevel`: `DETAILED`, `BASIC` | poziom szczegółowości: budynek szczegółowy, budynek podstawowy |
+  license: {name: MIT, identifier: MIT}
+servers: [{url: /, description: "Serwer, który udostępnia ten dokument; adres zależy od środowiska."}]
+security: [{keycloak: []}]
+tags:
+  - name: building
+    description: Budynki, wejścia, piętra i pomieszczenia (moduł serwera building).
+
+paths:
+  /buildings:
+    get:
+      operationId: listBuildings
+      summary: Lista budynków z konturami
+      description: Wszystkie budynki PWr z konturem budynku i poziomem szczegółowości do mapy kampusu (US1, US1.2).
+      tags: [building]
+      security: []
+      responses:
+        '200':
+          description: Budynki posortowane według symbolu budynku.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BuildingList'}
+        '4XX': {$ref: '#/components/responses/ClientError'}
+
+components:
+  securitySchemes:
+    keycloak:
+      type: openIdConnect
+      description: >-
+        Token z Usługi logowania (Keycloak, Authorization Code z PKCE). Lista przy operacji podaje wymagane role:
+        `VISITOR` (Odwiedzający), `COLLECTOR` (Zbierający), `VERIFIER` (Weryfikator), `COORDINATOR` (Koordynator).
+        Pusta lista oznacza dowolną zalogowaną osobę.
+      openIdConnectUrl: http://localhost:8180/realms/dostepny-kampus/.well-known/openid-configuration
+
+  responses:
+    ClientError:
+      description: Błąd żądania po stronie klienta.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+
+  schemas:
+    Problem:
+      type: object
+      description: Opis błędu według RFC 9457.
+      properties:
+        type: {type: string, format: uri-reference, description: "Identyfikator rodzaju błędu."}
+        title: {type: string, description: "Krótki opis rodzaju błędu."}
+        status: {type: integer, description: "Kod odpowiedzi HTTP."}
+        detail: {type: string, description: "Opis tego wystąpienia błędu."}
+        instance: {type: string, format: uri-reference, description: "Identyfikator tego wystąpienia błędu."}
+
+    Position:
+      type: array
+      description: Para [długość, szerokość] w stopniach WGS84.
+      minItems: 2
+      maxItems: 2
+      items: {type: number, format: double, description: "Współrzędna w stopniach."}
+    PolygonCoordinates:
+      type: array
+      description: Pierścienie wielokąta GeoJSON; pierwszy to granica zewnętrzna, kolejne to otwory.
+      minItems: 1
+      items:
+        type: array
+        description: Zamknięty pierścień; pierwszy i ostatni punkt są równe.
+        minItems: 4
+        items: {$ref: '#/components/schemas/Position'}
+    GeoPolygon:
+      type: object
+      description: Wielokąt GeoJSON.
+      required: [type, coordinates]
+      properties:
+        type: {const: Polygon, description: "Typ geometrii."}
+        coordinates: {$ref: '#/components/schemas/PolygonCoordinates'}
+    GeoMultiPolygon:
+      type: object
+      description: Wielokąt złożony GeoJSON, np. budynek z kilku części.
+      required: [type, coordinates]
+      properties:
+        type: {const: MultiPolygon, description: "Typ geometrii."}
+        coordinates:
+          type: array
+          description: Wielokąty składowe.
+          minItems: 1
+          items: {$ref: '#/components/schemas/PolygonCoordinates'}
+    GeoArea:
+      description: Powierzchnia GeoJSON — wielokąt albo wielokąt złożony.
+      oneOf:
+        - $ref: '#/components/schemas/GeoPolygon'
+        - $ref: '#/components/schemas/GeoMultiPolygon'
+      discriminator:
+        propertyName: type
+        mapping:
+          Polygon: '#/components/schemas/GeoPolygon'
+          MultiPolygon: '#/components/schemas/GeoMultiPolygon'
+
+    DetailLevel:
+      type: string
+      description: Poziom szczegółowości budynku. `DETAILED` — budynek szczegółowy z planami pięter, `BASIC` — budynek podstawowy.
+      enum: [DETAILED, BASIC]
+    Building:
+      type: object
+      description: Budynek PWr na mapie kampusu.
+      required: [symbol, name, detailLevel, outline]
+      properties:
+        symbol: {type: string, description: "Symbol budynku, np. `C-13`; unikalny."}
+        name: {type: string, description: "Nazwa budynku."}
+        detailLevel: {$ref: '#/components/schemas/DetailLevel'}
+        outline: {$ref: '#/components/schemas/GeoArea', description: "Kontur budynku z OpenStreetMap."}
+    BuildingList:
+      type: object
+      description: Budynki z atrybucją źródła konturów.
+      required: [source, buildings]
+      properties:
+        source: {type: string, description: "Atrybucja konturów budynków: „© OpenStreetMap contributors”."}
+        buildings:
+          type: array
+          description: Budynki.
+          items: {$ref: '#/components/schemas/Building'}
