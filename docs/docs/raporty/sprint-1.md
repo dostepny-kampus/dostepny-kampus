@@ -90,8 +90,6 @@ W tym sprincie doszło pięć ekranów: L1, L2 (US14), C5 (US15), C6 (US17.2) i 
 | Powrót do mapy z każdego ekranu | najwyżej 3 dotknięcia; wyjątek: kroki 2 i 3 V4 po zdjęciu, do 5 dotknięć, bo rezygnacja ze zdjęcia wymaga potwierdzenia |
 | Brak ślepych zaułków | spełnione: każdy przycisk ma cel |
 
-[![Diagram przejść Gościa i Odwiedzającego: start, V5, V1, V2, V3, zgłoszenie szybkie V4 w trzech krokach, L1 i L2](../_generated/nawigacja-odwiedzajacy.svg)](../_generated/nawigacja-odwiedzajacy.svg)
-
 Główna droga osoby starszej to V1, V2, V3 i z powrotem. Każdy stan błędu lokalizacji w V4 ma wyjście „Wróć do mapy”.
 
 ## 4. Struktura projektu
