@@ -46,7 +46,7 @@ kolory:
   onSurfaceVariant:
     jasny: "#3D4248"   # tekst drugorzędny wciąż ≥ 7:1, bo data i źródło przy wejściu są ważne (US17.3)
     ciemny: "#C4C8CE"
-    uzycie: tekst drugorzędny (data i źródło przy wejściu, podpisy), ikony bez napisu w pasku dolnym
+    uzycie: tekst drugorzędny (data i źródło przy wejściu, podpisy), ikony w pasku dolnym, zawsze z napisem
     zrodlo: NFR-16, US17.3
   outline:
     jasny: "#6B7178"   # ≥ 3:1 na obu tłach: ramka pola i pozycji listy jest widoczną granicą celu dotyku
@@ -64,9 +64,13 @@ kolory:
     uzycie: napis i ikona na czynności głównej
     zrodlo: NFR-16
   error:
-    jasny: "#8A0F18"   # ciemna czerwień tylko dla błędu przy polu; zawsze z tekstem, pogrubiona
+    # Ciemna czerwień tylko dla błędu walidacji: przy polu i w podsumowaniu nad formularzem
+    # (C2, C6, C7, R2). Zawsze z pogrubionym tekstem, który mówi, co się stało i co zrobić
+    # (wymagania wspólne fazy B). Błąd serwera, zapisu, logowania i brak internetu to zwykły
+    # komunikat: onSurface na surfaceVariant, bez czerwieni.
+    jasny: "#8A0F18"
     ciemny: "#FFB3AE"  # jasny łososiowy; na ciemnym tle ≥ 7:1
-    uzycie: tekst błędu przy polu i obramowanie pola z błędem; nigdy dla statusu, oznaczenia wejścia ani uciążliwości
+    uzycie: tekst błędu walidacji przy polu i nad formularzem, obramowanie pola z błędem; nigdy dla statusu, oznaczenia wejścia ani uciążliwości
     zrodlo: NFR-15 (WCAG 3.3.1), NFR-21
 
 # ---------------------------------------------------------------------------
@@ -189,14 +193,14 @@ obramowania:
     zrodlo: NFR-16 (WCAG 1.4.11)
   fokus:
     dp: 3
-    uzycie: wskaźnik fokusu klawiatury i TalkBack, w kolorze `primary`, 2 dp od elementu
-    zrodlo: NFR-16, NFR-18
+    uzycie: wskaźnik fokusu klawiatury, w kolorze `primary`, 2 dp od elementu; ramkę fokusu TalkBack rysuje system
+    zrodlo: NFR-15 (WCAG 2.4.7), NFR-16
 
 zaokraglenia:
   standard:
     dp: 8              # jedno zaokrąglenie dla przycisku, pola i ramki: kształt przycisku jest przewidywalny
     uzycie: przyciski, pola, ramki pozycji i komunikatów
-    zrodlo: NFR-15 (WCAG 3.2.4, spójność)
+    zrodlo: heurystyka Nielsena 4 (spójność)
 
 ikony:
   rozmiar:
