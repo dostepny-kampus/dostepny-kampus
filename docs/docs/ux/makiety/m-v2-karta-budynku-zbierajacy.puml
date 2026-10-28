@@ -1,6 +1,7 @@
 @startsalt
 ' V2 Karta budynku, stan zwykły, budynek szczegółowy, osoba z rolą RO-ZBI.
 !include _wspolne.iuml
+!include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Budynek A-1", "<i>[nazwa budynku z danych]</i>")
 $wejscie($niedostepne(), "Wejście główne", "Sprawdzone na miejscu <i>[data]</i>", "Zmień oznaczenie")
@@ -23,7 +24,7 @@ Sprawdzone <i>[data]</i>
 $przycisk("Zgłoś, że bariery nie ma")
 }
 {+
-$tekst("brak planu dotykowego lub głosowego", "b")
+$tekst("brak planu tyflograficznego", "b")
 $utrudnienie()
 $obraz("zdjęcie bariery")
 Sprawdzone <i>[data]</i>
