@@ -20,21 +20,21 @@ Wysłane <i>[data]</i>
 Budynek D-2
 Zgłoszenie szybkie
 Wysłane <i>[data]</i>
-$przycisk_glowny("Weź do sprawdzenia")
+$przycisk("Weź do sprawdzenia")
 }
 {+
 <b>niesprawna winda</b>
 Budynek D-2
 Bariery już nie ma
 Wysłane <i>[data]</i>
-$przycisk_glowny("Weź do sprawdzenia")
+$przycisk("Weź do sprawdzenia")
 }
 {+
 <b>Wejście od ul. Norwida</b>
 Budynek A-1
 Zmiana oznaczenia wejścia
 Wysłane <i>[data]</i>
-$przycisk_glowny("Weź do sprawdzenia")
+$przycisk("Weź do sprawdzenia")
 }
 $ekran_koniec()
 @endsalt

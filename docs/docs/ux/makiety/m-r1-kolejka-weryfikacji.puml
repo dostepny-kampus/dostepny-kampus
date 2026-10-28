@@ -1,6 +1,8 @@
 @startsalt
 ' R1 Kolejka weryfikacji, stan zwykły, widok listy, Weryfikator (RO-WER).
 ' Własnych zgłoszeń Weryfikatora lista nie pokazuje (BR-4), więc nie ma ich na makiecie.
+' „Weź do sprawdzenia” powtarza się w każdej pozycji, więc jest zwykłym przyciskiem na pełną
+' szerokość ramki: cztery pogrubione przyciski nie wskazywałyby jednej czynności głównej.
 !include _wspolne.iuml
 $ekran_poczatek()
 $naglowek("Zgłoszenia do sprawdzenia")
@@ -18,28 +20,28 @@ Wysłane <i>[data]</i>
 Budynek C-13
 Zgłoszenie z pomiaru
 Wysłane <i>[data]</i>
-$przycisk_glowny("Weź do sprawdzenia")
+$przycisk("Weź do sprawdzenia")
 }
 {+
 <b>Schody i windy</b>
 Budynek D-2
 Zgłoszenie szybkie
 Wysłane <i>[data]</i>
-$przycisk_glowny("Weź do sprawdzenia")
+$przycisk("Weź do sprawdzenia")
 }
 {+
 <b>niesprawna winda</b>
 Budynek D-2
 Bariery już nie ma
 Wysłane <i>[data]</i>
-$przycisk_glowny("Weź do sprawdzenia")
+$przycisk("Weź do sprawdzenia")
 }
 {+
 <b>Wejście od ul. Norwida</b>
 Budynek A-1
 Zmiana oznaczenia wejścia
 Wysłane <i>[data]</i>
-$przycisk_glowny("Weź do sprawdzenia")
+$przycisk("Weź do sprawdzenia")
 }
 $ekran_koniec()
 @endsalt

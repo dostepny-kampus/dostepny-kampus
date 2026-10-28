@@ -21,7 +21,7 @@ Przy otwarciu R1, R2 i K1 komunikat zastępuje treść ekranu. Po czynności na 
 
 ## R1 Kolejka weryfikacji
 
-Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu.
+Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu. Przycisk powtarza się w każdej pozycji, więc nie jest pogrubiony: wyróżnia go położenie na dole ramki i pełna szerokość. Cztery pogrubione przyciski nie wskazywałyby jednej czynności, a pogrubiony zostaje typ bariery, po którym Weryfikator wybiera zgłoszenie.
 
 ![Makieta R1 w stanie zwykłym: sekcja Wzięte przeze mnie z jednym zgłoszeniem, przełącznik Lista i Mapa, cztery zgłoszenia różnych rodzajów z przyciskiem Weź do sprawdzenia](../../_generated/m-r1-kolejka-weryfikacji.svg)
 
@@ -30,10 +30,10 @@ Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu.
 | „Wstecz” i nagłówek „Zgłoszenia do sprawdzenia”, równy napisowi przycisku w L2 | NFR-15, PW-14 |
 | Sekcja „Wzięte przeze mnie” na górze; dotknięcie pozycji otwiera R2 | BR-11, UC14 2b |
 | Przełącznik „Lista” i „Mapa”; wybrany widok widać po kształcie pola | UC14, NFR-19, NFR-21 |
-| Pozycja zgłoszenia „wysłane”: typ albo grupa barier, budynek, rodzaj, data wysłania | US10.4, BR-14 |
+| Pozycja zgłoszenia „wysłane”: typ albo grupa barier, budynek, rodzaj, data wysłania; przy zmianie oznaczenia wejścia nazwa wejścia, bo zmiana nie ma typu | US10.4, BR-14, BR-24 |
 | Grupa „Schody i windy” zamiast typu przy zgłoszeniu szybkim, bo typ ustala dopiero Weryfikator | BR-14, PW-7 |
 | Rodzaj: „Zgłoszenie z pomiaru”, „Zgłoszenie szybkie”, „Bariery już nie ma”, „Zmiana oznaczenia wejścia” | US10.5, US17.2, BR-19, BR-24 |
-| „Weź do sprawdzenia” przy każdym zgłoszeniu, pogrubiony, na pełną szerokość ramki | US10.4, BR-11, NFR-17, NFR-21 |
+| „Weź do sprawdzenia” przy każdym zgłoszeniu, zwykły przycisk na pełną szerokość ramki | US10.4, BR-11, NFR-17, NFR-21 |
 | Brak zgłoszeń samego Weryfikatora, także jego zmian „bariera usunięta” i oznaczenia wejścia; filtr robi serwer | US10.5, BR-4 |
 
 ![Makieta R1 w widoku mapy: mapa z punktami, podpis OpenStreetMap, przyciski Powiększ, Pomniejsz, W górę, W dół, W lewo, W prawo i zgłoszenie wybranego punktu](../../_generated/m-r1-kolejka-weryfikacji-mapa.svg)

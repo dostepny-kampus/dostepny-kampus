@@ -22,7 +22,7 @@ $obraz("mapa kampusu z punktami zgłoszeń do sprawdzenia; wybrany punkt przy C-
 Budynek C-13
 Zgłoszenie z pomiaru
 Wysłane <i>[data]</i>
-$przycisk_glowny("Weź do sprawdzenia")
+$przycisk("Weź do sprawdzenia")
 }
 $ekran_koniec()
 @endsalt
