@@ -112,7 +112,10 @@ jobs:
           python -X utf8 scripts/verify.py "${changed[@]}"
       - name: Zezwól Chromium na piaskownicę przestrzeni nazw
         if: ${{ !cancelled() && steps.verify.outcome != 'skipped' }}
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+        run: |
+          if [ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
       - name: Wyrenderuj wszystkie diagramy do katalogu tymczasowego
         if: ${{ !cancelled() && steps.verify.outcome != 'skipped' }}
         env:
