@@ -1,0 +1,71 @@
+name: android
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "sprint/**"
+  push:
+    branches:
+      - main
+      - "sprint/**"
+    paths:
+      - "android/**"
+      - ".github/workflows/android.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  zmiany:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      android: ${{ steps.diff.outputs.android }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Sprawdź, czy PR zmienia aplikację Android
+        id: diff
+        run: |
+          if git diff --quiet HEAD^1 HEAD -- android .github/workflows/android.yml; then
+            echo "android=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "android=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  budowanie:
+    needs: zmiany
+    if: ${{ !cancelled() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6.1.0
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v6.4.0
+        with:
+          cache-provider: basic
+      - name: Zbuduj i sprawdź
+        run: ./gradlew check assembleDebug
+      - name: Zapisz raporty lint i detekt
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: raporty-android
+          path: android/**/build/reports/
+          if-no-files-found: ignore
