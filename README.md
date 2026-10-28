@@ -31,4 +31,4 @@ Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko.
 
 ## Licencja
 
-Kod jest na licencji [MIT](LICENSE). Dane w `data/` będą na licencji [ODbL](https://opendatacommons.org/licenses/odbl/) z atrybucją „© OpenStreetMap contributors”.
+Repozytorium, w tym kod i dokumentacja, jest na licencji [MIT](LICENSE). Wyjątkiem będą dane w `data/` pochodzące z OpenStreetMap: licencja [ODbL](https://opendatacommons.org/licenses/odbl/) z atrybucją „© OpenStreetMap contributors”.
