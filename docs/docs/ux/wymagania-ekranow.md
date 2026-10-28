@@ -186,8 +186,8 @@ Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu,
 | Krok 1: „Zrób zdjęcie” i „Zrób nowe zdjęcie” | czynność | US4.1, BR-8, PW-8 | aparat, potem krok 2 |
 | Krok 1 po powrocie z kroku 2: miniatura zdjęcia i „Dalej” nad „Zrób nowe zdjęcie” | czynność główna | US4.1, heurystyka Nielsena 3 [5] | krok 2; zdjęcie i grupa zostają |
 | Krok 2: pytanie „Czego dotyczy bariera?” i 6 dużych przycisków grup barier, sam tekst: „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego” | czynność | US4.3, NFR-17, PW-7 | krok 3 albo pytanie o piętro |
-| Krok 2, pytanie o piętro: wybrana grupa, pytanie „Na którym piętrze?”, pod nim „Nie wiem” i przyciski pięter od parteru w górę. W budynku szczegółowym etykiety z danych PWr, w podstawowym „Parter”, „1”, „2”… | czynność | US4.5, BR-14, NFR-17 | krok 3 |
-| Krok 3: miniatura zdjęcia, wybrana grupa i piętro, jeśli było pytanie | dane | US4.1, US4.5 | — |
+| Krok 2, pytanie o piętro: wybrana grupa, pytanie „Na którym piętrze?”, pod nim „Nie wiem” i przyciski pięter od najniższego w górę. W budynku szczegółowym etykiety z danych PWr, w podstawowym „Parter”, „1”, „2”… | czynność | US4.5, BR-14, NFR-17 | krok 3 |
+| Krok 3: miniatura zdjęcia, wybrana grupa oraz piętro albo „Nie wiem”, jeśli było pytanie | dane | US4.1, US4.5 | — |
 | Krok 3: napis „Dołączymy miejsce, w którym teraz stoisz.” | dane | US4.1, NFR-27 | — |
 | Krok 3: „Wyślij” | czynność główna | US4.1 | potwierdzenie |
 | Potwierdzenie: „Dziękujemy. Sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.” | dane | US4.4, PW-5 | — |
@@ -195,12 +195,12 @@ Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu,
 
 Aplikacja nie pyta o typ bariery, uciążliwość ani budynek (US4.3, BR-14). Pozycję zaczyna ustalać po wejściu na ekran, w trakcie kroków 1 i 2 (NFR-27).
 
-O piętro aplikacja pyta tylko w konturze budynku i przy grupie z tabeli w [regułach](../biznes/reguly.md#pietro-w-zgloszeniu-szybkim) (US4.5). Zakres numerów pięter w budynku podstawowym ustalimy w fazie implementacji.
+O piętro aplikacja pyta tylko w konturze budynku i przy grupie z tabeli w [regułach](../biznes/reguly.md#pietro-w-zgloszeniu-szybkim) (US4.5). Zakres numerów pięter w budynku podstawowym, także pięter pod parterem, ustalimy w fazie implementacji.
 
 | Stan | Co widać |
 | --- | --- |
 | Zwykły | kroki 1–3 i potwierdzenie |
-| Pytanie o piętro | po wyborze grupy, na tym samym kroku 2; „Wstecz” wraca do listy grup. Gdy pozycja nie jest jeszcze znana, pytanie pojawia się jak w budynku (BR-14) |
+| Pytanie o piętro | po wyborze grupy, na tym samym kroku 2; „Wstecz” wraca do listy grup. Gdy pozycja nie jest jeszcze znana, pytanie pojawia się jak w budynku podstawowym (BR-14) |
 | Gość niezalogowany | zamiast aparatu ekran L1 (US14.2) |
 | Brak zgody na lokalizację | przed aparatem: „Aby wysłać zdjęcie bariery, potrzebujemy jej miejsca. Sprawdzimy je tylko teraz i nie będziemy Cię śledzić.” Przyciski „Pozwól na lokalizację” i „Wróć do mapy” (UC7 2a, NFR-27) [4] |
 | Odmowa zgody | „Bez lokalizacji nie wyślesz zdjęcia bariery. Możesz ją włączyć w ustawieniach telefonu.” Przyciski „Otwórz ustawienia” i „Wróć do mapy”. Aparat się nie otwiera, a aplikacja nie ponawia prośby sama (UC7 2a, BR-8) [4] |

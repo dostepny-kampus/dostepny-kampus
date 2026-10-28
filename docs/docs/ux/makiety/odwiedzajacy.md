@@ -289,7 +289,7 @@ Czynność główna: „Wyślij”.
 | Element | AC/BR/NFR |
 | --- | --- |
 | Miniatura zdjęcia i wybrana grupa pod pytaniem z kroku 2 | US4.1 |
-| Wybrane piętro pod pytaniem „Na którym piętrze?”; bez tych wierszy, gdy pytania nie było | US4.5 |
+| Wybrane piętro albo „Nie wiem” pod pytaniem „Na którym piętrze?”; bez tych wierszy, gdy pytania nie było | US4.5 |
 | „Dołączymy miejsce, w którym teraz stoisz.” | US4.1, NFR-27 |
 | „Wyślij” prowadzi do potwierdzenia | US4.1, US4.4 |
 

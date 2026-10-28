@@ -88,7 +88,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V4, krok 2 | „Wstecz” | V4, krok 1; zdjęcie zostaje | zalogowani | US4.1 |
 | V4, krok 1, zdjęcie zrobione | „Dalej” | V4, krok 2; zdjęcie i grupa zostają | zalogowani | US4.1 |
 | V4, krok 1, zdjęcie zrobione | „Wstecz” | V4, stan „potwierdzenie rezygnacji” | zalogowani | UC7 1b |
-| V4, krok 3 | „Wstecz” | V4, krok 2; zdjęcie, grupa i piętro zostają | zalogowani | US4.1 |
+| V4, krok 3 | „Wstecz” | V4, krok 2: pytanie o piętro, jeśli było, inaczej lista grup; zdjęcie, grupa i piętro zostają | zalogowani | US4.1, US4.5 |
 | V4, krok 3 | „Wyślij” | V4, potwierdzenie | zalogowani | US4.1, US4.4 |
 | V4, krok 3, brak sieci | „Wyślij” | V4, potwierdzenie „Zapisaliśmy zdjęcie w telefonie” | zalogowani | US4.2, UC7 7a |
 | V4, krok 3 | telefon nie ustalił pozycji | V4, stan „brak pozycji” | zalogowani | UC7 4c |
