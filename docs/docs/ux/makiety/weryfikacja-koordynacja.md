@@ -69,7 +69,7 @@ Czynność główna: „Przyjmij”. Odrzucenie wymaga powodu, więc stoi niżej
 
 Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m dalej, na innym piętrze, to nie duplikat. Schody przy wejściu głównym A-1 zgadzają się z deklaracją dostępności [1].
 
-![Makieta R2 w stanie zwykłym: schody przy wejściu z uciążliwością Blokada, budynek A-1, zdjęcie z przyciskiem Zasłoń twarz lub tablicę, autor Zbierający, Autor 17, podobne zgłoszenie próg 5 m przyjęte, przyciski Przyjmij i Odrzuć z powodem](../../_generated/m-r2-sprawdzenie-zgloszenia.svg)
+![Makieta R2 w stanie zwykłym: schody przy wejściu z uciążliwością Blokada, budynek A-1, zdjęcie z przyciskiem Zasłoń twarz lub tablicę, autor Zbierający, Autor [nr], podobne zgłoszenie próg 5 m przyjęte, przyciski Przyjmij i Odrzuć z powodem](../../_generated/m-r2-sprawdzenie-zgloszenia.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -77,7 +77,7 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Rodzaj na górze, pogrubiony, jak przy pozostałych rodzajach; pod nim typ, uciążliwość tekstem i ikoną, budynek, piętro, miejsce; bez pól do edycji | BR-14, BR-15, PW-13, NFR-21 |
 | Zdjęcie, zastępnik | US10 |
 | „Zasłoń twarz lub tablicę” pod zdjęciem; zasłonięcie nie tworzy nowej wersji | BR-15, NFR-25 |
-| „Autor: Zbierający, Autor 17”: rola i pseudonim, bez imienia i adresu e-mail | BR-5 |
+| „Autor: Zbierający, Autor [nr]”: rola i pseudonim, bez imienia i adresu e-mail | BR-5 |
 | „Podobne zgłoszenia do 10 m”: typ, zdjęcie, odległość tekstem, piętro, status tekstem i ikoną; bez uciążliwości, bo wymagania jej nie wymieniają | US10.1, BR-13, NFR-19, NFR-21 |
 | „Przyjmij”, pogrubiony, na pełną szerokość; po przyjęciu otwiera się R1, a R2 znika z historii „Wstecz” | US10, NFR-21; wymagania wspólne |
 | „Powód odrzucenia”: gotowe „Duplikat” i „Nieaktualne” oraz „Inny powód” z polem „Opisz powód dla autora” | US10.2, BR-13, BR-16, BR-23, NFR-18 |
@@ -113,7 +113,7 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Wybrany powód „Nieaktualne”: ta zmiana dotyczy zgłoszenia, które stało się archiwalne | BR-23 |
 | Po przyjęciu „Przyjmij” winda znika z mapy i karty budynku | US10.6 |
 
-![Makieta R2 dla zmiany oznaczenia wejścia: obecne oznaczenie Dostępne wejścia bramą od ul. Norwida z datą i źródłem, napis Bez zmian od wysłania, wybrane oznaczenie Dostępne, nowe zdjęcie wejścia](../../_generated/m-r2-sprawdzenie-zgloszenia-wejscie.svg)
+![Makieta R2 dla zmiany oznaczenia wejścia: obecne oznaczenie Dostępne wejścia bramą od ul. Norwida z datą i źródłem, napis Bez zmian od wysłania, wybrane oznaczenie Dostępne, nowe zdjęcie wejścia, brak podobnych zgłoszeń, powody odrzucenia Nieaktualne i Inny powód bez Duplikat](../../_generated/m-r2-sprawdzenie-zgloszenia-wejscie.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -123,6 +123,8 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Nowe zdjęcie wejścia z „Zasłoń twarz lub tablicę” | BR-24, NFR-25 |
 | „Bez zmian od wysłania” z ikoną pod obecnym oznaczeniem; gdy w tym czasie przyjęto inną zmianę tego wejścia: „Zmienione po wysłaniu”, a powód „Nieaktualne” | BR-23, BR-24, NFR-21 |
 | Weryfikator nie zmienia wybranego oznaczenia: gdy zdjęcie mu przeczy, odrzuca z powodem | BR-24, BR-16 |
+| „Podobne zgłoszenia do 10 m”, tu „W promieniu 10 m nie ma podobnych zgłoszeń.”; sekcja zostaje, bo kryterium i reguła nie wyłączają zmiany oznaczenia | US10.1, BR-13, UC14 krok 4 |
+| „Powód odrzucenia”: „Nieaktualne” i „Inny powód” z polem „Opisz powód dla autora”, bez „Duplikat”, bo duplikat opisuje tę samą barierę | BR-24, BR-23, BR-16 |
 
 ![Makieta R2 w stanie nowa wersja: komunikat Autor zmienił zgłoszenie, linia Zmienione: uciążliwość nad danymi zgłoszenia próg z nową uciążliwością Tylko z pomocą](../../_generated/m-r2-sprawdzenie-zgloszenia-nowa-wersja.svg)
 

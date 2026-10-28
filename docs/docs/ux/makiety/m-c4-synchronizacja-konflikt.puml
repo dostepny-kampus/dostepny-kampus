@@ -1,26 +1,26 @@
 @startsalt
 ' C4 Synchronizacja, konflikt wersji (US9.3, BR-10): uciążliwość 2 w telefonie, 3 na serwerze,
-' jak w scenariuszu @US9.3. Wersje jedna pod drugą (pion); różnicę oznacza napis, nie kolor.
+' jak w scenariuszu @US9.3. Wersje jedna pod drugą (pion); różnicę oznacza napis, nie kolor:
+' „Różni się:” z nazwą pola nad obiema wersjami, jak „Zmienione:” na R2, a w wersjach to pole pogrubione.
 !include _wspolne.iuml
 !include _zespol-w-terenie.iuml
 $ekran_poczatek()
 $naglowek("Synchronizacja")
 $komunikat("Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.")
+<b>Różni się:</b> uciążliwość
 ..
 $ramka()
 <b>Moja wersja</b>
 próg
 <i>[budynek]</i>, piętro <i>[piętro]</i>
-Uciążliwość: $tylko_z_pomoca()
-<b>Inna wartość</b>
+<b>Uciążliwość:</b> $tylko_z_pomoca()
 $przycisk_glowny("Zostaw moją wersję")
 }
 $ramka()
 <b>Wersja z serwera</b>
 próg
 <i>[budynek]</i>, piętro <i>[piętro]</i>
-Uciążliwość: $blokada()
-<b>Inna wartość</b>
+<b>Uciążliwość:</b> $blokada()
 $przycisk_glowny("Weź wersję z serwera")
 }
 ..

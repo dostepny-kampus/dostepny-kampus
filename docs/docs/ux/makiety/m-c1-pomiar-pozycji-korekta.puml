@@ -1,6 +1,8 @@
 @startsalt
 ' C1 Pomiar pozycji po potwierdzeniu budynku szczegółowego A-1 i przesunięciu punktu.
-' Korekta na planie wybranego piętra (US6.3) i na mapie (US6.4).
+' Jedna powierzchnia z przełącznikiem „Plan piętra / Mapa”, jak „Mapa / Lista” na R1, i jeden
+' zestaw przycisków przesuwania. Wybrany plan piętra (US6.3); po przełączeniu mapa z podpisem
+' OpenStreetMap (US6.4, NFR-37) w miejscu wyboru piętra i planu, opis na stronie grupy.
 !include _wspolne.iuml
 !include _zespol-w-terenie.iuml
 $ekran_poczatek()
@@ -13,15 +15,12 @@ $przycisk("Powtórz pomiar")
 $przycisk("Wybierz inny")
 $sekcja("Miejsce bariery")
 Korekta ręczna
+$przelacznik("Plan piętra", "Mapa", 1)
 Piętro:
 $pietra(2)
-<b>Plan piętra</b>
 $obraz("plan wybranego piętra z punktem bariery")
 Źródło: Politechnika Wrocławska
 $przesun_punkt("na planie")
-..
-$mapa("mapa z tym samym punktem")
-$przesun_punkt("na mapie")
 ..
 $przycisk_glowny("Dalej")
 $ekran_koniec()

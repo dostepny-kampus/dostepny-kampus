@@ -54,17 +54,17 @@ Uprawnienia opisuje [macierz ról](../biznes/role.md). Potrzeby N1–N9 to hipot
 | V3 | „Którędy wejść”: które wejście jest dostępne | wszyscy | US3 | Powinno być |
 | V4 | Zgłoszenie szybkie: zdjęcie, grupa barier, pozycja | Odwiedzający | US4 | Musi być |
 | V5 | Pomoc i instrukcja przy pierwszym uruchomieniu | wszyscy | US5 | Powinno być |
-| C1 | Pomiar precyzyjny: uśrednianie GNSS przez 30 s, podpowiedź budynku, piętro obejrzane | Zbierający | US6, US15 | Musi być (mapa nieba: Powinno być) |
-| C2 | Formularz: typ bariery, uciążliwość 1–3, zdjęcie, piętro | Zbierający | US7 | Musi być |
+| C1 | Pomiar precyzyjny: uśrednianie GNSS przez 30 s, podpowiedź budynku | Zbierający | US6 | Musi być (korekta na planie piętra i mapa nieba: Powinno być) |
+| C2 | Formularz: typ bariery, uciążliwość („Utrudnienie”, „Tylko z pomocą”, „Blokada”), zdjęcie, piętro | Zbierający | US7 | Musi być |
 | C3 | Moje zgłoszenia ze statusami | Zbierający | US8 | Musi być |
 | C4 | Synchronizacja po pracy offline, wybór wersji przy konflikcie | Zbierający | US9 | Musi być |
 | R1, R2 | Kolejka weryfikacji, decyzja z powodem, podobne zgłoszenia w promieniu 10 m | Weryfikator | US10 | Musi być |
 | K1 | Postęp inwentaryzacji według budynków | Koordynator | US11 | Musi być |
 | K2 | Zaproszenie osoby z rolą | Koordynator | US12 | Powinno być |
 | K3 | Eksport GeoJSON (WGS84) i CSV (PUWG 1992) | Koordynator | US13 | Musi być |
-| — | Logowanie i rejestracja | wszyscy z kontem | US14 | Musi być |
+| L1, L2 | Logowanie i rejestracja | wszyscy z kontem | US14 | Musi być |
 
-Historyjki „Musi być” tworzą MVP. Kryteria akceptacji każdej historyjki są na stronie [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md).
+Historyjki „Musi być” tworzą MVP. Faza B dodała ekrany L1, L2 i C5–C7; piętro obejrzane (US15, Musi być) ma teraz własny ekran C5 ([wymagania do ekranów](../ux/wymagania-ekranow.md)). Kryteria akceptacji każdej historyjki są na stronie [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md).
 
 - **Może być:** wersja angielska, tryb ciemny, kolejne budynki szczegółowe, dane z deklaracji dostępności.
 - **Nie tym razem:** nawigacja po trasie, iOS, Google Play, sztuczna inteligencja, czat, powiadomienia push.
