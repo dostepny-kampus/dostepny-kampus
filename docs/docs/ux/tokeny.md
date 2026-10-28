@@ -32,7 +32,7 @@ PE-1 słabo czyta drobny i blady tekst, zwłaszcza w słońcu, a PE-2 pracuje pr
 
 Nazwy ról pochodzą z Material 3 [5]. Plik zawiera tylko role, których potrzebują ekrany z makiet. Kwadrat obok wartości to próbka koloru.
 
-Plik nie ma koloru stanu nieaktywnego. Na makietach żaden przycisk nie jest wyszarzony: przycisk zawsze działa, a brakujące dane wyjaśnia błąd przy polu (C2, C6).
+Plik nie ma koloru stanu nieaktywnego. Na makietach każdy przycisk działa zawsze, a brakujące dane wyjaśnia błąd przy polu (C2, C6).
 
 Fokus klawiatury pokazuje ramka `primary` (WCAG 2.4.7), a ramkę fokusu TalkBack rysuje system.
 
@@ -94,7 +94,7 @@ Kontroli skryptem nie podlega mapa ani plan piętra: znaczniki barier leżą na 
 
 Rozmiary podajemy w sp, więc tekst rośnie razem z ustawieniem czcionki w telefonie, do 200% (NFR-20). Krój jest systemowy: PE-1 zachowuje czcionkę ustawioną w telefonie, a aplikacja nie dołącza pliku czcionki.
 
-Napisy paska dolnego mają 16 sp i mogą zawinąć się do dwóch wierszy pod ikoną, np. „Zgłoś barierę” i „Konto i praca”. Faza C sprawdza na zrzutach ekranu, czy przy 200% żaden napis paska nie jest ucięty (NFR-20).
+Napisy paska dolnego mają 16 sp i mogą zawinąć się do dwóch wierszy pod ikoną, np. „Zgłoś barierę” i „Konto i praca”. Faza C sprawdza na zrzutach ekranu, czy napisy paska mieszczą się bez ucięcia przy czcionce 200% (NFR-20).
 
 | Reguła | Wartość | Źródło |
 | --- | --- | --- |
