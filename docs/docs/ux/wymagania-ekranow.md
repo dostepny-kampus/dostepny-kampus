@@ -150,7 +150,7 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 | Zbierający: „Oznacz obejrzane piętra” dla całego budynku | czynność | US15.1, PW-12 | C5 |
 | Pasek dolny | czynność | wymagania wspólne | V1, V4, V5, L1 / L2 |
 
-V2 wysuwa się z dołu jako arkusz na mapie V1, tak jak karta miejsca w Mapach Google (decyzja 48). Najpierw zajmuje połowę ekranu, a nad nim widać budynek na mapie. Przewinięcie treści albo dotknięcie uchwytu rozwija arkusz na cały ekran, więc przeciąganie nie jest jedyną drogą (wymagania wspólne). To jest V2, a nie dodatkowy arkusz przed nim, więc droga do wejścia ma tyle samo dotknięć (US3.2). „Wstecz” chowa arkusz, a budynek zostaje zaznaczony.
+V2 wysuwa się z dołu jako arkusz na mapie V1, najpierw do połowy ekranu, jak karta miejsca w Mapach Google (decyzja 48). Przewinięcie treści albo dotknięcie uchwytu rozwija arkusz na cały ekran, więc przeciąganie nie jest jedyną drogą (wymagania wspólne). To jest V2, a nie dodatkowy arkusz przed nim, więc droga do wejścia ma tyle samo dotknięć (US3.2).
 
 „Zgłoś barierę przy tym wejściu” otwiera krok 1 V4 („Zgłoś barierę”) z napisem „Wejście: »nazwa wejścia«”. Wybrane wejście dołącza się do zgłoszenia jako wskazówka dla Weryfikatora, a miejsce i budynek nadal pochodzą z bieżącej pozycji (BR-8, BR-14). Gość przechodzi najpierw do L1, a po zalogowaniu wraca do V4 z tym samym wejściem (US14.2).
 
