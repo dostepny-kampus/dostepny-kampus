@@ -6,7 +6,8 @@ head="$2"
 limit="${3:-300}"
 
 stats="$(git diff --numstat "$base...$head" -- . \
-  ':(glob,exclude)data/**' \
+  ':(glob,exclude)data/**/*.geojson' \
+  ':(glob,exclude)data/**/*.json' \
   ':(glob,exclude)docs/docs/_generated/**' \
   ':(glob,exclude)**/generated/**' \
   ':(glob,exclude)**/package-lock.json' \
