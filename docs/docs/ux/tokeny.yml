@@ -20,13 +20,14 @@ wersja: 1
 # Zasady (NFR-21, wymagania wspólne fazy B, decyzja 48 pkt 3):
 #   * Kolor nie niesie znaczenia. Oznaczenie wejścia (Dostępne / Niedostępne /
 #     Brak danych) ma zawsze kształt ikony i słowo ze słownika użytkownika.
-#     Może stać w spokojnym, przyciemnionym kontenerze, ale znaczenie niosą kształt
+#     Może stać w spokojnym, lekko zabarwionym kontenerze, ale znaczenie niosą kształt
 #     i słowo, a nie barwa kontenera.
 #   * Uciążliwość (Utrudnienie / Tylko z pomocą / Blokada) i status zgłoszenia nie mają
 #     własnego kontenera: tekst i ikona w kolorze zwykłego tekstu.
 #   * Bez „sygnalizacji świetlnej”: w palecie interfejsu nie ma zielonego ani żółtego,
-#     więc nie ma pary zielony/czerwony. Kontenery statusów różnią się jasnością
-#     i odcieniem w osi morski–szaroróżowy.
+#     więc nie ma pary zielony/czerwony. Kontenery statusów różnią się odcieniem
+#     (morski, szaroróżowy, szary), a jasność mają prawie równą: w odcieniach szarości
+#     odróżnia je tylko kształt i słowo.
 #   * Jedna barwa akcentu: ciemny morski (petrol). Daltonizm czerwono-zielony
 #     (protanopia, deuteranopia) nie zmienia odbioru tej osi; skrypt sprawdza kontrast
 #     także po symulacji obu typów.
@@ -72,7 +73,7 @@ kolory:
   outline:
     jasny: "#6A7579"   # ≥ 3:1 na każdym tle: ramka pola, chipu i przycisku obrysowanego wyznacza granicę celu dotyku
     ciemny: "#8A969A"
-    uzycie: obramowanie pola wyszukiwania, chipów, przycisków obrysowanych i segmentów
+    uzycie: obramowanie pól (wyszukiwania i formularzy), ramek opcji, chipów, przycisków obrysowanych i segmentów
     zrodlo: NFR-16 (WCAG 1.4.11)
   primary:
     jasny: "#004E5E"   # ciemny morski: jedyny kolor akcentu
