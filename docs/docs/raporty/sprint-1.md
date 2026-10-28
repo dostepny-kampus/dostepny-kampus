@@ -108,7 +108,7 @@ Dokumentacja jest w katalogu `docs/` publicznego repozytorium projektu `github.c
 | `docs/scripts` | skrypty renderu i kontroli jakości |
 | `docs/styles` | reguły Vale zespołu |
 
-Dokumentacja ma 26 stron Markdown, 78 diagramów PlantUML i 2 diagramy BPMN. Wśród diagramów PlantUML jest 70 makiet i katalog fragmentów wspólnych. Diagramy powstają z plików tekstowych. Obrazy i zbudowana strona nie trafiają do Git.
+Dokumentacja ma 26 stron Markdown, 78 diagramów PlantUML i 2 diagramy BPMN. Wśród diagramów PlantUML jest 70 makiet i katalog fragmentów wspólnych. Diagramy powstają z plików tekstowych. Obrazy diagramów i makiet są w repozytorium, a kontrola sprawdza, czy zgadzają się ze źródłami; zbudowana strona nie trafia do Git.
 
 | Narzędzie | Co sprawdza albo robi |
 | --- | --- |
@@ -120,7 +120,7 @@ Dokumentacja ma 26 stron Markdown, 78 diagramów PlantUML i 2 diagramy BPMN. Wś
 | `check_ids.py` | każdy identyfikator ma definicję, brak odwołań do nieistniejących ID, aktualna macierz śledzenia |
 | `abbr.py` | podpowiedzi skrótów na stronie, generowane ze słownika pojęć |
 
-Skrypt `verify.py` uruchamia po kolei 8 kroków: render, skróty, Vale, markdownlint, LanguageTool, identyfikatory, macierz i budowanie MkDocs. Na żądanie robi też zrzuty każdej strony w szerokości 1280 i 390 px. Zmianę scalamy do `main` dopiero wtedy, gdy żaden krok nie zgłasza błędu.
+Skrypt `verify.py` uruchamia po kolei 9 kroków: aktualność obrazów, skróty, Vale, markdownlint, LanguageTool, identyfikatory, macierz, kontrast tokenów i budowanie MkDocs. Na żądanie robi też zrzuty każdej strony w szerokości 1280 i 390 px. Zmianę scalamy do `main` dopiero wtedy, gdy żaden krok nie zgłasza błędu.
 
 ### Kod (plan)
 
