@@ -348,8 +348,8 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Mapa nieba; system satelity rozróżniony kształtem i podpisem | dane | US6.5, NFR-21 | — |
 | „Powtórz pomiar” | czynność | UC8 2a, NFR-23 | początek pomiaru |
 | Podpowiedź budynku: „Czy to budynek C-13?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | czynność | US6.2, BR-G2 | „Wybierz inny”: lista budynków na C1 |
-| Przesunięcie punktu na mapie, także przyciskami strzałek | czynność | US6.4, NFR-3, NFR-15 | — |
-| Przesunięcie punktu na planie wybranego piętra (budynek szczegółowy) | czynność | US6.3, NFR-3 | — |
+| Budynek szczegółowy: przełącznik „Plan piętra” i „Mapa” nad jedną powierzchnią, domyślnie „Plan piętra”. Plan ma nad sobą wybór piętra, a mapa pokazuje ten sam punkt. | czynność | US6.3, US6.4, NFR-21 | C1, ten sam ekran |
+| Przesunięcie punktu na planie wybranego piętra albo na mapie, także przyciskami strzałek: jeden zestaw pod wybranym widokiem | czynność | US6.3, US6.4, NFR-3, NFR-15 | — |
 | Napis „Korekta ręczna” po przesunięciu punktu | dane | US6.3, US6.4 | — |
 | Napis „© OpenStreetMap contributors”; pod planem „Źródło: Politechnika Wrocławska” | dane | NFR-37, NFR-40 | — |
 | „Dalej” | czynność główna | US6 | C2 |
@@ -360,7 +360,7 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Ładowanie — szukanie satelitów | „Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.” Przycisk „Powtórz pomiar” (NFR-1, PW-9) |
 | Wybór innego budynku | po „Wybierz inny” w miejscu pytania sekcja „Wybierz budynek”: budynki najbliżej punktu, od najbliższego, i „Poza budynkiem”. Wybór zamyka listę i pokazuje „Budynek [symbol]” z „Wybierz inny”. Lista działa bez sieci, z konturów w telefonie (US6.2, BR-G2, NFR-4). |
 | Daleko od budynków PWr | „Poza budynkiem”, bez podpowiedzi i bez komunikatu o błędzie (BR-G4, NFR-49) |
-| Budynek podstawowy | bez wyboru piętra i korekty na planie. W ich miejscu napis „Nie mamy planu pięter tego budynku.”, jak na V2. Korekta na mapie działa (US6.4, BR-G1, PW-6). |
+| Budynek podstawowy | bez przełącznika „Plan piętra” i „Mapa”, wyboru piętra i korekty na planie. W ich miejscu napis „Nie mamy planu pięter tego budynku.”, jak na V2. Korekta na mapie działa (US6.4, BR-G1, PW-6). |
 | Brak zgody, zgoda tylko przybliżona albo lokalizacja wyłączona | jak w V4: prośba o zgodę albo o dokładną lokalizację, a po odmowie „Otwórz ustawienia” (NFR-27). Bez przycisku „Wróć do mapy”: rezygnacja przez „Wstecz” do ekranu, z którego otwarto C1, czyli L2, C2 albo C3 (NFR-15) |
 | Brak sieci | pomiar i podpowiedź działają; mapa bez podkładu (NFR-4, NFR-39) |
 

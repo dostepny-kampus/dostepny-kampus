@@ -141,7 +141,8 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | podpowiedź budynku | „Czy to budynek C-13?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | Zbierający | Pytanie zamiast słowa „podpowiedź”. | 10.2 |
 | lista budynków po „Wybierz inny” (C1) | „Wybierz budynek”, „Najbliżej punktu, od najbliższego:”, przyciski „Budynek A-1” | Zbierający | Ten sam zapis budynku co na liście V1. | 10.2 |
 | korekta ręczna | „Korekta ręczna” | Zbierający, Weryfikator | bez zmian | 10.2 |
-| przesunięcie punktu przyciskami (C1) | „Przesuń punkt na mapie:”, „Przesuń punkt na planie:” i „W górę”, „W dół”, „W lewo”, „W prawo” | Zbierający | Odpowiednik przeciągania punktu (NFR-15). Kierunki te same co przy mapie (PW-8). | 10.2 |
+| przełącznik „Plan piętra / Mapa” (C1, budynek szczegółowy) | „Plan piętra”, „Mapa” | Zbierający | Ten sam przełącznik co „Mapa / Lista” na V1 i R1. Jedna powierzchnia i jeden zestaw przycisków skracają ekran. | 10.2 |
+| przesunięcie punktu przyciskami (C1) | „Przesuń punkt na mapie:”, „Przesuń punkt na planie:” i „W górę”, „W dół”, „W lewo”, „W prawo” | Zbierający | Odpowiednik przeciągania punktu (NFR-15). Kierunki te same co przy mapie (PW-8). Podpis zależy od widoku wybranego przełącznikiem. | 10.2 |
 | nagłówki sekcji C1 i C2 | „Miejsce bariery”, „Piętro”, „Zdjęcie”, „Opis” | Zbierający | Krótki rzeczownik nad grupą pól. | 10.2 |
 | „Zmień miejsce”, „Powtórz pomiar”, „Dalej”, „Zapisz” | bez zmian | Zbierający | Czasowniki są już krótkie. | 10.2 |
 | typ bariery (C2) | „Typ bariery” | Zbierający, Weryfikator | bez zmian | 10.2 |
