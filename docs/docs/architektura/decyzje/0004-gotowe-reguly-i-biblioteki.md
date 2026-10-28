@@ -1,6 +1,6 @@
 # ADR-0004: Gotowe zestawy reguł i biblioteki
 
-Status: przyjęta. Data: 2026-10-28. Źródło: decyzje projektu nr 8, 22, 35 i 41.
+Status: przyjęta. Data: 2026-10-28. Źródło: decyzje projektu nr 8, 22, 35, 41 i 46.
 
 ## Kontekst i problem
 
@@ -21,13 +21,14 @@ Własne progi linterów są arbitralne i każdy można podważyć. Własny kod i
 - Własny kod piszemy tylko dla logiki dziedziny. Infrastrukturę dają biblioteki, np. Hibernate Spatial, Flyway, MapStruct, proj4j, Turf.
 - Własne rozwiązanie problemu ogólnego wymaga osobnego ADR.
 - Zależność autor zadania dodaje sam przy licencji MIT, Apache-2.0, BSD, EPL-2.0, MPL-2.0 lub ISC.
-- Zależność musi mieć wydanie z ostatnich 12 miesięcy, dokładną wersję i brak znanych podatności. Pilnują tego Dependabot i kontrola zależności w PR.
+- Zależność musi mieć wydanie z ostatnich 12 miesięcy, dokładną wersję i brak znanych podatności. Licencje i podatności sprawdza kontrola zależności w PR, aktualizacje proponuje Dependabot.
+- Narzędzia budowania i CI, które nie trafiają do aplikacji ani serwera, mogą mieć licencję GPL lub LGPL. Pobrany plik narzędzia ma w CI przypiętą sumę SHA-256.
 
 ## Konsekwencje
 
 - Dobrze: brak sporów o progi, reguły sprawdzone w wielu projektach.
 - Dobrze: mniej własnego kodu do testowania i utrzymania.
-- Gorzej: qulice wymaga m.in. klas `final`, co koliduje ze Springiem; wyjątki opisujemy z powodem.
+- Gorzej: qulice wymaga m.in. klas `final`, co może kolidować ze Springiem; wyjątki opisujemy z powodem.
 - Gorzej: detekt z `allRules` daje na starcie dużo uwag.
 - Gorzej: więcej zależności do aktualizacji.
 

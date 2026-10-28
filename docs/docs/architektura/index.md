@@ -9,7 +9,7 @@ Ta część pokazuje, dlaczego wybraliśmy takie rozwiązania. Decyzje są w for
 | [ADR-0001](decyzje/0001-stos-technologiczny.md) | Kotlin i Jetpack Compose, Spring Boot na Java 25, PostgreSQL z PostGIS | nr 2, 3, 28, 45 |
 | [ADR-0002](decyzje/0002-monorepo.md) | jedno repozytorium dla kontraktu, serwera, aplikacji, danych i dokumentacji | nr 4, 5, 40 |
 | [ADR-0003](decyzje/0003-keycloak.md) | konta, role i logowanie w Keycloak | nr 7 |
-| [ADR-0004](decyzje/0004-gotowe-reguly-i-biblioteki.md) | tylko gotowe zestawy reguł jakości i dojrzałe biblioteki | nr 8, 22, 35, 41 |
+| [ADR-0004](decyzje/0004-gotowe-reguly-i-biblioteki.md) | tylko gotowe zestawy reguł jakości i dojrzałe biblioteki | nr 8, 22, 35, 41, 46 |
 | [ADR-0005](decyzje/0005-mapa-offline.md) | mapa MapLibre bez sieci: kontury z OpenStreetMap, podkład tylko online | nr 14, 27 |
 | [ADR-0006](decyzje/0006-dane-pwr-o-pomieszczeniach.md) | plany pięter PWr importuje serwer, w repozytorium ich nie ma | nr 15, 17, 44 |
 
