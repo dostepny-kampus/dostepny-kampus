@@ -235,7 +235,7 @@ typografia:
     bodyLarge:
       sp: 18             # 34 znaki w wierszu na ekranie 360 dp (konwencja makiet)
       waga: 400
-      interlinia_sp: 26
+      interlinia_sp: 28  # 1,56 rozmiaru: WCAG 1.4.8 zaleca ≥ 1,5 dla tekstu ciągłego (decyzja 50)
       uzycie: tekst podstawowy, np. „Drzwi 120 cm”, opis piętra, kroki do sali
       zrodlo: konwencje makiet, NFR-20, PE-1
     labelLarge:
@@ -247,7 +247,7 @@ typografia:
     bodyMedium:
       sp: 18
       waga: 500
-      interlinia_sp: 24
+      interlinia_sp: 28  # podpis bywa dwuwierszowy, ta sama interlinia co tekst podstawowy (decyzja 50)
       uzycie: podpis, np. źródło i data oceny wejść, „Zalecane, parter”, podpis OpenStreetMap
       zrodlo: styl „Karta miejsca”, US17.3, NFR-37, NFR-40
     labelMedium:
@@ -294,15 +294,23 @@ cele_dotyku:
     uzycie: wysokość przycisków przypiętych nad paskiem dolnym, np. „Sprawdź, którędy wejść” i „Pokaż na mapie” (V2)
     zrodlo: styl „Karta miejsca”, NFR-17
   odstep:
+    dp: 16             # PE-1 ma lekkie drżenie dłoni: między sąsiednimi przyciskami zostaje pas, w który trudno trafić przypadkiem
+    uzycie: odstęp między sąsiednimi przyciskami, np. w przypiętym pasie akcji i w potwierdzeniach
+    zrodlo: NFR-17, PE-1, decyzja 50
+  odstep_w_grupie:
     dp: 8
-    uzycie: najmniejszy odstęp między dwoma osobnymi celami dotyku, np. chipami
-    zrodlo: wytyczne Material dla celów dotyku
+    uzycie: odstęp między celami jednej grupy, np. chipami statusu i segmentami przełącznika pięter
+    zrodlo: styl „Karta miejsca”, wytyczne Material dla celów dotyku
 
 obramowania:
   ramka:
     dp: 1              # granicę wyznacza kolor `outline` (≥ 3:1), a nie grubość
-    uzycie: obramowanie pola wyszukiwania, chipów, przycisków obrysowanych i segmentów
-    zrodlo: styl „Karta miejsca”, NFR-16 (WCAG 1.4.11)
+    uzycie: obramowanie kontenerów i kart, dzielniki, chipy statusu, przyciski obrysowane
+    zrodlo: styl „Karta miejsca”, NFR-16 (WCAG 1.4.11), decyzja 50
+  pole:
+    dp: 2              # pola i opcje dotyka się w terenie, w słońcu (PE-1, PE-2): granica ma być widoczna także przy odblasku
+    uzycie: obramowanie pól tekstowych (wyszukiwanie, formularze C1–C4), ramek opcji do wyboru i segmentów przełącznika pięter
+    zrodlo: NFR-16 (WCAG 1.4.11), PE-1, PE-2, decyzja 50
   wybrane:
     dp: 2
     uzycie: obwódka wybranego piętra w przełączniku, w kolorze `onPrimaryContainer`
