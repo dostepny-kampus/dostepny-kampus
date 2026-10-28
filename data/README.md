@@ -59,7 +59,7 @@ python -m venv .venv
 
 W systemie Windows zamiast `.venv/bin/` wpisujemy `.venv\Scripts\`. Skrypt nadpisuje pliki w `buildings/` i usuwa pliki budynków, których nie ma już w OSM. Wynik jest powtarzalny: te same dane OSM dają identyczne pliki, więc `git diff` pokazuje tylko prawdziwe zmiany w mapie.
 
-Opcja `--input <plik.json>` przetwarza zapisaną odpowiedź Overpass bez nowego zapytania. Publiczny serwer Overpass ma limity, dlatego skrypt nie ponawia zapytań. Uruchamiamy go ręcznie, gdy chcemy odświeżyć dane, a wynik zapisujemy w repozytorium.
+Opcja `--input <plik.json>` przetwarza zapisaną odpowiedź Overpass bez nowego zapytania. Publiczny serwer Overpass ma limity, dlatego skrypt nie ponawia zapytań, a odpowiedź z błędem wykonania (pole `remark`) przerywa go bez zmiany plików. Uruchamiamy go ręcznie, gdy chcemy odświeżyć dane, a wynik zapisujemy w repozytorium.
 
 ## Źródła
 
