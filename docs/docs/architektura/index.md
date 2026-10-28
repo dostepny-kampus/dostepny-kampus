@@ -1,6 +1,11 @@
 # Architektura
 
-Ta część pokazuje, dlaczego wybraliśmy takie rozwiązania. Decyzje są w formacie MADR [1].
+Ta część pokazuje, z czego składa się system i dlaczego wybraliśmy takie rozwiązania. Diagramy są w notacji C4 [1], decyzje w formacie MADR [3].
+
+| Strona | Co pokazuje |
+| --- | --- |
+| [Kontekst systemu](kontekst.md) | role i systemy zewnętrzne wokół systemu (C4, poziom 1) |
+| [Kontenery](kontenery.md) | aplikację, serwer, bazy danych, Usługę logowania i połączenia między nimi (C4, poziom 2) |
 
 ## Decyzje architektoniczne
 
@@ -17,4 +22,6 @@ ADR nie zmieniamy po przyjęciu. Nową decyzję zapisujemy kolejnym numerem ze s
 
 ## Źródła
 
-1. [MADR — Markdown Architectural Decision Records](https://adr.github.io/madr/)
+1. [Model C4](https://c4model.com/)
+2. [C4-PlantUML — biblioteka diagramów C4](https://github.com/plantuml-stdlib/C4-PlantUML)
+3. [MADR — Markdown Architectural Decision Records](https://adr.github.io/madr/)
