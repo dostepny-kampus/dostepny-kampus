@@ -7,14 +7,14 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 | Ekran | Makiety | Stany w tabelach |
 | --- | --- | --- |
 | V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu | ładowanie, brak mapy ulic, pierwsze uruchomienie |
-| V2 Karta budynku | budynek podstawowy, brak barier, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia |
+| V2 Karta budynku | budynek podstawowy, brak barier, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
 | V3 Którędy wejść | wejście jest, brak wejścia dostępnego, brak danych | brak sieci |
-| V4 Zgłoszenie szybkie | kroki 1–3, prośba o zgodę, zgoda przybliżona, brak pozycji, rezygnacja, wysłane, wysłane bez internetu | Gość, odmowa zgody, lokalizacja wyłączona, ustalanie miejsca, błąd zapisu |
+| V4 Zgłoszenie szybkie | kroki 1–3, krok 1 ze zdjęciem, prośba o zgodę, zgoda przybliżona, brak pozycji, rezygnacja, wysłane, wysłane bez internetu | Gość, odmowa zgody, lokalizacja wyłączona, ustalanie miejsca, błąd zapisu |
 | V5 Pomoc | krok z objaśnieniem „Dostępne” | krok o koncie, ostatni krok |
 | L1 Prośba o logowanie | zwykły, brak sieci | wejście z „Konto”, błąd |
 | L2 Konto | Odwiedzający, rola pracownicza, klauzula, wycofanie zgody | brak sieci |
 
-Fragmenty V1, V4 i V5, których nie ma w `_wspolne.iuml`, są w pliku `_odwiedzajacy.iuml`. To pole tekstowe, przełącznik „Mapa” i „Lista budynków”, przyciski mapy, zastępnik mapy, odnośnik OpenStreetMap i numer kroku.
+Fragmenty V1, V4 i V5, których nie ma w `_wspolne.iuml`, są w pliku `_odwiedzajacy.iuml`. To pole tekstowe, przełącznik „Mapa” i „Lista budynków”, przyciski mapy, zastępnik mapy, odnośnik OpenStreetMap i numer kroku. Plik poprawia też dopełnienie napisów przycisków, więc każdy przycisk z `$przycisk`, `$przycisk_glowny` i `$komunikat` ma tę samą szerokość.
 
 ## V1 Mapa kampusu
 
@@ -50,7 +50,7 @@ Czynność główna: wybór wyniku „Budynek C-13”, który zaznacza budynek n
 | Element | AC/BR/NFR |
 | --- | --- |
 | Wpisany zapis „c13” bez myślnika i wielkiej litery | US1.1, PW-8 |
-| Wynik: symbol w zapisie z dywizem i nazwa budynku z danych | US1.1 |
+| Wynik: symbol w zapisie z dywizem i nazwa budynku z danych; cała ramka wyniku to jeden cel dotyku | US1.1, NFR-17 |
 | Wybór wyniku otwiera V2; po „Wstecz” z V2 widać zaznaczony budynek | US1.1, US3.2 |
 
 ### V1: lista budynków
@@ -62,7 +62,7 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Lista budynków” wybrana w przełączniku | NFR-19 |
-| Pozycja: „Budynek A-1”, nazwa z danych, bariery z uciążliwością tekstem i ikoną | NFR-19, US1.3, NFR-21 |
+| Pozycja: „Budynek A-1”, nazwa z danych, bariery z uciążliwością tekstem i ikoną; cała ramka pozycji to jeden cel dotyku | NFR-19, US1.3, NFR-21, NFR-17 |
 | Bariery A-1 jak we wzorcu V2: schody przy wejściu głównym [1] i TB-22 | US1.3, BR-7 |
 | Lista daje tę samą informację co mapa, więc jest drogą dla TalkBack | NFR-19, NFR-18 |
 | Bez przycisków mapy i podpisu OpenStreetMap, bo lista nie pokazuje mapy | decyzja 16 |
@@ -112,7 +112,7 @@ Czynność główna: „Sprawdź, którędy wejść”, jak we wzorcu.
 | Element | AC/BR/NFR |
 | --- | --- |
 | Symbol, nazwa i wejścia jako zastępniki, bo nie wiemy, które budynki będą podstawowe | BR-G1, BR-G3 |
-| Napis „Nie mamy planu pięter tego budynku. Bariery są na liście niżej.” zamiast pięter i planu | US16.2, BR-G1, PW-6 |
+| Napis „Nie mamy planu pięter tego budynku. Bariery są na liście niżej.” zamiast pięter i planu; drugie zdanie tylko przy niepustej liście barier | US16.2, BR-G1, PW-6 |
 | Bez „Piętro:”, planu i „Źródło: Politechnika Wrocławska” | US16.2, NFR-48 |
 | Bariera z uciążliwością „Tylko z pomocą” tekstem i ikoną | US2.2, NFR-21, PW-13 |
 
@@ -120,6 +120,7 @@ Czynność główna: „Sprawdź, którędy wejść”, jak we wzorcu.
 | --- | --- |
 | Ładowanie | tekst widać od razu, a w miejscu zdjęcia jest napis „Wczytujemy zdjęcie…” (NFR-12) |
 | Błąd zdjęcia | w miejscu zdjęcia „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” i „Spróbuj ponownie” (NFR-50) |
+| Budynek podstawowy bez barier | napis „Nie mamy planu pięter tego budynku.” bez drugiego zdania, a pod „Bariery w budynku” zdanie ze stanu pustego (UC2 2a, PW-6) |
 
 ### V2: brak sprawdzonych barier
 
@@ -169,6 +170,7 @@ Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego 
 | „Oznacz obejrzane piętra” pod planem, raz dla całego budynku | US15.1, PW-12 |
 | „Zgłoś, że bariery nie ma” przy każdej barierze | US8.4, BR-19, PW-12 |
 | „Popraw zgłoszenie” tylko przy własnym zgłoszeniu przyjętym albo zgłoszeniu szybkim; tu przy drugiej barierze | BR-3, BR-18 |
+| Typ TB-22 nazwą z klasyfikacji, „brak planu tyflograficznego”: prostszy napis widzą tylko Gość i Odwiedzający | BR-7, słownik użytkownika |
 | Pasek dolny z „Konto i praca” | US14.1, PW-1 |
 | Gość i Odwiedzający nie widzą tych przycisków | US14.1, NFR-33 |
 
@@ -236,8 +238,20 @@ Czynność główna: „Zrób zdjęcie”.
 
 | Stan bez osobnej makiety | Co się zmienia |
 | --- | --- |
-| Zdjęcie zrobione, powrót z kroku 2 | miniatura zdjęcia i „Zrób nowe zdjęcie” zamiast „Zrób zdjęcie” (US4.1, PW-8); „Wstecz” otwiera potwierdzenie rezygnacji |
 | Błąd zapisu | „W telefonie brakuje miejsca, więc nie zapisaliśmy zdjęcia bariery…” i „Spróbuj ponownie”; zdjęcie i grupa zostają (NFR-5, NFR-7) |
+
+### V4: krok 1 ze zdjęciem
+
+![Makieta V4, krok 1 z 3 po powrocie z kroku 2: miniatura zdjęcia, przypomnienie o twarzach i tablicach, pogrubiony przycisk Dalej i zwykły Zrób nowe zdjęcie](../../_generated/m-v4-krok-1-zdjecie.svg)
+
+Czynność główna: „Dalej”, które prowadzi znowu do kroku 2 bez nowego zdjęcia.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Miniatura zrobionego zdjęcia | US4.1 |
+| „Dalej” pogrubione nad „Zrób nowe zdjęcie”; wybrana grupa zostaje | US4.1, heurystyka Nielsena 3 |
+| „Zrób nowe zdjęcie” z ikoną aparatu zamiast „Zrób zdjęcie” | US4.1, PW-8 |
+| „Wstecz” otwiera potwierdzenie rezygnacji | UC7 1b |
 
 ### V4: krok 2 z 3
 
@@ -248,7 +262,7 @@ Czynność główna: wybór jednej z 6 grup barier.
 | Element | AC/BR/NFR |
 | --- | --- |
 | Pytanie „Czego dotyczy bariera?” | US4.3, PW-7 |
-| 6 przycisków grup jeden pod drugim, sam tekst, bez ikon | US4.3, NFR-17, PW-7 |
+| 6 przycisków grup jeden pod drugim, tej samej szerokości, sam tekst, bez ikon | US4.3, NFR-17, PW-7 |
 | Bez typu, uciążliwości, budynku i piętra | US4.3, BR-14 |
 | „Wstecz” wraca do kroku 1, a zdjęcie zostaje | US4.1 |
 
