@@ -8,6 +8,7 @@ package io.github.dostepnykampus.core.designsystem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,11 +47,30 @@ class ComponentsScreenshotTest {
         captureRoboImage {
             DostepnyKampusTheme {
                 Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainer)) {
+                    BackHeader(title = "Którędy wejść do A-1", onBack = {})
                     GroupContainer(title = "Wejścia", modifier = Modifier.padding(horizontal = Odstepy.m)) {
                         Text(text = "Wejście dostosowane", style = MaterialTheme.typography.titleMedium)
                         EntranceMarking.entries.forEach {
                             MarkingChip(marking = it, modifier = Modifier.padding(vertical = Odstepy.xs))
                         }
+                    }
+                    PinnedActionBar(modifier = Modifier.padding(top = Odstepy.l)) {
+                        PinnedButton(text = "Sprawdź, którędy wejść", onClick = {}, modifier = Modifier.weight(3f))
+                        PinnedButton(
+                            text = "Pokaż na mapie",
+                            onClick = {},
+                            modifier = Modifier.weight(2f),
+                            kind = PinnedButtonKind.Tonal,
+                        )
+                    }
+                    PinnedActionBar(modifier = Modifier.padding(top = Odstepy.l)) {
+                        PinnedButton(text = "Wyślij", onClick = {}, modifier = Modifier.fillMaxWidth())
+                        PinnedButton(
+                            text = "Anuluj",
+                            onClick = {},
+                            modifier = Modifier.fillMaxWidth(),
+                            kind = PinnedButtonKind.Outlined,
+                        )
                     }
                 }
             }
