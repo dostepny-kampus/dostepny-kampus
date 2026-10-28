@@ -25,14 +25,23 @@ import org.snakeyaml.engine.v2.api.LoadSettings
 
 private const val M3 = "androidx.compose.material3"
 private const val UNIT = "androidx.compose.ui.unit"
+private const val FONT = "androidx.compose.ui.text.font"
 private val COLOR = ClassName("androidx.compose.ui.graphics", "Color")
+private val TEXT_STYLE = ClassName("androidx.compose.ui.text", "TextStyle")
+private val FONT_WEIGHT = ClassName(FONT, "FontWeight")
+private val ROUNDED = ClassName("androidx.compose.foundation.shape", "RoundedCornerShape")
 private val DP = MemberName(UNIT, "dp", isExtension = true)
+private val SP = MemberName(UNIT, "sp", isExtension = true)
 private val THEMES = listOf("jasny" to "Light", "ciemny" to "Dark")
+
+/** Zaokrąglenia z tokenów, które mają miejsce w skali kształtów Material 3 (komentarze w pliku tokenów). */
+private val M3_SHAPES = mapOf("standard" to "small", "srednie" to "medium", "duze" to "large", "bardzo_duze" to "extraLarge")
 
 /**
  * Generuje `DesignTokens.kt` w [packageName] z pliku tokenów wizualnych: schematy kolorów Material 3 jasny i
  * ciemny (`kolory`), klasy `StatusColors` (`kolory.status…`) i `MapColors` (`mapa.kolory`) z wartościami dla
- * obu motywów i obiekt stałych w dp dla każdej sekcji wymiarów (`odstepy`, `cele_dotyku`, …). Nazwy przechodzą
+ * obu motywów, funkcję `typography` (`typografia.style`, rozmiary w sp), obiekt `Typografia`, kształty
+ * `AppShapes` i obiekt stałych w dp dla każdej sekcji wymiarów (`odstepy`, `cele_dotyku`, …). Nazwy przechodzą
  * na camelCase (`droga_kontur` → `drogaKontur`), pole `uzycie` staje się KDoc. Zmiana [tokensFile] unieważnia
  * wynik; brak wymaganej sekcji albo wartości przerywa budowanie.
  */
@@ -65,8 +74,11 @@ abstract class GenerateDesignTokens : DefaultTask() {
         }
         palette(file, ClassName(packageName.get(), "StatusColors"), status.toMap())
         palette(file, ClassName(packageName.get(), "MapColors"), tokens.sub("mapa").sub("kolory"))
+        typography(file, tokens.sub("typografia"))
         tokens.filterValues { section -> section is Map<*, *> && section.values.all { it is Map<*, *> && "dp" in it } }
             .forEach { (name, section) -> dimensions(file, name, section.asMap()) }
+        val shapes = M3_SHAPES.map { (token, slot) -> CodeBlock.of("%N = %T(Zaokraglenia.%N)", slot, ROUNDED, camel(token)) }
+        file.addProperty(internal("AppShapes", ClassName(M3, "Shapes"), "%T%L", ClassName(M3, "Shapes"), shapes.args()))
         file.build().writeTo(outputDirectory.get().asFile.apply { deleteRecursively() })
     }
 
@@ -85,6 +97,32 @@ abstract class GenerateDesignTokens : DefaultTask() {
         THEMES.forEach { (theme, prefix) ->
             file.addProperty(internal(prefix + type.simpleName, type, "%T%L", type, colors(colors, theme)))
         }
+    }
+
+    private fun typography(file: FileSpec.Builder, section: Map<String, Any?>) {
+        val styles = section.sub("style").map { (name, value) ->
+            val style = value.asMap()
+            CodeBlock.of(
+                "%N = %T(fontFamily = fontFamily, fontWeight = %T(%L), fontSize = %L.%M, lineHeight = %L.%M)",
+                name, TEXT_STYLE, FONT_WEIGHT, style.require("waga"), style.require("sp"), SP, style.require("interlinia_sp"), SP,
+            )
+        }
+        file.addFunction(
+            FunSpec.builder("typography")
+                .addModifiers(KModifier.INTERNAL)
+                .addParameter("fontFamily", ClassName(FONT, "FontFamily"))
+                .returns(ClassName(M3, "Typography"))
+                .addStatement("return %T%L", ClassName(M3, "Typography"), styles.args())
+                .build(),
+        )
+        val emphasis = CodeBlock.of("%T(%L)", FONT_WEIGHT, section.require("wyroznienie_waga"))
+        val emphasisDoc = "Pogrubienie przycisków, oznaczeń wejścia i błędu przy polu."
+        file.addType(
+            TypeSpec.objectBuilder("Typografia")
+                .addKdoc("Stałe typografii z pliku tokenów.")
+                .addProperty(constant("wyroznienieWaga", FONT_WEIGHT, emphasis, emphasisDoc))
+                .build(),
+        )
     }
 
     private fun dimensions(file: FileSpec.Builder, name: String, section: Map<String, Any?>) {
