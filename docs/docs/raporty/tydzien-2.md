@@ -128,7 +128,7 @@ Używamy tylko gotowych, rygorystycznych zestawów reguł, bez własnych progów
 | Kotlin (aplikacja) | detekt ze wszystkimi regułami, ktlint_official, compose-rules, Android Lint, Konsist |
 | Oba moduły | SonarCloud z bramką jakości „Sonar way” |
 | Kontrakt API | Redocly lint, oasdiff (zmiana łamiąca zgodność blokuje scalenie) |
-| Dokumentacja | Vale, markdownlint, kontrola identyfikatorów, budowanie MkDocs w trybie strict |
+| Dokumentacja | Vale, markdownlint, kontrola identyfikatorów, budowanie MkDocs w trybie `--strict` |
 
 CI działa w GitHub Actions. Osobne przepływy obejmują kontrakt API, serwer, aplikację, testy UI na emulatorze i kontrolę PR. Kontrola PR sprawdza rozmiar zmiany, format commitów i sekrety (gitleaks).
 
@@ -136,7 +136,7 @@ CI działa w GitHub Actions. Osobne przepływy obejmują kontrakt API, serwer, a
 
 | Sprint | Cel | Najważniejsze zadania |
 | --- | --- | --- |
-| S1 | fundament, CI, dane | analiza i dokumentacja, szkielet repozytorium, kontrakt API v0, kontrola PR, szkielety serwera i aplikacji z linterami, eksport budynków z OSM, makiety low-fi |
+| S1 | fundament, CI, dane | analiza i dokumentacja, szkielet repozytorium, pierwsza wersja kontraktu API, kontrola PR, szkielety serwera i aplikacji z linterami, eksport budynków z OSM, makiety low-fi |
 | S2 | UI, nawigacja, model danych | model i geometria, system projektowy, nawigacja z rolami, mapa z konturami, baza lokalna, import budynków z oznaczeniami wejść do bazy |
 | S3 | serwer i API | budynki i podpowiedź budynku, zgłoszenia z wersją, zdjęcia, klient API, repozytoria danych |
 | S4 | logika dziedziny | uśrednianie pozycji, PUWG 1992, ekran pomiaru z mapą nieba, formularz ze zdjęciem, podobne zgłoszenia |

@@ -21,7 +21,7 @@ Raport podaje skrót i odsyła do stron dokumentacji projektu. Odwołuje się do
 | Struktura projektu | układ repozytoriów i modułów | repozytorium dokumentacji z automatyczną kontrolą jakości; repozytorium kodu zaplanowane, jeszcze nie istnieje | częściowo |
 | Git | sposób pracy z Git | zasady ustalone; w repozytorium dokumentacji 358 commitów i 31 scalonych gałęzi zadań | zrobione dla dokumentacji, dla kodu plan |
 
-Plan sprintów z raportu [Tydzień 2](tydzien-2.md) przypisał Sprintowi 1 także zadania techniczne, których nie zrobiliśmy. To szkielet repozytorium kodu, kontrakt API v0, kontrola PR w CI, szkielety serwera i aplikacji oraz eksport konturów budynków z OpenStreetMap. Przechodzą do Sprintu 2 (sekcja 7). Nie było też zadań próbnych, więc architektura z raportu „Tydzień 2” zostaje wstępna.
+Plan sprintów z raportu [Tydzień 2](tydzien-2.md) przypisał Sprintowi 1 także zadania techniczne, których nie zrobiliśmy. To szkielet repozytorium kodu, pierwsza wersja kontraktu API, kontrola PR w CI, szkielety serwera i aplikacji oraz eksport konturów budynków z OpenStreetMap. Przechodzą do Sprintu 2 (sekcja 7). Nie było też zadań próbnych, więc architektura z raportu „Tydzień 2” zostaje wstępna.
 
 ## 2. Makiety
 
@@ -110,7 +110,7 @@ Repozytorium ma 26 stron Markdown, 78 diagramów PlantUML i 2 diagramy BPMN. Wś
 
 | Narzędzie | Co sprawdza albo robi |
 | --- | --- |
-| MkDocs z motywem Material, tryb strict | buduje stronę dokumentacji; zepsuty link zatrzymuje budowanie |
+| MkDocs z motywem Material, tryb `--strict` | buduje stronę dokumentacji; zepsuty link zatrzymuje budowanie |
 | PlantUML, bpmn-to-image (`render.py`) | renderuje diagramy i makiety do SVG i PNG |
 | Vale | reguły zespołu: zdanie najwyżej 25 słów, akapit najwyżej 4 zdania, lista pustych zwrotów |
 | markdownlint | formatowanie Markdown |
@@ -152,7 +152,7 @@ Jedno repozytorium pozwala zmienić kontrakt, serwer i aplikację w jednym PR. P
 
 | Element | Repozytorium kodu (plan) | Repozytorium dokumentacji (stan) |
 | --- | --- | --- |
-| Gałęzie | `main` ← `sprint/N` ← `feature/<sprint>-<nazwa>` | `main` ← `docs/<zadanie>`; każde zadanie w osobnym katalogu roboczym (git worktree) |
+| Gałęzie | `main` ← `sprint/N` ← `feature/<sprint>-<nazwa>` | `main` ← `docs/<zadanie>`; każde zadanie w osobnej gałęzi |
 | Przegląd | PR z jedną akceptacją | przegląd każdej zmiany przed scaleniem; poprawki z przeglądu w osobnej gałęzi |
 | Ochrona gałęzi | do `main` i `sprint/*` tylko przez PR z zielonym CI | scalenie do `main` tylko po przeglądzie i bez błędów `verify.py` |
 | Rozmiar zmiany | PR funkcjonalny najwyżej 300 linii | jedna gałąź to jedno zamknięte zadanie |
@@ -195,7 +195,7 @@ Według harmonogramu kursu Sprint 2 obejmuje interfejs użytkownika, nawigację 
 | --- | --- | --- |
 | Repozytorium kodu | szkielet według planowanego układu katalogów, katalog `specs` przeniesiony z dokumentacji, reguły gałęzi | Tydzień 2, sekcja 4 |
 | CI i kontrola PR | rozmiar zmiany, format commitów, skan sekretów, lintery | NFR-35, NFR-46 |
-| Kontrakt API v0 | pierwsza wersja kontraktu OpenAPI | Tydzień 2 |
+| Kontrakt API | pierwsza wersja kontraktu OpenAPI | Tydzień 2 |
 | Szkielety serwera i aplikacji | projekty z linterami, uruchamiane w CI | Tydzień 2 |
 | Model danych | model dziedziny z geometrią; baza lokalna w aplikacji | Tydzień 2, plan S2 |
 | Dane budynków | eksport konturów z OpenStreetMap; import budynków z oznaczeniami wejść | R-11, US17 |
