@@ -25,6 +25,25 @@ Geoportal
 Geoportalu
 arc42
 PWr
+W04IST-SM0302G
+Telec
+Vladyslav
+Yevkov
+Gherkin
+Jetpack
+Compose
+Material
+Maven
+Modulith
+Actions
+Conventional
+Commits
+markdownlint
+commitlint
+bpmn-to-image
+worktree
+strict
+v0
 
 # Terminy techniczne
 utrzymywalność
@@ -36,6 +55,12 @@ półstrukturyzowanego
 półstrukturyzowane
 share-alike
 contributors
+low-fi
+commit
+commity
+commitów
+render
+renderu
 
 # Angielskie nazwy charakterystyk ISO/IEC 25010 podawane w nawiasach
 functional
