@@ -189,7 +189,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | przełącznik „Mapa / Lista” (R1) | „Mapa”, „Lista” | Weryfikator | Ta sama kolejność co na V1; zaznaczony jest widok domyślny, na R1 lista. | 10.5 |
 | nagłówek R2 | „Sprawdzenie zgłoszenia” | Weryfikator | bez zmian | 10.5 |
 | podobne zgłoszenie | „Podobne zgłoszenia do 10 m” | Weryfikator | Krócej niż „w promieniu 10 m”. | 10.4 |
-| duplikat, „nieaktualne” | „Duplikat”, „Nieaktualne”; przy zmianie oznaczenia wejścia tylko „Nieaktualne” | Weryfikator | bez zmian; duplikat to zgłoszenie tej samej bariery, a zmiana oznaczenia wejścia nie opisuje bariery (BR-24) | 10.4 |
+| duplikat, „nieaktualne” | „Duplikat”, „Nieaktualne”; przy zmianie oznaczenia wejścia bez „Duplikat” | Weryfikator | bez zmian; duplikat to zgłoszenie tej samej bariery, a zmiana oznaczenia wejścia nie opisuje bariery (BR-24) | 10.4 |
 | własny powód odrzucenia (R2) | opcja „Inny powód”, pole „Opisz powód dla autora” | Weryfikator | Etykieta mówi, co wpisać i dla kogo (recenzja B5). | 10.5 |
 | status poprzedniego zgłoszenia (R2, „bariera usunięta”) | „Poprzednie zgłoszenie:” i status, np. „Archiwalne” | Weryfikator | Bez statusu nie widać, że zmiana jest nieaktualna (BR-23). | 10.5 |
 | oznaczenie wejścia od wysłania zmiany (R2) | „Bez zmian od wysłania” z ikoną `link-intact`, „Zmienione po wysłaniu” z ikoną `link-broken` | Weryfikator | Mówi, czy zmiana dotyczy obecnego oznaczenia (BR-24). | 10.5 |
