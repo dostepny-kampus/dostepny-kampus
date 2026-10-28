@@ -1,4 +1,4 @@
-"""Dostępny Kampus — pełna kontrola dokumentacji (aktualność obrazów, skróty, Vale, markdownlint, LanguageTool, ID, macierz śledzenia, kontrast tokenów, MkDocs). Author: Vladyslav Yevkov. Version: 0.4.0. Copyright (c) 2026 Vladyslav Yevkov."""
+"""Dostępny Kampus — pełna kontrola dokumentacji (aktualność obrazów, skróty, Vale, markdownlint, LanguageTool, ID, macierz śledzenia, kontrast tokenów, MkDocs). Author: Vladyslav Yevkov. Version: 0.4.1. Copyright (c) 2026 Vladyslav Yevkov."""
 
 from __future__ import annotations
 
@@ -172,6 +172,8 @@ def step_vale() -> StepResult:
     if not files:
         return StepResult("vale", SKIP, "brak plików .md")
     vale = vale_program()
+    if vale is None and os.environ.get("VALE_BIN"):
+        return StepResult("vale", FAIL, f"VALE_BIN wskazuje nieistniejący program: {os.environ['VALE_BIN']}")
     if vale is None:
         return StepResult("vale", FAIL, "brak Vale: ustaw VALE_BIN na ścieżkę do programu vale albo dodaj vale do PATH")
     code, _ = run_command([vale, *[str(f.relative_to(REPO)) for f in files]])
