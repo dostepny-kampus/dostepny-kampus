@@ -1,0 +1,37 @@
+# Gradle, Android, Kotlin
+.gradle/
+.kotlin/
+build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# IntelliJ IDEA, Android Studio
+.idea/
+*.iml
+
+# Maven
+target/
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# MkDocs
+docs/site/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Sekrety i klucze podpisu
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
