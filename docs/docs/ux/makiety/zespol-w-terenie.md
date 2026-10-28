@@ -35,6 +35,20 @@ Czynność główna: „Dalej” — zatwierdzenie miejsca i przejście do C2.
 | „Przesuń punkt na mapie:” i „W górę”, „W dół”, „W lewo”, „W prawo” zamiast przeciągania | US6.4, NFR-3, NFR-15 |
 | „Dalej” pogrubione, na pełną szerokość | US6, NFR-21 |
 
+### Wybór innego budynku
+
+![Makieta C1 po dotknięciu Wybierz inny: sekcja Wybierz budynek z trzema najbliższymi budynkami jako przyciskami i przyciskiem Poza budynkiem, pod nią mapa z punktem, przyciski przesuwania i Dalej](../../_generated/m-c1-pomiar-pozycji-wybor-budynku.svg)
+
+Czynność główna: wybór budynku z listy. Ten sam ekran C1, bez nowego identyfikatora.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| „Wybierz budynek” w miejscu pytania „Czy to budynek A-1?” | US6.2, BR-G2 |
+| „Najbliżej punktu, od najbliższego:” i budynki jako przyciski na pełną szerokość, podpowiadany budynek pierwszy | US6.2, NFR-17 |
+| „Poza budynkiem” na końcu listy | BR-G2, BR-G4 |
+| Lista z konturów zapisanych w telefonie, więc działa bez sieci | NFR-4 |
+| Wybór zamyka listę i pokazuje „Budynek A-2” z „Wybierz inny”, jak po potwierdzeniu | US6.2 |
+
 ### Korekta w budynku szczegółowym
 
 ![Makieta C1 po potwierdzeniu budynku A-1: wybór piętra, plan piętra z punktem i źródłem, przyciski przesuwania na planie, mapa z tym samym punktem i własne przyciski przesuwania, napis Korekta ręczna i Dalej](../../_generated/m-c1-pomiar-pozycji-korekta.svg)

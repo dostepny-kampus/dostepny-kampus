@@ -13,7 +13,7 @@ Wysłane <i>[data]</i>
 $przycisk("Otwórz", "chevron-right")
 }
 ..
-$przelacznik("Lista", "Mapa", 2)
+$przelacznik("Mapa", "Lista", 1)
 $mapa("mapa kampusu z punktami zgłoszeń do sprawdzenia; wybrany punkt przy C-13")
 $przyciski_mapy()
 $ramka()

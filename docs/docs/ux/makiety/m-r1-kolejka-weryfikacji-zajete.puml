@@ -15,7 +15,7 @@ Wysłane <i>[data]</i>
 $przycisk("Otwórz", "chevron-right")
 }
 ..
-$przelacznik("Lista", "Mapa", 1)
+$przelacznik("Mapa", "Lista", 2)
 $ramka()
 <b>Schody i windy</b>
 Budynek D-2

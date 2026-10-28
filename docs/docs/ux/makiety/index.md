@@ -90,7 +90,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 
 ## Wszystkie makiety
 
-69 makiet ekranów i katalog fragmentów. Stan zwykły nie ma dopisku w nazwie pliku. Stany, które różnią się jednym napisem, opisuje tabela pod makietą na stronie grupy.
+70 makiet ekranów i katalog fragmentów. Stan zwykły nie ma dopisku w nazwie pliku. Stany, które różnią się jednym napisem, opisuje tabela pod makietą na stronie grupy.
 
 | Ekran | Stan | Makieta | Strona |
 | --- | --- | --- | --- |
@@ -128,6 +128,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | L2 | potwierdzenie wycofania zgody | [`m-l2-konto-wycofanie`](../../_generated/m-l2-konto-wycofanie.svg) | [odwiedzający](odwiedzajacy.md) |
 | C1 | pomiar trwa | [`m-c1-pomiar-pozycji`](../../_generated/m-c1-pomiar-pozycji.svg) | [zespół w terenie](zespol-w-terenie.md) |
 | C1 | podpowiedź budynku | [`m-c1-pomiar-pozycji-podpowiedz`](../../_generated/m-c1-pomiar-pozycji-podpowiedz.svg) | [zespół w terenie](zespol-w-terenie.md) |
+| C1 | wybór innego budynku | [`m-c1-pomiar-pozycji-wybor-budynku`](../../_generated/m-c1-pomiar-pozycji-wybor-budynku.svg) | [zespół w terenie](zespol-w-terenie.md) |
 | C1 | korekta w budynku szczegółowym | [`m-c1-pomiar-pozycji-korekta`](../../_generated/m-c1-pomiar-pozycji-korekta.svg) | [zespół w terenie](zespol-w-terenie.md) |
 | C1 | szukanie satelitów | [`m-c1-pomiar-pozycji-szukanie`](../../_generated/m-c1-pomiar-pozycji-szukanie.svg) | [zespół w terenie](zespol-w-terenie.md) |
 | C1 | daleko od budynków, bez internetu | [`m-c1-pomiar-pozycji-poza-budynkiem`](../../_generated/m-c1-pomiar-pozycji-poza-budynkiem.svg) | [zespół w terenie](zespol-w-terenie.md) |

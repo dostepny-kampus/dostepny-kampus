@@ -139,6 +139,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | liczba satelitów GNSS | „Satelity: GPS 7, Galileo 5, GLONASS 4” | Zbierający | Nazwy systemów zamiast skrótu „GNSS”, każdy system osobno (US6.1). | 10.2 |
 | mapa nieba | „Mapa nieba” | Zbierający | bez zmian | 10.2 |
 | podpowiedź budynku | „Czy to budynek C-13?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | Zbierający | Pytanie zamiast słowa „podpowiedź”. | 10.2 |
+| lista budynków po „Wybierz inny” (C1) | „Wybierz budynek”, „Najbliżej punktu, od najbliższego:”, przyciski „Budynek A-1” | Zbierający | Ten sam zapis budynku co na liście V1. | 10.2 |
 | korekta ręczna | „Korekta ręczna” | Zbierający, Weryfikator | bez zmian | 10.2 |
 | przesunięcie punktu przyciskami (C1) | „Przesuń punkt na mapie:”, „Przesuń punkt na planie:” i „W górę”, „W dół”, „W lewo”, „W prawo” | Zbierający | Odpowiednik przeciągania punktu (NFR-15). Kierunki te same co przy mapie (PW-8). | 10.2 |
 | nagłówki sekcji C1 i C2 | „Miejsce bariery”, „Piętro”, „Zdjęcie”, „Opis” | Zbierający | Krótki rzeczownik nad grupą pól. | 10.2 |
@@ -184,7 +185,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | kolejka weryfikacji (R1) | przycisk i nagłówek „Zgłoszenia do sprawdzenia” | Weryfikator | Nagłówek powtarza napis przycisku z L2. | 10.5 |
 | „Wzięte przeze mnie”, „Weź do sprawdzenia” | bez zmian | Weryfikator | — | 10.5 |
 | otwarcie pozycji listy (R1 „Wzięte przeze mnie”, K1 budynek) | „Otwórz” z ikoną `chevron-right` | Weryfikator, Koordynator | Ramka bez znaku nie wygląda na coś, co da się dotknąć (recenzja B5, Nielsen 6). | 10.5, 10.7 |
-| przełącznik „Lista / Mapa” (R1) | „Lista”, „Mapa” | Weryfikator | bez zmian | 10.5 |
+| przełącznik „Mapa / Lista” (R1) | „Mapa”, „Lista” | Weryfikator | Ta sama kolejność co na V1; zaznaczony jest widok domyślny, na R1 lista. | 10.5 |
 | nagłówek R2 | „Sprawdzenie zgłoszenia” | Weryfikator | bez zmian | 10.5 |
 | podobne zgłoszenie | „Podobne zgłoszenia do 10 m” | Weryfikator | Krócej niż „w promieniu 10 m”. | 10.4 |
 | duplikat, „nieaktualne” | „Duplikat”, „Nieaktualne” | Weryfikator | bez zmian | 10.4 |
