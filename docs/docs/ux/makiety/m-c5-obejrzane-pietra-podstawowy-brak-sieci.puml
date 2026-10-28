@@ -1,0 +1,18 @@
+@startsalt
+' C5 Piętra obejrzane, Zbierający, budynek podstawowy bez sieci (US15.1, US15.3, BR-20).
+' Jeden wiersz „Cały budynek”; forma „Obejrzany” jak dla budynku w K1 (słownik użytkownika).
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Obejrzane piętra", "Budynek <i>[symbol]</i>")
+$brak_internetu("Ostatnia synchronizacja: <i>[data]</i>, <i>[godzina]</i>")
+$komunikat("Znacznik zapisany w telefonie. Wyślemy go, gdy wróci internet.")
+$ramka()
+<b>Cały budynek</b>
+<b>$obejrzany()</b>
+Twój znacznik
+Czeka na wysłanie
+$przycisk("Cofnij znacznik")
+}
+$ekran_koniec()
+@endsalt

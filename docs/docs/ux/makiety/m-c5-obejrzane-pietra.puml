@@ -1,0 +1,37 @@
+@startsalt
+' C5 Piętra obejrzane, Zbierający, budynek szczegółowy A-1 z 5 etykietami pięter (US15.1).
+' „Cofnij znacznik” tylko przy własnym znaczniku (US15.2). Etykiety pięter z danych PWr.
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Obejrzane piętra", "Budynek A-1")
+$ramka()
+<b>Piętro: <i>[1]</i></b>
+<b>$obejrzane()</b>
+Twój znacznik
+$przycisk("Cofnij znacznik")
+}
+$ramka()
+<b>Piętro: <i>[2]</i></b>
+<b>$obejrzane()</b>
+Znacznik innej osoby
+}
+$ramka()
+<b>Piętro: <i>[3]</i></b>
+<b>$obejrzane()</b>
+Twój znacznik
+Czeka na wysłanie
+$przycisk("Cofnij znacznik")
+}
+$ramka()
+<b>Piętro: <i>[4]</i></b>
+$nieobejrzane()
+$przycisk_glowny("Oznacz jako obejrzane")
+}
+$ramka()
+<b>Piętro: <i>[5]</i></b>
+$nieobejrzane()
+$przycisk_glowny("Oznacz jako obejrzane")
+}
+$ekran_koniec()
+@endsalt
