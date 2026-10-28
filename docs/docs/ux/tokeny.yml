@@ -15,62 +15,139 @@
 wersja: 1
 
 # ---------------------------------------------------------------------------
-# Kolory — nazwy ról Material 3. Tylko role, których potrzebują ekrany z makiet.
-# Zasady (NFR-21, wymagania wspólne fazy B):
-#   * Kolor nie niesie znaczenia. Status zgłoszenia, oznaczenie wejścia (Dostępne /
-#     Niedostępne / Brak danych) i uciążliwość (Utrudnienie / Tylko z pomocą / Blokada)
-#     mają zawsze tekst i ikonę ze słownika użytkownika, w kolorze zwykłego tekstu.
-#   * Bez „sygnalizacji świetlnej”: w palecie nie ma zielonego ani żółtego, a żadna
-#     wartość statusu nie ma własnego koloru.
-#   * Jedna barwa akcentu: niebieski. Daltonizm czerwono-zielony (protanopia,
-#     deuteranopia) nie zmienia odbioru osi niebieskiej; skrypt sprawdza kontrast
+# Kolory — nazwy ról Material 3. Wartości ze stylu „Karta miejsca” (decyzja projektu
+# nr 48). Tylko role, których potrzebują ekrany.
+# Zasady (NFR-21, wymagania wspólne fazy B, decyzja 48 pkt 3):
+#   * Kolor nie niesie znaczenia. Oznaczenie wejścia (Dostępne / Niedostępne /
+#     Brak danych) ma zawsze kształt ikony i słowo ze słownika użytkownika.
+#     Może stać w spokojnym, przyciemnionym kontenerze, ale znaczenie niosą kształt
+#     i słowo, a nie barwa kontenera.
+#   * Uciążliwość (Utrudnienie / Tylko z pomocą / Blokada) i status zgłoszenia nie mają
+#     własnego kontenera: tekst i ikona w kolorze zwykłego tekstu.
+#   * Bez „sygnalizacji świetlnej”: w palecie interfejsu nie ma zielonego ani żółtego,
+#     więc nie ma pary zielony/czerwony. Kontenery statusów różnią się jasnością
+#     i odcieniem w osi morski–szaroróżowy.
+#   * Jedna barwa akcentu: ciemny morski (petrol). Daltonizm czerwono-zielony
+#     (protanopia, deuteranopia) nie zmienia odbioru tej osi; skrypt sprawdza kontrast
 #     także po symulacji obu typów.
 #   * Ciemny motyw dobrany osobno, a nie przez odwrócenie jasnego.
 # ---------------------------------------------------------------------------
 kolory:
   surface:
-    jasny: "#FFFFFF"   # białe tło daje największy kontrast w słońcu (PE-1, PE-2)
-    ciemny: "#16181B"  # ciemnoszare, nie czarne: mniej rażące przejścia przy jasnym tekście (Material, motyw ciemny)
-    uzycie: tło ekranu, pól tekstowych i paska dolnego
-    zrodlo: NFR-16, PE-1, PE-2
-  onSurface:
-    jasny: "#1A1C1E"   # prawie czarny; 17:1 na tle
-    ciemny: "#E4E5E7"  # jasnoszary zamiast czystej bieli, by tekst nie „świecił” na ciemnym tle
-    uzycie: tekst podstawowy, nagłówki, ikony i napisy statusów, oznaczeń wejść i uciążliwości
-    zrodlo: NFR-16, NFR-21
+    jasny: "#F5FAFC"   # bardzo jasny, lekko chłodny; białe są tylko kontenery grup
+    ciemny: "#161B1D"  # ciemnoszare, nie czarne: mniej rażące przejścia przy jasnym tekście (Material, motyw ciemny)
+    uzycie: nagłówek z polem wyszukiwania (V1), przypięty pasek czynności, pasek „Wstecz” po przewinięciu, tło pól tekstowych
+    zrodlo: NFR-16, styl „Karta miejsca”
+  surfaceContainerLowest:
+    jasny: "#FFFFFF"   # białe kontenery na szarym arkuszu zastępują linie podziału
+    ciemny: "#1E2427"
+    uzycie: kontenery grup („Wejścia”, „Winda i toaleta”, „Piętra”, stan pusty barier), pływające kontrolki mapy, legenda, chipy
+    zrodlo: NFR-16, styl „Karta miejsca”
+  surfaceContainerLow:
+    jasny: "#EFF4F6"
+    ciemny: "#1A1F21"
+    uzycie: pole wyszukiwania, pasek dolny nawigacji
+    zrodlo: styl „Karta miejsca”
+  surfaceContainer:
+    jasny: "#E8EEF0"   # tło arkusza: o ton ciemniejsze niż kontenery grup, by grupy odcinały się bez ramek
+    ciemny: "#0F1314"
+    uzycie: tło arkusza z kartą budynku (V2) i arkusza na mapie (V1)
+    zrodlo: styl „Karta miejsca”
   surfaceVariant:
-    jasny: "#EDF0F4"   # jasnoszare z lekkim chłodnym odcieniem; odróżnia ramkę od tła, ale granicę wyznacza obramowanie
-    ciemny: "#262A2F"
-    uzycie: tło ramek pozycji listy, ramki komunikatu i wskaźnika braku internetu
-    zrodlo: NFR-16
+    # W stylu „Karta miejsca” ten ton nazywa się surface-container-high.
+    jasny: "#DCE2E4"
+    ciemny: "#2A3033"
+    uzycie: tło fragmentu mapy przed wczytaniem, ramka komunikatu i wskaźnika braku internetu
+    zrodlo: NFR-16, styl „Karta miejsca”
+  onSurface:
+    jasny: "#161C1E"   # prawie czarny; ≥ 14:1 na każdym tle
+    ciemny: "#E8EEF0"  # jasnoszary zamiast czystej bieli, by tekst nie „świecił” na ciemnym tle
+    uzycie: tekst podstawowy, nazwa budynku, nagłówki grup, ikony i napisy uciążliwości oraz statusów zgłoszeń
+    zrodlo: NFR-16, NFR-21
   onSurfaceVariant:
-    jasny: "#3D4248"   # tekst drugorzędny wciąż ≥ 7:1, bo data i źródło przy wejściu są ważne (US17.3)
-    ciemny: "#C4C8CE"
-    uzycie: tekst drugorzędny (data i źródło przy wejściu, podpisy), ikony w pasku dolnym, zawsze z napisem
+    jasny: "#3A4549"   # tekst drugorzędny wciąż ≥ 7:1, bo źródło i data oceny wejść są ważne (US17.3)
+    ciemny: "#BCC9CD"
+    uzycie: tekst drugorzędny (źródło i data, „Zalecane, parter”, podpisy), napisy i ikony paska dolnego
     zrodlo: NFR-16, US17.3
   outline:
-    jasny: "#6B7178"   # ≥ 3:1 na obu tłach: ramka pola i pozycji listy jest widoczną granicą celu dotyku
-    ciemny: "#8C929A"
-    uzycie: obramowanie pól, ramek pozycji listy, przycisków drugorzędnych i pól wyboru
+    jasny: "#6A7579"   # ≥ 3:1 na każdym tle: ramka pola, chipu i przycisku obrysowanego wyznacza granicę celu dotyku
+    ciemny: "#8A969A"
+    uzycie: obramowanie pola wyszukiwania, chipów, przycisków obrysowanych i segmentów
     zrodlo: NFR-16 (WCAG 1.4.11)
   primary:
-    jasny: "#0A4680"   # ciemny niebieski: jedyny kolor akcentu
-    ciemny: "#A9C9F5"  # w ciemnym motywie jaśniejszy i mniej nasycony; nasycony niebieski na ciemnym tle drga
-    uzycie: wypełnienie czynności głównej, napis przycisku drugorzędnego, wskaźnik fokusu, wybrane pole wyboru
+    jasny: "#004E5E"   # ciemny morski: jedyny kolor akcentu
+    ciemny: "#85D1EA"  # w ciemnym motywie jaśniejszy i mniej nasycony; nasycony kolor na ciemnym tle drga
+    uzycie: symbol budynku, jedyny przycisk wypełniony na ekranie, przyciski tekstowe („Zgłoś problem”, „Pokaż na planie”), wskaźnik fokusu
     zrodlo: wymagania wspólne (czynność główna), NFR-16
   onPrimary:
     jasny: "#FFFFFF"
-    ciemny: "#0A2B4D"  # ciemny granat na jasnym niebieskim; biel dawałaby za mały kontrast
-    uzycie: napis i ikona na czynności głównej
+    ciemny: "#002933"  # ciemny morski na jasnym akcencie; biel dawałaby za mały kontrast
+    uzycie: napis i ikona na przycisku wypełnionym, np. „Sprawdź, którędy wejść”
     zrodlo: NFR-16
+  primaryContainer:
+    jasny: "#C3E9F6"   # tylko to, co wybrane: osoba widzi, gdzie jest
+    ciemny: "#0E4655"
+    uzycie: wybrane piętro, wybrany widok i pozycja paska dolnego, plakietka budynku
+    zrodlo: styl „Karta miejsca”
+  onPrimaryContainer:
+    jasny: "#001F27"
+    ciemny: "#D3F2FC"
+    uzycie: napis na wybranym elemencie i obwódka 2 dp wybranego piętra
+    zrodlo: NFR-16
+  secondaryContainer:
+    jasny: "#D5E7ED"
+    ciemny: "#2A434B"
+    uzycie: przyciski tonalne, np. „Zgłoś barierę”, „Pokaż na mapie”
+    zrodlo: styl „Karta miejsca”
+  onSecondaryContainer:
+    jasny: "#1C3640"
+    ciemny: "#D3EEF7"
+    uzycie: napis i ikona przycisku tonalnego
+    zrodlo: NFR-16
+  # Kontenery oznaczeń wejścia (decyzja 48 pkt 3). Znaczenie niesie kształt ikony i słowo;
+  # ten sam kształt mają znaczniki wejść na mapie. Kształt rysuje kolor `on…Container`.
+  statusDostepneContainer:
+    # Kształt: koło ze znakiem ✓, słowo „Dostępne”.
+    jasny: "#CDE8F0"   # spokojny morski
+    ciemny: "#1C4350"
+    uzycie: tło oznaczenia „Dostępne” przy wejściu i chipu „Wejście dostępne”
+    zrodlo: NFR-21, US2.1, decyzja 48
+  onStatusDostepneContainer:
+    jasny: "#00313C"
+    ciemny: "#D5F2FB"
+    uzycie: słowo „Dostępne” i ikona koła ze znakiem ✓
+    zrodlo: NFR-16, NFR-21
+  statusNiedostepneContainer:
+    # Kształt: ośmiokąt ze znakiem ✕, słowo „Niedostępne”.
+    jasny: "#F2DFE4"   # przygaszony szaroróżowy, nie czerwony
+    ciemny: "#4A2733"
+    uzycie: tło oznaczenia „Niedostępne” przy wejściu
+    zrodlo: NFR-21, US2.1, decyzja 48
+  onStatusNiedostepneContainer:
+    jasny: "#4A1B2A"
+    ciemny: "#FFDDE6"
+    uzycie: słowo „Niedostępne” i ikona ośmiokąta ze znakiem ✕
+    zrodlo: NFR-16, NFR-21
+  statusBrakDanychContainer:
+    # Kształt: romb ze znakiem ?, słowo „Brak danych”.
+    jasny: "#E3E5E6"   # neutralny szary
+    ciemny: "#33393C"
+    uzycie: tło oznaczenia „Brak danych” przy wejściu i w legendzie mapy
+    zrodlo: NFR-21, US2.1, decyzja 48
+  onStatusBrakDanychContainer:
+    jasny: "#2A2E30"
+    ciemny: "#E2E6E8"
+    uzycie: słowo „Brak danych” i ikona rombu ze znakiem ?
+    zrodlo: NFR-16, NFR-21
   error:
     # Ciemna czerwień tylko dla błędu walidacji: przy polu i w podsumowaniu nad formularzem
     # (C2, C6, C7, R2). Zawsze z pogrubionym tekstem, który mówi, co się stało i co zrobić
     # (wymagania wspólne fazy B). Błąd serwera, zapisu, logowania i brak internetu to zwykły
-    # komunikat: onSurface na surfaceVariant, bez czerwieni.
+    # komunikat: onSurface na surfaceVariant, bez czerwieni. Styl „Karta miejsca” nie ma
+    # formularzy, więc wartość zostaje z poprzedniej wersji pliku.
     jasny: "#8A0F18"
     ciemny: "#FFB3AE"  # jasny łososiowy; na ciemnym tle ≥ 7:1
-    uzycie: tekst błędu walidacji przy polu i nad formularzem, obramowanie pola z błędem; nigdy dla statusu, oznaczenia wejścia ani uciążliwości
+    uzycie: tekst błędu walidacji przy polu i nad formularzem, obramowanie pola z błędem; nigdy dla oznaczenia wejścia, statusu ani uciążliwości
     zrodlo: NFR-15 (WCAG 3.3.1), NFR-21
 
 # ---------------------------------------------------------------------------
@@ -86,18 +163,31 @@ kontrast:
     # NFR-16 i WCAG 1.4.11: ramki pól, ikony statusu, fokus, granica przycisku.
     komponent: 3.0
   pary:
-    - {kolor: onSurface, tlo: surface, rodzaj: tekst, gdzie: tekst podstawowy i nagłówki}
-    - {kolor: onSurface, tlo: surfaceVariant, rodzaj: tekst, gdzie: tekst w ramce pozycji i komunikatu}
-    - {kolor: onSurfaceVariant, tlo: surface, rodzaj: tekst, gdzie: data i źródło, podpisy}
-    - {kolor: onSurfaceVariant, tlo: surfaceVariant, rodzaj: tekst, gdzie: data i źródło w ramce}
-    - {kolor: onPrimary, tlo: primary, rodzaj: tekst, gdzie: napis czynności głównej}
-    - {kolor: primary, tlo: surface, rodzaj: tekst, gdzie: napis przycisku drugorzędnego}
-    - {kolor: primary, tlo: surfaceVariant, rodzaj: tekst, gdzie: przycisk drugorzędny w ramce}
-    - {kolor: error, tlo: surface, rodzaj: tekst, gdzie: błąd przy polu}
-    - {kolor: error, tlo: surfaceVariant, rodzaj: tekst, gdzie: błąd przy polu w ramce}
-    - {kolor: outline, tlo: surface, rodzaj: komponent, gdzie: obramowanie pola i ramki}
-    - {kolor: outline, tlo: surfaceVariant, rodzaj: komponent, gdzie: obramowanie pola wewnątrz ramki}
-    - {kolor: primary, tlo: surface, rodzaj: komponent, gdzie: granica czynności głównej, fokus, wybrane pole}
+    - {kolor: onSurface, tlo: surface, rodzaj: tekst, gdzie: "nagłówek V1, pasek czynności, pola"}
+    - {kolor: onSurface, tlo: surfaceContainer, rodzaj: tekst, gdzie: "nazwa budynku i nagłówki grup na arkuszu"}
+    - {kolor: onSurface, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "treść w kontenerach grup, kontrolki mapy, legenda"}
+    - {kolor: onSurface, tlo: surfaceContainerLow, rodzaj: tekst, gdzie: "pole wyszukiwania, pasek dolny"}
+    - {kolor: onSurface, tlo: surfaceVariant, rodzaj: tekst, gdzie: "komunikat i wskaźnik braku internetu"}
+    - {kolor: onSurfaceVariant, tlo: surfaceContainer, rodzaj: tekst, gdzie: "źródło i data na arkuszu"}
+    - {kolor: onSurfaceVariant, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "„Zalecane, parter”, podpis mapy"}
+    - {kolor: onSurfaceVariant, tlo: surfaceContainerLow, rodzaj: tekst, gdzie: "podpowiedź w polu, napisy paska dolnego"}
+    - {kolor: onSurfaceVariant, tlo: surfaceVariant, rodzaj: tekst, gdzie: "data przy wskaźniku braku internetu"}
+    - {kolor: primary, tlo: surfaceContainer, rodzaj: tekst, gdzie: "symbol budynku na arkuszu"}
+    - {kolor: primary, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "przyciski tekstowe w kontenerach grup"}
+    - {kolor: primary, tlo: surface, rodzaj: tekst, gdzie: "„Wstecz”, przycisk obrysowany"}
+    - {kolor: onPrimary, tlo: primary, rodzaj: tekst, gdzie: "przycisk wypełniony"}
+    - {kolor: onPrimaryContainer, tlo: primaryContainer, rodzaj: tekst, gdzie: "wybrane piętro, plakietka budynku"}
+    - {kolor: onSecondaryContainer, tlo: secondaryContainer, rodzaj: tekst, gdzie: "przycisk tonalny"}
+    - {kolor: onStatusDostepneContainer, tlo: statusDostepneContainer, rodzaj: tekst, gdzie: "„Dostępne” i koło ze znakiem ✓"}
+    - {kolor: onStatusNiedostepneContainer, tlo: statusNiedostepneContainer, rodzaj: tekst, gdzie: "„Niedostępne” i ośmiokąt ze znakiem ✕"}
+    - {kolor: onStatusBrakDanychContainer, tlo: statusBrakDanychContainer, rodzaj: tekst, gdzie: "„Brak danych” i romb ze znakiem ?"}
+    - {kolor: error, tlo: surface, rodzaj: tekst, gdzie: "błąd przy polu"}
+    - {kolor: error, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "błąd przy polu w kontenerze grupy"}
+    - {kolor: outline, tlo: surface, rodzaj: komponent, gdzie: "obramowanie pola i przycisku obrysowanego"}
+    - {kolor: outline, tlo: surfaceContainer, rodzaj: komponent, gdzie: "obramowanie chipu na arkuszu"}
+    - {kolor: outline, tlo: surfaceContainerLowest, rodzaj: komponent, gdzie: "obramowanie chipu w kontenerze"}
+    - {kolor: outline, tlo: surfaceVariant, rodzaj: komponent, gdzie: "obramowanie ramki komunikatu"}
+    - {kolor: primary, tlo: surface, rodzaj: komponent, gdzie: "granica przycisku wypełnionego, fokus"}
 
 # ---------------------------------------------------------------------------
 # Typografia — rozmiary w sp, żeby tekst rósł z ustawieniem czcionki (NFR-20, WCAG 1.4.4).
