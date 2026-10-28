@@ -7,7 +7,7 @@
 /**
  * Pakiet bazowy serwera Dostępny Kampus.
  *
- * <p>Moduły serwera powstaną jako jego podpakiety.</p>
+ * <p>Każdy bezpośredni podpakiet jest modułem serwera.</p>
  *
  * @since 0.1.0
  */
