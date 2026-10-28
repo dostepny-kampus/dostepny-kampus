@@ -1,6 +1,6 @@
 # Architektura
 
-Ta część pokazuje, z czego składa się system i dlaczego wybraliśmy takie rozwiązania. Diagramy są w notacji C4 [1], decyzje w formacie MADR [3].
+Ta część pokazuje, z czego składa się system i dlaczego wybraliśmy takie rozwiązania. Diagramy są w notacji C4 [1] i powstają z biblioteki C4-PlantUML [2], decyzje w formacie MADR [3].
 
 | Strona | Co pokazuje |
 | --- | --- |
