@@ -38,7 +38,9 @@ Przyjęcie wymaga też, by Weryfikator oceniał aktualną wersję zgłoszenia (B
 | orientacja i informacja („Napisy i oznaczenia”) | TB-21…TB-25 | tak | Numery sal, kierunki i pętla indukcyjna w sali dotyczą piętra. |
 | inne („Coś innego”) | TB-26…TB-29 | nie | Osoba nie rozpoznała bariery, więc drugie pytanie tylko ją obciąża. TB-26 leży przy parkingu, a TB-29 nie ma stałego miejsca. |
 
-Gdy przy wyborze grupy pozycja nie jest jeszcze znana, aplikacja pyta jak w konturze, bo w budynku telefon często dłużej ustala pozycję. Jeśli przy wysłaniu pozycja leży poza konturem, zgłoszenie zapisuje się bez piętra. Brakujące albo błędne piętro uzupełnia zmiana zgłoszenia przyjętego (BR-18).
+Gdy przy wyborze grupy pozycja nie jest jeszcze znana, aplikacja pyta jak w konturze, bo w budynku telefon często dłużej ustala pozycję. Budynek nie jest wtedy znany, więc przyciski są jak w budynku podstawowym. Przypisanie numeru do etykiety piętra budynku szczegółowego ustalimy w fazie implementacji.
+
+Jeśli przy wysłaniu pozycja leży poza konturem, zgłoszenie zapisuje się bez piętra. Brakujące albo błędne piętro uzupełnia zmiana zgłoszenia przyjętego (BR-18).
 
 ## Publikacja, postęp inwentaryzacji i eksport
 
