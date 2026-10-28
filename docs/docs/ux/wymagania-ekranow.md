@@ -60,7 +60,7 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | Stan | Komunikat |
 | --- | --- |
 | Brak sieci | „Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.” Przycisk „Spróbuj ponownie”. |
-| Błąd serwera | „Serwer chwilowo nie odpowiada, a dane w telefonie są bezpieczne. Spróbuj ponownie za kilka minut.” Przycisk „Spróbuj ponownie” (NFR-50, PW-10) |
+| Błąd serwera | „Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut.” Przycisk „Spróbuj ponownie” (NFR-50, PW-10) |
 | Brak uprawnień | Gdy rolę odebrano w trakcie pracy: „Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.” Przycisk „Wróć do mapy” (V1). (US14.1, PW-10) |
 
 ## Gość niezalogowany i Odwiedzający

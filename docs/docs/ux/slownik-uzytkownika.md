@@ -223,7 +223,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | --- | --- | --- | --- |
 | każdy ekran, brak sieci | „Brak internetu.” Obok, gdy dane są z telefonu: „Dane z 12.11.2026.” | — | PW-4 |
 | ekrany R1, R2, K1–K3, brak sieci | „Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.” | „Spróbuj ponownie” | — |
-| ekrany R1, R2, K1–K3, błąd serwera | „Serwer chwilowo nie odpowiada, a dane w telefonie są bezpieczne. Spróbuj ponownie za kilka minut.” | „Spróbuj ponownie” | PW-10 |
+| ekrany R1, R2, K1–K3, błąd serwera | „Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut.” | „Spróbuj ponownie” | PW-10 |
 | ekrany R1, R2, K1–K3, brak uprawnień | „Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.” | „Wróć do mapy” | PW-10 |
 
 ### Gość i Odwiedzający
