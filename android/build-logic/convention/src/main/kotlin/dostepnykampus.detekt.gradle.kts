@@ -1,3 +1,9 @@
+/*
+ * Dostępny Kampus
+ * Author: Vladyslav Yevkov
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+
 import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.extensions.FailOnSeverity
 

@@ -1,3 +1,6 @@
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 """Dostępny Kampus — kontrola tokenów wizualnych (kontrast WCAG 2.1, daltonizm, typografia, wymiary) i tabele strony tokenów. Author: Vladyslav Yevkov. Version: 0.1.0. Copyright (c) 2026 Vladyslav Yevkov."""
 
 from __future__ import annotations

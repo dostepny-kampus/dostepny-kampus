@@ -1,3 +1,6 @@
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 """Dostępny Kampus — pełna kontrola dokumentacji (aktualność obrazów, skróty, Vale, markdownlint, LanguageTool, ID, macierz śledzenia, kontrast tokenów, MkDocs). Author: Vladyslav Yevkov. Version: 0.4.1. Copyright (c) 2026 Vladyslav Yevkov."""
 
 from __future__ import annotations
