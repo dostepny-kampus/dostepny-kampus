@@ -561,7 +561,7 @@ Uciążliwości ani typu się nie wybiera: przechodzą z poprzedniego zgłoszeni
 | Lista zgłoszeń „wysłane”: typ albo grupa barier, budynek, rodzaj, data wysłania | dane | US10.4, BR-14 | — |
 | Przełącznik „Lista” i „Mapa”; lista daje tę samą informację | czynność | UC14, NFR-19 | — |
 | Napis „© OpenStreetMap contributors” na mapie | dane | NFR-37 | — |
-| Sekcja „Wzięte przeze mnie” ze zgłoszeniami „w weryfikacji” tego Weryfikatora | czynność | BR-11, UC14 2b | R2 |
+| Sekcja „Wzięte przeze mnie” ze zgłoszeniami „w weryfikacji” tego Weryfikatora; w każdej pozycji „Otwórz” z ikoną | czynność | BR-11, UC14 2b, NFR-21 | R2 |
 | „Weź do sprawdzenia” | czynność główna | US10.4, BR-11 | R2 |
 
 Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia wejścia, lista nie pokazuje (US10.5, BR-4).
@@ -592,9 +592,11 @@ Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia we
 | Zgłoszenie szybkie: wybór „Typ bariery” i „Uciążliwość” z wartościami „Utrudnienie”, „Tylko z pomocą”, „Blokada” | czynność | US10.3, BR-14, PW-13 | — |
 | „Zasłoń twarz lub tablicę” na zdjęciu | czynność | BR-15, NFR-25 | — |
 | Zmiana oznaczenia wejścia: obecne oznaczenie z datą i źródłem, wybrane oznaczenie, nowe zdjęcie | dane | US17.2, BR-24 | — |
+| Zmiana oznaczenia wejścia: tekstem i ikoną, czy oznaczenie jest „Bez zmian od wysłania”, czy „Zmienione po wysłaniu” przez inną przyjętą zmianę | dane | BR-23, BR-24, NFR-21 | — |
 | „Bariera usunięta”: zdjęcie poprzedniego zgłoszenia obok nowego | dane | US10.6, BR-19 | — |
+| „Bariera usunięta”: „Poprzednie zgłoszenie:” i jego status tekstem i ikoną, np. „Archiwalne” | dane | BR-19, BR-23, NFR-21 | — |
 | „Przyjmij” | czynność główna | US10, US10.6 | R1 |
-| „Odrzuć” z obowiązkowym polem „Powód odrzucenia”; gotowe powody „Duplikat” ze wskazaniem wcześniejszego zgłoszenia i „Nieaktualne” | czynność | US10.2, BR-13, BR-16, BR-23 | R1 |
+| „Odrzuć” z obowiązkowym polem „Powód odrzucenia”; gotowe powody „Duplikat” ze wskazaniem wcześniejszego zgłoszenia i „Nieaktualne” oraz „Inny powód” z polem „Opisz powód dla autora” | czynność | US10.2, BR-13, BR-16, BR-23, NFR-18 | R1 |
 
 | Stan | Co widać |
 | --- | --- |
@@ -603,7 +605,7 @@ Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia we
 | Ładowanie | tekst od razu, zdjęcia z napisem „Wczytujemy zdjęcie…” |
 | Błąd walidacji — przyjęcie | „Ustal typ bariery i uciążliwość, aby przyjąć zgłoszenie.” (US10.3) |
 | Błąd walidacji — odrzucenie | „Podaj powód odrzucenia, aby autor wiedział, co poprawić.” (US10.2) |
-| Nowa wersja | „Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.” (BR-3, UC14 5e, PW-10) |
+| Nowa wersja | „Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.” Pod komunikatem „Zmienione:” i nazwy zmienionych pól, np. „Zmienione: uciążliwość” (BR-3, BR-15, UC14 5e, PW-10) |
 | Brak sieci | „Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«. Połącz się z internetem i podejmij decyzję ponownie.” (BR-11, PW-10) |
 | Błąd serwera, brak uprawnień | stany wspólne |
 
@@ -625,9 +627,9 @@ Dostępność: podobne zgłoszenia mają odległość tekstem, np. „5 m”, a 
 | Lista budynków z symbolem | dane | US11.1 | — |
 | Budynek szczegółowy: „4 z 5 pięter, 80%” | dane | US11.1, US11.2, BR-21 | — |
 | Budynek podstawowy: „Obejrzany” tekstem i ikoną albo „Nieobejrzany” samym tekstem | dane | US11.1, PW-11 | — |
-| Liczby: „Czeka na sprawdzenie: 3” i „Przyjęte: 12” | dane | US11.1, BR-21 | — |
+| Liczby: „Czeka na sprawdzenie: 3” i „Przyjęte: 4”, jak w scenariuszu `@US11.1` | dane | US11.1, BR-21 | — |
 | Budynek szczegółowy: „Wejścia sprawdzone na miejscu: 4 z 6” | dane | US11.4, BR-24, PW-3 | — |
-| Dotknięcie budynku | czynność główna | US11.3 | C5 |
+| Dotknięcie budynku; w ramce „Otwórz” z ikoną | czynność główna | US11.3, NFR-21 | C5 |
 | „Odśwież” i godzina odczytu „Stan z 10:42” | czynność | US11.2 | — |
 
 Sortowania ani filtrów nie ma, bo nie wynikają z żadnego kryterium (decyzja 16). Wiersz o wejściach pozwala odczytać miarę M-1 z [wizji](../biznes/wizja.md) bez liczenia na kartach budynków (decyzja 38). Wejście liczy się dopiero po przyjęciu zmiany oznaczenia, bo wtedy dostaje źródło „obchód” (BR-24).

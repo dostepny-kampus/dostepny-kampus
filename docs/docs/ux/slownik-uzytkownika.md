@@ -169,16 +169,21 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | „Popraw zgłoszenie”, „Wyślij do sprawdzenia” | bez zmian | Zbierający | „Sprawdzenie” zamiast „weryfikacji”, jak w R1. | 10.5 |
 | kolejka weryfikacji (R1) | przycisk i nagłówek „Zgłoszenia do sprawdzenia” | Weryfikator | Nagłówek powtarza napis przycisku z L2. | 10.5 |
 | „Wzięte przeze mnie”, „Weź do sprawdzenia” | bez zmian | Weryfikator | — | 10.5 |
+| otwarcie pozycji listy (R1 „Wzięte przeze mnie”, K1 budynek) | „Otwórz” z ikoną `chevron-right` | Weryfikator, Koordynator | Ramka bez znaku nie wygląda na coś, co da się dotknąć (recenzja B5, Nielsen 6). | 10.5, 10.7 |
 | przełącznik „Lista / Mapa” (R1) | „Lista”, „Mapa” | Weryfikator | bez zmian | 10.5 |
 | nagłówek R2 | „Sprawdzenie zgłoszenia” | Weryfikator | bez zmian | 10.5 |
 | podobne zgłoszenie | „Podobne zgłoszenia do 10 m” | Weryfikator | Krócej niż „w promieniu 10 m”. | 10.4 |
 | duplikat, „nieaktualne” | „Duplikat”, „Nieaktualne” | Weryfikator | bez zmian | 10.4 |
+| własny powód odrzucenia (R2) | opcja „Inny powód”, pole „Opisz powód dla autora” | Weryfikator | Etykieta mówi, co wpisać i dla kogo (recenzja B5). | 10.5 |
+| status poprzedniego zgłoszenia (R2, „bariera usunięta”) | „Poprzednie zgłoszenie:” i status, np. „Archiwalne” | Weryfikator | Bez statusu nie widać, że zmiana jest nieaktualna (BR-23). | 10.5 |
+| oznaczenie wejścia od wysłania zmiany (R2) | „Bez zmian od wysłania” z ikoną `link-intact`, „Zmienione po wysłaniu” z ikoną `link-broken` | Weryfikator | Mówi, czy zmiana dotyczy obecnego oznaczenia (BR-24). | 10.5 |
+| zmienione pola nowej wersji (R2) | „Zmienione: uciążliwość” | Weryfikator | Weryfikator nie szuka różnicy sam (BR-3). | 10.5 |
 | „Przyjmij”, „Odrzuć”, powód odrzucenia | „Przyjmij”, „Odrzuć”, pole „Powód odrzucenia” | Weryfikator | bez zmian | 10.5 |
 | zasłonięcie twarzy albo tablicy | „Zasłoń twarz lub tablicę” | Weryfikator | Czasownik na przycisku. | 10.5 |
 | pseudonim autora | „Zbierający, Autor 17” | Weryfikator | bez zmian | 10.5 |
 | postęp inwentaryzacji | „Postęp inwentaryzacji” | Koordynator | bez zmian | 10.7 |
 | postęp budynku | „4 z 5 pięter, 80%” | Koordynator | bez zmian | 10.7 |
-| liczby zgłoszeń w K1 | „Czeka na sprawdzenie: 3”, „Przyjęte: 12” | Koordynator | bez zmian | 10.7 |
+| liczby zgłoszeń w K1 | „Czeka na sprawdzenie: 3”, „Przyjęte: 4” | Koordynator | bez zmian; liczby jak w scenariuszu `@US11.1` | 10.7 |
 | źródło „obchód” w K1 | „Wejścia sprawdzone na miejscu: 4 z 6” | Koordynator | Te same słowa co przy wejściu na karcie budynku. | 10.7 |
 | „Odśwież” | „Odśwież” i „Stan z 10:42” | Koordynator | Godzina odczytu (recenzja B3, Nielsen 1). | 10.7 |
 | zaproszenie | przycisk i nagłówek K2 „Zaproś osobę”, przycisk „Wyślij zaproszenie” | Koordynator | Nagłówek powtarza napis przycisku z L2. | 10.4 |
@@ -321,6 +326,9 @@ Ikony pochodzą z zestawu OpenIconic dostępnego w PlantUML Salt [3], [4]. Każd
 | status „odrzucone” | `circle-x` | „Odrzucone” | krzyżyk w kole: decyzja na nie |
 | status „archiwalne” | `box` | „Archiwalne” | pudło na stare dokumenty |
 | znacznik „obejrzane” | `task` | „Obejrzane” | odhaczona pozycja na liście kontrolnej |
+| otwarcie pozycji listy (R1, K1) | `chevron-right` | „Otwórz” | strzałka w prawo: dalej, do szczegółów |
+| oznaczenie wejścia bez zmian od wysłania zmiany (R2) | `link-intact` | „Bez zmian od wysłania” | całe ogniwo: zmiana dotyczy obecnego oznaczenia |
+| oznaczenie wejścia zmienione po wysłaniu zmiany (R2) | `link-broken` | „Zmienione po wysłaniu” | przerwane ogniwo: zmiana dotyczy oznaczenia, którego już nie ma |
 
 Zasady ikon:
 
@@ -328,7 +336,7 @@ Zasady ikon:
 | --- | --- |
 | Jedna ikona ma jedno znaczenie. | `question-mark` oznacza tylko pomoc, dlatego „Brak danych” ma `minus`. Lupa nie występuje, bo kojarzy się z wyszukiwaniem. |
 | Ikona tylko tam, gdzie wymaga jej NFR-21 albo wymagania wspólne, oraz na pasku dolnym. | Status, oznaczenie wejścia, uciążliwość, znacznik i wskaźnik sieci mają ikonę. Pasek dolny ma ikony, bo widać go na 5 ekranach i osoba uczy się ich raz. „Zrób zdjęcie” powtarza ikonę paska. |
-| Reszta elementów jest bez ikony. | „Wstecz”, przyciski mapy, 6 grup barier, wszystkie przyciski czynności, „Nieobejrzane”. Słowo jest dla PE-1 jaśniejsze niż strzałka albo symbol [6]. |
+| Reszta elementów jest bez ikony. | „Wstecz”, przyciski mapy, 6 grup barier, przyciski czynności, „Nieobejrzane”. Słowo jest dla PE-1 jaśniejsze niż strzałka albo symbol [6]. Wyjątek: „Otwórz” w ramkach R1 i K1, gdzie ikona odróżnia otwarcie pozycji od czynności na niej (recenzja B5). |
 | Grupy barier w V4 są bez ikon. | OpenIconic nie ma ikon toalety, drzwi ani chodnika, a ikona na siłę myli. US4.3 wymaga tylko dużych przycisków (PW-7). |
 
 ### Udział ikon
@@ -351,12 +359,12 @@ Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk,
 | C5 Obejrzane piętra | 10 | 2 | 20% | wskaźnik sieci, znacznik |
 | C6 Zmień oznaczenie wejścia | 12 | 5 | 42% | wskaźnik sieci, obecne oznaczenie, „Dostępne”, „Niedostępne”, „Zrób zdjęcie” |
 | C7 Zgłoś, że bariery nie ma | 8 | 2 | 25% | wskaźnik sieci, „Zrób zdjęcie” |
-| R1 Zgłoszenia do sprawdzenia | 8 | 1 | 13% | wskaźnik sieci |
-| R2 Sprawdzenie zgłoszenia | 16 | 4 | 25% | wskaźnik sieci, uciążliwość, status podobnych, oznaczenie |
-| K1 Postęp inwentaryzacji | 11 | 2 | 18% | wskaźnik sieci, znacznik |
+| R1 Zgłoszenia do sprawdzenia | 9 | 2 | 22% | wskaźnik sieci, „Otwórz” |
+| R2 Sprawdzenie zgłoszenia | 18 | 5 | 28% | wskaźnik sieci, uciążliwość, status podobnych, oznaczenie, status poprzedniego zgłoszenia albo oznaczenia |
+| K1 Postęp inwentaryzacji | 12 | 3 | 25% | wskaźnik sieci, znacznik, „Otwórz” |
 | K2 Zaproś osobę | 6 | 1 | 17% | wskaźnik sieci |
 | K3 Pobierz eksport | 6 | 1 | 17% | wskaźnik sieci |
-| **Razem** | **242** | **58** | **24%** | — |
+| **Razem** | **246** | **61** | **25%** | — |
 
 Tabela liczy każdy ekran w stanie typowym: bez sieci, z jednym wejściem i jedną barierą. V3 ma mało treści, więc jego udział zależy od stanu:
 
@@ -367,7 +375,7 @@ Tabela liczy każdy ekran w stanie typowym: bez sieci, z jednym wejściem i jedn
 | brak wejścia dostępnego albo brak danych, z siecią | 7 | 4 | 57% | pasek (4) |
 | brak wejścia dostępnego albo brak danych, bez sieci | 8 | 5 | 63% | wskaźnik sieci, pasek (4) |
 
-Limit kursu, najwyżej 50% ikon, mierzymy dla całego interfejsu i dla typowego stanu każdego ekranu. Cały interfejs ma 24%, a najwięcej w stanie typowym ma V3, 47%. Stany V3 powyżej 50% to świadomy wyjątek.
+Limit kursu, najwyżej 50% ikon, mierzymy dla całego interfejsu i dla typowego stanu każdego ekranu. Cały interfejs ma 25%, a najwięcej w stanie typowym ma V3, 47%. Stany V3 powyżej 50% to świadomy wyjątek.
 
 Oznaczenie wejścia i wskaźnik sieci zawsze mają tekst i ikonę (NFR-21 i kryterium WCAG o użyciu koloru [5]). Pasek dolny wygląda tak samo na każdym ekranie. Nie usuwamy tych ikon, żeby zmieścić się w limicie, bo każda stoi obok tekstu i tekst niesie znaczenie sam.
 
