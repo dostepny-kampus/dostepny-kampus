@@ -244,7 +244,7 @@ Czynność główna: „Zrób zdjęcie”.
 
 ![Makieta V4, krok 1 z 3 po powrocie z kroku 2: miniatura zdjęcia, przypomnienie o twarzach i tablicach, pogrubiony przycisk Dalej i zwykły Zrób nowe zdjęcie](../../_generated/m-v4-krok-1-zdjecie.svg)
 
-Czynność główna: „Dalej”, które prowadzi znowu do kroku 2 bez nowego zdjęcia.
+Czynność główna: „Dalej”. Przycisk prowadzi znowu do kroku 2 bez nowego zdjęcia.
 
 | Element | AC/BR/NFR |
 | --- | --- |
