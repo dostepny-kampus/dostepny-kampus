@@ -69,7 +69,7 @@ Funkcja: Zgłoszenie szybkie
     Oraz Odwiedzający widzi potwierdzenie, że zgłoszenie trafi do weryfikacji
 
   @BR-14
-  Szablon scenariusza: Budynek zgłoszenia szybkiego przypisuje system, a piętro zostaje puste
+  Szablon scenariusza: Budynek zgłoszenia szybkiego przypisuje system, a przy wejściu piętro zostaje puste
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz stoi <miejsce>
     Jeżeli wyśle zgłoszenie szybkie z grupą barier „wejście i drzwi”
@@ -81,6 +81,39 @@ Funkcja: Zgłoszenie szybkie
       | miejsce                                                        | budynek               |
       | w budynku C-13                                                 | ma budynek C-13       |
       | na chodniku przed wejściem głównym A-1, poza konturem budynku  | jest „poza budynkiem” |
+
+  @US4.5 @BR-14
+  Szablon scenariusza: Pytanie o piętro tylko w budynku i przy grupie, która go wymaga
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz zrobił zdjęcie bariery, stojąc <miejsce>
+    Jeżeli wybierze grupę barier <grupa>
+    Wtedy <pytanie>
+    Oraz to nadal krok 2 z 3
+
+    Przykłady:
+      | miejsce                              | grupa                 | pytanie                                                 |
+      | w budynku D-2                        | „komunikacja pionowa” | widzi pytanie o piętro z etykietami pięter z danych PWr |
+      | w budynku B-4                        | „toalety”             | widzi pytanie o piętro z przyciskami parter, 1, 2       |
+      | w budynku C-13                       | „inne”                | przechodzi do kroku 3 bez pytania o piętro              |
+      | na chodniku przed A-1, poza konturem | „komunikacja pozioma” | przechodzi do kroku 3 bez pytania o piętro              |
+
+  @US4.5
+  Scenariusz: Odpowiedź „Nie wiem” zostawia piętro puste i pozwala wysłać zgłoszenie
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz w budynku D-2 wybrał grupę barier „komunikacja pionowa” i widzi pytanie o piętro
+    Jeżeli wybierze „Nie wiem”
+    Oraz wyśle zgłoszenie
+    Wtedy zgłoszenie ma budynek D-2
+    Oraz zgłoszenie nie ma piętra
+    Oraz zgłoszenie powstało po 3 krokach
+
+  @US4.5
+  Scenariusz: Wybrane piętro trafia do zgłoszenia
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz w budynku B-4 wybrał grupę barier „toalety” i widzi pytanie o piętro
+    Jeżeli wybierze piętro 2
+    Oraz wyśle zgłoszenie
+    Wtedy zgłoszenie ma budynek B-4 i piętro 2
 
   @US4.2 @BR-9
   Scenariusz: Zgłoszenie szybkie bez sieci zapisuje się w telefonie
