@@ -48,9 +48,9 @@ C2 --> C1 : „Zmień miejsce”
 C2 --> C3 : „Zapisz”
 
 C3 --> C1 : „Zmierz i zgłoś\nbarierę”; nieaktualne\npo usunięciu bariery
-C3 --> C2 : zgłoszenie do poprawy;\n„Wyślij do\naktualnego zgłoszenia”
-C3 --> C6 : zmiana oznaczenia\ndo poprawy; „Wyślij do\naktualnego zgłoszenia”
-C3 --> C7 : „bariera usunięta”\ndo poprawy
+C3 --> C2 : zgłoszenie do poprawy;\n„Wyślij ponownie”
+C3 --> C6 : zmiana oznaczenia\ndo poprawy;\n„Wyślij ponownie”
+C3 --> C7 : „bariera usunięta”\ndo poprawy;\n„Wyślij ponownie”
 C3 --> C4 : „Dwie wersje:\nwybierz jedną”;\nstan synchronizacji
 
 C4 --> C3 : wybór wersji;\n„Zdecyduję później”

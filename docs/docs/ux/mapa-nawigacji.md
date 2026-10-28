@@ -145,8 +145,9 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | C3 | dotknięcie zgłoszenia przed decyzją albo odrzuconego | C2 | RO-ZBI | US8.3, BR-3 |
 | C3 | to samo przy zmianie oznaczenia wejścia | C6 | RO-ZBI | US17.2 |
 | C3 | to samo przy „bariera usunięta” | C7 | RO-ZBI | US8.4 |
-| C3 | „Wyślij do aktualnego zgłoszenia” | C2 | RO-ZBI | BR-23 |
-| C3 | to samo przy zmianie oznaczenia wejścia | C6 | RO-ZBI | BR-23, BR-24 |
+| C3 | „Wyślij ponownie” przy zmianie odrzuconej jako „nieaktualne” | C2 z aktualną wersją zgłoszenia | RO-ZBI | BR-23 |
+| C3 | to samo przy zmianie oznaczenia wejścia | C6 z bieżącym oznaczeniem | RO-ZBI | BR-23, BR-24 |
+| C3 | to samo przy „bariera usunięta” | C7 z aktualną wersją zgłoszenia | RO-ZBI | BR-23, US8.4 |
 | C3 | przy „nieaktualne” po usunięciu bariery: „Zmierz i zgłoś barierę” | C1 | RO-ZBI | BR-23 |
 | C3 | „Zmierz i zgłoś barierę”, także w stanie pustym | C1 | RO-ZBI | US6 |
 | C3, stan „błąd” | „Spróbuj ponownie” | C3 | RO-ZBI | NFR-50 |

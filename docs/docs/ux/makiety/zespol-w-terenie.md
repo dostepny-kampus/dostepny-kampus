@@ -175,7 +175,7 @@ Czynność główna: „Wyślij ponownie”.
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.”; przy zmianie oznaczenia wejścia: „Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.” | BR-23, BR-24, PW-14 |
-| „Wyślij ponownie”; prowadzi do C2, a przy zmianie oznaczenia wejścia do C6 | BR-23, BR-24, PW-14 |
+| „Wyślij ponownie”; prowadzi do C2, przy zmianie oznaczenia wejścia do C6, a przy „bariera usunięta” do C7, zawsze z aktualną wersją zgłoszenia | BR-23, BR-24, PW-14 |
 | „Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.” i „Zmierz i zgłoś barierę” | BR-23, PW-12 |
 
 ### Pusta lista
