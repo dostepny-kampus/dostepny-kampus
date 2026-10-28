@@ -1,4 +1,4 @@
-' Fragmenty makiet grupy „odwiedzający” (V1, V4), których brak w _wspolne.iuml.
+' Fragmenty makiet grupy „odwiedzający” (V1, V4, V5), których brak w _wspolne.iuml.
 ' Rozszerzenie .iuml: scripts/render.py nie renderuje tego pliku osobno.
 ' Dołączać po _wspolne.iuml, bo korzysta z jego funkcji.
 ' Propozycja: przenieść do _wspolne.iuml, gdy użyją ich inne grupy.
