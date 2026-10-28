@@ -9,6 +9,8 @@ comments:
 
 ktlint:
   code_style: 'ktlint_official'
+  FunctionSignature:
+    functionBodyExpressionWrapping: 'multiline'
   FunctionName:
     # Dubluje naming>FunctionNaming, a w detekt nie ma opcji pominięcia @Composable,
     # którą wymaga dokumentacja compose-rules. Nazwy funkcji sprawdza FunctionNaming.
