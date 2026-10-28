@@ -66,7 +66,7 @@ Czynność główna: „Dalej”. Plan i mapa dzielą jedną powierzchnię, wię
 
 | Wariant bez osobnej makiety | Co widać |
 | --- | --- |
-| Wybrana „Mapa” | w miejscu wyboru piętra, planu i podpisu PWr mapa z tym samym punktem i podpisem „© OpenStreetMap contributors” w ramce (US6.4, NFR-37), tak jak na makiecie „Po pomiarze: podpowiedź budynku”. Te same cztery przyciski mają podpis „Przesuń punkt na mapie:”. Wybrane piętro zostaje po powrocie do planu. |
+| Wybrana „Mapa” | w miejscu wyboru piętra, planu i podpisu PWr mapa z tym samym punktem i podpisem „© OpenStreetMap contributors” w ramce (US6.4, NFR-37). Ten blok rysuje makieta „Po pomiarze: podpowiedź budynku”. Te same cztery przyciski mają podpis „Przesuń punkt na mapie:”. Wybrane piętro zostaje po powrocie do planu. |
 
 ### Szukanie satelitów
 
