@@ -1,0 +1,60 @@
+@startsalt
+' R2 Sprawdzenie zgłoszenia, stan "odrzucenie jako duplikat": 2 m dalej jest przyjęte
+' zgłoszenie tej samej bariery (BR-13). Weryfikator wskazuje wcześniejsze zgłoszenie.
+!include _wspolne.iuml
+' Fragmenty lokalne R2 (propozycja do _wspolne.iuml, zob. opis PR).
+' Decyzja: „Przyjmij” jako czynność główna, pod nią powód odrzucenia i „Odrzuć”.
+' $powod: "" (nic nie wybrano), "Duplikat" albo "Nieaktualne".
+!procedure $r2_decyzja($powod="")
+..
+$przycisk_glowny("Przyjmij")
+<b>Powód odrzucenia</b>
+!if $powod == "Duplikat"
+(X) Duplikat
+{
+$dk_spacje(3) | Wcześniejsze zgłoszenie:
+$dk_spacje(3) | (X) schody przy wejściu, 2 m
+$dk_spacje(3) | ( ) próg, 5 m
+}
+!else
+( ) Duplikat
+!endif
+!if $powod == "Nieaktualne"
+(X) Nieaktualne
+!else
+( ) Nieaktualne
+!endif
+"$dk_spacje(30)"
+$przycisk("Odrzuć")
+!endprocedure
+' Zdjęcie z przyciskiem zasłaniania twarzy i tablic (BR-15, NFR-25).
+!procedure $r2_zdjecie($opis)
+$obraz($opis)
+$przycisk("Zasłoń twarz lub tablicę")
+!endprocedure
+$ekran_poczatek()
+$naglowek("Sprawdzenie zgłoszenia")
+<b>schody przy wejściu</b>
+$blokada()
+Budynek A-1, piętro <i>[piętro]</i>
+Miejsce: <i>[punkt z pomiaru]</i>
+Zgłoszenie z pomiaru
+$r2_zdjecie("zdjęcie bariery")
+Autor: Zbierający, Autor <i>[nr]</i>
+$sekcja("Podobne zgłoszenia do 10 m")
+{+
+<b>schody przy wejściu</b>$dk_spacje(12)
+$blokada()
+$obraz("zdjęcie")
+2 m, piętro <i>[piętro]</i>
+$przyjete()
+}
+{+
+<b>próg</b>$dk_spacje(26)
+$obraz("zdjęcie")
+5 m, piętro <i>[inne piętro]</i>
+$przyjete()
+}
+$r2_decyzja("Duplikat")
+$ekran_koniec()
+@endsalt
