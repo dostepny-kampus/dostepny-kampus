@@ -18,8 +18,8 @@ Raport podaje skrót i odsyła do stron dokumentacji projektu. Odwołuje się do
 | Obszar | Cel Sprintu 1 | Wynik | Stan |
 | --- | --- | --- | --- |
 | Makiety | makiety ekranów aplikacji | 70 makiet low-fi dla 19 ekranów, mapa nawigacji, słownik napisów | zrobione |
-| Struktura projektu | układ repozytoriów i modułów | repozytorium dokumentacji z automatyczną kontrolą jakości; repozytorium kodu zaplanowane, jeszcze nie istnieje | częściowo |
-| Git | sposób pracy z Git | zasady ustalone; w repozytorium dokumentacji 358 commitów i 31 scalonych gałęzi zadań | zrobione dla dokumentacji, dla kodu plan |
+| Struktura projektu | układ repozytoriów i modułów | dokumentacja z automatyczną kontrolą jakości w katalogu `docs/` repozytorium projektu; kod zaplanowany, jeszcze nie istnieje | częściowo |
+| Git | sposób pracy z Git | zasady ustalone; w historii dokumentacji 358 commitów i 31 scalonych gałęzi zadań | zrobione dla dokumentacji, dla kodu plan |
 
 Plan sprintów z raportu [Tydzień 2](tydzien-2.md) przypisał Sprintowi 1 także zadania techniczne, których nie zrobiliśmy. To szkielet repozytorium kodu, pierwsza wersja kontraktu API, kontrola PR w CI, szkielety serwera i aplikacji oraz eksport konturów budynków z OpenStreetMap. Przechodzą do Sprintu 2 (sekcja 7). Nie było też zadań próbnych, więc architektura z raportu „Tydzień 2” zostaje wstępna.
 
@@ -94,19 +94,21 @@ Główna droga osoby starszej to V1, V2, V3 i z powrotem. Każdy stan błędu lo
 
 ## 4. Struktura projektu
 
-### Repozytorium dokumentacji (stan)
+### Dokumentacja (stan)
+
+Dokumentacja jest w katalogu `docs/` publicznego repozytorium projektu `github.com/dostepny-kampus/dostepny-kampus`. Ścieżki w tabeli są względne do katalogu głównego repozytorium.
 
 | Katalog | Zawartość |
 | --- | --- |
-| `docs/biznes` | wizja, role i macierz uprawnień, słownik pojęć, procesy AS-IS i TO-BE (BPMN), reguły, ryzyka |
-| `docs/wymagania` | potrzeby N1–N9, historyjki US z kryteriami, przypadki użycia, NFR, macierz śledzenia |
-| `docs/ux` | scenariusz wywiadu, persony, mapy ścieżki, SWOT, QFD, wymagania do ekranów, mapa nawigacji, słownik użytkownika, makiety |
-| `docs/raporty` | raporty dla prowadzącego |
-| `specs` | 12 plików ze scenariuszami Gherkin po polsku, razem 126 scenariuszy z tagami kryteriów, np. `@US1.1` |
-| `scripts` | skrypty renderu i kontroli jakości |
-| `styles` | reguły Vale zespołu |
+| `docs/docs/biznes` | wizja, role i macierz uprawnień, słownik pojęć, procesy AS-IS i TO-BE (BPMN), reguły, ryzyka |
+| `docs/docs/wymagania` | potrzeby N1–N9, historyjki US z kryteriami, przypadki użycia, NFR, macierz śledzenia |
+| `docs/docs/ux` | scenariusz wywiadu, persony, mapy ścieżki, SWOT, QFD, wymagania do ekranów, mapa nawigacji, słownik użytkownika, makiety |
+| `docs/docs/raporty` | raporty dla prowadzącego |
+| `docs/specs` | 12 plików ze scenariuszami Gherkin po polsku, razem 126 scenariuszy z tagami kryteriów, np. `@US1.1` |
+| `docs/scripts` | skrypty renderu i kontroli jakości |
+| `docs/styles` | reguły Vale zespołu |
 
-Repozytorium ma 26 stron Markdown, 78 diagramów PlantUML i 2 diagramy BPMN. Wśród diagramów PlantUML jest 70 makiet i katalog fragmentów wspólnych. Diagramy powstają z plików tekstowych. Obrazy i zbudowana strona nie trafiają do Git.
+Dokumentacja ma 26 stron Markdown, 78 diagramów PlantUML i 2 diagramy BPMN. Wśród diagramów PlantUML jest 70 makiet i katalog fragmentów wspólnych. Diagramy powstają z plików tekstowych. Obrazy i zbudowana strona nie trafiają do Git.
 
 | Narzędzie | Co sprawdza albo robi |
 | --- | --- |
@@ -120,17 +122,17 @@ Repozytorium ma 26 stron Markdown, 78 diagramów PlantUML i 2 diagramy BPMN. Wś
 
 Skrypt `verify.py` uruchamia po kolei 8 kroków: render, skróty, Vale, markdownlint, LanguageTool, identyfikatory, macierz i budowanie MkDocs. Na żądanie robi też zrzuty każdej strony w szerokości 1280 i 390 px. Zmianę scalamy do `main` dopiero wtedy, gdy żaden krok nie zgłasza błędu.
 
-### Repozytorium kodu (plan)
+### Kod (plan)
 
 | Element | Ustalenie | Skąd |
 | --- | --- | --- |
-| Repozytorium | jedno publiczne repozytorium na GitHubie: kontrakt API, serwer, aplikacja, dane budynków | [Tydzień 2](tydzien-2.md), sekcja 4 |
-| Scenariusze | katalog `specs` przechodzi do repozytorium kodu na początku implementacji, bo to testy uruchamiane w CI | ustalenie zespołu |
+| Repozytorium | jedno publiczne repozytorium na GitHubie (`github.com/dostepny-kampus/dostepny-kampus`): kontrakt API, serwer, aplikacja, dane budynków, dokumentacja | [Tydzień 2](tydzien-2.md), sekcja 4 |
+| Scenariusze | katalog `docs/specs` przechodzi do katalogu głównego repozytorium na początku implementacji, bo to testy uruchamiane w CI | ustalenie zespołu |
 | Aplikacja | Kotlin, Jetpack Compose, Material 3; Room i WorkManager do pracy bez sieci | Tydzień 2, sekcja 3 |
 | Serwer | Spring Boot 3, Java 21, Maven; granic modułów pilnują Spring Modulith i ArchUnit | Tydzień 2, sekcja 3 |
 | Kontrakt API | OpenAPI powstaje przed kodem; z niego generujemy interfejsy serwera i klienta | Tydzień 2, sekcja 3 |
 | CI | GitHub Actions: osobne przepływy kontraktu, serwera, aplikacji, testów UI i kontroli PR | Tydzień 2, sekcja 4 |
-| Dokumentacja | zostaje w osobnym repozytorium | Tydzień 2, sekcja 4 |
+| Dokumentacja | katalog `docs/` w tym samym repozytorium | Tydzień 2, sekcja 4 |
 
 Planowany układ katalogów (ustalenie zespołu, jeszcze nie istnieje):
 
@@ -141,16 +143,17 @@ dostepny-kampus/
   backend/            serwer Spring Boot
   android/            aplikacja Kotlin + Compose
   data/buildings/     kontury budynków GeoJSON (ODbL) i skrypt eksportu
+  docs/               dokumentacja MkDocs
   .github/workflows/  przepływy CI
 ```
 
-Jedno repozytorium pozwala zmienić kontrakt, serwer i aplikację w jednym PR. Przepływy CI uruchamiają się według zmienionych katalogów, więc zmiana w aplikacji nie buduje serwera. Podziału serwera i aplikacji na moduły wewnętrzne dokumentacja jeszcze nie ustala. Ustalimy go razem z modelem danych w Sprincie 2.
+Jedno repozytorium pozwala zmienić kontrakt, serwer, aplikację i dokumentację w jednym PR. Przepływy CI uruchamiają się według zmienionych katalogów, więc zmiana w aplikacji nie buduje serwera. Podziału serwera i aplikacji na moduły wewnętrzne dokumentacja jeszcze nie ustala. Ustalimy go razem z modelem danych w Sprincie 2.
 
 ## 5. Praca z Git
 
 ### Sposób pracy
 
-| Element | Repozytorium kodu (plan) | Repozytorium dokumentacji (stan) |
+| Element | Kod (plan) | Dokumentacja (stan) |
 | --- | --- | --- |
 | Gałęzie | `main` ← `sprint/N` ← `feature/<sprint>-<nazwa>` | `main` ← `docs/<zadanie>`; każde zadanie w osobnej gałęzi |
 | Przegląd | PR z jedną akceptacją | przegląd każdej zmiany przed scaleniem; poprawki z przeglądu w osobnej gałęzi |
@@ -158,9 +161,9 @@ Jedno repozytorium pozwala zmienić kontrakt, serwer i aplikację w jednym PR. P
 | Rozmiar zmiany | PR funkcjonalny najwyżej 300 linii | jedna gałąź to jedno zamknięte zadanie |
 | Commity | Conventional Commits [6], sprawdzane przez commitlint | Conventional Commits, np. `docs(ux): …` |
 
-Repozytorium dokumentacji jest na razie lokalne, bez kopii zdalnej. Ochrona gałęzi na GitHubie będzie dotyczyć repozytorium kodu.
+Dokumentacja jest w katalogu `docs/` publicznego repozytorium projektu, razem z przyszłym kodem. Ochrona gałęzi na GitHubie obejmie całe repozytorium.
 
-### Stan repozytorium dokumentacji na 28.10.2026
+### Historia dokumentacji na 28.10.2026
 
 Liczby dotyczą `main` z 28.10.2026, godz. 9:15, po scaleniu poprawek z zatwierdzenia makiet.
 

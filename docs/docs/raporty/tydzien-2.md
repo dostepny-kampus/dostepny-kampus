@@ -112,7 +112,7 @@ Zasada: własny kod piszemy tylko dla logiki dziedziny, czyli cyklu zgłoszenia,
 | Element | Ustalenie |
 | --- | --- |
 | Repozytorium kodu | jedno publiczne repozytorium na GitHubie: kontrakt API, serwer, aplikacja, dane budynków |
-| Dokumentacja | osobne repozytorium, strona MkDocs; ten raport jest jej częścią |
+| Dokumentacja | katalog `docs/` tego samego repozytorium (`github.com/dostepny-kampus/dostepny-kampus`), strona MkDocs; ten raport jest jej częścią |
 | Gałęzie | `main` ← `sprint/N` ← `feature/<sprint>-<nazwa>` |
 | Ochrona gałęzi | do `main` i `sprint/*` tylko przez PR z zielonym CI i jedną akceptacją |
 | Rozmiar zmiany | PR funkcjonalny ma najwyżej 300 zmienionych linii; jedna gałąź to jedno zamknięte zadanie |
