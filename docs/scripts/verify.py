@@ -1,4 +1,4 @@
-"""Dostępny Kampus — pełna kontrola repozytorium dokumentacji (render, skróty, Vale, markdownlint, LanguageTool, ID, macierz śledzenia, kontrast tokenów, MkDocs). Author: Vladyslav Yevkov. Version: 0.3.0. Copyright (c) 2026 Vladyslav Yevkov."""
+"""Dostępny Kampus — pełna kontrola dokumentacji (aktualność obrazów, skróty, Vale, markdownlint, LanguageTool, ID, macierz śledzenia, kontrast tokenów, MkDocs). Author: Vladyslav Yevkov. Version: 0.4.0. Copyright (c) 2026 Vladyslav Yevkov."""
 
 from __future__ import annotations
 
@@ -36,6 +36,7 @@ STEP_TIMEOUT_S = 900
 TIMEOUT_CODE = 124
 CHECK_IDS_SUMMARY = re.compile(r"check_ids: błędów (\d+), uwag (\d+)")
 LINK_NOT_FOUND = re.compile(r"Doc file '([^']+)' contains a link (?:to )?'([^']+)'.*not found")
+IMAGE_TARGET = re.compile(r"\]\(([^)\s]+\.(?:png|svg))(?:\s[^)]*)?\)", re.IGNORECASE)
 PASS, FAIL, WARN, SKIP = "PASS", "FAIL", "WARN", "SKIP"
 
 
@@ -116,10 +117,38 @@ def changed_doc_files() -> list[Path]:
     return [p for p in doc_files() if p.resolve() in candidates]
 
 
-def step_render() -> StepResult:
-    """Krok: render diagramów (scripts/render.py)."""
-    code, _ = run_command(python_script("render.py"))
-    return StepResult("render", PASS if code == 0 else FAIL, "" if code == 0 else f"kod {code}")
+def missing_images() -> list[str]:
+    """Zwraca opisy odwołań do obrazów PNG i SVG ze stron docs/**/*.md, które wskazują nieistniejący plik.
+
+    Gwarantuje: sprawdza obrazy i linki do obrazów; adresy URL są pomijane, ścieżki są względne do strony.
+    """
+    problems = []
+    for page in doc_files():
+        for number, line in enumerate(page.read_text(encoding="utf-8").splitlines(), start=1):
+            for target in IMAGE_TARGET.findall(line):
+                if is_external(target):
+                    continue
+                if not (page.parent / target.split("#", 1)[0]).is_file():
+                    problems.append(f"{page.relative_to(REPO).as_posix()}:{number}: brak pliku {target}")
+    return problems
+
+
+def step_obrazy() -> StepResult:
+    """Krok: aktualność obrazów w repozytorium (scripts/render.py --check) i istnienie obrazów, do których odwołują się
+    strony. Niczego nie renderuje, więc nie wymaga Javy ani PlantUML.
+
+    Gwarantuje: manifest niezgodny ze źródłami, brak wyniku dla źródła, wynik bez źródła albo odwołanie do
+    nieistniejącego obrazu daje FAIL z poleceniem `python scripts/render.py`.
+    """
+    code, _ = run_command(python_script("render.py", "--check"))
+    missing = missing_images()
+    for problem in missing:
+        print(f"verify: {problem}")
+    if code == 0 and not missing:
+        return StepResult("obrazy", PASS)
+    parts = [] if code == 0 else ["obrazy nieaktualne" if code == 1 else f"błąd kontroli, kod {code}"]
+    parts += [f"odwołań do brakujących obrazów: {len(missing)}"] if missing else []
+    return StepResult("obrazy", FAIL, "; ".join(parts) + "; uruchom: python scripts/render.py")
 
 
 def step_abbr() -> StepResult:
@@ -442,7 +471,7 @@ def run_steps(options: Options) -> list[StepResult]:
     Gwarantuje: nieoczekiwany wyjątek kroku daje FAIL tego kroku zamiast przerwania całej kontroli.
     """
     steps: list[tuple[str, Callable[[], StepResult]]] = [
-        ("render", step_render),
+        ("obrazy", step_obrazy),
         ("abbr", step_abbr),
         ("vale", step_vale),
         ("markdownlint", step_markdownlint),

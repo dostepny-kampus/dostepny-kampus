@@ -1,8 +1,9 @@
-"""Dostępny Kampus — render diagramów PlantUML i BPMN do docs/_generated. Author: Vladyslav Yevkov. Version: 0.1.0. Copyright (c) 2026 Vladyslav Yevkov."""
+"""Dostępny Kampus — render diagramów PlantUML i BPMN do docs/_generated z manifestem źródeł. Author: Vladyslav Yevkov. Version: 0.2.0. Copyright (c) 2026 Vladyslav Yevkov."""
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import shutil
 import signal
@@ -15,6 +16,8 @@ from typing import Any
 
 REPO = Path(__file__).resolve().parent.parent
 FORMATS = ("svg", "png")
+MANIFEST_NAME = "zrodla.sha256"
+MOCKUP_DIR = Path("ux") / "makiety"
 PLANTUML_TIMEOUT_S = 300
 BPMN_BASE_TIMEOUT_S = 60
 BPMN_PER_FILE_TIMEOUT_S = 20
@@ -66,10 +69,92 @@ def ensure_unique_names(sources: list[Path]) -> None:
         raise RenderError("powtórzone nazwy diagramów: " + ", ".join(duplicates))
 
 
-def is_fresh(source: Path, out_dir: Path) -> bool:
-    """Zwraca True, gdy wszystkie formaty wyjściowe istnieją i są nowsze od źródła."""
-    outputs = [out_dir / f"{source.stem}.{fmt}" for fmt in FORMATS]
-    return all(o.exists() and o.stat().st_mtime >= source.stat().st_mtime for o in outputs)
+def file_digest(path: Path) -> str:
+    """Zwraca sha256 treści pliku po zamianie końców linii CRLF na LF (wynik nie zależy od systemu)."""
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
+def dependencies(source: Path, docs: Path) -> list[Path]:
+    """Zwraca posortowane pliki `*.iuml`, od których może zależeć źródło PlantUML: z jego katalogu i z katalogu
+    makiet. Źródło BPMN nie ma zależności."""
+    if source.suffix != ".puml":
+        return []
+    found = set(source.parent.glob("*.iuml")) | set((docs / MOCKUP_DIR).glob("*.iuml"))
+    return sorted(found, key=lambda p: p.relative_to(docs).as_posix())
+
+
+def source_digest(source: Path, docs: Path) -> str:
+    """Zwraca sha256 źródła połączony z sha256 jego zależności (ścieżki względne do `docs`, POSIX).
+
+    Gwarantuje: wynik zależy tylko od treści i nazw plików, nie od systemu ani czasu modyfikacji.
+    """
+    combined = hashlib.sha256()
+    for path in [source, *dependencies(source, docs)]:
+        combined.update(f"{path.relative_to(docs).as_posix()}\t{file_digest(path)}\n".encode("utf-8"))
+    return combined.hexdigest()
+
+
+def current_manifest(docs: Path, sources: list[Path]) -> dict[str, str]:
+    """Zwraca manifest bieżących źródeł: ścieżka względna do `docs` (POSIX) → source_digest."""
+    return {s.relative_to(docs).as_posix(): source_digest(s, docs) for s in sources}
+
+
+def read_manifest(path: Path) -> dict[str, str]:
+    """Czyta manifest w formacie `<sha256>  <ścieżka>` (jak sha256sum). Brak pliku daje pusty słownik."""
+    if not path.is_file():
+        return {}
+    entries = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        digest, _, name = line.partition("  ")
+        if digest and name:
+            entries[name.strip()] = digest.strip()
+    return entries
+
+
+def write_manifest(path: Path, entries: dict[str, str]) -> None:
+    """Zapisuje manifest posortowany po ścieżce, z końcami linii LF."""
+    lines = [f"{entries[name]}  {name}\n" for name in sorted(entries)]
+    path.write_bytes("".join(lines).encode("utf-8"))
+
+
+def outputs_of(source: Path, out_dir: Path) -> list[Path]:
+    """Zwraca ścieżki plików wyjściowych źródła we wszystkich formatach."""
+    return [out_dir / f"{source.stem}.{fmt}" for fmt in FORMATS]
+
+
+def orphan_outputs(sources: list[Path], out_dir: Path) -> list[Path]:
+    """Zwraca posortowane pliki SVG i PNG w `out_dir`, dla których nie ma źródła o tej samej nazwie."""
+    if not out_dir.is_dir():
+        return []
+    stems = {s.stem for s in sources}
+    return sorted(p for p in out_dir.iterdir() if p.suffix.lstrip(".") in FORMATS and p.stem not in stems)
+
+
+def is_fresh(source: Path, docs: Path, out_dir: Path, recorded: dict[str, str]) -> bool:
+    """Zwraca True, gdy manifest zgadza się z bieżącym źródłem i istnieją wszystkie pliki wyjściowe."""
+    name = source.relative_to(docs).as_posix()
+    if recorded.get(name) != source_digest(source, docs):
+        return False
+    return all(o.is_file() for o in outputs_of(source, out_dir))
+
+
+def stale_report(docs: Path, out_dir: Path) -> list[str]:
+    """Zwraca listę rozbieżności między źródłami a katalogiem wyników (pusta, gdy wszystko jest aktualne).
+
+    Sprawdza: manifest wobec bieżących źródeł i zależności, brak wyników dla źródła, wyniki bez źródła.
+    """
+    sources = find_sources(docs, ".puml") + find_sources(docs, ".bpmn")
+    manifest_path = out_dir / MANIFEST_NAME
+    if not manifest_path.is_file():
+        return [f"brak manifestu {MANIFEST_NAME}"]
+    recorded = read_manifest(manifest_path)
+    current = current_manifest(docs, sources)
+    problems = [f"zmienione źródło lub zależność: {n}" for n in sorted(current) if n in recorded and recorded[n] != current[n]]
+    problems += [f"źródło spoza manifestu: {n}" for n in sorted(current) if n not in recorded]
+    problems += [f"w manifeście, ale bez źródła: {n}" for n in sorted(recorded) if n not in current]
+    problems += [f"brak wyniku: {o.name}" for s in sources for o in outputs_of(s, out_dir) if not o.is_file()]
+    problems += [f"wynik bez źródła: {o.name}" for o in orphan_outputs(sources, out_dir)]
+    return problems
 
 
 def kill_tree(proc: subprocess.Popen[Any]) -> None:
@@ -181,21 +266,27 @@ def render_bpmn(sources: list[Path], out_dir: Path) -> None:
         raise RenderError("bpmn-to-image nie utworzył: " + ", ".join(missing))
 
 
-def render_all(docs: Path, out_dir: Path, force: bool) -> list[Path]:
-    """Renderuje wszystkie nieaktualne diagramy z `docs` do `out_dir` i zwraca listę wyrenderowanych źródeł.
+def render_all(docs: Path, out_dir: Path, force: bool) -> tuple[list[Path], list[Path]]:
+    """Renderuje nieaktualne diagramy z `docs` do `out_dir`; zwraca (wyrenderowane źródła, usunięte wyniki bez źródła).
 
-    Gwarantuje: `out_dir` istnieje po wywołaniu; aktualne wyniki są pomijane, chyba że `force`.
-    Wyjątki: RenderError przy pierwszym nieudanym renderze lub powtórzonych nazwach.
+    Gwarantuje: `out_dir` istnieje po wywołaniu; aktualne według manifestu wyniki są pomijane, chyba że `force`;
+    po udanym renderze wyniki bez źródła są usunięte, a manifest opisuje wszystkie bieżące źródła.
+    Wyjątki: RenderError przy pierwszym nieudanym renderze lub powtórzonych nazwach (manifest zostaje bez zmian).
     """
     puml = find_sources(docs, ".puml")
     bpmn = find_sources(docs, ".bpmn")
     ensure_unique_names(puml + bpmn)
     out_dir.mkdir(parents=True, exist_ok=True)
-    todo_puml = [p for p in puml if force or not is_fresh(p, out_dir)]
-    todo_bpmn = [p for p in bpmn if force or not is_fresh(p, out_dir)]
+    recorded = read_manifest(out_dir / MANIFEST_NAME)
+    todo_puml = [p for p in puml if force or not is_fresh(p, docs, out_dir, recorded)]
+    todo_bpmn = [p for p in bpmn if force or not is_fresh(p, docs, out_dir, recorded)]
     render_plantuml(todo_puml, out_dir)
     render_bpmn(todo_bpmn, out_dir)
-    return todo_puml + todo_bpmn
+    removed = orphan_outputs(puml + bpmn, out_dir)
+    for path in removed:
+        path.unlink()
+    write_manifest(out_dir / MANIFEST_NAME, current_manifest(docs, puml + bpmn))
+    return todo_puml + todo_bpmn, removed
 
 
 def use_utf8_output() -> None:
@@ -211,22 +302,39 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--docs", type=Path, default=REPO / "docs", help="katalog źródeł (domyślnie docs)")
     parser.add_argument("--out", type=Path, default=None, help="katalog wyników (domyślnie <docs>/_generated)")
     parser.add_argument("--force", action="store_true", help="renderuj także aktualne diagramy")
+    parser.add_argument("--check", action="store_true", help="tylko sprawdź, czy wyniki i manifest są aktualne")
     return parser.parse_args(argv)
 
 
+def check(docs: Path, out_dir: Path) -> int:
+    """Tryb --check: wypisuje rozbieżności i zwraca 1, gdy są, w przeciwnym razie 0. Niczego nie renderuje."""
+    problems = stale_report(docs, out_dir)
+    for problem in problems:
+        print(f"render: {problem}")
+    if problems:
+        print(f"render: obrazy nieaktualne ({len(problems)}), uruchom scripts/render.py i dodaj wyniki do commita")
+        return 1
+    print("render: obrazy aktualne")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
-    """Punkt wejścia. Zwraca 0 przy sukcesie, 1 przy błędzie renderu."""
+    """Punkt wejścia. Zwraca 0 przy sukcesie, 1 przy błędzie renderu albo nieaktualnych obrazach (--check)."""
     use_utf8_output()
     args = parse_args(argv)
     docs = args.docs.resolve()
     out_dir = (args.out or docs / "_generated").resolve()
+    if args.check:
+        return check(docs, out_dir)
     try:
-        done = render_all(docs, out_dir, args.force)
+        done, removed = render_all(docs, out_dir, args.force)
     except RenderError as exc:
         print(f"render: BŁĄD: {exc}", file=sys.stderr)
         return 1
     for src in done:
         print(f"render: {src.relative_to(docs).as_posix()} -> {out_dir.name}/{src.stem}.{{svg,png}}")
+    for path in removed:
+        print(f"render: usunięto wynik bez źródła {out_dir.name}/{path.name}")
     print(f"render: OK ({len(done)} wyrenderowano)")
     return 0
 
