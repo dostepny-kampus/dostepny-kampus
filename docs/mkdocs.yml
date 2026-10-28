@@ -4,6 +4,9 @@ site_author: Vladyslav Yevkov
 copyright: Copyright &copy; 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 docs_dir: docs
 strict: true
+validation:
+  links:
+    anchors: warn
 
 theme:
   name: material
