@@ -1,0 +1,111 @@
+name: pr-guard
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "sprint/**"
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+  COMMITLINT_VERSION: 21.2.4
+  GITLEAKS_VERSION: 8.30.1
+
+jobs:
+  rozmiar:
+    if: startsWith(github.head_ref, 'feature/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Policz zmienione linie
+        run: bash .github/scripts/rozmiar-pr.sh "$BASE_SHA" "$HEAD_SHA" 300
+
+  commity:
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+      - name: Zainstaluj commitlint
+        run: >-
+          npm install --no-save --no-package-lock --no-audit --no-fund
+          "@commitlint/cli@${COMMITLINT_VERSION}"
+          "@commitlint/config-conventional@${COMMITLINT_VERSION}"
+      - name: Sprawdź komunikaty commitów
+        run: npx --no-install commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
+      - name: Sprawdź tytuł PR
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PR_TITLE" | npx --no-install commitlint --verbose
+
+  zakazane-slowa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Sprawdź gałąź, tytuł, opis i commity
+        env:
+          FORBIDDEN_PATTERNS: ${{ vars.FORBIDDEN_PATTERNS }}
+          PR_BRANCH: ${{ github.head_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: bash .github/scripts/zakazane-slowa.sh "$BASE_SHA" "$HEAD_SHA"
+
+  sekrety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Pobierz gitleaks
+        working-directory: ${{ runner.temp }}
+        run: |
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          sums="gitleaks_${GITLEAKS_VERSION}_checksums.txt"
+          url="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          curl -sSfLO "${url}/${archive}"
+          curl -sSfLO "${url}/${sums}"
+          grep " ${archive}\$" "${sums}" | sha256sum --check --strict
+          tar -xzf "${archive}" gitleaks
+      - name: Skanuj commity PR
+        run: >-
+          "${RUNNER_TEMP}/gitleaks" git --no-banner --redact --verbose
+          --log-opts="${BASE_SHA}..${HEAD_SHA}" .
+
+  zaleznosci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/dependency-review-action@v5.0.0
+        with:
+          fail-on-severity: high
+          fail-on-scopes: runtime, development, unknown
+          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, EPL-2.0, MPL-2.0, ISC
