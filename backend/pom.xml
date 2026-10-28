@@ -21,6 +21,7 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
     <java.version>25</java.version>
     <qulice.version>0.36.0</qulice.version>
     <spring-modulith.version>2.1.2</spring-modulith.version>
+    <archunit.version>1.4.2</archunit.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -30,6 +31,11 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
         <version>${spring-modulith.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.tngtech.archunit</groupId>
+        <artifactId>archunit</artifactId>
+        <version>${archunit.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -79,6 +85,11 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
     <dependency>
       <groupId>org.springframework.modulith</groupId>
       <artifactId>spring-modulith-docs</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
