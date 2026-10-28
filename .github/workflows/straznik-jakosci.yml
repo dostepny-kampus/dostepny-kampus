@@ -1,0 +1,55 @@
+name: straznik-jakosci
+
+# Przepływ i skrypt pochodzą z gałęzi docelowej (pull_request_target), więc PR nie może ich podmienić.
+# Kod z PR nie jest uruchamiany: commity PR są tylko danymi dla `git diff`.
+on:
+  pull_request_target:
+    branches:
+      - main
+      - "sprint/**"
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+
+permissions:
+  contents: read
+
+concurrency:
+  group: straznik-jakosci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  straznik-jakosci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Pobierz commity PR jako dane
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          git fetch --no-tags --no-recurse-submodules origin "+refs/pull/${PR_NUMBER}/head:refs/remotes/pr/head"
+          test "$(git rev-parse refs/remotes/pr/head)" = "$HEAD_SHA" || git fetch --no-tags origin "$HEAD_SHA"
+          git cat-file -e "${HEAD_SHA}^{commit}"
+      - name: Sprawdź wyciszenia analizy, pliki baseline i zmiany reguł jakości
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          if [[ $BASE_REF == main && $HEAD_REF =~ ^sprint/[0-9]+$ && $HEAD_REPO == "$GITHUB_REPOSITORY" ]]; then
+            echo "Scalenie sprintu do main: każda zmiana przeszła strażnika w PR do gałęzi sprintu."
+            exit 0
+          fi
+          bash .github/scripts/straznik-jakosci.sh "$BASE_SHA" "$HEAD_SHA"
