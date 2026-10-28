@@ -4,7 +4,7 @@ Status: przyjęta. Data: 2026-10-28. Źródło: decyzje projektu nr 2, 3, 28 i 4
 
 ## Kontekst i problem
 
-Aplikacja czyta stan satelitów GNSS do mapy nieba (US6) i pracuje bez sieci (N6). Serwer liczy zapytania przestrzenne: budynek dla punktu, podobne zgłoszenia w promieniu, przeliczenie na PUWG 1992. Pierwszy opis tematu zakładał Flutter i FastAPI.
+Aplikacja czyta stan satelitów GNSS do mapy nieba (US6.5) i pracuje bez sieci (N6). Serwer liczy zapytania przestrzenne: budynek dla punktu, podobne zgłoszenia w promieniu, przeliczenie na PUWG 1992. Pierwszy opis tematu zakładał Flutter i FastAPI.
 
 ## Rozważone opcje
 
@@ -12,11 +12,12 @@ Aplikacja czyta stan satelitów GNSS do mapy nieba (US6) i pracuje bez sieci (N6
 - Serwer: Spring Boot z PostgreSQL i PostGIS, FastAPI z PostGIS, Supabase albo dane tylko w pakiecie aplikacji.
 - Supabase przeniósłby przebieg weryfikacji i konflikty wersji do SQL. Bez serwera nie ma weryfikacji ani synchronizacji.
 - Java na serwerze: 21 albo 25 (obie LTS [1]).
+- Spring Boot: linia 3.x albo 4.x.
 
 ## Decyzja
 
 - Aplikacja: Kotlin 2.x, Jetpack Compose, Material 3, od Androida 8.0 (API 26).
-- Serwer: Spring Boot na Java 25, budowany Mavenem. Linię 3.x albo 4.x wybiera zadanie szkieletu serwera według wsparcia OSS [2].
+- Serwer: Spring Boot 4.1.2 na Java 25, budowany Mavenem. Linia 3.x nie ma już wsparcia OSS, dlatego 4.x [2].
 - Baza: PostgreSQL z rozszerzeniem PostGIS.
 - Java 25 zastępuje Java 21 z decyzji projektu nr 3. Narzędzie, które nie działa na JDK 25, zostaje na JDK 21 z dowodem w PR.
 
