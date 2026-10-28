@@ -20,7 +20,7 @@ Czwarta pozycja paska dolnego to „Konto”, a osoby z rolą pracowniczą widz�
 
 ![Diagram przejść Gościa i Odwiedzającego: V1, V2, V3, V4 z krokami, V5, L1, L2](../_generated/nawigacja-odwiedzajacy.svg)
 
-Główna droga to V1, V2, V3 i z powrotem. Z V2 wraca się też na mapę z planem piętra albo wejściem, a „Zgłoś problem” otwiera V4 z wybranym wejściem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]).
+Główna droga to V1, V2, V3 i z powrotem. Z V2 wraca się też na mapę z planem piętra albo wejściem, a „Zgłoś barierę przy tym wejściu” otwiera V4 z wybranym wejściem. V2 wysuwa się jako arkusz na mapie V1, więc nie dodaje dotknięcia (US3.2). Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]).
 
 Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”. Po zalogowaniu wraca do kroku 1 V4 albo trafia do L2 (P3).
 
@@ -59,7 +59,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | Z ekranu | Czynność | Do ekranu | Rola | AC/BR |
 | --- | --- | --- | --- | --- |
 | V1 | wybór wyniku w polu „Wpisz symbol budynku, np. C-13” | V2 | wszystkie | US1.1 |
-| V1 | dotknięcie konturu budynku | V2 | wszystkie | US2, US3.2 |
+| V1 | dotknięcie konturu budynku | V2, arkusz na mapie do połowy ekranu | wszystkie | US2, US3.2, decyzja 48 |
 | V1 | przełącznik „Mapa” i „Lista budynków” | V1, lista | wszystkie | NFR-19 |
 | V1 | dotknięcie budynku na liście | V2 | wszystkie | US2, US3.2 |
 | V1 | dotknięcie bariery | V2 budynku bariery | wszystkie | US1.3, US10.6 |
@@ -73,8 +73,8 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, stan „znaleziona sala” | „Zamknij” | V1 | wszystkie | decyzja 48 |
 | V2 | „Pokaż na planie” przy piętrze | V1, plan tego piętra | wszystkie | US16.1, decyzja 44 |
 | V2 | „Pokaż na mapie” w przypiętym pasie albo przy wejściu zalecanym | V1 z zaznaczonym budynkiem albo wejściem | wszystkie | US2.1, BR-25 |
-| V2 | „Zgłoś problem” przy wejściu | V4, krok 1, wejście wybrane | zalogowani | US4, decyzja 48 |
-| V2 | „Zgłoś problem” przy wejściu | L1, potem V4 z wybranym wejściem | RO-GOS | US14.2, decyzja 48 |
+| V2 | „Zgłoś barierę przy tym wejściu” | V4, krok 1, wejście wybrane | zalogowani | US4, decyzja 48 |
+| V2 | „Zgłoś barierę przy tym wejściu” | L1, potem V4 z wybranym wejściem | RO-GOS | US14.2, decyzja 48 |
 | V2, stan „brak zgłoszeń przyjętych” | „Zgłoś barierę” | V4; Gość: L1 | wszystkie | US4, US14.2 |
 | V2 | „Sprawdź, którędy wejść” | V3 | wszystkie | US3, US3.2 |
 | V2 | „Wstecz” | V1 z zaznaczonym budynkiem | wszystkie | US1.1 |
