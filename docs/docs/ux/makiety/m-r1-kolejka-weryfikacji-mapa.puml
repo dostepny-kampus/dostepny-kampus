@@ -10,6 +10,7 @@ $naglowek("Zgłoszenia do sprawdzenia")
 Budynek A-1
 Zgłoszenie z pomiaru
 Wysłane <i>[data]</i>
+$przycisk("Otwórz", "chevron-right")
 }
 ..
 { ( ) Lista$dk_spacje(4) | (X) Mapa }

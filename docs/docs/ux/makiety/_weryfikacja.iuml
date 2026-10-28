@@ -7,7 +7,8 @@
 ' Decyzja na R2: „Przyjmij” jako czynność główna, pod nią powód odrzucenia i „Odrzuć”
 ' (US10, US10.2, BR-13, BR-16, BR-23).
 ' $powod: "" (nic nie wybrano), "Duplikat" albo "Nieaktualne". Przy „Duplikat” lista
-' „Wcześniejsze zgłoszenie:” z podobnymi zgłoszeniami (BR-13).
+' „Wcześniejsze zgłoszenie:” z podobnymi zgłoszeniami (BR-13). „Inny powód” ma pole
+' z etykietą widoczną zawsze, więc osoba wie, co i dla kogo wpisać (BR-16).
 !procedure $r2_decyzja($powod="")
 ..
 $przycisk_glowny("Przyjmij")
@@ -27,7 +28,11 @@ $dk_spacje(3) | ( ) próg, 5 m
 !else
 ( ) Nieaktualne
 !endif
-"$dk_spacje(30)"
+( ) Inny powód
+{
+$dk_spacje(3) | Opisz powód dla autora:
+$dk_spacje(3) | "$dk_spacje(26)"
+}
 $przycisk("Odrzuć")
 !endprocedure
 
@@ -36,3 +41,12 @@ $przycisk("Odrzuć")
 $obraz($opis)
 $przycisk("Zasłoń twarz lub tablicę")
 !endprocedure
+
+' Zmiana oznaczenia wejścia: czy od wysłania zmiany oznaczenie zostało zmienione
+' przez inną przyjętą zmianę (BR-24, BR-23). Tekst i ikona (NFR-21).
+!function $bez_zmian_od_wyslania()
+!return "<&link-intact> Bez zmian od wysłania"
+!endfunction
+!function $zmienione_po_wyslaniu()
+!return "<&link-broken> Zmienione po wysłaniu"
+!endfunction

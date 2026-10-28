@@ -6,6 +6,7 @@
 $ekran_poczatek()
 $naglowek("Sprawdzenie zgłoszenia")
 $komunikat("Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.")
+<b>Zmienione:</b> uciążliwość
 <b>Zgłoszenie z pomiaru</b>
 próg
 $tylko_z_pomoca()

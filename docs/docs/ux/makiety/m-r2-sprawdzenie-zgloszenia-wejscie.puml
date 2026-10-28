@@ -9,6 +9,7 @@ $naglowek("Sprawdzenie zgłoszenia")
 Budynek A-1
 Obecne oznaczenie:
 $wejscie($dostepne(), "Wejście od ul. Norwida", "Z map i opisów, stan z <i>[data]</i>")
+<b>$bez_zmian_od_wyslania()</b>
 Wybrane oznaczenie: <b>$dostepne()</b>
 $r2_zdjecie("nowe zdjęcie wejścia")
 Autor: Zbierający, Autor 17

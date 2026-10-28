@@ -23,12 +23,12 @@ Przy otwarciu R1, R2 i K1 komunikat zastępuje treść ekranu. Po czynności na 
 
 Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu. Przycisk powtarza się w każdej pozycji, więc nie jest pogrubiony: wyróżnia go położenie na dole ramki i pełna szerokość. Cztery pogrubione przyciski nie wskazywałyby jednej czynności, a pogrubiony zostaje typ bariery, po którym Weryfikator wybiera zgłoszenie.
 
-![Makieta R1 w stanie zwykłym: sekcja Wzięte przeze mnie z jednym zgłoszeniem, przełącznik Lista i Mapa, cztery zgłoszenia różnych rodzajów z przyciskiem Weź do sprawdzenia](../../_generated/m-r1-kolejka-weryfikacji.svg)
+![Makieta R1 w stanie zwykłym: sekcja Wzięte przeze mnie z jednym zgłoszeniem i przyciskiem Otwórz, przełącznik Lista i Mapa, cztery zgłoszenia różnych rodzajów z przyciskiem Weź do sprawdzenia](../../_generated/m-r1-kolejka-weryfikacji.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Wstecz” i nagłówek „Zgłoszenia do sprawdzenia”, równy napisowi przycisku w L2 | NFR-15, PW-14 |
-| Sekcja „Wzięte przeze mnie” na górze; dotknięcie pozycji otwiera R2 | BR-11, UC14 2b |
+| Sekcja „Wzięte przeze mnie” na górze; dotknięcie pozycji otwiera R2, a „Otwórz” z ikoną pokazuje, że pozycję da się otworzyć | BR-11, UC14 2b, NFR-21 |
 | Przełącznik „Lista” i „Mapa”; wybrany widok widać po kształcie pola | UC14, NFR-19, NFR-21 |
 | Pozycja zgłoszenia „wysłane”: typ albo grupa barier, budynek, rodzaj, data wysłania; przy zmianie oznaczenia wejścia nazwa wejścia, bo zmiana nie ma typu | US10.4, BR-14, BR-24 |
 | Grupa „Schody i windy” zamiast typu przy zgłoszeniu szybkim, bo typ ustala dopiero Weryfikator | BR-14, PW-7 |
@@ -80,7 +80,7 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | „Autor: Zbierający, Autor 17”: rola i pseudonim, bez imienia i adresu e-mail | BR-5 |
 | „Podobne zgłoszenia do 10 m”: typ, zdjęcie, odległość tekstem, piętro, status tekstem i ikoną; bez uciążliwości, bo wymagania jej nie wymieniają | US10.1, BR-13, NFR-19, NFR-21 |
 | „Przyjmij”, pogrubiony, na pełną szerokość; po przyjęciu otwiera się R1, a R2 znika z historii „Wstecz” | US10, NFR-21; wymagania wspólne |
-| „Powód odrzucenia”: gotowe „Duplikat” i „Nieaktualne” oraz pole na własny powód | US10.2, BR-13, BR-16, BR-23 |
+| „Powód odrzucenia”: gotowe „Duplikat” i „Nieaktualne” oraz „Inny powód” z polem „Opisz powód dla autora” | US10.2, BR-13, BR-16, BR-23, NFR-18 |
 | „Odrzuć”; po odrzuceniu otwiera się R1, a R2 znika z historii „Wstecz” | US10.2, BR-16; wymagania wspólne |
 
 ![Makieta R2 przy odrzuceniu duplikatu: dwa podobne zgłoszenia, wybrany powód Duplikat i wskazane wcześniejsze zgłoszenie schody przy wejściu 2 m](../../_generated/m-r2-sprawdzenie-zgloszenia-duplikat.svg)
@@ -102,17 +102,18 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda z ikoną | US10.3, PW-13, NFR-21 |
 | „W promieniu 10 m nie ma podobnych zgłoszeń.” zamiast listy | US10.1 |
 
-![Makieta R2 dla zmiany bariera usunięta: niesprawna winda w D-2, zdjęcie z poprzedniego zgłoszenia obok nowego, podobna zmiana przyjęta 0 m dalej, wybrany powód Nieaktualne](../../_generated/m-r2-sprawdzenie-zgloszenia-usunieta.svg)
+![Makieta R2 dla zmiany bariera usunięta: niesprawna winda w D-2, poprzednie zgłoszenie Archiwalne, zdjęcie z poprzedniego zgłoszenia obok nowego, podobna zmiana przyjęta 0 m dalej, wybrany powód Nieaktualne](../../_generated/m-r2-sprawdzenie-zgloszenia-usunieta.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Bariery już nie ma” i typ z poprzedniego zgłoszenia; bez uciążliwości, bo nie jest wymagana | BR-19 |
+| „Poprzednie zgłoszenie:” i jego status tekstem i ikoną; tu „Archiwalne”, bo przyjęto już równoległą zmianę | BR-19, BR-23, NFR-21 |
 | Zdjęcie z poprzedniego zgłoszenia obok nowego zdjęcia miejsca; „Zasłoń twarz lub tablicę” dotyczy nowego zdjęcia, bo poprzednie przeszło już weryfikację | US10.6, BR-19, NFR-25 |
 | Na liście podobnych równoległa zmiana tej samej windy, już przyjęta, 0 m, bo miejsce przechodzi z poprzedniego zgłoszenia | BR-19, BR-23 |
 | Wybrany powód „Nieaktualne”: ta zmiana dotyczy zgłoszenia, które stało się archiwalne | BR-23 |
 | Po przyjęciu „Przyjmij” winda znika z mapy i karty budynku | US10.6 |
 
-![Makieta R2 dla zmiany oznaczenia wejścia: obecne oznaczenie Dostępne wejścia od ul. Norwida z datą i źródłem, wybrane oznaczenie Dostępne, nowe zdjęcie wejścia](../../_generated/m-r2-sprawdzenie-zgloszenia-wejscie.svg)
+![Makieta R2 dla zmiany oznaczenia wejścia: obecne oznaczenie Dostępne wejścia od ul. Norwida z datą i źródłem, napis Bez zmian od wysłania, wybrane oznaczenie Dostępne, nowe zdjęcie wejścia](../../_generated/m-r2-sprawdzenie-zgloszenia-wejscie.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -120,13 +121,15 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Obecne oznaczenie tekstem i ikoną, z datą i źródłem jak na V2 | US17.3, BR-24, PW-3 |
 | „Wybrane oznaczenie: Dostępne”: Zbierający potwierdza obecne oznaczenie; wejście od ul. Norwida jest dostępne według deklaracji [1] | US17.2, BR-24 |
 | Nowe zdjęcie wejścia z „Zasłoń twarz lub tablicę” | BR-24, NFR-25 |
+| „Bez zmian od wysłania” z ikoną pod obecnym oznaczeniem; gdy w tym czasie przyjęto inną zmianę tego wejścia: „Zmienione po wysłaniu”, a powód „Nieaktualne” | BR-23, BR-24, NFR-21 |
 | Weryfikator nie zmienia wybranego oznaczenia: gdy zdjęcie mu przeczy, odrzuca z powodem | BR-24, BR-16 |
 
-![Makieta R2 w stanie nowa wersja: komunikat Autor zmienił zgłoszenie nad danymi zgłoszenia próg z nową uciążliwością Tylko z pomocą](../../_generated/m-r2-sprawdzenie-zgloszenia-nowa-wersja.svg)
+![Makieta R2 w stanie nowa wersja: komunikat Autor zmienił zgłoszenie, linia Zmienione: uciążliwość nad danymi zgłoszenia próg z nową uciążliwością Tylko z pomocą](../../_generated/m-r2-sprawdzenie-zgloszenia-nowa-wersja.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Komunikat „Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.” nad danymi | BR-3, UC14 5e, PW-10 |
+| „Zmienione: uciążliwość” pod komunikatem: Weryfikator nie szuka różnicy sam | BR-3, BR-15 |
 | Dane nowej wersji: uciążliwość „Tylko z pomocą” zamiast „Utrudnienie”, jak w scenariuszu `@BR-3` | BR-3 |
 
 | Stan bez osobnej makiety | Co widać |
@@ -139,11 +142,11 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 
 ## K1 Postęp inwentaryzacji
 
-Czynność główna: dotknięcie budynku, które otwiera C5 „Obejrzane piętra”. Tam Koordynator cofa znacznik piętra (US11.3).
+Czynność główna: dotknięcie budynku albo „Otwórz” w jego ramce, które otwiera C5 „Obejrzane piętra”. Tam Koordynator cofa znacznik piętra (US11.3).
 
 A-1 ma 4 z 5 pięter obejrzanych, jak w scenariuszu demo, w US11.2 i w przykładzie BR-21. Liczby zgłoszeń i wejść to zastępniki, bo scenariusze nie podają ich dla tego stanu. Sześć wejść A-1 ze scenariuszy `@US11.4` to dane testowe, a nie stan budynku.
 
-![Makieta K1: przycisk Odśwież i godzina odczytu, budynek A-1 z postępem 4 z 5 pięter, 80%, liczbami zgłoszeń i wejściami sprawdzonymi na miejscu jako zastępniki, budynek B-4 Obejrzany i budynek Nieobejrzany](../../_generated/m-k1-postep-inwentaryzacji.svg)
+![Makieta K1: przycisk Odśwież i godzina odczytu, budynek A-1 z postępem 4 z 5 pięter, 80%, liczbami zgłoszeń i wejściami sprawdzonymi na miejscu jako zastępniki, budynek B-4 Obejrzany i budynek Nieobejrzany, każdy z przyciskiem Otwórz](../../_generated/m-k1-postep-inwentaryzacji.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -154,7 +157,7 @@ A-1 ma 4 z 5 pięter obejrzanych, jak w scenariuszu demo, w US11.2 i w przykład
 | Budynek podstawowy: „Obejrzany” tekstem i ikoną albo „Nieobejrzany” samym tekstem | US11.1, PW-11 |
 | „Czeka na sprawdzenie: [liczba]” i „Przyjęte: [liczba]” przy każdym budynku | US11.1, BR-21 |
 | Tylko budynek szczegółowy: „Wejścia sprawdzone na miejscu:” i liczby „[x] z [y]” w osobnym wierszu | US11.4, BR-24, PW-3 |
-| Cała ramka budynku to jeden cel dotyku; otwiera C5 | US11.3, NFR-17 |
+| Cała ramka budynku to jeden cel dotyku, a „Otwórz” z ikoną pokazuje, że da się ją otworzyć; otwiera C5 | US11.3, NFR-17, NFR-21 |
 
 Wiersz o wejściach ma dwie linie, bo cały napis jest dłuższy niż 34 znaki. Brzmienie „Wejścia sprawdzone na miejscu” jest to samo w US11.4, w scenariuszach `@US11.4` i przy wejściu na karcie budynku (PW-3).
 

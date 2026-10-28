@@ -1,6 +1,7 @@
 @startsalt
 ' R2 Sprawdzenie zmiany "bariera usunięta" (BR-19). Równoległą zmianę autora przyjął
 ' już inny Weryfikator, więc ta zmiana dotyczy zgłoszenia archiwalnego: powód "Nieaktualne" (BR-23).
+' Status poprzedniego zgłoszenia mówi to Weryfikatorowi wprost (BR-19, BR-23, NFR-21).
 !include _wspolne.iuml
 !include _weryfikacja.iuml
 $ekran_poczatek()
@@ -9,6 +10,8 @@ $naglowek("Sprawdzenie zgłoszenia")
 niesprawna winda
 Budynek D-2, piętro <i>[piętro]</i>
 Miejsce: <i>[punkt z poprzedniego]</i>
+Poprzednie zgłoszenie:
+<b>$archiwalne()</b>
 {
 {+
 .

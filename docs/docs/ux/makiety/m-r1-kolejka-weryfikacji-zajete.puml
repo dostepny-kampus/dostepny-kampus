@@ -12,6 +12,7 @@ $komunikat("Ktoś inny wziął już to zgłoszenie. Wybierz inne.")
 Budynek A-1
 Zgłoszenie z pomiaru
 Wysłane <i>[data]</i>
+$przycisk("Otwórz", "chevron-right")
 }
 ..
 { (X) Lista$dk_spacje(4) | ( ) Mapa }
