@@ -16,6 +16,7 @@ roborazzi = "1.77.0"
 robolectric = "4.17"
 junit4 = "4.13.2"
 espresso = "3.7.0"
+kover = "0.9.11"
 androidCompileSdk = "37"
 androidTargetSdk = "37"
 androidMinSdk = "26"
@@ -47,3 +48,4 @@ roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose"
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
+kover-gradlePlugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
