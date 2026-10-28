@@ -10,6 +10,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm")
     id("com.android.lint")
     id("dostepnykampus.detekt")
+    id("dostepnykampus.kover")
 }
 
 val jvmTargetVersion = libs.versionInt("jvmTarget")
