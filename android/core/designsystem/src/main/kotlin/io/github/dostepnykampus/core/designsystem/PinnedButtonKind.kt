@@ -7,7 +7,10 @@ package io.github.dostepnykampus.core.designsystem
 
 /** Rodzaj przycisku przypiętego: jedyna czynność główna ekranu, czynność tonalna albo obrysowana. */
 enum class PinnedButtonKind {
-    /** Wypełniony `primary`: jedyna czynność główna na ekranie. */
+    /**
+     * Wypełniony: jedyna czynność główna na ekranie. W jasnym motywie tło `primary`, w ciemnym `primaryContainer`
+     * z ramką [Obramowania.wypelniony] w kolorze `primary`.
+     */
     Filled,
 
     /** Tonalny `secondaryContainer`, np. „Pokaż na mapie”. */
