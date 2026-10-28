@@ -54,7 +54,7 @@ Uprawnienia opisuje [macierz ról](../biznes/role.md). Potrzeby N1–N9 to hipot
 | V3 | „Którędy wejść”: które wejście jest dostępne | wszyscy | US3 | Powinno być |
 | V4 | Zgłoszenie szybkie: zdjęcie, grupa barier, pozycja | Odwiedzający | US4 | Musi być |
 | V5 | Pomoc i instrukcja przy pierwszym uruchomieniu | wszyscy | US5 | Powinno być |
-| C1 | Pomiar precyzyjny: uśrednianie GNSS przez 30 s, podpowiedź budynku | Zbierający | US6 | Musi być (mapa nieba: Powinno być) |
+| C1 | Pomiar precyzyjny: uśrednianie GNSS przez 30 s, podpowiedź budynku | Zbierający | US6 | Musi być (korekta na planie piętra i mapa nieba: Powinno być) |
 | C2 | Formularz: typ bariery, uciążliwość („Utrudnienie”, „Tylko z pomocą”, „Blokada”), zdjęcie, piętro | Zbierający | US7 | Musi być |
 | C3 | Moje zgłoszenia ze statusami | Zbierający | US8 | Musi być |
 | C4 | Synchronizacja po pracy offline, wybór wersji przy konflikcie | Zbierający | US9 | Musi być |
