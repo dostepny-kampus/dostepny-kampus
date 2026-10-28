@@ -13,8 +13,8 @@ Miejsce: <i>[punkt z pomiaru]</i>
 $r2_zdjecie("zdjęcie bariery")
 Autor: Zbierający, Autor 17
 $sekcja("Podobne zgłoszenia do 10 m")
-{+
-<b>próg</b>$dk_spacje(26)
+$ramka()
+<b>próg</b>
 $obraz("zdjęcie")
 5 m, piętro <i>[inne piętro]</i>
 $przyjete()

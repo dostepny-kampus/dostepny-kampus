@@ -10,7 +10,7 @@ $komunikat("Brakuje typu bariery. Uzupełnij to pole, aby zapisać.")
 <i>[miejsce z pomiaru]</i>
 $przycisk("Zmień miejsce")
 $sekcja("Piętro")
-{ ( ) <i>[1]</i>$dk_spacje(2) | (X) <i>[2]</i>$dk_spacje(2) | ( ) <i>[3]</i>$dk_spacje(2) | ( ) <i>[4]</i>$dk_spacje(2) | ( ) <i>[5]</i> }
+$pietra(2)
 $sekcja("Typ bariery")
 $blad_pola("Brakuje typu bariery. Uzupełnij to pole, aby zapisać.")
 ^<i>[typy w 6 grupach barier]</i>^
@@ -22,7 +22,7 @@ $opcja("X", $blokada(), "Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś 
 $sekcja("Zdjęcie")
 $zdjecie("zrobione zdjęcie bariery")
 $sekcja("Opis")
-"                          "
+$pole_tekstowe()
 $tekst("Obowiązkowy przy typie „inna bariera”.")
 ..
 $przycisk_glowny("Zapisz")

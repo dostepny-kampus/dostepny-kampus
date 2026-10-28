@@ -13,11 +13,11 @@ $r2_zdjecie("zdjęcie bariery")
 Autor: Odwiedzający, Autor <i>[nr]</i>
 ..
 <b>Typ bariery</b>
-^$dk_spacje(28)^
+^<i>[typy w 6 grupach barier]</i>^
 <b>Uciążliwość</b>
-( ) $utrudnienie()
-( ) $tylko_z_pomoca()
-( ) $blokada()
+$opcja("", $utrudnienie())
+$opcja("", $tylko_z_pomoca())
+$opcja("", $blokada())
 $sekcja("Podobne zgłoszenia do 10 m")
 $tekst("W promieniu 10 m nie ma podobnych zgłoszeń.")
 $r2_decyzja()

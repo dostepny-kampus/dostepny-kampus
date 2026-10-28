@@ -85,7 +85,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | przełącznik pięter | „Piętro:” i etykiety z danych PWr | wszystkie | Bez słowa „przełącznik”. | 6.3 |
 | plan piętra | „Plan piętra” | wszystkie | bez zmian | 6.3 |
 | podpis pod planem (NFR-40) | „Źródło: Politechnika Wrocławska” | wszystkie | bez zmian; mówi, skąd jest plan | 2.2 |
-| budynek podstawowy (napis na V2) | „Nie mamy planu pięter tego budynku.” | wszystkie | Słowo „niedostępny” zostaje dla wejścia. | 6.3 |
+| budynek podstawowy (napis na V2, C1 i C2) | „Nie mamy planu pięter tego budynku.” | wszystkie | Słowo „niedostępny” zostaje dla wejścia. Ten sam napis na każdym ekranie, na którym brakuje planu (BR-G1). | 6.3 |
 | przycisk do ekranu V3 (US3) | „Sprawdź, którędy wejść” | wszystkie | Dawna robocza nazwa brzmiała jak rezerwacja terminu. Ekran odpowiada na pytanie o wejście. | 2.1, 2.2, 4.1 |
 | nagłówek V3 | „Którędy wejść do C-13” | wszystkie | Nagłówek powtarza napis przycisku. | 4.1, część 5 |
 | zgłoszenie szybkie (nagłówek V4) | „Zgłoś barierę” | Odwiedzający | Ten sam napis co na pasku. | 4.6 |
@@ -120,7 +120,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | rejestracja | „Załóż konto” | Gość | bez zmian | 4.8 |
 | rezygnacja z logowania | „Nie teraz” | Gość | bez zmian; nie brzmi jak błąd | 4.8 |
 | nagłówek L2 | „Konto” albo „Konto i praca” | Odwiedzający; role pracownicze | Nagłówek powtarza napis z paska. | 6.3 |
-| rola, lista ról | „Twoje role: Odwiedzający, Zbierający” | wszystkie zalogowane | bez zmian | 10.1 |
+| rola, lista ról | „Twoje role: Odwiedzający, Zbierający, Koordynator” | wszystkie zalogowane | bez zmian | 10.1 |
 | „Twoje czynności” | „Twoja praca” | role pracownicze | „Czynności” brzmi urzędowo. Napis pasuje do „Konto i praca”. | 10.1 |
 | klauzula informacyjna | „Informacja o danych osobowych” | wszystkie zalogowane | bez zmian | 6.3 |
 | wycofanie zgody | „Wycofaj zgodę”; w potwierdzeniu „Zostaw zgodę” zamiast „Anuluj” | wszystkie zalogowane | Oba przyciski mówią o skutku, więc „Anuluj” nie myli. | 6.3 |
@@ -136,9 +136,10 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | nagłówek C1 | „Pomiar pozycji” | Zbierający | bez zmian | 10.2 |
 | uśrednianie pozycji | „Pomiar: zostało 12 s” | Zbierający | Bez słowa „uśrednianie”. | 10.2 |
 | dokładność pozycji | „Dokładność: 0,8 m (szacunek)” | Zbierający | bez zmian | 10.2 |
-| liczba satelitów GNSS | „Satelity: GPS 7, Galileo 5” | Zbierający | Nazwy systemów zamiast skrótu „GNSS”. | 10.2 |
+| liczba satelitów GNSS | „Satelity: GPS 7, Galileo 5, GLONASS 4” | Zbierający | Nazwy systemów zamiast skrótu „GNSS”, każdy system osobno (US6.1). | 10.2 |
 | mapa nieba | „Mapa nieba” | Zbierający | bez zmian | 10.2 |
 | podpowiedź budynku | „Czy to budynek C-13?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | Zbierający | Pytanie zamiast słowa „podpowiedź”. | 10.2 |
+| lista budynków po „Wybierz inny” (C1) | „Wybierz budynek”, „Najbliżej punktu, od najbliższego:”, przyciski „Budynek A-1” | Zbierający | Ten sam zapis budynku co na liście V1. | 10.2 |
 | korekta ręczna | „Korekta ręczna” | Zbierający, Weryfikator | bez zmian | 10.2 |
 | przesunięcie punktu przyciskami (C1) | „Przesuń punkt na mapie:”, „Przesuń punkt na planie:” i „W górę”, „W dół”, „W lewo”, „W prawo” | Zbierający | Odpowiednik przeciągania punktu (NFR-15). Kierunki te same co przy mapie (PW-8). | 10.2 |
 | nagłówki sekcji C1 i C2 | „Miejsce bariery”, „Piętro”, „Zdjęcie”, „Opis” | Zbierający | Krótki rzeczownik nad grupą pól. | 10.2 |
@@ -151,6 +152,8 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | opis „Blokada” (C2) | „Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś ją przeniesie.” | Zbierający | Skrócone kryterium stopnia 3. | 10.2, 10.5 |
 | opis przy TB-29 (C2) | „Obowiązkowy przy typie »inna bariera«.” | Zbierający | Mówi przed zapisem, kiedy pole jest wymagane (US7.3). | 10.2 |
 | „półpiętro” | „Półpiętro” | Zbierający | bez zmian | 10.2 |
+| budynek, piętro i data w pozycji listy (C3, C4, C7, R2) | „C-13, piętro 2, 12.11.2026”; w R2 „Budynek C-13, piętro 2”; przy zmianie oznaczenia wejścia „A-1, Wejście główne” | Zbierający, Weryfikator | Ten sam wzór co „Piętro:” na karcie budynku. | 10.3 |
+| piętro wpisywane ręcznie (C2, budynek podstawowy) | „Wpisz numer piętra, 0 to parter.” | Zbierający | Mówi, jak liczyć piętra, bo bez planu nie ma etykiet (BR-G1). | 10.2 |
 | status „lokalne” | „W telefonie” | Zbierający | Odpowiada na pytanie PE-2, czy zgłoszenie dotarło. | 10.3 |
 | statusy „wysłane”, „w weryfikacji”, „przyjęte”, „odrzucone”, „archiwalne” | „Wysłane”, „W weryfikacji”, „Przyjęte”, „Odrzucone”, „Archiwalne” | Zbierający | Krótkie pojęcia dokumentacji. | 10.3, 10.5 |
 | znak „zmiana czeka na wysłanie” | „Zmiana czeka na wysłanie” | Zbierający | bez zmian | 10.3 |
@@ -182,7 +185,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | kolejka weryfikacji (R1) | przycisk i nagłówek „Zgłoszenia do sprawdzenia” | Weryfikator | Nagłówek powtarza napis przycisku z L2. | 10.5 |
 | „Wzięte przeze mnie”, „Weź do sprawdzenia” | bez zmian | Weryfikator | — | 10.5 |
 | otwarcie pozycji listy (R1 „Wzięte przeze mnie”, K1 budynek) | „Otwórz” z ikoną `chevron-right` | Weryfikator, Koordynator | Ramka bez znaku nie wygląda na coś, co da się dotknąć (recenzja B5, Nielsen 6). | 10.5, 10.7 |
-| przełącznik „Lista / Mapa” (R1) | „Lista”, „Mapa” | Weryfikator | bez zmian | 10.5 |
+| przełącznik „Mapa / Lista” (R1) | „Mapa”, „Lista” | Weryfikator | Ta sama kolejność co na V1; zaznaczony jest widok domyślny, na R1 lista. | 10.5 |
 | nagłówek R2 | „Sprawdzenie zgłoszenia” | Weryfikator | bez zmian | 10.5 |
 | podobne zgłoszenie | „Podobne zgłoszenia do 10 m” | Weryfikator | Krócej niż „w promieniu 10 m”. | 10.4 |
 | duplikat, „nieaktualne” | „Duplikat”, „Nieaktualne” | Weryfikator | bez zmian | 10.4 |
@@ -192,7 +195,11 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | zmienione pola nowej wersji (R2) | „Zmienione: uciążliwość” | Weryfikator | Weryfikator nie szuka różnicy sam (BR-3). | 10.5 |
 | „Przyjmij”, „Odrzuć”, powód odrzucenia | „Przyjmij”, „Odrzuć”, pole „Powód odrzucenia” | Weryfikator | bez zmian | 10.5 |
 | zasłonięcie twarzy albo tablicy | „Zasłoń twarz lub tablicę” | Weryfikator | Czasownik na przycisku. | 10.5 |
-| pseudonim autora | „Zbierający, Autor 17” | Weryfikator | bez zmian | 10.5 |
+| pseudonim autora | „Autor: Zbierający, Autor 17”; przy zgłoszeniu szybkim „Autor: Odwiedzający, Autor 23” | Weryfikator | Rola i pseudonim bez danych osobowych (BR-5). | 10.5 |
+| rodzaj zgłoszenia (R1, R2) | „Zgłoszenie z pomiaru”, „Zgłoszenie szybkie”, „Bariery już nie ma”, „Zmiana oznaczenia wejścia” | Weryfikator | Rodzaj mówi, czy typ i uciążliwość trzeba ustalić (BR-14, BR-15). Dwa ostatnie napisy są te same co na C3. | 10.5 |
+| data wysłania w kolejce (R1) | „Wysłane 12.11.2026” | Weryfikator | To samo słowo co status „Wysłane” u Zbierającego. | 10.5 |
+| etykiety danych zgłoszenia (R2) | „Czego dotyczy:”, „Miejsce:”, „Obecne oznaczenie:”, „Wybrane oznaczenie:”, „Wcześniejsze zgłoszenie:” | Weryfikator | Krótka etykieta przed wartością z danych. „Czego dotyczy” powtarza pytanie z kroku 2 V4. | 10.5 |
+| podobne zgłoszenie: odległość i piętro (R2) | „5 m, piętro 2”; przy wyborze duplikatu „schody przy wejściu, 2 m”, „próg, 5 m” | Weryfikator | Odległość tekstem, a nie tylko punktem na mapie (NFR-19). | 10.4 |
 | postęp inwentaryzacji | „Postęp inwentaryzacji” | Koordynator | bez zmian | 10.7 |
 | postęp budynku | „4 z 5 pięter, 80%” | Koordynator | bez zmian | 10.7 |
 | liczby zgłoszeń w K1 | „Czeka na sprawdzenie: 3”, „Przyjęte: 4” | Koordynator | bez zmian; liczby jak w scenariuszu `@US11.1` | 10.7 |
@@ -201,6 +208,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | zaproszenie | przycisk i nagłówek K2 „Zaproś osobę”, przycisk „Wyślij zaproszenie” | Koordynator | Nagłówek powtarza napis przycisku z L2. | 10.4 |
 | pola K2 | „Adres e-mail”, „Rola” | Koordynator | bez zmian | 10.4 |
 | eksport | przycisk i nagłówek K3 „Pobierz eksport”, przycisk „Pobierz plik” | Koordynator | Krótkie pojęcie dokumentacji. | 10.6 |
+| wybór formatu eksportu (K3) | „Format pliku” | Koordynator | bez zmian; nagłówek nad dwoma formatami | 10.6 |
 | formaty eksportu | „GeoJSON (WGS84)”, „CSV (PUWG 1992, EPSG:2180)” | Koordynator | Format i kod EPSG pozwalają otworzyć plik w QGIS bez zgadywania układu. | 10.6 |
 
 ## Katalog komunikatów (hipoteza, do potwierdzenia w wywiadach)
@@ -370,7 +378,7 @@ Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk,
 | L2 Konto albo Konto i praca (wszystkie role) | 18 | 5 | 28% | wskaźnik sieci, pasek (4) |
 | C1 Pomiar pozycji | 19 | 1 | 5% | wskaźnik sieci |
 | C2 Formularz zgłoszenia | 13 | 3 | 23% | wskaźnik sieci, uciążliwość, „Zrób zdjęcie” |
-| C3 Moje zgłoszenia | 13 | 2 | 15% | wskaźnik sieci, status |
+| C3 Moje zgłoszenia | 14 | 3 | 21% | wskaźnik sieci, status, oznaczenie wejścia przy zmianie oznaczenia |
 | C4 Synchronizacja | 12 | 1 | 8% | wskaźnik sieci |
 | C5 Obejrzane piętra | 10 | 2 | 20% | wskaźnik sieci, znacznik |
 | C6 Zmień oznaczenie wejścia | 12 | 5 | 42% | wskaźnik sieci, obecne oznaczenie, „Dostępne”, „Niedostępne”, „Zrób zdjęcie” |
@@ -380,7 +388,7 @@ Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk,
 | K1 Postęp inwentaryzacji | 12 | 3 | 25% | wskaźnik sieci, znacznik, „Otwórz” |
 | K2 Zaproś osobę | 6 | 1 | 17% | wskaźnik sieci |
 | K3 Pobierz eksport | 6 | 1 | 17% | wskaźnik sieci |
-| **Razem** | **246** | **61** | **25%** | — |
+| **Razem** | **247** | **62** | **25%** | — |
 
 Tabela liczy każdy ekran w stanie typowym: bez sieci, z jednym wejściem i jedną barierą. V3 ma mało treści, więc jego udział zależy od stanu:
 

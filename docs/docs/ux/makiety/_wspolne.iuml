@@ -94,32 +94,59 @@ $tekst("[" + $opis + "]", "i")
 
 ' ---------- Przyciski ----------
 
-' Napis przycisku dopełniony spacjami do szerokości ramki.
-!function $dk_przycisk($t, $ikona, $zapas)
-!local $dl = %strlen($t) + $zapas
+' Salt liczy szerokość przycisku jak dla pisma o stałej szerokości: 8 px na znak,
+' także na spację U+2007 (zmierzone na PNG). Dlatego każdy przycisk na pełną
+' szerokość ma $DK_PRZYCISK znaków (tyle co najdłuższy napis: „Pozwól na dokładną
+' lokalizację”), a przycisk w parze obok drugiego $DK_PRZYCISK_POL znaków.
+' Dopełnienie jest liczone łącznie: po lewej połowa z obcięciem, po prawej reszta,
+' więc napis o nieparzystej długości nie traci spacji.
+!$DK_PRZYCISK = 30
+!$DK_PRZYCISK_POL = 14
+
+' Napis przycisku z ikoną albo bez, dopełniony do $szer znaków.
+!function $dk_napis($t, $ikona, $szer)
+!local $dl = %strlen($t)
 !if $ikona != ""
 !$dl = $dl + 3
 !endif
-!local $pol = ($DK_MAKS - $dl) / 2
-!if $pol < 0
-!$pol = 0
+!local $dop = $szer - $dl
+!if $dop < 0
+!$dop = 0
 !endif
+!local $lewo = $dop / 2
 !local $w = $t
 !if $ikona != ""
 !$w = "<&" + $ikona + "> " + $t
 !endif
-!return $dk_spacje($pol) + $w + $dk_spacje($pol)
+!return $dk_spacje($lewo) + $w + $dk_spacje($dop - $lewo)
+!endfunction
+
+' Napis przycisku na pełną szerokość ramki.
+!function $dk_przycisk($t, $ikona)
+!return $dk_napis($t, $ikona, $DK_PRZYCISK)
 !endfunction
 
 ' Czynność główna ekranu: pełna szerokość, pogrubiona (NFR-21: wyróżnienie
 ' położeniem i rozmiarem, nie kolorem). Jedna na ekranie.
 !procedure $przycisk_glowny($t, $ikona="")
-[<b>$dk_przycisk($t, $ikona, 6)</b>]
+[<b>$dk_przycisk($t, $ikona)</b>]
 !endprocedure
 
 ' Zwykła czynność: pełna szerokość, zwykła czcionka.
 !procedure $przycisk($t, $ikona="")
-[$dk_przycisk($t, $ikona, 6)]
+[$dk_przycisk($t, $ikona)]
+!endprocedure
+
+' Dwa zwykłe przyciski obok siebie, każdy na pół szerokości (NFR-17).
+!procedure $przyciski_obok($t1, $t2)
+{ [$dk_napis($t1, "", $DK_PRZYCISK_POL)] | [$dk_napis($t2, "", $DK_PRZYCISK_POL)] }
+!endprocedure
+
+' Przyciski kierunku zamiast przeciągania palcem: dwa w wierszu, jak przy mapie
+' (NFR-15, WCAG 2.5.1; NFR-3). Używają ich $przyciski_mapy i $przesun_punkt.
+!procedure $przyciski_kierunku()
+$przyciski_obok("W górę", "W dół")
+$przyciski_obok("W lewo", "W prawo")
 !endprocedure
 
 ' ---------- Nagłówek ekranu ----------
@@ -181,10 +208,11 @@ $dk_pasek("Konto i praca", 0)
 
 ' ---------- Komunikat stanu ----------
 
-' Ramka: co się stało i co zrobić (najwyżej 2 zdania), pod nią przyciski
+' Ramka na pełną szerokość, także bez przycisków: co się stało i co zrobić
+' (najwyżej 2 zdania), pod nią przyciski
 ' tej samej wielkości, jeden pod drugim. Treść z katalogu komunikatów.
 !procedure $komunikat($tresc, $p1="", $p2="")
-{+
+$ramka()
 $tekst($tresc)
 !if $p1 != ""
 $przycisk($p1)
@@ -253,13 +281,137 @@ $przycisk($p2)
 !return "Nieobejrzany"
 !endfunction
 
+' ---------- Ramka pozycji i pola formularza ----------
+
+' Otwiera ramkę pozycji listy na pełną szerokość ekranu: pierwszy wiersz jest
+' niewidoczny i ustala szerokość. Ramkę zamyka zwykłe „}”.
+' Pozycję składa się w niej ręcznie, gdy $pozycja nie wystarcza.
+!procedure $ramka()
+{+
+<size:2>$dk_spacje(230)</size>
+!endprocedure
+
+' Pole tekstowe na pełną szerokość ramki. $wpis: podpowiedź, wpisany tekst albo
+' "" (pole puste). Szerokość nie zależy od długości wpisu. W komórce tabeli,
+' gdzie procedura nie działa, wpisuje się funkcję $dk_pole(wpis, szerokość).
+!$DK_POLE = 31
+!function $dk_pole($wpis, $szer)
+!local $pol = $szer - %strlen($wpis)
+!if $pol < 0
+!$pol = 0
+!endif
+!return %chr(34) + $wpis + $dk_spacje($pol) + %chr(34)
+!endfunction
+!procedure $pole_tekstowe($wpis="", $szer=$DK_POLE)
+$dk_pole($wpis, $szer)
+!endprocedure
+
+' Błąd przy polu: ten sam tekst co w podsumowaniu nad formularzem
+' (NFR-15, WCAG 3.3.1). Pogrubienie i położenie, nie kolor (NFR-21).
+!procedure $blad_pola($t)
+$tekst($t, "b")
+!endprocedure
+
+' Opcja wyboru jednej wartości w ramce na pełną szerokość (NFR-17).
+' $wybrane: "X" dla wybranej, "" dla pozostałych. $tresc z ikoną z funkcji oznaczeń.
+!procedure $opcja($wybrane, $tresc, $opis="")
+$ramka()
+!if $wybrane == "X"
+(X) <b>$tresc</b>
+!else
+( ) $tresc
+!endif
+!if $opis != ""
+$tekst($opis)
+!endif
+}
+!endprocedure
+
+' Przełącznik dwóch widoków, np. „Mapa” i „Lista budynków” (NFR-19). Wybraną
+' pozycję widać po kształcie pola, a nie po kolorze (NFR-21). $wybrana: 1 albo 2.
+!procedure $przelacznik($p1, $p2, $wybrana=1)
+!if $wybrana == 2
+{ ( ) $p1$dk_spacje(4) | (X) $p2 }
+!else
+{ (X) $p1$dk_spacje(4) | ( ) $p2 }
+!endif
+!endprocedure
+
+' Wybór piętra: „Piętro:” robi makieta, tu etykiety z danych PWr jako zastępniki.
+' $wybrane: numer wybranego piętra albo 0 (nic nie wybrano). $liczba: ile pięter.
+!procedure $pietra($wybrane=0, $liczba=5)
+!local $w = ""
+!local $i = 1
+!while $i <= $liczba
+!if $i > 1
+!$w = $w + " | "
+!endif
+!if $i == $wybrane
+!$w = $w + "(X) "
+!else
+!$w = $w + "( ) "
+!endif
+!$w = $w + "<i>[" + $i + "]</i>"
+!if $i < $liczba
+!$w = $w + $dk_spacje(2)
+!endif
+!$i = $i + 1
+!endwhile
+{ $w }
+!endprocedure
+
+' Zdjęcie w formularzu (C2, C6, C7): przypomnienie o wizerunku i przycisk
+' z ikoną aparatu (NFR-25, PW-8). $opis: zastępnik zrobionego zdjęcia; pusty,
+' gdy zdjęcia jeszcze nie ma. Krok 1 V4 składa te same elementy ręcznie,
+' bo ma tam czynność główną.
+!procedure $zdjecie($opis="")
+$tekst("Nie fotografuj twarzy ani tablic rejestracyjnych.")
+!if $opis == ""
+$przycisk("Zrób zdjęcie", "camera-slr")
+!else
+$obraz($opis)
+$przycisk("Zrób nowe zdjęcie", "camera-slr")
+!endif
+!endprocedure
+
+' ---------- Mapa ----------
+
+' Napis o prawach autorskich OpenStreetMap jako odnośnik, zawsze w ramce mapy (NFR-37).
+!procedure $osm()
+<u>© OpenStreetMap contributors</u>
+!endprocedure
+
+' Zastępnik mapy na pełną szerokość, z podpisem OpenStreetMap w ramce (NFR-37).
+' $opis: co widać na mapie. $legenda: przykład oznaczeń na mapie tekstem i ikoną
+' (NFR-21), np. $blokada() na V1; pusta, gdy mapa nie pokazuje barier.
+!procedure $mapa($opis, $legenda="")
+$ramka()
+.
+$tekst("[" + $opis + "]", "i")
+.
+!if $legenda != ""
+<i>[przykład oznaczeń na mapie:]</i>
+$legenda
+.
+!endif
+$osm()
+}
+!endprocedure
+
+' Przyciski mapy zamiast gestów: powiększanie i przesuwanie, dwa w wierszu,
+' ten sam układ na V1 i R1 (NFR-15, WCAG 2.5.1; NFR-17; PW-8).
+!procedure $przyciski_mapy()
+$przyciski_obok("Powiększ", "Pomniejsz")
+$przyciski_kierunku()
+!endprocedure
+
 ' ---------- Szablony pozycji listy ----------
 
 ' Wejście: oznaczenie jako pierwsza informacja, tuż pod nim data i źródło
 ' (US17.3). $zrodlo bez zawijania: najwyżej 34 widoczne znaki.
 ' $akcja tylko dla Zbierającego: "Zmień oznaczenie".
 !procedure $wejscie($oznaczenie, $nazwa, $zrodlo, $akcja="")
-{+
+$ramka()
 <b>$oznaczenie</b>: $nazwa
 $zrodlo
 !if $akcja != ""
@@ -269,9 +421,9 @@ $przycisk($akcja)
 !endprocedure
 
 ' Ogólna pozycja listy: tytuł, oznaczenie (tekst i ikona), dopisek, przycisk.
-' Bardziej złożoną pozycję składa się ręcznie w ramce {+ ... }.
+' Bardziej złożoną pozycję składa się ręcznie w $ramka() … }.
 !procedure $pozycja($tytul, $oznaczenie="", $dopisek="", $akcja="")
-{+
+$ramka()
 $tekst($tytul, "b")
 !if $oznaczenie != ""
 $oznaczenie

@@ -4,7 +4,7 @@ Makiety ekranów C1–C7 dla roli Zbierającego (RO-ZBI), a na C5 także dla Koo
 
 Zbierający pracuje w ruchu i często w słońcu. Dlatego każdy ekran ma jedną czynność główną na pełną szerokość, a wybór wartości to duże ramki zamiast małych pól. Przykłady dotyczą budynku A-1: wejście główne ma schody [1]. Nieznane dane są zastępnikami w nawiasach.
 
-Fragmenty spoza `_wspolne.iuml` stoją w pliku `_zespol-w-terenie.iuml`: przyciski przesuwania punktu, blok zdjęcia, błąd przy polu, opcja wyboru i ramka pozycji na pełną szerokość.
+Blok zdjęcia, błąd przy polu, opcja wyboru, wybór piętra, mapa i ramka pozycji na pełną szerokość pochodzą z `_wspolne.iuml`. W pliku `_zespol-w-terenie.iuml` zostały tylko przyciski przesuwania punktu, w tym samym układzie co przyciski mapy na V1 i R1.
 
 ## C1 Pomiar pozycji
 
@@ -34,6 +34,20 @@ Czynność główna: „Dalej” — zatwierdzenie miejsca i przejście do C2.
 | Mapa z punktem bariery, „© OpenStreetMap contributors” | US6.4, NFR-37 |
 | „Przesuń punkt na mapie:” i „W górę”, „W dół”, „W lewo”, „W prawo” zamiast przeciągania | US6.4, NFR-3, NFR-15 |
 | „Dalej” pogrubione, na pełną szerokość | US6, NFR-21 |
+
+### Wybór innego budynku
+
+![Makieta C1 po dotknięciu Wybierz inny: sekcja Wybierz budynek z trzema najbliższymi budynkami jako przyciskami i przyciskiem Poza budynkiem, pod nią mapa z punktem, przyciski przesuwania i Dalej](../../_generated/m-c1-pomiar-pozycji-wybor-budynku.svg)
+
+Czynność główna: wybór budynku z listy. Ten sam ekran C1, bez nowego identyfikatora.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| „Wybierz budynek” w miejscu pytania „Czy to budynek A-1?” | US6.2, BR-G2 |
+| „Najbliżej punktu, od najbliższego:” i budynki jako przyciski na pełną szerokość, podpowiadany budynek pierwszy | US6.2, NFR-17 |
+| „Poza budynkiem” na końcu listy | BR-G2, BR-G4 |
+| Lista z konturów zapisanych w telefonie, więc działa bez sieci | NFR-4 |
+| Wybór zamyka listę i pokazuje „Budynek A-2” z „Wybierz inny”, jak po potwierdzeniu | US6.2 |
 
 ### Korekta w budynku szczegółowym
 
@@ -71,10 +85,12 @@ Czynność główna: „Dalej”.
 | --- | --- |
 | „Brak internetu” z ikoną i „Ostatnia synchronizacja: …” | US9.1, NFR-10, NFR-21 |
 | „Poza budynkiem” bez pytania o budynek i bez komunikatu o błędzie | BR-G4, NFR-49 |
-| Mapa bez mapy ulic: kontury i punkt z danych aplikacji, bez podpisu OpenStreetMap | NFR-4, NFR-39 |
+| Mapa bez mapy ulic: kontury i punkt z danych aplikacji. Podpis OpenStreetMap zostaje, jak na V1 bez internetu. Kontury pochodzą też z OpenStreetMap, a NFR-37 wymaga podpisu na każdym ekranie z mapą. | NFR-4, NFR-37, NFR-39 |
 | Brak planu piętra; korekta tylko na mapie | US6.4, BR-G4 |
 
-Budynek podstawowy wygląda tak samo, ale zamiast „Poza budynkiem” ma pytanie „Czy to budynek …?” z trzema przyciskami (US6.4, BR-G1). Zwykły stan bez internetu różni się od makiety po podpowiedzi tylko wskaźnikiem i mapą bez ulic.
+Budynek podstawowy wygląda tak samo, ale zamiast „Poza budynkiem” ma pytanie „Czy to budynek …?” z trzema przyciskami (US6.4, BR-G1). Po potwierdzeniu w miejscu wyboru piętra i planu stoi ten sam napis o braku planu co na V2 (BR-G1).
+
+Zwykły stan bez internetu różni się od makiety po podpowiedzi tylko wskaźnikiem i mapą bez ulic.
 
 ### Brak zgody na lokalizację
 
@@ -135,7 +151,7 @@ Czynność główna: „Zapisz”.
 | Element | AC/BR/NFR |
 | --- | --- |
 | Pola z zapisanymi wartościami | US8.3 |
-| Piętro jako liczba całkowita i pole „Półpiętro” | US7.2, BR-G1 |
+| „Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter.”, pod nim piętro jako liczba całkowita i pole „Półpiętro” | US7.2, BR-G1, PW-6 |
 | Typ „inna bariera” z opisem ze scenariusza `@US7.3` | US7.3 |
 
 | Stan bez makiety | Co się zmienia | AC/BR/NFR |
@@ -175,7 +191,7 @@ Czynność główna: „Wyślij ponownie”.
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.”; przy zmianie oznaczenia wejścia: „Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.” | BR-23, BR-24, PW-14 |
-| „Wyślij ponownie”; prowadzi do C2, a przy zmianie oznaczenia wejścia do C6 | BR-23, BR-24, PW-14 |
+| „Wyślij ponownie”; prowadzi do C2, przy zmianie oznaczenia wejścia do C6, a przy „bariera usunięta” do C7, zawsze z aktualną wersją zgłoszenia | BR-23, BR-24, PW-14 |
 | „Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.” i „Zmierz i zgłoś barierę” | BR-23, PW-12 |
 
 ### Pusta lista
@@ -234,7 +250,7 @@ Przy zgłoszeniu przyjętym komunikat ma drugie zdanie z katalogu komunikatów (
 
 ![Makieta C5 dla budynku A-1: pięć pięter; piętro 1 Obejrzane z Twój znacznik i Cofnij znacznik, piętro 2 Obejrzane ze Znacznik innej osoby, piętro 3 Obejrzane z Czeka na wysłanie, piętra 4 i 5 Nieobejrzane z przyciskiem Oznacz jako obejrzane](../../_generated/m-c5-obejrzane-pietra.svg)
 
-Czynność główna: „Oznacz jako obejrzane” przy piętrze bez znacznika.
+Czynność główna: „Oznacz jako obejrzane” przy piętrze bez znacznika. Przycisk powtarza się w wierszach, więc nie jest pogrubiony; wyróżnia go położenie w wierszu, jak „Weź do sprawdzenia” na R1 (NFR-21).
 
 | Element | AC/BR/NFR |
 | --- | --- |

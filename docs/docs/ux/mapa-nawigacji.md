@@ -64,6 +64,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1 | dotknięcie budynku na liście | V2 | wszystkie | US2, US3.2 |
 | V1 | dotknięcie bariery | V2 budynku bariery | wszystkie | US1.3, US10.6 |
 | V1 | napis „© OpenStreetMap contributors” | strona praw autorskich OSM | wszystkie | NFR-37 |
+| V1 | „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” | V1, mapa powiększona albo przesunięta | wszystkie | NFR-15, PW-8 |
 | V1, stan „brak wyniku” | „Lista budynków” | V1, lista | wszystkie | UC1 3a |
 | V2 | przełącznik pięter | V2, plan piętra | wszystkie | US16.1 |
 | V2 | „Sprawdź, którędy wejść” | V3 | wszystkie | US3, US3.2 |
@@ -81,7 +82,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V4, stan „lokalizacja wyłączona” | „Otwórz ustawienia” | ustawienia telefonu | zalogowani | UC7 4c |
 | V4, stan „lokalizacja wyłączona” | „Wróć do mapy” | V1 | zalogowani | UC7 4c |
 | V4, krok 1 | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | aparat, potem krok 2 | zalogowani | US4.1, BR-8 |
-| V4, krok 2 | wybór grupy barier, np. „Schody i windy” | V4, krok 3 | zalogowani | US4.3 |
+| V4, krok 2 | wybór grupy barier: „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego” | V4, krok 3 | zalogowani | US4.3 |
 | V4, krok 2 | „Wstecz” | V4, krok 1; zdjęcie zostaje | zalogowani | US4.1 |
 | V4, krok 1, zdjęcie zrobione | „Dalej” | V4, krok 2; zdjęcie i grupa zostają | zalogowani | US4.1 |
 | V4, krok 1, zdjęcie zrobione | „Wstecz” | V4, stan „potwierdzenie rezygnacji” | zalogowani | UC7 1b |
@@ -134,19 +135,25 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V2 | „Oznacz obejrzane piętra” | C5 | RO-ZBI | US15.1 |
 | C1 | „Powtórz pomiar” | C1, początek pomiaru | RO-ZBI | UC8 2a, NFR-23 |
 | C1 | „Dalej” | C2 | RO-ZBI | US6 |
+| C1 | „Potwierdź”, „Poza budynkiem” przy pytaniu „Czy to budynek C-13?” | C1 z wybranym budynkiem albo bez budynku | RO-ZBI | US6.2, BR-G2, BR-G4 |
+| C1 | „Wybierz inny” przy pytaniu albo po potwierdzeniu | C1, lista budynków najbliżej punktu | RO-ZBI | US6.2, BR-G2 |
+| C1, lista budynków | budynek z listy, np. „Budynek A-2”; „Poza budynkiem” | C1 z wybranym budynkiem albo bez budynku | RO-ZBI | US6.2, BR-G2, BR-G4 |
+| C1 | „W górę”, „W dół”, „W lewo”, „W prawo” pod „Przesuń punkt na mapie:” albo „Przesuń punkt na planie:” | C1, punkt przesunięty, napis „Korekta ręczna” | RO-ZBI | US6.3, US6.4, NFR-15 |
+| C1, stany „brak zgody” i „zgoda tylko przybliżona” | „Pozwól na lokalizację”, „Pozwól na dokładną lokalizację” | C1, pomiar | RO-ZBI | NFR-27, BR-8 |
 | C1, stany zgody na lokalizację | jak w V4; po odmowie „Otwórz ustawienia” | ustawienia telefonu | RO-ZBI | NFR-27 |
 | C1, stany zgody na lokalizację | „Wstecz” zamiast „Wróć do mapy” | ekran, z którego otwarto C1: L2, C2 albo C3 | RO-ZBI | NFR-15 |
 | C2 | „Zmień miejsce” | C1 | RO-ZBI | US6.2 |
-| C2 | dodanie zdjęcia | aparat | RO-ZBI | US7.1, NFR-25 |
+| C2 | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | aparat, potem C2 ze zdjęciem | RO-ZBI | US7.1, NFR-25 |
 | C2 | „Zapisz” | C3 | RO-ZBI | BR-7 |
 | C2, błąd walidacji | „Zapisz” bez wymaganego pola | C2, komunikat przy polu | RO-ZBI | US7.1, US7.3 |
 | C3 | znak „Dwie wersje: wybierz jedną” | C4 | RO-ZBI | US9.3 |
 | C3 | stan synchronizacji, np. „Czeka na wysłanie: 3” | C4 | RO-ZBI | US9.1 |
-| C3 | dotknięcie zgłoszenia przed decyzją albo odrzuconego | C2 | RO-ZBI | US8.3, BR-3 |
+| C3 | „Popraw zgłoszenie” albo dotknięcie zgłoszenia przed decyzją albo odrzuconego | C2 | RO-ZBI | US8.3, BR-3 |
 | C3 | to samo przy zmianie oznaczenia wejścia | C6 | RO-ZBI | US17.2 |
 | C3 | to samo przy „bariera usunięta” | C7 | RO-ZBI | US8.4 |
-| C3 | „Wyślij do aktualnego zgłoszenia” | C2 | RO-ZBI | BR-23 |
-| C3 | to samo przy zmianie oznaczenia wejścia | C6 | RO-ZBI | BR-23, BR-24 |
+| C3 | „Wyślij ponownie” przy zmianie odrzuconej jako „nieaktualne” | C2 z aktualną wersją zgłoszenia | RO-ZBI | BR-23 |
+| C3 | to samo przy zmianie oznaczenia wejścia | C6 z bieżącym oznaczeniem | RO-ZBI | BR-23, BR-24 |
+| C3 | to samo przy „bariera usunięta” | C7 z aktualną wersją zgłoszenia | RO-ZBI | BR-23, US8.4 |
 | C3 | przy „nieaktualne” po usunięciu bariery: „Zmierz i zgłoś barierę” | C1 | RO-ZBI | BR-23 |
 | C3 | „Zmierz i zgłoś barierę”, także w stanie pustym | C1 | RO-ZBI | US6 |
 | C3, stan „błąd” | „Spróbuj ponownie” | C3 | RO-ZBI | NFR-50 |
@@ -156,24 +163,26 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | C5 | „Oznacz jako obejrzane” | C5, nowy stan | RO-ZBI | US15.1 |
 | C5 | „Cofnij znacznik” przy własnym znaczniku | C5, nowy stan | RO-ZBI | US15.2 |
 | C5, stan „błąd zapisu” | „Spróbuj ponownie” | C5 | RO-ZBI | NFR-7 |
-| C6 | zdjęcie wejścia | aparat | RO-ZBI | US17.2, BR-24 |
+| C6 | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | aparat, potem C6 ze zdjęciem | RO-ZBI | US17.2, BR-24 |
 | C6 | „Wyślij do sprawdzenia” | C3 | RO-ZBI | US17.2 |
-| C7 | nowe zdjęcie miejsca | aparat | RO-ZBI | US8.4, BR-19 |
+| C7 | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | aparat, potem C7 ze zdjęciem | RO-ZBI | US8.4, BR-19 |
 | C7 | „Wyślij do sprawdzenia” | C3 | RO-ZBI | US8.4 |
 
 ### Przejścia: Weryfikator i Koordynator
 
 | Z ekranu | Czynność | Do ekranu | Rola | AC/BR |
 | --- | --- | --- | --- | --- |
-| R1 | przełącznik „Lista” i „Mapa” | R1 | RO-WER | NFR-19 |
+| R1 | przełącznik „Mapa” i „Lista” (domyślnie „Lista”) | R1 | RO-WER | NFR-19 |
+| R1, widok mapy | „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” | R1, mapa powiększona albo przesunięta | RO-WER | NFR-15, PW-8 |
 | R1 | „Weź do sprawdzenia” | R2 | RO-WER | US10.4, BR-11 |
 | R1 | „Weź do sprawdzenia”, zgłoszenie już zajęte | R1, komunikat, zgłoszenie znika | RO-WER | UC14 2a, BR-11 |
-| R1 | zgłoszenie z sekcji „Wzięte przeze mnie” | R2 | RO-WER | BR-11, UC14 2b |
+| R1 | „Otwórz” przy zgłoszeniu z sekcji „Wzięte przeze mnie” | R2 | RO-WER | BR-11, UC14 2b |
+| R2 | „Zasłoń twarz lub tablicę” | R2, zdjęcie z zasłoniętym miejscem | RO-WER | BR-15, NFR-25 |
 | R2 | „Przyjmij” | R1 | RO-WER | US10, US10.6 |
 | R2 | „Odrzuć” z powodem | R1 | RO-WER | US10.2, BR-16 |
 | R2, błąd walidacji | „Przyjmij” albo „Odrzuć” bez wymaganych danych | R2, komunikat | RO-WER | US10.2, US10.3 |
 | R2, brak sieci | „Przyjmij” albo „Odrzuć” | R2; zgłoszenie zostaje we „Wziętych przeze mnie” | RO-WER | BR-11 |
-| K1 | dotknięcie budynku | C5 | RO-KOO | US11.3 |
+| K1 | „Otwórz” albo dotknięcie budynku | C5 | RO-KOO | US11.3 |
 | K1 | „Odśwież” | K1 | RO-KOO | US11.2 |
 | C5 | „Cofnij znacznik” | C5, potwierdzenie | RO-KOO | US11.3, BR-20 |
 | C5, potwierdzenie | „Cofnij znacznik” | C5 z nowym stanem | RO-KOO | US11.3 |

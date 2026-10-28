@@ -23,13 +23,13 @@ Przy otwarciu R1, R2 i K1 komunikat zastępuje treść ekranu. Po czynności na 
 
 Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu. Przycisk powtarza się w każdej pozycji, więc nie jest pogrubiony: wyróżnia go położenie na dole ramki i pełna szerokość. Cztery pogrubione przyciski nie wskazywałyby jednej czynności, a pogrubiony zostaje typ bariery, po którym Weryfikator wybiera zgłoszenie.
 
-![Makieta R1 w stanie zwykłym: sekcja Wzięte przeze mnie z jednym zgłoszeniem i przyciskiem Otwórz, przełącznik Lista i Mapa, cztery zgłoszenia różnych rodzajów z przyciskiem Weź do sprawdzenia](../../_generated/m-r1-kolejka-weryfikacji.svg)
+![Makieta R1 w stanie zwykłym: sekcja Wzięte przeze mnie z jednym zgłoszeniem i przyciskiem Otwórz, przełącznik Mapa i Lista z wybraną listą, cztery zgłoszenia różnych rodzajów z przyciskiem Weź do sprawdzenia](../../_generated/m-r1-kolejka-weryfikacji.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Wstecz” i nagłówek „Zgłoszenia do sprawdzenia”, równy napisowi przycisku w L2 | NFR-15, PW-14 |
 | Sekcja „Wzięte przeze mnie” na górze; dotknięcie pozycji otwiera R2, a „Otwórz” z ikoną pokazuje, że pozycję da się otworzyć | BR-11, UC14 2b, NFR-21 |
-| Przełącznik „Lista” i „Mapa”; wybrany widok widać po kształcie pola | UC14, NFR-19, NFR-21 |
+| Przełącznik „Mapa” i „Lista” w tej samej kolejności co na V1; domyślnie wybrana lista, wybrany widok widać po kształcie pola | UC14, NFR-19, NFR-21 |
 | Pozycja zgłoszenia „wysłane”: typ albo grupa barier, budynek, rodzaj, data wysłania; przy zmianie oznaczenia wejścia nazwa wejścia, bo zmiana nie ma typu | US10.4, BR-14, BR-24 |
 | Grupa „Schody i windy” zamiast typu przy zgłoszeniu szybkim, bo typ ustala dopiero Weryfikator | BR-14, PW-7 |
 | Rodzaj: „Zgłoszenie z pomiaru”, „Zgłoszenie szybkie”, „Bariery już nie ma”, „Zmiana oznaczenia wejścia” | US10.5, US17.2, BR-19, BR-24 |
@@ -99,7 +99,7 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Budynek D-2 przypisany przez system z konturu | BR-14 |
 | „Autor: Odwiedzający, Autor [nr]” | BR-5 |
 | „Typ bariery”: lista do wyboru, także z innej grupy niż podpowiedź | US10.3, BR-14 |
-| „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda z ikoną | US10.3, PW-13, NFR-21 |
+| „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda z ikoną w ramce na pełną szerokość, jak na C2 | US10.3, PW-13, NFR-17, NFR-21 |
 | „W promieniu 10 m nie ma podobnych zgłoszeń.” zamiast listy | US10.1 |
 
 ![Makieta R2 dla zmiany bariera usunięta: niesprawna winda w D-2, poprzednie zgłoszenie Archiwalne, zdjęcie z poprzedniego zgłoszenia obok nowego, podobna zmiana przyjęta 0 m dalej, wybrany powód Nieaktualne](../../_generated/m-r2-sprawdzenie-zgloszenia-usunieta.svg)
@@ -113,13 +113,13 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Wybrany powód „Nieaktualne”: ta zmiana dotyczy zgłoszenia, które stało się archiwalne | BR-23 |
 | Po przyjęciu „Przyjmij” winda znika z mapy i karty budynku | US10.6 |
 
-![Makieta R2 dla zmiany oznaczenia wejścia: obecne oznaczenie Dostępne wejścia od ul. Norwida z datą i źródłem, napis Bez zmian od wysłania, wybrane oznaczenie Dostępne, nowe zdjęcie wejścia](../../_generated/m-r2-sprawdzenie-zgloszenia-wejscie.svg)
+![Makieta R2 dla zmiany oznaczenia wejścia: obecne oznaczenie Dostępne wejścia bramą od ul. Norwida z datą i źródłem, napis Bez zmian od wysłania, wybrane oznaczenie Dostępne, nowe zdjęcie wejścia](../../_generated/m-r2-sprawdzenie-zgloszenia-wejscie.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Zmiana oznaczenia wejścia” i budynek A-1 | US17.2 |
 | Obecne oznaczenie tekstem i ikoną, z datą i źródłem jak na V2 | US17.3, BR-24, PW-3 |
-| „Wybrane oznaczenie: Dostępne”: Zbierający potwierdza obecne oznaczenie; wejście od ul. Norwida jest dostępne według deklaracji [1] | US17.2, BR-24 |
+| „Wybrane oznaczenie: Dostępne”: Zbierający potwierdza obecne oznaczenie; wejście bramą od ul. Norwida jest dostępne według deklaracji [1] | US17.2, BR-24 |
 | Nowe zdjęcie wejścia z „Zasłoń twarz lub tablicę” | BR-24, NFR-25 |
 | „Bez zmian od wysłania” z ikoną pod obecnym oznaczeniem; gdy w tym czasie przyjęto inną zmianę tego wejścia: „Zmienione po wysłaniu”, a powód „Nieaktualne” | BR-23, BR-24, NFR-21 |
 | Weryfikator nie zmienia wybranego oznaczenia: gdy zdjęcie mu przeczy, odrzuca z powodem | BR-24, BR-16 |

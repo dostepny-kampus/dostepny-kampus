@@ -1,0 +1,23 @@
+@startsalt
+' C1 Pomiar pozycji po „Wybierz inny”: lista budynków najbliżej punktu w tym samym ekranie (US6.2, BR-G2).
+' Zbierający stoi przy wejściu głównym A-1, podpowiadany budynek jest pierwszy.
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Pomiar pozycji")
+Dokładność: 0,8 m (szacunek)
+$tekst("Satelity: GPS 7, Galileo 5, GLONASS <i>[liczba]</i>")
+$przycisk("Powtórz pomiar")
+$sekcja("Wybierz budynek")
+Najbliżej punktu, od najbliższego:
+$przycisk("Budynek A-1")
+$przycisk("Budynek A-2")
+$przycisk("Budynek A-3")
+$przycisk("Poza budynkiem")
+$sekcja("Miejsce bariery")
+$mapa("mapa z punktem bariery przy wejściu głównym A-1")
+$przesun_punkt("na mapie")
+..
+$przycisk_glowny("Dalej")
+$ekran_koniec()
+@endsalt

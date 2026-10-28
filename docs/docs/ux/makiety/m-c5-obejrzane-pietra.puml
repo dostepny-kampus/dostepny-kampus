@@ -26,12 +26,12 @@ $przycisk("Cofnij znacznik")
 $ramka()
 <b>Piętro: <i>[4]</i></b>
 $nieobejrzane()
-$przycisk_glowny("Oznacz jako obejrzane")
+$przycisk("Oznacz jako obejrzane")
 }
 $ramka()
 <b>Piętro: <i>[5]</i></b>
 $nieobejrzane()
-$przycisk_glowny("Oznacz jako obejrzane")
+$przycisk("Oznacz jako obejrzane")
 }
 $ekran_koniec()
 @endsalt

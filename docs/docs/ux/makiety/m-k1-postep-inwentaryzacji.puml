@@ -9,8 +9,8 @@ $naglowek("Postęp inwentaryzacji")
 $przycisk("Odśwież")
 Stan z <i>[godzina]</i>
 ..
-{+
-<b>Budynek A-1</b>$dk_spacje(27)
+$ramka()
+<b>Budynek A-1</b>
 4 z 5 pięter, 80%
 Czeka na sprawdzenie: <i>[liczba]</i>
 Przyjęte: <i>[liczba]</i>
@@ -18,15 +18,15 @@ Wejścia sprawdzone na miejscu:
 <i>[x]</i> z <i>[y]</i>
 $przycisk("Otwórz", "chevron-right")
 }
-{+
-<b>Budynek B-4</b>$dk_spacje(27)
-$obejrzany()
+$ramka()
+<b>Budynek B-4</b>
+<b>$obejrzany()</b>
 Czeka na sprawdzenie: <i>[liczba]</i>
 Przyjęte: <i>[liczba]</i>
 $przycisk("Otwórz", "chevron-right")
 }
-{+
-<b>Budynek <i>[symbol]</i></b>$dk_spacje(22)%chr(8200)
+$ramka()
+<b>Budynek <i>[symbol]</i></b>
 $nieobejrzany()
 Czeka na sprawdzenie: <i>[liczba]</i>
 Przyjęte: <i>[liczba]</i>

@@ -7,31 +7,31 @@ $naglowek("Zgłoszenia do sprawdzenia")
 $komunikat("Ktoś inny wziął już to zgłoszenie. Wybierz inne.")
 ..
 <b>Wzięte przeze mnie</b>
-{+
-<b>schody przy wejściu</b>$dk_spacje(18)
+$ramka()
+<b>schody przy wejściu</b>
 Budynek A-1
 Zgłoszenie z pomiaru
 Wysłane <i>[data]</i>
 $przycisk("Otwórz", "chevron-right")
 }
 ..
-{ (X) Lista$dk_spacje(4) | ( ) Mapa }
-{+
+$przelacznik("Mapa", "Lista", 2)
+$ramka()
 <b>Schody i windy</b>
 Budynek D-2
 Zgłoszenie szybkie
 Wysłane <i>[data]</i>
 $przycisk("Weź do sprawdzenia")
 }
-{+
+$ramka()
 <b>niesprawna winda</b>
 Budynek D-2
 Bariery już nie ma
 Wysłane <i>[data]</i>
 $przycisk("Weź do sprawdzenia")
 }
-{+
-<b>Wejście od ul. Norwida</b>
+$ramka()
+<b>Wejście bramą od ul. Norwida</b>
 Budynek A-1
 Zmiana oznaczenia wejścia
 Wysłane <i>[data]</i>

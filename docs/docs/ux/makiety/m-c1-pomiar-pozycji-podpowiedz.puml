@@ -13,8 +13,7 @@ $przycisk("Potwierdź")
 $przycisk("Wybierz inny")
 $przycisk("Poza budynkiem")
 $sekcja("Miejsce bariery")
-$obraz("mapa z punktem bariery przy wejściu głównym A-1")
-© OpenStreetMap contributors
+$mapa("mapa z punktem bariery przy wejściu głównym A-1")
 $przesun_punkt("na mapie")
 ..
 $przycisk_glowny("Dalej")

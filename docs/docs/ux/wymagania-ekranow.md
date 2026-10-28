@@ -79,7 +79,7 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | Mapa z konturami budynków | dane | US1, NFR-11 | — |
 | Bariery ze zgłoszeń przyjętych; uciążliwość napisem z wymagań wspólnych i kształtem | dane | US1.3, US10.6, NFR-21 | V2 (budynek bariery) |
 | Pole symbolu budynku z podpowiedzią „Wpisz symbol budynku, np. C-13”; przyjmuje też zapis „c13” | czynność główna | US1.1, PW-8 | V2 |
-| Przełącznik „Mapa” i „Lista budynków” | czynność | NFR-19 | lista na tym ekranie |
+| Przełącznik „Mapa” i „Lista budynków”; domyślnie wybrana „Mapa” | czynność | NFR-19 | lista na tym ekranie |
 | Dotknięcie konturu albo budynku na liście | czynność | US2, US3.2 | V2 |
 | Przyciski „Powiększ” i „Pomniejsz” oraz „W górę”, „W dół”, „W lewo”, „W prawo” | czynność | NFR-15 (WCAG 2.5.1, powiększanie dwoma palcami); przesuwanie: zasada dla osób starszych; PW-8 | — |
 | Napis „© OpenStreetMap contributors” z odnośnikiem | dane | NFR-37 | strona praw autorskich OSM |
@@ -347,7 +347,7 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Liczba satelitów osobno dla każdego systemu GNSS, np. „Satelity: GPS 7, Galileo 5” | dane | US6.1, NFR-2 | — |
 | Mapa nieba; system satelity rozróżniony kształtem i podpisem | dane | US6.5, NFR-21 | — |
 | „Powtórz pomiar” | czynność | UC8 2a, NFR-23 | początek pomiaru |
-| Podpowiedź budynku: „Czy to budynek C-13?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | czynność | US6.2, BR-G2 | — |
+| Podpowiedź budynku: „Czy to budynek C-13?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | czynność | US6.2, BR-G2 | „Wybierz inny”: lista budynków na C1 |
 | Przesunięcie punktu na mapie, także przyciskami strzałek | czynność | US6.4, NFR-3, NFR-15 | — |
 | Przesunięcie punktu na planie wybranego piętra (budynek szczegółowy) | czynność | US6.3, NFR-3 | — |
 | Napis „Korekta ręczna” po przesunięciu punktu | dane | US6.3, US6.4 | — |
@@ -358,8 +358,9 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | --- | --- |
 | Zwykły | uśrednianie, dokładność, satelity, podpowiedź budynku |
 | Ładowanie — szukanie satelitów | „Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.” Przycisk „Powtórz pomiar” (NFR-1, PW-9) |
+| Wybór innego budynku | po „Wybierz inny” w miejscu pytania sekcja „Wybierz budynek”: budynki najbliżej punktu, od najbliższego, i „Poza budynkiem”. Wybór zamyka listę i pokazuje „Budynek [symbol]” z „Wybierz inny”. Lista działa bez sieci, z konturów w telefonie (US6.2, BR-G2, NFR-4). |
 | Daleko od budynków PWr | „Poza budynkiem”, bez podpowiedzi i bez komunikatu o błędzie (BR-G4, NFR-49) |
-| Budynek podstawowy | bez korekty na planie; korekta na mapie działa (US6.4, BR-G1) |
+| Budynek podstawowy | bez wyboru piętra i korekty na planie. W ich miejscu napis „Nie mamy planu pięter tego budynku.”, jak na V2. Korekta na mapie działa (US6.4, BR-G1, PW-6). |
 | Brak zgody, zgoda tylko przybliżona albo lokalizacja wyłączona | jak w V4: prośba o zgodę albo o dokładną lokalizację, a po odmowie „Otwórz ustawienia” (NFR-27). Bez przycisku „Wróć do mapy”: rezygnacja przez „Wstecz” do ekranu, z którego otwarto C1, czyli L2, C2 albo C3 (NFR-15) |
 | Brak sieci | pomiar i podpowiedź działają; mapa bez podkładu (NFR-4, NFR-39) |
 
@@ -378,7 +379,7 @@ Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykres
 | --- | --- | --- | --- |
 | Budynek i miejsce z C1, przycisk „Zmień miejsce” | dane, czynność | US6.2 | C1 |
 | Piętro: wybór z etykiet z danych PWr (budynek szczegółowy) | czynność | US7.2 | — |
-| Piętro: liczba całkowita i pole „Półpiętro” (budynek podstawowy) | czynność | US7.2, BR-G1 | — |
+| Piętro: liczba całkowita i pole „Półpiętro” (budynek podstawowy); nad polem „Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter.” | czynność | US7.2, BR-G1, PW-6 | — |
 | „Typ bariery”, pogrupowany w 6 grup barier | czynność | US7.1, BR-7 | — |
 | „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda wartość z opisem i ikoną; pod nagłówkiem „Oceń dla osoby, dla której bariera jest najtrudniejsza.” | czynność | US7.1, NFR-21, PW-13 | — |
 | Zdjęcie, co najmniej jedno: „Zrób zdjęcie” i „Zrób nowe zdjęcie”, z przypomnieniem o twarzach i tablicach | czynność | US7.1, NFR-25, PW-8 | aparat |
@@ -416,7 +417,7 @@ Dostępność: błąd walidacji jest tekstem przy polu i w podsumowaniu, a fokus
 | Znak „Zmiana czeka na wysłanie” przy niewysłanej edycji | dane | BR-9, [reguły, cykl życia zgłoszenia](../biznes/reguly.md) | — |
 | Znak „Dwie wersje: wybierz jedną” przy konflikcie | czynność | US9.3 | C4 |
 | Dotknięcie zgłoszenia przed decyzją albo odrzuconego | czynność główna | US8.3, BR-3 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
-| Przy powodzie „nieaktualne”: „Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.” (przy zmianie oznaczenia wejścia: „Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.”) i przycisk „Wyślij ponownie” | czynność | BR-23, BR-24, PW-14 | C2; zmiana oznaczenia wejścia: C6 |
+| Przy powodzie „nieaktualne”: „Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.” (przy zmianie oznaczenia wejścia: „Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.”) i przycisk „Wyślij ponownie” | czynność | BR-23, BR-24, PW-14 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
 | Przy „nieaktualne” po usunięciu bariery: „Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.” Przycisk „Zmierz i zgłoś barierę” | dane, czynność | BR-23, PW-12 | C1 |
 | Stan synchronizacji, np. „Czeka na wysłanie: 3” | czynność | US9.1 | C4 |
 | „Zmierz i zgłoś barierę” | czynność | US6, PW-12 | C1 |
@@ -561,7 +562,7 @@ Uciążliwości ani typu się nie wybiera: przechodzą z poprzedniego zgłoszeni
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Lista zgłoszeń „wysłane”: typ albo grupa barier, budynek, rodzaj, data wysłania | dane | US10.4, BR-14 | — |
-| Przełącznik „Lista” i „Mapa”; lista daje tę samą informację | czynność | UC14, NFR-19 | — |
+| Przełącznik „Mapa” i „Lista”, w tej samej kolejności co na V1; domyślnie wybrana „Lista”. Lista daje tę samą informację. | czynność | UC14, NFR-19 | — |
 | Napis „© OpenStreetMap contributors” na mapie | dane | NFR-37 | — |
 | Sekcja „Wzięte przeze mnie” ze zgłoszeniami „w weryfikacji” tego Weryfikatora; w każdej pozycji „Otwórz” z ikoną | czynność | BR-11, UC14 2b, NFR-21 | R2 |
 | „Weź do sprawdzenia” | czynność główna | US10.4, BR-11 | R2 |

@@ -8,7 +8,7 @@ $wejscie($dostepne(), "<i>[nazwa wejścia z danych]</i>", "Sprawdzone na miejscu
 $przycisk_glowny("Sprawdź, którędy wejść")
 ..
 Piętro:
-{ (X) <i>[1]</i>$dk_spacje(2) | ( ) <i>[2]</i>$dk_spacje(2) | ( ) <i>[3]</i> }
+$pietra(1, 3)
 <b>Plan piętra</b>
 $obraz("plan wybranego piętra: windy, schody, toalety, wejścia")
 Źródło: Politechnika Wrocławska

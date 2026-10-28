@@ -14,7 +14,7 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 | L1 Prośba o logowanie | zwykły, brak sieci | wejście z „Konto”, błąd |
 | L2 Konto | Odwiedzający, rola pracownicza, klauzula, wycofanie zgody | brak sieci |
 
-Fragmenty V1, V4 i V5, których nie ma w `_wspolne.iuml`, są w pliku `_odwiedzajacy.iuml`. To pole tekstowe, przełącznik „Mapa” i „Lista budynków”, przyciski mapy, zastępnik mapy, odnośnik OpenStreetMap i numer kroku. Plik poprawia też dopełnienie napisów przycisków, więc każdy przycisk z `$przycisk`, `$przycisk_glowny` i `$komunikat` ma tę samą szerokość.
+Pole tekstowe, przełącznik „Mapa” i „Lista budynków”, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` został tylko numer kroku V4 i V5. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
 
 ## V1 Mapa kampusu
 
@@ -32,7 +32,7 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | Zastępnik mapy: mapa ulic, kontury budynków, bariery ze zgłoszeń przyjętych | US1, US1.3, US10.6, NFR-11 |
 | Bariera na mapie: uciążliwość napisem i ikoną, np. „Blokada”, „Utrudnienie” | US1.3, NFR-21, PW-13 |
 | „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” zamiast gestów | NFR-15 (WCAG 2.5.1), PW-8 |
-| „© OpenStreetMap contributors” jako odnośnik | NFR-37 |
+| „© OpenStreetMap contributors” jako odnośnik, w ramce mapy | NFR-37 |
 | Pasek dolny z „Konto” | US1, US4, US5.1, US14 |
 
 | Stan bez osobnej makiety | Co się zmienia |
