@@ -1,6 +1,7 @@
 # Wyjątki LanguageTool dla scripts/lang.py.
 # Linia „reguła: ID” wyłącza regułę. Każda inna niepusta linia to słowo (wielkość liter bez znaczenia).
 # Terminy z kolumny „Termin” w docs/biznes/slownik.md są pomijane automatycznie.
+# Tabela nagłówkowa raportów (nazwiska, kurs, data) nie podlega kontroli, więc nie ma tu nazwisk.
 
 # Reguły
 reguła: WHITESPACE_RULE
@@ -13,38 +14,53 @@ pt
 px
 dp
 
-# Nazwy własne, produkty i formaty
-ArcGIS
-QGIS
-GeoJSON
-OpenStreetMap
-ODbL
-USOS
-Connect
-Geoportal
-Geoportalu
-arc42
-Material
+# Miejsca i dane
 PWr
 W04IST-SM0302G
-Telec
-Vladyslav
-Yevkov
-Gherkin
-Jetpack
+USOS
+Geoportal
+Geoportalu
+OpenStreetMap
+ODbL
+GeoJSON
+
+# Narzędzia, biblioteki i standardy (także części nazw własnych, np. Error Prone, Android Lint)
+Actions
+arc42
+ArcGIS
+bpmn-to-image
+Checkstyle
+commitlint
+Commits
 Compose
+compose-rules
+Connect
+Conventional
+detekt
+Flyway
+Fused
+Gherkin
+gitleaks
+Hibernate
+Jetpack
+Keycloak
+Konsist
+ktlint_official
+Lint
+Location
+markdownlint
 Material
 Maven
 Modulith
-Actions
-Conventional
-Commits
-markdownlint
-commitlint
-bpmn-to-image
-worktree
-strict
-v0
+oasdiff
+ogr2ogr
+openapi-generator
+proj4j
+Prone
+QGIS
+qulice
+Redocly
+Spatial
 
 # Terminy techniczne
 utrzymywalność
