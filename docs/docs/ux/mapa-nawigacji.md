@@ -20,7 +20,7 @@ Czwarta pozycja paska dolnego to „Konto”, a osoby z rolą pracowniczą widz�
 
 ![Diagram przejść Gościa i Odwiedzającego: V1, V2, V3, V4 z krokami, V5, L1, L2](../_generated/nawigacja-odwiedzajacy.svg)
 
-Główna droga to V1, V2, V3 i z powrotem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]).
+Główna droga to V1, V2, V3 i z powrotem. Z V2 wraca się też na mapę z planem piętra albo wejściem, a „Zgłoś problem” otwiera V4 z wybranym wejściem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]).
 
 Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”. Po zalogowaniu wraca do kroku 1 V4 albo trafia do L2 (P3).
 
@@ -66,7 +66,16 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1 | napis „© OpenStreetMap contributors” | strona praw autorskich OSM | wszystkie | NFR-37 |
 | V1 | „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” | V1, mapa powiększona albo przesunięta | wszystkie | NFR-15, PW-8 |
 | V1, stan „brak wyniku” | „Lista budynków” | V1, lista | wszystkie | UC1 3a |
-| V2 | przełącznik pięter | V2, plan piętra | wszystkie | US16.1 |
+| V1 | „Legenda” | V1, legenda rozwinięta | wszystkie | NFR-21 |
+| V1 | wybór sali w wynikach pola, np. „A-1 329” | V1, stan „znaleziona sala”: plan piętra i kroki | wszystkie | BR-25, decyzja 44 |
+| V1, stan „plan piętra” albo „znaleziona sala” | przełącznik pięter | V1, plan innego piętra | wszystkie | US16.1 |
+| V1, stan „znaleziona sala”, „sala bez drogi” albo „brak sali” | „Pokaż opis budynku” | V2 | wszystkie | US2 |
+| V1, stan „znaleziona sala” | „Zamknij” | V1 | wszystkie | decyzja 48 |
+| V2 | „Pokaż na planie” przy piętrze | V1, plan tego piętra | wszystkie | US16.1, decyzja 44 |
+| V2 | „Pokaż na mapie” w przypiętym pasie albo przy wejściu zalecanym | V1 z zaznaczonym budynkiem albo wejściem | wszystkie | US2.1, BR-25 |
+| V2 | „Zgłoś problem” przy wejściu | V4, krok 1, wejście wybrane | zalogowani | US4, decyzja 48 |
+| V2 | „Zgłoś problem” przy wejściu | L1, potem V4 z wybranym wejściem | RO-GOS | US14.2, decyzja 48 |
+| V2, stan „brak zgłoszeń przyjętych” | „Zgłoś barierę” | V4; Gość: L1 | wszystkie | US4, US14.2 |
 | V2 | „Sprawdź, którędy wejść” | V3 | wszystkie | US3, US3.2 |
 | V2 | „Wstecz” | V1 z zaznaczonym budynkiem | wszystkie | US1.1 |
 | V2, stan „budynku nie ma w telefonie” | „Spróbuj ponownie” | V2 | wszystkie | NFR-10 |
@@ -108,7 +117,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | --- | --- | --- | --- | --- |
 | L1 | „Zaloguj się” | strona logowania w przeglądarce | RO-GOS | US14, NFR-31 |
 | L1 | „Załóż konto” | rejestracja w przeglądarce z klauzulą | RO-GOS | US14.3, NFR-30 |
-| strona logowania lub rejestracji, wejście z V4 | zalogowanie albo rejestracja | V4, krok 1 | zalogowani | US14.2, UC7 1a |
+| strona logowania lub rejestracji, wejście z V4 | zalogowanie albo rejestracja | V4, krok 1; wejście wybrane na V2 zostaje | zalogowani | US14.2, UC7 1a |
 | strona logowania lub rejestracji, wejście z „Konto” | zalogowanie albo rejestracja | L2 | zalogowani | UC6 krok 3, US12.1, P3 |
 | L1 | „Nie teraz” | V1 | RO-GOS | UC7 1b |
 | L1, stan „brak sieci” | „Wróć do mapy” | V1 | RO-GOS | UC6 1a |
