@@ -74,7 +74,7 @@ Czynność główna: „Dalej”.
 | Mapa bez mapy ulic: kontury i punkt z danych aplikacji, bez podpisu OpenStreetMap | NFR-4, NFR-39 |
 | Brak planu piętra; korekta tylko na mapie | US6.4, BR-G4 |
 
-Budynek podstawowy wygląda tak samo, ale zamiast „Poza budynkiem” ma pytanie „Czy to budynek …?” z trzema przyciskami (US6.4, BR-G1). Zwykły stan bez internetu różni się od makiety po podpowiedzi tylko wskaźnikiem i mapą bez ulic.
+Budynek podstawowy wygląda tak samo, ale zamiast „Poza budynkiem” ma pytanie „Czy to budynek …?” z trzema przyciskami (US6.4, BR-G1). Po potwierdzeniu zamiast wyboru piętra i planu stoi napis „Nie mamy planu pięter tego budynku.”, jak na V2. Zwykły stan bez internetu różni się od makiety po podpowiedzi tylko wskaźnikiem i mapą bez ulic.
 
 ### Brak zgody na lokalizację
 
@@ -135,7 +135,7 @@ Czynność główna: „Zapisz”.
 | Element | AC/BR/NFR |
 | --- | --- |
 | Pola z zapisanymi wartościami | US8.3 |
-| Piętro jako liczba całkowita i pole „Półpiętro” | US7.2, BR-G1 |
+| „Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter.”, pod nim piętro jako liczba całkowita i pole „Półpiętro” | US7.2, BR-G1, PW-6 |
 | Typ „inna bariera” z opisem ze scenariusza `@US7.3` | US7.3 |
 
 | Stan bez makiety | Co się zmienia | AC/BR/NFR |

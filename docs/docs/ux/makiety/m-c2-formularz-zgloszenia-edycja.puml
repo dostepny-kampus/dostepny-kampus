@@ -9,6 +9,7 @@ $naglowek("Formularz zgłoszenia")
 <i>[miejsce z pomiaru]</i>
 $przycisk("Zmień miejsce")
 $sekcja("Piętro")
+$tekst("Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter.")
 { $dk_pole("2", 5) | [ ] Półpiętro }
 $sekcja("Typ bariery")
 ^inna bariera^

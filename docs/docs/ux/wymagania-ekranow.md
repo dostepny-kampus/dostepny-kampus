@@ -359,7 +359,7 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Zwykły | uśrednianie, dokładność, satelity, podpowiedź budynku |
 | Ładowanie — szukanie satelitów | „Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.” Przycisk „Powtórz pomiar” (NFR-1, PW-9) |
 | Daleko od budynków PWr | „Poza budynkiem”, bez podpowiedzi i bez komunikatu o błędzie (BR-G4, NFR-49) |
-| Budynek podstawowy | bez korekty na planie; korekta na mapie działa (US6.4, BR-G1) |
+| Budynek podstawowy | bez wyboru piętra i korekty na planie; w ich miejscu napis „Nie mamy planu pięter tego budynku.”, jak na V2; korekta na mapie działa (US6.4, BR-G1, PW-6) |
 | Brak zgody, zgoda tylko przybliżona albo lokalizacja wyłączona | jak w V4: prośba o zgodę albo o dokładną lokalizację, a po odmowie „Otwórz ustawienia” (NFR-27). Bez przycisku „Wróć do mapy”: rezygnacja przez „Wstecz” do ekranu, z którego otwarto C1, czyli L2, C2 albo C3 (NFR-15) |
 | Brak sieci | pomiar i podpowiedź działają; mapa bez podkładu (NFR-4, NFR-39) |
 
@@ -378,7 +378,7 @@ Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykres
 | --- | --- | --- | --- |
 | Budynek i miejsce z C1, przycisk „Zmień miejsce” | dane, czynność | US6.2 | C1 |
 | Piętro: wybór z etykiet z danych PWr (budynek szczegółowy) | czynność | US7.2 | — |
-| Piętro: liczba całkowita i pole „Półpiętro” (budynek podstawowy) | czynność | US7.2, BR-G1 | — |
+| Piętro: liczba całkowita i pole „Półpiętro” (budynek podstawowy); nad polem „Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter.” | czynność | US7.2, BR-G1, PW-6 | — |
 | „Typ bariery”, pogrupowany w 6 grup barier | czynność | US7.1, BR-7 | — |
 | „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda wartość z opisem i ikoną; pod nagłówkiem „Oceń dla osoby, dla której bariera jest najtrudniejsza.” | czynność | US7.1, NFR-21, PW-13 | — |
 | Zdjęcie, co najmniej jedno: „Zrób zdjęcie” i „Zrób nowe zdjęcie”, z przypomnieniem o twarzach i tablicach | czynność | US7.1, NFR-25, PW-8 | aparat |
