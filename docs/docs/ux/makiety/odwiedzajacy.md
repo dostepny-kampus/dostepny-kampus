@@ -6,15 +6,15 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 
 | Ekran | Makiety | Stany w tabelach |
 | --- | --- | --- |
-| V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu | ładowanie, brak mapy ulic, pierwsze uruchomienie |
-| V2 Karta budynku | budynek podstawowy, brak barier, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
+| V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala | ładowanie, brak mapy ulic, pierwsze uruchomienie, plan piętra, sala bez drogi, brak sali |
+| V2 Karta budynku | budynek podstawowy bez wejścia zalecanego, brak barier, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
 | V3 Którędy wejść | wejście jest, brak wejścia dostępnego, brak danych | brak sieci |
 | V4 Zgłoszenie szybkie | kroki 1–3, krok 1 ze zdjęciem, prośba o zgodę, zgoda przybliżona, brak pozycji, rezygnacja, wysłane, wysłane bez internetu | Gość, odmowa zgody, lokalizacja wyłączona, ustalanie miejsca, błąd zapisu |
 | V5 Pomoc | krok z objaśnieniem „Dostępne” | krok o koncie, ostatni krok |
 | L1 Prośba o logowanie | zwykły, brak sieci | wejście z „Konto”, błąd |
 | L2 Konto | Odwiedzający, rola pracownicza, klauzula, wycofanie zgody | brak sieci |
 
-Pole tekstowe, przełącznik „Mapa” i „Lista budynków”, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` został tylko numer kroku V4 i V5. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
+Pole tekstowe, przełącznik „Mapa” i „Lista budynków”, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` są numer kroku V4 i V5 oraz części karty budynku V2: góra karty, wejście, grupy z planów PWr i dół karty. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
 
 ## V1 Mapa kampusu
 
@@ -29,6 +29,7 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | Nagłówek „Mapa kampusu” bez „Wstecz”, bo to ekran startowy | wymagania wspólne, NFR-15 |
 | Pole „Wpisz symbol budynku, np. C-13” na pełną szerokość, pierwsze pod nagłówkiem | US1.1, PW-8 |
 | Przełącznik „Mapa” i „Lista budynków”; wybraną pozycję widać po kształcie pola | NFR-19, NFR-21 |
+| „Legenda” nad mapą: znaki mapy i planu z napisami | NFR-21, decyzja 48 |
 | Zastępnik mapy: mapa ulic, kontury budynków, bariery ze zgłoszeń przyjętych | US1, US1.3, US10.6, NFR-11 |
 | Bariera na mapie: uciążliwość napisem i ikoną, np. „Blokada”, „Utrudnienie” | US1.3, NFR-21, PW-13 |
 | „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” zamiast gestów | NFR-15 (WCAG 2.5.1), PW-8 |
@@ -101,11 +102,32 @@ Czynność główna: brak; mapa wczyta się sama po połączeniu z internetem.
 | Komunikat „Pierwsze otwarcie aplikacji wymaga internetu…” bez przycisku | NFR-11, PW-4 |
 | Bez pola i mapy, bo w telefonie nie ma jeszcze danych | NFR-11 |
 
+### V1: znaleziona sala
+
+![Makieta V1 po wyszukaniu A-1 329: wybór piętra z zaznaczonym piętrem, legenda, plan piętra z podpisem źródła, przyciski mapy i arkusz sali z czterema krokami, Pokaż opis budynku i Zamknij](../../_generated/m-v1-mapa-sala.svg)
+
+Czynność główna: „Pokaż opis budynku”, która otwiera V2.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| W polu „A-1 329”: symbol budynku i numer sali | decyzja 44 |
+| Wybór piętra z etykietami z danych PWr jako zastępnikami; zaznaczone piętro sali | US16.1, NFR-21 |
+| Plan piętra z wyróżnioną salą i krótkimi podpisami; pod mapą „Źródło: Politechnika Wrocławska” | US16.1, NFR-40 |
+| Kroki tekstem od wejścia zalecanego, bez linii trasy | BR-25, decyzja 44, decyzja 48 |
+| Krok 2: winda przy klatkach C i D, bo tylko ona staje na parterze i na 2 piętrze [2] | decyzja 48 |
+| „Zamknij” chowa arkusz, a plan zostaje | decyzja 48 |
+
+| Stan bez osobnej makiety | Co się zmienia |
+| --- | --- |
+| Plan piętra | po „Pokaż na planie” na V2: plan bez arkusza sali |
+| Sala bez drogi | w arkuszu zamiast kroków komunikat „Nie znaleźliśmy w danych wejścia i windy…” (BR-25) |
+| Brak sali | komunikat „Nie znaleźliśmy sali »X« w budynku A-1…” z przyciskiem „Pokaż opis budynku” |
+
 ## V2 Karta budynku
 
 ### V2: budynek podstawowy
 
-![Makieta V2 budynku podstawowego: dwa wejścia z oznaczeniami, przycisk Sprawdź, którędy wejść, napis o braku planu pięter i jedna bariera Tylko z pomocą](../../_generated/m-v2-karta-budynku-podstawowy.svg)
+![Makieta V2 budynku podstawowego: fragment mapy bez chipów, wejścia Niedostępne i Brak danych bez napisu Zalecane, napis o braku planu pięter, jedna bariera Tylko z pomocą i przypięty pas czynności](../../_generated/m-v2-karta-budynku-podstawowy.svg)
 
 Czynność główna: „Sprawdź, którędy wejść”, jak we wzorcu.
 
@@ -113,7 +135,8 @@ Czynność główna: „Sprawdź, którędy wejść”, jak we wzorcu.
 | --- | --- |
 | Symbol, nazwa i wejścia jako zastępniki, bo nie wiemy, które budynki będą podstawowe | BR-G1, BR-G3 |
 | Napis „Nie mamy planu pięter tego budynku. Bariery są na liście niżej.” zamiast pięter i planu; drugie zdanie tylko przy niepustej liście barier | US16.2, BR-G1, PW-6 |
-| Bez „Piętro:”, planu i „Źródło: Politechnika Wrocławska” | US16.2, NFR-48 |
+| Bez grup „Winda i toaleta” i „Piętra”, bez chipów i bez „Źródło: Politechnika Wrocławska” | US16.2, NFR-48 |
+| Budynek bez wejścia „Dostępne”: brak napisu „Zalecane”, wejścia „Niedostępne” na początku | BR-25 |
 | Bariera z uciążliwością „Tylko z pomocą” tekstem i ikoną | US2.2, NFR-21, PW-13 |
 
 | Stan bez osobnej makiety | Co się zmienia |
@@ -124,25 +147,28 @@ Czynność główna: „Sprawdź, którędy wejść”, jak we wzorcu.
 
 ### V2: brak sprawdzonych barier
 
-![Makieta V2 w stanie pustym: pod nagłówkiem Bariery w budynku zdanie, że brak sprawdzonych barier nie znaczy, że barier nie ma](../../_generated/m-v2-karta-budynku-pusty.svg)
+![Makieta V2 w stanie pustym: wejścia z datą i źródłem przy każdym, a pod nagłówkiem Bariery w budynku ramka Brak zgłoszonych barier z przyciskiem Zgłoś barierę](../../_generated/m-v2-karta-budynku-pusty.svg)
 
 Czynność główna: „Sprawdź, którędy wejść”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Pod „Bariery w budynku” zdanie „Nie mamy jeszcze sprawdzonych barier w tym budynku. To nie znaczy, że barier tu nie ma.” | UC2 2a, PW-6 |
+| Pod „Bariery w budynku” ramka „Brak zgłoszonych barier” ze zdaniem „Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.” | UC2 2a, PW-6, decyzja 48 |
+| „Zgłoś barierę” w ramce: jedyne miejsce tego przycisku w treści karty | US4, decyzja 48 |
+| Wejścia mają różne źródła, więc data i źródło stoją przy każdym wejściu | BR-24, US17.3 |
 | Nagłówek „Bariery w budynku” zostaje, więc osoba wie, której części dotyczy zdanie | UC2 2a |
 | Budynek szczegółowy jako zastępnik: pusta lista nie może brzmieć jak fakt o PWr | decyzja 16, zasada danych przykładowych |
 
 ### V2: brak sieci
 
-![Makieta V2 budynku A-1 bez internetu: wskaźnik z datą danych, wejścia, plan, pierwsza bariera ze zdjęciem z telefonu, druga z napisem o zdjęciu po połączeniu](../../_generated/m-v2-karta-budynku-brak-sieci.svg)
+![Makieta V2 budynku A-1 bez internetu: wskaźnik z datą danych, fragment mapy bez mapy ulic, wejścia, grupy z planów PWr, pierwsza bariera ze zdjęciem z telefonu, druga z napisem o zdjęciu po połączeniu](../../_generated/m-v2-karta-budynku-brak-sieci.svg)
 
 Czynność główna: „Sprawdź, którędy wejść”; V3 działa na danych z telefonu.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Brak internetu” z ikoną i „Dane z [data]” pod nagłówkiem | US9.1, NFR-10, NFR-21 |
+| Fragment mapy bez mapy ulic, z konturem i wejściami z telefonu | NFR-10 |
 | Zdjęcie zapisane w telefonie widać normalnie | NFR-10 |
 | Zdjęcie spoza telefonu zastępuje „Zdjęcie zobaczysz po połączeniu z internetem.” | NFR-10, PW-6 |
 
@@ -160,14 +186,14 @@ Czynność główna: „Spróbuj ponownie” po połączeniu z internetem.
 
 ### V2: Zbierający
 
-![Makieta V2 budynku A-1 dla Zbierającego: przy każdym wejściu Zmień oznaczenie, pod planem Oznacz obejrzane piętra, przy barierach Zgłoś, że bariery nie ma i Popraw zgłoszenie, pasek z Konto i praca](../../_generated/m-v2-karta-budynku-zbierajacy.svg)
+![Makieta V2 budynku A-1 dla Zbierającego: przy każdym wejściu Zgłoś problem i Zmień oznaczenie, pod piętrami Oznacz obejrzane piętra, przy barierach Zgłoś, że bariery nie ma i Popraw zgłoszenie, pasek z Konto i praca](../../_generated/m-v2-karta-budynku-zbierajacy.svg)
 
 Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego są zwykłe, bez pogrubienia.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Zmień oznaczenie” w ramce każdego wejścia, także przy „Brak danych” | US17.2, BR-24 |
-| „Oznacz obejrzane piętra” pod planem, raz dla całego budynku | US15.1, PW-12 |
+| „Zmień oznaczenie” w ramce każdego wejścia pod „Zgłoś problem”, także przy „Brak danych” | US17.2, BR-24 |
+| „Oznacz obejrzane piętra” pod grupą „Piętra”, raz dla całego budynku | US15.1, PW-12 |
 | „Zgłoś, że bariery nie ma” przy każdej barierze | US8.4, BR-19, PW-12 |
 | „Popraw zgłoszenie” tylko przy własnym zgłoszeniu przyjętym albo zgłoszeniu szybkim; tu przy drugiej barierze | BR-3, BR-18 |
 | Pasek dolny z „Konto i praca” | US14.1, PW-1 |
@@ -490,5 +516,6 @@ Czynność główna: brak wyróżnionej; oba przyciski mówią o skutku i mają 
 ## Źródła
 
 1. Deklaracja dostępności budynku A-1 (wejście główne ze schodami, wejście dostępne z tyłu budynku, bramą od strony K.C. Norwida; drugie wejście przy ul. C.K. Norwida niedostosowane dla osób z problemami motorycznymi): <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/deklaracje-dostepnosci-budynkow/budynki-a/a1>
+2. Plany pięter PWr w ArcGIS (usługa „Planbudynku_A1”: sala 329 na 2 piętrze, windy A-1): <https://services3.arcgis.com/rrLByHvJ7zuJQDVw/arcgis/rest/services/>
 
 Dostęp do źródeł: 28.10.2026.
