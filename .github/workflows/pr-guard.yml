@@ -96,9 +96,10 @@ jobs:
           grep " ${archive}\$" "${sums}" | sha256sum --check --strict
           tar -xzf "${archive}" gitleaks
       - name: Skanuj commity PR
-        run: >-
-          "${RUNNER_TEMP}/gitleaks" git --no-banner --redact --verbose
-          --log-opts="${BASE_SHA}..${HEAD_SHA}" .
+        run: |
+          rm -f .gitleaks.toml .gitleaksignore
+          "${RUNNER_TEMP}/gitleaks" git --no-banner --redact --verbose \
+            --ignore-gitleaks-allow --log-opts="${BASE_SHA}..${HEAD_SHA}" .
 
   zaleznosci:
     runs-on: ubuntu-latest
