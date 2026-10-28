@@ -1,0 +1,29 @@
+@startsalt
+' C1 Pomiar pozycji po potwierdzeniu budynku szczegółowego A-1 i przesunięciu punktu.
+' Korekta na planie wybranego piętra (US6.3) i na mapie (US6.4).
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Pomiar pozycji")
+Dokładność: 0,8 m (szacunek)
+$tekst("Satelity: GPS 7, Galileo 5, GLONASS <i>[liczba]</i>")
+$przycisk("Powtórz pomiar")
+..
+<b>Budynek A-1</b>
+$przycisk("Wybierz inny")
+$sekcja("Miejsce bariery")
+Korekta ręczna
+Piętro:
+{ ( ) <i>[1]</i>$dk_spacje(2) | (X) <i>[2]</i>$dk_spacje(2) | ( ) <i>[3]</i>$dk_spacje(2) | ( ) <i>[4]</i>$dk_spacje(2) | ( ) <i>[5]</i> }
+<b>Plan piętra</b>
+$obraz("plan wybranego piętra z punktem bariery")
+Źródło: Politechnika Wrocławska
+$przesun_punkt("na planie")
+..
+$obraz("mapa z tym samym punktem")
+© OpenStreetMap contributors
+$przesun_punkt("na mapie")
+..
+$przycisk_glowny("Dalej")
+$ekran_koniec()
+@endsalt

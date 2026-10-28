@@ -1,0 +1,20 @@
+@startsalt
+' C1 Pomiar pozycji: punkt daleko od budynków PWr, bez sieci (BR-G4, NFR-49, NFR-39).
+' Bez podpowiedzi, bez planu i bez komunikatu o błędzie; korekta na mapie działa.
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Pomiar pozycji")
+$brak_internetu("Ostatnia synchronizacja: <i>[data]</i>, <i>[godzina]</i>")
+Dokładność: 0,8 m (szacunek)
+$tekst("Satelity: GPS 7, Galileo 5, GLONASS <i>[liczba]</i>")
+$przycisk("Powtórz pomiar")
+..
+<b>Poza budynkiem</b>
+$sekcja("Miejsce bariery")
+$obraz("mapa z punktem bariery: kontury budynków, bez mapy ulic")
+$przesun_punkt("na mapie")
+..
+$przycisk_glowny("Dalej")
+$ekran_koniec()
+@endsalt
