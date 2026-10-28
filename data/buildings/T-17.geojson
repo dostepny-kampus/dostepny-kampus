@@ -1,0 +1,68 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "symbol": "T-17",
+        "name": "T-17 \"Ikar\"",
+        "osm_id": "way/101144158"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              17.0866636,
+              51.1036353
+            ],
+            [
+              17.0863822,
+              51.1036694
+            ],
+            [
+              17.0863327,
+              51.1035079
+            ],
+            [
+              17.0863271,
+              51.1034895
+            ],
+            [
+              17.0863169,
+              51.1034563
+            ],
+            [
+              17.0862836,
+              51.1033478
+            ],
+            [
+              17.0865695,
+              51.1033147
+            ],
+            [
+              17.0866636,
+              51.1036353
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "node/11423890053",
+        "entrance": "main",
+        "ref": null,
+        "wheelchair": null
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.0863271,
+          51.1034895
+        ]
+      }
+    }
+  ]
+}

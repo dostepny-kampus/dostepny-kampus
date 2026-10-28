@@ -1,0 +1,60 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "symbol": "C-8",
+        "name": "C-8",
+        "osm_id": "way/479889152"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              17.058855,
+              51.108096
+            ],
+            [
+              17.0588119,
+              51.108155
+            ],
+            [
+              17.0584205,
+              51.1080428
+            ],
+            [
+              17.0584635,
+              51.1079834
+            ],
+            [
+              17.0584909,
+              51.1079913
+            ],
+            [
+              17.058855,
+              51.108096
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "node/7519428453",
+        "entrance": "yes",
+        "ref": null,
+        "wheelchair": null
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.0584909,
+          51.1079913
+        ]
+      }
+    }
+  ]
+}
