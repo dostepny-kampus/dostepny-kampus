@@ -32,7 +32,7 @@ Zapis „V2 → C5” w kolumnie „Ekran” znaczy, że krok zaczyna się na V2
 | T6b | Zbierający | Na obchodzie składa zmianę oznaczenia wejścia: wybiera „dostępne” albo „niedostępne” i robi nowe zdjęcie wejścia. Może też potwierdzić dotychczasowe oznaczenie. Zmianę składa dowolny Zbierający (US17.2, BR-24) | P-3 | N1, N2 | V2 → C6 |
 | T7 | Odwiedzający | Robi zdjęcie bariery | P-1, P-5, P-6 | N3, N4 | V4 |
 | T8 | Odwiedzający | Wybiera grupę barier jednym z 6 dużych przycisków; całe zgłoszenie szybkie to najwyżej 3 kroki (US4.1) | P-5, P-6 | N3, N4 | V4 |
-| T9 | System | Dołącza bieżącą pozycję telefonu, bez uśredniania. Budynek przypisuje z konturu, w którym leży pozycja; poza konturem zgłoszenie jest „poza budynkiem”. Piętro zostaje puste (BR-14) | P-6, P-9 | N3 | V4 |
+| T9 | System | Dołącza bieżącą pozycję telefonu, bez uśredniania. Budynek przypisuje z konturu, w którym leży pozycja; poza konturem zgłoszenie jest „poza budynkiem”. W konturze, przy grupie wymagającej piętra, Odwiedzający wybiera piętro albo „Nie wiem” (BR-14, US4.5) | P-6, P-9 | N3 | V4 |
 | T10 | System | Zapisuje zgłoszenie w telefonie ze statusem „lokalne” (US4.2, NFR-5) | — | N6 | C3, V4 |
 | T11 | System | Po powrocie sieci sam uruchamia synchronizację (US9.1, US9.2, NFR-6, NFR-8) | — | N6 | C4 |
 | T12 | Zbierający | Przy konflikcie wersji wybiera wersję własną albo z serwera (US9.3, NFR-9, BR-3) | — | N7 | C4 |
