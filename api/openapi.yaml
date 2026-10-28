@@ -34,6 +34,9 @@ info:
     | `similar` | podobne zgłoszenie |
     | `sync`, `push`, `pull` | synchronizacja: wysłanie i pobranie zmian |
     | `InspectionMarker`, `revoked` | znacznik piętra obejrzanego, cofnięcie znacznika |
+    | `progress` | postęp inwentaryzacji |
+    | `export` | eksport |
+    | `Invitation` | zaproszenie |
   license: {name: MIT, identifier: MIT}
 servers: [{url: /, description: "Serwer, który udostępnia ten dokument; adres zależy od środowiska."}]
 security: [{keycloak: []}]
@@ -46,6 +49,10 @@ tags:
     description: Kolejka weryfikacji i decyzje Weryfikatora (moduł serwera review).
   - name: sync
     description: Synchronizacja telefonu z serwerem po pracy w trybie offline (moduł serwera sync).
+  - name: export
+    description: Postęp inwentaryzacji i eksport dla Koordynatora (moduł serwera export).
+  - name: identity
+    description: Profil zalogowanej osoby i zaproszenia (moduł serwera identity).
 
 paths:
   /buildings:
@@ -449,6 +456,99 @@ paths:
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
+  /progress:
+    get:
+      operationId: getInventoryProgress
+      summary: Postęp inwentaryzacji
+      description: >-
+        Dla każdego budynku: piętra obejrzane albo znacznik „obejrzany”, liczby zgłoszeń czekających i przyjętych,
+        wejścia ze źródłem oznaczenia „obchód” oraz znaczniki do cofnięcia (US11.1–US11.4, BR-21). Wartości są liczone
+        przy każdym żądaniu, więc znacznik, który dotarł na serwer, od razu zmienia postęp (US11.2).
+      tags: [export]
+      security: [{keycloak: [COORDINATOR]}]
+      responses:
+        '200':
+          description: Postęp według budynków.
+          content:
+            application/json:
+              schema: {type: array, description: "Postęp budynków według symbolu budynku.", items: {$ref: '#/components/schemas/BuildingProgress'}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /export.geojson:
+    get:
+      operationId: exportGeoJson
+      summary: Eksport GeoJSON
+      description: >-
+        Bieżące zgłoszenia przyjęte jako punkty w WGS84, bez zgłoszeń archiwalnych i bez danych autora (US13.1, US13.3,
+        BR-6, BR-22). Bez geometrii budynków; budynek wskazuje tylko symbol budynku (NFR-38). Plik w UTF-8 (NFR-43).
+      tags: [export]
+      security: [{keycloak: [COORDINATOR]}]
+      responses:
+        '200':
+          description: Plik GeoJSON.
+          content:
+            application/geo+json:
+              schema: {$ref: '#/components/schemas/ExportFeatureCollection'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /export.csv:
+    get:
+      operationId: exportCsv
+      summary: Eksport CSV
+      description: >-
+        Te same zgłoszenia co w eksporcie GeoJSON, ze współrzędnymi w PUWG 1992 (EPSG:2180), do otwarcia w QGIS jako warstwa
+        punktów (US13.2, US13.3, NFR-43).
+      tags: [export]
+      security: [{keycloak: [COORDINATOR]}]
+      responses:
+        '200':
+          description: Plik CSV w UTF-8.
+          content:
+            text/csv:
+              schema:
+                type: string
+                description: >-
+                  Wiersz nagłówka i jeden wiersz na zgłoszenie. Kolumny: `submissionId`, `x` (wschód), `y` (północ) w metrach EPSG:2180, jak pola X i Y warstwy punktów w QGIS,
+                  `barrierType`, `barrierGroup`, `severity`, `buildingSymbol`, `floor`, `description`, `verifiedAt`.
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /me:
+    get:
+      operationId: getCurrentUser
+      summary: Profil zalogowanej osoby
+      description: Dane i role zalogowanej osoby do profilu i do wyboru ekranów roli (L2, US14.1, BR-1).
+      tags: [identity]
+      security: [{keycloak: []}]
+      responses:
+        '200':
+          description: Profil.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CurrentUser'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /invitations:
+    post:
+      operationId: createInvitation
+      summary: Zaproszenie osoby z rolą
+      description: >-
+        Koordynator wpisuje adres e-mail i rolę; Usługa logowania zakłada konto z tą rolą (US12.1, BR-2). Zaproszenie
+        na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają (US12.2, BR-1).
+      tags: [identity]
+      security: [{keycloak: [COORDINATOR]}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/InvitationRequest'}
+      responses:
+        '201':
+          description: Zaproszenie wykonane.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Invitation'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
 
 components:
   securitySchemes:
@@ -890,3 +990,74 @@ components:
             createdAt: {type: string, format: date-time, description: "Chwila odbioru znacznika przez serwer."}
             revoked: {type: boolean, description: "Czy znacznik cofnięto (US11.3, US15.2)."}
             mine: {type: boolean, description: "Czy znacznik postawiła osoba z tokenu: „Twój znacznik” albo „Znacznik innej osoby” (US15.2)."}
+
+    BuildingProgress:
+      type: object
+      description: Postęp inwentaryzacji jednego budynku (BR-21).
+      required: [buildingSymbol, detailLevel, pendingSubmissions, acceptedSubmissions, entrancesTotal, entrancesCheckedOnSite, markers]
+      properties:
+        buildingSymbol: {type: string, description: "Symbol budynku."}
+        detailLevel: {$ref: '#/components/schemas/DetailLevel'}
+        floorsTotal: {type: integer, minimum: 0, description: "Liczba pięter z danych PWr; tylko budynek szczegółowy."}
+        floorsInspected: {type: integer, minimum: 0, description: "Liczba pięter obejrzanych; tylko budynek szczegółowy."}
+        inspected: {type: boolean, description: "Znacznik „obejrzany”; tylko budynek podstawowy."}
+        pendingSubmissions: {type: integer, minimum: 0, description: "Zgłoszenia wysłane i w weryfikacji."}
+        acceptedSubmissions: {type: integer, minimum: 0, description: "Zgłoszenia przyjęte, bez archiwalnych."}
+        entrancesTotal: {type: integer, minimum: 0, description: "Wszystkie wejścia budynku (US11.4)."}
+        entrancesCheckedOnSite: {type: integer, minimum: 0, description: "Wejścia ze źródłem oznaczenia „obchód” (US11.4)."}
+        markers: {type: array, description: "Aktywne znaczniki do cofnięcia przez Koordynatora (US11.3).", items: {$ref: '#/components/schemas/InspectionMarker'}}
+    ExportFeatureCollection:
+      type: object
+      description: Kolekcja GeoJSON (RFC 7946) bieżących zgłoszeń przyjętych.
+      required: [type, features]
+      properties:
+        type: {const: FeatureCollection, description: "Typ obiektu GeoJSON."}
+        features:
+          type: array
+          description: Jedno zgłoszenie przyjęte na element.
+          items:
+            type: object
+            description: Zgłoszenie przyjęte jako punkt GeoJSON.
+            required: [type, geometry, properties]
+            properties:
+              type: {const: Feature, description: "Typ obiektu GeoJSON."}
+              geometry: {$ref: '#/components/schemas/GeoPoint', description: "Miejsce bariery."}
+              properties: {$ref: '#/components/schemas/ExportProperties'}
+    ExportProperties:
+      type: object
+      description: Atrybuty zgłoszenia w eksporcie, bez danych autora (BR-6).
+      required: [submissionId, barrierType, barrierGroup, severity, verifiedAt]
+      properties:
+        submissionId: {type: string, format: uuid, description: "Identyfikator zgłoszenia."}
+        barrierType: {$ref: '#/components/schemas/BarrierType'}
+        barrierGroup: {$ref: '#/components/schemas/BarrierGroup'}
+        severity: {$ref: '#/components/schemas/Severity'}
+        buildingSymbol: {type: string, description: "Symbol budynku; brak to „poza budynkiem”."}
+        floor: {type: string, description: "Etykieta piętra albo numer z dopiskiem „półpiętro”; brak, gdy piętra nie podano."}
+        description: {type: string, description: "Opis zgłoszenia."}
+        verifiedAt: {type: string, format: date-time, description: "Data weryfikacji (BR-17)."}
+    CurrentUser:
+      type: object
+      description: Profil zalogowanej osoby.
+      required: [id, displayName, email, roles]
+      properties:
+        id: {type: string, description: "Identyfikator konta w Usłudze logowania."}
+        displayName: {type: string, description: "Imię i nazwisko albo nazwa konta."}
+        email: {type: string, format: email, description: "Adres e-mail konta."}
+        roles: {type: array, description: "Role osoby; każde konto ma co najmniej `VISITOR` (BR-1, US14.3).", items: {$ref: '#/components/schemas/Role'}}
+    InvitationRequest:
+      type: object
+      description: Adres e-mail i rola zapraszanej osoby.
+      required: [email, role]
+      properties:
+        email: {type: string, format: email, description: "Adres e-mail zapraszanej osoby."}
+        role: {type: string, enum: [COLLECTOR, VERIFIER, COORDINATOR], description: "Rola pracownicza nadawana zaproszeniem (BR-2)."}
+    Invitation:
+      description: Wynik zaproszenia.
+      allOf:
+        - $ref: '#/components/schemas/InvitationRequest'
+        - type: object
+          description: Stan konta po zaproszeniu.
+          required: [accountExisted]
+          properties:
+            accountExisted: {type: boolean, description: "Czy konto z tym adresem istniało; wtedy dostało rolę obok dotychczasowych (US12.2)."}
