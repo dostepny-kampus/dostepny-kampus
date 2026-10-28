@@ -104,7 +104,8 @@ Czynność główna: „Zapisz”. Formularz nie ma paska dolnego.
 | „Budynek A-1”, miejsce z C1 i „Zmień miejsce” | US6.2 |
 | „Piętro”: 5 etykiet z danych PWr, bez wpisywania ręcznie | US7.2, BR-7 |
 | „Typ bariery”: lista z typami w 6 grupach barier | US7.1, BR-7 |
-| „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda w ramce z ikoną i opisem kryterium skali | US7.1, NFR-17, NFR-21, PW-13 |
+| „Uciążliwość” i pod nagłówkiem „Oceń dla osoby, dla której bariera jest najtrudniejsza.” | US7.1, słownik pojęć (skala uciążliwości) |
+| „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda w ramce z ikoną i opisem kryterium skali | US7.1, NFR-17, NFR-21, PW-13 |
 | „Nie fotografuj twarzy ani tablic rejestracyjnych.” i „Zrób zdjęcie” | US7.1, NFR-25, PW-8 |
 | „Opis” z dopiskiem o typie „inna bariera” | US7.3 |
 | „Zapisz” | BR-7 |

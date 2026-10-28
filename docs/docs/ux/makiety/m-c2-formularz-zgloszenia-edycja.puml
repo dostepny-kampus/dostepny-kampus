@@ -13,6 +13,7 @@ $sekcja("Piętro")
 $sekcja("Typ bariery")
 ^inna bariera^
 $sekcja("Uciążliwość")
+$tekst("Oceń dla osoby, dla której bariera jest najtrudniejsza.")
 $opcja("", $utrudnienie(), "Osoba pokona ją sama, ale z dodatkowym wysiłkiem lub ryzykiem.")
 $opcja("X", $tylko_z_pomoca(), "Osoba pokona ją tylko z pomocą innej osoby albo urządzenia obsługiwanego przez pracownika.")
 $opcja("", $blokada(), "Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś ją przeniesie.")

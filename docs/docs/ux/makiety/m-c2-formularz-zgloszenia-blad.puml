@@ -15,6 +15,7 @@ $sekcja("Typ bariery")
 $blad_pola("Brakuje typu bariery. Uzupełnij to pole, aby zapisać.")
 ^<i>[typy w 6 grupach barier]</i>^
 $sekcja("Uciążliwość")
+$tekst("Oceń dla osoby, dla której bariera jest najtrudniejsza.")
 $opcja("", $utrudnienie(), "Osoba pokona ją sama, ale z dodatkowym wysiłkiem lub ryzykiem.")
 $opcja("", $tylko_z_pomoca(), "Osoba pokona ją tylko z pomocą innej osoby albo urządzenia obsługiwanego przez pracownika.")
 $opcja("X", $blokada(), "Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś ją przeniesie.")
