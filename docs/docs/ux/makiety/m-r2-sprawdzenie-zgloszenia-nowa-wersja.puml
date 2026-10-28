@@ -6,11 +6,11 @@
 $ekran_poczatek()
 $naglowek("Sprawdzenie zgłoszenia")
 $komunikat("Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.")
-<b>próg</b>
+<b>Zgłoszenie z pomiaru</b>
+próg
 $tylko_z_pomoca()
 Budynek C-13, piętro <i>[piętro]</i>
 Miejsce: <i>[punkt z pomiaru]</i>
-Zgłoszenie z pomiaru
 $r2_zdjecie("zdjęcie bariery")
 Autor: Zbierający, Autor <i>[nr]</i>
 $sekcja("Podobne zgłoszenia do 10 m")

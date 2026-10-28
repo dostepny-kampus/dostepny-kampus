@@ -5,11 +5,11 @@
 !include _weryfikacja.iuml
 $ekran_poczatek()
 $naglowek("Sprawdzenie zgłoszenia")
-<b>schody przy wejściu</b>
+<b>Zgłoszenie z pomiaru</b>
+schody przy wejściu
 $blokada()
 Budynek A-1, piętro <i>[piętro]</i>
 Miejsce: <i>[punkt z pomiaru]</i>
-Zgłoszenie z pomiaru
 $r2_zdjecie("zdjęcie bariery")
 Autor: Zbierający, Autor 17
 $sekcja("Podobne zgłoszenia do 10 m")

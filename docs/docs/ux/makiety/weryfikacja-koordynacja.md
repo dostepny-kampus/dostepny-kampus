@@ -36,12 +36,12 @@ Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu. Przyci
 | „Weź do sprawdzenia” przy każdym zgłoszeniu, zwykły przycisk na pełną szerokość ramki | US10.4, BR-11, NFR-17, NFR-21 |
 | Brak zgłoszeń samego Weryfikatora, także jego zmian „bariera usunięta” i oznaczenia wejścia; filtr robi serwer | US10.5, BR-4 |
 
-![Makieta R1 w widoku mapy: mapa z punktami, podpis OpenStreetMap, przyciski Powiększ, Pomniejsz, W górę, W dół, W lewo, W prawo i zgłoszenie wybranego punktu](../../_generated/m-r1-kolejka-weryfikacji-mapa.svg)
+![Makieta R1 w widoku mapy: mapa z punktami i podpisem OpenStreetMap, przyciski Powiększ, Pomniejsz, W górę, W dół, W lewo, W prawo i zgłoszenie wybranego punktu](../../_generated/m-r1-kolejka-weryfikacji-mapa.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Mapa z punktami zgłoszeń, zastępnik | UC14 |
-| „© OpenStreetMap contributors” pod mapą | NFR-37 |
+| „© OpenStreetMap contributors” na mapie, podkreślony jako odnośnik do strony praw autorskich | NFR-37 |
 | „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” zamiast gestów | NFR-15 (WCAG 2.5.1), PW-8; wymagania wspólne |
 | Pod mapą zgłoszenie z wybranego punktu, z tymi samymi danymi co na liście | NFR-19, US10.4 |
 
@@ -74,12 +74,12 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Wstecz” i nagłówek „Sprawdzenie zgłoszenia”; „Wstecz” przed decyzją zostawia zgłoszenie we „Wziętych przeze mnie” | NFR-15, BR-11 |
-| Typ, uciążliwość tekstem i ikoną, budynek, piętro, miejsce, rodzaj; bez pól do edycji | BR-15, PW-13, NFR-21 |
+| Rodzaj na górze, pogrubiony, jak przy pozostałych rodzajach; pod nim typ, uciążliwość tekstem i ikoną, budynek, piętro, miejsce; bez pól do edycji | BR-14, BR-15, PW-13, NFR-21 |
 | Zdjęcie, zastępnik | US10 |
 | „Zasłoń twarz lub tablicę” pod zdjęciem; zasłonięcie nie tworzy nowej wersji | BR-15, NFR-25 |
 | „Autor: Zbierający, Autor 17”: rola i pseudonim, bez imienia i adresu e-mail | BR-5 |
-| „Podobne zgłoszenia do 10 m”: typ, zdjęcie, odległość tekstem, piętro, status tekstem i ikoną | US10.1, BR-13, NFR-19, NFR-21 |
-| „Przyjmij”, pogrubiony, na pełną szerokość; po przyjęciu otwiera się R1 | US10, NFR-21 |
+| „Podobne zgłoszenia do 10 m”: typ, zdjęcie, odległość tekstem, piętro, status tekstem i ikoną; bez uciążliwości, bo wymagania jej nie wymieniają | US10.1, BR-13, NFR-19, NFR-21 |
+| „Przyjmij”, pogrubiony, na pełną szerokość; po przyjęciu otwiera się R1, a R2 znika z historii „Wstecz” | US10, NFR-21; wymagania wspólne |
 | „Powód odrzucenia”: gotowe „Duplikat” i „Nieaktualne” oraz pole na własny powód | US10.2, BR-13, BR-16, BR-23 |
 | „Odrzuć”; po odrzuceniu otwiera się R1, a R2 znika z historii „Wstecz” | US10.2, BR-16; wymagania wspólne |
 
@@ -107,7 +107,7 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Bariery już nie ma” i typ z poprzedniego zgłoszenia; bez uciążliwości, bo nie jest wymagana | BR-19 |
-| Zdjęcie z poprzedniego zgłoszenia obok nowego zdjęcia miejsca | US10.6, BR-19 |
+| Zdjęcie z poprzedniego zgłoszenia obok nowego zdjęcia miejsca; „Zasłoń twarz lub tablicę” dotyczy nowego zdjęcia, bo poprzednie przeszło już weryfikację | US10.6, BR-19, NFR-25 |
 | Na liście podobnych równoległa zmiana tej samej windy, już przyjęta, 0 m, bo miejsce przechodzi z poprzedniego zgłoszenia | BR-19, BR-23 |
 | Wybrany powód „Nieaktualne”: ta zmiana dotyczy zgłoszenia, które stało się archiwalne | BR-23 |
 | Po przyjęciu „Przyjmij” winda znika z mapy i karty budynku | US10.6 |
