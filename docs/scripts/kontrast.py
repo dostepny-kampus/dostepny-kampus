@@ -288,10 +288,14 @@ def preview(tokens: dict[str, Any], theme: str, title: str) -> str:
         f"display:block;min-height:{button}px;line-height:{button}px;text-align:center;"
         f'border-radius:{radius}px;margin:{side}px 0 0 0;font-size:{label["sp"]}px'
     )
-    primary = (
-        f'<div style="{btn};background:{c["primary"]};color:{c["onPrimary"]};font-weight:{bold}">'
-        "Sprawdź, którędy wejść</div>"
+    filled_border = tokens["obramowania"]["wypelniony"]["dp"]
+    filled = (
+        f'background:{c["primaryContainer"]};color:{c["onPrimaryContainer"]};'
+        f'border:{filled_border}px solid {c["primary"]}'
+        if theme == "ciemny"
+        else f'background:{c["primary"]};color:{c["onPrimary"]}'
     )
+    primary = f'<div style="{btn};{filled};font-weight:{bold}">Sprawdź, którędy wejść</div>'
     secondary = (
         f'<div style="{btn};border:{border}px solid {c["outline"]};color:{c["primary"]};'
         f'font-weight:{label["waga"]}">Zmień oznaczenie</div>'
