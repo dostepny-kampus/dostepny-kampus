@@ -80,7 +80,7 @@ Pięć ekranów doszło względem raportu „Tydzień 2”: L1, L2 (US14), C5 (U
 
 ## 3. Mapa nawigacji
 
-[Mapa nawigacji](../ux/mapa-nawigacji.md) ma 130 przejść w tabeli i trzy diagramy: Gość i Odwiedzający, Zbierający, Weryfikator i Koordynator. Każde przejście pochodzi z wymagań do ekranów i ma odwołanie do kryterium.
+[Mapa nawigacji](../ux/mapa-nawigacji.md) ma 131 przejść w tabeli i trzy diagramy: Gość i Odwiedzający, Zbierający, Weryfikator i Koordynator. Każde przejście pochodzi z wymagań do ekranów i ma odwołanie do kryterium.
 
 | Kontrola | Wynik |
 | --- | --- |
