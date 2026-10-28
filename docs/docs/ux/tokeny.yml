@@ -31,102 +31,107 @@ wersja: 1
 #   * Jedna barwa akcentu: ciemny morski (petrol). Daltonizm czerwono-zielony
 #     (protanopia, deuteranopia) nie zmienia odbioru tej osi; skrypt sprawdza kontrast
 #     także po symulacji obu typów.
-#   * Ciemny motyw dobrany osobno, a nie przez odwrócenie jasnego.
+#   * Ciemny motyw dobrany osobno, a nie przez odwrócenie jasnego. Warstwa wyżej jest
+#     jaśniejsza: mapa → arkusz i tło ekranu → pasek i pole → kontener grupy. Akcent
+#     jest przygaszony, żeby nie świecił; mapa ma barwy nocne, bez jasnego morskiego.
+#   * W ciemnym motywie przycisk wypełniony ma tło `primaryContainer`, napis
+#     `onPrimaryContainer` i ramkę 1 dp `primary`. Jasny `primary` jako tło świeciłby.
+#     Przycisk tonalny (`secondaryContainer`) jest szary, mniej nasycony i bez ramki.
 # ---------------------------------------------------------------------------
 kolory:
   surface:
     jasny: "#F5FAFC"   # bardzo jasny, lekko chłodny; białe są tylko kontenery grup
-    ciemny: "#161B1D"  # ciemnoszare, nie czarne: mniej rażące przejścia przy jasnym tekście (Material, motyw ciemny)
+    ciemny: "#2B3135"  # ciemnoszare, nie czarne: mniej rażące przejścia przy jasnym tekście (Material, motyw ciemny)
     uzycie: nagłówek z polem wyszukiwania (V1), przypięty pasek czynności, pasek „Wstecz” po przewinięciu, tło pól tekstowych
     zrodlo: NFR-16, styl „Karta miejsca”
   surfaceContainerLowest:
     jasny: "#FFFFFF"   # białe kontenery na szarym arkuszu zastępują linie podziału
-    ciemny: "#1E2427"
+    ciemny: "#343C41"  # najjaśniejsza warstwa: kontener grupy leży na arkuszu
     uzycie: kontenery grup („Wejścia”, „Winda i toaleta”, „Piętra”, stan pusty barier), pływające kontrolki mapy, legenda, chipy
     zrodlo: NFR-16, styl „Karta miejsca”
   surfaceContainerLow:
     jasny: "#EFF4F6"
-    ciemny: "#1A1F21"
+    ciemny: "#2C3337"
     uzycie: pole wyszukiwania, pasek dolny nawigacji
     zrodlo: styl „Karta miejsca”
   surfaceContainer:
     jasny: "#E8EEF0"   # tło arkusza: o ton ciemniejsze niż kontenery grup, by grupy odcinały się bez ramek
-    ciemny: "#0F1314"
+    ciemny: "#252B2F"  # arkusz jaśniejszy niż ląd mapy pod nim, więc wygląda jak warstwa wyżej
     uzycie: tło arkusza z kartą budynku (V2) i arkusza na mapie (V1)
     zrodlo: styl „Karta miejsca”
   surfaceVariant:
     # W stylu „Karta miejsca” ten ton nazywa się surface-container-high.
     jasny: "#DCE2E4"
-    ciemny: "#2A3033"
+    ciemny: "#3A4246"
     uzycie: tło fragmentu mapy przed wczytaniem, ramka komunikatu i wskaźnika braku internetu
     zrodlo: NFR-16, styl „Karta miejsca”
   surfaceContainerHigh:
     # Ten sam ton co surfaceVariant; Material 3 bierze go dla kontenerów nad arkuszem.
     jasny: "#DCE2E4"
-    ciemny: "#2A3033"
+    ciemny: "#3A4246"
     uzycie: wspólny kontener statusów zgłoszeń i znaczników pięter (C3, C5), plakietki stopni uciążliwości
     zrodlo: styl „Karta miejsca”
   background:
     # Tło ekranu bez arkusza; Scaffold bierze tę rolę. Ten sam ton co surfaceContainer.
     jasny: "#E8EEF0"
-    ciemny: "#0F1314"
+    ciemny: "#252B2F"
     uzycie: tło ekranów z treścią w kontenerach (V4, C1–C7, R, K, L)
     zrodlo: styl „Karta miejsca”
   onSurface:
     jasny: "#161C1E"   # prawie czarny; ≥ 14:1 na każdym tle
-    ciemny: "#E8EEF0"  # jasnoszary zamiast czystej bieli, by tekst nie „świecił” na ciemnym tle
+    ciemny: "#E4E9EB"  # jasnoszary zamiast czystej bieli, by tekst nie „świecił” na ciemnym tle
     uzycie: tekst podstawowy, nazwa budynku, nagłówki grup, ikony i napisy uciążliwości oraz statusów zgłoszeń
     zrodlo: NFR-16, NFR-21
   onBackground:
     # Ten sam ton co onSurface.
     jasny: "#161C1E"
-    ciemny: "#E8EEF0"
+    ciemny: "#E4E9EB"
     uzycie: tekst bezpośrednio na tle ekranu (nagłówki sekcji poza kontenerami)
     zrodlo: NFR-16
   onSurfaceVariant:
     jasny: "#3A4549"   # tekst drugorzędny wciąż ≥ 7:1, bo źródło i data oceny wejść są ważne (US17.3)
-    ciemny: "#BCC9CD"
+    ciemny: "#D0D8DB"
     uzycie: tekst drugorzędny (źródło i data, „Zalecane, parter”, podpisy), napisy i ikony paska dolnego
     zrodlo: NFR-16, US17.3
   outline:
     jasny: "#6A7579"   # ≥ 3:1 na każdym tle: ramka pola, chipu i przycisku obrysowanego wyznacza granicę celu dotyku
-    ciemny: "#8A969A"
+    ciemny: "#929DA2"
     uzycie: obramowanie pól (wyszukiwania i formularzy), ramek opcji, chipów, przycisków obrysowanych i segmentów
     zrodlo: NFR-16 (WCAG 1.4.11)
   outlineVariant:
     # Jaśniejsza niż outline, ale ≥ 3:1: linia oddziela wejścia w jednym kontenerze, osoba słabowidząca ma ją widzieć.
     jasny: "#7F8A8E"
-    ciemny: "#6A7579"
+    ciemny: "#808C91"
     uzycie: linie podziału wewnątrz grup, górna krawędź paska dolnego nawigacji
     zrodlo: styl „Karta miejsca”
   primary:
     jasny: "#004E5E"   # ciemny morski: jedyny kolor akcentu
-    ciemny: "#85D1EA"  # w ciemnym motywie jaśniejszy i mniej nasycony; nasycony kolor na ciemnym tle drga
-    uzycie: symbol budynku, jedyny przycisk wypełniony na ekranie, przyciski tekstowe („Zgłoś barierę przy tym wejściu”, „Pokaż na planie”), wskaźnik fokusu
+    ciemny: "#ACD6E2"  # jasny i mało nasycony; w ciemnym motywie tylko tekst i ramki, bo jako tło świeci
+    uzycie: symbol budynku, jedyny przycisk wypełniony na ekranie (w ciemnym motywie jego ramka), przyciski tekstowe („Zgłoś barierę przy tym wejściu”, „Pokaż na planie”), wskaźnik fokusu
     zrodlo: wymagania wspólne (czynność główna), NFR-16
   onPrimary:
     jasny: "#FFFFFF"
-    ciemny: "#002933"  # ciemny morski na jasnym akcencie; biel dawałaby za mały kontrast
-    uzycie: napis i ikona na przycisku wypełnionym, np. „Sprawdź, którędy wejść”
+    ciemny: "#00303B"  # ciemny morski na jasnym akcencie; biel dawałaby za mały kontrast
+    uzycie: napis i ikona na przycisku wypełnionym w jasnym motywie, np. „Sprawdź, którędy wejść”
     zrodlo: NFR-16
   primaryContainer:
     jasny: "#C3E9F6"   # tylko to, co wybrane: osoba widzi, gdzie jest
-    ciemny: "#0E4655"
-    uzycie: wybrane piętro, wybrany widok i pozycja paska dolnego, plakietka budynku
+    ciemny: "#1E5262"  # przygaszony morski: przycisk widać, ale nie świeci
+    uzycie: wybrane piętro, wybrany widok i pozycja paska dolnego, plakietka budynku; w ciemnym motywie tło przycisku wypełnionego z ramką 1 dp `primary`
     zrodlo: styl „Karta miejsca”
   onPrimaryContainer:
     jasny: "#001F27"
-    ciemny: "#D3F2FC"
-    uzycie: napis na wybranym elemencie i obwódka 2 dp wybranego piętra
+    ciemny: "#F2FAFC"
+    uzycie: napis na wybranym elemencie i obwódka 2 dp wybranego piętra; w ciemnym motywie napis przycisku wypełnionego
     zrodlo: NFR-16
   secondaryContainer:
     jasny: "#D5E7ED"
-    ciemny: "#2A434B"
+    ciemny: "#36494F"
     uzycie: przyciski tonalne, np. „Zgłoś barierę”, „Pokaż na mapie”
     zrodlo: styl „Karta miejsca”
   onSecondaryContainer:
     jasny: "#1C3640"
-    ciemny: "#D3EEF7"
+    ciemny: "#E1EEF2"
     uzycie: napis i ikona przycisku tonalnego
     zrodlo: NFR-16
   # Kontenery oznaczeń wejścia (decyzja 48 pkt 3). Znaczenie niesie kształt ikony i słowo;
@@ -134,34 +139,34 @@ kolory:
   statusDostepneContainer:
     # Kształt: koło ze znakiem ✓, słowo „Dostępne”.
     jasny: "#CDE8F0"   # spokojny morski
-    ciemny: "#1C4350"
+    ciemny: "#2D4850"
     uzycie: tło oznaczenia „Dostępne” przy wejściu i chipu „Wejście dostępne”
     zrodlo: NFR-21, US2.1, decyzja 48
   onStatusDostepneContainer:
     jasny: "#00313C"
-    ciemny: "#D5F2FB"
+    ciemny: "#DDF1F6"
     uzycie: słowo „Dostępne” i ikona koła ze znakiem ✓
     zrodlo: NFR-16, NFR-21
   statusNiedostepneContainer:
     # Kształt: ośmiokąt ze znakiem ✕, słowo „Niedostępne”.
     jasny: "#F2DFE4"   # przygaszony szaroróżowy, nie czerwony
-    ciemny: "#4A2733"
+    ciemny: "#4B373F"
     uzycie: tło oznaczenia „Niedostępne” przy wejściu
     zrodlo: NFR-21, US2.1, decyzja 48
   onStatusNiedostepneContainer:
     jasny: "#4A1B2A"
-    ciemny: "#FFDDE6"
+    ciemny: "#F8E2E8"
     uzycie: słowo „Niedostępne” i ikona ośmiokąta ze znakiem ✕
     zrodlo: NFR-16, NFR-21
   statusBrakDanychContainer:
     # Kształt: romb ze znakiem ?, słowo „Brak danych”.
     jasny: "#E3E5E6"   # neutralny szary
-    ciemny: "#33393C"
+    ciemny: "#3C4347"
     uzycie: tło oznaczenia „Brak danych” przy wejściu i w legendzie mapy
     zrodlo: NFR-21, US2.1, decyzja 48
   onStatusBrakDanychContainer:
     jasny: "#2A2E30"
-    ciemny: "#E2E6E8"
+    ciemny: "#E4E8EA"
     uzycie: słowo „Brak danych” i ikona rombu ze znakiem ?
     zrodlo: NFR-16, NFR-21
   error:
@@ -171,7 +176,7 @@ kolory:
     # komunikat: onSurface na surfaceVariant, bez czerwieni. Styl „Karta miejsca” nie ma
     # formularzy, więc wartość zostaje z poprzedniej wersji pliku.
     jasny: "#8A0F18"
-    ciemny: "#FFB3AE"  # jasny łososiowy; na ciemnym tle ≥ 7:1
+    ciemny: "#FFCAC4"  # jasny łososiowy; na ciemnym tle ≥ 7:1
     uzycie: tekst błędu walidacji przy polu i nad formularzem, obramowanie pola z błędem; nigdy dla oznaczenia wejścia, statusu ani uciążliwości
     zrodlo: NFR-15 (WCAG 3.3.1), NFR-21
 
@@ -203,7 +208,7 @@ kontrast:
     - {kolor: primary, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "przyciski tekstowe w kontenerach grup"}
     - {kolor: primary, tlo: surface, rodzaj: tekst, gdzie: "„Wstecz”, przycisk obrysowany"}
     - {kolor: onPrimary, tlo: primary, rodzaj: tekst, gdzie: "przycisk wypełniony"}
-    - {kolor: onPrimaryContainer, tlo: primaryContainer, rodzaj: tekst, gdzie: "wybrane piętro, plakietka budynku"}
+    - {kolor: onPrimaryContainer, tlo: primaryContainer, rodzaj: tekst, gdzie: "wybrane piętro, plakietka budynku, przycisk wypełniony (ciemny)"}
     - {kolor: onSecondaryContainer, tlo: secondaryContainer, rodzaj: tekst, gdzie: "przycisk tonalny"}
     - {kolor: onStatusDostepneContainer, tlo: statusDostepneContainer, rodzaj: tekst, gdzie: "„Dostępne” i koło ze znakiem ✓"}
     - {kolor: onStatusNiedostepneContainer, tlo: statusNiedostepneContainer, rodzaj: tekst, gdzie: "„Niedostępne” i ośmiokąt ze znakiem ✕"}
@@ -217,6 +222,9 @@ kontrast:
     - {kolor: outline, tlo: surfaceContainerLowest, rodzaj: komponent, gdzie: "obramowanie chipu w kontenerze"}
     - {kolor: outline, tlo: surfaceVariant, rodzaj: komponent, gdzie: "obramowanie ramki komunikatu"}
     - {kolor: primary, tlo: surface, rodzaj: komponent, gdzie: "granica przycisku wypełnionego, fokus"}
+    - {kolor: primary, tlo: surfaceContainer, rodzaj: komponent, gdzie: "ramka przycisku wypełnionego na arkuszu"}
+    - {kolor: primary, tlo: background, rodzaj: komponent, gdzie: "ramka przycisku wypełnionego na tle ekranu"}
+    - {kolor: primary, tlo: primaryContainer, rodzaj: komponent, gdzie: "ramka do tła przycisku wypełnionego (ciemny)"}
 
 # ---------------------------------------------------------------------------
 # Typografia — rozmiary w sp, żeby tekst rósł z ustawieniem czcionki (NFR-20, WCAG 1.4.4).
@@ -384,7 +392,7 @@ ikony:
 wysokosci:
   kontrolki_mapy:
     dp: 3              # Material 3, poziom 2
-    obwodka_ciemny: "#4A5558"
+    obwodka_ciemny: "#454E53"
     uzycie: pływające kontrolki mapy (+/−, położenie, przełącznik pięter, legenda, „Wstecz”), nagłówek z polem wyszukiwania (V1)
     zrodlo: styl „Karta miejsca”
   pasek_czynnosci:
@@ -395,40 +403,44 @@ wysokosci:
 # ---------------------------------------------------------------------------
 # Paleta mapy: podkład, budynki PWr, plan piętra (styl mapy wektorowej, decyzja 44).
 # Nie są to role Material 3: aplikacja wstawia je do stylu mapy, a nie do motywu.
-# Ta sama barwa morska co `primary`. Napisy mapy: Noto Sans 16 sp z obwódką.
+# W jasnym motywie kontur PWr i ścieżka mają barwę `primary`. Ciemny to mapa nocna:
+# grafitowy ląd, szaroniebieskie kontury bez jasnego morskiego. Napisy: Noto Sans z obwódką.
 # Skrypt strony jeszcze nie sprawdza tej sekcji; pary niżej mają ten sam zapis
 # co `kontrast.pary`, a progi są te same (tekst 7:1, nietekst 3:1).
 # ---------------------------------------------------------------------------
 mapa:
   napisy_sp: 16
   kolory:
-    lad: {jasny: "#E8EDEE", ciemny: "#141819", uzycie: tło lądu}
-    zielen: {jasny: "#D4DFD5", ciemny: "#1A241E", uzycie: parki i trawniki}
-    woda: {jasny: "#BFD0D8", ciemny: "#0F2129", uzycie: rzeka i kanały}
-    droga: {jasny: "#FFFFFF", ciemny: "#2C3335", uzycie: wypełnienie ulic}
-    droga_kontur: {jasny: "#C5CDD0", ciemny: "#1F2527", uzycie: obrzeże ulic}
-    tory: {jasny: "#A3ACAF", ciemny: "#4C565A", uzycie: tory}
-    chodnik: {jasny: "#F7F9FA", ciemny: "#252B2D", uzycie: chodniki i place}
-    budynek: {jasny: "#D6DBDD", ciemny: "#22282A", uzycie: budynki spoza PWr}
-    budynek_kontur: {jasny: "#C2C9CC", ciemny: "#30373A", uzycie: kontur budynków spoza PWr}
-    pwr: {jasny: "#BFE0EC", ciemny: "#17363F", uzycie: wypełnienie budynków PWr}
-    pwr_kontur: {jasny: "#004E5E", ciemny: "#85D1EA", uzycie: kontur budynków PWr (= primary)}
-    napis_pwr: {jasny: "#00303B", ciemny: "#DAF5FF", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
-    napis_ulica: {jasny: "#3A4549", ciemny: "#BCC9CD", uzycie: nazwy ulic i numery sal}
-    napis_woda: {jasny: "#2B454D", ciemny: "#BCD9E3", uzycie: nazwa rzeki}
-    obwodka: {jasny: "#FFFFFF", ciemny: "#101415", uzycie: obwódka napisów}
-    sciezka: {jasny: "#004E5E", ciemny: "#85D1EA", uzycie: ścieżka dostosowana}
-    tusz: {jasny: "#181C1D", ciemny: "#EAEFF1", uzycie: "znaczniki wejść, ikony pochylni i planu"}
-    papier: {jasny: "#FFFFFF", ciemny: "#101415", uzycie: wnętrze znaczników}
-    p_korytarz: {jasny: "#FFFFFF", ciemny: "#272D2F", uzycie: korytarz na planie piętra}
-    p_sala: {jasny: "#D2EAF3", ciemny: "#183A45", uzycie: sala na planie piętra}
-    p_inne: {jasny: "#E1E6E8", ciemny: "#1C2123", uzycie: inne pomieszczenia i klatki schodowe}
-    p_winda: {jasny: "#A7C0C9", ciemny: "#3D5A64", uzycie: winda}
-    p_wzor: {jasny: "#4A5559", ciemny: "#9EAAAE", uzycie: kreskowanie klatek schodowych i kropki toalet}
-    p_wc: {jasny: "#F2F5F6", ciemny: "#22282A", uzycie: toaleta}
-    p_kontur: {jasny: "#6A7579", ciemny: "#879397", uzycie: ściany na planie piętra}
-    p_wybrana: {jasny: "#8FD3EA", ciemny: "#2B6D82", uzycie: szukana sala}
-    p_wybrana_kontur: {jasny: "#001F27", ciemny: "#DAF5FF", uzycie: kontur szukanej sali}
+    lad: {jasny: "#E8EDEE", ciemny: "#15181A", uzycie: tło lądu}
+    zielen: {jasny: "#D4DFD5", ciemny: "#1A221E", uzycie: parki i trawniki}
+    woda: {jasny: "#BFD0D8", ciemny: "#132129", uzycie: rzeka i kanały}
+    droga: {jasny: "#FFFFFF", ciemny: "#2B3034", uzycie: wypełnienie ulic}
+    droga_kontur: {jasny: "#C5CDD0", ciemny: "#1D2124", uzycie: obrzeże ulic}
+    tory: {jasny: "#A3ACAF", ciemny: "#3A4044", uzycie: tory}
+    chodnik: {jasny: "#F7F9FA", ciemny: "#22272A", uzycie: chodniki i place}
+    budynek: {jasny: "#D6DBDD", ciemny: "#23282B", uzycie: budynki spoza PWr}
+    budynek_kontur: {jasny: "#C2C9CC", ciemny: "#2C3236", uzycie: kontur budynków spoza PWr}
+    pwr: {jasny: "#BFE0EC", ciemny: "#2A3640", uzycie: wypełnienie budynków PWr}
+    # Ciemny kontur PWr: najciemniejszy ton, który do wypełnienia ma ≥ 3:1 także po symulacji daltonizmu.
+    pwr_kontur: {jasny: "#004E5E", ciemny: "#68848F", uzycie: "kontur budynków PWr (jasny = primary)"}
+    # Obrys wybranego budynku jest grubszy niż kontur; wybór pokazuje też arkusz z nazwą (NFR-21).
+    pwr_wybrany: {jasny: "#001F27", ciemny: "#7AA6B5", uzycie: obrys wybranego budynku}
+    napis_pwr: {jasny: "#00303B", ciemny: "#D9DFE2", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
+    napis_ulica: {jasny: "#3A4549", ciemny: "#A9B2B6", uzycie: nazwy ulic i numery sal}
+    napis_woda: {jasny: "#2B454D", ciemny: "#A3B8C0", uzycie: nazwa rzeki}
+    obwodka: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: obwódka napisów}
+    sciezka: {jasny: "#004E5E", ciemny: "#6A818A", uzycie: ścieżka dostosowana}
+    tusz: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "znaczniki wejść, ikony pochylni i planu"}
+    papier: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: wnętrze znaczników}
+    p_korytarz: {jasny: "#FFFFFF", ciemny: "#2C3236", uzycie: korytarz na planie piętra}
+    p_sala: {jasny: "#D2EAF3", ciemny: "#2C3C44", uzycie: sala na planie piętra}
+    p_inne: {jasny: "#E1E6E8", ciemny: "#23282B", uzycie: inne pomieszczenia i klatki schodowe}
+    p_winda: {jasny: "#A7C0C9", ciemny: "#3B4D55", uzycie: winda}
+    p_wzor: {jasny: "#4A5559", ciemny: "#8D979B", uzycie: kreskowanie klatek schodowych i kropki toalet}
+    p_wc: {jasny: "#F2F5F6", ciemny: "#272C30", uzycie: toaleta}
+    p_kontur: {jasny: "#6A7579", ciemny: "#828E94", uzycie: ściany na planie piętra}
+    p_wybrana: {jasny: "#8FD3EA", ciemny: "#2F5A68", uzycie: szukana sala}
+    p_wybrana_kontur: {jasny: "#001F27", ciemny: "#D9E6EB", uzycie: kontur szukanej sali}
   pary:
     - {kolor: napis_pwr, tlo: obwodka, rodzaj: tekst, gdzie: "symbol budynku, nazwy na planie"}
     - {kolor: napis_ulica, tlo: obwodka, rodzaj: tekst, gdzie: "nazwy ulic, numery sal"}
@@ -436,6 +448,8 @@ mapa:
     - {kolor: pwr_kontur, tlo: lad, rodzaj: komponent, gdzie: kontur budynku PWr na podkładzie}
     - {kolor: pwr_kontur, tlo: pwr, rodzaj: komponent, gdzie: kontur budynku PWr do wypełnienia}
     - {kolor: pwr_kontur, tlo: budynek, rodzaj: komponent, gdzie: kontur PWr przy budynku spoza PWr}
+    - {kolor: pwr_wybrany, tlo: pwr, rodzaj: komponent, gdzie: obrys wybranego budynku do wypełnienia}
+    - {kolor: pwr_wybrany, tlo: lad, rodzaj: komponent, gdzie: obrys wybranego budynku na podkładzie}
     - {kolor: sciezka, tlo: lad, rodzaj: komponent, gdzie: ścieżka dostosowana na podkładzie}
     - {kolor: sciezka, tlo: droga, rodzaj: komponent, gdzie: ścieżka dostosowana na ulicy}
     - {kolor: tusz, tlo: lad, rodzaj: komponent, gdzie: "znacznik wejścia, ikona pochylni"}
