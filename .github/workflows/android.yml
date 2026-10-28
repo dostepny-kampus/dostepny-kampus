@@ -11,6 +11,7 @@ on:
       - "sprint/**"
     paths:
       - "android/**"
+      - "docs/docs/ux/tokeny.yml"
       - ".github/workflows/android.yml"
 
 permissions:
@@ -32,10 +33,10 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
-      - name: Sprawdź, czy PR zmienia aplikację Android
+      - name: Sprawdź, czy PR zmienia aplikację Android albo jej tokeny
         id: diff
         run: |
-          if git diff --quiet HEAD^1 HEAD -- android .github/workflows/android.yml; then
+          if git diff --quiet HEAD^1 HEAD -- android docs/docs/ux/tokeny.yml .github/workflows/android.yml; then
             echo "android=false" >> "$GITHUB_OUTPUT"
           else
             echo "android=true" >> "$GITHUB_OUTPUT"
