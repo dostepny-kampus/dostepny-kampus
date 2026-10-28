@@ -5,9 +5,15 @@
  */
 package io.github.dostepnykampus.core.designsystem
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.snakeyaml.engine.v2.api.Load
 import org.snakeyaml.engine.v2.api.LoadSettings
@@ -42,6 +48,21 @@ class TokensTest {
     }
 
     @Test
+    fun nfr20_typografia_z_tokenow() {
+        val typography = typography(FontFamily.Default)
+        val section = tokens.sub("typografia")
+        section.sub("style").forEach { (key, value) ->
+            val expected = value.asMap()
+            val style = checkNotNull(typography.property(key)) as TextStyle
+            assertEquals("$key sp", expected.getValue("sp").int().sp, style.fontSize)
+            assertEquals("$key interlinia", expected.getValue("interlinia_sp").int().sp, style.lineHeight)
+            assertEquals("$key waga", FontWeight(expected.getValue("waga").int()), style.fontWeight)
+            assertTrue("$key minimum_sp", style.fontSize.value >= section.getValue("minimum_sp").int())
+        }
+        assertEquals(FontWeight(section.getValue("wyroznienie_waga").int()), Typografia.wyroznienieWaga)
+    }
+
+    @Test
     fun nfr17_wymiary_z_tokenow() {
         val generated =
             mapOf(
@@ -63,6 +84,12 @@ class TokensTest {
                 }
             }
         }
+        val corners = tokens.sub("zaokraglenia")
+        mapOf("small" to "standard", "medium" to "srednie", "large" to "duze", "extraLarge" to "bardzo_duze")
+            .forEach { (slot, token) ->
+                val radius = corners.sub(token).getValue("dp").int()
+                assertEquals(slot, RoundedCornerShape(radius.dp), AppShapes.property(slot))
+            }
     }
 
     private fun Any.property(name: String): Any? =

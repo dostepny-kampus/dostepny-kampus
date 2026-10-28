@@ -31,6 +31,9 @@ complexity:
 
 Compose:
   excludes: ['**/build/generated/**']
+  CompositionLocalAllowlist:
+    # Role tokenów spoza Material 3 (kolory oznaczeń wejścia i mapy) dostarcza motyw, jak MaterialTheme.
+    allowedCompositionLocals: ['LocalStatusColors', 'LocalMapColors']
 
 coroutines:
   excludes: ['**/build/generated/**']
