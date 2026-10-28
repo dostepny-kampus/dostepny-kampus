@@ -1,0 +1,23 @@
+name: dostepny-kampus
+
+services:
+  postgis:
+    image: postgis/postgis:18-3.6
+    environment:
+      POSTGRES_DB: ${DK_DB_NAME:?ustaw DK_DB_NAME w infra/.env}
+      POSTGRES_USER: ${DK_DB_USER:?ustaw DK_DB_USER w infra/.env}
+      POSTGRES_PASSWORD: ${DK_DB_PASSWORD:?ustaw DK_DB_PASSWORD w infra/.env}
+    ports:
+      - "127.0.0.1:${DK_DB_PORT:-5432}:5432"
+    volumes:
+      - postgis-dane:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  postgis-dane:
