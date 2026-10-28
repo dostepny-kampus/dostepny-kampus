@@ -1,7 +1,7 @@
 # Dostępny Kampus
 # Author: Vladyslav Yevkov
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
-"""Dostępny Kampus — kontrola języka polskiego (LanguageTool, pl-PL) w plikach Markdown. Author: Vladyslav Yevkov. Version: 0.2.0. Copyright (c) 2026 Vladyslav Yevkov."""
+"""Dostępny Kampus — kontrola języka polskiego (LanguageTool, pl-PL) w plikach Markdown. Version: 0.2.0."""
 
 from __future__ import annotations
 
