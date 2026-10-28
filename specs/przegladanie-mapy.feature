@@ -58,6 +58,28 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz wejście główne ma napis „niedostępne”
     Oraz oznaczenia wejść da się odróżnić w odcieniach szarości
 
+  @US2.1 @BR-25
+  Scenariusz: Wejście zalecane stoi pierwsze na karcie budynku
+    Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
+    Jeżeli przejrzy listę wejść
+    Wtedy pierwsze jest inne wejście z napisem „Zalecane” i oznaczeniem „dostępne”
+    Ale wejście główne nie ma napisu „Zalecane”
+
+  @BR-25
+  Scenariusz: Przy kilku wejściach dostępnych zalecane jest wejście główne
+    # Dane testowe, a nie stan faktyczny budynku C-13.
+    Zakładając, że w danych testowych wejście główne i wejście boczne C-13 mają oznaczenie „dostępne”
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-13
+    Wtedy pierwsze jest wejście główne z napisem „Zalecane”
+    Ale wejście boczne nie ma napisu „Zalecane”
+
+  @US3.1 @BR-25
+  Scenariusz: Budynek bez wejścia dostępnego nie ma wejścia zalecanego
+    Zakładając, że Gość niezalogowany otworzył kartę budynku B-4
+    Jeżeli przejrzy listę wejść
+    Wtedy żadne wejście nie ma napisu „Zalecane”
+    Oraz lista zaczyna się od wejść z oznaczeniem „niedostępne”
+
   @US2.2 @BR-17
   Scenariusz: Zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę weryfikacji
     Zakładając, że Weryfikator przyjął 12.11.2026 zgłoszenie TB-1 „schody przy wejściu” przy wejściu głównym A-1
@@ -98,10 +120,10 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   @US16.1
   Szablon scenariusza: Plan piętra w budynku szczegółowym
     Zakładając, że Odwiedzający otworzył kartę budynku <budynek>
-    Jeżeli otworzy przełącznik pięter
-    Wtedy widzi <liczba> etykiet pięter z danych PWr
-    Oraz po wybraniu piętra widzi plan piętra z windami, schodami, toaletami, wejściami i zgłoszeniami przyjętymi
-    Oraz pod planem piętra widnieje podpis „Źródło: Politechnika Wrocławska”
+    Jeżeli przy piętrze wybierze „Pokaż na planie”
+    Wtedy mapa kampusu pokazuje plan tego piętra z windami, schodami, toaletami, wejściami i zgłoszeniami przyjętymi
+    Oraz przełącznik pięter nad planem ma <liczba> etykiet pięter z danych PWr
+    Oraz przy planie widnieje podpis „Źródło: Politechnika Wrocławska”
 
     Przykłady:
       | budynek | liczba |
