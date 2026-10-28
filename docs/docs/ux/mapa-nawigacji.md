@@ -20,7 +20,7 @@ Czwarta pozycja paska dolnego to „Konto”, a osoby z rolą pracowniczą widz�
 
 ![Diagram przejść Gościa i Odwiedzającego: V1, V2, V3, V4 z krokami, V5, L1, L2](../_generated/nawigacja-odwiedzajacy.svg)
 
-Główna droga to V1, V2, V3 i z powrotem. Z V2 wraca się też na mapę z planem piętra albo wejściem, a „Zgłoś barierę przy tym wejściu” otwiera V4 z wybranym wejściem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]).
+Główna droga to V1, V2, V3 i z powrotem. Z V2 wraca się też na mapę z planem piętra albo wejściem, a „Zgłoś barierę” przy wejściu otwiera V4 z wybranym wejściem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]).
 
 Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”. Po zalogowaniu wraca do kroku 1 V4 albo trafia do L2 (P3).
 
@@ -62,9 +62,12 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1 | dotknięcie konturu budynku | V2, arkusz na mapie do połowy ekranu | wszystkie | US2, US3.2, decyzja 48 |
 | V1 | przełącznik „Mapa” i „Lista budynków” | V1, lista | wszystkie | NFR-19 |
 | V1 | dotknięcie budynku na liście | V2 | wszystkie | US2, US3.2 |
-| V1 | dotknięcie bariery | V2 budynku bariery | wszystkie | US1.3, US10.6 |
+| V1 | dotknięcie znaku bariery | V1, arkusz bariery | wszystkie | US1.3, US10.6 |
+| V1, arkusz bariery | „Pokaż opis budynku”; „Zamknij” | V2 budynku bariery; V1 | wszystkie | US2 |
 | V1 | napis „© OpenStreetMap contributors” | strona praw autorskich OSM | wszystkie | NFR-37 |
-| V1 | „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” | V1, mapa powiększona albo przesunięta | wszystkie | NFR-15, PW-8 |
+| V1 | „Powiększ”, „Pomniejsz” i strzałki „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | V1, mapa powiększona albo przesunięta | wszystkie | NFR-15, PW-8, PW-11 |
+| V1 | „ⓘ” („Informacje o mapie”) | V1, arkusz ze źródłami mapy | wszystkie | NFR-37, NFR-40 |
+| V1, lista | „Pokaż na mapie” przy budynku | V1, mapa z zaznaczonym budynkiem | wszystkie | NFR-19 |
 | V1, stan „brak wyniku” | „Lista budynków” | V1, lista | wszystkie | UC1 3a |
 | V1 | „Legenda” | V1, legenda rozwinięta | wszystkie | NFR-21 |
 | V1 | wybór sali w wynikach pola, np. „A-1 329” | V1, stan „znaleziona sala”: plan piętra i kroki | wszystkie | BR-25, decyzja 44 |
@@ -73,14 +76,15 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, stan „znaleziona sala” | „Zamknij” | V1 | wszystkie | decyzja 48 |
 | V2 | „Pokaż na planie” przy piętrze | V1, plan tego piętra | wszystkie | US16.1, decyzja 44 |
 | V2 | „Pokaż na mapie” w przypiętym pasie albo przy wejściu zalecanym | V1 z zaznaczonym budynkiem albo wejściem | wszystkie | US2.1, BR-25 |
-| V2 | „Zgłoś barierę przy tym wejściu” | V4, krok 1, wejście wybrane | zalogowani | US4, decyzja 48 |
-| V2 | „Zgłoś barierę przy tym wejściu” | L1, potem V4 z wybranym wejściem | RO-GOS | US14.2, decyzja 48 |
+| V2 | „Zgłoś barierę” przy wejściu | V4, krok 1, wejście wybrane | zalogowani | US4, decyzja 48 |
+| V2 | „Zgłoś barierę” przy wejściu | L1, potem V4 z wybranym wejściem | RO-GOS | US14.2, decyzja 48 |
 | V2, stan „brak zgłoszeń przyjętych” | „Zgłoś barierę” | V4; Gość: L1 | wszystkie | US4, US14.2 |
 | V2 | „Sprawdź, którędy wejść” | V3 | wszystkie | US3, US3.2 |
 | V2 | „Wstecz” | V1 z zaznaczonym budynkiem | wszystkie | US1.1 |
 | V2, stan „budynku nie ma w telefonie” | „Spróbuj ponownie” | V2 | wszystkie | NFR-10 |
 | V2, stan „błąd zdjęcia” | „Spróbuj ponownie” | V2 | wszystkie | NFR-50 |
 | V3 | „Wstecz” | V2 | wszystkie | US3 |
+| V3 | „Pokaż na mapie” przy wejściu dostępnym | V1 z zaznaczonym wejściem | wszystkie | US2.1, US3 |
 | V4 | wejście na ekran | L1 zamiast aparatu | RO-GOS | US14.2 |
 | V4, stan „brak zgody na lokalizację” | „Pozwól na lokalizację” | V4, krok 1 | zalogowani | UC7 2a, NFR-27 |
 | V4, stan „brak zgody na lokalizację” | „Wróć do mapy” | V1 | zalogowani | UC7 2a |
@@ -292,7 +296,7 @@ Punkt startu każdej roli to V1, bo od niej zaczyna się aplikacja. Pasek dolny 
 
 | Miejsce | Ocena |
 | --- | --- |
-| V3 | celowy koniec drogi US3: odpowiedź na pytanie, dalej tylko „Wstecz” i pasek dolny |
+| V3 | celowy koniec drogi US3: odpowiedź na pytanie, dalej „Wstecz”, „Pokaż na mapie” i pasek dolny |
 | V4, potwierdzenie | celowy koniec zgłoszenia szybkiego (US4.4); wyjście „Wróć do mapy” |
 | V1, stan „brak sieci przy pierwszym uruchomieniu” | celowe czekanie: mapa wczyta się sama po powrocie sieci (NFR-11) |
 | K2 i K3 po sukcesie | celowy koniec czynności; potwierdzenie na tym samym ekranie, dalej „Wstecz” |
