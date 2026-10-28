@@ -6,7 +6,7 @@ $ekran_poczatek()
 $naglowek("Budynek A-1", "<i>[nazwa budynku z danych]</i>")
 $brak_internetu("Dane z <i>[data]</i>")
 $wejscie($niedostepne(), "Wejście główne", "Sprawdzone na miejscu <i>[data]</i>")
-$wejscie($dostepne(), "Wejście od ul. Norwida", "Z map i opisów, stan z <i>[data]</i>")
+$wejscie($dostepne(), "Wejście bramą od ul. Norwida", "Z map i opisów, stan z <i>[data]</i>")
 $wejscie($brak_danych(), "<i>[nazwa wejścia z danych]</i>", "Z map i opisów, stan z <i>[data]</i>")
 $przycisk_glowny("Sprawdź, którędy wejść")
 ..
@@ -23,8 +23,8 @@ $obraz("zdjęcie bariery z telefonu")
 Sprawdzone <i>[data]</i>
 }
 {+
-$tekst("brak planu dotykowego lub głosowego", "b")
-$utrudnienie()
+<b><i>[typ bariery z danych]</i></b>
+$tekst("[uciążliwość z danych: napis i ikona]", "i")
 $tekst("Zdjęcie zobaczysz po połączeniu z internetem.")
 Sprawdzone <i>[data]</i>
 }

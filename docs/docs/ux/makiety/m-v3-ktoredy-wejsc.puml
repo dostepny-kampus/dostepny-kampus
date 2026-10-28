@@ -1,16 +1,16 @@
 @startsalt
-' V3 Którędy wejść, stan zwykły: budynek ma wejście dostępne (A-1, wejście od ul. Norwida).
+' V3 Którędy wejść, stan zwykły: budynek ma wejście dostępne (A-1, wejście bramą od ul. Norwida).
 !include _wspolne.iuml
 $ekran_poczatek()
 $naglowek("Którędy wejść do A-1")
-$tekst("Budynek A-1 ma wejście dostępne: »Wejście od ul. Norwida«.", "b")
+$tekst("Budynek A-1 ma wejście dostępne: »Wejście bramą od ul. Norwida«.", "b")
 ..
 {+
-<b>$dostepne()</b>: Wejście od ul. Norwida
+<b>$dostepne()</b>: Wejście bramą od ul. Norwida
 Z map i opisów, stan z <i>[data]</i>
 ..
 <b><i>[typ bariery z danych]</i></b>
-$utrudnienie()
+$tekst("[uciążliwość z danych: napis i ikona]", "i")
 $obraz("zdjęcie bariery")
 Sprawdzone <i>[data]</i>
 }

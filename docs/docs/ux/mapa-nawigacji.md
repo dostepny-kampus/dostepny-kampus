@@ -97,6 +97,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V5 | „Dalej” | następny krok V5 | wszystkie | US5.1 |
 | V5, ostatni krok | „Zacznij” | V1 | wszystkie | US5.1 |
 | V5 | „Pomiń instrukcję” | V1 | wszystkie | US5.1 |
+| V5 | „Wstecz” | poprzedni krok V5; w pierwszym kroku przy pierwszym uruchomieniu V1, jak „Pomiń instrukcję” | wszystkie | US5.1, NFR-15 |
 
 ### Przejścia: logowanie i konto
 

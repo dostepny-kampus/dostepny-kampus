@@ -10,8 +10,7 @@ $przelacznik_mapa("lista")
 <b>Budynek A-1</b>
 <i>[nazwa budynku z danych]</i>
 $blokada(): schody przy wejściu
-$utrudnienie(): brak planu dotykowego
-lub głosowego
+$tekst("[pozostałe bariery z danych: typ, uciążliwość]", "i")
 }
 {+
 <b>Budynek C-13</b>

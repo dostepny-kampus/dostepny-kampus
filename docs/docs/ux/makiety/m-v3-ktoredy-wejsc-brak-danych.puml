@@ -4,7 +4,7 @@
 $ekran_poczatek()
 $naglowek("Którędy wejść do <i>[symbol]</i>")
 $tekst("Nie wiemy jeszcze, czy budynek <i>[symbol]</i> ma wejście dostępne: brak danych o <i>[x]</i> z <i>[y]</i> wejść.", "b")
-$tekst("Wróć do opisu budynku, aby zobaczyć każde wejście z datą.")
+$tekst("Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście z datą.")
 $pasek_dolny_konto()
 $ekran_koniec()
 @endsalt

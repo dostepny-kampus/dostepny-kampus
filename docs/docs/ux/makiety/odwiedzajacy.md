@@ -55,7 +55,7 @@ Czynność główna: wybór wyniku „Budynek C-13”, który zaznacza budynek n
 
 ### V1: lista budynków
 
-![Makieta V1 z wybraną listą budynków: Budynek A-1 z dwiema barierami, Budynek C-13 i budynek-zastępnik, każdy z nazwą z danych i barierami](../../_generated/m-v1-mapa-lista.svg)
+![Makieta V1 z wybraną listą budynków: Budynek A-1 z barierą i zastępnikiem pozostałych barier, Budynek C-13 i budynek-zastępnik, każdy z nazwą z danych i barierami](../../_generated/m-v1-mapa-lista.svg)
 
 Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 
@@ -63,7 +63,7 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 | --- | --- |
 | „Lista budynków” wybrana w przełączniku | NFR-19 |
 | Pozycja: „Budynek A-1”, nazwa z danych, bariery z uciążliwością tekstem i ikoną; cała ramka pozycji to jeden cel dotyku | NFR-19, US1.3, NFR-21, NFR-17 |
-| Bariery A-1 jak we wzorcu V2: schody przy wejściu głównym [1] i TB-22 | US1.3, BR-7 |
+| Bariery A-1 jak we wzorcu V2: schody przy wejściu głównym [1], pozostałe jako zastępnik | US1.3, BR-7 |
 | Lista daje tę samą informację co mapa, więc jest drogą dla TalkBack | NFR-19, NFR-18 |
 | Bez przycisków mapy i podpisu OpenStreetMap, bo lista nie pokazuje mapy | decyzja 16 |
 
@@ -170,7 +170,6 @@ Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego 
 | „Oznacz obejrzane piętra” pod planem, raz dla całego budynku | US15.1, PW-12 |
 | „Zgłoś, że bariery nie ma” przy każdej barierze | US8.4, BR-19, PW-12 |
 | „Popraw zgłoszenie” tylko przy własnym zgłoszeniu przyjętym albo zgłoszeniu szybkim; tu przy drugiej barierze | BR-3, BR-18 |
-| Typ TB-22 nazwą z klasyfikacji, „brak planu tyflograficznego”: prostszy napis widzą tylko Gość i Odwiedzający | BR-7, słownik użytkownika |
 | Pasek dolny z „Konto i praca” | US14.1, PW-1 |
 | Gość i Odwiedzający nie widzą tych przycisków | US14.1, NFR-33 |
 
@@ -178,7 +177,7 @@ Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego 
 
 ### V3: wejście jest
 
-![Makieta V3 dla A-1: pogrubione zdanie o wejściu dostępnym od ul. Norwida, ramka wejścia z oznaczeniem i źródłem oraz bariera przy tym wejściu](../../_generated/m-v3-ktoredy-wejsc.svg)
+![Makieta V3 dla A-1: pogrubione zdanie o wejściu dostępnym bramą od ul. Norwida, ramka wejścia z oznaczeniem i źródłem oraz bariera przy tym wejściu](../../_generated/m-v3-ktoredy-wejsc.svg)
 
 Czynność główna: brak; ekran odpowiada na jedno pytanie, a dalej prowadzą „Wstecz” i pasek dolny.
 
@@ -186,9 +185,9 @@ Czynność główna: brak; ekran odpowiada na jedno pytanie, a dalej prowadzą �
 | --- | --- |
 | Nagłówek „Którędy wejść do A-1”, ten sam napis co przycisk na V2 | US3, PW-2 |
 | Zdanie z odpowiedzią na górze, pogrubione: TalkBack czyta je pierwsze | US3, US3.1, NFR-18 |
-| Wejście od ul. Norwida jako dostępne, jak w deklaracji A-1 [1] | US2.1, US3 |
+| „Wejście bramą od ul. Norwida” jako dostępne, jak w deklaracji A-1; nazwa odróżnia je od niedostosowanego wejścia przy ul. Norwida [1] | US2.1, US3 |
 | Oznaczenie tekstem i ikoną, pod nim data i źródło | US2.1, US17.3, NFR-21 |
-| Bariera przy tym wejściu: typ z danych, uciążliwość, zdjęcie, „Sprawdzone [data]” | US2.2, UC4 4c, PW-3 |
+| Bariera przy tym wejściu: typ i uciążliwość jako zastępniki, bo deklaracja nie podaje barier przy tym wejściu; zdjęcie, „Sprawdzone [data]” | US2.2, UC4 4c, PW-3 |
 | Pasek dolny z „Konto” | wymagania wspólne |
 
 | Stan bez osobnej makiety | Co się zmienia |
@@ -203,9 +202,9 @@ Czynność główna: brak; „Wstecz” wraca do opisu budynku z barierami przy 
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Pierwsze zdanie komunikatu pogrubione jako odpowiedź, drugie zwykłe jako rada | US3.1, UC4 4a, PW-10 |
+| Pierwsze zdanie komunikatu pogrubione jako odpowiedź, drugie zwykłe jako rada: „Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.” | US3.1, UC4 4a, PW-10 |
 | Symbol budynku jako zastępnik zamiast „B-4” z katalogu, bo nie znamy wejść tego budynku | zasada danych przykładowych |
-| Bez przycisku: rada odsyła do „Wstecz”, które jest zawsze w tym samym miejscu | NFR-15 (WCAG 3.2.3) |
+| Bez przycisku: rada wskazuje „Wstecz” z nazwy, a ten przycisk jest zawsze w tym samym miejscu | NFR-15 (WCAG 3.2.3), heurystyka Nielsena 6 |
 
 ### V3: brak danych o wejściach
 
@@ -376,6 +375,7 @@ Czynność główna: „Dalej”.
 | Krok o koncie | zdanie „Aby zgłosić barierę, potrzebne jest konto. Możesz je założyć teraz w »Konto«.” (US5.1, US14.2) |
 | Ostatni krok | „Zacznij” zamiast „Dalej”; otwiera V1 (US5.1) |
 | Pierwsze uruchomienie i otwarcie z „Pomoc” | ten sam układ; przy pierwszym uruchomieniu instrukcja otwiera się sama (US5.1) |
+| „Wstecz” | poprzedni krok instrukcji; w pierwszym kroku przy pierwszym uruchomieniu działa jak „Pomiń instrukcję” i otwiera V1 (wymagania wspólne, NFR-15) |
 
 ## L1 Prośba o logowanie
 
@@ -473,6 +473,6 @@ Czynność główna: brak wyróżnionej; oba przyciski mówią o skutku i mają 
 
 ## Źródła
 
-1. Deklaracja dostępności budynku A-1 (wejście główne ze schodami, wejście dostępne z tyłu budynku, bramą od strony K.C. Norwida): <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/deklaracje-dostepnosci-budynkow/budynki-a/a1>
+1. Deklaracja dostępności budynku A-1 (wejście główne ze schodami, wejście dostępne z tyłu budynku, bramą od strony K.C. Norwida; drugie wejście przy ul. C.K. Norwida niedostosowane dla osób z problemami motorycznymi): <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/deklaracje-dostepnosci-budynkow/budynki-a/a1>
 
 Dostęp do źródeł: 28.10.2026.

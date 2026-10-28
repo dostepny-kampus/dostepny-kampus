@@ -4,7 +4,7 @@
 $ekran_poczatek()
 $naglowek("Którędy wejść do <i>[symbol]</i>")
 $tekst("Budynek <i>[symbol]</i> nie ma wejścia dostępnego.", "b")
-$tekst("Wróć do opisu budynku, aby zobaczyć bariery przy każdym wejściu.")
+$tekst("Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.")
 $pasek_dolny_konto()
 $ekran_koniec()
 @endsalt

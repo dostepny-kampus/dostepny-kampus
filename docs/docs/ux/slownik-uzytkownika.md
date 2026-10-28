@@ -211,13 +211,13 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | V1, brak mapy ulic | „Mapa ulic chwilowo się nie wczytuje. Budynki i bariery nadal możesz oglądać.” | — | — |
 | V2, ładowanie zdjęcia | „Wczytujemy zdjęcie…” | — | PW-9 |
 | V2, brak barier | „Nie mamy jeszcze sprawdzonych barier w tym budynku. To nie znaczy, że barier tu nie ma.” | — | PW-6 |
-| V2, brak planu (budynek podstawowy) | „Nie mamy planu pięter tego budynku. Bariery są na liście niżej.” | — | PW-6 |
+| V2, brak planu (budynek podstawowy) | „Nie mamy planu pięter tego budynku. Bariery są na liście niżej.” Drugie zdanie tylko przy niepustej liście barier. | — | PW-6; recenzja B5 |
 | V2, zdjęcie bez internetu | „Zdjęcie zobaczysz po połączeniu z internetem.” | — | PW-6 |
 | V2, budynku nie ma w telefonie | „Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.” | „Spróbuj ponownie” | PW-4 |
 | V2, błąd zdjęcia | „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” | „Spróbuj ponownie” | PW-10 |
 | V3, jest wejście dostępne | „Budynek A-1 ma wejście dostępne: »nazwa wejścia«.” | — | — |
-| V3, brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Wróć do opisu budynku, aby zobaczyć bariery przy każdym wejściu.” | — | PW-10 |
-| V3, brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne: brak danych o 2 z 3 wejść. Wróć do opisu budynku, aby zobaczyć każde wejście z datą.” | — | PW-10 |
+| V3, brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.” | — | PW-10; rada wskazuje przycisk „Wstecz” (recenzja B5) |
+| V3, brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne: brak danych o 2 z 3 wejść. Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście z datą.” | — | PW-10; rada wskazuje przycisk „Wstecz” (recenzja B5) |
 | V4, krok 1 | „Nie fotografuj twarzy ani tablic rejestracyjnych.” | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | PW-8 |
 | V4, krok 3 | „Dołączymy miejsce, w którym teraz stoisz.” | „Wyślij” | — |
 | V4, brak zgody na lokalizację | „Aby wysłać zdjęcie bariery, potrzebujemy jej miejsca. Sprawdzimy je tylko teraz i nie będziemy Cię śledzić.” | „Pozwól na lokalizację”, „Wróć do mapy” | PW-5 |

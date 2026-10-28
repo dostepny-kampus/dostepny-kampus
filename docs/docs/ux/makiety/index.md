@@ -89,7 +89,7 @@ Wejście główne ma schody, a dostępne jest wejście z tyłu budynku, bramą o
 | --- | --- |
 | „Wstecz” i nagłówek „Budynek A-1” | US2, NFR-15 (wymagania wspólne) |
 | Nazwa budynku z danych, zastępnik | US2 |
-| Wejście: oznaczenie tekstem i ikoną na początku, potem nazwa wejścia; „Wejście główne” niedostępne, „Wejście od ul. Norwida” dostępne [1] | US2.1, US17.1, NFR-21 |
+| Wejście: oznaczenie tekstem i ikoną na początku, potem nazwa wejścia; „Wejście główne” niedostępne, „Wejście bramą od ul. Norwida” dostępne [1]; nazwa odróżnia je od drugiego wejścia przy ul. Norwida, które według deklaracji nie jest dostosowane | US2.1, US17.1, NFR-21 |
 | „Brak danych” z ikoną `minus`, inną niż `x` przy „Niedostępne” | US17.1 |
 | Pod oznaczeniem data i źródło: „Sprawdzone na miejscu [data]”, „Z map i opisów, stan z [data]” | US17.3, BR-24 |
 | „Sprawdź, którędy wejść”: czynność główna, pogrubiona, na pełną szerokość, zaraz pod wejściami | US3, US3.2, NFR-21 |
@@ -97,14 +97,14 @@ Wejście główne ma schody, a dostępne jest wejście z tyłu budynku, bramą o
 | „Plan piętra”, zastępnik planu wybranego piętra | US16.1 |
 | „Źródło: Politechnika Wrocławska” pod planem | NFR-40 |
 | „Bariery w budynku”: typ, uciążliwość tekstem i ikoną, zdjęcie, „Sprawdzone [data]”; pierwsza bariera to schody przy wejściu głównym (TB-1, „Blokada”) [1] | US2.2, BR-17, NFR-21 |
-| Typ „brak planu dotykowego lub głosowego”, napis TB-22 dla Gościa i Odwiedzającego | BR-7 |
+| Druga bariera: typ i uciążliwość jako zastępniki, bo deklaracja nie podaje innej bariery A-1 | US2.2, BR-7, NFR-21 |
 | Pasek dolny z „Konto” | US1, US4, US5.1, US14 (wymagania wspólne) |
 
 Gość nie widzi przycisków Zbierającego, więc karta jest krótka (US14.1). Wariant dla RO-ZBI to osobny plik z dopiskiem `-zbierajacy`. Wskaźnik braku internetu pojawia się dopiero w stanie braku sieci.
 
 ## Źródła
 
-1. Deklaracja dostępności budynku A-1 (wejście główne ze schodami, wejście dostępne z tyłu budynku, bramą od strony K.C. Norwida): <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/deklaracje-dostepnosci-budynkow/budynki-a/a1>
+1. Deklaracja dostępności budynku A-1 (wejście główne ze schodami, wejście dostępne z tyłu budynku, bramą od strony K.C. Norwida; drugie wejście przy ul. C.K. Norwida niedostosowane dla osób z problemami motorycznymi): <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/deklaracje-dostepnosci-budynkow/budynki-a/a1>
 2. PlantUML Salt: <https://plantuml.com/salt>
 3. Preprocesor PlantUML: <https://plantuml.com/preprocessing>
 

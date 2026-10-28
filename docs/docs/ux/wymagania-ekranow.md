@@ -163,8 +163,8 @@ Droga z mapy: dotknięcie budynku (V2), „Sprawdź, którędy wejść” (V3). 
 | Stan | Co widać |
 | --- | --- |
 | Zwykły | zdanie z odpowiedzią i wejścia dostępne |
-| Brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Wróć do opisu budynku, aby zobaczyć bariery przy każdym wejściu.” (US3.1, UC4 4a, PW-10) |
-| Brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne: brak danych o 2 z 3 wejść. Wróć do opisu budynku, aby zobaczyć każde wejście z datą.” (PW-10) Liczby zależą od budynku, także wtedy, gdy danych brak o wszystkich wejściach (UC4 4b, US17.1) |
+| Brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.” (US3.1, UC4 4a, PW-10) |
+| Brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne: brak danych o 2 z 3 wejść. Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście z datą.” (PW-10) Liczby zależą od budynku, także wtedy, gdy danych brak o wszystkich wejściach (UC4 4b, US17.1) |
 | Brak sieci | dane z telefonu z napisami „Brak internetu” i „Dane z 12.11.2026” (NFR-10) |
 
 Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu, a nie samym brakiem wyniku (US3.1). TalkBack czyta je jako pierwsze (NFR-18).
@@ -247,6 +247,7 @@ Zostaje jedno przerwanie przy pierwszym zgłoszeniu. Warianty kolejności opisuj
 | Zdanie w instrukcji: „Napis »Dostępne« przy wejściu znaczy, że wejdziesz bez pokonywania stopni: z poziomu chodnika, pochylnią albo podnośnikiem.” | dane | US5.1, US2.1, BR-24, PW-15 | — |
 | „Dalej”, a w ostatnim kroku „Zacznij” | czynność główna | US5.1 | następny krok albo V1 |
 | „Pomiń instrukcję” | czynność | US5.1, PW-8 | V1 |
+| „Wstecz”: poprzedni krok instrukcji; w pierwszym kroku przy pierwszym uruchomieniu działa jak „Pomiń instrukcję” | czynność | wymagania wspólne, NFR-15, US5.1 | poprzedni krok albo V1; przy otwarciu z paska pierwszy krok wraca do ekranu, z którego otwarto V5 |
 | Pasek dolny | czynność | wymagania wspólne | V1, V4, L1 / L2 |
 
 | Stan | Co widać |
@@ -712,6 +713,8 @@ Stanu pustego nie ma: lista budynków pochodzi z importu, a 0% to zwykła warto�
 | Rezygnacja ze zdjęcia w V4 (recenzja B4, uwaga 17) | „Zrezygnuj” w stanie „brak pozycji” i „Wstecz” w kroku 1 po zrobieniu zdjęcia najpierw pytają o potwierdzenie. Stan „Potwierdzenie rezygnacji” ma przyciski „Tak, zrezygnuj” i „Wróć do zdjęcia”. | Przypadkowe dotknięcie nie usuwa zdjęcia bez cofnięcia (heurystyka Nielsena 5), a osoba może wycofać się z decyzji (heurystyka 3) [5]. Pytanie nie ma limitu czasu (NFR-23). |
 | Powrót do kroku 1 V4 ze zdjęciem (recenzja B5) | Krok 1 ze zrobionym zdjęciem pokazuje miniaturę, „Dalej” jako czynność główną i „Zrób nowe zdjęcie”. „Dalej” prowadzi do kroku 2, a wybrana grupa zostaje. | Bez „Dalej” osoba, która cofnęła się ze zdjęciem, musi zrobić nowe zdjęcie albo zrezygnować. Swobodny powrót bez utraty pracy to heurystyka Nielsena 3 [5]. |
 | Napis budynku podstawowego bez barier (recenzja B5) | Drugie zdanie napisu o braku planu, „Bariery są na liście niżej.”, pojawia się tylko przy niepustej liście barier. | Przy pustej liście zdanie odsyłałoby do barier, których nie ma, obok zdania „Nie mamy jeszcze sprawdzonych barier…” (UC2 2a). |
+| „Wstecz” w V5 przy pierwszym uruchomieniu (recenzja B5) | „Wstecz” wraca do poprzedniego kroku instrukcji. W pierwszym kroku przy pierwszym uruchomieniu działa jak „Pomiń instrukcję” i otwiera V1. | Przy pierwszym uruchomieniu nie ma ekranu przed V5, a „Wstecz” musi mieć cel (wymagania wspólne, NFR-15). |
+| Rada w stanach „brak” V3 (recenzja B5) | Druga część komunikatu wskazuje przycisk: „Wybierz »Wstecz«, aby w opisie budynku zobaczyć…”. | Rada „Wróć do opisu budynku” odsyłała do przycisku, którego nazwy nie ma na ekranie (heurystyka Nielsena 6 [5]). |
 
 ## Moment logowania
 
