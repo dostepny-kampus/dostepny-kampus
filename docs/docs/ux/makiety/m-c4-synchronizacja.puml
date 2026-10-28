@@ -1,0 +1,13 @@
+@startsalt
+' C4 Synchronizacja, stan zwykły: kolejka w telefonie (US9.1, BR-9).
+' Synchronizacja rusza sama po powrocie internetu (US9.2); przycisk tylko ją przyspiesza.
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Synchronizacja")
+<b>Czeka na wysłanie: 3</b>
+2 zgłoszenia i 1 znacznik piętra
+$tekst("Ostatnia synchronizacja: <i>[data]</i>, <i>[godzina]</i>")
+..
+$przycisk_glowny("Synchronizuj teraz")
+$ekran_koniec()
+@endsalt

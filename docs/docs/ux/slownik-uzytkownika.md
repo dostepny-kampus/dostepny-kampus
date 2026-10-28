@@ -140,16 +140,26 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | mapa nieba | „Mapa nieba” | Zbierający | bez zmian | 10.2 |
 | podpowiedź budynku | „Czy to budynek C-13?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | Zbierający | Pytanie zamiast słowa „podpowiedź”. | 10.2 |
 | korekta ręczna | „Korekta ręczna” | Zbierający, Weryfikator | bez zmian | 10.2 |
+| przesunięcie punktu przyciskami (C1) | „Przesuń punkt na mapie:”, „Przesuń punkt na planie:” i „W górę”, „W dół”, „W lewo”, „W prawo” | Zbierający | Odpowiednik przeciągania punktu (NFR-15). Kierunki te same co przy mapie (PW-8). | 10.2 |
+| nagłówki sekcji C1 i C2 | „Miejsce bariery”, „Piętro”, „Zdjęcie”, „Opis” | Zbierający | Krótki rzeczownik nad grupą pól. | 10.2 |
 | „Zmień miejsce”, „Powtórz pomiar”, „Dalej”, „Zapisz” | bez zmian | Zbierający | Czasowniki są już krótkie. | 10.2 |
 | typ bariery (C2) | „Typ bariery” | Zbierający, Weryfikator | bez zmian | 10.2 |
 | uciążliwość (C2, R2) | „Uciążliwość” i wartości „Utrudnienie”, „Tylko z pomocą”, „Blokada” z opisem | Zbierający, Weryfikator | Te same wartości, które widzi Odwiedzający. | 10.2, 10.5 |
+| wskazówka nad uciążliwością (C2) | „Oceń dla osoby, dla której bariera jest najtrudniejsza.” | Zbierający | Opisy wartości mówią „Osoba”, a skala dotyczy osoby, dla której bariera jest najtrudniejsza, a nie samego Zbierającego. | 10.2, 10.5 |
+| opis „Utrudnienie” (C2) | „Osoba pokona ją sama, ale z dodatkowym wysiłkiem lub ryzykiem.” | Zbierający | Skrócone kryterium stopnia 1 ze skali uciążliwości. | 10.2, 10.5 |
+| opis „Tylko z pomocą” (C2) | „Osoba pokona ją tylko z pomocą innej osoby albo urządzenia obsługiwanego przez pracownika.” | Zbierający | Skrócone kryterium stopnia 2. | 10.2, 10.5 |
+| opis „Blokada” (C2) | „Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś ją przeniesie.” | Zbierający | Skrócone kryterium stopnia 3. | 10.2, 10.5 |
+| opis przy TB-29 (C2) | „Obowiązkowy przy typie »inna bariera«.” | Zbierający | Mówi przed zapisem, kiedy pole jest wymagane (US7.3). | 10.2 |
 | „półpiętro” | „Półpiętro” | Zbierający | bez zmian | 10.2 |
 | status „lokalne” | „W telefonie” | Zbierający | Odpowiada na pytanie PE-2, czy zgłoszenie dotarło. | 10.3 |
 | statusy „wysłane”, „w weryfikacji”, „przyjęte”, „odrzucone”, „archiwalne” | „Wysłane”, „W weryfikacji”, „Przyjęte”, „Odrzucone”, „Archiwalne” | Zbierający | Krótkie pojęcia dokumentacji. | 10.3, 10.5 |
 | znak „zmiana czeka na wysłanie” | „Zmiana czeka na wysłanie” | Zbierający | bez zmian | 10.3 |
+| powód odrzucenia i rodzaj zmiany (C3) | „Powód odrzucenia:”, „Zmiana oznaczenia wejścia” | Zbierający | Te same słowa co pole „Powód odrzucenia” w R2 i nagłówek C6. | 10.3 |
 | konflikt wersji („wybierz wersję”) | „Dwie wersje: wybierz jedną” | Zbierający | Mówi, co się stało i co zrobić. | 10.4 |
 | pole różniące się w konflikcie | „Inna wartość” | Zbierający | bez zmian; różnicę widać bez koloru (NFR-21) | 10.4 |
-| „Wyślij ponownie do bieżącego zgłoszenia” | „Wyślij do aktualnego zgłoszenia” | Zbierający | Krócej i bez słowa „ponownie”, które sugeruje to samo zgłoszenie. | 10.4 |
+| wersje w konflikcie (C4) | nagłówki „Moja wersja”, „Wersja z serwera” | Zbierający | Te same słowa co w przyciskach wyboru wersji. | 10.4 |
+| podział kolejki (C4) | „2 zgłoszenia i 1 znacznik piętra” | Zbierający | Mówi, co dokładnie czeka na wysłanie. | 10.3 |
+| „Wyślij ponownie do bieżącego zgłoszenia” | „Wyślij ponownie”, a nad przyciskiem zdanie z katalogu komunikatów (C3, nieaktualne) | Zbierający | Krótki napis mieści się na przycisku w jednym wierszu. Zdanie nad nim mówi, że zmiana trafi do aktualnej wersji, a nie do tego samego zgłoszenia. | 10.4 |
 | synchronizacja (nagłówek C4, „Synchronizuj teraz”) | „Synchronizacja”, „Synchronizuj teraz” | Zbierający | Krótkie pojęcie dokumentacji. | 10.3 |
 | „Czeka na wysłanie: 3” | bez zmian | Zbierający | — | 10.3 |
 | „Zostaw moją wersję”, „Weź wersję z serwera” | bez zmian; pod nimi skutek według katalogu komunikatów (C4, konflikt) | Zbierający | Skutek widać przed decyzją (recenzja B3, Nielsen 5). | 10.4 |
@@ -158,6 +168,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | nagłówek C5 | „Obejrzane piętra” | Zbierający, Koordynator | bez zmian treści | 10.7 |
 | znacznik „obejrzane” / „nieobejrzane” | „Obejrzane”, „Nieobejrzane” | Zbierający, Koordynator | bez zmian | 10.7 |
 | wiersz budynku podstawowego (C5) | „Cały budynek” | Zbierający, Koordynator | bez zmian | 10.7 |
+| wiersz piętra (C5) | „Piętro: [etykieta]” z etykietą z danych PWr | Zbierający, Koordynator | Ten sam wzór co „Piętro:” na karcie budynku. | 10.7 |
 | znacznik w telefonie (C5) | „Czeka na wysłanie” | Zbierający | Te same słowa co „Czeka na wysłanie: 3” na C3. | 10.3 |
 | budynek podstawowy w K1 | „Obejrzany”, „Nieobejrzany” | Koordynator | Forma dla budynku; ikona jak przy znaczniku. | 10.7 |
 | „Twój znacznik”, „znacznik innej osoby” | „Twój znacznik”, „Znacznik innej osoby” | Zbierający | bez zmian | 10.4 |
@@ -165,6 +176,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | „Cofnij” (Zbierający) i „Cofnij znacznik” (Koordynator) | „Cofnij znacznik” dla obu ról | Zbierający, Koordynator | Ta sama czynność ma ten sam napis. | 10.7 |
 | zmiana oznaczenia wejścia („Zmień oznaczenie”) | przycisk „Zmień oznaczenie”, nagłówek C6 „Zmień oznaczenie wejścia” | Zbierający | Przycisk stoi przy wejściu, więc słowo „wejścia” jest zbędne. | 10.1 |
 | przyciski wyboru w C6 | „Dostępne”, „Niedostępne” | Zbierający | Te same słowa co na karcie budynku. | 10.1 |
+| nagłówki sekcji C6 i C7 | „Nowe oznaczenie”, „Zdjęcie wejścia”, „Nowe zdjęcie miejsca” | Zbierający | Słowo „nowe” odróżnia to, co Zbierający dodaje, od obecnych danych nad sekcją. | 10.1 |
 | bariera usunięta („Bariery już nie ma”) | przycisk i nagłówek C7 „Zgłoś, że bariery nie ma”; rodzaj na C3 „Bariery już nie ma” | Zbierający | Czasownik na przycisku, opis stanu na liście. | 10.1 |
 | „Popraw zgłoszenie”, „Wyślij do sprawdzenia” | bez zmian | Zbierający | „Sprawdzenie” zamiast „weryfikacji”, jak w R1. | 10.5 |
 | kolejka weryfikacji (R1) | przycisk i nagłówek „Zgłoszenia do sprawdzenia” | Weryfikator | Nagłówek powtarza napis przycisku z L2. | 10.5 |
@@ -249,13 +261,17 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | Ekran i stan | Komunikat | Przyciski | Zmiana |
 | --- | --- | --- | --- |
 | C1, szukanie satelitów | „Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.” | „Powtórz pomiar” | PW-9 |
-| C1, zgody na lokalizację | jak w V4, z końcówką „aby zapisać miejsce bariery” | jak w V4 | — |
+| C1, brak zgody na lokalizację | „Aby zapisać miejsce bariery, potrzebujemy lokalizacji. Sprawdzimy ją tylko teraz i nie będziemy Cię śledzić.” | „Pozwól na lokalizację” | — |
+| C1, odmowa zgody | „Bez lokalizacji nie zapiszesz miejsca bariery. Możesz ją włączyć w ustawieniach telefonu.” | „Otwórz ustawienia” | — |
+| C1, zgoda tylko przybliżona | „Telefon podaje tylko przybliżone miejsce, a to za mało, by wskazać barierę. Pozwól na dokładną lokalizację.” | „Pozwól na dokładną lokalizację” | — |
+| C1, lokalizacja wyłączona | „Lokalizacja w telefonie jest wyłączona. Włącz ją, aby zapisać miejsce bariery.” | „Otwórz ustawienia” | — |
 | C2, zmiana zgłoszenia przyjętego | „Zapis utworzy nowe zgłoszenie, które znów sprawdzi Weryfikator.” | „Zapisz” | — |
-| C2, błąd walidacji | „Brakuje typu bariery. Uzupełnij to pole, aby zapisać.” | — | PW-10 |
+| C2, błąd walidacji | „Brakuje typu bariery. Uzupełnij to pole, aby zapisać.” Ten sam wzór dla innych pól, np. „Brakuje opisu. Uzupełnij to pole, aby zapisać.” | — | PW-10 |
 | C2, C6, C7, za mało miejsca | „Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.” | „Spróbuj ponownie” | — |
 | C3, pusty | „Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.” | „Zmierz i zgłoś barierę” | PW-12 |
 | C3, ładowanie | „Sprawdzamy statusy…” | — | PW-9 |
 | C3, błąd | „Nie udało się sprawdzić statusów, ale zgłoszenia są bezpieczne w telefonie. Spróbuj ponownie za chwilę.” | „Spróbuj ponownie” | PW-10 |
+| C3, nieaktualne | „Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.” Przy zmianie oznaczenia wejścia: „Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.” | „Wyślij ponownie” | PW-14 |
 | C3, nieaktualne po usunięciu bariery | „Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.” | „Zmierz i zgłoś barierę” | PW-12 |
 | C4, pusty | „Wszystko wysłane. Ostatnia synchronizacja: 12.11.2026, 10:42.” | — | — |
 | C4, wysyłanie | „Wysyłamy 2 z 5…” | — | PW-9 |
@@ -402,7 +418,7 @@ Propozycje PW-1…PW-15 są wprowadzone w [wymaganiach do ekranów](wymagania-ek
 | PW-11 | wymagania wspólne, C5, K1 | ikona przy „Wstecz” nieopisana; „nieobejrzane” tekstem i ikoną | „Wstecz” bez ikony; „Nieobejrzane” bez ikony, „Obejrzane” z ikoną `task` | próg 50% na V3; NFR-21 nie obejmuje znacznika |
 | PW-12 | V2, L2, C3, C4, C5, C7 | „Nowe zgłoszenie z pomiarem”, „Nowe zgłoszenie”, „Bariery już nie ma”, „Piętra obejrzane”, „Cofnij”, „lokalne”. Konflikt bez napisu o skutku, „Anuluj” w C5. | „Zmierz i zgłoś barierę”, „Zgłoś, że bariery nie ma”, „Oznacz obejrzane piętra”, „Cofnij znacznik”, „W telefonie”. Napis „Druga wersja zostanie usunięta.”, „Zostaw znacznik”. | czasownik na przycisku; skutek przed decyzją |
 | PW-13 | V1, V2, V3, C2, R2 | uciążliwość 1–3 bez napisów | „Utrudnienie”, „Tylko z pomocą”, „Blokada” dla wszystkich ról | słowa z kryteriów skali uciążliwości |
-| PW-14 | C3, L2, R1, K2, K3 | „Wyślij ponownie do bieżącego zgłoszenia”, „Wyloguj”. Nagłówki „Kolejka weryfikacji”, „Zaproszenie”, „Eksport”. | „Wyślij do aktualnego zgłoszenia”, „Wyloguj się”. Nagłówki „Zgłoszenia do sprawdzenia”, „Zaproś osobę”, „Pobierz eksport”. | nagłówek równy napisowi przycisku |
+| PW-14 | C3, L2, R1, K2, K3 | „Wyślij ponownie do bieżącego zgłoszenia”, „Wyloguj”. Nagłówki „Kolejka weryfikacji”, „Zaproszenie”, „Eksport”. | „Wyślij ponownie” ze zdaniem o aktualnej wersji, „Wyloguj się”. Nagłówki „Zgłoszenia do sprawdzenia”, „Zaproś osobę”, „Pobierz eksport”. | nagłówek równy napisowi przycisku |
 | PW-15 | V5 | instrukcja bez objaśnienia oznaczenia wejścia | zdanie z katalogu komunikatów: „Napis »Dostępne« przy wejściu znaczy, że wejdziesz bez pokonywania stopni…” | „Dostępne” bez objaśnienia można odczytać jako „otwarte”; definicja wejścia dostępnego ze słownika pojęć |
 
 ## Źródła

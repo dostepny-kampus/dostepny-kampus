@@ -1,0 +1,18 @@
+@startsalt
+' C6 Zmiana oznaczenia wejścia: wybrano obecną wartość i zrobiono nowe zdjęcie
+' (BR-24, UC18 2a; scenariusz „Zmiana może potwierdzić dotychczasowe oznaczenie”).
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Zmień oznaczenie wejścia", "Budynek A-1")
+$wejscie($niedostepne(), "Wejście główne", "Z map i opisów, stan z <i>[data]</i>")
+$sekcja("Nowe oznaczenie")
+$opcja("", $dostepne())
+$opcja("X", $niedostepne(), "Potwierdzasz obecne oznaczenie. Zmieni się data i źródło.")
+$sekcja("Zdjęcie wejścia")
+$zdjecie("nowe zdjęcie wejścia głównego")
+..
+$tekst("Zmianę sprawdzi inna osoba. Do tego czasu karta budynku pokazuje obecne oznaczenie.")
+$przycisk_glowny("Wyślij do sprawdzenia")
+$ekran_koniec()
+@endsalt

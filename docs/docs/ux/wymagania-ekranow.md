@@ -378,7 +378,7 @@ Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykres
 | Piętro: wybór z etykiet z danych PWr (budynek szczegółowy) | czynność | US7.2 | — |
 | Piętro: liczba całkowita i pole „Półpiętro” (budynek podstawowy) | czynność | US7.2, BR-G1 | — |
 | „Typ bariery”, pogrupowany w 6 grup barier | czynność | US7.1, BR-7 | — |
-| „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda wartość z opisem i ikoną | czynność | US7.1, NFR-21, PW-13 | — |
+| „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda wartość z opisem i ikoną; pod nagłówkiem „Oceń dla osoby, dla której bariera jest najtrudniejsza.” | czynność | US7.1, NFR-21, PW-13 | — |
 | Zdjęcie, co najmniej jedno: „Zrób zdjęcie” i „Zrób nowe zdjęcie”, z przypomnieniem o twarzach i tablicach | czynność | US7.1, NFR-25, PW-8 | aparat |
 | Opis; obowiązkowy przy TB-29 „inna bariera” | czynność | US7.3 | — |
 | Przy zmianie zgłoszenia przyjętego: „Zapis utworzy nowe zgłoszenie, które znów sprawdzi Weryfikator.” | dane | BR-18 | — |
@@ -414,7 +414,7 @@ Dostępność: błąd walidacji jest tekstem przy polu i w podsumowaniu, a fokus
 | Znak „Zmiana czeka na wysłanie” przy niewysłanej edycji | dane | BR-9, [reguły, cykl życia zgłoszenia](../biznes/reguly.md) | — |
 | Znak „Dwie wersje: wybierz jedną” przy konflikcie | czynność | US9.3 | C4 |
 | Dotknięcie zgłoszenia przed decyzją albo odrzuconego | czynność główna | US8.3, BR-3 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
-| Przy powodzie „nieaktualne”: „Wyślij do aktualnego zgłoszenia” | czynność | BR-23, BR-24, PW-14 | C2; zmiana oznaczenia wejścia: C6 |
+| Przy powodzie „nieaktualne”: „Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.” (przy zmianie oznaczenia wejścia: „Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.”) i przycisk „Wyślij ponownie” | czynność | BR-23, BR-24, PW-14 | C2; zmiana oznaczenia wejścia: C6 |
 | Przy „nieaktualne” po usunięciu bariery: „Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.” Przycisk „Zmierz i zgłoś barierę” | dane, czynność | BR-23, PW-12 | C1 |
 | Stan synchronizacji, np. „Czeka na wysłanie: 3” | czynność | US9.1 | C4 |
 | „Zmierz i zgłoś barierę” | czynność | US6, PW-12 | C1 |

@@ -1,0 +1,35 @@
+@startsalt
+' C5 Piętra obejrzane, Koordynator, potwierdzenie cofnięcia znacznika piętra 2 (US11.3, BR-20).
+' Koordynator nie stawia znaczników, więc nie widzi „Oznacz jako obejrzane”.
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Obejrzane piętra", "Budynek A-1")
+$ramka()
+<b>Piętro: <i>[1]</i></b>
+<b>$obejrzane()</b>
+Znacznik innej osoby
+$przycisk("Cofnij znacznik")
+}
+$ramka()
+<b>Piętro: <i>[2]</i></b>
+<b>$obejrzane()</b>
+Znacznik innej osoby
+$tekst("Cofnąć znacznik piętra <i>[2]</i>? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.", "b")
+$przycisk_glowny("Cofnij znacznik")
+$przycisk("Zostaw znacznik")
+}
+$ramka()
+<b>Piętro: <i>[3]</i></b>
+$nieobejrzane()
+}
+$ramka()
+<b>Piętro: <i>[4]</i></b>
+$nieobejrzane()
+}
+$ramka()
+<b>Piętro: <i>[5]</i></b>
+$nieobejrzane()
+}
+$ekran_koniec()
+@endsalt

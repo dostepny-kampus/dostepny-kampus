@@ -1,0 +1,21 @@
+@startsalt
+' C7 Usunięcie bariery, stan zwykły: przyjęte zgłoszenie TB-9 „niesprawna winda”
+' (scenariusz @US8.4), dane bez edycji i miejsce na nowe zdjęcie (BR-19). Bez typu i uciążliwości.
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Zgłoś, że bariery nie ma")
+$ramka()
+<b>niesprawna winda</b>
+<i>[budynek]</i>, piętro <i>[piętro]</i>
+<i>[miejsce]</i>
+$obraz("zdjęcie z przyjętego zgłoszenia")
+Sprawdzone <i>[data]</i>
+}
+$sekcja("Nowe zdjęcie miejsca")
+$zdjecie()
+..
+$tekst("Bariera zostanie na mapie, dopóki Weryfikator nie sprawdzi zgłoszenia.")
+$przycisk_glowny("Wyślij do sprawdzenia")
+$ekran_koniec()
+@endsalt

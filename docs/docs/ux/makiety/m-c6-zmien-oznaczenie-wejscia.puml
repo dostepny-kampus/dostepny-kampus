@@ -1,0 +1,19 @@
+@startsalt
+' C6 Zmiana oznaczenia wejścia, stan zwykły: nic nie wybrano, zdjęcia jeszcze nie ma.
+' Wejście główne A-1 ma schody, więc obecne oznaczenie to „Niedostępne” (deklaracja dostępności A-1).
+' „Brak danych” nie jest do wyboru: nadaje je tylko import (BR-24).
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Zmień oznaczenie wejścia", "Budynek A-1")
+$wejscie($niedostepne(), "Wejście główne", "Z map i opisów, stan z <i>[data]</i>")
+$sekcja("Nowe oznaczenie")
+$opcja("", $dostepne())
+$opcja("", $niedostepne())
+$sekcja("Zdjęcie wejścia")
+$zdjecie()
+..
+$tekst("Zmianę sprawdzi inna osoba. Do tego czasu karta budynku pokazuje obecne oznaczenie.")
+$przycisk_glowny("Wyślij do sprawdzenia")
+$ekran_koniec()
+@endsalt

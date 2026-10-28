@@ -1,0 +1,24 @@
+@startsalt
+' C1 Pomiar pozycji, stan zwykły: pomiar trwa. Zbierający stoi przy wejściu głównym A-1.
+' Mapa nieba: system satelity rozróżniony kształtem znaku i podpisem (US6.5, NFR-21).
+' „Dalej” pojawia się po końcu pomiaru, razem z podpowiedzią budynku (US6.2).
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Pomiar pozycji")
+<b>Pomiar: zostało 12 s</b>
+Dokładność: 0,8 m (szacunek)
+$tekst("Satelity: GPS 7, Galileo 5, GLONASS <i>[liczba]</i>")
+$sekcja("Mapa nieba")
+{+
+{ .  | .  | Pn | .  | .
+ .  | ● GPS | . | ■ Galileo | .
+ Zach | . | ▲ GLONASS | . | Wsch
+ .  | ■ Galileo | . | ● GPS | .
+ .  | .  | Pd | .  | . }
+<i>[położenie satelitów nad Tobą]</i>
+}
+..
+$przycisk("Powtórz pomiar")
+$ekran_koniec()
+@endsalt

@@ -1,0 +1,52 @@
+@startsalt
+' C3 Moje zgłoszenia, stan zwykły: własne zgłoszenia, najnowsze na górze.
+' Status jako pierwsza informacja, słowem i ikoną (US8.1, NFR-21); TalkBack czyta go przed typem.
+' Dotknięcie pozycji otwiera C2, C6 albo C7; przycisk „Popraw zgłoszenie” to ta sama czynność.
+' „Bariery już nie ma” nigdy nie jest „Przyjęte”: po przyjęciu oba zgłoszenia są archiwalne (BR-19).
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Moje zgłoszenia")
+$przycisk("Czeka na wysłanie: 2")
+$przycisk("Zmierz i zgłoś barierę")
+..
+$ramka()
+<b>$w_telefonie()</b>
+Bariery już nie ma
+niesprawna winda
+<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+}
+$ramka()
+<b>$odrzucone()</b>
+próg
+<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+Powód odrzucenia:
+Zdjęcie nie pokazuje progu
+$przycisk_glowny("Popraw zgłoszenie")
+}
+$ramka()
+<b>$w_weryfikacji()</b>
+ciężkie drzwi
+<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+Zmiana czeka na wysłanie
+}
+$ramka()
+<b>$wyslane()</b>
+próg
+<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+$przycisk("Dwie wersje: wybierz jedną")
+}
+$ramka()
+<b>$przyjete()</b>
+schody przy wejściu
+A-1, piętro <i>[1]</i>, <i>[data]</i>
+}
+$ramka()
+<b>$archiwalne()</b>
+Zmiana oznaczenia wejścia
+A-1, Wejście główne
+$niedostepne()
+<i>[data]</i>
+}
+$ekran_koniec()
+@endsalt

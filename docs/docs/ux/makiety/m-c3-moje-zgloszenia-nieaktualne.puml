@@ -1,0 +1,28 @@
+@startsalt
+' C3 Moje zgłoszenia: dwa zgłoszenia odrzucone z powodem „nieaktualne” (BR-23, BR-24).
+' Krótki napis przycisku, a skutek mówi zdanie nad nim (PW-14); napis mieści się w ramce 532 px.
+' Zwykłe zgłoszenie można wysłać do aktualnego; po usunięciu bariery zgłasza się ją od nowa.
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Moje zgłoszenia")
+$przycisk("Zmierz i zgłoś barierę")
+..
+$ramka()
+<b>$odrzucone()</b>
+próg
+<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+Powód odrzucenia: Nieaktualne
+$tekst("Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.")
+$przycisk_glowny("Wyślij ponownie")
+}
+$ramka()
+<b>$odrzucone()</b>
+niesprawna winda
+<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+Powód odrzucenia: Nieaktualne
+$tekst("Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.")
+$przycisk("Zmierz i zgłoś barierę")
+}
+$ekran_koniec()
+@endsalt

@@ -1,0 +1,8 @@
+@startsalt
+' C1 Pomiar pozycji, stan ładowania: telefon szuka satelitów (NFR-1, PW-9).
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Pomiar pozycji")
+$komunikat("Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.", "Powtórz pomiar")
+$ekran_koniec()
+@endsalt

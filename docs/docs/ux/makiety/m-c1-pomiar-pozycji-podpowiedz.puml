@@ -1,0 +1,22 @@
+@startsalt
+' C1 Pomiar pozycji, stan zwykły po końcu pomiaru: podpowiedź budynku i korekta na mapie.
+' Zbierający stoi przy wejściu głównym A-1 (scenariusz @US6.2).
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Pomiar pozycji")
+Dokładność: 0,8 m (szacunek)
+$tekst("Satelity: GPS 7, Galileo 5, GLONASS <i>[liczba]</i>")
+$przycisk("Powtórz pomiar")
+$sekcja("Czy to budynek A-1?")
+$przycisk("Potwierdź")
+$przycisk("Wybierz inny")
+$przycisk("Poza budynkiem")
+$sekcja("Miejsce bariery")
+$obraz("mapa z punktem bariery przy wejściu głównym A-1")
+© OpenStreetMap contributors
+$przesun_punkt("na mapie")
+..
+$przycisk_glowny("Dalej")
+$ekran_koniec()
+@endsalt
