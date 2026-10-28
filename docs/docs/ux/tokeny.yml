@@ -1,0 +1,209 @@
+# Dostępny Kampus — tokeny wizualne (jedno źródło prawdy).
+#
+# Z tego pliku faza C generuje motyw aplikacji: schemat kolorów jasny i ciemny,
+# skalę typografii i stałe wymiarów. Strona docs/ux/tokeny.md pokazuje te same
+# wartości w tabelach wygenerowanych skryptem.
+#
+# Po każdej zmianie:
+#   python scripts/kontrast.py --page docs/ux/tokeny.md   (sprawdza i odświeża tabele strony)
+#   python scripts/verify.py                               (krok „kontrast” sprawdza progi i aktualność strony)
+#
+# Pola `uzycie` i `zrodlo` trafiają do tabel na stronie. Komentarze wyjaśniają wybór wartości.
+# Kolory: zapis #RRGGBB, bez przezroczystości (kontrast liczymy dla koloru kryjącego).
+# Rozmiary tekstu w sp, a wszystkie inne wymiary w dp.
+
+wersja: 1
+
+# ---------------------------------------------------------------------------
+# Kolory — nazwy ról Material 3. Tylko role, których potrzebują ekrany z makiet.
+# Zasady (NFR-21, wymagania wspólne fazy B):
+#   * Kolor nie niesie znaczenia. Status zgłoszenia, oznaczenie wejścia (Dostępne /
+#     Niedostępne / Brak danych) i uciążliwość (Utrudnienie / Tylko z pomocą / Blokada)
+#     mają zawsze tekst i ikonę ze słownika użytkownika, w kolorze zwykłego tekstu.
+#   * Bez „sygnalizacji świetlnej”: w palecie nie ma zielonego ani żółtego, a żadna
+#     wartość statusu nie ma własnego koloru.
+#   * Jedna barwa akcentu: niebieski. Daltonizm czerwono-zielony (protanopia,
+#     deuteranopia) nie zmienia odbioru osi niebieskiej; skrypt sprawdza kontrast
+#     także po symulacji obu typów.
+#   * Ciemny motyw dobrany osobno, a nie przez odwrócenie jasnego.
+# ---------------------------------------------------------------------------
+kolory:
+  surface:
+    jasny: "#FFFFFF"   # białe tło daje największy kontrast w słońcu (PE-1, PE-2)
+    ciemny: "#16181B"  # ciemnoszare, nie czarne: mniej rażące przejścia przy jasnym tekście (Material, motyw ciemny)
+    uzycie: tło ekranu, pól tekstowych i paska dolnego
+    zrodlo: NFR-16, PE-1, PE-2
+  onSurface:
+    jasny: "#1A1C1E"   # prawie czarny; 17:1 na tle
+    ciemny: "#E4E5E7"  # jasnoszary zamiast czystej bieli, by tekst nie „świecił” na ciemnym tle
+    uzycie: tekst podstawowy, nagłówki, ikony i napisy statusów, oznaczeń wejść i uciążliwości
+    zrodlo: NFR-16, NFR-21
+  surfaceVariant:
+    jasny: "#EDF0F4"   # jasnoszare z lekkim chłodnym odcieniem; odróżnia ramkę od tła, ale granicę wyznacza obramowanie
+    ciemny: "#262A2F"
+    uzycie: tło ramek pozycji listy, ramki komunikatu i wskaźnika braku internetu
+    zrodlo: NFR-16
+  onSurfaceVariant:
+    jasny: "#3D4248"   # tekst drugorzędny wciąż ≥ 7:1, bo data i źródło przy wejściu są ważne (US17.3)
+    ciemny: "#C4C8CE"
+    uzycie: tekst drugorzędny (data i źródło przy wejściu, podpisy), ikony w pasku dolnym, zawsze z napisem
+    zrodlo: NFR-16, US17.3
+  outline:
+    jasny: "#6B7178"   # ≥ 3:1 na obu tłach: ramka pola i pozycji listy jest widoczną granicą celu dotyku
+    ciemny: "#8C929A"
+    uzycie: obramowanie pól, ramek pozycji listy, przycisków drugorzędnych i pól wyboru
+    zrodlo: NFR-16 (WCAG 1.4.11)
+  primary:
+    jasny: "#0A4680"   # ciemny niebieski: jedyny kolor akcentu
+    ciemny: "#A9C9F5"  # w ciemnym motywie jaśniejszy i mniej nasycony; nasycony niebieski na ciemnym tle drga
+    uzycie: wypełnienie czynności głównej, napis przycisku drugorzędnego, wskaźnik fokusu, wybrane pole wyboru
+    zrodlo: wymagania wspólne (czynność główna), NFR-16
+  onPrimary:
+    jasny: "#FFFFFF"
+    ciemny: "#0A2B4D"  # ciemny granat na jasnym niebieskim; biel dawałaby za mały kontrast
+    uzycie: napis i ikona na czynności głównej
+    zrodlo: NFR-16
+  error:
+    # Ciemna czerwień tylko dla błędu walidacji: przy polu i w podsumowaniu nad formularzem
+    # (C2, C6, C7, R2). Zawsze z pogrubionym tekstem, który mówi, co się stało i co zrobić
+    # (wymagania wspólne fazy B). Błąd serwera, zapisu, logowania i brak internetu to zwykły
+    # komunikat: onSurface na surfaceVariant, bez czerwieni.
+    jasny: "#8A0F18"
+    ciemny: "#FFB3AE"  # jasny łososiowy; na ciemnym tle ≥ 7:1
+    uzycie: tekst błędu walidacji przy polu i nad formularzem, obramowanie pola z błędem; nigdy dla statusu, oznaczenia wejścia ani uciążliwości
+    zrodlo: NFR-15 (WCAG 3.3.1), NFR-21
+
+# ---------------------------------------------------------------------------
+# Kontrast — pary sprawdzane przez scripts/kontrast.py dla obu motywów,
+# także po symulacji protanopii i deuteranopii.
+# ---------------------------------------------------------------------------
+kontrast:
+  progi:
+    # NFR-16 wymaga 4,5:1. Przyjmujemy 7:1 (WCAG 1.4.6, poziom AAA) dla każdego tekstu,
+    # także dużego: PE-1 słabo czyta blady tekst w słońcu, PE-2 pracuje w słońcu,
+    # PE-3 czyta drobny tekst z wysiłkiem. Skrypt odrzuca próg niższy niż w NFR-16.
+    tekst: 7.0
+    # NFR-16 i WCAG 1.4.11: ramki pól, ikony statusu, fokus, granica przycisku.
+    komponent: 3.0
+  pary:
+    - {kolor: onSurface, tlo: surface, rodzaj: tekst, gdzie: tekst podstawowy i nagłówki}
+    - {kolor: onSurface, tlo: surfaceVariant, rodzaj: tekst, gdzie: tekst w ramce pozycji i komunikatu}
+    - {kolor: onSurfaceVariant, tlo: surface, rodzaj: tekst, gdzie: data i źródło, podpisy}
+    - {kolor: onSurfaceVariant, tlo: surfaceVariant, rodzaj: tekst, gdzie: data i źródło w ramce}
+    - {kolor: onPrimary, tlo: primary, rodzaj: tekst, gdzie: napis czynności głównej}
+    - {kolor: primary, tlo: surface, rodzaj: tekst, gdzie: napis przycisku drugorzędnego}
+    - {kolor: primary, tlo: surfaceVariant, rodzaj: tekst, gdzie: przycisk drugorzędny w ramce}
+    - {kolor: error, tlo: surface, rodzaj: tekst, gdzie: błąd przy polu}
+    - {kolor: error, tlo: surfaceVariant, rodzaj: tekst, gdzie: błąd przy polu w ramce}
+    - {kolor: outline, tlo: surface, rodzaj: komponent, gdzie: obramowanie pola i ramki}
+    - {kolor: outline, tlo: surfaceVariant, rodzaj: komponent, gdzie: obramowanie pola wewnątrz ramki}
+    - {kolor: primary, tlo: surface, rodzaj: komponent, gdzie: granica czynności głównej, fokus, wybrane pole}
+
+# ---------------------------------------------------------------------------
+# Typografia — rozmiary w sp, żeby tekst rósł z ustawieniem czcionki (NFR-20, WCAG 1.4.4).
+# Krój systemowy: osoba zachowuje krój i rozmiar ustawiony w telefonie (PE-1 ma
+# powiększoną czcionkę), a aplikacja nie dołącza pliku czcionki.
+# Interlinia tekstu podstawowego ≈ 1,5 rozmiaru (WCAG 1.4.8, poziom AAA).
+# ---------------------------------------------------------------------------
+typografia:
+  kroj: systemowy
+  # Żaden tekst w aplikacji nie jest mniejszy (próg zespołu). Skrypt sprawdza każdy styl.
+  minimum_sp: 16
+  # Pogrubienie czynności głównej i błędu przy polu (makiety: przycisk główny, błąd pola).
+  wyroznienie_waga: 700
+  style:
+    titleLarge:
+      sp: 24
+      waga: 700
+      interlinia_sp: 32
+      uzycie: nagłówek ekranu, np. „Budynek A-1”
+      zrodlo: NFR-16 (duży tekst ≥ 24 sp)
+    titleMedium:
+      sp: 20
+      waga: 700
+      interlinia_sp: 28
+      uzycie: nagłówek sekcji, np. „Bariery w budynku”
+      zrodlo: NFR-16 (duży tekst ≥ 19 sp pogrubiony)
+    bodyLarge:
+      sp: 18             # 34 znaki w wierszu na ekranie 360 dp (konwencja makiet)
+      waga: 400
+      interlinia_sp: 28
+      uzycie: tekst podstawowy, oznaczenia, statusy, data i źródło przy wejściu
+      zrodlo: konwencje makiet, NFR-20, PE-1
+    labelLarge:
+      sp: 18
+      waga: 500
+      interlinia_sp: 24
+      uzycie: napis przycisku; czynność główna ma wagę wyróżnienia
+      zrodlo: konwencje makiet, NFR-17
+    bodyMedium:
+      sp: 16
+      waga: 400
+      interlinia_sp: 24
+      uzycie: podpis źródła pod planem piętra, podpis OpenStreetMap na mapie
+      zrodlo: NFR-37, NFR-40, minimum zespołu
+    labelMedium:
+      sp: 16
+      waga: 500
+      interlinia_sp: 22
+      uzycie: napisy pod ikonami paska dolnego, w razie potrzeby w dwóch wierszach
+      zrodlo: wymagania wspólne (pasek dolny), minimum zespołu
+
+# ---------------------------------------------------------------------------
+# Wymiary w dp. Odstępy na siatce 4 dp (Material 3); skrypt sprawdza wielokrotność.
+# ---------------------------------------------------------------------------
+siatka_dp: 4
+
+odstepy:
+  xs:
+    dp: 4
+    uzycie: odstęp ikony od napisu
+    zrodlo: siatka 4 dp
+  s:
+    dp: 8
+    uzycie: odstęp tekstu od ramki wewnątrz pozycji listy
+    zrodlo: siatka 4 dp
+  m:
+    dp: 16             # 360 dp − 2 × 16 dp zostawia 328 dp na wiersz tekstu 18 sp
+    uzycie: margines boczny ekranu, odstęp między przyciskami i pozycjami listy
+    zrodlo: konwencje makiet, PE-1 (drżenie dłoni)
+  l:
+    dp: 24
+    uzycie: odstęp między sekcjami ekranu
+    zrodlo: siatka 4 dp
+
+cele_dotyku:
+  minimum:
+    dp: 48
+    uzycie: najmniejszy cel dotyku, także ikona paska dolnego i pole wyboru z etykietą
+    zrodlo: NFR-17
+  przycisk:
+    dp: 56             # zapas ponad 48 dp: PE-1 ma lekkie drżenie dłoni i chybia małe przyciski
+    uzycie: najmniejsza wysokość przycisku z napisem; przy dużej czcionce rośnie razem z tekstem
+    zrodlo: NFR-17, NFR-20, PE-1
+  odstep:
+    dp: 8
+    uzycie: najmniejszy odstęp między dwoma osobnymi celami dotyku; między przyciskami stosujemy odstęp m
+    zrodlo: wytyczne Material dla celów dotyku
+
+obramowania:
+  ramka:
+    dp: 2              # 1 dp znika w słońcu; ramka wyznacza granicę celu (PE-1, PE-2)
+    uzycie: obramowanie pól, ramek pozycji listy i przycisków drugorzędnych
+    zrodlo: NFR-16 (WCAG 1.4.11)
+  fokus:
+    dp: 3
+    uzycie: wskaźnik fokusu klawiatury, w kolorze `primary`, 2 dp od elementu; ramkę fokusu TalkBack rysuje system
+    zrodlo: NFR-15 (WCAG 2.4.7), NFR-16
+
+zaokraglenia:
+  standard:
+    dp: 8              # jedno zaokrąglenie dla przycisku, pola i ramki: kształt przycisku jest przewidywalny
+    uzycie: przyciski, pola, ramki pozycji i komunikatów
+    zrodlo: heurystyka Nielsena 4 (spójność)
+
+ikony:
+  rozmiar:
+    dp: 24
+    uzycie: ikona statusu, oznaczenia i paska dolnego, zawsze z napisem obok
+    zrodlo: NFR-21, słownik użytkownika (Metafory i ikony)

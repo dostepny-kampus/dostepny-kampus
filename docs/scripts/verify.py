@@ -1,4 +1,4 @@
-"""Dostępny Kampus — pełna kontrola repozytorium dokumentacji (render, skróty, Vale, markdownlint, LanguageTool, ID, macierz śledzenia, MkDocs). Author: Vladyslav Yevkov. Version: 0.2.0. Copyright (c) 2026 Vladyslav Yevkov."""
+"""Dostępny Kampus — pełna kontrola repozytorium dokumentacji (render, skróty, Vale, markdownlint, LanguageTool, ID, macierz śledzenia, kontrast tokenów, MkDocs). Author: Vladyslav Yevkov. Version: 0.3.0. Copyright (c) 2026 Vladyslav Yevkov."""
 
 from __future__ import annotations
 
@@ -27,6 +27,7 @@ DOCS = REPO / "docs"
 CONFIG = REPO / "mkdocs.yml"
 SITE = REPO / "site"
 MATRIX_PAGE = DOCS / "wymagania" / "sledzenie.md"
+TOKENS_PAGE = DOCS / "ux" / "tokeny.md"
 DEFAULT_VALE = Path("tools/vale/vale.exe")
 EXCLUDED_DIRS = ("includes", "_generated")
 SCREEN_WIDTHS = (1280, 390)
@@ -202,6 +203,24 @@ def step_matrix(options: Options) -> StepResult:
     if code != 1:
         return StepResult("matrix", FAIL, f"błąd odczytu, kod {code}")
     return StepResult("matrix", FAIL, f"nieaktualna, odśwież: python scripts/check_ids.py --matrix {page}")
+
+
+def step_kontrast(options: Options) -> StepResult:
+    """Krok: tokeny wizualne (scripts/kontrast.py --check-page docs/ux/tokeny.md): progi kontrastu WCAG, daltonizm,
+    typografia, wymiary i aktualność tabel na stronie tokenów.
+
+    Gwarantuje: niespełniony próg albo nieaktualne tabele dają FAIL z poleceniem odświeżenia; brak strony daje SKIP
+    w trybie --partial, a FAIL w pełnej kontroli; błąd odczytu lub struktury pliku tokenów daje FAIL z kodem wyjścia.
+    """
+    page = TOKENS_PAGE.relative_to(REPO).as_posix()
+    if options.partial and not TOKENS_PAGE.is_file():
+        return StepResult("kontrast", SKIP, f"brak {page}")
+    code, _ = run_command(python_script("kontrast.py", "--check-page", page))
+    if code == 0:
+        return StepResult("kontrast", PASS)
+    if code != 1:
+        return StepResult("kontrast", FAIL, f"błąd odczytu tokenów, kod {code}")
+    return StepResult("kontrast", FAIL, f"próg niespełniony albo tabele nieaktualne: python scripts/kontrast.py --page {page}")
 
 
 def tagged_loader() -> type[yaml.SafeLoader]:
@@ -418,6 +437,7 @@ def run_steps(options: Options) -> list[StepResult]:
         ("lang", lambda: step_lang(options)),
         ("check_ids", lambda: step_check_ids(options)),
         ("matrix", lambda: step_matrix(options)),
+        ("kontrast", lambda: step_kontrast(options)),
         ("mkdocs", lambda: step_mkdocs(options)),
     ]
     if options.screens:
