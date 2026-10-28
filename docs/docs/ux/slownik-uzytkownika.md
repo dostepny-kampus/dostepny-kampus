@@ -377,7 +377,7 @@ Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk,
 | L2 Konto albo Konto i praca (wszystkie role) | 18 | 5 | 28% | wskaźnik sieci, pasek (4) |
 | C1 Pomiar pozycji | 19 | 1 | 5% | wskaźnik sieci |
 | C2 Formularz zgłoszenia | 13 | 3 | 23% | wskaźnik sieci, uciążliwość, „Zrób zdjęcie” |
-| C3 Moje zgłoszenia | 13 | 2 | 15% | wskaźnik sieci, status |
+| C3 Moje zgłoszenia | 14 | 3 | 21% | wskaźnik sieci, status, oznaczenie wejścia przy zmianie oznaczenia |
 | C4 Synchronizacja | 12 | 1 | 8% | wskaźnik sieci |
 | C5 Obejrzane piętra | 10 | 2 | 20% | wskaźnik sieci, znacznik |
 | C6 Zmień oznaczenie wejścia | 12 | 5 | 42% | wskaźnik sieci, obecne oznaczenie, „Dostępne”, „Niedostępne”, „Zrób zdjęcie” |
@@ -387,7 +387,7 @@ Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk,
 | K1 Postęp inwentaryzacji | 12 | 3 | 25% | wskaźnik sieci, znacznik, „Otwórz” |
 | K2 Zaproś osobę | 6 | 1 | 17% | wskaźnik sieci |
 | K3 Pobierz eksport | 6 | 1 | 17% | wskaźnik sieci |
-| **Razem** | **246** | **61** | **25%** | — |
+| **Razem** | **247** | **62** | **25%** | — |
 
 Tabela liczy każdy ekran w stanie typowym: bez sieci, z jednym wejściem i jedną barierą. V3 ma mało treści, więc jego udział zależy od stanu:
 

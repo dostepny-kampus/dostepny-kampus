@@ -71,10 +71,12 @@ Czynność główna: „Dalej”.
 | --- | --- |
 | „Brak internetu” z ikoną i „Ostatnia synchronizacja: …” | US9.1, NFR-10, NFR-21 |
 | „Poza budynkiem” bez pytania o budynek i bez komunikatu o błędzie | BR-G4, NFR-49 |
-| Mapa bez mapy ulic: kontury i punkt z danych aplikacji; podpis OpenStreetMap zostaje, bo kontury pochodzą też z OpenStreetMap, a NFR-37 wymaga go na każdym ekranie z mapą, jak na V1 bez internetu | NFR-4, NFR-37, NFR-39 |
+| Mapa bez mapy ulic: kontury i punkt z danych aplikacji. Podpis OpenStreetMap zostaje, jak na V1 bez internetu. Kontury pochodzą też z OpenStreetMap, a NFR-37 wymaga podpisu na każdym ekranie z mapą. | NFR-4, NFR-37, NFR-39 |
 | Brak planu piętra; korekta tylko na mapie | US6.4, BR-G4 |
 
-Budynek podstawowy wygląda tak samo, ale zamiast „Poza budynkiem” ma pytanie „Czy to budynek …?” z trzema przyciskami (US6.4, BR-G1). Po potwierdzeniu zamiast wyboru piętra i planu stoi napis „Nie mamy planu pięter tego budynku.”, jak na V2. Zwykły stan bez internetu różni się od makiety po podpowiedzi tylko wskaźnikiem i mapą bez ulic.
+Budynek podstawowy wygląda tak samo, ale zamiast „Poza budynkiem” ma pytanie „Czy to budynek …?” z trzema przyciskami (US6.4, BR-G1). Po potwierdzeniu w miejscu wyboru piętra i planu stoi ten sam napis o braku planu co na V2 (BR-G1).
+
+Zwykły stan bez internetu różni się od makiety po podpowiedzi tylko wskaźnikiem i mapą bez ulic.
 
 ### Brak zgody na lokalizację
 

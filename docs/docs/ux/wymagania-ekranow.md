@@ -359,7 +359,7 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Zwykły | uśrednianie, dokładność, satelity, podpowiedź budynku |
 | Ładowanie — szukanie satelitów | „Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.” Przycisk „Powtórz pomiar” (NFR-1, PW-9) |
 | Daleko od budynków PWr | „Poza budynkiem”, bez podpowiedzi i bez komunikatu o błędzie (BR-G4, NFR-49) |
-| Budynek podstawowy | bez wyboru piętra i korekty na planie; w ich miejscu napis „Nie mamy planu pięter tego budynku.”, jak na V2; korekta na mapie działa (US6.4, BR-G1, PW-6) |
+| Budynek podstawowy | bez wyboru piętra i korekty na planie. W ich miejscu napis „Nie mamy planu pięter tego budynku.”, jak na V2. Korekta na mapie działa (US6.4, BR-G1, PW-6). |
 | Brak zgody, zgoda tylko przybliżona albo lokalizacja wyłączona | jak w V4: prośba o zgodę albo o dokładną lokalizację, a po odmowie „Otwórz ustawienia” (NFR-27). Bez przycisku „Wróć do mapy”: rezygnacja przez „Wstecz” do ekranu, z którego otwarto C1, czyli L2, C2 albo C3 (NFR-15) |
 | Brak sieci | pomiar i podpowiedź działają; mapa bez podkładu (NFR-4, NFR-39) |
 
