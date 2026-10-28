@@ -141,9 +141,9 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 
 Czynność główna: dotknięcie budynku, które otwiera C5 „Obejrzane piętra”. Tam Koordynator cofa znacznik piętra (US11.3).
 
-A-1 ma 4 z 5 pięter obejrzanych, jak w scenariuszu demo i w przykładzie BR-21. Trzy wejścia A-1 i jedno „Sprawdzone na miejscu” zgadzają się ze [wzorcową makietą V2](index.md#wzorcowa-makieta-v2-karta-budynku).
+A-1 ma 4 z 5 pięter obejrzanych, jak w scenariuszu demo, w US11.2 i w przykładzie BR-21. Liczby zgłoszeń i wejść to zastępniki, bo scenariusze nie podają ich dla tego stanu. Sześć wejść A-1 ze scenariuszy `@US11.4` to dane testowe, a nie stan budynku.
 
-![Makieta K1: przycisk Odśwież i godzina odczytu, budynek A-1 z postępem 4 z 5 pięter, 80%, liczbami zgłoszeń i wejściami sprawdzonymi na miejscu 1 z 3, budynek B-4 Obejrzany i budynek Nieobejrzany](../../_generated/m-k1-postep-inwentaryzacji.svg)
+![Makieta K1: przycisk Odśwież i godzina odczytu, budynek A-1 z postępem 4 z 5 pięter, 80%, liczbami zgłoszeń i wejściami sprawdzonymi na miejscu jako zastępniki, budynek B-4 Obejrzany i budynek Nieobejrzany](../../_generated/m-k1-postep-inwentaryzacji.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -153,10 +153,10 @@ A-1 ma 4 z 5 pięter obejrzanych, jak w scenariuszu demo i w przykładzie BR-21.
 | Budynek szczegółowy: „4 z 5 pięter, 80%” | US11.1, US11.2, BR-21 |
 | Budynek podstawowy: „Obejrzany” tekstem i ikoną albo „Nieobejrzany” samym tekstem | US11.1, PW-11 |
 | „Czeka na sprawdzenie: [liczba]” i „Przyjęte: [liczba]” przy każdym budynku | US11.1, BR-21 |
-| Tylko budynek szczegółowy: „Wejścia sprawdzone na miejscu:” i liczba „1 z 3” w osobnym wierszu | US11.4, BR-24, PW-3 |
+| Tylko budynek szczegółowy: „Wejścia sprawdzone na miejscu:” i liczby „[x] z [y]” w osobnym wierszu | US11.4, BR-24, PW-3 |
 | Cała ramka budynku to jeden cel dotyku; otwiera C5 | US11.3, NFR-17 |
 
-Wiersz o wejściach ma dwie linie, bo cały napis ma 36 znaków, a wiersz mieści 34. Scenariusze `@US11.4` mają jeszcze dawne brzmienie „Wejścia potwierdzone na obchodzie”, a makieta idzie za PW-3.
+Wiersz o wejściach ma dwie linie, bo cały napis jest dłuższy niż 34 znaki. Brzmienie „Wejścia sprawdzone na miejscu” jest to samo w US11.4, w scenariuszach `@US11.4` i przy wejściu na karcie budynku (PW-3).
 
 | Stan bez osobnej makiety | Co widać |
 | --- | --- |
