@@ -41,7 +41,7 @@ Dotyczą każdego ekranu. Przy ekranach podajemy tylko to, co do nich dochodzi.
 | Nagłówek z nazwą ekranu i przyciskiem „Wstecz” bez ikony, zawsze widocznym w tym samym miejscu. Wyjątek: V1 jako ekran startowy. | zasada dla osób starszych, NFR-15 (WCAG 3.2.3) [1] |
 | Wskaźnik braku sieci: napis „Brak internetu” i ikona. Gdy dane pochodzą z telefonu, obok jest napis „Dane z 12.11.2026”. Zbierający widzi zamiast niego „Ostatnia synchronizacja: 12.11.2026, 10:42”. | US9.1, NFR-10, NFR-21; PW-4 |
 | Pasek dolny na V1, V2, V3, V5 i L2: „Mapa” (V1), „Zgłoś barierę” (V4), „Pomoc” (V5), „Konto” (L1 albo L2). Osoba z co najmniej jedną rolą pracowniczą widzi na czwartej pozycji, w tym samym miejscu, napis „Konto i praca” (PW-1). Pozycja prowadzi do L2. Na formularzach i krokach zgłoszenia paska nie ma. | US1, US4, US5.1, US14, US14.1; [mapa nawigacji](mapa-nawigacji.md), P1 |
-| Jedna czynność główna na ekranie, wyróżniona położeniem i rozmiarem, nie kolorem. | NFR-21, zasada dla osób starszych |
+| Jedna czynność główna na ekranie, wyróżniona położeniem, rozmiarem i wypełnieniem, nigdy samym kolorem. | NFR-21, zasada dla osób starszych |
 | Cel dotyku co najmniej 48 × 48 dp. | NFR-17 |
 | Kontrast tekstu, ikon statusu, ramek pól i fokusu według progów NFR-16. | NFR-16 |
 | Tekst czytelny przy czcionce 200%, bez ucinania i nakładania. | NFR-20 |
@@ -84,7 +84,7 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | Przełącznik pięter nad planem: etykiety pięter z danych PWr; wybrane piętro widać po obwódce, nie po kolorze | czynność | US16.1, NFR-17, NFR-21 | plan innego piętra |
 | Podpis „Źródło: Politechnika Wrocławska” obok podpisu OpenStreetMap, gdy widać plan | dane | NFR-40 | — |
 | Przełącznik „Mapa” i „Lista budynków”; domyślnie wybrana „Mapa” | czynność | NFR-19 | lista na tym ekranie |
-| Dotknięcie konturu albo budynku na liście | czynność | US2, US3.2 | V2 |
+| Dotknięcie konturu albo budynku na liście | czynność | US2, US3.2, decyzja 48 | V2 jako arkusz na mapie |
 | Przyciski „Powiększ” i „Pomniejsz” oraz „W górę”, „W dół”, „W lewo”, „W prawo” | czynność | NFR-15 (WCAG 2.5.1, powiększanie dwoma palcami); przesuwanie: zasada dla osób starszych; PW-8 | — |
 | Napis „© OpenStreetMap contributors” z odnośnikiem | dane | NFR-37 | strona praw autorskich OSM |
 | Pasek dolny | czynność | wymagania wspólne | V4, V5, L1 / L2 |
@@ -128,29 +128,31 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Fragment mapy na górze: kontur budynku wyróżniony, sąsiednie przygaszone, tylko wejścia tego budynku ze znakiem oznaczenia; napis „© OpenStreetMap contributors”. Fragment nie ma własnych czynności | dane | US2.1, NFR-21, NFR-37, decyzja 44, decyzja 48 | — |
+| Mapa nad arkuszem: kontur budynku wyróżniony, sąsiednie przygaszone, tylko wejścia tego budynku ze znakiem oznaczenia; napis „© OpenStreetMap contributors”. Na karcie mapa nie ma własnych czynności | dane | US2.1, NFR-21, NFR-37, decyzja 44, decyzja 48 | — |
 | Nagłówek „Budynek C-13” i nazwa z danych | dane | US2 | — |
 | Rząd chipów z ikoną i napisem: „Wejście dostępne”, „Winda”, „Toaleta dostosowana”. Chip jest tylko wtedy, gdy dane to potwierdzają; dotknięcie przewija do grupy | czynność | US2.1, US16.1, NFR-17, NFR-21, decyzja 48 | grupa na tym ekranie |
 | Nad grupą „Wejścia” jeden wiersz z datą i źródłem, np. „Z map i opisów, stan z 1.10.2026”, gdy wszystkie wejścia mają to samo źródło i datę. Inaczej data i źródło stoją przy każdym wejściu | dane | US17.3, BR-24, PW-3, decyzja 48 | — |
 | Grupa „Wejścia”: najpierw wejście zalecane z napisem „Zalecane” i piętrem, np. „Zalecane, parter” | dane | BR-25, US3, decyzja 48 | — |
 | Każde wejście: oznaczenie „Dostępne”, „Niedostępne” albo „Brak danych” tekstem i kształtem ikony, nazwa, opis i szerokość drzwi z danych. Wejście bez nazwy: „Wejście bez nazwy w danych” | dane | US2.1, US17.1, NFR-21, decyzja 44 | — |
 | Przy wejściu zalecanym „Pokaż na mapie” | czynność | US2.1, decyzja 48 | V1 z zaznaczonym wejściem |
-| Przy każdym wejściu „Zgłoś problem” | czynność | US4, US14.2, decyzja 48 | V4 z wybranym wejściem; Gość: L1 |
-| Wyjścia ewakuacyjne pod przyciskiem „Pokaż wyjścia ewakuacyjne (2)”; liczba z danych | czynność | US2.1 | lista na tym ekranie |
+| Przy każdym wejściu „Zgłoś barierę przy tym wejściu” | czynność | US4, US14.2, decyzja 48 | V4 z wybranym wejściem; Gość: L1 |
+| Wyjścia ewakuacyjne pod przyciskiem „Pokaż wyjścia ewakuacyjne (2)”; liczba z danych | czynność | US2.1, decyzja 44, decyzja 48 | lista na tym ekranie |
 | Grupa „Winda i toaleta”: na których piętrach jest winda i toaleta dla osób z niepełnosprawnością, z planów PWr (budynek szczegółowy) | dane | US16.1, NFR-40, decyzja 44 | — |
 | Grupa „Piętra”: każde piętro z danych PWr od najniższego, etykieta, krótki opis z funkcji pomieszczeń i „Pokaż na planie” | dane, czynność | US16.1, decyzja 44 | V1, plan tego piętra |
 | Podpis „Źródło: Politechnika Wrocławska” na dole karty | dane | NFR-40, decyzja 44 | — |
 | Budynek podstawowy: napis „Nie mamy planu pięter tego budynku.” zamiast grup „Winda i toaleta” i „Piętra”. Drugie zdanie „Bariery są na liście niżej.” tylko przy niepustej liście barier | dane | US16.2, BR-G1, PW-6, UC2 2a | — |
 | Zgłoszenia przyjęte pod nagłówkiem „Bariery w budynku”: typ bariery, uciążliwość, zdjęcie, data weryfikacji jako „Sprawdzone 12.11.2026” | dane | US2.2, BR-17, NFR-21, PW-3 | — |
 | Typ bariery nazwą z klasyfikacji, np. „niesprawna winda”. Gość i Odwiedzający widzą prostsze napisy trzech typów. TB-20: „toaleta zamknięta, zastawiona lub trudna do dojścia”. TB-22: „brak planu dotykowego lub głosowego”. TB-28: „brak obniżonej lady lub miejsca dla wózka”. Te same napisy są na V1 i V3. | dane | BR-7, słownik użytkownika | — |
-| Przypięty pas nad paskiem dolnym: „Sprawdź, którędy wejść”, jedyny wypełniony przycisk, i „Pokaż na mapie” | czynność główna, czynność | US3, US3.2, PW-2, NFR-21, decyzja 48 | V3; V1 z zaznaczonym budynkiem |
+| Przypięty pas nad paskiem dolnym: „Sprawdź, którędy wejść”, jedyny wypełniony przycisk, wyróżniony też położeniem i rozmiarem, i „Pokaż na mapie” | czynność główna, czynność | US3, US3.2, PW-2, NFR-21, decyzja 48 | V3; V1 z zaznaczonym budynkiem |
 | Zbierający: „Zmień oznaczenie” przy każdym wejściu | czynność | US17.2, BR-24 | C6 |
 | Zbierający: „Zgłoś, że bariery nie ma” przy każdym zgłoszeniu przyjętym | czynność | US8.4, BR-19, PW-12 | C7 |
 | Zbierający: „Popraw zgłoszenie” przy własnym zgłoszeniu przyjętym i przy każdym przyjętym zgłoszeniu szybkim | czynność | BR-3, BR-18 | C2 |
 | Zbierający: „Oznacz obejrzane piętra” dla całego budynku | czynność | US15.1, PW-12 | C5 |
 | Pasek dolny | czynność | wymagania wspólne | V1, V4, V5, L1 / L2 |
 
-„Zgłoś problem” otwiera krok 1 V4 z napisem „Wejście: »nazwa wejścia«”. Wybrane wejście dołącza się do zgłoszenia jako wskazówka dla Weryfikatora, a miejsce i budynek nadal pochodzą z bieżącej pozycji (BR-8, BR-14). Gość przechodzi najpierw do L1, a po zalogowaniu wraca do V4 z tym samym wejściem (US14.2).
+V2 wysuwa się z dołu jako arkusz na mapie V1, tak jak karta miejsca w Mapach Google (decyzja 48). Najpierw zajmuje połowę ekranu, a nad nim widać budynek na mapie. Przewinięcie treści albo dotknięcie uchwytu rozwija arkusz na cały ekran, więc przeciąganie nie jest jedyną drogą (wymagania wspólne). To jest V2, a nie dodatkowy arkusz przed nim, więc droga do wejścia ma tyle samo dotknięć (US3.2). „Wstecz” chowa arkusz, a budynek zostaje zaznaczony.
+
+„Zgłoś barierę przy tym wejściu” otwiera krok 1 V4 („Zgłoś barierę”) z napisem „Wejście: »nazwa wejścia«”. Wybrane wejście dołącza się do zgłoszenia jako wskazówka dla Weryfikatora, a miejsce i budynek nadal pochodzą z bieżącej pozycji (BR-8, BR-14). Gość przechodzi najpierw do L1, a po zalogowaniu wraca do V4 z tym samym wejściem (US14.2).
 
 Fragment mapy i plany pięter pokazują to, co już jest na liście, więc TalkBack ich nie potrzebuje (NFR-19). Gość i Odwiedzający nie widzą przycisków Zbierającego, więc ich karta jest krótka.
 
@@ -160,7 +162,7 @@ Fragment mapy i plany pięter pokazują to, co już jest na liście, więc TalkB
 | Zwykły — budynek podstawowy | fragment mapy, chipy, wejścia, napis o braku planu, lista barier (US16.2, NFR-48) |
 | Bez wejścia zalecanego | budynek nie ma wejścia „Dostępne”: napisu „Zalecane” nie ma, a wejścia „Niedostępne” są pierwsze, każde z powodem z danych (BR-25) |
 | Ładowanie | tekst od razu, w miejscu zdjęcia napis „Wczytujemy zdjęcie…” (NFR-12) |
-| Pusty — brak zgłoszeń przyjętych | w grupie „Bariery w budynku” nagłówek „Brak zgłoszonych barier”, zdanie „Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.” i przycisk „Zgłoś barierę” (V4, Gość: L1). To jedyne „Zgłoś barierę” w treści karty. W budynku podstawowym napis o braku planu jest wtedy bez zdania „Bariery są na liście niżej.” (UC2 2a, PW-6, decyzja 48) |
+| Pusty — brak zgłoszeń przyjętych | w grupie „Bariery w budynku” nagłówek „Brak zgłoszonych barier”, zdanie „Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.” i przycisk „Zgłoś barierę” (V4, Gość: L1). Bez wybranego wejścia ten przycisk stoi w treści karty tylko tutaj. W budynku podstawowym napis o braku planu jest wtedy bez zdania „Bariery są na liście niżej.” (UC2 2a, PW-6, decyzja 48) |
 | Brak sieci | karta z telefonu z napisami „Brak internetu” i „Dane z 12.11.2026”, fragment mapy bez podkładu. Zdjęcia, których nie ma w telefonie, zastępuje napis „Zdjęcie zobaczysz po połączeniu z internetem.” (NFR-10) |
 | Brak sieci, budynku nie ma w telefonie | „Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.” Przycisk „Spróbuj ponownie” (NFR-10) |
 | Błąd zdjęcia | „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” Przycisk „Spróbuj ponownie” (NFR-50) |
@@ -214,6 +216,7 @@ Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu,
 | Krok 1: przypomnienie „Nie fotografuj twarzy ani tablic rejestracyjnych.” | dane | NFR-25 | — |
 | Krok 1: „Zrób zdjęcie” i „Zrób nowe zdjęcie” | czynność | US4.1, BR-8, PW-8 | aparat, potem krok 2 |
 | Krok 1 po powrocie z kroku 2: miniatura zdjęcia i „Dalej” nad „Zrób nowe zdjęcie” | czynność główna | US4.1, heurystyka Nielsena 3 [5] | krok 2; zdjęcie i grupa zostają |
+| Krok 1 po „Zgłoś barierę przy tym wejściu” na V2: napis „Wejście: »nazwa wejścia«” nad „Zrób zdjęcie” | dane | US4, decyzja 48; znaczenie wejścia: V2 | — |
 | Krok 2: pytanie „Czego dotyczy bariera?” i 6 dużych przycisków grup barier, sam tekst: „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego” | czynność | US4.3, NFR-17, PW-7 | krok 3 albo pytanie o piętro |
 | Krok 2, pytanie o piętro: wybrana grupa, pytanie „Na którym piętrze?”, pod nim „Nie wiem” i przyciski pięter od najniższego w górę. W budynku szczegółowym etykiety z danych PWr, w podstawowym „Parter”, „1”, „2”… | czynność | US4.5, BR-14, NFR-17 | krok 3 |
 | Krok 3: miniatura zdjęcia, wybrana grupa oraz piętro albo „Nie wiem”, jeśli było pytanie | dane | US4.1, US4.5 | — |

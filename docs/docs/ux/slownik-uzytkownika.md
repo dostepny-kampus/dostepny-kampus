@@ -73,7 +73,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | wejście zalecane (V2, BR-25) | „Zalecane” z piętrem, np. „Zalecane, parter” | wszystkie | Jedno słowo obok oznaczenia mówi, którym wejściem wejść (decyzja 48). | 4.1 |
 | wejście bez nazwy w danych | „Wejście bez nazwy w danych” | wszystkie | Mówi, skąd brak nazwy, zamiast zmyślać nazwę. | 4.4 |
 | chipy na V2 | „Wejście dostępne”, „Winda”, „Toaleta dostosowana” | wszystkie | Chip stoi tylko przy fakcie z danych, nigdy przy braku (decyzja 48). | 4.1, 4.2 |
-| zgłoszenie szybkie przy wejściu (V2) | „Zgłoś problem” | wszystkie; Gość przechodzi do L1 | Napis z decyzji 48: przy wejściu problemem bywa też błędne oznaczenie. Odstępstwo od zasady nazwy ekranu docelowego „Zgłoś barierę”. | 4.6 |
+| zgłoszenie szybkie przy wejściu (V2) | „Zgłoś barierę przy tym wejściu”; na kroku 1 V4 „Wejście: »nazwa wejścia«” | wszystkie; Gość przechodzi do L1 | Zaczyna się nazwą ekranu docelowego V4 „Zgłoś barierę”, a koniec mówi, że wejście będzie już wybrane (decyzja 48). | 4.6 |
 | przejścia z V1 i V2 | „Pokaż na mapie”, „Pokaż na planie”, „Pokaż opis budynku”, „Pokaż wyjścia ewakuacyjne (2)”, „Legenda” | wszystkie | Czasownik i to, co się pokaże. | 4.4, 6.3 |
 | wejście dostępne (zdanie na V3) | „Budynek A-1 ma wejście dostępne: »nazwa wejścia«.” | wszystkie | bez zmian; zdanie powtarza słowo z oznaczenia | 4.1 |
 | źródło oznaczenia „obchód” z datą | „Sprawdzone na miejscu 12.11.2026” | wszystkie | Mówi, że ktoś tam był. To buduje zaufanie (N2). | 2.5, 4.3, 4.4 |
