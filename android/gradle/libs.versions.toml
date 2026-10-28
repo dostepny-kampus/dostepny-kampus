@@ -12,7 +12,10 @@ junit = "6.1.3"
 spatialk = "0.8.0"
 snakeyamlEngine = "3.2"
 kotlinpoet = "2.4.0"
+roborazzi = "1.77.0"
+robolectric = "4.17"
 junit4 = "4.13.2"
+espresso = "3.7.0"
 androidCompileSdk = "37"
 androidTargetSdk = "37"
 androidMinSdk = "26"
@@ -38,4 +41,9 @@ spatialk-turf = { module = "org.maplibre.spatialk:turf", version.ref = "spatialk
 snakeyaml-engine = { module = "org.snakeyaml:snakeyaml-engine", version.ref = "snakeyamlEngine" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+roborazzi-gradlePlugin = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "roborazzi" }
+roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
+androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }

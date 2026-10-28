@@ -1,6 +1,7 @@
 plugins {
     id("dostepnykampus.android.library")
     id("dostepnykampus.android.compose")
+    id("dostepnykampus.android.roborazzi")
 }
 
 val tokenFile = rootProject.layout.projectDirectory.file("../docs/docs/ux/tokeny.yml")
@@ -21,6 +22,7 @@ tasks.withType<Test>().configureEach {
 }
 
 dependencies {
+    api(project(":core:model"))
     implementation(libs.androidx.compose.material3)
     testImplementation(libs.junit4)
     testImplementation(libs.snakeyaml.engine)
