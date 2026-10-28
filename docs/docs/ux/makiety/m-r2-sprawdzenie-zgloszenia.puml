@@ -11,7 +11,7 @@ $blokada()
 Budynek A-1, piętro <i>[piętro]</i>
 Miejsce: <i>[punkt z pomiaru]</i>
 $r2_zdjecie("zdjęcie bariery")
-Autor: Zbierający, Autor 17
+Autor: Zbierający, Autor <i>[nr]</i>
 $sekcja("Podobne zgłoszenia do 10 m")
 $ramka()
 <b>próg</b>

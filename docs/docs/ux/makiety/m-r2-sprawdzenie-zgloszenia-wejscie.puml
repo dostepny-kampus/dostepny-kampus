@@ -14,7 +14,7 @@ $wejscie($dostepne(), "Wejście bramą od ul. Norwida", "Z map i opisów, stan z
 <b>$bez_zmian_od_wyslania()</b>
 Wybrane oznaczenie: <b>$dostepne()</b>
 $r2_zdjecie("nowe zdjęcie wejścia")
-Autor: Zbierający, Autor 17
+Autor: Zbierający, Autor <i>[nr]</i>
 $sekcja("Podobne zgłoszenia do 10 m")
 $tekst("W promieniu 10 m nie ma podobnych zgłoszeń.")
 $r2_decyzja("", 0)

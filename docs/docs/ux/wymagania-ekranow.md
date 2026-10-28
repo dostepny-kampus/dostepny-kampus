@@ -590,7 +590,7 @@ Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia we
 | --- | --- | --- | --- |
 | Dane zgłoszenia: typ, uciążliwość napisem z wymagań wspólnych, budynek, piętro, miejsce; bez edycji przy pomiarze precyzyjnym | dane | BR-15, PW-13 | — |
 | Zdjęcie | dane | US10 | — |
-| Rola i pseudonim autora, np. „Zbierający, Autor 17” | dane | BR-5 | — |
+| Rola i pseudonim autora, np. „Zbierający, Autor [nr]” | dane | BR-5 | — |
 | „Podobne zgłoszenia do 10 m”: typ, zdjęcie, odległość, piętro, status | dane | US10.1, BR-13 | — |
 | Zgłoszenie szybkie: wybór „Typ bariery” i „Uciążliwość” z wartościami „Utrudnienie”, „Tylko z pomocą”, „Blokada” | czynność | US10.3, BR-14, PW-13 | — |
 | „Zasłoń twarz lub tablicę” na zdjęciu | czynność | BR-15, NFR-25 | — |

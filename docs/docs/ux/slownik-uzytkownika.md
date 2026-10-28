@@ -196,7 +196,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | zmienione pola nowej wersji (R2) | „Zmienione: uciążliwość” | Weryfikator | Weryfikator nie szuka różnicy sam (BR-3). | 10.5 |
 | „Przyjmij”, „Odrzuć”, powód odrzucenia | „Przyjmij”, „Odrzuć”, pole „Powód odrzucenia” | Weryfikator | bez zmian | 10.5 |
 | zasłonięcie twarzy albo tablicy | „Zasłoń twarz lub tablicę” | Weryfikator | Czasownik na przycisku. | 10.5 |
-| pseudonim autora | „Autor: Zbierający, Autor 17”; przy zgłoszeniu szybkim „Autor: Odwiedzający, Autor 23” | Weryfikator | Rola i pseudonim bez danych osobowych (BR-5). | 10.5 |
+| pseudonim autora | „Autor: Zbierający, Autor [nr]”; przy zgłoszeniu szybkim „Autor: Odwiedzający, Autor [nr]” | Weryfikator | Rola i pseudonim bez danych osobowych (BR-5). Numer pseudonimu jest zastępnikiem, bo nadaje go system. | 10.5 |
 | rodzaj zgłoszenia (R1, R2) | „Zgłoszenie z pomiaru”, „Zgłoszenie szybkie”, „Bariery już nie ma”, „Zmiana oznaczenia wejścia” | Weryfikator | Rodzaj mówi, czy typ i uciążliwość trzeba ustalić (BR-14, BR-15). Dwa ostatnie napisy są te same co na C3. | 10.5 |
 | data wysłania w kolejce (R1) | „Wysłane 12.11.2026” | Weryfikator | To samo słowo co status „Wysłane” u Zbierającego. | 10.5 |
 | etykiety danych zgłoszenia (R2) | „Czego dotyczy:”, „Miejsce:”, „Obecne oznaczenie:”, „Wybrane oznaczenie:”, „Wcześniejsze zgłoszenie:” | Weryfikator | Krótka etykieta przed wartością z danych. „Czego dotyczy” powtarza pytanie z kroku 2 V4. | 10.5 |
