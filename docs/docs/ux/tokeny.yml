@@ -60,11 +60,29 @@ kolory:
     ciemny: "#2A3033"
     uzycie: tło fragmentu mapy przed wczytaniem, ramka komunikatu i wskaźnika braku internetu
     zrodlo: NFR-16, styl „Karta miejsca”
+  surfaceContainerHigh:
+    # Ten sam ton co surfaceVariant; Material 3 bierze go dla kontenerów nad arkuszem.
+    jasny: "#DCE2E4"
+    ciemny: "#2A3033"
+    uzycie: wspólny kontener statusów zgłoszeń i znaczników pięter (C3, C5), plakietki stopni uciążliwości
+    zrodlo: styl „Karta miejsca”
+  background:
+    # Tło ekranu bez arkusza; Scaffold bierze tę rolę. Ten sam ton co surfaceContainer.
+    jasny: "#E8EEF0"
+    ciemny: "#0F1314"
+    uzycie: tło ekranów z treścią w kontenerach (V4, C1–C7, R, K, L)
+    zrodlo: styl „Karta miejsca”
   onSurface:
     jasny: "#161C1E"   # prawie czarny; ≥ 14:1 na każdym tle
     ciemny: "#E8EEF0"  # jasnoszary zamiast czystej bieli, by tekst nie „świecił” na ciemnym tle
     uzycie: tekst podstawowy, nazwa budynku, nagłówki grup, ikony i napisy uciążliwości oraz statusów zgłoszeń
     zrodlo: NFR-16, NFR-21
+  onBackground:
+    # Ten sam ton co onSurface.
+    jasny: "#161C1E"
+    ciemny: "#E8EEF0"
+    uzycie: tekst bezpośrednio na tle ekranu (nagłówki sekcji poza kontenerami)
+    zrodlo: NFR-16
   onSurfaceVariant:
     jasny: "#3A4549"   # tekst drugorzędny wciąż ≥ 7:1, bo źródło i data oceny wejść są ważne (US17.3)
     ciemny: "#BCC9CD"
@@ -75,6 +93,12 @@ kolory:
     ciemny: "#8A969A"
     uzycie: obramowanie pól (wyszukiwania i formularzy), ramek opcji, chipów, przycisków obrysowanych i segmentów
     zrodlo: NFR-16 (WCAG 1.4.11)
+  outlineVariant:
+    # Jaśniejsza niż outline, ale ≥ 3:1: linia oddziela wejścia w jednym kontenerze, osoba słabowidząca ma ją widzieć.
+    jasny: "#7F8A8E"
+    ciemny: "#6A7579"
+    uzycie: linie podziału wewnątrz grup, górna krawędź paska dolnego nawigacji
+    zrodlo: styl „Karta miejsca”
   primary:
     jasny: "#004E5E"   # ciemny morski: jedyny kolor akcentu
     ciemny: "#85D1EA"  # w ciemnym motywie jaśniejszy i mniej nasycony; nasycony kolor na ciemnym tle drga
@@ -169,6 +193,8 @@ kontrast:
     - {kolor: onSurface, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "treść w kontenerach grup, kontrolki mapy, legenda"}
     - {kolor: onSurface, tlo: surfaceContainerLow, rodzaj: tekst, gdzie: "pole wyszukiwania, pasek dolny"}
     - {kolor: onSurface, tlo: surfaceVariant, rodzaj: tekst, gdzie: "komunikat i wskaźnik braku internetu"}
+    - {kolor: onBackground, tlo: background, rodzaj: tekst, gdzie: "nagłówki sekcji na tle ekranu"}
+    - {kolor: onSurface, tlo: surfaceContainerHigh, rodzaj: tekst, gdzie: "status zgłoszenia i znacznik piętra (C3, C5)"}
     - {kolor: onSurfaceVariant, tlo: surfaceContainer, rodzaj: tekst, gdzie: "źródło i data na arkuszu"}
     - {kolor: onSurfaceVariant, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "„Zalecane, parter”, podpis mapy"}
     - {kolor: onSurfaceVariant, tlo: surfaceContainerLow, rodzaj: tekst, gdzie: "podpowiedź w polu, napisy paska dolnego"}
@@ -184,6 +210,8 @@ kontrast:
     - {kolor: onStatusBrakDanychContainer, tlo: statusBrakDanychContainer, rodzaj: tekst, gdzie: "„Brak danych” i romb ze znakiem ?"}
     - {kolor: error, tlo: surface, rodzaj: tekst, gdzie: "błąd przy polu"}
     - {kolor: error, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "błąd przy polu w kontenerze grupy"}
+    - {kolor: outlineVariant, tlo: surfaceContainerLowest, rodzaj: komponent, gdzie: "linia podziału między wejściami w kontenerze"}
+    - {kolor: outlineVariant, tlo: surfaceContainerLow, rodzaj: komponent, gdzie: "górna krawędź paska dolnego"}
     - {kolor: outline, tlo: surface, rodzaj: komponent, gdzie: "obramowanie pola i przycisku obrysowanego"}
     - {kolor: outline, tlo: surfaceContainer, rodzaj: komponent, gdzie: "obramowanie chipu na arkuszu"}
     - {kolor: outline, tlo: surfaceContainerLowest, rodzaj: komponent, gdzie: "obramowanie chipu w kontenerze"}
