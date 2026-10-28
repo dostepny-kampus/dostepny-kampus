@@ -8,6 +8,7 @@ from contextlib import contextmanager
 import os
 import posixpath
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -28,7 +29,6 @@ CONFIG = REPO / "mkdocs.yml"
 SITE = REPO / "site"
 MATRIX_PAGE = DOCS / "wymagania" / "sledzenie.md"
 TOKENS_PAGE = DOCS / "ux" / "tokeny.md"
-DEFAULT_VALE = Path("tools/vale/vale.exe")
 EXCLUDED_DIRS = ("includes", "_generated")
 SCREEN_WIDTHS = (1280, 390)
 SCREEN_HEIGHT = 900
@@ -128,12 +128,22 @@ def step_abbr() -> StepResult:
     return StepResult("abbr", PASS if code == 0 else FAIL, "" if code == 0 else f"kod {code}")
 
 
+def vale_program() -> str | None:
+    """Zwraca program Vale: VALE_BIN, a bez tej zmiennej `vale` z PATH; None, gdy go nie ma."""
+    env = os.environ.get("VALE_BIN")
+    if env:
+        return env if Path(env).is_file() or shutil.which(env) else None
+    return shutil.which("vale")
+
+
 def step_vale() -> StepResult:
-    """Krok: Vale dla wszystkich stron dokumentacji (ścieżka z VALE_BIN)."""
+    """Krok: Vale dla wszystkich stron dokumentacji (program z VALE_BIN albo z PATH)."""
     files = doc_files()
     if not files:
         return StepResult("vale", SKIP, "brak plików .md")
-    vale = os.environ.get("VALE_BIN", str(DEFAULT_VALE))
+    vale = vale_program()
+    if vale is None:
+        return StepResult("vale", FAIL, "brak Vale: ustaw VALE_BIN na ścieżkę do programu vale albo dodaj vale do PATH")
     code, _ = run_command([vale, *[str(f.relative_to(REPO)) for f in files]])
     return StepResult("vale", PASS if code == 0 else FAIL, f"{len(files)} plików" + ("" if code == 0 else f", kod {code}"))
 
@@ -142,8 +152,10 @@ def step_markdownlint() -> StepResult:
     """Krok: markdownlint-cli2 z konfiguracją repozytorium (node_modules z DK_NODE_MODULES)."""
     cli = node_modules_dir() / "markdownlint-cli2" / "markdownlint-cli2-bin.mjs"
     if not cli.is_file():
-        return StepResult("markdownlint", FAIL, f"brak {cli}")
+        return StepResult("markdownlint", FAIL, f"brak {cli}: uruchom npm ci w katalogu docs albo ustaw DK_NODE_MODULES")
     code, _ = run_command([os.environ.get("NODE", "node"), str(cli), "docs/**/*.md"])
+    if code == 127:
+        return StepResult("markdownlint", FAIL, "brak programu node: zainstaluj Node.js albo ustaw NODE")
     return StepResult("markdownlint", PASS if code == 0 else FAIL, "" if code == 0 else f"kod {code}")
 
 

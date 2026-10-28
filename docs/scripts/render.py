@@ -14,8 +14,6 @@ from pathlib import Path
 from typing import Any
 
 REPO = Path(__file__).resolve().parent.parent
-MAIN_REPO = Path(".")
-DEFAULT_PLANTUML = Path("tools/plantuml.jar")
 FORMATS = ("svg", "png")
 PLANTUML_TIMEOUT_S = 300
 BPMN_BASE_TIMEOUT_S = 60
@@ -27,21 +25,24 @@ class RenderError(RuntimeError):
 
 
 def node_modules_dir() -> Path:
-    """Zwraca katalog node_modules z narzędziami.
-
-    Gwarantuje: ścieżkę z DK_NODE_MODULES, a bez niej node_modules repo, jeśli istnieje,
-    w przeciwnym razie node_modules głównego repozytorium. Nie sprawdza istnienia wyniku.
-    """
+    """Zwraca katalog node_modules z narzędziami: DK_NODE_MODULES, a bez tej zmiennej `node_modules` obok
+    package.json (po `npm ci`). Nie sprawdza istnienia wyniku."""
     env = os.environ.get("DK_NODE_MODULES")
-    if env:
-        return Path(env)
-    local = REPO / "node_modules"
-    return local if local.is_dir() else MAIN_REPO / "node_modules"
+    return Path(env) if env else REPO / "node_modules"
 
 
 def plantuml_jar() -> Path:
-    """Zwraca ścieżkę do plantuml.jar z PLANTUML_JAR albo wartość domyślną. Nie sprawdza istnienia."""
-    return Path(os.environ.get("PLANTUML_JAR", str(DEFAULT_PLANTUML)))
+    """Zwraca ścieżkę do plantuml.jar ze zmiennej PLANTUML_JAR.
+
+    Wyjątki: RenderError z poleceniem, co ustawić, gdy zmiennej brak albo plik nie istnieje.
+    """
+    env = os.environ.get("PLANTUML_JAR")
+    if not env:
+        raise RenderError("brak PlantUML: ustaw zmienną PLANTUML_JAR na ścieżkę do pliku plantuml.jar")
+    jar = Path(env)
+    if not jar.is_file():
+        raise RenderError(f"PLANTUML_JAR wskazuje nieistniejący plik: {jar}")
+    return jar
 
 
 def find_sources(docs: Path, suffix: str) -> list[Path]:
@@ -96,7 +97,7 @@ def run_with_timeout(cmd: list[str], timeout_s: int, cwd: Path) -> tuple[int, st
             start_new_session=os.name != "nt",
         )
     except FileNotFoundError as exc:
-        raise RenderError(f"nie znaleziono programu: {cmd[0]}") from exc
+        raise RenderError(f"nie znaleziono programu: {cmd[0]} (zainstaluj go albo ustaw JAVA lub NODE)") from exc
     try:
         out, _ = proc.communicate(timeout=timeout_s)
     except subprocess.TimeoutExpired as exc:
@@ -112,14 +113,12 @@ def run_with_timeout(cmd: list[str], timeout_s: int, cwd: Path) -> tuple[int, st
 def render_plantuml(sources: list[Path], out_dir: Path) -> None:
     """Renderuje pliki .puml do `out_dir/<nazwa>.svg` i `.png`.
 
-    Wymaga: Javy w PATH (lub JAVA) i plantuml.jar. Gwarantuje: nazwa wyniku = nazwa pliku źródłowego.
-    Wyjątki: RenderError, gdy PlantUML zgłosi błąd składni, zabraknie pliku wyniku lub minie limit czasu.
+    Wymaga: Javy w PATH (lub JAVA) i plantuml.jar (PLANTUML_JAR). Gwarantuje: nazwa wyniku = nazwa pliku źródłowego.
+    Wyjątki: RenderError, gdy brak narzędzi, PlantUML zgłosi błąd składni, zabraknie pliku wyniku lub minie limit czasu.
     """
     if not sources:
         return
     jar = plantuml_jar()
-    if not jar.is_file():
-        raise RenderError(f"brak PlantUML: {jar} (ustaw PLANTUML_JAR)")
     java = os.environ.get("JAVA", "java")
     for fmt in FORMATS:
         render_plantuml_format(java, jar, sources, out_dir, fmt)
@@ -155,7 +154,7 @@ def bpmn_cli() -> Path:
     """Zwraca ścieżkę do cli.js pakietu bpmn-to-image. Wyjątki: RenderError, gdy pakietu brak."""
     cli = node_modules_dir() / "bpmn-to-image" / "cli.js"
     if not cli.is_file():
-        raise RenderError(f"brak bpmn-to-image: {cli} (ustaw DK_NODE_MODULES)")
+        raise RenderError(f"brak bpmn-to-image: {cli} (uruchom npm ci w katalogu docs albo ustaw DK_NODE_MODULES)")
     return cli
 
 
