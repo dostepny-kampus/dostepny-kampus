@@ -71,7 +71,7 @@ jobs:
           persist-credentials: false
       - name: Sprawdź gałąź, tytuł, opis i commity
         env:
-          FORBIDDEN_PATTERNS: ${{ vars.FORBIDDEN_PATTERNS }}
+          FORBIDDEN_PATTERNS: ${{ secrets.FORBIDDEN_PATTERNS }}
           PR_BRANCH: ${{ github.head_ref }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}

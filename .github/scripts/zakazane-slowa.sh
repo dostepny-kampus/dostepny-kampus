@@ -6,13 +6,13 @@ head="$2"
 found=0
 
 if [[ -z "${FORBIDDEN_PATTERNS:-}" ]]; then
-  echo "::error title=Zakazane słowa::Brak zmiennej repozytorium FORBIDDEN_PATTERNS."
+  echo "::error title=Zakazane słowa::Brak sekretu FORBIDDEN_PATTERNS (repozytorium albo Dependabota)."
   exit 2
 fi
 
 check() {
   local where="$1" text="$2" matches status=0
-  matches="$(printf '%s\n' "$text" | grep -oP -- "$FORBIDDEN_PATTERNS")" || status=$?
+  matches="$(printf '%s\n' "$text" | grep -oP -- "$FORBIDDEN_PATTERNS" 2>/dev/null)" || status=$?
   if ((status == 1)); then
     return 0
   fi
