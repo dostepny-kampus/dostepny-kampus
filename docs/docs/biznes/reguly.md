@@ -21,11 +21,24 @@ Wybór wersji własnej działa jak zwykła edycja w obecnym statusie na serwerze
 | --- | --- | --- | --- |
 | BR-11 | Zgłoszenie w weryfikacji obsługuje tylko Weryfikator, który je wziął. Inny Weryfikator nie może go wziąć ani podjąć decyzji. | Dwie osoby nie sprawdzają tego samego zgłoszenia i nie podejmują sprzecznych decyzji (N7, N8). | US10.4, decyzja 29, T14, T15 |
 | BR-13 | Weryfikator widzi podobne zgłoszenia w promieniu 10 m: wysłane, w weryfikacji i przyjęte, z każdego piętra. System sam nie odrzuca ani nie łączy zgłoszeń. Duplikat Weryfikator odrzuca, wskazując wcześniejsze zgłoszenie w powodzie odrzucenia. | O duplikacie decyduje człowiek: bariera 5 m dalej może być inna (scenariusz demo w A-1). Piętro widać przy zgłoszeniu. | US10.1, T15, T16, słownik (duplikat, podobne zgłoszenie) |
-| BR-14 | Zgłoszenia szybkiego nie można przyjąć, dopóki Weryfikator nie ustali typu bariery i uciążliwości. Typ może należeć do innej grupy barier niż wybrana przez Odwiedzającego. Budynek przypisuje system z konturu, w którym leży bieżąca pozycja; poza konturem zgłoszenie jest „poza budynkiem” (BR-G2, BR-G4). Piętro zostaje puste, a Weryfikator ustala tylko typ i uciążliwość. | Mapa pokazuje typ i uciążliwość każdej bariery, a grupa od Odwiedzającego to tylko podpowiedź. Bez budynku zgłoszenie nie trafiłoby na kartę budynku ani do postępu (BR-21). | US10.3, decyzja 29, T9, T16 |
+| BR-14 | Zgłoszenia szybkiego nie można przyjąć, dopóki Weryfikator nie ustali typu bariery i uciążliwości. Typ może należeć do innej grupy barier niż wybrana przez Odwiedzającego. Budynek przypisuje system z konturu, w którym leży bieżąca pozycja; poza konturem zgłoszenie jest „poza budynkiem” (BR-G2, BR-G4). Gdy pozycja leży w konturze, a grupa wymaga piętra, aplikacja pyta o piętro; „Nie wiem” zostawia je puste. W pozostałych zgłoszeniach szybkich piętro zostaje puste. Weryfikator ustala tylko typ i uciążliwość. | Mapa pokazuje typ i uciążliwość każdej bariery, a grupa od Odwiedzającego to tylko podpowiedź. Bez budynku zgłoszenie nie trafiłoby na kartę budynku ani do postępu (BR-21). Bez piętra nie wiadomo, na którym piętrze np. winda nie działa. | US10.3, US4.5, decyzja 29, decyzja 43, T9, T16 |
 | BR-15 | Weryfikator nie zmienia typu, uciążliwości ani miejsca w zgłoszeniu z pomiaru precyzyjnego. Błąd oznacza odrzucenie z powodem, a Zbierający poprawia zgłoszenie. Zasłonięcie twarzy i tablic na zdjęciu (NFR-25) jest częścią przyjęcia i nie tworzy nowej wersji. | Konflikt wersji powstaje tylko między wersjami Zbierającego, a ekran C4 zostaje jedynym miejscem wyboru (N7). Gdy Zbierający wyśle nową wersję w trakcie weryfikacji, Weryfikator decyduje o nowej (BR-3). | słownik (Weryfikator, konflikt wersji), BR-3, NFR-25 |
 | BR-16 | Odrzucenie bez powodu odrzucenia jest niemożliwe. Zbierający widzi powód przy własnym zgłoszeniu na liście zgłoszeń. | Autor wie, co poprawić, i może wysłać zgłoszenie ponownie (BR-3). | US10.2, US8.1, T18, T19 |
 
 Przyjęcie wymaga też, by Weryfikator oceniał aktualną wersję zgłoszenia (BR-3) i nie był jego autorem (BR-4).
+
+### Grupy barier z pytaniem o piętro (BR-14) {#pietro-w-zgloszeniu-szybkim}
+
+| Grupa (napis na V4) | Typy | Pytanie | Dlaczego |
+| --- | --- | --- | --- |
+| wejście i drzwi („Wejście i drzwi”) | TB-1…TB-5 | nie | Bariera leży zwykle przy wejściu. Przy ścianie pozycja bywa niedokładna (BR-G2), więc osoba przed wejściem dostałaby pytanie, które do niej nie pasuje. |
+| komunikacja pionowa („Schody i windy”) | TB-6…TB-12 | tak | Schody i winda łączą piętra, a TB-8 opisuje piętro, na które winda nie dociera. |
+| komunikacja pozioma („Przejścia i chodniki”) | TB-13…TB-17 | tak | W konturze to próg albo przejście na piętrze (TB-13…TB-15). Krawężnik i chodnik leżą poza konturem, więc tam pytania nie ma. |
+| toalety („Toalety”) | TB-18…TB-20 | tak | Toaleta jest na piętrze, a TB-18 opisuje brak toalety na piętrze. |
+| orientacja i informacja („Napisy i oznaczenia”) | TB-21…TB-25 | tak | Numery sal, kierunki i pętla indukcyjna w sali dotyczą piętra. |
+| inne („Coś innego”) | TB-26…TB-29 | nie | Osoba nie rozpoznała bariery, więc drugie pytanie tylko ją obciąża. TB-26 leży przy parkingu, a TB-29 nie ma stałego miejsca. |
+
+Gdy przy wyborze grupy pozycja nie jest jeszcze znana, aplikacja pyta jak w konturze, bo w budynku telefon często dłużej ustala pozycję. Jeśli przy wysłaniu pozycja leży poza konturem, zgłoszenie zapisuje się bez piętra. Brakujące albo błędne piętro uzupełnia zmiana zgłoszenia przyjętego (BR-18).
 
 ## Publikacja, postęp inwentaryzacji i eksport
 
