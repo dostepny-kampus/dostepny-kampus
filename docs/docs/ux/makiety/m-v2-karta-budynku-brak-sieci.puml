@@ -5,16 +5,13 @@
 $ekran_poczatek()
 $naglowek("Budynek A-1", "<i>[nazwa budynku z danych]</i>")
 $brak_internetu("Dane z <i>[data]</i>")
-$wejscie($niedostepne(), "Wejście główne", "Sprawdzone na miejscu <i>[data]</i>")
-$wejscie($dostepne(), "Wejście bramą od ul. Norwida", "Z map i opisów, stan z <i>[data]</i>")
-$wejscie($brak_danych(), "<i>[nazwa wejścia z danych]</i>", "Z map i opisów, stan z <i>[data]</i>")
-$przycisk_glowny("Sprawdź, którędy wejść")
-..
-Piętro:
-$pietra(2)
-<b>Plan piętra</b>
-$obraz("plan wybranego piętra: windy, schody, toalety, wejścia, bariery")
-Źródło: Politechnika Wrocławska
+$karta_gora(1, "bez mapy ulic")
+Z map i opisów, stan z <i>[data]</i>
+$sekcja("Wejścia")
+$wejscie_karty($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane, parter")
+$wejscie_karty($niedostepne(), "Wejście główne")
+$wejscie_karty($brak_danych(), "<i>[nazwa wejścia z danych]</i>")
+$grupy_pwr()
 $sekcja("Bariery w budynku")
 $ramka()
 <b>schody przy wejściu</b>
@@ -28,6 +25,7 @@ $tekst("[uciążliwość z danych: napis i ikona]", "i")
 $tekst("Zdjęcie zobaczysz po połączeniu z internetem.")
 Sprawdzone <i>[data]</i>
 }
+$karta_dol()
 $pasek_dolny_konto()
 $ekran_koniec()
 @endsalt
