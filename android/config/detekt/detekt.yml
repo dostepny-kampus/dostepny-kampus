@@ -1,4 +1,6 @@
+# Kod generowany (build/generated) jest w analizie typów, ale bez uwag: nikt go nie pisze ani nie commituje.
 comments:
+  excludes: ['**/build/generated/**']
   AbsentOrWrongFileLicense:
     licenseTemplate: |
       /*
@@ -8,6 +10,7 @@ comments:
        */
 
 ktlint:
+  excludes: ['**/build/generated/**']
   code_style: 'ktlint_official'
   FunctionSignature:
     functionBodyExpressionWrapping: 'multiline'
@@ -17,9 +20,32 @@ ktlint:
     active: false
 
 naming:
+  excludes: ['**/build/generated/**']
   FunctionNaming:
     ignoreAnnotated: ['Composable']
 
 complexity:
+  excludes: ['**/build/generated/**']
   LongParameterList:
     ignoreAnnotated: ['Composable']
+
+Compose:
+  excludes: ['**/build/generated/**']
+
+coroutines:
+  excludes: ['**/build/generated/**']
+
+empty-blocks:
+  excludes: ['**/build/generated/**']
+
+exceptions:
+  excludes: ['**/build/generated/**']
+
+performance:
+  excludes: ['**/build/generated/**']
+
+potential-bugs:
+  excludes: ['**/build/generated/**']
+
+style:
+  excludes: ['**/build/generated/**']
