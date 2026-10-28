@@ -29,7 +29,7 @@ Plik `_wspolne.iuml` ma rozszerzenie `.iuml`, więc skrypt `render.py` nie trakt
 
 | Fragment | Co rysuje | Odwołanie |
 | --- | --- | --- |
-| `$naglowek("Tytuł", "podtytuł")` | „Wstecz” bez ikony i tytuł ekranu; podtytuł opcjonalny | wymagania wspólne, NFR-15 |
+| `$naglowek("Tytuł", "podtytuł")` | „Wstecz” ze strzałką w lewo i tytuł ekranu; podtytuł opcjonalny | wymagania wspólne, NFR-15, PW-11 |
 | `$naglowek_startowy("Mapa kampusu")` | sam tytuł, tylko na V1 | wymagania wspólne |
 | `$brak_internetu("Dane z <i>[data]</i>")` | „Brak internetu” z ikoną i dopiskiem o wieku danych; bez argumentu sam napis | US9.1, NFR-10, NFR-21 |
 | `$pasek_dolny_konto()` | „Mapa”, „Zgłoś barierę”, „Pomoc”, „Konto” | wymagania wspólne, US14 |
@@ -39,7 +39,7 @@ Plik `_wspolne.iuml` ma rozszerzenie `.iuml`, więc skrypt `render.py` nie trakt
 | `$pozycja("Tytuł", $blokada(), "Dopisek", "Przycisk")` | pozycja listy z oznaczeniem tekstem i ikoną | NFR-21 |
 | `$przycisk_glowny("…")`, `$przycisk("…", "camera-slr")` | przycisk na pełną szerokość, zawsze tej samej szerokości, z ikoną albo bez | NFR-17, NFR-21 |
 | `$przyciski_obok("…", "…")` | dwa przyciski po pół szerokości w jednym wierszu | NFR-17 |
-| `$mapa("opis", legenda)`, `$przyciski_mapy()` | mapa na pełną szerokość z podpisem OpenStreetMap w ramce. Pod nią „Powiększ”, „Pomniejsz” i kierunki, po dwa przyciski w wierszu. Układ jest ten sam na V1, C1 i R1. | NFR-15, NFR-37, PW-8 |
+| `$mapa("opis", legenda, kontrolki)`, `$przyciski_mapy()` | mapa na pełną szerokość z podpisem OpenStreetMap w ramce. Z `kontrolki` na mapie są „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu (V1, R1), a z wartością `"info"` także „ⓘ” przy podpisie (V1). C1 ma pod mapą słowne przyciski przesuwania punktu. | NFR-15, NFR-37, PW-8, PW-11 |
 | `$ramka()` … `}` | ramka pozycji listy na pełną szerokość; używają jej `$wejscie`, `$pozycja`, `$opcja`, `$komunikat` i `$mapa` | NFR-17 |
 | `$pole_tekstowe("…")`, `$blad_pola("…")` | pole tekstowe stałej szerokości; błąd przy polu pogrubiony | NFR-15, NFR-21 |
 | `$przelacznik("Mapa", "Lista budynków", 1)`, `$pietra(2)`, `$opcja("X", $blokada(), "opis")` | przełącznik dwóch widoków, wybór piętra, opcja w dużej ramce | NFR-17, NFR-19, NFR-21, US16.1 |
@@ -101,6 +101,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | V1 | brak sieci | [`m-v1-mapa-brak-sieci`](../../_generated/m-v1-mapa-brak-sieci.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | pierwsze otwarcie bez internetu | [`m-v1-mapa-pierwsze-otwarcie`](../../_generated/m-v1-mapa-pierwsze-otwarcie.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | znaleziona sala | [`m-v1-mapa-sala`](../../_generated/m-v1-mapa-sala.svg) | [odwiedzający](odwiedzajacy.md) |
+| V1 | bariera na mapie | [`m-v1-mapa-bariera`](../../_generated/m-v1-mapa-bariera.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | zwykły, budynek szczegółowy (wzorzec) | [`m-v2-karta-budynku`](../../_generated/m-v2-karta-budynku.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | budynek podstawowy bez wejścia zalecanego | [`m-v2-karta-budynku-podstawowy`](../../_generated/m-v2-karta-budynku-podstawowy.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | brak sprawdzonych barier | [`m-v2-karta-budynku-pusty`](../../_generated/m-v2-karta-budynku-pusty.svg) | [odwiedzający](odwiedzajacy.md) |
@@ -187,7 +188,7 @@ Makiety V2 pokazują arkusz rozwinięty na cały ekran. W aplikacji V2 wysuwa si
 | Wejście: oznaczenie tekstem i ikoną na początku, potem nazwa wejścia; „Wejście główne” niedostępne, „Wejście bramą od ul. Norwida” dostępne [1]; nazwa odróżnia je od drugiego wejścia przy ul. Norwida, które według deklaracji nie jest dostosowane | US2.1, US17.1, NFR-21 |
 | „Brak danych” z ikoną `minus`, inną niż `x` przy „Niedostępne” | US17.1 |
 | Wspólna data i źródło jeden raz nad grupą „Wejścia”: „Z map i opisów, stan z [data]” | US17.3, BR-24, PW-3 |
-| „Zgłoś barierę przy tym wejściu” przy każdym wejściu: otwiera V4 z wybranym wejściem | US4, decyzja 48 |
+| „Zgłoś barierę” przy każdym wejściu: otwiera V4 z wybranym wejściem; TalkBack czyta „Zgłoś barierę przy tym wejściu” z nazwą wejścia | US4, NFR-18, decyzja 48 |
 | „Pokaż wyjścia ewakuacyjne (2)” pod wejściami, liczba z danych | US2.1, decyzja 44, decyzja 48 |
 | Grupy „Winda i toaleta” i „Piętra”: zastępniki danych PWr, przy piętrze „Pokaż na planie” | US16.1, decyzja 44 |
 | „Źródło: Politechnika Wrocławska” na dole karty | NFR-40 |

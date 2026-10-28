@@ -4,7 +4,7 @@
 ' Ramka pozycji, opcja, zdjęcie, błąd przy polu i wybór piętra są w _wspolne.iuml.
 
 ' Przyciski przesuwania punktu bariery (C1): odpowiednik przeciągania palcem
-' (NFR-15, WCAG 2.5.1; NFR-3). Ten sam układ co przyciski mapy na V1 i R1.
+' (NFR-15, WCAG 2.5.1; NFR-3).
 ' $co: na czym leży punkt, np. "na mapie" albo "na planie".
 !procedure $przesun_punkt($co)
 Przesuń punkt $co:

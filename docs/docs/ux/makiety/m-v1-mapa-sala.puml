@@ -7,9 +7,8 @@ $naglowek_startowy("Mapa kampusu")
 $pole_tekstowe("A-1 329")
 $pietra(3)
 $przycisk("Legenda")
-$mapa("plan 2 piętra A-1 z wyróżnioną salą; krótkie podpisy: Winda, Toaleta, Sala 329")
+$mapa("plan 2 piętra A-1 z wyróżnioną salą; krótkie podpisy: Winda, Toaleta, Sala 329", "", "info")
 Źródło: Politechnika Wrocławska
-$przyciski_mapy()
 $ramka()
 <b>A-1: Sala 329</b>
 <i>[funkcja sali z danych]</i>, 2 piętro
