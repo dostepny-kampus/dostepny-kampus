@@ -1,0 +1,27 @@
+@startsalt
+' C2 Formularz zgłoszenia, stan zwykły: nowe zgłoszenie w budynku szczegółowym A-1.
+' Miejsce z C1. Typ bariery z listy w 6 grupach barier (BR-7). Bez paska dolnego.
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Formularz zgłoszenia")
+<b>Budynek A-1</b>
+<i>[miejsce z pomiaru]</i>
+$przycisk("Zmień miejsce")
+$sekcja("Piętro")
+{ ( ) <i>[1]</i>$dk_spacje(2) | ( ) <i>[2]</i>$dk_spacje(2) | ( ) <i>[3]</i>$dk_spacje(2) | ( ) <i>[4]</i>$dk_spacje(2) | ( ) <i>[5]</i> }
+$sekcja("Typ bariery")
+^<i>[typy w 6 grupach barier]</i>^
+$sekcja("Uciążliwość")
+$opcja("", $utrudnienie(), "Osoba pokona ją sama, ale z dodatkowym wysiłkiem lub ryzykiem.")
+$opcja("", $tylko_z_pomoca(), "Osoba pokona ją tylko z pomocą innej osoby albo urządzenia obsługiwanego przez pracownika.")
+$opcja("", $blokada(), "Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś ją przeniesie.")
+$sekcja("Zdjęcie")
+$zdjecie()
+$sekcja("Opis")
+"                          "
+$tekst("Obowiązkowy przy typie „inna bariera”.")
+..
+$przycisk_glowny("Zapisz")
+$ekran_koniec()
+@endsalt

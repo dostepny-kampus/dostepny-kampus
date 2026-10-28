@@ -1,0 +1,29 @@
+@startsalt
+' C2 Formularz zgłoszenia, edycja (US8.3) w budynku podstawowym (US7.2, BR-G1).
+' Typ TB-29 „inna bariera” z opisem ze scenariusza @US7.3. Piętro jako liczba.
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Formularz zgłoszenia")
+<b>Budynek <i>[symbol]</i></b>
+<i>[miejsce z pomiaru]</i>
+$przycisk("Zmień miejsce")
+$sekcja("Piętro")
+{ "  2  " | [ ] Półpiętro }
+$sekcja("Typ bariery")
+^inna bariera^
+$sekcja("Uciążliwość")
+$opcja("", $utrudnienie(), "Osoba pokona ją sama, ale z dodatkowym wysiłkiem lub ryzykiem.")
+$opcja("X", $tylko_z_pomoca(), "Osoba pokona ją tylko z pomocą innej osoby albo urządzenia obsługiwanego przez pracownika.")
+$opcja("", $blokada(), "Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś ją przeniesie.")
+$sekcja("Zdjęcie")
+$zdjecie("zrobione zdjęcie bariery")
+$sekcja("Opis")
+{+
+$tekst("Na długim korytarzu nie ma gdzie usiąść i odpocząć")
+}
+$tekst("Obowiązkowy przy typie „inna bariera”.")
+..
+$przycisk_glowny("Zapisz")
+$ekran_koniec()
+@endsalt
