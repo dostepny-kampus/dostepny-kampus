@@ -5,17 +5,19 @@
  */
 package io.github.dostepnykampus.core.model
 
-/**
- * Powierzchnia GeoJSON z kontraktu API (`GeoArea`); tak zapisany jest kontur budynku.
- * `MultiPolygon` z kontraktu to lista jego wielokątów składowych, a `Polygon` — lista z jednym wielokątem.
- *
- * @property polygons wielokąty składowe, np. części budynku
- */
-data class GeoArea(val polygons: List<GeoPolygon>)
+/** Powierzchnia GeoJSON z kontraktu API (`GeoArea`): wielokąt albo wielokąt złożony, np. kontur budynku. */
+sealed interface GeoArea
 
 /**
  * Wielokąt GeoJSON (`GeoPolygon` z kontraktu API).
  *
  * @property rings zamknięte pierścienie: pierwszy to granica zewnętrzna, kolejne to otwory, np. dziedziniec
  */
-data class GeoPolygon(val rings: List<List<GeoPoint>>)
+data class GeoPolygon(val rings: List<List<GeoPoint>>) : GeoArea
+
+/**
+ * Wielokąt złożony GeoJSON (`GeoMultiPolygon` z kontraktu API), np. budynek z kilku części.
+ *
+ * @property polygons wielokąty składowe
+ */
+data class GeoMultiPolygon(val polygons: List<GeoPolygon>) : GeoArea

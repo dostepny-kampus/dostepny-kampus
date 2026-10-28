@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.core.geo
 
 import io.github.dostepnykampus.core.model.Building
-import io.github.dostepnykampus.core.model.GeoArea
+import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -21,10 +21,7 @@ class LocateBuildingTest {
         Building(
             symbol = "A-1",
             name = "Budynek z dziedzińcem",
-            outline =
-                GeoArea(
-                    listOf(GeoPolygon(listOf(square(x = 0, y = 0, size = 8), square(x = 3, y = 3, size = 2)))),
-                ),
+            outline = GeoPolygon(listOf(square(x = 0, y = 0, size = 8), square(x = 3, y = 3, size = 2))),
         )
 
     private val twoPartBuilding =
@@ -32,7 +29,7 @@ class LocateBuildingTest {
             symbol = "B-1",
             name = "Budynek z dwóch części",
             outline =
-                GeoArea(
+                GeoMultiPolygon(
                     listOf(
                         GeoPolygon(listOf(square(x = 12, y = 0, size = 2))),
                         GeoPolygon(listOf(square(x = 12, y = 6, size = 2))),

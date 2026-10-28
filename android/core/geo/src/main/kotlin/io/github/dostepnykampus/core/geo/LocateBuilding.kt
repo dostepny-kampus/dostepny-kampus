@@ -7,10 +7,13 @@ package io.github.dostepnykampus.core.geo
 
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoArea
+import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import org.maplibre.spatialk.geojson.LineString
 import org.maplibre.spatialk.geojson.MultiPolygon
+import org.maplibre.spatialk.geojson.Polygon
+import org.maplibre.spatialk.geojson.PolygonGeometry
 import org.maplibre.spatialk.geojson.Position
 import org.maplibre.spatialk.turf.booleans.contains
 import org.maplibre.spatialk.turf.measurement.distance
@@ -52,6 +55,14 @@ private fun GeoPoint.toPosition(): Position = Position(longitude, latitude)
 
 private fun GeoPolygon.toPositions(): List<List<Position>> = rings.map { ring -> ring.map(GeoPoint::toPosition) }
 
-private fun GeoArea.toTurf(): MultiPolygon = MultiPolygon(polygons.map(GeoPolygon::toPositions))
+private fun GeoArea.toTurf(): PolygonGeometry =
+    when (this) {
+        is GeoPolygon -> Polygon(toPositions())
+        is GeoMultiPolygon -> MultiPolygon(polygons.map(GeoPolygon::toPositions))
+    }
 
-private fun GeoArea.allRings(): List<List<GeoPoint>> = polygons.flatMap(GeoPolygon::rings)
+private fun GeoArea.allRings(): List<List<GeoPoint>> =
+    when (this) {
+        is GeoPolygon -> rings
+        is GeoMultiPolygon -> polygons.flatMap(GeoPolygon::rings)
+    }
