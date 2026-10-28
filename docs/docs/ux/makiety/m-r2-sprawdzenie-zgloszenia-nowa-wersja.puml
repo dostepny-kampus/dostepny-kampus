@@ -2,36 +2,7 @@
 ' R2 Sprawdzenie zgłoszenia, stan "nowa wersja": autor zmienił uciążliwość z 1 na 2
 ' w trakcie weryfikacji (BR-3, UC14 5e). Weryfikator widzi nową wersję przed decyzją.
 !include _wspolne.iuml
-' Fragmenty lokalne R2 (propozycja do _wspolne.iuml, zob. opis PR).
-' Decyzja: „Przyjmij” jako czynność główna, pod nią powód odrzucenia i „Odrzuć”.
-' $powod: "" (nic nie wybrano), "Duplikat" albo "Nieaktualne".
-!procedure $r2_decyzja($powod="")
-..
-$przycisk_glowny("Przyjmij")
-<b>Powód odrzucenia</b>
-!if $powod == "Duplikat"
-(X) Duplikat
-{
-$dk_spacje(3) | Wcześniejsze zgłoszenie:
-$dk_spacje(3) | (X) schody przy wejściu, 2 m
-$dk_spacje(3) | ( ) próg, 5 m
-}
-!else
-( ) Duplikat
-!endif
-!if $powod == "Nieaktualne"
-(X) Nieaktualne
-!else
-( ) Nieaktualne
-!endif
-"$dk_spacje(30)"
-$przycisk("Odrzuć")
-!endprocedure
-' Zdjęcie z przyciskiem zasłaniania twarzy i tablic (BR-15, NFR-25).
-!procedure $r2_zdjecie($opis)
-$obraz($opis)
-$przycisk("Zasłoń twarz lub tablicę")
-!endprocedure
+!include _weryfikacja.iuml
 $ekran_poczatek()
 $naglowek("Sprawdzenie zgłoszenia")
 $komunikat("Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.")
