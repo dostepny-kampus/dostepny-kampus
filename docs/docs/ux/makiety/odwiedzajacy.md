@@ -1,6 +1,6 @@
 # Makiety: odwiedzający
 
-Strona pokazuje ekrany Gościa niezalogowanego i Odwiedzającego: V1–V5, L1 i L2. Elementy, stany i dokąd prowadzą przyciski pochodzą z [wymagań do ekranów](../wymagania-ekranow.md) i [mapy nawigacji](../mapa-nawigacji.md). Napisy są ze [słownika użytkownika](../slownik-uzytkownika.md) i są hipotezą do sprawdzenia w wywiadach.
+Strona pokazuje ekrany Gościa niezalogowanego i Odwiedzającego: V1–V5, L1 i L2. Elementy, stany i cele przycisków pochodzą z [wymagań do ekranów](../wymagania-ekranow.md) i [mapy nawigacji](../mapa-nawigacji.md). Napisy są ze [słownika użytkownika](../slownik-uzytkownika.md) i są hipotezą do sprawdzenia w wywiadach.
 
 Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym napisem, opisuje tabela pod makietą. Wzorcowa makieta V2 w stanie zwykłym jest na stronie [Makiety](index.md#wzorcowa-makieta-v2-karta-budynku).
 
@@ -75,7 +75,7 @@ Czynność główna: „Lista budynków” w komunikacie, gdy wyszukiwanie nic n
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Komunikat z katalogu z wpisanym tekstem jako zastępnikiem | UC1 3a, NFR-50, PW-9 |
+| Komunikat z katalogu; wpisany tekst jako zastępnik | UC1 3a, NFR-50, PW-9 |
 | Przycisk „Lista budynków” przełącza widok na listę | UC1 3a, NFR-19 |
 | Komunikat stoi zaraz pod polem, więc osoba widzi go tam, gdzie pisała | NFR-15 (WCAG 3.3.1) |
 
@@ -378,7 +378,7 @@ Czynność główna: „Zaloguj się”.
 | Przy wejściu z V4: „Po zalogowaniu od razu zrobisz zdjęcie. Całość to 3 krótkie kroki.” | US14.2, US4.1 |
 | „Zaloguj się” prowadzi do strony logowania w przeglądarce; pola hasła w aplikacji nie ma | US14, NFR-31 |
 | „Załóż konto” prowadzi do rejestracji z klauzulą informacyjną | US14.3, NFR-30 |
-| „Nie teraz” tak samo szerokie jak „Zaloguj się”; wraca do V1 | UC7 1b |
+| „Nie teraz” tak samo szerokie, jak „Zaloguj się”; wraca do V1 | UC7 1b |
 | Bez paska dolnego | wymagania wspólne |
 
 | Stan bez osobnej makiety | Co się zmienia |
