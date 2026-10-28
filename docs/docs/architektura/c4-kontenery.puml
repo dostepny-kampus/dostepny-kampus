@@ -1,0 +1,42 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Container>
+!$LEGEND_TITLE_TEXT = "Legenda"
+HIDE_STEREOTYPE()
+UpdateElementStyle("person", $legendText="rola")
+UpdateElementStyle("container", $legendText="kontener")
+UpdateElementStyle("external_system", $legendText="system zewnętrzny")
+UpdateSystemBoundaryStyle($legendText="granica systemu", $type="system")
+AddRelTag("dane", $lineStyle = DashedLine(), $legendText="dane z repozytorium")
+
+Person(pub, "Gość i Odwiedzający", "RO-GOS, RO-ODW")
+Person(zes, "Zespół inwentaryzacji", "RO-ZBI, RO-WER, RO-KOO")
+System_Ext(osm, "OpenStreetMap", "kontury budynków")
+System_Ext(tiles, "Serwery kafelków OSM", "podkład mapy")
+
+System_Boundary(dk, "Dostępny Kampus") {
+  Container(app, "Aplikacja mobilna", "Android, Kotlin, Jetpack Compose, MapLibre", "mapa, karty budynków, zgłoszenia, weryfikacja")
+  ContainerDb(local, "Baza lokalna", "Room", "budynki, bariery, kolejka synchronizacji")
+  Container(kc, "Usługa logowania", "Keycloak", "konta, role, rejestracja, zaproszenia")
+  Container(srv, "Serwer aplikacji", "Spring Boot, Java 25", "REST API z kontraktu OpenAPI")
+  ContainerDb(db, "Baza danych przestrzennych", "PostgreSQL, PostGIS", "budynki, piętra, pomieszczenia, zgłoszenia")
+  ContainerDb(foto, "Magazyn zdjęć", "MinIO", "zdjęcia zgłoszeń")
+}
+
+System_Ext(arc, "Plany budynków PWr", "publiczna usługa ArcGIS")
+
+Rel_D(pub, app, "korzysta")
+Rel_D(zes, app, "korzysta")
+Rel_L(app, local, "czyta i zapisuje, także offline")
+Rel_R(app, kc, "logowanie", "OAuth 2.0 + PKCE")
+Rel_U(app, tiles, "kafelki, tylko online", "HTTPS")
+Rel_D(app, srv, "odczyt i synchronizacja", "HTTPS, JSON, token")
+Rel_U(srv, kc, "sprawdzenie tokenu, zaproszenia", "OIDC, Admin API")
+Rel_D(srv, db, "zapytania przestrzenne", "JDBC")
+Rel_D(srv, foto, "zdjęcia", "S3")
+Rel_R(srv, arc, "import przy wdrożeniu", "HTTPS")
+Rel_D(osm, app, "kontury w pakiecie aplikacji", $tags="dane")
+Rel_D(osm, db, "import konturów", $tags="dane")
+
+SHOW_LEGEND()
+@enduml
