@@ -20,6 +20,7 @@ Aplikacja mobilna na Androida i serwer do inwentaryzacji barier architektoniczny
 - Gałęzie: `main` ← `sprint/N` ← `feature/s<N>-<nazwa>`. Jedna gałąź to jedno zakończone zadanie.
 - Każda zmiana trafia do gałęzi przez pull request z przeglądem i zielonymi kontrolami CI.
 - Każdy plik z kodem (`.kt`, `.kts`, `.java`, `.py`, `.sh`, `.sql`) zaczyna się nagłówkiem autorskim, co sprawdza job `naglowki` w przepływie `pr-guard`.
+- Kontrola `straznik-jakosci` blokuje wyciszenia analizy i pliki baseline; zmiana konfiguracji linterów, progów pokrycia lub CI wymaga w opisie PR linii `Zmiana reguł jakości: <powód>`, a wyciszeń w kodzie Androida nie dopuszcza w ogóle.
 - Commity w stylu [Conventional Commits](https://www.conventionalcommits.org/pl/v1.0.0/), np. `feat(api): …`.
 
 ## Dokumentacja
