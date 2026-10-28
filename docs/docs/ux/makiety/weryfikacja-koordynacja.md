@@ -91,12 +91,12 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Po wyborze „Duplikat” lista „Wcześniejsze zgłoszenie:” z podobnymi zgłoszeniami; wybrane trafia do powodu odrzucenia | BR-13 |
 | System niczego nie odrzuca ani nie łączy sam: wybór robi Weryfikator | BR-13 |
 
-![Makieta R2 dla zgłoszenia szybkiego: grupa Schody i windy, budynek D-2, autor Odwiedzający, pola Typ bariery i Uciążliwość z trzema wartościami, brak podobnych zgłoszeń](../../_generated/m-r2-sprawdzenie-zgloszenia-szybkie.svg)
+![Makieta R2 dla zgłoszenia szybkiego: grupa Schody i windy, budynek D-2 z piętrem, autor Odwiedzający, pola Typ bariery i Uciążliwość z trzema wartościami, brak podobnych zgłoszeń](../../_generated/m-r2-sprawdzenie-zgloszenia-szybkie.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Zgłoszenie szybkie”, „Czego dotyczy: Schody i windy” jako podpowiedź od autora; bez piętra, bo zostaje puste | BR-14, PW-7 |
-| Budynek D-2 przypisany przez system z konturu | BR-14 |
+| „Zgłoszenie szybkie”, „Czego dotyczy: Schody i windy” jako podpowiedź od autora | BR-14, PW-7 |
+| Budynek D-2 przypisany przez system z konturu; piętro podane przez autora, bez edycji. Po „Nie wiem” albo bez pytania sam budynek | BR-14, US4.5 |
 | „Autor: Odwiedzający, Autor [nr]” | BR-5 |
 | „Typ bariery”: lista do wyboru, także z innej grupy niż podpowiedź | US10.3, BR-14 |
 | „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda z ikoną w ramce na pełną szerokość, jak na C2 | US10.3, PW-13, NFR-17, NFR-21 |

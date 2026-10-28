@@ -262,18 +262,34 @@ Czynność główna: wybór jednej z 6 grup barier.
 | --- | --- |
 | Pytanie „Czego dotyczy bariera?” | US4.3, PW-7 |
 | 6 przycisków grup jeden pod drugim, tej samej szerokości, sam tekst, bez ikon | US4.3, NFR-17, PW-7 |
-| Bez typu, uciążliwości, budynku i piętra | US4.3, BR-14 |
+| Bez typu, uciążliwości i budynku; o piętro pyta dopiero stan niżej | US4.3, BR-14 |
 | „Wstecz” wraca do kroku 1, a zdjęcie zostaje | US4.1 |
+
+### V4: krok 2, pytanie o piętro
+
+![Makieta V4, krok 2 z 3 po wyborze grupy Schody i windy: pytanie Na którym piętrze?, przycisk Nie wiem, a pod nim przyciski Parter, 1, 2, 3](../../_generated/m-v4-krok-2-pietro.svg)
+
+Czynność główna: wybór piętra albo „Nie wiem”. Stan pojawia się tylko w konturze budynku i przy grupie z tabeli w [regułach](../../biznes/reguly.md#pietro-w-zgloszeniu-szybkim).
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| „Krok 2 z 3” bez zmian, bo pytanie jest częścią kroku 2 | US4.1, NFR-27 |
+| Wybrana grupa pod pytaniem „Czego dotyczy bariera?” | US4.5 |
+| „Na którym piętrze?” i przyciski na pełną szerokość | US4.5, NFR-17 |
+| „Nie wiem” nad piętrami, widoczne bez przewijania; zostawia piętro puste | US4.5, BR-14 |
+| Budynek podstawowy: „Parter”, „1”, „2”…; budynek szczegółowy: etykiety pięter z danych PWr | US4.5, BR-G1 |
+| „Wstecz” wraca do listy grup, a zdjęcie zostaje | US4.5 |
 
 ### V4: krok 3 z 3
 
-![Makieta V4, krok 3 z 3: miniatura zdjęcia, wybrana grupa Schody i windy, zdanie o dołączeniu miejsca i pogrubiony przycisk Wyślij](../../_generated/m-v4-krok-3.svg)
+![Makieta V4, krok 3 z 3: miniatura zdjęcia, wybrana grupa Schody i windy, piętro 2, zdanie o dołączeniu miejsca i pogrubiony przycisk Wyślij](../../_generated/m-v4-krok-3.svg)
 
 Czynność główna: „Wyślij”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Miniatura zdjęcia i wybrana grupa pod pytaniem z kroku 2 | US4.1 |
+| Wybrane piętro pod pytaniem „Na którym piętrze?”; bez tych wierszy, gdy pytania nie było | US4.5 |
 | „Dołączymy miejsce, w którym teraz stoisz.” | US4.1, NFR-27 |
 | „Wyślij” prowadzi do potwierdzenia | US4.1, US4.4 |
 

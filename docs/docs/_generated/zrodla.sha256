@@ -42,7 +42,7 @@ e6698ef7025cefc8ec63de5aa719fbea012d102979e0f34149806b89710bed07  ux/makiety/m-r
 1a6a84c6fedabde7158a4dcb8f7edef40d86a7e7fbb5ddf85cda1330bff9b76a  ux/makiety/m-r1-kolejka-weryfikacji.puml
 3bf12ea6c2747e0c232f8dc6214a2fce8df283fa2e293a3f122d3abc7132b314  ux/makiety/m-r2-sprawdzenie-zgloszenia-duplikat.puml
 492413b1a1067cec541523af3c7c0d21b0515237ebe8798257e5f5ac3d0cdd9c  ux/makiety/m-r2-sprawdzenie-zgloszenia-nowa-wersja.puml
-e5f7bd2bafa458e2e7adf0d89b21cc90a0364f00bedeb94161f4d3e164d3c9da  ux/makiety/m-r2-sprawdzenie-zgloszenia-szybkie.puml
+387e22c6680f9bfacb183330fc32926e86c0c85df195110b9f8a131626e70d39  ux/makiety/m-r2-sprawdzenie-zgloszenia-szybkie.puml
 af225a9ffb7e91dadd6f374e26226bd4474a883d57f1b551b7d720e4d0854e9a  ux/makiety/m-r2-sprawdzenie-zgloszenia-usunieta.puml
 ec2022d497fa0cbb916d2a1948b0e8856881aa62c3a68b0ff5df8f780482cd61  ux/makiety/m-r2-sprawdzenie-zgloszenia-wejscie.puml
 d4f0862d186d211f44a57751fc58c8b83b47caf612624c47bcb487ccde145f74  ux/makiety/m-r2-sprawdzenie-zgloszenia.puml
@@ -64,8 +64,9 @@ c891bd4ee5ea6c292bee81276f7f380f6f23544d79871a505717a1ead57481aa  ux/makiety/m-v
 4e7a8a02aabddb8ecf91e47811a054787e939806362a34f4b6a9dcb2a55b0c44  ux/makiety/m-v4-brak-pozycji.puml
 ea99d7385c683ea81a0f66851a895376b1025807614e2d1f243daa34a70d8bd0  ux/makiety/m-v4-krok-1-zdjecie.puml
 c185966a12ab880bbfff1e17c5d8d19a43217db76c34568579c88e05765d6287  ux/makiety/m-v4-krok-1.puml
+6ea9953177c18484bb12ad03e9e78c22ad14c229a960cb2b9830eb5c54dfc2cf  ux/makiety/m-v4-krok-2-pietro.puml
 184c476c064e51cbec13ee1f366729dd32bedc293a8e88195408457a05462682  ux/makiety/m-v4-krok-2.puml
-6a00ca0455643f1dc7e01b0ae35c7dc2205d84996b7179794f618eef4cc1966c  ux/makiety/m-v4-krok-3.puml
+9197d2f8599c4a1ab00d4150fa67a776a1d3e90d5be42e7f9e8f4b2f2ce4d0ce  ux/makiety/m-v4-krok-3.puml
 5d6e3eed73ae563dee77500358c5247f6c7f33d729f911437eb5bca261f65bc6  ux/makiety/m-v4-rezygnacja.puml
 8ba0e91fd5ba589321723f58bbfa267552b33e17822a87ffbd6de4f90f725a9f  ux/makiety/m-v4-wyslane-brak-sieci.puml
 cac974c89f1366fb524a07dd3f7fbb7614dc2e1b0b7277a7a1d3db7b2c2dcf2c  ux/makiety/m-v4-wyslane.puml
@@ -73,7 +74,7 @@ b5e2046943d56ff0f362e86d67eb8924a94e46868084939653dda3c3a7510b30  ux/makiety/m-v
 e9f5bc300c1a8ba0f9e6eb3ad71c98387132b5fd2ee98da06085dd36717c9d08  ux/makiety/m-v4-zgoda-przyblizona.puml
 1bb198d042b2888a3603a62f4820b5de479401175847f7742819708e655370e2  ux/makiety/m-v5-pomoc.puml
 4690501dc4559e26433405bf33a0369559dc7a580a1537413f8197b5e4304205  ux/makiety/m-wspolne-fragmenty.puml
-17133cf576a2f1b315191cce172d89bdf727b044a558af1af8ded6dc157d4a40  ux/nawigacja-odwiedzajacy.puml
+21b3df93fbbc29d3af05a1a44f720ae2fd2a67c778cc2bbac1a8463981d56aa0  ux/nawigacja-odwiedzajacy.puml
 13ee65e01077abf9d40d646ef621ad373926ebd9640ffbada15210cd7194aa6c  ux/nawigacja-zespol-weryfikacja.puml
 197a4de1f0d70670b7bec7c0caaebc75ec57c9f4a7598cceffe077c2f6c57ca0  ux/nawigacja-zespol-zbierajacy.puml
 8b664ffd38398d0716b61ee635a238ca1db817c50aa46ddb1f7ff0315685d49e  wymagania/przypadki-uzycia-odwiedzajacy.puml

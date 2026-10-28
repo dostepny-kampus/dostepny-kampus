@@ -112,6 +112,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | V4 | krok 1 z 3 | [`m-v4-krok-1`](../../_generated/m-v4-krok-1.svg) | [odwiedzający](odwiedzajacy.md) |
 | V4 | krok 1 ze zdjęciem | [`m-v4-krok-1-zdjecie`](../../_generated/m-v4-krok-1-zdjecie.svg) | [odwiedzający](odwiedzajacy.md) |
 | V4 | krok 2 z 3 | [`m-v4-krok-2`](../../_generated/m-v4-krok-2.svg) | [odwiedzający](odwiedzajacy.md) |
+| V4 | krok 2, pytanie o piętro | [`m-v4-krok-2-pietro`](../../_generated/m-v4-krok-2-pietro.svg) | [odwiedzający](odwiedzajacy.md) |
 | V4 | krok 3 z 3 | [`m-v4-krok-3`](../../_generated/m-v4-krok-3.svg) | [odwiedzający](odwiedzajacy.md) |
 | V4 | prośba o zgodę na lokalizację | [`m-v4-zgoda-lokalizacja`](../../_generated/m-v4-zgoda-lokalizacja.svg) | [odwiedzający](odwiedzajacy.md) |
 | V4 | zgoda tylko przybliżona | [`m-v4-zgoda-przyblizona`](../../_generated/m-v4-zgoda-przyblizona.svg) | [odwiedzający](odwiedzajacy.md) |

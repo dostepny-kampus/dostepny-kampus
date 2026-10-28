@@ -1,0 +1,22 @@
+@startsalt
+' V4 Zgłoszenie szybkie, krok 2 z 3 po wyborze grupy: pytanie o piętro (US4.5, BR-14).
+' Pozycja w konturze budynku podstawowego, grupa wymaga piętra. „Nie wiem” nad piętrami,
+' żeby było widać je bez przewijania.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek("Zgłoś barierę")
+$numer_kroku("Krok 2 z 3")
+Czego dotyczy bariera?
+<b>Schody i windy</b>
+.
+<b>Na którym piętrze?</b>
+$przycisk("Nie wiem")
+..
+$przycisk("Parter")
+$przycisk("1")
+$przycisk("2")
+$przycisk("3")
+$tekst("[kolejne piętra budynku]", "i")
+$ekran_koniec()
+@endsalt
