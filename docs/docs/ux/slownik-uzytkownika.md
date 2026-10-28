@@ -145,7 +145,9 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | „Zmień miejsce”, „Powtórz pomiar”, „Dalej”, „Zapisz” | bez zmian | Zbierający | Czasowniki są już krótkie. | 10.2 |
 | typ bariery (C2) | „Typ bariery” | Zbierający, Weryfikator | bez zmian | 10.2 |
 | uciążliwość (C2, R2) | „Uciążliwość” i wartości „Utrudnienie”, „Tylko z pomocą”, „Blokada” z opisem | Zbierający, Weryfikator | Te same wartości, które widzi Odwiedzający. | 10.2, 10.5 |
-| opis wartości uciążliwości (C2) | „Osoba pokona ją sama, ale z dodatkowym wysiłkiem lub ryzykiem.”, „Osoba pokona ją tylko z pomocą innej osoby albo urządzenia obsługiwanego przez pracownika.”, „Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś ją przeniesie.” | Zbierający | Skrócone kryteria ze skali uciążliwości w słowniku pojęć. | 10.2, 10.5 |
+| opis „Utrudnienie” (C2) | „Osoba pokona ją sama, ale z dodatkowym wysiłkiem lub ryzykiem.” | Zbierający | Skrócone kryterium stopnia 1 ze skali uciążliwości. | 10.2, 10.5 |
+| opis „Tylko z pomocą” (C2) | „Osoba pokona ją tylko z pomocą innej osoby albo urządzenia obsługiwanego przez pracownika.” | Zbierający | Skrócone kryterium stopnia 2. | 10.2, 10.5 |
+| opis „Blokada” (C2) | „Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś ją przeniesie.” | Zbierający | Skrócone kryterium stopnia 3. | 10.2, 10.5 |
 | opis przy TB-29 (C2) | „Obowiązkowy przy typie »inna bariera«.” | Zbierający | Mówi przed zapisem, kiedy pole jest wymagane (US7.3). | 10.2 |
 | „półpiętro” | „Półpiętro” | Zbierający | bez zmian | 10.2 |
 | status „lokalne” | „W telefonie” | Zbierający | Odpowiada na pytanie PE-2, czy zgłoszenie dotarło. | 10.3 |
