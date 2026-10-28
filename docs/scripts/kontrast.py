@@ -21,6 +21,8 @@ HEX = re.compile(r"^#[0-9A-Fa-f]{6}$")
 # Najniższe progi z NFR-16 (WCAG 1.4.3 i 1.4.11): progu w tokeny.yml nie wolno ustawić niżej.
 NFR_MINIMUM = {"tekst": 4.5, "komponent": 3.0}
 MIN_BODY_SP = 18
+# Próg zespołu dla najmniejszego tekstu: minimum_sp w tokeny.yml nie może zejść niżej.
+MIN_TEXT_SP = 16
 MIN_TARGET_DP = 48
 BODY_STYLE = "bodyLarge"
 DIMENSION_GROUPS = (
@@ -180,10 +182,12 @@ def evaluate_pairs(tokens: dict[str, Any]) -> tuple[list[PairResult], list[str]]
 
 
 def check_typography(typography: dict[str, Any]) -> list[str]:
-    """Zwraca błędy typografii: każdy styl ≥ minimum_sp, tekst podstawowy ≥ 18 sp, interlinia ≥ rozmiar."""
+    """Zwraca błędy typografii: minimum_sp ≥ 16, każdy styl ≥ minimum_sp, tekst podstawowy ≥ 18 sp, interlinia ≥ rozmiar."""
     errors = []
     minimum = require(typography, "minimum_sp", "typografia")
     styles = require(typography, "style", "typografia")
+    if minimum < MIN_TEXT_SP:
+        errors.append(f"minimum_sp = {minimum} sp jest niższe niż próg zespołu {MIN_TEXT_SP} sp")
     for name, style in styles.items():
         if style["sp"] < minimum:
             errors.append(f"styl {name}: {style['sp']} sp < minimum {minimum} sp")
@@ -341,6 +345,8 @@ def check_all(tokens: dict[str, Any]) -> tuple[list[PairResult], list[str]]:
         return [], errors
     results, pair_errors = evaluate_pairs(tokens)
     errors += pair_errors
+    used = {name for pair in tokens["kontrast"]["pary"] for name in (pair.get("kolor"), pair.get("tlo"))}
+    errors += [f"rola {role} nie występuje w żadnej parze kontrastu" for role in tokens["kolory"] if role not in used]
     errors += [
         f"kontrast {r.theme}: {r.color} na {r.background} = {fmt_ratio(r.worst)} < {fmt_number(r.threshold)}:1 ({r.kind})"
         for r in results
