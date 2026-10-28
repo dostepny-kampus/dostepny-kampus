@@ -18,7 +18,7 @@ Funkcja: Zgłoszenie szybkie
   Scenariusz: Zgłoszenie przy wejściu podpowiada wejście, a miejsce bierze z bieżącej pozycji
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz otworzył kartę budynku A-1
-    Jeżeli przy wejściu głównym wybierze „Zgłoś barierę przy tym wejściu”
+    Jeżeli przy wejściu głównym wybierze „Zgłoś barierę przy wejściu”
     Wtedy krok 1 zgłoszenia szybkiego ma napis „Wejście: »Wejście główne«”
     Oraz wysłane zgłoszenie ma wejście główne A-1 jako wskazówkę dla Weryfikatora
     Ale miejsce zgłoszenia pochodzi z bieżącej pozycji telefonu, a nie z wybranego wejścia

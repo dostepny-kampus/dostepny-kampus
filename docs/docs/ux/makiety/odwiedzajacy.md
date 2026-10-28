@@ -210,7 +210,7 @@ Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego 
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Zmień oznaczenie” w ramce każdego wejścia pod „Zgłoś barierę”, także przy „Brak danych” | US17.2, BR-24 |
+| „Zmień oznaczenie” w ramce każdego wejścia pod „Zgłoś barierę przy wejściu”, także przy „Brak danych” | US17.2, BR-24 |
 | „Oznacz obejrzane piętra” pod grupą „Piętra”, raz dla całego budynku | US15.1, PW-12 |
 | „Zgłoś, że bariery nie ma” przy każdej barierze | US8.4, BR-19, PW-12 |
 | „Popraw zgłoszenie” tylko przy własnym zgłoszeniu przyjętym albo zgłoszeniu szybkim; tu przy drugiej barierze | BR-3, BR-18 |
