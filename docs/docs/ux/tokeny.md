@@ -149,7 +149,7 @@ Wysokość przycisku to minimum. Gdy czcionka rośnie do 200%, przycisk rośnie 
 
 | Część pliku | Co powstaje w aplikacji |
 | --- | --- |
-| `kolory.<rola>.jasny` i `kolory.<rola>.ciemny` | dwa schematy kolorów motywu Material 3: jasny i ciemny; role spoza pliku nie są używane na ekranach |
+| `kolory.<rola>.jasny` i `kolory.<rola>.ciemny` | dwa schematy kolorów motywu Material 3: jasny i ciemny; pozostałe role schematu (np. `secondaryContainer` w pasku dolnym) dostają wartości z ról z pliku, a test porównuje schemat z plikiem, żeby żaden komponent nie użył domyślnego koloru Material |
 | `typografia.style` | skala typografii motywu: rozmiar i interlinia w sp, waga |
 | `odstepy`, `cele_dotyku`, `obramowania`, `zaokraglenia`, `ikony` | stałe wymiarów w dp, używane przez ekrany zamiast liczb |
 | `kontrast.pary` | lista par do sprawdzenia w podglądach ekranów i w teście dostępności |
