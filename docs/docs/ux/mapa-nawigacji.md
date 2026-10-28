@@ -20,7 +20,7 @@ Czwarta pozycja paska dolnego to „Konto”, a osoby z rolą pracowniczą widz�
 
 ![Diagram przejść Gościa i Odwiedzającego: V1, V2, V3, V4 z krokami, V5, L1, L2](../_generated/nawigacja-odwiedzajacy.svg)
 
-Główna droga to V1, V2, V3 i z powrotem. Z V2 wraca się też na mapę z planem piętra albo wejściem, a „Zgłoś barierę przy tym wejściu” otwiera V4 z wybranym wejściem. V2 wysuwa się jako arkusz na mapie V1, więc nie dodaje dotknięcia (US3.2). Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]).
+Główna droga to V1, V2, V3 i z powrotem. Z V2 wraca się też na mapę z planem piętra albo wejściem, a „Zgłoś barierę przy tym wejściu” otwiera V4 z wybranym wejściem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]).
 
 Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”. Po zalogowaniu wraca do kroku 1 V4 albo trafia do L2 (P3).
 
