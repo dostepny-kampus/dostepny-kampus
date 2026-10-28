@@ -27,7 +27,8 @@ import org.maplibre.spatialk.turf.measurement.distance
  *   wyjątku, z propozycją budynku o najmniejszej odległości od punktu do krawędzi konturu.
  *
  * @param point punkt, dla którego szukamy budynku
- * @param buildings budynki z konturami; pierścienie konturów są zamknięte, jak w GeoJSON
+ * @param buildings budynki z konturami jak w kontrakcie API: kontur ma co najmniej jeden wielokąt, a jego pierścienie
+ *   są zamknięte, jak w GeoJSON
  * @return podpowiedź budynku
  * @throws IllegalArgumentException gdy kontur ma pierścień niezamknięty albo krótszy niż 4 punkty
  */
