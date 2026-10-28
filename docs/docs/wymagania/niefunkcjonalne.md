@@ -5,7 +5,7 @@
 | Dokładność pozycji | przydatność funkcjonalna (functional suitability) | NFR-1…NFR-4 |
 | Praca offline i synchronizacja | niezawodność (reliability) | NFR-5…NFR-10 |
 | Wydajność | efektywność wykonania (performance efficiency) | NFR-11…NFR-14 |
-| Dostępność i użyteczność interfejsu | zdolność interakcji (interaction capability) | NFR-15…NFR-24 |
+| Dostępność i użyteczność interfejsu | zdolność interakcji (interaction capability) | NFR-15…NFR-24, NFR-51 |
 | RODO | bezpieczeństwo (security), poza modelem: zgodność z prawem | NFR-25…NFR-30 |
 | Bezpieczeństwo | bezpieczeństwo (security) | NFR-31…NFR-36 |
 | Licencje danych | poza modelem: zgodność z licencjami | NFR-37…NFR-40 |
@@ -52,16 +52,17 @@ Aplikacja dotyczy barier dla osób z niepełnosprawnościami, więc sama musi by
 
 | ID | Kategoria | Wymaganie | Miara / próg | Jak sprawdzamy | Źródło potrzeby |
 | --- | --- | --- | --- | --- | --- |
-| NFR-15 | Dostępność UI | Aplikacja i strona logowania i rejestracji spełniają WCAG 2.1 na poziomach A i AA według rozdziału 11 normy EN 301 549. NFR-16…NFR-23 doprecyzowują kryteria najważniejsze dla N4. | 0 niespełnionych kryteriów A i AA na wszystkich ekranach. | Skaner dostępności, przegląd według listy kryteriów z rozdziału 11 EN 301 549, przegląd z TalkBack. | N4, US14, [3], [4] |
-| NFR-16 | Dostępność UI | Tekst, ikony statusu, ramki pól i wskaźnik fokusu mają wystarczający kontrast z tłem. | Tekst ≥ 4,5:1. Tekst duży ≥ 3:1. Duży to ≥ 24 sp albo pogrubiony ≥ 19 sp (18 pt i 14 pt z WCAG, przeliczenie zespołu). Ikony statusu, ramki pól i fokus: ≥ 3:1. | Skaner dostępności na każdym ekranie, kontrola par kolorów w palecie, ręczny przegląd ikon statusu. | N4, WCAG 1.4.3 i 1.4.11 [3]; próg Androida 18 sp [6] jest łagodniejszy niż WCAG, więc go nie stosujemy |
-| NFR-17 | Dostępność UI | Elementy dotykowe są duże. | Cel dotyku ≥ 48 × 48 dp. To więcej niż 44 px z kryterium AAA WCAG 2.5.5. | Skaner dostępności na każdym ekranie. | N4, wytyczne Androida [6]; WCAG 2.1 AA nie stawia tu progu |
-| NFR-18 | Dostępność UI | Każdy element interaktywny ma po polsku nazwę, rolę i stan dla czytnika ekranu TalkBack. | 100% elementów z etykietą. Ścieżki US1–US5 przechodzone wyłącznie z TalkBack. | Skaner dostępności i ręczny przegląd z TalkBack. | N4, WCAG 1.1.1 i 4.1.2 [3], [4] |
-| NFR-19 | Dostępność UI | Informacja z mapy jest dostępna także jako lista budynków i barier. | Każdy budynek i bariera z V1 osiągalne z listy. | Ścieżka US1 z TalkBack bez dotykania mapy. | N1, N4, WCAG 1.1.1 [3] |
-| NFR-20 | Dostępność UI | Interfejs działa przy powiększonej czcionce. | Przy 200% (Android 14+) brak uciętego tekstu i nakładania, wszystkie funkcje osiągalne. Na starszych wersjach — przy maksimum systemu. | Przegląd wszystkich ekranów przy 200%, testy zrzutów ekranu. | N4, WCAG 1.4.4 [3], [7] |
-| NFR-21 | Dostępność UI | Informacja nie jest przekazywana wyłącznie kolorem. | Status zgłoszenia, oznaczenie wejścia (także „brak danych”) i uciążliwość bariery 1–3 mają tekst i ikonę lub kształt. | Przegląd ekranów w trybie odcieni szarości. | N4, US2.1, US17.1, WCAG 1.4.1 [3] |
-| NFR-22 | Dostępność UI | Aplikacja działa w orientacji pionowej i poziomej. | 100% ekranów w obu orientacjach bez utraty treści. | Przegląd ekranów po obrocie telefonu. | N4, WCAG 1.3.4 [3] |
-| NFR-23 | Dostępność UI | Brak limitów czasu na odpowiedź użytkownika. | 0 akcji przerywanych przez upływ czasu. Uśrednianie 30 s można przerwać i powtórzyć. | Przegląd ścieżek US1–US9. | N4, WCAG 2.2.1 [3] |
-| NFR-24 | Użyteczność | Osoby starsze z grupy docelowej oceniają aplikację co najmniej przeciętnie. Zbierający nie biorą udziału w tym teście. | Średni wynik SUS ≥ 68 przy ≥ 5 uczestnikach z grupy docelowej (M-3). | Ankieta SUS po teście z myśleniem na głos. | N4, [32] |
+| NFR-15 <span id="nfr-15"></span> | Dostępność UI | Aplikacja i strona logowania i rejestracji spełniają WCAG 2.1 na poziomach A i AA według rozdziału 11 normy EN 301 549. NFR-16…NFR-23 i NFR-51 doprecyzowują kryteria najważniejsze dla N4. | 0 niespełnionych kryteriów A i AA na wszystkich ekranach. | Skaner dostępności, przegląd według listy kryteriów z rozdziału 11 EN 301 549, przegląd z TalkBack. | N4, US14, [3], [4] |
+| NFR-16 <span id="nfr-16"></span> | Dostępność UI | Tekst, ikony statusu, ramki pól i wskaźnik fokusu mają wystarczający kontrast z tłem. | Tekst ≥ 4,5:1. Tekst duży ≥ 3:1. Duży to ≥ 24 sp albo pogrubiony ≥ 19 sp (18 pt i 14 pt z WCAG, przeliczenie zespołu). Ikony statusu, ramki pól i fokus: ≥ 3:1. | Skaner dostępności na każdym ekranie, kontrola par kolorów w palecie, ręczny przegląd ikon statusu. | N4, WCAG 1.4.3 i 1.4.11 [3]; próg Androida 18 sp [6] jest łagodniejszy niż WCAG, więc go nie stosujemy |
+| NFR-17 <span id="nfr-17"></span> | Dostępność UI | Elementy dotykowe są duże. | Cel dotyku ≥ 48 × 48 dp. To więcej niż 44 px z kryterium AAA WCAG 2.5.5. | Skaner dostępności na każdym ekranie. | N4, wytyczne Androida [6]; WCAG 2.1 AA nie stawia tu progu |
+| NFR-18 <span id="nfr-18"></span> | Dostępność UI | Każdy element interaktywny ma po polsku nazwę, rolę i stan dla czytnika ekranu TalkBack. | 100% elementów z etykietą. Ścieżki US1–US5 przechodzone wyłącznie z TalkBack. | Skaner dostępności i ręczny przegląd z TalkBack. | N4, WCAG 1.1.1 i 4.1.2 [3], [4] |
+| NFR-19 <span id="nfr-19"></span> | Dostępność UI | Informacja z mapy jest dostępna także jako lista budynków i barier. | Każdy budynek i bariera z V1 osiągalne z listy. | Ścieżka US1 z TalkBack bez dotykania mapy. | N1, N4, WCAG 1.1.1 [3] |
+| NFR-20 <span id="nfr-20"></span> | Dostępność UI | Interfejs działa przy powiększonej czcionce. | Przy 200% (Android 14+) brak uciętego tekstu i nakładania, wszystkie funkcje osiągalne. Na starszych wersjach — przy maksimum systemu. | Przegląd wszystkich ekranów przy 200%, testy zrzutów ekranu. | N4, WCAG 1.4.4 [3], [7] |
+| NFR-21 <span id="nfr-21"></span> | Dostępność UI | Informacja nie jest przekazywana wyłącznie kolorem. | Status zgłoszenia, oznaczenie wejścia (także „brak danych”) i uciążliwość bariery 1–3 mają tekst i ikonę lub kształt. | Przegląd ekranów w trybie odcieni szarości. | N4, US2.1, US17.1, WCAG 1.4.1 [3] |
+| NFR-22 <span id="nfr-22"></span> | Dostępność UI | Aplikacja działa w orientacji pionowej i poziomej. | 100% ekranów w obu orientacjach bez utraty treści. | Przegląd ekranów po obrocie telefonu. | N4, WCAG 1.3.4 [3] |
+| NFR-23 <span id="nfr-23"></span> | Dostępność UI | Brak limitów czasu na odpowiedź użytkownika. | 0 akcji przerywanych przez upływ czasu. Uśrednianie 30 s można przerwać i powtórzyć. | Przegląd ścieżek US1–US9. | N4, WCAG 2.2.1 [3] |
+| NFR-24 <span id="nfr-24"></span> | Użyteczność | Osoby starsze z grupy docelowej oceniają aplikację co najmniej przeciętnie. Zbierający nie biorą udziału w tym teście. | Średni wynik SUS ≥ 68 przy ≥ 5 uczestnikach z grupy docelowej (M-3). | Ankieta SUS po teście z myśleniem na głos. | N4, [32] |
+| NFR-51 <span id="nfr-51"></span> | Dostępność UI | Na tablecie i rozłożonym telefonie składanym tekst nie rozciąga się na całą szerokość, a mapa wypełnia resztę okna. Aplikacja nie wymusza orientacji. | Okno o szerokości ≥ 600 dp, czyli klasy „średnia” i szersze [35]: wiersz tekstu ma najwyżej 75 znaków ze spacjami [36]. Przyciski, pola i arkusze nie zajmują całej szerokości [38]. Wszystkie funkcje z telefonu działają w obu orientacjach i na podzielonym ekranie. Poza mapą nie ma przewijania w dwóch kierunkach. | Przegląd ekranów na emulatorze o zmiennym rozmiarze okna z profilami telefonu składanego i tabletu [39]: obie orientacje i podzielony ekran. Lista kontrolna poziomu 3 wytycznych adaptacyjnych [37] i punktów poziomu 2 o kolumnach tekstu i szerokości elementów [38]. | N4, WCAG 1.3.4 i 1.4.10 [3]; od API 36 system pomija blokadę orientacji na ekranach ≥ 600 dp [40] |
 
 ## RODO
 
@@ -157,3 +158,9 @@ Rozporządzenie RODO [14] zalicza dane o lokalizacji do danych osobowych (art. 4
 32. [System Usability Scale — średni wynik 68 (MeasuringU)](https://measuringu.com/sus/)
 33. [Geoportal krajowy](https://www.geoportal.gov.pl/)
 34. [Dział Dostępności PWr — deklaracje dostępności](https://dostepnosc.pwr.edu.pl/)
+35. [Android: klasy rozmiaru okna](https://developer.android.com/develop/ui/compose/layouts/adaptive/use-window-size-classes)
+36. [Android: podstawowe wytyczne jakości aplikacji — długość wiersza](https://developer.android.com/docs/quality-guidelines/core-app-quality)
+37. [Android: wytyczne jakości aplikacji adaptacyjnych, poziom 3](https://developer.android.com/docs/quality-guidelines/adaptive-app-quality/tier-3)
+38. [Android: wytyczne jakości aplikacji adaptacyjnych, poziom 2](https://developer.android.com/docs/quality-guidelines/adaptive-app-quality/tier-2)
+39. [Android: wytyczne jakości aplikacji adaptacyjnych — urządzenia testowe](https://developer.android.com/docs/quality-guidelines/adaptive-app-quality)
+40. [Android 16: orientacja i proporcje ignorowane na dużych ekranach](https://developer.android.com/about/versions/16/behavior-changes-16)
