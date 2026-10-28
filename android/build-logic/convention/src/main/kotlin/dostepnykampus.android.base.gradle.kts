@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
     id("dostepnykampus.detekt")
+    id("dostepnykampus.kover")
 }
 
 extensions.configure<CommonExtension> {
