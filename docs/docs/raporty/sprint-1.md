@@ -21,7 +21,7 @@ Raport podaje skrót i odsyła do stron dokumentacji projektu. Odwołuje się do
 | Struktura projektu | układ repozytoriów i modułów | dokumentacja z automatyczną kontrolą jakości w katalogu `docs/` repozytorium projektu; kod zaplanowany, jeszcze nie istnieje | częściowo |
 | Git | sposób pracy z Git | zasady ustalone; w historii dokumentacji 358 commitów i 31 scalonych gałęzi zadań | zrobione dla dokumentacji, dla kodu plan |
 
-Plan sprintów z raportu [Tydzień 2](tydzien-2.md) przypisał Sprintowi 1 także zadania techniczne, których nie zrobiliśmy. To szkielet repozytorium kodu, pierwsza wersja kontraktu API, kontrola PR w CI, szkielety serwera i aplikacji oraz eksport konturów budynków z OpenStreetMap. Przechodzą do Sprintu 2 (sekcja 7). Nie było też zadań próbnych, więc architektura z raportu „Tydzień 2” zostaje wstępna.
+Plan sprintów z raportu [Tydzień 2](tydzien-2.md) przypisał Sprintowi 1 także zadania techniczne, których nie zrobiliśmy. To szkielet katalogów kodu w repozytorium, pierwsza wersja kontraktu API, kontrola PR w CI, szkielety serwera i aplikacji oraz eksport konturów budynków z OpenStreetMap. Przechodzą do Sprintu 2 (sekcja 7). Nie było też zadań próbnych, więc architektura z raportu „Tydzień 2” zostaje wstępna.
 
 ## 2. Makiety
 
@@ -108,7 +108,7 @@ Dokumentacja jest w katalogu `docs/` publicznego repozytorium projektu `github.c
 | `docs/scripts` | skrypty renderu i kontroli jakości |
 | `docs/styles` | reguły Vale zespołu |
 
-Dokumentacja ma 26 stron Markdown, 78 diagramów PlantUML i 2 diagramy BPMN. Wśród diagramów PlantUML jest 70 makiet i katalog fragmentów wspólnych. Diagramy powstają z plików tekstowych. Obrazy diagramów i makiet są w repozytorium, a kontrola sprawdza, czy zgadzają się ze źródłami; zbudowana strona nie trafia do Git.
+Dokumentacja ma 27 stron Markdown, 78 diagramów PlantUML i 2 diagramy BPMN. Wśród diagramów PlantUML jest 70 makiet i katalog fragmentów wspólnych. Diagramy powstają z plików tekstowych. Obrazy diagramów i makiet są w repozytorium, a kontrola sprawdza, czy zgadzają się ze źródłami; zbudowana strona nie trafia do Git.
 
 | Narzędzie | Co sprawdza albo robi |
 | --- | --- |
@@ -180,7 +180,7 @@ Liczby dotyczą `main` z 28.10.2026, godz. 9:15, po scaleniu poprawek z zatwierd
 
 | Zmiana albo problem | Skutek | Odwołanie |
 | --- | --- | --- |
-| Sprint 1 bez zadań technicznych z planu „Tydzień 2” | repozytorium kodu, CI, szkielety i eksport OSM przechodzą do Sprintu 2 | R-1, sekcja 1 |
+| Sprint 1 bez zadań technicznych z planu „Tydzień 2” | szkielet katalogów kodu, CI, szkielety i eksport OSM przechodzą do Sprintu 2 | R-1, sekcja 1 |
 | Raporty „Tydzień 2” i „Sprint 1” po terminie | wystąpił sygnał ostrzegawczy R-1; reakcja: najpierw funkcje „Musi być” | R-1 |
 | Zmiana stosu z „Flutter + FastAPI” na „Kotlin + Spring Boot” | opisana w raporcie „Tydzień 2”; powód: pełny dostęp do GNSS przy uśrednianiu pozycji | [Tydzień 2](tydzien-2.md), sekcja 3 |
 | Pięć nowych ekranów: L1, L2, C5, C6, C7 | domykają US14, US15, US17.2 i US8.4 | [wymagania do ekranów](../ux/wymagania-ekranow.md) |
