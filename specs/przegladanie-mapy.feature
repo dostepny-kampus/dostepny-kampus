@@ -73,6 +73,16 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy pierwsze jest wejście główne z napisem „Zalecane”
     Ale wejście boczne nie ma napisu „Zalecane”
 
+  @BR-25
+  Scenariusz: Przy kilku wejściach dostępnych bez głównego zalecane jest pierwsze z danych
+    # Dane testowe, a nie stan faktyczny budynku C-13.
+    Zakładając, że w danych testowych wejście boczne i wejście od dziedzińca C-13 mają oznaczenie „dostępne”
+    Oraz wejście główne C-13 ma oznaczenie „niedostępne”
+    Oraz wejście boczne jest pierwsze w kolejności z danych
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-13
+    Wtedy pierwsze jest wejście boczne z napisem „Zalecane”
+    Ale wejście od dziedzińca nie ma napisu „Zalecane”
+
   @US3.1 @BR-25
   Scenariusz: Budynek bez wejścia dostępnego nie ma wejścia zalecanego
     Zakładając, że Gość niezalogowany otworzył kartę budynku B-4
