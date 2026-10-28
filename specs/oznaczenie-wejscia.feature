@@ -29,7 +29,7 @@ Funkcja: Oznaczenie wejścia
       Zakładając, że dane PWr opisują <wejście> A-1 jako <opis>
       Jeżeli 3.11.2026 zakończy się import budynków
       Wtedy na karcie budynku A-1 <wejście> ma napis „<oznaczenie>” i ikonę
-      Oraz przy tym wejściu widnieje data oznaczenia 3.11.2026 i źródło „import”
+      Oraz data oznaczenia tego wejścia to 3.11.2026, a źródło to „import”
 
       Przykłady:
         | wejście        | opis                  | oznaczenie  |
@@ -41,8 +41,25 @@ Funkcja: Oznaczenie wejścia
       Jeżeli 3.11.2026 zakończy się import budynków
       Wtedy na karcie budynku B-4 wejście boczne ma napis „brak danych” i ikonę
       Ale wejście boczne nie ma napisu „niedostępne”
-      Oraz przy tym wejściu widnieje data oznaczenia 3.11.2026 i źródło „import”
+      Oraz data oznaczenia tego wejścia to 3.11.2026, a źródło to „import”
       Oraz oznaczenia „dostępne”, „niedostępne” i „brak danych” da się odróżnić w odcieniach szarości
+
+  Reguła: Wspólną datę i źródło ekran podaje raz, a różne przy każdym wejściu
+
+    @US17.3
+    Scenariusz: Wspólna data i źródło stoją raz nad listą wejść
+      Zakładając, że wszystkie wejścia A-1 mają oznaczenie z datą 3.11.2026 i źródłem „import”
+      Jeżeli Gość niezalogowany otworzy kartę budynku A-1
+      Wtedy nad listą wejść widnieje jeden wiersz z datą 3.11.2026 i źródłem „import”
+      Ale przy wejściach nie ma osobnej daty ani źródła
+
+    @US17.3
+    Scenariusz: Różne źródła stoją przy każdym wejściu
+      Zakładając, że wejście główne A-1 ma oznaczenie z datą 12.11.2026 i źródłem „obchód”
+      Oraz pozostałe wejścia A-1 mają oznaczenie z datą 3.11.2026 i źródłem „import”
+      Jeżeli Gość niezalogowany otworzy kartę budynku A-1
+      Wtedy przy każdym wejściu widnieje jego data i źródło
+      Ale nad listą wejść nie ma wspólnego wiersza z datą
 
   Reguła: Zmianę oznaczenia składa Zbierający, a sprawdza Weryfikator, który jej nie złożył
 
