@@ -15,7 +15,7 @@ $ramka()
 <b>Piętro: <i>[2]</i></b>
 <b>$obejrzane()</b>
 Znacznik innej osoby
-$tekst("Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.", "b")
+$tekst("Cofnąć znacznik piętra <i>[2]</i>? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.", "b")
 $przycisk_glowny("Cofnij znacznik")
 $przycisk("Zostaw znacznik")
 }

@@ -12,7 +12,7 @@ Fragmenty spoza `_wspolne.iuml` stoją w pliku `_zespol-w-terenie.iuml`: przycis
 
 ![Makieta C1 w trakcie pomiaru: pozostały czas, dokładność, liczba satelitów według systemów, mapa nieba ze znakami koła, kwadratu i trójkąta z podpisami oraz przycisk Powtórz pomiar](../../_generated/m-c1-pomiar-pozycji.svg)
 
-Czynność główna: brak w trakcie pomiaru; „Dalej” pojawia się po końcu pomiaru, razem z podpowiedzią budynku.
+Czynność główna: brak w trakcie pomiaru; „Dalej” pojawia się po końcu pomiaru, razem z podpowiedzią budynku. Przerwanie i ponowny start to jedno dotknięcie „Powtórz pomiar” (UC8 2a, scenariusz przerwania `@US6.1`), a wyjście bez zapisu — „Wstecz”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -20,7 +20,7 @@ Czynność główna: brak w trakcie pomiaru; „Dalej” pojawia się po końcu 
 | „Dokładność: 0,8 m (szacunek)” | US6.1, NFR-2 |
 | „Satelity: GPS 7, Galileo 5, GLONASS…” tekstem, osobno dla każdego systemu | US6.1, NFR-2, NFR-18 |
 | „Mapa nieba”: GPS to koło, Galileo kwadrat, GLONASS trójkąt, każdy znak z podpisem systemu | US6.5, NFR-21 |
-| „Powtórz pomiar”: pomiar od nowa, bez limitu | UC8 2a, NFR-23 |
+| „Powtórz pomiar”: przerywa uśrednianie i zaczyna pełne 30 s od nowa, bez limitu | US6.1, UC8 2a, NFR-23 |
 
 ### Po pomiarze: podpowiedź budynku
 
@@ -89,7 +89,7 @@ Czynność główna: przycisk w komunikacie. Rezygnacja przez „Wstecz” do L2
 | Zgoda tylko przybliżona | „Telefon podaje tylko przybliżone miejsce, a to za mało, by wskazać barierę. Pozwól na dokładną lokalizację.” „Pozwól na dokładną lokalizację” | NFR-27 |
 | Lokalizacja wyłączona | „Lokalizacja w telefonie jest wyłączona. Włącz ją, aby zapisać miejsce bariery.” „Otwórz ustawienia” | NFR-27 |
 
-Komunikaty powtarzają V4 z końcówką „aby zapisać miejsce bariery”, jak każe katalog komunikatów.
+Komunikaty powtarzają V4 z końcówką „aby zapisać miejsce bariery” i stoją w katalogu komunikatów.
 
 ## C2 Formularz zgłoszenia
 
@@ -123,6 +123,8 @@ Czynność główna: „Zapisz”. Zapis nie wykona się, dopóki brakuje wymaga
 
 Ten sam wzór dotyczy piętra, uciążliwości, zdjęcia i opisu przy typie „inna bariera” (BR-7, US7.3).
 
+Gdy piętro wybrano już na C1 przy korekcie na planie, C2 ma je zaznaczone. Zbierający nie wybiera piętra drugi raz (US6.3, US7.2).
+
 ### Edycja w budynku podstawowym
 
 ![Makieta C2 w edycji: budynek jako zastępnik, piętro jako liczba z polem Półpiętro, typ inna bariera, uciążliwość Tylko z pomocą, zrobione zdjęcie i wpisany opis](../../_generated/m-c2-formularz-zgloszenia-edycja.svg)
@@ -146,7 +148,7 @@ Czynność główna: „Zapisz”.
 
 ### Lista zgłoszeń
 
-![Makieta C3: przyciski Czeka na wysłanie 2 i Zmierz i zgłoś barierę, potem sześć zgłoszeń, każde ze statusem tekstem i ikoną na początku: W telefonie, Odrzucone z powodem i Popraw zgłoszenie, W weryfikacji ze znakiem Zmiana czeka na wysłanie, Wysłane z przyciskiem Dwie wersje, Przyjęte Bariery już nie ma, Archiwalne zmiana oznaczenia wejścia](../../_generated/m-c3-moje-zgloszenia.svg)
+![Makieta C3: przyciski Czeka na wysłanie 2 i Zmierz i zgłoś barierę, potem sześć zgłoszeń, każde ze statusem tekstem i ikoną na początku: W telefonie Bariery już nie ma, Odrzucone z powodem i Popraw zgłoszenie, W weryfikacji ze znakiem Zmiana czeka na wysłanie, Wysłane z przyciskiem Dwie wersje, Przyjęte schody przy wejściu A-1, Archiwalne zmiana oznaczenia wejścia](../../_generated/m-c3-moje-zgloszenia.svg)
 
 Czynność główna: otwarcie zgłoszenia do poprawy — dotknięcie całej pozycji albo „Popraw zgłoszenie” przy odrzuconym.
 
@@ -160,18 +162,19 @@ Czynność główna: otwarcie zgłoszenia do poprawy — dotknięcie całej pozy
 | „Popraw zgłoszenie” przy odrzuconym; prowadzi do C2 | US8.3, BR-3 |
 | „Zmiana czeka na wysłanie” przy niewysłanej edycji | BR-9 |
 | „Dwie wersje: wybierz jedną”, prowadzi do C4 | US9.3 |
-| Rodzaj „Bariery już nie ma” | US8.4, PW-12 |
+| Rodzaj „Bariery już nie ma”, tu „W telefonie”; po przyjęciu byłby „Archiwalne”, nigdy „Przyjęte” | US8.4, BR-19, PW-12 |
 | Rodzaj „Zmiana oznaczenia wejścia”: wejście główne A-1 „Niedostępne”, przyjęta zmiana staje się archiwalna | US17.2, BR-24 |
 
 ### Odrzucone jako „nieaktualne”
 
-![Makieta C3 z dwoma odrzuconymi zgłoszeniami: próg z przyciskiem Wyślij do aktualnego zgłoszenia oraz niesprawna winda z komunikatem, że bariery nie ma już na mapie, i przyciskiem Zmierz i zgłoś barierę](../../_generated/m-c3-moje-zgloszenia-nieaktualne.svg)
+![Makieta C3 z dwoma odrzuconymi zgłoszeniami: próg ze zdaniem o zmianie przez inną osobę i przyciskiem Wyślij ponownie oraz niesprawna winda z komunikatem, że bariery nie ma już na mapie, i przyciskiem Zmierz i zgłoś barierę](../../_generated/m-c3-moje-zgloszenia-nieaktualne.svg)
 
-Czynność główna: „Wyślij do aktualnego zgłoszenia”.
+Czynność główna: „Wyślij ponownie”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Wyślij do aktualnego zgłoszenia”; prowadzi do C2, a przy zmianie oznaczenia wejścia do C6 | BR-23, BR-24, PW-14 |
+| „Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.”; przy zmianie oznaczenia wejścia: „Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.” | BR-23, BR-24, PW-14 |
+| „Wyślij ponownie”; prowadzi do C2, a przy zmianie oznaczenia wejścia do C6 | BR-23, BR-24, PW-14 |
 | „Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.” i „Zmierz i zgłoś barierę” | BR-23, PW-12 |
 
 ### Pusta lista
@@ -263,11 +266,11 @@ Czynność główna: „Cofnij znacznik” przy każdym znaczniku, z potwierdzen
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Cofnij znacznik” przy każdym znaczniku | US11.3, BR-20 |
-| „Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.” | BR-20, PW-12 |
+| „Cofnąć znacznik piętra [2]? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.” | BR-20, PW-12 |
 | „Cofnij znacznik” i „Zostaw znacznik” | BR-20, PW-12 |
 | Brak „Oznacz jako obejrzane” | BR-20 |
 
-Pytanie stoi przy wierszu, którego dotyczy, więc osoba widzi piętro i skutek naraz. Błąd zapisu ma nad listą komunikat z katalogu i „Spróbuj ponownie” (NFR-7).
+Pytanie stoi przy wierszu, którego dotyczy, więc osoba widzi piętro i skutek naraz. Błąd zapisu ma nad listą komunikat „Nie udało się zapisać znacznika w telefonie. Spróbuj ponownie, a jeśli to nie pomoże, zwolnij miejsce.” i „Spróbuj ponownie” (NFR-7).
 
 ## C6 Zmień oznaczenie wejścia
 

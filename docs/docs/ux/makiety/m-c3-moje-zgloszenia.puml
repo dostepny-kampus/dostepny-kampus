@@ -2,6 +2,7 @@
 ' C3 Moje zgłoszenia, stan zwykły: własne zgłoszenia, najnowsze na górze.
 ' Status jako pierwsza informacja, słowem i ikoną (US8.1, NFR-21); TalkBack czyta go przed typem.
 ' Dotknięcie pozycji otwiera C2, C6 albo C7; przycisk „Popraw zgłoszenie” to ta sama czynność.
+' „Bariery już nie ma” nigdy nie jest „Przyjęte”: po przyjęciu oba zgłoszenia są archiwalne (BR-19).
 !include _wspolne.iuml
 !include _zespol-w-terenie.iuml
 $ekran_poczatek()
@@ -11,8 +12,9 @@ $przycisk("Zmierz i zgłoś barierę")
 ..
 $ramka()
 <b>$w_telefonie()</b>
-schody przy wejściu
-A-1, piętro <i>[1]</i>, <i>[data]</i>
+Bariery już nie ma
+niesprawna winda
+<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
 }
 $ramka()
 <b>$odrzucone()</b>
@@ -24,21 +26,20 @@ $przycisk_glowny("Popraw zgłoszenie")
 }
 $ramka()
 <b>$w_weryfikacji()</b>
-próg
+ciężkie drzwi
 <i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
 Zmiana czeka na wysłanie
 }
 $ramka()
 <b>$wyslane()</b>
-niesprawna winda
+próg
 <i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
 $przycisk("Dwie wersje: wybierz jedną")
 }
 $ramka()
 <b>$przyjete()</b>
-Bariery już nie ma
-niesprawna winda
-<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+schody przy wejściu
+A-1, piętro <i>[1]</i>, <i>[data]</i>
 }
 $ramka()
 <b>$archiwalne()</b>
