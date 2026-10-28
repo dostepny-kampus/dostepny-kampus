@@ -111,4 +111,4 @@ jobs:
           allow-licenses: >-
             MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, EPL-2.0, MPL-2.0, ISC,
             0BSD, PSF-2.0, Python-2.0
-          allow-dependencies-licenses: pkg:pypi/language-tool-python, pkg:npm/bpmn-js
+          allow-dependencies-licenses: pkg:pypi/language-tool-python, pkg:npm/bpmn-js, pkg:maven/org.junit.jupiter/junit-jupiter-api
