@@ -407,15 +407,15 @@ $osm()
 }
 !endprocedure
 
-' Przyciski mapy zamiast gestów, na mapie: „Powiększ” i „Pomniejsz” oraz strzałki
-' przesuwania w krzyżu, każda z nazwą dla TalkBack „Przesuń mapę w górę” itd.
+' Przyciski mapy zamiast gestów, na mapie: „Powiększ” i „Pomniejsz” oraz groty (caret)
+' przesuwania w krzyżu, każdy z nazwą dla TalkBack „Przesuń mapę w górę” itd.
 ' Ten sam układ na V1 i R1 (NFR-15, WCAG 2.5.1, 2.5.7; NFR-17; PW-8, PW-11).
 !procedure $przyciski_mapy()
 $przyciski_obok("Powiększ", "Pomniejsz")
 {
-. | [<&arrow-top>] | .
-[<&arrow-left>] | . | [<&arrow-right>]
-. | [<&arrow-bottom>] | .
+. | [<&caret-top>] | .
+[<&caret-left>] | . | [<&caret-right>]
+. | [<&caret-bottom>] | .
 }
 !endprocedure
 

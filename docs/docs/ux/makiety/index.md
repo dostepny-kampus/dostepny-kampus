@@ -188,7 +188,7 @@ Makiety V2 pokazują arkusz rozwinięty na cały ekran. W aplikacji V2 wysuwa si
 | Wejście: oznaczenie tekstem i ikoną na początku, potem nazwa wejścia; „Wejście główne” niedostępne, „Wejście bramą od ul. Norwida” dostępne [1]; nazwa odróżnia je od drugiego wejścia przy ul. Norwida, które według deklaracji nie jest dostosowane | US2.1, US17.1, NFR-21 |
 | „Brak danych” z ikoną `minus`, inną niż `x` przy „Niedostępne” | US17.1 |
 | Wspólna data i źródło jeden raz nad grupą „Wejścia”: „Z map i opisów, stan z [data]” | US17.3, BR-24, PW-3 |
-| „Zgłoś barierę” przy każdym wejściu: otwiera V4 z wybranym wejściem; TalkBack czyta „Zgłoś barierę przy tym wejściu” z nazwą wejścia | US4, NFR-18, decyzja 48 |
+| „Zgłoś barierę przy wejściu” przy każdym wejściu: otwiera V4 z wybranym wejściem; TalkBack dodaje nazwę wejścia | US4, NFR-18, decyzja 48 |
 | „Pokaż wyjścia ewakuacyjne (2)” pod wejściami, liczba z danych | US2.1, decyzja 44, decyzja 48 |
 | Grupy „Winda i toaleta” i „Piętra”: zastępniki danych PWr, przy piętrze „Pokaż na planie” | US16.1, decyzja 44 |
 | „Źródło: Politechnika Wrocławska” na dole karty | NFR-40 |
