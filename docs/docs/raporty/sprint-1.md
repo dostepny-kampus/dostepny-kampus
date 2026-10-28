@@ -19,7 +19,7 @@ Raport podaje skrót i odsyła do stron dokumentacji projektu. Odwołuje się do
 | --- | --- | --- | --- |
 | Makiety | makiety ekranów aplikacji | 70 makiet low-fi dla 19 ekranów, mapa nawigacji, słownik napisów | zrobione |
 | Struktura projektu | układ repozytoriów i modułów | repozytorium dokumentacji z automatyczną kontrolą jakości; repozytorium kodu zaplanowane, jeszcze nie istnieje | częściowo |
-| Git | sposób pracy z Git | zasady ustalone; w repozytorium dokumentacji 344 commity i 30 scalonych gałęzi zadań | zrobione dla dokumentacji, dla kodu plan |
+| Git | sposób pracy z Git | zasady ustalone; w repozytorium dokumentacji 358 commitów i 31 scalonych gałęzi zadań | zrobione dla dokumentacji, dla kodu plan |
 
 Plan sprintów z raportu [Tydzień 2](tydzien-2.md) przypisał Sprintowi 1 także zadania techniczne, których nie zrobiliśmy. To szkielet repozytorium kodu, kontrakt API v0, kontrola PR w CI, szkielety serwera i aplikacji oraz eksport konturów budynków z OpenStreetMap. Przechodzą do Sprintu 2 (sekcja 7). Nie było też zadań próbnych, więc architektura z raportu „Tydzień 2” zostaje wstępna.
 
@@ -164,12 +164,14 @@ Repozytorium dokumentacji jest na razie lokalne, bez kopii zdalnej. Ochrona gał
 
 ### Stan repozytorium dokumentacji na 28.10.2026
 
+Liczby dotyczą `main` z 28.10.2026, godz. 9:15, po scaleniu poprawek z zatwierdzenia makiet.
+
 | Miara | Wartość |
 | --- | --- |
-| Commity w `main` | 344: 299 zmian i 45 scaleń |
-| Okres | 27.10–28.10.2026: 227 zmian pierwszego dnia, 72 drugiego |
-| Scalone gałęzie zadań | 30, z tego 27 z przeglądem w osobnej gałęzi |
-| Commity według obszaru (bez scaleń) | UX 116, biznes 76, wymagania 36, scenariusze 36, narzędzia 17, raporty 7, pozostałe 11 |
+| Commity w `main` | 358: 312 zmian i 46 scaleń |
+| Okres | 27.10–28.10.2026: 227 zmian pierwszego dnia, 85 drugiego |
+| Scalone gałęzie zadań | 31, z tego 28 z przeglądem w osobnej gałęzi |
+| Commity według obszaru (bez scaleń) | UX 125, biznes 76, wymagania 37, scenariusze 36, narzędzia 17, raporty 9, pozostałe 12 |
 | Autorzy commitów | 1 osoba |
 | Gałęzie w toku | tokeny wizualne i ten raport |
 
