@@ -16,6 +16,12 @@ info:
     | `symbol` | symbol budynku |
     | `outline` | kontur budynku |
     | `detailLevel`: `DETAILED`, `BASIC` | poziom szczegółowości: budynek szczegółowy, budynek podstawowy |
+    | `Entrance`, `main` | wejście, wejście główne |
+    | `marking`: `ACCESSIBLE`, `INACCESSIBLE`, `NO_DATA` | oznaczenie wejścia: dostępne, niedostępne, brak danych |
+    | `markingSource`: `IMPORT`, `WALKTHROUGH` | źródło oznaczenia: import, obchód |
+    | `Floor`, `label` | piętro, etykieta piętra z danych PWr |
+    | `Room` | pomieszczenie z planu piętra |
+    | `source` | źródło danych w podpisie (NFR-40) |
   license: {name: MIT, identifier: MIT}
 servers: [{url: /, description: "Serwer, który udostępnia ten dokument; adres zależy od środowiska."}]
 security: [{keycloak: []}]
@@ -38,6 +44,112 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/BuildingList'}
         '4XX': {$ref: '#/components/responses/ClientError'}
+  /buildings/{symbol}:
+    get:
+      operationId: getBuilding
+      summary: Karta budynku
+      description: Budynek z wejściami, oznaczeniem każdego wejścia, jego datą i źródłem (US2, US2.1, US17.1, US17.3).
+      tags: [building]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/BuildingSymbol'
+      responses:
+        '200':
+          description: Dane karty budynku.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BuildingDetails'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /buildings/locate:
+    get:
+      operationId: locateBuilding
+      summary: Podpowiedź budynku dla punktu
+      description: >-
+        Budynek, w którego konturze leży punkt, albo najbliższy budynek do potwierdzenia przez Zbierającego (US6.2, BR-G2).
+        Daleko od budynków PWr odpowiedź nie ma budynku, a punkt jest „poza budynkiem” (BR-G4).
+      tags: [building]
+      security: []
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          description: Szerokość geograficzna punktu w stopniach WGS84.
+          schema: {type: number, format: double, minimum: -90, maximum: 90, description: "Szerokość geograficzna."}
+        - name: lon
+          in: query
+          required: true
+          description: Długość geograficzna punktu w stopniach WGS84.
+          schema: {type: number, format: double, minimum: -180, maximum: 180, description: "Długość geograficzna."}
+      responses:
+        '200':
+          description: Wynik podpowiedzi budynku.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LocateResult'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+  /buildings/{symbol}/floors:
+    get:
+      operationId: listFloors
+      summary: Piętra budynku
+      description: >-
+        Piętra budynku szczegółowego z etykietami z danych PWr, od najniższego, do przełącznika pięter (US16.1, decyzja projektu nr 44).
+        Budynek podstawowy ma pustą listę, bo nie ma przełącznika pięter (US16.2, BR-G1).
+      tags: [building]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/BuildingSymbol'
+      responses:
+        '200':
+          description: Piętra budynku i źródło danych.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FloorList'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /buildings/{symbol}/floors/{floorId}/rooms:
+    get:
+      operationId: listFloorRooms
+      summary: Pomieszczenia piętra
+      description: >-
+        Pomieszczenia z planu piętra budynku szczegółowego: numer, funkcja i kształt, w tym windy, schody i toalety
+        (US16.1, NFR-40, decyzja projektu nr 44).
+      tags: [building]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/BuildingSymbol'
+        - name: floorId
+          in: path
+          required: true
+          description: Identyfikator piętra z listy pięter budynku.
+          schema: {type: string, description: "Identyfikator piętra."}
+      responses:
+        '200':
+          description: Pomieszczenia piętra i źródło danych.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RoomList'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /rooms:
+    get:
+      operationId: searchRooms
+      summary: Wyszukiwanie sali
+      description: >-
+        Sala po numerze, opcjonalnie z symbolem budynku. Wynik podaje budynek, piętro i pomieszczenie do wyróżnienia
+        na planie piętra (US18, decyzja projektu nr 44).
+      tags: [building]
+      security: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Numer sali, opcjonalnie poprzedzony symbolem budynku, np. `A-1 135`.
+          schema: {type: string, minLength: 1, maxLength: 50, description: "Tekst wyszukiwania."}
+      responses:
+        '200':
+          description: Pasujące sale; pusta lista, gdy nic nie pasuje.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RoomSearchResults'}
+        '400': {$ref: '#/components/responses/BadRequest'}
 
 components:
   securitySchemes:
@@ -48,10 +160,27 @@ components:
         `VISITOR` (Odwiedzający), `COLLECTOR` (Zbierający), `VERIFIER` (Weryfikator), `COORDINATOR` (Koordynator).
         Pusta lista oznacza dowolną zalogowaną osobę.
       openIdConnectUrl: http://localhost:8180/realms/dostepny-kampus/.well-known/openid-configuration
+  parameters:
+    BuildingSymbol:
+      name: symbol
+      in: path
+      required: true
+      description: Symbol budynku, np. `C-13`.
+      schema: {type: string, description: "Symbol budynku.", examples: [C-13]}
 
   responses:
     ClientError:
       description: Błąd żądania po stronie klienta.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    NotFound:
+      description: Nie ma zasobu o podanym identyfikatorze.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    BadRequest:
+      description: Niepoprawne parametry albo treść żądania.
       content:
         application/problem+json:
           schema: {$ref: '#/components/schemas/Problem'}
@@ -134,3 +263,111 @@ components:
           type: array
           description: Budynki.
           items: {$ref: '#/components/schemas/Building'}
+
+    GeoPoint:
+      type: object
+      description: Punkt GeoJSON.
+      required: [type, coordinates]
+      properties:
+        type: {const: Point, description: "Typ geometrii."}
+        coordinates: {$ref: '#/components/schemas/Position'}
+    BuildingDetails:
+      description: Dane karty budynku.
+      allOf:
+        - $ref: '#/components/schemas/Building'
+        - type: object
+          description: Wejścia budynku.
+          required: [entrances]
+          properties:
+            entrances:
+              type: array
+              description: Wejścia budynku; wejście główne jest pierwsze.
+              items: {$ref: '#/components/schemas/Entrance'}
+
+    EntranceMarking:
+      type: string
+      description: Oznaczenie wejścia (BR-24).
+      enum: [ACCESSIBLE, INACCESSIBLE, NO_DATA]
+    Entrance:
+      type: object
+      description: Wejście do budynku z oznaczeniem wejścia.
+      required: [id, buildingSymbol, name, main, location, marking, markingDate, markingSource]
+      properties:
+        id: {type: string, description: "Identyfikator wejścia."}
+        buildingSymbol: {type: string, description: "Budynek, do którego prowadzi wejście."}
+        name: {type: string, description: "Opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”."}
+        main: {type: boolean, description: "Czy to wejście główne."}
+        location: {$ref: '#/components/schemas/GeoPoint', description: "Położenie wejścia."}
+        marking: {$ref: '#/components/schemas/EntranceMarking'}
+        markingDate: {type: string, format: date, description: "Dzień importu albo dzień przyjęcia zmiany oznaczenia wejścia (US17.3)."}
+        markingSource:
+          type: string
+          description: Źródło oznaczenia. `IMPORT` — dane PWr albo OpenStreetMap, `WALKTHROUGH` — obchód (US17.3, BR-24).
+          enum: [IMPORT, WALKTHROUGH]
+
+    LocateResult:
+      type: object
+      description: Podpowiedź budynku. Brak `buildingSymbol` oznacza punkt poza budynkiem bez propozycji budynku (BR-G4).
+      required: [insideOutline]
+      properties:
+        buildingSymbol: {type: string, description: "Budynek, w którego konturze leży punkt, albo najbliższy budynek."}
+        insideOutline: {type: boolean, description: "Czy punkt leży w konturze budynku `buildingSymbol`."}
+
+    PwrSource:
+      type: string
+      description: Źródło danych planów pięter do podpisu na ekranie (NFR-40, decyzja projektu nr 44).
+      const: Politechnika Wrocławska
+    Floor:
+      type: object
+      description: Piętro budynku szczegółowego.
+      required: [id, label, order]
+      properties:
+        id: {type: string, description: "Identyfikator piętra."}
+        label: {type: string, description: "Etykieta piętra z danych PWr, pokazywana w przełączniku pięter."}
+        order: {type: integer, description: "Kolejność piętra w budynku; większa liczba to wyższe piętro."}
+    FloorList:
+      type: object
+      description: Piętra budynku ze źródłem danych.
+      required: [source, floors]
+      properties:
+        source: {$ref: '#/components/schemas/PwrSource'}
+        floors:
+          type: array
+          description: Piętra rosnąco według `order`.
+          items: {$ref: '#/components/schemas/Floor'}
+    Room:
+      type: object
+      description: Pomieszczenie z planu piętra.
+      required: [id, function, geometry]
+      properties:
+        id: {type: string, description: "Identyfikator pomieszczenia."}
+        number: {type: string, description: "Numer pomieszczenia z danych PWr; brak, gdy dane go nie podają."}
+        function: {type: string, description: "Funkcja pomieszczenia z danych PWr, np. „Winda”, „Klatka schodowa”, „Toaleta dla OzN”."}
+        geometry: {$ref: '#/components/schemas/GeoArea', description: "Kształt pomieszczenia na planie piętra."}
+    RoomList:
+      type: object
+      description: Pomieszczenia piętra ze źródłem danych.
+      required: [source, rooms]
+      properties:
+        source: {$ref: '#/components/schemas/PwrSource'}
+        rooms:
+          type: array
+          description: Pomieszczenia piętra.
+          items: {$ref: '#/components/schemas/Room'}
+    RoomSearchResults:
+      type: object
+      description: Wynik wyszukiwania sali ze źródłem danych.
+      required: [source, results]
+      properties:
+        source: {$ref: '#/components/schemas/PwrSource'}
+        results:
+          type: array
+          description: Pasujące sale; najpierw dokładne dopasowania numeru.
+          items:
+            type: object
+            description: Znaleziona sala z budynkiem i piętrem.
+            required: [buildingSymbol, floor, room]
+            properties:
+              buildingSymbol: {type: string, description: "Budynek z salą."}
+              floor: {$ref: '#/components/schemas/Floor', description: "Piętro z salą."}
+              room: {$ref: '#/components/schemas/Room', description: "Sala do wyróżnienia na planie piętra."}
