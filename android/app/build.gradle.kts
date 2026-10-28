@@ -4,6 +4,11 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":feature:auth"))
+    implementation(project(":feature:map"))
+    implementation(project(":feature:capture"))
+    implementation(project(":feature:review"))
+    implementation(project(":feature:progress"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     constraints {
