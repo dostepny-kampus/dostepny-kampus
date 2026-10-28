@@ -44,7 +44,7 @@ Pięć ekranów doszło względem raportu „Tydzień 2”: L1, L2 (US14), C5 (U
 4. **Słownik użytkownika.** Napisy i komunikaty słowami osoby starszej, bez żargonu ([Słownik użytkownika](../ux/slownik-uzytkownika.md)).
 5. **Makiety.** Trzy grupy ekranów rysowane równolegle w PlantUML Salt [4], ze wspólnych fragmentów: nagłówka, paska dolnego, przycisków i komunikatów.
 6. **Przegląd.** Każdą grupę sprawdziliśmy 10 heurystykami Nielsena [2], kryteriami WCAG 2.1 [3], listą zasad dla osób starszych i pokryciem kryteriów akceptacji. Na końcu był przegląd spójności wszystkich ekranów.
-7. **Zatwierdzenie.** Makiety ogląda i zatwierdza cały zespół. Uwagi wracają do wymagań i makiet.
+7. **Zatwierdzenie.** 28.10.2026 właściciel projektu zatwierdził makiety z pięcioma drobnymi poprawkami. Dotyczą one m.in. komunikatu o błędzie serwera i przełącznika „Plan piętra” i „Mapa” na C1.
 
 ### Zasady
 
@@ -56,7 +56,7 @@ Pięć ekranów doszło względem raportu „Tydzień 2”: L1, L2 (US14), C5 (U
 | Duży tekst | wiersz ma najwyżej 34 znaki, czyli tyle, ile mieści tekst 18 sp na ekranie 360 dp | NFR-20 |
 | Cel dotyku 48 dp | makieta sprawdza obecność i proporcje celu; wysokości Salt nie oddaje, więc sprawdzi ją test dostępności w implementacji | NFR-17 |
 | Bez czynności tylko gestem | mapa ma przyciski „Powiększ”, „W górę” i inne kierunki; mapa ma też widok listy | NFR-15, NFR-19 |
-| Każdy element z kryterium | pod każdą makietą tabela „Element → AC/BR/NFR”; element bez odwołania usuwamy | decyzja 16 |
+| Każdy element z kryterium | pod każdą makietą tabela „Element → AC/BR/NFR”; element bez odwołania usuwamy | — |
 | Prawdziwe dane przykładowe | budynek A-1 z wejściami jak w deklaracji dostępności [5]; nieznane dane jako zastępniki, np. „[data]” | — |
 
 ### Wybrane makiety
@@ -127,14 +127,26 @@ Skrypt `verify.py` uruchamia po kolei 8 kroków: render, skróty, Vale, markdown
 | Element | Ustalenie | Skąd |
 | --- | --- | --- |
 | Repozytorium | jedno publiczne repozytorium na GitHubie: kontrakt API, serwer, aplikacja, dane budynków | [Tydzień 2](tydzien-2.md), sekcja 4 |
-| Scenariusze | katalog `specs` przechodzi do repozytorium kodu na początku implementacji, bo to testy uruchamiane w CI | decyzje 24 i 35 |
+| Scenariusze | katalog `specs` przechodzi do repozytorium kodu na początku implementacji, bo to testy uruchamiane w CI | ustalenie zespołu |
 | Aplikacja | Kotlin, Jetpack Compose, Material 3; Room i WorkManager do pracy bez sieci | Tydzień 2, sekcja 3 |
 | Serwer | Spring Boot 3, Java 21, Maven; granic modułów pilnują Spring Modulith i ArchUnit | Tydzień 2, sekcja 3 |
 | Kontrakt API | OpenAPI powstaje przed kodem; z niego generujemy interfejsy serwera i klienta | Tydzień 2, sekcja 3 |
 | CI | GitHub Actions: osobne przepływy kontraktu, serwera, aplikacji, testów UI i kontroli PR | Tydzień 2, sekcja 4 |
 | Dokumentacja | zostaje w osobnym repozytorium | Tydzień 2, sekcja 4 |
 
-Dokumentacja nie ustala jeszcze podziału serwera i aplikacji na moduły. Ustalimy go razem z modelem danych w Sprincie 2.
+Planowany układ katalogów (ustalenie zespołu, jeszcze nie istnieje):
+
+```text
+dostepny-kampus/
+  api/openapi.yaml    kontrakt API, pisany jako pierwszy
+  specs/*.feature     scenariusze Gherkin po polsku
+  backend/            serwer Spring Boot
+  android/            aplikacja Kotlin + Compose
+  data/buildings/     kontury budynków GeoJSON (ODbL) i skrypt eksportu
+  .github/workflows/  przepływy CI
+```
+
+Jedno repozytorium pozwala zmienić kontrakt, serwer i aplikację w jednym PR. Przepływy CI uruchamiają się według zmienionych katalogów, więc zmiana w aplikacji nie buduje serwera. Podziału serwera i aplikacji na moduły wewnętrzne dokumentacja jeszcze nie ustala. Ustalimy go razem z modelem danych w Sprincie 2.
 
 ## 5. Praca z Git
 
@@ -181,7 +193,7 @@ Według harmonogramu kursu Sprint 2 obejmuje interfejs użytkownika, nawigację 
 
 | Zadanie | Wynik | Odwołanie |
 | --- | --- | --- |
-| Repozytorium kodu | szkielet, katalog `specs` przeniesiony z dokumentacji, reguły gałęzi | Tydzień 2, decyzja 35 |
+| Repozytorium kodu | szkielet według planowanego układu katalogów, katalog `specs` przeniesiony z dokumentacji, reguły gałęzi | Tydzień 2, sekcja 4 |
 | CI i kontrola PR | rozmiar zmiany, format commitów, skan sekretów, lintery | NFR-35, NFR-46 |
 | Kontrakt API v0 | pierwsza wersja kontraktu OpenAPI | Tydzień 2 |
 | Szkielety serwera i aplikacji | projekty z linterami, uruchamiane w CI | Tydzień 2 |
