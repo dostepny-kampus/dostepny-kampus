@@ -101,7 +101,7 @@ Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie pr
 | Warunki wstępne | Odwiedzający jest zalogowany (BR-8). |
 | Wyzwalacz | Odwiedzający widzi barierę, np. niesprawną windę, i wybiera zgłoszenie szybkie. |
 | Warunki końcowe | Zgłoszenie czeka w telefonie ze statusem „lokalne” albo na serwerze ze statusem „wysłane”. Na mapie pojawi się dopiero po przyjęciu (BR-6). |
-| Odwołania | US4.1…US4.4, US14.2, BR-6, BR-8, BR-9, BR-14, BR-G1, BR-G2, BR-G4, NFR-5, NFR-6, NFR-14, NFR-17, NFR-25, NFR-27, NFR-49, T7–T10 |
+| Odwołania | US4.1…US4.5, US14.2, BR-6, BR-8, BR-9, BR-14, BR-G1, BR-G2, BR-G4, NFR-5, NFR-6, NFR-14, NFR-17, NFR-25, NFR-27, NFR-49, T7–T10 |
 
 #### Przepływ główny UC7
 
@@ -109,7 +109,7 @@ Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie pr
 2. Aplikacja otwiera aparat i przypomina, by nie fotografować twarzy ani tablic rejestracyjnych (NFR-25).
 3. Odwiedzający robi zdjęcie bariery. To krok 1 z 3.
 4. Aplikacja sama dołącza bieżącą pozycję telefonu, bez uśredniania, za zgodą na lokalizację przy otwartym ekranie (US4.1, NFR-27).
-5. Odwiedzający wybiera jedną z 6 grup barier dużym przyciskiem. To krok 2 z 3 (US4.3).
+5. Odwiedzający wybiera jedną z 6 grup barier dużym przyciskiem. To krok 2 z 3 (US4.3). W budynku, przy grupie wymagającej piętra, wybiera jeszcze piętro albo „Nie wiem” na tym samym kroku (US4.5, BR-14).
 6. Odwiedzający wysyła zgłoszenie. To krok 3 z 3.
 7. Aplikacja zapisuje zgłoszenie w telefonie ze statusem „lokalne” i wysyła je przez UC10.
 8. Aplikacja potwierdza, że zgłoszenie trafi do weryfikacji (US4.4).
@@ -127,6 +127,7 @@ Aplikacja nie pyta o typ bariery ani uciążliwość; ustala je Weryfikator w UC
 | 4b | Budynek podstawowy | Zgłoszenie działa tak samo, jak w budynku szczegółowym (BR-G1). |
 | 4c | Telefon nie ustala pozycji | Bez pozycji zgłoszenia nie da się wysłać (BR-8). Aplikacja szuka pozycji od wejścia na ekran, bez limitu czasu (NFR-23). Gdy przy wysłaniu jej brak, radzi podejść do okna albo wyjść na zewnątrz. Zdjęcie i grupa zostają do ponownej próby. Wyłączoną lokalizację w telefonie aplikacja wskazuje razem z przyciskiem do ustawień. |
 | 5a | Żadna grupa nie pasuje | Odwiedzający wybiera grupę „inne”. Weryfikator ustali typ, także z innej grupy (BR-14). |
+| 5b | Odwiedzający nie wie, na którym jest piętrze | Wybiera „Nie wiem”. Zgłoszenie zapisuje się bez piętra i da się je wysłać (US4.5). |
 | 7a | Brak sieci | Zgłoszenie czeka w telefonie i wysyła się samo po powrocie sieci (US4.2, BR-9). Potwierdzenie mówi, że wysyłka nastąpi później. |
 | 7b | Aplikacja zamknięta albo telefon zrestartowany przed wysyłką | Zgłoszenie i zdjęcie zostają w telefonie (NFR-5). |
 
