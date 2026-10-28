@@ -20,7 +20,7 @@ $przycisk("Otwórz", "chevron-right")
 }
 $ramka()
 <b>Budynek B-4</b>
-$obejrzany()
+<b>$obejrzany()</b>
 Czeka na sprawdzenie: <i>[liczba]</i>
 Przyjęte: <i>[liczba]</i>
 $przycisk("Otwórz", "chevron-right")

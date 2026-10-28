@@ -208,10 +208,11 @@ $dk_pasek("Konto i praca", 0)
 
 ' ---------- Komunikat stanu ----------
 
-' Ramka: co się stało i co zrobić (najwyżej 2 zdania), pod nią przyciski
+' Ramka na pełną szerokość, także bez przycisków: co się stało i co zrobić
+' (najwyżej 2 zdania), pod nią przyciski
 ' tej samej wielkości, jeden pod drugim. Treść z katalogu komunikatów.
 !procedure $komunikat($tresc, $p1="", $p2="")
-{+
+$ramka()
 $tekst($tresc)
 !if $p1 != ""
 $przycisk($p1)

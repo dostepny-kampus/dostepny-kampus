@@ -21,7 +21,7 @@ $opcja("", $blokada(), "Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś j
 $sekcja("Zdjęcie")
 $zdjecie("zrobione zdjęcie bariery")
 $sekcja("Opis")
-{+
+$ramka()
 $tekst("Na długim korytarzu nie ma gdzie usiąść i odpocząć")
 }
 $tekst("Obowiązkowy przy typie „inna bariera”.")

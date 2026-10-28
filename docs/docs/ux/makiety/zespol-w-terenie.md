@@ -4,7 +4,7 @@ Makiety ekranów C1–C7 dla roli Zbierającego (RO-ZBI), a na C5 także dla Koo
 
 Zbierający pracuje w ruchu i często w słońcu. Dlatego każdy ekran ma jedną czynność główną na pełną szerokość, a wybór wartości to duże ramki zamiast małych pól. Przykłady dotyczą budynku A-1: wejście główne ma schody [1]. Nieznane dane są zastępnikami w nawiasach.
 
-Fragmenty spoza `_wspolne.iuml` stoją w pliku `_zespol-w-terenie.iuml`: przyciski przesuwania punktu, blok zdjęcia, błąd przy polu, opcja wyboru i ramka pozycji na pełną szerokość.
+Blok zdjęcia, błąd przy polu, opcja wyboru, wybór piętra, mapa i ramka pozycji na pełną szerokość pochodzą z `_wspolne.iuml`. W pliku `_zespol-w-terenie.iuml` zostały tylko przyciski przesuwania punktu, w tym samym układzie co przyciski mapy na V1 i R1.
 
 ## C1 Pomiar pozycji
 
@@ -71,7 +71,7 @@ Czynność główna: „Dalej”.
 | --- | --- |
 | „Brak internetu” z ikoną i „Ostatnia synchronizacja: …” | US9.1, NFR-10, NFR-21 |
 | „Poza budynkiem” bez pytania o budynek i bez komunikatu o błędzie | BR-G4, NFR-49 |
-| Mapa bez mapy ulic: kontury i punkt z danych aplikacji, bez podpisu OpenStreetMap | NFR-4, NFR-39 |
+| Mapa bez mapy ulic: kontury i punkt z danych aplikacji; podpis OpenStreetMap zostaje, bo kontury pochodzą też z OpenStreetMap, a NFR-37 wymaga go na każdym ekranie z mapą, jak na V1 bez internetu | NFR-4, NFR-37, NFR-39 |
 | Brak planu piętra; korekta tylko na mapie | US6.4, BR-G4 |
 
 Budynek podstawowy wygląda tak samo, ale zamiast „Poza budynkiem” ma pytanie „Czy to budynek …?” z trzema przyciskami (US6.4, BR-G1). Po potwierdzeniu zamiast wyboru piętra i planu stoi napis „Nie mamy planu pięter tego budynku.”, jak na V2. Zwykły stan bez internetu różni się od makiety po podpowiedzi tylko wskaźnikiem i mapą bez ulic.
@@ -234,7 +234,7 @@ Przy zgłoszeniu przyjętym komunikat ma drugie zdanie z katalogu komunikatów (
 
 ![Makieta C5 dla budynku A-1: pięć pięter; piętro 1 Obejrzane z Twój znacznik i Cofnij znacznik, piętro 2 Obejrzane ze Znacznik innej osoby, piętro 3 Obejrzane z Czeka na wysłanie, piętra 4 i 5 Nieobejrzane z przyciskiem Oznacz jako obejrzane](../../_generated/m-c5-obejrzane-pietra.svg)
 
-Czynność główna: „Oznacz jako obejrzane” przy piętrze bez znacznika.
+Czynność główna: „Oznacz jako obejrzane” przy piętrze bez znacznika. Przycisk powtarza się w wierszach, więc nie jest pogrubiony; wyróżnia go położenie w wierszu, jak „Weź do sprawdzenia” na R1 (NFR-21).
 
 | Element | AC/BR/NFR |
 | --- | --- |

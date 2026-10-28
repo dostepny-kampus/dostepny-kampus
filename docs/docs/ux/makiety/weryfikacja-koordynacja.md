@@ -99,7 +99,7 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Budynek D-2 przypisany przez system z konturu | BR-14 |
 | „Autor: Odwiedzający, Autor [nr]” | BR-5 |
 | „Typ bariery”: lista do wyboru, także z innej grupy niż podpowiedź | US10.3, BR-14 |
-| „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda z ikoną | US10.3, PW-13, NFR-21 |
+| „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda z ikoną w ramce na pełną szerokość, jak na C2 | US10.3, PW-13, NFR-17, NFR-21 |
 | „W promieniu 10 m nie ma podobnych zgłoszeń.” zamiast listy | US10.1 |
 
 ![Makieta R2 dla zmiany bariera usunięta: niesprawna winda w D-2, poprzednie zgłoszenie Archiwalne, zdjęcie z poprzedniego zgłoszenia obok nowego, podobna zmiana przyjęta 0 m dalej, wybrany powód Nieaktualne](../../_generated/m-r2-sprawdzenie-zgloszenia-usunieta.svg)
@@ -113,13 +113,13 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Wybrany powód „Nieaktualne”: ta zmiana dotyczy zgłoszenia, które stało się archiwalne | BR-23 |
 | Po przyjęciu „Przyjmij” winda znika z mapy i karty budynku | US10.6 |
 
-![Makieta R2 dla zmiany oznaczenia wejścia: obecne oznaczenie Dostępne wejścia od ul. Norwida z datą i źródłem, napis Bez zmian od wysłania, wybrane oznaczenie Dostępne, nowe zdjęcie wejścia](../../_generated/m-r2-sprawdzenie-zgloszenia-wejscie.svg)
+![Makieta R2 dla zmiany oznaczenia wejścia: obecne oznaczenie Dostępne wejścia bramą od ul. Norwida z datą i źródłem, napis Bez zmian od wysłania, wybrane oznaczenie Dostępne, nowe zdjęcie wejścia](../../_generated/m-r2-sprawdzenie-zgloszenia-wejscie.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Zmiana oznaczenia wejścia” i budynek A-1 | US17.2 |
 | Obecne oznaczenie tekstem i ikoną, z datą i źródłem jak na V2 | US17.3, BR-24, PW-3 |
-| „Wybrane oznaczenie: Dostępne”: Zbierający potwierdza obecne oznaczenie; wejście od ul. Norwida jest dostępne według deklaracji [1] | US17.2, BR-24 |
+| „Wybrane oznaczenie: Dostępne”: Zbierający potwierdza obecne oznaczenie; wejście bramą od ul. Norwida jest dostępne według deklaracji [1] | US17.2, BR-24 |
 | Nowe zdjęcie wejścia z „Zasłoń twarz lub tablicę” | BR-24, NFR-25 |
 | „Bez zmian od wysłania” z ikoną pod obecnym oznaczeniem; gdy w tym czasie przyjęto inną zmianę tego wejścia: „Zmienione po wysłaniu”, a powód „Nieaktualne” | BR-23, BR-24, NFR-21 |
 | Weryfikator nie zmienia wybranego oznaczenia: gdy zdjęcie mu przeczy, odrzuca z powodem | BR-24, BR-16 |
