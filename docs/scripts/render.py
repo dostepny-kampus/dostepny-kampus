@@ -256,7 +256,7 @@ def render_bpmn(sources: list[Path], out_dir: Path) -> None:
     cmd = [node, str(bpmn_cli()), "--no-footer"]
     for src in sources:
         outputs = ",".join(str(out_dir / f"{src.stem}.{fmt}") for fmt in FORMATS)
-        cmd.append(f"{src};{outputs}")
+        cmd.append(f"{src}{os.pathsep}{outputs}")
     timeout_s = BPMN_BASE_TIMEOUT_S + BPMN_PER_FILE_TIMEOUT_S * len(sources)
     code, out = run_with_timeout(cmd, timeout_s, REPO)
     if code != 0:
