@@ -1,0 +1,27 @@
+@startsalt
+' V1 Mapa kampusu, lista budynków: droga dla czytnika ekranu (NFR-19).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$przelacznik_mapa("lista")
+{+
+<b>Budynek A-1</b>
+<i>[nazwa budynku z danych]</i>
+$blokada(): schody przy wejściu
+$tekst("[pozostałe bariery z danych: typ, uciążliwość]", "i")
+}
+{+
+<b>Budynek C-13</b>
+<i>[nazwa budynku z danych]</i>
+$tekst("[bariery z danych: typ, uciążliwość]", "i")
+}
+{+
+<b>Budynek <i>[symbol]</i></b>
+<i>[nazwa budynku z danych]</i>
+$tekst("[bariery z danych: typ, uciążliwość]", "i")
+}
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

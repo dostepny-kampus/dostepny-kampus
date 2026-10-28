@@ -1,0 +1,14 @@
+@startsalt
+' V4 Zgłoszenie szybkie, brak pozycji w kroku 3: zdjęcie i grupa zostają (UC7 4c).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek("Zgłoś barierę")
+$numer_kroku("Krok 3 z 3")
+$obraz("miniatura zdjęcia")
+Czego dotyczy bariera?
+<b>Schody i windy</b>
+..
+$komunikat("Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.", "Spróbuj ponownie", "Zrezygnuj")
+$ekran_koniec()
+@endsalt

@@ -1,0 +1,18 @@
+@startsalt
+' V1 Mapa kampusu, wyszukiwanie: wpisany zapis „c13” i wynik.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("c13")
+{+
+<b>Budynek C-13</b>
+<i>[nazwa budynku z danych]</i>
+}
+$przelacznik_mapa("mapa")
+$mapa_kampusu("mapa ulic OpenStreetMap, kontury budynków z symbolami, bariery")
+$przyciski_mapy()
+$osm()
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

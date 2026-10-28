@@ -1,0 +1,14 @@
+@startsalt
+' L2 Konto, stan „Klauzula informacyjna” (NFR-30); „Wstecz” wraca do zwykłego stanu L2.
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Konto")
+<b>Informacja o danych osobowych</b>
+{+
+.
+$tekst("[treść klauzuli informacyjnej z podstawą przetwarzania, ta sama co przy rejestracji]", "i")
+.
+}
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

@@ -1,0 +1,10 @@
+@startsalt
+' L2 Konto, potwierdzenie wycofania zgody (NFR-29, NFR-30).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek("Konto")
+$komunikat("Wylogujemy Cię i w ciągu miesiąca usuniemy Twoje dane osobowe. Wysłane zdjęcia barier zostaną, ale bez Twoich danych.", "Wycofaj zgodę", "Zostaw zgodę")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

@@ -118,7 +118,7 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 | Przełącznik pięter: „Piętro:” i etykiety z danych PWr (budynek szczegółowy) | czynność | US16.1 | plan na tym ekranie |
 | „Plan piętra”: windy, schody, toalety, wejścia, zgłoszenia przyjęte | dane | US16.1 | — |
 | Podpis „Źródło: Politechnika Wrocławska” pod planem | dane | NFR-40 | — |
-| Napis „Nie mamy planu pięter tego budynku. Bariery są na liście niżej.” (budynek podstawowy) | dane | US16.2, BR-G1, PW-6 | — |
+| Napis „Nie mamy planu pięter tego budynku.” (budynek podstawowy); drugie zdanie „Bariery są na liście niżej.” tylko przy niepustej liście barier | dane | US16.2, BR-G1, PW-6, UC2 2a | — |
 | Przycisk „Sprawdź, którędy wejść” | czynność główna | US3, US3.2, PW-2 | V3 |
 | Zbierający: „Zmień oznaczenie” przy każdym wejściu | czynność | US17.2, BR-24 | C6 |
 | Zbierający: „Zgłoś, że bariery nie ma” przy każdym zgłoszeniu przyjętym | czynność | US8.4, BR-19, PW-12 | C7 |
@@ -133,7 +133,7 @@ Bariery z planu piętra są też na liście pod planem, więc TalkBack nie potrz
 | Zwykły — budynek szczegółowy | wejścia, przełącznik pięter, plan, lista barier |
 | Zwykły — budynek podstawowy | wejścia, napis o braku planu, lista barier (US16.2, NFR-48) |
 | Ładowanie | tekst od razu, w miejscu zdjęcia napis „Wczytujemy zdjęcie…” (NFR-12) |
-| Pusty — brak zgłoszeń przyjętych | „Nie mamy jeszcze sprawdzonych barier w tym budynku. To nie znaczy, że barier tu nie ma.” (UC2 2a) |
+| Pusty — brak zgłoszeń przyjętych | „Nie mamy jeszcze sprawdzonych barier w tym budynku. To nie znaczy, że barier tu nie ma.” W budynku podstawowym napis o braku planu jest wtedy bez zdania „Bariery są na liście niżej.” (UC2 2a, PW-6) |
 | Brak sieci | karta z telefonu z napisami „Brak internetu” i „Dane z 12.11.2026”; zdjęcia, których nie ma w telefonie, zastępuje napis „Zdjęcie zobaczysz po połączeniu z internetem.” (NFR-10) |
 | Brak sieci, budynku nie ma w telefonie | „Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.” Przycisk „Spróbuj ponownie” (NFR-10) |
 | Błąd zdjęcia | „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” Przycisk „Spróbuj ponownie” (NFR-50) |
@@ -163,8 +163,8 @@ Droga z mapy: dotknięcie budynku (V2), „Sprawdź, którędy wejść” (V3). 
 | Stan | Co widać |
 | --- | --- |
 | Zwykły | zdanie z odpowiedzią i wejścia dostępne |
-| Brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Wróć do opisu budynku, aby zobaczyć bariery przy każdym wejściu.” (US3.1, UC4 4a, PW-10) |
-| Brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne: brak danych o 2 z 3 wejść. Wróć do opisu budynku, aby zobaczyć każde wejście z datą.” (PW-10) Liczby zależą od budynku, także wtedy, gdy danych brak o wszystkich wejściach (UC4 4b, US17.1) |
+| Brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.” (US3.1, UC4 4a, PW-10) |
+| Brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne: brak danych o 2 z 3 wejść. Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście z datą.” (PW-10) Liczby zależą od budynku, także wtedy, gdy danych brak o wszystkich wejściach (UC4 4b, US17.1) |
 | Brak sieci | dane z telefonu z napisami „Brak internetu” i „Dane z 12.11.2026” (NFR-10) |
 
 Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu, a nie samym brakiem wyniku (US3.1). TalkBack czyta je jako pierwsze (NFR-18).
@@ -176,7 +176,7 @@ Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu,
 | Cel | Odwiedzający przekazuje informację o barierze w 3 krokach, bez formularza. |
 | Role | RO-ODW i role pracownicze; Gość niezalogowany przechodzi najpierw do L1 (US14.2) |
 | Realizuje | US4.1, US4.2, US4.3, US4.4, US14.2 |
-| Czynność główna | krok 1: „Zrób zdjęcie”; krok 2: wybór grupy; krok 3: „Wyślij” |
+| Czynność główna | krok 1: „Zrób zdjęcie”, a po powrocie z kroku 2 „Dalej”; krok 2: wybór grupy; krok 3: „Wyślij” |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -184,6 +184,7 @@ Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu,
 | Nagłówek „Zgłoś barierę”, ten sam napis co na pasku dolnym | dane | US4, PW-14 | — |
 | Krok 1: przypomnienie „Nie fotografuj twarzy ani tablic rejestracyjnych.” | dane | NFR-25 | — |
 | Krok 1: „Zrób zdjęcie” i „Zrób nowe zdjęcie” | czynność | US4.1, BR-8, PW-8 | aparat, potem krok 2 |
+| Krok 1 po powrocie z kroku 2: miniatura zdjęcia i „Dalej” nad „Zrób nowe zdjęcie” | czynność główna | US4.1, heurystyka Nielsena 3 [5] | krok 2; zdjęcie i grupa zostają |
 | Krok 2: pytanie „Czego dotyczy bariera?” i 6 dużych przycisków grup barier, sam tekst: „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego” | czynność | US4.3, NFR-17, PW-7 | krok 3 |
 | Krok 3: miniatura zdjęcia i wybrana grupa | dane | US4.1 | — |
 | Krok 3: napis „Dołączymy miejsce, w którym teraz stoisz.” | dane | US4.1, NFR-27 | — |
@@ -209,7 +210,7 @@ Aplikacja nie pyta o typ bariery, uciążliwość, budynek ani piętro (US4.3, B
 
 Dostępność i osoby starsze: każdy krok ma jedną czynność, a przyciski grup wypełniają szerokość ekranu (US4.3, NFR-17). Odwiedzający nie traci zdjęcia przy braku pozycji ani przy błędzie, a zdjęcie znika dopiero po potwierdzeniu rezygnacji.
 
-„Wstecz” w krokach 2 i 3 wraca o krok, a zdjęcie i grupa zostają. „Wstecz” w kroku 1 po zrobieniu zdjęcia najpierw pyta o potwierdzenie rezygnacji.
+„Wstecz” w krokach 2 i 3 wraca o krok, a zdjęcie i grupa zostają. W kroku 1 ze zdjęciem „Dalej” prowadzi znowu do kroku 2 bez nowego zdjęcia. „Wstecz” w kroku 1 po zrobieniu zdjęcia najpierw pyta o potwierdzenie rezygnacji.
 
 „Wstecz” z potwierdzenia wraca do ekranu, z którego otwarto V4, a nie do kroku 3 (wymagania wspólne).
 
@@ -246,6 +247,7 @@ Zostaje jedno przerwanie przy pierwszym zgłoszeniu. Warianty kolejności opisuj
 | Zdanie w instrukcji: „Napis »Dostępne« przy wejściu znaczy, że wejdziesz bez pokonywania stopni: z poziomu chodnika, pochylnią albo podnośnikiem.” | dane | US5.1, US2.1, BR-24, PW-15 | — |
 | „Dalej”, a w ostatnim kroku „Zacznij” | czynność główna | US5.1 | następny krok albo V1 |
 | „Pomiń instrukcję” | czynność | US5.1, PW-8 | V1 |
+| „Wstecz”: poprzedni krok instrukcji; w pierwszym kroku przy pierwszym uruchomieniu działa jak „Pomiń instrukcję” | czynność | wymagania wspólne, NFR-15, US5.1 | poprzedni krok albo V1; przy otwarciu z paska pierwszy krok wraca do ekranu, z którego otwarto V5 |
 | Pasek dolny | czynność | wymagania wspólne | V1, V4, L1 / L2 |
 
 | Stan | Co widać |
@@ -709,6 +711,10 @@ Stanu pustego nie ma: lista budynków pochodzi z importu, a 0% to zwykła warto�
 | Ekran po zalogowaniu (mapa nawigacji, P3) | Z V4: krok 1 V4. Z „Konto”: L2. | Po zalogowaniu aplikacja pokazuje czynności ról osoby (UC6 krok 3). Osoba zaproszona przez Koordynatora od razu widzi swoje role (US12.1). |
 | Przyciski bez ekranu docelowego (V4, L2) | Potwierdzone „Zrezygnuj” w stanie „brak pozycji” i potwierdzone „Wycofaj zgodę” prowadzą do V1. „Informacja o danych osobowych” otwiera stan L2 „Klauzula informacyjna”. | Rezygnacja ze zgłoszenia działa jak w UC7 1b, a wycofanie zgody wylogowuje jak „Wyloguj się” (NFR-29). NFR-30 wymaga klauzuli w profilu, więc nie potrzeba nowego ID. |
 | Rezygnacja ze zdjęcia w V4 (recenzja B4, uwaga 17) | „Zrezygnuj” w stanie „brak pozycji” i „Wstecz” w kroku 1 po zrobieniu zdjęcia najpierw pytają o potwierdzenie. Stan „Potwierdzenie rezygnacji” ma przyciski „Tak, zrezygnuj” i „Wróć do zdjęcia”. | Przypadkowe dotknięcie nie usuwa zdjęcia bez cofnięcia (heurystyka Nielsena 5), a osoba może wycofać się z decyzji (heurystyka 3) [5]. Pytanie nie ma limitu czasu (NFR-23). |
+| Powrót do kroku 1 V4 ze zdjęciem (recenzja B5) | Krok 1 ze zrobionym zdjęciem pokazuje miniaturę, „Dalej” jako czynność główną i „Zrób nowe zdjęcie”. „Dalej” prowadzi do kroku 2, a wybrana grupa zostaje. | Bez „Dalej” osoba, która cofnęła się ze zdjęciem, musi zrobić nowe zdjęcie albo zrezygnować. Swobodny powrót bez utraty pracy to heurystyka Nielsena 3 [5]. |
+| Napis budynku podstawowego bez barier (recenzja B5) | Drugie zdanie napisu o braku planu, „Bariery są na liście niżej.”, pojawia się tylko przy niepustej liście barier. | Przy pustej liście zdanie odsyłałoby do barier, których nie ma, obok zdania „Nie mamy jeszcze sprawdzonych barier…” (UC2 2a). |
+| „Wstecz” w V5 przy pierwszym uruchomieniu (recenzja B5) | „Wstecz” wraca do poprzedniego kroku instrukcji. W pierwszym kroku przy pierwszym uruchomieniu działa jak „Pomiń instrukcję” i otwiera V1. | Przy pierwszym uruchomieniu nie ma ekranu przed V5, a „Wstecz” musi mieć cel (wymagania wspólne, NFR-15). |
+| Rada w stanach „brak” V3 (recenzja B5) | Druga część komunikatu wskazuje przycisk: „Wybierz »Wstecz«, aby w opisie budynku zobaczyć…”. | Rada „Wróć do opisu budynku” odsyłała do przycisku, którego nazwy nie ma na ekranie (heurystyka Nielsena 6 [5]). |
 
 ## Moment logowania
 

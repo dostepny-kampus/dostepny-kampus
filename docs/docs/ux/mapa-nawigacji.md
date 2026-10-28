@@ -83,6 +83,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V4, krok 1 | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | aparat, potem krok 2 | zalogowani | US4.1, BR-8 |
 | V4, krok 2 | wybór grupy barier, np. „Schody i windy” | V4, krok 3 | zalogowani | US4.3 |
 | V4, krok 2 | „Wstecz” | V4, krok 1; zdjęcie zostaje | zalogowani | US4.1 |
+| V4, krok 1, zdjęcie zrobione | „Dalej” | V4, krok 2; zdjęcie i grupa zostają | zalogowani | US4.1 |
 | V4, krok 1, zdjęcie zrobione | „Wstecz” | V4, stan „potwierdzenie rezygnacji” | zalogowani | UC7 1b |
 | V4, krok 3 | „Wstecz” | V4, krok 2; zdjęcie i grupa zostają | zalogowani | US4.1 |
 | V4, krok 3 | „Wyślij” | V4, potwierdzenie | zalogowani | US4.1, US4.4 |
@@ -96,6 +97,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V5 | „Dalej” | następny krok V5 | wszystkie | US5.1 |
 | V5, ostatni krok | „Zacznij” | V1 | wszystkie | US5.1 |
 | V5 | „Pomiń instrukcję” | V1 | wszystkie | US5.1 |
+| V5 | „Wstecz” | poprzedni krok V5; w pierwszym kroku przy pierwszym uruchomieniu V1, jak „Pomiń instrukcję” | wszystkie | US5.1, NFR-15 |
 
 ### Przejścia: logowanie i konto
 

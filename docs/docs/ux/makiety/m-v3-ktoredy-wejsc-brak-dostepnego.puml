@@ -1,0 +1,10 @@
+@startsalt
+' V3 Którędy wejść, stan: budynek nie ma wejścia dostępnego (US3.1, UC4 4a).
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Którędy wejść do <i>[symbol]</i>")
+$tekst("Budynek <i>[symbol]</i> nie ma wejścia dostępnego.", "b")
+$tekst("Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

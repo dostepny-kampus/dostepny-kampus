@@ -1,0 +1,9 @@
+@startsalt
+' V4 Zgłoszenie szybkie, brak zgody na lokalizację: prośba przed aparatem (UC7 2a, NFR-27).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek("Zgłoś barierę")
+$komunikat("Aby wysłać zdjęcie bariery, potrzebujemy jej miejsca. Sprawdzimy je tylko teraz i nie będziemy Cię śledzić.", "Pozwól na lokalizację", "Wróć do mapy")
+$ekran_koniec()
+@endsalt

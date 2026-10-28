@@ -1,0 +1,19 @@
+@startsalt
+' V2 Karta budynku, stan pusty: brak sprawdzonych barier (UC2 2a), budynek szczegółowy.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek("Budynek <i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
+$wejscie($dostepne(), "<i>[nazwa wejścia z danych]</i>", "Sprawdzone na miejscu <i>[data]</i>")
+$przycisk_glowny("Sprawdź, którędy wejść")
+..
+Piętro:
+{ (X) <i>[1]</i>$dk_spacje(2) | ( ) <i>[2]</i>$dk_spacje(2) | ( ) <i>[3]</i> }
+<b>Plan piętra</b>
+$obraz("plan wybranego piętra: windy, schody, toalety, wejścia")
+Źródło: Politechnika Wrocławska
+$sekcja("Bariery w budynku")
+$tekst("Nie mamy jeszcze sprawdzonych barier w tym budynku. To nie znaczy, że barier tu nie ma.")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

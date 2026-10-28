@@ -1,0 +1,22 @@
+@startsalt
+' L2 Konto i praca, stan zwykły, osoba z rolami RO-ZBI i RO-KOO: na górze „Twoja praca”.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek("Konto i praca")
+<b>Twoja praca</b>
+$przycisk("Zmierz i zgłoś barierę")
+$przycisk("Moje zgłoszenia")
+$przycisk("Postęp inwentaryzacji")
+$przycisk("Zaproś osobę")
+$przycisk("Pobierz eksport")
+..
+<i>[nazwa wyświetlana]</i>
+$tekst("Twoje role: Odwiedzający, Zbierający, Koordynator")
+..
+$przycisk("Informacja o danych osobowych")
+$przycisk("Wycofaj zgodę")
+$przycisk("Wyloguj się")
+$pasek_dolny_praca()
+$ekran_koniec()
+@endsalt

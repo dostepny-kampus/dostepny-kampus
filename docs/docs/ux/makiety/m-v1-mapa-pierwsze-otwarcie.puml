@@ -1,0 +1,11 @@
+@startsalt
+' V1 Mapa kampusu, brak sieci przy pierwszym otwarciu: w telefonie nie ma jeszcze danych.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$brak_internetu()
+$komunikat("Pierwsze otwarcie aplikacji wymaga internetu. Połącz się z internetem, a mapa wczyta się sama.")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

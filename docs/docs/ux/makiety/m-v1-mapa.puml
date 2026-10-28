@@ -1,0 +1,14 @@
+@startsalt
+' V1 Mapa kampusu, stan zwykły, Gość niezalogowany.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$przelacznik_mapa("mapa")
+$mapa_kampusu("mapa ulic OpenStreetMap, kontury budynków z symbolami, bariery")
+$przyciski_mapy()
+$osm()
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt
