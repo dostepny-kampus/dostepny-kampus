@@ -50,7 +50,7 @@ Funkcja: Zgłoszenie szybkie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz telefon nie ustala bieżącej pozycji
     Jeżeli zrobi zdjęcie bariery
-    Oraz wybierze grupę barier „wejście i drzwi”
+    Oraz wybierze grupę barier „inne”
     Oraz spróbuje wysłać zgłoszenie
     Wtedy zgłoszenie nie zostaje wysłane
     Oraz zgłoszenie nie zapisuje się w telefonie do późniejszej wysyłki
@@ -60,7 +60,7 @@ Funkcja: Zgłoszenie szybkie
   @US4.1
   Scenariusz: Pozycja ustalona przy ponownej próbie pozwala wysłać zgłoszenie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
-    Oraz zrobił zdjęcie bariery i wybrał grupę barier „wejście i drzwi”
+    Oraz zrobił zdjęcie bariery i wybrał grupę barier „inne”
     Oraz widzi komunikat, że telefon nie ustalił miejsca
     Oraz telefon ma sieć
     Jeżeli telefon ustali bieżącą pozycję
@@ -69,10 +69,10 @@ Funkcja: Zgłoszenie szybkie
     Oraz Odwiedzający widzi potwierdzenie, że zgłoszenie trafi do weryfikacji
 
   @BR-14
-  Szablon scenariusza: Budynek zgłoszenia szybkiego przypisuje system, a przy wejściu piętro zostaje puste
+  Szablon scenariusza: Budynek zgłoszenia szybkiego przypisuje system, a przy grupie „inne” piętro zostaje puste
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz stoi <miejsce>
-    Jeżeli wyśle zgłoszenie szybkie z grupą barier „wejście i drzwi”
+    Jeżeli wyśle zgłoszenie szybkie z grupą barier „inne”
     Wtedy zgłoszenie <budynek>
     Oraz zgłoszenie nie ma piętra
     Ale aplikacja nie pyta o budynek ani o piętro
@@ -94,6 +94,7 @@ Funkcja: Zgłoszenie szybkie
       | miejsce                              | grupa                 | pytanie                                                                   |
       | w budynku D-2                        | „komunikacja pionowa” | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
       | w budynku B-4                        | „toalety”             | widzi pytanie o piętro z „Nie wiem” i przyciskami „Parter”, „1”, „2”      |
+      | w budynku C-13                       | „wejście i drzwi”     | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
       | w budynku C-13                       | „inne”                | przechodzi do kroku 3 bez pytania o piętro                                |
       | na chodniku przed A-1, poza konturem | „komunikacja pozioma” | przechodzi do kroku 3 bez pytania o piętro                                |
 
