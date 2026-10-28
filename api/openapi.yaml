@@ -32,6 +32,8 @@ info:
     | `claim`, `ReviewDecision`: `ACCEPT`, `REJECT` | wzięcie zgłoszenia, weryfikacja: przyjęcie, odrzucenie |
     | `rejectionReason`, `duplicateOfSubmissionId` | powód odrzucenia, duplikat |
     | `similar` | podobne zgłoszenie |
+    | `sync`, `push`, `pull` | synchronizacja: wysłanie i pobranie zmian |
+    | `InspectionMarker`, `revoked` | znacznik piętra obejrzanego, cofnięcie znacznika |
   license: {name: MIT, identifier: MIT}
 servers: [{url: /, description: "Serwer, który udostępnia ten dokument; adres zależy od środowiska."}]
 security: [{keycloak: []}]
@@ -42,6 +44,8 @@ tags:
     description: Zgłoszenia barier i ich zdjęcia (moduł serwera barrier).
   - name: review
     description: Kolejka weryfikacji i decyzje Weryfikatora (moduł serwera review).
+  - name: sync
+    description: Synchronizacja telefonu z serwerem po pracy w trybie offline (moduł serwera sync).
 
 paths:
   /buildings:
@@ -365,6 +369,83 @@ paths:
           content:
             application/json:
               schema: {type: array, description: "Podobne zgłoszenia.", items: {$ref: '#/components/schemas/SimilarSubmission'}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /sync/push:
+    post:
+      operationId: pushChanges
+      summary: Wysłanie zmian z telefonu
+      description: >-
+        Zmiany zapisane w telefonie w trybie offline, w kolejności zapisu (US4.2, US9.2, US15.3, BR-9, BR-20).
+        Każda operacja ma własny wynik, więc błąd jednej nie zatrzymuje pozostałych. Powtórzony `clientOperationId`
+        zwraca pierwszy wynik i niczego nie zapisuje drugi raz. Konflikt wersji zwraca wersję z serwera i nic nie zapisuje;
+        wybór wersji własnej to ponowna edycja z wersją z serwera, wybór wersji z serwera nie wymaga wysyłki (US9.3, BR-10).
+      tags: [sync]
+      security: [{keycloak: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Paczka zmian z telefonu.
+              required: [operations]
+              properties:
+                operations:
+                  type: array
+                  description: Operacje w kolejności zapisu w telefonie.
+                  minItems: 1
+                  maxItems: 100
+                  items: {$ref: '#/components/schemas/SyncOperation'}
+      responses:
+        '200':
+          description: Wynik każdej operacji w kolejności żądania.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Wyniki operacji.
+                required: [results]
+                properties:
+                  results: {type: array, description: "Wyniki operacji.", items: {$ref: '#/components/schemas/SyncOperationResult'}}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /sync/pull:
+    get:
+      operationId: pullChanges
+      summary: Pobranie zmian z serwera
+      description: >-
+        Zmiany od poprzedniego pobrania: statusy i powody odrzucenia własnych zgłoszeń (US8.1), zgłoszenia przyjęte
+        i archiwalne do mapy w telefonie (US1.3, US10.6), oznaczenia wejść (US17.2) i znaczniki pięter dla ekranu piętra obejrzanego (US15.1, US15.2, US11.3).
+      tags: [sync]
+      security: [{keycloak: []}]
+      parameters:
+        - name: since
+          in: query
+          description: Wartość `cursor` z poprzedniego pobrania; brak oznacza pobranie wszystkiego.
+          schema: {type: string, description: "Znacznik poprzedniego pobrania."}
+      responses:
+        '200':
+          description: Zmiany od `since`.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SyncPullResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /inspection-markers/{markerId}:
+    delete:
+      operationId: revokeInspectionMarker
+      summary: Cofnięcie znacznika piętra obejrzanego
+      description: >-
+        Koordynator cofa znacznik dowolnego Zbierającego z postępu inwentaryzacji (US11.3); Zbierający tylko własny (US15.2, BR-20).
+        Zbierający bez sieci cofa znacznik przez `/sync/push`.
+      tags: [building]
+      security: [{keycloak: [COLLECTOR]}, {keycloak: [COORDINATOR]}]
+      parameters:
+        - {name: markerId, in: path, required: true, description: "Identyfikator znacznika.", schema: {type: string, format: uuid, description: "Identyfikator znacznika."}}
+      responses:
+        '204': {description: "Znacznik cofnięty."}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
@@ -749,3 +830,63 @@ components:
           required: [distanceMeters]
           properties:
             distanceMeters: {type: number, format: double, minimum: 0, maximum: 10, description: "Odległość od sprawdzanego zgłoszenia w metrach."}
+
+    SyncOperation:
+      type: object
+      description: Zmiana zapisana w telefonie; wypełnione są tylko pola jej rodzaju.
+      required: [clientOperationId, type]
+      properties:
+        clientOperationId: {type: string, format: uuid, description: "Identyfikator operacji nadany w telefonie (BR-9)."}
+        type:
+          type: string
+          description: >-
+            Rodzaj zmiany: nowe zgłoszenie, edycja zgłoszenia, znacznik piętra obejrzanego, cofnięcie znacznika.
+            Edycja i znaczniki wymagają roli `COLLECTOR` (US8.3, BR-20).
+          enum: [CREATE_SUBMISSION, UPDATE_SUBMISSION, SET_INSPECTION_MARKER, REVOKE_INSPECTION_MARKER]
+        newSubmission: {$ref: '#/components/schemas/NewSubmission', description: "Dla `CREATE_SUBMISSION`."}
+        submissionId: {type: string, format: uuid, description: "Dla `UPDATE_SUBMISSION`: edytowane zgłoszenie."}
+        submissionUpdate: {$ref: '#/components/schemas/SubmissionUpdate', description: "Dla `UPDATE_SUBMISSION`."}
+        marker: {$ref: '#/components/schemas/NewInspectionMarker', description: "Dla `SET_INSPECTION_MARKER`."}
+        markerId: {type: string, format: uuid, description: "Dla `REVOKE_INSPECTION_MARKER`: cofany znacznik."}
+    SyncOperationResult:
+      type: object
+      description: Wynik jednej operacji.
+      required: [clientOperationId, outcome]
+      properties:
+        clientOperationId: {type: string, format: uuid, description: "Identyfikator operacji z żądania."}
+        outcome:
+          type: string
+          description: >-
+            `APPLIED` — zapisana, `CONFLICT` — konflikt wersji, w `submission` wersja z serwera (BR-10),
+            `REJECTED` — odrzucona, powód w `problem`.
+          enum: [APPLIED, CONFLICT, REJECTED]
+        submission: {$ref: '#/components/schemas/Submission', description: "Zgłoszenie po zapisie albo wersja z serwera przy konflikcie."}
+        problem: {$ref: '#/components/schemas/Problem', description: "Powód odrzucenia operacji, np. brak roli albo niepoprawna treść."}
+    SyncPullResponse:
+      type: object
+      description: Zmiany z serwera od poprzedniego pobrania.
+      required: [cursor, submissions, entrances, inspectionMarkers]
+      properties:
+        cursor: {type: string, description: "Znacznik do parametru `since` w następnym pobraniu."}
+        submissions: {type: array, description: "Własne zgłoszenia oraz zgłoszenia przyjęte i archiwalne.", items: {$ref: '#/components/schemas/Submission'}}
+        entrances: {type: array, description: "Wejścia ze zmienionym oznaczeniem wejścia.", items: {$ref: '#/components/schemas/Entrance'}}
+        inspectionMarkers: {type: array, description: "Dla roli `COLLECTOR` znaczniki wszystkich Zbierających, także cofnięte (US15.2); dla innych ról pusta lista.", items: {$ref: '#/components/schemas/InspectionMarker'}}
+    NewInspectionMarker:
+      type: object
+      description: Znacznik piętra obejrzanego postawiony przez Zbierającego (US15.1, BR-20).
+      required: [id, buildingSymbol]
+      properties:
+        id: {type: string, format: uuid, description: "Identyfikator znacznika nadany w telefonie."}
+        buildingSymbol: {type: string, description: "Budynek znacznika."}
+        floorId: {type: string, description: "Piętro obejrzane w budynku szczegółowym; brak w budynku podstawowym, gdzie znacznik „obejrzany” dotyczy całego budynku."}
+    InspectionMarker:
+      description: Znacznik zapisany na serwerze.
+      allOf:
+        - $ref: '#/components/schemas/NewInspectionMarker'
+        - type: object
+          description: Dane nadane przez serwer.
+          required: [createdAt, revoked, mine]
+          properties:
+            createdAt: {type: string, format: date-time, description: "Chwila odbioru znacznika przez serwer."}
+            revoked: {type: boolean, description: "Czy znacznik cofnięto (US11.3, US15.2)."}
+            mine: {type: boolean, description: "Czy znacznik postawiła osoba z tokenu: „Twój znacznik” albo „Znacznik innej osoby” (US15.2)."}
