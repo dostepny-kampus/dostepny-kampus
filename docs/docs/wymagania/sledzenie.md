@@ -14,7 +14,7 @@ Macierz pokazuje, z czego wynika każde wymaganie: potrzeba N → historyjka US 
 | UC (przypadek użycia) | Przypadki ze strony [Przypadki użycia](przypadki-uzycia.md), które odwołują się do historyjki albo kryterium. |
 | Scenariusz | Scenariusze z katalogu `specs/` oznaczone tagiem kryterium, na przykład `@US1.1`. Tag funkcji obejmuje wszystkie jej scenariusze. |
 
-Tag `@do-ustalenia` oznacza scenariusz zależny od ustalenia w fazie B lub C, np. ekranu albo progu. Do tego ustalenia taki scenariusz nie blokuje CI.
+Tag `@do-ustalenia` oznacza scenariusz zależny od ustalenia, którego jeszcze nie ma. Po fazie B mają go tylko dwa scenariusze progu propozycji budynku (BR-G4), ustalanego w fazie C. Do tego ustalenia taki scenariusz nie blokuje CI.
 
 Skrypt czyta powiązania z tabel i nagłówków. Identyfikator w pierwszej kolumnie wiersza to definicja, a identyfikatory w pozostałych kolumnach to powiązania. US14 (logowanie) jest historyjką umożliwiającą: nie ma własnej potrzeby, a służy N2 i N8.
 
