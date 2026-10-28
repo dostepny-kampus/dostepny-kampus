@@ -192,53 +192,70 @@ kontrast:
 
 # ---------------------------------------------------------------------------
 # Typografia — rozmiary w sp, żeby tekst rósł z ustawieniem czcionki (NFR-20, WCAG 1.4.4).
-# Krój systemowy: osoba zachowuje krój i rozmiar ustawiony w telefonie (PE-1 ma
-# powiększoną czcionkę), a aplikacja nie dołącza pliku czcionki.
-# Interlinia tekstu podstawowego ≈ 1,5 rozmiaru (WCAG 1.4.8, poziom AAA).
+# Skala stylu „Karta miejsca”: symbol / nazwa / nagłówek grupy / pozycja / treść / podpis.
+# Każdy styl interfejsu ma co najmniej 18 sp. Mniejsze (16 sp) są tylko napisy na mapie,
+# zapisane w sekcji `mapa`.
+# Interlinia tekstu podstawowego ≈ 1,45 rozmiaru (WCAG 1.4.8, poziom AAA, zaleca 1,5).
 # ---------------------------------------------------------------------------
 typografia:
-  kroj: systemowy
-  # Żaden tekst w aplikacji nie jest mniejszy (próg zespołu). Skrypt sprawdza każdy styl.
+  # Krój o wyraźnie różnych kształtach liter (I, l, 1; O, 0), zaprojektowany dla osób
+  # słabowidzących. Licencja SIL Open Font License: aplikacja dołącza plik czcionki.
+  # Gdy krój się nie wczyta, aplikacja używa kroju systemowego.
+  kroj: Atkinson Hyperlegible Next
+  # Żaden tekst w aplikacji nie jest mniejszy (próg zespołu, dotyczy też napisów mapy).
+  # Skrypt sprawdza każdy styl.
   minimum_sp: 16
-  # Pogrubienie czynności głównej i błędu przy polu (makiety: przycisk główny, błąd pola).
+  # Pogrubienie przycisków, oznaczeń wejścia i błędu przy polu.
   wyroznienie_waga: 700
   style:
-    titleLarge:
-      sp: 24
+    displayLarge:
+      sp: 57
+      waga: 800
+      interlinia_sp: 57   # symbol ma jeden krótki wiersz, np. „A-1”
+      uzycie: symbol budynku na karcie, np. „A-1”
+      zrodlo: styl „Karta miejsca”
+    headlineMedium:
+      sp: 28
       waga: 700
-      interlinia_sp: 32
-      uzycie: nagłówek ekranu, np. „Budynek A-1”
-      zrodlo: NFR-16 (duży tekst ≥ 24 sp)
+      interlinia_sp: 36
+      uzycie: nazwa miejsca, np. „Gmach Główny”, „Sala 329”
+      zrodlo: styl „Karta miejsca”, NFR-16 (duży tekst ≥ 24 sp)
+    titleLarge:
+      sp: 22
+      waga: 600
+      interlinia_sp: 28
+      uzycie: nagłówek grupy, np. „Wejścia”, „Bariery w budynku”
+      zrodlo: styl „Karta miejsca”, NFR-16 (duży tekst ≥ 19 sp pogrubiony)
     titleMedium:
       sp: 20
       waga: 700
-      interlinia_sp: 28
-      uzycie: nagłówek sekcji, np. „Bariery w budynku”
-      zrodlo: NFR-16 (duży tekst ≥ 19 sp pogrubiony)
+      interlinia_sp: 26
+      uzycie: nazwa wejścia, udogodnienia albo piętra w kontenerze grupy
+      zrodlo: styl „Karta miejsca”, NFR-16 (duży tekst ≥ 19 sp pogrubiony)
     bodyLarge:
       sp: 18             # 34 znaki w wierszu na ekranie 360 dp (konwencja makiet)
       waga: 400
-      interlinia_sp: 28
-      uzycie: tekst podstawowy, oznaczenia, statusy, data i źródło przy wejściu
+      interlinia_sp: 26
+      uzycie: tekst podstawowy, np. „Drzwi 120 cm”, opis piętra, kroki do sali
       zrodlo: konwencje makiet, NFR-20, PE-1
     labelLarge:
       sp: 18
-      waga: 500
+      waga: 600
       interlinia_sp: 24
-      uzycie: napis przycisku; czynność główna ma wagę wyróżnienia
-      zrodlo: konwencje makiet, NFR-17
+      uzycie: napis przycisku i chipu; przyciski i oznaczenia wejścia mają wagę wyróżnienia
+      zrodlo: styl „Karta miejsca”, NFR-17
     bodyMedium:
-      sp: 16
-      waga: 400
-      interlinia_sp: 24
-      uzycie: podpis źródła pod planem piętra, podpis OpenStreetMap na mapie
-      zrodlo: NFR-37, NFR-40, minimum zespołu
-    labelMedium:
-      sp: 16
+      sp: 18
       waga: 500
-      interlinia_sp: 22
+      interlinia_sp: 24
+      uzycie: podpis, np. źródło i data oceny wejść, „Zalecane, parter”, podpis OpenStreetMap
+      zrodlo: styl „Karta miejsca”, US17.3, NFR-37, NFR-40
+    labelMedium:
+      sp: 18
+      waga: 500
+      interlinia_sp: 20   # ciaśniej niż podpis, bo napis może mieć dwa wiersze pod ikoną
       uzycie: napisy pod ikonami paska dolnego, w razie potrzeby w dwóch wierszach
-      zrodlo: wymagania wspólne (pasek dolny), minimum zespołu
+      zrodlo: styl „Karta miejsca”, wymagania wspólne (pasek dolny)
 
 # ---------------------------------------------------------------------------
 # Wymiary w dp. Odstępy na siatce 4 dp (Material 3); skrypt sprawdza wielokrotność.
@@ -252,36 +269,44 @@ odstepy:
     zrodlo: siatka 4 dp
   s:
     dp: 8
-    uzycie: odstęp tekstu od ramki wewnątrz pozycji listy
-    zrodlo: siatka 4 dp
+    uzycie: odstęp między chipami i między ikoną a napisem w chipie
+    zrodlo: styl „Karta miejsca”
   m:
     dp: 16             # 360 dp − 2 × 16 dp zostawia 328 dp na wiersz tekstu 18 sp
-    uzycie: margines boczny ekranu, odstęp między przyciskami i pozycjami listy
-    zrodlo: konwencje makiet, PE-1 (drżenie dłoni)
+    uzycie: margines boczny ekranu, wcięcie treści w kontenerze grupy, odstęp pozycji w grupie
+    zrodlo: konwencje makiet, styl „Karta miejsca”
   l:
     dp: 24
-    uzycie: odstęp między sekcjami ekranu
+    uzycie: odstęp między grupami arkusza
     zrodlo: siatka 4 dp
 
 cele_dotyku:
   minimum:
     dp: 48
-    uzycie: najmniejszy cel dotyku, także ikona paska dolnego i pole wyboru z etykietą
+    uzycie: najmniejszy cel dotyku, np. przycisk tekstowy „Zgłoś problem”, chip, kontrolka mapy, piętro w przełączniku
     zrodlo: NFR-17
   przycisk:
     dp: 56             # zapas ponad 48 dp: PE-1 ma lekkie drżenie dłoni i chybia małe przyciski
-    uzycie: najmniejsza wysokość przycisku z napisem; przy dużej czcionce rośnie razem z tekstem
+    uzycie: najmniejsza wysokość przycisku wypełnionego, tonalnego i obrysowanego; przy dużej czcionce rośnie razem z tekstem
     zrodlo: NFR-17, NFR-20, PE-1
+  przypiety:
+    dp: 60
+    uzycie: wysokość przycisków przypiętych nad paskiem dolnym, np. „Sprawdź, którędy wejść” i „Pokaż na mapie” (V2)
+    zrodlo: styl „Karta miejsca”, NFR-17
   odstep:
     dp: 8
-    uzycie: najmniejszy odstęp między dwoma osobnymi celami dotyku; między przyciskami stosujemy odstęp m
+    uzycie: najmniejszy odstęp między dwoma osobnymi celami dotyku, np. chipami
     zrodlo: wytyczne Material dla celów dotyku
 
 obramowania:
   ramka:
-    dp: 2              # 1 dp znika w słońcu; ramka wyznacza granicę celu (PE-1, PE-2)
-    uzycie: obramowanie pól, ramek pozycji listy i przycisków drugorzędnych
-    zrodlo: NFR-16 (WCAG 1.4.11)
+    dp: 1              # granicę wyznacza kolor `outline` (≥ 3:1), a nie grubość
+    uzycie: obramowanie pola wyszukiwania, chipów, przycisków obrysowanych i segmentów
+    zrodlo: styl „Karta miejsca”, NFR-16 (WCAG 1.4.11)
+  wybrane:
+    dp: 2
+    uzycie: obwódka wybranego piętra w przełączniku, w kolorze `onPrimaryContainer`
+    zrodlo: styl „Karta miejsca”, NFR-21
   fokus:
     dp: 3
     uzycie: wskaźnik fokusu klawiatury, w kolorze `primary`, 2 dp od elementu; ramkę fokusu TalkBack rysuje system
@@ -289,12 +314,104 @@ obramowania:
 
 zaokraglenia:
   standard:
-    dp: 8              # jedno zaokrąglenie dla przycisku, pola i ramki: kształt przycisku jest przewidywalny
-    uzycie: przyciski, pola, ramki pozycji i komunikatów
-    zrodlo: heurystyka Nielsena 4 (spójność)
+    dp: 8
+    uzycie: oznaczenie wejścia, chipy, podpis OpenStreetMap na mapie
+    zrodlo: styl „Karta miejsca” (Material 3, kształt mały)
+  srednie:
+    dp: 12
+    uzycie: plakietka budynku na liście, tło piktogramu udogodnienia
+    zrodlo: styl „Karta miejsca” (Material 3, kształt średni)
+  duze:
+    dp: 16
+    uzycie: kontenery grup, legenda, kroki do sali, plakietka „A-1” na arkuszu
+    zrodlo: styl „Karta miejsca” (Material 3, kształt duży)
+  kapsula:
+    dp: 24             # połowa celu 48 dp: kontrolka ma kształt kapsuły
+    uzycie: kontrolki 48 dp, np. „Wstecz” na mapie, przyciski +/−, piętra w przełączniku, segmenty, małe przyciski
+    zrodlo: styl „Karta miejsca”
+  bardzo_duze:
+    dp: 28             # połowa przycisku 56 dp
+    uzycie: przyciski 56 dp i przypięte, pole wyszukiwania, przełącznik pięter, górne rogi arkusza
+    zrodlo: styl „Karta miejsca” (Material 3, kształt bardzo duży)
 
 ikony:
   rozmiar:
-    dp: 24
-    uzycie: ikona statusu, oznaczenia i paska dolnego, zawsze z napisem obok
+    dp: 24             # ikona oznaczenia wejścia i chipu rośnie z tekstem: 1,33 wysokości napisu
+    uzycie: ikona oznaczenia wejścia, chipu, przycisku i paska dolnego, zawsze z napisem obok
     zrodlo: NFR-21, słownik użytkownika (Metafory i ikony)
+
+# ---------------------------------------------------------------------------
+# Wysokości (cień) w dp, poziomy Material 3. Skrypt strony jeszcze ich nie sprawdza.
+# Cień w stylu „Karta miejsca”: kontrolki 0 1 2 + 0 3 8 px, pasek czynności 0 −4 12 px.
+# W ciemnym motywie cień słabo widać, więc element pływający ma dodatkowo obwódkę 1 dp.
+# ---------------------------------------------------------------------------
+wysokosci:
+  kontrolki_mapy:
+    dp: 3              # Material 3, poziom 2
+    obwodka_ciemny: "#4A5558"
+    uzycie: pływające kontrolki mapy (+/−, położenie, przełącznik pięter, legenda, „Wstecz”), nagłówek z polem wyszukiwania (V1)
+    zrodlo: styl „Karta miejsca”
+  pasek_czynnosci:
+    dp: 6              # Material 3, poziom 3; cień pada w górę
+    uzycie: przypięty pasek czynności nad paskiem dolnym (V2), arkusz na mapie (V1)
+    zrodlo: styl „Karta miejsca”
+
+# ---------------------------------------------------------------------------
+# Paleta mapy: podkład, budynki PWr, plan piętra (styl mapy wektorowej, decyzja 44).
+# Nie są to role Material 3: aplikacja wstawia je do stylu mapy, a nie do motywu.
+# Ta sama barwa morska co `primary`. Napisy mapy: Noto Sans 16 sp z obwódką.
+# Skrypt strony jeszcze nie sprawdza tej sekcji; pary niżej mają ten sam zapis
+# co `kontrast.pary`, a progi są te same (tekst 7:1, nietekst 3:1).
+# ---------------------------------------------------------------------------
+mapa:
+  napisy_sp: 16
+  kolory:
+    lad: {jasny: "#E8EDEE", ciemny: "#141819", uzycie: tło lądu}
+    zielen: {jasny: "#D4DFD5", ciemny: "#1A241E", uzycie: parki i trawniki}
+    woda: {jasny: "#BFD0D8", ciemny: "#0F2129", uzycie: rzeka i kanały}
+    droga: {jasny: "#FFFFFF", ciemny: "#2C3335", uzycie: wypełnienie ulic}
+    droga_kontur: {jasny: "#C5CDD0", ciemny: "#1F2527", uzycie: obrzeże ulic}
+    tory: {jasny: "#A3ACAF", ciemny: "#4C565A", uzycie: tory}
+    chodnik: {jasny: "#F7F9FA", ciemny: "#252B2D", uzycie: chodniki i place}
+    budynek: {jasny: "#D6DBDD", ciemny: "#22282A", uzycie: budynki spoza PWr}
+    budynek_kontur: {jasny: "#C2C9CC", ciemny: "#30373A", uzycie: kontur budynków spoza PWr}
+    pwr: {jasny: "#BFE0EC", ciemny: "#17363F", uzycie: wypełnienie budynków PWr}
+    pwr_kontur: {jasny: "#004E5E", ciemny: "#85D1EA", uzycie: kontur budynków PWr (= primary)}
+    napis_pwr: {jasny: "#00303B", ciemny: "#DAF5FF", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
+    napis_ulica: {jasny: "#3A4549", ciemny: "#BCC9CD", uzycie: nazwy ulic i numery sal}
+    napis_woda: {jasny: "#2B454D", ciemny: "#BCD9E3", uzycie: nazwa rzeki}
+    obwodka: {jasny: "#FFFFFF", ciemny: "#101415", uzycie: obwódka napisów}
+    sciezka: {jasny: "#004E5E", ciemny: "#85D1EA", uzycie: ścieżka dostosowana}
+    tusz: {jasny: "#181C1D", ciemny: "#EAEFF1", uzycie: "znaczniki wejść, ikony pochylni i planu"}
+    papier: {jasny: "#FFFFFF", ciemny: "#101415", uzycie: wnętrze znaczników}
+    p_korytarz: {jasny: "#FFFFFF", ciemny: "#272D2F", uzycie: korytarz na planie piętra}
+    p_sala: {jasny: "#D2EAF3", ciemny: "#183A45", uzycie: sala na planie piętra}
+    p_inne: {jasny: "#E1E6E8", ciemny: "#1C2123", uzycie: inne pomieszczenia i klatki schodowe}
+    p_winda: {jasny: "#A7C0C9", ciemny: "#3D5A64", uzycie: winda}
+    p_wzor: {jasny: "#4A5559", ciemny: "#9EAAAE", uzycie: kreskowanie klatek schodowych i kropki toalet}
+    p_wc: {jasny: "#F2F5F6", ciemny: "#22282A", uzycie: toaleta}
+    p_kontur: {jasny: "#6A7579", ciemny: "#879397", uzycie: ściany na planie piętra}
+    p_wybrana: {jasny: "#8FD3EA", ciemny: "#2B6D82", uzycie: szukana sala}
+    p_wybrana_kontur: {jasny: "#001F27", ciemny: "#DAF5FF", uzycie: kontur szukanej sali}
+  pary:
+    - {kolor: napis_pwr, tlo: obwodka, rodzaj: tekst, gdzie: "symbol budynku, nazwy na planie"}
+    - {kolor: napis_ulica, tlo: obwodka, rodzaj: tekst, gdzie: "nazwy ulic, numery sal"}
+    - {kolor: napis_woda, tlo: obwodka, rodzaj: tekst, gdzie: nazwa rzeki}
+    - {kolor: pwr_kontur, tlo: lad, rodzaj: komponent, gdzie: kontur budynku PWr na podkładzie}
+    - {kolor: pwr_kontur, tlo: pwr, rodzaj: komponent, gdzie: kontur budynku PWr do wypełnienia}
+    - {kolor: pwr_kontur, tlo: budynek, rodzaj: komponent, gdzie: kontur PWr przy budynku spoza PWr}
+    - {kolor: sciezka, tlo: lad, rodzaj: komponent, gdzie: ścieżka dostosowana na podkładzie}
+    - {kolor: sciezka, tlo: droga, rodzaj: komponent, gdzie: ścieżka dostosowana na ulicy}
+    - {kolor: tusz, tlo: lad, rodzaj: komponent, gdzie: "znacznik wejścia, ikona pochylni"}
+    - {kolor: tusz, tlo: pwr, rodzaj: komponent, gdzie: znacznik wejścia na budynku PWr}
+    - {kolor: papier, tlo: tusz, rodzaj: komponent, gdzie: znak wewnątrz znacznika}
+    - {kolor: tusz, tlo: p_korytarz, rodzaj: komponent, gdzie: ikona planu na korytarzu}
+    - {kolor: tusz, tlo: p_winda, rodzaj: komponent, gdzie: ikona windy}
+    - {kolor: p_kontur, tlo: p_sala, rodzaj: komponent, gdzie: ściany sali}
+    - {kolor: p_kontur, tlo: p_korytarz, rodzaj: komponent, gdzie: ściany korytarza}
+    - {kolor: p_kontur, tlo: p_inne, rodzaj: komponent, gdzie: ściany innych pomieszczeń}
+    - {kolor: p_wzor, tlo: p_inne, rodzaj: komponent, gdzie: kreskowanie klatek schodowych}
+    - {kolor: p_wzor, tlo: p_wc, rodzaj: komponent, gdzie: kropki toalet}
+    - {kolor: p_wybrana_kontur, tlo: p_wybrana, rodzaj: komponent, gdzie: kontur szukanej sali do wypełnienia}
+    - {kolor: p_wybrana_kontur, tlo: p_korytarz, rodzaj: komponent, gdzie: kontur szukanej sali do korytarza}
+    - {kolor: p_wybrana_kontur, tlo: p_sala, rodzaj: komponent, gdzie: kontur szukanej sali do sąsiedniej sali}
