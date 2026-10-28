@@ -10,7 +10,7 @@ $przycisk_glowny("Sprawdź, którędy wejść")
 ..
 $tekst("Nie mamy planu pięter tego budynku. Bariery są na liście niżej.")
 $sekcja("Bariery w budynku")
-{+
+$ramka()
 <b><i>[typ bariery z danych]</i></b>
 $tylko_z_pomoca()
 $obraz("zdjęcie bariery")

@@ -5,25 +5,18 @@
 $ekran_poczatek()
 $naglowek("Zgłoszenia do sprawdzenia")
 <b>Wzięte przeze mnie</b>
-{+
-<b>schody przy wejściu</b>$dk_spacje(18)
+$ramka()
+<b>schody przy wejściu</b>
 Budynek A-1
 Zgłoszenie z pomiaru
 Wysłane <i>[data]</i>
 $przycisk("Otwórz", "chevron-right")
 }
 ..
-{ ( ) Lista$dk_spacje(4) | (X) Mapa }
-{+
-.
-$tekst("[mapa kampusu z punktami zgłoszeń do sprawdzenia; wybrany punkt przy C-13]", "i")
-.
-<u>© OpenStreetMap contributors</u>
-}
-{ [$dk_spacje(3)Powiększ$dk_spacje(3)] | [$dk_spacje(2)Pomniejsz$dk_spacje(2)] }
-{ [$dk_spacje(4)W górę$dk_spacje(4)] | [$dk_spacje(5)W dół$dk_spacje(5)] }
-{ [$dk_spacje(4)W lewo$dk_spacje(4)] | [$dk_spacje(4)W prawo$dk_spacje(3)] }
-{+
+$przelacznik("Lista", "Mapa", 2)
+$mapa("mapa kampusu z punktami zgłoszeń do sprawdzenia; wybrany punkt przy C-13")
+$przyciski_mapy()
+$ramka()
 <b>próg</b>
 Budynek C-13
 Zgłoszenie z pomiaru

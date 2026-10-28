@@ -1,7 +1,6 @@
 ' Fragmenty makiet grupy „weryfikacja i koordynacja” (R2), których brak w _wspolne.iuml.
 ' Rozszerzenie .iuml: scripts/render.py nie renderuje tego pliku osobno.
 ' Dołączać po _wspolne.iuml, bo korzysta z jego procedur.
-' Propozycja: przenieść do _wspolne.iuml, gdy użyją ich inne grupy.
 ' Po zmianie tego pliku: python scripts/render.py --force.
 
 ' Decyzja na R2: „Przyjmij” jako czynność główna, pod nią powód odrzucenia i „Odrzuć”
@@ -31,7 +30,7 @@ $dk_spacje(3) | ( ) próg, 5 m
 ( ) Inny powód
 {
 $dk_spacje(3) | Opisz powód dla autora:
-$dk_spacje(3) | "$dk_spacje(26)"
+$dk_spacje(3) | $dk_pole("", 26)
 }
 $przycisk("Odrzuć")
 !endprocedure

@@ -30,8 +30,8 @@ Poprzednie zgłoszenie:
 $przycisk("Zasłoń twarz lub tablicę")
 Autor: Zbierający, Autor <i>[nr]</i>
 $sekcja("Podobne zgłoszenia do 10 m")
-{+
-<b>niesprawna winda</b>$dk_spacje(16)
+$ramka()
+<b>niesprawna winda</b>
 $obraz("zdjęcie")
 0 m, piętro <i>[piętro]</i>
 $przyjete()

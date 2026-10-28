@@ -1,55 +1,12 @@
 ' Fragmenty makiet zespołu w terenie (C1–C7), których nie ma w _wspolne.iuml.
-' Propozycja do _wspolne.iuml: po przyjęciu przenieść je tam i usunąć ten plik.
+' Rozszerzenie .iuml: scripts/render.py nie renderuje tego pliku osobno.
 ' Dołączać po _wspolne.iuml, bo korzysta z jego procedur.
+' Ramka pozycji, opcja, zdjęcie, błąd przy polu i wybór piętra są w _wspolne.iuml.
 
-' Przyciski przesuwania punktu: odpowiednik przeciągania palcem
-' (NFR-15, WCAG 2.5.1; NFR-3). Dwa w wierszu, żeby cel był szeroki (NFR-17).
+' Przyciski przesuwania punktu bariery (C1): odpowiednik przeciągania palcem
+' (NFR-15, WCAG 2.5.1; NFR-3). Ten sam układ co przyciski mapy na V1 i R1.
 ' $co: na czym leży punkt, np. "na mapie" albo "na planie".
 !procedure $przesun_punkt($co)
 Przesuń punkt $co:
-{
-[$dk_spacje(4)W górę$dk_spacje(4)] | [$dk_spacje(4)W dół$dk_spacje(5)]
-[$dk_spacje(4)W lewo$dk_spacje(4)] | [$dk_spacje(4)W prawo$dk_spacje(3)]
-}
-!endprocedure
-
-' Zdjęcie w formularzu (C2, C6, C7): przypomnienie o wizerunku i przycisk.
-' $opis: zastępnik zrobionego zdjęcia; pusty, gdy zdjęcia jeszcze nie ma.
-!procedure $zdjecie($opis="")
-$tekst("Nie fotografuj twarzy ani tablic rejestracyjnych.")
-!if $opis == ""
-$przycisk("Zrób zdjęcie", "camera-slr")
-!else
-$obraz($opis)
-$przycisk("Zrób nowe zdjęcie", "camera-slr")
-!endif
-!endprocedure
-
-' Błąd przy polu: ten sam tekst co w podsumowaniu nad formularzem
-' (NFR-15, WCAG 3.3.1). Pogrubienie i położenie, nie kolor (NFR-21).
-!procedure $blad_pola($t)
-$tekst($t, "b")
-!endprocedure
-
-' Opcja wyboru jednej wartości w ramce na pełną szerokość (NFR-17).
-' $wybrane: "X" dla wybranej, "" dla pozostałych. $tresc z ikoną z fragmentów.
-!procedure $opcja($wybrane, $tresc, $opis="")
-{+
-<size:2>$dk_spacje(226)</size>
-!if $wybrane == "X"
-(X) <b>$tresc</b>
-!else
-( ) $tresc
-!endif
-!if $opis != ""
-$tekst($opis)
-!endif
-}
-!endprocedure
-
-' Otwiera ramkę pozycji listy na pełną szerokość ekranu. Zamyka ją zwykłe „}”.
-' Pozycję składa się ręcznie, gdy $pozycja z _wspolne.iuml nie wystarcza.
-!procedure $ramka()
-{+
-<size:2>$dk_spacje(230)</size>
+$przyciski_kierunku()
 !endprocedure

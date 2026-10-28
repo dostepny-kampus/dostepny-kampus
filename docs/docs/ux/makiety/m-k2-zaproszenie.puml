@@ -5,7 +5,7 @@
 $ekran_poczatek()
 $naglowek("Zaproś osobę")
 <b>Adres e-mail</b>
-"$dk_spacje(30)"
+$pole_tekstowe()
 <b>Rola</b>
 ( ) Zbierający
 ( ) Weryfikator

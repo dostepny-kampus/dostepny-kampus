@@ -4,7 +4,6 @@
 !include _zespol-w-terenie.iuml
 $ekran_poczatek()
 $naglowek("Moje zgłoszenia")
-$tekst("Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.")
-$przycisk_glowny("Zmierz i zgłoś barierę")
+$komunikat("Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.", "Zmierz i zgłoś barierę")
 $ekran_koniec()
 @endsalt

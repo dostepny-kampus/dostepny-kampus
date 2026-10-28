@@ -6,7 +6,7 @@ $ekran_poczatek()
 $naglowek("Zaproś osobę")
 $komunikat("Zaproszenie wysłane na podany adres.")
 <b>Adres e-mail</b>
-"$dk_spacje(30)"
+$pole_tekstowe()
 <b>Rola</b>
 ( ) Zbierający
 ( ) Weryfikator

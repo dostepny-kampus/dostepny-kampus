@@ -12,7 +12,7 @@ $przycisk("Powtórz pomiar")
 ..
 <b>Poza budynkiem</b>
 $sekcja("Miejsce bariery")
-$obraz("mapa z punktem bariery: kontury budynków, bez mapy ulic")
+$mapa("mapa z punktem bariery: kontury budynków, bez mapy ulic")
 $przesun_punkt("na mapie")
 ..
 $przycisk_glowny("Dalej")
