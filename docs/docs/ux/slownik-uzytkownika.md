@@ -120,7 +120,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | rejestracja | „Załóż konto” | Gość | bez zmian | 4.8 |
 | rezygnacja z logowania | „Nie teraz” | Gość | bez zmian; nie brzmi jak błąd | 4.8 |
 | nagłówek L2 | „Konto” albo „Konto i praca” | Odwiedzający; role pracownicze | Nagłówek powtarza napis z paska. | 6.3 |
-| rola, lista ról | „Twoje role: Odwiedzający, Zbierający” | wszystkie zalogowane | bez zmian | 10.1 |
+| rola, lista ról | „Twoje role: Odwiedzający, Zbierający, Koordynator” | wszystkie zalogowane | bez zmian | 10.1 |
 | „Twoje czynności” | „Twoja praca” | role pracownicze | „Czynności” brzmi urzędowo. Napis pasuje do „Konto i praca”. | 10.1 |
 | klauzula informacyjna | „Informacja o danych osobowych” | wszystkie zalogowane | bez zmian | 6.3 |
 | wycofanie zgody | „Wycofaj zgodę”; w potwierdzeniu „Zostaw zgodę” zamiast „Anuluj” | wszystkie zalogowane | Oba przyciski mówią o skutku, więc „Anuluj” nie myli. | 6.3 |
@@ -136,7 +136,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | nagłówek C1 | „Pomiar pozycji” | Zbierający | bez zmian | 10.2 |
 | uśrednianie pozycji | „Pomiar: zostało 12 s” | Zbierający | Bez słowa „uśrednianie”. | 10.2 |
 | dokładność pozycji | „Dokładność: 0,8 m (szacunek)” | Zbierający | bez zmian | 10.2 |
-| liczba satelitów GNSS | „Satelity: GPS 7, Galileo 5” | Zbierający | Nazwy systemów zamiast skrótu „GNSS”. | 10.2 |
+| liczba satelitów GNSS | „Satelity: GPS 7, Galileo 5, GLONASS 4” | Zbierający | Nazwy systemów zamiast skrótu „GNSS”, każdy system osobno (US6.1). | 10.2 |
 | mapa nieba | „Mapa nieba” | Zbierający | bez zmian | 10.2 |
 | podpowiedź budynku | „Czy to budynek C-13?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | Zbierający | Pytanie zamiast słowa „podpowiedź”. | 10.2 |
 | korekta ręczna | „Korekta ręczna” | Zbierający, Weryfikator | bez zmian | 10.2 |
@@ -151,6 +151,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | opis „Blokada” (C2) | „Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś ją przeniesie.” | Zbierający | Skrócone kryterium stopnia 3. | 10.2, 10.5 |
 | opis przy TB-29 (C2) | „Obowiązkowy przy typie »inna bariera«.” | Zbierający | Mówi przed zapisem, kiedy pole jest wymagane (US7.3). | 10.2 |
 | „półpiętro” | „Półpiętro” | Zbierający | bez zmian | 10.2 |
+| budynek, piętro i data w pozycji listy (C3, C4, C7, R2) | „C-13, piętro 2, 12.11.2026”; w R2 „Budynek C-13, piętro 2”; przy zmianie oznaczenia wejścia „A-1, Wejście główne” | Zbierający, Weryfikator | Ten sam wzór co „Piętro:” na karcie budynku. | 10.3 |
 | piętro wpisywane ręcznie (C2, budynek podstawowy) | „Wpisz numer piętra, 0 to parter.” | Zbierający | Mówi, jak liczyć piętra, bo bez planu nie ma etykiet (BR-G1). | 10.2 |
 | status „lokalne” | „W telefonie” | Zbierający | Odpowiada na pytanie PE-2, czy zgłoszenie dotarło. | 10.3 |
 | statusy „wysłane”, „w weryfikacji”, „przyjęte”, „odrzucone”, „archiwalne” | „Wysłane”, „W weryfikacji”, „Przyjęte”, „Odrzucone”, „Archiwalne” | Zbierający | Krótkie pojęcia dokumentacji. | 10.3, 10.5 |
@@ -193,7 +194,11 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | zmienione pola nowej wersji (R2) | „Zmienione: uciążliwość” | Weryfikator | Weryfikator nie szuka różnicy sam (BR-3). | 10.5 |
 | „Przyjmij”, „Odrzuć”, powód odrzucenia | „Przyjmij”, „Odrzuć”, pole „Powód odrzucenia” | Weryfikator | bez zmian | 10.5 |
 | zasłonięcie twarzy albo tablicy | „Zasłoń twarz lub tablicę” | Weryfikator | Czasownik na przycisku. | 10.5 |
-| pseudonim autora | „Zbierający, Autor 17” | Weryfikator | bez zmian | 10.5 |
+| pseudonim autora | „Autor: Zbierający, Autor 17”; przy zgłoszeniu szybkim „Autor: Odwiedzający, Autor 23” | Weryfikator | Rola i pseudonim bez danych osobowych (BR-5). | 10.5 |
+| rodzaj zgłoszenia (R1, R2) | „Zgłoszenie z pomiaru”, „Zgłoszenie szybkie”, „Bariery już nie ma”, „Zmiana oznaczenia wejścia” | Weryfikator | Rodzaj mówi, czy typ i uciążliwość trzeba ustalić (BR-14, BR-15). Dwa ostatnie napisy są te same co na C3. | 10.5 |
+| data wysłania w kolejce (R1) | „Wysłane 12.11.2026” | Weryfikator | To samo słowo co status „Wysłane” u Zbierającego. | 10.5 |
+| etykiety danych zgłoszenia (R2) | „Czego dotyczy:”, „Miejsce:”, „Obecne oznaczenie:”, „Wybrane oznaczenie:”, „Wcześniejsze zgłoszenie:” | Weryfikator | Krótka etykieta przed wartością z danych. „Czego dotyczy” powtarza pytanie z kroku 2 V4. | 10.5 |
+| podobne zgłoszenie: odległość i piętro (R2) | „5 m, piętro 2”; przy wyborze duplikatu „schody przy wejściu, 2 m”, „próg, 5 m” | Weryfikator | Odległość tekstem, a nie tylko punktem na mapie (NFR-19). | 10.4 |
 | postęp inwentaryzacji | „Postęp inwentaryzacji” | Koordynator | bez zmian | 10.7 |
 | postęp budynku | „4 z 5 pięter, 80%” | Koordynator | bez zmian | 10.7 |
 | liczby zgłoszeń w K1 | „Czeka na sprawdzenie: 3”, „Przyjęte: 4” | Koordynator | bez zmian; liczby jak w scenariuszu `@US11.1` | 10.7 |
@@ -202,6 +207,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | zaproszenie | przycisk i nagłówek K2 „Zaproś osobę”, przycisk „Wyślij zaproszenie” | Koordynator | Nagłówek powtarza napis przycisku z L2. | 10.4 |
 | pola K2 | „Adres e-mail”, „Rola” | Koordynator | bez zmian | 10.4 |
 | eksport | przycisk i nagłówek K3 „Pobierz eksport”, przycisk „Pobierz plik” | Koordynator | Krótkie pojęcie dokumentacji. | 10.6 |
+| wybór formatu eksportu (K3) | „Format pliku” | Koordynator | bez zmian; nagłówek nad dwoma formatami | 10.6 |
 | formaty eksportu | „GeoJSON (WGS84)”, „CSV (PUWG 1992, EPSG:2180)” | Koordynator | Format i kod EPSG pozwalają otworzyć plik w QGIS bez zgadywania układu. | 10.6 |
 
 ## Katalog komunikatów (hipoteza, do potwierdzenia w wywiadach)
