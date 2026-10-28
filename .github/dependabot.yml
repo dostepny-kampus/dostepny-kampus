@@ -88,3 +88,19 @@ updates:
     commit-message:
       prefix: build
       include: scope
+
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: build
+      include: scope
+    groups:
+      gradle-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
