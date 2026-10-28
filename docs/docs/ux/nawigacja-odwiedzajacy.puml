@@ -63,7 +63,7 @@ PASEK --> L2 : „Konto”; role\npracownicze:\n„Konto i praca”
 ZG --> K1 : zgoda jest\nalbo „Pozwól na\nlokalizację”
 ZG --> UST : „Otwórz\nustawienia”
 ZG --> V1 : „Wróć do mapy”
-K1 --> K2 : „Zrób zdjęcie”
+K1 --> K2 : „Zrób zdjęcie”;\nze zdjęciem „Dalej”
 K2 --> K3 : wybór grupy
 K2 --> K1 : „Wstecz”
 K1 --> PR : „Wstecz”\n(zdjęcie\nzrobione)

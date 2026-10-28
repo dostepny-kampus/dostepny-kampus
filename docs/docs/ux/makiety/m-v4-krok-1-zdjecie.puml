@@ -1,0 +1,14 @@
+@startsalt
+' V4 Zgłoszenie szybkie, krok 1 z 3 po powrocie z kroku 2: zdjęcie już jest.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek("Zgłoś barierę")
+$numer_kroku("Krok 1 z 3")
+$obraz("miniatura zdjęcia")
+$tekst("Nie fotografuj twarzy ani tablic rejestracyjnych.")
+.
+$przycisk_glowny("Dalej")
+$przycisk("Zrób nowe zdjęcie", "camera-slr")
+$ekran_koniec()
+@endsalt
