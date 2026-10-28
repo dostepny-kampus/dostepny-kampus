@@ -173,7 +173,7 @@ Stan zwykły, budynek szczegółowy, Gość niezalogowany. Budynek A-1 ma trzy w
 
 Wejście główne ma schody, a dostępne jest wejście z tyłu budynku, bramą od ulicy Norwida [1]. Dlatego ono jest wejściem zalecanym (BR-25). Trzecie wejście to przykład oznaczenia „Brak danych”.
 
-Makiety V2 pokazują arkusz rozwinięty na cały ekran. W aplikacji V2 wysuwa się najpierw do połowy ekranu nad mapą V1, a fragment mapy z góry makiety to mapa nad arkuszem (wymagania V2, decyzja 48).
+Makiety V2 pokazują arkusz rozwinięty na cały ekran. W aplikacji V2 wysuwa się najpierw do połowy ekranu nad mapą V1 (wymagania V2, decyzja 48). Fragment mapy z góry makiety to mapa nad arkuszem.
 
 ![Makieta V2 Karta budynku: nagłówek Budynek A-1, fragment mapy, chipy, wiersz daty i źródła, trzy wejścia z wejściem zalecanym na górze, grupy Winda i toaleta oraz Piętra, dwie bariery, przypięty pas czynności i pasek dolny](../../_generated/m-v2-karta-budynku.svg)
 
