@@ -6,7 +6,7 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 
 | Ekran | Makiety | Stany w tabelach |
 | --- | --- | --- |
-| V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala | ładowanie, brak mapy ulic, pierwsze uruchomienie, plan piętra, sala bez drogi, brak sali |
+| V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala, bariera na mapie | ładowanie, brak mapy ulic, pierwsze uruchomienie, plan piętra, sala bez drogi, brak sali, duża czcionka |
 | V2 Karta budynku | budynek podstawowy bez wejścia zalecanego, brak barier, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
 | V3 Którędy wejść | wejście jest, brak wejścia dostępnego, brak danych | brak sieci |
 | V4 Zgłoszenie szybkie | kroki 1–3, krok 1 ze zdjęciem, prośba o zgodę, zgoda przybliżona, brak pozycji, rezygnacja, wysłane, wysłane bez internetu | Gość, odmowa zgody, lokalizacja wyłączona, ustalanie miejsca, błąd zapisu |
@@ -20,7 +20,7 @@ Pole tekstowe, przełącznik „Mapa” i „Lista budynków”, mapa z podpisem
 
 ### V1: stan zwykły
 
-![Makieta V1: nagłówek Mapa kampusu, pole symbolu budynku, przełącznik Mapa i Lista budynków, zastępnik mapy z oznaczeniami barier, przyciski mapy, podpis OpenStreetMap i pasek dolny](../../_generated/m-v1-mapa.svg)
+![Makieta V1: nagłówek Mapa kampusu, pole symbolu budynku, przełącznik Mapa i Lista budynków, zastępnik mapy z oznaczeniami barier, na mapie Powiększ, Pomniejsz i cztery strzałki w krzyżu, przycisk informacji przy podpisie OpenStreetMap i pasek dolny](../../_generated/m-v1-mapa.svg)
 
 Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 
@@ -31,9 +31,9 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | Przełącznik „Mapa” i „Lista budynków”; wybraną pozycję widać po kształcie pola | NFR-19, NFR-21 |
 | „Legenda” nad mapą: znaki mapy i planu z napisami | NFR-21, decyzja 48 |
 | Zastępnik mapy: mapa ulic, kontury budynków, bariery ze zgłoszeń przyjętych | US1, US1.3, US10.6, NFR-11 |
-| Bariera na mapie: uciążliwość napisem i ikoną, np. „Blokada”, „Utrudnienie” | US1.3, NFR-21, PW-13 |
-| „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” zamiast gestów | NFR-15 (WCAG 2.5.1), PW-8 |
-| „© OpenStreetMap contributors” jako odnośnik, w ramce mapy | NFR-37 |
+| Bariera na mapie: znak uciążliwości, a słowo, np. „Blokada”, gdy mieści się bez nakładania | US1.3, NFR-20, NFR-21, PW-13 |
+| Na mapie „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu, każda z nazwą dla TalkBack „Przesuń mapę w górę” itd. | NFR-15 (WCAG 2.5.1, 2.5.7), NFR-18, PW-8, PW-11 |
+| „© OpenStreetMap contributors” w jednym wierszu jako odnośnik, w ramce mapy; obok „ⓘ” ze źródłami mapy | NFR-37, NFR-40 |
 | Pasek dolny z „Konto” | US1, US4, US5.1, US14 |
 
 | Stan bez osobnej makiety | Co się zmienia |
@@ -41,6 +41,7 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | Ładowanie | w miejscu mapy napis „Wczytujemy mapę kampusu…”; kontury pojawiają się przed mapą ulic (NFR-11) |
 | Błąd: brak mapy ulic | w miejscu mapy ulic napis „Mapa ulic chwilowo się nie wczytuje. Budynki i bariery nadal możesz oglądać.” (NFR-50) |
 | Pierwsze uruchomienie | przed mapą otwiera się instrukcja V5 (US5.1) |
+| Duża czcionka | przy skali czcionki co najmniej 1,5 ekran startuje na liście budynków (NFR-19, NFR-20) |
 
 ### V1: wyszukiwanie
 
@@ -56,7 +57,7 @@ Czynność główna: wybór wyniku „Budynek C-13”, który zaznacza budynek n
 
 ### V1: lista budynków
 
-![Makieta V1 z wybraną listą budynków: Budynek A-1 z barierą i zastępnikiem pozostałych barier, Budynek C-13 i budynek-zastępnik, każdy z nazwą z danych i barierami](../../_generated/m-v1-mapa-lista.svg)
+![Makieta V1 z wybraną listą budynków: Budynek A-1 z barierą i zastępnikiem pozostałych barier, Budynek C-13 i budynek-zastępnik, każdy z nazwą z danych i barierami, przy dwóch pierwszych Pokaż na mapie](../../_generated/m-v1-mapa-lista.svg)
 
 Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 
@@ -66,6 +67,7 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 | Pozycja: „Budynek A-1”, nazwa z danych, bariery z uciążliwością tekstem i ikoną; cała ramka pozycji to jeden cel dotyku | NFR-19, US1.3, NFR-21, NFR-17 |
 | Bariery A-1 jak we wzorcu V2: schody przy wejściu głównym [1], pozostałe jako zastępnik | US1.3, BR-7 |
 | Lista daje tę samą informację co mapa, więc jest drogą dla TalkBack | NFR-19, NFR-18 |
+| „Pokaż na mapie” przy budynku: mapa z zaznaczonym budynkiem; przy dużej czcionce lista jest widokiem startowym | NFR-19, NFR-20 |
 | Bez przycisków mapy i podpisu OpenStreetMap, bo lista nie pokazuje mapy | decyzja 16 |
 
 ### V1: brak wyniku
@@ -123,6 +125,19 @@ Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 | Plan piętra | po „Pokaż na planie” na V2: plan bez arkusza sali |
 | Sala bez drogi | w arkuszu zamiast kroków komunikat „Nie znaleźliśmy w danych wejścia i windy…” (BR-25) |
 | Brak sali | komunikat „Nie znaleźliśmy sali »X« w budynku A-1…” z przyciskiem „Pokaż opis budynku” |
+
+### V1: bariera na mapie
+
+![Makieta V1 po dotknięciu znaku bariery: mapa z wybranym znakiem przy A-1, przyciski mapy, a pod mapą arkusz z typem bariery, napisem Blokada, miejscem, datą sprawdzenia, Pokaż opis budynku i Zamknij](../../_generated/m-v1-mapa-bariera.svg)
+
+Czynność główna: „Pokaż opis budynku”, która otwiera V2.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Dotknięcie znaku bariery otwiera arkusz; znak ma nazwę dla TalkBack | US1.3, NFR-18 |
+| Typ bariery jako zastępnik, uciążliwość napisem i ikoną | US1.3, BR-7, NFR-21 |
+| Miejsce: budynek i wejście albo piętro, „Sprawdzone [data]” | US2.2, PW-3 |
+| „Zamknij” chowa arkusz, a mapa zostaje | wymagania do ekranów (V1) |
 
 ## V2 Karta budynku
 
@@ -195,7 +210,7 @@ Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego 
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Zmień oznaczenie” w ramce każdego wejścia pod „Zgłoś barierę przy tym wejściu”, także przy „Brak danych” | US17.2, BR-24 |
+| „Zmień oznaczenie” w ramce każdego wejścia pod „Zgłoś barierę”, także przy „Brak danych” | US17.2, BR-24 |
 | „Oznacz obejrzane piętra” pod grupą „Piętra”, raz dla całego budynku | US15.1, PW-12 |
 | „Zgłoś, że bariery nie ma” przy każdej barierze | US8.4, BR-19, PW-12 |
 | „Popraw zgłoszenie” tylko przy własnym zgłoszeniu przyjętym albo zgłoszeniu szybkim; tu przy drugiej barierze | BR-3, BR-18 |
@@ -206,9 +221,9 @@ Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego 
 
 ### V3: wejście jest
 
-![Makieta V3 dla A-1: pogrubione zdanie o wejściu dostępnym bramą od ul. Norwida, ramka wejścia z oznaczeniem i źródłem oraz bariera przy tym wejściu](../../_generated/m-v3-ktoredy-wejsc.svg)
+![Makieta V3 dla A-1: pogrubione zdanie o wejściu dostępnym bramą od ul. Norwida, ramka wejścia z oznaczeniem, źródłem i Pokaż na mapie oraz bariera przy tym wejściu](../../_generated/m-v3-ktoredy-wejsc.svg)
 
-Czynność główna: brak; ekran odpowiada na jedno pytanie, a dalej prowadzą „Wstecz” i pasek dolny.
+Czynność główna: brak; ekran odpowiada na jedno pytanie, a dalej prowadzą „Wstecz”, „Pokaż na mapie” i pasek dolny.
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -216,6 +231,7 @@ Czynność główna: brak; ekran odpowiada na jedno pytanie, a dalej prowadzą �
 | Zdanie z odpowiedzią na górze, pogrubione: TalkBack czyta je pierwsze | US3, US3.1, NFR-18 |
 | „Wejście bramą od ul. Norwida” jako dostępne, jak w deklaracji A-1; nazwa odróżnia je od niedostosowanego wejścia przy ul. Norwida [1] | US2.1, US3 |
 | Oznaczenie tekstem i ikoną, pod nim data i źródło | US2.1, US17.3, NFR-21 |
+| „Pokaż na mapie” w ramce wejścia: V1 z zaznaczonym wejściem | US2.1, US3 |
 | Bariera przy tym wejściu: typ i uciążliwość jako zastępniki, bo deklaracja nie podaje barier przy tym wejściu; zdjęcie, „Sprawdzone [data]” | US2.2, UC4 4c, PW-3 |
 | Pasek dolny z „Konto” | wymagania wspólne |
 

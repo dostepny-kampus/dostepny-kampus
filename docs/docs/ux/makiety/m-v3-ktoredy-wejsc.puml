@@ -8,6 +8,7 @@ $tekst("Budynek A-1 ma wejście dostępne: »Wejście bramą od ul. Norwida«.",
 $ramka()
 <b>$dostepne()</b>: Wejście bramą od ul. Norwida
 Z map i opisów, stan z <i>[data]</i>
+$przycisk("Pokaż na mapie")
 ..
 <b><i>[typ bariery z danych]</i></b>
 $tekst("[uciążliwość z danych: napis i ikona]", "i")

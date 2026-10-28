@@ -36,13 +36,13 @@ Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu. Przyci
 | „Weź do sprawdzenia” przy każdym zgłoszeniu, zwykły przycisk na pełną szerokość ramki | US10.4, BR-11, NFR-17, NFR-21 |
 | Brak zgłoszeń samego Weryfikatora, także jego zmian „bariera usunięta” i oznaczenia wejścia; filtr robi serwer | US10.5, BR-4 |
 
-![Makieta R1 w widoku mapy: mapa z punktami i podpisem OpenStreetMap, przyciski Powiększ, Pomniejsz, W górę, W dół, W lewo, W prawo i zgłoszenie wybranego punktu](../../_generated/m-r1-kolejka-weryfikacji-mapa.svg)
+![Makieta R1 w widoku mapy: mapa z punktami i podpisem OpenStreetMap, na mapie Powiększ, Pomniejsz i cztery strzałki w krzyżu oraz zgłoszenie wybranego punktu](../../_generated/m-r1-kolejka-weryfikacji-mapa.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Mapa z punktami zgłoszeń, zastępnik | UC14 |
 | „© OpenStreetMap contributors” na mapie, podkreślony jako odnośnik do strony praw autorskich | NFR-37 |
-| „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” zamiast gestów | NFR-15 (WCAG 2.5.1), PW-8; wymagania wspólne |
+| Na mapie „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu z nazwami dla TalkBack, jak na V1 | NFR-15 (WCAG 2.5.1, 2.5.7), PW-8, PW-11; wymagania wspólne |
 | Pod mapą zgłoszenie z wybranego punktu, z tymi samymi danymi co na liście | NFR-19, US10.4 |
 
 ![Makieta R1 w stanie zgłoszenie zajęte: komunikat Ktoś inny wziął już to zgłoszenie, a lista nie ma już zgłoszenia próg z C-13](../../_generated/m-r1-kolejka-weryfikacji-zajete.svg)

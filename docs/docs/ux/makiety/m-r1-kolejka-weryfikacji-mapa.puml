@@ -14,8 +14,7 @@ $przycisk("Otwórz", "chevron-right")
 }
 ..
 $przelacznik("Mapa", "Lista", 1)
-$mapa("mapa kampusu z punktami zgłoszeń do sprawdzenia; wybrany punkt przy C-13")
-$przyciski_mapy()
+$mapa("mapa kampusu z punktami zgłoszeń do sprawdzenia; wybrany punkt przy C-13", "", "mapa")
 $ramka()
 <b>próg</b>
 Budynek C-13
