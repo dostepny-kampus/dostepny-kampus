@@ -4,8 +4,8 @@
 
 | Kontener | Technologia | Odpowiada za |
 | --- | --- | --- |
-| Aplikacja mobilna | Android 8.0+, Kotlin, Jetpack Compose, MapLibre | ekrany według roli, pomiar pozycji, mapa także bez sieci |
-| Baza lokalna | Room, WorkManager | budynki, bariery i zgłoszenia czekające na synchronizację; wysyłka po powrocie sieci (NFR-5, NFR-6) |
+| Aplikacja mobilna | Android 8.0+, Kotlin, Jetpack Compose, MapLibre, WorkManager | ekrany według roli, pomiar pozycji, mapa także bez sieci; wysyłka kolejki po powrocie sieci (NFR-6) |
+| Baza lokalna | Room | budynki, bariery i zgłoszenia czekające na synchronizację, także po restarcie telefonu (NFR-5) |
 | Serwer aplikacji | Spring Boot, Java 25, Spring Modulith | REST API z kontraktu `api/openapi.yaml`, sprawdzanie roli przy każdym żądaniu (NFR-33) |
 | Baza danych przestrzennych | PostgreSQL, PostGIS, Flyway | budynek dla punktu, podobne zgłoszenia w promieniu, przeliczenie na PUWG 1992 |
 | Magazyn zdjęć | MinIO, zgodny z S3 | zdjęcia zgłoszeń bez metadanych (NFR-26) |

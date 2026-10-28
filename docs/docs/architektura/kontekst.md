@@ -10,7 +10,7 @@
 | OpenStreetMap | system zewnętrzny | kontury budynków, eksportowane raz na licencji ODbL [2] ([ADR-0005](decyzje/0005-mapa-offline.md)) |
 | Serwery kafelków OSM | system zewnętrzny | podkład mapy, tylko online (NFR-39) |
 
-Usługa logowania jest jedynym systemem zewnętrznym, który występuje jako aktor w przypadkach użycia. Pozostałe tylko dostarczają dane, więc ich awaria nie zatrzymuje aplikacji (NFR-50).
+Usługa logowania jest jedynym systemem zewnętrznym, który występuje jako aktor w przypadkach użycia. Pozostałe tylko dostarczają dane, a ich awaria nie może zatrzymać aplikacji (NFR-50).
 
 USOS jest poza MVP (decyzja projektu nr 35), dlatego nie ma go na diagramie. QGIS też go nie ma: Koordynator otwiera w nim pobrany plik eksportu, a QGIS nie łączy się z systemem.
 
