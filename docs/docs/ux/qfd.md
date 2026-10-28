@@ -13,7 +13,7 @@ Reguła wag: potrzeba grupy docelowej (RO-GOS, RO-ODW) ma wagę co najmniej 4, a
 | 5 | N1 | To cel projektu z wizji: osoba starsza planuje wizytę bez przeszkód (M-1, M-4). |
 | 4 | N2 | Data i zdjęcie usuwają problemy AS-IS P-1, P-3 i P-4, ale same nie wskazują wejścia. |
 | 4 | N3 | Potrzeba grupy docelowej (RO-ODW). Nie 5, bo zgłoszenie Odwiedzającego uzupełnia obchód Zbierającego, a nie zastępuje go. |
-| 5 | N4 | Grupa docelowa kursu UX to osoby starsze, stąd NFR-15…NFR-24 i cel M-3. |
+| 5 | N4 | Grupa docelowa kursu UX to osoby starsze, stąd NFR-15…NFR-24, NFR-51 i cel M-3. |
 | 3 | N5 | Potrzeba roli zespołu (RO-ZBI). Cel poniżej 1 m dotyczy tylko terenu otwartego (NFR-1). |
 | 3 | N6 | Potrzeba roli zespołu (RO-ZBI). Utrata zgłoszenia to strata pracy w terenie, a cel M-6 wymaga 100% zgłoszeń na serwerze. |
 | 3 | N7 | Potrzeba ról zespołu (RO-ZBI, RO-WER). Konflikt wymaga równoczesnej edycji (hipoteza: rzadko), ale grozi utratą zmiany (NFR-9). |
@@ -26,7 +26,7 @@ Związki N ↔ US pochodzą z tabeli historyjek i z [macierzy śledzenia](../wym
 
 - **9** — kryterium akceptacji historyjki sprawdza potrzebę wprost;
 - **3** — historyjka wspiera potrzebę, ale jej kryteria nie sprawdzają jej wprost, albo historyjka jest umożliwiająca (US14);
-- **1** — związek spoza tabeli historyjek: wymaganie dostępności NFR-15…NFR-24 wymienia N4 i ścieżkę historyjki Gościa niezalogowanego lub Odwiedzającego.
+- **1** — związek spoza tabeli historyjek: wymaganie dostępności NFR-15…NFR-24, NFR-51 wymienia N4 i ścieżkę historyjki Gościa niezalogowanego lub Odwiedzającego.
 
 | Siła | Historyjka | Potrzeba | Uzasadnienie |
 | --- | --- | --- | --- |
@@ -111,7 +111,7 @@ Udział to ważność podzielona przez 633, zaokrąglona do 0,1 punktu procentow
 1. **US3 „Którędy wejść” jest na 6. miejscu, choć ma priorytet „Powinno być”.** Cel M-4 mierzy US3.2, a N1 ma najwyższą wagę. Propozycja do decyzji właściciela projektu: utrzymać priorytet, jeśli karta budynku (US2, US17) pokaże wejście dostępne w 3 dotknięciach od mapy. Wtedy M-4 trzeba odnieść do US2 i US17; w przeciwnym razie podnieść US3 do „Musi być”.
 2. **US7, US8 i US1 mają niski wynik, bo QFD liczy tylko wkład bezpośredni.** Bez formularza (US7) nie ma danych o barierach, a bez wyszukiwania (US1) nie ma ścieżki do karty budynku. Priorytet MoSCoW uwzględnia zależności i scenariusz pokazu, więc go nie zmieniamy. QFD nie zastępuje priorytetów, tylko pokazuje, skąd bierze się wartość dla użytkownika.
 3. **US8 może mieć niedoszacowany związek z N2.** Zbierający zaczyna zmianę „bariera usunięta” w US8.4, a po jej przyjęciu bariera znika z mapy (US10.6), co tekst pod kryteriami wiąże z N2. Macierz liczy N2 tylko po stronie Weryfikatora (US10), bo tabela historyjek nie wiąże US8 z N2. Propozycja: rozważyć dopisanie N2 do US8 na stronie historyjek (poza zakresem tej strony).
-4. **N4 ma wagę 5, a w macierzy tylko jeden silny związek (US4).** Potrzebę N4 realizują głównie wymagania przekrojowe NFR-15…NFR-24, obecne na każdym ekranie. Dlatego wymagania ekranów i makiety fazy B mają sprawdzać dostępność na każdym ekranie, a nie tylko w historyjkach z N4.
+4. **N4 ma wagę 5, a w macierzy tylko jeden silny związek (US4).** Potrzebę N4 realizują głównie wymagania przekrojowe NFR-15…NFR-24, NFR-51, obecne na każdym ekranie. Dlatego wymagania ekranów i makiety fazy B mają sprawdzać dostępność na każdym ekranie, a nie tylko w historyjkach z N4.
 5. **Wynik zależy od wag pod kurs UX.** US6, US11 i US13 są w środku rankingu, bo potrzeby zespołu N5–N9 mają wagę 3. Dla kursu Mobilne, gdzie pomiar GNSS i eksport są rdzeniem, te wagi byłyby wyższe. Ranking warto przeliczyć po wywiadach, gdy wagi N1–N4 przestaną być hipotezą (R-7).
 
 ## Źródła
