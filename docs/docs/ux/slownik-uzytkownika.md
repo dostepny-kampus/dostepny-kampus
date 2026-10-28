@@ -160,7 +160,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | znak „zmiana czeka na wysłanie” | „Zmiana czeka na wysłanie” | Zbierający | bez zmian | 10.3 |
 | powód odrzucenia i rodzaj zmiany (C3) | „Powód odrzucenia:”, „Zmiana oznaczenia wejścia” | Zbierający | Te same słowa co pole „Powód odrzucenia” w R2 i nagłówek C6. | 10.3 |
 | konflikt wersji („wybierz wersję”) | „Dwie wersje: wybierz jedną” | Zbierający | Mówi, co się stało i co zrobić. | 10.4 |
-| pole różniące się w konflikcie | „Różni się: [pole]”, np. „Różni się: uciążliwość”, nad obiema wersjami | Zbierający | Mówi, które pole się różni, tym samym wzorem co „Zmienione: uciążliwość” na R2; różnicę widać bez koloru (NFR-21). | 10.4 |
+| pole różniące się w konflikcie | „Różni się: [pole]”, np. „Różni się: uciążliwość”, nad obiema wersjami; przy kilku polach „Różnią się: [pole], [pole]” | Zbierający | Mówi, które pole się różni, tym samym wzorem co „Zmienione: uciążliwość” na R2; różnicę widać bez koloru (NFR-21). | 10.4 |
 | wersje w konflikcie (C4) | nagłówki „Moja wersja”, „Wersja z serwera” | Zbierający | Te same słowa co w przyciskach wyboru wersji. | 10.4 |
 | podział kolejki (C4) | „2 zgłoszenia i 1 znacznik piętra” | Zbierający | Mówi, co dokładnie czeka na wysłanie. | 10.3 |
 | „Wyślij ponownie do bieżącego zgłoszenia” | „Wyślij ponownie”, a nad przyciskiem zdanie z katalogu komunikatów (C3, nieaktualne) | Zbierający | Krótki napis mieści się na przycisku w jednym wierszu. Zdanie nad nim mówi, że zmiana trafi do aktualnej wersji, a nie do tego samego zgłoszenia. | 10.4 |

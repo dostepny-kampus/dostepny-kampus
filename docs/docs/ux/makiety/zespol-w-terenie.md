@@ -242,7 +242,7 @@ Czynność główna: wybór wersji — „Zostaw moją wersję” albo „Weź w
 | --- | --- |
 | „Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.” | US9.3, BR-10, PW-12 |
 | Obie wersje jedna pod drugą; uciążliwość 2 i 3 jak w scenariuszu `@US9.3` | US9.3, NFR-20, NFR-22 |
-| „Różni się: uciążliwość” pod komunikatem, nad obiema wersjami; w obu wersjach pole „Uciążliwość:” pogrubione. Przy innym polu napis podaje jego nazwę, np. „Różni się: [pole]” | US9.3, NFR-21 |
+| „Różni się: uciążliwość” pod komunikatem, nad obiema wersjami; w obu wersjach pole „Uciążliwość:” pogrubione. Przy innym polu napis podaje jego nazwę, np. „Różni się: [pole]”, a przy kilku polach „Różnią się: [pole], [pole]” | US9.3, NFR-21 |
 | Przycisk wyboru pod każdą wersją | US9.3, BR-10 |
 | „Zdecyduję później”: zmiana czeka w telefonie | BR-10 |
 

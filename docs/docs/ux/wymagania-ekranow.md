@@ -448,7 +448,7 @@ Dostępność: status jest słowem, a ikona go tylko wzmacnia (NFR-21). TalkBack
 | „Synchronizuj teraz”; synchronizacja i tak rusza sama | czynność | UC10, US9.2 | — |
 | Ostrzeżenie „W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia.” | dane | NFR-7, PW-10 | — |
 | Konflikt: napis „Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.”; przy zgłoszeniu przyjętym drugie zdanie „Przyjęte zgłoszenie zostanie, a Twoja wersja, jeśli ją wybierzesz, trafi do sprawdzenia jako nowe.” (UC11 3b) | dane | US9.3, BR-10, PW-12 | — |
-| Konflikt: wersja własna i wersja z serwera naraz. Nad nimi napis „Różni się:” z nazwą pola, np. „Różni się: uciążliwość”, a w obu wersjach to pole jest pogrubione | dane | US9.3, NFR-21 | — |
+| Konflikt: wersja własna i wersja z serwera naraz. Nad nimi napis „Różni się:” z nazwą pola, np. „Różni się: uciążliwość”, a przy kilku polach „Różnią się:” i ich nazwy. W obu wersjach te pola są pogrubione | dane | US9.3, NFR-21 | — |
 | „Zostaw moją wersję” i „Weź wersję z serwera” | czynność główna | US9.3, BR-10 | C3 |
 | „Zdecyduję później”; zmiana czeka w telefonie | czynność | BR-10 | C3 |
 
