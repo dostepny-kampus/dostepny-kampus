@@ -76,6 +76,8 @@ nav:
       - Wymagania do ekranów: ux/wymagania-ekranow.md
       - Mapa nawigacji: ux/mapa-nawigacji.md
       - Słownik użytkownika: ux/slownik-uzytkownika.md
-      - Makiety: ux/makiety/index.md
+      - Makiety:
+          - Konwencje: ux/makiety/index.md
+          - Zespół w terenie: ux/makiety/zespol-w-terenie.md
   - Raporty:
       - Tydzień 2: raporty/tydzien-2.md
