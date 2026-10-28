@@ -82,7 +82,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V4, stan „lokalizacja wyłączona” | „Otwórz ustawienia” | ustawienia telefonu | zalogowani | UC7 4c |
 | V4, stan „lokalizacja wyłączona” | „Wróć do mapy” | V1 | zalogowani | UC7 4c |
 | V4, krok 1 | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | aparat, potem krok 2 | zalogowani | US4.1, BR-8 |
-| V4, krok 2 | wybór grupy barier: „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego” | V4, krok 3; w budynku przy grupie wymagającej piętra pytanie o piętro | zalogowani | US4.3, US4.5 |
+| V4, krok 2 | wybór grupy barier: „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego” | V4, krok 3; w budynku przy każdej grupie poza „Coś innego” pytanie o piętro | zalogowani | US4.3, US4.5 |
 | V4, krok 2, pytanie o piętro | przycisk piętra albo „Nie wiem” | V4, krok 3 | zalogowani | US4.5, BR-14 |
 | V4, krok 2, pytanie o piętro | „Wstecz” | V4, krok 2, lista grup; zdjęcie zostaje | zalogowani | US4.5 |
 | V4, krok 2 | „Wstecz” | V4, krok 1; zdjęcie zostaje | zalogowani | US4.1 |

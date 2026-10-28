@@ -195,7 +195,7 @@ Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu,
 
 Aplikacja nie pyta o typ bariery, uciążliwość ani budynek (US4.3, BR-14). Pozycję zaczyna ustalać po wejściu na ekran, w trakcie kroków 1 i 2 (NFR-27).
 
-O piętro aplikacja pyta tylko w konturze budynku i przy grupie z tabeli w [regułach](../biznes/reguly.md#pietro-w-zgloszeniu-szybkim) (US4.5). Zakres numerów pięter w budynku podstawowym, także pięter pod parterem, ustalimy w fazie implementacji.
+O piętro aplikacja pyta tylko w konturze budynku i przy każdej grupie poza „Coś innego” (US4.5, tabela w [regułach](../biznes/reguly.md#pietro-w-zgloszeniu-szybkim)). Zakres numerów pięter w budynku podstawowym, także pięter pod parterem, ustalimy w fazie implementacji.
 
 | Stan | Co widać |
 | --- | --- |

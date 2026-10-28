@@ -31,7 +31,7 @@ Przyjęcie wymaga też, by Weryfikator oceniał aktualną wersję zgłoszenia (B
 
 | Grupa (napis na V4) | Typy | Pytanie | Dlaczego |
 | --- | --- | --- | --- |
-| wejście i drzwi („Wejście i drzwi”) | TB-1…TB-5 | nie | Bariera leży zwykle przy wejściu. Przy ścianie pozycja bywa niedokładna (BR-G2), więc osoba przed wejściem dostałaby pytanie, które do niej nie pasuje. |
+| wejście i drzwi („Wejście i drzwi”) | TB-1…TB-5 | tak | TB-2…TB-5 dotyczą też drzwi na piętrach. Przy wejściu pozycja leży zwykle poza konturem, więc pytania nie ma. Gdy GNSS wrzuci ją do konturu (BR-G2), „Parter” jest na górze listy. Bez piętra Weryfikator nie odróżni podobnych zgłoszeń z różnych pięter w promieniu 10 m (BR-13). |
 | komunikacja pionowa („Schody i windy”) | TB-6…TB-12 | tak | Schody i winda łączą piętra, a TB-8 opisuje piętro, na które winda nie dociera. |
 | komunikacja pozioma („Przejścia i chodniki”) | TB-13…TB-17 | tak | W konturze to próg albo przejście na piętrze (TB-13…TB-15). Krawężnik i chodnik leżą poza konturem, więc tam pytania nie ma. |
 | toalety („Toalety”) | TB-18…TB-20 | tak | Toaleta jest na piętrze, a TB-18 opisuje brak toalety na piętrze. |

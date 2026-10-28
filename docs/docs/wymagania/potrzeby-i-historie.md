@@ -61,7 +61,7 @@ Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. 
 | US4.2 | Bez sieci zgłoszenie zapisuje się w telefonie i wysyła się samo po powrocie sieci. | NFR-5, NFR-6 |
 | US4.3 | Odwiedzający wybiera jedną z 6 grup barier dużymi przyciskami. Aplikacja nie pyta o typ bariery ani uciążliwość. | NFR-17, US10.3 |
 | US4.4 | Odwiedzający po wysłaniu widzi potwierdzenie, że zgłoszenie trafi do weryfikacji. Dalszego statusu zgłoszenia aplikacja mu nie pokazuje. | decyzja 32 |
-| US4.5 | Gdy pozycja leży w konturze budynku, a wybrana grupa barier wymaga piętra, aplikacja w kroku 2 pyta o piętro dużymi przyciskami. Przyciski to etykiety pięter z danych PWr albo numery w budynku podstawowym i zawsze „Nie wiem”, które zostawia piętro puste. | BR-14, NFR-17, decyzja 43 |
+| US4.5 | Gdy pozycja leży w konturze budynku, a wybrana grupa barier wymaga piętra (każda poza „inne”), aplikacja w kroku 2 pyta o piętro dużymi przyciskami. Przyciski to etykiety pięter z danych PWr albo numery w budynku podstawowym i zawsze „Nie wiem”, które zostawia piętro puste. | BR-14, NFR-17, decyzja 43 |
 | US5.1 | Instrukcja pojawia się przy pierwszym uruchomieniu. Można ją pominąć i otworzyć ponownie z pomocy. | — |
 | US16.1 | W budynku szczegółowym przełącznik pięter pokazuje etykiety pięter z danych PWr. Wybrane piętro pokazuje plan z windami, schodami, toaletami, wejściami i zgłoszeniami przyjętymi. | NFR-40 |
 | US16.2 | W budynku podstawowym przełącznika pięter nie ma, a w miejscu planu widać napis „Plan piętra niedostępny dla tego budynku”. | BR-G1, NFR-48 |
