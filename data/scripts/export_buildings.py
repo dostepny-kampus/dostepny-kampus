@@ -11,8 +11,6 @@ from pathlib import Path
 import osm2geojson
 import requests
 import shapely
-from shapely.geometry import mapping
-from shapely.geometry.base import BaseGeometry
 
 OUTPUT = Path(__file__).resolve().parent.parent / "buildings"
 OVERPASS_URL = "https://overpass-api.de/api/interpreter"
@@ -53,7 +51,7 @@ class Element:
 
     osm_id: str
     tags: dict[str, str]
-    shape: BaseGeometry
+    shape: shapely.Geometry
 
     def sort_key(self) -> tuple[str, int]:
         """Klucz sortowania: typ obiektu OSM, potem numer."""
@@ -102,7 +100,9 @@ def symbol_key(symbol: str) -> tuple[str, int, str]:
 
 
 def elements(response: dict) -> list[Element]:
-    """Zamienia odpowiedź Overpass na obiekty z geometrią (wielokąty relacji składa osm2geojson)."""
+    """Zamienia odpowiedź Overpass na obiekty z geometrią (wielokąty relacji składa osm2geojson); odrzuca odpowiedź z błędem wykonania (`remark`)."""
+    if "remark" in response:
+        raise ValueError(f"Overpass: {response['remark']}")
     found = []
     for item in osm2geojson.json2shapes(response, filter_used_refs=False):
         props = item["properties"]
@@ -128,12 +128,12 @@ def buildings(found: list[Element]) -> list[Building]:
     return [by_symbol[s] for s in sorted(by_symbol, key=symbol_key)]
 
 
-def geometry(shape: BaseGeometry) -> dict:
+def geometry(shape: shapely.Geometry) -> dict:
     """Zwraca geometrię GeoJSON: współrzędne zaokrąglone do 7 miejsc, pierścień zewnętrzny przeciwnie do ruchu wskazówek zegara (RFC 7946)."""
     rounded = shapely.transform(shape, lambda coords: coords.round(PRECISION))
     if rounded.geom_type in POLYGONS:
         rounded = shapely.orient_polygons(rounded)
-    return mapping(rounded)
+    return shapely.geometry.mapping(rounded)
 
 
 def feature_collection(building: Building) -> dict:
@@ -197,7 +197,7 @@ def export(found: list[Building], output: Path) -> None:
 
 def main() -> None:
     """Pobiera dane z Overpass (albo czyta zapisaną odpowiedź z `--input`) i odświeża data/buildings."""
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description="Eksport konturów budynków PWr i ich wejść z OpenStreetMap do data/buildings.")
     parser.add_argument("--input", type=Path, help="zapisana odpowiedź Overpass (JSON) zamiast zapytania")
     args = parser.parse_args()
     response = json.loads(args.input.read_text(encoding="utf-8")) if args.input else fetch()
