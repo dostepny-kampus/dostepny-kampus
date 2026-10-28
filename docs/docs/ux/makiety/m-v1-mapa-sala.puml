@@ -12,7 +12,7 @@ $mapa("plan 2 piętra A-1 z wyróżnioną salą; krótkie podpisy: Winda, Toalet
 $przyciski_mapy()
 $ramka()
 <b>A-1: Sala 329</b>
-Sala wykładowa, 2 piętro
+<i>[funkcja sali z danych]</i>, 2 piętro
 1. <i>[wejście zalecane]</i> (parter)
 2. Winda przy klatkach C i D
 3. 2 piętro

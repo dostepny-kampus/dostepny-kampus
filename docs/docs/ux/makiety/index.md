@@ -173,6 +173,8 @@ Stan zwykły, budynek szczegółowy, Gość niezalogowany. Budynek A-1 ma trzy w
 
 Wejście główne ma schody, a dostępne jest wejście z tyłu budynku, bramą od ulicy Norwida [1]. Dlatego ono jest wejściem zalecanym (BR-25). Trzecie wejście to przykład oznaczenia „Brak danych”.
 
+Makiety V2 pokazują arkusz rozwinięty na cały ekran. W aplikacji V2 wysuwa się najpierw do połowy ekranu nad mapą V1, a fragment mapy z góry makiety to mapa nad arkuszem (wymagania V2, decyzja 48).
+
 ![Makieta V2 Karta budynku: nagłówek Budynek A-1, fragment mapy, chipy, wiersz daty i źródła, trzy wejścia z wejściem zalecanym na górze, grupy Winda i toaleta oraz Piętra, dwie bariery, przypięty pas czynności i pasek dolny](../../_generated/m-v2-karta-budynku.svg)
 
 | Element | AC/BR/NFR |
@@ -185,7 +187,8 @@ Wejście główne ma schody, a dostępne jest wejście z tyłu budynku, bramą o
 | Wejście: oznaczenie tekstem i ikoną na początku, potem nazwa wejścia; „Wejście główne” niedostępne, „Wejście bramą od ul. Norwida” dostępne [1]; nazwa odróżnia je od drugiego wejścia przy ul. Norwida, które według deklaracji nie jest dostosowane | US2.1, US17.1, NFR-21 |
 | „Brak danych” z ikoną `minus`, inną niż `x` przy „Niedostępne” | US17.1 |
 | Wspólna data i źródło jeden raz nad grupą „Wejścia”: „Z map i opisów, stan z [data]” | US17.3, BR-24, PW-3 |
-| „Zgłoś problem” przy każdym wejściu | US4, decyzja 48 |
+| „Zgłoś barierę przy tym wejściu” przy każdym wejściu: otwiera V4 z wybranym wejściem | US4, decyzja 48 |
+| „Pokaż wyjścia ewakuacyjne (2)” pod wejściami, liczba z danych | US2.1, decyzja 44, decyzja 48 |
 | Grupy „Winda i toaleta” i „Piętra”: zastępniki danych PWr, przy piętrze „Pokaż na planie” | US16.1, decyzja 44 |
 | „Źródło: Politechnika Wrocławska” na dole karty | NFR-40 |
 | Przypięty pas: „Sprawdź, którędy wejść”, czynność główna, pogrubiona, i „Pokaż na mapie” | US3, US3.2, NFR-21, decyzja 48 |

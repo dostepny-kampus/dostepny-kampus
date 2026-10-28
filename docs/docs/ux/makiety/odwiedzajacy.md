@@ -113,6 +113,7 @@ Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 | W polu „A-1 329”: symbol budynku i numer sali | decyzja 44 |
 | Wybór piętra z etykietami z danych PWr jako zastępnikami; zaznaczone piętro sali | US16.1, NFR-21 |
 | Plan piętra z wyróżnioną salą i krótkimi podpisami; pod mapą „Źródło: Politechnika Wrocławska” | US16.1, NFR-40 |
+| Nagłówek arkusza „A-1: Sala 329”, funkcja sali jako zastępnik i piętro z danych PWr | decyzja 44, NFR-40 |
 | Kroki tekstem od wejścia zalecanego, bez linii trasy | BR-25, decyzja 44, decyzja 48 |
 | Krok 2: winda przy klatkach C i D, bo tylko ona staje na parterze i na 2 piętrze [2] | decyzja 48 |
 | „Zamknij” chowa arkusz, a plan zostaje | decyzja 48 |
@@ -124,6 +125,8 @@ Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 | Brak sali | komunikat „Nie znaleźliśmy sali »X« w budynku A-1…” z przyciskiem „Pokaż opis budynku” |
 
 ## V2 Karta budynku
+
+Jak we wzorcu, makiety pokazują arkusz V2 rozwinięty na cały ekran; w aplikacji najpierw zajmuje on połowę ekranu nad mapą V1.
 
 ### V2: budynek podstawowy
 
@@ -192,7 +195,7 @@ Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego 
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Zmień oznaczenie” w ramce każdego wejścia pod „Zgłoś problem”, także przy „Brak danych” | US17.2, BR-24 |
+| „Zmień oznaczenie” w ramce każdego wejścia pod „Zgłoś barierę przy tym wejściu”, także przy „Brak danych” | US17.2, BR-24 |
 | „Oznacz obejrzane piętra” pod grupą „Piętra”, raz dla całego budynku | US15.1, PW-12 |
 | „Zgłoś, że bariery nie ma” przy każdej barierze | US8.4, BR-19, PW-12 |
 | „Popraw zgłoszenie” tylko przy własnym zgłoszeniu przyjętym albo zgłoszeniu szybkim; tu przy drugiej barierze | BR-3, BR-18 |
