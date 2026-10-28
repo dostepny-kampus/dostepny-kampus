@@ -70,7 +70,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Sprawdź gałąź, tytuł, opis i commity
+      - name: Sprawdź gałąź, tytuł, opis, commity i dodane linie plików
         env:
           FORBIDDEN_PATTERNS: ${{ secrets.FORBIDDEN_PATTERNS }}
           PR_BRANCH: ${{ github.head_ref }}

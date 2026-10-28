@@ -32,7 +32,13 @@ for sha in $commits; do
   check "commit ${sha:0:7}" "$(git log -1 --format=%B "$sha")"
 done
 
+# Dodane i zmienione pliki: ścieżka oraz dodane linie (pliki binarne git pomija w diffie).
+while IFS= read -r -d '' path; do
+  check "nazwa pliku $path" "$path"
+  check "plik $path" "$(git diff --unified=0 --no-color "$base...$head" -- "$path" | sed -n '/^+++ /d; s/^+//p')"
+done < <(git diff -z --name-only --diff-filter=AMR "$base...$head")
+
 if ((found == 0)); then
-  echo "Brak zakazanych słów w gałęzi, tytule, opisie i commitach PR."
+  echo "Brak zakazanych słów w gałęzi, tytule, opisie, commitach i dodanych liniach plików PR."
 fi
 exit "$found"
