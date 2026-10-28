@@ -1,6 +1,6 @@
 @startsalt
 ' C3 Moje zgłoszenia: dwa zgłoszenia odrzucone z powodem „nieaktualne” (BR-23, BR-24).
-' Napis przycisku ma 31 znaków: z marginesem przycisku PNG jest o kilka pikseli szerszy.
+' Krótki napis przycisku, a skutek mówi zdanie nad nim (PW-14); napis mieści się w ramce 532 px.
 ' Zwykłe zgłoszenie można wysłać do aktualnego; po usunięciu bariery zgłasza się ją od nowa.
 !include _wspolne.iuml
 !include _zespol-w-terenie.iuml
@@ -13,7 +13,8 @@ $ramka()
 próg
 <i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
 Powód odrzucenia: Nieaktualne
-$przycisk_glowny("Wyślij do aktualnego zgłoszenia")
+$tekst("Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.")
+$przycisk_glowny("Wyślij ponownie")
 }
 $ramka()
 <b>$odrzucone()</b>
