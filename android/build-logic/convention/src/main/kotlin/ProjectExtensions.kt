@@ -1,3 +1,9 @@
+/*
+ * Dostępny Kampus
+ * Author: Vladyslav Yevkov
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+
 import com.android.build.api.dsl.Lint
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog

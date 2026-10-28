@@ -1,3 +1,6 @@
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 """Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB) i macierz śledzenia. Author: Vladyslav Yevkov. Version: 0.2.0. Copyright (c) 2026 Vladyslav Yevkov."""
 
 from __future__ import annotations

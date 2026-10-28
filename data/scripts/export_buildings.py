@@ -1,3 +1,6 @@
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 """Dostępny Kampus — eksport konturów budynków PWr i ich wejść z OpenStreetMap do data/buildings/pwr-buildings.geojson. Author: Vladyslav Yevkov. Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko."""
 
 from __future__ import annotations
