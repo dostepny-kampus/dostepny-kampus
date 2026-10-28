@@ -1,0 +1,44 @@
+name: backend
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "sprint/**"
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
+  push:
+    branches:
+      - main
+      - "sprint/**"
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6.1.0
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Zbuduj, przetestuj i sprawdź qulice
+        run: ./mvnw -B verify
