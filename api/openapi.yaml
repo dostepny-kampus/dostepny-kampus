@@ -29,6 +29,9 @@ info:
     | `accuracyMeters`, `manualCorrection` | dokładność pozycji, korekta ręczna |
     | `replacesSubmissionId`, `barrierRemoved` | zmiana zgłoszenia przyjętego, bariera usunięta |
     | `version` | wersja zgłoszenia |
+    | `claim`, `ReviewDecision`: `ACCEPT`, `REJECT` | wzięcie zgłoszenia, weryfikacja: przyjęcie, odrzucenie |
+    | `rejectionReason`, `duplicateOfSubmissionId` | powód odrzucenia, duplikat |
+    | `similar` | podobne zgłoszenie |
   license: {name: MIT, identifier: MIT}
 servers: [{url: /, description: "Serwer, który udostępnia ten dokument; adres zależy od środowiska."}]
 security: [{keycloak: []}]
@@ -37,6 +40,8 @@ tags:
     description: Budynki, wejścia, piętra i pomieszczenia (moduł serwera building).
   - name: barrier
     description: Zgłoszenia barier i ich zdjęcia (moduł serwera barrier).
+  - name: review
+    description: Kolejka weryfikacji i decyzje Weryfikatora (moduł serwera review).
 
 paths:
   /buildings:
@@ -282,6 +287,87 @@ paths:
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
+  /review/queue:
+    get:
+      operationId: listReviewQueue
+      summary: Kolejka weryfikacji
+      description: >-
+        Zgłoszenia „wysłane” bez własnych zgłoszeń Weryfikatora, także jego zmian „bariera usunięta” (US10.5, BR-4),
+        oraz zgłoszenia „w weryfikacji” wzięte przez tego Weryfikatora. Zgłoszeń wziętych przez innych nie ma (US10.4, BR-11).
+        Zgłoszenie bez wszystkich zdjęć z `photoIds` jeszcze nie trafia do kolejki (BR-7).
+      tags: [review]
+      security: [{keycloak: [VERIFIER]}]
+      responses:
+        '200':
+          description: Zgłoszenia od najstarszego.
+          content:
+            application/json:
+              schema: {type: array, description: "Zgłoszenia w kolejce.", items: {$ref: '#/components/schemas/Submission'}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /submissions/{submissionId}/claim:
+    post:
+      operationId: claimSubmission
+      summary: Wzięcie zgłoszenia do weryfikacji
+      description: >-
+        Zgłoszenie „wysłane” dostaje status „w weryfikacji” i znika z kolejki innych Weryfikatorów (US10.4, US8.2, BR-11).
+        Własne zgłoszenie daje 403 (BR-4), zgłoszenie wzięte przez innego Weryfikatora daje 409.
+      tags: [review]
+      security: [{keycloak: [VERIFIER]}]
+      parameters:
+        - $ref: '#/components/parameters/SubmissionId'
+      responses:
+        '200': {$ref: '#/components/responses/SubmissionSaved'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /submissions/{submissionId}/review:
+    post:
+      operationId: reviewSubmission
+      summary: Decyzja Weryfikatora
+      description: >-
+        Przyjęcie albo odrzucenie zgłoszenia wziętego przez tego Weryfikatora (US10, BR-11, BR-15). Odrzucenie wymaga
+        powodu odrzucenia (US10.2, BR-16). Przyjęcie zgłoszenia szybkiego wymaga typu bariery i uciążliwości (US10.3, BR-14).
+        Przyjęcie zmiany archiwizuje zastąpione zgłoszenie (BR-18), a „bariera usunięta” i zmiana oznaczenia wejścia
+        same stają się archiwalne (US10.6, BR-19, BR-24). Decyzja o innej wersji niż aktualna daje 409 (BR-3),
+        a o zgłoszeniu wziętym przez innego Weryfikatora — 403 (BR-11).
+      tags: [review]
+      security: [{keycloak: [VERIFIER]}]
+      parameters:
+        - $ref: '#/components/parameters/SubmissionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReviewDecision'}
+      responses:
+        '200': {$ref: '#/components/responses/SubmissionSaved'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/VersionConflict'}
+  /submissions/{submissionId}/similar:
+    get:
+      operationId: listSimilarSubmissions
+      summary: Podobne zgłoszenia
+      description: >-
+        Zgłoszenia wysłane, w weryfikacji i przyjęte w promieniu 10 m od sprawdzanego, z każdego piętra, z odległością
+        (US10.1, BR-13). System sam niczego nie odrzuca ani nie łączy.
+      tags: [review]
+      security: [{keycloak: [VERIFIER]}]
+      parameters:
+        - $ref: '#/components/parameters/SubmissionId'
+      responses:
+        '200':
+          description: Podobne zgłoszenia od najbliższego.
+          content:
+            application/json:
+              schema: {type: array, description: "Podobne zgłoszenia.", items: {$ref: '#/components/schemas/SimilarSubmission'}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
 
 components:
   securitySchemes:
@@ -342,6 +428,11 @@ components:
       content:
         application/json:
           schema: {$ref: '#/components/schemas/Submission'}
+    Conflict:
+      description: Stan zasobu nie pozwala na operację, np. zgłoszenie wziął już inny Weryfikator.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
 
   schemas:
     Problem:
@@ -637,3 +728,24 @@ components:
               properties:
                 pseudonym: {type: string, description: "Pseudonim autora, np. „Autor 17”."}
                 roles: {type: array, description: "Role autora.", items: {$ref: '#/components/schemas/Role'}}
+
+    ReviewDecision:
+      type: object
+      description: Decyzja Weryfikatora o zgłoszeniu.
+      required: [decision, version]
+      properties:
+        decision: {type: string, enum: [ACCEPT, REJECT], description: "`ACCEPT` — przyjęcie, `REJECT` — odrzucenie."}
+        version: {type: integer, minimum: 1, description: "Wersja zgłoszenia, którą ocenił Weryfikator (BR-3)."}
+        rejectionReason: {type: string, minLength: 1, maxLength: 500, description: "Powód odrzucenia; wymagany przy `REJECT` (BR-16)."}
+        duplicateOfSubmissionId: {type: string, format: uuid, description: "Wcześniejsze zgłoszenie przy odrzuceniu duplikatu (BR-13)."}
+        barrierType: {$ref: '#/components/schemas/BarrierType', description: "Typ bariery ustalony przy przyjęciu zgłoszenia szybkiego (BR-14)."}
+        severity: {$ref: '#/components/schemas/Severity', description: "Uciążliwość ustalona przy przyjęciu zgłoszenia szybkiego (BR-14)."}
+    SimilarSubmission:
+      description: Podobne zgłoszenie z odległością od sprawdzanego.
+      allOf:
+        - $ref: '#/components/schemas/Submission'
+        - type: object
+          description: Odległość.
+          required: [distanceMeters]
+          properties:
+            distanceMeters: {type: number, format: double, minimum: 0, maximum: 10, description: "Odległość od sprawdzanego zgłoszenia w metrach."}
