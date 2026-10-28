@@ -1,6 +1,6 @@
 # Dokumentacja projektu Dostępny Kampus
 
-Strona MkDocs z dokumentacją biznesową, wymaganiami i projektem UX. Strony są w `docs/`, scenariusze Gherkin w `specs/`, skrypty kontroli w `scripts/`. Polecenia poniżej uruchamiaj w tym katalogu (`docs/`).
+Strona MkDocs z dokumentacją biznesową, wymaganiami i projektem UX. Strony są w `docs/`, skrypty kontroli w `scripts/`. Scenariusze Gherkin leżą w katalogu `specs/` w korzeniu repozytorium (`../specs/`), bo to testy uruchamiane w CI razem z kodem aplikacji i serwera. Polecenia poniżej uruchamiaj w tym katalogu (`docs/`).
 
 ## Środowisko
 

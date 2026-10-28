@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+ROOT = REPO.parent
 ID_BODY = r"US\d+\.\d+|US\d+|UC\d+|BR-G\d+|BR-\d+|NFR-\d+|TB-\d+|RO-[A-Z]{3}|R-\d+|M-\d+|N\d+"
 ID_RE = re.compile(rf"(?<![\w-])(?:{ID_BODY})(?![\w°-]|\.\d)")
 DEFINITION_END = re.compile(r"[\s:.*_\]`]|$")
@@ -95,11 +96,16 @@ def natural_key(identifier: str) -> tuple[object, ...]:
 
 
 def relative(path: Path) -> str:
-    """Zwraca ścieżkę względną do repozytorium (lub bezwzględną, gdy plik leży poza nim) w formacie POSIX."""
-    try:
-        return path.resolve().relative_to(REPO).as_posix()
-    except ValueError:
-        return path.resolve().as_posix()
+    """Zwraca ścieżkę w formacie POSIX względną do katalogu dokumentacji, a poza nim — do korzenia monorepo.
+
+    Gwarantuje: plik spoza monorepo dostaje ścieżkę bezwzględną.
+    """
+    for base in (REPO, ROOT):
+        try:
+            return path.resolve().relative_to(base).as_posix()
+        except ValueError:
+            continue
+    return path.resolve().as_posix()
 
 
 def clean_line(line: str) -> str:
@@ -593,7 +599,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     """Parsuje argumenty wiersza poleceń."""
     parser = argparse.ArgumentParser(description="Kontrola ID w docs/**/*.md i specs/**/*.feature.")
     parser.add_argument("--docs", type=Path, default=REPO / "docs", help="katalog dokumentacji")
-    parser.add_argument("--specs", type=Path, default=REPO / "specs", help="katalog plików .feature")
+    parser.add_argument("--specs", type=Path, default=ROOT / "specs", help="katalog plików .feature")
     target = parser.add_mutually_exclusive_group()
     target.add_argument("--matrix", type=Path, help="zapisz macierz N → US → AC → UC → scenariusz do pliku")
     target.add_argument("--check-matrix", type=Path, help="tylko sprawdź, czy macierz w pliku jest aktualna")
