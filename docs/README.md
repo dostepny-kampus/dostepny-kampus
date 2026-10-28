@@ -38,6 +38,8 @@ python scripts/verify.py
 
 Skrypt uruchamia po kolei: aktualność obrazów, skróty, Vale, markdownlint, LanguageTool, identyfikatory, macierz śledzenia, kontrast tokenów i `mkdocs build --strict`. Wynik to tabela kroków PASS, WARN, FAIL albo SKIP. LanguageTool sprawdza tylko pliki zmienione względem `main` i daje najwyżej WARN; wszystkie strony sprawdza opcja `--lang-all`.
 
+Opcja `--screens <katalog>` robi zrzuty każdej strony w szerokości 1280 i 390 px do katalogu poza repozytorium. Przed pierwszym użyciem zainstaluj przeglądarkę: `python -m playwright install chromium`.
+
 ## Diagramy i makiety
 
 Źródła `.puml` i `.bpmn` leżą obok stron. Gotowe obrazy SVG i PNG są w repozytorium, w `docs/_generated/`, razem z manifestem `zrodla.sha256`. Manifest zawiera sha256 każdego źródła i plików `.iuml`, od których zależy.
