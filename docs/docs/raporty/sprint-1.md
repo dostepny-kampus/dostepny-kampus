@@ -21,14 +21,7 @@ Raport podaje skrót i odsyła do stron dokumentacji projektu. Odwołuje się do
 | Struktura projektu | układ repozytoriów i modułów | repozytorium dokumentacji z automatyczną kontrolą jakości; repozytorium kodu zaplanowane, jeszcze nie istnieje | częściowo |
 | Git | sposób pracy z Git | zasady ustalone; w repozytorium dokumentacji 344 commity i 30 scalonych gałęzi zadań | zrobione dla dokumentacji, dla kodu plan |
 
-Plan sprintów z raportu [Tydzień 2](tydzien-2.md) przypisał Sprintowi 1 także zadania techniczne. Nie zrobiliśmy ich:
-
-- szkielet repozytorium kodu i kontrakt API v0;
-- kontrola PR w CI;
-- szkielety serwera i aplikacji z linterami;
-- eksport konturów budynków z OpenStreetMap.
-
-Te zadania przechodzą do Sprintu 2 (sekcja 7). Nie było też zadań próbnych, więc architektura z raportu „Tydzień 2” zostaje wstępna.
+Plan sprintów z raportu [Tydzień 2](tydzien-2.md) przypisał Sprintowi 1 także zadania techniczne, których nie zrobiliśmy. To szkielet repozytorium kodu, kontrakt API v0, kontrola PR w CI, szkielety serwera i aplikacji oraz eksport konturów budynków z OpenStreetMap. Przechodzą do Sprintu 2 (sekcja 7). Nie było też zadań próbnych, więc architektura z raportu „Tydzień 2” zostaje wstępna.
 
 ## 2. Makiety
 
@@ -70,11 +63,11 @@ Pięć ekranów doszło względem raportu „Tydzień 2”: L1, L2 (US14), C5 (U
 
 | V1: Mapa kampusu | V2: Karta budynku | V3: Którędy wejść |
 | --- | --- | --- |
-| ![Makieta V1: pole symbolu budynku, przełącznik Mapa i Lista budynków, mapa z oznaczeniami barier, przyciski przesuwania mapy, pasek dolny](../_generated/m-v1-mapa.png){: width="210" } | ![Makieta V2: budynek A-1, trzy wejścia z oznaczeniami Niedostępne, Dostępne i Brak danych, przycisk Sprawdź, którędy wejść, wybór piętra, plan piętra, bariery](../_generated/m-v2-karta-budynku.png){: width="210" } | ![Makieta V3: zdanie o wejściu dostępnym do A-1, wejście z oznaczeniem, bariera ze zdjęciem](../_generated/m-v3-ktoredy-wejsc.png){: width="210" } |
+| [![Makieta V1: pole symbolu budynku, przełącznik Mapa i Lista budynków, mapa z oznaczeniami barier, przyciski przesuwania mapy, pasek dolny](../_generated/m-v1-mapa.png){: width="210" }](../_generated/m-v1-mapa.png) | [![Makieta V2: budynek A-1, trzy wejścia z oznaczeniami Niedostępne, Dostępne i Brak danych, przycisk Sprawdź, którędy wejść, wybór piętra, plan piętra, bariery](../_generated/m-v2-karta-budynku.png){: width="210" }](../_generated/m-v2-karta-budynku.png) | [![Makieta V3: zdanie o wejściu dostępnym do A-1, wejście z oznaczeniem, bariera ze zdjęciem](../_generated/m-v3-ktoredy-wejsc.png){: width="210" }](../_generated/m-v3-ktoredy-wejsc.png) |
 
 | V4: Zgłoszenie szybkie, krok 1 | C1: Pomiar pozycji | R2: Sprawdzenie zgłoszenia |
 | --- | --- | --- |
-| ![Makieta V4 krok 1 z 3: przypomnienie, by nie fotografować twarzy i tablic, przycisk Zrób zdjęcie](../_generated/m-v4-krok-1.png){: width="210" } | ![Makieta C1: czas do końca pomiaru, dokładność, liczba satelitów według systemów, mapa nieba, przycisk Powtórz pomiar](../_generated/m-c1-pomiar-pozycji.png){: width="210" } | ![Makieta R2: zgłoszenie z pomiaru ze zdjęciem, podobne zgłoszenia do 10 m, przycisk Przyjmij, powody odrzucenia, przycisk Odrzuć](../_generated/m-r2-sprawdzenie-zgloszenia.png){: width="210" } |
+| [![Makieta V4 krok 1 z 3: przypomnienie, by nie fotografować twarzy i tablic, przycisk Zrób zdjęcie](../_generated/m-v4-krok-1.png){: width="210" }](../_generated/m-v4-krok-1.png) | [![Makieta C1: czas do końca pomiaru, dokładność, liczba satelitów według systemów, mapa nieba, przycisk Powtórz pomiar](../_generated/m-c1-pomiar-pozycji.png){: width="210" }](../_generated/m-c1-pomiar-pozycji.png) | [![Makieta R2: zgłoszenie z pomiaru ze zdjęciem, podobne zgłoszenia do 10 m, przycisk Przyjmij, powody odrzucenia, przycisk Odrzuć](../_generated/m-r2-sprawdzenie-zgloszenia.png){: width="210" }](../_generated/m-r2-sprawdzenie-zgloszenia.png) |
 
 | Ekran | Na co zwrócić uwagę | Odwołanie |
 | --- | --- | --- |
