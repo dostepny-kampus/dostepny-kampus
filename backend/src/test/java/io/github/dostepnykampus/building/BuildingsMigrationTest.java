@@ -72,7 +72,7 @@ final class BuildingsMigrationTest {
         context.getBean(JdbcClient.class).sql(
             """
             INSERT INTO buildings (symbol, name, detail_level, outline, source)
-            VALUES ('A-1', 'Gmach Główny', 'DETAILED',
+            VALUES ('TEST-1', 'Budynek testowy', 'DETAILED',
                 ST_SetSRID(ST_GeomFromGeoJSON(:outline), 4326),
                 '© OpenStreetMap contributors')
             """
@@ -80,7 +80,7 @@ final class BuildingsMigrationTest {
         MatcherAssert.assertThat(
             "Odczytany kontur budynku różni się od zapisanego",
             context.getBean(JdbcClient.class).sql(
-                "SELECT ST_AsGeoJSON(outline) FROM buildings WHERE symbol = 'A-1'"
+                "DELETE FROM buildings WHERE symbol = 'TEST-1' RETURNING ST_AsGeoJSON(outline)"
             ).query(String.class).single(),
             Matchers.equalTo(outline)
         );
