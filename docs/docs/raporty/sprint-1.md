@@ -34,7 +34,7 @@ Plan sprintów z raportu [Tydzień 2](tydzien-2.md) przypisał Sprintowi 1 takż
 
 Każdy ekran ma makietę stanu zwykłego. Pozostałe makiety to stany, które wyglądają inaczej: brak sieci, pusta lista, błąd, brak zgody na lokalizację, a także warianty ról. Stan różny o jeden napis opisuje tabela pod makietą.
 
-Pięć ekranów doszło względem raportu „Tydzień 2”: L1, L2 (US14), C5 (US15), C6 (US17.2) i C7 (US8.4). Ich identyfikatory nadają [wymagania do ekranów](../ux/wymagania-ekranow.md).
+W tym sprincie doszło pięć ekranów: L1, L2 (US14), C5 (US15), C6 (US17.2) i C7 (US8.4). Ich identyfikatory nadają [wymagania do ekranów](../ux/wymagania-ekranow.md).
 
 ### Jak powstały
 
@@ -44,7 +44,7 @@ Pięć ekranów doszło względem raportu „Tydzień 2”: L1, L2 (US14), C5 (U
 4. **Słownik użytkownika.** Napisy i komunikaty słowami osoby starszej, bez żargonu ([Słownik użytkownika](../ux/slownik-uzytkownika.md)).
 5. **Makiety.** Trzy grupy ekranów rysowane równolegle w PlantUML Salt [4], ze wspólnych fragmentów: nagłówka, paska dolnego, przycisków i komunikatów.
 6. **Przegląd.** Każdą grupę sprawdziliśmy 10 heurystykami Nielsena [2], kryteriami WCAG 2.1 [3], listą zasad dla osób starszych i pokryciem kryteriów akceptacji. Na końcu był przegląd spójności wszystkich ekranów.
-7. **Zatwierdzenie.** 28.10.2026 właściciel projektu zatwierdził makiety z pięcioma drobnymi poprawkami. Dotyczą one m.in. komunikatu o błędzie serwera i przełącznika „Plan piętra” i „Mapa” na C1.
+7. **Zatwierdzenie.** 28.10.2026 właściciel projektu zatwierdził makiety z pięcioma drobnymi poprawkami. Dotyczą one m.in. komunikatu o błędzie serwera i przełącznika „Plan piętra” i „Mapa” na C1. Wszystkie poprawki są już w makietach.
 
 ### Zasady
 
