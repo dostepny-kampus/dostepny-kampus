@@ -6,8 +6,8 @@
 | Kurs | Mobilne systemy informatyczne – Projekt (W04IST-SM0302G) [1] |
 | Prowadzący | dr inż. Zbigniew Telec |
 | Autor | Vladyslav Yevkov |
-| Członek zespołu | ………………………………………… |
-| Członek zespołu | ………………………………………… |
+| Członek zespołu | Myroslav Hryniuka |
+| Członek zespołu | Yevhenii Lukianenko |
 | Data | 28.10.2026 |
 | Zakres raportu | Sprint 1 według harmonogramu kursu: makiety, struktura projektu i praca z Git; stan na 28.10.2026 |
 
