@@ -12,7 +12,12 @@ stats="$(git diff --numstat "$base...$head" -- . \
   ':(glob,exclude)**/package-lock.json' \
   ':(glob,exclude)**/*.lock' \
   ':(glob,exclude)**/gradle.lockfile' \
-  ':(glob,exclude)**/gradle/wrapper/**' |
+  ':(glob,exclude)**/gradle/wrapper/**' \
+  ':(glob,exclude)**/gradlew' \
+  ':(glob,exclude)**/gradlew.bat' \
+  ':(glob,exclude)**/mvnw' \
+  ':(glob,exclude)**/mvnw.cmd' \
+  ':(glob,exclude)**/.mvn/wrapper/**' |
   awk -F '\t' '{ a = ($1 == "-") ? 0 : $1; d = ($2 == "-") ? 0 : $2; print a + d "\t" $3 }')"
 total="$(awk -F '\t' '{ s += $1 } END { print s + 0 }' <<<"$stats")"
 
