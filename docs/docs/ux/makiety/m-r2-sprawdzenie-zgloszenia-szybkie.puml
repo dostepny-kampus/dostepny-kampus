@@ -1,0 +1,25 @@
+@startsalt
+' R2 Sprawdzenie zgłoszenia szybkiego od Odwiedzającego: Weryfikator ustala typ bariery
+' i uciążliwość (BR-14). Piętro zostaje puste. Brak podobnych zgłoszeń w promieniu 10 m.
+!include _wspolne.iuml
+!include _weryfikacja.iuml
+$ekran_poczatek()
+$naglowek("Sprawdzenie zgłoszenia")
+<b>Zgłoszenie szybkie</b>
+Czego dotyczy: Schody i windy
+Budynek D-2
+Miejsce: <i>[punkt z telefonu]</i>
+$r2_zdjecie("zdjęcie bariery")
+Autor: Odwiedzający, Autor <i>[nr]</i>
+..
+<b>Typ bariery</b>
+^$dk_spacje(28)^
+<b>Uciążliwość</b>
+( ) $utrudnienie()
+( ) $tylko_z_pomoca()
+( ) $blokada()
+$sekcja("Podobne zgłoszenia do 10 m")
+$tekst("W promieniu 10 m nie ma podobnych zgłoszeń.")
+$r2_decyzja()
+$ekran_koniec()
+@endsalt

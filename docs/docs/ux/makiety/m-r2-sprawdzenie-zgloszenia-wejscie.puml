@@ -1,0 +1,20 @@
+@startsalt
+' R2 Sprawdzenie zmiany oznaczenia wejścia (BR-24). Zbierający potwierdza obecne oznaczenie
+' wejścia od ul. Norwida w A-1; dostępność tego wejścia wynika z deklaracji dostępności PWr.
+!include _wspolne.iuml
+!include _weryfikacja.iuml
+$ekran_poczatek()
+$naglowek("Sprawdzenie zgłoszenia")
+<b>Zmiana oznaczenia wejścia</b>
+Budynek A-1
+Obecne oznaczenie:
+$wejscie($dostepne(), "Wejście od ul. Norwida", "Z map i opisów, stan z <i>[data]</i>")
+<b>$bez_zmian_od_wyslania()</b>
+Wybrane oznaczenie: <b>$dostepne()</b>
+$r2_zdjecie("nowe zdjęcie wejścia")
+Autor: Zbierający, Autor 17
+$sekcja("Podobne zgłoszenia do 10 m")
+$tekst("W promieniu 10 m nie ma podobnych zgłoszeń.")
+$r2_decyzja()
+$ekran_koniec()
+@endsalt

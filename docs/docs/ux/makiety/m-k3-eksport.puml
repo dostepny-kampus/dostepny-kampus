@@ -1,0 +1,14 @@
+@startsalt
+' K3 Eksport, stan zwykły, Koordynator (RO-KOO). GeoJSON wybrany na start,
+' bo stany K3 nie mają błędu "brak formatu".
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Pobierz eksport")
+<b>Format pliku</b>
+(X) GeoJSON (WGS84)
+( ) CSV (PUWG 1992, EPSG:2180)
+..
+$tekst("Plik zawiera tylko obecne, sprawdzone bariery, bez danych autorów.")
+$przycisk_glowny("Pobierz plik")
+$ekran_koniec()
+@endsalt

@@ -1,0 +1,24 @@
+@startsalt
+' R2 Sprawdzenie zgłoszenia, stan zwykły: zgłoszenie z pomiaru precyzyjnego,
+' scenariusz demo w A-1 (podobne zgłoszenie 5 m dalej to nie duplikat). Weryfikator nie edytuje danych (BR-15).
+!include _wspolne.iuml
+!include _weryfikacja.iuml
+$ekran_poczatek()
+$naglowek("Sprawdzenie zgłoszenia")
+<b>Zgłoszenie z pomiaru</b>
+schody przy wejściu
+$blokada()
+Budynek A-1, piętro <i>[piętro]</i>
+Miejsce: <i>[punkt z pomiaru]</i>
+$r2_zdjecie("zdjęcie bariery")
+Autor: Zbierający, Autor 17
+$sekcja("Podobne zgłoszenia do 10 m")
+{+
+<b>próg</b>$dk_spacje(26)
+$obraz("zdjęcie")
+5 m, piętro <i>[inne piętro]</i>
+$przyjete()
+}
+$r2_decyzja()
+$ekran_koniec()
+@endsalt

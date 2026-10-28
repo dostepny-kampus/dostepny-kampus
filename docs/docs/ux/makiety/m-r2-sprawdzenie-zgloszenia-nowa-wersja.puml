@@ -1,0 +1,21 @@
+@startsalt
+' R2 Sprawdzenie zgłoszenia, stan "nowa wersja": autor zmienił uciążliwość z 1 na 2
+' w trakcie weryfikacji (BR-3, UC14 5e). Weryfikator widzi nową wersję przed decyzją.
+!include _wspolne.iuml
+!include _weryfikacja.iuml
+$ekran_poczatek()
+$naglowek("Sprawdzenie zgłoszenia")
+$komunikat("Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.")
+<b>Zmienione:</b> uciążliwość
+<b>Zgłoszenie z pomiaru</b>
+próg
+$tylko_z_pomoca()
+Budynek C-13, piętro <i>[piętro]</i>
+Miejsce: <i>[punkt z pomiaru]</i>
+$r2_zdjecie("zdjęcie bariery")
+Autor: Zbierający, Autor <i>[nr]</i>
+$sekcja("Podobne zgłoszenia do 10 m")
+$tekst("W promieniu 10 m nie ma podobnych zgłoszeń.")
+$r2_decyzja()
+$ekran_koniec()
+@endsalt

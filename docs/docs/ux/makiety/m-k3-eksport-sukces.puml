@@ -1,0 +1,15 @@
+@startsalt
+' K3 Eksport, stan "sukces": plik zapisany w pobranych plikach telefonu. Formularz zostaje,
+' więc Koordynator może od razu pobrać drugi format.
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Pobierz eksport")
+$komunikat("Plik zapisany w pobranych plikach.")
+<b>Format pliku</b>
+(X) GeoJSON (WGS84)
+( ) CSV (PUWG 1992, EPSG:2180)
+..
+$tekst("Plik zawiera tylko obecne, sprawdzone bariery, bez danych autorów.")
+$przycisk_glowny("Pobierz plik")
+$ekran_koniec()
+@endsalt

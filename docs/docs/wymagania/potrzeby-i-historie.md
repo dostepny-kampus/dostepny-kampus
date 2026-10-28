@@ -105,7 +105,7 @@ Ręczną korektę punktu opisują dwa kryteria: na planie piętra i na mapie. Ko
 | US11.1 | Dla każdego budynku widać odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy). Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. | US15.1 |
 | US11.2 | Gdy znacznik piętra obejrzanego albo jego cofnięcie dotrze na serwer, postęp budynku pokazuje nową wartość, np. 4 z 5 pięter, czyli 80 procent. | US15.3 |
 | US11.3 | Koordynator cofa znacznik piętra obejrzanego postawiony przez dowolnego Zbierającego. | decyzja 32 |
-| US11.4 | Dla każdego budynku szczegółowego widać liczbę wejść ze źródłem oznaczenia „obchód” wśród wszystkich jego wejść, np. „Wejścia potwierdzone na obchodzie: 4 z 6”. | BR-24, M-1, decyzja 38 |
+| US11.4 | Dla każdego budynku szczegółowego widać liczbę wejść ze źródłem oznaczenia „obchód” wśród wszystkich jego wejść, np. „Wejścia sprawdzone na miejscu: 4 z 6”. | BR-24, M-1, decyzja 38 |
 | US12.1 | Po zaproszeniu osoba z podanym adresem e-mail loguje się i ma wybraną rolę. | BR-2 |
 | US12.2 | Zaproszenie na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają. | BR-1, BR-2 |
 | US13.1 | Plik GeoJSON otwiera się w QGIS bez ustawiania układu współrzędnych i ma współrzędne w WGS84. | NFR-43 |

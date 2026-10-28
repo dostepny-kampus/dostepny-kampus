@@ -1,0 +1,30 @@
+@startsalt
+' R2 Sprawdzenie zgłoszenia, stan "odrzucenie jako duplikat": 2 m dalej jest przyjęte
+' zgłoszenie tej samej bariery (BR-13). Weryfikator wskazuje wcześniejsze zgłoszenie.
+!include _wspolne.iuml
+!include _weryfikacja.iuml
+$ekran_poczatek()
+$naglowek("Sprawdzenie zgłoszenia")
+<b>Zgłoszenie z pomiaru</b>
+schody przy wejściu
+$blokada()
+Budynek A-1, piętro <i>[piętro]</i>
+Miejsce: <i>[punkt z pomiaru]</i>
+$r2_zdjecie("zdjęcie bariery")
+Autor: Zbierający, Autor <i>[nr]</i>
+$sekcja("Podobne zgłoszenia do 10 m")
+{+
+<b>schody przy wejściu</b>$dk_spacje(12)
+$obraz("zdjęcie")
+2 m, piętro <i>[piętro]</i>
+$przyjete()
+}
+{+
+<b>próg</b>$dk_spacje(26)
+$obraz("zdjęcie")
+5 m, piętro <i>[inne piętro]</i>
+$przyjete()
+}
+$r2_decyzja("Duplikat")
+$ekran_koniec()
+@endsalt
