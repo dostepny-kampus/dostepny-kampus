@@ -61,7 +61,7 @@ Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu.
 | Stan bez osobnej makiety | Co widać |
 | --- | --- |
 | Ładowanie | napis „Wczytujemy zgłoszenia…” w miejscu listy (PW-9) |
-| Pusty, ale z wziętymi zgłoszeniami | sekcja „Wzięte przeze mnie”, a pod nią ten sam komunikat |
+| Pusty, ale ze wziętymi zgłoszeniami | sekcja „Wzięte przeze mnie”, a pod nią ten sam komunikat |
 
 ## R2 Sprawdzenie zgłoszenia
 
@@ -141,7 +141,7 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 
 Czynność główna: dotknięcie budynku, które otwiera C5 „Obejrzane piętra”. Tam Koordynator cofa znacznik piętra (US11.3).
 
-A-1 ma 4 z 5 pięter obejrzanych, jak w scenariuszu demo i w przykładzie BR-21. Trzy wejścia A-1 i jedno „Sprawdzone na miejscu” zgadzają się z [wzorcową makietą V2](index.md#wzorcowa-makieta-v2-karta-budynku).
+A-1 ma 4 z 5 pięter obejrzanych, jak w scenariuszu demo i w przykładzie BR-21. Trzy wejścia A-1 i jedno „Sprawdzone na miejscu” zgadzają się ze [wzorcową makietą V2](index.md#wzorcowa-makieta-v2-karta-budynku).
 
 ![Makieta K1: przycisk Odśwież i godzina odczytu, budynek A-1 z postępem 4 z 5 pięter, 80%, liczbami zgłoszeń i wejściami sprawdzonymi na miejscu 1 z 3, budynek B-4 Obejrzany i budynek Nieobejrzany](../../_generated/m-k1-postep-inwentaryzacji.svg)
 
