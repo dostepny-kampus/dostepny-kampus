@@ -1,7 +1,7 @@
 # Dostępny Kampus
 # Author: Vladyslav Yevkov
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
-"""Dostępny Kampus — generator skrótów (tooltipów MkDocs) ze słownika pojęć. Author: Vladyslav Yevkov. Version: 0.1.0. Copyright (c) 2026 Vladyslav Yevkov."""
+"""Dostępny Kampus — generator skrótów (tooltipów MkDocs) ze słownika pojęć. Version: 0.1.0."""
 
 from __future__ import annotations
 

@@ -1,7 +1,7 @@
 # Dostępny Kampus
 # Author: Vladyslav Yevkov
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
-"""Dostępny Kampus — render diagramów PlantUML i BPMN do docs/_generated z manifestem źródeł. Author: Vladyslav Yevkov. Version: 0.2.0. Copyright (c) 2026 Vladyslav Yevkov."""
+"""Dostępny Kampus — render diagramów PlantUML i BPMN do docs/_generated z manifestem źródeł. Version: 0.2.0."""
 
 from __future__ import annotations
 
