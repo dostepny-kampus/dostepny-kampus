@@ -1,19 +1,21 @@
 @startsalt
-' V2 Karta budynku, stan pusty: brak sprawdzonych barier (UC2 2a), budynek szczegółowy.
+' V2 Karta budynku, stan pusty: brak zgłoszeń przyjętych (UC2 2a), budynek szczegółowy.
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Budynek <i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
-$wejscie($dostepne(), "<i>[nazwa wejścia z danych]</i>", "Sprawdzone na miejscu <i>[data]</i>")
-$przycisk_glowny("Sprawdź, którędy wejść")
-..
-Piętro:
-$pietra(1, 3)
-<b>Plan piętra</b>
-$obraz("plan wybranego piętra: windy, schody, toalety, wejścia")
-Źródło: Politechnika Wrocławska
+$karta_gora()
+$sekcja("Wejścia")
+$wejscie_karty($dostepne(), "<i>[nazwa wejścia z danych]</i>", "Zalecane, <i>[piętro]</i>", "Sprawdzone na miejscu <i>[data]</i>")
+$wejscie_karty($niedostepne(), "<i>[nazwa wejścia z danych]</i>", "", "Z map i opisów, stan z <i>[data]</i>")
+$grupy_pwr()
 $sekcja("Bariery w budynku")
-$tekst("Nie mamy jeszcze sprawdzonych barier w tym budynku. To nie znaczy, że barier tu nie ma.")
+$ramka()
+<b>Brak zgłoszonych barier</b>
+$tekst("Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.")
+$przycisk("Zgłoś barierę", "camera-slr")
+}
+$karta_dol()
 $pasek_dolny_konto()
 $ekran_koniec()
 @endsalt

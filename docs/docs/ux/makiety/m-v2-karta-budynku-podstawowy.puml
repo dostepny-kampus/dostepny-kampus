@@ -1,12 +1,14 @@
 @startsalt
-' V2 Karta budynku, stan zwykły, budynek podstawowy (BR-G1): bez planu pięter.
+' V2 Karta budynku, budynek podstawowy (BR-G1) bez wejścia dostępnego (BR-25): bez planów PWr.
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Budynek <i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
-$wejscie($dostepne(), "<i>[nazwa wejścia z danych]</i>", "Z map i opisów, stan z <i>[data]</i>")
-$wejscie($niedostepne(), "<i>[nazwa wejścia z danych]</i>", "Z map i opisów, stan z <i>[data]</i>")
-$przycisk_glowny("Sprawdź, którędy wejść")
+$karta_gora(0)
+Z map i opisów, stan z <i>[data]</i>
+$sekcja("Wejścia")
+$wejscie_karty($niedostepne(), "<i>[nazwa wejścia z danych]</i>")
+$wejscie_karty($brak_danych(), "<i>[nazwa wejścia z danych]</i>")
 ..
 $tekst("Nie mamy planu pięter tego budynku. Bariery są na liście niżej.")
 $sekcja("Bariery w budynku")
@@ -16,6 +18,9 @@ $tylko_z_pomoca()
 $obraz("zdjęcie bariery")
 Sprawdzone <i>[data]</i>
 }
+--
+$przycisk_glowny("Sprawdź, którędy wejść")
+$przycisk("Pokaż na mapie")
 $pasek_dolny_konto()
 $ekran_koniec()
 @endsalt
