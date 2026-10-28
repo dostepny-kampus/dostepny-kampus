@@ -599,7 +599,7 @@ Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia we
 | „Bariera usunięta”: zdjęcie poprzedniego zgłoszenia obok nowego | dane | US10.6, BR-19 | — |
 | „Bariera usunięta”: „Poprzednie zgłoszenie:” i jego status tekstem i ikoną, np. „Archiwalne” | dane | BR-19, BR-23, NFR-21 | — |
 | „Przyjmij” | czynność główna | US10, US10.6 | R1 |
-| „Odrzuć” z obowiązkowym polem „Powód odrzucenia”; gotowe powody „Duplikat” ze wskazaniem wcześniejszego zgłoszenia i „Nieaktualne” oraz „Inny powód” z polem „Opisz powód dla autora” | czynność | US10.2, BR-13, BR-16, BR-23, NFR-18 | R1 |
+| „Odrzuć” z obowiązkowym polem „Powód odrzucenia”; gotowe powody „Duplikat” ze wskazaniem wcześniejszego zgłoszenia i „Nieaktualne” oraz „Inny powód” z polem „Opisz powód dla autora”. Przy zmianie oznaczenia wejścia bez „Duplikat”, bo duplikat opisuje tę samą barierę. | czynność | US10.2, BR-13, BR-16, BR-23, BR-24, NFR-18 | R1 |
 
 | Stan | Co widać |
 | --- | --- |

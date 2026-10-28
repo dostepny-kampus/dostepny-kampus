@@ -1,6 +1,8 @@
 @startsalt
 ' R2 Sprawdzenie zmiany oznaczenia wejścia (BR-24). Zbierający potwierdza obecne oznaczenie
 ' wejścia od ul. Norwida w A-1; dostępność tego wejścia wynika z deklaracji dostępności PWr.
+' Bez powodu „Duplikat”: zostają „Nieaktualne” i „Inny powód” z opisem (BR-24, BR-16).
+' Podobne zgłoszenia zostają, bo US10.1, BR-13 i UC14 krok 4 nie wyłączają zmiany oznaczenia.
 !include _wspolne.iuml
 !include _weryfikacja.iuml
 $ekran_poczatek()
@@ -15,6 +17,6 @@ $r2_zdjecie("nowe zdjęcie wejścia")
 Autor: Zbierający, Autor 17
 $sekcja("Podobne zgłoszenia do 10 m")
 $tekst("W promieniu 10 m nie ma podobnych zgłoszeń.")
-$r2_decyzja()
+$r2_decyzja("", 0)
 $ekran_koniec()
 @endsalt

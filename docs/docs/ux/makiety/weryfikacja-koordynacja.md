@@ -113,7 +113,7 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Wybrany powód „Nieaktualne”: ta zmiana dotyczy zgłoszenia, które stało się archiwalne | BR-23 |
 | Po przyjęciu „Przyjmij” winda znika z mapy i karty budynku | US10.6 |
 
-![Makieta R2 dla zmiany oznaczenia wejścia: obecne oznaczenie Dostępne wejścia bramą od ul. Norwida z datą i źródłem, napis Bez zmian od wysłania, wybrane oznaczenie Dostępne, nowe zdjęcie wejścia](../../_generated/m-r2-sprawdzenie-zgloszenia-wejscie.svg)
+![Makieta R2 dla zmiany oznaczenia wejścia: obecne oznaczenie Dostępne wejścia bramą od ul. Norwida z datą i źródłem, napis Bez zmian od wysłania, wybrane oznaczenie Dostępne, nowe zdjęcie wejścia, brak podobnych zgłoszeń, powody odrzucenia Nieaktualne i Inny powód bez Duplikat](../../_generated/m-r2-sprawdzenie-zgloszenia-wejscie.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -123,6 +123,8 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Nowe zdjęcie wejścia z „Zasłoń twarz lub tablicę” | BR-24, NFR-25 |
 | „Bez zmian od wysłania” z ikoną pod obecnym oznaczeniem; gdy w tym czasie przyjęto inną zmianę tego wejścia: „Zmienione po wysłaniu”, a powód „Nieaktualne” | BR-23, BR-24, NFR-21 |
 | Weryfikator nie zmienia wybranego oznaczenia: gdy zdjęcie mu przeczy, odrzuca z powodem | BR-24, BR-16 |
+| „Podobne zgłoszenia do 10 m”, tu „W promieniu 10 m nie ma podobnych zgłoszeń.”; sekcja zostaje, bo kryterium i reguła nie wyłączają zmiany oznaczenia | US10.1, BR-13, UC14 krok 4 |
+| „Powód odrzucenia”: „Nieaktualne” i „Inny powód” z polem „Opisz powód dla autora”, bez „Duplikat”, bo duplikat opisuje tę samą barierę | BR-24, BR-23, BR-16 |
 
 ![Makieta R2 w stanie nowa wersja: komunikat Autor zmienił zgłoszenie, linia Zmienione: uciążliwość nad danymi zgłoszenia próg z nową uciążliwością Tylko z pomocą](../../_generated/m-r2-sprawdzenie-zgloszenia-nowa-wersja.svg)
 
