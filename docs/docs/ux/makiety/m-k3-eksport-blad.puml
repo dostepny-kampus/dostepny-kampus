@@ -1,0 +1,14 @@
+@startsalt
+' K3 Eksport, stan wspólny "błąd serwera" po "Pobierz plik". Wybór formatu zostaje,
+' a "Spróbuj ponownie" zastępuje "Pobierz plik", więc na ekranie jest jedna czynność.
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Pobierz eksport")
+<b>Format pliku</b>
+( ) GeoJSON (WGS84)
+(X) CSV (PUWG 1992, EPSG:2180)
+..
+$tekst("Plik zawiera tylko obecne, sprawdzone bariery, bez danych autorów.")
+$komunikat("Serwer chwilowo nie odpowiada, a dane w telefonie są bezpieczne. Spróbuj ponownie za kilka minut.", "Spróbuj ponownie")
+$ekran_koniec()
+@endsalt

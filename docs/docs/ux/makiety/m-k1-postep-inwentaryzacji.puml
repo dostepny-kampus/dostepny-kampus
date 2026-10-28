@@ -1,0 +1,33 @@
+@startsalt
+' K1 Postęp inwentaryzacji, stan zwykły, Koordynator (RO-KOO).
+' A-1: 4 z 5 pięter jak w scenariuszu demo i BR-21; 3 wejścia jak na wzorcowej makiecie V2,
+' z których jedno ma źródło "obchód" ("Sprawdzone na miejscu"). Liczby zgłoszeń to zastępniki.
+' Dotknięcie budynku otwiera C5 "Obejrzane piętra" (US11.3).
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Postęp inwentaryzacji")
+$przycisk("Odśwież")
+Stan z <i>[godzina]</i>
+..
+{+
+<b>Budynek A-1</b>$dk_spacje(25)
+4 z 5 pięter, 80%
+Czeka na sprawdzenie: <i>[liczba]</i>
+Przyjęte: <i>[liczba]</i>
+Wejścia sprawdzone na miejscu:
+1 z 3
+}
+{+
+<b>Budynek B-4</b>$dk_spacje(25)
+$obejrzany()
+Czeka na sprawdzenie: <i>[liczba]</i>
+Przyjęte: <i>[liczba]</i>
+}
+{+
+<b>Budynek <i>[symbol]</i></b>$dk_spacje(20)
+$nieobejrzany()
+Czeka na sprawdzenie: <i>[liczba]</i>
+Przyjęte: <i>[liczba]</i>
+}
+$ekran_koniec()
+@endsalt

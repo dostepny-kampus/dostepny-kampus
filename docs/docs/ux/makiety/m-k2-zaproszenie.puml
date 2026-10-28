@@ -1,0 +1,16 @@
+@startsalt
+' K2 Zaproszenie, stan zwykły, Koordynator (RO-KOO). Rola bez wartości domyślnej,
+' bo stan "błąd walidacji" ma komunikat "Wybierz rolę." (US12.1, BR-2).
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Zaproś osobę")
+<b>Adres e-mail</b>
+"$dk_spacje(30)"
+<b>Rola</b>
+( ) Zbierający
+( ) Weryfikator
+( ) Koordynator
+..
+$przycisk_glowny("Wyślij zaproszenie")
+$ekran_koniec()
+@endsalt

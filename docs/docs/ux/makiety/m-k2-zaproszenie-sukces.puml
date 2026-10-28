@@ -1,0 +1,17 @@
+@startsalt
+' K2 Zaproszenie, stan "sukces": potwierdzenie nad pustym formularzem, gotowym do kolejnego
+' zaproszenia. Stan "konto istnieje" ma ten sam układ i inną treść (US12.2).
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Zaproś osobę")
+$komunikat("Zaproszenie wysłane na podany adres.")
+<b>Adres e-mail</b>
+"$dk_spacje(30)"
+<b>Rola</b>
+( ) Zbierający
+( ) Weryfikator
+( ) Koordynator
+..
+$przycisk_glowny("Wyślij zaproszenie")
+$ekran_koniec()
+@endsalt
