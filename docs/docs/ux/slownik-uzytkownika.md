@@ -374,62 +374,39 @@ Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości w
 | oznaczenie wejścia bez zmian od wysłania zmiany (R2) | `link-intact` | „Bez zmian od wysłania” | całe ogniwo: zmiana dotyczy obecnego oznaczenia |
 | oznaczenie wejścia zmienione po wysłaniu zmiany (R2) | `link-broken` | „Zmienione po wysłaniu” | przerwane ogniwo: zmiana dotyczy oznaczenia, którego już nie ma |
 
-Zasady ikon:
+Zasady ikon. Ikona stoi tylko w przypadkach z tej tabeli, a pozostałe elementy są bez ikony:
 
 | Zasada | Skutek |
 | --- | --- |
 | Jedna ikona ma jedno znaczenie. | `question-mark` oznacza tylko pomoc, dlatego „Brak danych” ma `minus`. Lupa stoi tylko w polu wyszukiwania. |
-| Ikona tylko tam, gdzie wymaga jej NFR-21 albo wymagania wspólne, oraz na pasku dolnym. | Status, oznaczenie wejścia, uciążliwość, znacznik i wskaźnik sieci mają ikonę. Pasek dolny ma ikony, bo widać go na 5 ekranach i osoba uczy się ich raz. „Zgłoś barierę przy wejściu” powtarza ikonę paska, bo zaczyna to samo zgłoszenie. |
-| Przy zwykłej czcionce ikona może stać obok słowa w odnośnikach, chipach, wierszach L2 i blokach V3. | Ikona pomaga rozpoznać czynność, ale znaczenie niesie słowo. Przy skali czcionki co najmniej 1,5 ikona znika ([reguła 11](wymagania-ekranow.md#duza-czcionka)). |
-| Reszta elementów jest bez ikony. | 6 grup barier, przyciski czynności, „Zrób zdjęcie” w V4, „Nieobejrzane”. Słowo jest dla PE-1 jaśniejsze niż strzałka albo symbol [6]. Wyjątek: „Otwórz” w ramkach R1 i K1, gdzie ikona odróżnia otwarcie pozycji od czynności na niej (recenzja B5). |
+| Ikonę mają elementy, dla których wymaga jej NFR-21 albo wymagania wspólne, oraz pasek dolny. | Status, oznaczenie wejścia, uciążliwość, znacznik i wskaźnik sieci mają ikonę. Pasek dolny ma ikony, bo widać go na 5 ekranach i osoba uczy się ich raz. |
+| Przy zwykłej czcionce ikona może stać obok słowa w odnośnikach, chipach, wierszach L2 i blokach V3. | Ikona pomaga rozpoznać czynność, ale znaczenie niesie słowo. „Zgłoś barierę przy wejściu” powtarza ikonę paska, bo zaczyna to samo zgłoszenie. Przy skali czcionki co najmniej 1,5 te ikony znikają ([reguła 11](wymagania-ekranow.md#duza-czcionka)). |
+| Strzałki zostają przy każdej czcionce. | Strzałka „Wstecz” i strzałka w dół przy rozwijanych piętrach i wyjściach ewakuacyjnych. Strzałka w prawo przy „Otwórz” w R1 i K1 odróżnia otwarcie pozycji od czynności na niej (recenzja B5); ta sama stoi w wierszach L2. Ołówek przy „Popraw zgłoszenie” (V2, Zbierający) odróżnia poprawę od nowego zgłoszenia. |
+| Na V1 sterowanie mapą, lupa i wybrana pozycja przełącznika mają ikony przy każdej czcionce. | Strzałki przesuwania, „+”, „−”, „ⓘ” i „Legenda” stoją na mapie jako jeden zestaw. Lupa oznacza pole wyszukiwania. Sam ptaszek bez koła pokazuje wybraną pozycję „Mapa” albo „Lista budynków” i nie myli się ze znakiem „Dostępne”. |
 | Nawigacja wstecz i przesuwanie mapy mają strzałkę. | „Wstecz” to strzałka w lewo i słowo. Przyciski przesuwania mapy to same strzałki na mapie z nazwą dla TalkBack, bo słowa pod mapą zabierały jej miejsce. „Powiększ” i „Pomniejsz” to w hi-fi znaki „+” i „−” na mapie, też z nazwą dla TalkBack. Wzorzec znają aplikacje map, a przesuwanie nadal nie wymaga przeciągania (WCAG 2.5.7). |
+| Pozostałe elementy są bez ikony. | 6 grup barier, przyciski czynności, „Zrób zdjęcie” w V4, „Nieobejrzane”. Słowo jest dla PE-1 jaśniejsze niż strzałka albo symbol [6]. |
 | Grupy barier w V4 są bez ikon. | OpenIconic nie ma ikon toalety, drzwi ani chodnika, a ikona na siłę myli. US4.3 wymaga tylko dużych przycisków (PW-7). |
 
 ### Udział ikon
 
-Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk, pole albo oznaczenie. Trzy wartości oznaczenia wejścia to jeden element. Pasek dolny to 4 elementy, a nagłówek, „Wstecz” i wskaźnik sieci liczymy na każdym ekranie, na którym są.
+Kurs „Projektowanie doświadczeń użytkownika” w etapie 4 dopuszcza najwyżej 50% ikon w całym interfejsie [7]. Udział liczymy tylko na zatwierdzonych makietach hi-fi (decyzja 60). Teraz to 42 stany ekranów partii 1, a po partii 2 cały interfejs.
 
-| Ekran | Elementy | Z ikoną | Udział | Elementy z ikoną |
+Element to miejsce, które osoba czyta albo dotyka osobno: nagłówek, akapit, pozycja listy, przycisk, pole albo chip. Element z ikoną ma ikonę w sobie albo tuż obok, a karta budynku z kilkoma znakami to jeden element. Liczymy cały ekran przy zwykłej czcionce, także treść pod krawędzią okna.
+
+| Ekran | Stany hi-fi | Elementy | Z ikoną | Udział |
 | --- | --- | --- | --- | --- |
-| V1 Mapa kampusu | 19 | 16 | 84% | pole wyszukiwania, „Mapa” w przełączniku, wskaźnik sieci, uciążliwość, „Legenda”, strzałki mapy (4), „Powiększ”, „Pomniejsz”, „ⓘ”, pasek (4) |
-| V2 Budynek | 27 | 16 | 59% | „Wstecz”, wskaźnik sieci, chipy, oznaczenie, dwa przyciski przy wejściu, wyjścia ewakuacyjne, uciążliwość, zdjęcie bez internetu, „Winda i toaleta”, piętro, „Pokaż na planie”, pasek (4) |
-| V3 Którędy wejść (stan zwykły) | 25 | 14 | 56% | „Wstecz”, wskaźnik sieci, odpowiedź, oznaczenie, „Dojście”, „Drzwi”, „Za drzwiami”, „Pokaż wejście na mapie”, „Zgłoś barierę przy wejściu”, uciążliwość, pasek (4) |
-| V4 Zgłoś barierę | 20 | 3 | 15% | „Wstecz”, wskaźnik sieci, komunikat „Ważne” |
-| V5 Jak korzystać z aplikacji | 13 | 7 | 54% | „Wstecz”, wskaźnik sieci, oznaczenie w przykładzie, pasek (4) |
-| L1 Konto (Gość) | 8 | 2 | 25% | „Wstecz”, wskaźnik sieci |
-| L2 Konto albo Konto i praca (wszystkie role) | 20 | 15 | 75% | „Wstecz”, wskaźnik sieci, wiersze „Twoja praca” (6), wiersze „Konto” (3), pasek (4) |
-| C1 Pomiar pozycji | 19 | 2 | 11% | „Wstecz”, wskaźnik sieci |
-| C2 Formularz zgłoszenia | 13 | 4 | 31% | „Wstecz”, wskaźnik sieci, uciążliwość, „Zrób zdjęcie” |
-| C3 Moje zgłoszenia | 14 | 4 | 29% | „Wstecz”, wskaźnik sieci, status, oznaczenie wejścia przy zmianie oznaczenia |
-| C4 Synchronizacja | 12 | 2 | 17% | „Wstecz”, wskaźnik sieci |
-| C5 Obejrzane piętra | 10 | 3 | 30% | „Wstecz”, wskaźnik sieci, znacznik |
-| C6 Zmień oznaczenie wejścia | 12 | 6 | 50% | „Wstecz”, wskaźnik sieci, obecne oznaczenie, „Dostępne”, „Niedostępne”, „Zrób zdjęcie” |
-| C7 Zgłoś, że bariery nie ma | 8 | 3 | 38% | „Wstecz”, wskaźnik sieci, „Zrób zdjęcie” |
-| R1 Zgłoszenia do sprawdzenia | 9 | 3 | 33% | „Wstecz”, wskaźnik sieci, „Otwórz” |
-| R2 Sprawdzenie zgłoszenia | 18 | 6 | 33% | „Wstecz”, wskaźnik sieci, uciążliwość, status podobnych, oznaczenie, status poprzedniego zgłoszenia albo oznaczenia |
-| K1 Postęp inwentaryzacji | 12 | 4 | 33% | „Wstecz”, wskaźnik sieci, znacznik, „Otwórz” |
-| K2 Zaproś osobę | 6 | 2 | 33% | „Wstecz”, wskaźnik sieci |
-| K3 Pobierz eksport | 6 | 2 | 33% | „Wstecz”, wskaźnik sieci |
-| **Razem** | **271** | **114** | **42%** | — |
+| V1 Mapa kampusu | 11 | 301 | 143 | 48% |
+| V2 Budynek | 9 | 231 | 147 | 64% |
+| V3 Którędy wejść | 3 | 40 | 26 | 65% |
+| V4 Zgłoś barierę | 11 | 86 | 14 | 16% |
+| V5 Jak korzystać z aplikacji | 2 | 27 | 12 | 44% |
+| L1 Konto (Gość) | 2 | 14 | 3 | 21% |
+| L2 Konto albo Konto i praca | 4 | 64 | 32 | 50% |
+| **Partia 1** | **42** | **763** | **377** | **49%** |
 
-Tabela liczy każdy ekran w stanie typowym: bez sieci, z jednym wejściem i jedną barierą. Ekrany V1–V5, L1 i L2 liczymy z zatwierdzonych makiet hi-fi, a pozostałe z makiet low-fi. V3 ma mało treści, więc jego udział zależy od stanu:
+Partia 1 mieści się w limicie z małym zapasem. Lista budynków V1 to 72 elementy, z czego 10 z ikoną, a bez niej udział wynosi 53%. Gdy partia 2 w hi-fi przekroczy limit, najpierw znikną ikony obok słów, bo słowo niesie znaczenie samo.
 
-| Stan V3 | Elementy | Z ikoną | Udział | Elementy z ikoną |
-| --- | --- | --- | --- | --- |
-| zwykły: 1 wejście dostępne, 1 bariera, bez sieci | 25 | 14 | 56% | jak w tabeli wyżej |
-| 1 wejście dostępne bez barier, bez sieci | 21 | 13 | 62% | jak wyżej, bez uciążliwości |
-| brak wejścia dostępnego albo brak danych, z siecią | 7 | 6 | 86% | „Wstecz”, odpowiedź, pasek (4) |
-| brak wejścia dostępnego albo brak danych, bez sieci | 8 | 7 | 88% | „Wstecz”, wskaźnik sieci, odpowiedź, pasek (4) |
-
-Kurs „Projektowanie doświadczeń użytkownika” w etapie 4 dopuszcza najwyżej 50% ikon w całym interfejsie [7]. Cały interfejs ma 42%. Próg 50% dla typowego stanu każdego ekranu to ostrzejsza miara zespołu.
-
-V1, V2, V3, V5 i L2 przekraczają 50%. Na V1 przesuwanie i powiększanie mapy to znaki na mapie zamiast słów pod nią. Zastępują przeciąganie mapy, czego WCAG wymaga dla ruchów przeciągania, i mają nazwy dla TalkBack.
-
-Na V2, V3 i L2 ikony stoją obok słów przy zwykłej czcionce i znikają przy dużej. Stany V3 bez wejścia dostępnego mają mało treści.
-
-Te przypadki to świadomy wyjątek od miary zespołu, a cały interfejs mieści się w limicie kursu.
-
-Oznaczenie wejścia i wskaźnik sieci zawsze mają tekst i ikonę (NFR-21 i kryterium WCAG o użyciu koloru [5]). Pasek dolny wygląda tak samo na każdym ekranie. Nie usuwamy tych ikon, żeby zmieścić się w limicie, bo każda stoi obok tekstu i tekst niesie znaczenie sam.
+Oznaczenie wejścia i wskaźnik sieci zawsze mają tekst i ikonę (NFR-21 i kryterium WCAG o użyciu koloru [5]). Tych ikon ani ikon paska dolnego nie usuwamy, żeby zmieścić się w limicie: wymaga ich NFR-21, a pasek wygląda tak samo na każdym ekranie.
 
 ## Nazwa wejścia do pracy zespołu {#nazwa-wejscia}
 
@@ -455,11 +432,11 @@ Propozycje PW-1…PW-15 są wprowadzone w [wymaganiach do ekranów](wymagania-ek
 | PW-4 | wymagania wspólne, V1, V2, L1 | wskaźnik braku sieci bez napisu; „Do pierwszego uruchomienia”; „karta budynku” w komunikatach | „Bez internetu · dane z …”; „Pierwsze otwarcie aplikacji”; „opis budynku” | żargon dla osoby starszej |
 | PW-5 | V4, V5, L1, L2 | rzeczownik „zgłoszenie” w komunikatach; „Anuluj zgłoszenie”; „Anuluj” w potwierdzeniu wycofania zgody | „zdjęcie bariery”, „bariera”; „Zrezygnuj”; „Zostaw zgodę”; treść według katalogu komunikatów | plan fazy B: bez słowa „zgłoszenie” dla Odwiedzającego |
 | PW-6 | V2 | „Plan piętra niedostępny dla tego budynku”, „Zdjęcie niedostępne bez internetu”, zdanie o barierach „którą sprawdziliśmy” | „Nie mamy planu pięter tego budynku.”, „Zdjęcie zobaczysz po połączeniu z internetem.”, „Nie mamy jeszcze sprawdzonych barier w tym budynku…” | słowo „niedostępne” tylko o wejściu; prostsze zdanie |
-| PW-7 | V4 | 6 przycisków grup barier z tekstem i ikoną; nazwy grup z klasyfikacji | pytanie „Czego dotyczy bariera?”, nazwy „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego”, bez ikon | NFR-21 nie obejmuje grup; brak trafnych ikon; próg 50% |
+| PW-7 | V4 | 6 przycisków grup barier z tekstem i ikoną; nazwy grup z klasyfikacji | pytanie „Czego dotyczy bariera?”, nazwy „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego”, bez ikon | NFR-21 nie obejmuje grup; brak trafnych ikon; limit 50% ikon |
 | PW-8 | V4, C2, C6, C7, V1, V5 | „Zrób ponownie”; „+” i „−”; pole „Symbol budynku”; „Pomiń” | „Zrób nowe zdjęcie”; „Powiększ”, „Pomniejsz”; strzałki przesuwania mapy z nazwą „Przesuń mapę w górę” itd.; „Wpisz symbol budynku, np. C-13”; „Pomiń instrukcję” | napis mówi, co się stanie |
 | PW-9 | V1, V2, V4, C1, C3, C4, R1, R2, K1, K3 | ładowanie w 1. osobie liczby pojedynczej, np. „Wczytuję”, „Ustalam”; „Nie znaleziono” | 1. osoba liczby mnogiej: „Wczytujemy”, „Ustalamy, gdzie jesteś”, „Nie znaleźliśmy” | jeden głos aplikacji, jak w „Wyślemy”, „Dziękujemy” |
 | PW-10 | stany wspólne, V2, V3, C2, C3, C4, R1, R2, K2 | komunikaty z 3 zdaniami albo bez rady, co zrobić | treść według katalogu komunikatów; „Spróbuj ponownie” także przy błędzie serwera | zasada „co się stało i co zrobić” w 2 zdaniach |
-| PW-11 | wymagania wspólne, V1, C5, K1 | ikona przy „Wstecz” nieopisana; „nieobejrzane” tekstem i ikoną | „Wstecz” ze strzałką i słowem: wyjątek dla nawigacji wstecz. Przyciski przesuwania mapy to strzałki z nazwą dla TalkBack. „Nieobejrzane” bez ikony, „Obejrzane” z ikoną `task` | próg 50% na V3; NFR-21 nie obejmuje znacznika |
+| PW-11 | wymagania wspólne, V1, C5, K1 | ikona przy „Wstecz” nieopisana; „nieobejrzane” tekstem i ikoną | „Wstecz” ze strzałką i słowem: wyjątek dla nawigacji wstecz. Przyciski przesuwania mapy to strzałki z nazwą dla TalkBack. „Nieobejrzane” bez ikony, „Obejrzane” z ikoną `task` | limit 50% ikon; NFR-21 nie obejmuje znacznika |
 | PW-12 | V2, L2, C3, C4, C5, C7 | „Nowe zgłoszenie z pomiarem”, „Nowe zgłoszenie”, „Bariery już nie ma”, „Piętra obejrzane”, „Cofnij”, „lokalne”. Konflikt bez napisu o skutku, „Anuluj” w C5. | „Zmierz i zgłoś barierę”, „Zgłoś, że bariery nie ma”, „Oznacz obejrzane piętra”, „Cofnij znacznik”, „W telefonie”. Napis „Druga wersja zostanie usunięta.”, „Zostaw znacznik”. | czasownik na przycisku; skutek przed decyzją |
 | PW-13 | V1, V2, V3, C2, R2 | uciążliwość 1–3 bez napisów | „Utrudnienie”, „Tylko z pomocą”, „Blokada” dla wszystkich ról | słowa z kryteriów skali uciążliwości |
 | PW-14 | C3, L2, R1, K2, K3 | „Wyślij ponownie do bieżącego zgłoszenia”, „Wyloguj”. Nagłówki „Kolejka weryfikacji”, „Zaproszenie”, „Eksport”. | „Wyślij ponownie” ze zdaniem o aktualnej wersji, „Wyloguj się”. Nagłówki „Zgłoszenia do sprawdzenia”, „Zaproś osobę”, „Pobierz eksport”. | nagłówek równy napisowi przycisku |
