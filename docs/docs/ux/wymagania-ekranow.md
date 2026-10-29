@@ -137,10 +137,10 @@ Arkusz znalezionej sali na dole mapy (decyzja 48, punkt 5):
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Symbol budynku, „Sala 329”, funkcja sali i piętro z danych PWr, „Zamknij” | dane | decyzja 44, NFR-40 | „Zamknij”: V1 |
-| Kroki tekstem w numerowanej liście, bez rysowania trasy: wejście zalecane, winda, piętro sali, sala z przybliżoną odległością od windy. Dane nie podają piętra wejścia, więc krok go nie podaje, a wejście zalecane liczy się jako parter. Sala na parterze ma kroki bez windy | dane | US18.2, BR-25 | — |
+| Kroki tekstem w numerowanej liście, bez rysowania trasy: wejście zalecane z piętrem, winda, piętro sali, sala z przybliżoną odległością od windy. Piętro wejścia pochodzi z warstwy wejść planu PWr. Gdy go brak, krok przyjmuje parter i mówi to, np. „Wejście zalecane, parter (brak piętra w danych)”. Sala na piętrze wejścia ma kroki bez windy | dane | US18.2, BR-25 | — |
 | „Pokaż opis budynku” | czynność główna stanu | US2, PW-5 | V2 |
 
-Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na parterze i na piętrze sali (US18.2). W A-1 to winda przy klatkach C i D, bo winda przy klatkach A i B jest w danych tylko na 2 piętrze [6]. Sala na parterze ma tylko pierwszy i ostatni krok, a odległość liczy się od wejścia.
+Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na piętrze tego wejścia i na piętrze sali (US18.2). W A-1, z wejściami na parterze, to winda przy klatkach C i D, bo winda przy A i B staje tylko na 2 piętrze [6]. Sala na piętrze wejścia ma tylko pierwszy i ostatni krok, a odległość liczy się od wejścia.
 
 | Stan | Co widać |
 | --- | --- |
@@ -149,7 +149,7 @@ Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na parterze 
 | Znaleziona sala | plan piętra sali z wyróżnioną salą i arkusz z krokami (decyzja 48) |
 | Bariera na mapie | wybrany znak bariery i arkusz z typem, uciążliwością i miejscem (US1.3) |
 | Duża czcionka | start na liście budynków; karta budynku to jeden przycisk, a „Pokaż na mapie” jest na V2 (NFR-19, NFR-20) |
-| Sala bez drogi | brak wejścia zalecanego albo windy z parteru na piętro sali. Zamiast kroków: „Nie znaleźliśmy w danych wejścia i windy, którymi dotrzesz do tej sali bez schodów.” Przycisk „Pokaż opis budynku” (BR-25) |
+| Sala bez drogi | brak wejścia zalecanego albo windy z piętra wejścia na piętro sali. Zamiast kroków: „Nie znaleźliśmy w danych wejścia i windy, którymi dotrzesz do tej sali bez schodów.” Przycisk „Pokaż opis budynku” (BR-25) |
 | Pusty — brak sali | „Nie znaleźliśmy sali »X« w budynku A-1. Sprawdź numer albo otwórz opis budynku.” Przycisk „Pokaż opis budynku” (PW-10) |
 | Pierwsze uruchomienie | przed mapą pokazuje się instrukcja V5 (US5.1) |
 | Ładowanie | „Wczytujemy mapę kampusu…”; kontury pojawiają się przed podkładem (NFR-11) |

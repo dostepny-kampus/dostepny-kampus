@@ -238,7 +238,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Warunki wstępne | Brak; logowanie nie jest potrzebne (US1.2). |
 | Wyzwalacz | Osoba zna budynek i numer sali, np. z planu zajęć. |
 | Przepływ główny | 1. Osoba wpisuje budynek i numer sali, np. „A-1 329”. <br> 2. System pokazuje plan piętra sali z wyróżnioną salą, jej funkcję i piętro z danych PWr (US18.1). <br> 3. System podaje kroki tekstem: wejście zalecane, winda, piętro sali i sala (US18.2, BR-25). |
-| Alternatywy i wyjątki | 1a. Brak sieci: dane z ostatniej synchronizacji z datą (NFR-10). <br> 2a. Sali nie ma w danych: system mówi to zdaniem i proponuje opis budynku (US18.3). <br> 3a. Sala na parterze: kroki bez windy, odległość od wejścia (US18.2). <br> 3b. Brak wejścia zalecanego albo windy z parteru na piętro sali: system mówi to zdaniem i proponuje opis budynku (US18.3). |
+| Alternatywy i wyjątki | 1a. Brak sieci: dane z ostatniej synchronizacji z datą (NFR-10). <br> 2a. Sali nie ma w danych: system mówi to zdaniem i proponuje opis budynku (US18.3). <br> 3a. Sala na piętrze wejścia: kroki bez windy, odległość od wejścia (US18.2). <br> 3b. Brak wejścia zalecanego albo windy z piętra wejścia na piętro sali: system mówi to zdaniem i proponuje opis budynku (US18.3). |
 | Warunki końcowe | Osoba zna piętro sali i drogę bez schodów albo wie, że w danych takiej drogi nie ma; system niczego nie zapisuje. |
 | Odwołania | US18.1…US18.3, US1.1, BR-25, NFR-10, NFR-19, NFR-40 |
 
