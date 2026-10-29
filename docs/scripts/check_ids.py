@@ -1,7 +1,7 @@
 # Dostępny Kampus
 # Author: Vladyslav Yevkov
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
-"""Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB), macierz śledzenia
+"""Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB), macierz śledzenia,
 odwołania wierszy w wymaganiach ekranów i znaczniki scenariuszy w testach Androida. Version: 0.4.0."""
 
 from __future__ import annotations
@@ -52,9 +52,9 @@ REQUIREMENT_RE = re.compile(r"(?<![\w-])(?:US\d+(?:\.\d+)?|UC\d+|BR-G?\d+|NFR-\d
 MARKER = re.compile(r"^\s*// Scenariusz( \(częściowo\))?: (\S[^:]*?\.feature):(?: (\S.*?))?\s*$")
 MARKER_CONTINUATION = re.compile(r"^\s*//\s{2,}(\S.*?)\s*$")
 MARKER_HINT = re.compile(r"^\s*//\s*scenariusz\b[^:]{0,20}:", re.IGNORECASE)
-MARKER_FORM = "// Scenariusz: <plik>.feature: <nazwa scenariusza>"
 ANNOTATION = re.compile(r"@([\w.:]+)(\((?:[^()]|\([^()]*\))*\))?\s*")
 FUNCTION = re.compile(r"^(?:(?:public|internal|private|protected|override|open|suspend)\s+)*fun\b")
+TEST_SOURCE = re.compile(r"^(?!(?:.*/)?(?:build|\.gradle)/)(?:.*/)?src/(?:test|\w*Test)\w*/")
 
 
 @dataclass(frozen=True)
@@ -79,12 +79,13 @@ class Scenario:
 
 @dataclass(frozen=True)
 class Marker:
-    """Znacznik `// Scenariusz: <plik>.feature: <nazwa>` w teście; `above_test` — stoi tuż nad funkcją testu."""
+    """Znacznik `// Scenariusz: <plik>.feature: <nazwa>` w teście; `test` — stan funkcji tuż pod znacznikiem:
+    „aktywny”, „wyłączony” (@Ignore, @Disabled…) albo pusty, gdy pod znacznikiem nie ma funkcji testu."""
 
     feature: str
     scenario: str
     partial: bool
-    above_test: bool
+    test: str
     location: Location
 
 
@@ -328,25 +329,25 @@ def collect(docs: Path, specs: Path, android: Path | None = None) -> Corpus:
     for path in sorted(specs.rglob("*.feature")) if specs.is_dir() else []:
         scan_feature(path, corpus, path.relative_to(specs).as_posix())
     for path in sorted(android.rglob("*.kt")) if android and android.is_dir() else []:
-        scan_kotlin(path, corpus)
+        if TEST_SOURCE.match(path.relative_to(android).as_posix()):
+            scan_kotlin(path, corpus)
     return corpus
 
 
 def scan_kotlin(path: Path, corpus: Corpus) -> None:
-    """Dodaje do `corpus` znaczniki scenariuszy z pliku Kotlin. Linię podobną do znacznika, ale niezgodną ze wzorem
-    (np. literówka w „częściowo”), albo znacznik bez nazwy scenariusza zapisuje jako zły znacznik.
+    """Dodaje do `corpus` znaczniki scenariuszy z pliku testów Kotlin (`src/test*`, `src/*Test*`, bez build i .gradle).
+    Linię podobną do znacznika, ale niezgodną ze wzorem, albo znacznik bez nazwy zapisuje jako zły znacznik.
 
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
-    lines = path.read_text(encoding="utf-8").splitlines()
+    lines, rel = path.read_text(encoding="utf-8").splitlines(), relative(path)
     for index, line in enumerate(lines):
-        location = Location(relative(path), index + 1)
         marker = read_marker(lines, index)
         if marker and marker[2]:
             partial, feature, name, end = marker
-            corpus.markers.append(Marker(feature, name, partial, marks_test(lines, end), location))
+            corpus.markers.append(Marker(feature, name, partial, test_state(lines, end), Location(rel, index + 1)))
         elif marker or MARKER_HINT.match(line):
-            corpus.bad_markers.append(location)
+            corpus.bad_markers.append(Location(rel, index + 1))
 
 
 def read_marker(lines: list[str], index: int) -> tuple[bool, str, str, int] | None:
@@ -366,13 +367,14 @@ def read_marker(lines: list[str], index: int) -> tuple[bool, str, str, int] | No
     return bool(match.group(1)), match.group(2), " ".join(parts), end
 
 
-def marks_test(lines: list[str], start: int) -> bool:
-    """Zwraca True, gdy od linii `start` są kolejne znaczniki i adnotacje (wśród nich adnotacja testu, np. @Test
-    albo @ParameterizedTest), a po nich deklaracja `fun`.
+def test_state(lines: list[str], start: int) -> str:
+    """Zwraca „aktywny”, gdy od linii `start` są kolejne znaczniki i adnotacje (wśród nich adnotacja testu, np. @Test
+    albo @ParameterizedTest), a po nich `fun`; „wyłączony”, gdy jest też @Ignore albo @Disabled…; inaczej pusty napis.
 
-    Gwarantuje: pusta linia, komentarz albo inny kod przed `fun` daje False; argumenty adnotacji mogą mieć kilka linii.
+    Gwarantuje: pusta linia, komentarz albo inny kod przed `fun` daje pusty napis; argumenty adnotacji mogą mieć kilka linii.
     """
-    has_test, depth, index = False, 0, start
+    names: set[str] = set()
+    depth, index = 0, start
     while index < len(lines):
         text = lines[index].strip()
         index += 1
@@ -380,20 +382,20 @@ def marks_test(lines: list[str], start: int) -> bool:
             depth = max(0, depth + text.count("(") - text.count(")"))
             continue
         if not text:
-            return False
+            return ""
         if marker := read_marker(lines, index - 1):
             index = marker[3]
             continue
         while match := ANNOTATION.match(text):
-            has_test |= match.group(1).rsplit(".", 1)[-1].endswith("Test")
+            names.add(match.group(1).rsplit(".", 1)[-1])
             text = text[match.end() :]
             if text.startswith("("):
                 depth, text = text.count("(") - text.count(")"), ""
-        if FUNCTION.match(text):
-            return has_test
+        if FUNCTION.match(text) and any(n.endswith("Test") for n in names):
+            return "wyłączony" if any(n == "Ignore" or n.startswith("Disabled") for n in names) else "aktywny"
         if text:
-            return False
-    return False
+            return ""
+    return ""
 
 
 def parent_us(ac: str) -> str:
@@ -486,25 +488,28 @@ def check_tests(corpus: Corpus, release: bool = False) -> list[Finding]:
     """Zwraca wyniki kontroli „scenariusz → test” (decyzja 67).
 
     Gwarantuje: zły znacznik, znacznik do nieistniejącego pliku .feature albo scenariusza (nazwa znak w znak)
-    i znacznik, który nie stoi tuż nad funkcją testu, to „BŁĄD” z miejscem w teście; taki znacznik nie pokrywa
-    scenariusza. Scenariusz bez testu i scenariusz tylko z testami „częściowo” to „UWAGI” w dwóch osobnych
-    listach, a w trybie `release` — „BŁĘDY”.
+    i znacznik, który nie stoi tuż nad funkcją testu, to „BŁĄD” z miejscem w teście; znacznik nad testem wyłączonym
+    to „UWAGA”. Żaden z nich nie pokrywa scenariusza. Scenariusz bez testu i scenariusz tylko z testami „częściowo”
+    to „UWAGI” w dwóch osobnych listach, a w trybie `release` — „BŁĘDY”.
     """
-    findings = [Finding("BŁĄD", str(loc), f"znacznik niezgodny ze wzorem „{MARKER_FORM}”") for loc in corpus.bad_markers]
+    form = "znacznik niezgodny ze wzorem „// Scenariusz: <plik>.feature: <nazwa>”"
+    findings = [Finding("BŁĄD", str(loc), form) for loc in corpus.bad_markers]
     names = {(s.feature, s.name) for s in corpus.all_scenarios}
     covered: dict[tuple[str, str], set[bool]] = defaultdict(set)
     for marker in corpus.markers:
-        key = (marker.feature, marker.scenario)
+        key, severity = (marker.feature, marker.scenario), "BŁĄD"
         if marker.feature not in corpus.features:
-            problem = f"znacznik wskazuje nieistniejący plik: {marker.feature}"
+            problem = f"znacznik wskazuje nieistniejący plik (ścieżka względem specs/): {marker.feature}"
         elif key not in names:
             problem = f"znacznik wskazuje nieistniejący scenariusz: {marker.feature}: {marker.scenario}"
-        elif not marker.above_test:
+        elif not marker.test:
             problem = "znacznik nie stoi tuż nad funkcją testu"
+        elif marker.test == "wyłączony":
+            severity, problem = "UWAGA", f"test wyłączony, nie pokrywa scenariusza: {marker.scenario}"
         else:
             covered[key].add(marker.partial)
             continue
-        findings.append(Finding("BŁĄD", str(marker.location), problem))
+        findings.append(Finding(severity, str(marker.location), problem))
     level = "BŁĄD" if release else "UWAGA"
     missing = [s for s in corpus.all_scenarios if not covered.get((s.feature, s.name))]
     partial = [s for s in corpus.all_scenarios if covered.get((s.feature, s.name)) == {True}]

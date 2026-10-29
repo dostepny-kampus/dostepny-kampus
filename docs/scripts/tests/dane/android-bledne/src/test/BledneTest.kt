@@ -24,9 +24,9 @@ class BledneTest {
     fun pomocnicza() = Unit
 
     // Scenariusz: kampus.feature: Pełny test
-    /** Opis testu stoi nad znacznikiem, nie pod nim. */
+    @Disabled("czeka na ekran")
     @Test
-    fun opisPodZnacznikiem() = Unit
+    fun wylaczony() = Unit
 
     // Scenariusz (czesciowo): kampus.feature: Tylko częściowo
     @Test
