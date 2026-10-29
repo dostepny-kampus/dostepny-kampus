@@ -13,7 +13,7 @@ Strona pokazuje w jednym miejscu, jak aplikacja pomaga osobom starszym, z ograni
 | Słaby wzrok: mylenie podobnych liter | Krój pisma powstał dla osób słabowidzących i różnicuje litery o podobnym kształcie. | [typografia](tokeny.md#typografia) |
 | Słaby wzrok: drobny tekst | Tekst jest duży już przy zwykłym ustawieniu telefonu. | [typografia](tokeny.md#typografia), [NFR-20](../wymagania/niefunkcjonalne.md#nfr-20) |
 | Słaby wzrok: niewidoczne granice pól i pozycji | Granicę pola, grupy i pozycji listy wyznacza wyraźna ramka albo linia podziału. | [zasady tokenów](tokeny.md#zasady), [NFR-16](../wymagania/niefunkcjonalne.md#nfr-16) |
-| Powiększona czcionka w telefonie (PE-1) | Napisy się nie ucinają, a mapa kampusu otwiera się listą budynków. | [NFR-20](../wymagania/niefunkcjonalne.md#nfr-20), [Duża czcionka](wymagania-ekranow.md#duza-czcionka), [V1](wymagania-ekranow.md#v1-mapa-kampusu) |
+| Powiększona czcionka w telefonie (PE-1) | Napisy się nie ucinają, a mapa kampusu otwiera się listą budynków. | [NFR-20](../wymagania/niefunkcjonalne.md#nfr-20), [Duża czcionka](wymagania-ekranow.md#duza-czcionka), [V1](wymagania-ekranow.md#v1-mapa-kampusu), [odstępstwo](#odstepstwo-pasek-dolny) |
 | Daltonizm | Kolor nigdy nie jest jedynym sygnałem: obok niego zawsze jest kształt albo ikona i słowo. | [NFR-21](../wymagania/niefunkcjonalne.md#nfr-21), [zasady tokenów](tokeny.md#zasady), [metafory i ikony](slownik-uzytkownika.md#metafory-i-ikony) |
 | Czytnik ekranu TalkBack | Każdy element, który można dotknąć, ma polską nazwę, a zamiast mapy można przejść listę budynków. | [NFR-18](../wymagania/niefunkcjonalne.md#nfr-18), [NFR-19](../wymagania/niefunkcjonalne.md#nfr-19), [V1](wymagania-ekranow.md#v1-mapa-kampusu) |
 | Wolniejsze tempo pracy | Aplikacja nie ponagla, bo żadna czynność nie kończy się z upływem czasu. | [NFR-23](../wymagania/niefunkcjonalne.md#nfr-23) |
@@ -24,3 +24,13 @@ Strona pokazuje w jednym miejscu, jak aplikacja pomaga osobom starszym, z ograni
 | Gubienie się w aplikacji | Na każdym ekranie poza mapą startową przycisk „Wstecz” ze strzałką i słowem stoi w tym samym miejscu. | [wymagania wspólne](wymagania-ekranow.md#wymagania-wspolne), [NFR-15](../wymagania/niefunkcjonalne.md#nfr-15) |
 | Trudne słowa i niejasne komunikaty | Napisy są proste, bez żargonu, a komunikat mówi, co zrobić, i nie obwinia osoby. | [zasady napisów](slownik-uzytkownika.md#zasady-napisow), [wymagania wspólne](wymagania-ekranow.md#wymagania-wspolne), [NFR-42](../wymagania/niefunkcjonalne.md#przenosnosc) |
 | Jasny ekran razi wieczorem | Ciemny motyw telefonu ma w aplikacji osobno dobrane i sprawdzone kolory. | [ciemny motyw](tokeny.md#ciemny-motyw), [NFR-16](../wymagania/niefunkcjonalne.md#nfr-16) |
+
+## Odstępstwo: napisy paska dolnego {#odstepstwo-pasek-dolny}
+
+Wiersz „Powiększona czcionka w telefonie” odsyła do [NFR-20](../wymagania/niefunkcjonalne.md#nfr-20): napisy się nie ucinają i nie nakładają, gdy czcionka ma 200%. Jedno miejsce rośnie mniej. Napisy paska dolnego rosną, dopóki najdłuższe słowo mieści się w swojej pozycji, ale co najmniej 1,3 raza. Przy 200% w telefonie nie zawsze osiągają więc pełny rozmiar (reguła 8 w sekcji [Duża czcionka](wymagania-ekranow.md#duza-czcionka)).
+
+Powód: pasek dolny nigdy się nie chowa ([wymagania wspólne](wymagania-ekranow.md#wymagania-wspolne)), a jego cztery pozycje mają w jednym rzędzie stałą szerokość. Przy pełnym powiększeniu słowo „barierę” nie zmieściłoby się w pozycji i musiałoby się łamać w środku.
+
+To świadome odstępstwo od miary NFR-20 i od kryterium WCAG 1.4.4.
+
+Łagodzą je ikona przy każdej pozycji, cały napis bez łamania słów, większy niż przy zwykłej czcionce, i pełna nazwa dla TalkBack. Odstępstwo ocenimy w przeglądzie dostępności według NFR-15.

@@ -51,14 +51,17 @@ state "V4 Zgłoszenie szybkie" as V4 {
 [*] --> V1 : kolejne\nuruchomienie
 V5 --> V1 : „Zacznij”,\n„Pomiń instrukcję”
 V1 --> V2 : budynek, wynik\nwyszukiwania, „Pokaż opis\nbudynku” w arkuszu\nbariery (arkusz na mapie)
-V2 --> V1 : „Wstecz”, „Pokaż\nna mapie” (budynek\nalbo wejście zaznaczone)
+V2 --> V1 : „Wstecz”, „Pokaż\nna mapie” (budynek),\n„Pokaż wejście\nna mapie” (wejście)
 V2 --> V3 : „Sprawdź,\nktórędy wejść”
 V3 --> V2 : „Wstecz”
+V3 --> V1 : „Pokaż wejście\nna mapie”
 V1 --> PLAN : wynik z salą,\nnp. „A-1 329”
 V2 --> PLAN : „Pokaż na planie”
 PLAN --> V2 : „Pokaż opis\nbudynku”
 V2 --> ZG : „Zgłoś barierę\nprzy wejściu”\n(wejście wybrane)
 V2 --> L1 : „Zgłoś barierę\nprzy wejściu” (Gość)
+V3 --> ZG : „Zgłoś barierę\nprzy wejściu”\n(wejście wybrane)
+V3 --> L1 : „Zgłoś barierę\nprzy wejściu” (Gość)
 
 PASEK --> V1 : „Mapa”
 PASEK --> V5 : „Pomoc”
