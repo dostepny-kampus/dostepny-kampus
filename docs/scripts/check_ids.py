@@ -1,7 +1,8 @@
 # Dostępny Kampus
 # Author: Vladyslav Yevkov
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
-"""Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB) i macierz śledzenia. Version: 0.2.0."""
+"""Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB), macierz śledzenia
+i odwołania wierszy w wymaganiach ekranów. Version: 0.3.0."""
 
 from __future__ import annotations
 
@@ -44,6 +45,10 @@ FEATURE_KEYWORDS = ("Feature", "Funkcja", "Funkcjonalność", "Właściwość", 
 RULE_KEYWORDS = ("Rule", "Reguła", "Zasada")
 SCENARIO_KEYWORDS = ("Scenario Outline", "Scenario Template", "Scenario", "Example", "Scenariusz", "Szablon scenariusza", "Przykład")
 EXAMPLES_KEYWORDS = ("Examples", "Scenarios", "Przykłady")
+SCREEN_PAGE = Path("ux") / "wymagania-ekranow.md"
+SCREEN_REF_HEADER = "Odwołanie"
+SCREEN_COMMON_REF = "wymagania wspólne"
+REQUIREMENT_RE = re.compile(r"(?<![\w-])(?:US\d+(?:\.\d+)?|UC\d+|BR-G?\d+|NFR-\d+)(?![\w-])")
 
 
 @dataclass(frozen=True)
@@ -586,6 +591,39 @@ def report_matrix_state(target: Path, current: bool) -> int:
     return 1
 
 
+def screen_rows(path: Path) -> list[Finding]:
+    """Zwraca błędy dla wierszy tabel z kolumną „Odwołanie”, w których ta kolumna nie ma ID US, AC, BR, NFR ani UC.
+
+    Gwarantuje: wiersz przechodzi, gdy kolumna ma choć jedno takie ID albo odsyłacz „wymagania wspólne”; same
+    „decyzja N”, „PW-x”, „WCAG …” czy „próg zespołu” dają „BŁĄD” z numerem linii. Tabele bez tej kolumny
+    i bloki kodu są pomijane. Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
+    """
+    findings: list[Finding] = []
+    column: int | None = None
+    for number, raw in markdown_lines(path.read_text(encoding="utf-8")):
+        if not raw.strip().startswith("|"):
+            column = None
+            continue
+        cells = table_cells(raw)
+        if cells is None:
+            continue
+        if column is None:
+            column = cells.index(SCREEN_REF_HEADER) if SCREEN_REF_HEADER in cells else -1
+            continue
+        cell = cells[column] if 0 <= column < len(cells) else None
+        if cell is None or REQUIREMENT_RE.search(clean_line(cell)) or SCREEN_COMMON_REF in cell:
+            continue
+        message = f"wiersz bez odwołania do US, AC, BR, NFR ani UC: „{cell or '—'}”"
+        findings.append(Finding("BŁĄD", str(Location(relative(path), number)), message))
+    return findings
+
+
+def check_screen_page(docs: Path) -> list[Finding]:
+    """Zwraca wyniki screen_rows dla strony wymagań ekranów w `docs`; brak strony nie jest błędem."""
+    page = docs / SCREEN_PAGE
+    return screen_rows(page) if page.is_file() else []
+
+
 def print_report(corpus: Corpus, findings: list[Finding]) -> None:
     """Wypisuje podsumowanie korpusu i listę wyników."""
     print(
@@ -628,10 +666,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.matrix:
             write_matrix(args.matrix, render_blocks(corpus))
             print(f"check_ids: macierz zapisana do {args.matrix}")
+        findings = check(corpus, args.partial) + check_screen_page(args.docs)
     except (OSError, UnicodeDecodeError) as exc:
         print(f"check_ids: BŁĄD: {exc}", file=sys.stderr)
         return 2
-    findings = check(corpus, args.partial)
     print_report(corpus, findings)
     has_errors = any(f.level == "BŁĄD" for f in findings)
     return 1 if args.strict and has_errors else 0
