@@ -27,9 +27,14 @@ Strona pokazuje w jednym miejscu, jak aplikacja pomaga osobom starszym, z ograni
 
 ## Odstępstwo: napisy paska dolnego {#odstepstwo-pasek-dolny}
 
-Wiersz „Powiększona czcionka w telefonie” odsyła do [NFR-20](../wymagania/niefunkcjonalne.md#nfr-20): napisy się nie ucinają i nie nakładają, gdy czcionka ma 200%. Jedno miejsce rośnie mniej. Napisy paska dolnego rosną, dopóki najdłuższe słowo mieści się w swojej pozycji, ale co najmniej 1,3 raza. Przy 200% w telefonie nie zawsze osiągają więc pełny rozmiar (reguła 8 w sekcji [Duża czcionka](wymagania-ekranow.md#duza-czcionka)).
+Wiersz „Powiększona czcionka w telefonie” odsyła do [NFR-20](../wymagania/niefunkcjonalne.md#nfr-20): napisy się nie ucinają i nie nakładają, gdy czcionka ma 200%. Jedno miejsce rośnie mniej: napisy paska dolnego (reguła 8 w sekcji [Duża czcionka](wymagania-ekranow.md#duza-czcionka)). Przy 200% w telefonie nie zawsze osiągają pełny rozmiar:
 
-Powód: pasek dolny nigdy się nie chowa ([wymagania wspólne](wymagania-ekranow.md#wymagania-wspolne)), a jego cztery pozycje mają w jednym rzędzie stałą szerokość. Przy pełnym powiększeniu słowo „barierę” nie zmieściłoby się w pozycji i musiałoby się łamać w środku.
+- Wszystkie napisy paska mają jeden rozmiar.
+- Rosną, dopóki najdłuższe słowo wszystkich napisów mieści się w pozycji, ale co najmniej 1,3 raza.
+- Pozycja ma odstęp 8 dp od sąsiedniej pozycji i od krawędzi ekranu.
+- Po „i” w „Konto i praca” stoi twarda spacja, więc „i praca” liczy się jako jedno słowo. Najdłuższe słowo to dziś „barierę”.
+
+Powód: pasek dolny nigdy się nie chowa ([wymagania wspólne](wymagania-ekranow.md#wymagania-wspolne)), a jego cztery pozycje mają w jednym rzędzie stałą szerokość. Przy pełnym powiększeniu słowo „barierę” nie zmieściłoby się w pozycji i musiałoby się łamać w środku. Jeden rozmiar i odstęp od krawędzi sprawiają, że pasek wygląda tak samo przy każdej pozycji, a ostatni napis nie dotyka krawędzi ekranu.
 
 To świadome odstępstwo od miary NFR-20 i od kryterium WCAG 1.4.4.
 

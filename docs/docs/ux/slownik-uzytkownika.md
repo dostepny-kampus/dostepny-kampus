@@ -21,6 +21,7 @@ Słownik pojęć zostaje źródłem nazw w dokumentach i w kodzie. Ta strona ust
 | Bez anglicyzmów. | „Plik”, „Pobierz” | Wyjątek: „© OpenStreetMap contributors”, bo podpis wymaga NFR-37. |
 | Jedno słowo ma jedno znaczenie w całej aplikacji. | „niedostępne” tylko o wejściu | Osoba nie myli wejścia z brakiem planu albo zdjęcia. |
 | Daty jako 12.11.2026, liczby cyframi. | „3 kroki”, „Krok 2 z 3” | Cyfry czyta się szybciej niż słowa. |
+| Jednoliterowe słowo, np. „i”, „w” albo „z”, nie zostaje na końcu wiersza: po nim stoi twarda spacja. | „Konto i praca” łamie się jako „Konto / i praca” | Zasada polskiego składu. Przy dużej czcionce wiersz zaczyna się od słowa, które niesie znaczenie. |
 
 Słowa, których Gość i Odwiedzający nie widzą:
 
