@@ -13,6 +13,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.first
 
 private val Context.startDataStore by preferencesDataStore(
     name = "start",
@@ -20,24 +21,27 @@ private val Context.startDataStore by preferencesDataStore(
 )
 
 /** Czy to pierwsze uruchomienie aplikacji: wtedy instrukcja V5 otwiera się sama, a potem już nie (US5.1). */
-fun interface FirstLaunch {
-    /** Prawda tylko przy pierwszym wywołaniu po instalacji; od razu zapisuje, że uruchomienie już było. */
-    suspend fun consume(): Boolean
+interface FirstLaunch {
+    /**
+     * Prawda, dopóki nie wywołano [markHelpSeen]. Sam odczyt niczego nie zapisuje, więc obrót telefonu
+     * i odtworzenie procesu przed zamknięciem instrukcji dają ten sam wynik.
+     */
+    suspend fun isFirstLaunch(): Boolean
+
+    /** Zapisuje, że osoba zamknęła instrukcję otwartą przy pierwszym uruchomieniu albo ją pominęła. */
+    suspend fun markHelpSeen()
 }
 
 /** [FirstLaunch] zapisany w [dataStore], więc przetrwa zamknięcie aplikacji i restart telefonu. */
 class FirstLaunchRepository(private val dataStore: DataStore<Preferences>) : FirstLaunch {
-    override suspend fun consume(): Boolean {
-        var isFirst = false
-        dataStore.edit { preferences ->
-            isFirst = preferences[HELP_SHOWN] != true
-            preferences[HELP_SHOWN] = true
-        }
-        return isFirst
+    override suspend fun isFirstLaunch(): Boolean = dataStore.data.first()[HELP_SEEN] != true
+
+    override suspend fun markHelpSeen() {
+        dataStore.edit { preferences -> preferences[HELP_SEEN] = true }
     }
 
     private companion object {
-        val HELP_SHOWN = booleanPreferencesKey("help_shown")
+        val HELP_SEEN = booleanPreferencesKey("help_seen")
     }
 }
 
