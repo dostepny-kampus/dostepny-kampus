@@ -77,9 +77,9 @@ Reguły włączają się, gdy skala czcionki w telefonie wynosi co najmniej 1,5.
 | 8 | Pasek dolny ma zawsze jeden rząd z czterema pozycjami, a napis może mieć dwa wiersze. Pasek nie chowa się przy przewijaniu. Napisy rosną, dopóki najdłuższe słowo mieści się w pozycji, ale co najmniej 1,3 raza. To [odstępstwo od pełnych 200%](dostepnosc.md#odstepstwo-pasek-dolny). | NFR-20, wymagania wspólne (pasek dolny); decyzja 53 |
 | 9 | Widoczny napis mieści się w przycisku bez dzielenia wyrazów, a pełną nazwę czyta TalkBack, np. „Zgłoś barierę przy wejściu” i „Zgłoś barierę przy wejściu: Wejście Cesarskie”. Nazwa dla TalkBack zaczyna się od widocznych słów. | NFR-18, WCAG 2.5.3 [1] |
 | 10 | Elementy przypięte to górny pasek, pas czynności i pasek dolny. Gdy razem zajęłyby ponad 25% wysokości okna w bieżącej orientacji, pas czynności nie jest przypięty. Jego czynności stoją na początku treści, przed pierwszą grupą, czynność główna pierwsza, np. „Sprawdź, którędy wejść” i „Pokaż na mapie” na V2. Na ekranach decyzji, V5 i L1, stoją na końcu treści, po tekście potrzebnym do decyzji. Przypięte zostają górny pasek, w którym jest „Wstecz”, i pasek dolny. Górny pasek może się chować przy przewijaniu. W szerokim oknie przyciski mają szerokość kolumny tekstu (NFR-51). | NFR-52, NFR-20 |
-| 11 | Ikona ozdobna obok słowa znika, np. przy „Winda”, „Drzwi”, „Pokaż na planie” i w wierszach L2. Zostają ikony, które niosą znaczenie albo stan: oznaczenie wejścia, uciążliwość, strzałki, ptaszek wybranej pozycji przełącznika i pasek dolny. Na V1 zostają też lupa w polu i sterowanie mapą ([zasady ikon](slownik-uzytkownika.md#metafory-i-ikony)). | NFR-20, NFR-21 |
+| 11 | Ikona ozdobna obok słowa znika, np. przy „Winda”, „Drzwi”, „Pokaż na planie” i w wierszach L2. Zostają ikony, które niosą znaczenie albo stan: oznaczenie wejścia, uciążliwość, strzałki, ptaszek wybranej pozycji przełącznika, ołówek przy „Popraw zgłoszenie” i pasek dolny. Na V1 zostają też lupa w polu i sterowanie mapą ([zasady ikon](slownik-uzytkownika.md#metafory-i-ikony)). | NFR-20, NFR-21 |
 | 12 | W opcji wyboru opis stoi pod tytułem na całą szerokość, a kółko i ikona tylko w wierszu tytułu. Tekst dzieli wyrazy po polsku i nie stoi w wąskich kolumnach. | NFR-20 |
-| 13 | Kroki do znalezionej sali otwierają się na cały ekran bez mapy. Na górze jest tylko „Wstecz”, a pod krokami „Pokaż opis budynku” i „Pokaż na mapie”. | NFR-20, US18.2 |
+| 13 | Kroki do znalezionej sali otwierają się na cały ekran bez mapy. Na górze jest tylko „Wstecz”, a pod krokami „Pokaż opis budynku” i „Pokaż na mapie”. | NFR-20, US18.1, US18.2 |
 
 Żadna reguła nie usuwa informacji wymaganej przez kryteria. Data i źródło przy wejściach zostają widoczne (US17.3), a podpis OpenStreetMap stoi przy każdej mapie (NFR-37).
 
@@ -141,7 +141,7 @@ Arkusz znalezionej sali na dole mapy (US18.1, US18.2):
 | --- | --- | --- | --- |
 | Symbol budynku, „Sala 329”, funkcja sali i piętro z danych PWr, „Zamknij” | dane | US18.1, NFR-40 | „Zamknij”: V1 |
 | Kroki tekstem w numerowanej liście, bez rysowania trasy: wejście zalecane z piętrem, winda, piętro sali, sala z odległością od windy. Odległość jest w linii prostej i zaokrąglona do 5 metrów. Piętro wejścia pochodzi z warstwy wejść planu PWr. Gdy go brak, krok przyjmuje parter i mówi to, np. „Wejście zalecane, parter (brak piętra w danych)”. Sala na piętrze wejścia ma kroki bez windy | dane | US18.2, BR-25 | — |
-| „Pokaż opis budynku” | czynność główna stanu | US2, PW-5 | V2 |
+| „Pokaż opis budynku” | czynność główna stanu | US18.1, PW-5 | V2 |
 
 Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na piętrze tego wejścia i na piętrze sali (US18.2). W A-1, z wejściami na parterze, to winda przy klatkach C i D, bo winda przy A i B staje tylko na 2 piętrze [6]. Sala na piętrze wejścia ma tylko pierwszy i ostatni krok, a odległość liczy się od wejścia.
 
@@ -662,7 +662,7 @@ Uciążliwości ani typu się nie wybiera: przechodzą z poprzedniego zgłoszeni
 | Lista zgłoszeń „wysłane”: typ albo grupa barier, budynek, rodzaj, data wysłania | dane | US10.4, BR-14 | — |
 | Przełącznik „Mapa” i „Lista”, w tej samej kolejności co na V1; domyślnie wybrana „Lista”. Lista daje tę samą informację. | czynność | UC14, NFR-19 | — |
 | Napis „© OpenStreetMap contributors” na mapie | dane | NFR-37 | — |
-| W widoku mapy te same przyciski mapy co na V1: „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu | czynność | NFR-15 (WCAG 2.5.1), WCAG 2.5.7 [7]; wymagania V1 | — |
+| W widoku mapy te same przyciski mapy co na V1: „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu | czynność | NFR-53; WCAG 2.5.1 [1], 2.5.7 [7]; wymagania V1 | — |
 | Sekcja „Wzięte przeze mnie” ze zgłoszeniami „w weryfikacji” tego Weryfikatora; w każdej pozycji „Otwórz” z ikoną | czynność | BR-11, UC14 2b, NFR-21 | R2 |
 | „Weź do sprawdzenia” | czynność główna | US10.4, BR-11 | R2 |
 
