@@ -205,3 +205,171 @@ Wymagania: [V3 „Którędy wejść”](../wymagania-ekranow.md#v3-zaplanuj-wizy
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
 | [![Którędy wejść do C-7: ramka ze znakiem rombu z minusem (brak danych) i zdaniem „Nie wiemy jeszcze, czy budynek C-7 ma wejście dostępne: brak danych o 2 z 3 wejść.” oraz radą, by wrócić do opisu budynku](obrazy/m-v3-ktoredy-wejsc-brak-danych-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v3-ktoredy-wejsc-brak-danych-jasny.webp) | [![Ta sama odpowiedź w motywie ciemnym](obrazy/m-v3-ktoredy-wejsc-brak-danych-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v3-ktoredy-wejsc-brak-danych-ciemny.webp) | [![Ta sama odpowiedź przy czcionce 200%](obrazy/m-v3-ktoredy-wejsc-brak-danych-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v3-ktoredy-wejsc-brak-danych-jasny-200.webp) |
+
+## V4 Zgłoszenie szybkie
+
+Wymagania: [V4 Zgłoszenie szybkie](../wymagania-ekranow.md#v4-zgoszenie-szybkie).
+
+### V4: prośba o lokalizację
+
+`m-v4-zgoda-lokalizacja` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-prosba-o-zgode-na-lokalizacje)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Zgłoś barierę przed aparatem: „Aby wysłać zdjęcie bariery, potrzebujemy jej miejsca.”, zapewnienie, że nie będziemy śledzić, przyciski Pozwól na lokalizację i Wróć do mapy](obrazy/m-v4-zgoda-lokalizacja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-zgoda-lokalizacja-jasny.webp) | [![Ta sama prośba w motywie ciemnym](obrazy/m-v4-zgoda-lokalizacja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-zgoda-lokalizacja-ciemny.webp) | [![Ta sama prośba przy czcionce 200%: oba przyciski w treści pod tekstem](obrazy/m-v4-zgoda-lokalizacja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-zgoda-lokalizacja-jasny-200.webp) |
+
+### V4: tylko przybliżona lokalizacja
+
+`m-v4-zgoda-przyblizona` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-zgoda-tylko-przyblizona)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Zgłoś barierę: „Telefon podaje tylko przybliżone miejsce, a to za mało, by wskazać barierę.”, przyciski Pozwól na dokładną lokalizację i Wróć do mapy](obrazy/m-v4-zgoda-przyblizona-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-zgoda-przyblizona-jasny.webp) | [![Ten sam komunikat w motywie ciemnym](obrazy/m-v4-zgoda-przyblizona-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-zgoda-przyblizona-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%](obrazy/m-v4-zgoda-przyblizona-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-zgoda-przyblizona-jasny-200.webp) |
+
+### V4: krok 1 z 3, zdjęcie
+
+`m-v4-krok-1` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-krok-1-z-3)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Krok 1 z 3 z paskiem postępu: ostrzeżenie Ważne „Nie fotografuj twarzy ani tablic rejestracyjnych.” z dopiskiem, że zdjęcie zobaczą inni, i przypięty na dole przycisk Zrób zdjęcie](obrazy/m-v4-krok-1-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-1-jasny.webp) | [![Ten sam krok 1 w motywie ciemnym](obrazy/m-v4-krok-1-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-1-ciemny.webp) | [![Ten sam krok 1 przy czcionce 200%](obrazy/m-v4-krok-1-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-1-jasny-200.webp) |
+
+### V4: krok 1 po zrobieniu zdjęcia
+
+`m-v4-krok-1-zdjecie` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-krok-1-ze-zdjeciem)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Krok 1 z 3 po powrocie z kroku 2: zrobione zdjęcie wejścia ze schodami, to samo ostrzeżenie Ważne, przyciski Dalej i Zrób nowe zdjęcie](obrazy/m-v4-krok-1-zdjecie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-1-zdjecie-jasny.webp) | [![Ten sam krok 1 ze zdjęciem w motywie ciemnym](obrazy/m-v4-krok-1-zdjecie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-1-zdjecie-ciemny.webp) | [![Ten sam krok 1 ze zdjęciem przy czcionce 200%: Zrób nowe zdjęcie w treści pod ostrzeżeniem, przypięty tylko Dalej](obrazy/m-v4-krok-1-zdjecie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-1-zdjecie-jasny-200.webp) |
+
+### V4: krok 2, czego dotyczy bariera
+
+`m-v4-krok-2` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-krok-2-z-3)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Krok 2 z 3: pytanie „Czego dotyczy bariera?” i sześć dużych przycisków: Wejście i drzwi, Schody i windy, Przejścia i chodniki, Toalety, Napisy i oznaczenia, Coś innego](obrazy/m-v4-krok-2-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-2-jasny.webp) | [![Ten sam krok 2 w motywie ciemnym](obrazy/m-v4-krok-2-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-2-ciemny.webp) | [![Ten sam krok 2 przy czcionce 200%](obrazy/m-v4-krok-2-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-2-jasny-200.webp) |
+
+### V4: krok 2, na którym piętrze
+
+`m-v4-krok-2-pietro` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-krok-2-pytanie-o-pietro)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Krok 2 z 3 po wyborze Schody i windy: pytanie „Na którym piętrze?”, przycisk Nie wiem i piętra A-1 od najniższego: Piwnica, Parter, 1, 2 i 3 piętro](obrazy/m-v4-krok-2-pietro-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-2-pietro-jasny.webp) | [![Ten sam wybór piętra w motywie ciemnym](obrazy/m-v4-krok-2-pietro-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-2-pietro-ciemny.webp) | [![Ten sam wybór piętra przy czcionce 200%](obrazy/m-v4-krok-2-pietro-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-2-pietro-jasny-200.webp) |
+
+### V4: krok 3, sprawdzenie i wysłanie
+
+`m-v4-krok-3` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-krok-3-z-3)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Krok 3 z 3: miniatura zdjęcia, podsumowanie Schody i windy oraz 2 piętro, zdanie „Dołączymy miejsce, w którym teraz stoisz.” i przypięty przycisk Wyślij](obrazy/m-v4-krok-3-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-3-jasny.webp) | [![Ten sam krok 3 w motywie ciemnym](obrazy/m-v4-krok-3-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-3-ciemny.webp) | [![Ten sam krok 3 przy czcionce 200%](obrazy/m-v4-krok-3-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-3-jasny-200.webp) |
+
+### V4: telefon nie ustalił miejsca
+
+`m-v4-brak-pozycji` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-brak-pozycji)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Krok 3 z 3 z podsumowaniem i komunikatem „Telefon nie ustalił, gdzie jesteś.”, radą, by podejść do okna albo wyjść na zewnątrz, oraz przyciskami Spróbuj ponownie i Zrezygnuj](obrazy/m-v4-brak-pozycji-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-brak-pozycji-jasny.webp) | [![Ten sam komunikat w motywie ciemnym](obrazy/m-v4-brak-pozycji-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-brak-pozycji-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%](obrazy/m-v4-brak-pozycji-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-brak-pozycji-jasny-200.webp) |
+
+### V4: potwierdzenie rezygnacji
+
+`m-v4-rezygnacja` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-potwierdzenie-rezygnacji)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Potwierdzenie rezygnacji: miniatura zdjęcia, które zostanie usunięte, zdanie „Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy.” i dwa jednakowe przyciski Tak, zrezygnuj oraz Wróć do zdjęcia](obrazy/m-v4-rezygnacja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-rezygnacja-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-v4-rezygnacja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-rezygnacja-ciemny.webp) | [![To samo potwierdzenie przy czcionce 200%](obrazy/m-v4-rezygnacja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-rezygnacja-jasny-200.webp) |
+
+### V4: wysłane
+
+`m-v4-wyslane` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-potwierdzenie-wysania)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Po wysłaniu: „Dziękujemy.” i zdanie, że sprawdzimy zdjęcie i pokażemy barierę na mapie, jeśli się potwierdzi, oraz przypięty przycisk Wróć do mapy](obrazy/m-v4-wyslane-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-v4-wyslane-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-ciemny.webp) | [![To samo potwierdzenie przy czcionce 200%](obrazy/m-v4-wyslane-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-jasny-200.webp) |
+
+### V4: zapisane bez internetu
+
+`m-v4-wyslane-brak-sieci` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-potwierdzenie-bez-internetu)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Po wysłaniu bez internetu: pasek „Bez internetu · dane z 27.10.2026”, „Zapisaliśmy zdjęcie w telefonie.”, „Wyślemy je sami, gdy wróci internet.” i przycisk Wróć do mapy](obrazy/m-v4-wyslane-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-brak-sieci-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-v4-wyslane-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-brak-sieci-ciemny.webp) | [![To samo potwierdzenie przy czcionce 200%](obrazy/m-v4-wyslane-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-brak-sieci-jasny-200.webp) |
+
+## V5 Pomoc
+
+Wymagania: [V5 Pomoc](../wymagania-ekranow.md#v5-pomoc).
+
+### V5: pierwsze uruchomienie, krok 1 z 4
+
+`m-v5-pomoc-pierwsze-uruchomienie` · [makieta low-fi](../makiety/odwiedzajacy.md#v5-pomoc). Przy pierwszym uruchomieniu „Wstecz” na tym kroku pomija instrukcję i otwiera mapę.
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Instrukcja otwarta sama przy pierwszym uruchomieniu, Jak korzystać z aplikacji, krok 1 z 4: Znajdź budynek, wyjaśnienie, że po wpisaniu symbolu w polu na górze mapy pokażemy opis budynku z wejściami i barierami, przykład pola wyszukiwania, przyciski Dalej i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny.webp) | [![Ten sam pierwszy krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-pierwsze-uruchomienie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-ciemny.webp) | [![Ten sam pierwszy krok instrukcji przy czcionce 200%: Dalej i Pomiń instrukcję na końcu treści, pod przykładem pola](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny-200.webp) |
+
+### V5: krok 2 z 4, co znaczy „Dostępne”
+
+`m-v5-pomoc` · [makieta low-fi](../makiety/odwiedzajacy.md#v5-pomoc)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Jak korzystać z aplikacji, krok 2 z 4: wyjaśnienie napisu Dostępne przy wejściu, przykład wejścia z opisu budynku z oznaczeniem Dostępne, Wejście dostosowane, Drzwi 120 cm, przyciski Dalej i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-jasny.webp) | [![Ten sam krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-ciemny.webp) | [![Ten sam krok instrukcji przy czcionce 200%: Dalej i Pomiń instrukcję na końcu treści, pod przykładem](obrazy/m-v5-pomoc-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-jasny-200.webp) |
+
+## L1 Prośba o logowanie
+
+Wymagania: [L1 Prośba o logowanie](../wymagania-ekranow.md#l1-prosba-o-logowanie).
+
+### L1: prośba o logowanie przy zgłoszeniu
+
+`m-l1-konto` · [makieta low-fi](../makiety/odwiedzajacy.md#l1-stan-zwyky)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Konto: „Aby zgłosić barierę, potrzebne jest konto.”, wyjaśnienie, że konto chroni mapę przed fałszywymi informacjami, informacja o trzech krótkich krokach i trzy przyciski jeden pod drugim: Zaloguj się, Załóż konto, Nie teraz](obrazy/m-l1-konto-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-jasny.webp) | [![Ta sama prośba w motywie ciemnym](obrazy/m-l1-konto-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-ciemny.webp) | [![Ta sama prośba przy czcionce 200%: trzy przyciski na końcu treści](obrazy/m-l1-konto-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-jasny-200.webp) |
+
+### L1: logowanie bez internetu
+
+`m-l1-konto-brak-sieci` · [makieta low-fi](../makiety/odwiedzajacy.md#l1-brak-sieci)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Konto bez internetu: pasek „Bez internetu · dane z 27.10.2026”, komunikat „Logowanie wymaga internetu.”, dopisek, że mapa i opisy budynków działają bez niego, i przycisk Wróć do mapy](obrazy/m-l1-konto-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-brak-sieci-jasny.webp) | [![Ten sam komunikat w motywie ciemnym](obrazy/m-l1-konto-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-brak-sieci-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%](obrazy/m-l1-konto-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-brak-sieci-jasny-200.webp) |
+
+## L2 Konto
+
+Wymagania: [L2 Konto](../wymagania-ekranow.md#l2-konto).
+
+### L2: konto Odwiedzającego
+
+`m-l2-konto` · [makieta low-fi](../makiety/odwiedzajacy.md#l2-odwiedzajacy)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Konto: karta osoby Halina Nowak z rolą Odwiedzający, a pod nią lista Konto z wierszami Informacja o danych osobowych, Wycofaj zgodę i Wyloguj się, w pasku dolnym zaznaczone Konto](obrazy/m-l2-konto-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-jasny.webp) | [![To samo konto w motywie ciemnym](obrazy/m-l2-konto-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-ciemny.webp) | [![To samo konto przy czcionce 200%](obrazy/m-l2-konto-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-jasny-200.webp) |
+
+### L2: Konto i praca
+
+`m-l2-konto-praca` · [makieta low-fi](../makiety/odwiedzajacy.md#l2-rola-pracownicza)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Konto i praca: karta osoby z rolami Odwiedzający, Zbierający, Koordynator, lista Twoja praca z wierszami Zmierz i zgłoś barierę, Moje zgłoszenia, Postęp inwentaryzacji, Zaproś osobę, Pobierz eksport, niżej lista Konto](obrazy/m-l2-konto-praca-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-praca-jasny.webp) | [![Ten sam ekran Konto i praca w motywie ciemnym](obrazy/m-l2-konto-praca-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-praca-ciemny.webp) | [![Ten sam ekran Konto i praca przy czcionce 200%: wiersze list bez ikon, dłuższe nazwy w dwóch wierszach tekstu](obrazy/m-l2-konto-praca-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-praca-jasny-200.webp) |
+
+### L2: informacja o danych osobowych
+
+`m-l2-konto-klauzula` · [makieta low-fi](../makiety/odwiedzajacy.md#l2-klauzula-informacyjna). Tekst klauzuli nie był jeszcze sprawdzony prawnie.
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Informacja o danych osobowych: administratorem jest Zespół projektu Dostępny Kampus, Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko, ze zdaniem „Politechnika Wrocławska nie jest administratorem Twoich danych.”, dalej kontakt przez repozytorium projektu na GitHub, jakie dane, po co, na jakiej podstawie, jak długo i jakie masz prawa](obrazy/m-l2-konto-klauzula-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-klauzula-jasny.webp) | [![Ta sama informacja w motywie ciemnym](obrazy/m-l2-konto-klauzula-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-klauzula-ciemny.webp) | [![Ta sama informacja przy czcionce 200%](obrazy/m-l2-konto-klauzula-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-klauzula-jasny-200.webp) |
+
+### L2: wycofanie zgody
+
+`m-l2-konto-wycofanie` · [makieta low-fi](../makiety/odwiedzajacy.md#l2-potwierdzenie-wycofania-zgody)
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Wycofanie zgody: „Wylogujemy Cię i w ciągu miesiąca usuniemy Twoje dane osobowe.”, dopisek, że wysłane zdjęcia barier zostaną bez danych osoby, i dwa jednakowe przyciski Wycofaj zgodę oraz Zostaw zgodę](obrazy/m-l2-konto-wycofanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-wycofanie-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-l2-konto-wycofanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-wycofanie-ciemny.webp) | [![To samo potwierdzenie przy czcionce 200%](obrazy/m-l2-konto-wycofanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-wycofanie-jasny-200.webp) |
