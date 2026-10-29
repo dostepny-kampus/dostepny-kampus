@@ -15,3 +15,4 @@
 | Napis bez odwołania | dane | | — |
 | Pole symbolu budynku | czynność główna | US1.1 | V2 |
 | Kod z ID | dane | `US1.1` | — |
+| Napis bez kolumn | dane |
