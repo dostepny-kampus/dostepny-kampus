@@ -309,7 +309,7 @@ odstepy:
     zrodlo: styl „Karta miejsca”
   s:
     dp: 8
-    uzycie: odstęp między chipami i między ikoną a napisem w chipie
+    uzycie: odstęp między chipami, między ikoną a napisem w chipie, między pozycjami paska dolnego i od jego krawędzi
     zrodlo: styl „Karta miejsca”
   m:
     dp: 16             # 360 dp − 2 × 16 dp zostawia 328 dp na wiersz tekstu 18 sp
