@@ -1,6 +1,6 @@
 # ADR-0006: Dane PWr o pomieszczeniach
 
-Status: przyjęta. Data: 2026-10-28. Źródło: decyzje projektu nr 15, 17 i 44.
+Status: przyjęta. Data: 2026-10-28. Źródło: decyzje projektu nr 15, 17, 44 i 56.
 
 ## Kontekst i problem
 
@@ -19,6 +19,7 @@ Dane służą US16, US17 i wyszukiwaniu sali.
 
 - Serwer importuje piętra, pomieszczenia i wejścia z usługi ArcGIS i trzyma kopię w PostGIS. Aplikacja dostaje je przez API.
 - W repozytorium jest tylko skrypt importu, bez danych (NFR-40).
+- Strona [Ekrany — makiety hi-fi](../../ux/ekrany/index.md) ma zrzuty makiet z fragmentami danych PWr. Są to kontury budynków PWr, ścieżki dostosowane, pochylnie, plan piętra A-1, kroki do sali i opisy wejść. To przytoczenie do celów dydaktycznych ze wskazaniem źródła „Źródło: Politechnika Wrocławska”, a nie baza ani pliki danych.
 - Każdy widok planu piętra i odpowiedź API podaje źródło „Politechnika Wrocławska”.
 - Budynki szczegółowe to wszystkie budynki z planem PWr. Ich lista jest konfiguracją (NFR-47).
 - Wejścia dostają pierwsze oznaczenia z warstwy wejść PWr.
@@ -27,7 +28,7 @@ Dane służą US16, US17 i wyszukiwaniu sali.
 ## Konsekwencje
 
 - Dobrze: plany pięter, wyszukiwanie sali i oznaczenia wejść bez ręcznego wprowadzania.
-- Dobrze: publiczne repozytorium nie zawiera cudzych danych.
+- Dobrze: publiczne repozytorium nie zawiera cudzych danych w formie bazy ani plików danych, tylko zrzuty makiet z fragmentami tych danych.
 - Gorzej: zmiana schematu usługi PWr wymaga zmiany importu.
 - Gorzej: dane mogą się zestarzeć, dlatego oznaczenie wejścia pokazuje datę i źródło (US17).
 - Gorzej: trasy do sali nie wyznaczymy, bo w danych nie ma drzwi.
