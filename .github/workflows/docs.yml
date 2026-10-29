@@ -42,10 +42,11 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
-      - name: Sprawdź, czy PR zmienia dokumentację albo scenariusze
+      - name: Sprawdź, czy PR zmienia dokumentację, scenariusze albo testy Androida
         id: diff
         run: |
-          if git diff --quiet HEAD^1 HEAD -- docs specs .github/workflows/docs.yml; then
+          android_tests=(':(glob)android/**/src/test/**' ':(glob)android/**/src/androidTest/**')
+          if git diff --quiet HEAD^1 HEAD -- docs specs .github/workflows/docs.yml "${android_tests[@]}"; then
             echo "dokumentacja=false" >> "$GITHUB_OUTPUT"
           else
             echo "dokumentacja=true" >> "$GITHUB_OUTPUT"

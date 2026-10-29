@@ -1,10 +1,13 @@
 # Dostępny Kampus
 # Author: Vladyslav Yevkov
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
-"""Testy kontroli odwołań w wymaganiach ekranów (check_ids.screen_rows) na przykładowych plikach z katalogu `dane`."""
+"""Testy kontroli odwołań w wymaganiach ekranów (check_ids.screen_rows) i kontroli „scenariusz → test”
+(check_ids.check_tests) na przykładowych plikach z katalogu `dane`."""
 
 from __future__ import annotations
 
+import contextlib
+import io
 import sys
 import tempfile
 import unittest
@@ -52,6 +55,49 @@ class ScreenRowsTest(unittest.TestCase):
             page.parent.mkdir(parents=True)
             page.write_text((DATA / "ekrany-bledne.md").read_text(encoding="utf-8"), encoding="utf-8")
             self.assertEqual(len(check_ids.check_screen_page(Path(docs))), 7)
+
+
+def scenario_tests(android: str) -> list[tuple[str, int, str]]:
+    """Zwraca wyniki check_tests dla `dane/scenariusze` i znaczników z `dane/<android>` jako (poziom, linia, komunikat)."""
+    findings = check_ids.check_tests(check_ids.collect(DATA / "brak", DATA / "scenariusze", DATA / android))
+    return [(f.level, line, f.message) for f, line in zip(findings, lines_of(findings))]
+
+
+class ScenarioTestsTest(unittest.TestCase):
+    def test_correct_markers_leave_only_missing_and_partial_lists(self) -> None:
+        expected = [("UWAGA", 16, "scenariusz bez testu: Bez testu")]
+        expected.append(("UWAGA", 10, "scenariusz tylko z testem częściowym: Tylko częściowo"))
+        self.assertEqual(scenario_tests("android-poprawne"), expected)
+
+    def test_wrapped_names_are_joined_with_one_space(self) -> None:
+        corpus = check_ids.collect(DATA / "brak", DATA / "scenariusze", DATA / "android-poprawne")
+        names = [m.scenario for m in corpus.markers if m.location.line > 28]
+        expected = ["Po wysłaniu „Wstecz” wraca do ekranu, z którego zaczęto zgłoszenie"]
+        expected.append("Zgłoszenie „Brak windy przy wejściu głównym” trafia do kolejki zgłoszeń")
+        self.assertEqual(names, expected)
+        self.assertTrue(all(m.above_test for m in corpus.markers))
+
+    def test_wrong_markers_are_errors_with_test_line(self) -> None:
+        errors = [(line, message) for level, line, message in scenario_tests("android-bledne") if level == "BŁĄD"]
+        self.assertEqual([line for line, _ in errors], [31, 40, 10, 14, 18, 23, 26, 35])
+        self.assertTrue(all("niezgodny ze wzorem" in m for _, m in errors[:2]))
+        self.assertIn('nieistniejący scenariusz: kampus.feature: Wyszukanie "A-1 329"', errors[2][1])
+        self.assertIn("nieistniejący plik: mapa.feature", errors[3][1])
+        self.assertTrue(all("nie stoi tuż nad funkcją testu" in m for _, m in errors[4:7]))
+        self.assertTrue(errors[7][1].endswith("kampus.feature: Zgłoszenie „Brak windy"))
+
+    def test_wrong_markers_and_missing_android_directory_cover_nothing(self) -> None:
+        self.assertEqual({level for level, _, _ in scenario_tests("brak")}, {"UWAGA"})
+        for android in ("android-bledne", "brak"):
+            warnings = [line for level, line, _ in scenario_tests(android) if level == "UWAGA"]
+            self.assertEqual(warnings, [4, 7, 10, 13, 16, 19, 22])
+
+    def test_release_flag_turns_warnings_into_errors(self) -> None:
+        args = ["--docs", str(DATA / "brak"), "--specs", str(DATA / "scenariusze"), "--android", str(DATA / "android-poprawne")]
+        for flags, level in (([], "UWAGA"), (["--release"], "BŁĄD ")):
+            with contextlib.redirect_stdout(io.StringIO()) as output:
+                check_ids.main([*args, *flags])
+            self.assertEqual([row[:5] for row in output.getvalue().splitlines() if "scenariusz bez testu" in row], [level])
 
 
 if __name__ == "__main__":

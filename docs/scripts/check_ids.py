@@ -2,7 +2,7 @@
 # Author: Vladyslav Yevkov
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 """Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB), macierz śledzenia
-i odwołania wierszy w wymaganiach ekranów. Version: 0.3.0."""
+odwołania wierszy w wymaganiach ekranów i znaczniki scenariuszy w testach Androida. Version: 0.4.0."""
 
 from __future__ import annotations
 
@@ -49,6 +49,12 @@ SCREEN_PAGE = Path("ux") / "wymagania-ekranow.md"
 SCREEN_REF_HEADER = "Odwołanie"
 SCREEN_COMMON_REF = "wymagania wspólne"
 REQUIREMENT_RE = re.compile(r"(?<![\w-])(?:US\d+(?:\.\d+)?|UC\d+|BR-G?\d+|NFR-\d+)(?![\w-])")
+MARKER = re.compile(r"^\s*// Scenariusz( \(częściowo\))?: (\S[^:]*?\.feature):(?: (\S.*?))?\s*$")
+MARKER_CONTINUATION = re.compile(r"^\s*//\s{2,}(\S.*?)\s*$")
+MARKER_HINT = re.compile(r"^\s*//\s*scenariusz\b[^:]{0,20}:", re.IGNORECASE)
+MARKER_FORM = "// Scenariusz: <plik>.feature: <nazwa scenariusza>"
+ANNOTATION = re.compile(r"@([\w.:]+)(\((?:[^()]|\([^()]*\))*\))?\s*")
+FUNCTION = re.compile(r"^(?:(?:public|internal|private|protected|override|open|suspend)\s+)*fun\b")
 
 
 @dataclass(frozen=True)
@@ -68,6 +74,18 @@ class Scenario:
 
     name: str
     location: Location
+    feature: str = ""
+
+
+@dataclass(frozen=True)
+class Marker:
+    """Znacznik `// Scenariusz: <plik>.feature: <nazwa>` w teście; `above_test` — stoi tuż nad funkcją testu."""
+
+    feature: str
+    scenario: str
+    partial: bool
+    above_test: bool
+    location: Location
 
 
 @dataclass
@@ -81,6 +99,9 @@ class Corpus:
     scenarios: dict[str, list[Scenario]] = field(default_factory=lambda: defaultdict(list))
     all_scenarios: list[Scenario] = field(default_factory=list)
     feature_files: int = 0
+    features: set[str] = field(default_factory=set)
+    markers: list[Marker] = field(default_factory=list)
+    bad_markers: list[Location] = field(default_factory=list)
 
     def link(self, owner: str, other: str) -> None:
         """Zapisuje powiązanie w obu kierunkach; pomija powiązanie ID z samym sobą."""
@@ -261,13 +282,16 @@ def keyword_of(line: str, keywords: tuple[str, ...]) -> str | None:
     return None
 
 
-def scan_feature(path: Path, corpus: Corpus) -> None:
+def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
     """Dodaje do `corpus` scenariusze i ich tagi-ID z pliku .feature (tagi funkcji i reguły są dziedziczone).
 
+    `feature` to ścieżka pliku względna do katalogu scenariuszy, jak w znaczniku testu (domyślnie nazwa pliku).
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
     rel = relative(path)
+    feature = feature or path.name
     corpus.feature_files += 1
+    corpus.features.add(feature)
     feature_tags: list[str] = []
     rule_tags: list[str] = []
     pending: list[tuple[str, Location]] = []
@@ -286,14 +310,14 @@ def scan_feature(path: Path, corpus: Corpus) -> None:
         elif keyword_of(line, RULE_KEYWORDS) is not None:
             rule_tags = tags
         elif (name := keyword_of(line, SCENARIO_KEYWORDS)) is not None:
-            scenario = Scenario(name or "(bez nazwy)", Location(rel, number))
+            scenario = Scenario(name or "(bez nazwy)", Location(rel, number), feature)
             corpus.all_scenarios.append(scenario)
             for tag in dict.fromkeys(feature_tags + rule_tags + tags):
                 corpus.scenarios[tag].append(scenario)
 
 
-def collect(docs: Path, specs: Path) -> Corpus:
-    """Zbiera korpus z `docs/**/*.md` (bez `_generated`) i `specs/**/*.feature`. Brak katalogów nie jest błędem.
+def collect(docs: Path, specs: Path, android: Path | None = None) -> Corpus:
+    """Zbiera korpus z `docs/**/*.md` (bez `_generated`), `specs/**/*.feature` i `android/**/*.kt`. Brak katalogów nie jest błędem.
 
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu pliku.
     """
@@ -302,8 +326,74 @@ def collect(docs: Path, specs: Path) -> Corpus:
         if "_generated" not in path.relative_to(docs).parts:
             scan_markdown(path, corpus)
     for path in sorted(specs.rglob("*.feature")) if specs.is_dir() else []:
-        scan_feature(path, corpus)
+        scan_feature(path, corpus, path.relative_to(specs).as_posix())
+    for path in sorted(android.rglob("*.kt")) if android and android.is_dir() else []:
+        scan_kotlin(path, corpus)
     return corpus
+
+
+def scan_kotlin(path: Path, corpus: Corpus) -> None:
+    """Dodaje do `corpus` znaczniki scenariuszy z pliku Kotlin. Linię podobną do znacznika, ale niezgodną ze wzorem
+    (np. literówka w „częściowo”), albo znacznik bez nazwy scenariusza zapisuje jako zły znacznik.
+
+    Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
+    """
+    lines = path.read_text(encoding="utf-8").splitlines()
+    for index, line in enumerate(lines):
+        location = Location(relative(path), index + 1)
+        marker = read_marker(lines, index)
+        if marker and marker[2]:
+            partial, feature, name, end = marker
+            corpus.markers.append(Marker(feature, name, partial, marks_test(lines, end), location))
+        elif marker or MARKER_HINT.match(line):
+            corpus.bad_markers.append(location)
+
+
+def read_marker(lines: list[str], index: int) -> tuple[bool, str, str, int] | None:
+    """Zwraca (częściowo, plik, nazwa, indeks linii po znaczniku) dla znacznika w linii `index` albo None.
+
+    Gwarantuje: nazwa to tekst po `<plik>.feature:` z tej linii i z kolejnych linii `//` z wcięciem co najmniej
+    dwóch spacji po `//`, sklejony jedną spacją; pusta nazwa oznacza znacznik bez nazwy.
+    """
+    match = MARKER.match(lines[index])
+    if not match:
+        return None
+    parts = [match.group(3)] if match.group(3) else []
+    end = index + 1
+    while end < len(lines) and (continuation := MARKER_CONTINUATION.match(lines[end])):
+        parts.append(continuation.group(1))
+        end += 1
+    return bool(match.group(1)), match.group(2), " ".join(parts), end
+
+
+def marks_test(lines: list[str], start: int) -> bool:
+    """Zwraca True, gdy od linii `start` są kolejne znaczniki i adnotacje (wśród nich adnotacja testu, np. @Test
+    albo @ParameterizedTest), a po nich deklaracja `fun`.
+
+    Gwarantuje: pusta linia, komentarz albo inny kod przed `fun` daje False; argumenty adnotacji mogą mieć kilka linii.
+    """
+    has_test, depth, index = False, 0, start
+    while index < len(lines):
+        text = lines[index].strip()
+        index += 1
+        if depth:
+            depth = max(0, depth + text.count("(") - text.count(")"))
+            continue
+        if not text:
+            return False
+        if marker := read_marker(lines, index - 1):
+            index = marker[3]
+            continue
+        while match := ANNOTATION.match(text):
+            has_test |= match.group(1).rsplit(".", 1)[-1].endswith("Test")
+            text = text[match.end() :]
+            if text.startswith("("):
+                depth, text = text.count("(") - text.count(")"), ""
+        if FUNCTION.match(text):
+            return has_test
+        if text:
+            return False
+    return False
 
 
 def parent_us(ac: str) -> str:
@@ -390,6 +480,36 @@ def has_need(corpus: Corpus, us: str) -> bool:
 def has_story(corpus: Corpus, uc: str) -> bool:
     """Zwraca True, gdy przypadek użycia `uc` jest powiązany z historyjką US albo z jej kryterium."""
     return any(US_RE.match(n) or AC_RE.match(n) for n in corpus.links.get(uc, set()))
+
+
+def check_tests(corpus: Corpus, release: bool = False) -> list[Finding]:
+    """Zwraca wyniki kontroli „scenariusz → test” (decyzja 67).
+
+    Gwarantuje: zły znacznik, znacznik do nieistniejącego pliku .feature albo scenariusza (nazwa znak w znak)
+    i znacznik, który nie stoi tuż nad funkcją testu, to „BŁĄD” z miejscem w teście; taki znacznik nie pokrywa
+    scenariusza. Scenariusz bez testu i scenariusz tylko z testami „częściowo” to „UWAGI” w dwóch osobnych
+    listach, a w trybie `release` — „BŁĘDY”.
+    """
+    findings = [Finding("BŁĄD", str(loc), f"znacznik niezgodny ze wzorem „{MARKER_FORM}”") for loc in corpus.bad_markers]
+    names = {(s.feature, s.name) for s in corpus.all_scenarios}
+    covered: dict[tuple[str, str], set[bool]] = defaultdict(set)
+    for marker in corpus.markers:
+        key = (marker.feature, marker.scenario)
+        if marker.feature not in corpus.features:
+            problem = f"znacznik wskazuje nieistniejący plik: {marker.feature}"
+        elif key not in names:
+            problem = f"znacznik wskazuje nieistniejący scenariusz: {marker.feature}: {marker.scenario}"
+        elif not marker.above_test:
+            problem = "znacznik nie stoi tuż nad funkcją testu"
+        else:
+            covered[key].add(marker.partial)
+            continue
+        findings.append(Finding("BŁĄD", str(marker.location), problem))
+    level = "BŁĄD" if release else "UWAGA"
+    missing = [s for s in corpus.all_scenarios if not covered.get((s.feature, s.name))]
+    partial = [s for s in corpus.all_scenarios if covered.get((s.feature, s.name)) == {True}]
+    findings += [Finding(level, str(s.location), f"scenariusz bez testu: {s.name}") for s in missing]
+    return findings + [Finding(level, str(s.location), f"scenariusz tylko z testem częściowym: {s.name}") for s in partial]
 
 
 def undefined_references(corpus: Corpus, partial: bool = False) -> list[Finding]:
@@ -646,14 +766,16 @@ def print_report(corpus: Corpus, findings: list[Finding]) -> None:
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     """Parsuje argumenty wiersza poleceń."""
-    parser = argparse.ArgumentParser(description="Kontrola ID w docs/**/*.md i specs/**/*.feature.")
+    parser = argparse.ArgumentParser(description="Kontrola ID w docs/**/*.md, specs/**/*.feature i testach Androida.")
     parser.add_argument("--docs", type=Path, default=REPO / "docs", help="katalog dokumentacji")
     parser.add_argument("--specs", type=Path, default=ROOT / "specs", help="katalog plików .feature")
+    parser.add_argument("--android", type=Path, default=ROOT / "android", help="katalog z testami Androida (.kt)")
     target = parser.add_mutually_exclusive_group()
     target.add_argument("--matrix", type=Path, help="zapisz macierz N → US → AC → UC → scenariusz do pliku")
     target.add_argument("--check-matrix", type=Path, help="tylko sprawdź, czy macierz w pliku jest aktualna")
     parser.add_argument("--strict", action="store_true", help="kod wyjścia 1, gdy są błędy")
     parser.add_argument("--partial", action="store_true", help="błędy klas ID bez żadnej definicji jako uwagi")
+    parser.add_argument("--release", action="store_true", help="na wydanie: scenariusz bez pełnego testu jest błędem")
     return parser.parse_args(argv)
 
 
@@ -668,13 +790,13 @@ def main(argv: list[str] | None = None) -> int:
             stream.reconfigure(encoding="utf-8", errors="replace")
     args = parse_args(argv)
     try:
-        corpus = collect(args.docs, args.specs)
+        corpus = collect(args.docs, args.specs, args.android)
         if args.check_matrix:
             return report_matrix_state(args.check_matrix, matrix_is_current(args.check_matrix, render_blocks(corpus)))
         if args.matrix:
             write_matrix(args.matrix, render_blocks(corpus))
             print(f"check_ids: macierz zapisana do {args.matrix}")
-        findings = check(corpus, args.partial) + check_screen_page(args.docs)
+        findings = check(corpus, args.partial) + check_tests(corpus, args.release) + check_screen_page(args.docs)
     except (OSError, UnicodeDecodeError) as exc:
         print(f"check_ids: BŁĄD: {exc}", file=sys.stderr)
         return 2
