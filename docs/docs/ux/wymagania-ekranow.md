@@ -137,7 +137,7 @@ Arkusz znalezionej sali na dole mapy (decyzja 48, punkt 5):
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Symbol budynku, „Sala 329”, funkcja sali i piętro z danych PWr, „Zamknij” | dane | decyzja 44, NFR-40 | „Zamknij”: V1 |
-| Kroki tekstem w numerowanej liście, bez rysowania trasy: wejście zalecane, winda, piętro sali, sala z przybliżoną odległością od windy. Piętra wejścia nie ma w danych, więc krok go nie podaje | dane | BR-25, decyzja 44, decyzja 48, decyzja 53 | — |
+| Kroki tekstem w numerowanej liście, bez rysowania trasy: wejście zalecane, winda, piętro sali, sala z przybliżoną odległością od windy | dane | BR-25, decyzja 44, decyzja 48, decyzja 53 | — |
 | „Pokaż opis budynku” | czynność główna stanu | US2, PW-5 | V2 |
 
 Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na piętrze tego wejścia i na piętrze sali. W A-1 to winda przy klatkach C i D, bo winda przy klatkach A i B jest w danych tylko na 2 piętrze [6]. Sala na piętrze wejścia ma tylko pierwszy i ostatni krok.
@@ -175,7 +175,7 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 | Nagłówek „Budynek C-13” i nazwa z danych | dane | US2 | — |
 | Rząd chipów z ikoną i napisem: „Wejście dostępne”, „Winda”, „Toaleta dostosowana”. Chip jest tylko wtedy, gdy dane to potwierdzają; dotknięcie przewija do grupy | czynność | US2.1, US16.1, NFR-17, NFR-21, decyzja 48 | grupa na tym ekranie |
 | Nad grupą „Wejścia” jeden wiersz z datą i źródłem, np. „Z map i opisów, stan z 1.10.2026”, gdy wszystkie wejścia mają to samo źródło i datę. Inaczej data i źródło stoją przy każdym wejściu | dane | US17.3, BR-24, PW-3, decyzja 48 | — |
-| Grupa „Wejścia”: najpierw wejście zalecane z napisem „Zalecane”, bez piętra, którego nie ma w danych | dane | BR-25, US3, decyzja 48, decyzja 53 | — |
+| Grupa „Wejścia”: najpierw wejście zalecane z napisem „Zalecane” bez piętra: etykieta jest krótka, a piętro podają kroki do sali i opis wejścia | dane | BR-25, US3, decyzja 48, decyzja 53 | — |
 | Każde wejście: oznaczenie „Dostępne”, „Niedostępne” albo „Brak danych” tekstem i kształtem ikony, nazwa, opis i szerokość drzwi z danych. Wejście bez nazwy: „Wejście bez nazwy w danych” | dane | US2.1, US17.1, NFR-21, decyzja 44 | — |
 | Przy wejściu zalecanym „Pokaż wejście na mapie”; TalkBack czyta „Pokaż wejście na mapie: »nazwa wejścia«”. Inne słowa niż „Pokaż na mapie” przy budynku, bo cel jest inny | czynność | US2.1, NFR-18, WCAG 2.4.6 [1], decyzja 48, decyzja 53 | V1 z zaznaczonym wejściem |
 | Przy każdym wejściu „Zgłoś barierę przy wejściu”; TalkBack czyta „Zgłoś barierę przy wejściu: »nazwa wejścia«” | czynność | US4, US14.2, NFR-18, WCAG 2.5.3 [1] | V4 z wybranym wejściem; Gość: L1 |
@@ -231,7 +231,7 @@ Dostępność i osoby starsze: oznaczenie wejścia jest pierwsze przy wejściu (
 | --- | --- | --- | --- |
 | Nagłówek „Którędy wejść do C-13” | dane | US3, PW-2 | — |
 | Zdanie z odpowiedzią, np. „Budynek A-1 ma wejście dostępne: »nazwa wejścia«.”; zdanie podaje wejście zalecane, to samo co na V2 | dane | US3, US3.1, BR-25 | — |
-| Każde wejście dostępne: nazwa, oznaczenie tekstem i ikoną. Wejście zalecane jest pierwsze, z napisem „Zalecane” bez piętra, którego nie ma w danych | dane | US2.1, NFR-21, BR-25, decyzja 53 | — |
+| Każde wejście dostępne: nazwa, oznaczenie tekstem i ikoną. Wejście zalecane jest pierwsze, z napisem „Zalecane” bez piętra, jak na V2 | dane | US2.1, NFR-21, BR-25, decyzja 53 | — |
 | Przy każdym wejściu dostępnym „Pokaż wejście na mapie”; TalkBack czyta „Pokaż wejście na mapie: »nazwa wejścia«” | czynność | US2.1, US3, NFR-18, WCAG 2.4.6 [1], decyzja 53 | V1 z zaznaczonym wejściem |
 | Przy każdym wejściu dostępnym „Zgłoś barierę przy wejściu”; TalkBack czyta „Zgłoś barierę przy wejściu: »nazwa wejścia«”. Działa jak na V2 | czynność | US4, US14.2, NFR-18, WCAG 2.5.3 [1], decyzja 54 | V4 z wybranym wejściem; Gość: L1 |
 | Data i źródło oznaczenia: jeden wiersz nad wejściami albo przy każdym wejściu, jak na V2 | dane | US17.3, BR-24, decyzja 48 | — |
