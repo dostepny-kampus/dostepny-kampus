@@ -39,12 +39,14 @@ Numery pytań pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md). W
 | US15 | C5 (z V2 i K1) | N6, N9 | Musi być | Jako Zbierający, chcę oznaczyć piętro obejrzane, aby postęp inwentaryzacji odpowiadał stanowi obchodu. |
 | US16 | V1, V2 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać piętro budynku szczegółowego, aby zobaczyć na planie piętra windy, toalety i bariery. |
 | US17 | V2, V3; zmiana: C6 | N1, N2 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę widzieć przy każdym wejściu aktualne oznaczenie z datą i źródłem, aby wiedzieć, czy mogę mu ufać. |
+| US18 | V1 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę znaleźć salę po numerze, aby wiedzieć, na którym jest piętrze i jak dojdę do niej bez schodów. |
 
 Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. Historyjki „Musi być” tworzą MVP.
 
 - **US14 jest historyjką umożliwiającą US4 i US6–US13.** Logowanie nie ma własnej potrzeby, a dla N3 jest dodatkowym krokiem. Konto służy N2 i N8: chroni dane przed spamem, a o publikacji decyduje tylko osoba z rolą nadaną przez Koordynatora (BR-2).
 - **US15 i US16 to nowe historyjki.** US15 daje podstawę postępu z US11, US16 opisuje plan piętra w budynkach szczegółowych.
 - **US17 to nowa historyjka (decyzja 36).** Oznaczenie wejścia ma trzy wartości, a Zbierający zmienia je na obchodzie (US17.2). Dlatego US2.1 dopuszcza „brak danych”.
+- **US18 to nowa historyjka.** Wyszukanie sali korzysta z numerów, funkcji i pięter pomieszczeń z danych PWr. Drogę do sali aplikacja podaje tekstem, bez rysowania trasy.
 
 ## Kryteria: Gość niezalogowany i Odwiedzający
 
@@ -53,18 +55,32 @@ Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. 
 | US1.1 | Wyszukanie „C13”, „c-13” i „C-13” znajduje budynek C-13. | — |
 | US1.2 | Mapa kampusu i wyszukiwanie działają bez logowania. | RO-GOS |
 | US1.3 | Na mapie są tylko zgłoszenia przyjęte. | BR-6 |
+| US1.4 | Na mapie widać wejścia budynków ze znakiem oznaczenia oraz ścieżki dostosowane i pochylnie z danych PWr albo OpenStreetMap. Legenda objaśnia słowem każdy znak mapy i planu, także „brak danych”. | NFR-21, US2.1 |
+| US1.5 | Dotknięcie znaku bariery na mapie pokazuje jej typ, uciążliwość, miejsce, zdjęcie i datę weryfikacji oraz przejście do karty budynku. | US2.2, BR-17 |
 | US2.1 | Każde wejście ma jedno z trzech oznaczeń: „dostępne”, „niedostępne” albo „brak danych”, tekstem i ikoną, nie tylko kolorem. | NFR-21, US17.1 |
 | US2.2 | Każde zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę weryfikacji. | BR-6 |
+| US2.3 | Karta budynku zaczyna się od skrótu faktów z danych: wejście dostępne, winda, toaleta dostosowana. Potem pokazuje wejścia, zaraz po nich bariery w budynku, a dopiero dalej windy, toalety i piętra. Faktu bez potwierdzenia w danych skrót nie pokazuje. | US2.1, US2.2 |
+| US2.4 | Gdy budynek nie ma zgłoszeń przyjętych, karta mówi zdaniem, że nikt jeszcze nie zgłosił tu sprawdzonej bariery, i nie sugeruje, że barier nie ma. | BR-6 |
+| US2.5 | Każda bariera na karcie budynku, na liście budynków i w opisie bariery na mapie podaje miejsce: wejście albo piętro, jeśli zgłoszenie je ma. | BR-14 |
+| US2.6 | W budynku z danymi PWr karta podaje liczbę wyjść ewakuacyjnych, a ich lista rozwija się dopiero na żądanie. | decyzja 44 |
 | US3.1 | Gdy budynek nie ma wejścia dostępnego, ekran mówi to wprost zdaniem, a nie samym brakiem wyniku. | — |
-| US3.2 | Od mapy do wskazania wejścia dostępnego są najwyżej 3 dotknięcia. | M-4 |
+| US3.2 | Od mapy z widocznym budynkiem albo od wyniku wyszukiwania do wskazania wejścia dostępnego są najwyżej 3 dotknięcia. | M-4 |
+| US3.3 | Przy wejściu zalecanym ekran podaje dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia, z danych PWr. Każde wejście dostępne można pokazać na mapie. | BR-25, decyzja 44 |
 | US4.1 | Zgłoszenie szybkie to najwyżej 3 kroki: zdjęcie, grupa barier, wysłanie. Bieżąca pozycja dołącza się sama. | NFR-27 |
 | US4.2 | Bez sieci zgłoszenie zapisuje się w telefonie i wysyła się samo po powrocie sieci. | NFR-5, NFR-6 |
 | US4.3 | Odwiedzający wybiera jedną z 6 grup barier dużymi przyciskami. Aplikacja nie pyta o typ bariery ani uciążliwość. | NFR-17, US10.3 |
 | US4.4 | Odwiedzający po wysłaniu widzi potwierdzenie, że zgłoszenie trafi do weryfikacji. Dalszego statusu zgłoszenia aplikacja mu nie pokazuje. | decyzja 32 |
 | US4.5 | Gdy pozycja leży w konturze budynku, a wybrana grupa barier wymaga piętra (każda poza „inne”), aplikacja w kroku 2 pyta o piętro dużymi przyciskami. Przyciski to etykiety pięter z danych PWr albo numery w budynku podstawowym i zawsze „Nie wiem”, które zostawia piętro puste. | BR-14, NFR-17, decyzja 43 |
+| US4.6 | Zgłoszenie zaczęte przy wejściu na karcie budynku albo na ekranie „Którędy wejść” pokazuje w kroku 1 nazwę tego wejścia i dołącza ją jako wskazówkę. Miejsce zgłoszenia nadal pochodzi z bieżącej pozycji. | BR-8, BR-14 |
+| US4.7 | Po wysłaniu „Wstecz” z potwierdzenia wraca do ekranu, z którego zaczęto zgłoszenie. Kroków zgłoszenia nie da się otworzyć ponownie ani wysłać zdjęcia drugi raz. | NFR-8 |
+| US4.8 | Powrót między krokami nie usuwa zdjęcia ani wybranej grupy. Zdjęcie znika tylko po potwierdzeniu rezygnacji, a pytanie o nią ma dwa przyciski tej samej wielkości. | NFR-23 |
 | US5.1 | Instrukcja pojawia się przy pierwszym uruchomieniu. Można ją pominąć i otworzyć ponownie z pomocy. | — |
 | US16.1 | W budynku szczegółowym przełącznik pięter pokazuje etykiety pięter z danych PWr. Wybrane piętro pokazuje plan z windami, schodami, toaletami, wejściami i zgłoszeniami przyjętymi. | NFR-40 |
-| US16.2 | W budynku podstawowym przełącznika pięter nie ma, a w miejscu planu widać napis „Plan piętra niedostępny dla tego budynku”. | BR-G1, NFR-48 |
+| US16.2 | W budynku podstawowym przełącznika pięter nie ma, a w miejscu planu widać napis „Nie mamy planu pięter tego budynku.” | BR-G1, NFR-48 |
+| US16.3 | W budynku szczegółowym karta budynku podaje tekstem, na których piętrach są winda i toaleta dostosowana. Każde piętro ma zwinięty na początku opis z funkcji pomieszczeń i przejście do planu tego piętra. | NFR-19, NFR-40, decyzja 44 |
+| US18.1 | Wyszukanie „A-1 329” i „a1 329” znajduje salę 329 w budynku A-1. Aplikacja pokazuje plan jej piętra z wyróżnioną salą oraz jej funkcję i piętro z danych PWr. | US1.1, NFR-40, decyzja 44 |
+| US18.2 | Przy znalezionej sali aplikacja podaje tekstem kroki: wejście zalecane, winda, piętro sali, sala z przybliżoną odległością od windy. Trasy nie rysuje. | BR-25, decyzja 44 |
+| US18.3 | Czasem sali nie ma w danych albo nie ma wejścia zalecanego i windy z jego piętra na piętro sali. Wtedy aplikacja mówi to zdaniem i proponuje opis budynku. | BR-25 |
 
 Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego ścieżkę na potwierdzeniu. Potrzebę takiej listy sprawdzimy w wywiadach.
 
@@ -134,6 +150,7 @@ Zmiana oznaczenia wejścia to zgłoszenie, więc przechodzi te same statusy co k
 | US14.1 | Bez wymaganej roli aplikacja nie pokazuje ekranu czynności, a serwer odrzuca próbę jej wykonania. | NFR-33 |
 | US14.2 | Gość niezalogowany po wybraniu zgłoszenia szybkiego widzi przed zdjęciem prośbę o logowanie albo rejestrację. | RO-GOS |
 | US14.3 | Nowe konto z samodzielnej rejestracji ma tylko uprawnienia Odwiedzającego. | BR-1, BR-2 |
+| US14.4 | Aplikacja pamięta zalogowanie do wylogowania albo wycofania zgody, więc prośba o logowanie przy zgłoszeniu szybkim pojawia się tylko za pierwszym razem. | NFR-35 |
 
 Uprawnienia każdej roli podaje macierz na stronie [Role i uprawnienia](../biznes/role.md). Sposób logowania opisują NFR-31 i NFR-32.
 
@@ -145,7 +162,7 @@ Uprawnienia każdej roli podaje macierz na stronie [Role i uprawnienia](../bizne
 | Kroki TO-BE | przed T7 | T20–T23 | T7–T10 | T1–T6 | T6a, T6b, T10–T13, T19 | T14–T19 | T24–T29 |
 | **Musi być (MVP)** | US14 logowanie | US1 wyszukiwanie<br>US2 karta budynku<br>US17 oznaczenie wejścia | US4 zgłoszenie szybkie | US6 pomiar bez US6.3, US6.5<br>US7 formularz | US8 statusy, „bariera usunięta”<br>US17.2 zmiana oznaczenia wejścia<br>US9 synchronizacja | US10 z podobnymi zgłoszeniami | US15 piętro obejrzane<br>US11 postęp<br>US13 eksport |
 | **— linia MVP —** | | | | | | | |
-| **Powinno być** | US5 pomoc | US3 „Którędy wejść”<br>US16 plan piętra | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | — | US12 zaproszenie |
+| **Powinno być** | US5 pomoc | US3 „Którędy wejść”<br>US16 plan piętra<br>US18 wyszukanie sali | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | — | US12 zaproszenie |
 | **Może być** | wersja angielska, tryb ciemny | kolejne budynki szczegółowe, dane z deklaracji dostępności | — | — | — | — | — |
 
 Kolumny idą w kolejności korzystania z aplikacji, od Gościa niezalogowanego do Koordynatora. Kroki TO-BE każdej aktywności podaje drugi wiersz. Wiersze nad linią MVP muszą działać na pokazie. Pozycje „Może być” nie mają jeszcze historyjek; dostaną je, gdy wejdą do planu sprintu.

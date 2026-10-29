@@ -14,14 +14,19 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie powstaje po 3 krokach
     Oraz ma dołączoną bieżącą pozycję telefonu, o którą aplikacja nie pytała
 
-  @US4.1
-  Scenariusz: Zgłoszenie przy wejściu podpowiada wejście, a miejsce bierze z bieżącej pozycji
+  @US4.6
+  Szablon scenariusza: Zgłoszenie przy wejściu podpowiada wejście, a miejsce bierze z bieżącej pozycji
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
-    Oraz otworzył kartę budynku A-1
+    Oraz otworzył <ekran> budynku A-1
     Jeżeli przy wejściu głównym wybierze „Zgłoś barierę przy wejściu”
     Wtedy krok 1 zgłoszenia szybkiego ma napis „Wejście: »Wejście główne«”
     Oraz wysłane zgłoszenie ma wejście główne A-1 jako wskazówkę dla Weryfikatora
     Ale miejsce zgłoszenia pochodzi z bieżącej pozycji telefonu, a nie z wybranego wejścia
+
+    Przykłady:
+      | ekran                   |
+      | kartę                   |
+      | ekran „Którędy wejść” |
 
   @US4.3
   Scenariusz: Wybór jednej z 6 grup barier dużymi przyciskami
