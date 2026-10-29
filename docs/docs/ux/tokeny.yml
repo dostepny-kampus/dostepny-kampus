@@ -171,14 +171,17 @@ kolory:
     uzycie: słowo „Brak danych” i ikona rombu ze znakiem ?
     zrodlo: NFR-16, NFR-21
   error:
-    # Ciemna czerwień tylko dla błędu walidacji: przy polu i w podsumowaniu nad formularzem
+    # Ciemna czerwień dla błędu walidacji: przy polu i w podsumowaniu nad formularzem
     # (C2, C6, C7, R2). Zawsze z pogrubionym tekstem, który mówi, co się stało i co zrobić
-    # (wymagania wspólne fazy B). Błąd serwera, zapisu, logowania i brak internetu to zwykły
-    # komunikat: onSurface na surfaceVariant, bez czerwieni. Styl „Karta miejsca” nie ma
-    # formularzy, więc wartość zostaje z poprzedniej wersji pliku.
+    # (wymagania wspólne fazy B). Ta sama rola barwi komunikat ostrzegawczy „Ważne” przed
+    # czynnością, np. w kroku 1 V4: ramkę, obrysowane koło ze znakiem „!” i słowo „Ważne”;
+    # treść komunikatu jest w onSurface. Roli „ostrzeżenie” celowo nie ma, bo paleta nie ma
+    # żółtego. Błąd serwera, zapisu, logowania i brak internetu to zwykły komunikat: onSurface
+    # na surfaceVariant, bez czerwieni. Styl „Karta miejsca” nie ma formularzy, więc wartość
+    # zostaje z poprzedniej wersji pliku.
     jasny: "#8A0F18"
     ciemny: "#FFCAC4"  # jasny łososiowy; na ciemnym tle ≥ 7:1
-    uzycie: tekst błędu walidacji przy polu i nad formularzem, obramowanie pola z błędem; nigdy dla oznaczenia wejścia, statusu ani uciążliwości
+    uzycie: tekst błędu walidacji przy polu i nad formularzem, ramka pola z błędem; ramka, koło „!” i słowo „Ważne” w ostrzeżeniu; nigdy dla oznaczenia wejścia, statusu ani uciążliwości
     zrodlo: NFR-15 (WCAG 3.3.1), NFR-21
 
 # ---------------------------------------------------------------------------
@@ -215,7 +218,7 @@ kontrast:
     - {kolor: onStatusNiedostepneContainer, tlo: statusNiedostepneContainer, rodzaj: tekst, gdzie: "„Niedostępne” i ośmiokąt ze znakiem ✕"}
     - {kolor: onStatusBrakDanychContainer, tlo: statusBrakDanychContainer, rodzaj: tekst, gdzie: "„Brak danych” i romb ze znakiem ?"}
     - {kolor: error, tlo: surface, rodzaj: tekst, gdzie: "błąd przy polu"}
-    - {kolor: error, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "błąd przy polu w kontenerze grupy"}
+    - {kolor: error, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "błąd przy polu w kontenerze grupy, „Ważne” w ostrzeżeniu"}
     - {kolor: outlineVariant, tlo: surfaceContainerLowest, rodzaj: komponent, gdzie: "linia podziału między wejściami w kontenerze"}
     - {kolor: outlineVariant, tlo: surfaceContainerLow, rodzaj: komponent, gdzie: "górna krawędź paska dolnego"}
     - {kolor: outline, tlo: surface, rodzaj: komponent, gdzie: "obramowanie pola i przycisku obrysowanego"}
