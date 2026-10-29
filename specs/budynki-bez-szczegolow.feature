@@ -13,7 +13,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
     Scenariusz: Karta budynku podstawowego zamiast planu piętra pokazuje napis
       Jeżeli Gość niezalogowany otworzy kartę budynku B-4
       Wtedy nie widzi przełącznika pięter
-      Oraz w miejscu planu piętra widzi napis „Plan piętra niedostępny dla tego budynku”
+      Oraz w miejscu planu piętra widzi napis „Nie mamy planu pięter tego budynku.”
       Oraz widzi wejścia budynku B-4 i jego zgłoszenia przyjęte
 
     @US7.2
@@ -91,7 +91,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
     Scenariusz: Budynek z uszkodzonymi danymi planów działa jako budynek podstawowy
       Zakładając, że dane planów pięter budynku B-1 są uszkodzone
       Jeżeli import planów pięter się zakończy
-      Wtedy budynek B-1 nie ma przełącznika pięter i pokazuje napis „Plan piętra niedostępny dla tego budynku”
+      Wtedy budynek B-1 nie ma przełącznika pięter i pokazuje napis „Nie mamy planu pięter tego budynku.”
       Oraz budynki A-1, C-13, D-1 i D-2 mają plany pięter
       Oraz raport importu wskazuje budynek B-1
 

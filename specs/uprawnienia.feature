@@ -84,3 +84,11 @@ Funkcja: Logowanie, role i zaproszenia
     Jeżeli jako Weryfikator spróbuje przyjąć to zgłoszenie z pominięciem aplikacji
     Wtedy próba jest odrzucona
     Oraz zgłoszenie ma nadal status „wysłane”
+
+  @US14.4
+  Scenariusz: Zalogowany Odwiedzający nie jest proszony o logowanie ponownie
+    Zakładając, że Odwiedzający zalogował się przy pierwszym zgłoszeniu szybkim
+    Oraz zamknął i ponownie uruchomił aplikację
+    Jeżeli wybierze zgłoszenie szybkie
+    Wtedy aplikacja od razu otwiera aparat
+    Ale po wylogowaniu albo wycofaniu zgody znów prosi o logowanie

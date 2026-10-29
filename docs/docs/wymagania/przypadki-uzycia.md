@@ -28,7 +28,7 @@ QGIS nie jest aktorem. Koordynator otwiera w nim plik eksportu poza systemem, a 
 
 | UC | Nazwa | Aktor główny | US | Ekran | Priorytet |
 | --- | --- | --- | --- | --- | --- |
-| UC1 | Wyszukanie budynku | Gość niezalogowany | US1 | V1 | Musi być |
+| UC1 | Wyszukanie budynku | Gość niezalogowany | US1, US18 | V1 | Musi być |
 | UC2 | Przegląd karty budynku | Gość niezalogowany | US2, US17.1, US17.3 | V2 | Musi być |
 | UC3 | Przegląd planu piętra | Gość niezalogowany | US16 | V2 | Powinno być |
 | UC4 | Wyszukanie wejścia dostępnego | Gość niezalogowany | US3 | V3 | Powinno być |
@@ -47,7 +47,7 @@ QGIS nie jest aktorem. Koordynator otwiera w nim plik eksportu poza systemem, a 
 | UC17 | Eksport do QGIS | Koordynator | US13 | K3 | Musi być |
 | UC18 | Zmiana oznaczenia wejścia | Zbierający | US17.2, US17.3 | V2, C6 | Musi być |
 
-Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej część, konkretne kryteria. Priorytet pochodzi z historyjek. Każda historyjka US1…US17 ma co najmniej jeden przypadek użycia, także umożliwiająca US14.
+Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej część, konkretne kryteria. Priorytet pochodzi z historyjek. Każda historyjka US1…US18 ma co najmniej jeden przypadek użycia, także umożliwiająca US14.
 
 ## Scenariusz demo w budynku A-1
 
@@ -164,7 +164,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | 3b | Punkt daleko od budynków PWr | System nie proponuje budynku. Zgłoszenie zapisuje się jako „poza budynkiem”, bez piętra (BR-G4). |
 | 4a | Podpowiedź wskazuje zły budynek | Zbierający wybiera inny budynek (US6.2). |
 | 4b | Pozycja z GNSS jest niedokładna, np. przy ścianie | Zbierający przesuwa punkt na planie piętra (US6.3) albo na mapie (US6.4). Zgłoszenie dostaje oznaczenie „korekta ręczna” (NFR-3). |
-| 5a | Budynek podstawowy, także po nieudanym imporcie planów | Przełącznika pięter nie ma, widać napis „Plan piętra niedostępny dla tego budynku”. Zbierający wpisuje liczbę, opcjonalnie z dopiskiem „półpiętro” (BR-G1, BR-G3). |
+| 5a | Budynek podstawowy, także po nieudanym imporcie planów | Przełącznika pięter nie ma, widać napis „Nie mamy planu pięter tego budynku.” Zbierający wpisuje liczbę, opcjonalnie z dopiskiem „półpiętro” (BR-G1, BR-G3). |
 | 7a | Brak typu, uciążliwości albo zdjęcia | System wskazuje brakujące pole i nie zapisuje zgłoszenia (US7.1). |
 | 7b | Typ TB-29 „inna bariera” bez opisu | System wymaga opisu (US7.3). |
 | 8a | Brak sieci, np. w piwnicy A-1 | Wskaźnik pokazuje brak sieci, a zgłoszenie czeka ze statusem „lokalne” (US9.1, BR-9). |
@@ -221,9 +221,9 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Warunki wstępne | Brak; logowanie nie jest potrzebne (US1.2). |
 | Wyzwalacz | Osoba zna symbol budynku z planu zajęć albo zaproszenia. |
 | Przepływ główny | 1. Osoba otwiera mapę kampusu. <br> 2. Wpisuje symbol budynku, np. „c13”. <br> 3. System znajduje C-13 niezależnie od zapisu (US1.1). <br> 4. System pokazuje budynek na mapie z barierami przyjętymi (US1.3). |
-| Alternatywy i wyjątki | 1a. Brak sieci: dane z ostatniej synchronizacji z datą (NFR-10). <br> 2a. Czytnik ekranu: osoba wybiera budynek z listy (NFR-19). <br> 3a. Brak wyniku: system mówi to zdaniem z przykładem symbolu i proponuje listę budynków (NFR-19). |
+| Alternatywy i wyjątki | 1a. Brak sieci: dane z ostatniej synchronizacji z datą (NFR-10). <br> 2a. Czytnik ekranu: osoba wybiera budynek z listy (NFR-19). <br> 2b. Osoba wpisuje budynek i numer sali, np. „A-1 329”: system pokazuje plan piętra z wyróżnioną salą i kroki do niej tekstem (US18.1, US18.2). Gdy sali nie ma w danych albo nie ma do niej drogi bez schodów, mówi to zdaniem i proponuje opis budynku (US18.3). <br> 3a. Brak wyniku: system mówi to zdaniem z przykładem symbolu i proponuje listę budynków (NFR-19). |
 | Warunki końcowe | Budynek jest zaznaczony na mapie; dalej można otworzyć UC2. |
-| Odwołania | US1.1…US1.3, BR-6, NFR-11, NFR-19, NFR-37, T20 |
+| Odwołania | US1.1…US1.5, US18.1…US18.3, BR-6, NFR-11, NFR-19, NFR-37, T20 |
 
 ### Przegląd karty budynku (UC2)
 
@@ -235,9 +235,9 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Wyzwalacz | Osoba otwiera kartę budynku. |
 | Przepływ główny | 1. System pokazuje wejścia z oznaczeniem „dostępne”, „niedostępne” albo „brak danych” tekstem i ikoną, z datą i źródłem oznaczenia (US2.1, US17.3). <br> 2. Pokazuje windy i zgłoszenia przyjęte ze zdjęciem i datą weryfikacji (US2.2, BR-17). <br> 3. Tekst pojawia się od razu, zdjęcia doczytują się później (NFR-12). |
 | Punkt rozszerzenia | „Budynek szczegółowy” — wybór piętra i plan piętra (UC3). |
-| Alternatywy i wyjątki | 1a. Brak sieci: karta wcześniej otwartego budynku z datą synchronizacji (NFR-10). <br> 1b. Budynek podstawowy: karta działa, planu piętra nie ma (BR-G1). <br> 1c. Import nie dał danych o wejściu: oznaczenie „brak danych”, a nie „niedostępne” (US17.1, BR-24). <br> 2a. Brak zgłoszeń przyjętych: karta mówi zdaniem, że nikt jeszcze nie zgłosił tu sprawdzonej bariery i że to nie znaczy „brak barier”. |
+| Alternatywy i wyjątki | 1a. Brak sieci: karta wcześniej otwartego budynku z datą synchronizacji (NFR-10). <br> 1b. Budynek podstawowy: karta działa, planu piętra nie ma (BR-G1). <br> 1c. Import nie dał danych o wejściu: oznaczenie „brak danych”, a nie „niedostępne” (US17.1, BR-24). <br> 2a. Brak zgłoszeń przyjętych: karta mówi zdaniem, że nikt jeszcze nie zgłosił tu sprawdzonej bariery, i nie sugeruje, że barier nie ma (US2.4). |
 | Warunki końcowe | Osoba zna stan budynku; system niczego nie zapisuje. |
-| Odwołania | US2.1, US2.2, US17.1, US17.3, BR-6, BR-17, BR-24, BR-G1, NFR-10, NFR-12, NFR-21, T21 |
+| Odwołania | US2.1…US2.6, US17.1, US17.3, BR-6, BR-17, BR-24, BR-G1, NFR-10, NFR-12, NFR-21, T21 |
 
 ### Przegląd planu piętra (UC3)
 
@@ -247,7 +247,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Aktor | Gość niezalogowany. |
 | Warunki wstępne | Otwarta karta budynku szczegółowego (rozszerza UC2). |
 | Przepływ główny | 1. Osoba wybiera piętro w przełączniku z etykietami z danych PWr (US16.1). <br> 2. System pokazuje plan piętra ze zgłoszeniami przyjętymi i podpisem źródła danych (NFR-40). |
-| Alternatywy i wyjątki | 1a. Budynek podstawowy albo nieudany import planów: przełącznika nie ma, widać napis „Plan piętra niedostępny dla tego budynku” (US16.2, BR-G1, BR-G3). |
+| Alternatywy i wyjątki | 1a. Budynek podstawowy albo nieudany import planów: przełącznika nie ma, widać napis „Nie mamy planu pięter tego budynku.” (US16.2, BR-G1, BR-G3). |
 | Warunki końcowe | Osoba zna rozkład piętra; system niczego nie zapisuje. |
 | Odwołania | US16.1, US16.2, BR-G1, BR-G3, NFR-40, NFR-48, T22 |
 
