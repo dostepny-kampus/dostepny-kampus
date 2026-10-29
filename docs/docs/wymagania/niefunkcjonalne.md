@@ -111,7 +111,7 @@ Rozporządzenie RODO [14] zalicza dane o lokalizacji do danych osobowych (art. 4
 | --- | --- | --- | --- | --- | --- |
 | NFR-44 | Utrzymywalność | Kontrakt API w OpenAPI 3.1 powstaje przed kodem. Błędy mają format RFC 9457. | 100% operacji i pól z opisem. Zmiana łamiąca zgodność wstecz blokuje scalenie. | Walidacja kontraktu i porównanie z poprzednią wersją w CI. | decyzje 4, 9 i 22, [28], [29] |
 | NFR-45 | Utrzymywalność | Każde kryterium AC i każda reguła BR ma wykonywalny scenariusz akceptacyjny po polsku. | 100% AC i BR pokryte co najmniej 1 scenariuszem. | Skrypt spójności identyfikatorów w CI. | produkt §8, decyzje 16 i 24 |
-| NFR-46 | Utrzymywalność | Każdy PR przechodzi budowanie, testy i analizę statyczną. | Czerwony wynik blokuje scalenie. PR funkcjonalny ≤ 300 linii. | Reguły gałęzi w repozytorium. | produkt §9, decyzje 5 i 8 |
+| NFR-46 | Utrzymywalność | Każdy PR przechodzi budowanie, testy i analizę statyczną. | Czerwony wynik blokuje scalenie. Każdy PR ma najwyżej 300 zmienionych linii bez danych, plików lock, kodu generowanego i plików binarnych. Wyjątkiem jest scalenie gałęzi sprintu do `main`. | Reguły gałęzi w repozytorium. | produkt §9, decyzje 5 i 8 |
 | NFR-47 | Utrzymywalność | Lista budynków szczegółowych jest konfiguracją, nie kodem. | Dodanie budynku: 1 wpis w konfiguracji, 0 zmian w kodzie. | Próbne dodanie budynku C-6. | produkt §6a |
 
 ## Odporność

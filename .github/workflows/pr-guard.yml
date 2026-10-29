@@ -27,7 +27,6 @@ env:
 
 jobs:
   rozmiar:
-    if: startsWith(github.head_ref, 'feature/')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -36,7 +35,16 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Policz zmienione linie
-        run: bash .github/scripts/rozmiar-pr.sh "$BASE_SHA" "$HEAD_SHA" 300
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          if [[ $BASE_REF == main && $HEAD_REF =~ ^sprint/[0-9]+$ && $HEAD_REPO == "$GITHUB_REPOSITORY" ]]; then
+            echo "Scalenie sprintu do main: każda zmiana przeszła limit w PR do gałęzi sprintu."
+            exit 0
+          fi
+          bash .github/scripts/rozmiar-pr.sh "$BASE_SHA" "$HEAD_SHA" 300
 
   commity:
     if: github.event.pull_request.user.login != 'dependabot[bot]'
