@@ -100,5 +100,50 @@ class ScenarioTestsTest(unittest.TestCase):
             self.assertEqual([row.split()[0] for row in output.getvalue().splitlines() if "scenariusz bez testu" in row], [level])
 
 
+MARKER = "// Scenariusz: kampus.feature: Pełny test\n"
+
+
+def kotlin_markers(source: str, newline: str = "\n") -> list[tuple[str, str]]:
+    """Zwraca (nazwa scenariusza, stan testu) znaczników z pliku `src/test/A.kt` o treści `source` (końce linii `newline`)."""
+    with tempfile.TemporaryDirectory() as android:
+        path = Path(android) / "src" / "test" / "A.kt"
+        path.parent.mkdir(parents=True)
+        path.write_bytes(source.replace("\n", newline).encode("utf-8"))
+        return [(m.scenario, m.test) for m in check_ids.collect(DATA / "brak", DATA / "brak", Path(android)).markers]
+
+
+class KotlinParsingTest(unittest.TestCase):
+    def test_markers_in_block_comments_and_strings_are_ignored(self) -> None:
+        sources = [
+            f"/*\n{MARKER}@Test\nfun a() = Unit\n*/\n",
+            f"/* zewnętrzny /* wewnętrzny */\n{MARKER}@Test\nfun a() = Unit\n*/\n",
+            f'val opis = """\n{MARKER}"""\n',
+            'val opis = "// Scenariusz: kampus.feature: Pełny test"\n',
+        ]
+        for source in sources:
+            self.assertEqual(kotlin_markers(source), [], source)
+
+    def test_test_annotation_in_comment_or_string_does_not_count(self) -> None:
+        for between in ("/* @Test */\n", "@DisplayName(\"@Test\")\n"):
+            self.assertEqual(kotlin_markers(f"{MARKER}{between}fun a() = Unit\n"), [("Pełny test", "")], between)
+
+    def test_only_listed_annotations_mark_a_test(self) -> None:
+        for annotation, state in [("Test", "aktywny"), ("RepeatedTest(3)", "aktywny"), ("TestFactory", "aktywny"),
+                                  ("TestTemplate", "aktywny"), ("SmallTest", ""), ("MediumTest", ""), ("LargeTest", "")]:
+            self.assertEqual(kotlin_markers(f"{MARKER}@{annotation}\nfun a() = Unit\n"), [("Pełny test", state)], annotation)
+
+    def test_parenthesis_inside_annotation_string_is_ignored(self) -> None:
+        source = f'{MARKER}@DisplayName("sala (A-1")\n@ValueSource(\n    chars = [\'(\'],\n    strings = [")(", "("],\n)\n'
+        self.assertEqual(kotlin_markers(source + "@ParameterizedTest\nfun a(s: String) = Unit\n"), [("Pełny test", "aktywny")])
+
+    def test_any_modifiers_before_fun(self) -> None:
+        for modifiers in ("internal inline", "private suspend", "tailrec", "public operator", "override"):
+            self.assertEqual(kotlin_markers(f"{MARKER}@Test\n{modifiers} fun a() = Unit\n"), [("Pełny test", "aktywny")], modifiers)
+
+    def test_crlf_line_endings(self) -> None:
+        source = "// Scenariusz: kampus.feature: Zgłoszenie „Brak windy\n//   przy wejściu”\n@Test\nfun a() = Unit\n"
+        self.assertEqual(kotlin_markers(source, "\r\n"), [("Zgłoszenie „Brak windy przy wejściu”", "aktywny")])
+
+
 if __name__ == "__main__":
     unittest.main()
