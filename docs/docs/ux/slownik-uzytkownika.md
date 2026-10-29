@@ -62,10 +62,10 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | --- | --- | --- | --- | --- |
 | mapa kampusu (nagłówek V1) | „Mapa kampusu” | wszystkie | bez zmian | 1.3 |
 | symbol budynku (pole V1) | „Wpisz symbol budynku, np. C-13” | wszystkie | Symbol wisi na budynku. Przykład pokazuje zapis, a czasownik mówi, co zrobić. | 1.3, część 5 |
-| przełącznik „Mapa / Lista budynków” | „Mapa” i „Lista budynków” | wszystkie | Lista pomaga osobie, której mapa sprawia kłopot, i czytnikowi TalkBack. | część 5 |
+| przełącznik „Mapa / Lista budynków” | „Mapa” i „Lista budynków”; przy skali czcionki co najmniej 1,5 widoczny napis „Lista”, a TalkBack czyta „Lista budynków” | wszystkie | Lista pomaga osobie, której mapa sprawia kłopot, i czytnikowi TalkBack. | część 5 |
 | przyciski „+” i „−” | „Powiększ” i „Pomniejsz” | wszystkie | Sam znak „+” nie mówi, co powiększy. | obserwacja w części 3 |
 | przyciski przesuwania mapy | strzałki na mapie; nazwa dla TalkBack „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | wszystkie | Cztery strzałki w krzyżu na mapie, każda co najmniej 48 dp. Kierunek widać po położeniu i strzałce, a pełną nazwę czyta TalkBack (PW-11). PE-1 nie lubi przeciągania. | obserwacja w części 3 |
-| karta budynku (nagłówek V2) | „Budynek C-13” i nazwa z danych | wszystkie | Osoba szuka budynku, a nie „karty”. | 4.4 |
+| karta budynku (nagłówek V2) | symbol dużym napisem, np. „A-1”, a pod nim nazwa z danych; bez nazwy „Budynek C-4”; TalkBack czyta „Budynek A-1, Gmach Główny” | wszystkie | Osoba szuka budynku, a nie „karty”. | 4.4 |
 | karta budynku (w zdaniach) | „opis budynku” | Gość, Odwiedzający | Tego słowa używa pytanie 4.4 scenariusza. „Karta” kojarzy się z kartą płatniczą (hipoteza). | 4.4 |
 | oznaczenie wejścia „dostępne” | „Dostępne” | wszystkie | Słowo z kryterium US2.1, krótkie. „Bez schodów” byłoby nieprawdą przy wejściu z podnośnikiem (recenzja B3, uwaga 12). | 4.1, 4.2, część 5 |
 | oznaczenie wejścia „niedostępne” | „Niedostępne” | wszystkie | Przeciwieństwo „Dostępne”. To słowo nie pada w innym znaczeniu. | 4.1, 4.2 |
@@ -344,20 +344,22 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 
 Ikony pochodzą z zestawu OpenIconic dostępnego w PlantUML Salt [3], [4]. Każda ikona stoi obok tekstu, a tekst niesie znaczenie sam. Kolor nie niesie znaczenia (NFR-21) [5].
 
+Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości własnymi kształtami, tymi samymi na mapie i w treści. Tabela podaje je po słowie „hi-fi”.
+
 | Element | Ikona (nazwa z OpenIconic) | Tekst obok | Metafora / dlaczego zrozumiała |
 | --- | --- | --- | --- |
 | pasek dolny: mapa | `map` | „Mapa” | plan w ramce ze znacznikiem miejsca, jak w aplikacjach map |
-| pasek dolny: zgłoszenie | `camera-slr` | „Zgłoś barierę” | zgłoszenie zaczyna się od zdjęcia (US4.1) |
+| pasek dolny: zgłoszenie | `camera-slr` | „Zgłoś barierę”; ta sama ikona przy „Zgłoś barierę przy wejściu” (V2, V3) | zgłoszenie zaczyna się od zdjęcia (US4.1) |
 | pasek dolny: pomoc | `question-mark` | „Pomoc” | znak zapytania, czyli „mam pytanie” |
 | pasek dolny: konto | `person` | „Konto” albo „Konto i praca” | sylwetka, czyli „ja”; ta sama ikona dla obu napisów |
 | wskaźnik braku sieci | `wifi` | „Bez internetu” | znak internetu znany z telefonu i kawiarni (hipoteza) |
-| oznaczenie „dostępne” | `check` | „Dostępne” | ptaszek, czyli „tak, da się” |
-| oznaczenie „niedostępne” | `x` | „Niedostępne” | krzyżyk, czyli „nie” |
-| oznaczenie „brak danych” | `minus` | „Brak danych” | kreska jak w pustej rubryce formularza; inna niż krzyżyk (US17.1) |
-| uciążliwość 1 | `warning` | „Utrudnienie” | trójkąt jak drogowy znak ostrzegawczy: uważaj |
-| uciążliwość 2 | `people` | „Tylko z pomocą” | dwie osoby: przejdziesz z drugą osobą |
-| uciążliwość 3 | `ban` | „Blokada” | koło z kreską jak znak zakazu: tędy nie |
-| przycisk zdjęcia (V4, C2, C6, C7) | `camera-slr` | „Zrób zdjęcie” | aparat; ta sama ikona co „Zgłoś barierę” |
+| oznaczenie „dostępne” | `check`; hi-fi: koło z ptaszkiem | „Dostępne” | ptaszek, czyli „tak, da się” |
+| oznaczenie „niedostępne” | `x`; hi-fi: ośmiokąt z krzyżykiem | „Niedostępne” | krzyżyk, czyli „nie”; ośmiokąt jak znak „stop” |
+| oznaczenie „brak danych” | `minus`; hi-fi: romb z poziomą kreską | „Brak danych” | kreska jak w pustej rubryce formularza; inna niż krzyżyk (US17.1) |
+| uciążliwość 1 | `warning`; hi-fi: trójkąt z „!” | „Utrudnienie” | trójkąt jak drogowy znak ostrzegawczy: uważaj |
+| uciążliwość 2 | `people`; hi-fi: tarcza z dwiema osobami | „Tylko z pomocą” | dwie osoby: przejdziesz z drugą osobą |
+| uciążliwość 3 | `ban`; hi-fi: zapora z ukośnymi pasami | „Blokada” | znak zakazu albo zapora drogowa: tędy nie |
+| przycisk zdjęcia (C2, C6, C7); w V4 bez ikony | `camera-slr` | „Zrób zdjęcie” | aparat; ta sama ikona co „Zgłoś barierę” |
 | status „lokalne” | `phone` | „W telefonie” | kształt telefonu: zgłoszenie jest tylko w nim |
 | status „wysłane” | `data-transfer-upload` | „Wysłane” | strzałka w górę: poszło dalej |
 | status „w weryfikacji” | `eye` | „W weryfikacji” | oko: ktoś teraz ogląda |
@@ -376,10 +378,11 @@ Zasady ikon:
 
 | Zasada | Skutek |
 | --- | --- |
-| Jedna ikona ma jedno znaczenie. | `question-mark` oznacza tylko pomoc, dlatego „Brak danych” ma `minus`. Lupa nie występuje, bo kojarzy się z wyszukiwaniem. |
-| Ikona tylko tam, gdzie wymaga jej NFR-21 albo wymagania wspólne, oraz na pasku dolnym. | Status, oznaczenie wejścia, uciążliwość, znacznik i wskaźnik sieci mają ikonę. Pasek dolny ma ikony, bo widać go na 5 ekranach i osoba uczy się ich raz. „Zrób zdjęcie” powtarza ikonę paska. |
-| Reszta elementów jest bez ikony. | „Powiększ”, „Pomniejsz”, 6 grup barier, przyciski czynności, „Nieobejrzane”. Słowo jest dla PE-1 jaśniejsze niż strzałka albo symbol [6]. Wyjątek: „Otwórz” w ramkach R1 i K1, gdzie ikona odróżnia otwarcie pozycji od czynności na niej (recenzja B5). |
-| Nawigacja wstecz i przesuwanie mapy mają strzałkę. | „Wstecz” to strzałka w lewo i słowo. Przyciski przesuwania mapy to same strzałki na mapie z nazwą dla TalkBack, bo słowa pod mapą zabierały jej miejsce. Wzorzec znają aplikacje map, a przesuwanie nadal nie wymaga przeciągania (WCAG 2.5.7). |
+| Jedna ikona ma jedno znaczenie. | `question-mark` oznacza tylko pomoc, dlatego „Brak danych” ma `minus`. Lupa stoi tylko w polu wyszukiwania. |
+| Ikona tylko tam, gdzie wymaga jej NFR-21 albo wymagania wspólne, oraz na pasku dolnym. | Status, oznaczenie wejścia, uciążliwość, znacznik i wskaźnik sieci mają ikonę. Pasek dolny ma ikony, bo widać go na 5 ekranach i osoba uczy się ich raz. „Zgłoś barierę przy wejściu” powtarza ikonę paska, bo zaczyna to samo zgłoszenie. |
+| Przy zwykłej czcionce ikona może stać obok słowa w odnośnikach, chipach, wierszach L2 i blokach V3. | Ikona pomaga rozpoznać czynność, ale znaczenie niesie słowo. Przy skali czcionki co najmniej 1,5 ikona znika ([reguła 11](wymagania-ekranow.md#duza-czcionka)). |
+| Reszta elementów jest bez ikony. | 6 grup barier, przyciski czynności, „Zrób zdjęcie” w V4, „Nieobejrzane”. Słowo jest dla PE-1 jaśniejsze niż strzałka albo symbol [6]. Wyjątek: „Otwórz” w ramkach R1 i K1, gdzie ikona odróżnia otwarcie pozycji od czynności na niej (recenzja B5). |
+| Nawigacja wstecz i przesuwanie mapy mają strzałkę. | „Wstecz” to strzałka w lewo i słowo. Przyciski przesuwania mapy to same strzałki na mapie z nazwą dla TalkBack, bo słowa pod mapą zabierały jej miejsce. „Powiększ” i „Pomniejsz” to w hi-fi znaki „+” i „−” na mapie, też z nazwą dla TalkBack. Wzorzec znają aplikacje map, a przesuwanie nadal nie wymaga przeciągania (WCAG 2.5.7). |
 | Grupy barier w V4 są bez ikon. | OpenIconic nie ma ikon toalety, drzwi ani chodnika, a ikona na siłę myli. US4.3 wymaga tylko dużych przycisków (PW-7). |
 
 ### Udział ikon
@@ -388,13 +391,13 @@ Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk,
 
 | Ekran | Elementy | Z ikoną | Udział | Elementy z ikoną |
 | --- | --- | --- | --- | --- |
-| V1 Mapa kampusu | 18 | 11 | 61% | wskaźnik sieci, uciążliwość, strzałki mapy (4), „ⓘ”, pasek (4) |
-| V2 Budynek | 18 | 8 | 44% | „Wstecz”, wskaźnik sieci, oznaczenie, uciążliwość, pasek (4) |
-| V3 Którędy wejść (stan zwykły) | 16 | 8 | 50% | „Wstecz”, wskaźnik sieci, oznaczenie, uciążliwość, pasek (4) |
-| V4 Zgłoś barierę | 20 | 3 | 15% | „Wstecz”, wskaźnik sieci, „Zrób zdjęcie” |
-| V5 Jak korzystać z aplikacji | 12 | 6 | 50% | „Wstecz”, wskaźnik sieci, pasek (4) |
+| V1 Mapa kampusu | 19 | 16 | 84% | pole wyszukiwania, „Mapa” w przełączniku, wskaźnik sieci, uciążliwość, „Legenda”, strzałki mapy (4), „Powiększ”, „Pomniejsz”, „ⓘ”, pasek (4) |
+| V2 Budynek | 27 | 16 | 59% | „Wstecz”, wskaźnik sieci, chipy, oznaczenie, dwa przyciski przy wejściu, wyjścia ewakuacyjne, uciążliwość, zdjęcie bez internetu, „Winda i toaleta”, piętro, „Pokaż na planie”, pasek (4) |
+| V3 Którędy wejść (stan zwykły) | 25 | 14 | 56% | „Wstecz”, wskaźnik sieci, odpowiedź, oznaczenie, „Dojście”, „Drzwi”, „Za drzwiami”, „Pokaż wejście na mapie”, „Zgłoś barierę przy wejściu”, uciążliwość, pasek (4) |
+| V4 Zgłoś barierę | 20 | 3 | 15% | „Wstecz”, wskaźnik sieci, komunikat „Ważne” |
+| V5 Jak korzystać z aplikacji | 13 | 7 | 54% | „Wstecz”, wskaźnik sieci, oznaczenie w przykładzie, pasek (4) |
 | L1 Konto (Gość) | 8 | 2 | 25% | „Wstecz”, wskaźnik sieci |
-| L2 Konto albo Konto i praca (wszystkie role) | 18 | 6 | 33% | „Wstecz”, wskaźnik sieci, pasek (4) |
+| L2 Konto albo Konto i praca (wszystkie role) | 20 | 15 | 75% | „Wstecz”, wskaźnik sieci, wiersze „Twoja praca” (6), wiersze „Konto” (3), pasek (4) |
 | C1 Pomiar pozycji | 19 | 2 | 11% | „Wstecz”, wskaźnik sieci |
 | C2 Formularz zgłoszenia | 13 | 4 | 31% | „Wstecz”, wskaźnik sieci, uciążliwość, „Zrób zdjęcie” |
 | C3 Moje zgłoszenia | 14 | 4 | 29% | „Wstecz”, wskaźnik sieci, status, oznaczenie wejścia przy zmianie oznaczenia |
@@ -407,20 +410,24 @@ Element to jedno miejsce na ekranie, które osoba czyta osobno: napis, przycisk,
 | K1 Postęp inwentaryzacji | 12 | 4 | 33% | „Wstecz”, wskaźnik sieci, znacznik, „Otwórz” |
 | K2 Zaproś osobę | 6 | 2 | 33% | „Wstecz”, wskaźnik sieci |
 | K3 Pobierz eksport | 6 | 2 | 33% | „Wstecz”, wskaźnik sieci |
-| **Razem** | **249** | **85** | **34%** | — |
+| **Razem** | **271** | **114** | **42%** | — |
 
-Tabela liczy każdy ekran w stanie typowym: bez sieci, z jednym wejściem i jedną barierą. V3 ma mało treści, więc jego udział zależy od stanu:
+Tabela liczy każdy ekran w stanie typowym: bez sieci, z jednym wejściem i jedną barierą. Ekrany V1–V5, L1 i L2 liczymy z zatwierdzonych makiet hi-fi, a pozostałe z makiet low-fi. V3 ma mało treści, więc jego udział zależy od stanu:
 
 | Stan V3 | Elementy | Z ikoną | Udział | Elementy z ikoną |
 | --- | --- | --- | --- | --- |
-| zwykły: 1 wejście dostępne, 1 bariera, bez sieci | 16 | 8 | 50% | „Wstecz”, wskaźnik sieci, oznaczenie, uciążliwość, pasek (4) |
-| 1 wejście dostępne bez barier, bez sieci | 12 | 7 | 58% | „Wstecz”, wskaźnik sieci, oznaczenie, pasek (4) |
-| brak wejścia dostępnego albo brak danych, z siecią | 7 | 5 | 71% | „Wstecz”, pasek (4) |
-| brak wejścia dostępnego albo brak danych, bez sieci | 8 | 6 | 75% | „Wstecz”, wskaźnik sieci, pasek (4) |
+| zwykły: 1 wejście dostępne, 1 bariera, bez sieci | 25 | 14 | 56% | jak w tabeli wyżej |
+| 1 wejście dostępne bez barier, bez sieci | 21 | 13 | 62% | jak wyżej, bez uciążliwości |
+| brak wejścia dostępnego albo brak danych, z siecią | 7 | 6 | 86% | „Wstecz”, odpowiedź, pasek (4) |
+| brak wejścia dostępnego albo brak danych, bez sieci | 8 | 7 | 88% | „Wstecz”, wskaźnik sieci, odpowiedź, pasek (4) |
 
-Kurs „Projektowanie doświadczeń użytkownika” w etapie 4 dopuszcza najwyżej 50% ikon w całym interfejsie [7]. Cały interfejs ma 34%. Próg 50% dla typowego stanu każdego ekranu to ostrzejsza miara zespołu.
+Kurs „Projektowanie doświadczeń użytkownika” w etapie 4 dopuszcza najwyżej 50% ikon w całym interfejsie [7]. Cały interfejs ma 42%. Próg 50% dla typowego stanu każdego ekranu to ostrzejsza miara zespołu.
 
-V1 ma 61%, bo przesuwanie mapy to strzałki na mapie zamiast słów pod nią, a obok jest „ⓘ”. Strzałki zastępują przeciąganie mapy, czego WCAG wymaga dla ruchów przeciągania, i mają nazwy dla TalkBack. Stany V3 powyżej 50% mają mało treści, a oba przypadki to świadomy wyjątek od miary zespołu.
+V1, V2, V3, V5 i L2 przekraczają 50%. Na V1 przesuwanie i powiększanie mapy to znaki na mapie zamiast słów pod nią. Zastępują przeciąganie mapy, czego WCAG wymaga dla ruchów przeciągania, i mają nazwy dla TalkBack.
+
+Na V2, V3 i L2 ikony stoją obok słów przy zwykłej czcionce i znikają przy dużej. Stany V3 bez wejścia dostępnego mają mało treści.
+
+Te przypadki to świadomy wyjątek od miary zespołu, a cały interfejs mieści się w limicie kursu.
 
 Oznaczenie wejścia i wskaźnik sieci zawsze mają tekst i ikonę (NFR-21 i kryterium WCAG o użyciu koloru [5]). Pasek dolny wygląda tak samo na każdym ekranie. Nie usuwamy tych ikon, żeby zmieścić się w limicie, bo każda stoi obok tekstu i tekst niesie znaczenie sam.
 
