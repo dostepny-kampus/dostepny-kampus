@@ -30,9 +30,11 @@ rectangle "Dostępny Kampus" {
   usecase "UC6\nLogowanie i rejestracja" as UC6
   usecase "UC7\nZgłoszenie szybkie" as UC7
   usecase "UC10\nSynchronizacja\nz serwerem" as UC10
+  usecase "UC19\nWyszukanie sali" as UC19
 }
 
 GOS -- UC1
+GOS -- UC19
 GOS -- UC2
 GOS -- UC4
 GOS -- UC5

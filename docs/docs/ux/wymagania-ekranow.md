@@ -137,10 +137,10 @@ Arkusz znalezionej sali na dole mapy (decyzja 48, punkt 5):
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Symbol budynku, „Sala 329”, funkcja sali i piętro z danych PWr, „Zamknij” | dane | decyzja 44, NFR-40 | „Zamknij”: V1 |
-| Kroki tekstem w numerowanej liście, bez rysowania trasy: wejście zalecane, winda, piętro sali, sala z przybliżoną odległością od windy | dane | BR-25, decyzja 44, decyzja 48, decyzja 53 | — |
+| Kroki tekstem w numerowanej liście, bez rysowania trasy: wejście zalecane, winda, piętro sali, sala z przybliżoną odległością od windy. Dane nie podają piętra wejścia, więc krok go nie podaje, a wejście zalecane liczy się jako parter. Sala na parterze ma kroki bez windy | dane | US18.2, BR-25 | — |
 | „Pokaż opis budynku” | czynność główna stanu | US2, PW-5 | V2 |
 
-Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na piętrze tego wejścia i na piętrze sali. W A-1 to winda przy klatkach C i D, bo winda przy klatkach A i B jest w danych tylko na 2 piętrze [6]. Sala na piętrze wejścia ma tylko pierwszy i ostatni krok.
+Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na parterze i na piętrze sali (US18.2). W A-1 to winda przy klatkach C i D, bo winda przy klatkach A i B jest w danych tylko na 2 piętrze [6]. Sala na parterze ma tylko pierwszy i ostatni krok, a odległość liczy się od wejścia.
 
 | Stan | Co widać |
 | --- | --- |
@@ -149,7 +149,7 @@ Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na piętrze 
 | Znaleziona sala | plan piętra sali z wyróżnioną salą i arkusz z krokami (decyzja 48) |
 | Bariera na mapie | wybrany znak bariery i arkusz z typem, uciążliwością i miejscem (US1.3) |
 | Duża czcionka | start na liście budynków; karta budynku to jeden przycisk, a „Pokaż na mapie” jest na V2 (NFR-19, NFR-20) |
-| Sala bez drogi | brak wejścia zalecanego albo windy z jego piętra na piętro sali. Zamiast kroków: „Nie znaleźliśmy w danych wejścia i windy, którymi dotrzesz do tej sali bez schodów.” Przycisk „Pokaż opis budynku” (BR-25) |
+| Sala bez drogi | brak wejścia zalecanego albo windy z parteru na piętro sali. Zamiast kroków: „Nie znaleźliśmy w danych wejścia i windy, którymi dotrzesz do tej sali bez schodów.” Przycisk „Pokaż opis budynku” (BR-25) |
 | Pusty — brak sali | „Nie znaleźliśmy sali »X« w budynku A-1. Sprawdź numer albo otwórz opis budynku.” Przycisk „Pokaż opis budynku” (PW-10) |
 | Pierwsze uruchomienie | przed mapą pokazuje się instrukcja V5 (US5.1) |
 | Ładowanie | „Wczytujemy mapę kampusu…”; kontury pojawiają się przed podkładem (NFR-11) |
@@ -793,7 +793,7 @@ Stanu pustego nie ma: lista budynków pochodzi z importu, a 0% to zwykła warto�
 | Zgłoszenie szybkie bez pozycji (UC7 4c) | Pozycja ustala się w trakcie kroków 1 i 2. Gdy przy „Wyślij” jej brak, komunikat z radą i „Spróbuj ponownie”; zdjęcie i grupa zostają. | Zapis bez pozycji łamie BR-8, a pozycja dopisana później byłaby z innego miejsca. Odwiedzający nie traci pracy, a limit czasu nie istnieje (NFR-23). |
 | Komunikat „brak wejścia dostępnego” (US3.1, UC4 4a, 4b) | Dwa różne zdania na V3: „nie ma wejścia dostępnego” i „nie wiemy jeszcze”. Treść w tabeli stanów V3. | „Brak danych” to co innego niż „niedostępne” (US17.1). Senior nie może zrezygnować z wizyty przez brak danych. |
 | Brak wyniku wyszukiwania (UC1 3a) | Zdanie z przykładem symbolu i przycisk „Lista budynków”. | Komunikat mówi, co zrobić, a lista działa też z TalkBack (NFR-19). |
-| Karta bez zgłoszeń przyjętych (US2.4, UC2 2a) | Zdanie, że nikt jeszcze nie zgłosił tu sprawdzonej bariery; karta nie sugeruje, że barier nie ma. | Wynika z P-4 procesu TO-BE: pusta lista nie może brzmieć jak „wszystko dostępne” (N2). |
+| Karta bez zgłoszeń przyjętych (UC2 2a) | Zdanie, że brak zgłoszeń nie znaczy braku barier. | Wynika z P-4 procesu TO-BE: pusta lista nie może brzmieć jak „wszystko dostępne” (N2). |
 | Eksport bez zgłoszeń przyjętych (UC17 2a) | Komunikat, a pobranie pustego pliku działa. | Pusty plik GeoJSON jest poprawny (NFR-43) i nie wymaga osobnej reguły na serwerze. |
 | Znak „zmiana czeka na wysłanie” (reguły, cykl życia) | Dodatkowy znak przy zgłoszeniu na C3, obok statusu. | Status się nie zmienia, a Zbierający musi wiedzieć, że edycja jest tylko w telefonie (BR-9). |
 | Odczyt miary M-1 (decyzja 38) | W K1 przy budynku szczegółowym wiersz „Wejścia sprawdzone na miejscu: x z y” i kryterium US11.4. | Bez tego M-1 nie da się zmierzyć z jednego ekranu. Dane już są: każde wejście ma źródło oznaczenia (BR-24). |
@@ -828,25 +828,14 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | Wyszukiwanie budynku | US1.1 | V1 | pole symbolu budynku |
 | | US1.2 | V1, V2 | bez logowania |
 | | US1.3 | V1, V2 | tylko zgłoszenia przyjęte |
-| | US1.4 | V1, V2, V3 | wejścia, ścieżki i legenda |
-| | US1.5 | V1 | arkusz bariery |
 | Karta budynku | US2.1 | V2, V3 | oznaczenie tekstem i ikoną |
 | | US2.2 | V2, V3 | zdjęcie i data weryfikacji |
-| | US2.3 | V1, V2 | chipy i kolejność grup |
-| | US2.4 | V2 | stan „Pusty” |
-| | US2.5 | V1, V2 | miejsce bariery |
-| | US2.6 | V2 | wyjścia ewakuacyjne na żądanie |
 | Którędy wejść | US3.1 | V3 | stan „brak wejścia dostępnego” |
 | | US3.2 | V1, V2, V3 | 2 dotknięcia |
-| | US3.3 | V3 | dojście, drzwi, winda; „Pokaż wejście na mapie” |
 | Zgłoszenie szybkie | US4.1 | V4 | 3 kroki, pozycja sama |
 | | US4.2 | V4 | potwierdzenie bez sieci; wysyłka w tle bez ekranu |
 | | US4.3 | V4 | 6 przycisków grup |
 | | US4.4 | V4 | potwierdzenie |
-| | US4.5 | V4 | pytanie o piętro |
-| | US4.6 | V2, V3, V4 | „Zgłoś barierę przy wejściu” i nazwa wejścia w kroku 1 |
-| | US4.7 | V4 | „Wstecz” z potwierdzenia |
-| | US4.8 | V4 | zdjęcie i grupa po powrocie, pytanie o rezygnację |
 | Pomoc | US5.1 | V5 | — |
 | Pomiar pozycji | US6.1 | C1 | — |
 | | US6.2 | C1 | podpowiedź budynku |
@@ -881,21 +870,16 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | Logowanie | US14.1 | L2, wszystkie ekrany ról | lista czynności tylko posiadanych ról |
 | | US14.2 | V4, L1 | — |
 | | US14.3 | L2 | lista ról; nadanie roli bez ekranu |
-| | US14.4 | V4, L1 | prośba o logowanie tylko za pierwszym razem |
 | Piętra obejrzane | US15.1 | C5 | — |
 | | US15.2 | C5 | „Cofnij znacznik” tylko przy własnym |
 | | US15.3 | C5 | znacznik w telefonie |
 | Plan piętra | US16.1 | V1, V2, C1 | V1: przełącznik i plan; V2: piętra tekstem i „Pokaż na planie” |
 | | US16.2 | V2, C2 | napis o braku planu, pole liczby |
-| | US16.3 | V2 | grupy „Winda i toaleta” i „Piętra” |
 | Oznaczenie wejścia | US17.1 | V2, V3 | trzy oznaczenia; nadanie przy imporcie bez ekranu |
 | | US17.2 | V2, C6, R2, C3 | start, zmiana, sprawdzenie, status |
 | | US17.3 | V2, V3, C6, R2 | data i źródło |
-| Wyszukanie sali | US18.1 | V1 | numer sali w polu wyszukiwania, plan piętra |
-| | US18.2 | V1 | kroki do sali |
-| | US18.3 | V1 | stany „Sala bez drogi” i „Pusty — brak sali” |
 
-Wszystkie 69 kryteriów ma ekran. Kryteria w całości serwerowe nie występują: każde ma co najmniej widoczny skutek.
+Wszystkie 53 kryteria mają ekran. Kryteria w całości serwerowe nie występują: każde ma co najmniej widoczny skutek.
 
 ## Źródła
 

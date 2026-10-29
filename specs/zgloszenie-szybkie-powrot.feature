@@ -16,12 +16,5 @@ Funkcja: Powrót w zgłoszeniu szybkim
   Scenariusz: Powrót między krokami nie usuwa zdjęcia ani grupy barier
     Zakładając, że Odwiedzający zrobił zdjęcie i wybrał grupę barier „toalety”
     Jeżeli wróci do kroku 1, a potem znów przejdzie dalej
-    Wtedy w kroku 1 widzi swoje zdjęcie
-    Oraz w kroku 2 grupa barier „toalety” jest nadal wybrana
-
-  @US4.8
-  Scenariusz: Zdjęcie znika dopiero po potwierdzeniu rezygnacji
-    Zakładając, że Odwiedzający zrobił zdjęcie w zgłoszeniu szybkim
-    Jeżeli wybierze „Wstecz” w kroku 1
-    Wtedy widzi pytanie o rezygnację z dwoma przyciskami tej samej wielkości
-    Oraz zdjęcie zostaje, dopóki nie potwierdzi rezygnacji
+    Wtedy w kroku 1 widzi swoje zdjęcie, a w kroku 2 grupa „toalety” jest nadal wybrana
+    Ale „Wstecz” w kroku 1 usuwa zdjęcie dopiero po potwierdzeniu rezygnacji
