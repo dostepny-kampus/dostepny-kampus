@@ -78,9 +78,9 @@ Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. 
 | US16.1 | W budynku szczegółowym przełącznik pięter pokazuje etykiety pięter z danych PWr. Wybrane piętro pokazuje plan z windami, schodami, toaletami, wejściami i zgłoszeniami przyjętymi. | NFR-40 |
 | US16.2 | W budynku podstawowym przełącznika pięter nie ma, a w miejscu planu widać napis „Nie mamy planu pięter tego budynku.” | BR-G1, NFR-48 |
 | US16.3 | W budynku szczegółowym karta budynku podaje tekstem, na których piętrach są winda i toaleta dostosowana. Dla każdego piętra osoba może przeczytać opis z funkcji pomieszczeń i przejść do planu tego piętra. | NFR-19, NFR-40, decyzja 44 |
-| US18.1 | Wyszukanie „A-1 329” i „a1 329” znajduje salę 329 w budynku A-1. Aplikacja pokazuje plan jej piętra z wyróżnioną salą oraz jej funkcję i piętro z danych PWr. | US1.1, NFR-40, decyzja 44 |
-| US18.2 | Przy znalezionej sali aplikacja podaje tekstem kroki: wejście zalecane, winda i piętro sali, a na końcu sala z przybliżoną odległością od windy. Sala na parterze ma kroki bez windy, z odległością od wejścia. Wejście zalecane traktuje jako parter, bo dane nie podają piętra wejścia. Trasy nie rysuje. | BR-25, decyzja 44 |
-| US18.3 | Gdy sali nie ma w danych, budynek nie ma wejścia zalecanego albo żadna winda nie łączy parteru z piętrem sali, aplikacja mówi to zdaniem. Proponuje wtedy opis budynku. | BR-25 |
+| US18.1 | Wyszukanie „A-1 329” i „a1 329” znajduje salę 329 w budynku A-1. Aplikacja pokazuje plan jej piętra z wyróżnioną salą oraz jej funkcję i piętro z danych PWr. Z wyniku osoba może otworzyć opis budynku i pokazać salę na mapie. | US1.1, NFR-40, decyzja 44 |
+| US18.2 | Przy znalezionej sali aplikacja podaje tekstem kroki: wejście zalecane z jego piętrem, winda i piętro sali, a na końcu sala z przybliżoną odległością od windy. Piętro wejścia pochodzi z danych planu PWr. Gdy go brak, aplikacja przyjmuje parter i mówi to w kroku. Sala na piętrze wejścia ma kroki bez windy, z odległością od wejścia. Trasy nie rysuje. | BR-25, decyzja 44 |
+| US18.3 | Gdy sali nie ma w danych, budynek nie ma wejścia zalecanego albo żadna winda nie łączy piętra wejścia z piętrem sali, aplikacja mówi to zdaniem. Proponuje wtedy opis budynku. | BR-25 |
 
 Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego ścieżkę na potwierdzeniu. Potrzebę takiej listy sprawdzimy w wywiadach.
 
