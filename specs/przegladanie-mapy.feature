@@ -4,7 +4,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   i którym wejściem (N1, N2). Mapa pokazuje tylko zgłoszenia przyjęte.
 
   Założenia:
-    Zakładając, że w aplikacji są budynki szczegółowe A-1, B-1, C-13, D-1 i D-2
+    Zakładając, że w aplikacji są między innymi budynki szczegółowe A-1, B-1, C-13, D-1 i D-2
     Oraz budynek A-1 ma 6 wejść, z których wejście główne ma schody, a wejściem dostępnym jest inne wejście
     # Dane testowe dla US3.1, a nie stan faktyczny budynku B-4.
     Oraz w danych testowych budynek podstawowy B-4 ma wejścia wyłącznie z oznaczeniem „niedostępne”

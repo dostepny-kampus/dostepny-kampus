@@ -42,7 +42,7 @@ Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 o
 
 | ID | Cel | Miara i próg | Potrzeba |
 | --- | --- | --- | --- |
-| M-1 | Budynki szczegółowe obejrzane | 5 z 5 budynków (A-1, B-1, C-13, D-1, D-2) obejrzanych na miejscu. 100% wejść tych budynków ma oznaczenie sprawdzone na miejscu, czyli ze źródłem „obchód” (US17.2, US17.3). Koordynator odczytuje to w postępie inwentaryzacji (US11.4) | N1, N9 |
+| M-1 | Budynki obejrzane na miejscu | 5 z 5 wybranych budynków szczegółowych (A-1, B-1, C-13, D-1, D-2) obejrzanych na miejscu. 100% wejść tych budynków ma oznaczenie sprawdzone na miejscu, czyli ze źródłem „obchód” (US17.2, US17.3). Koordynator odczytuje to w postępie inwentaryzacji (US11.4) | N1, N9 |
 | M-2 | Dokładna pozycja bariery | cel w terenie otwartym: po 30 s uśredniania mediana błędu poziomego < 1 m; sprawdzamy ≥ 10 pomiarami nad punktami kontrolnymi (NFR-1). To cel, nie gwarancja | N5 |
 | M-3 | Aplikacja wygodna dla grupy docelowej | średni wynik SUS ≥ 68 w badaniu z ≥ 5 użytkownikami z grupy docelowej (NFR-24) | N4 |
 | M-4 | Szybkie znalezienie dostępnego wejścia | ≥ 4 z 5 uczestników samodzielnie znajduje dostępne wejście do wskazanego budynku w ≤ 3 dotknięciach od mapy (US3.2) | N1 |
@@ -53,7 +53,7 @@ Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 o
 
 ## Zakres
 
-Nie budujemy gotowego systemu dla całego kampusu. Pięć budynków opracowujemy szczegółowo. Pozostałe budynki i teren kampusu obsługujemy prościej, ale zgłoszenie bariery działa zawsze.
+Nie budujemy gotowego systemu dla całego kampusu. Szczegółowe są budynki z planami pięter PWr, a pięć z nich zespół ogląda na miejscu. Pozostałe budynki i teren kampusu obsługujemy prościej, ale zgłoszenie bariery działa zawsze.
 
 | Poziom | Gdzie | Co działa |
 | --- | --- | --- |
