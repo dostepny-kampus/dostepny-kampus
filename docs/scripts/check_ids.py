@@ -2,7 +2,7 @@
 # Author: Vladyslav Yevkov
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 """Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB), macierz śledzenia,
-odwołania wierszy w wymaganiach ekranów i znaczniki scenariuszy w testach Androida. Version: 0.4.0."""
+odwołania wierszy w wymaganiach ekranów i znaczniki scenariuszy w testach Androida. Version: 0.4.1."""
 
 from __future__ import annotations
 
@@ -53,7 +53,10 @@ MARKER = re.compile(r"^\s*// Scenariusz( \(częściowo\))?: (\S[^:]*?\.feature):
 MARKER_CONTINUATION = re.compile(r"^\s*//\s{2,}(\S.*?)\s*$")
 MARKER_HINT = re.compile(r"^\s*//\s*scenariusz\b[^:]{0,20}:", re.IGNORECASE)
 ANNOTATION = re.compile(r"@([\w.:]+)(\((?:[^()]|\([^()]*\))*\))?\s*")
-FUNCTION = re.compile(r"^(?:(?:public|internal|private|protected|override|open|suspend)\s+)*fun\b")
+TEST_ANNOTATIONS = {"Test", "ParameterizedTest", "RepeatedTest", "TestFactory", "TestTemplate"}
+FUNCTION = re.compile(r"^(?:[a-z]+\s+)*fun\b")
+CODE_TOKEN = re.compile(r"""//[^\n]*|/\*|\"\"\"[\s\S]*?\"\"\"|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n]){1,6}'""")
+BLOCK_COMMENT_PART = re.compile(r"/\*|\*/")
 TEST_SOURCE = re.compile(r"^(?!(?:.*/)?(?:build|\.gradle)/)(?:.*/)?src/(?:test|\w*Test)\w*/")
 
 
@@ -340,18 +343,48 @@ def scan_kotlin(path: Path, corpus: Corpus) -> None:
 
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
-    lines, rel = path.read_text(encoding="utf-8").splitlines(), relative(path)
+    lines, rel = code_only(path.read_text(encoding="utf-8")).splitlines(), relative(path)
     for index, line in enumerate(lines):
         marker = read_marker(lines, index)
-        if marker and marker[2]:
-            partial, feature, name, end = marker
-            corpus.markers.append(Marker(feature, name, partial, test_state(lines, end), Location(rel, index + 1)))
+        location = Location(rel, index + 1)
+        if marker and marker.scenario:
+            state = test_state(lines, marker.end)
+            corpus.markers.append(Marker(marker.feature, marker.scenario, marker.partial, state, location))
         elif marker or MARKER_HINT.match(line):
-            corpus.bad_markers.append(Location(rel, index + 1))
+            corpus.bad_markers.append(location)
 
 
-def read_marker(lines: list[str], index: int) -> tuple[bool, str, str, int] | None:
-    """Zwraca (częściowo, plik, nazwa, indeks linii po znaczniku) dla znacznika w linii `index` albo None.
+def code_only(text: str) -> str:
+    """Zwraca kod Kotlin z treścią komentarzy blokowych `/* */` (także zagnieżdżonych) i napisów (`"…"`, `\"\"\"…\"\"\"`,
+    `'…'`) zamienioną na spacje, żeby znacznik, adnotacja ani nawias w nich nie były brane pod uwagę.
+
+    Gwarantuje: liczba linii i komentarze `//` poza komentarzem blokowym i napisem zostają bez zmian.
+    """
+    parts, pos = [], 0
+    while match := CODE_TOKEN.search(text, pos):
+        end, depth = match.end(), 1
+        while match.group(0) == "/*" and depth and (inner := BLOCK_COMMENT_PART.search(text, end)):
+            depth, end = depth + (1 if inner.group(0) == "/*" else -1), inner.end()
+        if match.group(0) == "/*" and depth:
+            end = len(text)
+        token = text[match.start() : end]
+        parts += [text[pos : match.start()], token if token.startswith("//") else re.sub(r"[^\n]", " ", token)]
+        pos = end
+    return "".join(parts) + text[pos:]
+
+
+@dataclass(frozen=True)
+class MarkerText:
+    """Znacznik odczytany z linii kodu: „częściowo”, plik, nazwa scenariusza i indeks pierwszej linii po znaczniku."""
+
+    partial: bool
+    feature: str
+    scenario: str
+    end: int
+
+
+def read_marker(lines: list[str], index: int) -> MarkerText | None:
+    """Zwraca znacznik zaczynający się w linii `index` albo None.
 
     Gwarantuje: nazwa to tekst po `<plik>.feature:` z tej linii i z kolejnych linii `//` z wcięciem co najmniej
     dwóch spacji po `//`, sklejony jedną spacją; pusta nazwa oznacza znacznik bez nazwy.
@@ -364,12 +397,13 @@ def read_marker(lines: list[str], index: int) -> tuple[bool, str, str, int] | No
     while end < len(lines) and (continuation := MARKER_CONTINUATION.match(lines[end])):
         parts.append(continuation.group(1))
         end += 1
-    return bool(match.group(1)), match.group(2), " ".join(parts), end
+    return MarkerText(bool(match.group(1)), match.group(2), " ".join(parts), end)
 
 
 def test_state(lines: list[str], start: int) -> str:
-    """Zwraca „aktywny”, gdy od linii `start` są kolejne znaczniki i adnotacje (wśród nich adnotacja testu, np. @Test
-    albo @ParameterizedTest), a po nich `fun`; „wyłączony”, gdy jest też @Ignore albo @Disabled…; inaczej pusty napis.
+    """Zwraca „aktywny”, gdy od linii `start` są kolejne znaczniki i adnotacje (wśród nich adnotacja testu
+    z TEST_ANNOTATIONS), a po nich `fun` z dowolnymi modyfikatorami; „wyłączony”, gdy jest też @Ignore albo
+    @Disabled…; inaczej pusty napis. Linie `lines` pochodzą z code_only.
 
     Gwarantuje: pusta linia, komentarz albo inny kod przed `fun` daje pusty napis; argumenty adnotacji mogą mieć kilka linii.
     """
@@ -384,14 +418,14 @@ def test_state(lines: list[str], start: int) -> str:
         if not text:
             return ""
         if marker := read_marker(lines, index - 1):
-            index = marker[3]
+            index = marker.end
             continue
         while match := ANNOTATION.match(text):
             names.add(match.group(1).rsplit(".", 1)[-1])
             text = text[match.end() :]
             if text.startswith("("):
                 depth, text = text.count("(") - text.count(")"), ""
-        if FUNCTION.match(text) and any(n.endswith("Test") for n in names):
+        if FUNCTION.match(text) and names & TEST_ANNOTATIONS:
             return "wyłączony" if any(n == "Ignore" or n.startswith("Disabled") for n in names) else "aktywny"
         if text:
             return ""
