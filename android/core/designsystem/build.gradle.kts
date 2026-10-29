@@ -31,6 +31,8 @@ dependencies {
     api(project(":core:model"))
     implementation(libs.androidx.compose.material3)
     testImplementation(libs.junit4)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.androidx.compose.ui.test.manifest)
     testImplementation(libs.snakeyaml.engine)
     testImplementation(libs.kotlin.reflect)
     constraints {
