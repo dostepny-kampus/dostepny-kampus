@@ -32,6 +32,8 @@ detekt-rules-ktlint = { module = "dev.detekt:detekt-rules-ktlint-wrapper", versi
 compose-rules-detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "composeRules" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "lifecycle" }
 konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
