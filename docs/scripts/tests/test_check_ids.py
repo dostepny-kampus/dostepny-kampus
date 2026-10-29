@@ -29,13 +29,18 @@ class ScreenRowsTest(unittest.TestCase):
 
     def test_rows_without_requirement_id_are_errors_with_line_numbers(self) -> None:
         findings = check_ids.screen_rows(DATA / "ekrany-bledne.md")
-        self.assertEqual(lines_of(findings), [5, 6, 10, 14, 15, 17])
+        self.assertEqual(lines_of(findings), [5, 6, 10, 14, 15, 17, 18])
         self.assertTrue(all(f.level == "BŁĄD" for f in findings))
 
     def test_message_quotes_the_reference_cell(self) -> None:
         findings = check_ids.screen_rows(DATA / "ekrany-bledne.md")
         self.assertIn("„decyzja 53”", findings[0].message)
         self.assertIn("„—”", findings[4].message)
+
+    def test_row_shorter_than_reference_column_is_an_error(self) -> None:
+        findings = check_ids.screen_rows(DATA / "ekrany-bledne.md")
+        self.assertIn("bez kolumny „Odwołanie”", findings[-1].message)
+        self.assertIn("2 komórek", findings[-1].message)
 
     def test_missing_screen_page_is_not_an_error(self) -> None:
         with tempfile.TemporaryDirectory() as docs:
@@ -46,7 +51,7 @@ class ScreenRowsTest(unittest.TestCase):
             page = Path(docs) / check_ids.SCREEN_PAGE
             page.parent.mkdir(parents=True)
             page.write_text((DATA / "ekrany-bledne.md").read_text(encoding="utf-8"), encoding="utf-8")
-            self.assertEqual(len(check_ids.check_screen_page(Path(docs))), 6)
+            self.assertEqual(len(check_ids.check_screen_page(Path(docs))), 7)
 
 
 if __name__ == "__main__":

@@ -595,8 +595,9 @@ def screen_rows(path: Path) -> list[Finding]:
     """Zwraca błędy dla wierszy tabel z kolumną „Odwołanie”, w których ta kolumna nie ma ID US, AC, BR, NFR ani UC.
 
     Gwarantuje: wiersz przechodzi, gdy kolumna ma choć jedno takie ID albo odsyłacz „wymagania wspólne”; same
-    „decyzja N”, „PW-x”, „WCAG …” czy „próg zespołu” dają „BŁĄD” z numerem linii. Tabele bez tej kolumny
-    i bloki kodu są pomijane. Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
+    „decyzja N”, „PW-x”, „WCAG …” czy „próg zespołu” dają „BŁĄD” z numerem linii. Wiersz z mniejszą
+    liczbą komórek, który nie sięga tej kolumny, też jest błędem. Tabele bez tej kolumny i bloki kodu są
+    pomijane. Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
     findings: list[Finding] = []
     column: int | None = None
@@ -610,11 +611,18 @@ def screen_rows(path: Path) -> list[Finding]:
         if column is None:
             column = cells.index(SCREEN_REF_HEADER) if SCREEN_REF_HEADER in cells else -1
             continue
-        cell = cells[column] if 0 <= column < len(cells) else None
-        if cell is None or REQUIREMENT_RE.search(clean_line(cell)) or SCREEN_COMMON_REF in cell:
+        if column < 0:
+            continue
+        location = str(Location(relative(path), number))
+        if column >= len(cells):
+            message = f"wiersz bez kolumny „{SCREEN_REF_HEADER}”: {len(cells)} komórek, a kolumna jest {column + 1}."
+            findings.append(Finding("BŁĄD", location, message))
+            continue
+        cell = cells[column]
+        if REQUIREMENT_RE.search(clean_line(cell)) or SCREEN_COMMON_REF in cell:
             continue
         message = f"wiersz bez odwołania do US, AC, BR, NFR ani UC: „{cell or '—'}”"
-        findings.append(Finding("BŁĄD", str(Location(relative(path), number)), message))
+        findings.append(Finding("BŁĄD", location, message))
     return findings
 
 
