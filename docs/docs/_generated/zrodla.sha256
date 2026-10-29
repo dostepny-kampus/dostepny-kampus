@@ -56,12 +56,12 @@ d8e578f4ad7ef892b5b7a9266677f6fa2830f3b26d70bc2053a2ad1810fe0d66  ux/makiety/m-v
 7e0ecb8cef25f790c4597cf5859635f88705df82169077bd0cf41eb0573f4c11  ux/makiety/m-v1-mapa-sala.puml
 7f0c598465ae02e598148bb4be7f5c92d453601ee5b650eb3fe9b147b3b5b42b  ux/makiety/m-v1-mapa-wyszukiwanie.puml
 ef65aeb4ffee09b04e25d394b1344bcec9573eaf031677c2fa57d24499ad3c8c  ux/makiety/m-v1-mapa.puml
-f87e42d2254f71f2f127d166c6acc56e23b5b55bec143bba4d8f655cbf73ec46  ux/makiety/m-v2-karta-budynku-brak-sieci.puml
+89a8ea6c6d3ffbf77fd6ab03182782940e33f2ea2033f7226f3b4fcdc2821009  ux/makiety/m-v2-karta-budynku-brak-sieci.puml
 02941ebd801835347ab8800cbfc8a462bf4879db27867d36a5727ceed2c6ed75  ux/makiety/m-v2-karta-budynku-brak-w-telefonie.puml
-4c32221aaf60511fefc1a94c1b2dba167e2ceb000695ca85cd89946d3cce2735  ux/makiety/m-v2-karta-budynku-podstawowy.puml
+f6963f01153b4ec701b1c4d6e6588f42232f48d0d0df518afa1a3dc3f8986b66  ux/makiety/m-v2-karta-budynku-podstawowy.puml
 964eb852ac5599fef92f662470738564c689aa980e902625165bb59c822472c5  ux/makiety/m-v2-karta-budynku-pusty.puml
-baccf290f1b11cab56f40ead64f7f6f60959c2d167ecbb6e9fff29f693c206b9  ux/makiety/m-v2-karta-budynku-zbierajacy.puml
-1ad7a1865aba4d08deeacedf12d52e57714069c15db3bda9134dc96c02629fdd  ux/makiety/m-v2-karta-budynku.puml
+913ab8663414e23438093c52fcdf83ca90640e81a336aa2052080033d8897c95  ux/makiety/m-v2-karta-budynku-zbierajacy.puml
+4cd808e964ccb748e449f2672cebc9c450446c1d89059da1a17a595708de12cf  ux/makiety/m-v2-karta-budynku.puml
 13c474874e66135b14681788745361a99cb6b8ceca442cc04ef3309647244a67  ux/makiety/m-v3-ktoredy-wejsc-brak-danych.puml
 5feaddaf2fac613b620e22bb507e09a10bace1fc857a91ca4a1455a9abe80f4c  ux/makiety/m-v3-ktoredy-wejsc-brak-dostepnego.puml
 0c81a766d4ba8cf0e5cff877426e9890e8d2b18552b66f154b0644ade04fd1f5  ux/makiety/m-v3-ktoredy-wejsc.puml

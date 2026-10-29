@@ -2,6 +2,8 @@
 
 Makiety low-fi pokazują układ i treść każdego ekranu z [wymagań do ekranów](../wymagania-ekranow.md). Rysujemy je w PlantUML Salt: szare ramki, tekst i przyciski, bez koloru i stylu. Napisy pochodzą ze [słownika użytkownika](../slownik-uzytkownika.md) i są hipotezą do sprawdzenia w wywiadach.
 
+Dla ekranów partii 1 (V1–V5, L1, L2) wzorcem są zatwierdzone makiety hi-fi ze strony Ekrany — makiety hi-fi. Makiety low-fi tych ekranów pokazują wcześniejszy etap. Mogą się różnić napisami, np. wskaźnikiem braku sieci, kolejnością grup na V2, przyciskami przy wejściach na V3 i układem L2.
+
 ## Konwencje
 
 | Temat | Zasada |
@@ -184,7 +186,7 @@ Makiety V2 pokazują arkusz rozwinięty na cały ekran. W aplikacji V2 wysuwa si
 | Nazwa budynku z danych, zastępnik | US2 |
 | Fragment mapy z konturem i wejściami budynku, podpis OpenStreetMap w ramce; bez własnych czynności | US2.1, NFR-37, decyzja 44, decyzja 48 |
 | Chipy „Wejście dostępne”, „Winda”, „Toaleta dostosowana”: fakty z danych, dotknięcie przewija do grupy | US2.1, US16.1, NFR-17, decyzja 48 |
-| Wejście zalecane pierwsze, z napisem „Zalecane, parter” i „Pokaż na mapie” | BR-25, decyzja 48 |
+| Wejście zalecane pierwsze, z napisem „Zalecane” bez piętra i „Pokaż na mapie”; w makiecie hi-fi „Pokaż wejście na mapie” | BR-25, decyzja 48, decyzja 53 |
 | Wejście: oznaczenie tekstem i ikoną na początku, potem nazwa wejścia; „Wejście główne” niedostępne, „Wejście bramą od ul. Norwida” dostępne [1]; nazwa odróżnia je od drugiego wejścia przy ul. Norwida, które według deklaracji nie jest dostosowane | US2.1, US17.1, NFR-21 |
 | „Brak danych” z ikoną `minus`, inną niż `x` przy „Niedostępne” | US17.1 |
 | Wspólna data i źródło jeden raz nad grupą „Wejścia”: „Z map i opisów, stan z [data]” | US17.3, BR-24, PW-3 |

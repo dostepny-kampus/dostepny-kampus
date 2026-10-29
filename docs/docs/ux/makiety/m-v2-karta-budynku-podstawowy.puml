@@ -10,7 +10,7 @@ $sekcja("Wejścia")
 $wejscie_karty($niedostepne(), "<i>[nazwa wejścia z danych]</i>")
 $wejscie_karty($brak_danych(), "<i>[nazwa wejścia z danych]</i>")
 ..
-$tekst("Nie mamy planu pięter tego budynku. Bariery są na liście niżej.")
+$tekst("Nie mamy planu pięter tego budynku.")
 $sekcja("Bariery w budynku")
 $ramka()
 <b><i>[typ bariery z danych]</i></b>

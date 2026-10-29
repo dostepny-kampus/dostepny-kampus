@@ -8,7 +8,7 @@ $brak_internetu("Dane z <i>[data]</i>")
 $karta_gora(1, "bez mapy ulic")
 Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")
-$wejscie_karty($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane, parter")
+$wejscie_karty($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane")
 $wejscie_karty($niedostepne(), "Wejście główne")
 $wejscie_karty($brak_danych(), "<i>[nazwa wejścia z danych]</i>")
 $grupy_pwr()
