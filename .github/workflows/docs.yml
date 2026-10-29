@@ -102,6 +102,8 @@ jobs:
           curl -sSfLO "https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/${plantuml_jar}"
           echo "${PLANTUML_SHA256}  ${plantuml_jar}" | sha256sum --check --strict
           mv "${plantuml_jar}" plantuml.jar
+      - name: Testy skryptów dokumentacji
+        run: python -X utf8 -m unittest discover -s scripts/tests -v
       - name: Uruchom verify.py
         id: verify
         env:
