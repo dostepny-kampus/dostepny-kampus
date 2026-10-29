@@ -18,6 +18,8 @@ Pole tekstowe, przełącznik „Mapa” i „Lista budynków”, mapa z podpisem
 
 ## V1 Mapa kampusu
 
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V1 są [makiety hi-fi](../ekrany/index.md#v1-mapa-kampusu).
+
 ### V1: stan zwykły
 
 ![Makieta V1: nagłówek Mapa kampusu, pole symbolu budynku, przełącznik Mapa i Lista budynków, zastępnik mapy z oznaczeniami barier, na mapie Powiększ, Pomniejsz i cztery strzałki w krzyżu, przycisk informacji przy podpisie OpenStreetMap i pasek dolny](../../_generated/m-v1-mapa.svg)
@@ -141,6 +143,8 @@ Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 
 ## V2 Karta budynku
 
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V2 są [makiety hi-fi](../ekrany/index.md#v2-karta-budynku).
+
 Jak we wzorcu, makiety pokazują arkusz V2 rozwinięty na cały ekran; w aplikacji najpierw zajmuje on połowę ekranu nad mapą V1.
 
 ### V2: budynek podstawowy
@@ -219,6 +223,8 @@ Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego 
 
 ## V3 Którędy wejść
 
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V3 są [makiety hi-fi](../ekrany/index.md#v3-ktoredy-wejsc).
+
 ### V3: wejście jest
 
 ![Makieta V3 dla A-1: pogrubione zdanie o wejściu dostępnym bramą od ul. Norwida, ramka wejścia z oznaczeniem, źródłem i Pokaż na mapie oraz bariera przy tym wejściu](../../_generated/m-v3-ktoredy-wejsc.svg)
@@ -264,6 +270,8 @@ Czynność główna: brak; „Wstecz” wraca do opisu budynku z każdym wejści
 | Ten sam układ co brak wejścia dostępnego; różnicę niesie treść, a nie kształt | US3.1, US17.1 |
 
 ## V4 Zgłoszenie szybkie
+
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V4 są [makiety hi-fi](../ekrany/index.md#v4-zgoszenie-szybkie).
 
 Kroki i potwierdzenia nie mają paska dolnego (wymagania wspólne). Gość niezalogowany zamiast aparatu widzi L1 (US14.2).
 
@@ -418,6 +426,8 @@ Czynność główna: „Wróć do mapy”.
 
 ## V5 Pomoc
 
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V5 są [makiety hi-fi](../ekrany/index.md#v5-pomoc).
+
 ![Makieta V5: nagłówek Jak korzystać z aplikacji, numer kroku jako zastępnik, zdanie objaśniające napis Dostępne, przyciski Dalej i Pomiń instrukcję, pasek dolny](../../_generated/m-v5-pomoc.svg)
 
 Czynność główna: „Dalej”.
@@ -439,6 +449,8 @@ Czynność główna: „Dalej”.
 | „Wstecz” | poprzedni krok instrukcji; w pierwszym kroku przy pierwszym uruchomieniu działa jak „Pomiń instrukcję” i otwiera V1 (wymagania wspólne, NFR-15) |
 
 ## L1 Prośba o logowanie
+
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu L1 są [makiety hi-fi](../ekrany/index.md#l1-prosba-o-logowanie).
 
 ### L1: stan zwykły
 
@@ -474,6 +486,8 @@ Czynność główna: „Wróć do mapy”.
 | „Wróć do mapy” otwiera V1 | UC6 1a |
 
 ## L2 Konto
+
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu L2 są [makiety hi-fi](../ekrany/index.md#l2-konto).
 
 ### L2: Odwiedzający
 
