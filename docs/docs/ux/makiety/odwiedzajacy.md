@@ -152,7 +152,7 @@ Czynność główna: „Sprawdź, którędy wejść”, jak we wzorcu.
 | Element | AC/BR/NFR |
 | --- | --- |
 | Symbol, nazwa i wejścia jako zastępniki, bo nie wiemy, które budynki będą podstawowe | BR-G1, BR-G3 |
-| Napis „Nie mamy planu pięter tego budynku. Bariery są na liście niżej.” zamiast pięter i planu; drugie zdanie tylko przy niepustej liście barier | US16.2, BR-G1, PW-6 |
+| Napis „Nie mamy planu pięter tego budynku.” zamiast pięter i planu | US16.2, BR-G1, PW-6, decyzja 54 |
 | Bez grup „Winda i toaleta” i „Piętra”, bez chipów i bez „Źródło: Politechnika Wrocławska” | US16.2, NFR-48 |
 | Budynek bez wejścia „Dostępne”: brak napisu „Zalecane”, wejścia „Niedostępne” na początku | BR-25 |
 | Bariera z uciążliwością „Tylko z pomocą” tekstem i ikoną | US2.2, NFR-21, PW-13 |
@@ -161,7 +161,7 @@ Czynność główna: „Sprawdź, którędy wejść”, jak we wzorcu.
 | --- | --- |
 | Ładowanie | tekst widać od razu, a w miejscu zdjęcia jest napis „Wczytujemy zdjęcie…” (NFR-12) |
 | Błąd zdjęcia | w miejscu zdjęcia „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” i „Spróbuj ponownie” (NFR-50) |
-| Budynek podstawowy bez barier | napis „Nie mamy planu pięter tego budynku.” bez drugiego zdania, a pod „Bariery w budynku” zdanie ze stanu pustego (UC2 2a, PW-6) |
+| Budynek podstawowy bez barier | napis „Nie mamy planu pięter tego budynku.”, a pod „Bariery w budynku” zdanie ze stanu pustego (UC2 2a, PW-6) |
 
 ### V2: brak sprawdzonych barier
 

@@ -17,7 +17,7 @@ Słownik pojęć zostaje źródłem nazw w dokumentach i w kodzie. Ta strona ust
 | Aplikacja mówi o sobie „my”, do osoby „Ty”, a zaimki pisze wielką literą. | „Wyślemy je, gdy wróci internet.” | Jeden głos na wszystkich ekranach. |
 | Komunikat mówi, co się stało i co zrobić, w najwyżej 2 krótkich zdaniach. | „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” | NFR-15 (WCAG 3.3.1, 3.3.3), NFR-50 [1] |
 | Komunikat nie obwinia osoby. | „Nie znaleźliśmy budynku” zamiast „Błędny symbol” | PE-1 przypisuje winę sobie i rezygnuje ([persony](persony.md)), a obwinianie siebie to częsta reakcja użytkowników [2]. |
-| Dla Gościa i Odwiedzającego nie ma żargonu technicznego. | „Brak internetu” zamiast „tryb offline” | Lista zakazanych słów jest w tabeli niżej. |
+| Dla Gościa i Odwiedzającego nie ma żargonu technicznego. | „Bez internetu” zamiast „tryb offline” | Lista zakazanych słów jest w tabeli niżej. |
 | Bez anglicyzmów. | „Plik”, „Pobierz” | Wyjątek: „© OpenStreetMap contributors”, bo podpis wymaga NFR-37. |
 | Jedno słowo ma jedno znaczenie w całej aplikacji. | „niedostępne” tylko o wejściu | Osoba nie myli wejścia z brakiem planu albo zdjęcia. |
 | Daty jako 12.11.2026, liczby cyframi. | „3 kroki”, „Krok 2 z 3” | Cyfry czyta się szybciej niż słowa. |
@@ -26,8 +26,8 @@ Słowa, których Gość i Odwiedzający nie widzą:
 
 | Pojęcie dokumentacji | Zamiast niego |
 | --- | --- |
-| synchronizacja | „Dane z 12.11.2026” |
-| tryb offline, sieć | „Brak internetu” |
+| synchronizacja | „dane z 12.11.2026” |
+| tryb offline, sieć | „Bez internetu” |
 | GNSS, GPS, pozycja | „miejsce”, „gdzie jesteś” |
 | status zgłoszenia | brak; Odwiedzający widzi tylko potwierdzenie (US4.4) |
 | eksport | brak; ekran tylko dla Koordynatora |
@@ -50,8 +50,8 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | pasek dolny: „Konto” | „Konto” | Gość, Odwiedzający | bez zmian | 4.7, 4.8 |
 | pasek dolny: „Konto” z pracą ról | „Konto i praca” | Zbierający, Weryfikator, Koordynator | Rozstrzygnięcie sporu z recenzji, sekcja [Nazwa wejścia do pracy zespołu](#nazwa-wejscia). | 10.1, 6.3 |
 | przycisk „Wstecz” | „Wstecz” ze strzałką w lewo | wszystkie | Strzałka i słowo, zawsze w tym samym miejscu. Strzałkę „wstecz” osoba zna z telefonu, a słowo mówi, co się stanie (PW-11). | obserwacja w części 3 |
-| wskaźnik braku sieci | „Brak internetu” | wszystkie | „Internet” zna każdy, a „sieć” i „offline” to żargon. | 3.2 |
-| data ostatniej synchronizacji | „Dane z 12.11.2026” | Gość, Odwiedzający | Mówi, jak stare są dane, bez słowa „synchronizacja”. | 2.5, 4.3 |
+| wskaźnik braku sieci | jedna linia „Bez internetu · dane z 12.11.2026”; Zbierający zamiast „dane z …” widzi „Ostatnia synchronizacja: 12.11.2026, 10:42” | wszystkie | „Internet” zna każdy, a „sieć” i „offline” to żargon. Data mówi, że dane w telefonie mogą być nieaktualne (decyzja 54). | 3.2 |
+| data ostatniej synchronizacji | „dane z 12.11.2026”, po „Bez internetu ·” | Gość, Odwiedzający | Mówi, jak stare są dane, bez słowa „synchronizacja”. | 2.5, 4.3 |
 | data ostatniej synchronizacji | „Ostatnia synchronizacja: 12.11.2026, 10:42” | Zbierający | Krótkie pojęcie dokumentacji. PE-2 ma wysokie umiejętności cyfrowe. | 10.3 |
 | „Wróć do mapy” | „Wróć do mapy” | wszystkie | bez zmian | 4.8 |
 | „Spróbuj ponownie” | „Spróbuj ponownie” | wszystkie | bez zmian | 3.2 |
@@ -70,11 +70,12 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | oznaczenie wejścia „dostępne” | „Dostępne” | wszystkie | Słowo z kryterium US2.1, krótkie. „Bez schodów” byłoby nieprawdą przy wejściu z podnośnikiem (recenzja B3, uwaga 12). | 4.1, 4.2, część 5 |
 | oznaczenie wejścia „niedostępne” | „Niedostępne” | wszystkie | Przeciwieństwo „Dostępne”. To słowo nie pada w innym znaczeniu. | 4.1, 4.2 |
 | oznaczenie wejścia „brak danych” | „Brak danych” | wszystkie | Mówi uczciwie, że nie wiemy, i różni się od „Niedostępne” (US17.1). | 4.3, 4.4 |
-| wejście zalecane (V2, BR-25) | „Zalecane” z piętrem, np. „Zalecane, parter” | wszystkie | Jedno słowo obok oznaczenia mówi, którym wejściem wejść (decyzja 48). | 4.1 |
+| wejście zalecane (V2, V3, BR-25) | „Zalecane” | wszystkie | Jedno słowo obok oznaczenia mówi, którym wejściem wejść (decyzja 48). Piętra wejścia nie ma w danych, więc napis go nie podaje (decyzja 53). | 4.1 |
 | wejście bez nazwy w danych | „Wejście bez nazwy w danych” | wszystkie | Mówi, skąd brak nazwy, zamiast zmyślać nazwę. | 4.4 |
 | chipy na V2 | „Wejście dostępne”, „Winda”, „Toaleta dostosowana” | wszystkie | Chip stoi tylko przy fakcie z danych, nigdy przy braku (decyzja 48). | 4.1, 4.2 |
-| zgłoszenie szybkie przy wejściu (V2) | „Zgłoś barierę przy wejściu”; nazwa dla TalkBack „Zgłoś barierę przy wejściu: »nazwa wejścia«”; na kroku 1 V4 „Wejście: »nazwa wejścia«” | wszystkie; Gość przechodzi do L1 | Zaczyna się nazwą ekranu V4, a koniec odróżnia ten przycisk od pozycji „Zgłoś barierę” w pasku dolnym: wejście będzie już wybrane (WCAG 2.4.6, 2.5.3). | 4.6 |
+| zgłoszenie szybkie przy wejściu (V2, V3) | „Zgłoś barierę przy wejściu”; nazwa dla TalkBack „Zgłoś barierę przy wejściu: »nazwa wejścia«”; na kroku 1 V4 „Wejście: »nazwa wejścia«” | wszystkie; Gość przechodzi do L1 | Zaczyna się nazwą ekranu V4, a koniec odróżnia ten przycisk od pozycji „Zgłoś barierę” w pasku dolnym: wejście będzie już wybrane (WCAG 2.4.6, 2.5.3). | 4.6 |
 | przejścia z V1 i V2 | „Pokaż na mapie”, „Pokaż na planie”, „Pokaż opis budynku”, „Pokaż wyjścia ewakuacyjne (2)”, „Legenda” | wszystkie | Czasownik i to, co się pokaże. | 4.4, 6.3 |
+| wejście na mapie (V2, V3) | „Pokaż wejście na mapie”; nazwa dla TalkBack „Pokaż wejście na mapie: »nazwa wejścia«” | wszystkie | Inny cel niż „Pokaż na mapie” przy budynku, więc inne słowa (WCAG 2.4.6, decyzja 53). | 4.4 |
 | wejście dostępne (zdanie na V3) | „Budynek A-1 ma wejście dostępne: »nazwa wejścia«.” | wszystkie | bez zmian; zdanie powtarza słowo z oznaczenia | 4.1 |
 | źródło oznaczenia „obchód” z datą | „Sprawdzone na miejscu 12.11.2026” | wszystkie | Mówi, że ktoś tam był. To buduje zaufanie (N2). | 2.5, 4.3, 4.4 |
 | źródło oznaczenia „import” z datą | „Z map i opisów, stan z 1.10.2026” | wszystkie | Import bierze dane z planów PWr i z OpenStreetMap. „Dane uczelni” byłyby nieprawdą przy OpenStreetMap (recenzja B3, uwaga 23). | 2.2, 4.3 |
@@ -97,6 +98,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | zgłoszenie (rzeczownik w komunikatach) | „zdjęcie bariery”, „bariera” | Gość, Odwiedzający | Osoba robi zdjęcie i to widzi. Plan fazy B zakazuje tu słowa „zgłoszenie”. | 3.4, 4.6 |
 | „Krok 1 z 3” | „Krok 1 z 3” | Odwiedzający | bez zmian | 4.8 |
 | przypomnienie o wizerunku | „Nie fotografuj twarzy ani tablic rejestracyjnych.” | Odwiedzający, Zbierający | bez zmian | 3.4 |
+| komunikat ostrzegawczy (V4, krok 1) | „Ważne” nad przypomnieniem o wizerunku, pod nim „Zdjęcie zobaczą inni użytkownicy.” | Odwiedzający, Zbierający | Słowo i koło ze znakiem „!” mówią, że to ważne, bez samego koloru, a drugie zdanie mówi, dlaczego (decyzja 54). | 3.4 |
 | „Zrób zdjęcie” | „Zrób zdjęcie” | Odwiedzający, Zbierający | bez zmian | 3.4 |
 | „Zrób ponownie” | „Zrób nowe zdjęcie” | Odwiedzający, Zbierający | Mówi, że nowe zdjęcie zastąpi stare. | 3.4 |
 | grupa barier (pytanie w kroku 2) | „Czego dotyczy bariera?” | Odwiedzający | Pytanie zamiast słowa „grupa”. | 4.5 |
@@ -131,6 +133,8 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | rola, lista ról | „Twoje role: Odwiedzający, Zbierający, Koordynator” | wszystkie zalogowane | bez zmian | 10.1 |
 | „Twoje czynności” | „Twoja praca” | role pracownicze | „Czynności” brzmi urzędowo. Napis pasuje do „Konto i praca”. | 10.1 |
 | klauzula informacyjna | „Informacja o danych osobowych” | wszystkie zalogowane | bez zmian | 6.3 |
+| administrator danych w klauzuli | „Politechnika Wrocławska nie jest administratorem Twoich danych.” | wszystkie zalogowane | Nazwę PWr osoba widzi w aplikacji, więc zdanie usuwa wątpliwość, kto odpowiada za dane. Tekst niesprawdzony prawnie (decyzja 53). | 6.3 |
+| kontakt w klauzuli | „Kontakt z zespołem:”, a po nim odnośnik „repozytorium projektu na GitHub” | wszystkie zalogowane | Bez słowa „zgłoszenia”, którego Gość i Odwiedzający nie widzą (PW-5, decyzja 53). | 6.3 |
 | wycofanie zgody | „Wycofaj zgodę”; w potwierdzeniu „Zostaw zgodę” zamiast „Anuluj” | wszystkie zalogowane | Oba przyciski mówią o skutku, więc „Anuluj” nie myli. | 6.3 |
 | „Wyloguj” | „Wyloguj się” | wszystkie zalogowane | Ta sama forma co „Zaloguj się”. | 6.3 |
 
@@ -230,7 +234,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 
 | Ekran i stan | Komunikat | Przyciski | Zmiana |
 | --- | --- | --- | --- |
-| każdy ekran, brak sieci | „Brak internetu.” Obok, gdy dane są z telefonu: „Dane z 12.11.2026.” | — | PW-4 |
+| każdy ekran, brak sieci | jedna linia „Bez internetu · dane z 12.11.2026” | — | PW-4; decyzja 54 |
 | ekrany R1, R2, K1–K3, brak sieci | „Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.” | „Spróbuj ponownie” | — |
 | ekrany R1, R2, K1–K3, błąd serwera | „Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut.” | „Spróbuj ponownie” | PW-10 |
 | ekrany R1, R2, K1–K3, brak uprawnień | „Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.” | „Wróć do mapy” | PW-10 |
@@ -247,14 +251,14 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | V1, sala bez drogi | „Nie znaleźliśmy w danych wejścia i windy, którymi dotrzesz do tej sali bez schodów.” | „Pokaż opis budynku” | decyzja 48 |
 | V2, ładowanie zdjęcia | „Wczytujemy zdjęcie…” | — | PW-9 |
 | V2, brak barier | nagłówek „Brak zgłoszonych barier”, zdanie „Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.” | „Zgłoś barierę” | PW-6; decyzja 48 |
-| V2, brak planu (budynek podstawowy) | „Nie mamy planu pięter tego budynku. Bariery są na liście niżej.” Drugie zdanie tylko przy niepustej liście barier. | — | PW-6; recenzja B5 |
+| V2, brak planu (budynek podstawowy) | „Nie mamy planu pięter tego budynku.” | — | PW-6; lista barier stoi nad napisem (decyzja 54) |
 | V2, zdjęcie bez internetu | „Zdjęcie zobaczysz po połączeniu z internetem.” | — | PW-6 |
 | V2, budynku nie ma w telefonie | „Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.” | „Spróbuj ponownie” | PW-4 |
 | V2, błąd zdjęcia | „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” | „Spróbuj ponownie” | PW-10 |
 | V3, jest wejście dostępne | „Budynek A-1 ma wejście dostępne: »nazwa wejścia«.” | — | — |
 | V3, brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.” | — | PW-10; rada wskazuje przycisk „Wstecz” (recenzja B5) |
 | V3, brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne: brak danych o 2 z 3 wejść. Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście z datą.” | — | PW-10; rada wskazuje przycisk „Wstecz” (recenzja B5) |
-| V4, krok 1 | „Nie fotografuj twarzy ani tablic rejestracyjnych.” | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | PW-8 |
+| V4, krok 1 | „Ważne”, „Nie fotografuj twarzy ani tablic rejestracyjnych.”, „Zdjęcie zobaczą inni użytkownicy.” | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | PW-8; decyzja 54 |
 | V4, krok 3 | „Dołączymy miejsce, w którym teraz stoisz.” | „Wyślij” | — |
 | V4, brak zgody na lokalizację | „Aby wysłać zdjęcie bariery, potrzebujemy jej miejsca. Sprawdzimy je tylko teraz i nie będziemy Cię śledzić.” | „Pozwól na lokalizację”, „Wróć do mapy” | PW-5 |
 | V4, odmowa zgody | „Bez lokalizacji nie wyślesz zdjęcia bariery. Możesz ją włączyć w ustawieniach telefonu.” | „Otwórz ustawienia”, „Wróć do mapy” | PW-5 |
@@ -346,7 +350,7 @@ Ikony pochodzą z zestawu OpenIconic dostępnego w PlantUML Salt [3], [4]. Każd
 | pasek dolny: zgłoszenie | `camera-slr` | „Zgłoś barierę” | zgłoszenie zaczyna się od zdjęcia (US4.1) |
 | pasek dolny: pomoc | `question-mark` | „Pomoc” | znak zapytania, czyli „mam pytanie” |
 | pasek dolny: konto | `person` | „Konto” albo „Konto i praca” | sylwetka, czyli „ja”; ta sama ikona dla obu napisów |
-| wskaźnik braku sieci | `wifi` | „Brak internetu” | znak internetu znany z telefonu i kawiarni (hipoteza) |
+| wskaźnik braku sieci | `wifi` | „Bez internetu” | znak internetu znany z telefonu i kawiarni (hipoteza) |
 | oznaczenie „dostępne” | `check` | „Dostępne” | ptaszek, czyli „tak, da się” |
 | oznaczenie „niedostępne” | `x` | „Niedostępne” | krzyżyk, czyli „nie” |
 | oznaczenie „brak danych” | `minus` | „Brak danych” | kreska jak w pustej rubryce formularza; inna niż krzyżyk (US17.1) |
@@ -441,9 +445,9 @@ Propozycje PW-1…PW-15 są wprowadzone w [wymaganiach do ekranów](wymagania-ek
 | PW-1 | pasek dolny, L2 | „Konto” dla wszystkich ról | „Konto i praca” dla ról pracowniczych; sekcja L2 „Twoja praca” zamiast „Twoje czynności” | spór z recenzji, uwaga 24 |
 | PW-2 | V2, V3 | dawna nazwa przycisku i ekranu V3 | przycisk „Sprawdź, którędy wejść”, nagłówek V3 „Którędy wejść do C-13” | dawna nazwa brzmiała jak rezerwacja terminu |
 | PW-3 | V2, V3, C6, K1 | źródło „import” albo „obchód”; data weryfikacji bez słowa; K1 „Wejścia potwierdzone na obchodzie” | „Z map i opisów, stan z …”, „Sprawdzone na miejscu …”, „Sprawdzone …”; K1 „Wejścia sprawdzone na miejscu: x z y” | recenzja B3, uwaga 23; te same słowa dla Odwiedzającego i Koordynatora |
-| PW-4 | wymagania wspólne, V1, V2, L1 | wskaźnik braku sieci bez napisu; „Do pierwszego uruchomienia”; „karta budynku” w komunikatach | „Brak internetu”; „Pierwsze otwarcie aplikacji”; „opis budynku” | żargon dla osoby starszej |
+| PW-4 | wymagania wspólne, V1, V2, L1 | wskaźnik braku sieci bez napisu; „Do pierwszego uruchomienia”; „karta budynku” w komunikatach | „Bez internetu · dane z …”; „Pierwsze otwarcie aplikacji”; „opis budynku” | żargon dla osoby starszej |
 | PW-5 | V4, V5, L1, L2 | rzeczownik „zgłoszenie” w komunikatach; „Anuluj zgłoszenie”; „Anuluj” w potwierdzeniu wycofania zgody | „zdjęcie bariery”, „bariera”; „Zrezygnuj”; „Zostaw zgodę”; treść według katalogu komunikatów | plan fazy B: bez słowa „zgłoszenie” dla Odwiedzającego |
-| PW-6 | V2 | „Plan piętra niedostępny dla tego budynku”, „Zdjęcie niedostępne bez internetu”, zdanie o barierach „którą sprawdziliśmy” | „Nie mamy planu pięter tego budynku. Bariery są na liście niżej.”, „Zdjęcie zobaczysz po połączeniu z internetem.”, „Nie mamy jeszcze sprawdzonych barier w tym budynku…” | słowo „niedostępne” tylko o wejściu; prostsze zdanie |
+| PW-6 | V2 | „Plan piętra niedostępny dla tego budynku”, „Zdjęcie niedostępne bez internetu”, zdanie o barierach „którą sprawdziliśmy” | „Nie mamy planu pięter tego budynku.”, „Zdjęcie zobaczysz po połączeniu z internetem.”, „Nie mamy jeszcze sprawdzonych barier w tym budynku…” | słowo „niedostępne” tylko o wejściu; prostsze zdanie |
 | PW-7 | V4 | 6 przycisków grup barier z tekstem i ikoną; nazwy grup z klasyfikacji | pytanie „Czego dotyczy bariera?”, nazwy „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego”, bez ikon | NFR-21 nie obejmuje grup; brak trafnych ikon; próg 50% |
 | PW-8 | V4, C2, C6, C7, V1, V5 | „Zrób ponownie”; „+” i „−”; pole „Symbol budynku”; „Pomiń” | „Zrób nowe zdjęcie”; „Powiększ”, „Pomniejsz”; strzałki przesuwania mapy z nazwą „Przesuń mapę w górę” itd.; „Wpisz symbol budynku, np. C-13”; „Pomiń instrukcję” | napis mówi, co się stanie |
 | PW-9 | V1, V2, V4, C1, C3, C4, R1, R2, K1, K3 | ładowanie w 1. osobie liczby pojedynczej, np. „Wczytuję”, „Ustalam”; „Nie znaleziono” | 1. osoba liczby mnogiej: „Wczytujemy”, „Ustalamy, gdzie jesteś”, „Nie znaleźliśmy” | jeden głos aplikacji, jak w „Wyślemy”, „Dziękujemy” |

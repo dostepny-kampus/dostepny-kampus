@@ -92,7 +92,7 @@ kolory:
   onSurfaceVariant:
     jasny: "#3A4549"   # tekst drugorzędny wciąż ≥ 7:1, bo źródło i data oceny wejść są ważne (US17.3)
     ciemny: "#D0D8DB"
-    uzycie: tekst drugorzędny (źródło i data, „Zalecane, parter”, podpisy), napisy i ikony paska dolnego
+    uzycie: tekst drugorzędny (źródło i data, „Zalecane”, podpisy), napisy i ikony paska dolnego
     zrodlo: NFR-16, US17.3
   outline:
     jasny: "#6A7579"   # ≥ 3:1 na każdym tle: ramka pola, chipu i przycisku obrysowanego wyznacza granicę celu dotyku
@@ -205,7 +205,7 @@ kontrast:
     - {kolor: onBackground, tlo: background, rodzaj: tekst, gdzie: "nagłówki sekcji na tle ekranu"}
     - {kolor: onSurface, tlo: surfaceContainerHigh, rodzaj: tekst, gdzie: "status zgłoszenia i znacznik piętra (C3, C5)"}
     - {kolor: onSurfaceVariant, tlo: surfaceContainer, rodzaj: tekst, gdzie: "źródło i data na arkuszu"}
-    - {kolor: onSurfaceVariant, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "„Zalecane, parter”, podpis mapy"}
+    - {kolor: onSurfaceVariant, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "„Zalecane”, podpis mapy"}
     - {kolor: onSurfaceVariant, tlo: surfaceContainerLow, rodzaj: tekst, gdzie: "podpowiedź w polu, napisy paska dolnego"}
     - {kolor: onSurfaceVariant, tlo: surfaceVariant, rodzaj: tekst, gdzie: "data przy wskaźniku braku internetu"}
     - {kolor: primary, tlo: surfaceContainer, rodzaj: tekst, gdzie: "symbol budynku na arkuszu"}
@@ -288,7 +288,7 @@ typografia:
       sp: 18
       waga: 500
       interlinia_sp: 28  # podpis bywa dwuwierszowy, ta sama interlinia co tekst podstawowy (decyzja 50)
-      uzycie: podpis, np. źródło i data oceny wejść, „Zalecane, parter”, podpis OpenStreetMap
+      uzycie: podpis, np. źródło i data oceny wejść, napisy „Zalecane”, podpisy OpenStreetMap
       zrodlo: styl „Karta miejsca”, US17.3, NFR-37, NFR-40
     labelMedium:
       sp: 18

@@ -7,7 +7,7 @@ $naglowek("Budynek A-1", "<i>[nazwa budynku z danych]</i>")
 $karta_gora()
 Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")
-$wejscie_karty($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane, parter", "", "Zmień oznaczenie")
+$wejscie_karty($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane", "", "Zmień oznaczenie")
 $wejscie_karty($niedostepne(), "Wejście główne", "", "", "Zmień oznaczenie")
 $wejscie_karty($brak_danych(), "<i>[nazwa wejścia z danych]</i>", "", "", "Zmień oznaczenie")
 $grupy_pwr()
