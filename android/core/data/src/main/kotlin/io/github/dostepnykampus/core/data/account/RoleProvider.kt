@@ -13,7 +13,7 @@ fun interface RoleProvider {
     fun currentAccount(): Account
 }
 
-/** Dostawca na czas bez logowania w aplikacji: każda osoba jest Gościem niezalogowanym (US1.2, US14.2). */
+/** Dostawca na czas bez logowania w aplikacji: każda osoba jest Gościem niezalogowanym (RO-GOS, US1.2). */
 object GuestRoleProvider : RoleProvider {
     override fun currentAccount(): Account = Account.Guest
 }
