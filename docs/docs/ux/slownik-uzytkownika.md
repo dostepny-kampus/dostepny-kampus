@@ -374,7 +374,7 @@ Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości w
 | oznaczenie wejścia bez zmian od wysłania zmiany (R2) | `link-intact` | „Bez zmian od wysłania” | całe ogniwo: zmiana dotyczy obecnego oznaczenia |
 | oznaczenie wejścia zmienione po wysłaniu zmiany (R2) | `link-broken` | „Zmienione po wysłaniu” | przerwane ogniwo: zmiana dotyczy oznaczenia, którego już nie ma |
 
-Zasady ikon. Ikona stoi tylko w przypadkach z tej tabeli, a pozostałe elementy są bez ikony:
+Zasady ikon. Ikona stoi tylko w przypadkach z tabel w tej sekcji, a pozostałe elementy są bez ikony:
 
 | Zasada | Skutek |
 | --- | --- |
@@ -391,7 +391,9 @@ Zasady ikon. Ikona stoi tylko w przypadkach z tej tabeli, a pozostałe elementy 
 
 Kurs „Projektowanie doświadczeń użytkownika” w etapie 4 dopuszcza najwyżej 50% ikon w całym interfejsie [7]. Udział liczymy tylko na zatwierdzonych makietach hi-fi (decyzja 60). Teraz to 42 stany ekranów partii 1, a po partii 2 cały interfejs.
 
-Element to miejsce, które osoba czyta albo dotyka osobno: nagłówek, akapit, pozycja listy, przycisk, pole albo chip. Element z ikoną ma ikonę w sobie albo tuż obok, a karta budynku z kilkoma znakami to jeden element. Liczymy cały ekran przy zwykłej czcionce, także treść pod krawędzią okna.
+Element to miejsce, które osoba czyta albo dotyka osobno: nagłówek, akapit, pozycja listy lub legendy, przycisk, pole albo chip. Element z ikoną ma ikonę w sobie albo tuż obok, a karta budynku z kilkoma znakami to jeden element. Zdjęcie ani rysunek nie są ikoną.
+
+Każdy stan liczymy osobno i w całości, także treść pod krawędzią okna, przy zwykłej czcionce. Elementy powtarzane liczymy w każdym stanie, więc pasek dolny daje 4 elementy z ikoną wszędzie, gdzie jest. Znaki i napisy na samej mapie (symbole budynków, znaki wejść i barier) to treść mapy i ich nie liczymy, a przyciski na mapie liczymy.
 
 | Ekran | Stany hi-fi | Elementy | Z ikoną | Udział |
 | --- | --- | --- | --- | --- |
