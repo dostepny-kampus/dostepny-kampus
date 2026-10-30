@@ -7,6 +7,7 @@ package io.github.dostepnykampus.core.designsystem
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,10 +29,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+
+private const val LARGE_FONT_SCALE = 1.5f
 
 private val MirroredArrowBack: ImageVector = arrowBack()
 
@@ -61,42 +65,53 @@ private fun arrowBack(): ImageVector {
  * Tokeny: tło `surface`, margines [Odstepy.m], strzałka [Ikony.rozmiar] skalowana jak tekst w sp (NFR-20),
  * przycisk obrysowany z napisem `primary` i ramką
  * [Obramowania.ramka] w kolorze `outline`, zaokrąglenie [Zaokraglenia.kapsula], wysokość co najmniej
- * [CeleDotyku.minimum] (NFR-17), tytuł `titleLarge`. Tytuł stoi zawsze obok przycisku i zawija się w swojej
- * kolumnie, np. przy dużej czcionce (NFR-20).
+ * [CeleDotyku.minimum] (NFR-17), tytuł `titleLarge`. Przy zwykłej czcionce tytuł stoi obok przycisku i zawija
+ * się w swojej kolumnie. Przy skali czcionki co najmniej 1,5 (reguły dużej czcionki, NFR-20) w wierszu zostaje
+ * tylko „Wstecz”, a tytuł stoi pod nim na całą szerokość, na tle ekranu, jak w makietach hi-fi przy 200 %.
  */
 @Composable
 fun BackHeader(title: String, onBack: () -> Unit, modifier: Modifier = Modifier) {
-    Surface(modifier = modifier, color = MaterialTheme.colorScheme.surface) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = Odstepy.m, vertical = Odstepy.s),
-            horizontalArrangement = Arrangement.spacedBy(Odstepy.m),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OutlinedButton(
-                onClick = onBack,
-                modifier = Modifier.heightIn(min = CeleDotyku.minimum),
-                shape = RoundedCornerShape(Zaokraglenia.kapsula),
-                border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.outline),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
-                contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+    val isTitleBelow = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    val titleText = @Composable { titleModifier: Modifier ->
+        val asHeading = titleModifier.semantics { heading() }
+        Text(text = title, modifier = asHeading, style = MaterialTheme.typography.titleLarge)
+    }
+    Column(modifier = modifier) {
+        Surface(color = MaterialTheme.colorScheme.surface) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = Odstepy.m, vertical = Odstepy.s),
+                horizontalArrangement = Arrangement.spacedBy(Odstepy.m),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    imageVector = MirroredArrowBack,
-                    contentDescription = null,
-                    modifier = Modifier.size(iconSizeLikeText()),
-                )
-                Spacer(modifier = Modifier.width(Odstepy.s))
-                Text(
-                    text = stringResource(R.string.wstecz),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = Typografia.wyroznienieWaga,
-                )
+                BackButton(onBack = onBack)
+                if (!isTitleBelow) titleText(Modifier.weight(1f))
             }
-            Text(
-                text = title,
-                modifier = Modifier.weight(1f).semantics { heading() },
-                style = MaterialTheme.typography.titleLarge,
-            )
         }
+        val below = Modifier.fillMaxWidth().padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m)
+        if (isTitleBelow) titleText(below)
+    }
+}
+
+@Composable
+private fun BackButton(onBack: () -> Unit) {
+    OutlinedButton(
+        onClick = onBack,
+        modifier = Modifier.heightIn(min = CeleDotyku.minimum),
+        shape = RoundedCornerShape(Zaokraglenia.kapsula),
+        border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.outline),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+    ) {
+        Icon(
+            imageVector = MirroredArrowBack,
+            contentDescription = null,
+            modifier = Modifier.size(iconSizeLikeText()),
+        )
+        Spacer(modifier = Modifier.width(Odstepy.s))
+        Text(
+            text = stringResource(R.string.wstecz),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = Typografia.wyroznienieWaga,
+        )
     }
 }

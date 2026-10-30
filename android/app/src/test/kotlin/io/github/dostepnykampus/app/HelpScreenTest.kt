@@ -54,7 +54,7 @@ class HelpScreenTest {
     @Test
     fun us5_1_first_launch_skip_v1() {
         shell(firstLaunch = true)
-        compose.onNodeWithText("Jak korzystać z aplikacji").assertExists()
+        compose.onNodeWithText("Jak korzystać z\u00A0aplikacji").assertExists()
         compose.onNodeWithText("Krok 1 z 3").assertExists()
         compose.onNodeWithText("Pomiń instrukcję").performClick()
         compose.onNodeWithText("Mapa").assertIsSelected()
@@ -66,7 +66,7 @@ class HelpScreenTest {
     fun us5_1_help_opens_again() {
         shell(firstLaunch = false)
         compose.onNodeWithText("Mapa").assertIsSelected()
-        compose.onAllNodesWithText("Jak korzystać z aplikacji").assertCountEquals(0)
+        compose.onAllNodesWithText("Jak korzystać z\u00A0aplikacji").assertCountEquals(0)
         compose.onNodeWithText("Pomoc").performClick()
         compose.onNodeWithText("Znajdź budynek").assertExists()
         compose.onNodeWithText("Dalej").performClick()
