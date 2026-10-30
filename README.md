@@ -4,16 +4,33 @@ Aplikacja mobilna na Androida i serwer do inwentaryzacji barier architektoniczny
 
 ## Układ repozytorium
 
-| Katalog | Co tu jest | Stan |
-| --- | --- | --- |
-| `api/` | kontrakt API w OpenAPI, pisany przed kodem | powstanie w Sprincie 2 |
-| `backend/` | serwer Spring Boot | powstanie w Sprincie 2 |
-| `android/` | aplikacja w Kotlinie i Compose | powstanie w Sprincie 2 |
-| `data/` | kontury budynków PWr z OpenStreetMap i skrypt eksportu | powstanie w Sprincie 2 |
-| `specs/` | scenariusze Gherkin po polsku z tagami kryteriów, np. `@US1.1` | jest |
-| `infra/` | konfiguracja środowiska lokalnego (`docker compose`) | powstanie w Sprincie 2 |
-| `docs/` | dokumentacja MkDocs: biznes, wymagania, UX | jest |
-| `.github/workflows/` | przepływy CI uruchamiane według zmienionych katalogów | powstanie w Sprincie 2 |
+| Katalog | Co tu jest |
+| --- | --- |
+| `api/` | kontrakt API w OpenAPI, pisany przed kodem; kontrola `redocly` i zmian łamiących |
+| `backend/` | serwer Spring Boot (Java 25, Maven, qulice), moduły sprawdzane przez Spring Modulith i ArchUnit |
+| `android/` | aplikacja w Kotlinie i Compose: mapa kampusu bez internetu, wyszukiwanie budynku, lista budynków, instrukcja „Pomoc” |
+| `data/` | kontury i wejścia budynków PWr z OpenStreetMap (`pwr-buildings.geojson`) i skrypt eksportu |
+| `specs/` | scenariusze Gherkin po polsku z tagami kryteriów, np. `@US1.1` |
+| `infra/` | środowisko lokalne: PostgreSQL z PostGIS w `docker compose` |
+| `docs/` | dokumentacja MkDocs: biznes, wymagania, UX, architektura, makiety hi-fi |
+| `.github/workflows/` | przepływy CI uruchamiane według zmienionych katalogów |
+
+## Uruchomienie
+
+Potrzebny jest JDK 25 (Temurin), jak w CI.
+
+**Aplikacja na Androida** (Android 8.0 lub nowszy):
+
+```sh
+cd android
+./gradlew assembleDebug
+./gradlew installDebug
+./gradlew check
+```
+
+`assembleDebug` buduje plik APK w `android/app/build/outputs/apk/debug/`. `installDebug` instaluje go na uruchomionym emulatorze albo telefonie z włączonym debugowaniem USB. `check` uruchamia testy, lintery i próg pokrycia Kover. Można też otworzyć katalog `android/` w Android Studio i uruchomić konfigurację `app`.
+
+**Serwer:** baza według [`infra/README.md`](infra/README.md), potem `./mvnw verify` w katalogu `backend/`.
 
 ## Jak pracujemy
 
@@ -25,7 +42,7 @@ Aplikacja mobilna na Androida i serwer do inwentaryzacji barier architektoniczny
 
 ## Dokumentacja
 
-Jak zbudować i sprawdzić dokumentację, opisuje [`docs/README.md`](docs/README.md). Strona dokumentacji będzie publikowana na GitHub Pages z gałęzi `main`.
+Jak zbudować i sprawdzić dokumentację, opisuje [`docs/README.md`](docs/README.md). Strona dokumentacji jest publikowana na GitHub Pages z gałęzi `main`: <https://dostepny-kampus.github.io/dostepny-kampus/>.
 
 ## Zespół
 
@@ -33,4 +50,4 @@ Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko.
 
 ## Licencja
 
-Repozytorium, w tym kod i dokumentacja, jest na licencji [MIT](LICENSE). Wyjątkiem będą dane w `data/` pochodzące z OpenStreetMap: licencja [ODbL](https://opendatacommons.org/licenses/odbl/) z atrybucją „© OpenStreetMap contributors”.
+Repozytorium, w tym kod i dokumentacja, jest na licencji [MIT](LICENSE). Wyjątkiem są dane w `data/` pochodzące z OpenStreetMap: licencja [ODbL](https://opendatacommons.org/licenses/odbl/) z atrybucją „© OpenStreetMap contributors”.
