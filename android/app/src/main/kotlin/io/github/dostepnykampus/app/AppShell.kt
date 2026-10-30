@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -47,10 +48,16 @@ private val RestartsSaver =
  * W oknie o szerokości co najmniej 600 dp pasek stoi z boku, w węższym na dole (decyzja 69). Historia zaczyna się
  * od V5 przy [firstLaunch] (US5.1), inaczej od V1, i przetrwa odtworzenie aktywności (NFR-22). [roles] wybiera
  * cele Gościa i napis czwartej pozycji, a [onFirstHelpLeft] dostaje znać, gdy instrukcja z pierwszego
- * uruchomienia przestanie być na wierzchu. Ekrany dojdą w kolejnych częściach, na razie są puste.
+ * uruchomienia przestanie być na wierzchu. [content] rysuje ekran trasy i podpina jego czynności do nawigatora.
  */
 @Composable
-fun AppShell(firstLaunch: Boolean, roles: RoleProvider, onFirstHelpLeft: () -> Unit, modifier: Modifier = Modifier) {
+fun AppShell(
+    firstLaunch: Boolean,
+    roles: RoleProvider,
+    onFirstHelpLeft: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable AppNavigator.(NavKey) -> Unit = {},
+) {
     val backStack = rememberNavBackStack(elements = startBackStack(firstLaunch).toTypedArray())
     val restarts = rememberSaveable(saver = RestartsSaver) { SnapshotStateList() }
     val currentOnFirstHelpLeft by rememberUpdatedState(onFirstHelpLeft)
@@ -66,7 +73,10 @@ fun AppShell(firstLaunch: Boolean, roles: RoleProvider, onFirstHelpLeft: () -> U
     val items = bottomBarItems(hasWork = roles.currentAccount().hasStaffRole)
     val entries =
         rememberDecoratedNavEntries(
-            entries = backStack.indices.map { NavEntry(key = backStack[it], contentKey = navigator.contentKey(it)) {} },
+            entries =
+                backStack.indices.map { index ->
+                    NavEntry(backStack[index], contentKey = navigator.contentKey(index)) { navigator.content(it) }
+                },
             entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator()),
         )
     BoxWithConstraints(modifier = modifier) {
