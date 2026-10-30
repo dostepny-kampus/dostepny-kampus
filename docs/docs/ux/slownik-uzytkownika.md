@@ -367,7 +367,6 @@ Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości w
 | uciążliwość 1 | `warning`; hi-fi: trójkąt z „!” | „Utrudnienie” | trójkąt jak drogowy znak ostrzegawczy: uważaj |
 | uciążliwość 2 | `people`; hi-fi: tarcza z dwiema osobami | „Tylko z pomocą” | dwie osoby: przejdziesz z drugą osobą |
 | uciążliwość 3 | `ban`; hi-fi: zapora z ukośnymi pasami | „Blokada” | znak zakazu albo zapora drogowa: tędy nie |
-| przycisk zdjęcia (C2, C6, C7); w V4 bez ikony | `camera-slr` | „Zrób zdjęcie” | aparat; ta sama ikona co „Zgłoś barierę” |
 | status „lokalne” | `phone` | „W telefonie” | kształt telefonu: zgłoszenie jest tylko w nim |
 | status „wysłane” | `data-transfer-upload` | „Wysłane” | strzałka w górę: poszło dalej |
 | status „w weryfikacji” | `eye` | „W weryfikacji” | oko: ktoś teraz ogląda |
@@ -392,7 +391,7 @@ Zasady ikon. Ikona stoi tylko w przypadkach z tabel w tej sekcji, a pozostałe e
 | Strzałki zostają przy każdej czcionce. | Strzałka „Wstecz” i strzałka w dół przy rozwijanych piętrach i wyjściach ewakuacyjnych. Strzałka w prawo przy „Otwórz” w R1, K1 i C3 odróżnia otwarcie pozycji od czynności na niej (recenzja B5); ta sama stoi w wierszach L2. Ołówek przy „Popraw zgłoszenie” (V2, Zbierający) odróżnia poprawę od nowego zgłoszenia. |
 | Na V1, C1 i R1 sterowanie mapą, a na V1 też lupa i wybrana pozycja przełącznika mają ikony przy każdej czcionce. | Strzałki przesuwania, „+”, „−”, „ⓘ” i „Legenda” stoją na mapie jako jeden zestaw. Lupa oznacza pole wyszukiwania. Sam ptaszek bez koła pokazuje wybraną pozycję „Mapa” albo „Lista budynków” i nie myli się ze znakiem „Dostępne”. |
 | Nawigacja wstecz i przesuwanie mapy mają strzałkę. | „Wstecz” to strzałka w lewo i słowo. Przyciski przesuwania mapy to same strzałki na mapie z nazwą dla TalkBack, bo słowa pod mapą zabierały jej miejsce. „Powiększ” i „Pomniejsz” to w hi-fi znaki „+” i „−” na mapie, też z nazwą dla TalkBack. Wzorzec znają aplikacje map, a przesuwanie nadal nie wymaga przeciągania (WCAG 2.5.7). |
-| Pozostałe elementy są bez ikony. | 6 grup barier, przyciski czynności, „Zrób zdjęcie” w V4, „Nieobejrzane”. Słowo jest dla PE-1 jaśniejsze niż strzałka albo symbol [6]. |
+| Pozostałe elementy są bez ikony. | 6 grup barier, przyciski czynności, „Zrób zdjęcie” i „Zrób nowe zdjęcie” (V4, C2, C6, C7; decyzja 94), „Nieobejrzane”. Słowo jest dla PE-1 jaśniejsze niż strzałka albo symbol [6]. |
 | Grupy barier w V4 są bez ikon. | OpenIconic nie ma ikon toalety, drzwi ani chodnika, a ikona na siłę myli. US4.3 wymaga tylko dużych przycisków (PW-7). |
 
 ### Udział ikon

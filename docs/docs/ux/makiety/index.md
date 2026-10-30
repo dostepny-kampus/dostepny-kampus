@@ -46,7 +46,7 @@ Plik `_wspolne.iuml` ma rozszerzenie `.iuml`, więc skrypt `render.py` nie trakt
 | `$pole_tekstowe("…")`, `$blad_pola("…")` | pole tekstowe stałej szerokości; błąd przy polu pogrubiony | NFR-15, NFR-21 |
 | `$przelacznik("Mapa", "Lista budynków", 1)`, `$pietra(2)`, `$opcja("X", $blokada(), "opis")` | przełącznik dwóch widoków, wybór piętra, opcja w dużej ramce | NFR-17, NFR-19, NFR-21, US16.1 |
 | `$wazne("wymaganie", "powód")` | komunikat ostrzegawczy w ramce: „(!)” zamiast koła ze znakiem „!”, pogrubione „Ważne”, wymaganie i zdanie z powodem; bez trójkąta, który należy do „Utrudnienie” | NFR-16, NFR-21, PW-13, decyzja 54 |
-| `$zdjecie("opis")` | komunikat „Ważne” o twarzach i tablicach, zdjęcie i „Zrób zdjęcie” albo „Zrób nowe zdjęcie” | NFR-25, PW-8 |
+| `$zdjecie("opis")` | komunikat „Ważne” o twarzach i tablicach, zdjęcie i „Zrób zdjęcie” albo „Zrób nowe zdjęcie”, bez ikony | NFR-25, PW-8, decyzja 94 |
 | `$tekst("…")`, `$sekcja("…")`, `$obraz("…")` | tekst zawinięty, nagłówek sekcji, zastępnik obrazu | NFR-20 |
 | `$dostepne()` i pozostałe funkcje oznaczeń | napis z ikoną: oznaczenie wejścia, uciążliwość, status, znacznik | NFR-21, US17.1, US8.1, US15.1 |
 

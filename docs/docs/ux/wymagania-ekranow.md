@@ -41,7 +41,7 @@ Dotyczą każdego ekranu. Przy ekranach podajemy tylko to, co do nich dochodzi.
 | Wymaganie | Odwołanie |
 | --- | --- |
 | Nagłówek z nazwą ekranu i przyciskiem „Wstecz”: strzałka w lewo i słowo, zawsze w tym samym miejscu. Przy przewijaniu w dół może się schować razem z górnym paskiem i wraca przy przewijaniu w górę (reguła 10). Wyjątek: V1 jako ekran startowy. | NFR-52; WCAG 3.2.3 [1]; PW-11 |
-| Wskaźnik braku sieci to jedna linia: ikona i napis „Bez internetu · dane z 12.11.2026”. Linia zostaje, bo dane w telefonie mogą być nieaktualne. Data to dzień ostatniego pobrania danych tego ekranu, a na V1 całej mapy. Gdy w telefonie nie ma jeszcze danych, linia ma samo „Bez internetu”. Część „dane z …” przechodzi do drugiego wiersza w całości. Zbierający widzi w tej linii „Ostatnia synchronizacja: 12.11.2026, 10:42” zamiast „dane z …”. | US9.1, NFR-10, NFR-21; PW-4; decyzja 54 |
+| Wskaźnik braku sieci to jedna linia: ikona i napis „Bez internetu · dane z 12.11.2026”. Linia zostaje, bo dane w telefonie mogą być nieaktualne. Data to dzień ostatniego pobrania danych tego ekranu, a na V1 całej mapy. Gdy w telefonie nie ma jeszcze danych, linia ma samo „Bez internetu”. Zbierający widzi w tej linii „Ostatnia synchronizacja: 12.11.2026, 10:42” zamiast „dane z …”. Przy dużej czcionce linia łamie się po słowach, a data z godziną zostaje razem w jednym wierszu. | US9.1, NFR-10, NFR-20, NFR-21; PW-4; decyzje 54, 94 |
 | Pasek dolny na V1, V2, V3, V5 i L2: „Mapa” (V1), „Zgłoś barierę” (V4), „Pomoc” (V5), „Konto” (L1 albo L2). Osoba z co najmniej jedną rolą pracowniczą widzi na czwartej pozycji, w tym samym miejscu, napis „Konto i praca” (PW-1). Pozycja prowadzi do L2. L1 nie ma paska, także otwarty z paska: to ekran decyzji, a „Nie teraz” wraca do mapy. Na formularzach i krokach zgłoszenia paska nie ma. | US1, US4, US5.1, US14, US14.1; [mapa nawigacji](mapa-nawigacji.md), P1 |
 | Pasek dolny nigdy się nie chowa, także przy przewijaniu. Przy przewijaniu w dół może się schować tylko górny pasek, w którym jest „Wstecz”. | NFR-52 |
 | W oknie o szerokości co najmniej 600 dp, np. w telefonie w poziomie, pasek nawigacji stoi z boku ekranu: te same cztery pozycje, napisy i kolejność co w pasku dolnym. Obowiązuje przy każdej czcionce. Pasek z boku też nigdy się nie chowa i nie zabiera wysokości okna, więc nie wlicza się do 25% elementów przypiętych. Węższe okno ma pasek dolny. | NFR-22, NFR-51, NFR-52; decyzja 69 |
@@ -760,7 +760,7 @@ Dostępność: podobne zgłoszenia mają odległość tekstem, np. „5 m”, a 
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Lista budynków z symbolem i nazwą z danych PWr | dane | US11.1 | — |
+| Lista budynków w kolejności katalogu z danych PWr: symbol, a pod nim nazwa budynku | dane | US11.1; decyzje 16, 94 | — |
 | Budynek szczegółowy: „4 z 5 pięter, 80%” | dane | US11.1, US11.2, BR-21 | — |
 | Budynek podstawowy: „Obejrzany” tekstem i ikoną albo „Nieobejrzany” samym tekstem | dane | US11.1, PW-11 | — |
 | Liczby: „Czeka na sprawdzenie: 3” i „Przyjęte: 4”, jak w scenariuszu `@US11.1` | dane | US11.1, BR-21 | — |
@@ -768,7 +768,7 @@ Dostępność: podobne zgłoszenia mają odległość tekstem, np. „5 m”, a 
 | Dotknięcie budynku; w ramce „Otwórz” z ikoną | czynność główna | US11.3, NFR-21 | C5 |
 | „Odśwież” i data z godziną odczytu, np. „Stan z 12.11.2026, 10:42”; bez samoczynnego odświeżania | czynność | US11.2 | — |
 
-Sortowania ani filtrów nie ma, bo nie wynikają z żadnego kryterium (decyzja 16). Wiersz o wejściach pozwala odczytać miarę M-1 z [wizji](../biznes/wizja.md) bez liczenia na kartach budynków (decyzja 38). Wejście liczy się dopiero po przyjęciu zmiany oznaczenia, bo wtedy dostaje źródło „obchód” (BR-24).
+Sortowania ani filtrów nie ma, bo nie wynikają z żadnego kryterium (decyzja 16). Budynki szczegółowe nie idą więc na początek listy (decyzja 94). Wiersz o wejściach pozwala odczytać miarę M-1 z [wizji](../biznes/wizja.md) bez liczenia na kartach budynków (decyzja 38). Wejście liczy się dopiero po przyjęciu zmiany oznaczenia, bo wtedy dostaje źródło „obchód” (BR-24).
 
 | Stan | Co widać |
 | --- | --- |
