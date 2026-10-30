@@ -49,6 +49,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
@@ -112,7 +113,9 @@ fun CampusMapScreen(
     val catalog by produceState<BuildingCatalog?>(initialValue = null, repository) { value = repository.catalog() }
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
     // Na start „jest internet”, żeby linia nie mignęła, zanim przyjdzie stan bieżący.
-    val isOnline by remember(networkStatus) { networkStatus.isOnline() }.collectAsState(initial = true)
+    // Monitor sieci działa tylko, gdy ekran jest widoczny; po powrocie do aplikacji stan jest od razu aktualny.
+    val online = remember(networkStatus) { networkStatus.isOnline() }
+    val isOnline by online.collectAsStateWithLifecycle(initialValue = true)
     val isListSaved by remember(mapListChoice) { mapListChoice.savedChoice }.collectAsState(initial = null)
     val isList = isListSaved ?: (LocalDensity.current.fontScale >= LIST_FONT_SCALE)
     val scope = rememberCoroutineScope()
