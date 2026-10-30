@@ -10,8 +10,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | Stan | Liczba |
 | --- | --- |
 | Pełny test | 0 |
-| Tylko częściowo | 6 |
-| Bez testu | 145 |
+| Tylko częściowo | 10 |
+| Bez testu | 141 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -75,7 +75,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `przegladanie-mapy.feature` | Przy kilku wejściach dostępnych bez głównego zalecane jest pierwsze z danych | BR-25 | — | brak |
 | `przegladanie-mapy.feature` | Budynek bez wejścia dostępnego nie ma wejścia zalecanego | BR-25, US3.1 | — | brak |
 | `przegladanie-mapy.feature` | Zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę weryfikacji | BR-17, US2.2 | — | brak |
-| `przegladanie-mapy.feature` | Wejście dostępne najwyżej 3 dotknięcia od mapy | US3.2 | — | brak |
+| `przegladanie-mapy.feature` | Wejście dostępne najwyżej 3 dotknięcia od mapy | US3.2 | `app · AppNavigatorTest.us3_1_v1_v2_v3_back_v2` | częściowo |
 | `przegladanie-mapy.feature` | Brak wejścia dostępnego jest powiedziany wprost | US3.1 | — | brak |
 | `przegladanie-mapy.feature` | Mapa pokazuje wejścia i ścieżki, a legenda objaśnia znaki słowem | US1.4 | — | brak |
 | `przegladanie-mapy.feature` | Dotknięcie znaku bariery pokazuje jej opis z miejscem | BR-14, BR-17, US1.5, US2.5 | — | brak |
@@ -147,8 +147,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `zgloszenia-zbierajacego.feature` | Zgłoszenie „bariera usunięta” zapisuje się bez uciążliwości | BR-7, BR-19, US8.4 | — | brak |
 | `zgloszenie-szybkie-powrot.feature` | Po wysłaniu „Wstecz” wraca do ekranu, z którego zaczęto zgłoszenie | US4.7 | — | brak |
 | `zgloszenie-szybkie-powrot.feature` | Powrót między krokami nie usuwa zdjęcia ani grupy barier | US4.8 | — | brak |
-| `zgloszenie-szybkie.feature` | Zgłoszenie szybkie w 3 krokach z pozycją dołączoną automatycznie | BR-8, US4.1 | — | brak |
-| `zgloszenie-szybkie.feature` | Zgłoszenie przy wejściu podpowiada wejście, a miejsce bierze z bieżącej pozycji | BR-8, US4.6 | — | brak |
+| `zgloszenie-szybkie.feature` | Zgłoszenie szybkie w 3 krokach z pozycją dołączoną automatycznie | BR-8, US4.1 | `app · AppNavigatorTest.us4_1_three_steps_sent_p2` | częściowo |
+| `zgloszenie-szybkie.feature` | Zgłoszenie przy wejściu podpowiada wejście, a miejsce bierze z bieżącej pozycji | BR-8, US4.6 | `app · AppNavigatorTest.us4_6_report_at_entrance` | częściowo |
 | `zgloszenie-szybkie.feature` | Wybór jednej z 6 grup barier dużymi przyciskami | BR-8, US4.3 | — | brak |
 | `zgloszenie-szybkie.feature` | Zgłoszenia szybkiego nie da się wysłać bez zdjęcia albo grupy barier | BR-8, US4.1, US4.3 | — | brak |
 | `zgloszenie-szybkie.feature` | Bez zgody na lokalizację aparat się nie otwiera | BR-8, US4.1 | — | brak |
@@ -164,5 +164,5 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `zgloszenie-szybkie.feature` | Potwierdzenie po wysłaniu bez dalszego statusu | BR-8, US4.4 | — | brak |
 | `zgloszenie-szybkie.feature` | Potwierdzenie bez sieci mówi o późniejszej wysyłce | BR-8, US4.2, US4.4 | — | brak |
 | `zgloszenie-szybkie.feature` | Gość niezalogowany jest proszony o logowanie przed zdjęciem | BR-8, US14.2 | `app · AppNavigatorTest.us14_2_bar_report_guest_l1` | częściowo |
-| `zgloszenie-szybkie.feature` | Gość po zalogowaniu wraca do zgłoszenia szybkiego | BR-8, US14.2 | — | brak |
+| `zgloszenie-szybkie.feature` | Gość po zalogowaniu wraca do zgłoszenia szybkiego | BR-8, US14.2 | `app · AppNavigatorTest.us14_2_guest_signed_in_v4` | częściowo |
 | `zgloszenie-szybkie.feature` | Gość rezygnuje z logowania | BR-8, US14.2 | `app · AppNavigatorTest.uc7_1b_guest_not_now_v1` | częściowo |
