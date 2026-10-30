@@ -4,7 +4,7 @@
 !include _wspolne.iuml
 !include _zespol-w-terenie.iuml
 $ekran_poczatek()
-$naglowek("Pomiar pozycji")
+$naglowek("Zmierz i zgłoś barierę")
 Dokładność: 0,8 m (szacunek)
 $tekst("Satelity: GPS 7, Galileo 5, GLONASS <i>[liczba]</i>")
 $przycisk("Powtórz pomiar")
@@ -13,8 +13,7 @@ $przycisk("Potwierdź")
 $przycisk("Wybierz inny")
 $przycisk("Poza budynkiem")
 $sekcja("Miejsce bariery")
-$mapa("mapa z punktem bariery przy wejściu głównym A-1")
-$przesun_punkt("na mapie")
+$punkt_na_srodku("mapa przy wejściu głównym A-1")
 ..
 $przycisk_glowny("Dalej")
 $ekran_koniec()

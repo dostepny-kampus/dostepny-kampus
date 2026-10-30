@@ -142,13 +142,6 @@ $tekst("[" + $opis + "]", "i")
 { [$dk_napis($t1, "", $DK_PRZYCISK_POL)] | [$dk_napis($t2, "", $DK_PRZYCISK_POL)] }
 !endprocedure
 
-' Przyciski kierunku zamiast przeciągania palcem, dwa w wierszu (NFR-15, WCAG 2.5.1;
-' NFR-3). Używa ich $przesun_punkt (C1); mapa V1 i R1 ma strzałki z $przyciski_mapy.
-!procedure $przyciski_kierunku()
-$przyciski_obok("W górę", "W dół")
-$przyciski_obok("W lewo", "W prawo")
-!endprocedure
-
 ' ---------- Nagłówek ekranu ----------
 
 ' Nagłówek z „Wstecz” (strzałka w lewo i słowo, zawsze w tym samym miejscu) i tytułem (PW-11).
@@ -400,8 +393,8 @@ $przycisk("Zrób nowe zdjęcie", "camera-slr")
 ' Zastępnik mapy na pełną szerokość, z podpisem OpenStreetMap w ramce (NFR-37).
 ' $opis: co widać na mapie. $legenda: przykład oznaczeń na mapie tekstem i ikoną
 ' (NFR-21), np. $blokada() na V1; pusta, gdy mapa nie pokazuje barier.
-' $kontrolki: "" (bez przycisków), "mapa" (przyciski mapy na mapie, R1)
-' albo "info" (przyciski mapy i „ⓘ” przy podpisie OpenStreetMap, V1).
+' $kontrolki: "" (bez przycisków), "mapa" (same przyciski mapy)
+' albo "info" (przyciski mapy i „ⓘ” przy podpisie OpenStreetMap, V1 i R1; C1: $punkt_na_srodku).
 !procedure $mapa($opis, $legenda="", $kontrolki="")
 $ramka()
 .
@@ -425,7 +418,7 @@ $osm()
 
 ' Przyciski mapy zamiast gestów, na mapie: „Powiększ” i „Pomniejsz” oraz groty (caret)
 ' przesuwania w krzyżu, każdy z nazwą dla TalkBack „Przesuń mapę w górę” itd.
-' Ten sam układ na V1 i R1 (NFR-15, WCAG 2.5.1, 2.5.7; NFR-17; PW-8, PW-11).
+' Ten sam układ na V1, C1 i R1 (NFR-15, WCAG 2.5.1, 2.5.7; NFR-17; PW-8, PW-11; decyzja 93).
 !procedure $przyciski_mapy()
 $przyciski_obok("Powiększ", "Pomniejsz")
 {

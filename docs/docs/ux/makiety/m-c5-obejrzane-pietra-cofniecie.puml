@@ -1,0 +1,27 @@
+@startsalt
+' C5 Piętra obejrzane, Zbierający, potwierdzenie cofnięcia własnego znacznika piętra 1
+' (US15.2, decyzja 93). Pytanie stoi przy wierszu i mówi skutek dla postępu, jak u Koordynatora.
+!include _wspolne.iuml
+!include _zespol-w-terenie.iuml
+$ekran_poczatek()
+$naglowek("Obejrzane piętra", "Budynek A-1")
+$ramka()
+<b>Piętro: <i>[1]</i></b>
+<b>$obejrzane()</b>
+Twój znacznik
+$tekst("Cofnąć znacznik piętra <i>[1]</i>? Postęp budynku się zmniejszy.", "b")
+$przycisk_glowny("Cofnij znacznik")
+$przycisk("Zostaw znacznik")
+}
+$ramka()
+<b>Piętro: <i>[2]</i></b>
+<b>$obejrzane()</b>
+Znacznik innej osoby
+}
+$ramka()
+<b>Piętro: <i>[3]</i></b>
+$nieobejrzane()
+$przycisk("Oznacz jako obejrzane")
+}
+$ekran_koniec()
+@endsalt
