@@ -87,7 +87,7 @@ Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie pr
 
 | Krok | Warunek | Przebieg |
 | --- | --- | --- |
-| 1a | Brak sieci | Aplikacja pokazuje ostatnio pobrane budynki i bariery z datą synchronizacji, bez podkładu OpenStreetMap (NFR-10, NFR-39). |
+| 1a | Brak sieci | Aplikacja pokazuje ostatnio pobrane budynki i bariery z datą synchronizacji. Nowego podkładu OpenStreetMap bez sieci nie pobiera; fragmenty obejrzane wcześniej mogą się pokazać z pamięci telefonu (NFR-10, NFR-39, decyzja 84). |
 | 2a | Gość niezalogowany korzysta z czytnika ekranu | Wybiera budynek z listy zamiast z mapy (NFR-18, NFR-19). |
 | 4a | Każde wejście ma oznaczenie „niedostępne” | Ekran mówi wprost zdaniem, że budynek nie ma wejścia dostępnego, a nie pokazuje pustego wyniku (US3.1). |
 | 4b | Żadne wejście nie ma oznaczenia „dostępne”, a co najmniej jedno ma „brak danych”, np. w budynku podstawowym | Ekran mówi, że o tych wejściach danych brak, a nie że wejścia dostępnego nie ma (US2.1, US17.1). Treść zdania podaje [ekran V3](../ux/wymagania-ekranow.md#v3-zaplanuj-wizyte). |
@@ -254,7 +254,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Punkt rozszerzenia | „Budynek szczegółowy” — wybór piętra i plan piętra (UC3). |
 | Alternatywy i wyjątki | 1a. Brak sieci: karta wcześniej otwartego budynku z datą synchronizacji (NFR-10). <br> 1b. Budynek podstawowy: karta działa, planu piętra nie ma (BR-G1). <br> 1c. Import nie dał danych o wejściu: oznaczenie „brak danych”, a nie „niedostępne” (US17.1, BR-24). <br> 2a. Brak zgłoszeń przyjętych: karta mówi zdaniem, że nikt jeszcze nie zgłosił tu sprawdzonej bariery, i nie sugeruje, że barier nie ma (US2.4). |
 | Warunki końcowe | Osoba zna stan budynku; system niczego nie zapisuje. |
-| Odwołania | US2.1…US2.6, US17.1, US17.3, BR-6, BR-17, BR-24, BR-G1, NFR-10, NFR-12, NFR-21, T21 |
+| Odwołania | US2.1…US2.7, US17.1, US17.3, BR-6, BR-17, BR-24, BR-G1, NFR-10, NFR-12, NFR-21, T21 |
 
 ### Przegląd planu piętra (UC3)
 
