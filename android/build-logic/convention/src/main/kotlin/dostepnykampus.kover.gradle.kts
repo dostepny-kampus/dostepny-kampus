@@ -27,12 +27,23 @@ val coverageExcludedClasses =
         "io.github.dostepnykampus.feature.map.MapLibreMapView$*",
     )
 
+/**
+ * Klasy generowane przez Hilt i Dagger (decyzja 97): nikt ich nie pisze, a graf sprawdza Hilt przy budowie. Nazwy
+ * z podkreśleniem tworzy tylko generator, bo ręczny kod ma nazwy klas bez podkreśleń (detekt `ClassNaming`).
+ */
+val generatedDiClasses =
+    arrayOf(
+        "*.Hilt_*", "*_Hilt*", "*.Dagger*", "*_*Factory", "*_*Factory$*", "*_MembersInjector", "*_GeneratedInjector",
+        "*_ComponentTreeDeps", "hilt_aggregated_deps.*", "dagger.hilt.internal.*",
+    )
+
 kover {
     reports {
         filters {
             excludes {
                 classes("*ComposableSingletons*", "*.BuildConfig", "*.R", "*.R$*")
                 classes(*coverageExcludedClasses)
+                classes(*generatedDiClasses)
             }
         }
     }

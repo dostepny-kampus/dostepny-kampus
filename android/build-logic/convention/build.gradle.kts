@@ -14,6 +14,8 @@ dependencies {
     implementation(libs.compose.gradlePlugin)
     implementation(libs.detekt.gradlePlugin)
     implementation(libs.kover.gradlePlugin)
+    implementation(libs.hilt.gradlePlugin)
+    implementation(libs.ksp.gradlePlugin)
     implementation(libs.moduleGraphAssert.gradlePlugin)
     implementation(libs.roborazzi.gradlePlugin)
     implementation(libs.snakeyaml.engine)

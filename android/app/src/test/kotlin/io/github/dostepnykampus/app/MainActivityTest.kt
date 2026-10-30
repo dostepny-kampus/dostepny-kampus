@@ -10,7 +10,10 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import io.github.dostepnykampus.core.data.start.firstLaunchRepository
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.HiltTestApplication
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
@@ -18,12 +21,23 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Aktywność z oboczką w Robolectric: pierwsze uruchomienie, odtworzenie aktywności i zapis instrukcji. */
+/**
+ * Aktywność z oboczką w Robolectric na grafie Hilt aplikacji: pierwsze uruchomienie, odtworzenie aktywności i zapis
+ * instrukcji.
+ */
+@HiltAndroidTest
 @RunWith(RobolectricTestRunner::class)
-@Config(qualifiers = "w360dp-h800dp")
+@Config(application = HiltTestApplication::class, qualifiers = "w360dp-h800dp")
 class MainActivityTest {
-    @get:Rule
+    @get:Rule(order = 0)
+    val hilt = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
     val compose = createAndroidComposeRule<MainActivity>()
+
+    // Ten sam zapis pierwszego uruchomienia, który dostała aktywność z grafu Hilt.
+    private val firstLaunch
+        get() = EntryPointAccessors.fromActivity<MainActivityEntryPoint>(compose.activity).firstLaunch()
 
     private fun pressBack() {
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
@@ -36,7 +50,7 @@ class MainActivityTest {
         compose.waitUntil { compose.onAllNodesWithText("Pomoc").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Pomoc").assertIsSelected()
         pressBack()
-        compose.waitUntil { runBlocking { !compose.activity.firstLaunchRepository().isFirstLaunch() } }
+        compose.waitUntil { runBlocking { !firstLaunch.isFirstLaunch() } }
         compose.onNodeWithText("Pomoc").performClick()
         compose.activityRule.scenario.recreate()
         compose.waitUntil { compose.onAllNodesWithText("Pomoc").fetchSemanticsNodes().isNotEmpty() }

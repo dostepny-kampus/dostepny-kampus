@@ -16,7 +16,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-private val Context.mapDataStore by preferencesDataStore(
+/** Plik ustawień mapy; jeden DataStore na proces, bo tak wymaga DataStore dla jednego pliku. */
+internal val Context.mapDataStore by preferencesDataStore(
     name = "mapa",
     corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
 )
@@ -42,6 +43,3 @@ class MapListChoiceRepository(private val dataStore: DataStore<Preferences>) : M
         val IS_LIST = booleanPreferencesKey("is_list")
     }
 }
-
-/** [MapListChoiceRepository] na pliku ustawień mapy. */
-fun Context.mapListChoice(): MapListChoiceRepository = MapListChoiceRepository(applicationContext.mapDataStore)

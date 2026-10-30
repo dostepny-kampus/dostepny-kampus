@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.core.data.network
 
-import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -51,7 +50,3 @@ class ConnectivityNetworkStatus(private val connectivity: ConnectivityManager) :
             awaitClose { connectivity.unregisterNetworkCallback(callback) }
         }.distinctUntilChanged()
 }
-
-/** [ConnectivityNetworkStatus] na usłudze systemowej telefonu. */
-fun Context.networkStatus(): NetworkStatus =
-    ConnectivityNetworkStatus(applicationContext.getSystemService(ConnectivityManager::class.java))

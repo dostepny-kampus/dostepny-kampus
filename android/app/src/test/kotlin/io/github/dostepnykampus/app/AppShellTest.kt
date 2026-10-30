@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app
 
+import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED
@@ -64,6 +65,9 @@ import androidx.core.view.WindowInsetsCompat.Type
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
+import io.github.dostepnykampus.core.data.buildings.BUILDINGS_ASSET
+import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.network.ConnectivityNetworkStatus
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
@@ -79,9 +83,20 @@ import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import org.robolectric.shadows.ShadowNetworkCapabilities
+import kotlin.coroutines.EmptyCoroutineContext
 
 /** Pozycja „Mapa” paska dolnego; V1 ma też „Mapa” w przełączniku „Mapa” i „Lista budynków” (NFR-19). */
 internal val MapTab = hasText("Mapa") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
+
+/** Źródła danych ekranów jak w aplikacji: plik konturów z zasobów i sieć telefonu; wybór mapy albo listy w pamięci. */
+internal fun Context.appScreenData(): ScreenData =
+    ScreenData(
+        BuildingCatalogRepository(EmptyCoroutineContext) {
+            assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() }
+        },
+        ConnectivityNetworkStatus(getSystemService(ConnectivityManager::class.java)),
+        TestMapListChoice(),
+    )
 
 /** Oboczka w Robolectric: historia, pasek dolny w wąskim oknie, pasek z boku w szerokim i role. */
 @RunWith(RobolectricTestRunner::class)
@@ -94,6 +109,7 @@ class AppShellTest {
     private val visitor = RoleProvider { Account.SignedIn() }
     private val tabRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
     private var helpLeft = 0
+    private lateinit var screenData: ScreenData
 
     // Telefon z internetem: w Robolectric sieć nie jest sprawdzona, więc V1 pokazałoby „Bez internetu” (US9.1).
     @Before
@@ -104,13 +120,23 @@ class AppShellTest {
         shadowOf(connectivity).setNetworkCapabilities(connectivity.activeNetwork, capabilities)
     }
 
+    // Przed kompozycją: odczyt aktywności z reguły w trakcie układu ekranu przerywa pomiar.
+    @Before
+    fun screens() {
+        screenData = compose.activity.appScreenData()
+    }
+
     private fun show(firstLaunch: Boolean = false, roles: RoleProvider = GuestRoleProvider) {
         compose.setContent { Shell(firstLaunch = firstLaunch, roles = roles) }
     }
 
     @Composable
     private fun Shell(firstLaunch: Boolean, roles: RoleProvider) {
-        DostepnyKampusTheme { AppShell(firstLaunch = firstLaunch, roles = roles, onFirstHelpLeft = { helpLeft++ }) }
+        DostepnyKampusTheme {
+            AppShell(firstLaunch = firstLaunch, roles = roles, onFirstHelpLeft = { helpLeft++ }) {
+                AppScreen(it, screenData)
+            }
+        }
     }
 
     private fun checkSideBar(windowHeight: Dp = 360.dp) {
@@ -292,7 +318,7 @@ class AppShellTest {
                 if (route is MapRoute) {
                     Text(route.focus?.toString() ?: "V1", Modifier.clickable { openBuilding(symbol = "A-1") })
                 } else {
-                    AppScreen(route)
+                    AppScreen(route, screenData)
                 }
             }
         }

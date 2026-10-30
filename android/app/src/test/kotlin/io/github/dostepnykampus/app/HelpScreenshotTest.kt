@@ -32,10 +32,11 @@ class HelpScreenshotTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private fun capture(isFirstStep: Boolean) {
+        val screenData = compose.activity.appScreenData()
         compose.setContent {
             DostepnyKampusTheme {
                 AppShell(firstLaunch = isFirstStep, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
-                    if (route !is MapRoute) AppScreen(route)
+                    if (route !is MapRoute) AppScreen(route, screenData)
                 }
             }
         }
