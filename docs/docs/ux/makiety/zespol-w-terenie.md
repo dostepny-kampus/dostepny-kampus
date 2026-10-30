@@ -81,13 +81,13 @@ Czynność główna: „Powtórz pomiar”.
 
 ### Daleko od budynków, bez internetu
 
-![Makieta C1 poza budynkiem i bez internetu: wskaźnik Brak internetu z datą synchronizacji, dokładność, satelity, napis Poza budynkiem, mapa z konturami bez mapy ulic, przyciski przesuwania i Dalej](../../_generated/m-c1-pomiar-pozycji-poza-budynkiem.svg)
+![Makieta C1 poza budynkiem i bez internetu: wskaźnik Bez internetu z datą synchronizacji, dokładność, satelity, napis Poza budynkiem, mapa z konturami bez mapy ulic, przyciski przesuwania i Dalej](../../_generated/m-c1-pomiar-pozycji-poza-budynkiem.svg)
 
 Czynność główna: „Dalej”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Brak internetu” z ikoną i „Ostatnia synchronizacja: …” | US9.1, NFR-10, NFR-21 |
+| „Bez internetu ·” z ikoną i „Ostatnia synchronizacja: …” | US9.1, NFR-10, NFR-21, decyzja 54 |
 | „Poza budynkiem” bez pytania o budynek i bez komunikatu o błędzie | BR-G4, NFR-49 |
 | Mapa bez mapy ulic: kontury i punkt z danych aplikacji. Podpis OpenStreetMap zostaje, jak na V1 bez internetu. Kontury pochodzą też z OpenStreetMap, a NFR-37 wymaga podpisu na każdym ekranie z mapą. | NFR-4, NFR-37, NFR-39 |
 | Brak planu piętra; korekta tylko na mapie | US6.4, BR-G4 |
@@ -115,7 +115,7 @@ Komunikaty powtarzają V4 z końcówką „aby zapisać miejsce bariery” i sto
 
 ### Nowe zgłoszenie w budynku szczegółowym
 
-![Makieta C2 nowego zgłoszenia: budynek A-1 i miejsce z pomiaru z przyciskiem Zmień miejsce, wybór piętra, lista typów bariery, trzy ramki uciążliwości z ikoną i opisem, przypomnienie o twarzach i Zrób zdjęcie, pole opisu i Zapisz](../../_generated/m-c2-formularz-zgloszenia.svg)
+![Makieta C2 nowego zgłoszenia: budynek A-1 i miejsce z pomiaru z przyciskiem Zmień miejsce, wybór piętra, lista typów bariery, trzy ramki uciążliwości z ikoną i opisem, komunikat Ważne o twarzach i Zrób zdjęcie, pole opisu i Zapisz](../../_generated/m-c2-formularz-zgloszenia.svg)
 
 Czynność główna: „Zapisz”. Formularz nie ma paska dolnego.
 
@@ -126,7 +126,7 @@ Czynność główna: „Zapisz”. Formularz nie ma paska dolnego.
 | „Typ bariery”: lista z typami w 6 grupach barier | US7.1, BR-7 |
 | „Uciążliwość” i pod nagłówkiem „Oceń dla osoby, dla której bariera jest najtrudniejsza.” | US7.1, słownik pojęć (skala uciążliwości) |
 | „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda w ramce z ikoną i opisem kryterium skali | US7.1, NFR-17, NFR-21, PW-13 |
-| „Nie fotografuj twarzy ani tablic rejestracyjnych.” i „Zrób zdjęcie” | US7.1, NFR-25, PW-8 |
+| Komunikat „Ważne” z „(!)”: „Nie fotografuj twarzy ani tablic rejestracyjnych.” i „Zdjęcie zobaczą inni użytkownicy.”, jak na V4; pod nim „Zrób zdjęcie” | US7.1, NFR-25, PW-8, PW-13, decyzja 54 |
 | „Opis” z dopiskiem o typie „inna bariera” | US7.3 |
 | „Zapisz” | BR-7 |
 
@@ -267,7 +267,7 @@ Czynność główna: „Oznacz jako obejrzane” przy piętrze bez znacznika. Pr
 
 ### Budynek podstawowy, bez internetu
 
-![Makieta C5 dla budynku podstawowego bez internetu: wskaźnik Brak internetu, komunikat Znacznik zapisany w telefonie, wiersz Cały budynek Obejrzany z Twój znacznik, Czeka na wysłanie i Cofnij znacznik](../../_generated/m-c5-obejrzane-pietra-podstawowy-brak-sieci.svg)
+![Makieta C5 dla budynku podstawowego bez internetu: wskaźnik Bez internetu, komunikat Znacznik zapisany w telefonie, wiersz Cały budynek Obejrzany z Twój znacznik, Czeka na wysłanie i Cofnij znacznik](../../_generated/m-c5-obejrzane-pietra-podstawowy-brak-sieci.svg)
 
 Czynność główna: „Oznacz jako obejrzane”, a po oznaczeniu „Cofnij znacznik” jako jedyny przycisk.
 
@@ -297,7 +297,7 @@ Pytanie stoi przy wierszu, którego dotyczy, więc osoba widzi piętro i skutek 
 
 ### Przed wyborem
 
-![Makieta C6 dla wejścia głównego A-1: obecne oznaczenie Niedostępne z datą i źródłem, dwie duże ramki Dostępne i Niedostępne, przypomnienie o twarzach, Zrób zdjęcie, informacja o sprawdzeniu przez inną osobę i Wyślij do sprawdzenia](../../_generated/m-c6-zmien-oznaczenie-wejscia.svg)
+![Makieta C6 dla wejścia głównego A-1: obecne oznaczenie Niedostępne z datą i źródłem, dwie duże ramki Dostępne i Niedostępne, komunikat Ważne o twarzach, Zrób zdjęcie, informacja o sprawdzeniu przez inną osobę i Wyślij do sprawdzenia](../../_generated/m-c6-zmien-oznaczenie-wejscia.svg)
 
 Czynność główna: „Wyślij do sprawdzenia”.
 
@@ -306,7 +306,7 @@ Czynność główna: „Wyślij do sprawdzenia”.
 | Budynek A-1 i „Wejście główne” | US17.2 |
 | Obecne oznaczenie „Niedostępne” z ikoną, datą i źródłem jak na V2 [1] | US17.3, NFR-21, PW-3 |
 | Dwie duże ramki „Dostępne” i „Niedostępne”, bez „Brak danych” | US17.2, BR-24, NFR-17 |
-| Przypomnienie o twarzach i „Zrób zdjęcie”; zdjęcie obowiązkowe | US17.2, BR-24, NFR-25, PW-8 |
+| Komunikat „Ważne” o twarzach i „Zrób zdjęcie”; zdjęcie obowiązkowe | US17.2, BR-24, NFR-25, PW-8, decyzja 54 |
 | „Zmianę sprawdzi inna osoba. Do tego czasu karta budynku pokazuje obecne oznaczenie.” | BR-4, BR-24 |
 
 ### Potwierdzenie obecnego oznaczenia
@@ -329,14 +329,14 @@ Czynność główna: „Wyślij do sprawdzenia”.
 
 ## C7 Zgłoś, że bariery nie ma
 
-![Makieta C7: przyjęte zgłoszenie niesprawna winda z budynkiem, piętrem, miejscem, zdjęciem i datą sprawdzenia, bez pól do edycji; sekcja Nowe zdjęcie miejsca z przypomnieniem i Zrób zdjęcie; informacja, że bariera zostanie na mapie do sprawdzenia, i Wyślij do sprawdzenia](../../_generated/m-c7-bariery-nie-ma.svg)
+![Makieta C7: przyjęte zgłoszenie niesprawna winda z budynkiem, piętrem, miejscem, zdjęciem i datą sprawdzenia, bez pól do edycji; sekcja Nowe zdjęcie miejsca z komunikatem Ważne i Zrób zdjęcie; informacja, że bariera zostanie na mapie do sprawdzenia, i Wyślij do sprawdzenia](../../_generated/m-c7-bariery-nie-ma.svg)
 
 Czynność główna: „Wyślij do sprawdzenia”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Zgłoszenie przyjęte: typ TB-9 ze scenariusza `@US8.4`, piętro, miejsce, zdjęcie, „Sprawdzone …”; bez edycji | BR-19 |
-| „Nowe zdjęcie miejsca”, przypomnienie i „Zrób zdjęcie”; zdjęcie obowiązkowe | US8.4, BR-19, NFR-25, PW-8 |
+| „Nowe zdjęcie miejsca”, komunikat „Ważne” o twarzach i „Zrób zdjęcie”; zdjęcie obowiązkowe | US8.4, BR-19, NFR-25, PW-8, decyzja 54 |
 | „Bariera zostanie na mapie, dopóki Weryfikator nie sprawdzi zgłoszenia.” | US8.4 |
 | Brak typu i uciążliwości do wyboru | BR-19, BR-7 |
 

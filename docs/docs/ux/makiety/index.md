@@ -33,7 +33,7 @@ Plik `_wspolne.iuml` ma rozszerzenie `.iuml`, więc skrypt `render.py` nie trakt
 | --- | --- | --- |
 | `$naglowek("Tytuł", "podtytuł")` | „Wstecz” ze strzałką w lewo i tytuł ekranu; podtytuł opcjonalny | wymagania wspólne, NFR-15, PW-11 |
 | `$naglowek_startowy("Mapa kampusu")` | sam tytuł, tylko na V1 | wymagania wspólne |
-| `$brak_internetu("Dane z <i>[data]</i>")` | „Brak internetu” z ikoną i dopiskiem o wieku danych; bez argumentu sam napis | US9.1, NFR-10, NFR-21 |
+| `$brak_internetu("dane z <i>[data]</i>")` | „Bez internetu ·” z ikoną, a w drugim wierszu dopisek o wieku danych albo „Ostatnia synchronizacja: …”; bez argumentu samo „Bez internetu” | US9.1, NFR-10, NFR-21, decyzja 54 |
 | `$pasek_dolny_konto()` | „Mapa”, „Zgłoś barierę”, „Pomoc”, „Konto” | wymagania wspólne, US14 |
 | `$pasek_dolny_praca()` | to samo z „Konto i praca” | wymagania wspólne, US14.1 |
 | `$komunikat("Treść.", "Przycisk")` | ramka z komunikatem i najwyżej dwoma przyciskami tej samej wielkości | NFR-15, NFR-50 |
@@ -45,7 +45,8 @@ Plik `_wspolne.iuml` ma rozszerzenie `.iuml`, więc skrypt `render.py` nie trakt
 | `$ramka()` … `}` | ramka pozycji listy na pełną szerokość; używają jej `$wejscie`, `$pozycja`, `$opcja`, `$komunikat` i `$mapa` | NFR-17 |
 | `$pole_tekstowe("…")`, `$blad_pola("…")` | pole tekstowe stałej szerokości; błąd przy polu pogrubiony | NFR-15, NFR-21 |
 | `$przelacznik("Mapa", "Lista budynków", 1)`, `$pietra(2)`, `$opcja("X", $blokada(), "opis")` | przełącznik dwóch widoków, wybór piętra, opcja w dużej ramce | NFR-17, NFR-19, NFR-21, US16.1 |
-| `$zdjecie("opis")` | przypomnienie o twarzach i tablicach, zdjęcie i „Zrób zdjęcie” albo „Zrób nowe zdjęcie” | NFR-25, PW-8 |
+| `$wazne("wymaganie", "powód")` | komunikat ostrzegawczy w ramce: „(!)” zamiast koła ze znakiem „!”, pogrubione „Ważne”, wymaganie i zdanie z powodem; bez trójkąta, który należy do „Utrudnienie” | NFR-16, NFR-21, PW-13, decyzja 54 |
+| `$zdjecie("opis")` | komunikat „Ważne” o twarzach i tablicach, zdjęcie i „Zrób zdjęcie” albo „Zrób nowe zdjęcie” | NFR-25, PW-8 |
 | `$tekst("…")`, `$sekcja("…")`, `$obraz("…")` | tekst zawinięty, nagłówek sekcji, zastępnik obrazu | NFR-20 |
 | `$dostepne()` i pozostałe funkcje oznaczeń | napis z ikoną: oznaczenie wejścia, uciążliwość, status, znacznik | NFR-21, US17.1, US8.1, US15.1 |
 

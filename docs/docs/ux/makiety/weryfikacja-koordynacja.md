@@ -8,11 +8,11 @@ Ekrany ról pracowniczych nie mają paska dolnego, bo wymagania wspólne przewid
 
 Wszystkie pięć ekranów potrzebuje serwera, więc mają te same stany „brak sieci”, „błąd serwera” i „brak uprawnień”. Makieta pokazuje je raz, na R1.
 
-![Makieta R1 w stanie brak sieci: nagłówek, wskaźnik Brak internetu i komunikat z przyciskiem Spróbuj ponownie](../../_generated/m-r1-kolejka-weryfikacji-brak-sieci.svg)
+![Makieta R1 w stanie brak sieci: nagłówek, wskaźnik Bez internetu i komunikat z przyciskiem Spróbuj ponownie](../../_generated/m-r1-kolejka-weryfikacji-brak-sieci.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Brak internetu” z ikoną pod nagłówkiem, bez dopisku o dacie, bo ekran nie pokazuje danych z telefonu | US9.1, NFR-10, NFR-21 |
+| „Bez internetu” z ikoną pod nagłówkiem, bez dopisku o dacie, bo ekran nie pokazuje danych z telefonu | US9.1, NFR-10, NFR-21 |
 | Komunikat „Ta czynność wymaga internetu…” i „Spróbuj ponownie” na pełną szerokość | NFR-50, PW-10; stan wspólny |
 | Błąd serwera: ten sam układ, bez wskaźnika sieci, komunikat „Serwer chwilowo nie odpowiada…” i „Spróbuj ponownie” | NFR-50, PW-10 |
 | Brak uprawnień: ten sam układ, komunikat „Nie masz już uprawnień do tej czynności…” i „Wróć do mapy”, który otwiera V1 | US14.1, NFR-33, PW-10 |
@@ -139,7 +139,7 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Ładowanie | tekst od razu, w ramkach zdjęć napis „Wczytujemy zdjęcie…” (PW-9) |
 | Błąd walidacji przy przyjęciu | nad „Przyjmij” komunikat „Ustal typ bariery i uciążliwość, aby przyjąć zgłoszenie.” (US10.3) |
 | Błąd walidacji przy odrzuceniu | nad „Odrzuć” komunikat „Podaj powód odrzucenia, aby autor wiedział, co poprawić.” (US10.2) |
-| Brak sieci przy decyzji | wskaźnik „Brak internetu” i nad „Przyjmij” komunikat „Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«…”; dane i wybory zostają (BR-11) |
+| Brak sieci przy decyzji | wskaźnik „Bez internetu” i nad „Przyjmij” komunikat „Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«…”; dane i wybory zostają (BR-11) |
 | Błąd serwera, brak uprawnień | stany wspólne |
 
 ## K1 Postęp inwentaryzacji

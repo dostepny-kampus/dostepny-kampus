@@ -3,7 +3,7 @@
 !include _wspolne.iuml
 $ekran_poczatek()
 $naglowek("Tytuł ekranu", "podtytuł (opcjonalny)")
-$brak_internetu("Dane z <i>[data]</i>")
+$brak_internetu("dane z <i>[data]</i>")
 $brak_internetu("Ostatnia synchronizacja: <i>[data]</i>, <i>[godzina]</i>")
 $sekcja("Oznaczenie wejścia")
 $wejscie($dostepne(), "Wejście główne", "Sprawdzone na miejscu <i>[data]</i>")
