@@ -16,6 +16,7 @@ android {
 dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:data"))
+    implementation(project(":core:geo"))
     implementation(project(":core:designsystem"))
     implementation(libs.androidx.compose.material3)
     implementation(libs.maplibre.android)

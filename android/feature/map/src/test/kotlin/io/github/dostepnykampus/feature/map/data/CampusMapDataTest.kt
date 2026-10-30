@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test
 import org.maplibre.spatialk.geojson.FeatureCollection
 import org.maplibre.spatialk.geojson.Geometry
 import org.maplibre.spatialk.geojson.MultiPolygon
+import org.maplibre.spatialk.geojson.Point
 import org.maplibre.spatialk.geojson.Polygon
 
 /** Warstwy mapy V1 z syntetycznego katalogu „Budynek testowy” (nie dane PWr). */
@@ -57,6 +58,14 @@ class CampusMapDataTest {
         assertEquals(listOf("C-3/C-4", "C-13"), data.labels)
         assertEquals(listOf(true, false), buildings.map { it.geometry is Polygon })
         assertEquals(2, (buildings.last().geometry as? MultiPolygon)?.run { coordinates.size })
+    }
+
+    @Test
+    fun us1_one_label_point_each() {
+        val points = parse(data.labelPoints)
+        assertEquals(listOf("C-3/C-4", "C-13"), points.map { it.properties.text("label") })
+        val position = (points.last().geometry as? Point)?.coordinates
+        assertEquals(true, position != null && position.longitude in 2.0..3.0 && position.latitude in 0.0..1.0)
     }
 
     @Test

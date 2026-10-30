@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.data
 
+import io.github.dostepnykampus.core.geo.labelPoint
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoArea
@@ -35,12 +36,20 @@ private const val LABEL_SEPARATOR = "/"
  * @property buildings kontury budynków; obiekt ma właściwość `label`, czyli podpis konturu na mapie, i listę
  *   `symbols`. Kontur wspólny kilku symboli to jeden obiekt z podpisem „C-3/C-4” (decyzja 79)
  * @property labels podpisy konturów, każdy raz, w kolejności katalogu; widok mapy rysuje z nich obrazy podpisów
+ * @property labelPoints punkty podpisów, jeden na kontur, wewnątrz konturu, z właściwością `label`. Podpis przy
+ *   konturze dzielonym na kafelki pojawiałby się w każdym kawałku albo w żadnym (US1, reguła 4 wymagań wspólnych)
  * @property entrances wejścia, każde raz po identyfikatorze, także wejście wspólne kilku budynków; obiekt ma
  *   właściwości `marking` (`ACCESSIBLE`, `INACCESSIBLE` albo `NO_DATA`) i `main`
  * @property start środek pierwszego widoku: środek budynku [START_BUILDING] (US1, US1.2, decyzja 80), a bez niego
  *   środek wszystkich konturów; `null` bez budynków
  */
-data class CampusMapData(val buildings: String, val labels: List<String>, val entrances: String, val start: GeoPoint?)
+data class CampusMapData(
+    val buildings: String,
+    val labels: List<String>,
+    val labelPoints: String,
+    val entrances: String,
+    val start: GeoPoint?,
+)
 
 /**
  * Dane warstw mapy z [catalog]. Katalog z repozytorium nie ma już wejść `emergency`, `exit` i `garage`
@@ -57,6 +66,11 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
                 }
             Feature(outline.toGeometry(), properties)
         }
+    val labelPoints =
+        outlines.map { (outline, symbols) ->
+            val properties = buildJsonObject { put(key = "label", value = symbols.joinToString(LABEL_SEPARATOR)) }
+            Feature(Point(labelPoint(outline).toPosition()), properties)
+        }
     val entrances =
         catalog.entrances.distinctBy { it.id }.map { entrance ->
             val properties =
@@ -70,6 +84,7 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
     return CampusMapData(
         buildings = GeoJsonObject.toJson(FeatureCollection(buildings)),
         labels = outlines.values.map { it.joinToString(separator = LABEL_SEPARATOR) },
+        labelPoints = GeoJsonObject.toJson(FeatureCollection(labelPoints)),
         entrances = GeoJsonObject.toJson(FeatureCollection(entrances)),
         start = center(startBuildings.flatMap { it.outline.points() }),
     )
