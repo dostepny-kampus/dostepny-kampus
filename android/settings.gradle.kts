@@ -37,4 +37,5 @@ include(
     ":feature:capture",
     ":feature:review",
     ":feature:progress",
+    ":feature:help",
 )
