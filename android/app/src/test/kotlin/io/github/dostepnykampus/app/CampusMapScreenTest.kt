@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -14,12 +15,16 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.CampusMapScreen
@@ -31,6 +36,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Ekran V1 z widokiem zastępczym zamiast MapLibre i katalogiem „Budynek testowy” (nie dane PWr). */
@@ -59,7 +65,7 @@ class CampusMapScreenTest {
         }
 
     @Composable
-    private fun Screen(fontScale: Float = 1f, focus: String? = null) {
+    private fun Screen(fontScale: Float = 1f, focus: String? = null, sheet: Dp = 0.dp) {
         DostepnyKampusTheme {
             val density = Density(density = LocalDensity.current.density, fontScale = fontScale)
             CompositionLocalProvider(LocalDensity provides density) {
@@ -67,6 +73,7 @@ class CampusMapScreenTest {
                     repository = repository,
                     onBuildingClick = { opened += it },
                     focus = focus,
+                    contentPadding = PaddingValues(bottom = sheet),
                     mapView = fakeMap,
                 )
             }
@@ -121,6 +128,18 @@ class CampusMapScreenTest {
         compose.onNodeWithText("Zamknij").performClick()
         compose.onNodeWithText("Który budynek?").assertDoesNotExist()
         assertEquals(emptyList<String>(), opened)
+    }
+
+    // Wiersz: V2 jako arkusz nad V1, podpis OSM i przyciski nad arkuszem, decyzja 87.
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun nfr37_osm_above_sheet() {
+        compose.setContent { Screen(sheet = 400.dp) }
+        val bottom = compose.onRoot().getBoundsInRoot().bottom
+        val osm = compose.onNodeWithText("© OpenStreetMap contributors").getBoundsInRoot()
+        assertEquals(true, osm.bottom <= bottom - 400.dp)
+        val zoomOut = compose.onNodeWithContentDescription("Pomniejsz").getBoundsInRoot()
+        assertEquals(true, zoomOut.bottom <= bottom - 400.dp)
     }
 
     // Wiersz: V2, „Wstecz” → V1 z zaznaczonym budynkiem (US1.1).

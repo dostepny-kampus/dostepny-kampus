@@ -58,10 +58,16 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
     }
 }
 
-// V1 z obrysem budynku z trasy, np. po „Wstecz” z V2 albo „Pokaż na mapie” (US1.1, US2.1).
+// V1 z obrysem budynku z trasy, np. po „Wstecz” z V2 albo „Pokaż na mapie” (US1.1, US2.1). Przyciski i podpis
+// OSM stoją nad arkuszem V2 (decyzja 87).
 @Composable
 private fun AppNavigator.MapScreen(focus: String?) {
-    CampusMapScreen(LocalContext.current.buildingCatalogRepository(), { openBuilding(it) }, focus = focus)
+    CampusMapScreen(
+        repository = LocalContext.current.buildingCatalogRepository(),
+        onBuildingClick = { openBuilding(it) },
+        focus = focus,
+        contentPadding = LocalSheetPadding.current,
+    )
 }
 
 @Composable
