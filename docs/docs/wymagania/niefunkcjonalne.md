@@ -35,7 +35,7 @@ Każde wymaganie ma miarę i sposób sprawdzenia. Dopisek „(próg zespołu)”
 | NFR-7 | Offline | Kolejka do synchronizacji mieści pracę kilku dni terenowych. | ≥ 200 zgłoszeń z jednym zdjęciem każde. Ostrzeżenie, gdy w telefonie zostaje < 100 MB (próg zespołu). | Test z 200 zgłoszeniami bez sieci, potem pełna synchronizacja. | N6 |
 | NFR-8 | Synchronizacja | Ponowne wysłanie tej samej operacji nie tworzy drugiego zgłoszenia. | 0 duplikatów przy 20 przerwanych synchronizacjach. | Przerwanie połączenia w trakcie synchronizacji, ponowienie, liczenie zgłoszeń na serwerze. | N6, N8 |
 | NFR-9 | Synchronizacja | Konflikt wersji nigdy nie kończy się cichym nadpisaniem. | 100% konfliktów trafia na ekran wyboru wersji (C4). | Równoległa edycja tego samego zgłoszenia z dwóch telefonów. | N7, US9.3 |
-| NFR-10 | Offline | Ostatnio pobrane budynki i bariery są dostępne bez sieci, z datą aktualizacji. | Karta wcześniej otwartego budynku otwiera się offline i pokazuje datę synchronizacji. Przy pierwszym otwarciu bez sieci aplikacja mówi, że potrzebuje internetu, i wczytuje dane sama po jego powrocie. Ekran konta bez sieci pokazuje role z ostatniego logowania. | Test w trybie samolotowym na V1, V2 i L2. | N1, N2, N6 |
+| NFR-10 | Offline | Ostatnio pobrane budynki i bariery są dostępne bez sieci, z datą aktualizacji. | Karta wcześniej otwartego budynku otwiera się offline i pokazuje datę synchronizacji. Przy pierwszym otwarciu bez sieci mapa pokazuje kontury i wejścia z danych aplikacji, a wyszukiwanie po symbolu działa. Bariery, plany pięter i mapa ulic wczytują się same po powrocie sieci. Ekran konta bez sieci pokazuje role z ostatniego logowania. | Test w trybie samolotowym na V1, V2 i L2. | N1, N2, N6 |
 
 ## Wydajność
 

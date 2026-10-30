@@ -64,6 +64,8 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | --- | --- | --- | --- | --- |
 | V1 | wybór wyniku w polu „Wpisz symbol budynku, np. C-13” | V2 | wszystkie | US1.1 |
 | V1 | dotknięcie konturu budynku | V2, arkusz na mapie do połowy ekranu | wszystkie | US2, US3.2, decyzja 48 |
+| V1 | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie w zasięgu dwóch konturów | V1, arkusz „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
+| V1, arkusz „Który budynek?” | przycisk budynku, np. „Budynek C-3”; „Zamknij” | V2 tego budynku; V1 | wszystkie | US2, NFR-53 |
 | V1 | przełącznik „Mapa” i „Lista budynków” | V1, lista | wszystkie | NFR-19 |
 | V1 | dotknięcie budynku na liście | V2 | wszystkie | US2, US3.2 |
 | V1 | dotknięcie znaku bariery | V1, arkusz bariery | wszystkie | US1.3, US10.6 |
@@ -240,6 +242,7 @@ Wejście jest wskazane już na V2, bo karta podaje oznaczenie każdego wejścia 
 | E. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem A | 2 | 3 | spełnione |
 | F. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem C albo D | 3 | 4 | do V3 ponad próg |
 | G. Brak wyniku: pole, litery, „Lista budynków”, budynek, „Sprawdź, którędy wejść” | 3 | 4 | droga po błędzie, ponad próg |
+| H. V1: kontur wspólny, np. „C-3/C-4”, budynek w „Który budynek?”, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
 
 Kryterium liczy dotknięcia od mapy, więc ścieżki E i F się w nim mieszczą. Jeśli liczyć od otwarcia aplikacji, ścieżka F przekracza próg tylko przy pierwszym uruchomieniu i tylko do V3.
 
@@ -304,7 +307,7 @@ Punkt startu każdej roli to V1, bo od niej zaczyna się aplikacja. Pasek dolny 
 | --- | --- |
 | V3 | celowy koniec drogi US3: odpowiedź na pytanie, dalej „Wstecz”, przyciski przy wejściach i pasek dolny |
 | V4, potwierdzenie | celowy koniec zgłoszenia szybkiego (US4.4); wyjście „Wróć do mapy” |
-| V1, stan „brak sieci przy pierwszym uruchomieniu” | celowe czekanie: mapa wczyta się sama po powrocie sieci (NFR-11) |
+| V1, stan „brak sieci przy pierwszym uruchomieniu” | nie zaułek: kontury, wejścia, wyszukiwanie i pasek działają; bariery i plany wczytają się same po powrocie sieci (NFR-10) |
 | K2 i K3 po sukcesie | celowy koniec czynności; potwierdzenie na tym samym ekranie, dalej „Wstecz” |
 | Przeglądarka, ustawienia telefonu, aparat, pobrane pliki | poza aplikacją; powrót przyciskiem „Wstecz” telefonu |
 | V4, „Zrezygnuj” | po potwierdzeniu prowadzi do V1 (rozbieżność 2, rozstrzygnięta); „Wróć do zdjęcia” wraca do stanu „brak pozycji” |
