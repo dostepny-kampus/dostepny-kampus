@@ -29,6 +29,14 @@ class MapCameraTest {
     }
 
     @Test
+    fun us1_1_building_above_sheet() {
+        val building = GeoPoint(longitude = 17.1, latitude = 60.1)
+        val aboveSheet = camera.aboveSheet(building, bottomInset = 800.0)
+        assertEquals(MapCamera(center = building, zoom = START_ZOOM, bottomInset = 800.0), aboveSheet)
+        assertEquals(camera, camera.aboveSheet(focus = null, bottomInset = 800.0))
+    }
+
+    @Test
     fun nfr53_arrows_move_center() {
         val step = 70.0 / 131_072.0
         assertEquals(17.0 + step, camera.moved(PanDirection.RIGHT).center.longitude, DELTA)
