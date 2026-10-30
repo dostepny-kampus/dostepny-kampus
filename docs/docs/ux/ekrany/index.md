@@ -4,9 +4,11 @@ Na tej stronie są makiety hi-fi ekranów aplikacji zatwierdzone przez właścic
 
 Każdy stan ma trzy warianty: jasny, ciemny i przy czcionce 200% (nieliniowa skala Androida 14). Wariant 200% to cała przewijana strona. Na telefonie przypięty jest tylko pasek dolny, a górny pasek z przyciskiem „Wstecz” może się chować przy przewijaniu w dół.
 
+Ekrany zespołu (C1–C7, R1, R2, K1–K3) nie mają paska dolnego. Na C1, C2, C6, C7, K2 i K3 przypięta jest czynność główna (reguła 10 z sekcji [Duża czcionka](../wymagania-ekranow.md#duza-czcionka)). Gdy czcionka ma 200%, nazwa ekranu stoi w treści, a na pasku zostaje „Wstecz”. Przy każdym stanie są odwołania do kryteriów, reguł i wymagań, z których wynikają jego elementy.
+
 Na zrzutach mapa ulic i pozostałe budynki pochodzą z OpenStreetMap. Kontury budynków Politechniki, ścieżki dostosowane, pochylnie, symbole i nazwy budynków, wejścia oraz plany pięter pochodzą z danych Politechniki Wrocławskiej. Przytaczamy je do celów dydaktycznych ze wskazaniem źródła „Źródło: Politechnika Wrocławska”.
 
-W aplikacji kontury budynków pochodzą z OpenStreetMap. Przykładowe są bariery, daty, osoba na ekranie konta i wejścia budynku C-7.
+W aplikacji kontury budynków pochodzą z OpenStreetMap. Przykładowe są bariery, daty, osoba na ekranie konta i wejścia budynku C-7. Na ekranach zespołu przykładowe są też zgłoszenia, pseudonimy autorów, odległości i dokładności pomiaru, liczby w postępie inwentaryzacji i adres e-mail w zaproszeniu.
 
 Obrazy jasne i ciemne mają 780 px szerokości, czyli ekran 390 dp w skali 2. Obrazy przy czcionce 200% mają 390 px szerokości (skala 1). Kliknięcie obrazu otwiera go w pełnym rozmiarze.
 
@@ -373,3 +375,175 @@ Wymagania: [L2 Konto](../wymagania-ekranow.md#l2-konto).
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
 | [![Wycofanie zgody: „Wylogujemy Cię i w ciągu miesiąca usuniemy Twoje dane osobowe.”, dopisek, że wysłane zdjęcia barier zostaną bez danych osoby, i dwa jednakowe przyciski Wycofaj zgodę oraz Zostaw zgodę](obrazy/m-l2-konto-wycofanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-wycofanie-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-l2-konto-wycofanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-wycofanie-ciemny.webp) | [![To samo potwierdzenie przy czcionce 200%](obrazy/m-l2-konto-wycofanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-wycofanie-jasny-200.webp) |
+
+## C1 Pomiar pozycji
+
+Wymagania: [C1 Pomiar pozycji](../wymagania-ekranow.md#c1-pomiar-pozycji). Nagłówek w aplikacji: „Zmierz i zgłoś barierę”.
+
+### C1: pomiar trwa
+
+`m-c1-pomiar-pozycji` · [makieta low-fi](../makiety/zespol-w-terenie.md#pomiar-trwa) · odwołania: US6.1, US6.5, NFR-2, NFR-21, NFR-23
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Pomiar trwa: karta „Pomiar: zostało 12 s” z dokładnością 0,8 m (szacunek), satelitami GPS 7, Galileo 5, GLONASS 4 i przyciskiem Powtórz pomiar, niżej Mapa nieba z kierunkami Pn, Pd, Wsch, Zach, satelitami w trzech kształtach i legendą kształtów GPS, Galileo, GLONASS](obrazy/m-c1-pomiar-pozycji-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-jasny.webp) | [![Ten sam pomiar w motywie ciemnym](obrazy/m-c1-pomiar-pozycji-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, liczby dokładności i satelitów w kilku wierszach, mapa nieba niżej](obrazy/m-c1-pomiar-pozycji-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-jasny-200.webp) |
+
+### C1: po pomiarze, podpowiedź budynku
+
+`m-c1-pomiar-pozycji-podpowiedz` · [makieta low-fi](../makiety/zespol-w-terenie.md#po-pomiarze-podpowiedz-budynku) · odwołania: US6.1, US6.2, US6.3, US6.4, BR-G2, NFR-37, NFR-40, NFR-53
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Po pomiarze: karta Pomiar zakończony, pytanie Czy to budynek A-1? z napisem Gmach Główny, ok. 2 m od punktu i przyciskami Potwierdź, Wybierz inny, Poza budynkiem, niżej Miejsce bariery z podpisem Przesuń mapę, aby punkt stał na miejscu bariery, mapa z punktem na środku, strzałkami w krzyżu, plusem i minusem, podpisem OpenStreetMap i przyciskiem informacji, na dole przycisk Dalej](obrazy/m-c1-pomiar-pozycji-podpowiedz-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-podpowiedz-jasny.webp) | [![Ta sama podpowiedź budynku w motywie ciemnym z nocną mapą](obrazy/m-c1-pomiar-pozycji-podpowiedz-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-podpowiedz-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, trzy przyciski podpowiedzi jeden pod drugim, mapa i Dalej niżej](obrazy/m-c1-pomiar-pozycji-podpowiedz-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-podpowiedz-jasny-200.webp) |
+
+### C1: wybór innego budynku
+
+`m-c1-pomiar-pozycji-wybor-budynku` · [makieta low-fi](../makiety/zespol-w-terenie.md#wybor-innego-budynku) · odwołania: US6.2, BR-G2, NFR-4
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Po dotknięciu Wybierz inny: sekcja Wybierz budynek z napisem Najbliżej punktu, od najbliższego i wyborem Budynek A-1 Gmach Główny ok. 2 m, Budynek A-6 Karlicówka ok. 22 m, Budynek A-7 ok. 31 m oraz Poza budynkiem, niżej mapa z punktem i przycisk Dalej](obrazy/m-c1-pomiar-pozycji-wybor-budynku-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-wybor-budynku-jasny.webp) | [![Ten sam wybór budynku w motywie ciemnym](obrazy/m-c1-pomiar-pozycji-wybor-budynku-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-wybor-budynku-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, każdy budynek na liście w dwóch wierszach](obrazy/m-c1-pomiar-pozycji-wybor-budynku-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-wybor-budynku-jasny-200.webp) |
+
+### C1: korekta na planie piętra
+
+`m-c1-pomiar-pozycji-korekta` · [makieta low-fi](../makiety/zespol-w-terenie.md#korekta-w-budynku-szczegoowym) · odwołania: US6.3, US6.4, NFR-3, NFR-21, NFR-37, NFR-40, NFR-53
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Korekta w budynku A-1: Budynek A-1 Gmach Główny z Wybierz inny, przełącznik z wybranym Plan piętra obok Mapa, wybór piętra z zaznaczonym 2 piętro, podpis Przesuń mapę, aby punkt stał na miejscu bariery, napis Korekta ręczna, plan piętra z punktem na środku, strzałkami i plusem oraz minusem, pod planem Źródło: Politechnika Wrocławska i przycisk Dalej](obrazy/m-c1-pomiar-pozycji-korekta-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-korekta-jasny.webp) | [![Ta sama korekta na planie piętra w motywie ciemnym](obrazy/m-c1-pomiar-pozycji-korekta-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-korekta-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, piętra w trzech wierszach, plan niżej](obrazy/m-c1-pomiar-pozycji-korekta-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-korekta-jasny-200.webp) |
+
+### C1: budynek bez planu pięter (A-6)
+
+`m-c1-pomiar-pozycji-podstawowy` · odwołania: US6.4, BR-G1, PW-6, NFR-53
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Budynek podstawowy A-6 Karlicówka: zamiast przełącznika i pięter napis Nie mamy planu pięter tego budynku, podpis Przesuń mapę, aby punkt stał na miejscu bariery, Korekta ręczna, mapa z punktem i przyciskami mapy, na dole Dalej](obrazy/m-c1-pomiar-pozycji-podstawowy-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-podstawowy-jasny.webp) | [![Ten sam budynek bez planu pięter w motywie ciemnym](obrazy/m-c1-pomiar-pozycji-podstawowy-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-podstawowy-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, napis o braku planu w dwóch wierszach](obrazy/m-c1-pomiar-pozycji-podstawowy-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-podstawowy-jasny-200.webp) |
+
+### C1: poza budynkiem, bez internetu
+
+`m-c1-pomiar-pozycji-poza-budynkiem` · [makieta low-fi](../makiety/zespol-w-terenie.md#daleko-od-budynkow-bez-internetu) · odwołania: BR-G4, NFR-4, NFR-10, NFR-49
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Daleko od budynków i bez internetu: linia Bez internetu · Ostatnia synchronizacja: 29.10.2026, 16:20, karta Pomiar zakończony, karta Poza budynkiem z Wybierz inny, mapa z punktem między budynkami A-11 i A-13, przycisk Dalej](obrazy/m-c1-pomiar-pozycji-poza-budynkiem-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-poza-budynkiem-jasny.webp) | [![Ten sam stan poza budynkiem w motywie ciemnym](obrazy/m-c1-pomiar-pozycji-poza-budynkiem-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-poza-budynkiem-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, linia braku internetu w dwóch wierszach, data z godziną razem](obrazy/m-c1-pomiar-pozycji-poza-budynkiem-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-poza-budynkiem-jasny-200.webp) |
+
+### C1: szukanie satelitów
+
+`m-c1-pomiar-pozycji-szukanie` · [makieta low-fi](../makiety/zespol-w-terenie.md#szukanie-satelitow) · odwołania: NFR-1, PW-9
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Szukanie satelitów: wskaźnik ładowania, napis Szukamy satelitów, Na otwartej przestrzeni pomiar będzie dokładniejszy, i przycisk Powtórz pomiar](obrazy/m-c1-pomiar-pozycji-szukanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-szukanie-jasny.webp) | [![To samo szukanie satelitów w motywie ciemnym](obrazy/m-c1-pomiar-pozycji-szukanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-szukanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, napis w kilku wierszach](obrazy/m-c1-pomiar-pozycji-szukanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-szukanie-jasny-200.webp) |
+
+### C1: brak zgody na lokalizację
+
+`m-c1-pomiar-pozycji-brak-zgody` · [makieta low-fi](../makiety/zespol-w-terenie.md#brak-zgody-na-lokalizacje) · odwołania: NFR-15, NFR-27
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Brak zgody na lokalizację: Aby zapisać miejsce bariery, potrzebujemy lokalizacji. Sprawdzimy ją tylko teraz i nie będziemy Cię śledzić, przycisk Pozwól na lokalizację, bez przycisku powrotu do mapy](obrazy/m-c1-pomiar-pozycji-brak-zgody-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-brak-zgody-jasny.webp) | [![Ta sama prośba o lokalizację w motywie ciemnym](obrazy/m-c1-pomiar-pozycji-brak-zgody-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-brak-zgody-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, przycisk Pozwól na lokalizację w dwóch wierszach](obrazy/m-c1-pomiar-pozycji-brak-zgody-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c1-pomiar-pozycji-brak-zgody-jasny-200.webp) |
+
+## C2 Formularz zgłoszenia
+
+Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgoszenia). Nagłówek w aplikacji: „Opisz barierę”, przy edycji „Popraw zgłoszenie”.
+
+### C2: nowe zgłoszenie
+
+`m-c2-formularz-zgloszenia` · [makieta low-fi](../makiety/zespol-w-terenie.md#nowe-zgoszenie-w-budynku-szczegoowym) · odwołania: US7.1, US7.2, US7.3, US7.4, NFR-19, NFR-21, NFR-25, PW-8, PW-13
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Nowe zgłoszenie: Budynek A-1 Gmach Główny, ok. 3 m od Wejścia Cesarskiego, dokładność 0,8 m, przycisk Zmień miejsce, wybór piętra od Piwnica do 3 piętro, pole Typ bariery z listą, Uciążliwość ze zdaniem Oceń dla osoby, dla której bariera jest najtrudniejsza, i trzema wyborami Utrudnienie, Tylko z pomocą, Blokada z ikoną i opisem, komunikat Ważne o twarzach i tablicach, Zrób zdjęcie bez ikony, pole Opis i przycisk Zapisz](obrazy/m-c2-formularz-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-jasny.webp) | [![Ten sam formularz w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, opisy uciążliwości w kilku wierszach, Zapisz na końcu formularza](obrazy/m-c2-formularz-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-jasny-200.webp) |
+
+### C2: edycja w budynku bez planu (C-13)
+
+`m-c2-formularz-zgloszenia-edycja` · [makieta low-fi](../makiety/zespol-w-terenie.md#edycja-w-budynku-podstawowym) · odwołania: US8.3, US7.2, US7.3, BR-G1, PW-6
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Popraw zgłoszenie: Budynek C-13 Zintegrowane Centrum Studenckie, ok. 6 m od wejścia głównego, dokładność 1,2 m, napis Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter, pole Numer piętra z wartością 2 i pole Półpiętro, Typ bariery Inna bariera, wybrana uciążliwość Tylko z pomocą, zdjęcie progu, Zrób nowe zdjęcie, wypełniony Opis i Zapisz](obrazy/m-c2-formularz-zgloszenia-edycja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-jasny.webp) | [![Ta sama edycja w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-edycja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, pole numeru piętra i Półpiętro jedno pod drugim](obrazy/m-c2-formularz-zgloszenia-edycja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-edycja-jasny-200.webp) |
+
+### C2: błąd walidacji
+
+`m-c2-formularz-zgloszenia-blad` · [makieta low-fi](../makiety/zespol-w-terenie.md#bad-walidacji) · odwołania: US7.1, NFR-15, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd walidacji: nad formularzem Brakuje typu bariery. Uzupełnij to pole, aby zapisać; przy polu Typ bariery ten sam pogrubiony tekst z kołem ze znakiem „!” i ramka pola w kolorze błędu, reszta formularza wypełniona](obrazy/m-c2-formularz-zgloszenia-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-jasny.webp) | [![Ten sam błąd w motywie ciemnym: tekst błędu i ramka pola jasnołososiowe](obrazy/m-c2-formularz-zgloszenia-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, tekst błędu przy polu w trzech wierszach](obrazy/m-c2-formularz-zgloszenia-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-jasny-200.webp) |
+
+### C2: zmiana zgłoszenia przyjętego
+
+`m-c2-formularz-zgloszenia-przyjete` · odwołania: BR-18, US8.3
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Popraw zgłoszenie przyjęte: na górze Zapis utworzy nowe zgłoszenie, które znów sprawdzi Weryfikator, niżej formularz z wybraną uciążliwością Utrudnienie, zdjęciem i przyciskiem Zapisz](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny.webp) | [![Ten sam formularz zgłoszenia przyjętego w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-przyjete-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, zdanie o nowym zgłoszeniu w kilku wierszach](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-przyjete-jasny-200.webp) |
+
+### C2: wyjście bez zapisu
+
+`m-c2-formularz-zgloszenia-wyjscie` · odwołania: US7.4, NFR-23
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Wyjście bez zapisu po Wstecz: Wyjść bez zapisu? Wpisane pola nie zostaną zapisane, dwa przyciski Wyjdź bez zapisu i Wróć do formularza](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny.webp) | [![To samo pytanie w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-wyjscie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, przyciski jeden pod drugim](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-wyjscie-jasny-200.webp) |
+
+### C2: błąd zapisu
+
+`m-c2-formularz-zgloszenia-blad-zapisu` · odwołania: NFR-7, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd zapisu: Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie, przycisk Spróbuj ponownie, niżej wypełniony formularz](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny.webp) | [![Ten sam błąd zapisu w motywie ciemnym](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad formularzem](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c2-formularz-zgloszenia-blad-zapisu-jasny-200.webp) |
+
+## C3 Moje zgłoszenia
+
+Wymagania: [C3 Moje zgłoszenia](../wymagania-ekranow.md#c3-moje-zgoszenia). Nagłówek w aplikacji: „Moje zgłoszenia”.
+
+### C3: lista zgłoszeń
+
+`m-c3-moje-zgloszenia` · [makieta low-fi](../makiety/zespol-w-terenie.md#lista-zgoszen) · odwołania: US8.1, US8.2, US8.4, US9.1, US17.2, BR-16, NFR-21, PW-12
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Lista zgłoszeń: przyciski Czeka na wysłanie: 2 i Zmierz i zgłoś barierę, potem karty ze statusem słowem i ikoną: W telefonie, Bariery już nie ma, Niesprawna winda z Otwórz; Odrzucone, Próg z powodem odrzucenia Zdjęcie nie pokazuje progu i Otwórz; W weryfikacji, Ciężkie drzwi ze Zmiana czeka na wysłanie; Wysłane, Próg z Dwie wersje: wybierz jedną; Przyjęte, Schody przy wejściu bez przycisku; Archiwalne, zmiana oznaczenia Wejścia Cesarskiego z Nowe oznaczenie: Niedostępne](obrazy/m-c3-moje-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny.webp) | [![Ta sama lista zgłoszeń w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty na całą szerokość, statusy i daty w kilku wierszach](obrazy/m-c3-moje-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny-200.webp) |
+
+### C3: odrzucone jako „Nieaktualne”
+
+`m-c3-moje-zgloszenia-nieaktualne` · [makieta low-fi](../makiety/zespol-w-terenie.md#odrzucone-jako-nieaktualne) · odwołania: BR-23, BR-24, PW-12, PW-14
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Trzy zgłoszenia odrzucone z powodem Nieaktualne: Próg z Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji i Wyślij ponownie; Bariery już nie ma, Niesprawna winda z Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa i Zmierz i zgłoś barierę; zmiana oznaczenia Wejścia Cesarskiego z Nowe oznaczenie: Dostępne, zdaniem Oznaczenie tego wejścia już się zmieniło i Wyślij ponownie](obrazy/m-c3-moje-zgloszenia-nieaktualne-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-nieaktualne-jasny.webp) | [![Te same odrzucone zgłoszenia w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-nieaktualne-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-nieaktualne-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, wyjaśnienia w kilku wierszach](obrazy/m-c3-moje-zgloszenia-nieaktualne-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-nieaktualne-jasny-200.webp) |
+
+### C3: pusta lista
+
+`m-c3-moje-zgloszenia-pusty` · [makieta low-fi](../makiety/zespol-w-terenie.md#pusta-lista) · odwołania: PW-12
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Pusta lista: Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę, przycisk Zmierz i zgłoś barierę](obrazy/m-c3-moje-zgloszenia-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-pusty-jasny.webp) | [![Ta sama pusta lista w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-pusty-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, przycisk w dwóch wierszach](obrazy/m-c3-moje-zgloszenia-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-pusty-jasny-200.webp) |
+
+### C3: sprawdzanie statusów
+
+`m-c3-moje-zgloszenia-ladowanie` · odwołania: US8.1, PW-9
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Ładowanie: nad listą z telefonu wskaźnik i napis Sprawdzamy statusy…, karty zgłoszeń widoczne](obrazy/m-c3-moje-zgloszenia-ladowanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ladowanie-jasny.webp) | [![To samo ładowanie w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-ladowanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ladowanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, napis ładowania nad kartami](obrazy/m-c3-moje-zgloszenia-ladowanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ladowanie-jasny-200.webp) |
+
+### C3: bez internetu
+
+`m-c3-moje-zgloszenia-brak-sieci` · odwołania: US9.1, NFR-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Bez internetu: linia Bez internetu · Ostatnia synchronizacja: 29.10.2026, 16:20, pod nią lista zgłoszeń z telefonu ze statusami](obrazy/m-c3-moje-zgloszenia-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-brak-sieci-jasny.webp) | [![Ta sama lista bez internetu w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, linia braku internetu w dwóch wierszach, data z godziną razem](obrazy/m-c3-moje-zgloszenia-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-brak-sieci-jasny-200.webp) |
+
+### C3: błąd sprawdzania statusów
+
+`m-c3-moje-zgloszenia-blad` · odwołania: NFR-5, NFR-50, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd: Nie udało się sprawdzić statusów, ale zgłoszenia są bezpieczne w telefonie. Spróbuj ponownie za chwilę, przycisk Spróbuj ponownie, pod nim lista z telefonu](obrazy/m-c3-moje-zgloszenia-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-blad-jasny.webp) | [![Ten sam błąd w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-blad-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad listą](obrazy/m-c3-moje-zgloszenia-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-blad-jasny-200.webp) |
