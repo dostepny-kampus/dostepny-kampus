@@ -6,6 +6,8 @@
 package io.github.dostepnykampus.feature.capture.navigation
 
 import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
 
 /** V4 Zgłoszenie szybkie (US4). */
+@Serializable
 data object ReportRoute : NavKey

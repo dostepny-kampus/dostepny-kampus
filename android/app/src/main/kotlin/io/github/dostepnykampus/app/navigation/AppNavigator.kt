@@ -54,9 +54,14 @@ fun selectedItem(route: NavKey): TopLevel? =
 /**
  * Przejścia między ekranami na historii [backStack] (mapa nawigacji: tabele „start, pasek dolny i »Wstecz«”
  * oraz „Gość i Odwiedzający”). Na dole historii jest zawsze V1. Konto z [roles] wybiera cel: Gość trafia do L1
- * zamiast V4 i L2 (US14, US14.2).
+ * zamiast V4 i L2 (US14, US14.2). [onFirstHelpLeft] dostaje znać, gdy instrukcja z pierwszego uruchomienia
+ * zniknie z historii dowolną drogą, żeby przy kolejnym starcie otworzyło się V1 (US5.1).
  */
-class AppNavigator(private val backStack: MutableList<NavKey>, private val roles: RoleProvider) {
+class AppNavigator(
+    private val backStack: MutableList<NavKey>,
+    private val roles: RoleProvider,
+    private val onFirstHelpLeft: () -> Unit = {},
+) {
     /** Ekran na wierzchu historii, czyli widoczny. */
     val current: NavKey
         get() = backStack.last()
@@ -76,12 +81,22 @@ class AppNavigator(private val backStack: MutableList<NavKey>, private val roles
     /** „Wstecz” w nagłówku i wstecz telefonu: poprzedni ekran (NFR-15). Na V1 fałsz, wtedy aplikacja się zamyka. */
     fun back(): Boolean {
         if (backStack.size == 1) return false
-        backStack.removeAt(backStack.lastIndex)
+        leaving { backStack.removeAt(backStack.lastIndex) }
         return true
     }
 
     /** V1 z wyczyszczoną historią, np. „Wróć do mapy”, „Pomiń instrukcję”, „Zacznij”, „Nie teraz”. */
     fun backToMap() {
-        backStack.subList(fromIndex = 1, toIndex = backStack.size).clear()
+        leaving { backStack.subList(fromIndex = 1, toIndex = backStack.size).clear() }
+    }
+
+    private fun leaving(change: () -> Unit) {
+        val hasHadFirstHelp = FirstHelp in backStack
+        change()
+        if (hasHadFirstHelp && FirstHelp !in backStack) onFirstHelpLeft()
+    }
+
+    private companion object {
+        val FirstHelp = HelpRoute(isFirstLaunch = true)
     }
 }

@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
     <string name="app_name">Dostępny Kampus</string>
+    <string name="nav_mapa">Mapa</string>
+    <string name="nav_zglos_bariere">Zgłoś barierę</string>
+    <string name="nav_pomoc">Pomoc</string>
+    <string name="nav_konto">Konto</string>
+    <string name="nav_konto_i_praca">Konto i praca</string>
 </resources>

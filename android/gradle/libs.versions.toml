@@ -42,6 +42,7 @@ konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine" }
 spatialk-turf = { module = "org.maplibre.spatialk:turf", version.ref = "spatialk" }
 spatialk-geojson = { module = "org.maplibre.spatialk:geojson", version.ref = "spatialk" }
 snakeyaml-engine = { module = "org.snakeyaml:snakeyaml-engine", version.ref = "snakeyamlEngine" }
@@ -54,5 +55,9 @@ robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectr
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 kover-gradlePlugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
+
+[plugins]
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

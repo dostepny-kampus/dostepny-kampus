@@ -6,6 +6,8 @@
 package io.github.dostepnykampus.feature.map.navigation
 
 import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
 
 /** V1 Mapa kampusu: ekran startowy, jedyny bez „Wstecz” (US1.2, wymagania wspólne). */
+@Serializable
 data object MapRoute : NavKey
