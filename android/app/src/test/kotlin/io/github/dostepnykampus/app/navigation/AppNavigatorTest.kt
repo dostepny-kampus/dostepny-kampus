@@ -11,7 +11,11 @@ import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
+import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
+import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -21,7 +25,7 @@ import org.junit.jupiter.api.Test
 
 /** Testy przejść; komentarz nad testem bez scenariusza podaje wiersz tabeli mapy nawigacji (ekran, czynność, AC/BR). */
 class AppNavigatorTest {
-    private val stack = mutableListOf<NavKey>(MapRoute)
+    private val stack = mutableListOf<NavKey>(MapRoute())
     private val visitor = Account.SignedIn()
     private val restarts = mutableListOf<Int>()
     private var helpLeft = 0
@@ -29,7 +33,7 @@ class AppNavigatorTest {
     private fun navigator(account: Account = Account.Guest) =
         AppNavigator(backStack = stack, roles = { account }, onFirstHelpLeft = { helpLeft++ }, restarts = restarts)
 
-    private fun stackOf(vararg routes: NavKey) = listOf<NavKey>(MapRoute, *routes)
+    private fun stackOf(vararg routes: NavKey) = listOf<NavKey>(MapRoute(), *routes)
 
     // Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu
     @Test
@@ -103,8 +107,26 @@ class AppNavigatorTest {
             val keys = stack.indices.map(::contentKey)
             open(TopLevel.HELP)
             assertEquals(stackOf(AccountRoute, HelpRoute()), stack)
+            assertEquals(keys.dropLast(1), stack.indices.map(::contentKey).dropLast(1))
             assertNotEquals(keys.last(), contentKey(index = 2))
+            back()
         }
+        assertEquals(stack.size, restarts.size)
+    }
+
+    // Wiersz: pasek dolny, ponowne dotknięcie „Mapa” → V1 bez arkusza i wyniku wyszukiwania, NFR-15, decyzja 72.
+    @Test
+    fun nfr15_reselect_map_restarts_v1() {
+        navigator().run {
+            val key = contentKey(index = 0)
+            open(TopLevel.HELP)
+            open(TopLevel.MAP)
+            assertEquals(key, contentKey(index = 0))
+            openBuilding(symbol = "C-13")
+            open(TopLevel.MAP)
+            assertNotEquals(key, contentKey(index = 0))
+        }
+        assertEquals(stackOf(), stack)
     }
 
     // Wiersz: każdy ekran poza V1, „Wstecz”, NFR-15: ten sam ekran dwa razy w historii ma dwa klucze treści.
@@ -114,6 +136,7 @@ class AppNavigatorTest {
             open(TopLevel.ACCOUNT)
             open(TopLevel.HELP)
             open(TopLevel.ACCOUNT)
+            assertEquals(stackOf(AccountRoute, HelpRoute(), AccountRoute), stack)
             val keys = stack.indices.map(::contentKey)
             assertEquals(keys.distinct(), keys)
         }
@@ -123,7 +146,7 @@ class AppNavigatorTest {
     @Test
     fun us4_bar_report_signed_in_v4() {
         navigator(visitor).open(TopLevel.REPORT)
-        assertEquals(stackOf(ReportRoute), stack)
+        assertEquals(stackOf(ReportRoute()), stack)
     }
 
     // Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość niezalogowany jest proszony o logowanie przed zdjęciem
@@ -167,16 +190,113 @@ class AppNavigatorTest {
     // Wiersz: każdy ekran poza V1, „Wstecz”, NFR-15: V1 jest na dole historii, wstecz zamyka aplikację.
     @Test
     fun nfr15_back_on_v1_closes_app() {
-        assertFalse(navigator().back())
+        navigator().run {
+            nextReportStep()
+            signedIn()
+            assertFalse(back())
+        }
         assertEquals(stackOf(), stack)
     }
 
     // Wymagania wspólne, wiersz „Pasek dolny na V1, V2, V3, V5 i L2”: L1 i V4 bez paska.
     @Test
     fun us14_1_bar_only_on_bar_screens() {
-        val expected = listOf(TopLevel.MAP, TopLevel.HELP, TopLevel.ACCOUNT)
-        assertEquals(expected, listOf(MapRoute, HelpRoute(), AccountRoute).map(::selectedItem))
+        val expected = listOf(TopLevel.MAP, TopLevel.MAP, TopLevel.MAP, TopLevel.HELP, TopLevel.ACCOUNT)
+        val routes = listOf(MapRoute(), BuildingRoute("A-1"), EntrancesRoute("A-1"), HelpRoute(), AccountRoute)
+        assertEquals(expected, routes.map(::selectedItem))
         assertTrue(hasNavigationBar(AccountRoute))
-        listOf(SignInRoute(isForReport = false), ReportRoute).forEach { assertFalse(hasNavigationBar(it)) }
+        val noBar = listOf(SignInRoute(isForReport = false), ReportRoute(), ReportRoute(step = ReportStep.SENT))
+        noBar.forEach { assertFalse(hasNavigationBar(it)) }
+    }
+
+    // Wiersz: V2, „Wstecz” → V1 z zaznaczonym budynkiem, US1.1.
+    @Test
+    fun us1_1_v2_back_v1_selected() {
+        navigator().run {
+            openBuilding(symbol = "C-13")
+            back()
+        }
+        assertEquals(listOf(MapRoute(MapFocus.Building("C-13"))), stack)
+    }
+
+    // Scenariusz (częściowo): przegladanie-mapy.feature: Wejście dostępne najwyżej 3 dotknięcia od mapy
+    @Test
+    fun us3_1_v1_v2_v3_back_v2() {
+        navigator().run {
+            openBuilding(symbol = "A-1")
+            openEntrances(symbol = "A-1")
+            assertEquals(3, stack.size)
+            back()
+        }
+        assertEquals(BuildingRoute("A-1"), stack.last())
+    }
+
+    // Wiersz: V3, „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem, US2.1, US3.
+    @Test
+    fun us2_1_show_entrance_on_map() {
+        navigator().run {
+            openBuilding(symbol = "A-1")
+            openEntrances(symbol = "A-1")
+            showOnMap(MapFocus.Entrance("A-1-glowne"))
+        }
+        assertEquals(listOf(MapRoute(MapFocus.Entrance("A-1-glowne"))), stack)
+    }
+
+    // Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu podpowiada wejście, a miejsce
+    //   bierze z bieżącej pozycji
+    @Test
+    fun us4_6_report_at_entrance() {
+        navigator(visitor).run {
+            openBuilding(symbol = "A-1")
+            report(entranceId = "A-1-glowne")
+        }
+        assertEquals(ReportRoute(entranceId = "A-1-glowne"), stack.last())
+    }
+
+    // Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie w 3 krokach z pozycją dołączoną
+    //   automatycznie
+    @Test
+    fun us4_1_three_steps_sent_p2() {
+        navigator(visitor).run {
+            openBuilding(symbol = "D-2")
+            report()
+            repeat(times = 3) { nextReportStep() }
+            assertEquals(ReportStep.entries.dropLast(1), stack.drop(2).map { (it as ReportRoute).step })
+            reportSent()
+            assertEquals(listOf(BuildingRoute("D-2"), ReportRoute(step = ReportStep.SENT)), stack.drop(1))
+            back()
+        }
+        assertEquals(BuildingRoute("D-2"), stack.last())
+    }
+
+    // Wiersz: V4, „potwierdzenie rezygnacji”, „Tak, zrezygnuj” po „Wstecz” z kroku 1 → ekran sprzed V4, UC7 1b.
+    @Test
+    fun uc7_1b_leave_report_back() {
+        navigator(visitor).run {
+            open(TopLevel.HELP)
+            report()
+            leaveReport()
+        }
+        assertEquals(stackOf(HelpRoute()), stack)
+    }
+
+    // Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość po zalogowaniu wraca do zgłoszenia szybkiego
+    @Test
+    fun us14_2_guest_signed_in_v4() {
+        navigator().run {
+            openBuilding(symbol = "A-1")
+            report(entranceId = "A-1-glowne")
+            assertEquals(SignInRoute(isForReport = true, entranceId = "A-1-glowne"), current)
+        }
+        navigator(visitor).signedIn()
+        assertEquals(listOf(BuildingRoute("A-1"), ReportRoute(entranceId = "A-1-glowne")), stack.drop(1))
+    }
+
+    // Wiersz: strona logowania, wejście z „Konto”, zalogowanie → L2, UC6 krok 3, P3.
+    @Test
+    fun uc6_signed_in_from_account_l2() {
+        navigator().open(TopLevel.ACCOUNT)
+        navigator(visitor).signedIn()
+        assertEquals(stackOf(AccountRoute), stack)
     }
 }
