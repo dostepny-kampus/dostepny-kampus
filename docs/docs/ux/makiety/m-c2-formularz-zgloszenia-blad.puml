@@ -4,7 +4,7 @@
 !include _wspolne.iuml
 !include _zespol-w-terenie.iuml
 $ekran_poczatek()
-$naglowek("Formularz zgłoszenia")
+$naglowek("Opisz barierę")
 $komunikat("Brakuje typu bariery. Uzupełnij to pole, aby zapisać.")
 <b>Budynek A-1</b>
 <i>[miejsce z pomiaru]</i>

@@ -4,9 +4,11 @@ Makiety ekranów C1–C7 dla roli Zbierającego (RO-ZBI), a na C5 także dla Koo
 
 Zbierający pracuje w ruchu i często w słońcu. Dlatego każdy ekran ma jedną czynność główną na pełną szerokość, a wybór wartości to duże ramki zamiast małych pól. Przykłady dotyczą budynku A-1: wejście główne ma schody [1]. Nieznane dane są zastępnikami w nawiasach.
 
-Blok zdjęcia, błąd przy polu, opcja wyboru, wybór piętra, mapa i ramka pozycji na pełną szerokość pochodzą z `_wspolne.iuml`. W pliku `_zespol-w-terenie.iuml` zostały tylko przyciski przesuwania punktu, w tym samym układzie co przyciski mapy na V1 i R1.
+Blok zdjęcia, błąd przy polu, opcja wyboru, wybór piętra, mapa i ramka pozycji na pełną szerokość pochodzą z `_wspolne.iuml`. W pliku `_zespol-w-terenie.iuml` został tylko punkt bariery na środku mapy albo planu. Ma te same przyciski mapy i „ⓘ” co V1 i R1 (decyzja 93).
 
 ## C1 Pomiar pozycji
+
+Nagłówek ekranu to „Zmierz i zgłoś barierę”: ten sam napis co na przycisku, który go otwiera (decyzja 93).
 
 ### Pomiar trwa
 
@@ -24,20 +26,21 @@ Czynność główna: brak w trakcie pomiaru; „Dalej” pojawia się po końcu 
 
 ### Po pomiarze: podpowiedź budynku
 
-![Makieta C1 po pomiarze: dokładność, satelity, pytanie Czy to budynek A-1 z przyciskami Potwierdź, Wybierz inny i Poza budynkiem, mapa z punktem, cztery przyciski przesuwania punktu i Dalej](../../_generated/m-c1-pomiar-pozycji-podpowiedz.svg)
+![Makieta C1 po pomiarze: dokładność, satelity, pytanie Czy to budynek A-1 z przyciskami Potwierdź, Wybierz inny i Poza budynkiem, podpis Przesuń mapę, aby punkt stał na miejscu bariery, mapa z punktem na środku, przyciski Powiększ i Pomniejsz, strzałki w krzyżu, przycisk informacji przy podpisie OpenStreetMap i Dalej](../../_generated/m-c1-pomiar-pozycji-podpowiedz.svg)
 
 Czynność główna: „Dalej” — zatwierdzenie miejsca i przejście do C2.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Czy to budynek A-1?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | US6.2, BR-G2 |
-| Mapa z punktem bariery, „© OpenStreetMap contributors” | US6.4, NFR-37 |
-| „Przesuń punkt na mapie:” i „W górę”, „W dół”, „W lewo”, „W prawo” zamiast przeciągania | US6.4, NFR-3, NFR-15 |
+| „Przesuń mapę, aby punkt stał na miejscu bariery.” i punkt bariery na środku mapy | US6.4, NFR-3, decyzja 93 |
+| „Powiększ”, „Pomniejsz” i strzałki w krzyżu zamiast przeciągania; te same na V1 i R1 | US6.4, NFR-3, NFR-15, NFR-53 |
+| „ⓘ” przy „© OpenStreetMap contributors”: źródła i pełna licencja jak na V1 | NFR-37, NFR-40 |
 | „Dalej” pogrubione, na pełną szerokość | US6, NFR-21 |
 
 ### Wybór innego budynku
 
-![Makieta C1 po dotknięciu Wybierz inny: sekcja Wybierz budynek z trzema najbliższymi budynkami jako przyciskami i przyciskiem Poza budynkiem, pod nią mapa z punktem, przyciski przesuwania i Dalej](../../_generated/m-c1-pomiar-pozycji-wybor-budynku.svg)
+![Makieta C1 po dotknięciu Wybierz inny: sekcja Wybierz budynek z trzema najbliższymi budynkami jako przyciskami i przyciskiem Poza budynkiem, pod nią mapa z punktem na środku, przyciski mapy i Dalej](../../_generated/m-c1-pomiar-pozycji-wybor-budynku.svg)
 
 Czynność główna: wybór budynku z listy. Ten sam ekran C1, bez nowego identyfikatora.
 
@@ -51,9 +54,9 @@ Czynność główna: wybór budynku z listy. Ten sam ekran C1, bez nowego identy
 
 ### Korekta w budynku szczegółowym
 
-![Makieta C1 po potwierdzeniu budynku A-1: napis Korekta ręczna, przełącznik z wybranym Plan piętra obok Mapa, wybór piętra, plan piętra z punktem i źródłem, jeden zestaw przycisków przesuwania na planie i Dalej](../../_generated/m-c1-pomiar-pozycji-korekta.svg)
+![Makieta C1 po potwierdzeniu budynku A-1: napis Korekta ręczna, przełącznik z wybranym Plan piętra obok Mapa, wybór piętra, podpis Przesuń mapę, plan piętra z punktem na środku, przyciski mapy, przycisk informacji przy źródle PWr i Dalej](../../_generated/m-c1-pomiar-pozycji-korekta.svg)
 
-Czynność główna: „Dalej”. Plan i mapa dzielą jedną powierzchnię, więc ekran ma jeden zestaw przycisków przesuwania.
+Czynność główna: „Dalej”. Plan i mapa dzielą jedną powierzchnię, więc ekran ma jeden zestaw przycisków mapy.
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -61,12 +64,12 @@ Czynność główna: „Dalej”. Plan i mapa dzielą jedną powierzchnię, wię
 | „Korekta ręczna” po przesunięciu punktu | US6.3, US6.4 |
 | Przełącznik „Plan piętra” i „Mapa”, jak „Mapa / Lista” na R1; w budynku szczegółowym wybrany jest „Plan piętra”, co widać po kształcie pola | US6.3, US6.4, NFR-21 |
 | „Piętro:” i 5 etykiet z danych PWr, plan wybranego piętra | US6.3, US16.1 |
-| „Źródło: Politechnika Wrocławska” pod planem | NFR-40 |
-| „Przesuń punkt na planie:” z czterema przyciskami, jedynymi na ekranie | US6.3, NFR-3, NFR-15 |
+| „Źródło: Politechnika Wrocławska” z „ⓘ” pod planem | NFR-40 |
+| Punkt na środku planu; plan przesuwają przyciski mapy, jedyne na ekranie | US6.3, NFR-3, NFR-15, decyzja 93 |
 
 | Wariant bez osobnej makiety | Co widać |
 | --- | --- |
-| Wybrana „Mapa” | w miejscu wyboru piętra, planu i podpisu PWr mapa z tym samym punktem i podpisem „© OpenStreetMap contributors” w ramce (US6.4, NFR-37). Ten blok rysuje makieta „Po pomiarze: podpowiedź budynku”. Te same cztery przyciski mają podpis „Przesuń punkt na mapie:”. Wybrane piętro zostaje po powrocie do planu. |
+| Wybrana „Mapa” | w miejscu wyboru piętra, planu i podpisu PWr mapa z tym samym punktem i podpisem „© OpenStreetMap contributors” w ramce (US6.4, NFR-37). Ten blok rysuje makieta „Po pomiarze: podpowiedź budynku”. Punkt zostaje na środku, a przyciski mapy są te same. Wybrane piętro zostaje po powrocie do planu. |
 
 ### Szukanie satelitów
 
@@ -81,7 +84,7 @@ Czynność główna: „Powtórz pomiar”.
 
 ### Daleko od budynków, bez internetu
 
-![Makieta C1 poza budynkiem i bez internetu: wskaźnik Bez internetu z datą synchronizacji, dokładność, satelity, napis Poza budynkiem, mapa z konturami bez mapy ulic, przyciski przesuwania i Dalej](../../_generated/m-c1-pomiar-pozycji-poza-budynkiem.svg)
+![Makieta C1 poza budynkiem i bez internetu: wskaźnik Bez internetu z datą synchronizacji, dokładność, satelity, napis Poza budynkiem, mapa z konturami bez mapy ulic i punktem na środku, przyciski mapy i Dalej](../../_generated/m-c1-pomiar-pozycji-poza-budynkiem.svg)
 
 Czynność główna: „Dalej”.
 
@@ -113,6 +116,8 @@ Komunikaty powtarzają V4 z końcówką „aby zapisać miejsce bariery” i sto
 
 ## C2 Formularz zgłoszenia
 
+Nagłówek ekranu: „Opisz barierę”, a przy poprawianiu „Popraw zgłoszenie”: to napis przycisku na C3 i V2 (decyzja 93).
+
 ### Nowe zgłoszenie w budynku szczegółowym
 
 ![Makieta C2 nowego zgłoszenia: budynek A-1 i miejsce z pomiaru z przyciskiem Zmień miejsce, wybór piętra, lista typów bariery, trzy ramki uciążliwości z ikoną i opisem, komunikat Ważne o twarzach i Zrób zdjęcie, pole opisu i Zapisz](../../_generated/m-c2-formularz-zgloszenia.svg)
@@ -121,7 +126,7 @@ Czynność główna: „Zapisz”. Formularz nie ma paska dolnego.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Budynek A-1”, miejsce z C1 i „Zmień miejsce” | US6.2 |
+| „Budynek A-1”, miejsce z C1 i „Zmień miejsce” | US6.2, US7.4 |
 | „Piętro”: 5 etykiet z danych PWr, bez wpisywania ręcznie | US7.2, BR-7 |
 | „Typ bariery”: lista z typami w 6 grupach barier | US7.1, BR-7 |
 | „Uciążliwość” i pod nagłówkiem „Oceń dla osoby, dla której bariera jest najtrudniejsza.” | US7.1, słownik pojęć (skala uciążliwości) |
@@ -148,7 +153,7 @@ Gdy piętro wybrano już na C1 przy korekcie na planie, C2 ma je zaznaczone. Zbi
 
 ### Edycja w budynku podstawowym
 
-![Makieta C2 w edycji: budynek jako zastępnik, piętro jako liczba z polem Półpiętro, typ inna bariera, uciążliwość Tylko z pomocą, zrobione zdjęcie i wpisany opis](../../_generated/m-c2-formularz-zgloszenia-edycja.svg)
+![Makieta C2 w edycji z nagłówkiem Popraw zgłoszenie: budynek jako zastępnik, piętro jako liczba z polem Półpiętro, typ inna bariera, uciążliwość Tylko z pomocą, zrobione zdjęcie i wpisany opis](../../_generated/m-c2-formularz-zgloszenia-edycja.svg)
 
 Czynność główna: „Zapisz”.
 
@@ -169,9 +174,9 @@ Czynność główna: „Zapisz”.
 
 ### Lista zgłoszeń
 
-![Makieta C3: przyciski Czeka na wysłanie 2 i Zmierz i zgłoś barierę, potem sześć zgłoszeń, każde ze statusem tekstem i ikoną na początku: W telefonie Bariery już nie ma, Odrzucone z powodem i Popraw zgłoszenie, W weryfikacji ze znakiem Zmiana czeka na wysłanie, Wysłane z przyciskiem Dwie wersje, Przyjęte schody przy wejściu A-1, Archiwalne zmiana oznaczenia wejścia](../../_generated/m-c3-moje-zgloszenia.svg)
+![Makieta C3: przyciski Czeka na wysłanie 2 i Zmierz i zgłoś barierę, potem sześć zgłoszeń, każde ze statusem tekstem i ikoną na początku: W telefonie Bariery już nie ma, Odrzucone z powodem, W weryfikacji ze znakiem Zmiana czeka na wysłanie, Wysłane z przyciskiem Dwie wersje, w tych czterech przycisk Otwórz ze strzałką, Przyjęte schody przy wejściu A-1, Archiwalne zmiana oznaczenia wejścia](../../_generated/m-c3-moje-zgloszenia.svg)
 
-Czynność główna: otwarcie zgłoszenia do poprawy — dotknięcie całej pozycji albo „Popraw zgłoszenie” przy odrzuconym.
+Czynność główna: „Otwórz” przy zgłoszeniu do poprawy. Przycisk powtarza się w pozycjach, więc nie jest pogrubiony. Tak samo jest z „Otwórz” na R1.
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -180,8 +185,9 @@ Czynność główna: otwarcie zgłoszenia do poprawy — dotknięcie całej pozy
 | Status jako pierwsza linia pozycji, słowem i ikoną; sześć statusów | US8.1, US8.2, NFR-18, NFR-21 |
 | Typ, budynek, piętro, data | US8.1 |
 | „Powód odrzucenia:” z powodem ze scenariusza `@BR-16` | US8.1, BR-16 |
-| „Popraw zgłoszenie” przy odrzuconym; prowadzi do C2 | US8.3, BR-3 |
-| „Zmiana czeka na wysłanie” przy niewysłanej edycji | BR-9 |
+| „Otwórz” ze strzałką przy zgłoszeniu przed decyzją i odrzuconym; prowadzi do C2 | US8.1, US8.3, BR-3, decyzja 93 |
+| Przyjęte i archiwalne bez „Otwórz” | US8.1 |
+| „Zmiana czeka na wysłanie” przy niewysłanej edycji | US8.1, BR-9 |
 | „Dwie wersje: wybierz jedną”, prowadzi do C4 | US9.3 |
 | Rodzaj „Bariery już nie ma”, tu „W telefonie”; po przyjęciu byłby „Archiwalne”, nigdy „Przyjęte” | US8.4, BR-19, PW-12 |
 | Rodzaj „Zmiana oznaczenia wejścia”: wejście główne A-1 „Niedostępne”, przyjęta zmiana staje się archiwalna | US17.2, BR-24 |
@@ -261,9 +267,21 @@ Czynność główna: „Oznacz jako obejrzane” przy piętrze bez znacznika. Pr
 | Symbol budynku pod nagłówkiem | US15.1 |
 | Lista pięter z etykietami z danych PWr | US15.1, US16.1 |
 | „Obejrzane” z ikoną albo „Nieobejrzane” samym tekstem | US15.1, PW-11 |
-| „Twój znacznik” albo „Znacznik innej osoby” | US15.2 |
+| „Twój znacznik” albo „Znacznik innej osoby”; u Koordynatora „Znacznik: Zbierający, Autor [nr]” | US15.2, BR-5 |
 | „Czeka na wysłanie” przy znaczniku w telefonie | US15.3 |
 | „Cofnij znacznik” tylko przy własnym znaczniku | US15.2, PW-12 |
+
+### Zbierający, potwierdzenie cofnięcia
+
+![Makieta C5 dla Zbierającego: przy piętrze 1 z Twój znacznik pytanie Cofnąć znacznik piętra 1, Postęp budynku się zmniejszy, przyciski Cofnij znacznik i Zostaw znacznik; piętro 2 ze Znacznik innej osoby bez przycisku, piętro 3 z Oznacz jako obejrzane](../../_generated/m-c5-obejrzane-pietra-cofniecie.svg)
+
+Czynność główna: „Cofnij znacznik”, po pytaniu o skutek (decyzja 93).
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| „Cofnąć znacznik piętra [1]? Postęp budynku się zmniejszy.” pod własnym znacznikiem | US15.2, BR-20, PW-12 |
+| „Cofnij znacznik” pogrubione i „Zostaw znacznik” | US15.2, PW-12 |
+| Przy znaczniku innej osoby brak „Cofnij znacznik” | US15.2 |
 
 ### Budynek podstawowy, bez internetu
 
@@ -280,13 +298,14 @@ Czynność główna: „Oznacz jako obejrzane”, a po oznaczeniu „Cofnij znac
 
 ### Koordynator, potwierdzenie cofnięcia
 
-![Makieta C5 dla Koordynatora: przy piętrze 2 pytanie Cofnąć znacznik piętra 2 i przyciski Cofnij znacznik oraz Zostaw znacznik; bez przycisków Oznacz jako obejrzane](../../_generated/m-c5-obejrzane-pietra-koordynator.svg)
+![Makieta C5 dla Koordynatora: przy znacznikach Znacznik: Zbierający, Autor nr; przy piętrze 2 pytanie Cofnąć znacznik piętra 2 i przyciski Cofnij znacznik oraz Zostaw znacznik; bez przycisków Oznacz jako obejrzane](../../_generated/m-c5-obejrzane-pietra-koordynator.svg)
 
 Czynność główna: „Cofnij znacznik” przy każdym znaczniku, z potwierdzeniem.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Cofnij znacznik” przy każdym znaczniku | US11.3, BR-20 |
+| „Znacznik: Zbierający, Autor [nr]”: rola i pseudonim autora jak w R2 | US15.2, BR-5 |
 | „Cofnąć znacznik piętra [2]? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.” | BR-20, PW-12 |
 | „Cofnij znacznik” i „Zostaw znacznik” | BR-20, PW-12 |
 | Brak „Oznacz jako obejrzane” | BR-20 |

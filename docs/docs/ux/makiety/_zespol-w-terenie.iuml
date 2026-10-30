@@ -3,10 +3,21 @@
 ' Dołączać po _wspolne.iuml, bo korzysta z jego procedur.
 ' Ramka pozycji, opcja, zdjęcie, błąd przy polu i wybór piętra są w _wspolne.iuml.
 
-' Przyciski przesuwania punktu bariery (C1): odpowiednik przeciągania palcem
-' (NFR-15, WCAG 2.5.1; NFR-3).
-' $co: na czym leży punkt, np. "na mapie" albo "na planie".
-!procedure $przesun_punkt($co)
-Przesuń punkt $co:
-$przyciski_kierunku()
+' Punkt bariery na środku mapy albo planu (C1, decyzja 93). Mapę i plan przesuwają te same
+' przyciski co na V1 i R1, a punkt zostaje na środku: odpowiednik przeciągania punktu
+' (NFR-53, NFR-3). „ⓘ” ze źródłami mapy (NFR-37, NFR-40).
+' $opis: co widać pod punktem. $plan: 1 dla planu piętra (podpis PWr), 0 dla mapy (podpis OSM).
+!procedure $punkt_na_srodku($opis, $plan=0)
+$tekst("Przesuń mapę, aby punkt stał na miejscu bariery.")
+$ramka()
+.
+$tekst("[" + $opis + "; punkt bariery na środku]", "i")
+.
+$przyciski_mapy()
+!if $plan == 1
+{ [<&info>] | Źródło: Politechnika Wrocławska }
+!else
+{ [<&info>] | <u>© OpenStreetMap contributors</u> }
+!endif
+}
 !endprocedure

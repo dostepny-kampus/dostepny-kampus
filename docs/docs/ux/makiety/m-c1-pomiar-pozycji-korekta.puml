@@ -1,12 +1,12 @@
 @startsalt
 ' C1 Pomiar pozycji po potwierdzeniu budynku szczegółowego A-1 i przesunięciu punktu.
-' Jedna powierzchnia z przełącznikiem „Plan piętra / Mapa”, jak „Mapa / Lista” na R1, i jeden
-' zestaw przycisków przesuwania. Wybrany plan piętra (US6.3); po przełączeniu mapa z podpisem
-' OpenStreetMap (US6.4, NFR-37) w miejscu wyboru piętra i planu, opis na stronie grupy.
+' Jedna powierzchnia z przełącznikiem „Plan piętra / Mapa”, jak „Mapa / Lista” na R1. Punkt na
+' środku, plan przesuwają przyciski mapy jak na V1 (decyzja 93). Wybrany plan piętra (US6.3); po
+' przełączeniu mapa z podpisem OpenStreetMap (US6.4, NFR-37), opis na stronie grupy.
 !include _wspolne.iuml
 !include _zespol-w-terenie.iuml
 $ekran_poczatek()
-$naglowek("Pomiar pozycji")
+$naglowek("Zmierz i zgłoś barierę")
 Dokładność: 0,8 m (szacunek)
 $tekst("Satelity: GPS 7, Galileo 5, GLONASS <i>[liczba]</i>")
 $przycisk("Powtórz pomiar")
@@ -18,9 +18,7 @@ Korekta ręczna
 $przelacznik("Plan piętra", "Mapa", 1)
 Piętro:
 $pietra(2)
-$obraz("plan wybranego piętra z punktem bariery")
-Źródło: Politechnika Wrocławska
-$przesun_punkt("na planie")
+$punkt_na_srodku("plan wybranego piętra", 1)
 ..
 $przycisk_glowny("Dalej")
 $ekran_koniec()

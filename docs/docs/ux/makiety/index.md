@@ -41,7 +41,7 @@ Plik `_wspolne.iuml` ma rozszerzenie `.iuml`, więc skrypt `render.py` nie trakt
 | `$pozycja("Tytuł", $blokada(), "Dopisek", "Przycisk")` | pozycja listy z oznaczeniem tekstem i ikoną | NFR-21 |
 | `$przycisk_glowny("…")`, `$przycisk("…", "camera-slr")` | przycisk na pełną szerokość, zawsze tej samej szerokości, z ikoną albo bez | NFR-17, NFR-21 |
 | `$przyciski_obok("…", "…")` | dwa przyciski po pół szerokości w jednym wierszu | NFR-17 |
-| `$mapa("opis", legenda, kontrolki)`, `$przyciski_mapy()` | mapa na pełną szerokość z podpisem OpenStreetMap w ramce. Z `kontrolki` na mapie są „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu (V1, R1), a z wartością `"info"` także „ⓘ” przy podpisie (V1). C1 ma pod mapą słowne przyciski przesuwania punktu. | NFR-15, NFR-37, PW-8, PW-11 |
+| `$mapa("opis", legenda, kontrolki)`, `$przyciski_mapy()` | mapa na pełną szerokość z podpisem OpenStreetMap w ramce. Z `kontrolki` na mapie są „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu, a z wartością `"info"` także „ⓘ” przy podpisie (V1, R1). Na C1 to samo rysuje `$punkt_na_srodku` z `_zespol-w-terenie.iuml`: punkt na środku mapy albo planu (decyzja 93). | NFR-15, NFR-37, NFR-40, PW-8, PW-11 |
 | `$ramka()` … `}` | ramka pozycji listy na pełną szerokość; używają jej `$wejscie`, `$pozycja`, `$opcja`, `$komunikat` i `$mapa` | NFR-17 |
 | `$pole_tekstowe("…")`, `$blad_pola("…")` | pole tekstowe stałej szerokości; błąd przy polu pogrubiony | NFR-15, NFR-21 |
 | `$przelacznik("Mapa", "Lista budynków", 1)`, `$pietra(2)`, `$opcja("X", $blokada(), "opis")` | przełącznik dwóch widoków, wybór piętra, opcja w dużej ramce | NFR-17, NFR-19, NFR-21, US16.1 |
@@ -78,8 +78,8 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | V5 | „Jak korzystać z aplikacji” | [odwiedzający](odwiedzajacy.md) |
 | L1 | „Konto” | [odwiedzający](odwiedzajacy.md) |
 | L2 | „Konto” albo „Konto i praca” | [odwiedzający](odwiedzajacy.md) |
-| C1 | „Pomiar pozycji” | [zespół w terenie](zespol-w-terenie.md) |
-| C2 | „Formularz zgłoszenia” | [zespół w terenie](zespol-w-terenie.md) |
+| C1 | „Zmierz i zgłoś barierę” | [zespół w terenie](zespol-w-terenie.md) |
+| C2 | „Opisz barierę”; przy poprawianiu „Popraw zgłoszenie” | [zespół w terenie](zespol-w-terenie.md) |
 | C3 | „Moje zgłoszenia” | [zespół w terenie](zespol-w-terenie.md) |
 | C4 | „Synchronizacja” | [zespół w terenie](zespol-w-terenie.md) |
 | C5 | „Obejrzane piętra” | [zespół w terenie](zespol-w-terenie.md) |
@@ -93,7 +93,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 
 ## Wszystkie makiety
 
-71 makiet ekranów i katalog fragmentów. Stan zwykły nie ma dopisku w nazwie pliku. Stany, które różnią się jednym napisem, opisuje tabela pod makietą na stronie grupy.
+74 makiety ekranów i katalog fragmentów. Stan zwykły nie ma dopisku w nazwie pliku. Stany, które różnią się jednym napisem, opisuje tabela pod makietą na stronie grupy.
 
 | Ekran | Stan | Makieta | Strona |
 | --- | --- | --- | --- |
@@ -149,6 +149,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | C4 | konflikt wersji | [`m-c4-synchronizacja-konflikt`](../../_generated/m-c4-synchronizacja-konflikt.svg) | [zespół w terenie](zespol-w-terenie.md) |
 | C5 | Zbierający, budynek szczegółowy | [`m-c5-obejrzane-pietra`](../../_generated/m-c5-obejrzane-pietra.svg) | [zespół w terenie](zespol-w-terenie.md) |
 | C5 | budynek podstawowy, bez internetu | [`m-c5-obejrzane-pietra-podstawowy-brak-sieci`](../../_generated/m-c5-obejrzane-pietra-podstawowy-brak-sieci.svg) | [zespół w terenie](zespol-w-terenie.md) |
+| C5 | Zbierający, potwierdzenie cofnięcia | [`m-c5-obejrzane-pietra-cofniecie`](../../_generated/m-c5-obejrzane-pietra-cofniecie.svg) | [zespół w terenie](zespol-w-terenie.md) |
 | C5 | Koordynator, potwierdzenie cofnięcia | [`m-c5-obejrzane-pietra-koordynator`](../../_generated/m-c5-obejrzane-pietra-koordynator.svg) | [zespół w terenie](zespol-w-terenie.md) |
 | C6 | przed wyborem | [`m-c6-zmien-oznaczenie-wejscia`](../../_generated/m-c6-zmien-oznaczenie-wejscia.svg) | [zespół w terenie](zespol-w-terenie.md) |
 | C6 | potwierdzenie obecnego oznaczenia | [`m-c6-zmien-oznaczenie-wejscia-obecna`](../../_generated/m-c6-zmien-oznaczenie-wejscia-obecna.svg) | [zespół w terenie](zespol-w-terenie.md) |
