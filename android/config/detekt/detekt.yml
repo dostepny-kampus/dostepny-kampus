@@ -33,7 +33,8 @@ Compose:
   excludes: ['**/build/generated/**']
   CompositionLocalAllowlist:
     # Role tokenów spoza Material 3 (kolory oznaczeń wejścia i mapy) dostarcza motyw, jak MaterialTheme.
-    allowedCompositionLocals: ['LocalStatusColors', 'LocalMapColors']
+    # Część V1 zasłoniętą przez arkusz V2 podaje scena arkusza ekranowi pod nim (LocalSheetPadding w :app).
+    allowedCompositionLocals: ['LocalStatusColors', 'LocalMapColors', 'LocalSheetPadding']
 
 coroutines:
   excludes: ['**/build/generated/**']
