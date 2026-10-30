@@ -60,7 +60,7 @@ internal object MapLibreMapView : CampusMapView {
                 MapLibre.getInstance(context)
                 mapHttpClient.value
                 val options = MapLibreMapOptions.createFromAttributes(context)
-                MapView(context, options.logoEnabled(false).attributionEnabled(false))
+                MapView(context, options.textureMode(true).logoEnabled(false).attributionEnabled(false))
             }
         FollowScreenLifecycle(mapView)
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
@@ -105,18 +105,22 @@ internal object MapLibreMapView : CampusMapView {
 
     @Composable
     private fun FollowScreenLifecycle(mapView: MapView) {
-        // Natywny widok idzie za cyklem życia ekranu, a po zejściu z ekranu zwalnia pamięć.
+        // Natywny widok powstaje i zwalnia pamięć raz, razem z ekranem. Przy V2 jako arkuszu ten sam widok
+        // przechodzi do innej sceny z innym cyklem życia, więc zmiana cyklu tylko zatrzymuje i wznawia mapę.
+        DisposableEffect(mapView) {
+            mapView.onCreate(null)
+            onDispose { mapView.onDestroy() }
+        }
         val lifecycle = LocalLifecycleOwner.current.lifecycle
         DisposableEffect(lifecycle, mapView) {
             val observer =
                 LifecycleEventObserver { _, event ->
                     when (event) {
-                        Lifecycle.Event.ON_CREATE -> mapView.onCreate(null)
                         Lifecycle.Event.ON_START -> mapView.onStart()
                         Lifecycle.Event.ON_RESUME -> mapView.onResume()
                         Lifecycle.Event.ON_PAUSE -> mapView.onPause()
                         Lifecycle.Event.ON_STOP -> mapView.onStop()
-                        Lifecycle.Event.ON_DESTROY, Lifecycle.Event.ON_ANY -> Unit
+                        Lifecycle.Event.ON_CREATE, Lifecycle.Event.ON_DESTROY, Lifecycle.Event.ON_ANY -> Unit
                     }
                 }
             lifecycle.addObserver(observer)
@@ -124,7 +128,6 @@ internal object MapLibreMapView : CampusMapView {
                 lifecycle.removeObserver(observer)
                 if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) mapView.onPause()
                 if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) mapView.onStop()
-                mapView.onDestroy()
             }
         }
     }
