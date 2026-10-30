@@ -17,13 +17,16 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.nextReportStep
+import io.github.dostepnykampus.app.navigation.openBuilding
 import io.github.dostepnykampus.app.navigation.openEntrances
 import io.github.dostepnykampus.app.navigation.reportSent
 import io.github.dostepnykampus.app.navigation.showOnMap
+import io.github.dostepnykampus.core.data.buildings.buildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
@@ -31,15 +34,17 @@ import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
+import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.navigation.MapRoute
 
 private typealias Action = Pair<String, () -> Unit>
 
 /**
- * Ekran trasy [route] z czynnościami podpiętymi do nawigatora. Poza V1 to zaślepki: nagłówek „Wstecz” z nagłówkiem
- * z listy ekranów (wymagania do ekranów) i przyciski czynności, które nie potrzebują danych. Ekran z `feature:*`
+ * Ekran trasy [route] z czynnościami podpiętymi do nawigatora. V1 to mapa z `feature:map`, reszta to zaślepki:
+ * nagłówek „Wstecz” z nazwą z listy ekranów i przyciski czynności bez danych. Ekran z `feature:*`
  * zastępuje swoją gałąź i dostaje czynności jako lambdy. Zaślepki nie zapamiętują stanu, więc nie muszą się
  * odświeżać osobno od nawigatora.
  */
@@ -53,7 +58,8 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is HelpRoute -> ToMapStub(title = R.string.ekran_pomoc, action = R.string.pomin_instrukcje)
         is SignInRoute -> ToMapStub(title = R.string.nav_konto, action = R.string.nie_teraz)
         AccountRoute -> Stub(title = stringResource(if (hasWork) R.string.nav_konto_i_praca else R.string.nav_konto))
-        else -> Unit // V1 rysuje `feature:map` (A6).
+        is MapRoute -> CampusMapScreen(LocalContext.current.buildingCatalogRepository(), { openBuilding(it) })
+        else -> Unit
     }
 }
 
