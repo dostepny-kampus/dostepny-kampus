@@ -47,7 +47,7 @@ private val RestartsSaver =
  * W oknie o szerokości co najmniej 600 dp pasek stoi z boku, w węższym na dole (decyzja 69). Historia zaczyna się
  * od V5 przy [firstLaunch] (US5.1), inaczej od V1, i przetrwa odtworzenie aktywności (NFR-22). [roles] wybiera
  * cele Gościa i napis czwartej pozycji, a [onFirstHelpLeft] dostaje znać, gdy instrukcja z pierwszego
- * uruchomienia zniknie z historii. Ekrany dojdą w kolejnych częściach, na razie są puste.
+ * uruchomienia przestanie być na wierzchu. Ekrany dojdą w kolejnych częściach, na razie są puste.
  */
 @Composable
 fun AppShell(firstLaunch: Boolean, roles: RoleProvider, onFirstHelpLeft: () -> Unit, modifier: Modifier = Modifier) {

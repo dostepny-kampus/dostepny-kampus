@@ -55,7 +55,8 @@ fun selectedItem(route: NavKey): TopLevel? =
  * Przejścia między ekranami na historii [backStack] (mapa nawigacji: tabele „start, pasek dolny i »Wstecz«”
  * oraz „Gość i Odwiedzający”). Na dole historii jest zawsze V1. Konto z [roles] wybiera cel: Gość trafia do L1
  * zamiast V4 i L2 (US14, US14.2). [onFirstHelpLeft] dostaje znać, gdy instrukcja z pierwszego uruchomienia
- * zniknie z historii dowolną drogą, żeby przy kolejnym starcie otworzyło się V1 (US5.1, decyzja 73). [restarts]
+ * przestanie być na wierzchu historii dowolną drogą, także paskiem, żeby przy kolejnym starcie otworzyło się V1
+ * (US5.1, decyzja 73); powtórne wywołanie nie szkodzi. Każda zmiana historii idzie przez `leaving`. [restarts]
  * liczy powroty do pierwszego ekranu sekcji na każdej pozycji historii; trzeba go zapisywać razem z historią.
  */
 class AppNavigator(
@@ -86,9 +87,9 @@ class AppNavigator(
         val isSignedIn = roles.currentAccount().isSignedIn
         when (item) {
             TopLevel.MAP -> backToMap()
-            TopLevel.REPORT -> backStack.add(if (isSignedIn) ReportRoute else SignInRoute(isForReport = true))
-            TopLevel.HELP -> backStack.add(HelpRoute())
-            TopLevel.ACCOUNT -> backStack.add(if (isSignedIn) AccountRoute else SignInRoute(isForReport = false))
+            TopLevel.REPORT -> push(if (isSignedIn) ReportRoute else SignInRoute(isForReport = true))
+            TopLevel.HELP -> push(HelpRoute())
+            TopLevel.ACCOUNT -> push(if (isSignedIn) AccountRoute else SignInRoute(isForReport = false))
         }
     }
 
@@ -110,10 +111,14 @@ class AppNavigator(
         restarts[backStack.lastIndex]++
     }
 
+    private fun push(route: NavKey) {
+        leaving { backStack.add(route) }
+    }
+
     private fun leaving(change: () -> Unit) {
-        val hasHadFirstHelp = FirstHelp in backStack
+        val isOnFirstHelp = current == FirstHelp
         change()
-        if (hasHadFirstHelp && FirstHelp !in backStack) onFirstHelpLeft()
+        if (isOnFirstHelp && current != FirstHelp) onFirstHelpLeft()
     }
 
     private companion object {
