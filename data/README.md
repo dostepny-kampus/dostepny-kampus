@@ -30,7 +30,7 @@ Wartości tagów `entrance` i `wheelchair` są przepisane z OSM bez zmian. Aplik
 | `no` | niedostępne |
 | `limited`, inna wartość, `null` | brak danych |
 
-Wejścia z `entrance` = `emergency`, `exit` albo `garage` nie są wejściami dla odwiedzających i aplikacja ich nie pokazuje (BR-25).
+Wejścia z `entrance` = `emergency`, `exit` albo `garage` nie są wejściami dla odwiedzających. Aplikacja ich nie pokazuje: nie stoją ani na liście wejść, ani na mapie (BR-25).
 
 Przypadki szczególne:
 
