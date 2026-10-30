@@ -5,12 +5,20 @@
  */
 package io.github.dostepnykampus.core.designsystem
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -18,7 +26,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
@@ -33,9 +41,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 
 private const val LABEL_MIN_GROWTH_AT_LARGE_FONT = 1.3f
+private val SideBarItemWidth = 80.dp
 private val ShortWordBeforeSpace = Regex("""(?<=(^|\s)[aiouwzAIOUWZ]) """)
 
 /** Pozycja paska dolnego: napis [label] pod ikoną [icon]. */
@@ -95,16 +105,28 @@ fun BottomBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit
  * Pasek nawigacji z boku ekranu w oknie o szerokości co najmniej 600 dp (wymagania wspólne, decyzja 69): te same
  * pozycje [items], napisy, kolejność i tokeny co [BottomBar], od góry, z krawędzią po stronie treści. Nie zabiera
  * wysokości okna i nigdy się nie chowa (NFR-52). TalkBack czyta napis, rolę karty i stan wybrany (NFR-18).
+ *
+ * Reguła 8: stała szerokość pozycji jak w pasku dolnym w oknie 360 dp (80 dp), ten sam rozmiar napisów, 2 wiersze,
+ * [Odstepy.s] od sąsiada i krawędzi. Gdy pozycje nie mieszczą się w wysokości okna, pasek się przewija.
  */
 @Composable
 fun SideBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     val iconSize = Modifier.size(Ikony.rozmiar)
-    Row(modifier = modifier) {
-        NavigationRail(containerColor = colors.surfaceContainerLow) {
+    Row(modifier = modifier.background(colors.surfaceContainerLow)) {
+        Column(
+            modifier =
+                Modifier
+                    .windowInsetsPadding(NavigationRailDefaults.windowInsets)
+                    .verticalScroll(rememberScrollState())
+                    .padding(Odstepy.s)
+                    .selectableGroup(),
+            verticalArrangement = Arrangement.spacedBy(Odstepy.s),
+        ) {
             items.entries.forEachIndexed { index, item ->
                 val isSelected = index == selectedIndex
                 NavigationRailItem(
+                    modifier = Modifier.width(SideBarItemWidth),
                     selected = isSelected,
                     onClick = { onSelect(index) },
                     icon = { Icon(imageVector = item.icon, contentDescription = null, modifier = iconSize) },

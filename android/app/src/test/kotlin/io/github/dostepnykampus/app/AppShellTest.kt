@@ -19,20 +19,29 @@ import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.height
+import androidx.compose.ui.unit.width
+import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 
-/** Oboczka z paskiem dolnym w wąskim oknie (Robolectric): historia, pasek na właściwych ekranach i role. */
+/** Oboczka w Robolectric: historia, pasek dolny w wąskim oknie, pasek z boku w szerokim i role. */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class AppShellTest {
@@ -40,6 +49,7 @@ class AppShellTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val staff = RoleProvider { Account.SignedIn(setOf(StaffRole.COLLECTOR)) }
+    private val tabRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
     private var helpLeft = 0
 
     private fun show(firstLaunch: Boolean = false, roles: RoleProvider = GuestRoleProvider) {
@@ -51,12 +61,18 @@ class AppShellTest {
         DostepnyKampusTheme { AppShell(firstLaunch = firstLaunch, roles = roles, onFirstHelpLeft = { helpLeft++ }) }
     }
 
-    private fun tabTops(): List<Float> =
-        listOf("Mapa", "Zgłoś barierę", "Pomoc", "Konto").map { label ->
-            compose.onNodeWithText(label).assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))
-            val bounds = compose.onNodeWithText(label).getUnclippedBoundsInRoot()
-            bounds.top.value
+    private fun checkSideBar(windowHeight: Dp = 360.dp) {
+        val heights = mutableMapOf<String, Dp>()
+        listOf("Mapa", "Zgłoś barierę", "Pomoc", "Konto").forEach { label ->
+            val node = compose.onNodeWithText(label).performScrollTo().assert(tabRole)
+            val item = node.getUnclippedBoundsInRoot()
+            val text = compose.onNodeWithText(label, useUnmergedTree = true).getUnclippedBoundsInRoot()
+            assertEquals(listOf(8.dp, 80.dp), listOf(item.left, item.width))
+            assertTrue(text.left >= item.left && text.right <= item.right && item.bottom <= windowHeight)
+            heights[label] = text.height
         }
+        assertTrue(heights.getValue("Zgłoś barierę") > heights.getValue("Pomoc") * 1.5f)
+    }
 
     private fun pressBack() {
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
@@ -91,21 +107,33 @@ class AppShellTest {
         compose.onNodeWithText("Konto i\u00A0praca").assertIsSelected()
     }
 
-    // Wymagania wspólne, decyzja 69: w oknie węższym niż 600 dp pasek dolny, pozycje w rzędzie jako karty, NFR-18.
+    // Wymagania wspólne i reguła 8, decyzje 69 i 77: okno ≥ 600 dp → pasek z boku, karty od góry, NFR-18, NFR-51.
     @Test
-    fun nfr18_narrow_window_bottom_bar() {
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @Config(qualifiers = "w640dp-h360dp-xhdpi")
+    fun nfr51_side_bar_font_100() {
         show()
-        assertEquals(1, tabTops().distinct().size)
+        checkSideBar()
     }
 
-    // Wymagania wspólne, decyzja 69: w oknie co najmniej 600 dp pasek z boku, te same karty od góry, NFR-51.
+    // Reguła 8, decyzje 69 i 77: pasek z boku przy czcionce 200 % ma te same zasady napisów i się przewija, NFR-20.
     @Test
-    @Config(qualifiers = "w640dp-h360dp")
-    fun nfr51_wide_window_side_bar() {
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @Config(qualifiers = "w640dp-h360dp-xhdpi", fontScale = 2f)
+    fun nfr20_side_bar_font_200() {
         show()
-        assertEquals(tabTops().sorted(), tabTops())
-        assertEquals(4, tabTops().distinct().size)
-        compose.onNodeWithText("Mapa").assertIsSelected()
+        compose.onRoot().captureRoboImage()
+        checkSideBar()
+    }
+
+    // Reguła 8, decyzja 77: gdy cztery pozycje nie mieszczą się w wysokości okna, pasek z boku się przewija.
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @Config(qualifiers = "w640dp-h240dp", fontScale = 2f)
+    fun nfr20_side_bar_scrolls() {
+        show()
+        assertTrue(compose.onNodeWithText("Konto").getUnclippedBoundsInRoot().bottom > 240.dp)
+        checkSideBar(windowHeight = 240.dp)
     }
 
     // Wiersz: każdy ekran poza V1, „Wstecz”: historia przetrwa odtworzenie aktywności, NFR-15, NFR-22.
