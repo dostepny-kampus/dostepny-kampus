@@ -10,6 +10,7 @@ plugins {
 
 dependencies {
     api(project(":core:model"))
+    implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
@@ -18,4 +19,8 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    // Test na prawdziwym pliku konturów z katalogu data/ w repozytorium.
+    val buildings = layout.projectDirectory.file("../../../data/buildings/pwr-buildings.geojson")
+    inputs.file(buildings).withPathSensitivity(PathSensitivity.NONE)
+    systemProperty("dostepnykampus.buildings", buildings.asFile.path)
 }
