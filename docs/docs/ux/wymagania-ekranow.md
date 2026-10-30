@@ -107,7 +107,7 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Mapa z konturami budynków | dane | US1, NFR-11 | — |
+| Mapa z konturami budynków. Pierwszy widok pokazuje główny kampus z budynkiem A-1 w skali, w której symbole budynków są czytelne | dane | US1, US1.2, NFR-11 | — |
 | Bariery ze zgłoszeń przyjętych jako znak uciążliwości: kształt, nie kolor. Słowo obok znaku od powiększenia 17, nie przy krawędzi mapy i tylko wtedy, gdy mieści się bez nakładania; symbole budynków mają pierwszeństwo. Znak ma nazwę dla TalkBack, np. „Blokada: schody przy wejściu, budynek A-1” | dane | US1.3, US10.6, NFR-18, NFR-20, NFR-21 | — |
 | Dotknięcie znaku bariery | czynność | US1.5, NFR-17 | arkusz bariery na tym ekranie |
 | Pole symbolu budynku z podpowiedzią „Wpisz symbol budynku, np. C-13”; przyjmuje też zapis „c13” i symbol z numerem sali, np. „A-1 329” | czynność główna | US1.1, US18.1, PW-8 | V2; sala: stan „znaleziona sala” |
