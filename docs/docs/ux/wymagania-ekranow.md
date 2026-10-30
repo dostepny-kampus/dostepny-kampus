@@ -48,7 +48,7 @@ Dotyczą każdego ekranu. Przy ekranach podajemy tylko to, co do nich dochodzi.
 | Przy dużej czcionce elementy przypięte razem zajmują najwyżej 25% wysokości okna w bieżącej orientacji (próg zespołu). Czynności, które by się nie zmieściły, stoją w treści według reguły 10 sekcji [Duża czcionka](#duza-czcionka). | NFR-52, NFR-20 |
 | Arkusz bariery, arkusz znalezionej sali i arkusz „Który budynek?” na V1 zamyka obrysowany przycisk ze słowem „Zamknij” w nagłówku, bez znaku „×”. Tak samo zamykają się panele „Legenda” i „ⓘ”. Arkusz budynku (V2) ma zamiast niego „Wstecz”. | NFR-53, NFR-17, NFR-18; PW-11; decyzja 53 |
 | Komunikat ostrzegawczy przed czynnością: obrysowane koło ze znakiem „!”, pogrubione słowo „Ważne”, wymaganie i jedno zdanie z powodem. Ramka, koło i słowo mają kolor roli `error` z [tokenów](tokeny.md#zasady), ale znaczenie niosą kształt i słowo. Trójkąt jest zarezerwowany dla uciążliwości „Utrudnienie”, więc komunikat go nie używa. | NFR-16, NFR-21; PW-13; decyzja 54 |
-| Jedna czynność główna na ekranie: pierwsza w kolejności czytania wśród czynności ekranu i jedyna wypełniona, nigdy wyróżniona samym kolorem. | NFR-21, zasada dla osób starszych |
+| Jedna czynność główna na ekranie: pierwsza w kolejności czytania wśród czynności ekranu i jedyna wypełniona, nigdy wyróżniona samym kolorem. Czynność powtarzana w każdej pozycji listy (R1, C5, K1) i wybór jednego z dwóch równorzędnych wariantów (C4) nie mają przycisku wypełnionego; wyróżnia je położenie. | NFR-21, zasada dla osób starszych |
 | Cel dotyku co najmniej 48 × 48 dp. | NFR-17 |
 | Kontrast tekstu, ikon statusu, ramek pól i fokusu według progów NFR-16. | NFR-16 |
 | Tekst czytelny przy czcionce 200%, bez ucinania i nakładania. Przy skali czcionki co najmniej 1,5 obowiązują reguły z sekcji [Duża czcionka](#duza-czcionka). | NFR-20 |
@@ -60,7 +60,7 @@ Dotyczą każdego ekranu. Przy ekranach podajemy tylko to, co do nich dochodzi.
 | Komunikat o błędzie mówi, co się stało i co zrobić, bez żargonu technicznego, w najwyżej 2 zdaniach. Aplikacja mówi o sobie „my”, np. „Wczytujemy”, „Nie znaleźliśmy”. | NFR-42, NFR-50 [2]; WCAG 3.3.1, 3.3.3 [1]; PW-9, PW-10 |
 | Gość i Odwiedzający nie widzą słów „zgłoszenie”, „karta budynku”, „synchronizacja”, „sieć”. Zamiast nich są napisy ze słownika użytkownika, np. „zdjęcie bariery”, „opis budynku”, „Bez internetu”. | NFR-42; PW-4, PW-5 |
 | Bez wymaganej roli ekranu nie ma w aplikacji, a serwer odrzuca żądanie. | US14.1, NFR-33 |
-| Po wysłaniu, zapisie albo decyzji formularz i kroki przed nim znikają z historii „Wstecz”. Dotyczy to V4 po „Wyślij”, C1 i C2 po „Zapisz”, C6 i C7 po „Wyślij do sprawdzenia”, C4 po wyborze wersji i R2 po decyzji. „Wstecz” z ekranu, który się wtedy otwiera, wraca tam, skąd zaczęła się praca, np. z C3 do L2 albo V2, z R1 do L2. | US4.7; WCAG 3.2.3 [1]; [mapa nawigacji](mapa-nawigacji.md), P2 |
+| Po wysłaniu, zapisie albo decyzji formularz i kroki przed nim znikają z historii „Wstecz”. Dotyczy to V4 po „Wyślij”, C1 i C2 po „Zapisz”, C6 i C7 po „Wyślij do sprawdzenia”, C4 po wyborze wersji i R2 po decyzji. „Wstecz” z ekranu, który się wtedy otwiera, wraca tam, skąd zaczęła się praca, np. z C3 do L2 albo V2, z R1 do L2. | NFR-54, US4.7; WCAG 3.2.3 [1]; [mapa nawigacji](mapa-nawigacji.md), P2 |
 
 Układ ekranów w szerokim oknie z NFR-51 nie ma jeszcze makiet i zostanie zaprojektowany osobno. Do tego czasu obowiązuje sama miara NFR-51, a ekrany przewijają się jak w pionie. Wyjątek to pasek nawigacji z boku ekranu (decyzja 69). Nie ma osobnych makiet, a jego wygląd sprawdzimy na zrzucie ekranu przy czcionce 200%.
 
@@ -90,7 +90,7 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 
 | Stan | Komunikat |
 | --- | --- |
-| Brak sieci | „Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.” Przycisk „Spróbuj ponownie”. |
+| Brak sieci | „Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.” Przycisk „Spróbuj ponownie” (UC14 1a, UC15 1a, UC16 1b, UC17 1a, NFR-50). |
 | Błąd serwera | „Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut.” Przycisk „Spróbuj ponownie” (NFR-50, PW-10) |
 | Brak uprawnień | Gdy rolę odebrano w trakcie pracy: „Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.” Przycisk „Wróć do mapy” (V1). (US14.1, PW-10) |
 
@@ -459,20 +459,21 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Postęp uśredniania 30 s, np. „Pomiar: zostało 12 s” | dane | US6.1 | — |
 | Dokładność pozycji w metrach z dopiskiem „szacunek”, np. „Dokładność: 0,8 m (szacunek)” | dane | US6.1, NFR-2 | — |
 | Liczba satelitów osobno dla każdego systemu GNSS, np. „Satelity: GPS 7, Galileo 5” | dane | US6.1, NFR-2 | — |
-| Mapa nieba; system satelity rozróżniony kształtem i podpisem | dane | US6.5, NFR-21 | — |
+| Mapa nieba; system satelity rozróżniony kształtem i podpisem, pod mapą legenda kształtów | dane | US6.5, NFR-21 | — |
 | „Powtórz pomiar” | czynność | UC8 2a, NFR-23 | początek pomiaru |
-| Podpowiedź budynku: „Czy to budynek C-13?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | czynność | US6.2, BR-G2 | „Wybierz inny”: lista budynków na C1 |
+| Podpowiedź budynku: „Czy to budynek C-13?”, pod pytaniem nazwa budynku z danych i odległość od punktu, i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | czynność | US6.2, BR-G2 | „Wybierz inny”: lista budynków na C1 |
 | Budynek szczegółowy: przełącznik „Plan piętra” i „Mapa” nad jedną powierzchnią, domyślnie „Plan piętra”. Plan ma nad sobą wybór piętra, a mapa pokazuje ten sam punkt. | czynność | US6.3, US6.4, NFR-21 | C1, ten sam ekran |
 | Przesunięcie punktu na planie wybranego piętra albo na mapie, także przyciskami strzałek: jeden zestaw pod wybranym widokiem | czynność | US6.3, US6.4, NFR-3, NFR-15 | — |
 | Napis „Korekta ręczna” po przesunięciu punktu | dane | US6.3, US6.4 | — |
 | Napis „© OpenStreetMap contributors”; pod planem „Źródło: Politechnika Wrocławska” | dane | NFR-37, NFR-40 | — |
-| „Dalej” | czynność główna | US6 | C2 |
+| „Dalej”; pojawia się po końcu uśredniania, razem z podpowiedzią budynku | czynność główna | US6, US6.1 | C2 |
 
 | Stan | Co widać |
 | --- | --- |
 | Zwykły | uśrednianie, dokładność, satelity, podpowiedź budynku |
+| Po pomiarze | napis „Pomiar zakończony”, dokładność i satelity z końca uśredniania, „Powtórz pomiar”, podpowiedź budynku i „Dalej” (US6.1, US6.2) |
 | Ładowanie — szukanie satelitów | „Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.” Przycisk „Powtórz pomiar” (NFR-1, PW-9) |
-| Wybór innego budynku | po „Wybierz inny” w miejscu pytania sekcja „Wybierz budynek”: budynki najbliżej punktu, od najbliższego, i „Poza budynkiem”. Wybór zamyka listę i pokazuje „Budynek [symbol]” z „Wybierz inny”. Lista działa bez sieci, z konturów w telefonie (US6.2, BR-G2, NFR-4). |
+| Wybór innego budynku | po „Wybierz inny” w miejscu pytania sekcja „Wybierz budynek”: budynki najbliżej punktu, od najbliższego, każdy z nazwą i odległością, i „Poza budynkiem”. Wybór zamyka listę i pokazuje „Budynek [symbol]” z „Wybierz inny”. Lista działa bez sieci, z konturów w telefonie (US6.2, BR-G2, NFR-4). |
 | Daleko od budynków PWr | „Poza budynkiem”, bez podpowiedzi i bez komunikatu o błędzie (BR-G4, NFR-49) |
 | Budynek podstawowy | bez przełącznika „Plan piętra” i „Mapa”, wyboru piętra i korekty na planie. W ich miejscu napis „Nie mamy planu pięter tego budynku.”, jak na V2. Korekta na mapie działa (US6.4, BR-G1, PW-6). |
 | Brak zgody, zgoda tylko przybliżona albo lokalizacja wyłączona | jak w V4: prośba o zgodę albo o dokładną lokalizację, a po odmowie „Otwórz ustawienia” (NFR-27). Bez przycisku „Wróć do mapy”: rezygnacja przez „Wstecz” do ekranu, z którego otwarto C1, czyli L2, C2 albo C3 (NFR-15) |
@@ -486,20 +487,21 @@ Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykres
 | --- | --- |
 | Cel | Zbierający opisuje barierę tak, by Weryfikator mógł ją ocenić. |
 | Role | RO-ZBI |
-| Realizuje | US7.1, US7.2, US7.3, US8.3 |
+| Realizuje | US7.1, US7.2, US7.3, US7.4, US8.3 |
 | Czynność główna | „Zapisz” |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Budynek i miejsce z C1, przycisk „Zmień miejsce” | dane, czynność | US6.2 | C1 |
+| Budynek i miejsce z C1. Miejsce słowami: najbliższe wejście z danych z odległością i dokładność pomiaru, np. „ok. 3 m od Wejścia Cesarskiego, dokładność 0,8 m”; bez współrzędnych | dane | US7.4, US6.1, NFR-19 | — |
+| „Zmień miejsce”: powrót do C1, wpisane pola zostają | czynność | US7.4 | C1 |
 | Piętro: wybór z etykiet z danych PWr (budynek szczegółowy) | czynność | US7.2 | — |
-| Piętro: liczba całkowita i pole „Półpiętro” (budynek podstawowy); nad polem „Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter.” | czynność | US7.2, BR-G1, PW-6 | — |
+| Piętro: liczba całkowita w polu z etykietą „Numer piętra” i pole „Półpiętro” (budynek podstawowy); nad polem „Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter.” | czynność | US7.2, BR-G1, NFR-15, PW-6 | — |
 | „Typ bariery”, pogrupowany w 6 grup barier | czynność | US7.1, BR-7 | — |
 | „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda wartość z opisem i ikoną; pod nagłówkiem „Oceń dla osoby, dla której bariera jest najtrudniejsza.” | czynność | US7.1, NFR-21, PW-13 | — |
-| Zdjęcie, co najmniej jedno: „Zrób zdjęcie” i „Zrób nowe zdjęcie”, z przypomnieniem o twarzach i tablicach | czynność | US7.1, NFR-25, PW-8 | aparat |
+| Zdjęcie, co najmniej jedno: „Zrób zdjęcie” i „Zrób nowe zdjęcie”. Nad nimi komunikat ostrzegawczy jak w kroku 1 V4: „Ważne”, „Nie fotografuj twarzy ani tablic rejestracyjnych.” i „Zdjęcie zobaczą inni użytkownicy.” | czynność | US7.1, NFR-25, PW-8, decyzja 54 | aparat |
 | Opis; obowiązkowy przy TB-29 „inna bariera” | czynność | US7.3 | — |
 | Przy zmianie zgłoszenia przyjętego: „Zapis utworzy nowe zgłoszenie, które znów sprawdzi Weryfikator.” | dane | BR-18 | — |
-| „Zapisz” | czynność główna | BR-7 | C3 |
+| „Zapisz” | czynność główna | BR-7, NFR-54 | C3 |
 
 Poza budynkiem pola piętra nie ma (BR-G4). C2 otwiera się z C1, z C3 przy edycji (US8.3) i z V2 przy zmianie zgłoszenia przyjętego (BR-18).
 
@@ -507,6 +509,7 @@ Poza budynkiem pola piętra nie ma (BR-G4). C2 otwiera się z C1, z C3 przy edyc
 | --- | --- |
 | Zwykły — nowe zgłoszenie | puste pola, miejsce z C1 |
 | Edycja | pola z zapisanymi wartościami (US8.3) |
+| Wyjście bez zapisu | po „Wstecz” z niezapisanymi zmianami: „Wyjść bez zapisu? Wpisane pola nie zostaną zapisane.” Przyciski „Wyjdź bez zapisu” i „Wróć do formularza” (US7.4, NFR-23) |
 | Błąd walidacji | nad formularzem „Brakuje typu bariery. Uzupełnij to pole, aby zapisać.”, a przy polu ten sam tekst (PW-10); zapis się nie wykonuje (US7.1, US7.3) |
 | Brak sieci | zapis działa, zgłoszenie dostaje status „lokalne”, na ekranie „W telefonie” (US9.1, PW-12) |
 | Błąd zapisu | „Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.” (NFR-7) |
@@ -525,10 +528,10 @@ Dostępność: błąd walidacji jest tekstem przy polu i w podsumowaniu, a fokus
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Zgłoszenie: typ, budynek, piętro, data | dane | US8.1 | — |
-| Rodzaj: zgłoszenie, „bariera usunięta” (na ekranie „Bariery już nie ma”) albo zmiana oznaczenia wejścia | dane | US8.4, US17.2 | — |
+| Rodzaj: zgłoszenie, „bariera usunięta” (na ekranie „Bariery już nie ma”) albo zmiana oznaczenia wejścia; przy zmianie oznaczenia „Nowe oznaczenie:” tekstem i ikoną | dane | US8.4, US17.2, NFR-21 | — |
 | Jeden status tekstem i ikoną: „W telefonie” (lokalne), „Wysłane”, „W weryfikacji”, „Przyjęte”, „Odrzucone”, „Archiwalne” | dane | US8.1, US8.2, NFR-21, PW-12 | — |
 | Przy odrzuconym: powód odrzucenia | dane | US8.1, BR-16 | — |
-| Znak „Zmiana czeka na wysłanie” przy niewysłanej edycji | dane | BR-9, [reguły, cykl życia zgłoszenia](../biznes/reguly.md) | — |
+| Znak „Zmiana czeka na wysłanie” przy niewysłanej edycji | dane | US8.1, BR-9, [reguły, cykl życia zgłoszenia](../biznes/reguly.md) | — |
 | Znak „Dwie wersje: wybierz jedną” przy konflikcie | czynność | US9.3 | C4 |
 | Dotknięcie zgłoszenia przed decyzją albo odrzuconego | czynność główna | US8.3, BR-3 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
 | Przy powodzie „nieaktualne”: „Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.” (przy zmianie oznaczenia wejścia: „Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.”) i przycisk „Wyślij ponownie” | czynność | BR-23, BR-24, PW-14 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
@@ -538,8 +541,8 @@ Dostępność: błąd walidacji jest tekstem przy polu i w podsumowaniu, a fokus
 
 | Stan | Co widać |
 | --- | --- |
-| Zwykły | lista własnych zgłoszeń, najnowsze na górze |
-| Pusty | „Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.” Przycisk „Zmierz i zgłoś barierę” (C1, PW-12) |
+| Zwykły | lista własnych zgłoszeń, najnowsze na górze (US8.1) |
+| Pusty | „Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.” Przycisk „Zmierz i zgłoś barierę” do C1 (UC9 0a, PW-12) |
 | Ładowanie | lista z telefonu zostaje widoczna; obok napis „Sprawdzamy statusy…” |
 | Brak sieci | lista z telefonu ze statusami z dnia ostatniej synchronizacji; nowe zgłoszenia „W telefonie” (US9.1) |
 | Błąd | „Nie udało się sprawdzić statusów, ale zgłoszenia są bezpieczne w telefonie. Spróbuj ponownie za chwilę.” Przycisk „Spróbuj ponownie” (NFR-5, NFR-50, PW-10) |
@@ -563,15 +566,15 @@ Dostępność: status jest słowem, a ikona go tylko wzmacnia (NFR-21). TalkBack
 | Ostrzeżenie „W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia.” | dane | NFR-7, PW-10 | — |
 | Konflikt: napis „Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.”; przy zgłoszeniu przyjętym drugie zdanie „Przyjęte zgłoszenie zostanie, a Twoja wersja, jeśli ją wybierzesz, trafi do sprawdzenia jako nowe.” (UC11 3b) | dane | US9.3, BR-10, PW-12 | — |
 | Konflikt: wersja własna i wersja z serwera naraz. Nad nimi napis „Różni się:” z nazwą pola, np. „Różni się: uciążliwość”, a przy kilku polach „Różnią się:” i ich nazwy. W obu wersjach te pola są pogrubione | dane | US9.3, NFR-21 | — |
-| „Zostaw moją wersję” i „Weź wersję z serwera” | czynność główna | US9.3, BR-10 | C3 |
+| „Zostaw moją wersję” i „Weź wersję z serwera” | czynność główna | US9.3, BR-10, NFR-54 | C3 |
 | „Zdecyduję później”; zmiana czeka w telefonie | czynność | BR-10 | C3 |
 
 | Stan | Co widać |
 | --- | --- |
 | Zwykły — kolejka | liczba czekających i data ostatniej synchronizacji |
-| Pusty | „Wszystko wysłane. Ostatnia synchronizacja: 12.11.2026, 10:42.” |
+| Pusty | „Wszystko wysłane. Ostatnia synchronizacja: 12.11.2026, 10:42.” (US9.1) |
 | Ładowanie | „Wysyłamy 2 z 5…” |
-| Brak sieci | „Brak internetu. Wyślemy wszystko sami, gdy internet wróci.” (US9.1, US9.2) |
+| Brak sieci | „Bez internetu. Wyślemy wszystko sami, gdy internet wróci.” (US9.1, US9.2, decyzja 54) |
 | Błąd serwera | „Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później.” (NFR-50) |
 | Konflikt | napis o skutku, obie wersje i trzy przyciski wyboru (US9.3) |
 
@@ -589,7 +592,7 @@ Dostępność: w pionie wersje stoją jedna pod drugą, w poziomie obok siebie, 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Symbol budynku | dane | US15.1 | — |
-| Budynek szczegółowy: lista pięter z etykietami z danych PWr | dane | US15.1, US16.1 | — |
+| Budynek szczegółowy: lista pięter z etykietami z danych PWr, od najniższego, jak pytanie o piętro w V4 | dane | US15.1, US16.1, US4.5 | — |
 | Budynek podstawowy: jeden wiersz „Cały budynek” | dane | US15.1, BR-20 | — |
 | Przy wierszu: „Obejrzane” tekstem i ikoną albo „Nieobejrzane” samym tekstem | dane | US15.1, PW-11 | — |
 | Przy znaczniku: „Twój znacznik” albo „Znacznik innej osoby” | dane | US15.2 | — |
@@ -621,12 +624,12 @@ Ekran nie ma stanu pustego: budynek szczegółowy ma piętra z danych PWr, a bud
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Budynek i nazwa wejścia | dane | US17.2 | — |
-| Obecne oznaczenie tekstem i ikoną, z datą i źródłem jak na V2 | dane | US17.3, NFR-21, PW-3 | — |
+| Pod podpisem „Obecne oznaczenie” oznaczenie tekstem i ikoną, z datą i źródłem jak na V2 | dane | US17.3, NFR-21, PW-3 | — |
 | Dwa duże przyciski: „Dostępne” i „Niedostępne” | czynność | US17.2, BR-24, NFR-17 | — |
 | Przy wyborze obecnej wartości: „Potwierdzasz obecne oznaczenie. Zmieni się data i źródło.” | dane | BR-24, UC18 2a | — |
-| Zdjęcie wejścia, obowiązkowe: „Zrób zdjęcie” i „Zrób nowe zdjęcie”, z przypomnieniem o twarzach i tablicach | czynność | US17.2, BR-24, NFR-25, PW-8 | aparat |
+| Zdjęcie wejścia, obowiązkowe: „Zrób zdjęcie” i „Zrób nowe zdjęcie”, z komunikatem ostrzegawczym jak w C2 | czynność | US17.2, BR-24, NFR-25, PW-8, decyzja 54 | aparat |
 | Napis „Zmianę sprawdzi inna osoba. Do tego czasu karta budynku pokazuje obecne oznaczenie.” | dane | BR-4, BR-24 | — |
-| „Wyślij do sprawdzenia” | czynność główna | US17.2 | C3 |
+| „Wyślij do sprawdzenia” | czynność główna | US17.2, NFR-54 | C3 |
 
 „Brak danych” nie jest do wyboru, bo nadaje je tylko import (BR-24).
 
@@ -634,7 +637,7 @@ Ekran nie ma stanu pustego: budynek szczegółowy ma piętra z danych PWr, a bud
 | --- | --- |
 | Zwykły | obecne oznaczenie, wybór i zdjęcie |
 | Błąd walidacji | „Dodaj zdjęcie wejścia, aby wysłać zmianę.” albo „Wybierz: dostępne czy niedostępne.” (BR-24) |
-| Brak sieci | „Zmiana zapisana w telefonie. Wyślemy ją, gdy wróci internet.” Status „W telefonie” (US9.1) |
+| Brak sieci | wysłanie działa i otwiera C3 z komunikatem „Zmiana zapisana w telefonie. Wyślemy ją, gdy wróci internet.” i statusem „W telefonie”, jak po zapisie C2 (US9.1, NFR-54) |
 | Błąd zapisu | „Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.” (NFR-7) |
 
 ### C7 Usunięcie bariery
@@ -649,9 +652,9 @@ Ekran nie ma stanu pustego: budynek szczegółowy ma piętra z danych PWr, a bud
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Zgłoszenie przyjęte: typ, piętro, miejsce, zdjęcie, data weryfikacji; bez edycji | dane | BR-19 | — |
-| Nowe zdjęcie miejsca, obowiązkowe: „Zrób zdjęcie” i „Zrób nowe zdjęcie” | czynność | US8.4, BR-19, NFR-25, PW-8 | aparat |
+| Nowe zdjęcie miejsca, obowiązkowe: „Zrób zdjęcie” i „Zrób nowe zdjęcie”, z komunikatem ostrzegawczym jak w C2 | czynność | US8.4, BR-19, NFR-25, PW-8, decyzja 54 | aparat |
 | Napis „Bariera zostanie na mapie, dopóki Weryfikator nie sprawdzi zgłoszenia.” | dane | US8.4 | — |
-| „Wyślij do sprawdzenia” | czynność główna | US8.4 | C3 |
+| „Wyślij do sprawdzenia” | czynność główna | US8.4, NFR-54 | C3 |
 
 Uciążliwości ani typu się nie wybiera: przechodzą z poprzedniego zgłoszenia albo nie są wymagane (BR-19).
 
@@ -659,7 +662,7 @@ Uciążliwości ani typu się nie wybiera: przechodzą z poprzedniego zgłoszeni
 | --- | --- |
 | Zwykły | dane poprzedniego zgłoszenia i miejsce na nowe zdjęcie |
 | Błąd walidacji | „Dodaj zdjęcie miejsca, aby wysłać zgłoszenie.” (BR-19) |
-| Brak sieci | „Zgłoszenie zapisane w telefonie. Wyślemy je, gdy wróci internet.” Status „W telefonie” (US8.4, US9.1) |
+| Brak sieci | wysłanie działa i otwiera C3 z komunikatem „Zgłoszenie zapisane w telefonie. Wyślemy je, gdy wróci internet.” i statusem „W telefonie”, jak po zapisie C2 (US8.4, US9.1, NFR-54) |
 | Błąd zapisu | „Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.” (NFR-7) |
 
 ## Weryfikator
@@ -670,16 +673,18 @@ Uciążliwości ani typu się nie wybiera: przechodzą z poprzedniego zgłoszeni
 | --- | --- |
 | Cel | Weryfikator wybiera zgłoszenie do sprawdzenia. |
 | Role | RO-WER |
-| Realizuje | US10.4, US10.5 |
+| Realizuje | US10.4, US10.5, US10.7 |
 | Czynność główna | „Weź do sprawdzenia” |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Lista zgłoszeń „wysłane”: typ albo grupa barier, budynek, rodzaj, data wysłania | dane | US10.4, BR-14 | — |
-| Przełącznik „Mapa” i „Lista”, w tej samej kolejności co na V1; domyślnie wybrana „Lista”. Lista daje tę samą informację. | czynność | UC14, NFR-19 | — |
+| Nad listą nagłówek „Do sprawdzenia”. Lista zgłoszeń „wysłane” od najdawniej wysłanego: typ albo grupa barier, budynek, rodzaj, data wysłania | dane | US10.4, BR-14 | — |
+| Przełącznik „Mapa” i „Lista”, w tej samej kolejności co na V1; domyślnie wybrana „Lista”. Wybór nie jest zapamiętywany: R1 zawsze otwiera się na liście. Lista daje tę samą informację. | czynność | UC14, NFR-19 | — |
 | Napis „© OpenStreetMap contributors” na mapie | dane | NFR-37 | — |
 | W widoku mapy te same przyciski mapy co na V1: „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu | czynność | NFR-53; WCAG 2.5.1 [1], 2.5.7 [7]; wymagania V1 | — |
-| Sekcja „Wzięte przeze mnie” ze zgłoszeniami „w weryfikacji” tego Weryfikatora; w każdej pozycji „Otwórz” z ikoną | czynność | BR-11, UC14 2b, NFR-21 | R2 |
+| W widoku mapy każde zgłoszenie ma jeden znak „zgłoszenie do sprawdzenia” z nazwą dla TalkBack, np. „Zgłoszenie do sprawdzenia: próg, budynek C-13” | dane | NFR-18, NFR-21 | — |
+| W widoku mapy dotknięcie znaku pokazuje pod mapą to zgłoszenie z tymi samymi danymi co na liście i „Weź do sprawdzenia” | czynność | UC14, NFR-19, NFR-53 | R2 |
+| Sekcja „Wzięte przeze mnie” ze zgłoszeniami „w weryfikacji” tego Weryfikatora; w każdej pozycji „Otwórz” z ikoną | czynność | US10.7, BR-11, UC14 2b, NFR-21 | R2 |
 | „Weź do sprawdzenia” | czynność główna | US10.4, BR-11 | R2 |
 
 Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia wejścia, lista nie pokazuje (US10.5, BR-4).
@@ -687,7 +692,7 @@ Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia we
 | Stan | Co widać |
 | --- | --- |
 | Zwykły | lista albo mapa zgłoszeń |
-| Pusty | „Nie ma zgłoszeń do sprawdzenia. Zajrzyj tu później.” (PW-10) |
+| Pusty | „Nie ma zgłoszeń do sprawdzenia. Zajrzyj tu później.” Bez przełącznika „Mapa” i „Lista” (UC14 1b, PW-10) |
 | Ładowanie | „Wczytujemy zgłoszenia…” |
 | Zgłoszenie zajęte | „Ktoś inny wziął już to zgłoszenie. Wybierz inne.” Zgłoszenie znika z listy (UC14 2a, BR-11) |
 | Brak sieci, błąd serwera, brak uprawnień | stany wspólne (UC14 1a, NFR-50) |
@@ -698,23 +703,25 @@ Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia we
 | --- | --- |
 | Cel | Weryfikator przyjmuje zgłoszenie albo odrzuca je z powodem, bez przepuszczenia błędu i duplikatu. |
 | Role | RO-WER, tylko cudze zgłoszenia wzięte przez siebie (BR-4, BR-11) |
-| Realizuje | US10.1, US10.2, US10.3, US10.6, US17.2 |
+| Realizuje | US10.1, US10.2, US10.3, US10.6, US10.8, US17.2 |
 | Czynność główna | „Przyjmij” |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Dane zgłoszenia: typ, uciążliwość napisem z wymagań wspólnych, budynek, piętro, miejsce; bez edycji przy pomiarze precyzyjnym | dane | BR-15, PW-13 | — |
+| Na górze rodzaj zgłoszenia, np. „Zgłoszenie z pomiaru”, „Zgłoszenie szybkie”, „Bariery już nie ma”, „Zmiana oznaczenia wejścia” | dane | US10.4 | — |
+| Dane zgłoszenia: typ, uciążliwość napisem z wymagań wspólnych, budynek, piętro, miejsce słowami jak w C2; bez edycji przy pomiarze precyzyjnym | dane | BR-15, US6.1, NFR-19, PW-13 | — |
 | Zdjęcie | dane | US10 | — |
 | Rola i pseudonim autora, np. „Zbierający, Autor [nr]” | dane | BR-5 | — |
 | „Podobne zgłoszenia do 10 m”: typ, zdjęcie, odległość, piętro, status | dane | US10.1, BR-13 | — |
-| Zgłoszenie szybkie: wybór „Typ bariery” i „Uciążliwość” z wartościami „Utrudnienie”, „Tylko z pomocą”, „Blokada” | czynność | US10.3, BR-14, PW-13 | — |
+| Zgłoszenie szybkie: „Czego dotyczy:” i grupa barier wybrana przez autora | dane | BR-14, US4.3 | — |
+| Zgłoszenie szybkie: wybór „Typ bariery” i „Uciążliwość” z wartościami „Utrudnienie”, „Tylko z pomocą”, „Blokada”. Lista typów otwiera się na grupie wybranej przez autora, a pozostałe grupy są pod nią | czynność | US10.3, BR-14, PW-13 | — |
 | „Zasłoń twarz lub tablicę” na zdjęciu | czynność | BR-15, NFR-25 | — |
 | Zmiana oznaczenia wejścia: obecne oznaczenie z datą i źródłem, wybrane oznaczenie, nowe zdjęcie | dane | US17.2, BR-24 | — |
-| Zmiana oznaczenia wejścia: tekstem i ikoną, czy oznaczenie jest „Bez zmian od wysłania”, czy „Zmienione po wysłaniu” przez inną przyjętą zmianę | dane | BR-23, BR-24, NFR-21 | — |
-| „Bariera usunięta”: zdjęcie poprzedniego zgłoszenia obok nowego | dane | US10.6, BR-19 | — |
-| „Bariera usunięta”: „Poprzednie zgłoszenie:” i jego status tekstem i ikoną, np. „Archiwalne” | dane | BR-19, BR-23, NFR-21 | — |
-| „Przyjmij” | czynność główna | US10, US10.6 | R1 |
-| „Odrzuć” z obowiązkowym polem „Powód odrzucenia”; gotowe powody „Duplikat” ze wskazaniem wcześniejszego zgłoszenia i „Nieaktualne” oraz „Inny powód” z polem „Opisz powód dla autora”. Przy zmianie oznaczenia wejścia bez „Duplikat”, bo duplikat opisuje tę samą barierę. | czynność | US10.2, BR-13, BR-16, BR-23, BR-24, NFR-18 | R1 |
+| Zmiana oznaczenia wejścia: tekstem i ikoną, czy oznaczenie jest „Bez zmian od wysłania”, czy „Zmienione po wysłaniu” przez inną przyjętą zmianę | dane | US10.8, BR-23, BR-24, NFR-21 | — |
+| „Bariera usunięta”: zdjęcie poprzedniego zgłoszenia obok nowego, z podpisami „Zdjęcie z poprzedniego zgłoszenia” i „Nowe zdjęcie miejsca” | dane | US10.8, US10.6, BR-19 | — |
+| „Bariera usunięta”: „Poprzednie zgłoszenie:” i jego status tekstem i ikoną, np. „Archiwalne” | dane | US10.8, BR-19, BR-23, NFR-21 | — |
+| „Przyjmij” | czynność główna | US10, US10.6, NFR-54 | R1 |
+| „Odrzuć” z obowiązkowym polem „Powód odrzucenia”; gotowe powody „Duplikat” ze wskazaniem wcześniejszego zgłoszenia i „Nieaktualne” oraz „Inny powód” z polem „Opisz powód dla autora”. Przy zmianie oznaczenia wejścia bez „Duplikat”, bo duplikat opisuje tę samą barierę. | czynność | US10.2, BR-13, BR-16, BR-23, BR-24, NFR-18, NFR-54 | R1 |
 
 | Stan | Co widać |
 | --- | --- |
@@ -723,11 +730,11 @@ Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia we
 | Ładowanie | tekst od razu, zdjęcia z napisem „Wczytujemy zdjęcie…” |
 | Błąd walidacji — przyjęcie | „Ustal typ bariery i uciążliwość, aby przyjąć zgłoszenie.” (US10.3) |
 | Błąd walidacji — odrzucenie | „Podaj powód odrzucenia, aby autor wiedział, co poprawić.” (US10.2) |
-| Nowa wersja | „Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.” Pod komunikatem „Zmienione:” i nazwy zmienionych pól, np. „Zmienione: uciążliwość” (BR-3, BR-15, UC14 5e, PW-10) |
+| Nowa wersja | „Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.” Pod komunikatem „Zmienione:” i nazwy zmienionych pól, np. „Zmienione: uciążliwość” (US10.8, BR-3, BR-15, UC14 5e, PW-10) |
 | Brak sieci | „Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«. Połącz się z internetem i podejmij decyzję ponownie.” (BR-11, PW-10) |
 | Błąd serwera, brak uprawnień | stany wspólne |
 
-Dostępność: podobne zgłoszenia mają odległość tekstem, np. „5 m”, a nie tylko punkt na mapie (NFR-19).
+Dostępność: podobne zgłoszenia mają odległość tekstem, np. „5 m”, a nie tylko punkt na mapie (NFR-19). Przy skali czcionki co najmniej 1,5 dwa zdjęcia „bariera usunięta” stoją jedno pod drugim (NFR-20).
 
 ## Koordynator
 
@@ -742,13 +749,13 @@ Dostępność: podobne zgłoszenia mają odległość tekstem, np. „5 m”, a 
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Lista budynków z symbolem | dane | US11.1 | — |
+| Lista budynków z symbolem i nazwą z danych PWr | dane | US11.1 | — |
 | Budynek szczegółowy: „4 z 5 pięter, 80%” | dane | US11.1, US11.2, BR-21 | — |
 | Budynek podstawowy: „Obejrzany” tekstem i ikoną albo „Nieobejrzany” samym tekstem | dane | US11.1, PW-11 | — |
 | Liczby: „Czeka na sprawdzenie: 3” i „Przyjęte: 4”, jak w scenariuszu `@US11.1` | dane | US11.1, BR-21 | — |
 | Budynek szczegółowy: „Wejścia sprawdzone na miejscu: 1 z 6” | dane | US11.4, BR-24, PW-3 | — |
 | Dotknięcie budynku; w ramce „Otwórz” z ikoną | czynność główna | US11.3, NFR-21 | C5 |
-| „Odśwież” i godzina odczytu „Stan z 10:42” | czynność | US11.2 | — |
+| „Odśwież” i data z godziną odczytu, np. „Stan z 12.11.2026, 10:42”; bez samoczynnego odświeżania | czynność | US11.2 | — |
 
 Sortowania ani filtrów nie ma, bo nie wynikają z żadnego kryterium (decyzja 16). Wiersz o wejściach pozwala odczytać miarę M-1 z [wizji](../biznes/wizja.md) bez liczenia na kartach budynków (decyzja 38). Wejście liczy się dopiero po przyjęciu zmiany oznaczenia, bo wtedy dostaje źródło „obchód” (BR-24).
 
@@ -781,7 +788,8 @@ Stanu pustego nie ma: lista budynków pochodzi z importu, a 0% to zwykła warto�
 | Zwykły | pole adresu i wybór roli |
 | Sukces | „Zaproszenie wysłane na podany adres.” (US12.1) |
 | Sukces — konto istnieje | „To konto już istnieje. Dodaliśmy mu rolę Weryfikatora, dotychczasowe role zostają.” (US12.2) |
-| Błąd walidacji | „Adres e-mail jest niepełny, np. brakuje znaku @. Popraw go i wyślij ponownie.” albo „Wybierz rolę.” (PW-10) |
+| Sukces — rola już jest | „Ta osoba ma już rolę Weryfikatora. Nic nie zmieniliśmy.” (US12.2) |
+| Błąd walidacji | „Adres e-mail jest niepełny, np. brakuje znaku @. Popraw go i wyślij ponownie.” albo „Wybierz rolę.” Zaproszenie się nie wysyła (US12.1, PW-10) |
 | Brak sieci, błąd serwera, brak uprawnień | stany wspólne; błąd serwera obejmuje Usługę logowania |
 
 ### K3 Eksport
@@ -883,21 +891,24 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | Formularz | US7.1 | C2 | walidacja |
 | | US7.2 | C2 | pole piętra |
 | | US7.3 | C2 | opis przy TB-29 |
-| Moje zgłoszenia | US8.1 | C3 | status i powód odrzucenia |
+| | US7.4 | C2, C1 | „Zmień miejsce” z polami, pytanie przed wyjściem bez zapisu |
+| Moje zgłoszenia | US8.1 | C3 | status, powód odrzucenia, znak zmiany i kolejność |
 | | US8.2 | C3 | statusy „wysłane” i „w weryfikacji”; moment zmiany ustala serwer |
 | | US8.3 | C3, C2 | edycja |
 | | US8.4 | V2, C7, C3 | start, formularz, status |
 | Synchronizacja | US9.1 | C3, C4 | wskaźnik braku sieci na każdym ekranie |
 | | US9.2 | C4 | samo uruchomienie bez ekranu |
-| | US9.3 | C4 | wybór wersji |
+| | US9.3 | C4 | wybór wersji i nazwy pól, którymi się różnią |
 | Weryfikacja | US10.1 | R2 | podobne zgłoszenia |
 | | US10.2 | R2 | powód odrzucenia |
 | | US10.3 | R2 | typ i uciążliwość |
-| | US10.4 | R1, C3 | zniknięcie z kolejki ustala serwer |
+| | US10.4 | R1, R2, C3 | dane pozycji i kolejność; zniknięcie z kolejki ustala serwer |
 | | US10.5 | R1 | filtr robi serwer |
 | | US10.6 | R2, V1, V2 | skutek przyjęcia |
+| | US10.7 | R1 | sekcja „Wzięte przeze mnie” |
+| | US10.8 | R2 | zmiana od wysłania, para zdjęć, zmienione pola |
 | Postęp | US11.1 | K1 | — |
-| | US11.2 | K1 | przeliczenie robi serwer |
+| | US11.2 | K1 | data odczytu i „Odśwież”; przeliczenie robi serwer |
 | | US11.3 | K1, C5 | cofnięcie z potwierdzeniem |
 | | US11.4 | K1 | wejścia ze źródłem „obchód”; liczbę liczy serwer |
 | Zaproszenie | US12.1 | K2, L1, L2 | zaproszona osoba loguje się przez L1 i widzi swoje role w L2 |
@@ -922,7 +933,7 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | | US18.2 | V1 | kroki do sali |
 | | US18.3 | V1 | stany „Sala bez drogi” i „Pusty — brak sali” |
 
-Wszystkie 69 kryteriów ma ekran. Kryteria w całości serwerowe nie występują: każde ma co najmniej widoczny skutek.
+Wszystkie 73 kryteria mają ekran. Kryteria w całości serwerowe nie występują: każde ma co najmniej widoczny skutek.
 
 ## Źródła
 
