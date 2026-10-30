@@ -81,7 +81,7 @@ Oznaczenia wejść powstają przy imporcie budynków, zanim proces się zacznie:
 
 | Zdarzenie | Kroki | Zachowanie | Odwołanie |
 | --- | --- | --- | --- |
-| Brak sieci | T10, T11 | Zgłoszenie czeka w telefonie ze statusem „lokalne”. Po zdarzeniu „Sieć wróciła” synchronizacja rusza sama. Mapa pokazuje ostatnio pobrane dane z datą, bez podkładu OpenStreetMap. | NFR-5…NFR-8, NFR-10, NFR-39 |
+| Brak sieci | T10, T11 | Zgłoszenie czeka w telefonie ze statusem „lokalne”. Po zdarzeniu „Sieć wróciła” synchronizacja rusza sama. Mapa pokazuje ostatnio pobrane dane z datą. Nowego podkładu OpenStreetMap bez sieci nie pobiera, a fragmenty obejrzane wcześniej mogą się pokazać z pamięci telefonu. | NFR-5…NFR-8, NFR-10, NFR-39 |
 | Konflikt wersji | T11, T12 | Zbierający wybiera wersję; zmiana nigdy nie nadpisuje się po cichu. | NFR-9, US9.3, BR-3 |
 | Brak planu piętra | T5, T22 | Budynek działa jako budynek podstawowy: przełącznik pięter ukryty, piętro wpisuje się ręcznie. Zgłoszenie działa zawsze. | BR-G1, BR-G3, NFR-48 |
 | Brak danych o wejściu | import, T21, T23 | Wejście ma oznaczenie „brak danych” tekstem i ikoną, a nie „niedostępne”. Oznaczenie ustala Zbierający na obchodzie (T6b). | US2.1, US17.1, BR-24 |

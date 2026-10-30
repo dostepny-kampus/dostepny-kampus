@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | --- | --- |
 | Pełny test | 2 |
 | Tylko częściowo | 8 |
-| Bez testu | 141 |
+| Bez testu | 142 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -82,6 +82,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `przegladanie-mapy.feature` | Karta budynku zaczyna się od skrótu faktów, potem wejścia i bariery | US2.3 | — | brak |
 | `przegladanie-mapy.feature` | Skrót nie pokazuje faktu bez potwierdzenia w danych | US2.3 | — | brak |
 | `przegladanie-mapy.feature` | Karta budynku bez zgłoszeń przyjętych nie sugeruje braku barier | BR-6, US2.4 | — | brak |
+| `przegladanie-mapy.feature` | Bez danych o barierach lista i karta budynku nic o barierach nie mówią | US2.7 | — | brak |
 | `przegladanie-mapy.feature` | Wyjścia ewakuacyjne rozwijają się na żądanie | US2.6 | — | brak |
 | `przegladanie-mapy.feature` | Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę | BR-25, US3.3 | — | brak |
 | `przegladanie-mapy.feature` | Karta budynku szczegółowego opisuje piętra tekstem | US16.3 | — | brak |

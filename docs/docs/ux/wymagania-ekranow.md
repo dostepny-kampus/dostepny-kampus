@@ -102,7 +102,7 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | --- | --- |
 | Cel | Osoba znajduje budynek na kampusie. |
 | Role | wszystkie, bez logowania (US1.2) |
-| Realizuje | US1.1…US1.5, US2.3, US2.5, US10.6, US16.1, US18.1…US18.3, początek US3.2 |
+| Realizuje | US1.1…US1.5, US2.3, US2.5, US2.7, US10.6, US16.1, US18.1…US18.3, początek US3.2 |
 | Czynność główna | wyszukanie budynku po symbolu |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
@@ -119,7 +119,7 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | Podpis „Źródło: Politechnika Wrocławska” obok podpisu OpenStreetMap, gdy widać plan | dane | NFR-40 | — |
 | Przełącznik „Mapa” i „Lista budynków”. Domyślnie „Mapa”, a przy skali czcionki co najmniej 1,5 „Lista budynków”. Aplikacja pamięta ostatni wybór także po zamknięciu. Przy tej skali widoczny napis to „Lista”, a nazwa dla TalkBack „Lista budynków” | czynność | NFR-19, NFR-20 | lista na tym ekranie |
 | Lista budynków pod przełącznikiem: wszystkie budynki w kolejności katalogu, naturalnej po symbolu, np. A-1, A-2 … A-10. Pole symbolu zawęża listę tym samym wyszukiwaniem co nad mapą, po pełnym symbolu. Wpisane C-13 zostawia na liście tylko C-13, a samo „C” daje stan „brak wyniku” | dane | NFR-19, US1.1, decyzja 90 | — |
-| Budynek na liście to jedna karta, która w całości jest jednym przyciskiem. Karta pokazuje symbol, nazwę z danych, a gdy nazwa jest, pod nią „Budynek A-6”, także przy czcionce 200%. Pod nimi bariery: znak, uciążliwość, typ i miejsce, albo „Brak zgłoszonych barier”. Gdy w telefonie nie ma jeszcze danych o barierach, karta nie mówi nic o barierach: ani barier, ani „Brak zgłoszonych barier”. TalkBack czyta symbol, nazwę i bariery, a potem „otwiera opis budynku”. Przycisk „Pokaż na mapie” jest na V2, a nie na liście | czynność | US2.4, US2.5, NFR-10, NFR-17, NFR-18, NFR-19, NFR-20; decyzja 90 | V2 |
+| Budynek na liście to jedna karta, która w całości jest jednym przyciskiem. Karta pokazuje symbol, nazwę z danych, a gdy nazwa jest, pod nią „Budynek A-6”, także przy czcionce 200%. Pod nimi bariery: znak, uciążliwość, typ i miejsce, albo „Brak zgłoszonych barier”. Gdy w telefonie nie ma jeszcze danych o barierach, karta nie mówi nic o barierach, także nie „Brak zgłoszonych barier”. TalkBack czyta symbol, nazwę i bariery, a potem „otwiera opis budynku”. Przycisk „Pokaż na mapie” jest na V2, a nie na liście | czynność | US2.5, US2.7, NFR-10, NFR-17, NFR-18, NFR-19, NFR-20; decyzja 90 | V2 |
 | Dotknięcie konturu albo budynku na liście | czynność | US2, US3.2, decyzja 48 | V2 jako arkusz na mapie |
 | Dotknięcie konturu wspólnego kilku symboli, np. „C-3/C-4” albo „T-18/T-22” | czynność | US2, US3.2, decyzja 85 | arkusz „Który budynek?” na tym ekranie |
 | Dotknięcie tuż obok konturu liczy się jako dotknięcie konturu. Zasięg to co najmniej połowa celu dotyku, czyli 24 dp od konturu. Gdy w zasięgu są dwa kontury, otwiera się arkusz „Który budynek?” z ich symbolami | czynność | US2, NFR-17, decyzja 85 | V2 albo arkusz „Który budynek?” |
@@ -171,7 +171,7 @@ Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na piętrze 
 | Pierwsze uruchomienie | przed mapą pokazuje się instrukcja V5 (US5.1) |
 | Ładowanie | „Wczytujemy mapę kampusu…”; kontury pojawiają się przed podkładem (NFR-11) |
 | Pusty — brak wyniku | „Nie znaleźliśmy budynku »X«. Sprawdź symbol, np. C-13, albo wybierz budynek z listy.” Przycisk „Lista budynków” (UC1 3a) |
-| Brak sieci | kontury i bariery z telefonu, bez podkładu. Linia „Bez internetu · dane z 12.11.2026” stoi pod przełącznikiem „Mapa” i „Lista budynków”, a pole wyszukiwania się nie przesuwa (NFR-10, NFR-39) |
+| Brak sieci | kontury i bariery z telefonu. Nowego podkładu aplikacja bez sieci nie pobiera. Fragmenty mapy ulic obejrzane wcześniej mogą się pokazać z pamięci telefonu (decyzja 84). Linia „Bez internetu · dane z 12.11.2026” stoi pod przełącznikiem „Mapa” i „Lista budynków”, a pole wyszukiwania się nie przesuwa (NFR-10, NFR-39) |
 | Brak sieci przy pierwszym uruchomieniu | mapa z konturami i wejściami z danych aplikacji, bez podkładu, barier i planów pięter. Wyszukiwanie po symbolu działa. Linia „Bez internetu” bez daty, bo nic jeszcze nie pobrano, stoi pod przełącznikiem „Mapa” i „Lista budynków”. Bariery, plany i podkład wczytują się same po powrocie sieci (NFR-10, NFR-39) |
 | Błąd — brak podkładu | kontury i bariery bez podkładu, napis „Mapa ulic chwilowo się nie wczytuje. Budynki i bariery nadal możesz oglądać.” (NFR-50) |
 
@@ -183,7 +183,7 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 | --- | --- |
 | Cel | Osoba sprawdza, którym wejściem wejdzie i jakie bariery są w budynku. |
 | Role | wszystkie; przyciski Zbierającego widzi tylko RO-ZBI (US14.1) |
-| Realizuje | US2.1…US2.6, US16.1…US16.3, US17.1, US17.3, US10.6, US3.2; start US4, US4.6, US8.4, US15.1, US17.2 |
+| Realizuje | US2.1…US2.7, US16.1…US16.3, US17.1, US17.3, US10.6, US3.2; start US4, US4.6, US8.4, US15.1, US17.2 |
 | Czynność główna | „Sprawdź, którędy wejść” |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
@@ -231,8 +231,9 @@ Fragment mapy i plany pięter pokazują to, co już jest na liście, więc TalkB
 | Bez wejścia zalecanego | budynek nie ma wejścia „Dostępne”: napisu „Zalecane” nie ma, a wejścia „Niedostępne” są pierwsze, każde z powodem z danych (BR-25) |
 | Ładowanie | tekst od razu, w miejscu zdjęcia napis „Wczytujemy zdjęcie…” (NFR-12) |
 | Pusty — brak zgłoszeń przyjętych | w grupie „Bariery w budynku” nagłówek „Brak zgłoszonych barier”, zdanie „Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.” i przycisk „Zgłoś barierę” (V4, Gość: L1). Bez wybranego wejścia ten przycisk stoi w treści karty tylko tutaj (US2.4, UC2 2a, PW-6) |
+| Bez danych o barierach | telefon nie ma jeszcze danych o barierach budynku: karta nie mówi nic o barierach, także nie „Brak zgłoszonych barier” (US2.7, NFR-10) |
 | Wejście bez danych | wejście z oznaczeniem „Brak danych” tekstem i ikoną `minus`, bez napisu „Zalecane”; data i źródło oceny jak przy innych wejściach (US17.1, US2.1) |
-| Brak sieci | karta z telefonu z linią „Bez internetu · dane z 12.11.2026”, fragment mapy bez podkładu. Zdjęcia, których nie ma w telefonie, zastępuje napis „Zdjęcie zobaczysz po połączeniu z internetem.” (NFR-10) |
+| Brak sieci | karta z telefonu z linią „Bez internetu · dane z 12.11.2026”, fragment mapy bez nowego podkładu, a obejrzany wcześniej może się pokazać z pamięci telefonu. Zdjęcia, których nie ma w telefonie, zastępuje napis „Zdjęcie zobaczysz po połączeniu z internetem.” (NFR-10) |
 | Brak sieci, budynku nie ma w telefonie | „Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.” Przycisk „Spróbuj ponownie” (NFR-10) |
 | Błąd zdjęcia | „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” Przycisk „Spróbuj ponownie” (NFR-50) |
 
@@ -474,7 +475,7 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Daleko od budynków PWr | „Poza budynkiem”, bez podpowiedzi i bez komunikatu o błędzie (BR-G4, NFR-49) |
 | Budynek podstawowy | bez przełącznika „Plan piętra” i „Mapa”, wyboru piętra i korekty na planie. W ich miejscu napis „Nie mamy planu pięter tego budynku.”, jak na V2. Korekta na mapie działa (US6.4, BR-G1, PW-6). |
 | Brak zgody, zgoda tylko przybliżona albo lokalizacja wyłączona | jak w V4: prośba o zgodę albo o dokładną lokalizację, a po odmowie „Otwórz ustawienia” (NFR-27). Bez przycisku „Wróć do mapy”: rezygnacja przez „Wstecz” do ekranu, z którego otwarto C1, czyli L2, C2 albo C3 (NFR-15) |
-| Brak sieci | pomiar i podpowiedź działają; mapa bez podkładu (NFR-4, NFR-39) |
+| Brak sieci | pomiar i podpowiedź działają; mapa bez nowego podkładu, a fragmenty obejrzane wcześniej mogą się pokazać z pamięci telefonu (NFR-4, NFR-39) |
 
 Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykresem (NFR-18). Uśrednianie można przerwać i powtórzyć bez limitu (NFR-23).
 
@@ -857,9 +858,10 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | Karta budynku | US2.1 | V2, V3 | oznaczenie tekstem i ikoną |
 | | US2.2 | V2, V3 | zdjęcie i data weryfikacji |
 | | US2.3 | V1, V2 | chipy i kolejność grup |
-| | US2.4 | V1, V2 | V2: stan „Pusty”; V1: karta listy bez danych o barierach |
+| | US2.4 | V2 | stan „Pusty” |
 | | US2.5 | V1, V2 | miejsce bariery |
 | | US2.6 | V2 | wyjścia ewakuacyjne na żądanie |
+| | US2.7 | V1, V2 | karta listy i stan „Bez danych o barierach” |
 | Którędy wejść | US3.1 | V3 | stan „brak wejścia dostępnego” |
 | | US3.2 | V1, V2, V3 | 2 dotknięcia |
 | | US3.3 | V3 | dojście, drzwi, winda; „Pokaż wejście na mapie” |

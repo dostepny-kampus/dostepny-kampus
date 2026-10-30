@@ -150,6 +150,14 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi zdanie, że nikt jeszcze nie zgłosił tu sprawdzonej bariery
     Ale karta nie mówi, że w budynku nie ma barier
 
+  @US2.7
+  Scenariusz: Bez danych o barierach lista i karta budynku nic o barierach nie mówią
+    Zakładając, że telefon nie ma jeszcze danych o barierach budynku C-13
+    Jeżeli Gość niezalogowany otworzy listę budynków
+    Wtedy karta budynku C-13 na liście nie mówi nic o barierach
+    Oraz po otwarciu karty budynku C-13 karta nie mówi nic o barierach
+    Ale nigdzie nie widzi napisu „Brak zgłoszonych barier”
+
   @US2.6
   Scenariusz: Wyjścia ewakuacyjne rozwijają się na żądanie
     # Dane testowe, a nie stan faktyczny budynku A-1.
