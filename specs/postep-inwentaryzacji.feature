@@ -92,6 +92,14 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
         | 4     | cofnięcie znacznika jednego piętra       | 3  | 60      |
         | 4     | drugi znacznik już obejrzanego piętra    | 4  | 80      |
 
+    @US11.2
+    Scenariusz: Postęp podaje datę i godzinę odczytu i daje się odświeżyć
+      Zakładając, że Koordynator otworzył postęp inwentaryzacji 28.10.2026 o 10:15
+      Oraz potem na serwer dotarł znacznik kolejnego piętra budynku A-1
+      Jeżeli Koordynator odświeży postęp
+      Wtedy widzi nową wartość postępu budynku A-1
+      Oraz datę i godzinę nowego odczytu
+
     Szablon scenariusza: Do postępu nie wchodzą zgłoszenia nieznane serwerowi, archiwalne ani poza budynkiem
       Zakładając, że przy budynku A-1 są 4 zgłoszenia przyjęte
       Oraz jest też <zgłoszenie>

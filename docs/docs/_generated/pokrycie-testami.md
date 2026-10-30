@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | --- | --- |
 | Pełny test | 2 |
 | Tylko częściowo | 8 |
-| Bez testu | 142 |
+| Bez testu | 150 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -55,6 +55,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `pomiar-precyzyjny.feature` | Kompletne zgłoszenie zapisuje się ze statusem „lokalne” | BR-7, US7.1 | — | brak |
 | `pomiar-precyzyjny.feature` | Typ TB-29 „inna bariera” wymaga opisu | BR-7, US7.3 | — | brak |
 | `pomiar-precyzyjny.feature` | Typ TB-29 „inna bariera” z opisem zapisuje się | BR-7, US7.3 | — | brak |
+| `pomiar-precyzyjny.feature` | Powrót do pomiaru zmienia miejsce, a wpisane pola zostają | US7.4 | — | brak |
+| `pomiar-precyzyjny.feature` | Wyjście z formularza z niezapisanymi zmianami wymaga potwierdzenia | US7.4 | — | brak |
 | `postep-inwentaryzacji.feature` | Oznaczenie piętra albo budynku jako obejrzanego | BR-20, US15.1 | — | brak |
 | `postep-inwentaryzacji.feature` | Zbierający cofa własny znacznik | BR-20, US15.2 | — | brak |
 | `postep-inwentaryzacji.feature` | Inny Zbierający nie cofnie cudzego znacznika | BR-20, US15.2 | — | brak |
@@ -63,6 +65,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `postep-inwentaryzacji.feature` | Po powrocie sieci znacznik i jego cofnięcie wysyłają się same | BR-9, BR-20, US15.3 | — | brak |
 | `postep-inwentaryzacji.feature` | Postęp budynku szczegółowego i podstawowego z liczbami zgłoszeń | BR-21, US11.1 | — | brak |
 | `postep-inwentaryzacji.feature` | Postęp pokazuje nową wartość po dotarciu znacznika na serwer | BR-21, US11.2 | — | brak |
+| `postep-inwentaryzacji.feature` | Postęp podaje datę i godzinę odczytu i daje się odświeżyć | BR-21, US11.2 | — | brak |
 | `postep-inwentaryzacji.feature` | Do postępu nie wchodzą zgłoszenia nieznane serwerowi, archiwalne ani poza budynkiem | BR-21 | — | brak |
 | `postep-inwentaryzacji.feature` | Liczba wejść ze źródłem „obchód” w budynku szczegółowym | BR-24, US11.4 | — | brak |
 | `postep-inwentaryzacji.feature` | Przyjęta zmiana oznaczenia wejścia zwiększa liczbę wejść sprawdzonych na miejscu | BR-24, US11.4 | — | brak |
@@ -109,8 +112,11 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `uprawnienia.feature` | Rolę pracowniczą nadaje tylko Koordynator | BR-2 | — | brak |
 | `uprawnienia.feature` | Osoba z rolami Zbierającego i Weryfikatora nie przyjmie własnego zgłoszenia | BR-1, BR-4 | — | brak |
 | `uprawnienia.feature` | Zalogowany Odwiedzający nie jest proszony o logowanie ponownie | US14.4 | — | brak |
+| `weryfikacja.feature` | Kolejka pokazuje rodzaj, budynek i datę wysłania, od najdawniej wysłanego | US10.4 | — | brak |
+| `weryfikacja.feature` | Przy zmianie Weryfikator widzi, czym różni się od poprzedniego stanu | US10.8 | — | brak |
 | `weryfikacja.feature` | Wzięte zgłoszenie znika z kolejki pozostałych Weryfikatorów | BR-11, US8.2, US10.4 | — | brak |
 | `weryfikacja.feature` | Drugi Weryfikator nie obsłuży zgłoszenia wziętego przez pierwszego | BR-11, US10.4 | — | brak |
+| `weryfikacja.feature` | Wzięte zgłoszenia bez decyzji Weryfikator widzi osobno i do nich wraca | BR-11, US10.7 | — | brak |
 | `weryfikacja.feature` | Weryfikator nie widzi w kolejce własnych zgłoszeń | BR-1, BR-4, US10.5 | — | brak |
 | `weryfikacja.feature` | Weryfikator widzi rolę i pseudonim autora, a nie jego dane osobowe | BR-5 | — | brak |
 | `weryfikacja.feature` | Podobne zgłoszenia w promieniu 10 m | BR-13, US10.1 | — | brak |
@@ -136,6 +142,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `weryfikacja.feature` | Po przyjęciu „bariera usunięta” barierę, która nadal istnieje, zgłasza się od nowa | BR-23 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Każde własne zgłoszenie ma jeden status tekstem i ikoną | US8.1 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Zgłoszenie odrzucone pokazuje powód odrzucenia | BR-16, US8.1 | — | brak |
+| `zgloszenia-zbierajacego.feature` | Zgłoszenie ze zmianą czekającą w telefonie ma napis przy statusie | US8.1 | — | brak |
+| `zgloszenia-zbierajacego.feature` | Najnowsze zgłoszenia są na górze listy | US8.1 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Status „wysłane” dopiero po potwierdzeniu odbioru przez serwer | BR-9, US8.2 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Status „w weryfikacji” po wzięciu zgłoszenia przez Weryfikatora | US8.2 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Edycja zgłoszenia przed decyzją Weryfikatora | BR-3, US8.3 | — | brak |
