@@ -76,8 +76,12 @@ class AppNavigator(
     /**
      * Klucz treści wpisu na pozycji [index] historii: pozycja, liczba powrotów na niej i trasa. Ten sam ekran dwa
      * razy w historii ma dwa klucze, a powrót do pierwszego ekranu sekcji daje nowy klucz, czyli świeży stan ekranu.
+     * Zaznaczenie V1 nie wchodzi do klucza: V1 żyje pod arkuszem V2 i po „Wstecz” wraca w swoim stanie (decyzja 83).
      */
-    fun contentKey(index: Int): String = "$index:${restarts.getOrElse(index) { 0 }}:${backStack[index]}"
+    fun contentKey(index: Int): String {
+        val route = backStack[index].let { if (it is MapRoute) MapRoute() else it }
+        return "$index:${restarts.getOrElse(index) { 0 }}:$route"
+    }
 
     /**
      * Pozycja [item] paska: „Mapa” wraca do V1, inna otwiera swój ekran nad bieżącym. Ponowne dotknięcie wybranej

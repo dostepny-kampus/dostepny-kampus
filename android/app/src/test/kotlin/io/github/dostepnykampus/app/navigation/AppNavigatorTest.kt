@@ -190,11 +190,7 @@ class AppNavigatorTest {
     // Wiersz: każdy ekran poza V1, „Wstecz”, NFR-15: V1 jest na dole historii, wstecz zamyka aplikację.
     @Test
     fun nfr15_back_on_v1_closes_app() {
-        navigator().run {
-            nextReportStep()
-            signedIn()
-            assertFalse(back())
-        }
+        assertFalse(navigator().back())
         assertEquals(stackOf(), stack)
     }
 
@@ -219,29 +215,23 @@ class AppNavigatorTest {
         assertEquals(listOf(MapRoute(MapFocus.Building("C-13"))), stack)
     }
 
+    // Wiersze: V3, „Wstecz” → V2 i „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem, US2.1, US3.
     // Scenariusz (częściowo): przegladanie-mapy.feature: Wejście dostępne najwyżej 3 dotknięcia od mapy
     @Test
-    fun us3_1_v1_v2_v3_back_v2() {
+    fun us3_2_v1_v2_v3_back_v2() {
         navigator().run {
             openBuilding(symbol = "A-1")
             openEntrances(symbol = "A-1")
             assertEquals(3, stack.size)
             back()
-        }
-        assertEquals(BuildingRoute("A-1"), stack.last())
-    }
-
-    // Wiersz: V3, „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem, US2.1, US3.
-    @Test
-    fun us2_1_show_entrance_on_map() {
-        navigator().run {
-            openBuilding(symbol = "A-1")
+            assertEquals(BuildingRoute("A-1"), current)
             openEntrances(symbol = "A-1")
             showOnMap(MapFocus.Entrance("A-1-glowne"))
         }
         assertEquals(listOf(MapRoute(MapFocus.Entrance("A-1-glowne"))), stack)
     }
 
+    // Wiersz: V4, „Tak, zrezygnuj” po „Wstecz” z kroku 1 → ekran sprzed V4, UC7 1b; poza V4 kroki nic nie robią.
     // Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu podpowiada wejście, a miejsce
     //   bierze z bieżącej pozycji
     @Test
@@ -249,8 +239,12 @@ class AppNavigatorTest {
         navigator(visitor).run {
             openBuilding(symbol = "A-1")
             report(entranceId = "A-1-glowne")
+            assertEquals(ReportRoute(entranceId = "A-1-glowne"), current)
+            leaveReport()
+            nextReportStep()
+            reportSent()
         }
-        assertEquals(ReportRoute(entranceId = "A-1-glowne"), stack.last())
+        assertEquals(BuildingRoute("A-1"), stack.last())
     }
 
     // Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie w 3 krokach z pozycją dołączoną
@@ -267,36 +261,5 @@ class AppNavigatorTest {
             back()
         }
         assertEquals(BuildingRoute("D-2"), stack.last())
-    }
-
-    // Wiersz: V4, „potwierdzenie rezygnacji”, „Tak, zrezygnuj” po „Wstecz” z kroku 1 → ekran sprzed V4, UC7 1b.
-    @Test
-    fun uc7_1b_leave_report_back() {
-        navigator(visitor).run {
-            open(TopLevel.HELP)
-            report()
-            leaveReport()
-        }
-        assertEquals(stackOf(HelpRoute()), stack)
-    }
-
-    // Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość po zalogowaniu wraca do zgłoszenia szybkiego
-    @Test
-    fun us14_2_guest_signed_in_v4() {
-        navigator().run {
-            openBuilding(symbol = "A-1")
-            report(entranceId = "A-1-glowne")
-            assertEquals(SignInRoute(isForReport = true, entranceId = "A-1-glowne"), current)
-        }
-        navigator(visitor).signedIn()
-        assertEquals(listOf(BuildingRoute("A-1"), ReportRoute(entranceId = "A-1-glowne")), stack.drop(1))
-    }
-
-    // Wiersz: strona logowania, wejście z „Konto”, zalogowanie → L2, UC6 krok 3, P3.
-    @Test
-    fun uc6_signed_in_from_account_l2() {
-        navigator().open(TopLevel.ACCOUNT)
-        navigator(visitor).signedIn()
-        assertEquals(stackOf(AccountRoute), stack)
     }
 }

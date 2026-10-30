@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.app.navigation
 
 import androidx.navigation3.runtime.NavKey
-import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
@@ -14,8 +13,6 @@ import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
-
-// Przejścia z tabeli „Gość i Odwiedzający” w mapie nawigacji, które wywołują ekrany V1–V4 i L1.
 
 /** V1 → V2 budynku [symbol]; „Wstecz” z V2 wraca do V1 z zaznaczonym budynkiem (US1.1, US2, US3.2). */
 fun AppNavigator.openBuilding(symbol: String) {
@@ -57,6 +54,7 @@ fun AppNavigator.nextReportStep() {
 
 /** „Wyślij”: potwierdzenie zamiast kroków V4, więc „Wstecz” prowadzi na ekran sprzed V4 (US4.4, P2). */
 fun AppNavigator.reportSent() {
+    if (current !is ReportRoute) return
     leaving {
         dropReport()
         add(ReportRoute(step = ReportStep.SENT))
@@ -66,15 +64,6 @@ fun AppNavigator.reportSent() {
 /** „Tak, zrezygnuj” po „Wstecz” z kroku 1: ekran sprzed V4, zgłoszenie nie powstaje (UC7 1b). */
 fun AppNavigator.leaveReport() {
     leaving { dropReport() }
-}
-
-/** Po zalogowaniu na L1: V4 krok 1 z wejściem wybranym przed L1 albo L2 (US14.2, UC7 1a, P3). */
-fun AppNavigator.signedIn() {
-    val route = current as? SignInRoute ?: return
-    leaving {
-        removeAt(lastIndex)
-        add(if (route.isForReport) ReportRoute(entranceId = route.entranceId) else AccountRoute)
-    }
 }
 
 private fun MutableList<NavKey>.dropReport() {

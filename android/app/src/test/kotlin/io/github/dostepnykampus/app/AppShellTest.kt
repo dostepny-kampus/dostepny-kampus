@@ -6,7 +6,15 @@
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -27,11 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.width
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.dostepnykampus.app.navigation.openBuilding
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
+import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -75,6 +85,7 @@ class AppShellTest {
     }
 
     private fun pressBack() {
+        compose.waitForIdle()
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
     }
@@ -136,6 +147,29 @@ class AppShellTest {
         show()
         assertTrue(compose.onNodeWithText("Konto").getUnclippedBoundsInRoot().bottom > 240.dp)
         checkSideBar(windowHeight = 240.dp)
+    }
+
+    // Wiersz: V2, „Wstecz” → V1 w poprzednim stanie, US1.1, decyzja 83; ponowne „Mapa” → świeże V1, decyzja 72.
+    @Test
+    fun us1_1_v2_back_keeps_v1_state() {
+        compose.setContent {
+            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+                if (route is MapRoute) {
+                    Column {
+                        var taps by rememberSaveable { mutableIntStateOf(0) }
+                        Text(text = "v=$taps", modifier = Modifier.clickable { taps++ })
+                        Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
+                    }
+                }
+            }
+        }
+        compose.onNodeWithText("v=0").performClick()
+        compose.onNodeWithText("A-1").performClick()
+        pressBack()
+        compose.waitUntil { compose.onAllNodesWithText("v=1").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("A-1").performClick()
+        compose.onNodeWithText("Mapa").performClick()
+        compose.onNodeWithText("v=0").assertExists()
     }
 
     // Wiersz: każdy ekran poza V1, „Wstecz”: historia przetrwa odtworzenie aktywności, NFR-15, NFR-22.
