@@ -19,6 +19,7 @@ dependencies {
     implementation(project(":core:geo"))
     implementation(project(":core:designsystem"))
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.maplibre.android)
     implementation(libs.okhttp)
     implementation(libs.androidx.navigation3.runtime)
