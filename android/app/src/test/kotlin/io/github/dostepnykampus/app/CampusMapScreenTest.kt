@@ -20,10 +20,14 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -66,6 +70,7 @@ class CampusMapScreenTest {
             touch = onBuildingsTouch
         }
     private val online = MutableStateFlow(true)
+    private val listToggle = hasText("Lista budynków") and isSelectable()
     private val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
@@ -108,10 +113,12 @@ class CampusMapScreenTest {
         assertEquals(listOf("C-13"), opened)
     }
 
+    // Czcionka 1,5: krótki podpis „© OpenStreetMap” (NFR-37) i „Lista” czytane jako „Lista budynków” (NFR-20).
     @Test
     fun nfr37_short_osm_at_large_font() {
         compose.setContent { Screen(fontScale = 1.5f) }
         compose.onNodeWithText("© OpenStreetMap").assertExists()
+        compose.onNode(hasText("Lista") and hasContentDescription("Lista budynków")).assertIsNotSelected()
     }
 
     // Wiersz: kontur wspólny „C-13/C-14” → arkusz „Który budynek?”, przycisk budynku → V2, decyzja 85.
@@ -192,6 +199,35 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("Wyczyść pole").performClick()
         compose.onNodeWithText("Nie znaleźliśmy", substring = true).assertDoesNotExist()
         assertEquals(emptyList<String>(), opened)
+    }
+
+    // Wiersz: V1, „Lista budynków” → lista z katalogu bez mapy; budynek z listy → V2 jako arkusz na mapie,
+    // a po „Wstecz” znów lista (NFR-19, US2.5, decyzja 48).
+    @Test
+    fun nfr19_list_opens_v2_on_map() {
+        var sheet by mutableStateOf(0.dp)
+        compose.setContent { Screen(sheet = sheet) }
+        compose.onNode(listToggle).performClick().assertIsSelected()
+        compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
+        compose.onNodeWithContentDescription("C-13, Budynek testowy").assertExists()
+        compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
+        assertEquals(listOf("C-14"), opened)
+        sheet = 400.dp
+        compose.onNodeWithText("© OpenStreetMap contributors").assertExists()
+        compose.onNode(listToggle).assertDoesNotExist()
+        sheet = 0.dp
+        compose.onNode(listToggle).assertIsSelected()
+        compose.onNodeWithText("© OpenStreetMap contributors").assertDoesNotExist()
+    }
+
+    // Wiersz: V1, lista i pole symbolu → lista zawężona do wpisanego budynku (NFR-19, US1.1).
+    @Test
+    fun nfr19_symbol_narrows_list() {
+        compose.setContent { Screen() }
+        compose.onNode(listToggle).performClick()
+        compose.onNode(hasSetTextAction()).performTextInput("c14")
+        compose.onNodeWithContentDescription("C-14, Budynek testowy").assertExists()
+        compose.onNodeWithContentDescription("C-13, Budynek testowy").assertDoesNotExist()
     }
 
     // Wiersz: V1 bez internetu → linia „Bez internetu” bez daty pod polem, czytana jako komunikat stanu, a po powrocie

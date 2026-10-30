@@ -42,6 +42,6 @@ class MainActivityTest {
         compose.waitUntil { compose.onAllNodesWithText("Pomoc").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Pomoc").assertIsSelected()
         pressBack()
-        compose.onNodeWithText("Mapa").assertIsSelected()
+        compose.onNode(MapTab).assertIsSelected()
     }
 }
