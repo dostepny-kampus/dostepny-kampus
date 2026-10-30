@@ -157,6 +157,8 @@ class AppShellTest {
     @Config(qualifiers = "w640dp-h360dp-xhdpi", fontScale = 2f)
     fun nfr20_side_bar_font_200() {
         show()
+        // Zrzut po wczytaniu mapy: bez tego zależy od tego, czy katalog zdążył się wczytać.
+        compose.waitUntil { compose.onAllNodesWithText("OpenStreetMap", substring = true).fetchSemanticsNodes().any() }
         compose.onRoot().captureRoboImage()
         checkSideBar()
     }
