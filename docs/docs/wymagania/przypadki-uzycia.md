@@ -200,6 +200,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Krok | Warunek | Przebieg |
 | --- | --- | --- |
 | 1a | Brak sieci albo awaria serwera | Kolejka się nie otwiera. Aplikacja mówi to bez żargonu technicznego (NFR-50). |
+| 1b | Kolejka jest pusta | Aplikacja mówi to zdaniem i proponuje zajrzeć później. |
 | 2a | Inny Weryfikator wziął zgłoszenie chwilę wcześniej | Zgłoszenie znika z kolejki; nie da się go wziąć drugi raz (BR-11). |
 | 2b | Weryfikator przerywa pracę przed decyzją | Zgłoszenie zostaje „w weryfikacji” u tego Weryfikatora; zwolnienia nie ma (BR-11, [Reguły biznesowe](../biznes/reguly.md), „Poza MVP”). |
 | 5a | Zgłoszenie szybkie | Weryfikator ustala typ bariery i uciążliwość. Bez nich przyjęcie jest niemożliwe (US10.3, BR-14). |
@@ -392,9 +393,9 @@ Odwiedzający nie zmienia oznaczenia wejścia, bo zmianę sprawdza się zdjęcie
 | Aktor | Koordynator; drugorzędny: Usługa logowania. |
 | Warunki wstępne | Koordynator jest zalogowany z rolą RO-KOO. Pierwszego Koordynatora nadaje administrator usługi logowania. |
 | Przepływ główny | 1. Koordynator wpisuje adres e-mail i wybiera rolę. <br> 2. System przekazuje zaproszenie do Usługi logowania. <br> 3. Osoba loguje się (UC6) i ma wybraną rolę (US12.1, BR-2). |
-| Alternatywy i wyjątki | 1a. Adres należy do istniejącego konta: konto dostaje nową rolę, dotychczasowe zostają (US12.2, BR-1). |
+| Alternatywy i wyjątki | 1a. Adres należy do istniejącego konta: konto dostaje nową rolę, dotychczasowe zostają (US12.2, BR-1). <br> 1b. Brak sieci albo awaria serwera: zaproszenie się nie wysyła, a aplikacja mówi to bez żargonu technicznego (NFR-50). <br> 1c. Adres jest niepełny albo nie wybrano roli: zaproszenie się nie wysyła (US12.1). |
 | Warunki końcowe | Osoba ma konto z wybraną rolą. |
-| Odwołania | US12.1, US12.2, BR-1, BR-2 |
+| Odwołania | US12.1, US12.2, BR-1, BR-2, NFR-50 |
 
 Gdy zaproszenie nie będzie gotowe na pokaz, rolę nada ręcznie administrator usługi logowania. To rozwiązanie zapasowe projektu z opisu produktu, a nie przebieg przypadku użycia.
 

@@ -152,6 +152,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | dokładność pozycji | „Dokładność: 0,8 m (szacunek)” | Zbierający | bez zmian | 10.2 |
 | liczba satelitów GNSS | „Satelity: GPS 7, Galileo 5, GLONASS 4” | Zbierający | Nazwy systemów zamiast skrótu „GNSS”, każdy system osobno (US6.1). | 10.2 |
 | mapa nieba | „Mapa nieba” | Zbierający | bez zmian | 10.2 |
+| koniec uśredniania (C1) | „Pomiar zakończony” | Zbierający | Mówi, że można przejść dalej (US6.1). | 10.2 |
 | podpowiedź budynku | „Czy to budynek C-13?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | Zbierający | Pytanie zamiast słowa „podpowiedź”. | 10.2 |
 | lista budynków po „Wybierz inny” (C1) | „Wybierz budynek”, „Najbliżej punktu, od najbliższego:”, przyciski „Budynek A-1” | Zbierający | Ten sam zapis budynku co na liście V1. | 10.2 |
 | korekta ręczna | „Korekta ręczna” | Zbierający, Weryfikator | bez zmian | 10.2 |
@@ -219,7 +220,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | postęp budynku | „4 z 5 pięter, 80%” | Koordynator | bez zmian | 10.7 |
 | liczby zgłoszeń w K1 | „Czeka na sprawdzenie: 3”, „Przyjęte: 4” | Koordynator | bez zmian; liczby jak w scenariuszu `@US11.1` | 10.7 |
 | źródło „obchód” w K1 | „Wejścia sprawdzone na miejscu: 1 z 6” | Koordynator | Te same słowa co przy wejściu na karcie budynku. | 10.7 |
-| „Odśwież” | „Odśwież” i „Stan z 10:42” | Koordynator | Godzina odczytu (recenzja B3, Nielsen 1). | 10.7 |
+| „Odśwież” | „Odśwież” i „Stan z 12.11.2026, 10:42” | Koordynator | Data i godzina odczytu (recenzja B3, Nielsen 1; US11.2). | 10.7 |
 | zaproszenie | przycisk i nagłówek K2 „Zaproś osobę”, przycisk „Wyślij zaproszenie” | Koordynator | Nagłówek powtarza napis przycisku z L2. | 10.4 |
 | pola K2 | „Adres e-mail”, „Rola” | Koordynator | bez zmian | 10.4 |
 | eksport | przycisk i nagłówek K3 „Pobierz eksport”, przycisk „Pobierz plik” | Koordynator | Krótkie pojęcie dokumentacji. | 10.6 |
@@ -296,6 +297,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | C1, odmowa zgody | „Bez lokalizacji nie zapiszesz miejsca bariery. Możesz ją włączyć w ustawieniach telefonu.” | „Otwórz ustawienia” | — |
 | C1, zgoda tylko przybliżona | „Telefon podaje tylko przybliżone miejsce, a to za mało, by wskazać barierę. Pozwól na dokładną lokalizację.” | „Pozwól na dokładną lokalizację” | — |
 | C1, lokalizacja wyłączona | „Lokalizacja w telefonie jest wyłączona. Włącz ją, aby zapisać miejsce bariery.” | „Otwórz ustawienia” | — |
+| C2, wyjście bez zapisu | „Wyjść bez zapisu? Wpisane pola nie zostaną zapisane.” | „Wyjdź bez zapisu”, „Wróć do formularza” | — |
 | C2, zmiana zgłoszenia przyjętego | „Zapis utworzy nowe zgłoszenie, które znów sprawdzi Weryfikator.” | „Zapisz” | — |
 | C2, błąd walidacji | „Brakuje typu bariery. Uzupełnij to pole, aby zapisać.” Ten sam wzór dla innych pól, np. „Brakuje opisu. Uzupełnij to pole, aby zapisać.” | — | PW-10 |
 | C2, C6, C7, za mało miejsca | „Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.” | „Spróbuj ponownie” | — |
@@ -306,7 +308,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | C3, nieaktualne po usunięciu bariery | „Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.” | „Zmierz i zgłoś barierę” | PW-12 |
 | C4, pusty | „Wszystko wysłane. Ostatnia synchronizacja: 12.11.2026, 10:42.” | — | — |
 | C4, wysyłanie | „Wysyłamy 2 z 5…” | — | PW-9 |
-| C4, brak sieci | „Brak internetu. Wyślemy wszystko sami, gdy internet wróci.” | — | — |
+| C4, brak sieci | „Bez internetu. Wyślemy wszystko sami, gdy internet wróci.” | — | decyzja 54 |
 | C4, błąd serwera | „Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później.” | — | — |
 | C4, mało miejsca | „W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia.” | — | PW-10 |
 | C4, konflikt | „Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.” Przy zgłoszeniu przyjętym drugie zdanie: „Przyjęte zgłoszenie zostanie, a Twoja wersja, jeśli ją wybierzesz, trafi do sprawdzenia jako nowe.” (UC11 3b) | „Zostaw moją wersję”, „Weź wersję z serwera”, „Zdecyduję później” | PW-12 |
@@ -337,6 +339,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | K1, ładowanie | „Wczytujemy postęp…” | — | PW-9 |
 | K2, sukces | „Zaproszenie wysłane na podany adres.” | — | — |
 | K2, konto istnieje | „To konto już istnieje. Dodaliśmy mu rolę Weryfikatora, dotychczasowe role zostają.” | — | — |
+| K2, rola już jest | „Ta osoba ma już rolę Weryfikatora. Nic nie zmieniliśmy.” | — | — |
 | K2, błąd walidacji | „Adres e-mail jest niepełny, np. brakuje znaku @. Popraw go i wyślij ponownie.” albo „Wybierz rolę.” | — | PW-10 |
 | K3, ładowanie | „Przygotowujemy plik…” | — | PW-9 |
 | K3, pusty | „Nie ma jeszcze przyjętych barier. Pobrany plik będzie pusty.” | „Pobierz plik” | — |
