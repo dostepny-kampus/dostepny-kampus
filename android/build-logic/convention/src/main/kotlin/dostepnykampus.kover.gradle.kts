@@ -16,11 +16,23 @@ plugins {
  */
 val coverageExcludedProjects = setOf(":core:designsystem")
 
+/**
+ * Klasy poza progiem pokrycia: widok MapLibre (`feature:map`, decyzja 86) uruchamia natywną bibliotekę mapy na ARM,
+ * której Robolectric nie wczytuje, więc testy JVM go nie wykonają. Widok sprawdza zrzut na emulatorze, a jego logika
+ * (kamera, styl, dane, trafienie dotknięcia, nagłówek HTTP) jest w funkcjach JVM z testami i zostaje pod progiem.
+ */
+val coverageExcludedClasses =
+    arrayOf(
+        "io.github.dostepnykampus.feature.map.MapLibreMapView",
+        "io.github.dostepnykampus.feature.map.MapLibreMapView$*",
+    )
+
 kover {
     reports {
         filters {
             excludes {
                 classes("*ComposableSingletons*", "*.BuildConfig", "*.R", "*.R$*")
+                classes(*coverageExcludedClasses)
             }
         }
     }
