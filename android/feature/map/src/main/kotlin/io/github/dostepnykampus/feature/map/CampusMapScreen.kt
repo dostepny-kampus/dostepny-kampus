@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -38,13 +39,16 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.campusMapData
 
 private const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 private val ButtonSize = 48.dp
+
+private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore = { it })
 
 private val CameraSaver =
     listSaver<MapCamera?, Double>(
@@ -60,7 +64,8 @@ private val CameraSaver =
  * Widok kamery jest stanem zapisywanym, więc wraca po „Wstecz” z V2 (decyzja 83).
  *
  * @param repository katalog budynków z zewnątrz, więc test podaje własny kontekst wczytywania
- * @param onBuildingClick symbol budynku, gdy dotknięcie z tolerancją 24 dp trafiło jeden kontur (US2, decyzja 85)
+ * @param onBuildingClick symbol budynku, gdy dotknięcie z tolerancją 24 dp trafiło jeden kontur, albo budynku
+ *   wybranego w arkuszu „Który budynek?”, gdy trafiło kontur wspólny albo dwa kontury (US2, decyzja 85)
  * @param modifier wymiary ekranu nadane przez aplikację
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
  */
@@ -71,10 +76,10 @@ fun CampusMapScreen(
     modifier: Modifier = Modifier,
     mapView: CampusMapView = MapLibreMapView,
 ) {
-    val data by produceState<CampusMapData?>(initialValue = null, repository) {
-        value = campusMapData(repository.catalog())
-    }
+    val catalog by produceState<BuildingCatalog?>(initialValue = null, repository) { value = repository.catalog() }
+    val data = remember(catalog) { catalog?.let(::campusMapData) }
     var camera by rememberSaveable(stateSaver = CameraSaver) { mutableStateOf<MapCamera?>(null) }
+    var choice by rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     Box(modifier.fillMaxSize()) {
         val loaded = data
         val shown = camera ?: loaded?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
@@ -83,12 +88,27 @@ fun CampusMapScreen(
                 data = loaded,
                 camera = shown,
                 onCameraIdle = { camera = it },
-                onBuildingsTouch = { symbols -> symbols.singleOrNull()?.let(onBuildingClick) },
+                onBuildingsTouch = { symbols ->
+                    if (symbols.size > 1) choice = symbols else symbols.singleOrNull()?.let(onBuildingClick)
+                },
                 modifier = Modifier.fillMaxSize(),
             )
             Box(Modifier.fillMaxSize().safeDrawingPadding()) {
                 MapControls(shown, onCameraChange = { camera = it }, modifier = Modifier.align(Alignment.TopEnd))
                 OsmAttribution(Modifier.align(Alignment.BottomStart))
+                val buildings = catalog?.buildings.orEmpty()
+                val chosen = choice.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
+                if (chosen.isNotEmpty()) {
+                    val sheetModifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
+                    BuildingChoiceSheet(onClose = { choice = emptyList() }, modifier = sheetModifier) {
+                        chosen.forEach { building ->
+                            BuildingChoice(building) {
+                                choice = emptyList()
+                                onBuildingClick(building.symbol)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
