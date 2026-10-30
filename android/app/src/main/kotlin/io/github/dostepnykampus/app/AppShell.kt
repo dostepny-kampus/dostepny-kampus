@@ -6,6 +6,12 @@
 package io.github.dostepnykampus.app
 
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.only
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldLayout
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
@@ -48,7 +54,9 @@ private val RestartsSaver =
  * W oknie o szerokości co najmniej 600 dp pasek stoi z boku, w węższym na dole (decyzja 69). Historia zaczyna się
  * od V5 przy [firstLaunch] (US5.1), inaczej od V1, i przetrwa odtworzenie aktywności (NFR-22). [roles] wybiera
  * cele Gościa i napis czwartej pozycji, a [onFirstHelpLeft] dostaje znać, gdy instrukcja z pierwszego
- * uruchomienia przestanie być na wierzchu. [content] rysuje ekran trasy i podpina jego czynności do nawigatora.
+ * uruchomienia przestanie być na wierzchu. [content] rysuje ekran trasy i podpina jego czynności do nawigatora,
+ * domyślnie [AppScreen]. Wcięcia systemowe, które zajmuje pasek, są dla treści zużyte: ekran dopełnia resztę
+ * przez `WindowInsets.safeDrawing` albo rysuje pod nią, jak mapa.
  */
 @Composable
 fun AppShell(
@@ -56,7 +64,7 @@ fun AppShell(
     roles: RoleProvider,
     onFirstHelpLeft: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable AppNavigator.(NavKey) -> Unit = {},
+    content: @Composable AppNavigator.(NavKey) -> Unit = { AppScreen(it) },
 ) {
     val backStack = rememberNavBackStack(elements = startBackStack(firstLaunch).toTypedArray())
     val restarts = rememberSaveable(saver = RestartsSaver) { SnapshotStateList() }
@@ -91,7 +99,19 @@ fun AppShell(
                 }
             },
             navigationSuiteType = if (isWide) NavigationSuiteType.NavigationRail else NavigationSuiteType.NavigationBar,
-            content = { NavDisplay(entries = entries, onBack = { navigator.back() }) },
+            content = {
+                val barInsets =
+                    when {
+                        !hasNavigationBar(current) -> WindowInsets(0)
+                        isWide -> NavigationRailDefaults.windowInsets.only(WindowInsetsSides.Start)
+                        else -> NavigationBarDefaults.windowInsets.only(WindowInsetsSides.Bottom)
+                    }
+                NavDisplay(
+                    entries = entries,
+                    modifier = Modifier.consumeWindowInsets(barInsets),
+                    onBack = { navigator.back() },
+                )
+            },
         )
     }
 }

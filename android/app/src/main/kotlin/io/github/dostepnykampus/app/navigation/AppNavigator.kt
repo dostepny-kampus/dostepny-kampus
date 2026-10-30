@@ -7,6 +7,7 @@ package io.github.dostepnykampus.app.navigation
 
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.core.data.account.RoleProvider
+import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.core.model.isSignedIn
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
@@ -72,6 +73,9 @@ class AppNavigator(
 
     internal val isSignedIn: Boolean
         get() = roles.currentAccount().isSignedIn
+
+    internal val hasWork: Boolean
+        get() = roles.currentAccount().hasStaffRole
 
     /**
      * Klucz treści wpisu na pozycji [index] historii: pozycja, liczba powrotów na niej i trasa. Ten sam ekran dwa
