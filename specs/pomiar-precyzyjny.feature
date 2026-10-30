@@ -101,3 +101,23 @@ Funkcja: Pomiar precyzyjny i formularz zgłoszenia
     Jeżeli wpisze opis „Na długim korytarzu nie ma gdzie usiąść i odpocząć”
     Oraz zapisze zgłoszenie
     Wtedy zgłoszenie zapisuje się w telefonie ze statusem „lokalne”
+
+  @US7.4
+  Scenariusz: Powrót do pomiaru zmienia miejsce, a wpisane pola zostają
+    Zakładając, że Zbierający potwierdził budynek A-1 i w formularzu wybrał TB-1 „schody przy wejściu” i uciążliwość 3
+    Jeżeli wróci do pomiaru i przesunie punkt
+    Oraz przejdzie znów do formularza
+    Wtedy formularz pokazuje budynek A-1 i nowe miejsce
+    Oraz typ TB-1 i uciążliwość 3 są nadal wybrane
+
+  @US7.4
+  Szablon scenariusza: Wyjście z formularza z niezapisanymi zmianami wymaga potwierdzenia
+    Zakładając, że Zbierający wybrał w formularzu TB-1 „schody przy wejściu” i nie zapisał zgłoszenia
+    Jeżeli spróbuje wyjść z formularza
+    Oraz <odpowiedź>
+    Wtedy <skutek>
+
+    Przykłady:
+      | odpowiedź            | skutek                                                   |
+      | potwierdzi wyjście   | formularz się zamyka, a zgłoszenie nie zostaje zapisane  |
+      | zrezygnuje z wyjścia | formularz zostaje otwarty z wybranym typem TB-1          |

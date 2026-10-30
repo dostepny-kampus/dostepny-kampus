@@ -6,6 +6,25 @@ Funkcja: Weryfikacja zgłoszeń
   Założenia:
     Zakładając, że pierwszy i drugi Weryfikator są zalogowani z rolą Weryfikatora
 
+  @US10.4
+  Scenariusz: Kolejka pokazuje rodzaj, budynek i datę wysłania, od najdawniej wysłanego
+    Zakładając, że w kolejce są zgłoszenia wysłane 27.10.2026 z budynku C-13 i 26.10.2026 z budynku A-1
+    Jeżeli pierwszy Weryfikator otworzy kolejkę weryfikacji
+    Wtedy pierwsze jest zgłoszenie z 26.10.2026, a drugie z 27.10.2026
+    Oraz przy każdym widzi rodzaj zgłoszenia, budynek i datę wysłania
+
+  @US10.8
+  Szablon scenariusza: Przy zmianie Weryfikator widzi, czym różni się od poprzedniego stanu
+    Zakładając, że w kolejce jest <zmiana>
+    Jeżeli pierwszy Weryfikator weźmie tę zmianę
+    Wtedy widzi <co widzi>
+
+    Przykłady:
+      | zmiana                                                                                   | co widzi                                                                        |
+      | zmiana oznaczenia wejścia głównego A-1, a po jej wysłaniu przyjęto inną zmianę tego wejścia | napis, że oznaczenie wejścia zmieniło się od wysłania zmiany                 |
+      | zmiana „bariera usunięta” zgłoszenia TB-9 „niesprawna winda” w budynku D-2                | zdjęcie poprzedniego zgłoszenia obok nowego i status poprzedniego „przyjęte”    |
+      | nowa wersja zgłoszenia TB-13 „próg”, w której autor zmienił uciążliwość i opis            | nazwy zmienionych pól: „uciążliwość” i „opis”                                   |
+
   @BR-11
   Reguła: Zgłoszenie w weryfikacji obsługuje tylko Weryfikator, który je wziął
 
@@ -28,6 +47,13 @@ Funkcja: Weryfikacja zgłoszeń
         | wziąć    |
         | przyjąć  |
         | odrzucić |
+
+    @US10.7
+    Scenariusz: Wzięte zgłoszenia bez decyzji Weryfikator widzi osobno i do nich wraca
+      Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z budynku C-13 i nie podjął decyzji
+      Jeżeli wyjdzie ze zgłoszenia i otworzy kolejkę weryfikacji
+      Wtedy widzi to zgłoszenie osobno, wśród wziętych przez siebie
+      Oraz może je otworzyć i podjąć decyzję
 
   @BR-4
   Reguła: Nikt nie weryfikuje własnego zgłoszenia

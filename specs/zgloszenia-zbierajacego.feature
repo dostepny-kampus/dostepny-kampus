@@ -29,6 +29,19 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
     Wtedy zgłoszenie ma status „odrzucone”
     Oraz przy zgłoszeniu widać powód odrzucenia „Zdjęcie nie pokazuje progu”
 
+  @US8.1
+  Scenariusz: Zgłoszenie ze zmianą czekającą w telefonie ma napis przy statusie
+    Zakładając, że Zbierający ma zgłoszenie TB-13 „próg” w budynku C-13 ze statusem „wysłane”
+    Oraz bez sieci zmienił w nim uciążliwość
+    Jeżeli otworzy listę swoich zgłoszeń
+    Wtedy zgłoszenie ma status „wysłane” i napis „Zmiana czeka na wysłanie”
+
+  @US8.1
+  Scenariusz: Najnowsze zgłoszenia są na górze listy
+    Zakładając, że Zbierający ma zgłoszenia z 12.10.2026, 24.10.2026 i 28.10.2026
+    Jeżeli otworzy listę swoich zgłoszeń
+    Wtedy pierwsze jest zgłoszenie z 28.10.2026, a ostatnie z 12.10.2026
+
   @US8.2 @BR-9
   Szablon scenariusza: Status „wysłane” dopiero po potwierdzeniu odbioru przez serwer
     Zakładając, że Zbierający ma zgłoszenie ze statusem „lokalne”

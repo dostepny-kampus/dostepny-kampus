@@ -42,6 +42,7 @@ Funkcja: Tryb offline i synchronizacja
     Oraz na drugim telefonie bez sieci zmienił uciążliwość na 2
     Jeżeli drugi telefon złapie sieć
     Wtedy aplikacja pokazuje obie wersje: własną z uciążliwością 2 i z serwera z uciążliwością 3
+    Oraz nazywa pole, którym wersje się różnią: „uciążliwość”
     Oraz serwer ma nadal wersję z uciążliwością 3
 
   @US9.3 @BR-10
