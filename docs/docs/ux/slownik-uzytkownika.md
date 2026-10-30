@@ -378,6 +378,7 @@ Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości w
 | przycisk „Wstecz” | `arrow-left` | „Wstecz” | strzałka w lewo: powrót do poprzedniego miejsca |
 | przesuwanie mapy (V1, C1, R1) | `caret-top`, `caret-bottom`, `caret-left`, `caret-right` | brak; nazwa dla TalkBack „Przesuń mapę w górę” i dalsze kierunki | grot pokazuje, w którą stronę przesunie się mapa; inny znak niż strzałka „Wstecz” |
 | informacje o mapie (V1, C1, R1) | `info` | brak; nazwa dla TalkBack „Informacje o mapie” | litera „i” jak w punkcie informacji |
+| znak zgłoszenia do sprawdzenia na mapie (R1) | `document`; hi-fi: kartka z zagiętym rogiem i dwiema liniami, z ostrzem w dół | brak; nazwa dla TalkBack „Zgłoszenie do sprawdzenia: próg, budynek C-13”. Wybrany znak jest większy i ma podpis z typem albo grupą barier, np. „Próg” | kartka zgłoszenia, czyli dokument do przeczytania; inny kształt niż znaki barier, wejść i szukanej sali (NFR-21, decyzja 95) |
 | oznaczenie wejścia bez zmian od wysłania zmiany (R2) | `link-intact` | „Bez zmian od wysłania” | całe ogniwo: zmiana dotyczy obecnego oznaczenia |
 | oznaczenie wejścia zmienione po wysłaniu zmiany (R2) | `link-broken` | „Zmienione po wysłaniu” | przerwane ogniwo: zmiana dotyczy oznaczenia, którego już nie ma |
 
