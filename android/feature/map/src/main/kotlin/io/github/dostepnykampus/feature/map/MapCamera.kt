@@ -23,7 +23,7 @@ private const val QUARTER_VIEW_DEGREES_AT_ZOOM_0 = 70.0
  * @property center środek widoku
  * @property zoom powiększenie mapy
  */
-internal data class MapCamera(val center: GeoPoint, val zoom: Double)
+data class MapCamera(val center: GeoPoint, val zoom: Double)
 
 /** Widok po „Powiększ”: o jeden poziom, najwyżej do powiększenia planu budynku. */
 internal fun MapCamera.zoomedIn(): MapCamera = copy(zoom = (zoom + 1).coerceAtMost(MAX_ZOOM))
