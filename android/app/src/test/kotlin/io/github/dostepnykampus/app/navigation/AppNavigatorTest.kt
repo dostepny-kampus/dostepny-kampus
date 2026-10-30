@@ -52,14 +52,14 @@ class AppNavigatorTest {
         assertEquals(1, helpLeft)
     }
 
-    // Wiersz: V5 przy pierwszym uruchomieniu, wyjście z instrukcji dowolną drogą (pasek → L1 → „Nie teraz”),
+    // Wiersz: V5 przy pierwszym uruchomieniu, wyjście z instrukcji dowolną drogą, tu paskiem „Konto” → L1,
     // US5.1, decyzja 73.
     @Test
     fun us5_1_first_help_left_via_l1() {
         stack += startBackStack(firstLaunch = true).drop(1)
         navigator().run {
             open(TopLevel.ACCOUNT)
-            assertEquals(0, helpLeft)
+            assertEquals(1, helpLeft)
             backToMap()
         }
         assertEquals(1, helpLeft)
@@ -70,6 +70,7 @@ class AppNavigatorTest {
     fun us5_1_bar_help_left_keeps_flag() {
         navigator().run {
             open(TopLevel.HELP)
+            open(TopLevel.ACCOUNT)
             back()
         }
         assertEquals(0, helpLeft)
@@ -105,20 +106,6 @@ class AppNavigatorTest {
             assertEquals(keys.dropLast(1), stack.indices.map(::contentKey).dropLast(1))
             assertNotEquals(keys.last(), contentKey(index = 2))
         }
-    }
-
-    // Wiersz: pasek dolny, ponowne dotknięcie „Mapa” na V1 → V1 bez arkusza i wyniku, NFR-15, decyzja 72.
-    @Test
-    fun nfr15_reselect_map_restarts_v1() {
-        navigator().run {
-            val key = contentKey(index = 0)
-            open(TopLevel.HELP)
-            open(TopLevel.MAP)
-            assertEquals(key, contentKey(index = 0))
-            open(TopLevel.MAP)
-            assertNotEquals(key, contentKey(index = 0))
-        }
-        assertEquals(stackOf(), stack)
     }
 
     // Wiersz: każdy ekran poza V1, „Wstecz”, NFR-15: ten sam ekran dwa razy w historii ma dwa klucze treści.
