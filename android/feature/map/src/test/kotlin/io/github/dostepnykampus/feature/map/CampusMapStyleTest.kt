@@ -46,6 +46,16 @@ class CampusMapStyleTest {
         assertEquals("C-13", properties.text("label"))
     }
 
+    @Test
+    fun us1_labels_from_point_source() {
+        val layers = style.array("layers").map { it.jsonObject }
+        assertEquals("podpisy", layers.single { it.text("id") == "podpisy" }.text("source"))
+        val source = style.obj("sources").obj("podpisy")
+        val points = source.obj("data").array("features")
+        val geometry = points.single().jsonObject.obj("geometry")
+        assertEquals("Point", geometry.text("type"))
+    }
+
     private fun JsonObject.obj(key: String): JsonObject = getValue(key).jsonObject
 
     private fun JsonObject.array(key: String): JsonArray = getValue(key).jsonArray

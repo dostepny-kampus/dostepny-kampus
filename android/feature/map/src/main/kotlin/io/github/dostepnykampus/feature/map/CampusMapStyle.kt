@@ -26,6 +26,7 @@ data class MapStyleColors(val land: String, val building: String, val buildingOu
  * Styl mapy V1 (ADR-0005). Kontury i podpisy ze źródła w aplikacji są zawsze, a podkład kafelków OSM tylko
  * online. Bez sieci warstwa podkładu jest pusta i dalej widać kontury na tle lądu (NFR-10, NFR-39). Podpis konturu
  * to obraz o nazwie z właściwości `label`, który dodaje widok mapy, bo napisy z czcionek stylu wymagają sieci.
+ * Obraz stoi w jednym punkcie wewnątrz konturu, więc każdy kontur ma jeden podpis przy każdym przybliżeniu.
  * Podpisy się nie nakładają (reguła 4 wymagań wspólnych).
  */
 fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
@@ -34,7 +35,8 @@ fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
         |  "version": 8,
         |  "sources": {
         |    "osm": {"type": "raster", "tiles": ["$OSM_TILES"], "tileSize": 256, "maxzoom": 19},
-        |    "budynki": {"type": "geojson", "data": ${data.buildings}}
+        |    "budynki": {"type": "geojson", "data": ${data.buildings}},
+        |    "podpisy": {"type": "geojson", "data": ${data.labelPoints}}
         |  },
         |  "layers": [
         |    {"id": "lad", "type": "background", "paint": {"background-color": "${colors.land}"}},
@@ -47,7 +49,7 @@ fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
         |      "id": "kontury", "type": "line", "source": "budynki",
         |      "paint": {"line-color": "${colors.buildingOutline}", "line-width": 1.5}
         |    },
-        |    {"id": "podpisy", "type": "symbol", "source": "budynki", "layout": {"icon-image": ["get", "label"]}}
+        |    {"id": "podpisy", "type": "symbol", "source": "podpisy", "layout": {"icon-image": ["get", "label"]}}
         |  ]
         |}
     """.trimMargin()
