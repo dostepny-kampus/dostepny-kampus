@@ -12,6 +12,8 @@ import io.github.dostepnykampus.core.model.GeoPolygon
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
 
 /**
@@ -46,7 +48,7 @@ class BuildingCatalogParserTest {
     fun us1_same_symbol_merges() {
         val h14 = catalog.buildings.single { it.symbol == "H-14" }
         assertEquals(GeoMultiPolygon(listOf(polygon(x = 2), polygon(x = 4))), h14.outline)
-        assertEquals("H-14", h14.name)
+        assertEquals(null, h14.name)
     }
 
     @Test
@@ -54,7 +56,7 @@ class BuildingCatalogParserTest {
         val (c3, c4) = catalog.buildings.filter { it.symbol in setOf("C-3", "C-4") }
         assertEquals(polygon(x = 6), c3.outline)
         assertEquals(c3.outline, c4.outline)
-        assertEquals("C-3/C-4", c4.name)
+        assertEquals(null, c4.name)
     }
 
     @Test
@@ -65,7 +67,8 @@ class BuildingCatalogParserTest {
             c13.map { it.marking },
         )
         assertEquals(listOf(true, false, false), c13.map { it.isMain })
-        assertEquals(listOf("", "G", ""), c13.map { it.name })
+        assertEquals(listOf("main", "yes", "yes"), c13.map { it.type })
+        assertEquals(listOf(null, "G", null), c13.map { it.name })
         assertEquals(GeoPoint(longitude = 1.0, latitude = 0.0), c13.first().location)
     }
 
@@ -76,10 +79,37 @@ class BuildingCatalogParserTest {
         assertEquals(listOf(EntranceMarking.NO_DATA, EntranceMarking.NO_DATA), shared.map { it.marking })
     }
 
+    @ParameterizedTest
+    @CsvSource("yes, ACCESSIBLE", "designated, ACCESSIBLE", "no, INACCESSIBLE", "limited, NO_DATA", "inne, NO_DATA")
+    fun br_24_wheelchair_marking(value: String, marking: EntranceMarking) {
+        val json = collection(entrance(id = 1, symbols = C13, tags = """"entrance":"yes","wheelchair":"$value""""))
+        assertEquals(listOf(marking), parseBuildingCatalog(json).entrances.map { it.marking })
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "C-13, ",
+        "C-3/C-4, ",
+        "T-22, ",
+        "C-3 / D-8a, ",
+        "A-1 / Budynek główny, A-1 / Budynek główny",
+        "M-6 bis, M-6 bis",
+    )
+    fun us1_symbol_name_is_no_name(name: String, expected: String?) {
+        val json = collection(building(id = 1, symbols = """["T-18"]""", name = "\"$name\"", geometry = square(x = 0)))
+        assertEquals(expected, parseBuildingCatalog(json).buildings.single().name)
+    }
+
     @Test
-    fun us1_point_outline_rejected() {
-        val pointOutline = collection(building(id = 1, symbols = C13, name = "null", geometry = POINT))
-        assertThrows<IllegalArgumentException> { parseBuildingCatalog(pointOutline) }
+    fun us1_bad_format_rejected() {
+        listOf(
+            """{"type":"FeatureCollection","features":[]}""",
+            collection(feature(properties = """{"kind":"droga","symbols":$C13,"osm_id":"way/1"}""", geometry = POINT)),
+            collection(building(id = 1, symbols = "[]", name = "null", geometry = square(x = 0))),
+            collection(building(id = 1, symbols = "[null]", name = "null", geometry = square(x = 0))),
+            collection(building(id = 1, symbols = C13, name = "null", geometry = POINT)),
+            collection(feature(properties = """{"kind":"entrance","symbols":$C13,"osm_id":"n/1"}""", geometry = AREA)),
+        ).forEach { json -> assertThrows<IllegalArgumentException>(json) { parseBuildingCatalog(json) } }
     }
 
     @Test
@@ -116,6 +146,7 @@ class BuildingCatalogParserTest {
 
     private companion object {
         const val C13 = """["C-13"]"""
+        const val AREA = """{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,1],[0,0]]]}"""
         const val POINT = """{"type":"Point","coordinates":[1,0]}"""
     }
 }

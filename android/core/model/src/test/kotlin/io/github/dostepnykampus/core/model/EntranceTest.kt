@@ -17,6 +17,7 @@ class EntranceTest {
             buildingSymbol = "B-4",
             name = "Wejście boczne",
             isMain = false,
+            type = "yes",
             location = GeoPoint(longitude = 17.0625, latitude = 51.109375),
             marking = EntranceMarking.NO_DATA,
         )
