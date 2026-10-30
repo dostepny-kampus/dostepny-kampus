@@ -105,6 +105,8 @@ class AppShellTest {
         show(roles = staff)
         compose.onNodeWithText("Konto i\u00A0praca").assertIsNotSelected().performClick()
         compose.onNodeWithText("Konto i\u00A0praca").assertIsSelected()
+        val ys = listOf("Mapa", "Konto i\u00A0praca").map { compose.onNodeWithText(it).getUnclippedBoundsInRoot().top }
+        assertEquals(1, ys.distinct().size) // Decyzja 69, NFR-51: okno < 600 dp → pozycje w jednym rzędzie.
     }
 
     // Wymagania wspólne i reguła 8, decyzje 69 i 77: okno ≥ 600 dp → pasek z boku, karty od góry, NFR-18, NFR-51.
