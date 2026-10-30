@@ -53,7 +53,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type
 import com.github.takahirom.roborazzi.captureRoboImage
-import io.github.dostepnykampus.app.navigation.openBuilding
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
