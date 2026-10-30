@@ -18,4 +18,7 @@
     <string name="mapa_brak_wyniku">Nie znaleźliśmy budynku »%1$s«.</string>
     <string name="mapa_brak_wyniku_rada">Sprawdź symbol, np. C-13, albo wybierz budynek z listy.</string>
     <string name="mapa_bez_internetu">Bez internetu</string>
+    <string name="mapa_widok_mapa">Mapa</string>
+    <string name="mapa_widok_lista">Lista budynków</string>
+    <string name="mapa_widok_lista_krotko">Lista</string>
 </resources>

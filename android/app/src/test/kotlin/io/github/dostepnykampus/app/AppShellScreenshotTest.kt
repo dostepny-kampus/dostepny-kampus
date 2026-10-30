@@ -10,9 +10,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
@@ -57,7 +61,12 @@ class AppShellScreenshotTest {
                 """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
         }
 
-    private fun capture(isSheetOpen: Boolean = true, query: String? = null, isOnline: Boolean = true) {
+    private fun capture(
+        isSheetOpen: Boolean = true,
+        query: String? = null,
+        isOnline: Boolean = true,
+        isList: Boolean = false,
+    ) {
         compose.setContent {
             DostepnyKampusTheme {
                 AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
@@ -76,6 +85,9 @@ class AppShellScreenshotTest {
             }
         }
         compose.waitForIdle()
+        // Akcja zamiast dotyku: zrzut bez śladu dotknięcia na przełączniku.
+        val list = compose.onNode(hasContentDescription("Lista budynków") and isSelectable())
+        if (isList) list.performSemanticsAction(SemanticsActions.OnClick)
         if (isSheetOpen) compose.runOnUiThread { touch(listOf("C-13")) }
         query?.let { compose.onNode(hasSetTextAction()).performTextInput(it) }
         compose.onRoot().captureRoboImage()
@@ -103,6 +115,19 @@ class AppShellScreenshotTest {
     @Test
     fun us9_1_v1_bez_internetu_jasny() {
         capture(isSheetOpen = false, isOnline = false)
+    }
+
+    // V1 z wybraną listą budynków, NFR-19.
+    @Test
+    fun nfr19_v1_lista_jasny() {
+        capture(isSheetOpen = false, isList = true)
+    }
+
+    // Lista budynków przy czcionce 200 %: w przełączniku napis „Lista”, NFR-19, NFR-20.
+    @Test
+    @Config(fontScale = 2f)
+    fun nfr20_v1_lista_200() {
+        capture(isSheetOpen = false, isList = true)
     }
 
     // V2 jako arkusz do połowy ekranu nad V1, decyzja 48, NFR-16.

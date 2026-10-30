@@ -34,12 +34,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -78,6 +79,9 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import org.robolectric.shadows.ShadowNetworkCapabilities
 
+/** Pozycja „Mapa” paska dolnego; V1 ma też „Mapa” w przełączniku „Mapa” i „Lista budynków” (NFR-19). */
+internal val MapTab = hasText("Mapa") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
+
 /** Oboczka w Robolectric: historia, pasek dolny w wąskim oknie, pasek z boku w szerokim i role. */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -111,9 +115,10 @@ class AppShellTest {
     private fun checkSideBar(windowHeight: Dp = 360.dp) {
         val heights = mutableMapOf<String, Dp>()
         listOf("Mapa", "Zgłoś barierę", "Pomoc", "Konto").forEach { label ->
-            val node = compose.onNodeWithText(label).performScrollTo().assert(tabRole)
+            val node = compose.onNode(hasText(label) and tabRole).performScrollTo()
             val item = node.getUnclippedBoundsInRoot()
-            val text = compose.onNodeWithText(label, useUnmergedTree = true).getUnclippedBoundsInRoot()
+            val textNode = compose.onNode(hasText(label) and hasAnyAncestor(tabRole), useUnmergedTree = true)
+            val text = textNode.getUnclippedBoundsInRoot()
             assertEquals(listOf(8.dp, 80.dp), listOf(item.left, item.width))
             assertTrue(text.left >= item.left && text.right <= item.right && item.bottom <= windowHeight)
             heights[label] = text.height
@@ -133,7 +138,7 @@ class AppShellTest {
         show(firstLaunch = true)
         compose.onNodeWithText("Pomoc").assertIsSelected()
         pressBack()
-        compose.onNodeWithText("Mapa").assertIsSelected()
+        compose.onNode(MapTab).assertIsSelected()
         assertEquals(1, helpLeft)
     }
 
@@ -144,7 +149,7 @@ class AppShellTest {
         compose.onNodeWithText("Zgłoś barierę").performClick()
         compose.onAllNodesWithText("Mapa").assertCountEquals(0)
         pressBack()
-        compose.onNodeWithText("Mapa").assertIsSelected()
+        compose.onNode(MapTab).assertIsSelected()
     }
 
     // Wiersz: pasek dolny, „Konto i praca” → L2, role pracownicze, US14.1.
@@ -153,7 +158,10 @@ class AppShellTest {
         show(roles = staff)
         compose.onNodeWithText("Konto i\u00A0praca").assertIsNotSelected().performClick()
         compose.onNodeWithText("Konto i\u00A0praca").assertIsSelected()
-        val ys = listOf("Mapa", "Konto i\u00A0praca").map { compose.onNodeWithText(it).getUnclippedBoundsInRoot().top }
+        val ys =
+            listOf("Mapa", "Konto i\u00A0praca").map {
+                compose.onNode(hasText(it) and tabRole).getUnclippedBoundsInRoot().top
+            }
         assertEquals(1, ys.distinct().size) // Decyzja 69, NFR-51: okno < 600 dp → pozycje w jednym rzędzie.
     }
 
@@ -209,7 +217,7 @@ class AppShellTest {
         pressBack()
         compose.waitUntil { compose.onAllNodesWithText("v=1").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("A-1").performClick()
-        compose.onNodeWithText("Mapa").performClick()
+        compose.onNode(MapTab).performClick()
         compose.onNodeWithText("v=0").assertExists()
     }
 
@@ -253,7 +261,7 @@ class AppShellTest {
         restoration.emulateSavedInstanceStateRestore()
         compose.onNodeWithText("Pomoc").assertIsSelected()
         pressBack()
-        compose.onNodeWithText("Mapa").assertIsSelected()
+        compose.onNode(MapTab).assertIsSelected()
     }
 
     // Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie w 3 krokach z pozycją dołączoną
@@ -268,7 +276,7 @@ class AppShellTest {
         }
         compose.onNodeWithText("Wróć do mapy").assertExists()
         pressBack()
-        compose.onNodeWithText("Mapa").assertIsSelected()
+        compose.onNode(MapTab).assertIsSelected()
     }
 
     // Wiersz: V2 → „Sprawdź, którędy wejść” → V3, „Wstecz” → V2 → V1 z zaznaczonym budynkiem; historia z parametrami

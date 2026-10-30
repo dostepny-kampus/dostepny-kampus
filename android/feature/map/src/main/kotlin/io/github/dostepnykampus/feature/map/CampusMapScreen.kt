@@ -37,6 +37,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +61,9 @@ private const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 private val ButtonSize = 48.dp
 
+private const val TOP_STATE = "top"
+private const val MAP_STATE = "map"
+
 private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore = { it })
 
 private val CameraSaver =
@@ -71,10 +75,10 @@ private val CameraSaver =
     )
 
 /**
- * Ekran V1 „Mapa kampusu” (US1): nagłówek z polem symbolu budynku (US1.1), bez sieci linia „Bez internetu”
- * (US9.1), pod nimi kontury z pliku w aplikacji,
- * przyciski powiększania i przesuwania (NFR-53) i podpis OSM (NFR-37). Przyciski i podpis są
- * w `WindowInsets.safeDrawing`.
+ * Ekran V1 „Mapa kampusu” (US1): nagłówek z polem symbolu budynku (US1.1) i przełącznikiem „Mapa” i „Lista
+ * budynków” (NFR-19), bez sieci linia „Bez internetu” (US9.1). Pod nimi lista budynków albo mapa: kontury z pliku
+ * w aplikacji, przyciski powiększania i przesuwania (NFR-53) i podpis OSM (NFR-37). Przyciski i podpis są
+ * w `WindowInsets.safeDrawing`. Budynek z listy otwiera V2 jako arkusz na mapie (decyzja 48).
  * Widok kamery jest stanem zapisywanym, więc wraca po „Wstecz” z V2 (decyzja 83).
  *
  * @param repository katalog budynków z zewnątrz, więc test podaje własny kontekst wczytywania
@@ -103,17 +107,37 @@ fun CampusMapScreen(
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
     // Na start „jest internet”, żeby linia nie mignęła, zanim przyjdzie stan bieżący.
     val isOnline by remember(networkStatus) { networkStatus.isOnline() }.collectAsState(initial = true)
+    var isList by rememberSaveable { mutableStateOf(false) }
+    // Góra V1 i mapa znikają pod arkuszem V2 albo przy liście; ich stan, np. przewinięcie listy i widok kamery,
+    // czeka na powrót.
+    val states = rememberSaveableStateHolder()
     Column(modifier.fillMaxSize()) {
         // Pod arkuszem V2 nagłówka nie ma, jak w hi-fi V2: mapa sięga wtedy pod pasek stanu.
-        if (!isCovered) CampusSearch(catalog, isOnline, onBuildingClick)
-        CampusMap(
-            catalog = catalog,
-            focus = focus,
-            contentPadding = contentPadding,
-            mapView = mapView,
-            onBuildingClick = onBuildingClick,
-            modifier = Modifier.weight(1f).fillMaxWidth(),
-        )
+        if (!isCovered) {
+            states.SaveableStateProvider(TOP_STATE) {
+                CampusSearch(
+                    catalog = catalog,
+                    isOnline = isOnline,
+                    isList = isList,
+                    onListChange = { isList = it },
+                    onBuildingClick = onBuildingClick,
+                    modifier = if (isList) Modifier.weight(1f) else Modifier,
+                )
+            }
+        }
+        // Budynek z listy też otwiera V2 jako arkusz na mapie (decyzja 48).
+        if (!isList || isCovered) {
+            states.SaveableStateProvider(MAP_STATE) {
+                CampusMap(
+                    catalog = catalog,
+                    focus = focus,
+                    contentPadding = contentPadding,
+                    mapView = mapView,
+                    onBuildingClick = onBuildingClick,
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                )
+            }
+        }
     }
 }
 
