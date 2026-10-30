@@ -100,6 +100,33 @@ fun CampusMapScreen(
     mapView: CampusMapView = MapLibreMapView,
 ) {
     val catalog by produceState<BuildingCatalog?>(initialValue = null, repository) { value = repository.catalog() }
+    val isCovered = contentPadding.calculateBottomPadding() > 0.dp
+    // Na start „jest internet”, żeby linia nie mignęła, zanim przyjdzie stan bieżący.
+    val isOnline by remember(networkStatus) { networkStatus.isOnline() }.collectAsState(initial = true)
+    Column(modifier.fillMaxSize()) {
+        // Pod arkuszem V2 nagłówka nie ma, jak w hi-fi V2: mapa sięga wtedy pod pasek stanu.
+        if (!isCovered) CampusSearch(catalog, isOnline, onBuildingClick)
+        CampusMap(
+            catalog = catalog,
+            focus = focus,
+            contentPadding = contentPadding,
+            mapView = mapView,
+            onBuildingClick = onBuildingClick,
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+        )
+    }
+}
+
+// Mapa V1 z konturami, przyciskami, podpisem OSM i arkuszem „Który budynek?” (US1, US2, NFR-37, NFR-53).
+@Composable
+private fun CampusMap(
+    catalog: BuildingCatalog?,
+    focus: String?,
+    contentPadding: PaddingValues,
+    mapView: CampusMapView,
+    onBuildingClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val layers = remember(catalog) { catalog?.let(::campusMapData) }
     val data = remember(layers, focus) { layers?.copy(focus = focus) }
     var camera by rememberSaveable(stateSaver = CameraSaver) { mutableStateOf<MapCamera?>(null) }
@@ -108,46 +135,40 @@ fun CampusMapScreen(
     val isCovered = cover > 0.dp
     val coverPixels = with(LocalDensity.current) { cover.toPx() }.toDouble()
     val focusPoint = remember(catalog, focus) { catalog?.pointOf(focus) }
-    // Na start „jest internet”, żeby linia nie mignęła, zanim przyjdzie stan bieżący.
-    val isOnline by remember(networkStatus) { networkStatus.isOnline() }.collectAsState(initial = true)
     // Pod arkuszem widok kamery się nie zapisuje, więc po „Wstecz” wraca widok sprzed V2 (decyzja 83).
     val keepCamera = { idle: MapCamera -> if (!isCovered) camera = idle }
-    Column(modifier.fillMaxSize()) {
-        // Pod arkuszem V2 nagłówka nie ma, jak w hi-fi V2: mapa sięga wtedy pod pasek stanu.
-        if (!isCovered) CampusSearch(catalog, isOnline, onBuildingClick)
-        val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
-        Box(Modifier.weight(1f).fillMaxWidth().consumeWindowInsets(topInset)) {
-            val loaded = data
-            val shown =
-                shownCamera(
-                    own = camera,
-                    start = loaded?.start,
-                    focus = focusPoint.takeIf { isCovered },
-                    bottomInset = coverPixels,
-                )
-            if (loaded != null && shown != null) {
-                mapView.Show(
-                    data = loaded,
-                    camera = shown,
-                    onCameraIdle = keepCamera,
-                    onBuildingsTouch = { symbols -> choice = touched(symbols, onBuildingClick) },
-                    modifier = Modifier.fillMaxSize(),
-                )
-                MapOverlay(
-                    camera = shown,
-                    hasControls = !isCovered,
-                    onCameraChange = { camera = it },
-                    modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
-                ) {
-                    val chosen = catalog?.buildingsOf(choice).orEmpty()
-                    if (chosen.isNotEmpty()) {
-                        val sheetModifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
-                        BuildingChoiceSheet(onClose = { choice = emptyList() }, modifier = sheetModifier) {
-                            chosen.forEach { building ->
-                                BuildingChoice(building) {
-                                    choice = emptyList()
-                                    onBuildingClick(building.symbol)
-                                }
+    val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
+    Box(modifier.consumeWindowInsets(topInset)) {
+        val loaded = data
+        val shown =
+            shownCamera(
+                own = camera,
+                start = loaded?.start,
+                focus = focusPoint.takeIf { isCovered },
+                bottomInset = coverPixels,
+            )
+        if (loaded != null && shown != null) {
+            mapView.Show(
+                data = loaded,
+                camera = shown,
+                onCameraIdle = keepCamera,
+                onBuildingsTouch = { symbols -> choice = touched(symbols, onBuildingClick) },
+                modifier = Modifier.fillMaxSize(),
+            )
+            MapOverlay(
+                camera = shown,
+                hasControls = !isCovered,
+                onCameraChange = { camera = it },
+                modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
+            ) {
+                val chosen = catalog?.buildingsOf(choice).orEmpty()
+                if (chosen.isNotEmpty()) {
+                    val sheetModifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
+                    BuildingChoiceSheet(onClose = { choice = emptyList() }, modifier = sheetModifier) {
+                        chosen.forEach { building ->
+                            BuildingChoice(building) {
+                                choice = emptyList()
+                                onBuildingClick(building.symbol)
                             }
                         }
                     }
