@@ -27,12 +27,13 @@ import org.maplibre.spatialk.geojson.Point
  *
  * - Kontury z tym samym symbolem, np. dwa obiekty OSM `H-14`, tworzą jeden budynek z wielokątem złożonym.
  *   Nazwą budynku jest pierwsza nazwa podana w danych.
+ * - Nazwa złożona wyłącznie z symboli budynków, np. „C-13”, „C-3/C-4” albo „T-22” przy T-18, to brak nazwy
+ *   (decyzja 75): ekran pokaże wtedy sam symbol.
  * - Kontur z kilkoma symbolami, np. `["C-3", "C-4"]`, daje osobny budynek dla każdego symbolu z tym samym konturem.
  * - Wejście z kilkoma symbolami daje wejście w każdym z tych budynków, z tym samym identyfikatorem `osm_id`.
- * - Wejście główne to wejście z tagiem `entrance` = `main`.
- * - Opis wejścia to tag `ref`, np. `W-1`, albo pusty napis, gdy tagu brak.
- * - Oznaczenie wejścia pochodzi z tagu `wheelchair` (BR-24): `yes` daje „dostępne”, `no` daje „niedostępne”,
- *   a każda inna wartość i brak tagu — „brak danych”.
+ * - Rodzaj wejścia to tag `entrance`, a wejście główne ma `entrance` = `main`. Opis wejścia to tag `ref`, np. `W-1`.
+ * - Oznaczenie wejścia pochodzi z tagu `wheelchair` (BR-24, decyzja 74): `yes` i `designated` dają „dostępne”,
+ *   `no` daje „niedostępne”, a `limited`, każda inna wartość i brak tagu — „brak danych”.
  *
  * Budynki i wejścia mają kolejność z pliku.
  *
@@ -68,7 +69,7 @@ private fun buildings(features: List<GeoFeature>): List<Building> =
             val areas = outlines.map { it.geometry.toArea() }
             Building(
                 symbol = symbol,
-                name = outlines.firstNotNullOfOrNull { it.textOrNull("name") },
+                name = outlines.firstNotNullOfOrNull { it.textOrNull("name")?.takeUnless(::isSymbolsOnly) },
                 outline = areas.singleOrNull() ?: GeoMultiPolygon(areas.flatMap(GeoArea::parts)),
             )
         }
@@ -76,16 +77,18 @@ private fun buildings(features: List<GeoFeature>): List<Building> =
 private fun entrances(feature: GeoFeature): List<Entrance> {
     val point = feature.geometry as? Point
     requireNotNull(point) { "Wejście ${feature.text("osm_id")} nie jest punktem" }
+    val type = feature.textOrNull("entrance")
     return feature.symbols().map { symbol ->
         Entrance(
             id = feature.text("osm_id"),
             buildingSymbol = symbol,
-            name = feature.textOrNull("ref").orEmpty(),
-            isMain = feature.textOrNull("entrance") == "main",
+            name = feature.textOrNull("ref"),
+            isMain = type == "main",
+            type = type,
             location = point.coordinates.toModel(),
             marking =
                 when (feature.textOrNull("wheelchair")) {
-                    "yes" -> EntranceMarking.ACCESSIBLE
+                    "yes", "designated" -> EntranceMarking.ACCESSIBLE
                     "no" -> EntranceMarking.INACCESSIBLE
                     else -> EntranceMarking.NO_DATA
                 },
@@ -102,7 +105,11 @@ private fun JsonElement.text(): String? = jsonPrimitive.contentOrNull
 private fun GeoFeature.text(key: String): String = requireNotNull(textOrNull(key)) { "Obiekt bez pola $key" }
 
 private fun GeoFeature.symbols(): List<String> {
-    val symbols = properties()["symbols"]?.jsonArray.orEmpty().map { it.jsonPrimitive.content }
-    require(symbols.isNotEmpty()) { "Obiekt ${text("osm_id")} bez symbolu budynku" }
-    return symbols
+    val symbols = properties()["symbols"]?.jsonArray.orEmpty().map { it.text() }
+    require(symbols.isNotEmpty() && null !in symbols) { "Obiekt ${text("osm_id")} bez symbolu budynku" }
+    return symbols.filterNotNull()
 }
+
+private val SYMBOLS_ONLY = Regex("""[A-Z]-\d+[a-z]?(\s*/\s*[A-Z]-\d+[a-z]?)*""")
+
+private fun isSymbolsOnly(name: String): Boolean = SYMBOLS_ONLY.matches(name.trim())
