@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -68,6 +69,8 @@ private val CameraSaver =
  *   wybranego w arkuszu „Który budynek?”, gdy trafiło kontur wspólny albo dwa kontury (US2, decyzja 85)
  * @param modifier wymiary ekranu nadane przez aplikację
  * @param focus symbol budynku zaznaczonego obrysem, np. po „Wstecz” z V2 (US1.1)
+ * @param contentPadding część ekranu zasłonięta z zewnątrz, np. przez arkusz V2 (decyzja 87). Przyciski i podpis
+ *   OSM stoją nad nią, a mapa dalej wypełnia cały ekran (NFR-37, NFR-53)
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
  */
 @Composable
@@ -76,6 +79,7 @@ fun CampusMapScreen(
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     focus: String? = null,
+    contentPadding: PaddingValues = PaddingValues(),
     mapView: CampusMapView = MapLibreMapView,
 ) {
     val catalog by produceState<BuildingCatalog?>(initialValue = null, repository) { value = repository.catalog() }
@@ -96,7 +100,7 @@ fun CampusMapScreen(
                 },
                 modifier = Modifier.fillMaxSize(),
             )
-            Box(Modifier.fillMaxSize().safeDrawingPadding()) {
+            Box(Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding)) {
                 MapControls(shown, onCameraChange = { camera = it }, modifier = Modifier.align(Alignment.TopEnd))
                 OsmAttribution(Modifier.align(Alignment.BottomStart))
                 val buildings = catalog?.buildings.orEmpty()

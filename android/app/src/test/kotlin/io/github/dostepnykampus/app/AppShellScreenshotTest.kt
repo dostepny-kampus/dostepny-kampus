@@ -59,7 +59,12 @@ class AppShellScreenshotTest {
             DostepnyKampusTheme {
                 AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                     if (route is MapRoute) {
-                        CampusMapScreen(repository, onBuildingClick = { openBuilding(it) }, mapView = landOnly)
+                        CampusMapScreen(
+                            repository = repository,
+                            onBuildingClick = { openBuilding(it) },
+                            contentPadding = LocalSheetPadding.current,
+                            mapView = landOnly,
+                        )
                     } else {
                         AppScreen(route)
                     }
