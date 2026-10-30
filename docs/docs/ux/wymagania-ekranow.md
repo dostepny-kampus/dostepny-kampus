@@ -350,8 +350,8 @@ Zostaje jedno przerwanie przy pierwszym zgłoszeniu. Warianty kolejności opisuj
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Instrukcja w najwyżej 4 krokach. Każdy krok ma tytuł, np. „Co znaczy »Dostępne«”, i najwyżej 3 zdania. Obraz jest tylko wtedy, gdy pokazuje prawdziwy element aplikacji, np. przycisk, pole wyszukiwania albo element opisu budynku, i ma opis dla TalkBack | dane | US5.1, NFR-18 | — |
-| Numer kroku, np. „Krok 2 z 4”, i pod nim pasek z 4 odcinków; wykonane odcinki są wypełnione | dane | US5.1, NFR-21 | — |
+| Instrukcja w 3 krokach: „Znajdź budynek”, „Co znaczy »Dostępne«” i „Zgłoś barierę”. Każdy krok ma tytuł i najwyżej 3 zdania. Obraz jest tylko wtedy, gdy pokazuje prawdziwy element aplikacji, np. przycisk, pole wyszukiwania albo element opisu budynku, i ma opis dla TalkBack | dane | US5.1, NFR-18 | — |
+| Numer kroku, np. „Krok 2 z 3”, i pod nim pasek z tylu odcinków, ile jest kroków; wykonane odcinki są wypełnione | dane | US5.1, NFR-21, decyzja 89 | — |
 | Nagłówek „Jak korzystać z aplikacji” | dane | US5.1 | — |
 | Zdanie w instrukcji: „Aby zgłosić barierę, potrzebne jest konto. Możesz je założyć teraz w »Konto«.” | dane | US5.1, US14.2, PW-5 | — |
 | Zdanie w instrukcji: „Napis »Dostępne« przy wejściu znaczy, że wejdziesz bez pokonywania stopni: z poziomu chodnika, pochylnią albo podnośnikiem.” | dane | US5.1, US2.1, BR-24, PW-15 | — |
