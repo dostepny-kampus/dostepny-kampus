@@ -8,9 +8,11 @@ package io.github.dostepnykampus.app
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.exclude
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.safeDrawing
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -38,6 +41,7 @@ import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -193,24 +197,31 @@ class AppShellTest {
     }
 
     // Wiersz: V1, dotknięcie konturu → V2, arkusz na mapie do połowy ekranu; uchwyt albo przewinięcie treści
-    // rozwija go na cały ekran, US2, decyzja 48.
+    // rozwija go na cały ekran, US2, decyzja 48; V1 dostaje zasłoniętą część jako dopełnienie od dołu, NFR-37.
     @Test
     fun us2_v2_sheet_half_then_expands() {
         compose.setContent {
             AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
-                    Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
+                    Box(modifier = Modifier.fillMaxSize().testTag("V1")) {
+                        Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
+                        Text(text = "dół ${LocalSheetPadding.current.calculateBottomPadding().value}")
+                    }
                 } else {
                     val scroll = Modifier.verticalScroll(rememberScrollState())
                     Column(modifier = scroll) { Text(text = "karta", modifier = Modifier.requiredHeight(2000.dp)) }
                 }
             }
         }
+        compose.onNodeWithText("dół 0.0").assertExists()
         compose.onNodeWithText("A-1").performClick()
         val handleTop = { label: String -> compose.onNodeWithContentDescription(label).getUnclippedBoundsInRoot().top }
-        assertTrue(handleTop("Rozwiń kartę budynku") > 300.dp)
+        val map = compose.onNodeWithTag("V1").getUnclippedBoundsInRoot().height
+        assertEquals((map / 2).value, handleTop("Rozwiń kartę budynku").value, 1f)
+        compose.onNodeWithText("dół ${(map / 2).value}").assertExists()
         compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
         assertEquals(0.dp, handleTop("Zwiń kartę budynku"))
+        compose.onNodeWithText("dół ${map.value}").assertExists()
         compose.onNodeWithContentDescription("Zwiń kartę budynku").performClick()
         compose.onNodeWithText("karta").performTouchInput { swipeUp() }
         assertEquals(0.dp, handleTop("Zwiń kartę budynku"))

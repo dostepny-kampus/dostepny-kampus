@@ -405,8 +405,8 @@ wysokosci:
     zrodlo: styl „Karta miejsca”
   pasek_czynnosci:
     dp: 6              # Material 3, poziom 3; cień pada w górę
-    uzycie: przypięty pasek czynności nad paskiem dolnym (V2), arkusz na mapie (V1)
-    zrodlo: styl „Karta miejsca”
+    uzycie: przypięty pasek czynności nad paskiem dolnym (V2), arkusz na mapie (V1), arkusz z kartą budynku V2 nad mapą
+    zrodlo: styl „Karta miejsca”; cień arkusza z makiety hi-fi V2
 
 # ---------------------------------------------------------------------------
 # Paleta mapy: podkład, budynki PWr, plan piętra (styl mapy wektorowej, decyzja 44).
