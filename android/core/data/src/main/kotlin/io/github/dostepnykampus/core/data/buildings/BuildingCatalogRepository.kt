@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.data.buildings
 
 import android.content.Context
+import android.content.res.AssetManager
 import io.github.dostepnykampus.core.geo.parseBuildingCatalog
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
@@ -46,11 +47,25 @@ class BuildingCatalogRepository(private val ioContext: CoroutineContext, private
         }
 }
 
-/** [BuildingCatalogRepository] na pliku [BUILDINGS_ASSET] z zasobów aplikacji; jedna instancja na proces. */
-fun Context.buildingCatalogRepository(ioContext: CoroutineContext = Dispatchers.IO): BuildingCatalogRepository {
-    val assets = applicationContext.assets
-    return BuildingCatalogRepository(ioContext) { assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() } }
-}
+/**
+ * [BuildingCatalogRepository] na pliku [BUILDINGS_ASSET] z zasobów aplikacji, jedna instancja na proces: każde
+ * wywołanie, także po obrocie ekranu albo z innego ekranu, zwraca tę samą instancję z tym samym katalogiem w pamięci.
+ */
+fun Context.buildingCatalogRepository(): BuildingCatalogRepository =
+    processRepository ?: synchronized(processLock) {
+        processRepository ?: assetRepository(applicationContext.assets).also { processRepository = it }
+    }
+
+private val processLock = Any()
+
+@Volatile
+private var processRepository: BuildingCatalogRepository? = null
+
+private fun assetRepository(
+    assets: AssetManager,
+    ioContext: CoroutineContext = Dispatchers.IO,
+): BuildingCatalogRepository =
+    BuildingCatalogRepository(ioContext) { assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() } }
 
 private val NOT_FOR_VISITORS = setOf("emergency", "exit", "garage")
 

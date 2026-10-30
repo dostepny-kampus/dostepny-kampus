@@ -12,6 +12,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
+import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
@@ -57,6 +58,17 @@ class BuildingCatalogRepositoryTest {
             assertSame(first, second)
             assertEquals(1, reads.get())
         }
+    }
+
+    @Test
+    fun us1_real_file_for_visitors() {
+        val file = File(System.getProperty("dostepnykampus.buildings"))
+        val real = BuildingCatalogRepository(EmptyCoroutineContext) { file.readText() }
+        val catalog = runBlocking { real.catalog() }
+        assertEquals(95, catalog.buildings.size)
+        assertEquals(70, catalog.entrances.size)
+        val visitorTypes = setOf("main", "yes", "service", "staircase", "secondary")
+        assertEquals(visitorTypes, catalog.entrances.mapNotNull { it.type }.toSet())
     }
 
     private fun collection(features: List<String>): String =

@@ -8,8 +8,16 @@ plugins {
     id("dostepnykampus.android.library")
 }
 
+val buildingsFile: RegularFile = layout.projectDirectory.file("../../../data/buildings/pwr-buildings.geojson")
+
 android {
-    testOptions.unitTests.all { it.useJUnitPlatform() }
+    testOptions.unitTests.all {
+        it.useJUnitPlatform()
+        // Test repozytorium na prawdziwym pliku konturów z katalogu data/ w repozytorium.
+        it.jvmArgumentProviders.add(
+            objects.newInstance<BuildingsFile>().apply { file.set(buildingsFile) },
+        )
+    }
 }
 
 dependencies {
@@ -20,6 +28,15 @@ dependencies {
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+/** Ścieżka pliku konturów dla testu; wejściem zadania jest treść pliku, a nie jego położenie na dysku. */
+abstract class BuildingsFile : CommandLineArgumentProvider {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val file: RegularFileProperty
+
+    override fun asArguments(): List<String> = listOf("-Ddostepnykampus.buildings=${file.get().asFile.path}")
 }
 
 /** Kopiuje plik konturów z `data/buildings` do zasobów aplikacji przy budowie, bez kopii w repozytorium (US1). */
@@ -39,7 +56,7 @@ abstract class CopyBuildingsAsset : DefaultTask() {
 
 val copyBuildingsAsset =
     tasks.register<CopyBuildingsAsset>("copyBuildingsAsset") {
-        source.set(layout.projectDirectory.file("../../../data/buildings/pwr-buildings.geojson"))
+        source.set(buildingsFile)
     }
 
 androidComponents {
