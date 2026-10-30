@@ -10,8 +10,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | Stan | Liczba |
 | --- | --- |
 | Pełny test | 0 |
-| Tylko częściowo | 9 |
-| Bez testu | 142 |
+| Tylko częściowo | 10 |
+| Bez testu | 141 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -85,7 +85,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `przegladanie-mapy.feature` | Wyjścia ewakuacyjne rozwijają się na żądanie | US2.6 | — | brak |
 | `przegladanie-mapy.feature` | Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę | BR-25, US3.3 | — | brak |
 | `przegladanie-mapy.feature` | Karta budynku szczegółowego opisuje piętra tekstem | US16.3 | — | brak |
-| `przegladanie-mapy.feature` | Instrukcja przy pierwszym uruchomieniu | US5.1 | `app · AppNavigatorTest.us5_1_first_launch_opens_v5`<br>`app · AppShellTest.us5_1_first_launch_v5_back_v1`<br>`core/data · FirstLaunchRepositoryTest.us5_1_help_until_marked_seen` | częściowo |
+| `przegladanie-mapy.feature` | Instrukcja przy pierwszym uruchomieniu | US5.1 | `app · AppNavigatorTest.us5_1_first_launch_opens_v5`<br>`app · AppShellTest.us5_1_first_launch_v5_back_v1`<br>`app · MainActivityTest.us5_1_first_launch_recreate`<br>`core/data · FirstLaunchRepositoryTest.us5_1_help_until_marked_seen` | częściowo |
 | `przegladanie-mapy.feature` | Instrukcję można otworzyć ponownie z pomocy | US5.1 | `app · AppNavigatorTest.us5_1_bar_help_v5_back_returns`<br>`app · AppNavigatorTest.us5_1_first_launch_back_v1`<br>`app · AppNavigatorTest.us5_1_next_launch_opens_v1`<br>`core/data · FirstLaunchRepositoryTest.us5_1_second_launch_no_help` | częściowo |
 | `przegladanie-mapy.feature` | Plan piętra w budynku szczegółowym | US16.1 | — | brak |
 | `scenariusz-demo.feature` | Schody przy wejściu głównym A-1 od pomiaru do eksportu | US2.1, US6.1, US6.2, US7.1, US9.2, US10.1, US11.1, US13.1 | — | brak |
@@ -147,7 +147,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `zgloszenia-zbierajacego.feature` | Zgłoszenie „bariera usunięta” zapisuje się bez uciążliwości | BR-7, BR-19, US8.4 | — | brak |
 | `zgloszenie-szybkie-powrot.feature` | Po wysłaniu „Wstecz” wraca do ekranu, z którego zaczęto zgłoszenie | US4.7 | — | brak |
 | `zgloszenie-szybkie-powrot.feature` | Powrót między krokami nie usuwa zdjęcia ani grupy barier | US4.8 | — | brak |
-| `zgloszenie-szybkie.feature` | Zgłoszenie szybkie w 3 krokach z pozycją dołączoną automatycznie | BR-8, US4.1 | `app · AppNavigatorTest.us4_1_three_steps_sent_p2` | częściowo |
+| `zgloszenie-szybkie.feature` | Zgłoszenie szybkie w 3 krokach z pozycją dołączoną automatycznie | BR-8, US4.1 | `app · AppNavigatorTest.us4_1_three_steps_sent_p2`<br>`app · AppShellTest.us4_1_report_stubs_steps_sent` | częściowo |
 | `zgloszenie-szybkie.feature` | Zgłoszenie przy wejściu podpowiada wejście, a miejsce bierze z bieżącej pozycji | BR-8, US4.6 | `app · AppNavigatorTest.us4_6_report_at_entrance` | częściowo |
 | `zgloszenie-szybkie.feature` | Wybór jednej z 6 grup barier dużymi przyciskami | BR-8, US4.3 | — | brak |
 | `zgloszenie-szybkie.feature` | Zgłoszenia szybkiego nie da się wysłać bez zdjęcia albo grupy barier | BR-8, US4.1, US4.3 | — | brak |
@@ -164,5 +164,5 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `zgloszenie-szybkie.feature` | Potwierdzenie po wysłaniu bez dalszego statusu | BR-8, US4.4 | — | brak |
 | `zgloszenie-szybkie.feature` | Potwierdzenie bez sieci mówi o późniejszej wysyłce | BR-8, US4.2, US4.4 | — | brak |
 | `zgloszenie-szybkie.feature` | Gość niezalogowany jest proszony o logowanie przed zdjęciem | BR-8, US14.2 | `app · AppNavigatorTest.us14_2_bar_report_guest_l1` | częściowo |
-| `zgloszenie-szybkie.feature` | Gość po zalogowaniu wraca do zgłoszenia szybkiego | BR-8, US14.2 | — | brak |
+| `zgloszenie-szybkie.feature` | Gość po zalogowaniu wraca do zgłoszenia szybkiego | BR-8, US14.2 | `app · AppNavigatorTest.us14_2_guest_signed_in_v4` | częściowo |
 | `zgloszenie-szybkie.feature` | Gość rezygnuje z logowania | BR-8, US14.2 | `app · AppNavigatorTest.uc7_1b_guest_not_now_v1` | częściowo |
