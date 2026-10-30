@@ -10,8 +10,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | Stan | Liczba |
 | --- | --- |
 | Pełny test | 0 |
-| Tylko częściowo | 4 |
-| Bez testu | 147 |
+| Tylko częściowo | 6 |
+| Bez testu | 145 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -66,8 +66,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `postep-inwentaryzacji.feature` | Do postępu nie wchodzą zgłoszenia nieznane serwerowi, archiwalne ani poza budynkiem | BR-21 | — | brak |
 | `postep-inwentaryzacji.feature` | Liczba wejść ze źródłem „obchód” w budynku szczegółowym | BR-24, US11.4 | — | brak |
 | `postep-inwentaryzacji.feature` | Przyjęta zmiana oznaczenia wejścia zwiększa liczbę wejść sprawdzonych na miejscu | BR-24, US11.4 | — | brak |
-| `przegladanie-mapy.feature` | Wyszukanie budynku po symbolu w różnym zapisie | US1.1 | — | brak |
-| `przegladanie-mapy.feature` | Mapa i wyszukiwanie działają bez logowania | US1.2 | — | brak |
+| `przegladanie-mapy.feature` | Wyszukanie budynku po symbolu w różnym zapisie | US1.1 | `core/geo · SearchBuildingsTest.us1_1_spelling_finds_c13` | częściowo |
+| `przegladanie-mapy.feature` | Mapa i wyszukiwanie działają bez logowania | US1.2 | `core/geo · SearchBuildingsTest.us1_2_real_file_finds_a1` | częściowo |
 | `przegladanie-mapy.feature` | Na mapie są tylko zgłoszenia przyjęte | BR-6, US1.3 | — | brak |
 | `przegladanie-mapy.feature` | Wejście ma oznaczenie tekstem i ikoną, nie tylko kolorem | US2.1 | — | brak |
 | `przegladanie-mapy.feature` | Wejście zalecane stoi pierwsze na karcie budynku | BR-25, US2.1 | — | brak |
