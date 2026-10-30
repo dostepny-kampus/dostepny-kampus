@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.core.data.buildings.buildingCatalogRepository
+import io.github.dostepnykampus.core.data.map.mapListChoice
 import io.github.dostepnykampus.core.data.network.networkStatus
 import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.Odstepy
@@ -71,6 +72,7 @@ private fun AppNavigator.MapScreen(focus: String?) {
         repository = context.buildingCatalogRepository(),
         // Jedna obserwacja sieci na ekran, a nie nowa przy każdym przerysowaniu.
         networkStatus = remember(context) { context.networkStatus() },
+        mapListChoice = remember(context) { context.mapListChoice() },
         onBuildingClick = { openBuilding(it) },
         focus = focus,
         contentPadding = LocalSheetPadding.current,

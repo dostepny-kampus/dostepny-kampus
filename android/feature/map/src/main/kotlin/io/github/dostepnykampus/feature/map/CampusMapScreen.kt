@@ -35,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
@@ -49,6 +50,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.geo.labelPoint
@@ -56,6 +58,7 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.campusMapData
+import kotlinx.coroutines.launch
 
 private const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
@@ -83,6 +86,8 @@ private val CameraSaver =
  *
  * @param repository katalog budynków z zewnątrz, więc test podaje własny kontekst wczytywania
  * @param networkStatus stan internetu; bez niego pod polem symbolu stoi linia „Bez internetu” (US9.1, NFR-10)
+ * @param mapListChoice ostatni wybór w przełączniku „Mapa” i „Lista budynków”; bez niego „Mapa”, a przy skali
+ *   czcionki co najmniej 1,5 „Lista budynków” (NFR-19, NFR-20)
  * @param onBuildingClick symbol budynku, gdy dotknięcie z tolerancją 24 dp trafiło jeden kontur, albo budynku
  *   wybranego w arkuszu „Który budynek?”, gdy trafiło kontur wspólny albo dwa kontury (US2, decyzja 85)
  * @param modifier wymiary ekranu nadane przez aplikację
@@ -97,6 +102,7 @@ private val CameraSaver =
 fun CampusMapScreen(
     repository: BuildingCatalogRepository,
     networkStatus: NetworkStatus,
+    mapListChoice: MapListChoice,
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     focus: String? = null,
@@ -107,7 +113,9 @@ fun CampusMapScreen(
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
     // Na start „jest internet”, żeby linia nie mignęła, zanim przyjdzie stan bieżący.
     val isOnline by remember(networkStatus) { networkStatus.isOnline() }.collectAsState(initial = true)
-    var isList by rememberSaveable { mutableStateOf(false) }
+    val isListSaved by remember(mapListChoice) { mapListChoice.savedChoice }.collectAsState(initial = null)
+    val isList = isListSaved ?: (LocalDensity.current.fontScale >= LIST_FONT_SCALE)
+    val scope = rememberCoroutineScope()
     // Góra V1 i mapa znikają pod arkuszem V2 albo przy liście; ich stan, np. przewinięcie listy i widok kamery,
     // czeka na powrót.
     val states = rememberSaveableStateHolder()
@@ -119,7 +127,7 @@ fun CampusMapScreen(
                     catalog = catalog,
                     isOnline = isOnline,
                     isList = isList,
-                    onListChange = { isList = it },
+                    onListChange = { scope.launch { mapListChoice.choose(it) } },
                     onBuildingClick = onBuildingClick,
                     modifier = if (isList) Modifier.weight(1f) else Modifier,
                 )

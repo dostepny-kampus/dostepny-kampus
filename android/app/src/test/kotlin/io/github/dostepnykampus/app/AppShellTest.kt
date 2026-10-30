@@ -40,6 +40,7 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -180,8 +181,10 @@ class AppShellTest {
     @Config(qualifiers = "w640dp-h360dp-xhdpi", fontScale = 2f)
     fun nfr20_side_bar_font_200() {
         show()
-        // Zrzut po wczytaniu mapy: bez tego zależy od tego, czy katalog zdążył się wczytać.
-        compose.waitUntil { compose.onAllNodesWithText("OpenStreetMap", substring = true).fetchSemanticsNodes().any() }
+        // Zrzut po wczytaniu listy, od której V1 startuje przy dużej czcionce (NFR-19): bez tego zależy od tego,
+        // czy katalog zdążył się wczytać.
+        val a1 = hasContentDescription("A-1, ", substring = true)
+        compose.waitUntil { compose.onAllNodes(a1).fetchSemanticsNodes().any() }
         compose.onRoot().captureRoboImage()
         checkSideBar()
     }
