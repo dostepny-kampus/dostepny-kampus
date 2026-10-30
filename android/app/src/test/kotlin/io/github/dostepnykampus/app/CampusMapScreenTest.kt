@@ -20,6 +20,8 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
@@ -120,7 +122,8 @@ class CampusMapScreenTest {
         assertEquals(true, moved.center.latitude > zoomed.center.latitude)
         val names = listOf("Pomniejsz", "Przesuń mapę w dół", "Przesuń mapę w lewo", "Przesuń mapę w prawo")
         names.forEach { compose.onNodeWithContentDescription(it).assertExists() }
-        compose.onNodeWithText("© OpenStreetMap contributors").assertExists()
+        // Plakietka jest niska jak w hi-fi, ale odnośnik ma cel dotyku 48 dp (NFR-17).
+        compose.onNodeWithText("© OpenStreetMap contributors").assertHasClickAction().assertHeightIsAtLeast(48.dp)
         compose.runOnUiThread { listOf(listOf("C-3", "C-4"), listOf("C-13")).forEach(touch) }
         assertEquals(listOf("C-13"), opened)
     }

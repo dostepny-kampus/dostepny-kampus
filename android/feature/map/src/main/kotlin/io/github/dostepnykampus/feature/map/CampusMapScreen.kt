@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -42,18 +42,22 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
+import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.geo.labelPoint
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
@@ -63,6 +67,9 @@ import kotlinx.coroutines.launch
 
 private const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
+
+// Jasność tła, poniżej której motyw jest ciemny i element pływający dostaje obwódkę zamiast samego cienia.
+private const val DARK_SURFACE_LUMINANCE = 0.5f
 private val ButtonSize = 48.dp
 
 private const val TOP_STATE = "top"
@@ -276,22 +283,37 @@ private fun MapButton(name: Int, glyph: String, onClick: () -> Unit) {
     }
 }
 
-// „© OpenStreetMap contributors” jako odnośnik, od skali czcionki 1,5 „© OpenStreetMap” (NFR-37).
+// „© OpenStreetMap contributors” jako podkreślony odnośnik na niskiej plakietce, jak w hi-fi V1; od skali czcionki 1,5
+// „© OpenStreetMap” (NFR-37). Pole dotyku ma 48 dp i wystaje poza plakietkę (NFR-17). W ciemnym motywie cień
+// słabo widać, więc plakietka ma też obwódkę.
 @Composable
 private fun OsmAttribution(modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
     val isShort = LocalDensity.current.fontScale >= SHORT_ATTRIBUTION_FONT_SCALE
-    Surface(modifier.padding(8.dp), shape = MaterialTheme.shapes.small) {
-        Text(
-            text = stringResource(if (isShort) R.string.mapa_osm_krotko else R.string.mapa_osm),
-            modifier =
-                Modifier
-                    .clickable { uriHandler.openUri(OSM_COPYRIGHT) }
-                    .heightIn(min = ButtonSize)
-                    .wrapContentHeight()
-                    .padding(horizontal = 8.dp),
-            maxLines = 1,
-            style = MaterialTheme.typography.bodyMedium,
-        )
+    val isDark = MaterialTheme.colorScheme.surface.luminance() < DARK_SURFACE_LUMINANCE
+    val border = BorderStroke(Obramowania.ramka, Wysokosci.kontrolkiMapyObwodkaCiemny).takeIf { isDark }
+    Box(
+        modifier =
+            modifier
+                .padding(horizontal = Odstepy.s)
+                .clickable { uriHandler.openUri(OSM_COPYRIGHT) }
+                .heightIn(min = ButtonSize),
+        contentAlignment = Alignment.Center,
+    ) {
+        Surface(
+            shape = MaterialTheme.shapes.small,
+            color = MaterialTheme.colorScheme.surfaceContainerLowest,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            shadowElevation = Wysokosci.kontrolkiMapy,
+            border = border,
+        ) {
+            Text(
+                text = stringResource(if (isShort) R.string.mapa_osm_krotko else R.string.mapa_osm),
+                modifier = Modifier.padding(horizontal = Odstepy.s),
+                maxLines = 1,
+                textDecoration = TextDecoration.Underline,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
     }
 }
