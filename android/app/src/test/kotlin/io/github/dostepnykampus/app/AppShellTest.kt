@@ -5,6 +5,9 @@
  */
 package io.github.dostepnykampus.app
 
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
+import android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
@@ -65,12 +68,15 @@ import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import org.robolectric.shadows.ShadowNetworkCapabilities
 
 /** Oboczka w Robolectric: historia, pasek dolny w wąskim oknie, pasek z boku w szerokim i role. */
 @RunWith(RobolectricTestRunner::class)
@@ -83,6 +89,15 @@ class AppShellTest {
     private val visitor = RoleProvider { Account.SignedIn() }
     private val tabRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
     private var helpLeft = 0
+
+    // Telefon z internetem: w Robolectric sieć nie jest sprawdzona, więc V1 pokazałoby „Bez internetu” (US9.1).
+    @Before
+    fun online() {
+        val connectivity = compose.activity.getSystemService(ConnectivityManager::class.java)
+        val capabilities = ShadowNetworkCapabilities.newInstance()
+        listOf(NET_CAPABILITY_INTERNET, NET_CAPABILITY_VALIDATED).forEach(shadowOf(capabilities)::addCapability)
+        shadowOf(connectivity).setNetworkCapabilities(connectivity.activeNetwork, capabilities)
+    }
 
     private fun show(firstLaunch: Boolean = false, roles: RoleProvider = GuestRoleProvider) {
         compose.setContent { Shell(firstLaunch = firstLaunch, roles = roles) }

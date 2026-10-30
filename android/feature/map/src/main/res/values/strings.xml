@@ -17,4 +17,5 @@
     <string name="mapa_wyczysc_pole">Wyczyść pole</string>
     <string name="mapa_brak_wyniku">Nie znaleźliśmy budynku »%1$s«.</string>
     <string name="mapa_brak_wyniku_rada">Sprawdź symbol, np. C-13, albo wybierz budynek z listy.</string>
+    <string name="mapa_bez_internetu">Bez internetu</string>
 </resources>

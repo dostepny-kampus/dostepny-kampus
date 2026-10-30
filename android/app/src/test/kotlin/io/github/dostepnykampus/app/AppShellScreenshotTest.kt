@@ -22,6 +22,7 @@ import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapView
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -56,13 +57,14 @@ class AppShellScreenshotTest {
                 """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
         }
 
-    private fun capture(isSheetOpen: Boolean = true, query: String? = null) {
+    private fun capture(isSheetOpen: Boolean = true, query: String? = null, isOnline: Boolean = true) {
         compose.setContent {
             DostepnyKampusTheme {
                 AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                     if (route is MapRoute) {
                         CampusMapScreen(
                             repository = repository,
+                            networkStatus = { flowOf(isOnline) },
                             onBuildingClick = { openBuilding(it) },
                             contentPadding = LocalSheetPadding.current,
                             mapView = landOnly,
@@ -95,6 +97,12 @@ class AppShellScreenshotTest {
     @Test
     fun us1_1_v1_brak_wyniku_jasny() {
         capture(isSheetOpen = false, query = "C-31")
+    }
+
+    // V1 bez internetu przy danych z aplikacji: linia „Bez internetu” bez daty, US9.1, NFR-10, decyzja 84.
+    @Test
+    fun us9_1_v1_bez_internetu_jasny() {
+        capture(isSheetOpen = false, isOnline = false)
     }
 
     // V2 jako arkusz do połowy ekranu nad V1, decyzja 48, NFR-16.

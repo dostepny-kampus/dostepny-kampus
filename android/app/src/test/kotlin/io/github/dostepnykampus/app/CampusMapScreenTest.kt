@@ -14,12 +14,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.getBoundsInRoot
+import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -36,6 +40,7 @@ import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapView
 import io.github.dostepnykampus.feature.map.MapCamera
 import io.github.dostepnykampus.feature.map.data.CampusMapData
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -60,6 +65,7 @@ class CampusMapScreenTest {
             focuses += data.focus
             touch = onBuildingsTouch
         }
+    private val online = MutableStateFlow(true)
     private val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
@@ -76,6 +82,7 @@ class CampusMapScreenTest {
             CompositionLocalProvider(LocalDensity provides density) {
                 CampusMapScreen(
                     repository = repository,
+                    networkStatus = { online },
                     onBuildingClick = { opened += it },
                     focus = focus,
                     contentPadding = PaddingValues(bottom = sheet),
@@ -185,6 +192,21 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("Wyczyść pole").performClick()
         compose.onNodeWithText("Nie znaleźliśmy", substring = true).assertDoesNotExist()
         assertEquals(emptyList<String>(), opened)
+    }
+
+    // Wiersz: V1 bez internetu → linia „Bez internetu” bez daty pod polem, czytana jako komunikat stanu, a po powrocie
+    // internetu znika (US9.1, NFR-10, decyzja 84, WCAG 4.1.3).
+    @Test
+    fun us9_1_offline_line() {
+        compose.setContent { Screen() }
+        compose.onNodeWithText("Bez internetu", substring = true).assertDoesNotExist()
+        online.value = false
+        val status = SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite)
+        compose.onNode(status and hasAnyDescendant(hasText("Bez internetu"))).assertExists()
+        val field = compose.onNode(hasSetTextAction()).getBoundsInRoot()
+        assertEquals(true, compose.onNodeWithText("Bez internetu").getBoundsInRoot().top >= field.bottom)
+        online.value = true
+        compose.onNodeWithText("Bez internetu").assertDoesNotExist()
     }
 
     // Wiersz: V2, „Wstecz” → V1 z zaznaczonym budynkiem (US1.1).

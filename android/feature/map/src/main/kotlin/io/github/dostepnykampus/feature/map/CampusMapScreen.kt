@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -47,6 +48,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.geo.labelPoint
 import io.github.dostepnykampus.core.model.Building
@@ -69,12 +71,14 @@ private val CameraSaver =
     )
 
 /**
- * Ekran V1 „Mapa kampusu” (US1): nagłówek z polem symbolu budynku (US1.1), pod nim kontury z pliku w aplikacji,
+ * Ekran V1 „Mapa kampusu” (US1): nagłówek z polem symbolu budynku (US1.1), bez sieci linia „Bez internetu”
+ * (US9.1), pod nimi kontury z pliku w aplikacji,
  * przyciski powiększania i przesuwania (NFR-53) i podpis OSM (NFR-37). Przyciski i podpis są
  * w `WindowInsets.safeDrawing`.
  * Widok kamery jest stanem zapisywanym, więc wraca po „Wstecz” z V2 (decyzja 83).
  *
  * @param repository katalog budynków z zewnątrz, więc test podaje własny kontekst wczytywania
+ * @param networkStatus stan internetu; bez niego pod polem symbolu stoi linia „Bez internetu” (US9.1, NFR-10)
  * @param onBuildingClick symbol budynku, gdy dotknięcie z tolerancją 24 dp trafiło jeden kontur, albo budynku
  *   wybranego w arkuszu „Który budynek?”, gdy trafiło kontur wspólny albo dwa kontury (US2, decyzja 85)
  * @param modifier wymiary ekranu nadane przez aplikację
@@ -88,6 +92,7 @@ private val CameraSaver =
 @Composable
 fun CampusMapScreen(
     repository: BuildingCatalogRepository,
+    networkStatus: NetworkStatus,
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     focus: String? = null,
@@ -103,11 +108,13 @@ fun CampusMapScreen(
     val isCovered = cover > 0.dp
     val coverPixels = with(LocalDensity.current) { cover.toPx() }.toDouble()
     val focusPoint = remember(catalog, focus) { catalog?.pointOf(focus) }
+    // Na start „jest internet”, żeby linia nie mignęła, zanim przyjdzie stan bieżący.
+    val isOnline by remember(networkStatus) { networkStatus.isOnline() }.collectAsState(initial = true)
     // Pod arkuszem widok kamery się nie zapisuje, więc po „Wstecz” wraca widok sprzed V2 (decyzja 83).
     val keepCamera = { idle: MapCamera -> if (!isCovered) camera = idle }
     Column(modifier.fillMaxSize()) {
         // Pod arkuszem V2 nagłówka nie ma, jak w hi-fi V2: mapa sięga wtedy pod pasek stanu.
-        if (!isCovered) CampusSearch(catalog, onBuildingClick)
+        if (!isCovered) CampusSearch(catalog, isOnline, onBuildingClick)
         val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
         Box(Modifier.weight(1f).fillMaxWidth().consumeWindowInsets(topInset)) {
             val loaded = data
