@@ -7,6 +7,7 @@ package io.github.dostepnykampus.core.designsystem
 
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.size
@@ -17,7 +18,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
@@ -83,6 +88,39 @@ fun BottomBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit
                 )
             }
         }
+    }
+}
+
+/**
+ * Pasek nawigacji z boku ekranu w oknie o szerokości co najmniej 600 dp (wymagania wspólne, decyzja 69): te same
+ * pozycje [items], napisy, kolejność i tokeny co [BottomBar], od góry, z krawędzią po stronie treści. Nie zabiera
+ * wysokości okna i nigdy się nie chowa (NFR-52). TalkBack czyta napis, rolę karty i stan wybrany (NFR-18).
+ */
+@Composable
+fun SideBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
+    val colors = MaterialTheme.colorScheme
+    val iconSize = Modifier.size(Ikony.rozmiar)
+    Row(modifier = modifier) {
+        NavigationRail(containerColor = colors.surfaceContainerLow) {
+            items.entries.forEachIndexed { index, item ->
+                val isSelected = index == selectedIndex
+                NavigationRailItem(
+                    selected = isSelected,
+                    onClick = { onSelect(index) },
+                    icon = { Icon(imageVector = item.icon, contentDescription = null, modifier = iconSize) },
+                    label = { BottomBarLabel(text = item.label, items = items, selected = isSelected) },
+                    colors =
+                        NavigationRailItemDefaults.colors(
+                            selectedIconColor = colors.onPrimaryContainer,
+                            selectedTextColor = colors.onSurface,
+                            indicatorColor = colors.primaryContainer,
+                            unselectedIconColor = colors.onSurfaceVariant,
+                            unselectedTextColor = colors.onSurfaceVariant,
+                        ),
+                )
+            }
+        }
+        VerticalDivider(thickness = Obramowania.ramka, color = colors.outlineVariant)
     }
 }
 

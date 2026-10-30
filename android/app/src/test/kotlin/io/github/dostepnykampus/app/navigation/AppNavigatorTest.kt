@@ -15,6 +15,7 @@ import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -22,10 +23,11 @@ import org.junit.jupiter.api.Test
 class AppNavigatorTest {
     private val stack = mutableListOf<NavKey>(MapRoute)
     private val visitor = Account.SignedIn()
+    private val restarts = mutableListOf<Int>()
     private var helpLeft = 0
 
     private fun navigator(account: Account = Account.Guest) =
-        AppNavigator(backStack = stack, roles = { account }, onFirstHelpLeft = { helpLeft++ })
+        AppNavigator(backStack = stack, roles = { account }, onFirstHelpLeft = { helpLeft++ }, restarts = restarts)
 
     private fun stackOf(vararg routes: NavKey) = listOf<NavKey>(MapRoute, *routes)
 
@@ -41,7 +43,7 @@ class AppNavigatorTest {
         assertEquals(stackOf(), startBackStack(firstLaunch = false))
     }
 
-    // Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu
+    // Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy
     @Test
     fun us5_1_first_launch_back_v1() {
         stack += startBackStack(firstLaunch = true).drop(1)
@@ -50,7 +52,8 @@ class AppNavigatorTest {
         assertEquals(1, helpLeft)
     }
 
-    // Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy
+    // Wiersz: V5 przy pierwszym uruchomieniu, wyjście z instrukcji dowolną drogą (pasek → L1 → „Nie teraz”),
+    // US5.1, decyzja 73.
     @Test
     fun us5_1_first_help_left_via_l1() {
         stack += startBackStack(firstLaunch = true).drop(1)
@@ -88,6 +91,47 @@ class AppNavigatorTest {
         stack += listOf(HelpRoute(), AccountRoute)
         navigator().open(TopLevel.MAP)
         assertEquals(stackOf(), stack)
+    }
+
+    // Wiersz: pasek dolny, ponowne dotknięcie wybranej pozycji → pierwszy ekran sekcji, NFR-15, decyzja 72.
+    @Test
+    fun nfr15_reselect_restarts_v5() {
+        navigator(visitor).run {
+            open(TopLevel.ACCOUNT)
+            open(TopLevel.HELP)
+            val keys = stack.indices.map(::contentKey)
+            open(TopLevel.HELP)
+            assertEquals(stackOf(AccountRoute, HelpRoute()), stack)
+            assertEquals(keys.dropLast(1), stack.indices.map(::contentKey).dropLast(1))
+            assertNotEquals(keys.last(), contentKey(index = 2))
+        }
+    }
+
+    // Wiersz: pasek dolny, ponowne dotknięcie „Mapa” na V1 → V1 bez arkusza i wyniku, NFR-15, decyzja 72.
+    @Test
+    fun nfr15_reselect_map_restarts_v1() {
+        navigator().run {
+            val key = contentKey(index = 0)
+            open(TopLevel.HELP)
+            open(TopLevel.MAP)
+            assertEquals(key, contentKey(index = 0))
+            open(TopLevel.MAP)
+            assertNotEquals(key, contentKey(index = 0))
+        }
+        assertEquals(stackOf(), stack)
+    }
+
+    // Wiersz: każdy ekran poza V1, „Wstecz”, NFR-15: ten sam ekran dwa razy w historii ma dwa klucze treści.
+    @Test
+    fun nfr15_same_screen_twice_keys() {
+        navigator(visitor).run {
+            open(TopLevel.ACCOUNT)
+            open(TopLevel.HELP)
+            open(TopLevel.ACCOUNT)
+            assertEquals(stackOf(AccountRoute, HelpRoute(), AccountRoute), stack)
+            val keys = stack.indices.map(::contentKey)
+            assertEquals(keys.distinct(), keys)
+        }
     }
 
     // Wiersz: pasek dolny, „Zgłoś barierę” → V4, zalogowani, US4.
@@ -147,7 +191,7 @@ class AppNavigatorTest {
     fun us14_1_bar_only_on_bar_screens() {
         val expected = listOf(TopLevel.MAP, TopLevel.HELP, TopLevel.ACCOUNT)
         assertEquals(expected, listOf(MapRoute, HelpRoute(), AccountRoute).map(::selectedItem))
-        assertTrue(hasBottomBar(AccountRoute))
-        listOf(SignInRoute(isForReport = false), ReportRoute).forEach { assertFalse(hasBottomBar(it)) }
+        assertTrue(hasNavigationBar(AccountRoute))
+        listOf(SignInRoute(isForReport = false), ReportRoute).forEach { assertFalse(hasNavigationBar(it)) }
     }
 }
