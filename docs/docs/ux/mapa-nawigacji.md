@@ -162,7 +162,8 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | C1 | „Wybierz inny” przy pytaniu albo po potwierdzeniu | C1, lista budynków najbliżej punktu | RO-ZBI | US6.2, BR-G2 |
 | C1, lista budynków | budynek z listy, np. „Budynek A-2”; „Poza budynkiem” | C1 z wybranym budynkiem albo bez budynku | RO-ZBI | US6.2, BR-G2, BR-G4 |
 | C1, budynek szczegółowy | przełącznik „Plan piętra” i „Mapa” (domyślnie „Plan piętra”) | C1, ten sam ekran: plan wybranego piętra albo mapa z tym samym punktem | RO-ZBI | US6.3, US6.4 |
-| C1 | „W górę”, „W dół”, „W lewo”, „W prawo” pod „Przesuń punkt na mapie:” albo „Przesuń punkt na planie:” | C1, punkt przesunięty, napis „Korekta ręczna” | RO-ZBI | US6.3, US6.4, NFR-15 |
+| C1 | „Powiększ”, „Pomniejsz” i strzałki „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | C1, mapa albo plan przesunięte, punkt na środku w nowym miejscu, napis „Korekta ręczna” | RO-ZBI | US6.3, US6.4, NFR-15 |
+| C1 | „ⓘ” („Informacje o mapie”) | C1, panel ze źródłami mapy | RO-ZBI | NFR-37, NFR-40 |
 | C1, stany „brak zgody” i „zgoda tylko przybliżona” | „Pozwól na lokalizację”, „Pozwól na dokładną lokalizację” | C1, pomiar | RO-ZBI | NFR-27, BR-8 |
 | C1, stany zgody na lokalizację | jak w V4; po odmowie „Otwórz ustawienia” | ustawienia telefonu | RO-ZBI | NFR-27 |
 | C1, stany zgody na lokalizację | „Wstecz” zamiast „Wróć do mapy” | ekran, z którego otwarto C1: L2, C2 albo C3 | RO-ZBI | NFR-15 |
@@ -172,7 +173,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | C2, błąd walidacji | „Zapisz” bez wymaganego pola | C2, komunikat przy polu | RO-ZBI | US7.1, US7.3 |
 | C3 | znak „Dwie wersje: wybierz jedną” | C4 | RO-ZBI | US9.3 |
 | C3 | stan synchronizacji, np. „Czeka na wysłanie: 3” | C4 | RO-ZBI | US9.1 |
-| C3 | „Popraw zgłoszenie” albo dotknięcie zgłoszenia przed decyzją albo odrzuconego | C2 | RO-ZBI | US8.3, BR-3 |
+| C3 | „Otwórz” przy zgłoszeniu przed decyzją albo odrzuconym | C2 | RO-ZBI | US8.1, US8.3, BR-3 |
 | C3 | to samo przy zmianie oznaczenia wejścia | C6 | RO-ZBI | US17.2 |
 | C3 | to samo przy „bariera usunięta” | C7 | RO-ZBI | US8.4 |
 | C3 | „Wyślij ponownie” przy zmianie odrzuconej jako „nieaktualne” | C2 z aktualną wersją zgłoszenia | RO-ZBI | BR-23 |
@@ -185,7 +186,8 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | C4, konflikt | „Zostaw moją wersję”, „Weź wersję z serwera” | C3 | RO-ZBI | US9.3, BR-10 |
 | C4, konflikt | „Zdecyduję później” | C3 | RO-ZBI | BR-10 |
 | C5 | „Oznacz jako obejrzane” | C5, nowy stan | RO-ZBI | US15.1 |
-| C5 | „Cofnij znacznik” przy własnym znaczniku | C5, nowy stan | RO-ZBI | US15.2 |
+| C5 | „Cofnij znacznik” przy własnym znaczniku | C5, potwierdzenie | RO-ZBI | US15.2 |
+| C5, potwierdzenie | „Cofnij znacznik” | C5 z nowym stanem | RO-ZBI | US15.2 |
 | C5, stan „błąd zapisu” | „Spróbuj ponownie” | C5 | RO-ZBI | NFR-7 |
 | C6 | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | aparat, potem C6 ze zdjęciem | RO-ZBI | US17.2, BR-24 |
 | C6 | „Wyślij do sprawdzenia” | C3 | RO-ZBI | US17.2 |
@@ -198,6 +200,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | --- | --- | --- | --- | --- |
 | R1 | przełącznik „Mapa” i „Lista” (domyślnie „Lista”) | R1 | RO-WER | NFR-19 |
 | R1, widok mapy | „Powiększ”, „Pomniejsz” i strzałki „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | R1, mapa powiększona albo przesunięta | RO-WER | NFR-15, PW-8 |
+| R1, widok mapy | „ⓘ” („Informacje o mapie”) | R1, panel ze źródłami mapy | RO-WER | NFR-37, NFR-40 |
 | R1 | „Weź do sprawdzenia” | R2 | RO-WER | US10.4, BR-11 |
 | R1 | „Weź do sprawdzenia”, zgłoszenie już zajęte | R1, komunikat, zgłoszenie znika | RO-WER | UC14 2a, BR-11 |
 | R1 | „Otwórz” przy zgłoszeniu z sekcji „Wzięte przeze mnie” | R2 | RO-WER | BR-11, UC14 2b |

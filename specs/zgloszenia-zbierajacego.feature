@@ -36,6 +36,29 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
     Jeżeli otworzy listę swoich zgłoszeń
     Wtedy zgłoszenie ma status „wysłane” i napis „Zmiana czeka na wysłanie”
 
+  @US8.1 @US4.4
+  Scenariusz: Lista nie pokazuje własnych zgłoszeń szybkich
+    Zakładając, że Zbierający wysłał zgłoszenie szybkie z grupą „Schody i windy”
+    Oraz ma zgłoszenie z pomiaru TB-13 „próg” w budynku C-13
+    Jeżeli otworzy listę swoich zgłoszeń
+    Wtedy widzi zgłoszenie TB-13
+    Ale nie widzi zgłoszenia szybkiego
+
+  @US8.1
+  Szablon scenariusza: „Otwórz” mają tylko zgłoszenia, które można poprawić
+    Zakładając, że Zbierający ma zgłoszenie TB-13 „próg” w budynku C-13 ze statusem „<status>”
+    Jeżeli otworzy listę swoich zgłoszeń
+    Wtedy przy tym zgłoszeniu <otwórz>
+
+    Przykłady:
+      | status        | otwórz                 |
+      | lokalne       | jest „Otwórz”          |
+      | wysłane       | jest „Otwórz”          |
+      | w weryfikacji | jest „Otwórz”          |
+      | odrzucone     | jest „Otwórz”          |
+      | przyjęte      | nie ma „Otwórz”        |
+      | archiwalne    | nie ma „Otwórz”        |
+
   @US8.1
   Scenariusz: Najnowsze zgłoszenia są na górze listy
     Zakładając, że Zbierający ma zgłoszenia z 12.10.2026, 24.10.2026 i 28.10.2026
