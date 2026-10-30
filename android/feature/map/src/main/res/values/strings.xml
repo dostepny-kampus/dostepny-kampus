@@ -12,4 +12,9 @@
     <string name="mapa_zamknij">Zamknij</string>
     <string name="mapa_budynek">Budynek %1$s</string>
     <string name="mapa_otwiera_opis_budynku">otwiera opis budynku</string>
+    <string name="mapa_kampusu">Mapa kampusu</string>
+    <string name="mapa_szukaj_podpowiedz">Wpisz symbol budynku, np. C-13</string>
+    <string name="mapa_wyczysc_pole">Wyczyść pole</string>
+    <string name="mapa_brak_wyniku">Nie znaleźliśmy budynku »%1$s«.</string>
+    <string name="mapa_brak_wyniku_rada">Sprawdź symbol, np. C-13, albo wybierz budynek z listy.</string>
 </resources>
