@@ -867,3 +867,135 @@ Wymagania: [R2 Sprawdzenie zgłoszenia](../wymagania-ekranow.md#r2-sprawdzenie-z
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
 | [![Bez internetu przy decyzji: na górze linia Bez internetu, nad Przyjmij komunikat Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«. Połącz się z internetem i podejmij decyzję ponownie; wybrane wartości zostają](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad Przyjmij](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny-200.webp) |
+
+## K1 Postęp inwentaryzacji
+
+Wymagania: [K1 Postęp inwentaryzacji](../wymagania-ekranow.md#k1-postep-inwentaryzacji). Nagłówek w aplikacji: „Postęp inwentaryzacji”.
+
+### K1: lista budynków
+
+`m-k1-postep-inwentaryzacji` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#k1-postep-inwentaryzacji) · odwołania: US11.1, US11.2, US11.3, BR-21, NFR-21, PW-11
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Lista budynków w kolejności katalogu: Stan z 30.10.2026, 10:42 i przycisk Odśwież, karty z symbolem i nazwą z danych PWr, np. L-2 Kompleks badawczy GEO-3EM Energia, Ekologia, Edukacja Nieobejrzany, C-18 Strefa Kultury Studenckiej Obejrzany z ikoną, z liczbami Czeka na sprawdzenie i Przyjęte oraz przyciskiem Otwórz](obrazy/m-k1-postep-inwentaryzacji-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-jasny.webp) | [![Ta sama lista w motywie ciemnym](obrazy/m-k1-postep-inwentaryzacji-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty na całą szerokość, nazwy budynków w kilku wierszach](obrazy/m-k1-postep-inwentaryzacji-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-jasny-200.webp) |
+
+### K1: budynek szczegółowy A-1
+
+`m-k1-postep-inwentaryzacji-a1` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#k1-postep-inwentaryzacji) · odwołania: US11.1, US11.2, US11.4, BR-21, BR-24, PW-3
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Lista przewinięta do A-1 Gmach Główny: 4 z 5 pięter, 80%, Czeka na sprawdzenie: 3, Przyjęte: 4, Wejścia sprawdzone na miejscu: 1 z 6 i Otwórz, obok budynki podstawowe H-5 i A-7 Nieobejrzany oraz A-6 Karlicówka Obejrzany](obrazy/m-k1-postep-inwentaryzacji-a1-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-a1-jasny.webp) | [![Ta sama lista w motywie ciemnym](obrazy/m-k1-postep-inwentaryzacji-a1-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-a1-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, liczby w osobnych wierszach](obrazy/m-k1-postep-inwentaryzacji-a1-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-a1-jasny-200.webp) |
+
+### K1: wczytywanie
+
+`m-k1-postep-inwentaryzacji-ladowanie` · odwołania: PW-9
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Ładowanie: wskaźnik i napis Wczytujemy postęp…](obrazy/m-k1-postep-inwentaryzacji-ladowanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-ladowanie-jasny.webp) | [![To samo ładowanie w motywie ciemnym](obrazy/m-k1-postep-inwentaryzacji-ladowanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-ladowanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści](obrazy/m-k1-postep-inwentaryzacji-ladowanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-ladowanie-jasny-200.webp) |
+
+### K1: bez internetu
+
+`m-k1-postep-inwentaryzacji-brak-sieci` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#stany-wspolne) · odwołania: NFR-50, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Bez internetu: linia Bez internetu, komunikat Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie, przycisk Spróbuj ponownie](obrazy/m-k1-postep-inwentaryzacji-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-k1-postep-inwentaryzacji-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-k1-postep-inwentaryzacji-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-brak-sieci-jasny-200.webp) |
+
+### K1: błąd serwera
+
+`m-k1-postep-inwentaryzacji-blad-serwera` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#stany-wspolne) · odwołania: NFR-50, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd serwera: Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut, przycisk Spróbuj ponownie](obrazy/m-k1-postep-inwentaryzacji-blad-serwera-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-blad-serwera-jasny.webp) | [![Ten sam błąd w motywie ciemnym](obrazy/m-k1-postep-inwentaryzacji-blad-serwera-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-blad-serwera-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-k1-postep-inwentaryzacji-blad-serwera-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-blad-serwera-jasny-200.webp) |
+
+### K1: brak uprawnień
+
+`m-k1-postep-inwentaryzacji-brak-uprawnien` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#stany-wspolne) · odwołania: BR-2, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Brak uprawnień: Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie, przycisk Wróć do mapy](obrazy/m-k1-postep-inwentaryzacji-brak-uprawnien-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-brak-uprawnien-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-k1-postep-inwentaryzacji-brak-uprawnien-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-brak-uprawnien-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-k1-postep-inwentaryzacji-brak-uprawnien-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-brak-uprawnien-jasny-200.webp) |
+
+## K2 Zaproszenie
+
+Wymagania: [K2 Zaproszenie](../wymagania-ekranow.md#k2-zaproszenie). Nagłówek w aplikacji: „Zaproś osobę”.
+
+### K2: formularz zaproszenia
+
+`m-k2-zaproszenie` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#k2-zaproszenie) · odwołania: US12.1, BR-2
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Zaproszenie: pole Adres e-mail, Rola z wyborem Zbierający, Weryfikator, Koordynator, przycisk Wyślij zaproszenie](obrazy/m-k2-zaproszenie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k2-zaproszenie-jasny.webp) | [![Ten sam formularz w motywie ciemnym](obrazy/m-k2-zaproszenie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k2-zaproszenie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, wybory ról na całą szerokość](obrazy/m-k2-zaproszenie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k2-zaproszenie-jasny-200.webp) |
+
+### K2: zaproszenie wysłane
+
+`m-k2-zaproszenie-sukces` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#k2-zaproszenie) · odwołania: US12.1, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Sukces: Zaproszenie wysłane na podany adres nad pustym formularzem](obrazy/m-k2-zaproszenie-sukces-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k2-zaproszenie-sukces-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-k2-zaproszenie-sukces-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k2-zaproszenie-sukces-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w trzech wierszach](obrazy/m-k2-zaproszenie-sukces-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k2-zaproszenie-sukces-jasny-200.webp) |
+
+### K2: konto już istnieje
+
+`m-k2-zaproszenie-konto-istnieje` · odwołania: US12.2, BR-2
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Konto już istnieje: To konto już istnieje. Dodaliśmy mu rolę Weryfikatora, dotychczasowe role zostają, pod nim formularz](obrazy/m-k2-zaproszenie-konto-istnieje-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k2-zaproszenie-konto-istnieje-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-k2-zaproszenie-konto-istnieje-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k2-zaproszenie-konto-istnieje-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-k2-zaproszenie-konto-istnieje-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k2-zaproszenie-konto-istnieje-jasny-200.webp) |
+
+### K2: błąd walidacji
+
+`m-k2-zaproszenie-walidacja` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#k2-zaproszenie) · odwołania: US12.1, NFR-15, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd walidacji: przy polu Adres e-mail z wartością anna.nowak.pwr.edu.pl tekst Adres e-mail jest niepełny, np. brakuje znaku @. Popraw go i wyślij ponownie, przy Rola Wybierz rolę; oba z kołem ze znakiem „!”, pogrubione, w kolorze błędu, ramki pola i wyborów też](obrazy/m-k2-zaproszenie-walidacja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k2-zaproszenie-walidacja-jasny.webp) | [![Ten sam błąd w motywie ciemnym: teksty i ramki jasnołososiowe](obrazy/m-k2-zaproszenie-walidacja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k2-zaproszenie-walidacja-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, tekst błędu przy polu w czterech wierszach](obrazy/m-k2-zaproszenie-walidacja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k2-zaproszenie-walidacja-jasny-200.webp) |
+
+## K3 Eksport
+
+Wymagania: [K3 Eksport](../wymagania-ekranow.md#k3-eksport). Nagłówek w aplikacji: „Pobierz eksport”.
+
+### K3: wybór formatu
+
+`m-k3-eksport` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#k3-eksport) · odwołania: US13.1, US13.2, US13.3, BR-22
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Eksport: Format pliku z wyborem GeoJSON (WGS84) i CSV (PUWG 1992, EPSG:2180), zaznaczony GeoJSON, napis Plik zawiera tylko obecne, sprawdzone bariery, bez danych autorów, przycisk Pobierz plik](obrazy/m-k3-eksport-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-jasny.webp) | [![Ten sam ekran w motywie ciemnym](obrazy/m-k3-eksport-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, nazwy formatów w dwóch wierszach](obrazy/m-k3-eksport-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-jasny-200.webp) |
+
+### K3: plik zapisany
+
+`m-k3-eksport-sukces` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#k3-eksport) · odwołania: US13.1, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Sukces: Plik zapisany w pobranych plikach nad wyborem formatu](obrazy/m-k3-eksport-sukces-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-sukces-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-k3-eksport-sukces-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-sukces-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w dwóch wierszach](obrazy/m-k3-eksport-sukces-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-sukces-jasny-200.webp) |
+
+### K3: błąd serwera
+
+`m-k3-eksport-blad` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#k3-eksport) · odwołania: NFR-50, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd: zaznaczony CSV, pod napisem o zawartości pliku komunikat Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut z przyciskiem Spróbuj ponownie w miejscu Pobierz plik](obrazy/m-k3-eksport-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-blad-jasny.webp) | [![Ten sam błąd w motywie ciemnym](obrazy/m-k3-eksport-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-blad-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-k3-eksport-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-blad-jasny-200.webp) |
+
+### K3: przygotowanie pliku
+
+`m-k3-eksport-ladowanie` · odwołania: US13.1, PW-9
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Ładowanie: wskaźnik i napis Przygotowujemy plik… nad wyborem formatu](obrazy/m-k3-eksport-ladowanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-ladowanie-jasny.webp) | [![To samo ładowanie w motywie ciemnym](obrazy/m-k3-eksport-ladowanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-ladowanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści](obrazy/m-k3-eksport-ladowanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-ladowanie-jasny-200.webp) |
+
+### K3: brak przyjętych barier
+
+`m-k3-eksport-pusty` · odwołania: US13.1, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Pusty: Nie ma jeszcze przyjętych barier. Pobrany plik będzie pusty, niżej wybór formatu i Pobierz plik](obrazy/m-k3-eksport-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-pusty-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-k3-eksport-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-pusty-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-k3-eksport-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k3-eksport-pusty-jasny-200.webp) |
