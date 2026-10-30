@@ -28,6 +28,7 @@ import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
+import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
@@ -38,7 +39,8 @@ import io.github.dostepnykampus.feature.map.navigation.MapRoute
 private typealias Action = Pair<String, () -> Unit>
 
 /**
- * Ekran trasy [route] z czynnościami podpiętymi do nawigatora. V1 to mapa z `feature:map`, reszta to zaślepki:
+ * Ekran trasy [route] z czynnościami podpiętymi do nawigatora. V1 to mapa z `feature:map`, V5 instrukcja z
+ * `feature:help`, reszta to zaślepki:
  * nagłówek „Wstecz” z nazwą z listy ekranów i przyciski czynności bez danych. Ekran z `feature:*`
  * zastępuje swoją gałąź i dostaje czynności jako lambdy. Zaślepki nie zapamiętują stanu, więc nie muszą się
  * odświeżać osobno od nawigatora.
@@ -50,7 +52,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is BuildingRoute -> BuildingStub(route.symbol)
         is EntrancesRoute -> Stub(title = stringResource(R.string.ekran_ktoredy_wejsc, route.symbol))
         is ReportRoute -> ReportStub(route.step)
-        is HelpRoute -> ToMapStub(title = R.string.ekran_pomoc, action = R.string.pomin_instrukcje)
+        is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute -> ToMapStub(title = R.string.nav_konto, action = R.string.nie_teraz)
         AccountRoute -> Stub(title = stringResource(if (hasWork) R.string.nav_konto_i_praca else R.string.nav_konto))
         is MapRoute -> MapScreen(focus = (route.focus as? MapFocus.Building)?.symbol)
