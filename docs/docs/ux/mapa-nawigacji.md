@@ -53,6 +53,8 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | pasek dolny | „Konto” | L1 | RO-GOS | US14 |
 | pasek dolny | „Konto” | L2 | RO-ODW | US14.1, US14.3 |
 | pasek dolny | „Konto i praca” | L2, na górze sekcja „Twoja praca” | role pracownicze | US14.1, P1 |
+| pasek dolny | ponowne dotknięcie wybranej pozycji | pierwszy ekran tej sekcji: V1 bez arkusza i wyniku wyszukiwania, V5 na kroku 1, L1 albo L2 jak po wejściu | wszystkie | NFR-15, decyzja 72 |
+| V5 przy pierwszym uruchomieniu | wyjście z instrukcji dowolną drogą: „Wstecz”, pasek, „Pomiń instrukcję”, „Zacznij” | ekran docelowy tej czynności; instrukcja jest pokazana i nie otworzy się sama przy kolejnym uruchomieniu. Zamknięcie aplikacji w trakcie instrukcji jej nie kończy | wszystkie | US5.1, decyzja 73 |
 | każdy ekran poza V1 | „Wstecz” | poprzedni ekran | wszystkie | NFR-15 |
 | ekran po wysłaniu formularza: C3, R1, V4 potwierdzenie | „Wstecz” | ekran, z którego zaczęła się praca: L2, V2 albo ekran sprzed V4 | zalogowani | NFR-15, P2 |
 
