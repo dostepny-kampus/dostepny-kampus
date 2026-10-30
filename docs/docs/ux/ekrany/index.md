@@ -547,3 +547,187 @@ Wymagania: [C3 Moje zgłoszenia](../wymagania-ekranow.md#c3-moje-zgoszenia). Nag
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
 | [![Błąd: Nie udało się sprawdzić statusów, ale zgłoszenia są bezpieczne w telefonie. Spróbuj ponownie za chwilę, przycisk Spróbuj ponownie, pod nim lista z telefonu](obrazy/m-c3-moje-zgloszenia-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-blad-jasny.webp) | [![Ten sam błąd w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-blad-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad listą](obrazy/m-c3-moje-zgloszenia-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-blad-jasny-200.webp) |
+
+## C4 Synchronizacja i wybór wersji
+
+Wymagania: [C4 Synchronizacja i wybór wersji](../wymagania-ekranow.md#c4-synchronizacja-i-wybor-wersji). Nagłówek w aplikacji: „Synchronizacja”.
+
+### C4: kolejka w telefonie
+
+`m-c4-synchronizacja` · [makieta low-fi](../makiety/zespol-w-terenie.md#kolejka-w-telefonie) · odwołania: US9.1, US9.2, BR-9, NFR-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Kolejka: karta Czeka na wysłanie: 3, 2 zgłoszenia i 1 znacznik piętra, Ostatnia synchronizacja: 29.10.2026, 16:20, przycisk Synchronizuj teraz](obrazy/m-c4-synchronizacja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-jasny.webp) | [![Ta sama kolejka w motywie ciemnym](obrazy/m-c4-synchronizacja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, data z godziną w osobnym wierszu](obrazy/m-c4-synchronizacja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-jasny-200.webp) |
+
+### C4: konflikt wersji
+
+`m-c4-synchronizacja-konflikt` · [makieta low-fi](../makiety/zespol-w-terenie.md#konflikt-wersji) · odwołania: US9.3, BR-10, NFR-21, NFR-52, NFR-54, PW-12
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Konflikt: Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta, napis Różni się: uciążliwość, karta Moja wersja, Próg, C-13, piętro 1, Uciążliwość Tylko z pomocą, karta Wersja z serwera z Uciążliwość Blokada, pod nimi Zostaw moją wersję, Weź wersję z serwera i Zdecyduję później](obrazy/m-c4-synchronizacja-konflikt-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-jasny.webp) | [![Ten sam konflikt w motywie ciemnym](obrazy/m-c4-synchronizacja-konflikt-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, wersje jedna pod drugą, trzy przyciski na końcu](obrazy/m-c4-synchronizacja-konflikt-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-konflikt-jasny-200.webp) |
+
+### C4: wszystko wysłane
+
+`m-c4-synchronizacja-pusty` · odwołania: US9.1, NFR-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Wszystko wysłane: Wszystko wysłane. Ostatnia synchronizacja: 29.10.2026, 16:20](obrazy/m-c4-synchronizacja-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-pusty-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-c4-synchronizacja-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-pusty-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, data z godziną razem](obrazy/m-c4-synchronizacja-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-pusty-jasny-200.webp) |
+
+### C4: wysyłanie
+
+`m-c4-synchronizacja-ladowanie` · odwołania: US9.2, PW-9
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Wysyłanie: wskaźnik i napis Wysyłamy 2 z 5…](obrazy/m-c4-synchronizacja-ladowanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-ladowanie-jasny.webp) | [![To samo wysyłanie w motywie ciemnym](obrazy/m-c4-synchronizacja-ladowanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-ladowanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści](obrazy/m-c4-synchronizacja-ladowanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-ladowanie-jasny-200.webp) |
+
+### C4: bez internetu
+
+`m-c4-synchronizacja-brak-sieci` · odwołania: US9.1, US9.2, NFR-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Bez internetu: linia Bez internetu · Ostatnia synchronizacja: 29.10.2026, 16:20, komunikat Wyślemy wszystko sami, gdy internet wróci, karta Czeka na wysłanie: 3](obrazy/m-c4-synchronizacja-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-brak-sieci-jasny.webp) | [![Ten sam stan bez internetu w motywie ciemnym](obrazy/m-c4-synchronizacja-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, linia braku internetu w dwóch wierszach, data z godziną razem](obrazy/m-c4-synchronizacja-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-brak-sieci-jasny-200.webp) |
+
+### C4: błąd serwera
+
+`m-c4-synchronizacja-blad` · odwołania: NFR-50, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd serwera: Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później, pod nim karta Czeka na wysłanie: 3](obrazy/m-c4-synchronizacja-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-blad-jasny.webp) | [![Ten sam błąd serwera w motywie ciemnym](obrazy/m-c4-synchronizacja-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-blad-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c4-synchronizacja-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-blad-jasny-200.webp) |
+
+### C4: mało miejsca w telefonie
+
+`m-c4-synchronizacja-malo-miejsca` · odwołania: NFR-7, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Mało miejsca: komunikat Ważne z kołem ze znakiem „!”, W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia, pod nim kolejka i Synchronizuj teraz](obrazy/m-c4-synchronizacja-malo-miejsca-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-malo-miejsca-jasny.webp) | [![Ten sam komunikat w motywie ciemnym](obrazy/m-c4-synchronizacja-malo-miejsca-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-malo-miejsca-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat Ważne w kilku wierszach](obrazy/m-c4-synchronizacja-malo-miejsca-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c4-synchronizacja-malo-miejsca-jasny-200.webp) |
+
+## C5 Piętra obejrzane
+
+Wymagania: [C5 Piętra obejrzane](../wymagania-ekranow.md#c5-pietra-obejrzane). Nagłówek w aplikacji: „Obejrzane piętra”.
+
+### C5: Zbierający, budynek A-1
+
+`m-c5-obejrzane-pietra` · [makieta low-fi](../makiety/zespol-w-terenie.md#zbierajacy-budynek-szczegoowy) · odwołania: US15.1, US15.2, US15.3, US16.1, BR-5, PW-11
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Budynek A-1, Gmach Główny: piętra od Piwnica do 3 piętro, przy obejrzanych Obejrzane z ikoną i Twój znacznik albo Znacznik innej osoby, przy własnych Cofnij znacznik, przy 1 piętrze Czeka na wysłanie, 3 piętro Nieobejrzane z Oznacz jako obejrzane](obrazy/m-c5-obejrzane-pietra-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-jasny.webp) | [![Ta sama lista pięter w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty pięter na całą szerokość](obrazy/m-c5-obejrzane-pietra-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-jasny-200.webp) |
+
+### C5: Zbierający, potwierdzenie cofnięcia
+
+`m-c5-obejrzane-pietra-potwierdzenie` · [makieta low-fi](../makiety/zespol-w-terenie.md#zbierajacy-potwierdzenie-cofniecia) · odwołania: US15.2, BR-20, PW-12
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Potwierdzenie przy 2 piętrze: Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, przyciski Cofnij znacznik i Zostaw znacznik](obrazy/m-c5-obejrzane-pietra-potwierdzenie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-potwierdzenie-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-potwierdzenie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-potwierdzenie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, pytanie w kilku wierszach](obrazy/m-c5-obejrzane-pietra-potwierdzenie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-potwierdzenie-jasny-200.webp) |
+
+### C5: Koordynator, autorzy znaczników
+
+`m-c5-obejrzane-pietra-koordynator` · [makieta low-fi](../makiety/zespol-w-terenie.md#koordynator-potwierdzenie-cofniecia) · odwołania: US11.3, BR-5, BR-20
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Widok Koordynatora: przy każdym piętrze Znacznik: Zbierający, Autor 14 albo Autor 9 i Cofnij znacznik, przy 2 piętrze pytanie Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający, z przyciskami Cofnij znacznik i Zostaw znacznik](obrazy/m-c5-obejrzane-pietra-koordynator-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-koordynator-jasny.webp) | [![Ten sam widok Koordynatora w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-koordynator-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-koordynator-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, pytanie i przyciski pod znacznikiem](obrazy/m-c5-obejrzane-pietra-koordynator-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-koordynator-jasny-200.webp) |
+
+### C5: budynek bez planu (A-6), bez internetu
+
+`m-c5-obejrzane-pietra-podstawowy-brak-sieci` · [makieta low-fi](../makiety/zespol-w-terenie.md#budynek-podstawowy-bez-internetu) · odwołania: US15.1, US15.3, BR-20, NFR-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Budynek A-6, Karlicówka bez internetu: linia Bez internetu · Ostatnia synchronizacja, komunikat Znacznik zapisany w telefonie. Wyślemy go, gdy wróci internet, jeden wiersz Cały budynek z Obejrzane, Twój znacznik, Czeka na wysłanie i Cofnij znacznik](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, linia braku internetu w dwóch wierszach](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-jasny-200.webp) |
+
+### C5: błąd zapisu znacznika
+
+`m-c5-obejrzane-pietra-blad-zapisu` · odwołania: NFR-7, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd zapisu: Nie udało się zapisać znacznika w telefonie. Spróbuj ponownie, a jeśli to nie pomoże, zwolnij miejsce, przycisk Spróbuj ponownie, pod nim lista pięter](obrazy/m-c5-obejrzane-pietra-blad-zapisu-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-blad-zapisu-jasny.webp) | [![Ten sam błąd w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-blad-zapisu-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-blad-zapisu-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c5-obejrzane-pietra-blad-zapisu-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-blad-zapisu-jasny-200.webp) |
+
+## C6 Zmiana oznaczenia wejścia
+
+Wymagania: [C6 Zmiana oznaczenia wejścia](../wymagania-ekranow.md#c6-zmiana-oznaczenia-wejscia). Nagłówek w aplikacji: „Zmień oznaczenie wejścia”.
+
+### C6: przed wyborem
+
+`m-c6-zmien-oznaczenie-wejscia` · [makieta low-fi](../makiety/zespol-w-terenie.md#przed-wyborem) · odwołania: US17.2, US17.3, BR-4, BR-24, NFR-17, NFR-21, NFR-25, PW-3, PW-8
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Przed wyborem: karta Obecne oznaczenie z Niedostępne, Z map i opisów, 18.12.2023, Wejście Cesarskie, Budynek A-1, Gmach Główny, niżej Nowe oznaczenie z dwoma dużymi wyborami Dostępne i Niedostępne, Zdjęcie wejścia z komunikatem Ważne i Zrób zdjęcie, napis Zmianę sprawdzi inna osoba. Do tego czasu karta budynku pokazuje obecne oznaczenie, przycisk Wyślij do sprawdzenia](obrazy/m-c6-zmien-oznaczenie-wejscia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-jasny.webp) | [![Ten sam ekran w motywie ciemnym](obrazy/m-c6-zmien-oznaczenie-wejscia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, nazwa ekranu w dwóch wierszach, wybory na całą szerokość](obrazy/m-c6-zmien-oznaczenie-wejscia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-jasny-200.webp) |
+
+### C6: potwierdzenie obecnego oznaczenia
+
+`m-c6-zmien-oznaczenie-wejscia-obecna` · [makieta low-fi](../makiety/zespol-w-terenie.md#potwierdzenie-obecnego-oznaczenia) · odwołania: BR-24, US17.2
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Wybrane Niedostępne, czyli obecne oznaczenie: pod wyborem Potwierdzasz obecne oznaczenie. Zmieni się data i źródło, zdjęcie wejścia ze schodami, Zrób nowe zdjęcie i Wyślij do sprawdzenia](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, zdanie pod wyborem w kilku wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-obecna-jasny-200.webp) |
+
+### C6: błąd walidacji
+
+`m-c6-zmien-oznaczenie-wejscia-walidacja` · odwołania: BR-24, NFR-15, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd walidacji: pod Nowe oznaczenie Wybierz: dostępne czy niedostępne, nad Zrób zdjęcie Dodaj zdjęcie wejścia, aby wysłać zmianę; oba z kołem ze znakiem „!”, pogrubione, w kolorze błędu, ramki wyborów też](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-jasny.webp) | [![Ten sam błąd w motywie ciemnym: teksty błędów i ramki jasnołososiowe](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, teksty błędów w dwóch wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-walidacja-jasny-200.webp) |
+
+### C6: błąd zapisu
+
+`m-c6-zmien-oznaczenie-wejscia-blad-zapisu` · odwołania: NFR-7, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd zapisu: Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie z przyciskiem Spróbuj ponownie, niżej obecne oznaczenie, wybrane Niedostępne i zdjęcie wejścia](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-jasny.webp) | [![Ten sam błąd zapisu w motywie ciemnym](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-blad-zapisu-jasny-200.webp) |
+
+### C6: po wysłaniu bez internetu (C3)
+
+`m-c6-zmien-oznaczenie-wejscia-brak-sieci` · odwołania: US9.1, NFR-54
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Po wysłaniu bez internetu otwiera się Moje zgłoszenia: linia Bez internetu · Ostatnia synchronizacja, komunikat Zmiana zapisana w telefonie. Wyślemy ją, gdy wróci internet, karta W telefonie, Zmiana oznaczenia wejścia, A-1, Wejście Cesarskie](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c6-zmien-oznaczenie-wejscia-brak-sieci-jasny-200.webp) |
+
+## C7 Usunięcie bariery
+
+Wymagania: [C7 Usunięcie bariery](../wymagania-ekranow.md#c7-usuniecie-bariery). Nagłówek w aplikacji: „Zgłoś, że bariery nie ma”.
+
+### C7: przyjęte zgłoszenie i nowe zdjęcie
+
+`m-c7-bariery-nie-ma` · [makieta low-fi](../makiety/zespol-w-terenie.md#c7-zgos-ze-bariery-nie-ma) · odwołania: US8.4, BR-19, NFR-25, NFR-54, PW-8
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Przyjęte zgłoszenie Niesprawna winda, A-1, piętro 1, ok. 25 m od Wejścia dostosowanego, dokładność 1,1 m, zdjęcie zamkniętej windy, Sprawdzone 7.10.2026, bez pól do edycji; niżej Nowe zdjęcie miejsca z komunikatem Ważne i Zrób zdjęcie, napis Bariera zostanie na mapie, dopóki Weryfikator nie sprawdzi zgłoszenia, przycisk Wyślij do sprawdzenia](obrazy/m-c7-bariery-nie-ma-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-jasny.webp) | [![Ten sam ekran w motywie ciemnym](obrazy/m-c7-bariery-nie-ma-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, nazwa ekranu w dwóch wierszach](obrazy/m-c7-bariery-nie-ma-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-jasny-200.webp) |
+
+### C7: błąd walidacji
+
+`m-c7-bariery-nie-ma-walidacja` · odwołania: BR-19, NFR-15, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd walidacji: nad Zrób zdjęcie Dodaj zdjęcie miejsca, aby wysłać zgłoszenie, z kołem ze znakiem „!”, pogrubione, w kolorze błędu](obrazy/m-c7-bariery-nie-ma-walidacja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-walidacja-jasny.webp) | [![Ten sam błąd w motywie ciemnym](obrazy/m-c7-bariery-nie-ma-walidacja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-walidacja-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, tekst błędu w dwóch wierszach](obrazy/m-c7-bariery-nie-ma-walidacja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-walidacja-jasny-200.webp) |
+
+### C7: błąd zapisu
+
+`m-c7-bariery-nie-ma-blad-zapisu` · odwołania: NFR-7, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd zapisu: Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie z przyciskiem Spróbuj ponownie, niżej przyjęte zgłoszenie i nowe zdjęcie windy z Zrób nowe zdjęcie](obrazy/m-c7-bariery-nie-ma-blad-zapisu-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-blad-zapisu-jasny.webp) | [![Ten sam błąd zapisu w motywie ciemnym](obrazy/m-c7-bariery-nie-ma-blad-zapisu-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-blad-zapisu-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c7-bariery-nie-ma-blad-zapisu-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-blad-zapisu-jasny-200.webp) |
+
+### C7: po wysłaniu bez internetu (C3)
+
+`m-c7-bariery-nie-ma-brak-sieci` · odwołania: US8.4, US9.1, NFR-54
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Po wysłaniu bez internetu otwiera się Moje zgłoszenia: linia Bez internetu · Ostatnia synchronizacja, komunikat Zgłoszenie zapisane w telefonie. Wyślemy je, gdy wróci internet, karta W telefonie, Bariery już nie ma, A-1, piętro 1](obrazy/m-c7-bariery-nie-ma-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-c7-bariery-nie-ma-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c7-bariery-nie-ma-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-brak-sieci-jasny-200.webp) |
