@@ -85,8 +85,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `przegladanie-mapy.feature` | Wyjścia ewakuacyjne rozwijają się na żądanie | US2.6 | — | brak |
 | `przegladanie-mapy.feature` | Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę | BR-25, US3.3 | — | brak |
 | `przegladanie-mapy.feature` | Karta budynku szczegółowego opisuje piętra tekstem | US16.3 | — | brak |
-| `przegladanie-mapy.feature` | Instrukcja przy pierwszym uruchomieniu | US5.1 | `app · AppNavigatorTest.us5_1_first_launch_back_v1`<br>`app · AppNavigatorTest.us5_1_first_launch_opens_v5`<br>`core/data · FirstLaunchRepositoryTest.us5_1_help_until_marked_seen` | częściowo |
-| `przegladanie-mapy.feature` | Instrukcję można otworzyć ponownie z pomocy | US5.1 | `app · AppNavigatorTest.us5_1_bar_help_v5_back_returns`<br>`app · AppNavigatorTest.us5_1_next_launch_opens_v1`<br>`core/data · FirstLaunchRepositoryTest.us5_1_second_launch_no_help` | częściowo |
+| `przegladanie-mapy.feature` | Instrukcja przy pierwszym uruchomieniu | US5.1 | `app · AppNavigatorTest.us5_1_first_launch_back_v1`<br>`app · AppNavigatorTest.us5_1_first_launch_opens_v5`<br>`app · AppShellTest.us5_1_first_launch_v5_back_v1`<br>`core/data · FirstLaunchRepositoryTest.us5_1_help_until_marked_seen` | częściowo |
+| `przegladanie-mapy.feature` | Instrukcję można otworzyć ponownie z pomocy | US5.1 | `app · AppNavigatorTest.us5_1_bar_help_v5_back_returns`<br>`app · AppNavigatorTest.us5_1_first_help_left_via_l1`<br>`app · AppNavigatorTest.us5_1_next_launch_opens_v1`<br>`core/data · FirstLaunchRepositoryTest.us5_1_second_launch_no_help` | częściowo |
 | `przegladanie-mapy.feature` | Plan piętra w budynku szczegółowym | US16.1 | — | brak |
 | `scenariusz-demo.feature` | Schody przy wejściu głównym A-1 od pomiaru do eksportu | US2.1, US6.1, US6.2, US7.1, US9.2, US10.1, US11.1, US13.1 | — | brak |
 | `synchronizacja.feature` | Bez sieci widać wskaźnik, a zgłoszenie czeka ze statusem „lokalne” | BR-9, US9.1 | — | brak |
