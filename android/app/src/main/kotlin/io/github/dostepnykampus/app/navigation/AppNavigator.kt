@@ -10,8 +10,9 @@ import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.model.isSignedIn
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
+import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
+import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 
 /** Pozycja paska dolnego (wymagania wspólne). */
@@ -34,10 +35,10 @@ enum class TopLevel {
  * uruchomieniu V5 nad V1 (US5.1), przy kolejnym samo V1. Na dole jest zawsze V1, ekran bez „Wstecz”.
  */
 fun startBackStack(firstLaunch: Boolean): List<NavKey> =
-    if (firstLaunch) listOf(MapRoute, HelpRoute(isFirstLaunch = true)) else listOf(MapRoute)
+    if (firstLaunch) listOf(MapRoute(), HelpRoute(isFirstLaunch = true)) else listOf(MapRoute())
 
 /**
- * Czy ekran [route] ma pasek nawigacji, dolny albo z boku: V1, V5 i L2 tak (V2 i V3 dojdą z ich trasami), L1 i V4
+ * Czy ekran [route] ma pasek nawigacji, dolny albo z boku: V1, V2, V3, V5 i L2 tak, L1 i V4
  * nie (wymagania wspólne, wiersz „Pasek dolny na V1, V2, V3, V5 i L2”).
  */
 fun hasNavigationBar(route: NavKey): Boolean = selectedItem(route) != null
@@ -45,7 +46,7 @@ fun hasNavigationBar(route: NavKey): Boolean = selectedItem(route) != null
 /** Pozycja paska zaznaczona na ekranie [route] albo `null`, gdy żadna nie jest zaznaczona. */
 fun selectedItem(route: NavKey): TopLevel? =
     when (route) {
-        MapRoute -> TopLevel.MAP
+        is MapRoute, is BuildingRoute, is EntrancesRoute -> TopLevel.MAP
         is HelpRoute -> TopLevel.HELP
         AccountRoute -> TopLevel.ACCOUNT
         else -> null
@@ -69,6 +70,9 @@ class AppNavigator(
     val current: NavKey
         get() = backStack.last()
 
+    internal val isSignedIn: Boolean
+        get() = roles.currentAccount().isSignedIn
+
     /**
      * Klucz treści wpisu na pozycji [index] historii: pozycja, liczba powrotów na niej i trasa. Ten sam ekran dwa
      * razy w historii ma dwa klucze, a powrót do pierwszego ekranu sekcji daje nowy klucz, czyli świeży stan ekranu.
@@ -84,10 +88,9 @@ class AppNavigator(
             restartSection(item)
             return
         }
-        val isSignedIn = roles.currentAccount().isSignedIn
         when (item) {
             TopLevel.MAP -> backToMap()
-            TopLevel.REPORT -> push(if (isSignedIn) ReportRoute else SignInRoute(isForReport = true))
+            TopLevel.REPORT -> report()
             TopLevel.HELP -> push(HelpRoute())
             TopLevel.ACCOUNT -> push(if (isSignedIn) AccountRoute else SignInRoute(isForReport = false))
         }
@@ -106,7 +109,7 @@ class AppNavigator(
     }
 
     private fun restartSection(item: TopLevel) {
-        if (item == TopLevel.MAP) backToMap()
+        if (item == TopLevel.MAP) showOnMap(focus = null)
         while (restarts.size < backStack.size) restarts += 0
         restarts[backStack.lastIndex]++
     }
@@ -115,9 +118,11 @@ class AppNavigator(
         leaving { backStack.add(route) }
     }
 
-    private fun leaving(change: () -> Unit) {
+    /** Jedyna droga zmiany historii: pilnuje wyjścia z instrukcji i liczników powrotów (decyzje 72 i 73). */
+    internal fun leaving(change: MutableList<NavKey>.() -> Unit) {
         val isOnFirstHelp = current == FirstHelp
-        change()
+        backStack.change()
+        while (restarts.size > backStack.size) restarts.removeAt(restarts.lastIndex)
         if (isOnFirstHelp && current != FirstHelp) onFirstHelpLeft()
     }
 
