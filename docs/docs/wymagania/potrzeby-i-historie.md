@@ -98,7 +98,7 @@ Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego 
 | US7.2 | W budynku szczegółowym piętro wybiera się z etykiet z danych PWr. W budynku podstawowym wpisuje się liczbę całkowitą, z dopiskiem „półpiętro” lub bez. | BR-G1 |
 | US7.3 | Przy typie TB-29 „inna bariera” opis jest obowiązkowy. | TB-29 |
 | US7.4 | Formularz pokazuje budynek i miejsce z pomiaru. Miejsce można zmienić, wracając do pomiaru, a wpisane pola zostają. Wyjście z formularza z niezapisanymi zmianami wymaga potwierdzenia. | US6.2, NFR-23 |
-| US8.1 | Lista pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte, odrzucone albo archiwalne. Odrzucone ma powód odrzucenia. Zgłoszenie, którego zmiana czeka w telefonie, ma przy statusie napis „Zmiana czeka na wysłanie”. Najnowsze zgłoszenia są na górze. | NFR-21, BR-18 |
+| US8.1 | Lista pokazuje każde własne zgłoszenie z pomiaru precyzyjnego i każdą własną zmianę z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte, odrzucone albo archiwalne. Odrzucone ma powód odrzucenia. Zgłoszenie, którego zmiana czeka w telefonie, ma przy statusie napis „Zmiana czeka na wysłanie”. Najnowsze zgłoszenia są na górze, a zgłoszenia, które można poprawić, mają „Otwórz”. Zgłoszeń szybkich lista nie pokazuje (US4.4). | NFR-21, BR-18, US4.4 |
 | US8.2 | Status „wysłane” pojawia się dopiero wtedy, gdy zgłoszenie czeka w kolejce na serwerze. Status „w weryfikacji” pojawia się, gdy wziął je Weryfikator. | US10.4 |
 | US8.3 | Zgłoszenie przed decyzją Weryfikatora można edytować. Odrzucone można poprawić i wysłać ponownie. | BR-3 |
 | US8.4 | Każdy Zbierający, także inny niż autor, zaczyna na karcie budynku, przy wybranym zgłoszeniu przyjętym, zmianę z oznaczeniem „bariera usunięta”. Do decyzji Weryfikatora zmiana przechodzi te same statusy co zgłoszenie i po synchronizacji ma status „wysłane”. Po przyjęciu jest od razu archiwalna (US10.6). Bariera zostaje na mapie do decyzji Weryfikatora. | BR-3, US10.6, decyzja 33 |
@@ -106,7 +106,7 @@ Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego 
 | US9.2 | Po powrocie sieci synchronizacja rusza bez działania użytkownika. | NFR-6, NFR-8 |
 | US9.3 | Przy konflikcie wersji aplikacja pokazuje obie wersje, a wybór należy do Zbierającego: własna albo z serwera. Żadna zmiana nie znika po cichu. Aplikacja nazywa pola, którymi wersje się różnią. | NFR-9, BR-3 |
 | US15.1 | W budynku szczegółowym Zbierający oznacza wybrane piętro jako obejrzane. W budynku podstawowym oznacza cały budynek jako „obejrzany”. | US11.1 |
-| US15.2 | Znacznik cofa Zbierający, który go postawił. Inny Zbierający nie może go cofnąć. | US11.3 |
+| US15.2 | Znacznik cofa Zbierający, który go postawił. Inny Zbierający nie może go cofnąć. Cofnięcie wymaga potwierdzenia ze zdaniem o skutku dla postępu. | US11.3 |
 | US15.3 | Bez sieci znacznik i jego cofnięcie czekają w telefonie jak zgłoszenie i wysyłają się same po powrocie sieci. | NFR-5, NFR-6, decyzja 33 |
 
 Ręczną korektę punktu opisują dwa kryteria: na planie piętra i na mapie. Korekta na planie działa tylko w budynku szczegółowym, więc ma priorytet „Powinno być”, podobnie jak mapa nieba. W MVP punkt poprawia się na mapie.
@@ -125,7 +125,7 @@ Ręczną korektę punktu opisują dwa kryteria: na planie piętra i na mapie. Ko
 | US10.8 | Przy zmianie oznaczenia wejścia Weryfikator widzi, czy oznaczenie zmieniło się od jej wysłania. Przy zmianie „bariera usunięta” widzi zdjęcie poprzedniego zgłoszenia obok nowego i status poprzedniego zgłoszenia. Przy nowej wersji widzi nazwy pól zmienionych przez autora. | BR-3, BR-19, BR-23, BR-24 |
 | US11.1 | Dla każdego budynku widać odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy). Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. | US15.1 |
 | US11.2 | Gdy znacznik piętra obejrzanego albo jego cofnięcie dotrze na serwer, postęp budynku pokazuje nową wartość, np. 4 z 5 pięter, czyli 80 procent. Ekran podaje datę i godzinę odczytu postępu i pozwala go odświeżyć. | US15.3 |
-| US11.3 | Koordynator cofa znacznik piętra obejrzanego postawiony przez dowolnego Zbierającego. | decyzja 32 |
+| US11.3 | Koordynator cofa znacznik piętra obejrzanego postawiony przez dowolnego Zbierającego. Cofnięcie wymaga potwierdzenia ze zdaniem o skutku dla postępu. | decyzja 32, decyzja 93 |
 | US11.4 | Dla każdego budynku szczegółowego widać liczbę wejść ze źródłem oznaczenia „obchód” wśród wszystkich jego wejść, np. „Wejścia sprawdzone na miejscu: 1 z 6”. | BR-24, M-1, decyzja 38 |
 | US12.1 | Po zaproszeniu osoba z podanym adresem e-mail loguje się i ma wybraną rolę. | BR-2 |
 | US12.2 | Zaproszenie na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają. | BR-1, BR-2 |

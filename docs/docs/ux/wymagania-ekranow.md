@@ -17,9 +17,9 @@ Napisy przycisków i treść komunikatów w cudzysłowie pochodzą ze [słownika
 | V5 | Pomoc | „Jak korzystać z aplikacji” | wszystkie | US5 | — |
 | L1 | Prośba o logowanie | „Konto” | RO-GOS | US14.2, US14.3 | tak |
 | L2 | Konto | „Konto”; role pracownicze: „Konto i praca” | RO-ODW i role pracownicze | US14.1, US14.3 | tak |
-| C1 | Pomiar pozycji | „Pomiar pozycji” | RO-ZBI | US6 | — |
-| C2 | Formularz zgłoszenia | jak nazwa robocza | RO-ZBI | US7, US8.3 | — |
-| C3 | Moje zgłoszenia | „Moje zgłoszenia” | RO-ZBI, tylko własne | US8, US9.1 | — |
+| C1 | Pomiar pozycji | „Zmierz i zgłoś barierę” | RO-ZBI | US6 | — |
+| C2 | Formularz zgłoszenia | „Opisz barierę”; przy poprawianiu i zmianie zgłoszenia przyjętego „Popraw zgłoszenie” | RO-ZBI | US7, US8.3 | — |
+| C3 | Moje zgłoszenia | „Moje zgłoszenia” | RO-ZBI, tylko własne, bez zgłoszeń szybkich | US8, US9.1 | — |
 | C4 | Synchronizacja i wybór wersji | „Synchronizacja” | RO-ZBI | US9 | — |
 | C5 | Piętra obejrzane | „Obejrzane piętra” | RO-ZBI, RO-KOO | US15, US11.3 | tak |
 | C6 | Zmiana oznaczenia wejścia | „Zmień oznaczenie wejścia” | RO-ZBI | US17.2 | tak |
@@ -79,8 +79,8 @@ Reguły włączają się, gdy skala czcionki w telefonie wynosi co najmniej 1,5.
 | 7 | V1 otwiera się na liście budynków. Widok mapy V1 się nie przewija: mapa wypełnia miejsce między polem wyszukiwania a paskiem dolnym. | NFR-19, NFR-20 |
 | 8 | Pasek dolny ma zawsze jeden rząd z czterema pozycjami, a napis może mieć dwa wiersze. Pasek nie chowa się przy przewijaniu. Wszystkie napisy paska mają jeden rozmiar. Rosną z czcionką telefonu, dopóki najdłuższe słowo wszystkich napisów mieści się w pozycji, ale co najmniej 1,3 raza. Pozycja ma odstęp 8 dp od sąsiedniej pozycji i od krawędzi ekranu. Po jednoliterowym słowie stoi twarda spacja, więc „Konto i praca” łamie się jako „Konto / i praca”, a „i praca” liczy się jako jedno słowo. To [odstępstwo od pełnych 200%](dostepnosc.md#odstepstwo-pasek-dolny). Pasek z boku w oknie co najmniej 600 dp ma te same zasady napisów. Ma stałą szerokość, napis do dwóch wierszy, jeden rozmiar napisów i odstęp 8 dp. Gdy cztery pozycje nie mieszczą się w wysokości okna, pasek z boku się przewija. | NFR-20, NFR-51, NFR-52, wymagania wspólne (pasek dolny); decyzja 53, decyzja 69 |
 | 9 | Widoczny napis mieści się w przycisku bez dzielenia wyrazów, a pełną nazwę czyta TalkBack, np. „Zgłoś barierę przy wejściu” i „Zgłoś barierę przy wejściu: Wejście Cesarskie”. Nazwa dla TalkBack zaczyna się od widocznych słów. | NFR-18, WCAG 2.5.3 [1] |
-| 10 | Elementy przypięte to górny pasek, pas czynności i pasek dolny. Gdy razem zajęłyby ponad 25% wysokości okna w bieżącej orientacji, pas czynności nie jest przypięty. Jego czynności stoją na początku treści, przed pierwszą grupą, czynność główna pierwsza, np. „Sprawdź, którędy wejść” i „Pokaż na mapie” na V2. Na ekranach decyzji, V5 i L1, stoją na końcu treści, po tekście potrzebnym do decyzji. Przypięte zostają górny pasek, w którym jest „Wstecz”, i pasek dolny. Pasek nawigacji z boku ekranu w oknie co najmniej 600 dp nie wlicza się do tych 25% (wymagania wspólne). Górny pasek może się chować przy przewijaniu. W szerokim oknie przyciski mają szerokość kolumny tekstu (NFR-51). | NFR-52, NFR-20, NFR-51 |
-| 11 | Ikona ozdobna obok słowa znika, np. przy „Winda”, „Drzwi”, „Pokaż na planie” i w wierszach L2. Zostają ikony, które niosą znaczenie albo stan: oznaczenie wejścia, uciążliwość, strzałki, ptaszek wybranej pozycji przełącznika, ołówek przy „Popraw zgłoszenie” i pasek dolny. Na V1 zostają też lupa w polu i sterowanie mapą ([zasady ikon](slownik-uzytkownika.md#metafory-i-ikony)). | NFR-20, NFR-21 |
+| 10 | Elementy przypięte to górny pasek, pas czynności i pasek dolny. Gdy razem zajęłyby ponad 25% wysokości okna w bieżącej orientacji, pas czynności nie jest przypięty. Jego czynności stoją na początku treści, przed pierwszą grupą, czynność główna pierwsza, np. „Sprawdź, którędy wejść” i „Pokaż na mapie” na V2. Na ekranach decyzji, V5, L1, C4 i R2, stoją na końcu treści, po tekście potrzebnym do decyzji. Przypięte zostają górny pasek, w którym jest „Wstecz”, i pasek dolny. Pasek nawigacji z boku ekranu w oknie co najmniej 600 dp nie wlicza się do tych 25% (wymagania wspólne). Górny pasek może się chować przy przewijaniu. W szerokim oknie przyciski mają szerokość kolumny tekstu (NFR-51). | NFR-52, NFR-20, NFR-51 |
+| 11 | Ikona ozdobna obok słowa znika, np. przy „Winda”, „Drzwi”, „Pokaż na planie” i w wierszach L2. Zostają ikony, które niosą znaczenie albo stan: oznaczenie wejścia, uciążliwość, strzałki, ptaszek wybranej pozycji przełącznika, ołówek przy „Popraw zgłoszenie” i pasek dolny. Na V1 zostaje też lupa w polu, a na V1, C1 i R1 sterowanie mapą ([zasady ikon](slownik-uzytkownika.md#metafory-i-ikony)). | NFR-20, NFR-21 |
 | 12 | W opcji wyboru opis stoi pod tytułem na całą szerokość, a kółko i ikona tylko w wierszu tytułu. Tekst dzieli wyrazy po polsku i nie stoi w wąskich kolumnach. | NFR-20 |
 | 13 | Kroki do znalezionej sali otwierają się na cały ekran bez mapy. Na górze jest tylko „Wstecz”, a pod krokami „Pokaż opis budynku” i „Pokaż na mapie”. | NFR-20, US18.1, US18.2 |
 
@@ -453,6 +453,7 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Role | RO-ZBI |
 | Realizuje | US6.1, US6.2, US6.3, US6.4, US6.5 |
 | Czynność główna | „Dalej” — zatwierdzenie miejsca |
+| Czynność główna przypięta | tak (reguła 10) |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -463,7 +464,8 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | „Powtórz pomiar” | czynność | UC8 2a, NFR-23 | początek pomiaru |
 | Podpowiedź budynku: „Czy to budynek C-13?”, pod pytaniem nazwa budynku z danych i odległość od punktu, i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | czynność | US6.2, BR-G2 | „Wybierz inny”: lista budynków na C1 |
 | Budynek szczegółowy: przełącznik „Plan piętra” i „Mapa” nad jedną powierzchnią, domyślnie „Plan piętra”. Plan ma nad sobą wybór piętra, a mapa pokazuje ten sam punkt. | czynność | US6.3, US6.4, NFR-21 | C1, ten sam ekran |
-| Przesunięcie punktu na planie wybranego piętra albo na mapie, także przyciskami strzałek: jeden zestaw pod wybranym widokiem | czynność | US6.3, US6.4, NFR-3, NFR-15 | — |
+| Punkt stoi na środku planu albo mapy. Nad nimi podpis „Przesuń mapę, aby punkt stał na miejscu bariery.” Plan i mapę przesuwają te same przyciski co na V1: „Powiększ”, „Pomniejsz” i strzałki w krzyżu, a punkt zostaje na środku | czynność | US6.3, US6.4, NFR-3, NFR-53; wymagania V1; decyzja 51, decyzja 93 | — |
+| „ⓘ” na mapie i planie: źródła i pełna licencja mapy jak na V1 | czynność | NFR-37, NFR-40 | C1, panel „ⓘ” |
 | Napis „Korekta ręczna” po przesunięciu punktu | dane | US6.3, US6.4 | — |
 | Napis „© OpenStreetMap contributors”; pod planem „Źródło: Politechnika Wrocławska” | dane | NFR-37, NFR-40 | — |
 | „Dalej”; pojawia się po końcu uśredniania, razem z podpowiedzią budynku | czynność główna | US6, US6.1 | C2 |
@@ -489,6 +491,7 @@ Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykres
 | Role | RO-ZBI |
 | Realizuje | US7.1, US7.2, US7.3, US7.4, US8.3 |
 | Czynność główna | „Zapisz” |
+| Czynność główna przypięta | tak (reguła 10) |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -521,9 +524,10 @@ Dostępność: błąd walidacji jest tekstem przy polu i w podsumowaniu, a fokus
 | Pole | Treść |
 | --- | --- |
 | Cel | Zbierający wie, które zgłoszenia dotarły, a które trzeba poprawić. |
-| Role | RO-ZBI, tylko własne zgłoszenia |
+| Role | RO-ZBI, tylko własne zgłoszenia z pomiaru precyzyjnego i własne zmiany; zgłoszeń szybkich lista nie pokazuje (US4.4) |
 | Realizuje | US8.1, US8.2, US8.3, US9.1, US8.4 (status zmiany), US17.2 (status zmiany) |
-| Czynność główna | otwarcie zgłoszenia do poprawy |
+| Czynność główna | „Otwórz” przy zgłoszeniu do poprawy |
+| Czynność główna przypięta | nie: czynność powtarza się w pozycjach listy |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -533,7 +537,7 @@ Dostępność: błąd walidacji jest tekstem przy polu i w podsumowaniu, a fokus
 | Przy odrzuconym: powód odrzucenia | dane | US8.1, BR-16 | — |
 | Znak „Zmiana czeka na wysłanie” przy niewysłanej edycji | dane | US8.1, BR-9, [reguły, cykl życia zgłoszenia](../biznes/reguly.md) | — |
 | Znak „Dwie wersje: wybierz jedną” przy konflikcie | czynność | US9.3 | C4 |
-| Dotknięcie zgłoszenia przed decyzją albo odrzuconego | czynność główna | US8.3, BR-3 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
+| Przy zgłoszeniu przed decyzją albo odrzuconym „Otwórz” ze strzałką w ramce jak w R1 i K1. Zgłoszenia przyjęte i archiwalne nie są przyciskami | czynność główna | US8.1, US8.3, BR-3 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
 | Przy powodzie „nieaktualne”: „Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.” (przy zmianie oznaczenia wejścia: „Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.”) i przycisk „Wyślij ponownie” | czynność | BR-23, BR-24, PW-14 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
 | Przy „nieaktualne” po usunięciu bariery: „Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.” Przycisk „Zmierz i zgłoś barierę” | dane, czynność | BR-23, PW-12 | C1 |
 | Stan synchronizacji, np. „Czeka na wysłanie: 3” | czynność | US9.1 | C4 |
@@ -557,6 +561,7 @@ Dostępność: status jest słowem, a ikona go tylko wzmacnia (NFR-21). TalkBack
 | Role | RO-ZBI |
 | Realizuje | US9.1, US9.2, US9.3 |
 | Czynność główna | przy konflikcie: wybór wersji; bez konfliktu: „Synchronizuj teraz” |
+| Czynność główna przypięta | nie: przy konflikcie to ekran decyzji, wybór stoi na końcu treści, pod obiema wersjami (NFR-52) |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -588,6 +593,7 @@ Dostępność: w pionie wersje stoją jedna pod drugą, w poziomie obok siebie, 
 | Role | RO-ZBI: oznacza i cofa własne; RO-KOO: cofa każdy znacznik |
 | Realizuje | US15.1, US15.2, US15.3, US11.3 |
 | Czynność główna | RO-ZBI: „Oznacz jako obejrzane”; RO-KOO: „Cofnij znacznik” |
+| Czynność główna przypięta | nie: czynność powtarza się przy piętrach |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -595,18 +601,18 @@ Dostępność: w pionie wersje stoją jedna pod drugą, w poziomie obok siebie, 
 | Budynek szczegółowy: lista pięter z etykietami z danych PWr, od najniższego, jak pytanie o piętro w V4 | dane | US15.1, US16.1, US4.5 | — |
 | Budynek podstawowy: jeden wiersz „Cały budynek” | dane | US15.1, BR-20 | — |
 | Przy wierszu: „Obejrzane” tekstem i ikoną albo „Nieobejrzane” samym tekstem | dane | US15.1, PW-11 | — |
-| Przy znaczniku: „Twój znacznik” albo „Znacznik innej osoby” | dane | US15.2 | — |
+| Przy znaczniku u Zbierającego: „Twój znacznik” albo „Znacznik innej osoby”; u Koordynatora: „Znacznik: Zbierający, Autor [nr]” | dane | US15.2, BR-5 | — |
 | Przy znaczniku w telefonie: „Czeka na wysłanie” | dane | US15.3 | — |
 | Zbierający: „Oznacz jako obejrzane” przy wierszu bez znacznika | czynność główna | US15.1 | — |
-| Zbierający: „Cofnij znacznik” tylko przy własnym znaczniku | czynność | US15.2, PW-12 | — |
-| Koordynator: „Cofnij znacznik” przy każdym znaczniku, z potwierdzeniem | czynność główna | US11.3, BR-20 | C5 z nowym stanem; do K1 przez „Wstecz” |
+| Zbierający: „Cofnij znacznik” tylko przy własnym znaczniku, z potwierdzeniem | czynność | US15.2, PW-12 | C5, potwierdzenie |
+| Koordynator: „Cofnij znacznik” przy każdym znaczniku, z potwierdzeniem | czynność główna | US11.3, BR-20 | C5, potwierdzenie; do K1 przez „Wstecz” |
 
 C5 otwiera Zbierający z karty budynku (V2), a Koordynator z postępu (K1). Koordynator nie stawia znaczników (BR-20), więc nie widzi „Oznacz jako obejrzane”.
 
 | Stan | Co widać |
 | --- | --- |
 | Zwykły | lista pięter albo wiersz „Cały budynek” |
-| Potwierdzenie cofnięcia (RO-KOO) | „Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.” Przyciski „Cofnij znacznik” i „Zostaw znacznik” (BR-20, PW-12) |
+| Potwierdzenie cofnięcia | pod znacznikiem, u Zbierającego: „Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy.”; u Koordynatora: „Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.” Przyciski „Cofnij znacznik” i „Zostaw znacznik” (US15.2, US11.3, BR-20, PW-12) |
 | Brak sieci | „Znacznik zapisany w telefonie. Wyślemy go, gdy wróci internet.” Cofnięcie działa tak samo (US15.3, BR-20) |
 | Błąd zapisu | „Nie udało się zapisać znacznika w telefonie. Spróbuj ponownie, a jeśli to nie pomoże, zwolnij miejsce.” Przycisk „Spróbuj ponownie” (NFR-7) |
 
@@ -620,6 +626,7 @@ Ekran nie ma stanu pustego: budynek szczegółowy ma piętra z danych PWr, a bud
 | Role | RO-ZBI, każde wejście |
 | Realizuje | US17.2, US17.3 |
 | Czynność główna | „Wyślij do sprawdzenia” |
+| Czynność główna przypięta | tak (reguła 10) |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -648,6 +655,7 @@ Ekran nie ma stanu pustego: budynek szczegółowy ma piętra z danych PWr, a bud
 | Role | RO-ZBI, także dla cudzych zgłoszeń (BR-19) |
 | Realizuje | US8.4 |
 | Czynność główna | „Wyślij do sprawdzenia” |
+| Czynność główna przypięta | tak (reguła 10) |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -675,12 +683,13 @@ Uciążliwości ani typu się nie wybiera: przechodzą z poprzedniego zgłoszeni
 | Role | RO-WER |
 | Realizuje | US10.4, US10.5, US10.7 |
 | Czynność główna | „Weź do sprawdzenia” |
+| Czynność główna przypięta | nie: czynność powtarza się w pozycjach listy |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Nad listą nagłówek „Do sprawdzenia”. Lista zgłoszeń „wysłane” od najdawniej wysłanego: typ albo grupa barier, budynek, rodzaj, data wysłania | dane | US10.4, BR-14 | — |
 | Przełącznik „Mapa” i „Lista”, w tej samej kolejności co na V1; domyślnie wybrana „Lista”. Wybór nie jest zapamiętywany: R1 zawsze otwiera się na liście. Lista daje tę samą informację. | czynność | UC14, NFR-19 | — |
-| Napis „© OpenStreetMap contributors” na mapie | dane | NFR-37 | — |
+| Napis „© OpenStreetMap contributors” na mapie i „ⓘ” ze źródłami i pełną licencją jak na V1 | dane, czynność | NFR-37, NFR-40; decyzja 93 | R1, panel „ⓘ” |
 | W widoku mapy te same przyciski mapy co na V1: „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu | czynność | NFR-53; WCAG 2.5.1 [1], 2.5.7 [7]; wymagania V1 | — |
 | W widoku mapy każde zgłoszenie ma jeden znak „zgłoszenie do sprawdzenia” z nazwą dla TalkBack, np. „Zgłoszenie do sprawdzenia: próg, budynek C-13” | dane | NFR-18, NFR-21 | — |
 | W widoku mapy dotknięcie znaku pokazuje pod mapą to zgłoszenie z tymi samymi danymi co na liście i „Weź do sprawdzenia” | czynność | UC14, NFR-19, NFR-53 | R2 |
@@ -705,6 +714,7 @@ Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia we
 | Role | RO-WER, tylko cudze zgłoszenia wzięte przez siebie (BR-4, BR-11) |
 | Realizuje | US10.1, US10.2, US10.3, US10.6, US10.8, US17.2 |
 | Czynność główna | „Przyjmij” |
+| Czynność główna przypięta | nie: ekran decyzji, „Przyjmij” i „Odrzuć” stoją na końcu treści, po „Podobne zgłoszenia do 10 m” (BR-13, NFR-52) |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -746,6 +756,7 @@ Dostępność: podobne zgłoszenia mają odległość tekstem, np. „5 m”, a 
 | Role | RO-KOO |
 | Realizuje | US11.1, US11.2, US11.3, US11.4 |
 | Czynność główna | dotknięcie budynku — otwarcie jego pięter |
+| Czynność główna przypięta | nie: czynność powtarza się w pozycjach listy |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -776,6 +787,7 @@ Stanu pustego nie ma: lista budynków pochodzi z importu, a 0% to zwykła warto�
 | Role | RO-KOO |
 | Realizuje | US12.1, US12.2 |
 | Czynność główna | „Wyślij zaproszenie” |
+| Czynność główna przypięta | tak (reguła 10) |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -800,6 +812,7 @@ Stanu pustego nie ma: lista budynków pochodzi z importu, a 0% to zwykła warto�
 | Role | RO-KOO |
 | Realizuje | US13.1, US13.2, US13.3 |
 | Czynność główna | „Pobierz plik” |
+| Czynność główna przypięta | tak (reguła 10) |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
@@ -892,7 +905,7 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | | US7.2 | C2 | pole piętra |
 | | US7.3 | C2 | opis przy TB-29 |
 | | US7.4 | C2, C1 | „Zmień miejsce” z polami, pytanie przed wyjściem bez zapisu |
-| Moje zgłoszenia | US8.1 | C3 | status, powód odrzucenia, znak zmiany i kolejność |
+| Moje zgłoszenia | US8.1 | C3 | status, powód odrzucenia, znak zmiany, kolejność, „Otwórz”, bez zgłoszeń szybkich |
 | | US8.2 | C3 | statusy „wysłane” i „w weryfikacji”; moment zmiany ustala serwer |
 | | US8.3 | C3, C2 | edycja |
 | | US8.4 | V2, C7, C3 | start, formularz, status |
@@ -909,7 +922,7 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | | US10.8 | R2 | zmiana od wysłania, para zdjęć, zmienione pola |
 | Postęp | US11.1 | K1 | — |
 | | US11.2 | K1 | data odczytu i „Odśwież”; przeliczenie robi serwer |
-| | US11.3 | K1, C5 | cofnięcie z potwierdzeniem |
+| | US11.3 | K1, C5 | cofnięcie z potwierdzeniem i podpisem autora znacznika |
 | | US11.4 | K1 | wejścia ze źródłem „obchód”; liczbę liczy serwer |
 | Zaproszenie | US12.1 | K2, L1, L2 | zaproszona osoba loguje się przez L1 i widzi swoje role w L2 |
 | | US12.2 | K2 | komunikat „konto istnieje” |
@@ -921,7 +934,7 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | | US14.3 | L2 | lista ról; nadanie roli bez ekranu |
 | | US14.4 | V4, L1 | prośba o logowanie tylko za pierwszym razem |
 | Piętra obejrzane | US15.1 | C5 | — |
-| | US15.2 | C5 | „Cofnij znacznik” tylko przy własnym |
+| | US15.2 | C5 | „Cofnij znacznik” tylko przy własnym, z potwierdzeniem |
 | | US15.3 | C5 | znacznik w telefonie |
 | Plan piętra | US16.1 | V1, V2, C1 | V1: przełącznik i plan; V2: piętra tekstem i „Pokaż na planie” |
 | | US16.2 | V2, C2 | napis o braku planu, pole liczby |

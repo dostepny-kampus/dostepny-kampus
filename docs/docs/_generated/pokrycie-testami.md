@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | --- | --- |
 | Pełny test | 2 |
 | Tylko częściowo | 8 |
-| Bez testu | 150 |
+| Bez testu | 153 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -58,9 +58,10 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `pomiar-precyzyjny.feature` | Powrót do pomiaru zmienia miejsce, a wpisane pola zostają | US7.4 | — | brak |
 | `pomiar-precyzyjny.feature` | Wyjście z formularza z niezapisanymi zmianami wymaga potwierdzenia | US7.4 | — | brak |
 | `postep-inwentaryzacji.feature` | Oznaczenie piętra albo budynku jako obejrzanego | BR-20, US15.1 | — | brak |
-| `postep-inwentaryzacji.feature` | Zbierający cofa własny znacznik | BR-20, US15.2 | — | brak |
+| `postep-inwentaryzacji.feature` | Zbierający cofa własny znacznik po potwierdzeniu | BR-20, US15.2 | — | brak |
 | `postep-inwentaryzacji.feature` | Inny Zbierający nie cofnie cudzego znacznika | BR-20, US15.2 | — | brak |
-| `postep-inwentaryzacji.feature` | Koordynator cofa znacznik dowolnego Zbierającego | BR-20, US11.3 | — | brak |
+| `postep-inwentaryzacji.feature` | Koordynator cofa znacznik dowolnego Zbierającego po potwierdzeniu | BR-20, US11.3 | — | brak |
+| `postep-inwentaryzacji.feature` | Bez potwierdzenia znacznik zostaje | BR-20, US11.3, US15.2 | — | brak |
 | `postep-inwentaryzacji.feature` | Znacznik i jego cofnięcie bez sieci czekają w telefonie | BR-9, BR-20, US15.3 | — | brak |
 | `postep-inwentaryzacji.feature` | Po powrocie sieci znacznik i jego cofnięcie wysyłają się same | BR-9, BR-20, US15.3 | — | brak |
 | `postep-inwentaryzacji.feature` | Postęp budynku szczegółowego i podstawowego z liczbami zgłoszeń | BR-21, US11.1 | — | brak |
@@ -143,6 +144,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `zgloszenia-zbierajacego.feature` | Każde własne zgłoszenie ma jeden status tekstem i ikoną | US8.1 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Zgłoszenie odrzucone pokazuje powód odrzucenia | BR-16, US8.1 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Zgłoszenie ze zmianą czekającą w telefonie ma napis przy statusie | US8.1 | — | brak |
+| `zgloszenia-zbierajacego.feature` | Lista nie pokazuje własnych zgłoszeń szybkich | US4.4, US8.1 | — | brak |
+| `zgloszenia-zbierajacego.feature` | „Otwórz” mają tylko zgłoszenia, które można poprawić | US8.1 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Najnowsze zgłoszenia są na górze listy | US8.1 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Status „wysłane” dopiero po potwierdzeniu odbioru przez serwer | BR-9, US8.2 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Status „w weryfikacji” po wzięciu zgłoszenia przez Weryfikatora | US8.2 | — | brak |

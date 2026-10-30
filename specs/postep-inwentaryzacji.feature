@@ -21,9 +21,11 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
         | B-4     | cały budynek jako „obejrzany”      | znacznik „obejrzany”     |
 
     @US15.2
-    Scenariusz: Zbierający cofa własny znacznik
+    Scenariusz: Zbierający cofa własny znacznik po potwierdzeniu
       Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
-      Jeżeli cofnie ten znacznik
+      Jeżeli wybierze „Cofnij znacznik”
+      Wtedy aplikacja pyta o potwierdzenie i mówi, że postęp budynku się zmniejszy
+      Jeżeli potwierdzi cofnięcie
       Wtedy piętro nie jest już obejrzane
 
     @US15.2
@@ -34,11 +36,25 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Oraz piętro jest nadal obejrzane
 
     @US11.3
-    Scenariusz: Koordynator cofa znacznik dowolnego Zbierającego
+    Scenariusz: Koordynator cofa znacznik dowolnego Zbierającego po potwierdzeniu
       Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
-      Jeżeli Koordynator cofnie ten znacznik
+      Jeżeli Koordynator wybierze „Cofnij znacznik”
+      Wtedy aplikacja pyta o potwierdzenie i mówi, że postęp budynku się zmniejszy
+      Jeżeli Koordynator potwierdzi cofnięcie
       Wtedy piętro nie jest już obejrzane
       Oraz postęp budynku A-1 pokazuje o jedno piętro obejrzane mniej
+
+    @US11.3 @US15.2
+    Szablon scenariusza: Bez potwierdzenia znacznik zostaje
+      Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
+      Jeżeli <osoba> wybierze „Cofnij znacznik”
+      Oraz wybierze „Zostaw znacznik”
+      Wtedy piętro jest nadal obejrzane
+
+      Przykłady:
+        | osoba       |
+        | Zbierający  |
+        | Koordynator |
 
     @US15.3 @BR-9
     Szablon scenariusza: Znacznik i jego cofnięcie bez sieci czekają w telefonie
