@@ -302,21 +302,21 @@ Wymagania: [V4 Zgłoszenie szybkie](../wymagania-ekranow.md#v4-zgoszenie-szybkie
 
 Wymagania: [V5 Pomoc](../wymagania-ekranow.md#v5-pomoc).
 
-### V5: pierwsze uruchomienie, krok 1 z 4
+### V5: pierwsze uruchomienie, krok 1 z 3
 
 `m-v5-pomoc-pierwsze-uruchomienie` · [makieta low-fi](../makiety/odwiedzajacy.md#v5-pomoc). Przy pierwszym uruchomieniu „Wstecz” na tym kroku pomija instrukcję i otwiera mapę.
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Instrukcja otwarta sama przy pierwszym uruchomieniu, Jak korzystać z aplikacji, krok 1 z 4: Znajdź budynek, wyjaśnienie, że po wpisaniu symbolu w polu na górze mapy pokażemy opis budynku z wejściami i barierami, przykład pola wyszukiwania, przyciski Dalej i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny.webp) | [![Ten sam pierwszy krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-pierwsze-uruchomienie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-ciemny.webp) | [![Ten sam pierwszy krok instrukcji przy czcionce 200%: Dalej i Pomiń instrukcję na końcu treści, pod przykładem pola](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny-200.webp) |
+| [![Instrukcja otwarta sama przy pierwszym uruchomieniu, Jak korzystać z aplikacji, krok 1 z 3: Znajdź budynek, wyjaśnienie, że po wpisaniu symbolu w polu na górze mapy pokażemy opis budynku z wejściami i barierami, przykład pola wyszukiwania bez lupy, przyciski Dalej i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny.webp) | [![Ten sam pierwszy krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-pierwsze-uruchomienie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-ciemny.webp) | [![Ten sam pierwszy krok instrukcji przy czcionce 200%: Dalej i Pomiń instrukcję na końcu treści, pod przykładem pola](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny-200.webp) |
 
-### V5: krok 2 z 4, co znaczy „Dostępne”
+### V5: krok 2 z 3, co znaczy „Dostępne”
 
-`m-v5-pomoc` · [makieta low-fi](../makiety/odwiedzajacy.md#v5-pomoc)
+`m-v5-pomoc` · [makieta low-fi](../makiety/odwiedzajacy.md#v5-pomoc). Instrukcja ma 3 kroki, trzeci to „Zgłoś barierę” ze zdaniem o koncie, bez osobnej makiety.
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Jak korzystać z aplikacji, krok 2 z 4: wyjaśnienie napisu Dostępne przy wejściu, przykład wejścia z opisu budynku z oznaczeniem Dostępne, Wejście dostosowane, Drzwi 120 cm, przyciski Dalej i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-jasny.webp) | [![Ten sam krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-ciemny.webp) | [![Ten sam krok instrukcji przy czcionce 200%: Dalej i Pomiń instrukcję na końcu treści, pod przykładem](obrazy/m-v5-pomoc-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-jasny-200.webp) |
+| [![Jak korzystać z aplikacji, krok 2 z 3: wyjaśnienie napisu Dostępne przy wejściu, przykład wejścia z opisu budynku z oznaczeniem Dostępne, Wejście dostosowane, Drzwi 120 cm, przyciski Dalej i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-jasny.webp) | [![Ten sam krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-ciemny.webp) | [![Ten sam krok instrukcji przy czcionce 200%: Dalej i Pomiń instrukcję na końcu treści, pod przykładem](obrazy/m-v5-pomoc-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-jasny-200.webp) |
 
 ## L1 Prośba o logowanie
 
