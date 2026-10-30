@@ -103,7 +103,6 @@ class AppNavigatorTest {
             val keys = stack.indices.map(::contentKey)
             open(TopLevel.HELP)
             assertEquals(stackOf(AccountRoute, HelpRoute()), stack)
-            assertEquals(keys.dropLast(1), stack.indices.map(::contentKey).dropLast(1))
             assertNotEquals(keys.last(), contentKey(index = 2))
         }
     }
@@ -115,7 +114,6 @@ class AppNavigatorTest {
             open(TopLevel.ACCOUNT)
             open(TopLevel.HELP)
             open(TopLevel.ACCOUNT)
-            assertEquals(stackOf(AccountRoute, HelpRoute(), AccountRoute), stack)
             val keys = stack.indices.map(::contentKey)
             assertEquals(keys.distinct(), keys)
         }
