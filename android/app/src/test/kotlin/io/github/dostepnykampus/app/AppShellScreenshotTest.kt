@@ -68,6 +68,7 @@ class AppShellScreenshotTest {
         query: String? = null,
         isOnline: Boolean = true,
         isList: Boolean = false,
+        isKeyboardOpen: Boolean = false,
     ) {
         compose.setContent {
             DostepnyKampusTheme {
@@ -96,6 +97,7 @@ class AppShellScreenshotTest {
         if (isSheetOpen && isFromList) compose.onNodeWithContentDescription("C-13").performSemanticsAction(OnClick)
         if (isSheetOpen && !isFromList) compose.runOnUiThread { touch(listOf("C-13")) }
         query?.let { compose.onNode(hasSetTextAction()).performTextInput(it) }
+        if (isKeyboardOpen) compose.runOnUiThread { dispatchKeyboard(compose.activity, isOpen = true) }
         compose.onRoot().captureRoboImage()
     }
 
@@ -109,6 +111,12 @@ class AppShellScreenshotTest {
     @Test
     fun us1_1_v1_wynik_jasny() {
         capture(isSheetOpen = false, query = "c13")
+    }
+
+    // V1 przy otwartej klawiaturze: bez przycisków mapy, z podpisem OSM, NFR-53, decyzja 91.
+    @Test
+    fun nfr53_v1_klawiatura_jasny() {
+        capture(isSheetOpen = false, query = "c13", isKeyboardOpen = true)
     }
 
     // V1: brak wyniku dla „C-31”, UC1 3a, PW-9.

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -179,6 +180,8 @@ private fun CampusMap(
     val focusPoint = remember(catalog, focus) { catalog?.pointOf(focus) }
     // Pod arkuszem widok kamery się nie zapisuje, więc po „Wstecz” wraca widok sprzed V2 (decyzja 83).
     val keepCamera = { idle: MapCamera -> if (!isCovered) camera = idle }
+    // Przy otwartej klawiaturze mapa jest za niska na przyciski, więc znikają do jej zamknięcia (decyzja 91).
+    val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     Box(modifier.consumeWindowInsets(topInset)) {
         val loaded = data
@@ -199,7 +202,7 @@ private fun CampusMap(
             )
             MapOverlay(
                 camera = shown,
-                hasControls = !isCovered,
+                hasControls = !isCovered && !isKeyboardOpen,
                 onCameraChange = { camera = it },
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
             ) {
@@ -237,7 +240,7 @@ private fun BuildingCatalog.pointOf(symbol: String?): GeoPoint? =
 private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
     symbols.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
 
-// Przyciski mapy, gdy są (bez arkusza V2), podpis OSM i [content] nad mapą (NFR-53, NFR-37).
+// Przyciski mapy, gdy są (bez arkusza V2 i klawiatury), podpis OSM i [content] nad mapą (NFR-53, NFR-37).
 @Composable
 private fun MapOverlay(
     camera: MapCamera,

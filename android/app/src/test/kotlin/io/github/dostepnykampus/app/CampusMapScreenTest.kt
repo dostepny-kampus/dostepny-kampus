@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app
 
+import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
@@ -40,6 +41,9 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -63,6 +67,22 @@ internal class TestMapListChoice : MapListChoice {
     override suspend fun choose(isList: Boolean) {
         savedChoice.value = isList
     }
+}
+
+// Wysokość klawiatury w pikselach: przy gęstości zrzutów 2× to 300 dp, jak na telefonie.
+private const val KEYBOARD_HEIGHT = 600
+
+/** Podaje ekranowi [activity] klawiaturę otwartą albo zamkniętą tak, jak system: w odstępach okna. */
+internal fun dispatchKeyboard(activity: ComponentActivity, isOpen: Boolean) {
+    val ime = WindowInsetsCompat.Type.ime()
+    val insets =
+        WindowInsetsCompat
+            .Builder()
+            .setInsets(ime, Insets.of(0, 0, 0, if (isOpen) KEYBOARD_HEIGHT else 0))
+            .setVisible(ime, isOpen)
+            .build()
+    val content = activity.findViewById<ViewGroup>(android.R.id.content)
+    ViewCompat.dispatchApplyWindowInsets(content.getChildAt(0), insets)
 }
 
 /** Ekran V1 z widokiem zastępczym zamiast MapLibre i katalogiem „Budynek testowy” (nie dane PWr). */
@@ -109,6 +129,11 @@ class CampusMapScreenTest {
                 )
             }
         }
+    }
+
+    private fun keyboard(isOpen: Boolean) {
+        compose.runOnUiThread { dispatchKeyboard(compose.activity, isOpen) }
+        compose.waitForIdle()
     }
 
     @Test
@@ -174,6 +199,20 @@ class CampusMapScreenTest {
         compose.onNodeWithText("Zamknij").performClick()
         compose.onNodeWithText("Który budynek?").assertDoesNotExist()
         assertEquals(emptyList<String>(), opened)
+    }
+
+    // Wiersz: otwarta klawiatura chowa przyciski mapy, podpis OSM zostaje; po zamknięciu przyciski wracają
+    // (NFR-53, decyzja 91).
+    @Test
+    fun nfr53_keyboard_hides_buttons() {
+        compose.setContent { Screen() }
+        keyboard(isOpen = true)
+        compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Przesuń mapę w górę").assertDoesNotExist()
+        compose.onNodeWithText("© OpenStreetMap contributors").assertExists()
+        keyboard(isOpen = false)
+        compose.onNodeWithContentDescription("Powiększ").assertExists()
+        compose.onNodeWithContentDescription("Przesuń mapę w górę").assertExists()
     }
 
     // Wiersz: V2 jako arkusz nad V1, podpis OSM i przyciski nad arkuszem, decyzja 87.
