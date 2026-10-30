@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.app.navigation
 
 import androidx.navigation3.runtime.NavKey
+import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
@@ -64,6 +65,15 @@ fun AppNavigator.reportSent() {
 /** „Tak, zrezygnuj” po „Wstecz” z kroku 1: ekran sprzed V4, zgłoszenie nie powstaje (UC7 1b). */
 fun AppNavigator.leaveReport() {
     leaving { dropReport() }
+}
+
+/** Po zalogowaniu na L1: V4 krok 1 z wejściem wybranym przed L1 albo L2 (US14.2, UC7 1a, P3). */
+fun AppNavigator.signedIn() {
+    val route = current as? SignInRoute ?: return
+    leaving {
+        removeAt(lastIndex)
+        add(if (route.isForReport) ReportRoute(entranceId = route.entranceId) else AccountRoute)
+    }
 }
 
 private fun MutableList<NavKey>.dropReport() {

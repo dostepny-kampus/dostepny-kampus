@@ -262,4 +262,24 @@ class AppNavigatorTest {
         }
         assertEquals(BuildingRoute("D-2"), stack.last())
     }
+
+    // Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość po zalogowaniu wraca do zgłoszenia szybkiego
+    @Test
+    fun us14_2_guest_signed_in_v4() {
+        navigator().run {
+            openBuilding(symbol = "A-1")
+            report(entranceId = "A-1-glowne")
+            assertEquals(SignInRoute(isForReport = true, entranceId = "A-1-glowne"), current)
+        }
+        repeat(times = 2) { navigator(visitor).signedIn() }
+        assertEquals(listOf(BuildingRoute("A-1"), ReportRoute(entranceId = "A-1-glowne")), stack.drop(1))
+    }
+
+    // Wiersz: strona logowania, wejście z „Konto”, zalogowanie → L2, UC6 krok 3, P3.
+    @Test
+    fun uc6_signed_in_from_account_l2() {
+        navigator().open(TopLevel.ACCOUNT)
+        navigator(visitor).signedIn()
+        assertEquals(stackOf(AccountRoute), stack)
+    }
 }

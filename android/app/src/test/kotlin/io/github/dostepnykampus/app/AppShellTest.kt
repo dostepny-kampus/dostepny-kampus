@@ -5,16 +5,24 @@
  */
 package io.github.dostepnykampus.app
 
+import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.exclude
+import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -34,6 +42,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.width
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsCompat.Type
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.app.navigation.openBuilding
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
@@ -59,6 +71,7 @@ class AppShellTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val staff = RoleProvider { Account.SignedIn(setOf(StaffRole.COLLECTOR)) }
+    private val visitor = RoleProvider { Account.SignedIn() }
     private val tabRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
     private var helpLeft = 0
 
@@ -182,5 +195,65 @@ class AppShellTest {
         compose.onNodeWithText("Pomoc").assertIsSelected()
         pressBack()
         compose.onNodeWithText("Mapa").assertIsSelected()
+    }
+
+    // Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie w 3 krokach z pozycją dołączoną
+    //   automatycznie
+    @Test
+    fun us4_1_report_stubs_steps_sent() {
+        show(roles = visitor)
+        compose.onNodeWithText("Zgłoś barierę").performClick()
+        listOf("Dalej", "Dalej", "Wyślij").forEachIndexed { index, action ->
+            compose.onNodeWithText("Krok ${index + 1} z 3").assertExists()
+            compose.onNodeWithText(action).performClick()
+        }
+        compose.onNodeWithText("Wróć do mapy").assertExists()
+        pressBack()
+        compose.onNodeWithText("Mapa").assertIsSelected()
+    }
+
+    // Wiersz: V2 → „Sprawdź, którędy wejść” → V3, „Wstecz” → V2 → V1 z zaznaczonym budynkiem; historia z parametrami
+    // tras przetrwa odtworzenie aktywności, US3, US1.1, NFR-22.
+    @Test
+    fun nfr22_params_survive_restore() {
+        val restoration = StateRestorationTester(compose)
+        restoration.setContent {
+            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+                if (route is MapRoute) {
+                    Text(route.focus?.toString() ?: "V1", Modifier.clickable { openBuilding(symbol = "A-1") })
+                } else {
+                    AppScreen(route)
+                }
+            }
+        }
+        compose.onNodeWithText("V1").performClick()
+        compose.onNodeWithText("Sprawdź, którędy wejść").performClick()
+        restoration.emulateSavedInstanceStateRestore()
+        compose.onNodeWithText("Którędy wejść do A-1").assertExists()
+        pressBack()
+        compose.onNodeWithText("Pokaż na mapie").assertExists()
+        pressBack()
+        compose.onNodeWithText("Building(symbol=A-1)").assertExists()
+    }
+
+    // Wiersz: wymagania wspólne, pasek dolny na V1, bez niego na L1: treść nie wchodzi pod paski, NFR-52.
+    @Test
+    fun nfr52_content_insets_after_bar() {
+        compose.setContent {
+            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) {
+                var consumed by remember { mutableStateOf(WindowInsets(0)) }
+                val rest = WindowInsets.safeDrawing.exclude(consumed)
+                val text = "${rest.getTop(LocalDensity.current)}:${rest.getBottom(LocalDensity.current)}"
+                Text(text, Modifier.onConsumedWindowInsetsChanged { insets -> consumed = insets })
+            }
+        }
+        val bars = WindowInsetsCompat.Builder()
+        bars.setInsets(Type.statusBars(), Insets.of(0, 24, 0, 0))
+        bars.setInsets(Type.navigationBars(), Insets.of(0, 0, 0, 40))
+        val view = compose.activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
+        compose.runOnUiThread { ViewCompat.dispatchApplyWindowInsets(view, bars.build()) }
+        compose.onNodeWithText("24:0").assertExists()
+        compose.onNodeWithText("Zgłoś barierę").performClick()
+        compose.onNodeWithText("24:40").assertExists()
     }
 }
