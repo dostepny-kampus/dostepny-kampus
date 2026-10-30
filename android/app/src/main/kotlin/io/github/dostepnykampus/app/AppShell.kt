@@ -55,7 +55,7 @@ private val RestartsSaver =
  * od V5 przy [firstLaunch] (US5.1), inaczej od V1, i przetrwa odtworzenie aktywności (NFR-22). [roles] wybiera
  * cele Gościa i napis czwartej pozycji, a [onFirstHelpLeft] dostaje znać, gdy instrukcja z pierwszego
  * uruchomienia przestanie być na wierzchu. [content] rysuje ekran trasy i podpina jego czynności do nawigatora,
- * domyślnie [AppScreen]. Wcięcia systemowe, które zajmuje pasek, są dla treści zużyte: ekran dopełnia resztę
+ * w aplikacji [AppScreen]. Wcięcia systemowe, które zajmuje pasek, są dla treści zużyte: ekran dopełnia resztę
  * przez `WindowInsets.safeDrawing` albo rysuje pod nią, jak mapa. V2 jest arkuszem nad V1 ([SheetSceneStrategy]).
  */
 @Composable
@@ -64,7 +64,7 @@ fun AppShell(
     roles: RoleProvider,
     onFirstHelpLeft: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable AppNavigator.(NavKey) -> Unit = { AppScreen(it) },
+    content: @Composable AppNavigator.(NavKey) -> Unit,
 ) {
     val backStack = rememberNavBackStack(elements = startBackStack(firstLaunch).toTypedArray())
     val restarts = rememberSaveable(saver = RestartsSaver) { SnapshotStateList() }

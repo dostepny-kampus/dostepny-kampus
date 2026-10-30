@@ -8,6 +8,7 @@ plugins {
     id("dostepnykampus.android.application")
     id("dostepnykampus.android.compose")
     id("dostepnykampus.android.roborazzi")
+    id("dostepnykampus.android.hilt")
 }
 
 android {
@@ -40,6 +41,8 @@ dependencies {
     testImplementation(libs.konsist)
     testImplementation(libs.junit4)
     testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.hilt.compiler)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     testRuntimeOnly(libs.junit.vintage.engine)
     testRuntimeOnly(libs.junit.platform.launcher)

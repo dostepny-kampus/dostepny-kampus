@@ -83,7 +83,7 @@ class AppShellScreenshotTest {
                             mapView = landOnly,
                         )
                     } else {
-                        AppScreen(route)
+                        AppScreen(route, ScreenData(repository, { flowOf(isOnline) }, choice))
                     }
                 }
             }

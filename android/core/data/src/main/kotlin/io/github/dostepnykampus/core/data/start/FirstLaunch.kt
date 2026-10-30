@@ -15,7 +15,8 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
 
-private val Context.startDataStore by preferencesDataStore(
+/** Plik ustawień startu aplikacji; jeden DataStore na proces, bo tak wymaga DataStore dla jednego pliku. */
+internal val Context.startDataStore by preferencesDataStore(
     name = "start",
     corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
 )
@@ -44,6 +45,3 @@ class FirstLaunchRepository(private val dataStore: DataStore<Preferences>) : Fir
         val HELP_SEEN = booleanPreferencesKey("help_seen")
     }
 }
-
-/** [FirstLaunchRepository] na pliku ustawień startu aplikacji. */
-fun Context.firstLaunchRepository(): FirstLaunchRepository = FirstLaunchRepository(applicationContext.startDataStore)

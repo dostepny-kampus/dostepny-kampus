@@ -6,6 +6,7 @@
 
 plugins {
     id("dostepnykampus.android.library")
+    id("dostepnykampus.android.hilt")
 }
 
 val buildingsFile: RegularFile = layout.projectDirectory.file("../../../data/buildings/pwr-buildings.geojson")
