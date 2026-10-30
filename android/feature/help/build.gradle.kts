@@ -9,9 +9,16 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+android {
+    testOptions.unitTests.all { it.useJUnitPlatform() }
+}
+
 dependencies {
     implementation(project(":core:designsystem"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation3.runtime)
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
 }
