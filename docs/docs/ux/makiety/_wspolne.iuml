@@ -370,16 +370,16 @@ $tekst($powod)
 !endprocedure
 
 ' Zdjęcie w formularzu (C2, C6, C7): komunikat „Ważne” o wizerunku, jak na V4,
-' i przycisk z ikoną aparatu (NFR-25, PW-8). $opis: zastępnik zrobionego zdjęcia;
+' i przycisk bez ikony, jak na V4 (NFR-25, PW-8, decyzja 94). $opis: zastępnik zrobionego zdjęcia;
 ' pusty, gdy zdjęcia jeszcze nie ma. Krok 1 V4 składa te same elementy ręcznie,
 ' bo ma tam czynność główną.
 !procedure $zdjecie($opis="")
 $wazne("Nie fotografuj twarzy ani tablic rejestracyjnych.", "Zdjęcie zobaczą inni użytkownicy.")
 !if $opis == ""
-$przycisk("Zrób zdjęcie", "camera-slr")
+$przycisk("Zrób zdjęcie")
 !else
 $obraz($opis)
-$przycisk("Zrób nowe zdjęcie", "camera-slr")
+$przycisk("Zrób nowe zdjęcie")
 !endif
 !endprocedure
 
