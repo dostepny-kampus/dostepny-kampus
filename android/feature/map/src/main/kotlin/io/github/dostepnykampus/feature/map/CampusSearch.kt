@@ -66,15 +66,30 @@ private val ClearIcon =
  * a TalkBack czyta go sam.
  *
  * @param catalog katalog budynków; `null`, dopóki się wczytuje
+ * @param isOnline czy jest internet; bez niego pod nagłówkiem stoi [OfflineLine]
  * @param onBuildingClick symbol wybranego wyniku; ekran otwiera V2 i zaznacza budynek na mapie
  * @param modifier położenie nad mapą
  */
 @Composable
-internal fun CampusSearch(catalog: BuildingCatalog?, onBuildingClick: (String) -> Unit, modifier: Modifier = Modifier) {
+internal fun CampusSearch(
+    catalog: BuildingCatalog?,
+    isOnline: Boolean,
+    onBuildingClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier.fillMaxWidth()) {
+        SearchHeader(catalog, onBuildingClick)
+        if (!isOnline) OfflineLine()
+    }
+}
+
+// Nagłówek, pole i wynik albo karta brak wyniku na tle powierzchni ekranu.
+@Composable
+private fun SearchHeader(catalog: BuildingCatalog?, onBuildingClick: (String) -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
     val results = remember(query, catalog) { catalog?.let { searchBuildings(query, it.buildings) }.orEmpty() }
     val insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
-    Surface(modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface) {
+    Surface(Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface) {
         Column(
             Modifier.windowInsetsPadding(insets).padding(horizontal = Odstepy.m, vertical = Odstepy.s),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
@@ -137,7 +152,8 @@ private fun NoResult(query: String) {
     }
 }
 
-private fun icon(path: String): ImageVector {
+// Ikona z jednej ścieżki Material Icons na siatce 24 × 24.
+internal fun icon(path: String): ImageVector {
     val builder =
         ImageVector.Builder(
             defaultWidth = ICON_VIEWPORT.dp,

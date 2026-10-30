@@ -16,12 +16,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.core.data.buildings.buildingCatalogRepository
+import io.github.dostepnykampus.core.data.network.networkStatus
 import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
@@ -64,8 +66,11 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
 // OSM stoją nad arkuszem V2 (decyzja 87).
 @Composable
 private fun AppNavigator.MapScreen(focus: String?) {
+    val context = LocalContext.current
     CampusMapScreen(
-        repository = LocalContext.current.buildingCatalogRepository(),
+        repository = context.buildingCatalogRepository(),
+        // Jedna obserwacja sieci na ekran, a nie nowa przy każdym przerysowaniu.
+        networkStatus = remember(context) { context.networkStatus() },
         onBuildingClick = { openBuilding(it) },
         focus = focus,
         contentPadding = LocalSheetPadding.current,
