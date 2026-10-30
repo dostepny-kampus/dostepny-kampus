@@ -25,12 +25,13 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
  * - Wejścia nie obejmują rodzajów `emergency`, `exit` i `garage`, bo to nie są wejścia dla odwiedzających
  *   (BR-25, decyzja 76).
  *
- * Plik jest czytany i parsowany raz, w [context]; kolejne wywołania [catalog] dostają ten sam katalog.
+ * Plik jest czytany i parsowany raz, w [ioContext]; kolejne wywołania [catalog], także równoległe, dostają
+ * ten sam katalog.
  *
- * @param context kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
+ * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
  * @param readGeoJson odczyt treści pliku konturów
  */
-class BuildingCatalogRepository(private val context: CoroutineContext, private val readGeoJson: () -> String) {
+class BuildingCatalogRepository(private val ioContext: CoroutineContext, private val readGeoJson: () -> String) {
     private val mutex = Mutex()
     private var cached: BuildingCatalog? = null
 
@@ -41,14 +42,14 @@ class BuildingCatalogRepository(private val context: CoroutineContext, private v
      */
     suspend fun catalog(): BuildingCatalog =
         mutex.withLock {
-            cached ?: withContext(context) { parseBuildingCatalog(readGeoJson()).forVisitors() }.also { cached = it }
+            cached ?: withContext(ioContext) { parseBuildingCatalog(readGeoJson()).forVisitors() }.also { cached = it }
         }
 }
 
-/** [BuildingCatalogRepository] na pliku [BUILDINGS_ASSET] z zasobów aplikacji. */
-fun Context.buildingCatalogRepository(context: CoroutineContext = Dispatchers.IO): BuildingCatalogRepository {
+/** [BuildingCatalogRepository] na pliku [BUILDINGS_ASSET] z zasobów aplikacji; jedna instancja na proces. */
+fun Context.buildingCatalogRepository(ioContext: CoroutineContext = Dispatchers.IO): BuildingCatalogRepository {
     val assets = applicationContext.assets
-    return BuildingCatalogRepository(context) { assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() } }
+    return BuildingCatalogRepository(ioContext) { assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() } }
 }
 
 private val NOT_FOR_VISITORS = setOf("emergency", "exit", "garage")
