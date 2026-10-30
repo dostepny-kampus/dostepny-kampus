@@ -27,6 +27,8 @@ import org.maplibre.spatialk.geojson.Position
 /** Budynek w środku pierwszego widoku mapy: główny kampus (decyzja 80). */
 const val START_BUILDING = "A-1"
 
+private const val LABEL_SEPARATOR = "/"
+
 /**
  * Dane warstw mapy V1 z katalogu budynków jako GeoJSON dla źródeł mapy, bez sieci (US1, US1.4, NFR-10).
  *
@@ -50,7 +52,7 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
         outlines.map { (outline, symbols) ->
             val properties =
                 buildJsonObject {
-                    put(key = "label", value = symbols.joinToString(separator = "/"))
+                    put(key = "label", value = symbols.joinToString(separator = LABEL_SEPARATOR))
                     put(key = "symbols", element = JsonArray(symbols.map { JsonPrimitive(it) }))
                 }
             Feature(outline.toGeometry(), properties)
@@ -67,11 +69,17 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
     val startBuildings = catalog.buildings.filter { it.symbol == START_BUILDING }.ifEmpty { catalog.buildings }
     return CampusMapData(
         buildings = GeoJsonObject.toJson(FeatureCollection(buildings)),
-        labels = outlines.values.map { it.joinToString(separator = "/") },
+        labels = outlines.values.map { it.joinToString(separator = LABEL_SEPARATOR) },
         entrances = GeoJsonObject.toJson(FeatureCollection(entrances)),
         start = center(startBuildings.flatMap { it.outline.points() }),
     )
 }
+
+/**
+ * Symbole budynków z podpisów [labels] konturów trafionych jednym dotknięciem, każdy raz. Kontur wspólny
+ * „C-3/C-4” daje oba symbole, a wtedy ekran pyta „Który budynek?” (decyzja 85).
+ */
+fun symbolsOf(labels: List<String>): List<String> = labels.flatMap { it.split(LABEL_SEPARATOR) }.distinct()
 
 private fun center(points: List<GeoPoint>): GeoPoint? =
     points.takeIf { it.isNotEmpty() }?.let { all ->

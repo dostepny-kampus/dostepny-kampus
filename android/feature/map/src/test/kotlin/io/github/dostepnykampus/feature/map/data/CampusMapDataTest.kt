@@ -85,6 +85,11 @@ class CampusMapDataTest {
     }
 
     @Test
+    fun us2_touched_symbols_once() {
+        assertEquals(listOf("C-3", "C-4", "C-13"), symbolsOf(listOf("C-3/C-4", "C-13", "C-3/C-4")))
+    }
+
+    @Test
     fun us1_empty_catalog_no_start() {
         val empty = campusMapData(BuildingCatalog(buildings = emptyList(), entrances = emptyList(), attribution = ""))
         assertEquals(null, empty.start)
