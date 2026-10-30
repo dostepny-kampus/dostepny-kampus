@@ -13,9 +13,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -63,8 +69,9 @@ private val CameraSaver =
     )
 
 /**
- * Ekran V1 „Mapa kampusu” (US1): kontury z pliku w aplikacji, przyciski powiększania i przesuwania (NFR-53)
- * i podpis OSM (NFR-37). Mapa jest pod paskiem systemowym, przyciski i podpis w `WindowInsets.safeDrawing`.
+ * Ekran V1 „Mapa kampusu” (US1): nagłówek z polem symbolu budynku (US1.1), pod nim kontury z pliku w aplikacji,
+ * przyciski powiększania i przesuwania (NFR-53) i podpis OSM (NFR-37). Przyciski i podpis są
+ * w `WindowInsets.safeDrawing`.
  * Widok kamery jest stanem zapisywanym, więc wraca po „Wstecz” z V2 (decyzja 83).
  *
  * @param repository katalog budynków z zewnątrz, więc test podaje własny kontekst wczytywania
@@ -96,32 +103,44 @@ fun CampusMapScreen(
     val isCovered = cover > 0.dp
     val coverPixels = with(LocalDensity.current) { cover.toPx() }.toDouble()
     val focusPoint = remember(catalog, focus) { catalog?.pointOf(focus) }
-    Box(modifier.fillMaxSize()) {
-        val loaded = data
-        val own = camera ?: loaded?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
-        val shown = own?.aboveSheet(focusPoint.takeIf { isCovered }, coverPixels)
-        if (loaded != null && shown != null) {
-            mapView.Show(
-                data = loaded,
-                camera = shown,
-                onCameraIdle = { if (!isCovered) camera = it },
-                onBuildingsTouch = { symbols -> choice = touched(symbols, onBuildingClick) },
-                modifier = Modifier.fillMaxSize(),
-            )
-            MapOverlay(
-                camera = shown,
-                hasControls = !isCovered,
-                onCameraChange = { camera = it },
-                modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
-            ) {
-                val chosen = catalog?.buildingsOf(choice).orEmpty()
-                if (chosen.isNotEmpty()) {
-                    val sheetModifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
-                    BuildingChoiceSheet(onClose = { choice = emptyList() }, modifier = sheetModifier) {
-                        chosen.forEach { building ->
-                            BuildingChoice(building) {
-                                choice = emptyList()
-                                onBuildingClick(building.symbol)
+    // Pod arkuszem widok kamery się nie zapisuje, więc po „Wstecz” wraca widok sprzed V2 (decyzja 83).
+    val keepCamera = { idle: MapCamera -> if (!isCovered) camera = idle }
+    Column(modifier.fillMaxSize()) {
+        // Pod arkuszem V2 nagłówka nie ma, jak w hi-fi V2: mapa sięga wtedy pod pasek stanu.
+        if (!isCovered) CampusSearch(catalog, onBuildingClick)
+        val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
+        Box(Modifier.weight(1f).fillMaxWidth().consumeWindowInsets(topInset)) {
+            val loaded = data
+            val shown =
+                shownCamera(
+                    own = camera,
+                    start = loaded?.start,
+                    focus = focusPoint.takeIf { isCovered },
+                    bottomInset = coverPixels,
+                )
+            if (loaded != null && shown != null) {
+                mapView.Show(
+                    data = loaded,
+                    camera = shown,
+                    onCameraIdle = keepCamera,
+                    onBuildingsTouch = { symbols -> choice = touched(symbols, onBuildingClick) },
+                    modifier = Modifier.fillMaxSize(),
+                )
+                MapOverlay(
+                    camera = shown,
+                    hasControls = !isCovered,
+                    onCameraChange = { camera = it },
+                    modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
+                ) {
+                    val chosen = catalog?.buildingsOf(choice).orEmpty()
+                    if (chosen.isNotEmpty()) {
+                        val sheetModifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
+                        BuildingChoiceSheet(onClose = { choice = emptyList() }, modifier = sheetModifier) {
+                            chosen.forEach { building ->
+                                BuildingChoice(building) {
+                                    choice = emptyList()
+                                    onBuildingClick(building.symbol)
+                                }
                             }
                         }
                     }
@@ -130,6 +149,10 @@ fun CampusMapScreen(
         }
     }
 }
+
+// Widok mapy: zapamiętany albo startowy, a pod arkuszem V2 z budynkiem [focus] w części nad arkuszem.
+private fun shownCamera(own: MapCamera?, start: GeoPoint?, focus: GeoPoint?, bottomInset: Double): MapCamera? =
+    (own ?: start?.let { MapCamera(center = it, zoom = START_ZOOM) })?.aboveSheet(focus, bottomInset)
 
 // Jeden trafiony budynek otwiera V2 od razu, a kilka czeka na wybór w arkuszu „Który budynek?” (decyzja 85).
 private fun touched(symbols: List<String>, onBuildingClick: (String) -> Unit): List<String> {

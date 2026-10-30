@@ -19,12 +19,14 @@ import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.getBoundsInRoot
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -142,6 +144,7 @@ class CampusMapScreenTest {
         val osm = compose.onNodeWithText("© OpenStreetMap contributors").getBoundsInRoot()
         assertEquals(true, osm.bottom <= bottom - 400.dp)
         compose.onNodeWithContentDescription("Pomniejsz").assertDoesNotExist()
+        compose.onNodeWithText("Mapa kampusu").assertDoesNotExist()
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertDoesNotExist()
     }
 
@@ -160,6 +163,28 @@ class CampusMapScreenTest {
         sheet = 0.dp
         compose.waitForIdle()
         assertEquals(start, cameras.last())
+    }
+
+    // Wiersz: pole symbolu „c14” → wynik „Budynek C-14” → V2 z obrysem, US1.1.
+    @Test
+    fun us1_1_search_result_opens_v2() {
+        compose.setContent { Screen() }
+        compose.onNode(hasSetTextAction()).performTextInput("c14")
+        compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertExists()
+        compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
+        assertEquals(listOf("C-14"), opened)
+        compose.onNodeWithContentDescription("Wyczyść pole").assertDoesNotExist()
+    }
+
+    // Wiersz: „A-1 329” → stan „brak wyniku”, decyzja 82; „×” „Wyczyść pole” → pole puste.
+    @Test
+    fun us1_1_no_result_and_clear() {
+        compose.setContent { Screen() }
+        compose.onNode(hasSetTextAction()).performTextInput("A-1 329")
+        compose.onNodeWithText("Nie znaleźliśmy budynku »A-1 329«.").assertExists()
+        compose.onNodeWithContentDescription("Wyczyść pole").performClick()
+        compose.onNodeWithText("Nie znaleźliśmy", substring = true).assertDoesNotExist()
+        assertEquals(emptyList<String>(), opened)
     }
 
     // Wiersz: V2, „Wstecz” → V1 z zaznaczonym budynkiem (US1.1).

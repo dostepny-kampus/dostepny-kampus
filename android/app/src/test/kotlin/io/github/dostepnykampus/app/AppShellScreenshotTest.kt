@@ -10,8 +10,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performTextInput
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
@@ -54,7 +56,7 @@ class AppShellScreenshotTest {
                 """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
         }
 
-    private fun capture(isSheetOpen: Boolean = true) {
+    private fun capture(isSheetOpen: Boolean = true, query: String? = null) {
         compose.setContent {
             DostepnyKampusTheme {
                 AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
@@ -73,6 +75,7 @@ class AppShellScreenshotTest {
         }
         compose.waitForIdle()
         if (isSheetOpen) compose.runOnUiThread { touch(listOf("C-13")) }
+        query?.let { compose.onNode(hasSetTextAction()).performTextInput(it) }
         compose.onRoot().captureRoboImage()
     }
 
@@ -80,6 +83,18 @@ class AppShellScreenshotTest {
     @Test
     fun nfr37_v1_jasny() {
         capture(isSheetOpen = false)
+    }
+
+    // V1: wynik pod polem po wpisaniu „c13”, US1.1.
+    @Test
+    fun us1_1_v1_wynik_jasny() {
+        capture(isSheetOpen = false, query = "c13")
+    }
+
+    // V1: brak wyniku dla „C-31”, UC1 3a, PW-9.
+    @Test
+    fun us1_1_v1_brak_wyniku_jasny() {
+        capture(isSheetOpen = false, query = "C-31")
     }
 
     // V2 jako arkusz do połowy ekranu nad V1, decyzja 48, NFR-16.
