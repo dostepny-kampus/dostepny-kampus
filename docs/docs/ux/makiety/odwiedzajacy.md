@@ -6,7 +6,7 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 
 | Ekran | Makiety | Stany w tabelach |
 | --- | --- | --- |
-| V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala, bariera na mapie | ładowanie, brak mapy ulic, pierwsze uruchomienie, plan piętra, sala bez drogi, brak sali, duża czcionka |
+| V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala, bariera na mapie | ładowanie, brak mapy ulic, pierwsze uruchomienie, wybór budynku, plan piętra, sala bez drogi, brak sali, duża czcionka |
 | V2 Karta budynku | budynek podstawowy bez wejścia zalecanego, brak barier, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
 | V3 Którędy wejść | wejście jest, brak wejścia dostępnego, brak danych | brak sieci |
 | V4 Zgłoszenie szybkie | kroki 1–3, krok 1 ze zdjęciem, prośba o zgodę, zgoda przybliżona, brak pozycji, rezygnacja, wysłane, wysłane bez internetu | Gość, odmowa zgody, lokalizacja wyłączona, ustalanie miejsca, błąd zapisu |
@@ -43,6 +43,7 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | Ładowanie | w miejscu mapy napis „Wczytujemy mapę kampusu…”; kontury pojawiają się przed mapą ulic (NFR-11) |
 | Błąd: brak mapy ulic | w miejscu mapy ulic napis „Mapa ulic chwilowo się nie wczytuje. Budynki i bariery nadal możesz oglądać.” (NFR-50) |
 | Pierwsze uruchomienie | przed mapą otwiera się instrukcja V5 (US5.1) |
+| Wybór budynku | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie w zasięgu dwóch konturów otwiera arkusz „Który budynek?”. W arkuszu są przyciski „Budynek C-3”, „Budynek C-4” i „Zamknij”, a przycisk budynku otwiera V2 (US2, decyzja 85) |
 | Duża czcionka | przy skali czcionki co najmniej 1,5 ekran startuje na liście budynków (NFR-19, NFR-20) |
 
 ### V1: wyszukiwanie
@@ -97,14 +98,16 @@ Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
 ### V1: pierwsze otwarcie bez internetu
 
-![Makieta V1 przy pierwszym otwarciu bez internetu: wskaźnik Brak internetu i komunikat, że mapa wczyta się sama po połączeniu](../../_generated/m-v1-mapa-pierwsze-otwarcie.svg)
+![Makieta V1 przy pierwszym otwarciu bez internetu: pole symbolu, przełącznik Mapa i Lista budynków, wskaźnik Brak internetu bez daty, mapa bez mapy ulic z konturami budynków i wejściami z danych aplikacji](../../_generated/m-v1-mapa-pierwsze-otwarcie.svg)
 
-Czynność główna: brak; mapa wczyta się sama po połączeniu z internetem.
+Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Komunikat „Pierwsze otwarcie aplikacji wymaga internetu…” bez przycisku | NFR-11, PW-4 |
-| Bez pola i mapy, bo w telefonie nie ma jeszcze danych | NFR-11 |
+| Wskaźnik braku internetu bez daty, bo w telefonie nie ma jeszcze pobranych danych | NFR-10, NFR-21, PW-4 |
+| Kontury budynków z symbolami i wejścia z danych aplikacji, bez mapy ulic, barier i planów pięter | NFR-10, NFR-39, US1.4 |
+| Pole symbolu działa, bo kontury z symbolami są w danych aplikacji | US1.1, NFR-10 |
+| Bez komunikatu i bez przycisku: bariery, plany i mapa ulic wczytają się same po powrocie sieci | NFR-10, NFR-6 |
 
 ### V1: znaleziona sala
 

@@ -100,7 +100,7 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Pierwsze otwarcie bez internetu: pasek Bez internetu pod tytułem i komunikat „Pierwsze otwarcie aplikacji wymaga internetu.” z dopiskiem, że mapa wczyta się sama po połączeniu](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp) | [![Ten sam komunikat w motywie ciemnym](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp) |
+| [![Pierwsze otwarcie bez internetu: pole symbolu, przełącznik Mapa i Lista budynków, pod nim pasek „Bez internetu” bez daty, mapa bez mapy ulic i bez znaków barier, tylko kontury budynków z symbolami](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp) | [![Ta sama mapa przy pierwszym otwarciu w motywie ciemnym](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp) | [![Ta sama mapa przy pierwszym otwarciu przy czcionce 200%: pole symbolu w dwóch wierszach, przełącznik Mapa i Lista, pasek Bez internetu](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp) |
 
 ## V2 Karta budynku
 

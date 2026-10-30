@@ -75,6 +75,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | wejście bez nazwy w danych | „Wejście bez nazwy w danych” | wszystkie | Mówi, skąd brak nazwy, zamiast zmyślać nazwę. | 4.4 |
 | chipy na V2 | „Wejście dostępne”, „Winda”, „Toaleta dostosowana” | wszystkie | Chip stoi tylko przy fakcie z danych, nigdy przy braku (decyzja 48). | 4.1, 4.2 |
 | zgłoszenie szybkie przy wejściu (V2, V3) | „Zgłoś barierę przy wejściu”; nazwa dla TalkBack „Zgłoś barierę przy wejściu: »nazwa wejścia«”; na kroku 1 V4 „Wejście: »nazwa wejścia«” | wszystkie; Gość przechodzi do L1 | Zaczyna się nazwą ekranu V4, a koniec odróżnia ten przycisk od pozycji „Zgłoś barierę” w pasku dolnym: wejście będzie już wybrane (WCAG 2.4.6, 2.5.3). | 4.6 |
+| wybór budynku przy konturze wspólnym (V1) | nagłówek „Który budynek?”; przycisk na każdy symbol, np. „Budynek C-3” i „Budynek C-4”, z nazwą z danych, gdy jest; „Zamknij” | wszystkie | Pytanie mówi, co wybrać. Przycisk ma ten sam wzór co wynik wyszukiwania (decyzja 85). | 1.3 |
 | przejścia z V1 i V2 | „Pokaż na mapie”, „Pokaż na planie”, „Pokaż opis budynku”, „Pokaż wyjścia ewakuacyjne (2)”, „Legenda” | wszystkie | Czasownik i to, co się pokaże. | 4.4, 6.3 |
 | wejście na mapie (V2, V3) | „Pokaż wejście na mapie”; nazwa dla TalkBack „Pokaż wejście na mapie: »nazwa wejścia«” | wszystkie | Inny cel niż „Pokaż na mapie” przy budynku, więc inne słowa (WCAG 2.4.6, decyzja 53). | 4.4 |
 | wejście dostępne (zdanie na V3) | „Budynek A-1 ma wejście dostępne: »nazwa wejścia«.” | wszystkie | bez zmian; zdanie powtarza słowo z oznaczenia | 4.1 |
@@ -246,7 +247,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | --- | --- | --- | --- |
 | V1, ładowanie | „Wczytujemy mapę kampusu…” | — | PW-9 |
 | V1, brak wyniku | „Nie znaleźliśmy budynku »X«. Sprawdź symbol, np. C-13, albo wybierz budynek z listy.” | „Lista budynków” | PW-9 |
-| V1, brak sieci przy pierwszym otwarciu | „Pierwsze otwarcie aplikacji wymaga internetu. Połącz się z internetem, a mapa wczyta się sama.” | — | PW-4 |
+| V1, brak sieci przy pierwszym otwarciu | bez komunikatu: jedna linia „Bez internetu” bez daty nad mapą z konturami i wejściami | — | PW-4; decyzja 84 |
 | V1, brak mapy ulic | „Mapa ulic chwilowo się nie wczytuje. Budynki i bariery nadal możesz oglądać.” | — | — |
 | V1, brak sali | „Nie znaleźliśmy sali »X« w budynku A-1. Sprawdź numer albo otwórz opis budynku.” | „Pokaż opis budynku” | decyzja 44 |
 | V1, sala bez drogi | „Nie znaleźliśmy w danych wejścia i windy, którymi dotrzesz do tej sali bez schodów.” | „Pokaż opis budynku” | decyzja 48 |
@@ -432,7 +433,7 @@ Propozycje PW-1…PW-15 są wprowadzone w [wymaganiach do ekranów](wymagania-ek
 | PW-1 | pasek dolny, L2 | „Konto” dla wszystkich ról | „Konto i praca” dla ról pracowniczych; sekcja L2 „Twoja praca” zamiast „Twoje czynności” | spór z recenzji, uwaga 24 |
 | PW-2 | V2, V3 | dawna nazwa przycisku i ekranu V3 | przycisk „Sprawdź, którędy wejść”, nagłówek V3 „Którędy wejść do C-13” | dawna nazwa brzmiała jak rezerwacja terminu |
 | PW-3 | V2, V3, C6, K1 | źródło „import” albo „obchód”; data weryfikacji bez słowa; K1 „Wejścia potwierdzone na obchodzie” | „Z map i opisów, stan z …”, „Sprawdzone na miejscu …”, „Sprawdzone …”; K1 „Wejścia sprawdzone na miejscu: x z y” | recenzja B3, uwaga 23; te same słowa dla Odwiedzającego i Koordynatora |
-| PW-4 | wymagania wspólne, V1, V2, L1 | wskaźnik braku sieci bez napisu; „Do pierwszego uruchomienia”; „karta budynku” w komunikatach | „Bez internetu · dane z …”; „Pierwsze otwarcie aplikacji”; „opis budynku” | żargon dla osoby starszej |
+| PW-4 | wymagania wspólne, V1, V2, L1 | wskaźnik braku sieci bez napisu; „Do pierwszego uruchomienia”; „karta budynku” w komunikatach | „Bez internetu · dane z …”, a przy pierwszym otwarciu samo „Bez internetu” (decyzja 84); „opis budynku” | żargon dla osoby starszej |
 | PW-5 | V4, V5, L1, L2 | rzeczownik „zgłoszenie” w komunikatach; „Anuluj zgłoszenie”; „Anuluj” w potwierdzeniu wycofania zgody | „zdjęcie bariery”, „bariera”; „Zrezygnuj”; „Zostaw zgodę”; treść według katalogu komunikatów | plan fazy B: bez słowa „zgłoszenie” dla Odwiedzającego |
 | PW-6 | V2 | „Plan piętra niedostępny dla tego budynku”, „Zdjęcie niedostępne bez internetu”, zdanie o barierach „którą sprawdziliśmy” | „Nie mamy planu pięter tego budynku.”, „Zdjęcie zobaczysz po połączeniu z internetem.”, „Nie mamy jeszcze sprawdzonych barier w tym budynku…” | słowo „niedostępne” tylko o wejściu; prostsze zdanie |
 | PW-7 | V4 | 6 przycisków grup barier z tekstem i ikoną; nazwy grup z klasyfikacji | pytanie „Czego dotyczy bariera?”, nazwy „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego”, bez ikon | NFR-21 nie obejmuje grup; brak trafnych ikon; limit 50% ikon |

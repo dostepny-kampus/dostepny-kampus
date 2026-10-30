@@ -1,11 +1,14 @@
 @startsalt
-' V1 Mapa kampusu, brak sieci przy pierwszym otwarciu: w telefonie nie ma jeszcze danych.
+' V1 Mapa kampusu, pierwsze otwarcie bez internetu: kontury i wejścia z danych aplikacji, bez mapy ulic, barier i planów.
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$przelacznik("Mapa", "Lista budynków", 1)
 $brak_internetu()
-$komunikat("Pierwsze otwarcie aplikacji wymaga internetu. Połącz się z internetem, a mapa wczyta się sama.")
+$przycisk("Legenda")
+$mapa("kontury budynków z symbolami i wejścia z danych aplikacji, bez mapy ulic i barier", $dostepne() + $dk_spacje(6) + $brak_danych(), "info")
 $pasek_dolny_konto()
 $ekran_koniec()
 @endsalt
