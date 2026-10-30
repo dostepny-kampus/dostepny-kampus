@@ -42,6 +42,7 @@ private const val LABEL_SEPARATOR = "/"
  *   właściwości `marking` (`ACCESSIBLE`, `INACCESSIBLE` albo `NO_DATA`) i `main`
  * @property start środek pierwszego widoku: środek budynku [START_BUILDING] (US1, US1.2, decyzja 80), a bez niego
  *   środek wszystkich konturów; `null` bez budynków
+ * @property focus symbol budynku zaznaczonego na mapie, np. po „Wstecz” z V2 (US1.1); `null` bez zaznaczenia
  */
 data class CampusMapData(
     val buildings: String,
@@ -49,6 +50,7 @@ data class CampusMapData(
     val labelPoints: String,
     val entrances: String,
     val start: GeoPoint?,
+    val focus: String? = null,
 )
 
 /**
