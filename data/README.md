@@ -18,9 +18,19 @@ Plik to jeden `FeatureCollection` w GeoJSON (RFC 7946, EPSG:4326), gotowy jako j
 | `kind` | Geometria | Pozostałe właściwości |
 | --- | --- | --- |
 | `building` | `Polygon` albo `MultiPolygon` | `symbols` (np. `["C-13"]`), `name` (tag `name` z OSM albo `null`), `osm_id` (np. `way/101124650`) |
-| `entrance` | `Point` | `symbols`, `osm_id`, `entrance` (np. `main`, `yes`), `ref`, `wheelchair` (`yes`, `no`, `limited` albo `null`) |
+| `entrance` | `Point` | `symbols`, `osm_id`, `entrance` (np. `main`, `yes`), `ref`, `wheelchair` (wartość tagu z OSM albo `null`) |
 
 Każdy obiekt OSM występuje raz. Kontury są pierwsze, wejścia po nich, każda grupa posortowana po `osm_id`. Lista `symbols` jest posortowana naturalnie (`A-2` przed `A-10`).
+
+Wartości tagów `entrance` i `wheelchair` są przepisane z OSM bez zmian. Aplikacja zamienia `wheelchair` na oznaczenie wejścia (BR-24):
+
+| `wheelchair` | Oznaczenie wejścia |
+| --- | --- |
+| `yes`, `designated` | dostępne |
+| `no` | niedostępne |
+| `limited`, inna wartość, `null` | brak danych |
+
+Wejścia z `entrance` = `emergency`, `exit` albo `garage` nie są wejściami dla odwiedzających i aplikacja ich nie pokazuje (BR-25).
 
 Przypadki szczególne:
 
