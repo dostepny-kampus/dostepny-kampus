@@ -40,11 +40,13 @@ class CampusMapScreenTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val cameras = mutableListOf<MapCamera>()
+    private val focuses = mutableListOf<String?>()
     private val opened = mutableListOf<String>()
     private var touch: (List<String>) -> Unit = {}
     private val fakeMap =
-        CampusMapView { _: CampusMapData, camera, _, onBuildingsTouch, _: Modifier ->
+        CampusMapView { data: CampusMapData, camera, _, onBuildingsTouch, _: Modifier ->
             cameras += camera
+            focuses += data.focus
             touch = onBuildingsTouch
         }
     private val repository =
@@ -57,11 +59,16 @@ class CampusMapScreenTest {
         }
 
     @Composable
-    private fun Screen(fontScale: Float = 1f) {
+    private fun Screen(fontScale: Float = 1f, focus: String? = null) {
         DostepnyKampusTheme {
             val density = Density(density = LocalDensity.current.density, fontScale = fontScale)
             CompositionLocalProvider(LocalDensity provides density) {
-                CampusMapScreen(repository, onBuildingClick = { opened += it }, mapView = fakeMap)
+                CampusMapScreen(
+                    repository = repository,
+                    onBuildingClick = { opened += it },
+                    focus = focus,
+                    mapView = fakeMap,
+                )
             }
         }
     }
@@ -114,6 +121,14 @@ class CampusMapScreenTest {
         compose.onNodeWithText("Zamknij").performClick()
         compose.onNodeWithText("Który budynek?").assertDoesNotExist()
         assertEquals(emptyList<String>(), opened)
+    }
+
+    // Wiersz: V2, „Wstecz” → V1 z zaznaczonym budynkiem (US1.1).
+    @Test
+    fun us1_1_focus_reaches_map() {
+        compose.setContent { Screen(focus = "C-14") }
+        compose.waitForIdle()
+        assertEquals("C-14", focuses.last())
     }
 
     // Wiersz: V2, „Wstecz” → V1 w poprzednim stanie z tym samym widokiem kamery, decyzja 83.

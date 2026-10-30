@@ -53,9 +53,15 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is HelpRoute -> ToMapStub(title = R.string.ekran_pomoc, action = R.string.pomin_instrukcje)
         is SignInRoute -> ToMapStub(title = R.string.nav_konto, action = R.string.nie_teraz)
         AccountRoute -> Stub(title = stringResource(if (hasWork) R.string.nav_konto_i_praca else R.string.nav_konto))
-        is MapRoute -> CampusMapScreen(LocalContext.current.buildingCatalogRepository(), { openBuilding(it) })
+        is MapRoute -> MapScreen(focus = (route.focus as? MapFocus.Building)?.symbol)
         else -> Unit
     }
+}
+
+// V1 z obrysem budynku z trasy, np. po „Wstecz” z V2 albo „Pokaż na mapie” (US1.1, US2.1).
+@Composable
+private fun AppNavigator.MapScreen(focus: String?) {
+    CampusMapScreen(LocalContext.current.buildingCatalogRepository(), { openBuilding(it) }, focus = focus)
 }
 
 @Composable

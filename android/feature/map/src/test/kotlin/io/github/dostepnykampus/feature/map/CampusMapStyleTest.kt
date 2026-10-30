@@ -25,7 +25,8 @@ class CampusMapStyleTest {
     private val outline = GeoPolygon(listOf(listOf(a, a.copy(longitude = 1.0), a.copy(latitude = 1.0), a)))
     private val building = Building(symbol = "C-13", name = "Budynek testowy", outline = outline)
     private val catalog = BuildingCatalog(buildings = listOf(building), entrances = emptyList(), attribution = "")
-    private val colors = MapStyleColors(land = "#E8EDEE", building = "#BFE0EC", buildingOutline = "#004E5E")
+    private val colors =
+        MapStyleColors(land = "#E8EDEE", building = "#BFE0EC", buildingOutline = "#004E5E", selectedOutline = "#001F27")
     private val style =
         Json.parseToJsonElement(campusMapStyle(data = campusMapData(catalog), colors = colors)).jsonObject
 
@@ -54,6 +55,18 @@ class CampusMapStyleTest {
         val points = source.obj("data").array("features")
         val geometry = points.single().jsonObject.obj("geometry")
         assertEquals("Point", geometry.text("type"))
+    }
+
+    @Test
+    fun us1_1_focused_outline() {
+        val data = campusMapData(catalog).copy(focus = "C-13")
+        val focused = Json.parseToJsonElement(campusMapStyle(data, colors)).jsonObject
+        val layers = focused.array("layers")
+        val selected = layers.map { it.jsonObject }.single { it.text("id") == SELECTED_LAYER }
+        val label = selected.array("filter").last()
+        assertEquals("C-13", label.jsonPrimitive.content)
+        assertEquals("#001F27", selected.obj("paint").text("line-color"))
+        assertEquals(null, style.array("layers").find { it.jsonObject.text("id") == SELECTED_LAYER })
     }
 
     private fun JsonObject.obj(key: String): JsonObject = getValue(key).jsonObject

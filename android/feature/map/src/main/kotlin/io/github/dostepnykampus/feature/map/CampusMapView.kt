@@ -81,7 +81,12 @@ internal fun labelImage(label: String, colors: MapColors, size: Float): Bitmap {
 }
 
 internal fun MapColors.styleColors(): MapStyleColors =
-    MapStyleColors(land = lad.hex(), building = pwr.hex(), buildingOutline = pwrKontur.hex())
+    MapStyleColors(
+        land = lad.hex(),
+        building = pwr.hex(),
+        buildingOutline = pwrKontur.hex(),
+        selectedOutline = pwrWybrany.hex(),
+    )
 
 internal fun Color.hex(): String = "#%06X".format(Locale.ROOT, toArgb() and RGB_MASK)
 

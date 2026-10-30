@@ -67,6 +67,7 @@ private val CameraSaver =
  * @param onBuildingClick symbol budynku, gdy dotknięcie z tolerancją 24 dp trafiło jeden kontur, albo budynku
  *   wybranego w arkuszu „Który budynek?”, gdy trafiło kontur wspólny albo dwa kontury (US2, decyzja 85)
  * @param modifier wymiary ekranu nadane przez aplikację
+ * @param focus symbol budynku zaznaczonego obrysem, np. po „Wstecz” z V2 (US1.1)
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
  */
 @Composable
@@ -74,10 +75,12 @@ fun CampusMapScreen(
     repository: BuildingCatalogRepository,
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    focus: String? = null,
     mapView: CampusMapView = MapLibreMapView,
 ) {
     val catalog by produceState<BuildingCatalog?>(initialValue = null, repository) { value = repository.catalog() }
-    val data = remember(catalog) { catalog?.let(::campusMapData) }
+    val layers = remember(catalog) { catalog?.let(::campusMapData) }
+    val data = remember(layers, focus) { layers?.copy(focus = focus) }
     var camera by rememberSaveable(stateSaver = CameraSaver) { mutableStateOf<MapCamera?>(null) }
     var choice by rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     Box(modifier.fillMaxSize()) {
