@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
+    <string name="pomoc_tytul">Jak korzystać z aplikacji</string>
+    <string name="pomoc_krok">Krok %1$d z %2$d</string>
+    <string name="pomoc_dalej">Dalej</string>
+    <string name="pomoc_zacznij">Zacznij</string>
+    <string name="pomoc_pomin">Pomiń instrukcję</string>
+    <string name="pomoc_budynek_tytul">Znajdź budynek</string>
+    <string name="pomoc_budynek_tekst">Wpisz symbol budynku w polu na górze mapy, np. C-13. Pokażemy opis budynku: jego wejścia i bariery.</string>
+    <string name="pomoc_dostepne_tytul">Co znaczy »Dostępne«</string>
+    <string name="pomoc_dostepne_tekst">Napis »Dostępne« przy wejściu znaczy, że wejdziesz bez pokonywania stopni: z poziomu chodnika, pochylnią albo podnośnikiem.</string>
+    <string name="pomoc_konto_tytul">Zgłoś barierę</string>
+    <string name="pomoc_konto_tekst">Aby zgłosić barierę, potrzebne jest konto. Możesz je założyć teraz w »Konto«.</string>
+</resources>
