@@ -118,7 +118,8 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | Przełącznik pięter nad planem: napis „Piętro:” i etykiety pięter z danych PWr skrócone do numeru, np. „2”; TalkBack czyta pełną etykietę „2 piętro”. Wybrane piętro widać po obwódce, nie po kolorze | czynność | US16.1, NFR-17, NFR-21 | plan innego piętra |
 | Podpis „Źródło: Politechnika Wrocławska” obok podpisu OpenStreetMap, gdy widać plan | dane | NFR-40 | — |
 | Przełącznik „Mapa” i „Lista budynków”. Domyślnie „Mapa”, a przy skali czcionki co najmniej 1,5 „Lista budynków”. Aplikacja pamięta ostatni wybór także po zamknięciu. Przy tej skali widoczny napis to „Lista”, a nazwa dla TalkBack „Lista budynków” | czynność | NFR-19, NFR-20 | lista na tym ekranie |
-| Budynek na liście to jedna karta, która w całości jest jednym przyciskiem. Karta pokazuje symbol, nazwę z danych, a gdy nazwa jest, pod nią „Budynek A-6”. Pod nimi bariery: znak, uciążliwość, typ i miejsce, albo „Brak zgłoszonych barier”. TalkBack czyta symbol, nazwę i bariery, a potem „otwiera opis budynku”. Przycisk „Pokaż na mapie” jest na V2, a nie na liście | czynność | US2.5, NFR-17, NFR-18, NFR-19, NFR-20 | V2 |
+| Lista budynków pod przełącznikiem: wszystkie budynki w kolejności katalogu, naturalnej po symbolu, np. A-1, A-2 … A-10. Pole symbolu zawęża listę tym samym wyszukiwaniem co nad mapą, po pełnym symbolu. Wpisane C-13 zostawia na liście tylko C-13, a samo „C” daje stan „brak wyniku” | dane | NFR-19, US1.1, decyzja 90 | — |
+| Budynek na liście to jedna karta, która w całości jest jednym przyciskiem. Karta pokazuje symbol, nazwę z danych, a gdy nazwa jest, pod nią „Budynek A-6”, także przy czcionce 200%. Pod nimi bariery: znak, uciążliwość, typ i miejsce, albo „Brak zgłoszonych barier”. Gdy w telefonie nie ma jeszcze danych o barierach, karta nie mówi nic o barierach: ani barier, ani „Brak zgłoszonych barier”. TalkBack czyta symbol, nazwę i bariery, a potem „otwiera opis budynku”. Przycisk „Pokaż na mapie” jest na V2, a nie na liście | czynność | US2.4, US2.5, NFR-10, NFR-17, NFR-18, NFR-19, NFR-20; decyzja 90 | V2 |
 | Dotknięcie konturu albo budynku na liście | czynność | US2, US3.2, decyzja 48 | V2 jako arkusz na mapie |
 | Dotknięcie konturu wspólnego kilku symboli, np. „C-3/C-4” albo „T-18/T-22” | czynność | US2, US3.2, decyzja 85 | arkusz „Który budynek?” na tym ekranie |
 | Dotknięcie tuż obok konturu liczy się jako dotknięcie konturu. Zasięg to co najmniej połowa celu dotyku, czyli 24 dp od konturu. Gdy w zasięgu są dwa kontury, otwiera się arkusz „Który budynek?” z ich symbolami | czynność | US2, NFR-17, decyzja 85 | V2 albo arkusz „Który budynek?” |
@@ -856,7 +857,7 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | Karta budynku | US2.1 | V2, V3 | oznaczenie tekstem i ikoną |
 | | US2.2 | V2, V3 | zdjęcie i data weryfikacji |
 | | US2.3 | V1, V2 | chipy i kolejność grup |
-| | US2.4 | V2 | stan „Pusty” |
+| | US2.4 | V1, V2 | V2: stan „Pusty”; V1: karta listy bez danych o barierach |
 | | US2.5 | V1, V2 | miejsce bariery |
 | | US2.6 | V2 | wyjścia ewakuacyjne na żądanie |
 | Którędy wejść | US3.1 | V3 | stan „brak wejścia dostępnego” |
