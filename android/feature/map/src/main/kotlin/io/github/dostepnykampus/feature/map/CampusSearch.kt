@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -61,7 +62,7 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 
 private const val ICON_VIEWPORT = 24f
 
-/** Skala czcionki, od której przełącznik ma krótki napis „Lista” (NFR-20). */
+/** Skala czcionki, od której V1 startuje na liście, a przełącznik ma krótki napis „Lista” (NFR-19, NFR-20). */
 internal const val LIST_FONT_SCALE = 1.5f
 
 // Lupa i „×” z Material Icons, siatka 24 × 24, jak ikony paska dolnego.
@@ -78,13 +79,14 @@ private val ClearIcon =
  * Góra V1: nagłówek „Mapa kampusu”, pole symbolu budynku, przełącznik „Mapa” i „Lista budynków” (NFR-19) i wynik
  * pod nimi (US1.1). Pole przyjmuje zapis „c13” i szuka bez sieci w katalogu z aplikacji. Wynik to ten sam przycisk
  * co w arkuszu „Który budynek?”: symbol, nazwa z danych i „Budynek C-13”. Tekst, który nie jest symbolem budynku,
- * np. „A-1 329”, daje stan „brak wyniku” (decyzja 82). Komunikat stoi pod polem, więc osoba widzi go tam, gdzie
- * pisała (WCAG 3.3.1), a TalkBack czyta go sam. Przy liście pole zawęża listę zamiast pokazywać wynik.
+ * np. „A-1 329”, daje stan „brak wyniku” (decyzja 82) z przyciskiem „Lista budynków” (UC1 3a). Komunikat stoi pod
+ * polem, więc osoba widzi go tam, gdzie pisała (WCAG 3.3.1), a TalkBack czyta go sam. Przy liście pole zawęża listę
+ * zamiast pokazywać wynik.
  *
  * @param catalog katalog budynków; `null`, dopóki się wczytuje
  * @param isOnline czy jest internet; bez niego pod przełącznikiem stoi [OfflineLine]
  * @param isList czy przełącznik stoi na „Lista budynków”; wtedy pod górą jest lista budynków
- * @param onListChange wybór w przełączniku
+ * @param onListChange wybór w przełączniku albo „Lista budynków” w karcie brak wyniku
  * @param onBuildingClick symbol wybranego wyniku albo budynku z listy; ekran otwiera V2 i zaznacza budynek
  * @param modifier położenie nad mapą; przy liście cała wysokość nad paskiem dolnym
  */
@@ -102,6 +104,10 @@ internal fun CampusSearch(
     val isNoResult = query.isNotBlank() && catalog != null && results.isEmpty()
     // Przy liście wynik to sama lista, więc pod polem zostaje tylko karta brak wyniku.
     val shown = results.takeUnless { isList }.orEmpty()
+    val showList = {
+        query = ""
+        onListChange(true)
+    }
     Column(modifier.fillMaxWidth()) {
         SearchHeader(query = query, onQueryChange = { query = it }, isList = isList, onListChange = onListChange)
         if (!isOnline) OfflineLine()
@@ -113,7 +119,7 @@ internal fun CampusSearch(
                         onBuildingClick(building.symbol)
                     }
                 }
-                query.takeIf { isNoResult }?.let { NoResult(it) }
+                query.takeIf { isNoResult }?.let { NoResult(it, onShowList = showList.takeUnless { isList }) }
             }
         }
         if (isList) {
@@ -244,9 +250,10 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit) {
     )
 }
 
-// „Nie znaleźliśmy budynku »X«.” z radą, w białym kontenerze pod polem (UC1 3a, PW-9).
+// „Nie znaleźliśmy budynku »X«.” z radą i przyciskiem „Lista budynków”, w białym kontenerze pod polem
+// (UC1 3a, PW-9). Przy liście przycisku nie ma, bo lista już jest.
 @Composable
-private fun NoResult(query: String) {
+private fun NoResult(query: String, onShowList: (() -> Unit)?) {
     Surface(
         modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
         shape = RoundedCornerShape(Zaokraglenia.duze),
@@ -258,6 +265,12 @@ private fun NoResult(query: String) {
                 style = MaterialTheme.typography.titleMedium,
             )
             Text(text = stringResource(R.string.mapa_brak_wyniku_rada), style = MaterialTheme.typography.bodyLarge)
+            onShowList?.let { showList ->
+                val buttonModifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)
+                FilledTonalButton(onClick = showList, modifier = buttonModifier) {
+                    Text(text = stringResource(R.string.mapa_widok_lista), style = MaterialTheme.typography.bodyLarge)
+                }
+            }
         }
     }
 }

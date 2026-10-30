@@ -5,11 +5,14 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -33,7 +36,9 @@ import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.model.Building
 
@@ -80,8 +85,9 @@ private fun SheetHeader(onClose: () -> Unit) {
 }
 
 /**
- * Przycisk budynku [building] w arkuszu „Który budynek?”. Cały przycisk to jeden cel dotyku, a TalkBack czyta
- * „C-3, nazwa” i czynność „otwiera opis budynku”.
+ * Karta budynku [building] w arkuszu „Który budynek?”, pod polem symbolu i na liście budynków (US2, US1.1, NFR-19):
+ * symbol na plakietce, nazwa z danych, a gdy nazwa jest, pod nią „Budynek C-3”; bez nazwy samo „Budynek C-3”.
+ * Cała karta to jeden cel dotyku, a TalkBack czyta „C-3, nazwa” i czynność „otwiera opis budynku”.
  *
  * @param building budynek z katalogu: symbol i nazwa z danych, gdy jest
  * @param onClick otwiera V2 tego budynku
@@ -90,7 +96,7 @@ private fun SheetHeader(onClose: () -> Unit) {
 internal fun BuildingChoice(building: Building, onClick: () -> Unit) {
     val action = stringResource(R.string.mapa_otwiera_opis_budynku)
     val description = listOfNotNull(building.symbol, building.name).joinToString(separator = ", ")
-    val shape = RoundedCornerShape(Zaokraglenia.srednie)
+    val shape = RoundedCornerShape(Zaokraglenia.duze)
     val choiceSemantics =
         Modifier.clearAndSetSemantics {
             contentDescription = description
@@ -108,12 +114,45 @@ internal fun BuildingChoice(building: Building, onClick: () -> Unit) {
                 .then(choiceSemantics)
                 .clickable(onClick = onClick),
         shape = shape,
-        color = MaterialTheme.colorScheme.secondaryContainer,
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        Column(Modifier.heightIn(min = CeleDotyku.minimum).padding(Odstepy.m)) {
-            Text(text = building.symbol, style = MaterialTheme.typography.titleMedium)
-            building.name?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
-            Text(stringResource(R.string.mapa_budynek, building.symbol), style = MaterialTheme.typography.bodyMedium)
+        Row(
+            modifier = Modifier.heightIn(min = CeleDotyku.minimum).padding(Odstepy.m),
+            horizontalArrangement = Arrangement.spacedBy(Odstepy.m),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SymbolBadge(building.symbol)
+            Column {
+                val generic = stringResource(R.string.mapa_budynek, building.symbol)
+                Text(
+                    text = building.name ?: generic,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = Typografia.wyroznienieWaga,
+                )
+                if (building.name != null) {
+                    val color = MaterialTheme.colorScheme.onSurfaceVariant
+                    Text(text = generic, style = MaterialTheme.typography.bodyLarge, color = color)
+                }
+            }
+        }
+    }
+}
+
+// Symbol budynku na plakietce w kolorze wybranej pozycji przełącznika, jak w hi-fi listy budynków.
+@Composable
+private fun SymbolBadge(symbol: String) {
+    Surface(shape = RoundedCornerShape(Zaokraglenia.srednie), color = MaterialTheme.colorScheme.primaryContainer) {
+        Box(
+            modifier = Modifier.defaultMinSize(minWidth = CeleDotyku.przycisk, minHeight = CeleDotyku.minimum),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = symbol,
+                modifier = Modifier.padding(horizontal = Odstepy.s),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = Typografia.wyroznienieWaga,
+            )
         }
     }
 }

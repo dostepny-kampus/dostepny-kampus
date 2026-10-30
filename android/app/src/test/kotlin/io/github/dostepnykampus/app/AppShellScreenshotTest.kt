@@ -10,11 +10,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsActions.OnClick
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
@@ -49,6 +50,7 @@ class AppShellScreenshotTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private var touch: (List<String>) -> Unit = {}
+    private val choice = TestMapListChoice()
     private val landOnly =
         CampusMapView { _: CampusMapData, _, _, onBuildingsTouch, modifier: Modifier ->
             touch = onBuildingsTouch
@@ -74,6 +76,7 @@ class AppShellScreenshotTest {
                         CampusMapScreen(
                             repository = repository,
                             networkStatus = { flowOf(isOnline) },
+                            mapListChoice = choice,
                             onBuildingClick = { openBuilding(it) },
                             contentPadding = LocalSheetPadding.current,
                             mapView = landOnly,
@@ -87,8 +90,11 @@ class AppShellScreenshotTest {
         compose.waitForIdle()
         // Akcja zamiast dotyku: zrzut bez śladu dotknięcia na przełączniku.
         val list = compose.onNode(hasContentDescription("Lista budynków") and isSelectable())
-        if (isList) list.performSemanticsAction(SemanticsActions.OnClick)
-        if (isSheetOpen) compose.runOnUiThread { touch(listOf("C-13")) }
+        if (isList) list.performSemanticsAction(OnClick)
+        // Przy dużej czcionce V1 startuje na liście, więc V2 otwiera budynek z listy (NFR-19).
+        val isFromList = compose.onAllNodes(hasContentDescription("C-13")).fetchSemanticsNodes().isNotEmpty()
+        if (isSheetOpen && isFromList) compose.onNodeWithContentDescription("C-13").performSemanticsAction(OnClick)
+        if (isSheetOpen && !isFromList) compose.runOnUiThread { touch(listOf("C-13")) }
         query?.let { compose.onNode(hasSetTextAction()).performTextInput(it) }
         compose.onRoot().captureRoboImage()
     }
@@ -123,11 +129,11 @@ class AppShellScreenshotTest {
         capture(isSheetOpen = false, isList = true)
     }
 
-    // Lista budynków przy czcionce 200 %: w przełączniku napis „Lista”, NFR-19, NFR-20.
+    // Przy czcionce 200 % V1 startuje na liście budynków, a przełącznik ma napis „Lista”, NFR-19, NFR-20.
     @Test
     @Config(fontScale = 2f)
     fun nfr20_v1_lista_200() {
-        capture(isSheetOpen = false, isList = true)
+        capture(isSheetOpen = false)
     }
 
     // V2 jako arkusz do połowy ekranu nad V1, decyzja 48, NFR-16.

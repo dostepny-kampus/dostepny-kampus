@@ -20,9 +20,9 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
-import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getBoundsInRoot
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapView
@@ -52,6 +53,15 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
+
+/** Wybór w przełączniku „Mapa” i „Lista budynków” w pamięci testu; na start osoba nic nie wybrała. */
+internal class TestMapListChoice : MapListChoice {
+    override val savedChoice = MutableStateFlow<Boolean?>(null)
+
+    override suspend fun choose(isList: Boolean) {
+        savedChoice.value = isList
+    }
+}
 
 /** Ekran V1 z widokiem zastępczym zamiast MapLibre i katalogiem „Budynek testowy” (nie dane PWr). */
 @RunWith(RobolectricTestRunner::class)
@@ -70,6 +80,7 @@ class CampusMapScreenTest {
             touch = onBuildingsTouch
         }
     private val online = MutableStateFlow(true)
+    private val choice = TestMapListChoice()
     private val listToggle = hasText("Lista budynków") and isSelectable()
     private val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
@@ -88,6 +99,7 @@ class CampusMapScreenTest {
                 CampusMapScreen(
                     repository = repository,
                     networkStatus = { online },
+                    mapListChoice = choice,
                     onBuildingClick = { opened += it },
                     focus = focus,
                     contentPadding = PaddingValues(bottom = sheet),
@@ -113,12 +125,24 @@ class CampusMapScreenTest {
         assertEquals(listOf("C-13"), opened)
     }
 
-    // Czcionka 1,5: krótki podpis „© OpenStreetMap” (NFR-37) i „Lista” czytane jako „Lista budynków” (NFR-20).
+    // Wiersz: czcionka 1,5 → start na liście, „Lista” czytane jako „Lista budynków” (NFR-19, NFR-20); wybór „Mapa”
+    // zostaje zapisany, a mapa ma krótki podpis „© OpenStreetMap” (NFR-37).
     @Test
-    fun nfr37_short_osm_at_large_font() {
+    fun nfr20_list_start_short_osm() {
         compose.setContent { Screen(fontScale = 1.5f) }
+        compose.onNode(hasText("Lista") and hasContentDescription("Lista budynków")).assertIsSelected()
+        compose.onNode(hasText("Mapa") and isSelectable()).performClick()
         compose.onNodeWithText("© OpenStreetMap").assertExists()
-        compose.onNode(hasText("Lista") and hasContentDescription("Lista budynków")).assertIsNotSelected()
+        assertEquals(false, choice.savedChoice.value)
+    }
+
+    // Wiersz: zapisany wybór „Lista budynków” → V1 startuje na liście także przy zwykłej czcionce (NFR-19).
+    @Test
+    fun nfr19_saved_list_choice() {
+        choice.savedChoice.value = true
+        compose.setContent { Screen() }
+        compose.onNode(listToggle).assertIsSelected()
+        compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
     }
 
     // Wiersz: kontur wspólny „C-13/C-14” → arkusz „Który budynek?”, przycisk budynku → V2, decyzja 85.
@@ -228,6 +252,18 @@ class CampusMapScreenTest {
         compose.onNode(hasSetTextAction()).performTextInput("c14")
         compose.onNodeWithContentDescription("C-14, Budynek testowy").assertExists()
         compose.onNodeWithContentDescription("C-13, Budynek testowy").assertDoesNotExist()
+    }
+
+    // Wiersz: V1, brak wyniku → „Lista budynków” w karcie czyści pole i pokazuje całą listę (UC1 3a, PW-9).
+    @Test
+    fun uc1_3a_no_result_opens_list() {
+        compose.setContent { Screen() }
+        compose.onNode(hasSetTextAction()).performTextInput("C-31")
+        val inCard = hasAnyAncestor(SemanticsMatcher.keyIsDefined(SemanticsProperties.LiveRegion))
+        compose.onNode(hasText("Lista budynków") and inCard).performClick()
+        compose.onNode(listToggle).assertIsSelected()
+        compose.onNodeWithText("Nie znaleźliśmy", substring = true).assertDoesNotExist()
+        compose.onNodeWithContentDescription("C-13, Budynek testowy").assertExists()
     }
 
     // Wiersz: V1 bez internetu → linia „Bez internetu” bez daty pod polem, czytana jako komunikat stanu, a po powrocie
