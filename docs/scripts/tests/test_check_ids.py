@@ -145,5 +145,85 @@ class KotlinParsingTest(unittest.TestCase):
         self.assertEqual(kotlin_markers(source, "\r\n"), [("Zgłoszenie „Brak windy przy wejściu”", "aktywny")])
 
 
+def table_rows(page: str) -> list[list[str]]:
+    """Zwraca komórki wierszy tabel Markdown ze strony `page` (bez nagłówków i separatorów)."""
+    rows = [check_ids.table_cells(line) for line in page.splitlines()]
+    return [r for r in rows if r and r[0] not in ("Stan", "Plik")]
+
+
+class CoverageTest(unittest.TestCase):
+    def test_duplicate_scenario_name_in_one_file_is_an_error(self) -> None:
+        with tempfile.TemporaryDirectory() as specs:
+            feature = "Funkcja: Dwa razy\n\n  Scenariusz: Taki sam\n    Wtedy a\n\n  Scenariusz: Taki sam\n    Wtedy b\n"
+            (Path(specs) / "dwa.feature").write_text(feature, encoding="utf-8")
+            corpus = check_ids.collect(DATA / "brak", Path(specs), DATA / "brak")
+        errors = [f for f in check_ids.check_tests(corpus) if f.level == "BŁĄD"]
+        self.assertEqual(lines_of(errors), [6])
+        self.assertIn("tej samej nazwie co w linii 3", errors[0].message)
+
+    def test_coverage_page_lists_counts_and_tests_of_each_scenario(self) -> None:
+        corpus = check_ids.collect(DATA / "brak", DATA / "scenariusze", DATA / "android-poprawne")
+        rows = table_rows(check_ids.render_coverage(corpus))
+        self.assertEqual(rows[:3], [["Pełny test", "5"], ["Tylko częściowo", "1"], ["Bez testu", "1"]])
+        by_name = {r[1]: (r[0], r[3], r[4]) for r in rows[3:]}
+        self.assertEqual(len(by_name), 7)
+        both = "`PoprawneTest.calosc`<br>`PoprawneTest.wyszukanie`"
+        self.assertEqual(by_name["Częściowo i w całości"], ("`kampus.feature`", both, "pełny"))
+        self.assertEqual(by_name["Tylko częściowo"][1:], ("`PoprawneTest.czesciowo`", "częściowo"))
+        self.assertEqual(by_name["Bez testu"][1:], ("—", "brak"))
+
+    def test_test_id_is_module_class_and_function_without_line_number(self) -> None:
+        source = f"package x\n\nclass FirstLaunchTest {{\n    {MARKER}    @Test\n    fun `pomoc do oznaczenia`() = Unit\n}}\n"
+        with tempfile.TemporaryDirectory() as android:
+            path = Path(android) / "core" / "data" / "src" / "test" / "kotlin" / "FirstLaunchTest.kt"
+            path.parent.mkdir(parents=True)
+            path.write_text(source, encoding="utf-8")
+            (Path(android) / "src" / "test").mkdir(parents=True)
+            (Path(android) / "src" / "test" / "Bez.kt").write_text(f"{MARKER}@Test\nfun bezKlasy() = Unit\n", encoding="utf-8")
+            ids = [m.test_id for m in check_ids.collect(DATA / "brak", DATA / "brak", Path(android)).markers]
+        self.assertEqual(ids, ["core/data · FirstLaunchTest.pomoc do oznaczenia", "Bez.bezKlasy"])
+
+    def test_owner_follows_nested_classes_and_objects(self) -> None:
+        source = (
+            f"class OuterTest {{\n    data class Wiersz(val a: Int)\n\n    @Nested\n    inner class InnerTest {{\n"
+            f"        {MARKER}        @Test\n        fun w() = Unit\n    }}\n\n"
+            f"    {MARKER}    @Test\n    fun String.na() = Unit\n}}\n\n"
+            f"object HelpersTest {{\n    {MARKER}    @Test\n    fun h() = Unit\n}}\n"
+        )
+        with tempfile.TemporaryDirectory() as android:
+            path = Path(android) / "src" / "test" / "A.kt"
+            path.parent.mkdir(parents=True)
+            path.write_text(source, encoding="utf-8")
+            ids = [m.test_id for m in check_ids.collect(DATA / "brak", DATA / "brak", Path(android)).markers]
+        self.assertEqual(ids, ["OuterTest.InnerTest.w", "OuterTest.na", "HelpersTest.h"])
+
+    def test_same_test_id_for_two_functions_is_an_error(self) -> None:
+        source = f"class ATest {{\n    {MARKER}    @Test\n    fun a() = Unit\n\n    {MARKER}    @Test\n    fun a(x: Int) = Unit\n}}\n"
+        with tempfile.TemporaryDirectory() as android:
+            (Path(android) / "src" / "test").mkdir(parents=True)
+            (Path(android) / "src" / "test" / "A.kt").write_text(source, encoding="utf-8")
+            corpus = check_ids.collect(DATA / "brak", DATA / "scenariusze", Path(android))
+        errors = [f for f in check_ids.check_tests(corpus) if f.level == "BŁĄD"]
+        self.assertEqual(lines_of(errors), [6])
+        self.assertIn("identyfikator testu „ATest.a” ma też inna funkcja", errors[0].message)
+
+    def test_coverage_table_is_not_padded(self) -> None:
+        page = check_ids.render_coverage(check_ids.collect(DATA / "brak", DATA / "scenariusze", DATA / "android-poprawne"))
+        self.assertIn("| `kampus.feature` | Bez testu | — | — | brak |", page.splitlines())
+        self.assertNotIn("  |", page)
+
+    def test_check_matrix_fails_when_coverage_page_is_stale_or_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as docs, contextlib.redirect_stdout(io.StringIO()) as output:
+            args = ["--docs", docs, "--specs", str(DATA / "scenariusze"), "--android", str(DATA / "android-poprawne")]
+            page, coverage = str(Path(docs) / "sledzenie.md"), Path(docs) / check_ids.COVERAGE_PAGE
+            check_ids.main([*args, "--matrix", page])
+            self.assertEqual(check_ids.main([*args, "--check-matrix", page]), 0)
+            coverage.write_text(coverage.read_text(encoding="utf-8") + "zmiana\n", encoding="utf-8")
+            self.assertEqual(check_ids.main([*args, "--check-matrix", page]), 1)
+            self.assertIn(f"nieaktualne albo brak: {coverage}; odśwież", output.getvalue())
+            coverage.unlink()
+            self.assertEqual(check_ids.main([*args, "--check-matrix", page]), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

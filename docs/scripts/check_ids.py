@@ -2,7 +2,7 @@
 # Author: Vladyslav Yevkov
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 """Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB), macierz śledzenia,
-odwołania wierszy w wymaganiach ekranów i znaczniki scenariuszy w testach Androida. Version: 0.4.1."""
+odwołania wierszy w wymaganiach ekranów, znaczniki scenariuszy w testach Androida i pokrycie scenariuszy testami. Version: 0.5.0."""
 
 from __future__ import annotations
 
@@ -46,6 +46,19 @@ RULE_KEYWORDS = ("Rule", "Reguła", "Zasada")
 SCENARIO_KEYWORDS = ("Scenario Outline", "Scenario Template", "Scenario", "Example", "Scenariusz", "Szablon scenariusza", "Przykład")
 EXAMPLES_KEYWORDS = ("Examples", "Scenarios", "Przykłady")
 SCREEN_PAGE = Path("ux") / "wymagania-ekranow.md"
+COVERAGE_PAGE = Path("_generated") / "pokrycie-testami.md"
+COVERAGE_HEADER = ["Plik", "Scenariusz", "Kryteria i reguły", "Test", "Stan"]
+COVERAGE_COUNTS = (("Pełny test", "pełny"), ("Tylko częściowo", "częściowo"), ("Bez testu", "brak"))
+COVERAGE_INTRO = """# Pokrycie scenariuszy testami
+
+Jeden wiersz to jeden scenariusz z katalogu `specs/`. Kolumna „Test” wskazuje testy Androida ze znacznikiem
+`// Scenariusz:` (moduł, klasa i funkcja testu). Stan „pełny” znaczy, że test sprawdza wszystkie kroki „Wtedy”,
+„częściowo” — tylko część z nich, a „brak” — że scenariusz nie ma testu.
+
+Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą śledzenia:
+`python scripts/check_ids.py --matrix docs/wymagania/sledzenie.md`.
+
+"""
 SCREEN_REF_HEADER = "Odwołanie"
 SCREEN_COMMON_REF = "wymagania wspólne"
 REQUIREMENT_RE = re.compile(r"(?<![\w-])(?:US\d+(?:\.\d+)?|UC\d+|BR-G?\d+|NFR-\d+)(?![\w-])")
@@ -54,7 +67,8 @@ MARKER_CONTINUATION = re.compile(r"^\s*//\s{2,}(\S.*?)\s*$")
 MARKER_HINT = re.compile(r"^\s*//\s*scenariusz\b[^:]{0,20}:", re.IGNORECASE)
 ANNOTATION = re.compile(r"@([\w.:]+)(\((?:[^()]|\([^()]*\))*\))?\s*")
 TEST_ANNOTATIONS = {"Test", "ParameterizedTest", "RepeatedTest", "TestFactory", "TestTemplate"}
-FUNCTION = re.compile(r"^(?:[a-z]+\s+)*fun\b")
+FUNCTION = re.compile(r"^(?:[a-z]+\s+)*fun\s+(?:<[^>]*>\s*)?(?:[\w.]+\.)?(?:`([^`]+)`|(\w+))")
+CLASS = re.compile(r"^\s*(?:@[\w.]+(?:\([^)]*\))?\s+)*(?:[a-z]+\s+)*(?:class|object)\s+(\w+)[^{]*\{")
 CODE_TOKEN = re.compile(r"""//[^\n]*|/\*|\"\"\"[\s\S]*?\"\"\"|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n]){1,6}'""")
 BLOCK_COMMENT_PART = re.compile(r"/\*|\*/")
 TEST_SOURCE = re.compile(r"^(?!(?:.*/)?(?:build|\.gradle)/)(?:.*/)?src/(?:test|\w*Test)\w*/")
@@ -83,13 +97,16 @@ class Scenario:
 @dataclass(frozen=True)
 class Marker:
     """Znacznik `// Scenariusz: <plik>.feature: <nazwa>` w teście; `test` — stan funkcji tuż pod znacznikiem:
-    „aktywny”, „wyłączony” (@Ignore, @Disabled…) albo pusty, gdy pod znacznikiem nie ma funkcji testu."""
+    „aktywny”, „wyłączony” (@Ignore, @Disabled…) albo pusty, gdy pod znacznikiem nie ma funkcji testu; `test_id` —
+    stały identyfikator testu „moduł · Klasa.funkcja”, niezależny od numerów linii."""
 
     feature: str
     scenario: str
     partial: bool
     test: str
     location: Location
+    test_id: str = ""
+    function_line: int = 0
 
 
 @dataclass
@@ -326,30 +343,51 @@ def collect(docs: Path, specs: Path, android: Path | None = None) -> Corpus:
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu pliku.
     """
     corpus = Corpus()
-    for path in sorted(docs.rglob("*.md")) if docs.is_dir() else []:
+    for path in files_in(docs, "*.md"):
         if "_generated" not in path.relative_to(docs).parts:
             scan_markdown(path, corpus)
-    for path in sorted(specs.rglob("*.feature")) if specs.is_dir() else []:
+    for path in files_in(specs, "*.feature"):
         scan_feature(path, corpus, path.relative_to(specs).as_posix())
-    for path in sorted(android.rglob("*.kt")) if android and android.is_dir() else []:
+    for path in files_in(android, "*.kt"):
         if TEST_SOURCE.match(path.relative_to(android).as_posix()):
-            scan_kotlin(path, corpus)
+            parts = path.relative_to(android).parts
+            scan_kotlin(path, corpus, "/".join(parts[: parts.index("src")]))
     return corpus
 
 
-def scan_kotlin(path: Path, corpus: Corpus) -> None:
+def files_in(root: Path | None, pattern: str) -> list[Path]:
+    """Zwraca pliki `pattern` z `root` (rekurencyjnie) posortowane po ścieżce POSIX względem `root`.
+
+    Gwarantuje: ta sama kolejność na każdym systemie (bez porównań zależnych od wielkości liter w Windows);
+    brak katalogu daje pustą listę.
+    """
+    return sorted(root.rglob(pattern), key=lambda p: p.relative_to(root).as_posix()) if root and root.is_dir() else []
+
+
+def scan_kotlin(path: Path, corpus: Corpus, module: str = "") -> None:
     """Dodaje do `corpus` znaczniki scenariuszy z pliku testów Kotlin (`src/test*`, `src/*Test*`, bez build i .gradle).
     Linię podobną do znacznika, ale niezgodną ze wzorem, albo znacznik bez nazwy zapisuje jako zły znacznik.
+    Identyfikator testu to `module` (katalog przed `src/`), łańcuch klas i obiektów z ciałem `{`, które obejmują
+    znacznik (według wcięcia; bez nich — nazwa pliku), i nazwa funkcji testu.
 
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
     lines, rel = code_only(path.read_text(encoding="utf-8")).splitlines(), relative(path)
+    owners: list[tuple[int, str]] = []
     for index, line in enumerate(lines):
         marker = read_marker(lines, index)
         location = Location(rel, index + 1)
+        indent = len(line) - len(line.lstrip())
+        while line.strip() and owners and owners[-1][0] >= indent:
+            owners.pop()
+        if declared := CLASS.match(line):
+            owners.append((indent, declared.group(1)))
         if marker and marker.scenario:
-            state = test_state(lines, marker.end)
-            corpus.markers.append(Marker(marker.feature, marker.scenario, marker.partial, state, location))
+            state, function, line_number = test_state(lines, marker.end)
+            owner = ".".join(name for _, name in owners) or path.stem
+            test_id = f"{module} · {owner}.{function}" if module else f"{owner}.{function}"
+            found = Marker(marker.feature, marker.scenario, marker.partial, state, location, test_id, line_number)
+            corpus.markers.append(found)
         elif marker or MARKER_HINT.match(line):
             corpus.bad_markers.append(location)
 
@@ -400,12 +438,12 @@ def read_marker(lines: list[str], index: int) -> MarkerText | None:
     return MarkerText(bool(match.group(1)), match.group(2), " ".join(parts), end)
 
 
-def test_state(lines: list[str], start: int) -> str:
-    """Zwraca „aktywny”, gdy od linii `start` są kolejne znaczniki i adnotacje (wśród nich adnotacja testu
-    z TEST_ANNOTATIONS), a po nich `fun` z dowolnymi modyfikatorami; „wyłączony”, gdy jest też @Ignore albo
-    @Disabled…; inaczej pusty napis. Linie `lines` pochodzą z code_only.
+def test_state(lines: list[str], start: int) -> tuple[str, str, int]:
+    """Zwraca (stan, nazwa funkcji, numer linii funkcji od 1). Stan to „aktywny”, gdy od linii `start` są kolejne
+    znaczniki i adnotacje (wśród nich adnotacja testu z TEST_ANNOTATIONS), a po nich `fun` z dowolnymi modyfikatorami;
+    „wyłączony”, gdy jest też @Ignore albo @Disabled…; inaczej pusty stan, pusta nazwa i 0. Linie są z code_only.
 
-    Gwarantuje: pusta linia, komentarz albo inny kod przed `fun` daje pusty napis; argumenty adnotacji mogą mieć kilka linii.
+    Gwarantuje: pusta linia, komentarz albo inny kod przed `fun` daje pusty stan; argumenty adnotacji mogą mieć kilka linii.
     """
     names: set[str] = set()
     depth, index = 0, start
@@ -416,7 +454,7 @@ def test_state(lines: list[str], start: int) -> str:
             depth = max(0, depth + text.count("(") - text.count(")"))
             continue
         if not text:
-            return ""
+            return "", "", 0
         if marker := read_marker(lines, index - 1):
             index = marker.end
             continue
@@ -425,11 +463,12 @@ def test_state(lines: list[str], start: int) -> str:
             text = text[match.end() :]
             if text.startswith("("):
                 depth, text = text.count("(") - text.count(")"), ""
-        if FUNCTION.match(text) and names & TEST_ANNOTATIONS:
-            return "wyłączony" if any(n == "Ignore" or n.startswith("Disabled") for n in names) else "aktywny"
+        if (function := FUNCTION.match(text)) and names & TEST_ANNOTATIONS:
+            disabled = any(n == "Ignore" or n.startswith("Disabled") for n in names)
+            return "wyłączony" if disabled else "aktywny", function.group(1) or function.group(2), index
         if text:
-            return ""
-    return ""
+            return "", "", 0
+    return "", "", 0
 
 
 def parent_us(ac: str) -> str:
@@ -523,13 +562,20 @@ def check_tests(corpus: Corpus, release: bool = False) -> list[Finding]:
 
     Gwarantuje: zły znacznik, znacznik do nieistniejącego pliku .feature albo scenariusza (nazwa znak w znak)
     i znacznik, który nie stoi tuż nad funkcją testu, to „BŁĄD” z miejscem w teście; znacznik nad testem wyłączonym
-    to „UWAGA”. Żaden z nich nie pokrywa scenariusza. Scenariusz bez testu i scenariusz tylko z testami „częściowo”
-    to „UWAGI” w dwóch osobnych listach, a w trybie `release` — „BŁĘDY”.
+    to „UWAGA”. Żaden z nich nie pokrywa scenariusza. Dwa scenariusze o tej samej nazwie w jednym pliku to „BŁĄD”
+    (znacznik byłby niejednoznaczny). Scenariusz bez testu i scenariusz tylko z testami „częściowo” to „UWAGI”
+    w dwóch osobnych listach, a w trybie `release` — „BŁĘDY”. Ten sam identyfikator testu u dwóch różnych funkcji
+    to „BŁĄD” (wiersz tabeli pokrycia byłby niejednoznaczny).
     """
     form = "znacznik niezgodny ze wzorem „// Scenariusz: <plik>.feature: <nazwa>”"
     findings = [Finding("BŁĄD", str(loc), form) for loc in corpus.bad_markers]
-    names = {(s.feature, s.name) for s in corpus.all_scenarios}
-    covered: dict[tuple[str, str], set[bool]] = defaultdict(set)
+    first: dict[tuple[str, str], Scenario] = {}
+    for scenario in corpus.all_scenarios:
+        if (twin := first.setdefault((scenario.feature, scenario.name), scenario)) is not scenario:
+            line = twin.location.line
+            message = f"scenariusz o tej samej nazwie co w linii {line}, znacznik byłby niejednoznaczny: {scenario.name}"
+            findings.append(Finding("BŁĄD", str(scenario.location), message))
+    names = set(first)
     for marker in corpus.markers:
         key, severity = (marker.feature, marker.scenario), "BŁĄD"
         if marker.feature not in corpus.features:
@@ -541,14 +587,54 @@ def check_tests(corpus: Corpus, release: bool = False) -> list[Finding]:
         elif marker.test == "wyłączony":
             severity, problem = "UWAGA", f"test wyłączony, nie pokrywa scenariusza: {marker.scenario}"
         else:
-            covered[key].add(marker.partial)
             continue
         findings.append(Finding(severity, str(marker.location), problem))
-    level = "BŁĄD" if release else "UWAGA"
-    missing = [s for s in corpus.all_scenarios if not covered.get((s.feature, s.name))]
-    partial = [s for s in corpus.all_scenarios if covered.get((s.feature, s.name)) == {True}]
+    functions: dict[str, tuple[str, int]] = {}
+    for marker in corpus.markers:
+        place = (marker.location.path, marker.function_line)
+        if marker.test and functions.setdefault(marker.test_id, place) != place:
+            other = ":".join(map(str, functions[marker.test_id]))
+            message = f"identyfikator testu „{marker.test_id}” ma też inna funkcja ({other}); zmień nazwę funkcji albo klasy"
+            findings.append(Finding("BŁĄD", str(marker.location), message))
+    level, states = "BŁĄD" if release else "UWAGA", coverage_states(corpus)
+    missing = [s for s in corpus.all_scenarios if states[s][1] == "brak"]
+    partial = [s for s in corpus.all_scenarios if states[s][1] == "częściowo"]
     findings += [Finding(level, str(s.location), f"scenariusz bez testu: {s.name}") for s in missing]
     return findings + [Finding(level, str(s.location), f"scenariusz tylko z testem częściowym: {s.name}") for s in partial]
+
+
+def coverage_states(corpus: Corpus) -> dict[Scenario, tuple[list[Marker], str]]:
+    """Zwraca dla każdego scenariusza znaczniki, które go pokrywają, i stan: „pełny”, „częściowo” albo „brak”.
+
+    Gwarantuje: pokrywa tylko znacznik nad aktywnym testem; stan „pełny”, gdy choć jeden znacznik nie jest „częściowo”.
+    """
+    covering = defaultdict(list)
+    for marker in corpus.markers:
+        if marker.test == "aktywny":
+            covering[(marker.feature, marker.scenario)].append(marker)
+    states = {}
+    for scenario in corpus.all_scenarios:
+        markers = covering.get((scenario.feature, scenario.name), [])
+        state = "brak" if not markers else "częściowo" if all(m.partial for m in markers) else "pełny"
+        states[scenario] = (markers, state)
+    return states
+
+
+def render_coverage(corpus: Corpus) -> str:
+    """Zwraca stronę pokrycia: liczby stanów i tabelę [plik, scenariusz, kryteria i reguły, testy, stan] w kolejności
+    plików i scenariuszy. Test to jego stały identyfikator (Marker.test_id), bez numeru linii."""
+    tags: dict[Scenario, list[str]] = defaultdict(list)
+    for tag, items in corpus.scenarios.items():
+        for scenario in items if AC_RE.match(tag) or BR_RE.match(tag) else []:
+            tags[scenario].append(tag)
+    rows = []
+    for scenario, (markers, state) in coverage_states(corpus).items():
+        tests = [f"`{test_id}`".replace("|", "\\|") for test_id in sorted(dict.fromkeys(m.test_id for m in markers))]
+        name = scenario.name.replace("|", "\\|")
+        rows.append([f"`{scenario.feature}`", name, join(sorted(tags[scenario], key=natural_key)), join(tests, "<br>"), state])
+    counts = [[label, str(sum(row[-1] == state for row in rows))] for label, state in COVERAGE_COUNTS]
+    tables = [*plain_table(["Stan", "Liczba"], counts), "", *plain_table(COVERAGE_HEADER, rows)]
+    return COVERAGE_INTRO + "\n".join(tables) + "\n"
 
 
 def undefined_references(corpus: Corpus, partial: bool = False) -> list[Finding]:
@@ -696,6 +782,11 @@ def aligned_table(header: list[str], rows: list[list[str]]) -> list[str]:
     return [table_line(header, widths), table_line(["-" * w for w in widths], widths), *[table_line(r, widths) for r in rows]]
 
 
+def plain_table(header: list[str], rows: list[list[str]]) -> list[str]:
+    """Zwraca linie tabeli Markdown bez wyrównania kolumn: nowy wiersz nie zmienia pozostałych linii."""
+    return ["| " + " | ".join(row) + " |" for row in [header, ["---"] * len(header), *rows]]
+
+
 def table_line(cells: list[str], widths: list[int]) -> str:
     """Zwraca wiersz tabeli Markdown z komórkami dopełnionymi spacjami do `widths`."""
     return "| " + " | ".join(c.ljust(w) for c, w in zip(cells, widths)) + " |"
@@ -741,12 +832,13 @@ def matrix_is_current(target: Path, blocks: dict[str, str]) -> bool:
     return current == updated_content(current, blocks)
 
 
-def report_matrix_state(target: Path, current: bool) -> int:
+def report_matrix_state(target: Path, stale: list[Path]) -> int:
     """Wypisuje wynik kontroli aktualności macierzy w `target` i zwraca kod wyjścia: 0 aktualna, 1 nieaktualna."""
-    if current:
-        print(f"check_ids: macierz w {target} jest aktualna")
+    if not stale:
+        print(f"check_ids: macierz w {target} i strona pokrycia testami są aktualne")
         return 0
-    print(f"check_ids: BŁĄD: macierz w {target} jest nieaktualna; odśwież: python scripts/check_ids.py --matrix {target}")
+    names = ", ".join(str(path) for path in stale)
+    print(f"check_ids: BŁĄD: nieaktualne albo brak: {names}; odśwież: python scripts/check_ids.py --matrix {target}")
     return 1
 
 
@@ -821,8 +913,9 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     """Punkt wejścia. Zwraca 1 przy błędach w trybie --strict, 2 przy błędzie odczytu/zapisu, w pozostałych razach 0.
 
-    Gwarantuje: z --check-matrix tylko porównuje macierz w pliku z wygenerowaną z bieżących dokumentów, bez raportu
-    kontroli ID; zwraca 0, gdy jest aktualna, 1, gdy jest nieaktualna albo pliku brak, 2 przy błędzie odczytu.
+    Gwarantuje: --matrix zapisuje też stronę pokrycia testami (COVERAGE_PAGE w katalogu dokumentacji). Z --check-matrix
+    tylko porównuje macierz i stronę pokrycia z wygenerowanymi z bieżących plików, bez raportu kontroli ID; zwraca 0,
+    gdy obie są aktualne, 1, gdy któraś jest nieaktualna albo jej brak, 2 przy błędzie odczytu.
     """
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
@@ -830,11 +923,17 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
         corpus = collect(args.docs, args.specs, args.android)
+        coverage = args.docs / COVERAGE_PAGE
         if args.check_matrix:
-            return report_matrix_state(args.check_matrix, matrix_is_current(args.check_matrix, render_blocks(corpus)))
+            stale = [] if matrix_is_current(args.check_matrix, render_blocks(corpus)) else [args.check_matrix]
+            if not coverage.is_file() or coverage.read_text(encoding="utf-8") != render_coverage(corpus):
+                stale.append(coverage)
+            return report_matrix_state(args.check_matrix, stale)
         if args.matrix:
             write_matrix(args.matrix, render_blocks(corpus))
-            print(f"check_ids: macierz zapisana do {args.matrix}")
+            coverage.parent.mkdir(parents=True, exist_ok=True)
+            coverage.write_text(render_coverage(corpus), encoding="utf-8", newline="\n")
+            print(f"check_ids: macierz zapisana do {args.matrix}, pokrycie testami do {coverage}")
         findings = check(corpus, args.partial) + check_tests(corpus, args.release) + check_screen_page(args.docs)
     except (OSError, UnicodeDecodeError) as exc:
         print(f"check_ids: BŁĄD: {exc}", file=sys.stderr)

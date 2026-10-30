@@ -70,6 +70,7 @@ nav:
       - Przypadki użycia: wymagania/przypadki-uzycia.md
       - Wymagania niefunkcjonalne: wymagania/niefunkcjonalne.md
       - Macierz śledzenia: wymagania/sledzenie.md
+      - Pokrycie testami: _generated/pokrycie-testami.md
   - UX:
       - Scenariusz wywiadu: ux/scenariusz-wywiadu.md
       - Persony: ux/persony.md

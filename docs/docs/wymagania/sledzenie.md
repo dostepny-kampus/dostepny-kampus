@@ -1,9 +1,9 @@
 # Macierz śledzenia
 
-Macierz pokazuje, z czego wynika każde wymaganie: potrzeba N → historyjka US → kryterium akceptacji USx.y → przypadek użycia UC → scenariusz. Dzięki niej widać, że nie ma historyjki bez potrzeby ani kryterium bez scenariusza. W kolejnych fazach do łańcucha dojdą zadania, PR, kod i testy.
+Macierz pokazuje, z czego wynika każde wymaganie: potrzeba N → historyjka US → kryterium akceptacji USx.y → przypadek użycia UC → scenariusz. Dzięki niej widać, że nie ma historyjki bez potrzeby ani kryterium bez scenariusza. Testy pokazuje osobna strona opisana niżej, a w kolejnych fazach do łańcucha dojdą zadania, PR i kod.
 
 !!! warning "Tabele generowane — nie edytuj ich ręcznie"
-    Tabelę „Jak czytać” pisze się ręcznie. Pozostałe tabele i liczby tworzy skrypt z bieżących dokumentów i plików `.feature`. Po zmianie dokumentów odśwież je poleceniem `python scripts/check_ids.py --matrix docs/wymagania/sledzenie.md`. Kontrola `python scripts/verify.py` kończy się błędem, gdy zapisana macierz różni się od wygenerowanej.
+    Tabelę „Jak czytać” pisze się ręcznie. Pozostałe tabele i liczby oraz stronę pokrycia testami tworzy skrypt z bieżących dokumentów, plików `.feature` i testów Androida. Po zmianie dokumentów, scenariuszy albo testów odśwież je poleceniem `python scripts/check_ids.py --matrix docs/wymagania/sledzenie.md`. Kontrola `python scripts/verify.py` kończy się błędem, gdy zapisana macierz albo strona pokrycia różni się od wygenerowanej.
 
 ## Jak czytać
 
@@ -176,6 +176,10 @@ Reguły BR-1…BR-6 opisuje strona [Role i uprawnienia](../biznes/role.md), pozo
 
 <!-- vale on -->
 <!-- reguly:end -->
+
+## Scenariusze i testy
+
+Każdy scenariusz ma mieć test Androida oznaczony komentarzem `// Scenariusz: <plik>.feature: <nazwa scenariusza>` tuż nad funkcją testu. Tabela [Pokrycie scenariuszy testami](../_generated/pokrycie-testami.md) ma wiersz dla każdego scenariusza: jego kryteria i reguły, testy (moduł, klasa i funkcja testu) i stan „pełny”, „częściowo” albo „brak”. Ma tyle wierszy, ile scenariuszy, dlatego jest na osobnej stronie.
 
 ## Dziury
 
