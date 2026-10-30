@@ -10,8 +10,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | Stan | Liczba |
 | --- | --- |
 | Pełny test | 0 |
-| Tylko częściowo | 2 |
-| Bez testu | 149 |
+| Tylko częściowo | 4 |
+| Bez testu | 147 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -85,8 +85,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `przegladanie-mapy.feature` | Wyjścia ewakuacyjne rozwijają się na żądanie | US2.6 | — | brak |
 | `przegladanie-mapy.feature` | Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę | BR-25, US3.3 | — | brak |
 | `przegladanie-mapy.feature` | Karta budynku szczegółowego opisuje piętra tekstem | US16.3 | — | brak |
-| `przegladanie-mapy.feature` | Instrukcja przy pierwszym uruchomieniu | US5.1 | `core/data · FirstLaunchRepositoryTest.us5_1_help_until_marked_seen` | częściowo |
-| `przegladanie-mapy.feature` | Instrukcję można otworzyć ponownie z pomocy | US5.1 | `core/data · FirstLaunchRepositoryTest.us5_1_second_launch_no_help` | częściowo |
+| `przegladanie-mapy.feature` | Instrukcja przy pierwszym uruchomieniu | US5.1 | `app · AppNavigatorTest.us5_1_first_launch_back_v1`<br>`app · AppNavigatorTest.us5_1_first_launch_opens_v5`<br>`core/data · FirstLaunchRepositoryTest.us5_1_help_until_marked_seen` | częściowo |
+| `przegladanie-mapy.feature` | Instrukcję można otworzyć ponownie z pomocy | US5.1 | `app · AppNavigatorTest.us5_1_bar_help_v5_back_returns`<br>`app · AppNavigatorTest.us5_1_next_launch_opens_v1`<br>`core/data · FirstLaunchRepositoryTest.us5_1_second_launch_no_help` | częściowo |
 | `przegladanie-mapy.feature` | Plan piętra w budynku szczegółowym | US16.1 | — | brak |
 | `scenariusz-demo.feature` | Schody przy wejściu głównym A-1 od pomiaru do eksportu | US2.1, US6.1, US6.2, US7.1, US9.2, US10.1, US11.1, US13.1 | — | brak |
 | `synchronizacja.feature` | Bez sieci widać wskaźnik, a zgłoszenie czeka ze statusem „lokalne” | BR-9, US9.1 | — | brak |
@@ -163,6 +163,6 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `zgloszenie-szybkie.feature` | Zgłoszenie szybkie zapisane bez sieci wysyła się samo po powrocie sieci | BR-8, BR-9, US4.2 | — | brak |
 | `zgloszenie-szybkie.feature` | Potwierdzenie po wysłaniu bez dalszego statusu | BR-8, US4.4 | — | brak |
 | `zgloszenie-szybkie.feature` | Potwierdzenie bez sieci mówi o późniejszej wysyłce | BR-8, US4.2, US4.4 | — | brak |
-| `zgloszenie-szybkie.feature` | Gość niezalogowany jest proszony o logowanie przed zdjęciem | BR-8, US14.2 | — | brak |
+| `zgloszenie-szybkie.feature` | Gość niezalogowany jest proszony o logowanie przed zdjęciem | BR-8, US14.2 | `app · AppNavigatorTest.us14_2_bar_report_guest_l1` | częściowo |
 | `zgloszenie-szybkie.feature` | Gość po zalogowaniu wraca do zgłoszenia szybkiego | BR-8, US14.2 | — | brak |
-| `zgloszenie-szybkie.feature` | Gość rezygnuje z logowania | BR-8, US14.2 | — | brak |
+| `zgloszenie-szybkie.feature` | Gość rezygnuje z logowania | BR-8, US14.2 | `app · AppNavigatorTest.uc7_1b_guest_not_now_v1` | częściowo |
