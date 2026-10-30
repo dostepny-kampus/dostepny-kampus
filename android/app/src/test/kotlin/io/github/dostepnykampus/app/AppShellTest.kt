@@ -12,14 +12,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -28,16 +30,20 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
@@ -163,13 +169,14 @@ class AppShellTest {
     }
 
     // Wiersz: V2, „Wstecz” → V1 w poprzednim stanie, US1.1, decyzja 83; ponowne „Mapa” → świeże V1, decyzja 72.
+    // V1 żyje pod arkuszem V2, więc zostaje nawet stan z remember (decyzja 48).
     @Test
     fun us1_1_v2_back_keeps_v1_state() {
         compose.setContent {
             AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     Column {
-                        var taps by rememberSaveable { mutableIntStateOf(0) }
+                        var taps by remember { mutableIntStateOf(0) }
                         Text(text = "v=$taps", modifier = Modifier.clickable { taps++ })
                         Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
                     }
@@ -178,11 +185,36 @@ class AppShellTest {
         }
         compose.onNodeWithText("v=0").performClick()
         compose.onNodeWithText("A-1").performClick()
+        compose.onNodeWithText("v=1").assertIsDisplayed()
         pressBack()
         compose.waitUntil { compose.onAllNodesWithText("v=1").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("A-1").performClick()
         compose.onNodeWithText("Mapa").performClick()
         compose.onNodeWithText("v=0").assertExists()
+    }
+
+    // Wiersz: V1, dotknięcie konturu → V2, arkusz na mapie do połowy ekranu; uchwyt albo przewinięcie treści
+    // rozwija go na cały ekran, US2, decyzja 48.
+    @Test
+    fun us2_v2_sheet_half_then_expands() {
+        compose.setContent {
+            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+                if (route is MapRoute) {
+                    Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
+                } else {
+                    val scroll = Modifier.verticalScroll(rememberScrollState())
+                    Column(modifier = scroll) { Text(text = "karta", modifier = Modifier.requiredHeight(2000.dp)) }
+                }
+            }
+        }
+        compose.onNodeWithText("A-1").performClick()
+        val handleTop = { label: String -> compose.onNodeWithContentDescription(label).getUnclippedBoundsInRoot().top }
+        assertTrue(handleTop("Rozwiń kartę budynku") > 300.dp)
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
+        assertEquals(0.dp, handleTop("Zwiń kartę budynku"))
+        compose.onNodeWithContentDescription("Zwiń kartę budynku").performClick()
+        compose.onNodeWithText("karta").performTouchInput { swipeUp() }
+        assertEquals(0.dp, handleTop("Zwiń kartę budynku"))
     }
 
     // Wiersz: każdy ekran poza V1, „Wstecz”: historia przetrwa odtworzenie aktywności, NFR-15, NFR-22.

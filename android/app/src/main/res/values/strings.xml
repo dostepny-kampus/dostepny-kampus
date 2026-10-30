@@ -16,4 +16,6 @@
     <string name="wroc_do_mapy">Wróć do mapy</string>
     <string name="pomin_instrukcje">Pomiń instrukcję</string>
     <string name="nie_teraz">Nie teraz</string>
+    <string name="rozwin_karte">Rozwiń kartę budynku</string>
+    <string name="zwin_karte">Zwiń kartę budynku</string>
 </resources>
