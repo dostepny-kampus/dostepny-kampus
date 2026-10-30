@@ -95,7 +95,12 @@ internal fun MapCamera.toPosition(): CameraPosition =
         .Builder()
         .target(LatLng(latitude = center.latitude, longitude = center.longitude))
         .zoom(zoom)
+        .padding(doubleArrayOf(0.0, 0.0, 0.0, bottomInset))
         .build()
 
 internal fun CameraPosition.toCamera(): MapCamera =
-    MapCamera(GeoPoint(longitude = target?.longitude ?: 0.0, latitude = target?.latitude ?: 0.0), zoom)
+    MapCamera(
+        center = GeoPoint(longitude = target?.longitude ?: 0.0, latitude = target?.latitude ?: 0.0),
+        zoom = zoom,
+        bottomInset = padding?.lastOrNull() ?: 0.0,
+    )

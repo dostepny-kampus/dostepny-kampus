@@ -9,6 +9,9 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsActions
@@ -138,8 +141,25 @@ class CampusMapScreenTest {
         val bottom = compose.onRoot().getBoundsInRoot().bottom
         val osm = compose.onNodeWithText("© OpenStreetMap contributors").getBoundsInRoot()
         assertEquals(true, osm.bottom <= bottom - 400.dp)
-        val zoomOut = compose.onNodeWithContentDescription("Pomniejsz").getBoundsInRoot()
-        assertEquals(true, zoomOut.bottom <= bottom - 400.dp)
+        compose.onNodeWithContentDescription("Pomniejsz").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Przesuń mapę w górę").assertDoesNotExist()
+    }
+
+    // Wiersz: V1 → V2 z budynkiem nad arkuszem, „Wstecz” → widok sprzed otwarcia V2, decyzja 83.
+    @Test
+    fun us1_1_focus_above_sheet() {
+        var sheet by mutableStateOf(0.dp)
+        compose.setContent { Screen(focus = "C-14", sheet = sheet) }
+        compose.waitForIdle()
+        val start = cameras.last()
+        sheet = 400.dp
+        compose.waitForIdle()
+        val aboveSheet = cameras.last()
+        assertEquals(listOf(start.zoom, true), listOf(aboveSheet.zoom, aboveSheet.bottomInset > 0))
+        assertEquals(true, aboveSheet.center != start.center)
+        sheet = 0.dp
+        compose.waitForIdle()
+        assertEquals(start, cameras.last())
     }
 
     // Wiersz: V2, „Wstecz” → V1 z zaznaczonym budynkiem (US1.1).

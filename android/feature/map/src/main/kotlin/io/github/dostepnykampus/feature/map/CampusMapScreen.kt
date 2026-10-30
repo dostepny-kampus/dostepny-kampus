@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -41,6 +42,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.geo.labelPoint
+import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.campusMapData
@@ -69,8 +72,10 @@ private val CameraSaver =
  *   wybranego w arkuszu „Który budynek?”, gdy trafiło kontur wspólny albo dwa kontury (US2, decyzja 85)
  * @param modifier wymiary ekranu nadane przez aplikację
  * @param focus symbol budynku zaznaczonego obrysem, np. po „Wstecz” z V2 (US1.1)
- * @param contentPadding część ekranu zasłonięta z zewnątrz, np. przez arkusz V2 (decyzja 87). Przyciski i podpis
- *   OSM stoją nad nią, a mapa dalej wypełnia cały ekran (NFR-37, NFR-53)
+ * @param contentPadding część ekranu zasłonięta z zewnątrz przez arkusz V2 (decyzja 87). Podpis OSM stoi nad nią,
+ *   a mapa dalej wypełnia cały ekran (NFR-37). Pod arkuszem nie ma przycisków mapy, bo wymagania V2 ich nie mają;
+ *   wracają po „Wstecz” (NFR-53). Budynek [focus] staje w środku części nad arkuszem, a po „Wstecz” wraca widok
+ *   sprzed otwarcia V2 (decyzja 83)
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
  */
 @Composable
@@ -87,24 +92,29 @@ fun CampusMapScreen(
     val data = remember(layers, focus) { layers?.copy(focus = focus) }
     var camera by rememberSaveable(stateSaver = CameraSaver) { mutableStateOf<MapCamera?>(null) }
     var choice by rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
+    val cover = contentPadding.calculateBottomPadding()
+    val isCovered = cover > 0.dp
+    val coverPixels = with(LocalDensity.current) { cover.toPx() }.toDouble()
+    val focusPoint = remember(catalog, focus) { catalog?.pointOf(focus) }
     Box(modifier.fillMaxSize()) {
         val loaded = data
-        val shown = camera ?: loaded?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
+        val own = camera ?: loaded?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
+        val shown = own?.aboveSheet(focusPoint.takeIf { isCovered }, coverPixels)
         if (loaded != null && shown != null) {
             mapView.Show(
                 data = loaded,
                 camera = shown,
-                onCameraIdle = { camera = it },
-                onBuildingsTouch = { symbols ->
-                    if (symbols.size > 1) choice = symbols else symbols.singleOrNull()?.let(onBuildingClick)
-                },
+                onCameraIdle = { if (!isCovered) camera = it },
+                onBuildingsTouch = { symbols -> choice = touched(symbols, onBuildingClick) },
                 modifier = Modifier.fillMaxSize(),
             )
-            Box(Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding)) {
-                MapControls(shown, onCameraChange = { camera = it }, modifier = Modifier.align(Alignment.TopEnd))
-                OsmAttribution(Modifier.align(Alignment.BottomStart))
-                val buildings = catalog?.buildings.orEmpty()
-                val chosen = choice.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
+            MapOverlay(
+                camera = shown,
+                hasControls = !isCovered,
+                onCameraChange = { camera = it },
+                modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
+            ) {
+                val chosen = catalog?.buildingsOf(choice).orEmpty()
                 if (chosen.isNotEmpty()) {
                     val sheetModifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
                     BuildingChoiceSheet(onClose = { choice = emptyList() }, modifier = sheetModifier) {
@@ -118,6 +128,35 @@ fun CampusMapScreen(
                 }
             }
         }
+    }
+}
+
+// Jeden trafiony budynek otwiera V2 od razu, a kilka czeka na wybór w arkuszu „Który budynek?” (decyzja 85).
+private fun touched(symbols: List<String>, onBuildingClick: (String) -> Unit): List<String> {
+    symbols.singleOrNull()?.let(onBuildingClick)
+    return symbols.takeIf { it.size > 1 }.orEmpty()
+}
+
+// Budynek [symbol] stoi nad arkuszem V2 punktem podpisu, który zawsze leży wewnątrz konturu.
+private fun BuildingCatalog.pointOf(symbol: String?): GeoPoint? =
+    buildings.firstOrNull { it.symbol == symbol }?.let { labelPoint(it.outline) }
+
+private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
+    symbols.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
+
+// Przyciski mapy, gdy są (bez arkusza V2), podpis OSM i [content] nad mapą (NFR-53, NFR-37).
+@Composable
+private fun MapOverlay(
+    camera: MapCamera,
+    hasControls: Boolean,
+    onCameraChange: (MapCamera) -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    Box(modifier) {
+        if (hasControls) MapControls(camera, onCameraChange, modifier = Modifier.align(Alignment.TopEnd))
+        OsmAttribution(Modifier.align(Alignment.BottomStart))
+        content()
     }
 }
 

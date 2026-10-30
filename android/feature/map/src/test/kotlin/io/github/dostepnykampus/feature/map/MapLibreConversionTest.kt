@@ -17,6 +17,8 @@ class MapLibreConversionTest {
     fun nfr53_camera_survives_maplibre() {
         val camera = MapCamera(center = GeoPoint(longitude = 17.0, latitude = 60.0), zoom = START_ZOOM)
         assertEquals(camera, camera.toPosition().toCamera())
+        val aboveSheet = camera.copy(bottomInset = 600.0)
+        assertEquals(aboveSheet, aboveSheet.toPosition().toCamera())
     }
 
     @Test

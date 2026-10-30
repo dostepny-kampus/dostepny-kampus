@@ -22,8 +22,17 @@ private const val QUARTER_VIEW_DEGREES_AT_ZOOM_0 = 70.0
  *
  * @property center środek widoku
  * @property zoom powiększenie mapy
+ * @property bottomInset zasłonięty dół widoku w pikselach, np. pod arkuszem V2; [center] stoi wtedy w środku
+ *   części odkrytej
  */
-data class MapCamera(val center: GeoPoint, val zoom: Double)
+data class MapCamera(val center: GeoPoint, val zoom: Double, val bottomInset: Double = 0.0)
+
+/**
+ * Widok pod arkuszem V2 wysokim na [bottomInset] pikseli: budynek [focus] w środku części mapy nad arkuszem,
+ * bez zmiany powiększenia, jak w makiecie hi-fi V2. Bez budynku widok zostaje.
+ */
+internal fun MapCamera.aboveSheet(focus: GeoPoint?, bottomInset: Double): MapCamera =
+    focus?.let { copy(center = it, bottomInset = bottomInset) } ?: this
 
 /** Widok po „Powiększ”: o jeden poziom, najwyżej do powiększenia planu budynku. */
 internal fun MapCamera.zoomedIn(): MapCamera = copy(zoom = (zoom + 1).coerceAtMost(MAX_ZOOM))
