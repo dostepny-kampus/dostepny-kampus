@@ -31,16 +31,19 @@ enum class TopLevel {
 
 /**
  * Historia „Wstecz” przy starcie (mapa nawigacji, tabela „start, pasek dolny i »Wstecz«”): przy pierwszym
- * uruchomieniu V5 nad V1 (US5.1), przy kolejnym samo V1 (US1.2). Na dole jest zawsze V1, ekran bez „Wstecz”.
+ * uruchomieniu V5 nad V1 (US5.1), przy kolejnym samo V1. Na dole jest zawsze V1, ekran bez „Wstecz”.
  */
 fun startBackStack(firstLaunch: Boolean): List<NavKey> =
     if (firstLaunch) listOf(MapRoute, HelpRoute(isFirstLaunch = true)) else listOf(MapRoute)
 
 /**
- * Pozycja paska dolnego wybrana na ekranie [route] albo `null`, gdy ekran nie ma paska. Pasek mają V1, V5 i L2
- * (V2 i V3 dojdą z ich trasami); L1 i V4 go nie mają (wymagania wspólne).
+ * Czy ekran [route] ma pasek dolny: V1, V5 i L2 tak (V2 i V3 dojdą z ich trasami), L1 i V4 nie (wymagania
+ * wspólne, wiersz „Pasek dolny na V1, V2, V3, V5 i L2”).
  */
-fun topLevelOf(route: NavKey): TopLevel? =
+fun hasBottomBar(route: NavKey): Boolean = selectedItem(route) != null
+
+/** Pozycja paska zaznaczona na ekranie [route] albo `null`, gdy żadna nie jest zaznaczona. */
+fun selectedItem(route: NavKey): TopLevel? =
     when (route) {
         MapRoute -> TopLevel.MAP
         is HelpRoute -> TopLevel.HELP
@@ -58,18 +61,15 @@ class AppNavigator(private val backStack: MutableList<NavKey>, private val roles
     val current: NavKey
         get() = backStack.last()
 
-    /**
-     * Pozycja [item] paska dolnego. „Mapa” wraca do V1. Inna pozycja otwiera swój ekran nad bieżącym, więc „Wstecz”
-     * wraca tam, skąd ją otwarto (V5, NFR-15); ten sam ekran wcześniej w historii przechodzi na wierzch.
-     */
+    /** Pozycja [item] paska dolnego: „Mapa” wraca do V1, inna otwiera swój ekran nad bieżącym, jeśli to nie on. */
     fun open(item: TopLevel) {
-        if (item != TopLevel.MAP && topLevelOf(current) == item) return
-        val account = if (roles.currentAccount().isSignedIn) AccountRoute else SignInRoute(isForReport = false)
+        if (item != TopLevel.MAP && selectedItem(current) == item) return
+        val isSignedIn = roles.currentAccount().isSignedIn
         when (item) {
             TopLevel.MAP -> backToMap()
-            TopLevel.REPORT -> push(reportStart())
-            TopLevel.HELP -> push(HelpRoute())
-            TopLevel.ACCOUNT -> push(account)
+            TopLevel.REPORT -> backStack.add(if (isSignedIn) ReportRoute else SignInRoute(isForReport = true))
+            TopLevel.HELP -> backStack.add(HelpRoute())
+            TopLevel.ACCOUNT -> backStack.add(if (isSignedIn) AccountRoute else SignInRoute(isForReport = false))
         }
     }
 
@@ -80,16 +80,8 @@ class AppNavigator(private val backStack: MutableList<NavKey>, private val roles
         return true
     }
 
-    /** V1 z wyczyszczoną historią, np. „Wróć do mapy”, „Pomiń instrukcję”, „Zacznij”, „Pokaż na mapie”. */
+    /** V1 z wyczyszczoną historią, np. „Wróć do mapy”, „Pomiń instrukcję”, „Zacznij”, „Nie teraz”. */
     fun backToMap() {
         backStack.subList(fromIndex = 1, toIndex = backStack.size).clear()
-    }
-
-    private fun reportStart(): NavKey =
-        if (roles.currentAccount().isSignedIn) ReportRoute() else SignInRoute(isForReport = true)
-
-    private fun push(route: NavKey) {
-        backStack.removeAll { it::class == route::class }
-        backStack.add(route)
     }
 }

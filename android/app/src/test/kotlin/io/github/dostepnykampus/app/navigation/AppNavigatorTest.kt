@@ -15,7 +15,7 @@ import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /** Testy przejść; komentarz nad testem bez scenariusza podaje wiersz tabeli mapy nawigacji (ekran, czynność, AC/BR). */
@@ -39,11 +39,21 @@ class AppNavigatorTest {
         assertEquals(stackOf(), startBackStack(firstLaunch = false))
     }
 
-    // Wiersz: V5, „Wstecz” w pierwszym kroku przy pierwszym uruchomieniu → V1, US5.1, NFR-15.
+    // Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu
     @Test
     fun us5_1_first_launch_back_v1() {
         stack += startBackStack(firstLaunch = true).drop(1)
         navigator().back()
+        assertEquals(stackOf(), stack)
+    }
+
+    // Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość rezygnuje z logowania
+    @Test
+    fun uc7_1b_guest_not_now_v1() {
+        navigator().run {
+            open(TopLevel.REPORT)
+            backToMap()
+        }
         assertEquals(stackOf(), stack)
     }
 
@@ -59,23 +69,23 @@ class AppNavigatorTest {
     @Test
     fun us4_bar_report_signed_in_v4() {
         navigator(visitor).open(TopLevel.REPORT)
-        assertEquals(stackOf(ReportRoute()), stack)
+        assertEquals(stackOf(ReportRoute), stack)
     }
 
-    // Scenariusz: zgloszenie-szybkie.feature: Gość niezalogowany jest proszony o logowanie przed zdjęciem
+    // Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość niezalogowany jest proszony o logowanie przed zdjęciem
     @Test
     fun us14_2_bar_report_guest_l1() {
         navigator().open(TopLevel.REPORT)
         assertEquals(stackOf(SignInRoute(isForReport = true)), stack)
     }
 
-    // Wiersz: pasek dolny, „Pomoc” → V5, US5.1; V5 „Wstecz” → ekran, z którego otwarto V5, NFR-15.
+    // Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy
     @Test
     fun us5_1_bar_help_v5_back_returns() {
         navigator(visitor).run {
             open(TopLevel.ACCOUNT)
-            open(TopLevel.HELP)
-            assertEquals(HelpRoute(), current)
+            repeat(times = 2) { open(TopLevel.HELP) }
+            assertEquals(stackOf(AccountRoute, HelpRoute()), stack)
             back()
         }
         assertEquals(stackOf(AccountRoute), stack)
@@ -100,13 +110,6 @@ class AppNavigatorTest {
         }
     }
 
-    // Wiersz: każdy ekran poza V1, „Wstecz” → poprzedni ekran, NFR-15 (ten sam ekran nie powtarza się w historii).
-    @Test
-    fun nfr15_bar_screen_moves_to_top() {
-        navigator(visitor).run { listOf(TopLevel.HELP, TopLevel.ACCOUNT, TopLevel.HELP, TopLevel.HELP).forEach(::open) }
-        assertEquals(stackOf(AccountRoute, HelpRoute()), stack)
-    }
-
     // Wiersz: każdy ekran poza V1, „Wstecz”, NFR-15: V1 jest na dole historii, wstecz zamyka aplikację.
     @Test
     fun nfr15_back_on_v1_closes_app() {
@@ -114,11 +117,12 @@ class AppNavigatorTest {
         assertEquals(stackOf(), stack)
     }
 
-    // Wymagania wspólne: pasek dolny na V1, V5 i L2; L1 i V4 bez paska (US14.1, US14.2).
+    // Wymagania wspólne, wiersz „Pasek dolny na V1, V2, V3, V5 i L2”: L1 i V4 bez paska.
     @Test
     fun us14_1_bar_only_on_bar_screens() {
         val expected = listOf(TopLevel.MAP, TopLevel.HELP, TopLevel.ACCOUNT)
-        assertEquals(expected, listOf(MapRoute, HelpRoute(), AccountRoute).map(::topLevelOf))
-        listOf(SignInRoute(isForReport = false), ReportRoute()).forEach { assertNull(topLevelOf(it)) }
+        assertEquals(expected, listOf(MapRoute, HelpRoute(), AccountRoute).map(::selectedItem))
+        assertTrue(hasBottomBar(AccountRoute))
+        listOf(SignInRoute(isForReport = false), ReportRoute).forEach { assertFalse(hasBottomBar(it)) }
     }
 }
