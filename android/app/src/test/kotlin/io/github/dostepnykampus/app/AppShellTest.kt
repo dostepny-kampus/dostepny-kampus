@@ -7,9 +7,14 @@ package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -46,6 +51,13 @@ class AppShellTest {
         DostepnyKampusTheme { AppShell(firstLaunch = firstLaunch, roles = roles, onFirstHelpLeft = { helpLeft++ }) }
     }
 
+    private fun tabTops(): List<Float> =
+        listOf("Mapa", "Zgłoś barierę", "Pomoc", "Konto").map { label ->
+            compose.onNodeWithText(label).assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))
+            val bounds = compose.onNodeWithText(label).getUnclippedBoundsInRoot()
+            bounds.top.value
+        }
+
     private fun pressBack() {
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
@@ -77,6 +89,23 @@ class AppShellTest {
         show(roles = staff)
         compose.onNodeWithText("Konto i\u00A0praca").assertIsNotSelected().performClick()
         compose.onNodeWithText("Konto i\u00A0praca").assertIsSelected()
+    }
+
+    // Wymagania wspólne, decyzja 69: w oknie węższym niż 600 dp pasek dolny, pozycje w rzędzie jako karty, NFR-18.
+    @Test
+    fun nfr18_narrow_window_bottom_bar() {
+        show()
+        assertEquals(1, tabTops().distinct().size)
+    }
+
+    // Wymagania wspólne, decyzja 69: w oknie co najmniej 600 dp pasek z boku, te same karty od góry, NFR-51.
+    @Test
+    @Config(qualifiers = "w640dp-h360dp")
+    fun nfr51_wide_window_side_bar() {
+        show()
+        assertEquals(tabTops().sorted(), tabTops())
+        assertEquals(4, tabTops().distinct().size)
+        compose.onNodeWithText("Mapa").assertIsSelected()
     }
 
     // Wiersz: każdy ekran poza V1, „Wstecz”: historia przetrwa odtworzenie aktywności, NFR-15, NFR-22.

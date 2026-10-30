@@ -11,11 +11,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.lifecycleScope
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
+import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.start.firstLaunchRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Jedyna aktywność aplikacji, rysowana od krawędzi do krawędzi. Po odczycie, czy to pierwsze uruchomienie (US5.1),
@@ -29,16 +32,20 @@ class MainActivity : ComponentActivity() {
         val firstLaunch = firstLaunchRepository()
         setContent {
             DostepnyKampusTheme {
-                val scope = rememberCoroutineScope()
                 val isFirst by produceState<Boolean?>(initialValue = null) { value = firstLaunch.isFirstLaunch() }
                 isFirst?.let { first ->
                     AppShell(
                         firstLaunch = first,
                         roles = GuestRoleProvider,
-                        onFirstHelpLeft = { scope.launch { firstLaunch.markHelpSeen() } },
+                        onFirstHelpLeft = { markHelpSeen(firstLaunch) },
                     )
                 }
             }
         }
+    }
+
+    // Zapis kończy się także wtedy, gdy aktywność zniknie w trakcie, np. po drugim „wstecz” zaraz po instrukcji.
+    private fun markHelpSeen(firstLaunch: FirstLaunch) {
+        lifecycleScope.launch { withContext(NonCancellable) { firstLaunch.markHelpSeen() } }
     }
 }
