@@ -22,8 +22,10 @@ import org.junit.jupiter.api.Test
 class AppNavigatorTest {
     private val stack = mutableListOf<NavKey>(MapRoute)
     private val visitor = Account.SignedIn()
+    private var helpLeft = 0
 
-    private fun navigator(account: Account = Account.Guest) = AppNavigator(stack) { account }
+    private fun navigator(account: Account = Account.Guest) =
+        AppNavigator(backStack = stack, roles = { account }, onFirstHelpLeft = { helpLeft++ })
 
     private fun stackOf(vararg routes: NavKey) = listOf<NavKey>(MapRoute, *routes)
 
@@ -45,6 +47,29 @@ class AppNavigatorTest {
         stack += startBackStack(firstLaunch = true).drop(1)
         navigator().back()
         assertEquals(stackOf(), stack)
+        assertEquals(1, helpLeft)
+    }
+
+    // Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy
+    @Test
+    fun us5_1_first_help_left_via_l1() {
+        stack += startBackStack(firstLaunch = true).drop(1)
+        navigator().run {
+            open(TopLevel.ACCOUNT)
+            assertEquals(0, helpLeft)
+            backToMap()
+        }
+        assertEquals(1, helpLeft)
+    }
+
+    // Wiersz: pasek dolny, „Pomoc” → V5, US5.1: zamknięcie V5 otwartego z paska nie zmienia pierwszego startu.
+    @Test
+    fun us5_1_bar_help_left_keeps_flag() {
+        navigator().run {
+            open(TopLevel.HELP)
+            back()
+        }
+        assertEquals(0, helpLeft)
     }
 
     // Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość rezygnuje z logowania
