@@ -10,6 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -46,7 +50,9 @@ class CampusMapScreenTest {
     private val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["C-13"],"osm_id":"way/1"},""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["C-13","C-14"],""" +
+                """"name":"Budynek testowy",""" +
+                """"osm_id":"way/1"},""" +
                 """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
         }
 
@@ -80,6 +86,34 @@ class CampusMapScreenTest {
     fun nfr37_short_osm_at_large_font() {
         compose.setContent { Screen(fontScale = 1.5f) }
         compose.onNodeWithText("© OpenStreetMap").assertExists()
+    }
+
+    // Wiersz: kontur wspólny „C-13/C-14” → arkusz „Który budynek?”, przycisk budynku → V2, decyzja 85.
+    @Test
+    fun us2_which_building_opens_v2() {
+        compose.setContent { Screen() }
+        compose.waitForIdle()
+        compose.runOnUiThread { touch(listOf("C-13", "C-14")) }
+        compose.onNodeWithText("Który budynek?").assertExists()
+        val action =
+            SemanticsMatcher("otwiera opis budynku") {
+                it.config.getOrNull(SemanticsActions.OnClick)?.label == "otwiera opis budynku"
+            }
+        compose.onNodeWithContentDescription("C-14, Budynek testowy").assert(action).performClick()
+        compose.onNodeWithText("Który budynek?").assertDoesNotExist()
+        assertEquals(listOf("C-14"), opened)
+    }
+
+    // Wiersz: „Zamknij” w arkuszu „Który budynek?” → V1 bez arkusza.
+    @Test
+    fun us2_which_building_closes() {
+        compose.setContent { Screen() }
+        compose.waitForIdle()
+        compose.runOnUiThread { touch(listOf("C-13", "C-14")) }
+        compose.onNodeWithText("Budynek C-13", useUnmergedTree = true).assertExists()
+        compose.onNodeWithText("Zamknij").performClick()
+        compose.onNodeWithText("Który budynek?").assertDoesNotExist()
+        assertEquals(emptyList<String>(), opened)
     }
 
     // Wiersz: V2, „Wstecz” → V1 w poprzednim stanie z tym samym widokiem kamery, decyzja 83.

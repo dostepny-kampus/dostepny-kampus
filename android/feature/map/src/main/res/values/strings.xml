@@ -8,4 +8,8 @@
     <string name="mapa_przesun_w_prawo">Przesuń mapę w prawo</string>
     <string name="mapa_osm">© OpenStreetMap contributors</string>
     <string name="mapa_osm_krotko">© OpenStreetMap</string>
+    <string name="mapa_ktory_budynek">Który budynek?</string>
+    <string name="mapa_zamknij">Zamknij</string>
+    <string name="mapa_budynek">Budynek %1$s</string>
+    <string name="mapa_otwiera_opis_budynku">otwiera opis budynku</string>
 </resources>
