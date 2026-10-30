@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
+    <string name="mapa_powieksz">Powiększ</string>
+    <string name="mapa_pomniejsz">Pomniejsz</string>
+    <string name="mapa_przesun_w_gore">Przesuń mapę w górę</string>
+    <string name="mapa_przesun_w_dol">Przesuń mapę w dół</string>
+    <string name="mapa_przesun_w_lewo">Przesuń mapę w lewo</string>
+    <string name="mapa_przesun_w_prawo">Przesuń mapę w prawo</string>
+    <string name="mapa_osm">© OpenStreetMap contributors</string>
+    <string name="mapa_osm_krotko">© OpenStreetMap</string>
+</resources>
