@@ -20,6 +20,7 @@ import okhttp3.Call
 import okhttp3.OkHttpClient
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.module.http.HttpRequestUtil
 import java.util.Locale
 import kotlin.math.ceil
 
@@ -43,14 +44,19 @@ fun interface CampusMapView {
 }
 
 /**
- * Klient HTTP mapy z własnym nagłówkiem User-Agent aplikacji, jak wymaga polityka kafelków OSM (NFR-39). Bez
- * regionów offline: kafelki tylko na bieżący widok.
+ * Nagłówek User-Agent aplikacji dla kafelków OSM, np. „DostepnyKampus/0.1.0 (io.github.dostepnykampus)” (NFR-39).
+ * Klient HTTP z nim powstaje raz na proces, przy pierwszym widoku mapy z biblioteką natywną.
  */
-internal fun osmClient(packageName: String): Call.Factory {
+@Volatile
+var mapUserAgent: String? = null
+
+internal val mapHttpClient = lazy { mapUserAgent?.let { HttpRequestUtil.setOkHttpClient(osmClient(it)) } }
+
+/** Klient HTTP mapy z nagłówkiem [userAgent]; bez regionów offline, kafelki tylko na bieżący widok (NFR-39). */
+internal fun osmClient(userAgent: String): Call.Factory {
     val client = OkHttpClient()
-    val agent = "DostepnyKampus ($packageName)"
     return Call.Factory { request ->
-        client.newCall(request.newBuilder().header(name = "User-Agent", value = agent).build())
+        client.newCall(request.newBuilder().header(name = "User-Agent", value = userAgent).build())
     }
 }
 

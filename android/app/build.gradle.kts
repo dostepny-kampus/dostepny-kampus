@@ -11,6 +11,7 @@ plugins {
 }
 
 android {
+    buildFeatures.buildConfig = true
     testOptions.unitTests.all { it.useJUnitPlatform() }
 }
 

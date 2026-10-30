@@ -16,6 +16,7 @@ import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.start.firstLaunchRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.feature.map.mapUserAgent
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,6 +30,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        mapUserAgent = "DostepnyKampus/${BuildConfig.VERSION_NAME} (${BuildConfig.APPLICATION_ID})"
         val firstLaunch = firstLaunchRepository()
         setContent {
             DostepnyKampusTheme {
