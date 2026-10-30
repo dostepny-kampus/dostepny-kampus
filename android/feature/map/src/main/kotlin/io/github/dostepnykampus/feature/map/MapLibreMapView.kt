@@ -29,7 +29,6 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
-import org.maplibre.android.module.http.HttpRequestUtil
 
 private const val LABEL_TEXT_SP = 14f
 private const val LABEL_MAX_FONT_SCALE = 1.4f
@@ -45,6 +44,9 @@ internal object MapLibreMapView : CampusMapView {
         onBuildingsTouch: (List<String>) -> Unit,
         modifier: Modifier,
     ) {
+        // Bez biblioteki natywnej (np. testy JVM, telefon bez wspieranej architektury) mapa się nie rysuje,
+        // a ekran z przyciskami działa dalej.
+        if (!remember { nativeMapLoads() }) return
         val context = LocalContext.current
         val density = LocalDensity.current
         val colors = DostepnyKampusTheme.mapColors
@@ -56,7 +58,7 @@ internal object MapLibreMapView : CampusMapView {
         val mapView =
             remember {
                 MapLibre.getInstance(context)
-                HttpRequestUtil.setOkHttpClient(osmClient(context.packageName))
+                mapHttpClient.value
                 val options = MapLibreMapOptions.createFromAttributes(context)
                 MapView(context, options.logoEnabled(false).attributionEnabled(false))
             }
@@ -126,4 +128,6 @@ internal object MapLibreMapView : CampusMapView {
             }
         }
     }
+
+    private fun nativeMapLoads(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess
 }

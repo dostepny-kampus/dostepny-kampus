@@ -22,8 +22,8 @@ class MapLibreConversionTest {
     @Test
     fun nfr39_own_user_agent() {
         val tile = Request.Builder().url("https://tile.openstreetmap.org/0/0/0.png").build()
-        val call = osmClient(packageName = "io.example.test").newCall(tile)
-        assertEquals("DostepnyKampus (io.example.test)", call.request().header("User-Agent"))
+        val call = osmClient(userAgent = "DostepnyKampus/1.0 (io.example.test)").newCall(tile)
+        assertEquals("DostepnyKampus/1.0 (io.example.test)", call.request().header("User-Agent"))
     }
 
     @Test
