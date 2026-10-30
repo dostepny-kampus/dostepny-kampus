@@ -16,6 +16,7 @@ import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -52,9 +53,16 @@ class CampusMapDataTest {
     @Test
     fun us1_outline_with_symbol() {
         val buildings = parse(data.buildings)
-        assertEquals(listOf("C-3", "C-4", "C-13"), buildings.map { it.properties.text("symbol") })
-        assertEquals(listOf(true, true, false), buildings.map { it.geometry is Polygon })
+        assertEquals(listOf("C-3/C-4", "C-13"), buildings.map { it.properties.text("label") })
+        assertEquals(listOf("C-3/C-4", "C-13"), data.labels)
+        assertEquals(listOf(true, false), buildings.map { it.geometry is Polygon })
         assertEquals(2, (buildings.last().geometry as? MultiPolygon)?.run { coordinates.size })
+    }
+
+    @Test
+    fun us1_shared_outline_symbols() {
+        val symbols = parse(data.buildings).first().properties?.run { getValue("symbols").jsonArray }
+        assertEquals(listOf("C-3", "C-4"), symbols?.map { it.jsonPrimitive.content })
     }
 
     @Test
@@ -65,19 +73,21 @@ class CampusMapDataTest {
     }
 
     @Test
-    fun us1_bounds_cover_all_outlines() {
-        val expected =
-            GeoBounds(
-                southWest = GeoPoint(longitude = 0.0, latitude = 0.0),
-                northEast = GeoPoint(longitude = 5.0, latitude = 1.0),
-            )
-        assertEquals(expected, data.bounds)
+    fun us1_2_start_at_main_campus() {
+        val a1 = c13.copy(symbol = START_BUILDING)
+        val catalog = BuildingCatalog(buildings = listOf(c3, a1), entrances = emptyList(), attribution = "")
+        assertEquals(GeoPoint(longitude = 3.5, latitude = 0.5), campusMapData(catalog).start)
     }
 
     @Test
-    fun us1_empty_catalog_no_bounds() {
+    fun us1_2_start_without_a1() {
+        assertEquals(GeoPoint(longitude = 2.5, latitude = 0.5), data.start)
+    }
+
+    @Test
+    fun us1_empty_catalog_no_start() {
         val empty = campusMapData(BuildingCatalog(buildings = emptyList(), entrances = emptyList(), attribution = ""))
-        assertEquals(null, empty.bounds)
+        assertEquals(null, empty.start)
         assertEquals(0, parse(empty.buildings).size)
     }
 
