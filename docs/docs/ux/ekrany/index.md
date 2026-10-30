@@ -731,3 +731,139 @@ Wymagania: [C7 Usunięcie bariery](../wymagania-ekranow.md#c7-usuniecie-bariery)
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
 | [![Po wysłaniu bez internetu otwiera się Moje zgłoszenia: linia Bez internetu · Ostatnia synchronizacja, komunikat Zgłoszenie zapisane w telefonie. Wyślemy je, gdy wróci internet, karta W telefonie, Bariery już nie ma, A-1, piętro 1](obrazy/m-c7-bariery-nie-ma-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-c7-bariery-nie-ma-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c7-bariery-nie-ma-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c7-bariery-nie-ma-brak-sieci-jasny-200.webp) |
+
+## R1 Kolejka weryfikacji
+
+Wymagania: [R1 Kolejka weryfikacji](../wymagania-ekranow.md#r1-kolejka-weryfikacji). Nagłówek w aplikacji: „Zgłoszenia do sprawdzenia”.
+
+### R1: lista do sprawdzenia
+
+`m-r1-kolejka-weryfikacji` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#r1-kolejka-weryfikacji) · odwołania: US10.4, US10.5, US10.7, BR-4, BR-11, BR-14, BR-24, NFR-21
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Lista: sekcja Wzięte przeze mnie z kartą Schody przy wejściu, Budynek A-1, Zgłoszenie z pomiaru, Wysłane 26.10.2026 i Otwórz, nagłówek Do sprawdzenia, przełącznik Mapa i Lista z wybraną listą, cztery zgłoszenia od najdawniej wysłanego: Próg w C-13, Schody i windy w C-6 jako zgłoszenie szybkie, Niesprawna winda w A-1 z Bariery już nie ma, Wejście dostosowane w A-1 ze Zmiana oznaczenia wejścia, każde z przyciskiem Weź do sprawdzenia](obrazy/m-r1-kolejka-weryfikacji-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-jasny.webp) | [![Ta sama lista w motywie ciemnym](obrazy/m-r1-kolejka-weryfikacji-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, przełącznik i karty na całą szerokość, Weź do sprawdzenia przy każdej karcie](obrazy/m-r1-kolejka-weryfikacji-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-jasny-200.webp) |
+
+### R1: widok mapy
+
+`m-r1-kolejka-weryfikacji-mapa` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#r1-kolejka-weryfikacji) · odwołania: UC14, NFR-18, NFR-19, NFR-21, NFR-37, NFR-40, NFR-53
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Widok mapy: ta sama mapa kampusu co na V1, na niej cztery znaki zgłoszenia do sprawdzenia w kształcie kartki z zagiętym rogiem, wybrany znak Próg przy C-13 większy i podpisany, strzałki w krzyżu, plus i minus, podpis OpenStreetMap i przycisk informacji; pod mapą karta wybranego zgłoszenia Próg, Budynek C-13 z Weź do sprawdzenia](obrazy/m-r1-kolejka-weryfikacji-mapa-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-mapa-jasny.webp) | [![Ten sam widok mapy w motywie ciemnym: nocna mapa, znaki zgłoszeń jasne na ciemnym](obrazy/m-r1-kolejka-weryfikacji-mapa-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-mapa-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, mapa tej samej wysokości, napisy na mapie bez powiększenia](obrazy/m-r1-kolejka-weryfikacji-mapa-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-mapa-jasny-200.webp) |
+
+### R1: brak zgłoszeń
+
+`m-r1-kolejka-weryfikacji-pusty` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#r1-kolejka-weryfikacji) · odwołania: US10.4, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Pusty: Nie ma zgłoszeń do sprawdzenia. Zajrzyj tu później, bez przełącznika i bez przycisku](obrazy/m-r1-kolejka-weryfikacji-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-pusty-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-r1-kolejka-weryfikacji-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-pusty-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-r1-kolejka-weryfikacji-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-pusty-jasny-200.webp) |
+
+### R1: zgłoszenie zajęte
+
+`m-r1-kolejka-weryfikacji-zajete` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#r1-kolejka-weryfikacji) · odwołania: BR-11, US10.4
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Zgłoszenie zajęte: na górze Ktoś inny wziął już to zgłoszenie. Wybierz inne, niżej Wzięte przeze mnie i lista bez zgłoszenia Próg z C-13](obrazy/m-r1-kolejka-weryfikacji-zajete-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-zajete-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-r1-kolejka-weryfikacji-zajete-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-zajete-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad listą](obrazy/m-r1-kolejka-weryfikacji-zajete-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-zajete-jasny-200.webp) |
+
+### R1: bez internetu
+
+`m-r1-kolejka-weryfikacji-brak-sieci` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#stany-wspolne) · odwołania: NFR-50, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Bez internetu: linia Bez internetu, komunikat Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie, przycisk Spróbuj ponownie; ten sam układ mają R2, K1, K2 i K3](obrazy/m-r1-kolejka-weryfikacji-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-r1-kolejka-weryfikacji-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-r1-kolejka-weryfikacji-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-brak-sieci-jasny-200.webp) |
+
+### R1: wczytywanie
+
+`m-r1-kolejka-weryfikacji-ladowanie` · odwołania: PW-9
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Ładowanie: wskaźnik i napis Wczytujemy zgłoszenia…](obrazy/m-r1-kolejka-weryfikacji-ladowanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-ladowanie-jasny.webp) | [![To samo ładowanie w motywie ciemnym](obrazy/m-r1-kolejka-weryfikacji-ladowanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-ladowanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści](obrazy/m-r1-kolejka-weryfikacji-ladowanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-ladowanie-jasny-200.webp) |
+
+## R2 Sprawdzenie zgłoszenia
+
+Wymagania: [R2 Sprawdzenie zgłoszenia](../wymagania-ekranow.md#r2-sprawdzenie-zgoszenia). Nagłówek w aplikacji: „Sprawdzenie zgłoszenia”.
+
+### R2: zgłoszenie z pomiaru
+
+`m-r2-sprawdzenie-zgloszenia` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#r2-sprawdzenie-zgoszenia) · odwołania: US10, US10.1, US10.2, BR-5, BR-13, BR-15, BR-16, NFR-21, NFR-25
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Zgłoszenie z pomiaru Schody przy wejściu z uciążliwością Blokada, Budynek A-1, parter, Miejsce: ok. 2 m od Wejścia Cesarskiego, dokładność 0,8 m, zdjęcie schodów, Zasłoń twarz lub tablicę, Autor: Zbierający, Autor 14; Podobne zgłoszenia do 10 m: Próg, 5 m, piętro 1, Przyjęte; pod kreską Przyjmij, Powód odrzucenia z wyborem Duplikat, Nieaktualne, Inny powód i polem Opisz powód dla autora, przycisk Odrzuć](obrazy/m-r2-sprawdzenie-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-jasny.webp) | [![To samo zgłoszenie w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, dane zgłoszenia w kilku wierszach, decyzja na końcu strony](obrazy/m-r2-sprawdzenie-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-jasny-200.webp) |
+
+### R2: duplikat
+
+`m-r2-sprawdzenie-zgloszenia-duplikat` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#r2-sprawdzenie-zgoszenia) · odwołania: US10.1, US10.2, BR-13, BR-16
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Duplikat: podobne zgłoszenia Schody przy wejściu, 2 m, parter i Próg, 5 m, piętro 1, oba Przyjęte; wybrany powód Duplikat, pod nim Wcześniejsze zgłoszenie: z wybranym Schody przy wejściu, 2 m](obrazy/m-r2-sprawdzenie-zgloszenia-duplikat-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-duplikat-jasny.webp) | [![Ten sam duplikat w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-duplikat-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-duplikat-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, zdjęcia podobnych na całą szerokość](obrazy/m-r2-sprawdzenie-zgloszenia-duplikat-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-duplikat-jasny-200.webp) |
+
+### R2: zgłoszenie szybkie
+
+`m-r2-sprawdzenie-zgloszenia-szybkie` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#r2-sprawdzenie-zgoszenia) · odwołania: US10.3, US7.1, BR-14, BR-5, NFR-21, PW-13
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Zgłoszenie szybkie: Czego dotyczy: Schody i windy, Budynek C-6, piętro 1, ok. 6 m od wejścia do C-6, dokładność 15 m, zdjęcie schodów, Autor: Odwiedzający, Autor 31; pole Typ bariery z listą, Uciążliwość ze zdaniem Oceń dla osoby, dla której bariera jest najtrudniejsza, i trzema wyborami z opisem jak na C2; W promieniu 10 m nie ma podobnych zgłoszeń; decyzja](obrazy/m-r2-sprawdzenie-zgloszenia-szybkie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-szybkie-jasny.webp) | [![To samo zgłoszenie szybkie w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-szybkie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-szybkie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, opisy uciążliwości w kilku wierszach](obrazy/m-r2-sprawdzenie-zgloszenia-szybkie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-szybkie-jasny-200.webp) |
+
+### R2: bariery już nie ma
+
+`m-r2-sprawdzenie-zgloszenia-usunieta` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#r2-sprawdzenie-zgoszenia) · odwołania: US10.6, US10.8, BR-19, BR-23, NFR-20, NFR-21
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Bariery już nie ma: Niesprawna winda, Budynek A-1, piętro 1, Miejsce: winda przy klatkach schodowych C i D, Poprzednie zgłoszenie: Archiwalne, obok siebie Zdjęcie z poprzedniego zgłoszenia i Nowe zdjęcie miejsca, Autor: Zbierający, Autor 22, podobne Niesprawna winda 0 m Przyjęte, wybrany powód Nieaktualne](obrazy/m-r2-sprawdzenie-zgloszenia-usunieta-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-usunieta-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-usunieta-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-usunieta-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, dwa zdjęcia jedno pod drugim z podpisami](obrazy/m-r2-sprawdzenie-zgloszenia-usunieta-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-usunieta-jasny-200.webp) |
+
+### R2: zmiana oznaczenia wejścia
+
+`m-r2-sprawdzenie-zgloszenia-wejscie` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#r2-sprawdzenie-zgoszenia) · odwołania: US17.2, US17.3, US10.8, BR-23, BR-24, NFR-21, PW-3
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Zmiana oznaczenia wejścia: Wejście dostosowane, Budynek A-1, Obecne oznaczenie: Dostępne, Z map i opisów, 18.12.2023, Bez zmian od wysłania z ikoną ogniwa, Wybrane oznaczenie: Dostępne, zdjęcie wejścia, Autor: Zbierający, Autor 14; W promieniu 10 m nie ma podobnych zgłoszeń; Przyjmij i powody Nieaktualne oraz Inny powód, bez Duplikat](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-jasny.webp) | [![Ta sama zmiana oznaczenia w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, oznaczenia i daty w kilku wierszach](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-jasny-200.webp) |
+
+### R2: nowa wersja od autora
+
+`m-r2-sprawdzenie-zgloszenia-nowa-wersja` · [makieta low-fi](../makiety/weryfikacja-koordynacja.md#r2-sprawdzenie-zgoszenia) · odwołania: US10.8, BR-3, BR-15, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Nowa wersja: na górze Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją, Zmienione: uciążliwość; niżej zgłoszenie Próg z Tylko z pomocą, Budynek C-13, piętro 1, ok. 3 m od Wejścia „C”, dokładność 0,9 m, Autor: Zbierający, Autor 9](obrazy/m-r2-sprawdzenie-zgloszenia-nowa-wersja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-nowa-wersja-jasny.webp) | [![Ta sama nowa wersja w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-nowa-wersja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-nowa-wersja-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-r2-sprawdzenie-zgloszenia-nowa-wersja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-nowa-wersja-jasny-200.webp) |
+
+### R2: wczytywanie zdjęć
+
+`m-r2-sprawdzenie-zgloszenia-ladowanie` · odwołania: US10, PW-9
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Ładowanie: dane zgłoszenia widoczne od razu, w ramkach zdjęć wskaźnik i napis Wczytujemy zdjęcie…](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-jasny.webp) | [![To samo ładowanie w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, ramki zdjęć z napisem ładowania](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-jasny-200.webp) |
+
+### R2: błąd przy przyjęciu
+
+`m-r2-sprawdzenie-zgloszenia-walidacja-przyjecie` · odwołania: US10.3, NFR-15, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd przy przyjęciu zgłoszenia szybkiego: pole Typ bariery i wybory uciążliwości w ramce koloru błędu, nad Przyjmij Ustal typ bariery i uciążliwość, aby przyjąć zgłoszenie, z kołem ze znakiem „!”, pogrubione](obrazy/m-r2-sprawdzenie-zgloszenia-walidacja-przyjecie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-walidacja-przyjecie-jasny.webp) | [![Ten sam błąd w motywie ciemnym: tekst i ramki jasnołososiowe](obrazy/m-r2-sprawdzenie-zgloszenia-walidacja-przyjecie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-walidacja-przyjecie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, tekst błędu w kilku wierszach nad Przyjmij](obrazy/m-r2-sprawdzenie-zgloszenia-walidacja-przyjecie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-walidacja-przyjecie-jasny-200.webp) |
+
+### R2: błąd przy odrzuceniu
+
+`m-r2-sprawdzenie-zgloszenia-walidacja-odrzucenie` · odwołania: US10.2, NFR-15, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Błąd przy odrzuceniu: wybory powodu w ramce koloru błędu, nad Odrzuć Podaj powód odrzucenia, aby autor wiedział, co poprawić, z kołem ze znakiem „!”, pogrubione](obrazy/m-r2-sprawdzenie-zgloszenia-walidacja-odrzucenie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-walidacja-odrzucenie-jasny.webp) | [![Ten sam błąd w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-walidacja-odrzucenie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-walidacja-odrzucenie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, tekst błędu w kilku wierszach nad Odrzuć](obrazy/m-r2-sprawdzenie-zgloszenia-walidacja-odrzucenie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-walidacja-odrzucenie-jasny-200.webp) |
+
+### R2: bez internetu przy decyzji
+
+`m-r2-sprawdzenie-zgloszenia-brak-sieci` · odwołania: BR-11, NFR-50, PW-10
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Bez internetu przy decyzji: na górze linia Bez internetu, nad Przyjmij komunikat Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«. Połącz się z internetem i podejmij decyzję ponownie; wybrane wartości zostają](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad Przyjmij](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny-200.webp) |
