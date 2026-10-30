@@ -62,7 +62,7 @@ class BuildingCatalogRepositoryTest {
 
     @Test
     fun us1_real_file_for_visitors() {
-        val file = File(System.getProperty("dostepnykampus.buildings"))
+        val file = File(requireNotNull(System.getProperty("dostepnykampus.buildings")) { "Test uruchamia Gradle" })
         val real = BuildingCatalogRepository(EmptyCoroutineContext) { file.readText() }
         val catalog = runBlocking { real.catalog() }
         assertEquals(95, catalog.buildings.size)
