@@ -11,6 +11,7 @@ import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -26,7 +27,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
-/** Ekran V5 „Pomoc” w Robolectric: kroki, „Wstecz” w obu wariantach, duża czcionka i podpięcie w oboczce. */
+/** Ekran V5 „Pomoc” w Robolectric: kroki, obrazy, „Wstecz” w obu wariantach, duża czcionka i oboczka. */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class HelpScreenTest {
@@ -102,6 +103,17 @@ class HelpScreenTest {
         compose.onAllNodesWithText("Dalej").assertCountEquals(0)
         compose.onNodeWithText("Zacznij").performClick()
         assertEquals(listOf("wyjście", "mapa"), calls)
+    }
+
+    // Wiersz: obraz pokazuje prawdziwy element aplikacji i ma opis dla TalkBack, US5.1, NFR-18.
+    @Test
+    fun nfr18_example_talkback() {
+        show()
+        compose.onNodeWithContentDescription("Przykład z mapy kampusu", substring = true).assertExists()
+        compose.onAllNodesWithText("Wpisz symbol budynku, np. C-13").assertCountEquals(0)
+        compose.onNodeWithText("Dalej").performClick()
+        compose.onNodeWithContentDescription("Przykład z opisu budynku A-1", substring = true).assertExists()
+        compose.onAllNodesWithText("Wejście dostosowane").assertCountEquals(0)
     }
 
     // Wiersz: reguła 10 dużej czcionki, czynności V5 na końcu treści, po tekście kroku, NFR-20, NFR-52.

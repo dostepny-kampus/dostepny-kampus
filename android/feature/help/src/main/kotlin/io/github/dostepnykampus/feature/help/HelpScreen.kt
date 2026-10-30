@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.feature.help
 
 import androidx.activity.compose.BackHandler
-import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -35,32 +37,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.MarkingChip
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.PinnedButton
 import io.github.dostepnykampus.core.designsystem.PinnedButtonKind.Outlined
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.model.EntranceMarking
 
 private const val LARGE_FONT_SCALE = 1.5f
-
-/** Krok instrukcji: tytuł [title] i najwyżej 3 zdania [text] (US5.1). */
-private data class HelpStep(
-    @param:StringRes val title: Int,
-    @param:StringRes val text: Int,
-)
-
-// Kroki według makiety hi-fi i wymagań V5; krok 3 ma zdanie o koncie (US14.2, PW-5).
-private val HelpSteps =
-    listOf(
-        HelpStep(title = R.string.pomoc_budynek_tytul, text = R.string.pomoc_budynek_tekst),
-        HelpStep(title = R.string.pomoc_dostepne_tytul, text = R.string.pomoc_dostepne_tekst),
-        HelpStep(title = R.string.pomoc_konto_tytul, text = R.string.pomoc_konto_tekst),
-    )
 
 /**
  * Ekran V5 „Pomoc” (US5.1): instrukcja krok po kroku, przejście przyciskiem „Dalej” zamiast przesunięcia
@@ -78,10 +70,10 @@ fun HelpScreen(isFirstLaunch: Boolean, onOpenMap: () -> Unit, onLeave: () -> Uni
     var step by rememberSaveable { mutableIntStateOf(0) }
     val isLast = step == HelpSteps.lastIndex
     val onBack: () -> Unit = {
-        when {
-            step > 0 -> step--
-            isFirstLaunch -> onOpenMap()
-            else -> onLeave()
+        when (helpBack(step, isFirstLaunch)) {
+            HelpBack.PREVIOUS_STEP -> step--
+            HelpBack.SKIP -> onOpenMap()
+            HelpBack.LEAVE -> onLeave()
         }
     }
     val onNext: () -> Unit = { if (isLast) onOpenMap() else step++ }
@@ -99,7 +91,7 @@ fun HelpScreen(isFirstLaunch: Boolean, onOpenMap: () -> Unit, onLeave: () -> Uni
                     verticalArrangement = Arrangement.spacedBy(Odstepy.m),
                 ) {
                     StepNumberAndBar(step = step)
-                    StepTitleAndText(HelpSteps[step])
+                    StepTitleTextAndImage(HelpSteps[step])
                     if (isLargeFont) actions()
                 }
             }
@@ -128,7 +120,7 @@ private fun StepNumberAndBar(step: Int) {
 }
 
 @Composable
-private fun StepTitleAndText(content: HelpStep) {
+private fun StepTitleTextAndImage(content: HelpStep) {
     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLowest) {
         Column(Modifier.fillMaxWidth().padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
             Text(
@@ -137,7 +129,55 @@ private fun StepTitleAndText(content: HelpStep) {
                 style = MaterialTheme.typography.titleLarge,
             )
             Text(text = stringResource(content.text), style = MaterialTheme.typography.bodyLarge)
+            content.example?.let { example ->
+                Text(
+                    text = stringResource(example.caption),
+                    modifier = Modifier.padding(top = Odstepy.s),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                // Obraz w instrukcji: TalkBack czyta jeden opis zamiast napisów przykładu (NFR-18).
+                val description = stringResource(example.description)
+                val image = Modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = description }
+                when (example) {
+                    HelpExample.SEARCH_FIELD -> SearchFieldExample(image)
+                    HelpExample.ENTRANCE -> EntranceExample(image)
+                }
+            }
         }
+    }
+}
+
+@Composable
+private fun SearchFieldExample(modifier: Modifier = Modifier) {
+    // Pole wyszukiwania V1 jako obraz: ten sam kształt i podpowiedź, bez lupy i bez możliwości wpisania.
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.extraLarge,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        border = BorderStroke(Obramowania.pole, MaterialTheme.colorScheme.outline),
+    ) {
+        Text(
+            text = stringResource(R.string.pomoc_budynek_pole),
+            modifier =
+                Modifier
+                    .heightIn(min = CeleDotyku.przycisk)
+                    .wrapContentHeight()
+                    .padding(horizontal = Odstepy.m, vertical = Odstepy.s),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyLarge,
+        )
+    }
+}
+
+@Composable
+private fun EntranceExample(modifier: Modifier = Modifier) {
+    // Wejście z opisu budynku na tle kroku: oznaczenie „Dostępne”, nazwa wejścia i szerokość drzwi.
+    val frame = modifier.border(Obramowania.ramka, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
+    Column(modifier = frame.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        MarkingChip(marking = EntranceMarking.ACCESSIBLE)
+        Text(text = stringResource(R.string.pomoc_dostepne_wejscie), style = MaterialTheme.typography.titleMedium)
+        Text(text = stringResource(R.string.pomoc_dostepne_drzwi), style = MaterialTheme.typography.bodyLarge)
     }
 }
 

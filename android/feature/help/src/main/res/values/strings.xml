@@ -7,8 +7,15 @@
     <string name="pomoc_pomin">Pomiń instrukcję</string>
     <string name="pomoc_budynek_tytul">Znajdź budynek</string>
     <string name="pomoc_budynek_tekst">Wpisz symbol budynku w polu na górze mapy, np. C-13. Pokażemy opis budynku: jego wejścia i bariery.</string>
+    <string name="pomoc_budynek_podpis">Tak wygląda pole na mapie:</string>
+    <string name="pomoc_budynek_pole">Wpisz symbol budynku, np. C-13</string>
+    <string name="pomoc_budynek_opis">Przykład z mapy kampusu: pole »Wpisz symbol budynku, np. C-13«</string>
     <string name="pomoc_dostepne_tytul">Co znaczy »Dostępne«</string>
     <string name="pomoc_dostepne_tekst">Napis »Dostępne« przy wejściu znaczy, że wejdziesz bez pokonywania stopni: z poziomu chodnika, pochylnią albo podnośnikiem.</string>
+    <string name="pomoc_dostepne_podpis">Tak wygląda wejście w opisie budynku:</string>
+    <string name="pomoc_dostepne_wejscie">Wejście dostosowane</string>
+    <string name="pomoc_dostepne_drzwi">Drzwi 120 cm.</string>
+    <string name="pomoc_dostepne_opis">Przykład z opisu budynku A-1: Dostępne, Wejście dostosowane, drzwi 120 centymetrów</string>
     <string name="pomoc_konto_tytul">Zgłoś barierę</string>
     <string name="pomoc_konto_tekst">Aby zgłosić barierę, potrzebne jest konto. Możesz je założyć teraz w »Konto«.</string>
 </resources>
