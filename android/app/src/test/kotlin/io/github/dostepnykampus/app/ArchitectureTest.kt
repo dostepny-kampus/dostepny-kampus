@@ -5,7 +5,9 @@
  */
 package io.github.dostepnykampus.app
 
+import androidx.lifecycle.ViewModel
 import com.lemonappdev.konsist.api.Konsist
+import com.lemonappdev.konsist.api.declaration.KoClassDeclaration
 import com.lemonappdev.konsist.api.declaration.KoFileDeclaration
 import com.lemonappdev.konsist.api.verify.assertFalse
 import com.lemonappdev.konsist.api.verify.assertTrue
@@ -13,6 +15,12 @@ import org.junit.jupiter.api.Test
 
 class ArchitectureTest {
     private val files = Konsist.scopeFromProject().files
+
+    private val viewModels: List<KoClassDeclaration> =
+        Konsist
+            .scopeFromProduction()
+            .classes()
+            .filter { it.hasParentOf(ViewModel::class, indirectParents = true) }
 
     @Test
     fun infra_a1_pure_core_no_android() {
@@ -52,17 +60,13 @@ class ArchitectureTest {
 
     @Test
     fun infra_a1_viewmodel_in_feature() {
-        files
-            .flatMap { it.classes() }
-            .filter { it.name.endsWith("ViewModel") }
+        viewModels
             .assertFalse { !it.containingFile.inPackage("feature") }
     }
 
     @Test
     fun adr7_viewmodel_from_hilt() {
-        files
-            .flatMap { it.classes() }
-            .filter { it.name.endsWith("ViewModel") }
+        viewModels
             .assertTrue(strict = true) { it.hasAnnotationWithName("HiltViewModel") }
     }
 
