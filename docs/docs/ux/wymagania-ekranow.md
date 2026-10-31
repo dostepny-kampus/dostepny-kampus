@@ -651,7 +651,7 @@ Ekran nie ma stanu pustego: budynek szczegółowy ma piętra z danych PWr, a bud
 
 | Pole | Treść |
 | --- | --- |
-| Cel | Zbierający zgłasza, że przyjętej bariery już nie ma, np. winda działa. |
+| Cel | Zbierający zgłasza, że bariery ze zgłoszenia przyjętego już nie ma, np. winda działa. |
 | Role | RO-ZBI, także dla cudzych zgłoszeń (BR-19) |
 | Realizuje | US8.4 |
 | Czynność główna | „Wyślij do sprawdzenia” |
