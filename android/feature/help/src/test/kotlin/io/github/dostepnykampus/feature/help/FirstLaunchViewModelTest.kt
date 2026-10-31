@@ -5,7 +5,12 @@
  */
 package io.github.dostepnykampus.feature.help
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.CreationExtras
 import io.github.dostepnykampus.core.data.start.FirstLaunch
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -15,6 +20,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.reflect.KClass
+import kotlin.reflect.cast
 
 /** Pierwsze uruchomienie w ViewModel na zapisie pierwszego uruchomienia w pamięci testu. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -57,5 +64,27 @@ class FirstLaunchViewModelTest {
         start.markHelpSeen()
         assertEquals(true, isHelpSeen)
         assertEquals(false, FirstLaunchViewModel(firstLaunch).firstLaunchState.value)
+    }
+
+    @Test
+    fun us5_1_saved_after_cleared() {
+        val saving = CompletableDeferred<Unit>()
+        val slow =
+            object : FirstLaunch by firstLaunch {
+                override suspend fun markHelpSeen() {
+                    saving.await()
+                    firstLaunch.markHelpSeen()
+                }
+            }
+        val store = ViewModelStore()
+        val factory =
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T =
+                    modelClass.cast(FirstLaunchViewModel(slow))
+            }
+        ViewModelProvider.create(store, factory)[FirstLaunchViewModel::class].markHelpSeen()
+        store.clear()
+        saving.complete(Unit)
+        assertEquals(true, isHelpSeen)
     }
 }
