@@ -39,7 +39,6 @@ class MainActivity : ComponentActivity() {
         val graph = EntryPointAccessors.fromActivity<MainActivityEntryPoint>(this)
         val firstLaunch = graph.firstLaunch()
         val roles = graph.roles()
-        val screenData = graph.screenData()
         setContent {
             DostepnyKampusTheme {
                 val isFirst by produceState<Boolean?>(initialValue = null) { value = firstLaunch.isFirstLaunch() }
@@ -48,7 +47,7 @@ class MainActivity : ComponentActivity() {
                         firstLaunch = first,
                         roles = roles,
                         onFirstHelpLeft = { markHelpSeen(firstLaunch) },
-                    ) { AppScreen(it, screenData) }
+                    )
                 }
             }
         }
@@ -72,7 +71,4 @@ interface MainActivityEntryPoint {
 
     /** Konto i role osoby (US14.1). */
     fun roles(): RoleProvider
-
-    /** Źródła danych ekranów z `feature:*`. */
-    fun screenData(): ScreenData
 }

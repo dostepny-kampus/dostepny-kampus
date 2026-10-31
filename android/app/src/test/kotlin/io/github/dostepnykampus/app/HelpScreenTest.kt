@@ -43,11 +43,11 @@ class HelpScreenTest {
     }
 
     private fun shell(firstLaunch: Boolean) {
-        val screenData = compose.activity.appScreenData()
+        val mapViewModel = compose.activity.appMapViewModel()
         compose.setContent {
             DostepnyKampusTheme {
                 AppShell(firstLaunch, GuestRoleProvider, onFirstHelpLeft = { calls += "pokazana" }) {
-                    AppScreen(it, screenData)
+                    TestAppScreen(it, mapViewModel)
                 }
             }
         }
