@@ -215,6 +215,19 @@ class AppNavigatorTest {
         assertEquals(listOf(MapRoute(MapFocus.Building("C-13"))), stack)
     }
 
+    // Wiersz: V1 z arkuszem V2, dotknięcie konturu innego budynku → V2 tego budynku zamiast poprzedniego,
+    // „Wstecz” → V1, US2, decyzja 48.
+    @Test
+    fun us2_other_building_replaces_v2() {
+        navigator().run {
+            openBuilding(symbol = "C-13")
+            openBuilding(symbol = "A-1")
+            assertEquals(listOf(MapRoute(MapFocus.Building("A-1")), BuildingRoute("A-1")), stack)
+            back()
+        }
+        assertEquals(listOf(MapRoute(MapFocus.Building("A-1"))), stack)
+    }
+
     // Wiersze: V3, „Wstecz” → V2 i „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem, US2.1, US3.
     // Scenariusz (częściowo): przegladanie-mapy.feature: Wejście dostępne najwyżej 3 dotknięcia od mapy
     @Test

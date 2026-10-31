@@ -151,9 +151,13 @@ class AppNavigator(
         restartTop()
     }
 
-    /** V1 → V2 budynku [symbol]; „Wstecz” z V2 wraca do V1 z zaznaczonym budynkiem (US1.1, US2, US3.2). */
+    /**
+     * V1 → V2 budynku [symbol]; „Wstecz” z V2 wraca do V1 z zaznaczonym budynkiem (US1.1, US2, US3.2). Dotknięcie
+     * innego budynku przy otwartym arkuszu V2 zastępuje V2, więc „Wstecz” dalej wraca prosto do V1 (decyzja 48).
+     */
     fun openBuilding(symbol: String) {
         leaving {
+            subList(fromIndex = 1, toIndex = size).clear()
             this[0] = MapRoute(MapFocus.Building(symbol))
             add(BuildingRoute(symbol))
         }
