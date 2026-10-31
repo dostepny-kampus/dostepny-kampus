@@ -56,8 +56,10 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
+import io.github.dostepnykampus.feature.map.navigation.MapRoute
 
 private const val SHEET_KEY = "arkusz"
+private const val MAP_KEY = "mapa"
 private const val HALF_WINDOW = 0.5f
 
 /**
@@ -69,34 +71,53 @@ internal val LocalSheetPadding = compositionLocalOf { PaddingValues() }
 /**
  * Strategia sceny dla V2: wpis z metadanymi arkusza ([metadata]) nad samym V1 rysuje się jako arkusz od dołu,
  * a V1 zostaje pod nim widoczne i żywe, z tym samym stanem (decyzje 48 i 83). W oknie co najmniej 600 dp arkusz też
- * wysuwa się od dołu (decyzja 69). Inne układy historii zostawia scenie z jednym ekranem.
+ * wysuwa się od dołu (decyzja 69). Samo V1 to ta sama scena bez arkusza, więc otwarcie i zamknięcie V2 nie zmienia
+ * sceny i nie uruchamia przenikania całego ekranu. Inne układy historii zostawia scenie z jednym ekranem.
  */
 internal object SheetSceneStrategy : SceneStrategy<NavKey> {
     private val sheet: Map<String, Any> = mapOf(SHEET_KEY to true)
+    private val map: Map<String, Any> = mapOf(MAP_KEY to true)
 
-    /** Metadane wpisu [route]: V2 rysuje się jako arkusz nad V1, inne trasy bez metadanych. */
-    fun metadata(route: NavKey): Map<String, Any> = if (route is BuildingRoute) sheet else emptyMap()
+    /** Metadane wpisu [route]: V1 to mapa pod arkuszem, V2 rysuje się jako arkusz nad V1, inne trasy bez metadanych. */
+    fun metadata(route: NavKey): Map<String, Any> =
+        when (route) {
+            is MapRoute -> map
+            is BuildingRoute -> sheet
+            else -> emptyMap()
+        }
 
     override fun SceneStrategyScope<NavKey>.calculateScene(entries: List<NavEntry<NavKey>>): Scene<NavKey>? {
+        val isMapAlone = entries.size == 1 && MAP_KEY in entries.first().metadata
         val isSheetOverMap = entries.size == 2 && SHEET_KEY in entries.last().metadata
-        return if (isSheetOverMap) SheetScene(map = entries.first(), sheet = entries.last()) else null
+        return when {
+            isMapAlone -> SheetScene(map = entries.first(), sheet = null)
+            isSheetOverMap -> SheetScene(map = entries.first(), sheet = entries.last())
+            else -> null
+        }
     }
 }
 
-private data class SheetScene(val map: NavEntry<NavKey>, val sheet: NavEntry<NavKey>) : Scene<NavKey> {
+private data class SheetScene(val map: NavEntry<NavKey>, val sheet: NavEntry<NavKey>?) : Scene<NavKey> {
     override val key: Any = map.contentKey
-    override val entries: List<NavEntry<NavKey>> = listOf(map, sheet)
-    override val previousEntries: List<NavEntry<NavKey>> = listOf(map)
+    override val entries: List<NavEntry<NavKey>> = listOfNotNull(map, sheet)
+    override val previousEntries: List<NavEntry<NavKey>> = if (sheet == null) emptyList() else listOf(map)
     override val content: @Composable () -> Unit = {
-        var isExpanded by rememberSaveable { mutableStateOf(false) }
+        var isExpanded by rememberSaveable(sheet?.contentKey) { mutableStateOf(false) }
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val cover = if (isExpanded) maxHeight else maxHeight * HALF_WINDOW
+            val cover =
+                when {
+                    sheet == null -> 0.dp
+                    isExpanded -> maxHeight
+                    else -> maxHeight * HALF_WINDOW
+                }
             CompositionLocalProvider(LocalSheetPadding provides PaddingValues(bottom = cover)) { map.Content() }
-            Sheet(
-                isExpanded = isExpanded,
-                onExpandedChange = { isExpanded = it },
-                modifier = Modifier.align(Alignment.BottomCenter).height(cover),
-            ) { sheet.Content() }
+            if (sheet != null) {
+                Sheet(
+                    isExpanded = isExpanded,
+                    onExpandedChange = { isExpanded = it },
+                    modifier = Modifier.align(Alignment.BottomCenter).height(cover),
+                ) { sheet.Content() }
+            }
         }
     }
 }

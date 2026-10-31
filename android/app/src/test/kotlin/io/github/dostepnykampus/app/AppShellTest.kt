@@ -344,6 +344,23 @@ class AppShellTest {
         assertEquals(0.dp, handleTop("Zwiń kartę budynku"))
     }
 
+    // Wiersz: V2 rozwinięte, „Wstecz” → V1, dotknięcie konturu → nowe V2 znów do połowy ekranu, US2, decyzja 48.
+    @Test
+    fun us2_new_v2_starts_half() {
+        compose.setContent {
+            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+                if (route is MapRoute) {
+                    Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
+                }
+            }
+        }
+        compose.onNodeWithText("A-1").performClick()
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
+        pressBack()
+        compose.onNodeWithText("A-1").performClick()
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertExists()
+    }
+
     // Wiersz: każdy ekran poza V1, „Wstecz”: historia przetrwa odtworzenie aktywności, NFR-15, NFR-22.
     @Test
     fun nfr22_history_survives_restore() {
