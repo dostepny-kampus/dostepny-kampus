@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app
 
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.declaration.KoClassDeclaration
@@ -20,7 +21,10 @@ class ArchitectureTest {
         Konsist
             .scopeFromProduction()
             .classes()
-            .filter { it.hasParentOf(ViewModel::class, indirectParents = true) }
+            .filter { declaration ->
+                declaration.hasParentOf(ViewModel::class, AndroidViewModel::class, indirectParents = true) ||
+                    declaration.name.endsWith("ViewModel")
+            }
 
     @Test
     fun infra_a1_pure_core_no_android() {
