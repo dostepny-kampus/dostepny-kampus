@@ -15,7 +15,7 @@
     <string name="mapa_kampusu">Mapa kampusu</string>
     <string name="mapa_szukaj_podpowiedz">Wpisz symbol budynku, np. C-13</string>
     <string name="mapa_wyczysc_pole">Wyczyść pole</string>
-    <string name="mapa_brak_wyniku">Nie znaleźliśmy budynku »%1$s«.</string>
+    <string name="mapa_brak_wyniku">Nie znaleźliśmy budynku „%1$s”.</string>
     <string name="mapa_brak_wyniku_rada">Sprawdź symbol, np. C-13, albo wybierz budynek z listy.</string>
     <string name="mapa_bez_internetu">Bez internetu</string>
     <string name="mapa_widok_mapa">Mapa</string>

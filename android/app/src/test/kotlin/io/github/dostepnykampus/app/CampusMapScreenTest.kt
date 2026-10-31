@@ -262,7 +262,7 @@ class CampusMapScreenTest {
     fun us1_1_no_result_and_clear() {
         compose.setContent { Screen() }
         compose.onNode(hasSetTextAction()).performTextInput("A-1 329")
-        compose.onNodeWithText("Nie znaleźliśmy budynku »A-1 329«.").assertExists()
+        compose.onNodeWithText("Nie znaleźliśmy budynku „A-1 329”.").assertExists()
         compose.onNodeWithContentDescription("Wyczyść pole").performClick()
         compose.onNodeWithText("Nie znaleźliśmy", substring = true).assertDoesNotExist()
         assertEquals(emptyList<String>(), opened)
