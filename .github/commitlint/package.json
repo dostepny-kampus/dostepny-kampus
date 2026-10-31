@@ -1,0 +1,11 @@
+{
+  "name": "dostepny-kampus-commitlint",
+  "version": "0.1.0",
+  "private": true,
+  "author": "Vladyslav Yevkov",
+  "description": "Commitlint do sprawdzania komunikatów commitów i tytułów PR w CI",
+  "devDependencies": {
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4"
+  }
+}
