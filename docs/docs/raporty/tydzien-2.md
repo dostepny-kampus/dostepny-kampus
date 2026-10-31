@@ -64,7 +64,7 @@ Uprawnienia opisuje [macierz ról](../biznes/role.md). Potrzeby N1–N9 to hipot
 | K3 | Eksport GeoJSON (WGS84) i CSV (PUWG 1992) | Koordynator | US13 | Musi być |
 | L1, L2 | Logowanie i rejestracja | wszyscy z kontem | US14 | Musi być |
 
-Historyjki „Musi być” tworzą MVP. Faza B dodała ekrany L1, L2 i C5–C7; piętro obejrzane (US15, Musi być) ma teraz własny ekran C5 ([wymagania do ekranów](../ux/wymagania-ekranow.md)). Kryteria akceptacji każdej historyjki są na stronie [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md).
+Historyjki „Musi być” tworzą MVP. Przy projektowaniu ekranów doszły L1, L2 i C5–C7; piętro obejrzane (US15, Musi być) ma teraz własny ekran C5 ([wymagania do ekranów](../ux/wymagania-ekranow.md)). Kryteria akceptacji każdej historyjki są na stronie [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md).
 
 - **Może być:** wersja angielska, tryb ciemny, kolejne budynki szczegółowe, dane z deklaracji dostępności.
 - **Nie tym razem:** nawigacja po trasie, iOS, Google Play, sztuczna inteligencja, czat, powiadomienia push.
