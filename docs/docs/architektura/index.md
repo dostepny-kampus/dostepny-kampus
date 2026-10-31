@@ -17,6 +17,7 @@ Ta część pokazuje, z czego składa się system i dlaczego wybraliśmy takie r
 | [ADR-0004](decyzje/0004-gotowe-reguly-i-biblioteki.md) | tylko gotowe zestawy reguł jakości i dojrzałe biblioteki | nr 8, 22, 35, 41, 46 |
 | [ADR-0005](decyzje/0005-mapa-offline.md) | mapa MapLibre bez sieci: kontury z OpenStreetMap, podkład tylko online | nr 14, 27 |
 | [ADR-0006](decyzje/0006-dane-pwr-o-pomieszczeniach.md) | plany pięter PWr importuje serwer, w repozytorium ich nie ma | nr 15, 17, 44 |
+| [ADR-0007](decyzje/0007-hilt-i-mvvm.md) | zależności z Hilt, stan ekranu w ViewModel z jednym `UiState` | nr 97, 100 |
 
 ADR nie zmieniamy po przyjęciu. Nową decyzję zapisujemy kolejnym numerem ze statusem „zastępuje ADR-…”.
 

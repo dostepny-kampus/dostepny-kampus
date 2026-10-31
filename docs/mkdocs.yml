@@ -99,6 +99,7 @@ nav:
           - ADR-0004 Gotowe reguły i biblioteki: architektura/decyzje/0004-gotowe-reguly-i-biblioteki.md
           - ADR-0005 Mapa bez sieci: architektura/decyzje/0005-mapa-offline.md
           - ADR-0006 Dane PWr o pomieszczeniach: architektura/decyzje/0006-dane-pwr-o-pomieszczeniach.md
+          - ADR-0007 Hilt i MVVM: architektura/decyzje/0007-hilt-i-mvvm.md
   - Raporty:
       - Tydzień 2: raporty/tydzien-2.md
       - Sprint 1: raporty/sprint-1.md
