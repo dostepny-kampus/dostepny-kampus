@@ -63,7 +63,7 @@ class ArchitectureTest {
         files
             .flatMap { it.classes() }
             .filter { it.name.endsWith("ViewModel") }
-            .assertTrue { it.hasAnnotationWithName("HiltViewModel") }
+            .assertTrue(strict = true) { it.hasAnnotationWithName("HiltViewModel") }
     }
 
     @Test
