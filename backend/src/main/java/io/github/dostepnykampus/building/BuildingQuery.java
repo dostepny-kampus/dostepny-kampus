@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -76,6 +77,17 @@ final class BuildingQuery {
             .query(BuildingQuery::hit);
     }
 
+    Optional<BuildingCard> building(final String symbol) {
+        return this.jdbc.sql(
+            """
+            SELECT symbol, name, detail_level,
+                ST_AsGeoJSON(outline) AS outline
+            FROM buildings
+            WHERE symbol = :symbol
+            """
+        ).param("symbol", symbol).query(this::card);
+    }
+
     private BuildingList rows(final ResultSet rows) throws SQLException {
         final List<Building> found = new ArrayList<>(8);
         String chosen = "© OpenStreetMap contributors";
@@ -95,6 +107,25 @@ final class BuildingQuery {
             BuildingQuery.text(rows, "detail_level"),
             this.mapper.readTree(BuildingQuery.text(rows, "outline"))
         );
+    }
+
+    private Optional<BuildingCard> card(final ResultSet rows) throws SQLException {
+        final Optional<BuildingCard> found;
+        if (rows.next()) {
+            final Building item = this.one(rows);
+            found = Optional.of(
+                new BuildingCard(
+                    item.symbol(),
+                    item.name(),
+                    item.detailLevel(),
+                    item.outline(),
+                    List.of()
+                )
+            );
+        } else {
+            found = Optional.empty();
+        }
+        return found;
     }
 
     private static LocateResult hit(final ResultSet rows) throws SQLException {

@@ -57,6 +57,30 @@ final class BuildingsHttpTest {
     }
 
     @Test
+    void usTwoReturnsBuildingCardWithoutEntrances(final WebApplicationContext context)
+        throws Exception {
+        final ObjectMapper mapper = context.getBean(ObjectMapper.class);
+        BuildingsHttpTest.insert(
+            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpTest.west()
+        );
+        MatcherAssert.assertThat(
+            "Karta budynku nie ma konturu albo nie ma pustej listy wejść",
+            mapper.readTree(BuildingsHttpTest.card(context, "A-1")),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.cardBody()))
+        );
+    }
+
+    @Test
+    void usTwoReturnsNotFoundForUnknownSymbol(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Nieznany symbol budynku nie jest błędem 404",
+            BuildingsHttpTest.failure(context, "/buildings/C-13"),
+            Matchers.startsWith("404 application/problem+json")
+        );
+    }
+
+    @Test
     void usSixTwoLocatesPointInsideOutline(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
@@ -270,6 +294,23 @@ final class BuildingsHttpTest {
             "[17.06,51.11],[17.061,51.11],[17.061,51.111],",
             "[17.06,51.111],[17.06,51.11]]]]}"
         );
+    }
+
+    private static String card(final WebApplicationContext context, final String symbol)
+        throws Exception {
+        return MockMvcBuilders.webAppContextSetup(context).build()
+            .perform(MockMvcRequestBuilders.get("/buildings/{symbol}", symbol))
+            .andReturn()
+            .getResponse()
+            .getContentAsString(StandardCharsets.UTF_8);
+    }
+
+    private static String cardBody() {
+        return String.join(
+            "",
+            "{\"symbol\":\"A-1\",\"name\":\"Budynek A-1\",",
+            "\"detailLevel\":\"BASIC\",\"outline\":%s,\"entrances\":[]}"
+        ).formatted(BuildingsHttpTest.west());
     }
 
     private static String inside() {
