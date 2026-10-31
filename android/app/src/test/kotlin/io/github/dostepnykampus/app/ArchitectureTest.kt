@@ -8,6 +8,7 @@ package io.github.dostepnykampus.app
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.declaration.KoFileDeclaration
 import com.lemonappdev.konsist.api.verify.assertFalse
+import com.lemonappdev.konsist.api.verify.assertTrue
 import org.junit.jupiter.api.Test
 
 class ArchitectureTest {
@@ -55,6 +56,14 @@ class ArchitectureTest {
             .flatMap { it.classes() }
             .filter { it.name.endsWith("ViewModel") }
             .assertFalse { !it.containingFile.inPackage("feature") }
+    }
+
+    @Test
+    fun adr7_viewmodel_from_hilt() {
+        files
+            .flatMap { it.classes() }
+            .filter { it.name.endsWith("ViewModel") }
+            .assertTrue { it.hasAnnotationWithName("HiltViewModel") }
     }
 
     @Test
