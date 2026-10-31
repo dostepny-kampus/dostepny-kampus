@@ -31,12 +31,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
@@ -52,10 +49,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
-import io.github.dostepnykampus.core.data.map.MapListChoice
-import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
@@ -64,7 +59,6 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.campusMapData
-import kotlinx.coroutines.launch
 
 private const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
@@ -93,10 +87,6 @@ private val CameraSaver =
  * w `WindowInsets.safeDrawing`. Budynek z listy otwiera V2 jako arkusz na mapie (decyzja 48).
  * Widok kamery jest stanem zapisywanym, więc wraca po „Wstecz” z V2 (decyzja 83).
  *
- * @param repository katalog budynków z zewnątrz, więc test podaje własny kontekst wczytywania
- * @param networkStatus stan internetu; bez niego pod polem symbolu stoi linia „Bez internetu” (US9.1, NFR-10)
- * @param mapListChoice ostatni wybór w przełączniku „Mapa” i „Lista budynków”; bez niego „Mapa”, a przy skali
- *   czcionki co najmniej 1,5 „Lista budynków” (NFR-19, NFR-20)
  * @param onBuildingClick symbol budynku, gdy dotknięcie z tolerancją 24 dp trafiło jeden kontur, albo budynku
  *   wybranego w arkuszu „Który budynek?”, gdy trafiło kontur wspólny albo dwa kontury (US2, decyzja 85)
  * @param modifier wymiary ekranu nadane przez aplikację
@@ -106,27 +96,54 @@ private val CameraSaver =
  *   wracają po „Wstecz” (NFR-53). Budynek [focus] staje w środku części nad arkuszem, a po „Wstecz” wraca widok
  *   sprzed otwarcia V2 (decyzja 83)
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
+ * @param viewModel stan ekranu i zapis wyboru w przełączniku; w aplikacji z grafu Hilt, w testach z podróbkami źródeł
  */
 @Composable
 fun CampusMapScreen(
-    repository: BuildingCatalogRepository,
-    networkStatus: NetworkStatus,
-    mapListChoice: MapListChoice,
+    onBuildingClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    focus: String? = null,
+    contentPadding: PaddingValues = PaddingValues(),
+    mapView: CampusMapView = MapLibreMapView,
+    viewModel: CampusMapViewModel = hiltViewModel(),
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    CampusMapScreen(
+        state = state,
+        onListChange = viewModel::chooseList,
+        onBuildingClick = onBuildingClick,
+        modifier = modifier,
+        focus = focus,
+        contentPadding = contentPadding,
+        mapView = mapView,
+    )
+}
+
+/**
+ * Ekran V1 ze stanem [state] z zewnątrz, bez ViewModel; parametry jak w [CampusMapScreen] z ViewModel.
+ *
+ * @param state katalog, internet (bez niego pod polem symbolu stoi linia „Bez internetu”, US9.1, NFR-10) i ostatni
+ *   wybór w przełączniku; bez wyboru „Mapa”, a przy skali czcionki co najmniej 1,5 „Lista budynków” (NFR-19, NFR-20)
+ * @param onListChange wybór w przełączniku: prawda dla „Lista budynków”
+ * @param onBuildingClick budynek dotknięty na mapie, wybrany w arkuszu albo na liście (US2)
+ * @param modifier wymiary ekranu nadane przez aplikację
+ * @param focus symbol budynku zaznaczonego obrysem (US1.1)
+ * @param contentPadding część ekranu zasłonięta przez arkusz V2 (decyzja 87)
+ * @param mapView widok mapy
+ */
+@Composable
+fun CampusMapScreen(
+    state: CampusMapUiState,
+    onListChange: (Boolean) -> Unit,
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     focus: String? = null,
     contentPadding: PaddingValues = PaddingValues(),
     mapView: CampusMapView = MapLibreMapView,
 ) {
-    val catalog by produceState<BuildingCatalog?>(initialValue = null, repository) { value = repository.catalog() }
+    val catalog = state.catalog
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
-    // Na start „jest internet”, żeby linia nie mignęła, zanim przyjdzie stan bieżący.
-    // Monitor sieci działa tylko, gdy ekran jest widoczny; po powrocie do aplikacji stan jest od razu aktualny.
-    val online = remember(networkStatus) { networkStatus.isOnline() }
-    val isOnline by online.collectAsStateWithLifecycle(initialValue = true)
-    val isListSaved by remember(mapListChoice) { mapListChoice.savedChoice }.collectAsState(initial = null)
-    val isList = isListSaved ?: (LocalDensity.current.fontScale >= LIST_FONT_SCALE)
-    val scope = rememberCoroutineScope()
+    val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LIST_FONT_SCALE)
     // Góra V1 i mapa znikają pod arkuszem V2 albo przy liście; ich stan, np. przewinięcie listy i widok kamery,
     // czeka na powrót.
     val states = rememberSaveableStateHolder()
@@ -136,9 +153,9 @@ fun CampusMapScreen(
             states.SaveableStateProvider(TOP_STATE) {
                 CampusSearch(
                     catalog = catalog,
-                    isOnline = isOnline,
+                    isOnline = state.isOnline,
                     isList = isList,
-                    onListChange = { scope.launch { mapListChoice.choose(it) } },
+                    onListChange = onListChange,
                     onBuildingClick = onBuildingClick,
                     modifier = if (isList) Modifier.weight(1f) else Modifier,
                 )

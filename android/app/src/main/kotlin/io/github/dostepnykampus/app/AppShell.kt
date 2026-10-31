@@ -25,6 +25,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
@@ -55,7 +56,7 @@ private val RestartsSaver =
  * od V5 przy [firstLaunch] (US5.1), inaczej od V1, i przetrwa odtworzenie aktywności (NFR-22). [roles] wybiera
  * cele Gościa i napis czwartej pozycji, a [onFirstHelpLeft] dostaje znać, gdy instrukcja z pierwszego
  * uruchomienia przestanie być na wierzchu. [content] rysuje ekran trasy i podpina jego czynności do nawigatora,
- * w aplikacji [AppScreen]. Wcięcia systemowe, które zajmuje pasek, są dla treści zużyte: ekran dopełnia resztę
+ * domyślnie [AppScreen]. Wcięcia systemowe, które zajmuje pasek, są dla treści zużyte: ekran dopełnia resztę
  * przez `WindowInsets.safeDrawing` albo rysuje pod nią, jak mapa. V2 jest arkuszem nad V1 ([SheetSceneStrategy]).
  */
 @Composable
@@ -64,7 +65,7 @@ fun AppShell(
     roles: RoleProvider,
     onFirstHelpLeft: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable AppNavigator.(NavKey) -> Unit,
+    content: @Composable AppNavigator.(NavKey) -> Unit = { AppScreen(it) },
 ) {
     val backStack = rememberNavBackStack(elements = startBackStack(firstLaunch).toTypedArray())
     val restarts = rememberSaveable(saver = RestartsSaver) { SnapshotStateList() }
@@ -90,7 +91,8 @@ fun AppShell(
                         metadata = SheetSceneStrategy.metadata(route),
                     ) { navigator.content(it) }
                 },
-            entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator()),
+            entryDecorators =
+                listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
         )
     BoxWithConstraints(modifier = modifier) {
         val isWide = maxWidth >= WideWindow
