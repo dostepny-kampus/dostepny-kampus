@@ -62,7 +62,9 @@ import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.app.navigation.AppNavigator
@@ -122,6 +124,12 @@ internal fun AppNavigator.TestAppScreen(route: NavKey, mapViewModel: CampusMapVi
     } else {
         AppScreen(route)
     }
+}
+
+/** ViewModel z licznikiem dotknięć: pokazuje, czy ekran dostał ten sam ViewModel, czy nowy. */
+private class TapsModel : ViewModel() {
+    /** Liczba dotknięć. */
+    var taps by mutableIntStateOf(0)
 }
 
 /** Oboczka w Robolectric: historia, pasek dolny w wąskim oknie, pasek z boku w szerokim i role. */
@@ -274,6 +282,35 @@ class AppShellTest {
         compose.onNodeWithText("A-1").performClick()
         compose.onNode(MapTab).performClick()
         compose.onNodeWithText("v=0").assertExists()
+    }
+
+    // Wiersz: V3, „Wstecz” → V2 → V1 w poprzednim stanie, US1.1, decyzja 83: ViewModel V1 żyje tyle, co wpis V1
+    // w historii, także gdy V1 nie jest rysowane pod V3; ponowne „Mapa” → nowy ViewModel, decyzja 72.
+    @Test
+    fun us1_1_v3_back_keeps_v1_model() {
+        compose.setContent {
+            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+                if (route is MapRoute) {
+                    val model = viewModel { TapsModel() }
+                    Column {
+                        Text(text = "vm=${model.taps}", modifier = Modifier.clickable { model.taps++ })
+                        Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
+                    }
+                } else {
+                    AppScreen(route)
+                }
+            }
+        }
+        compose.onNodeWithText("vm=0").performClick()
+        compose.onNodeWithText("A-1").performClick()
+        compose.onNodeWithText("vm=1").assertIsDisplayed()
+        compose.onNodeWithText("Sprawdź, którędy wejść").performClick()
+        compose.onAllNodesWithText("vm=1").assertCountEquals(0)
+        pressBack()
+        pressBack()
+        compose.onNodeWithText("vm=1").assertExists()
+        compose.onNode(MapTab).performClick()
+        compose.onNodeWithText("vm=0").assertExists()
     }
 
     // Wiersz: V1, dotknięcie konturu → V2, arkusz na mapie do połowy ekranu; uchwyt albo przewinięcie treści
