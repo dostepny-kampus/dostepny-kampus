@@ -361,6 +361,27 @@ class AppShellTest {
         compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertExists()
     }
 
+    // Wiersz: V1 pod arkuszem V2, dotknięcie konturu innego budynku → jego V2 jako arkusz nad tą samą mapą, US2,
+    // decyzja 48; „Wstecz” → V1, US1.1.
+    @Test
+    fun us2_other_v2_sheet_over_v1() {
+        compose.setContent {
+            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+                if (route is MapRoute) {
+                    Column {
+                        Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
+                        Text(text = "C-13", modifier = Modifier.clickable { openBuilding(symbol = "C-13") })
+                    }
+                }
+            }
+        }
+        compose.onNodeWithText("A-1").performClick()
+        compose.onNodeWithText("C-13").performClick()
+        compose.onNodeWithText("A-1").assertIsDisplayed()
+        pressBack()
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertDoesNotExist()
+    }
+
     // Wiersz: każdy ekran poza V1, „Wstecz”: historia przetrwa odtworzenie aktywności, NFR-15, NFR-22.
     @Test
     fun nfr22_history_survives_restore() {
