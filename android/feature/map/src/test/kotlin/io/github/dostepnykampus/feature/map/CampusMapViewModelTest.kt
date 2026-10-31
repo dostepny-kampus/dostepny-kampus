@@ -11,6 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -53,7 +55,8 @@ class CampusMapViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel() = CampusMapViewModel(repository, { online }, choice)
+    private fun viewModel(catalog: BuildingCatalogRepository = repository) =
+        CampusMapViewModel(catalog, { online }, choice)
 
     @Test
     fun us1_catalog_loaded() =
@@ -70,6 +73,17 @@ class CampusMapViewModelTest {
             val viewModel = viewModel()
             backgroundScope.launch { viewModel.uiState.collect {} }
             online.value = false
+            assertFalse(viewModel.uiState.value.isOnline)
+        }
+
+    @Test
+    fun us9_1_offline_while_loading() =
+        runTest(UnconfinedTestDispatcher()) {
+            val stopped = StandardTestDispatcher(TestCoroutineScheduler())
+            val viewModel = viewModel(BuildingCatalogRepository(stopped) { error("plik nie jest czytany") })
+            backgroundScope.launch { viewModel.uiState.collect {} }
+            online.value = false
+            assertNull(viewModel.uiState.value.catalog)
             assertFalse(viewModel.uiState.value.isOnline)
         }
 
