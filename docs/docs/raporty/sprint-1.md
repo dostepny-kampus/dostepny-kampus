@@ -196,7 +196,7 @@ Według harmonogramu kursu Sprint 2 obejmuje interfejs użytkownika, nawigację 
 
 | Zadanie | Wynik | Odwołanie |
 | --- | --- | --- |
-| Repozytorium kodu | szkielet według planowanego układu katalogów, katalog `specs` przeniesiony z dokumentacji, reguły gałęzi | Tydzień 2, sekcja 4 |
+| Kod w jednym repozytorium z dokumentacją (`android/`, `backend/`, `api/`) | szkielet według planowanego układu katalogów, katalog `specs` przeniesiony z dokumentacji, reguły gałęzi | Tydzień 2, sekcja 4 |
 | CI i kontrola PR | rozmiar zmiany, format commitów, skan sekretów, lintery | NFR-35, NFR-46 |
 | Kontrakt API | pierwsza wersja kontraktu OpenAPI | Tydzień 2 |
 | Szkielety serwera i aplikacji | projekty z linterami, uruchamiane w CI | Tydzień 2 |
