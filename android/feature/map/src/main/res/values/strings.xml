@@ -21,4 +21,15 @@
     <string name="mapa_widok_mapa">Mapa</string>
     <string name="mapa_widok_lista">Lista budynków</string>
     <string name="mapa_widok_lista_krotko">Lista</string>
+    <string name="karta_czytaj">Budynek %1$s, %2$s</string>
+    <string name="karta_wejscia">Wejścia</string>
+    <string name="karta_zalecane">Zalecane</string>
+    <string name="karta_bez_nazwy">Wejście bez nazwy w danych</string>
+    <string name="karta_bariery">Bariery w budynku</string>
+    <string name="karta_brak_barier">Brak zgłoszonych barier</string>
+    <string name="karta_brak_barier_zdanie">Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.</string>
+    <string name="karta_sprawdz">Sprawdź, którędy wejść</string>
+    <string name="karta_pokaz">Pokaż na mapie</string>
+    <string name="karta_brak_w_telefonie">Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.</string>
+    <string name="karta_sprobuj">Spróbuj ponownie</string>
 </resources>

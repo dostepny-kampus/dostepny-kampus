@@ -158,7 +158,7 @@ internal fun Sheet(
         val top = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
         Column(modifier = if (isExpanded) Modifier.windowInsetsPadding(top) else Modifier.consumeWindowInsets(top)) {
             Handle(isExpanded = isExpanded, onClick = { onExpandedChange(!isExpanded) })
-            content()
+            Box(Modifier.weight(1f).fillMaxWidth()) { content() }
         }
     }
 }

@@ -28,6 +28,7 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
+import io.github.dostepnykampus.feature.map.BuildingCardScreen
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
@@ -38,7 +39,7 @@ private typealias Action = Pair<String, () -> Unit>
 
 /**
  * Ekran trasy [route] z czynnościami podpiętymi do nawigatora. V1 to mapa z `feature:map` ze stanem w ViewModel
- * z grafu Hilt, V5 instrukcja z `feature:help`, reszta to zaślepki:
+ * z grafu Hilt, V2 karta budynku i V5 z `feature:help`, reszta to zaślepki:
  * nagłówek „Wstecz” z nazwą z listy ekranów i przyciski czynności bez danych. Ekran z `feature:*`
  * zastępuje swoją gałąź i dostaje czynności jako lambdy. Zaślepki nie zapamiętują stanu, więc nie muszą się
  * odświeżać osobno od nawigatora.
@@ -47,7 +48,7 @@ private typealias Action = Pair<String, () -> Unit>
 @NonRestartableComposable
 internal fun AppNavigator.AppScreen(route: NavKey) {
     when (route) {
-        is BuildingRoute -> BuildingStub(route.symbol)
+        is BuildingRoute -> BuildingCard(route.symbol)
         is EntrancesRoute -> Stub(title = stringResource(R.string.ekran_ktoredy_wejsc, route.symbol))
         is ReportRoute -> ReportStub(route.step)
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
@@ -70,12 +71,12 @@ private fun AppNavigator.MapScreen(focus: String?) {
 }
 
 @Composable
-@NonRestartableComposable
-private fun AppNavigator.BuildingStub(symbol: String) {
-    Stub(
-        symbol,
-        stringResource(R.string.sprawdz_ktoredy_wejsc) to { openEntrances(symbol) },
-        stringResource(R.string.pokaz_na_mapie) to { showOnMap(MapFocus.Building(symbol)) },
+private fun AppNavigator.BuildingCard(symbol: String) {
+    BuildingCardScreen(
+        symbol = symbol,
+        onCheckEntrances = { openEntrances(symbol) },
+        onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
+        onBack = { back() },
     )
 }
 
