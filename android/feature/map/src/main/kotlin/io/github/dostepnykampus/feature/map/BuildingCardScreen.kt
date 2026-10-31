@@ -136,7 +136,7 @@ private fun EntranceLine(listed: OrderedEntrance) {
 }
 
 @Composable
-private fun MissingBuilding(onRetry: () -> Unit) {
+internal fun MissingBuilding(onRetry: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
         Text(text = stringResource(R.string.karta_brak_w_telefonie), style = MaterialTheme.typography.bodyLarge)
         PinnedButton(
