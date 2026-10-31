@@ -18,7 +18,7 @@ suppression+='|NOPMD|CHECKSTYLE[:.]OFF|@checkstyle|ktlint-disable|noinspection|<
 suppression+='|detekt:disable|lint:ignore|[\w-]+:(ignore|targetApi)\s*='
 
 rule_files='^android/config/|^android/build-logic/|^android/buildSrc/|(^|/)gradle\.properties$'
-rule_files+='|^\.github/(workflows|scripts)/|^\.github/dependabot\.ya?ml$|^commitlint\.config\.'
+rule_files+='|^\.github/(workflows|scripts|commitlint)/|^\.github/dependabot\.ya?ml$|^commitlint\.config\.'
 rule_files+='|^\.commitlintrc|(^|/)\.gitleaks|(^|/)\.editorconfig$|(^|/)\.gitattributes$|(^|/)lint\.xml$'
 rule_files+='|^api/redocly\.yaml$|^docs/(\.vale\.ini$|\.markdownlint|styles/|scripts/verify\.py$|scripts/check_ids\.py$)'
 
