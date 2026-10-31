@@ -15,7 +15,7 @@ Oznaczenia punktów: MS — mocna strona, SS — słaba strona, SZ — szansa, Z
 
 1. **Braki danych (ZG1, SS4) łagodzi zakres poziomowy.** Budynek bez planów działa jako podstawowy (BR-G3, NFR-48), a „brak danych” mówi wprost, czego nie wiemy (US17.1). Obchód 5 budynków (M-1) zamienia źródło „import” na „obchód” (US17.2, US17.3).
 2. **Słabą dokładność GNSS (SS3, ZG3) łagodzą trzy funkcje ekranu C1.** Uśrednianie z widoczną dokładnością (US6.1), potwierdzenie budynku (US6.2) i ręczna korekta punktu (US6.4) ograniczają R-4. Pokaz w sali opiera się na trybie demonstracyjnym z nagraną trasą (R-3).
-3. **Hipotezy (SS1, ZG5) są największym ryzykiem dla ekranów fazy B.** Persony i makiety oznaczamy jako hipotezy i poprawiamy po wywiadach (R-7). Szansa SZ4 nie zastępuje rekrutacji: prowadzą ją członkowie zespołu w swoim otoczeniu (R-6).
+3. **Hipotezy (SS1, ZG5) są największym ryzykiem dla projektu ekranów.** Persony i makiety oznaczamy jako hipotezy i poprawiamy po wywiadach (R-7). Szansa SZ4 nie zastępuje rekrutacji: prowadzą ją członkowie zespołu w swoim otoczeniu (R-6).
 4. **Weryfikacja daje zaufanie (MS3), ale jest wąskim gardłem (SS5).** Liczbę zgłoszeń czekających widać w K1 (US11.1), a cel M-8 to mediana do 3 dni roboczych. Rolę RO-WER ma każdy członek zespołu (R-19).
 5. **Wartość dla uczelni (SZ1, SZ2) to hipoteza, a ZG6 może ją osłabić.** Produkt musi bronić się wartością dla Odwiedzającego: wejściem, datą i zdjęciem (MS1, MS2; N1, N2). Eksport do QGIS (MS6) zostaje dodatkiem dla Koordynatora (N9).
 
