@@ -4,7 +4,7 @@ Strona opisuje każdy ekran, zanim powstanie makieta. Element ekranu istnieje ty
 
 Kolumna „Odwołanie” podaje te identyfikatory. Skrypt `check_ids.py` sprawdza, że każdy wiersz ma w niej ID US, AC, BR, NFR albo UC lub odsyłacz „wymagania wspólne”.
 
-Napisy przycisków i treść komunikatów w cudzysłowie pochodzą ze [słownika użytkownika](slownik-uzytkownika.md) (propozycje PW-1…PW-15) i są hipotezą do sprawdzenia w wywiadach. Opis elementu bez cudzysłowu używa pojęć ze [słownika pojęć](../biznes/slownik.md). Kolumna „Dokąd” podaje ekran docelowy i jest wejściem do mapy nawigacji.
+Napisy przycisków i treść komunikatów w cudzysłowie pochodzą ze [słownika użytkownika](slownik-uzytkownika.md) (propozycje PW-1…PW-15) i są hipotezą do sprawdzenia w wywiadach. Cudzysłów »…« wewnątrz takiego napisu to na ekranie „…” ([zasady napisów](slownik-uzytkownika.md#zasady-napisow)). Opis elementu bez cudzysłowu używa pojęć ze [słownika pojęć](../biznes/slownik.md). Kolumna „Dokąd” podaje ekran docelowy i jest wejściem do mapy nawigacji.
 
 ## Lista ekranów
 
