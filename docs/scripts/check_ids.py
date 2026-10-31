@@ -1,4 +1,8 @@
-"""Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB) i macierz śledzenia. Author: Vladyslav Yevkov. Version: 0.2.0. Copyright (c) 2026 Vladyslav Yevkov."""
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+"""Dostępny Kampus — kontrola identyfikatorów (N, US, AC, UC, BR, NFR, R, RO, M, TB), macierz śledzenia,
+odwołania wierszy w wymaganiach ekranów, znaczniki scenariuszy w testach Androida i pokrycie scenariuszy testami. Version: 0.5.0."""
 
 from __future__ import annotations
 
@@ -10,6 +14,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+ROOT = REPO.parent
 ID_BODY = r"US\d+\.\d+|US\d+|UC\d+|BR-G\d+|BR-\d+|NFR-\d+|TB-\d+|RO-[A-Z]{3}|R-\d+|M-\d+|N\d+"
 ID_RE = re.compile(rf"(?<![\w-])(?:{ID_BODY})(?![\w°-]|\.\d)")
 DEFINITION_END = re.compile(r"[\s:.*_\]`]|$")
@@ -40,6 +45,33 @@ FEATURE_KEYWORDS = ("Feature", "Funkcja", "Funkcjonalność", "Właściwość", 
 RULE_KEYWORDS = ("Rule", "Reguła", "Zasada")
 SCENARIO_KEYWORDS = ("Scenario Outline", "Scenario Template", "Scenario", "Example", "Scenariusz", "Szablon scenariusza", "Przykład")
 EXAMPLES_KEYWORDS = ("Examples", "Scenarios", "Przykłady")
+SCREEN_PAGE = Path("ux") / "wymagania-ekranow.md"
+COVERAGE_PAGE = Path("_generated") / "pokrycie-testami.md"
+COVERAGE_HEADER = ["Plik", "Scenariusz", "Kryteria i reguły", "Test", "Stan"]
+COVERAGE_COUNTS = (("Pełny test", "pełny"), ("Tylko częściowo", "częściowo"), ("Bez testu", "brak"))
+COVERAGE_INTRO = """# Pokrycie scenariuszy testami
+
+Jeden wiersz to jeden scenariusz z katalogu `specs/`. Kolumna „Test” wskazuje testy Androida ze znacznikiem
+`// Scenariusz:` (moduł, klasa i funkcja testu). Stan „pełny” znaczy, że test sprawdza wszystkie kroki „Wtedy”,
+„częściowo” — tylko część z nich, a „brak” — że scenariusz nie ma testu.
+
+Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą śledzenia:
+`python scripts/check_ids.py --matrix docs/wymagania/sledzenie.md`.
+
+"""
+SCREEN_REF_HEADER = "Odwołanie"
+SCREEN_COMMON_REF = "wymagania wspólne"
+REQUIREMENT_RE = re.compile(r"(?<![\w-])(?:US\d+(?:\.\d+)?|UC\d+|BR-G?\d+|NFR-\d+)(?![\w-])")
+MARKER = re.compile(r"^\s*// Scenariusz( \(częściowo\))?: (\S[^:]*?\.feature):(?: (\S.*?))?\s*$")
+MARKER_CONTINUATION = re.compile(r"^\s*//\s{2,}(\S.*?)\s*$")
+MARKER_HINT = re.compile(r"^\s*//\s*scenariusz\b[^:]{0,20}:", re.IGNORECASE)
+ANNOTATION = re.compile(r"@([\w.:]+)(\((?:[^()]|\([^()]*\))*\))?\s*")
+TEST_ANNOTATIONS = {"Test", "ParameterizedTest", "RepeatedTest", "TestFactory", "TestTemplate"}
+FUNCTION = re.compile(r"^(?:[a-z]+\s+)*fun\s+(?:<[^>]*>\s*)?(?:[\w.]+\.)?(?:`([^`]+)`|(\w+))")
+CLASS = re.compile(r"^\s*(?:@[\w.]+(?:\([^)]*\))?\s+)*(?:[a-z]+\s+)*(?:class|object)\s+(\w+)[^{]*\{")
+CODE_TOKEN = re.compile(r"""//[^\n]*|/\*|\"\"\"[\s\S]*?\"\"\"|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n]){1,6}'""")
+BLOCK_COMMENT_PART = re.compile(r"/\*|\*/")
+TEST_SOURCE = re.compile(r"^(?!(?:.*/)?(?:build|\.gradle)/)(?:.*/)?src/(?:test|\w*Test)\w*/")
 
 
 @dataclass(frozen=True)
@@ -59,6 +91,22 @@ class Scenario:
 
     name: str
     location: Location
+    feature: str = ""
+
+
+@dataclass(frozen=True)
+class Marker:
+    """Znacznik `// Scenariusz: <plik>.feature: <nazwa>` w teście; `test` — stan funkcji tuż pod znacznikiem:
+    „aktywny”, „wyłączony” (@Ignore, @Disabled…) albo pusty, gdy pod znacznikiem nie ma funkcji testu; `test_id` —
+    stały identyfikator testu „moduł · Klasa.funkcja”, niezależny od numerów linii."""
+
+    feature: str
+    scenario: str
+    partial: bool
+    test: str
+    location: Location
+    test_id: str = ""
+    function_line: int = 0
 
 
 @dataclass
@@ -72,6 +120,9 @@ class Corpus:
     scenarios: dict[str, list[Scenario]] = field(default_factory=lambda: defaultdict(list))
     all_scenarios: list[Scenario] = field(default_factory=list)
     feature_files: int = 0
+    features: set[str] = field(default_factory=set)
+    markers: list[Marker] = field(default_factory=list)
+    bad_markers: list[Location] = field(default_factory=list)
 
     def link(self, owner: str, other: str) -> None:
         """Zapisuje powiązanie w obu kierunkach; pomija powiązanie ID z samym sobą."""
@@ -95,11 +146,16 @@ def natural_key(identifier: str) -> tuple[object, ...]:
 
 
 def relative(path: Path) -> str:
-    """Zwraca ścieżkę względną do repozytorium (lub bezwzględną, gdy plik leży poza nim) w formacie POSIX."""
-    try:
-        return path.resolve().relative_to(REPO).as_posix()
-    except ValueError:
-        return path.resolve().as_posix()
+    """Zwraca ścieżkę w formacie POSIX względną do katalogu dokumentacji, a poza nim — do korzenia monorepo.
+
+    Gwarantuje: plik spoza monorepo dostaje ścieżkę bezwzględną.
+    """
+    for base in (REPO, ROOT):
+        try:
+            return path.resolve().relative_to(base).as_posix()
+        except ValueError:
+            continue
+    return path.resolve().as_posix()
 
 
 def clean_line(line: str) -> str:
@@ -247,13 +303,16 @@ def keyword_of(line: str, keywords: tuple[str, ...]) -> str | None:
     return None
 
 
-def scan_feature(path: Path, corpus: Corpus) -> None:
+def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
     """Dodaje do `corpus` scenariusze i ich tagi-ID z pliku .feature (tagi funkcji i reguły są dziedziczone).
 
+    `feature` to ścieżka pliku względna do katalogu scenariuszy, jak w znaczniku testu (domyślnie nazwa pliku).
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
     rel = relative(path)
+    feature = feature or path.name
     corpus.feature_files += 1
+    corpus.features.add(feature)
     feature_tags: list[str] = []
     rule_tags: list[str] = []
     pending: list[tuple[str, Location]] = []
@@ -272,24 +331,144 @@ def scan_feature(path: Path, corpus: Corpus) -> None:
         elif keyword_of(line, RULE_KEYWORDS) is not None:
             rule_tags = tags
         elif (name := keyword_of(line, SCENARIO_KEYWORDS)) is not None:
-            scenario = Scenario(name or "(bez nazwy)", Location(rel, number))
+            scenario = Scenario(name or "(bez nazwy)", Location(rel, number), feature)
             corpus.all_scenarios.append(scenario)
             for tag in dict.fromkeys(feature_tags + rule_tags + tags):
                 corpus.scenarios[tag].append(scenario)
 
 
-def collect(docs: Path, specs: Path) -> Corpus:
-    """Zbiera korpus z `docs/**/*.md` (bez `_generated`) i `specs/**/*.feature`. Brak katalogów nie jest błędem.
+def collect(docs: Path, specs: Path, android: Path | None = None) -> Corpus:
+    """Zbiera korpus z `docs/**/*.md` (bez `_generated`), `specs/**/*.feature` i `android/**/*.kt`. Brak katalogów nie jest błędem.
 
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu pliku.
     """
     corpus = Corpus()
-    for path in sorted(docs.rglob("*.md")) if docs.is_dir() else []:
+    for path in files_in(docs, "*.md"):
         if "_generated" not in path.relative_to(docs).parts:
             scan_markdown(path, corpus)
-    for path in sorted(specs.rglob("*.feature")) if specs.is_dir() else []:
-        scan_feature(path, corpus)
+    for path in files_in(specs, "*.feature"):
+        scan_feature(path, corpus, path.relative_to(specs).as_posix())
+    for path in files_in(android, "*.kt"):
+        if TEST_SOURCE.match(path.relative_to(android).as_posix()):
+            parts = path.relative_to(android).parts
+            scan_kotlin(path, corpus, "/".join(parts[: parts.index("src")]))
     return corpus
+
+
+def files_in(root: Path | None, pattern: str) -> list[Path]:
+    """Zwraca pliki `pattern` z `root` (rekurencyjnie) posortowane po ścieżce POSIX względem `root`.
+
+    Gwarantuje: ta sama kolejność na każdym systemie (bez porównań zależnych od wielkości liter w Windows);
+    brak katalogu daje pustą listę.
+    """
+    return sorted(root.rglob(pattern), key=lambda p: p.relative_to(root).as_posix()) if root and root.is_dir() else []
+
+
+def scan_kotlin(path: Path, corpus: Corpus, module: str = "") -> None:
+    """Dodaje do `corpus` znaczniki scenariuszy z pliku testów Kotlin (`src/test*`, `src/*Test*`, bez build i .gradle).
+    Linię podobną do znacznika, ale niezgodną ze wzorem, albo znacznik bez nazwy zapisuje jako zły znacznik.
+    Identyfikator testu to `module` (katalog przed `src/`), łańcuch klas i obiektów z ciałem `{`, które obejmują
+    znacznik (według wcięcia; bez nich — nazwa pliku), i nazwa funkcji testu.
+
+    Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
+    """
+    lines, rel = code_only(path.read_text(encoding="utf-8")).splitlines(), relative(path)
+    owners: list[tuple[int, str]] = []
+    for index, line in enumerate(lines):
+        marker = read_marker(lines, index)
+        location = Location(rel, index + 1)
+        indent = len(line) - len(line.lstrip())
+        while line.strip() and owners and owners[-1][0] >= indent:
+            owners.pop()
+        if declared := CLASS.match(line):
+            owners.append((indent, declared.group(1)))
+        if marker and marker.scenario:
+            state, function, line_number = test_state(lines, marker.end)
+            owner = ".".join(name for _, name in owners) or path.stem
+            test_id = f"{module} · {owner}.{function}" if module else f"{owner}.{function}"
+            found = Marker(marker.feature, marker.scenario, marker.partial, state, location, test_id, line_number)
+            corpus.markers.append(found)
+        elif marker or MARKER_HINT.match(line):
+            corpus.bad_markers.append(location)
+
+
+def code_only(text: str) -> str:
+    """Zwraca kod Kotlin z treścią komentarzy blokowych `/* */` (także zagnieżdżonych) i napisów (`"…"`, `\"\"\"…\"\"\"`,
+    `'…'`) zamienioną na spacje, żeby znacznik, adnotacja ani nawias w nich nie były brane pod uwagę.
+
+    Gwarantuje: liczba linii i komentarze `//` poza komentarzem blokowym i napisem zostają bez zmian.
+    """
+    parts, pos = [], 0
+    while match := CODE_TOKEN.search(text, pos):
+        end, depth = match.end(), 1
+        while match.group(0) == "/*" and depth and (inner := BLOCK_COMMENT_PART.search(text, end)):
+            depth, end = depth + (1 if inner.group(0) == "/*" else -1), inner.end()
+        if match.group(0) == "/*" and depth:
+            end = len(text)
+        token = text[match.start() : end]
+        parts += [text[pos : match.start()], token if token.startswith("//") else re.sub(r"[^\n]", " ", token)]
+        pos = end
+    return "".join(parts) + text[pos:]
+
+
+@dataclass(frozen=True)
+class MarkerText:
+    """Znacznik odczytany z linii kodu: „częściowo”, plik, nazwa scenariusza i indeks pierwszej linii po znaczniku."""
+
+    partial: bool
+    feature: str
+    scenario: str
+    end: int
+
+
+def read_marker(lines: list[str], index: int) -> MarkerText | None:
+    """Zwraca znacznik zaczynający się w linii `index` albo None.
+
+    Gwarantuje: nazwa to tekst po `<plik>.feature:` z tej linii i z kolejnych linii `//` z wcięciem co najmniej
+    dwóch spacji po `//`, sklejony jedną spacją; pusta nazwa oznacza znacznik bez nazwy.
+    """
+    match = MARKER.match(lines[index])
+    if not match:
+        return None
+    parts = [match.group(3)] if match.group(3) else []
+    end = index + 1
+    while end < len(lines) and (continuation := MARKER_CONTINUATION.match(lines[end])):
+        parts.append(continuation.group(1))
+        end += 1
+    return MarkerText(bool(match.group(1)), match.group(2), " ".join(parts), end)
+
+
+def test_state(lines: list[str], start: int) -> tuple[str, str, int]:
+    """Zwraca (stan, nazwa funkcji, numer linii funkcji od 1). Stan to „aktywny”, gdy od linii `start` są kolejne
+    znaczniki i adnotacje (wśród nich adnotacja testu z TEST_ANNOTATIONS), a po nich `fun` z dowolnymi modyfikatorami;
+    „wyłączony”, gdy jest też @Ignore albo @Disabled…; inaczej pusty stan, pusta nazwa i 0. Linie są z code_only.
+
+    Gwarantuje: pusta linia, komentarz albo inny kod przed `fun` daje pusty stan; argumenty adnotacji mogą mieć kilka linii.
+    """
+    names: set[str] = set()
+    depth, index = 0, start
+    while index < len(lines):
+        text = lines[index].strip()
+        index += 1
+        if depth:
+            depth = max(0, depth + text.count("(") - text.count(")"))
+            continue
+        if not text:
+            return "", "", 0
+        if marker := read_marker(lines, index - 1):
+            index = marker.end
+            continue
+        while match := ANNOTATION.match(text):
+            names.add(match.group(1).rsplit(".", 1)[-1])
+            text = text[match.end() :]
+            if text.startswith("("):
+                depth, text = text.count("(") - text.count(")"), ""
+        if (function := FUNCTION.match(text)) and names & TEST_ANNOTATIONS:
+            disabled = any(n == "Ignore" or n.startswith("Disabled") for n in names)
+            return "wyłączony" if disabled else "aktywny", function.group(1) or function.group(2), index
+        if text:
+            return "", "", 0
+    return "", "", 0
 
 
 def parent_us(ac: str) -> str:
@@ -376,6 +555,86 @@ def has_need(corpus: Corpus, us: str) -> bool:
 def has_story(corpus: Corpus, uc: str) -> bool:
     """Zwraca True, gdy przypadek użycia `uc` jest powiązany z historyjką US albo z jej kryterium."""
     return any(US_RE.match(n) or AC_RE.match(n) for n in corpus.links.get(uc, set()))
+
+
+def check_tests(corpus: Corpus, release: bool = False) -> list[Finding]:
+    """Zwraca wyniki kontroli „scenariusz → test” (decyzja 67).
+
+    Gwarantuje: zły znacznik, znacznik do nieistniejącego pliku .feature albo scenariusza (nazwa znak w znak)
+    i znacznik, który nie stoi tuż nad funkcją testu, to „BŁĄD” z miejscem w teście; znacznik nad testem wyłączonym
+    to „UWAGA”. Żaden z nich nie pokrywa scenariusza. Dwa scenariusze o tej samej nazwie w jednym pliku to „BŁĄD”
+    (znacznik byłby niejednoznaczny). Scenariusz bez testu i scenariusz tylko z testami „częściowo” to „UWAGI”
+    w dwóch osobnych listach, a w trybie `release` — „BŁĘDY”. Ten sam identyfikator testu u dwóch różnych funkcji
+    to „BŁĄD” (wiersz tabeli pokrycia byłby niejednoznaczny).
+    """
+    form = "znacznik niezgodny ze wzorem „// Scenariusz: <plik>.feature: <nazwa>”"
+    findings = [Finding("BŁĄD", str(loc), form) for loc in corpus.bad_markers]
+    first: dict[tuple[str, str], Scenario] = {}
+    for scenario in corpus.all_scenarios:
+        if (twin := first.setdefault((scenario.feature, scenario.name), scenario)) is not scenario:
+            line = twin.location.line
+            message = f"scenariusz o tej samej nazwie co w linii {line}, znacznik byłby niejednoznaczny: {scenario.name}"
+            findings.append(Finding("BŁĄD", str(scenario.location), message))
+    names = set(first)
+    for marker in corpus.markers:
+        key, severity = (marker.feature, marker.scenario), "BŁĄD"
+        if marker.feature not in corpus.features:
+            problem = f"znacznik wskazuje nieistniejący plik (ścieżka względem specs/): {marker.feature}"
+        elif key not in names:
+            problem = f"znacznik wskazuje nieistniejący scenariusz: {marker.feature}: {marker.scenario}"
+        elif not marker.test:
+            problem = "znacznik nie stoi tuż nad funkcją testu"
+        elif marker.test == "wyłączony":
+            severity, problem = "UWAGA", f"test wyłączony, nie pokrywa scenariusza: {marker.scenario}"
+        else:
+            continue
+        findings.append(Finding(severity, str(marker.location), problem))
+    functions: dict[str, tuple[str, int]] = {}
+    for marker in corpus.markers:
+        place = (marker.location.path, marker.function_line)
+        if marker.test and functions.setdefault(marker.test_id, place) != place:
+            other = ":".join(map(str, functions[marker.test_id]))
+            message = f"identyfikator testu „{marker.test_id}” ma też inna funkcja ({other}); zmień nazwę funkcji albo klasy"
+            findings.append(Finding("BŁĄD", str(marker.location), message))
+    level, states = "BŁĄD" if release else "UWAGA", coverage_states(corpus)
+    missing = [s for s in corpus.all_scenarios if states[s][1] == "brak"]
+    partial = [s for s in corpus.all_scenarios if states[s][1] == "częściowo"]
+    findings += [Finding(level, str(s.location), f"scenariusz bez testu: {s.name}") for s in missing]
+    return findings + [Finding(level, str(s.location), f"scenariusz tylko z testem częściowym: {s.name}") for s in partial]
+
+
+def coverage_states(corpus: Corpus) -> dict[Scenario, tuple[list[Marker], str]]:
+    """Zwraca dla każdego scenariusza znaczniki, które go pokrywają, i stan: „pełny”, „częściowo” albo „brak”.
+
+    Gwarantuje: pokrywa tylko znacznik nad aktywnym testem; stan „pełny”, gdy choć jeden znacznik nie jest „częściowo”.
+    """
+    covering = defaultdict(list)
+    for marker in corpus.markers:
+        if marker.test == "aktywny":
+            covering[(marker.feature, marker.scenario)].append(marker)
+    states = {}
+    for scenario in corpus.all_scenarios:
+        markers = covering.get((scenario.feature, scenario.name), [])
+        state = "brak" if not markers else "częściowo" if all(m.partial for m in markers) else "pełny"
+        states[scenario] = (markers, state)
+    return states
+
+
+def render_coverage(corpus: Corpus) -> str:
+    """Zwraca stronę pokrycia: liczby stanów i tabelę [plik, scenariusz, kryteria i reguły, testy, stan] w kolejności
+    plików i scenariuszy. Test to jego stały identyfikator (Marker.test_id), bez numeru linii."""
+    tags: dict[Scenario, list[str]] = defaultdict(list)
+    for tag, items in corpus.scenarios.items():
+        for scenario in items if AC_RE.match(tag) or BR_RE.match(tag) else []:
+            tags[scenario].append(tag)
+    rows = []
+    for scenario, (markers, state) in coverage_states(corpus).items():
+        tests = [f"`{test_id}`".replace("|", "\\|") for test_id in sorted(dict.fromkeys(m.test_id for m in markers))]
+        name = scenario.name.replace("|", "\\|")
+        rows.append([f"`{scenario.feature}`", name, join(sorted(tags[scenario], key=natural_key)), join(tests, "<br>"), state])
+    counts = [[label, str(sum(row[-1] == state for row in rows))] for label, state in COVERAGE_COUNTS]
+    tables = [*plain_table(["Stan", "Liczba"], counts), "", *plain_table(COVERAGE_HEADER, rows)]
+    return COVERAGE_INTRO + "\n".join(tables) + "\n"
 
 
 def undefined_references(corpus: Corpus, partial: bool = False) -> list[Finding]:
@@ -523,6 +782,11 @@ def aligned_table(header: list[str], rows: list[list[str]]) -> list[str]:
     return [table_line(header, widths), table_line(["-" * w for w in widths], widths), *[table_line(r, widths) for r in rows]]
 
 
+def plain_table(header: list[str], rows: list[list[str]]) -> list[str]:
+    """Zwraca linie tabeli Markdown bez wyrównania kolumn: nowy wiersz nie zmienia pozostałych linii."""
+    return ["| " + " | ".join(row) + " |" for row in [header, ["---"] * len(header), *rows]]
+
+
 def table_line(cells: list[str], widths: list[int]) -> str:
     """Zwraca wiersz tabeli Markdown z komórkami dopełnionymi spacjami do `widths`."""
     return "| " + " | ".join(c.ljust(w) for c, w in zip(cells, widths)) + " |"
@@ -568,13 +832,55 @@ def matrix_is_current(target: Path, blocks: dict[str, str]) -> bool:
     return current == updated_content(current, blocks)
 
 
-def report_matrix_state(target: Path, current: bool) -> int:
+def report_matrix_state(target: Path, stale: list[Path]) -> int:
     """Wypisuje wynik kontroli aktualności macierzy w `target` i zwraca kod wyjścia: 0 aktualna, 1 nieaktualna."""
-    if current:
-        print(f"check_ids: macierz w {target} jest aktualna")
+    if not stale:
+        print(f"check_ids: macierz w {target} i strona pokrycia testami są aktualne")
         return 0
-    print(f"check_ids: BŁĄD: macierz w {target} jest nieaktualna; odśwież: python scripts/check_ids.py --matrix {target}")
+    names = ", ".join(str(path) for path in stale)
+    print(f"check_ids: BŁĄD: nieaktualne albo brak: {names}; odśwież: python scripts/check_ids.py --matrix {target}")
     return 1
+
+
+def screen_rows(path: Path) -> list[Finding]:
+    """Zwraca błędy dla wierszy tabel z kolumną „Odwołanie”, w których ta kolumna nie ma ID US, AC, BR, NFR ani UC.
+
+    Gwarantuje: wiersz przechodzi, gdy kolumna ma choć jedno takie ID albo odsyłacz „wymagania wspólne”; same
+    „decyzja N”, „PW-x”, „WCAG …” czy „próg zespołu” dają „BŁĄD” z numerem linii. Wiersz z mniejszą
+    liczbą komórek, który nie sięga tej kolumny, też jest błędem. Tabele bez tej kolumny i bloki kodu są
+    pomijane. Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
+    """
+    findings: list[Finding] = []
+    column: int | None = None
+    for number, raw in markdown_lines(path.read_text(encoding="utf-8")):
+        if not raw.strip().startswith("|"):
+            column = None
+            continue
+        cells = table_cells(raw)
+        if cells is None:
+            continue
+        if column is None:
+            column = cells.index(SCREEN_REF_HEADER) if SCREEN_REF_HEADER in cells else -1
+            continue
+        if column < 0:
+            continue
+        location = str(Location(relative(path), number))
+        if column >= len(cells):
+            message = f"wiersz bez kolumny „{SCREEN_REF_HEADER}”: {len(cells)} komórek, a kolumna jest {column + 1}."
+            findings.append(Finding("BŁĄD", location, message))
+            continue
+        cell = cells[column]
+        if REQUIREMENT_RE.search(clean_line(cell)) or SCREEN_COMMON_REF in cell:
+            continue
+        message = f"wiersz bez odwołania do US, AC, BR, NFR ani UC: „{cell or '—'}”"
+        findings.append(Finding("BŁĄD", location, message))
+    return findings
+
+
+def check_screen_page(docs: Path) -> list[Finding]:
+    """Zwraca wyniki screen_rows dla strony wymagań ekranów w `docs`; brak strony nie jest błędem."""
+    page = docs / SCREEN_PAGE
+    return screen_rows(page) if page.is_file() else []
 
 
 def print_report(corpus: Corpus, findings: list[Finding]) -> None:
@@ -591,38 +897,47 @@ def print_report(corpus: Corpus, findings: list[Finding]) -> None:
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     """Parsuje argumenty wiersza poleceń."""
-    parser = argparse.ArgumentParser(description="Kontrola ID w docs/**/*.md i specs/**/*.feature.")
+    parser = argparse.ArgumentParser(description="Kontrola ID w docs/**/*.md, specs/**/*.feature i testach Androida.")
     parser.add_argument("--docs", type=Path, default=REPO / "docs", help="katalog dokumentacji")
-    parser.add_argument("--specs", type=Path, default=REPO / "specs", help="katalog plików .feature")
+    parser.add_argument("--specs", type=Path, default=ROOT / "specs", help="katalog plików .feature")
+    parser.add_argument("--android", type=Path, default=ROOT / "android", help="katalog z testami Androida (.kt)")
     target = parser.add_mutually_exclusive_group()
     target.add_argument("--matrix", type=Path, help="zapisz macierz N → US → AC → UC → scenariusz do pliku")
     target.add_argument("--check-matrix", type=Path, help="tylko sprawdź, czy macierz w pliku jest aktualna")
     parser.add_argument("--strict", action="store_true", help="kod wyjścia 1, gdy są błędy")
     parser.add_argument("--partial", action="store_true", help="błędy klas ID bez żadnej definicji jako uwagi")
+    parser.add_argument("--release", action="store_true", help="na wydanie: scenariusz bez pełnego testu jest błędem")
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     """Punkt wejścia. Zwraca 1 przy błędach w trybie --strict, 2 przy błędzie odczytu/zapisu, w pozostałych razach 0.
 
-    Gwarantuje: z --check-matrix tylko porównuje macierz w pliku z wygenerowaną z bieżących dokumentów, bez raportu
-    kontroli ID; zwraca 0, gdy jest aktualna, 1, gdy jest nieaktualna albo pliku brak, 2 przy błędzie odczytu.
+    Gwarantuje: --matrix zapisuje też stronę pokrycia testami (COVERAGE_PAGE w katalogu dokumentacji). Z --check-matrix
+    tylko porównuje macierz i stronę pokrycia z wygenerowanymi z bieżących plików, bez raportu kontroli ID; zwraca 0,
+    gdy obie są aktualne, 1, gdy któraś jest nieaktualna albo jej brak, 2 przy błędzie odczytu.
     """
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8", errors="replace")
     args = parse_args(argv)
     try:
-        corpus = collect(args.docs, args.specs)
+        corpus = collect(args.docs, args.specs, args.android)
+        coverage = args.docs / COVERAGE_PAGE
         if args.check_matrix:
-            return report_matrix_state(args.check_matrix, matrix_is_current(args.check_matrix, render_blocks(corpus)))
+            stale = [] if matrix_is_current(args.check_matrix, render_blocks(corpus)) else [args.check_matrix]
+            if not coverage.is_file() or coverage.read_text(encoding="utf-8") != render_coverage(corpus):
+                stale.append(coverage)
+            return report_matrix_state(args.check_matrix, stale)
         if args.matrix:
             write_matrix(args.matrix, render_blocks(corpus))
-            print(f"check_ids: macierz zapisana do {args.matrix}")
+            coverage.parent.mkdir(parents=True, exist_ok=True)
+            coverage.write_text(render_coverage(corpus), encoding="utf-8", newline="\n")
+            print(f"check_ids: macierz zapisana do {args.matrix}, pokrycie testami do {coverage}")
+        findings = check(corpus, args.partial) + check_tests(corpus, args.release) + check_screen_page(args.docs)
     except (OSError, UnicodeDecodeError) as exc:
         print(f"check_ids: BŁĄD: {exc}", file=sys.stderr)
         return 2
-    findings = check(corpus, args.partial)
     print_report(corpus, findings)
     has_errors = any(f.level == "BŁĄD" for f in findings)
     return 1 if args.strict and has_errors else 0

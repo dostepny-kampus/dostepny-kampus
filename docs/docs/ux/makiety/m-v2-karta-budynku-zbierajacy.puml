@@ -4,16 +4,13 @@
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Budynek A-1", "<i>[nazwa budynku z danych]</i>")
-$wejscie($niedostepne(), "Wejście główne", "Sprawdzone na miejscu <i>[data]</i>", "Zmień oznaczenie")
-$wejscie($dostepne(), "Wejście bramą od ul. Norwida", "Z map i opisów, stan z <i>[data]</i>", "Zmień oznaczenie")
-$wejscie($brak_danych(), "<i>[nazwa wejścia z danych]</i>", "Z map i opisów, stan z <i>[data]</i>", "Zmień oznaczenie")
-$przycisk_glowny("Sprawdź, którędy wejść")
-..
-Piętro:
-$pietra(2)
-<b>Plan piętra</b>
-$obraz("plan wybranego piętra: windy, schody, toalety, wejścia, bariery")
-Źródło: Politechnika Wrocławska
+$karta_gora()
+Z map i opisów, stan z <i>[data]</i>
+$sekcja("Wejścia")
+$wejscie_karty($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane", "", "Zmień oznaczenie")
+$wejscie_karty($niedostepne(), "Wejście główne", "", "", "Zmień oznaczenie")
+$wejscie_karty($brak_danych(), "<i>[nazwa wejścia z danych]</i>", "", "", "Zmień oznaczenie")
+$grupy_pwr()
 $przycisk("Oznacz obejrzane piętra")
 $sekcja("Bariery w budynku")
 $ramka()
@@ -31,6 +28,7 @@ Sprawdzone <i>[data]</i>
 $przycisk("Zgłoś, że bariery nie ma")
 $przycisk("Popraw zgłoszenie")
 }
+$karta_dol()
 $pasek_dolny_praca()
 $ekran_koniec()
 @endsalt

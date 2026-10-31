@@ -11,11 +11,13 @@ $ramka()
 <i>[nazwa budynku z danych]</i>
 $blokada(): schody przy wejściu
 $tekst("[pozostałe bariery z danych: typ, uciążliwość]", "i")
+$przycisk("Pokaż na mapie")
 }
 $ramka()
 <b>Budynek C-13</b>
 <i>[nazwa budynku z danych]</i>
 $tekst("[bariery z danych: typ, uciążliwość]", "i")
+$przycisk("Pokaż na mapie")
 }
 $ramka()
 <b>Budynek <i>[symbol]</i></b>

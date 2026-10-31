@@ -1,9 +1,12 @@
 site_name: Dostępny Kampus — dokumentacja
 site_description: Inwentaryzacja barier architektonicznych na kampusie Politechniki Wrocławskiej
 site_author: Vladyslav Yevkov
-copyright: Copyright &copy; 2026 Vladyslav Yevkov
+copyright: Copyright &copy; 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 docs_dir: docs
 strict: true
+validation:
+  links:
+    anchors: warn
 
 theme:
   name: material
@@ -67,6 +70,7 @@ nav:
       - Przypadki użycia: wymagania/przypadki-uzycia.md
       - Wymagania niefunkcjonalne: wymagania/niefunkcjonalne.md
       - Macierz śledzenia: wymagania/sledzenie.md
+      - Pokrycie testami: _generated/pokrycie-testami.md
   - UX:
       - Scenariusz wywiadu: ux/scenariusz-wywiadu.md
       - Persony: ux/persony.md
@@ -74,14 +78,31 @@ nav:
       - Analiza SWOT: ux/swot.md
       - QFD — potrzeby a funkcje: ux/qfd.md
       - Wymagania do ekranów: ux/wymagania-ekranow.md
+      - Ekrany (makiety hi-fi): ux/ekrany/index.md
       - Mapa nawigacji: ux/mapa-nawigacji.md
       - Słownik użytkownika: ux/slownik-uzytkownika.md
+      - Dostępność w aplikacji: ux/dostepnosc.md
       - Makiety:
           - Konwencje: ux/makiety/index.md
           - Odwiedzający: ux/makiety/odwiedzajacy.md
           - Zespół w terenie: ux/makiety/zespol-w-terenie.md
           - Weryfikacja i koordynacja: ux/makiety/weryfikacja-koordynacja.md
       - Tokeny wizualne: ux/tokeny.md
+  - Architektura:
+      - architektura/index.md
+      - Kontekst systemu: architektura/kontekst.md
+      - Kontenery: architektura/kontenery.md
+      - Decyzje:
+          - ADR-0001 Stos technologiczny: architektura/decyzje/0001-stos-technologiczny.md
+          - ADR-0002 Jedno repozytorium: architektura/decyzje/0002-monorepo.md
+          - ADR-0003 Keycloak: architektura/decyzje/0003-keycloak.md
+          - ADR-0004 Gotowe reguły i biblioteki: architektura/decyzje/0004-gotowe-reguly-i-biblioteki.md
+          - ADR-0005 Mapa bez sieci: architektura/decyzje/0005-mapa-offline.md
+          - ADR-0006 Dane PWr o pomieszczeniach: architektura/decyzje/0006-dane-pwr-o-pomieszczeniach.md
+          - ADR-0007 Hilt i MVVM: architektura/decyzje/0007-hilt-i-mvvm.md
   - Raporty:
       - Tydzień 2: raporty/tydzien-2.md
       - Sprint 1: raporty/sprint-1.md
+      - UX (PDU):
+          - raporty/ux/index.md
+          - Przegląd kognitywny: raporty/ux/przeglad-kognitywny.md

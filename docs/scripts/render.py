@@ -1,4 +1,7 @@
-"""Dostępny Kampus — render diagramów PlantUML i BPMN do docs/_generated z manifestem źródeł. Author: Vladyslav Yevkov. Version: 0.2.0. Copyright (c) 2026 Vladyslav Yevkov."""
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+"""Dostępny Kampus — render diagramów PlantUML i BPMN do docs/_generated z manifestem źródeł. Version: 0.2.0."""
 
 from __future__ import annotations
 
@@ -256,7 +259,7 @@ def render_bpmn(sources: list[Path], out_dir: Path) -> None:
     cmd = [node, str(bpmn_cli()), "--no-footer"]
     for src in sources:
         outputs = ",".join(str(out_dir / f"{src.stem}.{fmt}") for fmt in FORMATS)
-        cmd.append(f"{src};{outputs}")
+        cmd.append(f"{src}{os.pathsep}{outputs}")
     timeout_s = BPMN_BASE_TIMEOUT_S + BPMN_PER_FILE_TIMEOUT_S * len(sources)
     code, out = run_with_timeout(cmd, timeout_s, REPO)
     if code != 0:

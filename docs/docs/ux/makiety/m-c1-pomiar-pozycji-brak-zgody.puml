@@ -3,7 +3,7 @@
 ' rezygnacja przez „Wstecz” do L2, C2 albo C3 (NFR-15, mapa nawigacji).
 !include _wspolne.iuml
 $ekran_poczatek()
-$naglowek("Pomiar pozycji")
+$naglowek("Zmierz i zgłoś barierę")
 $komunikat("Aby zapisać miejsce bariery, potrzebujemy lokalizacji. Sprawdzimy ją tylko teraz i nie będziemy Cię śledzić.", "Pozwól na lokalizację")
 $ekran_koniec()
 @endsalt

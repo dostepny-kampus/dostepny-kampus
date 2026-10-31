@@ -6,21 +6,23 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 
 | Ekran | Makiety | Stany w tabelach |
 | --- | --- | --- |
-| V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu | ładowanie, brak mapy ulic, pierwsze uruchomienie |
-| V2 Karta budynku | budynek podstawowy, brak barier, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
+| V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala, bariera na mapie | ładowanie, brak mapy ulic, pierwsze uruchomienie, wybór budynku, plan piętra, sala bez drogi, brak sali, duża czcionka |
+| V2 Karta budynku | budynek podstawowy bez wejścia zalecanego, brak barier, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
 | V3 Którędy wejść | wejście jest, brak wejścia dostępnego, brak danych | brak sieci |
 | V4 Zgłoszenie szybkie | kroki 1–3, krok 1 ze zdjęciem, prośba o zgodę, zgoda przybliżona, brak pozycji, rezygnacja, wysłane, wysłane bez internetu | Gość, odmowa zgody, lokalizacja wyłączona, ustalanie miejsca, błąd zapisu |
 | V5 Pomoc | krok z objaśnieniem „Dostępne” | krok o koncie, ostatni krok |
 | L1 Prośba o logowanie | zwykły, brak sieci | wejście z „Konto”, błąd |
 | L2 Konto | Odwiedzający, rola pracownicza, klauzula, wycofanie zgody | brak sieci |
 
-Pole tekstowe, przełącznik „Mapa” i „Lista budynków”, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` został tylko numer kroku V4 i V5. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
+Pole tekstowe, przełącznik „Mapa” i „Lista budynków”, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` są numer kroku V4 i V5 oraz części karty budynku V2: góra karty, wejście, grupy z planów PWr i dół karty. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
 
 ## V1 Mapa kampusu
 
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V1 są [makiety hi-fi](../ekrany/index.md#v1-mapa-kampusu).
+
 ### V1: stan zwykły
 
-![Makieta V1: nagłówek Mapa kampusu, pole symbolu budynku, przełącznik Mapa i Lista budynków, zastępnik mapy z oznaczeniami barier, przyciski mapy, podpis OpenStreetMap i pasek dolny](../../_generated/m-v1-mapa.svg)
+![Makieta V1: nagłówek Mapa kampusu, pole symbolu budynku, przełącznik Mapa i Lista budynków, zastępnik mapy z oznaczeniami barier, na mapie Powiększ, Pomniejsz i cztery strzałki w krzyżu, przycisk informacji przy podpisie OpenStreetMap i pasek dolny](../../_generated/m-v1-mapa.svg)
 
 Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 
@@ -29,10 +31,11 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | Nagłówek „Mapa kampusu” bez „Wstecz”, bo to ekran startowy | wymagania wspólne, NFR-15 |
 | Pole „Wpisz symbol budynku, np. C-13” na pełną szerokość, pierwsze pod nagłówkiem | US1.1, PW-8 |
 | Przełącznik „Mapa” i „Lista budynków”; wybraną pozycję widać po kształcie pola | NFR-19, NFR-21 |
+| „Legenda” nad mapą: znaki mapy i planu z napisami | NFR-21, decyzja 48 |
 | Zastępnik mapy: mapa ulic, kontury budynków, bariery ze zgłoszeń przyjętych | US1, US1.3, US10.6, NFR-11 |
-| Bariera na mapie: uciążliwość napisem i ikoną, np. „Blokada”, „Utrudnienie” | US1.3, NFR-21, PW-13 |
-| „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” zamiast gestów | NFR-15 (WCAG 2.5.1), PW-8 |
-| „© OpenStreetMap contributors” jako odnośnik, w ramce mapy | NFR-37 |
+| Bariera na mapie: znak uciążliwości, a słowo, np. „Blokada”, gdy mieści się bez nakładania | US1.3, NFR-20, NFR-21, PW-13 |
+| Na mapie „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu, każda z nazwą dla TalkBack „Przesuń mapę w górę” itd. | NFR-15 (WCAG 2.5.1, 2.5.7), NFR-18, PW-8, PW-11 |
+| „© OpenStreetMap contributors” w jednym wierszu jako odnośnik, w ramce mapy; obok „ⓘ” ze źródłami mapy | NFR-37, NFR-40 |
 | Pasek dolny z „Konto” | US1, US4, US5.1, US14 |
 
 | Stan bez osobnej makiety | Co się zmienia |
@@ -40,6 +43,8 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | Ładowanie | w miejscu mapy napis „Wczytujemy mapę kampusu…”; kontury pojawiają się przed mapą ulic (NFR-11) |
 | Błąd: brak mapy ulic | w miejscu mapy ulic napis „Mapa ulic chwilowo się nie wczytuje. Budynki i bariery nadal możesz oglądać.” (NFR-50) |
 | Pierwsze uruchomienie | przed mapą otwiera się instrukcja V5 (US5.1) |
+| Wybór budynku | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie w zasięgu dwóch konturów otwiera arkusz „Który budynek?”. W arkuszu są przyciski „Budynek C-3”, „Budynek C-4” i „Zamknij”, a przycisk budynku otwiera V2 (US2, decyzja 85) |
+| Duża czcionka | przy skali czcionki co najmniej 1,5 ekran startuje na liście budynków (NFR-19, NFR-20) |
 
 ### V1: wyszukiwanie
 
@@ -55,7 +60,7 @@ Czynność główna: wybór wyniku „Budynek C-13”, który zaznacza budynek n
 
 ### V1: lista budynków
 
-![Makieta V1 z wybraną listą budynków: Budynek A-1 z barierą i zastępnikiem pozostałych barier, Budynek C-13 i budynek-zastępnik, każdy z nazwą z danych i barierami](../../_generated/m-v1-mapa-lista.svg)
+![Makieta V1 z wybraną listą budynków: Budynek A-1 z barierą i zastępnikiem pozostałych barier, Budynek C-13 i budynek-zastępnik, każdy z nazwą z danych i barierami, przy dwóch pierwszych Pokaż na mapie](../../_generated/m-v1-mapa-lista.svg)
 
 Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 
@@ -65,6 +70,7 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 | Pozycja: „Budynek A-1”, nazwa z danych, bariery z uciążliwością tekstem i ikoną; cała ramka pozycji to jeden cel dotyku | NFR-19, US1.3, NFR-21, NFR-17 |
 | Bariery A-1 jak we wzorcu V2: schody przy wejściu głównym [1], pozostałe jako zastępnik | US1.3, BR-7 |
 | Lista daje tę samą informację co mapa, więc jest drogą dla TalkBack | NFR-19, NFR-18 |
+| „Pokaż na mapie” przy budynku: mapa z zaznaczonym budynkiem; przy dużej czcionce lista jest widokiem startowym | NFR-19, NFR-20 |
 | Bez przycisków mapy i podpisu OpenStreetMap, bo lista nie pokazuje mapy | decyzja 16 |
 
 ### V1: brak wyniku
@@ -92,57 +98,102 @@ Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
 ### V1: pierwsze otwarcie bez internetu
 
-![Makieta V1 przy pierwszym otwarciu bez internetu: wskaźnik Brak internetu i komunikat, że mapa wczyta się sama po połączeniu](../../_generated/m-v1-mapa-pierwsze-otwarcie.svg)
+![Makieta V1 przy pierwszym otwarciu bez internetu: pole symbolu, przełącznik Mapa i Lista budynków, wskaźnik Brak internetu bez daty, mapa bez mapy ulic z konturami budynków i wejściami z danych aplikacji](../../_generated/m-v1-mapa-pierwsze-otwarcie.svg)
 
-Czynność główna: brak; mapa wczyta się sama po połączeniu z internetem.
+Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Komunikat „Pierwsze otwarcie aplikacji wymaga internetu…” bez przycisku | NFR-11, PW-4 |
-| Bez pola i mapy, bo w telefonie nie ma jeszcze danych | NFR-11 |
+| Wskaźnik braku internetu bez daty, bo w telefonie nie ma jeszcze pobranych danych | NFR-10, NFR-21, PW-4 |
+| Kontury budynków z symbolami i wejścia z danych aplikacji, bez mapy ulic, barier i planów pięter | NFR-10, NFR-39, US1.4 |
+| Pole symbolu działa, bo kontury z symbolami są w danych aplikacji | US1.1, NFR-10 |
+| Bez komunikatu i bez przycisku: bariery, plany i mapa ulic wczytają się same po powrocie sieci | NFR-10, NFR-6 |
+
+### V1: znaleziona sala
+
+![Makieta V1 po wyszukaniu A-1 329: wybór piętra z zaznaczonym piętrem, legenda, plan piętra z podpisem źródła, przyciski mapy i arkusz sali z czterema krokami, Pokaż opis budynku i Zamknij](../../_generated/m-v1-mapa-sala.svg)
+
+Czynność główna: „Pokaż opis budynku”, która otwiera V2.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| W polu „A-1 329”: symbol budynku i numer sali | decyzja 44 |
+| Wybór piętra z etykietami z danych PWr jako zastępnikami; zaznaczone piętro sali | US16.1, NFR-21 |
+| Plan piętra z wyróżnioną salą i krótkimi podpisami; pod mapą „Źródło: Politechnika Wrocławska” | US16.1, NFR-40 |
+| Nagłówek arkusza „A-1: Sala 329”, funkcja sali jako zastępnik i piętro z danych PWr | decyzja 44, NFR-40 |
+| Kroki tekstem od wejścia zalecanego, bez linii trasy | BR-25, decyzja 44, decyzja 48 |
+| Krok 2: winda przy klatkach C i D, bo tylko ona staje na parterze i na 2 piętrze [2] | decyzja 48 |
+| „Zamknij” chowa arkusz, a plan zostaje | decyzja 48 |
+
+| Stan bez osobnej makiety | Co się zmienia |
+| --- | --- |
+| Plan piętra | po „Pokaż na planie” na V2: plan bez arkusza sali |
+| Sala bez drogi | w arkuszu zamiast kroków komunikat „Nie znaleźliśmy w danych wejścia i windy…” (BR-25) |
+| Brak sali | komunikat „Nie znaleźliśmy sali »X« w budynku A-1…” z przyciskiem „Pokaż opis budynku” |
+
+### V1: bariera na mapie
+
+![Makieta V1 po dotknięciu znaku bariery: mapa z wybranym znakiem przy A-1, przyciski mapy, a pod mapą arkusz z typem bariery, napisem Blokada, miejscem, datą sprawdzenia, Pokaż opis budynku i Zamknij](../../_generated/m-v1-mapa-bariera.svg)
+
+Czynność główna: „Pokaż opis budynku”, która otwiera V2.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Dotknięcie znaku bariery otwiera arkusz; znak ma nazwę dla TalkBack | US1.3, NFR-18 |
+| Typ bariery jako zastępnik, uciążliwość napisem i ikoną | US1.3, BR-7, NFR-21 |
+| Miejsce: budynek i wejście albo piętro, „Sprawdzone [data]” | US2.2, PW-3 |
+| „Zamknij” chowa arkusz, a mapa zostaje | wymagania do ekranów (V1) |
 
 ## V2 Karta budynku
 
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V2 są [makiety hi-fi](../ekrany/index.md#v2-karta-budynku).
+
+Jak we wzorcu, makiety pokazują arkusz V2 rozwinięty na cały ekran; w aplikacji najpierw zajmuje on połowę ekranu nad mapą V1.
+
 ### V2: budynek podstawowy
 
-![Makieta V2 budynku podstawowego: dwa wejścia z oznaczeniami, przycisk Sprawdź, którędy wejść, napis o braku planu pięter i jedna bariera Tylko z pomocą](../../_generated/m-v2-karta-budynku-podstawowy.svg)
+![Makieta V2 budynku podstawowego: fragment mapy bez chipów, wejścia Niedostępne i Brak danych bez napisu Zalecane, napis o braku planu pięter, jedna bariera Tylko z pomocą i przypięty pas czynności](../../_generated/m-v2-karta-budynku-podstawowy.svg)
 
 Czynność główna: „Sprawdź, którędy wejść”, jak we wzorcu.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Symbol, nazwa i wejścia jako zastępniki, bo nie wiemy, które budynki będą podstawowe | BR-G1, BR-G3 |
-| Napis „Nie mamy planu pięter tego budynku. Bariery są na liście niżej.” zamiast pięter i planu; drugie zdanie tylko przy niepustej liście barier | US16.2, BR-G1, PW-6 |
-| Bez „Piętro:”, planu i „Źródło: Politechnika Wrocławska” | US16.2, NFR-48 |
+| Napis „Nie mamy planu pięter tego budynku.” zamiast pięter i planu | US16.2, BR-G1, PW-6, decyzja 54 |
+| Bez grup „Winda i toaleta” i „Piętra”, bez chipów i bez „Źródło: Politechnika Wrocławska” | US16.2, NFR-48 |
+| Budynek bez wejścia „Dostępne”: brak napisu „Zalecane”, wejścia „Niedostępne” na początku | BR-25 |
 | Bariera z uciążliwością „Tylko z pomocą” tekstem i ikoną | US2.2, NFR-21, PW-13 |
 
 | Stan bez osobnej makiety | Co się zmienia |
 | --- | --- |
 | Ładowanie | tekst widać od razu, a w miejscu zdjęcia jest napis „Wczytujemy zdjęcie…” (NFR-12) |
 | Błąd zdjęcia | w miejscu zdjęcia „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” i „Spróbuj ponownie” (NFR-50) |
-| Budynek podstawowy bez barier | napis „Nie mamy planu pięter tego budynku.” bez drugiego zdania, a pod „Bariery w budynku” zdanie ze stanu pustego (UC2 2a, PW-6) |
+| Budynek podstawowy bez barier | napis „Nie mamy planu pięter tego budynku.”, a pod „Bariery w budynku” zdanie ze stanu pustego (UC2 2a, PW-6) |
 
 ### V2: brak sprawdzonych barier
 
-![Makieta V2 w stanie pustym: pod nagłówkiem Bariery w budynku zdanie, że brak sprawdzonych barier nie znaczy, że barier nie ma](../../_generated/m-v2-karta-budynku-pusty.svg)
+![Makieta V2 w stanie pustym: wejścia z datą i źródłem przy każdym, a pod nagłówkiem Bariery w budynku ramka Brak zgłoszonych barier z przyciskiem Zgłoś barierę](../../_generated/m-v2-karta-budynku-pusty.svg)
 
 Czynność główna: „Sprawdź, którędy wejść”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Pod „Bariery w budynku” zdanie „Nie mamy jeszcze sprawdzonych barier w tym budynku. To nie znaczy, że barier tu nie ma.” | UC2 2a, PW-6 |
+| Pod „Bariery w budynku” ramka „Brak zgłoszonych barier” ze zdaniem „Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.” | UC2 2a, PW-6, decyzja 48 |
+| „Zgłoś barierę” w ramce: jedyne miejsce tego przycisku w treści karty | US4, decyzja 48 |
+| Wejścia mają różne źródła, więc data i źródło stoją przy każdym wejściu | BR-24, US17.3 |
 | Nagłówek „Bariery w budynku” zostaje, więc osoba wie, której części dotyczy zdanie | UC2 2a |
 | Budynek szczegółowy jako zastępnik: pusta lista nie może brzmieć jak fakt o PWr | decyzja 16, zasada danych przykładowych |
 
 ### V2: brak sieci
 
-![Makieta V2 budynku A-1 bez internetu: wskaźnik z datą danych, wejścia, plan, pierwsza bariera ze zdjęciem z telefonu, druga z napisem o zdjęciu po połączeniu](../../_generated/m-v2-karta-budynku-brak-sieci.svg)
+![Makieta V2 budynku A-1 bez internetu: wskaźnik z datą danych, fragment mapy bez mapy ulic, wejścia, grupy z planów PWr, pierwsza bariera ze zdjęciem z telefonu, druga z napisem o zdjęciu po połączeniu](../../_generated/m-v2-karta-budynku-brak-sieci.svg)
 
 Czynność główna: „Sprawdź, którędy wejść”; V3 działa na danych z telefonu.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Brak internetu” z ikoną i „Dane z [data]” pod nagłówkiem | US9.1, NFR-10, NFR-21 |
+| Fragment mapy bez mapy ulic, z konturem i wejściami z telefonu | NFR-10 |
 | Zdjęcie zapisane w telefonie widać normalnie | NFR-10 |
 | Zdjęcie spoza telefonu zastępuje „Zdjęcie zobaczysz po połączeniu z internetem.” | NFR-10, PW-6 |
 
@@ -160,14 +211,14 @@ Czynność główna: „Spróbuj ponownie” po połączeniu z internetem.
 
 ### V2: Zbierający
 
-![Makieta V2 budynku A-1 dla Zbierającego: przy każdym wejściu Zmień oznaczenie, pod planem Oznacz obejrzane piętra, przy barierach Zgłoś, że bariery nie ma i Popraw zgłoszenie, pasek z Konto i praca](../../_generated/m-v2-karta-budynku-zbierajacy.svg)
+![Makieta V2 budynku A-1 dla Zbierającego: przy każdym wejściu Zgłoś problem i Zmień oznaczenie, pod piętrami Oznacz obejrzane piętra, przy barierach Zgłoś, że bariery nie ma i Popraw zgłoszenie, pasek z Konto i praca](../../_generated/m-v2-karta-budynku-zbierajacy.svg)
 
 Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego są zwykłe, bez pogrubienia.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Zmień oznaczenie” w ramce każdego wejścia, także przy „Brak danych” | US17.2, BR-24 |
-| „Oznacz obejrzane piętra” pod planem, raz dla całego budynku | US15.1, PW-12 |
+| „Zmień oznaczenie” w ramce każdego wejścia pod „Zgłoś barierę przy wejściu”, także przy „Brak danych” | US17.2, BR-24 |
+| „Oznacz obejrzane piętra” pod grupą „Piętra”, raz dla całego budynku | US15.1, PW-12 |
 | „Zgłoś, że bariery nie ma” przy każdej barierze | US8.4, BR-19, PW-12 |
 | „Popraw zgłoszenie” tylko przy własnym zgłoszeniu przyjętym albo zgłoszeniu szybkim; tu przy drugiej barierze | BR-3, BR-18 |
 | Pasek dolny z „Konto i praca” | US14.1, PW-1 |
@@ -175,11 +226,13 @@ Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego 
 
 ## V3 Którędy wejść
 
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V3 są [makiety hi-fi](../ekrany/index.md#v3-ktoredy-wejsc).
+
 ### V3: wejście jest
 
-![Makieta V3 dla A-1: pogrubione zdanie o wejściu dostępnym bramą od ul. Norwida, ramka wejścia z oznaczeniem i źródłem oraz bariera przy tym wejściu](../../_generated/m-v3-ktoredy-wejsc.svg)
+![Makieta V3 dla A-1: pogrubione zdanie o wejściu dostępnym bramą od ul. Norwida, ramka wejścia z oznaczeniem, źródłem i Pokaż na mapie oraz bariera przy tym wejściu](../../_generated/m-v3-ktoredy-wejsc.svg)
 
-Czynność główna: brak; ekran odpowiada na jedno pytanie, a dalej prowadzą „Wstecz” i pasek dolny.
+Czynność główna: brak; ekran odpowiada na jedno pytanie, a dalej prowadzą „Wstecz”, „Pokaż na mapie” i pasek dolny.
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -187,6 +240,7 @@ Czynność główna: brak; ekran odpowiada na jedno pytanie, a dalej prowadzą �
 | Zdanie z odpowiedzią na górze, pogrubione: TalkBack czyta je pierwsze | US3, US3.1, NFR-18 |
 | „Wejście bramą od ul. Norwida” jako dostępne, jak w deklaracji A-1; nazwa odróżnia je od niedostosowanego wejścia przy ul. Norwida [1] | US2.1, US3 |
 | Oznaczenie tekstem i ikoną, pod nim data i źródło | US2.1, US17.3, NFR-21 |
+| „Pokaż na mapie” w ramce wejścia: V1 z zaznaczonym wejściem | US2.1, US3 |
 | Bariera przy tym wejściu: typ i uciążliwość jako zastępniki, bo deklaracja nie podaje barier przy tym wejściu; zdjęcie, „Sprawdzone [data]” | US2.2, UC4 4c, PW-3 |
 | Pasek dolny z „Konto” | wymagania wspólne |
 
@@ -219,6 +273,8 @@ Czynność główna: brak; „Wstecz” wraca do opisu budynku z każdym wejści
 | Ten sam układ co brak wejścia dostępnego; różnicę niesie treść, a nie kształt | US3.1, US17.1 |
 
 ## V4 Zgłoszenie szybkie
+
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V4 są [makiety hi-fi](../ekrany/index.md#v4-zgoszenie-szybkie).
 
 Kroki i potwierdzenia nie mają paska dolnego (wymagania wspólne). Gość niezalogowany zamiast aparatu widzi L1 (US14.2).
 
@@ -262,18 +318,34 @@ Czynność główna: wybór jednej z 6 grup barier.
 | --- | --- |
 | Pytanie „Czego dotyczy bariera?” | US4.3, PW-7 |
 | 6 przycisków grup jeden pod drugim, tej samej szerokości, sam tekst, bez ikon | US4.3, NFR-17, PW-7 |
-| Bez typu, uciążliwości, budynku i piętra | US4.3, BR-14 |
+| Bez typu, uciążliwości i budynku; o piętro pyta dopiero stan niżej | US4.3, BR-14 |
 | „Wstecz” wraca do kroku 1, a zdjęcie zostaje | US4.1 |
+
+### V4: krok 2, pytanie o piętro
+
+![Makieta V4, krok 2 z 3 po wyborze grupy Schody i windy: pytanie Na którym piętrze?, przycisk Nie wiem, a pod nim przyciski Parter, 1, 2, 3](../../_generated/m-v4-krok-2-pietro.svg)
+
+Czynność główna: wybór piętra albo „Nie wiem”. Stan pojawia się tylko w konturze budynku i przy grupie z tabeli w [regułach](../../biznes/reguly.md#pietro-w-zgloszeniu-szybkim).
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| „Krok 2 z 3” bez zmian, bo pytanie jest częścią kroku 2 | US4.1, NFR-27 |
+| Wybrana grupa pod pytaniem „Czego dotyczy bariera?” | US4.5 |
+| „Na którym piętrze?” i przyciski na pełną szerokość | US4.5, NFR-17 |
+| „Nie wiem” nad piętrami, widoczne bez przewijania; zostawia piętro puste | US4.5, BR-14 |
+| Budynek podstawowy: „Parter”, „1”, „2”…; budynek szczegółowy: etykiety pięter z danych PWr | US4.5, BR-G1 |
+| „Wstecz” wraca do listy grup, a zdjęcie zostaje | US4.5 |
 
 ### V4: krok 3 z 3
 
-![Makieta V4, krok 3 z 3: miniatura zdjęcia, wybrana grupa Schody i windy, zdanie o dołączeniu miejsca i pogrubiony przycisk Wyślij](../../_generated/m-v4-krok-3.svg)
+![Makieta V4, krok 3 z 3: miniatura zdjęcia, wybrana grupa Schody i windy, piętro 2, zdanie o dołączeniu miejsca i pogrubiony przycisk Wyślij](../../_generated/m-v4-krok-3.svg)
 
 Czynność główna: „Wyślij”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Miniatura zdjęcia i wybrana grupa pod pytaniem z kroku 2 | US4.1 |
+| Wybrane piętro albo „Nie wiem” pod pytaniem „Na którym piętrze?”; bez tych wierszy, gdy pytania nie było | US4.5 |
 | „Dołączymy miejsce, w którym teraz stoisz.” | US4.1, NFR-27 |
 | „Wyślij” prowadzi do potwierdzenia | US4.1, US4.4 |
 
@@ -357,6 +429,8 @@ Czynność główna: „Wróć do mapy”.
 
 ## V5 Pomoc
 
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V5 są [makiety hi-fi](../ekrany/index.md#v5-pomoc).
+
 ![Makieta V5: nagłówek Jak korzystać z aplikacji, numer kroku jako zastępnik, zdanie objaśniające napis Dostępne, przyciski Dalej i Pomiń instrukcję, pasek dolny](../../_generated/m-v5-pomoc.svg)
 
 Czynność główna: „Dalej”.
@@ -378,6 +452,8 @@ Czynność główna: „Dalej”.
 | „Wstecz” | poprzedni krok instrukcji; w pierwszym kroku przy pierwszym uruchomieniu działa jak „Pomiń instrukcję” i otwiera V1 (wymagania wspólne, NFR-15) |
 
 ## L1 Prośba o logowanie
+
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu L1 są [makiety hi-fi](../ekrany/index.md#l1-prosba-o-logowanie).
 
 ### L1: stan zwykły
 
@@ -413,6 +489,8 @@ Czynność główna: „Wróć do mapy”.
 | „Wróć do mapy” otwiera V1 | UC6 1a |
 
 ## L2 Konto
+
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu L2 są [makiety hi-fi](../ekrany/index.md#l2-konto).
 
 ### L2: Odwiedzający
 
@@ -474,5 +552,6 @@ Czynność główna: brak wyróżnionej; oba przyciski mówią o skutku i mają 
 ## Źródła
 
 1. Deklaracja dostępności budynku A-1 (wejście główne ze schodami, wejście dostępne z tyłu budynku, bramą od strony K.C. Norwida; drugie wejście przy ul. C.K. Norwida niedostosowane dla osób z problemami motorycznymi): <https://dostepnosc.pwr.edu.pl/dostepnosc-architektoniczna/deklaracje-dostepnosci-budynkow/budynki-a/a1>
+2. Plany pięter PWr w ArcGIS (usługa „Planbudynku_A1”: sala 329 na 2 piętrze, windy A-1): <https://services3.arcgis.com/rrLByHvJ7zuJQDVw/arcgis/rest/services/>
 
 Dostęp do źródeł: 28.10.2026.

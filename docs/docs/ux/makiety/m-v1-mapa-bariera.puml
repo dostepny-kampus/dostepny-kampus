@@ -1,0 +1,21 @@
+@startsalt
+' V1 Mapa kampusu, bariera na mapie: arkusz po dotknięciu znaku bariery (US1.3).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$przelacznik("Mapa", "Lista budynków", 1)
+$przycisk("Legenda")
+$mapa("mapa ulic OpenStreetMap, kontury budynków z symbolami, znaki barier; wybrany znak przy A-1", "", "info")
+$ramka()
+<b><i>[typ bariery z danych]</i></b>
+$blokada()
+Budynek A-1, <i>[wejście albo piętro]</i>
+Sprawdzone <i>[data]</i>
+$przycisk_glowny("Pokaż opis budynku")
+$przycisk("Zamknij")
+}
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

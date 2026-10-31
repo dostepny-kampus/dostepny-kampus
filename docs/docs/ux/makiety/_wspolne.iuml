@@ -142,19 +142,12 @@ $tekst("[" + $opis + "]", "i")
 { [$dk_napis($t1, "", $DK_PRZYCISK_POL)] | [$dk_napis($t2, "", $DK_PRZYCISK_POL)] }
 !endprocedure
 
-' Przyciski kierunku zamiast przeciągania palcem: dwa w wierszu, jak przy mapie
-' (NFR-15, WCAG 2.5.1; NFR-3). Używają ich $przyciski_mapy i $przesun_punkt.
-!procedure $przyciski_kierunku()
-$przyciski_obok("W górę", "W dół")
-$przyciski_obok("W lewo", "W prawo")
-!endprocedure
-
 ' ---------- Nagłówek ekranu ----------
 
-' Nagłówek z „Wstecz” (słowo bez ikony, zawsze w tym samym miejscu) i tytułem.
+' Nagłówek z „Wstecz” (strzałka w lewo i słowo, zawsze w tym samym miejscu) i tytułem (PW-11).
 ' $podtytul: drugi wiersz, np. nazwa budynku z danych na V2.
 !procedure $naglowek($tytul, $podtytul="")
-{ [Wstecz] | <b>$tytul</b> }
+{ [<&arrow-left> Wstecz] | <b>$tytul</b> }
 !if $podtytul != ""
 $podtytul
 !endif
@@ -169,13 +162,18 @@ $podtytul
 
 ' ---------- Wskaźnik braku internetu ----------
 
-' Pod nagłówkiem. $dopisek dla Gościa i Odwiedzającego: "Dane z 12.11.2026",
-' dla Zbierającego: "Ostatnia synchronizacja: 12.11.2026, 10:42".
+' Pod nagłówkiem jedna linia „Bez internetu · dane z 12.11.2026” (decyzja 54, PW-4).
+' $dopisek po „·”: dla Gościa i Odwiedzającego "dane z 12.11.2026", dla Zbierającego
+' "Ostatnia synchronizacja: 12.11.2026, 10:42". Dopisek stoi w drugim wierszu w całości,
+' bo w ramce 34 znaków nie mieści się obok. Bez dopisku samo „Bez internetu”, gdy
+' w telefonie nie ma jeszcze danych (decyzja 84).
 !procedure $brak_internetu($dopisek="")
 {+
-<&wifi> <b>Brak internetu</b>
 !if $dopisek != ""
+<&wifi> <b>Bez internetu</b> ·
 $tekst($dopisek)
+!else
+<&wifi> <b>Bez internetu</b>
 !endif
 }
 !endprocedure
@@ -360,17 +358,28 @@ $tekst($opis)
 { $w }
 !endprocedure
 
-' Zdjęcie w formularzu (C2, C6, C7): przypomnienie o wizerunku i przycisk
-' z ikoną aparatu (NFR-25, PW-8). $opis: zastępnik zrobionego zdjęcia; pusty,
-' gdy zdjęcia jeszcze nie ma. Krok 1 V4 składa te same elementy ręcznie,
+' Komunikat ostrzegawczy przed czynnością (decyzja 54, PW-13): w ramce koło ze znakiem
+' „!”, pogrubione „Ważne”, wymaganie i zdanie z powodem. W low-fi koło to „(!)”.
+' Trójkąt należy do uciążliwości „Utrudnienie”, więc komunikat go nie używa.
+!procedure $wazne($wymaganie, $powod)
+$ramka()
+<b>(!) Ważne</b>
+$tekst($wymaganie)
+$tekst($powod)
+}
+!endprocedure
+
+' Zdjęcie w formularzu (C2, C6, C7): komunikat „Ważne” o wizerunku, jak na V4,
+' i przycisk bez ikony, jak na V4 (NFR-25, PW-8, decyzja 94). $opis: zastępnik zrobionego zdjęcia;
+' pusty, gdy zdjęcia jeszcze nie ma. Krok 1 V4 składa te same elementy ręcznie,
 ' bo ma tam czynność główną.
 !procedure $zdjecie($opis="")
-$tekst("Nie fotografuj twarzy ani tablic rejestracyjnych.")
+$wazne("Nie fotografuj twarzy ani tablic rejestracyjnych.", "Zdjęcie zobaczą inni użytkownicy.")
 !if $opis == ""
-$przycisk("Zrób zdjęcie", "camera-slr")
+$przycisk("Zrób zdjęcie")
 !else
 $obraz($opis)
-$przycisk("Zrób nowe zdjęcie", "camera-slr")
+$przycisk("Zrób nowe zdjęcie")
 !endif
 !endprocedure
 
@@ -384,7 +393,9 @@ $przycisk("Zrób nowe zdjęcie", "camera-slr")
 ' Zastępnik mapy na pełną szerokość, z podpisem OpenStreetMap w ramce (NFR-37).
 ' $opis: co widać na mapie. $legenda: przykład oznaczeń na mapie tekstem i ikoną
 ' (NFR-21), np. $blokada() na V1; pusta, gdy mapa nie pokazuje barier.
-!procedure $mapa($opis, $legenda="")
+' $kontrolki: "" (bez przycisków), "mapa" (same przyciski mapy)
+' albo "info" (przyciski mapy i „ⓘ” przy podpisie OpenStreetMap, V1 i R1; C1: $punkt_na_srodku).
+!procedure $mapa($opis, $legenda="", $kontrolki="")
 $ramka()
 .
 $tekst("[" + $opis + "]", "i")
@@ -394,15 +405,27 @@ $tekst("[" + $opis + "]", "i")
 $legenda
 .
 !endif
+!if $kontrolki != ""
+$przyciski_mapy()
+!endif
+!if $kontrolki == "info"
+{ [<&info>] | <u>© OpenStreetMap contributors</u> }
+!else
 $osm()
+!endif
 }
 !endprocedure
 
-' Przyciski mapy zamiast gestów: powiększanie i przesuwanie, dwa w wierszu,
-' ten sam układ na V1 i R1 (NFR-15, WCAG 2.5.1; NFR-17; PW-8).
+' Przyciski mapy zamiast gestów, na mapie: „Powiększ” i „Pomniejsz” oraz groty (caret)
+' przesuwania w krzyżu, każdy z nazwą dla TalkBack „Przesuń mapę w górę” itd.
+' Ten sam układ na V1, C1 i R1 (NFR-15, WCAG 2.5.1, 2.5.7; NFR-17; PW-8, PW-11; decyzja 93).
 !procedure $przyciski_mapy()
 $przyciski_obok("Powiększ", "Pomniejsz")
-$przyciski_kierunku()
+{
+. | [<&caret-top>] | .
+[<&caret-left>] | . | [<&caret-right>]
+. | [<&caret-bottom>] | .
+}
 !endprocedure
 
 ' ---------- Szablony pozycji listy ----------

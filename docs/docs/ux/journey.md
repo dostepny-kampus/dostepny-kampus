@@ -22,7 +22,7 @@ Wywiad sprawdza to samo zadanie na C-13 (część 5 scenariusza). Mapa pokazuje 
 | J1-5 | ocenia, czy informacja jest aktualna | „Czy to jeszcze prawda?” (2 → 4) | P-3, P-4 | V2: data i źródło oznaczenia wejścia (US17.3), zdjęcie i data weryfikacji bariery (US2.2) | średnie |
 | J1-6 | sprawdza windę i toaletę na piętrze wykładu | „Czy winda działa?” (1 → 3) | P-5 | V2: przełącznik pięter i plan piętra z windami i toaletami (US16.1) | **wysokie** |
 | J1-7 | dojeżdża i szuka wskazanego wejścia | „Czy to na pewno tu?” (2 → 3) | P-9 | V2: wejście na planie piętra z oznaczeniem tekstem i ikoną (US16.1, US2.1); nawigacja po trasie jest poza zakresem | średnie |
-| J1-8 | trafia na przeszkodę, np. nieczynną windę | „I co teraz? Komu to powiedzieć?” (1 → 2) | P-5, P-6 | V4: zdjęcie, grupa barier, wysłanie (US4.1, US4.3); bez sieci zgłoszenie czeka w telefonie (US4.2) | **wysokie** |
+| J1-8 | trafia na przeszkodę, np. nieczynną windę | „I co teraz? Komu to powiedzieć?” (1 → 2) | P-5, P-6 | V4: zdjęcie, grupa barier, wysłanie (US4.1, US4.3); w budynku piętro albo „Nie wiem” (US4.5); bez sieci zgłoszenie czeka w telefonie (US4.2) | **wysokie** |
 | J1-9 | widzi potwierdzenie po wysłaniu | „Dobrze, ktoś to sprawdzi” (2 → 4) | P-6 | V4: potwierdzenie, że zgłoszenie trafi do weryfikacji (US4.4) | niskie |
 
 ### Gdzie osoba starsza najłatwiej zrezygnuje

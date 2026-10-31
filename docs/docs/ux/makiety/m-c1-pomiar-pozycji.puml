@@ -5,7 +5,7 @@
 !include _wspolne.iuml
 !include _zespol-w-terenie.iuml
 $ekran_poczatek()
-$naglowek("Pomiar pozycji")
+$naglowek("Zmierz i zgłoś barierę")
 <b>Pomiar: zostało 12 s</b>
 Dokładność: 0,8 m (szacunek)
 $tekst("Satelity: GPS 7, Galileo 5, GLONASS <i>[liczba]</i>")

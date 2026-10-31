@@ -1,0 +1,1063 @@
+openapi: 3.1.0
+info:
+  title: Dostępny Kampus API
+  version: 0.1.0
+  description: |
+    Kontrakt v0 serwera aplikacji Dostępny Kampus. Kod serwera i klienta Android powstaje z tego pliku.
+
+    - Geometrie są w GeoJSON (RFC 7946), współrzędne w WGS84 (EPSG:4326), w kolejności: długość, szerokość.
+    - Błędy mają postać `application/problem+json` (RFC 9457).
+    - Operacje publiczne mają `security: []`. Pozostałe wymagają tokenu z Usługi logowania i roli podanej przy operacji.
+
+    Identyfikatory są po angielsku. Każdy odpowiada jednemu terminowi słownika pojęć:
+
+    | Identyfikator | Termin słownika |
+    | --- | --- |
+    | `symbol` | symbol budynku |
+    | `outline` | kontur budynku |
+    | `detailLevel`: `DETAILED`, `BASIC` | poziom szczegółowości: budynek szczegółowy, budynek podstawowy |
+    | `Entrance`, `main` | wejście, wejście główne |
+    | `marking`: `ACCESSIBLE`, `INACCESSIBLE`, `NO_DATA` | oznaczenie wejścia: dostępne, niedostępne, brak danych |
+    | `markingSource`: `IMPORT`, `WALKTHROUGH` | źródło oznaczenia: import, obchód |
+    | `Floor`, `label` | piętro, etykieta piętra z danych PWr |
+    | `Room` | pomieszczenie z planu piętra |
+    | `source` | źródło danych w podpisie (NFR-40) |
+    | `Submission` | zgłoszenie |
+    | `status`: `SENT`, `IN_REVIEW`, `ACCEPTED`, `REJECTED`, `ARCHIVED` | status zgłoszenia: wysłane, w weryfikacji, przyjęte, odrzucone, archiwalne |
+    | `kind`: `PRECISE`, `QUICK`, `ENTRANCE_MARKING` | pomiar precyzyjny, zgłoszenie szybkie, zmiana oznaczenia wejścia |
+    | `barrierGroup`, `barrierType`, `severity` | grupa barier, typ bariery, uciążliwość bariery |
+    | `accuracyMeters`, `manualCorrection` | dokładność pozycji, korekta ręczna |
+    | `replacesSubmissionId`, `barrierRemoved` | zmiana zgłoszenia przyjętego, bariera usunięta |
+    | `version` | wersja zgłoszenia |
+    | `claim`, `ReviewDecision`: `ACCEPT`, `REJECT` | wzięcie zgłoszenia, weryfikacja: przyjęcie, odrzucenie |
+    | `rejectionReason`, `duplicateOfSubmissionId` | powód odrzucenia, duplikat |
+    | `similar` | podobne zgłoszenie |
+    | `sync`, `push`, `pull` | synchronizacja: wysłanie i pobranie zmian |
+    | `InspectionMarker`, `revoked` | znacznik piętra obejrzanego, cofnięcie znacznika |
+    | `progress` | postęp inwentaryzacji |
+    | `export` | eksport |
+    | `Invitation` | zaproszenie |
+  license: {name: MIT, identifier: MIT}
+servers: [{url: /, description: "Serwer, który udostępnia ten dokument; adres zależy od środowiska."}]
+security: [{keycloak: []}]
+tags:
+  - name: building
+    description: Budynki, wejścia, piętra i pomieszczenia (moduł serwera building).
+  - name: barrier
+    description: Zgłoszenia barier i ich zdjęcia (moduł serwera barrier).
+  - name: review
+    description: Kolejka weryfikacji i decyzje Weryfikatora (moduł serwera review).
+  - name: sync
+    description: Synchronizacja telefonu z serwerem po pracy w trybie offline (moduł serwera sync).
+  - name: export
+    description: Postęp inwentaryzacji i eksport dla Koordynatora (moduł serwera export).
+  - name: identity
+    description: Profil zalogowanej osoby i zaproszenia (moduł serwera identity).
+
+paths:
+  /buildings:
+    get:
+      operationId: listBuildings
+      summary: Lista budynków z konturami
+      description: Wszystkie budynki PWr z konturem budynku i poziomem szczegółowości do mapy kampusu (US1, US1.2).
+      tags: [building]
+      security: []
+      responses:
+        '200':
+          description: Budynki posortowane według symbolu budynku.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BuildingList'}
+        '4XX': {$ref: '#/components/responses/ClientError'}
+  /buildings/{symbol}:
+    get:
+      operationId: getBuilding
+      summary: Karta budynku
+      description: Budynek z wejściami, oznaczeniem każdego wejścia, jego datą i źródłem (US2, US2.1, US17.1, US17.3).
+      tags: [building]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/BuildingSymbol'
+      responses:
+        '200':
+          description: Dane karty budynku.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BuildingDetails'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /buildings/locate:
+    get:
+      operationId: locateBuilding
+      summary: Podpowiedź budynku dla punktu
+      description: >-
+        Budynek, w którego konturze leży punkt, albo najbliższy budynek do potwierdzenia przez Zbierającego (US6.2, BR-G2).
+        Daleko od budynków PWr odpowiedź nie ma budynku, a punkt jest „poza budynkiem” (BR-G4).
+      tags: [building]
+      security: []
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          description: Szerokość geograficzna punktu w stopniach WGS84.
+          schema: {type: number, format: double, minimum: -90, maximum: 90, description: "Szerokość geograficzna."}
+        - name: lon
+          in: query
+          required: true
+          description: Długość geograficzna punktu w stopniach WGS84.
+          schema: {type: number, format: double, minimum: -180, maximum: 180, description: "Długość geograficzna."}
+      responses:
+        '200':
+          description: Wynik podpowiedzi budynku.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LocateResult'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+  /buildings/{symbol}/floors:
+    get:
+      operationId: listFloors
+      summary: Piętra budynku
+      description: >-
+        Piętra budynku szczegółowego z etykietami z danych PWr, od najniższego, do przełącznika pięter (US16.1, decyzja projektu nr 44).
+        Budynek podstawowy ma pustą listę, bo nie ma przełącznika pięter (US16.2, BR-G1).
+      tags: [building]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/BuildingSymbol'
+      responses:
+        '200':
+          description: Piętra budynku i źródło danych.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FloorList'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /buildings/{symbol}/floors/{floorId}/rooms:
+    get:
+      operationId: listFloorRooms
+      summary: Pomieszczenia piętra
+      description: >-
+        Pomieszczenia z planu piętra budynku szczegółowego: numer, funkcja i kształt, w tym windy, schody i toalety
+        (US16.1, NFR-40, decyzja projektu nr 44).
+      tags: [building]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/BuildingSymbol'
+        - name: floorId
+          in: path
+          required: true
+          description: Identyfikator piętra z listy pięter budynku.
+          schema: {type: string, description: "Identyfikator piętra."}
+      responses:
+        '200':
+          description: Pomieszczenia piętra i źródło danych.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RoomList'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /rooms:
+    get:
+      operationId: searchRooms
+      summary: Wyszukiwanie sali
+      description: >-
+        Sala po numerze, opcjonalnie z symbolem budynku. Wynik podaje budynek, piętro i pomieszczenie do wyróżnienia
+        na planie piętra (US18, decyzja projektu nr 44).
+      tags: [building]
+      security: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Numer sali, opcjonalnie poprzedzony symbolem budynku, np. `A-1 135`.
+          schema: {type: string, minLength: 1, maxLength: 50, description: "Tekst wyszukiwania."}
+      responses:
+        '200':
+          description: Pasujące sale; pusta lista, gdy nic nie pasuje.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RoomSearchResults'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+  /submissions:
+    get:
+      operationId: listSubmissions
+      summary: Lista zgłoszeń
+      description: >-
+        Bez tokenu i dla Odwiedzającego tylko zgłoszenia przyjęte do mapy i karty budynku (US1.3, US2.2, BR-6).
+        Zbierający z `mine=true` dostaje własne zgłoszenia w każdym statusie, odrzucone z powodem odrzucenia (US8.1).
+      tags: [barrier]
+      security: [{}, {keycloak: []}]
+      parameters:
+        - {name: buildingSymbol, in: query, description: "Tylko zgłoszenia z budynku o tym symbolu.", schema: {type: string, description: "Symbol budynku."}}
+        - {name: floorId, in: query, description: "Tylko zgłoszenia z tego piętra budynku szczegółowego.", schema: {type: string, description: "Identyfikator piętra."}}
+        - name: status
+          in: query
+          description: Tylko zgłoszenia w tych statusach; bez `mine=true` dozwolone jest tylko `ACCEPTED`.
+          schema: {type: array, description: "Statusy zgłoszenia.", items: {$ref: '#/components/schemas/SubmissionStatus'}}
+        - {name: mine, in: query, description: "Tylko własne zgłoszenia; wymaga roli `COLLECTOR`.", schema: {type: boolean, default: false, description: "Czy tylko własne."}}
+      responses:
+        '200':
+          description: Zgłoszenia według filtrów.
+          content:
+            application/json:
+              schema: {type: array, description: "Zgłoszenia.", items: {$ref: '#/components/schemas/Submission'}}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      operationId: createSubmission
+      summary: Wysłanie nowego zgłoszenia
+      description: >-
+        Zapis zgłoszenia na serwerze; zgłoszenie dostaje status „wysłane” (US8.2, BR-9). Zgłoszenie szybkie składa każda
+        zalogowana osoba (US4, BR-8), pomiar precyzyjny, zmianę oznaczenia wejścia i zmianę zgłoszenia przyjętego
+        (`replacesSubmissionId`) tylko Zbierający (US7, US17.2, US8.4, BR-18, BR-19).
+        Ponowne wysłanie tego samego `id` zwraca zapisane zgłoszenie i nie tworzy drugiego (BR-9).
+        Do kolejki weryfikacji zgłoszenie trafia, gdy serwer ma wszystkie zdjęcia z `photoIds` (BR-7, BR-8, US8.2).
+        Walidacja według BR-7, BR-8, BR-14, BR-19 i BR-24.
+      tags: [barrier]
+      security: [{keycloak: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NewSubmission'}
+      responses:
+        '201': {$ref: '#/components/responses/SubmissionSaved'}
+        '200': {$ref: '#/components/responses/SubmissionSaved'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /submissions/{submissionId}:
+    parameters:
+      - $ref: '#/components/parameters/SubmissionId'
+    get:
+      operationId: getSubmission
+      summary: Zgłoszenie
+      description: Zgłoszenie przyjęte widzi każdy (BR-6); pozostałe tylko autor i Weryfikator (BR-5, NFR-33).
+      tags: [barrier]
+      security: [{}, {keycloak: []}]
+      responses:
+        '200':
+          description: Zgłoszenie.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Submission'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      operationId: updateSubmission
+      summary: Edycja zgłoszenia
+      description: >-
+        Edycja własnego zgłoszenia przed decyzją Weryfikatora albo poprawka odrzuconego, które wraca do statusu „wysłane”
+        (US8.3, BR-3). Inna wersja na serwerze albo zgłoszenie przyjęte lub archiwalne daje 409 z wersją z serwera;
+        nic nie zapisuje się samo (US9.3, BR-10). Zmiana zgłoszenia przyjętego to nowe zgłoszenie (BR-18).
+      tags: [barrier]
+      security: [{keycloak: [COLLECTOR]}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SubmissionUpdate'}
+      responses:
+        '200': {$ref: '#/components/responses/SubmissionSaved'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/VersionConflict'}
+  /submissions/{submissionId}/photos/{photoId}:
+    parameters:
+      - $ref: '#/components/parameters/SubmissionId'
+      - {name: photoId, in: path, required: true, description: "Identyfikator zdjęcia nadany w telefonie (UUID).", schema: {type: string, format: uuid, description: "Identyfikator zdjęcia."}}
+    get:
+      operationId: getSubmissionPhoto
+      summary: Zdjęcie zgłoszenia
+      description: Zdjęcie zgłoszenia przyjętego widzi każdy (US2.2); pozostałe tylko autor i Weryfikator.
+      tags: [barrier]
+      security: [{}, {keycloak: []}]
+      responses:
+        '200':
+          description: Zdjęcie.
+          content:
+            image/jpeg:
+              schema: {type: string, contentMediaType: image/jpeg, description: "Plik JPEG."}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      operationId: putSubmissionPhoto
+      summary: Dodanie zdjęcia do zgłoszenia
+      description: >-
+        Autor dodaje zdjęcie z listy `photoIds` własnego zgłoszenia (BR-7, BR-8). Identyfikator z telefonu sprawia, że ponowne
+        wysłanie po zerwanym połączeniu nie tworzy drugiego zdjęcia (BR-9). Weryfikator, który wziął zgłoszenie, zastępuje
+        zdjęcie wersją z zasłoniętymi twarzami i tablicami; nie tworzy to nowej wersji zgłoszenia (NFR-25, BR-15).
+      tags: [barrier]
+      security: [{keycloak: []}]
+      requestBody:
+        required: true
+        content:
+          image/jpeg:
+            schema: {type: string, contentMediaType: image/jpeg, description: "Plik JPEG."}
+      responses:
+        '204': {description: "Zdjęcie zapisane."}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /review/queue:
+    get:
+      operationId: listReviewQueue
+      summary: Kolejka weryfikacji
+      description: >-
+        Zgłoszenia „wysłane” bez własnych zgłoszeń Weryfikatora, także jego zmian „bariera usunięta” (US10.5, BR-4),
+        oraz zgłoszenia „w weryfikacji” wzięte przez tego Weryfikatora. Zgłoszeń wziętych przez innych nie ma (US10.4, BR-11).
+        Zgłoszenie bez wszystkich zdjęć z `photoIds` jeszcze nie trafia do kolejki (BR-7).
+      tags: [review]
+      security: [{keycloak: [VERIFIER]}]
+      responses:
+        '200':
+          description: Zgłoszenia od najstarszego.
+          content:
+            application/json:
+              schema: {type: array, description: "Zgłoszenia w kolejce.", items: {$ref: '#/components/schemas/Submission'}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /submissions/{submissionId}/claim:
+    post:
+      operationId: claimSubmission
+      summary: Wzięcie zgłoszenia do weryfikacji
+      description: >-
+        Zgłoszenie „wysłane” dostaje status „w weryfikacji” i znika z kolejki innych Weryfikatorów (US10.4, US8.2, BR-11).
+        Własne zgłoszenie daje 403 (BR-4), zgłoszenie wzięte przez innego Weryfikatora daje 409.
+      tags: [review]
+      security: [{keycloak: [VERIFIER]}]
+      parameters:
+        - $ref: '#/components/parameters/SubmissionId'
+      responses:
+        '200': {$ref: '#/components/responses/SubmissionSaved'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /submissions/{submissionId}/review:
+    post:
+      operationId: reviewSubmission
+      summary: Decyzja Weryfikatora
+      description: >-
+        Przyjęcie albo odrzucenie zgłoszenia wziętego przez tego Weryfikatora (US10, BR-11, BR-15). Odrzucenie wymaga
+        powodu odrzucenia (US10.2, BR-16). Przyjęcie zgłoszenia szybkiego wymaga typu bariery i uciążliwości (US10.3, BR-14).
+        Przyjęcie zmiany archiwizuje zastąpione zgłoszenie (BR-18), a „bariera usunięta” i zmiana oznaczenia wejścia
+        same stają się archiwalne (US10.6, BR-19, BR-24). Decyzja o innej wersji niż aktualna daje 409 (BR-3),
+        a o zgłoszeniu wziętym przez innego Weryfikatora — 403 (BR-11).
+      tags: [review]
+      security: [{keycloak: [VERIFIER]}]
+      parameters:
+        - $ref: '#/components/parameters/SubmissionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReviewDecision'}
+      responses:
+        '200': {$ref: '#/components/responses/SubmissionSaved'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/VersionConflict'}
+  /submissions/{submissionId}/similar:
+    get:
+      operationId: listSimilarSubmissions
+      summary: Podobne zgłoszenia
+      description: >-
+        Zgłoszenia wysłane, w weryfikacji i przyjęte w promieniu 10 m od sprawdzanego, z każdego piętra, z odległością
+        (US10.1, BR-13). System sam niczego nie odrzuca ani nie łączy.
+      tags: [review]
+      security: [{keycloak: [VERIFIER]}]
+      parameters:
+        - $ref: '#/components/parameters/SubmissionId'
+      responses:
+        '200':
+          description: Podobne zgłoszenia od najbliższego.
+          content:
+            application/json:
+              schema: {type: array, description: "Podobne zgłoszenia.", items: {$ref: '#/components/schemas/SimilarSubmission'}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /sync/push:
+    post:
+      operationId: pushChanges
+      summary: Wysłanie zmian z telefonu
+      description: >-
+        Zmiany zapisane w telefonie w trybie offline, w kolejności zapisu (US4.2, US9.2, US15.3, BR-9, BR-20).
+        Każda operacja ma własny wynik, więc błąd jednej nie zatrzymuje pozostałych. Powtórzony `clientOperationId`
+        zwraca pierwszy wynik i niczego nie zapisuje drugi raz. Konflikt wersji zwraca wersję z serwera i nic nie zapisuje;
+        wybór wersji własnej to ponowna edycja z wersją z serwera, wybór wersji z serwera nie wymaga wysyłki (US9.3, BR-10).
+      tags: [sync]
+      security: [{keycloak: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Paczka zmian z telefonu.
+              required: [operations]
+              properties:
+                operations:
+                  type: array
+                  description: Operacje w kolejności zapisu w telefonie.
+                  minItems: 1
+                  maxItems: 100
+                  items: {$ref: '#/components/schemas/SyncOperation'}
+      responses:
+        '200':
+          description: Wynik każdej operacji w kolejności żądania.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Wyniki operacji.
+                required: [results]
+                properties:
+                  results: {type: array, description: "Wyniki operacji.", items: {$ref: '#/components/schemas/SyncOperationResult'}}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /sync/pull:
+    get:
+      operationId: pullChanges
+      summary: Pobranie zmian z serwera
+      description: >-
+        Zmiany od poprzedniego pobrania: statusy i powody odrzucenia własnych zgłoszeń (US8.1), zgłoszenia przyjęte
+        i archiwalne do mapy w telefonie (US1.3, US10.6), oznaczenia wejść (US17.2) i znaczniki pięter dla ekranu piętra obejrzanego (US15.1, US15.2, US11.3).
+      tags: [sync]
+      security: [{keycloak: []}]
+      parameters:
+        - name: since
+          in: query
+          description: Wartość `cursor` z poprzedniego pobrania; brak oznacza pobranie wszystkiego.
+          schema: {type: string, description: "Znacznik poprzedniego pobrania."}
+      responses:
+        '200':
+          description: Zmiany od `since`.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SyncPullResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /inspection-markers/{markerId}:
+    delete:
+      operationId: revokeInspectionMarker
+      summary: Cofnięcie znacznika piętra obejrzanego
+      description: >-
+        Koordynator cofa znacznik dowolnego Zbierającego z postępu inwentaryzacji (US11.3); Zbierający tylko własny (US15.2, BR-20).
+        Zbierający bez sieci cofa znacznik przez `/sync/push`.
+      tags: [building]
+      security: [{keycloak: [COLLECTOR]}, {keycloak: [COORDINATOR]}]
+      parameters:
+        - {name: markerId, in: path, required: true, description: "Identyfikator znacznika.", schema: {type: string, format: uuid, description: "Identyfikator znacznika."}}
+      responses:
+        '204': {description: "Znacznik cofnięty."}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /progress:
+    get:
+      operationId: getInventoryProgress
+      summary: Postęp inwentaryzacji
+      description: >-
+        Dla każdego budynku: piętra obejrzane albo znacznik „obejrzany”, liczby zgłoszeń czekających i przyjętych,
+        wejścia ze źródłem oznaczenia „obchód” oraz znaczniki do cofnięcia (US11.1–US11.4, BR-21). Wartości są liczone
+        przy każdym żądaniu, więc znacznik, który dotarł na serwer, od razu zmienia postęp (US11.2).
+      tags: [export]
+      security: [{keycloak: [COORDINATOR]}]
+      responses:
+        '200':
+          description: Postęp według budynków.
+          content:
+            application/json:
+              schema: {type: array, description: "Postęp budynków według symbolu budynku.", items: {$ref: '#/components/schemas/BuildingProgress'}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /export.geojson:
+    get:
+      operationId: exportGeoJson
+      summary: Eksport GeoJSON
+      description: >-
+        Bieżące zgłoszenia przyjęte jako punkty w WGS84, bez zgłoszeń archiwalnych i bez danych autora (US13.1, US13.3,
+        BR-6, BR-22). Bez geometrii budynków; budynek wskazuje tylko symbol budynku (NFR-38). Plik w UTF-8 (NFR-43).
+      tags: [export]
+      security: [{keycloak: [COORDINATOR]}]
+      responses:
+        '200':
+          description: Plik GeoJSON.
+          content:
+            application/geo+json:
+              schema: {$ref: '#/components/schemas/ExportFeatureCollection'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /export.csv:
+    get:
+      operationId: exportCsv
+      summary: Eksport CSV
+      description: >-
+        Te same zgłoszenia co w eksporcie GeoJSON, ze współrzędnymi w PUWG 1992 (EPSG:2180), do otwarcia w QGIS jako warstwa
+        punktów (US13.2, US13.3, NFR-43).
+      tags: [export]
+      security: [{keycloak: [COORDINATOR]}]
+      responses:
+        '200':
+          description: Plik CSV w UTF-8.
+          content:
+            text/csv:
+              schema:
+                type: string
+                description: >-
+                  Wiersz nagłówka i jeden wiersz na zgłoszenie. Kolumny: `submissionId`, `x` (wschód), `y` (północ) w metrach EPSG:2180, jak pola X i Y warstwy punktów w QGIS,
+                  `barrierType`, `barrierGroup`, `severity`, `buildingSymbol`, `floor`, `description`, `verifiedAt`.
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /me:
+    get:
+      operationId: getCurrentUser
+      summary: Profil zalogowanej osoby
+      description: Dane i role zalogowanej osoby do profilu i do wyboru ekranów roli (L2, US14.1, BR-1).
+      tags: [identity]
+      security: [{keycloak: []}]
+      responses:
+        '200':
+          description: Profil.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CurrentUser'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /invitations:
+    post:
+      operationId: createInvitation
+      summary: Zaproszenie osoby z rolą
+      description: >-
+        Koordynator wpisuje adres e-mail i rolę; Usługa logowania zakłada konto z tą rolą (US12.1, BR-2). Zaproszenie
+        na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają (US12.2, BR-1).
+      tags: [identity]
+      security: [{keycloak: [COORDINATOR]}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/InvitationRequest'}
+      responses:
+        '201':
+          description: Zaproszenie wykonane.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Invitation'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+
+components:
+  securitySchemes:
+    keycloak:
+      type: openIdConnect
+      description: >-
+        Token z Usługi logowania (Keycloak, Authorization Code z PKCE). Lista przy operacji podaje wymagane role:
+        `VISITOR` (Odwiedzający), `COLLECTOR` (Zbierający), `VERIFIER` (Weryfikator), `COORDINATOR` (Koordynator).
+        Pusta lista oznacza dowolną zalogowaną osobę.
+      openIdConnectUrl: http://localhost:8180/realms/dostepny-kampus/.well-known/openid-configuration
+  parameters:
+    BuildingSymbol:
+      name: symbol
+      in: path
+      required: true
+      description: Symbol budynku, np. `C-13`.
+      schema: {type: string, description: "Symbol budynku.", examples: [C-13]}
+    SubmissionId:
+      name: submissionId
+      in: path
+      required: true
+      description: Identyfikator zgłoszenia.
+      schema: {type: string, format: uuid, description: "Identyfikator zgłoszenia."}
+
+  responses:
+    ClientError:
+      description: Błąd żądania po stronie klienta.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    NotFound:
+      description: Nie ma zasobu o podanym identyfikatorze.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    BadRequest:
+      description: Niepoprawne parametry albo treść żądania.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    Unauthorized:
+      description: Brak ważnego tokenu z Usługi logowania.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    Forbidden:
+      description: Brak wymaganej roli albo zgłoszenie innej osoby przy uprawnieniu „własne” (NFR-33).
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    VersionConflict:
+      description: Konflikt wersji albo zgłoszenie w statusie, który nie pozwala na zmianę; w odpowiedzi wersja z serwera.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/VersionConflictProblem'}
+    SubmissionSaved:
+      description: Zgłoszenie zapisane na serwerze.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Submission'}
+    Conflict:
+      description: Stan zasobu nie pozwala na operację, np. zgłoszenie wziął już inny Weryfikator.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+
+  schemas:
+    Problem:
+      type: object
+      description: Opis błędu według RFC 9457.
+      properties:
+        type: {type: string, format: uri-reference, description: "Identyfikator rodzaju błędu."}
+        title: {type: string, description: "Krótki opis rodzaju błędu."}
+        status: {type: integer, description: "Kod odpowiedzi HTTP."}
+        detail: {type: string, description: "Opis tego wystąpienia błędu."}
+        instance: {type: string, format: uri-reference, description: "Identyfikator tego wystąpienia błędu."}
+
+    Position:
+      type: array
+      description: Para [długość, szerokość] w stopniach WGS84.
+      minItems: 2
+      maxItems: 2
+      items: {type: number, format: double, description: "Współrzędna w stopniach."}
+    PolygonCoordinates:
+      type: array
+      description: Pierścienie wielokąta GeoJSON; pierwszy to granica zewnętrzna, kolejne to otwory.
+      minItems: 1
+      items:
+        type: array
+        description: Zamknięty pierścień; pierwszy i ostatni punkt są równe.
+        minItems: 4
+        items: {$ref: '#/components/schemas/Position'}
+    GeoPolygon:
+      type: object
+      description: Wielokąt GeoJSON.
+      required: [type, coordinates]
+      properties:
+        type: {const: Polygon, description: "Typ geometrii."}
+        coordinates: {$ref: '#/components/schemas/PolygonCoordinates'}
+    GeoMultiPolygon:
+      type: object
+      description: Wielokąt złożony GeoJSON, np. budynek z kilku części.
+      required: [type, coordinates]
+      properties:
+        type: {const: MultiPolygon, description: "Typ geometrii."}
+        coordinates:
+          type: array
+          description: Wielokąty składowe.
+          minItems: 1
+          items: {$ref: '#/components/schemas/PolygonCoordinates'}
+    GeoArea:
+      description: Powierzchnia GeoJSON — wielokąt albo wielokąt złożony.
+      oneOf:
+        - $ref: '#/components/schemas/GeoPolygon'
+        - $ref: '#/components/schemas/GeoMultiPolygon'
+      discriminator:
+        propertyName: type
+        mapping:
+          Polygon: '#/components/schemas/GeoPolygon'
+          MultiPolygon: '#/components/schemas/GeoMultiPolygon'
+
+    DetailLevel:
+      type: string
+      description: Poziom szczegółowości budynku. `DETAILED` — budynek szczegółowy z planami pięter, `BASIC` — budynek podstawowy.
+      enum: [DETAILED, BASIC]
+    Building:
+      type: object
+      description: Budynek PWr na mapie kampusu.
+      required: [symbol, name, detailLevel, outline]
+      properties:
+        symbol: {type: string, description: "Symbol budynku, np. `C-13`; unikalny."}
+        name: {type: string, description: "Nazwa budynku."}
+        detailLevel: {$ref: '#/components/schemas/DetailLevel'}
+        outline: {$ref: '#/components/schemas/GeoArea', description: "Kontur budynku z OpenStreetMap."}
+    BuildingList:
+      type: object
+      description: Budynki z atrybucją źródła konturów.
+      required: [source, buildings]
+      properties:
+        source: {type: string, description: "Atrybucja konturów budynków: „© OpenStreetMap contributors”."}
+        buildings:
+          type: array
+          description: Budynki.
+          items: {$ref: '#/components/schemas/Building'}
+
+    GeoPoint:
+      type: object
+      description: Punkt GeoJSON.
+      required: [type, coordinates]
+      properties:
+        type: {const: Point, description: "Typ geometrii."}
+        coordinates: {$ref: '#/components/schemas/Position'}
+    BuildingDetails:
+      description: Dane karty budynku.
+      allOf:
+        - $ref: '#/components/schemas/Building'
+        - type: object
+          description: Wejścia budynku.
+          required: [entrances]
+          properties:
+            entrances:
+              type: array
+              description: Wejścia budynku; wejście główne jest pierwsze.
+              items: {$ref: '#/components/schemas/Entrance'}
+
+    EntranceMarking:
+      type: string
+      description: Oznaczenie wejścia (BR-24).
+      enum: [ACCESSIBLE, INACCESSIBLE, NO_DATA]
+    Entrance:
+      type: object
+      description: Wejście do budynku z oznaczeniem wejścia.
+      required: [id, buildingSymbol, name, main, location, marking, markingDate, markingSource]
+      properties:
+        id: {type: string, description: "Identyfikator wejścia."}
+        buildingSymbol: {type: string, description: "Budynek, do którego prowadzi wejście."}
+        name: {type: string, description: "Opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”."}
+        main: {type: boolean, description: "Czy to wejście główne."}
+        location: {$ref: '#/components/schemas/GeoPoint', description: "Położenie wejścia."}
+        marking: {$ref: '#/components/schemas/EntranceMarking'}
+        markingDate: {type: string, format: date, description: "Dzień importu albo dzień przyjęcia zmiany oznaczenia wejścia (US17.3)."}
+        markingSource:
+          type: string
+          description: Źródło oznaczenia. `IMPORT` — dane PWr albo OpenStreetMap, `WALKTHROUGH` — obchód (US17.3, BR-24).
+          enum: [IMPORT, WALKTHROUGH]
+
+    LocateResult:
+      type: object
+      description: Podpowiedź budynku. Brak `buildingSymbol` oznacza punkt poza budynkiem bez propozycji budynku (BR-G4).
+      required: [insideOutline]
+      properties:
+        buildingSymbol: {type: string, description: "Budynek, w którego konturze leży punkt, albo najbliższy budynek."}
+        insideOutline: {type: boolean, description: "Czy punkt leży w konturze budynku `buildingSymbol`."}
+
+    PwrSource:
+      type: string
+      description: Źródło danych planów pięter do podpisu na ekranie (NFR-40, decyzja projektu nr 44).
+      const: Politechnika Wrocławska
+    Floor:
+      type: object
+      description: Piętro budynku szczegółowego.
+      required: [id, label, order]
+      properties:
+        id: {type: string, description: "Identyfikator piętra."}
+        label: {type: string, description: "Etykieta piętra z danych PWr, pokazywana w przełączniku pięter."}
+        order: {type: integer, description: "Kolejność piętra w budynku; większa liczba to wyższe piętro."}
+    FloorList:
+      type: object
+      description: Piętra budynku ze źródłem danych.
+      required: [source, floors]
+      properties:
+        source: {$ref: '#/components/schemas/PwrSource'}
+        floors:
+          type: array
+          description: Piętra rosnąco według `order`.
+          items: {$ref: '#/components/schemas/Floor'}
+    Room:
+      type: object
+      description: Pomieszczenie z planu piętra.
+      required: [id, function, geometry]
+      properties:
+        id: {type: string, description: "Identyfikator pomieszczenia."}
+        number: {type: string, description: "Numer pomieszczenia z danych PWr; brak, gdy dane go nie podają."}
+        function: {type: string, description: "Funkcja pomieszczenia z danych PWr, np. „Winda”, „Klatka schodowa”, „Toaleta dla OzN”."}
+        geometry: {$ref: '#/components/schemas/GeoArea', description: "Kształt pomieszczenia na planie piętra."}
+    RoomList:
+      type: object
+      description: Pomieszczenia piętra ze źródłem danych.
+      required: [source, rooms]
+      properties:
+        source: {$ref: '#/components/schemas/PwrSource'}
+        rooms:
+          type: array
+          description: Pomieszczenia piętra.
+          items: {$ref: '#/components/schemas/Room'}
+    RoomSearchResults:
+      type: object
+      description: Wynik wyszukiwania sali ze źródłem danych.
+      required: [source, results]
+      properties:
+        source: {$ref: '#/components/schemas/PwrSource'}
+        results:
+          type: array
+          description: Pasujące sale; najpierw dokładne dopasowania numeru.
+          items:
+            type: object
+            description: Znaleziona sala z budynkiem i piętrem.
+            required: [buildingSymbol, floor, room]
+            properties:
+              buildingSymbol: {type: string, description: "Budynek z salą."}
+              floor: {$ref: '#/components/schemas/Floor', description: "Piętro z salą."}
+              room: {$ref: '#/components/schemas/Room', description: "Sala do wyróżnienia na planie piętra."}
+
+    VersionConflictProblem:
+      description: Błąd konfliktu wersji z wersją zgłoszenia z serwera do ekranu wyboru wersji (US9.3, BR-10).
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          description: Wersja z serwera.
+          required: [serverSubmission]
+          properties:
+            serverSubmission: {$ref: '#/components/schemas/Submission', description: "Zgłoszenie w wersji z serwera."}
+    Role:
+      type: string
+      description: >-
+        Rola: `VISITOR` — Odwiedzający (RO-ODW), `COLLECTOR` — Zbierający (RO-ZBI), `VERIFIER` — Weryfikator (RO-WER),
+        `COORDINATOR` — Koordynator (RO-KOO). Gość niezalogowany nie ma roli.
+      enum: [VISITOR, COLLECTOR, VERIFIER, COORDINATOR]
+    SubmissionStatus:
+      type: string
+      description: Status zgłoszenia na serwerze (US8.1, US8.2). Status „lokalne” istnieje tylko w telefonie.
+      enum: [SENT, IN_REVIEW, ACCEPTED, REJECTED, ARCHIVED]
+    BarrierGroup:
+      type: string
+      description: >-
+        Grupa barier: wejście i drzwi, komunikacja pionowa, komunikacja pozioma, toalety, orientacja i informacja, inne.
+      enum: [ENTRANCE_AND_DOORS, VERTICAL_CIRCULATION, HORIZONTAL_CIRCULATION, TOILETS, ORIENTATION_AND_INFORMATION, OTHER]
+    BarrierType:
+      type: string
+      description: Typ bariery z klasyfikacji barier, TB-1…TB-29.
+      pattern: '^TB-([1-9]|1[0-9]|2[0-9])$'
+    Severity:
+      type: integer
+      description: Uciążliwość bariery 1–3; 3 oznacza blokadę.
+      minimum: 1
+      maximum: 3
+    SubmissionFloor:
+      type: object
+      description: Piętro zgłoszenia. W budynku szczegółowym `floorId`, w budynku podstawowym `number` i `mezzanine` (US7.2, BR-G1).
+      properties:
+        floorId: {type: string, description: "Piętro z listy pięter budynku szczegółowego."}
+        number: {type: integer, description: "Numer piętra w budynku podstawowym; 0 to parter."}
+        mezzanine: {type: boolean, default: false, description: "Dopisek „półpiętro” w budynku podstawowym."}
+    SubmissionContent:
+      type: object
+      description: Treść zgłoszenia ustalana przez składającego.
+      required: [kind, location, photoIds]
+      properties:
+        kind:
+          type: string
+          description: "`PRECISE` — pomiar precyzyjny, `QUICK` — zgłoszenie szybkie, `ENTRANCE_MARKING` — zmiana oznaczenia wejścia."
+          enum: [PRECISE, QUICK, ENTRANCE_MARKING]
+        location: {$ref: '#/components/schemas/GeoPoint', description: "Miejsce bariery po pomiarze precyzyjnym albo bieżąca pozycja."}
+        accuracyMeters: {type: number, format: double, minimum: 0, description: "Dokładność pozycji w metrach (US6.1)."}
+        manualCorrection: {type: boolean, default: false, description: "Oznaczenie „korekta ręczna” (US6.3, US6.4)."}
+        buildingSymbol: {type: string, description: "Budynek; brak to „poza budynkiem” (BR-G2). W zgłoszeniu szybkim ustala go serwer z konturu (BR-14)."}
+        floor: {$ref: '#/components/schemas/SubmissionFloor', description: "Piętro; w budynku wymagane przy pomiarze precyzyjnym (BR-7), w zgłoszeniu szybkim może być puste (BR-14)."}
+        barrierGroup: {$ref: '#/components/schemas/BarrierGroup', description: "Grupa barier; w zgłoszeniu szybkim zamiast typu bariery (US4.3)."}
+        barrierType: {$ref: '#/components/schemas/BarrierType', description: "Typ bariery; wymagany przy pomiarze precyzyjnym (BR-7)."}
+        severity: {$ref: '#/components/schemas/Severity', description: "Uciążliwość; wymagana przy pomiarze precyzyjnym poza „bariera usunięta” (BR-7, BR-19)."}
+        description: {type: string, maxLength: 2000, description: "Opis; obowiązkowy przy TB-29 „inna bariera” (US7.3)."}
+        replacesSubmissionId: {type: string, format: uuid, description: "Zgłoszenie przyjęte, które ta zmiana zastąpi po przyjęciu (BR-18)."}
+        barrierRemoved: {type: boolean, default: false, description: "Oznaczenie „bariera usunięta”; wymaga `replacesSubmissionId` (US8.4, BR-19)."}
+        entranceId: {type: string, description: "Wejście w zmianie oznaczenia wejścia (BR-24)."}
+        entranceMarking: {type: string, enum: [ACCESSIBLE, INACCESSIBLE], description: "Nowe oznaczenie wejścia w zmianie oznaczenia wejścia (US17.2)."}
+        photoIds:
+          type: array
+          description: Zdjęcia zgłoszenia, identyfikatory nadane w telefonie; każde zgłoszenie ma co najmniej jedno (BR-7, BR-8, BR-19, BR-24).
+          minItems: 1
+          items: {type: string, format: uuid, description: "Identyfikator zdjęcia."}
+    NewSubmission:
+      description: Nowe zgłoszenie z identyfikatorem nadanym w telefonie.
+      allOf:
+        - $ref: '#/components/schemas/SubmissionContent'
+        - type: object
+          description: Identyfikator nowego zgłoszenia.
+          required: [id]
+          properties:
+            id: {type: string, format: uuid, description: "Identyfikator zgłoszenia nadany w telefonie (UUID)."}
+    SubmissionUpdate:
+      description: Edycja zgłoszenia z wersją, od której zaczęto edycję w telefonie.
+      allOf:
+        - $ref: '#/components/schemas/SubmissionContent'
+        - type: object
+          description: Wersja bazowa edycji.
+          required: [version]
+          properties:
+            version: {type: integer, minimum: 1, description: "Wersja zgłoszenia, którą edytowano (BR-10)."}
+    Submission:
+      description: Zgłoszenie zapisane na serwerze.
+      allOf:
+        - $ref: '#/components/schemas/SubmissionContent'
+        - type: object
+          description: Dane nadane przez serwer.
+          required: [id, version, status, createdAt]
+          properties:
+            id: {type: string, format: uuid, description: "Identyfikator zgłoszenia."}
+            version: {type: integer, minimum: 1, description: "Wersja zgłoszenia; rośnie po każdej zapisanej edycji (BR-3)."}
+            status: {$ref: '#/components/schemas/SubmissionStatus'}
+            createdAt: {type: string, format: date-time, description: "Chwila odbioru zgłoszenia przez serwer."}
+            verifiedAt: {type: string, format: date-time, description: "Data weryfikacji, czyli chwila przyjęcia (BR-17)."}
+            rejectionReason: {type: string, description: "Powód odrzucenia; widzi go autor (BR-16)."}
+            duplicateOfSubmissionId: {type: string, format: uuid, description: "Wcześniejsze zgłoszenie wskazane przy odrzuceniu duplikatu (BR-13)."}
+            author:
+              type: object
+              description: Autor widziany przez Weryfikatora; tylko rola i pseudonim, bez danych osobowych (BR-5).
+              required: [pseudonym, roles]
+              properties:
+                pseudonym: {type: string, description: "Pseudonim autora, np. „Autor 17”."}
+                roles: {type: array, description: "Role autora.", items: {$ref: '#/components/schemas/Role'}}
+
+    ReviewDecision:
+      type: object
+      description: Decyzja Weryfikatora o zgłoszeniu.
+      required: [decision, version]
+      properties:
+        decision: {type: string, enum: [ACCEPT, REJECT], description: "`ACCEPT` — przyjęcie, `REJECT` — odrzucenie."}
+        version: {type: integer, minimum: 1, description: "Wersja zgłoszenia, którą ocenił Weryfikator (BR-3)."}
+        rejectionReason: {type: string, minLength: 1, maxLength: 500, description: "Powód odrzucenia; wymagany przy `REJECT` (BR-16)."}
+        duplicateOfSubmissionId: {type: string, format: uuid, description: "Wcześniejsze zgłoszenie przy odrzuceniu duplikatu (BR-13)."}
+        barrierType: {$ref: '#/components/schemas/BarrierType', description: "Typ bariery ustalony przy przyjęciu zgłoszenia szybkiego (BR-14)."}
+        severity: {$ref: '#/components/schemas/Severity', description: "Uciążliwość ustalona przy przyjęciu zgłoszenia szybkiego (BR-14)."}
+    SimilarSubmission:
+      description: Podobne zgłoszenie z odległością od sprawdzanego.
+      allOf:
+        - $ref: '#/components/schemas/Submission'
+        - type: object
+          description: Odległość.
+          required: [distanceMeters]
+          properties:
+            distanceMeters: {type: number, format: double, minimum: 0, maximum: 10, description: "Odległość od sprawdzanego zgłoszenia w metrach."}
+
+    SyncOperation:
+      type: object
+      description: Zmiana zapisana w telefonie; wypełnione są tylko pola jej rodzaju.
+      required: [clientOperationId, type]
+      properties:
+        clientOperationId: {type: string, format: uuid, description: "Identyfikator operacji nadany w telefonie (BR-9)."}
+        type:
+          type: string
+          description: >-
+            Rodzaj zmiany: nowe zgłoszenie, edycja zgłoszenia, znacznik piętra obejrzanego, cofnięcie znacznika.
+            Edycja i znaczniki wymagają roli `COLLECTOR` (US8.3, BR-20).
+          enum: [CREATE_SUBMISSION, UPDATE_SUBMISSION, SET_INSPECTION_MARKER, REVOKE_INSPECTION_MARKER]
+        newSubmission: {$ref: '#/components/schemas/NewSubmission', description: "Dla `CREATE_SUBMISSION`."}
+        submissionId: {type: string, format: uuid, description: "Dla `UPDATE_SUBMISSION`: edytowane zgłoszenie."}
+        submissionUpdate: {$ref: '#/components/schemas/SubmissionUpdate', description: "Dla `UPDATE_SUBMISSION`."}
+        marker: {$ref: '#/components/schemas/NewInspectionMarker', description: "Dla `SET_INSPECTION_MARKER`."}
+        markerId: {type: string, format: uuid, description: "Dla `REVOKE_INSPECTION_MARKER`: cofany znacznik."}
+    SyncOperationResult:
+      type: object
+      description: Wynik jednej operacji.
+      required: [clientOperationId, outcome]
+      properties:
+        clientOperationId: {type: string, format: uuid, description: "Identyfikator operacji z żądania."}
+        outcome:
+          type: string
+          description: >-
+            `APPLIED` — zapisana, `CONFLICT` — konflikt wersji, w `submission` wersja z serwera (BR-10),
+            `REJECTED` — odrzucona, powód w `problem`.
+          enum: [APPLIED, CONFLICT, REJECTED]
+        submission: {$ref: '#/components/schemas/Submission', description: "Zgłoszenie po zapisie albo wersja z serwera przy konflikcie."}
+        problem: {$ref: '#/components/schemas/Problem', description: "Powód odrzucenia operacji, np. brak roli albo niepoprawna treść."}
+    SyncPullResponse:
+      type: object
+      description: Zmiany z serwera od poprzedniego pobrania.
+      required: [cursor, submissions, entrances, inspectionMarkers]
+      properties:
+        cursor: {type: string, description: "Znacznik do parametru `since` w następnym pobraniu."}
+        submissions: {type: array, description: "Własne zgłoszenia oraz zgłoszenia przyjęte i archiwalne.", items: {$ref: '#/components/schemas/Submission'}}
+        entrances: {type: array, description: "Wejścia ze zmienionym oznaczeniem wejścia.", items: {$ref: '#/components/schemas/Entrance'}}
+        inspectionMarkers: {type: array, description: "Dla roli `COLLECTOR` znaczniki wszystkich Zbierających, także cofnięte (US15.2); dla innych ról pusta lista.", items: {$ref: '#/components/schemas/InspectionMarker'}}
+    NewInspectionMarker:
+      type: object
+      description: Znacznik piętra obejrzanego postawiony przez Zbierającego (US15.1, BR-20).
+      required: [id, buildingSymbol]
+      properties:
+        id: {type: string, format: uuid, description: "Identyfikator znacznika nadany w telefonie."}
+        buildingSymbol: {type: string, description: "Budynek znacznika."}
+        floorId: {type: string, description: "Piętro obejrzane w budynku szczegółowym; brak w budynku podstawowym, gdzie znacznik „obejrzany” dotyczy całego budynku."}
+    InspectionMarker:
+      description: Znacznik zapisany na serwerze.
+      allOf:
+        - $ref: '#/components/schemas/NewInspectionMarker'
+        - type: object
+          description: Dane nadane przez serwer.
+          required: [createdAt, revoked, mine]
+          properties:
+            createdAt: {type: string, format: date-time, description: "Chwila odbioru znacznika przez serwer."}
+            revoked: {type: boolean, description: "Czy znacznik cofnięto (US11.3, US15.2)."}
+            mine: {type: boolean, description: "Czy znacznik postawiła osoba z tokenu: „Twój znacznik” albo „Znacznik innej osoby” (US15.2)."}
+
+    BuildingProgress:
+      type: object
+      description: Postęp inwentaryzacji jednego budynku (BR-21).
+      required: [buildingSymbol, detailLevel, pendingSubmissions, acceptedSubmissions, entrancesTotal, entrancesCheckedOnSite, markers]
+      properties:
+        buildingSymbol: {type: string, description: "Symbol budynku."}
+        detailLevel: {$ref: '#/components/schemas/DetailLevel'}
+        floorsTotal: {type: integer, minimum: 0, description: "Liczba pięter z danych PWr; tylko budynek szczegółowy."}
+        floorsInspected: {type: integer, minimum: 0, description: "Liczba pięter obejrzanych; tylko budynek szczegółowy."}
+        inspected: {type: boolean, description: "Znacznik „obejrzany”; tylko budynek podstawowy."}
+        pendingSubmissions: {type: integer, minimum: 0, description: "Zgłoszenia wysłane i w weryfikacji."}
+        acceptedSubmissions: {type: integer, minimum: 0, description: "Zgłoszenia przyjęte, bez archiwalnych."}
+        entrancesTotal: {type: integer, minimum: 0, description: "Wszystkie wejścia budynku (US11.4)."}
+        entrancesCheckedOnSite: {type: integer, minimum: 0, description: "Wejścia ze źródłem oznaczenia „obchód” (US11.4)."}
+        markers: {type: array, description: "Aktywne znaczniki do cofnięcia przez Koordynatora (US11.3).", items: {$ref: '#/components/schemas/InspectionMarker'}}
+    ExportFeatureCollection:
+      type: object
+      description: Kolekcja GeoJSON (RFC 7946) bieżących zgłoszeń przyjętych.
+      required: [type, features]
+      properties:
+        type: {const: FeatureCollection, description: "Typ obiektu GeoJSON."}
+        features:
+          type: array
+          description: Jedno zgłoszenie przyjęte na element.
+          items:
+            type: object
+            description: Zgłoszenie przyjęte jako punkt GeoJSON.
+            required: [type, geometry, properties]
+            properties:
+              type: {const: Feature, description: "Typ obiektu GeoJSON."}
+              geometry: {$ref: '#/components/schemas/GeoPoint', description: "Miejsce bariery."}
+              properties: {$ref: '#/components/schemas/ExportProperties'}
+    ExportProperties:
+      type: object
+      description: Atrybuty zgłoszenia w eksporcie, bez danych autora (BR-6).
+      required: [submissionId, barrierType, barrierGroup, severity, verifiedAt]
+      properties:
+        submissionId: {type: string, format: uuid, description: "Identyfikator zgłoszenia."}
+        barrierType: {$ref: '#/components/schemas/BarrierType'}
+        barrierGroup: {$ref: '#/components/schemas/BarrierGroup'}
+        severity: {$ref: '#/components/schemas/Severity'}
+        buildingSymbol: {type: string, description: "Symbol budynku; brak to „poza budynkiem”."}
+        floor: {type: string, description: "Etykieta piętra albo numer z dopiskiem „półpiętro”; brak, gdy piętra nie podano."}
+        description: {type: string, description: "Opis zgłoszenia."}
+        verifiedAt: {type: string, format: date-time, description: "Data weryfikacji (BR-17)."}
+    CurrentUser:
+      type: object
+      description: Profil zalogowanej osoby.
+      required: [id, displayName, email, roles]
+      properties:
+        id: {type: string, description: "Identyfikator konta w Usłudze logowania."}
+        displayName: {type: string, description: "Imię i nazwisko albo nazwa konta."}
+        email: {type: string, format: email, description: "Adres e-mail konta."}
+        roles: {type: array, description: "Role osoby; każde konto ma co najmniej `VISITOR` (BR-1, US14.3).", items: {$ref: '#/components/schemas/Role'}}
+    InvitationRequest:
+      type: object
+      description: Adres e-mail i rola zapraszanej osoby.
+      required: [email, role]
+      properties:
+        email: {type: string, format: email, description: "Adres e-mail zapraszanej osoby."}
+        role: {type: string, enum: [COLLECTOR, VERIFIER, COORDINATOR], description: "Rola pracownicza nadawana zaproszeniem (BR-2)."}
+    Invitation:
+      description: Wynik zaproszenia.
+      allOf:
+        - $ref: '#/components/schemas/InvitationRequest'
+        - type: object
+          description: Stan konta po zaproszeniu.
+          required: [accountExisted]
+          properties:
+            accountExisted: {type: boolean, description: "Czy konto z tym adresem istniało; wtedy dostało rolę obok dotychczasowych (US12.2)."}

@@ -1,7 +1,9 @@
 @startsalt
-' C3 Moje zgłoszenia, stan zwykły: własne zgłoszenia, najnowsze na górze.
+' C3 Moje zgłoszenia, stan zwykły: własne zgłoszenia z pomiaru i zmiany, najnowsze na górze;
+' zgłoszeń szybkich lista nie pokazuje (US8.1, US4.4).
 ' Status jako pierwsza informacja, słowem i ikoną (US8.1, NFR-21); TalkBack czyta go przed typem.
-' Dotknięcie pozycji otwiera C2, C6 albo C7; przycisk „Popraw zgłoszenie” to ta sama czynność.
+' „Otwórz” ze strzałką tylko przy zgłoszeniach przed decyzją i odrzuconych; otwiera C2, C6 albo C7.
+' Przyjęte i archiwalne nie są przyciskami (US8.1, decyzja 93).
 ' „Bariery już nie ma” nigdy nie jest „Przyjęte”: po przyjęciu oba zgłoszenia są archiwalne (BR-19).
 !include _wspolne.iuml
 !include _zespol-w-terenie.iuml
@@ -15,6 +17,7 @@ $ramka()
 Bariery już nie ma
 niesprawna winda
 <i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+$przycisk("Otwórz", "chevron-right")
 }
 $ramka()
 <b>$odrzucone()</b>
@@ -22,19 +25,21 @@ próg
 <i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
 Powód odrzucenia:
 Zdjęcie nie pokazuje progu
-$przycisk_glowny("Popraw zgłoszenie")
+$przycisk("Otwórz", "chevron-right")
 }
 $ramka()
 <b>$w_weryfikacji()</b>
 ciężkie drzwi
 <i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
 Zmiana czeka na wysłanie
+$przycisk("Otwórz", "chevron-right")
 }
 $ramka()
 <b>$wyslane()</b>
 próg
 <i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
 $przycisk("Dwie wersje: wybierz jedną")
+$przycisk("Otwórz", "chevron-right")
 }
 $ramka()
 <b>$przyjete()</b>

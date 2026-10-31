@@ -15,6 +15,7 @@ Wysłane <i>[data]</i>
 $przycisk("Otwórz", "chevron-right")
 }
 ..
+<b>Do sprawdzenia</b>
 $przelacznik("Mapa", "Lista", 2)
 $ramka()
 <b>próg</b>

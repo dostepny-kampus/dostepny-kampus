@@ -1,0 +1,35 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Context>
+!$LEGEND_TITLE_TEXT = "Legenda"
+HIDE_STEREOTYPE()
+UpdateElementStyle("person", $legendText="rola")
+UpdateElementStyle("system", $legendText="nasz system")
+UpdateElementStyle("external_system", $legendText="system zewnętrzny")
+
+Person(gos, "Gość niezalogowany", "RO-GOS")
+Person(odw, "Odwiedzający", "RO-ODW")
+Person(zbi, "Zbierający", "RO-ZBI")
+Person(wer, "Weryfikator", "RO-WER")
+Person(koo, "Koordynator", "RO-KOO")
+
+System(dk, "Dostępny Kampus", "aplikacja mobilna i serwer: mapa barier, zgłoszenia, weryfikacja, postęp")
+
+System_Ext(kc, "Usługa logowania", "Keycloak: konta, role, rejestracja, zaproszenia")
+System_Ext(arc, "Plany budynków PWr", "publiczna usługa ArcGIS: piętra, pomieszczenia, wejścia")
+System_Ext(osm, "OpenStreetMap", "kontury budynków, ODbL")
+System_Ext(tiles, "Serwery kafelków OSM", "podkład mapy")
+
+Rel(gos, dk, "sprawdza wejścia i bariery")
+Rel(odw, dk, "zgłasza barierę")
+Rel(zbi, dk, "zaznacza bariery na miejscu")
+Rel(wer, dk, "przyjmuje albo odrzuca")
+Rel(koo, dk, "zaprasza, śledzi postęp, eksportuje")
+
+Rel(dk, kc, "logowanie, role, zaproszenia", "OAuth 2.0, OIDC")
+Rel(dk, arc, "import pięter i pomieszczeń", "HTTPS")
+Rel(dk, osm, "eksport konturów", "Overpass API")
+Rel(dk, tiles, "kafelki, tylko online", "HTTPS")
+
+SHOW_LEGEND()
+@enduml

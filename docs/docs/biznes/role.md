@@ -1,6 +1,6 @@
 # Role i uprawnienia
 
-Strona opisuje, kto korzysta z systemu i co wolno każdej roli. Ekrany V1…K3 i historyjki US1…US17 pochodzą z opisu produktu. Cykl życia zgłoszenia opisuje strona [Reguły biznesowe](reguly.md).
+Strona opisuje, kto korzysta z systemu i co wolno każdej roli. Ekrany V1…K3 i historyjki US1…US18 pochodzą z opisu produktu. Cykl życia zgłoszenia opisuje strona [Reguły biznesowe](reguly.md).
 
 ## Role
 

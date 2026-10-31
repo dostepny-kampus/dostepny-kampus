@@ -8,11 +8,11 @@ Ekrany ról pracowniczych nie mają paska dolnego, bo wymagania wspólne przewid
 
 Wszystkie pięć ekranów potrzebuje serwera, więc mają te same stany „brak sieci”, „błąd serwera” i „brak uprawnień”. Makieta pokazuje je raz, na R1.
 
-![Makieta R1 w stanie brak sieci: nagłówek, wskaźnik Brak internetu i komunikat z przyciskiem Spróbuj ponownie](../../_generated/m-r1-kolejka-weryfikacji-brak-sieci.svg)
+![Makieta R1 w stanie brak sieci: nagłówek, wskaźnik Bez internetu i komunikat z przyciskiem Spróbuj ponownie](../../_generated/m-r1-kolejka-weryfikacji-brak-sieci.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Brak internetu” z ikoną pod nagłówkiem, bez dopisku o dacie, bo ekran nie pokazuje danych z telefonu | US9.1, NFR-10, NFR-21 |
+| „Bez internetu” z ikoną pod nagłówkiem, bez dopisku o dacie, bo ekran nie pokazuje danych z telefonu | US9.1, NFR-10, NFR-21 |
 | Komunikat „Ta czynność wymaga internetu…” i „Spróbuj ponownie” na pełną szerokość | NFR-50, PW-10; stan wspólny |
 | Błąd serwera: ten sam układ, bez wskaźnika sieci, komunikat „Serwer chwilowo nie odpowiada…” i „Spróbuj ponownie” | NFR-50, PW-10 |
 | Brak uprawnień: ten sam układ, komunikat „Nie masz już uprawnień do tej czynności…” i „Wróć do mapy”, który otwiera V1 | US14.1, NFR-33, PW-10 |
@@ -23,12 +23,13 @@ Przy otwarciu R1, R2 i K1 komunikat zastępuje treść ekranu. Po czynności na 
 
 Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu. Przycisk powtarza się w każdej pozycji, więc nie jest pogrubiony: wyróżnia go położenie na dole ramki i pełna szerokość. Cztery pogrubione przyciski nie wskazywałyby jednej czynności, a pogrubiony zostaje typ bariery, po którym Weryfikator wybiera zgłoszenie.
 
-![Makieta R1 w stanie zwykłym: sekcja Wzięte przeze mnie z jednym zgłoszeniem i przyciskiem Otwórz, przełącznik Mapa i Lista z wybraną listą, cztery zgłoszenia różnych rodzajów z przyciskiem Weź do sprawdzenia](../../_generated/m-r1-kolejka-weryfikacji.svg)
+![Makieta R1 w stanie zwykłym: sekcja Wzięte przeze mnie z jednym zgłoszeniem i przyciskiem Otwórz, nagłówek Do sprawdzenia, przełącznik Mapa i Lista z wybraną listą, cztery zgłoszenia różnych rodzajów z przyciskiem Weź do sprawdzenia](../../_generated/m-r1-kolejka-weryfikacji.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Wstecz” i nagłówek „Zgłoszenia do sprawdzenia”, równy napisowi przycisku w L2 | NFR-15, PW-14 |
 | Sekcja „Wzięte przeze mnie” na górze; dotknięcie pozycji otwiera R2, a „Otwórz” z ikoną pokazuje, że pozycję da się otworzyć | BR-11, UC14 2b, NFR-21 |
+| Nagłówek „Do sprawdzenia” nad przełącznikiem: nazywa listę i mapę | US10.4 |
 | Przełącznik „Mapa” i „Lista” w tej samej kolejności co na V1; domyślnie wybrana lista, wybrany widok widać po kształcie pola | UC14, NFR-19, NFR-21 |
 | Pozycja zgłoszenia „wysłane”: typ albo grupa barier, budynek, rodzaj, data wysłania; przy zmianie oznaczenia wejścia nazwa wejścia, bo zmiana nie ma typu | US10.4, BR-14, BR-24 |
 | Grupa „Schody i windy” zamiast typu przy zgłoszeniu szybkim, bo typ ustala dopiero Weryfikator | BR-14, PW-7 |
@@ -36,13 +37,14 @@ Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu. Przyci
 | „Weź do sprawdzenia” przy każdym zgłoszeniu, zwykły przycisk na pełną szerokość ramki | US10.4, BR-11, NFR-17, NFR-21 |
 | Brak zgłoszeń samego Weryfikatora, także jego zmian „bariera usunięta” i oznaczenia wejścia; filtr robi serwer | US10.5, BR-4 |
 
-![Makieta R1 w widoku mapy: mapa z punktami i podpisem OpenStreetMap, przyciski Powiększ, Pomniejsz, W górę, W dół, W lewo, W prawo i zgłoszenie wybranego punktu](../../_generated/m-r1-kolejka-weryfikacji-mapa.svg)
+![Makieta R1 w widoku mapy: mapa z punktami i podpisem OpenStreetMap, na mapie Powiększ, Pomniejsz, cztery strzałki w krzyżu i przycisk informacji przy podpisie oraz zgłoszenie wybranego punktu](../../_generated/m-r1-kolejka-weryfikacji-mapa.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Mapa z punktami zgłoszeń, zastępnik | UC14 |
 | „© OpenStreetMap contributors” na mapie, podkreślony jako odnośnik do strony praw autorskich | NFR-37 |
-| „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” zamiast gestów | NFR-15 (WCAG 2.5.1), PW-8; wymagania wspólne |
+| „ⓘ” przy podpisie: źródła i pełna licencja jak na V1 | NFR-37, NFR-40, decyzja 93 |
+| Na mapie „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu z nazwami dla TalkBack, jak na V1 | NFR-15 (WCAG 2.5.1, 2.5.7), PW-8, PW-11; wymagania wspólne |
 | Pod mapą zgłoszenie z wybranego punktu, z tymi samymi danymi co na liście | NFR-19, US10.4 |
 
 ![Makieta R1 w stanie zgłoszenie zajęte: komunikat Ktoś inny wziął już to zgłoszenie, a lista nie ma już zgłoszenia próg z C-13](../../_generated/m-r1-kolejka-weryfikacji-zajete.svg)
@@ -91,12 +93,12 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Po wyborze „Duplikat” lista „Wcześniejsze zgłoszenie:” z podobnymi zgłoszeniami; wybrane trafia do powodu odrzucenia | BR-13 |
 | System niczego nie odrzuca ani nie łączy sam: wybór robi Weryfikator | BR-13 |
 
-![Makieta R2 dla zgłoszenia szybkiego: grupa Schody i windy, budynek D-2, autor Odwiedzający, pola Typ bariery i Uciążliwość z trzema wartościami, brak podobnych zgłoszeń](../../_generated/m-r2-sprawdzenie-zgloszenia-szybkie.svg)
+![Makieta R2 dla zgłoszenia szybkiego: grupa Schody i windy, budynek D-2 z piętrem, autor Odwiedzający, pola Typ bariery i Uciążliwość z trzema wartościami, brak podobnych zgłoszeń](../../_generated/m-r2-sprawdzenie-zgloszenia-szybkie.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Zgłoszenie szybkie”, „Czego dotyczy: Schody i windy” jako podpowiedź od autora; bez piętra, bo zostaje puste | BR-14, PW-7 |
-| Budynek D-2 przypisany przez system z konturu | BR-14 |
+| „Zgłoszenie szybkie”, „Czego dotyczy: Schody i windy” jako podpowiedź od autora | BR-14, PW-7 |
+| Budynek D-2 przypisany przez system z konturu; piętro podane przez autora, bez edycji. Po „Nie wiem” albo bez pytania sam budynek | BR-14, US4.5 |
 | „Autor: Odwiedzający, Autor [nr]” | BR-5 |
 | „Typ bariery”: lista do wyboru, także z innej grupy niż podpowiedź | US10.3, BR-14 |
 | „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda z ikoną w ramce na pełną szerokość, jak na C2 | US10.3, PW-13, NFR-17, NFR-21 |
@@ -139,7 +141,7 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | Ładowanie | tekst od razu, w ramkach zdjęć napis „Wczytujemy zdjęcie…” (PW-9) |
 | Błąd walidacji przy przyjęciu | nad „Przyjmij” komunikat „Ustal typ bariery i uciążliwość, aby przyjąć zgłoszenie.” (US10.3) |
 | Błąd walidacji przy odrzuceniu | nad „Odrzuć” komunikat „Podaj powód odrzucenia, aby autor wiedział, co poprawić.” (US10.2) |
-| Brak sieci przy decyzji | wskaźnik „Brak internetu” i nad „Przyjmij” komunikat „Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«…”; dane i wybory zostają (BR-11) |
+| Brak sieci przy decyzji | wskaźnik „Bez internetu” i nad „Przyjmij” komunikat „Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«…”; dane i wybory zostają (BR-11) |
 | Błąd serwera, brak uprawnień | stany wspólne |
 
 ## K1 Postęp inwentaryzacji

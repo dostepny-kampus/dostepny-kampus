@@ -37,14 +37,16 @@ Numery pytań pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md). W
 | US13 | K3 | N9 | Musi być | Jako Koordynator, chcę pobrać eksport, aby otworzyć zgłoszenia przyjęte w QGIS. |
 | US14 | L1, L2 | N2, N8 | Musi być | Jako Odwiedzający lub osoba z rolą pracowniczą, chcę się zalogować, aby korzystać z czynności mojej roli. |
 | US15 | C5 (z V2 i K1) | N6, N9 | Musi być | Jako Zbierający, chcę oznaczyć piętro obejrzane, aby postęp inwentaryzacji odpowiadał stanowi obchodu. |
-| US16 | V2 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać piętro budynku szczegółowego, aby zobaczyć na planie piętra windy, toalety i bariery. |
+| US16 | V1, V2 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać piętro budynku szczegółowego, aby zobaczyć na planie piętra windy, toalety i bariery. |
 | US17 | V2, V3; zmiana: C6 | N1, N2 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę widzieć przy każdym wejściu aktualne oznaczenie z datą i źródłem, aby wiedzieć, czy mogę mu ufać. |
+| US18 | V1 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę znaleźć salę po numerze, aby wiedzieć, na którym jest piętrze i jak dojdę do niej bez schodów. |
 
 Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. Historyjki „Musi być” tworzą MVP.
 
 - **US14 jest historyjką umożliwiającą US4 i US6–US13.** Logowanie nie ma własnej potrzeby, a dla N3 jest dodatkowym krokiem. Konto służy N2 i N8: chroni dane przed spamem, a o publikacji decyduje tylko osoba z rolą nadaną przez Koordynatora (BR-2).
 - **US15 i US16 to nowe historyjki.** US15 daje podstawę postępu z US11, US16 opisuje plan piętra w budynkach szczegółowych.
 - **US17 to nowa historyjka (decyzja 36).** Oznaczenie wejścia ma trzy wartości, a Zbierający zmienia je na obchodzie (US17.2). Dlatego US2.1 dopuszcza „brak danych”.
+- **US18 to nowa historyjka.** Służy N1, bo dojście do sali bez schodów to dalsza część pytania, czy wejdę do budynku i którym wejściem. Wyszukanie korzysta z numerów, funkcji i pięter pomieszczeń z danych PWr, a drogę aplikacja podaje tekstem.
 
 ## Kryteria: Gość niezalogowany i Odwiedzający
 
@@ -53,17 +55,33 @@ Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. 
 | US1.1 | Wyszukanie „C13”, „c-13” i „C-13” znajduje budynek C-13. | — |
 | US1.2 | Mapa kampusu i wyszukiwanie działają bez logowania. | RO-GOS |
 | US1.3 | Na mapie są tylko zgłoszenia przyjęte. | BR-6 |
+| US1.4 | Na mapie widać wejścia budynków ze znakiem oznaczenia oraz ścieżki dostosowane i pochylnie z danych PWr albo OpenStreetMap. Legenda objaśnia słowem każdy znak mapy i planu, także „brak danych”. | NFR-21, US2.1 |
+| US1.5 | Dotknięcie znaku bariery na mapie pokazuje jej typ, uciążliwość, miejsce, zdjęcie i datę weryfikacji oraz przejście do karty budynku. | US2.2, BR-17 |
 | US2.1 | Każde wejście ma jedno z trzech oznaczeń: „dostępne”, „niedostępne” albo „brak danych”, tekstem i ikoną, nie tylko kolorem. | NFR-21, US17.1 |
 | US2.2 | Każde zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę weryfikacji. | BR-6 |
+| US2.3 | Karta budynku zaczyna się od skrótu faktów z danych: wejście dostępne, winda, toaleta dostosowana. Wejścia i bariery w budynku osoba widzi bez przewijania przez opisy pięter. Faktu bez potwierdzenia w danych skrót nie pokazuje. | US2.1, US2.2 |
+| US2.4 | Gdy budynek nie ma zgłoszeń przyjętych, karta mówi zdaniem, że nikt jeszcze nie zgłosił tu sprawdzonej bariery, i nie sugeruje, że barier nie ma. | BR-6 |
+| US2.5 | Każda bariera na karcie budynku, na liście budynków i w opisie bariery na mapie podaje miejsce: wejście albo piętro, jeśli zgłoszenie je ma. | BR-14 |
+| US2.6 | W budynku z danymi PWr karta podaje liczbę wyjść ewakuacyjnych, a na żądanie pokazuje ich listę. | decyzja 44 |
+| US2.7 | Gdy telefon nie ma jeszcze danych o barierach budynku, karta i lista budynków nic o barierach nie mówią, także nie „Brak zgłoszonych barier”. | US2.4, NFR-10 |
 | US3.1 | Gdy budynek nie ma wejścia dostępnego, ekran mówi to wprost zdaniem, a nie samym brakiem wyniku. | — |
-| US3.2 | Od mapy do wskazania wejścia dostępnego są najwyżej 3 dotknięcia. | M-4 |
+| US3.2 | Od mapy z widocznym budynkiem albo od wyniku wyszukiwania do wskazania wejścia dostępnego są najwyżej 3 dotknięcia. | M-4 |
+| US3.3 | Przy wejściu zalecanym ekran podaje dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia, z danych PWr. Każde wejście dostępne można pokazać na mapie. | BR-25, decyzja 44 |
 | US4.1 | Zgłoszenie szybkie to najwyżej 3 kroki: zdjęcie, grupa barier, wysłanie. Bieżąca pozycja dołącza się sama. | NFR-27 |
 | US4.2 | Bez sieci zgłoszenie zapisuje się w telefonie i wysyła się samo po powrocie sieci. | NFR-5, NFR-6 |
 | US4.3 | Odwiedzający wybiera jedną z 6 grup barier dużymi przyciskami. Aplikacja nie pyta o typ bariery ani uciążliwość. | NFR-17, US10.3 |
 | US4.4 | Odwiedzający po wysłaniu widzi potwierdzenie, że zgłoszenie trafi do weryfikacji. Dalszego statusu zgłoszenia aplikacja mu nie pokazuje. | decyzja 32 |
+| US4.5 | Gdy pozycja leży w konturze budynku, a wybrana grupa barier wymaga piętra (każda poza „inne”), aplikacja w kroku 2 pyta o piętro dużymi przyciskami. Przyciski to etykiety pięter z danych PWr albo numery w budynku podstawowym i zawsze „Nie wiem”, które zostawia piętro puste. | BR-14, NFR-17, decyzja 43 |
+| US4.6 | Zgłoszenie zaczęte przy wejściu na karcie budynku albo na ekranie „Którędy wejść” pokazuje w kroku 1 nazwę tego wejścia i dołącza ją jako wskazówkę. Miejsce zgłoszenia nadal pochodzi z bieżącej pozycji. | BR-8, BR-14 |
+| US4.7 | Po wysłaniu „Wstecz” z potwierdzenia wraca do ekranu, z którego zaczęto zgłoszenie. Kroków zgłoszenia nie da się otworzyć ponownie ani wysłać zdjęcia drugi raz. | NFR-8 |
+| US4.8 | Powrót między krokami nie usuwa zdjęcia ani wybranej grupy. Zdjęcie znika tylko wtedy, gdy Odwiedzający potwierdzi rezygnację. | NFR-23 |
 | US5.1 | Instrukcja pojawia się przy pierwszym uruchomieniu. Można ją pominąć i otworzyć ponownie z pomocy. | — |
 | US16.1 | W budynku szczegółowym przełącznik pięter pokazuje etykiety pięter z danych PWr. Wybrane piętro pokazuje plan z windami, schodami, toaletami, wejściami i zgłoszeniami przyjętymi. | NFR-40 |
-| US16.2 | W budynku podstawowym przełącznika pięter nie ma, a w miejscu planu widać napis „Plan piętra niedostępny dla tego budynku”. | BR-G1, NFR-48 |
+| US16.2 | W budynku podstawowym przełącznika pięter nie ma, a w miejscu planu widać napis „Nie mamy planu pięter tego budynku.” | BR-G1, NFR-48 |
+| US16.3 | W budynku szczegółowym karta budynku podaje tekstem, na których piętrach są winda i toaleta dostosowana. Dla każdego piętra osoba może przeczytać opis z funkcji pomieszczeń i przejść do planu tego piętra. | NFR-19, NFR-40, decyzja 44 |
+| US18.1 | Wyszukanie „A-1 329” i „a1 329” znajduje salę 329 w budynku A-1. Aplikacja pokazuje plan jej piętra z wyróżnioną salą oraz jej funkcję i piętro z danych PWr. Z wyniku osoba może otworzyć opis budynku i pokazać salę na mapie. | US1.1, NFR-40, decyzja 44 |
+| US18.2 | Przy znalezionej sali aplikacja podaje tekstem kroki: wejście zalecane z jego piętrem, winda i piętro sali, a na końcu sala z przybliżoną odległością od windy. Piętro wejścia pochodzi z danych planu PWr. Gdy go brak, aplikacja przyjmuje parter i mówi to w kroku. Sala na piętrze wejścia ma kroki bez windy, z odległością od wejścia. Trasy nie rysuje. | BR-25, decyzja 44 |
+| US18.3 | Gdy sali nie ma w danych, budynek nie ma wejścia zalecanego albo żadna winda nie łączy piętra wejścia z piętrem sali, aplikacja mówi to zdaniem. Proponuje wtedy opis budynku. | BR-25 |
 
 Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego ścieżkę na potwierdzeniu. Potrzebę takiej listy sprawdzimy w wywiadach.
 
@@ -79,15 +97,16 @@ Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego 
 | US7.1 | Bez typu bariery, uciążliwości 1–3 i zdjęcia zgłoszenia nie da się zapisać. | — |
 | US7.2 | W budynku szczegółowym piętro wybiera się z etykiet z danych PWr. W budynku podstawowym wpisuje się liczbę całkowitą, z dopiskiem „półpiętro” lub bez. | BR-G1 |
 | US7.3 | Przy typie TB-29 „inna bariera” opis jest obowiązkowy. | TB-29 |
-| US8.1 | Lista pokazuje każde własne zgłoszenie z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte, odrzucone albo archiwalne. Odrzucone ma powód odrzucenia. | NFR-21, BR-18 |
+| US7.4 | Formularz pokazuje budynek i miejsce z pomiaru. Miejsce można zmienić, wracając do pomiaru, a wpisane pola zostają. Wyjście z formularza z niezapisanymi zmianami wymaga potwierdzenia. | US6.2, NFR-23 |
+| US8.1 | Lista pokazuje każde własne zgłoszenie z pomiaru precyzyjnego i każdą własną zmianę z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte, odrzucone albo archiwalne. Odrzucone ma powód odrzucenia. Zgłoszenie, którego zmiana czeka w telefonie, ma przy statusie napis „Zmiana czeka na wysłanie”. Najnowsze zgłoszenia są na górze, a zgłoszenia, które można poprawić, mają „Otwórz”. Zgłoszeń szybkich lista nie pokazuje (US4.4). | NFR-21, BR-18, US4.4 |
 | US8.2 | Status „wysłane” pojawia się dopiero wtedy, gdy zgłoszenie czeka w kolejce na serwerze. Status „w weryfikacji” pojawia się, gdy wziął je Weryfikator. | US10.4 |
 | US8.3 | Zgłoszenie przed decyzją Weryfikatora można edytować. Odrzucone można poprawić i wysłać ponownie. | BR-3 |
 | US8.4 | Każdy Zbierający, także inny niż autor, zaczyna na karcie budynku, przy wybranym zgłoszeniu przyjętym, zmianę z oznaczeniem „bariera usunięta”. Do decyzji Weryfikatora zmiana przechodzi te same statusy co zgłoszenie i po synchronizacji ma status „wysłane”. Po przyjęciu jest od razu archiwalna (US10.6). Bariera zostaje na mapie do decyzji Weryfikatora. | BR-3, US10.6, decyzja 33 |
 | US9.1 | Bez sieci aplikacja pokazuje wskaźnik braku sieci, a nowe zgłoszenie czeka w kolejce ze statusem „lokalne”. | NFR-5, NFR-7 |
 | US9.2 | Po powrocie sieci synchronizacja rusza bez działania użytkownika. | NFR-6, NFR-8 |
-| US9.3 | Przy konflikcie wersji aplikacja pokazuje obie wersje, a wybór należy do Zbierającego: własna albo z serwera. Żadna zmiana nie znika po cichu. | NFR-9, BR-3 |
+| US9.3 | Przy konflikcie wersji aplikacja pokazuje obie wersje, a wybór należy do Zbierającego: własna albo z serwera. Żadna zmiana nie znika po cichu. Aplikacja nazywa pola, którymi wersje się różnią. | NFR-9, BR-3 |
 | US15.1 | W budynku szczegółowym Zbierający oznacza wybrane piętro jako obejrzane. W budynku podstawowym oznacza cały budynek jako „obejrzany”. | US11.1 |
-| US15.2 | Znacznik cofa Zbierający, który go postawił. Inny Zbierający nie może go cofnąć. | US11.3 |
+| US15.2 | Znacznik cofa Zbierający, który go postawił. Inny Zbierający nie może go cofnąć. Cofnięcie wymaga potwierdzenia ze zdaniem o skutku dla postępu. | US11.3 |
 | US15.3 | Bez sieci znacznik i jego cofnięcie czekają w telefonie jak zgłoszenie i wysyłają się same po powrocie sieci. | NFR-5, NFR-6, decyzja 33 |
 
 Ręczną korektę punktu opisują dwa kryteria: na planie piętra i na mapie. Korekta na planie działa tylko w budynku szczegółowym, więc ma priorytet „Powinno być”, podobnie jak mapa nieba. W MVP punkt poprawia się na mapie.
@@ -99,13 +118,15 @@ Ręczną korektę punktu opisują dwa kryteria: na planie piętra i na mapie. Ko
 | US10.1 | Przy sprawdzaniu Weryfikator widzi podobne zgłoszenia w promieniu 10 m: typ, zdjęcie i odległość. | — |
 | US10.2 | Odrzucenie, także duplikatu, jest niemożliwe bez powodu odrzucenia. | — |
 | US10.3 | Zgłoszenia szybkiego nie da się przyjąć, zanim Weryfikator nie ustali typu bariery i uciążliwości. | decyzja 29 |
-| US10.4 | Zgłoszenie wzięte przez Weryfikatora ma status „w weryfikacji” i znika z kolejki pozostałych Weryfikatorów. | decyzja 29 |
+| US10.4 | Zgłoszenie wzięte przez Weryfikatora ma status „w weryfikacji” i znika z kolejki pozostałych Weryfikatorów. Kolejka pokazuje przy każdym zgłoszeniu rodzaj, budynek i datę wysłania, od najdawniej wysłanego. | decyzja 29 |
 | US10.5 | Weryfikator nie widzi w kolejce własnych zgłoszeń ani zmian „bariera usunięta”, które sam złożył. | BR-4, decyzja 33 |
 | US10.6 | Po przyjęciu zmiany „bariera usunięta” bariera znika z mapy i karty budynku. Zgłoszenie zostaje w systemie z tym oznaczeniem. | US1.3, decyzja 32 |
+| US10.7 | Weryfikator widzi osobno zgłoszenia, które wziął i o których jeszcze nie zdecydował, i może do nich wrócić. | BR-11 |
+| US10.8 | Przy zmianie oznaczenia wejścia Weryfikator widzi, czy oznaczenie zmieniło się od jej wysłania. Przy zmianie „bariera usunięta” widzi zdjęcie poprzedniego zgłoszenia obok nowego i status poprzedniego zgłoszenia. Przy nowej wersji widzi nazwy pól zmienionych przez autora. | BR-3, BR-19, BR-23, BR-24 |
 | US11.1 | Dla każdego budynku widać odsetek pięter obejrzanych (budynek szczegółowy) albo znacznik „obejrzany” (budynek podstawowy). Obok są liczby zgłoszeń czekających na weryfikację i przyjętych. | US15.1 |
-| US11.2 | Gdy znacznik piętra obejrzanego albo jego cofnięcie dotrze na serwer, postęp budynku pokazuje nową wartość, np. 4 z 5 pięter, czyli 80 procent. | US15.3 |
-| US11.3 | Koordynator cofa znacznik piętra obejrzanego postawiony przez dowolnego Zbierającego. | decyzja 32 |
-| US11.4 | Dla każdego budynku szczegółowego widać liczbę wejść ze źródłem oznaczenia „obchód” wśród wszystkich jego wejść, np. „Wejścia sprawdzone na miejscu: 4 z 6”. | BR-24, M-1, decyzja 38 |
+| US11.2 | Gdy znacznik piętra obejrzanego albo jego cofnięcie dotrze na serwer, postęp budynku pokazuje nową wartość, np. 4 z 5 pięter, czyli 80 procent. Ekran podaje datę i godzinę odczytu postępu i pozwala go odświeżyć. | US15.3 |
+| US11.3 | Koordynator cofa znacznik piętra obejrzanego postawiony przez dowolnego Zbierającego. Cofnięcie wymaga potwierdzenia ze zdaniem o skutku dla postępu. | decyzja 32, decyzja 93 |
+| US11.4 | Dla każdego budynku szczegółowego widać liczbę wejść ze źródłem oznaczenia „obchód” wśród wszystkich jego wejść, np. „Wejścia sprawdzone na miejscu: 1 z 6”. | BR-24, M-1, decyzja 38 |
 | US12.1 | Po zaproszeniu osoba z podanym adresem e-mail loguje się i ma wybraną rolę. | BR-2 |
 | US12.2 | Zaproszenie na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają. | BR-1, BR-2 |
 | US13.1 | Plik GeoJSON otwiera się w QGIS bez ustawiania układu współrzędnych i ma współrzędne w WGS84. | NFR-43 |
@@ -122,7 +143,7 @@ Usunięcie bariery nie ma osobnego procesu ani formularza. Przechodzi tę samą 
 | --- | --- | --- |
 | US17.1 | Przy imporcie budynków wejście dostaje oznaczenie „dostępne” albo „niedostępne” z danych PWr albo OpenStreetMap. Wejście bez takich danych ma oznaczenie „brak danych” tekstem i ikoną. | BR-24, NFR-21 |
 | US17.2 | Zbierający na obchodzie składa zmianę oznaczenia wejścia z nowym zdjęciem. Sprawdza ją inny Weryfikator, a po przyjęciu nowe oznaczenie widać na karcie budynku. | BR-4, BR-24 |
-| US17.3 | Przy każdym wejściu widać datę i źródło oznaczenia: „import” albo „obchód”. | BR-24 |
+| US17.3 | Dla każdego wejścia widać datę i źródło oznaczenia: „import” albo „obchód”. Gdy są wspólne dla wszystkich wejść budynku, stoją raz nad listą wejść. | BR-24 |
 
 Zmiana oznaczenia wejścia to zgłoszenie, więc przechodzi te same statusy co każde zgłoszenie. Po przyjęciu jest od razu archiwalna, podobnie jak „bariera usunięta” (BR-24).
 
@@ -133,6 +154,7 @@ Zmiana oznaczenia wejścia to zgłoszenie, więc przechodzi te same statusy co k
 | US14.1 | Bez wymaganej roli aplikacja nie pokazuje ekranu czynności, a serwer odrzuca próbę jej wykonania. | NFR-33 |
 | US14.2 | Gość niezalogowany po wybraniu zgłoszenia szybkiego widzi przed zdjęciem prośbę o logowanie albo rejestrację. | RO-GOS |
 | US14.3 | Nowe konto z samodzielnej rejestracji ma tylko uprawnienia Odwiedzającego. | BR-1, BR-2 |
+| US14.4 | Aplikacja pamięta zalogowanie do wylogowania albo wycofania zgody, więc prośba o logowanie przy zgłoszeniu szybkim pojawia się tylko za pierwszym razem. | NFR-35 |
 
 Uprawnienia każdej roli podaje macierz na stronie [Role i uprawnienia](../biznes/role.md). Sposób logowania opisują NFR-31 i NFR-32.
 
@@ -144,7 +166,7 @@ Uprawnienia każdej roli podaje macierz na stronie [Role i uprawnienia](../bizne
 | Kroki TO-BE | przed T7 | T20–T23 | T7–T10 | T1–T6 | T6a, T6b, T10–T13, T19 | T14–T19 | T24–T29 |
 | **Musi być (MVP)** | US14 logowanie | US1 wyszukiwanie<br>US2 karta budynku<br>US17 oznaczenie wejścia | US4 zgłoszenie szybkie | US6 pomiar bez US6.3, US6.5<br>US7 formularz | US8 statusy, „bariera usunięta”<br>US17.2 zmiana oznaczenia wejścia<br>US9 synchronizacja | US10 z podobnymi zgłoszeniami | US15 piętro obejrzane<br>US11 postęp<br>US13 eksport |
 | **— linia MVP —** | | | | | | | |
-| **Powinno być** | US5 pomoc | US3 „Którędy wejść”<br>US16 plan piętra | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | — | US12 zaproszenie |
+| **Powinno być** | US5 pomoc | US3 „Którędy wejść”<br>US16 plan piętra<br>US18 wyszukanie sali | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | — | US12 zaproszenie |
 | **Może być** | wersja angielska, tryb ciemny | kolejne budynki szczegółowe, dane z deklaracji dostępności | — | — | — | — | — |
 
 Kolumny idą w kolejności korzystania z aplikacji, od Gościa niezalogowanego do Koordynatora. Kroki TO-BE każdej aktywności podaje drugi wiersz. Wiersze nad linią MVP muszą działać na pokazie. Pozycje „Może być” nie mają jeszcze historyjek; dostaną je, gdy wejdą do planu sprintu.

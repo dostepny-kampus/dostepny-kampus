@@ -7,3 +7,67 @@
 !procedure $numer_kroku($t)
 <b>$t</b>
 !endprocedure
+
+' ---------- V2 Karta budynku (decyzja 48) ----------
+
+' Góra karty: fragment mapy z wejściami budynku i chipy faktów z danych.
+' $chipy: 1 — „Wejście dostępne”, „Winda”, „Toaleta dostosowana”; 0 — bez chipów.
+' $podklad: opis podkładu; bez internetu „bez mapy ulic”.
+!procedure $karta_gora($chipy=1, $podklad="mapa ulic")
+$mapa("fragment mapy (" + $podklad + "): kontur budynku wyróżniony, sąsiednie przygaszone, wejścia budynku ze znakami oznaczeń")
+!if $chipy == 1
+{ [$dk_napis("Wejście dostępne", "", 17)] | [$dk_napis("Winda", "", 11)] }
+$przycisk("Toaleta dostosowana")
+!endif
+!endprocedure
+
+' Wejście na karcie: oznaczenie, przy wejściu zalecanym „Zalecane” z piętrem (BR-25),
+' nazwa, opis z danych, „Pokaż na mapie” tylko przy zalecanym i „Zgłoś barierę przy wejściu”
+' (TalkBack: „Zgłoś barierę przy wejściu: nazwa wejścia”, WCAG 2.5.3).
+' $zrodlo: data i źródło przy wejściu, gdy nie są wspólne dla wszystkich (BR-24).
+' $akcja tylko dla Zbierającego: "Zmień oznaczenie".
+!procedure $wejscie_karty($oznaczenie, $nazwa, $zalecane="", $zrodlo="", $akcja="")
+$ramka()
+<b>$oznaczenie</b>$dk_spacje(2)$zalecane
+<b>$nazwa</b>
+$tekst("[opis i szerokość drzwi z danych]", "i")
+!if $zrodlo != ""
+$zrodlo
+!endif
+!if $zalecane != ""
+$przycisk("Pokaż na mapie")
+!endif
+$przycisk("Zgłoś barierę przy wejściu")
+!if $akcja != ""
+$przycisk($akcja)
+!endif
+}
+!endprocedure
+
+' Grupy z planów PWr (budynek szczegółowy): winda i toaleta, piętra tekstem
+' z „Pokaż na planie” (decyzja 44), podpis źródła (NFR-40).
+!procedure $grupy_pwr()
+$sekcja("Winda i toaleta")
+$ramka()
+<b>Winda</b>
+$tekst("[piętra z windą, z danych]", "i")
+$tekst("Toaleta dla osób z niepełnosprawnością", "b")
+$tekst("[piętra z toaletą, z danych]", "i")
+}
+$sekcja("Piętra")
+$ramka()
+<b><i>[etykieta piętra]</i></b>
+$tekst("[opis z funkcji pomieszczeń]", "i")
+$przycisk("Pokaż na planie")
+}
+<i>[kolejne piętra w tym samym układzie]</i>
+!endprocedure
+
+' Dół karty: podpis źródła, przypięty pas czynności nad paskiem dolnym.
+!procedure $karta_dol()
+..
+Źródło: Politechnika Wrocławska
+--
+$przycisk_glowny("Sprawdź, którędy wejść")
+$przycisk("Pokaż na mapie")
+!endprocedure

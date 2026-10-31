@@ -1,0 +1,166 @@
+name: docs
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "sprint/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "24"
+  JAVA_VERSION: "25"
+  VALE_VERSION: 3.25.1
+  VALE_SHA256: 4bf5c5176b682b1da0830f471584d3494f1c2e27ee3029e1ad6f6661d4962182
+  PLANTUML_VERSION: 1.2026.9
+  PLANTUML_SHA256: aa4a1d06f8911c4b842beff4828dd955be431692b631a312d04c0e9fab9581de
+  NO_MKDOCS_2_WARNING: "1"
+
+jobs:
+  zmiany:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      dokumentacja: ${{ steps.diff.outputs.dokumentacja }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Sprawdź, czy PR zmienia dokumentację, scenariusze albo testy Androida
+        id: diff
+        run: |
+          android_tests=(':(glob)android/**/src/test*/**' ':(glob)android/**/src/*Test*/**')
+          if git diff --quiet HEAD^1 HEAD -- docs specs .github/workflows/docs.yml "${android_tests[@]}"; then
+            echo "dokumentacja=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "dokumentacja=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  kontrola:
+    needs: zmiany
+    if: needs.zmiany.outputs.dokumentacja == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: docs
+    env:
+      DK_NODE_MODULES: ${{ github.workspace }}/docs/node_modules
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: docs/requirements.txt
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - uses: actions/setup-java@v6.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Przywróć serwer LanguageTool z pamięci podręcznej
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.cache/language_tool_python
+          key: languagetool-${{ runner.os }}-${{ hashFiles('docs/requirements.txt') }}
+      - name: Zainstaluj zależności Pythona
+        run: python -m pip install -r requirements.txt
+      - name: Zainstaluj zależności Node
+        run: npm ci --no-audit --no-fund
+      - name: Pobierz Vale i PlantUML
+        working-directory: ${{ runner.temp }}
+        run: |
+          mkdir -p narzedzia
+          cd narzedzia
+          vale_archive="vale_${VALE_VERSION}_Linux_64-bit.tar.gz"
+          curl -sSfLO "https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/${vale_archive}"
+          echo "${VALE_SHA256}  ${vale_archive}" | sha256sum --check --strict
+          tar -xzf "${vale_archive}" vale
+          plantuml_jar="plantuml-${PLANTUML_VERSION}.jar"
+          curl -sSfLO "https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/${plantuml_jar}"
+          echo "${PLANTUML_SHA256}  ${plantuml_jar}" | sha256sum --check --strict
+          mv "${plantuml_jar}" plantuml.jar
+      - name: Testy skryptów dokumentacji
+        run: python -X utf8 -m unittest discover -s scripts/tests -v
+      - name: Uruchom verify.py
+        id: verify
+        env:
+          VALE_BIN: ${{ runner.temp }}/narzedzia/vale
+          PLANTUML_JAR: ${{ runner.temp }}/narzedzia/plantuml.jar
+        run: |
+          mapfile -t changed < <(git diff --name-only --relative --diff-filter=d HEAD^1 HEAD -- 'docs/*.md')
+          python -X utf8 scripts/verify.py "${changed[@]}"
+      - name: Zezwól Chromium na piaskownicę przestrzeni nazw
+        if: ${{ !cancelled() && steps.verify.outcome != 'skipped' }}
+        run: |
+          if [ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Wyrenderuj wszystkie diagramy do katalogu tymczasowego
+        if: ${{ !cancelled() && steps.verify.outcome != 'skipped' }}
+        env:
+          PLANTUML_JAR: ${{ runner.temp }}/narzedzia/plantuml.jar
+        run: python -X utf8 scripts/render.py --force --out "${RUNNER_TEMP}/diagramy"
+
+  strona:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: docs/requirements.txt
+      - name: Zainstaluj zależności Pythona
+        run: python -m pip install -r requirements.txt
+      - name: Wygeneruj skróty ze słownika
+        run: python -X utf8 scripts/abbr.py
+      - name: Zbuduj stronę
+        run: python -m mkdocs build --strict --site-dir "${RUNNER_TEMP}/strona"
+      - uses: actions/upload-pages-artifact@v5.0.0
+        with:
+          path: ${{ runner.temp }}/strona
+
+  publikacja:
+    needs: strona
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5.0.1

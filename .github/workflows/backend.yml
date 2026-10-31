@@ -1,0 +1,63 @@
+name: backend
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "sprint/**"
+  push:
+    branches:
+      - main
+      - "sprint/**"
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  zmiany:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      serwer: ${{ steps.diff.outputs.serwer }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Sprawdź, czy PR zmienia serwer
+        id: diff
+        run: |
+          if git diff --quiet HEAD^1 HEAD -- backend .github/workflows/backend.yml; then
+            echo "serwer=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "serwer=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  serwer:
+    needs: zmiany
+    if: ${{ !cancelled() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6.1.0
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Zbuduj, przetestuj i sprawdź qulice
+        run: ./mvnw -B verify

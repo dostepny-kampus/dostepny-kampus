@@ -1,0 +1,24 @@
+@startsalt
+' V1 Mapa kampusu, znaleziona sala: plan piętra na mapie i kroki tekstem (decyzja 48, punkt 5).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("A-1 329")
+$pietra(3)
+$przycisk("Legenda")
+$mapa("plan 2 piętra A-1 z wyróżnioną salą; krótkie podpisy: Winda, Toaleta, Sala 329", "", "info")
+Źródło: Politechnika Wrocławska
+$ramka()
+<b>A-1: Sala 329</b>
+<i>[funkcja sali z danych]</i>, 2 piętro
+1. <i>[wejście zalecane]</i> (parter)
+2. Winda przy klatkach C i D
+3. 2 piętro
+4. Sala 329, ok. <i>[odległość]</i> od windy
+$przycisk_glowny("Pokaż opis budynku")
+$przycisk("Zamknij")
+}
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

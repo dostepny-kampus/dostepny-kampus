@@ -1,6 +1,7 @@
 @startsalt
 ' R1 Kolejka weryfikacji, stan zwykły, widok mapy, Weryfikator wybrał punkt na mapie.
-' Atrybucja OSM na mapie, podkreślona jako odnośnik do strony praw autorskich (NFR-37).
+' Atrybucja OSM na mapie, podkreślona jako odnośnik do strony praw autorskich, i „ⓘ” ze źródłami
+' jak na V1 (NFR-37, decyzja 93).
 !include _wspolne.iuml
 $ekran_poczatek()
 $naglowek("Zgłoszenia do sprawdzenia")
@@ -13,9 +14,9 @@ Wysłane <i>[data]</i>
 $przycisk("Otwórz", "chevron-right")
 }
 ..
+<b>Do sprawdzenia</b>
 $przelacznik("Mapa", "Lista", 1)
-$mapa("mapa kampusu z punktami zgłoszeń do sprawdzenia; wybrany punkt przy C-13")
-$przyciski_mapy()
+$mapa("mapa kampusu z punktami zgłoszeń do sprawdzenia; wybrany punkt przy C-13", "", "info")
 $ramka()
 <b>próg</b>
 Budynek C-13

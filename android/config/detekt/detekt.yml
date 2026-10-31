@@ -1,0 +1,55 @@
+# Kod generowany (build/generated) jest w analizie typów, ale bez uwag: nikt go nie pisze ani nie commituje.
+comments:
+  excludes: ['**/build/generated/**']
+  AbsentOrWrongFileLicense:
+    licenseTemplate: |
+      /*
+       * Dostępny Kampus
+       * Author: Vladyslav Yevkov
+       * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+       */
+
+ktlint:
+  excludes: ['**/build/generated/**']
+  code_style: 'ktlint_official'
+  FunctionSignature:
+    functionBodyExpressionWrapping: 'multiline'
+  FunctionName:
+    # Dubluje naming>FunctionNaming, a w detekt nie ma opcji pominięcia @Composable,
+    # którą wymaga dokumentacja compose-rules. Nazwy funkcji sprawdza FunctionNaming.
+    active: false
+
+naming:
+  excludes: ['**/build/generated/**']
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+
+complexity:
+  excludes: ['**/build/generated/**']
+  LongParameterList:
+    ignoreAnnotated: ['Composable']
+
+Compose:
+  excludes: ['**/build/generated/**']
+  CompositionLocalAllowlist:
+    # Role tokenów spoza Material 3 (kolory oznaczeń wejścia i mapy) dostarcza motyw, jak MaterialTheme.
+    # Część V1 zasłoniętą przez arkusz V2 podaje scena arkusza ekranowi pod nim (LocalSheetPadding w :app).
+    allowedCompositionLocals: ['LocalStatusColors', 'LocalMapColors', 'LocalSheetPadding']
+
+coroutines:
+  excludes: ['**/build/generated/**']
+
+empty-blocks:
+  excludes: ['**/build/generated/**']
+
+exceptions:
+  excludes: ['**/build/generated/**']
+
+performance:
+  excludes: ['**/build/generated/**']
+
+potential-bugs:
+  excludes: ['**/build/generated/**']
+
+style:
+  excludes: ['**/build/generated/**']

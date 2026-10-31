@@ -1,0 +1,17 @@
+extends:
+  - recommended-strict
+
+rules:
+  info-license-strict: error
+  operation-description: error
+  parameter-description: error
+  tag-description: error
+  operation-4xx-problem-details-rfc7807: error
+  rule/schema-description:
+    subject:
+      type: Schema
+    assertions:
+      required:
+        - description
+    message: Każda schema i każde pole ma opis (description).
+    severity: error

@@ -1,13 +1,13 @@
 @startsalt
 ' R2 Sprawdzenie zgłoszenia szybkiego od Odwiedzającego: Weryfikator ustala typ bariery
-' i uciążliwość (BR-14). Piętro zostaje puste. Brak podobnych zgłoszeń w promieniu 10 m.
+' i uciążliwość (BR-14). Piętro podał autor (US4.5). Brak podobnych zgłoszeń w promieniu 10 m.
 !include _wspolne.iuml
 !include _weryfikacja.iuml
 $ekran_poczatek()
 $naglowek("Sprawdzenie zgłoszenia")
 <b>Zgłoszenie szybkie</b>
 Czego dotyczy: Schody i windy
-Budynek D-2
+Budynek D-2, piętro <i>[etykieta]</i>
 Miejsce: <i>[punkt z telefonu]</i>
 $r2_zdjecie("zdjęcie bariery")
 Autor: Odwiedzający, Autor <i>[nr]</i>

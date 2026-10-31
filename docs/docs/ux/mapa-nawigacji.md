@@ -20,7 +20,9 @@ Czwarta pozycja paska dolnego to „Konto”, a osoby z rolą pracowniczą widz�
 
 ![Diagram przejść Gościa i Odwiedzającego: V1, V2, V3, V4 z krokami, V5, L1, L2](../_generated/nawigacja-odwiedzajacy.svg)
 
-Główna droga to V1, V2, V3 i z powrotem. Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]).
+Główna droga to V1, V2, V3 i z powrotem. Z V2 wraca się też na mapę z planem piętra albo wejściem. „Zgłoś barierę przy wejściu” na V2 i V3 otwiera V4 z wybranym wejściem.
+
+Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]).
 
 Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”. Po zalogowaniu wraca do kroku 1 V4 albo trafia do L2 (P3).
 
@@ -51,6 +53,8 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | pasek dolny | „Konto” | L1 | RO-GOS | US14 |
 | pasek dolny | „Konto” | L2 | RO-ODW | US14.1, US14.3 |
 | pasek dolny | „Konto i praca” | L2, na górze sekcja „Twoja praca” | role pracownicze | US14.1, P1 |
+| pasek dolny | ponowne dotknięcie wybranej pozycji | pierwszy ekran tej sekcji: V1 bez arkusza i wyniku wyszukiwania, V5 na kroku 1, L1 albo L2 jak po wejściu | wszystkie | NFR-15, decyzja 72 |
+| V5 przy pierwszym uruchomieniu | wyjście z instrukcji dowolną drogą: „Wstecz”, pasek, „Pomiń instrukcję”, „Zacznij” | ekran docelowy tej czynności; instrukcja jest pokazana i nie otworzy się sama przy kolejnym uruchomieniu. Zamknięcie aplikacji w trakcie instrukcji jej nie kończy | wszystkie | US5.1, decyzja 73 |
 | każdy ekran poza V1 | „Wstecz” | poprzedni ekran | wszystkie | NFR-15 |
 | ekran po wysłaniu formularza: C3, R1, V4 potwierdzenie | „Wstecz” | ekran, z którego zaczęła się praca: L2, V2 albo ekran sprzed V4 | zalogowani | NFR-15, P2 |
 
@@ -59,19 +63,37 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | Z ekranu | Czynność | Do ekranu | Rola | AC/BR |
 | --- | --- | --- | --- | --- |
 | V1 | wybór wyniku w polu „Wpisz symbol budynku, np. C-13” | V2 | wszystkie | US1.1 |
-| V1 | dotknięcie konturu budynku | V2 | wszystkie | US2, US3.2 |
+| V1 | dotknięcie konturu budynku | V2, arkusz na mapie do połowy ekranu | wszystkie | US2, US3.2, decyzja 48 |
+| V1 z arkuszem V2 | dotknięcie konturu innego budynku | V2 tego budynku zamiast poprzedniego; „Wstecz” wraca do V1 | wszystkie | US2, decyzja 48 |
+| V1 | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie w zasięgu dwóch konturów | V1, arkusz „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
+| V1, arkusz „Który budynek?” | przycisk budynku, np. „Budynek C-3”; „Zamknij” | V2 tego budynku; V1 | wszystkie | US2, NFR-53 |
 | V1 | przełącznik „Mapa” i „Lista budynków” | V1, lista | wszystkie | NFR-19 |
 | V1 | dotknięcie budynku na liście | V2 | wszystkie | US2, US3.2 |
-| V1 | dotknięcie bariery | V2 budynku bariery | wszystkie | US1.3, US10.6 |
+| V1 | dotknięcie znaku bariery | V1, arkusz bariery | wszystkie | US1.3, US10.6 |
+| V1, arkusz bariery | „Pokaż opis budynku”; „Zamknij” | V2 budynku bariery; V1 | wszystkie | US2 |
 | V1 | napis „© OpenStreetMap contributors” | strona praw autorskich OSM | wszystkie | NFR-37 |
-| V1 | „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” | V1, mapa powiększona albo przesunięta | wszystkie | NFR-15, PW-8 |
+| V1 | „Powiększ”, „Pomniejsz” i strzałki „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | V1, mapa powiększona albo przesunięta | wszystkie | NFR-15, PW-8, PW-11 |
+| V1 | „ⓘ” („Informacje o mapie”) | V1, arkusz ze źródłami mapy | wszystkie | NFR-37, NFR-40 |
 | V1, stan „brak wyniku” | „Lista budynków” | V1, lista | wszystkie | UC1 3a |
-| V2 | przełącznik pięter | V2, plan piętra | wszystkie | US16.1 |
+| V1 | „Legenda” | V1, legenda rozwinięta | wszystkie | NFR-21 |
+| V1 | wybór sali w wynikach pola, np. „A-1 329” | V1, stan „znaleziona sala”: plan piętra i kroki | wszystkie | BR-25, decyzja 44 |
+| V1, stan „plan piętra” albo „znaleziona sala” | przełącznik pięter | V1, plan innego piętra | wszystkie | US16.1 |
+| V1, stan „znaleziona sala”, „sala bez drogi” albo „brak sali” | „Pokaż opis budynku” | V2 | wszystkie | US2 |
+| V1, stan „znaleziona sala” | „Zamknij” | V1 | wszystkie | decyzja 48 |
+| V2 | „Pokaż na planie” przy piętrze | V1, plan tego piętra | wszystkie | US16.1, decyzja 44 |
+| V2 | „Pokaż na mapie” w przypiętym pasie | V1 z zaznaczonym budynkiem | wszystkie | US2.1, US3.2 |
+| V2 | „Pokaż wejście na mapie” przy wejściu zalecanym | V1 z zaznaczonym wejściem | wszystkie | US2.1, BR-25 |
+| V2 | „Zgłoś barierę przy wejściu” | V4, krok 1, wejście wybrane | zalogowani | US4, decyzja 48 |
+| V2 | „Zgłoś barierę przy wejściu” | L1, potem V4 z wybranym wejściem | RO-GOS | US14.2, decyzja 48 |
+| V2, stan „brak zgłoszeń przyjętych” | „Zgłoś barierę” | V4; Gość: L1 | wszystkie | US4, US14.2 |
 | V2 | „Sprawdź, którędy wejść” | V3 | wszystkie | US3, US3.2 |
 | V2 | „Wstecz” | V1 z zaznaczonym budynkiem | wszystkie | US1.1 |
 | V2, stan „budynku nie ma w telefonie” | „Spróbuj ponownie” | V2 | wszystkie | NFR-10 |
 | V2, stan „błąd zdjęcia” | „Spróbuj ponownie” | V2 | wszystkie | NFR-50 |
 | V3 | „Wstecz” | V2 | wszystkie | US3 |
+| V3 | „Pokaż wejście na mapie” przy wejściu dostępnym | V1 z zaznaczonym wejściem | wszystkie | US2.1, US3 |
+| V3 | „Zgłoś barierę przy wejściu” | V4, krok 1, wejście wybrane | zalogowani | US4, decyzja 54 |
+| V3 | „Zgłoś barierę przy wejściu” | L1, potem V4 z wybranym wejściem | RO-GOS | US14.2, decyzja 54 |
 | V4 | wejście na ekran | L1 zamiast aparatu | RO-GOS | US14.2 |
 | V4, stan „brak zgody na lokalizację” | „Pozwól na lokalizację” | V4, krok 1 | zalogowani | UC7 2a, NFR-27 |
 | V4, stan „brak zgody na lokalizację” | „Wróć do mapy” | V1 | zalogowani | UC7 2a |
@@ -82,11 +104,13 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V4, stan „lokalizacja wyłączona” | „Otwórz ustawienia” | ustawienia telefonu | zalogowani | UC7 4c |
 | V4, stan „lokalizacja wyłączona” | „Wróć do mapy” | V1 | zalogowani | UC7 4c |
 | V4, krok 1 | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | aparat, potem krok 2 | zalogowani | US4.1, BR-8 |
-| V4, krok 2 | wybór grupy barier: „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego” | V4, krok 3 | zalogowani | US4.3 |
+| V4, krok 2 | wybór grupy barier: „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego” | V4, krok 3; w budynku przy każdej grupie poza „Coś innego” pytanie o piętro | zalogowani | US4.3, US4.5 |
+| V4, krok 2, pytanie o piętro | przycisk piętra albo „Nie wiem” | V4, krok 3 | zalogowani | US4.5, BR-14 |
+| V4, krok 2, pytanie o piętro | „Wstecz” | V4, krok 2, lista grup; zdjęcie zostaje | zalogowani | US4.5 |
 | V4, krok 2 | „Wstecz” | V4, krok 1; zdjęcie zostaje | zalogowani | US4.1 |
 | V4, krok 1, zdjęcie zrobione | „Dalej” | V4, krok 2; zdjęcie i grupa zostają | zalogowani | US4.1 |
 | V4, krok 1, zdjęcie zrobione | „Wstecz” | V4, stan „potwierdzenie rezygnacji” | zalogowani | UC7 1b |
-| V4, krok 3 | „Wstecz” | V4, krok 2; zdjęcie i grupa zostają | zalogowani | US4.1 |
+| V4, krok 3 | „Wstecz” | V4, krok 2: pytanie o piętro, jeśli było, inaczej lista grup; zdjęcie, grupa i piętro zostają | zalogowani | US4.1, US4.5 |
 | V4, krok 3 | „Wyślij” | V4, potwierdzenie | zalogowani | US4.1, US4.4 |
 | V4, krok 3, brak sieci | „Wyślij” | V4, potwierdzenie „Zapisaliśmy zdjęcie w telefonie” | zalogowani | US4.2, UC7 7a |
 | V4, krok 3 | telefon nie ustalił pozycji | V4, stan „brak pozycji” | zalogowani | UC7 4c |
@@ -106,7 +130,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | --- | --- | --- | --- | --- |
 | L1 | „Zaloguj się” | strona logowania w przeglądarce | RO-GOS | US14, NFR-31 |
 | L1 | „Załóż konto” | rejestracja w przeglądarce z klauzulą | RO-GOS | US14.3, NFR-30 |
-| strona logowania lub rejestracji, wejście z V4 | zalogowanie albo rejestracja | V4, krok 1 | zalogowani | US14.2, UC7 1a |
+| strona logowania lub rejestracji, wejście z V4 | zalogowanie albo rejestracja | V4, krok 1; wejście wybrane na V2 zostaje | zalogowani | US14.2, UC7 1a |
 | strona logowania lub rejestracji, wejście z „Konto” | zalogowanie albo rejestracja | L2 | zalogowani | UC6 krok 3, US12.1, P3 |
 | L1 | „Nie teraz” | V1 | RO-GOS | UC7 1b |
 | L1, stan „brak sieci” | „Wróć do mapy” | V1 | RO-GOS | UC6 1a |
@@ -139,7 +163,8 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | C1 | „Wybierz inny” przy pytaniu albo po potwierdzeniu | C1, lista budynków najbliżej punktu | RO-ZBI | US6.2, BR-G2 |
 | C1, lista budynków | budynek z listy, np. „Budynek A-2”; „Poza budynkiem” | C1 z wybranym budynkiem albo bez budynku | RO-ZBI | US6.2, BR-G2, BR-G4 |
 | C1, budynek szczegółowy | przełącznik „Plan piętra” i „Mapa” (domyślnie „Plan piętra”) | C1, ten sam ekran: plan wybranego piętra albo mapa z tym samym punktem | RO-ZBI | US6.3, US6.4 |
-| C1 | „W górę”, „W dół”, „W lewo”, „W prawo” pod „Przesuń punkt na mapie:” albo „Przesuń punkt na planie:” | C1, punkt przesunięty, napis „Korekta ręczna” | RO-ZBI | US6.3, US6.4, NFR-15 |
+| C1 | „Powiększ”, „Pomniejsz” i strzałki „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | C1, mapa albo plan przesunięte, punkt na środku w nowym miejscu, napis „Korekta ręczna” | RO-ZBI | US6.3, US6.4, NFR-15 |
+| C1 | „ⓘ” („Informacje o mapie”) | C1, panel ze źródłami mapy | RO-ZBI | NFR-37, NFR-40 |
 | C1, stany „brak zgody” i „zgoda tylko przybliżona” | „Pozwól na lokalizację”, „Pozwól na dokładną lokalizację” | C1, pomiar | RO-ZBI | NFR-27, BR-8 |
 | C1, stany zgody na lokalizację | jak w V4; po odmowie „Otwórz ustawienia” | ustawienia telefonu | RO-ZBI | NFR-27 |
 | C1, stany zgody na lokalizację | „Wstecz” zamiast „Wróć do mapy” | ekran, z którego otwarto C1: L2, C2 albo C3 | RO-ZBI | NFR-15 |
@@ -149,7 +174,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | C2, błąd walidacji | „Zapisz” bez wymaganego pola | C2, komunikat przy polu | RO-ZBI | US7.1, US7.3 |
 | C3 | znak „Dwie wersje: wybierz jedną” | C4 | RO-ZBI | US9.3 |
 | C3 | stan synchronizacji, np. „Czeka na wysłanie: 3” | C4 | RO-ZBI | US9.1 |
-| C3 | „Popraw zgłoszenie” albo dotknięcie zgłoszenia przed decyzją albo odrzuconego | C2 | RO-ZBI | US8.3, BR-3 |
+| C3 | „Otwórz” przy zgłoszeniu przed decyzją albo odrzuconym | C2 | RO-ZBI | US8.1, US8.3, BR-3 |
 | C3 | to samo przy zmianie oznaczenia wejścia | C6 | RO-ZBI | US17.2 |
 | C3 | to samo przy „bariera usunięta” | C7 | RO-ZBI | US8.4 |
 | C3 | „Wyślij ponownie” przy zmianie odrzuconej jako „nieaktualne” | C2 z aktualną wersją zgłoszenia | RO-ZBI | BR-23 |
@@ -162,7 +187,8 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | C4, konflikt | „Zostaw moją wersję”, „Weź wersję z serwera” | C3 | RO-ZBI | US9.3, BR-10 |
 | C4, konflikt | „Zdecyduję później” | C3 | RO-ZBI | BR-10 |
 | C5 | „Oznacz jako obejrzane” | C5, nowy stan | RO-ZBI | US15.1 |
-| C5 | „Cofnij znacznik” przy własnym znaczniku | C5, nowy stan | RO-ZBI | US15.2 |
+| C5 | „Cofnij znacznik” przy własnym znaczniku | C5, potwierdzenie | RO-ZBI | US15.2 |
+| C5, potwierdzenie | „Cofnij znacznik” | C5 z nowym stanem | RO-ZBI | US15.2 |
 | C5, stan „błąd zapisu” | „Spróbuj ponownie” | C5 | RO-ZBI | NFR-7 |
 | C6 | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | aparat, potem C6 ze zdjęciem | RO-ZBI | US17.2, BR-24 |
 | C6 | „Wyślij do sprawdzenia” | C3 | RO-ZBI | US17.2 |
@@ -174,7 +200,8 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | Z ekranu | Czynność | Do ekranu | Rola | AC/BR |
 | --- | --- | --- | --- | --- |
 | R1 | przełącznik „Mapa” i „Lista” (domyślnie „Lista”) | R1 | RO-WER | NFR-19 |
-| R1, widok mapy | „Powiększ”, „Pomniejsz”, „W górę”, „W dół”, „W lewo”, „W prawo” | R1, mapa powiększona albo przesunięta | RO-WER | NFR-15, PW-8 |
+| R1, widok mapy | „Powiększ”, „Pomniejsz” i strzałki „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | R1, mapa powiększona albo przesunięta | RO-WER | NFR-15, PW-8 |
+| R1, widok mapy | „ⓘ” („Informacje o mapie”) | R1, panel ze źródłami mapy | RO-WER | NFR-37, NFR-40 |
 | R1 | „Weź do sprawdzenia” | R2 | RO-WER | US10.4, BR-11 |
 | R1 | „Weź do sprawdzenia”, zgłoszenie już zajęte | R1, komunikat, zgłoszenie znika | RO-WER | UC14 2a, BR-11 |
 | R1 | „Otwórz” przy zgłoszeniu z sekcji „Wzięte przeze mnie” | R2 | RO-WER | BR-11, UC14 2b |
@@ -219,6 +246,7 @@ Wejście jest wskazane już na V2, bo karta podaje oznaczenie każdego wejścia 
 | E. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem A | 2 | 3 | spełnione |
 | F. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem C albo D | 3 | 4 | do V3 ponad próg |
 | G. Brak wyniku: pole, litery, „Lista budynków”, budynek, „Sprawdź, którędy wejść” | 3 | 4 | droga po błędzie, ponad próg |
+| H. V1: kontur wspólny, np. „C-3/C-4”, budynek w „Który budynek?”, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
 
 Kryterium liczy dotknięcia od mapy, więc ścieżki E i F się w nim mieszczą. Jeśli liczyć od otwarcia aplikacji, ścieżka F przekracza próg tylko przy pierwszym uruchomieniu i tylko do V3.
 
@@ -281,9 +309,9 @@ Punkt startu każdej roli to V1, bo od niej zaczyna się aplikacja. Pasek dolny 
 
 | Miejsce | Ocena |
 | --- | --- |
-| V3 | celowy koniec drogi US3: odpowiedź na pytanie, dalej tylko „Wstecz” i pasek dolny |
+| V3 | celowy koniec drogi US3: odpowiedź na pytanie, dalej „Wstecz”, przyciski przy wejściach i pasek dolny |
 | V4, potwierdzenie | celowy koniec zgłoszenia szybkiego (US4.4); wyjście „Wróć do mapy” |
-| V1, stan „brak sieci przy pierwszym uruchomieniu” | celowe czekanie: mapa wczyta się sama po powrocie sieci (NFR-11) |
+| V1, stan „brak sieci przy pierwszym uruchomieniu” | nie zaułek: kontury, wejścia, wyszukiwanie i pasek działają; bariery i plany wczytają się same po powrocie sieci (NFR-10) |
 | K2 i K3 po sukcesie | celowy koniec czynności; potwierdzenie na tym samym ekranie, dalej „Wstecz” |
 | Przeglądarka, ustawienia telefonu, aparat, pobrane pliki | poza aplikacją; powrót przyciskiem „Wstecz” telefonu |
 | V4, „Zrezygnuj” | po potwierdzeniu prowadzi do V1 (rozbieżność 2, rozstrzygnięta); „Wróć do zdjęcia” wraca do stanu „brak pozycji” |

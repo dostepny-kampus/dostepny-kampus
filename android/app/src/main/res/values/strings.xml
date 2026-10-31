@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
+    <string name="app_name">Dostępny Kampus</string>
+    <string name="nav_mapa">Mapa</string>
+    <string name="nav_zglos_bariere">Zgłoś barierę</string>
+    <string name="nav_pomoc">Pomoc</string>
+    <string name="nav_konto">Konto</string>
+    <string name="nav_konto_i_praca">Konto i praca</string>
+    <string name="ekran_ktoredy_wejsc">Którędy wejść do %1$s</string>
+    <string name="krok_z_3">Krok %1$d z 3</string>
+    <string name="sprawdz_ktoredy_wejsc">Sprawdź, którędy wejść</string>
+    <string name="pokaz_na_mapie">Pokaż na mapie</string>
+    <string name="dalej">Dalej</string>
+    <string name="wyslij">Wyślij</string>
+    <string name="wroc_do_mapy">Wróć do mapy</string>
+    <string name="nie_teraz">Nie teraz</string>
+    <string name="rozwin_karte">Rozwiń kartę budynku</string>
+    <string name="zwin_karte">Zwiń kartę budynku</string>
+</resources>

@@ -1,0 +1,146 @@
+name: pr-guard
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "sprint/**"
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+  COMMITLINT_VERSION: 21.2.4
+  GITLEAKS_VERSION: 8.30.1
+  GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+
+jobs:
+  rozmiar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Policz zmienione linie
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          if [[ $BASE_REF == main && $HEAD_REF =~ ^sprint/[0-9]+$ && $HEAD_REPO == "$GITHUB_REPOSITORY" ]]; then
+            echo "Scalenie sprintu do main: każda zmiana przeszła limit w PR do gałęzi sprintu."
+            exit 0
+          fi
+          bash .github/scripts/rozmiar-pr.sh "$BASE_SHA" "$HEAD_SHA" 300
+
+  commity:
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+      - name: Zainstaluj commitlint
+        run: >-
+          npm install --no-save --no-package-lock --no-audit --no-fund
+          "@commitlint/cli@${COMMITLINT_VERSION}"
+          "@commitlint/config-conventional@${COMMITLINT_VERSION}"
+      - name: Sprawdź komunikaty commitów
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          # Commit, który dodał commitlint; trzy wcześniejsze commity z PR #2 powstały przed tą kontrolą.
+          COMMITLINT_START: 6cf5eac12b0aedff147d5d06e7394571936bcd8e
+        run: |
+          from=$BASE_SHA
+          if [[ $BASE_REF == main && $HEAD_REF =~ ^sprint/[0-9]+$ && $HEAD_REPO == "$GITHUB_REPOSITORY" ]] &&
+            git merge-base --is-ancestor "$COMMITLINT_START" "$HEAD_SHA" &&
+            ! git merge-base --is-ancestor "$COMMITLINT_START" "$BASE_SHA"; then
+            echo "Scalenie sprintu do main: commity sprawdzane od wprowadzenia commitlint."
+            from=$COMMITLINT_START
+          fi
+          npx --no-install commitlint --from "$from" --to "$HEAD_SHA" --verbose
+      - name: Sprawdź tytuł PR
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PR_TITLE" | npx --no-install commitlint --verbose
+
+  zakazane-slowa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Sprawdź gałąź, tytuł, opis, commity i dodane linie plików
+        env:
+          FORBIDDEN_PATTERNS: ${{ secrets.FORBIDDEN_PATTERNS }}
+          PR_BRANCH: ${{ github.head_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: bash .github/scripts/zakazane-slowa.sh "$BASE_SHA" "$HEAD_SHA"
+
+  sekrety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Pobierz gitleaks
+        working-directory: ${{ runner.temp }}
+        run: |
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          url="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          curl -sSfLO "${url}/${archive}"
+          echo "${GITLEAKS_SHA256}  ${archive}" | sha256sum --check --strict
+          tar -xzf "${archive}" gitleaks
+      - name: Skanuj commity PR
+        run: |
+          rm -f .gitleaks.toml .gitleaksignore
+          "${RUNNER_TEMP}/gitleaks" git --no-banner --redact --verbose \
+            --ignore-gitleaks-allow --log-opts="${BASE_SHA}..${HEAD_SHA}" .
+
+  zaleznosci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/dependency-review-action@v5.0.0
+        with:
+          fail-on-severity: high
+          fail-on-scopes: runtime, development, unknown
+          allow-licenses: >-
+            MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, EPL-2.0, MPL-2.0, ISC,
+            0BSD, PSF-2.0, Python-2.0
+          allow-dependencies-licenses: pkg:pypi/language-tool-python, pkg:npm/bpmn-js, pkg:maven/org.junit.jupiter/junit-jupiter-api, pkg:maven/org.springframework.modulith/spring-modulith-core, pkg:maven/org.springframework.modulith/spring-modulith-docs, pkg:maven/com.tngtech.archunit/archunit
+
+  naglowki:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Sprawdź nagłówek autorski w plikach z kodem
+        run: bash .github/scripts/naglowki.sh

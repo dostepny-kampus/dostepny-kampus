@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
+    <string name="mapa_powieksz">Powiększ</string>
+    <string name="mapa_pomniejsz">Pomniejsz</string>
+    <string name="mapa_przesun_w_gore">Przesuń mapę w górę</string>
+    <string name="mapa_przesun_w_dol">Przesuń mapę w dół</string>
+    <string name="mapa_przesun_w_lewo">Przesuń mapę w lewo</string>
+    <string name="mapa_przesun_w_prawo">Przesuń mapę w prawo</string>
+    <string name="mapa_osm">© OpenStreetMap contributors</string>
+    <string name="mapa_osm_krotko">© OpenStreetMap</string>
+    <string name="mapa_ktory_budynek">Który budynek?</string>
+    <string name="mapa_zamknij">Zamknij</string>
+    <string name="mapa_budynek">Budynek %1$s</string>
+    <string name="mapa_otwiera_opis_budynku">otwiera opis budynku</string>
+    <string name="mapa_kampusu">Mapa kampusu</string>
+    <string name="mapa_szukaj_podpowiedz">Wpisz symbol budynku, np. C-13</string>
+    <string name="mapa_wyczysc_pole">Wyczyść pole</string>
+    <string name="mapa_brak_wyniku">Nie znaleźliśmy budynku „%1$s”.</string>
+    <string name="mapa_brak_wyniku_rada">Sprawdź symbol, np. C-13, albo wybierz budynek z listy.</string>
+    <string name="mapa_bez_internetu">Bez internetu</string>
+    <string name="mapa_widok_mapa">Mapa</string>
+    <string name="mapa_widok_lista">Lista budynków</string>
+    <string name="mapa_widok_lista_krotko">Lista</string>
+</resources>

@@ -1,0 +1,86 @@
+name: api
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "sprint/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  REDOCLY_VERSION: 2.71.2
+  OASDIFF_VERSION: 1.34.1
+  OASDIFF_SHA256: 75775f65b0adebd26a8e013af51a799342dfdc6262d89efa9e3b7bdf89657d90
+
+jobs:
+  zmiany:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      api: ${{ steps.diff.outputs.api }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Sprawdź, czy PR zmienia kontrakt API
+        id: diff
+        run: |
+          if git diff --quiet HEAD^1 HEAD -- api .github/workflows/api.yml; then
+            echo "api=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "api=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  kontrakt:
+    needs: zmiany
+    if: needs.zmiany.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+      - name: Sprawdź kontrakt regułami Redocly
+        working-directory: api
+        run: npx --yes "@redocly/cli@${REDOCLY_VERSION}" lint --format=github-actions openapi.yaml
+
+  zmiany-lamiace:
+    needs: zmiany
+    if: needs.zmiany.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Pobierz oasdiff
+        working-directory: ${{ runner.temp }}
+        run: |
+          archive="oasdiff_${OASDIFF_VERSION}_linux_amd64.tar.gz"
+          url="https://github.com/oasdiff/oasdiff/releases/download/v${OASDIFF_VERSION}"
+          curl -sSfLO "${url}/${archive}"
+          echo "${OASDIFF_SHA256}  ${archive}" | sha256sum --check --strict
+          tar -xzf "${archive}" oasdiff
+      - name: Porównaj kontrakt z gałęzią bazową
+        run: |
+          if ! git cat-file -e "${BASE_SHA}:api/openapi.yaml" 2>/dev/null; then
+            echo "::notice title=oasdiff::Gałąź bazowa nie ma api/openapi.yaml, porównanie pominięte."
+            exit 0
+          fi
+          git show "${BASE_SHA}:api/openapi.yaml" > "${RUNNER_TEMP}/base.yaml"
+          set -o pipefail
+          "${RUNNER_TEMP}/oasdiff" breaking "${RUNNER_TEMP}/base.yaml" api/openapi.yaml \
+            --format githubactions | sed 's/^::error /::warning /'
