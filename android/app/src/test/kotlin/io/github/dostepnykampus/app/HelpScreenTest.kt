@@ -95,7 +95,7 @@ class HelpScreenTest {
     fun us5_1_bar_dalej_back_zacznij() {
         show()
         compose.onNodeWithText("Dalej").performClick()
-        compose.onNodeWithText("Co znaczy »Dostępne«").assertExists()
+        compose.onNodeWithText("Co znaczy „Dostępne”").assertExists()
         compose.waitForIdle()
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.onNodeWithText("Krok 1 z 3").assertExists()
