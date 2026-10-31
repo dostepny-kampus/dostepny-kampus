@@ -21,7 +21,6 @@ concurrency:
 env:
   BASE_SHA: ${{ github.event.pull_request.base.sha }}
   HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-  COMMITLINT_VERSION: 21.2.4
   GITLEAKS_VERSION: 8.30.1
   GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
 
@@ -58,12 +57,13 @@ jobs:
       - uses: actions/setup-node@v7.1.0
         with:
           node-version: 24
-      - name: Zainstaluj commitlint
-        run: >-
-          npm install --no-save --no-package-lock --no-audit --no-fund
-          "@commitlint/cli@${COMMITLINT_VERSION}"
-          "@commitlint/config-conventional@${COMMITLINT_VERSION}"
+          cache: npm
+          cache-dependency-path: .github/commitlint/package-lock.json
+      - name: Zainstaluj commitlint z pliku lock
+        working-directory: .github/commitlint
+        run: npm ci --no-audit --no-fund
       - name: Sprawdź komunikaty commitów
+        working-directory: .github/commitlint
         env:
           BASE_REF: ${{ github.base_ref }}
           HEAD_REF: ${{ github.head_ref }}
@@ -80,6 +80,7 @@ jobs:
           fi
           npx --no-install commitlint --from "$from" --to "$HEAD_SHA" --verbose
       - name: Sprawdź tytuł PR
+        working-directory: .github/commitlint
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: printf '%s\n' "$PR_TITLE" | npx --no-install commitlint --verbose
