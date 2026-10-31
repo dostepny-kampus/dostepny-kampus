@@ -42,8 +42,10 @@ Fused
 Gherkin
 gitleaks
 Hibernate
+Hilt
 Jetpack
 Keycloak
+Koin
 Konsist
 ktlint_official
 Lint
@@ -52,6 +54,7 @@ markdownlint
 Material
 Maven
 Modulith
+Navigation
 oasdiff
 ogr2ogr
 openapi-generator
