@@ -56,7 +56,8 @@ pluginManager.withPlugin("com.android.application") {
     }
     gradle.projectsEvaluated {
         val missing = modules.filterNot {
-            it.pluginManager.hasPlugin("org.jetbrains.kotlinx.kover") && it.pluginManager.hasPlugin("dostepnykampus.detekt")
+            it.pluginManager.hasPlugin("org.jetbrains.kotlinx.kover") &&
+                it.pluginManager.hasPlugin("dostepnykampus.detekt")
         }
         check(missing.isEmpty()) {
             "Moduły bez convention plugins (Kover, detekt): ${missing.joinToString { it.path }}"

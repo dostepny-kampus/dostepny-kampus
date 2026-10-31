@@ -41,7 +41,8 @@ private val SP = MemberName(UNIT, "sp", isExtension = true)
 private val THEMES = listOf("jasny" to "Light", "ciemny" to "Dark")
 
 /** Zaokrąglenia z tokenów, które mają miejsce w skali kształtów Material 3 (komentarze w pliku tokenów). */
-private val M3_SHAPES = mapOf("standard" to "small", "srednie" to "medium", "duze" to "large", "bardzo_duze" to "extraLarge")
+private val M3_SHAPES =
+    mapOf("standard" to "small", "srednie" to "medium", "duze" to "large", "bardzo_duze" to "extraLarge")
 
 /**
  * Generuje `DesignTokens.kt` w [packageName] z pliku tokenów wizualnych: schematy kolorów Material 3 jasny i
@@ -73,25 +74,33 @@ abstract class GenerateDesignTokens : DefaultTask() {
             Load(LoadSettings.builder().build()).loadFromInputStream(it)
         }.asMap()
         val file = FileSpec.builder(packageName.get(), "DesignTokens")
-        val (status, scheme) = tokens.sub("kolory").toList().partition { it.first.contains("status", ignoreCase = true) }
+        val (status, scheme) =
+            tokens.sub("kolory").toList().partition { it.first.contains("status", ignoreCase = true) }
         THEMES.forEach { (theme, prefix) ->
             val builder = MemberName(M3, prefix.lowercase() + "ColorScheme")
-            file.addProperty(internal("${prefix}ColorScheme", ClassName(M3, "ColorScheme"), "%M%L", builder, colors(scheme.toMap(), theme)))
+            val type = ClassName(M3, "ColorScheme")
+            file.addProperty(internal("${prefix}ColorScheme", type, "%M%L", builder, colors(scheme.toMap(), theme)))
         }
         palette(file, ClassName(packageName.get(), "StatusColors"), status.toMap())
         palette(file, ClassName(packageName.get(), "MapColors"), tokens.sub("mapa").sub("kolory"))
         typography(file, tokens.sub("typografia"))
         tokens.filterValues { section -> section is Map<*, *> && section.values.all { it is Map<*, *> && "dp" in it } }
             .forEach { (name, section) -> dimensions(file, name, section.asMap()) }
-        val shapes = M3_SHAPES.map { (token, slot) -> CodeBlock.of("%N = %T(Zaokraglenia.%N)", slot, ROUNDED, camel(token)) }
+        val shapes =
+            M3_SHAPES.map { (token, slot) -> CodeBlock.of("%N = %T(Zaokraglenia.%N)", slot, ROUNDED, camel(token)) }
         file.addProperty(internal("AppShapes", ClassName(M3, "Shapes"), "%T%L", ClassName(M3, "Shapes"), shapes.args()))
         file.build().writeTo(outputDirectory.get().asFile.apply { deleteRecursively() })
     }
 
     private fun palette(file: FileSpec.Builder, type: ClassName, colors: Map<String, Any?>) {
-        val constructor = FunSpec.constructorBuilder().addParameters(colors.keys.map { ParameterSpec(camel(it), COLOR) })
+        val constructor =
+            FunSpec.constructorBuilder().addParameters(colors.keys.map { ParameterSpec(camel(it), COLOR) })
         val properties = colors.map { (key, value) ->
-            PropertySpec.builder(camel(key), COLOR).initializer(camel(key)).addKdoc("%L", value.asMap().require("uzycie")).build()
+            PropertySpec
+                .builder(camel(key), COLOR)
+                .initializer(camel(key))
+                .addKdoc("%L", value.asMap().require("uzycie"))
+                .build()
         }
         file.addType(
             TypeSpec.classBuilder(type)
@@ -110,7 +119,8 @@ abstract class GenerateDesignTokens : DefaultTask() {
             val style = value.asMap()
             CodeBlock.of(
                 "%N = %T(fontFamily = fontFamily, fontWeight = %T(%L), fontSize = %L.%M, lineHeight = %L.%M)",
-                name, TEXT_STYLE, FONT_WEIGHT, style.require("waga"), style.require("sp"), SP, style.require("interlinia_sp"), SP,
+                name, TEXT_STYLE, FONT_WEIGHT, style.require("waga"),
+                style.require("sp"), SP, style.require("interlinia_sp"), SP,
             )
         }
         file.addFunction(
@@ -137,7 +147,8 @@ abstract class GenerateDesignTokens : DefaultTask() {
         section.forEach { (key, value) ->
             val entry = value.asMap()
             val usage = entry.require("uzycie").toString()
-            type.addProperty(constant(camel(key), ClassName(UNIT, "Dp"), CodeBlock.of("%L.%M", entry.require("dp"), DP), usage))
+            val dp = CodeBlock.of("%L.%M", entry.require("dp"), DP)
+            type.addProperty(constant(camel(key), ClassName(UNIT, "Dp"), dp, usage))
             entry.filterValues { it is String && it.startsWith("#") }.forEach { (field, hex) ->
                 type.addProperty(constant(camel("${key}_$field"), COLOR, color(hex), usage))
             }
@@ -159,7 +170,10 @@ abstract class GenerateDesignTokens : DefaultTask() {
     private fun List<CodeBlock>.args() = joinToCode(",\n", "(\n⇥", ",\n⇤)")
 
     private fun camel(name: String) =
-        name.split('_').mapIndexed { index, part -> if (index == 0) part else part.replaceFirstChar(Char::uppercase) }.joinToString("")
+        name
+            .split('_')
+            .mapIndexed { index, part -> if (index == 0) part else part.replaceFirstChar(Char::uppercase) }
+            .joinToString("")
 
     private fun Any?.asMap(): Map<String, Any?> =
         (this as? Map<*, *>)?.mapKeys { it.key.toString() } ?: error("Oczekiwano sekcji w pliku tokenów, jest: $this")
