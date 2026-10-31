@@ -62,7 +62,10 @@ import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.buildings.BUILDINGS_ASSET
@@ -71,6 +74,9 @@ import io.github.dostepnykampus.core.data.network.ConnectivityNetworkStatus
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
+import io.github.dostepnykampus.feature.map.CampusMapScreen
+import io.github.dostepnykampus.feature.map.CampusMapViewModel
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -88,15 +94,35 @@ import kotlin.coroutines.EmptyCoroutineContext
 /** Pozycja „Mapa” paska dolnego; V1 ma też „Mapa” w przełączniku „Mapa” i „Lista budynków” (NFR-19). */
 internal val MapTab = hasText("Mapa") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
 
-/** Źródła danych ekranów jak w aplikacji: plik konturów z zasobów i sieć telefonu; wybór mapy albo listy w pamięci. */
-internal fun Context.appScreenData(): ScreenData =
-    ScreenData(
+/** Stan V1 na źródłach jak w aplikacji: plik konturów z zasobów i sieć telefonu; wybór mapy albo listy w pamięci. */
+internal fun Context.appMapViewModel(): CampusMapViewModel =
+    CampusMapViewModel(
         BuildingCatalogRepository(EmptyCoroutineContext) {
             assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() }
         },
         ConnectivityNetworkStatus(getSystemService(ConnectivityManager::class.java)),
         TestMapListChoice(),
     )
+
+/**
+ * Ekran trasy [route] jak [AppScreen], ale V1 ze stanem [mapViewModel] zamiast ViewModel z grafu Hilt, bo aktywność
+ * testu nie ma grafu. Ekran z grafem sprawdza [MainActivityTest].
+ */
+@Composable
+internal fun AppNavigator.TestAppScreen(route: NavKey, mapViewModel: CampusMapViewModel) {
+    if (route is MapRoute) {
+        val state by mapViewModel.uiState.collectAsStateWithLifecycle()
+        CampusMapScreen(
+            state = state,
+            onListChange = mapViewModel::chooseList,
+            onBuildingClick = { openBuilding(it) },
+            focus = (route.focus as? MapFocus.Building)?.symbol,
+            contentPadding = LocalSheetPadding.current,
+        )
+    } else {
+        AppScreen(route)
+    }
+}
 
 /** Oboczka w Robolectric: historia, pasek dolny w wąskim oknie, pasek z boku w szerokim i role. */
 @RunWith(RobolectricTestRunner::class)
@@ -109,7 +135,7 @@ class AppShellTest {
     private val visitor = RoleProvider { Account.SignedIn() }
     private val tabRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
     private var helpLeft = 0
-    private lateinit var screenData: ScreenData
+    private lateinit var mapViewModel: CampusMapViewModel
 
     // Telefon z internetem: w Robolectric sieć nie jest sprawdzona, więc V1 pokazałoby „Bez internetu” (US9.1).
     @Before
@@ -123,7 +149,7 @@ class AppShellTest {
     // Przed kompozycją: odczyt aktywności z reguły w trakcie układu ekranu przerywa pomiar.
     @Before
     fun screens() {
-        screenData = compose.activity.appScreenData()
+        mapViewModel = compose.activity.appMapViewModel()
     }
 
     private fun show(firstLaunch: Boolean = false, roles: RoleProvider = GuestRoleProvider) {
@@ -134,7 +160,7 @@ class AppShellTest {
     private fun Shell(firstLaunch: Boolean, roles: RoleProvider) {
         DostepnyKampusTheme {
             AppShell(firstLaunch = firstLaunch, roles = roles, onFirstHelpLeft = { helpLeft++ }) {
-                AppScreen(it, screenData)
+                TestAppScreen(it, mapViewModel)
             }
         }
     }
@@ -318,7 +344,7 @@ class AppShellTest {
                 if (route is MapRoute) {
                     Text(route.focus?.toString() ?: "V1", Modifier.clickable { openBuilding(symbol = "A-1") })
                 } else {
-                    AppScreen(route, screenData)
+                    AppScreen(route)
                 }
             }
         }

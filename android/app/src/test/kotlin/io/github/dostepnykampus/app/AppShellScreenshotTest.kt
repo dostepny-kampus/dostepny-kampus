@@ -9,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsActions.OnClick
 import androidx.compose.ui.test.hasContentDescription
@@ -25,6 +26,7 @@ import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapView
+import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.flow.flowOf
@@ -75,15 +77,13 @@ class AppShellScreenshotTest {
                 AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                     if (route is MapRoute) {
                         CampusMapScreen(
-                            repository = repository,
-                            networkStatus = { flowOf(isOnline) },
-                            mapListChoice = choice,
                             onBuildingClick = { openBuilding(it) },
                             contentPadding = LocalSheetPadding.current,
                             mapView = landOnly,
+                            viewModel = remember { CampusMapViewModel(repository, { flowOf(isOnline) }, choice) },
                         )
                     } else {
-                        AppScreen(route, ScreenData(repository, { flowOf(isOnline) }, choice))
+                        AppScreen(route)
                     }
                 }
             }
