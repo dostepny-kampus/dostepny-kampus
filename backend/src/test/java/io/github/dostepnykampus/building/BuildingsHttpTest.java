@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +53,128 @@ final class BuildingsHttpTest {
             "Pusta tabela budynków nie daje listy z atrybucją OpenStreetMap",
             mapper.readTree(BuildingsHttpTest.body(context)),
             Matchers.equalTo(mapper.readTree(BuildingsHttpTest.empty()))
+        );
+    }
+
+    @Test
+    void usSixTwoLocatesPointInsideOutline(final WebApplicationContext context)
+        throws Exception {
+        final ObjectMapper mapper = context.getBean(ObjectMapper.class);
+        BuildingsHttpTest.insert(
+            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpTest.yard()
+        );
+        MatcherAssert.assertThat(
+            "Punkt w konturze nie wskazuje tego budynku",
+            mapper.readTree(BuildingsHttpTest.locate(context, "51.1105", "17.0605")),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.inside()))
+        );
+    }
+
+    @Test
+    void usSixTwoSuggestsNearestBuilding(final WebApplicationContext context)
+        throws Exception {
+        final ObjectMapper mapper = context.getBean(ObjectMapper.class);
+        BuildingsHttpTest.insert(
+            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpTest.yard()
+        );
+        MatcherAssert.assertThat(
+            "Punkt tuż poza konturem nie podpowiada najbliższego budynku",
+            mapper.readTree(BuildingsHttpTest.locate(context, "51.1113", "17.0605")),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.nearby()))
+        );
+    }
+
+    @Test
+    void usSixTwoLeavesFarPointWithoutBuilding(final WebApplicationContext context)
+        throws Exception {
+        final ObjectMapper mapper = context.getBean(ObjectMapper.class);
+        BuildingsHttpTest.insert(
+            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpTest.yard()
+        );
+        MatcherAssert.assertThat(
+            "Punkt daleko od budynków dostał podpowiedź budynku",
+            mapper.readTree(BuildingsHttpTest.locate(context, "51.113", "17.0605")),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.away()))
+        );
+    }
+
+    @Test
+    void usSixTwoRejectsLatitudeAboveRange(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Szerokość powyżej 90 stopni nie jest błędem 400",
+            BuildingsHttpTest.failure(context, "/buildings/locate?lat=91&lon=17"),
+            Matchers.startsWith("400 application/problem+json")
+        );
+    }
+
+    @Test
+    void usSixTwoRejectsLatitudeBelowRange(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Szerokość poniżej -90 stopni nie jest błędem 400",
+            BuildingsHttpTest.failure(context, "/buildings/locate?lat=-91&lon=17"),
+            Matchers.startsWith("400 application/problem+json")
+        );
+    }
+
+    @Test
+    void usSixTwoRejectsLongitudeAboveRange(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Długość powyżej 180 stopni nie jest błędem 400",
+            BuildingsHttpTest.failure(context, "/buildings/locate?lat=51&lon=181"),
+            Matchers.startsWith("400 application/problem+json")
+        );
+    }
+
+    @Test
+    void usSixTwoRejectsLongitudeBelowRange(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Długość poniżej -180 stopni nie jest błędem 400",
+            BuildingsHttpTest.failure(context, "/buildings/locate?lat=51&lon=-181"),
+            Matchers.startsWith("400 application/problem+json")
+        );
+    }
+
+    @Test
+    void usSixTwoRejectsNonFiniteLatitude(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Szerokość NaN nie jest błędem 400",
+            BuildingsHttpTest.failure(context, "/buildings/locate?lat=NaN&lon=17"),
+            Matchers.startsWith("400 application/problem+json")
+        );
+    }
+
+    @Test
+    void usSixTwoRejectsNonFiniteLongitude(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Długość NaN nie jest błędem 400",
+            BuildingsHttpTest.failure(context, "/buildings/locate?lat=51&lon=NaN"),
+            Matchers.startsWith("400 application/problem+json")
+        );
+    }
+
+    @Test
+    void usSixTwoRejectsTextInsteadOfLatitude(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Tekst zamiast szerokości nie jest błędem 400",
+            BuildingsHttpTest.failure(context, "/buildings/locate?lat=abc&lon=17"),
+            Matchers.startsWith("400 application/problem+json")
+        );
+    }
+
+    @Test
+    void usSixTwoRejectsMissingLongitude(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Brak długości nie jest błędem 400",
+            BuildingsHttpTest.failure(context, "/buildings/locate?lat=51"),
+            Matchers.startsWith("400 application/problem+json")
         );
     }
 
@@ -115,5 +238,49 @@ final class BuildingsHttpTest {
             "[17.0613,51.1072],[17.0621,51.1072],[17.0621,51.1077],",
             "[17.0613,51.1077],[17.0613,51.1072]]]]}"
         );
+    }
+
+    private static String locate(
+        final WebApplicationContext context,
+        final String lat,
+        final String lon
+    ) throws Exception {
+        return MockMvcBuilders.webAppContextSetup(context).build().perform(
+            MockMvcRequestBuilders.get("/buildings/locate").param("lat", lat)
+                .param("lon", lon)
+        ).andReturn()
+            .getResponse()
+            .getContentAsString(StandardCharsets.UTF_8);
+    }
+
+    private static String failure(final WebApplicationContext context, final String path)
+        throws Exception {
+        final MockHttpServletResponse reply =
+            MockMvcBuilders.webAppContextSetup(context).build()
+                .perform(MockMvcRequestBuilders.get(path))
+                .andReturn()
+                .getResponse();
+        return "%d %s".formatted(reply.getStatus(), reply.getContentType());
+    }
+
+    private static String yard() {
+        return String.join(
+            "",
+            "{\"type\":\"MultiPolygon\",\"coordinates\":[[[",
+            "[17.06,51.11],[17.061,51.11],[17.061,51.111],",
+            "[17.06,51.111],[17.06,51.11]]]]}"
+        );
+    }
+
+    private static String inside() {
+        return "{\"buildingSymbol\":\"A-1\",\"insideOutline\":true}";
+    }
+
+    private static String nearby() {
+        return "{\"buildingSymbol\":\"A-1\",\"insideOutline\":false}";
+    }
+
+    private static String away() {
+        return "{\"insideOutline\":false}";
     }
 }
