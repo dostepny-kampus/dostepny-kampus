@@ -76,6 +76,5 @@ Brak uprawnienia działa na dwóch poziomach (US14): aplikacja nie pokazuje ekra
 ## Źródła
 
 - Dział Dostępności PWr: <https://dzd.pwr.edu.pl/>
-- Serwis dostępności PWr: <https://dostepnosc.pwr.edu.pl/>
 - RODO, art. 5 (zasada minimalizacji danych): <https://standardyprawa.pl/akt/188/art/23806>
 - RODO, tekst urzędowy: <https://eur-lex.europa.eu/eli/reg/2016/679/oj?locale=pl>
