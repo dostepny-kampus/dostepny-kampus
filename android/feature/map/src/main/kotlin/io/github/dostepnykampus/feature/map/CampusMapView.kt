@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.createBitmap
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusMapData
@@ -70,7 +71,7 @@ internal fun labelImage(label: String, colors: MapColors, size: Float): Bitmap {
     val margin = paint.strokeWidth
     val width = ceil(paint.measureText(label) + 2 * margin).toInt()
     val height = ceil(paint.descent() - paint.ascent() + 2 * margin).toInt()
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val bitmap = createBitmap(width, height)
     val canvas = Canvas(bitmap)
     listOf(Paint.Style.STROKE to colors.obwodka, Paint.Style.FILL to colors.napisPwr).forEach { (style, color) ->
         paint.style = style
