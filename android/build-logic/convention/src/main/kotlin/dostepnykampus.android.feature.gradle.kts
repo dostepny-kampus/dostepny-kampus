@@ -7,4 +7,5 @@
 plugins {
     id("dostepnykampus.android.library")
     id("dostepnykampus.android.compose")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }

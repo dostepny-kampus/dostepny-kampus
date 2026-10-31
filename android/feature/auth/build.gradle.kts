@@ -6,7 +6,6 @@
 
 plugins {
     id("dostepnykampus.android.feature")
-    alias(libs.plugins.kotlin.serialization)
 }
 
 dependencies {
