@@ -18,7 +18,6 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.navigation3.runtime)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotlinx.coroutines.test)

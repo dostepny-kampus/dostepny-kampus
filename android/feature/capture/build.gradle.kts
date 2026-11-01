@@ -7,7 +7,3 @@
 plugins {
     id("dostepnykampus.android.feature")
 }
-
-dependencies {
-    implementation(libs.androidx.navigation3.runtime)
-}
