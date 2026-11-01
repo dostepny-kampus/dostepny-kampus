@@ -24,7 +24,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.maplibre.android)
     implementation(libs.okhttp)
-    implementation(libs.androidx.navigation3.runtime)
     implementation(libs.spatialk.geojson)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
