@@ -38,3 +38,14 @@ internal fun SheetState.after(gesture: BackGesture): SheetState =
         is BackGesture.Progressed -> copy(progress = gesture.progress)
         BackGesture.Completed -> copy(progress = 1f)
     }
+
+/**
+ * Arkusz przechodzi do stanu po zdarzeniu gestu animacją ruchu (`true`) albo od razu, za palcem (`false`):
+ * po zakończeniu dojeżdża w dół do końca, po anulowaniu wraca na swoje miejsce.
+ */
+internal val BackGesture.isSlide: Boolean
+    get() =
+        when (this) {
+            BackGesture.Completed, BackGesture.Cancelled -> true
+            BackGesture.Started, is BackGesture.Progressed -> false
+        }
