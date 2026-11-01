@@ -17,7 +17,6 @@ import kotlin.math.tan
 /** Powiększenie pierwszego widoku: symbole budynków są czytelne (decyzja 80). */
 internal const val START_ZOOM = 17.0
 
-private const val MIN_ZOOM = 12.0
 private const val MAX_ZOOM = 20.0
 private const val QUARTER_VIEW_DEGREES_AT_ZOOM_0 = 70.0
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
@@ -44,8 +43,8 @@ internal fun MapCamera.aboveSheet(focus: GeoPoint?, bottomInset: Double): MapCam
 /** Widok po „Powiększ”: o jeden poziom, najwyżej do powiększenia planu budynku. */
 internal fun MapCamera.zoomedIn(): MapCamera = copy(zoom = (zoom + 1).coerceAtMost(MAX_ZOOM))
 
-/** Widok po „Pomniejsz”: o jeden poziom, najmniej do widoku całego miasta. */
-internal fun MapCamera.zoomedOut(): MapCamera = copy(zoom = (zoom - 1).coerceAtLeast(MIN_ZOOM))
+/** Widok po „Pomniejsz”: o jeden poziom; najmniejsze powiększenie obszaru kampusu daje [MapLimits.clamp]. */
+internal fun MapCamera.zoomedOut(): MapCamera = copy(zoom = zoom - 1)
 
 /**
  * Widok po strzałce [direction]: przy każdym powiększeniu o około ćwierć szerokości widoku telefonu. Krok
