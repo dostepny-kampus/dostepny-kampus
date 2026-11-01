@@ -16,6 +16,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performSemanticsAction
@@ -24,10 +25,14 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.feature.map.BuildingCardScreen
+import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapView
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
@@ -62,7 +67,13 @@ class AppShellScreenshotTest {
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
                 """{"type":"Feature","properties":{"kind":"building","symbols":["C-13"],"osm_id":"way/1"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
+                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
+                """{"type":"Feature","properties":{"kind":"entrance","symbols":["C-13"],"osm_id":"node/1",""" +
+                """"entrance":"yes","wheelchair":"yes","ref":"Od podwórza"},""" +
+                """"geometry":{"type":"Point","coordinates":[0,0]}},""" +
+                """{"type":"Feature","properties":{"kind":"entrance","symbols":["C-13"],"osm_id":"node/2",""" +
+                """"entrance":"main","wheelchair":"no","ref":"Główne"},""" +
+                """"geometry":{"type":"Point","coordinates":[1,0]}}]}"""
         }
 
     private fun capture(
@@ -82,6 +93,15 @@ class AppShellScreenshotTest {
                             mapView = landOnly,
                             viewModel = remember { CampusMapViewModel(repository, { flowOf(isOnline) }, choice) },
                         )
+                    } else if (route is BuildingRoute) {
+                        val card = remember(route.symbol) { BuildingCardViewModel(route.symbol, repository) }
+                        BuildingCardScreen(
+                            symbol = route.symbol,
+                            onCheckEntrances = { openEntrances(route.symbol) },
+                            onShowOnMap = { showOnMap(MapFocus.Building(route.symbol)) },
+                            onBack = { back() },
+                            viewModel = card,
+                        )
                     } else {
                         AppScreen(route)
                     }
@@ -98,6 +118,7 @@ class AppShellScreenshotTest {
         if (isSheetOpen && !isFromList) compose.runOnUiThread { touch(listOf("C-13")) }
         query?.let { compose.onNode(hasSetTextAction()).performTextInput(it) }
         if (isKeyboardOpen) compose.runOnUiThread { dispatchKeyboard(compose.activity, isOpen = true) }
+        if (isSheetOpen) compose.waitUntil { compose.onAllNodesWithText("Wejścia").fetchSemanticsNodes().isNotEmpty() }
         compose.onRoot().captureRoboImage()
     }
 

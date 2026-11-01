@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
@@ -76,8 +77,11 @@ import io.github.dostepnykampus.core.data.network.ConnectivityNetworkStatus
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
+import io.github.dostepnykampus.feature.map.BuildingCardScreen
+import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
+import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertEquals
@@ -95,6 +99,29 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 /** Pozycja „Mapa” paska dolnego; V1 ma też „Mapa” w przełączniku „Mapa” i „Lista budynków” (NFR-19). */
 internal val MapTab = hasText("Mapa") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
+
+/** Karta V2 na katalogu z zasobów, bez grafu Hilt (aktywność testu go nie ma). */
+internal fun Context.buildingCardViewModel(symbol: String): BuildingCardViewModel =
+    BuildingCardViewModel(
+        symbol,
+        BuildingCatalogRepository(EmptyCoroutineContext) {
+            assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() }
+        },
+    )
+
+/** V2 jak w aplikacji, ze stanem [buildingCardViewModel] zamiast ViewModel z grafu Hilt. */
+@Composable
+internal fun AppNavigator.TestBuildingCard(symbol: String) {
+    val context = LocalContext.current
+    val card = remember(symbol) { context.buildingCardViewModel(symbol) }
+    BuildingCardScreen(
+        symbol = symbol,
+        onCheckEntrances = { openEntrances(symbol) },
+        onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
+        onBack = { back() },
+        viewModel = card,
+    )
+}
 
 /** Stan V1 na źródłach jak w aplikacji: plik konturów z zasobów i sieć telefonu; wybór mapy albo listy w pamięci. */
 internal fun Context.appMapViewModel(): CampusMapViewModel =
@@ -121,6 +148,8 @@ internal fun AppNavigator.TestAppScreen(route: NavKey, mapViewModel: CampusMapVi
             focus = (route.focus as? MapFocus.Building)?.symbol,
             contentPadding = LocalSheetPadding.current,
         )
+    } else if (route is BuildingRoute) {
+        TestBuildingCard(route.symbol)
     } else {
         AppScreen(route)
     }
@@ -296,6 +325,8 @@ class AppShellTest {
                         Text(text = "vm=${model.taps}", modifier = Modifier.clickable { model.taps++ })
                         Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
                     }
+                } else if (route is BuildingRoute) {
+                    TestBuildingCard(route.symbol)
                 } else {
                     AppScreen(route)
                 }
@@ -418,6 +449,8 @@ class AppShellTest {
             AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     Text(route.focus?.toString() ?: "V1", Modifier.clickable { openBuilding(symbol = "A-1") })
+                } else if (route is BuildingRoute) {
+                    TestBuildingCard(route.symbol)
                 } else {
                     AppScreen(route)
                 }
