@@ -30,6 +30,7 @@ import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.BuildingCardScreen
 import io.github.dostepnykampus.feature.map.CampusMapScreen
+import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -39,7 +40,7 @@ private typealias Action = Pair<String, () -> Unit>
 
 /**
  * Ekran trasy [route] z czynnościami podpiętymi do nawigatora. V1 to mapa z `feature:map` ze stanem w ViewModel
- * z grafu Hilt, V2 karta budynku i V5 z `feature:help`, reszta to zaślepki:
+ * z grafu Hilt, V2 karta budynku, V3 „Którędy wejść” i V5 z `feature:help`, reszta to zaślepki:
  * nagłówek „Wstecz” z nazwą z listy ekranów i przyciski czynności bez danych. Ekran z `feature:*`
  * zastępuje swoją gałąź i dostaje czynności jako lambdy. Zaślepki nie zapamiętują stanu, więc nie muszą się
  * odświeżać osobno od nawigatora.
@@ -49,7 +50,7 @@ private typealias Action = Pair<String, () -> Unit>
 internal fun AppNavigator.AppScreen(route: NavKey) {
     when (route) {
         is BuildingRoute -> BuildingCard(route.symbol)
-        is EntrancesRoute -> Stub(title = stringResource(R.string.ekran_ktoredy_wejsc, route.symbol))
+        is EntrancesRoute -> Entrances(route.symbol)
         is ReportRoute -> ReportStub(route.step)
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute -> ToMapStub(title = R.string.nav_konto, action = R.string.nie_teraz)
@@ -67,6 +68,15 @@ private fun AppNavigator.MapScreen(focus: String?) {
         onBuildingClick = { openBuilding(it) },
         focus = focus,
         contentPadding = LocalSheetPadding.current,
+    )
+}
+
+@Composable
+private fun AppNavigator.Entrances(symbol: String) {
+    EntrancesScreen(
+        symbol = symbol,
+        onShowEntrance = { showOnMap(MapFocus.Entrance(it)) },
+        onBack = { back() },
     )
 }
 

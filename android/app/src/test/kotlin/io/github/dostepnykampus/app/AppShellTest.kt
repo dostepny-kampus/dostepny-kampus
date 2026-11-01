@@ -81,7 +81,9 @@ import io.github.dostepnykampus.feature.map.BuildingCardScreen
 import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
+import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
+import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertEquals
@@ -108,6 +110,19 @@ internal fun Context.buildingCardViewModel(symbol: String): BuildingCardViewMode
             assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() }
         },
     )
+
+/** V3 jak w aplikacji, ze stanem [buildingCardViewModel] zamiast ViewModel z grafu Hilt. */
+@Composable
+internal fun AppNavigator.TestEntrances(symbol: String) {
+    val context = LocalContext.current
+    val card = remember(symbol) { context.buildingCardViewModel(symbol) }
+    EntrancesScreen(
+        symbol = symbol,
+        onShowEntrance = { showOnMap(MapFocus.Entrance(it)) },
+        onBack = { back() },
+        viewModel = card,
+    )
+}
 
 /** V2 jak w aplikacji, ze stanem [buildingCardViewModel] zamiast ViewModel z grafu Hilt. */
 @Composable
@@ -150,6 +165,8 @@ internal fun AppNavigator.TestAppScreen(route: NavKey, mapViewModel: CampusMapVi
         )
     } else if (route is BuildingRoute) {
         TestBuildingCard(route.symbol)
+    } else if (route is EntrancesRoute) {
+        TestEntrances(route.symbol)
     } else {
         AppScreen(route)
     }
@@ -327,6 +344,8 @@ class AppShellTest {
                     }
                 } else if (route is BuildingRoute) {
                     TestBuildingCard(route.symbol)
+                } else if (route is EntrancesRoute) {
+                    TestEntrances(route.symbol)
                 } else {
                     AppScreen(route)
                 }
@@ -451,6 +470,8 @@ class AppShellTest {
                     Text(route.focus?.toString() ?: "V1", Modifier.clickable { openBuilding(symbol = "A-1") })
                 } else if (route is BuildingRoute) {
                     TestBuildingCard(route.symbol)
+                } else if (route is EntrancesRoute) {
+                    TestEntrances(route.symbol)
                 } else {
                     AppScreen(route)
                 }
@@ -460,6 +481,10 @@ class AppShellTest {
         compose.onNodeWithText("Sprawdź, którędy wejść").performClick()
         restoration.emulateSavedInstanceStateRestore()
         compose.onNodeWithText("Którędy wejść do A-1").assertExists()
+        compose.waitUntil {
+            val nodes = compose.onAllNodesWithText("brak danych o 1 z 1 wejść", substring = true)
+            nodes.fetchSemanticsNodes().isNotEmpty()
+        }
         pressBack()
         compose.onNodeWithText("Pokaż na mapie").assertExists()
         pressBack()
