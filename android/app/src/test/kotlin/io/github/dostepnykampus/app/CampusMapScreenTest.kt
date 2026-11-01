@@ -54,6 +54,7 @@ import io.github.dostepnykampus.feature.map.MapCamera
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -105,13 +106,14 @@ class CampusMapScreenTest {
     private val online = MutableStateFlow(true)
     private val choice = TestMapListChoice()
     private val listToggle = hasText("Lista budynków") and isSelectable()
+    private var ring = "[[0,0],[1,0],[1,1],[0,0]]"
     private val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
                 """{"type":"Feature","properties":{"kind":"building","symbols":["C-13","C-14"],""" +
                 """"name":"Budynek testowy",""" +
                 """"osm_id":"way/1"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
+                """"geometry":{"type":"Polygon","coordinates":[$ring]}}]}"""
         }
 
     private val viewModel by lazy { CampusMapViewModel(repository, { online }, choice) }
@@ -152,6 +154,32 @@ class CampusMapScreenTest {
         compose.onNodeWithText("© OpenStreetMap contributors").assertHasClickAction().assertHeightIsAtLeast(48.dp)
         compose.runOnUiThread { listOf(listOf("C-3", "C-4"), listOf("C-13")).forEach(touch) }
         assertEquals(listOf("C-13"), opened)
+    }
+
+    // Wiersz: V1, strzałki przesuwania zatrzymują się na granicy obszaru kampusu, czyli konturów powiększonych
+    // o 500 m z każdej strony, bez komunikatu (NFR-39, NFR-53).
+    @Test
+    fun nfr53_arrows_stop_at_edge() {
+        compose.setContent { Screen() }
+        repeat(times = 5) { compose.onNodeWithContentDescription("Pomniejsz").performClick() }
+        repeat(times = 40) { compose.onNodeWithContentDescription("Przesuń mapę w prawo").performClick() }
+        compose.waitForIdle()
+        assertEquals(1.0 + 500.0 / 111_195.0, cameras.last().center.longitude, 5e-5)
+    }
+
+    // Wiersz: V1, najmniejsze powiększenie pokazuje cały obszar kampusu; bardziej oddalić mapy się nie da, więc
+    // „Pomniejsz” przy małym konturze zatrzymuje się wyżej niż dawne powiększenie 12 (NFR-39, NFR-53).
+    @Test
+    fun nfr39_zoom_out_stops_at_campus() {
+        ring = "[[0,0],[0.001,0],[0.001,0.001],[0,0]]"
+        compose.setContent { Screen() }
+        repeat(times = 20) { compose.onNodeWithContentDescription("Pomniejsz").performClick() }
+        compose.waitForIdle()
+        val farthest = cameras.last()
+        assertTrue("powiększenie ${farthest.zoom}", farthest.zoom > 12.0)
+        compose.onNodeWithContentDescription("Pomniejsz").performClick()
+        compose.waitForIdle()
+        assertEquals(farthest, cameras.last())
     }
 
     // Wiersz: czcionka 1,5 → start na liście, „Lista” czytane jako „Lista budynków” (NFR-19, NFR-20); wybór „Mapa”

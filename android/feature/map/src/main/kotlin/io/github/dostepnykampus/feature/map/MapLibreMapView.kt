@@ -14,8 +14,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -25,6 +27,7 @@ import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.symbolsOf
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
@@ -44,9 +47,7 @@ internal object MapLibreMapView : CampusMapView {
         onBuildingsTouch: (List<String>) -> Unit,
         modifier: Modifier,
     ) {
-        // Bez biblioteki natywnej (np. testy JVM, telefon bez wspieranej architektury) mapa się nie rysuje,
-        // a ekran z przyciskami działa dalej.
-        if (!remember { nativeMapLoads() }) return
+        if (!remember { isNativeMapAvailable() }) return
         val context = LocalContext.current
         val density = LocalDensity.current
         val colors = DostepnyKampusTheme.mapColors
@@ -64,6 +65,8 @@ internal object MapLibreMapView : CampusMapView {
             }
         FollowScreenLifecycle(mapView)
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
+        var size by remember { mutableStateOf(IntSize.Zero) }
+        val limits = remember(data.bounds, size, density) { density.mapLimits(data.bounds, size) }
         val currentCamera by rememberUpdatedState(camera)
         val cameraIdle by rememberUpdatedState(onCameraIdle)
         val buildingsTouch by rememberUpdatedState(onBuildingsTouch)
@@ -93,6 +96,10 @@ internal object MapLibreMapView : CampusMapView {
             }
             onDispose {}
         }
+        DisposableEffect(map, limits) {
+            if (size != IntSize.Zero) limits?.let { map?.limitTo(it) }
+            onDispose {}
+        }
         DisposableEffect(map, camera) {
             val ready = map
             if (ready != null && ready.cameraPosition.toCamera() != camera) {
@@ -100,7 +107,7 @@ internal object MapLibreMapView : CampusMapView {
             }
             onDispose {}
         }
-        AndroidView(factory = { mapView }, modifier = modifier)
+        AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
     }
 
     @Composable
@@ -132,5 +139,18 @@ internal object MapLibreMapView : CampusMapView {
         }
     }
 
-    private fun nativeMapLoads(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess
+    private fun MapLibreMap.limitTo(limits: MapLimits) {
+        val bounds = limits.bounds
+        val target =
+            LatLngBounds.from(
+                latNorth = bounds.north,
+                lonEast = bounds.east,
+                latSouth = bounds.south,
+                lonWest = bounds.west,
+            )
+        setLatLngBoundsForCameraTarget(target)
+        setMinZoomPreference(limits.minZoom)
+    }
+
+    private fun isNativeMapAvailable(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess
 }
