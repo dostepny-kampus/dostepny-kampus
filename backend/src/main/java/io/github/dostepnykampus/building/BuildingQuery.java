@@ -22,6 +22,11 @@ import tools.jackson.databind.ObjectMapper;
 final class BuildingQuery {
 
     /**
+     * Promień podpowiedzi budynku w metrach, większy niż błąd GNSS 15 m (NFR-3).
+     */
+    static final int NEAR_METERS = 50;
+
+    /**
      * Dostęp do tabeli buildings.
      */
     private final JdbcClient jdbc;
@@ -47,6 +52,30 @@ final class BuildingQuery {
         ).query(this::rows);
     }
 
+    LocateResult locate(final double lat, final double lon) {
+        return this.jdbc.sql(
+            """
+            WITH point AS (
+                SELECT ST_SetSRID(ST_MakePoint(:lon, :lat), 4326) AS geom
+            )
+            SELECT buildings.symbol AS symbol,
+                ST_Contains(buildings.outline, point.geom) AS inside
+            FROM buildings CROSS JOIN point
+            WHERE ST_Contains(buildings.outline, point.geom)
+                OR ST_DWithin(buildings.outline::geography,
+                    point.geom::geography, :meters)
+            ORDER BY inside DESC,
+                ST_Distance(buildings.outline::geography,
+                    point.geom::geography),
+                buildings.symbol
+            LIMIT 1
+            """
+        ).param("lat", lat)
+            .param("lon", lon)
+            .param("meters", BuildingQuery.NEAR_METERS)
+            .query(BuildingQuery::hit);
+    }
+
     private BuildingList rows(final ResultSet rows) throws SQLException {
         final List<Building> found = new ArrayList<>(8);
         String chosen = "© OpenStreetMap contributors";
@@ -66,6 +95,19 @@ final class BuildingQuery {
             BuildingQuery.text(rows, "detail_level"),
             this.mapper.readTree(BuildingQuery.text(rows, "outline"))
         );
+    }
+
+    private static LocateResult hit(final ResultSet rows) throws SQLException {
+        final LocateResult found;
+        if (rows.next()) {
+            found = new LocateResult(
+                BuildingQuery.text(rows, "symbol"),
+                rows.getBoolean("inside")
+            );
+        } else {
+            found = new LocateResult(null, false);
+        }
+        return found;
     }
 
     private static String text(final ResultSet rows, final String column)
