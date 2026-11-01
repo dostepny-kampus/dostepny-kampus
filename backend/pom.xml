@@ -21,7 +21,7 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
     <java.version>25</java.version>
     <qulice.version>0.36.0</qulice.version>
     <spring-modulith.version>2.1.2</spring-modulith.version>
-    <archunit.version>1.4.2</archunit.version>
+    <archunit.version>1.5.1</archunit.version>
     <jacoco.version>0.8.16</jacoco.version>
     <argLine/>
   </properties>
