@@ -11,6 +11,7 @@ import io.github.dostepnykampus.app.BackGesture.Completed
 import io.github.dostepnykampus.app.BackGesture.Progressed
 import io.github.dostepnykampus.app.BackGesture.Started
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -45,5 +46,15 @@ class SheetGestureTest {
     @Test
     fun us1_1_complete_slides_out() {
         assertEquals(SheetState(isExpanded = true, progress = 1f), SheetState(isExpanded = true).after(Completed))
+    }
+
+    // Wiersz: V2, gest „Wstecz” zakończony albo anulowany → arkusz dojeżdża w dół albo wraca animacją; w trakcie gestu
+    // idzie za palcem bez animacji, US1.1, US2.
+    @Test
+    fun us2_slides_only_after_gesture() {
+        assertTrue("dojazd w dół po zakończeniu", Completed.isSlide)
+        assertTrue("powrót po anulowaniu", Cancelled.isSlide)
+        assertFalse("za palcem przy postępie", Progressed(0.6f).isSlide)
+        assertFalse("na początku gestu", Started.isSlide)
     }
 }
