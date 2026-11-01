@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.app
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -76,8 +76,9 @@ private const val SHEET_KEY = "arkusz"
 private const val MAP_KEY = "mapa"
 private const val HALF_WINDOW = 0.5f
 private const val MATERIAL_DURATION_MEDIUM2_MILLIS = 300
+private val MaterialStandardEasing = CubicBezierEasing(0.2f, 0f, 0f, 1f)
 private val MaterialStandardMediumSlide =
-    tween<Float>(durationMillis = MATERIAL_DURATION_MEDIUM2_MILLIS, easing = FastOutSlowInEasing)
+    tween<Float>(durationMillis = MATERIAL_DURATION_MEDIUM2_MILLIS, easing = MaterialStandardEasing)
 
 private val SheetStateSaver =
     Saver<SheetState, Boolean>(
@@ -98,8 +99,8 @@ internal val LocalSheetPadding = compositionLocalOf { PaddingValues() }
  * sceny i nie uruchamia przenikania całego ekranu. Przewidywany gest „Wstecz” obsługuje sam arkusz: zjeżdża w dół
  * z postępem gestu nad niezmienioną mapą (za palcem, bez animacji), po anulowaniu płynnie wraca na swoje miejsce,
  * a po zakończeniu gestu albo „Wstecz” bez gestu dojeżdża w dół do końca i dopiero wtedy raz zamyka V2; kolejne
- * „Wstecz” w trakcie dojazdu pochłania. Dojazd i powrót mają czas `medium2` i krzywą standardową z tokenów ruchu
- * Material 3. Inne układy historii zostawia scenie z jednym ekranem.
+ * „Wstecz” w trakcie dojazdu pochłania. Dojazd i powrót mają czas `medium2` (300 ms) i krzywą standardową
+ * `(0,2; 0; 0; 1)` z tokenów ruchu Material 3. Inne układy historii zostawia scenie z jednym ekranem.
  */
 internal object SheetSceneStrategy : SceneStrategy<NavKey> {
     private val sheet: Map<String, Any> = mapOf(SHEET_KEY to true)
