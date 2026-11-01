@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.symbolsOf
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 
 /** Warstwa wypełnienia konturów; widok mapy szuka w niej dotkniętego budynku. */
@@ -46,7 +47,7 @@ fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
         |{
         |  "version": 8,
         |  "sources": {
-        |    "osm": {"type": "raster", "tiles": ["$OSM_TILES"], "tileSize": 256, "maxzoom": 19},
+        |    "osm": {"type": "raster", "tiles": ["$OSM_TILES"], "tileSize": 256, "maxzoom": 19${basemapBounds(data)}},
         |    "budynki": {"type": "geojson", "data": ${data.buildings}},
         |    "podpisy": {"type": "geojson", "data": ${data.labelPoints}}
         |  },
@@ -66,6 +67,13 @@ fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
         |  ]
         |}
     """.trimMargin()
+
+// Podkład tylko w obszarze kampusu, więc kafelków spoza niego mapa nie pobiera (NFR-39).
+private fun basemapBounds(data: CampusMapData): String {
+    val bounds = data.bounds ?: return ""
+    val edges = listOf(bounds.west, bounds.south, bounds.east, bounds.north)
+    return ", \"bounds\": ${JsonArray(edges.map { JsonPrimitive(it) })}"
+}
 
 // Obrys konturu z budynkiem zaznaczonym, także konturu wspólnego „C-3/C-4”; bez zaznaczenia brak warstwy.
 private fun selectedLayer(data: CampusMapData, colors: MapStyleColors): String {
