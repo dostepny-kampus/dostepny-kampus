@@ -76,7 +76,7 @@ private const val SHEET_KEY = "arkusz"
 private const val MAP_KEY = "mapa"
 private const val HALF_WINDOW = 0.5f
 private const val MATERIAL_DURATION_MEDIUM2_MILLIS = 300
-private val MaterialStandardEasing = CubicBezierEasing(0.2f, 0f, 0f, 1f)
+private val MaterialStandardEasing = CubicBezierEasing(a = 0.2f, b = 0f, c = 0f, d = 1f)
 private val MaterialStandardMediumSlide =
     tween<Float>(durationMillis = MATERIAL_DURATION_MEDIUM2_MILLIS, easing = MaterialStandardEasing)
 
