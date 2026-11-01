@@ -28,9 +28,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.DirectNavigationEventInput
 import androidx.navigationevent.NavigationEvent
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
+import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -43,6 +47,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 private const val MIDWAY_MILLIS = 150L
+private const val SLIDE_STEP_MILLIS = 64L
 
 /** ViewModel V1: ten sam obiekt po geście znaczy ten sam stan mapy (decyzja 83). */
 private class MapModel : ViewModel()
@@ -173,5 +178,128 @@ class SheetBackGestureTest {
         compose.mainClock.autoAdvance = true
         restoration.emulateSavedInstanceStateRestore()
         compose.onNodeWithContentDescription("Zwiń kartę budynku").assertExists("arkusz V2 rozwinięty po odtworzeniu")
+    }
+
+    private fun mapBottom(): Dp = compose.onNodeWithText("A-1").getUnclippedBoundsInRoot().bottom
+
+    private fun pressBack() = compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
+
+    private fun checkClosed() {
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        compose.onNodeWithText("karta").assertDoesNotExist()
+        assertEquals("ViewModel V1 po zamknięciu V2", 1, models.size)
+        pressBack()
+        assertTrue("„Wstecz” na V1 zamyka aplikację", compose.activity.isFinishing)
+    }
+
+    private fun checkSlideOut(isExpanded: Boolean) {
+        compose.setContent { Shell() }
+        openSheet(isExpanded)
+        val bottom = mapBottom()
+        move(0f)
+        move(0.4f)
+        val start = sheetTop("przy postępie 0,4")
+        compose.runOnUiThread { gesture.backCompleted() }
+        compose.mainClock.advanceTimeByFrame()
+        val first = sheetTop("na początku dojazdu")
+        compose.mainClock.advanceTimeBy(SLIDE_STEP_MILLIS)
+        val midway = sheetTop("w trakcie dojazdu")
+        compose.onNodeWithText("karta").assertExists("V2 w historii w trakcie dojazdu")
+        assertTrue("dojazd od postępu 0,4, nie wyżej: $first < $start", first >= start - 1.dp)
+        assertTrue("w trakcie dojazdu niżej niż przy 0,4: $midway, $start", midway > start + 1.dp)
+        assertTrue("w trakcie dojazdu arkusz widoczny: $midway, dół $bottom", midway < bottom)
+        checkClosed()
+    }
+
+    // Wiersz: V2 do połowy, gest „Wstecz” 0,4 i zakończenie → arkusz dojeżdża w dół, potem V2 zdjęte z historii,
+    // V1 z tym samym ViewModel, US1.1, decyzja 83.
+    @Test
+    fun us1_1_half_sheet_slides_out() = checkSlideOut(isExpanded = false)
+
+    // Wiersz: V2 rozwinięte, gest „Wstecz” 0,4 i zakończenie → arkusz dojeżdża w dół od wysokości rozwiniętej, US1.1.
+    @Test
+    fun us1_1_full_sheet_slides_out() = checkSlideOut(isExpanded = true)
+
+    private fun checkSlideBack(isExpanded: Boolean) {
+        compose.setContent { Shell() }
+        openSheet(isExpanded)
+        val before = sheetTop("przed gestem")
+        move(0f)
+        move(0.6f)
+        val start = sheetTop("przy postępie 0,6")
+        compose.runOnUiThread { gesture.backCancelled() }
+        compose.mainClock.advanceTimeByFrame()
+        compose.mainClock.advanceTimeBy(SLIDE_STEP_MILLIS)
+        val midway = sheetTop("w trakcie powrotu")
+        assertTrue("w trakcie powrotu wyżej niż przy 0,6: $midway, $start", midway < start - 1.dp)
+        assertTrue("w trakcie powrotu niżej niż przed gestem: $midway, $before", midway > before + 1.dp)
+        compose.mainClock.autoAdvance = true
+        assertEquals("góra arkusza po powrocie", before.value, sheetTop("po powrocie").value, 1f)
+        val handle = if (isExpanded) "Zwiń kartę budynku" else "Rozwiń kartę budynku"
+        compose.onNodeWithContentDescription(handle).assertExists("rozwinięcie arkusza po anulowaniu")
+    }
+
+    // Wiersz: V2 do połowy, gest „Wstecz” 0,6 i anulowanie → arkusz wraca płynnie do połowy, V2 zostaje, US2.
+    @Test
+    fun us2_half_sheet_slides_back() = checkSlideBack(isExpanded = false)
+
+    // Wiersz: V2 rozwinięte, gest „Wstecz” 0,6 i anulowanie → arkusz wraca płynnie i zostaje rozwinięty, US2.
+    @Test
+    fun us2_full_sheet_slides_back() = checkSlideBack(isExpanded = true)
+
+    // Wiersz: V2 do połowy, „Wstecz” przyciskiem, bez gestu → arkusz dojeżdża w dół, potem V2 zdjęte z historii, US1.1.
+    @Test
+    fun us1_1_back_button_slides_out() {
+        compose.setContent { Shell() }
+        openSheet(isExpanded = false)
+        val bottom = mapBottom()
+        val before = sheetTop("przed „Wstecz”")
+        pressBack()
+        compose.mainClock.advanceTimeByFrame()
+        compose.mainClock.advanceTimeBy(SLIDE_STEP_MILLIS)
+        val midway = sheetTop("w trakcie dojazdu po „Wstecz”")
+        assertTrue("w trakcie dojazdu niżej niż przed „Wstecz”: $midway, $before", midway > before + 1.dp)
+        assertTrue("w trakcie dojazdu arkusz widoczny: $midway, dół $bottom", midway < bottom)
+        checkClosed()
+    }
+
+    // Wiersz: V2 do połowy, gest „Wstecz” 0,2 → 0,6 → arkusz od razu tam, gdzie palec, bez animacji, US2.
+    @Test
+    fun us2_sheet_follows_finger() {
+        compose.setContent { Shell() }
+        openSheet(isExpanded = false)
+        val before = sheetTop("przed gestem")
+        val height = mapBottom() - before
+        move(0f)
+        move(0.2f)
+        val event = NavigationEvent(swipeEdge = NavigationEvent.EDGE_LEFT, progress = 0.6f)
+        compose.runOnUiThread { gesture.backProgressed(event) }
+        compose.mainClock.advanceTimeByFrame()
+        val offset = sheetTop("tuż po postępie 0,6") - before
+        assertEquals("przy 0,6 od razu", sheetBackOffset(progress = 0.6f, height = height).value, offset.value, 1f)
+    }
+
+    // Wiersz: V2, drugie „Wstecz” w trakcie dojazdu arkusza → V2 zdjęte z historii raz, V1 zostaje, US1.1.
+    @Test
+    fun us1_1_second_back_closes_once() {
+        var backs = 0
+        compose.setContent {
+            NavDisplay(
+                backStack = listOf<NavKey>(MapRoute(), BuildingRoute(symbol = "A-1")),
+                onBack = { backs++ },
+                sceneStrategies = listOf(SheetSceneStrategy),
+            ) { route: NavKey ->
+                NavEntry(key = route, metadata = SheetSceneStrategy.metadata(route)) { Text(text = "$route") }
+            }
+        }
+        compose.waitForIdle()
+        compose.mainClock.autoAdvance = false
+        pressBack()
+        compose.mainClock.advanceTimeBy(SLIDE_STEP_MILLIS)
+        pressBack()
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        assertEquals("zdjęcia V2 z historii po dwóch „Wstecz”", 1, backs)
     }
 }
