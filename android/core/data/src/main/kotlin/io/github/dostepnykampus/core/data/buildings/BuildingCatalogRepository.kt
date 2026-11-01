@@ -29,7 +29,8 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
  * Budynki z serwera są sortowane jak te z pliku.
  *
  * Wynik inny niż [ApiResult.Success], czyli brak sieci, błąd serwera albo nieznany zasób, daje cały katalog
- * z pliku, z jego wejściami i atrybucją. Bez [listBuildings] odczyt jest od razu z pliku, jak dotychczas.
+ * z pliku, z jego wejściami i atrybucją. Tak samo pusta lista z serwera: baza bez zaimportowanych budynków
+ * nie może dać pustej mapy. Bez [listBuildings] odczyt jest od razu z pliku, jak dotychczas.
  *
  * - Budynki są posortowane naturalnie po symbolu: litera, potem numer jako liczba, np. A-2 przed A-10.
  * - Wejścia nie obejmują rodzajów `emergency`, `exit` i `garage`, bo to nie są wejścia dla odwiedzających
@@ -59,7 +60,7 @@ class BuildingCatalogRepository(
 
     private suspend fun load(): BuildingCatalog {
         val bundled = withContext(ioContext) { parseBuildingCatalog(readGeoJson()).forVisitors() }
-        val server = (listBuildings?.invoke() as? ApiResult.Success)?.value
+        val server = nonEmptyServerList()
         return if (server == null) {
             bundled
         } else {
@@ -72,6 +73,11 @@ class BuildingCatalogRepository(
                 )
             outlines.forVisitors()
         }
+    }
+
+    private suspend fun nonEmptyServerList(): BuildingList? {
+        val result = listBuildings?.invoke()
+        return if (result is ApiResult.Success && result.value.buildings.isNotEmpty()) result.value else null
     }
 }
 

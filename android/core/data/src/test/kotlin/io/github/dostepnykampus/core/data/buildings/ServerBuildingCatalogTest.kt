@@ -57,6 +57,12 @@ class ServerBuildingCatalogTest {
         assertEquals(catalog(), failed)
     }
 
+    @Test
+    fun us1_empty_list_uses_asset() {
+        val empty = catalog { ApiResult.Success(BuildingList(source = SERVER_SOURCE, buildings = emptyList())) }
+        assertEquals(catalog(), empty)
+    }
+
     private fun catalog(remote: (suspend () -> ApiResult<BuildingList>)? = null): BuildingCatalog =
         runBlocking { BuildingCatalogRepository(EmptyCoroutineContext, remote) { assetJson() }.catalog() }
 
