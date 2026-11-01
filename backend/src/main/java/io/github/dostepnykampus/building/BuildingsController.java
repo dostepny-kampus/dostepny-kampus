@@ -7,12 +7,13 @@ package io.github.dostepnykampus.building;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Publiczny odczyt budynków: lista i podpowiedź dla punktu.
+ * Publiczny odczyt budynków: lista, karta i podpowiedź dla punktu.
  *
  * @since 0.1.0
  */
@@ -56,6 +57,17 @@ public final class BuildingsController {
         return this.query.locate(lat, lon);
     }
 
+    /**
+     * Zwraca kartę budynku. Bez danych wejść lista wejść jest pusta.
+     *
+     * @param symbol Symbol budynku
+     * @return Karta budynku z konturem i pustą listą wejść
+     */
+    @GetMapping("/buildings/{symbol}")
+    BuildingCard getBuilding(@PathVariable("symbol") final String symbol) {
+        return this.query.building(symbol).orElseThrow(BuildingsController::missing);
+    }
+
     private static boolean outside(final double lat, final double lon) {
         return BuildingsController.bad(lat, -90, 90)
             || BuildingsController.bad(lon, -180, 180);
@@ -65,5 +77,9 @@ public final class BuildingsController {
         final double value, final double lower, final double upper
     ) {
         return !Double.isFinite(value) || value < lower || value > upper;
+    }
+
+    private static ResponseStatusException missing() {
+        return new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 }
