@@ -44,4 +44,8 @@ internal fun SheetState.after(gesture: BackGesture): SheetState =
  * po zakończeniu dojeżdża w dół do końca, po anulowaniu wraca na swoje miejsce.
  */
 internal val BackGesture.isSlide: Boolean
-    get() = false
+    get() =
+        when (this) {
+            BackGesture.Completed, BackGesture.Cancelled -> true
+            BackGesture.Started, is BackGesture.Progressed -> false
+        }

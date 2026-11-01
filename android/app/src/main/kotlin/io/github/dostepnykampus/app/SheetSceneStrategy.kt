@@ -5,6 +5,9 @@
  */
 package io.github.dostepnykampus.app
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -34,6 +37,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -65,10 +69,15 @@ import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.launch
 
 private const val SHEET_KEY = "arkusz"
 private const val MAP_KEY = "mapa"
 private const val HALF_WINDOW = 0.5f
+private const val MATERIAL_DURATION_MEDIUM2_MILLIS = 300
+private val MaterialStandardMediumSlide =
+    tween<Float>(durationMillis = MATERIAL_DURATION_MEDIUM2_MILLIS, easing = FastOutSlowInEasing)
 
 private val SheetStateSaver =
     Saver<SheetState, Boolean>(
@@ -87,8 +96,10 @@ internal val LocalSheetPadding = compositionLocalOf { PaddingValues() }
  * a V1 zostaje pod nim widoczne i żywe, z tym samym stanem (decyzje 48 i 83). W oknie co najmniej 600 dp arkusz też
  * wysuwa się od dołu (decyzja 69). Samo V1 to ta sama scena bez arkusza, więc otwarcie i zamknięcie V2 nie zmienia
  * sceny i nie uruchamia przenikania całego ekranu. Przewidywany gest „Wstecz” obsługuje sam arkusz: zjeżdża w dół
- * z postępem gestu nad niezmienioną mapą, po anulowaniu wraca na swoje miejsce, a po zakończeniu zamyka V2.
- * Inne układy historii zostawia scenie z jednym ekranem.
+ * z postępem gestu nad niezmienioną mapą (za palcem, bez animacji), po anulowaniu płynnie wraca na swoje miejsce,
+ * a po zakończeniu gestu albo „Wstecz” bez gestu dojeżdża w dół do końca i dopiero wtedy raz zamyka V2; kolejne
+ * „Wstecz” w trakcie dojazdu pochłania. Dojazd i powrót mają czas `medium2` i krzywą standardową z tokenów ruchu
+ * Material 3. Inne układy historii zostawia scenie z jednym ekranem.
  */
 internal object SheetSceneStrategy : SceneStrategy<NavKey> {
     private val sheet: Map<String, Any> = mapOf(SHEET_KEY to true)
@@ -120,6 +131,9 @@ private data class SheetScene(val map: NavEntry<NavKey>, val sheet: NavEntry<Nav
     override val previousEntries: List<NavEntry<NavKey>> = if (sheet == null) emptyList() else listOf(map)
     override val content: @Composable () -> Unit = {
         var state by rememberSaveable(sheet?.contentKey, stateSaver = SheetStateSaver) { mutableStateOf(SheetState()) }
+        val shift = remember(sheet?.contentKey) { Animatable(0f) }
+        var isClosing by remember(sheet?.contentKey) { mutableStateOf(false) }
+        val scope = rememberCoroutineScope()
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val cover =
                 when {
@@ -130,8 +144,18 @@ private data class SheetScene(val map: NavEntry<NavKey>, val sheet: NavEntry<Nav
             CompositionLocalProvider(LocalSheetPadding provides PaddingValues(bottom = cover)) { map.Content() }
             if (sheet != null) {
                 SheetBackHandler { gesture ->
-                    state = state.after(gesture)
-                    if (gesture == BackGesture.Completed) onBack()
+                    if (!isClosing) {
+                        state = state.after(gesture)
+                        isClosing = gesture == BackGesture.Completed
+                        scope.launch(start = CoroutineStart.UNDISPATCHED) {
+                            if (gesture.isSlide) {
+                                shift.animateTo(state.progress, MaterialStandardMediumSlide)
+                            } else {
+                                shift.snapTo(state.progress)
+                            }
+                            if (isClosing) onBack()
+                        }
+                    }
                 }
                 Sheet(
                     isExpanded = state.isExpanded,
@@ -140,7 +164,7 @@ private data class SheetScene(val map: NavEntry<NavKey>, val sheet: NavEntry<Nav
                         Modifier
                             .align(Alignment.BottomCenter)
                             .height(cover)
-                            .offset { IntOffset(x = 0, y = sheetBackOffset(state.progress, cover).roundToPx()) },
+                            .offset { IntOffset(x = 0, y = sheetBackOffset(shift.value, cover).roundToPx()) },
                 ) { sheet.Content() }
             }
         }
@@ -172,9 +196,12 @@ internal fun SheetBackHandler(onGesture: (BackGesture) -> Unit) {
     }
 }
 
-// Arkusz na połowę okna. Dotknięcie uchwytu albo przewinięcie treści w górę rozwija go na całe okno, więc
-// przeciąganie nie jest jedyną drogą (wymagania V2). Tło `surfaceContainer`, górne rogi `Zaokraglenia.bardzoDuze`,
-// cień `Wysokosci.pasekCzynnosci` padający w górę, jak w makiecie hi-fi V2.
+/**
+ * Arkusz V2 na połowę okna albo rozwinięty na całe okno ([isExpanded]); zmianę rozwinięcia zgłasza
+ * [onExpandedChange]. Dotknięcie uchwytu albo przewinięcie treści w górę rozwija go na całe okno, więc przeciąganie
+ * nie jest jedyną drogą (wymagania V2). Tło `surfaceContainer`, górne rogi `Zaokraglenia.bardzoDuze`, cień
+ * `Wysokosci.pasekCzynnosci` padający w górę, jak w makiecie hi-fi V2.
+ */
 @Composable
 internal fun Sheet(
     isExpanded: Boolean,
@@ -204,14 +231,16 @@ internal fun Sheet(
         color = MaterialTheme.colorScheme.surfaceContainer,
         shadowElevation = Wysokosci.pasekCzynnosci,
     ) {
-        // Rozwinięty arkusz sięga pod pasek stanu, zwinięty zaczyna się w połowie okna: góra treści bez wcięcia.
-        val top = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
-        Column(modifier = if (isExpanded) Modifier.windowInsetsPadding(top) else Modifier.consumeWindowInsets(top)) {
+        val statusBar = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
+        Column(modifier = Modifier.belowStatusBarWhenExpanded(statusBar, isExpanded)) {
             Handle(isExpanded = isExpanded, onClick = { onExpandedChange(!isExpanded) })
             Box(Modifier.weight(1f).fillMaxWidth()) { content() }
         }
     }
 }
+
+private fun Modifier.belowStatusBarWhenExpanded(statusBar: WindowInsets, isExpanded: Boolean): Modifier =
+    if (isExpanded) windowInsetsPadding(statusBar) else consumeWindowInsets(statusBar)
 
 @Composable
 private fun Handle(isExpanded: Boolean, onClick: () -> Unit) {

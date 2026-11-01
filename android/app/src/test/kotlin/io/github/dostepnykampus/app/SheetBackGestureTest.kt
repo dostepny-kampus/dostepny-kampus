@@ -302,4 +302,22 @@ class SheetBackGestureTest {
         compose.waitForIdle()
         assertEquals("zdjęcia V2 z historii po dwóch „Wstecz”", 1, backs)
     }
+
+    // Wiersz: V2 do połowy, „Wstecz” przyciskiem, w trakcie dojazdu początek gestu → arkusz dojeżdża do końca,
+    // V2 zdjęte z historii, US1.1.
+    @Test
+    fun us1_1_gesture_while_closing() {
+        compose.setContent { Shell() }
+        openSheet(isExpanded = false)
+        pressBack()
+        compose.mainClock.advanceTimeBy(SLIDE_STEP_MILLIS)
+        val event = NavigationEvent(swipeEdge = NavigationEvent.EDGE_LEFT, progress = 0f)
+        compose.runOnUiThread {
+            compose.activity.navigationEventDispatcher.addInput(gesture)
+            gesture.backStarted(event)
+        }
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        compose.onNodeWithText("karta").assertDoesNotExist()
+    }
 }
