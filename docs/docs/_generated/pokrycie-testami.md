@@ -24,7 +24,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `budynki-bez-szczegolow.feature` | Zgłoszenie szybkie poza konturem budynku zapisuje się bez błędu | BR-G2 | — | brak |
 | `budynki-bez-szczegolow.feature` | Budynek z uszkodzonymi danymi planów działa jako budynek podstawowy | BR-G3, US16.2 | — | brak |
 | `budynki-bez-szczegolow.feature` | Zgłoszenie w budynku po nieudanym imporcie planów | BR-G3 | — | brak |
-| `budynki-bez-szczegolow.feature` | Pomiar daleko od budynków PWr nie dostaje propozycji budynku | BR-G4, US6.2 | — | brak |
+| `budynki-bez-szczegolow.feature` | Propozycja budynku po pomiarze zależy od odległości od konturu | BR-G4, US6.2 | — | brak |
 | `budynki-bez-szczegolow.feature` | Mapa działa daleko od budynków PWr | BR-G4 | — | brak |
 | `eksport.feature` | Plik GeoJSON otwiera się w QGIS bez ustawiania układu współrzędnych | US13.1 | — | brak |
 | `eksport.feature` | Plik CSV ma współrzędne w PUWG 1992 i otwiera się jako warstwa punktów | US13.2 | — | brak |
