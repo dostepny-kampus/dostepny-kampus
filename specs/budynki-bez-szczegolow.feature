@@ -112,10 +112,10 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
       Ale aplikacja nie pokazuje komunikatu o błędzie
 
       Przykłady:
-        | odległość | propozycja                                                                               |
-        | 30 m      | aplikacja podpowiada budynek A-1 do potwierdzenia                                        |
-        | 50 m      | aplikacja podpowiada budynek A-1 do potwierdzenia                                        |
-        | 60 m      | aplikacja nie podpowiada żadnego budynku, a zgłoszenie jest „poza budynkiem”, bez piętra |
+        | odległość | propozycja                                                                                            |
+        | 30 m      | aplikacja podpowiada budynek A-1 do potwierdzenia                                                     |
+        | 50 m      | aplikacja podpowiada budynek A-1 do potwierdzenia                                                     |
+        | 60 m      | aplikacja nie podpowiada żadnego budynku, a po zapisaniu zgłoszenie jest „poza budynkiem”, bez piętra |
 
     Scenariusz: Mapa działa daleko od budynków PWr
       Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
