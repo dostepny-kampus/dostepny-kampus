@@ -16,6 +16,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import org.maplibre.spatialk.geojson.BoundingBox
 import org.maplibre.spatialk.geojson.Feature
 import org.maplibre.spatialk.geojson.FeatureCollection
 import org.maplibre.spatialk.geojson.GeoJsonObject
@@ -24,11 +25,17 @@ import org.maplibre.spatialk.geojson.Point
 import org.maplibre.spatialk.geojson.Polygon
 import org.maplibre.spatialk.geojson.PolygonGeometry
 import org.maplibre.spatialk.geojson.Position
+import org.maplibre.spatialk.turf.measurement.computeBbox
+import org.maplibre.spatialk.turf.measurement.offset
+import org.maplibre.spatialk.units.Bearing
+import org.maplibre.spatialk.units.extensions.meters
 
 /** Budynek w środku pierwszego widoku mapy: główny kampus (decyzja 80). */
 const val START_BUILDING = "A-1"
 
 private const val LABEL_SEPARATOR = "/"
+
+private val CAMPUS_MARGIN = 500.meters
 
 /**
  * Dane warstw mapy V1 z katalogu budynków jako GeoJSON dla źródeł mapy, bez sieci (US1, US1.4, NFR-10).
@@ -96,12 +103,14 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
             Feature(Point(entrance.location.toPosition()), properties)
         }
     val startBuildings = catalog.buildings.filter { it.symbol == START_BUILDING }.ifEmpty { catalog.buildings }
+    val allPoints = catalog.buildings.flatMap { it.outline.points() }
     return CampusMapData(
         buildings = GeoJsonObject.toJson(FeatureCollection(buildings)),
         labels = outlines.values.map { it.joinToString(separator = LABEL_SEPARATOR) },
         labelPoints = GeoJsonObject.toJson(FeatureCollection(labelPoints)),
         entrances = GeoJsonObject.toJson(FeatureCollection(entrances)),
         start = center(startBuildings.flatMap { it.outline.points() }),
+        bounds = campusBounds(allPoints),
     )
 }
 
@@ -118,6 +127,19 @@ private fun center(points: List<GeoPoint>): GeoPoint? =
             latitude = (all.minOf(GeoPoint::latitude) + all.maxOf(GeoPoint::latitude)) / 2,
         )
     }
+
+private fun campusBounds(points: List<GeoPoint>): CampusBounds? =
+    points.takeIf { it.isNotEmpty() }?.let { all -> computeBbox(all.map(GeoPoint::toPosition)).withCampusMargin() }
+
+private fun BoundingBox.withCampusMargin(): CampusBounds {
+    val middleLatitude = (south + north) / 2
+    return CampusBounds(
+        west = Position(longitude = west, latitude = middleLatitude).offset(CAMPUS_MARGIN, Bearing.West).longitude,
+        south = southwest.offset(CAMPUS_MARGIN, Bearing.South).latitude,
+        east = Position(longitude = east, latitude = middleLatitude).offset(CAMPUS_MARGIN, Bearing.East).longitude,
+        north = northeast.offset(CAMPUS_MARGIN, Bearing.North).latitude,
+    )
+}
 
 private fun GeoPoint.toPosition(): Position = Position(longitude, latitude)
 

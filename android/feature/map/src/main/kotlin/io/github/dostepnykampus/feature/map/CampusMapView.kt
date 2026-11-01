@@ -85,7 +85,12 @@ internal fun labelImage(label: String, colors: MapColors, size: Float): Bitmap {
 }
 
 /** Granice widoku mapy o rozmiarze [size] w pikselach w obszarze [bounds]; `null` bez obszaru (NFR-39, NFR-53). */
-internal fun Density.mapLimits(bounds: CampusBounds?, size: IntSize): MapLimits? = null
+internal fun Density.mapLimits(bounds: CampusBounds?, size: IntSize): MapLimits? =
+    bounds?.let { area ->
+        val width = size.width.toDp().value
+        val height = size.height.toDp().value
+        MapLimits(area, widthDp = width.toDouble(), heightDp = height.toDouble())
+    }
 
 internal fun MapColors.styleColors(): MapStyleColors =
     MapStyleColors(

@@ -7,8 +7,12 @@ package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusBounds
+import kotlin.math.PI
+import kotlin.math.asinh
 import kotlin.math.cos
+import kotlin.math.log2
 import kotlin.math.pow
+import kotlin.math.tan
 
 /** Powiększenie pierwszego widoku: symbole budynków są czytelne (decyzja 80). */
 internal const val START_ZOOM = 17.0
@@ -16,6 +20,8 @@ internal const val START_ZOOM = 17.0
 private const val MIN_ZOOM = 12.0
 private const val MAX_ZOOM = 20.0
 private const val QUARTER_VIEW_DEGREES_AT_ZOOM_0 = 70.0
+private const val WORLD_DP_AT_ZOOM_0 = 512.0
+private const val FULL_TURN_DEGREES = 360.0
 
 /**
  * Widok mapy V1. Przyciski „Powiększ”, „Pomniejsz” i cztery strzałki zmieniają go bez gestów (NFR-53,
@@ -67,13 +73,26 @@ internal fun MapCamera.moved(direction: PanDirection): MapCamera {
  */
 internal class MapLimits(val bounds: CampusBounds, val widthDp: Double, val heightDp: Double) {
     /** Najmniejsze powiększenie: cały [bounds] mieści się w widoku, a bardziej oddalić mapy się nie da. */
-    val minZoom: Double get() = MIN_ZOOM
+    val minZoom: Double =
+        minOf(
+            a = fitZoom(viewDp = widthDp, worldShare = (bounds.east - bounds.west) / FULL_TURN_DEGREES),
+            b = fitZoom(viewDp = heightDp, worldShare = (mercatorY(bounds.north) - mercatorY(bounds.south)) / (2 * PI)),
+        )
 
     /**
      * Widok [camera] w granicach: środek w [bounds], powiększenie co najmniej [minZoom]. Strzałki i „Pomniejsz”
      * zatrzymują się na granicy bez komunikatu.
      */
-    fun clamp(camera: MapCamera): MapCamera = camera
+    fun clamp(camera: MapCamera): MapCamera {
+        val longitude = camera.center.longitude.coerceIn(minimumValue = bounds.west, maximumValue = bounds.east)
+        val latitude = camera.center.latitude.coerceIn(minimumValue = bounds.south, maximumValue = bounds.north)
+        val center = GeoPoint(longitude = longitude, latitude = latitude)
+        return camera.copy(center = center, zoom = camera.zoom.coerceAtLeast(minZoom))
+    }
+
+    private fun fitZoom(viewDp: Double, worldShare: Double): Double = log2(viewDp / (WORLD_DP_AT_ZOOM_0 * worldShare))
+
+    private fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latitude)))
 }
 
 /**

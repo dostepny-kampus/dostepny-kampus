@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.spatialk.geojson)
+    implementation(libs.spatialk.turf)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotlinx.coroutines.test)
