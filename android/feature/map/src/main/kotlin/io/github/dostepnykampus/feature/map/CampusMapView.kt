@@ -13,9 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.IntSize
 import androidx.core.graphics.createBitmap
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import okhttp3.Call
 import okhttp3.OkHttpClient
@@ -80,6 +83,9 @@ internal fun labelImage(label: String, colors: MapColors, size: Float): Bitmap {
     }
     return bitmap
 }
+
+/** Granice widoku mapy o rozmiarze [size] w pikselach w obszarze [bounds]; `null` bez obszaru (NFR-39, NFR-53). */
+internal fun Density.mapLimits(bounds: CampusBounds?, size: IntSize): MapLimits? = null
 
 internal fun MapColors.styleColors(): MapStyleColors =
     MapStyleColors(

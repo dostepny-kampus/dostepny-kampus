@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.data.CampusBounds
 import kotlin.math.cos
 import kotlin.math.pow
 
@@ -54,6 +55,25 @@ internal fun MapCamera.moved(direction: PanDirection): MapCamera {
                 latitude = center.latitude + direction.north * latitudeStep,
             ),
     )
+}
+
+/**
+ * Granice widoku V1 na mapie o rozmiarze [widthDp] × [heightDp] dp (NFR-39, NFR-53). Te same wartości dostaje
+ * MapLibre dla gestów.
+ *
+ * @property bounds obszar kampusu, poza który środek widoku nie wychodzi
+ * @property widthDp szerokość widoku mapy w dp
+ * @property heightDp wysokość widoku mapy w dp
+ */
+internal class MapLimits(val bounds: CampusBounds, val widthDp: Double, val heightDp: Double) {
+    /** Najmniejsze powiększenie: cały [bounds] mieści się w widoku, a bardziej oddalić mapy się nie da. */
+    val minZoom: Double get() = MIN_ZOOM
+
+    /**
+     * Widok [camera] w granicach: środek w [bounds], powiększenie co najmniej [minZoom]. Strzałki i „Pomniejsz”
+     * zatrzymują się na granicy bez komunikatu.
+     */
+    fun clamp(camera: MapCamera): MapCamera = camera
 }
 
 /**

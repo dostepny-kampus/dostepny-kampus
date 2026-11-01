@@ -43,6 +43,8 @@ private const val LABEL_SEPARATOR = "/"
  * @property start środek pierwszego widoku: środek budynku [START_BUILDING] (US1, US1.2, decyzja 80), a bez niego
  *   środek wszystkich konturów; `null` bez budynków
  * @property focus symbol budynku zaznaczonego na mapie, np. po „Wstecz” z V2 (US1.1); `null` bez zaznaczenia
+ * @property bounds obszar kampusu: najmniejszy prostokąt ze wszystkimi konturami powiększony o 500 m z każdej strony
+ *   (NFR-39); `null` bez budynków
  */
 data class CampusMapData(
     val buildings: String,
@@ -51,7 +53,18 @@ data class CampusMapData(
     val entrances: String,
     val start: GeoPoint?,
     val focus: String? = null,
+    val bounds: CampusBounds? = null,
 )
+
+/**
+ * Prostokąt na mapie w stopniach (NFR-39).
+ *
+ * @property west długość geograficzna zachodniego brzegu
+ * @property south szerokość geograficzna południowego brzegu
+ * @property east długość geograficzna wschodniego brzegu
+ * @property north szerokość geograficzna północnego brzegu
+ */
+data class CampusBounds(val west: Double, val south: Double, val east: Double, val north: Double)
 
 /**
  * Dane warstw mapy z [catalog]. Katalog z repozytorium nie ma już wejść `emergency`, `exit` i `garage`
