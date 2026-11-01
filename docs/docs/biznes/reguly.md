@@ -71,9 +71,11 @@ Reguły dotyczą budynków bez planów pięter i miejsc poza budynkiem. Poziomy 
 | BR-G1 | Budynek bez planów pięter nie ma przełącznika pięter. Widać napis „Nie mamy planu pięter tego budynku.” Piętro wpisuje się ręcznie: liczba całkowita (0 to parter), opcjonalnie z dopiskiem „półpiętro”. Zgłoszenie można złożyć zawsze. | Plany pięter PWr ma 25 budynków szczegółowych, pozostałe są podstawowe. Brak planu nie może blokować zgłoszenia (N3). | produkt §6a, decyzja 26, decyzja 29, US7.2, US16.2, NFR-3, NFR-48 |
 | BR-G2 | Punkt poza konturem każdego budynku daje stan „Poza budynkiem”, bez komunikatu o błędzie. W pomiarze precyzyjnym aplikacja proponuje najbliższy budynek, który można wybrać albo odrzucić. Zgłoszenie szybkie zostaje „poza budynkiem” bez pytania (BR-14). | Krawężnik czy pochylnia przed wejściem to też bariery. Pozycja z GNSS przy ścianie bywa niedokładna. | produkt §6a, US6.2, T4, NFR-49 |
 | BR-G3 | Gdy import planów budynku się nie uda albo danych brak, budynek działa jako budynek podstawowy. Pozostałe budynki zachowują swoje plany. Import kończy się raportem. | Błąd danych jednego budynku nie psuje aplikacji w pozostałych. | produkt §6a, decyzja 26, NFR-47, NFR-48 |
-| BR-G4 | Punkt blisko kampusu, ale z dala od budynków PWr, nie dostaje propozycji budynku. Mapa i zgłoszenie działają, a zgłoszenie zapisuje się jako „poza budynkiem”, bez piętra. | Bariery na trasie do budynku też utrudniają wizytę (N1, N3). | produkt §5 (bufor budynku), produkt §6a, decyzja 26, US6.2, T4, NFR-49 |
+| BR-G4 | Punkt dalej niż 50 m od konturu każdego budynku PWr nie dostaje propozycji budynku. Odległość liczymy w metrach na ziemi. Mapa i zgłoszenie działają, a zgłoszenie zapisuje się jako „poza budynkiem”, bez piętra. | Bariery na trasie do budynku też utrudniają wizytę (N1, N3). | produkt §5 (bufor budynku), produkt §6a, decyzja 26, US6.2, T4, NFR-49 |
 
-Odległość, od której nie proponujemy budynku (BR-G4), ustalimy w fazie implementacji. Zgłoszenia poza budynkiem są na mapie, ale nie wchodzą do postępu żadnego budynku (BR-21).
+Próg 50 m (BR-G4) pokrywa z zapasem błąd GNSS przy ścianach, który sięga 15 m (R-4, NFR-3). Bariera na chodniku po drugiej stronie ulicy nie dostaje już propozycji budynku. Bliżej niż 50 m aplikacja proponuje najbliższy budynek do potwierdzenia (US6.2).
+
+Zgłoszenia poza budynkiem są na mapie, ale nie wchodzą do postępu żadnego budynku (BR-21).
 
 ## Cykl życia zgłoszenia
 
