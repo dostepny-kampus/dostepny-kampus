@@ -91,7 +91,7 @@ paths:
       summary: Podpowiedź budynku dla punktu
       description: >-
         Budynek, w którego konturze leży punkt, albo najbliższy budynek do potwierdzenia przez Zbierającego (US6.2, BR-G2).
-        Daleko od budynków PWr odpowiedź nie ma budynku, a punkt jest „poza budynkiem” (BR-G4).
+        Dalej niż 50 m od konturu każdego budynku PWr odpowiedź nie ma budynku, a punkt jest „poza budynkiem” (BR-G4).
       tags: [building]
       security: []
       parameters:
