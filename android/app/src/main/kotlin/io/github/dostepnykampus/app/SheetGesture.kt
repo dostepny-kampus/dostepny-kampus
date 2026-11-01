@@ -6,13 +6,12 @@
 package io.github.dostepnykampus.app
 
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.coerceAtLeast
 
 /**
  * Przesunięcie w dół góry arkusza V2 o wysokości [height] przy przewidywanym geście „Wstecz” o postępie
  * [progress] od 0 do 1: rośnie proporcjonalnie do postępu, a w trakcie gestu arkusz zostaje widoczny.
  */
-internal fun sheetBackOffset(progress: Float, height: Dp): Dp = (height * progress).coerceAtLeast(height)
+internal fun sheetBackOffset(progress: Float, height: Dp): Dp = height * progress
 
 /** Arkusz V2: rozwinięty na całe okno albo do połowy ([isExpanded]) i postęp gestu „Wstecz” w toku ([progress]). */
 internal data class SheetState(val isExpanded: Boolean = false, val progress: Float = 0f)
@@ -34,4 +33,8 @@ internal sealed interface BackGesture {
 
 /** Stan arkusza po zdarzeniu [gesture]; rozwinięcie arkusza gest zostawia bez zmian. */
 internal fun SheetState.after(gesture: BackGesture): SheetState =
-    SheetState(progress = (gesture as? BackGesture.Progressed)?.progress ?: 0f)
+    when (gesture) {
+        BackGesture.Started, BackGesture.Cancelled -> copy(progress = 0f)
+        is BackGesture.Progressed -> copy(progress = gesture.progress)
+        BackGesture.Completed -> copy(progress = 1f)
+    }
