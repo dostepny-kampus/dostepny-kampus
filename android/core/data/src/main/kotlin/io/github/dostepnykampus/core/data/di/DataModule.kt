@@ -23,6 +23,7 @@ import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.start.FirstLaunchRepository
 import io.github.dostepnykampus.core.data.start.startDataStore
+import io.github.dostepnykampus.core.network.BuildingsApi
 import javax.inject.Singleton
 
 /**
@@ -32,10 +33,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DataModule {
-    /** Katalog budynków z pliku konturów w zasobach aplikacji (US1). */
+    /** Katalog: kontury z serwera, a przy innej odpowiedzi z pliku; wejścia z pliku konturów (US1). */
     @Provides
     @Singleton
-    fun buildingCatalog(app: Application): BuildingCatalogRepository = assetRepository(app.assets)
+    fun buildingCatalog(app: Application, api: BuildingsApi): BuildingCatalogRepository =
+        assetRepository(assets = app.assets, listBuildings = api::listBuildings)
 
     /** Wybór „Mapa” albo „Lista budynków” w pliku ustawień mapy (NFR-19). */
     @Provides

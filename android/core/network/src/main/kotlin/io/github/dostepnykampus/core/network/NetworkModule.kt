@@ -22,19 +22,21 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val CONNECT_TIMEOUT_SECONDS = 10L
-    private const val READ_TIMEOUT_SECONDS = 30L
-    private const val WRITE_TIMEOUT_SECONDS = 30L
+    private const val CALL_TIMEOUT_SECONDS = 3L
 
-    /** Klient HTTP: 10 s na połączenie, 30 s na odczyt i na zapis. */
+    /**
+     * Klient HTTP: całe wywołanie, z połączeniem i odczytem, trwa najwyżej 3 s. Mapa czeka na listę budynków
+     * z serwera przed pierwszym pokazaniem, a bez serwera bierze plik konturów, więc nie może czekać dłużej
+     * niż próg mapy z danymi w telefonie (NFR-10, NFR-11). Wysyłka zdjęć ustawi dłuższy limit na kopii klienta
+     * z `newBuilder()`.
+     */
     @Provides
     @Singleton
     fun okHttp(): OkHttpClient =
         OkHttpClient
             .Builder()
-            .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .writeTimeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .connectTimeout(CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .callTimeout(CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .build()
 
     /** Parser kontraktu. Nieznane pole odpowiedzi jest pomijane, bo serwer może dodać pola później. */
