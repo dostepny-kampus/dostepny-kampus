@@ -23,7 +23,7 @@ import kotlin.coroutines.CoroutineContext
  * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek.
  *
  * @param http klient OkHttp
- * @param json parser JSON kontraktu; nieznane pole odpowiedzi jest błędem
+ * @param json parser JSON kontraktu; nieznane pole jest pomijane, serwer może je dodać później
  * @param baseUrl adres serwera, np. `http://10.0.2.2:8080/` z emulatora
  * @param io kontekst blokującego wywołania; domyślnie dyspozytor wejścia-wyjścia
  */
