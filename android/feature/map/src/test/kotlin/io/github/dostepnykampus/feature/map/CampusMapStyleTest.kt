@@ -9,10 +9,12 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -45,6 +47,16 @@ class CampusMapStyleTest {
         val buildings = sources.obj("budynki").obj("data").array("features")
         val properties = buildings.single().jsonObject.obj("properties")
         assertEquals("C-13", properties.text("label"))
+    }
+
+    // Wiersz: V1, mapa zostaje na obszarze kampusu; podkładu spoza tego prostokąta aplikacja nie pobiera (NFR-39).
+    @Test
+    fun nfr39_basemap_only_campus_area() {
+        val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
+        val data = campusMapData(catalog).copy(bounds = bounds)
+        val bounded = Json.parseToJsonElement(campusMapStyle(data, colors)).jsonObject
+        val osm = bounded.obj("sources").obj("osm")
+        assertEquals(listOf(16.9, 59.9, 17.1, 60.1), osm["bounds"]?.run { jsonArray.map { it.jsonPrimitive.double } })
     }
 
     @Test
