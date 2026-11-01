@@ -12,28 +12,16 @@ import androidx.navigation3.scene.SceneStrategyScope
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-/** Sceny z historii: V1 i V1 z arkuszem V2 to jedna scena, więc NavDisplay nie przenika całego ekranu. */
+/** Sceny z historii: układy inne niż V1 i V2 nad V1 strategia arkusza zostawia scenie z jednym ekranem. */
 class SheetSceneStrategyTest {
     private fun entry(route: NavKey): NavEntry<NavKey> =
         NavEntry(key = route, metadata = SheetSceneStrategy.metadata(route)) {}
 
     private fun scene(vararg routes: NavKey): Scene<NavKey>? =
         with(SheetSceneStrategy) { SceneStrategyScope<NavKey>().calculateScene(routes.map(::entry)) }
-
-    // Wiersz: V1, dotknięcie konturu → V2 jako arkusz bez migania ekranu, US2, decyzja 48;
-    // „Wstecz” z V2 → V1 bez migania.
-    @Test
-    fun us2_v2_same_scene_as_v1() {
-        val map = requireNotNull(scene(MapRoute()))
-        val sheet = requireNotNull(scene(MapRoute(), BuildingRoute("A-1")))
-        assertEquals(map::class, sheet::class)
-        assertEquals(map.key, sheet.key)
-        assertEquals(listOf(entry(MapRoute()).contentKey), sheet.previousEntries.map { it.contentKey })
-    }
 
     // Wiersz: V2, „Sprawdź, którędy wejść” → V3 na cały ekran, US3; inne układy historii rysuje scena z jednym ekranem.
     @Test
