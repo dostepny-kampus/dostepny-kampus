@@ -38,6 +38,13 @@ class BuildingCatalogParserTest {
     private val real by lazy { parseBuildingCatalog(File(System.getProperty("dostepnykampus.buildings")).readText()) }
 
     @Test
+    fun us1_outline_from_text() {
+        assertEquals(polygon(x = 0), parseGeoArea(square(x = 0)))
+        val multi = """{"type":"MultiPolygon","coordinates":[[[[0,0],[1,0],[1,1],[0,1],[0,0]]]]}"""
+        assertEquals(GeoMultiPolygon(listOf(polygon(x = 0))), parseGeoArea(multi))
+    }
+
+    @Test
     fun us1_building_per_symbol() {
         assertEquals(listOf("C-13", "H-14", "C-3", "C-4"), catalog.buildings.map { it.symbol })
         assertEquals("Budynek testowy", catalog.buildings.first().name)

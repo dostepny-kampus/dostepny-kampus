@@ -6,4 +6,18 @@
 
 plugins {
     id("dostepnykampus.android.library")
+    alias(libs.plugins.kotlin.serialization)
+}
+
+android {
+    testOptions.unitTests.all { it.useJUnitPlatform() }
+}
+
+dependencies {
+    api(project(":core:model"))
+    implementation(project(":core:geo"))
+    implementation(libs.kotlinx.serialization.json)
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
 }
