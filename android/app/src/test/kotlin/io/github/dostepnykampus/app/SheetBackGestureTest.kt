@@ -114,8 +114,12 @@ class SheetBackGestureTest {
         openSheet(isExpanded)
         val before = sheetTop("przed gestem")
         move(0f)
+        move(0.2f)
+        val first = sheetTop("przy postępie 0,2") - before
         move(0.6f)
-        assertTrue("arkusz V2 niżej przy postępie 0,6", sheetTop("przy postępie 0,6") > before)
+        val second = sheetTop("przy postępie 0,6") - before
+        assertTrue("arkusz V2 niżej przy postępie 0,2: $first", first > 0.dp)
+        assertEquals("przy 0,6 trzy razy dalej niż przy 0,2", first.value * 3, second.value, 1f)
         finish({ backCancelled() })
         assertEquals("góra arkusza po anulowaniu", before.value, sheetTop("po anulowaniu").value, 1f)
     }
