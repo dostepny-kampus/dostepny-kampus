@@ -14,6 +14,12 @@ import org.maplibre.spatialk.geojson.MultiPolygon
 import org.maplibre.spatialk.geojson.Polygon
 import org.maplibre.spatialk.geojson.Position
 
+/**
+ * Kontur budynku z tekstu GeoJSON (`Polygon` albo `MultiPolygon`).
+ * Inna geometria daje [IllegalArgumentException].
+ */
+fun parseGeoArea(geoJson: String): GeoArea = Geometry.fromJson(geoJson).toArea()
+
 /** Kontur budynku z geometrii GeoJSON; inna geometria niż wielokąt daje [IllegalArgumentException]. */
 internal fun Geometry?.toArea(): GeoArea {
     if (this is MultiPolygon) return GeoMultiPolygon(coordinates.map(::toModel))
