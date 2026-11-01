@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -48,6 +49,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -177,7 +179,6 @@ fun CampusMapScreen(
     }
 }
 
-// Mapa V1 z konturami, przyciskami, podpisem OSM i arkuszem „Który budynek?” (US1, US2, NFR-37, NFR-53).
 @Composable
 private fun CampusMap(
     catalog: BuildingCatalog?,
@@ -200,7 +201,9 @@ private fun CampusMap(
     // Przy otwartej klawiaturze mapa jest za niska na przyciski, więc znikają do jej zamknięcia (decyzja 91).
     val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
-    Box(modifier.consumeWindowInsets(topInset)) {
+    var size by remember { mutableStateOf(IntSize.Zero) }
+    val limits = with(LocalDensity.current) { mapLimits(data?.bounds, size) }
+    Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val loaded = data
         val shown =
             shownCamera(
@@ -220,7 +223,7 @@ private fun CampusMap(
             MapOverlay(
                 camera = shown,
                 hasControls = !isCovered && !isKeyboardOpen,
-                onCameraChange = { camera = it },
+                onCameraChange = { camera = limits?.clamp(it) ?: it },
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
             ) {
                 val chosen = catalog?.buildingsOf(choice).orEmpty()
