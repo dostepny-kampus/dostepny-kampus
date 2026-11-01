@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app
 
+import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +27,10 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsCompat.Type
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavEntry
@@ -319,5 +324,58 @@ class SheetBackGestureTest {
         compose.mainClock.autoAdvance = true
         compose.waitForIdle()
         compose.onNodeWithText("karta").assertDoesNotExist()
+    }
+
+    // Wiersz: V2 zamknięte po dojeździe, ponowne otwarcie tego samego budynku → arkusz na swoim miejscu
+    // i znów idzie za gestem „Wstecz”, US1.1, US2.
+    @Test
+    fun us1_1_reopen_after_slide_out() {
+        compose.setContent { Shell() }
+        openSheet(isExpanded = false)
+        val before = sheetTop("przed zamknięciem")
+        pressBack()
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        openSheet(isExpanded = false)
+        assertEquals("góra ponownie otwartego V2", before.value, sheetTop("po ponownym otwarciu").value, 1f)
+        move(0f)
+        move(0.5f)
+        val moved = sheetTop("ponownie otwarte przy postępie 0,5")
+        assertTrue("ponownie otwarte V2 idzie za gestem: $moved, $before", moved > before + 1.dp)
+    }
+
+    // Wiersz: V2 do połowy, postęp 0,6 i anulowanie w tej samej klatce → arkusz wraca płynnie od 0,6, nie skokiem, US2.
+    @Test
+    fun us2_cancel_same_frame_slides() {
+        compose.setContent { Shell() }
+        openSheet(isExpanded = false)
+        val before = sheetTop("przed gestem")
+        move(0f)
+        val event = NavigationEvent(swipeEdge = NavigationEvent.EDGE_LEFT, progress = 0.6f)
+        compose.runOnUiThread {
+            gesture.backProgressed(event)
+            gesture.backCancelled()
+        }
+        compose.mainClock.advanceTimeByFrame()
+        compose.mainClock.advanceTimeBy(SLIDE_STEP_MILLIS)
+        val midway = sheetTop("w trakcie powrotu od 0,6")
+        assertTrue("w trakcie powrotu niżej niż przed gestem: $midway, $before", midway > before + 1.dp)
+    }
+
+    // Wiersz: pasek stanu 24 px → uchwyt rozwiniętego V2 pod paskiem stanu, zwiniętego przy górze arkusza, NFR-52.
+    @Test
+    fun nfr52_sheet_below_status_bar() {
+        compose.setContent { Shell() }
+        val bars = WindowInsetsCompat.Builder().setInsets(Type.statusBars(), Insets.of(0, 24, 0, 0)).build()
+        val view = compose.activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
+        compose.runOnUiThread { ViewCompat.dispatchApplyWindowInsets(view, bars) }
+        val top = compose.onNodeWithText("A-1").getUnclippedBoundsInRoot().top
+        val half = top + (mapBottom() - top) / 2
+        openSheet(isExpanded = false)
+        assertEquals("uchwyt zwiniętego V2 przy górze arkusza", half.value, sheetTop("zwinięte").value, 1f)
+        compose.mainClock.autoAdvance = true
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
+        val belowStatusBar = top + with(compose.density) { 24.toDp() }
+        assertEquals("uchwyt rozwiniętego V2 pod paskiem stanu", belowStatusBar.value, sheetTop("rozwinięte").value, 1f)
     }
 }
