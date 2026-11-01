@@ -1,0 +1,108 @@
+/*
+ * Dostępny Kampus
+ * Author: Vladyslav Yevkov
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+package io.github.dostepnykampus.core.data.buildings
+
+import io.github.dostepnykampus.core.model.Building
+import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.network.ApiBuilding
+import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.BuildingList
+import io.github.dostepnykampus.core.network.DetailLevel
+import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import java.io.IOException
+import kotlin.coroutines.EmptyCoroutineContext
+
+/** Kontury z serwera i wejścia z pliku; przy błędzie sieci albo serwera cały katalog zostaje z pliku. */
+class ServerBuildingCatalogTest {
+    @Test
+    fun us1_server_outlines_entrances() {
+        val outline = square(SERVER_SPAN)
+        val merged =
+            catalog {
+                ApiResult.Success(
+                    BuildingList(
+                        source = SERVER_SOURCE,
+                        buildings =
+                            listOf(
+                                apiBuilding(symbol = "A-10", name = "Nowy A-10", outline = outline),
+                                apiBuilding(symbol = "A-2", name = "Nowy A-2", outline = outline),
+                            ),
+                    ),
+                )
+            }
+        assertEquals(listOf("A-2", "A-10"), merged.buildings.map { it.symbol })
+        assertEquals(listOf("Nowy A-2", "Nowy A-10"), merged.buildings.map { it.name })
+        assertEquals(listOf(outline, outline), merged.buildings.map { it.outline })
+        assertEquals(listOf("A-2", "A-10"), merged.entrances.map { it.buildingSymbol })
+        assertEquals(SERVER_SOURCE, merged.attribution)
+        assertEquals(listOf("A-2", "A-10", "C-1"), catalog().entrances.map { it.buildingSymbol })
+    }
+
+    @Test
+    fun us1_network_error_uses_asset() {
+        val failed = catalog { ApiResult.NetworkError(IOException("brak sieci")) }
+        assertEquals(catalog(), failed)
+    }
+
+    @Test
+    fun us1_server_error_uses_asset() {
+        val failed = catalog { ApiResult.ServerError(SERVER_ERROR) }
+        assertEquals(catalog(), failed)
+    }
+
+    private fun catalog(remote: (suspend () -> ApiResult<BuildingList>)? = null): BuildingCatalog =
+        runBlocking { BuildingCatalogRepository(EmptyCoroutineContext, remote) { assetJson() }.catalog() }
+
+    private fun apiBuilding(symbol: String, name: String, outline: GeoPolygon): ApiBuilding =
+        ApiBuilding(
+            building = Building(symbol = symbol, name = name, outline = outline),
+            detailLevel = DetailLevel.BASIC,
+        )
+
+    private fun square(span: Double): GeoPolygon =
+        GeoPolygon(
+            rings =
+                listOf(
+                    listOf(0.0 to 0.0, span to 0.0, span to span, 0.0 to 0.0).map { (longitude, latitude) ->
+                        GeoPoint(longitude = longitude, latitude = latitude)
+                    },
+                ),
+        )
+
+    private fun assetJson(): String =
+        """{"type":"FeatureCollection","attribution":"$ASSET_SOURCE","features":[""" +
+            listOf(
+                building(symbol = "A-10", name = "Stary A-10"),
+                building(symbol = "A-2", name = "Stary A-2"),
+                building(symbol = "C-1", name = "Tylko plik"),
+                entrance(symbol = "A-2", type = "main"),
+                entrance(symbol = "A-2", type = "emergency"),
+                entrance(symbol = "A-10", type = "yes"),
+                entrance(symbol = "C-1", type = "main"),
+            ).joinToString(",") +
+            "]}"
+
+    private fun building(symbol: String, name: String): String =
+        """{"type":"Feature","properties":{"kind":"building","symbols":["$symbol"],"name":"$name",""" +
+            """"osm_id":"way/$symbol"},"geometry":$POLYGON}"""
+
+    private fun entrance(symbol: String, type: String): String =
+        """{"type":"Feature","properties":{"kind":"entrance","symbols":["$symbol"],"osm_id":"n/$symbol-$type",""" +
+            """"entrance":"$type"},"geometry":$POINT}"""
+
+    private companion object {
+        const val SERVER_SOURCE = "© serwer"
+        const val ASSET_SOURCE = "© OpenStreetMap contributors"
+        const val SERVER_SPAN = 2.0
+        const val SERVER_ERROR = 500
+        const val POLYGON = """{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}"""
+        const val POINT = """{"type":"Point","coordinates":[0,0]}"""
+    }
+}
