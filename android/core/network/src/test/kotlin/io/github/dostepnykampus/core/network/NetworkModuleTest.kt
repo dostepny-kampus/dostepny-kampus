@@ -16,9 +16,8 @@ class NetworkModuleTest {
         val http = NetworkModule.okHttp()
         val json = NetworkModule.json()
         val api = NetworkModule.buildingsApi(http = http, json = json)
-        assertEquals(CONNECT_MS, http.connectTimeoutMillis)
-        assertEquals(IO_MS, http.readTimeoutMillis)
-        assertEquals(IO_MS, http.writeTimeoutMillis)
+        assertEquals(CALL_MS, http.connectTimeoutMillis)
+        assertEquals(CALL_MS, http.callTimeoutMillis)
         assertEquals(BASE_URL, BuildConfig.API_BASE_URL)
         assertInstanceOf(BuildingsApi::class.java, api)
         val parsed = json.decodeFromString<BuildingListDto>("""{"source":"x","extra":1,"buildings":[]}""")
@@ -27,8 +26,7 @@ class NetworkModuleTest {
     }
 
     private companion object {
-        const val CONNECT_MS = 10_000
-        const val IO_MS = 30_000
+        const val CALL_MS = 3_000
         const val BASE_URL = "http://10.0.2.2:8080/"
     }
 }
