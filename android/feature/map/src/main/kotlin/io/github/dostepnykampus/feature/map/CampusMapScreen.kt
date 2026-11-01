@@ -212,7 +212,7 @@ private fun CampusMap(
                 focus = focusPoint.takeIf { isCovered },
                 bottomInset = coverPixels,
             )
-        if (loaded != null && shown != null) {
+        if (loaded != null && shown != null && limits != null) {
             mapView.Show(
                 data = loaded,
                 camera = shown,
@@ -223,7 +223,7 @@ private fun CampusMap(
             MapOverlay(
                 camera = shown,
                 hasControls = !isCovered && !isKeyboardOpen,
-                onCameraChange = { camera = limits?.clamp(it) ?: it },
+                onCameraChange = { camera = limits.clamp(it) },
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
             ) {
                 val chosen = catalog?.buildingsOf(choice).orEmpty()
