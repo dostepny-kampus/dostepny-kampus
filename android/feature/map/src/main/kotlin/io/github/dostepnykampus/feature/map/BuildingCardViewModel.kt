@@ -47,7 +47,7 @@ class BuildingCardViewModel
     @AssistedInject
     constructor(
         @Assisted val symbol: String,
-        private val repository: BuildingCatalogRepository,
+        repository: BuildingCatalogRepository,
     ) : ViewModel() {
         private val attempts = MutableStateFlow(0)
 
