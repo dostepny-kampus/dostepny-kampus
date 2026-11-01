@@ -39,6 +39,42 @@ fun orderedEntrances(entrances: List<Entrance>): List<OrderedEntrance> {
 }
 
 /**
+ * Odpowiedź V3 „Którędy wejść” (US3.1, BR-25).
+ */
+sealed interface VisitAnswer {
+    /** Jest wejście zalecane; [name] to jego nazwa, `null`, gdy danych nazwy nie ma. */
+    data class Accessible(val name: String?) : VisitAnswer
+
+    /** Żadne wejście odwiedzających nie jest „dostępne” i żadne nie ma „brak danych”. */
+    data object NoAccessible : VisitAnswer
+
+    /**
+     * Nie ma wejścia „dostępne”, a o części nie ma danych.
+     *
+     * @property missing ile wejść odwiedzających ma „brak danych”
+     * @property total ile wejść odwiedzających ma budynek
+     */
+    data class Unknown(val missing: Int, val total: Int) : VisitAnswer
+}
+
+/**
+ * Zdanie V3 z listy [entrances] ułożonej przez [orderedEntrances] (BR-25, US3.1).
+ *
+ * Wejście zalecane jest w zdaniu „ma wejście dostępne”. Bez niego, gdy choć jedno wejście ma „brak danych”,
+ * zdanie podaje, o ilu z ilu wejść brak danych — także wtedy, gdy danych brak o wszystkich. Inaczej budynek
+ * nie ma wejścia dostępnego. Pusta lista też nie ma wejścia dostępnego.
+ */
+fun visitAnswer(entrances: List<OrderedEntrance>): VisitAnswer {
+    val recommended = entrances.firstOrNull { it.isRecommended } ?: return missingOrNone(entrances)
+    return VisitAnswer.Accessible(recommended.entrance.name)
+}
+
+private fun missingOrNone(entrances: List<OrderedEntrance>): VisitAnswer {
+    val missing = entrances.count { it.entrance.marking == EntranceMarking.NO_DATA }
+    return if (missing == 0) VisitAnswer.NoAccessible else VisitAnswer.Unknown(missing, entrances.size)
+}
+
+/**
  * Stan karty budynku [symbol] z katalogu (US2, US2.7). Brak symbolu w katalogu to „budynku nie ma w telefonie”.
  */
 fun buildingCard(catalog: BuildingCatalog, symbol: String): BuildingCardUiState {

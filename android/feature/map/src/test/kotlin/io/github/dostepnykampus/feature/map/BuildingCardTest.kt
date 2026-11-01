@@ -98,6 +98,52 @@ class BuildingCardTest {
     }
 
     @Test
+    fun us3_answer_names_recommended() {
+        val ordered =
+            orderedEntrances(
+                listOf(
+                    entrance(id = "boczne", marking = EntranceMarking.ACCESSIBLE),
+                    entrance(id = "glowne", marking = EntranceMarking.ACCESSIBLE, isMain = true),
+                ),
+            )
+        assertEquals(VisitAnswer.Accessible("glowne"), visitAnswer(ordered))
+    }
+
+    @Test
+    fun us3_answer_when_none() {
+        val stairs = orderedEntrances(listOf(entrance(id = "schody", marking = EntranceMarking.INACCESSIBLE)))
+        assertEquals(VisitAnswer.NoAccessible, visitAnswer(stairs))
+        assertEquals(VisitAnswer.NoAccessible, visitAnswer(emptyList()))
+    }
+
+    @Test
+    fun us3_answer_counts_missing() {
+        val ordered =
+            orderedEntrances(
+                listOf(
+                    entrance(id = "schody", marking = EntranceMarking.INACCESSIBLE),
+                    entrance(id = "brak", marking = EntranceMarking.NO_DATA),
+                    entrance(id = "brama", marking = EntranceMarking.NO_DATA),
+                ),
+            )
+        assertEquals(VisitAnswer.Unknown(missing = 2, total = 3), visitAnswer(ordered))
+    }
+
+    @Test
+    fun us3_unnamed_and_service() {
+        val unnamed = entrance(id = "boczne", marking = EntranceMarking.ACCESSIBLE).copy(name = null)
+        assertEquals(VisitAnswer.Accessible(null), visitAnswer(orderedEntrances(listOf(unnamed))))
+        val service =
+            orderedEntrances(
+                listOf(
+                    entrance(id = "awaryjne", marking = EntranceMarking.ACCESSIBLE, type = "emergency"),
+                    entrance(id = "brak", marking = EntranceMarking.NO_DATA),
+                ),
+            )
+        assertEquals(VisitAnswer.Unknown(missing = 1, total = 1), visitAnswer(service))
+    }
+
+    @Test
     fun us2_ready_and_missing() {
         val catalog =
             BuildingCatalog(
