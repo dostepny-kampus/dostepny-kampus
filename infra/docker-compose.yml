@@ -18,6 +18,23 @@ services:
       retries: 12
       start_period: 30s
     restart: unless-stopped
+  zdjecia:
+    image: rustfs/rustfs:1.0.4
+    environment:
+      RUSTFS_ACCESS_KEY: ${DK_PHOTOS_ACCESS_KEY:?ustaw DK_PHOTOS_ACCESS_KEY w infra/.env}
+      RUSTFS_SECRET_KEY: ${DK_PHOTOS_SECRET_KEY:?ustaw DK_PHOTOS_SECRET_KEY w infra/.env}
+    ports:
+      - "127.0.0.1:${DK_PHOTOS_PORT:-9000}:9000"
+    volumes:
+      - zdjecia-dane:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://127.0.0.1:9000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
 
 volumes:
   postgis-dane:
+  zdjecia-dane:
