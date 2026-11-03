@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -29,35 +28,38 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.GroupContainer
 import io.github.dostepnykampus.core.designsystem.MarkingChip
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.PinnedButton
 import io.github.dostepnykampus.core.designsystem.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.EntranceMarking
 
-private const val LARGE_FONT_SCALE = 1.5f
-
 /**
  * V2 Karta budynku (US2, BR-25): symbol, nazwa, wiersz o wejściach (US2.8), wejścia z oznaczeniem tekstem
  * i ikoną, zalecane pierwsze.
- * Karta nic nie mówi o barierach, bo aplikacja nie ma jeszcze ich źródła (US2.7). Czynności: „Sprawdź,
- * którędy wejść” i „Pokaż na mapie”. Przy skali czcionki co najmniej 1,5 czynności stoją w treści (reguła 10).
+ * Karta nic nie mówi o barierach, bo aplikacja nie ma jeszcze ich źródła (US2.7). Czynności stoją w przewijanej
+ * treści pod wierszem o wejściach, bez przypiętego pasa (reguła 10): „Sprawdź, którędy wejść” w każdym trybie,
+ * „Zamknij” w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]. Pasek „Wstecz” i grupę „Wejścia”
+ * ma tylko pełny ekran.
  * Nieznany symbol: „budynku nie ma w telefonie” (US2.7). Bez internetu nad treścią stoi [OfflineLine] jak na V1,
  * bez daty (NFR-10, US2.8).
  *
  * @param symbol symbol z trasy, widoczny w nagłówku także w trakcie wczytywania
+ * @param mode mała karta nad mapą, pełny ekran rozwinięty z niej albo pełny ekran otwarty od razu
  * @param onCheckEntrances „Sprawdź, którędy wejść” otwiera V3
- * @param onShowOnMap „Pokaż na mapie” zaznacza budynek na V1
+ * @param onShowOnMap „Pokaż budynek na mapie” zaznacza budynek na V1
  * @param onBack „Wstecz”
+ * @param onClose „Zamknij” małej karty
  * @param modifier wymiary nadane przez arkusz
  * @param viewModel stan karty; w aplikacji z grafu Hilt, w testach z podróbką katalogu
  */
 @Composable
 fun BuildingCardScreen(
     symbol: String,
+    mode: CardMode,
     onCheckEntrances: () -> Unit,
     onShowOnMap: () -> Unit,
     onBack: () -> Unit,
+    onClose: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BuildingCardViewModel =
         hiltViewModel<BuildingCardViewModel, BuildingCardViewModel.Factory>(
@@ -67,12 +69,9 @@ fun BuildingCardScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val card = state
     val isOnline by viewModel.online.collectAsStateWithLifecycle()
-    val isLargeFont = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
-    val actions = @Composable { inContent: Boolean ->
-        CardActions(onCheckEntrances = onCheckEntrances, onShowOnMap = onShowOnMap, inContent = inContent)
-    }
+    val isFullScreen = mode != CardMode.Compact
     Column(modifier.fillMaxSize()) {
-        BackHeader(title = symbol, onBack = onBack)
+        if (isFullScreen) BackHeader(title = symbol, onBack = onBack)
         Column(
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
@@ -81,15 +80,16 @@ fun BuildingCardScreen(
             if (card is BuildingCardUiState.Ready) {
                 BuildingName(symbol = symbol, name = card.name)
                 EntranceSummaryRow(entranceSummary(card.entrances))
+                CardActions(
+                    mode = mode,
+                    onCheckEntrances = onCheckEntrances,
+                    onShowOnMap = onShowOnMap,
+                    onClose = onClose,
+                )
+                if (isFullScreen) BuildingFacts(card)
             }
-            if (isLargeFont && card is BuildingCardUiState.Ready) actions(true)
-            when (card) {
-                BuildingCardUiState.Loading -> Unit
-                BuildingCardUiState.Missing -> MissingBuilding(onRetry = viewModel::retry)
-                is BuildingCardUiState.Ready -> BuildingFacts(card)
-            }
+            if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = viewModel::retry)
         }
-        if (!isLargeFont && card is BuildingCardUiState.Ready) actions(false)
     }
 }
 
@@ -166,16 +166,19 @@ internal fun MissingBuilding(onRetry: () -> Unit) {
 }
 
 @Composable
-private fun CardActions(onCheckEntrances: () -> Unit, onShowOnMap: () -> Unit, inContent: Boolean) {
-    val check = stringResource(R.string.karta_sprawdz)
-    val show = stringResource(R.string.karta_pokaz)
-    val buttons: @Composable (Modifier) -> Unit = { width ->
-        PinnedButton(text = check, onClick = onCheckEntrances, modifier = width)
-        PinnedButton(text = show, onClick = onShowOnMap, modifier = width, kind = PinnedButtonKind.Tonal)
+private fun CardActions(mode: CardMode, onCheckEntrances: () -> Unit, onShowOnMap: () -> Unit, onClose: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
+        CardButton(text = stringResource(R.string.karta_sprawdz), onClick = onCheckEntrances)
+        when (mode) {
+            CardMode.Compact -> CardButton(stringResource(R.string.mapa_zamknij), onClose, outlined = true)
+            CardMode.Expanded -> Unit
+            CardMode.Direct -> CardButton(stringResource(R.string.karta_pokaz), onShowOnMap, outlined = true)
+        }
     }
-    if (inContent) {
-        Column(verticalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) { buttons(Modifier.fillMaxWidth()) }
-    } else {
-        PinnedActionBar { buttons(Modifier.fillMaxWidth()) }
-    }
+}
+
+@Composable
+private fun CardButton(text: String, onClick: () -> Unit, outlined: Boolean = false) {
+    val kind = if (outlined) PinnedButtonKind.Outlined else PinnedButtonKind.Filled
+    PinnedButton(text = text, onClick = onClick, modifier = Modifier.fillMaxWidth(), kind = kind)
 }

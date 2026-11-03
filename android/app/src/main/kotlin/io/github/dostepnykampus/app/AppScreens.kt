@@ -17,6 +17,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
@@ -30,11 +31,18 @@ import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.BuildingCardScreen
 import io.github.dostepnykampus.feature.map.CampusMapScreen
+import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
+
+private const val LARGE_FONT_SCALE = 1.5f
+
+/** Tryb karty z trasy (US2.9, NFR-20): `Direct` od skali czcionki 1,5, inaczej `Expanded`. */
+internal fun cardModeFor(fontScale: Float): CardMode =
+    if (fontScale >= LARGE_FONT_SCALE) CardMode.Direct else CardMode.Expanded
 
 private typealias Action = Pair<String, () -> Unit>
 
@@ -84,9 +92,11 @@ private fun AppNavigator.Entrances(symbol: String) {
 private fun AppNavigator.BuildingCard(symbol: String) {
     BuildingCardScreen(
         symbol = symbol,
+        mode = cardModeFor(LocalDensity.current.fontScale),
         onCheckEntrances = { openEntrances(symbol) },
         onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
         onBack = { back() },
+        onClose = { back() },
     )
 }
 
