@@ -17,6 +17,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
@@ -36,6 +37,8 @@ import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
+
+private const val LARGE_FONT_SCALE = 1.5f
 
 private typealias Action = Pair<String, () -> Unit>
 
@@ -85,7 +88,7 @@ private fun AppNavigator.Entrances(symbol: String) {
 private fun AppNavigator.BuildingCard(symbol: String) {
     BuildingCardScreen(
         symbol = symbol,
-        mode = CardMode.Expanded,
+        mode = if (LocalDensity.current.fontScale >= LARGE_FONT_SCALE) CardMode.Direct else CardMode.Expanded,
         onCheckEntrances = { openEntrances(symbol) },
         onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
         onBack = { back() },

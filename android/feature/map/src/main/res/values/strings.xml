@@ -29,7 +29,7 @@
     <string name="karta_zalecane">Zalecane</string>
     <string name="karta_bez_nazwy">Wejście bez nazwy w danych</string>
     <string name="karta_sprawdz">Sprawdź, którędy wejść</string>
-    <string name="karta_pokaz">Pokaż na mapie</string>
+    <string name="karta_pokaz">Pokaż budynek na mapie</string>
     <string name="karta_brak_w_telefonie">Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.</string>
     <string name="karta_sprobuj">Spróbuj ponownie</string>
     <string name="wizyta_naglowek">Którędy wejść do %1$s</string>
