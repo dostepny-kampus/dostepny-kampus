@@ -9,6 +9,8 @@ import io.github.dostepnykampus.building.Outlines;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,14 @@ import tools.jackson.databind.node.ObjectNode;
  */
 @Service
 final class SubmissionStore {
+
+    /**
+     * Odczyt zgłoszenia z polami nadanymi przez serwer.
+     */
+    private static final String SELECT = """
+        SELECT id::text AS id, version, status, created_at, content::text AS content
+        FROM submissions
+        """;
 
     /**
      * Dostęp do tabeli submissions.
@@ -86,15 +96,48 @@ final class SubmissionStore {
         return new Saved(added == 1, this.submission(draft.id()));
     }
 
-    private JsonNode submission(final UUID id) {
+    /**
+     * Zwraca zgłoszenie przyjęte, które widzi każdy (BR-6).
+     *
+     * @param id Identyfikator zgłoszenia
+     * @return Zgłoszenie; brak, gdy nie ma go albo nie jest przyjęte
+     */
+    Optional<JsonNode> accepted(final UUID id) {
         return this.jdbc.sql(
-            """
-            SELECT id::text AS id, version, status, created_at,
-                content::text AS content
-            FROM submissions
-            WHERE id = :id
-            """
-        ).param("id", id).query((rows, num) -> this.node(rows)).single();
+            SubmissionStore.SELECT.concat("WHERE id = :id AND status = 'ACCEPTED'")
+        ).param("id", id)
+            .query((rows, num) -> this.node(rows))
+            .optional();
+    }
+
+    /**
+     * Zwraca zgłoszenia przyjęte do mapy i karty budynku (US1.3, US2.2, BR-6).
+     *
+     * @param building Symbol budynku albo null dla wszystkich budynków
+     * @param floor Piętro budynku szczegółowego albo null dla wszystkich pięter
+     * @return Zgłoszenia przyjęte od najstarszego
+     */
+    List<JsonNode> accepted(final String building, final String floor) {
+        return this.jdbc.sql(
+            SubmissionStore.SELECT.concat(
+                """
+                WHERE status = 'ACCEPTED'
+                    AND (CAST(:building AS TEXT) IS NULL OR building_symbol = :building)
+                    AND (CAST(:floor AS TEXT) IS NULL OR content #>> '{floor,floorId}' = :floor)
+                ORDER BY created_at, id
+                """
+            )
+        ).param("building", building)
+            .param("floor", floor)
+            .query((rows, num) -> this.node(rows))
+            .list();
+    }
+
+    private JsonNode submission(final UUID id) {
+        return this.jdbc.sql(SubmissionStore.SELECT.concat("WHERE id = :id"))
+            .param("id", id)
+            .query((rows, num) -> this.node(rows))
+            .single();
     }
 
     private JsonNode node(final ResultSet rows) throws SQLException {
