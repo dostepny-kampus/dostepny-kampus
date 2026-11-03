@@ -50,8 +50,8 @@ state "V4 Zgłoszenie szybkie" as V4 {
 [*] --> V5 : pierwsze\nuruchomienie
 [*] --> V1 : kolejne\nuruchomienie
 V5 --> V1 : „Zacznij”,\n„Pomiń instrukcję”
-V1 --> V2 : budynek, wynik\nwyszukiwania, „Pokaż opis\nbudynku” w arkuszu\nbariery (arkusz na mapie)
-V2 --> V1 : „Wstecz”, „Pokaż\nna mapie” (budynek),\n„Pokaż wejście\nna mapie” (wejście)
+V1 --> V2 : budynek, wynik\nwyszukiwania, „Pokaż opis\nbudynku” w arkuszu\nbariery (mała karta\nnad mapą)
+V2 --> V1 : „Wstecz”, „Zamknij”,\n„Pokaż budynek\nna mapie” (pełny ekran),\n„Pokaż wejście\nna mapie” (wejście)
 V2 --> V3 : „Sprawdź,\nktórędy wejść”
 V3 --> V2 : „Wstecz”
 V3 --> V1 : „Pokaż wejście\nna mapie”

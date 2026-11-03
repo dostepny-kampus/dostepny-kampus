@@ -4,7 +4,7 @@
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek("Budynek <i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
-$karta_gora(0)
+$karta_gora(0, "Brak danych o wejściach")
 Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")
 $wejscie_karty($niedostepne(), "<i>[nazwa wejścia z danych]</i>")
@@ -18,9 +18,6 @@ $tylko_z_pomoca()
 $obraz("zdjęcie bariery")
 Sprawdzone <i>[data]</i>
 }
---
-$przycisk_glowny("Sprawdź, którędy wejść")
-$przycisk("Pokaż na mapie")
 $pasek_dolny_konto()
 $ekran_koniec()
 @endsalt

@@ -8,21 +8,21 @@
 <b>$t</b>
 !endprocedure
 
-' ---------- V2 Karta budynku (decyzja 48) ----------
+' ---------- V2 Karta budynku (decyzje 48, 115) ----------
 
-' Góra karty: fragment mapy z wejściami budynku i chipy faktów z danych.
-' $chipy: 1 — „Wejście dostępne”, „Winda”, „Toaleta dostosowana”; 0 — bez chipów.
-' $podklad: opis podkładu; bez internetu „bez mapy ulic”.
-!procedure $karta_gora($chipy=1, $podklad="mapa ulic")
-$mapa("fragment mapy (" + $podklad + "): kontur budynku wyróżniony, sąsiednie przygaszone, wejścia budynku ze znakami oznaczeń")
+' Góra pełnego ekranu, bez mapy: wiersz o wejściach, czynność główna w treści, potem chipy faktów z danych.
+' $chipy: 1 — „Winda”, „Toaleta dostosowana” (wejście dostępne podaje wiersz); 0 — bez chipów.
+' $wejscia: napis wiersza o wejściach (US2.8).
+!procedure $karta_gora($chipy=1, $wejscia="Wejście dostępne")
+<b>$wejscia</b>
+$przycisk_glowny("Sprawdź, którędy wejść")
 !if $chipy == 1
-{ [$dk_napis("Wejście dostępne", "", 17)] | [$dk_napis("Winda", "", 11)] }
-$przycisk("Toaleta dostosowana")
+{ [$dk_napis("Winda", "", 11)] | [$dk_napis("Toaleta dostosowana", "", 21)] }
 !endif
 !endprocedure
 
 ' Wejście na karcie: oznaczenie, przy wejściu zalecanym „Zalecane” z piętrem (BR-25),
-' nazwa, opis z danych, „Pokaż na mapie” tylko przy zalecanym i „Zgłoś barierę przy wejściu”
+' nazwa, opis z danych, „Pokaż wejście na mapie” tylko przy zalecanym i „Zgłoś barierę przy wejściu”
 ' (TalkBack: „Zgłoś barierę przy wejściu: nazwa wejścia”, WCAG 2.5.3).
 ' $zrodlo: data i źródło przy wejściu, gdy nie są wspólne dla wszystkich (BR-24).
 ' $akcja tylko dla Zbierającego: "Zmień oznaczenie".
@@ -35,7 +35,7 @@ $tekst("[opis i szerokość drzwi z danych]", "i")
 $zrodlo
 !endif
 !if $zalecane != ""
-$przycisk("Pokaż na mapie")
+$przycisk("Pokaż wejście na mapie")
 !endif
 $przycisk("Zgłoś barierę przy wejściu")
 !if $akcja != ""
@@ -63,11 +63,8 @@ $przycisk("Pokaż na planie")
 <i>[kolejne piętra w tym samym układzie]</i>
 !endprocedure
 
-' Dół karty: podpis źródła, przypięty pas czynności nad paskiem dolnym.
+' Dół karty: podpis źródła; bez przypiętego pasa czynności (decyzja 115).
 !procedure $karta_dol()
 ..
 Źródło: Politechnika Wrocławska
---
-$przycisk_glowny("Sprawdź, którędy wejść")
-$przycisk("Pokaż na mapie")
 !endprocedure

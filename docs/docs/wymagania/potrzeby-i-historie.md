@@ -64,6 +64,8 @@ Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. 
 | US2.5 | Każda bariera na karcie budynku, na liście budynków i w opisie bariery na mapie podaje miejsce: wejście albo piętro, jeśli zgłoszenie je ma. | BR-14 |
 | US2.6 | W budynku z danymi PWr karta podaje liczbę wyjść ewakuacyjnych, a na żądanie pokazuje ich listę. | decyzja 44 |
 | US2.7 | Gdy telefon nie ma jeszcze danych o barierach budynku, karta i lista budynków nic o barierach nie mówią, także nie „Brak zgłoszonych barier”. | US2.4, NFR-10 |
+| US2.8 | Dotknięcie budynku na mapie otwiera nad mapą małą kartę z nazwą budynku. Karta mówi słowami, czy budynek ma wejście dostępne, nie ma go albo brak o tym danych. Z małej karty jednym dotknięciem osoba przechodzi do „Którędy wejść”, rozwija pełny opis budynku albo zamyka kartę. | US2.1, US3.1, US3.2, NFR-53 |
+| US2.9 | Opis budynku otwarty od razu na całym ekranie bez mapy ma przejście do mapy z zaznaczonym budynkiem, także gdy osoba przyszła z listy budynków. | NFR-19, NFR-20 |
 | US3.1 | Gdy budynek nie ma wejścia dostępnego, ekran mówi to wprost zdaniem, a nie samym brakiem wyniku. | — |
 | US3.2 | Od mapy z widocznym budynkiem albo od wyniku wyszukiwania do wskazania wejścia dostępnego są najwyżej 3 dotknięcia. | M-4 |
 | US3.3 | Przy wejściu zalecanym ekran podaje dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia, z danych PWr. Każde wejście dostępne można pokazać na mapie. | BR-25, decyzja 44 |
