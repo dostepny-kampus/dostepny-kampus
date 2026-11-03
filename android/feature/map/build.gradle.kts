@@ -7,6 +7,7 @@
 plugins {
     id("dostepnykampus.android.feature")
     id("dostepnykampus.android.hilt")
+    id("dostepnykampus.android.roborazzi")
 }
 
 android {
@@ -29,5 +30,9 @@ dependencies {
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit4)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.androidx.compose.ui.test.manifest)
+    testRuntimeOnly(libs.junit.vintage.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
 }
