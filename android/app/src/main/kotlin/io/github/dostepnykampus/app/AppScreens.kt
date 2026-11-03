@@ -114,6 +114,7 @@ private fun AppNavigator.MapScreen(focus: String?) {
         onBuildingClick = { openBuilding(it) },
         focus = focus,
         contentPadding = LocalSheetPadding.current,
+        onEmptyMapClick = { closeCardOnEmptyMap() },
     )
 }
 

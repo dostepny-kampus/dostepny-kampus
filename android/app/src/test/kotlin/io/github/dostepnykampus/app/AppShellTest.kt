@@ -43,6 +43,7 @@ import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasStateDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -103,6 +104,13 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 /** Pozycja „Mapa” paska dolnego; V1 ma też „Mapa” w przełączniku „Mapa” i „Lista budynków” (NFR-19). */
 internal val MapTab = hasText("Mapa") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
+
+/** Opis uchwytu arkusza V2 dla TalkBack, ten sam na małej karcie i na pełnym ekranie (US2.8, NFR-18). */
+internal const val EXPAND_HANDLE = "Rozwiń opis budynku"
+
+/** Uchwyt arkusza V2: przycisk [EXPAND_HANDLE] ze stanem „rozwinięte” albo „zwinięte” (US2.8, NFR-18). */
+internal fun sheetHandle(isExpanded: Boolean): SemanticsMatcher =
+    hasContentDescription(EXPAND_HANDLE) and hasStateDescription(if (isExpanded) "rozwinięte" else "zwinięte")
 
 /** Karta V2 na katalogu z zasobów, bez grafu Hilt (aktywność testu go nie ma). */
 internal fun Context.buildingCardViewModel(symbol: String): BuildingCardViewModel =
@@ -177,8 +185,6 @@ internal fun AppNavigator.TestAppScreen(route: NavKey, mapViewModel: CampusMapVi
         AppScreen(route)
     }
 }
-
-private const val EXPAND_HANDLE = "Rozwiń kartę budynku"
 
 /** ViewModel z licznikiem dotknięć: pokazuje, czy ekran dostał ten sam ViewModel, czy nowy. */
 private class TapsModel : ViewModel() {
@@ -407,10 +413,10 @@ class AppShellTest {
             "przeciągnięcie w górę" to { handle().performTouchInput { swipeUp() } },
         ).forEach { (way, expand) ->
             expand()
-            assertEquals("góra pełnego ekranu: $way", 0f, handleTop("Zwiń kartę budynku").value, 1f)
+            assertEquals("góra pełnego ekranu: $way", 0f, handleTop(EXPAND_HANDLE).value, 1f)
             compose.onNodeWithText("Expanded").assertExists("pełny ekran: $way")
             assertEquals("dopełnienie V1 pod pełnym ekranem: $way", map.value, cover.value, 1f)
-            compose.onNodeWithContentDescription("Zwiń kartę budynku").performClick()
+            compose.onNode(sheetHandle(isExpanded = true)).performClick()
         }
     }
 
@@ -425,10 +431,10 @@ class AppShellTest {
             }
         }
         compose.onNodeWithText("A-1").performClick()
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
+        compose.onNode(sheetHandle(isExpanded = false)).performClick()
         pressBack()
         compose.onNodeWithText("A-1").performClick()
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertExists()
+        compose.onNode(sheetHandle(isExpanded = false)).assertExists()
     }
 
     // Wiersz: pełny ekran po małej karcie, „Wstecz” w górnym pasku karty → znowu mała karta, NFR-15; „Zamknij”
@@ -474,7 +480,7 @@ class AppShellTest {
         compose.onNodeWithText("C-13").performClick()
         compose.onNodeWithText("A-1").assertIsDisplayed()
         pressBack()
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertDoesNotExist()
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()
     }
 
     // Wiersz: każdy ekran poza V1, „Wstecz”: historia przetrwa odtworzenie aktywności, NFR-15, NFR-22.
