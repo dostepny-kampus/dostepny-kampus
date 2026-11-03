@@ -40,6 +40,11 @@ import io.github.dostepnykampus.feature.map.navigation.MapRoute
 
 private const val LARGE_FONT_SCALE = 1.5f
 
+/**
+ * Tryb karty budynku otwieranej z trasy (US2.9, NFR-20): `Direct` od skali czcionki 1,5, inaczej `Expanded`.
+ */
+internal fun cardModeFor(fontScale: Float): CardMode = CardMode.Expanded
+
 private typealias Action = Pair<String, () -> Unit>
 
 /**
@@ -88,7 +93,7 @@ private fun AppNavigator.Entrances(symbol: String) {
 private fun AppNavigator.BuildingCard(symbol: String) {
     BuildingCardScreen(
         symbol = symbol,
-        mode = if (LocalDensity.current.fontScale >= LARGE_FONT_SCALE) CardMode.Direct else CardMode.Expanded,
+        mode = cardModeFor(LocalDensity.current.fontScale),
         onCheckEntrances = { openEntrances(symbol) },
         onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
         onBack = { back() },
