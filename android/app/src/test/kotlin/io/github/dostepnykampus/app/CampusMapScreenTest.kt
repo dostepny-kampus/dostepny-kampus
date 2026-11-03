@@ -232,6 +232,17 @@ class CampusMapScreenTest {
         assertEquals(emptyList<String>(), opened)
     }
 
+    // Wiersz: arkusz „Który budynek?” zamyka tylko przycisk budynku albo „Zamknij”; dotknięcie pustej mapy go
+    // zostawia, decyzja 85.
+    @Test
+    fun us2_which_building_empty_tap() {
+        compose.setContent { Screen() }
+        compose.waitForIdle()
+        compose.runOnUiThread { touch(listOf("C-13", "C-14")) }
+        compose.runOnUiThread { touch(emptyList()) }
+        compose.onNodeWithText("Który budynek?").assertExists("arkusz po dotknięciu pustej mapy")
+    }
+
     // Wiersz: otwarta klawiatura chowa przyciski mapy, podpis OSM zostaje; po zamknięciu przyciski wracają
     // (NFR-53, decyzja 91).
     @Test
