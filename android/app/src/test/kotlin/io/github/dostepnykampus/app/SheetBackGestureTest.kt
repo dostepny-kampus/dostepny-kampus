@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -25,6 +26,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.Insets
@@ -240,6 +242,20 @@ class SheetBackGestureTest {
         compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertExists("mała karta po geście „Wstecz”")
         pressBack()
         checkClosed()
+    }
+
+    // Wiersz: mała karta, przeciągnięcie uchwytu w górę poza uchwyt → pełny ekran na całe okno, US2.8, NFR-53.
+    @Test
+    fun us2_8_handle_drag_expands() {
+        compose.setContent { Shell() }
+        compose.onNodeWithText("A-1").performClick()
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").performTouchInput {
+            down(center)
+            repeat(times = 10) { moveBy(Offset(x = 0f, y = -60f)) }
+            up()
+        }
+        assertEquals("góra pełnego ekranu po przeciągnięciu", 0f, sheetTop("po przeciągnięciu").value, 1f)
+        compose.onNodeWithContentDescription("Zwiń kartę budynku").assertExists("pełny ekran po przeciągnięciu")
     }
 
     private fun checkSlideBack(isExpanded: Boolean) {
