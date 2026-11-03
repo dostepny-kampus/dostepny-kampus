@@ -10,6 +10,7 @@ import io.github.dostepnykampus.app.BackGesture.Cancelled
 import io.github.dostepnykampus.app.BackGesture.Completed
 import io.github.dostepnykampus.app.BackGesture.Progressed
 import io.github.dostepnykampus.app.BackGesture.Started
+import io.github.dostepnykampus.feature.map.CardMode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -42,10 +43,19 @@ class SheetGestureTest {
         }
     }
 
-    // Wiersz: V2, gest „Wstecz” zakończony → arkusz zjeżdża do końca, US1.1.
+    // Wiersz: mała karta, „Wstecz” → arkusz zjeżdża do końca, US1.1; pełny ekran po małej karcie, „Wstecz” → znowu
+    // mała karta, V2 zostaje, NFR-15, US2.8, decyzja 115.
     @Test
-    fun us1_1_complete_slides_out() {
-        assertEquals(SheetState(isExpanded = true, progress = 1f), SheetState(isExpanded = true).after(Completed))
+    fun nfr15_back_collapses_closes() {
+        assertEquals(SheetState(isExpanded = false, progress = 1f), SheetState().after(Completed))
+        assertEquals(SheetState(isExpanded = false), SheetState(isExpanded = true).after(Completed))
+    }
+
+    // Wiersz: arkusz zwinięty → karta w trybie małej karty, rozwinięty → pełny ekran z małej karty, US2.8, NFR-53.
+    @Test
+    fun us2_8_sheet_gives_card_mode() {
+        assertEquals(CardMode.Compact, SheetState().cardMode(fontScale = 1f))
+        assertEquals(CardMode.Expanded, SheetState(isExpanded = true).cardMode(fontScale = 1f))
     }
 
     // Wiersz: V2, gest „Wstecz” zakończony albo anulowany → arkusz dojeżdża w dół albo wraca animacją; w trakcie gestu

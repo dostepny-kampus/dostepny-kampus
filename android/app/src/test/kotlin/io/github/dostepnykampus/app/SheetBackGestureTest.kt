@@ -39,6 +39,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.DirectNavigationEventInput
 import androidx.navigationevent.NavigationEvent
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
+import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertArrayEquals
@@ -222,9 +223,24 @@ class SheetBackGestureTest {
     @Test
     fun us1_1_half_sheet_slides_out() = checkSlideOut(isExpanded = false)
 
-    // Wiersz: V2 rozwinięte, gest „Wstecz” 0,4 i zakończenie → arkusz dojeżdża w dół od wysokości rozwiniętej, US1.1.
+    // Wiersz: pełny ekran po małej karcie, „Wstecz” przyciskiem albo gestem → znowu mała karta, V2 zostaje;
+    // z małej karty „Wstecz” → V1, NFR-15, US2.8, decyzja 115.
     @Test
-    fun us1_1_full_sheet_slides_out() = checkSlideOut(isExpanded = true)
+    fun nfr15_full_back_collapses() {
+        compose.setContent { Shell() }
+        openSheet(isExpanded = true)
+        compose.mainClock.autoAdvance = true
+        pressBack()
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertExists("mała karta po „Wstecz” przyciskiem")
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
+        compose.mainClock.autoAdvance = false
+        move(0f)
+        move(0.4f)
+        finish({ backCompleted() })
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertExists("mała karta po geście „Wstecz”")
+        pressBack()
+        checkClosed()
+    }
 
     private fun checkSlideBack(isExpanded: Boolean) {
         compose.setContent { Shell() }
@@ -370,9 +386,10 @@ class SheetBackGestureTest {
         val view = compose.activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
         compose.runOnUiThread { ViewCompat.dispatchApplyWindowInsets(view, bars) }
         val top = compose.onNodeWithText("A-1").getUnclippedBoundsInRoot().top
-        val half = top + (mapBottom() - top) / 2
         openSheet(isExpanded = false)
-        assertEquals("uchwyt zwiniętego V2 przy górze arkusza", half.value, sheetTop("zwinięte").value, 1f)
+        val card = compose.onNodeWithText("karta").getUnclippedBoundsInRoot()
+        val compact = mapBottom() - CeleDotyku.minimum - (card.bottom - card.top)
+        assertEquals("uchwyt małej karty przy górze arkusza", compact.value, sheetTop("zwinięte").value, 1f)
         compose.mainClock.autoAdvance = true
         compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
         val belowStatusBar = top + with(compose.density) { 24.toDp() }

@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.app
 
 import androidx.compose.ui.unit.Dp
+import io.github.dostepnykampus.feature.map.CardMode
 
 /**
  * Przesunięcie w dół góry arkusza V2 o wysokości [height] przy przewidywanym geście „Wstecz” o postępie
@@ -15,6 +16,9 @@ internal fun sheetBackOffset(progress: Float, height: Dp): Dp = height * progres
 
 /** Arkusz V2: rozwinięty na całe okno albo do połowy ([isExpanded]) i postęp gestu „Wstecz” w toku ([progress]). */
 internal data class SheetState(val isExpanded: Boolean = false, val progress: Float = 0f)
+
+/** Tryb karty V2 w arkuszu przy skali czcionki [fontScale] (US2.8, US2.9, NFR-20). */
+internal fun SheetState.cardMode(fontScale: Float): CardMode = cardModeFor(fontScale)
 
 /** Zdarzenie przewidywanego gestu „Wstecz” nad arkuszem V2. */
 internal sealed interface BackGesture {

@@ -74,6 +74,7 @@ import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.buildings.BUILDINGS_ASSET
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.network.ConnectivityNetworkStatus
+import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
@@ -131,13 +132,14 @@ internal fun AppNavigator.TestEntrances(symbol: String) {
 internal fun AppNavigator.TestBuildingCard(symbol: String) {
     val context = LocalContext.current
     val card = remember(symbol) { context.buildingCardViewModel(symbol) }
+    val sheet = sheetCard()
     BuildingCardScreen(
         symbol = symbol,
-        mode = CardMode.Expanded,
+        mode = sheet.mode,
         onCheckEntrances = { openEntrances(symbol) },
         onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
-        onBack = { back() },
-        onClose = { back() },
+        onBack = sheet.onBack,
+        onClose = sheet.onClose,
         viewModel = card,
     )
 }
@@ -175,6 +177,8 @@ internal fun AppNavigator.TestAppScreen(route: NavKey, mapViewModel: CampusMapVi
         AppScreen(route)
     }
 }
+
+private const val EXPAND_HANDLE = "Rozwiń kartę budynku"
 
 /** ViewModel z licznikiem dotknięć: pokazuje, czy ekran dostał ten sam ViewModel, czy nowy. */
 private class TapsModel : ViewModel() {
@@ -367,40 +371,52 @@ class AppShellTest {
         compose.onNodeWithText("vm=0").assertExists()
     }
 
-    // Wiersz: V1, dotknięcie konturu → V2, arkusz na mapie do połowy ekranu; uchwyt albo przewinięcie treści
-    // rozwija go na cały ekran, US2, decyzja 48; V1 dostaje zasłoniętą część jako dopełnienie od dołu, NFR-37.
+    // Wiersz: V1, dotknięcie konturu → V2, mała karta o wysokości treści nad mapą, a V1 dostaje zasłoniętą część
+    // jako dopełnienie od dołu, US2.8, decyzje 87, 115; uchwyt, przewinięcie treści albo przeciągnięcie w górę
+    // rozwija ją na całe okno z kartą w trybie pełnego ekranu, US2.8, NFR-53.
     @Test
-    fun us2_v2_sheet_half_then_expands() {
+    fun us2_8_compact_then_expands() {
+        var cover = 1.dp
         compose.setContent {
             AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
+                    cover = LocalSheetPadding.current.calculateBottomPadding()
                     Box(modifier = Modifier.fillMaxSize().testTag("V1")) {
                         Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
-                        Text(text = "dół ${LocalSheetPadding.current.calculateBottomPadding().value}")
                     }
                 } else {
+                    val mode = sheetCard().mode
+                    val height = if (mode == CardMode.Compact) 120.dp else 2000.dp
                     val scroll = Modifier.verticalScroll(rememberScrollState())
-                    Column(modifier = scroll) { Text(text = "karta", modifier = Modifier.requiredHeight(2000.dp)) }
+                    Column(modifier = scroll) { Text(text = "$mode", modifier = Modifier.requiredHeight(height)) }
                 }
             }
         }
-        compose.onNodeWithText("dół 0.0").assertExists()
+        assertEquals(0.dp, cover)
         compose.onNodeWithText("A-1").performClick()
         val handleTop = { label: String -> compose.onNodeWithContentDescription(label).getUnclippedBoundsInRoot().top }
         val map = compose.onNodeWithTag("V1").getUnclippedBoundsInRoot().height
-        assertEquals((map / 2).value, handleTop("Rozwiń kartę budynku").value, 1f)
-        compose.onNodeWithText("dół ${(map / 2).value}").assertExists()
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
-        assertEquals(0.dp, handleTop("Zwiń kartę budynku"))
-        compose.onNodeWithText("dół ${map.value}").assertExists()
-        compose.onNodeWithContentDescription("Zwiń kartę budynku").performClick()
-        compose.onNodeWithText("karta").performTouchInput { swipeUp() }
-        assertEquals(0.dp, handleTop("Zwiń kartę budynku"))
+        compose.onNodeWithText("Compact").assertExists("mała karta po dotknięciu konturu")
+        val compact = handleTop(EXPAND_HANDLE)
+        assertEquals("uchwyt i treść małej karty", (map - CeleDotyku.minimum - 120.dp).value, compact.value, 1f)
+        assertEquals("dopełnienie V1 pod małą kartą", (map - compact).value, cover.value, 1f)
+        val handle = { compose.onNodeWithContentDescription(EXPAND_HANDLE) }
+        listOf<Pair<String, () -> Unit>>(
+            "uchwyt" to { handle().performClick() },
+            "przewinięcie treści" to { compose.onNodeWithText("Compact").performTouchInput { swipeUp() } },
+            "przeciągnięcie w górę" to { handle().performTouchInput { swipeUp() } },
+        ).forEach { (way, expand) ->
+            expand()
+            assertEquals("góra pełnego ekranu: $way", 0f, handleTop("Zwiń kartę budynku").value, 1f)
+            compose.onNodeWithText("Expanded").assertExists("pełny ekran: $way")
+            assertEquals("dopełnienie V1 pod pełnym ekranem: $way", map.value, cover.value, 1f)
+            compose.onNodeWithContentDescription("Zwiń kartę budynku").performClick()
+        }
     }
 
-    // Wiersz: V2 rozwinięte, „Wstecz” → V1, dotknięcie konturu → nowe V2 znów do połowy ekranu, US2, decyzja 48.
+    // Wiersz: V2 rozwinięte, „Wstecz” → V1, dotknięcie konturu → nowe V2 znów jako mała karta, US2.8, decyzja 115.
     @Test
-    fun us2_new_v2_starts_half() {
+    fun us2_8_new_v2_starts_compact() {
         compose.setContent {
             AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
@@ -413,6 +429,28 @@ class AppShellTest {
         pressBack()
         compose.onNodeWithText("A-1").performClick()
         compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertExists()
+    }
+
+    // Wiersz: pełny ekran po małej karcie, „Wstecz” w górnym pasku karty → znowu mała karta, NFR-15; „Zamknij”
+    // małej karty → V1 bez zaznaczenia budynku, US2.8, decyzja 116.
+    // Scenariusz (częściowo): przegladanie-mapy.feature: Z małej karty osoba rozwija opis albo wraca do mapy
+    @Test
+    fun us2_8_card_back_then_close() {
+        compose.setContent {
+            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+                if (route is MapRoute) {
+                    Text(route.focus?.toString() ?: "V1", Modifier.clickable { openBuilding(symbol = "A-1") })
+                } else if (route is BuildingRoute) {
+                    TestBuildingCard(route.symbol)
+                }
+            }
+        }
+        compose.onNodeWithText("V1").performClick()
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
+        compose.onNodeWithText("Wstecz").performClick()
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).assertExists("mała karta po „Wstecz” w górnym pasku")
+        compose.onNodeWithText("Zamknij").performClick()
+        compose.onNodeWithText("V1").assertExists("V1 bez zaznaczenia budynku po „Zamknij”")
     }
 
     // Wiersz: V1 pod arkuszem V2, dotknięcie konturu innego budynku → jego V2 jako arkusz nad tą samą mapą, US2,
@@ -463,8 +501,8 @@ class AppShellTest {
         compose.onNode(MapTab).assertIsSelected()
     }
 
-    // Wiersz: V2 → „Sprawdź, którędy wejść” → V3, „Wstecz” → V2 → V1 z zaznaczonym budynkiem; historia z parametrami
-    // tras przetrwa odtworzenie aktywności, US3, US1.1, NFR-22.
+    // Wiersz: V2 → „Sprawdź, którędy wejść” → V3, „Wstecz” → V2 → V1 bez zaznaczenia budynku, decyzja 116; historia
+    // z parametrami tras przetrwa odtworzenie aktywności, US3, US1.1, NFR-22.
     @Test
     fun nfr22_params_survive_restore() {
         val restoration = StateRestorationTester(compose)
@@ -492,7 +530,7 @@ class AppShellTest {
         pressBack()
         compose.onNodeWithText("Sprawdź, którędy wejść").assertExists()
         pressBack()
-        compose.onNodeWithText("Building(symbol=A-1)").assertExists()
+        compose.onNodeWithText("V1").assertExists("V1 bez zaznaczenia budynku po zamknięciu małej karty")
     }
 
     // Wiersz: wymagania wspólne, pasek dolny na V1, bez niego na L1: treść nie wchodzi pod paski, NFR-52.
