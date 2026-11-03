@@ -59,6 +59,12 @@ class BuildingCardViewModel
                 .map { buildingCard(repository.catalog(), symbol) }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), BuildingCardUiState.Loading)
 
+        /** Czy jest internet; na start prawda, żeby linia „Bez internetu” nie mignęła (NFR-10, US2.8). */
+        val isOnline: StateFlow<Boolean> =
+            networkStatus
+                .isOnline()
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), true)
+
         /** „Spróbuj ponownie”, gdy budynku nie ma w telefonie (NFR-10). */
         fun retry() {
             attempts.value++
