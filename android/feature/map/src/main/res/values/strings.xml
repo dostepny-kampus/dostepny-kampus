@@ -22,6 +22,9 @@
     <string name="mapa_widok_lista">Lista budynków</string>
     <string name="mapa_widok_lista_krotko">Lista</string>
     <string name="karta_czytaj">Budynek %1$s, %2$s</string>
+    <string name="karta_wiersz_dostepne">Wejście dostępne</string>
+    <string name="karta_wiersz_niedostepne">Brak wejścia dostępnego</string>
+    <string name="karta_wiersz_brak_danych">Brak danych o wejściach</string>
     <string name="karta_wejscia">Wejścia</string>
     <string name="karta_zalecane">Zalecane</string>
     <string name="karta_bez_nazwy">Wejście bez nazwy w danych</string>
