@@ -14,6 +14,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -39,9 +40,18 @@ class EntranceRowTest {
         val shown = mutableStateOf("A-1")
         compose.setContent {
             val symbol = shown.value
-            val viewModel = remember(symbol) { BuildingCardViewModel(symbol = symbol, repository = repository) }
+            val viewModel =
+                remember(symbol) {
+                    BuildingCardViewModel(symbol = symbol, repository = repository, networkStatus = { flowOf(true) })
+                }
             DostepnyKampusTheme {
-                BuildingCardScreen(symbol, onCheckEntrances = {}, onShowOnMap = {}, onBack = {}, viewModel = viewModel)
+                BuildingCardScreen(
+                    symbol = symbol,
+                    onCheckEntrances = {},
+                    onShowOnMap = {},
+                    onBack = {},
+                    viewModel = viewModel,
+                )
             }
         }
         listOf("A-1" to ROWS[0], "B-4" to ROWS[1], "C-13" to ROWS[2]).forEach { (symbol, row) ->
@@ -60,15 +70,19 @@ class EntranceRowTest {
         val repository =
             BuildingCatalogRepository(EmptyCoroutineContext) {
                 listOf(
-                    building("A-1"),
-                    entrance("A-1", """"wheelchair":"no""""),
-                    entrance("A-1", """"wheelchair":"yes""""),
-                    building("B-4"),
-                    entrance("B-4", """"wheelchair":"no""""),
-                    building("C-13"),
-                    entrance("C-13", """"wheelchair":"no""""),
-                    entrance("C-13", """"ref":"Brama""""),
-                ).joinToString(",", """{"type":"FeatureCollection","attribution":"©","features":[""", "]}")
+                    building(symbol = "A-1"),
+                    entrance(symbol = "A-1", tags = """"wheelchair":"no""""),
+                    entrance(symbol = "A-1", tags = """"wheelchair":"yes""""),
+                    building(symbol = "B-4"),
+                    entrance(symbol = "B-4", tags = """"wheelchair":"no""""),
+                    building(symbol = "C-13"),
+                    entrance(symbol = "C-13", tags = """"wheelchair":"no""""),
+                    entrance(symbol = "C-13", tags = """"ref":"Brama""""),
+                ).joinToString(
+                    separator = ",",
+                    prefix = """{"type":"FeatureCollection","attribution":"©","features":[""",
+                    postfix = "]}",
+                )
             }
 
         fun building(symbol: String): String =
