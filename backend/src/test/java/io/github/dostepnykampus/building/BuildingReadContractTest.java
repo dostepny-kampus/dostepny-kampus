@@ -63,7 +63,10 @@ final class BuildingReadContractTest {
                 'NO_DATA', DATE '2026-10-01', 'IMPORT'),
                 ('node/2', 'G-900', 'Wejście główne', 'main', true,
                 ST_SetSRID(ST_MakePoint(0.0005, 0), 4326),
-                'ACCESSIBLE', DATE '2026-10-02', 'WALKTHROUGH')
+                'ACCESSIBLE', DATE '2026-10-02', 'WALKTHROUGH'),
+                ('node/3', 'G-900', 'Wejście boczne', 'service', false,
+                ST_SetSRID(ST_MakePoint(0.001, 0.0005), 4326),
+                'INACCESSIBLE', DATE '2026-10-03', 'WALKTHROUGH')
             """
         ).update();
         MatcherAssert.assertThat(
@@ -132,7 +135,12 @@ final class BuildingReadContractTest {
             {"id":"node/1","buildingSymbol":"G-900","main":false,
             "location":{"type":"Point","coordinates":[0,0.0005]},
             "marking":"NO_DATA","markingDate":"2026-10-01",
-            "markingSource":"IMPORT"}]
+            "markingSource":"IMPORT"},
+            {"id":"node/3","buildingSymbol":"G-900","name":"Wejście boczne",
+            "type":"service","main":false,
+            "location":{"type":"Point","coordinates":[0.001,0.0005]},
+            "marking":"INACCESSIBLE","markingDate":"2026-10-03",
+            "markingSource":"WALKTHROUGH"}]
             """;
     }
 
