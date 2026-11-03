@@ -10,7 +10,9 @@ import java.io.UncheckedIOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.CRC32;
 import org.flywaydb.core.api.MigrationVersion;
@@ -23,7 +25,8 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 
 /**
- * Budynki z pliku konturów OpenStreetMap w tabeli buildings (US1, ADR-0008).
+ * Budynki i ich wejścia z pliku konturów OpenStreetMap w tabelach
+ * buildings i entrances (US1, US17.1, ADR-0008).
  *
  * <p>Migracja powtarzalna: Flyway wykonuje ją przy pierwszym starcie
  * i ponownie po każdej zmianie pliku, bo suma kontrolna to CRC32 pliku.
@@ -55,6 +58,12 @@ final class OsmBuildings implements JavaMigration {
         """;
 
     /**
+     * Wersja importu w sumie kontrolnej: zmiana wykonuje import ponownie
+     * także bez zmiany pliku; 2 to import z wejściami.
+     */
+    static final int FORMAT = 2;
+
+    /**
      * Parser pliku GeoJSON.
      */
     private final ObjectMapper mapper;
@@ -77,6 +86,7 @@ final class OsmBuildings implements JavaMigration {
     public Integer getChecksum() {
         final CRC32 crc = new CRC32();
         crc.update(OsmBuildings.content());
+        crc.update(OsmBuildings.FORMAT);
         return (int) crc.getValue();
     }
 
@@ -91,8 +101,12 @@ final class OsmBuildings implements JavaMigration {
         final String source = root.required("attribution").asString();
         final Map<String, ArrayNode> outlines = new LinkedHashMap<>(128);
         final Map<String, String> names = new LinkedHashMap<>(128);
+        final List<JsonNode> entrances = new ArrayList<>(128);
         for (final JsonNode feature : root.required("features")) {
             final JsonNode props = feature.required("properties");
+            if ("entrance".equals(props.required("kind").asString())) {
+                entrances.add(feature);
+            }
             if ("building".equals(props.required("kind").asString())) {
                 for (final JsonNode symbol : props.required("symbols")) {
                     this.add(outlines, symbol.asString(), feature.required("geometry"));
@@ -101,6 +115,7 @@ final class OsmBuildings implements JavaMigration {
             }
         }
         this.save(context.getConnection(), outlines, names, source);
+        new OsmEntrances(entrances).save(context.getConnection());
     }
 
     private void save(

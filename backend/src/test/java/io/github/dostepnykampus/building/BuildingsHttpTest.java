@@ -37,6 +37,7 @@ final class BuildingsHttpTest {
 
     @BeforeEach
     void clearBuildings(final WebApplicationContext context) {
+        context.getBean(JdbcClient.class).sql("DELETE FROM entrances").update();
         context.getBean(JdbcClient.class).sql("DELETE FROM buildings").update();
     }
 
