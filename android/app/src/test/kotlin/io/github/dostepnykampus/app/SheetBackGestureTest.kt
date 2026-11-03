@@ -22,7 +22,6 @@ import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -85,13 +84,13 @@ class SheetBackGestureTest {
 
     private fun openSheet(isExpanded: Boolean) {
         compose.onNodeWithText("A-1").performClick()
-        if (isExpanded) compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
+        if (isExpanded) compose.onNode(sheetHandle(isExpanded = false)).performClick()
         compose.waitForIdle()
         compose.mainClock.autoAdvance = false
     }
 
     private fun sheetTop(moment: String): Dp {
-        val handle = hasContentDescription("Rozwiń kartę budynku") or hasContentDescription("Zwiń kartę budynku")
+        val handle = hasContentDescription(EXPAND_HANDLE)
         return compose
             .onNode(handle)
             .assertExists("arkusz V2 $moment")
@@ -185,7 +184,7 @@ class SheetBackGestureTest {
         openSheet(isExpanded = true)
         compose.mainClock.autoAdvance = true
         restoration.emulateSavedInstanceStateRestore()
-        compose.onNodeWithContentDescription("Zwiń kartę budynku").assertExists("arkusz V2 rozwinięty po odtworzeniu")
+        compose.onNode(sheetHandle(isExpanded = true)).assertExists("arkusz V2 rozwinięty po odtworzeniu")
     }
 
     private fun mapBottom(): Dp = compose.onNodeWithText("A-1").getUnclippedBoundsInRoot().bottom
@@ -233,13 +232,13 @@ class SheetBackGestureTest {
         openSheet(isExpanded = true)
         compose.mainClock.autoAdvance = true
         pressBack()
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertExists("mała karta po „Wstecz” przyciskiem")
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
+        compose.onNode(sheetHandle(isExpanded = false)).assertExists("mała karta po „Wstecz” przyciskiem")
+        compose.onNode(sheetHandle(isExpanded = false)).performClick()
         compose.mainClock.autoAdvance = false
         move(0f)
         move(0.4f)
         finish({ backCompleted() })
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertExists("mała karta po geście „Wstecz”")
+        compose.onNode(sheetHandle(isExpanded = false)).assertExists("mała karta po geście „Wstecz”")
         pressBack()
         checkClosed()
     }
@@ -249,13 +248,13 @@ class SheetBackGestureTest {
     fun us2_8_handle_drag_expands() {
         compose.setContent { Shell() }
         compose.onNodeWithText("A-1").performClick()
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").performTouchInput {
+        compose.onNode(sheetHandle(isExpanded = false)).performTouchInput {
             down(center)
             repeat(times = 10) { moveBy(Offset(x = 0f, y = -60f)) }
             up()
         }
         assertEquals("góra pełnego ekranu po przeciągnięciu", 0f, sheetTop("po przeciągnięciu").value, 1f)
-        compose.onNodeWithContentDescription("Zwiń kartę budynku").assertExists("pełny ekran po przeciągnięciu")
+        compose.onNode(sheetHandle(isExpanded = true)).assertExists("pełny ekran po przeciągnięciu")
     }
 
     private fun checkSlideBack(isExpanded: Boolean) {
@@ -273,8 +272,7 @@ class SheetBackGestureTest {
         assertTrue("w trakcie powrotu niżej niż przed gestem: $midway, $before", midway > before + 1.dp)
         compose.mainClock.autoAdvance = true
         assertEquals("góra arkusza po powrocie", before.value, sheetTop("po powrocie").value, 1f)
-        val handle = if (isExpanded) "Zwiń kartę budynku" else "Rozwiń kartę budynku"
-        compose.onNodeWithContentDescription(handle).assertExists("rozwinięcie arkusza po anulowaniu")
+        compose.onNode(sheetHandle(isExpanded)).assertExists("rozwinięcie arkusza po anulowaniu")
     }
 
     // Wiersz: mała karta, gest „Wstecz” 0,6 i anulowanie → arkusz wraca płynnie na miejsce, V2 zostaje, US2.
@@ -407,7 +405,7 @@ class SheetBackGestureTest {
         val compact = mapBottom() - CeleDotyku.minimum - (card.bottom - card.top)
         assertEquals("uchwyt małej karty przy górze arkusza", compact.value, sheetTop("zwinięte").value, 1f)
         compose.mainClock.autoAdvance = true
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
+        compose.onNode(sheetHandle(isExpanded = false)).performClick()
         val belowStatusBar = top + with(compose.density) { 24.toDp() }
         assertEquals("uchwyt rozwiniętego V2 pod paskiem stanu", belowStatusBar.value, sheetTop("rozwinięte").value, 1f)
     }
