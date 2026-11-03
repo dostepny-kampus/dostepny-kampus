@@ -97,6 +97,8 @@ private val CameraSaver =
  *   a mapa dalej wypełnia cały ekran (NFR-37). Pod arkuszem nie ma przycisków mapy, bo wymagania V2 ich nie mają;
  *   wracają po „Wstecz” (NFR-53). Budynek [focus] staje w środku części nad arkuszem, a po „Wstecz” wraca widok
  *   sprzed otwarcia V2 (decyzja 83)
+ * @param onEmptyMapClick dotknięcie mapy, które nie trafiło żadnego konturu ani miejsca obok; aplikacja zamyka nim
+ *   małą kartę V2 (US2.8)
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
  * @param viewModel stan ekranu i zapis wyboru w przełączniku; w aplikacji z grafu Hilt, w testach z podróbkami źródeł
  */
@@ -106,6 +108,7 @@ fun CampusMapScreen(
     modifier: Modifier = Modifier,
     focus: String? = null,
     contentPadding: PaddingValues = PaddingValues(),
+    onEmptyMapClick: () -> Unit = {},
     mapView: CampusMapView = MapLibreMapView,
     viewModel: CampusMapViewModel = hiltViewModel(),
 ) {
@@ -117,6 +120,7 @@ fun CampusMapScreen(
         modifier = modifier,
         focus = focus,
         contentPadding = contentPadding,
+        onEmptyMapClick = onEmptyMapClick,
         mapView = mapView,
     )
 }
@@ -131,6 +135,7 @@ fun CampusMapScreen(
  * @param modifier wymiary ekranu nadane przez aplikację
  * @param focus symbol budynku zaznaczonego obrysem (US1.1)
  * @param contentPadding część ekranu zasłonięta przez arkusz V2 (decyzja 87)
+ * @param onEmptyMapClick dotknięcie mapy poza konturami (US2.8)
  * @param mapView widok mapy
  */
 @Composable
@@ -141,6 +146,7 @@ fun CampusMapScreen(
     modifier: Modifier = Modifier,
     focus: String? = null,
     contentPadding: PaddingValues = PaddingValues(),
+    onEmptyMapClick: () -> Unit = {},
     mapView: CampusMapView = MapLibreMapView,
 ) {
     val catalog = state.catalog
@@ -172,6 +178,7 @@ fun CampusMapScreen(
                     contentPadding = contentPadding,
                     mapView = mapView,
                     onBuildingClick = onBuildingClick,
+                    onEmptyMapClick = onEmptyMapClick,
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                 )
             }
@@ -186,6 +193,7 @@ private fun CampusMap(
     contentPadding: PaddingValues,
     mapView: CampusMapView,
     onBuildingClick: (String) -> Unit,
+    onEmptyMapClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val layers = remember(catalog) { catalog?.let(::campusMapData) }
@@ -217,7 +225,9 @@ private fun CampusMap(
                 data = loaded,
                 camera = shown,
                 onCameraIdle = keepCamera,
-                onBuildingsTouch = { symbols -> choice = touched(symbols, onBuildingClick) },
+                onBuildingsTouch = { symbols ->
+                    if (symbols.isEmpty()) onEmptyMapClick() else choice = touched(symbols, onBuildingClick)
+                },
                 modifier = Modifier.fillMaxSize(),
             )
             MapOverlay(

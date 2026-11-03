@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.app.navigation
 
 import androidx.navigation3.runtime.NavKey
+import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
@@ -224,6 +225,25 @@ class AppNavigatorTest {
             openBuilding(symbol = "A-1")
             assertEquals(listOf(MapRoute(MapFocus.Building("A-1")), BuildingRoute("A-1")), stack)
             back()
+        }
+        assertEquals(listOf(MapRoute()), stack)
+    }
+
+    // Wiersz: mała karta V2 nad V1, dotknięcie pustej mapy → V1 bez zaznaczenia budynku, US2.8, NFR-17, decyzja 116;
+    // samo V1, także z budynkiem zaznaczonym przez „Pokaż na mapie”, i V3 nad V2 zostają.
+    @Test
+    fun us2_8_empty_map_closes_v2() {
+        val selected = MapRoute(MapFocus.Building("A-1"))
+        navigator().run {
+            showOnMap(MapFocus.Building("A-1"))
+            closeCardOnEmptyMap()
+            assertEquals(listOf(selected), stack)
+            openBuilding(symbol = "A-1")
+            openEntrances(symbol = "A-1")
+            closeCardOnEmptyMap()
+            assertEquals(listOf(selected, BuildingRoute("A-1"), EntrancesRoute("A-1")), stack)
+            back()
+            closeCardOnEmptyMap()
         }
         assertEquals(listOf(MapRoute()), stack)
     }

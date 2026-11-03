@@ -11,6 +11,7 @@
     <string name="wyslij">Wyślij</string>
     <string name="wroc_do_mapy">Wróć do mapy</string>
     <string name="nie_teraz">Nie teraz</string>
-    <string name="rozwin_karte">Rozwiń kartę budynku</string>
-    <string name="zwin_karte">Zwiń kartę budynku</string>
+    <string name="rozwin_opis">Rozwiń opis budynku</string>
+    <string name="stan_zwiniete">zwinięte</string>
+    <string name="stan_rozwiniete">rozwinięte</string>
 </resources>
