@@ -225,7 +225,9 @@ private fun CampusMap(
                 data = loaded,
                 camera = shown,
                 onCameraIdle = keepCamera,
-                onBuildingsTouch = { symbols -> choice = touched(symbols, onBuildingClick, onEmptyMapClick) },
+                onBuildingsTouch = { symbols ->
+                    if (symbols.isEmpty()) onEmptyMapClick() else choice = touched(symbols, onBuildingClick)
+                },
                 modifier = Modifier.fillMaxSize(),
             )
             MapOverlay(
@@ -256,12 +258,7 @@ private fun shownCamera(own: MapCamera?, start: GeoPoint?, focus: GeoPoint?, bot
     (own ?: start?.let { MapCamera(center = it, zoom = START_ZOOM) })?.aboveSheet(focus, bottomInset)
 
 // Jeden trafiony budynek otwiera V2 od razu, a kilka czeka na wybór w arkuszu „Który budynek?” (decyzja 85).
-private fun touched(
-    symbols: List<String>,
-    onBuildingClick: (String) -> Unit,
-    onEmptyMapClick: () -> Unit,
-): List<String> {
-    if (symbols.isEmpty()) onEmptyMapClick()
+private fun touched(symbols: List<String>, onBuildingClick: (String) -> Unit): List<String> {
     symbols.singleOrNull()?.let(onBuildingClick)
     return symbols.takeIf { it.size > 1 }.orEmpty()
 }
