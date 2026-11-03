@@ -28,7 +28,7 @@ final class SubmissionDraftTest {
         "",
         "{\"id\":\"0b6f6c1e-8a43-4d5e-9f43-2f1d3c4b5a69\",\"kind\":\"QUICK\",\"extra\":1,",
         "\"location\":{\"type\":\"Point\",\"coordinates\":[17.0,51.1]},",
-        "\"buildingSymbol\":\"C-13\",",
+        "\"buildingSymbol\":\"C-13\",\"barrierGroup\":\"OTHER\",",
         "\"photoIds\":[\"5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d\"]}"
     );
 
