@@ -432,7 +432,7 @@ class AppShellTest {
     }
 
     // Wiersz: pełny ekran po małej karcie, „Wstecz” w górnym pasku karty → znowu mała karta, NFR-15; „Zamknij”
-    // małej karty → V1, US2.8.
+    // małej karty → V1 bez zaznaczenia budynku, US2.8, decyzja 116.
     // Scenariusz (częściowo): przegladanie-mapy.feature: Z małej karty osoba rozwija opis albo wraca do mapy
     @Test
     fun us2_8_card_back_then_close() {
@@ -453,7 +453,7 @@ class AppShellTest {
         compose.onNodeWithText("Wstecz").performClick()
         compose.onNodeWithContentDescription(EXPAND_HANDLE).assertExists("mała karta po „Wstecz” w górnym pasku")
         compose.onNodeWithText("Zamknij").performClick()
-        compose.onNodeWithText("Zamknij").assertDoesNotExist()
+        compose.onNodeWithText("V1").assertExists("V1 bez zaznaczenia budynku po „Zamknij”")
     }
 
     // Wiersz: V1 pod arkuszem V2, dotknięcie konturu innego budynku → jego V2 jako arkusz nad tą samą mapą, US2,
@@ -504,8 +504,8 @@ class AppShellTest {
         compose.onNode(MapTab).assertIsSelected()
     }
 
-    // Wiersz: V2 → „Sprawdź, którędy wejść” → V3, „Wstecz” → V2 → V1 z zaznaczonym budynkiem; historia z parametrami
-    // tras przetrwa odtworzenie aktywności, US3, US1.1, NFR-22.
+    // Wiersz: V2 → „Sprawdź, którędy wejść” → V3, „Wstecz” → V2 → V1 bez zaznaczenia budynku, decyzja 116; historia
+    // z parametrami tras przetrwa odtworzenie aktywności, US3, US1.1, NFR-22.
     @Test
     fun nfr22_params_survive_restore() {
         val restoration = StateRestorationTester(compose)
@@ -533,7 +533,7 @@ class AppShellTest {
         pressBack()
         compose.onNodeWithText("Sprawdź, którędy wejść").assertExists()
         pressBack()
-        compose.onNodeWithText("Building(symbol=A-1)").assertExists()
+        compose.onNodeWithText("V1").assertExists("V1 bez zaznaczenia budynku po zamknięciu małej karty")
     }
 
     // Wiersz: wymagania wspólne, pasek dolny na V1, bez niego na L1: treść nie wchodzi pod paski, NFR-52.
