@@ -11,7 +11,9 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,6 +57,37 @@ class BuildingCardOfflineTest {
         compose.onNodeWithText("dane z", substring = true).assertDoesNotExist()
         online.value = true
         compose.waitForIdle()
+        compose.onNodeWithText("Bez internetu").assertDoesNotExist()
+    }
+
+    // Wiersz: V2, stan sieci jeszcze nie przyszedł → brak linii „Bez internetu”, żeby nie mignęła, NFR-10, US2.8.
+    @Test
+    fun nfr10_no_line_before_state() {
+        val repository =
+            BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
+                """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
+                    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],""" +
+                    """"name":"Gmach Główny","osm_id":"way/1"},""" +
+                    """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
+            }
+        val viewModel =
+            BuildingCardViewModel(
+                symbol = "A-1",
+                repository = repository,
+                networkStatus = { flow { awaitCancellation() } },
+            )
+        compose.setContent {
+            DostepnyKampusTheme {
+                BuildingCardScreen(
+                    symbol = "A-1",
+                    onCheckEntrances = {},
+                    onShowOnMap = {},
+                    onBack = {},
+                    viewModel = viewModel,
+                )
+            }
+        }
+        compose.onNodeWithText("Gmach Główny").assertIsDisplayed()
         compose.onNodeWithText("Bez internetu").assertDoesNotExist()
     }
 }
