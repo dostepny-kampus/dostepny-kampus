@@ -13,6 +13,7 @@ import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.EntrancesScreen
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,7 +37,8 @@ class EntrancesScreenTest {
                     """"name":"Budynek testowy","osm_id":"way/1"},""" +
                     """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
             }
-        val viewModel = BuildingCardViewModel(symbol = "A-2", repository = repository)
+        val viewModel =
+            BuildingCardViewModel(symbol = "A-2", repository = repository, networkStatus = { flowOf(true) })
         compose.setContent {
             DostepnyKampusTheme {
                 EntrancesScreen(symbol = "A-2", onShowEntrance = {}, onBack = {}, viewModel = viewModel)

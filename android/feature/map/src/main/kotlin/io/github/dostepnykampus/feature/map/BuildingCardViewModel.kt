@@ -12,6 +12,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.network.NetworkStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -48,6 +49,7 @@ class BuildingCardViewModel
     constructor(
         @Assisted val symbol: String,
         repository: BuildingCatalogRepository,
+        networkStatus: NetworkStatus,
     ) : ViewModel() {
         private val attempts = MutableStateFlow(0)
 
@@ -56,6 +58,12 @@ class BuildingCardViewModel
             attempts
                 .map { buildingCard(repository.catalog(), symbol) }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), BuildingCardUiState.Loading)
+
+        /** Czy jest internet; na start prawda, żeby linia „Bez internetu” nie mignęła (NFR-10, US2.8). */
+        val online: StateFlow<Boolean> =
+            networkStatus
+                .isOnline()
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), true)
 
         /** „Spróbuj ponownie”, gdy budynku nie ma w telefonie (NFR-10). */
         fun retry() {

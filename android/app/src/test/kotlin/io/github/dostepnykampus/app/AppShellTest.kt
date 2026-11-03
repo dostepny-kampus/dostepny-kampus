@@ -109,6 +109,7 @@ internal fun Context.buildingCardViewModel(symbol: String): BuildingCardViewMode
         BuildingCatalogRepository(EmptyCoroutineContext) {
             assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() }
         },
+        ConnectivityNetworkStatus(getSystemService(ConnectivityManager::class.java)),
     )
 
 /** V3 jak w aplikacji, ze stanem [buildingCardViewModel] zamiast ViewModel z grafu Hilt. */
