@@ -21,7 +21,7 @@ import tools.jackson.databind.ObjectMapper;
  * @since 0.1.0
  */
 @Service
-final class BuildingQuery {
+final class BuildingQuery implements Outlines {
 
     /**
      * Promień podpowiedzi budynku w metrach, większy niż błąd GNSS 15 m (NFR-3).
@@ -41,6 +41,13 @@ final class BuildingQuery {
     BuildingQuery(final JdbcClient jdbc, final ObjectMapper mapper) {
         this.jdbc = jdbc;
         this.mapper = mapper;
+    }
+
+    @Override
+    public Optional<String> containing(final double lat, final double lon) {
+        final LocateResult hit = this.locate(lat, lon);
+        return Optional.ofNullable(hit.buildingSymbol())
+            .filter(symbol -> hit.insideOutline());
     }
 
     BuildingList listBuildings() {
