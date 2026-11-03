@@ -81,7 +81,7 @@ internal object MapLibreMapView : CampusMapView {
                     val area = RectF(at.x - tolerance, at.y - tolerance, at.x + tolerance, at.y + tolerance)
                     val features = ready.queryRenderedFeatures(area, BUILDINGS_LAYER)
                     val symbols = symbolsOf(features.mapNotNull { it.getStringProperty("label") })
-                    if (symbols.isNotEmpty()) buildingsTouch(symbols)
+                    buildingsTouch(symbols)
                     symbols.isNotEmpty()
                 }
                 map = ready

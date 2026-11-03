@@ -8,6 +8,7 @@ package io.github.dostepnykampus.app
 import androidx.compose.ui.unit.Dp
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.feature.map.CardMode
+import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 
 /**
  * Przesunięcie w dół góry arkusza V2 o wysokości [height] przy przewidywanym geście „Wstecz” o postępie
@@ -31,7 +32,7 @@ internal fun SheetState.cardMode(fontScale: Float): CardMode {
  * Dotknięcie pustej mapy V1: zamyka kartę V2 nad mapą, więc V1 wraca bez zaznaczenia budynku (US2.8, NFR-17,
  * decyzja 116); bez karty na wierzchu historia zostaje bez zmian.
  */
-internal val closeCardOnEmptyMap: AppNavigator.() -> Unit = {}
+internal val closeCardOnEmptyMap: AppNavigator.() -> Unit = { if (current is BuildingRoute) back() }
 
 /** Zdarzenie przewidywanego gestu „Wstecz” nad arkuszem V2. */
 internal sealed interface BackGesture {

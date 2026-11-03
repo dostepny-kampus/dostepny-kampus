@@ -178,6 +178,7 @@ fun CampusMapScreen(
                     contentPadding = contentPadding,
                     mapView = mapView,
                     onBuildingClick = onBuildingClick,
+                    onEmptyMapClick = onEmptyMapClick,
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                 )
             }
@@ -192,6 +193,7 @@ private fun CampusMap(
     contentPadding: PaddingValues,
     mapView: CampusMapView,
     onBuildingClick: (String) -> Unit,
+    onEmptyMapClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val layers = remember(catalog) { catalog?.let(::campusMapData) }
@@ -223,7 +225,7 @@ private fun CampusMap(
                 data = loaded,
                 camera = shown,
                 onCameraIdle = keepCamera,
-                onBuildingsTouch = { symbols -> choice = touched(symbols, onBuildingClick) },
+                onBuildingsTouch = { symbols -> choice = touched(symbols, onBuildingClick, onEmptyMapClick) },
                 modifier = Modifier.fillMaxSize(),
             )
             MapOverlay(
@@ -254,7 +256,12 @@ private fun shownCamera(own: MapCamera?, start: GeoPoint?, focus: GeoPoint?, bot
     (own ?: start?.let { MapCamera(center = it, zoom = START_ZOOM) })?.aboveSheet(focus, bottomInset)
 
 // Jeden trafiony budynek otwiera V2 od razu, a kilka czeka na wybór w arkuszu „Który budynek?” (decyzja 85).
-private fun touched(symbols: List<String>, onBuildingClick: (String) -> Unit): List<String> {
+private fun touched(
+    symbols: List<String>,
+    onBuildingClick: (String) -> Unit,
+    onEmptyMapClick: () -> Unit,
+): List<String> {
+    if (symbols.isEmpty()) onEmptyMapClick()
     symbols.singleOrNull()?.let(onBuildingClick)
     return symbols.takeIf { it.size > 1 }.orEmpty()
 }
