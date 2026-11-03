@@ -446,6 +446,9 @@ class AppShellTest {
             }
         }
         compose.onNodeWithText("V1").performClick()
+        val window = compose.onRoot().getUnclippedBoundsInRoot().bottom
+        val compact = compose.onNodeWithContentDescription(EXPAND_HANDLE).getUnclippedBoundsInRoot().top
+        assertTrue("mapa nad małą kartą widoczna: uchwyt $compact, okno $window", compact > window / 2)
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
         compose.onNodeWithText("Wstecz").performClick()
         compose.onNodeWithContentDescription(EXPAND_HANDLE).assertExists("mała karta po „Wstecz” w górnym pasku")

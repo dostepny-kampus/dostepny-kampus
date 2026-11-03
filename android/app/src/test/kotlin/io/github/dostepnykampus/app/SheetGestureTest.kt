@@ -18,7 +18,7 @@ import org.junit.Test
 
 /** Arkusz V2 przy przewidywanym geście „Wstecz”: przesunięcie z postępu i stan po zdarzeniach gestu. */
 class SheetGestureTest {
-    // Wiersz: V2 do połowy albo rozwinięte, gest „Wstecz” o postępie 0,2 i 0,6 → góra arkusza w dół proporcjonalnie
+    // Wiersz: mała karta albo pełny ekran V2, gest „Wstecz” o postępie 0,2 i 0,6 → góra arkusza w dół proporcjonalnie
     // do postępu, a arkusz nie znika, US2, decyzja 48.
     @Test
     fun us2_gesture_moves_sheet() {
@@ -32,7 +32,7 @@ class SheetGestureTest {
         }
     }
 
-    // Wiersz: V2 do połowy albo rozwinięte, gest „Wstecz” anulowany → arkusz jak przed gestem, V2 zostaje, US2.
+    // Wiersz: mała karta albo pełny ekran V2, gest „Wstecz” anulowany → arkusz jak przed gestem, V2 zostaje, US2.
     @Test
     fun us2_gesture_cancel_keeps_sheet() {
         listOf(false, true).forEach { isExpanded ->

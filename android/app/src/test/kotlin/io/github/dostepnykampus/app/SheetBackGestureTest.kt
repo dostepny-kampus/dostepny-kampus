@@ -135,7 +135,7 @@ class SheetBackGestureTest {
         assertEquals("góra arkusza po anulowaniu", before.value, sheetTop("po anulowaniu").value, 1f)
     }
 
-    // Wiersz: V2 do połowy, gest „Wstecz” 0,6 i anulowanie → arkusz w dół, potem znów do połowy, V2 zostaje, US2.
+    // Wiersz: mała karta, gest „Wstecz” 0,6 i anulowanie → arkusz w dół, potem znów mała karta, V2 zostaje, US2.
     @Test
     fun us2_cancel_keeps_half_sheet() = checkCancel(isExpanded = false)
 
@@ -218,7 +218,7 @@ class SheetBackGestureTest {
         checkClosed()
     }
 
-    // Wiersz: V2 do połowy, gest „Wstecz” 0,4 i zakończenie → arkusz dojeżdża w dół, potem V2 zdjęte z historii,
+    // Wiersz: mała karta, gest „Wstecz” 0,4 i zakończenie → arkusz dojeżdża w dół, potem V2 zdjęte z historii,
     // V1 z tym samym ViewModel, US1.1, decyzja 83.
     @Test
     fun us1_1_half_sheet_slides_out() = checkSlideOut(isExpanded = false)
@@ -261,7 +261,7 @@ class SheetBackGestureTest {
         compose.onNodeWithContentDescription(handle).assertExists("rozwinięcie arkusza po anulowaniu")
     }
 
-    // Wiersz: V2 do połowy, gest „Wstecz” 0,6 i anulowanie → arkusz wraca płynnie do połowy, V2 zostaje, US2.
+    // Wiersz: mała karta, gest „Wstecz” 0,6 i anulowanie → arkusz wraca płynnie na miejsce, V2 zostaje, US2.
     @Test
     fun us2_half_sheet_slides_back() = checkSlideBack(isExpanded = false)
 
@@ -269,7 +269,7 @@ class SheetBackGestureTest {
     @Test
     fun us2_full_sheet_slides_back() = checkSlideBack(isExpanded = true)
 
-    // Wiersz: V2 do połowy, „Wstecz” przyciskiem, bez gestu → arkusz dojeżdża w dół, potem V2 zdjęte z historii, US1.1.
+    // Wiersz: mała karta, „Wstecz” przyciskiem, bez gestu → arkusz dojeżdża w dół, potem V2 zdjęte z historii, US1.1.
     @Test
     fun us1_1_back_button_slides_out() {
         compose.setContent { Shell() }
@@ -285,7 +285,7 @@ class SheetBackGestureTest {
         checkClosed()
     }
 
-    // Wiersz: V2 do połowy, gest „Wstecz” 0,2 → 0,6 → arkusz od razu tam, gdzie palec, bez animacji, US2.
+    // Wiersz: mała karta, gest „Wstecz” 0,2 → 0,6 → arkusz od razu tam, gdzie palec, bez animacji, US2.
     @Test
     fun us2_sheet_follows_finger() {
         compose.setContent { Shell() }
@@ -324,7 +324,7 @@ class SheetBackGestureTest {
         assertEquals("zdjęcia V2 z historii po dwóch „Wstecz”", 1, backs)
     }
 
-    // Wiersz: V2 do połowy, „Wstecz” przyciskiem, w trakcie dojazdu początek gestu → arkusz dojeżdża do końca,
+    // Wiersz: mała karta, „Wstecz” przyciskiem, w trakcie dojazdu początek gestu → arkusz dojeżdża do końca,
     // V2 zdjęte z historii, US1.1.
     @Test
     fun us1_1_gesture_while_closing() {
@@ -360,7 +360,7 @@ class SheetBackGestureTest {
         assertTrue("ponownie otwarte V2 idzie za gestem: $moved, $before", moved > before + 1.dp)
     }
 
-    // Wiersz: V2 do połowy, postęp 0,6 i anulowanie w tej samej klatce → arkusz wraca płynnie od 0,6, nie skokiem, US2.
+    // Wiersz: mała karta, postęp 0,6 i anulowanie w tej samej klatce → arkusz wraca płynnie od 0,6, nie skokiem, US2.
     @Test
     fun us2_cancel_same_frame_slides() {
         compose.setContent { Shell() }

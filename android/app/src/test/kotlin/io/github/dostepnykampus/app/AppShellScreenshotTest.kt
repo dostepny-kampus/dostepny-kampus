@@ -171,7 +171,7 @@ class AppShellScreenshotTest {
         capture(isSheetOpen = false)
     }
 
-    // V2 jako arkusz do połowy ekranu nad V1, decyzja 48, NFR-16.
+    // V2 jako mała karta nad V1, decyzja 115, NFR-16.
     @Test
     fun nfr16_v2_arkusz_jasny() {
         capture()
