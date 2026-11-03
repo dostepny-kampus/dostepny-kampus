@@ -27,6 +27,15 @@ class BuildingListTest {
     }
 
     @Test
+    fun us1_server_symbol_no_name() {
+        val listed = json.decodeFromString<BuildingListDto>(LIST.replace(oldValue = NAME, newValue = "C-13"))
+        val building = listed.toModel().buildings.single()
+        assertEquals(null, building.building.name)
+        val card = json.decodeFromString<BuildingDetailsDto>(DETAILS.replace(oldValue = NAME, newValue = "C-3/C-4"))
+        assertEquals(null, card.toModel().building.name)
+    }
+
+    @Test
     fun us2_building_with_entrance() {
         val card = json.decodeFromString<BuildingDetailsDto>(DETAILS).toModel()
         assertEquals(c13(DetailLevel.BASIC).building, card.building)
@@ -94,6 +103,7 @@ class BuildingListTest {
         )
 
     private companion object {
+        const val NAME = "Budynek C-13"
         const val OUTLINE =
             """{"type":"Polygon","coordinates":[[[17,51],[18,51],[18,52],[17,52],[17,51]]]}"""
         const val LIST =

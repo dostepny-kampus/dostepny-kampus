@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.network
 
+import io.github.dostepnykampus.core.geo.buildingName
 import io.github.dostepnykampus.core.geo.parseGeoArea
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.Entrance
@@ -109,13 +110,13 @@ internal fun BuildingListDto.toModel(): BuildingList =
 
 internal fun BuildingDto.toModel(): ApiBuilding =
     ApiBuilding(
-        building = Building(symbol = symbol, name = name, outline = parseGeoArea(outline.toString())),
+        building = Building(symbol = symbol, name = buildingName(name), outline = parseGeoArea(outline.toString())),
         detailLevel = detailLevel,
     )
 
 internal fun BuildingDetailsDto.toModel(): BuildingDetails =
     BuildingDetails(
-        building = Building(symbol = symbol, name = name, outline = parseGeoArea(outline.toString())),
+        building = Building(symbol = symbol, name = buildingName(name), outline = parseGeoArea(outline.toString())),
         detailLevel = detailLevel,
         entrances = entrances.map(EntranceDto::toModel),
     )

@@ -27,8 +27,7 @@ import org.maplibre.spatialk.geojson.Point
  *
  * - Kontury z tym samym symbolem, np. dwa obiekty OSM `H-14`, tworzą jeden budynek z wielokątem złożonym.
  *   Nazwą budynku jest pierwsza nazwa podana w danych.
- * - Nazwa złożona wyłącznie z symboli budynków, np. „C-13”, „C-3/C-4” albo „T-22” przy T-18, to brak nazwy
- *   (decyzja 75): ekran pokaże wtedy sam symbol.
+ * - Nazwa złożona wyłącznie z symboli budynków to brak nazwy, według [buildingName] (decyzja 75).
  * - Kontur z kilkoma symbolami, np. `["C-3", "C-4"]`, daje osobny budynek dla każdego symbolu z tym samym konturem.
  * - Wejście z kilkoma symbolami daje wejście w każdym z tych budynków, z tym samym identyfikatorem `osm_id`.
  * - Rodzaj wejścia to tag `entrance`, a wejście główne ma `entrance` = `main`. Opis wejścia to tag `ref`, np. `W-1`.
@@ -69,7 +68,7 @@ private fun buildings(features: List<GeoFeature>): List<Building> =
             val areas = outlines.map { it.geometry.toArea() }
             Building(
                 symbol = symbol,
-                name = outlines.firstNotNullOfOrNull { it.textOrNull("name")?.takeUnless(::isSymbolsOnly) },
+                name = outlines.firstNotNullOfOrNull { buildingName(it.textOrNull("name")) },
                 outline = areas.singleOrNull() ?: GeoMultiPolygon(areas.flatMap(GeoArea::parts)),
             )
         }
@@ -109,7 +108,3 @@ private fun GeoFeature.symbols(): List<String> {
     require(symbols.isNotEmpty() && null !in symbols) { "Obiekt ${text("osm_id")} bez symbolu budynku" }
     return symbols.filterNotNull()
 }
-
-private val SYMBOLS_ONLY = Regex("""[A-Z]-\d+[a-z]?(\s*/\s*[A-Z]-\d+[a-z]?)*""")
-
-private fun isSymbolsOnly(name: String): Boolean = SYMBOLS_ONLY.matches(name.trim())
