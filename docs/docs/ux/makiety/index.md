@@ -181,13 +181,13 @@ Wejście główne ma schody, a dostępne jest wejście z tyłu budynku, bramą o
 
 Makiety V2 pokazują pełny ekran bez mapy. Po dotknięciu budynku na mapie V2 jest najpierw małą kartą nad mapą V1 (wymagania V2, decyzja 115), osobna makieta `m-v2-karta-budynku-mala`.
 
-![Makieta V2 Karta budynku: nagłówek Budynek A-1, chipy, wiersz Wejście dostępne, Sprawdź, którędy wejść, wiersz daty i źródła, trzy wejścia z wejściem zalecanym na górze, grupy Winda i toaleta oraz Piętra, dwie bariery i pasek dolny](../../_generated/m-v2-karta-budynku.svg)
+![Makieta V2 Karta budynku: nagłówek Budynek A-1, wiersz Wejście dostępne, Sprawdź, którędy wejść, chipy Winda i Toaleta dostosowana, wiersz daty i źródła, trzy wejścia z wejściem zalecanym na górze, grupy Winda i toaleta oraz Piętra, dwie bariery i pasek dolny](../../_generated/m-v2-karta-budynku.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Wstecz” i nagłówek „Budynek A-1” | US2, NFR-15 (wymagania wspólne) |
 | Nazwa budynku z danych, zastępnik | US2 |
-| Chipy „Wejście dostępne”, „Winda”, „Toaleta dostosowana”: fakty z danych, dotknięcie przewija do grupy | US2.1, US16.1, NFR-17, decyzja 48 |
+| Chipy „Winda”, „Toaleta dostosowana” pod czynnościami: fakty z danych, dotknięcie przewija do grupy; wejście dostępne podaje wiersz o wejściach | US2.3, US2.8, US16.1, NFR-17 |
 | Wejście zalecane pierwsze, z napisem „Zalecane” bez piętra i „Pokaż wejście na mapie” | BR-25, decyzja 48, decyzja 53 |
 | Wejście: oznaczenie tekstem i ikoną na początku, potem nazwa wejścia; „Wejście główne” niedostępne, „Wejście bramą od ul. Norwida” dostępne [1]; nazwa odróżnia je od drugiego wejścia przy ul. Norwida, które według deklaracji nie jest dostosowane | US2.1, US17.1, NFR-21 |
 | „Brak danych” z ikoną `minus`, inną niż `x` przy „Niedostępne” | US17.1 |
@@ -196,7 +196,7 @@ Makiety V2 pokazują pełny ekran bez mapy. Po dotknięciu budynku na mapie V2 j
 | „Pokaż wyjścia ewakuacyjne (2)” pod wejściami, liczba z danych | US2.1, decyzja 44, decyzja 48 |
 | Grupy „Winda i toaleta” i „Piętra”: zastępniki danych PWr, przy piętrze „Pokaż na planie” | US16.1, decyzja 44 |
 | „Źródło: Politechnika Wrocławska” na dole karty | NFR-40 |
-| Wiersz o wejściach i „Sprawdź, którędy wejść”, czynność główna, pogrubiona, w treści pod chipami; bez przypiętego pasa | US2.8, US3, US3.2, NFR-21, NFR-52 |
+| Wiersz o wejściach pod nagłówkiem, a pod nim „Sprawdź, którędy wejść”, czynność główna, pogrubiona, pierwsza w kolejności czytania; bez przypiętego pasa | US2.8, US3, US3.2, NFR-21, NFR-52 |
 | „Bariery w budynku”: typ, uciążliwość tekstem i ikoną, zdjęcie, „Sprawdzone [data]”; pierwsza bariera to schody przy wejściu głównym (TB-1, „Blokada”) [1] | US2.2, BR-17, NFR-21 |
 | Druga bariera: typ i uciążliwość jako zastępniki, bo deklaracja nie podaje innej bariery A-1 | US2.2, BR-7, NFR-21 |
 | Pasek dolny z „Konto” | US1, US4, US5.1, US14 (wymagania wspólne) |

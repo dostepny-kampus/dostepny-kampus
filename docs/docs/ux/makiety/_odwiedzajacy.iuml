@@ -10,16 +10,15 @@
 
 ' ---------- V2 Karta budynku (decyzje 48, 115) ----------
 
-' Góra pełnego ekranu, bez mapy: chipy faktów z danych, wiersz o wejściach i czynność główna w treści.
-' $chipy: 1 — „Wejście dostępne”, „Winda”, „Toaleta dostosowana”; 0 — bez chipów.
+' Góra pełnego ekranu, bez mapy: wiersz o wejściach, czynność główna w treści, potem chipy faktów z danych.
+' $chipy: 1 — „Winda”, „Toaleta dostosowana” (wejście dostępne podaje wiersz); 0 — bez chipów.
 ' $wejscia: napis wiersza o wejściach (US2.8).
 !procedure $karta_gora($chipy=1, $wejscia="Wejście dostępne")
-!if $chipy == 1
-{ [$dk_napis("Wejście dostępne", "", 17)] | [$dk_napis("Winda", "", 11)] }
-$przycisk("Toaleta dostosowana")
-!endif
 <b>$wejscia</b>
 $przycisk_glowny("Sprawdź, którędy wejść")
+!if $chipy == 1
+{ [$dk_napis("Winda", "", 11)] | [$dk_napis("Toaleta dostosowana", "", 21)] }
+!endif
 !endprocedure
 
 ' Wejście na karcie: oznaczenie, przy wejściu zalecanym „Zalecane” z piętrem (BR-25),

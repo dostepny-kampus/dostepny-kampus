@@ -141,7 +141,7 @@ kolory:
     # Kształt: koło ze znakiem ✓, słowo „Dostępne”.
     jasny: "#CDE8F0"   # spokojny morski
     ciemny: "#2D4850"
-    uzycie: tło oznaczenia „Dostępne” przy wejściu i chipu „Wejście dostępne”
+    uzycie: tło oznaczenia „Dostępne” przy wejściu i wiersza „Wejście dostępne” na V2
     zrodlo: NFR-21, US2.1, decyzja 48
   onStatusDostepneContainer:
     jasny: "#00313C"
