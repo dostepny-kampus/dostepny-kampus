@@ -78,6 +78,26 @@ private fun missingOrNone(entrances: List<OrderedEntrance>): VisitAnswer {
     return if (missing == 0) VisitAnswer.NoAccessible else VisitAnswer.Unknown(missing, entrances.size)
 }
 
+/** Wiersz o wejściach pod nagłówkiem karty budynku (US2.8, US2.1, US3.1). */
+enum class EntranceSummary {
+    /** „Wejście dostępne”: choć jedno wejście odwiedzających jest „dostępne”. */
+    Accessible,
+
+    /** „Brak wejścia dostępnego”: lista niepusta, a każde wejście jest „niedostępne”. */
+    NoAccessible,
+
+    /** „Brak danych o wejściach”: lista pusta albo żadne nie jest „dostępne”, a choć jedno ma „brak danych”. */
+    NoData,
+}
+
+/** Wiersz o wejściach dla listy [entrances] ułożonej przez [orderedEntrances] (US2.8, US17.1). */
+fun entranceSummary(entrances: List<OrderedEntrance>): EntranceSummary =
+    when (visitAnswer(entrances)) {
+        is VisitAnswer.Accessible -> EntranceSummary.Accessible
+        VisitAnswer.NoAccessible -> EntranceSummary.NoAccessible
+        VisitAnswer.NoData, is VisitAnswer.Unknown -> EntranceSummary.NoData
+    }
+
 /**
  * Stan karty budynku [symbol] z katalogu (US2, US2.7). Brak symbolu w katalogu to „budynku nie ma w telefonie”.
  */
