@@ -94,6 +94,7 @@ record SubmissionDraft(UUID id, String kind, double lat, double lon, ObjectNode 
             body.path("buildingSymbol").isMissingNode() || body.path("buildingSymbol").isString(),
             "Symbol budynku nie jest tekstem"
         );
+        SubmissionRules.check(body);
         return new SubmissionDraft(
             id,
             body.path("kind").stringValue(),
@@ -103,17 +104,29 @@ record SubmissionDraft(UUID id, String kind, double lat, double lon, ObjectNode 
         );
     }
 
-    private static boolean uuid(final JsonNode node) {
+    /**
+     * Sprawdza, czy węzeł to UUID zapisany tekstem.
+     *
+     * @param node Węzeł JSON
+     * @return Czy węzeł to UUID
+     */
+    static boolean uuid(final JsonNode node) {
         return SubmissionDraft.UUID_TEXT.matcher(node.stringValue("")).matches();
+    }
+
+    /**
+     * Odrzuca zgłoszenie z błędem 400, gdy reguła nie jest spełniona.
+     *
+     * @param valid Czy reguła jest spełniona
+     * @param reason Opis złamanej reguły do odpowiedzi
+     */
+    static void require(final boolean valid, final String reason) {
+        if (!valid) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, reason);
+        }
     }
 
     private static boolean within(final JsonNode node, final double limit) {
         return node.isNumber() && Math.abs(node.doubleValue()) <= limit;
-    }
-
-    private static void require(final boolean valid, final String reason) {
-        if (!valid) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, reason);
-        }
     }
 }

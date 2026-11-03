@@ -139,7 +139,7 @@ final class SubmissionsEditHttpTest {
     private static String body(final String base) {
         return String.join(
             "",
-            "{\"version\":", base, ",\"kind\":\"QUICK\",\"severity\":3,",
+            "{\"version\":", base, ",\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\",",
             "\"location\":{\"type\":\"Point\",\"coordinates\":[17.0,51.0]},",
             "\"photoIds\":[\"5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d\"]}"
         );
