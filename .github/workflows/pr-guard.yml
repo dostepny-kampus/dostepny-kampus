@@ -145,3 +145,5 @@ jobs:
           persist-credentials: false
       - name: Sprawdź nagłówek autorski w plikach z kodem
         run: bash .github/scripts/naglowki.sh
+      - name: Sprawdź test sprawdzania nagłówków
+        run: bash .github/scripts/naglowki-test.sh
