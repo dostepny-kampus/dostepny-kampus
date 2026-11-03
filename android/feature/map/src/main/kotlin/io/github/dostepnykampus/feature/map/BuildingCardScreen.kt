@@ -49,7 +49,7 @@ import io.github.dostepnykampus.core.model.EntranceMarking
  * @param onShowOnMap „Pokaż budynek na mapie” zaznacza budynek na V1
  * @param onBack „Wstecz”
  * @param onClose „Zamknij” małej karty
- * @param modifier wymiary nadane przez arkusz
+ * @param modifier wymiary nadane przez arkusz; mała karta ma wysokość treści, pełny ekran wypełnia całe miejsce
  * @param viewModel stan karty; w aplikacji z grafu Hilt, w testach z podróbką katalogu
  */
 @Composable
@@ -70,10 +70,10 @@ fun BuildingCardScreen(
     val card = state
     val isOnline by viewModel.online.collectAsStateWithLifecycle()
     val isFullScreen = mode != CardMode.Compact
-    Column(modifier.fillMaxSize()) {
+    Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
         if (isFullScreen) BackHeader(title = symbol, onBack = onBack)
         Column(
-            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+            modifier = Modifier.weight(1f, isFullScreen).verticalScroll(rememberScrollState()).padding(Odstepy.m),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
             OfflineWhen(isOnline = isOnline)

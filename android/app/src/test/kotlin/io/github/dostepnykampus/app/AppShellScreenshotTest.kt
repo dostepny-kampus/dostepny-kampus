@@ -30,7 +30,6 @@ import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapView
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
-import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -99,13 +98,14 @@ class AppShellScreenshotTest {
                             remember(route.symbol) {
                                 BuildingCardViewModel(route.symbol, repository, { flowOf(isOnline) })
                             }
+                        val sheet = sheetCard()
                         BuildingCardScreen(
                             symbol = route.symbol,
-                            mode = CardMode.Expanded,
+                            mode = sheet.mode,
                             onCheckEntrances = { openEntrances(route.symbol) },
                             onShowOnMap = { showOnMap(MapFocus.Building(route.symbol)) },
-                            onBack = { back() },
-                            onClose = { back() },
+                            onBack = sheet.onBack,
+                            onClose = sheet.onClose,
                             viewModel = card,
                         )
                     } else {
@@ -124,7 +124,8 @@ class AppShellScreenshotTest {
         if (isSheetOpen && !isFromList) compose.runOnUiThread { touch(listOf("C-13")) }
         query?.let { compose.onNode(hasSetTextAction()).performTextInput(it) }
         if (isKeyboardOpen) compose.runOnUiThread { dispatchKeyboard(compose.activity, isOpen = true) }
-        if (isSheetOpen) compose.waitUntil { compose.onAllNodesWithText("Wejścia").fetchSemanticsNodes().isNotEmpty() }
+        val check = "Sprawdź, którędy wejść"
+        if (isSheetOpen) compose.waitUntil { compose.onAllNodesWithText(check).fetchSemanticsNodes().isNotEmpty() }
         compose.onRoot().captureRoboImage()
     }
 
@@ -171,7 +172,7 @@ class AppShellScreenshotTest {
         capture(isSheetOpen = false)
     }
 
-    // V2 jako arkusz do połowy ekranu nad V1, decyzja 48, NFR-16.
+    // V2 jako mała karta nad V1, decyzja 115, NFR-16.
     @Test
     fun nfr16_v2_arkusz_jasny() {
         capture()
