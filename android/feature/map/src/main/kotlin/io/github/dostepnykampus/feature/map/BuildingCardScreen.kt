@@ -38,8 +38,8 @@ import io.github.dostepnykampus.core.model.EntranceMarking
  * i ikoną, zalecane pierwsze.
  * Karta nic nie mówi o barierach, bo aplikacja nie ma jeszcze ich źródła (US2.7). Czynności stoją w przewijanej
  * treści pod wierszem o wejściach, bez przypiętego pasa (reguła 10): „Sprawdź, którędy wejść” w każdym trybie,
- * „Zamknij” w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]. Górny pasek „Wstecz” ma tylko
- * pełny ekran, a grupę „Wejścia” tylko pełny ekran.
+ * „Zamknij” w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]. Pasek „Wstecz” i grupę „Wejścia”
+ * ma tylko pełny ekran.
  * Nieznany symbol: „budynku nie ma w telefonie” (US2.7). Bez internetu nad treścią stoi [OfflineLine] jak na V1,
  * bez daty (NFR-10, US2.8).
  *
@@ -168,20 +168,17 @@ internal fun MissingBuilding(onRetry: () -> Unit) {
 @Composable
 private fun CardActions(mode: CardMode, onCheckEntrances: () -> Unit, onShowOnMap: () -> Unit, onClose: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
-        PinnedButton(
-            text = stringResource(R.string.karta_sprawdz),
-            onClick = onCheckEntrances,
-            modifier = Modifier.fillMaxWidth(),
-        )
+        CardButton(text = stringResource(R.string.karta_sprawdz), onClick = onCheckEntrances)
         when (mode) {
-            CardMode.Compact -> OutlinedAction(text = stringResource(R.string.mapa_zamknij), onClick = onClose)
+            CardMode.Compact -> CardButton(stringResource(R.string.mapa_zamknij), onClose, outlined = true)
             CardMode.Expanded -> Unit
-            CardMode.Direct -> OutlinedAction(text = stringResource(R.string.karta_pokaz), onClick = onShowOnMap)
+            CardMode.Direct -> CardButton(stringResource(R.string.karta_pokaz), onShowOnMap, outlined = true)
         }
     }
 }
 
 @Composable
-private fun OutlinedAction(text: String, onClick: () -> Unit) {
-    PinnedButton(text = text, onClick = onClick, modifier = Modifier.fillMaxWidth(), kind = PinnedButtonKind.Outlined)
+private fun CardButton(text: String, onClick: () -> Unit, outlined: Boolean = false) {
+    val kind = if (outlined) PinnedButtonKind.Outlined else PinnedButtonKind.Filled
+    PinnedButton(text = text, onClick = onClick, modifier = Modifier.fillMaxWidth(), kind = kind)
 }
