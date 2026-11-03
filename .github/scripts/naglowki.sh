@@ -6,9 +6,12 @@ set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
 
+authors=("Vladyslav Yevkov" "Myroslav Hryniuka" "Yevhenii Lukianenko")
+author_marker="@AUTOR@"
+
 header=(
   "Dostępny Kampus"
-  "Author: Vladyslav Yevkov"
+  "Author: ${author_marker}"
   "Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko"
 )
 
@@ -53,6 +56,20 @@ set_form() {
   done
 }
 
+line_matches() {
+  local actual="$1" want="$2" author
+  if [[ "$want" != *"$author_marker"* ]]; then
+    [[ "$actual" == "$want" ]]
+    return
+  fi
+  for author in "${authors[@]}"; do
+    if [[ "$actual" == "${want/"$author_marker"/$author}" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 has_header() {
   local path="$1" start=0 i
   local -a lines=()
@@ -70,18 +87,21 @@ has_header() {
     fi
   fi
   for i in "${!expected[@]}"; do
-    if [[ "${lines[start + i]:-}" != "${expected[i]}" ]]; then
+    if ! line_matches "${lines[start + i]:-}" "${expected[i]}"; then
       return 1
     fi
   done
 }
+
+allowed_authors="$(printf '%s, ' "${authors[@]}")"
+allowed_authors="${allowed_authors%, }"
 
 found=0
 checked=0
 while IFS= read -r -d '' path; do
   checked=$((checked + 1))
   if ! has_header "$path"; then
-    echo "::error file=${path},line=1::Brak nagłówka autorskiego albo nagłówek niezgodny ze wzorcem (${form})."
+    echo "::error file=${path},line=1::Brak nagłówka autorskiego albo nagłówek niezgodny ze wzorcem (${form}); linia Author: musi wskazywać jedną z osób: ${allowed_authors}."
     found=1
   fi
 done < <(git ls-files -z -- '*.kt' '*.kts' '*.java' '*.py' '*.sh' '*.sql' "${excluded[@]}")
