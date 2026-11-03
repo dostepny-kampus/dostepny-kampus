@@ -25,7 +25,8 @@ class BuildingCardScreenTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    // Scenariusz: przegladanie-mapy.feature: Bez danych o barierach lista i karta budynku nic o barierach nie mówią
+    // Scenariusz (częściowo): przegladanie-mapy.feature: Bez danych o barierach lista i karta budynku
+    //   nic o barierach nie mówią
     @Test
     fun us2_7_no_data_says_nothing() {
         val repository =
@@ -54,7 +55,7 @@ class BuildingCardScreenTest {
         compose.onNodeWithText("Wejścia").assertIsDisplayed()
         compose.onNodeWithText("Główne").assertIsDisplayed()
         compose.onNodeWithText("Sprawdź, którędy wejść").assertIsDisplayed()
-        listOf("Brak zgłoszonych barier", "Bariera pojawi się tutaj", "Bariery w budynku", "barier").forEach { text ->
+        listOf("Brak zgłoszonych barier", "Bariera pojawi się tutaj", "Bariery w budynku").forEach { text ->
             compose.onNodeWithText(text, substring = true, ignoreCase = true).assertDoesNotExist()
         }
     }

@@ -7,15 +7,11 @@
 plugins {
     id("dostepnykampus.android.feature")
     id("dostepnykampus.android.hilt")
+    id("dostepnykampus.android.roborazzi")
 }
 
 android {
     testOptions.unitTests.all { it.useJUnitPlatform() }
-    testOptions.unitTests.isIncludeAndroidResources = true
-}
-
-tasks.withType<Test>().configureEach {
-    jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED", "--enable-native-access=ALL-UNNAMED")
 }
 
 dependencies {
@@ -35,12 +31,8 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit4)
-    testImplementation(libs.robolectric)
     testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(libs.androidx.compose.ui.test.manifest)
     testRuntimeOnly(libs.junit.vintage.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
-    constraints {
-        testImplementation(libs.androidx.test.espresso.core)
-    }
 }
