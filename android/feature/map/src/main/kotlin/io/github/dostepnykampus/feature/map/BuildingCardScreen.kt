@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,9 +37,10 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 private const val LARGE_FONT_SCALE = 1.5f
 
 /**
- * V2 Karta budynku (US2, BR-25): symbol, nazwa, wejścia z oznaczeniem tekstem i ikoną, zalecane pierwsze,
- * oraz puste „Bariery w budynku”. Czynności: „Sprawdź, którędy wejść” i „Pokaż na mapie”. Przy skali czcionki
- * co najmniej 1,5 czynności stoją w treści (reguła 10). Nieznany symbol: „budynku nie ma w telefonie” (US2.7).
+ * V2 Karta budynku (US2, BR-25): symbol, nazwa, wejścia z oznaczeniem tekstem i ikoną, zalecane pierwsze.
+ * Karta nic nie mówi o barierach, bo aplikacja nie ma jeszcze ich źródła (US2.7). Czynności: „Sprawdź,
+ * którędy wejść” i „Pokaż na mapie”. Przy skali czcionki co najmniej 1,5 czynności stoją w treści (reguła 10).
+ * Nieznany symbol: „budynku nie ma w telefonie” (US2.7).
  *
  * @param symbol symbol z trasy, widoczny w nagłówku także w trakcie wczytywania
  * @param onCheckEntrances „Sprawdź, którędy wejść” otwiera V3
@@ -98,18 +98,8 @@ private fun BuildingName(symbol: String, name: String?) {
 
 @Composable
 private fun BuildingFacts(card: BuildingCardUiState.Ready) {
-    Column {
-        GroupContainer(title = stringResource(R.string.karta_wejscia)) {
-            card.entrances.forEach { EntranceLine(it) }
-        }
-        GroupContainer(title = stringResource(R.string.karta_bariery)) {
-            Text(
-                text = stringResource(R.string.karta_brak_barier),
-                modifier = Modifier.semantics { heading() },
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(text = stringResource(R.string.karta_brak_barier_zdanie), style = MaterialTheme.typography.bodyLarge)
-        }
+    GroupContainer(title = stringResource(R.string.karta_wejscia)) {
+        card.entrances.forEach { EntranceLine(it) }
     }
 }
 
