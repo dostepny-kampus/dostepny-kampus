@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-/** Zgłoszenia na MockWebServer: wysłanie, ponowienie, zdjęcie i lista przyjętych. */
+/** Zgłoszenia na MockWebServer: wysłanie, ponowienie, edycja z konfliktem wersji, zdjęcie i lista przyjętych. */
 class SubmissionsApiTest {
     private val server = MockWebServer()
     private val json = Json { ignoreUnknownKeys = true }
@@ -54,6 +54,32 @@ class SubmissionsApiTest {
         assertEquals("POST", recorded.method)
         assertEquals("/submissions", recorded.path)
         assertTrue(recorded.body.readUtf8().contains(""""id":"$ID""""))
+    }
+
+    @Test
+    fun br10_update_saved() {
+        enqueue(code = 200, body = submission(version = 2))
+        val saved = blocking { update(id = ID, version = 1, content = quick) }
+        val edit = assertInstanceOf(ApiResult.Success::class.java, saved).value
+        assertEquals(2, assertInstanceOf(SubmissionEdit.Saved::class.java, edit).submission.version)
+        val recorded = server.takeRequest()
+        assertEquals("PUT", recorded.method)
+        assertEquals("/submissions/$ID", recorded.path)
+    }
+
+    @Test
+    fun br10_update_conflict() {
+        enqueue(code = 409, body = """{"status":409,"serverSubmission":${submission(version = 3)}}""")
+        val result = blocking { update(id = ID, version = 1, content = quick) }
+        val edit = assertInstanceOf(ApiResult.Success::class.java, result).value
+        assertEquals(3, assertInstanceOf(SubmissionEdit.Conflict::class.java, edit).server.version)
+    }
+
+    @Test
+    fun br10_conflict_without_server() {
+        enqueue(code = 409, body = """{"status":409}""")
+        val result = blocking { update(id = ID, version = 1, content = quick) }
+        assertEquals(409, assertInstanceOf(ApiResult.ServerError::class.java, result).code)
     }
 
     @Test
