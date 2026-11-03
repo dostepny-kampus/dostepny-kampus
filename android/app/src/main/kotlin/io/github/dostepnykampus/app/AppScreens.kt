@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
@@ -38,8 +39,12 @@ import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
+import kotlin.math.roundToInt
 
 private const val LARGE_FONT_SCALE = 1.5f
+
+/** Szerokość okna w dp, od której pasek nawigacji stoi z boku, a V2 otwiera się od razu na pełnym ekranie. */
+internal const val WIDE_WINDOW_DP = 600
 
 /** Tryb karty z trasy (US2.9, NFR-20): `Direct` od skali czcionki 1,5, inaczej `Expanded`. */
 internal fun cardModeFor(fontScale: Float): CardMode =
@@ -48,18 +53,33 @@ internal fun cardModeFor(fontScale: Float): CardMode =
 /** Bieżące okno aplikacji dla trybu karty V2: skala czcionki [fontScale], szerokość [widthDp] i [isLandscape]. */
 internal data class CardWindow(val fontScale: Float, val widthDp: Int, val isLandscape: Boolean)
 
-/** Tryb karty V2 w oknie: dziś tylko ze skali czcionki, jak [cardModeFor]. */
-internal fun CardWindow.cardMode(): CardMode = cardModeFor(fontScale)
+/** Tryb karty V2 w oknie: `Direct` w oknie od 600 dp albo poziomo (NFR-51, NFR-22), inaczej jak [cardModeFor]. */
+internal fun CardWindow.cardMode(): CardMode =
+    if (widthDp >= WIDE_WINDOW_DP || isLandscape) CardMode.Direct else cardModeFor(fontScale)
+
+/** Bieżące okno z kompozycji, więc tryb karty idzie za obrotem i zmianą czcionki w trakcie (UI-05). */
+@Composable
+internal fun currentCardWindow(): CardWindow {
+    val density = LocalDensity.current
+    val window = LocalWindowInfo.current.containerSize
+    val widthDp = with(density) { window.width.toDp() }.value.roundToInt()
+    return CardWindow(density.fontScale, widthDp, isLandscape = window.width > window.height)
+}
 
 /** Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku [onBack] i „Zamknij” małej karty [onClose] (US2.8). */
 internal data class SheetCard(val mode: CardMode, val onBack: () -> Unit, val onClose: () -> Unit)
 
-/** Karta V2 w arkuszu: tryb z rozwinięcia, „Wstecz” jak wstecz telefonu, „Zamknij” zamyka V2 (US2.8, NFR-15). */
+/**
+ * Karta V2: `Direct`, gdy okno go wymaga, inaczej tryb z rozwinięcia arkusza; „Wstecz” jak wstecz telefonu, „Zamknij”
+ * zamyka V2 (US2.8, US2.9, NFR-15).
+ */
 @Composable
 internal fun AppNavigator.sheetCard(): SheetCard {
+    val window = currentCardWindow()
     val sheet = SheetState(isExpanded = LocalSheetPadding.current.isExpanded)
+    val mode = if (window.cardMode() == CardMode.Direct) CardMode.Direct else sheet.cardMode(window.fontScale)
     val back = checkNotNull(LocalOnBackPressedDispatcherOwner.current).onBackPressedDispatcher
-    return SheetCard(sheet.cardMode(LocalDensity.current.fontScale), onBack = back::onBackPressed, onClose = { back() })
+    return SheetCard(mode, onBack = back::onBackPressed, onClose = { back() })
 }
 
 private typealias Action = Pair<String, () -> Unit>
