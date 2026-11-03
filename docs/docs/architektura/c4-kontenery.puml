@@ -20,7 +20,7 @@ System_Boundary(dk, "Dostępny Kampus") {
   Container(kc, "Usługa logowania", "Keycloak", "konta, role, rejestracja, zaproszenia")
   Container(srv, "Serwer aplikacji", "Spring Boot, Java 25", "REST API z kontraktu OpenAPI")
   ContainerDb(db, "Baza danych przestrzennych", "PostgreSQL, PostGIS", "budynki, piętra, pomieszczenia, zgłoszenia")
-  ContainerDb(foto, "Magazyn zdjęć", "MinIO", "zdjęcia zgłoszeń")
+  ContainerDb(foto, "Magazyn zdjęć", "RustFS", "zdjęcia zgłoszeń")
 }
 
 System_Ext(arc, "Plany budynków PWr", "publiczna usługa ArcGIS")

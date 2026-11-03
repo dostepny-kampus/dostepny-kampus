@@ -8,7 +8,7 @@
 | Baza lokalna | Room | budynki, bariery i zgłoszenia czekające na synchronizację, także po restarcie telefonu (NFR-5) |
 | Serwer aplikacji | Spring Boot, Java 25, Spring Modulith | REST API z kontraktu `api/openapi.yaml`, sprawdzanie roli przy każdym żądaniu (NFR-33) |
 | Baza danych przestrzennych | PostgreSQL, PostGIS, Flyway | budynek dla punktu, podobne zgłoszenia w promieniu, przeliczenie na PUWG 1992 |
-| Magazyn zdjęć | MinIO, zgodny z S3 | zdjęcia zgłoszeń bez metadanych (NFR-26) |
+| Magazyn zdjęć | RustFS, zgodny z S3 ([ADR-0009](decyzje/0009-magazyn-zdjec.md)) | zdjęcia zgłoszeń bez metadanych (NFR-26) |
 | Usługa logowania | Keycloak | hasła i e-maile; serwer zna tylko identyfikator konta, nazwę i rolę (NFR-28) |
 
 Serwer ma moduły `identity`, `building`, `barrier`, `review`, `sync` i `export`. Moduł sięga do innego tylko przez jego publiczny pakiet, co sprawdzają testy architektury.

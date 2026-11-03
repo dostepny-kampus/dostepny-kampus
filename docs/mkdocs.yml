@@ -101,6 +101,7 @@ nav:
           - ADR-0006 Dane PWr o pomieszczeniach: architektura/decyzje/0006-dane-pwr-o-pomieszczeniach.md
           - ADR-0007 Hilt i MVVM: architektura/decyzje/0007-hilt-i-mvvm.md
           - ADR-0008 Import budynków: architektura/decyzje/0008-import-budynkow.md
+          - ADR-0009 Magazyn zdjęć: architektura/decyzje/0009-magazyn-zdjec.md
   - Raporty:
       - Tydzień 2: raporty/tydzien-2.md
       - Sprint 1: raporty/sprint-1.md
