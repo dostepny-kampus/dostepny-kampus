@@ -721,11 +721,12 @@ components:
     Entrance:
       type: object
       description: Wejście do budynku z oznaczeniem wejścia.
-      required: [id, buildingSymbol, name, main, location, marking, markingDate, markingSource]
+      required: [id, buildingSymbol, main, location, marking, markingDate, markingSource]
       properties:
         id: {type: string, description: "Identyfikator wejścia."}
         buildingSymbol: {type: string, description: "Budynek, do którego prowadzi wejście."}
-        name: {type: string, description: "Opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”."}
+        name: {type: string, description: "Opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”; brak, gdy dane nie opisują wejścia."}
+        type: {type: string, description: "Rodzaj wejścia z tagu OpenStreetMap `entrance`, np. `main`, `service`, `emergency`; brak, gdy dane go nie podają."}
         main: {type: boolean, description: "Czy to wejście główne."}
         location: {$ref: '#/components/schemas/GeoPoint', description: "Położenie wejścia."}
         marking: {$ref: '#/components/schemas/EntranceMarking'}

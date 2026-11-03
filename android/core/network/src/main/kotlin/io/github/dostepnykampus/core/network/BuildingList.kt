@@ -85,7 +85,8 @@ internal data class BuildingDetailsDto(
 internal data class EntranceDto(
     val id: String,
     val buildingSymbol: String,
-    val name: String,
+    val name: String? = null,
+    val type: String? = null,
     @SerialName("main") val isMain: Boolean,
     val location: GeoPointDto,
     val marking: String,
@@ -128,7 +129,7 @@ internal fun EntranceDto.toModel(): Entrance {
         buildingSymbol = buildingSymbol,
         name = name,
         isMain = isMain,
-        type = null,
+        type = type,
         location = location.toModel(),
         marking = EntranceMarking.valueOf(marking),
     )
