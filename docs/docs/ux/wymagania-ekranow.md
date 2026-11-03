@@ -132,7 +132,7 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | „ⓘ” w rogu mapy, nazwa dla TalkBack „Informacje o mapie”. Panel ma nagłówek „Źródła danych”. Pod nim „Mapa ulic i kontury budynków: © OpenStreetMap contributors” z odnośnikiem i nazwą licencji ODbL. Dalej „Wejścia i plany pięter: Źródło: Politechnika Wrocławska” z datą stanu danych | czynność | NFR-18, NFR-37, NFR-40 | arkusz informacji na tym ekranie |
 | Pasek dolny | czynność | wymagania wspólne | V4, V5, L1 / L2 |
 
-Wybór wyniku wyszukiwania zaznacza budynek na mapie i otwiera małą kartę V2. „Wstecz” albo „Zamknij” na małej karcie zamyka ją i zdejmuje zaznaczenie. Tryb, tekst wyszukiwania i widok mapy zostają jak przed kartą (decyzje 83, 116). Plan piętra pojawia się po „Pokaż na planie” na V2 albo po znalezieniu sali.
+Wybór wyniku wyszukiwania zaznacza budynek na mapie i otwiera małą kartę V2, a przy skali czcionki co najmniej 1,5 od razu pełny ekran V2. „Wstecz” albo „Zamknij” na małej karcie zamyka ją i zdejmuje zaznaczenie. Tryb, tekst wyszukiwania i widok mapy zostają jak przed kartą (decyzje 83, 116). Plan piętra pojawia się po „Pokaż na planie” na V2 albo po znalezieniu sali.
 
 Arkusz budynku na V1 to ten sam wzorzec co V2, z tym samym układem i kodem. Zmiana V2 zmienia więc też arkusz na V1 (decyzja 53).
 
@@ -221,7 +221,7 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 
 V2 wysuwa się z dołu jako mała karta nad mapą V1, o wysokości swojej treści (decyzja 115). Uchwyt, przewinięcie treści albo przeciągnięcie w górę otwiera pełny ekran bez mapy, więc przeciąganie nie jest jedyną drogą (NFR-53). Mała karta to już V2, a nie dodatkowy ekran przed nim, więc droga do wejścia ma tyle samo dotknięć (US3.2).
 
-Przy skali czcionki co najmniej 1,5 i w oknie co najmniej 600 dp V2 otwiera się od razu na pełnym ekranie (NFR-20, NFR-51). Tak samo jest w poziomie i po wyborze budynku z listy przy TalkBack (NFR-19, NFR-22). Tylko wtedy jest „Pokaż budynek na mapie” (US2.9).
+Przy skali czcionki co najmniej 1,5 albo w oknie co najmniej 600 dp V2 otwiera się od razu na pełnym ekranie (NFR-20, NFR-51). Tak samo jest w poziomie i po wyborze budynku z listy przy TalkBack (NFR-19, NFR-22). Tylko wtedy jest „Pokaż budynek na mapie” (US2.9).
 
 Kolejność od góry: nazwa budynku, wiersz o wejściach i czynności, „Wejścia”, „Bariery w budynku”, „Winda i toaleta”, „Piętra”. Bariery stoją zaraz po wejściach, bo to najważniejsza informacja karty, a zwinięte opisy pięter skracają kartę przy dużej czcionce (US2.3, US16.3).
 
