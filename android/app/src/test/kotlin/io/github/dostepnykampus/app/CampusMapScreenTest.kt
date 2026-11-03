@@ -352,7 +352,7 @@ class CampusMapScreenTest {
         compose.onNodeWithText("Bez internetu").assertDoesNotExist()
     }
 
-    // Wiersz: V2 otwarte od razu, „Pokaż budynek na mapie” → V1 z zaznaczonym budynkiem, US2.9, decyzja 116.
+    // Wiersz: V2, „Wstecz” → V1 z zaznaczonym budynkiem (US1.1).
     @Test
     fun us1_1_focus_reaches_map() {
         compose.setContent { Screen(focus = "C-14") }
