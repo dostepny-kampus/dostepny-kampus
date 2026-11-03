@@ -42,6 +42,9 @@ fun orderedEntrances(entrances: List<Entrance>): List<OrderedEntrance> {
  * Odpowiedź V3 „Którędy wejść” (US3.1, BR-25).
  */
 sealed interface VisitAnswer {
+    /** Brak wejść odwiedzających w danych nie potwierdza niedostępności budynku (US17.1). */
+    data object NoData : VisitAnswer
+
     /** Jest wejście zalecane; [name] to jego nazwa, `null`, gdy danych nazwy nie ma. */
     data class Accessible(val name: String?) : VisitAnswer
 
@@ -62,11 +65,12 @@ sealed interface VisitAnswer {
  *
  * Wejście zalecane jest w zdaniu „ma wejście dostępne”. Bez niego, gdy choć jedno wejście ma „brak danych”,
  * zdanie podaje, o ilu z ilu wejść brak danych — także wtedy, gdy danych brak o wszystkich. Inaczej budynek
- * nie ma wejścia dostępnego. Pusta lista też nie ma wejścia dostępnego.
+ * nie ma wejścia dostępnego. Pusta lista oznacza brak danych o wejściach (US17.1).
  */
 fun visitAnswer(entrances: List<OrderedEntrance>): VisitAnswer {
-    val recommended = entrances.firstOrNull { it.isRecommended } ?: return missingOrNone(entrances)
-    return VisitAnswer.Accessible(recommended.entrance.name)
+    if (entrances.isEmpty()) return VisitAnswer.NoData
+    val recommended = entrances.firstOrNull { it.isRecommended }
+    return recommended?.let { VisitAnswer.Accessible(it.entrance.name) } ?: missingOrNone(entrances)
 }
 
 private fun missingOrNone(entrances: List<OrderedEntrance>): VisitAnswer {
