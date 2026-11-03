@@ -30,6 +30,7 @@ import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapView
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
+import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -100,9 +101,11 @@ class AppShellScreenshotTest {
                             }
                         BuildingCardScreen(
                             symbol = route.symbol,
+                            mode = CardMode.Expanded,
                             onCheckEntrances = { openEntrances(route.symbol) },
                             onShowOnMap = { showOnMap(MapFocus.Building(route.symbol)) },
                             onBack = { back() },
+                            onClose = { back() },
                             viewModel = card,
                         )
                     } else {

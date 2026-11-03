@@ -10,8 +10,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | Stan | Liczba |
 | --- | --- |
 | Pełny test | 2 |
-| Tylko częściowo | 9 |
-| Bez testu | 155 |
+| Tylko częściowo | 11 |
+| Bez testu | 153 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -80,9 +80,9 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `przegladanie-mapy.feature` | Budynek bez wejścia dostępnego nie ma wejścia zalecanego | BR-25, US3.1 | — | brak |
 | `przegladanie-mapy.feature` | Zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę weryfikacji | BR-17, US2.2 | — | brak |
 | `przegladanie-mapy.feature` | Wejście dostępne najwyżej 3 dotknięcia od mapy | US3.2 | `app · AppNavigatorTest.us3_2_v1_v2_v3_back_v2` | częściowo |
-| `przegladanie-mapy.feature` | Mała karta nad mapą mówi słowami o wejściach | US2.8 | — | brak |
+| `przegladanie-mapy.feature` | Mała karta nad mapą mówi słowami o wejściach | US2.8 | `feature/map · BuildingCardModesTest.us2_8_compact_card` | częściowo |
 | `przegladanie-mapy.feature` | Z małej karty osoba rozwija opis albo wraca do mapy | US2.8 | — | brak |
-| `przegladanie-mapy.feature` | Z listy przy dużej czcionce opis budynku prowadzi do mapy | US2.9 | — | brak |
+| `przegladanie-mapy.feature` | Z listy przy dużej czcionce opis budynku prowadzi do mapy | US2.9 | `feature/map · BuildingCardModesTest.nfr20_large_font_all_scrolls` | częściowo |
 | `przegladanie-mapy.feature` | Brak wejścia dostępnego jest powiedziany wprost | US3.1 | — | brak |
 | `przegladanie-mapy.feature` | Mapa pokazuje wejścia i ścieżki, a legenda objaśnia znaki słowem | US1.4 | — | brak |
 | `przegladanie-mapy.feature` | Dotknięcie znaku bariery pokazuje jej opis z miejscem | BR-14, BR-17, US1.5, US2.5 | — | brak |

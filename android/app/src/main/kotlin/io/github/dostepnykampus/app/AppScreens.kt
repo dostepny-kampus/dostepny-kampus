@@ -30,6 +30,7 @@ import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.BuildingCardScreen
 import io.github.dostepnykampus.feature.map.CampusMapScreen
+import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
@@ -84,9 +85,11 @@ private fun AppNavigator.Entrances(symbol: String) {
 private fun AppNavigator.BuildingCard(symbol: String) {
     BuildingCardScreen(
         symbol = symbol,
+        mode = CardMode.Expanded,
         onCheckEntrances = { openEntrances(symbol) },
         onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
         onBack = { back() },
+        onClose = { back() },
     )
 }
 

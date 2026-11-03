@@ -46,18 +46,22 @@ private const val LARGE_FONT_SCALE = 1.5f
  * bez daty (NFR-10, US2.8).
  *
  * @param symbol symbol z trasy, widoczny w nagłówku także w trakcie wczytywania
+ * @param mode mała karta nad mapą, pełny ekran rozwinięty z niej albo pełny ekran otwarty od razu
  * @param onCheckEntrances „Sprawdź, którędy wejść” otwiera V3
  * @param onShowOnMap „Pokaż na mapie” zaznacza budynek na V1
  * @param onBack „Wstecz”
+ * @param onClose „Zamknij” małej karty
  * @param modifier wymiary nadane przez arkusz
  * @param viewModel stan karty; w aplikacji z grafu Hilt, w testach z podróbką katalogu
  */
 @Composable
 fun BuildingCardScreen(
     symbol: String,
+    mode: CardMode,
     onCheckEntrances: () -> Unit,
     onShowOnMap: () -> Unit,
     onBack: () -> Unit,
+    onClose: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BuildingCardViewModel =
         hiltViewModel<BuildingCardViewModel, BuildingCardViewModel.Factory>(
@@ -72,7 +76,7 @@ fun BuildingCardScreen(
         CardActions(onCheckEntrances = onCheckEntrances, onShowOnMap = onShowOnMap, inContent = inContent)
     }
     Column(modifier.fillMaxSize()) {
-        BackHeader(title = symbol, onBack = onBack)
+        BackHeader(title = symbol, onBack = mode.backAction(onBack = onBack, onClose = onClose))
         Column(
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
@@ -92,6 +96,9 @@ fun BuildingCardScreen(
         if (!isLargeFont && card is BuildingCardUiState.Ready) actions(false)
     }
 }
+
+private fun CardMode.backAction(onBack: () -> Unit, onClose: () -> Unit): () -> Unit =
+    if (this == CardMode.Compact) onClose else onBack
 
 @Composable
 private fun OfflineWhen(isOnline: Boolean) {
