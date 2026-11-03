@@ -205,18 +205,18 @@ class AppNavigatorTest {
         noBar.forEach { assertFalse(hasNavigationBar(it)) }
     }
 
-    // Wiersz: V2, „Wstecz” → V1 z zaznaczonym budynkiem, US1.1.
+    // Wiersz: mała karta V2, „Wstecz” → V1 bez zaznaczenia budynku, US2.8, decyzja 116.
     @Test
-    fun us1_1_v2_back_v1_selected() {
+    fun us2_8_v2_back_v1_unselected() {
         navigator().run {
             openBuilding(symbol = "C-13")
             back()
         }
-        assertEquals(listOf(MapRoute(MapFocus.Building("C-13"))), stack)
+        assertEquals(listOf(MapRoute()), stack)
     }
 
     // Wiersz: V1 z arkuszem V2, dotknięcie konturu innego budynku → V2 tego budynku zamiast poprzedniego,
-    // „Wstecz” → V1, US2, decyzja 48.
+    // „Wstecz” → V1 bez zaznaczenia budynku, US2.8, decyzje 115, 116.
     @Test
     fun us2_other_building_replaces_v2() {
         navigator().run {
@@ -225,7 +225,19 @@ class AppNavigatorTest {
             assertEquals(listOf(MapRoute(MapFocus.Building("A-1")), BuildingRoute("A-1")), stack)
             back()
         }
-        assertEquals(listOf(MapRoute(MapFocus.Building("A-1"))), stack)
+        assertEquals(listOf(MapRoute()), stack)
+    }
+
+    // Wiersz: V3, „Wstecz” → pełny ekran V2, a pod nim V1 dalej z zaznaczonym budynkiem; zaznaczenie znika dopiero
+    // z zamknięciem karty, US2.8, decyzja 116.
+    @Test
+    fun us2_8_v3_back_v1_selected() {
+        navigator().run {
+            openBuilding(symbol = "A-1")
+            openEntrances(symbol = "A-1")
+            back()
+        }
+        assertEquals(listOf(MapRoute(MapFocus.Building("A-1")), BuildingRoute("A-1")), stack)
     }
 
     // Wiersze: V3, „Wstecz” → V2 i „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem, US2.1, US3.
