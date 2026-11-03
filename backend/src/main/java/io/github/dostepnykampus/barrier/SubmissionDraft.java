@@ -56,10 +56,21 @@ record SubmissionDraft(UUID id, String kind, double lat, double lon, ObjectNode 
      * @return Zgłoszenie do zapisu
      */
     static SubmissionDraft of(final JsonNode body) {
-        SubmissionDraft.require(body.isObject(), "Zgłoszenie nie jest obiektem JSON");
         SubmissionDraft.require(
             SubmissionDraft.uuid(body.path("id")), "Brak UUID zgłoszenia w polu id"
         );
+        return SubmissionDraft.of(UUID.fromString(body.path("id").stringValue()), body);
+    }
+
+    /**
+     * Sprawdza treść zgłoszenia o znanym identyfikatorze, np. edycji.
+     *
+     * @param id Identyfikator zgłoszenia
+     * @param body Treść zgłoszenia według schematu SubmissionContent
+     * @return Zgłoszenie do zapisu
+     */
+    static SubmissionDraft of(final UUID id, final JsonNode body) {
+        SubmissionDraft.require(body.isObject(), "Zgłoszenie nie jest obiektem JSON");
         SubmissionDraft.require(
             SubmissionDraft.KINDS.contains(body.path("kind").stringValue("")),
             "Nieznany rodzaj zgłoszenia w polu kind"
@@ -84,7 +95,7 @@ record SubmissionDraft(UUID id, String kind, double lat, double lon, ObjectNode 
             "Symbol budynku nie jest tekstem"
         );
         return new SubmissionDraft(
-            UUID.fromString(body.path("id").stringValue()),
+            id,
             body.path("kind").stringValue(),
             place.path(1).doubleValue(),
             place.path(0).doubleValue(),
