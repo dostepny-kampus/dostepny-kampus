@@ -64,7 +64,7 @@ fun BuildingCardScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val card = state
-    val isOnline by viewModel.isOnline.collectAsStateWithLifecycle()
+    val isOnline by viewModel.online.collectAsStateWithLifecycle()
     val isLargeFont = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val actions = @Composable { inContent: Boolean ->
         CardActions(onCheckEntrances = onCheckEntrances, onShowOnMap = onShowOnMap, inContent = inContent)
