@@ -490,7 +490,7 @@ class AppShellTest {
             nodes.fetchSemanticsNodes().isNotEmpty()
         }
         pressBack()
-        compose.onNodeWithText("Pokaż na mapie").assertExists()
+        compose.onNodeWithText("Sprawdź, którędy wejść").assertExists()
         pressBack()
         compose.onNodeWithText("Building(symbol=A-1)").assertExists()
     }
