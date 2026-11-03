@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.Entrance
@@ -14,6 +15,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
@@ -185,7 +187,7 @@ class BuildingCardTest {
     @Test
     fun us2_view_model_loads_catalog() =
         runTest(UnconfinedTestDispatcher()) {
-            val viewModel = BuildingCardViewModel(symbol = "A-1", repository = repository)
+            val viewModel = BuildingCardViewModel(symbol = "A-1", repository = repository, networkStatus = online)
             backgroundScope.launch { viewModel.uiState.collect {} }
             assertEquals(buildingCard(repository.catalog(), "A-1"), viewModel.uiState.value)
         }
@@ -193,7 +195,7 @@ class BuildingCardTest {
     @Test
     fun us2_view_model_missing_retries() =
         runTest(UnconfinedTestDispatcher()) {
-            val viewModel = BuildingCardViewModel(symbol = "Z-9", repository = repository)
+            val viewModel = BuildingCardViewModel(symbol = "Z-9", repository = repository, networkStatus = online)
             backgroundScope.launch { viewModel.uiState.collect {} }
             assertEquals(BuildingCardUiState.Missing, viewModel.uiState.value)
             viewModel.retry()
@@ -208,6 +210,7 @@ class BuildingCardTest {
                 BuildingCardViewModel(
                     symbol = "A-1",
                     repository = BuildingCatalogRepository(stopped) { error("plik nie jest czytany") },
+                    networkStatus = online,
                 )
             backgroundScope.launch { viewModel.uiState.collect {} }
             assertEquals(BuildingCardUiState.Loading, viewModel.uiState.value)
@@ -225,6 +228,8 @@ class BuildingCardTest {
         )
 
     private companion object {
+        val online = NetworkStatus { flowOf(true) }
+
         val repository =
             BuildingCatalogRepository(EmptyCoroutineContext) {
                 """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +

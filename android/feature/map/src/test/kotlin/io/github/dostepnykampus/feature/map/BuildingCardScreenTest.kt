@@ -11,6 +11,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,7 +40,8 @@ class BuildingCardScreenTest {
                     """"entrance":"main","wheelchair":"yes","ref":"Główne"},""" +
                     """"geometry":{"type":"Point","coordinates":[0,0]}}]}"""
             }
-        val viewModel = BuildingCardViewModel(symbol = "C-13", repository = repository)
+        val viewModel =
+            BuildingCardViewModel(symbol = "C-13", repository = repository, networkStatus = { flowOf(true) })
         compose.setContent {
             DostepnyKampusTheme {
                 BuildingCardScreen(
