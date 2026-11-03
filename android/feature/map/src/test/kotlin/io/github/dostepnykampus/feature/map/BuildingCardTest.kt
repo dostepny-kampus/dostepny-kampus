@@ -23,6 +23,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.coroutines.EmptyCoroutineContext
@@ -113,7 +114,29 @@ class BuildingCardTest {
     fun us3_answer_when_none() {
         val stairs = orderedEntrances(listOf(entrance(id = "schody", marking = EntranceMarking.INACCESSIBLE)))
         assertEquals(VisitAnswer.NoAccessible, visitAnswer(stairs))
-        assertEquals(VisitAnswer.NoAccessible, visitAnswer(emptyList()))
+        assertNotEquals(VisitAnswer.NoAccessible, visitAnswer(emptyList()))
+    }
+
+    /** US3.1, US17.1: istniejący budynek bez wejść odwiedzających ma osobną odpowiedź o braku danych. */
+    @Test
+    fun us3_1_service_only_is_no_data() {
+        val service =
+            listOf(
+                entrance(id = "awaryjne", marking = EntranceMarking.ACCESSIBLE, type = "emergency"),
+                entrance(id = "wyjscie", marking = EntranceMarking.INACCESSIBLE, type = "exit"),
+                entrance(id = "garaz", marking = EntranceMarking.NO_DATA, type = "garage"),
+            )
+        val catalog =
+            BuildingCatalog(
+                buildings = listOf(Building(symbol = "A-1", name = null, outline = GeoPolygon(emptyList()))),
+                entrances = service,
+                attribution = "©",
+            )
+        val card = buildingCard(catalog, "A-1") as BuildingCardUiState.Ready
+        assertEquals(emptyList<OrderedEntrance>(), card.entrances)
+        val answer = visitAnswer(card.entrances)
+        assertNotEquals(VisitAnswer.NoAccessible, answer)
+        assertNotEquals(VisitAnswer.Unknown(missing = 0, total = 0), answer)
     }
 
     @Test
