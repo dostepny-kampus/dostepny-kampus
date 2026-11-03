@@ -122,6 +122,19 @@ final class SubmissionStore {
     }
 
     /**
+     * Zwraca zgłoszenie w każdym statusie.
+     *
+     * @param id Identyfikator zgłoszenia
+     * @return Zgłoszenie; brak, gdy go nie ma
+     */
+    Optional<JsonNode> find(final UUID id) {
+        return this.jdbc.sql(SubmissionStore.SELECT.concat("WHERE id = :id"))
+            .param("id", id)
+            .query((rows, num) -> this.node(rows))
+            .optional();
+    }
+
+    /**
      * Zwraca zgłoszenie przyjęte, które widzi każdy (BR-6).
      *
      * @param id Identyfikator zgłoszenia
@@ -156,13 +169,6 @@ final class SubmissionStore {
             .param("floor", floor)
             .query((rows, num) -> this.node(rows))
             .list();
-    }
-
-    private Optional<JsonNode> find(final UUID id) {
-        return this.jdbc.sql(SubmissionStore.SELECT.concat("WHERE id = :id"))
-            .param("id", id)
-            .query((rows, num) -> this.node(rows))
-            .optional();
     }
 
     private int write(final String sql, final SubmissionDraft draft, final int version) {

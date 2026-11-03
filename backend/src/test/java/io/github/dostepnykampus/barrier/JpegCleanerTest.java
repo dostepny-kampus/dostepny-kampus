@@ -83,7 +83,13 @@ final class JpegCleanerTest {
         );
     }
 
-    private static byte[] photo() throws IOException {
+    /**
+     * Tworzy zdjęcie JPEG 8 × 8 px z segmentami EXIF, ICC i komentarzem.
+     *
+     * @return Plik JPEG z metadanymi
+     * @throws IOException Gdy ImageIO nie zapisze obrazu
+     */
+    static byte[] photo() throws IOException {
         final ByteArrayOutputStream image = new ByteArrayOutputStream();
         ImageIO.write(new BufferedImage(8, 8, BufferedImage.TYPE_INT_RGB), "jpg", image);
         final byte[] plain = image.toByteArray();

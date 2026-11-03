@@ -285,6 +285,8 @@ paths:
         Autor dodaje zdjęcie z listy `photoIds` własnego zgłoszenia (BR-7, BR-8). Identyfikator z telefonu sprawia, że ponowne
         wysłanie po zerwanym połączeniu nie tworzy drugiego zdjęcia (BR-9). Weryfikator, który wziął zgłoszenie, zastępuje
         zdjęcie wersją z zasłoniętymi twarzami i tablicami; nie tworzy to nowej wersji zgłoszenia (NFR-25, BR-15).
+        Serwer usuwa z pliku metadane EXIF, XMP i IPTC oraz komentarze, w tym znacznik orientacji (NFR-26), więc telefon
+        wysyła zdjęcie już obrócone.
       tags: [barrier]
       security: [{keycloak: []}]
       requestBody:
