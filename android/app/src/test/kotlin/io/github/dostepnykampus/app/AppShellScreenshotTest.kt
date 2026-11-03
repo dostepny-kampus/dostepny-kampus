@@ -124,7 +124,8 @@ class AppShellScreenshotTest {
         if (isSheetOpen && !isFromList) compose.runOnUiThread { touch(listOf("C-13")) }
         query?.let { compose.onNode(hasSetTextAction()).performTextInput(it) }
         if (isKeyboardOpen) compose.runOnUiThread { dispatchKeyboard(compose.activity, isOpen = true) }
-        if (isSheetOpen) compose.waitUntil { compose.onAllNodesWithText("Wejścia").fetchSemanticsNodes().isNotEmpty() }
+        val check = "Sprawdź, którędy wejść"
+        if (isSheetOpen) compose.waitUntil { compose.onAllNodesWithText(check).fetchSemanticsNodes().isNotEmpty() }
         compose.onRoot().captureRoboImage()
     }
 
