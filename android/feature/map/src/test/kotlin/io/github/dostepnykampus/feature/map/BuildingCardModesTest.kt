@@ -22,6 +22,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -36,6 +37,7 @@ private const val CHECK = "Sprawdź, którędy wejść"
 private const val SHOW = "Pokaż budynek na mapie"
 private const val CLOSE = "Zamknij"
 private const val BACK = "Wstecz"
+private const val ROW = "Wejście dostępne"
 
 private val inScroll = hasAnyAncestor(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
 
@@ -48,6 +50,7 @@ class BuildingCardModesTest {
 
     private val mode = mutableStateOf(CardMode.Compact)
     private val calls = mutableListOf<String>()
+    private val online = MutableStateFlow(true)
 
     // Wiersz: V2, mała karta: nagłówek, potem „Sprawdź, którędy wejść” jako pierwsza czynność i „Zamknij”; bez
     //   „Wejścia”, „Wstecz” i „Pokaż budynek na mapie”, US2.8, US3.2, decyzja 115.
@@ -60,6 +63,15 @@ class BuildingCardModesTest {
         }
         assertOrder(NAME, CHECK, CLOSE)
         compose.onAllNodes(hasClickAction()).onFirst().assert(hasText(CHECK))
+        assertOrder(NAME, ROW, CHECK)
+    }
+
+    // Wiersz: V2 bez internetu, mała karta: linia „Bez internetu” nad przyciskami, NFR-10, US2.8, decyzja 115.
+    @Test
+    fun nfr10_offline_above_compact() {
+        online.value = false
+        card(CardMode.Compact)
+        assertOrder("Bez internetu", CHECK, CLOSE)
     }
 
     // Wiersz: V2, pełny ekran: „Sprawdź, którędy wejść” w treści pod nagłówkiem, pierwsza czynność, bez
@@ -74,6 +86,7 @@ class BuildingCardModesTest {
             compose.onAllNodes(hasClickAction() and !hasText(BACK)).onFirst().assert(hasText(CHECK))
             compose.onNodeWithText(BACK).assertIsDisplayed()
             compose.onNodeWithText("Wejście bez nazwy w danych").assertExists()
+            assertOrder(NAME, ROW, CHECK)
         }
         compose.onNodeWithText(SHOW).assertDoesNotExist()
     }
@@ -104,7 +117,7 @@ class BuildingCardModesTest {
 
     private fun card(start: CardMode) {
         mode.value = start
-        val viewModel = BuildingCardViewModel(symbol = "A-1", repository = repository)
+        val viewModel = BuildingCardViewModel(symbol = "A-1", repository = repository, networkStatus = { online })
         compose.setContent {
             DostepnyKampusTheme {
                 BuildingCardScreen(

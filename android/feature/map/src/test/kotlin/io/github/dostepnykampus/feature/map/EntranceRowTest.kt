@@ -47,9 +47,11 @@ class EntranceRowTest {
             DostepnyKampusTheme {
                 BuildingCardScreen(
                     symbol = symbol,
+                    mode = CardMode.Expanded,
                     onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
+                    onClose = {},
                     viewModel = viewModel,
                 )
             }
