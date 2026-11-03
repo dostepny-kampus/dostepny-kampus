@@ -96,6 +96,7 @@ class CampusMapScreenTest {
     private val cameras = mutableListOf<MapCamera>()
     private val focuses = mutableListOf<String?>()
     private val opened = mutableListOf<String>()
+    private var emptyTaps = 0
     private var touch: (List<String>) -> Unit = {}
     private val fakeMap =
         CampusMapView { data: CampusMapData, camera, _, onBuildingsTouch, _: Modifier ->
@@ -127,6 +128,7 @@ class CampusMapScreenTest {
                     onBuildingClick = { opened += it },
                     focus = focus,
                     contentPadding = PaddingValues(bottom = sheet),
+                    onEmptyMapClick = { emptyTaps++ },
                     mapView = fakeMap,
                     viewModel = viewModel,
                 )
@@ -255,6 +257,18 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("Pomniejsz").assertDoesNotExist()
         compose.onNodeWithText("Mapa kampusu").assertDoesNotExist()
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertDoesNotExist()
+    }
+
+    // Wiersz: mała karta V2 nad V1, dotknięcie pustej mapy → zamknięcie karty; dotknięcie konturu, także wspólnego,
+    // zamknięciem nie jest, US2.8, NFR-17.
+    @Test
+    fun us2_8_empty_map_tap() {
+        compose.setContent { Screen(focus = "C-13", sheet = 200.dp) }
+        compose.waitForIdle()
+        compose.runOnUiThread { listOf(listOf("C-13"), listOf("C-13", "C-14")).forEach(touch) }
+        assertEquals("dotknięcia konturów", 0 to listOf("C-13"), emptyTaps to opened)
+        compose.runOnUiThread { touch(emptyList()) }
+        assertEquals("dotknięcie pustej mapy", 1, emptyTaps)
     }
 
     // Wiersz: V1 → V2 z budynkiem nad arkuszem, „Wstecz” → widok sprzed otwarcia V2, decyzja 83.

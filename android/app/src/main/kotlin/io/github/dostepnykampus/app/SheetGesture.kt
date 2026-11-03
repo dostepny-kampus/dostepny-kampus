@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.app
 
 import androidx.compose.ui.unit.Dp
+import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.feature.map.CardMode
 
 /**
@@ -25,6 +26,9 @@ internal fun SheetState.cardMode(fontScale: Float): CardMode {
     val fullScreen = cardModeFor(fontScale)
     return if (isExpanded || fullScreen == CardMode.Direct) fullScreen else CardMode.Compact
 }
+
+/** Czy dotknięcie pustej mapy V1 zamyka ekran z wierzchu historii: tylko kartę V2 nad mapą (US2.8, NFR-17). */
+internal val closesOnEmptyMapTap: (NavKey) -> Boolean = { false }
 
 /** Zdarzenie przewidywanego gestu „Wstecz” nad arkuszem V2. */
 internal sealed interface BackGesture {
