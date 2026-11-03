@@ -9,6 +9,7 @@ import io.github.dostepnykampus.PostgisTestConfiguration;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -24,12 +25,20 @@ import tools.jackson.databind.ObjectMapper;
  * Testy US1: GET /buildings zwraca budynki z konturem GeoJSON,
  * posortowane według symbolu, albo pustą listę z atrybucją kontraktu.
  *
+ * <p>Każdy test zaczyna od pustej tabeli, bez budynków z pliku konturów;
+ * transakcja testu przywraca je po teście.</p>
+ *
  * @since 0.1.0
  */
 @SpringBootTest
 @Import(PostgisTestConfiguration.class)
 @Transactional
 final class BuildingsHttpTest {
+
+    @BeforeEach
+    void clearBuildings(final WebApplicationContext context) {
+        context.getBean(JdbcClient.class).sql("DELETE FROM buildings").update();
+    }
 
     @Test
     void usOneListsBuildingsBySymbol(final WebApplicationContext context)
