@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -25,6 +26,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.Insets
@@ -39,6 +41,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.DirectNavigationEventInput
 import androidx.navigationevent.NavigationEvent
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
+import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertArrayEquals
@@ -134,7 +137,7 @@ class SheetBackGestureTest {
         assertEquals("góra arkusza po anulowaniu", before.value, sheetTop("po anulowaniu").value, 1f)
     }
 
-    // Wiersz: V2 do połowy, gest „Wstecz” 0,6 i anulowanie → arkusz w dół, potem znów do połowy, V2 zostaje, US2.
+    // Wiersz: mała karta, gest „Wstecz” 0,6 i anulowanie → arkusz w dół, potem znów mała karta, V2 zostaje, US2.
     @Test
     fun us2_cancel_keeps_half_sheet() = checkCancel(isExpanded = false)
 
@@ -217,14 +220,43 @@ class SheetBackGestureTest {
         checkClosed()
     }
 
-    // Wiersz: V2 do połowy, gest „Wstecz” 0,4 i zakończenie → arkusz dojeżdża w dół, potem V2 zdjęte z historii,
+    // Wiersz: mała karta, gest „Wstecz” 0,4 i zakończenie → arkusz dojeżdża w dół, potem V2 zdjęte z historii,
     // V1 z tym samym ViewModel, US1.1, decyzja 83.
     @Test
     fun us1_1_half_sheet_slides_out() = checkSlideOut(isExpanded = false)
 
-    // Wiersz: V2 rozwinięte, gest „Wstecz” 0,4 i zakończenie → arkusz dojeżdża w dół od wysokości rozwiniętej, US1.1.
+    // Wiersz: pełny ekran po małej karcie, „Wstecz” przyciskiem albo gestem → znowu mała karta, V2 zostaje;
+    // z małej karty „Wstecz” → V1, NFR-15, US2.8, decyzja 115.
     @Test
-    fun us1_1_full_sheet_slides_out() = checkSlideOut(isExpanded = true)
+    fun nfr15_full_back_collapses() {
+        compose.setContent { Shell() }
+        openSheet(isExpanded = true)
+        compose.mainClock.autoAdvance = true
+        pressBack()
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertExists("mała karta po „Wstecz” przyciskiem")
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
+        compose.mainClock.autoAdvance = false
+        move(0f)
+        move(0.4f)
+        finish({ backCompleted() })
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertExists("mała karta po geście „Wstecz”")
+        pressBack()
+        checkClosed()
+    }
+
+    // Wiersz: mała karta, przeciągnięcie uchwytu w górę poza uchwyt → pełny ekran na całe okno, US2.8, NFR-53.
+    @Test
+    fun us2_8_handle_drag_expands() {
+        compose.setContent { Shell() }
+        compose.onNodeWithText("A-1").performClick()
+        compose.onNodeWithContentDescription("Rozwiń kartę budynku").performTouchInput {
+            down(center)
+            repeat(times = 10) { moveBy(Offset(x = 0f, y = -60f)) }
+            up()
+        }
+        assertEquals("góra pełnego ekranu po przeciągnięciu", 0f, sheetTop("po przeciągnięciu").value, 1f)
+        compose.onNodeWithContentDescription("Zwiń kartę budynku").assertExists("pełny ekran po przeciągnięciu")
+    }
 
     private fun checkSlideBack(isExpanded: Boolean) {
         compose.setContent { Shell() }
@@ -245,7 +277,7 @@ class SheetBackGestureTest {
         compose.onNodeWithContentDescription(handle).assertExists("rozwinięcie arkusza po anulowaniu")
     }
 
-    // Wiersz: V2 do połowy, gest „Wstecz” 0,6 i anulowanie → arkusz wraca płynnie do połowy, V2 zostaje, US2.
+    // Wiersz: mała karta, gest „Wstecz” 0,6 i anulowanie → arkusz wraca płynnie na miejsce, V2 zostaje, US2.
     @Test
     fun us2_half_sheet_slides_back() = checkSlideBack(isExpanded = false)
 
@@ -253,7 +285,7 @@ class SheetBackGestureTest {
     @Test
     fun us2_full_sheet_slides_back() = checkSlideBack(isExpanded = true)
 
-    // Wiersz: V2 do połowy, „Wstecz” przyciskiem, bez gestu → arkusz dojeżdża w dół, potem V2 zdjęte z historii, US1.1.
+    // Wiersz: mała karta, „Wstecz” przyciskiem, bez gestu → arkusz dojeżdża w dół, potem V2 zdjęte z historii, US1.1.
     @Test
     fun us1_1_back_button_slides_out() {
         compose.setContent { Shell() }
@@ -269,7 +301,7 @@ class SheetBackGestureTest {
         checkClosed()
     }
 
-    // Wiersz: V2 do połowy, gest „Wstecz” 0,2 → 0,6 → arkusz od razu tam, gdzie palec, bez animacji, US2.
+    // Wiersz: mała karta, gest „Wstecz” 0,2 → 0,6 → arkusz od razu tam, gdzie palec, bez animacji, US2.
     @Test
     fun us2_sheet_follows_finger() {
         compose.setContent { Shell() }
@@ -308,7 +340,7 @@ class SheetBackGestureTest {
         assertEquals("zdjęcia V2 z historii po dwóch „Wstecz”", 1, backs)
     }
 
-    // Wiersz: V2 do połowy, „Wstecz” przyciskiem, w trakcie dojazdu początek gestu → arkusz dojeżdża do końca,
+    // Wiersz: mała karta, „Wstecz” przyciskiem, w trakcie dojazdu początek gestu → arkusz dojeżdża do końca,
     // V2 zdjęte z historii, US1.1.
     @Test
     fun us1_1_gesture_while_closing() {
@@ -344,7 +376,7 @@ class SheetBackGestureTest {
         assertTrue("ponownie otwarte V2 idzie za gestem: $moved, $before", moved > before + 1.dp)
     }
 
-    // Wiersz: V2 do połowy, postęp 0,6 i anulowanie w tej samej klatce → arkusz wraca płynnie od 0,6, nie skokiem, US2.
+    // Wiersz: mała karta, postęp 0,6 i anulowanie w tej samej klatce → arkusz wraca płynnie od 0,6, nie skokiem, US2.
     @Test
     fun us2_cancel_same_frame_slides() {
         compose.setContent { Shell() }
@@ -370,9 +402,10 @@ class SheetBackGestureTest {
         val view = compose.activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
         compose.runOnUiThread { ViewCompat.dispatchApplyWindowInsets(view, bars) }
         val top = compose.onNodeWithText("A-1").getUnclippedBoundsInRoot().top
-        val half = top + (mapBottom() - top) / 2
         openSheet(isExpanded = false)
-        assertEquals("uchwyt zwiniętego V2 przy górze arkusza", half.value, sheetTop("zwinięte").value, 1f)
+        val card = compose.onNodeWithText("karta").getUnclippedBoundsInRoot()
+        val compact = mapBottom() - CeleDotyku.minimum - (card.bottom - card.top)
+        assertEquals("uchwyt małej karty przy górze arkusza", compact.value, sheetTop("zwinięte").value, 1f)
         compose.mainClock.autoAdvance = true
         compose.onNodeWithContentDescription("Rozwiń kartę budynku").performClick()
         val belowStatusBar = top + with(compose.density) { 24.toDp() }

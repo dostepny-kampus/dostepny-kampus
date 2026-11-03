@@ -10,6 +10,7 @@ import io.github.dostepnykampus.app.BackGesture.Cancelled
 import io.github.dostepnykampus.app.BackGesture.Completed
 import io.github.dostepnykampus.app.BackGesture.Progressed
 import io.github.dostepnykampus.app.BackGesture.Started
+import io.github.dostepnykampus.feature.map.CardMode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -17,7 +18,7 @@ import org.junit.Test
 
 /** Arkusz V2 przy przewidywanym geście „Wstecz”: przesunięcie z postępu i stan po zdarzeniach gestu. */
 class SheetGestureTest {
-    // Wiersz: V2 do połowy albo rozwinięte, gest „Wstecz” o postępie 0,2 i 0,6 → góra arkusza w dół proporcjonalnie
+    // Wiersz: mała karta albo pełny ekran V2, gest „Wstecz” o postępie 0,2 i 0,6 → góra arkusza w dół proporcjonalnie
     // do postępu, a arkusz nie znika, US2, decyzja 48.
     @Test
     fun us2_gesture_moves_sheet() {
@@ -31,7 +32,7 @@ class SheetGestureTest {
         }
     }
 
-    // Wiersz: V2 do połowy albo rozwinięte, gest „Wstecz” anulowany → arkusz jak przed gestem, V2 zostaje, US2.
+    // Wiersz: mała karta albo pełny ekran V2, gest „Wstecz” anulowany → arkusz jak przed gestem, V2 zostaje, US2.
     @Test
     fun us2_gesture_cancel_keeps_sheet() {
         listOf(false, true).forEach { isExpanded ->
@@ -42,10 +43,26 @@ class SheetGestureTest {
         }
     }
 
-    // Wiersz: V2, gest „Wstecz” zakończony → arkusz zjeżdża do końca, US1.1.
+    // Wiersz: mała karta, „Wstecz” → arkusz zjeżdża do końca, US1.1; pełny ekran po małej karcie, „Wstecz” → znowu
+    // mała karta, V2 zostaje, NFR-15, US2.8, decyzja 115.
     @Test
-    fun us1_1_complete_slides_out() {
-        assertEquals(SheetState(isExpanded = true, progress = 1f), SheetState(isExpanded = true).after(Completed))
+    fun nfr15_back_collapses_closes() {
+        assertEquals(SheetState(isExpanded = false, progress = 1f), SheetState().after(Completed))
+        assertEquals(SheetState(isExpanded = false), SheetState(isExpanded = true).after(Completed))
+    }
+
+    // Wiersz: arkusz zwinięty → karta w trybie małej karty, rozwinięty → pełny ekran z małej karty, US2.8, NFR-53.
+    @Test
+    fun us2_8_sheet_gives_card_mode() {
+        assertEquals(CardMode.Compact, SheetState().cardMode(fontScale = 1f))
+        assertEquals(CardMode.Expanded, SheetState(isExpanded = true).cardMode(fontScale = 1f))
+    }
+
+    // Wiersz: V2 przy skali czcionki co najmniej 1,5 → pełny ekran od razu, także w zwiniętym arkuszu, US2.9, NFR-20.
+    @Test
+    fun nfr20_large_font_sheet_direct() {
+        assertEquals(CardMode.Direct, SheetState().cardMode(fontScale = 2f))
+        assertEquals(CardMode.Direct, SheetState(isExpanded = true).cardMode(fontScale = 2f))
     }
 
     // Wiersz: V2, gest „Wstecz” zakończony albo anulowany → arkusz dojeżdża w dół albo wraca animacją; w trakcie gestu

@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +44,17 @@ private const val LARGE_FONT_SCALE = 1.5f
 /** Tryb karty z trasy (US2.9, NFR-20): `Direct` od skali czcionki 1,5, inaczej `Expanded`. */
 internal fun cardModeFor(fontScale: Float): CardMode =
     if (fontScale >= LARGE_FONT_SCALE) CardMode.Direct else CardMode.Expanded
+
+/** Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku [onBack] i „Zamknij” małej karty [onClose] (US2.8). */
+internal data class SheetCard(val mode: CardMode, val onBack: () -> Unit, val onClose: () -> Unit)
+
+/** Karta V2 w arkuszu: tryb z rozwinięcia, „Wstecz” jak wstecz telefonu, „Zamknij” zamyka V2 (US2.8, NFR-15). */
+@Composable
+internal fun AppNavigator.sheetCard(): SheetCard {
+    val sheet = SheetState(isExpanded = LocalSheetPadding.current.isExpanded)
+    val back = checkNotNull(LocalOnBackPressedDispatcherOwner.current).onBackPressedDispatcher
+    return SheetCard(sheet.cardMode(LocalDensity.current.fontScale), onBack = back::onBackPressed, onClose = { back() })
+}
 
 private typealias Action = Pair<String, () -> Unit>
 
@@ -90,13 +102,14 @@ private fun AppNavigator.Entrances(symbol: String) {
 
 @Composable
 private fun AppNavigator.BuildingCard(symbol: String) {
+    val card = sheetCard()
     BuildingCardScreen(
         symbol = symbol,
-        mode = cardModeFor(LocalDensity.current.fontScale),
+        mode = card.mode,
         onCheckEntrances = { openEntrances(symbol) },
         onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
-        onBack = { back() },
-        onClose = { back() },
+        onBack = card.onBack,
+        onClose = card.onClose,
     )
 }
 
