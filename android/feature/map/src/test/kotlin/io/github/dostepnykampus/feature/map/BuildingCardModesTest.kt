@@ -138,10 +138,14 @@ class BuildingCardModesTest {
                     """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"$NAME",""" +
                         """"osm_id":"way/1"},""" +
                         """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}""",
-                    entrance("node/1", """"entrance":"main","wheelchair":"yes","ref":"Główne""""),
-                    entrance("node/2", """"entrance":"yes","wheelchair":"no","ref":"Schody""""),
-                    entrance("node/3", """"entrance":"yes","wheelchair":"no""""),
-                ).joinToString(",", """{"type":"FeatureCollection","attribution":"©","features":[""", "]}")
+                    entrance(id = "node/1", tags = """"entrance":"main","wheelchair":"yes","ref":"Główne""""),
+                    entrance(id = "node/2", tags = """"entrance":"yes","wheelchair":"no","ref":"Schody""""),
+                    entrance(id = "node/3", tags = """"entrance":"yes","wheelchair":"no""""),
+                ).joinToString(
+                    separator = ",",
+                    prefix = """{"type":"FeatureCollection","attribution":"©","features":[""",
+                    postfix = "]}",
+                )
             }
 
         fun entrance(id: String, tags: String): String =
