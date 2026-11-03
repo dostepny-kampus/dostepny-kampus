@@ -228,6 +228,18 @@ class AppNavigatorTest {
         assertEquals(listOf(MapRoute()), stack)
     }
 
+    // Wiersz: V3, „Wstecz” → pełny ekran V2, a pod nim V1 dalej z zaznaczonym budynkiem; zaznaczenie znika dopiero
+    // z zamknięciem karty, US2.8, decyzja 116.
+    @Test
+    fun us2_8_v3_back_v1_selected() {
+        navigator().run {
+            openBuilding(symbol = "A-1")
+            openEntrances(symbol = "A-1")
+            back()
+        }
+        assertEquals(listOf(MapRoute(MapFocus.Building("A-1")), BuildingRoute("A-1")), stack)
+    }
+
     // Wiersze: V3, „Wstecz” → V2 i „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem, US2.1, US3.
     // Scenariusz (częściowo): przegladanie-mapy.feature: Wejście dostępne najwyżej 3 dotknięcia od mapy
     @Test

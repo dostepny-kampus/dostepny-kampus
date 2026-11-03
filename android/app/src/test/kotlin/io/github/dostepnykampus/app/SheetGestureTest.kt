@@ -58,6 +58,13 @@ class SheetGestureTest {
         assertEquals(CardMode.Expanded, SheetState(isExpanded = true).cardMode(fontScale = 1f))
     }
 
+    // Wiersz: V2 przy skali czcionki co najmniej 1,5 → pełny ekran od razu, także w zwiniętym arkuszu, US2.9, NFR-20.
+    @Test
+    fun nfr20_large_font_sheet_direct() {
+        assertEquals(CardMode.Direct, SheetState().cardMode(fontScale = 2f))
+        assertEquals(CardMode.Direct, SheetState(isExpanded = true).cardMode(fontScale = 2f))
+    }
+
     // Wiersz: V2, gest „Wstecz” zakończony albo anulowany → arkusz dojeżdża w dół albo wraca animacją; w trakcie gestu
     // idzie za palcem bez animacji, US1.1, US2.
     @Test
