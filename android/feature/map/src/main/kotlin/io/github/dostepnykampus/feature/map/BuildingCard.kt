@@ -92,7 +92,11 @@ enum class EntranceSummary {
 
 /** Wiersz o wejściach dla listy [entrances] ułożonej przez [orderedEntrances] (US2.8, US17.1). */
 fun entranceSummary(entrances: List<OrderedEntrance>): EntranceSummary =
-    if (entrances.isEmpty()) EntranceSummary.NoData else EntranceSummary.Accessible
+    when (visitAnswer(entrances)) {
+        is VisitAnswer.Accessible -> EntranceSummary.Accessible
+        VisitAnswer.NoAccessible -> EntranceSummary.NoAccessible
+        VisitAnswer.NoData, is VisitAnswer.Unknown -> EntranceSummary.NoData
+    }
 
 /**
  * Stan karty budynku [symbol] z katalogu (US2, US2.7). Brak symbolu w katalogu to „budynku nie ma w telefonie”.

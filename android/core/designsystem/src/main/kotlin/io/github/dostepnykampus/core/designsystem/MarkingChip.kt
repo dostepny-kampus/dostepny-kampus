@@ -76,9 +76,13 @@ private enum class MarkingLook(
  * kolorze `outline`, zaokrąglenie [Zaokraglenia.standard], napis `labelLarge` z [Typografia.wyroznienieWaga],
  * ikona [Ikony.rozmiar] skalowana jak tekst w sp (NFR-20). Wysokość co najmniej 36 dp jak w makietach V2 i V3;
  * oznaczenie nie jest celem dotyku. Ikona jest ozdobna: TalkBack czyta słowo.
+ *
+ * @param marking oznaczenie, które wyznacza kształt ikony i barwy
+ * @param modifier modyfikator zewnętrzny
+ * @param label własne słowo obok ikony; `null` daje słowo ze słownika oznaczenia
  */
 @Composable
-fun MarkingChip(marking: EntranceMarking, modifier: Modifier = Modifier) {
+fun MarkingChip(marking: EntranceMarking, modifier: Modifier = Modifier, label: String? = null) {
     val look =
         when (marking) {
             EntranceMarking.ACCESSIBLE -> MarkingLook.ACCESSIBLE
@@ -103,7 +107,7 @@ fun MarkingChip(marking: EntranceMarking, modifier: Modifier = Modifier) {
         ) {
             MarkingIcon(look = look, shapeColor = content, markColor = container)
             Text(
-                text = stringResource(look.word),
+                text = label ?: stringResource(look.word),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = Typografia.wyroznienieWaga,
             )

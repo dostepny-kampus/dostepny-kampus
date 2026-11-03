@@ -33,11 +33,13 @@ import io.github.dostepnykampus.core.designsystem.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.PinnedButton
 import io.github.dostepnykampus.core.designsystem.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.model.EntranceMarking
 
 private const val LARGE_FONT_SCALE = 1.5f
 
 /**
- * V2 Karta budynku (US2, BR-25): symbol, nazwa, wejścia z oznaczeniem tekstem i ikoną, zalecane pierwsze.
+ * V2 Karta budynku (US2, BR-25): symbol, nazwa, wiersz o wejściach (US2.8), wejścia z oznaczeniem tekstem
+ * i ikoną, zalecane pierwsze.
  * Karta nic nie mówi o barierach, bo aplikacja nie ma jeszcze ich źródła (US2.7). Czynności: „Sprawdź,
  * którędy wejść” i „Pokaż na mapie”. Przy skali czcionki co najmniej 1,5 czynności stoją w treści (reguła 10).
  * Nieznany symbol: „budynku nie ma w telefonie” (US2.7).
@@ -73,7 +75,10 @@ fun BuildingCardScreen(
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
-            if (card is BuildingCardUiState.Ready) BuildingName(symbol = symbol, name = card.name)
+            if (card is BuildingCardUiState.Ready) {
+                BuildingName(symbol = symbol, name = card.name)
+                EntranceSummaryRow(entranceSummary(card.entrances))
+            }
             if (isLargeFont && card is BuildingCardUiState.Ready) actions(true)
             when (card) {
                 BuildingCardUiState.Loading -> Unit
@@ -94,6 +99,21 @@ private fun BuildingName(symbol: String, name: String?) {
         modifier = Modifier.semantics { contentDescription = spoken },
         style = MaterialTheme.typography.titleLarge,
     )
+}
+
+/**
+ * Wiersz o wejściach pod nagłówkiem (US2.8, NFR-21): słowo i ikona oznaczenia jak w [MarkingChip] (kształt, nie
+ * para zielony/czerwony).
+ */
+@Composable
+internal fun EntranceSummaryRow(summary: EntranceSummary) {
+    val (marking, word) =
+        when (summary) {
+            EntranceSummary.Accessible -> EntranceMarking.ACCESSIBLE to R.string.karta_wiersz_dostepne
+            EntranceSummary.NoAccessible -> EntranceMarking.INACCESSIBLE to R.string.karta_wiersz_niedostepne
+            EntranceSummary.NoData -> EntranceMarking.NO_DATA to R.string.karta_wiersz_brak_danych
+        }
+    MarkingChip(marking = marking, label = stringResource(word))
 }
 
 @Composable
