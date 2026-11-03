@@ -14,11 +14,17 @@ import io.github.dostepnykampus.feature.map.CardMode
  */
 internal fun sheetBackOffset(progress: Float, height: Dp): Dp = height * progress
 
-/** Arkusz V2: rozwinięty na całe okno albo do połowy ([isExpanded]) i postęp gestu „Wstecz” w toku ([progress]). */
+/**
+ * Arkusz V2: rozwinięty na całe okno albo mała karta o wysokości treści ([isExpanded]) i postęp gestu „Wstecz” w toku
+ * ([progress]).
+ */
 internal data class SheetState(val isExpanded: Boolean = false, val progress: Float = 0f)
 
-/** Tryb karty V2 w arkuszu przy skali czcionki [fontScale] (US2.8, US2.9, NFR-20). */
-internal fun SheetState.cardMode(fontScale: Float): CardMode = cardModeFor(fontScale)
+/** Tryb karty V2 w arkuszu przy skali [fontScale]: `Direct` od 1,5, inaczej z rozwinięcia (US2.8, US2.9, NFR-20). */
+internal fun SheetState.cardMode(fontScale: Float): CardMode {
+    val fullScreen = cardModeFor(fontScale)
+    return if (isExpanded || fullScreen == CardMode.Direct) fullScreen else CardMode.Compact
+}
 
 /** Zdarzenie przewidywanego gestu „Wstecz” nad arkuszem V2. */
 internal sealed interface BackGesture {
@@ -31,17 +37,20 @@ internal sealed interface BackGesture {
     /** Gest anulowany: V2 zostaje. */
     data object Cancelled : BackGesture
 
-    /** Gest zakończony: V2 się zamyka. */
+    /** Gest zakończony: pełny ekran wraca do małej karty, a mała karta zamyka V2 (NFR-15). */
     data object Completed : BackGesture
 }
 
-/** Stan arkusza po zdarzeniu [gesture]; rozwinięcie arkusza gest zostawia bez zmian. */
+/** Stan arkusza po zdarzeniu [gesture]; zakończony gest zwija pełny ekran do małej karty (NFR-15, decyzja 115). */
 internal fun SheetState.after(gesture: BackGesture): SheetState =
     when (gesture) {
         BackGesture.Started, BackGesture.Cancelled -> copy(progress = 0f)
         is BackGesture.Progressed -> copy(progress = gesture.progress)
-        BackGesture.Completed -> copy(progress = 1f)
+        BackGesture.Completed -> if (isExpanded) SheetState() else copy(progress = 1f)
     }
+
+/** Czy zdarzenie [gesture] zamyka V2: tylko zakończony gest nad małą kartą, pełny ekran najpierw się zwija (NFR-15). */
+internal fun SheetState.closesOn(gesture: BackGesture): Boolean = gesture == BackGesture.Completed && !isExpanded
 
 /**
  * Arkusz przechodzi do stanu po zdarzeniu gestu animacją ruchu (`true`) albo od razu, za palcem (`false`):

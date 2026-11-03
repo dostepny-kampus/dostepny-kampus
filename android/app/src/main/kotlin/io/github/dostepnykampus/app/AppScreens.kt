@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,10 +48,13 @@ internal fun cardModeFor(fontScale: Float): CardMode =
 /** Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku [onBack] i „Zamknij” małej karty [onClose] (US2.8). */
 internal data class SheetCard(val mode: CardMode, val onBack: () -> Unit, val onClose: () -> Unit)
 
-/** Karta V2 w bieżącym arkuszu nad V1: tryb i czynności zgodne z rozwinięciem arkusza (US2.8, NFR-15). */
+/** Karta V2 w arkuszu: tryb z rozwinięcia, „Wstecz” jak wstecz telefonu, „Zamknij” zamyka V2 (US2.8, NFR-15). */
 @Composable
-internal fun AppNavigator.sheetCard(): SheetCard =
-    SheetCard(mode = cardModeFor(LocalDensity.current.fontScale), onBack = { back() }, onClose = { back() })
+internal fun AppNavigator.sheetCard(): SheetCard {
+    val sheet = SheetState(isExpanded = LocalSheetPadding.current.isExpanded)
+    val back = checkNotNull(LocalOnBackPressedDispatcherOwner.current).onBackPressedDispatcher
+    return SheetCard(sheet.cardMode(LocalDensity.current.fontScale), onBack = back::onBackPressed, onClose = { back() })
+}
 
 private typealias Action = Pair<String, () -> Unit>
 
