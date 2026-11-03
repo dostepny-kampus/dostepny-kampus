@@ -50,4 +50,29 @@ class EntrancesScreenTest {
             compose.onNodeWithText(advice, substring = true).assertDoesNotExist()
         }
     }
+
+    // Wiersz: V3, „Brak danych o wejściach”: „z datą” tylko gdy wejścia mają datę i źródło, inaczej „każde wejście”,
+    // PW-10, US17.3.
+    @Test
+    fun us17_3_unknown_no_date_promise() {
+        val repository =
+            BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
+                """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
+                    """{"type":"Feature","properties":{"kind":"building","symbols":["A-2"],""" +
+                    """"name":"Budynek testowy","osm_id":"way/1"},""" +
+                    """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
+                    """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-2"],"osm_id":"node/1",""" +
+                    """"entrance":"yes"},"geometry":{"type":"Point","coordinates":[0,0]}}]}"""
+            }
+        val viewModel =
+            BuildingCardViewModel(symbol = "A-2", repository = repository, networkStatus = { flowOf(true) })
+        compose.setContent {
+            DostepnyKampusTheme {
+                EntrancesScreen(symbol = "A-2", onShowEntrance = {}, onBack = {}, viewModel = viewModel)
+            }
+        }
+        compose.onNodeWithText("brak danych o 1 z 1 wejść", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("zobaczyć każde wejście.", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("z datą", substring = true).assertDoesNotExist()
+    }
 }
