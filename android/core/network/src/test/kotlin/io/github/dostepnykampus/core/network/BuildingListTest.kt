@@ -55,6 +55,19 @@ class BuildingListTest {
     }
 
     @Test
+    fun us17_1_entrance_without_name() {
+        val dto =
+            json.decodeFromString<EntranceDto>(
+                """{"id":"node/1","buildingSymbol":"C-13","type":"emergency","main":false,""" +
+                    """"location":{"type":"Point","coordinates":[17,51]},"marking":"NO_DATA",""" +
+                    """"markingDate":"2026-11-03","markingSource":"IMPORT"}""",
+            )
+        val entrance = dto.toModel()
+        assertEquals(null, entrance.name)
+        assertEquals("emergency", entrance.type)
+    }
+
+    @Test
     fun us6_2_locate() {
         val inside = json.decodeFromString<LocateResultDto>("""{"buildingSymbol":"C-13","insideOutline":true}""")
         assertEquals(BuildingAtPoint(buildingSymbol = "C-13", isInsideOutline = true), inside.toModel())
