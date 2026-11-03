@@ -45,7 +45,7 @@ import io.github.dostepnykampus.core.designsystem.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.SideBar
 import io.github.dostepnykampus.core.model.hasStaffRole
 
-private val WideWindow = 600.dp
+private val WideWindow = WIDE_WINDOW_DP.dp
 
 private val RestartsSaver =
     listSaver<SnapshotStateList<Int>, Int>(save = { it.toList() }, restore = { it.toMutableStateList() })
@@ -57,7 +57,8 @@ private val RestartsSaver =
  * cele Gościa i napis czwartej pozycji, a [onFirstHelpLeft] dostaje znać, gdy instrukcja z pierwszego
  * uruchomienia przestanie być na wierzchu. [content] rysuje ekran trasy i podpina jego czynności do nawigatora,
  * domyślnie [AppScreen]. Wcięcia systemowe, które zajmuje pasek, są dla treści zużyte: ekran dopełnia resztę
- * przez `WindowInsets.safeDrawing` albo rysuje pod nią, jak mapa. V2 jest arkuszem nad V1 ([SheetSceneStrategy]).
+ * przez `WindowInsets.safeDrawing` albo rysuje pod nią, jak mapa. V2 jest arkuszem nad V1 ([SheetSceneStrategy]),
+ * a gdy okno daje kartę `Direct` (duża czcionka, szerokie okno, poziomo), osobnym ekranem bez mapy (US2.9, NFR-51).
  */
 @Composable
 fun AppShell(
@@ -116,7 +117,7 @@ fun AppShell(
                 NavDisplay(
                     entries = entries,
                     modifier = Modifier.consumeWindowInsets(barInsets),
-                    sceneStrategies = listOf(SheetSceneStrategy),
+                    sceneStrategies = currentCardWindow().sceneStrategies(),
                     onBack = { navigator.back() },
                 )
             },
