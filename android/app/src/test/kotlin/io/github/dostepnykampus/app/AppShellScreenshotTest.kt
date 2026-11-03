@@ -94,7 +94,10 @@ class AppShellScreenshotTest {
                             viewModel = remember { CampusMapViewModel(repository, { flowOf(isOnline) }, choice) },
                         )
                     } else if (route is BuildingRoute) {
-                        val card = remember(route.symbol) { BuildingCardViewModel(route.symbol, repository) }
+                        val card =
+                            remember(route.symbol) {
+                                BuildingCardViewModel(route.symbol, repository, { flowOf(isOnline) })
+                            }
                         BuildingCardScreen(
                             symbol = route.symbol,
                             onCheckEntrances = { openEntrances(route.symbol) },

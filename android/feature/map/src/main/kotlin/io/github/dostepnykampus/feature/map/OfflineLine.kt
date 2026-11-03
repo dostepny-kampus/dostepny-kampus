@@ -41,12 +41,12 @@ private val NoInternetIcon =
     )
 
 /**
- * Wskaźnik braku sieci na V1: jedna linia z ikoną i napisem „Bez internetu” na całą szerokość, pod górą ekranu
+ * Wskaźnik braku sieci na V1 i V2: jedna linia z ikoną i napisem „Bez internetu” na całą szerokość, pod górą ekranu
  * (US9.1, NFR-10, NFR-21, PW-4). W S2 wszystkie dane są z pakietu aplikacji i nic nie jest pobierane, więc linia
  * nie ma daty „dane z …” (decyzja 84). Linia pojawia się sama, więc TalkBack czyta ją jako komunikat stanu
  * (NFR-15, WCAG 4.1.3).
  *
- * @param modifier położenie nad mapą
+ * @param modifier położenie linii wyznacza wołający
  */
 @Composable
 internal fun OfflineLine(modifier: Modifier = Modifier) {

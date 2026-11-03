@@ -42,7 +42,8 @@ private const val LARGE_FONT_SCALE = 1.5f
  * i ikoną, zalecane pierwsze.
  * Karta nic nie mówi o barierach, bo aplikacja nie ma jeszcze ich źródła (US2.7). Czynności: „Sprawdź,
  * którędy wejść” i „Pokaż na mapie”. Przy skali czcionki co najmniej 1,5 czynności stoją w treści (reguła 10).
- * Nieznany symbol: „budynku nie ma w telefonie” (US2.7).
+ * Nieznany symbol: „budynku nie ma w telefonie” (US2.7). Bez internetu nad treścią stoi [OfflineLine] jak na V1,
+ * bez daty (NFR-10, US2.8).
  *
  * @param symbol symbol z trasy, widoczny w nagłówku także w trakcie wczytywania
  * @param onCheckEntrances „Sprawdź, którędy wejść” otwiera V3
@@ -65,6 +66,7 @@ fun BuildingCardScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val card = state
+    val isOnline by viewModel.online.collectAsStateWithLifecycle()
     val isLargeFont = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val actions = @Composable { inContent: Boolean ->
         CardActions(onCheckEntrances = onCheckEntrances, onShowOnMap = onShowOnMap, inContent = inContent)
@@ -75,6 +77,7 @@ fun BuildingCardScreen(
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
+            OfflineWhen(isOnline = isOnline)
             if (card is BuildingCardUiState.Ready) {
                 BuildingName(symbol = symbol, name = card.name)
                 EntranceSummaryRow(entranceSummary(card.entrances))
@@ -88,6 +91,11 @@ fun BuildingCardScreen(
         }
         if (!isLargeFont && card is BuildingCardUiState.Ready) actions(false)
     }
+}
+
+@Composable
+private fun OfflineWhen(isOnline: Boolean) {
+    if (!isOnline) OfflineLine()
 }
 
 @Composable
