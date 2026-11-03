@@ -107,6 +107,7 @@ final class SubmissionsHttpTest {
                 "{\"id\":\"%s\",\"kind\":\"%s\",",
                 "\"location\":{\"type\":\"Point\",\"coordinates\":[%s]},",
                 "\"buildingSymbol\":\"NIE-MA\",\"barrierGroup\":\"OTHER\",",
+                "\"barrierType\":\"TB-1\",\"severity\":2,\"floor\":{\"number\":0},",
                 "\"photoIds\":[\"%s\"]}"
             ),
             UUID.randomUUID(), kind, point, UUID.randomUUID()
