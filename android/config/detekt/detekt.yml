@@ -2,12 +2,13 @@
 comments:
   excludes: ['**/build/generated/**']
   AbsentOrWrongFileLicense:
+    licenseTemplateIsRegex: true
     licenseTemplate: |
-      /*
-       * Dostępny Kampus
-       * Author: Vladyslav Yevkov
-       * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
-       */
+      /\*
+       \* Dostępny Kampus
+       \* Author: (Vladyslav Yevkov|Myroslav Hryniuka|Yevhenii Lukianenko)
+       \* Copyright \(c\) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+       \*/
 
 ktlint:
   excludes: ['**/build/generated/**']
