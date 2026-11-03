@@ -15,7 +15,7 @@ import tools.jackson.databind.JsonNode;
  * @param name Nazwa budynku
  * @param detailLevel Poziom szczegółowości: DETAILED albo BASIC
  * @param outline Kontur budynku jako GeoJSON
- * @param entrances Wejścia budynku; pusta lista, dopóki nie ma danych wejść
+ * @param entrances Wejścia budynku; pusta lista, gdy dane nie mają wejść
  * @since 0.1.0
  */
 public record BuildingCard(
@@ -23,6 +23,6 @@ public record BuildingCard(
     String name,
     String detailLevel,
     JsonNode outline,
-    List<Object> entrances
+    List<Entrance> entrances
 ) {
 }
