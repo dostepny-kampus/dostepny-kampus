@@ -33,7 +33,7 @@
     <string name="wizyta_brak_danych">Nie mamy jeszcze danych o wejściach do budynku %1$s.</string>
     <string name="wizyta_dostepne">Budynek %1$s ma wejście dostępne: »%2$s«.</string>
     <string name="wizyta_brak">Budynek %1$s nie ma wejścia dostępnego. Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.</string>
-    <string name="wizyta_nie_wiemy">Nie wiemy jeszcze, czy budynek %1$s ma wejście dostępne: brak danych o %2$d z %3$d wejść. Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście z datą.</string>
+    <string name="wizyta_nie_wiemy">Nie wiemy jeszcze, czy budynek %1$s ma wejście dostępne: brak danych o %2$d z %3$d wejść. Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście.</string>
     <string name="wizyta_zalecane">Zalecane wejście</string>
     <string name="wizyta_inne">Inne wejście dostępne</string>
     <string name="wizyta_pokaz">Pokaż wejście na mapie</string>
