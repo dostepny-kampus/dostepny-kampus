@@ -105,6 +105,37 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi wejście dostępne budynku A-1
     Oraz od mapy wykonał najwyżej 3 dotknięcia
 
+  @US2.8
+  Szablon scenariusza: Mała karta nad mapą mówi słowami o wejściach
+    Zakładając, że w danych testowych <dane>
+    Oraz Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
+    Jeżeli dotknie budynku <budynek>
+    Wtedy nad mapą widzi małą kartę budynku <budynek> z napisem „<napis>”
+    Oraz na karcie są „Sprawdź, którędy wejść” i „Zamknij”
+    Ale na karcie nie ma „Pokaż budynek na mapie”
+
+    Przykłady:
+      | budynek | dane                                                 | napis                   |
+      | A-1     | budynek A-1 ma wejście z oznaczeniem „dostępne”      | Wejście dostępne        |
+      | B-4     | wszystkie wejścia B-4 mają oznaczenie „niedostępne”  | Brak wejścia dostępnego |
+      | C-13    | wszystkie wejścia C-13 mają oznaczenie „brak danych” | Brak danych o wejściach |
+      | A-2     | budynek A-2 nie ma wejść w danych                    | Brak danych o wejściach |
+
+  @US2.8
+  Scenariusz: Z małej karty osoba rozwija opis albo wraca do mapy
+    Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
+    Jeżeli wybierze „Rozwiń opis budynku”
+    Wtedy widzi opis budynku A-1 na całym ekranie bez mapy
+    Oraz po „Wstecz” widzi znowu małą kartę nad mapą
+    Oraz po „Zamknij” widzi mapę bez zaznaczonego budynku
+
+  @US2.9
+  Scenariusz: Z listy przy dużej czcionce opis budynku prowadzi do mapy
+    Zakładając, że Gość niezalogowany ma skalę czcionki 2,0 i otwartą listę budynków
+    Jeżeli wybierze budynek A-1
+    Wtedy widzi opis budynku A-1 na całym ekranie bez mapy
+    Oraz po „Pokaż budynek na mapie” widzi mapę z zaznaczonym budynkiem A-1, a nie listę
+
   @US3.1
   Scenariusz: Brak wejścia dostępnego jest powiedziany wprost
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
