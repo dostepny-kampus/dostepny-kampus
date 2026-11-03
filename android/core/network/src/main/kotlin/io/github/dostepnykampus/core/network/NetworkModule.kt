@@ -17,7 +17,7 @@ import javax.inject.Singleton
 /**
  * Klient HTTP `core:network` w grafie Hilt aplikacji (decyzja 97).
  *
- * Jedna instancja klienta, parsera i [BuildingsApi] na proces.
+ * Jedna instancja klienta, parsera, [BuildingsApi] i [SubmissionsApi] na proces.
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -54,4 +54,10 @@ object NetworkModule {
     @Singleton
     fun buildingsApi(http: OkHttpClient, json: Json): BuildingsApi =
         BuildingsApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
+
+    /** Wysłanie i edycja zgłoszeń, zdjęcia i zgłoszenia przyjęte; ten sam adres co [buildingsApi]. */
+    @Provides
+    @Singleton
+    fun submissionsApi(http: OkHttpClient, json: Json): SubmissionsApi =
+        SubmissionsApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
 }
