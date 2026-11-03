@@ -81,6 +81,7 @@ import io.github.dostepnykampus.feature.map.BuildingCardScreen
 import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
+import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
@@ -132,9 +133,11 @@ internal fun AppNavigator.TestBuildingCard(symbol: String) {
     val card = remember(symbol) { context.buildingCardViewModel(symbol) }
     BuildingCardScreen(
         symbol = symbol,
+        mode = CardMode.Expanded,
         onCheckEntrances = { openEntrances(symbol) },
         onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
         onBack = { back() },
+        onClose = { back() },
         viewModel = card,
     )
 }
@@ -487,7 +490,7 @@ class AppShellTest {
             nodes.fetchSemanticsNodes().isNotEmpty()
         }
         pressBack()
-        compose.onNodeWithText("Pokaż na mapie").assertExists()
+        compose.onNodeWithText("Sprawdź, którędy wejść").assertExists()
         pressBack()
         compose.onNodeWithText("Building(symbol=A-1)").assertExists()
     }

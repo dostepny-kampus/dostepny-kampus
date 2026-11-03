@@ -45,9 +45,11 @@ class BuildingCardOfflineTest {
             DostepnyKampusTheme {
                 BuildingCardScreen(
                     symbol = "A-1",
+                    mode = CardMode.Expanded,
                     onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
+                    onClose = {},
                     viewModel = viewModel,
                 )
             }
@@ -80,9 +82,11 @@ class BuildingCardOfflineTest {
             DostepnyKampusTheme {
                 BuildingCardScreen(
                     symbol = "A-1",
+                    mode = CardMode.Expanded,
                     onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
+                    onClose = {},
                     viewModel = viewModel,
                 )
             }
