@@ -72,6 +72,7 @@ import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
+import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.CoroutineStart
@@ -101,10 +102,14 @@ internal data class SheetLayout(val cover: Dp = 0.dp, val isExpanded: Boolean = 
  */
 internal val LocalSheetPadding = compositionLocalOf { SheetLayout() }
 
+/** Strategie sceny w oknie: bez arkusza, gdy karta V2 jest od razu na pełnym ekranie (US2.9, NFR-20, NFR-51). */
+internal fun CardWindow.sceneStrategies(): List<SceneStrategy<NavKey>> =
+    if (cardMode() == CardMode.Direct) emptyList() else listOf(SheetSceneStrategy)
+
 /**
  * Strategia sceny dla V2: wpis z metadanymi arkusza ([metadata]) nad samym V1 rysuje się jako arkusz od dołu,
- * a V1 zostaje pod nim widoczne i żywe, z tym samym stanem (decyzje 48 i 83). W oknie co najmniej 600 dp arkusz też
- * wysuwa się od dołu (decyzja 69). Samo V1 to ta sama scena bez arkusza, więc otwarcie i zamknięcie V2 nie zmienia
+ * a V1 zostaje pod nim widoczne i żywe, z tym samym stanem (decyzje 48 i 83), chyba że V2 otwiera się od razu na
+ * pełnym ekranie ([sceneStrategies]). Samo V1 to ta sama scena bez arkusza, więc otwarcie i zamknięcie V2 nie zmienia
  * sceny i nie uruchamia przenikania całego ekranu. Przewidywany gest „Wstecz” obsługuje sam arkusz: zjeżdża w dół
  * z postępem gestu nad niezmienioną mapą (za palcem, bez animacji), po anulowaniu płynnie wraca na swoje miejsce,
  * a po zakończeniu gestu albo „Wstecz” bez gestu pełny ekran zwija do małej karty, a mała karta dojeżdża w dół
