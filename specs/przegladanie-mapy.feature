@@ -135,6 +135,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli wybierze budynek A-1
     Wtedy widzi opis budynku A-1 na całym ekranie bez mapy
     Oraz po „Pokaż budynek na mapie” widzi mapę z zaznaczonym budynkiem A-1, a nie listę
+    Oraz przełącznik „Mapa” i „Lista budynków” pamięta wybór „Mapa”
 
   @US3.1
   Scenariusz: Brak wejścia dostępnego jest powiedziany wprost

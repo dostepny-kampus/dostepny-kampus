@@ -5,7 +5,7 @@
 $ekran_poczatek()
 $naglowek("Budynek A-1", "<i>[nazwa budynku z danych]</i>")
 $brak_internetu("dane z <i>[data]</i>")
-$karta_gora(1, "bez mapy ulic")
+$karta_gora()
 Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")
 $wejscie_karty($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane")

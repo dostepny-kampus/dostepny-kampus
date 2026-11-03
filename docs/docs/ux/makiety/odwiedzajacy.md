@@ -148,11 +148,29 @@ Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 
 Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V2 są [makiety hi-fi](../ekrany/index.md#v2-karta-budynku).
 
-Jak we wzorcu, makiety pokazują arkusz V2 rozwinięty na cały ekran; w aplikacji najpierw zajmuje on połowę ekranu nad mapą V1.
+Jak we wzorcu, makiety pokazują pełny ekran V2 bez mapy. Po dotknięciu budynku na mapie V2 jest najpierw małą kartą nad mapą V1 (decyzja 115).
+
+### V2: mała karta nad mapą
+
+![Makieta małej karty A-1 nad mapą: mapa z wyróżnionym konturem A-1, a pod nią uchwyt, symbol, nazwa, wiersz Wejście dostępne, Sprawdź, którędy wejść i Zamknij](../../_generated/m-v2-karta-budynku-mala.svg)
+
+Czynność główna: „Sprawdź, którędy wejść”.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Mapa z konturem budynku na środku, wyróżnionym; mapa pod kartą bez nazw dla TalkBack | US2.8, NFR-19 |
+| Uchwyt: przycisk „Rozwiń opis budynku” ze stanem; otwiera pełny ekran | US2.8, NFR-18, NFR-53 |
+| Wiersz o wejściach zamiast chipów; inne napisy: „Brak wejścia dostępnego”, „Brak danych o wejściach” | US2.8, US3.1, NFR-21 |
+| „Sprawdź, którędy wejść” wypełniony i obrysowany „Zamknij”; bez „Pokaż budynek na mapie” | US2.8, US3.2, NFR-53 |
+
+| Stan bez osobnej makiety | Co się zmienia |
+| --- | --- |
+| Brak sieci | nad przyciskami linia „Bez internetu” (NFR-10) |
+| Pełny ekran od razu | duża czcionka, okno co najmniej 600 dp, poziomo albo lista przy TalkBack. Bez małej karty, a pod „Sprawdź, którędy wejść” stoi obrysowany „Pokaż budynek na mapie” (US2.9) |
 
 ### V2: budynek podstawowy
 
-![Makieta V2 budynku podstawowego: fragment mapy bez chipów, wejścia Niedostępne i Brak danych bez napisu Zalecane, napis o braku planu pięter, jedna bariera Tylko z pomocą i przypięty pas czynności](../../_generated/m-v2-karta-budynku-podstawowy.svg)
+![Makieta V2 budynku podstawowego: bez chipów, wiersz Brak danych o wejściach, Sprawdź, którędy wejść, wejścia Niedostępne i Brak danych bez napisu Zalecane, napis o braku planu pięter i jedna bariera Tylko z pomocą](../../_generated/m-v2-karta-budynku-podstawowy.svg)
 
 Czynność główna: „Sprawdź, którędy wejść”, jak we wzorcu.
 
@@ -186,14 +204,14 @@ Czynność główna: „Sprawdź, którędy wejść”.
 
 ### V2: brak sieci
 
-![Makieta V2 budynku A-1 bez internetu: wskaźnik z datą danych, fragment mapy bez mapy ulic, wejścia, grupy z planów PWr, pierwsza bariera ze zdjęciem z telefonu, druga z napisem o zdjęciu po połączeniu](../../_generated/m-v2-karta-budynku-brak-sieci.svg)
+![Makieta V2 budynku A-1 bez internetu: wskaźnik z datą danych, chipy, wiersz o wejściach, wejścia, grupy z planów PWr, pierwsza bariera ze zdjęciem z telefonu, druga z napisem o zdjęciu po połączeniu](../../_generated/m-v2-karta-budynku-brak-sieci.svg)
 
 Czynność główna: „Sprawdź, którędy wejść”; V3 działa na danych z telefonu.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Brak internetu” z ikoną i „Dane z [data]” pod nagłówkiem | US9.1, NFR-10, NFR-21 |
-| Fragment mapy bez mapy ulic, z konturem i wejściami z telefonu | NFR-10 |
+| Pełny ekran bez mapy; mapa bez mapy ulic jest tylko nad małą kartą | NFR-10, US2.8 |
 | Zdjęcie zapisane w telefonie widać normalnie | NFR-10 |
 | Zdjęcie spoza telefonu zastępuje „Zdjęcie zobaczysz po połączeniu z internetem.” | NFR-10, PW-6 |
 

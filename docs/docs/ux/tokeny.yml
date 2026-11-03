@@ -128,7 +128,7 @@ kolory:
   secondaryContainer:
     jasny: "#D5E7ED"
     ciemny: "#36494F"
-    uzycie: przyciski tonalne, np. „Zgłoś barierę”, „Pokaż na mapie”
+    uzycie: przyciski tonalne, np. „Zgłoś barierę”
     zrodlo: styl „Karta miejsca”
   onSecondaryContainer:
     jasny: "#1C3640"
@@ -335,11 +335,11 @@ cele_dotyku:
     zrodlo: NFR-17, NFR-20, PE-1
   przypiety:
     dp: 60
-    uzycie: wysokość przycisków przypiętych nad paskiem dolnym, np. „Sprawdź, którędy wejść” i „Pokaż na mapie” (V2)
+    uzycie: wysokość przycisków przypiętych na dole ekranu, np. „Wyślij” (V4); V2 nie ma przypiętego pasa (decyzja 115)
     zrodlo: styl „Karta miejsca”, NFR-17
   odstep:
     dp: 16             # PE-1 ma lekkie drżenie dłoni: między sąsiednimi przyciskami zostaje pas, w który trudno trafić przypadkiem
-    uzycie: odstęp między sąsiednimi przyciskami, np. w przypiętym pasie akcji i w potwierdzeniach
+    uzycie: odstęp między sąsiednimi przyciskami, np. „Sprawdź, którędy wejść” i „Zamknij” na małej karcie V2 i w potwierdzeniach
     zrodlo: NFR-17, PE-1, decyzja 50
   odstep_w_grupie:
     dp: 8
@@ -409,7 +409,7 @@ wysokosci:
     zrodlo: styl „Karta miejsca”
   pasek_czynnosci:
     dp: 6              # Material 3, poziom 3; cień pada w górę
-    uzycie: przypięty pasek czynności nad paskiem dolnym (V2), arkusz na mapie (V1), arkusz z kartą budynku V2 nad mapą
+    uzycie: przypięty pasek czynności (V4, ekrany zespołu), arkusz na mapie (V1), mała karta V2 nad mapą
     zrodlo: styl „Karta miejsca”; cień arkusza z makiety hi-fi V2
 
 # ---------------------------------------------------------------------------
