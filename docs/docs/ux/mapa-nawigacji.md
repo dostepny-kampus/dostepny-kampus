@@ -62,13 +62,16 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 
 | Z ekranu | Czynność | Do ekranu | Rola | AC/BR |
 | --- | --- | --- | --- | --- |
-| V1 | wybór wyniku w polu „Wpisz symbol budynku, np. C-13” | V2 | wszystkie | US1.1 |
-| V1 | dotknięcie konturu budynku | V2, arkusz na mapie do połowy ekranu | wszystkie | US2, US3.2, decyzja 48 |
-| V1 z arkuszem V2 | dotknięcie konturu innego budynku | V2 tego budynku zamiast poprzedniego; „Wstecz” wraca do V1 | wszystkie | US2, decyzja 48 |
+| V1 | wybór wyniku w polu „Wpisz symbol budynku, np. C-13” | V2, mała karta nad mapą; duża czcionka: pełny ekran | wszystkie | US1.1, US2.8 |
+| V1 | dotknięcie konturu budynku | V2, mała karta nad mapą o wysokości treści | wszystkie | US2.8, US3.2, decyzja 115 |
+| V1 z małą kartą V2 | dotknięcie konturu innego budynku | V2 tego budynku zamiast poprzedniego; „Wstecz” wraca do V1 | wszystkie | US2.8, decyzja 115 |
+| V1 z małą kartą V2 | dotknięcie pustej mapy; „Zamknij”; „Wstecz” | V1 bez zaznaczenia; tryb, tekst wyszukiwania i widok mapy bez zmian | wszystkie | US2.8, NFR-53, decyzje 83, 116 |
+| V2, mała karta | uchwyt „Rozwiń opis budynku”, przewinięcie albo przeciągnięcie w górę | V2, pełny ekran bez mapy | wszystkie | US2.8, NFR-53 |
+| V2, pełny ekran po małej karcie | „Wstecz” | V2, mała karta | wszystkie | NFR-15, decyzja 115 |
 | V1 | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie w zasięgu dwóch konturów | V1, arkusz „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
 | V1, arkusz „Który budynek?” | przycisk budynku, np. „Budynek C-3”; „Zamknij” | V2 tego budynku; V1 | wszystkie | US2, NFR-53 |
 | V1 | przełącznik „Mapa” i „Lista budynków” | V1, lista | wszystkie | NFR-19 |
-| V1 | dotknięcie budynku na liście | V2 | wszystkie | US2, US3.2 |
+| V1 | dotknięcie budynku na liście | zwykła czcionka: V1 w widoku mapy z małą kartą V2; duża czcionka albo TalkBack: V2, pełny ekran | wszystkie | US2.8, US3.2, NFR-19, decyzja 115 |
 | V1 | dotknięcie znaku bariery | V1, arkusz bariery | wszystkie | US1.3, US10.6 |
 | V1, arkusz bariery | „Pokaż opis budynku”; „Zamknij” | V2 budynku bariery; V1 | wszystkie | US2 |
 | V1 | napis „© OpenStreetMap contributors” | strona praw autorskich OSM | wszystkie | NFR-37 |
@@ -81,13 +84,13 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, stan „znaleziona sala”, „sala bez drogi” albo „brak sali” | „Pokaż opis budynku” | V2 | wszystkie | US2 |
 | V1, stan „znaleziona sala” | „Zamknij” | V1 | wszystkie | decyzja 48 |
 | V2 | „Pokaż na planie” przy piętrze | V1, plan tego piętra | wszystkie | US16.1, decyzja 44 |
-| V2 | „Pokaż na mapie” w przypiętym pasie | V1 z zaznaczonym budynkiem | wszystkie | US2.1, US3.2 |
+| V2, pełny ekran otwarty od razu | „Pokaż budynek na mapie” | V1 w widoku mapy z zaznaczonym budynkiem, bez karty; zapamiętany wybór „Mapa” | wszystkie | US2.9, NFR-19, decyzja 116 |
 | V2 | „Pokaż wejście na mapie” przy wejściu zalecanym | V1 z zaznaczonym wejściem | wszystkie | US2.1, BR-25 |
 | V2 | „Zgłoś barierę przy wejściu” | V4, krok 1, wejście wybrane | zalogowani | US4, decyzja 48 |
 | V2 | „Zgłoś barierę przy wejściu” | L1, potem V4 z wybranym wejściem | RO-GOS | US14.2, decyzja 48 |
 | V2, stan „brak zgłoszeń przyjętych” | „Zgłoś barierę” | V4; Gość: L1 | wszystkie | US4, US14.2 |
 | V2 | „Sprawdź, którędy wejść” | V3 | wszystkie | US3, US3.2 |
-| V2 | „Wstecz” | V1 z zaznaczonym budynkiem | wszystkie | US1.1 |
+| V2, pełny ekran otwarty od razu | „Wstecz” | ekran sprzed V2, np. lista V1 | wszystkie | NFR-15, US2.9 |
 | V2, stan „budynku nie ma w telefonie” | „Spróbuj ponownie” | V2 | wszystkie | NFR-10 |
 | V2, stan „błąd zdjęcia” | „Spróbuj ponownie” | V2 | wszystkie | NFR-50 |
 | V3 | „Wstecz” | V2 | wszystkie | US3 |
@@ -225,7 +228,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 
 | Kontrola | Wynik | Uwagi |
 | --- | --- | --- |
-| Najwyżej 3 dotknięcia od mapy do wejścia dostępnego (US3.2) | spełnione | najkrótsza droga: 1 dotknięcie do V2, 2 do V3; od otwarcia aplikacji przy pierwszym uruchomieniu do 4 |
+| Najwyżej 3 dotknięcia od mapy do wejścia dostępnego (US3.2) | spełnione | najkrótsza droga: 1 dotknięcie do małej karty V2, 2 do V3; od otwarcia aplikacji przy pierwszym uruchomieniu do 4 |
 | Ekran osiągalny dla roli z uprawnieniem | spełnione | 19 z 19 ekranów |
 | Ekran nieosiągalny dla roli bez uprawnienia | spełnione | brak przejścia z ekranu innej roli |
 | Powrót do punktu startu z każdego ekranu | spełnione | najwyżej 3 dotknięcia; po wysłaniu formularza dzięki P2. Wyjątek: kroki 2 i 3 V4 po zdjęciu, do 5 dotknięć, bo rezygnacja ze zdjęcia wymaga potwierdzenia |
@@ -237,15 +240,17 @@ Liczymy dotknięcie, które uruchamia element; przy TalkBack to podwójne dotkni
 
 Wejście jest wskazane już na V2, bo karta podaje oznaczenie każdego wejścia (US2.1). V3 podaje odpowiedź pełnym zdaniem (US3.1).
 
+„Sprawdź, którędy wejść” stoi i na małej karcie, i na pełnym ekranie, więc mała karta nie dodaje dotknięcia (US2.8).
+
 | Ścieżka | Dotknięcia do V2 | Dotknięcia do V3 | Wynik |
 | --- | --- | --- | --- |
-| A. V1: kontur budynku, „Sprawdź, którędy wejść” | 1 | 2 | spełnione |
+| A. V1: kontur budynku, na małej karcie „Sprawdź, którędy wejść” | 1 | 2 | spełnione |
 | B. V1: bariera na mapie, „Sprawdź, którędy wejść” | 1 | 2 | spełnione |
-| C. V1: pole symbolu budynku, litery, wynik, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
-| D. V1 z TalkBack: „Lista budynków”, budynek, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
+| C. V1: pole symbolu budynku, litery, wynik, na małej karcie „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
+| D. V1 z TalkBack: „Lista budynków”, budynek, od razu pełny ekran, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
 | E. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem A | 2 | 3 | spełnione |
 | F. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem C albo D | 3 | 4 | do V3 ponad próg |
-| G. Brak wyniku: pole, litery, „Lista budynków”, budynek, „Sprawdź, którędy wejść” | 3 | 4 | droga po błędzie, ponad próg |
+| G. Brak wyniku: pole, litery, „Lista budynków”, budynek, mapa z małą kartą, „Sprawdź, którędy wejść” | 3 | 4 | droga po błędzie, ponad próg |
 | H. V1: kontur wspólny, np. „C-3/C-4”, budynek w „Który budynek?”, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
 
 Kryterium liczy dotknięcia od mapy, więc ścieżki E i F się w nim mieszczą. Jeśli liczyć od otwarcia aplikacji, ścieżka F przekracza próg tylko przy pierwszym uruchomieniu i tylko do V3.

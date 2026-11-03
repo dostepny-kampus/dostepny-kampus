@@ -1,0 +1,20 @@
+@startsalt
+' V2 Karta budynku, mała karta nad mapą V1 po dotknięciu konturu A-1 (US2.8; decyzje 115, 116).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$przelacznik("Mapa", "Lista budynków", 1)
+$mapa("mapa ulic OpenStreetMap; kontur A-1 na środku i wyróżniony, sąsiednie przygaszone, wejścia A-1 ze znakami oznaczeń", "", "info")
+$ramka()
+$tekst("[uchwyt; TalkBack: Rozwiń opis budynku, zwinięte]", "i")
+<b>A-1</b>
+<i>[nazwa budynku z danych]</i>
+<b>Wejście dostępne</b>
+$przycisk_glowny("Sprawdź, którędy wejść")
+$przycisk("Zamknij")
+}
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt
