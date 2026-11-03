@@ -21,6 +21,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
+import java.net.HttpURLConnection.HTTP_CONFLICT
 import java.net.HttpURLConnection.HTTP_CREATED
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_NO_CONTENT
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 
 /**
- * Klient HTTP zgłoszeń: wysłanie, zdjęcia i zgłoszenia przyjęte (`/submissions`).
+ * Klient HTTP zgłoszeń: wysłanie, edycja z kontrolą wersji, zdjęcia i zgłoszenia przyjęte (`/submissions`).
  *
  * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek. Odpowiedź z kodem spoza kontraktu,
  * np. 400 przy złamanej regule zgłoszenia, to [ApiResult.ServerError] z tym kodem.
@@ -57,6 +58,23 @@ class SubmissionsApi(
     suspend fun create(id: String, content: SubmissionContent): ApiResult<Submission> =
         call(http, request(path(), JSON.body(json.encodeNewSubmission(id, content)), POST)) { code, body ->
             if (code == HTTP_OK || code == HTTP_CREATED) success(code) { submission(body) } else other(code)
+        }
+
+    /**
+     * Wysyła edycję zaczętą od wersji [version]. Inna wersja na serwerze daje [SubmissionEdit.Conflict]
+     * z wersją z serwera; nic nie zapisuje się samo (NFR-9, BR-10).
+     *
+     * @param id identyfikator zgłoszenia
+     * @param version wersja, od której zaczęto edycję w telefonie
+     * @param content treść po edycji
+     */
+    suspend fun update(id: String, version: Int, content: SubmissionContent): ApiResult<SubmissionEdit> =
+        call(http, request(path(id), JSON.body(json.encodeSubmissionUpdate(version, content)), PUT)) { code, body ->
+            when (code) {
+                HTTP_OK -> success(code) { SubmissionEdit.Saved(submission(body)) }
+                HTTP_CONFLICT -> success(code) { SubmissionEdit.Conflict(conflict(body)) }
+                else -> other(code)
+            }
         }
 
     /**
@@ -89,6 +107,12 @@ class SubmissionsApi(
     }
 
     private fun submission(body: String): Submission = json.decodeSubmission(json.parseToJsonElement(body).jsonObject)
+
+    private fun conflict(body: String): Submission {
+        val server = json.parseToJsonElement(body).jsonObject["serverSubmission"]
+        requireNotNull(server) { "Konflikt wersji bez zgłoszenia z serwera" }
+        return json.decodeSubmission(server.jsonObject)
+    }
 
     private suspend fun <T> call(
         client: OkHttpClient,
@@ -140,4 +164,21 @@ class SubmissionsApi(
         fun other(code: Int): ApiResult<Nothing> =
             if (code == HTTP_NOT_FOUND) ApiResult.NotFound else ApiResult.ServerError(code)
     }
+}
+
+/** Wynik edycji zgłoszenia, które serwer przyjął do sprawdzenia wersji (NFR-9). */
+sealed interface SubmissionEdit {
+    /**
+     * Serwer zapisał edycję jako kolejną wersję.
+     *
+     * @property submission zgłoszenie po edycji
+     */
+    data class Saved(val submission: Submission) : SubmissionEdit
+
+    /**
+     * Serwer ma inną wersję albo zgłoszenie nie pozwala na zmianę; edycja czeka w telefonie na wybór (US9.3).
+     *
+     * @property server zgłoszenie w wersji z serwera
+     */
+    data class Conflict(val server: Submission) : SubmissionEdit
 }
