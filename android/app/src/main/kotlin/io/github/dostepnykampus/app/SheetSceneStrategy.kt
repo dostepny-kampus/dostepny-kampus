@@ -97,6 +97,7 @@ internal data class SheetLayout(val cover: Dp = 0.dp, val isExpanded: Boolean = 
 /**
  * Część V1 zasłonięta przez arkusz V2, jako dopełnienie od dołu; bez arkusza zero. Mapa rysuje się dalej pod
  * arkuszem, a ekran V1 przesuwa o nie tylko swoje przyciski i podpis OSM, żeby stały nad arkuszem (NFR-37).
+ * Treść arkusza dostaje tu [SheetLayout] bez dopełnienia, z rozwinięciem arkusza, z którego karta bierze tryb (US2.8).
  */
 internal val LocalSheetPadding = compositionLocalOf { SheetLayout() }
 
