@@ -45,6 +45,12 @@ private const val LARGE_FONT_SCALE = 1.5f
 internal fun cardModeFor(fontScale: Float): CardMode =
     if (fontScale >= LARGE_FONT_SCALE) CardMode.Direct else CardMode.Expanded
 
+/** Bieżące okno aplikacji dla trybu karty V2: skala czcionki [fontScale], szerokość [widthDp] i [isLandscape]. */
+internal data class CardWindow(val fontScale: Float, val widthDp: Int, val isLandscape: Boolean)
+
+/** Tryb karty V2 w oknie: dziś tylko ze skali czcionki, jak [cardModeFor]. */
+internal fun CardWindow.cardMode(): CardMode = cardModeFor(fontScale)
+
 /** Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku [onBack] i „Zamknij” małej karty [onClose] (US2.8). */
 internal data class SheetCard(val mode: CardMode, val onBack: () -> Unit, val onClose: () -> Unit)
 
