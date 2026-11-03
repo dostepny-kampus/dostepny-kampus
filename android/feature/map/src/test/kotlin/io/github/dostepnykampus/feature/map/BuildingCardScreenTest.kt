@@ -46,9 +46,11 @@ class BuildingCardScreenTest {
             DostepnyKampusTheme {
                 BuildingCardScreen(
                     symbol = "C-13",
+                    mode = CardMode.Expanded,
                     onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
+                    onClose = {},
                     viewModel = viewModel,
                 )
             }
