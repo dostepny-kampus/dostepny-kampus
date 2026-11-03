@@ -19,6 +19,7 @@ Ta część pokazuje, z czego składa się system i dlaczego wybraliśmy takie r
 | [ADR-0006](decyzje/0006-dane-pwr-o-pomieszczeniach.md) | plany pięter PWr importuje serwer, w repozytorium ich nie ma | nr 15, 17, 44 |
 | [ADR-0007](decyzje/0007-hilt-i-mvvm.md) | zależności z Hilt, stan ekranu w ViewModel z jednym `UiState` | nr 97, 100 |
 | [ADR-0008](decyzje/0008-import-budynkow.md) | budynki z pliku konturów OSM w bazie serwera przez powtarzalną migrację Java we Flyway | — |
+| [ADR-0009](decyzje/0009-magazyn-zdjec.md) | zdjęcia zgłoszeń w RustFS przez S3 zamiast MinIO bez obrazów | — |
 
 ADR nie zmieniamy po przyjęciu. Nową decyzję zapisujemy kolejnym numerem ze statusem „zastępuje ADR-…”.
 
