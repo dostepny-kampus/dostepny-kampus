@@ -12,6 +12,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.network.NetworkStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -48,6 +49,7 @@ class BuildingCardViewModel
     constructor(
         @Assisted val symbol: String,
         repository: BuildingCatalogRepository,
+        networkStatus: NetworkStatus,
     ) : ViewModel() {
         private val attempts = MutableStateFlow(0)
 
