@@ -82,13 +82,10 @@ sealed class NavigationHistory(
         return "$index:${restarts.getOrElse(index) { 0 }}:$route"
     }
 
-    /**
-     * „Wstecz” w nagłówku i wstecz telefonu: poprzedni ekran (NFR-15). Zamknięcie V2 zdejmuje z V1 zaznaczenie
-     * budynku, a resztę stanu V1 zostawia (decyzje 83, 116). Na V1 fałsz, wtedy aplikacja się zamyka.
-     */
+    /** „Wstecz” w nagłówku i wstecz telefonu: poprzedni ekran (NFR-15). Na V1 fałsz, wtedy aplikacja się zamyka. */
     fun back(): Boolean {
         if (backStack.size == 1) return false
-        leaving { if (removeAt(lastIndex) is BuildingRoute) this[0] = MapRoute() }
+        leaving { backStack.removeAt(backStack.lastIndex) }
         return true
     }
 
@@ -155,7 +152,7 @@ class AppNavigator(
     }
 
     /**
-     * V1 → V2 budynku [symbol]; „Wstecz” z V2 wraca do V1 bez zaznaczenia budynku (US2.8, decyzja 116). Dotknięcie
+     * V1 → V2 budynku [symbol]; „Wstecz” z V2 wraca do V1 z zaznaczonym budynkiem (US1.1, US2, US3.2). Dotknięcie
      * innego budynku przy otwartym arkuszu V2 zastępuje V2, więc „Wstecz” dalej wraca prosto do V1 (decyzja 48).
      */
     fun openBuilding(symbol: String) {
