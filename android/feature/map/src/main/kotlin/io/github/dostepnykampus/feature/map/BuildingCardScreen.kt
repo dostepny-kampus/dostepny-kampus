@@ -98,10 +98,8 @@ private fun BuildingName(symbol: String, name: String?) {
 
 @Composable
 private fun BuildingFacts(card: BuildingCardUiState.Ready) {
-    Column {
-        GroupContainer(title = stringResource(R.string.karta_wejscia)) {
-            card.entrances.forEach { EntranceLine(it) }
-        }
+    GroupContainer(title = stringResource(R.string.karta_wejscia)) {
+        card.entrances.forEach { EntranceLine(it) }
     }
 }
 
