@@ -15,7 +15,8 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Odczyt budynków z tabeli buildings do listy na mapie (US1).
+ * Odczyt budynków z tabeli buildings do listy na mapie (US1) i ich wejść
+ * z tabeli entrances na kartę budynku (US2).
  *
  * @since 0.1.0
  */
@@ -88,6 +89,33 @@ final class BuildingQuery {
         ).param("symbol", symbol).query(this::card);
     }
 
+    private List<Entrance> entrances(final String symbol) {
+        return this.jdbc.sql(
+            """
+            SELECT id, building_symbol, name, type, main,
+                ST_AsGeoJSON(location) AS location, marking,
+                marking_date::text AS marking_date, marking_source
+            FROM entrances
+            WHERE building_symbol = :symbol
+            ORDER BY main DESC, id
+            """
+        ).param("symbol", symbol).query(
+            (rows, num) -> new Entrance(
+                BuildingQuery.text(rows, "id"),
+                BuildingQuery.text(rows, "building_symbol"),
+                rows.getString("name"),
+                rows.getString("type"),
+                rows.getBoolean("main"),
+                this.mapper.readTree(BuildingQuery.text(rows, "location")),
+                new Entrance.Marking(
+                    BuildingQuery.text(rows, "marking"),
+                    BuildingQuery.text(rows, "marking_date"),
+                    BuildingQuery.text(rows, "marking_source")
+                )
+            )
+        ).list();
+    }
+
     private BuildingList rows(final ResultSet rows) throws SQLException {
         final List<Building> found = new ArrayList<>(8);
         String chosen = "© OpenStreetMap contributors";
@@ -119,7 +147,7 @@ final class BuildingQuery {
                     item.name(),
                     item.detailLevel(),
                     item.outline(),
-                    List.of()
+                    this.entrances(item.symbol())
                 )
             );
         } else {
