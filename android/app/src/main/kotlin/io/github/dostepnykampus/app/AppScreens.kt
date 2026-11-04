@@ -37,7 +37,6 @@ import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.BuildingCardContent
 import io.github.dostepnykampus.feature.map.BuildingCardUiState
 import io.github.dostepnykampus.feature.map.BuildingCardViewModel
-import io.github.dostepnykampus.feature.map.CardCallbacks
 import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
@@ -151,15 +150,12 @@ internal fun AppNavigator.BuildingCard(
         mode = card.mode,
         card = state,
         isOnline = isOnline,
-        actions =
-            CardCallbacks(
-                onCheckEntrances = { openEntrances(symbol) },
-                onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
-                onBack = card.onBack,
-                onClose = card.onClose,
-                onReportEntrance = { report(it) },
-                onRetry = onRetry,
-            ),
+        onCheckEntrances = { openEntrances(symbol) },
+        onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
+        onBack = card.onBack,
+        onClose = card.onClose,
+        onReportEntrance = { report(it) },
+        onRetry = onRetry,
     )
 }
 
