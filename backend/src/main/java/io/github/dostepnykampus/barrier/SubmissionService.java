@@ -63,12 +63,6 @@ public class SubmissionService {
         );
     }
 
-    /**
-     * Treść do zapisu: w zgłoszeniu szybkim budynek z konturu zamiast budynku od klienta.
-     *
-     * @param content Treść od klienta
-     * @return Treść z budynkiem z konturu albo poza budynkami; inne rodzaje bez zmian
-     */
     private SubmissionContent placed(final SubmissionContent content) {
         final SubmissionContent result;
         if (content.kind().buildingFromOutline()) {
