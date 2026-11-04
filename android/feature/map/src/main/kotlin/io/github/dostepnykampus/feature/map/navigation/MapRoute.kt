@@ -27,9 +27,12 @@ sealed interface MapFocus {
     data class Entrance(val id: String) : MapFocus
 }
 
-/** V2 Karta budynku o symbolu [symbol] (US2, US3.2). */
+/**
+ * V2 Karta budynku o symbolu [symbol] (US2, US3.2). [isDirect]: karta otwarta od razu na pełnym ekranie, bez
+ * małej karty, bo budynek wybrano z listy przy TalkBack (NFR-19, decyzja 115).
+ */
 @Serializable
-data class BuildingRoute(val symbol: String) : NavKey
+data class BuildingRoute(val symbol: String, val isDirect: Boolean = false) : NavKey
 
 /** V3 Którędy wejść do budynku o symbolu [symbol] (US3). */
 @Serializable
