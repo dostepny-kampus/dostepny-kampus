@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 final class SubmissionTest {
 
     @Test
-    void mThreeOneRejectsVersionBelowOneAsServerData() {
+    void mthreeOneRejectsVersionBelowOneAsServerData() {
         Assertions.assertAll(
             Stream.of(0, -1, Integer.MIN_VALUE).map(
                 version -> () -> Assertions.assertEquals(
@@ -34,7 +34,7 @@ final class SubmissionTest {
     }
 
     @Test
-    void mThreeOneKeepsComponentsOfVersionOne() {
+    void mthreeOneKeepsComponentsOfVersionOne() {
         final Submission submission = SubmissionSamples.submission(
             1, SubmissionStatus.ACCEPTED
         );
@@ -57,7 +57,7 @@ final class SubmissionTest {
     }
 
     @Test
-    void mThreeOneRejectsMissingReferences() {
+    void mthreeOneRejectsMissingReferences() {
         final SubmissionContent content = SubmissionSamples.content();
         Assertions.assertAll(
             () -> Assertions.assertThrows(

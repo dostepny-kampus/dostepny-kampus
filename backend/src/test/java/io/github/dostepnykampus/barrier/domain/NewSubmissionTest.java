@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 final class NewSubmissionTest {
 
     @Test
-    void mThreeTwoKeepsIdAndContent() {
+    void mthreeTwoKeepsIdAndContent() {
         final NewSubmission command = new NewSubmission(
             SubmissionSamples.ID, SubmissionSamples.content()
         );
@@ -31,7 +31,7 @@ final class NewSubmissionTest {
     }
 
     @Test
-    void mThreeTwoRejectsMissingIdOrContent() {
+    void mthreeTwoRejectsMissingIdOrContent() {
         Assertions.assertAll(
             () -> Assertions.assertThrows(
                 NullPointerException.class,
