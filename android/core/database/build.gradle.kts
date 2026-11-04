@@ -7,10 +7,16 @@
 plugins {
     id("dostepnykampus.android.library")
     id("dostepnykampus.android.hilt")
+    alias(libs.plugins.androidx.room)
 }
 
 android {
     testOptions.unitTests.all { it.useJUnitPlatform() }
+}
+
+room {
+    // `generated` входить у CI-виключення «**/generated/**», бо снапшот згенерований збіркою.
+    schemaDirectory("$projectDir/generated/schemas")
 }
 
 dependencies {
