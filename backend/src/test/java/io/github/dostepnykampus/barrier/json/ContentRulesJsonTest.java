@@ -10,7 +10,6 @@ import io.github.dostepnykampus.barrier.domain.NewEntranceMarking;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -22,7 +21,6 @@ import tools.jackson.databind.node.ObjectNode;
  *
  * @since 0.1.0
  */
-@Disabled("ścisłość i pomijanie pól w JSON jeszcze nie istnieją, kod w następnym PR")
 final class ContentRulesJsonTest {
 
     @Test
