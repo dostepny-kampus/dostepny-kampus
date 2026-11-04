@@ -16,12 +16,22 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import java.io.IOException;
+import java.lang.reflect.Executable;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
@@ -42,7 +52,8 @@ import org.junit.jupiter.params.provider.ValueSource;
  * <p>Każdy pakiet kodu produkcyjnego ma {@code @NullMarked} w package-info,
  * poza listą pakietów czekających na oznaczenie. Lista ma się kurczyć, więc
  * pakiet z listy, który już ma adnotację, łamie regułę. Przykłady negatywne
- * test kompiluje do katalogu tymczasowego; pusty import jest błędem.</p>
+ * test kompiluje do katalogu tymczasowego; pusty import jest błędem. {@code Optional} jest tylko
+ * wynikiem metody.</p>
  *
  * @since 0.1.0
  */
@@ -97,6 +108,15 @@ final class NullabilityArchitectureTest {
         );
     }
 
+    @Test
+    void optionalOnlyAsMethodResult() {
+        Assertions.assertDoesNotThrow(
+            () -> NullabilityArchitectureTest.optionals()
+                .check(NullabilityArchitectureTest.production()),
+            "Optional jest polem, parametrem albo komponentem rekordu"
+        );
+    }
+
     @ParameterizedTest
     @MethodSource("samples")
     void judgesFixtureClasses(final Sample sample)
@@ -108,15 +128,21 @@ final class NullabilityArchitectureTest {
         );
     }
 
-    @ParameterizedTest(name = "lista czekających: {0}")
-    @ValueSource(booleans = {false, true})
-    void failsOnEmptyImport(final boolean waiting) {
+    @ParameterizedTest(name = "{index}")
+    @MethodSource("emptyScopeRules")
+    void failsOnEmptyImport(final ArchRule rule) {
         Assertions.assertThrows(
             AssertionError.class,
-            () -> NullabilityArchitectureTest.state(
-                NullabilityArchitectureTest.WAITING, waiting
-            ).check(new ClassFileImporter().importClasses()),
+            () -> rule.check(new ClassFileImporter().importClasses()),
             "Reguła przechodzi, choć nie sprawdziła żadnej klasy"
+        );
+    }
+
+    private static Stream<ArchRule> emptyScopeRules() {
+        return Stream.of(
+            NullabilityArchitectureTest.state(NullabilityArchitectureTest.WAITING, false),
+            NullabilityArchitectureTest.state(NullabilityArchitectureTest.WAITING, true),
+            NullabilityArchitectureTest.optionals()
         );
     }
 
@@ -124,6 +150,7 @@ final class NullabilityArchitectureTest {
         final String pending = String.format("%s.p", NullabilityArchitectureTest.FIXTURES);
         final String plain = "final class Plain { }";
         final ArchRule none = NullabilityArchitectureTest.state(List.of(), false);
+        final ArchRule optional = NullabilityArchitectureTest.optionals();
         return Stream.of(
             new Sample(
                 none, "bez package-info", Map.of("b/Plain", plain), true
@@ -154,8 +181,92 @@ final class NullabilityArchitectureTest {
                 NullabilityArchitectureTest.state(List.of(pending), true),
                 "nieoznaczony pakiet z listy",
                 Map.of("p/Plain", plain), false
+            ),
+            new Sample(
+                optional, "pole", Map.of("a/A", "class A { Optional<String> v; }"), true
+            ),
+            new Sample(
+                optional, "parametr metody",
+                Map.of("a/A", "class A { void f(Optional<String> v) { } }"), true
+            ),
+            new Sample(
+                optional, "parametr konstruktora",
+                Map.of("a/A", "class A { A(Optional<String> v) { } }"), true
+            ),
+            new Sample(
+                optional, "komponent rekordu",
+                Map.of("a/A", "record A(Optional<String> v) { }"), true
+            ),
+            new Sample(
+                optional, "argument typu",
+                Map.of("a/A", "class A { List<Optional<String>> v; }"), true
+            ),
+            new Sample(
+                optional, "wynik metody",
+                Map.of("a/A", "class A { Optional<String> f() { return null; } }"), false
             )
         );
+    }
+
+    private static ArchRule optionals() {
+        return ArchRuleDefinition.classes().should(
+            NullabilityArchitectureTest.problems(
+                "use Optional only as a result", NullabilityArchitectureTest::optionalSites
+            )
+        );
+    }
+
+    private static ArchCondition<JavaClass> problems(
+        final String text, final Function<Class<?>, List<String>> check
+    ) {
+        return new ArchCondition<JavaClass>(text) {
+            @Override
+            public void check(final JavaClass item, final ConditionEvents events) {
+                for (final String found : check.apply(item.reflect())) {
+                    events.add(SimpleConditionEvent.violated(item, found));
+                }
+            }
+        };
+    }
+
+    private static List<String> optionalSites(final Class<?> type) {
+        final List<String> found = new ArrayList<>(0);
+        Arrays.stream(type.getDeclaredFields())
+            .filter(field -> !field.isSynthetic())
+            .filter(field -> NullabilityArchitectureTest.mentions(field.getGenericType()))
+            .forEach(field -> found.add(String.format("%s.%s", type, field.getName())));
+        NullabilityArchitectureTest.executables(type).forEach(
+            code -> Arrays.stream(code.getParameters())
+                .filter(arg -> NullabilityArchitectureTest.mentions(arg.getParameterizedType()))
+                .forEach(arg -> found.add(String.format("%s.%s", type, code.getName())))
+        );
+        return found;
+    }
+
+    private static Stream<Executable> executables(final Class<?> type) {
+        return Stream.<Executable>concat(
+            Arrays.stream(type.getDeclaredConstructors()),
+            Arrays.stream(type.getDeclaredMethods())
+        ).filter(code -> !code.isSynthetic());
+    }
+
+    private static boolean mentions(final Type type) {
+        final boolean found;
+        if (type instanceof ParameterizedType generic) {
+            found = NullabilityArchitectureTest.mentions(generic.getRawType())
+                || Arrays.stream(generic.getActualTypeArguments())
+                .anyMatch(NullabilityArchitectureTest::mentions);
+        } else if (type instanceof GenericArrayType array) {
+            found = NullabilityArchitectureTest.mentions(array.getGenericComponentType());
+        } else if (type instanceof WildcardType wildcard) {
+            found = Stream.concat(
+                Arrays.stream(wildcard.getUpperBounds()),
+                Arrays.stream(wildcard.getLowerBounds())
+            ).anyMatch(NullabilityArchitectureTest::mentions);
+        } else {
+            found = type == Optional.class;
+        }
+        return found;
     }
 
     private static ArchRule state(final List<String> names, final boolean waiting) {
@@ -217,7 +328,10 @@ final class NullabilityArchitectureTest {
                     "@org.jspecify.annotations.%s%npackage %s;", file.getValue(), pack
                 );
             } else {
-                code = String.format("package %s;%n%s", pack, file.getValue());
+                code = String.format(
+                    "package %s;%nimport java.util.*;%nimport org.jspecify.annotations.*;%n%s",
+                    pack, file.getValue()
+                );
             }
             Files.createDirectories(source.getParent());
             Files.writeString(source, code);
@@ -227,11 +341,20 @@ final class NullabilityArchitectureTest {
             .run(null, null, null, args.toArray(new String[0])) != 0) {
             throw new IllegalStateException("Przykład się nie skompilował");
         }
+        final Thread thread = Thread.currentThread();
+        final ClassLoader before = thread.getContextClassLoader();
         boolean failed = false;
-        try {
+        try (
+            URLClassLoader loader = new URLClassLoader(
+                new URL[] {out.toUri().toURL()}, before
+            )
+        ) {
+            thread.setContextClassLoader(loader);
             sample.rule().check(new ClassFileImporter().importPath(out));
         } catch (final AssertionError ex) {
             failed = true;
+        } finally {
+            thread.setContextClassLoader(before);
         }
         return failed;
     }
