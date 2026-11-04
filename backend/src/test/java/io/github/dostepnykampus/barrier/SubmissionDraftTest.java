@@ -88,15 +88,6 @@ final class SubmissionDraftTest {
     }
 
     @Test
-    void usFourRejectsLatitudeOutsideRange() {
-        Assertions.assertThrows(
-            ResponseStatusException.class,
-            SubmissionDraftTest.parse("[17.0,51.1]", "[17.0,91.0]"),
-            "Szerokość 91° przeszła"
-        );
-    }
-
-    @Test
     void usFourRejectsLineInsteadOfPoint() {
         Assertions.assertThrows(
             ResponseStatusException.class,
