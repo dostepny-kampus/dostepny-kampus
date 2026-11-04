@@ -5,8 +5,10 @@
  */
 package io.github.dostepnykampus.core.network
 
+import io.github.dostepnykampus.core.model.AssessmentSource
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.Entrance
+import io.github.dostepnykampus.core.model.EntranceAssessment
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
@@ -14,6 +16,7 @@ import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
 
 /** Mapowanie JSON kontraktu budynków na modele, bez sieci. */
 class BuildingListTest {
@@ -49,6 +52,7 @@ class BuildingListTest {
                 type = null,
                 location = GeoPoint(longitude = 17.0, latitude = 51.0),
                 marking = EntranceMarking.ACCESSIBLE,
+                assessment = EntranceAssessment(LocalDate.of(2026, 10, 1), AssessmentSource.IMPORT),
             ),
             card.entrances.single(),
         )
