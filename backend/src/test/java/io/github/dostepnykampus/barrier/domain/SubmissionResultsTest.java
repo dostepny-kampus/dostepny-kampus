@@ -5,7 +5,10 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
+import java.util.Arrays;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -19,7 +22,7 @@ import org.junit.jupiter.api.Test;
 final class SubmissionResultsTest {
 
     @Test
-    void mThreeSixCreateResultsExposeGivenSubmission() {
+    void mthreeSixCreateResultsExposeGivenSubmission() {
         final Submission submission = SubmissionSamples.submission(1, SubmissionStatus.SENT);
         final CreateResult created = new CreateResult.Created(submission);
         final CreateResult existing = new CreateResult.Existing(submission);
@@ -35,39 +38,29 @@ final class SubmissionResultsTest {
     }
 
     @Test
-    void mThreeSixResultsAreSealedWithTheirVariantsOnly() {
-        final Submission submission = SubmissionSamples.submission(2, SubmissionStatus.SENT);
+    void mthreeSixResultsAreSealedWithTheirVariantsOnly() {
         Assertions.assertAll(
             () -> Assertions.assertTrue(CreateResult.class.isSealed(), "CreateResult otwarty"),
             () -> Assertions.assertTrue(EditResult.class.isSealed(), "EditResult otwarty"),
             () -> Assertions.assertEquals(
-                2, CreateResult.class.getPermittedSubclasses().length,
-                "CreateResult ma inną liczbę wariantów"
+                Set.of("Saved", "Conflict", "Missing"),
+                Arrays.stream(EditResult.class.getPermittedSubclasses())
+                    .map(Class::getSimpleName)
+                    .collect(Collectors.toSet()),
+                "EditResult ma inne warianty"
             ),
             () -> Assertions.assertEquals(
-                3, EditResult.class.getPermittedSubclasses().length,
-                "EditResult ma inną liczbę wariantów"
-            ),
-            () -> Assertions.assertEquals(
-                "Saved",
-                SubmissionResultsTest.name(new EditResult.Saved(submission)),
-                "Saved nie pasuje do wzorca"
-            ),
-            () -> Assertions.assertEquals(
-                "Conflict",
-                SubmissionResultsTest.name(new EditResult.Conflict(submission)),
-                "Conflict nie pasuje do wzorca"
-            ),
-            () -> Assertions.assertEquals(
-                "Missing",
-                SubmissionResultsTest.name(new EditResult.Missing(SubmissionSamples.ID)),
-                "Missing nie pasuje do wzorca"
+                Set.of("Created", "Existing"),
+                Arrays.stream(CreateResult.class.getPermittedSubclasses())
+                    .map(Class::getSimpleName)
+                    .collect(Collectors.toSet()),
+                "CreateResult ma inne warianty"
             )
         );
     }
 
     @Test
-    void mThreeSixEditResultsKeepTheirComponents() {
+    void mthreeSixEditResultsKeepTheirComponents() {
         final Submission submission = SubmissionSamples.submission(
             3, SubmissionStatus.IN_REVIEW
         );
@@ -87,7 +80,7 @@ final class SubmissionResultsTest {
 
     @Test
     @Disabled("Wyniki nie odrzucają jeszcze null, poprawka w następnym PR")
-    void mThreeSixRejectsMissingComponents() {
+    void mthreeSixRejectsMissingComponents() {
         Assertions.assertAll(
             () -> Assertions.assertThrows(
                 NullPointerException.class,
@@ -115,13 +108,5 @@ final class SubmissionResultsTest {
                 "Missing bez identyfikatora przeszło"
             )
         );
-    }
-
-    private static String name(final EditResult result) {
-        return switch (result) {
-            case EditResult.Saved saved -> "Saved";
-            case EditResult.Conflict conflict -> "Conflict";
-            case EditResult.Missing missing -> "Missing";
-        };
     }
 }
