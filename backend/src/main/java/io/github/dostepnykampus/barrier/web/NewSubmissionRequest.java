@@ -27,7 +27,7 @@ record NewSubmissionRequest(UUID id, SubmissionContentJson content) {
         return NewSubmissionRequest.missing();
     }
 
-    private static <T> T missing() {
+    private static NewSubmission missing() {
         throw new UnsupportedOperationException();
     }
 }
