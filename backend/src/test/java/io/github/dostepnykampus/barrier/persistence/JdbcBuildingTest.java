@@ -34,23 +34,21 @@ final class JdbcBuildingTest {
 
     @AfterEach
     void clean(final ApplicationContext context) {
-        new SubmissionData(context).clean();
+        SubmissionData.of(context).clean();
     }
 
     @Test
     @Disabled("adapter JdbcSubmissions jest zaślepką")
     void brFourteenUnknownBuildingIsInvalidSubmission(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
-        final UUID id = data.seed(
-            1, SubmissionData.BUILDING, "p1", SubmissionStatus.SENT, SubmissionData.EARLY
-        );
-        final SubmissionContent unknown = data.content("J-NONE", "p1", "x");
+        final UUID id = data.seed(SubmissionStatus.SENT);
+        final SubmissionContent unknown = SubmissionData.content("J-NONE", "p1", "x");
         Assertions.assertEquals(
             List.of("Nieznany budynek zgłoszenia", "Nieznany budynek zgłoszenia"),
             List.of(
                 Assertions.assertThrows(
                     InvalidSubmission.class,
-                    () -> data.repo().create(new NewSubmission(data.id(2), unknown))
+                    () -> data.repo().create(new NewSubmission(SubmissionData.id(2), unknown))
                 ).getMessage(),
                 Assertions.assertThrows(
                     InvalidSubmission.class,
@@ -74,7 +72,10 @@ final class JdbcBuildingTest {
             Assertions.assertThrows(
                 DataIntegrityViolationException.class,
                 () -> data.repo().create(
-                    new NewSubmission(data.id(1), data.content(SubmissionData.OTHER, "p1", "x"))
+                    new NewSubmission(
+                        SubmissionData.id(1),
+                        SubmissionData.content(SubmissionData.OTHER, "p1", "x")
+                    )
                 ),
                 "Błąd inny niż brak budynku został zamaskowany"
             );
