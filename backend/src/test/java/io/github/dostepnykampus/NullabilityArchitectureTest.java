@@ -16,9 +16,15 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import java.io.IOException;
+import java.lang.reflect.AnnotatedArrayType;
+import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.AnnotatedWildcardType;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.net.URISyntaxException;
@@ -28,10 +34,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
@@ -51,8 +60,10 @@ import org.junit.jupiter.params.provider.MethodSource;
  * <p>Każdy pakiet kodu produkcyjnego ma {@code @NullMarked} w package-info,
  * poza listą pakietów czekających na oznaczenie. Lista ma się kurczyć, więc
  * pakiet z listy, który już ma adnotację, łamie regułę. Przykłady negatywne
- * test kompiluje do katalogu tymczasowego; pusty import jest błędem. {@code Optional} jest tylko
- * wynikiem metody.</p>
+ * test kompiluje do katalogu tymczasowego; pusty import jest błędem. {@code Optional} jest tylko wynikiem metody. W
+ * {@code ..domain..} {@code @Nullable} stoi wyłącznie na komponentach rekordów
+ * z zamkniętej listy par klasa i komponent; para z klasą, której jeszcze nie
+ * ma w kodzie, jest dozwolona.</p>
  *
  * @since 0.1.0
  */
@@ -68,6 +79,20 @@ final class NullabilityArchitectureTest {
      */
     private static final List<String> WAITING =
         List.of("io.github.dostepnykampus.barrier");
+
+    /**
+     * Komponenty rekordów domeny dopuszczone jako {@code @Nullable};
+     * {@code SubmissionContent.replaces} w specyfikacji nazywa się
+     * {@code replacesSubmissionId}.
+     */
+    private static final Map<String, Set<String>> LISTED = Map.of(
+        "SubmissionFloor", Set.of("floorId", "number"),
+        "SubmissionPlace", Set.of("accuracyMeters", "buildingSymbol", "floor"),
+        "BarrierDetails", Set.of("group", "type", "severity", "description"),
+        "SubmissionContent",
+        Set.of("entranceId", "entranceMarking", "replaces"),
+        "SubmissionQuery", Set.of("buildingSymbol", "floorId")
+    );
 
     /**
      * Katalog na źródła i klasy przykładów.
@@ -116,6 +141,16 @@ final class NullabilityArchitectureTest {
         );
     }
 
+    @Test
+    void nullableInDomainOnlyOnListedComponents() {
+        Assertions.assertDoesNotThrow(
+            () -> NullabilityArchitectureTest.nullables(
+                NullabilityArchitectureTest.LISTED
+            ).check(NullabilityArchitectureTest.production()),
+            "W domenie @Nullable stoi poza listą par klasa i komponent"
+        );
+    }
+
     @ParameterizedTest
     @MethodSource("samples")
     void judgesFixtureClasses(final Sample sample)
@@ -141,7 +176,8 @@ final class NullabilityArchitectureTest {
         return Stream.of(
             NullabilityArchitectureTest.state(NullabilityArchitectureTest.WAITING, false),
             NullabilityArchitectureTest.state(NullabilityArchitectureTest.WAITING, true),
-            NullabilityArchitectureTest.optionals()
+            NullabilityArchitectureTest.optionals(),
+            NullabilityArchitectureTest.nullables(NullabilityArchitectureTest.LISTED)
         );
     }
 
@@ -150,6 +186,9 @@ final class NullabilityArchitectureTest {
         final String plain = "final class Plain { }";
         final ArchRule none = NullabilityArchitectureTest.state(List.of(), false);
         final ArchRule optional = NullabilityArchitectureTest.optionals();
+        final ArchRule nullable = NullabilityArchitectureTest.nullables(
+            Map.of("Listed", Set.of("kept"))
+        );
         return Stream.of(
             new Sample(
                 none, "bez package-info", Map.of("b/Plain", plain), true
@@ -203,6 +242,51 @@ final class NullabilityArchitectureTest {
             new Sample(
                 optional, "wynik metody",
                 Map.of("a/A", "class A { Optional<String> f() { return null; } }"), false
+            ),
+            new Sample(
+                nullable, "pole",
+                Map.of("domain/A", "class A { @Nullable String v; }"), true
+            ),
+            new Sample(
+                nullable, "wynik metody",
+                Map.of("domain/A", "class A { @Nullable String f() { return null; } }"), true
+            ),
+            new Sample(
+                nullable, "parametr metody",
+                Map.of("domain/A", "class A { void f(@Nullable String v) { } }"), true
+            ),
+            new Sample(
+                nullable, "parametr konstruktora",
+                Map.of("domain/A", "class A { A(@Nullable String v) { } }"), true
+            ),
+            new Sample(
+                nullable, "komponent spoza listy",
+                Map.of("domain/A", "record A(@Nullable String v) { }"), true
+            ),
+            new Sample(
+                nullable, "inny komponent klasy z listy",
+                Map.of(
+                    "domain/Listed",
+                    "record Listed(@Nullable String kept, @Nullable String x) { }"
+                ), true
+            ),
+            new Sample(
+                nullable, "klasa z listy poza rekordem",
+                Map.of("domain/Listed", "class Listed { @Nullable String kept; }"), true
+            ),
+            new Sample(
+                nullable, "argument typu",
+                Map.of("domain/A", "class A { List<@Nullable String> v; }"), true
+            ),
+            new Sample(
+                nullable, "brak klas domeny", Map.of("a/A", "class A { }"), true
+            ),
+            new Sample(
+                nullable, "komponent z listy i null poza domeną",
+                Map.of(
+                    "domain/Listed", "record Listed(@Nullable String kept, String x) { }",
+                    "a/A", "class A { @Nullable String v; }"
+                ), false
             )
         );
     }
@@ -211,6 +295,15 @@ final class NullabilityArchitectureTest {
         return ArchRuleDefinition.classes().should(
             NullabilityArchitectureTest.problems(
                 "use Optional only as a result", NullabilityArchitectureTest::optionalSites
+            )
+        );
+    }
+
+    private static ArchRule nullables(final Map<String, Set<String>> listed) {
+        return ArchRuleDefinition.classes().that().resideInAPackage("..domain..").should(
+            NullabilityArchitectureTest.problems(
+                "use @Nullable only on listed components",
+                type -> NullabilityArchitectureTest.misplaced(type, listed)
             )
         );
     }
@@ -242,6 +335,43 @@ final class NullabilityArchitectureTest {
         return found;
     }
 
+    private static List<String> misplaced(
+        final Class<?> type, final Map<String, Set<String>> listed
+    ) {
+        final Set<String> kept = new HashSet<>(0);
+        final RecordComponent[] parts = Optional
+            .ofNullable(type.getRecordComponents()).orElse(new RecordComponent[0]);
+        if (type.isRecord()) {
+            kept.addAll(listed.getOrDefault(type.getSimpleName(), Set.of()));
+        }
+        final List<String> found = new ArrayList<>(0);
+        Arrays.stream(type.getDeclaredFields())
+            .filter(field -> NullabilityArchitectureTest.nullable(field.getAnnotatedType()))
+            .filter(field -> !kept.contains(field.getName()))
+            .forEach(field -> found.add(String.format("%s.%s", type, field.getName())));
+        Arrays.stream(parts)
+            .filter(part -> NullabilityArchitectureTest.nullable(part.getAnnotatedType()))
+            .filter(part -> !kept.contains(part.getName()))
+            .forEach(part -> found.add(String.format("%s.%s", type, part.getName())));
+        NullabilityArchitectureTest.executables(type).forEach(
+            code -> {
+                if (NullabilityArchitectureTest.nullable(code.getAnnotatedReturnType())
+                    && !(code.getParameterCount() == 0 && kept.contains(code.getName()))) {
+                    found.add(String.format("%s.%s", type, code.getName()));
+                }
+                IntStream.range(0, code.getParameterCount())
+                    .filter(idx -> NullabilityArchitectureTest.nullable(
+                        code.getParameters()[idx].getAnnotatedType()
+                    ))
+                    .filter(idx -> !(code instanceof Constructor<?>
+                        && code.getParameterCount() == parts.length
+                        && kept.contains(parts[idx].getName())))
+                    .forEach(idx -> found.add(String.format("%s.%s", type, code.getName())));
+            }
+        );
+        return found;
+    }
+
     private static Stream<Executable> executables(final Class<?> type) {
         return Stream.<Executable>concat(
             Arrays.stream(type.getDeclaredConstructors()),
@@ -266,6 +396,24 @@ final class NullabilityArchitectureTest {
             found = type == Optional.class;
         }
         return found;
+    }
+
+    private static boolean nullable(final AnnotatedType type) {
+        final Stream<AnnotatedType> inner;
+        if (type instanceof AnnotatedParameterizedType generic) {
+            inner = Arrays.stream(generic.getAnnotatedActualTypeArguments());
+        } else if (type instanceof AnnotatedArrayType array) {
+            inner = Stream.of(array.getAnnotatedGenericComponentType());
+        } else if (type instanceof AnnotatedWildcardType wildcard) {
+            inner = Stream.concat(
+                Arrays.stream(wildcard.getAnnotatedUpperBounds()),
+                Arrays.stream(wildcard.getAnnotatedLowerBounds())
+            );
+        } else {
+            inner = Stream.empty();
+        }
+        return type.isAnnotationPresent(Nullable.class)
+            || inner.anyMatch(NullabilityArchitectureTest::nullable);
     }
 
     private static ArchRule state(final List<String> names, final boolean waiting) {
