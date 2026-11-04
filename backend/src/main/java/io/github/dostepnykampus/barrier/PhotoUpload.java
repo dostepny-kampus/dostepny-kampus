@@ -27,8 +27,8 @@ record PhotoUpload(InputStream source, long declared) {
      * Czyta najwyżej limit bajtów do bufora; dodatkowy bajt wykrywa przekroczenie.
      *
      * @return Ciało mieszczące się w limicie
-     * @throws PhotoTooLargeException Gdy długość lub odczyt przekracza limit
-     * @throws IOException Gdy nie uda się odczytać ciała
+     * @throws IOException Gdy odczyt się nie uda lub rozmiar przekracza limit
+     *  (PhotoTooLargeException)
      */
     byte[] read() throws IOException {
         if (this.declared > PhotoUpload.MAX_BYTES) {
