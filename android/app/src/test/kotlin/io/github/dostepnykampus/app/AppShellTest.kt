@@ -140,7 +140,10 @@ internal fun AppNavigator.TestEntrances(symbol: String) {
 @Composable
 internal fun AppNavigator.TestBuildingCard(symbol: String) {
     val context = LocalContext.current
-    BuildingCard(symbol, remember(symbol) { context.buildingCardViewModel(symbol) })
+    val card = remember(symbol) { context.buildingCardViewModel(symbol) }
+    val state by card.uiState.collectAsStateWithLifecycle()
+    val isOnline by card.online.collectAsStateWithLifecycle()
+    BuildingCard(symbol = symbol, state = state, isOnline = isOnline, onRetry = card::retry)
 }
 
 /** Stan V1 na źródłach jak w aplikacji: plik konturów z zasobów i sieć telefonu; wybór mapy albo listy [choice]. */
