@@ -165,7 +165,7 @@ private fun SubmissionDto.toModel(): Submission =
 
 private fun Boolean.sentOnlyIfTrue(): Boolean? = takeIf { it }
 
-private fun Boolean?.absentAsFalse(): Boolean = this ?: false
+private fun Boolean?.absentAsFalse(): Boolean = this == true
 
 private fun instant(text: String): Instant =
     try {
