@@ -29,23 +29,33 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public final class ProblemResponses {
 
     /**
-     * Dziennik nieoczekiwanych wyjątków, których klient nie widzi.
+     * Dziennik serwera: odrzucone żądania na poziomie DEBUG, nieoczekiwane
+     * wyjątki, których klient nie widzi, na poziomie ERROR.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(ProblemResponses.class);
+    private final Logger log;
+
+    /**
+     * Obsługa z dziennikiem tej klasy.
+     */
+    public ProblemResponses() {
+        this.log = LoggerFactory.getLogger(ProblemResponses.class);
+    }
 
     @ExceptionHandler
-    static ProblemDetail invalid(final InvalidInput error) {
+    ProblemDetail invalid(final InvalidInput error) {
+        this.log.debug("Niepoprawne dane żądania: {}", error.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, error.getMessage());
     }
 
     @ExceptionHandler
-    static ProblemDetail missing(final MissingResource error) {
+    ProblemDetail missing(final MissingResource error) {
+        this.log.debug("Brak zasobu: {}", error.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.getMessage());
     }
 
     @ExceptionHandler
-    static ProblemDetail unexpected(final Exception error) {
-        ProblemResponses.LOG.error("Nieobsłużony wyjątek w obsłudze żądania", error);
+    ProblemDetail unexpected(final Exception error) {
+        this.log.error("Nieobsłużony wyjątek w obsłudze żądania", error);
         return ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
