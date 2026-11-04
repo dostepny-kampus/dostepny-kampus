@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
@@ -15,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import tools.jackson.databind.JsonNode;
@@ -53,7 +53,7 @@ public final class SubmissionPhotosController {
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia z listy photoIds
-     * @param jpeg Plik JPEG
+     * @param request Wejściowe żądanie JPEG odczytywane z limitem NFR-34
      * @return Odpowiedź 204 bez treści
      */
     @PutMapping(
@@ -63,7 +63,7 @@ public final class SubmissionPhotosController {
     ResponseEntity<Void> putSubmissionPhoto(
         @PathVariable("submissionId") final UUID submission,
         @PathVariable("photoId") final UUID photo,
-        @RequestBody final byte[] jpeg
+        final HttpServletRequest request
     ) {
         final boolean locked = this.submissions.find(submission)
             .filter(item -> SubmissionPhotosController.listed(item, photo))
@@ -77,7 +77,11 @@ public final class SubmissionPhotosController {
         }
         final byte[] clean;
         try {
-            clean = JpegCleaner.strip(jpeg);
+            clean = JpegCleaner.strip(
+                new PhotoUpload(request.getInputStream(), request.getContentLengthLong()).read()
+            );
+        } catch (final PhotoTooLargeException ex) {
+            throw new ResponseStatusException(HttpStatus.CONTENT_TOO_LARGE, ex.getMessage(), ex);
         } catch (final IOException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Uszkodzony plik JPEG", ex);
         }
