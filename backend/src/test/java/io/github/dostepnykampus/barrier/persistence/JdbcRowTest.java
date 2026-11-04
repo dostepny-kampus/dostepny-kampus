@@ -30,25 +30,27 @@ final class JdbcRowTest {
 
     @AfterEach
     void clean(final ApplicationContext context) {
-        new SubmissionData(context).clean();
+        SubmissionData.of(context).clean();
     }
 
     @Test
     @Disabled("adapter JdbcSubmissions jest zaślepką")
     void brTenStaleVersionConflictsAndMissingIsReported(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
-        final UUID id = data.seed(
-            1, SubmissionData.BUILDING, "p1", SubmissionStatus.SENT, SubmissionData.EARLY
+        final UUID id = data.seed(SubmissionStatus.SENT);
+        final EditResult saved = data.repo().update(
+            new SubmissionEdit(id, 1, SubmissionData.content("a"))
         );
-        final EditResult saved = data.repo().update(new SubmissionEdit(id, 1, data.content("a")));
         Assertions.assertEquals(
             List.of(
                 new EditResult.Conflict(((EditResult.Saved) saved).submission()),
-                new EditResult.Missing(data.id(7))
+                new EditResult.Missing(SubmissionData.id(7))
             ),
             List.of(
-                data.repo().update(new SubmissionEdit(id, 1, data.content("b"))),
-                data.repo().update(new SubmissionEdit(data.id(7), 1, data.content("c")))
+                data.repo().update(new SubmissionEdit(id, 1, SubmissionData.content("b"))),
+                data.repo().update(
+                    new SubmissionEdit(SubmissionData.id(7), 1, SubmissionData.content("c"))
+                )
             )
         );
     }
@@ -57,7 +59,7 @@ final class JdbcRowTest {
     @Disabled("adapter JdbcSubmissions jest zaślepką")
     void unreadableRowFailsWithItsId(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
-        final UUID id = data.id(1);
+        final UUID id = SubmissionData.id(1);
         data.jdbc().sql(
             """
             INSERT INTO submissions (id, kind, location, content)
