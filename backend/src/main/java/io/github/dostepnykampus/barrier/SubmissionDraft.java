@@ -67,13 +67,12 @@ record SubmissionDraft(UUID id, String kind, double lat, double lon, ObjectNode 
      * Sprawdza treść zgłoszenia o znanym identyfikatorze, np. edycji.
      *
      * <p>Strukturę miejsca (punkt GeoJSON z dwiema liczbami) sprawdza ta
-     * metoda, zakres WGS84 — {@link SubmissionPoint}.</p>
+     * metoda, zakres WGS84 — {@link SubmissionPoint}, który poza nim rzuca
+     * {@code InvalidSubmission}.</p>
      *
      * @param id Identyfikator zgłoszenia
      * @param body Treść zgłoszenia według schematu SubmissionContent
      * @return Zgłoszenie do zapisu
-     * @throws io.github.dostepnykampus.barrier.domain.InvalidSubmission Gdy
-     *  współrzędne miejsca są poza zakresem WGS84
      */
     static SubmissionDraft of(final UUID id, final JsonNode body) {
         SubmissionDraft.require(body.isObject(), "Zgłoszenie nie jest obiektem JSON");

@@ -18,24 +18,14 @@ package io.github.dostepnykampus.barrier.domain;
 public record SubmissionPoint(double longitude, double latitude) {
 
     /**
-     * Największa bezwzględna długość geograficzna w WGS84.
-     */
-    private static final double LONGITUDE_LIMIT = 180.0;
-
-    /**
-     * Największa bezwzględna szerokość geograficzna w WGS84.
-     */
-    private static final double LATITUDE_LIMIT = 90.0;
-
-    /**
      * Punkt o skończonych współrzędnych w domkniętym zakresie WGS84.
      *
      * @throws InvalidSubmission Gdy współrzędna jest NaN, nieskończona
      *  albo poza zakresem
      */
     public SubmissionPoint {
-        SubmissionPoint.requireWithin(longitude, SubmissionPoint.LONGITUDE_LIMIT, "Długość");
-        SubmissionPoint.requireWithin(latitude, SubmissionPoint.LATITUDE_LIMIT, "Szerokość");
+        SubmissionPoint.requireWithin(longitude, 180.0, "Długość");
+        SubmissionPoint.requireWithin(latitude, 90.0, "Szerokość");
     }
 
     private static void requireWithin(final double value, final double limit, final String name) {
