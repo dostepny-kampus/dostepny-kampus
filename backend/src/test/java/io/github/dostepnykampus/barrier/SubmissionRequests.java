@@ -25,11 +25,6 @@ final class SubmissionRequests {
      */
     private final WebApplicationContext context;
 
-    /**
-     * Konstruktor.
-     *
-     * @param context Kontekst aplikacji testu
-     */
     SubmissionRequests(final WebApplicationContext context) {
         this.context = context;
     }
