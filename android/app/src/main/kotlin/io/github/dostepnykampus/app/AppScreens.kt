@@ -32,7 +32,6 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.BuildingCardScreen
-import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
@@ -101,21 +100,9 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute -> ToMapStub(title = R.string.nav_konto, action = R.string.nie_teraz)
         AccountRoute -> Stub(title = stringResource(if (hasWork) R.string.nav_konto_i_praca else R.string.nav_konto))
-        is MapRoute -> MapScreen(focus = (route.focus as? MapFocus.Building)?.symbol)
+        is MapRoute -> HiltMapScreen(focus = (route.focus as? MapFocus.Building)?.symbol)
         else -> Unit
     }
-}
-
-// V1 z obrysem budynku z trasy, np. po „Wstecz” z V2 albo „Pokaż na mapie” (US1.1, US2.1). Przyciski i podpis
-// OSM stoją nad arkuszem V2 (decyzja 87).
-@Composable
-private fun AppNavigator.MapScreen(focus: String?) {
-    CampusMapScreen(
-        onBuildingClick = { openBuilding(it) },
-        focus = focus,
-        contentPadding = LocalSheetPadding.current,
-        onEmptyMapClick = { closeCardOnEmptyMap() },
-    )
 }
 
 @Composable

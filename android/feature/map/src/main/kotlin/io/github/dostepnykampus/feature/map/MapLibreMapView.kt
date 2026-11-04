@@ -38,7 +38,7 @@ private const val LABEL_MAX_FONT_SCALE = 1.4f
 private const val TOUCH_TOLERANCE_DP = 24f
 
 /** Widok MapLibre Android bez kluczy i kont (ADR-0005); logo i podpis biblioteki zastępuje podpis ekranu. */
-internal object MapLibreMapView : CampusMapView {
+object MapLibreMapView : CampusMapView {
     @Composable
     override fun Show(
         data: CampusMapData,
