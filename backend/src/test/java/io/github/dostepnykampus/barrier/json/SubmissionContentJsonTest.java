@@ -17,7 +17,6 @@ import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
 import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.JsonNode;
 
@@ -30,7 +29,6 @@ import tools.jackson.databind.JsonNode;
 final class SubmissionContentJsonTest {
 
     @Test
-    @Disabled("zapis treści w JSON jeszcze nie przenosi pól, kod w następnym PR")
     void wthreeOneFullContentBindsToDomain() {
         Assertions.assertEquals(
             new SubmissionContent(
@@ -49,7 +47,6 @@ final class SubmissionContentJsonTest {
     }
 
     @Test
-    @Disabled("zapis treści w JSON jeszcze nie przenosi pól, kod w następnym PR")
     void wthreeOneContentWritesBackSameJson() {
         final JsonNode full = JsonBodies.json(JsonBodies.FULL);
         Assertions.assertAll(
