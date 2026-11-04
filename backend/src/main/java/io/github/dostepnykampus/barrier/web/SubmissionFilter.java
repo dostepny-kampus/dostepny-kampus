@@ -10,6 +10,7 @@ import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,13 +22,20 @@ import org.jspecify.annotations.Nullable;
  * @param buildingSymbol Symbol budynku albo null, gdy bez filtra
  * @param floorId Identyfikator piętra albo null, gdy bez filtra
  * @param status Szukane statusy albo null, gdy nie podano
- * @param mine Tylko własne zgłoszenia, domyślnie fałsz
+ * @param mine Tylko własne zgłoszenia, null znaczy fałsz
  * @since 0.1.0
  */
 record SubmissionFilter(
     @Nullable String buildingSymbol, @Nullable String floorId,
-    @Nullable List<SubmissionStatus> status, boolean mine
+    @Nullable List<SubmissionStatus> status, Boolean mine
 ) {
+
+    /**
+     * Filtr, w którym nieobecny parametr mine oznacza fałsz (domyślna wartość z OpenAPI).
+     */
+    SubmissionFilter {
+        mine = Boolean.TRUE.equals(mine);
+    }
 
     /**
      * Przenosi parametry do zapytania domeny.
@@ -35,6 +43,10 @@ record SubmissionFilter(
      * @return Zapytanie o listę zgłoszeń
      */
     SubmissionQuery toQuery() {
+        if (this.status != null
+            && (this.status.isEmpty() || this.status.stream().anyMatch(Objects::isNull))) {
+            throw new InvalidInput("Parametr status nie może być pusty");
+        }
         final Set<SubmissionStatus> statuses = this.statuses();
         if (!this.mine && !statuses.stream().allMatch(SubmissionStatus::publiclyVisible)) {
             throw new InvalidInput("Bez mine=true dozwolony jest tylko status ACCEPTED");
