@@ -40,8 +40,7 @@ public final class PhotoStorage {
         return S3Client.builder()
             .endpointOverride(settings.endpoint())
             .region(Region.US_EAST_1)
-            .forcePathStyle(true)
-            .credentialsProvider(
+            .forcePathStyle(true).credentialsProvider(
                 () -> AwsBasicCredentials.create(settings.accessKey(), settings.secretKey())
             )
             .build();
