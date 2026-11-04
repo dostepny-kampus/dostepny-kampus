@@ -128,14 +128,10 @@ final class NullabilityArchitectureTest {
     }
 
     private static Stream<Sample> samples() {
-        final String pending = String.format("%s.p", FIXTURES);
+        final String pending = String.format("%s.p", NullabilityArchitectureTest.FIXTURES);
         final String plain = "final class Plain { }";
         final Function<ClassLoader, ArchRule> none =
             l -> NullabilityArchitectureTest.state(l, List.of(), false);
-        final Function<ClassLoader, ArchRule> waiting =
-            l -> NullabilityArchitectureTest.state(
-                l, List.of(String.format("%s.w", FIXTURES)), true
-            );
         return Stream.of(
             new Sample(
                 none, "bez package-info", Map.of("b/Plain", plain), true
@@ -145,7 +141,9 @@ final class NullabilityArchitectureTest {
                 Map.of("r/package-info", "NullUnmarked", "r/Plain", plain), true
             ),
             new Sample(
-                waiting, "pakiet z listy",
+                l -> NullabilityArchitectureTest.state(
+                    l, List.of(String.format("%s.w", NullabilityArchitectureTest.FIXTURES)), true
+                ), "pakiet z listy",
                 Map.of("w/package-info", "NullMarked", "w/Plain", plain), true
             ),
             new Sample(
@@ -269,8 +267,7 @@ final class NullabilityArchitectureTest {
                 NullabilityArchitectureTest.loader()
             )
         ) {
-            sample.rule().apply(loader)
-                .check(new ClassFileImporter().importPath(out));
+            sample.rule().apply(loader).check(new ClassFileImporter().importPath(out));
         } catch (final AssertionError ex) {
             failed = true;
         }
@@ -282,11 +279,11 @@ final class NullabilityArchitectureTest {
      *
      * @param rule Reguła zbudowana dla ładowarki klas przykładu
      * @param label Opis przykładu
-     * @param files Źródła klas: ścieżka pakietu i klasy na treść
+     * @param files Mapa źródeł klas: ścieżka pakietu i klasy na treść
      * @param violating Czy reguła ma zgłosić naruszenie
      * @since 0.1.0
      */
-    private record Sample(
+    record Sample(
         Function<ClassLoader, ArchRule> rule, String label,
         Map<String, String> files, boolean violating
     ) {
