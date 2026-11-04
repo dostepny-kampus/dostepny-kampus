@@ -10,6 +10,7 @@ import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -72,6 +73,31 @@ final class JdbcReadTest {
             ),
             "Lista nie filtruje po statusie, budynku i piętrze albo ma złą kolejność"
         );
+    }
+
+    @Test
+    void usEightListOrdersByCreationThenId(final ApplicationContext context) {
+        final SubmissionData data = SubmissionData.of(context);
+        final SubmissionContent content = SubmissionData.content("o");
+        final SubmissionStatus sent = SubmissionStatus.SENT;
+        final UUID third = JdbcReadTest.created(data, data.seed(3, content, sent), 2);
+        final UUID first = JdbcReadTest.created(data, data.seed(1, content, sent), 3);
+        final UUID second = JdbcReadTest.created(data, data.seed(2, content, sent), 2);
+        final UUID last = JdbcReadTest.created(data, data.seed(4, content, sent), 0);
+        Assertions.assertEquals(
+            List.of(last, second, third, first),
+            JdbcReadTest.ids(
+                data, new SubmissionQuery(Set.of(sent), SubmissionData.BUILDING, null)
+            ),
+            "Lista nie jest posortowana po chwili utworzenia, a przy równych chwilach po id"
+        );
+    }
+
+    private static UUID created(final SubmissionData data, final UUID id, final int minutes) {
+        data.jdbc().sql("UPDATE submissions SET created_at = :at WHERE id = :id")
+            .param("at", OffsetDateTime.parse("2026-01-01T10:00:00Z").plusMinutes(minutes))
+            .param("id", id).update();
+        return id;
     }
 
     private static List<UUID> ids(final SubmissionData data, final SubmissionQuery query) {
