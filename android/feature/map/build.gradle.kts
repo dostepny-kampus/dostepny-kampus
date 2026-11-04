@@ -27,7 +27,6 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)
-    testImplementation(project(":core:network"))
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotlinx.coroutines.test)

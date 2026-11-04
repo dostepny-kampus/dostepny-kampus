@@ -13,10 +13,6 @@ import io.github.dostepnykampus.core.model.Entrance
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.network.ApiBuilding
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.BuildingList
-import io.github.dostepnykampus.core.network.DetailLevel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -207,23 +203,25 @@ class BuildingCardTest {
             assertEquals(BuildingCardUiState.Missing, viewModel.uiState.value)
         }
 
-    // Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” → serwer ma już budynek i karta go pokazuje;
-    //   zwykłe otwarcie karty nie pyta serwera drugi raz, NFR-10.
+    // Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” → katalog czytany od nowa i karta budynku;
+    //   zwykłe otwarcie karty nie czyta katalogu drugi raz, NFR-10.
     @Test
     fun nfr10_retry_shows_new_building() =
         runTest(UnconfinedTestDispatcher()) {
-            val calls = AtomicInteger()
+            val reads = AtomicInteger()
             val server =
-                BuildingCatalogRepository(EmptyCoroutineContext, { serverList(calls.incrementAndGet()) }) { ASSET_JSON }
+                BuildingCatalogRepository(EmptyCoroutineContext) {
+                    if (reads.incrementAndGet() == 1) ASSET_JSON else ASSET_WITH_NEW_JSON
+                }
             val opened = BuildingCardViewModel(symbol = "A-1", repository = server, networkStatus = online)
             backgroundScope.launch { opened.uiState.collect {} }
             val viewModel = BuildingCardViewModel(symbol = "N-1", repository = server, networkStatus = online)
             backgroundScope.launch { viewModel.uiState.collect {} }
             assertEquals(BuildingCardUiState.Missing, viewModel.uiState.value)
-            assertEquals(1, calls.get())
+            assertEquals(1, reads.get())
             viewModel.retry()
             assertEquals("N-1", (viewModel.uiState.value as? BuildingCardUiState.Ready)?.symbol)
-            assertEquals(2, calls.get())
+            assertEquals(2, reads.get())
         }
 
     @Test
@@ -251,17 +249,6 @@ class BuildingCardTest {
             marking = marking,
         )
 
-    private fun serverList(call: Int): ApiResult<BuildingList> =
-        ApiResult.Success(
-            BuildingList(
-                source = "© serwer",
-                buildings =
-                    listOf("A-1", "N-1").take(call).map { symbol ->
-                        ApiBuilding(Building(symbol, null, GeoPolygon(emptyList())), DetailLevel.BASIC)
-                    },
-            ),
-        )
-
     private companion object {
         val online = NetworkStatus { flowOf(true) }
 
@@ -275,6 +262,11 @@ class BuildingCardTest {
                 """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/1",""" +
                 """"entrance":"main","wheelchair":"no","ref":"Główne"},""" +
                 """"geometry":{"type":"Point","coordinates":[0,0]}}]}"""
+
+        val ASSET_WITH_NEW_JSON =
+            ASSET_JSON.removeSuffix("]}") +
+                """,{"type":"Feature","properties":{"kind":"building","symbols":["N-1"],"osm_id":"way/3"},""" +
+                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
 
         val repository = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON }
     }
