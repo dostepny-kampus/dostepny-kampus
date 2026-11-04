@@ -80,7 +80,6 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
-import io.github.dostepnykampus.feature.map.BuildingCardScreen
 import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CampusMapView
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
@@ -141,18 +140,7 @@ internal fun AppNavigator.TestEntrances(symbol: String) {
 @Composable
 internal fun AppNavigator.TestBuildingCard(symbol: String) {
     val context = LocalContext.current
-    val card = remember(symbol) { context.buildingCardViewModel(symbol) }
-    val sheet = sheetCard()
-    BuildingCardScreen(
-        symbol = symbol,
-        mode = sheet.mode,
-        onCheckEntrances = { openEntrances(symbol) },
-        onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
-        onBack = sheet.onBack,
-        onClose = sheet.onClose,
-        onReportEntrance = { report(it) },
-        viewModel = card,
-    )
+    BuildingCard(symbol, remember(symbol) { context.buildingCardViewModel(symbol) })
 }
 
 /** Stan V1 na źródłach jak w aplikacji: plik konturów z zasobów i sieć telefonu; wybór mapy albo listy [choice]. */
