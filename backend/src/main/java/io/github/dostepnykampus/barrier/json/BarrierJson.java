@@ -8,7 +8,6 @@ package io.github.dostepnykampus.barrier.json;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.github.dostepnykampus.barrier.domain.BarrierDetails;
 import io.github.dostepnykampus.barrier.domain.BarrierType;
-import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
