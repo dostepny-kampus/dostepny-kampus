@@ -37,12 +37,14 @@ import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.util.concurrent.TimeUnit.NANOSECONDS
 import java.util.concurrent.TimeUnit.SECONDS
 
 /**
@@ -110,7 +112,7 @@ class CancellationTest {
     fun nfr55_broken_body_no_cancel(call: String) {
         server.enqueue(MockResponse().setBody(BODY).setSocketPolicy(SocketPolicy.DISCONNECT_DURING_RESPONSE_BODY))
         val outcome = begin(call, client()).outcome.within(GUARD_WAIT_MILLIS)
-        assertInstanceOf(ApiResult.NetworkError::class.java, outcome)
+        assertInstanceOf(ApiResult.NetworkError::class.java, outcome?.value)
     }
 
     @ParameterizedTest
@@ -118,16 +120,21 @@ class CancellationTest {
     fun nfr55_timeout_no_cancel(call: String) {
         server.dispatcher = holdHeaders()
         val outcome = begin(call, client(PLAIN_TIMEOUT_MILLIS)).outcome.within(GUARD_WAIT_MILLIS)
-        assertInstanceOf(ApiResult.NetworkError::class.java, outcome)
+        assertInstanceOf(ApiResult.NetworkError::class.java, outcome?.value)
     }
 
     private fun assertCancelled(running: Running) {
+        val cancelledAt = System.nanoTime()
         running.job.cancel()
-        val outcome = running.outcome.within(LIMIT_MILLIS)
+        val finished = running.outcome.within(WAIT_MILLIS)
+        val millis = finished?.let { NANOSECONDS.toMillis(it.at - cancelledAt) } ?: WAIT_MILLIS
+        val isInterrupted = canceled.await(LIMIT_MILLIS, MILLISECONDS)
+        val late = "koniec po $millis ms od anulowania, limit $LIMIT_MILLIS ms"
+        val result = finished?.value
         assertAll(
-            { assertNotNull(outcome, "wywołanie trwa dłużej niż $LIMIT_MILLIS ms po anulowaniu") },
-            { assertTrue(canceled.await(LIMIT_MILLIS, MILLISECONDS), "klient nie przerwał żądania HTTP") },
-            { assertInstanceOf(CancellationException::class.java, outcome, "wywołujący nie dostał anulowania") },
+            { assertTrue(millis <= LIMIT_MILLIS, late) },
+            { assertTrue(isInterrupted, "klient nie przerwał żądania HTTP") },
+            { assertInstanceOf(CancellationException::class.java, result, "wywołujący nie dostał anulowania") },
         )
     }
 
@@ -136,9 +143,9 @@ class CancellationTest {
         val running = Running(Job(scope.coroutineContext.job), CompletableDeferred())
         scope.future(running.job) {
             try {
-                running.outcome.complete(CALLS.getValue(call)(apis))
+                running.outcome.complete(Finished(CALLS.getValue(call)(apis)))
             } catch (cancelled: CancellationException) {
-                running.outcome.complete(cancelled)
+                running.outcome.complete(Finished(cancelled))
                 throw cancelled
             }
         }
@@ -168,10 +175,9 @@ class CancellationTest {
             }
         }
 
-    private fun CompletableDeferred<Any>.within(millis: Long): Any? =
-        runBlocking { withTimeoutOrNull(millis) { await() } }
+    private data class Running(val job: Job, val outcome: CompletableDeferred<Finished>)
 
-    private data class Running(val job: Job, val outcome: CompletableDeferred<Any>)
+    private data class Finished(val value: Any, val at: Long = System.nanoTime())
 
     private class ReadingBody(private val delegate: ResponseBody, private val reading: CountDownLatch) :
         ResponseBody() {
@@ -194,6 +200,7 @@ class CancellationTest {
 
     private companion object {
         const val LIMIT_MILLIS = 500L
+        const val WAIT_MILLIS = 2_000L
         const val HOLD_SECONDS = 5L
         const val START_WAIT_SECONDS = 5L
         const val BODY_BYTES = 50
@@ -224,5 +231,15 @@ class CancellationTest {
         fun plainCalls(): List<String> = CALLS.keys.filter { it != PHOTO_CALL }
 
         fun call(block: suspend (Apis) -> Any): suspend (Apis) -> Any = block
+
+        fun <T> CompletableDeferred<T>.within(millis: Long): T? = runBlocking { withTimeoutOrNull(millis) { await() } }
+
+        @JvmStatic
+        @BeforeAll
+        fun warmUp() {
+            val idle = CompletableDeferred<Unit>()
+            CoroutineScope(SupervisorJob()).future { idle.await() }.cancel(true)
+            idle.within(1)
+        }
     }
 }
