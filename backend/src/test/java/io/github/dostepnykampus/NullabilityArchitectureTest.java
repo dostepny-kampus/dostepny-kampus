@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -238,7 +237,8 @@ final class NullabilityArchitectureTest {
             ),
             new Sample(
                 nullable, "domain/Listed",
-                "class Listed { private void f(@Nullable String v) { } }", false
+                "record Listed(@Nullable String kept) { private void f(@Nullable String v) { } }",
+                false
             ),
             new Sample(nullable, "a/A", "class A { }", true),
             new Sample(

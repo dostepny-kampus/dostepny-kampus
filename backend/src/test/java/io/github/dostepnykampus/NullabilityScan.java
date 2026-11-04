@@ -30,6 +30,9 @@ import org.jspecify.annotations.Nullable;
  */
 final class NullabilityScan {
 
+    private NullabilityScan() {
+    }
+
     static List<String> optionalSites(final Class<?> type) {
         final List<String> found = new ArrayList<>(0);
         Arrays.stream(type.getDeclaredFields())
@@ -60,26 +63,30 @@ final class NullabilityScan {
             .filter(part -> NullabilityScan.nullable(part.getAnnotatedType()))
             .filter(part -> !kept.contains(part.getName()))
             .forEach(part -> found.add(String.format("%s.%s", type, part.getName())));
-        NullabilityScan.executables(type).forEach(
-            code -> {
-                if (NullabilityScan.nullable(code.getAnnotatedReturnType())
-                    && !(code.getParameterCount() == 0 && kept.contains(code.getName()))) {
-                    found.add(String.format("%s.%s", type, code.getName()));
-                }
-                final AnnotatedType[] args = code.getAnnotatedParameterTypes();
-                final boolean helper = Modifier.isPrivate(code.getModifiers())
-                    && listed.containsKey(type.getSimpleName());
-                final boolean canonical = type.getName().equals(code.getName())
-                    && args.length == parts.length;
-                for (int idx = 0; idx < args.length; ++idx) {
-                    if (NullabilityScan.nullable(args[idx]) && !helper
-                        && !(canonical && kept.contains(parts[idx].getName()))) {
-                        found.add(String.format("%s.%s", type, code.getName()));
-                    }
-                }
-            }
-        );
+        NullabilityScan.executables(type)
+            .filter(code -> NullabilityScan.misplaced(type, code, kept))
+            .forEach(code -> found.add(String.format("%s.%s", type, code.getName())));
         return found;
+    }
+
+    private static boolean misplaced(
+        final Class<?> type, final Executable code, final Set<String> kept
+    ) {
+        final RecordComponent[] parts = Optional
+            .ofNullable(type.getRecordComponents()).orElse(new RecordComponent[0]);
+        final AnnotatedType[] args = code.getAnnotatedParameterTypes();
+        final boolean helper = Modifier.isPrivate(code.getModifiers()) && !kept.isEmpty();
+        final boolean canonical = type.getName().equals(code.getName())
+            && args.length == parts.length;
+        boolean bad = NullabilityScan.nullable(code.getAnnotatedReturnType())
+            && !(code.getParameterCount() == 0 && kept.contains(code.getName()));
+        for (int idx = 0; idx < args.length; ++idx) {
+            if (NullabilityScan.nullable(args[idx]) && !helper
+                && !(canonical && kept.contains(parts[idx].getName()))) {
+                bad = true;
+            }
+        }
+        return bad;
     }
 
     private static Stream<Executable> executables(final Class<?> type) {
