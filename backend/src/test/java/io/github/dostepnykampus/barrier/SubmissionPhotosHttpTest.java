@@ -137,7 +137,15 @@ final class SubmissionPhotosHttpTest {
             """
         ).param("id", id)
             .param("status", status)
-            .param("content", "{\"photoIds\":[\"%s\"]}".formatted(SubmissionPhotosHttpTest.PHOTO))
+            .param(
+                "content",
+                String.join(
+                    "",
+                    "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
+                    "\"coordinates\":[17.0,51.0]},\"barrierGroup\":\"OTHER\",",
+                    "\"photoIds\":[\"%s\"]}"
+                ).formatted(SubmissionPhotosHttpTest.PHOTO)
+            )
             .update();
         return id;
     }
