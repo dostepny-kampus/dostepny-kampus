@@ -26,7 +26,7 @@ import tools.jackson.databind.node.ObjectNode;
 final class ContentRulesJsonTest {
 
     @Test
-    void wThreeFiveOmitsFalseFlagsAndMissingFields() {
+    void wthreeFiveOmitsFalseFlagsAndMissingFields() {
         final ObjectNode input = JsonBodies.with(
             node -> {
                 node.put("manualCorrection", false);
@@ -49,7 +49,7 @@ final class ContentRulesJsonTest {
     }
 
     @Test
-    void wThreeSixRejectsExplicitNull() {
+    void wthreeSixRejectsExplicitNull() {
         Assertions.assertAll(
             Stream.of(
                 "kind", "location", "accuracyMeters", "manualCorrection", "floor",
@@ -74,7 +74,7 @@ final class ContentRulesJsonTest {
     }
 
     @Test
-    void wThreeSixRejectsEmptyTextInEnumFields() {
+    void wthreeSixRejectsEmptyTextInEnumFields() {
         Assertions.assertAll(
             Stream.of("kind", "barrierGroup", "entranceMarking").map(
                 field -> () -> JsonBodies.failsBinding(
@@ -109,7 +109,7 @@ final class ContentRulesJsonTest {
     }
 
     @Test
-    void wThreeSevenMissingRequiredFieldsGiveInvalidInput() {
+    void wthreeSevenMissingRequiredFieldsGiveInvalidInput() {
         Assertions.assertAll(
             Stream.of("kind", "location", "photoIds").map(
                 field -> () -> Assertions.assertThrows(
