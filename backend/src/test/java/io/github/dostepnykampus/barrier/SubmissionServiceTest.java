@@ -116,14 +116,19 @@ final class SubmissionServiceTest {
                 new CreateResult.Created(SubmissionServiceTest.STORED),
                 new CreateResult.Existing(SubmissionServiceTest.STORED)
             ).map(
-                result -> () -> Assertions.assertSame(
-                    result,
-                    new SubmissionService(
-                        new SubmissionServiceTest.RecordingSubmissions(result, null),
-                        SubmissionServiceTest.FORBIDDEN
-                    ).create(command),
-                    "Wynik utworzenia nie wrócił tym samym obiektem"
-                )
+                result -> () -> {
+                    final SubmissionServiceTest.RecordingSubmissions fake =
+                        new SubmissionServiceTest.RecordingSubmissions(result, null);
+                    Assertions.assertSame(
+                        result,
+                        new SubmissionService(fake, SubmissionServiceTest.FORBIDDEN)
+                            .create(command),
+                        "Wynik utworzenia nie wrócił tym samym obiektem"
+                    );
+                    Assertions.assertEquals(
+                        List.of(command), fake.seen(), "Komenda zmieniona po drodze"
+                    );
+                }
             )
         );
     }
