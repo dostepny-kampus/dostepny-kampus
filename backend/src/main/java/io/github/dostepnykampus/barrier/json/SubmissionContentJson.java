@@ -7,7 +7,6 @@ package io.github.dostepnykampus.barrier.json;
 
 import io.github.dostepnykampus.barrier.domain.BarrierDetails;
 import io.github.dostepnykampus.barrier.domain.BarrierGroup;
-import io.github.dostepnykampus.barrier.domain.NewEntranceMarking;
 import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionKind;
 import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
@@ -17,35 +16,14 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Treść zgłoszenia w JSON, schemat SubmissionContent w OpenAPI.
+ * Treść zgłoszenia w JSON, schemat SubmissionContent w OpenAPI. Zaślepka
+ * z jednym polem; pozostałe pola trzeba rozbić na zagnieżdżone rekordy
+ * ({@code @JsonUnwrapped}), bo qulice dopuszcza do ośmiu komponentów rekordu.
  *
  * @param kind Rodzaj zgłoszenia
- * @param location Miejsce bariery
- * @param accuracyMeters Dokładność pozycji w metrach
- * @param manualCorrection Korekta ręczna
- * @param buildingSymbol Symbol budynku
- * @param floor Piętro
- * @param barrierGroup Grupa barier, wartość z OpenAPI
- * @param barrierType Typ bariery w postaci TB-n
- * @param severity Uciążliwość
- * @param description Opis
- * @param replaces Zgłoszenie zastępowane, w JSON replacesSubmissionId
- * @param barrierRemoved Bariera usunięta
- * @param entranceId Wejście w zmianie oznaczenia
- * @param entranceMarking Nowe oznaczenie wejścia
- * @param photoIds Identyfikatory zdjęć
  * @since 0.1.0
  */
-public record SubmissionContentJson(
-    @Nullable SubmissionKind kind, @Nullable GeoPointJson location,
-    @Nullable Double accuracyMeters, @Nullable Boolean manualCorrection,
-    @Nullable String buildingSymbol, @Nullable SubmissionFloorJson floor,
-    @Nullable String barrierGroup, @Nullable String barrierType,
-    @Nullable Integer severity, @Nullable String description,
-    @Nullable UUID replaces, @Nullable Boolean barrierRemoved,
-    @Nullable String entranceId, @Nullable NewEntranceMarking entranceMarking,
-    @Nullable List<UUID> photoIds
-) {
+public record SubmissionContentJson(@Nullable SubmissionKind kind) {
 
     /**
      * Zapisuje treść zgłoszenia w JSON.
@@ -53,10 +31,7 @@ public record SubmissionContentJson(
      * @param content Treść zgłoszenia
      */
     public SubmissionContentJson(final SubmissionContent content) {
-        this(
-            content.kind(), null, null, null, null, null, null, null, null, null, null, null,
-            null, null, null
-        );
+        this(content.kind());
     }
 
     /**
