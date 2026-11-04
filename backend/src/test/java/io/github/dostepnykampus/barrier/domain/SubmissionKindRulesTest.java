@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -41,7 +40,6 @@ final class SubmissionKindRulesTest {
     );
 
     @Test
-    @Disabled("treść zgłoszenia nie sprawdza reguł rodzaju, kod w następnym PR")
     void brNineteenNeedsReplacedSubmissionForEveryKind() {
         Assertions.assertAll(
             Stream.of(SubmissionKind.values()).map(
@@ -67,7 +65,6 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    @Disabled("treść zgłoszenia nie sprawdza reguł rodzaju, kod w następnym PR")
     void brEightNeedsBarrierGroup() {
         Assertions.assertEquals(
             "Zgłoszenie szybkie wymaga grupy barier (BR-8)",
@@ -82,7 +79,6 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    @Disabled("treść zgłoszenia nie sprawdza reguł rodzaju, kod w następnym PR")
     void brSevenNeedsBarrierType() {
         Assertions.assertEquals(
             "Pomiar precyzyjny wymaga typu bariery (BR-7)",
@@ -97,7 +93,6 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    @Disabled("treść zgłoszenia nie sprawdza reguł rodzaju, kod w następnym PR")
     void brSevenNeedsSeverityUnlessBarrierRemoved() {
         Assertions.assertEquals(
             "Pomiar precyzyjny wymaga uciążliwości (BR-7)",
@@ -113,7 +108,6 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    @Disabled("treść zgłoszenia nie sprawdza reguł rodzaju, kod w następnym PR")
     void brSevenNeedsIdentifiedFloorInBuilding() {
         Assertions.assertAll(
             Stream.of(null, new SubmissionFloor(null, null, false)).map(
@@ -149,7 +143,6 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    @Disabled("treść zgłoszenia nie sprawdza reguł rodzaju, kod w następnym PR")
     void usSevenThreeNeedsDescriptionOfOtherBarrier() {
         Assertions.assertAll(
             Stream.of(null, "", "   ").map(
@@ -186,7 +179,6 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    @Disabled("treść zgłoszenia nie sprawdza reguł rodzaju, kod w następnym PR")
     void brTwentyFourNeedsEntranceIdAndMarking() {
         Assertions.assertAll(
             () -> SubmissionKindRulesTest.entranceRejected(null, NewEntranceMarking.ACCESSIBLE),
