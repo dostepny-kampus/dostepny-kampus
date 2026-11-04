@@ -11,13 +11,19 @@ import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Ścisłe wiązanie ciał JSON żądań w całym serwerze; nieznane pola są
- * pomijane, jak w domyślnym ustawieniu Spring Boot.
+ * Konfiguracja ścisłego wiązania ciał JSON żądań w całym serwerze; nieznane
+ * pola są pomijane, jak w domyślnym ustawieniu Spring Boot.
  *
  * @since 0.1.0
  */
 @Configuration(proxyBeanMethods = false)
 public final class StrictJsonConfiguration implements JsonMapperBuilderCustomizer {
+
+    /**
+     * Tworzy konfigurację dla kontekstu Springa i testów wiązania.
+     */
+    public StrictJsonConfiguration() {
+    }
 
     @Override
     public void customize(final JsonMapper.Builder builder) {

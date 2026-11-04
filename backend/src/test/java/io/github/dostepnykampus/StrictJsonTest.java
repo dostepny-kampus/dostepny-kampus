@@ -15,7 +15,7 @@ import org.hamcrest.Matchers;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import tools.jackson.core.JacksonException;
+import tools.jackson.databind.exc.MismatchedInputException;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
@@ -36,7 +36,7 @@ final class StrictJsonTest {
     private static final String CANONICAL = "3f2504e0-4f89-11d3-9a0c-0305e82c3301";
 
     /**
-     * Wynik odczytu, po którym serwer odpowie 400.
+     * Wynik odczytu odrzuconego jako błąd danych, po którym serwer odpowie 400.
      */
     private static final String REJECTED = "odrzucone";
 
@@ -101,30 +101,24 @@ final class StrictJsonTest {
     }
 
     @Test
-    void strictJsonSixKeepsCorrectBodyWithUpperCaseUuid() {
+    void strictJsonSixKeepsCorrectBodiesWithUuidInBothCases() {
+        final UUID id = UUID.fromString(StrictJsonTest.CANONICAL);
         MatcherAssert.assertThat(
-            "Poprawne ciało z polem spoza schematu nie przeszło bez zmian",
-            StrictJsonTest.read(
-                String.join(
-                    "",
-                    "{\"accuracyMeters\":5,\"manualCorrection\":false,\"version\":3,",
-                    "\"severity\":2,\"floorId\":\"C-13/1\",\"extra\":\"x\",\"id\":\"%s\"}"
-                        .formatted(StrictJsonTest.CANONICAL.toUpperCase(Locale.ROOT))
-                )
+            "Poprawne ciało z polem spoza schematu albo bez pól nieobowiązkowych nie przeszło",
+            List.of(
+                StrictJsonTest.read(
+                    String.join(
+                        "",
+                        "{\"accuracyMeters\":5,\"manualCorrection\":false,\"version\":3,",
+                        "\"severity\":2,\"floorId\":\"C-13/1\",\"extra\":\"x\",\"id\":\"%s\"}"
+                            .formatted(StrictJsonTest.CANONICAL.toUpperCase(Locale.ROOT))
+                    )
+                ),
+                StrictJsonTest.read("{\"id\":\"%s\"}".formatted(StrictJsonTest.CANONICAL))
             ),
-            Matchers.equalTo(
-                new Sample(5.0, false, 3, 2, "C-13/1", UUID.fromString(StrictJsonTest.CANONICAL))
-            )
-        );
-    }
-
-    @Test
-    void strictJsonSixLeavesAbsentFieldsEmpty() {
-        MatcherAssert.assertThat(
-            "Ciało z samym identyfikatorem małymi literami nie przeszło",
-            StrictJsonTest.read("{\"id\":\"%s\"}".formatted(StrictJsonTest.CANONICAL)),
-            Matchers.equalTo(
-                new Sample(null, null, null, null, null, UUID.fromString(StrictJsonTest.CANONICAL))
+            Matchers.contains(
+                new Sample(5.0, false, 3, 2, "C-13/1", id),
+                new Sample(null, null, null, null, null, id)
             )
         );
     }
@@ -143,7 +137,7 @@ final class StrictJsonTest {
         String result;
         try {
             result = "przyjęte jako %s".formatted(StrictJsonTest.read(body));
-        } catch (final JacksonException error) {
+        } catch (final MismatchedInputException error) {
             result = StrictJsonTest.REJECTED;
         }
         return result;
