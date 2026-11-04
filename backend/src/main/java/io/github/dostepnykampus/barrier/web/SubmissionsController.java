@@ -1,10 +1,16 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus.barrier.web;
 
+import io.github.dostepnykampus.ConflictingState;
+import io.github.dostepnykampus.MissingResource;
+import io.github.dostepnykampus.barrier.SubmissionService;
+import io.github.dostepnykampus.barrier.domain.CreateResult;
+import io.github.dostepnykampus.barrier.domain.EditResult;
+import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
@@ -16,7 +22,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import tools.jackson.databind.JsonNode;
 
 /**
  * Zgłoszenia barier: wysłanie nowego zgłoszenia (US4, US7, BR-9), edycja
@@ -32,12 +37,23 @@ import tools.jackson.databind.JsonNode;
 public final class SubmissionsController {
 
     /**
-     * Zapis i odczyt zgłoszeń.
+     * Opis braku zgłoszenia w odpowiedzi 404.
      */
-    private final SubmissionStore store;
+    private static final String MISSING = "Nie ma takiego zgłoszenia";
 
-    SubmissionsController(final SubmissionStore store) {
-        this.store = store;
+    /**
+     * Zapis zgłoszeń.
+     */
+    private final SubmissionService service;
+
+    /**
+     * Odczyt zgłoszeń.
+     */
+    private final SubmissionFinder finder;
+
+    SubmissionsController(final SubmissionService service, final SubmissionFinder finder) {
+        this.service = service;
+        this.finder = finder;
     }
 
     /**
@@ -47,18 +63,13 @@ public final class SubmissionsController {
      * @return Zgłoszenia przyjęte od najstarszego
      */
     @GetMapping("/submissions")
-    List<JsonNode> listSubmissions(final SubmissionFilter filter) {
-        if (Boolean.TRUE.equals(filter.mine())) {
+    List<SubmissionResponse> listSubmissions(final SubmissionFilter filter) {
+        if (filter.mine()) {
             throw new ResponseStatusException(
                 HttpStatus.UNAUTHORIZED, "Własne zgłoszenia wymagają logowania"
             );
         }
-        if (filter.status() != null && !List.of("ACCEPTED").containsAll(filter.status())) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST, "Bez mine=true dozwolony jest tylko status ACCEPTED"
-            );
-        }
-        return this.store.accepted(filter.buildingSymbol(), filter.floorId());
+        return this.finder.list(filter.toQuery()).stream().map(SubmissionResponse::new).toList();
     }
 
     /**
@@ -69,10 +80,11 @@ public final class SubmissionsController {
      * @return Zgłoszenie przyjęte
      */
     @GetMapping("/submissions/{submissionId}")
-    JsonNode getSubmission(@PathVariable("submissionId") final UUID id) {
-        return this.store.accepted(id).orElseThrow(
-            () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
-        );
+    SubmissionResponse getSubmission(@PathVariable("submissionId") final UUID id) {
+        return this.finder.find(id)
+            .filter(submission -> submission.status().publiclyVisible())
+            .map(SubmissionResponse::new)
+            .orElseThrow(() -> new MissingResource(SubmissionsController.MISSING));
     }
 
     /**
@@ -83,15 +95,17 @@ public final class SubmissionsController {
      * @return Nowe zgłoszenie z kodem 201 albo zapisane wcześniej z kodem 200
      */
     @PostMapping("/submissions")
-    ResponseEntity<JsonNode> createSubmission(@RequestBody final JsonNode body) {
-        final SubmissionStore.Saved saved = this.store.create(SubmissionDraft.of(body));
+    ResponseEntity<SubmissionResponse> createSubmission(
+        @RequestBody final NewSubmissionRequest body
+    ) {
+        final CreateResult result = this.service.create(body.toCommand());
         final HttpStatus status;
-        if (saved.created()) {
+        if (result instanceof CreateResult.Created) {
             status = HttpStatus.CREATED;
         } else {
             status = HttpStatus.OK;
         }
-        return ResponseEntity.status(status).body(saved.submission());
+        return ResponseEntity.status(status).body(new SubmissionResponse(result.submission()));
     }
 
     /**
@@ -103,15 +117,19 @@ public final class SubmissionsController {
      * @return Zgłoszenie po edycji z kolejną wersją
      */
     @PutMapping("/submissions/{submissionId}")
-    JsonNode updateSubmission(
-        @PathVariable("submissionId") final UUID id, @RequestBody final JsonNode body
+    SubmissionResponse updateSubmission(
+        @PathVariable("submissionId") final UUID id,
+        @RequestBody final SubmissionUpdateRequest body
     ) {
-        final JsonNode version = body.path("version");
-        if (!version.isInt() || version.intValue() < 1) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST, "Brak wersji bazowej edycji w polu version"
+        return switch (this.service.update(body.toCommand(id))) {
+            case EditResult.Saved saved -> new SubmissionResponse(saved.submission());
+            case EditResult.Conflict conflict -> throw new ConflictingState(
+                "Na serwerze jest inna wersja zgłoszenia albo jego status nie pozwala na zmianę",
+                "serverSubmission",
+                new SubmissionResponse(conflict.current())
             );
-        }
-        return this.store.update(SubmissionDraft.of(id, body), version.intValue());
+            case EditResult.Missing _ -> throw new MissingResource(SubmissionsController.MISSING);
+            case null -> throw new IllegalStateException("Brak wyniku edycji zgłoszenia");
+        };
     }
 }
