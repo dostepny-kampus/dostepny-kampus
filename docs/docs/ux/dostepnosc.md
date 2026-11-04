@@ -1,6 +1,6 @@
 # Dostępność w aplikacji
 
-Strona pokazuje w jednym miejscu, jak aplikacja pomaga osobom starszym, z ograniczoną mobilnością i słabowidzącym ([potrzeba N4](../wymagania/potrzeby-i-historie.md#potrzeby), persona [PE-1](persony.md#pe-1-pani-halina-osoba-starsza-planujaca-wizyte-hipoteza-do-potwierdzenia-w-wywiadach)). To tylko indeks: każdy wiersz łączy trudność człowieka z krótkim opisem rozwiązania. Wiążące są podlinkowane wymagania i reguły, a tylko one podają wartości.
+Strona pokazuje w jednym miejscu, jak aplikacja pomaga osobom starszym, z ograniczoną mobilnością i słabowidzącym ([potrzeba N4](../wymagania/potrzeby-i-historie.md#potrzeby), persony [PE-1](persony.md#pe-1-pani-halina-osoba-starsza-planujaca-wizyte) i [PE-4](persony.md#pe-4-tomasz-osoba-na-wozku-planujaca-zajecia)). To tylko indeks: każdy wiersz łączy trudność człowieka z krótkim opisem rozwiązania. Wiążące są podlinkowane wymagania i reguły, a tylko one podają wartości.
 
 | Trudność | Co robi aplikacja | Wiążące reguły |
 | --- | --- | --- |
