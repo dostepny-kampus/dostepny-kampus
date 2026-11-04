@@ -99,6 +99,8 @@ private val CameraSaver =
  *   sprzed otwarcia V2 (decyzja 83)
  * @param onEmptyMapClick dotknięcie mapy, które nie trafiło żadnego konturu ani miejsca obok; aplikacja zamyka nim
  *   małą kartę V2 (US2.8)
+ * @param onListBuildingClick symbol budynku dotkniętego na liście „Lista budynków”; aplikacja wybiera nim tryb
+ *   karty V2 dla wejścia z listy (NFR-19)
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
  * @param viewModel stan ekranu i zapis wyboru w przełączniku; w aplikacji z grafu Hilt, w testach z podróbkami źródeł
  */
@@ -109,6 +111,7 @@ fun CampusMapScreen(
     focus: String? = null,
     contentPadding: PaddingValues = PaddingValues(),
     onEmptyMapClick: () -> Unit = {},
+    onListBuildingClick: (String) -> Unit = onBuildingClick,
     mapView: CampusMapView = MapLibreMapView,
     viewModel: CampusMapViewModel = hiltViewModel(),
 ) {
@@ -121,6 +124,7 @@ fun CampusMapScreen(
         focus = focus,
         contentPadding = contentPadding,
         onEmptyMapClick = onEmptyMapClick,
+        onListBuildingClick = onListBuildingClick,
         mapView = mapView,
     )
 }
@@ -136,6 +140,7 @@ fun CampusMapScreen(
  * @param focus symbol budynku zaznaczonego obrysem (US1.1)
  * @param contentPadding część ekranu zasłonięta przez arkusz V2 (decyzja 87)
  * @param onEmptyMapClick dotknięcie mapy poza konturami (US2.8)
+ * @param onListBuildingClick budynek dotknięty na liście (NFR-19)
  * @param mapView widok mapy
  */
 @Composable
@@ -147,6 +152,7 @@ fun CampusMapScreen(
     focus: String? = null,
     contentPadding: PaddingValues = PaddingValues(),
     onEmptyMapClick: () -> Unit = {},
+    onListBuildingClick: (String) -> Unit = onBuildingClick,
     mapView: CampusMapView = MapLibreMapView,
 ) {
     val catalog = state.catalog
@@ -164,7 +170,7 @@ fun CampusMapScreen(
                     isOnline = state.isOnline,
                     isList = isList,
                     onListChange = onListChange,
-                    onBuildingClick = onBuildingClick,
+                    onBuildingClick = if (isList) onListBuildingClick else onBuildingClick,
                     modifier = if (isList) Modifier.weight(1f) else Modifier,
                 )
             }

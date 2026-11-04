@@ -12,15 +12,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ActivityComponent
 import io.github.dostepnykampus.core.data.account.RoleProvider
+import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.help.FirstLaunchViewModel
 import io.github.dostepnykampus.feature.map.mapUserAgent
+import kotlinx.coroutines.launch
 
 /**
  * Jedyna aktywność aplikacji, rysowana od krawędzi do krawędzi. Po odczycie, czy to pierwsze uruchomienie (US5.1,
@@ -35,12 +38,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         mapUserAgent = "DostepnyKampus/${BuildConfig.VERSION_NAME} (${BuildConfig.APPLICATION_ID})"
-        val roles = EntryPointAccessors.fromActivity<MainActivityEntryPoint>(this).roles()
+        val graph = EntryPointAccessors.fromActivity<MainActivityEntryPoint>(this)
+        val onChooseMap: () -> Unit = { lifecycleScope.launch { graph.mapListChoice().choose(isList = false) } }
         setContent {
             DostepnyKampusTheme {
                 val isFirst by firstLaunch.firstLaunchState.collectAsStateWithLifecycle()
                 isFirst?.let { first ->
-                    AppShell(firstLaunch = first, roles = roles, onFirstHelpLeft = firstLaunch::markHelpSeen)
+                    AppShell(
+                        firstLaunch = first,
+                        roles = graph.roles(),
+                        onFirstHelpLeft = firstLaunch::markHelpSeen,
+                        onChooseMap = onChooseMap,
+                    )
                 }
             }
         }
@@ -56,4 +65,7 @@ class MainActivity : ComponentActivity() {
 interface MainActivityEntryPoint {
     /** Konto i role osoby (US14.1). */
     fun roles(): RoleProvider
+
+    /** Wybór „Mapa” albo „Lista budynków” w V1 (NFR-19, decyzja 116). */
+    fun mapListChoice(): MapListChoice
 }

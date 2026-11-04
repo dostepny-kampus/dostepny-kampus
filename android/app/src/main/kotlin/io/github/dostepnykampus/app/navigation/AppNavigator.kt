@@ -121,7 +121,7 @@ sealed class NavigationHistory(
  * czcionce V1 w widoku mapy z małą kartą V2, przy TalkBack od razu pełny ekran V2; zapamiętany wybór „Lista budynków”
  * się nie zmienia (US2.8, US3.2, NFR-19, decyzje 115, 118).
  */
-internal val openBuildingFromList: AppNavigator.(String, Boolean) -> Unit = { symbol, _ -> openBuilding(symbol) }
+internal val openBuildingFromList: AppNavigator.(String, Boolean) -> Unit = AppNavigator::openBuilding
 
 /**
  * Przejścia między ekranami (mapa nawigacji: tabele „start, pasek dolny i »Wstecz«”, „Gość i Odwiedzający” oraz
@@ -133,7 +133,7 @@ class AppNavigator(
     private val roles: RoleProvider,
     onFirstHelpLeft: () -> Unit = {},
     restarts: MutableList<Int> = mutableListOf(),
-    internal val onChooseMap: () -> Unit = {},
+    private val onChooseMap: () -> Unit = {},
 ) : NavigationHistory(backStack, onFirstHelpLeft, restarts) {
     private val isSignedIn: Boolean
         get() = roles.currentAccount().isSignedIn
@@ -166,12 +166,13 @@ class AppNavigator(
     /**
      * V1 → V2 budynku [symbol]; „Wstecz” z V2 wraca do V1 bez zaznaczenia budynku (US2.8, decyzja 116). Dotknięcie
      * innego budynku przy otwartym arkuszu V2 zastępuje V2, więc „Wstecz” dalej wraca prosto do V1 (decyzja 48).
+     * [isDirect] otwiera V2 od razu na pełnym ekranie, bez małej karty (NFR-19, decyzja 115).
      */
-    fun openBuilding(symbol: String) {
+    fun openBuilding(symbol: String, isDirect: Boolean = false) {
         leaving {
             subList(fromIndex = 1, toIndex = size).clear()
             this[0] = MapRoute(MapFocus.Building(symbol))
-            add(BuildingRoute(symbol))
+            add(BuildingRoute(symbol, isDirect))
         }
     }
 
@@ -182,6 +183,7 @@ class AppNavigator(
 
     /** V1 z zaznaczonym [focus] i wyczyszczoną historią: „Pokaż na mapie”, „Pokaż wejście na mapie” (US2.1, BR-25). */
     fun showOnMap(focus: MapFocus?) {
+        if (focus is MapFocus.Building) onChooseMap()
         leaving {
             subList(fromIndex = 1, toIndex = size).clear()
             this[0] = MapRoute(focus)
