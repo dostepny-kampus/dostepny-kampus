@@ -41,7 +41,7 @@ public class SubmissionService {
      */
     @Transactional
     public CreateResult create(final NewSubmission command) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(String.valueOf(this.repository));
     }
 
     /**
@@ -52,6 +52,6 @@ public class SubmissionService {
      */
     @Transactional
     public EditResult update(final SubmissionEdit command) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(String.valueOf(this.outlines));
     }
 }

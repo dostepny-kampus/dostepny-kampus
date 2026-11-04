@@ -68,8 +68,8 @@ final class SubmissionServiceTest {
         Assertions.assertEquals(
             SubmissionServiceTest.quick("A1"),
             SubmissionServiceTest.created(
-                    SubmissionServiceTest.CONTOUR, SubmissionKind.QUICK, null
-                ),
+                SubmissionServiceTest.CONTOUR, SubmissionKind.QUICK, null
+            ),
             "Do zapisu trafiła treść bez symbolu z konturu"
         );
     }
@@ -121,7 +121,8 @@ final class SubmissionServiceTest {
                 result -> () -> Assertions.assertSame(
                     result,
                     new SubmissionService(
-                        new RecordingSubmissions(result, null), SubmissionServiceTest.FORBIDDEN
+                        new SubmissionServiceTest.RecordingSubmissions(result, null),
+                        SubmissionServiceTest.FORBIDDEN
                     ).create(command),
                     "Wynik utworzenia nie wrócił tym samym obiektem"
                 )
@@ -142,7 +143,8 @@ final class SubmissionServiceTest {
                 new EditResult.Missing(SubmissionServiceTest.ID)
             ).map(
                 result -> () -> {
-                    final RecordingSubmissions fake = new RecordingSubmissions(null, result);
+                    final SubmissionServiceTest.RecordingSubmissions fake =
+                        new SubmissionServiceTest.RecordingSubmissions(null, result);
                     Assertions.assertSame(
                         result,
                         new SubmissionService(fake, SubmissionServiceTest.FORBIDDEN)
@@ -159,7 +161,8 @@ final class SubmissionServiceTest {
 
     @Test
     void ioneFiveUpdateAppliesSameBuildingRulesAsCreate() {
-        final RecordingSubmissions fake = new RecordingSubmissions(null, null);
+        final SubmissionServiceTest.RecordingSubmissions fake =
+            new SubmissionServiceTest.RecordingSubmissions(null, null);
         new SubmissionService(fake, SubmissionServiceTest.CONTOUR).update(
             new SubmissionEdit(SubmissionServiceTest.ID, 2, SubmissionServiceTest.quick("Z9"))
         );
@@ -175,7 +178,8 @@ final class SubmissionServiceTest {
     private static SubmissionContent created(
         final Outlines outlines, final SubmissionKind kind, final String building
     ) {
-        final RecordingSubmissions fake = new RecordingSubmissions(null, null);
+        final SubmissionServiceTest.RecordingSubmissions fake =
+            new SubmissionServiceTest.RecordingSubmissions(null, null);
         new SubmissionService(fake, outlines).create(
             new NewSubmission(
                 SubmissionServiceTest.ID, SubmissionServiceTest.content(kind, building)
@@ -211,11 +215,12 @@ final class SubmissionServiceTest {
         private final EditResult edited;
 
         /** Przyjęte komendy w kolejności. */
-        private final List<Object> seen = new ArrayList<>(1);
+        private final List<Object> seen;
 
         RecordingSubmissions(final CreateResult created, final EditResult edited) {
             this.created = created;
             this.edited = edited;
+            this.seen = new ArrayList<>(1);
         }
 
         @Override
