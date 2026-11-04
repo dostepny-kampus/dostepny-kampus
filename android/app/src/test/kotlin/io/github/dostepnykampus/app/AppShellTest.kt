@@ -74,6 +74,7 @@ import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.buildings.BUILDINGS_ASSET
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.ConnectivityNetworkStatus
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -81,9 +82,11 @@ import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.map.BuildingCardScreen
 import io.github.dostepnykampus.feature.map.BuildingCardViewModel
+import io.github.dostepnykampus.feature.map.CampusMapView
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.EntrancesScreen
+import io.github.dostepnykampus.feature.map.MapLibreMapView
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -151,26 +154,35 @@ internal fun AppNavigator.TestBuildingCard(symbol: String) {
     )
 }
 
-/** Stan V1 na źródłach jak w aplikacji: plik konturów z zasobów i sieć telefonu; wybór mapy albo listy w pamięci. */
-internal fun Context.appMapViewModel(): CampusMapViewModel =
+/** Stan V1 na źródłach jak w aplikacji: plik konturów z zasobów i sieć telefonu; wybór mapy albo listy [choice]. */
+internal fun Context.appMapViewModel(choice: MapListChoice = TestMapListChoice()): CampusMapViewModel =
     CampusMapViewModel(
         BuildingCatalogRepository(EmptyCoroutineContext) {
             assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() }
         },
         ConnectivityNetworkStatus(getSystemService(ConnectivityManager::class.java)),
-        TestMapListChoice(),
+        choice,
     )
 
 /**
  * Ekran trasy [route] jak [AppScreen]: V1 to ten sam [MapScreen] co w aplikacji, ale ze stanem [mapViewModel] zamiast
- * ViewModel z grafu Hilt, bo aktywność testu nie ma grafu. Ekran z grafem sprawdza [MainActivityTest].
+ * ViewModel z grafu Hilt, bo aktywność testu nie ma grafu, i z widokiem mapy [mapView]. Ekran z grafem sprawdza
+ * [MainActivityTest].
  */
 @Composable
-internal fun AppNavigator.TestAppScreen(route: NavKey, mapViewModel: CampusMapViewModel) {
+internal fun AppNavigator.TestAppScreen(
+    route: NavKey,
+    mapViewModel: CampusMapViewModel,
+    mapView: CampusMapView = MapLibreMapView,
+) {
     if (route is MapRoute) {
         val state by mapViewModel.uiState.collectAsStateWithLifecycle()
-        val focus = (route.focus as? MapFocus.Building)?.symbol
-        MapScreen(focus = focus, state = state, onListChange = mapViewModel::chooseList)
+        MapScreen(
+            focus = (route.focus as? MapFocus.Building)?.symbol,
+            state = state,
+            onListChange = mapViewModel::chooseList,
+            mapView = mapView,
+        )
     } else if (route is BuildingRoute) {
         TestBuildingCard(route.symbol)
     } else if (route is EntrancesRoute) {
