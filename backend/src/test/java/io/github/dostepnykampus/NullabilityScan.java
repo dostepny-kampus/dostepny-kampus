@@ -30,9 +30,6 @@ import org.jspecify.annotations.Nullable;
  */
 final class NullabilityScan {
 
-    private NullabilityScan() {
-    }
-
     static List<String> optionalSites(final Class<?> type) {
         final List<String> found = new ArrayList<>(0);
         Arrays.stream(type.getDeclaredFields())

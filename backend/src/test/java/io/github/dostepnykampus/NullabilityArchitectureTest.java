@@ -180,9 +180,7 @@ final class NullabilityArchitectureTest {
             Map.of("Listed", Set.of("kept"))
         );
         return Stream.of(
-            new Sample(
-                none, "bez package-info", Map.of("b/Plain", plain), true
-            ),
+            new Sample(none, "bez package-info", Map.of("b/Plain", plain), true),
             new Sample(
                 none, "pakiet tylko z package-info",
                 Map.of("t/package-info", "NullUnmarked"), true
@@ -210,81 +208,39 @@ final class NullabilityArchitectureTest {
                 "nieoznaczony pakiet z listy",
                 Map.of("p/Plain", plain), false
             ),
+            new Sample(optional, "a/A", "class A { Optional<String> v; }", true),
+            new Sample(optional, "a/A", "class A { void f(Optional<String> v) { } }", true),
+            new Sample(optional, "a/A", "class A { A(Optional<String> v) { } }", true),
+            new Sample(optional, "a/A", "record A(Optional<String> v) { }", true),
+            new Sample(optional, "a/A", "class A { List<Optional<String>> v; }", true),
+            new Sample(optional, "a/A", "class A { Optional<String> f() { return null; } }", false),
+            new Sample(nullable, "domain/A", "class A { @Nullable String v; }", true),
             new Sample(
-                optional, "pole", Map.of("a/A", "class A { Optional<String> v; }"), true
+                nullable, "domain/A",
+                "class A { @Nullable String f() { return null; } }", true
+            ),
+            new Sample(nullable, "domain/A", "class A { void f(@Nullable String v) { } }", true),
+            new Sample(nullable, "domain/A", "class A { A(@Nullable String v) { } }", true),
+            new Sample(nullable, "domain/A", "record A(@Nullable String v) { }", true),
+            new Sample(
+                nullable, "domain/Listed",
+                "record Listed(@Nullable String kept, @Nullable String x) { }", true
+            ),
+            new Sample(nullable, "domain/Listed", "class Listed { @Nullable String kept; }", true),
+            new Sample(nullable, "domain/A", "class A { List<@Nullable String> v; }", true),
+            new Sample(
+                nullable, "domain/A",
+                "class A { private void f(@Nullable String v) { } }", true
             ),
             new Sample(
-                optional, "parametr metody",
-                Map.of("a/A", "class A { void f(Optional<String> v) { } }"), true
+                nullable, "domain/Listed",
+                "class Listed { void f(@Nullable String v) { } }", true
             ),
             new Sample(
-                optional, "parametr konstruktora",
-                Map.of("a/A", "class A { A(Optional<String> v) { } }"), true
+                nullable, "domain/Listed",
+                "class Listed { private void f(@Nullable String v) { } }", false
             ),
-            new Sample(
-                optional, "komponent rekordu",
-                Map.of("a/A", "record A(Optional<String> v) { }"), true
-            ),
-            new Sample(
-                optional, "argument typu",
-                Map.of("a/A", "class A { List<Optional<String>> v; }"), true
-            ),
-            new Sample(
-                optional, "wynik metody",
-                Map.of("a/A", "class A { Optional<String> f() { return null; } }"), false
-            ),
-            new Sample(
-                nullable, "pole",
-                Map.of("domain/A", "class A { @Nullable String v; }"), true
-            ),
-            new Sample(
-                nullable, "wynik metody",
-                Map.of("domain/A", "class A { @Nullable String f() { return null; } }"), true
-            ),
-            new Sample(
-                nullable, "parametr metody",
-                Map.of("domain/A", "class A { void f(@Nullable String v) { } }"), true
-            ),
-            new Sample(
-                nullable, "parametr konstruktora",
-                Map.of("domain/A", "class A { A(@Nullable String v) { } }"), true
-            ),
-            new Sample(
-                nullable, "komponent spoza listy",
-                Map.of("domain/A", "record A(@Nullable String v) { }"), true
-            ),
-            new Sample(
-                nullable, "inny komponent klasy z listy",
-                Map.of(
-                    "domain/Listed",
-                    "record Listed(@Nullable String kept, @Nullable String x) { }"
-                ), true
-            ),
-            new Sample(
-                nullable, "klasa z listy poza rekordem",
-                Map.of("domain/Listed", "class Listed { @Nullable String kept; }"), true
-            ),
-            new Sample(
-                nullable, "argument typu",
-                Map.of("domain/A", "class A { List<@Nullable String> v; }"), true
-            ),
-            new Sample(
-                nullable, "private poza listą",
-                Map.of("domain/A", "class A { private void f(@Nullable String v) { } }"), true
-            ),
-            new Sample(
-                nullable, "metoda pakietowa klasy z listy",
-                Map.of("domain/Listed", "class Listed { void f(@Nullable String v) { } }"), true
-            ),
-            new Sample(
-                nullable, "private w klasie z listy",
-                Map.of(
-                    "domain/Listed", "class Listed { private void f(@Nullable String v) { } }"
-                ), false
-            ),
-            new Sample(
-                nullable, "brak klas domeny", Map.of("a/A", "class A { }"), true
-            ),
+            new Sample(nullable, "a/A", "class A { }", true),
             new Sample(
                 nullable, "komponent z listy i null poza domeną",
                 Map.of(
@@ -428,6 +384,10 @@ final class NullabilityArchitectureTest {
         ArchRule rule, String label,
         Map<String, String> files, boolean violating
     ) {
+        Sample(final ArchRule rule, final String key, final String code, final boolean bad) {
+            this(rule, code, Map.of(key, code), bad);
+        }
+
         @Override
         public String toString() {
             return this.label;
