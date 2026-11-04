@@ -43,7 +43,7 @@ final class ContentFieldsJsonTest {
     );
 
     @Test
-    void wThreeTwoEveryGroupHasPairBothWays() {
+    void wthreeTwoEveryGroupHasPairBothWays() {
         Assertions.assertEquals(
             EnumSet.allOf(BarrierGroup.class), ContentFieldsJsonTest.GROUPS.keySet(),
             "Tabela grup nie ma pary dla każdej stałej domeny"
@@ -73,7 +73,7 @@ final class ContentFieldsJsonTest {
     }
 
     @Test
-    void wThreeTwoUnknownGroupFailsBinding() {
+    void wthreeTwoUnknownGroupFailsBinding() {
         Assertions.assertAll(
             Stream.of("ENTRANCE", "NOPE", "vertical_circulation").map(
                 group -> () -> JsonBodies.failsBinding(
@@ -84,7 +84,7 @@ final class ContentFieldsJsonTest {
     }
 
     @Test
-    void wThreeThreeCodeMapsBothWays() {
+    void wthreeThreeCodeMapsBothWays() {
         Assertions.assertAll(
             Stream.of(1, 17, 29).map(
                 number -> () -> {
@@ -105,7 +105,7 @@ final class ContentFieldsJsonTest {
     }
 
     @Test
-    void wThreeThreeCodeOutsideRangeIsInvalidSubmission() {
+    void wthreeThreeCodeOutsideRangeIsInvalidSubmission() {
         Assertions.assertAll(
             Stream.of("TB-30", "TB-0", "TB-01", "3").map(
                 code -> () -> Assertions.assertThrows(
@@ -120,7 +120,7 @@ final class ContentFieldsJsonTest {
     }
 
     @Test
-    void wThreeFourPointIsLongitudeThenLatitude() {
+    void wthreeFourPointIsLongitudeThenLatitude() {
         final ObjectNode body = JsonBodies.with(
             node -> node.set(
                 "location", JsonBodies.json("{'type':'Point','coordinates':[21.0,52.2]}")
@@ -139,7 +139,7 @@ final class ContentFieldsJsonTest {
     }
 
     @Test
-    void wThreeFourRejectsOtherTypeAndWrongCoordinateCount() {
+    void wthreeFourRejectsOtherTypeAndWrongCoordinateCount() {
         Assertions.assertAll(
             Stream.of(
                 "{'type':'LineString','coordinates':[1.0,2.0]}",
