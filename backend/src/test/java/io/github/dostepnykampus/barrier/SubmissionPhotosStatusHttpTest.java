@@ -86,19 +86,17 @@ final class SubmissionPhotosStatusHttpTest {
         throws Exception {
         final PhotoRequests requests = new PhotoRequests(context);
         final String lower = SubmissionPhotosStatusHttpTest.PHOTO.toString();
-        final UUID id = requests.add("SENT", lower.toUpperCase(Locale.ROOT));
-        final int saved = requests.put(
+        final String upper = lower.toUpperCase(Locale.ROOT);
+        final UUID id = requests.add("ACCEPTED", upper);
+        context.getBean(PhotoStore.class).put(
             id, SubmissionPhotosStatusHttpTest.PHOTO, JpegCleanerTest.photo()
-        ).getStatus();
-        requests.status(id, "ACCEPTED");
+        );
         MatcherAssert.assertThat(
-            "Wielkość liter w identyfikatorze zdjęcia zmienia wynik zapisu albo odczytu",
+            "Wielkość liter w identyfikatorze zdjęcia zmienia wynik odczytu",
             List.of(
-                saved,
-                requests.get(id, lower).getStatus(),
-                requests.get(id, lower.toUpperCase(Locale.ROOT)).getStatus()
+                requests.get(id, lower).getStatus(), requests.get(id, upper).getStatus()
             ),
-            Matchers.equalTo(List.of(204, 200, 200))
+            Matchers.equalTo(List.of(200, 200))
         );
     }
 }

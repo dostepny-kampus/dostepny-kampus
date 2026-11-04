@@ -55,18 +55,6 @@ final class PhotoRequests {
     }
 
     /**
-     * Zmienia status zgłoszenia w bazie.
-     *
-     * @param id Identyfikator zgłoszenia
-     * @param status Nowy status
-     */
-    void status(final UUID id, final String status) {
-        this.context.getBean(JdbcClient.class)
-            .sql("UPDATE submissions SET status = :status WHERE id = :id")
-            .param("status", status).param("id", id).update();
-    }
-
-    /**
      * Wysyła zdjęcie.
      *
      * @param id Identyfikator zgłoszenia
