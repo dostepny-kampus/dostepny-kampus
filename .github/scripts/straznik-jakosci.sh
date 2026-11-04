@@ -16,13 +16,18 @@ android_rule+=' z powodem w PR.'
 suppression='\b(Suppress(Lint|Warnings|FBWarnings)?|TargetApi)\b|@\s*([\w.]+\.)?Generated\b'
 suppression+='|NOPMD|CHECKSTYLE[:.]OFF|@checkstyle|ktlint-disable|noinspection|<!--\s*suppress\b'
 suppression+='|detekt:disable|lint:ignore|[\w-]+:(ignore|targetApi)\s*='
+suppression+='|@\s*([\w.]+\.)?NullUnmarked\b|\bcastToNonNull\b|NullAway:(OFF|WARN)\b'
+suppression+='|-XepExcludedPaths|-XepDisableAllChecks'
 
 rule_files='^android/config/|^android/build-logic/|^android/buildSrc/|(^|/)gradle\.properties$'
 rule_files+='|^\.github/(workflows|scripts|commitlint)/|^\.github/dependabot\.ya?ml$|^commitlint\.config\.'
 rule_files+='|^\.commitlintrc|(^|/)\.gitleaks|(^|/)\.editorconfig$|(^|/)\.gitattributes$|(^|/)lint\.xml$'
+rule_files+='|(^|/)\.mvn/(jvm|maven)\.config$|^backend/src/test/(.*/)?([^/]*ArchitectureTest|ModularityTest)\.java$'
+rule_files+='|^android/(.*/)?src/test/(.*/)?[^/]*ArchitectureTest\.kt$'
 rule_files+='|^api/redocly\.yaml$|^docs/(\.vale\.ini$|\.markdownlint|styles/|scripts/verify\.py$|scripts/check_ids\.py$)'
 
 pom_words='jacoco|qulice|<minimum>|<exclude|skip|haltOnFailure|testFailureIgnore'
+pom_words+='|(?i:errorprone|nullaway|jspecify)|-Xep|-Xplugin'
 gradle_words='kover|detekt|\blint\b|baseline|ignoreFailures|abortOnError|[wW]arningsAsErrors'
 gradle_words+='|checkAllWarnings|suppressWarnings|nowarn|Xsuppress|Xwarning-level|failOnSeverity'
 gradle_words+='|verifyRoborazzi|enabled\s*=\s*false|[iI]sEnabled|setEnabled|onlyIf|excludedTaskNames'
@@ -52,7 +57,7 @@ diff_lines() {
     /^-/ { print "-\t" o++ "\t" substr($0, 2) }'
 }
 
-# Numery linii wewnątrz <plugin> JaCoCo albo qulice.
+# Numery linii wewnątrz <plugin> JaCoCo, qulice albo kompilatora (Error Prone, NullAway).
 pom_context() {
   awk '
     /<plugin>/ { inside = 1; n = 0; aid = "" }
@@ -60,7 +65,10 @@ pom_context() {
       buf[++n] = NR
       if (aid == "" && match($0, /<artifactId>[^<]*/)) aid = substr($0, RSTART + 12, RLENGTH - 12)
     }
-    /<\/plugin>/ { if (aid ~ /jacoco|qulice/) for (i = 1; i <= n; i++) print buf[i]; inside = 0 }'
+    /<\/plugin>/ {
+      if (aid ~ /jacoco|qulice|maven-compiler-plugin/) for (i = 1; i <= n; i++) print buf[i]
+      inside = 0
+    }'
 }
 
 # Numery linii wewnątrz bloków kover, detekt, lint i opcji kompilatora skryptu Gradle.
@@ -112,9 +120,20 @@ only_version_bumps() {
   [[ "$(grep -P '^-\t' <<<"$lines" | normalize_versions)" == "$(grep -P '^\+\t' <<<"$lines" | normalize_versions)" ]]
 }
 
+# Plik package-info.java w bazie miał @NullMarked, a w PR go nie ma (usunięty plik albo adnotacja).
+null_marked_removed() {
+  local status="$1" path="$2" old="$3" marked='^\s*@\s*([\w.]+\.)?NullMarked\b'
+  [[ ${old##*/} == package-info.java ]] || return 1
+  grep -qP -- "$marked" <<<"$(git show "$merge_base:$old" 2>/dev/null || true)" || return 1
+  [[ $status == D ]] || ! grep -qP -- "$marked" <<<"$(git show "$head:$path")"
+}
+
 check_file() {
   local status="$1" path="$2" old="${3:-$2}" rule=0 lines="" name side num text
   [[ $path =~ (^|/)(build|target)/ ]] && return 0
+  if null_marked_removed "$status" "$path" "$old"; then
+    add_soft "$path" "" "usunięte @NullMarked: pakiet wychodzi spod sprawdzania NullAway"
+  fi
   if grep -qE -- "$rule_files" <<<"$path"$'\n'"$old"; then rule=1; fi
   if [[ $path == */GenerateDesignTokens.kt && $old == "$path" ]]; then rule=0; fi
   if [[ $status == D ]]; then
