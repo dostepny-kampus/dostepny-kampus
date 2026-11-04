@@ -10,6 +10,7 @@ import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
@@ -55,20 +56,23 @@ final class JdbcErrorsTest {
             """
         ).update();
         try {
-            final EditResult result = data.repo().update(
-                new SubmissionEdit(id, 1, SubmissionData.content("własna"))
-            );
             Assertions.assertEquals(
-                new EditResult.Saved(
-                    new Submission(
-                        id, 2, SubmissionStatus.SENT, data.created(id),
-                        SubmissionData.content("własna")
-                    )
+                List.of(
+                    new EditResult.Saved(
+                        new Submission(
+                            id, 2, SubmissionStatus.SENT, data.created(id),
+                            SubmissionData.content("własna")
+                        )
+                    ),
+                    3
                 ),
-                result,
-                "Wynik edycji pochodzi z ponownego odczytu cudzej zmiany"
+                List.of(
+                    data.repo().update(
+                        new SubmissionEdit(id, 1, SubmissionData.content("własna"))
+                    ),
+                    data.row(id).get("version")
+                )
             );
-            Assertions.assertEquals(3, data.row(id).get("version"), "Cudza zmiana nie zaszła");
         } finally {
             data.jdbc().sql("DROP TRIGGER j_foreign_bump ON submissions").update();
             data.jdbc().sql("DROP FUNCTION j_foreign_bump()").update();
@@ -86,8 +90,7 @@ final class JdbcErrorsTest {
                     WHERE table_name = 'submissions' AND constraint_type = 'FOREIGN KEY'
                     """
                 ).query(String.class).list()
-            ),
-            "Nowy klucz obcy wymaga zmiany mapowania błędów integralności"
+            )
         );
     }
 }
