@@ -5,6 +5,9 @@
  */
 package io.github.dostepnykampus.barrier.json;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.github.dostepnykampus.barrier.domain.SubmissionFloor;
+import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -12,10 +15,32 @@ import org.jspecify.annotations.Nullable;
  *
  * @param floorId Identyfikator piętra albo null
  * @param number Numer piętra albo null
- * @param mezzanine Półpiętro albo null, gdy nie podano
+ * @param mezzanine Półpiętro albo null, gdy nie podano lub fałsz
  * @since 0.1.0
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 record SubmissionFloorJson(
     @Nullable String floorId, @Nullable Integer number, @Nullable Boolean mezzanine
 ) {
+
+    /**
+     * Zapisuje piętro zgłoszenia; fałszywe półpiętro nie trafia do JSON.
+     *
+     * @param floor Piętro zgłoszenia
+     */
+    SubmissionFloorJson(final SubmissionFloor floor) {
+        this(
+            floor.floorId(), floor.number(),
+            Optional.of(floor.mezzanine()).filter(Boolean::booleanValue).orElse(null)
+        );
+    }
+
+    /**
+     * Przenosi piętro z JSON do domeny.
+     *
+     * @return Piętro zgłoszenia
+     */
+    SubmissionFloor toFloor() {
+        return new SubmissionFloor(this.floorId, this.number, Boolean.TRUE.equals(this.mezzanine));
+    }
 }

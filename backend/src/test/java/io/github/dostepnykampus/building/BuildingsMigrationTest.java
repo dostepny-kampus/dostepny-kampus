@@ -5,13 +5,11 @@
  */
 package io.github.dostepnykampus.building;
 
-import io.github.dostepnykampus.PostgisTestConfiguration;
+import io.github.dostepnykampus.IntegrationTest;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
@@ -20,8 +18,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
  *
  * @since 0.1.0
  */
-@SpringBootTest
-@Import(PostgisTestConfiguration.class)
+@IntegrationTest
 final class BuildingsMigrationTest {
 
     @Test
