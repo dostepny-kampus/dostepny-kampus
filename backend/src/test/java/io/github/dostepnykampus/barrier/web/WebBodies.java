@@ -47,10 +47,14 @@ final class WebBodies {
     private WebBodies() {
     }
 
+    static String newBody(final String tail) {
+        return WebBodies.body(String.format("'id':'%s',%s", WebBodies.ID, tail));
+    }
+
     static String body(final String head) {
         return String.format(
             "{%s,'kind':'QUICK','location':{'type':'Point','coordinates':[17.06,51.1]},%s}",
-            head, "'barrierGroup':'OTHER','photoIds':['" + WebBodies.PHOTO + "']"
+            head, String.format("'barrierGroup':'OTHER','photoIds':['%s']", WebBodies.PHOTO)
         ).replace('\'', '"');
     }
 

@@ -24,14 +24,12 @@ import tools.jackson.databind.exc.MismatchedInputException;
 @Disabled("Ciała żądań zgłoszeń jeszcze nie wiążą JSON")
 final class RequestsJsonTest {
 
-    private static final String NEW_ID = "'id':'" + WebBodies.ID + "'";
-
     @Test
     void wfourOneNewRequestGivesCommandWithIdAndContent() {
         Assertions.assertEquals(
             new NewSubmission(WebBodies.ID, WebBodies.content()),
             WebBodies.MAPPER.readValue(
-                WebBodies.body(RequestsJsonTest.NEW_ID), NewSubmissionRequest.class
+                WebBodies.newBody("'extra':'x'"), NewSubmissionRequest.class
             ).toCommand(),
             "Komenda bez identyfikatora z ciała albo bez treści"
         );
@@ -42,7 +40,7 @@ final class RequestsJsonTest {
         Assertions.assertEquals(
             new SubmissionEdit(WebBodies.PATH, 3, WebBodies.content()),
             WebBodies.MAPPER.readValue(
-                WebBodies.body("'version':3," + RequestsJsonTest.NEW_ID),
+                WebBodies.body(String.format("'version':3,'id':'%s'", WebBodies.ID)),
                 SubmissionUpdateRequest.class
             ).toCommand(WebBodies.PATH),
             "Komenda edycji bez identyfikatora z adresu, wersji albo treści"
@@ -67,7 +65,7 @@ final class RequestsJsonTest {
             () -> Assertions.assertEquals(
                 WebBodies.ID,
                 WebBodies.MAPPER.readValue(
-                    WebBodies.body(RequestsJsonTest.NEW_ID + "," + extra),
+                    WebBodies.newBody(extra),
                     NewSubmissionRequest.class
                 ).toCommand().id(),
                 "Nieznane pole zepsuło wiązanie POST"
@@ -75,7 +73,8 @@ final class RequestsJsonTest {
             () -> Assertions.assertEquals(
                 2,
                 WebBodies.MAPPER.readValue(
-                    WebBodies.body("'version':2," + extra), SubmissionUpdateRequest.class
+                    WebBodies.body(String.format("'version':2,%s", extra)),
+                    SubmissionUpdateRequest.class
                 ).toCommand(WebBodies.PATH).expectedVersion(),
                 "Nieznane pole zepsuło wiązanie PUT"
             )
@@ -85,21 +84,17 @@ final class RequestsJsonTest {
     @Test
     void wfourThreeNewRequestRejectsNullAndCoercion() {
         Assertions.assertAll(
-            Stream.of(
-                "'id':null",
-                RequestsJsonTest.NEW_ID + ",'accuracyMeters':null",
-                RequestsJsonTest.NEW_ID + ",'accuracyMeters':'5'",
-                RequestsJsonTest.NEW_ID + ",'manualCorrection':'true'",
-                RequestsJsonTest.NEW_ID + ",'severity':null",
-                RequestsJsonTest.NEW_ID + ",'severity':'2'",
-                RequestsJsonTest.NEW_ID + ",'barrierRemoved':'true'"
+            Stream.concat(
+                Stream.of(WebBodies.body("'id':null")),
+                Stream.of(
+                    "'accuracyMeters':null", "'accuracyMeters':'5'", "'manualCorrection':'true'",
+                    "'severity':null", "'severity':'2'", "'barrierRemoved':'true'"
+                ).map(WebBodies::newBody)
             ).map(
-                head -> () -> Assertions.assertThrows(
+                body -> () -> Assertions.assertThrows(
                     MismatchedInputException.class,
-                    () -> WebBodies.MAPPER.readValue(
-                        WebBodies.body(head), NewSubmissionRequest.class
-                    ),
-                    "Wiązanie POST przyjęło " + head
+                    () -> WebBodies.MAPPER.readValue(body, NewSubmissionRequest.class),
+                    String.format("Wiązanie POST przyjęło %s", body)
                 )
             )
         );
@@ -117,7 +112,7 @@ final class RequestsJsonTest {
                     () -> WebBodies.MAPPER.readValue(
                         WebBodies.body(head), SubmissionUpdateRequest.class
                     ),
-                    "Wiązanie PUT przyjęło " + head
+                    String.format("Wiązanie PUT przyjęło %s", head)
                 )
             )
         );

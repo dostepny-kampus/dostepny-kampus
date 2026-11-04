@@ -22,10 +22,10 @@ record SubmissionUpdateRequest(@Nullable Integer version, SubmissionContentJson 
     /**
      * Przenosi ciało żądania do komendy domeny.
      *
-     * @param pathId Identyfikator zgłoszenia z adresu
+     * @param path Identyfikator zgłoszenia z adresu
      * @return Komenda edycji zgłoszenia
      */
-    SubmissionEdit toCommand(final UUID pathId) {
+    SubmissionEdit toCommand(final UUID path) {
         throw new UnsupportedOperationException();
     }
 }
