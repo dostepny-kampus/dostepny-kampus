@@ -17,7 +17,6 @@ import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -27,7 +26,6 @@ import org.junit.jupiter.api.Test;
  *
  * @since 0.1.0
  */
-@Disabled("Odpowiedź ze zgłoszeniem jeszcze nie zapisuje JSON")
 final class SubmissionResponseTest {
 
     @Test

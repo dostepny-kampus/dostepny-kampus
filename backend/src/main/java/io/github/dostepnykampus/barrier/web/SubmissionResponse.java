@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.barrier.web;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import io.github.dostepnykampus.barrier.json.SubmissionContentJson;
@@ -21,9 +23,10 @@ import java.util.UUID;
  * @param content Treść zgłoszenia, w JSON płasko obok pozostałych pól
  * @since 0.1.0
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 record SubmissionResponse(
     UUID id, int version, SubmissionStatus status, Instant createdAt,
-    SubmissionContentJson content
+    @JsonUnwrapped SubmissionContentJson content
 ) {
 
     /**

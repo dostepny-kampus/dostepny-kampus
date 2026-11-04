@@ -6,11 +6,11 @@
 package io.github.dostepnykampus.barrier.web;
 
 import io.github.dostepnykampus.InvalidInput;
+import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.exc.MismatchedInputException;
 
@@ -21,7 +21,6 @@ import tools.jackson.databind.exc.MismatchedInputException;
  *
  * @since 0.1.0
  */
-@Disabled("Ciała żądań zgłoszeń jeszcze nie wiążą JSON")
 final class RequestsJsonTest {
 
     @Test
@@ -32,6 +31,21 @@ final class RequestsJsonTest {
                 WebBodies.newBody("'extra':'x'"), NewSubmissionRequest.class
             ).toCommand(),
             "Komenda bez identyfikatora z ciała albo bez treści"
+        );
+    }
+
+    @Test
+    void wfourOneNewRequestWithoutIdIsClientError() {
+        Assertions.assertEquals(
+            "Brak identyfikatora zgłoszenia w polu id",
+            Assertions.assertThrows(
+                InvalidSubmission.class,
+                () -> WebBodies.MAPPER.readValue(
+                    WebBodies.body("'extra':'x'"), NewSubmissionRequest.class
+                ).toCommand(),
+                "Zgłoszenie bez id nie dało błędu 400"
+            ).getMessage(),
+            "Zły komunikat błędu"
         );
     }
 

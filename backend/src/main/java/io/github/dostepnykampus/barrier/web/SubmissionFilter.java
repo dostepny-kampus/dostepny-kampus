@@ -5,9 +5,14 @@
  */
 package io.github.dostepnykampus.barrier.web;
 
+import io.github.dostepnykampus.InvalidInput;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -30,10 +35,22 @@ record SubmissionFilter(
      * @return Zapytanie o listę zgłoszeń
      */
     SubmissionQuery toQuery() {
-        return SubmissionFilter.missing();
+        final Set<SubmissionStatus> statuses = this.statuses();
+        if (!this.mine && !statuses.stream().allMatch(SubmissionStatus::publiclyVisible)) {
+            throw new InvalidInput("Bez mine=true dozwolony jest tylko status ACCEPTED");
+        }
+        return new SubmissionQuery(statuses, this.buildingSymbol, this.floorId);
     }
 
-    private static SubmissionQuery missing() {
-        throw new UnsupportedOperationException();
+    private Set<SubmissionStatus> statuses() {
+        final Set<SubmissionStatus> result;
+        if (this.status == null) {
+            result = Stream.of(SubmissionStatus.values())
+                .filter(SubmissionStatus::publiclyVisible)
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(SubmissionStatus.class)));
+        } else {
+            result = Set.copyOf(this.status);
+        }
+        return result;
     }
 }
