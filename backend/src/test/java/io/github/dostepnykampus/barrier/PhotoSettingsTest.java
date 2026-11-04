@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -189,10 +190,9 @@ final class PhotoSettingsTest {
     void cfgFiveHidesKeysInSettingsText() {
         MatcherAssert.assertThat(
             "Tekst ustawień zawiera klucz dostępu albo sekret magazynu",
-            new PhotoSettings(
-                URI.create("http://127.0.0.1:9000"), "zdjecia", "klucz-ukryty", "sekret-ukryty"
-            ).toString(),
-            Matchers.not(Matchers.matchesRegex(".*(klucz|sekret)-ukryty.*"))
+            new PhotoSettings(URI.create("http://magazyn"), "zdjecia", "klucz-1", "sekret-1")
+                .toString(),
+            Matchers.not(Matchers.matchesRegex(".*(klucz|sekret)-1.*"))
         );
     }
 
@@ -215,9 +215,7 @@ final class PhotoSettingsTest {
             .collect(Collectors.joining(" <- "));
     }
 
-    private static List<String> properties(
-        final AssertableApplicationContext context, final String... keys
-    ) {
+    private static List<String> properties(final ApplicationContext context, final String... keys) {
         return Stream.of(keys).map(context.getEnvironment()::getProperty).toList();
     }
 
@@ -242,9 +240,6 @@ final class PhotoSettingsTest {
     @EnableConfigurationProperties(PhotoSettings.class)
     @Import({PhotoStorage.class, PhotoStore.class})
     static final class Photos {
-
-        private Photos() {
-        }
     }
 
     /**
