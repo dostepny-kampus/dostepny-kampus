@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
@@ -11,6 +11,8 @@ import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -105,6 +107,21 @@ final class SubmissionPhotosHttpTest {
             SubmissionPhotosHttpTest.get(context, id).getStatus(),
             Matchers.equalTo(404)
         );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"GIF89a", "ÿØÿá"})
+    void nfrTwentySixRejectsInvalidJpeg(
+        final String content, final WebApplicationContext context
+    ) throws Exception {
+        final UUID id = SubmissionPhotosHttpTest.add(context, "SENT");
+        SubmissionPhotosHttpTest.mvc(context).perform(
+            MockMvcRequestBuilders.put(
+                "/submissions/{id}/photos/{photo}", id, SubmissionPhotosHttpTest.PHOTO
+            ).contentType(MediaType.IMAGE_JPEG)
+                .content(content.getBytes(StandardCharsets.ISO_8859_1))
+        ).andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status()
+            .isBadRequest());
     }
 
     private static UUID add(final WebApplicationContext context, final String status) {
