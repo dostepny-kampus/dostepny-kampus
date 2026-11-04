@@ -126,7 +126,7 @@ class ServerBuildingCatalogTest {
 
     // Wiersz: otwarcie karty i „Spróbuj ponownie” naraz → jedno zapytanie do serwera, dopóki pierwsze trwa, NFR-10.
     @Test
-    fun nfr10_retry_waits_for_running_read() {
+    fun nfr10_retry_waits_for_read() {
         val gate = CompletableDeferred<Unit>()
         val server: suspend () -> ApiResult<BuildingList> = {
             serverCalls.incrementAndGet()
