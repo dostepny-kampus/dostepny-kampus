@@ -74,6 +74,15 @@ final class OpenApiContractTest {
     }
 
     @Test
+    void contractFindsProblemWithoutTitle() {
+        MatcherAssert.assertThat(
+            "Błąd bez title przechodzi sprawdzenie schematem Problem",
+            new OpenApiContract().violations("Problem", "{\"status\":400}"),
+            Matchers.hasItem(Matchers.containsString("'title'"))
+        );
+    }
+
+    @Test
     void contractReadsSpecificationOnce() throws Exception {
         final AtomicInteger reads = new AtomicInteger();
         final OpenApiContract contract = new OpenApiContract(
@@ -145,6 +154,11 @@ final class OpenApiContractTest {
                 OpenApiContractTest.review("{\"decision\":\"REJECT\",\"version\":1}"),
                 OpenApiContractTest.problem(401, "{\"title\":\"Brak tokenu\",\"status\":401}"),
                 "POST /submissions/{submissionId}/review, żądanie: "
+            ),
+            Arguments.of(
+                MockMvcRequestBuilders.get("/buildings/A-1"),
+                ResponseEntity.ok().<String>build(),
+                "GET /buildings/{symbol} 200: typ treści '' spoza kontraktu"
             )
         );
     }
