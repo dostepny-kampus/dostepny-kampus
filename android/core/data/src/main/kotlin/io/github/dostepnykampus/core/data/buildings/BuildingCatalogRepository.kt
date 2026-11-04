@@ -12,6 +12,9 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -38,9 +41,12 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
  * - Wejścia nie obejmują rodzajów `emergency`, `exit` i `garage`, bo to nie są wejścia dla odwiedzających
  *   (BR-25, decyzja 76).
  *
- * [catalog] czyta plik i pyta serwer raz, w [ioContext]; kolejne wywołania, także równoległe, dostają ten sam
- * katalog z pamięci. [refresh] pyta serwer i czyta plik od nowa. Bez odpowiedzi serwera katalog pobrany
- * wcześniej z serwera zostaje, a plik jest zapasem tylko wtedy, gdy z serwera nic jeszcze nie pobrano (NFR-10).
+ * [catalogUpdates] oddaje katalog w dwóch etapach: z pliku zaraz po odczycie, potem z serwera, gdy ten odpowie
+ * niepustą listą. Mapa pokazuje więc kontury bez czekania na sieć (NFR-11), a katalog z serwera zastępuje plik bez
+ * ponownego otwierania ekranu; plik nigdy nie nadpisuje przyjętego katalogu z serwera. [catalog] czeka na oba etapy,
+ * czyta plik i pyta serwer raz, w [ioContext]; kolejne wywołania, także równoległe, dostają ten sam katalog z pamięci.
+ * [refresh] pyta serwer i czyta plik od nowa. Bez odpowiedzi serwera katalog pobrany wcześniej z serwera zostaje,
+ * a plik jest zapasem tylko wtedy, gdy z serwera nic jeszcze nie pobrano (NFR-10).
  *
  * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
  * @param listBuildings lista z serwera; `null` zostawia katalog wyłącznie z pliku
@@ -63,6 +69,30 @@ class BuildingCatalogRepository(
     suspend fun catalog(): BuildingCatalog = mutex.withLock { cached ?: load().also { cached = it } }
 
     /**
+     * Strumień katalogu dla mapy: najpierw katalog z pliku (albo już pobrany z serwera), potem katalog z serwera, gdy
+     * ten odpowie niepustą listą. Błąd, brak sieci i pusta lista nie dają drugiej emisji. Gdy katalog jest już
+     * w pamięci, strumień oddaje go i kończy się. Anulowanie zbierającego przerywa odczyt i pytanie serwera.
+     *
+     * @throws IllegalArgumentException gdy plik konturów ma zły format
+     */
+    fun catalogUpdates(): Flow<BuildingCatalog> =
+        flow {
+            val ready = mutex.withLock { cached }
+            if (ready == null) emitFileThenServer() else emit(ready)
+        }
+
+    private suspend fun FlowCollector<BuildingCatalog>.emitFileThenServer() {
+        val bundled = readBundled()
+        emit(mutex.withLock { downloaded } ?: bundled)
+        val server = nonEmptyServerList()
+        if (server != null) {
+            emit(accept(bundled, server))
+        } else {
+            mutex.withLock { cached = cached ?: downloaded ?: bundled }
+        }
+    }
+
+    /**
      * Pyta serwer i czyta plik od nowa, zapamiętuje wynik i zwraca katalog dla „Spróbuj ponownie”, gdy budynku
      * nie ma w telefonie (NFR-10). Gdy serwer nie odpowie, zostaje ostatni katalog z serwera, a bez niego plik.
      *
@@ -70,8 +100,19 @@ class BuildingCatalogRepository(
      */
     suspend fun refresh(): BuildingCatalog = mutex.withLock { load().also { cached = it } }
 
+    private suspend fun readBundled(): BuildingCatalog =
+        withContext(ioContext) { parseBuildingCatalog(readGeoJson()).forVisitors() }
+
+    private suspend fun accept(bundled: BuildingCatalog, server: BuildingList): BuildingCatalog =
+        mutex.withLock {
+            fromServer(bundled, server).also { catalog ->
+                downloaded = catalog
+                cached = catalog
+            }
+        }
+
     private suspend fun load(): BuildingCatalog {
-        val bundled = withContext(ioContext) { parseBuildingCatalog(readGeoJson()).forVisitors() }
+        val bundled = readBundled()
         val server = nonEmptyServerList()
         if (server != null) {
             downloaded = fromServer(bundled, server)
