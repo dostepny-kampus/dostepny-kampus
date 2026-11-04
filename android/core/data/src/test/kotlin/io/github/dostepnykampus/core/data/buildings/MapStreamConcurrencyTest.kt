@@ -70,8 +70,13 @@ class MapStreamConcurrencyTest {
         inRun {
             launch { repository.refresh() }
             settle()
-            val first = withTimeoutOrNull(WAIT_MS) { repository.catalogUpdates().first() }
-            assertEquals(listOf("C-1"), first?.buildings.orEmpty().map { it.symbol }, "mapa czeka na trwające pobranie")
+            try {
+                val first = withTimeoutOrNull(WAIT_MS) { repository.catalogUpdates().first() }
+                val symbols = first?.buildings.orEmpty().map { it.symbol }
+                assertEquals(listOf("C-1"), symbols, "mapa czeka na trwające pobranie")
+            } finally {
+                gate.complete(Unit)
+            }
         }
     }
 
