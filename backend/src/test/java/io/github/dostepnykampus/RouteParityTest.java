@@ -263,7 +263,8 @@ final class RouteParityTest {
     private static String prefix(final JsonNode tree) {
         return URI.create(
             tree.path("servers").path(0).path("url").asString("/")
-                .replace("{", "").replace("}", "")).getPath();
+                .replace("{", "").replace("}", "")
+        ).getPath();
     }
 
     private static String normalized(final String verb, final String prefix, final String path) {
