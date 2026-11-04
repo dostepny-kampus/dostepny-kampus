@@ -276,9 +276,9 @@ class AppNavigatorTest {
             back()
             assertEquals(BuildingRoute("A-1"), current)
             openEntrances(symbol = "A-1")
-            showOnMap(MapFocus.Entrance("A-1-glowne", "A-1"))
+            showOnMap(MapFocus.Entrance(id = "A-1-glowne", buildingSymbol = "A-1"))
         }
-        assertEquals(listOf(MapRoute(MapFocus.Entrance("A-1-glowne", "A-1"))), stack)
+        assertEquals(listOf(MapRoute(MapFocus.Entrance(id = "A-1-glowne", buildingSymbol = "A-1"))), stack)
     }
 
     // Wiersze: V1, dotknięcie budynku na liście przy zwykłej czcionce → V1 w widoku mapy z małą kartą V2; mała karta,
@@ -331,7 +331,7 @@ class AppNavigatorTest {
     @Disabled("wejście na mapie jeszcze nie działa, poprawka w następnym PR")
     fun us2_1_entrance_chooses_map() {
         mapChoiceNavigator().run {
-            showOnMap(MapFocus.Entrance("A-1-glowne", "A-1"))
+            showOnMap(MapFocus.Entrance(id = "A-1-glowne", buildingSymbol = "A-1"))
             open(TopLevel.MAP)
         }
         assertEquals(1, mapChosen)

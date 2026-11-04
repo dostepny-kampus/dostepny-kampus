@@ -130,7 +130,7 @@ internal fun AppNavigator.TestEntrances(symbol: String) {
     val card = remember(symbol) { context.buildingCardViewModel(symbol) }
     EntrancesScreen(
         symbol = symbol,
-        onShowEntrance = { showOnMap(MapFocus.Entrance(it, symbol)) },
+        onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol)) },
         onBack = { back() },
         viewModel = card,
     )

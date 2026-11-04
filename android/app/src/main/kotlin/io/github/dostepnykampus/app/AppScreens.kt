@@ -115,7 +115,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
 private fun AppNavigator.Entrances(symbol: String) {
     EntrancesScreen(
         symbol = symbol,
-        onShowEntrance = { showOnMap(MapFocus.Entrance(it, symbol)) },
+        onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol)) },
         onBack = { back() },
     )
 }

@@ -97,19 +97,25 @@ class EntranceOnMapTest {
                 val state by model.uiState.collectAsStateWithLifecycle()
                 MapScreen(focus = route.focus, state = state, onListChange = model::chooseList, mapView = fakeMap)
             }
+
             is BuildingRoute -> {
                 val card = remember { BuildingCardViewModel(route.symbol, repository, { flowOf(true) }) }
                 val state by card.uiState.collectAsStateWithLifecycle()
                 BuildingCard(symbol = route.symbol, state = state, isOnline = true, onRetry = card::retry)
             }
-            is EntrancesRoute ->
+
+            is EntrancesRoute -> {
                 EntrancesScreen(
                     symbol = route.symbol,
-                    onShowEntrance = { showOnMap(MapFocus.Entrance(it, route.symbol)) },
+                    onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = route.symbol)) },
                     onBack = { back() },
                     viewModel = remember { BuildingCardViewModel(route.symbol, repository, { flowOf(true) }) },
                 )
-            else -> AppScreen(route)
+            }
+
+            else -> {
+                AppScreen(route)
+            }
         }
     }
 
@@ -156,7 +162,8 @@ class EntranceOnMapTest {
     @Ignore("wejście na mapie jeszcze nie działa, poprawka w następnym PR")
     fun us3_3_map_gets_entrance() {
         val (data, _) = showEntranceOnMap(namedCatalog())
-        assertEquals(SelectedEntrance(NAMED_ID, NAMED_AT, NAMED, buildingSymbol = "A-1"), data.selectedEntrance)
+        val expected = SelectedEntrance(id = NAMED_ID, location = NAMED_AT, label = NAMED, buildingSymbol = "A-1")
+        assertEquals(expected, data.selectedEntrance)
     }
 
     // Wiersz E2, E4: wejście bez nazwy w danych dostaje podpis zastępczy, także dla TalkBack (decyzja 135).
