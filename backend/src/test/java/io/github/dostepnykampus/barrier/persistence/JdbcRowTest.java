@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 
@@ -31,7 +30,6 @@ final class JdbcRowTest {
     }
 
     @Test
-    @Disabled("adapter JdbcSubmissions jest zaślepką")
     void brTenStaleVersionConflictsAndMissingIsReported(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = data.seed(SubmissionStatus.SENT);
@@ -54,7 +52,6 @@ final class JdbcRowTest {
     }
 
     @Test
-    @Disabled("adapter JdbcSubmissions jest zaślepką")
     void unreadableRowFailsWithItsId(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = SubmissionData.id(1);
