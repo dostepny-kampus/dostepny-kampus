@@ -1,12 +1,14 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.PostgisTestConfiguration;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -19,11 +21,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
  * Testy BR-6, US1.3 i US2.2: bez logowania GET /submissions pokazuje tylko
- * zgłoszenia przyjęte, a własne zgłoszenia wymagają logowania (US8.1).
+ * zgłoszenia przyjęte w kształcie schematu Submission, a własne zgłoszenia
+ * wymagają logowania (US8.1).
  *
  * @since 0.1.0
  */
@@ -32,12 +36,28 @@ import tools.jackson.databind.ObjectMapper;
 @Transactional
 final class SubmissionsReadHttpTest {
 
+    /**
+     * Chwila odbioru zgłoszeń z tej klasy.
+     */
+    private static final String CREATED = "2026-11-04T10:00:00Z";
+
+    /**
+     * Piętro zgłoszeń wyszukiwanych w testach listy.
+     */
+    private static final String FLOOR = "A-1-0";
+
     @Test
     void brSixShowsAcceptedSubmission(final WebApplicationContext context) throws Exception {
+        final Row row = SubmissionsReadHttpTest.add(
+            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        );
+        final MockHttpServletResponse response = SubmissionsReadHttpTest.get(
+            context, "/submissions/%s".formatted(row.id())
+        );
         MatcherAssert.assertThat(
-            "Zgłoszenie przyjęte nie jest widoczne bez logowania",
-            SubmissionsReadHttpTest.read(context, "ACCEPTED"),
-            Matchers.equalTo(200)
+            "Zgłoszenie przyjęte nie jest widoczne bez logowania w kształcie Submission",
+            List.of(response.getStatus(), SubmissionsReadHttpTest.json(context, response)),
+            Matchers.equalTo(List.of(200, row.expected(context)))
         );
     }
 
@@ -51,11 +71,36 @@ final class SubmissionsReadHttpTest {
     }
 
     @Test
-    void usTwoListsAcceptedOfBuilding(final WebApplicationContext context) throws Exception {
+    void usTwoListsOnlyAcceptedOfBuilding(final WebApplicationContext context)
+        throws Exception {
+        final Row accepted = SubmissionsReadHttpTest.add(
+            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        );
         MatcherAssert.assertThat(
-            "Lista zgłoszeń A-1 nie ma zgłoszenia przyjętego w A-1",
-            SubmissionsReadHttpTest.listed(context, "buildingSymbol=A-1"),
-            Matchers.greaterThan(0)
+            "Lista zgłoszeń A-1 nie ma samego zgłoszenia przyjętego z A-1",
+            SubmissionsReadHttpTest.listed(
+                context, "buildingSymbol=A-1",
+                List.of(
+                    accepted,
+                    SubmissionsReadHttpTest.add(context, "SENT", SubmissionsReadHttpTest.FLOOR)
+                )
+            ),
+            Matchers.equalTo(List.of(accepted.expected(context)))
+        );
+    }
+
+    @Test
+    void usTwoListsOnlyRequestedFloor(final WebApplicationContext context) throws Exception {
+        final Row floor = SubmissionsReadHttpTest.add(
+            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        );
+        MatcherAssert.assertThat(
+            "Lista zgłoszeń piętra ma zgłoszenie z innego piętra albo nie ma swojego",
+            SubmissionsReadHttpTest.listed(
+                context, "buildingSymbol=A-1&floorId=".concat(SubmissionsReadHttpTest.FLOOR),
+                List.of(floor, SubmissionsReadHttpTest.add(context, "ACCEPTED", "A-1-1"))
+            ),
+            Matchers.equalTo(List.of(floor.expected(context)))
         );
     }
 
@@ -63,8 +108,15 @@ final class SubmissionsReadHttpTest {
     void usTwoSkipsOtherBuilding(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Lista zgłoszeń C-13 ma zgłoszenie z A-1",
-            SubmissionsReadHttpTest.listed(context, "buildingSymbol=C-13"),
-            Matchers.equalTo(0)
+            SubmissionsReadHttpTest.listed(
+                context, "buildingSymbol=C-13",
+                List.of(
+                    SubmissionsReadHttpTest.add(
+                        context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+                    )
+                )
+            ),
+            Matchers.empty()
         );
     }
 
@@ -90,29 +142,51 @@ final class SubmissionsReadHttpTest {
     private static int read(final WebApplicationContext context, final String status)
         throws Exception {
         return SubmissionsReadHttpTest.get(
-            context, "/submissions/%s".formatted(SubmissionsReadHttpTest.add(context, status))
+            context, "/submissions/%s".formatted(
+                SubmissionsReadHttpTest.add(context, status, SubmissionsReadHttpTest.FLOOR).id()
+            )
         ).getStatus();
     }
 
-    private static int listed(final WebApplicationContext context, final String query)
-        throws Exception {
-        SubmissionsReadHttpTest.add(context, "ACCEPTED");
-        return context.getBean(ObjectMapper.class).readTree(
-            SubmissionsReadHttpTest.get(context, "/submissions?".concat(query))
-                .getContentAsString(StandardCharsets.UTF_8)
-        ).size();
+    private static List<JsonNode> listed(
+        final WebApplicationContext context, final String query, final List<Row> rows
+    ) throws Exception {
+        final List<String> ids = rows.stream().map(row -> row.id().toString()).toList();
+        final List<JsonNode> own = new ArrayList<>(rows.size());
+        for (final JsonNode item : SubmissionsReadHttpTest.json(
+            context, SubmissionsReadHttpTest.get(context, "/submissions?".concat(query))
+        )) {
+            if (ids.contains(item.path("id").asString())) {
+                own.add(item);
+            }
+        }
+        return own;
     }
 
-    private static UUID add(final WebApplicationContext context, final String status) {
-        final UUID id = UUID.randomUUID();
+    private static Row add(
+        final WebApplicationContext context, final String status, final String floor
+    ) {
+        final Row row = new Row(UUID.randomUUID(), status, floor, UUID.randomUUID());
         context.getBean(JdbcClient.class).sql(
             """
-            INSERT INTO submissions (id, status, kind, building_symbol, location, content)
+            INSERT INTO submissions
+                (id, status, kind, building_symbol, location, content, created_at)
             VALUES (:id, :status, 'QUICK', 'A-1',
-                ST_SetSRID(ST_MakePoint(17.062, 51.108), 4326), '{"kind":"QUICK"}')
+                ST_SetSRID(ST_MakePoint(17.062, 51.108), 4326),
+                CAST(:content AS JSONB), CAST(:created AS TIMESTAMPTZ))
             """
-        ).param("id", id).param("status", status).update();
-        return id;
+        ).param("id", row.id()).param("status", status)
+            .param("content", row.content().concat("}"))
+            .param("created", SubmissionsReadHttpTest.CREATED).update();
+        return row;
+    }
+
+    private static JsonNode json(
+        final WebApplicationContext context, final MockHttpServletResponse response
+    ) throws Exception {
+        return context.getBean(ObjectMapper.class).readTree(
+            response.getContentAsString(StandardCharsets.UTF_8)
+        );
     }
 
     private static MockHttpServletResponse get(
@@ -122,5 +196,53 @@ final class SubmissionsReadHttpTest {
             .perform(MockMvcRequestBuilders.get(uri))
             .andReturn()
             .getResponse();
+    }
+
+    /**
+     * Zgłoszenie dodane do bazy przed odczytem.
+     *
+     * @param id Identyfikator zgłoszenia
+     * @param status Status zgłoszenia
+     * @param floor Piętro budynku szczegółowego
+     * @param photo Identyfikator zdjęcia
+     * @since 0.1.0
+     */
+    private record Row(UUID id, String status, String floor, UUID photo) {
+
+        /**
+         * Treść według schematu SubmissionContent bez zamykającego nawiasu:
+         * piętro i identyfikator zdjęcia.
+         */
+        private static final String CONTENT = String.join(
+            "",
+            "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
+            "\"coordinates\":[17.062,51.108]},\"buildingSymbol\":\"A-1\",",
+            "\"floor\":{\"floorId\":\"%s\"},\"barrierGroup\":\"OTHER\",",
+            "\"description\":\"Próg przy wejściu\",\"photoIds\":[\"%s\"]"
+        );
+
+        /**
+         * Treść zgłoszenia bez zamykającego nawiasu.
+         *
+         * @return Początek obiektu SubmissionContent
+         */
+        String content() {
+            return Row.CONTENT.formatted(this.floor, this.photo);
+        }
+
+        /**
+         * Zgłoszenie, jakie według schematu Submission zwraca serwer.
+         *
+         * @param context Kontekst z ObjectMapper
+         * @return Treść z polami nadanymi przez serwer
+         */
+        JsonNode expected(final WebApplicationContext context) {
+            return context.getBean(ObjectMapper.class).readTree(
+                String.format(
+                    "%s,\"id\":\"%s\",\"version\":1,\"status\":\"%s\",\"createdAt\":\"%s\"}",
+                    this.content(), this.id, this.status, SubmissionsReadHttpTest.CREATED
+                )
+            );
+        }
     }
 }
