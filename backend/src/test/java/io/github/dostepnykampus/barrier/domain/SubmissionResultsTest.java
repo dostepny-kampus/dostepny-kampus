@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -79,7 +78,6 @@ final class SubmissionResultsTest {
     }
 
     @Test
-    @Disabled("Wyniki nie odrzucają jeszcze null, poprawka w następnym PR")
     void mthreeSixRejectsMissingComponents() {
         Assertions.assertAll(
             () -> Assertions.assertThrows(
