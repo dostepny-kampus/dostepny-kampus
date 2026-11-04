@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -38,7 +37,6 @@ import org.junit.jupiter.api.Test;
  *
  * @since 0.1.0
  */
-@Disabled("Usługa zapisu zgłoszeń jest zaślepką")
 final class SubmissionServiceTest {
 
     /** Identyfikator zgłoszenia w próbkach. */
@@ -118,14 +116,19 @@ final class SubmissionServiceTest {
                 new CreateResult.Created(SubmissionServiceTest.STORED),
                 new CreateResult.Existing(SubmissionServiceTest.STORED)
             ).map(
-                result -> () -> Assertions.assertSame(
-                    result,
-                    new SubmissionService(
-                        new SubmissionServiceTest.RecordingSubmissions(result, null),
-                        SubmissionServiceTest.FORBIDDEN
-                    ).create(command),
-                    "Wynik utworzenia nie wrócił tym samym obiektem"
-                )
+                result -> () -> {
+                    final SubmissionServiceTest.RecordingSubmissions fake =
+                        new SubmissionServiceTest.RecordingSubmissions(result, null);
+                    Assertions.assertSame(
+                        result,
+                        new SubmissionService(fake, SubmissionServiceTest.FORBIDDEN)
+                            .create(command),
+                        "Wynik utworzenia nie wrócił tym samym obiektem"
+                    );
+                    Assertions.assertEquals(
+                        List.of(command), fake.seen(), "Komenda zmieniona po drodze"
+                    );
+                }
             )
         );
     }
