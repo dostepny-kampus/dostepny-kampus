@@ -37,15 +37,14 @@ internal suspend fun <T> OkHttpClient.exchange(request: Request, read: (Int, Str
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    continuation.resume(response.result(read))
+                    val result =
+                        try {
+                            response.use { read(it.code, it.body?.string().orEmpty()) }
+                        } catch (error: IOException) {
+                            ApiResult.NetworkError(error)
+                        }
+                    continuation.resume(result)
                 }
             },
         )
-    }
-
-private fun <T> Response.result(read: (Int, String) -> ApiResult<T>): ApiResult<T> =
-    try {
-        use { read(it.code, it.body?.string().orEmpty()) }
-    } catch (error: IOException) {
-        ApiResult.NetworkError(error)
     }
