@@ -287,6 +287,8 @@ paths:
         zdjęcie wersją z zasłoniętymi twarzami i tablicami; nie tworzy to nowej wersji zgłoszenia (NFR-25, BR-15).
         Serwer usuwa z pliku metadane EXIF, XMP i IPTC oraz komentarze, w tym znacznik orientacji (NFR-26), więc telefon
         wysyła zdjęcie już obrócone.
+        Maksymalny rozmiar pliku to 5 000 000 bajtów (5 MB, NFR-34); przekroczenie daje 413,
+        także bez nagłówka Content-Length.
       tags: [barrier]
       security: [{keycloak: []}]
       requestBody:
@@ -296,6 +298,11 @@ paths:
             schema: {type: string, contentMediaType: image/jpeg, description: "Plik JPEG."}
       responses:
         '204': {description: "Zdjęcie zapisane."}
+        '413':
+          description: Zdjęcie przekracza limit 5 000 000 bajtów (NFR-34).
+          content:
+            application/problem+json:
+              schema: {$ref: '#/components/schemas/Problem'}
         '400': {$ref: '#/components/responses/BadRequest'}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}

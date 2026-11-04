@@ -26,7 +26,6 @@ import io.github.dostepnykampus.feature.map.BuildingCardScreen
 import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CardMode
 import kotlinx.coroutines.flow.flowOf
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,7 +44,6 @@ class CardAssessmentTextTest {
     // Wiersz: odpowiedź serwera `GET /buildings/A-1` z wejściami z importu z dnia 1.10.2026 → na V2 wiersz
     //   „Z map i opisów, stan z 1.10.2026”, US17.3, BR-24, import.
     @Test
-    @Ignore("dzień i źródło oznaczenia wejść jeszcze nie na ekranie, poprawka w następnym PR")
     fun us17_3_server_answer_to_screen() {
         val viewModel =
             BuildingCardViewModel(
