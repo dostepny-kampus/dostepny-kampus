@@ -21,9 +21,14 @@ import org.jspecify.annotations.Nullable;
  * ({@code @JsonUnwrapped}), bo qulice dopuszcza do ośmiu komponentów rekordu.
  *
  * @param kind Rodzaj zgłoszenia
+ * @param location Miejsce bariery
+ * @param floor Piętro
  * @since 0.1.0
  */
-public record SubmissionContentJson(@Nullable SubmissionKind kind) {
+public record SubmissionContentJson(
+    @Nullable SubmissionKind kind, @Nullable GeoPointJson location,
+    @Nullable SubmissionFloorJson floor
+) {
 
     /**
      * Zapisuje treść zgłoszenia w JSON.
@@ -31,7 +36,7 @@ public record SubmissionContentJson(@Nullable SubmissionKind kind) {
      * @param content Treść zgłoszenia
      */
     public SubmissionContentJson(final SubmissionContent content) {
-        this(content.kind());
+        this(content.kind(), null, null);
     }
 
     /**
