@@ -13,7 +13,10 @@ import io.github.dostepnykampus.core.network.ApiBuilding
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingList
 import io.github.dostepnykampus.core.network.DetailLevel
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.IOException
@@ -121,6 +124,28 @@ class ServerBuildingCatalogTest {
         }
     }
 
+    // Wiersz: otwarcie karty i „Spróbuj ponownie” naraz → jedno zapytanie do serwera, dopóki pierwsze trwa, NFR-10.
+    @Test
+    fun nfr10_retry_waits_for_running_read() {
+        val gate = CompletableDeferred<Unit>()
+        val server: suspend () -> ApiResult<BuildingList> = {
+            serverCalls.incrementAndGet()
+            gate.await()
+            listed("A-2", "N-1")
+        }
+        val repository = BuildingCatalogRepository(EmptyCoroutineContext, server) { assetJson() }
+        runBlocking {
+            val opened = launch { repository.catalog() }
+            val retried = launch { repository.refresh() }
+            repeat(PENDING_YIELDS) { yield() }
+            assertEquals(1, serverCalls.get())
+            gate.complete(Unit)
+            opened.join()
+            retried.join()
+            assertEquals(listOf("A-2", "N-1"), repository.catalog().buildings.map { it.symbol })
+        }
+    }
+
     private fun catalog(remote: (suspend () -> ApiResult<BuildingList>)? = null): BuildingCatalog =
         runBlocking { BuildingCatalogRepository(EmptyCoroutineContext, remote) { assetJson() }.catalog() }
 
@@ -183,6 +208,7 @@ class ServerBuildingCatalogTest {
         const val ASSET_SOURCE = "© OpenStreetMap contributors"
         const val SERVER_SPAN = 2.0
         const val SERVER_ERROR = 500
+        const val PENDING_YIELDS = 5
         const val POLYGON = """{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}"""
         const val POINT = """{"type":"Point","coordinates":[0,0]}"""
         val OFFLINE = ApiResult.NetworkError(IOException("brak sieci"))
