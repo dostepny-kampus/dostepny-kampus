@@ -125,6 +125,7 @@ private fun AppNavigator.BuildingCard(symbol: String) {
         onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
         onBack = card.onBack,
         onClose = card.onClose,
+        onReportEntrance = { report(it) },
     )
 }
 

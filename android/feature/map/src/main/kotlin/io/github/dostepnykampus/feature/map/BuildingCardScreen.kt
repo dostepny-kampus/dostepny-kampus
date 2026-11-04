@@ -94,7 +94,7 @@ fun BuildingCardScreen(
                     onShowOnMap = onShowOnMap,
                     onClose = onClose,
                 )
-                if (isFullScreen) BuildingFacts(card)
+                if (isFullScreen) BuildingFacts(card, onReportEntrance)
             }
             if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = viewModel::retry)
         }
@@ -135,15 +135,16 @@ internal fun EntranceSummaryRow(summary: EntranceSummary) {
 }
 
 @Composable
-private fun BuildingFacts(card: BuildingCardUiState.Ready) {
+private fun BuildingFacts(card: BuildingCardUiState.Ready, onReportEntrance: (String) -> Unit) {
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
-        card.entrances.forEach { EntranceLine(it) }
+        card.entrances.forEach { EntranceLine(it, onReportEntrance) }
     }
 }
 
 @Composable
-private fun EntranceLine(listed: OrderedEntrance) {
+private fun EntranceLine(listed: OrderedEntrance, onReportEntrance: (String) -> Unit) {
     val title = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
+    val spoken = stringResource(R.string.karta_zglos_czytaj, title)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
@@ -160,6 +161,12 @@ private fun EntranceLine(listed: OrderedEntrance) {
             }
         }
         Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
+        PinnedButton(
+            text = stringResource(R.string.karta_zglos),
+            onClick = { onReportEntrance(listed.entrance.id) },
+            modifier = Modifier.fillMaxWidth().semantics { contentDescription = spoken },
+            kind = PinnedButtonKind.Tonal,
+        )
     }
 }
 
