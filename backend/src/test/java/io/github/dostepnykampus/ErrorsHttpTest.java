@@ -21,9 +21,10 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Testy E1–E3: wyjątek rzucony w obsłudze żądania daje odpowiedź
- * {@code application/problem+json} (RFC 9457) z kodem zależnym od jego typu,
- * a nieoczekiwany błąd nie ujawnia szczegółów wewnętrznych.
+ * Testy E1–E3 i W1-1, W1-2: wyjątek rzucony w obsłudze żądania daje
+ * odpowiedź {@code application/problem+json} (RFC 9457) z kodem zależnym od
+ * jego typu, a nieoczekiwany błąd nie ujawnia szczegółów wewnętrznych.
+ * Konflikt z bieżącym stanem daje 409 z tym stanem jako obiektem JSON.
  *
  * <p>Prawdziwy serwer HTTP daje odpowiedź, jaką dostałby klient, także
  * dla wyjątku bez obsługi.</p>
@@ -78,6 +79,30 @@ final class ErrorsHttpTest {
                     Matchers.containsString("sekret-wewnetrzny-7f3a"),
                     Matchers.containsString("FailingController")
                 )
+            )
+        );
+    }
+
+    @Test
+    void conflictOneGivesConflictProblemWithDetail(@LocalServerPort final int port)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Konflikt z bieżącym stanem nie daje 409 application/problem+json z opisem w detail",
+            ErrorsHttpTest.problem(port, "/proba-bledow/konflikt"),
+            Matchers.equalTo("409 application/problem+json 409 Na serwerze jest nowsza wersja")
+        );
+    }
+
+    @Test
+    void conflictTwoGivesCurrentStateAsTopLevelJsonObject(@LocalServerPort final int port)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Odpowiedź 409 nie ma na najwyższym poziomie obiektu currentState z polami rekordu",
+            JsonMapper.shared().readTree(
+                ErrorsHttpTest.send(port, "/proba-bledow/konflikt").body()
+            ).path("currentState"),
+            Matchers.equalTo(
+                JsonMapper.shared().readTree("{\"version\":3,\"status\":\"IN_REVIEW\"}")
             )
         );
     }
