@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.web;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
 import io.github.dostepnykampus.barrier.json.SubmissionContentJson;
 import java.util.UUID;
@@ -16,7 +17,7 @@ import java.util.UUID;
  * @param content Treść zgłoszenia, w JSON płasko obok identyfikatora
  * @since 0.1.0
  */
-record NewSubmissionRequest(UUID id, SubmissionContentJson content) {
+record NewSubmissionRequest(UUID id, @JsonUnwrapped SubmissionContentJson content) {
 
     /**
      * Przenosi ciało żądania do komendy domeny.
@@ -24,10 +25,6 @@ record NewSubmissionRequest(UUID id, SubmissionContentJson content) {
      * @return Komenda utworzenia zgłoszenia
      */
     NewSubmission toCommand() {
-        return NewSubmissionRequest.missing();
-    }
-
-    private static NewSubmission missing() {
-        throw new UnsupportedOperationException();
+        return new NewSubmission(this.id, this.content.toContent());
     }
 }
