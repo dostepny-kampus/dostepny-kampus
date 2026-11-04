@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
@@ -10,8 +10,6 @@ import io.github.dostepnykampus.core.model.SubmissionContent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType
@@ -57,7 +55,7 @@ class SubmissionsApi(
      */
     suspend fun create(id: String, content: SubmissionContent): ApiResult<Submission> =
         call(http, request(path(), JSON.body(json.encodeNewSubmission(id, content)), POST)) { code, body ->
-            if (code == HTTP_OK || code == HTTP_CREATED) success(code) { submission(body) } else other(code)
+            if (code == HTTP_OK || code == HTTP_CREATED) success(code) { json.decodeSubmission(body) } else other(code)
         }
 
     /**
@@ -71,8 +69,8 @@ class SubmissionsApi(
     suspend fun update(id: String, version: Int, content: SubmissionContent): ApiResult<SubmissionEdit> =
         call(http, request(path(id), JSON.body(json.encodeSubmissionUpdate(version, content)), PUT)) { code, body ->
             when (code) {
-                HTTP_OK -> success(code) { SubmissionEdit.Saved(submission(body)) }
-                HTTP_CONFLICT -> success(code) { SubmissionEdit.Conflict(conflict(body)) }
+                HTTP_OK -> success(code) { SubmissionEdit.Saved(json.decodeSubmission(body)) }
+                HTTP_CONFLICT -> success(code) { SubmissionEdit.Conflict(json.decodeConflict(body)) }
                 else -> other(code)
             }
         }
@@ -99,19 +97,11 @@ class SubmissionsApi(
         buildingSymbol?.let { builder.addQueryParameter(name = "buildingSymbol", value = it) }
         return call(http, request(builder.build(), body = null, method = GET)) { code, body ->
             if (code == HTTP_OK) {
-                success(code) { json.parseToJsonElement(body).jsonArray.map { json.decodeSubmission(it.jsonObject) } }
+                success(code) { json.decodeSubmissions(body) }
             } else {
                 other(code)
             }
         }
-    }
-
-    private fun submission(body: String): Submission = json.decodeSubmission(json.parseToJsonElement(body).jsonObject)
-
-    private fun conflict(body: String): Submission {
-        val server = json.parseToJsonElement(body).jsonObject["serverSubmission"]
-        requireNotNull(server) { "Konflikt wersji bez zgłoszenia z serwera" }
-        return json.decodeSubmission(server.jsonObject)
     }
 
     private suspend fun <T> call(
