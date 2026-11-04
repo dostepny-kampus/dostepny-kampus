@@ -38,12 +38,13 @@ final class JdbcRowTest {
     void brTenStaleVersionConflictsAndMissingIsReported(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = data.seed(SubmissionStatus.SENT);
-        final EditResult saved = data.repo().update(
-            new SubmissionEdit(id, 1, SubmissionData.content("a"))
-        );
         Assertions.assertEquals(
             List.of(
-                new EditResult.Conflict(((EditResult.Saved) saved).submission()),
+                new EditResult.Conflict(
+                    ((EditResult.Saved) data.repo().update(
+                        new SubmissionEdit(id, 1, SubmissionData.content("a"))
+                    )).submission()
+                ),
                 new EditResult.Missing(SubmissionData.id(7))
             ),
             List.of(
