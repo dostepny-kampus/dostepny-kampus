@@ -1,12 +1,11 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
-import java.net.URI;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -19,6 +18,7 @@ import software.amazon.awssdk.services.s3.S3Client;
  * @since 0.1.0
  */
 @Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(PhotoSettings.class)
 public final class PhotoStorage {
 
     /**
@@ -32,22 +32,18 @@ public final class PhotoStorage {
      * Klucze są czytane przy pierwszym żądaniu, więc serwer startuje także
      * bez skonfigurowanego magazynu.
      *
-     * @param endpoint Adres S3 magazynu, np. http://127.0.0.1:9000
-     * @param access Klucz dostępu
-     * @param secret Sekret
+     * @param settings Ustawienia magazynu zdjęć
      * @return Klient S3 z adresami w ścieżce, bez nazw kubełków w domenie
      */
     @Bean
-    static S3Client photoClient(
-        @Value("${dk.photos.endpoint}") final String endpoint,
-        @Value("${dk.photos.access-key}") final String access,
-        @Value("${dk.photos.secret-key}") final String secret
-    ) {
+    static S3Client photoClient(final PhotoSettings settings) {
         return S3Client.builder()
-            .endpointOverride(URI.create(endpoint))
+            .endpointOverride(settings.endpoint())
             .region(Region.US_EAST_1)
             .forcePathStyle(true)
-            .credentialsProvider(() -> AwsBasicCredentials.create(access, secret))
+            .credentialsProvider(
+                () -> AwsBasicCredentials.create(settings.accessKey(), settings.secretKey())
+            )
             .build();
     }
 }
