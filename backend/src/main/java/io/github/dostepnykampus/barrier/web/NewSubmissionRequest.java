@@ -6,18 +6,22 @@
 package io.github.dostepnykampus.barrier.web;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
 import io.github.dostepnykampus.barrier.json.SubmissionContentJson;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Ciało POST /submissions, schemat NewSubmission w OpenAPI.
  *
- * @param id Identyfikator zgłoszenia nadany przez klienta
+ * @param id Identyfikator zgłoszenia nadany przez klienta albo null, gdy nie podano
  * @param content Treść zgłoszenia, w JSON płasko obok identyfikatora
  * @since 0.1.0
  */
-record NewSubmissionRequest(UUID id, @JsonUnwrapped SubmissionContentJson content) {
+record NewSubmissionRequest(
+    @Nullable UUID id, @JsonUnwrapped SubmissionContentJson content
+) {
 
     /**
      * Przenosi ciało żądania do komendy domeny.
@@ -25,6 +29,9 @@ record NewSubmissionRequest(UUID id, @JsonUnwrapped SubmissionContentJson conten
      * @return Komenda utworzenia zgłoszenia
      */
     NewSubmission toCommand() {
+        if (this.id == null) {
+            throw new InvalidSubmission("Brak identyfikatora zgłoszenia w polu id");
+        }
         return new NewSubmission(this.id, this.content.toContent());
     }
 }
