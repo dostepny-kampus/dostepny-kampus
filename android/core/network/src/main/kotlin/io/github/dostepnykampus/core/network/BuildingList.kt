@@ -7,13 +7,17 @@ package io.github.dostepnykampus.core.network
 
 import io.github.dostepnykampus.core.geo.buildingName
 import io.github.dostepnykampus.core.geo.parseGeoArea
+import io.github.dostepnykampus.core.model.AssessmentSource
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.Entrance
+import io.github.dostepnykampus.core.model.EntranceAssessment
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.GeoPoint
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
+import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 /**
  * Lista budynków z atrybucją konturów (`BuildingList`).
@@ -35,7 +39,8 @@ data class ApiBuilding(val building: Building, val detailLevel: DetailLevel)
  * Karta budynku (`BuildingDetails`).
  *
  * Kontrakt nie podaje rodzaju wejścia OSM, więc [Entrance.type] jest puste.
- * Dzień i źródło oznaczenia są sprawdzane; model wejścia ich nie trzyma.
+ * Dzień i źródło oznaczenia trafiają do [Entrance.assessment] (US17.3); nieistniejący dzień
+ * albo nieznane źródło to błąd treści odpowiedzi.
  *
  * @property building symbol, nazwa i kontur
  * @property detailLevel poziom szczegółowości
@@ -122,9 +127,8 @@ internal fun BuildingDetailsDto.toModel(): BuildingDetails =
         entrances = entrances.map(EntranceDto::toModel),
     )
 
-internal fun EntranceDto.toModel(): Entrance {
-    require(ISO_DATE.matches(markingDate)) { "Zła data oznaczenia wejścia" }
-    return Entrance(
+internal fun EntranceDto.toModel(): Entrance =
+    Entrance(
         id = id,
         buildingSymbol = buildingSymbol,
         name = name,
@@ -132,8 +136,21 @@ internal fun EntranceDto.toModel(): Entrance {
         type = type,
         location = location.toModel(),
         marking = EntranceMarking.valueOf(marking),
+        assessment = EntranceAssessment(date = markingDay(markingDate), source = markingSource.toModel()),
     )
-}
+
+private fun markingDay(text: String): LocalDate =
+    try {
+        LocalDate.parse(text)
+    } catch (error: DateTimeParseException) {
+        throw IllegalArgumentException("Zła data oznaczenia wejścia", error)
+    }
+
+private fun MarkingSource.toModel(): AssessmentSource =
+    when (this) {
+        MarkingSource.IMPORT -> AssessmentSource.IMPORT
+        MarkingSource.WALKTHROUGH -> AssessmentSource.WALKTHROUGH
+    }
 
 internal fun LocateResultDto.toModel(): BuildingAtPoint =
     BuildingAtPoint(buildingSymbol = buildingSymbol, isInsideOutline = isInsideOutline)
@@ -144,8 +161,6 @@ internal fun GeoPointDto.toModel(): GeoPoint {
 }
 
 internal fun GeoPoint.toDto(): GeoPointDto = GeoPointDto(type = "Point", coordinates = listOf(longitude, latitude))
-
-private val ISO_DATE = Regex("""\d{4}-\d{2}-\d{2}""")
 
 private const val MIN_COORDINATES = 2
 private const val LONGITUDE = 0
