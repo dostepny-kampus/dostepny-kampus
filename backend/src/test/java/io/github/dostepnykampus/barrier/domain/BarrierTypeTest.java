@@ -67,7 +67,8 @@ final class BarrierTypeTest {
         Assertions.assertAll(
             Stream.of(
                 "TB-0", "TB-30", "TB-01", "tb-1", " TB-1", "TB-1 ", "TB1", "",
-                "TB-+1", "TB-1\n", "TB-".concat(Character.toString(0x0663)),
+                "TB-+1", "TB-1".concat(Character.toString(0x0A)),
+                "TB-".concat(Character.toString(0x0663)),
                 "TB-".concat(Character.toString(0xFF13))
             ).map(
                 code -> () -> Assertions.assertEquals(
