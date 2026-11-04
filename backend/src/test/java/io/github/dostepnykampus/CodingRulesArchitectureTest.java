@@ -48,6 +48,12 @@ final class CodingRulesArchitectureTest {
      */
     private static final String FIXTURES = "io.github.dostepnykampus.fixture.deep";
 
+    /**
+     * Katalog na źródła i klasy przykładu negatywnego, nowy w każdym teście.
+     */
+    @TempDir
+    private Path dir;
+
     @Test
     void codingForbidsJavaUtilLogging() {
         Assertions.assertDoesNotThrow(
@@ -78,13 +84,12 @@ final class CodingRulesArchitectureTest {
     @ParameterizedTest(name = "{1}")
     @MethodSource("violations")
     void codingRejectsViolatingClass(
-        final ArchRule rule, final String name, final String body,
-        @TempDir final Path dir
+        final ArchRule rule, final String name, final String body
     ) throws IOException {
         MatcherAssert.assertThat(
             String.format("Reguła przepuściła klasę %s", name),
             rule.evaluate(
-                CodingRulesArchitectureTest.fixture(dir, name, body)
+                CodingRulesArchitectureTest.fixture(this.dir, name, body)
             ).hasViolation(),
             Matchers.is(true)
         );
@@ -168,8 +173,7 @@ final class CodingRulesArchitectureTest {
 
     private static ArchRule logging() {
         return CompositeArchRule
-            .of(GeneralCodingRules.NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING)
-            .and(
+            .of(GeneralCodingRules.NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING).and(
                 ArchRuleDefinition.noClasses().should().dependOnClassesThat()
                     .resideInAPackage("java.util.logging..")
             );
