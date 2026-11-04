@@ -50,6 +50,27 @@ final class SubmissionPointHttpTest {
     }
 
     @Test
+    void usSevenRejectsNonNumericLatitudeAtHttpBoundary(final WebApplicationContext context) {
+        final UUID id = UUID.randomUUID();
+        Assertions.assertAll(
+            () -> Assertions.assertEquals(
+                400,
+                SubmissionPointHttpTest.post(
+                    context, id, SubmissionPointHttpTest.point("[0,\"bad\"]")
+                ),
+                "Szerokość niebędąca liczbą nie została odrzucona jako HTTP 400"
+            ),
+            () -> Assertions.assertEquals(
+                0,
+                context.getBean(JdbcClient.class)
+                    .sql("SELECT count(*) FROM submissions WHERE id = :id")
+                    .param("id", id).query(Integer.class).single(),
+                "Odrzucone zgłoszenie zostało zapisane"
+            )
+        );
+    }
+
+    @Test
     void usEightRejectsInvalidPointOnEdit(final WebApplicationContext context)
         throws Exception {
         final UUID id = UUID.randomUUID();
