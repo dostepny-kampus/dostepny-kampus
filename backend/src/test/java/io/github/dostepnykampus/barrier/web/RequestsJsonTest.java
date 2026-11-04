@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier.web;
 
 import io.github.dostepnykampus.InvalidInput;
+import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
 import java.util.stream.Stream;
@@ -30,6 +31,21 @@ final class RequestsJsonTest {
                 WebBodies.newBody("'extra':'x'"), NewSubmissionRequest.class
             ).toCommand(),
             "Komenda bez identyfikatora z ciała albo bez treści"
+        );
+    }
+
+    @Test
+    void wfourOneNewRequestWithoutIdIsClientError() {
+        Assertions.assertEquals(
+            "Brak identyfikatora zgłoszenia w polu id",
+            Assertions.assertThrows(
+                InvalidSubmission.class,
+                () -> WebBodies.MAPPER.readValue(
+                    WebBodies.body("'extra':'x'"), NewSubmissionRequest.class
+                ).toCommand(),
+                "Zgłoszenie bez id nie dało błędu 400"
+            ).getMessage(),
+            "Zły komunikat błędu"
         );
     }
 
