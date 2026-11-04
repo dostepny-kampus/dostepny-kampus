@@ -16,7 +16,7 @@ android_rule+=' z powodem w PR.'
 suppression='\b(Suppress(Lint|Warnings|FBWarnings)?|TargetApi)\b|@\s*([\w.]+\.)?Generated\b'
 suppression+='|NOPMD|CHECKSTYLE[:.]OFF|@checkstyle|ktlint-disable|noinspection|<!--\s*suppress\b'
 suppression+='|detekt:disable|lint:ignore|[\w-]+:(ignore|targetApi)\s*='
-suppression+='|@\s*([\w.]+\.)?NullUnmarked\b|\bcastToNonNull\b|NullAway:(OFF|WARN)\b'
+suppression+='|\bNullUnmarked\b|\bcastToNonNull\b|NullAway:(OFF|WARN)\b'
 suppression+='|-XepExcludedPaths|-XepDisableAllChecks'
 
 rule_files='^android/config/|^android/build-logic/|^android/buildSrc/|(^|/)gradle\.properties$'
@@ -120,19 +120,20 @@ only_version_bumps() {
   [[ "$(grep -P '^-\t' <<<"$lines" | normalize_versions)" == "$(grep -P '^\+\t' <<<"$lines" | normalize_versions)" ]]
 }
 
-# Plik package-info.java w bazie miał @NullMarked, a w PR go nie ma (usunięty plik albo adnotacja).
+# Plik w bazie miał @NullMarked, a w PR go nie ma: usunięta adnotacja albo plik,
+# albo package-info.java przeniesiony pod inną ścieżkę (pakiet traci adnotację).
 null_marked_removed() {
-  local status="$1" path="$2" old="$3" marked='^\s*@\s*([\w.]+\.)?NullMarked\b'
-  [[ ${old##*/} == package-info.java ]] || return 1
+  local path="$1" old="$2" marked='^\s*@\s*([\w.]+\.)?NullMarked\b'
   grep -qP -- "$marked" <<<"$(git show "$merge_base:$old" 2>/dev/null || true)" || return 1
-  [[ $status == D ]] || ! grep -qP -- "$marked" <<<"$(git show "$head:$path")"
+  [[ ${old##*/} == package-info.java && $path != "$old" ]] ||
+    ! grep -qP -- "$marked" <<<"$(git show "$head:$path" 2>/dev/null || true)"
 }
 
 check_file() {
   local status="$1" path="$2" old="${3:-$2}" rule=0 lines="" name side num text
   [[ $path =~ (^|/)(build|target)/ ]] && return 0
-  if null_marked_removed "$status" "$path" "$old"; then
-    add_soft "$path" "" "usunięte @NullMarked: pakiet wychodzi spod sprawdzania NullAway"
+  if null_marked_removed "$path" "$old"; then
+    add_soft "$path" "" "usunięte @NullMarked: kod wychodzi spod sprawdzania NullAway"
   fi
   if grep -qE -- "$rule_files" <<<"$path"$'\n'"$old"; then rule=1; fi
   if [[ $path == */GenerateDesignTokens.kt && $old == "$path" ]]; then rule=0; fi
