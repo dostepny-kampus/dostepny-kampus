@@ -30,6 +30,6 @@ public enum SubmissionKind {
      * @return Prawda tylko dla QUICK
      */
     public boolean buildingFromOutline() {
-        return false;
+        return this == SubmissionKind.QUICK;
     }
 }
