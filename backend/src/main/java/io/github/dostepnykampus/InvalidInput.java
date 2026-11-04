@@ -26,4 +26,14 @@ public class InvalidInput extends RuntimeException {
     public InvalidInput(final String detail) {
         super(detail);
     }
+
+    /**
+     * Wyjątek z przyczyną, która trafia tylko do dziennika.
+     *
+     * @param detail Opis dla klienta
+     * @param cause Przyczyna
+     */
+    public InvalidInput(final String detail, final Throwable cause) {
+        super(detail, cause);
+    }
 }

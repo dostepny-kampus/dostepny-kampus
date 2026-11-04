@@ -62,7 +62,6 @@ public final class ProblemResponses {
 
     @ExceptionHandler
     ProblemDetail forbidden(final ForbiddenChange error) {
-        this.log.debug("Zmiana niedozwolona: {}", error.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, error.getMessage());
     }
 

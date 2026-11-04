@@ -28,9 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public final class SubmissionPhotosController {
 
-    /**
-     * Zdjęcia zgłoszeń.
-     */
+    /** Zdjęcia zgłoszeń. */
     private final SubmissionPhotos photos;
 
     SubmissionPhotosController(final SubmissionPhotos photos) {
@@ -56,9 +54,10 @@ public final class SubmissionPhotosController {
         @PathVariable("photoId") final UUID photo,
         final HttpServletRequest request
     ) throws IOException {
-        this.photos.put(
-            submission, photo, request.getInputStream(), request.getContentLengthLong()
+        final PhotoUpload upload = new PhotoUpload(
+            request.getInputStream(), request.getContentLengthLong()
         );
+        this.photos.put(submission, photo, upload);
         return ResponseEntity.noContent().build();
     }
 
@@ -87,7 +86,7 @@ public final class SubmissionPhotosController {
      * @return Problem ze statusem 413 i opisem limitu
      */
     @ExceptionHandler
-    ProblemDetail tooLarge(final PhotoTooLargeException error) {
+    static ProblemDetail tooLarge(final PhotoTooLargeException error) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONTENT_TOO_LARGE, error.getMessage());
     }
 }

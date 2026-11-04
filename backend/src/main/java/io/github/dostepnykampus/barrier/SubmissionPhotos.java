@@ -11,7 +11,6 @@ import io.github.dostepnykampus.MissingResource;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -30,14 +29,10 @@ import org.springframework.stereotype.Service;
 @Service
 final class SubmissionPhotos {
 
-    /**
-     * Zgłoszenia z listą zdjęć.
-     */
+    /** Zgłoszenia z listą zdjęć. */
     private final SubmissionFinder submissions;
 
-    /**
-     * Magazyn zdjęć.
-     */
+    /** Magazyn zdjęć. */
     private final PhotoStore photos;
 
     SubmissionPhotos(final SubmissionFinder submissions, final PhotoStore photos) {
@@ -51,23 +46,17 @@ final class SubmissionPhotos {
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia z listy photoIds
-     * @param body Ciało żądania z JPEG
-     * @param declared Zadeklarowany rozmiar ciała albo -1
+     * @param upload Ciało żądania z JPEG
      * @throws IOException Gdy odczyt ciała się nie uda albo przekracza limit
      *  NFR-34 (PhotoTooLargeException)
      */
-    void put(
-        final UUID submission, final UUID photo, final InputStream body, final long declared
-    ) throws IOException {
+    void put(final UUID submission, final UUID photo, final PhotoUpload upload)
+        throws IOException {
         final Submission found = this.find(submission, photo);
         if (!found.status().editable()) {
-            throw new ForbiddenChange(
-                "Zdjęcie zgłoszenia przyjętego zmienia tylko Weryfikator"
-            );
+            throw new ForbiddenChange("Zdjęcie zgłoszenia przyjętego zmienia tylko Weryfikator");
         }
-        this.photos.put(
-            submission, photo, SubmissionPhotos.clean(new PhotoUpload(body, declared).read())
-        );
+        this.photos.put(submission, photo, SubmissionPhotos.clean(upload.read()));
     }
 
     /**
@@ -88,7 +77,7 @@ final class SubmissionPhotos {
         try {
             return JpegCleaner.strip(raw);
         } catch (final IOException ex) {
-            throw new InvalidInput(String.format("Uszkodzony plik JPEG (%s)", "nagłówek"));
+            throw new InvalidInput("Uszkodzony plik JPEG", ex);
         }
     }
 
