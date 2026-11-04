@@ -10,8 +10,11 @@ import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.hamcrest.MatcherAssert;
@@ -28,51 +31,36 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.identity.spi.AwsCredentialsIdentity;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 /**
  * Ustawienia magazynu zdjęć (ADR-0009): plik {@code application.yaml}
  * ze zmiennymi środowiskowymi, jeden rekord {@code dk.photos}, czytelny
  * błąd startu przy złej wartości i klucze ukryte w tekście (NFR-35).
  *
- * <p>Zmienne środowiskowe są tu właściwościami testu; prawdziwe
- * środowisko maszyny jest odłączone.</p>
- *
  * @since 0.1.0
  */
 final class PhotoSettingsTest {
 
     @Test
-    void cfgOneReadsPhotoDefaultsWithoutEnvironment() {
+    void cfgFourStartsWithDefaultsWithoutPhotoKeys() {
         PhotoSettingsTest.runner().run(
             context -> Assertions.assertAll(
                 () -> Assertions.assertEquals(
-                    "zdjecia",
-                    context.getBean(PhotoSettings.class).bucket(),
-                    "Bez DK_PHOTOS_BUCKET kubełek nie jest domyślnym zdjecia"
+                    new PhotoSettings(URI.create("http://127.0.0.1:9000"), "zdjecia", "", ""),
+                    context.getBean(PhotoSettings.class),
+                    "Bez zmiennych DK_PHOTOS_* serwer nie wstał z domyślnym magazynem bez kluczy"
                 ),
                 () -> Assertions.assertEquals(
-                    URI.create("http://127.0.0.1:9000"),
-                    context.getBean(PhotoSettings.class).endpoint(),
-                    "Bez zmiennych adres magazynu nie jest domyślnym"
-                )
-            )
-        );
-    }
-
-    @Test
-    void cfgOneKeepsServerDefaultsWithoutEnvironment() {
-        PhotoSettingsTest.runner().run(
-            context -> Assertions.assertAll(
-                () -> Assertions.assertEquals(
-                    "jdbc:postgresql://127.0.0.1:5432/dostepny_kampus",
-                    context.getEnvironment().getProperty("spring.datasource.url"),
-                    "Bez zmiennych adres bazy nie jest domyślnym"
-                ),
-                () -> Assertions.assertEquals(
-                    "true",
-                    context.getEnvironment().getProperty("spring.mvc.problemdetails.enabled"),
-                    "Odpowiedzi błędów przestały być ProblemDetail"
+                    List.of("jdbc:postgresql://127.0.0.1:5432/dostepny_kampus", "true"),
+                    PhotoSettingsTest.properties(
+                        context, "spring.datasource.url", "spring.mvc.problemdetails.enabled"
+                    ),
+                    "Bez zmiennych adres bazy nie jest domyślny albo błędy nie są ProblemDetail"
                 )
             )
         );
@@ -81,8 +69,7 @@ final class PhotoSettingsTest {
     @Test
     void cfgOneReadsPhotoEnvironmentVariables() {
         PhotoSettingsTest.runner().withPropertyValues(
-            "DK_PHOTOS_HOST=magazyn", "DK_PHOTOS_PORT=9100",
-            "DK_PHOTOS_BUCKET=zdjecia-testowe",
+            "DK_PHOTOS_HOST=magazyn", "DK_PHOTOS_PORT=9100", "DK_PHOTOS_BUCKET=zdjecia-testowe",
             "DK_PHOTOS_ACCESS_KEY=klucz-testowy", "DK_PHOTOS_SECRET_KEY=sekret-testowy"
         ).run(
             context -> Assertions.assertAll(
@@ -98,8 +85,31 @@ final class PhotoSettingsTest {
                     Optional.of(URI.create("http://magazyn:9100")),
                     context.getBean(S3Client.class).serviceClientConfiguration().endpointOverride(),
                     "Klient S3 łączy się pod inny adres niż z DK_PHOTOS_HOST i DK_PHOTOS_PORT"
+                ),
+                () -> Assertions.assertEquals(
+                    List.of("klucz-testowy", "sekret-testowy"),
+                    PhotoSettingsTest.credentials(context.getBean(S3Client.class)),
+                    "Klient S3 nie dostał klucza i sekretu z DK_PHOTOS_* na ich miejscach"
                 )
             )
+        );
+    }
+
+    @Test
+    void cfgTwoWritesPhotoToBucketFromSettings() {
+        final PhotoSettingsTest.BucketProbe probe = new PhotoSettingsTest.BucketProbe();
+        final UUID photo = UUID.randomUUID();
+        final ApplicationContextRunner runner = PhotoSettingsTest.runner()
+            .withPropertyValues("DK_PHOTOS_BUCKET=zdjecia-testowe")
+            .withBean(S3Client.class, () -> probe, bean -> bean.setPrimary(true));
+        runner.run(
+            context -> {
+                context.getBean(PhotoStore.class).put(photo, photo, new byte[] {1});
+                Assertions.assertEquals(
+                    List.of("zdjecia-testowe"), probe.written,
+                    "Magazyn zapisał zdjęcie poza kubełkiem z DK_PHOTOS_BUCKET"
+                );
+            }
         );
     }
 
@@ -109,22 +119,13 @@ final class PhotoSettingsTest {
             "DK_DB_HOST=baza", "DK_DB_PORT=5433", "DK_DB_NAME=kampus",
             "DK_DB_USER=uzytkownik", "DK_DB_PASSWORD=haslo"
         ).run(
-            context -> Assertions.assertAll(
-                () -> Assertions.assertEquals(
-                    "jdbc:postgresql://baza:5433/kampus",
-                    context.getEnvironment().getProperty("spring.datasource.url"),
-                    "Adres bazy nie wziął DK_DB_HOST, DK_DB_PORT i DK_DB_NAME"
+            context -> Assertions.assertEquals(
+                List.of("jdbc:postgresql://baza:5433/kampus", "uzytkownik", "haslo"),
+                PhotoSettingsTest.properties(
+                    context, "spring.datasource.url",
+                    "spring.datasource.username", "spring.datasource.password"
                 ),
-                () -> Assertions.assertEquals(
-                    "uzytkownik",
-                    context.getEnvironment().getProperty("spring.datasource.username"),
-                    "Użytkownik bazy nie wziął DK_DB_USER"
-                ),
-                () -> Assertions.assertEquals(
-                    "haslo",
-                    context.getEnvironment().getProperty("spring.datasource.password"),
-                    "Hasło bazy nie wzięło DK_DB_PASSWORD"
-                )
+                "Adres, użytkownik albo hasło bazy nie wzięły zmiennych DK_DB_*"
             )
         );
     }
@@ -132,15 +133,11 @@ final class PhotoSettingsTest {
     @Disabled("Ustawienia serwera są jeszcze w application.properties")
     @Test
     void cfgOneKeepsSettingsOnlyInYaml() {
-        Assertions.assertAll(
-            () -> Assertions.assertTrue(
-                new ClassPathResource("application.yaml").exists(),
-                "Brak pliku application.yaml z ustawieniami serwera"
-            ),
-            () -> Assertions.assertFalse(
-                new ClassPathResource("application.properties").exists(),
-                "Plik application.properties nadal nadpisuje ustawienia z YAML"
-            )
+        Assertions.assertEquals(
+            List.of(true, false),
+            Stream.of("application.yaml", "application.properties")
+                .map(name -> new ClassPathResource(name).exists()).toList(),
+            "Ustawienia serwera nie są wyłącznie w application.yaml"
         );
     }
 
@@ -173,16 +170,12 @@ final class PhotoSettingsTest {
     void cfgThreeStopsStartupOnEndpointWithoutSchemeOrHost() {
         Assertions.assertAll(
             Stream.of(
-                "DK_PHOTOS_HOST=",
-                "dk.photos.endpoint=magazyn.local/zdjecia",
-                "dk.photos.endpoint=http:zdjecia",
-                "dk.photos.endpoint=http:///zdjecia"
+                "DK_PHOTOS_HOST=", "dk.photos.endpoint=magazyn.local/zdjecia",
+                "dk.photos.endpoint=http:zdjecia", "dk.photos.endpoint=http:///zdjecia"
             ).map(
                 property -> () -> PhotoSettingsTest.runner().withPropertyValues(property).run(
                     context -> MatcherAssert.assertThat(
-                        String.format(
-                            "Adres bez schematu lub hosta (%s) nie zatrzymał startu", property
-                        ),
+                        String.format("Adres %s nie zatrzymał startu", property),
                         PhotoSettingsTest.failure(context),
                         Matchers.containsString("dk.photos.endpoint")
                     )
@@ -191,35 +184,15 @@ final class PhotoSettingsTest {
         );
     }
 
-    @Test
-    void cfgFourStartsWithoutPhotoKeys() {
-        PhotoSettingsTest.runner().withPropertyValues(
-            "DK_PHOTOS_ACCESS_KEY=", "DK_PHOTOS_SECRET_KEY="
-        ).run(
-            context -> Assertions.assertEquals(
-                "",
-                PhotoSettingsTest.failure(context),
-                "Serwer bez kluczy magazynu nie wystartował"
-            )
-        );
-    }
-
     @Disabled("Tekst rekordu ustawień magazynu zawiera jeszcze klucze")
     @Test
     void cfgFiveHidesKeysInSettingsText() {
-        final String text = new PhotoSettings(
-            URI.create("http://127.0.0.1:9000"), "zdjecia",
-            "klucz-ukryty", "sekret-ukryty"
-        ).toString();
-        Assertions.assertAll(
-            () -> MatcherAssert.assertThat(
-                "Tekst ustawień zawiera sekret magazynu",
-                text, Matchers.not(Matchers.containsString("sekret-ukryty"))
-            ),
-            () -> MatcherAssert.assertThat(
-                "Tekst ustawień zawiera klucz dostępu magazynu",
-                text, Matchers.not(Matchers.containsString("klucz-ukryty"))
-            )
+        MatcherAssert.assertThat(
+            "Tekst ustawień zawiera klucz dostępu albo sekret magazynu",
+            new PhotoSettings(
+                URI.create("http://127.0.0.1:9000"), "zdjecia", "klucz-ukryty", "sekret-ukryty"
+            ).toString(),
+            Matchers.not(Matchers.matchesRegex(".*(klucz|sekret)-ukryty.*"))
         );
     }
 
@@ -242,6 +215,18 @@ final class PhotoSettingsTest {
             .collect(Collectors.joining(" <- "));
     }
 
+    private static List<String> properties(
+        final AssertableApplicationContext context, final String... keys
+    ) {
+        return Stream.of(keys).map(context.getEnvironment()::getProperty).toList();
+    }
+
+    private static List<String> credentials(final S3Client client) {
+        final AwsCredentialsIdentity identity = client.serviceClientConfiguration()
+            .credentialsProvider().resolveIdentity().join();
+        return List.of(identity.accessKeyId(), identity.secretAccessKey());
+    }
+
     private static JavaClasses barrier() {
         return new ClassFileImporter()
             .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
@@ -259,6 +244,35 @@ final class PhotoSettingsTest {
     static final class Photos {
 
         private Photos() {
+        }
+    }
+
+    /**
+     * Klient S3, który zapamiętuje kubełki zapisów zamiast je wykonywać.
+     *
+     * @since 0.1.0
+     */
+    private static final class BucketProbe implements S3Client {
+
+        /**
+         * Kubełki kolejnych zapisów.
+         */
+        private final List<String> written = new ArrayList<>(1);
+
+        @Override
+        public String serviceName() {
+            return S3Client.SERVICE_NAME;
+        }
+
+        @Override
+        public void close() {
+            this.written.clear();
+        }
+
+        @Override
+        public PutObjectResponse putObject(final PutObjectRequest request, final RequestBody body) {
+            this.written.add(request.bucket());
+            return PutObjectResponse.builder().build();
         }
     }
 }
