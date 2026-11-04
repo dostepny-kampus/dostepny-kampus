@@ -8,6 +8,7 @@ package io.github.dostepnykampus.core.data.buildings
 import io.github.dostepnykampus.core.model.Entrance
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingDetails
+import java.util.concurrent.ConcurrentHashMap
 
 /** Wejścia budynku z serwera dla karty V2 i V3, z dniem i źródłem oznaczenia (US17.3). */
 fun interface ServerEntrances {
@@ -24,10 +25,23 @@ fun interface ServerEntrances {
 /**
  * [ServerEntrances] z karty budynku z serwera (`GET /buildings/{symbol}`).
  *
- * Na razie karta nie pyta serwera: wynik jest zawsze pusty, a wejścia karty są z pliku konturów.
+ * Każde wywołanie pyta serwer przez [details]; zapytanie i odczyt odpowiedzi idą poza wątkiem UI w kliencie
+ * HTTP. Wejścia z [ApiResult.Success] są zapamiętywane dla symbolu; przy innym wyniku (brak sieci, błąd serwera,
+ * nieznany budynek) zostają wejścia pobrane wcześniej, a bez nich pusta lista (NFR-10). Pamięć żyje tyle co
+ * obiekt, więc w aplikacji jest jeden na proces.
  *
  * @param details karta budynku z serwera, np. `BuildingsApi::building`
  */
-class ServerEntrancesRepository(details: suspend (String) -> ApiResult<BuildingDetails>) : ServerEntrances {
-    override suspend fun entrances(symbol: String): List<Entrance> = emptyList()
+class ServerEntrancesRepository(private val details: suspend (String) -> ApiResult<BuildingDetails>) :
+    ServerEntrances {
+    private val downloaded = ConcurrentHashMap<String, List<Entrance>>()
+
+    override suspend fun entrances(symbol: String): List<Entrance> {
+        val result = details(symbol)
+        return if (result is ApiResult.Success) {
+            result.value.entrances.also { downloaded[symbol] = it }
+        } else {
+            downloaded[symbol].orEmpty()
+        }
+    }
 }

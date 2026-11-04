@@ -15,11 +15,14 @@ import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.ServerEntrances
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.core.model.Entrance
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 private const val STOP_TIMEOUT_MS = 5_000L
 
@@ -44,8 +47,11 @@ sealed interface BuildingCardUiState {
 /**
  * Karta budynku [symbol] z katalogu w telefonie (US2, BR-25). Katalog jest czytany, gdy ekran jest widoczny,
  * i jeszcze 5 s po zniknięciu, więc obrót ekranu nie czyta go od nowa. [retry] pyta serwer i czyta plik od nowa.
- * `serverEntrances` to wejścia budynku z serwera z dniem i źródłem oznaczenia (US17.3); domyślnie żadnych,
- * wtedy karta ma wejścia z katalogu.
+ *
+ * Tekst karty i wejścia z pliku pokazują się od razu, bez czekania na sieć (NFR-12). Równolegle, w zasięgu
+ * ViewModelu, karta pyta `serverEntrances` o wejścia z dniem i źródłem oznaczenia (US17.3); niepusta lista
+ * zastępuje wejścia z pliku. Pusta lista (brak sieci, błąd serwera, nic pobranego wcześniej) zostawia wejścia
+ * z pliku bez komunikatu błędu (NFR-10). Zamknięcie karty przerywa pobieranie.
  */
 @HiltViewModel(assistedFactory = BuildingCardViewModel.Factory::class)
 class BuildingCardViewModel
@@ -58,10 +64,13 @@ class BuildingCardViewModel
     ) : ViewModel() {
         private val attempts = MutableStateFlow(0)
 
+        private val fromServer = MutableStateFlow(emptyList<Entrance>())
+
         /** Bieżący stan karty. */
         val uiState: StateFlow<BuildingCardUiState> =
             attempts
                 .map { attempt -> buildingCard(catalogFor(repository, attempt), symbol) }
+                .combine(fromServer, ::withServerEntrances)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), BuildingCardUiState.Loading)
 
         /** Czy jest internet; na start prawda, żeby linia „Bez internetu” nie mignęła (NFR-10, US2.8). */
@@ -70,10 +79,21 @@ class BuildingCardViewModel
                 .isOnline()
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), true)
 
+        init {
+            viewModelScope.launch { fromServer.value = serverEntrances.entrances(symbol) }
+        }
+
         /** „Spróbuj ponownie”, gdy budynku nie ma w telefonie (NFR-10). */
         fun retry() {
             attempts.value++
         }
+
+        private fun withServerEntrances(card: BuildingCardUiState, entrances: List<Entrance>): BuildingCardUiState =
+            if (card is BuildingCardUiState.Ready && entrances.isNotEmpty()) {
+                card.copy(entrances = orderedEntrances(entrances))
+            } else {
+                card
+            }
 
         private suspend fun catalogFor(repository: BuildingCatalogRepository, attempt: Int): BuildingCatalog =
             if (attempt == 0) repository.catalog() else repository.refresh()
