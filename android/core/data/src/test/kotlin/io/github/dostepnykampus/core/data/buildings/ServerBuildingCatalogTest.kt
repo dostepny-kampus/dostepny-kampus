@@ -20,7 +20,11 @@ import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Kontury z serwera i wejścia z pliku; przy błędzie sieci albo serwera cały katalog zostaje z pliku. */
+/**
+ * Kontury z serwera i wejścia z pliku. Przy błędzie sieci albo serwera cały katalog jest z pliku, ale tylko gdy
+ * z serwera nic jeszcze nie pobrano; inaczej zostaje katalog pobrany z serwera (NFR-10). Ponowna próba pyta
+ * serwer od nowa, a zwykłe czytanie bierze katalog z pamięci.
+ */
 class ServerBuildingCatalogTest {
     private val serverCalls = AtomicInteger()
 
