@@ -30,6 +30,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
      * Tworzy adapter.
      */
     public JdbcSubmissions() {
+        // bez zależności
     }
 
     @Override

@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.persistence;
 
-import io.github.dostepnykampus.PostgisTestConfiguration;
+import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
@@ -18,9 +18,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
 
 /**
  * Odczyt zgłoszeń na prawdziwej bazie, bez transakcji testowej: wyszukiwanie,
@@ -28,8 +26,7 @@ import org.springframework.context.annotation.Import;
  *
  * @since 0.1.0
  */
-@SpringBootTest
-@Import(PostgisTestConfiguration.class)
+@IntegrationTest
 final class JdbcReadTest {
 
     @AfterEach
@@ -60,12 +57,11 @@ final class JdbcReadTest {
         final UUID first = data.seed(3, ground, sent);
         final UUID rejected = data.seed(2, ground, SubmissionStatus.REJECTED);
         final UUID upstairs = data.seed(1, upper, sent);
-        final UUID elsewhere = data.seed(4, other, sent);
         Assertions.assertEquals(
             List.of(
                 List.of(first, rejected, upstairs),
                 List.of(first, rejected, data.seed(5, ground, SubmissionStatus.ACCEPTED)),
-                List.of(elsewhere)
+                List.of(data.seed(4, other, sent))
             ),
             List.of(
                 JdbcReadTest.ids(
