@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
+import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -28,13 +29,27 @@ public record SubmissionPlace(
 ) {
 
     /**
+     * Miejsce z punktem i nieujemną dokładnością; brak dokładności jest
+     * dozwolony. Ujemna albo NaN dokładność kończy się wyjątkiem
+     * InvalidSubmission.
+     */
+    public SubmissionPlace {
+        Objects.requireNonNull(point, "point");
+        if (accuracyMeters != null && (accuracyMeters.isNaN() || accuracyMeters < 0)) {
+            throw new InvalidSubmission("Dokładność pozycji jest ujemna");
+        }
+    }
+
+    /**
      * Kopia miejsca z innym budynkiem.
      *
      * @param symbol Symbol budynku
      * @return Miejsce z tym budynkiem i pozostałymi polami bez zmian
      */
     public SubmissionPlace withBuilding(final String symbol) {
-        return this;
+        return new SubmissionPlace(
+            this.point, this.accuracyMeters, this.manualCorrection, symbol, this.floor
+        );
     }
 
     /**
@@ -43,6 +58,8 @@ public record SubmissionPlace(
      * @return Miejsce bez symbolu budynku, z tym samym piętrem i resztą pól
      */
     public SubmissionPlace outsideBuildings() {
-        return this;
+        return new SubmissionPlace(
+            this.point, this.accuracyMeters, this.manualCorrection, null, this.floor
+        );
     }
 }
