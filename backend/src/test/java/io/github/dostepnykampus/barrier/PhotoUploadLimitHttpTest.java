@@ -98,6 +98,11 @@ final class PhotoUploadLimitHttpTest {
             context.getServletContext()
         ) {
             @Override
+            public long getContentLengthLong() {
+                return declared;
+            }
+
+            @Override
             public ServletInputStream getInputStream() {
                 return new DelegatingServletInputStream(source);
             }
