@@ -58,6 +58,13 @@ class BuildingCatalogRepository(
      */
     suspend fun catalog(): BuildingCatalog = mutex.withLock { cached ?: load().also { cached = it } }
 
+    /**
+     * Zwraca katalog dla „Spróbuj ponownie”, gdy budynku nie ma w telefonie (NFR-10).
+     *
+     * @throws IllegalArgumentException gdy plik konturów ma zły format
+     */
+    suspend fun refresh(): BuildingCatalog = catalog()
+
     private suspend fun load(): BuildingCatalog {
         val bundled = withContext(ioContext) { parseBuildingCatalog(readGeoJson()).forVisitors() }
         val server = nonEmptyServerList()
