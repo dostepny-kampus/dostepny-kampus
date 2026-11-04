@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -15,4 +16,13 @@ import java.util.UUID;
  * @since 0.1.0
  */
 public record NewSubmission(UUID id, SubmissionContent content) {
+
+    /**
+     * Komenda z identyfikatorem i treścią; brak któregokolwiek kończy się
+     * niekontrolowanym wyjątkiem NullPointerException.
+     */
+    public NewSubmission {
+        Objects.requireNonNull(id, "id");
+        Objects.requireNonNull(content, "content");
+    }
 }
