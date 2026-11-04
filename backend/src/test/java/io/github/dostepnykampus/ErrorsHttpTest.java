@@ -109,6 +109,11 @@ final class ErrorsHttpTest {
 
     private static String problem(final int port, final String path) throws Exception {
         final HttpResponse<String> reply = ErrorsHttpTest.send(port, path);
+        MatcherAssert.assertThat(
+            "Odpowiedź błędu nie jest schematem Problem z kontraktu",
+            new OpenApiContract().violations("Problem", reply.body()),
+            Matchers.empty()
+        );
         final MediaType type = MediaType.parseMediaType(
             reply.headers().firstValue("Content-Type").orElse("text/plain")
         );

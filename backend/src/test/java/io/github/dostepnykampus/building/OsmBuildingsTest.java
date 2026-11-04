@@ -1,10 +1,11 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
 
+import io.github.dostepnykampus.OpenApiContract;
 import io.github.dostepnykampus.PostgisTestConfiguration;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
@@ -71,7 +72,8 @@ final class OsmBuildingsTest {
             MockMvcBuilders.webAppContextSetup(context).build().perform(
                 MockMvcRequestBuilders.get("/buildings/locate").param("lat", "51.10785")
                     .param("lon", "17.06209")
-            ).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+            ).andExpect(new OpenApiContract())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
             Matchers.containsString("\"buildingSymbol\":\"A-1\"")
         );
     }
