@@ -5,15 +5,13 @@
  */
 package io.github.dostepnykampus.building;
 
+import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.OpenApiContract;
-import io.github.dostepnykampus.PostgisTestConfiguration;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -31,8 +29,7 @@ import tools.jackson.databind.ObjectMapper;
  *
  * @since 0.1.0
  */
-@SpringBootTest
-@Import(PostgisTestConfiguration.class)
+@IntegrationTest
 @Transactional
 final class BuildingsHttpTest {
 
