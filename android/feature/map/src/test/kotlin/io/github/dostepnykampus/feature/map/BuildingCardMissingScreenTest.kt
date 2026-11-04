@@ -84,6 +84,7 @@ class BuildingCardMissingScreenTest {
     fun nfr10_retry_click_reads_again() {
         val reads = AtomicInteger()
         showCard("N-1") { if (reads.incrementAndGet() == 1) listOf(GMACH) else listOf(GMACH, NEW_BUILDING) }
+        compose.onNodeWithText(MISSING_TEXT, substring = true).assertIsDisplayed()
         compose.onNodeWithText(RETRY_TEXT).performClick()
         compose.onNodeWithText("Nowy budynek").assertIsDisplayed()
         compose.onNodeWithText(MISSING_TEXT, substring = true).assertDoesNotExist()
