@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.JacksonException;
@@ -50,11 +51,6 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         "id, version, status, created_at, content::text AS content";
 
     /**
-     * Stan SQL naruszenia klucza obcego; jedynym kluczem tabeli jest budynek.
-     */
-    private static final String FOREIGN_KEY = "23503";
-
-    /**
      * Dostęp do tabeli submissions.
      */
     private final JdbcClient jdbc;
@@ -65,6 +61,11 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     private final ObjectMapper mapper;
 
     /**
+     * Odczyt wiersza jako zgłoszenie.
+     */
+    private final RowMapper<Submission> mapping;
+
+    /**
      * Tworzy adapter.
      *
      * @param jdbc Dostęp do tabeli submissions
@@ -73,6 +74,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     public JdbcSubmissions(final JdbcClient jdbc, final ObjectMapper mapper) {
         this.jdbc = jdbc;
         this.mapper = mapper;
+        this.mapping = (rows, num) -> this.row(rows);
     }
 
     @Override
@@ -137,7 +139,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     public Optional<Submission> find(final UUID id) {
         return this.jdbc.sql(
             String.format("SELECT %s FROM submissions WHERE id = :id", JdbcSubmissions.COLUMNS)
-        ).param("id", id).query(this::row).optional();
+        ).param("id", id).query(this.mapping).optional();
     }
 
     @Override
@@ -155,7 +157,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         ).param("statuses", query.statuses().stream().map(Enum::name).toList())
             .param("building", query.buildingSymbol())
             .param("floor", query.floorId())
-            .query(this::row)
+            .query(this.mapping)
             .list();
     }
 
@@ -163,6 +165,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         final String sql, final UUID id, final int version, final SubmissionContent content
     ) {
         final SubmissionPlace place = content.place();
+        final String json = this.mapper.writeValueAsString(new SubmissionContentJson(content));
         try {
             return this.jdbc.sql(sql)
                 .param("id", id)
@@ -171,25 +174,30 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 .param("building", place.buildingSymbol())
                 .param("lon", place.point().longitude())
                 .param("lat", place.point().latitude())
-                .param(
-                    "content", this.mapper.writeValueAsString(new SubmissionContentJson(content))
-                )
+                .param("content", json)
                 .param("from", JdbcSubmissions.editable(Function.identity()))
                 .param("to", JdbcSubmissions.editable(SubmissionStatus::afterEdit))
-                .query(this::row)
+                .query(this.mapping)
                 .optional();
         } catch (final DataIntegrityViolationException ex) {
-            if (
-                ex.getMostSpecificCause() instanceof SQLException cause
-                    && JdbcSubmissions.FOREIGN_KEY.equals(cause.getSQLState())
-            ) {
-                throw new InvalidSubmission("Nieznany budynek zgłoszenia");
-            }
-            throw ex;
+            throw JdbcSubmissions.translated(ex);
         }
     }
 
-    private Submission row(final ResultSet rows, final int num) throws SQLException {
+    private static RuntimeException translated(final DataIntegrityViolationException error) {
+        final RuntimeException result;
+        if (
+            error.getMostSpecificCause() instanceof SQLException cause
+                && "23503".equals(cause.getSQLState())
+        ) {
+            result = new InvalidSubmission("Nieznany budynek zgłoszenia");
+        } else {
+            result = error;
+        }
+        return result;
+    }
+
+    private Submission row(final ResultSet rows) throws SQLException {
         final UUID id = rows.getObject("id", UUID.class);
         try {
             return new Submission(
