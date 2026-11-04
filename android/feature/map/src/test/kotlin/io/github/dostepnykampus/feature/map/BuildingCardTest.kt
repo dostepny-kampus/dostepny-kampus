@@ -13,6 +13,10 @@ import io.github.dostepnykampus.core.model.Entrance
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.network.ApiBuilding
+import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.BuildingList
+import io.github.dostepnykampus.core.network.DetailLevel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -28,6 +32,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Wejście zalecane i kolejność listy (BR-25) oraz stan karty z katalogu. */
@@ -202,6 +207,25 @@ class BuildingCardTest {
             assertEquals(BuildingCardUiState.Missing, viewModel.uiState.value)
         }
 
+    // Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” → serwer ma już budynek i karta go pokazuje;
+    //   zwykłe otwarcie karty nie pyta serwera drugi raz, NFR-10.
+    @Test
+    fun nfr10_retry_shows_new_building() =
+        runTest(UnconfinedTestDispatcher()) {
+            val calls = AtomicInteger()
+            val server =
+                BuildingCatalogRepository(EmptyCoroutineContext, { serverList(calls.incrementAndGet()) }) { ASSET_JSON }
+            val opened = BuildingCardViewModel(symbol = "A-1", repository = server, networkStatus = online)
+            backgroundScope.launch { opened.uiState.collect {} }
+            val viewModel = BuildingCardViewModel(symbol = "N-1", repository = server, networkStatus = online)
+            backgroundScope.launch { viewModel.uiState.collect {} }
+            assertEquals(BuildingCardUiState.Missing, viewModel.uiState.value)
+            assertEquals(1, calls.get())
+            viewModel.retry()
+            assertEquals("N-1", (viewModel.uiState.value as? BuildingCardUiState.Ready)?.symbol)
+            assertEquals(2, calls.get())
+        }
+
     @Test
     fun us2_view_model_loading() =
         runTest(UnconfinedTestDispatcher()) {
@@ -227,20 +251,31 @@ class BuildingCardTest {
             marking = marking,
         )
 
+    private fun serverList(call: Int): ApiResult<BuildingList> =
+        ApiResult.Success(
+            BuildingList(
+                source = "© serwer",
+                buildings =
+                    listOf("A-1", "N-1").take(call).map { symbol ->
+                        ApiBuilding(Building(symbol, null, GeoPolygon(emptyList())), DetailLevel.BASIC)
+                    },
+            ),
+        )
+
     private companion object {
         val online = NetworkStatus { flowOf(true) }
 
-        val repository =
-            BuildingCatalogRepository(EmptyCoroutineContext) {
-                """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
-                    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"Gmach",""" +
-                    """"osm_id":"way/1"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
-                    """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/2",""" +
-                    """"entrance":"yes","wheelchair":"yes","ref":"Boczna"},""" +
-                    """"geometry":{"type":"Point","coordinates":[1,0]}},""" +
-                    """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/1",""" +
-                    """"entrance":"main","wheelchair":"no","ref":"Główne"},""" +
-                    """"geometry":{"type":"Point","coordinates":[0,0]}}]}"""
-            }
+        const val ASSET_JSON =
+            """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"Gmach",""" +
+                """"osm_id":"way/1"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
+                """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/2",""" +
+                """"entrance":"yes","wheelchair":"yes","ref":"Boczna"},""" +
+                """"geometry":{"type":"Point","coordinates":[1,0]}},""" +
+                """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/1",""" +
+                """"entrance":"main","wheelchair":"no","ref":"Główne"},""" +
+                """"geometry":{"type":"Point","coordinates":[0,0]}}]}"""
+
+        val repository = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON }
     }
 }
