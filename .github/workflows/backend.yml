@@ -61,3 +61,24 @@ jobs:
           cache-dependency-path: backend/pom.xml
       - name: Zbuduj, przetestuj i sprawdź qulice
         run: ./mvnw -B verify
+
+  jakosc:
+    needs: zmiany
+    if: ${{ !cancelled() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6.1.0
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Sprawdź qulice niezależnie od wyniku testów
+        run: ./mvnw -B -DskipTests test-compile qulice:check
