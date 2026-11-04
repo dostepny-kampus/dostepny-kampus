@@ -245,7 +245,8 @@ final class SubmissionsTypedHttpTest {
     }
 
     private static String edit(final String version) {
-        return "{\"version\":%s,%s}".formatted(version, SubmissionsTypedHttpTest.CONTENT);
+        return "{\"version\":%s,%s}"
+            .formatted(version, SubmissionsTypedHttpTest.CONTENT);
     }
 
     private static void add(
