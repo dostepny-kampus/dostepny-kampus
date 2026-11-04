@@ -21,6 +21,9 @@ import org.apache.commons.imaging.formats.jpeg.xmp.JpegRewriter;
  * i APP2 z profilem kolorów ICC. Dane od pierwszego SOS nie są analizowane.
  * Razem z EXIF znika orientacja, więc telefon wysyła zdjęcie już obrócone.</p>
  *
+ * <p>Obce bajty pomiędzy segmentami są odrzucane, także gdy parser biblioteki
+ * potrafi je pominąć i odczytać dalszy ciąg nagłówka.</p>
+ *
  * @since 0.1.0
  */
 final class JpegCleaner extends JpegRewriter {
@@ -47,7 +50,6 @@ final class JpegCleaner extends JpegRewriter {
         final ByteArrayOutputStream output = new ByteArrayOutputStream(jpeg.length);
         final JFIFPieces parsed = this.analyzeJfif(ByteSource.array(jpeg));
         this.writeSegments(output, parsed.pieces);
-        // Parser może pominąć obce bajty między segmentami; takie nagłówki odrzucamy.
         if (output.size() != jpeg.length) {
             throw new IOException("Obce bajty pomiędzy segmentami JPEG");
         }
