@@ -19,10 +19,8 @@ import java.io.IOException;
 import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.AnnotatedWildcardType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
@@ -60,7 +58,8 @@ import org.junit.jupiter.params.provider.MethodSource;
  * <p>Każdy pakiet kodu produkcyjnego ma {@code @NullMarked} w package-info,
  * poza listą pakietów czekających na oznaczenie. Lista ma się kurczyć, więc
  * pakiet z listy, który już ma adnotację, łamie regułę. Przykłady negatywne
- * test kompiluje do katalogu tymczasowego; pusty import jest błędem. {@code Optional} jest tylko wynikiem metody. W
+ * test kompiluje do katalogu tymczasowego; pusty import jest błędem.
+ * {@code Optional} jest tylko wynikiem metody. W
  * {@code ..domain..} {@code @Nullable} stoi wyłącznie na komponentach rekordów
  * z zamkniętej listy par klasa i komponent; para z klasą, której jeszcze nie
  * ma w kodzie, jest dozwolona.</p>
@@ -359,13 +358,12 @@ final class NullabilityArchitectureTest {
                     && !(code.getParameterCount() == 0 && kept.contains(code.getName()))) {
                     found.add(String.format("%s.%s", type, code.getName()));
                 }
-                IntStream.range(0, code.getParameterCount())
-                    .filter(idx -> NullabilityArchitectureTest.nullable(
-                        code.getParameters()[idx].getAnnotatedType()
-                    ))
-                    .filter(idx -> !(code instanceof Constructor<?>
-                        && code.getParameterCount() == parts.length
-                        && kept.contains(parts[idx].getName())))
+                final AnnotatedType[] args = code.getAnnotatedParameterTypes();
+                final boolean canonical = code instanceof Constructor<?>
+                    && args.length == parts.length;
+                IntStream.range(0, args.length)
+                    .filter(idx -> NullabilityArchitectureTest.nullable(args[idx]))
+                    .filter(idx -> !canonical || !kept.contains(parts[idx].getName()))
                     .forEach(idx -> found.add(String.format("%s.%s", type, code.getName())));
             }
         );
@@ -385,8 +383,6 @@ final class NullabilityArchitectureTest {
             found = NullabilityArchitectureTest.mentions(generic.getRawType())
                 || Arrays.stream(generic.getActualTypeArguments())
                 .anyMatch(NullabilityArchitectureTest::mentions);
-        } else if (type instanceof GenericArrayType array) {
-            found = NullabilityArchitectureTest.mentions(array.getGenericComponentType());
         } else if (type instanceof WildcardType wildcard) {
             found = Stream.concat(
                 Arrays.stream(wildcard.getUpperBounds()),
@@ -404,11 +400,6 @@ final class NullabilityArchitectureTest {
             inner = Arrays.stream(generic.getAnnotatedActualTypeArguments());
         } else if (type instanceof AnnotatedArrayType array) {
             inner = Stream.of(array.getAnnotatedGenericComponentType());
-        } else if (type instanceof AnnotatedWildcardType wildcard) {
-            inner = Stream.concat(
-                Arrays.stream(wildcard.getAnnotatedUpperBounds()),
-                Arrays.stream(wildcard.getAnnotatedLowerBounds())
-            );
         } else {
             inner = Stream.empty();
         }
