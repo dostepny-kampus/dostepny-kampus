@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.RecordComponent;
@@ -32,13 +31,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
@@ -337,12 +334,10 @@ final class NullabilityArchitectureTest {
     private static List<String> misplaced(
         final Class<?> type, final Map<String, Set<String>> listed
     ) {
-        final Set<String> kept = new HashSet<>(0);
+        final Set<String> kept = Optional.of(type).filter(Class::isRecord)
+            .map(Class::getSimpleName).map(listed::get).orElse(Set.of());
         final RecordComponent[] parts = Optional
             .ofNullable(type.getRecordComponents()).orElse(new RecordComponent[0]);
-        if (type.isRecord()) {
-            kept.addAll(listed.getOrDefault(type.getSimpleName(), Set.of()));
-        }
         final List<String> found = new ArrayList<>(0);
         Arrays.stream(type.getDeclaredFields())
             .filter(field -> NullabilityArchitectureTest.nullable(field.getAnnotatedType()))
@@ -359,12 +354,14 @@ final class NullabilityArchitectureTest {
                     found.add(String.format("%s.%s", type, code.getName()));
                 }
                 final AnnotatedType[] args = code.getAnnotatedParameterTypes();
-                final boolean canonical = code instanceof Constructor<?>
+                final boolean canonical = type.getName().equals(code.getName())
                     && args.length == parts.length;
-                IntStream.range(0, args.length)
-                    .filter(idx -> NullabilityArchitectureTest.nullable(args[idx]))
-                    .filter(idx -> !canonical || !kept.contains(parts[idx].getName()))
-                    .forEach(idx -> found.add(String.format("%s.%s", type, code.getName())));
+                for (int idx = 0; idx < args.length; ++idx) {
+                    if (NullabilityArchitectureTest.nullable(args[idx])
+                        && !(canonical && kept.contains(parts[idx].getName()))) {
+                        found.add(String.format("%s.%s", type, code.getName()));
+                    }
+                }
             }
         );
         return found;
