@@ -6,7 +6,7 @@ comments:
     licenseTemplate: |
       /\*
        \* Dostępny Kampus
-       \* Author: (Vladyslav Yevkov|Myroslav Hryniuka|Yevhenii Lukianenko)
+       \* Author: (?![^\r\n]*(Vladyslav Yevkov|Myroslav Hryniuka|Yevhenii Lukianenko)[^\r\n]*\1)(?:Vladyslav Yevkov|Myroslav Hryniuka|Yevhenii Lukianenko)(?:, (?:Vladyslav Yevkov|Myroslav Hryniuka|Yevhenii Lukianenko)){0,2}
        \* Copyright \(c\) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
        \*/
 

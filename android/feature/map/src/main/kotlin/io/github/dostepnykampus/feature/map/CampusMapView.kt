@@ -35,7 +35,8 @@ private const val RGB_MASK = 0xFFFFFF
 fun interface CampusMapView {
     /**
      * Mapa [data] w widoku [camera]. Po geście widok zgłasza nowy widok przez [onCameraIdle], a po dotknięciu
-     * konturu albo miejsca obok niego symbole trafionych budynków przez [onBuildingsTouch].
+     * konturu albo miejsca obok niego symbole trafionych budynków przez [onBuildingsTouch], a po dotknięciu pustej
+     * mapy pustą listę.
      */
     @Composable
     fun Show(

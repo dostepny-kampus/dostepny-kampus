@@ -56,7 +56,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -154,7 +156,10 @@ private data class SheetScene(val map: NavEntry<NavKey>, val sheet: NavEntry<Nav
         val scope = rememberCoroutineScope()
         Box(modifier = Modifier.fillMaxSize()) {
             val cover = if (sheet == null) 0.dp else height
-            CompositionLocalProvider(LocalSheetPadding provides SheetLayout(cover = cover)) { map.Content() }
+            val silentUnderSheet = Modifier.semantics { if (sheet != null) hideFromAccessibility() }
+            CompositionLocalProvider(LocalSheetPadding provides SheetLayout(cover = cover)) {
+                Box(modifier = silentUnderSheet) { map.Content() }
+            }
             if (sheet != null) {
                 SheetBackHandler { gesture ->
                     if (!isClosing) {
@@ -261,7 +266,8 @@ private fun Modifier.belowStatusBarWhenExpanded(statusBar: WindowInsets, isExpan
 
 @Composable
 private fun Handle(isExpanded: Boolean, onClick: () -> Unit) {
-    val label = stringResource(if (isExpanded) R.string.zwin_karte else R.string.rozwin_karte)
+    val label = stringResource(R.string.rozwin_opis)
+    val state = stringResource(if (isExpanded) R.string.stan_rozwiniete else R.string.stan_zwiniete)
     Box(
         modifier =
             Modifier
@@ -269,7 +275,10 @@ private fun Handle(isExpanded: Boolean, onClick: () -> Unit) {
                 .heightIn(min = CeleDotyku.minimum)
                 .clickable(role = Role.Button, onClick = onClick)
                 .scrollable(rememberScrollableState { 0f }, Orientation.Vertical)
-                .semantics { contentDescription = label },
+                .semantics {
+                    contentDescription = label
+                    stateDescription = state
+                },
         contentAlignment = Alignment.Center,
     ) {
         val grip = Modifier.size(width = 32.dp, height = 4.dp)

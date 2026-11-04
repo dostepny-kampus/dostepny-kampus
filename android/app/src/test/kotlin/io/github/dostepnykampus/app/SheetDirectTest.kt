@@ -60,13 +60,12 @@ class SheetDirectTest {
 
     private fun checkDirect(moment: String) {
         compose.onNodeWithText(SHOW_ON_MAP).assertExists("„$SHOW_ON_MAP” na pełnym ekranie od razu: $moment")
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertDoesNotExist()
-        compose.onNodeWithContentDescription("Zwiń kartę budynku").assertDoesNotExist()
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()
         compose.onNodeWithText("V1").assertDoesNotExist()
     }
 
     private fun checkCompact(moment: String) {
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertExists("mała karta nad mapą: $moment")
+        compose.onNode(sheetHandle(isExpanded = false)).assertExists("mała karta nad mapą: $moment")
         compose.onNodeWithText("V1").assertExists("mapa V1 nad małą kartą: $moment")
         compose.onNodeWithText(SHOW_ON_MAP).assertDoesNotExist()
     }
@@ -89,14 +88,14 @@ class SheetDirectTest {
         compose.onNodeWithText("Wstecz").performClick()
         compose.onNodeWithText("V1").assertExists("V1 po jednym „Wstecz” w górnym pasku")
         compose.onNodeWithText(SHOW_ON_MAP).assertDoesNotExist()
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertDoesNotExist()
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()
         compose.onNodeWithText("V1").performClick()
         compose.waitForIdle()
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
         compose.onNodeWithText("V1").assertExists("V1 po jednym „Wstecz” telefonu")
         compose.onNodeWithText(SHOW_ON_MAP).assertDoesNotExist()
-        compose.onNodeWithContentDescription("Rozwiń kartę budynku").assertDoesNotExist()
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()
     }
 
     // Wiersz: V2 otwarte, obrót do poziomu albo zmiana czcionki w trakcie → tryb z bieżącego okna: poziomo
