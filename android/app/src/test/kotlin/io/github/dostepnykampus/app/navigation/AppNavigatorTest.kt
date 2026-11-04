@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 /** Testy przejść; komentarz nad testem bez scenariusza podaje wiersz tabeli mapy nawigacji (ekran, czynność, AC/BR). */
@@ -301,7 +300,6 @@ class AppNavigatorTest {
     // Wiersze: V1, dotknięcie budynku na liście przy TalkBack → V2, pełny ekran od razu, US3.2, NFR-19, decyzja 115;
     // V2 otwarte od razu, „Wstecz” → lista V1 jednym krokiem, wybór bez zmian, NFR-15, US2.9.
     @Test
-    @Disabled("Tryb karty z listy i zapis wyboru „Mapa” w następnym PR")
     fun nfr19_talkback_list_tap_direct() {
         mapChoiceNavigator().run {
             openBuildingFromList("A-1", true)
@@ -317,7 +315,6 @@ class AppNavigatorTest {
     // zapamiętany wybór „Mapa”, US2.9, NFR-19, decyzja 116.
     // Scenariusz (częściowo): przegladanie-mapy.feature: Z listy przy dużej czcionce opis budynku prowadzi do mapy
     @Test
-    @Disabled("Tryb karty z listy i zapis wyboru „Mapa” w następnym PR")
     fun us2_9_show_on_map_chooses_map() {
         mapChoiceNavigator().run {
             openBuildingFromList("A-1", true)
