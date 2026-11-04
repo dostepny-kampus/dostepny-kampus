@@ -17,45 +17,25 @@ import java.util.Arrays;
  */
 enum GroupJson {
 
-    /**
-     * Wejście i drzwi.
-     */
+    /** Wejście i drzwi. */
     @JsonProperty("ENTRANCE_AND_DOORS")
     ENTRANCE(BarrierGroup.ENTRANCE),
-
-    /**
-     * Komunikacja pionowa.
-     */
+    /** Komunikacja pionowa. */
     @JsonProperty("VERTICAL_CIRCULATION")
     VERTICAL(BarrierGroup.VERTICAL),
-
-    /**
-     * Komunikacja pozioma.
-     */
+    /** Komunikacja pozioma. */
     @JsonProperty("HORIZONTAL_CIRCULATION")
     HORIZONTAL(BarrierGroup.HORIZONTAL),
-
-    /**
-     * Toalety.
-     */
+    /** Toalety. */
     @JsonProperty("TOILETS")
     TOILETS(BarrierGroup.TOILETS),
-
-    /**
-     * Orientacja i informacja.
-     */
+    /** Orientacja i informacja. */
     @JsonProperty("ORIENTATION_AND_INFORMATION")
     ORIENTATION(BarrierGroup.ORIENTATION),
-
-    /**
-     * Inne.
-     */
+    /** Inne. */
     @JsonProperty("OTHER")
     OTHER(BarrierGroup.OTHER);
-
-    /**
-     * Stała domeny tej wartości.
-     */
+    /** Stała domeny tej wartości. */
     private final BarrierGroup domain;
 
     GroupJson(final BarrierGroup group) {

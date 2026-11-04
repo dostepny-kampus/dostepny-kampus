@@ -22,9 +22,7 @@ import org.jspecify.annotations.Nullable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 record GeoPointJson(@Nullable String type, @Nullable List<Double> coordinates) {
 
-    /**
-     * Rodzaj geometrii punktu.
-     */
+    /** Rodzaj geometrii punktu. */
     private static final String POINT = "Point";
 
     /**
