@@ -57,15 +57,29 @@ set_form() {
 }
 
 line_matches() {
-  local actual="$1" want="$2" author
+  local actual="$1" want="$2" author prefix remaining matched
+  local -A seen=()
   if [[ "$want" != *"$author_marker"* ]]; then
     [[ "$actual" == "$want" ]]
     return
   fi
-  for author in "${authors[@]}"; do
-    if [[ "$actual" == "${want/"$author_marker"/$author}" ]]; then
-      return 0
-    fi
+  prefix="${want%%"$author_marker"*}"
+  [[ "$actual" == "$prefix"* ]] || return 1
+  remaining="${actual#"$prefix"}"
+  while [[ -n "$remaining" ]]; do
+    matched=0
+    for author in "${authors[@]}"; do
+      if [[ "$remaining" == "$author" || "$remaining" == "$author, "* ]]; then
+        [[ -z "${seen[$author]:-}" ]] || return 1
+        seen[$author]=1
+        remaining="${remaining#"$author"}"
+        [[ -n "$remaining" ]] || return 0
+        remaining="${remaining#", "}"
+        matched=1
+        break
+      fi
+    done
+    [[ "$matched" -eq 1 ]] || return 1
   done
   return 1
 }
@@ -101,7 +115,7 @@ checked=0
 while IFS= read -r -d '' path; do
   checked=$((checked + 1))
   if ! has_header "$path"; then
-    echo "::error file=${path},line=1::Brak nagłówka autorskiego albo nagłówek niezgodny ze wzorcem (${form}); linia Author: musi wskazywać jedną z osób: ${allowed_authors}."
+    echo "::error file=${path},line=1::Brak nagłówka autorskiego albo nagłówek niezgodny ze wzorcem (${form}); Author: wymaga różnych osób z listy ${allowed_authors}, rozdzielonych przecinkiem i spacją."
     found=1
   fi
 done < <(git ls-files -z -- '*.kt' '*.kts' '*.java' '*.py' '*.sh' '*.sql' "${excluded[@]}")

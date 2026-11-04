@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -16,8 +17,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -35,7 +41,7 @@ import io.github.dostepnykampus.core.model.EntranceMarking
 
 /**
  * V2 Karta budynku (US2, BR-25): symbol, nazwa, wiersz o wejściach (US2.8), wejścia z oznaczeniem tekstem
- * i ikoną, zalecane pierwsze.
+ * i ikoną, zalecane pierwsze. Po otwarciu fokus, a z nim TalkBack, stoi na nagłówku (NFR-18).
  * Karta nic nie mówi o barierach, bo aplikacja nie ma jeszcze ich źródła (US2.7). Czynności stoją w przewijanej
  * treści pod wierszem o wejściach, bez przypiętego pasa (reguła 10): „Sprawdź, którędy wejść” w każdym trybie,
  * „Zamknij” w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]. Pasek „Wstecz” i grupę „Wejścia”
@@ -102,11 +108,13 @@ private fun OfflineWhen(isOnline: Boolean) {
 private fun BuildingName(symbol: String, name: String?) {
     val visible = name ?: stringResource(R.string.mapa_budynek, symbol)
     val spoken = if (name == null) visible else stringResource(R.string.karta_czytaj, symbol, name)
+    val focus = remember { FocusRequester() }
     Text(
         text = visible,
-        modifier = Modifier.semantics { contentDescription = spoken },
+        modifier = Modifier.semantics { contentDescription = spoken }.focusRequester(focus).focusable(),
         style = MaterialTheme.typography.titleLarge,
     )
+    LaunchedEffect(focus) { withFrameMillis { focus.requestFocus() } }
 }
 
 /**
