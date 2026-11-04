@@ -20,22 +20,15 @@ import org.springframework.stereotype.Service;
  * Zdjęcia zgłoszeń: zapis zdjęcia z listy photoIds (BR-7, BR-8) i odczyt
  * zdjęcia zgłoszenia przyjętego (US2.2).
  *
- * <p>Zdjęcie zapisuje się tylko do zgłoszenia, którego status pozwala na
- * edycję. Status jest sprawdzany przed zapisem do magazynu, bez wspólnej
- * transakcji S3 i bazy: zgłoszenie może zostać przyjęte pomiędzy sprawdzeniem
- * a zapisem, a wtedy zdjęcie zastąpi dotychczasowe w zgłoszeniu już przyjętym.
- * Ten wyścig jest świadomie przyjęty do sprintu 5 (weryfikator), bo
- * nie istnieje atomowy zapis do S3 i SQL naraz.</p>
+ * <p>Status jest sprawdzany przed zapisem do magazynu, bez wspólnej transakcji
+ * S3 i bazy: zgłoszenie może zostać przyjęte pomiędzy sprawdzeniem a zapisem,
+ * a wtedy zdjęcie zastąpi dotychczasowe w zgłoszeniu przyjętym. Ten wyścig jest
+ * przyjęty do sprintu 5 (weryfikator): zapis S3 i SQL nie jest atomowy.</p>
  *
  * @since 0.1.0
  */
 @Service
 final class SubmissionPhotos {
-
-    /**
-     * Opis braku zgłoszenia albo zdjęcia, bez szczegółów wewnętrznych.
-     */
-    private static final String MISSING = "Nie ma takiego zdjęcia zgłoszenia";
 
     /**
      * Zgłoszenia z listą zdjęć.
@@ -88,7 +81,7 @@ final class SubmissionPhotos {
         return Optional.of(this.find(submission, photo))
             .filter(item -> item.status().publiclyVisible())
             .flatMap(item -> this.photos.get(submission, photo))
-            .orElseThrow(() -> new MissingResource(SubmissionPhotos.MISSING));
+            .orElseThrow(() -> new MissingResource("Nie ma takiego zdjęcia zgłoszenia"));
     }
 
     private static byte[] clean(final byte[] raw) {
@@ -102,6 +95,6 @@ final class SubmissionPhotos {
     private Submission find(final UUID submission, final UUID photo) {
         return this.submissions.find(submission)
             .filter(item -> item.content().photoIds().contains(photo))
-            .orElseThrow(() -> new MissingResource(SubmissionPhotos.MISSING));
+            .orElseThrow(() -> new MissingResource("Nie ma takiego zdjęcia zgłoszenia"));
     }
 }

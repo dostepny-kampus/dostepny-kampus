@@ -16,20 +16,15 @@ import software.amazon.awssdk.services.s3.model.BucketAlreadyExistsException;
 import software.amazon.awssdk.services.s3.model.BucketAlreadyOwnedByYouException;
 
 /**
- * Tworzy kubełek zdjęć przy starcie serwera (ADR-0009), więc zapis zdjęcia
- * nie tworzy go w żądaniu.
- *
- * <p>Gdy magazyn jest niedostępny albo bez kluczy, serwer startuje mimo to,
- * a błąd trafia do dziennika; zapis zdjęcia zakończy się wtedy błędem magazynu.</p>
+ * Tworzy kubełek zdjęć przy starcie (ADR-0009). Gdy magazyn jest niedostępny,
+ * serwer startuje mimo to, a błąd trafia do dziennika.
  *
  * @since 0.1.0
  */
 @Component
 final class PhotoBucket implements ApplicationRunner {
 
-    /**
-     * Dziennik serwera.
-     */
+    /** Dziennik serwera. */
     private static final Logger LOG = LoggerFactory.getLogger(PhotoBucket.class);
 
     /**

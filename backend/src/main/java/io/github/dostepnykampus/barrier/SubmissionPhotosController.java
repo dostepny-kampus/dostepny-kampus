@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Zdjęcia zgłoszeń: dodanie zdjęcia z listy photoIds (BR-7, BR-8)
  * i odczyt zdjęcia zgłoszenia przyjętego (US2.2).
- *
- * <p>Do sprintu 5 serwer nie zna autora, więc zdjęcia zgłoszenia przyjętego
- * nie zmienia nikt, a odczyt działa tylko dla zgłoszeń przyjętych.</p>
+ * Do sprintu 5 zdjęcia zgłoszenia przyjętego nie zmienia nikt.
  *
  * @since 0.1.0
  */

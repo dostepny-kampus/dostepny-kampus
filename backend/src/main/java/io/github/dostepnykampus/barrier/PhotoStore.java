@@ -39,7 +39,6 @@ final class PhotoStore {
 
     /**
      * Zapisuje zdjęcie; ponowny zapis tego samego zdjęcia je zastępuje.
-     * Kubełek tworzy {@code PhotoBucket} przy starcie; brak kubełka to błąd magazynu.
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia
