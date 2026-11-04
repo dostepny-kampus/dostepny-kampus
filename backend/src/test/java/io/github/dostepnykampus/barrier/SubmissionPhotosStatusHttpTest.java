@@ -46,7 +46,7 @@ final class SubmissionPhotosStatusHttpTest {
 
     @ParameterizedTest
     @EnumSource(SubmissionStatus.class)
-    void iTwoBOneAndThreeGateByStatus(
+    void acTwoBOneAndThreeGateByStatus(
         final SubmissionStatus status, final WebApplicationContext context
     ) throws Exception {
         final PhotoRequests requests = new PhotoRequests(context);
@@ -66,7 +66,7 @@ final class SubmissionPhotosStatusHttpTest {
     }
 
     @Test
-    void iTwoBThreeHidesPhotoOutsideList(final WebApplicationContext context)
+    void acTwoBThreeHidesPhotoOutsideList(final WebApplicationContext context)
         throws Exception {
         final PhotoRequests requests = new PhotoRequests(context);
         final UUID id = requests.add(
@@ -82,7 +82,7 @@ final class SubmissionPhotosStatusHttpTest {
     }
 
     @Test
-    void iTwoBThreeComparesPhotoIdsAsUuid(final WebApplicationContext context)
+    void acTwoBThreeComparesPhotoIdsAsUuid(final WebApplicationContext context)
         throws Exception {
         final PhotoRequests requests = new PhotoRequests(context);
         final String lower = SubmissionPhotosStatusHttpTest.PHOTO.toString();
