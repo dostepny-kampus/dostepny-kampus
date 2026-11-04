@@ -8,7 +8,9 @@ package io.github.dostepnykampus.barrier;
 import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
+import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
+import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
 import io.github.dostepnykampus.building.Outlines;
 import org.springframework.stereotype.Service;
@@ -41,7 +43,9 @@ public class SubmissionService {
      */
     @Transactional
     public CreateResult create(final NewSubmission command) {
-        throw new UnsupportedOperationException(String.valueOf(this.repository));
+        return this.repository.create(
+            new NewSubmission(command.id(), this.placed(command.content()))
+        );
     }
 
     /**
@@ -52,6 +56,29 @@ public class SubmissionService {
      */
     @Transactional
     public EditResult update(final SubmissionEdit command) {
-        throw new UnsupportedOperationException(String.valueOf(this.outlines));
+        return this.repository.update(
+            new SubmissionEdit(
+                command.id(), command.expectedVersion(), this.placed(command.content())
+            )
+        );
+    }
+
+    /**
+     * Treść do zapisu: w zgłoszeniu szybkim budynek z konturu zamiast budynku od klienta.
+     *
+     * @param content Treść od klienta
+     * @return Treść z budynkiem z konturu albo poza budynkami; inne rodzaje bez zmian
+     */
+    private SubmissionContent placed(final SubmissionContent content) {
+        final SubmissionContent result;
+        if (content.kind().buildingFromOutline()) {
+            final SubmissionPoint point = content.place().point();
+            result = this.outlines.containing(point.latitude(), point.longitude())
+                .map(content::withBuilding)
+                .orElseGet(content::outsideBuildings);
+        } else {
+            result = content;
+        }
+        return result;
     }
 }
