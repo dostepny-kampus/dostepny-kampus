@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -56,7 +55,6 @@ final class OpenApiContractTest {
         );
     }
 
-    @Disabled("Sprawdzenie kontraktu przepuszcza każdą wymianę")
     @ParameterizedTest(name = "{2}")
     @MethodSource("violating")
     void contractRejectsViolatingExchange(
@@ -75,7 +73,6 @@ final class OpenApiContractTest {
         );
     }
 
-    @Disabled("Sprawdzenie kontraktu nie czyta kontraktu")
     @Test
     void contractReadsSpecificationOnce() throws Exception {
         final AtomicInteger reads = new AtomicInteger();
