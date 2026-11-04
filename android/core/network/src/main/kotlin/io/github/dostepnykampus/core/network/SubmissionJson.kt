@@ -24,11 +24,11 @@ import java.time.format.DateTimeParseException
  * Puste pola nieobowiązkowe nie trafiają do JSON, bo serwer odrzuca `null` w miejscu tekstu.
  */
 internal fun Json.encodeNewSubmission(id: String, content: SubmissionContent): String =
-    encodeToString(NewSubmission.serializer(), content.toNewSubmission(id))
+    encodeToString(SubmissionRequest.serializer(), content.toRequest(id = id))
 
 /** Treść `SubmissionUpdate` dla `PUT /submissions/{id}`: pola [content] i wersja bazowa [version] (BR-10). */
 internal fun Json.encodeSubmissionUpdate(version: Int, content: SubmissionContent): String =
-    encodeToString(SubmissionUpdate.serializer(), content.toSubmissionUpdate(version))
+    encodeToString(SubmissionRequest.serializer(), content.toRequest(version = version))
 
 /**
  * Zgłoszenie z odpowiedzi serwera (`Submission`). Zła treść, także wartość wyliczenia spoza kontraktu,
@@ -57,28 +57,9 @@ internal fun Json.decodeConflict(body: String): Submission =
     decodeFromString(VersionConflictDto.serializer(), body).serverSubmission.toModel()
 
 @Serializable
-private data class NewSubmission(
-    val id: String,
-    val kind: SubmissionKind,
-    val location: GeoPointDto,
-    val photoIds: List<String>,
-    val accuracyMeters: Double? = null,
-    @SerialName("manualCorrection") val isManualCorrection: Boolean = false,
-    val buildingSymbol: String? = null,
-    val floor: SubmissionFloorDto? = null,
-    val barrierGroup: BarrierGroup? = null,
-    val barrierType: String? = null,
-    val severity: Int? = null,
-    val description: String? = null,
-    val replacesSubmissionId: String? = null,
-    @SerialName("barrierRemoved") val isBarrierRemoved: Boolean = false,
-    val entranceId: String? = null,
-    val entranceMarking: EntranceMarking? = null,
-)
-
-@Serializable
-private data class SubmissionUpdate(
-    val version: Int,
+private data class SubmissionRequest(
+    val id: String? = null,
+    val version: Int? = null,
     val kind: SubmissionKind,
     val location: GeoPointDto,
     val photoIds: List<String>,
@@ -131,28 +112,9 @@ private data class SubmissionFloorDto(
     @SerialName("mezzanine") val isMezzanine: Boolean = false,
 )
 
-private fun SubmissionContent.toNewSubmission(id: String): NewSubmission =
-    NewSubmission(
+private fun SubmissionContent.toRequest(id: String? = null, version: Int? = null): SubmissionRequest =
+    SubmissionRequest(
         id = id,
-        kind = kind,
-        location = location.toDto(),
-        photoIds = photoIds,
-        accuracyMeters = accuracyMeters,
-        isManualCorrection = isManualCorrection,
-        buildingSymbol = buildingSymbol,
-        floor = floor?.toDto(),
-        barrierGroup = barrierGroup,
-        barrierType = barrierType,
-        severity = severity,
-        description = description,
-        replacesSubmissionId = replacesSubmissionId,
-        isBarrierRemoved = isBarrierRemoved,
-        entranceId = entranceId,
-        entranceMarking = entranceMarking,
-    )
-
-private fun SubmissionContent.toSubmissionUpdate(version: Int): SubmissionUpdate =
-    SubmissionUpdate(
         version = version,
         kind = kind,
         location = location.toDto(),
