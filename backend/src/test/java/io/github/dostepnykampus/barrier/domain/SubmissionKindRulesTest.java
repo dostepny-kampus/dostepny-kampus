@@ -69,37 +69,46 @@ final class SubmissionKindRulesTest {
     @Test
     @Disabled("treść zgłoszenia nie sprawdza reguł rodzaju, kod w następnym PR")
     void brEightNeedsBarrierGroup() {
-        SubmissionKindRulesTest.rejected(
+        Assertions.assertEquals(
             "Zgłoszenie szybkie wymaga grupy barier (BR-8)",
-            "Zgłoszenie szybkie bez grupy barier przeszło",
-            () -> SubmissionKindRulesTest.valid(
-                SubmissionKind.QUICK, new BarrierDetails(null, null, null, null, false)
-            )
+            SubmissionKindRulesTest.message(
+                "Zgłoszenie szybkie bez grupy barier przeszło",
+                () -> SubmissionKindRulesTest.valid(
+                    SubmissionKind.QUICK, new BarrierDetails(null, null, null, null, false)
+                )
+            ),
+            "Zły opis błędu braku grupy"
         );
     }
 
     @Test
     @Disabled("treść zgłoszenia nie sprawdza reguł rodzaju, kod w następnym PR")
     void brSevenNeedsBarrierType() {
-        SubmissionKindRulesTest.rejected(
+        Assertions.assertEquals(
             "Pomiar precyzyjny wymaga typu bariery (BR-7)",
-            "Pomiar bez typu przeszedł",
-            () -> SubmissionKindRulesTest.valid(
-                SubmissionKind.PRECISE, new BarrierDetails(null, null, 2, null, false)
-            )
+            SubmissionKindRulesTest.message(
+                "Pomiar bez typu przeszedł",
+                () -> SubmissionKindRulesTest.valid(
+                    SubmissionKind.PRECISE, new BarrierDetails(null, null, 2, null, false)
+                )
+            ),
+            "Zły opis błędu braku typu"
         );
     }
 
     @Test
     @Disabled("treść zgłoszenia nie sprawdza reguł rodzaju, kod w następnym PR")
     void brSevenNeedsSeverityUnlessBarrierRemoved() {
-        SubmissionKindRulesTest.rejected(
+        Assertions.assertEquals(
             "Pomiar precyzyjny wymaga uciążliwości (BR-7)",
-            "Pomiar bez uciążliwości przeszedł",
-            () -> SubmissionKindRulesTest.valid(
-                SubmissionKind.PRECISE,
-                new BarrierDetails(null, new BarrierType(3), null, null, false)
-            )
+            SubmissionKindRulesTest.message(
+                "Pomiar bez uciążliwości przeszedł",
+                () -> SubmissionKindRulesTest.valid(
+                    SubmissionKind.PRECISE,
+                    new BarrierDetails(null, new BarrierType(3), null, null, false)
+                )
+            ),
+            "Zły opis błędu braku uciążliwości"
         );
     }
 
@@ -224,12 +233,15 @@ final class SubmissionKindRulesTest {
 
     @Test
     void brSevenRejectsTypeOutsideOfClassificationAndSeverityAboveThree() {
-        SubmissionKindRulesTest.rejected(
-            "Typ bariery spoza TB-1…TB-29", "Typ TB-30 przeszedł", () -> new BarrierType("TB-30")
-        );
-        SubmissionKindRulesTest.rejected(
-            "Uciążliwość spoza zakresu 1–3", "Uciążliwość 4 przeszła",
-            () -> new BarrierDetails(null, null, 4, null, false)
+        Assertions.assertAll(
+            () -> SubmissionKindRulesTest.rejected(
+                "Typ bariery spoza TB-1…TB-29", "Typ TB-30 przeszedł",
+                () -> new BarrierType("TB-30")
+            ),
+            () -> SubmissionKindRulesTest.rejected(
+                "Uciążliwość spoza zakresu 1–3", "Uciążliwość 4 przeszła",
+                () -> new BarrierDetails(null, null, 4, null, false)
+            )
         );
     }
 
@@ -245,11 +257,11 @@ final class SubmissionKindRulesTest {
     }
 
     private static void rejected(final String detail, final String why, final Executable build) {
-        Assertions.assertEquals(
-            detail,
-            Assertions.assertThrows(InvalidSubmission.class, build, why).getMessage(),
-            "Zły opis błędu zgłoszenia"
-        );
+        Assertions.assertEquals(detail, SubmissionKindRulesTest.message(why, build), "Zły opis");
+    }
+
+    private static String message(final String why, final Executable build) {
+        return Assertions.assertThrows(InvalidSubmission.class, build, why).getMessage();
     }
 
     private static SubmissionContent removal(final SubmissionKind kind, final UUID replaces) {
