@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -35,7 +34,6 @@ final class JdbcBuildingTest {
     }
 
     @Test
-    @Disabled("adapter JdbcSubmissions jest zaślepką")
     void brFourteenUnknownBuildingIsInvalidSubmission(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = data.seed(SubmissionStatus.SENT);
@@ -56,7 +54,6 @@ final class JdbcBuildingTest {
     }
 
     @Test
-    @Disabled("adapter JdbcSubmissions jest zaślepką")
     void otherIntegrityErrorsAreNotMasked(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         data.jdbc().sql(
