@@ -31,7 +31,7 @@ final class FailingController {
     private final Map<String, Supplier<RuntimeException>> failures;
 
     /**
-     * Punkt z trzema rodzajami błędu używanymi w testach.
+     * Punkt z czterema rodzajami błędu używanymi w testach.
      */
     FailingController() {
         this(
@@ -39,7 +39,12 @@ final class FailingController {
                 "niepoprawne",
                 () -> new InvalidInput("Szerokość 91 jest poza zakresem WGS84"),
                 "brak", () -> new MissingResource("Nie ma budynku Z-99"),
-                "awaria", () -> new IllegalStateException("sekret-wewnetrzny-7f3a")
+                "awaria", () -> new IllegalStateException("sekret-wewnetrzny-7f3a"),
+                "konflikt",
+                () -> new ConflictingState(
+                    "Na serwerze jest nowsza wersja", "currentState",
+                    new CurrentState(3, "IN_REVIEW")
+                )
             )
         );
     }
@@ -59,5 +64,15 @@ final class FailingController {
             throw this.failures.get(kind).get();
         }
         return kind;
+    }
+
+    /**
+     * Bieżący stan zasobu zwracany przy konflikcie.
+     *
+     * @param version Wersja na serwerze
+     * @param status Status na serwerze
+     * @since 0.1.0
+     */
+    record CurrentState(int version, String status) {
     }
 }

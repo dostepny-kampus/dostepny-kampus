@@ -73,6 +73,7 @@ fun AppShell(
     val backStack = rememberNavBackStack(elements = startBackStack(firstLaunch).toTypedArray())
     val restarts = rememberSaveable(saver = RestartsSaver) { SnapshotStateList() }
     val currentOnFirstHelpLeft by rememberUpdatedState(onFirstHelpLeft)
+    val currentOnChooseMap by rememberUpdatedState(onChooseMap)
     val navigator =
         remember(backStack, roles, restarts) {
             AppNavigator(
@@ -80,7 +81,7 @@ fun AppShell(
                 roles = roles,
                 onFirstHelpLeft = { currentOnFirstHelpLeft() },
                 restarts = restarts,
-                onChooseMap = onChooseMap,
+                onChooseMap = { currentOnChooseMap() },
             )
         }
     val items = bottomBarItems(hasWork = roles.currentAccount().hasStaffRole)

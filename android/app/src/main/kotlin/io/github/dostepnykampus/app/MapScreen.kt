@@ -5,11 +5,14 @@
  */
 package io.github.dostepnykampus.app
 
+import android.view.accessibility.AccessibilityManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.app.navigation.AppNavigator
+import io.github.dostepnykampus.app.navigation.openBuildingFromList
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
 import io.github.dostepnykampus.feature.map.CampusMapView
@@ -26,8 +29,8 @@ internal fun AppNavigator.HiltMapScreen(focus: String?, viewModel: CampusMapView
 /**
  * V1 ze stanem [state] i obrysem budynku [focus] z trasy, np. po „Wstecz” z V2 albo „Pokaż na mapie” (US1.1, US2.1),
  * z czynnościami podpiętymi do nawigatora; [onListChange] zapisuje wybór w przełączniku „Mapa” i „Lista budynków”
- * (NFR-19). Przyciski i podpis OSM stoją nad arkuszem V2 (decyzja 87). [mapView] w aplikacji to MapLibre, testy
- * podają podróbkę.
+ * (NFR-19). Budynek z listy przy TalkBack otwiera V2 od razu na pełnym ekranie (NFR-19, decyzja 115). Przyciski
+ * i podpis OSM stoją nad arkuszem V2 (decyzja 87). [mapView] w aplikacji to MapLibre, testy podają podróbkę.
  */
 @Composable
 internal fun AppNavigator.MapScreen(
@@ -36,6 +39,7 @@ internal fun AppNavigator.MapScreen(
     onListChange: (Boolean) -> Unit,
     mapView: CampusMapView = MapLibreMapView,
 ) {
+    val accessibility = checkNotNull(LocalContext.current.getSystemService(AccessibilityManager::class.java))
     CampusMapScreen(
         state = state,
         onListChange = onListChange,
@@ -43,6 +47,7 @@ internal fun AppNavigator.MapScreen(
         focus = focus,
         contentPadding = LocalSheetPadding.current,
         onEmptyMapClick = { closeCardOnEmptyMap() },
+        onListBuildingClick = { openBuildingFromList(it, accessibility.isTouchExplorationEnabled) },
         mapView = mapView,
     )
 }
