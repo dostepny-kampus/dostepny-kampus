@@ -226,8 +226,7 @@ final class RouteParityTest {
     }
 
     private static boolean ours(final HandlerMethod handler) {
-        final String type = handler.getBeanType().getName();
-        return type.startsWith("io.github.dostepnykampus.")
+        return handler.getBeanType().getName().startsWith("io.github.dostepnykampus.")
             && !handler.getBeanType().isAnnotationPresent(TestComponent.class);
     }
 
