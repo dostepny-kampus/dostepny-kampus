@@ -22,8 +22,7 @@ import java.util.stream.Collectors;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -39,12 +38,11 @@ import tools.jackson.databind.JsonNode;
  * na zamkniętej liście operacji jeszcze niezrobionych, z powodem. Każdy
  * handler aplikacji ma operację w kontrakcie. Operacja z listy, która
  * ma już handler, jest błędem, więc lista tylko się kurczy. Handlery
- * Springa, Actuatora i punkt {@code FailingController} są poza zakresem.</p>
+ * Springa, Actuatora i klasy testowe z {@code @TestComponent} są poza zakresem.</p>
  *
  * @since 0.1.0
  */
-@SpringBootTest
-@Import(PostgisTestConfiguration.class)
+@IntegrationTest
 final class RouteParityTest {
 
     /**
@@ -230,7 +228,7 @@ final class RouteParityTest {
     private static boolean ours(final HandlerMethod handler) {
         final String type = handler.getBeanType().getName();
         return type.startsWith("io.github.dostepnykampus.")
-            && !"io.github.dostepnykampus.FailingController".equals(type);
+            && !handler.getBeanType().isAnnotationPresent(TestComponent.class);
     }
 
     private static List<String> routes(final RequestMappingInfo info) {
