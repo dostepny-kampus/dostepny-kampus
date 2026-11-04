@@ -12,6 +12,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.buildings.ServerEntrances
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,6 +44,8 @@ sealed interface BuildingCardUiState {
 /**
  * Karta budynku [symbol] z katalogu w telefonie (US2, BR-25). Katalog jest czytany, gdy ekran jest widoczny,
  * i jeszcze 5 s po zniknięciu, więc obrót ekranu nie czyta go od nowa. [retry] pyta serwer i czyta plik od nowa.
+ * `serverEntrances` to wejścia budynku z serwera z dniem i źródłem oznaczenia (US17.3); domyślnie żadnych,
+ * wtedy karta ma wejścia z katalogu.
  */
 @HiltViewModel(assistedFactory = BuildingCardViewModel.Factory::class)
 class BuildingCardViewModel
@@ -51,6 +54,7 @@ class BuildingCardViewModel
         @Assisted val symbol: String,
         repository: BuildingCatalogRepository,
         networkStatus: NetworkStatus,
+        serverEntrances: ServerEntrances = ServerEntrances { emptyList() },
     ) : ViewModel() {
         private val attempts = MutableStateFlow(0)
 
