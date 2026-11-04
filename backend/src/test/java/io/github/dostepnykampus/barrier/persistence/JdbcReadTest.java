@@ -10,13 +10,13 @@ import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 
@@ -35,7 +35,6 @@ final class JdbcReadTest {
     }
 
     @Test
-    @Disabled("adapter JdbcSubmissions jest zaślepką")
     void usEightFindsEveryStatus(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         for (final SubmissionStatus status : SubmissionStatus.values()) {
@@ -46,7 +45,6 @@ final class JdbcReadTest {
     }
 
     @Test
-    @Disabled("adapter JdbcSubmissions jest zaślepką")
     void usEightListFiltersAndOrdersByCreation(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final String home = SubmissionData.BUILDING;
@@ -75,6 +73,33 @@ final class JdbcReadTest {
             ),
             "Lista nie filtruje po statusie, budynku i piętrze albo ma złą kolejność"
         );
+    }
+
+    @Test
+    void usEightListOrdersByCreationThenId(final ApplicationContext context) {
+        final SubmissionData data = SubmissionData.of(context);
+        final SubmissionContent content = SubmissionData.content("o");
+        final SubmissionStatus sent = SubmissionStatus.SENT;
+        JdbcReadTest.created(data, data.seed(3, content, sent), 2);
+        JdbcReadTest.created(data, data.seed(1, content, sent), 3);
+        JdbcReadTest.created(data, data.seed(2, content, sent), 2);
+        JdbcReadTest.created(data, data.seed(4, content, sent), 0);
+        Assertions.assertEquals(
+            List.of(
+                SubmissionData.id(4), SubmissionData.id(2), SubmissionData.id(3),
+                SubmissionData.id(1)
+            ),
+            JdbcReadTest.ids(
+                data, new SubmissionQuery(Set.of(sent), SubmissionData.BUILDING, null)
+            ),
+            "Lista nie jest posortowana po chwili utworzenia, a przy równych chwilach po id"
+        );
+    }
+
+    private static void created(final SubmissionData data, final UUID id, final int minutes) {
+        data.jdbc().sql("UPDATE submissions SET created_at = :at WHERE id = :id")
+            .param("at", OffsetDateTime.parse("2026-01-01T10:00:00Z").plusMinutes(minutes))
+            .param("id", id).update();
     }
 
     private static List<UUID> ids(final SubmissionData data, final SubmissionQuery query) {

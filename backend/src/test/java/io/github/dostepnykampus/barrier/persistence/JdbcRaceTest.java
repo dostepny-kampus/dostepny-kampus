@@ -22,7 +22,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 
@@ -35,7 +34,6 @@ import org.springframework.context.ApplicationContext;
 final class JdbcRaceTest {
 
     @Test
-    @Disabled("adapter JdbcSubmissions jest zaślepką")
     void brTenSameVersionRaceConflicts(final ApplicationContext context) throws Exception {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = data.seed(SubmissionStatus.SENT);
