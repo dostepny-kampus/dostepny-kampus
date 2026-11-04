@@ -37,7 +37,8 @@ class CampusMapStyleTest {
     @Disabled("wejścia na mapie jeszcze nie działają, poprawka w następnym PR")
     fun nfr39_outlines_over_basemap() {
         val layers = style.array("layers").map { it.jsonObject }
-        assertEquals(listOf("lad", "osm", BUILDINGS_LAYER, "kontury", ENTRANCES_LAYER, "podpisy"), layers.map { it.text("id") })
+        val expected = listOf("lad", "osm", BUILDINGS_LAYER, "kontury", ENTRANCES_LAYER, "podpisy")
+        assertEquals(expected, layers.map { it.text("id") })
         assertEquals("#E8EDEE", layers.first().obj("paint").text("background-color"))
     }
 
