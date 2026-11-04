@@ -147,3 +147,13 @@ jobs:
         run: bash .github/scripts/naglowki.sh
       - name: Sprawdź test sprawdzania nagłówków
         run: bash .github/scripts/naglowki-test.sh
+
+  straznik-jakosci-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Sprawdź test strażnika jakości na przykładowych zmianach
+        run: bash .github/scripts/straznik-jakosci-test.sh
