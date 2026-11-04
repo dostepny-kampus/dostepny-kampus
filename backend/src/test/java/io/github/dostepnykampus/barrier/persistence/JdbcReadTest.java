@@ -56,10 +56,9 @@ final class JdbcReadTest {
         final SubmissionContent other = SubmissionData.content(SubmissionData.OTHER, "p1", "o");
         final UUID first = data.seed(3, ground, sent);
         final UUID rejected = data.seed(2, ground, SubmissionStatus.REJECTED);
-        final UUID upstairs = data.seed(1, upper, sent);
         Assertions.assertEquals(
             List.of(
-                List.of(first, rejected, upstairs),
+                List.of(first, rejected, data.seed(1, upper, sent)),
                 List.of(first, rejected, data.seed(5, ground, SubmissionStatus.ACCEPTED)),
                 List.of(data.seed(4, other, sent))
             ),
