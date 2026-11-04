@@ -130,7 +130,7 @@ internal fun AppNavigator.TestEntrances(symbol: String) {
     val card = remember(symbol) { context.buildingCardViewModel(symbol) }
     EntrancesScreen(
         symbol = symbol,
-        onShowEntrance = { showOnMap(MapFocus.Entrance(it)) },
+        onShowEntrance = { showOnMap(MapFocus.Entrance(it, symbol)) },
         onBack = { back() },
         viewModel = card,
     )
@@ -170,7 +170,7 @@ internal fun AppNavigator.TestAppScreen(
     if (route is MapRoute) {
         val state by mapViewModel.uiState.collectAsStateWithLifecycle()
         MapScreen(
-            focus = (route.focus as? MapFocus.Building)?.symbol,
+            focus = route.focus,
             state = state,
             onListChange = mapViewModel::chooseList,
             mapView = mapView,

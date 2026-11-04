@@ -106,7 +106,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute -> ToMapStub(title = R.string.nav_konto, action = R.string.nie_teraz)
         AccountRoute -> Stub(title = stringResource(if (hasWork) R.string.nav_konto_i_praca else R.string.nav_konto))
-        is MapRoute -> HiltMapScreen(focus = (route.focus as? MapFocus.Building)?.symbol)
+        is MapRoute -> HiltMapScreen(focus = route.focus)
         else -> Unit
     }
 }
@@ -115,7 +115,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
 private fun AppNavigator.Entrances(symbol: String) {
     EntrancesScreen(
         symbol = symbol,
-        onShowEntrance = { showOnMap(MapFocus.Entrance(it)) },
+        onShowEntrance = { showOnMap(MapFocus.Entrance(it, symbol)) },
         onBack = { back() },
     )
 }
