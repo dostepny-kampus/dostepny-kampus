@@ -16,21 +16,12 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import java.io.IOException;
-import java.lang.reflect.AnnotatedArrayType;
-import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Executable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.RecordComponent;
-import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,7 +68,10 @@ final class NullabilityArchitectureTest {
         List.of("io.github.dostepnykampus.barrier");
 
     /**
-     * Komponenty rekordów domeny dopuszczone jako {@code @Nullable};
+     * Komponenty rekordów domeny dopuszczone jako {@code @Nullable}. Klasy z
+     * listy mogą też mieć {@code @Nullable} w parametrach metod prywatnych:
+     * to pomocnicze sprawdzenia własnych komponentów, null nie wychodzi poza
+     * klasę. Wyniki i parametry innych metod pozostają błędem;
      * {@code SubmissionContent.replaces} w specyfikacji nazywa się
      * {@code replacesSubmissionId}.
      */
@@ -275,6 +269,20 @@ final class NullabilityArchitectureTest {
                 Map.of("domain/A", "class A { List<@Nullable String> v; }"), true
             ),
             new Sample(
+                nullable, "private poza listą",
+                Map.of("domain/A", "class A { private void f(@Nullable String v) { } }"), true
+            ),
+            new Sample(
+                nullable, "metoda pakietowa klasy z listy",
+                Map.of("domain/Listed", "class Listed { void f(@Nullable String v) { } }"), true
+            ),
+            new Sample(
+                nullable, "private w klasie z listy",
+                Map.of(
+                    "domain/Listed", "class Listed { private void f(@Nullable String v) { } }"
+                ), false
+            ),
+            new Sample(
                 nullable, "brak klas domeny", Map.of("a/A", "class A { }"), true
             ),
             new Sample(
@@ -290,7 +298,7 @@ final class NullabilityArchitectureTest {
     private static ArchRule optionals() {
         return ArchRuleDefinition.classes().should(
             NullabilityArchitectureTest.problems(
-                "use Optional only as a result", NullabilityArchitectureTest::optionalSites
+                "use Optional only as a result", NullabilityScan::optionalSites
             )
         );
     }
@@ -299,7 +307,7 @@ final class NullabilityArchitectureTest {
         return ArchRuleDefinition.classes().that().resideInAPackage("..domain..").should(
             NullabilityArchitectureTest.problems(
                 "use @Nullable only on listed components",
-                type -> NullabilityArchitectureTest.misplaced(type, listed)
+                type -> NullabilityScan.misplaced(type, listed)
             )
         );
     }
@@ -315,93 +323,6 @@ final class NullabilityArchitectureTest {
                 }
             }
         };
-    }
-
-    private static List<String> optionalSites(final Class<?> type) {
-        final List<String> found = new ArrayList<>(0);
-        Arrays.stream(type.getDeclaredFields())
-            .filter(field -> !field.isSynthetic())
-            .filter(field -> NullabilityArchitectureTest.mentions(field.getGenericType()))
-            .forEach(field -> found.add(String.format("%s.%s", type, field.getName())));
-        NullabilityArchitectureTest.executables(type).forEach(
-            code -> Arrays.stream(code.getParameters())
-                .filter(arg -> NullabilityArchitectureTest.mentions(arg.getParameterizedType()))
-                .forEach(arg -> found.add(String.format("%s.%s", type, code.getName())))
-        );
-        return found;
-    }
-
-    private static List<String> misplaced(
-        final Class<?> type, final Map<String, Set<String>> listed
-    ) {
-        final Set<String> kept = Optional.of(type).filter(Class::isRecord)
-            .map(Class::getSimpleName).map(listed::get).orElse(Set.of());
-        final RecordComponent[] parts = Optional
-            .ofNullable(type.getRecordComponents()).orElse(new RecordComponent[0]);
-        final List<String> found = new ArrayList<>(0);
-        Arrays.stream(type.getDeclaredFields())
-            .filter(field -> NullabilityArchitectureTest.nullable(field.getAnnotatedType()))
-            .filter(field -> !kept.contains(field.getName()))
-            .forEach(field -> found.add(String.format("%s.%s", type, field.getName())));
-        Arrays.stream(parts)
-            .filter(part -> NullabilityArchitectureTest.nullable(part.getAnnotatedType()))
-            .filter(part -> !kept.contains(part.getName()))
-            .forEach(part -> found.add(String.format("%s.%s", type, part.getName())));
-        NullabilityArchitectureTest.executables(type).forEach(
-            code -> {
-                if (NullabilityArchitectureTest.nullable(code.getAnnotatedReturnType())
-                    && !(code.getParameterCount() == 0 && kept.contains(code.getName()))) {
-                    found.add(String.format("%s.%s", type, code.getName()));
-                }
-                final AnnotatedType[] args = code.getAnnotatedParameterTypes();
-                final boolean canonical = type.getName().equals(code.getName())
-                    && args.length == parts.length;
-                for (int idx = 0; idx < args.length; ++idx) {
-                    if (NullabilityArchitectureTest.nullable(args[idx])
-                        && !(canonical && kept.contains(parts[idx].getName()))) {
-                        found.add(String.format("%s.%s", type, code.getName()));
-                    }
-                }
-            }
-        );
-        return found;
-    }
-
-    private static Stream<Executable> executables(final Class<?> type) {
-        return Stream.<Executable>concat(
-            Arrays.stream(type.getDeclaredConstructors()),
-            Arrays.stream(type.getDeclaredMethods())
-        ).filter(code -> !code.isSynthetic());
-    }
-
-    private static boolean mentions(final Type type) {
-        final boolean found;
-        if (type instanceof ParameterizedType generic) {
-            found = NullabilityArchitectureTest.mentions(generic.getRawType())
-                || Arrays.stream(generic.getActualTypeArguments())
-                .anyMatch(NullabilityArchitectureTest::mentions);
-        } else if (type instanceof WildcardType wildcard) {
-            found = Stream.concat(
-                Arrays.stream(wildcard.getUpperBounds()),
-                Arrays.stream(wildcard.getLowerBounds())
-            ).anyMatch(NullabilityArchitectureTest::mentions);
-        } else {
-            found = type == Optional.class;
-        }
-        return found;
-    }
-
-    private static boolean nullable(final AnnotatedType type) {
-        final Stream<AnnotatedType> inner;
-        if (type instanceof AnnotatedParameterizedType generic) {
-            inner = Arrays.stream(generic.getAnnotatedActualTypeArguments());
-        } else if (type instanceof AnnotatedArrayType array) {
-            inner = Stream.of(array.getAnnotatedGenericComponentType());
-        } else {
-            inner = Stream.empty();
-        }
-        return type.isAnnotationPresent(Nullable.class)
-            || inner.anyMatch(NullabilityArchitectureTest::nullable);
     }
 
     private static ArchRule state(final List<String> names, final boolean waiting) {
