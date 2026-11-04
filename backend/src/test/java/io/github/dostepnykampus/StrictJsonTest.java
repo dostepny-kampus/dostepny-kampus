@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tools.jackson.core.JacksonException;
@@ -23,8 +24,7 @@ import tools.jackson.databind.json.JsonMapper;
  * ciało (identyfikator małymi albo wielkimi literami, liczba bez ułamka
  * w polu liczbowym, pole spoza schematu, brak pól nieobowiązkowych) przechodzi.
  *
- * <p>{@code JsonMapper} dostaje to samo dostosowanie co w Spring Boot,
- * bez kontekstu Springa.</p>
+ * <p>{@code JsonMapper} z tym samym dostosowaniem co w Spring Boot, bez Springa.</p>
  *
  * @since 0.1.0
  */
@@ -156,8 +156,7 @@ final class StrictJsonTest {
     }
 
     /**
-     * Ciało żądania z polami każdego rodzaju używanego w zgłoszeniach; pole,
-     * którego nie ma w ciele, ma wartość null.
+     * Ciało żądania z polami rodzajów używanych w zgłoszeniach, każde albo null.
      *
      * @param accuracyMeters Liczba albo null
      * @param manualCorrection Wartość logiczna albo null
@@ -168,8 +167,9 @@ final class StrictJsonTest {
      * @since 0.1.0
      */
     record Sample(
-        Double accuracyMeters, Boolean manualCorrection, Integer version,
-        Integer severity, String floorId, UUID id
+        @Nullable Double accuracyMeters, @Nullable Boolean manualCorrection,
+        @Nullable Integer version, @Nullable Integer severity,
+        @Nullable String floorId, @Nullable UUID id
     ) {
     }
 }
