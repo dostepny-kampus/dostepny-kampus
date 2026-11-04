@@ -22,23 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SubmissionService {
 
-    /**
-     * Zapis zgłoszeń.
-     */
+    /** Zapis zgłoszeń. */
     private final SubmissionRepository repository;
 
-    /**
-     * Kontury budynków do budynku zgłoszenia szybkiego (BR-14).
-     */
+    /** Kontury budynków do budynku zgłoszenia szybkiego (BR-14). */
     private final Outlines outlines;
 
-    /**
-     * Usługa z portem zapisu i konturami budynków.
-     *
-     * @param repository Zapis zgłoszeń
-     * @param outlines Kontury budynków
-     */
-    public SubmissionService(final SubmissionRepository repository, final Outlines outlines) {
+    SubmissionService(final SubmissionRepository repository, final Outlines outlines) {
         this.repository = repository;
         this.outlines = outlines;
     }
@@ -47,7 +37,7 @@ public class SubmissionService {
      * Zapisuje nowe zgłoszenie albo zwraca zapisane wcześniej (BR-9).
      *
      * @param command Komenda utworzenia
-     * @return Wynik zapisu bez zmian
+     * @return Wynik zapisu
      */
     @Transactional
     public CreateResult create(final NewSubmission command) {
@@ -58,7 +48,7 @@ public class SubmissionService {
      * Zapisuje edycję zgłoszenia (BR-3, BR-10).
      *
      * @param command Komenda edycji
-     * @return Wynik edycji bez zmian
+     * @return Wynik edycji
      */
     @Transactional
     public EditResult update(final SubmissionEdit command) {

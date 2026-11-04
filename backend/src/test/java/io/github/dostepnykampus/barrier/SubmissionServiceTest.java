@@ -10,6 +10,7 @@ import io.github.dostepnykampus.barrier.domain.BarrierGroup;
 import io.github.dostepnykampus.barrier.domain.BarrierType;
 import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
+import io.github.dostepnykampus.barrier.domain.NewEntranceMarking;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionContent;
@@ -18,12 +19,15 @@ import io.github.dostepnykampus.barrier.domain.SubmissionFloor;
 import io.github.dostepnykampus.barrier.domain.SubmissionKind;
 import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
 import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
+import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import io.github.dostepnykampus.building.Outlines;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -35,232 +39,197 @@ import org.junit.jupiter.api.Test;
  */
 final class SubmissionServiceTest {
 
-    /**
-     * Identyfikator zgłoszenia w próbkach.
-     */
+    /** Identyfikator zgłoszenia w próbkach. */
     private static final UUID ID = UUID.fromString("0b1c2d3e-4f50-4a6b-8c7d-9e0f1a2b3c4d");
 
-    /**
-     * Szerokość punktu asymetrycznego: różna od długości, żeby pomyłka kolejności była widoczna.
-     */
-    private static final double LAT = 51.1;
+    /** Zgłoszenie zwracane przez atrapę portu zapisu. */
+    private static final Submission STORED = new Submission(
+        SubmissionServiceTest.ID, 1, SubmissionStatus.SENT, Instant.EPOCH,
+        SubmissionServiceTest.quick("A1")
+    );
 
-    /**
-     * Długość punktu asymetrycznego.
-     */
-    private static final double LON = 17.06;
+    /** Kontur z budynkiem tylko dla szerokości 51,1 i długości 17,06 w tej kolejności. */
+    private static final Outlines CONTOUR = (lat, lon) -> Optional.of("A1").filter(
+        symbol -> Double.compare(lat, 51.1) == 0 && Double.compare(lon, 17.06) == 0
+    );
 
-    /**
-     * Kontur znajdujący budynek tylko dla szerokości LAT i długości LON w tej kolejności.
-     */
-    private static final Outlines CONTOUR = (lat, lon) -> {
-        final Optional<String> found;
-        if (Double.compare(lat, SubmissionServiceTest.LAT) == 0
-            && Double.compare(lon, SubmissionServiceTest.LON) == 0) {
-            found = Optional.of("A1");
-        } else {
-            found = Optional.empty();
-        }
-        return found;
-    };
-
-    /**
-     * Kontur bez budynku w żadnym punkcie.
-     */
+    /** Kontur bez budynku w żadnym punkcie. */
     private static final Outlines EMPTY = (lat, lon) -> Optional.empty();
 
-    /**
-     * Kontur, którego użycie jest błędem.
-     */
+    /** Kontur, którego użycie jest błędem. */
     private static final Outlines FORBIDDEN = (lat, lon) -> {
         throw new AssertionError("Kontur nie powinien być pytany");
     };
 
     @Test
     void ioneOneQuickTakesBuildingFromOutlineAskedWithLatitudeFirst() {
-        final RecordingSubmissions repository = SubmissionServiceTest.repository();
-        new SubmissionService(repository, SubmissionServiceTest.CONTOUR).create(
-            new NewSubmission(SubmissionServiceTest.ID, SubmissionServiceTest.quick(null))
-        );
         Assertions.assertEquals(
-            List.of(
-                new NewSubmission(
-                    SubmissionServiceTest.ID, SubmissionServiceTest.quick("A1")
-                )
-            ),
-            repository.creations(),
+            SubmissionServiceTest.quick("A1"),
+            SubmissionServiceTest.created(
+                    SubmissionServiceTest.CONTOUR, SubmissionKind.QUICK, null
+                ),
             "Do zapisu trafiła treść bez symbolu z konturu"
         );
     }
 
     @Test
-    void ioneTwoQuickIgnoresBuildingFromClientInsideOutline() {
-        final RecordingSubmissions repository = SubmissionServiceTest.repository();
-        new SubmissionService(repository, SubmissionServiceTest.CONTOUR).create(
-            new NewSubmission(SubmissionServiceTest.ID, SubmissionServiceTest.quick("Z9"))
-        );
-        Assertions.assertEquals(
-            List.of(
-                new NewSubmission(
-                    SubmissionServiceTest.ID, SubmissionServiceTest.quick("A1")
-                )
-            ),
-            repository.creations(),
-            "Budynek od klienta nie został zastąpiony symbolem z konturu"
-        );
-    }
-
-    @Test
-    void ioneTwoQuickOutsideOutlineDropsBuildingAndKeepsFloor() {
-        final RecordingSubmissions repository = SubmissionServiceTest.repository();
-        new SubmissionService(repository, SubmissionServiceTest.EMPTY).create(
-            new NewSubmission(SubmissionServiceTest.ID, SubmissionServiceTest.quick("Z9"))
-        );
-        Assertions.assertEquals(
-            List.of(
-                new NewSubmission(
-                    SubmissionServiceTest.ID, SubmissionServiceTest.quick(null)
-                )
-            ),
-            repository.creations(),
-            "Poza konturem miejsce powinno stracić tylko symbol budynku"
-        );
-    }
-
-    @Test
-    void ioneThreePreciseSkipsOutlineAndKeepsClientBuilding() {
-        final RecordingSubmissions repository = SubmissionServiceTest.repository();
-        final NewSubmission command = new NewSubmission(
-            SubmissionServiceTest.ID, SubmissionServiceTest.precise("Z9")
-        );
-        new SubmissionService(repository, SubmissionServiceTest.FORBIDDEN).create(command);
-        Assertions.assertEquals(
-            List.of(command),
-            repository.creations(),
-            "Pomiar precyzyjny powinien trafić do zapisu bez zmian"
-        );
-    }
-
-    @Test
-    void ioneFourCreateReturnsRepositoryResultAndPassesCommand() {
-        final Submission stored = SubmissionServiceTest.stored();
-        final NewSubmission command = new NewSubmission(
-            SubmissionServiceTest.ID, SubmissionServiceTest.precise("Z9")
-        );
-        final CreateResult created = new CreateResult.Created(stored);
-        final CreateResult existing = new CreateResult.Existing(stored);
+    void ioneTwoQuickIgnoresClientBuildingInsideAndDropsItOutsideOutline() {
         Assertions.assertAll(
-            () -> Assertions.assertSame(
-                created,
-                new SubmissionService(
-                    new RecordingSubmissions(created, null), SubmissionServiceTest.FORBIDDEN
-                ).create(command),
-                "Utworzone zgłoszenie nie wróciło tym samym wynikiem"
+            () -> Assertions.assertEquals(
+                SubmissionServiceTest.quick("A1"),
+                SubmissionServiceTest.created(
+                    SubmissionServiceTest.CONTOUR, SubmissionKind.QUICK, "Z9"
+                ),
+                "Budynek od klienta nie został zastąpiony symbolem z konturu"
             ),
-            () -> Assertions.assertSame(
-                existing,
-                new SubmissionService(
-                    new RecordingSubmissions(existing, null), SubmissionServiceTest.FORBIDDEN
-                ).create(command),
-                "Istniejące zgłoszenie nie wróciło tym samym wynikiem"
+            () -> Assertions.assertEquals(
+                SubmissionServiceTest.quick(null),
+                SubmissionServiceTest.created(
+                    SubmissionServiceTest.EMPTY, SubmissionKind.QUICK, "Z9"
+                ),
+                "Poza konturem miejsce powinno stracić tylko symbol budynku"
+            )
+        );
+    }
+
+    @Test
+    void ioneThreeOtherKindsSkipOutlineAndKeepContent() {
+        Assertions.assertAll(
+            Stream.of(SubmissionKind.PRECISE, SubmissionKind.ENTRANCE_MARKING).map(
+                kind -> () -> Assertions.assertEquals(
+                    SubmissionServiceTest.content(kind, "Z9"),
+                    SubmissionServiceTest.created(SubmissionServiceTest.FORBIDDEN, kind, "Z9"),
+                    "Treść rodzaju spoza szybkiego powinna trafić do zapisu bez zmian"
+                )
+            )
+        );
+    }
+
+    @Test
+    void ioneFourCreateReturnsRepositoryResult() {
+        final NewSubmission command = new NewSubmission(
+            SubmissionServiceTest.ID,
+            SubmissionServiceTest.content(SubmissionKind.PRECISE, "Z9")
+        );
+        Assertions.assertAll(
+            Stream.of(
+                new CreateResult.Created(SubmissionServiceTest.STORED),
+                new CreateResult.Existing(SubmissionServiceTest.STORED)
+            ).map(
+                result -> () -> Assertions.assertSame(
+                    result,
+                    new SubmissionService(
+                        new RecordingSubmissions(result, null), SubmissionServiceTest.FORBIDDEN
+                    ).create(command),
+                    "Wynik utworzenia nie wrócił tym samym obiektem"
+                )
             )
         );
     }
 
     @Test
     void ioneFourUpdateReturnsRepositoryResultAndPassesCommand() {
-        final Submission stored = SubmissionServiceTest.stored();
         final SubmissionEdit command = new SubmissionEdit(
-            SubmissionServiceTest.ID, 3, SubmissionServiceTest.precise("Z9")
+            SubmissionServiceTest.ID, 3,
+            SubmissionServiceTest.content(SubmissionKind.PRECISE, "Z9")
         );
-        final EditResult saved = new EditResult.Saved(stored);
-        final EditResult conflict = new EditResult.Conflict(stored);
-        final EditResult missing = new EditResult.Missing(SubmissionServiceTest.ID);
-        final RecordingSubmissions repository = new RecordingSubmissions(null, saved);
         Assertions.assertAll(
-            () -> Assertions.assertSame(
-                saved,
-                new SubmissionService(repository, SubmissionServiceTest.FORBIDDEN)
-                    .update(command),
-                "Zapisana edycja nie wróciła tym samym wynikiem"
-            ),
-            () -> Assertions.assertEquals(
-                List.of(command), repository.edits(),
-                "Id, wersja bazowa i treść powinny trafić do zapisu bez zmian"
-            ),
-            () -> Assertions.assertSame(
-                conflict,
-                new SubmissionService(
-                    new RecordingSubmissions(null, conflict), SubmissionServiceTest.FORBIDDEN
-                ).update(command),
-                "Konflikt nie wrócił tym samym wynikiem"
-            ),
-            () -> Assertions.assertSame(
-                missing,
-                new SubmissionService(
-                    new RecordingSubmissions(null, missing), SubmissionServiceTest.FORBIDDEN
-                ).update(command),
-                "Brak zgłoszenia nie wrócił tym samym wynikiem"
+            Stream.of(
+                new EditResult.Saved(SubmissionServiceTest.STORED),
+                new EditResult.Conflict(SubmissionServiceTest.STORED),
+                new EditResult.Missing(SubmissionServiceTest.ID)
+            ).map(
+                result -> () -> {
+                    final RecordingSubmissions fake = new RecordingSubmissions(null, result);
+                    Assertions.assertSame(
+                        result,
+                        new SubmissionService(fake, SubmissionServiceTest.FORBIDDEN)
+                            .update(command),
+                        "Wynik edycji nie wrócił tym samym obiektem"
+                    );
+                    Assertions.assertEquals(
+                        List.of(command), fake.seen(), "Komenda zmieniona po drodze"
+                    );
+                }
             )
         );
     }
 
     @Test
     void ioneFiveUpdateAppliesSameBuildingRulesAsCreate() {
-        final RecordingSubmissions repository = SubmissionServiceTest.repository();
-        new SubmissionService(repository, SubmissionServiceTest.CONTOUR).update(
+        final RecordingSubmissions fake = new RecordingSubmissions(null, null);
+        new SubmissionService(fake, SubmissionServiceTest.CONTOUR).update(
             new SubmissionEdit(SubmissionServiceTest.ID, 2, SubmissionServiceTest.quick("Z9"))
         );
         Assertions.assertEquals(
             List.of(
-                new SubmissionEdit(
-                    SubmissionServiceTest.ID, 2, SubmissionServiceTest.quick("A1")
-                )
+                new SubmissionEdit(SubmissionServiceTest.ID, 2, SubmissionServiceTest.quick("A1"))
             ),
-            repository.edits(),
+            fake.seen(),
             "Edycja szybkiego zgłoszenia powinna dostać symbol z konturu"
         );
     }
 
-    private static RecordingSubmissions repository() {
-        return new RecordingSubmissions(
-            new CreateResult.Created(SubmissionServiceTest.stored()),
-            new EditResult.Saved(SubmissionServiceTest.stored())
+    private static SubmissionContent created(
+        final Outlines outlines, final SubmissionKind kind, final String building
+    ) {
+        final RecordingSubmissions fake = new RecordingSubmissions(null, null);
+        new SubmissionService(fake, outlines).create(
+            new NewSubmission(
+                SubmissionServiceTest.ID, SubmissionServiceTest.content(kind, building)
+            )
         );
-    }
-
-    private static Submission stored() {
-        return new Submission(
-            SubmissionServiceTest.ID, 1, SubmissionStatus.SENT,
-            Instant.parse("2026-03-01T10:00:00Z"), SubmissionServiceTest.quick("A1")
-        );
+        return ((NewSubmission) fake.seen().get(0)).content();
     }
 
     private static SubmissionContent quick(final String building) {
-        return SubmissionServiceTest.content(
-            SubmissionKind.QUICK, building,
-            new BarrierDetails(BarrierGroup.OTHER, null, 2, "opis", false)
-        );
+        return SubmissionServiceTest.content(SubmissionKind.QUICK, building);
     }
 
-    private static SubmissionContent precise(final String building) {
-        return SubmissionServiceTest.content(
-            SubmissionKind.PRECISE, building,
-            new BarrierDetails(null, new BarrierType(5), 2, "opis", false)
-        );
-    }
-
-    private static SubmissionContent content(
-        final SubmissionKind kind, final String building, final BarrierDetails barrier
-    ) {
+    private static SubmissionContent content(final SubmissionKind kind, final String building) {
         return new SubmissionContent(
             kind,
             new SubmissionPlace(
-                new SubmissionPoint(SubmissionServiceTest.LON, SubmissionServiceTest.LAT),
-                4.5, true, building, new SubmissionFloor("p2", 2, false)
+                new SubmissionPoint(17.06, 51.1), 4.5, true, building,
+                new SubmissionFloor("p2", 2, false)
             ),
-            barrier, null, null, null,
+            new BarrierDetails(BarrierGroup.OTHER, new BarrierType(5), 2, "opis", false),
+            "e1", NewEntranceMarking.ACCESSIBLE, null,
             List.of(UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"))
         );
+    }
+
+    /** Atrapa portu zapisu: zapamiętuje przyjęte komendy i zwraca podane wyniki. */
+    private static final class RecordingSubmissions implements SubmissionRepository {
+
+        /** Wynik zwracany z utworzenia. */
+        private final CreateResult created;
+
+        /** Wynik zwracany z edycji. */
+        private final EditResult edited;
+
+        /** Przyjęte komendy w kolejności. */
+        private final List<Object> seen = new ArrayList<>(1);
+
+        RecordingSubmissions(final CreateResult created, final EditResult edited) {
+            this.created = created;
+            this.edited = edited;
+        }
+
+        @Override
+        public CreateResult create(final NewSubmission submission) {
+            this.seen.add(submission);
+            return this.created;
+        }
+
+        @Override
+        public EditResult update(final SubmissionEdit edit) {
+            this.seen.add(edit);
+            return this.edited;
+        }
+
+        List<Object> seen() {
+            return List.copyOf(this.seen);
+        }
     }
 }
