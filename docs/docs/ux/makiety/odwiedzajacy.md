@@ -60,7 +60,7 @@ Czynność główna: wybór wyniku „Budynek C-13”, który zaznacza budynek n
 
 ### V1: lista budynków
 
-![Makieta V1 z wybraną listą budynków: Budynek A-1 z barierą i zastępnikiem pozostałych barier, Budynek C-13 i budynek-zastępnik, każdy z nazwą z danych i barierami, przy dwóch pierwszych Pokaż na mapie](../../_generated/m-v1-mapa-lista.svg)
+![Makieta V1 z wybraną listą budynków: Budynek A-1 z barierą i zastępnikiem pozostałych barier, Budynek C-13 i budynek-zastępnik, każdy z nazwą z danych i barierami](../../_generated/m-v1-mapa-lista.svg)
 
 Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 
@@ -70,7 +70,8 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 | Pozycja: „Budynek A-1”, nazwa z danych, bariery z uciążliwością tekstem i ikoną; cała ramka pozycji to jeden cel dotyku | NFR-19, US1.3, NFR-21, NFR-17 |
 | Bariery A-1 jak we wzorcu V2: schody przy wejściu głównym [1], pozostałe jako zastępnik | US1.3, BR-7 |
 | Lista daje tę samą informację co mapa, więc jest drogą dla TalkBack | NFR-19, NFR-18 |
-| „Pokaż na mapie” przy budynku: mapa z zaznaczonym budynkiem; przy dużej czcionce lista jest widokiem startowym | NFR-19, NFR-20 |
+| Dotknięcie pozycji: mapa z zaznaczonym budynkiem i małą kartą V2; przy TalkBack, dużej czcionce albo szerokim oknie od razu pełny ekran V2; zamknięcie małej karty wraca do listy | US2.8, NFR-19 |
+| Przy dużej czcionce lista jest widokiem startowym | NFR-20 |
 | Bez przycisków mapy i podpisu OpenStreetMap, bo lista nie pokazuje mapy | decyzja 16 |
 
 ### V1: brak wyniku
@@ -248,9 +249,9 @@ Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V3 są [makiety hi-fi](../e
 
 ### V3: wejście jest
 
-![Makieta V3 dla A-1: pogrubione zdanie o wejściu dostępnym bramą od ul. Norwida, ramka wejścia z oznaczeniem, źródłem i Pokaż na mapie oraz bariera przy tym wejściu](../../_generated/m-v3-ktoredy-wejsc.svg)
+![Makieta V3 dla A-1: pogrubione zdanie o wejściu dostępnym bramą od ul. Norwida, ramka wejścia z oznaczeniem, źródłem i Pokaż wejście na mapie oraz bariera przy tym wejściu](../../_generated/m-v3-ktoredy-wejsc.svg)
 
-Czynność główna: brak; ekran odpowiada na jedno pytanie, a dalej prowadzą „Wstecz”, „Pokaż na mapie” i pasek dolny.
+Czynność główna: brak; ekran odpowiada na jedno pytanie, a dalej prowadzą „Wstecz”, „Pokaż wejście na mapie” i pasek dolny.
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -258,7 +259,7 @@ Czynność główna: brak; ekran odpowiada na jedno pytanie, a dalej prowadzą �
 | Zdanie z odpowiedzią na górze, pogrubione: TalkBack czyta je pierwsze | US3, US3.1, NFR-18 |
 | „Wejście bramą od ul. Norwida” jako dostępne, jak w deklaracji A-1; nazwa odróżnia je od niedostosowanego wejścia przy ul. Norwida [1] | US2.1, US3 |
 | Oznaczenie tekstem i ikoną, pod nim data i źródło | US2.1, US17.3, NFR-21 |
-| „Pokaż na mapie” w ramce wejścia: V1 z zaznaczonym wejściem | US2.1, US3 |
+| „Pokaż wejście na mapie” w ramce wejścia: V1 z zaznaczonym wejściem | US2.1, US3 |
 | Bariera przy tym wejściu: typ i uciążliwość jako zastępniki, bo deklaracja nie podaje barier przy tym wejściu; zdjęcie, „Sprawdzone [data]” | US2.2, UC4 4c, PW-3 |
 | Pasek dolny z „Konto” | wymagania wspólne |
 
