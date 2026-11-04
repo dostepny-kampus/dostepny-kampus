@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.app
 
 import com.lemonappdev.konsist.api.Konsist
-import com.lemonappdev.konsist.api.declaration.KoClassDeclaration
 import com.lemonappdev.konsist.api.declaration.KoFileDeclaration
 import com.lemonappdev.konsist.api.declaration.combined.KoClassAndInterfaceAndObjectDeclaration
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -56,6 +55,8 @@ class NullabilityArchitectureTest {
                         "data class Room(val label: String?, var floor: Int?, val id: String) {",
                         "    var note: String? = null",
                         "    val code: String = id",
+                        "",
+                        "    data class Door(val width: Int?)",
                         "}",
                         "",
                         "class Draft(raw: String?) {",
@@ -66,7 +67,7 @@ class NullabilityArchitectureTest {
                     ),
             )
         assertEquals(
-            setOf("Room.label", "Room.floor", "Room.note", "Building.alias", "Room.kt.lastRoom"),
+            setOf("Room.label", "Room.floor", "Room.note", "Room.Door.width", "Building.alias", "Room.kt.lastRoom"),
             nullablePropertiesOutsideList(files),
         )
     }
@@ -150,10 +151,8 @@ class NullabilityArchitectureTest {
 
     private fun nullableMembers(owner: KoClassAndInterfaceAndObjectDeclaration): List<String> {
         val ownerName = owner.fullyQualifiedName.orEmpty().removePrefix("${owner.containingFile.packagePath()}.")
-        val body = owner.properties(includeNested = false).filter { it.type?.isNullable == true }
-        val parameters = (owner as? KoClassDeclaration)?.primaryConstructor?.parameters.orEmpty()
-        val constructor = parameters.filter { (it.isVal || it.isVar) && it.type.isNullable }
-        return (body.map { it.name } + constructor.map { it.name }).map { "$ownerName.$it" }
+        val nullable = owner.properties(includeNested = false).filter { it.type?.isNullable == true }
+        return nullable.map { "$ownerName.${it.name}" }
     }
 
     private fun dtoOutsideNetwork(files: List<KoFileDeclaration>): Set<String> =
