@@ -36,6 +36,9 @@ record SubmissionFilter(
      */
     SubmissionQuery toQuery() {
         final Set<SubmissionStatus> statuses = this.statuses();
+        if (statuses.isEmpty()) {
+            throw new InvalidInput("Parametr status nie może być pusty");
+        }
         if (!this.mine && !statuses.stream().allMatch(SubmissionStatus::publiclyVisible)) {
             throw new InvalidInput("Bez mine=true dozwolony jest tylko status ACCEPTED");
         }
