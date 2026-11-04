@@ -27,7 +27,6 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -53,7 +52,6 @@ class EntranceAssessmentTextTest {
     // Wiersz: V2, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
     //   nad grupą „Wejścia”, US17.3, BR-24, import.
     @Test
-    @Ignore(NOT_YET)
     fun us17_3_v2_common_row_import() {
         showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, IMPORT_DAY)))
         compose.onNodeWithText(IMPORT_TEXT).assertExists()
@@ -64,7 +62,6 @@ class EntranceAssessmentTextTest {
     // Wiersz: V2, wszystkie wejścia z obchodu z tym samym dniem → jeden wiersz „Sprawdzone na miejscu 5.3.2026”
     //   (bez zer wiodących, bez „Z map i opisów”), US17.3, BR-24, obchód.
     @Test
-    @Ignore(NOT_YET)
     fun us17_3_v2_row_walkthrough() {
         showCard(listOf(entrance(MAIN, WALKTHROUGH, WALK_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
         compose.onNodeWithText(WALK_TEXT).assertExists()
@@ -75,16 +72,22 @@ class EntranceAssessmentTextTest {
 
     // Wiersz: V2, wejścia z różnym źródłem → napis przy każdym wejściu, nad grupą go nie ma, US17.3, BR-24.
     @Test
-    @Ignore(NOT_YET)
     fun us17_3_v2_per_entrance() {
         showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
         assertPerEntrance(first = IMPORT_TEXT, second = WALK_TEXT, group = GROUP_V2)
     }
 
+    // Wiersz: V2, wejścia z tym samym źródłem i różnym dniem → napis przy każdym wejściu, nad grupą go nie ma,
+    //   US17.3, BR-24, import.
+    @Test
+    fun us17_3_v2_per_day() {
+        showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, NEXT_DAY)))
+        assertPerEntrance(first = IMPORT_TEXT, second = NEXT_TEXT, group = GROUP_V2)
+    }
+
     // Wiersz: V3, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
     //   nad wejściami, US17.3, BR-24, import.
     @Test
-    @Ignore(NOT_YET)
     fun us17_3_v3_common_row() {
         showVisit(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, IMPORT_DAY)))
         compose.onNodeWithText(IMPORT_TEXT).assertExists()
@@ -94,7 +97,6 @@ class EntranceAssessmentTextTest {
 
     // Wiersz: V3, wejścia z różnym źródłem → napis przy każdym wejściu, nad wejściami go nie ma, US17.3, BR-24.
     @Test
-    @Ignore(NOT_YET)
     fun us17_3_v3_per_entrance() {
         showVisit(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
         assertPerEntrance(first = IMPORT_TEXT, second = WALK_TEXT, group = GROUP_V3)
@@ -176,7 +178,6 @@ class EntranceAssessmentTextTest {
         )
 
     private companion object {
-        const val NOT_YET = "dzień i źródło oznaczenia wejść jeszcze nie na ekranie, poprawka w następnym PR"
         const val SYMBOL = "A-1"
         const val MAIN = "Główne"
         const val SIDE = "Boczne"
@@ -184,9 +185,11 @@ class EntranceAssessmentTextTest {
         const val GROUP_V2 = "Wejścia"
         const val GROUP_V3 = "Zalecane wejście"
         const val IMPORT_TEXT = "Z map i opisów, stan z 1.10.2026"
+        const val NEXT_TEXT = "Z map i opisów, stan z 2.10.2026"
         const val WALK_TEXT = "Sprawdzone na miejscu 5.3.2026"
 
         val IMPORT_DAY: LocalDate = LocalDate.of(2026, 10, 1)
+        val NEXT_DAY: LocalDate = LocalDate.of(2026, 10, 2)
         val WALK_DAY: LocalDate = LocalDate.of(2026, 3, 5)
 
         val catalog =

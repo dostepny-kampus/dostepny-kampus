@@ -165,13 +165,17 @@ internal fun EntranceSummaryRow(summary: EntranceSummary) {
 
 @Composable
 private fun BuildingFacts(card: BuildingCardUiState.Ready, onReportEntrance: (String) -> Unit) {
+    val common = commonAssessment(card.entrances)
+    common?.let { AssessmentLine(it) }
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
-        card.entrances.forEach { EntranceLine(it, onReportEntrance) }
+        card.entrances.forEach {
+            EntranceLine(it, withAssessment = common == null, onReportEntrance = onReportEntrance)
+        }
     }
 }
 
 @Composable
-private fun EntranceLine(listed: OrderedEntrance, onReportEntrance: (String) -> Unit) {
+private fun EntranceLine(listed: OrderedEntrance, withAssessment: Boolean, onReportEntrance: (String) -> Unit) {
     val title = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
     val spoken = stringResource(R.string.karta_zglos_czytaj, title)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
@@ -190,6 +194,7 @@ private fun EntranceLine(listed: OrderedEntrance, onReportEntrance: (String) -> 
             }
         }
         Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
+        if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }
         PinnedButton(
             text = stringResource(R.string.karta_zglos),
             onClick = { onReportEntrance(listed.entrance.id) },
