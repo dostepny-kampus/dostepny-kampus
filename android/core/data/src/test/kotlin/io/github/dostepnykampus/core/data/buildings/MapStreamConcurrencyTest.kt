@@ -20,7 +20,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.yield
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
@@ -67,7 +66,6 @@ class MapStreamConcurrencyTest {
 
     // Wiersz: refresh() w toku na wstrzymanym serwerze → pierwsza emisja mapy to plik w ≤ 1 s, W1, NFR-11.
     @Test
-    @Disabled("strumień mapy czeka na trwające pobranie, poprawka w następnym PR")
     fun nfr11_file_while_retry_runs() {
         inRun {
             launch { repository.refresh() }
