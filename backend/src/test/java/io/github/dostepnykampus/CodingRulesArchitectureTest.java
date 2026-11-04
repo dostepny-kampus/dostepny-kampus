@@ -9,6 +9,8 @@ import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.lang.CompositeArchRule;
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import com.tngtech.archunit.library.GeneralCodingRules;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,11 +29,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * Ogólne reguły kodu serwera z gotowego zestawu ArchUnit.
  *
- * <p>Kod produkcyjny nie używa {@code java.util.logging}, nie pisze do
+ * <p>Kod produkcyjny nie zależy od {@code java.util.logging}, nie pisze do
  * strumieni standardowych i nie rzuca ogólnych wyjątków. Każda reguła ma
  * przykład negatywny: klasę, która ją łamie. Przykłady kompiluje test do
  * katalogu tymczasowego, więc nie trafiają do importu kodu produkcyjnego
  * ani do kontroli stylu.</p>
+ *
+ * <p>Gotowa reguła ArchUnit o {@code java.util.logging} łapie tylko pole
+ * typu loggera, więc reguła loggingu dokłada zakaz każdej zależności od
+ * tego pakietu, także wywołania bez pola.</p>
  *
  * @since 0.1.0
  */
@@ -122,6 +128,10 @@ final class CodingRulesArchitectureTest {
                 "final java.util.logging.Logger log = java.util.logging.Logger.getLogger(\"x\");"
             ),
             Arguments.of(
+                CodingRulesArchitectureTest.logging(), "JulCall",
+                "void log() { java.util.logging.Logger.getLogger(\"x\").info(\"x\"); }"
+            ),
+            Arguments.of(
                 CodingRulesArchitectureTest.streams(), "StandardOut",
                 "void print() { System.out.println(\"x\"); }"
             ),
@@ -157,7 +167,12 @@ final class CodingRulesArchitectureTest {
     }
 
     private static ArchRule logging() {
-        return GeneralCodingRules.NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING;
+        return CompositeArchRule
+            .of(GeneralCodingRules.NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING)
+            .and(
+                ArchRuleDefinition.noClasses().should().dependOnClassesThat()
+                    .resideInAPackage("java.util.logging..")
+            );
     }
 
     private static ArchRule streams() {
