@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -16,4 +17,17 @@ import java.util.UUID;
  * @since 0.1.0
  */
 public record SubmissionEdit(UUID id, int expectedVersion, SubmissionContent content) {
+
+    /**
+     * Komenda z identyfikatorem, wersją bazową i treścią. Wersja bazowa poniżej 1
+     * kończy się niekontrolowanym wyjątkiem {@link InvalidSubmission}; brak
+     * identyfikatora albo treści kończy się wyjątkiem NullPointerException.
+     */
+    public SubmissionEdit {
+        Objects.requireNonNull(id, "id");
+        Objects.requireNonNull(content, "content");
+        if (expectedVersion < 1) {
+            throw new InvalidSubmission("Brak wersji bazowej edycji w polu version");
+        }
+    }
 }

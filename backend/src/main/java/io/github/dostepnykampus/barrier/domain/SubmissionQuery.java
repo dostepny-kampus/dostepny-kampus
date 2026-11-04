@@ -19,4 +19,16 @@ import org.jspecify.annotations.Nullable;
 public record SubmissionQuery(
     Set<SubmissionStatus> statuses, @Nullable String buildingSymbol, @Nullable String floorId
 ) {
+
+    /**
+     * Zapytanie z niemodyfikowalną kopią statusów. Pusty zbiór statusów kończy się
+     * niekontrolowanym wyjątkiem IllegalArgumentException; brak zbioru kończy się
+     * wyjątkiem NullPointerException.
+     */
+    public SubmissionQuery {
+        statuses = Set.copyOf(statuses);
+        if (statuses.isEmpty()) {
+            throw new IllegalArgumentException("Zapytanie wymaga co najmniej jednego statusu");
+        }
+    }
 }
