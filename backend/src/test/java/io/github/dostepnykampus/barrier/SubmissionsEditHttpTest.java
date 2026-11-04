@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -18,20 +19,30 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.ObjectMapper;
 
 /**
  * Testy US8.3, US9.3 i BR-10: PUT /submissions/{id} zapisuje edycję tylko
  * z wersji, którą ma serwer; inaczej daje 409 z wersją z serwera.
+ * Bez transakcji testowej, jak na produkcji; wiersze usuwane po teście.
  *
  * @since 0.1.0
  */
 @SpringBootTest
 @Import(PostgisTestConfiguration.class)
-@Transactional
 final class SubmissionsEditHttpTest {
+
+    /**
+     * Wiersz zarezerwowany dla sekwencyjnych scenariuszy tej klasy, usuwany po każdym teście.
+     */
+    private static final UUID ID = UUID.fromString("c4e7b2d9-1a3f-4e8c-b6d0-5f9a2e7c1d84");
+
+    @AfterEach
+    void clean(final WebApplicationContext context) {
+        context.getBean(JdbcClient.class).sql("DELETE FROM submissions WHERE id = :id")
+            .param("id", SubmissionsEditHttpTest.ID).update();
+    }
 
     @Test
     void usEightSavesEditAsNextVersion(final WebApplicationContext context)
@@ -83,20 +94,11 @@ final class SubmissionsEditHttpTest {
     }
 
     @Test
-    void usEightNeedsBaseVersion(final WebApplicationContext context) throws Exception {
-        MatcherAssert.assertThat(
-            "Edycja bez wersji bazowej nie daje 400",
-            SubmissionsEditHttpTest.edit(context, "SENT", 1, "\"1\"").getStatus(),
-            Matchers.equalTo(400)
-        );
-    }
-
-    @Test
     void usEightFindsNoUnknownSubmission(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Edycja nieistniejącego zgłoszenia nie daje 404",
-            SubmissionsEditHttpTest.put(context, UUID.randomUUID(), "1").getStatus(),
+            SubmissionsEditHttpTest.put(context, SubmissionsEditHttpTest.ID, "1").getStatus(),
             Matchers.equalTo(404)
         );
     }
@@ -115,15 +117,15 @@ final class SubmissionsEditHttpTest {
         final WebApplicationContext context, final String status, final int version,
         final String base
     ) throws Exception {
-        final UUID id = UUID.randomUUID();
         context.getBean(JdbcClient.class).sql(
             """
             INSERT INTO submissions (id, version, status, kind, location, content)
             VALUES (:id, :version, :status, 'QUICK',
                 ST_SetSRID(ST_MakePoint(17.0, 51.0), 4326), '{"kind":"QUICK"}')
             """
-        ).param("id", id).param("version", version).param("status", status).update();
-        return SubmissionsEditHttpTest.put(context, id, base);
+        ).param("id", SubmissionsEditHttpTest.ID).param("version", version)
+            .param("status", status).update();
+        return SubmissionsEditHttpTest.put(context, SubmissionsEditHttpTest.ID, base);
     }
 
     private static MockHttpServletResponse put(

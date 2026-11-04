@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
@@ -138,10 +138,12 @@ internal fun EntranceDto.toModel(): Entrance {
 internal fun LocateResultDto.toModel(): BuildingAtPoint =
     BuildingAtPoint(buildingSymbol = buildingSymbol, isInsideOutline = isInsideOutline)
 
-private fun GeoPointDto.toModel(): GeoPoint {
+internal fun GeoPointDto.toModel(): GeoPoint {
     require(type == "Point" && coordinates.size >= MIN_COORDINATES) { "Zły punkt GeoJSON" }
     return GeoPoint(longitude = coordinates[LONGITUDE], latitude = coordinates[LATITUDE])
 }
+
+internal fun GeoPoint.toDto(): GeoPointDto = GeoPointDto(type = "Point", coordinates = listOf(longitude, latitude))
 
 private val ISO_DATE = Regex("""\d{4}-\d{2}-\d{2}""")
 

@@ -81,7 +81,6 @@ import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.map.BuildingCardScreen
 import io.github.dostepnykampus.feature.map.BuildingCardViewModel
-import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.EntrancesScreen
@@ -163,20 +162,15 @@ internal fun Context.appMapViewModel(): CampusMapViewModel =
     )
 
 /**
- * Ekran trasy [route] jak [AppScreen], ale V1 ze stanem [mapViewModel] zamiast ViewModel z grafu Hilt, bo aktywność
- * testu nie ma grafu. Ekran z grafem sprawdza [MainActivityTest].
+ * Ekran trasy [route] jak [AppScreen]: V1 to ten sam [MapScreen] co w aplikacji, ale ze stanem [mapViewModel] zamiast
+ * ViewModel z grafu Hilt, bo aktywność testu nie ma grafu. Ekran z grafem sprawdza [MainActivityTest].
  */
 @Composable
 internal fun AppNavigator.TestAppScreen(route: NavKey, mapViewModel: CampusMapViewModel) {
     if (route is MapRoute) {
         val state by mapViewModel.uiState.collectAsStateWithLifecycle()
-        CampusMapScreen(
-            state = state,
-            onListChange = mapViewModel::chooseList,
-            onBuildingClick = { openBuilding(it) },
-            focus = (route.focus as? MapFocus.Building)?.symbol,
-            contentPadding = LocalSheetPadding.current,
-        )
+        val focus = (route.focus as? MapFocus.Building)?.symbol
+        MapScreen(focus = focus, state = state, onListChange = mapViewModel::chooseList)
     } else if (route is BuildingRoute) {
         TestBuildingCard(route.symbol)
     } else if (route is EntrancesRoute) {

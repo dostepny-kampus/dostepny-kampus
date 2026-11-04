@@ -79,7 +79,7 @@ class SubmissionJsonTest {
 
     @Test
     fun us8_1_server_submission() {
-        val submission = json.decodeSubmission(json.parseToJsonElement(SERVER).jsonObject)
+        val submission = json.decodeSubmission(SERVER)
         assertEquals(SubmissionStatus.SENT, submission.status)
         assertEquals(Instant.parse("2026-11-03T18:00:00Z"), submission.createdAt)
         assertEquals(quick.copy(buildingSymbol = "A-1"), submission.content)
@@ -92,7 +92,7 @@ class SubmissionJsonTest {
         assertThrows<IllegalArgumentException> { decode(SERVER.replace(oldValue = "\"$PHOTO\"", newValue = "")) }
     }
 
-    private fun decode(body: String) = json.decodeSubmission(json.parseToJsonElement(body).jsonObject)
+    private fun decode(body: String) = json.decodeSubmission(body)
 
     private companion object {
         const val ID = "0b6f6c1e-8a43-4d5e-9f43-2f1d3c4b5a69"
