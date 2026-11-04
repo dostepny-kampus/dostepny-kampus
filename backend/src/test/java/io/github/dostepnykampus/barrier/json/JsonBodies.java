@@ -58,7 +58,7 @@ final class JsonBodies {
     /**
      * Mapper ze ścisłym wiązaniem jak na serwerze.
      */
-    private static final JsonMapper MAPPER = new StrictMapper().build();
+    private static final JsonMapper MAPPER = new StrictMapper().get();
 
     private JsonBodies() {
     }

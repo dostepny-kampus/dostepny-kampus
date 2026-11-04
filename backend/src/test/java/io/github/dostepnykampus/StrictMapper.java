@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus;
 
+import java.util.function.Supplier;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
@@ -12,14 +13,16 @@ import tools.jackson.databind.json.JsonMapper;
  *
  * @since 0.1.0
  */
-public final class StrictMapper {
+public final class StrictMapper implements Supplier<JsonMapper> {
 
     /**
-     * Buduje mapper.
-     *
-     * @return Mapper ze ścisłym wiązaniem
+     * Tworzy fabrykę mappera.
      */
-    public JsonMapper build() {
+    public StrictMapper() {
+    }
+
+    @Override
+    public JsonMapper get() {
         final JsonMapper.Builder builder = JsonMapper.builder();
         new StrictJsonConfiguration().customize(builder);
         return builder.build();

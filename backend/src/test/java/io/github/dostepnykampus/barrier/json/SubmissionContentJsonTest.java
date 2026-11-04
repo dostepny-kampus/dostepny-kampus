@@ -31,7 +31,7 @@ final class SubmissionContentJsonTest {
 
     @Test
     @Disabled("zapis treści w JSON jeszcze nie przenosi pól, kod w następnym PR")
-    void wThreeOneFullContentBindsToDomain() {
+    void wthreeOneFullContentBindsToDomain() {
         Assertions.assertEquals(
             new SubmissionContent(
                 SubmissionKind.PRECISE,
