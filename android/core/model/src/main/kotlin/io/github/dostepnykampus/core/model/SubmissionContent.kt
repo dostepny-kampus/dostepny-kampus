@@ -12,7 +12,8 @@ package io.github.dostepnykampus.core.model
  * @property location miejsce bariery po pomiarze precyzyjnym albo bieżąca pozycja
  * @property photoIds identyfikatory zdjęć nadane w telefonie; co najmniej jedno (BR-7, BR-8)
  * @property accuracyMeters dokładność pozycji w metrach (US6.1)
- * @property isManualCorrection oznaczenie „korekta ręczna” (US6.3, US6.4)
+ * @property isManualCorrection oznaczenie „korekta ręczna” (US6.3, US6.4); `null` to pole nieobecne,
+ *   które kontrakt API traktuje jak `false`
  * @property buildingSymbol budynek; `null` to „poza budynkiem” (BR-G2). W zgłoszeniu szybkim ustala go serwer (BR-14)
  * @property floor piętro zgłoszenia
  * @property barrierGroup grupa barier w zgłoszeniu szybkim (US4.3)
@@ -20,7 +21,8 @@ package io.github.dostepnykampus.core.model
  * @property severity uciążliwość 1–3; 3 to blokada
  * @property description opis; obowiązkowy przy TB-29 „inna bariera” (US7.3)
  * @property replacesSubmissionId zgłoszenie przyjęte, które ta zmiana zastąpi (BR-18)
- * @property isBarrierRemoved oznaczenie „bariera usunięta” (US8.4, BR-19)
+ * @property isBarrierRemoved oznaczenie „bariera usunięta” (US8.4, BR-19); `null` to pole nieobecne,
+ *   które kontrakt API traktuje jak `false`
  * @property entranceId wejście w zmianie oznaczenia wejścia (BR-24)
  * @property entranceMarking nowe oznaczenie wejścia: tylko dostępne albo niedostępne (US17.2)
  */
@@ -29,7 +31,7 @@ data class SubmissionContent(
     val location: GeoPoint,
     val photoIds: List<String>,
     val accuracyMeters: Double? = null,
-    val isManualCorrection: Boolean = false,
+    val isManualCorrection: Boolean? = null,
     val buildingSymbol: String? = null,
     val floor: SubmissionFloor? = null,
     val barrierGroup: BarrierGroup? = null,
@@ -37,7 +39,7 @@ data class SubmissionContent(
     val severity: Int? = null,
     val description: String? = null,
     val replacesSubmissionId: String? = null,
-    val isBarrierRemoved: Boolean = false,
+    val isBarrierRemoved: Boolean? = null,
     val entranceId: String? = null,
     val entranceMarking: EntranceMarking? = null,
 ) {
@@ -57,9 +59,10 @@ data class SubmissionContent(
  *
  * @property floorId piętro z listy pięter budynku szczegółowego
  * @property number numer piętra w budynku podstawowym; 0 to parter
- * @property isMezzanine dopisek „półpiętro” w budynku podstawowym
+ * @property isMezzanine dopisek „półpiętro” w budynku podstawowym; `null` to pole nieobecne,
+ *   które kontrakt API traktuje jak `false`
  */
-data class SubmissionFloor(val floorId: String? = null, val number: Int? = null, val isMezzanine: Boolean = false)
+data class SubmissionFloor(val floorId: String? = null, val number: Int? = null, val isMezzanine: Boolean? = null)
 
 /** Rodzaj zgłoszenia (`kind` w `SubmissionContent`). */
 enum class SubmissionKind {

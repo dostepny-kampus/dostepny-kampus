@@ -122,15 +122,15 @@ private fun SubmissionContent.toRequest(id: String? = null, version: Int? = null
         location = location.toDto(),
         photoIds = photoIds,
         accuracyMeters = accuracyMeters,
-        isManualCorrection = isManualCorrection.sentOnlyIfTrue(),
+        isManualCorrection = isManualCorrection,
         buildingSymbol = buildingSymbol,
-        floor = floor?.let { SubmissionFloorDto(it.floorId, it.number, it.isMezzanine.sentOnlyIfTrue()) },
+        floor = floor?.let { SubmissionFloorDto(it.floorId, it.number, it.isMezzanine) },
         barrierGroup = barrierGroup,
         barrierType = barrierType,
         severity = severity,
         description = description,
         replacesSubmissionId = replacesSubmissionId,
-        isBarrierRemoved = isBarrierRemoved.sentOnlyIfTrue(),
+        isBarrierRemoved = isBarrierRemoved,
         entranceId = entranceId,
         entranceMarking = entranceMarking,
     )
@@ -147,25 +147,21 @@ private fun SubmissionDto.toModel(): Submission =
                 location = location.toModel(),
                 photoIds = photoIds,
                 accuracyMeters = accuracyMeters,
-                isManualCorrection = isManualCorrection.absentAsFalse(),
+                isManualCorrection = isManualCorrection,
                 buildingSymbol = buildingSymbol,
-                floor = floor?.let { SubmissionFloor(it.floorId, it.number, it.isMezzanine.absentAsFalse()) },
+                floor = floor?.let { SubmissionFloor(it.floorId, it.number, it.isMezzanine) },
                 barrierGroup = barrierGroup,
                 barrierType = barrierType,
                 severity = severity,
                 description = description,
                 replacesSubmissionId = replacesSubmissionId,
-                isBarrierRemoved = isBarrierRemoved.absentAsFalse(),
+                isBarrierRemoved = isBarrierRemoved,
                 entranceId = entranceId,
                 entranceMarking = entranceMarking,
             ),
         rejectionReason = rejectionReason,
         verifiedAt = verifiedAt?.let(::instant),
     )
-
-private fun Boolean.sentOnlyIfTrue(): Boolean? = takeIf { it }
-
-private fun Boolean?.absentAsFalse(): Boolean = this == true
 
 private fun instant(text: String): Instant =
     try {
