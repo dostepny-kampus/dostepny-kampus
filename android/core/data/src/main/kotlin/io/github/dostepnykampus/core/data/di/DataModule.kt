@@ -14,6 +14,8 @@ import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.buildings.ServerEntrances
+import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
 import io.github.dostepnykampus.core.data.buildings.assetRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.map.MapListChoiceRepository
@@ -38,6 +40,11 @@ object DataModule {
     @Singleton
     fun buildingCatalog(app: Application, api: BuildingsApi): BuildingCatalogRepository =
         assetRepository(assets = app.assets, listBuildings = api::listBuildings)
+
+    /** Wejścia karty budynku z serwera z dniem i źródłem oznaczenia (US17.3). */
+    @Provides
+    @Singleton
+    fun cardEntrances(api: BuildingsApi): ServerEntrances = ServerEntrancesRepository(api::building)
 
     /** Wybór „Mapa” albo „Lista budynków” w pliku ustawień mapy (NFR-19). */
     @Provides

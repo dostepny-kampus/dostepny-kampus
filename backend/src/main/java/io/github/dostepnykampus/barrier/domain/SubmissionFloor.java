@@ -25,6 +25,6 @@ public record SubmissionFloor(
      * @return Prawda, gdy podano identyfikator albo numer
      */
     public boolean identified() {
-        return false;
+        return this.floorId != null || this.number != null;
     }
 }

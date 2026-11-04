@@ -5,19 +5,27 @@
  */
 package io.github.dostepnykampus.core.data.buildings
 
+import io.github.dostepnykampus.core.data.di.DataModule
+import io.github.dostepnykampus.core.model.AssessmentSource.WALKTHROUGH
+import io.github.dostepnykampus.core.model.EntranceAssessment
+import io.github.dostepnykampus.core.network.BuildingsApi
+import io.github.dostepnykampus.core.network.NetworkModule
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
 import java.io.File
+import java.time.LocalDate
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Katalog budynków z repozytorium na małym syntetycznym pliku w formacie `data/buildings` (nie dane PWr). */
+/** Katalog budynków na syntetycznym pliku `data/buildings` (nie dane PWr) i wejścia karty z serwera. */
 class BuildingCatalogRepositoryTest {
     private val reads = AtomicInteger()
     private val json =
@@ -71,6 +79,18 @@ class BuildingCatalogRepositoryTest {
         assertEquals(visitorTypes, catalog.entrances.mapNotNull { it.type }.toSet())
     }
 
+    // Wiersz: wejścia karty w aplikacji pochodzą z `GET /buildings/{symbol}` z dniem i źródłem oznaczenia, US17.3.
+    @Test
+    fun us17_3_app_asks_server() {
+        val found =
+            MockWebServer().use { server ->
+                server.enqueue(MockResponse().setBody(CARD))
+                val api = BuildingsApi(NetworkModule.okHttp(), NetworkModule.json(), server.url("/").toString())
+                runBlocking { DataModule.cardEntrances(api).entrances("A-1") }
+            }
+        assertEquals(listOf(EntranceAssessment(LocalDate.of(2026, 10, 1), WALKTHROUGH)), found.map { it.assessment })
+    }
+
     private fun collection(features: List<String>): String =
         """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors",""" +
             """"features":[${features.joinToString(",")}]}"""
@@ -85,5 +105,10 @@ class BuildingCatalogRepositoryTest {
 
     private companion object {
         const val SLOW_READ_MS = 50L
+        const val CARD =
+            """{"symbol":"A-1","name":"Gmach","detailLevel":"BASIC","outline":{"type":"Polygon","coordinates":""" +
+                """[[[0,0],[1,0],[1,1],[0,0]]]},"entrances":[{"id":"a1","buildingSymbol":"A-1","main":true,""" +
+                """"location":{"type":"Point","coordinates":[0.5,0]},"marking":"ACCESSIBLE",""" +
+                """"markingDate":"2026-10-01","markingSource":"WALKTHROUGH"}]}"""
     }
 }
