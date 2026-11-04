@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
@@ -131,7 +130,6 @@ final class PhotoSettingsTest {
         );
     }
 
-    @Disabled("Ustawienia serwera są jeszcze w application.properties")
     @Test
     void cfgOneKeepsSettingsOnlyInYaml() {
         Assertions.assertEquals(
@@ -142,7 +140,6 @@ final class PhotoSettingsTest {
         );
     }
 
-    @Disabled("Moduł zgłoszeń czyta jeszcze ustawienia magazynu przez @Value")
     @Test
     void cfgTwoReadsPhotoSettingsWithoutValueAnnotation() {
         Assertions.assertDoesNotThrow(
@@ -154,7 +151,6 @@ final class PhotoSettingsTest {
         );
     }
 
-    @Disabled("Rekord ustawień magazynu przyjmuje jeszcze pusty kubełek")
     @Test
     void cfgThreeStopsStartupOnEmptyBucket() {
         PhotoSettingsTest.runner().withPropertyValues("DK_PHOTOS_BUCKET=").run(
@@ -166,7 +162,6 @@ final class PhotoSettingsTest {
         );
     }
 
-    @Disabled("Rekord ustawień magazynu przyjmuje jeszcze adres bez schematu lub hosta")
     @Test
     void cfgThreeStopsStartupOnEndpointWithoutSchemeOrHost() {
         Assertions.assertAll(
@@ -185,7 +180,6 @@ final class PhotoSettingsTest {
         );
     }
 
-    @Disabled("Tekst rekordu ustawień magazynu zawiera jeszcze klucze")
     @Test
     void cfgFiveHidesKeysInSettingsText() {
         MatcherAssert.assertThat(
