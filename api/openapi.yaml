@@ -621,6 +621,7 @@ components:
     Problem:
       type: object
       description: Opis błędu według RFC 9457.
+      required: [title, status]
       properties:
         type: {type: string, format: uri-reference, description: "Identyfikator rodzaju błędu."}
         title: {type: string, description: "Krótki opis rodzaju błędu."}
@@ -914,16 +915,35 @@ components:
                 roles: {type: array, description: "Role autora.", items: {$ref: '#/components/schemas/Role'}}
 
     ReviewDecision:
+      description: Decyzja Weryfikatora o zgłoszeniu; rodzaj decyzji w `decision`.
+      oneOf:
+        - $ref: '#/components/schemas/AcceptDecision'
+        - $ref: '#/components/schemas/RejectDecision'
+      discriminator:
+        propertyName: decision
+        mapping:
+          ACCEPT: '#/components/schemas/AcceptDecision'
+          REJECT: '#/components/schemas/RejectDecision'
+    AcceptDecision:
       type: object
-      description: Decyzja Weryfikatora o zgłoszeniu.
+      description: Przyjęcie zgłoszenia.
       required: [decision, version]
       properties:
-        decision: {type: string, enum: [ACCEPT, REJECT], description: "`ACCEPT` — przyjęcie, `REJECT` — odrzucenie."}
+        decision: {const: ACCEPT, description: "`ACCEPT` — przyjęcie."}
+        version: {type: integer, minimum: 1, description: "Wersja zgłoszenia, którą ocenił Weryfikator (BR-3)."}
+        barrierType: {$ref: '#/components/schemas/BarrierType', description: "Typ bariery ustalony przy przyjęciu zgłoszenia szybkiego (BR-14)."}
+        severity: {$ref: '#/components/schemas/Severity', description: "Uciążliwość ustalona przy przyjęciu zgłoszenia szybkiego (BR-14)."}
+      unevaluatedProperties: false
+    RejectDecision:
+      type: object
+      description: Odrzucenie zgłoszenia z powodem odrzucenia (BR-16).
+      required: [decision, version, rejectionReason]
+      properties:
+        decision: {const: REJECT, description: "`REJECT` — odrzucenie."}
         version: {type: integer, minimum: 1, description: "Wersja zgłoszenia, którą ocenił Weryfikator (BR-3)."}
         rejectionReason: {type: string, minLength: 1, maxLength: 500, description: "Powód odrzucenia; wymagany przy `REJECT` (BR-16)."}
         duplicateOfSubmissionId: {type: string, format: uuid, description: "Wcześniejsze zgłoszenie przy odrzuceniu duplikatu (BR-13)."}
-        barrierType: {$ref: '#/components/schemas/BarrierType', description: "Typ bariery ustalony przy przyjęciu zgłoszenia szybkiego (BR-14)."}
-        severity: {$ref: '#/components/schemas/Severity', description: "Uciążliwość ustalona przy przyjęciu zgłoszenia szybkiego (BR-14)."}
+      unevaluatedProperties: false
     SimilarSubmission:
       description: Podobne zgłoszenie z odległością od sprawdzanego.
       allOf:
@@ -935,36 +955,99 @@ components:
             distanceMeters: {type: number, format: double, minimum: 0, maximum: 10, description: "Odległość od sprawdzanego zgłoszenia w metrach."}
 
     SyncOperation:
+      description: >-
+        Zmiana zapisana w telefonie; rodzaj zmiany w `type`: nowe zgłoszenie, edycja zgłoszenia, znacznik piętra
+        obejrzanego, cofnięcie znacznika. Edycja i znaczniki wymagają roli `COLLECTOR` (US8.3, BR-20).
+      oneOf:
+        - $ref: '#/components/schemas/CreateSubmissionOperation'
+        - $ref: '#/components/schemas/UpdateSubmissionOperation'
+        - $ref: '#/components/schemas/SetInspectionMarkerOperation'
+        - $ref: '#/components/schemas/RevokeInspectionMarkerOperation'
+      discriminator:
+        propertyName: type
+        mapping:
+          CREATE_SUBMISSION: '#/components/schemas/CreateSubmissionOperation'
+          UPDATE_SUBMISSION: '#/components/schemas/UpdateSubmissionOperation'
+          SET_INSPECTION_MARKER: '#/components/schemas/SetInspectionMarkerOperation'
+          REVOKE_INSPECTION_MARKER: '#/components/schemas/RevokeInspectionMarkerOperation'
+    CreateSubmissionOperation:
       type: object
-      description: Zmiana zapisana w telefonie; wypełnione są tylko pola jej rodzaju.
-      required: [clientOperationId, type]
+      description: Nowe zgłoszenie zapisane w telefonie.
+      required: [clientOperationId, type, newSubmission]
       properties:
         clientOperationId: {type: string, format: uuid, description: "Identyfikator operacji nadany w telefonie (BR-9)."}
-        type:
-          type: string
-          description: >-
-            Rodzaj zmiany: nowe zgłoszenie, edycja zgłoszenia, znacznik piętra obejrzanego, cofnięcie znacznika.
-            Edycja i znaczniki wymagają roli `COLLECTOR` (US8.3, BR-20).
-          enum: [CREATE_SUBMISSION, UPDATE_SUBMISSION, SET_INSPECTION_MARKER, REVOKE_INSPECTION_MARKER]
-        newSubmission: {$ref: '#/components/schemas/NewSubmission', description: "Dla `CREATE_SUBMISSION`."}
-        submissionId: {type: string, format: uuid, description: "Dla `UPDATE_SUBMISSION`: edytowane zgłoszenie."}
-        submissionUpdate: {$ref: '#/components/schemas/SubmissionUpdate', description: "Dla `UPDATE_SUBMISSION`."}
-        marker: {$ref: '#/components/schemas/NewInspectionMarker', description: "Dla `SET_INSPECTION_MARKER`."}
-        markerId: {type: string, format: uuid, description: "Dla `REVOKE_INSPECTION_MARKER`: cofany znacznik."}
-    SyncOperationResult:
+        type: {const: CREATE_SUBMISSION, description: "Rodzaj zmiany: nowe zgłoszenie."}
+        newSubmission: {$ref: '#/components/schemas/NewSubmission', description: "Nowe zgłoszenie."}
+      unevaluatedProperties: false
+    UpdateSubmissionOperation:
       type: object
-      description: Wynik jednej operacji.
-      required: [clientOperationId, outcome]
+      description: Edycja zgłoszenia zapisana w telefonie; wymaga roli `COLLECTOR` (US8.3, BR-20).
+      required: [clientOperationId, type, submissionId, submissionUpdate]
+      properties:
+        clientOperationId: {type: string, format: uuid, description: "Identyfikator operacji nadany w telefonie (BR-9)."}
+        type: {const: UPDATE_SUBMISSION, description: "Rodzaj zmiany: edycja zgłoszenia."}
+        submissionId: {type: string, format: uuid, description: "Edytowane zgłoszenie."}
+        submissionUpdate: {$ref: '#/components/schemas/SubmissionUpdate', description: "Treść zgłoszenia po edycji z wersją bazową."}
+      unevaluatedProperties: false
+    SetInspectionMarkerOperation:
+      type: object
+      description: Znacznik piętra obejrzanego postawiony w telefonie; wymaga roli `COLLECTOR` (US15.1, BR-20).
+      required: [clientOperationId, type, marker]
+      properties:
+        clientOperationId: {type: string, format: uuid, description: "Identyfikator operacji nadany w telefonie (BR-9)."}
+        type: {const: SET_INSPECTION_MARKER, description: "Rodzaj zmiany: znacznik piętra obejrzanego."}
+        marker: {$ref: '#/components/schemas/NewInspectionMarker', description: "Stawiany znacznik."}
+      unevaluatedProperties: false
+    RevokeInspectionMarkerOperation:
+      type: object
+      description: Cofnięcie znacznika piętra obejrzanego zapisane w telefonie; wymaga roli `COLLECTOR` (BR-20).
+      required: [clientOperationId, type, markerId]
+      properties:
+        clientOperationId: {type: string, format: uuid, description: "Identyfikator operacji nadany w telefonie (BR-9)."}
+        type: {const: REVOKE_INSPECTION_MARKER, description: "Rodzaj zmiany: cofnięcie znacznika."}
+        markerId: {type: string, format: uuid, description: "Cofany znacznik."}
+      unevaluatedProperties: false
+    SyncOperationResult:
+      description: >-
+        Wynik jednej operacji; rodzaj wyniku w `outcome`: `APPLIED` — zapisana, `CONFLICT` — konflikt wersji,
+        w `submission` wersja z serwera (BR-10), `REJECTED` — odrzucona, powód w `problem`.
+      oneOf:
+        - $ref: '#/components/schemas/AppliedResult'
+        - $ref: '#/components/schemas/ConflictResult'
+        - $ref: '#/components/schemas/RejectedResult'
+      discriminator:
+        propertyName: outcome
+        mapping:
+          APPLIED: '#/components/schemas/AppliedResult'
+          CONFLICT: '#/components/schemas/ConflictResult'
+          REJECTED: '#/components/schemas/RejectedResult'
+    AppliedResult:
+      type: object
+      description: Operacja zapisana na serwerze.
+      required: [clientOperationId, outcome, submission]
       properties:
         clientOperationId: {type: string, format: uuid, description: "Identyfikator operacji z żądania."}
-        outcome:
-          type: string
-          description: >-
-            `APPLIED` — zapisana, `CONFLICT` — konflikt wersji, w `submission` wersja z serwera (BR-10),
-            `REJECTED` — odrzucona, powód w `problem`.
-          enum: [APPLIED, CONFLICT, REJECTED]
-        submission: {$ref: '#/components/schemas/Submission', description: "Zgłoszenie po zapisie albo wersja z serwera przy konflikcie."}
+        outcome: {const: APPLIED, description: "`APPLIED` — zapisana."}
+        submission: {$ref: '#/components/schemas/Submission', description: "Zgłoszenie po zapisie."}
+      unevaluatedProperties: false
+    ConflictResult:
+      type: object
+      description: Konflikt wersji; serwer niczego nie zapisał (US9.3, BR-10).
+      required: [clientOperationId, outcome, submission]
+      properties:
+        clientOperationId: {type: string, format: uuid, description: "Identyfikator operacji z żądania."}
+        outcome: {const: CONFLICT, description: "`CONFLICT` — konflikt wersji."}
+        submission: {$ref: '#/components/schemas/Submission', description: "Wersja zgłoszenia z serwera przy konflikcie (BR-10)."}
+      unevaluatedProperties: false
+    RejectedResult:
+      type: object
+      description: Operacja odrzucona przez serwer; błąd jednej operacji nie zatrzymuje pozostałych.
+      required: [clientOperationId, outcome, problem]
+      properties:
+        clientOperationId: {type: string, format: uuid, description: "Identyfikator operacji z żądania."}
+        outcome: {const: REJECTED, description: "`REJECTED` — odrzucona."}
         problem: {$ref: '#/components/schemas/Problem', description: "Powód odrzucenia operacji, np. brak roli albo niepoprawna treść."}
+      unevaluatedProperties: false
     SyncPullResponse:
       type: object
       description: Zmiany z serwera od poprzedniego pobrania.
