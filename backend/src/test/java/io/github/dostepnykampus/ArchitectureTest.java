@@ -62,7 +62,7 @@ final class ArchitectureTest {
     }
 
     @Test
-    void eFiveKeepsErrorTypesFreeOfWebAndJson() {
+    void errorFiveKeepsErrorTypesFreeOfWebAndJson() {
         Assertions.assertDoesNotThrow(
             () -> ArchRuleDefinition.noClasses()
                 .that().areAssignableTo(InvalidInput.class)

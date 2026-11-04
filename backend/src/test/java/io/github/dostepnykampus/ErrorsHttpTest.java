@@ -35,7 +35,7 @@ import tools.jackson.databind.json.JsonMapper;
 final class ErrorsHttpTest {
 
     @Test
-    void eOneGivesBadRequestProblemWithDetail(@LocalServerPort final int port)
+    void errorOneGivesBadRequestProblemWithDetail(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Niepoprawne dane nie dają 400 application/problem+json z opisem w detail",
@@ -47,7 +47,7 @@ final class ErrorsHttpTest {
     }
 
     @Test
-    void eTwoGivesNotFoundProblemWithDetail(@LocalServerPort final int port)
+    void errorTwoGivesNotFoundProblemWithDetail(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Brak zasobu nie daje 404 application/problem+json z opisem w detail",
@@ -57,7 +57,7 @@ final class ErrorsHttpTest {
     }
 
     @Test
-    void eThreeGivesServerErrorProblem(@LocalServerPort final int port)
+    void errorThreeGivesServerErrorProblem(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Nieoczekiwany wyjątek nie daje 500 application/problem+json",
@@ -67,7 +67,7 @@ final class ErrorsHttpTest {
     }
 
     @Test
-    void eThreeHidesExceptionClassAndMessage(@LocalServerPort final int port)
+    void errorThreeHidesExceptionClassAndMessage(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Odpowiedź 500 ujawnia klasę albo komunikat wyjątku",
@@ -87,9 +87,10 @@ final class ErrorsHttpTest {
         final MediaType type = MediaType.parseMediaType(
             reply.headers().firstValue("Content-Type").orElse("text/plain")
         );
-        final JsonNode body = type.getSubtype().endsWith("json")
-            ? JsonMapper.shared().readTree(reply.body())
-            : JsonMapper.shared().missingNode();
+        JsonNode body = JsonMapper.shared().missingNode();
+        if (type.getSubtype().endsWith("json")) {
+            body = JsonMapper.shared().readTree(reply.body());
+        }
         return "%d %s/%s %s %s".formatted(
             reply.statusCode(), type.getType(), type.getSubtype(),
             body.path("status").asString(), body.path("detail").asString()
