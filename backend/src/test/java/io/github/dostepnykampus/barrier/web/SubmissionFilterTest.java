@@ -44,7 +44,7 @@ final class SubmissionFilterTest {
                     Assertions.assertThrows(
                         InvalidInput.class,
                         new SubmissionFilter(null, null, status, false)::toQuery,
-                        "Status niepubliczny bez mine przeszedł: " + status
+                        String.format("Status niepubliczny bez mine przeszedł: %s", status)
                     ).getMessage(),
                     "Zły komunikat błędu"
                 )
