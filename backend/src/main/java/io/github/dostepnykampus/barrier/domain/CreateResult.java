@@ -10,7 +10,8 @@ package io.github.dostepnykampus.barrier.domain;
  *
  * @since 0.1.0
  */
-public sealed interface CreateResult {
+public sealed interface CreateResult
+    permits CreateResult.Created, CreateResult.Existing {
 
     /**
      * Zgłoszenie, którego dotyczy wynik.

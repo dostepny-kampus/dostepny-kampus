@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 final class SubmissionPortsTest {
 
     @Test
-    void mThreeFiveRepositoryHasCreateAndUpdate() throws NoSuchMethodException {
+    void mthreeFiveRepositoryHasCreateAndUpdate() throws NoSuchMethodException {
         Assertions.assertAll(
             () -> Assertions.assertEquals(
                 CreateResult.class,
@@ -44,7 +44,7 @@ final class SubmissionPortsTest {
     }
 
     @Test
-    void mThreeFiveFinderHasFindAndList() throws NoSuchMethodException {
+    void mthreeFiveFinderHasFindAndList() throws NoSuchMethodException {
         Assertions.assertAll(
             () -> Assertions.assertEquals(
                 Optional.class,

@@ -12,7 +12,8 @@ import java.util.UUID;
  *
  * @since 0.1.0
  */
-public sealed interface EditResult {
+public sealed interface EditResult
+    permits EditResult.Saved, EditResult.Conflict, EditResult.Missing {
 
     /**
      * Edycja zapisana.
