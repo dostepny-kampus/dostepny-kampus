@@ -12,6 +12,8 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -61,6 +63,13 @@ class BuildingCatalogRepository(
      * @throws IllegalArgumentException gdy plik konturów ma zły format
      */
     suspend fun catalog(): BuildingCatalog = mutex.withLock { cached ?: load().also { cached = it } }
+
+    /**
+     * Strumień katalogu dla mapy. Jeszcze nie docelowe zachowanie: na razie oddaje tylko wynik [catalog].
+     *
+     * @throws IllegalArgumentException gdy plik konturów ma zły format
+     */
+    fun catalogUpdates(): Flow<BuildingCatalog> = flow { emit(catalog()) }
 
     /**
      * Pyta serwer i czyta plik od nowa, zapamiętuje wynik i zwraca katalog dla „Spróbuj ponownie”, gdy budynku
