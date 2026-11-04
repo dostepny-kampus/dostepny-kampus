@@ -12,6 +12,7 @@ import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import com.tngtech.archunit.library.Architectures;
 import com.tngtech.archunit.library.GeneralCodingRules;
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
@@ -26,6 +27,9 @@ import org.junit.jupiter.api.Test;
  * usługa, repozytorium; kontroler nie widzi repozytorium”, „encja nie
  * wycieka poza moduł” i „pole {@code @Autowired} zabronione” (gotowa
  * reguła ArchUnit). Reguły dopuszczają brak klas, bo moduły są puste.</p>
+ *
+ * <p>E5: wspólne typy błędów nie zależą od Spring Web ani Jacksona, żeby
+ * wyjątki domenowe nie wciągały warstwy HTTP.</p>
  *
  * @since 0.1.0
  */
@@ -54,6 +58,21 @@ final class ArchitectureTest {
                 .allowEmptyShould(true)
                 .check(ArchitectureTest.classes()),
             "Klasa wstrzykuje zależność przez pole zamiast konstruktora"
+        );
+    }
+
+    @Test
+    void eFiveKeepsErrorTypesFreeOfWebAndJson() {
+        Assertions.assertDoesNotThrow(
+            () -> ArchRuleDefinition.noClasses()
+                .that().areAssignableTo(InvalidInput.class)
+                .or().areAssignableTo(MissingResource.class)
+                .should().dependOnClassesThat().resideInAnyPackage(
+                    "org.springframework.web..", "org.springframework.http..",
+                    "tools.jackson..", "com.fasterxml.jackson.."
+                )
+                .check(ArchitectureTest.classes()),
+            "Typ błędu zależy od Spring Web albo Jacksona"
         );
     }
 
