@@ -117,14 +117,23 @@ sealed class NavigationHistory(
 }
 
 /**
+ * Dotknięcie budynku o symbolu na liście „Lista budynków”; drugi argument mówi, czy działa TalkBack. Przy zwykłej
+ * czcionce V1 w widoku mapy z małą kartą V2, przy TalkBack od razu pełny ekran V2; zapamiętany wybór „Lista budynków”
+ * się nie zmienia (US2.8, US3.2, NFR-19, decyzje 115, 118).
+ */
+internal val openBuildingFromList: AppNavigator.(String, Boolean) -> Unit = { symbol, _ -> openBuilding(symbol) }
+
+/**
  * Przejścia między ekranami (mapa nawigacji: tabele „start, pasek dolny i »Wstecz«”, „Gość i Odwiedzający” oraz
  * „logowanie i konto”). Konto z [roles] wybiera cel: Gość trafia do L1 zamiast V4 i L2 (US14, US14.2).
+ * [onChooseMap] zapisuje wybór „Mapa” w przełączniku V1 po „Pokaż budynek na mapie” (US2.9, decyzja 116).
  */
 class AppNavigator(
     backStack: MutableList<NavKey>,
     private val roles: RoleProvider,
     onFirstHelpLeft: () -> Unit = {},
     restarts: MutableList<Int> = mutableListOf(),
+    onChooseMap: () -> Unit = {},
 ) : NavigationHistory(backStack, onFirstHelpLeft, restarts) {
     private val isSignedIn: Boolean
         get() = roles.currentAccount().isSignedIn

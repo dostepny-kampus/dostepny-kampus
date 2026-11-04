@@ -30,9 +30,13 @@ class AppNavigatorTest {
     private val visitor = Account.SignedIn()
     private val restarts = mutableListOf<Int>()
     private var helpLeft = 0
+    private var mapChosen = 0
 
     private fun navigator(account: Account = Account.Guest) =
         AppNavigator(backStack = stack, roles = { account }, onFirstHelpLeft = { helpLeft++ }, restarts = restarts)
+
+    private fun mapChoiceNavigator() =
+        AppNavigator(backStack = stack, roles = { Account.Guest }, restarts = restarts, onChooseMap = { mapChosen++ })
 
     private fun stackOf(vararg routes: NavKey) = listOf<NavKey>(MapRoute(), *routes)
 
@@ -274,6 +278,50 @@ class AppNavigatorTest {
             showOnMap(MapFocus.Entrance("A-1-glowne"))
         }
         assertEquals(listOf(MapRoute(MapFocus.Entrance("A-1-glowne"))), stack)
+    }
+
+    // Wiersze: V1, dotknięcie budynku na liście przy zwykłej czcionce → V1 w widoku mapy z małą kartą V2; mała karta,
+    // „Wstecz” albo dotknięcie pustej mapy → V1 bez zaznaczenia, zapamiętany wybór „Lista budynków” bez zmian,
+    // US2.8, NFR-19, decyzja 118.
+    @Test
+    fun nfr19_list_compact_keeps_list() {
+        mapChoiceNavigator().run {
+            openBuildingFromList("A-1", false)
+            assertEquals(listOf(MapRoute(MapFocus.Building("A-1")), BuildingRoute("A-1")), stack)
+            back()
+            assertEquals(listOf(MapRoute()), stack)
+            openBuildingFromList("A-1", false)
+            closeCardOnEmptyMap()
+        }
+        assertEquals(listOf(MapRoute()), stack)
+        assertEquals(0, mapChosen)
+    }
+
+    // Wiersze: V1, dotknięcie budynku na liście przy TalkBack → V2, pełny ekran od razu, US3.2, NFR-19, decyzja 115;
+    // V2 otwarte od razu, „Wstecz” → lista V1 jednym krokiem, wybór bez zmian, NFR-15, US2.9.
+    @Test
+    fun nfr19_talkback_list_tap_direct() {
+        mapChoiceNavigator().run {
+            openBuildingFromList("A-1", true)
+            assertEquals(BuildingRoute("A-1", isDirect = true), current)
+            assertEquals(2, stack.size)
+            assertTrue(back())
+        }
+        assertEquals(listOf(MapRoute()), stack)
+        assertEquals(0, mapChosen)
+    }
+
+    // Wiersz: V2 otwarte od razu, „Pokaż budynek na mapie” → V1 w widoku mapy z zaznaczonym budynkiem, bez karty,
+    // zapamiętany wybór „Mapa”, US2.9, NFR-19, decyzja 116.
+    // Scenariusz (częściowo): przegladanie-mapy.feature: Z listy przy dużej czcionce opis budynku prowadzi do mapy
+    @Test
+    fun us2_9_show_on_map_chooses_map() {
+        mapChoiceNavigator().run {
+            openBuildingFromList("A-1", true)
+            showOnMap(MapFocus.Building("A-1"))
+        }
+        assertEquals(listOf(MapRoute(MapFocus.Building("A-1"))), stack)
+        assertEquals(1, mapChosen)
     }
 
     // Wiersz: V4, „Tak, zrezygnuj” po „Wstecz” z kroku 1 → ekran sprzed V4, UC7 1b; poza V4 kroki nic nie robią.
