@@ -170,7 +170,7 @@ fun CampusMapScreen(
                     isOnline = state.isOnline,
                     isList = isList,
                     onListChange = onListChange,
-                    onBuildingClick = onBuildingClick,
+                    onBuildingClick = if (isList) onListBuildingClick else onBuildingClick,
                     modifier = if (isList) Modifier.weight(1f) else Modifier,
                 )
             }

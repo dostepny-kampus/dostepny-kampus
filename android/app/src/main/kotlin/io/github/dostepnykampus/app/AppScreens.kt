@@ -69,14 +69,15 @@ internal fun currentCardWindow(): CardWindow {
 internal data class SheetCard(val mode: CardMode, val onBack: () -> Unit, val onClose: () -> Unit)
 
 /**
- * Karta V2: `Direct`, gdy okno go wymaga, inaczej tryb z rozwinięcia arkusza; „Wstecz” jak wstecz telefonu, „Zamknij”
- * zamyka V2 (US2.8, US2.9, NFR-15).
+ * Karta V2: `Direct`, gdy okno go wymaga albo V2 otwarto od razu na pełnym ekranie (NFR-19), inaczej tryb z rozwinięcia
+ * arkusza; „Wstecz” jak wstecz telefonu, „Zamknij” zamyka V2 (US2.8, US2.9, NFR-15).
  */
 @Composable
 internal fun AppNavigator.sheetCard(): SheetCard {
     val window = currentCardWindow()
     val sheet = SheetState(isExpanded = LocalSheetPadding.current.isExpanded)
-    val mode = if (window.cardMode() == CardMode.Direct) CardMode.Direct else sheet.cardMode(window.fontScale)
+    val isDirect = window.cardMode() == CardMode.Direct || (current as? BuildingRoute)?.isDirect == true
+    val mode = if (isDirect) CardMode.Direct else sheet.cardMode(window.fontScale)
     val back = checkNotNull(LocalOnBackPressedDispatcherOwner.current).onBackPressedDispatcher
     return SheetCard(mode, onBack = back::onBackPressed, onClose = { back() })
 }

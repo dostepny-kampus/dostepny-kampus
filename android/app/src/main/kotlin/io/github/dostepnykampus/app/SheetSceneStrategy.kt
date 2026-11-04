@@ -123,11 +123,11 @@ internal object SheetSceneStrategy : SceneStrategy<NavKey> {
     private val sheet: Map<String, Any> = mapOf(SHEET_KEY to true)
     private val map: Map<String, Any> = mapOf(MAP_KEY to true)
 
-    /** Metadane wpisu [route]: V1 to mapa pod arkuszem, V2 rysuje się jako arkusz nad V1, inne trasy bez metadanych. */
+    /** Metadane wpisu [route]: V1 to mapa, V2 arkusz nad V1, chyba że [BuildingRoute.isDirect], inne trasy bez. */
     fun metadata(route: NavKey): Map<String, Any> =
         when (route) {
             is MapRoute -> map
-            is BuildingRoute -> sheet
+            is BuildingRoute -> if (route.isDirect) emptyMap() else sheet
             else -> emptyMap()
         }
 
