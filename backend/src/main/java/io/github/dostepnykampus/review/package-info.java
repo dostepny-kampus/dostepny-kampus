@@ -12,4 +12,7 @@
  *
  * @since 0.1.0
  */
+@NullMarked
 package io.github.dostepnykampus.review;
+
+import org.jspecify.annotations.NullMarked;
