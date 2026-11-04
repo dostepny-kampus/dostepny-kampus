@@ -65,7 +65,7 @@ class EntranceAssessmentTextTest {
     //   (bez zer wiodących, bez „Z map i opisów”), US17.3, BR-24, obchód.
     @Test
     @Ignore(NOT_YET)
-    fun us17_3_v2_common_row_walkthrough() {
+    fun us17_3_v2_row_walkthrough() {
         showCard(listOf(entrance(MAIN, WALKTHROUGH, WALK_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
         compose.onNodeWithText(WALK_TEXT).assertExists()
         assertEquals(1, datedCount())
@@ -76,9 +76,9 @@ class EntranceAssessmentTextTest {
     // Wiersz: V2, wejścia z różnym źródłem → napis przy każdym wejściu, nad grupą go nie ma, US17.3, BR-24.
     @Test
     @Ignore(NOT_YET)
-    fun us17_3_v2_each_entrance_when_sources_differ() {
+    fun us17_3_v2_per_entrance() {
         showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
-        assertPerEntrance(IMPORT_TEXT, WALK_TEXT, GROUP_V2)
+        assertPerEntrance(first = IMPORT_TEXT, second = WALK_TEXT, group = GROUP_V2)
     }
 
     // Wiersz: V3, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
@@ -95,9 +95,9 @@ class EntranceAssessmentTextTest {
     // Wiersz: V3, wejścia z różnym źródłem → napis przy każdym wejściu, nad wejściami go nie ma, US17.3, BR-24.
     @Test
     @Ignore(NOT_YET)
-    fun us17_3_v3_each_entrance_when_sources_differ() {
+    fun us17_3_v3_per_entrance() {
         showVisit(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
-        assertPerEntrance(IMPORT_TEXT, WALK_TEXT, GROUP_V3)
+        assertPerEntrance(first = IMPORT_TEXT, second = WALK_TEXT, group = GROUP_V3)
     }
 
     // Wiersz: V2, wejścia z pliku bez dnia i źródła → brak wiersza i brak jakiejkolwiek daty, US17.3, BR-24.
