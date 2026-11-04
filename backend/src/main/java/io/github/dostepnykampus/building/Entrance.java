@@ -1,12 +1,13 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 /**
@@ -25,8 +26,8 @@ import tools.jackson.databind.JsonNode;
 public record Entrance(
     String id,
     String buildingSymbol,
-    String name,
-    String type,
+    @Nullable String name,
+    @Nullable String type,
     boolean main,
     JsonNode location,
     @JsonUnwrapped Marking marking
