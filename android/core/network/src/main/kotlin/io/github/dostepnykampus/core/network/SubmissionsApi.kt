@@ -7,8 +7,6 @@ package io.github.dostepnykampus.core.network
 
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -18,32 +16,27 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.IOException
 import java.net.HttpURLConnection.HTTP_CONFLICT
 import java.net.HttpURLConnection.HTTP_CREATED
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_NO_CONTENT
 import java.net.HttpURLConnection.HTTP_OK
 import java.util.concurrent.TimeUnit
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Klient HTTP zgłoszeń: wysłanie, edycja z kontrolą wersji, zdjęcia i zgłoszenia przyjęte (`/submissions`).
  *
  * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek. Odpowiedź z kodem spoza kontraktu,
- * np. 400 przy złamanej regule zgłoszenia, to [ApiResult.ServerError] z tym kodem.
+ * np. 400 przy złamanej regule zgłoszenia, to [ApiResult.ServerError] z tym kodem. Anulowanie korutyny
+ * wywołującej każdą funkcję `suspend`, także wysyłkę zdjęcia, przerywa jej żądanie HTTP, również w trakcie
+ * czytania odpowiedzi, i kończy się [kotlinx.coroutines.CancellationException], nie [ApiResult.NetworkError]
+ * (NFR-55).
  *
  * @param http klient OkHttp; wysyłka zdjęcia używa jego kopii z dłuższym limitem czasu
  * @param json parser JSON kontraktu
  * @param baseUrl adres serwera, np. `http://10.0.2.2:8080/` z emulatora
- * @param io kontekst blokującego wywołania; domyślnie dyspozytor wejścia-wyjścia
  */
-class SubmissionsApi(
-    private val http: OkHttpClient,
-    private val json: Json,
-    baseUrl: String,
-    private val io: CoroutineContext = Dispatchers.IO,
-) {
+class SubmissionsApi(private val http: OkHttpClient, private val json: Json, baseUrl: String) {
     private val base = baseUrl.toHttpUrl()
     private val photoHttp by lazy { http.newBuilder().callTimeout(PHOTO_TIMEOUT_SECONDS, TimeUnit.SECONDS).build() }
 
@@ -54,7 +47,7 @@ class SubmissionsApi(
      * @param content treść zgłoszenia
      */
     suspend fun create(id: String, content: SubmissionContent): ApiResult<Submission> =
-        call(http, request(path(), JSON.body(json.encodeNewSubmission(id, content)), POST)) { code, body ->
+        http.exchange(request(path(), JSON.body(json.encodeNewSubmission(id, content)), POST)) { code, body ->
             if (code == HTTP_OK || code == HTTP_CREATED) success(code) { json.decodeSubmission(body) } else other(code)
         }
 
@@ -67,7 +60,7 @@ class SubmissionsApi(
      * @param content treść po edycji
      */
     suspend fun update(id: String, version: Int, content: SubmissionContent): ApiResult<SubmissionEdit> =
-        call(http, request(path(id), JSON.body(json.encodeSubmissionUpdate(version, content)), PUT)) { code, body ->
+        http.exchange(request(path(id), JSON.body(json.encodeSubmissionUpdate(version, content)), PUT)) { code, body ->
             when (code) {
                 HTTP_OK -> success(code) { SubmissionEdit.Saved(json.decodeSubmission(body)) }
                 HTTP_CONFLICT -> success(code) { SubmissionEdit.Conflict(json.decodeConflict(body)) }
@@ -83,7 +76,7 @@ class SubmissionsApi(
      * @param jpeg plik JPEG już obrócony, bo serwer usuwa EXIF z orientacją (NFR-26)
      */
     suspend fun putPhoto(submissionId: String, photoId: String, jpeg: ByteArray): ApiResult<Unit> =
-        call(photoHttp, request(path(submissionId, PHOTOS, photoId), JPEG.body(jpeg), PUT)) { code, _ ->
+        photoHttp.exchange(request(path(submissionId, PHOTOS, photoId), JPEG.body(jpeg), PUT)) { code, _ ->
             if (code == HTTP_NO_CONTENT) ApiResult.Success(Unit) else other(code)
         }
 
@@ -95,7 +88,7 @@ class SubmissionsApi(
     suspend fun accepted(buildingSymbol: String? = null): ApiResult<List<Submission>> {
         val builder = path().newBuilder()
         buildingSymbol?.let { builder.addQueryParameter(name = "buildingSymbol", value = it) }
-        return call(http, request(builder.build(), body = null, method = GET)) { code, body ->
+        return http.exchange(request(builder.build(), body = null, method = GET)) { code, body ->
             if (code == HTTP_OK) {
                 success(code) { json.decodeSubmissions(body) }
             } else {
@@ -103,19 +96,6 @@ class SubmissionsApi(
             }
         }
     }
-
-    private suspend fun <T> call(
-        client: OkHttpClient,
-        request: Request,
-        read: (Int, String) -> ApiResult<T>,
-    ): ApiResult<T> =
-        withContext(io) {
-            try {
-                client.newCall(request).execute().use { read(it.code, it.body?.string().orEmpty()) }
-            } catch (error: IOException) {
-                ApiResult.NetworkError(error)
-            }
-        }
 
     private fun request(target: HttpUrl, body: RequestBody?, method: String): Request {
         val builder = Request.Builder().url(target).header(name = ACCEPT, value = ACCEPTED_TYPES)

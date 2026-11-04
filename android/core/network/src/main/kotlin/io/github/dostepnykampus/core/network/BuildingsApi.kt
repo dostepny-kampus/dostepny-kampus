@@ -1,12 +1,10 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -15,24 +13,19 @@ import okhttp3.Request
 import java.io.IOException
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_OK
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Klient HTTP listy budynków, karty i podpowiedzi punktu (`GET /buildings`).
  *
- * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek.
+ * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek. Anulowanie korutyny wywołującej
+ * każdą funkcję `suspend` przerywa jej żądanie HTTP, także w trakcie czytania odpowiedzi, i kończy się
+ * [kotlinx.coroutines.CancellationException], nie [ApiResult.NetworkError] (NFR-55).
  *
  * @param http klient OkHttp
  * @param json parser JSON kontraktu; nieznane pole jest pomijane, serwer może je dodać później
  * @param baseUrl adres serwera, np. `http://10.0.2.2:8080/` z emulatora
- * @param io kontekst blokującego wywołania; domyślnie dyspozytor wejścia-wyjścia
  */
-class BuildingsApi(
-    private val http: OkHttpClient,
-    private val json: Json,
-    baseUrl: String,
-    private val io: CoroutineContext = Dispatchers.IO,
-) {
+class BuildingsApi(private val http: OkHttpClient, private val json: Json, baseUrl: String) {
     private val base = baseUrl.toHttpUrl()
 
     /** Lista budynków z konturami i atrybucją źródła. */
@@ -63,23 +56,14 @@ class BuildingsApi(
             json.decodeFromString<LocateResultDto>(it).toModel()
         }
 
-    private suspend fun <T> fetch(target: HttpUrl, decode: (String) -> T): ApiResult<T> =
-        withContext(io) {
-            try {
-                execute(target, decode)
-            } catch (error: IOException) {
-                ApiResult.NetworkError(error)
-            }
-        }
-
-    private fun <T> execute(target: HttpUrl, decode: (String) -> T): ApiResult<T> {
+    private suspend fun <T> fetch(target: HttpUrl, decode: (String) -> T): ApiResult<T> {
         val builder = Request.Builder().url(target)
         val request = builder.header(name = ACCEPT, value = JSON).build()
-        return http.newCall(request).execute().use { response ->
-            when (response.code) {
+        return http.exchange(request) { code, body ->
+            when (code) {
                 HTTP_NOT_FOUND -> ApiResult.NotFound
-                HTTP_OK -> decodeBody(response.code, response.body?.string().orEmpty(), decode)
-                else -> ApiResult.ServerError(response.code)
+                HTTP_OK -> decodeBody(code, body, decode)
+                else -> ApiResult.ServerError(code)
             }
         }
     }
