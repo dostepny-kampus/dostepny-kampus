@@ -16,7 +16,6 @@ import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -37,26 +36,22 @@ final class SubmissionData {
     /** Drugi budynek próbny. */
     static final String OTHER = "J-901";
 
-    /** Wcześniejsza chwila utworzenia. */
-    static final Instant EARLY = Instant.parse("2026-03-01T10:00:00Z");
-
-    /** Późniejsza chwila utworzenia. */
-    static final Instant LATE = Instant.parse("2026-03-01T11:00:00Z");
-
     /** Dostęp do bazy. */
-    private final JdbcClient db;
+    private final JdbcClient jdbc;
 
     /** Badany adapter. */
     private final JdbcSubmissions adapter;
 
-    SubmissionData(final ApplicationContext context) {
-        this.db = context.getBean(JdbcClient.class);
-        this.adapter = context.getBean(JdbcSubmissions.class);
+    private SubmissionData(final JdbcClient jdbc, final JdbcSubmissions adapter) {
+        this.jdbc = jdbc;
+        this.adapter = adapter;
     }
 
     static SubmissionData of(final ApplicationContext context) {
-        final SubmissionData data = new SubmissionData(context);
-        data.db.sql(
+        final SubmissionData data = new SubmissionData(
+            context.getBean(JdbcClient.class), context.getBean(JdbcSubmissions.class)
+        );
+        data.jdbc.sql(
             """
             INSERT INTO buildings (symbol, name, detail_level, outline, source)
             SELECT symbol, 'Budynek próbny', 'BASIC', ST_Multi(ST_GeomFromText(
@@ -68,28 +63,15 @@ final class SubmissionData {
         return data;
     }
 
-    JdbcSubmissions repo() {
-        return this.adapter;
-    }
-
-    JdbcClient jdbc() {
-        return this.db;
-    }
-
-    UUID id(final long number) {
+    static UUID id(final long number) {
         return new UUID(0x4A5A000000004000L, number);
     }
 
-    void clean() {
-        this.db.sql("DELETE FROM submissions WHERE id::text LIKE '4a5a0000-0000-4000-%'").update();
-        this.db.sql("DELETE FROM buildings WHERE symbol IN ('J-900', 'J-901')").update();
+    static SubmissionContent content(final String description) {
+        return SubmissionData.content(SubmissionData.BUILDING, "p1", description);
     }
 
-    SubmissionContent content(final String description) {
-        return this.content(SubmissionData.BUILDING, "p1", description);
-    }
-
-    SubmissionContent content(final String building, final String floor, final String text) {
+    static SubmissionContent content(final String building, final String floor, final String text) {
         return new SubmissionContent(
             SubmissionKind.QUICK,
             new SubmissionPlace(
@@ -102,26 +84,38 @@ final class SubmissionData {
         );
     }
 
-    UUID seed(
-        final long number, final String building, final String floor,
-        final SubmissionStatus status, final Instant created
-    ) {
-        final UUID id = this.id(number);
-        this.adapter.create(new NewSubmission(id, this.content(building, floor, "opis")));
-        this.db.sql("UPDATE submissions SET status = :s, created_at = :t WHERE id = :id")
-            .param("s", status.name())
-            .param("t", OffsetDateTime.ofInstant(created, ZoneOffset.UTC))
-            .param("id", id).update();
+    JdbcSubmissions repo() {
+        return this.adapter;
+    }
+
+    JdbcClient jdbc() {
+        return this.jdbc;
+    }
+
+    void clean() {
+        this.jdbc.sql("DELETE FROM submissions WHERE id::text LIKE '4a5a0000-%'").update();
+        this.jdbc.sql("DELETE FROM buildings WHERE symbol IN ('J-900', 'J-901')").update();
+    }
+
+    UUID seed(final SubmissionStatus status) {
+        return this.seed(status.name().hashCode(), SubmissionData.content("opis"), status);
+    }
+
+    UUID seed(final long number, final SubmissionContent content, final SubmissionStatus status) {
+        final UUID id = SubmissionData.id(number);
+        this.adapter.create(new NewSubmission(id, content));
+        this.jdbc.sql("UPDATE submissions SET status = :status WHERE id = :id")
+            .param("status", status.name()).param("id", id).update();
         return id;
     }
 
     Instant created(final UUID id) {
-        return this.db.sql("SELECT created_at FROM submissions WHERE id = :id")
+        return this.jdbc.sql("SELECT created_at FROM submissions WHERE id = :id")
             .param("id", id).query(OffsetDateTime.class).single().toInstant();
     }
 
     Map<String, Object> row(final UUID id) {
-        return this.db.sql(
+        return this.jdbc.sql(
             """
             SELECT version, status, kind, building_symbol, ST_AsText(location) AS location,
                 content::text AS content, created_at::text AS created_at

@@ -31,16 +31,14 @@ final class JdbcErrorsTest {
 
     @AfterEach
     void clean(final ApplicationContext context) {
-        new SubmissionData(context).clean();
+        SubmissionData.of(context).clean();
     }
 
     @Test
     @Disabled("adapter JdbcSubmissions jest zaślepką")
     void brTenSavedIsOwnWriteNotLaterRead(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
-        final UUID id = data.seed(
-            1, SubmissionData.BUILDING, "p1", SubmissionStatus.SENT, SubmissionData.EARLY
-        );
+        final UUID id = data.seed(SubmissionStatus.SENT);
         data.jdbc().sql(
             """
             CREATE FUNCTION j_foreign_bump() RETURNS trigger LANGUAGE plpgsql AS $$
@@ -58,12 +56,13 @@ final class JdbcErrorsTest {
         ).update();
         try {
             final EditResult result = data.repo().update(
-                new SubmissionEdit(id, 1, data.content("własna"))
+                new SubmissionEdit(id, 1, SubmissionData.content("własna"))
             );
             Assertions.assertEquals(
                 new EditResult.Saved(
                     new Submission(
-                        id, 2, SubmissionStatus.SENT, SubmissionData.EARLY, data.content("własna")
+                        id, 2, SubmissionStatus.SENT, data.created(id),
+                        SubmissionData.content("własna")
                     )
                 ),
                 result,
