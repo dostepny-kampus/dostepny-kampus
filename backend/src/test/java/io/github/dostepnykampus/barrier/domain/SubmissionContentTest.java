@@ -42,35 +42,35 @@ final class SubmissionContentTest {
     @Test
     @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void usFourRejectsMissingRequiredComponents() {
-        final SubmissionContent ok = SubmissionContentTest.content(
+        final SubmissionContent valid = SubmissionContentTest.content(
             List.of(SubmissionContentTest.PHOTO)
         );
         Assertions.assertAll(
             () -> Assertions.assertThrows(
                 NullPointerException.class,
                 () -> new SubmissionContent(
-                    null, ok.place(), ok.barrier(), null, null, null, ok.photoIds()
+                    null, valid.place(), valid.barrier(), null, null, null, valid.photoIds()
                 ),
                 "Zgłoszenie bez rodzaju przeszło"
             ),
             () -> Assertions.assertThrows(
                 NullPointerException.class,
                 () -> new SubmissionContent(
-                    ok.kind(), null, ok.barrier(), null, null, null, ok.photoIds()
+                    valid.kind(), null, valid.barrier(), null, null, null, valid.photoIds()
                 ),
                 "Zgłoszenie bez miejsca przeszło"
             ),
             () -> Assertions.assertThrows(
                 NullPointerException.class,
                 () -> new SubmissionContent(
-                    ok.kind(), ok.place(), null, null, null, null, ok.photoIds()
+                    valid.kind(), valid.place(), null, null, null, null, valid.photoIds()
                 ),
                 "Zgłoszenie bez bariery przeszło"
             ),
             () -> Assertions.assertThrows(
                 NullPointerException.class,
                 () -> new SubmissionContent(
-                    ok.kind(), ok.place(), ok.barrier(), null, null, null, null
+                    valid.kind(), valid.place(), valid.barrier(), null, null, null, null
                 ),
                 "Zgłoszenie bez listy zdjęć przeszło"
             )
