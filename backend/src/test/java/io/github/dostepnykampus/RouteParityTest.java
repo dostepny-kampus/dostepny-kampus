@@ -241,9 +241,7 @@ final class RouteParityTest {
         return context.getBean("requestMappingHandlerMapping", RequestMappingHandlerMapping.class)
             .getHandlerMethods().entrySet().stream()
             .filter(entry -> RouteParityTest.ours(entry.getValue()))
-            .flatMap(
-                entry -> RouteParityTest.routes(entry.getKey()).stream()
-            )
+            .flatMap(entry -> RouteParityTest.routes(entry.getKey()).stream())
             .collect(Collectors.toCollection(TreeSet::new));
     }
 
@@ -254,19 +252,15 @@ final class RouteParityTest {
     }
 
     private static List<String> routes(final RequestMappingInfo info) {
-        final List<String> found = new ArrayList<>(0);
-        final Set<String> patterns = info.getPatternValues();
         final Set<String> verbs = info.getMethodsCondition().getMethods().stream()
             .map(Enum::name).collect(Collectors.toSet());
         if (verbs.isEmpty()) {
             verbs.add("ANY");
         }
-        for (final String verb : verbs) {
-            for (final String pattern : patterns) {
-                found.add(RouteParityTest.normalized(verb, "", pattern));
-            }
-        }
-        return found;
+        return verbs.stream().flatMap(
+            verb -> info.getPatternValues().stream()
+                .map(pattern -> RouteParityTest.normalized(verb, "", pattern))
+        ).toList();
     }
 
     private static Set<String> operations() throws Exception {
@@ -289,11 +283,7 @@ final class RouteParityTest {
     }
 
     private static String prefix(final JsonNode tree) {
-        String url = "/";
-        final JsonNode first = tree.path("servers").path(0).path("url");
-        if (first.isString()) {
-            url = first.asString();
-        }
+        final String url = tree.path("servers").path(0).path("url").asString("/");
         return URI.create(url.replace("{", "").replace("}", "")).getPath();
     }
 
