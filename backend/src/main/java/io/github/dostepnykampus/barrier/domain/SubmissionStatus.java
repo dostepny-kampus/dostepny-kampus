@@ -35,7 +35,9 @@ public enum SubmissionStatus {
      * @return Prawda dla SENT, IN_REVIEW i REJECTED
      */
     public boolean editable() {
-        return false;
+        return this == SubmissionStatus.SENT
+            || this == SubmissionStatus.IN_REVIEW
+            || this == SubmissionStatus.REJECTED;
     }
 
     /**
@@ -44,9 +46,21 @@ public enum SubmissionStatus {
      * wolno edytować, rzuca IllegalStateException.
      *
      * @return Status zgłoszenia po edycji
+     * @throws IllegalStateException Gdy statusu nie wolno edytować
      */
     public SubmissionStatus afterEdit() {
-        return this;
+        if (!this.editable()) {
+            throw new IllegalStateException(
+                String.format("Zgłoszenia w statusie %s nie wolno edytować (BR-18)", this)
+            );
+        }
+        final SubmissionStatus after;
+        if (this == SubmissionStatus.REJECTED) {
+            after = SubmissionStatus.SENT;
+        } else {
+            after = this;
+        }
+        return after;
     }
 
     /**
@@ -55,6 +69,6 @@ public enum SubmissionStatus {
      * @return Prawda tylko dla ACCEPTED
      */
     public boolean publiclyVisible() {
-        return false;
+        return this == SubmissionStatus.ACCEPTED;
     }
 }

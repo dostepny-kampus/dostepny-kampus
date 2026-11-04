@@ -5,6 +5,9 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Typ bariery z klasyfikacji barier TB-1…TB-29, schemat BarrierType
  * w OpenAPI (US7.3).
@@ -19,14 +22,36 @@ package io.github.dostepnykampus.barrier.domain;
 public record BarrierType(int number) {
 
     /**
+     * Wzorzec schematu BarrierType w OpenAPI, tylko cyfry ASCII.
+     */
+    private static final Pattern CODE = Pattern.compile("TB-([1-9]|1[0-9]|2[0-9])");
+
+    /**
+     * Opis błędu typu spoza klasyfikacji.
+     */
+    private static final String OUTSIDE = "Typ bariery spoza TB-1…TB-29";
+
+    /**
+     * Typ o numerze z klasyfikacji.
+     *
+     * @throws InvalidSubmission Gdy numer jest poza zakresem 1…29
+     */
+    public BarrierType {
+        if (number < 1 || number > 29) {
+            throw new InvalidSubmission(BarrierType.OUTSIDE);
+        }
+    }
+
+    /**
      * Typ z kodu zgodnego z wzorcem schematu BarrierType: wielkie litery,
      * bez zer wiodących i bez spacji; inny kod daje
      * {@link InvalidSubmission}.
      *
      * @param code Kod typu, np. TB-3
+     * @throws InvalidSubmission Gdy kod nie pasuje do wzorca
      */
     public BarrierType(final String code) {
-        this(0);
+        this(BarrierType.numberOf(code));
     }
 
     /**
@@ -35,7 +60,7 @@ public record BarrierType(int number) {
      * @return Kod TB-n, gdzie n to numer typu
      */
     public String code() {
-        return "";
+        return String.format("TB-%d", this.number);
     }
 
     /**
@@ -44,6 +69,14 @@ public record BarrierType(int number) {
      * @return Prawda tylko dla TB-29
      */
     public boolean other() {
-        return false;
+        return this.number == 29;
+    }
+
+    private static int numberOf(final String code) {
+        final Matcher matcher = BarrierType.CODE.matcher(code);
+        if (!matcher.matches()) {
+            throw new InvalidSubmission(BarrierType.OUTSIDE);
+        }
+        return Integer.parseInt(matcher.group(1));
     }
 }
