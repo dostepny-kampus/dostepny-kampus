@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -22,6 +23,14 @@ public sealed interface EditResult
      * @since 0.1.0
      */
     record Saved(Submission submission) implements EditResult {
+
+        /**
+         * Wynik z zapisanym zgłoszeniem; brak zgłoszenia kończy się wyjątkiem
+         * NullPointerException.
+         */
+        public Saved {
+            Objects.requireNonNull(submission, "submission");
+        }
     }
 
     /**
@@ -31,6 +40,14 @@ public sealed interface EditResult
      * @since 0.1.0
      */
     record Conflict(Submission current) implements EditResult {
+
+        /**
+         * Wynik z bieżącym stanem; brak zgłoszenia kończy się wyjątkiem
+         * NullPointerException.
+         */
+        public Conflict {
+            Objects.requireNonNull(current, "current");
+        }
     }
 
     /**
@@ -40,5 +57,13 @@ public sealed interface EditResult
      * @since 0.1.0
      */
     record Missing(UUID id) implements EditResult {
+
+        /**
+         * Wynik z identyfikatorem; brak identyfikatora kończy się wyjątkiem
+         * NullPointerException.
+         */
+        public Missing {
+            Objects.requireNonNull(id, "id");
+        }
     }
 }
