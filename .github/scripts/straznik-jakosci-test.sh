@@ -187,6 +187,10 @@ code_null_unmarked() { sed -i 's/^public final class Building {$/@NullUnmarked\n
 code_require_non_null() {
   sed -i 's/this.name = name;/this.name = Objects.requireNonNull(name);/' "$main_dir/Building.java"
 }
+code_split_unmarked() { sed -i 's/^public final class Building {$/@\nNullUnmarked\n&/' "$main_dir/Building.java"; }
+code_marked_base() { sed -i 's/^public final class Building {$/@NullMarked\n&/' "$main_dir/Building.java"; }
+code_drop_marked() { sed -i '/^@NullMarked$/d' "$main_dir/Building.java"; }
+code_rename_class() { git mv "$main_dir/Building.java" "$main_dir/Edifice.java"; }
 code_rename_method() { sed -i 's/name()/label()/' "$main_dir/Building.java"; }
 
 package_drop_marked() { sed -i '/^@NullMarked$/d' "$main_dir/package-info.java"; }
@@ -196,6 +200,7 @@ package_javadoc() { sed -i 's/Budynki kampusu./Budynki kampusu i ich wejścia./'
 package_qualified() {
   sed -i 's/^@NullMarked$/@org.jspecify.annotations.NullMarked/; /^import/d' "$main_dir/package-info.java"
 }
+package_rename() { git mv "$main_dir/package-info.java" "$main_dir/package-info.txt"; }
 package_new() {
   mkdir -p backend/src/main/java/kampus/review
   printf '@NullMarked\npackage kampus.review;\n\nimport org.jspecify.annotations.NullMarked;\n' \
@@ -231,6 +236,7 @@ run_case "S3, S6: zwykły test Androida" "" android_test_edit
 run_case "S4, O4: @SuppressWarnings(\"NullAway\")" "$silenced" code_suppress_nullaway
 run_case "S4: castToNonNull" "$silenced" code_cast_to_non_null
 run_case "S4: @NullUnmarked na klasie" "$silenced" code_null_unmarked
+run_case "S4: @ i NullUnmarked w osobnych liniach" "$silenced" code_split_unmarked
 run_case "S4: -XepExcludedPaths w kompilatorze" "$silenced" pom_excluded_paths
 run_case "S4: -XepDisableAllChecks w nowej linii" "$silenced" pom_disable_all
 run_case "S4: NullAway:OFF" "$silenced" pom_nullaway_off
@@ -239,6 +245,9 @@ run_case "S4, S6: Objects.requireNonNull" "" code_require_non_null
 run_case "S5, O6: usunięte @NullMarked" "$unmarked" package_drop_marked
 run_case "S5: usunięty package-info.java z @NullMarked" "$unmarked" package_delete
 run_case "S5: @NullMarked zamienione na @NullUnmarked" "$unmarked" package_unmark
+run_case "S5: package-info.java przemianowany na .txt" "$unmarked" package_rename
+run_case "S5: klasa traci @NullMarked" "$unmarked" code_drop_marked code_marked_base
+run_case "S5, S6: przemianowana klasa z @NullMarked" "" code_rename_class code_marked_base
 run_case "S5, S6: zmieniony opis pakietu" "" package_javadoc
 run_case "S5, S6: pełna nazwa adnotacji @NullMarked" "" package_qualified
 run_case "S5, S6: nowy pakiet z @NullMarked" "" package_new
