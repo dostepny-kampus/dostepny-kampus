@@ -88,7 +88,7 @@ private fun VisitBody(card: BuildingCardUiState.Ready, onShowEntrance: (String) 
             text = answerSentence(symbol = card.symbol, answer = visitAnswer(card.entrances)),
             style = MaterialTheme.typography.bodyLarge,
         )
-        AssessmentLine(common)
+        common?.let { AssessmentLine(it) }
         if (recommended != null) {
             GroupContainer(title = stringResource(R.string.wizyta_zalecane)) {
                 AccessibleEntrance(recommended, withAssessment = common == null, onShowEntrance = onShowEntrance)
@@ -136,7 +136,7 @@ private fun AccessibleEntrance(listed: OrderedEntrance, withAssessment: Boolean,
             }
         }
         Text(text = name, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
-        if (withAssessment) AssessmentLine(listed.entrance.assessment)
+        if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }
         PinnedButton(
             text = stringResource(R.string.wizyta_pokaz),
             onClick = { onShowEntrance(listed.entrance.id) },

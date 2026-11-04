@@ -24,10 +24,9 @@ private val DAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.ROOT)
 internal fun commonAssessment(entrances: List<OrderedEntrance>): EntranceAssessment? =
     entrances.map { it.entrance.assessment }.distinct().singleOrNull()
 
-/** Napis o dniu i źródle oznaczenia (US17.3, BR-24, PW-3); bez oznaczenia (wejście z pliku) nic nie pokazuje. */
+/** Napis o dniu i źródle oznaczenia (US17.3, BR-24, PW-3). */
 @Composable
-internal fun AssessmentLine(assessment: EntranceAssessment?) {
-    if (assessment == null) return
+internal fun AssessmentLine(assessment: EntranceAssessment) {
     val day = DAY_FORMAT.format(assessment.date)
     val text =
         when (assessment.source) {

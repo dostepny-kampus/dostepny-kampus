@@ -135,7 +135,7 @@ internal fun EntranceSummaryRow(summary: EntranceSummary) {
 @Composable
 private fun BuildingFacts(card: BuildingCardUiState.Ready) {
     val common = commonAssessment(card.entrances)
-    AssessmentLine(common)
+    common?.let { AssessmentLine(it) }
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
         card.entrances.forEach { EntranceLine(it, withAssessment = common == null) }
     }
@@ -160,7 +160,7 @@ private fun EntranceLine(listed: OrderedEntrance, withAssessment: Boolean) {
             }
         }
         Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
-        if (withAssessment) AssessmentLine(listed.entrance.assessment)
+        if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }
     }
 }
 
