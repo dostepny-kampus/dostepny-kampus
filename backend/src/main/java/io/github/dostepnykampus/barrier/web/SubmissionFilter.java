@@ -33,7 +33,7 @@ record SubmissionFilter(
     /**
      * Filtr, w którym nieobecny parametr mine oznacza fałsz (domyślna wartość z OpenAPI).
      */
-    public SubmissionFilter {
+    SubmissionFilter {
         mine = Boolean.TRUE.equals(mine);
     }
 
