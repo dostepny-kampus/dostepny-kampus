@@ -20,7 +20,6 @@ import io.github.dostepnykampus.core.data.start.FirstLaunch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -79,7 +78,6 @@ class MainActivityTest {
     // aktywności, US3.2, NFR-19, NFR-22; „Pokaż budynek na mapie” → zapamiętany wybór „Mapa”, US2.9, decyzja 116.
     // Scenariusz (częściowo): przegladanie-mapy.feature: Z listy przy dużej czcionce opis budynku prowadzi do mapy
     @Test
-    @Ignore("Tryb karty z listy przy TalkBack i zapis wyboru „Mapa” w następnym PR")
     fun us2_9_talkback_list_restore() {
         shadowOf(compose.activity.getSystemService(AccessibilityManager::class.java)).setTouchExplorationEnabled(true)
         runBlocking { mapListChoice.choose(isList = true) }
