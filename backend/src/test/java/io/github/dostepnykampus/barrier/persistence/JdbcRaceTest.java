@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.persistence;
 
-import io.github.dostepnykampus.PostgisTestConfiguration;
+import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
@@ -24,17 +24,14 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
 
 /**
  * Dwie równoległe edycje tej samej wersji, kolejność wymuszona blokadą wiersza (BR-10).
  *
  * @since 0.1.0
  */
-@SpringBootTest
-@Import(PostgisTestConfiguration.class)
+@IntegrationTest
 final class JdbcRaceTest {
 
     @Test
