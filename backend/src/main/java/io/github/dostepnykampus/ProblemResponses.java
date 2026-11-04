@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * rzuconych w obsłudze żądania.
  *
  * <p>{@link InvalidInput} daje 400, {@link MissingResource} 404, oba
- * z opisem wyjątku w {@code detail}. Pozostały wyjątek daje 500 bez nazwy
+ * z opisem wyjątku w {@code detail}. {@link ConflictingState} daje 409
+ * z opisem w {@code detail} i bieżącym stanem jako obiektem JSON we właściwości
+ * o nazwie {@link ConflictingState#property()}. Pozostały wyjątek daje 500 bez nazwy
  * klasy i komunikatu; trafia tylko do dziennika serwera.
  * {@code ResponseStatusException} i {@code ErrorResponseException} obsługuje
  * wcześniej Spring Boot ({@code spring.mvc.problemdetails.enabled}), więc ich
@@ -55,6 +57,16 @@ public final class ProblemResponses {
     ProblemDetail missing(final MissingResource error) {
         this.log.debug("Brak zasobu: {}", error.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.getMessage());
+    }
+
+    @ExceptionHandler
+    ProblemDetail conflict(final ConflictingState error) {
+        this.log.debug("Konflikt z bieżącym stanem: {}", error.getMessage());
+        final ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+            HttpStatus.CONFLICT, error.getMessage()
+        );
+        problem.setProperty(error.property(), error.value());
+        return problem;
     }
 
     @ExceptionHandler
