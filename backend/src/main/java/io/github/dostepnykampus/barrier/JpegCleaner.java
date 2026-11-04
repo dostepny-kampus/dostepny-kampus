@@ -45,10 +45,16 @@ final class JpegCleaner extends JpegRewriter {
 
     private byte[] rewrite(final byte[] jpeg) throws ImagingException, IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream(jpeg.length);
+        final JFIFPieces parsed = this.analyzeJfif(ByteSource.array(jpeg));
+        this.writeSegments(output, parsed.pieces);
+        // Parser może pominąć obce bajty między segmentami; takie nagłówki odrzucamy.
+        if (output.size() != jpeg.length) {
+            throw new IOException("Obce bajty pomiędzy segmentami JPEG");
+        }
+        output.reset();
         this.writeSegments(
             output,
-            this.analyzeJfif(ByteSource.array(jpeg)).pieces.stream()
-                .filter(JpegCleaner::keep).toList()
+            parsed.pieces.stream().filter(JpegCleaner::keep).toList()
         );
         return output.toByteArray();
     }
