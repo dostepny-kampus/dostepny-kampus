@@ -11,7 +11,7 @@
 | Licencje danych | poza modelem: zgodność z licencjami | NFR-37…NFR-40 |
 | Przenośność | elastyczność (flexibility), zgodność (compatibility) | NFR-41…NFR-43 |
 | Utrzymywalność | utrzymywalność (maintainability) | NFR-44…NFR-47 |
-| Odporność | niezawodność (reliability), bezpieczeństwo użytkowania (safety) | NFR-48…NFR-50 |
+| Odporność | niezawodność (reliability), bezpieczeństwo użytkowania (safety) | NFR-48…NFR-50, NFR-55 |
 
 Każde wymaganie ma miarę i sposób sprawdzenia. Dopisek „(próg zespołu)” oznacza wartość ustaloną przez zespół bez normy ani przepisu; potwierdzamy ją w testach. Numery w nawiasach kwadratowych odsyłają do sekcji „Źródła”.
 
@@ -124,6 +124,7 @@ Rozporządzenie RODO [14] zalicza dane o lokalizacji do danych osobowych (art. 4
 | NFR-48 | Odporność | Budynek bez planów pięter — brak danych albo nieudany import — działa jako budynek podstawowy (BR-G1, BR-G3). | 100% budynków podstawowych otwiera kartę i przyjmuje zgłoszenie bez błędu. Przy uszkodzonych danych 1 z 5 budynków szczegółowych pozostałe 4 mają plany, a import kończy się raportem. | Scenariusze BR-G1 i BR-G3, automatyczny przegląd kart wszystkich budynków, import z celowo uszkodzonymi danymi. | BR-G1, BR-G3, N3 |
 | NFR-49 | Odporność | Punkt poza konturem budynku, także daleko od budynków PWr, to stan normalny (BR-G2, BR-G4). | 0 komunikatów błędu. Propozycja najbliższego budynku, którą można odrzucić. Daleko od budynków PWr zgłoszenie zapisuje się jako „poza budynkiem”. | Scenariusze BR-G2 (punkt między budynkami) i BR-G4 (punkt na ulicy obok kampusu). | BR-G2, BR-G4, N3, N5 |
 | NFR-50 | Odporność | Awaria serwera lub źródeł zewnętrznych (podkład OSM, ArcGIS PWr) nie zatrzymuje aplikacji. Aplikacja pokazuje dane z telefonu, a zgłoszenia czekają w kolejce. Dane źródeł są importowane przy wdrożeniu. | 0 awarii aplikacji. Ścieżki US1, US2 i US4 przechodzą. Brak podkładu nie blokuje konturów i list. Komunikat spełnia NFR-42. | Test z wyłączonym serwerem i z zablokowanym dostępem do źródeł zewnętrznych. | N1, N6, NFR-5, NFR-39, decyzja 17 |
+| NFR-55 | Odporność | Gdy osoba opuszcza ekran albo anuluje wysyłanie, aplikacja przerywa rozpoczęte połączenie z serwerem, zamiast czekać na odpowiedź. | Połączenie kończy się ≤ 500 ms po anulowaniu, także w trakcie czytania odpowiedzi (próg zespołu). Przerwane połączenie nie daje wyniku „brak sieci”. | Test z serwerem, który wstrzymuje odpowiedź na 5 s. | N1, N6, NFR-14, NFR-50 |
 
 ## Źródła
 
