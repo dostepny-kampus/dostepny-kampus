@@ -32,15 +32,6 @@ final class SubmissionResponseTest {
 
     @Test
     void wfourFourResponseIsFlatJsonWithoutEmptyFields() {
-        final SubmissionContent content = new SubmissionContent(
-            SubmissionKind.QUICK,
-            new SubmissionPlace(
-                new SubmissionPoint(17.06, 51.1), 4.5, false, "B1",
-                new SubmissionFloor("p2", 2, false)
-            ),
-            new BarrierDetails(BarrierGroup.OTHER, null, 2, "opis", false),
-            null, null, null, List.of(WebBodies.PHOTO)
-        );
         Assertions.assertEquals(
             WebBodies.MAPPER.readTree(
                 String.join(
@@ -55,7 +46,16 @@ final class SubmissionResponseTest {
                 new SubmissionResponse(
                     new Submission(
                         WebBodies.ID, 2, SubmissionStatus.IN_REVIEW,
-                        Instant.parse("2026-03-01T10:00:00Z"), content
+                        Instant.parse("2026-03-01T10:00:00Z"),
+                        new SubmissionContent(
+                            SubmissionKind.QUICK,
+                            new SubmissionPlace(
+                                new SubmissionPoint(17.06, 51.1), 4.5, false, "B1",
+                                new SubmissionFloor("p2", 2, false)
+                            ),
+                            new BarrierDetails(BarrierGroup.OTHER, null, 2, "opis", false),
+                            null, null, null, List.of(WebBodies.PHOTO)
+                        )
                     )
                 )
             ),
