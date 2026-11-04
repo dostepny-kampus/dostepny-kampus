@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 final class SubmissionQueryTest {
 
     @Test
-    void mThreeFourRejectsEmptyStatuses() {
+    void mthreeFourRejectsEmptyStatuses() {
         Assertions.assertEquals(
             IllegalArgumentException.class,
             Assertions.assertThrows(
@@ -31,7 +31,7 @@ final class SubmissionQueryTest {
     }
 
     @Test
-    void mThreeFourRejectsMissingStatuses() {
+    void mthreeFourRejectsMissingStatuses() {
         Assertions.assertThrows(
             NullPointerException.class,
             () -> new SubmissionQuery(null, "B1", "p2"),
@@ -40,7 +40,7 @@ final class SubmissionQueryTest {
     }
 
     @Test
-    void mThreeFourCopiesStatusesAsUnmodifiableSet() {
+    void mthreeFourCopiesStatusesAsUnmodifiableSet() {
         final Set<SubmissionStatus> source = new HashSet<>(Set.of(SubmissionStatus.SENT));
         final SubmissionQuery query = new SubmissionQuery(source, null, null);
         source.add(SubmissionStatus.ACCEPTED);
@@ -59,7 +59,7 @@ final class SubmissionQueryTest {
     }
 
     @Test
-    void mThreeFourAcceptsMissingBuildingAndFloor() {
+    void mthreeFourAcceptsMissingBuildingAndFloor() {
         final SubmissionQuery query = new SubmissionQuery(
             Set.of(SubmissionStatus.ACCEPTED), null, null
         );
