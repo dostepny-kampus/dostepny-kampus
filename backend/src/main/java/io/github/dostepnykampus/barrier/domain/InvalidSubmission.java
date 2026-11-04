@@ -5,12 +5,17 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
+import io.github.dostepnykampus.InvalidInput;
+
 /**
  * Dane zgłoszenia naruszają jego inwariant; opis nie zawiera sekretów.
  *
+ * <p>Jako {@link InvalidInput} w obsłudze żądania daje odpowiedź 400
+ * z opisem w {@code detail}.</p>
+ *
  * @since 0.1.0
  */
-public final class InvalidSubmission extends RuntimeException {
+public final class InvalidSubmission extends InvalidInput {
 
     /**
      * Identyfikator postaci serializowanej wyjątku.

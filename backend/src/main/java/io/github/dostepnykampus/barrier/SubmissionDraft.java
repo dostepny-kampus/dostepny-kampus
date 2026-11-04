@@ -1,10 +1,11 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -65,6 +66,10 @@ record SubmissionDraft(UUID id, String kind, double lat, double lon, ObjectNode 
     /**
      * Sprawdza treść zgłoszenia o znanym identyfikatorze, np. edycji.
      *
+     * <p>Strukturę miejsca (punkt GeoJSON z dwiema liczbami) sprawdza ta
+     * metoda, zakres WGS84 — {@link SubmissionPoint}, który poza nim rzuca
+     * {@code InvalidSubmission}.</p>
+     *
      * @param id Identyfikator zgłoszenia
      * @param body Treść zgłoszenia według schematu SubmissionContent
      * @return Zgłoszenie do zapisu
@@ -79,9 +84,12 @@ record SubmissionDraft(UUID id, String kind, double lat, double lon, ObjectNode 
         SubmissionDraft.require(
             "Point".equals(body.path("location").path("type").stringValue(""))
                 && place.size() == 2
-                && SubmissionDraft.within(place.path(0), 180)
-                && SubmissionDraft.within(place.path(1), 90),
-            "Miejsce zgłoszenia nie jest punktem GeoJSON w WGS84"
+                && place.path(0).isNumber()
+                && place.path(1).isNumber(),
+            "Miejsce zgłoszenia nie jest punktem GeoJSON z dwiema współrzędnymi"
+        );
+        final SubmissionPoint point = new SubmissionPoint(
+            place.path(0).doubleValue(), place.path(1).doubleValue()
         );
         final JsonNode photos = body.path("photoIds");
         SubmissionDraft.require(
@@ -98,8 +106,8 @@ record SubmissionDraft(UUID id, String kind, double lat, double lon, ObjectNode 
         return new SubmissionDraft(
             id,
             body.path("kind").stringValue(),
-            place.path(1).doubleValue(),
-            place.path(0).doubleValue(),
+            point.latitude(),
+            point.longitude(),
             ((ObjectNode) body).deepCopy().retain(SubmissionDraft.FIELDS)
         );
     }
@@ -124,9 +132,5 @@ record SubmissionDraft(UUID id, String kind, double lat, double lon, ObjectNode 
         if (!valid) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, reason);
         }
-    }
-
-    private static boolean within(final JsonNode node, final double limit) {
-        return node.isNumber() && Math.abs(node.doubleValue()) <= limit;
     }
 }

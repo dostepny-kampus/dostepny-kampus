@@ -7,7 +7,6 @@ package io.github.dostepnykampus.barrier.domain;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -45,7 +44,6 @@ final class SubmissionPointTest {
         );
     }
 
-    @Disabled("Zakres WGS84 sprawdza konstruktor dopiero w następnej zmianie")
     @Test
     void usFourRejectsInvalidLongitudeThroughConstructor() {
         Assertions.assertAll(
@@ -62,7 +60,6 @@ final class SubmissionPointTest {
         );
     }
 
-    @Disabled("Zakres WGS84 sprawdza konstruktor dopiero w następnej zmianie")
     @Test
     void usSevenRejectsInvalidLatitudeThroughConstructor() {
         Assertions.assertAll(
