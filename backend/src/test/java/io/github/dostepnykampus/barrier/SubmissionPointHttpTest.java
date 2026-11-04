@@ -13,49 +13,96 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Punkt niezgodny z kontraktem zgłoszenia daje HTTP 400 niezależnie od
- * wewnętrznego typu błędu (US4, US7).
+ * wewnętrznego typu błędu, przy wysłaniu i przy edycji (US4, US7, US8.3).
  *
  * @since 0.1.0
  */
 @SpringBootTest
 @Import(PostgisTestConfiguration.class)
+@Transactional
 final class SubmissionPointHttpTest {
 
     @Test
     void usFourRejectsInvalidPointAtHttpBoundary(final WebApplicationContext context) {
         Assertions.assertAll(
             Stream.of(
-                "{\"type\":\"Point\",\"coordinates\":[181,0]}",
-                "{\"type\":\"Point\",\"coordinates\":[0,91]}",
-                "{\"type\":\"Point\",\"coordinates\":[\"bad\",0]}",
-                "{\"type\":\"Point\",\"coordinates\":[0]}",
+                SubmissionPointHttpTest.point("[181,0]"),
+                SubmissionPointHttpTest.point("[0,91]"),
+                SubmissionPointHttpTest.point("[\"bad\",0]"),
+                SubmissionPointHttpTest.point("[0]"),
                 "{\"type\":\"LineString\",\"coordinates\":[0,0]}"
             ).map(
                 location -> () -> Assertions.assertEquals(
-                    400, SubmissionPointHttpTest.status(context, location),
+                    400, SubmissionPointHttpTest.post(context, UUID.randomUUID(), location),
                     "Niepoprawny punkt nie został odrzucony jako HTTP 400"
                 )
             )
         );
     }
 
-    private static int status(final WebApplicationContext context, final String location)
+    @Test
+    void usEightRejectsInvalidPointOnEdit(final WebApplicationContext context)
         throws Exception {
+        final UUID id = UUID.randomUUID();
+        SubmissionPointHttpTest.post(context, id, SubmissionPointHttpTest.point("[17.0,51.0]"));
+        Assertions.assertAll(
+            () -> Assertions.assertEquals(
+                400, SubmissionPointHttpTest.put(context, id, "[181,0]"), "PUT [181,0] bez 400"
+            ),
+            () -> Assertions.assertEquals(
+                400, SubmissionPointHttpTest.put(context, id, "[0,91]"), "PUT [0,91] bez 400"
+            ),
+            () -> Assertions.assertEquals(
+                1,
+                context.getBean(JdbcClient.class)
+                    .sql("SELECT version FROM submissions WHERE id = :id")
+                    .param("id", id).query(Integer.class).single(),
+                "Odrzucona edycja zmieniła wersję zgłoszenia"
+            )
+        );
+    }
+
+    private static String point(final String coordinates) {
+        return String.format("{\"type\":\"Point\",\"coordinates\":%s}", coordinates);
+    }
+
+    private static int post(
+        final WebApplicationContext context, final UUID id, final String location
+    ) throws Exception {
+        return SubmissionPointHttpTest.status(
+            context, MockMvcRequestBuilders.post("/submissions"),
+            String.format("\"id\":\"%s\",\"location\":%s", id, location)
+        );
+    }
+
+    private static int put(final WebApplicationContext context, final UUID id, final String place)
+        throws Exception {
+        return SubmissionPointHttpTest.status(
+            context, MockMvcRequestBuilders.put("/submissions/{id}", id),
+            String.format("\"version\":1,\"location\":%s", SubmissionPointHttpTest.point(place))
+        );
+    }
+
+    private static int status(
+        final WebApplicationContext context, final MockHttpServletRequestBuilder request,
+        final String fields
+    ) throws Exception {
         return MockMvcBuilders.webAppContextSetup(context).build().perform(
-            MockMvcRequestBuilders.post("/submissions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(
-                    """
-                    {"id":"%s","kind":"QUICK","barrierGroup":"OTHER",
-                    "location":%s,"photoIds":["5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"]}
-                    """.formatted(UUID.randomUUID(), location)
+            request.contentType(MediaType.APPLICATION_JSON).content(
+                String.format(
+                    "{%s,\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\",\"photoIds\":[\"%s\"]}",
+                    fields, "5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"
                 )
+            )
         ).andReturn().getResponse().getStatus();
     }
 }
