@@ -30,6 +30,10 @@ record SubmissionFilter(
      * @return Zapytanie o listę zgłoszeń
      */
     SubmissionQuery toQuery() {
+        return SubmissionFilter.missing();
+    }
+
+    private static <T> T missing() {
         throw new UnsupportedOperationException();
     }
 }
