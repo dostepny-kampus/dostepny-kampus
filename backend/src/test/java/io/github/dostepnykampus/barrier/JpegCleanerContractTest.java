@@ -29,10 +29,12 @@ import org.junit.jupiter.params.provider.ValueSource;
 final class JpegCleanerContractTest {
 
     @ParameterizedTest
-    @ValueSource(ints = {
-        0xE1, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9,
-        0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF, 0xFE,
-    })
+    @ValueSource(
+        ints = {
+            0xE1, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9,
+            0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF, 0xFE
+        }
+    )
     void nfrTwentySixRemovesEveryPrivateSegment(final int marker) throws Exception {
         final byte[] plain = JpegCleanerContractTest.image(false);
         Assertions.assertArrayEquals(
@@ -74,8 +76,28 @@ final class JpegCleanerContractTest {
         Assertions.assertArrayEquals(
             expected, JpegCleaner.strip(marked), "Zmienił się obraz, JFIF lub profil ICC"
         );
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void nfrTwentySixKeepsCleanJpeg(final boolean progressive) throws IOException {
+        final byte[] plain = JpegCleanerContractTest.image(progressive);
         Assertions.assertArrayEquals(
-            expected, JpegCleaner.strip(expected), "Czysty JPEG został zmieniony"
+            plain, JpegCleaner.strip(plain), "Czysty JPEG został zmieniony"
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {2, 20})
+    void nfrTwentySixRejectsJunkBetweenSegments(final int offset) throws IOException {
+        final byte[] plain = JpegCleanerContractTest.image(false);
+        final ByteArrayOutputStream corrupt = new ByteArrayOutputStream();
+        corrupt.write(plain, 0, offset);
+        corrupt.write(0);
+        corrupt.write(plain, offset, plain.length - offset);
+        Assertions.assertThrows(
+            IOException.class, () -> JpegCleaner.strip(corrupt.toByteArray()),
+            "Pominięto obcy bajt pomiędzy segmentami JPEG"
         );
     }
 

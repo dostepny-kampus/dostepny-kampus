@@ -110,18 +110,21 @@ final class SubmissionPhotosHttpTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"GIF89a", "ÿØÿá"})
+    @ValueSource(strings = {"GIF89a", "ÿØÿá", "ÿØxÿÙ"})
     void nfrTwentySixRejectsInvalidJpeg(
         final String content, final WebApplicationContext context
     ) throws Exception {
-        final UUID id = SubmissionPhotosHttpTest.add(context, "SENT");
-        SubmissionPhotosHttpTest.mvc(context).perform(
-            MockMvcRequestBuilders.put(
-                "/submissions/{id}/photos/{photo}", id, SubmissionPhotosHttpTest.PHOTO
-            ).contentType(MediaType.IMAGE_JPEG)
-                .content(content.getBytes(StandardCharsets.ISO_8859_1))
-        ).andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status()
-            .isBadRequest());
+        MatcherAssert.assertThat(
+            "Niepoprawny nagłówek JPEG nie daje 400",
+            SubmissionPhotosHttpTest.mvc(context).perform(
+                MockMvcRequestBuilders.put(
+                    "/submissions/{id}/photos/{photo}",
+                    SubmissionPhotosHttpTest.add(context, "SENT"), SubmissionPhotosHttpTest.PHOTO
+                ).contentType(MediaType.IMAGE_JPEG)
+                    .content(content.getBytes(StandardCharsets.ISO_8859_1))
+            ).andReturn().getResponse().getStatus(),
+            Matchers.equalTo(400)
+        );
     }
 
     private static UUID add(final WebApplicationContext context, final String status) {
