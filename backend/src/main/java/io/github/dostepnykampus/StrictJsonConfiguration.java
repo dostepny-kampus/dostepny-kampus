@@ -17,13 +17,7 @@ import tools.jackson.databind.json.JsonMapper;
  * @since 0.1.0
  */
 @Configuration(proxyBeanMethods = false)
-public final class StrictJsonConfiguration implements JsonMapperBuilderCustomizer {
-
-    /**
-     * Tworzy konfigurację dla kontekstu Springa i testów wiązania.
-     */
-    public StrictJsonConfiguration() {
-    }
+final class StrictJsonConfiguration implements JsonMapperBuilderCustomizer {
 
     @Override
     public void customize(final JsonMapper.Builder builder) {
