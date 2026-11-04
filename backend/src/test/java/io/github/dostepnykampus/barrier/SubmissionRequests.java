@@ -52,6 +52,18 @@ final class SubmissionRequests {
         return this.send(MockMvcRequestBuilders.put("/submissions/{id}", id), json);
     }
 
+    /**
+     * Pobiera zasób.
+     *
+     * @param uri Adres z zapytaniem
+     * @return Odpowiedź GET
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    MockHttpServletResponse get(final String uri) throws Exception {
+        return MockMvcBuilders.webAppContextSetup(this.context).build()
+            .perform(MockMvcRequestBuilders.get(uri)).andReturn().getResponse();
+    }
+
     private MockHttpServletResponse send(
         final MockHttpServletRequestBuilder request, final String json
     ) throws Exception {
