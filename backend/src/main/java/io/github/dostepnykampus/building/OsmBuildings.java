@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
@@ -18,6 +18,7 @@ import java.util.zip.CRC32;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.migration.Context;
 import org.flywaydb.core.api.migration.JavaMigration;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
@@ -73,7 +74,7 @@ final class OsmBuildings implements JavaMigration {
     }
 
     @Override
-    public MigrationVersion getVersion() {
+    public @Nullable MigrationVersion getVersion() {
         return null;
     }
 
@@ -100,7 +101,7 @@ final class OsmBuildings implements JavaMigration {
         final JsonNode root = this.mapper.readTree(OsmBuildings.content());
         final String source = root.required("attribution").asString();
         final Map<String, ArrayNode> outlines = new LinkedHashMap<>(128);
-        final Map<String, String> names = new LinkedHashMap<>(128);
+        final Map<String, @Nullable String> names = new LinkedHashMap<>(128);
         final List<JsonNode> entrances = new ArrayList<>(128);
         for (final JsonNode feature : root.required("features")) {
             final JsonNode props = feature.required("properties");
@@ -121,7 +122,7 @@ final class OsmBuildings implements JavaMigration {
     private void save(
         final Connection connection,
         final Map<String, ArrayNode> outlines,
-        final Map<String, String> names,
+        final Map<String, @Nullable String> names,
         final String source
     ) throws SQLException {
         try (PreparedStatement insert = connection.prepareStatement(OsmBuildings.UPSERT)) {
@@ -157,7 +158,7 @@ final class OsmBuildings implements JavaMigration {
         );
     }
 
-    private static String named(final String name, final String symbol) {
+    private static String named(final @Nullable String name, final String symbol) {
         final String result;
         if (name == null) {
             result = symbol;
