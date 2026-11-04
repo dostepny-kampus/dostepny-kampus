@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -26,7 +25,6 @@ final class SubmissionContentTest {
     private static final UUID PHOTO = UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void usFourRejectsSubmissionWithoutPhoto() {
         Assertions.assertEquals(
             "Zgłoszenie wymaga co najmniej jednego UUID zdjęcia w polu photoIds",
@@ -40,7 +38,6 @@ final class SubmissionContentTest {
     }
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void usFourRejectsMissingRequiredComponents() {
         final SubmissionContent valid = SubmissionContentTest.content(
             List.of(SubmissionContentTest.PHOTO)
@@ -78,7 +75,6 @@ final class SubmissionContentTest {
     }
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void usFourCopiesPhotoIdsAsUnmodifiableList() {
         final List<UUID> source = new ArrayList<>(List.of(SubmissionContentTest.PHOTO));
         final SubmissionContent content = SubmissionContentTest.content(source);
@@ -98,7 +94,6 @@ final class SubmissionContentTest {
     }
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void brGTwoWithBuildingChangesOnlyPlaceOfContent() {
         final SubmissionContent origin = SubmissionContentTest.content(
             List.of(SubmissionContentTest.PHOTO)
@@ -117,7 +112,6 @@ final class SubmissionContentTest {
     }
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void brGTwoOutsideBuildingsChangesOnlyPlaceOfContent() {
         final SubmissionContent origin = SubmissionContentTest.content(
             List.of(SubmissionContentTest.PHOTO)
