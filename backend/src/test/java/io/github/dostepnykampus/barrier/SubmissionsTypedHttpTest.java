@@ -56,9 +56,8 @@ final class SubmissionsTypedHttpTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"status=", "status=,"})
-    void usOneRejectsEmptyStatusFilter(
-        final String query, final WebApplicationContext context
-    ) throws Exception {
+    void usOneRejectsEmptyStatus(final String query, final WebApplicationContext context)
+        throws Exception {
         MatcherAssert.assertThat(
             "Pusty filtr status nie daje 400 application/problem+json",
             SubmissionsTypedHttpTest.summary(
@@ -70,9 +69,8 @@ final class SubmissionsTypedHttpTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"mine=true", "mine=true&status=SENT", "mine=true&status=ACCEPTED"})
-    void usEightNeedsLoginForOwn(
-        final String query, final WebApplicationContext context
-    ) throws Exception {
+    void usEightNeedsLoginForOwn(final String query, final WebApplicationContext context)
+        throws Exception {
         MatcherAssert.assertThat(
             "Własne zgłoszenia bez logowania nie dają 401",
             new SubmissionRequests(context).get("/submissions?".concat(query)).getStatus(),
@@ -99,9 +97,8 @@ final class SubmissionsTypedHttpTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"\"1\"", "null", "0", "-1"})
-    void brTenRejectsMissingOrBadBaseVersion(
-        final String version, final WebApplicationContext context
-    ) throws Exception {
+    void brTenRejectsBadVersion(final String version, final WebApplicationContext context)
+        throws Exception {
         MatcherAssert.assertThat(
             "Wersja bazowa edycji ".concat(version).concat(" nie daje 400 problem+json"),
             SubmissionsTypedHttpTest.summary(
@@ -244,9 +241,7 @@ final class SubmissionsTypedHttpTest {
     }
 
     private static String edit(final String version) {
-        return String.format(
-            "{\"version\":%s,%s}", version, SubmissionsTypedHttpTest.CONTENT
-        );
+        return "{\"version\":%s,%s}".formatted(version, SubmissionsTypedHttpTest.CONTENT);
     }
 
     private static void add(
@@ -260,8 +255,7 @@ final class SubmissionsTypedHttpTest {
                 CAST(:content AS JSONB))
             """
         ).param("id", SubmissionsTypedHttpTest.ID).param("version", version)
-            .param("status", status)
-            .param("content", "{".concat(SubmissionsTypedHttpTest.CONTENT).concat("}"))
+            .param("status", status).param("content", "{".concat(SubmissionsTypedHttpTest.CONTENT).concat("}"))
             .update();
     }
 }

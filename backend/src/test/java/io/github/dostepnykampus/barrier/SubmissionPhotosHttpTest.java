@@ -129,6 +129,12 @@ final class SubmissionPhotosHttpTest {
 
     private static UUID add(final WebApplicationContext context, final String status) {
         final UUID id = UUID.randomUUID();
+        final String content = String.join(
+            "",
+            "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
+            "\"coordinates\":[17.0,51.0]},\"barrierGroup\":\"OTHER\",",
+            "\"photoIds\":[\"%s\"]}"
+        ).formatted(SubmissionPhotosHttpTest.PHOTO);
         context.getBean(JdbcClient.class).sql(
             """
             INSERT INTO submissions (id, status, kind, location, content)
@@ -137,15 +143,7 @@ final class SubmissionPhotosHttpTest {
             """
         ).param("id", id)
             .param("status", status)
-            .param(
-                "content",
-                String.join(
-                    "",
-                    "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
-                    "\"coordinates\":[17.0,51.0]},\"barrierGroup\":\"OTHER\",",
-                    "\"photoIds\":[\"%s\"]}"
-                ).formatted(SubmissionPhotosHttpTest.PHOTO)
-            )
+            .param("content", content)
             .update();
         return id;
     }
