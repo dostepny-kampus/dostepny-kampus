@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.json;
 
+import io.github.dostepnykampus.OpenApiContract;
 import io.github.dostepnykampus.barrier.domain.BarrierDetails;
 import io.github.dostepnykampus.barrier.domain.BarrierGroup;
 import io.github.dostepnykampus.barrier.domain.BarrierType;
@@ -18,9 +19,11 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
 
 /**
- * Pełna treść zgłoszenia z OpenAPI w JSON (W3-1) wiąże się z domeną.
+ * Pełna treść zgłoszenia z OpenAPI w JSON (W3-1): wiąże się z domeną i wraca
+ * jako to samo drzewo.
  *
  * @since 0.1.0
  */
@@ -42,6 +45,21 @@ final class SubmissionContentJsonTest {
             ),
             JsonBodies.bind(JsonBodies.json(JsonBodies.FULL)).toContent(),
             "Pełna treść nie przeszła do domeny"
+        );
+    }
+
+    @Test
+    @Disabled("zapis treści w JSON jeszcze nie przenosi pól, kod w następnym PR")
+    void wthreeOneContentWritesBackSameJson() {
+        final JsonNode full = JsonBodies.json(JsonBodies.FULL);
+        Assertions.assertAll(
+            () -> Assertions.assertEquals(
+                List.of(), new OpenApiContract().violations("SubmissionContent", full.toString()),
+                "Treść testowa nie jest zgodna z OpenAPI"
+            ),
+            () -> Assertions.assertEquals(
+                full, JsonBodies.roundTrip(full), "Zapis treści różni się od wejścia"
+            )
         );
     }
 }
