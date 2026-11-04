@@ -7,9 +7,9 @@ package io.github.dostepnykampus.barrier.persistence;
 
 import io.github.dostepnykampus.PostgisTestConfiguration;
 import io.github.dostepnykampus.barrier.domain.Submission;
+import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,7 +34,7 @@ final class JdbcReadTest {
 
     @AfterEach
     void clean(final ApplicationContext context) {
-        new SubmissionData(context).clean();
+        SubmissionData.of(context).clean();
     }
 
     @Test
@@ -42,14 +42,11 @@ final class JdbcReadTest {
     void usEightFindsEveryStatus(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         for (final SubmissionStatus status : SubmissionStatus.values()) {
-            final UUID id = data.seed(
-                10L + status.ordinal(), SubmissionData.BUILDING, "p1", status, SubmissionData.EARLY
-            );
             Assertions.assertEquals(
-                Optional.of(status), data.repo().find(id).map(Submission::status)
+                Optional.of(status), data.repo().find(data.seed(status)).map(Submission::status)
             );
         }
-        Assertions.assertEquals(Optional.empty(), data.repo().find(data.id(99)));
+        Assertions.assertEquals(Optional.empty(), data.repo().find(SubmissionData.id(99)));
     }
 
     @Test
@@ -58,32 +55,35 @@ final class JdbcReadTest {
         final SubmissionData data = SubmissionData.of(context);
         final String home = SubmissionData.BUILDING;
         final SubmissionStatus sent = SubmissionStatus.SENT;
-        final Instant early = SubmissionData.EARLY;
-        final Instant late = SubmissionData.LATE;
-        final UUID rejected = data.seed(2, home, "p1", SubmissionStatus.REJECTED, early);
-        final UUID first = data.seed(1, home, "p1", sent, late);
-        final UUID upstairs = data.seed(3, home, "p2", sent, late);
-        final UUID other = data.seed(4, SubmissionData.OTHER, "p1", sent, early);
-        final UUID accepted = data.seed(5, home, "p1", SubmissionStatus.ACCEPTED, late);
+        final SubmissionContent ground = SubmissionData.content(home, "p1", "o");
+        final SubmissionContent upper = SubmissionData.content(home, "p2", "o");
+        final SubmissionContent other = SubmissionData.content(SubmissionData.OTHER, "p1", "o");
+        final UUID first = data.seed(3, ground, sent);
+        final UUID rejected = data.seed(2, ground, SubmissionStatus.REJECTED);
+        final UUID upstairs = data.seed(1, upper, sent);
+        final UUID elsewhere = data.seed(4, other, sent);
+        final UUID accepted = data.seed(5, ground, SubmissionStatus.ACCEPTED);
         Assertions.assertEquals(
             List.of(
-                List.of(rejected, first, upstairs), List.of(rejected, first, accepted),
-                List.of(other)
+                List.of(first, rejected, upstairs), List.of(first, rejected, accepted),
+                List.of(elsewhere)
             ),
             List.of(
-                this.ids(data, Set.of(sent, SubmissionStatus.REJECTED), home, null),
-                this.ids(data, Set.of(SubmissionStatus.values()), home, "p1"),
-                this.ids(data, Set.of(sent), SubmissionData.OTHER, null)
+                JdbcReadTest.ids(
+                    data, new SubmissionQuery(Set.of(sent, SubmissionStatus.REJECTED), home, null)
+                ),
+                JdbcReadTest.ids(
+                    data, new SubmissionQuery(Set.of(SubmissionStatus.values()), home, "p1")
+                ),
+                JdbcReadTest.ids(
+                    data, new SubmissionQuery(Set.of(sent), SubmissionData.OTHER, null)
+                )
             ),
             "Lista nie filtruje po statusie, budynku i piętrze albo ma złą kolejność"
         );
     }
 
-    private List<UUID> ids(
-        final SubmissionData data, final Set<SubmissionStatus> statuses,
-        final String building, final String floor
-    ) {
-        return data.repo().list(new SubmissionQuery(statuses, building, floor))
-            .stream().map(Submission::id).toList();
+    private static List<UUID> ids(final SubmissionData data, final SubmissionQuery query) {
+        return data.repo().list(query).stream().map(Submission::id).toList();
     }
 }
