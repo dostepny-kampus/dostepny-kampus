@@ -13,7 +13,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jspecify.annotations.Nullable;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.exc.MismatchedInputException;
 import tools.jackson.databind.json.JsonMapper;
@@ -41,7 +40,6 @@ final class StrictJsonTest {
     private static final String REJECTED = "odrzucone";
 
     @Test
-    @Disabled("Napis wiązany jest jako liczba albo wartość logiczna")
     void strictJsonOneRejectsTextForNumberOrBoolean() {
         MatcherAssert.assertThat(
             "Napis w polu liczbowym albo logicznym przeszedł",
@@ -54,7 +52,6 @@ final class StrictJsonTest {
     }
 
     @Test
-    @Disabled("Liczba wiązana jest jako napis")
     void strictJsonTwoRejectsNumberForText() {
         MatcherAssert.assertThat(
             "Liczba w polu tekstowym przeszła",
@@ -64,7 +61,6 @@ final class StrictJsonTest {
     }
 
     @Test
-    @Disabled("Liczba z ułamkiem wiązana jest jako liczba całkowita")
     void strictJsonThreeRejectsFractionForInteger() {
         MatcherAssert.assertThat(
             "Liczba z ułamkiem w polu całkowitym przeszła",
@@ -74,7 +70,6 @@ final class StrictJsonTest {
     }
 
     @Test
-    @Disabled("Jawny null w polu jest przyjmowany jak brak pola")
     void strictJsonFourRejectsExplicitNull() {
         MatcherAssert.assertThat(
             "Jawny null w polu przeszedł",
@@ -87,7 +82,6 @@ final class StrictJsonTest {
     }
 
     @Test
-    @Disabled("Identyfikator w Base64 jest przyjmowany")
     void strictJsonFiveRejectsNonCanonicalUuid() {
         MatcherAssert.assertThat(
             "Identyfikator spoza postaci 8-4-4-4-12 przeszedł",
