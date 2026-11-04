@@ -19,6 +19,7 @@ public final class StrictMapper implements Supplier<JsonMapper> {
      * Tworzy fabrykę mappera.
      */
     public StrictMapper() {
+        // Bez stanu.
     }
 
     @Override
