@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Wejście zalecane i kolejność listy (BR-25) oraz stan karty z katalogu. */
@@ -202,6 +203,27 @@ class BuildingCardTest {
             assertEquals(BuildingCardUiState.Missing, viewModel.uiState.value)
         }
 
+    // Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” → katalog czytany od nowa i karta budynku;
+    //   zwykłe otwarcie karty nie czyta katalogu drugi raz, NFR-10.
+    @Test
+    fun nfr10_retry_shows_new_building() =
+        runTest(UnconfinedTestDispatcher()) {
+            val reads = AtomicInteger()
+            val server =
+                BuildingCatalogRepository(EmptyCoroutineContext) {
+                    if (reads.incrementAndGet() == 1) ASSET_JSON else ASSET_WITH_NEW_JSON
+                }
+            val opened = BuildingCardViewModel(symbol = "A-1", repository = server, networkStatus = online)
+            backgroundScope.launch { opened.uiState.collect {} }
+            val viewModel = BuildingCardViewModel(symbol = "N-1", repository = server, networkStatus = online)
+            backgroundScope.launch { viewModel.uiState.collect {} }
+            assertEquals(BuildingCardUiState.Missing, viewModel.uiState.value)
+            assertEquals(1, reads.get())
+            viewModel.retry()
+            assertEquals("N-1", (viewModel.uiState.value as? BuildingCardUiState.Ready)?.symbol)
+            assertEquals(2, reads.get())
+        }
+
     @Test
     fun us2_view_model_loading() =
         runTest(UnconfinedTestDispatcher()) {
@@ -230,17 +252,22 @@ class BuildingCardTest {
     private companion object {
         val online = NetworkStatus { flowOf(true) }
 
-        val repository =
-            BuildingCatalogRepository(EmptyCoroutineContext) {
-                """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
-                    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"Gmach",""" +
-                    """"osm_id":"way/1"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
-                    """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/2",""" +
-                    """"entrance":"yes","wheelchair":"yes","ref":"Boczna"},""" +
-                    """"geometry":{"type":"Point","coordinates":[1,0]}},""" +
-                    """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/1",""" +
-                    """"entrance":"main","wheelchair":"no","ref":"Główne"},""" +
-                    """"geometry":{"type":"Point","coordinates":[0,0]}}]}"""
-            }
+        const val ASSET_JSON =
+            """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"Gmach",""" +
+                """"osm_id":"way/1"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
+                """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/2",""" +
+                """"entrance":"yes","wheelchair":"yes","ref":"Boczna"},""" +
+                """"geometry":{"type":"Point","coordinates":[1,0]}},""" +
+                """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/1",""" +
+                """"entrance":"main","wheelchair":"no","ref":"Główne"},""" +
+                """"geometry":{"type":"Point","coordinates":[0,0]}}]}"""
+
+        val ASSET_WITH_NEW_JSON =
+            ASSET_JSON.removeSuffix("]}") +
+                """,{"type":"Feature","properties":{"kind":"building","symbols":["N-1"],"osm_id":"way/3"},""" +
+                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
+
+        val repository = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON }
     }
 }
