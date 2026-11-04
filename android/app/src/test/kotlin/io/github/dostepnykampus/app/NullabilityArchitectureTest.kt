@@ -197,12 +197,33 @@ class NullabilityArchitectureTest {
         const val GEO = "core.geo"
         const val NETWORK = "core.network"
 
-        /** Zamknięta lista nullable w modelu: para „klasa.właściwość” → powód (decyzje 122, 124). */
+        const val OPTIONAL = "pole nieobowiązkowe OpenAPI (decyzja 127 P1)"
+        const val ABSENT_FLAG = "brak pola w odpowiedzi zachowany przy odesłaniu (decyzja K4 naprawy klienta)"
+        const val BY_STATUS = "zależne od statusu"
+
+        /** Zamknięta lista nullable w modelu: para „klasa.właściwość” → powód (decyzje 122, 124, 127). */
         val NULLABLE_IN_MODEL =
             mapOf(
                 "Building.name" to "budynek bez nazwy w danych, decyzja 124",
                 "Entrance.name" to "dane OpenStreetMap nie podają opisu wejścia",
                 "Entrance.type" to "wejście spoza danych OpenStreetMap nie ma tagu entrance",
+                "Submission.rejectionReason" to "$BY_STATUS, BR-16",
+                "Submission.verifiedAt" to "$BY_STATUS, BR-17",
+                "SubmissionContent.accuracyMeters" to OPTIONAL,
+                "SubmissionContent.isManualCorrection" to ABSENT_FLAG,
+                "SubmissionContent.buildingSymbol" to "$OPTIONAL, BR-G2: poza budynkiem",
+                "SubmissionContent.floor" to "$OPTIONAL, BR-G1",
+                "SubmissionContent.barrierGroup" to OPTIONAL,
+                "SubmissionContent.barrierType" to OPTIONAL,
+                "SubmissionContent.severity" to OPTIONAL,
+                "SubmissionContent.description" to OPTIONAL,
+                "SubmissionContent.replacesSubmissionId" to OPTIONAL,
+                "SubmissionContent.isBarrierRemoved" to ABSENT_FLAG,
+                "SubmissionContent.entranceId" to OPTIONAL,
+                "SubmissionContent.entranceMarking" to OPTIONAL,
+                "SubmissionFloor.floorId" to OPTIONAL,
+                "SubmissionFloor.number" to OPTIONAL,
+                "SubmissionFloor.isMezzanine" to ABSENT_FLAG,
             )
     }
 }
