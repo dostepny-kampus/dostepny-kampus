@@ -12,7 +12,6 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -36,7 +35,6 @@ import tools.jackson.databind.json.JsonMapper;
 final class ErrorsHttpTest {
 
     @Test
-    @Disabled("Typy błędów mapuje na problem+json dopiero następna zmiana")
     void errorOneGivesBadRequestProblemWithDetail(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
@@ -49,7 +47,6 @@ final class ErrorsHttpTest {
     }
 
     @Test
-    @Disabled("Typy błędów mapuje na problem+json dopiero następna zmiana")
     void errorTwoGivesNotFoundProblemWithDetail(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
@@ -60,7 +57,6 @@ final class ErrorsHttpTest {
     }
 
     @Test
-    @Disabled("Typy błędów mapuje na problem+json dopiero następna zmiana")
     void errorThreeGivesServerErrorProblem(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
