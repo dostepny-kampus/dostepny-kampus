@@ -140,7 +140,7 @@ final class SubmissionContentTest {
     ) {
         return new SubmissionContent(
             origin.kind(), place, origin.barrier(), origin.entranceId(),
-            origin.entranceMarking(), origin.replacesSubmissionId(), origin.photoIds()
+            origin.entranceMarking(), origin.replaces(), origin.photoIds()
         );
     }
 

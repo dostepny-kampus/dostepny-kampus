@@ -17,7 +17,7 @@ import org.jspecify.annotations.Nullable;
  * @param barrier Szczegóły bariery
  * @param entranceId Wejście, którego dotyczy zgłoszenie, albo null
  * @param entranceMarking Nowe oznaczenie wejścia albo null (BR-24)
- * @param replacesSubmissionId Zastępowane zgłoszenie albo null (BR-19)
+ * @param replaces Zastępowane zgłoszenie albo null (BR-19)
  * @param photoIds Identyfikatory zdjęć, co najmniej jeden
  * @since 0.1.0
  */
@@ -27,7 +27,7 @@ public record SubmissionContent(
     BarrierDetails barrier,
     @Nullable String entranceId,
     @Nullable NewEntranceMarking entranceMarking,
-    @Nullable UUID replacesSubmissionId,
+    @Nullable UUID replaces,
     List<UUID> photoIds
 ) {
 
