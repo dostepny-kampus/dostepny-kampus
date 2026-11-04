@@ -6,27 +6,28 @@
 package io.github.dostepnykampus.barrier.domain;
 
 /**
- * Grupa barier, wartości jak schemat BarrierGroup w OpenAPI (US4.3, BR-8).
+ * Grupa barier (US4.3, BR-8): krótkie nazwy stałych, w liczbie i kolejności
+ * wartości schematu BarrierGroup w OpenAPI; wartość ze spec podaje opis stałej.
  *
  * @since 0.1.0
  */
 public enum BarrierGroup {
 
-    /** Wejście i drzwi. */
-    ENTRANCE_AND_DOORS,
+    /** Wejście i drzwi, w OpenAPI ENTRANCE_AND_DOORS. */
+    ENTRANCE,
 
-    /** Komunikacja pionowa. */
-    VERTICAL_CIRCULATION,
+    /** Komunikacja pionowa, w OpenAPI VERTICAL_CIRCULATION. */
+    VERTICAL,
 
-    /** Komunikacja pozioma. */
-    HORIZONTAL_CIRCULATION,
+    /** Komunikacja pozioma, w OpenAPI HORIZONTAL_CIRCULATION. */
+    HORIZONTAL,
 
-    /** Toalety. */
+    /** Toalety, w OpenAPI TOILETS. */
     TOILETS,
 
-    /** Orientacja i informacja. */
-    ORIENTATION_AND_INFORMATION,
+    /** Orientacja i informacja, w OpenAPI ORIENTATION_AND_INFORMATION. */
+    ORIENTATION,
 
-    /** Inne. */
+    /** Inne, w OpenAPI OTHER. */
     OTHER
 }

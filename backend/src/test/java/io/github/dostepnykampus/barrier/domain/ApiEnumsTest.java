@@ -12,8 +12,10 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Stałe enumów zgłoszenia są dokładnie wartościami z api/openapi.yaml:
- * schematy SubmissionStatus i BarrierGroup oraz pola kind
- * i entranceMarking schematu SubmissionContent, w kolejności ze spec.
+ * schemat SubmissionStatus oraz pola kind i entranceMarking schematu
+ * SubmissionContent, w kolejności ze spec. Grupy barier mają w domenie
+ * krótkie nazwy: ich liczba i kolejność jak w schemacie BarrierGroup
+ * OpenAPI, a pary z wartościami spec trzyma warstwa JSON.
  *
  * @since 0.1.0
  */
@@ -41,11 +43,10 @@ final class ApiEnumsTest {
     void usFourGroupsMatchSpec() {
         Assertions.assertEquals(
             List.of(
-                "ENTRANCE_AND_DOORS", "VERTICAL_CIRCULATION", "HORIZONTAL_CIRCULATION",
-                "TOILETS", "ORIENTATION_AND_INFORMATION", "OTHER"
+                "ENTRANCE", "VERTICAL", "HORIZONTAL", "TOILETS", "ORIENTATION", "OTHER"
             ),
             ApiEnumsTest.names(BarrierGroup.values()),
-            "Grupy barier różnią się od schematu BarrierGroup"
+            "Grupy barier różnią się kolejnością lub liczbą od schematu BarrierGroup"
         );
     }
 
