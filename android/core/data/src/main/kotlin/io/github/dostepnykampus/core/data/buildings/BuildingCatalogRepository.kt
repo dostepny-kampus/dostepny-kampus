@@ -24,8 +24,9 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
  * Katalog budynków dla mapy (US1, US1.2).
  *
  * Gdy [listBuildings] jest podane, kontury i nazwy biorą się z serwera, a wejścia zostają z pliku konturów.
- * Lista z serwera nie ma jeszcze wejść, więc zostają wejścia z pliku, ale tylko budynków, które serwer podał:
- * katalog opisuje wejścia swoich budynków. Atrybucja udanego odczytu jest z serwera, bo dotyczy konturów.
+ * Lista z serwera (`GET /buildings`) nie ma wejść, więc katalog ma wejścia z pliku, ale tylko budynków, które
+ * serwer podał: katalog opisuje wejścia swoich budynków. Wejścia z dniem i źródłem oznaczenia karta budynku
+ * bierze osobno z [ServerEntrances] (US17.3). Atrybucja udanego odczytu jest z serwera, bo dotyczy konturów.
  * Budynki z serwera są sortowane jak te z pliku.
  *
  * Wynik inny niż [ApiResult.Success], czyli brak sieci, błąd serwera albo nieznany zasób, daje cały katalog
