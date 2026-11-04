@@ -17,6 +17,12 @@ package io.github.dostepnykampus;
  */
 public class InvalidInput extends RuntimeException {
 
+    /**
+     * Wyjątek, który w obsłudze żądania daje odpowiedź 400.
+     *
+     * @param detail Opis dla klienta, trafia bez zmian do pola
+     *  {@code detail} odpowiedzi; bez szczegółów wewnętrznych
+     */
     public InvalidInput(final String detail) {
         super(detail);
     }

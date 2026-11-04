@@ -17,6 +17,12 @@ package io.github.dostepnykampus;
  */
 public class MissingResource extends RuntimeException {
 
+    /**
+     * Wyjątek, który w obsłudze żądania daje odpowiedź 404.
+     *
+     * @param detail Opis dla klienta, trafia bez zmian do pola
+     *  {@code detail} odpowiedzi; bez szczegółów wewnętrznych
+     */
     public MissingResource(final String detail) {
         super(detail);
     }
