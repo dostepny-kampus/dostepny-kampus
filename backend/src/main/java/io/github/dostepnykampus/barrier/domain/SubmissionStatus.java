@@ -46,9 +46,8 @@ public enum SubmissionStatus {
      * wolno edytować, rzuca IllegalStateException.
      *
      * @return Status zgłoszenia po edycji
-     * @throws IllegalStateException Gdy statusu nie wolno edytować
      */
-    public SubmissionStatus afterEdit() throws IllegalStateException {
+    public SubmissionStatus afterEdit() {
         if (!this.editable()) {
             throw new IllegalStateException(
                 String.format("Zgłoszenia w statusie %s nie wolno edytować (BR-18)", this)
