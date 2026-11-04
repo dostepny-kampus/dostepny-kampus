@@ -33,6 +33,8 @@ public sealed interface CreateResult
         /**
          * Wynik z utworzonym zgłoszeniem; brak zgłoszenia kończy się wyjątkiem
          * NullPointerException.
+         *
+         * @param submission Zgłoszenie z wyniku
          */
         public Created {
             Objects.requireNonNull(submission, "submission");
@@ -50,6 +52,8 @@ public sealed interface CreateResult
         /**
          * Wynik z istniejącym zgłoszeniem; brak zgłoszenia kończy się wyjątkiem
          * NullPointerException.
+         *
+         * @param submission Zgłoszenie z wyniku
          */
         public Existing {
             Objects.requireNonNull(submission, "submission");

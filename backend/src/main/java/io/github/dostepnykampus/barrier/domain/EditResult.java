@@ -27,6 +27,8 @@ public sealed interface EditResult
         /**
          * Wynik z zapisanym zgłoszeniem; brak zgłoszenia kończy się wyjątkiem
          * NullPointerException.
+         *
+         * @param submission Zgłoszenie z wyniku
          */
         public Saved {
             Objects.requireNonNull(submission, "submission");
@@ -44,6 +46,8 @@ public sealed interface EditResult
         /**
          * Wynik z bieżącym stanem; brak zgłoszenia kończy się wyjątkiem
          * NullPointerException.
+         *
+         * @param current Bieżące zgłoszenie
          */
         public Conflict {
             Objects.requireNonNull(current, "current");
@@ -61,6 +65,8 @@ public sealed interface EditResult
         /**
          * Wynik z identyfikatorem; brak identyfikatora kończy się wyjątkiem
          * NullPointerException.
+         *
+         * @param id Identyfikator szukanego zgłoszenia
          */
         public Missing {
             Objects.requireNonNull(id, "id");
