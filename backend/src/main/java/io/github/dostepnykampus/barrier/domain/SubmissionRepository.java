@@ -1,0 +1,30 @@
+/*
+ * Dostępny Kampus
+ * Author: Vladyslav Yevkov
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+package io.github.dostepnykampus.barrier.domain;
+
+/**
+ * Port zapisu zgłoszeń; z niego korzysta wyłącznie usługa zgłoszeń (BR-3, BR-9, BR-10).
+ *
+ * @since 0.1.0
+ */
+public interface SubmissionRepository {
+
+    /**
+     * Zapisuje nowe zgłoszenie albo zwraca już zapisane o tym identyfikatorze.
+     *
+     * @param submission Komenda utworzenia
+     * @return Zgłoszenie utworzone albo istniejące, bez zmiany treści i wersji
+     */
+    CreateResult create(NewSubmission submission);
+
+    /**
+     * Zapisuje edycję, gdy wersja bazowa zgadza się z zapisaną i status pozwala edytować.
+     *
+     * @param edit Komenda edycji
+     * @return Zgłoszenie zapisane, bieżący stan przy konflikcie albo brak zgłoszenia
+     */
+    EditResult update(SubmissionEdit edit);
+}

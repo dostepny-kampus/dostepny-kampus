@@ -31,6 +31,8 @@
     <string name="karta_ocena_obchod">Sprawdzone na miejscu %1$s</string>
     <string name="karta_bez_nazwy">Wejście bez nazwy w danych</string>
     <string name="karta_sprawdz">Sprawdź, którędy wejść</string>
+    <string name="karta_zglos">Zgłoś barierę przy wejściu</string>
+    <string name="karta_zglos_czytaj">Zgłoś barierę przy wejściu: »%1$s«</string>
     <string name="karta_pokaz">Pokaż budynek na mapie</string>
     <string name="karta_brak_w_telefonie">Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.</string>
     <string name="karta_sprobuj">Spróbuj ponownie</string>

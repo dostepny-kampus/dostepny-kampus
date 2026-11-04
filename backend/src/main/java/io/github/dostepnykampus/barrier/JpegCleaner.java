@@ -1,76 +1,75 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import org.apache.commons.imaging.ImagingException;
+import org.apache.commons.imaging.bytesource.ByteSource;
+import org.apache.commons.imaging.formats.jpeg.JpegConstants;
+import org.apache.commons.imaging.formats.jpeg.xmp.JpegRewriter;
 
 /**
  * Usuwa metadane ze zdjęcia JPEG przed zapisem (NFR-26): EXIF i XMP
  * z miejscem, modelem telefonu i czasem, IPTC i komentarze.
  *
- * <p>Obraz zostaje bez zmian, bo klasa kopiuje segmenty pliku bez ponownego
- * kodowania. Usuwa segmenty APP1 (EXIF, XMP), APP3–APP15 (m.in. IPTC) i COM.
- * Zostaje APP0 (JFIF) i APP2 z profilem kolorów ICC. Skanowanie kończy
- * segment SOS (0xDA), po którym są już tylko dane obrazu, albo EOI (0xD9).
+ * <p>Obraz zostaje bez ponownego kodowania. Usuwane są segmenty APP1 (EXIF, XMP),
+ * APP3–APP15 (m.in. IPTC) i COM przed pierwszym SOS. Zostaje APP0 (JFIF)
+ * i APP2 z profilem kolorów ICC. Dane od pierwszego SOS nie są analizowane.
  * Razem z EXIF znika orientacja, więc telefon wysyła zdjęcie już obrócone.</p>
+ *
+ * <p>Obce bajty pomiędzy segmentami są odrzucane, także gdy parser biblioteki
+ * potrafi je pominąć i odczytać dalszy ciąg nagłówka.</p>
  *
  * @since 0.1.0
  */
-final class JpegCleaner {
-
-    /**
-     * Bajt rozpoczynający każdy znacznik JPEG.
-     */
-    private static final int MARK = 0xFF;
+final class JpegCleaner extends JpegRewriter {
 
     private JpegCleaner() {
     }
 
     /**
-     * Zwraca kopię zdjęcia bez metadanych; plik spoza formatu JPEG daje 400.
+     * Usuwa prywatne segmenty nagłówka JPEG, zachowując dane obrazu.
      *
      * @param jpeg Plik JPEG z telefonu
      * @return Plik JPEG bez EXIF, XMP, IPTC i komentarzy
+     * @throws IOException Gdy nagłówek nie jest poprawnym JPEG
      */
-    static byte[] strip(final byte[] jpeg) {
-        SubmissionDraft.require(
-            jpeg.length > 3 && JpegCleaner.at(jpeg, 0) == JpegCleaner.MARK
-                && JpegCleaner.at(jpeg, 1) == 0xD8,
-            "Zdjęcie nie jest plikiem JPEG"
-        );
-        final ByteArrayOutputStream out = new ByteArrayOutputStream(jpeg.length);
-        out.write(jpeg, 0, 2);
-        int pos = 2;
-        while (true) {
-            SubmissionDraft.require(
-                pos + 1 < jpeg.length && JpegCleaner.at(jpeg, pos) == JpegCleaner.MARK,
-                "Uszkodzony plik JPEG"
-            );
-            final int marker = JpegCleaner.at(jpeg, pos + 1);
-            if (marker == 0xDA || marker == 0xD9) {
-                out.write(jpeg, pos, jpeg.length - pos);
-                break;
-            }
-            SubmissionDraft.require(pos + 3 < jpeg.length, "Uszkodzony plik JPEG");
-            final int size = 2
-                + (JpegCleaner.at(jpeg, pos + 2) << 8 | JpegCleaner.at(jpeg, pos + 3));
-            SubmissionDraft.require(pos + size <= jpeg.length, "Uszkodzony plik JPEG");
-            if (!JpegCleaner.metadata(marker)) {
-                out.write(jpeg, pos, size);
-            }
-            pos += size;
+    static byte[] strip(final byte[] jpeg) throws IOException {
+        try {
+            return new JpegCleaner().rewrite(jpeg);
+        } catch (final ImagingException ex) {
+            throw new IOException("Uszkodzony nagłówek JPEG", ex);
         }
-        return out.toByteArray();
     }
 
-    private static boolean metadata(final int marker) {
-        return marker == 0xFE || marker >= 0xE1 && marker <= 0xEF && marker != 0xE2;
+    private byte[] rewrite(final byte[] jpeg) throws ImagingException, IOException {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream(jpeg.length);
+        final JFIFPieces parsed = this.analyzeJfif(ByteSource.array(jpeg));
+        this.writeSegments(output, parsed.pieces);
+        if (output.size() != jpeg.length) {
+            throw new IOException("Obce bajty pomiędzy segmentami JPEG");
+        }
+        output.reset();
+        this.writeSegments(
+            output,
+            parsed.pieces.stream().filter(JpegCleaner::keep).toList()
+        );
+        return output.toByteArray();
     }
 
-    private static int at(final byte[] jpeg, final int pos) {
-        return jpeg[pos] & JpegCleaner.MARK;
+    private static boolean keep(final JFIFPiece piece) {
+        boolean allowed = true;
+        if (piece instanceof JFIFPieceSegment segment) {
+            allowed = segment.marker != JpegConstants.COM_MARKER;
+            if (segment.isAppSegment()) {
+                allowed = segment.marker == JpegConstants.JPEG_APP0_MARKER
+                    || segment.marker == JpegConstants.JPEG_APP2_MARKER;
+            }
+        }
+        return allowed;
     }
 }

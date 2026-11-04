@@ -56,6 +56,7 @@ import io.github.dostepnykampus.core.model.EntranceMarking
  * @param onBack „Wstecz”
  * @param onClose „Zamknij” małej karty
  * @param modifier wymiary nadane przez arkusz; mała karta ma wysokość treści, pełny ekran wypełnia całe miejsce
+ * @param onReportEntrance „Zgłoś barierę przy wejściu” dla identyfikatora wejścia
  * @param viewModel stan karty; w aplikacji z grafu Hilt, w testach z podróbką katalogu
  */
 @Composable
@@ -67,14 +68,44 @@ fun BuildingCardScreen(
     onBack: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
+    onReportEntrance: (String) -> Unit = {},
     viewModel: BuildingCardViewModel =
         hiltViewModel<BuildingCardViewModel, BuildingCardViewModel.Factory>(
             creationCallback = { factory -> factory.create(symbol) },
         ),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val card = state
     val isOnline by viewModel.online.collectAsStateWithLifecycle()
+    BuildingCardContent(
+        symbol = symbol,
+        mode = mode,
+        card = state,
+        isOnline = isOnline,
+        onCheckEntrances = onCheckEntrances,
+        onShowOnMap = onShowOnMap,
+        onBack = onBack,
+        onClose = onClose,
+        onReportEntrance = onReportEntrance,
+        onRetry = viewModel::retry,
+        modifier = modifier,
+    )
+}
+
+/** V2 dla gotowego stanu [card] i [isOnline]; „Spróbuj ponownie” to [onRetry], reszta jak w [BuildingCardScreen]. */
+@Composable
+fun BuildingCardContent(
+    symbol: String,
+    mode: CardMode,
+    card: BuildingCardUiState,
+    isOnline: Boolean,
+    onCheckEntrances: () -> Unit,
+    onShowOnMap: () -> Unit,
+    onBack: () -> Unit,
+    onClose: () -> Unit,
+    onReportEntrance: (String) -> Unit,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val isFullScreen = mode != CardMode.Compact
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
         if (isFullScreen) BackHeader(title = symbol, onBack = onBack)
@@ -92,9 +123,9 @@ fun BuildingCardScreen(
                     onShowOnMap = onShowOnMap,
                     onClose = onClose,
                 )
-                if (isFullScreen) BuildingFacts(card)
+                if (isFullScreen) BuildingFacts(card, onReportEntrance)
             }
-            if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = viewModel::retry)
+            if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
         }
     }
 }
@@ -133,17 +164,20 @@ internal fun EntranceSummaryRow(summary: EntranceSummary) {
 }
 
 @Composable
-private fun BuildingFacts(card: BuildingCardUiState.Ready) {
+private fun BuildingFacts(card: BuildingCardUiState.Ready, onReportEntrance: (String) -> Unit) {
     val common = commonAssessment(card.entrances)
     common?.let { AssessmentLine(it) }
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
-        card.entrances.forEach { EntranceLine(it, withAssessment = common == null) }
+        card.entrances.forEach {
+            EntranceLine(it, withAssessment = common == null, onReportEntrance = onReportEntrance)
+        }
     }
 }
 
 @Composable
-private fun EntranceLine(listed: OrderedEntrance, withAssessment: Boolean) {
+private fun EntranceLine(listed: OrderedEntrance, withAssessment: Boolean, onReportEntrance: (String) -> Unit) {
     val title = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
+    val spoken = stringResource(R.string.karta_zglos_czytaj, title)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
@@ -161,6 +195,12 @@ private fun EntranceLine(listed: OrderedEntrance, withAssessment: Boolean) {
         }
         Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
         if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }
+        PinnedButton(
+            text = stringResource(R.string.karta_zglos),
+            onClick = { onReportEntrance(listed.entrance.id) },
+            modifier = Modifier.fillMaxWidth().semantics { contentDescription = spoken },
+            kind = PinnedButtonKind.Tonal,
+        )
     }
 }
 
