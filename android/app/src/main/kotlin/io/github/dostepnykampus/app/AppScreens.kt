@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.core.designsystem.BackHeader
@@ -32,6 +33,7 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.BuildingCardScreen
+import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
@@ -95,7 +97,7 @@ private typealias Action = Pair<String, () -> Unit>
 @NonRestartableComposable
 internal fun AppNavigator.AppScreen(route: NavKey) {
     when (route) {
-        is BuildingRoute -> BuildingCard(route.symbol)
+        is BuildingRoute -> HiltBuildingCard(route.symbol)
         is EntrancesRoute -> Entrances(route.symbol)
         is ReportRoute -> ReportStub(route.step)
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
@@ -115,8 +117,24 @@ private fun AppNavigator.Entrances(symbol: String) {
     )
 }
 
+/** V2 ze stanem z grafu Hilt dla [symbol]. */
 @Composable
-private fun AppNavigator.BuildingCard(symbol: String) {
+private fun AppNavigator.HiltBuildingCard(symbol: String) {
+    BuildingCard(
+        symbol = symbol,
+        viewModel =
+            hiltViewModel<BuildingCardViewModel, BuildingCardViewModel.Factory>(
+                creationCallback = { factory -> factory.create(symbol) },
+            ),
+    )
+}
+
+/**
+ * V2 ze stanem [viewModel] i czynnościami podpiętymi do nawigatora; „Zgłoś barierę przy wejściu” prowadzi do V4
+ * z wybranym wejściem, a Gościa najpierw do L1 (US4.6, US14.2).
+ */
+@Composable
+internal fun AppNavigator.BuildingCard(symbol: String, viewModel: BuildingCardViewModel) {
     val card = sheetCard()
     BuildingCardScreen(
         symbol = symbol,
@@ -126,6 +144,7 @@ private fun AppNavigator.BuildingCard(symbol: String) {
         onBack = card.onBack,
         onClose = card.onClose,
         onReportEntrance = { report(it) },
+        viewModel = viewModel,
     )
 }
 
