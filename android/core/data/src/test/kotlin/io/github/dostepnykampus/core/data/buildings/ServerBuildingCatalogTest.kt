@@ -13,14 +13,24 @@ import io.github.dostepnykampus.core.network.ApiBuilding
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingList
 import io.github.dostepnykampus.core.network.DetailLevel
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Kontury z serwera i wejścia z pliku; przy błędzie sieci albo serwera cały katalog zostaje z pliku. */
+/**
+ * Kontury z serwera i wejścia z pliku. Przy błędzie sieci albo serwera cały katalog jest z pliku, ale tylko gdy
+ * z serwera nic jeszcze nie pobrano; inaczej zostaje katalog pobrany z serwera (NFR-10). Ponowna próba pyta
+ * serwer od nowa, a zwykłe czytanie bierze katalog z pamięci.
+ */
 class ServerBuildingCatalogTest {
+    private val serverCalls = AtomicInteger()
+
     @Test
     fun us1_server_outlines_entrances() {
         val outline = square(SERVER_SPAN)
@@ -63,8 +73,98 @@ class ServerBuildingCatalogTest {
         assertEquals(catalog(), empty)
     }
 
+    // Wiersz: zwykłe otwarcie karty albo mapy → katalog z pamięci, bez drugiego zapytania do serwera, US1, NFR-10.
+    @Test
+    fun us1_catalog_asks_server_once() {
+        val repository = repository({ listed("A-2") }, { listed("A-2", "N-1") })
+        runBlocking { repeat(2) { repository.catalog() } }
+        assertEquals(1, serverCalls.get())
+    }
+
+    // Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” po połączeniu z internetem → katalog z serwera,
+    //   choć pierwsze czytanie poszło z pliku bez sieci, NFR-10.
+    @Test
+    fun nfr10_retry_after_offline() {
+        val repository = repository({ OFFLINE }, { listed("A-2", "N-1") })
+        runBlocking {
+            assertEquals(catalog(), repository.catalog())
+            assertEquals(listOf("A-2", "N-1"), repository.refresh().buildings.map { it.symbol })
+            assertEquals(listOf("A-2", "N-1"), repository.catalog().buildings.map { it.symbol })
+        }
+    }
+
+    // Wiersz: V2, „Spróbuj ponownie” → widać budynek, który serwer dodał po pierwszym czytaniu, NFR-10.
+    @Test
+    fun nfr10_retry_sees_new_building() {
+        val repository = repository({ listed("A-2") }, { listed("A-2", "N-1") })
+        runBlocking {
+            assertEquals(listOf("A-2"), repository.catalog().buildings.map { it.symbol })
+            assertEquals(listOf("A-2", "N-1"), repository.refresh().buildings.map { it.symbol })
+        }
+        assertEquals(2, serverCalls.get())
+    }
+
+    // Wiersz: „Spróbuj ponownie” bez sieci albo z zerwanym połączeniem → zostają budynki pobrane wcześniej
+    //   z serwera, nie sam plik, NFR-10.
+    @Test
+    fun nfr10_failed_retry_keeps_data() {
+        val repository =
+            repository({ listed("A-2", "N-1") }, { OFFLINE }, { throw IOException("zerwane połączenie") })
+        runBlocking {
+            val downloaded = repository.catalog()
+            assertEquals(downloaded, repository.refresh())
+            val afterError =
+                try {
+                    repository.refresh()
+                } catch (expected: IOException) {
+                    downloaded
+                }
+            assertEquals(downloaded, afterError)
+            assertEquals(downloaded, repository.catalog())
+        }
+    }
+
+    // Wiersz: otwarcie karty i „Spróbuj ponownie” naraz → jedno zapytanie do serwera, dopóki pierwsze trwa, NFR-10.
+    @Test
+    fun nfr10_retry_waits_for_read() {
+        val gate = CompletableDeferred<Unit>()
+        val server: suspend () -> ApiResult<BuildingList> = {
+            serverCalls.incrementAndGet()
+            gate.await()
+            listed("A-2", "N-1")
+        }
+        val repository = BuildingCatalogRepository(EmptyCoroutineContext, server) { assetJson() }
+        runBlocking {
+            val opened = launch { repository.catalog() }
+            val retried = launch { repository.refresh() }
+            repeat(PENDING_YIELDS) { yield() }
+            assertEquals(1, serverCalls.get())
+            gate.complete(Unit)
+            opened.join()
+            retried.join()
+            assertEquals(listOf("A-2", "N-1"), repository.catalog().buildings.map { it.symbol })
+        }
+    }
+
     private fun catalog(remote: (suspend () -> ApiResult<BuildingList>)? = null): BuildingCatalog =
         runBlocking { BuildingCatalogRepository(EmptyCoroutineContext, remote) { assetJson() }.catalog() }
+
+    private fun repository(vararg answers: () -> ApiResult<BuildingList>): BuildingCatalogRepository {
+        val next = answers.iterator()
+        val server: suspend () -> ApiResult<BuildingList> = { next.next()().also { serverCalls.incrementAndGet() } }
+        return BuildingCatalogRepository(EmptyCoroutineContext, server) { assetJson() }
+    }
+
+    private fun listed(vararg symbols: String): ApiResult<BuildingList> =
+        ApiResult.Success(
+            BuildingList(
+                source = SERVER_SOURCE,
+                buildings =
+                    symbols.map { symbol ->
+                        apiBuilding(symbol = symbol, name = "Serwer $symbol", outline = square(SERVER_SPAN))
+                    },
+            ),
+        )
 
     private fun apiBuilding(symbol: String, name: String, outline: GeoPolygon): ApiBuilding =
         ApiBuilding(
@@ -108,7 +208,9 @@ class ServerBuildingCatalogTest {
         const val ASSET_SOURCE = "© OpenStreetMap contributors"
         const val SERVER_SPAN = 2.0
         const val SERVER_ERROR = 500
+        const val PENDING_YIELDS = 5
         const val POLYGON = """{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}"""
         const val POINT = """{"type":"Point","coordinates":[0,0]}"""
+        val OFFLINE = ApiResult.NetworkError(IOException("brak sieci"))
     }
 }
