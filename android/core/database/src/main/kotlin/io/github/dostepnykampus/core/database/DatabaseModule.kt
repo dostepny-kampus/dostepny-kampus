@@ -26,4 +26,8 @@ object DatabaseModule {
     fun database(
         @ApplicationContext context: Context,
     ): DkDatabase = Room.databaseBuilder(context, DkDatabase::class.java, NAME).build()
+
+    /** Kolejka zgłoszeń z [database]. */
+    @Provides
+    fun pendingSubmissions(database: DkDatabase): PendingSubmissionDao = database.pendingSubmissions()
 }
