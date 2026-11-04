@@ -240,6 +240,10 @@ final class NullabilityArchitectureTest {
                 "record Listed(@Nullable String kept) { private void f(@Nullable String v) { } }",
                 false
             ),
+            new Sample(
+                nullable, "domain/Listed",
+                "record Listed(@Nullable String kept) { void f(@Nullable String v) { } }", true
+            ),
             new Sample(nullable, "a/A", "class A { }", true),
             new Sample(
                 nullable, "komponent z listy i null poza domeną",
