@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
@@ -16,7 +16,6 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Testy NFR-26: zdjęcie po zapisie nie ma EXIF z miejscem ani komentarza,
@@ -67,7 +66,7 @@ final class JpegCleanerTest {
     @Test
     void nfrTwentySixRejectsOtherFormat() {
         Assertions.assertThrows(
-            ResponseStatusException.class,
+            IOException.class,
             () -> JpegCleaner.strip("GIF89a".getBytes(StandardCharsets.US_ASCII)),
             "Plik GIF przeszedł jako JPEG"
         );
@@ -77,7 +76,7 @@ final class JpegCleanerTest {
     void nfrTwentySixRejectsCutFile() throws IOException {
         final byte[] photo = JpegCleanerTest.photo();
         Assertions.assertThrows(
-            ResponseStatusException.class,
+            IOException.class,
             () -> JpegCleaner.strip(Arrays.copyOf(photo, 30)),
             "Ucięty plik JPEG przeszedł"
         );
