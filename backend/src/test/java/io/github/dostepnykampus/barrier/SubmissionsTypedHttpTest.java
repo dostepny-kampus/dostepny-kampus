@@ -50,11 +50,6 @@ final class SubmissionsTypedHttpTest {
         "\"photoIds\":[\"5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d\"]"
     );
 
-    /**
-     * Typ odpowiedzi z błędem.
-     */
-    private static final String PROBLEM = "application/problem+json";
-
     @ParameterizedTest
     @Disabled("Stary kontroler przyjmuje pusty status, poprawka w następnym PR")
     @ValueSource(strings = {"status=", "status=,"})
@@ -65,7 +60,7 @@ final class SubmissionsTypedHttpTest {
             SubmissionsTypedHttpTest.summary(
                 new SubmissionRequests(context).get("/submissions?".concat(query))
             ),
-            Matchers.equalTo("400 ".concat(SubmissionsTypedHttpTest.PROBLEM))
+            Matchers.equalTo("400 application/problem+json")
         );
     }
 
@@ -109,7 +104,7 @@ final class SubmissionsTypedHttpTest {
                     SubmissionsTypedHttpTest.ID, SubmissionsTypedHttpTest.edit(version)
                 )
             ),
-            Matchers.equalTo("400 ".concat(SubmissionsTypedHttpTest.PROBLEM))
+            Matchers.equalTo("400 application/problem+json")
         );
     }
 
@@ -129,7 +124,7 @@ final class SubmissionsTypedHttpTest {
             Matchers.equalTo(
                 List.of(
                     String.join(
-                        " ", "409", SubmissionsTypedHttpTest.PROBLEM,
+                        " ", "409", "application/problem+json",
                         "Na serwerze jest inna wersja zgłoszenia albo jego status",
                         "nie pozwala na zmianę"
                     ),
