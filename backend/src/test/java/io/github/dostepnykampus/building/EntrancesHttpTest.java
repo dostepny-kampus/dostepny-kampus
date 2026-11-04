@@ -1,10 +1,11 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
 
+import io.github.dostepnykampus.OpenApiContract;
 import io.github.dostepnykampus.PostgisTestConfiguration;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
@@ -67,6 +68,7 @@ final class EntrancesHttpTest {
         throws Exception {
         return MockMvcBuilders.webAppContextSetup(context).build()
             .perform(MockMvcRequestBuilders.get("/buildings/{symbol}", symbol))
+            .andExpect(new OpenApiContract())
             .andReturn()
             .getResponse()
             .getContentAsString(StandardCharsets.UTF_8);
