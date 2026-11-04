@@ -1024,11 +1024,15 @@ components:
     AppliedResult:
       type: object
       description: Operacja zapisana na serwerze.
-      required: [clientOperationId, outcome, submission]
+      required: [clientOperationId, outcome]
       properties:
         clientOperationId: {type: string, format: uuid, description: "Identyfikator operacji z żądania."}
         outcome: {const: APPLIED, description: "`APPLIED` — zapisana."}
-        submission: {$ref: '#/components/schemas/Submission', description: "Zgłoszenie po zapisie."}
+        submission:
+          $ref: '#/components/schemas/Submission'
+          description: >-
+            Zgłoszenie po zapisie; obecne przy `CREATE_SUBMISSION` i `UPDATE_SUBMISSION`, nieobecne przy operacjach
+            na znacznikach piętra obejrzanego (US15.1, US15.2).
       unevaluatedProperties: false
     ConflictResult:
       type: object
