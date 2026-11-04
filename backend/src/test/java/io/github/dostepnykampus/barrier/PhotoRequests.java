@@ -14,15 +14,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Zgłoszenia z listą zdjęć w bazie oraz żądania zdjęć przez MockMvc.
+ * Zgłoszenia z jednym zdjęciem w bazie i żądania zdjęć przez MockMvc.
  *
  * @since 0.1.0
  */
 final class PhotoRequests {
 
-    /**
-     * Kontekst aplikacji, na którym działa MockMvc.
-     */
+    /** Kontekst aplikacji. */
     private final WebApplicationContext context;
 
     PhotoRequests(final WebApplicationContext context) {
@@ -57,7 +55,7 @@ final class PhotoRequests {
     }
 
     /**
-     * Zmienia status zgłoszenia bezpośrednio w bazie.
+     * Zmienia status zgłoszenia w bazie.
      *
      * @param id Identyfikator zgłoszenia
      * @param status Nowy status
