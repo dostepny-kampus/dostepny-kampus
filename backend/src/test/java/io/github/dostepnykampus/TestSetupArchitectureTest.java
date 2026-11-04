@@ -22,7 +22,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -74,13 +73,6 @@ final class TestSetupArchitectureTest {
      * Klasy z {@code @MockitoBean} lub {@code @MockitoSpyBean}, z powodem.
      */
     private static final Map<String, String> MOCKED = Map.of();
-
-    /** Importy w źródłach przykładów. */
-    private static final String IMPORTS =
-        "import io.github.dostepnykampus.IntegrationTest; "
-        + "import org.springframework.boot.test.context.*; "
-        + "import org.springframework.test.annotation.*; "
-        + "import org.springframework.test.context.bean.override.mockito.*;";
 
     /** Klasy testowe aplikacji, importowane raz. */
     private static final JavaClasses TESTS = new ClassFileImporter()
@@ -192,16 +184,11 @@ final class TestSetupArchitectureTest {
     ) {
         return ArchRuleDefinition.classes().should(
             new ArchCondition<JavaClass>(text) {
-                private final Set<String> missing = new HashSet<>();
-
-                @Override
-                public void init(final Collection<JavaClass> all) {
-                    this.missing.addAll(expected);
-                    all.forEach(item -> this.missing.remove(item.getName()));
-                }
+                private final Set<String> seen = new HashSet<>();
 
                 @Override
                 public void check(final JavaClass item, final ConditionEvents events) {
+                    this.seen.add(item.getName());
                     if (bad.test(item)) {
                         events.add(SimpleConditionEvent.violated(item, item.getName()));
                     }
@@ -209,7 +196,7 @@ final class TestSetupArchitectureTest {
 
                 @Override
                 public void finish(final ConditionEvents events) {
-                    this.missing.forEach(
+                    expected.stream().filter(name -> !this.seen.contains(name)).forEach(
                         name -> events.add(SimpleConditionEvent.violated(name, name))
                     );
                 }
@@ -257,7 +244,12 @@ final class TestSetupArchitectureTest {
                     source,
                     String.format(
                         "package fixture.s%d;%n%s%n%s%n", idx,
-                        TestSetupArchitectureTest.IMPORTS, samples.get(idx).code()
+                        String.join(
+                            " ", "import io.github.dostepnykampus.IntegrationTest;",
+                            "import org.springframework.boot.test.context.*;",
+                            "import org.springframework.test.annotation.*;",
+                            "import org.springframework.test.context.bean.override.mockito.*;"
+                        ), samples.get(idx).code()
                     )
                 );
                 args.add(source.toString());
@@ -274,7 +266,7 @@ final class TestSetupArchitectureTest {
     }
 
     private static String classpath() throws URISyntaxException {
-        final List<String> parts = new ArrayList<>();
+        final List<String> parts = new ArrayList<>(4);
         for (final Class<?> type : List.of(
             SpringBootTest.class, Import.class, MockitoBean.class, IntegrationTest.class
         )) {
@@ -290,7 +282,7 @@ final class TestSetupArchitectureTest {
      * Przykład: reguła z nazwy pakietu, źródło klas i czy reguła ma je odrzucić.
      *
      * @param rule Reguła sprawdzana na przykładzie
-     * @param code Źródło klas przykładu
+     * @param code Kod klas przykładu
      * @param violating Czy reguła ma zgłosić naruszenie
      * @since 0.1.0
      */
