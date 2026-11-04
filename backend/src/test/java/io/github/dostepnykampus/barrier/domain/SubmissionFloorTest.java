@@ -7,7 +7,6 @@ package io.github.dostepnykampus.barrier.domain;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -35,7 +34,6 @@ final class SubmissionFloorTest {
     }
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void brGOneIdentifiesFloorByIdOrNumber() {
         Assertions.assertAll(
             () -> Assertions.assertTrue(

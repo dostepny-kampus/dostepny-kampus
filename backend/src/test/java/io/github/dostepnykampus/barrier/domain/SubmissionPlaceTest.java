@@ -7,7 +7,6 @@ package io.github.dostepnykampus.barrier.domain;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -24,7 +23,6 @@ final class SubmissionPlaceTest {
     private static final String NEGATIVE = "Dokładność pozycji jest ujemna";
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void usSixRejectsNegativeAccuracy() {
         Assertions.assertAll(
             Stream.of(-0.001, -1.0, Double.NEGATIVE_INFINITY).map(
@@ -42,7 +40,6 @@ final class SubmissionPlaceTest {
     }
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void usSixRejectsNanAccuracy() {
         Assertions.assertEquals(
             SubmissionPlaceTest.NEGATIVE,
@@ -70,7 +67,6 @@ final class SubmissionPlaceTest {
     }
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void usSixRejectsMissingPoint() {
         Assertions.assertThrows(
             NullPointerException.class,
@@ -80,7 +76,6 @@ final class SubmissionPlaceTest {
     }
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void brGTwoWithBuildingChangesOnlyBuilding() {
         final SubmissionPlace origin = SubmissionPlaceTest.place(4.5, "B1");
         final SubmissionPlace copy = origin.withBuilding("C3");
@@ -97,7 +92,6 @@ final class SubmissionPlaceTest {
     }
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void brGTwoOutsideBuildingsClearsOnlyBuilding() {
         final SubmissionPlace origin = SubmissionPlaceTest.place(4.5, "B1");
         final SubmissionPlace copy = origin.outsideBuildings();
