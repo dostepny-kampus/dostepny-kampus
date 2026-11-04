@@ -81,6 +81,15 @@ class EntranceAssessmentTextTest {
         assertPerEntrance(first = IMPORT_TEXT, second = WALK_TEXT, group = GROUP_V2)
     }
 
+    // Wiersz: V2, wejścia z tym samym źródłem i różnym dniem → napis przy każdym wejściu, nad grupą go nie ma,
+    //   US17.3, BR-24, import.
+    @Test
+    @Ignore(NOT_YET)
+    fun us17_3_v2_per_day() {
+        showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, NEXT_DAY)))
+        assertPerEntrance(first = IMPORT_TEXT, second = NEXT_TEXT, group = GROUP_V2)
+    }
+
     // Wiersz: V3, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
     //   nad wejściami, US17.3, BR-24, import.
     @Test
@@ -184,9 +193,11 @@ class EntranceAssessmentTextTest {
         const val GROUP_V2 = "Wejścia"
         const val GROUP_V3 = "Zalecane wejście"
         const val IMPORT_TEXT = "Z map i opisów, stan z 1.10.2026"
+        const val NEXT_TEXT = "Z map i opisów, stan z 2.10.2026"
         const val WALK_TEXT = "Sprawdzone na miejscu 5.3.2026"
 
         val IMPORT_DAY: LocalDate = LocalDate.of(2026, 10, 1)
+        val NEXT_DAY: LocalDate = LocalDate.of(2026, 10, 2)
         val WALK_DAY: LocalDate = LocalDate.of(2026, 3, 5)
 
         val catalog =
