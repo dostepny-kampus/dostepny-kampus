@@ -34,13 +34,7 @@ import org.springframework.web.server.ResponseStatusException;
  * @since 0.1.0
  */
 @RestController
-final class SubmissionsController {
-
-    /**
-     * Opis konfliktu wersji w odpowiedzi 409.
-     */
-    private static final String CONFLICT =
-        "Na serwerze jest inna wersja zgłoszenia albo jego status nie pozwala na zmianę";
+public final class SubmissionsController {
 
     /**
      * Opis braku zgłoszenia w odpowiedzi 404.
@@ -127,17 +121,15 @@ final class SubmissionsController {
         @PathVariable("submissionId") final UUID id,
         @RequestBody final SubmissionUpdateRequest body
     ) {
-        final EditResult result = this.service.update(body.toCommand(id));
-        return switch (result) {
+        return switch (this.service.update(body.toCommand(id))) {
             case EditResult.Saved saved -> new SubmissionResponse(saved.submission());
             case EditResult.Conflict conflict -> throw new ConflictingState(
-                SubmissionsController.CONFLICT,
+                "Na serwerze jest inna wersja zgłoszenia albo jego status nie pozwala na zmianę",
                 "serverSubmission",
                 new SubmissionResponse(conflict.current())
             );
-            case EditResult.Missing _ -> throw new MissingResource(
-                SubmissionsController.MISSING
-            );
+            case EditResult.Missing _ -> throw new MissingResource(SubmissionsController.MISSING);
+            case null -> throw new IllegalStateException("Brak wyniku edycji zgłoszenia");
         };
     }
 }
