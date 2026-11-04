@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
+import java.util.Objects;
+
 /**
  * Wynik utworzenia zgłoszenia (BR-9).
  *
@@ -27,6 +29,16 @@ public sealed interface CreateResult
      * @since 0.1.0
      */
     record Created(Submission submission) implements CreateResult {
+
+        /**
+         * Wynik z utworzonym zgłoszeniem; brak zgłoszenia kończy się wyjątkiem
+         * NullPointerException.
+         *
+         * @param submission Zgłoszenie z wyniku
+         */
+        public Created {
+            Objects.requireNonNull(submission, "submission");
+        }
     }
 
     /**
@@ -36,5 +48,15 @@ public sealed interface CreateResult
      * @since 0.1.0
      */
     record Existing(Submission submission) implements CreateResult {
+
+        /**
+         * Wynik z istniejącym zgłoszeniem; brak zgłoszenia kończy się wyjątkiem
+         * NullPointerException.
+         *
+         * @param submission Zgłoszenie z wyniku
+         */
+        public Existing {
+            Objects.requireNonNull(submission, "submission");
+        }
     }
 }

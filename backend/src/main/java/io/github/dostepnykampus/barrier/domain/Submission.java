@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier.domain;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -21,4 +22,22 @@ import java.util.UUID;
 public record Submission(
     UUID id, int version, SubmissionStatus status, Instant createdAt, SubmissionContent content
 ) {
+
+    /**
+     * Zgłoszenie z wersją co najmniej 1 i kompletem referencji. Wersja poniżej 1
+     * to uszkodzone dane serwera, więc kończy się niekontrolowanym wyjątkiem
+     * IllegalArgumentException, a nie błędem klienta; brak którejkolwiek referencji
+     * kończy się wyjątkiem NullPointerException.
+     */
+    public Submission {
+        Objects.requireNonNull(id, "id");
+        Objects.requireNonNull(status, "status");
+        Objects.requireNonNull(createdAt, "createdAt");
+        Objects.requireNonNull(content, "content");
+        if (version < 1) {
+            throw new IllegalArgumentException(
+                String.format("Wersja zgłoszenia %d jest mniejsza niż 1", version)
+            );
+        }
+    }
 }
