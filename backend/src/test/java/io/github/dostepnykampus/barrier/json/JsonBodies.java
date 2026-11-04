@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.barrier.json;
 
-<<<<<<< HEAD
 import io.github.dostepnykampus.InvalidInput;
 import io.github.dostepnykampus.StrictMapper;
 import java.util.UUID;
@@ -13,12 +12,6 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Assertions;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.exc.MismatchedInputException;
-=======
-import io.github.dostepnykampus.StrictMapper;
-import java.util.UUID;
-import java.util.function.Consumer;
-import tools.jackson.databind.JsonNode;
->>>>>>> origin/sprint/3
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -85,7 +78,6 @@ final class JsonBodies {
     static SubmissionContentJson bind(final JsonNode node) {
         return JsonBodies.MAPPER.readValue(node.toString(), SubmissionContentJson.class);
     }
-<<<<<<< HEAD
 
     static JsonNode roundTrip(final JsonNode node) {
         return JsonBodies.MAPPER.valueToTree(
@@ -111,6 +103,4 @@ final class JsonBodies {
             reason
         );
     }
-=======
->>>>>>> origin/sprint/3
 }
