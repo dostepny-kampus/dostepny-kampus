@@ -165,7 +165,6 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         final String sql, final UUID id, final int version, final SubmissionContent content
     ) {
         final SubmissionPlace place = content.place();
-        final String json = this.mapper.writeValueAsString(new SubmissionContentJson(content));
         try {
             return this.jdbc.sql(sql)
                 .param("id", id)
@@ -174,7 +173,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 .param("building", place.buildingSymbol())
                 .param("lon", place.point().longitude())
                 .param("lat", place.point().latitude())
-                .param("content", json)
+                .param("content", this.json(content))
                 .param("from", JdbcSubmissions.editable(Function.identity()))
                 .param("to", JdbcSubmissions.editable(SubmissionStatus::afterEdit))
                 .query(this.mapping)
@@ -182,6 +181,10 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         } catch (final DataIntegrityViolationException ex) {
             throw JdbcSubmissions.translated(ex);
         }
+    }
+
+    private String json(final SubmissionContent content) {
+        return this.mapper.writeValueAsString(new SubmissionContentJson(content));
     }
 
     private static RuntimeException translated(final DataIntegrityViolationException error) {
