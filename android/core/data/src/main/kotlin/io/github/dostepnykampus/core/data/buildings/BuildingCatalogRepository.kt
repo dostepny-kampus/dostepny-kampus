@@ -36,8 +36,9 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
  * - Wejścia nie obejmują rodzajów `emergency`, `exit` i `garage`, bo to nie są wejścia dla odwiedzających
  *   (BR-25, decyzja 76).
  *
- * Plik jest czytany i parsowany raz, w [ioContext]; kolejne wywołania [catalog], także równoległe, dostają
- * ten sam katalog. Pierwszy wynik, także zapasowy z pliku, zostaje na czas procesu.
+ * [catalog] czyta plik i pyta serwer raz, w [ioContext]; kolejne wywołania, także równoległe, dostają ten sam
+ * katalog z pamięci. [refresh] pyta serwer i czyta plik od nowa. Bez odpowiedzi serwera katalog pobrany
+ * wcześniej z serwera zostaje, a plik jest zapasem tylko wtedy, gdy z serwera nic jeszcze nie pobrano (NFR-10).
  *
  * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
  * @param listBuildings lista z serwera; `null` zostawia katalog wyłącznie z pliku
@@ -50,6 +51,7 @@ class BuildingCatalogRepository(
 ) {
     private val mutex = Mutex()
     private var cached: BuildingCatalog? = null
+    private var downloaded: BuildingCatalog? = null
 
     /**
      * Zwraca katalog budynków.
@@ -59,27 +61,31 @@ class BuildingCatalogRepository(
     suspend fun catalog(): BuildingCatalog = mutex.withLock { cached ?: load().also { cached = it } }
 
     /**
-     * Zwraca katalog dla „Spróbuj ponownie”, gdy budynku nie ma w telefonie (NFR-10).
+     * Pyta serwer i czyta plik od nowa, zapamiętuje wynik i zwraca katalog dla „Spróbuj ponownie”, gdy budynku
+     * nie ma w telefonie (NFR-10). Gdy serwer nie odpowie, zostaje ostatni katalog z serwera, a bez niego plik.
      *
      * @throws IllegalArgumentException gdy plik konturów ma zły format
      */
-    suspend fun refresh(): BuildingCatalog = catalog()
+    suspend fun refresh(): BuildingCatalog = mutex.withLock { load().also { cached = it } }
 
     private suspend fun load(): BuildingCatalog {
         val bundled = withContext(ioContext) { parseBuildingCatalog(readGeoJson()).forVisitors() }
         val server = nonEmptyServerList()
-        return if (server == null) {
-            bundled
-        } else {
-            val symbols = server.buildings.map { item -> item.building.symbol }.toSet()
-            val outlines =
-                bundled.copy(
-                    buildings = server.buildings.map { item -> item.building },
-                    entrances = bundled.entrances.filter { entrance -> entrance.buildingSymbol in symbols },
-                    attribution = server.source,
-                )
-            outlines.forVisitors()
+        if (server != null) {
+            downloaded = fromServer(bundled, server)
         }
+        return downloaded ?: bundled
+    }
+
+    private fun fromServer(bundled: BuildingCatalog, server: BuildingList): BuildingCatalog {
+        val symbols = server.buildings.map { item -> item.building.symbol }.toSet()
+        val outlines =
+            bundled.copy(
+                buildings = server.buildings.map { item -> item.building },
+                entrances = bundled.entrances.filter { entrance -> entrance.buildingSymbol in symbols },
+                attribution = server.source,
+            )
+        return outlines.forVisitors()
     }
 
     private suspend fun nonEmptyServerList(): BuildingList? {

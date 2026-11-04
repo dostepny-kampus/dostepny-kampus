@@ -13,6 +13,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.network.NetworkStatus
+import io.github.dostepnykampus.core.model.BuildingCatalog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -41,7 +42,7 @@ sealed interface BuildingCardUiState {
 
 /**
  * Karta budynku [symbol] z katalogu w telefonie (US2, BR-25). Katalog jest czytany, gdy ekran jest widoczny,
- * i jeszcze 5 s po zniknięciu, więc obrót ekranu nie czyta go od nowa. [retry] czyta katalog ponownie.
+ * i jeszcze 5 s po zniknięciu, więc obrót ekranu nie czyta go od nowa. [retry] pyta serwer i czyta plik od nowa.
  */
 @HiltViewModel(assistedFactory = BuildingCardViewModel.Factory::class)
 class BuildingCardViewModel
@@ -56,7 +57,7 @@ class BuildingCardViewModel
         /** Bieżący stan karty. */
         val uiState: StateFlow<BuildingCardUiState> =
             attempts
-                .map { buildingCard(repository.catalog(), symbol) }
+                .map { attempt -> buildingCard(catalogFor(repository, attempt), symbol) }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), BuildingCardUiState.Loading)
 
         /** Czy jest internet; na start prawda, żeby linia „Bez internetu” nie mignęła (NFR-10, US2.8). */
@@ -69,6 +70,9 @@ class BuildingCardViewModel
         fun retry() {
             attempts.value++
         }
+
+        private suspend fun catalogFor(repository: BuildingCatalogRepository, attempt: Int): BuildingCatalog =
+            if (attempt == 0) repository.catalog() else repository.refresh()
 
         /** Tworzy [BuildingCardViewModel] dla symbolu z trasy V2. */
         @AssistedFactory
