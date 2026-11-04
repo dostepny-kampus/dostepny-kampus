@@ -48,16 +48,6 @@ import tools.jackson.databind.JsonNode;
 final class RouteParityTest {
 
     /**
-     * Pakiet kodu aplikacji; handlery spoza niego są poza zakresem.
-     */
-    private static final String APPLICATION = "io.github.dostepnykampus";
-
-    /**
-     * Punkt tylko dla testów, poza zakresem parytetu.
-     */
-    private static final String TESTING = "io.github.dostepnykampus.FailingController";
-
-    /**
      * Zmienna w szablonie ścieżki, także z wyrażeniem regularnym Springa.
      */
     private static final Pattern VARIABLE = Pattern.compile("\\{[^}]*}");
@@ -193,18 +183,12 @@ final class RouteParityTest {
         MatcherAssert.assertThat(
             "Nazwy zmiennych albo prefiks serwera wpływają na parytet",
             RouteParityTest.normalized("get", "/api/", "/buildings/{id:[A-Z]+}/floors"),
-            Matchers.equalTo(RouteParityTest.normalized("GET", "/api", "/buildings/{symbol}/floors"))
+            Matchers.equalTo(
+                RouteParityTest.normalized("GET", "/api", "/buildings/{symbol}/floors")
+            )
         );
     }
 
-    /**
-     * Błędy parytetu, w stałej kolejności: handlery, operacje, lista.
-     *
-     * @param spec Operacje kontraktu
-     * @param handlers Operacje obsługiwane przez aplikację
-     * @param pending Operacje kontraktu jeszcze bez handlera i powód
-     * @return Opisy błędów, pusta dla zgodnych zbiorów
-     */
     private static List<String> problems(
         final Set<String> spec, final Set<String> handlers, final Map<String, String> pending
     ) {
@@ -215,22 +199,20 @@ final class RouteParityTest {
         if (spec.isEmpty()) {
             found.add("brak operacji w kontrakcie");
         }
-        new TreeSet<>(handlers).stream().filter(item -> !spec.contains(item)).forEach(
-            item -> found.add("handler bez operacji w kontrakcie: ".concat(item))
-        );
+        new TreeSet<>(handlers).stream().filter(item -> !spec.contains(item))
+            .map("handler bez operacji w kontrakcie: "::concat).forEach(found::add);
         new TreeSet<>(spec).stream()
             .filter(item -> !handlers.contains(item) && !pending.containsKey(item))
-            .forEach(
-                item -> found.add(
-                    "operacja kontraktu bez handlera i spoza listy: ".concat(item)
-                )
-            );
+            .map("operacja kontraktu bez handlera i spoza listy: "::concat)
+            .forEach(found::add);
         new TreeSet<>(pending.keySet()).forEach(
             item -> {
-                if (!spec.contains(item)) {
+                if (spec.contains(item)) {
+                    if (handlers.contains(item)) {
+                        found.add("wpis listy ma już handler, usuń go z listy: ".concat(item));
+                    }
+                } else {
                     found.add("wpis listy bez operacji w kontrakcie: ".concat(item));
-                } else if (handlers.contains(item)) {
-                    found.add("wpis listy ma już handler, usuń go z listy: ".concat(item));
                 }
             }
         );
@@ -247,8 +229,8 @@ final class RouteParityTest {
 
     private static boolean ours(final HandlerMethod handler) {
         final String type = handler.getBeanType().getName();
-        return type.startsWith(RouteParityTest.APPLICATION.concat("."))
-            && !type.equals(RouteParityTest.TESTING);
+        return type.startsWith("io.github.dostepnykampus.")
+            && !"io.github.dostepnykampus.FailingController".equals(type);
     }
 
     private static List<String> routes(final RequestMappingInfo info) {
@@ -271,20 +253,17 @@ final class RouteParityTest {
             builder -> builder.schemas(Map.of(location, text))
         ).getSchema(SchemaLocation.of(location)).getSchemaNode();
         final String prefix = RouteParityTest.prefix(tree);
-        final Set<String> found = new TreeSet<>();
-        tree.path("paths").properties().forEach(
+        return tree.path("paths").properties().stream().flatMap(
             path -> path.getValue().propertyNames().stream()
                 .filter(RouteParityTest.VERBS::contains)
-                .forEach(
-                    verb -> found.add(RouteParityTest.normalized(verb, prefix, path.getKey()))
-                )
-        );
-        return found;
+                .map(verb -> RouteParityTest.normalized(verb, prefix, path.getKey()))
+        ).collect(Collectors.toCollection(TreeSet::new));
     }
 
     private static String prefix(final JsonNode tree) {
-        final String url = tree.path("servers").path(0).path("url").asString("/");
-        return URI.create(url.replace("{", "").replace("}", "")).getPath();
+        return URI.create(
+            tree.path("servers").path(0).path("url").asString("/")
+                .replace("{", "").replace("}", "")).getPath();
     }
 
     private static String normalized(final String verb, final String prefix, final String path) {
