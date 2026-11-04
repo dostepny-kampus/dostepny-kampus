@@ -43,11 +43,15 @@ final class ContentFieldsJsonTest {
     );
 
     @Test
-    void wthreeTwoEveryGroupHasPairBothWays() {
+    void wthreeTwoTableCoversEveryGroup() {
         Assertions.assertEquals(
             EnumSet.allOf(BarrierGroup.class), ContentFieldsJsonTest.GROUPS.keySet(),
             "Tabela grup nie ma pary dla każdej stałej domeny"
         );
+    }
+
+    @Test
+    void wthreeTwoEveryGroupHasPairBothWays() {
         Assertions.assertAll(
             ContentFieldsJsonTest.GROUPS.entrySet().stream().map(
                 pair -> () -> {
