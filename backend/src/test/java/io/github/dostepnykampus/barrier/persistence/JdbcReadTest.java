@@ -83,9 +83,10 @@ final class JdbcReadTest {
         final UUID third = JdbcReadTest.created(data, data.seed(3, content, sent), 2);
         final UUID first = JdbcReadTest.created(data, data.seed(1, content, sent), 3);
         final UUID second = JdbcReadTest.created(data, data.seed(2, content, sent), 2);
-        final UUID last = JdbcReadTest.created(data, data.seed(4, content, sent), 0);
         Assertions.assertEquals(
-            List.of(last, second, third, first),
+            List.of(
+                JdbcReadTest.created(data, data.seed(4, content, sent), 0), second, third, first
+            ),
             JdbcReadTest.ids(
                 data, new SubmissionQuery(Set.of(sent), SubmissionData.BUILDING, null)
             ),
