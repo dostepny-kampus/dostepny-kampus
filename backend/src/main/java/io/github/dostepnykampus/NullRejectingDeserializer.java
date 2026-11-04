@@ -41,7 +41,7 @@ final class NullRejectingDeserializer extends DelegatingDeserializer {
     }
 
     @Override
-    protected ValueDeserializer<?> newDelegatingInstance(final ValueDeserializer<?> delegatee) {
+    public ValueDeserializer<?> newDelegatingInstance(final ValueDeserializer<?> delegatee) {
         return new NullRejectingDeserializer(delegatee);
     }
 }

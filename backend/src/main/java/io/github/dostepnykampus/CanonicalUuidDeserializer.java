@@ -35,13 +35,21 @@ final class CanonicalUuidDeserializer extends StdScalarDeserializer<UUID> {
     @Override
     public UUID deserialize(final JsonParser parser, final DeserializationContext context) {
         final UUID result;
-        if (!parser.hasToken(JsonToken.VALUE_STRING)) {
+        if (parser.hasToken(JsonToken.VALUE_STRING)) {
+            result = CanonicalUuidDeserializer.parsed(parser.getString(), context);
+        } else {
             result = (UUID) context.handleUnexpectedToken(UUID.class, parser);
-        } else if (CanonicalUuidDeserializer.CANONICAL.matcher(parser.getString()).matches()) {
-            result = UUID.fromString(parser.getString());
+        }
+        return result;
+    }
+
+    private static UUID parsed(final String text, final DeserializationContext context) {
+        final UUID result;
+        if (CanonicalUuidDeserializer.CANONICAL.matcher(text).matches()) {
+            result = UUID.fromString(text);
         } else {
             result = (UUID) context.handleWeirdStringValue(
-                UUID.class, parser.getString(), "Identyfikator spoza postaci 8-4-4-4-12"
+                UUID.class, text, "Identyfikator spoza postaci 8-4-4-4-12"
             );
         }
         return result;
