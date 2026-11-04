@@ -10,7 +10,6 @@ import io.github.dostepnykampus.barrier.domain.NewSubmission;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.exc.MismatchedInputException;
 
@@ -21,7 +20,6 @@ import tools.jackson.databind.exc.MismatchedInputException;
  *
  * @since 0.1.0
  */
-@Disabled("Ciała żądań zgłoszeń jeszcze nie wiążą JSON")
 final class RequestsJsonTest {
 
     @Test
