@@ -25,7 +25,10 @@ import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.start.FirstLaunchRepository
 import io.github.dostepnykampus.core.data.start.startDataStore
+import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
+import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.network.BuildingsApi
+import io.github.dostepnykampus.core.network.SubmissionsApi
 import javax.inject.Singleton
 
 /**
@@ -66,4 +69,14 @@ object DataModule {
     @Provides
     @Singleton
     fun roles(): RoleProvider = GuestRoleProvider
+
+    /** Kolejka zgłoszeń: zapis w bazie Room, wysyłka klientem zgłoszeń (NFR-5, US9.2). */
+    @Provides
+    @Singleton
+    fun submissionQueue(api: SubmissionsApi, store: PendingSubmissionDao): SubmissionQueue =
+        SubmissionQueue(
+            store = store,
+            create = api::create,
+            putPhoto = api::putPhoto,
+        )
 }
