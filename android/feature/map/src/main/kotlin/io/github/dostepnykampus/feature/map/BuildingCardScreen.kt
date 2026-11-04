@@ -134,13 +134,15 @@ internal fun EntranceSummaryRow(summary: EntranceSummary) {
 
 @Composable
 private fun BuildingFacts(card: BuildingCardUiState.Ready) {
+    val common = commonAssessment(card.entrances)
+    AssessmentLine(common)
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
-        card.entrances.forEach { EntranceLine(it) }
+        card.entrances.forEach { EntranceLine(it, withAssessment = common == null) }
     }
 }
 
 @Composable
-private fun EntranceLine(listed: OrderedEntrance) {
+private fun EntranceLine(listed: OrderedEntrance, withAssessment: Boolean) {
     val title = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
         FlowRow(
@@ -158,6 +160,7 @@ private fun EntranceLine(listed: OrderedEntrance) {
             }
         }
         Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
+        if (withAssessment) AssessmentLine(listed.entrance.assessment)
     }
 }
 

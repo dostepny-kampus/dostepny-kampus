@@ -82,19 +82,23 @@ private fun VisitBody(card: BuildingCardUiState.Ready, onShowEntrance: (String) 
     val accessible = card.entrances.filter { it.entrance.marking == EntranceMarking.ACCESSIBLE }
     val recommended = accessible.firstOrNull { it.isRecommended }
     val others = accessible.filterNot { it.isRecommended }
+    val common = commonAssessment(accessible)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = answerSentence(symbol = card.symbol, answer = visitAnswer(card.entrances)),
             style = MaterialTheme.typography.bodyLarge,
         )
+        AssessmentLine(common)
         if (recommended != null) {
             GroupContainer(title = stringResource(R.string.wizyta_zalecane)) {
-                AccessibleEntrance(listed = recommended, onShowEntrance = onShowEntrance)
+                AccessibleEntrance(recommended, withAssessment = common == null, onShowEntrance = onShowEntrance)
             }
         }
         if (others.isNotEmpty()) {
             GroupContainer(title = stringResource(R.string.wizyta_inne)) {
-                others.forEach { AccessibleEntrance(listed = it, onShowEntrance = onShowEntrance) }
+                others.forEach {
+                    AccessibleEntrance(it, withAssessment = common == null, onShowEntrance = onShowEntrance)
+                }
             }
         }
     }
@@ -113,7 +117,7 @@ private fun answerSentence(symbol: String, answer: VisitAnswer): String {
 }
 
 @Composable
-private fun AccessibleEntrance(listed: OrderedEntrance, onShowEntrance: (String) -> Unit) {
+private fun AccessibleEntrance(listed: OrderedEntrance, withAssessment: Boolean, onShowEntrance: (String) -> Unit) {
     val name = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
     val spoken = stringResource(R.string.wizyta_pokaz_czytaj, name)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
@@ -132,6 +136,7 @@ private fun AccessibleEntrance(listed: OrderedEntrance, onShowEntrance: (String)
             }
         }
         Text(text = name, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
+        if (withAssessment) AssessmentLine(listed.entrance.assessment)
         PinnedButton(
             text = stringResource(R.string.wizyta_pokaz),
             onClick = { onShowEntrance(listed.entrance.id) },

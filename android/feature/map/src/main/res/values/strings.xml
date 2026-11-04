@@ -27,6 +27,8 @@
     <string name="karta_wiersz_brak_danych">Brak danych o wejściach</string>
     <string name="karta_wejscia">Wejścia</string>
     <string name="karta_zalecane">Zalecane</string>
+    <string name="karta_ocena_import">Z map i opisów, stan z %1$s</string>
+    <string name="karta_ocena_obchod">Sprawdzone na miejscu %1$s</string>
     <string name="karta_bez_nazwy">Wejście bez nazwy w danych</string>
     <string name="karta_sprawdz">Sprawdź, którędy wejść</string>
     <string name="karta_pokaz">Pokaż budynek na mapie</string>
