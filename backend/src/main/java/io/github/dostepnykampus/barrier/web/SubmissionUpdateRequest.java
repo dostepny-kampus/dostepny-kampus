@@ -26,6 +26,10 @@ record SubmissionUpdateRequest(@Nullable Integer version, SubmissionContentJson 
      * @return Komenda edycji zgłoszenia
      */
     SubmissionEdit toCommand(final UUID path) {
+        return SubmissionUpdateRequest.missing();
+    }
+
+    private static <T> T missing() {
         throw new UnsupportedOperationException();
     }
 }

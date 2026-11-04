@@ -24,6 +24,10 @@ record NewSubmissionRequest(UUID id, SubmissionContentJson content) {
      * @return Komenda utworzenia zgłoszenia
      */
     NewSubmission toCommand() {
+        return NewSubmissionRequest.missing();
+    }
+
+    private static <T> T missing() {
         throw new UnsupportedOperationException();
     }
 }
