@@ -80,12 +80,14 @@ final class JdbcReadTest {
         final SubmissionData data = SubmissionData.of(context);
         final SubmissionContent content = SubmissionData.content("o");
         final SubmissionStatus sent = SubmissionStatus.SENT;
-        final UUID third = JdbcReadTest.created(data, data.seed(3, content, sent), 2);
-        final UUID first = JdbcReadTest.created(data, data.seed(1, content, sent), 3);
-        final UUID second = JdbcReadTest.created(data, data.seed(2, content, sent), 2);
+        JdbcReadTest.created(data, data.seed(3, content, sent), 2);
+        JdbcReadTest.created(data, data.seed(1, content, sent), 3);
+        JdbcReadTest.created(data, data.seed(2, content, sent), 2);
+        JdbcReadTest.created(data, data.seed(4, content, sent), 0);
         Assertions.assertEquals(
             List.of(
-                JdbcReadTest.created(data, data.seed(4, content, sent), 0), second, third, first
+                SubmissionData.id(4), SubmissionData.id(2), SubmissionData.id(3),
+                SubmissionData.id(1)
             ),
             JdbcReadTest.ids(
                 data, new SubmissionQuery(Set.of(sent), SubmissionData.BUILDING, null)
@@ -94,11 +96,10 @@ final class JdbcReadTest {
         );
     }
 
-    private static UUID created(final SubmissionData data, final UUID id, final int minutes) {
+    private static void created(final SubmissionData data, final UUID id, final int minutes) {
         data.jdbc().sql("UPDATE submissions SET created_at = :at WHERE id = :id")
             .param("at", OffsetDateTime.parse("2026-01-01T10:00:00Z").plusMinutes(minutes))
             .param("id", id).update();
-        return id;
     }
 
     private static List<UUID> ids(final SubmissionData data, final SubmissionQuery query) {
