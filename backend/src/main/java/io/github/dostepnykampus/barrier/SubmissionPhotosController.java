@@ -1,10 +1,11 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
@@ -74,7 +75,13 @@ public final class SubmissionPhotosController {
                 HttpStatus.FORBIDDEN, "Zdjęcie zgłoszenia przyjętego zmienia tylko Weryfikator"
             );
         }
-        this.photos.put(submission, photo, JpegCleaner.strip(jpeg));
+        final byte[] clean;
+        try {
+            clean = JpegCleaner.strip(jpeg);
+        } catch (final IOException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Uszkodzony plik JPEG", ex);
+        }
+        this.photos.put(submission, photo, clean);
         return ResponseEntity.noContent().build();
     }
 
