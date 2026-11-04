@@ -33,12 +33,8 @@ record SubmissionResponse(
      */
     SubmissionResponse(final Submission submission) {
         this(
-            SubmissionResponse.missing(), 1, SubmissionStatus.SENT, SubmissionResponse.missing(),
-            SubmissionResponse.missing()
+            submission.id(), submission.version(), submission.status(), submission.createdAt(),
+            new SubmissionContentJson(submission.content())
         );
-    }
-
-    private static <T> T missing() {
-        throw new UnsupportedOperationException();
     }
 }

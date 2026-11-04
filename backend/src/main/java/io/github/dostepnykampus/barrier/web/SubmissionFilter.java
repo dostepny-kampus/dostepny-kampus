@@ -33,7 +33,7 @@ record SubmissionFilter(
         return SubmissionFilter.missing();
     }
 
-    private static <T> T missing() {
+    private static SubmissionQuery missing() {
         throw new UnsupportedOperationException();
     }
 }
