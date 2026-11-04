@@ -1,10 +1,11 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
 
+import io.github.dostepnykampus.OpenApiContract;
 import io.github.dostepnykampus.PostgisTestConfiguration;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
@@ -215,6 +216,7 @@ final class BuildingsHttpTest {
     private static String body(final WebApplicationContext context) throws Exception {
         return MockMvcBuilders.webAppContextSetup(context).build()
             .perform(MockMvcRequestBuilders.get("/buildings"))
+            .andExpect(new OpenApiContract())
             .andReturn()
             .getResponse()
             .getContentAsString(StandardCharsets.UTF_8);
@@ -282,7 +284,8 @@ final class BuildingsHttpTest {
         return MockMvcBuilders.webAppContextSetup(context).build().perform(
             MockMvcRequestBuilders.get("/buildings/locate").param("lat", lat)
                 .param("lon", lon)
-        ).andReturn()
+        ).andExpect(new OpenApiContract())
+            .andReturn()
             .getResponse()
             .getContentAsString(StandardCharsets.UTF_8);
     }
@@ -292,6 +295,7 @@ final class BuildingsHttpTest {
         final MockHttpServletResponse reply =
             MockMvcBuilders.webAppContextSetup(context).build()
                 .perform(MockMvcRequestBuilders.get(path))
+                .andExpect(new OpenApiContract())
                 .andReturn()
                 .getResponse();
         return "%d %s".formatted(reply.getStatus(), reply.getContentType());
@@ -310,6 +314,7 @@ final class BuildingsHttpTest {
         throws Exception {
         return MockMvcBuilders.webAppContextSetup(context).build()
             .perform(MockMvcRequestBuilders.get("/buildings/{symbol}", symbol))
+            .andExpect(new OpenApiContract())
             .andReturn()
             .getResponse()
             .getContentAsString(StandardCharsets.UTF_8);

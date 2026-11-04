@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -56,7 +55,6 @@ final class OpenApiContractTest {
         );
     }
 
-    @Disabled("Sprawdzenie kontraktu przepuszcza każdą wymianę")
     @ParameterizedTest(name = "{2}")
     @MethodSource("violating")
     void contractRejectsViolatingExchange(
@@ -75,7 +73,15 @@ final class OpenApiContractTest {
         );
     }
 
-    @Disabled("Sprawdzenie kontraktu nie czyta kontraktu")
+    @Test
+    void contractFindsProblemWithoutTitle() {
+        MatcherAssert.assertThat(
+            "Błąd bez title przechodzi sprawdzenie schematem Problem",
+            new OpenApiContract().violations("Problem", "{\"status\":400}"),
+            Matchers.hasItem(Matchers.containsString("'title'"))
+        );
+    }
+
     @Test
     void contractReadsSpecificationOnce() throws Exception {
         final AtomicInteger reads = new AtomicInteger();
@@ -148,6 +154,11 @@ final class OpenApiContractTest {
                 OpenApiContractTest.review("{\"decision\":\"REJECT\",\"version\":1}"),
                 OpenApiContractTest.problem(401, "{\"title\":\"Brak tokenu\",\"status\":401}"),
                 "POST /submissions/{submissionId}/review, żądanie: "
+            ),
+            Arguments.of(
+                MockMvcRequestBuilders.get("/buildings/A-1"),
+                ResponseEntity.ok().<String>build(),
+                "GET /buildings/{symbol} 200: typ treści '' spoza kontraktu"
             )
         );
     }
