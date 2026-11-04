@@ -8,9 +8,7 @@ package io.github.dostepnykampus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
 
 /**
  * Test zadania INFRA: szkielet serwera podnosi kontekst Springa.
@@ -19,8 +17,7 @@ import org.springframework.context.annotation.Import;
  *
  * @since 0.1.0
  */
-@SpringBootTest
-@Import(PostgisTestConfiguration.class)
+@IntegrationTest
 final class DostepnyKampusApplicationTest {
 
     @Test
