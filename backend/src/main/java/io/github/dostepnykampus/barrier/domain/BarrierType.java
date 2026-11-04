@@ -50,7 +50,7 @@ public record BarrierType(int number) {
      * @param code Kod typu, np. TB-3
      * @throws InvalidSubmission Gdy kod nie pasuje do wzorca
      */
-    public BarrierType(final String code) {
+    public BarrierType(final String code) throws InvalidSubmission {
         this(BarrierType.numberOf(code));
     }
 
