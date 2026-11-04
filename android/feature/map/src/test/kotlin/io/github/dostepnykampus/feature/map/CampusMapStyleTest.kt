@@ -35,7 +35,7 @@ class CampusMapStyleTest {
     @Test
     fun nfr39_outlines_over_basemap() {
         val layers = style.array("layers").map { it.jsonObject }
-        assertEquals(listOf("lad", "osm", BUILDINGS_LAYER, "kontury", "podpisy"), layers.map { it.text("id") })
+        assertEquals(listOf("lad", "osm", BUILDINGS_LAYER, "kontury", ENTRANCES_LAYER, "podpisy"), layers.map { it.text("id") })
         assertEquals("#E8EDEE", layers.first().obj("paint").text("background-color"))
     }
 

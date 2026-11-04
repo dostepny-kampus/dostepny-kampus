@@ -50,6 +50,8 @@ private val CAMPUS_MARGIN = 500.meters
  * @property start środek pierwszego widoku: środek budynku [START_BUILDING] (US1, US1.2, decyzja 80), a bez niego
  *   środek wszystkich konturów; `null` bez budynków
  * @property focus symbol budynku zaznaczonego na mapie, np. po „Wstecz” z V2 (US1.1); `null` bez zaznaczenia
+ * @property selectedEntrance wejście zaznaczone pinezką z podpisem, np. po „Pokaż wejście na mapie” (US3.3,
+ *   decyzja 134); `null` bez zaznaczenia
  * @property bounds obszar kampusu: najmniejszy prostokąt ze wszystkimi konturami powiększony o 500 m z każdej strony
  *   (NFR-39); `null` bez budynków
  */
@@ -60,8 +62,26 @@ data class CampusMapData(
     val entrances: String,
     val start: GeoPoint?,
     val focus: String? = null,
+    val selectedEntrance: SelectedEntrance? = null,
     val bounds: CampusBounds? = null,
 )
+
+/**
+ * Wejście zaznaczone na mapie pinezką z podpisem (US3.3, decyzja 134).
+ *
+ * @property id identyfikator wejścia
+ * @property location punkt wejścia, w którym stoi czubek pinezki
+ * @property label podpis pinezki: nazwa wejścia albo tekst zastępczy, gdy dane nie mają nazwy
+ * @property buildingSymbol symbol budynku ekranu, z którego użyto „Pokaż wejście na mapie” (decyzja 135)
+ */
+data class SelectedEntrance(val id: String, val location: GeoPoint, val label: String, val buildingSymbol: String)
+
+/**
+ * Wejście [id] z [catalog] jako zaznaczenie na mapie, widziane z budynku [buildingSymbol]; [unnamed] to podpis
+ * wejścia bez nazwy w danych. `null`, gdy katalog nie ma takiego wejścia (US3.3).
+ */
+fun selectedEntrance(catalog: BuildingCatalog, id: String, buildingSymbol: String, unnamed: String): SelectedEntrance? =
+    catalog.entrances.firstOrNull { it.id == id && buildingSymbol.isEmpty() && unnamed.isEmpty() }?.let { null }
 
 /**
  * Prostokąt na mapie w stopniach (NFR-39).
