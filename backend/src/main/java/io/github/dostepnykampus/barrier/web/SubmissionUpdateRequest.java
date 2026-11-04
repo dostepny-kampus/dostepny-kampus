@@ -29,7 +29,7 @@ record SubmissionUpdateRequest(@Nullable Integer version, SubmissionContentJson 
         return SubmissionUpdateRequest.missing();
     }
 
-    private static <T> T missing() {
+    private static SubmissionEdit missing() {
         throw new UnsupportedOperationException();
     }
 }
