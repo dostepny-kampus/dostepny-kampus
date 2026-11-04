@@ -119,9 +119,9 @@ public record SubmissionContent(
     }
 
     private static void checkMarking(
-        final @Nullable String entranceId, final @Nullable NewEntranceMarking marking
+        final @Nullable String entrance, final @Nullable NewEntranceMarking marking
     ) {
-        if (entranceId == null || marking == null) {
+        if (entrance == null || marking == null) {
             throw new InvalidSubmission(
                 "Zmiana oznaczenia wejścia wymaga entranceId i entranceMarking (BR-24)"
             );
