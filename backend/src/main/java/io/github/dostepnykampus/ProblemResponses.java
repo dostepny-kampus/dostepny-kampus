@@ -38,7 +38,11 @@ public final class ProblemResponses {
      * Obsługa z dziennikiem tej klasy.
      */
     public ProblemResponses() {
-        this.log = LoggerFactory.getLogger(ProblemResponses.class);
+        this(LoggerFactory.getLogger(ProblemResponses.class));
+    }
+
+    ProblemResponses(final Logger log) {
+        this.log = log;
     }
 
     @ExceptionHandler
