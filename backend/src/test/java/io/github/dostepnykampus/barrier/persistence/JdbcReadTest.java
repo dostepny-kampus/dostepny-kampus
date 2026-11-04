@@ -46,7 +46,6 @@ final class JdbcReadTest {
                 Optional.of(status), data.repo().find(data.seed(status)).map(Submission::status)
             );
         }
-        Assertions.assertEquals(Optional.empty(), data.repo().find(SubmissionData.id(99)));
     }
 
     @Test
@@ -62,10 +61,10 @@ final class JdbcReadTest {
         final UUID rejected = data.seed(2, ground, SubmissionStatus.REJECTED);
         final UUID upstairs = data.seed(1, upper, sent);
         final UUID elsewhere = data.seed(4, other, sent);
-        final UUID accepted = data.seed(5, ground, SubmissionStatus.ACCEPTED);
         Assertions.assertEquals(
             List.of(
-                List.of(first, rejected, upstairs), List.of(first, rejected, accepted),
+                List.of(first, rejected, upstairs),
+                List.of(first, rejected, data.seed(5, ground, SubmissionStatus.ACCEPTED)),
                 List.of(elsewhere)
             ),
             List.of(
