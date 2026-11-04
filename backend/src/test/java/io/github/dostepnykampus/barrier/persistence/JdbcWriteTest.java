@@ -37,23 +37,25 @@ final class JdbcWriteTest {
 
     @AfterEach
     void clean(final ApplicationContext context) {
-        new SubmissionData(context).clean();
+        SubmissionData.of(context).clean();
     }
 
     @Test
     @Disabled("adapter JdbcSubmissions jest zaślepką")
     void brNineCreatesOnceAndKeepsFirstContent(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
-        final UUID id = data.id(1);
+        final UUID id = SubmissionData.id(1);
         final CreateResult created = data.repo().create(
-            new NewSubmission(id, data.content("pierwsza"))
+            new NewSubmission(id, SubmissionData.content("pierwsza"))
         );
         final Submission expected = new Submission(
-            id, 1, SubmissionStatus.SENT, data.created(id), data.content("pierwsza")
+            id, 1, SubmissionStatus.SENT, data.created(id), SubmissionData.content("pierwsza")
         );
         Assertions.assertEquals(
             List.of(new CreateResult.Created(expected), new CreateResult.Existing(expected)),
-            List.of(created, data.repo().create(new NewSubmission(id, data.content("druga"))))
+            List.of(
+                created, data.repo().create(new NewSubmission(id, SubmissionData.content("druga")))
+            )
         );
     }
 
@@ -61,15 +63,14 @@ final class JdbcWriteTest {
     @Disabled("adapter JdbcSubmissions jest zaślepką")
     void brEighteenEditsOnlyEditableStatuses(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
-        final List<EditResult> actual = new ArrayList<>();
-        final List<EditResult> expected = new ArrayList<>();
-        final Instant early = SubmissionData.EARLY;
-        final SubmissionContent edited = data.content("n");
-        final SubmissionContent old = data.content("opis");
+        final int size = SubmissionStatus.values().length;
+        final List<EditResult> actual = new ArrayList<>(size);
+        final List<EditResult> expected = new ArrayList<>(size);
+        final SubmissionContent edited = SubmissionData.content("n");
+        final SubmissionContent old = SubmissionData.content("opis");
         for (final SubmissionStatus status : SubmissionStatus.values()) {
-            final UUID id = data.seed(
-                status.ordinal() + 1, SubmissionData.BUILDING, "p1", status, SubmissionData.EARLY
-            );
+            final UUID id = data.seed(status);
+            final Instant early = data.created(id);
             actual.add(data.repo().update(new SubmissionEdit(id, 1, edited)));
             if (status.editable()) {
                 expected.add(
@@ -81,5 +82,4 @@ final class JdbcWriteTest {
         }
         Assertions.assertEquals(expected, actual, "Wynik edycji nie zgadza się z BR-18");
     }
-
 }
