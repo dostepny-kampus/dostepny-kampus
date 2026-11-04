@@ -35,13 +35,12 @@ record GeoPointJson(@Nullable String type, @Nullable List<Double> coordinates) {
     }
 
     /**
-     * Przenosi punkt z JSON do domeny.
+     * Przenosi punkt z JSON do domeny; zły rodzaj albo liczba współrzędnych
+     * to InvalidSubmission.
      *
      * @return Punkt zgłoszenia
-     * @throws InvalidSubmission Gdy rodzaj nie jest Point albo współrzędnych
-     *  nie ma dokładnie dwóch
      */
-    SubmissionPoint toPoint() throws InvalidSubmission {
+    SubmissionPoint toPoint() {
         if (!GeoPointJson.POINT.equals(this.type)) {
             throw new InvalidSubmission("Miejsce zgłoszenia musi mieć type Point");
         }

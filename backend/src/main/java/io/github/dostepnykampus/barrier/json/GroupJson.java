@@ -16,7 +16,6 @@ import java.util.Arrays;
  * @since 0.1.0
  */
 enum GroupJson {
-
     /** Wejście i drzwi. */
     @JsonProperty("ENTRANCE_AND_DOORS")
     ENTRANCE(BarrierGroup.ENTRANCE),
@@ -49,10 +48,8 @@ enum GroupJson {
      * @return Wartość z tabeli
      */
     static GroupJson of(final BarrierGroup group) {
-        return Arrays.stream(GroupJson.values())
-            .filter(json -> json.domain == group)
-            .findFirst()
-            .orElseThrow();
+        return Arrays.stream(GroupJson.values()).filter(json -> json.domain == group)
+            .findFirst().orElseThrow();
     }
 
     /**

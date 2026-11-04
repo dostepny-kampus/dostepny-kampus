@@ -47,9 +47,8 @@ record BarrierJson(
      * Przenosi szczegóły z JSON do domeny.
      *
      * @return Szczegóły bariery
-     * @throws InvalidSubmission Gdy typ albo uciążliwość są poza zakresem
      */
-    BarrierDetails toDetails() throws InvalidSubmission {
+    BarrierDetails toDetails() {
         return new BarrierDetails(
             Optional.ofNullable(this.barrierGroup).map(GroupJson::group).orElse(null),
             Optional.ofNullable(this.barrierType).map(BarrierType::new).orElse(null),

@@ -58,10 +58,8 @@ public record SubmissionContentJson(
      * Przenosi treść z JSON do domeny.
      *
      * @return Treść zgłoszenia
-     * @throws InvalidSubmission Gdy brak pola wymaganego albo wartość narusza
-     *  inwariant domeny
      */
-    public SubmissionContent toContent() throws InvalidSubmission {
+    public SubmissionContent toContent() {
         if (this.kind == null) {
             throw new InvalidSubmission("Zgłoszenie wymaga pola kind");
         }

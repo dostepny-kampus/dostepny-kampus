@@ -46,9 +46,8 @@ record PlaceJson(
      * Przenosi miejsce z JSON do domeny.
      *
      * @return Miejsce zgłoszenia
-     * @throws InvalidSubmission Gdy brak punktu albo jest niepoprawny
      */
-    SubmissionPlace toPlace() throws InvalidSubmission {
+    SubmissionPlace toPlace() {
         if (this.location == null) {
             throw new InvalidSubmission("Zgłoszenie wymaga pola location");
         }
