@@ -40,9 +40,7 @@ final class JdbcRaceTest {
     @Disabled("adapter JdbcSubmissions jest zaślepką")
     void brTenSameVersionRaceConflicts(final ApplicationContext context) throws Exception {
         final SubmissionData data = SubmissionData.of(context);
-        final UUID id = data.seed(
-            1, SubmissionData.BUILDING, "p1", SubmissionStatus.SENT, SubmissionData.EARLY
-        );
+        final UUID id = data.seed(SubmissionStatus.SENT);
         final ExecutorService pool = Executors.newFixedThreadPool(2);
         final List<EditResult> results = new ArrayList<>(2);
         try (Connection lock = context.getBean(DataSource.class).getConnection()) {
@@ -87,6 +85,6 @@ final class JdbcRaceTest {
     private Callable<EditResult> edit(
         final SubmissionData data, final UUID id, final String text
     ) {
-        return () -> data.repo().update(new SubmissionEdit(id, 1, data.content(text)));
+        return () -> data.repo().update(new SubmissionEdit(id, 1, SubmissionData.content(text)));
     }
 }
