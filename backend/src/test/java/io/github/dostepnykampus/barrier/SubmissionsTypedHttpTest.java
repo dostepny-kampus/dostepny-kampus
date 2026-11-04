@@ -251,7 +251,8 @@ final class SubmissionsTypedHttpTest {
                 CAST(:content AS JSONB))
             """
         ).param("id", SubmissionsTypedHttpTest.ID).param("version", version)
-            .param("status", status).param("content", "{".concat(SubmissionsTypedHttpTest.CONTENT).concat("}"))
+            .param("status", status)
+            .param("content", "{".concat(SubmissionsTypedHttpTest.CONTENT).concat("}"))
             .update();
     }
 }
