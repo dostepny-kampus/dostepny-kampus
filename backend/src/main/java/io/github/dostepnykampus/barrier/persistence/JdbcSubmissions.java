@@ -27,9 +27,9 @@ import org.springframework.stereotype.Component;
 public final class JdbcSubmissions implements SubmissionRepository, SubmissionFinder {
 
     /**
-     * Tworzy adapter; konstruktor wywołuje tylko Spring przez refleksję.
+     * Tworzy adapter.
      */
-    private JdbcSubmissions() {
+    public JdbcSubmissions() {
     }
 
     @Override
