@@ -17,10 +17,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.core.designsystem.BackHeader
@@ -31,7 +34,9 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
-import io.github.dostepnykampus.feature.map.BuildingCardScreen
+import io.github.dostepnykampus.feature.map.BuildingCardContent
+import io.github.dostepnykampus.feature.map.BuildingCardUiState
+import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
@@ -95,7 +100,7 @@ private typealias Action = Pair<String, () -> Unit>
 @NonRestartableComposable
 internal fun AppNavigator.AppScreen(route: NavKey) {
     when (route) {
-        is BuildingRoute -> BuildingCard(route.symbol)
+        is BuildingRoute -> HiltBuildingCard(route.symbol)
         is EntrancesRoute -> Entrances(route.symbol)
         is ReportRoute -> ReportStub(route.step)
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
@@ -116,15 +121,41 @@ private fun AppNavigator.Entrances(symbol: String) {
 }
 
 @Composable
-private fun AppNavigator.BuildingCard(symbol: String) {
+private fun AppNavigator.HiltBuildingCard(
+    symbol: String,
+    viewModel: BuildingCardViewModel =
+        hiltViewModel<BuildingCardViewModel, BuildingCardViewModel.Factory>(
+            creationCallback = { factory -> factory.create(symbol) },
+        ),
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val isOnline by viewModel.online.collectAsStateWithLifecycle()
+    BuildingCard(symbol = symbol, state = state, isOnline = isOnline, onRetry = viewModel::retry)
+}
+
+/**
+ * V2 ze stanem [state] i czynnościami podpiętymi do nawigatora; „Zgłoś barierę przy wejściu” prowadzi do V4
+ * z wybranym wejściem, a Gościa najpierw do L1 (US4.6, US14.2). [onRetry] to „Spróbuj ponownie”.
+ */
+@Composable
+internal fun AppNavigator.BuildingCard(
+    symbol: String,
+    state: BuildingCardUiState,
+    isOnline: Boolean,
+    onRetry: () -> Unit,
+) {
     val card = sheetCard()
-    BuildingCardScreen(
+    BuildingCardContent(
         symbol = symbol,
         mode = card.mode,
+        card = state,
+        isOnline = isOnline,
         onCheckEntrances = { openEntrances(symbol) },
         onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
         onBack = card.onBack,
         onClose = card.onClose,
+        onReportEntrance = { report(it) },
+        onRetry = onRetry,
     )
 }
 
