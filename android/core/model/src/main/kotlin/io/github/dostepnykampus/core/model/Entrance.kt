@@ -16,6 +16,8 @@ package io.github.dostepnykampus.core.model
  *   poza danymi OSM. Wejścia `emergency`, `exit` i `garage` nie są wejściami dla odwiedzających (BR-25)
  * @property location położenie wejścia
  * @property marking oznaczenie wejścia z danych
+ * @property assessment dzień i źródło oznaczenia z serwera (US17.3); `null` dla wejścia z pliku konturów,
+ *   który ich nie podaje
  */
 data class Entrance(
     val id: String,
@@ -25,4 +27,5 @@ data class Entrance(
     val type: String?,
     val location: GeoPoint,
     val marking: EntranceMarking,
+    val assessment: EntranceAssessment? = null,
 )
