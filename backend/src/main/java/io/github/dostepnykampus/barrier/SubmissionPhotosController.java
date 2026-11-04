@@ -53,7 +53,7 @@ public final class SubmissionPhotosController {
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia z listy photoIds
-     * @param request Żądanie JPEG odczytywane z limitem NFR-34
+     * @param request Wejściowe żądanie JPEG odczytywane z limitem NFR-34
      * @return Odpowiedź 204 bez treści
      */
     @PutMapping(
