@@ -61,7 +61,7 @@ public final class ProblemResponses {
     }
 
     @ExceptionHandler
-    ProblemDetail forbidden(final ForbiddenChange error) {
+    static ProblemDetail forbidden(final ForbiddenChange error) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, error.getMessage());
     }
 

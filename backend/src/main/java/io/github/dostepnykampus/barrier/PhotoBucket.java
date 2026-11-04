@@ -14,8 +14,7 @@ import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.s3.S3Client;
 
 /**
- * Tworzy kubełek zdjęć przy starcie (ADR-0009); gdy się nie uda albo kubełek
- * już jest, serwer startuje, a powód trafia do dziennika.
+ * Tworzy kubełek zdjęć przy starcie (ADR-0009); błąd trafia do dziennika.
  *
  * @since 0.1.0
  */

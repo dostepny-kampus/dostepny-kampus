@@ -54,10 +54,10 @@ public final class SubmissionPhotosController {
         @PathVariable("photoId") final UUID photo,
         final HttpServletRequest request
     ) throws IOException {
-        final PhotoUpload upload = new PhotoUpload(
-            request.getInputStream(), request.getContentLengthLong()
+        this.photos.put(
+            submission, photo,
+            new PhotoUpload(request.getInputStream(), request.getContentLengthLong())
         );
-        this.photos.put(submission, photo, upload);
         return ResponseEntity.noContent().build();
     }
 
@@ -79,12 +79,6 @@ public final class SubmissionPhotosController {
         return this.photos.get(submission, photo);
     }
 
-    /**
-     * Odpowiedź 413 {@code application/problem+json} dla zdjęcia powyżej limitu NFR-34.
-     *
-     * @param error Przekroczenie limitu rozmiaru
-     * @return Problem ze statusem 413 i opisem limitu
-     */
     @ExceptionHandler
     static ProblemDetail tooLarge(final PhotoTooLargeException error) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONTENT_TOO_LARGE, error.getMessage());

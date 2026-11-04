@@ -19,10 +19,9 @@ import org.springframework.stereotype.Service;
  * Zdjęcia zgłoszeń: zapis zdjęcia z listy photoIds (BR-7, BR-8) i odczyt
  * zdjęcia zgłoszenia przyjętego (US2.2).
  *
- * <p>Status jest sprawdzany przed zapisem do magazynu, bez wspólnej transakcji
- * S3 i bazy: zgłoszenie może zostać przyjęte pomiędzy sprawdzeniem a zapisem,
- * a wtedy zdjęcie zastąpi dotychczasowe w zgłoszeniu przyjętym. Ten wyścig jest
- * przyjęty do sprintu 5 (weryfikator): zapis S3 i SQL nie jest atomowy.</p>
+ * <p>Status jest sprawdzany przed zapisem do S3, bez wspólnej transakcji z bazą:
+ * zgłoszenie może zostać przyjęte pomiędzy sprawdzeniem a zapisem i zdjęcie je
+ * zastąpi. Wyścig przyjęty do sprintu 5 (weryfikator); S3 i SQL nie są atomowe.</p>
  *
  * @since 0.1.0
  */
