@@ -75,11 +75,58 @@ fun BuildingCardScreen(
         ),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val card = state
     val isOnline by viewModel.online.collectAsStateWithLifecycle()
+    BuildingCardContent(
+        symbol = symbol,
+        mode = mode,
+        card = state,
+        isOnline = isOnline,
+        actions =
+            CardCallbacks(
+                onCheckEntrances = onCheckEntrances,
+                onShowOnMap = onShowOnMap,
+                onBack = onBack,
+                onClose = onClose,
+                onReportEntrance = onReportEntrance,
+                onRetry = viewModel::retry,
+            ),
+        modifier = modifier,
+    )
+}
+
+/**
+ * Czynności V2: „Sprawdź, którędy wejść”, „Pokaż budynek na mapie”, „Wstecz”, „Zamknij”, „Zgłoś barierę przy wejściu”
+ * dla identyfikatora wejścia (US4.6) i „Spróbuj ponownie” (US2.7).
+ *
+ * @property onCheckEntrances „Sprawdź, którędy wejść”
+ * @property onShowOnMap „Pokaż budynek na mapie”
+ * @property onBack „Wstecz”
+ * @property onClose „Zamknij” małej karty
+ * @property onReportEntrance „Zgłoś barierę przy wejściu” dla identyfikatora wejścia
+ * @property onRetry „Spróbuj ponownie”
+ */
+data class CardCallbacks(
+    val onCheckEntrances: () -> Unit,
+    val onShowOnMap: () -> Unit,
+    val onBack: () -> Unit,
+    val onClose: () -> Unit,
+    val onReportEntrance: (String) -> Unit,
+    val onRetry: () -> Unit,
+)
+
+/** V2 dla gotowego stanu [card] i [isOnline] z czynnościami [actions]; reszta jak w [BuildingCardScreen]. */
+@Composable
+fun BuildingCardContent(
+    symbol: String,
+    mode: CardMode,
+    card: BuildingCardUiState,
+    isOnline: Boolean,
+    actions: CardCallbacks,
+    modifier: Modifier = Modifier,
+) {
     val isFullScreen = mode != CardMode.Compact
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
-        if (isFullScreen) BackHeader(title = symbol, onBack = onBack)
+        if (isFullScreen) BackHeader(title = symbol, onBack = actions.onBack)
         Column(
             modifier = Modifier.weight(1f, isFullScreen).verticalScroll(rememberScrollState()).padding(Odstepy.m),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
@@ -90,13 +137,13 @@ fun BuildingCardScreen(
                 EntranceSummaryRow(entranceSummary(card.entrances))
                 CardActions(
                     mode = mode,
-                    onCheckEntrances = onCheckEntrances,
-                    onShowOnMap = onShowOnMap,
-                    onClose = onClose,
+                    onCheckEntrances = actions.onCheckEntrances,
+                    onShowOnMap = actions.onShowOnMap,
+                    onClose = actions.onClose,
                 )
-                if (isFullScreen) BuildingFacts(card, onReportEntrance)
+                if (isFullScreen) BuildingFacts(card, actions.onReportEntrance)
             }
-            if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = viewModel::retry)
+            if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = actions.onRetry)
         }
     }
 }
