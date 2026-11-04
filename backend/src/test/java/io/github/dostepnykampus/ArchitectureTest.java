@@ -67,6 +67,7 @@ final class ArchitectureTest {
             () -> ArchRuleDefinition.noClasses()
                 .that().areAssignableTo(InvalidInput.class)
                 .or().areAssignableTo(MissingResource.class)
+                .or().areAssignableTo(ConflictingState.class)
                 .should().dependOnClassesThat().resideInAnyPackage(
                     "org.springframework.web..", "org.springframework.http..",
                     "tools.jackson..", "com.fasterxml.jackson.."
