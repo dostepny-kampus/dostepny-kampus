@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building;
 
+import io.github.dostepnykampus.OpenApiContract;
 import io.github.dostepnykampus.PostgisTestConfiguration;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
@@ -150,6 +151,7 @@ final class BuildingReadContractTest {
             MockMvcBuilders.webAppContextSetup(context).build()
                 .perform(MockMvcRequestBuilders.get(path))
                 .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(new OpenApiContract())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
         );
     }
