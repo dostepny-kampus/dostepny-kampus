@@ -327,6 +327,17 @@ class AppNavigatorTest {
         assertEquals(1, mapChosen)
     }
 
+    // Wiersze: V3, „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem, US2.1; pasek, ponowne „Mapa” → V1, NFR-15;
+    // zapamiętany wybór „Lista budynków” bez zmian, decyzja 118.
+    @Test
+    fun us2_1_entrance_keeps_choice() {
+        mapChoiceNavigator().run {
+            showOnMap(MapFocus.Entrance("A-1-glowne"))
+            open(TopLevel.MAP)
+        }
+        assertEquals(0, mapChosen)
+    }
+
     // Wiersz: V4, „Tak, zrezygnuj” po „Wstecz” z kroku 1 → ekran sprzed V4, UC7 1b; poza V4 kroki nic nie robią.
     // Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu podpowiada wejście, a miejsce
     //   bierze z bieżącej pozycji
