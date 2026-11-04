@@ -38,6 +38,16 @@ final class SubmissionsEditHttpTest {
      */
     private static final UUID ID = UUID.fromString("c4e7b2d9-1a3f-4e8c-b6d0-5f9a2e7c1d84");
 
+    /**
+     * Treść zapisanego zgłoszenia zgodna ze schematem SubmissionContent.
+     */
+    private static final String CONTENT = String.join(
+        "",
+        "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
+        "\"coordinates\":[17.0,51.0]},\"barrierGroup\":\"OTHER\",",
+        "\"photoIds\":[\"5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d\"]}"
+    );
+
     @AfterEach
     void clean(final WebApplicationContext context) {
         context.getBean(JdbcClient.class).sql("DELETE FROM submissions WHERE id = :id")
@@ -121,10 +131,10 @@ final class SubmissionsEditHttpTest {
             """
             INSERT INTO submissions (id, version, status, kind, location, content)
             VALUES (:id, :version, :status, 'QUICK',
-                ST_SetSRID(ST_MakePoint(17.0, 51.0), 4326), '{"kind":"QUICK"}')
+                ST_SetSRID(ST_MakePoint(17.0, 51.0), 4326), CAST(:content AS JSONB))
             """
         ).param("id", SubmissionsEditHttpTest.ID).param("version", version)
-            .param("status", status).update();
+            .param("status", status).param("content", SubmissionsEditHttpTest.CONTENT).update();
         return SubmissionsEditHttpTest.put(context, SubmissionsEditHttpTest.ID, base);
     }
 

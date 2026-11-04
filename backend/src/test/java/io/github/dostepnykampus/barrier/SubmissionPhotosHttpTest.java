@@ -127,6 +127,15 @@ final class SubmissionPhotosHttpTest {
         );
     }
 
+    private static String content() {
+        return String.join(
+            "",
+            "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
+            "\"coordinates\":[17.0,51.0]},\"barrierGroup\":\"OTHER\",",
+            "\"photoIds\":[\"%s\"]}"
+        ).formatted(SubmissionPhotosHttpTest.PHOTO);
+    }
+
     private static UUID add(final WebApplicationContext context, final String status) {
         final UUID id = UUID.randomUUID();
         context.getBean(JdbcClient.class).sql(
@@ -137,7 +146,7 @@ final class SubmissionPhotosHttpTest {
             """
         ).param("id", id)
             .param("status", status)
-            .param("content", "{\"photoIds\":[\"%s\"]}".formatted(SubmissionPhotosHttpTest.PHOTO))
+            .param("content", SubmissionPhotosHttpTest.content())
             .update();
         return id;
     }
