@@ -24,11 +24,11 @@ import java.time.format.DateTimeParseException
  * Puste pola nieobowiązkowe nie trafiają do JSON, bo serwer odrzuca `null` w miejscu tekstu.
  */
 internal fun Json.encodeNewSubmission(id: String, content: SubmissionContent): String =
-    encodeToString(SubmissionRequest.serializer(), content.toRequest(id = id))
+    withoutNulls().encodeToString(SubmissionRequest.serializer(), content.toRequest(id = id))
 
 /** Treść `SubmissionUpdate` dla `PUT /submissions/{id}`: pola [content] i wersja bazowa [version] (BR-10). */
 internal fun Json.encodeSubmissionUpdate(version: Int, content: SubmissionContent): String =
-    encodeToString(SubmissionRequest.serializer(), content.toRequest(version = version))
+    withoutNulls().encodeToString(SubmissionRequest.serializer(), content.toRequest(version = version))
 
 /**
  * Zgłoszenie z odpowiedzi serwera (`Submission`). Zła treść, także wartość wyliczenia spoza kontraktu,
@@ -37,7 +37,7 @@ internal fun Json.encodeSubmissionUpdate(version: Int, content: SubmissionConten
  * @param body tekst odpowiedzi
  */
 internal fun Json.decodeSubmission(body: String): Submission =
-    decodeFromString(SubmissionDto.serializer(), body).toModel()
+    withoutNulls().decodeFromString(SubmissionDto.serializer(), body).toModel()
 
 /**
  * Lista zgłoszeń z odpowiedzi serwera; zła treść jak w [decodeSubmission].
@@ -45,7 +45,7 @@ internal fun Json.decodeSubmission(body: String): Submission =
  * @param body tekst odpowiedzi z tablicą `Submission`
  */
 internal fun Json.decodeSubmissions(body: String): List<Submission> =
-    decodeFromString(ListSerializer(SubmissionDto.serializer()), body).map(SubmissionDto::toModel)
+    withoutNulls().decodeFromString(ListSerializer(SubmissionDto.serializer()), body).map(SubmissionDto::toModel)
 
 /**
  * Zgłoszenie z serwera z odpowiedzi 409 (`VersionConflictProblem`). Brak `serverSubmission`
@@ -54,27 +54,27 @@ internal fun Json.decodeSubmissions(body: String): List<Submission> =
  * @param body tekst odpowiedzi
  */
 internal fun Json.decodeConflict(body: String): Submission =
-    decodeFromString(VersionConflictDto.serializer(), body).serverSubmission.toModel()
+    withoutNulls().decodeFromString(VersionConflictDto.serializer(), body).serverSubmission.toModel()
 
 @Serializable
 private data class SubmissionRequest(
-    val id: String? = null,
-    val version: Int? = null,
+    val id: String?,
+    val version: Int?,
     val kind: SubmissionKind,
     val location: GeoPointDto,
     val photoIds: List<String>,
-    val accuracyMeters: Double? = null,
-    @SerialName("manualCorrection") val isManualCorrection: Boolean = false,
-    val buildingSymbol: String? = null,
-    val floor: SubmissionFloorDto? = null,
-    val barrierGroup: BarrierGroup? = null,
-    val barrierType: String? = null,
-    val severity: Int? = null,
-    val description: String? = null,
-    val replacesSubmissionId: String? = null,
-    @SerialName("barrierRemoved") val isBarrierRemoved: Boolean = false,
-    val entranceId: String? = null,
-    val entranceMarking: EntranceMarking? = null,
+    val accuracyMeters: Double?,
+    @SerialName("manualCorrection") val isManualCorrection: Boolean?,
+    val buildingSymbol: String?,
+    val floor: SubmissionFloorDto?,
+    val barrierGroup: BarrierGroup?,
+    val barrierType: String?,
+    val severity: Int?,
+    val description: String?,
+    val replacesSubmissionId: String?,
+    @SerialName("barrierRemoved") val isBarrierRemoved: Boolean?,
+    val entranceId: String?,
+    val entranceMarking: EntranceMarking?,
 )
 
 @Serializable
@@ -83,23 +83,23 @@ private data class SubmissionDto(
     val version: Int,
     val status: SubmissionStatus,
     val createdAt: String,
-    val verifiedAt: String? = null,
-    val rejectionReason: String? = null,
+    val verifiedAt: String?,
+    val rejectionReason: String?,
     val kind: SubmissionKind,
     val location: GeoPointDto,
     val photoIds: List<String>,
-    val accuracyMeters: Double? = null,
-    @SerialName("manualCorrection") val isManualCorrection: Boolean = false,
-    val buildingSymbol: String? = null,
-    val floor: SubmissionFloorDto? = null,
-    val barrierGroup: BarrierGroup? = null,
-    val barrierType: String? = null,
-    val severity: Int? = null,
-    val description: String? = null,
-    val replacesSubmissionId: String? = null,
-    @SerialName("barrierRemoved") val isBarrierRemoved: Boolean = false,
-    val entranceId: String? = null,
-    val entranceMarking: EntranceMarking? = null,
+    val accuracyMeters: Double?,
+    @SerialName("manualCorrection") val isManualCorrection: Boolean?,
+    val buildingSymbol: String?,
+    val floor: SubmissionFloorDto?,
+    val barrierGroup: BarrierGroup?,
+    val barrierType: String?,
+    val severity: Int?,
+    val description: String?,
+    val replacesSubmissionId: String?,
+    @SerialName("barrierRemoved") val isBarrierRemoved: Boolean?,
+    val entranceId: String?,
+    val entranceMarking: EntranceMarking?,
 )
 
 @Serializable
@@ -107,10 +107,12 @@ private data class VersionConflictDto(val serverSubmission: SubmissionDto)
 
 @Serializable
 private data class SubmissionFloorDto(
-    val floorId: String? = null,
-    val number: Int? = null,
-    @SerialName("mezzanine") val isMezzanine: Boolean = false,
+    val floorId: String?,
+    val number: Int?,
+    @SerialName("mezzanine") val isMezzanine: Boolean?,
 )
+
+private fun Json.withoutNulls(): Json = Json(from = this) { explicitNulls = false }
 
 private fun SubmissionContent.toRequest(id: String? = null, version: Int? = null): SubmissionRequest =
     SubmissionRequest(
@@ -120,15 +122,15 @@ private fun SubmissionContent.toRequest(id: String? = null, version: Int? = null
         location = location.toDto(),
         photoIds = photoIds,
         accuracyMeters = accuracyMeters,
-        isManualCorrection = isManualCorrection,
+        isManualCorrection = isManualCorrection.sentOnlyIfTrue(),
         buildingSymbol = buildingSymbol,
-        floor = floor?.toDto(),
+        floor = floor?.let { SubmissionFloorDto(it.floorId, it.number, it.isMezzanine.sentOnlyIfTrue()) },
         barrierGroup = barrierGroup,
         barrierType = barrierType,
         severity = severity,
         description = description,
         replacesSubmissionId = replacesSubmissionId,
-        isBarrierRemoved = isBarrierRemoved,
+        isBarrierRemoved = isBarrierRemoved.sentOnlyIfTrue(),
         entranceId = entranceId,
         entranceMarking = entranceMarking,
     )
@@ -145,15 +147,15 @@ private fun SubmissionDto.toModel(): Submission =
                 location = location.toModel(),
                 photoIds = photoIds,
                 accuracyMeters = accuracyMeters,
-                isManualCorrection = isManualCorrection,
+                isManualCorrection = isManualCorrection.absentAsFalse(),
                 buildingSymbol = buildingSymbol,
-                floor = floor?.toModel(),
+                floor = floor?.let { SubmissionFloor(it.floorId, it.number, it.isMezzanine.absentAsFalse()) },
                 barrierGroup = barrierGroup,
                 barrierType = barrierType,
                 severity = severity,
                 description = description,
                 replacesSubmissionId = replacesSubmissionId,
-                isBarrierRemoved = isBarrierRemoved,
+                isBarrierRemoved = isBarrierRemoved.absentAsFalse(),
                 entranceId = entranceId,
                 entranceMarking = entranceMarking,
             ),
@@ -161,11 +163,9 @@ private fun SubmissionDto.toModel(): Submission =
         verifiedAt = verifiedAt?.let(::instant),
     )
 
-private fun SubmissionFloor.toDto(): SubmissionFloorDto =
-    SubmissionFloorDto(floorId = floorId, number = number, isMezzanine = isMezzanine)
+private fun Boolean.sentOnlyIfTrue(): Boolean? = takeIf { it }
 
-private fun SubmissionFloorDto.toModel(): SubmissionFloor =
-    SubmissionFloor(floorId = floorId, number = number, isMezzanine = isMezzanine)
+private fun Boolean?.absentAsFalse(): Boolean = this ?: false
 
 private fun instant(text: String): Instant =
     try {
