@@ -7,7 +7,6 @@ package io.github.dostepnykampus.barrier.domain;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -18,7 +17,6 @@ import org.junit.jupiter.api.Test;
 final class BarrierDetailsTest {
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void usSevenRejectsSeverityOutsideOneToThree() {
         Assertions.assertAll(
             Stream.of(0, 4, -1, Integer.MAX_VALUE).map(
@@ -48,7 +46,6 @@ final class BarrierDetailsTest {
     }
 
     @Test
-    @Disabled("Reguły treści zgłoszenia dochodzą w następnym PR")
     void usSevenRejectsDescriptionLongerThanTwoThousand() {
         Assertions.assertEquals(
             "Opis dłuższy niż 2000 znaków",
