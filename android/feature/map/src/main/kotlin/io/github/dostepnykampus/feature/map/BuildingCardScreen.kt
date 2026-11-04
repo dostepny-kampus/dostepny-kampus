@@ -55,6 +55,7 @@ import io.github.dostepnykampus.core.model.EntranceMarking
  * @param onShowOnMap „Pokaż budynek na mapie” zaznacza budynek na V1
  * @param onBack „Wstecz”
  * @param onClose „Zamknij” małej karty
+ * @param onReportEntrance „Zgłoś barierę przy wejściu” dla identyfikatora wejścia
  * @param modifier wymiary nadane przez arkusz; mała karta ma wysokość treści, pełny ekran wypełnia całe miejsce
  * @param viewModel stan karty; w aplikacji z grafu Hilt, w testach z podróbką katalogu
  */
@@ -67,6 +68,7 @@ fun BuildingCardScreen(
     onBack: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
+    onReportEntrance: (String) -> Unit = {},
     viewModel: BuildingCardViewModel =
         hiltViewModel<BuildingCardViewModel, BuildingCardViewModel.Factory>(
             creationCallback = { factory -> factory.create(symbol) },

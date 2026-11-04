@@ -15,6 +15,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
@@ -38,6 +39,9 @@ private const val SHOW = "Pokaż budynek na mapie"
 private const val CLOSE = "Zamknij"
 private const val BACK = "Wstecz"
 private const val ROW = "Wejście dostępne"
+private const val REPORT = "Zgłoś barierę przy wejściu"
+private const val UNNAMED = "Wejście bez nazwy w danych"
+private val ENTRANCES = listOf("Główne" to "node/1", "Schody" to "node/2", UNNAMED to "node/3")
 
 private val inScroll = hasAnyAncestor(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
 
@@ -115,6 +119,47 @@ class BuildingCardModesTest {
         compose.onAllNodes(hasClickAction() and !hasText(BACK) and !inScroll).assertCountEquals(0)
     }
 
+    private fun reportButton(name: String) =
+        compose.onNode(hasClickAction() and hasContentDescription("$REPORT: »$name«"))
+
+    // Wiersz: V2, pełny ekran (rozwinięty i od razu): przy każdym wejściu, nie tylko zalecanym, „Zgłoś barierę
+    //   przy wejściu” pod opisem wejścia, w przewijanej treści; TalkBack czyta „Zgłoś barierę przy wejściu:
+    //   »nazwa wejścia«”, także dla wejścia bez nazwy, US4.6, NFR-18, WCAG 2.5.3.
+    @Test
+    fun us4_6_report_at_each_entrance() {
+        card(CardMode.Direct)
+        listOf(CardMode.Direct, CardMode.Expanded).forEach { fullScreen ->
+            show(fullScreen)
+            compose.onAllNodes(hasText(REPORT)).assertCountEquals(ENTRANCES.size)
+            ENTRANCES.forEach { (name, _) -> reportButton(name).assert(hasText(REPORT) and inScroll) }
+            val tops =
+                ENTRANCES.flatMap { (name, _) ->
+                    listOf(compose.onNodeWithText(name), reportButton(name)).map { it.getUnclippedBoundsInRoot().top }
+                }
+            assertTrue("wejście, jego czynność, następne wejście od góry, a są na $tops", tops.zipWithNext().all { (up, down) -> up < down })
+        }
+    }
+
+    // Wiersz: V2, dotknięcie „Zgłoś barierę przy wejściu” przy wejściu → onReportEntrance z identyfikatorem
+    //   dokładnie tego wejścia, US4.6.
+    @Test
+    fun us4_6_report_passes_entrance() {
+        card(CardMode.Expanded)
+        ENTRANCES.forEach { (name, _) -> reportButton(name).performClick() }
+        assertEquals(ENTRANCES.map { (_, id) -> "report $id" }, calls)
+    }
+
+    // Wiersz: V2, mała karta nie ma listy wejść, więc nie ma „Zgłoś barierę przy wejściu”; pełny ekran ma, US4.6,
+    //   decyzja 115.
+    @Test
+    fun us4_6_compact_has_no_report() {
+        card(CardMode.Direct)
+        compose.onAllNodes(hasText(REPORT)).assertCountEquals(ENTRANCES.size)
+        show(CardMode.Compact)
+        compose.onAllNodes(hasText(REPORT)).assertCountEquals(0)
+        compose.onAllNodes(hasContentDescription(REPORT, substring = true)).assertCountEquals(0)
+    }
+
     private fun card(start: CardMode) {
         mode.value = start
         val viewModel = BuildingCardViewModel(symbol = "A-1", repository = repository, networkStatus = { online })
@@ -127,6 +172,7 @@ class BuildingCardModesTest {
                     onShowOnMap = { calls += "map" },
                     onBack = { calls += "back" },
                     onClose = { calls += "close" },
+                    onReportEntrance = { calls += "report $it" },
                     viewModel = viewModel,
                 )
             }

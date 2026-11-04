@@ -150,6 +150,7 @@ internal fun AppNavigator.TestBuildingCard(symbol: String) {
         onShowOnMap = { showOnMap(MapFocus.Building(symbol)) },
         onBack = sheet.onBack,
         onClose = sheet.onClose,
+        onReportEntrance = { report(it) },
         viewModel = card,
     )
 }
