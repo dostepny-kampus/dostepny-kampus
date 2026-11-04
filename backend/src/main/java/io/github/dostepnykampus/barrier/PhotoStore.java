@@ -1,13 +1,12 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -29,13 +28,13 @@ final class PhotoStore {
     private final S3Client client;
 
     /**
-     * Kubełek ze zdjęciami.
+     * Ustawienia magazynu z kubełkiem ze zdjęciami.
      */
-    private final String bucket;
+    private final PhotoSettings settings;
 
-    PhotoStore(final S3Client client, @Value("${dk.photos.bucket}") final String bucket) {
+    PhotoStore(final S3Client client, final PhotoSettings settings) {
         this.client = client;
-        this.bucket = bucket;
+        this.settings = settings;
     }
 
     /**
@@ -50,7 +49,7 @@ final class PhotoStore {
         try {
             this.write(submission, photo, jpeg);
         } catch (final NoSuchBucketException ex) {
-            this.client.createBucket(request -> request.bucket(this.bucket));
+            this.client.createBucket(request -> request.bucket(this.settings.bucket()));
             this.write(submission, photo, jpeg);
         }
     }
@@ -67,7 +66,8 @@ final class PhotoStore {
         try {
             found = Optional.of(
                 this.client.getObjectAsBytes(
-                    request -> request.bucket(this.bucket).key(PhotoStore.key(submission, photo))
+                    request -> request.bucket(this.settings.bucket())
+                        .key(PhotoStore.key(submission, photo))
                 ).asByteArray()
             );
         } catch (final NoSuchKeyException | NoSuchBucketException ex) {
@@ -78,7 +78,7 @@ final class PhotoStore {
 
     private void write(final UUID submission, final UUID photo, final byte[] jpeg) {
         this.client.putObject(
-            request -> request.bucket(this.bucket)
+            request -> request.bucket(this.settings.bucket())
                 .key(PhotoStore.key(submission, photo))
                 .contentType("image/jpeg"),
             RequestBody.fromBytes(jpeg)

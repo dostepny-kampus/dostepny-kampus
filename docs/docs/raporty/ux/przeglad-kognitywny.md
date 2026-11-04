@@ -6,7 +6,7 @@ Poprawki z tabeli problemów to propozycje do decyzji właściciela produktu. An
 
 ## Kto i założenia
 
-Użytkowniczka to [PE-1 Pani Halina](../../ux/persony.md#pe-1-pani-halina-osoba-starsza-planujaca-wizyte-hipoteza-do-potwierdzenia-w-wywiadach). To jedyna persona z grupy Gościa i Odwiedzającego i reprezentuje grupę docelową kursu, więc wybieramy tylko ją.
+Użytkowniczka to [PE-1 Pani Halina](../../ux/persony.md#pe-1-pani-halina-osoba-starsza-planujaca-wizyte). Grupę Gościa i Odwiedzającego reprezentują dwie persony: PE-1 i PE-4. Wybieramy PE-1, bo ma najmniej doświadczenia z aplikacjami, a przegląd ma znaleźć problemy właśnie takiej osoby.
 
 | Założenie | Źródło |
 | --- | --- |
