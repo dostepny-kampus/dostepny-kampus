@@ -35,7 +35,7 @@ final class PhotoStoreBucketTest {
         final UUID photo = UUID.randomUUID();
         try (PhotoStoreBucketTest.BucketProbe probe = new PhotoStoreBucketTest.BucketProbe()) {
             final PhotoSettings settings = new PhotoSettings(
-                URI.create("http://magazyn"), "zdjecia-testowe", "", ""
+                URI.create("http://magazyn"), "zdjecia-testowe", "k", "k"
             );
             final PhotoStore store = new PhotoStore(probe, settings);
             new PhotoBucket(probe, settings).run(null);
