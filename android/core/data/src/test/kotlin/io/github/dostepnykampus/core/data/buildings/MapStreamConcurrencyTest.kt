@@ -64,6 +64,29 @@ class MapStreamConcurrencyTest {
         }
     }
 
+    // Wiersz: zapytanie mapy pada, a potem, przy wciąż zbieranym strumieniu, osobny refresh() przyjmuje niepustą
+    //   listę → ostatni stan mapy to katalog z serwera, dwa zapytania, W2.
+    @Test
+    fun nfr10_map_sees_late_refresh() {
+        val offline = ApiResult.NetworkError(IOException("brak"))
+        val answers = ArrayDeque<ApiResult<BuildingList>>(listOf(offline, LIST))
+        val ask: suspend () -> ApiResult<BuildingList> = {
+            calls.incrementAndGet()
+            answers.removeFirst()
+        }
+        val late = BuildingCatalogRepository(EmptyCoroutineContext, ask) { FILE_JSON }
+        inRun {
+            val seen = mutableListOf<BuildingCatalog>()
+            val map = launch { late.catalogUpdates().collect { seen += it } }
+            settle()
+            late.refresh()
+            withTimeoutOrNull(WAIT_MS) { map.join() }
+            map.cancel()
+            assertEquals(listOf("S-1"), seen.last().buildings.map { it.symbol }, "mapa została na pliku")
+            assertEquals(2, calls.get(), "liczba zapytań do serwera")
+        }
+    }
+
     // Wiersz: refresh() w toku na wstrzymanym serwerze → pierwsza emisja mapy to plik w ≤ 1 s, W1, NFR-11.
     @Test
     fun nfr11_file_while_retry_runs() {
