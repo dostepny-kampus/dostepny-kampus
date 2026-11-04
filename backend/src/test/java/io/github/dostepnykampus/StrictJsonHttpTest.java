@@ -12,7 +12,6 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestComponent;
@@ -50,7 +49,6 @@ final class StrictJsonHttpTest {
     }
 
     @Test
-    @Disabled("Serwer wiąże napis jako liczbę i przyjmuje ciało")
     void strictJsonSevenGivesBadRequestForCoercedValue(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
