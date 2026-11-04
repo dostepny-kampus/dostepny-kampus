@@ -59,7 +59,9 @@ class ReportAtEntranceTest {
         val ids = entranceIds()
         show(RoleProvider { Account.SignedIn() })
         ids.forEachIndexed { index, id ->
-            compose.onAllNodes(ReportButton)[index].performScrollTo().performClick()
+            val button = compose.onAllNodes(ReportButton)[index]
+            button.performScrollTo()
+            button.performClick()
             assertEquals("wejście nr ${index + 1}", ReportRoute(entranceId = id), navigator.current)
             pressBack()
         }
@@ -71,7 +73,9 @@ class ReportAtEntranceTest {
         val ids = entranceIds()
         show(GuestRoleProvider)
         ids.forEachIndexed { index, id ->
-            compose.onAllNodes(ReportButton)[index].performScrollTo().performClick()
+            val button = compose.onAllNodes(ReportButton)[index]
+            button.performScrollTo()
+            button.performClick()
             assertEquals(
                 "wejście nr ${index + 1}",
                 SignInRoute(isForReport = true, entranceId = id),
@@ -85,7 +89,8 @@ class ReportAtEntranceTest {
         runBlocking {
             val catalog =
                 BuildingCatalogRepository(EmptyCoroutineContext) {
-                    compose.activity.assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() }
+                    val assets = compose.activity.assets
+                    assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() }
                 }
             val card = buildingCard(catalog.catalog(), SYMBOL) as BuildingCardUiState.Ready
             card.entrances.map { it.entrance.id }

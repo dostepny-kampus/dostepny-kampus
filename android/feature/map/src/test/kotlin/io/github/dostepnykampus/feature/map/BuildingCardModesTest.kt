@@ -136,7 +136,8 @@ class BuildingCardModesTest {
                 ENTRANCES.flatMap { (name, _) ->
                     listOf(compose.onNodeWithText(name), reportButton(name)).map { it.getUnclippedBoundsInRoot().top }
                 }
-            assertTrue("wejście, jego czynność, następne wejście od góry, a są na $tops", tops.zipWithNext().all { (up, down) -> up < down })
+            val isDescending = tops.zipWithNext().all { (up, down) -> up < down }
+            assertTrue("wejście, jego czynność, następne wejście od góry, a są na $tops", isDescending)
         }
     }
 
