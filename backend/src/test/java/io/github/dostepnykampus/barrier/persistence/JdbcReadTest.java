@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 
@@ -35,7 +34,6 @@ final class JdbcReadTest {
     }
 
     @Test
-    @Disabled("adapter JdbcSubmissions jest zaślepką")
     void usEightFindsEveryStatus(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         for (final SubmissionStatus status : SubmissionStatus.values()) {
@@ -46,7 +44,6 @@ final class JdbcReadTest {
     }
 
     @Test
-    @Disabled("adapter JdbcSubmissions jest zaślepką")
     void usEightListFiltersAndOrdersByCreation(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final String home = SubmissionData.BUILDING;
