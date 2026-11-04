@@ -168,13 +168,16 @@ final class NullabilityArchitectureTest {
         return ArchRuleDefinition.classes()
             .that(NullabilityArchitectureTest.real())
             .and(NullabilityArchitectureTest.within(names, waiting))
-            .should(
-                NullabilityArchitectureTest.condition(
-                    loader, "reside in a package with the expected @NullMarked",
-                    type -> type.getPackage().isAnnotationPresent(NullMarked.class)
-                        == waiting
-                )
-            );
+            .should(NullabilityArchitectureTest.marking(loader, waiting));
+    }
+
+    private static ArchCondition<JavaClass> marking(
+        final ClassLoader loader, final boolean waiting
+    ) {
+        return NullabilityArchitectureTest.condition(
+            loader, "reside in a package with the expected @NullMarked",
+            type -> type.getPackage().isAnnotationPresent(NullMarked.class) == waiting
+        );
     }
 
     private static DescribedPredicate<JavaClass> real() {
