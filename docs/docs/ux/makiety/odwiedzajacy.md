@@ -70,7 +70,7 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 | Pozycja: „Budynek A-1”, nazwa z danych, bariery z uciążliwością tekstem i ikoną; cała ramka pozycji to jeden cel dotyku | NFR-19, US1.3, NFR-21, NFR-17 |
 | Bariery A-1 jak we wzorcu V2: schody przy wejściu głównym [1], pozostałe jako zastępnik | US1.3, BR-7 |
 | Lista daje tę samą informację co mapa, więc jest drogą dla TalkBack | NFR-19, NFR-18 |
-| Dotknięcie pozycji: mapa z zaznaczonym budynkiem i małą kartą V2; przy TalkBack, dużej czcionce albo szerokim oknie od razu pełny ekran V2; zamknięcie małej karty wraca do listy | US2.8, NFR-19 |
+| Dotknięcie pozycji: mapa z zaznaczonym budynkiem i małą kartą V2. Przy TalkBack, dużej czcionce albo szerokim oknie od razu pełny ekran V2. Zamknięcie małej karty wraca do listy | US2.8, NFR-19 |
 | Przy dużej czcionce lista jest widokiem startowym | NFR-20 |
 | Bez przycisków mapy i podpisu OpenStreetMap, bo lista nie pokazuje mapy | decyzja 16 |
 
