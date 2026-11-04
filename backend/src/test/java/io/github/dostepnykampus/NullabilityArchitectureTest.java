@@ -17,15 +17,11 @@ import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
@@ -73,7 +69,6 @@ final class NullabilityArchitectureTest {
     void nullMarkedOutsideWaitingPackages() {
         Assertions.assertDoesNotThrow(
             () -> NullabilityArchitectureTest.state(
-                NullabilityArchitectureTest.loader(),
                 NullabilityArchitectureTest.WAITING, false
             ).check(NullabilityArchitectureTest.production()),
             "Pakiet poza listą czekających nie ma @NullMarked"
@@ -85,7 +80,6 @@ final class NullabilityArchitectureTest {
         Assumptions.assumeFalse(NullabilityArchitectureTest.WAITING.isEmpty());
         Assertions.assertDoesNotThrow(
             () -> NullabilityArchitectureTest.state(
-                NullabilityArchitectureTest.loader(),
                 NullabilityArchitectureTest.WAITING, true
             ).check(NullabilityArchitectureTest.production()),
             "Pakiet z listy czekających ma już @NullMarked albo nie istnieje"
@@ -120,7 +114,6 @@ final class NullabilityArchitectureTest {
         Assertions.assertThrows(
             AssertionError.class,
             () -> NullabilityArchitectureTest.state(
-                NullabilityArchitectureTest.loader(),
                 NullabilityArchitectureTest.WAITING, waiting
             ).check(new ClassFileImporter().importClasses()),
             "Reguła przechodzi, choć nie sprawdziła żadnej klasy"
@@ -130,24 +123,27 @@ final class NullabilityArchitectureTest {
     private static Stream<Sample> samples() {
         final String pending = String.format("%s.p", NullabilityArchitectureTest.FIXTURES);
         final String plain = "final class Plain { }";
-        final Function<ClassLoader, ArchRule> none =
-            l -> NullabilityArchitectureTest.state(l, List.of(), false);
+        final ArchRule none = NullabilityArchitectureTest.state(List.of(), false);
         return Stream.of(
             new Sample(
                 none, "bez package-info", Map.of("b/Plain", plain), true
+            ),
+            new Sample(
+                none, "pakiet tylko z package-info",
+                Map.of("t/package-info", "NullUnmarked"), true
             ),
             new Sample(
                 none, "bez NullMarked",
                 Map.of("r/package-info", "NullUnmarked", "r/Plain", plain), true
             ),
             new Sample(
-                l -> NullabilityArchitectureTest.state(
-                    l, List.of(String.format("%s.w", NullabilityArchitectureTest.FIXTURES)), true
+                NullabilityArchitectureTest.state(
+                    List.of(String.format("%s.w", NullabilityArchitectureTest.FIXTURES)), true
                 ), "pakiet z listy",
                 Map.of("w/package-info", "NullMarked", "w/Plain", plain), true
             ),
             new Sample(
-                l -> NullabilityArchitectureTest.state(l, List.of(pending), false),
+                NullabilityArchitectureTest.state(List.of(pending), false),
                 "oznaczony pakiet i pakiet z listy",
                 Map.of(
                     "o/package-info", "NullMarked", "o/Good", plain,
@@ -155,36 +151,17 @@ final class NullabilityArchitectureTest {
                 ), false
             ),
             new Sample(
-                l -> NullabilityArchitectureTest.state(l, List.of(pending), true),
+                NullabilityArchitectureTest.state(List.of(pending), true),
                 "nieoznaczony pakiet z listy",
                 Map.of("p/Plain", plain), false
             )
         );
     }
 
-    private static ArchRule state(
-        final ClassLoader loader, final List<String> names, final boolean waiting
-    ) {
+    private static ArchRule state(final List<String> names, final boolean waiting) {
         return ArchRuleDefinition.classes()
-            .that(NullabilityArchitectureTest.real())
-            .and(NullabilityArchitectureTest.within(names, waiting))
-            .should(NullabilityArchitectureTest.marking(loader, waiting));
-    }
-
-    private static ArchCondition<JavaClass> marking(
-        final ClassLoader loader, final boolean waiting
-    ) {
-        return NullabilityArchitectureTest.condition(
-            loader, "reside in a package with the expected @NullMarked",
-            type -> type.getPackage().isAnnotationPresent(NullMarked.class) == waiting
-        );
-    }
-
-    private static DescribedPredicate<JavaClass> real() {
-        return DescribedPredicate.describe(
-            "are not package-info",
-            item -> !"package-info".equals(item.getSimpleName())
-        );
+            .that(NullabilityArchitectureTest.within(names, waiting))
+            .should(NullabilityArchitectureTest.marking(waiting));
     }
 
     private static DescribedPredicate<JavaClass> within(
@@ -199,28 +176,15 @@ final class NullabilityArchitectureTest {
         );
     }
 
-    private static ArchCondition<JavaClass> condition(
-        final ClassLoader loader, final String text,
-        final Predicate<Class<?>> bad
-    ) {
-        return new ArchCondition<JavaClass>(text) {
+    private static ArchCondition<JavaClass> marking(final boolean waiting) {
+        return new ArchCondition<JavaClass>("reside in a package with the expected @NullMarked") {
             @Override
             public void check(final JavaClass item, final ConditionEvents events) {
-                final Class<?> type;
-                try {
-                    type = loader.loadClass(item.getName());
-                } catch (final ClassNotFoundException ex) {
-                    throw new IllegalStateException(item.getName(), ex);
-                }
-                if (bad.test(type)) {
+                if (item.getPackage().isAnnotatedWith(NullMarked.class) == waiting) {
                     events.add(SimpleConditionEvent.violated(item, item.getName()));
                 }
             }
         };
-    }
-
-    private static ClassLoader loader() {
-        return Thread.currentThread().getContextClassLoader();
     }
 
     private static JavaClasses production() {
@@ -264,13 +228,8 @@ final class NullabilityArchitectureTest {
             throw new IllegalStateException("Przykład się nie skompilował");
         }
         boolean failed = false;
-        try (
-            URLClassLoader loader = new URLClassLoader(
-                new URL[] {out.toUri().toURL()},
-                NullabilityArchitectureTest.loader()
-            )
-        ) {
-            sample.rule().apply(loader).check(new ClassFileImporter().importPath(out));
+        try {
+            sample.rule().check(new ClassFileImporter().importPath(out));
         } catch (final AssertionError ex) {
             failed = true;
         }
@@ -280,14 +239,14 @@ final class NullabilityArchitectureTest {
     /**
      * Przykład: reguła, opis, źródła klas i czy reguła ma je odrzucić.
      *
-     * @param rule Reguła zbudowana dla ładowarki klas przykładu
+     * @param rule Reguła sprawdzana na przykładzie
      * @param label Opis przykładu
      * @param files Mapa źródeł klas: ścieżka pakietu i klasy na treść
      * @param violating Czy reguła ma zgłosić naruszenie
      * @since 0.1.0
      */
     record Sample(
-        Function<ClassLoader, ArchRule> rule, String label,
+        ArchRule rule, String label,
         Map<String, String> files, boolean violating
     ) {
         @Override
