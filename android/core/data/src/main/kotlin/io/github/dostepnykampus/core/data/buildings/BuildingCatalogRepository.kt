@@ -11,11 +11,14 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingList
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
@@ -40,9 +43,17 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
  * - Wejścia nie obejmują rodzajów `emergency`, `exit` i `garage`, bo to nie są wejścia dla odwiedzających
  *   (BR-25, decyzja 76).
  *
- * [catalog] czyta plik i pyta serwer raz, w [ioContext]; kolejne wywołania, także równoległe, dostają ten sam
- * katalog z pamięci. [refresh] pyta serwer i czyta plik od nowa. Bez odpowiedzi serwera katalog pobrany
- * wcześniej z serwera zostaje, a plik jest zapasem tylko wtedy, gdy z serwera nic jeszcze nie pobrano (NFR-10).
+ * Serwer jest pytany jednym wspólnym zapytaniem: [catalogUpdates], [catalog] i [refresh] wywołane w trakcie trwającego
+ * pobrania czekają na jego wynik, zamiast pytać drugi raz. Katalog pobrany z serwera jest widoczny dla wszystkich,
+ * także dla mapy, która sama go nie zamawiała. [catalogUpdates] oddaje najpierw katalog z pliku (albo już pobrany
+ * z serwera), bez czekania na pobranie (NFR-11), a potem katalog z serwera, gdy ten odpowie niepustą listą; plik nie
+ * nadpisuje przyjętego katalogu z serwera. [catalog] czeka na wynik pobrania i zapamiętuje go; [refresh] czyta plik
+ * od nowa i pyta serwer, chyba że pobranie już trwa. Bez odpowiedzi serwera katalog pobrany wcześniej z serwera
+ * zostaje, a plik jest zapasem tylko wtedy, gdy z serwera nic jeszcze nie pobrano (NFR-10).
+ *
+ * Anulowanie przerywa pytanie serwera, o ile [listBuildings] jest anulowalne; odczyt pliku [readGeoJson] jest
+ * blokujący, więc anulowanie działa dopiero po nim. Gdy anulowany zostanie ten, kto prowadził wspólne pobranie,
+ * pozostali czekający pytają serwer od nowa.
  *
  * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
  * @param listBuildings lista z serwera; `null` zostawia katalog wyłącznie z pliku
@@ -53,40 +64,84 @@ class BuildingCatalogRepository(
     private val listBuildings: (suspend () -> ApiResult<BuildingList>)? = null,
     private val readGeoJson: () -> String,
 ) {
-    private val mutex = Mutex()
-    private var cached: BuildingCatalog? = null
-    private var downloaded: BuildingCatalog? = null
+    private val lock = Any()
+    private var inflight: CompletableDeferred<BuildingCatalog>? = null
+    private val downloaded = MutableStateFlow<BuildingCatalog?>(null)
+
+    @Volatile private var cached: BuildingCatalog? = null
+
+    @Volatile private var bundled: BuildingCatalog? = null
 
     /**
-     * Zwraca katalog budynków.
+     * Zwraca katalog budynków; gdy trwa pobranie z serwera, czeka na jego wynik.
      *
      * @throws IllegalArgumentException gdy plik konturów ma zły format
      */
-    suspend fun catalog(): BuildingCatalog = mutex.withLock { cached ?: load().also { cached = it } }
+    suspend fun catalog(): BuildingCatalog = fetched(isFresh = false)
 
     /**
-     * Strumień katalogu dla mapy. Jeszcze nie docelowe zachowanie: na razie oddaje tylko wynik [catalog].
+     * Strumień katalogu dla mapy: najpierw katalog z pliku (albo już pobrany z serwera), bez czekania na pobranie,
+     * potem katalog z serwera, gdy ten odpowie niepustą listą, także przyjęty przez [catalog] lub [refresh]. Błąd,
+     * brak sieci i pusta lista nie dają drugiej emisji. Strumień kończy się po katalogu z serwera; bez niego czeka na
+     * katalog przyjęty później (np. przez [refresh]) i kończy go anulowanie zbierającego.
      *
      * @throws IllegalArgumentException gdy plik konturów ma zły format
      */
-    fun catalogUpdates(): Flow<BuildingCatalog> = flow { emit(catalog()) }
+    fun catalogUpdates(): Flow<BuildingCatalog> =
+        channelFlow {
+            val first = downloaded.value ?: readBundled(isFresh = false)
+            send(first)
+            launch { fetched(isFresh = false) }
+            send(downloaded.filterNotNull().first { server -> server !== first })
+        }
 
     /**
      * Pyta serwer i czyta plik od nowa, zapamiętuje wynik i zwraca katalog dla „Spróbuj ponownie”, gdy budynku
-     * nie ma w telefonie (NFR-10). Gdy serwer nie odpowie, zostaje ostatni katalog z serwera, a bez niego plik.
+     * nie ma w telefonie (NFR-10). Gdy pobranie już trwa, czeka na jego wynik. Gdy serwer nie odpowie, zostaje
+     * ostatni katalog z serwera, a bez niego plik.
      *
      * @throws IllegalArgumentException gdy plik konturów ma zły format
      */
-    suspend fun refresh(): BuildingCatalog = mutex.withLock { load().also { cached = it } }
+    suspend fun refresh(): BuildingCatalog = fetched(isFresh = true)
 
-    private suspend fun load(): BuildingCatalog {
-        val bundled = withContext(ioContext) { parseBuildingCatalog(readGeoJson()).forVisitors() }
-        val server = nonEmptyServerList()
-        if (server != null) {
-            downloaded = fromServer(bundled, server)
-        }
-        return downloaded ?: bundled
+    private suspend fun fetched(isFresh: Boolean): BuildingCatalog {
+        val ready = if (isFresh) null else cached
+        if (ready != null) return ready
+        val mine = CompletableDeferred<BuildingCatalog>()
+        val running =
+            synchronized(lock) {
+                val current = inflight
+                if (current == null) inflight = mine
+                current
+            }
+        return if (running == null) lead(mine, isFresh) else follow(running, isFresh)
     }
+
+    private suspend fun follow(running: CompletableDeferred<BuildingCatalog>, isFresh: Boolean): BuildingCatalog {
+        running.join()
+        return if (running.isCancelled) fetched(isFresh) else running.await()
+    }
+
+    private suspend fun lead(mine: CompletableDeferred<BuildingCatalog>, isFresh: Boolean): BuildingCatalog {
+        try {
+            val file = readBundled(isFresh)
+            val server = nonEmptyServerList()
+            if (server != null) {
+                downloaded.value = fromServer(file, server)
+            }
+            val result = downloaded.value ?: file
+            cached = result
+            mine.complete(result)
+            return result
+        } finally {
+            mine.cancel()
+            synchronized(lock) { inflight = null }
+        }
+    }
+
+    private suspend fun readBundled(isFresh: Boolean): BuildingCatalog =
+        (if (isFresh) null else bundled)
+            ?: withContext(ioContext) { parseBuildingCatalog(readGeoJson()).forVisitors() }.also { bundled = it }
 
     private fun fromServer(bundled: BuildingCatalog, server: BuildingList): BuildingCatalog {
         val symbols = server.buildings.map { item -> item.building.symbol }.toSet()
