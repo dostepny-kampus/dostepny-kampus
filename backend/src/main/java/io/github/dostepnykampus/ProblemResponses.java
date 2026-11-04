@@ -26,22 +26,25 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * @since 0.1.0
  */
 @RestControllerAdvice
-final class ProblemResponses {
+public final class ProblemResponses {
 
+    /**
+     * Dziennik nieoczekiwanych wyjątków, których klient nie widzi.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(ProblemResponses.class);
 
     @ExceptionHandler
-    ProblemDetail invalid(final InvalidInput error) {
+    static ProblemDetail invalid(final InvalidInput error) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, error.getMessage());
     }
 
     @ExceptionHandler
-    ProblemDetail missing(final MissingResource error) {
+    static ProblemDetail missing(final MissingResource error) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.getMessage());
     }
 
     @ExceptionHandler
-    ProblemDetail unexpected(final Exception error) {
+    static ProblemDetail unexpected(final Exception error) {
         ProblemResponses.LOG.error("Nieobsłużony wyjątek w obsłudze żądania", error);
         return ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
     }
