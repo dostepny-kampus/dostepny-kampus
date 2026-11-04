@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier.domain;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
@@ -32,13 +33,33 @@ public record SubmissionContent(
 ) {
 
     /**
+     * Treść z rodzajem, miejscem, szczegółami i co najmniej jednym zdjęciem;
+     * lista zdjęć jest niemodyfikowalną kopią. Pusta lista zdjęć kończy się
+     * niekontrolowanym wyjątkiem {@link InvalidSubmission}; brak rodzaju,
+     * miejsca, szczegółów albo listy zdjęć kończy się wyjątkiem
+     * NullPointerException.
+     */
+    public SubmissionContent {
+        Objects.requireNonNull(kind, "kind");
+        Objects.requireNonNull(place, "place");
+        Objects.requireNonNull(barrier, "barrier");
+        Objects.requireNonNull(photoIds, "photoIds");
+        if (photoIds.isEmpty()) {
+            throw new InvalidSubmission(
+                "Zgłoszenie wymaga co najmniej jednego UUID zdjęcia w polu photoIds"
+            );
+        }
+        photoIds = List.copyOf(photoIds);
+    }
+
+    /**
      * Kopia treści z innym budynkiem miejsca.
      *
      * @param symbol Symbol budynku
      * @return Treść z miejscem w tym budynku i resztą bez zmian
      */
     public SubmissionContent withBuilding(final String symbol) {
-        return this;
+        return this.withPlace(this.place.withBuilding(symbol));
     }
 
     /**
@@ -47,6 +68,13 @@ public record SubmissionContent(
      * @return Treść z miejscem bez symbolu budynku i resztą bez zmian
      */
     public SubmissionContent outsideBuildings() {
-        return this;
+        return this.withPlace(this.place.outsideBuildings());
+    }
+
+    private SubmissionContent withPlace(final SubmissionPlace other) {
+        return new SubmissionContent(
+            this.kind, other, this.barrier, this.entranceId, this.entranceMarking,
+            this.replaces, this.photoIds
+        );
     }
 }
