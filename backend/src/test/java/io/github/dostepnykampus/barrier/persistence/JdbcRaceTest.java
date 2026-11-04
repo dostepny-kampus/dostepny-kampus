@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -41,9 +42,11 @@ final class JdbcRaceTest {
     void brTenSameVersionRaceConflicts(final ApplicationContext context) throws Exception {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = data.seed(SubmissionStatus.SENT);
-        final ExecutorService pool = Executors.newFixedThreadPool(2);
         final List<EditResult> results = new ArrayList<>(2);
-        try (Connection lock = context.getBean(DataSource.class).getConnection()) {
+        try (
+            ExecutorService pool = Executors.newFixedThreadPool(2);
+            Connection lock = context.getBean(DataSource.class).getConnection()
+        ) {
             lock.setAutoCommit(false);
             try (Statement select = lock.createStatement()) {
                 select.execute(
@@ -59,16 +62,14 @@ final class JdbcRaceTest {
                 results.add(edit.get(20, TimeUnit.SECONDS));
             }
         } finally {
-            pool.shutdownNow();
             data.clean();
         }
-        final List<EditResult.Saved> saved = results.stream()
-            .filter(EditResult.Saved.class::isInstance).map(EditResult.Saved.class::cast)
-            .toList();
-        Assertions.assertEquals(1, saved.size(), "Zapisały się dwie edycje tej samej wersji");
+        final EditResult saved = results.stream()
+            .filter(EditResult.Saved.class::isInstance).findFirst().orElseThrow();
         Assertions.assertEquals(
-            List.of(new EditResult.Conflict(saved.get(0).submission())),
-            results.stream().filter(EditResult.Conflict.class::isInstance).toList()
+            Set.of(saved, new EditResult.Conflict(((EditResult.Saved) saved).submission())),
+            Set.copyOf(results),
+            "Jedna edycja ma się zapisać, a druga dostać konflikt z zapisanym stanem"
         );
     }
 
