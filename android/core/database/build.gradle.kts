@@ -12,6 +12,12 @@ plugins {
 
 android {
     testOptions.unitTests.all { it.useJUnitPlatform() }
+    testOptions.unitTests.isIncludeAndroidResources = true
+
+    // Schematy Room też do testów jednostkowych (Robolectric), żeby MigrationTestHelper je czytał.
+    sourceSets.getByName("test") {
+        assets.srcDir("$projectDir/generated/schemas")
+    }
 }
 
 room {
@@ -23,6 +29,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.kotlinx.coroutines.core)
+    testImplementation(libs.androidx.room.testing)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit4)
     testImplementation(libs.robolectric)
