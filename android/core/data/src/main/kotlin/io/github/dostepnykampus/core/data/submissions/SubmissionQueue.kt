@@ -45,6 +45,7 @@ private enum class Outcome { SENT, OFFLINE, REFUSED }
  * Bez sieci albo po błędzie serwera zgłoszenie zostaje w kolejce: zapis w bazie mówi, co serwer
  * już ma, więc kolejna próba wysyła treść raz i tylko brakujące zdjęcia (NFR-8).
  * Identyfikator powstaje raz, więc serwer nie dostanie drugiego zgłoszenia (BR-9).
+ * Po zapisie [onSaved] planuje wysyłkę po powrocie sieci (NFR-6); zapis działa także bez niego.
  */
 class SubmissionQueue(
     private val store: PendingSubmissionDao,
@@ -52,7 +53,7 @@ class SubmissionQueue(
     private val create: suspend (id: String, content: SubmissionContent) -> ApiResult<Submission>,
     private val putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ApiResult<Unit>,
     private val newId: () -> String = { UUID.randomUUID().toString() },
-    private val nowMillis: () -> Long = System::currentTimeMillis,
+    private val onSaved: () -> Unit = {},
 ) {
     private val lock = Mutex()
 
@@ -67,20 +68,23 @@ class SubmissionQueue(
             "Zdjęcia w kolejce muszą odpowiadać identyfikatorom treści (BR-7, BR-8)"
         }
         val id = newId()
-        val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = nowMillis())
+        val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = System.currentTimeMillis())
         store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
+        // Awaria planowania nie może zgubić zapisanego zgłoszenia (NFR-5).
+        runCatching(onSaved)
         return entity
     }
 
     /**
      * Wysyła zgłoszenia z kolejki od najstarszych: treść raz, potem tylko nie wysłane zdjęcia.
      * Bez sieci wysyłanie się kończy do zasięgu, a błąd serwera zostawia zgłoszenie w kolejce (NFR-5, US9.2).
+     *
+     * @return `true`, gdy wysyłka doszła do końca kolejki; `false`, gdy zabrakło sieci i trzeba spróbować później
      */
-    suspend fun sendAll(): Unit =
+    suspend fun sendAll(): Boolean =
         lock.withLock {
-            for (item in store.all()) {
-                if (sendOne(item) == Outcome.OFFLINE) break
-            }
+            val isOffline = store.all().any { item -> sendOne(item) == Outcome.OFFLINE }
+            !isOffline
         }
 
     private suspend fun sendOne(item: PendingSubmissionWithPhotos): Outcome =

@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":core:geo"))
     implementation(project(":core:network"))
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.work.runtime)
     implementation(libs.kotlinx.serialization.json)
     api(libs.kotlinx.coroutines.core)
     testImplementation(platform(libs.junit.bom))
