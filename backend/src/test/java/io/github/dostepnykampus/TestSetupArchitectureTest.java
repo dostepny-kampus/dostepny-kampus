@@ -28,9 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -47,9 +45,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 /**
  * Strażnik: testy na pełnym kontekście dzielą jeden kontekst Springa.
  *
- * <p>{@code @SpringBootTest} tylko w {@code IntegrationTest} i na listach
- * (klasy {@code barrier} czekają na przejście, lista ma się kurczyć),
- * {@code @DirtiesContext} jest zakazany, mocki Mockito tylko z listy.</p>
+ * <p>{@code @SpringBootTest} tylko w {@code IntegrationTest} i w klasach
+ * z listy z powodem, {@code @DirtiesContext} jest zakazany, mocki Mockito
+ * tylko z listy.</p>
  *
  * @since 0.1.0
  */
@@ -59,15 +57,6 @@ final class TestSetupArchitectureTest {
      * Klasy z własnym {@code @SpringBootTest}, z powodem.
      */
     private static final Map<String, String> OWN_CONTEXT = Map.of();
-
-    /**
-     * Klasy czekające na przejście na {@code IntegrationTest}, do scalenia I3.
-     */
-    private static final Set<String> WAITING = Stream.of(
-        "PhotoStoreTest", "PhotoUploadLimitHttpTest", "SubmissionPhotosHttpTest",
-        "SubmissionPointHttpTest", "SubmissionsEditHttpTest", "SubmissionsHttpTest",
-        "SubmissionsMigrationTest", "SubmissionsReadHttpTest", "SubmissionsWriteContractTest"
-    ).map("io.github.dostepnykampus.barrier."::concat).collect(Collectors.toSet());
 
     /**
      * Klasy z {@code @MockitoBean} lub {@code @MockitoSpyBean}, z powodem.
@@ -91,8 +80,7 @@ final class TestSetupArchitectureTest {
 
     @Test
     void springBootTestOnlyInIntegrationTestAndListedClasses() {
-        final Set<String> all = new HashSet<>(TestSetupArchitectureTest.WAITING);
-        all.addAll(TestSetupArchitectureTest.OWN_CONTEXT.keySet());
+        final Set<String> all = TestSetupArchitectureTest.OWN_CONTEXT.keySet();
         TestSetupArchitectureTest.bare(all).check(TestSetupArchitectureTest.TESTS);
         TestSetupArchitectureTest.listed(all).check(TestSetupArchitectureTest.TESTS);
     }
