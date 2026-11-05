@@ -44,6 +44,14 @@ final class OpenApiContractTest {
         "[17.06,51.10],[17.06,51.11],[17.05,51.10]]]]},\"entrances\":[]}"
     );
 
+    /**
+     * Adres zdjęcia zgłoszenia.
+     */
+    private static final String PHOTO = String.join(
+        "/", "/submissions", "8d0c7a5e-1b7a-4c64-9f50-3c1f0d0e6a11", "photos",
+        "5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"
+    );
+
     @ParameterizedTest(name = "{2}")
     @MethodSource("conforming")
     void contractAcceptsConformingExchange(
@@ -119,6 +127,20 @@ final class OpenApiContractTest {
                 ),
                 OpenApiContractTest.problem(401, "{\"title\":\"Brak tokenu\",\"status\":401}"),
                 "zgodne ciało żądania"
+            ),
+            Arguments.of(
+                OpenApiContractTest.photo(MediaType.IMAGE_JPEG),
+                ResponseEntity.noContent().<String>build(), "zdjęcie JPEG jako treść nie-JSON"
+            ),
+            Arguments.of(
+                MockMvcRequestBuilders.get(OpenApiContractTest.PHOTO),
+                ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body("zdjęcie"),
+                "odpowiedź JPEG"
+            ),
+            Arguments.of(
+                OpenApiContractTest.review("{\"decision\":\"REJECT\",\"version\":1}"),
+                OpenApiContractTest.problem(400, "{\"title\":\"Błąd\",\"status\":400}"),
+                "niezgodne żądanie odrzucone statusem 400 z Problem"
             )
         );
     }
@@ -152,8 +174,23 @@ final class OpenApiContractTest {
             ),
             Arguments.of(
                 OpenApiContractTest.review("{\"decision\":\"REJECT\",\"version\":1}"),
-                OpenApiContractTest.problem(401, "{\"title\":\"Brak tokenu\",\"status\":401}"),
+                OpenApiContractTest.json(200, "{}"),
                 "POST /submissions/{submissionId}/review, żądanie: "
+            ),
+            Arguments.of(
+                OpenApiContractTest.review("{\"decision\":\"REJECT\",\"version\":1}"),
+                OpenApiContractTest.problem(400, "{\"status\":400}"),
+                "POST /submissions/{submissionId}/review 400:  required property 'title'"
+            ),
+            Arguments.of(
+                MockMvcRequestBuilders.get(OpenApiContractTest.PHOTO),
+                ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body("zdjęcie"),
+                "GET /submissions/{submissionId}/photos/{photoId} 200: typ treści 'image/png'"
+            ),
+            Arguments.of(
+                OpenApiContractTest.photo(MediaType.TEXT_PLAIN),
+                ResponseEntity.noContent().<String>build(),
+                "PUT /submissions/{submissionId}/photos/{photoId}, żądanie: typ treści 'text/plain'"
             ),
             Arguments.of(
                 MockMvcRequestBuilders.get("/buildings/A-1"),
@@ -171,6 +208,11 @@ final class OpenApiContractTest {
             OpenApiContractTest.json(200, OpenApiContractTest.CARD.replace(part, replacement)),
             message
         );
+    }
+
+    private static RequestBuilder photo(final MediaType type) {
+        return MockMvcRequestBuilders.put(OpenApiContractTest.PHOTO).contentType(type)
+            .content(new byte[] {(byte) 0xFF, (byte) 0xD8});
     }
 
     private static RequestBuilder review(final String decision) {
