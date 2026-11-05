@@ -155,7 +155,7 @@ object MapLibreMapView : CampusMapView {
 }
 
 // Podpisy konturów, znaki wejść oraz pinezka i podpis zaznaczonego wejścia: obrazy, bo napisy ze stylu wymagają sieci.
-private fun Style.addMapImages(data: CampusMapData, colors: MapColors, density: Float, labelSize: Float) {
+internal fun Style.addMapImages(data: CampusMapData, colors: MapColors, density: Float, labelSize: Float) {
     data.labels.forEach { label -> addImage(label, labelImage(label, colors, labelSize)) }
     val selected = data.selectedEntrance
     entranceImages(selected = selected, colors = colors, density = density, labelSize = labelSize)
