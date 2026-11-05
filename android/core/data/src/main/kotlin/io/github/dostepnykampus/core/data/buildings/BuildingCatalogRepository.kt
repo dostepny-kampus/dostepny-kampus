@@ -134,8 +134,8 @@ class BuildingCatalogRepository(
             mine.complete(result)
             return result
         } finally {
-            mine.cancel()
             synchronized(lock) { inflight = null }
+            mine.cancel()
         }
     }
 
