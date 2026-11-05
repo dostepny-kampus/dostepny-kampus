@@ -158,7 +158,7 @@ final class BarrierArchitectureTest {
     }
 
     private static ArchRule rule(final String name, final String root) {
-        final String all = String.format("%s..", root);
+        final String pkg = String.format("%s..", root);
         final String out = String.format("%s.persistence..", root);
         final String service = String.format(
             "%s.SubmissionService", BarrierArchitectureTest.MODULE
@@ -167,7 +167,7 @@ final class BarrierArchitectureTest {
             "%s.web.SubmissionsController(\\$.*)?", BarrierArchitectureTest.MODULE
         );
         final String adapter = "..barrier.persistence..";
-        return Objects.requireNonNull(Map.of(
+        final Map<String, ArchRule> all = Map.of(
             "A-1", ArchRuleDefinition.noClasses()
                 .that().resideInAPackage(String.format("%s.domain..", root))
                 .should().dependOnClassesThat().resideInAnyPackage(
@@ -175,11 +175,11 @@ final class BarrierArchitectureTest {
                     "io.github.dostepnykampus.building.."
                 ),
             "A-2", ArchRuleDefinition.noClasses()
-                .that().resideInAPackage(all).and().resideOutsideOfPackage(out)
+                .that().resideInAPackage(pkg).and().resideOutsideOfPackage(out)
                 .should().dependOnClassesThat().resideInAnyPackage(
                     "java.sql..", "org.springframework.jdbc.."
                 ),
-            "A-3", ArchRuleDefinition.noClasses().that().resideInAPackage(all)
+            "A-3", ArchRuleDefinition.noClasses().that().resideInAPackage(pkg)
                 .should().dependOnClassesThat().haveSimpleName("JsonNode"),
             "A-4", ArchRuleDefinition.noClasses()
                 .that().resideInAPackage(String.format("%s.web..", root))
@@ -187,22 +187,23 @@ final class BarrierArchitectureTest {
                 .orShould().dependOnClassesThat()
                 .haveFullyQualifiedName(BarrierArchitectureTest.REPO),
             "A-5", ArchRuleDefinition.noClasses()
-                .that().resideInAPackage(all).and().resideOutsideOfPackage(out)
+                .that().resideInAPackage(pkg).and().resideOutsideOfPackage(out)
                 .and().doNotHaveFullyQualifiedName(service)
                 .should().dependOnClassesThat()
                 .haveFullyQualifiedName(BarrierArchitectureTest.REPO),
             "A-6", ArchRuleDefinition.noClasses()
-                .that().resideInAPackage(all).and().doNotHaveFullyQualifiedName(service)
+                .that().resideInAPackage(pkg).and().doNotHaveFullyQualifiedName(service)
                 .should().dependOnClassesThat()
                 .haveFullyQualifiedName(BarrierArchitectureTest.OUTLINES),
             "A-7", ArchRuleDefinition.noClasses()
-                .that().resideInAPackage(all).and().haveNameNotMatching(controller)
+                .that().resideInAPackage(pkg).and().haveNameNotMatching(controller)
                 .should().dependOnClassesThat().haveSimpleName("ResponseStatusException"),
             "A-8", ArchRuleDefinition.noClasses()
-                .that().resideInAPackage(all).and().resideOutsideOfPackage(out)
+                .that().resideInAPackage(pkg).and().resideOutsideOfPackage(out)
                 .should().dependOnClassesThat().resideInAPackage(adapter),
             "A-9", ArchitectureTest.errorTypes()
-        ).get(name)).allowEmptyShould(false);
+        );
+        return Objects.requireNonNull(all.get(name)).allowEmptyShould(false);
     }
 
     private static JavaClasses production() {
