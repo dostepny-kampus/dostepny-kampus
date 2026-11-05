@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
 import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -41,17 +41,16 @@ final class PhotoBucketTest {
 
     @Test
     void acTwoBFourStopsStartupWhenStorageFailsWithKeys() {
-        final IllegalStateException error = Assertions.assertThrows(
-            IllegalStateException.class,
-            () -> new PhotoBucket(
-                new PhotoBucketTest.Storage(SdkClientException.create("brak połączenia")),
-                PhotoBucketTest.settings("klucz")
-            ).run(null),
-            "Awaria magazynu przy skonfigurowanych kluczach nie zatrzymała startu"
-        );
         MatcherAssert.assertThat(
             "Komunikat nie wskazuje ustawienia dk.photos i kubełka",
-            error.getMessage(), Matchers.allOf(
+            Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> new PhotoBucket(
+                    new PhotoBucketTest.Storage(SdkClientException.create("brak połączenia")),
+                    PhotoBucketTest.settings("klucz")
+                ).run(null),
+                "Awaria magazynu przy skonfigurowanych kluczach nie zatrzymała startu"
+            ).getMessage(), Matchers.allOf(
                 Matchers.containsString("dk.photos"), Matchers.containsString("zdjecia-start")
             )
         );
@@ -80,7 +79,7 @@ final class PhotoBucketTest {
         /**
          * Kubełki kolejnych utworzeń.
          */
-        private final List<String> created = new ArrayList<>(1);
+        private final List<String> created;
 
         /**
          * Błąd rzucany przy tworzeniu albo null.
@@ -88,6 +87,7 @@ final class PhotoBucketTest {
         private final @Nullable RuntimeException failure;
 
         Storage(final @Nullable RuntimeException failure) {
+            this.created = new ArrayList<>(1);
             this.failure = failure;
         }
 
