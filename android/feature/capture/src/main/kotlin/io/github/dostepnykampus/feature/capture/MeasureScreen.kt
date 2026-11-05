@@ -81,11 +81,13 @@ fun MeasureContent(state: MeasureUiState, onRepeat: () -> Unit, onBack: () -> Un
                     is MeasureUiState.Measuring -> {
                         Headline(stringResource(R.string.pomiar_zostalo, state.remainingSeconds))
                         Result(state.average, resources.satellitesLine(state.satellites))
+                        SkyMap(Sky(state.sky))
                     }
 
                     is MeasureUiState.Finished -> {
                         Headline(stringResource(R.string.pomiar_zakonczony))
                         Result(state.average, resources.satellitesLine(state.satellites))
+                        SkyMap(Sky(state.sky))
                     }
                 }
             }
