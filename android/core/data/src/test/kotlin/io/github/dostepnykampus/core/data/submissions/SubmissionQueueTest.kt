@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -38,7 +39,7 @@ class SubmissionQueueTest {
     fun `wysyła treść i czyści kolejkę`() =
         runBlocking {
             saveTwoPhotos()
-            queue().sendAll()
+            assertTrue(queue().sendAll())
 
             assertEquals(listOf(SENT_ID to "p1", SENT_ID to "p2"), store.photos)
             assertTrue(store.rows.isEmpty())
@@ -49,13 +50,13 @@ class SubmissionQueueTest {
         runBlocking {
             saveTwoPhotos()
             store.photoResults.addLast(ApiResult.NetworkError(IOException("sieć")))
-            queue().sendAll()
+            assertFalse(queue().sendAll())
 
             assertEquals(SENT_ID, store.created.single())
             val row = store.rows.single()
             assertTrue(store.photos.isEmpty() && row.photos.none { it.isUploaded })
 
-            queue().sendAll()
+            assertTrue(queue().sendAll())
 
             assertEquals(1, store.created.size)
             assertEquals(listOf(SENT_ID to "p1", SENT_ID to "p2"), store.photos)
@@ -75,19 +76,29 @@ class SubmissionQueueTest {
             assertTrue(left.submission.isCreatedOnServer == false)
         }
 
-    private fun queue(): SubmissionQueue =
+    @Test
+    fun `zapis planuje wysyłkę`() =
+        runBlocking {
+            var scheduled = 0
+            saveTwoPhotos(queue(onSaved = { scheduled++ }))
+
+            assertEquals(1, scheduled)
+        }
+
+    private fun queue(onSaved: () -> Unit = {}): SubmissionQueue =
         SubmissionQueue(
             store = store,
             ioContext = EmptyCoroutineContext,
             create = { id, content -> store.createResults.removeFirstOrNull() ?: serverSubmission(content) },
             putPhoto = { _, _, _ -> store.photoResults.removeFirstOrNull() ?: ApiResult.Success(Unit) },
             newId = { SENT_ID },
+            onSaved = onSaved,
         )
 
-    private fun saveTwoPhotos() {
+    private fun saveTwoPhotos(target: SubmissionQueue = queue()) {
         val drafts = listOf("p1", "p2").map { photo -> PendingPhotoDraft(photoId = photo, path = pathOf(photo)) }
         drafts.forEach { File(it.path).writeBytes(byteArrayOf(1, 2, 3)) }
-        runBlocking { queue().save(fullContent(), drafts) }
+        runBlocking { target.save(fullContent(), drafts) }
     }
 
     private fun pathOf(photo: String): String = tempDir.resolve("$photo.jpg").path
