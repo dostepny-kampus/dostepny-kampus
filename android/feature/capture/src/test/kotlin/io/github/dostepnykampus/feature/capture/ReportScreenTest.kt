@@ -12,7 +12,9 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -69,5 +71,31 @@ class ReportScreenTest {
 
         assertEquals(ReportEdit.Rating(Severity.BLOCKING), edits.last())
         assertEquals(1, saves)
+    }
+
+    @Test
+    fun us7_2_floor_number() {
+        show()
+        compose.onNodeWithText("Numer piętra").performTextInput("-1")
+
+        assertEquals(ReportEdit.Floor(ReportFloor.Numbered(number = -1, isMezzanine = false)), edits.last())
+    }
+
+    @Test
+    fun us7_2_floor_not_integer() {
+        show()
+        compose.onNodeWithText("Numer piętra").performTextInput("1,5")
+
+        assertEquals(ReportEdit.Floor(null), edits.last())
+        compose.onNodeWithText("Wpisz liczbę całkowitą, np. 0 albo -1.").assertIsDisplayed()
+    }
+
+    @Test
+    fun us7_1_type_from_list() {
+        show()
+        compose.onNodeWithText("Wybierz typ bariery").performClick()
+        compose.onNodeWithText("Próg").performScrollTo().performClick()
+
+        assertEquals(ReportEdit.Type(BarrierType.THRESHOLD), edits.last())
     }
 }
