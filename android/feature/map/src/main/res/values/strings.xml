@@ -11,6 +11,7 @@
     <string name="mapa_ktory_budynek">Który budynek?</string>
     <string name="mapa_zamknij">Zamknij</string>
     <string name="mapa_budynek">Budynek %1$s</string>
+    <string name="mapa_zaznaczone_wejscie">Zaznaczone wejście: »%1$s«, budynek %2$s</string>
     <string name="mapa_otwiera_opis_budynku">otwiera opis budynku</string>
     <string name="mapa_kampusu">Mapa kampusu</string>
     <string name="mapa_szukaj_podpowiedz">Wpisz symbol budynku, np. C-13</string>

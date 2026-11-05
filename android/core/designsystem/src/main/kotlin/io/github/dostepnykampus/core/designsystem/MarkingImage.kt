@@ -5,15 +5,24 @@
  */
 package io.github.dostepnykampus.core.designsystem
 
+import android.graphics.Bitmap
 import androidx.annotation.StringRes
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.vector.PathParser
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import io.github.dostepnykampus.core.model.EntranceMarking
 
 private const val ICON_VIEWPORT = 24f
@@ -67,4 +76,28 @@ internal fun DrawScope.drawMarking(shape: Path, mark: Path, shapeColor: Color, m
             style = Stroke(width = MARK_STROKE, cap = StrokeCap.Round, join = StrokeJoin.Round),
         )
     }
+}
+
+/**
+ * Znak oznaczenia jako obraz [sizePx] × [sizePx] dla warstw mapy (US2.1, NFR-21), z tych samych kształtów co
+ * [MarkingChip]: [shapeColor] to kształt, [markColor] znak w nim.
+ */
+fun markingImage(marking: EntranceMarking, sizePx: Int, shapeColor: Color, markColor: Color): Bitmap {
+    val look = marking.look()
+    val image = ImageBitmap(width = sizePx, height = sizePx)
+    val size = Size(width = sizePx.toFloat(), height = sizePx.toFloat())
+    CanvasDrawScope().draw(
+        density = Density(density = 1f),
+        layoutDirection = LayoutDirection.Ltr,
+        canvas = Canvas(image),
+        size = size,
+    ) {
+        drawMarking(
+            shape = PathParser().parsePathString(look.shape).toPath(),
+            mark = PathParser().parsePathString(look.mark).toPath(),
+            shapeColor = shapeColor,
+            markColor = markColor,
+        )
+    }
+    return image.asAndroidBitmap()
 }
