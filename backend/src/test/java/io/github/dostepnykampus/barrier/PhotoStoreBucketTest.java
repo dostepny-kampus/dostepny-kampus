@@ -23,7 +23,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 /**
- * Magazyn zdjęć tworzy i czyta kubełek z ustawień {@code dk.photos}
+ * Kubełek tworzony przy starcie i magazyn zdjęć czytają kubełek z ustawień {@code dk.photos}
  * (ADR-0009).
  *
  * @since 0.1.0
@@ -34,9 +34,11 @@ final class PhotoStoreBucketTest {
     void cfgTwoCreatesAndReadsBucketFromSettings() {
         final UUID photo = UUID.randomUUID();
         try (PhotoStoreBucketTest.BucketProbe probe = new PhotoStoreBucketTest.BucketProbe()) {
-            final PhotoStore store = new PhotoStore(
-                probe, new PhotoSettings(URI.create("http://magazyn"), "zdjecia-testowe", "", "")
+            final PhotoSettings settings = new PhotoSettings(
+                URI.create("http://magazyn"), "zdjecia-testowe", "k", "k"
             );
+            final PhotoStore store = new PhotoStore(probe, settings);
+            new PhotoBucket(probe, settings).run(null);
             store.put(photo, photo, new byte[] {1});
             store.get(photo, photo);
             Assertions.assertAll(
