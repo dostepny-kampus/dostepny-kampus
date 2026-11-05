@@ -26,7 +26,7 @@ Cel pochodzi z planu sprintów w raporcie [Tydzień 2](tydzien-2.md), sekcja „
 | Klient API | klient HTTP w aplikacji; kontury z serwera, a bez sieci z pliku | modele odpowiedzi i klient budynków (#143–#145, #147), klient zgłoszeń (#192–#199), zapas z pliku (#202, #293) | zrobione |
 | Baza lokalna | pamięć podręczna Room z datą synchronizacji | tabela `building_cache` z migracją 1→2 (#260), kopia listy z datą i offline (#313); kolejka zgłoszeń w Room (#214, #225, #229) | zrobione |
 | Karta budynku | treść V2 i ekran V3 „Którędy wejść” | V2 z wejściami i oznaczeniem (#141, #233, #254), V3 z odpowiedzią serwera (#142), zgłoszenie przy wejściu (#247) | zrobione |
-| Automatyczna wysyłka | synchronizacja po powrocie sieci (NFR-6) | worker WorkManagera i planowanie po zapisie w `core:data` (#314); haka startowego w `app` jeszcze nie ma | częściowo |
+| Automatyczna wysyłka | synchronizacja po powrocie sieci (NFR-6) | worker WorkManagera i planowanie po zapisie w `core:data` (#314), planowanie przy starcie aplikacji w `app` (#316) | zrobione |
 | Testy na emulatorze | przepływ na emulatorze | nadal tylko testy JVM i zrzuty Roborazzi; emulatora nie ma | nie zrobione |
 
 Najważniejszy wynik: aplikacja bierze kontury i wejścia z serwera, a bez sieci wraca do pliku i do kopii w bazie z datą pobrania. Zgłoszenie z telefonu przechodzi przez kolejkę lokalną do serwera, który pilnuje wersji i przy konflikcie zwraca 409, a zdjęcia leżą w magazynie RustFS. Po powrocie sieci kolejkę wysyła zadanie WorkManagera.
@@ -73,7 +73,7 @@ Aplikacja ma 14 modułów: `app`, siedem modułów `core` i sześć modułów `f
 | Karta w nowym modelu | mała karta nad mapą i pełny ekran bez przypiętego pasa, gest wstecz, duża czcionka, TalkBack | #157, #162, #175, #183, #223, #236 |
 | Kolejka zgłoszeń | DAO z postępem wysyłki, mapowanie na kontrakt, klient zgłoszeń i zdjęć, wysyłka od najstarszego | #193, #199, #225, #229, #248 |
 | Baza lokalna | Room z migracją 1→2, kopia listy budynków z datą pobrania i praca bez sieci | #214, #260, #313 |
-| Automatyczna wysyłka | worker WorkManagera z warunkiem sieci i ponowieniem; planowanie po zapisie zgłoszenia | #314 |
+| Automatyczna wysyłka | worker WorkManagera z warunkiem sieci i ponowieniem; planowanie po zapisie zgłoszenia i przy starcie aplikacji | #314, #316 |
 | Architektura | Hilt i MVVM; Konsist pilnuje `null` tylko na granicy modułu | #227, [ADR-0007](../architektura/decyzje/0007-hilt-i-mvvm.md) |
 
 Zrzuty Roborazzi nadal powstają w testach na JVM, w motywie jasnym, ciemnym i przy czcionce 200%. Testów na emulatorze z planu „Tydzień 2” nie ma.
@@ -102,10 +102,10 @@ Makiety zmieniły się razem z kodem karty budynku i listy.
 
 | Miara | Wartość |
 | --- | --- |
-| PR scalone do `sprint/3` | 165, wszystkie scalone metodą squash |
-| Okres | 01.11–05.11.2026: 19, 38, 87 i 21 PR w kolejnych dniach |
-| PR według typu commitu | `feat` 65, `test` 54, `fix` 17, `refactor` 9, `docs` 8, `ci` 4, `build` 4, `chore` 3, `revert` 1 |
-| Autorzy PR | 2 konta: Vladyslav Yevkov 122, Myroslav Hryniuka 43 |
+| PR scalone do `sprint/3` | 166, wszystkie scalone metodą squash |
+| Okres | 01.11–05.11.2026: 19, 38, 87 i 22 PR w kolejnych dniach |
+| PR według typu commitu | `feat` 66, `test` 54, `fix` 17, `refactor` 9, `docs` 8, `ci` 4, `build` 4, `chore` 3, `revert` 1 |
+| Autorzy PR | 3 konta: Vladyslav Yevkov 122, Myroslav Hryniuka 43, Yevhenii Lukianenko 1 |
 | Scal do `main` | w dniu raportu czeka na PR |
 | Otwarte po sprincie | PR #309 z refaktorem systemu projektowego |
 
@@ -116,10 +116,9 @@ Każdy PR w sprincie miał jedno zadanie i najwyżej 300 zmienionych linii wedł
 | Zmiana albo problem | Skutek | Odwołanie |
 | --- | --- | --- |
 | MinIO zastąpione magazynem RustFS | magazyn zdjęć działa lokalnie i w CI; różnica względem planu jest w ADR | R-12, [ADR-0009](../architektura/decyzje/0009-magazyn-zdjec.md) |
-| Brak haka startowego dla NFR-6 | worker jest w `core:data`, ale bez wywołania w `app` zgłoszenia z poprzedniego procesu czekają na następny zapis | NFR-6, PR #314 |
 | Brak testów na emulatorze | przepływ sprawdzają testy JVM i zrzuty Roborazzi; nadal brak urządzenia | R-3, R-10 |
 | Brak wywiadów | persony, ścieżki i napisy zostają hipotezami | R-6, R-7 |
-| Zależność od jednej osoby maleje | największe konto wnosi 122 z 165 PR, czyli 74% — poniżej progu 80% z sygnału R-2 | R-2 |
+| Zależność od jednej osoby maleje | największe konto wnosi 122 z 166 PR, czyli 73% — poniżej progu 80% z sygnału R-2 | R-2 |
 | Raport „Sprint 3” na czas | raport oddajemy 05.11.2026, po terminie Sprintu 2 | R-1 |
 
 Pełny rejestr z ocenami i sygnałami jest na stronie [Ryzyka](../biznes/ryzyka.md).
@@ -135,7 +134,7 @@ Według harmonogramu kursu Sprint 4 obejmuje logikę dziedziny.
 | Współrzędne | przeliczenie punktu na PUWG 1992 (EPSG:2180) | US13.2, NFR-43 |
 | Formularz zgłoszenia | treść zgłoszenia i zdjęcie z telefonu w trzech krokach | US4.1 |
 | Podobne zgłoszenia | lista zgłoszeń w promieniu 10 m dla Weryfikatora | US10.1 |
-| Automatyczna wysyłka | dopięcie haka startowego w `app` i wywołania kolejki z formularza | NFR-6 |
+| Automatyczna wysyłka | wywołanie kolejki z formularza zgłoszenia | NFR-6 |
 
 ## Źródła
 
