@@ -687,10 +687,10 @@ components:
     Building:
       type: object
       description: Budynek PWr na mapie kampusu.
-      required: [symbol, name, detailLevel, outline]
+      required: [symbol, detailLevel, outline]
       properties:
         symbol: {type: string, description: "Symbol budynku, np. `C-13`; unikalny."}
-        name: {type: string, description: "Nazwa budynku."}
+        name: {type: string, description: "Nazwa budynku; brak pola oznacza budynek bez nazwy (aplikacja pokazuje wtedy sam symbol)."}
         detailLevel: {$ref: '#/components/schemas/DetailLevel'}
         outline: {$ref: '#/components/schemas/GeoArea', description: "Kontur budynku z OpenStreetMap."}
     BuildingList:
