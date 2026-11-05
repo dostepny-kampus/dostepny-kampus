@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * @since 0.1.0
  */
 @Component
-final class PostgisOutlines implements Outlines {
+public final class PostgisOutlines implements Outlines {
 
     /**
      * Dostęp do tabeli buildings.
