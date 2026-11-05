@@ -1,9 +1,9 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,7 +26,7 @@ import org.testcontainers.utility.DockerImageName;
  * @since 0.1.0
  */
 @TestConfiguration(proxyBeanMethods = false)
-final class RustfsTestConfiguration {
+public final class RustfsTestConfiguration {
 
     /**
      * Klucz dostępu i sekret magazynu w teście.
@@ -38,6 +38,9 @@ final class RustfsTestConfiguration {
      */
     private static final int PORT = 9000;
 
+    /**
+     * Tworzy konfigurację; konstruktor wywołuje tylko Spring przez refleksję.
+     */
     private RustfsTestConfiguration() {
     }
 

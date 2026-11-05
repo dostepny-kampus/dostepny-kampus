@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.barrier;
 
-import io.github.dostepnykampus.PostgisTestConfiguration;
+import io.github.dostepnykampus.IntegrationTest;
 import jakarta.servlet.ServletInputStream;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
@@ -15,8 +15,6 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -34,8 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @since 0.1.0
  */
-@SpringBootTest
-@Import({PostgisTestConfiguration.class, RustfsTestConfiguration.class})
+@IntegrationTest
 @Transactional
 final class PhotoUploadLimitHttpTest {
 
