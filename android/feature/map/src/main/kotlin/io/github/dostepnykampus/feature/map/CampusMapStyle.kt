@@ -16,6 +16,12 @@ internal const val BUILDINGS_LAYER = "budynki"
 /** Warstwa obrysu zaznaczonego budynku. */
 internal const val SELECTED_LAYER = "zaznaczenie"
 
+/** Warstwa znaków wszystkich wejść: kształt według oznaczenia (US2.1, NFR-21). */
+internal const val ENTRANCES_LAYER = "wejscia"
+
+/** Warstwa pinezki zaznaczonego wejścia, czubkiem w punkcie wejścia (US3.3). */
+internal const val ENTRANCE_PIN_LAYER = "wejscie_pinezka"
+
 /** Kafelki podkładu z serwerów OSM, pobierane tylko online i bez zapisu do użytku offline (ADR-0005). */
 internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
