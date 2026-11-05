@@ -158,6 +158,11 @@ final class BarrierArchitectureTest {
     }
 
     private static ArchRule rule(final String name, final String root) {
+        return Objects.requireNonNull(BarrierArchitectureTest.all(root).get(name))
+            .allowEmptyShould(false);
+    }
+
+    private static Map<String, ArchRule> all(final String root) {
         final String pkg = String.format("%s..", root);
         final String out = String.format("%s.persistence..", root);
         final String service = String.format(
@@ -167,7 +172,7 @@ final class BarrierArchitectureTest {
             "%s.web.SubmissionsController(\\$.*)?", BarrierArchitectureTest.MODULE
         );
         final String adapter = "..barrier.persistence..";
-        final Map<String, ArchRule> all = Map.of(
+        return Map.of(
             "A-1", ArchRuleDefinition.noClasses()
                 .that().resideInAPackage(String.format("%s.domain..", root))
                 .should().dependOnClassesThat().resideInAnyPackage(
@@ -203,7 +208,6 @@ final class BarrierArchitectureTest {
                 .should().dependOnClassesThat().resideInAPackage(adapter),
             "A-9", ArchitectureTest.errorTypes()
         );
-        return Objects.requireNonNull(all.get(name)).allowEmptyShould(false);
     }
 
     private static JavaClasses production() {
