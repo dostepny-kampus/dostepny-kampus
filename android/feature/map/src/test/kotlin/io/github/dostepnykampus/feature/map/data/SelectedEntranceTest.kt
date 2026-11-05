@@ -15,7 +15,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.maplibre.spatialk.geojson.FeatureCollection
 import org.maplibre.spatialk.geojson.Geometry
@@ -51,7 +50,6 @@ class SelectedEntranceTest {
 
     // Wiersz E1: każdy znak na mapie ma identyfikator wejścia, więc da się go wskazać.
     @Test
-    @Disabled("wejścia na mapie jeszcze nie działają, poprawka w następnym PR")
     fun us2_1_feature_has_id() {
         val json = campusMapData(catalog).entrances
         val ids = FeatureCollection.fromJson<Geometry?, JsonObject?>(json).features.map { it.properties?.get("id") }
@@ -60,7 +58,6 @@ class SelectedEntranceTest {
 
     // Wiersz E2: pinezka stoi w punkcie wejścia, a podpis to nazwa wejścia.
     @Test
-    @Disabled("wejścia na mapie jeszcze nie działają, poprawka w następnym PR")
     fun us3_3_selected_has_point_name() {
         val expected =
             SelectedEntrance(id = "node/1", location = at, label = "Wejście dostosowane", buildingSymbol = "A-1")
@@ -69,14 +66,12 @@ class SelectedEntranceTest {
 
     // Wiersz E4: wejście wspólne kilku budynków podaje budynek ekranu, z którego użyto przycisku (decyzja 135).
     @Test
-    @Disabled("wejścia na mapie jeszcze nie działają, poprawka w następnym PR")
     fun us3_3_shared_screen_building() {
         assertEquals("A-2", chosen("node/1", building = "A-2")?.buildingSymbol)
     }
 
     // Wiersz E2: wejście bez nazwy w danych dostaje podpis zastępczy.
     @Test
-    @Disabled("wejścia na mapie jeszcze nie działają, poprawka w następnym PR")
     fun us3_3_unnamed_label() {
         assertEquals(UNNAMED, chosen("node/2")?.label)
     }

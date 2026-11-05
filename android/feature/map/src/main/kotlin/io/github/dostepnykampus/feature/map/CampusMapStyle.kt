@@ -5,10 +5,18 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.symbolsOf
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import org.maplibre.spatialk.geojson.Feature
+import org.maplibre.spatialk.geojson.FeatureCollection
+import org.maplibre.spatialk.geojson.GeoJsonObject
+import org.maplibre.spatialk.geojson.Point
+import org.maplibre.spatialk.geojson.Position
 
 /** Warstwa wypełnienia konturów; widok mapy szuka w niej dotkniętego budynku. */
 internal const val BUILDINGS_LAYER = "budynki"
@@ -21,6 +29,10 @@ internal const val ENTRANCES_LAYER = "wejscia"
 
 /** Warstwa pinezki zaznaczonego wejścia, czubkiem w punkcie wejścia (US3.3). */
 internal const val ENTRANCE_PIN_LAYER = "wejscie_pinezka"
+internal const val ENTRANCE_CAPTION_LAYER = "wejscie_podpis"
+internal const val ENTRANCE_PIN_IMAGE = "wejscie_pinezka"
+internal const val ENTRANCE_MARK_DP = 28
+private const val CAPTION_OFFSET_DP = ENTRANCE_MARK_DP / 2 + 2
 
 /** Kafelki podkładu z serwerów OSM, pobierane tylko online i bez zapisu do użytku offline (ADR-0005). */
 internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -46,7 +58,9 @@ data class MapStyleColors(
  * to obraz o nazwie z właściwości `label`, który dodaje widok mapy, bo napisy z czcionek stylu wymagają sieci.
  * Obraz stoi w jednym punkcie wewnątrz konturu, więc każdy kontur ma jeden podpis przy każdym przybliżeniu.
  * Podpisy się nie nakładają (reguła 4 wymagań wspólnych). Kontur budynku [CampusMapData.focus] ma grubszy obrys
- * `pwr_wybrany` (US1.1).
+ * `pwr_wybrany` (US1.1). Każde wejście z [CampusMapData.entrances] ma znak o kształcie według oznaczenia, bez
+ * filtra, więc zaznaczenie nie chowa pozostałych (US2.1, NFR-21). Wejście [CampusMapData.selectedEntrance] ma
+ * ponadto pinezkę czubkiem w swoim punkcie i pod znakiem podpis z nazwą (US3.3, decyzja 134).
  */
 fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
     """
@@ -55,7 +69,8 @@ fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
         |  "sources": {
         |    "osm": {"type": "raster", "tiles": ["$OSM_TILES"], "tileSize": 256, "maxzoom": 19${basemapBounds(data)}},
         |    "budynki": {"type": "geojson", "data": ${data.buildings}},
-        |    "podpisy": {"type": "geojson", "data": ${data.labelPoints}}
+        |    "podpisy": {"type": "geojson", "data": ${data.labelPoints}},
+        |    "wejscia": {"type": "geojson", "data": ${data.entrances}}${chosenSource(data)}
         |  },
         |  "layers": [
         |    {"id": "lad", "type": "background", "paint": {"background-color": "${colors.land}"}},
@@ -69,10 +84,18 @@ fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
         |      "paint": {"line-color": "${colors.buildingOutline}", "line-width": 1.5}
         |    },
         |    ${selectedLayer(data, colors)}
+        |    ${marksLayer()},
         |    {"id": "podpisy", "type": "symbol", "source": "podpisy", "layout": {"icon-image": ["get", "label"]}}
+        |    ${chosenLayers(data)}
         |  ]
         |}
     """.trimMargin()
+
+/** Nazwa obrazu znaku wejścia o oznaczeniu [marking] (US2.1, NFR-21). */
+internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${marking.name}"
+
+/** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
+internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 
 // Podkład tylko w obszarze kampusu, więc kafelków spoza niego mapa nie pobiera (NFR-39).
 private fun basemapBounds(data: CampusMapData): String {
@@ -87,4 +110,41 @@ private fun selectedLayer(data: CampusMapData, colors: MapStyleColors): String {
     val filter = """["==", ["get", "label"], ${JsonPrimitive(label)}]"""
     val paint = """{"line-color": "${colors.selectedOutline}", "line-width": 4}"""
     return """{"id": "$SELECTED_LAYER", "type": "line", "source": "budynki", "filter": $filter, "paint": $paint},"""
+}
+
+// Znak każdego wejścia z danych; obraz zależy od oznaczenia, więc kształt niesie znaczenie, nie barwa (NFR-21).
+// Brak filtra i nakładanie dozwolone: znaki zostają przy zaznaczeniu (decyzja 134 pkt 2).
+private fun marksLayer(): String {
+    val (accessible, inaccessible, noData) = EntranceMarking.entries.map(::entranceMarkImage)
+    val image =
+        """["match", ["get", "marking"], "ACCESSIBLE", "$accessible", """ +
+            """"INACCESSIBLE", "$inaccessible", "$noData"]"""
+    return """{"id": "$ENTRANCES_LAYER", "type": "symbol", "source": "wejscia", """ +
+        """"layout": {"icon-image": $image, "icon-allow-overlap": true}}"""
+}
+
+// Źródło z jednym punktem, wejściem zaznaczonym; właściwości: `label` (nazwa) i `image` (obraz podpisu).
+private fun chosenSource(data: CampusMapData): String {
+    val chosen = data.selectedEntrance ?: return ""
+    val properties =
+        buildJsonObject {
+            put(key = "label", value = chosen.label)
+            put(key = "image", value = entranceCaptionImage(chosen.label))
+        }
+    val point = Point(Position(longitude = chosen.location.longitude, latitude = chosen.location.latitude))
+    val json = GeoJsonObject.toJson(FeatureCollection(listOf(Feature(point, properties))))
+    return """, "wejscie": {"type": "geojson", "data": $json}"""
+}
+
+// Pinezka czubkiem (dół obrazu) w punkcie wejścia i pod znakiem podpis z nazwą; obie warstwy rysują się zawsze.
+private fun chosenLayers(data: CampusMapData): String {
+    if (data.selectedEntrance == null) return ""
+    val pin =
+        """{"id": "$ENTRANCE_PIN_LAYER", "type": "symbol", "source": "wejscie", "layout": """ +
+            """{"icon-image": "$ENTRANCE_PIN_IMAGE", "icon-anchor": "bottom", "icon-allow-overlap": true}}"""
+    val caption =
+        """{"id": "$ENTRANCE_CAPTION_LAYER", "type": "symbol", "source": "wejscie", "layout": """ +
+            """{"icon-image": ["get", "image"], "icon-anchor": "top", "icon-offset": [0, $CAPTION_OFFSET_DP], """ +
+            """"icon-allow-overlap": true}}"""
+    return ", $pin, $caption"
 }

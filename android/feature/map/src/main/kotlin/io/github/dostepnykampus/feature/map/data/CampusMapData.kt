@@ -46,7 +46,7 @@ private val CAMPUS_MARGIN = 500.meters
  * @property labelPoints punkty podpisów, jeden na kontur, wewnątrz konturu, z właściwością `label`. Podpis przy
  *   konturze dzielonym na kafelki pojawiałby się w każdym kawałku albo w żadnym (US1, reguła 4 wymagań wspólnych)
  * @property entrances wejścia, każde raz po identyfikatorze, także wejście wspólne kilku budynków; obiekt ma
- *   właściwości `marking` (`ACCESSIBLE`, `INACCESSIBLE` albo `NO_DATA`) i `main`
+ *   właściwości `id`, `marking` (`ACCESSIBLE`, `INACCESSIBLE` albo `NO_DATA`) i `main`
  * @property start środek pierwszego widoku: środek budynku [START_BUILDING] (US1, US1.2, decyzja 80), a bez niego
  *   środek wszystkich konturów; `null` bez budynków
  * @property focus symbol budynku zaznaczonego na mapie, np. po „Wstecz” z V2 (US1.1); `null` bez zaznaczenia
@@ -81,7 +81,14 @@ data class SelectedEntrance(val id: String, val location: GeoPoint, val label: S
  * wejścia bez nazwy w danych. `null`, gdy katalog nie ma takiego wejścia (US3.3).
  */
 fun selectedEntrance(catalog: BuildingCatalog, id: String, buildingSymbol: String, unnamed: String): SelectedEntrance? =
-    catalog.entrances.firstOrNull { it.id == id && buildingSymbol.isEmpty() && unnamed.isEmpty() }?.let { null }
+    catalog.entrances.firstOrNull { it.id == id }?.let { found ->
+        SelectedEntrance(
+            id = found.id,
+            location = found.location,
+            label = found.name?.takeIf(String::isNotBlank) ?: unnamed,
+            buildingSymbol = buildingSymbol,
+        )
+    }
 
 /**
  * Prostokąt na mapie w stopniach (NFR-39).
@@ -117,6 +124,7 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
         catalog.entrances.distinctBy { it.id }.map { entrance ->
             val properties =
                 buildJsonObject {
+                    put(key = "id", value = entrance.id)
                     put(key = "marking", value = entrance.marking.name)
                     put(key = "main", value = entrance.isMain)
                 }

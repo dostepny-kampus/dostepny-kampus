@@ -17,6 +17,9 @@ import kotlin.math.tan
 /** Powiększenie pierwszego widoku: symbole budynków są czytelne (decyzja 80). */
 internal const val START_ZOOM = 17.0
 
+/** Powiększenie po zaznaczeniu wejścia: pinezka i sąsiednie wejścia są czytelne (US3.3). */
+internal const val ENTRANCE_ZOOM = 19.0
+
 private const val MAX_ZOOM = 20.0
 private const val QUARTER_VIEW_DEGREES_AT_ZOOM_0 = 70.0
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
