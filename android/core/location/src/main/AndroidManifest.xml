@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Odczyty GNSS do pomiaru na ekranie C1, tylko przy otwartym ekranie (US6.1, NFR-27). Android wymaga obu zgód
+         naraz, a bez dokładnej pomiar się nie zaczyna. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+</manifest>
