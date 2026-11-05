@@ -206,7 +206,10 @@ public final class OpenApiContract implements ResultMatcher {
     }
 
     private static boolean json(final @Nullable String type) {
-        final String subtype = type == null ? "" : MediaType.parseMediaType(type).getSubtype();
+        String subtype = "";
+        if (type != null) {
+            subtype = MediaType.parseMediaType(type).getSubtype();
+        }
         return "json".equals(subtype) || subtype.endsWith("+json");
     }
 
