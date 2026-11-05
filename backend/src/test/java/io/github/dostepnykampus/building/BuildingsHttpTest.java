@@ -54,6 +54,34 @@ final class BuildingsHttpTest {
     }
 
     @Test
+    void usOneOmitsNameOfUnnamedBuildingInList(final WebApplicationContext context)
+        throws Exception {
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        final ObjectMapper mapper = context.getBean(ObjectMapper.class);
+        BuildingsHttpTest.insert(jdbc, "A-1", "BASIC", BuildingsHttpTest.west());
+        BuildingsHttpTest.insertUnnamed(jdbc, "C-13", "DETAILED", BuildingsHttpTest.east());
+        MatcherAssert.assertThat(
+            "Budynek bez nazwy ma w liście pole name, a budynek z nazwą go nie ma",
+            mapper.readTree(BuildingsHttpTest.body(context)),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.listedUnnamed()))
+        );
+    }
+
+    @Test
+    void usTwoOmitsNameOfUnnamedBuildingInCard(final WebApplicationContext context)
+        throws Exception {
+        final ObjectMapper mapper = context.getBean(ObjectMapper.class);
+        BuildingsHttpTest.insertUnnamed(
+            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpTest.west()
+        );
+        MatcherAssert.assertThat(
+            "Karta budynku bez nazwy ma pole name",
+            mapper.readTree(BuildingsHttpTest.card(context, "A-1")),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.cardUnnamed()))
+        );
+    }
+
+    @Test
     void usOneListsNoBuildingsWhenTableIsEmpty(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
@@ -238,6 +266,43 @@ final class BuildingsHttpTest {
             .param("outline", outline)
             .param("source", "© OpenStreetMap contributors")
             .update();
+    }
+
+    private static void insertUnnamed(
+        final JdbcClient jdbc,
+        final String symbol,
+        final String level,
+        final String outline
+    ) {
+        jdbc.sql(
+            """
+            INSERT INTO buildings (symbol, name, detail_level, outline, source)
+            VALUES (:symbol, NULL, :level,
+                ST_SetSRID(ST_GeomFromGeoJSON(:outline), 4326),
+                :source)
+            """
+        ).param("symbol", symbol)
+            .param("level", level)
+            .param("outline", outline)
+            .param("source", "© OpenStreetMap contributors")
+            .update();
+    }
+
+    private static String listedUnnamed() {
+        return """
+            {"source":"© OpenStreetMap contributors","buildings":[
+            {"symbol":"A-1","name":"Budynek A-1","detailLevel":"BASIC","outline":%s},
+            {"symbol":"C-13","detailLevel":"DETAILED","outline":%s}
+            ]}
+            """.formatted(BuildingsHttpTest.west(), BuildingsHttpTest.east());
+    }
+
+    private static String cardUnnamed() {
+        return String.join(
+            "",
+            "{\"symbol\":\"A-1\",\"detailLevel\":\"BASIC\",",
+            "\"outline\":%s,\"entrances\":[]}"
+        ).formatted(BuildingsHttpTest.west());
     }
 
     private static String listed() {

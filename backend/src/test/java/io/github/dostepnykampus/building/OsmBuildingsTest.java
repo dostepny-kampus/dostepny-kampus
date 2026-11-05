@@ -8,6 +8,7 @@ package io.github.dostepnykampus.building;
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.OpenApiContract;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -51,13 +52,47 @@ final class OsmBuildingsTest {
     }
 
     @Test
-    void usOneNamesBuildingWithoutName(final WebApplicationContext context) {
+    void usOneLeavesBuildingWithoutNameWhenDataHasNone(final WebApplicationContext context) {
         MatcherAssert.assertThat(
-            "Budynek bez nazwy w danych nie dostał symbolu za nazwę",
-            context.getBean(JdbcClient.class).sql(
-                "SELECT name FROM buildings WHERE symbol = 'L-1'"
-            ).query(String.class).single(),
-            Matchers.equalTo("L-1")
+            "Budynek bez nazwy w danych dostał nazwę",
+            OsmBuildingsTest.names(context, "L-1"),
+            Matchers.contains(Matchers.nullValue())
+        );
+    }
+
+    @Test
+    void usOneDropsNameThatIsOwnSymbol(final WebApplicationContext context) {
+        MatcherAssert.assertThat(
+            "Nazwa równa własnemu symbolowi C-13 została zapisana",
+            OsmBuildingsTest.names(context, "C-13"),
+            Matchers.contains(Matchers.nullValue())
+        );
+    }
+
+    @Test
+    void usOneDropsNameThatIsOtherSymbol(final WebApplicationContext context) {
+        MatcherAssert.assertThat(
+            "Nazwa T-22 cudzego symbolu została zapisana dla T-18 i T-22",
+            OsmBuildingsTest.names(context, "T-18", "T-22"),
+            Matchers.contains(Matchers.nullValue(), Matchers.nullValue())
+        );
+    }
+
+    @Test
+    void usOneDropsNameThatListsSymbols(final WebApplicationContext context) {
+        MatcherAssert.assertThat(
+            "Nazwa C-3/C-4 złożona z samych symboli została zapisana",
+            OsmBuildingsTest.names(context, "C-3", "C-4"),
+            Matchers.contains(Matchers.nullValue(), Matchers.nullValue())
+        );
+    }
+
+    @Test
+    void usOneKeepsNameWithSymbolAndAddition(final WebApplicationContext context) {
+        MatcherAssert.assertThat(
+            "Nazwa z symbolem i dodatkiem nie została zachowana",
+            OsmBuildingsTest.names(context, "A-1"),
+            Matchers.contains("A-1 / Budynek główny")
         );
     }
 
@@ -87,5 +122,15 @@ final class OsmBuildingsTest {
             ).query(Integer.class).single(),
             Matchers.equalTo(context.getBean(OsmBuildings.class).getChecksum())
         );
+    }
+
+    private static List<String> names(
+        final WebApplicationContext context, final String... symbols
+    ) {
+        return context.getBean(JdbcClient.class).sql(
+            "SELECT name FROM buildings WHERE symbol IN (:symbols) ORDER BY symbol"
+        ).param("symbols", List.of(symbols)).query(
+            (rs, row) -> rs.getString(1)
+        ).list();
     }
 }

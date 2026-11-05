@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.core.network
 
-import io.github.dostepnykampus.core.geo.buildingName
 import io.github.dostepnykampus.core.geo.parseGeoArea
 import io.github.dostepnykampus.core.model.AssessmentSource
 import io.github.dostepnykampus.core.model.Building
@@ -72,7 +71,7 @@ internal data class BuildingListDto(val source: String, val buildings: List<Buil
 @Serializable
 internal data class BuildingDto(
     val symbol: String,
-    val name: String,
+    val name: String? = null,
     val detailLevel: DetailLevel,
     val outline: JsonElement,
 )
@@ -80,7 +79,7 @@ internal data class BuildingDto(
 @Serializable
 internal data class BuildingDetailsDto(
     val symbol: String,
-    val name: String,
+    val name: String? = null,
     val detailLevel: DetailLevel,
     val outline: JsonElement,
     val entrances: List<EntranceDto>,
@@ -116,13 +115,13 @@ internal fun BuildingListDto.toModel(): BuildingList =
 
 internal fun BuildingDto.toModel(): ApiBuilding =
     ApiBuilding(
-        building = Building(symbol = symbol, name = buildingName(name), outline = parseGeoArea(outline.toString())),
+        building = Building(symbol = symbol, name = name, outline = parseGeoArea(outline.toString())),
         detailLevel = detailLevel,
     )
 
 internal fun BuildingDetailsDto.toModel(): BuildingDetails =
     BuildingDetails(
-        building = Building(symbol = symbol, name = buildingName(name), outline = parseGeoArea(outline.toString())),
+        building = Building(symbol = symbol, name = name, outline = parseGeoArea(outline.toString())),
         detailLevel = detailLevel,
         entrances = entrances.map(EntranceDto::toModel),
     )
