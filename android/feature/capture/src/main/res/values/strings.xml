@@ -20,4 +20,11 @@
     <string name="pomiar_zgoda_przycisk">Zezwól na lokalizację</string>
     <string name="pomiar_zgoda_odmowa">Bez zgody na dokładną lokalizację pomiar nie zadziała. Możesz ją włączyć w ustawieniach aplikacji.</string>
     <string name="pomiar_otworz_ustawienia">Otwórz ustawienia</string>
+    <string name="pomiar_mapa_nieba">Mapa nieba</string>
+    <string name="pomiar_mapa_nieba_opis">Mapa nieba, widoczne satelity: %1$s</string>
+    <string name="pomiar_mapa_nieba_pusta">Mapa nieba: nie widać jeszcze satelitów</string>
+    <string name="kierunek_polnoc">Pn</string>
+    <string name="kierunek_wschod">Wsch</string>
+    <string name="kierunek_poludnie">Pd</string>
+    <string name="kierunek_zachod">Zach</string>
 </resources>
