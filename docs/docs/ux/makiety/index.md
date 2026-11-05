@@ -2,7 +2,9 @@
 
 Makiety low-fi pokazują układ i treść każdego ekranu z [wymagań do ekranów](../wymagania-ekranow.md). Rysujemy je w PlantUML Salt: szare ramki, tekst i przyciski, bez koloru i stylu. Napisy pochodzą ze [słownika użytkownika](../slownik-uzytkownika.md) i są hipotezą do sprawdzenia w wywiadach.
 
-Dla ekranów partii 1 (V1–V5, L1, L2) wzorcem są zatwierdzone [makiety hi-fi](../ekrany/index.md). Od 05.11.2026 dotyczy to także ekranów C2 i C3. Makiety low-fi tych ekranów pokazują wcześniejszy etap. Mogą się różnić napisami, np. wskaźnikiem braku sieci, kolejnością grup na V2, przyciskami przy wejściach na V3 i układem L2.
+Dla ekranów partii 1 (V1–V5, L1, L2) wzorcem są zatwierdzone [makiety hi-fi](../ekrany/index.md). Makiety low-fi tych ekranów pokazują wcześniejszy etap. Mogą się różnić napisami, np. wskaźnikiem braku sieci, kolejnością grup na V2, przyciskami przy wejściach na V3 i układem L2.
+
+Zatwierdzone makiety hi-fi są wzorcem także dla ekranów C2 i C3 (akceptacja 05.11.2026).
 
 ## Konwencje
 
