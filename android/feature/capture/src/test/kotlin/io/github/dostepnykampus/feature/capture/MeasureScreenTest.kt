@@ -1,0 +1,73 @@
+/*
+ * Dostępny Kampus
+ * Author: Yevhenii Lukianenko
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+package io.github.dostepnykampus.feature.capture
+
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.location.GnssSystem
+import io.github.dostepnykampus.core.location.PositionAverage
+import io.github.dostepnykampus.core.model.GeoPoint
+import org.junit.Assert.assertEquals
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+
+/** Napisy C1 z makiety „zespół w terenie” dla każdego stanu pomiaru (US6.1, NFR-2, NFR-18, NFR-23). */
+@RunWith(RobolectricTestRunner::class)
+@Config(qualifiers = "w360dp-h800dp")
+class MeasureScreenTest {
+    @get:Rule
+    val compose = createAndroidComposeRule<ComponentActivity>()
+
+    private val average = PositionAverage(GeoPoint(longitude = 17.06, latitude = 51.11), 0.8, fixCount = 30)
+    private val satellites = mapOf(GnssSystem.GPS to 7, GnssSystem.GALILEO to 5, GnssSystem.GLONASS to 4)
+
+    private fun show(state: MeasureUiState, onRepeat: () -> Unit = {}) {
+        compose.setContent {
+            DostepnyKampusTheme { MeasureContent(state = state, onRepeat = onRepeat, onBack = {}) }
+        }
+    }
+
+    // Wiersz: C1, szukanie satelitów → komunikat i „Powtórz pomiar” jako czynność główna, NFR-1, PW-9.
+    @Test
+    fun us6_1_searching_message() {
+        var repeats = 0
+        show(MeasureUiState.Searching, onRepeat = { repeats++ })
+        compose.onNodeWithText("Szukamy satelitów", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Powtórz pomiar").performClick()
+        assertEquals(1, repeats)
+    }
+
+    // Wiersz: C1, pomiar trwa → „Pomiar: zostało 12 s”, „Dokładność: 0,8 m (szacunek)”, satelity tekstem, US6.1, NFR-2.
+    @Test
+    fun us6_1_measuring_texts() {
+        show(MeasureUiState.Measuring(remainingSeconds = 12, average = average, satellites = satellites))
+        compose.onNodeWithText("Pomiar: zostało 12 s").assertIsDisplayed()
+        compose.onNodeWithText("Dokładność: 0,8 m (szacunek)").assertIsDisplayed()
+        compose.onNodeWithText("Satelity: GPS 7, Galileo 5, GLONASS 4").assertIsDisplayed()
+    }
+
+    // Wiersz: C1, po pomiarze → „Pomiar zakończony” z dokładnością i satelitami z końca pomiaru, US6.1.
+    @Test
+    fun us6_1_finished_texts() {
+        show(MeasureUiState.Finished(average = average, satellites = satellites))
+        compose.onNodeWithText("Pomiar zakończony").assertIsDisplayed()
+        compose.onNodeWithText("Dokładność: 0,8 m (szacunek)").assertIsDisplayed()
+        compose.onNodeWithText("Powtórz pomiar").assertIsDisplayed()
+    }
+
+    @Test
+    fun us6_1_no_satellites_in_fix() {
+        show(MeasureUiState.Measuring(remainingSeconds = 30, average = average, satellites = emptyMap()))
+        compose.onNodeWithText("Satelity: brak w pozycji").assertIsDisplayed()
+    }
+}
