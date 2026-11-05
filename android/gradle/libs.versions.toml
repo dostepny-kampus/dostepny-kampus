@@ -28,6 +28,7 @@ hilt = "2.60.1"
 ksp = "2.3.12"
 room = "2.8.5"
 work = "2.12.0"
+startup = "1.2.0"
 hiltLifecycle = "1.4.0"
 coreKtx = "1.18.0"
 androidCompileSdk = "37"
@@ -85,6 +86,8 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "work" }
+androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "work" }
+androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "startup" }
 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
