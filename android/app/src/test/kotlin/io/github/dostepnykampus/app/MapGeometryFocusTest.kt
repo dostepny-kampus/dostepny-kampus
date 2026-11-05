@@ -22,7 +22,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Assert.assertEquals
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -64,7 +63,6 @@ class MapGeometryFocusTest {
 
     // Wiersz: W3, W4, O5, O6, mapa pokazana, potem zmiana zaznaczonego budynku → widok mapy dostaje geometrię
     //   policzoną w ViewModelu z nowym zaznaczeniem, a funkcja licząca poszła raz, NFR-11, US1.1.
-    @Ignore("geometria mapy liczona w kompozycji, poprawka w następnym PR")
     @Test
     fun nfr11_focus_keeps_geometry() {
         compose.setContent {

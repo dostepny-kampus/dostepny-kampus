@@ -76,6 +76,7 @@ import io.github.dostepnykampus.core.data.buildings.BUILDINGS_ASSET
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.ConnectivityNetworkStatus
+import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
@@ -86,10 +87,12 @@ import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.CardMode
 import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.MapLibreMapView
+import io.github.dostepnykampus.feature.map.data.campusMapData
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
+import kotlinx.coroutines.Dispatchers
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -101,6 +104,7 @@ import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import org.robolectric.shadows.ShadowNetworkCapabilities
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Pozycja „Mapa” paska dolnego; V1 ma też „Mapa” w przełączniku „Mapa” i „Lista budynków” (NFR-19). */
@@ -146,9 +150,24 @@ internal fun AppNavigator.TestBuildingCard(symbol: String) {
     BuildingCard(symbol = symbol, state = state, isOnline = isOnline, onRetry = card::retry)
 }
 
+/** Stan V1 z geometrią liczoną w wątku testu, żeby `waitForIdle` obejmował ją jak resztę ekranu. */
+internal fun inlineMapViewModel(
+    repository: BuildingCatalogRepository,
+    networkStatus: NetworkStatus,
+    choice: MapListChoice,
+    compute: CoroutineContext = Dispatchers.Unconfined,
+): CampusMapViewModel =
+    CampusMapViewModel(
+        repository = repository,
+        networkStatus = networkStatus,
+        mapListChoice = choice,
+        computeContext = compute,
+        geometry = ::campusMapData,
+    )
+
 /** Stan V1 na źródłach jak w aplikacji: plik konturów z zasobów i sieć telefonu; wybór mapy albo listy [choice]. */
 internal fun Context.appMapViewModel(choice: MapListChoice = TestMapListChoice()): CampusMapViewModel =
-    CampusMapViewModel(
+    inlineMapViewModel(
         BuildingCatalogRepository(EmptyCoroutineContext) {
             assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() }
         },

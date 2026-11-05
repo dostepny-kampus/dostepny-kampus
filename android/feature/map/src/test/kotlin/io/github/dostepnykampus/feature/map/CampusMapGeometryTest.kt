@@ -26,8 +26,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertSame
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
@@ -37,6 +37,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 private const val WAIT_MS = 1_000L
 private const val COMPUTE_THREAD = "map-geometry-test"
+private const val OUTLINES = 5
 
 /** Gdzie i ile razy ViewModel V1 liczy geometrię mapy: na podróbce funkcji liczącej, bez pomiaru czasu (NFR-11). */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -90,13 +91,13 @@ class CampusMapGeometryTest {
 
     // Wiersz: W3, O5, katalog z pliku → geometria liczona w kontekście obliczeń, nie w wątku wywołującym, a stan niesie
     //   gotowe dane mapy, NFR-11.
-    @Disabled("geometria mapy liczona w kompozycji, poprawka w następnym PR")
     @Test
     fun nfr11_geometry_in_compute() {
         Executors.newSingleThreadExecutor { Thread(it, COMPUTE_THREAD) }.asCoroutineDispatcher().use { compute ->
             val viewModel = viewModelOf(compute)
             val state = viewModel.ready()
-            assertEquals(COMPUTE_THREAD, thread.get(), "geometria liczona poza kontekstem obliczeń")
+            val name = thread.get().substringBefore(" @coroutine")
+            assertEquals(COMPUTE_THREAD, name, "geometria liczona poza kontekstem obliczeń")
             assertNotEquals(Thread.currentThread().name, thread.get())
             assertEquals(state.catalog?.let(::campusMapData), state.mapData, "stan bez gotowych danych mapy")
         }
@@ -104,7 +105,6 @@ class CampusMapGeometryTest {
 
     // Wiersz: W3, jeden katalog, potem zmiana internetu i wyboru „Lista” → ta sama geometria i jedno wywołanie
     //   funkcji liczącej, nie przeliczenie przy każdej zmianie stanu, NFR-11.
-    @Disabled("geometria mapy liczona w kompozycji, poprawka w następnym PR")
     @Test
     fun nfr11_geometry_once_catalog() =
         runTest(UnconfinedTestDispatcher()) {
@@ -118,4 +118,23 @@ class CampusMapGeometryTest {
             assertSame(first.mapData, later.mapData, "geometria policzona od nowa")
             assertEquals(1, calls.get(), "geometria liczona częściej niż raz na katalog")
         }
+
+    // Wiersz: W3, anulowanie, przerwany wątek liczący katalog z kilkoma konturami → liczenie rzuca przerwanie, nie
+    //   zwraca wyniku (zamknięcie ekranu przerywa pracę CPU), NFR-11.
+    @Test
+    fun nfr11_interrupt_stops_compute() {
+        val features =
+            (1..OUTLINES).joinToString(separator = ",") { i ->
+                """{"type":"Feature","properties":{"kind":"building","symbols":["M-$i"],"osm_id":"way/$i"},""" +
+                    """"geometry":{"type":"Polygon","coordinates":[[[$i,0],[${i + 1},0],[${i + 1},1],[$i,0]]]}}"""
+            }
+        val json = """{"type":"FeatureCollection","attribution":"OSM","features":[$features]}"""
+        val catalog = runBlocking { BuildingCatalogRepository(EmptyCoroutineContext) { json }.catalog() }
+        try {
+            Thread.currentThread().interrupt()
+            assertThrows(InterruptedException::class.java) { campusMapData(catalog) }
+        } finally {
+            Thread.interrupted()
+        }
+    }
 }

@@ -23,7 +23,6 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CampusMapView
-import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.MapCamera
 import io.github.dostepnykampus.feature.map.data.CampusMapData
@@ -92,7 +91,7 @@ class EntranceOnMapTest {
         val repository = remember { BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { json } }
         when (route) {
             is MapRoute -> {
-                val model = remember { CampusMapViewModel(repository, { flowOf(true) }, choice) }
+                val model = remember { inlineMapViewModel(repository, { flowOf(true) }, choice) }
                 val state by model.uiState.collectAsStateWithLifecycle()
                 MapScreen(focus = route.focus, state = state, onListChange = model::chooseList, mapView = fakeMap)
             }
