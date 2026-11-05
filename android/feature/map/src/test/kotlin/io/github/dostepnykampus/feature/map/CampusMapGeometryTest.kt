@@ -94,7 +94,8 @@ class CampusMapGeometryTest {
         Executors.newSingleThreadExecutor { Thread(it, COMPUTE_THREAD) }.asCoroutineDispatcher().use { compute ->
             val viewModel = viewModelOf(compute)
             val state = viewModel.ready()
-            assertEquals(COMPUTE_THREAD, thread.get(), "geometria liczona poza kontekstem obliczeń")
+            val name = thread.get().substringBefore(" @coroutine")
+            assertEquals(COMPUTE_THREAD, name, "geometria liczona poza kontekstem obliczeń")
             assertNotEquals(Thread.currentThread().name, thread.get())
             assertEquals(state.catalog?.let(::campusMapData), state.mapData, "stan bez gotowych danych mapy")
         }

@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.network.ApiBuilding
 import io.github.dostepnykampus.core.network.ApiResult
@@ -157,7 +158,10 @@ class MapCatalogFromFileTest {
     private companion object {
         const val SERVER_ERROR = 500
 
-        val SERVER_BUILDING = Building(symbol = "A-1", name = "Z serwera", outline = GeoPolygon(emptyList()))
+        val SERVER_OUTLINE =
+            GeoPolygon(listOf(listOf(GeoPoint(0.0, 0.0), GeoPoint(1.0, 0.0), GeoPoint(1.0, 1.0), GeoPoint(0.0, 0.0))))
+
+        val SERVER_BUILDING = Building(symbol = "A-1", name = "Z serwera", outline = SERVER_OUTLINE)
 
         val SERVER_LIST =
             BuildingList(source = "Serwer", buildings = listOf(ApiBuilding(SERVER_BUILDING, DetailLevel.BASIC)))
