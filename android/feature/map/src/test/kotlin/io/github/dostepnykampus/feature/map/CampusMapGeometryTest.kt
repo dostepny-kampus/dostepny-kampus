@@ -26,6 +26,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertSame
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.concurrent.Executors
@@ -36,6 +37,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 private const val WAIT_MS = 1_000L
 private const val COMPUTE_THREAD = "map-geometry-test"
+private const val OUTLINES = 5
 
 /** Gdzie i ile razy ViewModel V1 liczy geometrię mapy: na podróbce funkcji liczącej, bez pomiaru czasu (NFR-11). */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -116,4 +118,23 @@ class CampusMapGeometryTest {
             assertSame(first.mapData, later.mapData, "geometria policzona od nowa")
             assertEquals(1, calls.get(), "geometria liczona częściej niż raz na katalog")
         }
+
+    // Wiersz: W3, anulowanie, przerwany wątek liczący katalog z kilkoma konturami → liczenie rzuca przerwanie, nie
+    //   zwraca wyniku (zamknięcie ekranu przerywa pracę CPU), NFR-11.
+    @Test
+    fun nfr11_interrupt_stops_compute() {
+        val features =
+            (1..OUTLINES).joinToString(separator = ",") { i ->
+                """{"type":"Feature","properties":{"kind":"building","symbols":["M-$i"],"osm_id":"way/$i"},""" +
+                    """"geometry":{"type":"Polygon","coordinates":[[[$i,0],[${i + 1},0],[${i + 1},1],[$i,0]]]}}"""
+            }
+        val json = """{"type":"FeatureCollection","attribution":"OSM","features":[$features]}"""
+        val catalog = runBlocking { BuildingCatalogRepository(EmptyCoroutineContext) { json }.catalog() }
+        try {
+            Thread.currentThread().interrupt()
+            assertThrows(InterruptedException::class.java) { campusMapData(catalog) }
+        } finally {
+            Thread.interrupted()
+        }
+    }
 }
