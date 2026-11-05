@@ -29,9 +29,17 @@ internal const val ENTRANCES_LAYER = "wejscia"
 
 /** Warstwa pinezki zaznaczonego wejścia, czubkiem w punkcie wejścia (US3.3). */
 internal const val ENTRANCE_PIN_LAYER = "wejscie_pinezka"
+
+/** Warstwa podpisu zaznaczonego wejścia: nazwa pod znakiem wejścia (US3.3). */
 internal const val ENTRANCE_CAPTION_LAYER = "wejscie_podpis"
+
+/** Obraz pinezki zaznaczonego wejścia, której czubek stoi w punkcie wejścia (US3.3). */
 internal const val ENTRANCE_PIN_IMAGE = "wejscie_pinezka"
+
+/** Wysokość i szerokość znaku wejścia w dp (US2.1, NFR-21). */
 internal const val ENTRANCE_MARK_DP = 28
+
+// Odsunięcie podpisu od punktu wejścia w dp (US3.3): tuż pod znakiem, którego środek stoi w tym punkcie.
 private const val CAPTION_OFFSET_DP = ENTRANCE_MARK_DP / 2 + 2
 
 /** Kafelki podkładu z serwerów OSM, pobierane tylko online i bez zapisu do użytku offline (ADR-0005). */
