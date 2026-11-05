@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.OpenApiContract;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
@@ -119,7 +120,8 @@ final class SubmissionPhotosHttpTest {
                     SubmissionPhotosHttpTest.add(context, "SENT"), SubmissionPhotosHttpTest.PHOTO
                 ).contentType(MediaType.IMAGE_JPEG)
                     .content(content.getBytes(StandardCharsets.ISO_8859_1))
-            ).andReturn().getResponse().getStatus(),
+            ).andExpect(new OpenApiContract())
+                .andReturn().getResponse().getStatus(),
             Matchers.equalTo(400)
         );
     }
@@ -155,7 +157,8 @@ final class SubmissionPhotosHttpTest {
             MockMvcRequestBuilders.put("/submissions/{id}/photos/{photo}", id, photo)
                 .contentType(MediaType.IMAGE_JPEG)
                 .content(JpegCleanerTest.photo())
-        ).andReturn().getResponse();
+        ).andExpect(new OpenApiContract())
+            .andReturn().getResponse();
     }
 
     private static MockHttpServletResponse get(
@@ -165,7 +168,8 @@ final class SubmissionPhotosHttpTest {
             MockMvcRequestBuilders.get(
                 "/submissions/{id}/photos/{photo}", id, SubmissionPhotosHttpTest.PHOTO
             )
-        ).andReturn().getResponse();
+        ).andExpect(new OpenApiContract())
+            .andReturn().getResponse();
     }
 
     private static MockMvc mvc(final WebApplicationContext context) {
