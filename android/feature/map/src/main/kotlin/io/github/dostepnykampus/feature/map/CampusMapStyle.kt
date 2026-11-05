@@ -39,7 +39,7 @@ internal const val ENTRANCE_PIN_IMAGE = "wejscie_pinezka"
 /** Wysokość i szerokość znaku wejścia w dp (US2.1, NFR-21). */
 internal const val ENTRANCE_MARK_DP = 28
 
-/** Odsunięcie podpisu wejścia od punktu w dp: tuż pod znakiem, którego środek stoi w tym punkcie (US3.3). */
+// Odsunięcie podpisu od punktu wejścia w dp (US3.3): tuż pod znakiem, którego środek stoi w tym punkcie.
 private const val CAPTION_OFFSET_DP = ENTRANCE_MARK_DP / 2 + 2
 
 /** Kafelki podkładu z serwerów OSM, pobierane tylko online i bez zapisu do użytku offline (ADR-0005). */

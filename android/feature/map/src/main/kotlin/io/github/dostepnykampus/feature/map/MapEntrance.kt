@@ -39,7 +39,10 @@ internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocu
     }
 }
 
-/** * Węzeł dla TalkBack: natywna mapa nie opisuje pinezki, więc czytany jest tekst „Zaznaczone wejście: »nazwa«, * budynek X” dla [chosen], z budynkiem ekranu (NFR-18, decyzja 135). */
+/**
+ * Węzeł dla TalkBack: natywna mapa nie opisuje pinezki, więc czytany jest tekst „Zaznaczone wejście: »nazwa«,
+ * budynek X” dla [chosen], z budynkiem ekranu (NFR-18, decyzja 135).
+ */
 @Composable
 internal fun EntranceDescription(chosen: SelectedEntrance) {
     val text = stringResource(R.string.mapa_zaznaczone_wejscie, chosen.label, chosen.buildingSymbol)
