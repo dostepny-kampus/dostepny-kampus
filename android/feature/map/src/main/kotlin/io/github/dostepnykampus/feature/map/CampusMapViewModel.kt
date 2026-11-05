@@ -12,6 +12,9 @@ import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.data.campusMapData
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -20,6 +23,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 private const val STOP_TIMEOUT_MS = 5_000L
 
@@ -32,11 +36,13 @@ private const val STOP_TIMEOUT_MS = 5_000L
  *   bieżący (US9.1)
  * @property isListSaved ostatni wybór w przełączniku: prawda dla „Lista budynków”, fałsz dla „Mapa”, `null`, gdy osoba
  *   jeszcze nie wybierała (NFR-19)
+ * @property mapData gotowe dane warstw mapy z [catalog]; `null`, dopóki geometria nie jest policzona (NFR-11)
  */
 data class CampusMapUiState(
     val catalog: BuildingCatalog? = null,
     val isOnline: Boolean = true,
     val isListSaved: Boolean? = null,
+    val mapData: CampusMapData? = null,
 )
 
 /**
@@ -45,24 +51,31 @@ data class CampusMapUiState(
  * więc obrót ekranu nie uruchamia ich od nowa, a monitor sieci nie działa w tle.
  */
 @HiltViewModel
-class CampusMapViewModel
+class CampusMapViewModel(
+    repository: BuildingCatalogRepository,
+    networkStatus: NetworkStatus,
+    private val mapListChoice: MapListChoice,
+    internal val computeContext: CoroutineContext,
+    internal val geometry: (BuildingCatalog) -> CampusMapData,
+) : ViewModel() {
+    /** Bieżący stan ekranu. */
+    val uiState: StateFlow<CampusMapUiState> =
+        combine(
+            flow = repository.catalogUpdates().map<BuildingCatalog, BuildingCatalog?> { it }.onStart { emit(null) },
+            flow2 = networkStatus.isOnline(),
+            flow3 = mapListChoice.savedChoice,
+            transform = ::CampusMapUiState,
+        ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), CampusMapUiState())
+
     @Inject
     constructor(
         repository: BuildingCatalogRepository,
         networkStatus: NetworkStatus,
-        private val mapListChoice: MapListChoice,
-    ) : ViewModel() {
-        /** Bieżący stan ekranu. */
-        val uiState: StateFlow<CampusMapUiState> =
-            combine(
-                flow = repository.catalogUpdates().map<BuildingCatalog, BuildingCatalog?> { it }.onStart { emit(null) },
-                flow2 = networkStatus.isOnline(),
-                flow3 = mapListChoice.savedChoice,
-                transform = ::CampusMapUiState,
-            ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), CampusMapUiState())
+        mapListChoice: MapListChoice,
+    ) : this(repository, networkStatus, mapListChoice, Dispatchers.Default, ::campusMapData)
 
-        /** Zapamiętuje wybór w przełączniku: „Lista budynków” przy [isList], inaczej „Mapa” (NFR-19). */
-        fun chooseList(isList: Boolean) {
-            viewModelScope.launch { mapListChoice.choose(isList) }
-        }
+    /** Zapamiętuje wybór w przełączniku: „Lista budynków” przy [isList], inaczej „Mapa” (NFR-19). */
+    fun chooseList(isList: Boolean) {
+        viewModelScope.launch { mapListChoice.choose(isList) }
     }
+}
