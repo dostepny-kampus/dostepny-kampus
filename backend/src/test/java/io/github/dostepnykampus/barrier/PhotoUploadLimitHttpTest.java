@@ -86,7 +86,13 @@ final class PhotoUploadLimitHttpTest {
             VALUES (:id, 'SENT', 'QUICK', ST_SetSRID(ST_MakePoint(17.0, 51.0), 4326),
                 CAST(:content AS JSONB))
             """
-        ).param("id", id).param("content", "{\"photoIds\":[\"%s\"]}".formatted(id)).update();
+        ).param("id", id).param(
+            "content",
+            """
+            {"kind":"QUICK","location":{"type":"Point","coordinates":[17,51]},
+            "barrierGroup":"OTHER","photoIds":["%s"]}
+            """.formatted(id)
+        ).update();
         return id;
     }
 

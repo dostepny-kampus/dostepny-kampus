@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.context.annotation.Import;
@@ -70,7 +69,6 @@ final class SubmissionPhotosProblemHttpTest {
     }
 
     @ParameterizedTest
-    @Disabled("Kontroler zwraca 404 bez opisu w detail, poprawka w następnym PR")
     @ValueSource(booleans = {true, false})
     void acTwoBTwoExplainsMissingPhotoWithoutInternals(
         final boolean exists, final WebApplicationContext context

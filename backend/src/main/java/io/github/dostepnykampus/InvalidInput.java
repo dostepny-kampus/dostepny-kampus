@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Niepoprawne dane żądania: wartość, której serwer nie przyjmuje.
  *
@@ -24,6 +26,16 @@ public class InvalidInput extends RuntimeException {
      *  {@code detail} odpowiedzi; bez szczegółów wewnętrznych
      */
     public InvalidInput(final String detail) {
-        super(detail);
+        this(detail, null);
+    }
+
+    /**
+     * Wyjątek z przyczyną, która trafia tylko do dziennika.
+     *
+     * @param detail Opis dla klienta
+     * @param cause Przyczyna albo null
+     */
+    public InvalidInput(final String detail, final @Nullable Throwable cause) {
+        super(detail, cause);
     }
 }
