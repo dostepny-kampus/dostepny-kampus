@@ -57,7 +57,7 @@ final class BuildingQuery {
         ).query(this::rows);
     }
 
-    LocateResult locate(final double lat, final double lon) {
+    Placement locate(final double lat, final double lon) {
         return this.jdbc.sql(
             """
             WITH point AS (
@@ -153,15 +153,17 @@ final class BuildingQuery {
         );
     }
 
-    private static LocateResult hit(final ResultSet rows) throws SQLException {
-        final LocateResult found;
+    private static Placement hit(final ResultSet rows) throws SQLException {
+        final Placement found;
         if (rows.next()) {
-            found = new LocateResult(
-                BuildingQuery.text(rows, "symbol"),
-                rows.getBoolean("inside")
-            );
+            final String symbol = BuildingQuery.text(rows, "symbol");
+            if (rows.getBoolean("inside")) {
+                found = new Placement.Inside(symbol);
+            } else {
+                found = new Placement.Near(symbol);
+            }
         } else {
-            found = new LocateResult(null, false);
+            found = new Placement.None();
         }
         return found;
     }

@@ -1,0 +1,46 @@
+/*
+ * Dostępny Kampus
+ * Author: Vladyslav Yevkov
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+package io.github.dostepnykampus.building;
+
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Testy BR-G2 i BR-G4: położenie punktu staje się odpowiedzią REST bez
+ * pomyłki między konturem, sąsiedztwem i brakiem budynku.
+ *
+ * @since 0.1.0
+ */
+final class LocateResultsTest {
+
+    @Test
+    void brGTwoMarksPointInsideOutline() {
+        MatcherAssert.assertThat(
+            "Punkt w konturze musi mieć insideOutline=true",
+            new LocateResults().result(new Placement.Inside("A-1")),
+            Matchers.equalTo(new LocateResult("A-1", true))
+        );
+    }
+
+    @Test
+    void brGTwoMarksNearPointOutsideOutline() {
+        MatcherAssert.assertThat(
+            "Punkt blisko konturu musi mieć symbol i insideOutline=false",
+            new LocateResults().result(new Placement.Near("A-1")),
+            Matchers.equalTo(new LocateResult("A-1", false))
+        );
+    }
+
+    @Test
+    void brGFourLeavesFarPointWithoutSymbol() {
+        MatcherAssert.assertThat(
+            "Punkt poza budynkami nie ma symbolu i insideOutline=false",
+            new LocateResults().result(new Placement.None()),
+            Matchers.equalTo(new LocateResult(null, false))
+        );
+    }
+}
