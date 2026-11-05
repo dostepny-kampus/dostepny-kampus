@@ -49,7 +49,6 @@ import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapView
-import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.MapCamera
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -117,7 +116,7 @@ class CampusMapScreenTest {
                 """"geometry":{"type":"Polygon","coordinates":[$ring]}}]}"""
         }
 
-    private val viewModel by lazy { CampusMapViewModel(repository, { online }, choice) }
+    private val viewModel by lazy { inlineMapViewModel(repository, { online }, choice) }
 
     @Composable
     private fun Screen(fontScale: Float = 1f, focus: String? = null, sheet: Dp = 0.dp) {

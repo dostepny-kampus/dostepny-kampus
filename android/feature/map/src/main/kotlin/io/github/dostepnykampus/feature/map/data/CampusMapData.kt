@@ -102,7 +102,8 @@ data class CampusBounds(val west: Double, val south: Double, val east: Double, v
 
 /**
  * Dane warstw mapy z [catalog]. Katalog z repozytorium nie ma już wejść `emergency`, `exit` i `garage`
- * (BR-25, decyzja 76), więc mapa ich nie rysuje.
+ * (BR-25, decyzja 76), więc mapa ich nie rysuje. Liczenie można przerwać przerwaniem wątku: sprawdza je przed każdym
+ * punktem podpisu, najcięższym krokiem, i rzuca [InterruptedException] (NFR-11).
  */
 fun campusMapData(catalog: BuildingCatalog): CampusMapData {
     val outlines = catalog.buildings.groupBy(keySelector = Building::outline, valueTransform = Building::symbol)
@@ -118,6 +119,7 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
     val labelPoints =
         outlines.map { (outline, symbols) ->
             val properties = buildJsonObject { put(key = "label", value = symbols.joinToString(LABEL_SEPARATOR)) }
+            if (Thread.interrupted()) throw InterruptedException("liczenie geometrii przerwane")
             Feature(Point(labelPoint(outline).toPosition()), properties)
         }
     val entrances =

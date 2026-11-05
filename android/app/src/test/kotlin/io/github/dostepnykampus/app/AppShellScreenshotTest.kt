@@ -29,7 +29,6 @@ import io.github.dostepnykampus.feature.map.BuildingCardScreen
 import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapView
-import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -91,7 +90,7 @@ class AppShellScreenshotTest {
                             onBuildingClick = { openBuilding(it) },
                             contentPadding = LocalSheetPadding.current,
                             mapView = landOnly,
-                            viewModel = remember { CampusMapViewModel(repository, { flowOf(isOnline) }, choice) },
+                            viewModel = remember { inlineMapViewModel(repository, { flowOf(isOnline) }, choice) },
                         )
                     } else if (route is BuildingRoute) {
                         val card =
