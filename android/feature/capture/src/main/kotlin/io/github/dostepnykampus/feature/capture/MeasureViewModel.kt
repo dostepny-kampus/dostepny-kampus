@@ -13,6 +13,7 @@ import io.github.dostepnykampus.core.location.GnssSystem
 import io.github.dostepnykampus.core.location.PositionAverage
 import io.github.dostepnykampus.core.location.PositionAveraging
 import io.github.dostepnykampus.core.location.PositionSource
+import io.github.dostepnykampus.core.location.Satellite
 import io.github.dostepnykampus.core.location.SatelliteSource
 import io.github.dostepnykampus.core.location.countsInFix
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,11 +47,13 @@ sealed interface MeasureUiState {
      * @property remainingSeconds pełne sekundy do końca pomiaru
      * @property average bieżąca średnia z szacowaną dokładnością (NFR-2)
      * @property satellites satelity użyte do pozycji według systemów
+     * @property sky wszystkie widoczne satelity do mapy nieba (US6.5)
      */
     data class Measuring(
         val remainingSeconds: Int,
         val average: PositionAverage,
         val satellites: Map<GnssSystem, Int>,
+        val sky: List<Satellite> = emptyList(),
     ) : MeasureUiState
 
     /**
@@ -58,8 +61,13 @@ sealed interface MeasureUiState {
      *
      * @property average średnia z 30 s
      * @property satellites satelity użyte do pozycji według systemów na koniec pomiaru
+     * @property sky widoczne satelity na koniec pomiaru (US6.5)
      */
-    data class Finished(val average: PositionAverage, val satellites: Map<GnssSystem, Int>) : MeasureUiState
+    data class Finished(
+        val average: PositionAverage,
+        val satellites: Map<GnssSystem, Int>,
+        val sky: List<Satellite> = emptyList(),
+    ) : MeasureUiState
 }
 
 /**
@@ -93,14 +101,14 @@ class MeasureViewModel
         private fun measurement(attempt: Int): Flow<MeasureUiState> =
             channelFlow {
                 var averaging: PositionAveraging? = null
-                var counts = emptyMap<GnssSystem, Int>()
+                var sky = emptyList<Satellite>()
 
-                suspend fun publish() = send(stateOf(averaging, counts))
+                suspend fun publish() = send(stateOf(averaging, sky))
 
                 publish()
                 launch {
                     satellites.satellites().collect { visible ->
-                        counts = visible.countsInFix()
+                        sky = visible
                         publish()
                     }
                 }
@@ -121,13 +129,18 @@ class MeasureViewModel
                 }
             }
 
-        private fun stateOf(averaging: PositionAveraging?, counts: Map<GnssSystem, Int>): MeasureUiState {
+        private fun stateOf(averaging: PositionAveraging?, sky: List<Satellite>): MeasureUiState {
             val average = averaging?.average() ?: return MeasureUiState.Searching
             val now = clock.nowMillis()
             return if (averaging.isFinished(now)) {
-                MeasureUiState.Finished(average, counts)
+                MeasureUiState.Finished(average, sky.countsInFix(), sky)
             } else {
-                MeasureUiState.Measuring(averaging.remainingSeconds(now), average, counts)
+                MeasureUiState.Measuring(
+                    remainingSeconds = averaging.remainingSeconds(now),
+                    average = average,
+                    satellites = sky.countsInFix(),
+                    sky = sky,
+                )
             }
         }
 
