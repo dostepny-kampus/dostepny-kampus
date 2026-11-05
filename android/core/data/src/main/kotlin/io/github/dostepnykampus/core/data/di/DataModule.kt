@@ -26,6 +26,7 @@ import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.start.FirstLaunchRepository
 import io.github.dostepnykampus.core.data.start.startDataStore
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
+import io.github.dostepnykampus.core.database.BuildingCacheDao
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.network.BuildingsApi
 import io.github.dostepnykampus.core.network.SubmissionsApi
@@ -38,11 +39,19 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DataModule {
-    /** Katalog: kontury z serwera, a przy innej odpowiedzi z pliku; wejścia z pliku konturów (US1). */
+    /** Katalog: kontury z serwera, a przy innej odpowiedzi z kopii w bazie albo z pliku (US1, NFR-10). */
     @Provides
     @Singleton
-    fun buildingCatalog(app: Application, api: BuildingsApi): BuildingCatalogRepository =
-        assetRepository(assets = app.assets, listBuildings = api::listBuildings)
+    fun buildingCatalog(
+        app: Application,
+        api: BuildingsApi,
+        buildingCache: BuildingCacheDao,
+    ): BuildingCatalogRepository =
+        assetRepository(
+            assets = app.assets,
+            listBuildings = api::listBuildings,
+            buildingCache = buildingCache,
+        )
 
     /** Wejścia karty budynku z serwera z dniem i źródłem oznaczenia (US17.3). */
     @Provides

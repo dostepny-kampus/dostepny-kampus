@@ -124,7 +124,12 @@ class MapCatalogFromFileTest {
         readGeoJson: () -> String = { ASSET_JSON },
         listBuildings: suspend () -> ApiResult<BuildingList>,
     ): Screen {
-        val repository = BuildingCatalogRepository(ioContext, listBuildings, readGeoJson)
+        val repository =
+            BuildingCatalogRepository(
+                ioContext = ioContext,
+                listBuildings = listBuildings,
+                readGeoJson = readGeoJson,
+            )
         val choice =
             object : MapListChoice {
                 override val savedChoice = flowOf<Boolean?>(null)
