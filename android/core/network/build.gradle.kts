@@ -21,6 +21,13 @@ android {
     testOptions.unitTests.all { it.useJUnitPlatform() }
 }
 
+val openApiFile = rootProject.layout.projectDirectory.file("../api/openapi.yaml")
+
+tasks.withType<Test>().configureEach {
+    inputs.file(openApiFile).withPathSensitivity(PathSensitivity.NONE).withPropertyName("openApiFile")
+    systemProperty("openapi.file", openApiFile.asFile.relativeTo(projectDir).invariantSeparatorsPath)
+}
+
 dependencies {
     api(project(":core:model"))
     implementation(project(":core:geo"))
@@ -30,5 +37,6 @@ dependencies {
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.json.schema.validator)
     testRuntimeOnly(libs.junit.platform.launcher)
 }
