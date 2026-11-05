@@ -20,23 +20,30 @@ final class ContentTypesJsonTest {
 
     @Test
     void usFourRejectsUnknownKind() {
-        JsonBodies.failsBinding(
-            "Nieznany rodzaj zgłoszenia przeszedł", node -> node.put("kind", "FAST")
+        Assertions.assertThrows(
+            MismatchedInputException.class,
+            () -> JsonBodies.bind(JsonBodies.with(node -> node.put("kind", "FAST"))),
+            "Nieznany rodzaj zgłoszenia przeszedł"
         );
     }
 
     @Test
     void usFourRejectsPhotoIdThatIsNoUuid() {
-        JsonBodies.failsBinding(
-            "Zdjęcie bez UUID przeszło",
-            node -> node.set("photoIds", JsonBodies.json("['foto']"))
+        Assertions.assertThrows(
+            MismatchedInputException.class,
+            () -> JsonBodies.bind(
+                JsonBodies.with(node -> node.set("photoIds", JsonBodies.json("['foto']")))
+            ),
+            "Zdjęcie bez UUID przeszło"
         );
     }
 
     @Test
     void usSevenRejectsNumericBuildingSymbol() {
-        JsonBodies.failsBinding(
-            "Liczba zamiast symbolu budynku przeszła", node -> node.put("buildingSymbol", 13)
+        Assertions.assertThrows(
+            MismatchedInputException.class,
+            () -> JsonBodies.bind(JsonBodies.with(node -> node.put("buildingSymbol", 13))),
+            "Liczba zamiast symbolu budynku przeszła"
         );
     }
 
