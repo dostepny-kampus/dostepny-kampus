@@ -21,7 +21,11 @@ private const val MILLIS_IN_SECOND = 1_000.0
  * @property accuracyMeters szacowany promień ufności 68% w metrach, jak podaje system (NFR-2)
  * @property elapsedMillis czas odczytu na zegarze monotonicznym telefonu, tym samym co start pomiaru
  */
-data class PositionFix(val point: GeoPoint, val accuracyMeters: Double, val elapsedMillis: Long)
+data class PositionFix(val point: GeoPoint, val accuracyMeters: Double, val elapsedMillis: Long) {
+    /** Czy odczyt ma znany, dodatni promień ufności; tylko taki wchodzi do średniej i zaczyna pomiar. */
+    val hasAccuracy: Boolean
+        get() = accuracyMeters.isFinite() && accuracyMeters > 0
+}
 
 /**
  * Średnia pozycja z odczytów pomiaru.
@@ -52,7 +56,7 @@ class PositionAveraging private constructor(val startMillis: Long, private val f
 
     /** Pomiar z dołożonym odczytem, gdy ten mieści się w oknie i ma znaną dokładność. */
     fun withFix(fix: PositionFix): PositionAveraging =
-        if (fix.elapsedMillis in startMillis until endMillis && fix.isUsable()) {
+        if (fix.elapsedMillis in startMillis until endMillis && fix.hasAccuracy) {
             PositionAveraging(startMillis, fixes + fix)
         } else {
             this
@@ -81,6 +85,4 @@ class PositionAveraging private constructor(val startMillis: Long, private val f
             fixCount = fixes.size,
         )
     }
-
-    private fun PositionFix.isUsable(): Boolean = accuracyMeters.isFinite() && accuracyMeters > 0
 }
