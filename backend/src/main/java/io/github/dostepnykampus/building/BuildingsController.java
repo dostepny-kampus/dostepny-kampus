@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
@@ -54,7 +54,7 @@ public final class BuildingsController {
         if (BuildingsController.outside(lat, lon)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        return this.query.locate(lat, lon);
+        return new LocateResults(this.query.locate(lat, lon)).result();
     }
 
     /**
