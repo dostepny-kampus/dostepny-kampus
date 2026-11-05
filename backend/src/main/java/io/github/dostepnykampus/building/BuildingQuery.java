@@ -82,7 +82,7 @@ final class BuildingQuery {
     }
 
     Optional<BuildingCard> building(final String symbol) {
-        final Optional<Building> found = this.jdbc.sql(
+        return this.jdbc.sql(
             """
             SELECT symbol, name, detail_level,
                 ST_AsGeoJSON(outline) AS outline
@@ -91,8 +91,8 @@ final class BuildingQuery {
             """
         ).param("symbol", symbol)
             .query((rows, num) -> this.one(rows))
-            .optional();
-        return found.map(this::card);
+            .optional()
+            .map(this::card);
     }
 
     private BuildingCard card(final Building item) {
