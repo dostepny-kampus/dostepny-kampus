@@ -47,6 +47,20 @@ final class BuildingsMigrationTest {
     }
 
     @Test
+    void usOneAllowsBuildingWithoutName(final ApplicationContext context) {
+        MatcherAssert.assertThat(
+            "Kolumna nazwy budynku nie dopuszcza braku nazwy (NULL)",
+            context.getBean(JdbcClient.class).sql(
+                """
+                SELECT is_nullable FROM information_schema.columns
+                WHERE table_name = 'buildings' AND column_name = 'name'
+                """
+            ).query(String.class).single(),
+            Matchers.equalTo("YES")
+        );
+    }
+
+    @Test
     void usOneIndexesOutlinesWithGist(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Kontury budynków nie mają indeksu przestrzennego GiST",

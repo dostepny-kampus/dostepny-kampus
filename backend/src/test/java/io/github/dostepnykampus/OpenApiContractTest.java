@@ -147,7 +147,7 @@ final class OpenApiContractTest {
 
     private static Stream<Arguments> violating() {
         return Stream.of(
-            OpenApiContractTest.card("\"name\":\"Budynek A-1\",", "", "property 'name'"),
+            OpenApiContractTest.card("\"detailLevel\":\"BASIC\",", "", "property 'detailLevel'"),
             OpenApiContractTest.card("\"A-1\"", "1", "{symbol} 200: /symbol "),
             OpenApiContractTest.card(
                 "BASIC", "MEDIUM", "GET /buildings/{symbol} 200: /detailLevel "

@@ -148,7 +148,7 @@ final class BuildingQuery {
     private Building one(final ResultSet rows) throws SQLException {
         return new Building(
             BuildingQuery.text(rows, "symbol"),
-            BuildingQuery.text(rows, "name"),
+            rows.getString("name"),
             BuildingQuery.text(rows, "detail_level"),
             this.mapper.readTree(BuildingQuery.text(rows, "outline"))
         );
