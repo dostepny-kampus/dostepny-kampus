@@ -61,10 +61,10 @@ final class NullabilityArchitectureTest {
     private static final String FIXTURES = "io.github.dostepnykampus.fixture";
 
     /**
-     * Pakiety (z podpakietami) czekające na oznaczenie, do scalenia I3.
+     * Pakiety (z podpakietami) czekające na oznaczenie; pusta, gdy każdy
+     * pakiet kodu produkcyjnego jest już oznaczony.
      */
-    private static final List<String> WAITING =
-        List.of("io.github.dostepnykampus.barrier");
+    private static final List<String> WAITING = List.of();
 
     /**
      * Komponenty rekordów domeny dopuszczone jako {@code @Nullable}. Klasy z
