@@ -8,6 +8,7 @@ package io.github.dostepnykampus;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.properties.HasAnnotations;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchCondition;
@@ -251,12 +252,20 @@ final class TestSetupArchitectureTest {
     }
 
     private static boolean own(final JavaClass item) {
-        final boolean marked = TestSetupArchitectureTest.CONTEXT_MARKS.stream()
-            .anyMatch(item::isAnnotatedWith);
-        return item.isAnnotatedWith(IntegrationTest.class) && (
-            marked || item.getMethods().stream()
-                .anyMatch(method -> method.isAnnotatedWith(DynamicPropertySource.class))
-        );
+        return item.isAnnotatedWith(IntegrationTest.class)
+            && (TestSetupArchitectureTest.marked(item) || TestSetupArchitectureTest.dynamic(item));
+    }
+
+    private static boolean marked(final JavaClass item) {
+        return TestSetupArchitectureTest.CONTEXT_MARKS.stream().anyMatch(item::isAnnotatedWith);
+    }
+
+    private static boolean dynamic(final JavaClass item) {
+        return item.getMethods().stream().anyMatch(TestSetupArchitectureTest::dynamic);
+    }
+
+    private static boolean dynamic(final JavaMethod method) {
+        return method.isAnnotatedWith(DynamicPropertySource.class);
     }
 
     private static ArchRule forbidden(
