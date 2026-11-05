@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building;
 
+import io.github.dostepnykampus.building.locate.Placement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;

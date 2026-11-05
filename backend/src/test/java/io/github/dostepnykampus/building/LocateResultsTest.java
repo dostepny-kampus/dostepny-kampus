@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building;
 
+import io.github.dostepnykampus.building.locate.Placement;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
