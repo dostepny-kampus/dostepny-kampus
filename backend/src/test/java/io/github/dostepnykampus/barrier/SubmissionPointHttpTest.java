@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.OpenApiContract;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -121,6 +122,7 @@ final class SubmissionPointHttpTest {
                     fields, "5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"
                 )
             )
-        ).andReturn().getResponse().getStatus();
+        ).andExpect(new OpenApiContract())
+            .andReturn().getResponse().getStatus();
     }
 }
