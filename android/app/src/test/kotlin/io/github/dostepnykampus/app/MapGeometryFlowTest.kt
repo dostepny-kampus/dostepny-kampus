@@ -38,7 +38,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
@@ -70,7 +69,6 @@ class MapGeometryFlowTest {
 
     // Wiersz: W3, plik, potem serwer → geometria najwyżej raz na katalog, a ostatni stan ma ją z katalogu serwera;
     //   wolna geometria z pliku nie wraca po niej, NFR-10, NFR-11.
-    @Disabled("geometria mapy liczona w kompozycji, poprawka w następnym PR")
     @Test
     fun nfr11_geometry_per_catalog() {
         val answer = CompletableDeferred<ApiResult<BuildingList>>()
@@ -120,7 +118,6 @@ class MapGeometryFlowTest {
     }
 
     // Wiersz: zamknięcie ekranu w trakcie liczenia geometrii → liczenie czekające w kolejce nie rusza po zamknięciu.
-    @Disabled("geometria mapy liczona w kompozycji, poprawka w następnym PR")
     @Test
     fun closing_map_cancels_compute() {
         val busy = CountDownLatch(1)

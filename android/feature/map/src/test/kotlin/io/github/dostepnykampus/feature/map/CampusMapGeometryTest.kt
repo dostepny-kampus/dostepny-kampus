@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
@@ -90,7 +89,6 @@ class CampusMapGeometryTest {
 
     // Wiersz: W3, O5, katalog z pliku → geometria liczona w kontekście obliczeń, nie w wątku wywołującym, a stan niesie
     //   gotowe dane mapy, NFR-11.
-    @Disabled("geometria mapy liczona w kompozycji, poprawka w następnym PR")
     @Test
     fun nfr11_geometry_in_compute() {
         Executors.newSingleThreadExecutor { Thread(it, COMPUTE_THREAD) }.asCoroutineDispatcher().use { compute ->
@@ -104,7 +102,6 @@ class CampusMapGeometryTest {
 
     // Wiersz: W3, jeden katalog, potem zmiana internetu i wyboru „Lista” → ta sama geometria i jedno wywołanie
     //   funkcji liczącej, nie przeliczenie przy każdej zmianie stanu, NFR-11.
-    @Disabled("geometria mapy liczona w kompozycji, poprawka w następnym PR")
     @Test
     fun nfr11_geometry_once_catalog() =
         runTest(UnconfinedTestDispatcher()) {
