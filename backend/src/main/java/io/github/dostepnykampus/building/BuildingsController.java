@@ -58,10 +58,11 @@ public final class BuildingsController {
     }
 
     /**
-     * Zwraca kartę budynku. Bez danych wejść lista wejść jest pusta.
+     * Zwraca kartę budynku z wejściami: główne pierwsze, potem według
+     * identyfikatora. Budynek bez wejść ma pustą listę, nieznany symbol daje 404.
      *
      * @param symbol Symbol budynku
-     * @return Karta budynku z konturem i pustą listą wejść
+     * @return Karta budynku z konturem i wejściami
      */
     @GetMapping("/buildings/{symbol}")
     BuildingCard getBuilding(@PathVariable("symbol") final String symbol) {
