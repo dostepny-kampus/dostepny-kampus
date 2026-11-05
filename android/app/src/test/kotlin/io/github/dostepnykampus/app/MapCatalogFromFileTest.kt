@@ -159,7 +159,16 @@ class MapCatalogFromFileTest {
         const val SERVER_ERROR = 500
 
         val SERVER_OUTLINE =
-            GeoPolygon(listOf(listOf(GeoPoint(0.0, 0.0), GeoPoint(1.0, 0.0), GeoPoint(1.0, 1.0), GeoPoint(0.0, 0.0))))
+            GeoPolygon(
+                listOf(
+                    listOf(
+                        GeoPoint(longitude = 0.0, latitude = 0.0),
+                        GeoPoint(longitude = 1.0, latitude = 0.0),
+                        GeoPoint(longitude = 1.0, latitude = 1.0),
+                        GeoPoint(longitude = 0.0, latitude = 0.0),
+                    ),
+                ),
+            )
 
         val SERVER_BUILDING = Building(symbol = "A-1", name = "Z serwera", outline = SERVER_OUTLINE)
 
