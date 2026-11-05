@@ -37,7 +37,10 @@ import tools.jackson.databind.JsonNode;
  * <p>Operację wybiera po metodzie i ścieżce; ścieżka z mniejszą liczbą
  * szablonów ma pierwszeństwo. Odpowiedź wybiera po statusie, potem po
  * zakresie, np. {@code 4XX}, i po typie treści. Operacja, status albo typ
- * treści spoza kontraktu jest naruszeniem. Kontrakt jest wczytywany raz.</p>
+ * treści spoza kontraktu jest naruszeniem. Treść innego typu niż JSON, np.
+ * {@code image/jpeg}, jest sprawdzana tylko co do typu. Żądanie niezgodne ze
+ * schematem jest dopuszczone, gdy odpowiedź ma status 4xx opisany w kontrakcie.
+ * Kontrakt jest wczytywany raz.</p>
  *
  * @since 0.1.0
  */
@@ -116,6 +119,11 @@ public final class OpenApiContract implements ResultMatcher {
         );
         final String reply = this.resolve(this.status(operation, response.getStatus()));
         final String body = response.getContentAsString(StandardCharsets.UTF_8);
+        final List<String> asked = new ArrayList<>(0);
+        if (!sent.isEmpty()) {
+            this.content(operation.concat("/requestBody"), request.getContentType(), sent)
+                .forEach(line -> asked.add("%s, żądanie: %s".formatted(name, line)));
+        }
         if (this.tree().at(operation).isMissingNode()) {
             found.add("%s: brak operacji w kontrakcie".formatted(name));
         } else if (this.tree().at(reply).isMissingNode()) {
@@ -125,9 +133,8 @@ public final class OpenApiContract implements ResultMatcher {
                 line -> found.add("%s %d: %s".formatted(name, response.getStatus(), line))
             );
         }
-        if (!sent.isEmpty()) {
-            this.content(operation.concat("/requestBody"), request.getContentType(), sent)
-                .forEach(line -> found.add("%s, żądanie: %s".formatted(name, line)));
+        if (response.getStatus() / 100 != 4) {
+            found.addAll(asked);
         }
         return found;
     }
@@ -145,7 +152,10 @@ public final class OpenApiContract implements ResultMatcher {
         );
         List<String> found = List.of("typ treści '%s' spoza kontraktu".formatted(key));
         if (!this.tree().at(schema).isMissingNode()) {
-            found = this.validate(schema, json);
+            found = List.of();
+            if (OpenApiContract.json(type)) {
+                found = this.validate(schema, json);
+            }
         }
         return found;
     }
@@ -193,6 +203,14 @@ public final class OpenApiContract implements ResultMatcher {
                 builder -> builder.schemas(Map.of(OpenApiContract.SPEC, text.get()))
             ).getSchema(SchemaLocation.of(OpenApiContract.SPEC))
         );
+    }
+
+    private static boolean json(final @Nullable String type) {
+        String subtype = "";
+        if (type != null) {
+            subtype = MediaType.parseMediaType(type).getSubtype();
+        }
+        return "json".equals(subtype) || subtype.endsWith("+json");
     }
 
     private static String escape(final String segment) {

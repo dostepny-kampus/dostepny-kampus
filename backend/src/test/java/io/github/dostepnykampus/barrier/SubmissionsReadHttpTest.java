@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.OpenApiContract;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -191,6 +192,7 @@ final class SubmissionsReadHttpTest {
     ) throws Exception {
         return MockMvcBuilders.webAppContextSetup(context).build()
             .perform(MockMvcRequestBuilders.get(uri))
+            .andExpect(new OpenApiContract())
             .andReturn()
             .getResponse();
     }

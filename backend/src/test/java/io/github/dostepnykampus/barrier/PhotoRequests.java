@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.OpenApiContract;
 import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -68,7 +69,8 @@ final class PhotoRequests {
         return MockMvcBuilders.webAppContextSetup(this.context).build().perform(
             MockMvcRequestBuilders.put("/submissions/{id}/photos/{photo}", id, photo)
                 .contentType(MediaType.IMAGE_JPEG).content(body)
-        ).andReturn().getResponse();
+        ).andExpect(new OpenApiContract())
+            .andReturn().getResponse();
     }
 
     /**
@@ -82,6 +84,7 @@ final class PhotoRequests {
     MockHttpServletResponse get(final UUID id, final String photo) throws Exception {
         return MockMvcBuilders.webAppContextSetup(this.context).build().perform(
             MockMvcRequestBuilders.get("/submissions/{id}/photos/{photo}", id, photo)
-        ).andReturn().getResponse();
+        ).andExpect(new OpenApiContract())
+            .andReturn().getResponse();
     }
 }

@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.OpenApiContract;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
@@ -142,7 +143,8 @@ final class SubmissionsEditHttpTest {
             MockMvcRequestBuilders.put("/submissions/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(SubmissionsEditHttpTest.body(base))
-        ).andReturn().getResponse();
+        ).andExpect(new OpenApiContract())
+            .andReturn().getResponse();
     }
 
     private static String body(final String base) {
