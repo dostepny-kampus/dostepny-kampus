@@ -20,7 +20,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.yield
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
@@ -65,15 +64,42 @@ class MapStreamConcurrencyTest {
         }
     }
 
+    // Wiersz: zapytanie mapy pada, a potem, przy wciąż zbieranym strumieniu, osobny refresh() przyjmuje niepustą
+    //   listę → ostatni stan mapy to katalog z serwera, dwa zapytania, W2.
+    @Test
+    fun nfr10_map_sees_late_refresh() {
+        val offline = ApiResult.NetworkError(IOException("brak"))
+        val answers = ArrayDeque<ApiResult<BuildingList>>(listOf(offline, LIST))
+        val ask: suspend () -> ApiResult<BuildingList> = {
+            calls.incrementAndGet()
+            answers.removeFirst()
+        }
+        val late = BuildingCatalogRepository(EmptyCoroutineContext, ask) { FILE_JSON }
+        inRun {
+            val seen = mutableListOf<BuildingCatalog>()
+            val map = launch { late.catalogUpdates().collect { seen += it } }
+            settle()
+            late.refresh()
+            withTimeoutOrNull(WAIT_MS) { map.join() }
+            map.cancel()
+            assertEquals(listOf("S-1"), seen.last().buildings.map { it.symbol }, "mapa została na pliku")
+            assertEquals(2, calls.get(), "liczba zapytań do serwera")
+        }
+    }
+
     // Wiersz: refresh() w toku na wstrzymanym serwerze → pierwsza emisja mapy to plik w ≤ 1 s, W1, NFR-11.
     @Test
-    @Disabled("strumień mapy czeka na trwające pobranie, poprawka w następnym PR")
     fun nfr11_file_while_retry_runs() {
         inRun {
             launch { repository.refresh() }
             settle()
-            val first = withTimeoutOrNull(WAIT_MS) { repository.catalogUpdates().first() }
-            assertEquals(listOf("C-1"), first?.buildings.orEmpty().map { it.symbol }, "mapa czeka na trwające pobranie")
+            try {
+                val first = withTimeoutOrNull(WAIT_MS) { repository.catalogUpdates().first() }
+                val symbols = first?.buildings.orEmpty().map { it.symbol }
+                assertEquals(listOf("C-1"), symbols, "mapa czeka na trwające pobranie")
+            } finally {
+                gate.complete(Unit)
+            }
         }
     }
 

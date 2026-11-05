@@ -8,6 +8,7 @@ package io.github.dostepnykampus;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.properties.HasAnnotations;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchCondition;
@@ -39,6 +40,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
@@ -46,17 +51,36 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
  * Strażnik: testy na pełnym kontekście dzielą jeden kontekst Springa.
  *
  * <p>{@code @SpringBootTest} tylko w {@code IntegrationTest} i w klasach
- * z listy z powodem, {@code @DirtiesContext} jest zakazany, mocki Mockito
- * tylko z listy.</p>
+ * z listy z powodem. Klasa z {@code @IntegrationTest}, która dokłada
+ * {@code @TestPropertySource}, {@code @ActiveProfiles},
+ * {@code @ContextConfiguration}, własny {@code @Import} albo metodę
+ * {@code @DynamicPropertySource}, zakłada osobny kontekst, więc też musi być
+ * na liście. {@code @DirtiesContext} jest zakazany, mocki Mockito tylko
+ * z listy.</p>
  *
  * @since 0.1.0
  */
 final class TestSetupArchitectureTest {
 
     /**
-     * Klasy z własnym {@code @SpringBootTest}, z powodem.
+     * Klasy z własnym kontekstem, z powodem.
      */
-    private static final Map<String, String> OWN_CONTEXT = Map.of();
+    private static final Map<String, String> OWN_CONTEXT = Map.of(
+        "io.github.dostepnykampus.barrier.PhotoBucketStartupTest",
+        String.join(
+            " ",
+            "sprawdza utworzenie kubełka przy starcie kontekstu,",
+            "więc potrzebuje świeżego kontekstu z własną nazwą kubełka"
+        )
+    );
+
+    /**
+     * Adnotacje klasy, które zmieniają klucz kontekstu.
+     */
+    private static final List<Class<? extends Annotation>> CONTEXT_MARKS = List.of(
+        TestPropertySource.class, ActiveProfiles.class,
+        ContextConfiguration.class, Import.class
+    );
 
     /**
      * Klasy z {@code @MockitoBean} lub {@code @MockitoSpyBean}, z powodem.
@@ -83,6 +107,7 @@ final class TestSetupArchitectureTest {
         final Set<String> all = TestSetupArchitectureTest.OWN_CONTEXT.keySet();
         TestSetupArchitectureTest.bare(all).check(TestSetupArchitectureTest.TESTS);
         TestSetupArchitectureTest.listed(all).check(TestSetupArchitectureTest.TESTS);
+        TestSetupArchitectureTest.unlisted(all).check(TestSetupArchitectureTest.TESTS);
     }
 
     @Test
@@ -137,6 +162,7 @@ final class TestSetupArchitectureTest {
     private static List<Sample> samples() {
         final Function<Set<String>, ArchRule> bare = TestSetupArchitectureTest::bare;
         final Function<Set<String>, ArchRule> listed = TestSetupArchitectureTest::listed;
+        final Function<Set<String>, ArchRule> unlisted = TestSetupArchitectureTest::unlisted;
         final Function<Set<String>, ArchRule> dirty = kept -> TestSetupArchitectureTest
             .forbidden(Set.of(), List.of(DirtiesContext.class));
         final Function<Set<String>, ArchRule> mock = kept -> TestSetupArchitectureTest
@@ -148,6 +174,21 @@ final class TestSetupArchitectureTest {
             new Sample(listed, "@SpringBootTest class Kept { }", false),
             new Sample(listed, "@IntegrationTest class Kept { }", true),
             new Sample(listed, "class Other { }", true),
+            new Sample(listed, "@IntegrationTest @ActiveProfiles(\"x\") class Kept { }", false),
+            new Sample(unlisted, "@IntegrationTest @TestPropertySource(\"a=b\") class A { }", true),
+            new Sample(unlisted, "@IntegrationTest @ActiveProfiles(\"x\") class A { }", true),
+            new Sample(
+                unlisted,
+                String.join(
+                    " ", "@IntegrationTest class A {",
+                    "@DynamicPropertySource static void f(DynamicPropertyRegistry r) { } }"
+                ),
+                true
+            ),
+            new Sample(unlisted, "@IntegrationTest @ContextConfiguration class A { }", true),
+            new Sample(unlisted, "@IntegrationTest @Import(Object.class) class A { }", true),
+            new Sample(unlisted, "@IntegrationTest @ActiveProfiles(\"x\") class Kept { }", false),
+            new Sample(unlisted, "@IntegrationTest class A { }", false),
             new Sample(dirty, "@DirtiesContext class A { }", true),
             new Sample(dirty, "class A { @DirtiesContext void f() { } }", true),
             new Sample(dirty, "class A { void f() { } }", false),
@@ -194,10 +235,37 @@ final class TestSetupArchitectureTest {
 
     private static ArchRule listed(final Set<String> names) {
         return TestSetupArchitectureTest.rule(
-            "be listed only while it has its own @SpringBootTest",
-            item -> names.contains(item.getName()) && !item.isAnnotatedWith(SpringBootTest.class),
+            "be listed only while it has its own context",
+            item -> names.contains(item.getName())
+                && !item.isAnnotatedWith(SpringBootTest.class)
+                && !TestSetupArchitectureTest.own(item),
             names
         );
+    }
+
+    private static ArchRule unlisted(final Set<String> allowed) {
+        return TestSetupArchitectureTest.rule(
+            "have its own context settings only when listed",
+            item -> TestSetupArchitectureTest.own(item) && !allowed.contains(item.getName()),
+            Set.of()
+        );
+    }
+
+    private static boolean own(final JavaClass item) {
+        return item.isAnnotatedWith(IntegrationTest.class)
+            && (TestSetupArchitectureTest.marked(item) || TestSetupArchitectureTest.dynamic(item));
+    }
+
+    private static boolean marked(final JavaClass item) {
+        return TestSetupArchitectureTest.CONTEXT_MARKS.stream().anyMatch(item::isAnnotatedWith);
+    }
+
+    private static boolean dynamic(final JavaClass item) {
+        return item.getMethods().stream().anyMatch(TestSetupArchitectureTest::dynamic);
+    }
+
+    private static boolean dynamic(final JavaMethod method) {
+        return method.isAnnotatedWith(DynamicPropertySource.class);
     }
 
     private static ArchRule forbidden(
@@ -234,6 +302,8 @@ final class TestSetupArchitectureTest {
                         "package fixture.s%d;%n%s%n%s%n", idx,
                         String.join(
                             " ", "import io.github.dostepnykampus.IntegrationTest;",
+                            "import org.springframework.context.annotation.Import;",
+                            "import org.springframework.test.context.*;",
                             "import org.springframework.boot.test.context.*;",
                             "import org.springframework.test.annotation.*;",
                             "import org.springframework.test.context.bean.override.mockito.*;"
