@@ -367,7 +367,7 @@ Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości w
 | wskaźnik braku sieci | `wifi` | „Bez internetu” | znak internetu znany z telefonu i kawiarni (hipoteza) |
 | oznaczenie „dostępne” | `check`; hi-fi: koło z ptaszkiem | „Dostępne” | ptaszek, czyli „tak, da się” |
 | oznaczenie „niedostępne” | `x`; hi-fi: ośmiokąt z krzyżykiem | „Niedostępne” | krzyżyk, czyli „nie”; ośmiokąt jak znak „stop” |
-| oznaczenie „brak danych” | `minus`; hi-fi: romb z poziomą kreską | „Brak danych” | kreska jak w pustej rubryce formularza; inna niż krzyżyk (US17.1) |
+| oznaczenie „brak danych” | `minus`; hi-fi: romb ze znakiem ? | „Brak danych” | znak zapytania, czyli „nie wiadomo”; inny niż ptaszek i krzyżyk, jak w [tokenach](tokeny.md) (US17.1) |
 | uciążliwość 1 | `warning`; hi-fi: trójkąt z „!” | „Utrudnienie” | trójkąt jak drogowy znak ostrzegawczy: uważaj |
 | uciążliwość 2 | `people`; hi-fi: tarcza z dwiema osobami | „Tylko z pomocą” | dwie osoby: przejdziesz z drugą osobą |
 | uciążliwość 3 | `ban`; hi-fi: zapora z ukośnymi pasami | „Blokada” | znak zakazu albo zapora drogowa: tędy nie |
