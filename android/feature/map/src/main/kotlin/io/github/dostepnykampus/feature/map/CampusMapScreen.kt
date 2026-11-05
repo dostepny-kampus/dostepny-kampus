@@ -60,7 +60,7 @@ import io.github.dostepnykampus.core.geo.labelPoint
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.data.campusMapData
+import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 private const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
@@ -137,8 +137,9 @@ fun CampusMapScreen(
 /**
  * Ekran V1 ze stanem [state] z zewnątrz, bez ViewModel; parametry jak w [CampusMapScreen] z ViewModel.
  *
- * @param state katalog, internet (bez niego pod polem symbolu stoi linia „Bez internetu”, US9.1, NFR-10) i ostatni
- *   wybór w przełączniku; bez wyboru „Mapa”, a przy skali czcionki co najmniej 1,5 „Lista budynków” (NFR-19, NFR-20)
+ * @param state katalog, gotowa geometria mapy, internet (bez niego pod polem symbolu stoi linia „Bez internetu”,
+ *   US9.1, NFR-10) i ostatni wybór w przełączniku; bez wyboru „Mapa”, a przy skali czcionki co najmniej 1,5
+ *   „Lista budynków” (NFR-19, NFR-20)
  * @param onListChange wybór w przełączniku: prawda dla „Lista budynków”
  * @param onBuildingClick budynek dotknięty na mapie, wybrany w arkuszu albo na liście (US2)
  * @param modifier wymiary ekranu nadane przez aplikację
@@ -187,6 +188,7 @@ fun CampusMapScreen(
             states.SaveableStateProvider(MAP_STATE) {
                 CampusMap(
                     catalog = catalog,
+                    layers = state.mapData,
                     focus = focus,
                     entrance = entrance,
                     contentPadding = contentPadding,
@@ -203,6 +205,7 @@ fun CampusMapScreen(
 @Composable
 private fun CampusMap(
     catalog: BuildingCatalog?,
+    layers: CampusMapData?,
     focus: String?,
     entrance: MapFocus.Entrance?,
     contentPadding: PaddingValues,
@@ -211,7 +214,6 @@ private fun CampusMap(
     onEmptyMapClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val layers = remember(catalog) { catalog?.let(::campusMapData) }
     val chosen = rememberChosenEntrance(catalog, entrance)
     val data = remember(layers, focus, chosen) { layers?.copy(focus = focus, selectedEntrance = chosen) }
     var camera by rememberSaveable(entrance?.id, stateSaver = CameraSaver) { mutableStateOf<MapCamera?>(null) }
