@@ -67,6 +67,16 @@ class PositionAveragingTest {
     }
 
     @Test
+    fun us6_1_has_accuracy() {
+        assertEquals(
+            listOf(true, false, false, false, false),
+            listOf(4.5, 0.0, -1.0, Double.NaN, Double.POSITIVE_INFINITY).map {
+                fix(longitude = 17.0, latitude = 51.0, accuracy = it, at = 0).hasAccuracy
+            },
+        )
+    }
+
+    @Test
     fun us6_1_no_fix_no_average() {
         assertNull(start.average())
     }

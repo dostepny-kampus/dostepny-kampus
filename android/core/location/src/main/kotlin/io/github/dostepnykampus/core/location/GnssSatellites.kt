@@ -66,9 +66,9 @@ data class Satellite(
  * Nasłuch `GnssStatus` trwa, dopóki ktoś zbiera przepływ, i znika razem z nim, więc działa tylko przy otwartym ekranie
  * (NFR-27). Bez zgody na dokładną lokalizację przepływ kończy się [SecurityException]; o zgodę prosi ekran.
  */
-class GnssSatellites(private val context: Context) {
+class GnssSatellites(private val context: Context) : SatelliteSource {
     /** Wszystkie widoczne satelity po każdej zmianie stanu odbiornika. */
-    fun satellites(): Flow<List<Satellite>> =
+    override fun satellites(): Flow<List<Satellite>> =
         callbackFlow {
             val manager = context.getSystemService(LocationManager::class.java)
             val permission = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
