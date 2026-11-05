@@ -158,6 +158,7 @@ internal fun AppNavigator.BuildingCard(
         onBack = card.onBack,
         onClose = card.onClose,
         onReportEntrance = { report(it) },
+        onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol)) },
         onRetry = onRetry,
     )
 }

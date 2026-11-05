@@ -127,7 +127,7 @@ fun BuildingCardContent(
                     onShowOnMap = onShowOnMap,
                     onClose = onClose,
                 )
-                if (isFullScreen) BuildingFacts(card, onReportEntrance)
+                if (isFullScreen) BuildingFacts(card, onReportEntrance, onShowEntrance)
             }
             if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
         }
@@ -168,19 +168,34 @@ internal fun EntranceSummaryRow(summary: EntranceSummary) {
 }
 
 @Composable
-private fun BuildingFacts(card: BuildingCardUiState.Ready, onReportEntrance: (String) -> Unit) {
+private fun BuildingFacts(
+    card: BuildingCardUiState.Ready,
+    onReportEntrance: (String) -> Unit,
+    onShowEntrance: (String) -> Unit,
+) {
     val common = commonAssessment(card.entrances)
     common?.let { AssessmentLine(it) }
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
-        card.entrances.forEach {
-            EntranceLine(it, withAssessment = common == null, onReportEntrance = onReportEntrance)
+        card.entrances.forEach { entrance ->
+            EntranceLine(
+                listed = entrance,
+                withAssessment = common == null,
+                onReportEntrance = onReportEntrance,
+                onShowEntrance = onShowEntrance,
+            )
         }
     }
 }
 
 @Composable
-private fun EntranceLine(listed: OrderedEntrance, withAssessment: Boolean, onReportEntrance: (String) -> Unit) {
+private fun EntranceLine(
+    listed: OrderedEntrance,
+    withAssessment: Boolean,
+    onReportEntrance: (String) -> Unit,
+    onShowEntrance: (String) -> Unit,
+) {
     val title = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
+    val spokenShow = stringResource(R.string.wizyta_pokaz_czytaj, title)
     val spoken = stringResource(R.string.karta_zglos_czytaj, title)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
         FlowRow(
@@ -199,6 +214,14 @@ private fun EntranceLine(listed: OrderedEntrance, withAssessment: Boolean, onRep
         }
         Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
         if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }
+        if (listed.isRecommended) {
+            PinnedButton(
+                text = stringResource(R.string.wizyta_pokaz),
+                onClick = { onShowEntrance(listed.entrance.id) },
+                modifier = Modifier.fillMaxWidth().semantics { contentDescription = spokenShow },
+                kind = PinnedButtonKind.Tonal,
+            )
+        }
         PinnedButton(
             text = stringResource(R.string.karta_zglos),
             onClick = { onReportEntrance(listed.entrance.id) },
