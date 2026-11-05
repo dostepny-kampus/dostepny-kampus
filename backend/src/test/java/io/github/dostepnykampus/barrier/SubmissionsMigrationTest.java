@@ -1,17 +1,15 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
-import io.github.dostepnykampus.PostgisTestConfiguration;
+import io.github.dostepnykampus.IntegrationTest;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
@@ -20,8 +18,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
  *
  * @since 0.1.0
  */
-@SpringBootTest
-@Import(PostgisTestConfiguration.class)
+@IntegrationTest
 final class SubmissionsMigrationTest {
 
     @Test

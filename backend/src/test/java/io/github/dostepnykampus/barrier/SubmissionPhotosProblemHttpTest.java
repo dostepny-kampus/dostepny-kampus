@@ -13,7 +13,6 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -27,7 +26,6 @@ import tools.jackson.databind.ObjectMapper;
  * @since 0.1.0
  */
 @IntegrationTest
-@Import(RustfsTestConfiguration.class)
 @Transactional
 final class SubmissionPhotosProblemHttpTest {
 
