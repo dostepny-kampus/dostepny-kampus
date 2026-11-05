@@ -40,7 +40,8 @@ private val POLISH = Locale.forLanguageTag("pl-PL")
 /**
  * C1 Pomiar pozycji (US6.1): szukanie satelitów, pomiar 30 s i „Pomiar zakończony”. Dokładność i satelity są
  * tekstem, nie tylko wykresem (NFR-18), a dokładność ma dopisek „szacunek” (NFR-2). „Powtórz pomiar” działa w każdym
- * stanie, bez limitu (NFR-23). Podpowiedź budynku, mapa nieba i „Dalej” przyjdą w kolejnych krokach.
+ * stanie, bez limitu (NFR-23). Bez zgody na lokalizację pokazuje prośbę o nią (NFR-27). Podpowiedź budynku, mapa
+ * nieba i „Dalej” przyjdą w kolejnych krokach.
  *
  * @param onBack „Wstecz” do ekranu, z którego otwarto C1 (NFR-15)
  * @param modifier wymiary nadane przez aplikację
@@ -48,8 +49,10 @@ private val POLISH = Locale.forLanguageTag("pl-PL")
  */
 @Composable
 fun MeasureScreen(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: MeasureViewModel = hiltViewModel()) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
-    MeasureContent(state = state, onRepeat = viewModel::repeat, onBack = onBack, modifier = modifier)
+    WithLocationPermission(onBack = onBack) {
+        val state by viewModel.uiState.collectAsStateWithLifecycle()
+        MeasureContent(state = state, onRepeat = viewModel::repeat, onBack = onBack, modifier = modifier)
+    }
 }
 
 /**
