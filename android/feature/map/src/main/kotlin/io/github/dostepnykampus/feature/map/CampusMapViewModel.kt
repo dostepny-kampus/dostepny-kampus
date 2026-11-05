@@ -15,7 +15,7 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -26,7 +26,8 @@ private const val STOP_TIMEOUT_MS = 5_000L
 /**
  * Stan ekranu V1 „Mapa kampusu” (US1).
  *
- * @property catalog katalog budynków; `null`, dopóki plik konturów się wczytuje
+ * @property catalog katalog budynków; `null`, dopóki plik konturów się wczytuje, potem katalog z pliku, a gdy serwer
+ *   odpowie niepustą listą, katalog z serwera (NFR-10, NFR-11)
  * @property isOnline czy jest internet; na start prawda, żeby linia „Bez internetu” nie mignęła, zanim przyjdzie stan
  *   bieżący (US9.1)
  * @property isListSaved ostatni wybór w przełączniku: prawda dla „Lista budynków”, fałsz dla „Mapa”, `null`, gdy osoba
@@ -39,9 +40,9 @@ data class CampusMapUiState(
 )
 
 /**
- * Stan V1 z katalogu budynków, stanu internetu i zapamiętanego wyboru „Mapa” albo „Lista budynków” (US1, US9.1,
- * NFR-19). Źródła są obserwowane, gdy ekran jest widoczny, i jeszcze 5 s po zniknięciu, więc obrót ekranu nie
- * uruchamia ich od nowa, a monitor sieci nie działa w tle.
+ * Stan V1 z katalogu budynków (najpierw z pliku, potem z serwera), stanu internetu i zapamiętanego wyboru „Mapa” albo
+ * „Lista budynków” (US1, US9.1, NFR-19). Źródła są obserwowane, gdy ekran jest widoczny, i jeszcze 5 s po zniknięciu,
+ * więc obrót ekranu nie uruchamia ich od nowa, a monitor sieci nie działa w tle.
  */
 @HiltViewModel
 class CampusMapViewModel
@@ -54,7 +55,7 @@ class CampusMapViewModel
         /** Bieżący stan ekranu. */
         val uiState: StateFlow<CampusMapUiState> =
             combine(
-                flow = flow<BuildingCatalog?> { emit(repository.catalog()) }.onStart { emit(null) },
+                flow = repository.catalogUpdates().map<BuildingCatalog, BuildingCatalog?> { it }.onStart { emit(null) },
                 flow2 = networkStatus.isOnline(),
                 flow3 = mapListChoice.savedChoice,
                 transform = ::CampusMapUiState,
