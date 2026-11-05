@@ -9,4 +9,7 @@
  *
  * @since 0.1.0
  */
+@NullMarked
 package io.github.dostepnykampus.barrier.persistence;
+
+import org.jspecify.annotations.NullMarked;
