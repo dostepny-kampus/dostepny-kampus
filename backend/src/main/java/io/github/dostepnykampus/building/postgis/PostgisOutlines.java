@@ -25,6 +25,11 @@ public final class PostgisOutlines implements Outlines {
      */
     private final JdbcClient jdbc;
 
+    /**
+     * Tworzy adapter.
+     *
+     * @param jdbc Dostęp do tabeli buildings
+     */
     public PostgisOutlines(final JdbcClient jdbc) {
         this.jdbc = jdbc;
     }
