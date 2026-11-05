@@ -35,7 +35,8 @@ import tools.jackson.databind.node.ArrayNode;
  * Kontury z tym samym symbolem tworzą jeden wielokąt złożony, a kontur
  * z kilkoma symbolami daje osobny budynek dla każdego symbolu, tak jak
  * w aplikacji. Nazwa złożona wyłącznie z symboli budynków albo jej brak
- * to budynek bez nazwy (decyzja 75).
+ * to budynek bez nazwy (decyzja 75). Ta sama reguła działa w aplikacji
+ * w buildingName() w BuildingName.kt (core:geo); obie muszą być zgodne.
  * Istniejący budynek dostaje nowy kontur, nazwę i atrybucję, a poziom
  * szczegółowości zostaje bez zmian.</p>
  *
