@@ -10,7 +10,6 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.Bucket;
@@ -23,7 +22,6 @@ import software.amazon.awssdk.services.s3.model.Bucket;
  * @since 0.1.0
  */
 @IntegrationTest
-@Import(RustfsTestConfiguration.class)
 @TestPropertySource(properties = "dk.photos.bucket=zdjecia-po-starcie")
 final class PhotoBucketStartupTest {
 

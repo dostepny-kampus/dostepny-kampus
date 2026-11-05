@@ -16,7 +16,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -28,7 +27,6 @@ import org.springframework.web.context.WebApplicationContext;
  * @since 0.1.0
  */
 @IntegrationTest
-@Import(RustfsTestConfiguration.class)
 @Transactional
 final class SubmissionPhotosStatusHttpTest {
 
