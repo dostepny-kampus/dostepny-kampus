@@ -18,9 +18,12 @@ data class MapRoute(val focus: MapFocus? = null) : NavKey
 /** Co V1 zaznacza na mapie. */
 @Serializable
 sealed interface MapFocus {
-    /** Budynek o symbolu [symbol], np. `C-13`. */
+    /**
+     * Budynek o symbolu [symbol], np. `C-13`. [isShown]: polecenie „Pokaż budynek na mapie”, po którym kamera staje
+     * na budynku (US2.9); bez niego budynek jest tylko zaznaczony, a widok zostaje, np. po „Wstecz” z V2 (decyzja 83).
+     */
     @Serializable
-    data class Building(val symbol: String) : MapFocus
+    data class Building(val symbol: String, val isShown: Boolean = false) : MapFocus
 
     /**
      * Wejście o identyfikatorze [id] z danych wejść (BR-25), pokazane z ekranu budynku [buildingSymbol]; TalkBack
