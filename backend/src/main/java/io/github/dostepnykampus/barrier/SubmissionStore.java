@@ -29,7 +29,7 @@ import tools.jackson.databind.node.ObjectNode;
  * @since 0.1.0
  */
 @Service
-final class SubmissionStore {
+public final class SubmissionStore {
 
     /**
      * Odczyt zgłoszenia z polami nadanymi przez serwer.

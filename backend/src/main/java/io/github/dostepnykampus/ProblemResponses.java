@@ -16,8 +16,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * Odpowiedzi {@code application/problem+json} (RFC 9457) dla wyjątków
  * rzuconych w obsłudze żądania.
  *
- * <p>{@link InvalidInput} daje 400, {@link MissingResource} 404, oba
- * z opisem wyjątku w {@code detail}. {@link ConflictingState} daje 409
+ * <p>{@link InvalidInput} daje 400, {@link MissingResource} 404,
+ * {@link ForbiddenChange} 403,
+ * wszystkie z opisem wyjątku w {@code detail}. {@link ConflictingState} daje 409
  * z opisem w {@code detail} i bieżącym stanem jako obiektem JSON we właściwości
  * o nazwie {@link ConflictingState#property()}. Pozostały wyjątek daje 500 bez nazwy
  * klasy i komunikatu; trafia tylko do dziennika serwera.
@@ -57,6 +58,11 @@ public final class ProblemResponses {
     ProblemDetail missing(final MissingResource error) {
         this.log.debug("Brak zasobu: {}", error.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.getMessage());
+    }
+
+    @ExceptionHandler
+    static ProblemDetail forbidden(final ForbiddenChange error) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, error.getMessage());
     }
 
     @ExceptionHandler
