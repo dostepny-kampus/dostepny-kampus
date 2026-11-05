@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.building;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Położenie punktu względem budynków kampusu (BR-G2, BR-G4): w konturze,
@@ -13,8 +14,22 @@ import java.util.Objects;
  *
  * @since 0.1.0
  */
-sealed interface Placement
+public sealed interface Placement
     permits Placement.Inside, Placement.Near, Placement.None {
+
+    /**
+     * Symbol budynku, jeśli jakiś jest w zasięgu podpowiedzi.
+     *
+     * @return Symbol budynku albo pusty wynik poza zasięgiem
+     */
+    Optional<String> found();
+
+    /**
+     * Czy punkt leży w konturze budynku.
+     *
+     * @return Prawda tylko dla punktu w konturze
+     */
+    boolean inside();
 
     /**
      * Punkt leży w konturze budynku.
@@ -32,6 +47,16 @@ sealed interface Placement
          */
         public Inside {
             Objects.requireNonNull(symbol, "symbol");
+        }
+
+        @Override
+        public Optional<String> found() {
+            return Optional.of(this.symbol);
+        }
+
+        @Override
+        public boolean inside() {
+            return true;
         }
     }
 
@@ -52,6 +77,16 @@ sealed interface Placement
         public Near {
             Objects.requireNonNull(symbol, "symbol");
         }
+
+        @Override
+        public Optional<String> found() {
+            return Optional.of(this.symbol);
+        }
+
+        @Override
+        public boolean inside() {
+            return false;
+        }
     }
 
     /**
@@ -60,5 +95,15 @@ sealed interface Placement
      * @since 0.1.0
      */
     record None() implements Placement {
+
+        @Override
+        public Optional<String> found() {
+            return Optional.empty();
+        }
+
+        @Override
+        public boolean inside() {
+            return false;
+        }
     }
 }

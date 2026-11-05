@@ -54,7 +54,7 @@ public final class BuildingsController {
         if (BuildingsController.outside(lat, lon)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        return new LocateResults().result(this.query.locate(lat, lon));
+        return new LocateResults(this.query.locate(lat, lon)).result();
     }
 
     /**

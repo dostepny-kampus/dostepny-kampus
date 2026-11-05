@@ -14,19 +14,23 @@ package io.github.dostepnykampus.building;
 final class LocateResults {
 
     /**
+     * Położenie punktu.
+     */
+    private final Placement place;
+
+    LocateResults(final Placement place) {
+        this.place = place;
+    }
+
+    /**
      * Zamienia położenie na odpowiedź REST.
      *
-     * @param place Położenie punktu
      * @return Odpowiedź: symbol i flaga konturu, bez symbolu poza budynkami
      */
-    LocateResult result(final Placement place) {
-        return switch (place) {
-            case Placement.Inside inside ->
-                new LocateResult(inside.symbol(), true);
-            case Placement.Near near ->
-                new LocateResult(near.symbol(), false);
-            case Placement.None none ->
-                new LocateResult(null, false);
-        };
+    LocateResult result() {
+        return new LocateResult(
+            this.place.found().orElse(null),
+            this.place.inside()
+        );
     }
 }

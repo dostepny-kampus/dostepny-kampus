@@ -21,7 +21,7 @@ final class LocateResultsTest {
     void brGTwoMarksPointInsideOutline() {
         MatcherAssert.assertThat(
             "Punkt w konturze musi mieć insideOutline=true",
-            new LocateResults().result(new Placement.Inside("A-1")),
+            new LocateResults(new Placement.Inside("A-1")).result(),
             Matchers.equalTo(new LocateResult("A-1", true))
         );
     }
@@ -30,7 +30,7 @@ final class LocateResultsTest {
     void brGTwoMarksNearPointOutsideOutline() {
         MatcherAssert.assertThat(
             "Punkt blisko konturu musi mieć symbol i insideOutline=false",
-            new LocateResults().result(new Placement.Near("A-1")),
+            new LocateResults(new Placement.Near("A-1")).result(),
             Matchers.equalTo(new LocateResult("A-1", false))
         );
     }
@@ -39,7 +39,7 @@ final class LocateResultsTest {
     void brGFourLeavesFarPointWithoutSymbol() {
         MatcherAssert.assertThat(
             "Punkt poza budynkami nie ma symbolu i insideOutline=false",
-            new LocateResults().result(new Placement.None()),
+            new LocateResults(new Placement.None()).result(),
             Matchers.equalTo(new LocateResult(null, false))
         );
     }
