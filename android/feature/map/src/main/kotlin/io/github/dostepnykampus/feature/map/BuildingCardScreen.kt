@@ -57,6 +57,7 @@ import io.github.dostepnykampus.core.model.EntranceMarking
  * @param onClose „Zamknij” małej karty
  * @param modifier wymiary nadane przez arkusz; mała karta ma wysokość treści, pełny ekran wypełnia całe miejsce
  * @param onReportEntrance „Zgłoś barierę przy wejściu” dla identyfikatora wejścia
+ * @param onShowEntrance „Pokaż wejście na mapie” dla identyfikatora wejścia zalecanego
  * @param viewModel stan karty; w aplikacji z grafu Hilt, w testach z podróbką katalogu
  */
 @Composable
@@ -69,6 +70,7 @@ fun BuildingCardScreen(
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
     onReportEntrance: (String) -> Unit = {},
+    onShowEntrance: (String) -> Unit = {},
     viewModel: BuildingCardViewModel =
         hiltViewModel<BuildingCardViewModel, BuildingCardViewModel.Factory>(
             creationCallback = { factory -> factory.create(symbol) },
@@ -88,6 +90,7 @@ fun BuildingCardScreen(
         onReportEntrance = onReportEntrance,
         onRetry = viewModel::retry,
         modifier = modifier,
+        onShowEntrance = onShowEntrance,
     )
 }
 
@@ -105,6 +108,7 @@ fun BuildingCardContent(
     onReportEntrance: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onShowEntrance: (String) -> Unit = {},
 ) {
     val isFullScreen = mode != CardMode.Compact
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {

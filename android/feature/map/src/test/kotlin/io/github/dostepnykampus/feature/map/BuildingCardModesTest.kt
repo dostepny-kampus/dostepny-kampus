@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
@@ -40,6 +41,7 @@ private const val CLOSE = "Zamknij"
 private const val BACK = "Wstecz"
 private const val ROW = "Wejście dostępne"
 private const val REPORT = "Zgłoś barierę przy wejściu"
+private const val SHOW_ENTRANCE = "Pokaż wejście na mapie"
 private const val UNNAMED = "Wejście bez nazwy w danych"
 private val ENTRANCES = listOf("Główne" to "node/1", "Schody" to "node/2", UNNAMED to "node/3")
 
@@ -53,6 +55,7 @@ class BuildingCardModesTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val mode = mutableStateOf(CardMode.Compact)
+    private val symbol = mutableStateOf("A-1")
     private val calls = mutableListOf<String>()
     private val online = MutableStateFlow(true)
 
@@ -161,19 +164,65 @@ class BuildingCardModesTest {
         compose.onAllNodes(hasContentDescription(REPORT, substring = true)).assertCountEquals(0)
     }
 
+    // Wiersz: V2 pełny ekran: „Pokaż wejście na mapie” tylko przy wejściu zalecanym, pod jego opisem, w przewijanej
+    //   treści; TalkBack czyta „Pokaż wejście na mapie: »nazwa wejścia«”; dotknięcie → onShowEntrance z id tego
+    //   wejścia, US3.3, US2.1, BR-25, NFR-18.
+    @Test
+    fun us3_3_show_recommended_only() {
+        card(CardMode.Direct)
+        listOf(CardMode.Direct, CardMode.Expanded).forEach { fullScreen ->
+            show(fullScreen)
+            compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
+            val shown = compose.onNode(hasClickAction() and hasContentDescription("$SHOW_ENTRANCE: »Główne«"))
+            shown.assert(hasText(SHOW_ENTRANCE) and inScroll)
+            val tops = listOf(compose.onNodeWithText("Główne"), shown, compose.onNodeWithText("Schody"))
+            val ys = tops.map { it.getUnclippedBoundsInRoot().top }
+            assertTrue("„Główne”, czynność, „Schody” od góry, a są na $ys", ys.zipWithNext().all { (a, b) -> a < b })
+        }
+        compose.onNode(hasContentDescription("$SHOW_ENTRANCE: »Główne«")).performClick()
+        assertEquals(listOf("show node/1"), calls)
+    }
+
+    // Wiersz: V2 pełny ekran budynku bez wejścia zalecanego (każde „Niedostępne”) → bez „Pokaż wejście na mapie”,
+    //   US3.3, BR-25.
+    @Test
+    fun us3_3_no_show_no_recommended() {
+        card(CardMode.Direct)
+        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
+        symbol.value = "B-4"
+        compose.waitUntil { compose.onAllNodes(hasText("Zamknięte")).fetchSemanticsNodes().isNotEmpty() }
+        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(0)
+    }
+
+    // Wiersz: V2, mała karta nie ma listy wejść, więc nie ma „Pokaż wejście na mapie”; pełny ekran ma, US3.3,
+    //   decyzja 115.
+    @Test
+    fun us3_3_compact_has_no_show() {
+        card(CardMode.Direct)
+        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
+        show(CardMode.Compact)
+        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(0)
+        compose.onAllNodes(hasContentDescription(SHOW_ENTRANCE, substring = true)).assertCountEquals(0)
+    }
+
     private fun card(start: CardMode) {
         mode.value = start
-        val viewModel = BuildingCardViewModel(symbol = "A-1", repository = repository, networkStatus = { online })
         compose.setContent {
+            val shown = symbol.value
+            val viewModel =
+                remember(shown) {
+                    BuildingCardViewModel(symbol = shown, repository = repository, networkStatus = { online })
+                }
             DostepnyKampusTheme {
                 BuildingCardScreen(
-                    symbol = "A-1",
+                    symbol = shown,
                     mode = mode.value,
                     onCheckEntrances = { calls += "check" },
                     onShowOnMap = { calls += "map" },
                     onBack = { calls += "back" },
                     onClose = { calls += "close" },
                     onReportEntrance = { calls += "report $it" },
+                    onShowEntrance = { calls += "show $it" },
                     viewModel = viewModel,
                 )
             }
@@ -201,6 +250,10 @@ class BuildingCardModesTest {
                     entrance(id = "node/1", tags = """"entrance":"main","wheelchair":"yes","ref":"Główne""""),
                     entrance(id = "node/2", tags = """"entrance":"yes","wheelchair":"no","ref":"Schody""""),
                     entrance(id = "node/3", tags = """"entrance":"yes","wheelchair":"no""""),
+                    """{"type":"Feature","properties":{"kind":"building","symbols":["B-4"],"name":"Budynek B",""" +
+                        """"osm_id":"way/4"},""" +
+                        """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}""",
+                    entrance(id = "node/4", tags = """"wheelchair":"no","ref":"Zamknięte"""", symbol = "B-4"),
                 ).joinToString(
                     separator = ",",
                     prefix = """{"type":"FeatureCollection","attribution":"©","features":[""",
@@ -208,8 +261,8 @@ class BuildingCardModesTest {
                 )
             }
 
-        fun entrance(id: String, tags: String): String =
-            """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"$id",$tags},""" +
+        fun entrance(id: String, tags: String, symbol: String = "A-1"): String =
+            """{"type":"Feature","properties":{"kind":"entrance","symbols":["$symbol"],"osm_id":"$id",$tags},""" +
                 """"geometry":{"type":"Point","coordinates":[0,0]}}"""
     }
 }
