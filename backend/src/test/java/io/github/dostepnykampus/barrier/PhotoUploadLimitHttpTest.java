@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.OpenApiContract;
 import jakarta.servlet.ServletInputStream;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
@@ -117,6 +118,7 @@ final class PhotoUploadLimitHttpTest {
             request.addHeader(HttpHeaders.CONTENT_LENGTH, declared);
         }
         return PhotoUploadLimitHttpTest.mvc(context).perform(servlet -> request)
+            .andExpect(new OpenApiContract())
             .andReturn().getResponse();
     }
 
@@ -127,7 +129,8 @@ final class PhotoUploadLimitHttpTest {
             .param("id", id).update();
         return PhotoUploadLimitHttpTest.mvc(context).perform(
             MockMvcRequestBuilders.get("/submissions/{id}/photos/{photo}", id, id)
-        ).andReturn().getResponse().getStatus();
+        ).andExpect(new OpenApiContract())
+            .andReturn().getResponse().getStatus();
     }
 
     private static MockMvc mvc(final WebApplicationContext context) {

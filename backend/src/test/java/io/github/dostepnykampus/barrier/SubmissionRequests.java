@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.OpenApiContract;
 import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -61,7 +62,9 @@ final class SubmissionRequests {
      */
     MockHttpServletResponse get(final String uri) throws Exception {
         return MockMvcBuilders.webAppContextSetup(this.context).build()
-            .perform(MockMvcRequestBuilders.get(uri)).andReturn().getResponse();
+            .perform(MockMvcRequestBuilders.get(uri))
+            .andExpect(new OpenApiContract())
+            .andReturn().getResponse();
     }
 
     private MockHttpServletResponse send(
@@ -69,6 +72,7 @@ final class SubmissionRequests {
     ) throws Exception {
         return MockMvcBuilders.webAppContextSetup(this.context).build().perform(
             request.contentType(MediaType.APPLICATION_JSON).content(json)
-        ).andReturn().getResponse();
+        ).andExpect(new OpenApiContract())
+            .andReturn().getResponse();
     }
 }
