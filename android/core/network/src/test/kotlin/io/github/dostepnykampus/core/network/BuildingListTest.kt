@@ -32,17 +32,23 @@ class BuildingListTest {
     @Test
     fun us1_server_without_name() {
         val listed = json.decodeFromString<BuildingListDto>(LIST.replace(oldValue = NAME_FIELD, newValue = ""))
-        assertEquals(null, listed.toModel().buildings.single().building.name)
+        val listedAll = listed.toModel().buildings
+        val listedBuilding = listedAll.single().building
+        assertEquals(null, listedBuilding.name)
         val card = json.decodeFromString<BuildingDetailsDto>(DETAILS.replace(oldValue = NAME_FIELD, newValue = ""))
-        assertEquals(null, card.toModel().building.name)
+        val cardBuilding = card.toModel().building
+        assertEquals(null, cardBuilding.name)
     }
 
     @Test
-    fun us1_server_name_that_looks_like_symbol_is_kept() {
+    fun us1_server_symbol_name_kept() {
         val listed = json.decodeFromString<BuildingListDto>(LIST.replace(oldValue = NAME, newValue = "C-13"))
-        assertEquals("C-13", listed.toModel().buildings.single().building.name)
+        val listedAll = listed.toModel().buildings
+        val listedBuilding = listedAll.single().building
+        assertEquals("C-13", listedBuilding.name)
         val card = json.decodeFromString<BuildingDetailsDto>(DETAILS.replace(oldValue = NAME, newValue = "C-3/C-4"))
-        assertEquals("C-3/C-4", card.toModel().building.name)
+        val cardBuilding = card.toModel().building
+        assertEquals("C-3/C-4", cardBuilding.name)
     }
 
     @Test
