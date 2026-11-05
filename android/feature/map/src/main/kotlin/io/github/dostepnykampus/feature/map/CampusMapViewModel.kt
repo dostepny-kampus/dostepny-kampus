@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runInterruptible
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -56,13 +56,14 @@ data class CampusMapUiState(
  * Stan V1 z katalogu budynków (najpierw z pliku, potem z serwera), stanu internetu i zapamiętanego wyboru „Mapa” albo
  * „Lista budynków” (US1, US9.1, NFR-19). Źródła są obserwowane, gdy ekran jest widoczny, i jeszcze 5 s po zniknięciu,
  * więc obrót ekranu nie uruchamia ich od nowa, a monitor sieci nie działa w tle. Geometrię mapy liczy [geometry]
- * w [computeContext], raz na katalog; zamknięcie ekranu przerywa liczenie (NFR-11).
+ * w [computeContext], raz na katalog. Zamknięcie ekranu i nowszy katalog przerywają trwające liczenie przerwaniem
+ * wątku, więc [geometry] musi je respektować (NFR-11).
  *
  * @param repository katalog budynków: najpierw plik, potem serwer
  * @param networkStatus stan internetu
  * @param mapListChoice zapamiętany wybór „Mapa” albo „Lista budynków”
  * @property computeContext kontekst obliczeń geometrii; w aplikacji `Dispatchers.Default`
- * @property geometry funkcja licząca dane mapy z katalogu; w aplikacji `campusMapData`
+ * @property geometry funkcja licząca dane mapy z katalogu, przerywalna przerwaniem wątku; w aplikacji `campusMapData`
  */
 @HiltViewModel
 class CampusMapViewModel(
@@ -94,7 +95,8 @@ class CampusMapViewModel(
         mapListChoice: MapListChoice,
     ) : this(repository, networkStatus, mapListChoice, Dispatchers.Default, ::campusMapData)
 
-    // Katalog od razu, jego geometria z kontekstu obliczeń: raz na katalog, a nowszy katalog przerywa liczenie starego.
+    // Katalog od razu, jego geometria z kontekstu obliczeń: raz na katalog. Nowszy katalog i zamknięcie ekranu
+    // przerywają liczenie przerwaniem wątku (runInterruptible), więc nowe nie czeka na koniec starego.
     // Do czasu policzenia nowej mapa zostaje na poprzedniej, więc kontury nie znikają przy zmianie katalogu (NFR-11).
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun Flow<BuildingCatalog?>.withGeometry(): Flow<Pair<BuildingCatalog?, CampusMapData?>> =
@@ -104,7 +106,7 @@ class CampusMapViewModel(
                 transformLatest { catalog ->
                     emit(catalog to shown)
                     if (catalog != null) {
-                        shown = withContext(computeContext) { geometry(catalog) }
+                        shown = runInterruptible(computeContext) { geometry(catalog) }
                         emit(catalog to shown)
                     }
                 },
