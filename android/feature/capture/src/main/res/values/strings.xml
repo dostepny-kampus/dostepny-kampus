@@ -16,4 +16,8 @@
     <string name="system_navic">NavIC</string>
     <string name="system_sbas">SBAS</string>
     <string name="system_inny">inne</string>
+    <string name="pomiar_zgoda_tekst">Do pomiaru potrzebna jest dokładna lokalizacja telefonu. Aplikacja używa jej tylko na tym ekranie.</string>
+    <string name="pomiar_zgoda_przycisk">Zezwól na lokalizację</string>
+    <string name="pomiar_zgoda_odmowa">Bez zgody na dokładną lokalizację pomiar nie zadziała. Możesz ją włączyć w ustawieniach aplikacji.</string>
+    <string name="pomiar_otworz_ustawienia">Otwórz ustawienia</string>
 </resources>

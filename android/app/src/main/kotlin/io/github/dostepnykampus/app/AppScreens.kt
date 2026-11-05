@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.app
@@ -30,6 +30,8 @@ import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
+import io.github.dostepnykampus.feature.capture.MeasureScreen
+import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.HelpScreen
@@ -91,7 +93,7 @@ private typealias Action = Pair<String, () -> Unit>
 
 /**
  * Ekran trasy [route] z czynnościami podpiętymi do nawigatora. V1 to mapa z `feature:map` ze stanem w ViewModel
- * z grafu Hilt, V2 karta budynku, V3 „Którędy wejść” i V5 z `feature:help`, reszta to zaślepki:
+ * z grafu Hilt, V2 karta budynku, V3 „Którędy wejść”, C1 z `feature:capture` i V5 z `feature:help`, reszta to zaślepki:
  * nagłówek „Wstecz” z nazwą z listy ekranów i przyciski czynności bez danych. Ekran z `feature:*`
  * zastępuje swoją gałąź i dostaje czynności jako lambdy. Zaślepki nie zapamiętują stanu, więc nie muszą się
  * odświeżać osobno od nawigatora.
@@ -103,6 +105,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is BuildingRoute -> HiltBuildingCard(route.symbol)
         is EntrancesRoute -> Entrances(route.symbol)
         is ReportRoute -> ReportStub(route.step)
+        MeasureRoute -> MeasureScreen(onBack = { back() })
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute -> ToMapStub(title = R.string.nav_konto, action = R.string.nie_teraz)
         AccountRoute -> Stub(title = stringResource(if (hasWork) R.string.nav_konto_i_praca else R.string.nav_konto))

@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.app
@@ -31,9 +31,9 @@ class PermissionsTest {
     }
 
     @Test
-    fun nfr27_no_location_before_c1_v4() {
-        assertFalse(Manifest.permission.ACCESS_FINE_LOCATION in requested)
-        assertFalse(Manifest.permission.ACCESS_COARSE_LOCATION in requested)
+    fun nfr27_foreground_location() {
+        assertTrue(Manifest.permission.ACCESS_FINE_LOCATION in requested)
+        assertTrue(Manifest.permission.ACCESS_COARSE_LOCATION in requested)
         assertFalse(Manifest.permission.ACCESS_BACKGROUND_LOCATION in requested)
     }
 }
