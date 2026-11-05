@@ -28,5 +28,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Wysyłka kolejki zgłoszeń z poprzedniego procesu zaraz po starcie (NFR-6). -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="io.github.dostepnykampus.app.SubmissionSyncInitializer"
+                android:value="androidx.startup" />
+        </provider>
     </application>
 </manifest>
