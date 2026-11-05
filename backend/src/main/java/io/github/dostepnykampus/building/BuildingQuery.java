@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
@@ -15,13 +15,16 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Odczyt budynków z tabeli buildings do listy na mapie (US1) i ich wejść
- * z tabeli entrances na kartę budynku (US2).
+ * Odczyt REST budynków z tabeli buildings: lista na mapie (US1), podpowiedź
+ * budynku dla punktu (BR-G4) i karta budynku z wejściami z tabeli entrances
+ * (US2). Wejścia karty są czytane osobnym zapytaniem po zmapowaniu wiersza
+ * budynku. Wąskie zawieranie punktu dla innych modułów jest w
+ * {@link PostgisOutlines}.
  *
  * @since 0.1.0
  */
 @Service
-final class BuildingQuery implements Outlines {
+final class BuildingQuery {
 
     /**
      * Promień podpowiedzi budynku w metrach, większy niż błąd GNSS 15 m (NFR-3).
@@ -41,13 +44,6 @@ final class BuildingQuery implements Outlines {
     BuildingQuery(final JdbcClient jdbc, final ObjectMapper mapper) {
         this.jdbc = jdbc;
         this.mapper = mapper;
-    }
-
-    @Override
-    public Optional<String> containing(final double lat, final double lon) {
-        final LocateResult hit = this.locate(lat, lon);
-        return Optional.ofNullable(hit.buildingSymbol())
-            .filter(symbol -> hit.insideOutline());
     }
 
     BuildingList listBuildings() {
@@ -93,7 +89,18 @@ final class BuildingQuery implements Outlines {
             FROM buildings
             WHERE symbol = :symbol
             """
-        ).param("symbol", symbol).query(this::card);
+        ).param("symbol", symbol)
+            .query((rows, num) -> this.one(rows))
+            .optional()
+            .map(
+                item -> new BuildingCard(
+                    item.symbol(),
+                    item.name(),
+                    item.detailLevel(),
+                    item.outline(),
+                    this.entrances(item.symbol())
+                )
+            );
     }
 
     private List<Entrance> entrances(final String symbol) {
@@ -142,25 +149,6 @@ final class BuildingQuery implements Outlines {
             BuildingQuery.text(rows, "detail_level"),
             this.mapper.readTree(BuildingQuery.text(rows, "outline"))
         );
-    }
-
-    private Optional<BuildingCard> card(final ResultSet rows) throws SQLException {
-        final Optional<BuildingCard> found;
-        if (rows.next()) {
-            final Building item = this.one(rows);
-            found = Optional.of(
-                new BuildingCard(
-                    item.symbol(),
-                    item.name(),
-                    item.detailLevel(),
-                    item.outline(),
-                    this.entrances(item.symbol())
-                )
-            );
-        } else {
-            found = Optional.empty();
-        }
-        return found;
     }
 
     private static LocateResult hit(final ResultSet rows) throws SQLException {
