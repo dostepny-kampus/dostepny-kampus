@@ -22,9 +22,12 @@ sealed interface MapFocus {
     @Serializable
     data class Building(val symbol: String) : MapFocus
 
-    /** Wejście o identyfikatorze [id] z danych wejść (BR-25). */
+    /**
+     * Wejście o identyfikatorze [id] z danych wejść (BR-25), pokazane z ekranu budynku [buildingSymbol]; TalkBack
+     * czyta ten budynek także dla wejścia wspólnego kilku budynków (decyzja 135).
+     */
     @Serializable
-    data class Entrance(val id: String) : MapFocus
+    data class Entrance(val id: String, val buildingSymbol: String) : MapFocus
 }
 
 /**
