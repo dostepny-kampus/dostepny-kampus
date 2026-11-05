@@ -26,6 +26,7 @@ import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.start.FirstLaunchRepository
 import io.github.dostepnykampus.core.data.start.startDataStore
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
+import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
 import io.github.dostepnykampus.core.database.BuildingCacheDao
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.network.BuildingsApi
@@ -79,13 +80,23 @@ object DataModule {
     @Singleton
     fun roles(): RoleProvider = GuestRoleProvider
 
+    /** Planowanie wysyłki kolejki po powrocie sieci (NFR-6); start aplikacji zwołuje je osobno. */
+    @Provides
+    @Singleton
+    fun submissionSync(app: Application): SubmissionSyncScheduler = SubmissionSyncScheduler(app)
+
     /** Kolejka zgłoszeń: zapis w bazie Room, wysyłka klientem zgłoszeń (NFR-5, US9.2). */
     @Provides
     @Singleton
-    fun submissionQueue(api: SubmissionsApi, store: PendingSubmissionDao): SubmissionQueue =
+    fun submissionQueue(
+        api: SubmissionsApi,
+        store: PendingSubmissionDao,
+        sync: SubmissionSyncScheduler,
+    ): SubmissionQueue =
         SubmissionQueue(
             store = store,
             create = api::create,
             putPhoto = api::putPhoto,
+            onSaved = sync::schedule,
         )
 }
