@@ -23,6 +23,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.symbolsOf
 import org.maplibre.android.MapLibre
@@ -90,9 +91,7 @@ object MapLibreMapView : CampusMapView {
         }
         DisposableEffect(map, style, labelSize) {
             map?.setStyle(Style.Builder().fromJson(style)) { loaded ->
-                data.labels.forEach { label ->
-                    loaded.addImage(label, labelImage(label, colors, labelSize))
-                }
+                loaded.addMapImages(data = data, colors = colors, density = density.density, labelSize = labelSize)
             }
             onDispose {}
         }
@@ -153,4 +152,12 @@ object MapLibreMapView : CampusMapView {
     }
 
     private fun isNativeMapAvailable(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess
+}
+
+// Podpisy konturów, znaki wejść oraz pinezka i podpis zaznaczonego wejścia: obrazy, bo napisy ze stylu wymagają sieci.
+internal fun Style.addMapImages(data: CampusMapData, colors: MapColors, density: Float, labelSize: Float) {
+    data.labels.forEach { label -> addImage(label, labelImage(label, colors, labelSize)) }
+    val selected = data.selectedEntrance
+    entranceImages(selected = selected, colors = colors, density = density, labelSize = labelSize)
+        .forEach { (name, image) -> addImage(name, image) }
 }

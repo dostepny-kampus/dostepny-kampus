@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 /** Styl mapy V1 z wejściami z syntetycznego katalogu „Budynek testowy” (nie dane PWr): US2.1, US3.3, decyzja 134. */
@@ -67,7 +66,6 @@ class CampusMapEntrancesStyleTest {
 
     // Wiersz E1: warstwa znaków wejść; obraz znaku zależy od oznaczenia, więc kształt, nie sam kolor.
     @Test
-    @Disabled("wejścia na mapie jeszcze nie działają, poprawka w następnym PR")
     fun us2_1_entrance_marks_layer() {
         val marks = style().layer(ENTRANCES_LAYER)
         assertNotNull(marks, "brak warstwy znaków wejść")
@@ -78,7 +76,6 @@ class CampusMapEntrancesStyleTest {
 
     // Wiersz E2 (O2, O4): pinezka czubkiem (dół znaku) w punkcie wejścia, z podpisem z nazwą.
     @Test
-    @Disabled("wejścia na mapie jeszcze nie działają, poprawka w następnym PR")
     fun us3_3_pin_tip_at_entrance() {
         val chosen = style(pin)
         val layer = chosen.layer(ENTRANCE_PIN_LAYER)
@@ -91,7 +88,6 @@ class CampusMapEntrancesStyleTest {
 
     // Wiersz E2 (O5): przy zaznaczeniu wszystkie znaki zostają, bez filtra.
     @Test
-    @Disabled("wejścia na mapie jeszcze nie działają, poprawka w następnym PR")
     fun us3_3_marks_stay_when_chosen() {
         val marks = style(pin).layer(ENTRANCES_LAYER)
         assertNotNull(marks, "brak warstwy znaków wejść")

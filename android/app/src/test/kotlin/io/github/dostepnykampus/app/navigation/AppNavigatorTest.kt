@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 /** Testy przejść; komentarz nad testem bez scenariusza podaje wiersz tabeli mapy nawigacji (ekran, czynność, AC/BR). */
@@ -328,7 +327,6 @@ class AppNavigatorTest {
     // Wiersze: V3, „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem w widoku „Mapa”, US2.1, decyzja 135;
     // pasek, ponowne „Mapa” → V1, NFR-15, nie zmienia wyboru drugi raz, decyzja 118.
     @Test
-    @Disabled("wejście na mapie jeszcze nie działa, poprawka w następnym PR")
     fun us2_1_entrance_chooses_map() {
         mapChoiceNavigator().run {
             showOnMap(MapFocus.Entrance(id = "A-1-glowne", buildingSymbol = "A-1"))

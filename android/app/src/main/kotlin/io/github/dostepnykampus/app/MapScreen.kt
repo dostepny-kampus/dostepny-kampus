@@ -46,6 +46,7 @@ internal fun AppNavigator.MapScreen(
         onListChange = onListChange,
         onBuildingClick = { openBuilding(it) },
         focus = (focus as? MapFocus.Building)?.symbol,
+        entrance = focus as? MapFocus.Entrance,
         contentPadding = LocalSheetPadding.current,
         onEmptyMapClick = { closeCardOnEmptyMap() },
         onListBuildingClick = { openBuildingFromList(it, accessibility.isTouchExplorationEnabled) },
