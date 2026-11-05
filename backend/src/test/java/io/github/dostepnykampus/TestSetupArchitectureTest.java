@@ -178,8 +178,10 @@ final class TestSetupArchitectureTest {
             new Sample(unlisted, "@IntegrationTest @ActiveProfiles(\"x\") class A { }", true),
             new Sample(
                 unlisted,
-                "@IntegrationTest class A { @DynamicPropertySource static void f("
-                + "DynamicPropertyRegistry r) { } }",
+                String.join(
+                    " ", "@IntegrationTest class A {",
+                    "@DynamicPropertySource static void f(DynamicPropertyRegistry r) { } }"
+                ),
                 true
             ),
             new Sample(unlisted, "@IntegrationTest @ContextConfiguration class A { }", true),
@@ -249,12 +251,11 @@ final class TestSetupArchitectureTest {
     }
 
     private static boolean own(final JavaClass item) {
-        return item.isAnnotatedWith(IntegrationTest.class) && (
-            TestSetupArchitectureTest.CONTEXT_MARKS.stream().anyMatch(item::isAnnotatedWith)
-            || item.getMethods().stream().anyMatch(
-                method -> method.isAnnotatedWith(DynamicPropertySource.class)
-            )
-        );
+        final boolean marked = TestSetupArchitectureTest.CONTEXT_MARKS.stream()
+            .anyMatch(item::isAnnotatedWith);
+        final boolean dynamic = item.getMethods().stream()
+            .anyMatch(method -> method.isAnnotatedWith(DynamicPropertySource.class));
+        return item.isAnnotatedWith(IntegrationTest.class) && (marked || dynamic);
     }
 
     private static ArchRule forbidden(
