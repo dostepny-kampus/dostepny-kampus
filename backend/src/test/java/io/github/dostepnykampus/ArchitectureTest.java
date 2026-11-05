@@ -64,17 +64,27 @@ final class ArchitectureTest {
     @Test
     void errorFiveKeepsErrorTypesFreeOfWebAndJson() {
         Assertions.assertDoesNotThrow(
-            () -> ArchRuleDefinition.noClasses()
-                .that().areAssignableTo(InvalidInput.class)
-                .or().areAssignableTo(MissingResource.class)
-                .or().areAssignableTo(ConflictingState.class)
-                .should().dependOnClassesThat().resideInAnyPackage(
-                    "org.springframework.web..", "org.springframework.http..",
-                    "tools.jackson..", "com.fasterxml.jackson.."
-                )
-                .check(ArchitectureTest.classes()),
+            () -> ArchitectureTest.errorTypes().check(ArchitectureTest.classes()),
             "Typ błędu zależy od Spring Web albo Jacksona"
         );
+    }
+
+    /**
+     * Reguła E5: typy błędów bez Spring Web i Jacksona.
+     *
+     * @return Reguła, także dla przykładu negatywnego strażnika zgłoszeń
+     */
+    static ArchRule errorTypes() {
+        return ArchRuleDefinition.noClasses()
+            .that().areAssignableTo(InvalidInput.class)
+            .or().areAssignableTo(MissingResource.class)
+            .or().areAssignableTo(ConflictingState.class)
+            .or().areAssignableTo(ForbiddenChange.class)
+            .should().dependOnClassesThat().resideInAnyPackage(
+                "org.springframework.web..", "org.springframework.http..",
+                "tools.jackson..", "com.fasterxml.jackson.."
+            )
+            .allowEmptyShould(false);
     }
 
     private static ArchRule layers() {
