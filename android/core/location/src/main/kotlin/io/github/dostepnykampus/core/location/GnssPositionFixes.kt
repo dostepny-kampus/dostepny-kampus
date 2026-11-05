@@ -30,9 +30,9 @@ private const val NANOS_IN_MILLI = 1_000_000L
  * ktoś zbiera przepływ, i znika razem z nim, więc lokalizacja działa tylko przy otwartym ekranie (NFR-27). Bez
  * zgody na dokładną lokalizację przepływ kończy się [SecurityException]; o zgodę prosi ekran.
  */
-class GnssPositionFixes(private val context: Context) {
+class GnssPositionFixes(private val context: Context) : PositionSource {
     /** Odczyty od teraz, aż do przerwania zbierania; czas odczytu z zegara monotonicznego telefonu. */
-    fun fixes(): Flow<PositionFix> =
+    override fun fixes(): Flow<PositionFix> =
         callbackFlow {
             val manager = context.getSystemService(LocationManager::class.java)
             val permission = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
