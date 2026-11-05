@@ -18,7 +18,10 @@ import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.selectedEntrance
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
-// Wejście [entrance] z katalogu jako zaznaczenie na mapie; podpis zastępczy, gdy dane nie mają nazwy (decyzja 134).
+/**
+ * Wejście [entrance] z [catalog] jako zaznaczenie na mapie; `null` bez katalogu, bez wejścia albo gdy katalog go
+ * nie zna. Wejście bez nazwy dostaje podpis „Wejście bez nazwy w danych” (US3.3, decyzja 134).
+ */
 @Composable
 internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocus.Entrance?): SelectedEntrance? {
     val unnamed = stringResource(R.string.karta_bez_nazwy)
@@ -36,7 +39,7 @@ internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocu
     }
 }
 
-// Natywna mapa nie ma opisu pinezki, więc TalkBack czyta zaznaczone wejście i budynek ekranu z tego węzła (NFR-18).
+/** * Węzeł dla TalkBack: natywna mapa nie opisuje pinezki, więc czytany jest tekst „Zaznaczone wejście: »nazwa«, * budynek X” dla [chosen], z budynkiem ekranu (NFR-18, decyzja 135). */
 @Composable
 internal fun EntranceDescription(chosen: SelectedEntrance) {
     val text = stringResource(R.string.mapa_zaznaczone_wejscie, chosen.label, chosen.buildingSymbol)
