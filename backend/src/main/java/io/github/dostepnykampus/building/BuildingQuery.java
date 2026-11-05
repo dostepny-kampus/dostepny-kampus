@@ -16,10 +16,10 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Odczyt REST budynków z tabeli buildings: lista na mapie (US1), podpowiedź
- * budynku dla punktu (BR-G4) i karta budynku z wejściami z tabeli entrances
+ * budynku dla punktu (BR-G2) i karta budynku z wejściami z tabeli entrances
  * (US2). Wejścia karty są czytane osobnym zapytaniem po zmapowaniu wiersza
  * budynku. Wąskie zawieranie punktu dla innych modułów jest w
- * {@link PostgisOutlines}.
+ * {@code PostgisOutlines} w podpakiecie postgis.
  *
  * @since 0.1.0
  */

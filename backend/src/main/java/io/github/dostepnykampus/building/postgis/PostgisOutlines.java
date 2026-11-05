@@ -3,8 +3,9 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.building;
+package io.github.dostepnykampus.building.postgis;
 
+import io.github.dostepnykampus.building.Outlines;
 import java.util.Optional;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 /**
  * Kontury budynków w PostGIS dla innych modułów (BR-14): tylko zawieranie
  * punktu w konturze, bez promienia podpowiedzi i bez odpowiedzi REST.
+ * Przy nachodzących konturach wygrywa najmniejszy symbol.
  *
  * @since 0.1.0
  */
@@ -23,7 +25,7 @@ public final class PostgisOutlines implements Outlines {
      */
     private final JdbcClient jdbc;
 
-    PostgisOutlines(final JdbcClient jdbc) {
+    public PostgisOutlines(final JdbcClient jdbc) {
         this.jdbc = jdbc;
     }
 
