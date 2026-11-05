@@ -14,12 +14,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 /**
- * Test na pełnym kontekście aplikacji z bazą PostGIS w kontenerze.
+ * Test na pełnym kontekście aplikacji z bazą PostGIS i magazynem RustFS w kontenerach.
  *
  * <p>Wszystkie testy z tą adnotacją mają ten sam zestaw konfiguracji, więc
- * Spring buduje jeden kontekst i jeden kontener bazy na cały przebieg.
- * Zestaw obejmuje serwer na losowym porcie, bazę PostGIS oraz punkty
- * HTTP tylko dla testów: {@code FailingController} i
+ * Spring buduje jeden kontekst i po jednym kontenerze bazy i magazynu na cały przebieg.
+ * Zestaw obejmuje serwer na losowym porcie, bazę PostGIS, magazyn zdjęć
+ * RustFS oraz punkty HTTP tylko dla testów: {@code FailingController} i
  * {@code StrictJsonHttpTest.Binding}, których trasy są poza kontraktem.
  * Używaj jej w każdym teście, który potrzebuje kontekstu Springa; nie
  * dodawaj własnego {@code @SpringBootTest}, {@code @DirtiesContext} ani
@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Import;
 @Import(
     {
         PostgisTestConfiguration.class,
+        RustfsTestConfiguration.class,
         FailingController.class,
         StrictJsonHttpTest.Binding.class
     }

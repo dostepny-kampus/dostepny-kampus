@@ -5,13 +5,11 @@
  */
 package io.github.dostepnykampus.barrier;
 
-import io.github.dostepnykampus.PostgisTestConfiguration;
+import io.github.dostepnykampus.IntegrationTest;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -26,8 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @since 0.1.0
  */
-@SpringBootTest
-@Import(PostgisTestConfiguration.class)
+@IntegrationTest
 @Transactional
 final class SubmissionPointHttpTest {
 
