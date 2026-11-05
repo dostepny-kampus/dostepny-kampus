@@ -13,6 +13,7 @@ import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.stream.Stream;
 import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
@@ -46,12 +47,14 @@ final class BarrierArchitectureTest {
     /**
      * Korzeń pakietów przykładów negatywnych.
      */
-    private static final String SAMPLES = "io.github.dostepnykampus.archsamples";
+    private static final String SAMPLES =
+        "io.github.dostepnykampus.archsamples";
 
     /**
      * Port repozytorium zgłoszeń.
      */
-    private static final String REPO = "io.github.dostepnykampus.barrier.domain.SubmissionRepository";
+    private static final String REPO =
+        "io.github.dostepnykampus.barrier.domain.SubmissionRepository";
 
     /**
      * Wejście do kodu budynków.
@@ -61,7 +64,8 @@ final class BarrierArchitectureTest {
     /**
      * Adapter bazy, zawsze pod modułem zgłoszeń.
      */
-    private static final String JDBC = "io.github.dostepnykampus.barrier.persistence.JdbcSubmissions";
+    private static final String JDBC =
+        "io.github.dostepnykampus.barrier.persistence.JdbcSubmissions";
 
     /**
      * Wyjątek HTTP Springa.
@@ -91,7 +95,7 @@ final class BarrierArchitectureTest {
         MatcherAssert.assertThat(
             String.format("Reguła %s przepuściła przykład negatywny", name),
             BarrierArchitectureTest.rule(name, BarrierArchitectureTest.SAMPLES)
-                .evaluate(this.sample(pack, body)).hasViolation(),
+                .evaluate(this.compiled(pack, body)).hasViolation(),
             Matchers.is(true)
         );
     }
@@ -115,94 +119,89 @@ final class BarrierArchitectureTest {
     }
 
     private static Stream<Arguments> violations() {
-        final String subtype = "extends io.github.dostepnykampus.%s { %s s; Sample() { super(%s); } }";
+        final String jackson = "tools.jackson.databind.JsonNode";
+        final String sql = "java.sql.Connection";
+        final String subtype =
+            "extends io.github.dostepnykampus.%s { %s s; Sample() { super(%s); } }";
         return Stream.of(
-            Arguments.of("A-1", "domain", BarrierArchitectureTest.field(BarrierArchitectureTest.HTTP)),
-            Arguments.of("A-1", "domain", BarrierArchitectureTest.field("tools.jackson.databind.JsonNode")),
-            Arguments.of("A-1", "domain", BarrierArchitectureTest.field("java.sql.Connection")),
-            Arguments.of("A-1", "domain", BarrierArchitectureTest.field(BarrierArchitectureTest.OUTLINES)),
-            Arguments.of("A-2", "web", BarrierArchitectureTest.field("org.springframework.jdbc.core.simple.JdbcClient")),
-            Arguments.of("A-2", "json", BarrierArchitectureTest.field("java.sql.Connection")),
-            Arguments.of("A-3", "web", BarrierArchitectureTest.field("tools.jackson.databind.JsonNode")),
-            Arguments.of("A-4", "web", BarrierArchitectureTest.field(BarrierArchitectureTest.JDBC)),
-            Arguments.of("A-4", "web", BarrierArchitectureTest.field(BarrierArchitectureTest.REPO)),
-            Arguments.of("A-5", "json", BarrierArchitectureTest.field(BarrierArchitectureTest.REPO)),
-            Arguments.of("A-6", "web", BarrierArchitectureTest.field(BarrierArchitectureTest.OUTLINES)),
-            Arguments.of("A-7", "domain", BarrierArchitectureTest.field(BarrierArchitectureTest.HTTP)),
-            Arguments.of("A-8", "json", BarrierArchitectureTest.field(BarrierArchitectureTest.JDBC)),
+            BarrierArchitectureTest.sample("A-1", "domain", BarrierArchitectureTest.HTTP),
+            BarrierArchitectureTest.sample("A-1", "domain", jackson),
+            BarrierArchitectureTest.sample("A-1", "domain", sql),
+            BarrierArchitectureTest.sample("A-1", "domain", BarrierArchitectureTest.OUTLINES),
+            BarrierArchitectureTest.sample(
+                "A-2", "web", "org.springframework.jdbc.core.simple.JdbcClient"
+            ),
+            BarrierArchitectureTest.sample("A-2", "json", sql),
+            BarrierArchitectureTest.sample("A-3", "web", jackson),
+            BarrierArchitectureTest.sample("A-4", "web", BarrierArchitectureTest.JDBC),
+            BarrierArchitectureTest.sample("A-4", "web", BarrierArchitectureTest.REPO),
+            BarrierArchitectureTest.sample("A-5", "json", BarrierArchitectureTest.REPO),
+            BarrierArchitectureTest.sample("A-6", "web", BarrierArchitectureTest.OUTLINES),
+            BarrierArchitectureTest.sample("A-7", "domain", BarrierArchitectureTest.HTTP),
+            BarrierArchitectureTest.sample("A-8", "json", BarrierArchitectureTest.JDBC),
             Arguments.of(
                 "A-9", "errors",
-                String.format(subtype, "ForbiddenChange", "org.springframework.http.HttpStatus", "\"x\"")
+                String.format(
+                    subtype, "ForbiddenChange", "org.springframework.http.HttpStatus", "\"x\""
+                )
             ),
             Arguments.of(
                 "A-9", "errors",
-                String.format(subtype, "ConflictingState", "tools.jackson.databind.JsonNode", "\"x\", \"y\", null")
+                String.format(subtype, "ConflictingState", jackson, "\"x\", \"y\", null")
             )
         );
     }
 
-    private static String field(final String type) {
-        return String.format("{ %s field; }", type);
+    private static Arguments sample(final String name, final String pack, final String type) {
+        return Arguments.of(name, pack, String.format("{ %s field; }", type));
     }
 
     private static ArchRule rule(final String name, final String root) {
         final String all = String.format("%s..", root);
-        final String persistence = String.format("%s.persistence..", root);
-        final String service = String.format("%s.SubmissionService", MODULE);
-        final String controller = String.format("%s.web.SubmissionsController(\\$.*)?", MODULE);
-        final ArchRule result;
-        switch (name) {
-            case "A-1":
-                result = ArchRuleDefinition.noClasses()
-                    .that().resideInAPackage(String.format("%s.domain..", root))
-                    .should().dependOnClassesThat().resideInAnyPackage(
-                        "org.springframework..", "tools.jackson..", "java.sql..",
-                        "io.github.dostepnykampus.building.."
-                    );
-                break;
-            case "A-2":
-                result = ArchRuleDefinition.noClasses()
-                    .that().resideInAPackage(all).and().resideOutsideOfPackage(persistence)
-                    .should().dependOnClassesThat().resideInAnyPackage(
-                        "java.sql..", "org.springframework.jdbc.."
-                    );
-                break;
-            case "A-3":
-                result = ArchRuleDefinition.noClasses().that().resideInAPackage(all)
-                    .should().dependOnClassesThat().haveSimpleName("JsonNode");
-                break;
-            case "A-4":
-                result = ArchRuleDefinition.noClasses()
-                    .that().resideInAPackage(String.format("%s.web..", root))
-                    .should().dependOnClassesThat().resideInAPackage("..barrier.persistence..")
-                    .orShould().dependOnClassesThat().haveFullyQualifiedName(REPO);
-                break;
-            case "A-5":
-                result = ArchRuleDefinition.noClasses()
-                    .that().resideInAPackage(all).and().resideOutsideOfPackage(persistence)
-                    .and().doNotHaveFullyQualifiedName(service)
-                    .should().dependOnClassesThat().haveFullyQualifiedName(REPO);
-                break;
-            case "A-6":
-                result = ArchRuleDefinition.noClasses()
-                    .that().resideInAPackage(all).and().doNotHaveFullyQualifiedName(service)
-                    .should().dependOnClassesThat().haveFullyQualifiedName(OUTLINES);
-                break;
-            case "A-7":
-                result = ArchRuleDefinition.noClasses()
-                    .that().resideInAPackage(all).and().haveNameNotMatching(controller)
-                    .should().dependOnClassesThat().haveSimpleName("ResponseStatusException");
-                break;
-            case "A-8":
-                result = ArchRuleDefinition.noClasses()
-                    .that().resideInAPackage(all).and().resideOutsideOfPackage(persistence)
-                    .should().dependOnClassesThat().resideInAPackage("..barrier.persistence..");
-                break;
-            default:
-                result = ArchitectureTest.errorTypes();
-                break;
-        }
-        return result.allowEmptyShould(false);
+        final String out = String.format("%s.persistence..", root);
+        final String service = String.format(
+            "%s.SubmissionService", BarrierArchitectureTest.MODULE
+        );
+        final String controller = String.format(
+            "%s.web.SubmissionsController(\$.*)?", BarrierArchitectureTest.MODULE
+        );
+        final String adapter = "..barrier.persistence..";
+        return Map.of(
+            "A-1", ArchRuleDefinition.noClasses()
+                .that().resideInAPackage(String.format("%s.domain..", root))
+                .should().dependOnClassesThat().resideInAnyPackage(
+                    "org.springframework..", "tools.jackson..", "java.sql..",
+                    "io.github.dostepnykampus.building.."
+                ),
+            "A-2", ArchRuleDefinition.noClasses()
+                .that().resideInAPackage(all).and().resideOutsideOfPackage(out)
+                .should().dependOnClassesThat().resideInAnyPackage(
+                    "java.sql..", "org.springframework.jdbc.."
+                ),
+            "A-3", ArchRuleDefinition.noClasses().that().resideInAPackage(all)
+                .should().dependOnClassesThat().haveSimpleName("JsonNode"),
+            "A-4", ArchRuleDefinition.noClasses()
+                .that().resideInAPackage(String.format("%s.web..", root))
+                .should().dependOnClassesThat().resideInAPackage(adapter)
+                .orShould().dependOnClassesThat()
+                .haveFullyQualifiedName(BarrierArchitectureTest.REPO),
+            "A-5", ArchRuleDefinition.noClasses()
+                .that().resideInAPackage(all).and().resideOutsideOfPackage(out)
+                .and().doNotHaveFullyQualifiedName(service)
+                .should().dependOnClassesThat()
+                .haveFullyQualifiedName(BarrierArchitectureTest.REPO),
+            "A-6", ArchRuleDefinition.noClasses()
+                .that().resideInAPackage(all).and().doNotHaveFullyQualifiedName(service)
+                .should().dependOnClassesThat()
+                .haveFullyQualifiedName(BarrierArchitectureTest.OUTLINES),
+            "A-7", ArchRuleDefinition.noClasses()
+                .that().resideInAPackage(all).and().haveNameNotMatching(controller)
+                .should().dependOnClassesThat().haveSimpleName("ResponseStatusException"),
+            "A-8", ArchRuleDefinition.noClasses()
+                .that().resideInAPackage(all).and().resideOutsideOfPackage(out)
+                .should().dependOnClassesThat().resideInAPackage(adapter),
+            "A-9", ArchitectureTest.errorTypes()
+        ).get(name).allowEmptyShould(false);
     }
 
     private static JavaClasses production() {
@@ -211,16 +210,19 @@ final class BarrierArchitectureTest {
             .importPackagesOf(DostepnyKampusApplication.class);
     }
 
-    private JavaClasses sample(final String pack, final String body) throws IOException {
+    private JavaClasses compiled(final String pack, final String body) throws IOException {
         final String full = String.format("%s.%s", BarrierArchitectureTest.SAMPLES, pack);
         final Path source = this.dir.resolve("Sample.java");
         Files.writeString(
             source, String.format("package %s;%nfinal class Sample %s%n", full, body)
         );
-        final int code = ToolProvider.getSystemJavaCompiler().run(
-            null, null, null, "-d", this.dir.toString(), source.toString()
+        Assertions.assertEquals(
+            0,
+            ToolProvider.getSystemJavaCompiler().run(
+                null, null, null, "-d", this.dir.toString(), source.toString()
+            ),
+            "Przykład negatywny się nie skompilował"
         );
-        Assertions.assertEquals(0, code, "Przykład negatywny się nie skompilował");
         return new ClassFileImporter().importPath(this.dir.resolve(full.replace('.', '/')));
     }
 }
