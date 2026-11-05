@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
@@ -163,10 +164,10 @@ final class BarrierArchitectureTest {
             "%s.SubmissionService", BarrierArchitectureTest.MODULE
         );
         final String controller = String.format(
-            "%s.web.SubmissionsController(\$.*)?", BarrierArchitectureTest.MODULE
+            "%s.web.SubmissionsController(\\$.*)?", BarrierArchitectureTest.MODULE
         );
         final String adapter = "..barrier.persistence..";
-        return Map.of(
+        return Objects.requireNonNull(Map.of(
             "A-1", ArchRuleDefinition.noClasses()
                 .that().resideInAPackage(String.format("%s.domain..", root))
                 .should().dependOnClassesThat().resideInAnyPackage(
@@ -201,7 +202,7 @@ final class BarrierArchitectureTest {
                 .that().resideInAPackage(all).and().resideOutsideOfPackage(out)
                 .should().dependOnClassesThat().resideInAPackage(adapter),
             "A-9", ArchitectureTest.errorTypes()
-        ).get(name).allowEmptyShould(false);
+        ).get(name)).allowEmptyShould(false);
     }
 
     private static JavaClasses production() {
