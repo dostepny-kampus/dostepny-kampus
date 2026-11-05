@@ -253,9 +253,10 @@ final class TestSetupArchitectureTest {
     private static boolean own(final JavaClass item) {
         final boolean marked = TestSetupArchitectureTest.CONTEXT_MARKS.stream()
             .anyMatch(item::isAnnotatedWith);
-        final boolean dynamic = item.getMethods().stream()
-            .anyMatch(method -> method.isAnnotatedWith(DynamicPropertySource.class));
-        return item.isAnnotatedWith(IntegrationTest.class) && (marked || dynamic);
+        return item.isAnnotatedWith(IntegrationTest.class) && (
+            marked || item.getMethods().stream()
+                .anyMatch(method -> method.isAnnotatedWith(DynamicPropertySource.class))
+        );
     }
 
     private static ArchRule forbidden(
