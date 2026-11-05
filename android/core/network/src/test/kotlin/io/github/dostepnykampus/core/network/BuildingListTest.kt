@@ -30,12 +30,19 @@ class BuildingListTest {
     }
 
     @Test
-    fun us1_server_symbol_no_name() {
-        val listed = json.decodeFromString<BuildingListDto>(LIST.replace(oldValue = NAME, newValue = "C-13"))
-        val building = listed.toModel().buildings.single()
-        assertEquals(null, building.building.name)
-        val card = json.decodeFromString<BuildingDetailsDto>(DETAILS.replace(oldValue = NAME, newValue = "C-3/C-4"))
+    fun us1_server_without_name() {
+        val listed = json.decodeFromString<BuildingListDto>(LIST.replace(oldValue = NAME_FIELD, newValue = ""))
+        assertEquals(null, listed.toModel().buildings.single().building.name)
+        val card = json.decodeFromString<BuildingDetailsDto>(DETAILS.replace(oldValue = NAME_FIELD, newValue = ""))
         assertEquals(null, card.toModel().building.name)
+    }
+
+    @Test
+    fun us1_server_name_that_looks_like_symbol_is_kept() {
+        val listed = json.decodeFromString<BuildingListDto>(LIST.replace(oldValue = NAME, newValue = "C-13"))
+        assertEquals("C-13", listed.toModel().buildings.single().building.name)
+        val card = json.decodeFromString<BuildingDetailsDto>(DETAILS.replace(oldValue = NAME, newValue = "C-3/C-4"))
+        assertEquals("C-3/C-4", card.toModel().building.name)
     }
 
     @Test
@@ -121,6 +128,7 @@ class BuildingListTest {
 
     private companion object {
         const val NAME = "Budynek C-13"
+        const val NAME_FIELD = """"name":"Budynek C-13","""
         const val OUTLINE =
             """{"type":"Polygon","coordinates":[[[17,51],[18,51],[18,52],[17,52],[17,51]]]}"""
         const val LIST =
