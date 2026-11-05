@@ -7,6 +7,7 @@ package io.github.dostepnykampus.core.data.submissions
 
 import android.content.Context
 import androidx.work.CoroutineWorker
+import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -28,6 +29,13 @@ class SubmissionSyncWorker(appContext: Context, params: WorkerParameters) : Coro
     override suspend fun doWork(): Result {
         val entryPoint =
             EntryPointAccessors.fromApplication(applicationContext, SubmissionSyncEntryPoint::class.java)
-        return if (entryPoint.submissionQueue().sendAll()) Result.success() else Result.retry()
+        return entryPoint.submissionQueue().syncResult()
     }
 }
+
+/**
+ * Wynik zadania po jednej wysyłce kolejki: ponowienie tylko przy braku sieci (NFR-6).
+ * Odmowa serwera nie ponawia zadania w kółko — zgłoszenie czeka w kolejce na następne planowanie (US9.2).
+ */
+internal suspend fun SubmissionQueue.syncResult(): ListenableWorker.Result =
+    if (sendAll()) ListenableWorker.Result.success() else ListenableWorker.Result.retry()
