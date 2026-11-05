@@ -41,7 +41,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,7 +54,6 @@ import kotlin.math.asinh
 import kotlin.math.pow
 import kotlin.math.tan
 
-private const val NOT_MOVED = "kamera nie przesuwa się na budynek po „Pokaż budynek na mapie”, poprawka w następnym PR"
 private const val UNIT = 0.0001
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
@@ -198,7 +196,6 @@ class BuildingOnMapCameraTest {
 
     // Wiersz: K1, V2 „Pokaż budynek na mapie” → kamera mapy widzi budynek daleko od startu, US2.9, NFR-19, NFR-20.
     @Test
-    @Ignore(NOT_MOVED)
     fun us2_9_far_building_in_view() {
         showOnMap("T-9")
         assertShown("T-9")
@@ -206,7 +203,6 @@ class BuildingOnMapCameraTest {
 
     // Wiersz: K2, mapa przesunięta strzałkami → „Pokaż budynek na mapie” dla A-1 wraca do budynku, US2.9, NFR-53.
     @Test
-    @Ignore(NOT_MOVED)
     fun us2_9_a1_after_arrows() {
         pan("prawo", times = 4)
         showOnMap("A-1")
@@ -215,7 +211,6 @@ class BuildingOnMapCameraTest {
 
     // Wiersz: K1, budynek w kształcie litery U → kamera widzi punkt podpisu, nie środek obrysu, US2.9.
     @Test
-    @Ignore(NOT_MOVED)
     fun us2_9_u_shape_label_point() {
         showOnMap("U-1")
         assertShown("U-1")
@@ -246,7 +241,6 @@ class BuildingOnMapCameraTest {
 
     // Wiersz: K5, po „Pokaż budynek na mapie” obrót ekranu → ten sam obszar, nie start, NFR-22.
     @Test
-    @Ignore(NOT_MOVED)
     fun nfr22_show_survives_rotation() {
         showOnMap("T-9")
         val before = shown.last().second
@@ -258,7 +252,6 @@ class BuildingOnMapCameraTest {
 
     // Wiersz: K6, drugie „Pokaż budynek na mapie” po przesunięciu mapy → kamera na drugim budynku, US2.9.
     @Test
-    @Ignore(NOT_MOVED)
     fun us2_9_second_show_moves() {
         showOnMap("T-9")
         pan("prawo", times = 1)
