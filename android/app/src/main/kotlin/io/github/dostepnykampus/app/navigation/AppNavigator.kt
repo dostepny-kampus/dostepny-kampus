@@ -126,7 +126,8 @@ internal val openBuildingFromList: AppNavigator.(String, Boolean) -> Unit = AppN
 /**
  * Przejścia między ekranami (mapa nawigacji: tabele „start, pasek dolny i »Wstecz«”, „Gość i Odwiedzający” oraz
  * „logowanie i konto”). Konto z [roles] wybiera cel: Gość trafia do L1 zamiast V4 i L2 (US14, US14.2).
- * [onChooseMap] zapisuje wybór „Mapa” w przełączniku V1 po „Pokaż budynek na mapie” (US2.9, decyzja 116).
+ * [onChooseMap] zapisuje wybór „Mapa” w przełączniku V1 po „Pokaż budynek na mapie” (US2.9, decyzja 116) i po
+ * „Pokaż wejście na mapie” (US2.1, decyzja 135).
  */
 class AppNavigator(
     backStack: MutableList<NavKey>,
@@ -181,9 +182,12 @@ class AppNavigator(
         leaving { add(EntrancesRoute(symbol)) }
     }
 
-    /** V1 z zaznaczonym [focus] i wyczyszczoną historią: „Pokaż na mapie”, „Pokaż wejście na mapie” (US2.1, BR-25). */
+    /**
+     * V1 z zaznaczonym [focus] i wyczyszczoną historią: „Pokaż na mapie”, „Pokaż wejście na mapie” (US2.1, BR-25).
+     * Budynek i wejście wybierają też widok „Mapa” w przełączniku V1 (decyzje 116, 135).
+     */
     fun showOnMap(focus: MapFocus?) {
-        if (focus is MapFocus.Building) onChooseMap()
+        if (focus != null) onChooseMap()
         leaving {
             subList(fromIndex = 1, toIndex = size).clear()
             this[0] = MapRoute(focus)

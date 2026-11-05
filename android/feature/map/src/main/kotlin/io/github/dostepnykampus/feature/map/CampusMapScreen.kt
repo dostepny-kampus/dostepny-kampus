@@ -61,6 +61,7 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.campusMapData
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 private const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
@@ -93,6 +94,8 @@ private val CameraSaver =
  *   wybranego w arkuszu „Który budynek?”, gdy trafiło kontur wspólny albo dwa kontury (US2, decyzja 85)
  * @param modifier wymiary ekranu nadane przez aplikację
  * @param focus symbol budynku zaznaczonego obrysem, np. po „Wstecz” z V2 (US1.1)
+ * @param entrance wejście zaznaczone pinezką z podpisem, a kamera staje na nim, np. po „Pokaż wejście na mapie” (US3.3,
+ *   decyzja 134); TalkBack czyta jego nazwę i budynek ekranu (NFR-18)
  * @param contentPadding część ekranu zasłonięta z zewnątrz przez arkusz V2 (decyzja 87). Podpis OSM stoi nad nią,
  *   a mapa dalej wypełnia cały ekran (NFR-37). Pod arkuszem nie ma przycisków mapy, bo wymagania V2 ich nie mają;
  *   wracają po „Wstecz” (NFR-53). Budynek [focus] staje w środku części nad arkuszem, a po „Wstecz” wraca widok
@@ -109,6 +112,7 @@ fun CampusMapScreen(
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     focus: String? = null,
+    entrance: MapFocus.Entrance? = null,
     contentPadding: PaddingValues = PaddingValues(),
     onEmptyMapClick: () -> Unit = {},
     onListBuildingClick: (String) -> Unit = onBuildingClick,
@@ -122,6 +126,7 @@ fun CampusMapScreen(
         onBuildingClick = onBuildingClick,
         modifier = modifier,
         focus = focus,
+        entrance = entrance,
         contentPadding = contentPadding,
         onEmptyMapClick = onEmptyMapClick,
         onListBuildingClick = onListBuildingClick,
@@ -138,6 +143,7 @@ fun CampusMapScreen(
  * @param onBuildingClick budynek dotknięty na mapie, wybrany w arkuszu albo na liście (US2)
  * @param modifier wymiary ekranu nadane przez aplikację
  * @param focus symbol budynku zaznaczonego obrysem (US1.1)
+ * @param entrance wejście zaznaczone pinezką z podpisem i kamerą (US3.3, decyzja 134)
  * @param contentPadding część ekranu zasłonięta przez arkusz V2 (decyzja 87)
  * @param onEmptyMapClick dotknięcie mapy poza konturami (US2.8)
  * @param onListBuildingClick budynek dotknięty na liście (NFR-19)
@@ -150,6 +156,7 @@ fun CampusMapScreen(
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     focus: String? = null,
+    entrance: MapFocus.Entrance? = null,
     contentPadding: PaddingValues = PaddingValues(),
     onEmptyMapClick: () -> Unit = {},
     onListBuildingClick: (String) -> Unit = onBuildingClick,
@@ -181,6 +188,7 @@ fun CampusMapScreen(
                 CampusMap(
                     catalog = catalog,
                     focus = focus,
+                    entrance = entrance,
                     contentPadding = contentPadding,
                     mapView = mapView,
                     onBuildingClick = onBuildingClick,
@@ -196,6 +204,7 @@ fun CampusMapScreen(
 private fun CampusMap(
     catalog: BuildingCatalog?,
     focus: String?,
+    entrance: MapFocus.Entrance?,
     contentPadding: PaddingValues,
     mapView: CampusMapView,
     onBuildingClick: (String) -> Unit,
@@ -203,8 +212,9 @@ private fun CampusMap(
     modifier: Modifier = Modifier,
 ) {
     val layers = remember(catalog) { catalog?.let(::campusMapData) }
-    val data = remember(layers, focus) { layers?.copy(focus = focus) }
-    var camera by rememberSaveable(stateSaver = CameraSaver) { mutableStateOf<MapCamera?>(null) }
+    val chosen = rememberChosenEntrance(catalog, entrance)
+    val data = remember(layers, focus, chosen) { layers?.copy(focus = focus, selectedEntrance = chosen) }
+    var camera by rememberSaveable(entrance?.id, stateSaver = CameraSaver) { mutableStateOf<MapCamera?>(null) }
     var choice by rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val cover = contentPadding.calculateBottomPadding()
     val isCovered = cover > 0.dp
@@ -221,7 +231,7 @@ private fun CampusMap(
         val loaded = data
         val shown =
             shownCamera(
-                own = camera,
+                own = camera ?: chosen?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) },
                 start = loaded?.start,
                 focus = focusPoint.takeIf { isCovered },
                 bottomInset = coverPixels,
@@ -236,6 +246,7 @@ private fun CampusMap(
                 },
                 modifier = Modifier.fillMaxSize(),
             )
+            chosen?.let { EntranceDescription(it) }
             MapOverlay(
                 camera = shown,
                 hasControls = !isCovered && !isKeyboardOpen,
