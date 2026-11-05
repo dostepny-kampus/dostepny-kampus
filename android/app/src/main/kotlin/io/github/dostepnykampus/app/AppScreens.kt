@@ -138,7 +138,8 @@ private fun AppNavigator.HiltBuildingCard(
 
 /**
  * V2 ze stanem [state] i czynnościami podpiętymi do nawigatora; „Zgłoś barierę przy wejściu” prowadzi do V4
- * z wybranym wejściem, a Gościa najpierw do L1 (US4.6, US14.2). [onRetry] to „Spróbuj ponownie”.
+ * z wybranym wejściem, a Gościa najpierw do L1 (US4.6, US14.2). „Pokaż wejście na mapie” prowadzi do V1
+ * z zaznaczonym wejściem tego budynku (US3.3, US2.1). [onRetry] to „Spróbuj ponownie”.
  */
 @Composable
 internal fun AppNavigator.BuildingCard(
@@ -158,6 +159,7 @@ internal fun AppNavigator.BuildingCard(
         onBack = card.onBack,
         onClose = card.onClose,
         onReportEntrance = { report(it) },
+        onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol)) },
         onRetry = onRetry,
     )
 }

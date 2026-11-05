@@ -57,6 +57,7 @@ import io.github.dostepnykampus.core.model.EntranceMarking
  * @param onClose „Zamknij” małej karty
  * @param modifier wymiary nadane przez arkusz; mała karta ma wysokość treści, pełny ekran wypełnia całe miejsce
  * @param onReportEntrance „Zgłoś barierę przy wejściu” dla identyfikatora wejścia
+ * @param onShowEntrance „Pokaż wejście na mapie” dla identyfikatora wejścia zalecanego
  * @param viewModel stan karty; w aplikacji z grafu Hilt, w testach z podróbką katalogu
  */
 @Composable
@@ -69,6 +70,7 @@ fun BuildingCardScreen(
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
     onReportEntrance: (String) -> Unit = {},
+    onShowEntrance: (String) -> Unit = {},
     viewModel: BuildingCardViewModel =
         hiltViewModel<BuildingCardViewModel, BuildingCardViewModel.Factory>(
             creationCallback = { factory -> factory.create(symbol) },
@@ -88,6 +90,7 @@ fun BuildingCardScreen(
         onReportEntrance = onReportEntrance,
         onRetry = viewModel::retry,
         modifier = modifier,
+        onShowEntrance = onShowEntrance,
     )
 }
 
@@ -105,6 +108,7 @@ fun BuildingCardContent(
     onReportEntrance: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onShowEntrance: (String) -> Unit = {},
 ) {
     val isFullScreen = mode != CardMode.Compact
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
@@ -123,7 +127,7 @@ fun BuildingCardContent(
                     onShowOnMap = onShowOnMap,
                     onClose = onClose,
                 )
-                if (isFullScreen) BuildingFacts(card, onReportEntrance)
+                if (isFullScreen) BuildingFacts(card, onReportEntrance, onShowEntrance)
             }
             if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
         }
@@ -164,19 +168,34 @@ internal fun EntranceSummaryRow(summary: EntranceSummary) {
 }
 
 @Composable
-private fun BuildingFacts(card: BuildingCardUiState.Ready, onReportEntrance: (String) -> Unit) {
+private fun BuildingFacts(
+    card: BuildingCardUiState.Ready,
+    onReportEntrance: (String) -> Unit,
+    onShowEntrance: (String) -> Unit,
+) {
     val common = commonAssessment(card.entrances)
     common?.let { AssessmentLine(it) }
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
-        card.entrances.forEach {
-            EntranceLine(it, withAssessment = common == null, onReportEntrance = onReportEntrance)
+        card.entrances.forEach { entrance ->
+            EntranceLine(
+                listed = entrance,
+                withAssessment = common == null,
+                onReportEntrance = onReportEntrance,
+                onShowEntrance = onShowEntrance,
+            )
         }
     }
 }
 
 @Composable
-private fun EntranceLine(listed: OrderedEntrance, withAssessment: Boolean, onReportEntrance: (String) -> Unit) {
+private fun EntranceLine(
+    listed: OrderedEntrance,
+    withAssessment: Boolean,
+    onReportEntrance: (String) -> Unit,
+    onShowEntrance: (String) -> Unit,
+) {
     val title = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
+    val spokenShow = stringResource(R.string.wizyta_pokaz_czytaj, title)
     val spoken = stringResource(R.string.karta_zglos_czytaj, title)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
         FlowRow(
@@ -195,6 +214,14 @@ private fun EntranceLine(listed: OrderedEntrance, withAssessment: Boolean, onRep
         }
         Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
         if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }
+        if (listed.isRecommended) {
+            PinnedButton(
+                text = stringResource(R.string.wizyta_pokaz),
+                onClick = { onShowEntrance(listed.entrance.id) },
+                modifier = Modifier.fillMaxWidth().semantics { contentDescription = spokenShow },
+                kind = PinnedButtonKind.Tonal,
+            )
+        }
         PinnedButton(
             text = stringResource(R.string.karta_zglos),
             onClick = { onReportEntrance(listed.entrance.id) },
