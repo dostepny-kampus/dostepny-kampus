@@ -30,7 +30,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
@@ -59,7 +58,6 @@ class MapCatalogFromFileTest {
 
     // Wiersz: W1, serwer jeszcze nie odpowiedział → stan mapy ma kontury z pliku, NFR-11.
     @Test
-    @Disabled("mapa czeka na odpowiedź serwera, poprawka w następnym PR")
     fun nfr11_file_without_server() {
         val screen = openScreen { CompletableDeferred<ApiResult<BuildingList>>().await() }
         assertEquals(fileCatalog, screen.waitFor { it == fileCatalog }, "mapa czeka na serwer")
@@ -67,7 +65,6 @@ class MapCatalogFromFileTest {
 
     // Wiersz: W2, serwer odpowiada niepustą listą → najpierw kontury z pliku, potem katalog z serwera, NFR-10, US1.
     @Test
-    @Disabled("mapa nie pokazuje pliku przed serwerem, poprawka w następnym PR")
     fun nfr10_server_replaces_file() {
         val answer = CompletableDeferred<ApiResult<BuildingList>>()
         val screen = openScreen { answer.await() }
@@ -80,7 +77,6 @@ class MapCatalogFromFileTest {
 
     // Wiersz: W2, brak sieci albo błąd serwera → zostają kontury z pliku, bez null, błędu i pustego katalogu, NFR-10.
     @Test
-    @Disabled("mapa nie pokazuje pliku przed odpowiedzią serwera, poprawka w następnym PR")
     fun nfr10_failure_keeps_file() {
         listOf(ApiResult.NetworkError(IOException("brak sieci")), ApiResult.ServerError(code = SERVER_ERROR))
             .forEach { failure -> assertKeepsFile(failure) }
@@ -88,7 +84,6 @@ class MapCatalogFromFileTest {
 
     // Wiersz: W2, serwer odpowiada pustą listą → zostają kontury z pliku, bez pustego katalogu, NFR-10.
     @Test
-    @Disabled("mapa nie pokazuje pliku przed odpowiedzią serwera, poprawka w następnym PR")
     fun nfr10_empty_list_keeps_file() {
         assertKeepsFile(ApiResult.Success(BuildingList(source = "Serwer", buildings = emptyList())))
     }
