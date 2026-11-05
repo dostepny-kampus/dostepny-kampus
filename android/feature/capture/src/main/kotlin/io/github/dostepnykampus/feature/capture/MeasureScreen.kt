@@ -39,9 +39,9 @@ private val POLISH = Locale.forLanguageTag("pl-PL")
 
 /**
  * C1 Pomiar pozycji (US6.1): szukanie satelitów, pomiar 30 s i „Pomiar zakończony”. Dokładność i satelity są
- * tekstem, nie tylko wykresem (NFR-18), a dokładność ma dopisek „szacunek” (NFR-2). „Powtórz pomiar” działa w każdym
- * stanie, bez limitu (NFR-23). Bez zgody na lokalizację pokazuje prośbę o nią (NFR-27). Podpowiedź budynku, mapa
- * nieba i „Dalej” przyjdą w kolejnych krokach.
+ * tekstem, nie tylko na mapie nieba (NFR-18, US6.5), a dokładność ma dopisek „szacunek” (NFR-2). „Powtórz pomiar”
+ * działa w każdym stanie, bez limitu (NFR-23). Bez zgody na lokalizację pokazuje prośbę o nią (NFR-27).
+ * Podpowiedź budynku i „Dalej” przyjdą w kolejnych krokach.
  *
  * @param onBack „Wstecz” do ekranu, z którego otwarto C1 (NFR-15)
  * @param modifier wymiary nadane przez aplikację
@@ -113,11 +113,15 @@ private fun Result(average: PositionAverage, satellitesLine: String) {
 /** „Satelity: GPS 7, Galileo 5, GLONASS 4” w kolejności systemów (US6.1). */
 internal fun Resources.satellitesLine(satellites: Map<GnssSystem, Int>): String {
     if (satellites.isEmpty()) return getString(R.string.pomiar_satelity_brak)
-    val parts = satellites.map { (system, count) -> "${systemName(system)} $count" }
-    return getString(R.string.pomiar_satelity, parts.joinToString(", "))
+    return getString(R.string.pomiar_satelity, systemCounts(satellites))
 }
 
-private fun Resources.systemName(system: GnssSystem): String =
+/** „GPS 7, Galileo 5” w kolejności mapy [satellites]. */
+internal fun Resources.systemCounts(satellites: Map<GnssSystem, Int>): String =
+    satellites.entries.joinToString(", ") { (system, count) -> "${systemName(system)} $count" }
+
+/** Nazwa systemu GNSS z napisów modułu. */
+internal fun Resources.systemName(system: GnssSystem): String =
     getString(
         when (system) {
             GnssSystem.GPS -> R.string.system_gps
