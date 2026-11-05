@@ -25,9 +25,17 @@ object DatabaseModule {
     @Singleton
     fun database(
         @ApplicationContext context: Context,
-    ): DkDatabase = Room.databaseBuilder(context, DkDatabase::class.java, NAME).build()
+    ): DkDatabase =
+        Room
+            .databaseBuilder(context, DkDatabase::class.java, NAME)
+            .addMigrations(MIGRATION_1_2)
+            .build()
 
     /** Kolejka zgłoszeń z [database]. */
     @Provides
     fun pendingSubmissions(database: DkDatabase): PendingSubmissionDao = database.pendingSubmissions()
+
+    /** Kopia listy budynków z [database] (NFR-10). */
+    @Provides
+    fun buildingCache(database: DkDatabase): BuildingCacheDao = database.buildingCache()
 }
