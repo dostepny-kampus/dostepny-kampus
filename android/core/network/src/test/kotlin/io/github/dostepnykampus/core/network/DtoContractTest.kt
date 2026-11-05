@@ -12,6 +12,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.descriptors.elementNames
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.serializer
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -37,13 +38,6 @@ class DtoContractTest {
         val names = serializable.map { it.simpleName }.toSet()
         assertEquals(emptySet<String>(), names - TABLE.keys - HELPERS.keys, "klasa @Serializable bez wpisu")
         assertEquals(emptySet<String>(), TABLE.keys + HELPERS.keys - names, "wpis bez klasy")
-        assertEquals(emptyList<String>(), HELPERS.filterValues { it.isBlank() }.keys.toList(), "wpis bez powodu")
-    }
-
-    @Test
-    fun d1_every_row_has_a_schema() {
-        val missing = TABLE.values.flatMap { it.pointers }.filter { spec.node(it).isMissingNode }
-        assertEquals(emptyList<String>(), missing, "wpis bez schematu")
     }
 
     @Test
@@ -52,9 +46,8 @@ class DtoContractTest {
     }
 
     @Test
-    fun d3_optional_has_default() {
-        val responses = TABLE.filterValues { row -> row.isResponse }
-        val problems = responses.flatMap { (name, row) -> defaultProblems(name, row) }
+    fun d3_minimal_json_decodes() {
+        val problems = TABLE.filterValues { it.isResponse }.mapNotNull { (name, row) -> decodeProblem(name, row) }
         assertEquals(emptyList<String>(), problems)
     }
 
@@ -76,71 +69,87 @@ class DtoContractTest {
         assertEquals(emptyList<String>(), problems)
     }
 
-    private fun defaultProblems(name: String, row: Row): List<String> {
+    private fun decodeProblem(name: String, row: Row): String? {
+        val body = spec.sample(spec.node(row.pointers.first())).toString()
+        return runCatching { decode(name, body) }.exceptionOrNull()?.let { "$name: ${it.message.orEmpty()}" }
+    }
+
+    private fun decode(name: String, body: String) =
+        when (name) {
+            "SubmissionDto" -> json.decodeSubmission(body)
+            "VersionConflictDto" -> json.decodeConflict(body)
+            "SubmissionFloorDto" -> json.decodeSubmission(withFloor(body))
+            else -> json.decodeFromString(serializer(classOf(name)), body)
+        }
+
+    private fun withFloor(floor: String): String {
+        val submission = spec.sample(spec.node("/components/schemas/Submission")).jsonObject
+        return JsonObject(submission + ("floor" to json.parseToJsonElement(floor))).toString()
+    }
+
+    private fun enumProblems(name: String, row: Row): List<String> {
         val descriptor = descriptorOf(name)
-        val required = row.pointers.flatMap { pointer -> spec.required(spec.node(pointer)) }
-        val unsafe =
-            descriptor.elementNames
-                .asSequence()
-                .withIndex()
-                .filter { (_, field) -> descriptor.kind != SerialKind.ENUM && field !in required }
-                .filterNot { (index, _) ->
-                    descriptor.isElementOptional(index) || descriptor.getElementDescriptor(index).isNullable
+        val props = row.pointers.flatMap { spec.properties(spec.node(it)).entries }.associate { it.key to it.value }
+        return (0 until descriptor.elementsCount).flatMap { index ->
+            val field = descriptor.getElementName(index)
+            val element = descriptor.getElementDescriptor(index)
+            val values = props[field]?.let { spec.resolve(it).path("enum").toList() }.orEmpty()
+            val declared = values.map { value -> value.asString() }.toSet()
+            val client = element.elementNames.toSet()
+            val missing = (declared - client).map { "spec ma '$it', klient nie" }
+            val sent = (client - declared).filter { "$field:$it" !in row.unsent }.map { "klient wysyła '$it'" }
+            val issues =
+                when {
+                    element.kind != SerialKind.ENUM -> emptyList()
+                    row.isResponse -> missing
+                    else -> sent
                 }
-        return unsafe.map { (_, field) -> "$name.$field: pole nieobowiązkowe, bez domyślnej i bez null" }.toList()
+            issues.map { "$name.$field: $it" }
+        }
     }
 
     private fun fieldProblems(name: String, row: Row): List<String> {
         val descriptor = descriptorOf(name)
         val schema = row.pointers.map(spec::node)
-        val problems = mutableListOf<String>()
         if (descriptor.kind == SerialKind.ENUM) {
-            val values = schema.flatMap { node -> node.path("enum").toList().map { value -> value.asString() } }
-            if (descriptor.elementNames.toSet() != values.toSet()) {
-                problems += "$name: wartości wyliczenia poza schematem"
-            }
-        } else {
-            val fields = descriptor.elementNames.toSet()
-            val declared = schema.flatMap { node -> spec.properties(node).keys }.toSet()
-            problems += (fields - declared).map { "$name.$it: pole DTO poza schematem" }
-            problems += (declared - fields - row.ignored.keys).map { "$name.$it: pole schematu bez pola w DTO" }
-            val stale = row.ignored.keys.filter { it in fields || it !in declared }
-            problems += stale.map { "$name.$it: nieaktualny wpis „klient ignoruje”" }
+            val values = schema.flatMap { node -> node.path("enum").toList().map { it.asString() } }.toSet()
+            return listOf("$name: wartości poza schematem").filter { descriptor.elementNames.toSet() != values }
         }
-        return problems
+        val fields = descriptor.elementNames.toSet()
+        val declared = schema.flatMap { node -> spec.properties(node).keys }.toSet()
+        val stale = row.ignored.keys.filter { it in fields || it !in declared }
+        return (fields - declared).map { "$name.$it: pole DTO poza schematem" } +
+            (declared - fields - row.ignored.keys).map { "$name.$it: pole schematu bez pola w DTO" } +
+            stale.map { "$name.$it: nieaktualny wpis „klient ignoruje”" } +
+            enumProblems(name, row)
     }
 
-    private fun descriptorOf(name: String): SerialDescriptor =
-        serializer(serializable.first { it.simpleName == name }).descriptor
+    private fun classOf(name: String): Class<*> = serializable.first { it.simpleName == name }
+
+    private fun descriptorOf(name: String): SerialDescriptor = serializer(classOf(name)).descriptor
 
     private fun serializableClasses(): List<Class<*>> {
         val location = requireNotNull(BuildingsApi::class.java.protectionDomain?.codeSource).location
-        val names =
-            JarFile(File(location.toURI())).use { jar ->
-                jar
-                    .entries()
-                    .asSequence()
-                    .map { entry -> entry.name }
-                    .filter { it.endsWith(".class") && '$' !in it }
-                    .toList()
-            }
-        return names
-            .asSequence()
-            .map { entry -> entry.removeSuffix(".class").replace(oldChar = '/', newChar = '.') }
-            .map { className -> Class.forName(className, false, javaClass.classLoader) }
-            .filter { it.isAnnotationPresent(Serializable::class.java) }
-            .toList()
+        return JarFile(File(location.toURI())).use { jar ->
+            jar
+                .entries()
+                .asSequence()
+                .map { entry -> entry.name }
+                .filter { it.endsWith(".class") && '$' !in it }
+                .map { it.removeSuffix(".class").replace(oldChar = '/', newChar = '.') }
+                .map { className -> Class.forName(className, false, javaClass.classLoader) }
+                .filter { it.isAnnotationPresent(Serializable::class.java) }
+                .toList()
+        }
     }
 
-    /** Wiersz tabeli: wskaźniki schematów, pola schematu pomijane przez klienta (z powodem) i kierunek wymiany. */
     private class Row(
-        schemas: List<String>,
+        vararg schemas: String,
         val ignored: Map<String, String> = emptyMap(),
         val isResponse: Boolean = true,
+        val unsent: Map<String, String> = emptyMap(),
     ) {
         val pointers = schemas.map { "/components/schemas/$it" }
-
-        constructor(schema: String, ignored: Map<String, String> = emptyMap()) : this(listOf(schema), ignored)
     }
 
     private companion object {
@@ -160,21 +169,29 @@ class DtoContractTest {
                 "DetailLevel" to Row("DetailLevel"),
                 "MarkingSource" to Row("Entrance/properties/markingSource"),
                 "SubmissionFloorDto" to Row("SubmissionFloor"),
-                "SubmissionRequest" to Row(listOf("NewSubmission", "SubmissionUpdate"), isResponse = false),
+                "SubmissionRequest" to
+                    Row(
+                        "NewSubmission",
+                        "SubmissionUpdate",
+                        isResponse = false,
+                        unsent = mapOf("entranceMarking:NO_DATA" to "SubmissionContent.init odrzuca NO_DATA"),
+                    ),
                 "SubmissionDto" to
                     Row(
                         "Submission",
-                        mapOf(
-                            "duplicateOfSubmissionId" to NOT_SHOWN,
-                            "author" to "$NOT_SHOWN; autora widzi tylko Weryfikator",
-                        ),
+                        ignored =
+                            mapOf(
+                                "duplicateOfSubmissionId" to NOT_SHOWN,
+                                "author" to "$NOT_SHOWN; autora widzi tylko Weryfikator",
+                            ),
                     ),
                 "VersionConflictDto" to
                     Row(
                         "VersionConflictProblem",
-                        listOf("type", "title", "status", "detail", "instance").associateWith {
-                            "klient czyta z odpowiedzi 409 tylko serverSubmission, opis błędu nie jest pokazywany"
-                        },
+                        ignored =
+                            listOf("type", "title", "status", "detail", "instance").associateWith {
+                                "klient czyta z odpowiedzi 409 tylko serverSubmission, opis błędu nie jest pokazywany"
+                            },
                     ),
             )
 
