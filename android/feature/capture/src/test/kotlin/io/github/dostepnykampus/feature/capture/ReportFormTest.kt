@@ -7,7 +7,6 @@ package io.github.dostepnykampus.feature.capture
 
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.BarrierType
-import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
@@ -141,11 +140,3 @@ class ReportFormTest {
             photoIds = listOf("p1"),
         )
 }
-
-private val A1 =
-    ReportPlace(
-        location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
-        accuracyMeters = 0.8,
-        buildingSymbol = "A-1",
-        isManualCorrection = false,
-    )
