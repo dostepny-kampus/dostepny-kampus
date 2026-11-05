@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
@@ -134,11 +135,15 @@ final class BarrierArchitectureTest {
             ),
             BarrierArchitectureTest.sample("A-2", "json", sql),
             BarrierArchitectureTest.sample("A-3", "web", jackson),
+            BarrierArchitectureTest.sample("A-3", "web", "tools.jackson.databind.node.ObjectNode"),
             BarrierArchitectureTest.sample("A-4", "web", BarrierArchitectureTest.JDBC),
             BarrierArchitectureTest.sample("A-4", "web", BarrierArchitectureTest.REPO),
             BarrierArchitectureTest.sample("A-5", "json", BarrierArchitectureTest.REPO),
             BarrierArchitectureTest.sample("A-6", "web", BarrierArchitectureTest.OUTLINES),
             BarrierArchitectureTest.sample("A-7", "domain", BarrierArchitectureTest.HTTP),
+            BarrierArchitectureTest.sample(
+                "A-7", "web", "org.springframework.web.server.ServerWebInputException"
+            ),
             BarrierArchitectureTest.sample("A-8", "json", BarrierArchitectureTest.JDBC),
             Arguments.of(
                 "A-9", "errors",
@@ -169,7 +174,7 @@ final class BarrierArchitectureTest {
             "%s.SubmissionService", BarrierArchitectureTest.MODULE
         );
         final String controller = String.format(
-            "%s.web.SubmissionsController(\\$.*)?", BarrierArchitectureTest.MODULE
+            "%s\\.web\\.SubmissionsController(\\$.*)?", Pattern.quote(BarrierArchitectureTest.MODULE)
         );
         final String adapter = "..barrier.persistence..";
         return Map.of(
@@ -185,7 +190,7 @@ final class BarrierArchitectureTest {
                     "java.sql..", "org.springframework.jdbc.."
                 ),
             "A-3", ArchRuleDefinition.noClasses().that().resideInAPackage(pkg)
-                .should().dependOnClassesThat().haveSimpleName("JsonNode"),
+                .should().dependOnClassesThat().areAssignableTo("tools.jackson.databind.JsonNode"),
             "A-4", ArchRuleDefinition.noClasses()
                 .that().resideInAPackage(String.format("%s.web..", root))
                 .should().dependOnClassesThat().resideInAPackage(adapter)
@@ -202,7 +207,8 @@ final class BarrierArchitectureTest {
                 .haveFullyQualifiedName(BarrierArchitectureTest.OUTLINES),
             "A-7", ArchRuleDefinition.noClasses()
                 .that().resideInAPackage(pkg).and().haveNameNotMatching(controller)
-                .should().dependOnClassesThat().haveSimpleName("ResponseStatusException"),
+                .should().dependOnClassesThat()
+                .areAssignableTo(BarrierArchitectureTest.HTTP),
             "A-8", ArchRuleDefinition.noClasses()
                 .that().resideInAPackage(pkg).and().resideOutsideOfPackage(out)
                 .should().dependOnClassesThat().resideInAPackage(adapter),
