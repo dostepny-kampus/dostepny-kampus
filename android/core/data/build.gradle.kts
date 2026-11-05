@@ -7,6 +7,7 @@
 plugins {
     id("dostepnykampus.android.library")
     id("dostepnykampus.android.hilt")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 val buildingsFile: RegularFile = layout.projectDirectory.file("../../../data/buildings/pwr-buildings.geojson")
@@ -23,10 +24,11 @@ android {
 
 dependencies {
     api(project(":core:model"))
-    implementation(project(":core:database"))
+    api(project(":core:database"))
     implementation(project(":core:geo"))
     implementation(project(":core:network"))
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.serialization.json)
     api(libs.kotlinx.coroutines.core)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
