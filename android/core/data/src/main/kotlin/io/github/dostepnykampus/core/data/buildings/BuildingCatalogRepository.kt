@@ -6,6 +6,9 @@
 package io.github.dostepnykampus.core.data.buildings
 
 import android.content.res.AssetManager
+import io.github.dostepnykampus.core.database.BUILDING_CACHE_SINGLE_ROW
+import io.github.dostepnykampus.core.database.BuildingCacheDao
+import io.github.dostepnykampus.core.database.BuildingCacheEntity
 import io.github.dostepnykampus.core.geo.parseBuildingCatalog
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
@@ -20,6 +23,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.Instant
 import kotlin.coroutines.CoroutineContext
 
 /** Plik konturów OSM w zasobach aplikacji; przy budowie kopiuje go z `data/buildings` zadanie `copyBuildingsAsset`. */
@@ -55,13 +59,21 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
  * blokujący, więc anulowanie działa dopiero po nim. Gdy anulowany zostanie ten, kto prowadził wspólne pobranie,
  * pozostali czekający pytają serwer od nowa.
  *
+ * Pobranie listy z serwera zapisuje jej kopię w bazie [buildingCache] z chwilą pobrania; bez odpowiedzi serwera
+ * i bez katalogu pobranego w tym procesie katalog może wrócić z tej kopii (NFR-10). [syncedAt] podaje moment
+ * ostatniego pobrania z serwera, które widzi katalog.
+ *
  * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
  * @param listBuildings lista z serwera; `null` zostawia katalog wyłącznie z pliku
+ * @param buildingCache kopia listy budynków w bazie; `null` zostawia katalog bez kopii
+ * @param nowMillis zegar chwili pobrania listy z serwera
  * @param readGeoJson odczyt treści pliku konturów
  */
 class BuildingCatalogRepository(
     private val ioContext: CoroutineContext,
     private val listBuildings: (suspend () -> ApiResult<BuildingList>)? = null,
+    private val buildingCache: BuildingCacheDao? = null,
+    private val nowMillis: () -> Long = System::currentTimeMillis,
     private val readGeoJson: () -> String,
 ) {
     private val lock = Any()
@@ -71,6 +83,8 @@ class BuildingCatalogRepository(
     @Volatile private var cached: BuildingCatalog? = null
 
     @Volatile private var bundled: BuildingCatalog? = null
+
+    @Volatile private var syncedAtMillis: Long? = null
 
     /**
      * Zwraca katalog budynków; gdy trwa pobranie z serwera, czeka na jego wynik.
@@ -98,11 +112,17 @@ class BuildingCatalogRepository(
     /**
      * Pyta serwer i czyta plik od nowa, zapamiętuje wynik i zwraca katalog dla „Spróbuj ponownie”, gdy budynku
      * nie ma w telefonie (NFR-10). Gdy pobranie już trwa, czeka na jego wynik. Gdy serwer nie odpowie, zostaje
-     * ostatni katalog z serwera, a bez niego plik.
+     * ostatni katalog z serwera, a bez niego kopia z bazy [buildingCache], a bez kopii plik.
      *
      * @throws IllegalArgumentException gdy plik konturów ma zły format
      */
     suspend fun refresh(): BuildingCatalog = fetched(isFresh = true)
+
+    /**
+     * Chwila ostatniego, udanego pobrania listy budynków z serwera, które widzi katalog; `null`, gdy katalog
+     * jest z pliku (NFR-10).
+     */
+    fun syncedAt(): Instant? = syncedAtMillis?.let(Instant::ofEpochMilli)
 
     private suspend fun fetched(isFresh: Boolean): BuildingCatalog {
         val ready = if (isFresh) null else cached
@@ -128,6 +148,19 @@ class BuildingCatalogRepository(
             val server = nonEmptyServerList()
             if (server != null) {
                 downloaded.value = fromServer(file, server)
+                val savedAtMillis = nowMillis()
+                syncedAtMillis = savedAtMillis
+                withContext(ioContext) {
+                    buildingCache?.save(
+                        BuildingCacheEntity(
+                            id = BUILDING_CACHE_SINGLE_ROW,
+                            listJson = server.toCacheJson(),
+                            syncedAt = savedAtMillis,
+                        ),
+                    )
+                }
+            } else if (downloaded.value == null) {
+                downloaded.value = cachedCatalog(file)
             }
             val result = downloaded.value ?: file
             cached = result
@@ -142,6 +175,14 @@ class BuildingCatalogRepository(
     private suspend fun readBundled(isFresh: Boolean): BuildingCatalog =
         (if (isFresh) null else bundled)
             ?: withContext(ioContext) { parseBuildingCatalog(readGeoJson()).forVisitors() }.also { bundled = it }
+
+    private suspend fun cachedCatalog(file: BuildingCatalog): BuildingCatalog? {
+        val document = buildingCache?.let { cache -> withContext(ioContext) { cache.get() } }
+        val restored = document?.run { listJson.toCachedBuildingList() }
+        if (document == null || restored == null) return null
+        syncedAtMillis = document.syncedAt
+        return fromServer(file, restored)
+    }
 
     private fun fromServer(bundled: BuildingCatalog, server: BuildingList): BuildingCatalog {
         val symbols = server.buildings.map { item -> item.building.symbol }.toSet()
@@ -165,11 +206,13 @@ internal fun assetRepository(
     assets: AssetManager,
     ioContext: CoroutineContext = Dispatchers.IO,
     listBuildings: (suspend () -> ApiResult<BuildingList>)? = null,
+    buildingCache: BuildingCacheDao? = null,
 ): BuildingCatalogRepository =
     BuildingCatalogRepository(
         ioContext = ioContext,
         listBuildings = listBuildings,
         readGeoJson = { assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() } },
+        buildingCache = buildingCache,
     )
 
 private val NOT_FOR_VISITORS = setOf("emergency", "exit", "garage")
