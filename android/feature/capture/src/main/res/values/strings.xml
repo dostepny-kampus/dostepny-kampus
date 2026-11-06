@@ -27,4 +27,15 @@
     <string name="kierunek_wschod">Wsch</string>
     <string name="kierunek_poludnie">Pd</string>
     <string name="kierunek_zachod">Zach</string>
+    <string name="budynek_szukanie">Sprawdzamy, przy którym budynku jesteś…</string>
+    <string name="budynek_pytanie">Czy to budynek %1$s?</string>
+    <string name="budynek_w_obrysie">Punkt leży w obrysie budynku</string>
+    <string name="budynek_odleglosc">%1$d m od punktu</string>
+    <string name="budynek_potwierdz">Potwierdź</string>
+    <string name="budynek_wybierz_inny">Wybierz inny</string>
+    <string name="budynek_wybierz">Wybierz budynek</string>
+    <string name="budynek_poza">Poza budynkiem</string>
+    <string name="budynek_wybrany">Budynek: %1$s</string>
+    <string name="budynek_miejsce_poza">Miejsce: poza budynkiem</string>
+    <string name="budynek_anuluj">Anuluj</string>
 </resources>
