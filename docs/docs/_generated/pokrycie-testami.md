@@ -9,7 +9,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Stan | Liczba |
 | --- | --- |
-| Pełny test | 2 |
+| Pełny test | 3 |
 | Tylko częściowo | 12 |
 | Bez testu | 152 |
 
@@ -21,6 +21,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `budynki-bez-szczegolow.feature` | W budynku podstawowym zgłoszenie można złożyć zawsze | BR-G1 | — | brak |
 | `budynki-bez-szczegolow.feature` | Poza konturem aplikacja pokazuje stan „Poza budynkiem” i proponuje najbliższy budynek | BR-G2, US6.2 | — | brak |
 | `budynki-bez-szczegolow.feature` | Propozycję najbliższego budynku można wybrać albo odrzucić | BR-G2, US6.2 | — | brak |
+| `budynki-bez-szczegolow.feature` | Punkt dokładnie na krawędzi konturu jest poza budynkiem z propozycją | BR-G2, US6.2 | `feature/capture · MeasureViewModelTest.us6_2_edge_suggests_not_inside` | pełny |
 | `budynki-bez-szczegolow.feature` | Zgłoszenie szybkie poza konturem budynku zapisuje się bez błędu | BR-G2 | — | brak |
 | `budynki-bez-szczegolow.feature` | Budynek z uszkodzonymi danymi planów działa jako budynek podstawowy | BR-G3, US16.2 | — | brak |
 | `budynki-bez-szczegolow.feature` | Zgłoszenie w budynku po nieudanym imporcie planów | BR-G3 | — | brak |

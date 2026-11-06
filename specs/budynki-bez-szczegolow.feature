@@ -77,6 +77,19 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | wybierze budynek A-1          | ma budynek A-1          |
         | odrzuci podpowiedź budynku    | jest „poza budynkiem”   |
 
+    @US6.2
+    Szablon scenariusza: Punkt dokładnie na krawędzi konturu jest poza budynkiem z propozycją
+      Zakładając, że Zbierający stoi dokładnie <miejsce> budynku A-1
+      Jeżeli skończy uśrednianie pozycji
+      Wtedy widzi stan „Poza budynkiem” bez komunikatu o błędzie
+      Oraz aplikacja podpowiada budynek A-1 do potwierdzenia
+      Ale aplikacja nie przypisuje budynku A-1 bez potwierdzenia
+
+      Przykłady:
+        | miejsce                      |
+        | na krawędzi konturu          |
+        | na krawędzi dziedzińca       |
+
     Scenariusz: Zgłoszenie szybkie poza konturem budynku zapisuje się bez błędu
       Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
       Oraz stoi na chodniku przed wejściem głównym A-1, poza konturem budynku
