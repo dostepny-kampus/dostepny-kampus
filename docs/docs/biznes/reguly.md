@@ -10,7 +10,8 @@ Kolumna „Źródło” wskazuje potrzebę (N), kryterium akceptacji (`USx.y`), 
 | --- | --- | --- | --- |
 | BR-7 | Zgłoszenie z pomiaru precyzyjnego zapisuje się tylko z typem bariery, uciążliwością 1–3 i co najmniej jednym zdjęciem. W budynku trzeba podać piętro, a typ TB-29 „inna bariera” wymaga opisu. Wyjątki: zgłoszenie „bariera usunięta” nie wymaga uciążliwości (BR-19), a zmiana oznaczenia wejścia — typu ani uciążliwości (BR-24). | Weryfikator ocenia barierę po zdjęciu i typie. Bez opisu „inna bariera” nic nie mówi. | US7.1, US7.2, US7.3, T6, słownik (TB-29) |
 | BR-8 | Zgłoszenie szybkie składa tylko osoba zalogowana. Wymaga zdjęcia, bieżącej pozycji i grupy barier, najwyżej w 3 krokach. Gościa niezalogowanego aplikacja prosi o logowanie przed zdjęciem. | Senior nie przejdzie długiego formularza (N3, N4). Konto chroni przed spamem. | US4.1, US4.3, US14.2, T7–T9, [przypis 2](role.md#przypisy) |
-| BR-9 | Zgłoszenie ma status „lokalne”, dopóki serwer nie potwierdzi odbioru. Telefon nie usuwa go wcześniej. Po powrocie sieci synchronizacja rusza bez działania użytkownika. | W piwnicy nie ma sieci, a zgłoszenie nie może zginąć (N6). | US4.2, US9.1, US9.2, T10, T11, T13, NFR-5, NFR-6, NFR-8 |
+| BR-9 | Zgłoszenie ma status „lokalne”, dopóki serwer nie potwierdzi odbioru. Telefon nie usuwa go wcześniej. Po powrocie sieci synchronizacja rusza bez działania użytkownika. Awaria serwera (odpowiedź 5xx) działa jak brak sieci: zgłoszenie zostaje „lokalne”, a wysyłka ponawia się sama. Odmowy serwera opisuje BR-26. | W piwnicy nie ma sieci, a zgłoszenie nie może zginąć (N6). | US4.2, US9.1, US9.2, US9.4, T10, T11, T13, NFR-5, NFR-6, NFR-8, NFR-50 |
+| BR-26 | Gdy serwer nie przyjmuje zgłoszenia z kolejki, telefon go nie usuwa (BR-9). (1) Wygasłe zalogowanie (401): zgłoszenie zostaje „lokalne”, aplikacja prosi o ponowne zalogowanie i po nim wysyła zgłoszenie bez działania użytkownika. (2) Odebrana rola (403) oraz odrzucona treść albo zdjęcie (400, 404, 413): zgłoszenie dostaje status „Nie wysłano” z powodem, a aplikacja nie ponawia go sama. Ponowny zapis z formularza wysyła je znów i zmienia status na „lokalne”. (3) Licznik „Czeka na wysłanie” nie liczy zgłoszeń „Nie wysłano”. Dotyczy też zmiany oznaczenia wejścia (BR-24); zgłoszenia szybkiego Odwiedzającego nie pokazuje lista (US4.4). | Zgłoszenie, które serwer i tak odrzuci, nie może ginąć ani wysyłać się w kółko, a Zbierający musi widzieć, że wymaga jego uwagi (N6). | US9.4, US9.5, US8.1, US14.1, US14.4, BR-9, NFR-50 |
 | BR-10 | Gdy przy synchronizacji edycji serwer ma inną wersję zgłoszenia, żadna wersja nie zapisuje się sama. Zbierający wybiera wersję własną albo z serwera. Do wyboru zmiana czeka w telefonie. | Nikt nie traci cudzej ani własnej pracy (N7). | US9.3, T12, NFR-9, BR-3 |
 
 Wybór wersji własnej działa jak zwykła edycja w obecnym statusie na serwerze. Zgłoszenie wysłane lub w weryfikacji dostaje nową wersję. Odrzucone wraca do kolejki, a zmiana przyjętego tworzy nowe zgłoszenie (BR-3, BR-18).
@@ -89,6 +90,8 @@ Statusy pochodzą ze słownika i US8.1. Każde zgłoszenie, także szybkie i zmi
 | --- | --- | --- | --- |
 | — | lokalne | Zbierający, Odwiedzający | zapis w telefonie, także bez sieci (BR-7, BR-8, BR-24) |
 | lokalne | lokalne | Zbierający | edycja przed wysłaniem; konfliktu nie ma, bo serwer nie zna zgłoszenia |
+| lokalne | Nie wysłano | system | serwer odmówił: 403, 400, 404 albo 413 (BR-26); przy 5xx i 401 status zostaje „lokalne” (BR-9, BR-26) |
+| Nie wysłano | lokalne | Zbierający | ponowny zapis z formularza; zgłoszenie wysyła się znów (BR-26) |
 | lokalne | wysłane | system | serwer potwierdził odbiór (BR-9) |
 | wysłane | wysłane | Zbierający (autor) | edycja tworzy nową wersję (BR-3); przy innej wersji na serwerze — BR-10 |
 | wysłane | w weryfikacji | Weryfikator | nie jest autorem (BR-4); zgłoszenia nie wziął nikt inny (BR-11) |
@@ -102,6 +105,8 @@ Statusy pochodzą ze słownika i US8.1. Każde zgłoszenie, także szybkie i zmi
 | przyjęte | archiwalne | system | przyjęto zmianę tego zgłoszenia albo zgłoszenie „bariera usunięta” (BR-18, BR-19, US10.6) |
 
 Status „archiwalne” jest końcowy: zgłoszenie nie wraca na mapę i nie jest usuwane po 90 dniach.
+
+„Nie wysłano” to status tylko lokalny: serwer go nie zna. Zgłoszenie z tym statusem zostaje w telefonie, nie liczy się do „Czeka na wysłanie” (BR-26) i nie przechodzi dalej, dopóki Zbierający go nie zapisze ponownie.
 
 Niewysłana edycja nie zmienia statusu. Lista zgłoszeń (C3) pokazuje przy zgłoszeniu znak „zmiana czeka na wysłanie” obok niezmienionego statusu, by Zbierający wiedział, że edycja jest tylko w telefonie (BR-9).
 
