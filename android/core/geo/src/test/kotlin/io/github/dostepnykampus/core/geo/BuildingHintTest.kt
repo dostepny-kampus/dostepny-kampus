@@ -45,7 +45,7 @@ class BuildingHintTest {
     @Test
     fun us6_2_inside_outline() {
         val hint = hintBuilding(GeoPoint(longitude = LON + SIDE / 2, latitude = LAT + SIDE / 2), listOf(building))
-        assertEquals(BuildingHint(building, distanceMeters = 0.0), hint)
+        assertEquals(BuildingHint(building, distanceMeters = 0.0, isInside = true), hint)
         assertTrue(hint?.isInside == true)
     }
 
