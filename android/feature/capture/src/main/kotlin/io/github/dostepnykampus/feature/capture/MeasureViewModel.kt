@@ -8,6 +8,9 @@ package io.github.dostepnykampus.feature.capture
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.geo.BuildingHint
+import io.github.dostepnykampus.core.geo.hintBuilding
 import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
 import io.github.dostepnykampus.core.location.PositionAverage
@@ -16,6 +19,8 @@ import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.location.Satellite
 import io.github.dostepnykampus.core.location.SatelliteSource
 import io.github.dostepnykampus.core.location.countsInFix
+import io.github.dostepnykampus.core.model.Building
+import io.github.dostepnykampus.core.model.GeoPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
@@ -62,19 +68,45 @@ sealed interface MeasureUiState {
      * @property average średnia z 30 s
      * @property satellites satelity użyte do pozycji według systemów na koniec pomiaru
      * @property sky widoczne satelity na koniec pomiaru (US6.5)
+     * @property place budynek zgłoszenia: podpowiedź albo decyzja Zbierającego (US6.2)
      */
     data class Finished(
         val average: PositionAverage,
         val satellites: Map<GnssSystem, Int>,
         val sky: List<Satellite> = emptyList(),
+        val place: PlaceChoice = PlaceChoice.Locating,
     ) : MeasureUiState
+}
+
+/** Budynek zgłoszenia po pomiarze (US6.2, BR-G2, BR-G4). */
+sealed interface PlaceChoice {
+    /** Podpowiedź jeszcze się liczy. */
+    data object Locating : PlaceChoice
+
+    /**
+     * „Czy to budynek …?”: podpowiedź czeka na decyzję.
+     *
+     * @property hint budynek z odległością od punktu
+     */
+    data class Suggested(val hint: BuildingHint) : PlaceChoice
+
+    /**
+     * Budynek potwierdzony albo wybrany z listy.
+     *
+     * @property building budynek zgłoszenia
+     */
+    data class Chosen(val building: Building) : PlaceChoice
+
+    /** „Poza budynkiem”: wybór Zbierającego albo brak budynku w promieniu 50 m; zgłoszenie bez piętra (BR-G4). */
+    data object Outside : PlaceChoice
 }
 
 /**
  * Pomiar pozycji na ekranie C1 (US6.1, NFR-1). 30 s liczy się od pierwszego odczytu ze znaną dokładnością, więc czas
  * szukania satelitów nie skraca pomiaru. Odbiornik nasłuchuje, gdy ekran jest widoczny i jeszcze 5 s po zniknięciu
  * (obrót ekranu), a po końcu pomiaru przestaje (NFR-27). Wynik zostaje w ViewModelu, więc powrót na ekran go nie
- * kasuje; [repeat] zaczyna od nowa bez limitu (NFR-23).
+ * kasuje; [repeat] zaczyna od nowa bez limitu (NFR-23). Po pomiarze podpowiada budynek z katalogu bez sieci,
+ * a Zbierający go potwierdza, wybiera inny albo zostawia „poza budynkiem” (US6.2).
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -84,8 +116,10 @@ class MeasureViewModel
         private val positions: PositionSource,
         private val satellites: SatelliteSource,
         private val clock: ElapsedClock,
+        private val catalog: BuildingCatalogRepository,
     ) : ViewModel() {
         private val result = MutableStateFlow(Run(attempt = 0, finished = null))
+        private var buildings = emptyList<Building>()
 
         /** Bieżący stan pomiaru. */
         val uiState: StateFlow<MeasureUiState> =
@@ -96,6 +130,50 @@ class MeasureViewModel
         /** „Powtórz pomiar”: nowe szukanie satelitów i pełne 30 s. */
         fun repeat() {
             result.update { Run(attempt = it.attempt + 1, finished = null) }
+        }
+
+        /** „Potwierdź”: podpowiedziany budynek staje się budynkiem zgłoszenia. */
+        fun confirm() {
+            choose { place -> (place as? PlaceChoice.Suggested)?.let { PlaceChoice.Chosen(it.hint.building) } }
+        }
+
+        /**
+         * „Wybierz inny”: budynek z listy zamiast podpowiedzi.
+         *
+         * @param symbol symbol wybranego budynku
+         */
+        fun choose(symbol: String) {
+            val building = buildings.firstOrNull { it.symbol == symbol } ?: return
+            choose { PlaceChoice.Chosen(building) }
+        }
+
+        /** „Poza budynkiem”: zgłoszenie bez budynku i piętra (BR-G2). */
+        fun outside() {
+            choose { PlaceChoice.Outside }
+        }
+
+        private fun choose(change: (PlaceChoice) -> PlaceChoice?) {
+            result.update { run ->
+                val finished = run.finished
+                val place = finished?.let { change(it.place) }
+                if (finished != null && place != null) run.copy(finished = finished.copy(place = place)) else run
+            }
+        }
+
+        // Podpowiedź z katalogu z pliku albo już pobranego, bez czekania na serwer (NFR-4: do 2 s bez sieci).
+        private fun locate(attempt: Int, point: GeoPoint) {
+            viewModelScope.launch {
+                buildings = catalog.catalogUpdates().first().buildings
+                val place = hintBuilding(point, buildings)?.let(PlaceChoice::Suggested) ?: PlaceChoice.Outside
+                result.update { run ->
+                    val finished = run.finished
+                    if (run.attempt == attempt && finished?.place == PlaceChoice.Locating) {
+                        run.copy(finished = finished.copy(place = place))
+                    } else {
+                        run
+                    }
+                }
+            }
         }
 
         private fun measurement(attempt: Int): Flow<MeasureUiState> =
@@ -126,6 +204,7 @@ class MeasureViewModel
             }.onEach { state ->
                 if (state is MeasureUiState.Finished) {
                     result.update { if (it.attempt == attempt) it.copy(finished = state) else it }
+                    locate(attempt, state.average.point)
                 }
             }
 
