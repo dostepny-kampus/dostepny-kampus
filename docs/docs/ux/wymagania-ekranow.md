@@ -286,8 +286,8 @@ V3 nie powtarza V2. Karta pokazuje wszystkie wejścia z wejściem zalecanym na g
 | --- | --- |
 | Zwykły | zdanie z odpowiedzią i wejścia dostępne |
 | Pusta lista wejść odwiedzających | „Nie mamy jeszcze danych o wejściach do budynku A-2.” Symbol zależy od budynku. Bez liczników i rady szukania wejść lub barier (US3.1, US17.1, PW-10) |
-| Brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.” (US3.1, UC4 4a, PW-10) |
-| Brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne: brak danych o 2 z 3 wejść. Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście z datą.” Słowa „z datą” są tylko wtedy, gdy wejścia mają datę i źródło oznaczenia; inaczej zdanie kończy się na „każde wejście” (PW-10, US17.3). Liczby zależą od budynku, także wtedy, gdy danych brak o wszystkich wejściach (UC4 4b, US17.1) |
+| Brak wejścia dostępnego | „Budynek B-8 nie ma wejścia dostępnego. Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.” (US3.1, UC4 4a, PW-10) |
+| Brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-8 ma wejście dostępne: brak danych o 2 z 3 wejść. Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście z datą.” Słowa „z datą” są tylko wtedy, gdy wejścia mają datę i źródło oznaczenia; inaczej zdanie kończy się na „każde wejście” (PW-10, US17.3). Liczby zależą od budynku, także wtedy, gdy danych brak o wszystkich wejściach (UC4 4b, US17.1) |
 | Brak sieci | dane z telefonu z linią „Bez internetu · dane z 12.11.2026” (NFR-10) |
 
 Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu, a nie samym brakiem wyniku (US3.1). TalkBack czyta je jako pierwsze (NFR-18).

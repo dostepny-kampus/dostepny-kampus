@@ -6,8 +6,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   Założenia:
     Zakładając, że w aplikacji są między innymi budynki szczegółowe A-1, B-1, C-13, D-1 i D-2
     Oraz budynek A-1 ma 6 wejść, z których wejście główne ma schody, a wejściem dostępnym jest inne wejście
-    # Dane testowe dla US3.1, a nie stan faktyczny budynku B-4.
-    Oraz w danych testowych budynek podstawowy B-4 ma wejścia wyłącznie z oznaczeniem „niedostępne”
+    # Dane testowe dla US3.1, a nie stan faktyczny budynku B-8.
+    Oraz w danych testowych budynek podstawowy B-8 ma wejścia wyłącznie z oznaczeniem „niedostępne”
 
   @US1.1
   Szablon scenariusza: Wyszukanie budynku po symbolu w różnym zapisie
@@ -85,7 +85,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
 
   @US3.1 @BR-25
   Scenariusz: Budynek bez wejścia dostępnego nie ma wejścia zalecanego
-    Zakładając, że Gość niezalogowany otworzył kartę budynku B-4
+    Zakładając, że Gość niezalogowany otworzył kartę budynku B-8
     Jeżeli przejrzy listę wejść
     Wtedy żadne wejście nie ma napisu „Zalecane”
     Oraz lista zaczyna się od wejść z oznaczeniem „niedostępne”
@@ -117,7 +117,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Przykłady:
       | budynek | dane                                                 | napis                   |
       | A-1     | budynek A-1 ma wejście z oznaczeniem „dostępne”      | Wejście dostępne        |
-      | B-4     | wszystkie wejścia B-4 mają oznaczenie „niedostępne”  | Brak wejścia dostępnego |
+      | B-8     | wszystkie wejścia B-8 mają oznaczenie „niedostępne”  | Brak wejścia dostępnego |
       | C-13    | wszystkie wejścia C-13 mają oznaczenie „brak danych” | Brak danych o wejściach |
       | A-2     | budynek A-2 nie ma wejść w danych                    | Brak danych o wejściach |
 
@@ -140,9 +140,9 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   @US3.1
   Scenariusz: Brak wejścia dostępnego jest powiedziany wprost
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
-    Jeżeli dotknie budynku B-4
+    Jeżeli dotknie budynku B-8
     Oraz wybierze „Sprawdź, którędy wejść”
-    Wtedy widzi zdanie, że budynek B-4 nie ma wejścia dostępnego
+    Wtedy widzi zdanie, że budynek B-8 nie ma wejścia dostępnego
     Ale ekran nie jest pusty i nie pokazuje samego braku wyniku
 
   @US1.4
@@ -170,9 +170,9 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
 
   @US2.3
   Scenariusz: Skrót nie pokazuje faktu bez potwierdzenia w danych
-    # Dane testowe, a nie stan faktyczny budynku B-4.
-    Zakładając, że dane budynku B-4 nie mówią nic o windzie
-    Jeżeli Gość niezalogowany otworzy kartę budynku B-4
+    # Dane testowe, a nie stan faktyczny budynku B-8.
+    Zakładając, że dane budynku B-8 nie mówią nic o windzie
+    Jeżeli Gość niezalogowany otworzy kartę budynku B-8
     Wtedy skrót faktów nie ma pozycji „Winda”
 
   @US2.4 @BR-6
