@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.capture
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -88,6 +89,20 @@ class ReportScreenTest {
 
         assertEquals(ReportEdit.Floor(null), edits.last())
         compose.onNodeWithText("Wpisz liczbę całkowitą, np. 0 albo -1.").assertIsDisplayed()
+    }
+
+    @Test
+    fun us7_4_new_building_empty_floor() {
+        val state = mutableStateOf(ReportUiState(form = ReportForm(place = A1)))
+        val actions = ReportActions(onEdit = { edits.add(it) }, onChangePlace = {}, onSave = {}, onBack = {})
+        compose.setContent { DostepnyKampusTheme { ReportContent(state = state.value, actions = actions) } }
+        compose.onNodeWithText("Numer piętra").performTextInput("2")
+        assertEquals(1, compose.onAllNodes(hasText("2")).fetchSemanticsNodes().size)
+
+        state.value = ReportUiState(form = ReportForm(place = A1.copy(buildingSymbol = "C-13")))
+        compose.waitForIdle()
+
+        assertEquals(0, compose.onAllNodes(hasText("2")).fetchSemanticsNodes().size)
     }
 
     @Test

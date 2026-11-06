@@ -58,8 +58,8 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
                 PlaceCard(place = state.form.place, onChangePlace = actions.onChangePlace)
-                if (state.form.place.buildingSymbol != null) {
-                    FloorSection(floor = state.form.floor, onEdit = actions.onEdit)
+                state.form.place.buildingSymbol?.let { building ->
+                    FloorSection(building = building, floor = state.form.floor, onEdit = actions.onEdit)
                 }
                 TypeSection(type = state.form.barrierType, onEdit = actions.onEdit)
                 SeveritySection(severity = state.form.severity, onEdit = actions.onEdit)

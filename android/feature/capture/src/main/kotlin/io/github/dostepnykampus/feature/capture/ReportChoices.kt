@@ -36,11 +36,14 @@ import io.github.dostepnykampus.core.designsystem.nameRes
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.BarrierType
 
-/** Piętro wpisane liczbą w budynku bez planu PWr, z polem „Półpiętro” (US7.2, BR-G1, PW-6). */
+/**
+ * Piętro wpisane liczbą w budynku bez planu PWr, z polem „Półpiętro” (US7.2, BR-G1, PW-6).
+ * Wpisany tekst należy do budynku: po „Zmień miejsce” na inny budynek pole startuje od piętra ze stanu.
+ */
 @Composable
-internal fun FloorSection(floor: ReportFloor?, onEdit: (ReportEdit) -> Unit) {
+internal fun FloorSection(building: String, floor: ReportFloor?, onEdit: (ReportEdit) -> Unit) {
     val numbered = floor as? ReportFloor.Numbered
-    var text by rememberSaveable { mutableStateOf(numbered?.run { number.toString() }.orEmpty()) }
+    var text by rememberSaveable(building) { mutableStateOf(numbered?.run { number.toString() }.orEmpty()) }
     val isMezzanine = numbered?.isMezzanine == true
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         SectionTitle(stringResource(R.string.formularz_pietro))
