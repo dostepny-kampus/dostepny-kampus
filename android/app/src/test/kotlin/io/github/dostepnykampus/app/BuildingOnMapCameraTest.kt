@@ -9,6 +9,7 @@ import android.view.accessibility.AccessibilityManager
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -101,13 +102,16 @@ class BuildingOnMapCameraTest {
     private var touch: (List<String>) -> Unit = {}
     private var mapSize = IntSize.Zero
     private var density = 1f
+    private var reportsIdle = false
     private val choice = TestMapListChoice()
     private val repository = BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { CATALOG }
     private val fakeMap =
-        CampusMapView { data: CampusMapData, camera, _, onBuildingsTouch, modifier: Modifier ->
+        CampusMapView { data: CampusMapData, camera, onCameraIdle, onBuildingsTouch, modifier: Modifier ->
             shown += data to camera
             touch = onBuildingsTouch
             density = LocalDensity.current.density
+            // Jak natywna mapa po ruchu: bezczynność z otrzymaną kamerą, gdy test o to prosi.
+            LaunchedEffect(camera) { if (reportsIdle) onCameraIdle(camera) }
             Box(modifier.onSizeChanged { mapSize = it })
         }
 
@@ -257,5 +261,29 @@ class BuildingOnMapCameraTest {
         pan("prawo", times = 1)
         showOnMap("C-13")
         assertShown("C-13")
+    }
+
+    // Wiersz: K6, to samo „Pokaż budynek na mapie” po przesunięciu mapy strzałkami → kamera znów na budynku, US2.9.
+    @Test
+    fun us2_9_same_show_again() {
+        showOnMap("T-9")
+        pan("prawo", times = 4)
+        showOnMap("T-9")
+        assertShown("T-9")
+    }
+
+    // Wiersz: K3, po „Pokaż” i bezczynności kamery mała karta innego budynku i „Wstecz” → widok jak przed kartą, decyzja 83.
+    @Test
+    fun us2_8_back_after_show() {
+        reportsIdle = true
+        showOnMap("T-9")
+        compose.waitForIdle()
+        val before = shown.last().second
+        compose.runOnUiThread { touch(listOf("A-1")) }
+        compose.waitForIdle()
+        compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        compose.waitForIdle()
+        assertShown("T-9")
+        assertEquals(before, shown.last().second)
     }
 }
