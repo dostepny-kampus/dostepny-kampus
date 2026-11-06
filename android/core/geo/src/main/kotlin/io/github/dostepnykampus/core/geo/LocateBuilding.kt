@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.geo
@@ -17,6 +17,7 @@ import org.maplibre.spatialk.geojson.PolygonGeometry
 import org.maplibre.spatialk.geojson.Position
 import org.maplibre.spatialk.turf.booleans.contains
 import org.maplibre.spatialk.turf.measurement.distance
+import org.maplibre.spatialk.units.International
 
 /**
  * Podpowiedź budynku dla punktu, bez sieci (US6.2, to-be T3 i T4, BR-G2). Obliczenia wykonuje Turf.
@@ -41,13 +42,15 @@ fun locateBuilding(point: GeoPoint, buildings: List<Building>): LocateResult {
     return if (inside != null) {
         LocateResult.InsideOutline(inside)
     } else {
-        LocateResult.OutsideBuilding(
-            buildings.minByOrNull { building ->
-                building.outline.allRings().minOf { ring ->
-                    distance(position, LineString(ring.map(GeoPoint::toPosition)))
-                }
-            },
-        )
+        LocateResult.OutsideBuilding(buildings.minByOrNull { building -> building.edgeDistanceMeters(point) })
+    }
+}
+
+/** Odległość w metrach na ziemi od [point] do najbliższej krawędzi konturu, także krawędzi otworu. */
+internal fun Building.edgeDistanceMeters(point: GeoPoint): Double {
+    val position = point.toPosition()
+    return outline.allRings().minOf { ring ->
+        distance(position, LineString(ring.map(GeoPoint::toPosition))).toDouble(International.Meters)
     }
 }
 
