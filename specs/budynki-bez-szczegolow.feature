@@ -78,7 +78,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | odrzuci podpowiedź budynku    | jest „poza budynkiem”   |
 
     @US6.2
-    Szablon scenariusza: Punkt dokładnie na krawędzi konturu jest poza budynkiem, z propozycją budynku
+    Szablon scenariusza: Punkt dokładnie na krawędzi konturu jest poza budynkiem z propozycją
       Zakładając, że Zbierający stoi dokładnie <miejsce> budynku A-1
       Jeżeli skończy uśrednianie pozycji
       Wtedy widzi stan „Poza budynkiem” bez komunikatu o błędzie
