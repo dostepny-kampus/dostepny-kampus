@@ -165,6 +165,7 @@ class MeasureViewModelTest {
 
     // Wiersz: G5, decyzja 120 pkt 3, decyzja 137, US6.2 — punkt na krawędzi konturu A-1: podpowiedź A-1 do
     // potwierdzenia, nie w konturze i bez przypisania budynku.
+    // Scenariusz: budynki-bez-szczegolow.feature: Punkt dokładnie na krawędzi konturu jest poza budynkiem z propozycją
     @Test
     fun us6_2_edge_suggests_not_inside() =
         runTest(dispatcher) {

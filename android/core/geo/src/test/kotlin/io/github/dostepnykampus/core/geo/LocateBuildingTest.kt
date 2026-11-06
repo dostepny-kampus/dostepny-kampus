@@ -50,6 +50,18 @@ class LocateBuildingTest {
                 ),
         )
 
+    private val triangleBuilding =
+        Building(
+            symbol = "D-1",
+            name = "Budynek z ukośną krawędzią",
+            outline =
+                GeoPolygon(
+                    listOf(
+                        listOf(point(x = 30, y = 0), point(x = 38, y = 0), point(x = 30, y = 8), point(x = 30, y = 0)),
+                    ),
+                ),
+        )
+
     private val buildings = listOf(courtyardBuilding, twoPartBuilding)
 
     @Test
@@ -115,6 +127,38 @@ class LocateBuildingTest {
                 "punkt ($x, $y) w konturze",
             )
         }
+    }
+
+    // Wiersz: G1, decyzja 137, US6.2, BR-G2 — punkt dokładnie na ukośnej krawędzi (30,8)-(38,0) jest poza budynkiem.
+    @Test
+    fun us6_2_diagonal_edge_outside() {
+        assertEquals(
+            LocateResult.OutsideBuilding(triangleBuilding),
+            locateBuilding(point(x = 34, y = 4), listOf(triangleBuilding)),
+        )
+    }
+
+    // Wiersz: G3, decyzja 137, O5 — punkt ściśle w trójkącie, ale w prostokącie ograniczającym ukośną krawędź.
+    @Test
+    fun us6_2_inside_diagonal_bbox() {
+        assertEquals(
+            LocateResult.InsideOutline(triangleBuilding),
+            locateBuilding(point(x = 32, y = 2), listOf(triangleBuilding)),
+        )
+    }
+
+    // Wiersz: G3, decyzja 137, O5 — punkt na przedłużeniu poziomej krawędzi dziedzińca, poza jej odcinkiem, jest w
+    // budynku (korpus między krawędzią zewnętrzną a dziedzińcem).
+    @Test
+    fun us6_2_edge_line_extension_in() {
+        assertEquals(LocateResult.InsideOutline(courtyardBuilding), locateBuilding(point(x = 2, y = 3), buildings))
+    }
+
+    // Wiersz: G3, decyzja 137, O5 — punkt około 4 mm w głąb od krawędzi (1/4096 kroku siatki) jest w budynku.
+    @Test
+    fun us6_2_four_mm_inside_edge_in() {
+        val almostOnEdge = point(x = 8.0 - 1.0 / 4096, y = 4.0)
+        assertEquals(LocateResult.InsideOutline(courtyardBuilding), locateBuilding(almostOnEdge, buildings))
     }
 
     @Test
