@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -33,11 +34,46 @@ class BuildingHintTest {
                 ),
         )
 
+    // Siatka o kroku 1/4096 stopnia (około 17 m), dokładnie zapisywalna w `Double`: punkt na krawędzi leży na niej.
+    private val gridBuilding =
+        Building(
+            symbol = "A-1",
+            name = "Budynek z dziedzińcem",
+            outline = GeoPolygon(listOf(gridSquare(origin = 0, size = 8), gridSquare(origin = 3, size = 2))),
+        )
+
     @Test
     fun us6_2_inside_outline() {
         val hint = hintBuilding(GeoPoint(longitude = LON + SIDE / 2, latitude = LAT + SIDE / 2), listOf(building))
-        assertEquals(BuildingHint(building, distanceMeters = 0.0), hint)
+        assertEquals(BuildingHint(building, distanceMeters = 0.0, isInside = true), hint)
         assertTrue(hint?.isInside == true)
+    }
+
+    // Wiersz: G1, decyzja 137, US6.2, BR-G2 — punkt na krawędzi konturu: podpowiedź budynku, 0 m, ale nie w konturze.
+    @Test
+    fun us6_2_edge_hint_not_inside() {
+        val hint = checkNotNull(hintBuilding(gridPoint(x = 8.0, y = 4.0), listOf(gridBuilding)))
+        assertEquals(gridBuilding, hint.building)
+        assertEquals(0.0, hint.distanceMeters, EXACT)
+        assertFalse(hint.isInside)
+    }
+
+    // Wiersz: G2, decyzja 137, BR-G2 — to samo dla krawędzi dziedzińca.
+    @Test
+    fun br_g2_courtyard_hint_not_in() {
+        val hint = checkNotNull(hintBuilding(gridPoint(x = 3.0, y = 4.0), listOf(gridBuilding)))
+        assertEquals(gridBuilding, hint.building)
+        assertEquals(0.0, hint.distanceMeters, EXACT)
+        assertFalse(hint.isInside)
+    }
+
+    // Wiersz: G3, US6.2 — punkt ściśle w konturze tuż przy krawędzi: ten budynek, 0 m, w konturze.
+    @Test
+    fun us6_2_near_edge_hint_inside() {
+        val hint = checkNotNull(hintBuilding(gridPoint(x = 7.9375, y = 4.0), listOf(gridBuilding)))
+        assertEquals(gridBuilding, hint.building)
+        assertEquals(0.0, hint.distanceMeters, EXACT)
+        assertTrue(hint.isInside)
     }
 
     // Wiersze: 30 m i 50 m od konturu → budynek do potwierdzenia.
@@ -59,6 +95,14 @@ class BuildingHintTest {
         assertNull(hintBuilding(north(meters = 1.0), emptyList()))
     }
 
+    private fun gridSquare(origin: Int, size: Int): List<GeoPoint> =
+        listOf(0 to 0, size to 0, size to size, 0 to size, 0 to 0).map { (dx, dy) ->
+            gridPoint(x = (origin + dx).toDouble(), y = (origin + dy).toDouble())
+        }
+
+    private fun gridPoint(x: Double, y: Double): GeoPoint =
+        GeoPoint(longitude = GRID_LON + x * GRID_STEP, latitude = GRID_LAT + y * GRID_STEP)
+
     private fun north(meters: Double): GeoPoint =
         GeoPoint(longitude = LON + SIDE / 2, latitude = LAT + SIDE + meters / METERS_PER_DEGREE)
 
@@ -68,5 +112,9 @@ class BuildingHintTest {
         const val SIDE = 0.001
         const val METERS_PER_DEGREE = 111_195.0
         const val METER = 0.5
+        const val EXACT = 1e-6
+        const val GRID_LON = 17.0625
+        const val GRID_LAT = 51.109375
+        const val GRID_STEP = 1.0 / 4096
     }
 }
