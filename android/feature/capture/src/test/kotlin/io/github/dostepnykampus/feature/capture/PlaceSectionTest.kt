@@ -48,7 +48,7 @@ class PlaceSectionTest {
     // Wiersz: „Czy to budynek A-1?”, pod pytaniem nazwa z danych i odległość od punktu.
     @Test
     fun us6_2_hint_name_and_distance() {
-        show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 12.4)))
+        show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 12.4, isInside = false)))
         compose.onNodeWithText("Czy to budynek A-1?").assertIsDisplayed()
         compose.onNodeWithText("Gmach Główny").assertIsDisplayed()
         compose.onNodeWithText("12 m od punktu").assertIsDisplayed()
@@ -58,7 +58,7 @@ class PlaceSectionTest {
 
     @Test
     fun us6_2_choose_from_list() {
-        show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 0.0)))
+        show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 0.0, isInside = true)))
         compose.onNodeWithText("Punkt leży w obrysie budynku").assertIsDisplayed()
         compose.onNodeWithText("Wybierz inny").performClick()
         compose.onNodeWithText("B-1 Budynek B-1").performClick()
@@ -67,7 +67,7 @@ class PlaceSectionTest {
 
     @Test
     fun br_g2_leave_outside() {
-        show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 30.0)))
+        show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 30.0, isInside = false)))
         compose.onNodeWithText("Poza budynkiem").performClick()
         assertEquals(listOf("outside"), actions)
     }
