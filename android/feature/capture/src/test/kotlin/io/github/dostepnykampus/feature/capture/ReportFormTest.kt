@@ -17,13 +17,14 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-/** Formularz C2: bez typu, uciążliwości i zdjęcia nie da się zapisać, a TB-29 wymaga opisu (US7.1–US7.3). */
+/** Formularz C2: bez typu, uciążliwości, zdjęcia i piętra w budynku nie ma zapisu; TB-29 wymaga opisu (BR-7). */
 class ReportFormTest {
     @Test
     fun `pusty ma wszystkie braki`() {
         assertEquals(
             ReportCheck.Incomplete(
                 listOf(
+                    ReportFormError.MISSING_FLOOR,
                     ReportFormError.MISSING_BARRIER_TYPE,
                     ReportFormError.MISSING_SEVERITY,
                     ReportFormError.MISSING_PHOTO,
@@ -41,6 +42,13 @@ class ReportFormTest {
     @Test
     fun `brak tylko zdjęcia`() {
         assertEquals(listOf(ReportFormError.MISSING_PHOTO), complete().copy(photoIds = emptyList()).errors())
+    }
+
+    @Test
+    fun `w budynku brak piętra`() {
+        val noFloor = complete().copy(floor = null)
+
+        assertEquals(ReportCheck.Incomplete(listOf(ReportFormError.MISSING_FLOOR)), noFloor.check())
     }
 
     @Test
