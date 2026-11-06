@@ -286,8 +286,8 @@ V3 nie powtarza V2. Karta pokazuje wszystkie wejścia z wejściem zalecanym na g
 | --- | --- |
 | Zwykły | zdanie z odpowiedzią i wejścia dostępne |
 | Pusta lista wejść odwiedzających | „Nie mamy jeszcze danych o wejściach do budynku A-2.” Symbol zależy od budynku. Bez liczników i rady szukania wejść lub barier (US3.1, US17.1, PW-10) |
-| Brak wejścia dostępnego | „Budynek B-4 nie ma wejścia dostępnego. Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.” (US3.1, UC4 4a, PW-10) |
-| Brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-4 ma wejście dostępne: brak danych o 2 z 3 wejść. Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście z datą.” Słowa „z datą” są tylko wtedy, gdy wejścia mają datę i źródło oznaczenia; inaczej zdanie kończy się na „każde wejście” (PW-10, US17.3). Liczby zależą od budynku, także wtedy, gdy danych brak o wszystkich wejściach (UC4 4b, US17.1) |
+| Brak wejścia dostępnego | „Budynek B-8 nie ma wejścia dostępnego. Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.” (US3.1, UC4 4a, PW-10) |
+| Brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-8 ma wejście dostępne: brak danych o 2 z 3 wejść. Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście z datą.” Słowa „z datą” są tylko wtedy, gdy wejścia mają datę i źródło oznaczenia; inaczej zdanie kończy się na „każde wejście” (PW-10, US17.3). Liczby zależą od budynku, także wtedy, gdy danych brak o wszystkich wejściach (UC4 4b, US17.1) |
 | Brak sieci | dane z telefonu z linią „Bez internetu · dane z 12.11.2026” (NFR-10) |
 
 Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu, a nie samym brakiem wyniku (US3.1). TalkBack czyta je jako pierwsze (NFR-18).
@@ -528,7 +528,7 @@ Poza budynkiem pola piętra nie ma (BR-G4). C2 otwiera się z C1, z C3 przy edyc
 | Zwykły — nowe zgłoszenie | puste pola, miejsce z C1 |
 | Edycja | pola z zapisanymi wartościami (US8.3) |
 | Wyjście bez zapisu | po „Wstecz” z niezapisanymi zmianami: „Wyjść bez zapisu? Wpisane pola nie zostaną zapisane.” Przyciski „Wyjdź bez zapisu” i „Wróć do formularza” (US7.4, NFR-23) |
-| Błąd walidacji | nad formularzem „Brakuje typu bariery. Uzupełnij to pole, aby zapisać.”, a przy polu ten sam tekst (PW-10); zapis się nie wykonuje (US7.1, US7.3) |
+| Błąd walidacji | po „Zapisz” nad formularzem pierwszy brak, np. „Brakuje typu bariery. Uzupełnij to pole, aby zapisać.”, a przy każdym brakującym polu jego tekst: „Brakuje uciążliwości. Uzupełnij to pole, aby zapisać.”, „Brakuje zdjęcia. Zrób zdjęcie, aby zapisać.”, „Brakuje opisu. Przy typie „inna bariera” opis jest obowiązkowy.” (PW-10); opis z samych spacji to brak opisu. Po pierwszej próbie braki znikają na bieżąco, gdy pole zostanie uzupełnione; zapis się nie wykonuje (US7.1, US7.3) |
 | Brak sieci | zapis działa, zgłoszenie dostaje status „lokalne”, na ekranie „W telefonie” (US9.1, PW-12) |
 | Błąd zapisu | „Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.” (NFR-7) |
 
