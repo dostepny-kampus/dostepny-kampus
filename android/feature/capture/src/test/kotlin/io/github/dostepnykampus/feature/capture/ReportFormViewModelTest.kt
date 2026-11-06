@@ -61,6 +61,17 @@ class ReportFormViewModelTest {
     }
 
     @Test
+    fun `zapisz włącza braki na stałe`() {
+        viewModel.save()
+        fill()
+        assertEquals(emptyList<ReportFormError>(), state().errors)
+
+        viewModel.edit(ReportEdit.Type(BarrierType.OTHER_BARRIER))
+
+        assertEquals(listOf(ReportFormError.MISSING_DESCRIPTION), state().errors)
+    }
+
+    @Test
     fun `zapis trafia do kolejki`() =
         runTest(dispatcher) {
             fill()

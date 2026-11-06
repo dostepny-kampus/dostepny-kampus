@@ -56,7 +56,7 @@ class ReportFormViewModel
             val current = state.value ?: return
             if (current.isSavingOrSaved) return
             when (val check = current.form.check()) {
-                is ReportCheck.Incomplete -> state.value = current.copy(errors = check.errors)
+                is ReportCheck.Incomplete -> state.value = current.copy(errors = check.errors, isSaveAttempted = true)
                 is ReportCheck.Complete -> store(current, check.content)
             }
         }
@@ -84,7 +84,7 @@ class ReportFormViewModel
         }
 
         private fun store(current: ReportUiState, content: SubmissionContent) {
-            state.value = current.copy(errors = emptyList(), stage = ReportStage.SAVING)
+            state.value = current.copy(errors = emptyList(), stage = ReportStage.SAVING, isSaveAttempted = true)
             viewModelScope.launch {
                 val stage =
                     try {
