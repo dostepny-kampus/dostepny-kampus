@@ -5,9 +5,9 @@ Funkcja: Oznaczenie wejścia
   Zbierający zmienia oznaczenie na obchodzie, a zmianę sprawdza inny Weryfikator (N8).
 
   Założenia:
-    Zakładając, że budynek B-4 jest budynkiem podstawowym z konturem i wejściami z OpenStreetMap
-    # Dane testowe, a nie stan faktyczny budynku B-4.
-    Oraz w danych testowych wejście boczne B-4 nie ma informacji o dostępności ani w danych PWr, ani w OpenStreetMap
+    Zakładając, że budynek B-8 jest budynkiem podstawowym z konturem i wejściami z OpenStreetMap
+    # Dane testowe, a nie stan faktyczny budynku B-8.
+    Oraz w danych testowych wejście boczne B-8 nie ma informacji o dostępności ani w danych PWr, ani w OpenStreetMap
 
   @US14.1
   Szablon scenariusza: Bez roli Zbierającego zmiany oznaczenia wejścia nie da się złożyć
@@ -39,7 +39,7 @@ Funkcja: Oznaczenie wejścia
     @US17.1 @US17.3 @US2.1
     Scenariusz: Import bez danych daje oznaczenie „brak danych”
       Jeżeli 3.11.2026 zakończy się import budynków
-      Wtedy na karcie budynku B-4 wejście boczne ma napis „brak danych” i ikonę
+      Wtedy na karcie budynku B-8 wejście boczne ma napis „brak danych” i ikonę
       Ale wejście boczne nie ma napisu „niedostępne”
       Oraz data oznaczenia tego wejścia to 3.11.2026, a źródło to „import”
       Oraz oznaczenia „dostępne”, „niedostępne” i „brak danych” da się odróżnić w odcieniach szarości
@@ -69,27 +69,27 @@ Funkcja: Oznaczenie wejścia
 
     @US17.2 @BR-9
     Scenariusz: Zmiana oznaczenia wejścia przechodzi te same statusy co zgłoszenie
-      Zakładając, że wejście boczne B-4 ma oznaczenie „brak danych”
+      Zakładając, że wejście boczne B-8 ma oznaczenie „brak danych”
       Oraz telefon nie ma sieci
-      Jeżeli Zbierający wybierze dla wejścia bocznego B-4 oznaczenie „niedostępne” i zrobi zdjęcie wejścia
+      Jeżeli Zbierający wybierze dla wejścia bocznego B-8 oznaczenie „niedostępne” i zrobi zdjęcie wejścia
       Wtedy zgłoszenie zmiany oznaczenia czeka w telefonie ze statusem „lokalne”
       Jeżeli sieć wróci
       Wtedy zgłoszenie zmiany oznaczenia ma status „wysłane” i jest w kolejce weryfikacji
-      Oraz wejście boczne B-4 nadal ma oznaczenie „brak danych”
+      Oraz wejście boczne B-8 nadal ma oznaczenie „brak danych”
 
     @US17.2 @BR-7
     Scenariusz: Zmiany oznaczenia wejścia nie da się zapisać bez zdjęcia
-      Jeżeli Zbierający wybierze dla wejścia bocznego B-4 oznaczenie „dostępne” i nie zrobi zdjęcia
+      Jeżeli Zbierający wybierze dla wejścia bocznego B-8 oznaczenie „dostępne” i nie zrobi zdjęcia
       Wtedy aplikacja wskazuje brak zdjęcia i nie zapisuje zgłoszenia
       Ale nie pyta o typ bariery ani uciążliwość
 
     @US17.2 @US17.3
     Scenariusz: Przyjęta zmiana zmienia oznaczenie, datę i źródło na karcie budynku
-      Zakładając, że wejście boczne B-4 ma oznaczenie „brak danych” ze źródłem „import”
+      Zakładając, że wejście boczne B-8 ma oznaczenie „brak danych” ze źródłem „import”
       Oraz Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne” z nowym zdjęciem
       Jeżeli pierwszy Weryfikator 12.11.2026 weźmie i przyjmie tę zmianę
       Wtedy zgłoszenie zmiany oznaczenia ma status „archiwalne”
-      Oraz na karcie budynku B-4 wejście boczne ma napis „niedostępne” i ikonę
+      Oraz na karcie budynku B-8 wejście boczne ma napis „niedostępne” i ikonę
       Oraz przy tym wejściu widnieje data oznaczenia 12.11.2026 i źródło „obchód”
       Ale zgłoszenie zmiany oznaczenia nie jest widoczne na mapie ani w eksporcie
 
@@ -113,7 +113,7 @@ Funkcja: Oznaczenie wejścia
     @US17.2 @US10.5 @BR-4
     Scenariusz: Weryfikator nie sprawdza zmiany oznaczenia, którą sam złożył
       Zakładając, że pierwszy Weryfikator ma też rolę Zbierającego
-      Oraz jako Zbierający wysłał zmianę oznaczenia wejścia bocznego B-4 na „dostępne”
+      Oraz jako Zbierający wysłał zmianę oznaczenia wejścia bocznego B-8 na „dostępne”
       Jeżeli pierwszy Weryfikator otworzy kolejkę weryfikacji
       Wtedy nie widzi w niej tej zmiany
       Oraz próba przyjęcia tej zmiany przez pierwszego Weryfikatora z pominięciem aplikacji jest odrzucona
@@ -121,9 +121,9 @@ Funkcja: Oznaczenie wejścia
 
     @US17.2 @BR-23
     Scenariusz: Po przyjęciu jednej zmiany wejścia drugą czekającą odrzuca się jako „nieaktualne”
-      Zakładając, że Zbierający wysłał zmianę oznaczenia wejścia bocznego B-4 na „dostępne”
+      Zakładając, że Zbierający wysłał zmianę oznaczenia wejścia bocznego B-8 na „dostępne”
       Oraz inny Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne”
       Oraz pierwszy Weryfikator 12.11.2026 przyjął zmianę na „dostępne”
       Jeżeli drugi Weryfikator weźmie zmianę na „niedostępne” i odrzuci ją z powodem „nieaktualne”
       Wtedy inny Zbierający widzi tę zmianę ze statusem „odrzucone” i powodem odrzucenia „nieaktualne”
-      Oraz wejście boczne B-4 ma oznaczenie „dostępne” z datą 12.11.2026 i źródłem „obchód”
+      Oraz wejście boczne B-8 ma oznaczenie „dostępne” z datą 12.11.2026 i źródłem „obchód”

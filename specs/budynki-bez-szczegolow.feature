@@ -4,21 +4,21 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   aplikacja działa w prostszej formie, ale nic się nie psuje (N1, N3).
 
   Założenia:
-    Zakładając, że budynek B-4 jest budynkiem podstawowym z konturem i wejściami z OpenStreetMap
+    Zakładając, że budynek B-8 jest budynkiem podstawowym z konturem i wejściami z OpenStreetMap
 
   @BR-G1
   Reguła: Budynek bez planów pięter nie ma przełącznika pięter, a piętro wpisuje się ręcznie
 
     @US16.2
     Scenariusz: Karta budynku podstawowego zamiast planu piętra pokazuje napis
-      Jeżeli Gość niezalogowany otworzy kartę budynku B-4
+      Jeżeli Gość niezalogowany otworzy kartę budynku B-8
       Wtedy nie widzi przełącznika pięter
       Oraz w miejscu planu piętra widzi napis „Nie mamy planu pięter tego budynku.”
-      Oraz widzi wejścia budynku B-4 i jego zgłoszenia przyjęte
+      Oraz widzi wejścia budynku B-8 i jego zgłoszenia przyjęte
 
     @US7.2
     Szablon scenariusza: Piętro w budynku podstawowym wpisuje się jako liczbę całkowitą
-      Zakładając, że Zbierający wypełnia formularz zgłoszenia w budynku B-4
+      Zakładając, że Zbierający wypełnia formularz zgłoszenia w budynku B-8
       Jeżeli wpisze piętro <piętro>
       Wtedy zgłoszenie <wynik>
 
@@ -39,16 +39,16 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
 
       Przykłady:
         | miejsce                                         |
-        | w budynku B-4                                   |
+        | w budynku B-8                                   |
         | w budynku szczegółowym A-1                      |
         | na chodniku przed wejściem głównym A-1          |
 
     Szablon scenariusza: W budynku podstawowym zgłoszenie można złożyć zawsze
       Zakładając, że <osoba> jest zalogowany z rolą <rola>
-      Oraz stoi w budynku B-4
+      Oraz stoi w budynku B-8
       Jeżeli złoży <zgłoszenie> z kompletem wymaganych danych
       Wtedy zgłoszenie zapisuje się bez komunikatu o błędzie
-      Oraz zgłoszenie ma budynek B-4
+      Oraz zgłoszenie ma budynek B-8
 
       Przykłady:
         | osoba         | rola            | zgłoszenie                                            |
