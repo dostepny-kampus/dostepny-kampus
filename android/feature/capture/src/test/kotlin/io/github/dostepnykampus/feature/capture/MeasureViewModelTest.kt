@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture
 
+import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
 import io.github.dostepnykampus.core.location.PositionFix
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.coroutines.EmptyCoroutineContext
 
 /** Pomiar na ekranie C1 na odczytach testowych w czasie wirtualnym, bez odbiornika GNSS (US6.1, NFR-23, NFR-27). */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -36,7 +38,12 @@ class MeasureViewModelTest {
     private val satellites = MutableSharedFlow<List<Satellite>>()
     private val clock = ElapsedClock { BOOT + dispatcher.scheduler.currentTime }
     private val viewModel by lazy {
-        MeasureViewModel(PositionSource { fixes }, SatelliteSource { satellites }, clock)
+        MeasureViewModel(
+            positions = PositionSource { fixes },
+            satellites = SatelliteSource { satellites },
+            clock = clock,
+            catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS },
+        )
     }
 
     @BeforeEach
@@ -112,6 +119,59 @@ class MeasureViewModelTest {
             assertEquals(1, fixes.subscriptionCount.value)
         }
 
+    // Punkt pomiaru leży w konturze A-1, więc aplikacja podpowiada A-1 (US6.2).
+    @Test
+    fun us6_2_hint_after_measurement() =
+        runTest(dispatcher) {
+            finish()
+            assertEquals("A-1", (place() as PlaceChoice.Suggested).hint.building.symbol)
+        }
+
+    @Test
+    fun us6_2_confirm_hint() =
+        runTest(dispatcher) {
+            finish()
+            viewModel.confirm()
+            runCurrent()
+            assertEquals("A-1", (place() as PlaceChoice.Chosen).building.symbol)
+        }
+
+    @Test
+    fun us6_2_choose_other_building() =
+        runTest(dispatcher) {
+            finish()
+            viewModel.choose("B-1")
+            runCurrent()
+            assertEquals("B-1", (place() as PlaceChoice.Chosen).building.symbol)
+        }
+
+    @Test
+    fun br_g2_leave_outside() =
+        runTest(dispatcher) {
+            finish()
+            viewModel.outside()
+            runCurrent()
+            assertEquals(PlaceChoice.Outside, place())
+        }
+
+    // Dalej niż 50 m od konturu: bez podpowiedzi, od razu „poza budynkiem” (BR-G4).
+    @Test
+    fun br_g4_far_point_outside() =
+        runTest(dispatcher) {
+            finish(GeoPoint(longitude = 17.2, latitude = 51.2))
+            assertEquals(PlaceChoice.Outside, place())
+        }
+
+    private fun TestScope.finish(point: GeoPoint = A1_POINT) {
+        watch()
+        backgroundScope.launch { fixes.emit(PositionFix(point, 6.0, clock.nowMillis())) }
+        runCurrent()
+        advanceTimeBy(31_000)
+        runCurrent()
+    }
+
+    private fun place(): PlaceChoice = (viewModel.uiState.value as MeasureUiState.Finished).place
+
     private fun TestScope.watch() = backgroundScope.launch { viewModel.uiState.collect {} }.also { runCurrent() }
 
     private suspend fun fix(accuracy: Double) {
@@ -125,5 +185,17 @@ class MeasureViewModelTest {
     private companion object {
         const val BOOT = 1_000_000L
         const val PRECISION = 1e-9
+        val A1_POINT = GeoPoint(longitude = 17.0605, latitude = 51.1105)
+        val CAMPUS =
+            """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
+                feature("A-1", west = 17.06) +
+                "," +
+                feature("B-1", west = 17.07) +
+                "]}"
+
+        fun feature(symbol: String, west: Double): String =
+            """{"type":"Feature","properties":{"kind":"building","symbols":["$symbol"],"name":"$symbol",""" +
+                """"osm_id":"way/$symbol"},"geometry":{"type":"Polygon","coordinates":[[[$west,51.11],""" +
+                """[${west + 0.001},51.11],[${west + 0.001},51.111],[$west,51.111],[$west,51.11]]]}}"""
     }
 }
