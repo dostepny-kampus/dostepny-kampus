@@ -89,6 +89,7 @@ class ReportEditTest {
         val shown = start.copy(errors = start.form.errors())
         val state =
             shown
+                .edited(ReportEdit.Floor(ReportFloor.Planned("A-1-0")))
                 .edited(ReportEdit.Type(BarrierType.OTHER_BARRIER))
                 .edited(ReportEdit.Rating(Severity.BLOCKING))
 
