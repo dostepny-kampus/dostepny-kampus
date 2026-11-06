@@ -119,7 +119,10 @@ class MeasureViewModel
         private val catalog: BuildingCatalogRepository,
     ) : ViewModel() {
         private val result = MutableStateFlow(Run(attempt = 0, finished = null))
-        private var buildings = emptyList<Building>()
+        private val catalogBuildings = MutableStateFlow(emptyList<Building>())
+
+        /** Budynki z katalogu do „Wybierz inny”; puste, dopóki pomiar się nie skończy (US6.2). */
+        val buildings: StateFlow<List<Building>> = catalogBuildings
 
         /** Bieżący stan pomiaru. */
         val uiState: StateFlow<MeasureUiState> =
@@ -143,7 +146,7 @@ class MeasureViewModel
          * @param symbol symbol wybranego budynku
          */
         fun choose(symbol: String) {
-            val building = buildings.firstOrNull { it.symbol == symbol } ?: return
+            val building = catalogBuildings.value.firstOrNull { it.symbol == symbol } ?: return
             choose { PlaceChoice.Chosen(building) }
         }
 
@@ -163,7 +166,8 @@ class MeasureViewModel
         // Podpowiedź z katalogu z pliku albo już pobranego, bez czekania na serwer (NFR-4: do 2 s bez sieci).
         private fun locate(attempt: Int, point: GeoPoint) {
             viewModelScope.launch {
-                buildings = catalog.catalogUpdates().first().buildings
+                val buildings = catalog.catalogUpdates().first().buildings
+                catalogBuildings.value = buildings
                 val place = hintBuilding(point, buildings)?.let(PlaceChoice::Suggested) ?: PlaceChoice.Outside
                 result.update { run ->
                     val finished = run.finished
