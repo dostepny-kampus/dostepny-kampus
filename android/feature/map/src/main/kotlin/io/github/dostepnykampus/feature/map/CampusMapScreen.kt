@@ -86,9 +86,9 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
  *   wybranego w arkuszu „Który budynek?”, gdy trafiło kontur wspólny albo dwa kontury (US2, decyzja 85)
  * @param modifier wymiary ekranu nadane przez aplikację
  * @param focus symbol budynku zaznaczonego obrysem, np. po „Wstecz” z V2; sam obrys nie rusza kamery (US1.1)
- * @param show symbol budynku, na którym kamera staje po „Pokaż budynek na mapie” (US2.9); polecenie działa raz,
- *   a dalsze przesuwanie mapy zostaje przy osobie (NFR-53), więc nowe polecenie, także dla tego samego budynku
- *   po wyjściu z V2, znów przesuwa kamerę
+ * @param show budynek z poleceniem „Pokaż budynek na mapie” (US2.9): kamera staje na nim raz na polecenie,
+ *   a dalsze przesuwanie mapy zostaje przy osobie (NFR-53); każde nowe polecenie, także dla tego samego budynku,
+ *   znów przesuwa kamerę
  * @param entrance wejście zaznaczone pinezką z podpisem, a kamera staje na nim, np. po „Pokaż wejście na mapie” (US3.3,
  *   decyzja 134); TalkBack czyta jego nazwę i budynek ekranu (NFR-18)
  * @param contentPadding część ekranu zasłonięta z zewnątrz przez arkusz V2 (decyzja 87). Podpis OSM stoi nad nią,
@@ -107,7 +107,7 @@ fun CampusMapScreen(
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     focus: String? = null,
-    show: String? = null,
+    show: MapFocus.Building? = null,
     entrance: MapFocus.Entrance? = null,
     contentPadding: PaddingValues = PaddingValues(),
     onEmptyMapClick: () -> Unit = {},
@@ -141,7 +141,7 @@ fun CampusMapScreen(
  * @param onBuildingClick budynek dotknięty na mapie, wybrany w arkuszu albo na liście (US2)
  * @param modifier wymiary ekranu nadane przez aplikację
  * @param focus symbol budynku zaznaczonego obrysem (US1.1)
- * @param show symbol budynku, na którym staje kamera (US2.9)
+ * @param show budynek z poleceniem „Pokaż”, na którym staje kamera (US2.9)
  * @param entrance wejście zaznaczone pinezką z podpisem i kamerą (US3.3, decyzja 134)
  * @param contentPadding część ekranu zasłonięta przez arkusz V2 (decyzja 87)
  * @param onEmptyMapClick dotknięcie mapy poza konturami (US2.8)
@@ -155,7 +155,7 @@ fun CampusMapScreen(
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     focus: String? = null,
-    show: String? = null,
+    show: MapFocus.Building? = null,
     entrance: MapFocus.Entrance? = null,
     contentPadding: PaddingValues = PaddingValues(),
     onEmptyMapClick: () -> Unit = {},
@@ -207,7 +207,7 @@ private fun CampusMap(
     catalog: BuildingCatalog?,
     layers: CampusMapData?,
     focus: String?,
-    show: String?,
+    show: MapFocus.Building?,
     entrance: MapFocus.Entrance?,
     contentPadding: PaddingValues,
     mapView: CampusMapView,
@@ -217,7 +217,7 @@ private fun CampusMap(
 ) {
     val chosen = rememberChosenEntrance(catalog, entrance)
     val data = remember(layers, focus, chosen) { layers?.copy(focus = focus, selectedEntrance = chosen) }
-    val showPoint = remember(catalog, show) { catalog?.pointOf(show) }
+    val showPoint = remember(catalog, show) { catalog?.pointOf(show?.symbol) }
     val view = rememberCameraView(entranceId = entrance?.id, show = show, showPoint = showPoint)
     var choice by rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val cover = contentPadding.calculateBottomPadding()

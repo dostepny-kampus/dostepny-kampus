@@ -46,7 +46,7 @@ internal fun AppNavigator.MapScreen(
         onListChange = onListChange,
         onBuildingClick = { openBuilding(it) },
         focus = (focus as? MapFocus.Building)?.symbol,
-        show = (focus as? MapFocus.Building)?.takeIf { it.isShown }?.symbol,
+        show = (focus as? MapFocus.Building)?.takeIf { it.command != null },
         entrance = focus as? MapFocus.Entrance,
         contentPadding = LocalSheetPadding.current,
         onEmptyMapClick = { closeCardOnEmptyMap() },

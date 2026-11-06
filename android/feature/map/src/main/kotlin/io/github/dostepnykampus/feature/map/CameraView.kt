@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,6 +13,7 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 private val CameraSaver =
     listSaver<MapCamera?, Double>(
@@ -31,21 +31,21 @@ internal data class CameraView(val camera: MapCamera?, val keep: (MapCamera) -> 
 
 /**
  * Zapisywany widok mapy. Nowe wejście [entranceId] zaczyna od nowa (US3.3). Polecenie „Pokaż budynek na mapie”
- * dla [show] stawia kamerę na [showPoint], dopóki osoba nie ruszy mapy ani widok nie zostanie zapisany; potem
- * kamera idzie za osobą, także po obrocie ekranu (US2.9, NFR-53, NFR-22). Bez polecenia stan polecenia się
- * zeruje, więc następne, także dla tego samego budynku, znów przesuwa kamerę.
+ * [show] stawia kamerę na [showPoint], dopóki osoba nie ruszy mapy ani widok nie zostanie zapisany; potem kamera
+ * idzie za osobą, także po obrocie ekranu (US2.9, NFR-53, NFR-22). Wykonane polecenie jest zapamiętane razem
+ * z zapisanym widokiem przez jego tożsamość ([MapFocus.Building.command]), więc nowe polecenie, także dla tego
+ * samego budynku, znów przesuwa kamerę, niezależnie od tego, czy mapa była między nimi składana.
  */
 @Composable
-internal fun rememberCameraView(entranceId: String?, show: String?, showPoint: GeoPoint?): CameraView {
+internal fun rememberCameraView(entranceId: String?, show: MapFocus.Building?, showPoint: GeoPoint?): CameraView {
     var camera by rememberSaveable(entranceId, stateSaver = CameraSaver) { mutableStateOf<MapCamera?>(null) }
-    var applied by rememberSaveable { mutableStateOf<String?>(null) }
-    SideEffect { if (show == null) applied = null }
+    var applied by rememberSaveable { mutableStateOf<Long?>(null) }
     val target = remember(showPoint) { showPoint?.let { point -> MapCamera(center = point, zoom = START_ZOOM) } }
     return CameraView(
-        camera = target.takeIf { show != applied } ?: camera,
+        camera = target.takeIf { show?.command != applied } ?: camera,
         keep = { next ->
             camera = next
-            applied = show
+            show?.command?.let { applied = it }
         },
     )
 }
