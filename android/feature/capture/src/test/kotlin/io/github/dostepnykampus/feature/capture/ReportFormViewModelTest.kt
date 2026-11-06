@@ -52,7 +52,10 @@ class ReportFormViewModelTest {
 
         viewModel.save()
 
-        assertEquals(listOf(ReportFormError.MISSING_SEVERITY, ReportFormError.MISSING_PHOTO), state().errors)
+        assertEquals(
+            listOf(ReportFormError.MISSING_FLOOR, ReportFormError.MISSING_SEVERITY, ReportFormError.MISSING_PHOTO),
+            state().errors,
+        )
         assertEquals(ReportStage.EDITING, state().stage)
         assertEquals(emptyList<Any>(), saved)
     }
@@ -81,6 +84,24 @@ class ReportFormViewModelTest {
             runCurrent()
             viewModel.save()
 
+            assertEquals(1, saved.size)
+        }
+
+    @Test
+    fun `wstecz nie odblokowuje zapisz`() =
+        runTest(dispatcher) {
+            fill()
+            viewModel.save()
+            viewModel.back()
+            viewModel.stay()
+            viewModel.confirmExit()
+            viewModel.edit(ReportEdit.Description("Próg"))
+            viewModel.save()
+            assertEquals(ReportStage.SAVING, state().stage)
+            assertEquals("", state().form.description)
+            runCurrent()
+
+            assertEquals(ReportStage.SAVED, state().stage)
             assertEquals(1, saved.size)
         }
 
@@ -132,6 +153,7 @@ class ReportFormViewModelTest {
     }
 
     private fun fill() {
+        viewModel.edit(ReportEdit.Floor(ReportFloor.Planned("A-1-0")))
         viewModel.edit(ReportEdit.Type(BarrierType.THRESHOLD))
         viewModel.edit(ReportEdit.Rating(Severity.ONLY_WITH_HELP))
         viewModel.edit(ReportEdit.Photo(PHOTO))

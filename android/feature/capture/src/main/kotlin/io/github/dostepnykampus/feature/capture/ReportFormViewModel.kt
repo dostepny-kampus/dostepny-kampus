@@ -46,34 +46,41 @@ class ReportFormViewModel
 
         /** Zmiana jednego pola formularza (US7.1–US7.4). */
         fun edit(change: ReportEdit) {
-            state.update { it?.edited(change) }
+            state.update { current ->
+                if (current == null || current.isSavingOrSaved) current else current.edited(change)
+            }
         }
 
         /** „Zapisz”: przy brakach pokazuje je, inaczej zapisuje w kolejce (US7.1, NFR-5). */
         fun save() {
             val current = state.value ?: return
-            if (current.stage == ReportStage.SAVING || current.stage == ReportStage.SAVED) return
+            if (current.isSavingOrSaved) return
             when (val check = current.form.check()) {
                 is ReportCheck.Incomplete -> state.value = current.copy(errors = check.errors)
                 is ReportCheck.Complete -> store(current, check.content)
             }
         }
 
-        /** „Wstecz”: bez zmian wychodzi od razu, ze zmianami pyta (US7.4, NFR-23). */
+        /** „Wstecz”: bez zmian wychodzi od razu, ze zmianami pyta (US7.4, NFR-23); w czasie zapisu nic nie robi. */
         fun back() {
-            state.update { current ->
-                current?.copy(stage = if (current.form == initial) ReportStage.LEFT else ReportStage.EXIT_ASKED)
-            }
+            moveToWhileEditable { current -> if (current.form == initial) ReportStage.LEFT else ReportStage.EXIT_ASKED }
         }
 
         /** „Wyjdź bez zapisu”. */
         fun confirmExit() {
-            state.update { it?.copy(stage = ReportStage.LEFT) }
+            moveToWhileEditable { ReportStage.LEFT }
         }
 
         /** „Wróć do formularza” albo zamknięcie komunikatu o błędzie zapisu. */
         fun stay() {
-            state.update { it?.copy(stage = ReportStage.EDITING) }
+            moveToWhileEditable { ReportStage.EDITING }
+        }
+
+        private fun moveToWhileEditable(next: (ReportUiState) -> ReportStage) {
+            // W czasie zapisu i po nim etap ustala tylko zapis, więc nie ma dwóch zgłoszeń.
+            state.update { current ->
+                if (current == null || current.isSavingOrSaved) current else current.copy(stage = next(current))
+            }
         }
 
         private fun store(current: ReportUiState, content: SubmissionContent) {
@@ -93,3 +100,6 @@ class ReportFormViewModel
             }
         }
     }
+
+internal val ReportUiState.isSavingOrSaved: Boolean
+    get() = stage == ReportStage.SAVING || stage == ReportStage.SAVED
