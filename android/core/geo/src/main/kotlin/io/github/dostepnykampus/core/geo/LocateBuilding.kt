@@ -63,12 +63,13 @@ private fun GeoArea.hasPointOnEdge(point: GeoPoint): Boolean =
 private fun GeoPoint.isOnSegment(from: GeoPoint, to: GeoPoint): Boolean {
     val alongX = (to.longitude - from.longitude) * (latitude - from.latitude)
     val alongY = (to.latitude - from.latitude) * (longitude - from.longitude)
-    val withinBox = longitude.isBetween(from.longitude, to.longitude) && latitude.isBetween(from.latitude, to.latitude)
-    return alongX == alongY && withinBox
+    val isInLongitudes = longitude.isBetween(first = from.longitude, second = to.longitude)
+    val isInLatitudes = latitude.isBetween(first = from.latitude, second = to.latitude)
+    return alongX == alongY && isInLongitudes && isInLatitudes
 }
 
 private fun Double.isBetween(first: Double, second: Double): Boolean =
-    this in minOf(first, second)..maxOf(first, second)
+    if (first <= second) this in first..second else this in second..first
 
 private fun GeoPoint.toPosition(): Position = Position(longitude, latitude)
 
