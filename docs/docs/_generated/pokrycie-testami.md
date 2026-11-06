@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | --- | --- |
 | Pełny test | 3 |
 | Tylko częściowo | 12 |
-| Bez testu | 153 |
+| Bez testu | 159 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -103,6 +103,12 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `synchronizacja.feature` | Zgłoszenia zapisane bez sieci przetrwają restart telefonu | BR-9, US4.2, US9.1 | — | brak |
 | `synchronizacja.feature` | Po powrocie sieci synchronizacja rusza sama | BR-9, US9.2 | — | brak |
 | `synchronizacja.feature` | Przerwana synchronizacja nie gubi zgłoszenia i nie tworzy drugiego | BR-9, US9.2 | — | brak |
+| `synchronizacja.feature` | Awaria serwera działa jak brak sieci | BR-9, US9.4 | — | brak |
+| `synchronizacja.feature` | Wygasłe zalogowanie czeka na ponowne zalogowanie | BR-26, US9.4, US14.4 | — | brak |
+| `synchronizacja.feature` | Odebrana rola zostawia zgłoszenie w telefonie ze statusem „Nie wysłano” | BR-26, US9.5, US14.1 | — | brak |
+| `synchronizacja.feature` | Odrzucona treść albo zdjęcie zostawia zgłoszenie ze statusem „Nie wysłano” | BR-26, US9.5 | — | brak |
+| `synchronizacja.feature` | Licznik oczekujących nie liczy zgłoszeń „Nie wysłano” | BR-26, US9.5 | — | brak |
+| `synchronizacja.feature` | Ponowny zapis wysyła zgłoszenie „Nie wysłano” znów | BR-26, US9.5 | — | brak |
 | `synchronizacja.feature` | Przy konflikcie wersji aplikacja pokazuje obie wersje | BR-10, US9.3 | — | brak |
 | `synchronizacja.feature` | Przy konflikcie wersji Zbierający wybiera wersję | BR-10, US9.3 | — | brak |
 | `synchronizacja.feature` | Odłożony wybór wersji zostawia zmianę w telefonie | BR-10, US9.3 | — | brak |

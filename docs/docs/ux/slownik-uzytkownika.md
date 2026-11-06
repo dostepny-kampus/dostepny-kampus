@@ -175,6 +175,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | budynek, piętro i data w pozycji listy (C3, C4, C7, R2) | „C-13, piętro 2, 12.11.2026”; w R2 „Budynek C-13, piętro 2”; przy zmianie oznaczenia wejścia „A-1, Wejście główne” | Zbierający, Weryfikator | Ten sam wzór co „Piętro:” na karcie budynku. | 10.3 |
 | piętro wpisywane ręcznie (C2, budynek podstawowy) | „Wpisz numer piętra, 0 to parter.” | Zbierający | Mówi, jak liczyć piętra, bo bez planu nie ma etykiet (BR-G1). | 10.2 |
 | status „lokalne” | „W telefonie” | Zbierający | Odpowiada na pytanie PE-2, czy zgłoszenie dotarło. | 10.3 |
+| status „Nie wysłano” | „Nie wysłano” | Zbierający | Mówi wprost, że zgłoszenie nie dotarło, i różni się od „W telefonie”, które czeka samo (US9.5, BR-26). | 10.3 |
 | statusy „wysłane”, „w weryfikacji”, „przyjęte”, „odrzucone”, „archiwalne” | „Wysłane”, „W weryfikacji”, „Przyjęte”, „Odrzucone”, „Archiwalne” | Zbierający | Krótkie pojęcia dokumentacji. | 10.3, 10.5 |
 | znak „zmiana czeka na wysłanie” | „Zmiana czeka na wysłanie” | Zbierający | bez zmian | 10.3 |
 | powód odrzucenia i rodzaj zmiany (C3) | „Powód odrzucenia:”, „Zmiana oznaczenia wejścia” | Zbierający | Te same słowa co pole „Powód odrzucenia” w R2 i nagłówek C6. | 10.3 |
@@ -310,10 +311,13 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | C3, ładowanie | „Sprawdzamy statusy…” | — | PW-9 |
 | C3, błąd | „Nie udało się sprawdzić statusów, ale zgłoszenia są bezpieczne w telefonie. Spróbuj ponownie za chwilę.” | „Spróbuj ponownie” | PW-10 |
 | C3, nieaktualne | „Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.” Przy zmianie oznaczenia wejścia: „Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.” | „Wyślij ponownie” | PW-14 |
+| C3, „Nie wysłano”, rola odebrana | „Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.” | „Otwórz” | US9.5, US14.1, PW-10 |
+| C3, „Nie wysłano”, serwer odrzucił treść albo zdjęcie | „Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.” | „Otwórz” | US9.5, PW-10 |
 | C3, nieaktualne po usunięciu bariery | „Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.” | „Zmierz i zgłoś barierę” | PW-12 |
 | C4, pusty | „Wszystko wysłane. Ostatnia synchronizacja: 12.11.2026, 10:42.” | — | — |
 | C4, wysyłanie | „Wysyłamy 2 z 5…” | — | PW-9 |
 | C4, brak sieci | „Bez internetu. Wyślemy wszystko sami, gdy internet wróci.” | — | decyzja 54 |
+| C4, wygasłe zalogowanie | „Logowanie wygasło. Zaloguj się, a wyślemy zgłoszenia same.” | „Zaloguj się” | US9.4, PW-10 |
 | C4, błąd serwera | „Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później.” | — | — |
 | C4, mało miejsca | „W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia.” | — | PW-10 |
 | C4, konflikt | „Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.” Przy zgłoszeniu przyjętym drugie zdanie: „Przyjęte zgłoszenie zostanie, a Twoja wersja, jeśli ją wybierzesz, trafi do sprawdzenia jako nowe.” (UC11 3b) | „Zostaw moją wersję”, „Weź wersję z serwera”, „Zdecyduję później” | PW-12 |
@@ -376,6 +380,7 @@ Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości w
 | status „w weryfikacji” | `eye` | „W weryfikacji” | oko: ktoś teraz ogląda |
 | status „przyjęte” | `circle-check` | „Przyjęte” | ptaszek w kole: decyzja na tak |
 | status „odrzucone” | `circle-x` | „Odrzucone” | krzyżyk w kole: decyzja na nie |
+| status „Nie wysłano” | `circle-alert`; hi-fi: brak obrazu | „Nie wysłano” | wykrzyknik w kole: wymaga Twojej uwagi, a nie decyzji Weryfikatora |
 | status „archiwalne” | `box` | „Archiwalne” | pudło na stare dokumenty |
 | znacznik „obejrzane” | `task` | „Obejrzane” | odhaczona pozycja na liście kontrolnej |
 | otwarcie pozycji listy (R1, K1, C3) | `chevron-right` | „Otwórz” | strzałka w prawo: dalej, do szczegółów |
