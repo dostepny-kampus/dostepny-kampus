@@ -9,6 +9,7 @@ import android.view.accessibility.AccessibilityManager
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -41,7 +42,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,7 +55,6 @@ import kotlin.math.asinh
 import kotlin.math.pow
 import kotlin.math.tan
 
-private const val NOT_MOVED = "kamera nie przesuwa się na budynek po „Pokaż budynek na mapie”, poprawka w następnym PR"
 private const val UNIT = 0.0001
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
@@ -103,13 +102,16 @@ class BuildingOnMapCameraTest {
     private var touch: (List<String>) -> Unit = {}
     private var mapSize = IntSize.Zero
     private var density = 1f
+    private var isIdleReported = false
     private val choice = TestMapListChoice()
     private val repository = BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { CATALOG }
     private val fakeMap =
-        CampusMapView { data: CampusMapData, camera, _, onBuildingsTouch, modifier: Modifier ->
+        CampusMapView { data: CampusMapData, camera, onCameraIdle, onBuildingsTouch, modifier: Modifier ->
             shown += data to camera
             touch = onBuildingsTouch
             density = LocalDensity.current.density
+            // Jak natywna mapa po ruchu: bezczynność z otrzymaną kamerą, gdy test o to prosi.
+            SideEffect { if (isIdleReported) onCameraIdle(camera) }
             Box(modifier.onSizeChanged { mapSize = it })
         }
 
@@ -198,7 +200,6 @@ class BuildingOnMapCameraTest {
 
     // Wiersz: K1, V2 „Pokaż budynek na mapie” → kamera mapy widzi budynek daleko od startu, US2.9, NFR-19, NFR-20.
     @Test
-    @Ignore(NOT_MOVED)
     fun us2_9_far_building_in_view() {
         showOnMap("T-9")
         assertShown("T-9")
@@ -206,7 +207,6 @@ class BuildingOnMapCameraTest {
 
     // Wiersz: K2, mapa przesunięta strzałkami → „Pokaż budynek na mapie” dla A-1 wraca do budynku, US2.9, NFR-53.
     @Test
-    @Ignore(NOT_MOVED)
     fun us2_9_a1_after_arrows() {
         pan("prawo", times = 4)
         showOnMap("A-1")
@@ -215,7 +215,6 @@ class BuildingOnMapCameraTest {
 
     // Wiersz: K1, budynek w kształcie litery U → kamera widzi punkt podpisu, nie środek obrysu, US2.9.
     @Test
-    @Ignore(NOT_MOVED)
     fun us2_9_u_shape_label_point() {
         showOnMap("U-1")
         assertShown("U-1")
@@ -246,7 +245,6 @@ class BuildingOnMapCameraTest {
 
     // Wiersz: K5, po „Pokaż budynek na mapie” obrót ekranu → ten sam obszar, nie start, NFR-22.
     @Test
-    @Ignore(NOT_MOVED)
     fun nfr22_show_survives_rotation() {
         showOnMap("T-9")
         val before = shown.last().second
@@ -258,11 +256,35 @@ class BuildingOnMapCameraTest {
 
     // Wiersz: K6, drugie „Pokaż budynek na mapie” po przesunięciu mapy → kamera na drugim budynku, US2.9.
     @Test
-    @Ignore(NOT_MOVED)
     fun us2_9_second_show_moves() {
         showOnMap("T-9")
         pan("prawo", times = 1)
         showOnMap("C-13")
         assertShown("C-13")
+    }
+
+    // Wiersz: K6, to samo „Pokaż budynek na mapie” po przesunięciu mapy strzałkami → kamera znów na budynku, US2.9.
+    @Test
+    fun us2_9_same_show_again() {
+        showOnMap("T-9")
+        pan("prawo", times = 4)
+        showOnMap("T-9")
+        assertShown("T-9")
+    }
+
+    // Wiersz: K3, po „Pokaż” i bezczynności kamery mała karta innego budynku i „Wstecz”
+    // → widok jak przed kartą, decyzja 83.
+    @Test
+    fun us2_8_back_after_show() {
+        isIdleReported = true
+        showOnMap("T-9")
+        compose.waitForIdle()
+        val before = shown.last().second
+        compose.runOnUiThread { touch(listOf("A-1")) }
+        compose.waitForIdle()
+        compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        compose.waitForIdle()
+        assertShown("T-9")
+        assertEquals(before, shown.last().second)
     }
 }
