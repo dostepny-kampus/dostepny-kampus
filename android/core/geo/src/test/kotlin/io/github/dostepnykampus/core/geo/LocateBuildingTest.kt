@@ -49,14 +49,16 @@ class LocateBuildingTest {
         assertEquals(LocateResult.InsideOutline(twoPartBuilding), locateBuilding(point(x = 13, y = 7), buildings))
     }
 
+    // Wiersz: G1, decyzja 137, US6.2, BR-G2 — punkt na zewnętrznej krawędzi jest poza budynkiem, z jego propozycją.
     @Test
-    fun us6_2_on_outline_edge_inside() {
-        assertEquals(LocateResult.InsideOutline(courtyardBuilding), locateBuilding(point(x = 8, y = 4), buildings))
+    fun us6_2_on_outline_edge_outside() {
+        assertEquals(LocateResult.OutsideBuilding(courtyardBuilding), locateBuilding(point(x = 8, y = 4), buildings))
     }
 
+    // Wiersz: G2, decyzja 137, US6.2, BR-G2 — punkt na krawędzi dziedzińca jest poza budynkiem, z jego propozycją.
     @Test
-    fun us6_2_on_courtyard_edge_inside() {
-        assertEquals(LocateResult.InsideOutline(courtyardBuilding), locateBuilding(point(x = 3, y = 4), buildings))
+    fun us6_2_courtyard_edge_outside() {
+        assertEquals(LocateResult.OutsideBuilding(courtyardBuilding), locateBuilding(point(x = 3, y = 4), buildings))
     }
 
     @Test
