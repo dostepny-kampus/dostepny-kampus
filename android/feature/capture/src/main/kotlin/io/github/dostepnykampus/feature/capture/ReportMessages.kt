@@ -70,7 +70,7 @@ internal fun DescriptionSection(text: String, onEdit: (ReportEdit) -> Unit) {
         Text(stringResource(R.string.formularz_opis_podpowiedz))
         OutlinedTextField(
             value = text,
-            onValueChange = { onEdit(ReportEdit.Description(it)) },
+            onValueChange = { onEdit(ReportEdit.Description(it.take(DESCRIPTION_MAX_LENGTH))) },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
         )
@@ -124,6 +124,9 @@ internal fun ExitDialog(onConfirmExit: () -> Unit, onStay: () -> Unit) {
         dismissButton = { TextButton(onClick = onStay) { Text(stringResource(R.string.formularz_wroc)) } },
     )
 }
+
+/** Najdłuższy opis, który przyjmie serwer (`maxLength` w api/openapi.yaml); dłuższy byłby odrzucony. */
+internal const val DESCRIPTION_MAX_LENGTH = 2000
 
 @StringRes
 private fun ReportFormError.messageRes(): Int =

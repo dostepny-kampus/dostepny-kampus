@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.capture
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -170,6 +171,14 @@ class ReportScreenTest {
         compose.onNodeWithText("Wyjdź bez zapisu").performClick()
 
         assertEquals(1, exits)
+    }
+
+    @Test
+    fun us7_3_description_max_2000() {
+        show(place = A1.copy(buildingSymbol = null))
+        compose.onNode(hasSetTextAction()).performScrollTo().performTextInput("a".repeat(2001))
+
+        assertEquals(ReportEdit.Description("a".repeat(2000)), edits.last())
     }
 
     @Test
