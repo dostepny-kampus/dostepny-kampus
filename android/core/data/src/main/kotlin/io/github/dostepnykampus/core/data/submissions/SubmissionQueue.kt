@@ -37,7 +37,10 @@ internal fun PendingPhotoDraft.toPendingPhotoEntity(submissionId: String): Pendi
         isUploaded = false,
     )
 
-private enum class Outcome { SENT, OFFLINE, REFUSED }
+/** SENT: wysłane; LATER: brak sieci albo awaria serwera (5xx), spróbować później; REFUSED: odmowa serwera. */
+private enum class Outcome { SENT, LATER, REFUSED }
+
+private const val FIRST_SERVER_FAULT_CODE = 500
 
 /**
  * Kolejka zgłoszeń: zapis w telefonie i wysyłanie od najstarszego (NFR-5, US9.1, US9.2, BR-9).
@@ -77,14 +80,15 @@ class SubmissionQueue(
 
     /**
      * Wysyła zgłoszenia z kolejki od najstarszych: treść raz, potem tylko nie wysłane zdjęcia.
-     * Bez sieci wysyłanie się kończy do zasięgu, a błąd serwera zostawia zgłoszenie w kolejce (NFR-5, US9.2).
+     * Bez sieci albo przy awarii serwera (5xx) wysyłanie się kończy do kolejnej próby, a odmowa serwera (4xx)
+     * zostawia zgłoszenie w kolejce i przechodzi do następnego (NFR-5, US9.2).
      *
-     * @return `true`, gdy wysyłka doszła do końca kolejki; `false`, gdy zabrakło sieci i trzeba spróbować później
+     * @return `true`, gdy wysyłka doszła do końca kolejki; `false`, gdy trzeba spróbować później
      */
     suspend fun sendAll(): Boolean =
         lock.withLock {
-            val isOffline = store.all().any { item -> sendOne(item) == Outcome.OFFLINE }
-            !isOffline
+            val isStopped = store.all().any { item -> sendOne(item) == Outcome.LATER }
+            !isStopped
         }
 
     private suspend fun sendOne(item: PendingSubmissionWithPhotos): Outcome =
@@ -118,8 +122,9 @@ class SubmissionQueue(
 
     private fun outcomeOf(result: ApiResult<*>): Outcome =
         when (result) {
-            is ApiResult.NetworkError -> Outcome.OFFLINE
-            ApiResult.NotFound, is ApiResult.ServerError -> Outcome.REFUSED
+            is ApiResult.NetworkError -> Outcome.LATER
+            is ApiResult.ServerError -> if (result.code >= FIRST_SERVER_FAULT_CODE) Outcome.LATER else Outcome.REFUSED
+            ApiResult.NotFound -> Outcome.REFUSED
             is ApiResult.Success -> Outcome.SENT
         }
 

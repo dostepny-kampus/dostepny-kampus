@@ -46,6 +46,17 @@ class SubmissionSyncWorkerTest {
         }
 
     @Test
+    fun `awaria serwera ponawia zadanie`() =
+        runBlocking {
+            val target = queue()
+            target.save(content(), photos())
+            store.createResults.addLast(ApiResult.ServerError(code = 503))
+
+            assertEquals(ListenableWorker.Result.retry(), target.syncResult())
+            assertEquals(listOf(SENT_ID), store.rows.map { it.submission.id })
+        }
+
+    @Test
     fun `400 bez ponawiania zadania`() =
         runBlocking {
             val target = queue()
