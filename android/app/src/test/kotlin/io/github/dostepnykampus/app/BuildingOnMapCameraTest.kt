@@ -272,7 +272,8 @@ class BuildingOnMapCameraTest {
         assertShown("T-9")
     }
 
-    // Wiersz: K3, po „Pokaż” i bezczynności kamery mała karta innego budynku i „Wstecz” → widok jak przed kartą, decyzja 83.
+    // Wiersz: K3, po „Pokaż” i bezczynności kamery mała karta innego budynku i „Wstecz”
+    // → widok jak przed kartą, decyzja 83.
     @Test
     fun us2_8_back_after_show() {
         reportsIdle = true
