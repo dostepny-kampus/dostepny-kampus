@@ -540,7 +540,7 @@ Dostępność: błąd walidacji jest tekstem przy polu i w podsumowaniu, a fokus
 | --- | --- |
 | Cel | Zbierający wie, które zgłoszenia dotarły, a które trzeba poprawić. |
 | Role | RO-ZBI, tylko własne zgłoszenia z pomiaru precyzyjnego i własne zmiany; zgłoszeń szybkich lista nie pokazuje (US4.4) |
-| Realizuje | US8.1, US8.2, US8.3, US9.1, US8.4 (status zmiany), US17.2 (status zmiany) |
+| Realizuje | US8.1, US8.2, US8.3, US9.1, US9.5, US8.4 (status zmiany), US17.2 (status zmiany) |
 | Czynność główna | „Otwórz” przy zgłoszeniu do poprawy |
 | Czynność główna przypięta | nie: czynność powtarza się w pozycjach listy |
 
@@ -548,11 +548,12 @@ Dostępność: błąd walidacji jest tekstem przy polu i w podsumowaniu, a fokus
 | --- | --- | --- | --- |
 | Zgłoszenie: typ, budynek, piętro, data | dane | US8.1 | — |
 | Rodzaj: zgłoszenie, „bariera usunięta” (na ekranie „Bariery już nie ma”) albo zmiana oznaczenia wejścia; przy zmianie oznaczenia „Nowe oznaczenie:” tekstem i ikoną | dane | US8.4, US17.2, NFR-21 | — |
-| Jeden status tekstem i ikoną: „W telefonie” (lokalne), „Wysłane”, „W weryfikacji”, „Przyjęte”, „Odrzucone”, „Archiwalne” | dane | US8.1, US8.2, NFR-21, PW-12 | — |
+| Jeden status tekstem i ikoną: „W telefonie” (lokalne), „Nie wysłano”, „Wysłane”, „W weryfikacji”, „Przyjęte”, „Odrzucone”, „Archiwalne” | dane | US8.1, US8.2, NFR-21, PW-12 | — |
 | Przy odrzuconym: powód odrzucenia | dane | US8.1, BR-16 | — |
+| Przy „Nie wysłano”: powód. Przy odebranej roli „Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.”, w pozostałych przypadkach „Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.” | dane | US9.5, US14.1, BR-26, PW-10 | — |
 | Znak „Zmiana czeka na wysłanie” przy niewysłanej edycji | dane | US8.1, BR-9, [reguły, cykl życia zgłoszenia](../biznes/reguly.md) | — |
 | Znak „Dwie wersje: wybierz jedną” przy konflikcie | czynność | US9.3 | C4 |
-| Przy zgłoszeniu przed decyzją albo odrzuconym „Otwórz” ze strzałką w ramce jak w R1 i K1. Zgłoszenia przyjęte i archiwalne nie są przyciskami | czynność główna | US8.1, US8.3, BR-3 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
+| Przy zgłoszeniu przed decyzją, odrzuconym albo „Nie wysłano” „Otwórz” ze strzałką w ramce jak w R1 i K1. Zgłoszenia przyjęte i archiwalne nie są przyciskami | czynność główna | US8.1, US8.3, US9.5, BR-3, BR-26 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
 | Przy powodzie „nieaktualne”: „Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.” (przy zmianie oznaczenia wejścia: „Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.”) i przycisk „Wyślij ponownie” | czynność | BR-23, BR-24, PW-14 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
 | Przy „nieaktualne” po usunięciu bariery: „Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.” Przycisk „Zmierz i zgłoś barierę” | dane, czynność | BR-23, PW-12 | C1 |
 | Stan synchronizacji, np. „Czeka na wysłanie: 3” | czynność | US9.1 | C4 |
@@ -574,13 +575,14 @@ Dostępność: status jest słowem, a ikona go tylko wzmacnia (NFR-21). TalkBack
 | --- | --- |
 | Cel | Zbierający wie, co czeka na wysłanie, i nie traci żadnej wersji zgłoszenia. |
 | Role | RO-ZBI |
-| Realizuje | US9.1, US9.2, US9.3 |
+| Realizuje | US9.1, US9.2, US9.3, US9.4, US9.5 |
 | Czynność główna | przy konflikcie: wybór wersji; bez konfliktu: „Synchronizuj teraz” |
 | Czynność główna przypięta | nie: przy konflikcie to ekran decyzji, wybór stoi na końcu treści, pod obiema wersjami (NFR-52) |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Liczba zgłoszeń i znaczników czekających w telefonie | dane | US9.1, BR-9 | — |
+| Liczba zgłoszeń i znaczników czekających w telefonie, bez zgłoszeń „Nie wysłano” | dane | US9.1, US9.5, BR-9, BR-26 | — |
+| Przy wygasłym zalogowaniu: „Logowanie wygasło. Zaloguj się, a wyślemy zgłoszenia same.” i przycisk „Zaloguj się” | dane, czynność | US9.4, US14.4, BR-26, PW-10 | L1 |
 | „Ostatnia synchronizacja: 12.11.2026, 10:42” | dane | NFR-10 | — |
 | „Synchronizuj teraz”; synchronizacja i tak rusza sama | czynność | UC10, US9.2 | — |
 | Ostrzeżenie „W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia.” | dane | NFR-7, PW-10 | — |
@@ -595,7 +597,8 @@ Dostępność: status jest słowem, a ikona go tylko wzmacnia (NFR-21). TalkBack
 | Pusty | „Wszystko wysłane. Ostatnia synchronizacja: 12.11.2026, 10:42.” (US9.1) |
 | Ładowanie | „Wysyłamy 2 z 5…” |
 | Brak sieci | „Bez internetu. Wyślemy wszystko sami, gdy internet wróci.” (US9.1, US9.2, decyzja 54) |
-| Błąd serwera | „Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później.” (NFR-50) |
+| Błąd serwera | „Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później.” (NFR-50, US9.4) |
+| Wygasłe zalogowanie | „Logowanie wygasło. Zaloguj się, a wyślemy zgłoszenia same.” Zgłoszenia czekają (US9.4) |
 | Konflikt | napis o skutku, obie wersje i trzy przyciski wyboru (US9.3) |
 
 Dostępność: w pionie wersje stoją jedna pod drugą, w poziomie obok siebie, by przy czcionce 200% nic się nie ucinało (NFR-20, NFR-22).

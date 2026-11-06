@@ -316,9 +316,9 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Wyzwalacz | Powrót sieci albo wybór „Synchronizuj”. |
 | Przepływ główny | 1. Aplikacja wykrywa sieć i sama rusza z synchronizacją (US9.2, NFR-6). <br> 2. Wysyła zgłoszenia i znaczniki z kolejki. <br> 3. Po potwierdzeniu odbioru przez serwer zgłoszenie dostaje status „wysłane” (BR-9, US8.2). <br> 4. Aplikacja pobiera zmiany z serwera. |
 | Punkt rozszerzenia | „Inna wersja na serwerze” — wybór wersji (UC11). |
-| Alternatywy i wyjątki | 1a. Brak sieci: wskaźnik braku sieci, zgłoszenie czeka ze statusem „lokalne” (US9.1). <br> 1b. W telefonie zostaje mniej niż 100 MB: ostrzeżenie (NFR-7). <br> 2a. Połączenie przerwane: ponowienie nie tworzy drugiego zgłoszenia (NFR-8). <br> 2b. Awaria serwera: zgłoszenia czekają w kolejce (NFR-50). |
+| Alternatywy i wyjątki | 1a. Brak sieci: wskaźnik braku sieci, zgłoszenie czeka ze statusem „lokalne” (US9.1). <br> 1b. W telefonie zostaje mniej niż 100 MB: ostrzeżenie (NFR-7). <br> 2a. Połączenie przerwane: ponowienie nie tworzy drugiego zgłoszenia (NFR-8). <br> 2b. Awaria serwera (5xx): zgłoszenia czekają w kolejce i ponawiają się same (NFR-50, US9.4). <br> 2c. Wygasłe zalogowanie (401): zgłoszenia czekają, aplikacja prosi o zalogowanie i po nim wysyła je sama (US9.4, BR-26). <br> 2d. Serwer odmawia (403, 400, 404, 413): zgłoszenie dostaje status „Nie wysłano” i nie ponawia się samo (US9.5, BR-26). |
 | Warunki końcowe | Kolejka w telefonie jest pusta albo czeka na sieć; nic nie zginęło. |
-| Odwołania | US4.2, US9.1, US9.2, US8.2, US15.3, BR-9, BR-20, NFR-5…NFR-8, NFR-50, T10, T11, T13 |
+| Odwołania | US4.2, US9.1, US9.2, US9.4, US9.5, US8.2, US15.3, BR-9, BR-20, BR-26, NFR-5…NFR-8, NFR-50, T10, T11, T13 |
 
 ### Wybór wersji przy konflikcie (UC11)
 
