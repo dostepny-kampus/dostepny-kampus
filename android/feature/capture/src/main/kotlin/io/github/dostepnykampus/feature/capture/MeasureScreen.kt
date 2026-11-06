@@ -41,7 +41,7 @@ private val POLISH = Locale.forLanguageTag("pl-PL")
  * C1 Pomiar pozycji (US6.1): szukanie satelitów, pomiar 30 s i „Pomiar zakończony”. Dokładność i satelity są
  * tekstem, nie tylko na mapie nieba (NFR-18, US6.5), a dokładność ma dopisek „szacunek” (NFR-2). „Powtórz pomiar”
  * działa w każdym stanie, bez limitu (NFR-23). Bez zgody na lokalizację pokazuje prośbę o nią (NFR-27).
- * Podpowiedź budynku i „Dalej” przyjdą w kolejnych krokach.
+ * Po pomiarze podpowiada budynek (US6.2); „Dalej” przyjdzie w kolejnym kroku.
  *
  * @param onBack „Wstecz” do ekranu, z którego otwarto C1 (NFR-15)
  * @param modifier wymiary nadane przez aplikację
@@ -51,7 +51,15 @@ private val POLISH = Locale.forLanguageTag("pl-PL")
 fun MeasureScreen(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: MeasureViewModel = hiltViewModel()) {
     WithLocationPermission(onBack = onBack) {
         val state by viewModel.uiState.collectAsStateWithLifecycle()
-        MeasureContent(state = state, onRepeat = viewModel::repeat, onBack = onBack, modifier = modifier)
+        val buildings by viewModel.buildings.collectAsStateWithLifecycle()
+        MeasureContent(
+            state = state,
+            onRepeat = viewModel::repeat,
+            onBack = onBack,
+            modifier = modifier,
+            buildings = Buildings(buildings),
+            placeActions = PlaceActions(viewModel::confirm, viewModel::choose, viewModel::outside),
+        )
     }
 }
 
@@ -62,9 +70,18 @@ fun MeasureScreen(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: 
  * @param onRepeat „Powtórz pomiar”
  * @param onBack „Wstecz”
  * @param modifier wymiary nadane przez aplikację
+ * @param buildings budynki do „Wybierz inny”
+ * @param placeActions czynności wyboru budynku po pomiarze (US6.2)
  */
 @Composable
-fun MeasureContent(state: MeasureUiState, onRepeat: () -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun MeasureContent(
+    state: MeasureUiState,
+    onRepeat: () -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    buildings: Buildings = Buildings(emptyList()),
+    placeActions: PlaceActions = PlaceActions.None,
+) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = stringResource(R.string.pomiar_naglowek), onBack = onBack)
@@ -87,6 +104,7 @@ fun MeasureContent(state: MeasureUiState, onRepeat: () -> Unit, onBack: () -> Un
                     is MeasureUiState.Finished -> {
                         Headline(stringResource(R.string.pomiar_zakonczony))
                         Result(state.average, resources.satellitesLine(state.satellites))
+                        PlaceSection(place = state.place, buildings = buildings, actions = placeActions)
                         SkyMap(Sky(state.sky))
                     }
                 }
