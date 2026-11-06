@@ -128,6 +128,7 @@ internal fun ExitDialog(onConfirmExit: () -> Unit, onStay: () -> Unit) {
 @StringRes
 private fun ReportFormError.messageRes(): Int =
     when (this) {
+        ReportFormError.MISSING_FLOOR -> R.string.formularz_brak_pietra
         ReportFormError.MISSING_BARRIER_TYPE -> R.string.formularz_brak_typu
         ReportFormError.MISSING_SEVERITY -> R.string.formularz_brak_uciazliwosci
         ReportFormError.MISSING_PHOTO -> R.string.formularz_brak_zdjecia

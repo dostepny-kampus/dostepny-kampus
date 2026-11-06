@@ -62,6 +62,7 @@
     <string name="formularz_zdjecia_liczba">Zdjęcia: %1$d</string>
     <string name="formularz_opis">Opis</string>
     <string name="formularz_opis_podpowiedz">Obowiązkowy przy typie „inna bariera”.</string>
+    <string name="formularz_brak_pietra">Brakuje piętra. Uzupełnij to pole, aby zapisać.</string>
     <string name="formularz_brak_typu">Brakuje typu bariery. Uzupełnij to pole, aby zapisać.</string>
     <string name="formularz_brak_uciazliwosci">Brakuje uciążliwości. Uzupełnij to pole, aby zapisać.</string>
     <string name="formularz_brak_zdjecia">Brakuje zdjęcia. Zrób zdjęcie, aby zapisać.</string>

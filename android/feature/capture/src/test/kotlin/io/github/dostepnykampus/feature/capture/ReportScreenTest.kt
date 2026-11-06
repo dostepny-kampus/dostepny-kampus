@@ -147,6 +147,14 @@ class ReportScreenTest {
     }
 
     @Test
+    fun brg7_missing_floor_shown() {
+        show(ReportUiState(form = ReportForm(place = A1), errors = listOf(ReportFormError.MISSING_FLOOR)))
+
+        val text = "Brakuje piętra. Uzupełnij to pole, aby zapisać."
+        assertEquals(2, compose.onAllNodes(hasText(text)).fetchSemanticsNodes().size)
+    }
+
+    @Test
     fun nfr7_save_failed_retry() {
         show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.SAVE_FAILED))
         compose.onNodeWithText("Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.").assertIsDisplayed()

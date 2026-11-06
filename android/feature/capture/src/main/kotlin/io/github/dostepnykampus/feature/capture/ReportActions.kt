@@ -25,6 +25,7 @@ import io.github.dostepnykampus.core.designsystem.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.PinnedButton
 import io.github.dostepnykampus.feature.capture.ReportFormError.MISSING_BARRIER_TYPE
 import io.github.dostepnykampus.feature.capture.ReportFormError.MISSING_DESCRIPTION
+import io.github.dostepnykampus.feature.capture.ReportFormError.MISSING_FLOOR
 import io.github.dostepnykampus.feature.capture.ReportFormError.MISSING_PHOTO
 import io.github.dostepnykampus.feature.capture.ReportFormError.MISSING_SEVERITY
 
@@ -71,6 +72,7 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
                 PlaceCard(place = state.form.place, onChangePlace = actions.onChangePlace)
                 state.form.place.buildingSymbol?.let { building ->
                     FloorSection(building = building, floor = state.form.floor, onEdit = actions.onEdit)
+                    FieldError(MISSING_FLOOR, isShown = MISSING_FLOOR in state.errors)
                 }
                 TypeSection(type = state.form.barrierType, onEdit = actions.onEdit)
                 FieldError(MISSING_BARRIER_TYPE, isShown = MISSING_BARRIER_TYPE in state.errors)
