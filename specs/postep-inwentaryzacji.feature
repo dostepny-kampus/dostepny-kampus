@@ -18,7 +18,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
         | budynek | co                                 | wynik                    |
         | A-1     | jedno z 5 pięter jako obejrzane    | 1 z 5 pięter             |
         | B-1     | jedno z 7 pięter jako obejrzane    | 1 z 7 pięter             |
-        | B-4     | cały budynek jako „obejrzany”      | znacznik „obejrzany”     |
+        | B-8     | cały budynek jako „obejrzany”      | znacznik „obejrzany”     |
 
     @US15.2
     Scenariusz: Zbierający cofa własny znacznik po potwierdzeniu
@@ -90,11 +90,11 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
 
     @US11.1
     Scenariusz: Postęp budynku szczegółowego i podstawowego z liczbami zgłoszeń
-      Zakładając, że w budynku A-1 obejrzano 3 z 5 pięter, a budynek B-4 ma znacznik „obejrzany”
+      Zakładając, że w budynku A-1 obejrzano 3 z 5 pięter, a budynek B-8 ma znacznik „obejrzany”
       Oraz w budynku A-1 są 2 zgłoszenia „wysłane”, 1 „w weryfikacji” i 4 „przyjęte”
       Jeżeli Koordynator otworzy postęp inwentaryzacji
       Wtedy przy budynku A-1 widzi 60 procent pięter obejrzanych, 3 zgłoszenia czekające i 4 przyjęte
-      Oraz przy budynku B-4 widzi znacznik „obejrzany”
+      Oraz przy budynku B-8 widzi znacznik „obejrzany”
 
     @US11.2
     Szablon scenariusza: Postęp pokazuje nową wartość po dotarciu znacznika na serwer

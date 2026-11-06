@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | --- | --- |
 | Pełny test | 3 |
 | Tylko częściowo | 12 |
-| Bez testu | 152 |
+| Bez testu | 153 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -57,6 +57,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `pomiar-precyzyjny.feature` | Typ TB-29 „inna bariera” wymaga opisu | BR-7, US7.3 | — | brak |
 | `pomiar-precyzyjny.feature` | Typ TB-29 „inna bariera” z opisem zapisuje się | BR-7, US7.3 | — | brak |
 | `pomiar-precyzyjny.feature` | Powrót do pomiaru zmienia miejsce, a wpisane pola zostają | US7.4 | — | brak |
+| `pomiar-precyzyjny.feature` | Piętro zostaje po zmianie miejsca tylko w tym samym budynku | US7.4 | — | brak |
 | `pomiar-precyzyjny.feature` | Wyjście z formularza z niezapisanymi zmianami wymaga potwierdzenia | US7.4 | — | brak |
 | `postep-inwentaryzacji.feature` | Oznaczenie piętra albo budynku jako obejrzanego | BR-20, US15.1 | — | brak |
 | `postep-inwentaryzacji.feature` | Zbierający cofa własny znacznik po potwierdzeniu | BR-20, US15.2 | — | brak |
