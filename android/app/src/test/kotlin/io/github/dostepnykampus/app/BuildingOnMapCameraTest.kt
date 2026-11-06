@@ -9,7 +9,7 @@ import android.view.accessibility.AccessibilityManager
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -102,7 +102,7 @@ class BuildingOnMapCameraTest {
     private var touch: (List<String>) -> Unit = {}
     private var mapSize = IntSize.Zero
     private var density = 1f
-    private var reportsIdle = false
+    private var isIdleReported = false
     private val choice = TestMapListChoice()
     private val repository = BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { CATALOG }
     private val fakeMap =
@@ -111,7 +111,7 @@ class BuildingOnMapCameraTest {
             touch = onBuildingsTouch
             density = LocalDensity.current.density
             // Jak natywna mapa po ruchu: bezczynność z otrzymaną kamerą, gdy test o to prosi.
-            LaunchedEffect(camera) { if (reportsIdle) onCameraIdle(camera) }
+            SideEffect { if (isIdleReported) onCameraIdle(camera) }
             Box(modifier.onSizeChanged { mapSize = it })
         }
 
@@ -276,7 +276,7 @@ class BuildingOnMapCameraTest {
     // → widok jak przed kartą, decyzja 83.
     @Test
     fun us2_8_back_after_show() {
-        reportsIdle = true
+        isIdleReported = true
         showOnMap("T-9")
         compose.waitForIdle()
         val before = shown.last().second
