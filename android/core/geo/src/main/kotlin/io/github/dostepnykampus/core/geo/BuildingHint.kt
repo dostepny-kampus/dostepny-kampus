@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.geo
@@ -15,16 +15,21 @@ const val NEAR_METERS = 50.0
  * Podpowiedź budynku po pomiarze na C1: „Czy to budynek C-13?” z nazwą i odległością (US6.2).
  *
  * @property building budynek, w którego konturze leży punkt, albo najbliższy
- * @property distanceMeters odległość od punktu do konturu w metrach; 0, gdy punkt leży w konturze
+ * @property distanceMeters odległość od punktu do krawędzi konturu w metrach; 0 także dla punktu dokładnie na
+ *   krawędzi, która nie leży w konturze
+ * @property isInside czy punkt leży ściśle w konturze budynku (wynik [locateBuilding]); punkt na krawędzi
+ *   konturu jest poza budynkiem, mimo odległości 0
  */
-data class BuildingHint(val building: Building, val distanceMeters: Double) {
-    /** Czy punkt leży w konturze budynku. */
-    val isInside: Boolean get() = distanceMeters == 0.0
-}
+data class BuildingHint(
+    val building: Building,
+    val distanceMeters: Double,
+    val isInside: Boolean = distanceMeters == 0.0,
+)
 
 /**
- * Podpowiedź budynku dla punktu z pomiaru, bez sieci (US6.2, NFR-4). Punkt w konturze daje ten budynek, punkt poza
- * konturem najbliższy budynek do 50 m włącznie, a dalej nic: zgłoszenie będzie „poza budynkiem” (BR-G2, BR-G4).
+ * Podpowiedź budynku dla punktu z pomiaru, bez sieci (US6.2, NFR-4). Punkt ściśle w konturze daje ten budynek, punkt
+ * poza konturem lub na jego krawędzi najbliższy budynek do 50 m włącznie, a dalej nic: zgłoszenie będzie
+ * „poza budynkiem” (BR-G2, BR-G4).
  *
  * @param point uśredniony punkt pomiaru
  * @param buildings budynki z konturami, jak dla [locateBuilding]
@@ -33,12 +38,16 @@ data class BuildingHint(val building: Building, val distanceMeters: Double) {
 fun hintBuilding(point: GeoPoint, buildings: List<Building>): BuildingHint? =
     when (val located = locateBuilding(point, buildings)) {
         is LocateResult.InsideOutline -> {
-            BuildingHint(located.building, distanceMeters = 0.0)
+            BuildingHint(located.building, distanceMeters = 0.0, isInside = true)
         }
 
         is LocateResult.OutsideBuilding -> {
             val nearest = located.nearest
             val meters = nearest?.edgeDistanceMeters(point)
-            if (nearest != null && meters != null && meters <= NEAR_METERS) BuildingHint(nearest, meters) else null
+            if (nearest != null && meters != null && meters <= NEAR_METERS) {
+                BuildingHint(nearest, meters, isInside = false)
+            } else {
+                null
+            }
         }
     }
