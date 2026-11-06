@@ -31,4 +31,12 @@ public interface SubmissionFinder {
      * @return Zgłoszenia posortowane po chwili utworzenia, potem po identyfikatorze
      */
     List<Submission> list(SubmissionQuery query);
+
+    /**
+     * Wyszukuje zgłoszenia podobne do danego (US10.1, BR-13), bez niego samego.
+     *
+     * @param id Identyfikator sprawdzanego zgłoszenia
+     * @return Podobne zgłoszenia od najbliższego; puste, gdy zgłoszenia nie ma
+     */
+    List<SimilarSubmission> similar(UUID id);
 }

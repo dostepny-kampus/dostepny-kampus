@@ -25,7 +25,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Zgłoszenia barier: wysłanie nowego zgłoszenia (US4, US7, BR-9), edycja
- * z kontrolą wersji (US8.3, BR-10) i odczyt zgłoszeń przyjętych (BR-6).
+ * z kontrolą wersji (US8.3, BR-10), odczyt zgłoszeń przyjętych (BR-6)
+ * i podobne zgłoszenia dla Weryfikatora (US10.1, BR-13).
  *
  * <p>Logowanie przez Keycloak dochodzi w sprincie 5. Do tego czasu serwer
  * przyjmuje zgłoszenia bez tokenu i bez autora, a pokazuje tylko zgłoszenia
@@ -85,6 +86,24 @@ public final class SubmissionsController {
             .filter(submission -> submission.status().publiclyVisible())
             .map(SubmissionResponse::new)
             .orElseThrow(() -> new MissingResource(SubmissionsController.MISSING));
+    }
+
+    /**
+     * Zwraca zgłoszenia podobne do danego w promieniu 10 m, z każdego piętra
+     * (US10.1, BR-13). Sprawdzane zgłoszenie może mieć dowolny status.
+     * Wymóg roli Weryfikatora dochodzi z logowaniem w sprincie 5.
+     *
+     * @param id Identyfikator sprawdzanego zgłoszenia
+     * @return Podobne zgłoszenia od najbliższego
+     */
+    @GetMapping("/submissions/{submissionId}/similar")
+    List<SimilarSubmissionResponse> listSimilarSubmissions(
+        @PathVariable("submissionId") final UUID id
+    ) {
+        if (this.finder.find(id).isEmpty()) {
+            throw new MissingResource(SubmissionsController.MISSING);
+        }
+        return this.finder.similar(id).stream().map(SimilarSubmissionResponse::new).toList();
     }
 
     /**
