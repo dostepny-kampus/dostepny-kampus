@@ -111,6 +111,20 @@ Funkcja: Pomiar precyzyjny i formularz zgłoszenia
     Oraz typ TB-1 i uciążliwość 3 są nadal wybrane
 
   @US7.4
+  Szablon scenariusza: Piętro zostaje po zmianie miejsca tylko w tym samym budynku
+    Zakładając, że Zbierający potwierdził budynek A-1 i w formularzu wybrał 2 piętro i TB-1 „schody przy wejściu”
+    Jeżeli wróci do pomiaru i przesunie punkt <miejsce>
+    Oraz przejdzie znów do formularza
+    Wtedy <piętro>
+    Oraz typ TB-1 jest nadal wybrany
+
+    Przykłady:
+      | miejsce                 | piętro                                |
+      | w budynku A-1           | 2 piętro jest nadal wybrane           |
+      | do budynku C-13         | piętro nie jest wybrane               |
+      | poza budynek, na ulicę  | formularz nie ma pola piętra          |
+
+  @US7.4
   Szablon scenariusza: Wyjście z formularza z niezapisanymi zmianami wymaga potwierdzenia
     Zakładając, że Zbierający wybrał w formularzu TB-1 „schody przy wejściu” i nie zapisał zgłoszenia
     Jeżeli spróbuje wyjść z formularza

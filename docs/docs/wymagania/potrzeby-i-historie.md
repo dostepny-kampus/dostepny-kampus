@@ -99,7 +99,7 @@ Odwiedzający w MVP nie ma listy własnych zgłoszeń, więc US4.4 kończy jego 
 | US7.1 | Bez typu bariery, uciążliwości 1–3 i zdjęcia zgłoszenia nie da się zapisać. | — |
 | US7.2 | W budynku szczegółowym piętro wybiera się z etykiet z danych PWr. W budynku podstawowym wpisuje się liczbę całkowitą, z dopiskiem „półpiętro” lub bez. | BR-G1 |
 | US7.3 | Przy typie TB-29 „inna bariera” opis jest obowiązkowy. | TB-29 |
-| US7.4 | Formularz pokazuje budynek i miejsce z pomiaru. Miejsce można zmienić, wracając do pomiaru, a wpisane pola zostają. Wyjście z formularza z niezapisanymi zmianami wymaga potwierdzenia. | US6.2, NFR-23 |
+| US7.4 | Formularz pokazuje budynek i miejsce z pomiaru. Miejsce można zmienić, wracając do pomiaru, a wpisane pola zostają; piętro zostaje tylko w tym samym budynku. Wyjście z formularza z niezapisanymi zmianami wymaga potwierdzenia. | US6.2, NFR-23 |
 | US8.1 | Lista pokazuje każde własne zgłoszenie z pomiaru precyzyjnego i każdą własną zmianę z jednym statusem: lokalne, wysłane, w weryfikacji, przyjęte, odrzucone albo archiwalne. Odrzucone ma powód odrzucenia. Zgłoszenie, którego zmiana czeka w telefonie, ma przy statusie napis „Zmiana czeka na wysłanie”. Najnowsze zgłoszenia są na górze, a zgłoszenia, które można poprawić, mają „Otwórz”. Zgłoszeń szybkich lista nie pokazuje (US4.4). | NFR-21, BR-18, US4.4 |
 | US8.2 | Status „wysłane” pojawia się dopiero wtedy, gdy zgłoszenie czeka w kolejce na serwerze. Status „w weryfikacji” pojawia się, gdy wziął je Weryfikator. | US10.4 |
 | US8.3 | Zgłoszenie przed decyzją Weryfikatora można edytować. Odrzucone można poprawić i wysłać ponownie. | BR-3 |
