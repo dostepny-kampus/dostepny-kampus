@@ -15,16 +15,12 @@ const val NEAR_METERS = 50.0
  * Podpowiedź budynku po pomiarze na C1: „Czy to budynek C-13?” z nazwą i odległością (US6.2).
  *
  * @property building budynek, w którego konturze leży punkt, albo najbliższy
- * @property distanceMeters odległość od punktu do krawędzi konturu w metrach; 0 także dla punktu dokładnie na
- *   krawędzi, która nie leży w konturze
+ * @property distanceMeters odległość od punktu do krawędzi konturu w metrach; 0 także dla punktu leżącego dokładnie
+ *   na krawędzi; taki punkt nie leży w konturze
  * @property isInside czy punkt leży ściśle w konturze budynku (wynik [locateBuilding]); punkt na krawędzi
  *   konturu jest poza budynkiem, mimo odległości 0
  */
-data class BuildingHint(
-    val building: Building,
-    val distanceMeters: Double,
-    val isInside: Boolean = distanceMeters == 0.0,
-)
+data class BuildingHint(val building: Building, val distanceMeters: Double, val isInside: Boolean)
 
 /**
  * Podpowiedź budynku dla punktu z pomiaru, bez sieci (US6.2, NFR-4). Punkt ściśle w konturze daje ten budynek, punkt
