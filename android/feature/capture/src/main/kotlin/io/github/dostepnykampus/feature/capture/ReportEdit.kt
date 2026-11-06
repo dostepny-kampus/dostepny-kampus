@@ -37,12 +37,14 @@ enum class ReportStage {
  * @property photos zdjęcia z plikami, w kolejności [ReportForm.photoIds]
  * @property errors braki pokazywane dopiero po pierwszym „Zapisz” (US7.1)
  * @property stage etap ekranu
+ * @property isSaveAttempted czy „Zapisz” było już naciśnięte; od tej chwili braki liczą się na bieżąco
  */
 data class ReportUiState(
     val form: ReportForm,
     val photos: List<PendingPhotoDraft> = emptyList(),
     val errors: List<ReportFormError> = emptyList(),
     val stage: ReportStage = ReportStage.EDITING,
+    val isSaveAttempted: Boolean = false,
 )
 
 /** Zmiana jednego pola na ekranie C2. */
@@ -90,19 +92,22 @@ sealed interface ReportEdit {
     data class Photo(val photo: PendingPhotoDraft) : ReportEdit
 }
 
-/** Stan po zmianie pola; po pierwszym „Zapisz” braki znikają na bieżąco, gdy pole zostanie uzupełnione. */
+/**
+ * Stan po zmianie pola. Po pierwszym „Zapisz” braki liczą się na bieżąco: znikają po uzupełnieniu pola
+ * i wracają, gdy zmiana tworzy nowy, np. typ TB-29 bez opisu. Piętra poza budynkiem nie ma (BR-G4).
+ */
 internal fun ReportUiState.edited(change: ReportEdit): ReportUiState {
     val photos = if (change is ReportEdit.Photo) photos + change.photo else photos
     val form =
         when (change) {
             is ReportEdit.Place -> form.movedTo(change.place)
-            is ReportEdit.Floor -> form.copy(floor = change.floor)
+            is ReportEdit.Floor -> form.copy(floor = change.floor.takeIf { form.place.buildingSymbol != null })
             is ReportEdit.Type -> form.copy(barrierType = change.type)
             is ReportEdit.Rating -> form.copy(severity = change.severity)
             is ReportEdit.Description -> form.copy(description = change.text)
             is ReportEdit.Photo -> form.copy(photoIds = photos.map(PendingPhotoDraft::photoId))
         }
-    return copy(form = form, photos = photos, errors = if (errors.isEmpty()) emptyList() else form.errors())
+    return copy(form = form, photos = photos, errors = if (isSaveAttempted) form.errors() else emptyList())
 }
 
 private fun ReportForm.movedTo(next: ReportPlace): ReportForm =

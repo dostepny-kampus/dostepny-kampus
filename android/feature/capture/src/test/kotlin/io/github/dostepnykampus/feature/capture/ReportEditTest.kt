@@ -86,7 +86,7 @@ class ReportEditTest {
 
     @Test
     fun `brak znika po uzupełnieniu`() {
-        val shown = start.copy(errors = start.form.errors())
+        val shown = start.copy(errors = start.form.errors(), isSaveAttempted = true)
         val state =
             shown
                 .edited(ReportEdit.Floor(ReportFloor.Planned("A-1-0")))
@@ -98,6 +98,29 @@ class ReportEditTest {
             listOf(ReportFormError.MISSING_DESCRIPTION),
             state.edited(ReportEdit.Photo(photo("p1"))).errors,
         )
+    }
+
+    @Test
+    fun `po zapisz nowy brak od razu`() {
+        val complete =
+            start
+                .copy(errors = start.form.errors(), isSaveAttempted = true)
+                .edited(ReportEdit.Floor(ReportFloor.Planned("A-1-0")))
+                .edited(ReportEdit.Type(BarrierType.THRESHOLD))
+                .edited(ReportEdit.Rating(Severity.BLOCKING))
+                .edited(ReportEdit.Photo(photo("p1")))
+        assertEquals(emptyList<ReportFormError>(), complete.errors)
+
+        val other = complete.edited(ReportEdit.Type(BarrierType.OTHER_BARRIER))
+
+        assertEquals(listOf(ReportFormError.MISSING_DESCRIPTION), other.errors)
+    }
+
+    @Test
+    fun `bez budynku piętro pominięte`() {
+        val outside = ReportUiState(form = ReportForm(place = A1.copy(buildingSymbol = null)))
+
+        assertNull(outside.edited(ReportEdit.Floor(ReportFloor.Planned("A-1-0"))).form.floor)
     }
 
     private fun photo(id: String) = PendingPhotoDraft(photoId = id, path = "/data/$id.jpg")
