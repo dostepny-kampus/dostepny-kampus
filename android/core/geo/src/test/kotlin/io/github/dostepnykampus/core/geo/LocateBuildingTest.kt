@@ -37,6 +37,19 @@ class LocateBuildingTest {
                 ),
         )
 
+    private val compoundCourtyardBuilding =
+        Building(
+            symbol = "C-1",
+            name = "Budynek złożony z dziedzińcem w drugiej części",
+            outline =
+                GeoMultiPolygon(
+                    listOf(
+                        GeoPolygon(listOf(square(x = 20, y = 0, size = 2))),
+                        GeoPolygon(listOf(square(x = 20, y = 6, size = 8), square(x = 23, y = 9, size = 2))),
+                    ),
+                ),
+        )
+
     private val buildings = listOf(courtyardBuilding, twoPartBuilding)
 
     @Test
@@ -61,6 +74,49 @@ class LocateBuildingTest {
         assertEquals(LocateResult.OutsideBuilding(courtyardBuilding), locateBuilding(point(x = 3, y = 4), buildings))
     }
 
+    // Wiersz: G1, decyzja 137, US6.2, BR-G2 — każdy z boków i wierzchołek konturu jest poza budynkiem.
+    @Test
+    fun us6_2_every_side_corner_out() {
+        listOf(0 to 4, 4 to 0, 4 to 8, 0 to 0, 8 to 8).forEach { (x, y) ->
+            assertEquals(
+                LocateResult.OutsideBuilding(courtyardBuilding),
+                locateBuilding(point(x = x, y = y), buildings),
+                "punkt ($x, $y) na konturze",
+            )
+        }
+    }
+
+    // Wiersz: G2, decyzja 137, BR-G2 — krawędź dziedzińca w drugiej części wielokąta złożonego, także poza budynkiem.
+    @Test
+    fun br_g2_compound_hole_edge_out() {
+        assertEquals(
+            LocateResult.OutsideBuilding(compoundCourtyardBuilding),
+            locateBuilding(point(x = 23, y = 10), listOf(compoundCourtyardBuilding)),
+        )
+    }
+
+    // Wiersz: G2, decyzja 137, BR-G2 — krawędź zewnętrzna tej samej części złożonej jest poza, a ścisłe wnętrze w.
+    @Test
+    fun br_g2_compound_edge_and_body() {
+        val compound = listOf(compoundCourtyardBuilding)
+        val outside = LocateResult.OutsideBuilding(compoundCourtyardBuilding)
+        val inside = LocateResult.InsideOutline(compoundCourtyardBuilding)
+        assertEquals(outside, locateBuilding(point(x = 28, y = 10), compound))
+        assertEquals(inside, locateBuilding(point(x = 21, y = 7), compound))
+    }
+
+    // Wiersz: G3, US6.2 — punkt ściśle w konturze tuż przy krawędzi i tuż przy dziedzińcu nadal jest w budynku.
+    @Test
+    fun us6_2_near_edges_inside() {
+        listOf(7.9375 to 4.0, 0.0625 to 4.0, 3.0 to 2.9375, 3.0 to 5.0625).forEach { (x, y) ->
+            assertEquals(
+                LocateResult.InsideOutline(courtyardBuilding),
+                locateBuilding(point(x = x, y = y), buildings),
+                "punkt ($x, $y) w konturze",
+            )
+        }
+    }
+
     @Test
     fun br_g2_courtyard_outside() {
         assertEquals(LocateResult.OutsideBuilding(courtyardBuilding), locateBuilding(point(x = 4, y = 4), buildings))
@@ -79,7 +135,9 @@ class LocateBuildingTest {
     private fun square(x: Int, y: Int, size: Int): List<GeoPoint> =
         listOf(0 to 0, size to 0, size to size, 0 to size, 0 to 0).map { (dx, dy) -> point(x = x + dx, y = y + dy) }
 
-    private fun point(x: Int, y: Int): GeoPoint =
+    private fun point(x: Int, y: Int): GeoPoint = point(x = x.toDouble(), y = y.toDouble())
+
+    private fun point(x: Double, y: Double): GeoPoint =
         GeoPoint(longitude = BASE_LONGITUDE + x * STEP, latitude = BASE_LATITUDE + y * STEP)
 
     private companion object {

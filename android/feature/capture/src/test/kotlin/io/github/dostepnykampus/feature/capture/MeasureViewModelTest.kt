@@ -26,6 +26,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.coroutines.EmptyCoroutineContext
@@ -162,6 +163,17 @@ class MeasureViewModelTest {
             assertEquals(PlaceChoice.Outside, place())
         }
 
+    // Wiersz: G5, decyzja 120 pkt 3, decyzja 137, US6.2 — punkt na krawędzi konturu A-1: podpowiedź A-1 do
+    // potwierdzenia, nie w konturze i bez przypisania budynku.
+    @Test
+    fun us6_2_edge_suggests_not_inside() =
+        runTest(dispatcher) {
+            finish(A1_EDGE_POINT)
+            val suggested = place() as PlaceChoice.Suggested
+            assertEquals("A-1", suggested.hint.building.symbol)
+            assertFalse(suggested.hint.isInside)
+        }
+
     private fun TestScope.finish(point: GeoPoint = A1_POINT) {
         watch()
         backgroundScope.launch { fixes.emit(PositionFix(point, 6.0, clock.nowMillis())) }
@@ -186,6 +198,7 @@ class MeasureViewModelTest {
         const val BOOT = 1_000_000L
         const val PRECISION = 1e-9
         val A1_POINT = GeoPoint(longitude = 17.0605, latitude = 51.1105)
+        val A1_EDGE_POINT = GeoPoint(longitude = 17.06, latitude = 51.1105)
         val CAMPUS =
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
                 feature("A-1", west = 17.06) +
