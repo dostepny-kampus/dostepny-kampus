@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
+import io.github.dostepnykampus.feature.map.data.campusMapData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,7 +57,13 @@ class CampusMapViewModelTest {
     }
 
     private fun viewModel(catalog: BuildingCatalogRepository = repository) =
-        CampusMapViewModel(catalog, { online }, choice)
+        CampusMapViewModel(
+            repository = catalog,
+            networkStatus = { online },
+            mapListChoice = choice,
+            computeContext = EmptyCoroutineContext,
+            geometry = ::campusMapData,
+        )
 
     @Test
     fun us1_catalog_loaded() =
