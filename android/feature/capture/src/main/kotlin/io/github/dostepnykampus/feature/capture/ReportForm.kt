@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture
 
+import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.geo.EntranceDistance
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -96,6 +97,7 @@ sealed interface ReportCheck {
  * @property photoIds identyfikatory zrobionych zdjęć (BR-7)
  * @property description opis wpisany przez Zbierającego
  * @property replacesSubmissionId zgłoszenie przyjęte, które zapis zastąpi nowym (BR-18)
+ * @property editedSubmission własne zgłoszenie poprawiane z C3; zapis zmienia je, a nie tworzy nowego (US8.3)
  */
 data class ReportForm(
     val place: ReportPlace,
@@ -105,6 +107,7 @@ data class ReportForm(
     val photoIds: List<String> = emptyList(),
     val description: String = "",
     val replacesSubmissionId: String? = null,
+    val editedSubmission: EditedSubmission? = null,
 ) {
     init {
         require(floor == null || place.buildingSymbol != null) { "Poza budynkiem formularz nie ma piętra (BR-G4)" }

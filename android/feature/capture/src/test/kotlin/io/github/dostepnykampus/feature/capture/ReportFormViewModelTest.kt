@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture
 
+import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
@@ -27,12 +28,15 @@ import java.io.IOException
 class ReportFormViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val saved = mutableListOf<Pair<SubmissionContent, List<PendingPhotoDraft>>>()
+    private val editedSaves = mutableListOf<EditedSubmission?>()
     private var failure: Exception? = null
+    private var opened = ReportForm(place = A1)
     private val viewModel by lazy {
-        ReportFormViewModel { content, photos ->
+        ReportFormViewModel { content, photos, edited ->
             failure?.let { throw it }
             saved.add(content to photos)
-        }.apply { open(ReportForm(place = A1)) }
+            editedSaves.add(edited)
+        }.apply { open(opened) }
     }
 
     @BeforeEach
@@ -84,6 +88,18 @@ class ReportFormViewModelTest {
             assertEquals("TB-13", content.barrierType)
             assertEquals(listOf("p1"), content.photoIds)
             assertEquals(listOf(PHOTO), photos)
+        }
+
+    @Test
+    fun `poprawka zapisuje to samo`() =
+        runTest(dispatcher) {
+            val edited = EditedSubmission(id = "s1", baseVersion = 2)
+            opened = ReportForm(place = A1, editedSubmission = edited)
+            fill()
+            viewModel.save()
+            runCurrent()
+
+            assertEquals(listOf(edited), editedSaves)
         }
 
     @Test

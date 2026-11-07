@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.SubmissionContent
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,10 +20,16 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
-/** Zapis zgłoszenia w kolejce telefonu; w aplikacji to `SubmissionQueue.save` (NFR-5, US9.1). */
+/** Zapis zgłoszenia w kolejce telefonu; w aplikacji to `SubmissionQueue.save` albo `saveEdit` (NFR-5, US9.1). */
 fun interface ReportSaver {
-    /** Zapisuje treść i zdjęcia; rzuca [IOException] albo [SQLiteException], gdy telefon nie może zapisać (NFR-7). */
-    suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>)
+    /**
+     * Zapisuje treść i zdjęcia; rzuca [IOException] albo [SQLiteException], gdy telefon nie może zapisać (NFR-7).
+     *
+     * @param content treść zgłoszenia
+     * @param photos zdjęcia zgłoszenia
+     * @param edited poprawiane zgłoszenie z C3 albo `null` dla nowego (US8.3)
+     */
+    suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>, edited: EditedSubmission?)
 }
 
 /** Model widoku formularza C2 „Opisz barierę” (US7.1–US7.4). */
@@ -88,7 +95,7 @@ class ReportFormViewModel
             viewModelScope.launch {
                 val stage =
                     try {
-                        saver.save(content, current.photos)
+                        saver.save(content, current.photos, current.form.editedSubmission)
                         ReportStage.SAVED
                     } catch (_: IOException) {
                         ReportStage.SAVE_FAILED
