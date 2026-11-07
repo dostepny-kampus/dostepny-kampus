@@ -23,7 +23,8 @@ internal interface SubmissionSyncEntryPoint {
 
 /**
  * Wysyła kolejkę, gdy telefon wróci do sieci (NFR-6): zadanie czeka na warunek sieci, więc system trzyma je
- * do zasięgu. Gdy wysyłka przerwie się na braku sieci, [CoroutineWorker.Result.retry] prosi o kolejną próbę.
+ * do zasięgu. Gdy wysyłka przerwie się na braku sieci albo awarii serwera, [CoroutineWorker.Result.retry]
+ * prosi o kolejną próbę.
  */
 class SubmissionSyncWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
