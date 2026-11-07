@@ -6,13 +6,16 @@
 package io.github.dostepnykampus.feature.capture
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -69,5 +72,45 @@ class ReportScreenTest {
 
         assertEquals(ReportEdit.Rating(Severity.BLOCKING), edits.last())
         assertEquals(1, saves)
+    }
+
+    @Test
+    fun us7_2_floor_number() {
+        show()
+        compose.onNodeWithText("Numer piętra").performTextInput("-1")
+
+        assertEquals(ReportEdit.Floor(ReportFloor.Numbered(number = -1, isMezzanine = false)), edits.last())
+    }
+
+    @Test
+    fun us7_2_floor_not_integer() {
+        show()
+        compose.onNodeWithText("Numer piętra").performTextInput("1,5")
+
+        assertEquals(ReportEdit.Floor(null), edits.last())
+        compose.onNodeWithText("Wpisz liczbę całkowitą, np. 0 albo -1.").assertIsDisplayed()
+    }
+
+    @Test
+    fun us7_4_new_building_empty_floor() {
+        val state = mutableStateOf(ReportUiState(form = ReportForm(place = A1)))
+        val actions = ReportActions(onEdit = { edits.add(it) }, onChangePlace = {}, onSave = {}, onBack = {})
+        compose.setContent { DostepnyKampusTheme { ReportContent(state = state.value, actions = actions) } }
+        compose.onNodeWithText("Numer piętra").performTextInput("2")
+        assertEquals(1, compose.onAllNodes(hasText("2")).fetchSemanticsNodes().size)
+
+        state.value = ReportUiState(form = ReportForm(place = A1.copy(buildingSymbol = "C-13")))
+        compose.waitForIdle()
+
+        assertEquals(0, compose.onAllNodes(hasText("2")).fetchSemanticsNodes().size)
+    }
+
+    @Test
+    fun us7_1_type_from_list() {
+        show()
+        compose.onNodeWithText("Wybierz typ bariery").performClick()
+        compose.onNodeWithText("Próg").performScrollTo().performClick()
+
+        assertEquals(ReportEdit.Type(BarrierType.THRESHOLD), edits.last())
     }
 }
