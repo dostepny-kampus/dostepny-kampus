@@ -38,4 +38,12 @@
     <string name="budynek_wybrany">Budynek: %1$s</string>
     <string name="budynek_miejsce_poza">Miejsce: poza budynkiem</string>
     <string name="budynek_anuluj">Anuluj</string>
+    <string name="formularz_naglowek">Opisz barierę</string>
+    <string name="formularz_naglowek_edycja">Popraw zgłoszenie</string>
+    <string name="formularz_budynek">Budynek %1$s</string>
+    <string name="formularz_dokladnosc">dokładność %1$s m</string>
+    <string name="formularz_zmien_miejsce">Zmień miejsce</string>
+    <string name="formularz_uciazliwosc">Uciążliwość</string>
+    <string name="formularz_uciazliwosc_podpowiedz">Oceń dla osoby, dla której bariera jest najtrudniejsza.</string>
+    <string name="formularz_zapisz">Zapisz</string>
 </resources>
