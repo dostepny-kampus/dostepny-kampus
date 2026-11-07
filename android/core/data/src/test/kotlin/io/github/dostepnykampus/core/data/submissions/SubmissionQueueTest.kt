@@ -15,6 +15,7 @@ import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
 import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.SubmissionEdit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
@@ -34,6 +35,9 @@ class SubmissionQueueTest {
     lateinit var tempDir: File
 
     private val store = FakeStore()
+    private val edits = mutableListOf<Pair<String, Int>>()
+    private var creates = 0
+    private val editResults = ArrayDeque<ApiResult<SubmissionEdit>>()
 
     @Test
     fun `wysyła treść i czyści kolejkę`() =
@@ -85,20 +89,77 @@ class SubmissionQueueTest {
             assertEquals(1, scheduled)
         }
 
+    @Test
+    fun `poprawka zastępuje wiersz`() =
+        runBlocking {
+            val target = queue()
+            saveTwoPhotos(target)
+
+            val edited = EditedSubmission(id = SENT_ID, baseVersion = null)
+            target.saveEdit(edited, content = fullContent().copy(severity = 3), photos = drafts())
+
+            assertEquals(listOf(SENT_ID), store.rows.map { it.submission.id })
+            assertEquals(listOf(3), store.rows.map { it.submission.severity })
+        }
+
+    @Test
+    fun `poprawka z wersją to edycja`() =
+        runBlocking {
+            val target = queue()
+            target.saveEdit(EditedSubmission(id = "s1", baseVersion = 4), fullContent(), drafts())
+
+            assertTrue(target.sendAll())
+
+            assertEquals(listOf("s1" to 4), edits)
+            assertEquals(0, creates)
+            assertEquals(emptyList<String>(), store.rows.map { it.submission.id })
+        }
+
+    @Test
+    fun `konflikt wersji zostaje`() =
+        runBlocking {
+            val target = queue()
+            target.saveEdit(EditedSubmission(id = "s1", baseVersion = 4), fullContent(), drafts())
+            val server = (serverSubmission(fullContent()) as ApiResult.Success).value
+            editResults.addLast(ApiResult.Success(SubmissionEdit.Conflict(server)))
+
+            target.sendAll()
+
+            assertEquals(listOf("s1"), store.rows.map { it.submission.id })
+            assertEquals(emptyList<Pair<String, String>>(), store.photos)
+        }
+
     private fun queue(onSaved: () -> Unit = {}): SubmissionQueue =
         SubmissionQueue(
             store = store,
             ioContext = EmptyCoroutineContext,
-            create = { id, content -> store.createResults.removeFirstOrNull() ?: serverSubmission(content) },
-            putPhoto = { _, _, _ -> store.photoResults.removeFirstOrNull() ?: ApiResult.Success(Unit) },
+            server =
+                SubmissionServer(
+                    create = { _, content ->
+                        creates++
+                        store.createResults.removeFirstOrNull() ?: serverSubmission(content)
+                    },
+                    putPhoto = { _, _, _ -> store.photoResults.removeFirstOrNull() ?: ApiResult.Success(Unit) },
+                    update = { id, version, content ->
+                        edits.add(id to version)
+                        editResults.removeFirstOrNull() ?: ApiResult.Success(SubmissionEdit.Saved(edited(id, content)))
+                    },
+                ),
             newId = { SENT_ID },
             onSaved = onSaved,
         )
 
+    private fun edited(id: String, content: SubmissionContent): Submission =
+        (serverSubmission(content) as ApiResult.Success).value.copy(id = id, version = 5)
+
     private fun saveTwoPhotos(target: SubmissionQueue = queue()) {
+        runBlocking { target.save(fullContent(), drafts()) }
+    }
+
+    private fun drafts(): List<PendingPhotoDraft> {
         val drafts = listOf("p1", "p2").map { photo -> PendingPhotoDraft(photoId = photo, path = pathOf(photo)) }
         drafts.forEach { File(it.path).writeBytes(byteArrayOf(1, 2, 3)) }
-        runBlocking { target.save(fullContent(), drafts) }
+        return drafts
     }
 
     private fun pathOf(photo: String): String = tempDir.resolve("$photo.jpg").path
