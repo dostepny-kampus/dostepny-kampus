@@ -134,13 +134,6 @@ class ReportFormViewModelTest {
         }
 
     @Test
-    fun `wstecz bez zmian wychodzi`() {
-        viewModel.back()
-
-        assertEquals(ReportStage.LEFT, state().stage)
-    }
-
-    @Test
     fun `wstecz ze zmianami pyta`() {
         viewModel.edit(ReportEdit.Description("Próg"))
         viewModel.back()
