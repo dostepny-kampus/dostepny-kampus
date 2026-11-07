@@ -5,9 +5,11 @@
  */
 package io.github.dostepnykampus.feature.capture
 
+import android.graphics.Bitmap
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -16,6 +18,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.core.data.submissions.EditedSubmission
+import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.geo.EntranceDistance
 import io.github.dostepnykampus.core.model.BarrierType
@@ -25,6 +28,7 @@ import io.github.dostepnykampus.core.model.Severity
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -35,6 +39,9 @@ import org.robolectric.annotation.Config
 class ReportScreenTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
+
+    @get:Rule
+    val folder = TemporaryFolder()
 
     private val edits = mutableListOf<ReportEdit>()
     private var saves = 0
@@ -230,6 +237,22 @@ class ReportScreenTest {
         assertEquals(0, compose.onAllNodes(hasText("Zrób nowe zdjęcie")).fetchSemanticsNodes().size)
     }
 
+    @Test
+    fun us7_1_photo_preview() {
+        val file = folder.newFile("p1.jpg")
+        val image = Bitmap.createBitmap(4, 3, Bitmap.Config.ARGB_8888)
+        file.outputStream().use { out -> image.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, out) }
+        val photo = PendingPhotoDraft(photoId = "p1", path = file.path)
+        show(ReportUiState(form = ReportForm(place = A1), photos = listOf(photo)))
+
+        val preview = hasContentDescription("Zrobione zdjęcie 1 z 1")
+        compose.waitUntil(timeoutMillis = DECODE_TIMEOUT_MILLIS) {
+            compose.onAllNodes(preview).fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNode(preview).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Zrób nowe zdjęcie").performScrollTo().assertIsDisplayed()
+    }
+
     private fun near(name: String?, isMain: Boolean, meters: Double): EntranceDistance =
         EntranceDistance(
             entrance =
@@ -245,3 +268,6 @@ class ReportScreenTest {
             meters = meters,
         )
 }
+
+private const val JPEG_QUALITY = 90
+private const val DECODE_TIMEOUT_MILLIS = 5_000L

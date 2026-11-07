@@ -64,7 +64,7 @@
     <string name="formularz_wazne_widoczne">Zdjęcie zobaczą inni użytkownicy.</string>
     <string name="formularz_zrob_zdjecie">Zrób zdjęcie</string>
     <string name="formularz_zrob_nowe_zdjecie">Zrób nowe zdjęcie</string>
-    <string name="formularz_zdjecia_liczba">Zdjęcia: %1$d</string>
+    <string name="formularz_zdjecie_podglad">Zrobione zdjęcie %1$d z %2$d</string>
     <string name="formularz_opis">Opis</string>
     <string name="formularz_opis_podpowiedz">Obowiązkowy przy typie „inna bariera”.</string>
     <string name="formularz_brak_pietra">Brakuje piętra. Uzupełnij to pole, aby zapisać.</string>
