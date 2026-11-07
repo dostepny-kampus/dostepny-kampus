@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.capture
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -34,9 +35,23 @@ class ReportScreenTest {
     private val edits = mutableListOf<ReportEdit>()
     private var saves = 0
 
+    private var exits = 0
+
     private fun show(place: ReportPlace = A1, replaces: String? = null) {
-        val state = ReportUiState(form = ReportForm(place = place, replacesSubmissionId = replaces))
-        val actions = ReportActions(onEdit = { edits.add(it) }, onChangePlace = {}, onSave = { saves++ }, onBack = {})
+        show(ReportUiState(form = ReportForm(place = place, replacesSubmissionId = replaces)))
+    }
+
+    private fun show(state: ReportUiState) {
+        val actions =
+            ReportActions(
+                onEdit = { edits.add(it) },
+                onChangePlace = {},
+                onTakePhoto = {},
+                onSave = { saves++ },
+                onBack = {},
+                onConfirmExit = { exits++ },
+                onStay = {},
+            )
         compose.setContent { DostepnyKampusTheme { ReportContent(state = state, actions = actions) } }
     }
 
@@ -94,7 +109,16 @@ class ReportScreenTest {
     @Test
     fun us7_4_new_building_empty_floor() {
         val state = mutableStateOf(ReportUiState(form = ReportForm(place = A1)))
-        val actions = ReportActions(onEdit = { edits.add(it) }, onChangePlace = {}, onSave = {}, onBack = {})
+        val actions =
+            ReportActions(
+                onEdit = { edits.add(it) },
+                onChangePlace = {},
+                onTakePhoto = {},
+                onSave = {},
+                onBack = {},
+                onConfirmExit = {},
+                onStay = {},
+            )
         compose.setContent { DostepnyKampusTheme { ReportContent(state = state.value, actions = actions) } }
         compose.onNodeWithText("Numer piętra").performTextInput("2")
         assertEquals(1, compose.onAllNodes(hasText("2")).fetchSemanticsNodes().size)
@@ -112,5 +136,58 @@ class ReportScreenTest {
         compose.onNodeWithText("Próg").performScrollTo().performClick()
 
         assertEquals(ReportEdit.Type(BarrierType.THRESHOLD), edits.last())
+    }
+
+    @Test
+    fun pw10_error_above_and_at_field() {
+        val form = ReportForm(place = A1)
+        show(ReportUiState(form = form, errors = listOf(ReportFormError.MISSING_BARRIER_TYPE)))
+
+        val text = "Brakuje typu bariery. Uzupełnij to pole, aby zapisać."
+        assertEquals(2, compose.onAllNodes(hasText(text)).fetchSemanticsNodes().size)
+    }
+
+    @Test
+    fun brg7_missing_floor_shown() {
+        show(ReportUiState(form = ReportForm(place = A1), errors = listOf(ReportFormError.MISSING_FLOOR)))
+
+        val text = "Brakuje piętra. Uzupełnij to pole, aby zapisać."
+        assertEquals(2, compose.onAllNodes(hasText(text)).fetchSemanticsNodes().size)
+    }
+
+    @Test
+    fun nfr7_save_failed_retry() {
+        show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.SAVE_FAILED))
+        compose.onNodeWithText("Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.").assertIsDisplayed()
+        compose.onNodeWithText("Spróbuj ponownie").performClick()
+
+        assertEquals(1, saves)
+    }
+
+    @Test
+    fun us7_4_exit_dialog() {
+        show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.EXIT_ASKED))
+        compose.onNodeWithText("Wyjść bez zapisu?").assertIsDisplayed()
+        compose.onNodeWithText("Wyjdź bez zapisu").performClick()
+
+        assertEquals(1, exits)
+    }
+
+    @Test
+    fun us7_3_description_max_2000() {
+        show(place = A1.copy(buildingSymbol = null))
+        compose.onNode(hasSetTextAction()).performScrollTo().performTextInput("a".repeat(2001))
+
+        assertEquals(ReportEdit.Description("a".repeat(2000)), edits.last())
+    }
+
+    @Test
+    fun us7_3_description_and_photo() {
+        show()
+        compose.onNodeWithText("Nie fotografuj twarzy ani tablic rejestracyjnych.").performScrollTo()
+        compose.onNodeWithText("Zrób zdjęcie").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Obowiązkowy przy typie „inna bariera”.").performScrollTo()
+
+        assertEquals(0, compose.onAllNodes(hasText("Zrób nowe zdjęcie")).fetchSemanticsNodes().size)
     }
 }

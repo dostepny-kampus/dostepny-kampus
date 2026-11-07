@@ -53,4 +53,24 @@
     <string name="formularz_typ">Typ bariery</string>
     <string name="formularz_typ_wybierz">Wybierz typ bariery</string>
     <string name="formularz_zapisz">Zapisz</string>
+    <string name="formularz_zdjecie">Zdjęcie</string>
+    <string name="formularz_wazne">Ważne</string>
+    <string name="formularz_wazne_twarze">Nie fotografuj twarzy ani tablic rejestracyjnych.</string>
+    <string name="formularz_wazne_widoczne">Zdjęcie zobaczą inni użytkownicy.</string>
+    <string name="formularz_zrob_zdjecie">Zrób zdjęcie</string>
+    <string name="formularz_zrob_nowe_zdjecie">Zrób nowe zdjęcie</string>
+    <string name="formularz_zdjecia_liczba">Zdjęcia: %1$d</string>
+    <string name="formularz_opis">Opis</string>
+    <string name="formularz_opis_podpowiedz">Obowiązkowy przy typie „inna bariera”.</string>
+    <string name="formularz_brak_pietra">Brakuje piętra. Uzupełnij to pole, aby zapisać.</string>
+    <string name="formularz_brak_typu">Brakuje typu bariery. Uzupełnij to pole, aby zapisać.</string>
+    <string name="formularz_brak_uciazliwosci">Brakuje uciążliwości. Uzupełnij to pole, aby zapisać.</string>
+    <string name="formularz_brak_zdjecia">Brakuje zdjęcia. Zrób zdjęcie, aby zapisać.</string>
+    <string name="formularz_brak_opisu">Brakuje opisu. Przy typie „inna bariera” opis jest obowiązkowy.</string>
+    <string name="formularz_blad_zapisu">Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.</string>
+    <string name="formularz_sprobuj_ponownie">Spróbuj ponownie</string>
+    <string name="formularz_wyjsc_pytanie">Wyjść bez zapisu?</string>
+    <string name="formularz_wyjsc_opis">Wpisane pola nie zostaną zapisane.</string>
+    <string name="formularz_wyjdz">Wyjdź bez zapisu</string>
+    <string name="formularz_wroc">Wróć do formularza</string>
 </resources>
