@@ -13,6 +13,9 @@ import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.network.ApiResult
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -37,9 +40,13 @@ internal fun PendingPhotoDraft.toPendingPhotoEntity(submissionId: String): Pendi
         isUploaded = false,
     )
 
-/** SENT: wysłane; LATER: brak sieci albo awaria serwera (5xx), spróbować później; REFUSED: odmowa serwera. */
-private enum class Outcome { SENT, LATER, REFUSED }
+/**
+ * SENT: wysłane; LATER: brak sieci albo awaria serwera (5xx), spróbować później (BR-9);
+ * LOGIN_EXPIRED: 401, czekać na ponowne zalogowanie (BR-26); REFUSED: inna odmowa serwera.
+ */
+private enum class Outcome { SENT, LATER, LOGIN_EXPIRED, REFUSED }
 
+private const val HTTP_UNAUTHORIZED = 401
 private const val FIRST_SERVER_FAULT_CODE = 500
 
 /**
@@ -49,6 +56,7 @@ private const val FIRST_SERVER_FAULT_CODE = 500
  * już ma, więc kolejna próba wysyła treść raz i tylko brakujące zdjęcia (NFR-8).
  * Identyfikator powstaje raz, więc serwer nie dostanie drugiego zgłoszenia (BR-9).
  * Po zapisie [onSaved] planuje wysyłkę po powrocie sieci (NFR-6); zapis działa także bez niego.
+ * Po 401 wysyłka czeka na ponowne zalogowanie: [loginExpired] i [onLoggedIn] (BR-26, US14.4).
  */
 class SubmissionQueue(
     private val store: PendingSubmissionDao,
@@ -59,6 +67,10 @@ class SubmissionQueue(
     private val onSaved: () -> Unit = {},
 ) {
     private val lock = Mutex()
+    private val expired = MutableStateFlow(false)
+
+    /** `true` po odpowiedzi 401 aż do [onLoggedIn]: aplikacja prosi o ponowne zalogowanie (BR-26). */
+    val loginExpired: StateFlow<Boolean> = expired.asStateFlow()
 
     /**
      * Zapisuje zgłoszenie w kolejce z nowym identyfikatorem w telefonie (BR-9).
@@ -80,15 +92,29 @@ class SubmissionQueue(
 
     /**
      * Wysyła zgłoszenia z kolejki od najstarszych: treść raz, potem tylko nie wysłane zdjęcia.
-     * Bez sieci albo przy awarii serwera (5xx) wysyłanie się kończy do kolejnej próby, a odmowa serwera (4xx)
+     * Bez sieci albo przy awarii serwera (5xx) wysyłanie się kończy do kolejnej próby (BR-9). Po 401 kończy się
+     * do ponownego zalogowania, bo bez niego serwer odrzuci każde zgłoszenie (BR-26). Inna odmowa serwera (4xx)
      * zostawia zgłoszenie w kolejce i przechodzi do następnego (NFR-5, US9.2).
      *
-     * @return `true`, gdy wysyłka doszła do końca kolejki; `false`, gdy trzeba spróbować później
+     * @return `false`, gdy trzeba spróbować później; `true`, gdy wysyłka doszła do końca kolejki albo czeka
+     *   na zalogowanie, a nie na czas
      */
     suspend fun sendAll(): Boolean =
         lock.withLock {
-            val isStopped = store.all().any { item -> sendOne(item) == Outcome.LATER }
-            !isStopped
+            val stop = if (expired.value) Outcome.LOGIN_EXPIRED else sendUntilStop()
+            if (stop == Outcome.LOGIN_EXPIRED) expired.value = true
+            stop != Outcome.LATER
+        }
+
+    /** Po ponownym zalogowaniu wysyłka rusza sama, bez działania Zbierającego (BR-26, US14.4). */
+    fun onLoggedIn() {
+        expired.value = false
+        runCatching(onSaved)
+    }
+
+    private suspend fun sendUntilStop(): Outcome? =
+        store.all().firstNotNullOfOrNull { item ->
+            sendOne(item).takeIf { it == Outcome.LATER || it == Outcome.LOGIN_EXPIRED }
         }
 
     private suspend fun sendOne(item: PendingSubmissionWithPhotos): Outcome =
@@ -123,9 +149,16 @@ class SubmissionQueue(
     private fun outcomeOf(result: ApiResult<*>): Outcome =
         when (result) {
             is ApiResult.NetworkError -> Outcome.LATER
-            is ApiResult.ServerError -> if (result.code >= FIRST_SERVER_FAULT_CODE) Outcome.LATER else Outcome.REFUSED
+            is ApiResult.ServerError -> serverOutcome(result.code)
             ApiResult.NotFound -> Outcome.REFUSED
             is ApiResult.Success -> Outcome.SENT
+        }
+
+    private fun serverOutcome(code: Int): Outcome =
+        when {
+            code >= FIRST_SERVER_FAULT_CODE -> Outcome.LATER
+            code == HTTP_UNAUTHORIZED -> Outcome.LOGIN_EXPIRED
+            else -> Outcome.REFUSED
         }
 
     private suspend fun jpeg(path: String): ByteArray = withContext(ioContext) { File(path).readBytes() }
