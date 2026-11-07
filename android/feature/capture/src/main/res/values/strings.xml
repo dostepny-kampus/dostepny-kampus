@@ -42,6 +42,11 @@
     <string name="formularz_naglowek_edycja">Popraw zgłoszenie</string>
     <string name="formularz_budynek">Budynek %1$s</string>
     <string name="formularz_dokladnosc">dokładność %1$s m</string>
+    <string name="formularz_budynek_nazwa">Budynek %1$s %2$s</string>
+    <string name="formularz_miejsce">ok. %1$d m od %2$s, dokładność %3$s m</string>
+    <string name="formularz_wejscie">wejścia</string>
+    <string name="formularz_wejscie_glowne">wejścia głównego</string>
+    <string name="formularz_wejscie_nazwa">wejścia „%1$s”</string>
     <string name="formularz_zmien_miejsce">Zmień miejsce</string>
     <string name="formularz_uciazliwosc">Uciążliwość</string>
     <string name="formularz_uciazliwosc_podpowiedz">Oceń dla osoby, dla której bariera jest najtrudniejsza.</string>
