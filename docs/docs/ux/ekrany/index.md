@@ -446,7 +446,7 @@ Wymagania: [C1 Pomiar pozycji](../wymagania-ekranow.md#c1-pomiar-pozycji). Nagł
 
 ## C2 Formularz zgłoszenia
 
-Makiety hi-fi C2 zatwierdził właściciel produktu 05.11.2026. Według nich powstaje kod ekranu.
+Makiety hi-fi C2 zatwierdził właściciel projektu 30.10.2026 razem z całą partią 2 (C1–C7, R1–R2, K1–K3). Według nich powstaje kod ekranu.
 
 Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgoszenia). Nagłówek w aplikacji: „Opisz barierę”, przy edycji „Popraw zgłoszenie”.
 
@@ -500,7 +500,7 @@ Wymagania: [C2 Formularz zgłoszenia](../wymagania-ekranow.md#c2-formularz-zgosz
 
 ## C3 Moje zgłoszenia
 
-Makiety hi-fi C3 zatwierdził właściciel produktu 05.11.2026. Według nich powstaje kod ekranu.
+Makiety hi-fi C3 zatwierdził właściciel projektu 30.10.2026 razem z całą partią 2 (C1–C7, R1–R2, K1–K3). Według nich powstaje kod ekranu.
 
 Wymagania: [C3 Moje zgłoszenia](../wymagania-ekranow.md#c3-moje-zgoszenia). Nagłówek w aplikacji: „Moje zgłoszenia”.
 
