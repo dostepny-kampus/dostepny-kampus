@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture
 
+import io.github.dostepnykampus.core.geo.EntranceDistance
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Severity
@@ -19,12 +20,16 @@ import io.github.dostepnykampus.core.model.SubmissionKind
  * @property accuracyMeters dokładność pomiaru w metrach
  * @property buildingSymbol budynek potwierdzony na C1 albo `null` poza budynkiem (BR-G4)
  * @property isManualCorrection czy punkt poprawiono ręcznie na planie piętra (US6.3)
+ * @property buildingName nazwa budynku obok symbolu albo `null`, gdy dane jej nie mają
+ * @property nearestEntrance najbliższe wejście z odległością do opisu miejsca słowami albo `null` bez wejść w danych
  */
 data class ReportPlace(
     val location: GeoPoint,
     val accuracyMeters: Double,
     val buildingSymbol: String?,
     val isManualCorrection: Boolean,
+    val buildingName: String? = null,
+    val nearestEntrance: EntranceDistance? = null,
 )
 
 /** Piętro bariery w formularzu C2 (US7.2, BR-G1). */

@@ -16,7 +16,10 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.geo.EntranceDistance
 import io.github.dostepnykampus.core.model.BarrierType
+import io.github.dostepnykampus.core.model.Entrance
+import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.Severity
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -62,6 +65,21 @@ class ReportScreenTest {
         compose.onNodeWithText("Opisz barierę").assertIsDisplayed()
         compose.onNodeWithText("Budynek A-1").assertIsDisplayed()
         compose.onNodeWithText("dokładność 0,8 m").assertIsDisplayed()
+    }
+
+    @Test
+    fun us7_4_place_in_words() {
+        show(A1.copy(buildingName = "Gmach Główny", nearestEntrance = near(name = null, isMain = true, meters = 3.2)))
+
+        compose.onNodeWithText("Budynek A-1 Gmach Główny").assertIsDisplayed()
+        compose.onNodeWithText("ok. 3 m od wejścia głównego, dokładność 0,8 m").assertIsDisplayed()
+    }
+
+    @Test
+    fun us7_4_named_entrance() {
+        show(A1.copy(nearestEntrance = near(name = "Wejście Cesarskie", isMain = false, meters = 0.3)))
+
+        compose.onNodeWithText("ok. 1 m od wejścia „Wejście Cesarskie”, dokładność 0,8 m").assertIsDisplayed()
     }
 
     @Test
@@ -190,4 +208,19 @@ class ReportScreenTest {
 
         assertEquals(0, compose.onAllNodes(hasText("Zrób nowe zdjęcie")).fetchSemanticsNodes().size)
     }
+
+    private fun near(name: String?, isMain: Boolean, meters: Double): EntranceDistance =
+        EntranceDistance(
+            entrance =
+                Entrance(
+                    id = "e1",
+                    buildingSymbol = "A-1",
+                    name = name,
+                    isMain = isMain,
+                    type = null,
+                    location = A1.location,
+                    marking = EntranceMarking.NO_DATA,
+                ),
+            meters = meters,
+        )
 }
