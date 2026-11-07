@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
@@ -19,6 +21,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -77,6 +80,27 @@ internal fun FloorSection(building: String, floor: ReportFloor?, onEdit: (Report
         ) {
             Checkbox(checked = isMezzanine, onCheckedChange = null, enabled = numbered != null)
             Text(stringResource(R.string.formularz_polpietro))
+        }
+    }
+}
+
+/** Piętro z etykiet planu PWr w budynku szczegółowym, bez wpisywania liczby (US7.2, BR-G1). */
+@Composable
+internal fun PlanFloorSection(floors: PlanFloors, floor: ReportFloor?, onEdit: (ReportEdit) -> Unit) {
+    val chosen = (floor as? ReportFloor.Planned)?.floorId
+    Column(modifier = Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        SectionTitle(stringResource(R.string.formularz_pietro))
+        floors.items.forEach { option ->
+            Row(
+                modifier =
+                    Modifier.fillMaxWidth().selectable(selected = option.id == chosen, role = Role.RadioButton) {
+                        onEdit(ReportEdit.Floor(ReportFloor.Planned(option.id)))
+                    },
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                RadioButton(selected = option.id == chosen, onClick = null)
+                Text(text = option.label, modifier = Modifier.padding(start = Odstepy.s))
+            }
         }
     }
 }
