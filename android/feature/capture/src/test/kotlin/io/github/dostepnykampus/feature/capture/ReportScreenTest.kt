@@ -15,6 +15,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
+import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.geo.EntranceDistance
 import io.github.dostepnykampus.core.model.BarrierType
@@ -83,8 +84,16 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us8_3_edit_header() {
+    fun brg18_edit_header() {
         show(replaces = "s-old")
+
+        compose.onNodeWithText("Popraw zgłoszenie").assertIsDisplayed()
+    }
+
+    @Test
+    fun us8_3_edit_header() {
+        val edited = EditedSubmission(id = "s1", baseVersion = 2)
+        show(ReportUiState(form = ReportForm(place = A1, editedSubmission = edited)))
 
         compose.onNodeWithText("Popraw zgłoszenie").assertIsDisplayed()
     }

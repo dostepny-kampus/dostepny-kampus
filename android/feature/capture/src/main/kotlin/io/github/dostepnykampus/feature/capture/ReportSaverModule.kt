@@ -15,10 +15,10 @@ import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 @Module
 @InstallIn(SingletonComponent::class)
 object ReportSaverModule {
-    /** Zapis przez kolejkę; wynik zapisu nie jest ekranowi potrzebny. */
+    /** Zapis przez kolejkę; poprawka z C3 zastępuje swoje zgłoszenie (US8.3). Wynik nie jest ekranowi potrzebny. */
     @Provides
     fun reportSaver(queue: SubmissionQueue): ReportSaver =
-        ReportSaver { content, photos ->
-            queue.save(content, photos)
+        ReportSaver { content, photos, edited ->
+            if (edited == null) queue.save(content, photos) else queue.saveEdit(edited, content, photos)
         }
 }
