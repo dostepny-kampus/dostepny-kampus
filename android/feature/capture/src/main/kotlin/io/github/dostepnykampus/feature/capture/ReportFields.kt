@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -32,25 +33,55 @@ import io.github.dostepnykampus.core.designsystem.descriptionRes
 import io.github.dostepnykampus.core.designsystem.nameRes
 import io.github.dostepnykampus.core.model.Severity
 import java.util.Locale
+import kotlin.math.roundToInt
 
 private val POLISH = Locale.forLanguageTag("pl-PL")
 
-/** Budynek i dokładność z C1 bez współrzędnych oraz „Zmień miejsce” (US7.4, NFR-19). */
+/** Budynek i miejsce słowami z C1 bez współrzędnych oraz „Zmień miejsce” (US7.4, NFR-19). */
 @Composable
 internal fun PlaceCard(place: ReportPlace, onChangePlace: () -> Unit) {
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            val building =
-                place.buildingSymbol?.let { stringResource(R.string.formularz_budynek, it) }
-                    ?: stringResource(R.string.budynek_poza)
-            Text(text = building, style = MaterialTheme.typography.titleMedium, fontWeight = Typografia.wyroznienieWaga)
-            val accuracy = String.format(POLISH, "%.1f", place.accuracyMeters)
-            Text(stringResource(R.string.formularz_dokladnosc, accuracy))
+            Text(
+                text = buildingText(place),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = Typografia.wyroznienieWaga,
+            )
+            Text(placeInWords(place))
             OutlinedButton(onClick = onChangePlace, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.formularz_zmien_miejsce))
             }
         }
     }
+}
+
+@Composable
+@ReadOnlyComposable
+private fun buildingText(place: ReportPlace): String {
+    val symbol = place.buildingSymbol ?: return stringResource(R.string.budynek_poza)
+    val name = place.buildingName
+    return if (name == null) {
+        stringResource(R.string.formularz_budynek, symbol)
+    } else {
+        stringResource(R.string.formularz_budynek_nazwa, symbol, name)
+    }
+}
+
+@Composable
+@ReadOnlyComposable
+private fun placeInWords(place: ReportPlace): String {
+    // Np. „ok. 3 m od wejścia głównego, dokładność 0,8 m”; bez wejść w danych sama dokładność (US7.4, US6.1).
+    val accuracy = String.format(POLISH, "%.1f", place.accuracyMeters)
+    val nearest = place.nearestEntrance ?: return stringResource(R.string.formularz_dokladnosc, accuracy)
+    val name = nearest.entrance.name
+    val entrance =
+        when {
+            name != null -> stringResource(R.string.formularz_wejscie_nazwa, name)
+            nearest.entrance.isMain -> stringResource(R.string.formularz_wejscie_glowne)
+            else -> stringResource(R.string.formularz_wejscie)
+        }
+    val meters = nearest.meters.roundToInt().coerceAtLeast(1)
+    return stringResource(R.string.formularz_miejsce, meters, entrance, accuracy)
 }
 
 /** „Uciążliwość”: trzy wybory z opisem, oceniane dla osoby, dla której bariera jest najtrudniejsza (US7.1, PW-13). */
