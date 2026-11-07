@@ -151,3 +151,10 @@ private fun ReportFloor.toSubmissionFloor(): SubmissionFloor =
         is ReportFloor.Planned -> SubmissionFloor(floorId = floorId)
         is ReportFloor.Numbered -> SubmissionFloor(number = number, isMezzanine = isMezzanine)
     }
+
+/**
+ * Numer piętra z pola „Numer piętra” w budynku podstawowym: liczba całkowita, także ujemna (US7.2).
+ *
+ * @return numer albo `null`, gdy tekst nie jest liczbą całkowitą
+ */
+fun parseFloorNumber(text: String): Int? = text.trim().toIntOrNull()
