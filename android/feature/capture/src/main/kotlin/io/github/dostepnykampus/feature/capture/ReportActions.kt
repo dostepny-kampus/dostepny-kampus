@@ -83,7 +83,7 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
                 FieldError(MISSING_BARRIER_TYPE, isShown = MISSING_BARRIER_TYPE in state.errors)
                 SeveritySection(severity = state.form.severity, onEdit = actions.onEdit)
                 FieldError(MISSING_SEVERITY, isShown = MISSING_SEVERITY in state.errors)
-                PhotoSection(photoCount = state.photos.size, onTakePhoto = actions.onTakePhoto)
+                PhotoSection(photos = PhotoPaths(state.photos.map { it.path }), onTakePhoto = actions.onTakePhoto)
                 FieldError(MISSING_PHOTO, isShown = MISSING_PHOTO in state.errors)
                 DescriptionSection(text = state.form.description, onEdit = actions.onEdit)
                 FieldError(MISSING_DESCRIPTION, isShown = MISSING_DESCRIPTION in state.errors)
