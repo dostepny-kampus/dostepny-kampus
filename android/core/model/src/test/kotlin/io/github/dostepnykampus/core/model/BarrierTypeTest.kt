@@ -17,20 +17,16 @@ class BarrierTypeTest {
     }
 
     @Test
-    fun `liczba typów w każdej grupie`() {
-        val counts = BarrierType.entries.groupingBy { it.group }.eachCount()
+    fun `grupa każdego kodu ze słownika`() {
+        val expected =
+            (1..5).associate { "TB-$it" to BarrierGroup.ENTRANCE_AND_DOORS } +
+                (6..12).associate { "TB-$it" to BarrierGroup.VERTICAL_CIRCULATION } +
+                (13..17).associate { "TB-$it" to BarrierGroup.HORIZONTAL_CIRCULATION } +
+                (18..20).associate { "TB-$it" to BarrierGroup.TOILETS } +
+                (21..25).associate { "TB-$it" to BarrierGroup.ORIENTATION_AND_INFORMATION } +
+                (26..29).associate { "TB-$it" to BarrierGroup.OTHER }
 
-        assertEquals(
-            mapOf(
-                BarrierGroup.ENTRANCE_AND_DOORS to 5,
-                BarrierGroup.VERTICAL_CIRCULATION to 7,
-                BarrierGroup.HORIZONTAL_CIRCULATION to 5,
-                BarrierGroup.TOILETS to 3,
-                BarrierGroup.ORIENTATION_AND_INFORMATION to 5,
-                BarrierGroup.OTHER to 4,
-            ),
-            counts,
-        )
+        assertEquals(expected, BarrierType.entries.associate { it.code to it.group })
     }
 
     @Test
