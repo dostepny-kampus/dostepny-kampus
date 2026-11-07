@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture
 
+import androidx.compose.runtime.Immutable
 import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.geo.EntranceDistance
 import io.github.dostepnykampus.core.model.BarrierType
@@ -23,6 +24,7 @@ import io.github.dostepnykampus.core.model.SubmissionKind
  * @property isManualCorrection czy punkt poprawiono ręcznie na planie piętra (US6.3)
  * @property buildingName nazwa budynku obok symbolu albo `null`, gdy dane jej nie mają
  * @property nearestEntrance najbliższe wejście z odległością do opisu miejsca słowami albo `null` bez wejść w danych
+ * @property floors piętra z planu PWr budynku szczegółowego, od najniższego; pusta lista to budynek bez planu (BR-G1)
  */
 data class ReportPlace(
     val location: GeoPoint,
@@ -31,7 +33,24 @@ data class ReportPlace(
     val isManualCorrection: Boolean,
     val buildingName: String? = null,
     val nearestEntrance: EntranceDistance? = null,
+    val floors: PlanFloors = PlanFloors(emptyList()),
 )
+
+/**
+ * Piętra z planu PWr; opakowanie listy, żeby Compose wiedział, że się nie zmienia.
+ *
+ * @property items piętra od najniższego
+ */
+@Immutable
+data class PlanFloors(val items: List<PlanFloor>)
+
+/**
+ * Piętro z planu PWr budynku szczegółowego (US7.2).
+ *
+ * @property id identyfikator piętra z danych PWr
+ * @property label etykieta piętra z danych PWr, np. „Piwnica” albo „3 piętro”
+ */
+data class PlanFloor(val id: String, val label: String)
 
 /** Piętro bariery w formularzu C2 (US7.2, BR-G1). */
 sealed interface ReportFloor {
