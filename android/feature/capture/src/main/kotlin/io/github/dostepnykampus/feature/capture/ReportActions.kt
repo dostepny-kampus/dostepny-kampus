@@ -71,7 +71,12 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
                 ReportBanner(state = state, onRetry = actions.onSave)
                 PlaceCard(place = state.form.place, onChangePlace = actions.onChangePlace)
                 state.form.place.buildingSymbol?.let { building ->
-                    FloorSection(building = building, floor = state.form.floor, onEdit = actions.onEdit)
+                    val floors = state.form.place.floors
+                    if (floors.items.isEmpty()) {
+                        FloorSection(building = building, floor = state.form.floor, onEdit = actions.onEdit)
+                    } else {
+                        PlanFloorSection(floors = floors, floor = state.form.floor, onEdit = actions.onEdit)
+                    }
                     FieldError(MISSING_FLOOR, isShown = MISSING_FLOOR in state.errors)
                 }
                 TypeSection(type = state.form.barrierType, onEdit = actions.onEdit)
