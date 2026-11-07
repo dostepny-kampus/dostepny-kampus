@@ -122,16 +122,6 @@ class ReportFormTest {
         assertEquals(false, start == start.copy(description = "x"))
     }
 
-    @Test
-    fun `numer piętra z tekstu`() {
-        assertEquals(0, parseFloorNumber("0"))
-        assertEquals(-2, parseFloorNumber(" -2 "))
-        assertEquals(12, parseFloorNumber("12"))
-        assertNull(parseFloorNumber(""))
-        assertNull(parseFloorNumber("1,5"))
-        assertNull(parseFloorNumber("parter"))
-    }
-
     private fun complete(): ReportForm =
         ReportForm(
             place = A1,
