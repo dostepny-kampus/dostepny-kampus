@@ -21,7 +21,7 @@ import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Zadanie WorkManagera ponawia wysyłkę tylko przy braku sieci (NFR-6, US9.2). */
+/** Zadanie WorkManagera ponawia wysyłkę, gdy kolejka każe spróbować później (NFR-6, US9.2). */
 class SubmissionSyncWorkerTest {
     @TempDir
     lateinit var tempDir: File
@@ -46,7 +46,7 @@ class SubmissionSyncWorkerTest {
         }
 
     @Test
-    fun `odmowa nie ponawia zadania`() =
+    fun `400 bez ponawiania zadania`() =
         runBlocking {
             val target = queue()
             target.save(content(), photos())

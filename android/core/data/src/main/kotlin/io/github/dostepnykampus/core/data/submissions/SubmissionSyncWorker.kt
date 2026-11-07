@@ -34,8 +34,9 @@ class SubmissionSyncWorker(appContext: Context, params: WorkerParameters) : Coro
 }
 
 /**
- * Wynik zadania po jednej wysyłce kolejki: ponowienie tylko przy braku sieci (NFR-6).
- * Odmowa serwera nie ponawia zadania w kółko — zgłoszenie czeka w kolejce na następne planowanie (US9.2).
+ * Wynik zadania po jednej wysyłce kolejki: `retry`, gdy [SubmissionQueue.sendAll] każe spróbować później,
+ * a `success`, gdy doszła do końca kolejki (NFR-6). Które odpowiedzi serwera oznaczają „później”, ustala
+ * kolejka, nie zadanie (BR-9, BR-26).
  */
 internal suspend fun SubmissionQueue.syncResult(): ListenableWorker.Result =
     if (sendAll()) ListenableWorker.Result.success() else ListenableWorker.Result.retry()
