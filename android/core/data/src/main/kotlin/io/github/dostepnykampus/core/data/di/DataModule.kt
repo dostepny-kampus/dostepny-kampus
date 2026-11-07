@@ -26,6 +26,7 @@ import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.start.FirstLaunchRepository
 import io.github.dostepnykampus.core.data.start.startDataStore
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
+import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
 import io.github.dostepnykampus.core.database.BuildingCacheDao
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
@@ -95,8 +96,7 @@ object DataModule {
     ): SubmissionQueue =
         SubmissionQueue(
             store = store,
-            create = api::create,
-            putPhoto = api::putPhoto,
+            server = SubmissionServer(create = api::create, putPhoto = api::putPhoto, update = api::update),
             onSaved = sync::schedule,
         )
 }

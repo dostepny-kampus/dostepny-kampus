@@ -59,7 +59,7 @@ data class ReportActions(
  */
 @Composable
 fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifier = Modifier) {
-    val isEdit = state.form.replacesSubmissionId != null
+    val isEdit = state.form.replacesSubmissionId != null || state.form.editedSubmission != null
     val title = stringResource(if (isEdit) R.string.formularz_naglowek_edycja else R.string.formularz_naglowek)
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
