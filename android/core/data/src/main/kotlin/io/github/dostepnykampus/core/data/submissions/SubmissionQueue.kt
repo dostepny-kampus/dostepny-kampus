@@ -53,7 +53,7 @@ internal fun PendingPhotoDraft.toPendingPhotoEntity(submissionId: String): Pendi
  * SENT: wysłane; LATER: brak sieci albo awaria serwera (5xx), spróbować później (BR-9);
  * LOGIN_EXPIRED: 401, czekać na ponowne zalogowanie (BR-26); REFUSED: inna odmowa serwera.
  */
-private enum class Outcome { SENT, LATER, LOGIN_EXPIRED, REFUSED }
+internal enum class Outcome { SENT, LATER, LOGIN_EXPIRED, REFUSED }
 
 private const val HTTP_UNAUTHORIZED = 401
 private const val FIRST_SERVER_FAULT_CODE = 500
@@ -210,28 +210,28 @@ class SubmissionQueue(
         return Outcome.SENT
     }
 
-    private fun outcomeOf(result: ApiResult<*>): Outcome =
-        when (result) {
-            is ApiResult.NetworkError -> Outcome.LATER
-            is ApiResult.ServerError -> serverOutcome(result.code)
-            ApiResult.NotFound -> Outcome.REFUSED
-            is ApiResult.Success -> Outcome.SENT
-        }
-
-    // Konflikt wersji czeka w telefonie na wybór Zbierającego, bez ponawiania w kółko (US9.3, BR-10).
-    private fun editOutcome(result: ApiResult<SubmissionEdit>): Outcome =
-        if (result is ApiResult.Success && result.value is SubmissionEdit.Conflict) {
-            Outcome.REFUSED
-        } else {
-            outcomeOf(result)
-        }
-
-    private fun serverOutcome(code: Int): Outcome =
-        when {
-            code >= FIRST_SERVER_FAULT_CODE -> Outcome.LATER
-            code == HTTP_UNAUTHORIZED -> Outcome.LOGIN_EXPIRED
-            else -> Outcome.REFUSED
-        }
-
     private suspend fun jpeg(path: String): ByteArray = withContext(ioContext) { File(path).readBytes() }
 }
+
+internal fun outcomeOf(result: ApiResult<*>): Outcome =
+    when (result) {
+        is ApiResult.NetworkError -> Outcome.LATER
+        is ApiResult.ServerError -> serverOutcome(result.code)
+        ApiResult.NotFound -> Outcome.REFUSED
+        is ApiResult.Success -> Outcome.SENT
+    }
+
+// Konflikt wersji czeka w telefonie na wybór Zbierającego, bez ponawiania w kółko (US9.3, BR-10).
+internal fun editOutcome(result: ApiResult<SubmissionEdit>): Outcome =
+    if (result is ApiResult.Success && result.value is SubmissionEdit.Conflict) {
+        Outcome.REFUSED
+    } else {
+        outcomeOf(result)
+    }
+
+internal fun serverOutcome(code: Int): Outcome =
+    when {
+        code >= FIRST_SERVER_FAULT_CODE -> Outcome.LATER
+        code == HTTP_UNAUTHORIZED -> Outcome.LOGIN_EXPIRED
+        else -> Outcome.REFUSED
+    }
