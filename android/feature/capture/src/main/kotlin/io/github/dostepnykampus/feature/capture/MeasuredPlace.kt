@@ -17,11 +17,28 @@ fun MeasureUiState.reportFormRoute(): ReportFormRoute? {
     val point = finished.average.point
     val accuracy = finished.average.accuracyMeters
     return when (val place = finished.place) {
-        is PlaceChoice.Chosen ->
-            ReportFormRoute(point.longitude, point.latitude, accuracy, place.building.symbol, place.building.name)
+        is PlaceChoice.Chosen -> {
+            ReportFormRoute(
+                longitude = point.longitude,
+                latitude = point.latitude,
+                accuracyMeters = accuracy,
+                buildingSymbol = place.building.symbol,
+                buildingName = place.building.name,
+            )
+        }
 
-        PlaceChoice.Outside -> ReportFormRoute(point.longitude, point.latitude, accuracy, buildingSymbol = null)
-        PlaceChoice.Locating, is PlaceChoice.Suggested -> null
+        PlaceChoice.Outside -> {
+            ReportFormRoute(
+                longitude = point.longitude,
+                latitude = point.latitude,
+                accuracyMeters = accuracy,
+                buildingSymbol = null,
+            )
+        }
+
+        PlaceChoice.Locating, is PlaceChoice.Suggested -> {
+            null
+        }
     }
 }
 

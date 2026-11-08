@@ -19,7 +19,16 @@ import org.junit.jupiter.api.Test
 class MeasuredPlaceTest {
     private val point = GeoPoint(longitude = 17.06209, latitude = 51.10785)
     private val average = PositionAverage(point, accuracyMeters = 0.8, fixCount = 30)
-    private val a1 = Building("A-1", "Gmach Główny", GeoPolygon(listOf(List(4) { point })))
+    private val a1 = Building(symbol = "A-1", name = "Gmach Główny", outline = GeoPolygon(listOf(List(4) { point })))
+
+    private fun route(symbol: String?, name: String?) =
+        ReportFormRoute(
+            longitude = 17.06209,
+            latitude = 51.10785,
+            accuracyMeters = 0.8,
+            buildingSymbol = symbol,
+            buildingName = name,
+        )
 
     private fun finished(place: PlaceChoice) = MeasureUiState.Finished(average, emptyMap(), place = place)
 
@@ -27,14 +36,14 @@ class MeasuredPlaceTest {
     @Test
     fun us6_chosen_building_to_c2() {
         val route = finished(PlaceChoice.Chosen(a1)).reportFormRoute()
-        assertEquals(ReportFormRoute(17.06209, 51.10785, 0.8, "A-1", "Gmach Główny"), route)
+        assertEquals(route(symbol = "A-1", name = "Gmach Główny"), route)
     }
 
     // Wiersz: C1, „Poza budynkiem” → C2 bez budynku i piętra, BR-G4.
     @Test
     fun brg4_outside_to_c2() {
         val route = finished(PlaceChoice.Outside).reportFormRoute()
-        assertEquals(ReportFormRoute(17.06209, 51.10785, 0.8, buildingSymbol = null), route)
+        assertEquals(route(symbol = null, name = null), route)
     }
 
     // Wiersz: C1, „Czy to budynek A-1?” → „Dalej” czeka na decyzję, US6.2.
@@ -47,7 +56,7 @@ class MeasuredPlaceTest {
 
     @Test
     fun us7_4_place_from_route() {
-        val place = ReportFormRoute(17.06209, 51.10785, 0.8, "A-1", "Gmach Główny").place()
+        val place = route(symbol = "A-1", name = "Gmach Główny").place()
         assertEquals(A1.copy(buildingName = "Gmach Główny"), place)
     }
 }

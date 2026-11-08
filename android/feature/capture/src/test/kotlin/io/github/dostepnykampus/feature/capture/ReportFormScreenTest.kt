@@ -34,9 +34,16 @@ class ReportFormScreenTest {
         compose.setContent {
             DostepnyKampusTheme {
                 ReportFormScreen(
-                    route = ReportFormRoute(17.06209, 51.10785, 0.8, "A-1", "Gmach Główny"),
-                    onLeft = { left++ },
-                    onSaved = { saved++ },
+                    route =
+                        ReportFormRoute(
+                            longitude = 17.06209,
+                            latitude = 51.10785,
+                            accuracyMeters = 0.8,
+                            buildingSymbol = "A-1",
+                            buildingName = "Gmach Główny",
+                        ),
+                    onLeave = { left++ },
+                    onSave = { saved++ },
                     viewModel = viewModel,
                 )
             }
@@ -53,7 +60,7 @@ class ReportFormScreenTest {
 
     // Wiersz: C2, „Wstecz” bez zmian → poprzedni ekran bez pytania, US7.4.
     @Test
-    fun us7_4_back_without_changes_leaves() {
+    fun us7_4_back_unchanged_leaves() {
         show()
         compose.onNodeWithText("Wstecz").performClick()
         compose.waitForIdle()
