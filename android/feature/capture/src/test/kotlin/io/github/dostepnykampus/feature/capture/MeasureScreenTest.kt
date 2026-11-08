@@ -14,6 +14,7 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.location.GnssSystem
 import io.github.dostepnykampus.core.location.PositionAverage
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -31,9 +32,13 @@ class MeasureScreenTest {
     private val average = PositionAverage(GeoPoint(longitude = 17.06, latitude = 51.11), 0.8, fixCount = 30)
     private val satellites = mapOf(GnssSystem.GPS to 7, GnssSystem.GALILEO to 5, GnssSystem.GLONASS to 4)
 
+    private val next = mutableListOf<ReportFormRoute>()
+
     private fun show(state: MeasureUiState, onRepeat: () -> Unit = {}) {
         compose.setContent {
-            DostepnyKampusTheme { MeasureContent(state = state, onRepeat = onRepeat, onBack = {}) }
+            DostepnyKampusTheme {
+                MeasureContent(state = state, onRepeat = onRepeat, onBack = {}, onNext = { next.add(it) })
+            }
         }
     }
 
@@ -63,6 +68,21 @@ class MeasureScreenTest {
         compose.onNodeWithText("Pomiar zakończony").assertIsDisplayed()
         compose.onNodeWithText("Dokładność: 0,8 m (szacunek)").assertIsDisplayed()
         compose.onNodeWithText("Powtórz pomiar").assertIsDisplayed()
+    }
+
+    // Wiersz: C1, „Dalej” → C2, US6: po decyzji „poza budynkiem” formularz dostaje punkt bez budynku (BR-G4).
+    @Test
+    fun us6_next_after_place_decision() {
+        show(MeasureUiState.Finished(average = average, satellites = satellites, place = PlaceChoice.Outside))
+        compose.onNodeWithText("Dalej").performClick()
+        assertEquals(listOf(ReportFormRoute(17.06, 51.11, 0.8, buildingSymbol = null)), next)
+    }
+
+    // Wiersz: C1, „Dalej” dopiero po decyzji o budynku, US6.2.
+    @Test
+    fun us6_2_no_next_while_locating() {
+        show(MeasureUiState.Finished(average = average, satellites = satellites))
+        compose.onNodeWithText("Dalej").assertDoesNotExist()
     }
 
     @Test

@@ -11,6 +11,8 @@ import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.core.model.isSignedIn
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
+import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
@@ -232,6 +234,24 @@ class AppNavigator(
             removeAt(lastIndex)
             add(if (route.isForReport) ReportRoute(entranceId = route.entranceId) else AccountRoute)
         }
+    }
+
+    /** L2 → C1: „Zmierz i zgłoś barierę” (US6, US14.1). */
+    fun measure() {
+        leaving { add(MeasureRoute) }
+    }
+
+    /** C1 → C2: „Dalej” z miejscem z pomiaru (US6); poza C1 nic nie robi. */
+    fun openReportForm(route: ReportFormRoute) {
+        if (current == MeasureRoute) leaving { add(route) }
+    }
+
+    /**
+     * „Zapisz” na C2: C1 i C2 znikają z historii, więc „Wstecz” wraca tam, skąd zaczęła się praca (NFR-54, P2).
+     * Ekranu C3 jeszcze nie ma, więc zostaje ekran sprzed pomiaru.
+     */
+    fun reportSaved() {
+        leaving { while (last() is ReportFormRoute || last() == MeasureRoute) removeAt(lastIndex) }
     }
 
     private fun MutableList<NavKey>.dropReport() {
