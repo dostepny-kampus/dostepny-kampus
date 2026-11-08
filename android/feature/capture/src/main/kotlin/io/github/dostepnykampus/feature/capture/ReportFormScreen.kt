@@ -46,16 +46,8 @@ fun ReportFormScreen(
             .map { it?.stage }
             .distinctUntilChanged()
             .collect { stage ->
-                when (stage) {
-                    ReportStage.LEFT -> leave()
-                    ReportStage.SAVED -> save()
-                    ReportStage.EDITING,
-                    ReportStage.SAVING,
-                    ReportStage.SAVE_FAILED,
-                    ReportStage.EXIT_ASKED,
-                    null,
-                    -> Unit
-                }
+                if (stage == ReportStage.LEFT) leave()
+                if (stage == ReportStage.SAVED) save()
             }
     }
     BackHandler(onBack = viewModel::back)
