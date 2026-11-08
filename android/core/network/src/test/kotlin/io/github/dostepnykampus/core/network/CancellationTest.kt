@@ -11,11 +11,9 @@ import io.github.dostepnykampus.core.network.SubmissionServer.Companion.quick
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.future.future
-import kotlinx.coroutines.job
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.Call
@@ -42,6 +40,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.NANOSECONDS
@@ -125,7 +124,7 @@ class CancellationTest {
 
     private fun assertCancelled(running: Running) {
         val cancelledAt = System.nanoTime()
-        running.job.cancel()
+        running.task.cancel(true)
         val finished = running.outcome.within(WAIT_MILLIS)
         val millis = finished?.let { NANOSECONDS.toMillis(it.at - cancelledAt) } ?: WAIT_MILLIS
         val isInterrupted = canceled.await(LIMIT_MILLIS, MILLISECONDS)
@@ -140,16 +139,17 @@ class CancellationTest {
 
     private fun begin(call: String, http: OkHttpClient): Running {
         val apis = Apis(http, server.url("/").toString())
-        val running = Running(Job(scope.coroutineContext.job), CompletableDeferred())
-        scope.future(running.job) {
-            try {
-                running.outcome.complete(Finished(CALLS.getValue(call)(apis)))
-            } catch (cancelled: CancellationException) {
-                running.outcome.complete(Finished(cancelled))
-                throw cancelled
+        val outcome = CompletableDeferred<Finished>()
+        val task =
+            scope.future {
+                try {
+                    outcome.complete(Finished(CALLS.getValue(call)(apis)))
+                } catch (cancelled: CancellationException) {
+                    outcome.complete(Finished(cancelled))
+                    throw cancelled
+                }
             }
-        }
-        return running
+        return Running(task, outcome)
     }
 
     private fun client(callTimeoutMillis: Long = 0): OkHttpClient =
@@ -163,7 +163,7 @@ class CancellationTest {
     private fun markReading(chain: Interceptor.Chain): Response = chain.proceed(chain.request()).run(::withReadingBody)
 
     private fun withReadingBody(response: Response): Response =
-        response.newBuilder().body(readingBody(checkNotNull(response.body))).build()
+        response.newBuilder().body(readingBody(response.body)).build()
 
     private fun readingBody(body: ResponseBody): ResponseBody = ReadingBody(body, reading)
 
@@ -175,7 +175,7 @@ class CancellationTest {
             }
         }
 
-    private data class Running(val job: Job, val outcome: CompletableDeferred<Finished>)
+    private data class Running(val task: CompletableFuture<*>, val outcome: CompletableDeferred<Finished>)
 
     private data class Finished(val value: Any, val at: Long = System.nanoTime())
 
