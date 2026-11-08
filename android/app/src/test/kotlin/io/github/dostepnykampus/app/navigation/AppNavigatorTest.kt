@@ -11,6 +11,8 @@ import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
+import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
@@ -28,6 +30,7 @@ import org.junit.jupiter.api.Test
 class AppNavigatorTest {
     private val stack = mutableListOf<NavKey>(MapRoute())
     private val visitor = Account.SignedIn()
+    private val collector = Account.SignedIn(setOf(StaffRole.COLLECTOR))
     private val restarts = mutableListOf<Int>()
     private var helpLeft = 0
     private var mapChosen = 0
@@ -384,6 +387,29 @@ class AppNavigatorTest {
     fun uc6_signed_in_from_account_l2() {
         navigator().open(TopLevel.ACCOUNT)
         navigator(visitor).signedIn()
+        assertEquals(stackOf(AccountRoute), stack)
+    }
+
+    // Wiersz: L2, „Zmierz i zgłoś barierę” → C1, potem C1 „Dalej” → C2, US6.
+    @Test
+    fun us6_l2_to_c1_to_c2() {
+        val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
+        stack += AccountRoute
+        navigator(collector).run {
+            openReportForm(form)
+            assertEquals(stackOf(AccountRoute), stack)
+            measure()
+            openReportForm(form)
+        }
+        assertEquals(stackOf(AccountRoute, MeasureRoute, form), stack)
+    }
+
+    // Wiersz: C2, „Zapisz” → C1 i C2 znikają z historii, „Wstecz” wraca do L2, NFR-54, P2.
+    @Test
+    fun nfr54_saved_drops_c1_and_c2() {
+        val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = null)
+        stack += listOf(AccountRoute, MeasureRoute, form)
+        navigator(collector).reportSaved()
         assertEquals(stackOf(AccountRoute), stack)
     }
 }

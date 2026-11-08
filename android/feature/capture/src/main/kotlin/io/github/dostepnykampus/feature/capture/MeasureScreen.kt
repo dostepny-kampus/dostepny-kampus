@@ -33,6 +33,7 @@ import io.github.dostepnykampus.core.designsystem.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.location.GnssSystem
 import io.github.dostepnykampus.core.location.PositionAverage
+import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import java.util.Locale
 
 private val POLISH = Locale.forLanguageTag("pl-PL")
@@ -41,14 +42,20 @@ private val POLISH = Locale.forLanguageTag("pl-PL")
  * C1 Pomiar pozycji (US6.1): szukanie satelitów, pomiar 30 s i „Pomiar zakończony”. Dokładność i satelity są
  * tekstem, nie tylko na mapie nieba (NFR-18, US6.5), a dokładność ma dopisek „szacunek” (NFR-2). „Powtórz pomiar”
  * działa w każdym stanie, bez limitu (NFR-23). Bez zgody na lokalizację pokazuje prośbę o nią (NFR-27).
- * Po pomiarze podpowiada budynek (US6.2); „Dalej” przyjdzie w kolejnym kroku.
+ * Po pomiarze podpowiada budynek (US6.2), a po decyzji o budynku „Dalej” otwiera C2 (US6).
  *
  * @param onBack „Wstecz” do ekranu, z którego otwarto C1 (NFR-15)
+ * @param onNext „Dalej” z trasą C2 i miejscem z pomiaru
  * @param modifier wymiary nadane przez aplikację
  * @param viewModel pomiar; w aplikacji z grafu Hilt, w testach ze źródłami testowymi
  */
 @Composable
-fun MeasureScreen(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: MeasureViewModel = hiltViewModel()) {
+fun MeasureScreen(
+    onBack: () -> Unit,
+    onNext: (ReportFormRoute) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: MeasureViewModel = hiltViewModel(),
+) {
     WithLocationPermission(onBack = onBack) {
         val state by viewModel.uiState.collectAsStateWithLifecycle()
         val buildings by viewModel.buildings.collectAsStateWithLifecycle()
@@ -57,6 +64,7 @@ fun MeasureScreen(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: 
             onRepeat = viewModel::repeat,
             onBack = onBack,
             modifier = modifier,
+            onNext = onNext,
             buildings = Buildings(buildings),
             placeActions = PlaceActions(viewModel::confirm, viewModel::choose, viewModel::outside),
         )
@@ -70,6 +78,7 @@ fun MeasureScreen(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: 
  * @param onRepeat „Powtórz pomiar”
  * @param onBack „Wstecz”
  * @param modifier wymiary nadane przez aplikację
+ * @param onNext „Dalej”, widoczne po pomiarze i decyzji o budynku (US6.2)
  * @param buildings budynki do „Wybierz inny”
  * @param placeActions czynności wyboru budynku po pomiarze (US6.2)
  */
@@ -79,6 +88,7 @@ fun MeasureContent(
     onRepeat: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onNext: (ReportFormRoute) -> Unit = {},
     buildings: Buildings = Buildings(emptyList()),
     placeActions: PlaceActions = PlaceActions.None,
 ) {
@@ -110,8 +120,10 @@ fun MeasureContent(
                 }
             }
             PinnedActionBar {
+                val next = state.reportFormRoute()
                 val kind = if (state == MeasureUiState.Searching) PinnedButtonKind.Filled else PinnedButtonKind.Outlined
                 PinnedButton(text = stringResource(R.string.pomiar_powtorz), onClick = onRepeat, kind = kind)
+                next?.let { PinnedButton(text = stringResource(R.string.pomiar_dalej), onClick = { onNext(it) }) }
             }
         }
     }

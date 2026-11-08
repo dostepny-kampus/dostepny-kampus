@@ -61,7 +61,7 @@ fun selectedItem(route: NavKey): TopLevel? =
  * uruchomienia przestanie być na wierzchu historii dowolną drogą, także paskiem, żeby przy kolejnym starcie
  * otworzyło się V1 (US5.1, decyzja 73); powtórne wywołanie nie szkodzi. [restarts] liczy powroty do pierwszego
  * ekranu sekcji na każdej pozycji historii; trzeba go zapisywać razem z historią. Każda zmiana historii idzie
- * przez [leaving], dostępne tylko dla przejść w [AppNavigator].
+ * przez [leaving], dostępne tylko dla przejść nawigatora w module `app`.
  */
 sealed class NavigationHistory(
     private val backStack: MutableList<NavKey>,
@@ -103,8 +103,11 @@ sealed class NavigationHistory(
         restarts[backStack.lastIndex]++
     }
 
-    /** Jedyna droga zmiany historii: pilnuje wyjścia z instrukcji i liczników powrotów (decyzje 72 i 73). */
-    protected fun leaving(change: MutableList<NavKey>.() -> Unit) {
+    /**
+     * Jedyna droga zmiany historii: pilnuje wyjścia z instrukcji i liczników powrotów (decyzje 72 i 73). Widoczna
+     * w module `app` dla przejść nawigatora rozbitych na pliki, np. pomiaru i formularza w `CaptureTransitions.kt`.
+     */
+    internal fun leaving(change: MutableList<NavKey>.() -> Unit) {
         val isOnFirstHelp = current == FirstHelp
         backStack.change()
         while (restarts.size > backStack.size) restarts.removeAt(restarts.lastIndex)
