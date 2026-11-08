@@ -39,7 +39,7 @@ internal suspend fun <T> OkHttpClient.exchange(request: Request, read: (Int, Str
                 override fun onResponse(call: Call, response: Response) {
                     val result =
                         try {
-                            response.use { read(it.code, it.body?.string().orEmpty()) }
+                            response.use { read(it.code, it.body.string()) }
                         } catch (error: IOException) {
                             ApiResult.NetworkError(error)
                         }
