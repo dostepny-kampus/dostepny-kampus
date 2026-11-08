@@ -11,8 +11,6 @@ import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.core.model.isSignedIn
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
-import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
@@ -63,7 +61,7 @@ fun selectedItem(route: NavKey): TopLevel? =
  * uruchomienia przestanie być na wierzchu historii dowolną drogą, także paskiem, żeby przy kolejnym starcie
  * otworzyło się V1 (US5.1, decyzja 73); powtórne wywołanie nie szkodzi. [restarts] liczy powroty do pierwszego
  * ekranu sekcji na każdej pozycji historii; trzeba go zapisywać razem z historią. Każda zmiana historii idzie
- * przez [leaving], dostępne tylko dla przejść w [AppNavigator].
+ * przez [leaving], dostępne tylko dla przejść nawigatora w module `app`.
  */
 sealed class NavigationHistory(
     private val backStack: MutableList<NavKey>,
@@ -105,8 +103,11 @@ sealed class NavigationHistory(
         restarts[backStack.lastIndex]++
     }
 
-    /** Jedyna droga zmiany historii: pilnuje wyjścia z instrukcji i liczników powrotów (decyzje 72 i 73). */
-    protected fun leaving(change: MutableList<NavKey>.() -> Unit) {
+    /**
+     * Jedyna droga zmiany historii: pilnuje wyjścia z instrukcji i liczników powrotów (decyzje 72 i 73). Widoczna
+     * w module `app` dla przejść nawigatora rozbitych na pliki, np. pomiaru i formularza w `CaptureTransitions.kt`.
+     */
+    internal fun leaving(change: MutableList<NavKey>.() -> Unit) {
         val isOnFirstHelp = current == FirstHelp
         backStack.change()
         while (restarts.size > backStack.size) restarts.removeAt(restarts.lastIndex)
@@ -234,24 +235,6 @@ class AppNavigator(
             removeAt(lastIndex)
             add(if (route.isForReport) ReportRoute(entranceId = route.entranceId) else AccountRoute)
         }
-    }
-
-    /** L2 → C1: „Zmierz i zgłoś barierę” (US6, US14.1). */
-    fun measure() {
-        leaving { add(MeasureRoute) }
-    }
-
-    /** C1 → C2: „Dalej” z miejscem z pomiaru (US6); poza C1 nic nie robi. */
-    fun openReportForm(route: ReportFormRoute) {
-        if (current == MeasureRoute) leaving { add(route) }
-    }
-
-    /**
-     * „Zapisz” na C2: C1 i C2 znikają z historii, więc „Wstecz” wraca tam, skąd zaczęła się praca (NFR-54, P2).
-     * Ekranu C3 jeszcze nie ma, więc zostaje ekran sprzed pomiaru.
-     */
-    fun reportSaved() {
-        leaving { while (last() is ReportFormRoute || last() == MeasureRoute) removeAt(lastIndex) }
     }
 
     private fun MutableList<NavKey>.dropReport() {

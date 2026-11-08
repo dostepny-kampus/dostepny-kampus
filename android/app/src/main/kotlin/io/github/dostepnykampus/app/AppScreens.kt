@@ -26,6 +26,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
+import io.github.dostepnykampus.app.navigation.measure
+import io.github.dostepnykampus.app.navigation.openReportForm
+import io.github.dostepnykampus.app.navigation.reportSaved
 import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
@@ -110,8 +113,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
         is ReportFormRoute -> ReportFormScreen(route, onLeave = { back() }, onSave = { reportSaved() })
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
-        is SignInRoute -> ToMapStub(title = R.string.nav_konto, action = R.string.nie_teraz)
-        AccountRoute -> Account()
+        is SignInRoute, AccountRoute -> Account(route)
         is MapRoute -> HiltMapScreen(focus = route.focus)
         else -> Unit
     }
@@ -179,21 +181,16 @@ private fun AppNavigator.ReportStub(step: ReportStep) {
     Stub(stringResource(R.string.nav_zglos_bariere), action, note = step.takeIf { it != ReportStep.SENT })
 }
 
-/** L2: zaślepka konta; Zbierający ma „Zmierz i zgłoś barierę” do C1 (US6, US14.1). */
 @Composable
 @NonRestartableComposable
-private fun AppNavigator.Account() {
-    if (hasWork) {
-        Stub(stringResource(R.string.nav_konto_i_praca), stringResource(R.string.zmierz_i_zglos) to { measure() })
-    } else {
-        Stub(stringResource(R.string.nav_konto))
+private fun AppNavigator.Account(route: NavKey) {
+    val isWork = hasWork && route == AccountRoute
+    val title = stringResource(if (isWork) R.string.nav_konto_i_praca else R.string.nav_konto)
+    when {
+        route is SignInRoute -> Stub(title, stringResource(R.string.nie_teraz) to { backToMap() })
+        isWork -> Stub(title, stringResource(R.string.zmierz_i_zglos) to { measure() })
+        else -> Stub(title)
     }
-}
-
-@Composable
-@NonRestartableComposable
-private fun AppNavigator.ToMapStub(title: Int, action: Int) {
-    Stub(stringResource(title), stringResource(action) to { backToMap() })
 }
 
 @Composable
