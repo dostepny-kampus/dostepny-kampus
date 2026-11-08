@@ -168,6 +168,8 @@ jobs:
           mkdir -p build
           adb logcat -d > build/logcat.txt || true
           cp "$RUNNER_TEMP/emulator.log" build/ || true
+          find app/build/outputs/androidTest-results -name '*.xml' -exec cat {} + || true
+          grep -E 'FATAL EXCEPTION|AndroidRuntime|TestRunner' build/logcat.txt | head -200 || true
       - name: Zapisz raporty testów na emulatorze
         if: always()
         uses: actions/upload-artifact@v7.0.2
