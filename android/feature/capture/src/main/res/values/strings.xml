@@ -8,6 +8,7 @@
     <string name="pomiar_satelity">Satelity: %1$s</string>
     <string name="pomiar_satelity_brak">Satelity: brak w pozycji</string>
     <string name="pomiar_powtorz">Powtórz pomiar</string>
+    <string name="pomiar_dalej">Dalej</string>
     <string name="system_gps">GPS</string>
     <string name="system_galileo">Galileo</string>
     <string name="system_glonass">GLONASS</string>
