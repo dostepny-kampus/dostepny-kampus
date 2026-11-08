@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Katalog zdjęć zgłoszeń z PHOTO_DIR w PhotoFile.kt. -->
+<paths>
+    <files-path name="zdjecia" path="zdjecia/" />
+</paths>

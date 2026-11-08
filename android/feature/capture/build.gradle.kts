@@ -21,6 +21,7 @@ dependencies {
     implementation(project(":core:geo"))
     implementation(project(":core:designsystem"))
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.exifinterface)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.lifecycle.runtime.compose)
