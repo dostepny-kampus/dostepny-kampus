@@ -70,7 +70,7 @@ jobs:
             android-zaleznosci-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('android/**/*.gradle.kts', 'android/**/gradle.properties', 'android/**/*.toml', 'android/**/gradle.lockfile', 'android/gradle/verification-metadata.xml', 'android/gradle/wrapper/gradle-wrapper.properties', '.github/workflows/android.yml') }}
           restore-keys: |
             android-zaleznosci-v1-${{ runner.os }}-${{ runner.arch }}-
-      - uses: gradle/actions/setup-gradle@v6.4.0
+      - uses: gradle/actions/setup-gradle@v6.4.1
         with:
           cache-provider: external
       - name: Zbuduj i sprawdź
@@ -127,7 +127,7 @@ jobs:
             android-zaleznosci-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('android/**/*.gradle.kts', 'android/**/gradle.properties', 'android/**/*.toml', 'android/**/gradle.lockfile', 'android/gradle/verification-metadata.xml', 'android/gradle/wrapper/gradle-wrapper.properties', '.github/workflows/android.yml') }}
           restore-keys: |
             android-zaleznosci-v1-${{ runner.os }}-${{ runner.arch }}-
-      - uses: gradle/actions/setup-gradle@v6.4.0
+      - uses: gradle/actions/setup-gradle@v6.4.1
         with:
           cache-provider: external
       - name: Włącz KVM dla emulatora
