@@ -9,6 +9,7 @@ import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
+import io.github.dostepnykampus.barrier.domain.SimilarSubmission;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
@@ -158,6 +159,33 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
             .param("building", query.buildingSymbol())
             .param("floor", query.floorId())
             .query(this.mapping)
+            .list();
+    }
+
+    @Override
+    public List<SimilarSubmission> similar(final UUID id) {
+        return this.jdbc.sql(
+            String.format(
+                """
+                SELECT %s, distance FROM (
+                    SELECT other.*, ROUND(CAST(ST_Distance(other.location::geography,
+                        checked.location::geography) AS NUMERIC), 2) AS distance
+                    FROM submissions AS other
+                    JOIN submissions AS checked ON checked.id = :id AND other.id <> checked.id
+                    WHERE other.status IN (:statuses)
+                        -- zapas na zaokrąglenie do centymetra: granica promienia widoczna
+                        AND ST_DWithin(other.location::geography,
+                            checked.location::geography, :radius + 0.005)
+                ) AS near
+                WHERE distance <= :radius
+                ORDER BY distance, created_at, id
+                """,
+                JdbcSubmissions.COLUMNS
+            )
+        ).param("id", id)
+            .param("statuses", SimilarSubmission.STATUSES.stream().map(Enum::name).toList())
+            .param("radius", SimilarSubmission.RADIUS_METERS)
+            .query((rows, num) -> new SimilarSubmission(this.row(rows), rows.getDouble("distance")))
             .list();
     }
 

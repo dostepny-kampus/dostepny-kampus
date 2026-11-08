@@ -67,7 +67,6 @@ final class RouteParityTest {
         Map.entry("GET /review/queue", "kolejka Weryfikatora: moduł weryfikacji"),
         Map.entry("POST /submissions/{}/claim", "przejęcie zgłoszenia: moduł weryfikacji"),
         Map.entry("POST /submissions/{}/review", "decyzja Weryfikatora: moduł weryfikacji"),
-        Map.entry("GET /submissions/{}/similar", "podobne zgłoszenia: moduł weryfikacji"),
         Map.entry("POST /sync/push", "wysyłka zmian z aplikacji: synchronizacja"),
         Map.entry("GET /sync/pull", "pobranie zmian do aplikacji: synchronizacja"),
         Map.entry("DELETE /inspection-markers/{}", "znaczniki inspekcji: moduł inspekcji"),
