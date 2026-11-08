@@ -79,4 +79,14 @@
     <string name="formularz_wyjsc_opis">Wpisane pola nie zostaną zapisane.</string>
     <string name="formularz_wyjdz">Wyjdź bez zapisu</string>
     <string name="formularz_wroc">Wróć do formularza</string>
+    <string name="szybkie_pytanie_grupa">Czego dotyczy bariera?</string>
+    <string name="szybkie_grupa_wejscie">Wejście i drzwi</string>
+    <string name="szybkie_grupa_schody">Schody i windy</string>
+    <string name="szybkie_grupa_przejscia">Przejścia i chodniki</string>
+    <string name="szybkie_grupa_toalety">Toalety</string>
+    <string name="szybkie_grupa_napisy">Napisy i oznaczenia</string>
+    <string name="szybkie_grupa_inne">Coś innego</string>
+    <string name="szybkie_pytanie_pietro">Na którym piętrze?</string>
+    <string name="szybkie_nie_wiem">Nie wiem</string>
+    <string name="szybkie_parter">Parter</string>
 </resources>
