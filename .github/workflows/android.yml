@@ -161,7 +161,7 @@ jobs:
             adb shell settings put global "$scale" 0
           done
       - name: Testy na emulatorze
-        run: ./gradlew connectedDebugAndroidTest
+        run: ./gradlew :app:connectedDebugAndroidTest
       - name: Zapisz logcat i log emulatora
         if: failure()
         run: |
