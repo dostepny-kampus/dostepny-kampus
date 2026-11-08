@@ -75,7 +75,8 @@ class MeasureScreenTest {
     fun us6_next_after_place_decision() {
         show(MeasureUiState.Finished(average = average, satellites = satellites, place = PlaceChoice.Outside))
         compose.onNodeWithText("Dalej").performClick()
-        assertEquals(listOf(ReportFormRoute(17.06, 51.11, 0.8, buildingSymbol = null)), next)
+        val route = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = null)
+        assertEquals(listOf(route), next)
     }
 
     // Wiersz: C1, „Dalej” dopiero po decyzji o budynku, US6.2.

@@ -393,7 +393,7 @@ class AppNavigatorTest {
     // Wiersz: L2, „Zmierz i zgłoś barierę” → C1, potem C1 „Dalej” → C2, US6.
     @Test
     fun us6_l2_to_c1_to_c2() {
-        val form = ReportFormRoute(17.06, 51.11, 0.8, "A-1")
+        val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
         stack += AccountRoute
         navigator(collector).run {
             openReportForm(form)
@@ -407,7 +407,8 @@ class AppNavigatorTest {
     // Wiersz: C2, „Zapisz” → C1 i C2 znikają z historii, „Wstecz” wraca do L2, NFR-54, P2.
     @Test
     fun nfr54_saved_drops_c1_and_c2() {
-        stack += listOf(AccountRoute, MeasureRoute, ReportFormRoute(17.06, 51.11, 0.8, buildingSymbol = null))
+        val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = null)
+        stack += listOf(AccountRoute, MeasureRoute, form)
         navigator(collector).reportSaved()
         assertEquals(stackOf(AccountRoute), stack)
     }

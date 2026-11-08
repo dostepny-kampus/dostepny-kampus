@@ -95,8 +95,8 @@ private typealias Action = Pair<String, () -> Unit>
 
 /**
  * Ekran trasy [route] z czynnościami podpiętymi do nawigatora. V1 to mapa z `feature:map` ze stanem w ViewModel
- * z grafu Hilt, V2 karta budynku, V3 „Którędy wejść”, C1 i C2 z `feature:capture` i V5 z `feature:help`, reszta to zaślepki:
- * nagłówek „Wstecz” z nazwą z listy ekranów i przyciski czynności bez danych. Ekran z `feature:*`
+ * z grafu Hilt, V2 karta budynku, V3 „Którędy wejść”, C1 i C2 z `feature:capture` i V5 z `feature:help`, reszta
+ * to zaślepki: nagłówek „Wstecz” z nazwą z listy ekranów i przyciski czynności bez danych. Ekran z `feature:*`
  * zastępuje swoją gałąź i dostaje czynności jako lambdy. Zaślepki nie zapamiętują stanu, więc nie muszą się
  * odświeżać osobno od nawigatora.
  */
@@ -108,7 +108,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is EntrancesRoute -> Entrances(route.symbol)
         is ReportRoute -> ReportStub(route.step)
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
-        is ReportFormRoute -> ReportFormScreen(route, onLeft = { back() }, onSaved = { reportSaved() })
+        is ReportFormRoute -> ReportFormScreen(route, onLeave = { back() }, onSave = { reportSaved() })
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute -> ToMapStub(title = R.string.nav_konto, action = R.string.nie_teraz)
         AccountRoute -> Account()
