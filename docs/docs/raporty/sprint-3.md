@@ -27,7 +27,7 @@ Cel pochodzi z planu sprintów w raporcie [Tydzień 2](tydzien-2.md), sekcja „
 | Baza lokalna | pamięć podręczna Room z datą synchronizacji | tabela `building_cache` z migracją 1→2 (#260), kopia listy z datą i offline (#313); kolejka zgłoszeń w Room (#214, #225, #229) | zrobione |
 | Karta budynku | treść V2 i ekran V3 „Którędy wejść” | V2 z wejściami i oznaczeniem (#141, #233, #254), V3 z odpowiedzią serwera (#142), zgłoszenie przy wejściu (#247) | zrobione |
 | Automatyczna wysyłka | synchronizacja po powrocie sieci (NFR-6) | worker WorkManagera i planowanie po zapisie w `core:data` (#314), planowanie przy starcie aplikacji w `app` (#316) | zrobione |
-| Testy na emulatorze | przepływ na emulatorze | nadal tylko testy JVM i zrzuty Roborazzi; emulatora nie ma | nie zrobione |
+| Testy na emulatorze | przepływ na emulatorze | zadanie `emulator` w CI: ścieżka V1 → V2 → V3 i lista budynków na API 26 i API 36; dopisane po dniu raportu (#364) | zrobione |
 
 Najważniejszy wynik: aplikacja bierze kontury i wejścia z serwera, a bez sieci wraca do pliku i do kopii w bazie z datą pobrania. Zgłoszenie z telefonu przechodzi przez kolejkę lokalną do serwera, który pilnuje wersji i przy konflikcie zwraca 409, a zdjęcia leżą w magazynie RustFS. Po powrocie sieci kolejkę wysyła zadanie WorkManagera.
 
@@ -41,7 +41,7 @@ Kontrole nadal uruchamiane są według zmienionych katalogów. W Sprincie 3 dosz
 | `straznik-jakosci` | brak wyciszeń analizy i plików baseline | pilnuje też zmian NullAway i reguł architektury (#222) |
 | `api` | kontrakt regułami Redocly; oasdiff blokuje zmianę łamiącą zgodność | warianty synchronizacji jako `oneOf` (#216) |
 | `backend` | `./mvnw verify`: testy, qulice, Spring Modulith, ArchUnit, próg pokrycia | qulice w osobnym zadaniu bez testów (#226), NullMarked i NullAway (#215, #255, #302) |
-| `android` | `./gradlew check assembleDebug`: testy, detekt, ktlint, Lint, Konsist, zrzuty, Kover | Konsist pilnuje `null` tylko na granicy modułu (#227), pamięć podręczna zależności (#151) |
+| `android` | `./gradlew check assembleDebug`: testy, detekt, ktlint, Lint, Konsist, zrzuty, Kover; testy na emulatorze API 26 i API 36 | Konsist pilnuje `null` tylko na granicy modułu (#227), pamięć podręczna zależności (#151), zadanie `emulator` (#364) |
 | `docs` | `verify.py`, odwołania wierszy wymagań i znaczniki scenariuszy | bez zmian |
 
 Próg pokrycia w serwerze i w aplikacji to nadal 80% linii i 70% gałęzi. Doszły strażnicy: parytet tras i odpowiedzi HTTP z `openapi.yaml` (#235, #242, #305, #312) oraz jeden kontekst Springa dla testów integracyjnych (#265, #276, #304). Modułu zgłoszeń pilnuje ArchUnit (#217, #301).
@@ -76,7 +76,7 @@ Aplikacja ma 14 modułów: `app`, siedem modułów `core` i sześć modułów `f
 | Automatyczna wysyłka | worker WorkManagera z warunkiem sieci i ponowieniem; planowanie po zapisie zgłoszenia i przy starcie aplikacji | #314, #316 |
 | Architektura | Hilt i MVVM; Konsist pilnuje `null` tylko na granicy modułu | #227, [ADR-0007](../architektura/decyzje/0007-hilt-i-mvvm.md) |
 
-Zrzuty Roborazzi nadal powstają w testach na JVM, w motywie jasnym, ciemnym i przy czcionce 200%. Testów na emulatorze z planu „Tydzień 2” nie ma.
+Zrzuty Roborazzi nadal powstają w testach na JVM, w motywie jasnym, ciemnym i przy czcionce 200%. Po dniu raportu doszły testy na emulatorze z planu „Tydzień 2” (#364). Na API 26 wykryły błąd: mapa na Vulkanie przerywała aplikację, więc MapLibre działa teraz na OpenGL ES.
 
 ## 5. Dane budynków
 
@@ -107,7 +107,7 @@ Makiety zmieniły się razem z kodem karty budynku i listy.
 | PR według typu commitu | `feat` 66, `test` 54, `fix` 17, `refactor` 9, `docs` 8, `ci` 4, `build` 4, `chore` 3, `revert` 1 |
 | Autorzy PR | 3 konta: Vladyslav Yevkov 122, Myroslav Hryniuka 43, Yevhenii Lukianenko 1 |
 | Scal do `main` | w dniu raportu czeka na PR |
-| Otwarte po sprincie | PR #309 z refaktorem systemu projektowego |
+| Otwarte po sprincie | brak; PR #309 z refaktorem systemu projektowego scalony po dniu raportu |
 
 Każdy PR w sprincie miał jedno zadanie i najwyżej 300 zmienionych linii według `rozmiar-pr.sh`. Większe zadania dzieliliśmy na części, np. kolejkę zgłoszeń na DAO, mapowanie i wysyłkę (#225, #229, #248).
 
@@ -116,7 +116,7 @@ Każdy PR w sprincie miał jedno zadanie i najwyżej 300 zmienionych linii wedł
 | Zmiana albo problem | Skutek | Odwołanie |
 | --- | --- | --- |
 | MinIO zastąpione magazynem RustFS | magazyn zdjęć działa lokalnie i w CI; różnica względem planu jest w ADR | R-12, [ADR-0009](../architektura/decyzje/0009-magazyn-zdjec.md) |
-| Brak testów na emulatorze | przepływ sprawdzają testy JVM i zrzuty Roborazzi; nadal brak urządzenia | R-3, R-10 |
+| Testy na emulatorze dopiero po raporcie | przepływ sprawdza emulator w CI (#364); telefonu do testów GNSS nadal brak | R-3, R-10 |
 | Brak wywiadów | persony, ścieżki i napisy zostają hipotezami | R-6, R-7 |
 | Zależność od jednej osoby maleje | największe konto wnosi 122 z 166 PR, czyli 73% — poniżej progu 80% z sygnału R-2 | R-2 |
 | Raport „Sprint 3” na czas | raport oddajemy 05.11.2026, po terminie Sprintu 2 | R-1 |
