@@ -36,7 +36,10 @@ fun interface ReportSaver {
 @HiltViewModel
 class ReportFormViewModel
     @Inject
-    constructor(private val draft: ReportDraft = ReportDraft(), private val saver: ReportSaver) : ViewModel() {
+    constructor(
+        private val draft: ReportDraft = ReportDraft(),
+        private val saver: ReportSaver,
+    ) : ViewModel() {
         private val state = MutableStateFlow<ReportUiState?>(null)
         private var initial: ReportForm? = null
 
