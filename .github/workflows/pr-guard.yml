@@ -54,30 +54,25 @@ jobs:
           bash .github/scripts/rozmiar-pr.sh "$BASE_SHA" "$HEAD_SHA" 300
 
   commity:
+    # W kolejce scalania sprawdzamy commity grupy (base_sha..head_sha): komunikat commitu squash bierze tytuł PR,
+    # który można zmienić jeszcze w kolejce, więc sprawdzenie sprzed kolejki nie wystarcza.
     if: github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Sprawdzone na PR
-        if: github.event_name == 'merge_group'
-        run: echo "Ta kontrola dotyczy danych PR (tytuł, opis, rozmiar, zależności) i przeszła na PR; w kolejce scalania nie jest powtarzana."
       - uses: actions/checkout@v7.0.1
-        if: github.event_name != 'merge_group'
         with:
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@v7.1.0
-        if: github.event_name != 'merge_group'
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: .github/commitlint/package-lock.json
       - name: Zainstaluj commitlint z pliku lock
-        if: github.event_name != 'merge_group'
         working-directory: .github/commitlint
         run: npm ci --no-audit --no-fund
       - name: Sprawdź komunikaty commitów
-        if: github.event_name != 'merge_group'
         working-directory: .github/commitlint
         env:
           BASE_REF: ${{ github.base_ref }}
@@ -105,16 +100,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Sprawdzone na PR
-        if: github.event_name == 'merge_group'
-        run: echo "Ta kontrola dotyczy danych PR (tytuł, opis, rozmiar, zależności) i przeszła na PR; w kolejce scalania nie jest powtarzana."
       - uses: actions/checkout@v7.0.1
-        if: github.event_name != 'merge_group'
         with:
           fetch-depth: 0
           persist-credentials: false
       - name: Sprawdź gałąź, tytuł, opis, commity i dodane linie plików
-        if: github.event_name != 'merge_group'
         env:
           FORBIDDEN_PATTERNS: ${{ secrets.FORBIDDEN_PATTERNS }}
           PR_BRANCH: ${{ github.head_ref }}
