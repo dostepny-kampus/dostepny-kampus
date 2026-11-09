@@ -126,7 +126,6 @@ jobs:
         api: [26, 36]
     env:
       IMAGE: system-images;android-${{ matrix.api }};default;x86_64
-      URUCHAMIACZ_TESTOW: io.github.dostepnykampus.test/androidx.test.runner.AndroidJUnitRunner
     steps:
       - name: Pobierz APK aplikacji i testów
         uses: actions/download-artifact@v8.0.2
@@ -169,7 +168,15 @@ jobs:
           adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug-androidTest.apk | head -n 1)"
       - name: Testy na emulatorze
         run: |
-          adb shell am instrument -w "$URUCHAMIACZ_TESTOW" | tee "$RUNNER_TEMP/instrumentacja.txt"
+          # Uruchamiacz testów (np. własny runner Hilt) odczytujemy z zainstalowanego APK testów, nie z konfiguracji workflow.
+          uruchamiacz="$(adb shell pm list instrumentation | tr -d '\r' | sed -n 's/^instrumentation:\([^ ]*\) (target=io.github.dostepnykampus)$/\1/p' | head -n 1)"
+          if [[ -z $uruchamiacz ]]; then
+            echo "::error title=Testy na emulatorze::Nie znaleziono uruchamiacza testów dla aplikacji."
+            adb shell pm list instrumentation
+            exit 1
+          fi
+          echo "Uruchamiacz testów: ${uruchamiacz}"
+          adb shell am instrument -w "$uruchamiacz" | tee "$RUNNER_TEMP/instrumentacja.txt"
           # `am instrument` kończy się kodem 0 także przy porażce testów, więc wynik czytamy z wyjścia;
           # sukces bez żadnego testu też jest błędem.
           if ! grep -Eq '^OK \(([1-9][0-9]*) tests?\)' "$RUNNER_TEMP/instrumentacja.txt"; then
