@@ -19,7 +19,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.BarrierGroup
 
-/** Piętra budynku podstawowego w pytaniu kroku 2, od parteru; budynek szczegółowy dostanie etykiety PWr (US4.5). */
+// Piętra budynku podstawowego w pytaniu kroku 2, od parteru; budynek szczegółowy dostanie etykiety PWr (US4.5).
 private val BASIC_FLOORS = 0..4
 
 /** Napis grupy barier na V4, prostszy niż nazwa grupy w formularzu C2 (BR-14, PW-7). */
