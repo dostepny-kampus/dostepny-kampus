@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app
 
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
@@ -35,6 +36,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,6 +69,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventHandler
 import androidx.navigationevent.NavigationEventInfo
@@ -118,6 +121,9 @@ internal fun CardWindow.sceneStrategies(): List<SceneStrategy<NavKey>> =
  * do końca i dopiero wtedy raz zamyka V2 (NFR-15); kolejne „Wstecz” w trakcie dojazdu pochłania. Dojazd i powrót
  * mają czas `medium2` (300 ms) i krzywą standardową
  * `(0,2; 0; 0; 1)` z tokenów ruchu Material 3. Inne układy historii zostawia scenie z jednym ekranem.
+ *
+ * Scena, z której NavDisplay właśnie przechodzi do innej (V2 → V3), nie odbiera „Wstecz”: dostaje je NavDisplay
+ * i cofa przejście, a arkusz nie zostaje w stanie zamykania, który pochłaniałby kolejne „Wstecz” (US3).
  */
 internal object SheetSceneStrategy : SceneStrategy<NavKey> {
     private val sheet: Map<String, Any> = mapOf(SHEET_KEY to true)
@@ -161,7 +167,8 @@ private data class SheetScene(val map: NavEntry<NavKey>, val sheet: NavEntry<Nav
                 Box(modifier = silentUnderSheet) { map.Content() }
             }
             if (sheet != null) {
-                SheetBackHandler { gesture ->
+                val isTarget = LocalNavAnimatedContentScope.current.transition.targetState == EnterExitState.Visible
+                SheetBackHandler(isEnabled = isTarget) { gesture ->
                     if (!isClosing) {
                         isClosing = state.closesOn(gesture)
                         state = state.after(gesture)
@@ -193,16 +200,16 @@ private data class SheetScene(val map: NavEntry<NavKey>, val sheet: NavEntry<Nav
 }
 
 /**
- * Przewidywany gest „Wstecz” nad arkuszem V2: każde zdarzenie gestu (początek, postęp, anulowanie, zakończenie) trafia
- * do [onGesture], zanim zobaczy je NavDisplay, więc scena V1 pod arkuszem zostaje bez zmian.
+ * Przewidywany gest „Wstecz” nad arkuszem V2: gdy [isEnabled], każde zdarzenie gestu (początek, postęp, anulowanie,
+ * zakończenie) trafia do [onGesture], zanim zobaczy je NavDisplay, więc scena V1 pod arkuszem zostaje bez zmian.
  */
 @Composable
-internal fun SheetBackHandler(onGesture: (BackGesture) -> Unit) {
+internal fun SheetBackHandler(isEnabled: Boolean, onGesture: (BackGesture) -> Unit) {
     val dispatcher = checkNotNull(LocalNavigationEventDispatcherOwner.current).navigationEventDispatcher
     val currentOnGesture by rememberUpdatedState(onGesture)
-    DisposableEffect(dispatcher) {
-        val handler =
-            object : NavigationEventHandler<NavigationEventInfo.None>(NavigationEventInfo.None, isBackEnabled = true) {
+    val handler =
+        remember(dispatcher) {
+            object : NavigationEventHandler<NavigationEventInfo.None>(NavigationEventInfo.None, isEnabled) {
                 override fun onBackStarted(event: NavigationEvent) = currentOnGesture(BackGesture.Started)
 
                 override fun onBackProgressed(event: NavigationEvent) =
@@ -212,6 +219,9 @@ internal fun SheetBackHandler(onGesture: (BackGesture) -> Unit) {
 
                 override fun onBackCompleted() = currentOnGesture(BackGesture.Completed)
             }
+        }
+    SideEffect { handler.isBackEnabled = isEnabled }
+    DisposableEffect(handler) {
         dispatcher.addHandler(handler)
         onDispose { handler.remove() }
     }
