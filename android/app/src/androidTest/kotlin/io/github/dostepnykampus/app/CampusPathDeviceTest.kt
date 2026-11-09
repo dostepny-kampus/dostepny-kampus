@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app
 
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
@@ -12,7 +13,8 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.text.AnnotatedString
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -59,10 +61,16 @@ class CampusPathDeviceTest {
 
     /**
      * Wiersze: V1, wpisanie symbolu i wybór wyniku → V2; „Sprawdź, którędy wejść” → V3; „Wstecz” → V2, US1.1, US2, US3.
+     *
+     * Symbol jest wpisany akcją semantyki, bez fokusu pola, więc klawiatura ekranowa się nie otwiera. Otwarta
+     * klawiatura pochłania „Wstecz” (chowa się zamiast cofnąć V3), a chwila jej otwarcia i zamknięcia zależy od
+     * emulatora, więc wynik testu zależałby od czasu.
      */
     @Test
     fun us3_search_card_entrances() {
-        compose.onNode(hasSetTextAction()).performTextInput("A-1")
+        compose
+            .onNode(hasSetTextAction())
+            .performSemanticsAction(SemanticsActions.SetText) { it(AnnotatedString("A-1")) }
         waitFor(BuildingA1InCatalog)
         compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
         waitFor(hasText(CHECK))
