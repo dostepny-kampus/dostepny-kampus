@@ -18,24 +18,22 @@ import io.github.dostepnykampus.core.network.ApiBuilding
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingList
 import io.github.dostepnykampus.core.network.DetailLevel
-import io.github.dostepnykampus.feature.map.CampusMapUiState
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -43,28 +41,25 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Timeout
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-// Tylko ochrona przed zawieszeniem przy błędzie w kodzie; wynik testów nie zależy od czasu.
-private const val HANG_GUARD_SECONDS = 60L
 private const val MANY_OUTLINES = 40
 private val FILE_LABELS = listOf("A-1", "B-2")
 private val SERVER_LABELS = listOf("A-1")
 
 /**
  * Geometria mapy V1 od odpowiedzi serwera i zamknięcia ekranu do stanu ViewModelu (NFR-10, NFR-11). Testy czekają na
- * zdarzenia (zatrzaski, wynik liczenia), nie na upływ czasu, więc wynik nie zależy od szybkości maszyny.
+ * zdarzenia (sygnały z funkcji liczącej, wynik liczenia), nie na upływ czasu, więc wynik nie zależy od szybkości
+ * maszyny. Zawieszenie przy błędzie w kodzie kończy limit `runTest`, który nie wpływa na wynik działającego kodu.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-@Timeout(HANG_GUARD_SECONDS)
 class MapGeometryFlowTest {
     private val calls = AtomicInteger()
-    private val screens = mutableListOf<Job>()
 
     @BeforeEach
     fun main() {
@@ -73,156 +68,175 @@ class MapGeometryFlowTest {
 
     @AfterEach
     fun reset() {
-        screens.forEach(Job::cancel)
         Dispatchers.resetMain()
     }
 
     // Wiersz: W3, plik, potem serwer → geometria raz na katalog, a stan ma ją z katalogu serwera; liczenie dla pliku,
     //   które jeszcze trwa, zostaje przerwane i nie wraca po serwerze, NFR-10, NFR-11.
     @Test
-    fun nfr11_geometry_per_catalog() {
-        val answer = CompletableDeferred<ApiResult<BuildingList>>()
-        val fileRunning = CountDownLatch(1)
-        val fileHeld = CountDownLatch(1)
-        val fileFinished = CompletableDeferred<Boolean>()
-        Executors.newFixedThreadPool(2).asCoroutineDispatcher().use { compute ->
-            try {
-                val geometry = { catalog: BuildingCatalog ->
-                    calls.incrementAndGet()
-                    if (catalog.buildings.size == FILE_LABELS.size) {
-                        var isDone = false
-                        try {
-                            fileRunning.countDown()
-                            fileHeld.await()
-                            isDone = true
-                        } finally {
-                            fileFinished.complete(isDone)
+    fun nfr11_geometry_per_catalog() =
+        runTest {
+            val answer = CompletableDeferred<ApiResult<BuildingList>>()
+            val fileRunning = CompletableDeferred<Unit>()
+            val fileHeld = CountDownLatch(1)
+            val fileFinished = CompletableDeferred<Boolean>()
+            withPool(threads = 2) { compute ->
+                try {
+                    val geometry = { catalog: BuildingCatalog ->
+                        calls.incrementAndGet()
+                        if (catalog.buildings.size == FILE_LABELS.size) {
+                            holdFile(fileRunning, fileHeld, fileFinished)
                         }
+                        campusMapData(catalog)
                     }
-                    campusMapData(catalog)
+                    val viewModel = viewModelOf(repository { answer.await() }, compute, geometry)
+                    show(viewModel)
+                    fileRunning.await()
+                    answer.complete(ApiResult.Success(SERVER_LIST))
+                    val state =
+                        viewModel.uiState.first { it.catalog?.run { buildings.size } == 1 && it.mapData != null }
+                    assertEquals(SERVER_LABELS, state.mapData?.labels, "geometria nie z serwera")
+                    assertFalse(fileFinished.await(), "liczenie dla pliku doszło do końca po serwerze")
+                    assertEquals(2, calls.get(), "geometria liczona inaczej niż raz na katalog")
+                } finally {
+                    fileHeld.countDown()
                 }
-                val viewModel = viewModelOf(repository { answer.await() }, compute, geometry)
-                viewModel.show()
-                fileRunning.await()
-                answer.complete(ApiResult.Success(SERVER_LIST))
-                val state = viewModel.waitFor { it.catalog?.buildings?.size == 1 && it.mapData != null }
-                assertEquals(SERVER_LABELS, state.mapData?.labels, "geometria nie z serwera")
-                assertFalse(runBlocking { fileFinished.await() }, "liczenie dla pliku doszło do końca po serwerze")
-                assertEquals(2, calls.get(), "geometria liczona inaczej niż raz na katalog")
-            } finally {
-                fileHeld.countDown()
             }
         }
-    }
 
     // Wiersz: zamknięcie ekranu w trakcie pobierania z serwera → wywołanie przerwane, bez działającej pracy.
     @Test
-    fun closing_map_cancels_call() {
-        val started = CompletableDeferred<Unit>()
-        val cancelled = CompletableDeferred<Unit>()
-        val store = ViewModelStore()
-        val repository =
-            repository {
-                started.complete(Unit)
-                try {
-                    awaitCancellation()
-                } finally {
-                    cancelled.complete(Unit)
+    fun closing_map_cancels_call() =
+        runTest {
+            val started = CompletableDeferred<Unit>()
+            val cancelled = CompletableDeferred<Unit>()
+            val store = ViewModelStore()
+            val repository =
+                repository {
+                    started.complete(Unit)
+                    try {
+                        awaitCancellation()
+                    } finally {
+                        cancelled.complete(Unit)
+                    }
                 }
-            }
-        ViewModelProvider.create(store, factoryOf(repository, UnconfinedTestDispatcher()))[CampusMapViewModel::class]
-            .show()
-        runBlocking { started.await() }
-        store.clear()
-        runBlocking { cancelled.await() }
-        assertTrue(started.isCompleted && cancelled.isCompleted, "pobranie nie zaczęło się albo trwa po zamknięciu")
-    }
+            val factory = factoryOf(repository, UnconfinedTestDispatcher(testScheduler))
+            show(ViewModelProvider.create(store, factory)[CampusMapViewModel::class])
+            started.await()
+            store.clear()
+            cancelled.await()
+            assertTrue(started.isCompleted && cancelled.isCompleted, "pobranie nie zaczęło się albo trwa po zamknięciu")
+        }
 
     // Wiersz: zamknięcie ekranu w trakcie liczenia geometrii → liczenie czekające w kolejce nie rusza po zamknięciu.
     @Test
-    fun closing_map_cancels_compute() {
-        val queued = ArrayDeque<Runnable>()
-        val compute =
-            object : CoroutineDispatcher() {
-                override fun dispatch(context: CoroutineContext, block: Runnable) {
-                    queued.addLast(block)
+    fun closing_map_cancels_compute() =
+        runTest {
+            val queued = ArrayDeque<Runnable>()
+            val compute =
+                object : CoroutineDispatcher() {
+                    override fun dispatch(context: CoroutineContext, block: Runnable) {
+                        queued.addLast(block)
+                    }
                 }
-            }
-        val store = ViewModelStore()
-        ViewModelProvider.create(store, factoryOf(repository(), compute))[CampusMapViewModel::class].show()
-        assertTrue(queued.isNotEmpty(), "geometria nie trafiła do kontekstu obliczeń")
-        store.clear()
-        while (queued.isNotEmpty()) queued.removeFirst().run()
-        assertEquals(0, calls.get(), "liczenie ruszyło po zamknięciu ekranu")
-    }
+            val store = ViewModelStore()
+            show(ViewModelProvider.create(store, factoryOf(repository(), compute))[CampusMapViewModel::class])
+            assertTrue(queued.isNotEmpty(), "geometria nie trafiła do kontekstu obliczeń")
+            store.clear()
+            while (queued.isNotEmpty()) queued.removeFirst().run()
+            assertEquals(0, calls.get(), "liczenie ruszyło po zamknięciu ekranu")
+        }
 
     // Wiersz: zamknięcie ekranu w trakcie liczenia geometrii katalogu z wieloma konturami → liczenie nie dochodzi do
     //   końca katalogu, NFR-11.
     @Test
-    fun closing_map_stops_running() {
-        val started = CountDownLatch(1)
-        val release = CountDownLatch(1)
-        val finished = CompletableDeferred<Boolean>()
-        val store = ViewModelStore()
-        Executors.newSingleThreadExecutor().asCoroutineDispatcher().use { compute ->
-            try {
-                val geometry = { catalog: BuildingCatalog ->
-                    var isDone = false
-                    try {
-                        started.countDown()
-                        release.await()
-                        campusMapData(catalog).also { isDone = true }
-                    } finally {
-                        finished.complete(isDone)
+    fun closing_map_stops_running() =
+        runTest {
+            val started = CompletableDeferred<Unit>()
+            val release = CountDownLatch(1)
+            val finished = CompletableDeferred<Boolean>()
+            val store = ViewModelStore()
+            withPool(threads = 1) { compute ->
+                try {
+                    val geometry = { catalog: BuildingCatalog ->
+                        var isDone = false
+                        try {
+                            started.complete(Unit)
+                            release.await()
+                            campusMapData(catalog).also { isDone = true }
+                        } finally {
+                            finished.complete(isDone)
+                        }
                     }
+                    val many = repository(json = MANY_JSON)
+                    val factory = viewModelFactory { initializer { viewModelOf(many, compute, geometry) } }
+                    show(ViewModelProvider.create(store, factory)[CampusMapViewModel::class])
+                    started.await()
+                    store.clear()
+                    release.countDown()
+                    assertFalse(finished.await(), "liczenie doszło do końca katalogu po zamknięciu ekranu")
+                } finally {
+                    release.countDown()
                 }
-                val factory =
-                    viewModelFactory { initializer { viewModelOf(repository(json = MANY_JSON), compute, geometry) } }
-                ViewModelProvider.create(store, factory)[CampusMapViewModel::class].show()
-                started.await()
-                store.clear()
-                release.countDown()
-                assertFalse(runBlocking { finished.await() }, "liczenie doszło do końca katalogu po zamknięciu ekranu")
-            } finally {
-                release.countDown()
             }
         }
-    }
 
     // Wiersz: serwer odpowiada, gdy liczy się katalog z pliku → liczenie katalogu z serwera rusza, zanim skończy się
     //   liczenie pliku, NFR-11.
     @Test
-    fun server_compute_starts_early() {
-        val answer = CompletableDeferred<ApiResult<BuildingList>>()
-        val fileRunning = CountDownLatch(1)
-        val serverStarted = CountDownLatch(1)
-        val hold = CountDownLatch(1)
-        val fileFinished = CompletableDeferred<Boolean>()
-        Executors.newFixedThreadPool(2).asCoroutineDispatcher().use { compute ->
-            try {
-                val geometry = { catalog: BuildingCatalog ->
-                    if (catalog.buildings.size == SERVER_LABELS.size) {
-                        serverStarted.countDown()
-                    } else {
-                        var isDone = false
-                        try {
-                            fileRunning.countDown()
-                            hold.await()
-                            isDone = true
-                        } finally {
-                            fileFinished.complete(isDone)
+    fun server_compute_starts_early() =
+        runTest {
+            val answer = CompletableDeferred<ApiResult<BuildingList>>()
+            val fileRunning = CompletableDeferred<Unit>()
+            val serverStarted = CompletableDeferred<Unit>()
+            val hold = CountDownLatch(1)
+            val fileFinished = CompletableDeferred<Boolean>()
+            withPool(threads = 2) { compute ->
+                try {
+                    val geometry = { catalog: BuildingCatalog ->
+                        if (catalog.buildings.size == SERVER_LABELS.size) {
+                            serverStarted.complete(Unit)
+                        } else {
+                            holdFile(fileRunning, hold, fileFinished)
                         }
+                        campusMapData(catalog)
                     }
-                    campusMapData(catalog)
+                    show(viewModelOf(repository { answer.await() }, compute, geometry))
+                    fileRunning.await()
+                    answer.complete(ApiResult.Success(SERVER_LIST))
+                    serverStarted.await()
+                    assertFalse(fileFinished.await(), "serwer czekał na koniec liczenia pliku")
+                } finally {
+                    hold.countDown()
                 }
-                viewModelOf(repository { answer.await() }, compute, geometry).show()
-                fileRunning.await()
-                answer.complete(ApiResult.Success(SERVER_LIST))
-                serverStarted.await()
-                assertFalse(runBlocking { fileFinished.await() }, "serwer czekał na koniec liczenia pliku")
-            } finally {
-                hold.countDown()
             }
+        }
+
+    // Liczenie dla pliku: zgłasza start i czeka na zwolnienie; [finished] dostaje prawdę, gdy doczekało, a fałsz, gdy
+    //   przerwano wątek (wtedy przerwanie idzie dalej).
+    private fun holdFile(
+        running: CompletableDeferred<Unit>,
+        held: CountDownLatch,
+        finished: CompletableDeferred<Boolean>,
+    ) {
+        var isDone = false
+        try {
+            running.complete(Unit)
+            held.await()
+            isDone = true
+        } finally {
+            finished.complete(isDone)
+        }
+    }
+
+    // Wątki liczące na czas testu. Na końcu czeka, aż skończą, więc żadne wznowienie z nich nie trafi do
+    //   Dispatchers.Main po resetMain i nie wycieknie do następnego testu.
+    private inline fun withPool(threads: Int, block: (CoroutineDispatcher) -> Unit) {
+        val pool = Executors.newFixedThreadPool(threads)
+        try {
+            pool.asCoroutineDispatcher().use(block)
+        } finally {
+            pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
         }
     }
 
@@ -248,12 +262,9 @@ class MapGeometryFlowTest {
         viewModelFactory { initializer { viewModelOf(repository, compute) } }
 
     // Widoczny ekran: subskrypcja stanu trwa do końca testu, więc źródła działają aż do zamknięcia ViewModelu.
-    private fun CampusMapViewModel.show() {
-        screens += CoroutineScope(Dispatchers.Unconfined).launch { uiState.collect {} }
+    private fun TestScope.show(viewModel: CampusMapViewModel) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
     }
-
-    private fun CampusMapViewModel.waitFor(until: (CampusMapUiState) -> Boolean): CampusMapUiState =
-        runBlocking { uiState.first(until) }
 
     private companion object {
         val SERVER_OUTLINE =
