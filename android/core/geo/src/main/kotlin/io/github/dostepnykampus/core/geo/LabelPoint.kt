@@ -20,9 +20,10 @@ private const val CELL_CENTER = 0.5
  * nad prostokątem tej części (przybliżony „pole of inaccessibility”). Środek ciężkości konturu z dziedzińcem, jak
  * A-1, może wypaść poza kontur, a ten punkt nie. Jeden punkt na kontur daje jeden podpis także przy wielokącie
  * złożonym (US1, reguła 4 wymagań wspólnych).
- * Punkt leży poza konturem albo w dziedzińcu, gdy promień z niego przecina krawędzie wszystkich pierścieni
- * nieparzystą liczbę razy; odległość liczy się na płaszczyźnie, w której stopień długości jest krótszy o cosinus
- * szerokości.
+ *
+ * Punkt leży wewnątrz konturu, gdy promień z niego przecina krawędzie wszystkich pierścieni nieparzystą liczbę razy;
+ * parzysta liczba przecięć znaczy poza konturem albo w dziedzińcu. Odległość liczy się na płaszczyźnie, w której
+ * stopień długości jest krótszy o cosinus szerokości.
  */
 fun labelPoint(area: GeoArea): GeoPoint {
     val polygon = area.parts().maxBy { abs(it.rings.first().signedArea()) }
