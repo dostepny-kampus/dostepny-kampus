@@ -89,8 +89,10 @@ class CampusMapGeometryTest {
     private fun CampusMapViewModel.ready(): CampusMapUiState =
         runBlocking { withTimeoutOrNull(WAIT_MS) { uiState.first { it.mapData != null } } ?: uiState.value }
 
-    // Wiersz: W3, O5, katalog z pliku → geometria liczona w kontekście obliczeń, nie w wątku wywołującym, a stan niesie
-    //   gotowe dane mapy, NFR-11.
+    /**
+     * Wiersz: W3, O5, katalog z pliku → geometria liczona w kontekście obliczeń, nie w wątku wywołującym, a stan niesie
+     *   gotowe dane mapy, NFR-11.
+     */
     @Test
     fun nfr11_geometry_in_compute() {
         Executors.newSingleThreadExecutor { Thread(it, COMPUTE_THREAD) }.asCoroutineDispatcher().use { compute ->
@@ -103,8 +105,10 @@ class CampusMapGeometryTest {
         }
     }
 
-    // Wiersz: W3, jeden katalog, potem zmiana internetu i wyboru „Lista” → ta sama geometria i jedno wywołanie
-    //   funkcji liczącej, nie przeliczenie przy każdej zmianie stanu, NFR-11.
+    /**
+     * Wiersz: W3, jeden katalog, potem zmiana internetu i wyboru „Lista” → ta sama geometria i jedno wywołanie
+     *   funkcji liczącej, nie przeliczenie przy każdej zmianie stanu, NFR-11.
+     */
     @Test
     fun nfr11_geometry_once_catalog() =
         runTest(UnconfinedTestDispatcher()) {
@@ -119,8 +123,10 @@ class CampusMapGeometryTest {
             assertEquals(1, calls.get(), "geometria liczona częściej niż raz na katalog")
         }
 
-    // Wiersz: W3, anulowanie, przerwany wątek liczący katalog z kilkoma konturami → liczenie rzuca przerwanie, nie
-    //   zwraca wyniku (zamknięcie ekranu przerywa pracę CPU), NFR-11.
+    /**
+     * Wiersz: W3, anulowanie, przerwany wątek liczący katalog z kilkoma konturami → liczenie rzuca przerwanie, nie
+     *   zwraca wyniku (zamknięcie ekranu przerywa pracę CPU), NFR-11.
+     */
     @Test
     fun nfr11_interrupt_stops_compute() {
         val features =

@@ -26,8 +26,10 @@ class BuildingCardScreenTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    // Scenariusz (częściowo): przegladanie-mapy.feature: Bez danych o barierach lista i karta budynku
-    //   nic o barierach nie mówią
+    /**
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Bez danych o barierach lista i karta budynku
+     *   nic o barierach nie mówią
+     */
     @Test
     fun us2_7_no_data_says_nothing() {
         val repository =

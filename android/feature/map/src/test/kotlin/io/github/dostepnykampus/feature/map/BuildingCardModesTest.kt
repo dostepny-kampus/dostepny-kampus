@@ -59,9 +59,11 @@ class BuildingCardModesTest {
     private val calls = mutableListOf<String>()
     private val online = MutableStateFlow(true)
 
-    // Wiersz: V2, mała karta: nagłówek, potem „Sprawdź, którędy wejść” jako pierwsza czynność i „Zamknij”; bez
-    //   „Wejścia”, „Wstecz” i „Pokaż budynek na mapie”, US2.8, US3.2, decyzja 115.
-    // Scenariusz (częściowo): przegladanie-mapy.feature: Mała karta nad mapą mówi słowami o wejściach
+    /**
+     * Wiersz: V2, mała karta: nagłówek, potem „Sprawdź, którędy wejść” jako pierwsza czynność i „Zamknij”; bez
+     *   „Wejścia”, „Wstecz” i „Pokaż budynek na mapie”, US2.8, US3.2, decyzja 115.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Mała karta nad mapą mówi słowami o wejściach
+     */
     @Test
     fun us2_8_compact_card() {
         card(CardMode.Compact)
@@ -73,7 +75,7 @@ class BuildingCardModesTest {
         assertOrder(NAME, ROW, CHECK)
     }
 
-    // Wiersz: V2 bez internetu, mała karta: linia „Bez internetu” nad przyciskami, NFR-10, US2.8, decyzja 115.
+    /** Wiersz: V2 bez internetu, mała karta: linia „Bez internetu” nad przyciskami, NFR-10, US2.8, decyzja 115. */
     @Test
     fun nfr10_offline_above_compact() {
         online.value = false
@@ -81,8 +83,10 @@ class BuildingCardModesTest {
         assertOrder("Bez internetu", CHECK, CLOSE)
     }
 
-    // Wiersz: V2, pełny ekran: „Sprawdź, którędy wejść” w treści pod nagłówkiem, pierwsza czynność, bez
-    //   przypiętego pasa, potem grupa „Wejścia” jak dziś; „Pokaż budynek na mapie” tylko od razu, US3.2, US2.9.
+    /**
+     * Wiersz: V2, pełny ekran: „Sprawdź, którędy wejść” w treści pod nagłówkiem, pierwsza czynność, bez
+     *   przypiętego pasa, potem grupa „Wejścia” jak dziś; „Pokaż budynek na mapie” tylko od razu, US3.2, US2.9.
+     */
     @Test
     fun us3_2_check_first_in_content() {
         card(CardMode.Direct)
@@ -98,8 +102,10 @@ class BuildingCardModesTest {
         compose.onNodeWithText(SHOW).assertDoesNotExist()
     }
 
-    // Wiersz: V2, „Zamknij” → onClose, „Wstecz” → onBack, „Sprawdź…” → onCheckEntrances, „Pokaż budynek na
-    //   mapie” → onShowOnMap, NFR-15, US2.8.
+    /**
+     * Wiersz: V2, „Zamknij” → onClose, „Wstecz” → onBack, „Sprawdź…” → onCheckEntrances, „Pokaż budynek na
+     *   mapie” → onShowOnMap, NFR-15, US2.8.
+     */
     @Test
     fun nfr15_each_action_its_callback() {
         card(CardMode.Compact)
@@ -111,8 +117,10 @@ class BuildingCardModesTest {
         assertEquals(listOf("close", "check", "back", "map"), calls)
     }
 
-    // Wiersz: V2 od razu przy czcionce 200 %: treść i czynności w przewijanej treści, nic przypiętego, NFR-20.
-    // Scenariusz (częściowo): przegladanie-mapy.feature: Z listy przy dużej czcionce opis budynku prowadzi do mapy
+    /**
+     * Wiersz: V2 od razu przy czcionce 200 %: treść i czynności w przewijanej treści, nic przypiętego, NFR-20.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Z listy przy dużej czcionce opis budynku prowadzi do mapy
+     */
     @Test
     @Config(fontScale = 2f)
     fun nfr20_large_font_all_scrolls() {
@@ -125,9 +133,11 @@ class BuildingCardModesTest {
     private fun reportButton(name: String) =
         compose.onNode(hasClickAction() and hasContentDescription("$REPORT: »$name«"))
 
-    // Wiersz: V2, pełny ekran (rozwinięty i od razu): przy każdym wejściu, nie tylko zalecanym, „Zgłoś barierę
-    //   przy wejściu” pod opisem wejścia, w przewijanej treści; TalkBack czyta „Zgłoś barierę przy wejściu:
-    //   »nazwa wejścia«”, także dla wejścia bez nazwy, US4.6, NFR-18, WCAG 2.5.3.
+    /**
+     * Wiersz: V2, pełny ekran (rozwinięty i od razu): przy każdym wejściu, nie tylko zalecanym, „Zgłoś barierę
+     *   przy wejściu” pod opisem wejścia, w przewijanej treści; TalkBack czyta „Zgłoś barierę przy wejściu:
+     *   »nazwa wejścia«”, także dla wejścia bez nazwy, US4.6, NFR-18, WCAG 2.5.3.
+     */
     @Test
     fun us4_6_report_at_each_entrance() {
         card(CardMode.Direct)
@@ -144,8 +154,10 @@ class BuildingCardModesTest {
         }
     }
 
-    // Wiersz: V2, dotknięcie „Zgłoś barierę przy wejściu” przy wejściu → onReportEntrance z identyfikatorem
-    //   dokładnie tego wejścia, US4.6.
+    /**
+     * Wiersz: V2, dotknięcie „Zgłoś barierę przy wejściu” przy wejściu → onReportEntrance z identyfikatorem
+     *   dokładnie tego wejścia, US4.6.
+     */
     @Test
     fun us4_6_report_passes_entrance() {
         card(CardMode.Expanded)
@@ -153,8 +165,10 @@ class BuildingCardModesTest {
         assertEquals(ENTRANCES.map { (_, id) -> "report $id" }, calls)
     }
 
-    // Wiersz: V2, mała karta nie ma listy wejść, więc nie ma „Zgłoś barierę przy wejściu”; pełny ekran ma, US4.6,
-    //   decyzja 115.
+    /**
+     * Wiersz: V2, mała karta nie ma listy wejść, więc nie ma „Zgłoś barierę przy wejściu”; pełny ekran ma, US4.6,
+     *   decyzja 115.
+     */
     @Test
     fun us4_6_compact_has_no_report() {
         card(CardMode.Direct)
@@ -164,9 +178,11 @@ class BuildingCardModesTest {
         compose.onAllNodes(hasContentDescription(REPORT, substring = true)).assertCountEquals(0)
     }
 
-    // Wiersz: V2 pełny ekran: „Pokaż wejście na mapie” tylko przy wejściu zalecanym, pod jego opisem, w przewijanej
-    //   treści; TalkBack czyta „Pokaż wejście na mapie: »nazwa wejścia«”; dotknięcie → onShowEntrance z id tego
-    //   wejścia, US3.3, US2.1, BR-25, NFR-18.
+    /**
+     * Wiersz: V2 pełny ekran: „Pokaż wejście na mapie” tylko przy wejściu zalecanym, pod jego opisem, w przewijanej
+     *   treści; TalkBack czyta „Pokaż wejście na mapie: »nazwa wejścia«”; dotknięcie → onShowEntrance z id tego
+     *   wejścia, US3.3, US2.1, BR-25, NFR-18.
+     */
     @Test
     fun us3_3_show_recommended_only() {
         card(CardMode.Direct)
@@ -183,8 +199,10 @@ class BuildingCardModesTest {
         assertEquals(listOf("show node/1"), calls)
     }
 
-    // Wiersz: V2 pełny ekran budynku bez wejścia zalecanego (każde „Niedostępne”) → bez „Pokaż wejście na mapie”,
-    //   US3.3, BR-25.
+    /**
+     * Wiersz: V2 pełny ekran budynku bez wejścia zalecanego (każde „Niedostępne”) → bez „Pokaż wejście na mapie”,
+     *   US3.3, BR-25.
+     */
     @Test
     fun us3_3_no_show_no_recommended() {
         card(CardMode.Direct)
@@ -194,8 +212,10 @@ class BuildingCardModesTest {
         compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(0)
     }
 
-    // Wiersz: V2, mała karta nie ma listy wejść, więc nie ma „Pokaż wejście na mapie”; pełny ekran ma, US3.3,
-    //   decyzja 115.
+    /**
+     * Wiersz: V2, mała karta nie ma listy wejść, więc nie ma „Pokaż wejście na mapie”; pełny ekran ma, US3.3,
+     *   decyzja 115.
+     */
     @Test
     fun us3_3_compact_has_no_show() {
         card(CardMode.Direct)

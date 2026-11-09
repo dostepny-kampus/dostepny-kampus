@@ -49,8 +49,10 @@ class EntranceAssessmentTextTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    // Wiersz: V2, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
-    //   nad grupą „Wejścia”, US17.3, BR-24, import.
+    /**
+     * Wiersz: V2, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
+     *   nad grupą „Wejścia”, US17.3, BR-24, import.
+     */
     @Test
     fun us17_3_v2_common_row_import() {
         showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, IMPORT_DAY)))
@@ -59,8 +61,10 @@ class EntranceAssessmentTextTest {
         assertTrue(top(IMPORT_TEXT) < top(GROUP_V2))
     }
 
-    // Wiersz: V2, wszystkie wejścia z obchodu z tym samym dniem → jeden wiersz „Sprawdzone na miejscu 5.3.2026”
-    //   (bez zer wiodących, bez „Z map i opisów”), US17.3, BR-24, obchód.
+    /**
+     * Wiersz: V2, wszystkie wejścia z obchodu z tym samym dniem → jeden wiersz „Sprawdzone na miejscu 5.3.2026”
+     *   (bez zer wiodących, bez „Z map i opisów”), US17.3, BR-24, obchód.
+     */
     @Test
     fun us17_3_v2_row_walkthrough() {
         showCard(listOf(entrance(MAIN, WALKTHROUGH, WALK_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
@@ -70,23 +74,27 @@ class EntranceAssessmentTextTest {
         assertTrue(top(WALK_TEXT) < top(GROUP_V2))
     }
 
-    // Wiersz: V2, wejścia z różnym źródłem → napis przy każdym wejściu, nad grupą go nie ma, US17.3, BR-24.
+    /** Wiersz: V2, wejścia z różnym źródłem → napis przy każdym wejściu, nad grupą go nie ma, US17.3, BR-24. */
     @Test
     fun us17_3_v2_per_entrance() {
         showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
         assertPerEntrance(first = IMPORT_TEXT, second = WALK_TEXT, group = GROUP_V2)
     }
 
-    // Wiersz: V2, wejścia z tym samym źródłem i różnym dniem → napis przy każdym wejściu, nad grupą go nie ma,
-    //   US17.3, BR-24, import.
+    /**
+     * Wiersz: V2, wejścia z tym samym źródłem i różnym dniem → napis przy każdym wejściu, nad grupą go nie ma,
+     *   US17.3, BR-24, import.
+     */
     @Test
     fun us17_3_v2_per_day() {
         showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, NEXT_DAY)))
         assertPerEntrance(first = IMPORT_TEXT, second = NEXT_TEXT, group = GROUP_V2)
     }
 
-    // Wiersz: V3, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
-    //   nad wejściami, US17.3, BR-24, import.
+    /**
+     * Wiersz: V3, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
+     *   nad wejściami, US17.3, BR-24, import.
+     */
     @Test
     fun us17_3_v3_common_row() {
         showVisit(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, IMPORT_DAY)))
@@ -95,14 +103,14 @@ class EntranceAssessmentTextTest {
         assertTrue(top(IMPORT_TEXT) < top(GROUP_V3))
     }
 
-    // Wiersz: V3, wejścia z różnym źródłem → napis przy każdym wejściu, nad wejściami go nie ma, US17.3, BR-24.
+    /** Wiersz: V3, wejścia z różnym źródłem → napis przy każdym wejściu, nad wejściami go nie ma, US17.3, BR-24. */
     @Test
     fun us17_3_v3_per_entrance() {
         showVisit(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
         assertPerEntrance(first = IMPORT_TEXT, second = WALK_TEXT, group = GROUP_V3)
     }
 
-    // Wiersz: V2, wejścia z pliku bez dnia i źródła → brak wiersza i brak jakiejkolwiek daty, US17.3, BR-24.
+    /** Wiersz: V2, wejścia z pliku bez dnia i źródła → brak wiersza i brak jakiejkolwiek daty, US17.3, BR-24. */
     @Test
     fun us17_3_v2_file_has_no_date() {
         showCard(emptyList())
@@ -110,7 +118,7 @@ class EntranceAssessmentTextTest {
         listOf("stan z", "Sprawdzone").forEach { compose.onNodeWithText(it, substring = true).assertDoesNotExist() }
     }
 
-    // Wiersz: V3, wejścia z pliku → brak daty, zdanie „brak danych o wejściach” bez „z datą”, US17.3, PW-10.
+    /** Wiersz: V3, wejścia z pliku → brak daty, zdanie „brak danych o wejściach” bez „z datą”, US17.3, PW-10. */
     @Test
     fun us17_3_v3_file_has_no_date() {
         showVisit(emptyList())
