@@ -1,0 +1,27 @@
+android:
+  - changed-files:
+      - any-glob-to-any-file: "android/**"
+
+backend:
+  - changed-files:
+      - any-glob-to-any-file: "backend/**"
+
+api:
+  - changed-files:
+      - any-glob-to-any-file: "api/**"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: ".github/**"
+
+test:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/src/test/**"
+          - "**/src/androidTest/**"
+          - "specs/**"
+          - ".github/scripts/*-test.sh"
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: "docs/**"
