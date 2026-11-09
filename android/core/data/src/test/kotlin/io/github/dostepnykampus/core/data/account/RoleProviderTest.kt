@@ -3,6 +3,8 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
+@file:OptIn(TymczasoweRole::class)
+
 package io.github.dostepnykampus.core.data.account
 
 import io.github.dostepnykampus.core.model.Account
