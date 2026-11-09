@@ -36,12 +36,10 @@ fun interface ReportSaver {
 @HiltViewModel
 class ReportFormViewModel
     @Inject
-    constructor(
-        private val draft: ReportDraft = ReportDraft(),
-        private val saver: ReportSaver,
-    ) : ViewModel() {
+    constructor(private val saver: ReportSaver) : ViewModel() {
         private val state = MutableStateFlow<ReportUiState?>(null)
         private var initial: ReportForm? = null
+        private var draft: ReportDraft? = null
 
         /** Stan ekranu; `null`, dopóki C1 nie poda miejsca. */
         val uiState: StateFlow<ReportUiState?> = state.asStateFlow()
@@ -50,11 +48,15 @@ class ReportFormViewModel
          * Otwiera nowy formularz albo edycję; drugie wywołanie nie kasuje wpisanych pól. Po „Zmień miejsce” bierze
          * odłożone pola z nowym miejscem z [form] (US7.4).
          */
-        fun open(form: ReportForm) {
-            if (state.value == null) {
+        fun open(form: ReportForm, draft: ReportDraft? = null) {
+            val current = state.value
+            if (current == null) {
                 initial = form
-                val kept = draft.take()
-                state.value = kept?.copy(form = kept.form.movedTo(form.place)) ?: ReportUiState(form = form)
+                this.draft = draft
+                keep(draft?.restore(form) ?: ReportUiState(form = form))
+            } else if (this.draft !== draft) {
+                this.draft = draft
+                if (current.stage != ReportStage.LEFT && current.stage != ReportStage.SAVED) draft?.keep(current)
             }
         }
 
@@ -62,15 +64,13 @@ class ReportFormViewModel
         fun changePlace() {
             val current = state.value ?: return
             if (current.isSavingOrSaved) return
-            draft.keep(current.copy(stage = ReportStage.EDITING))
             state.value = current.copy(stage = ReportStage.LEFT)
         }
 
         /** Zmiana jednego pola formularza (US7.1–US7.4). */
         fun edit(change: ReportEdit) {
-            state.update { current ->
-                if (current == null || current.isSavingOrSaved) current else current.edited(change)
-            }
+            val current = state.value ?: return
+            if (!current.isSavingOrSaved) keep(current.edited(change))
         }
 
         /** „Zapisz”: przy brakach pokazuje je, inaczej zapisuje w kolejce (US7.1, NFR-5). */
@@ -78,7 +78,7 @@ class ReportFormViewModel
             val current = state.value ?: return
             if (current.isSavingOrSaved) return
             when (val check = current.form.check()) {
-                is ReportCheck.Incomplete -> state.value = current.copy(errors = check.errors, isSaveAttempted = true)
+                is ReportCheck.Incomplete -> keep(current.copy(errors = check.errors, isSaveAttempted = true))
                 is ReportCheck.Complete -> store(current, check.content)
             }
         }
@@ -99,10 +99,16 @@ class ReportFormViewModel
         }
 
         private fun moveToWhileEditable(next: (ReportUiState) -> ReportStage) {
-            // W czasie zapisu i po nim etap ustala tylko zapis, więc nie ma dwóch zgłoszeń.
-            state.update { current ->
-                if (current == null || current.isSavingOrSaved) current else current.copy(stage = next(current))
-            }
+            val current = state.value ?: return
+            if (current.isSavingOrSaved) return
+            val stage = next(current)
+            if (stage == ReportStage.LEFT) draft?.clear()
+            state.value = current.copy(stage = stage)
+        }
+
+        private fun keep(current: ReportUiState) {
+            draft?.keep(current)
+            state.value = current
         }
 
         private fun store(current: ReportUiState, content: SubmissionContent) {
@@ -111,6 +117,7 @@ class ReportFormViewModel
                 val stage =
                     try {
                         saver.save(content, current.photos, current.form.editedSubmission)
+                        draft?.clear()
                         ReportStage.SAVED
                     } catch (_: IOException) {
                         ReportStage.SAVE_FAILED

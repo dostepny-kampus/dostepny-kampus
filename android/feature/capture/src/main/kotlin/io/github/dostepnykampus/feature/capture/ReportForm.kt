@@ -14,6 +14,7 @@ import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.model.SubmissionKind
+import kotlinx.serialization.Serializable
 
 /**
  * Miejsce bariery z pomiaru C1, pokazywane na górze formularza C2 (US7.4, US6.1).
@@ -53,12 +54,14 @@ data class PlanFloors(val items: List<PlanFloor>)
 data class PlanFloor(val id: String, val label: String)
 
 /** Piętro bariery w formularzu C2 (US7.2, BR-G1). */
+@Serializable
 sealed interface ReportFloor {
     /**
      * Piętro z etykiet planu PWr w budynku szczegółowym.
      *
      * @property floorId identyfikator piętra z danych PWr
      */
+    @Serializable
     data class Planned(val floorId: String) : ReportFloor
 
     /**
@@ -67,6 +70,7 @@ sealed interface ReportFloor {
      * @property number numer piętra
      * @property isMezzanine czy to półpiętro
      */
+    @Serializable
     data class Numbered(val number: Int, val isMezzanine: Boolean) : ReportFloor
 }
 

@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
@@ -34,7 +35,6 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.TopLevel
-import io.github.dostepnykampus.app.navigation.hasNavigationBar
 import io.github.dostepnykampus.app.navigation.selectedItem
 import io.github.dostepnykampus.app.navigation.startBackStack
 import io.github.dostepnykampus.core.data.account.RoleProvider
@@ -44,6 +44,9 @@ import io.github.dostepnykampus.core.designsystem.BottomBarItems
 import io.github.dostepnykampus.core.designsystem.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.SideBar
 import io.github.dostepnykampus.core.model.hasStaffRole
+import io.github.dostepnykampus.feature.capture.ReportDraft
+import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 
 private val WideWindow = WIDE_WINDOW_DP.dp
 
@@ -72,16 +75,18 @@ fun AppShell(
 ) {
     val backStack = rememberNavBackStack(elements = startBackStack(firstLaunch).toTypedArray())
     val restarts = rememberSaveable(saver = RestartsSaver) { SnapshotStateList() }
+    val draft = rememberCaptureDraft(backStack.any(::isCaptureRoute))
     val currentOnFirstHelpLeft by rememberUpdatedState(onFirstHelpLeft)
     val currentOnChooseMap by rememberUpdatedState(onChooseMap)
     val navigator =
-        remember(backStack, roles, restarts) {
+        remember(backStack, roles, restarts, draft) {
             AppNavigator(
                 backStack = backStack,
                 roles = roles,
                 onFirstHelpLeft = { currentOnFirstHelpLeft() },
                 restarts = restarts,
                 onChooseMap = { currentOnChooseMap() },
+                reportDraft = draft,
             )
         }
     val items = bottomBarItems(hasWork = roles.currentAccount().hasStaffRole)
@@ -101,11 +106,10 @@ fun AppShell(
         )
     BoxWithConstraints(modifier = modifier) {
         val isWide = maxWidth >= WideWindow
-        val current = backStack.last()
+        val selected = selectedItem(navigator.current)?.ordinal
         NavigationSuiteScaffoldLayout(
             navigationSuite = {
-                if (hasNavigationBar(current)) {
-                    val selected = selectedItem(current)?.ordinal ?: -1
+                if (selected != null) {
                     val onSelect = { index: Int -> navigator.open(TopLevel.entries[index]) }
                     if (isWide) SideBar(items, selected, onSelect) else BottomBar(items, selected, onSelect)
                 }
@@ -114,7 +118,7 @@ fun AppShell(
             content = {
                 val barInsets =
                     when {
-                        !hasNavigationBar(current) -> WindowInsets(0)
+                        selected == null -> WindowInsets(0)
                         isWide -> NavigationRailDefaults.windowInsets.only(WindowInsetsSides.Start)
                         else -> NavigationBarDefaults.windowInsets.only(WindowInsetsSides.Bottom)
                     }
@@ -128,6 +132,12 @@ fun AppShell(
         )
     }
 }
+
+@Composable
+private fun rememberCaptureDraft(active: Boolean): ReportDraft? =
+    if (active) rememberSerializable { ReportDraft() } else null
+
+private fun isCaptureRoute(route: NavKey): Boolean = route == MeasureRoute || route is ReportFormRoute
 
 @Composable
 private fun bottomBarItems(hasWork: Boolean): BottomBarItems {

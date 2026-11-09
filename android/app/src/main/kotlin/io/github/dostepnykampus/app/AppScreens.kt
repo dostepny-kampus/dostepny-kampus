@@ -111,7 +111,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is EntrancesRoute -> Entrances(route.symbol)
         is ReportRoute -> QuickReport(route)
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
-        is ReportFormRoute -> ReportFormScreen(route, onLeave = { back() }, onSave = { reportSaved() })
+        is ReportFormRoute -> ReportFormScreen(route, { back() }, onSave = { reportSaved() }, draft = reportDraft)
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute, AccountRoute -> Account(route)
         is MapRoute -> HiltMapScreen(focus = route.focus)

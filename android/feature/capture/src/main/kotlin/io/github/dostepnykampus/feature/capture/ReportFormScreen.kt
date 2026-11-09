@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.map
  * @param onSave zgłoszenie zapisane w kolejce (NFR-5); dalej C3
  * @param modifier wymiary nadane przez aplikację
  * @param viewModel formularz; w aplikacji z grafu Hilt, w testach z zapisem testowym
+ * @param draft szkic współdzielony z C1 przez nawigację
  */
 @Composable
 fun ReportFormScreen(
@@ -36,8 +37,9 @@ fun ReportFormScreen(
     onSave: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ReportFormViewModel = hiltViewModel(),
+    draft: ReportDraft? = null,
 ) {
-    SideEffect { viewModel.open(ReportForm(place = route.place())) }
+    SideEffect { viewModel.open(ReportForm(place = route.place()), draft) }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val leave by rememberUpdatedState(onLeave)
     val save by rememberUpdatedState(onSave)

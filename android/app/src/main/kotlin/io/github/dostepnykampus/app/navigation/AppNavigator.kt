@@ -11,6 +11,7 @@ import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.core.model.isSignedIn
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
+import io.github.dostepnykampus.feature.capture.ReportDraft
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
@@ -138,6 +139,7 @@ class AppNavigator(
     onFirstHelpLeft: () -> Unit = {},
     restarts: MutableList<Int> = mutableListOf(),
     private val onChooseMap: () -> Unit = {},
+    internal val reportDraft: ReportDraft? = null,
 ) : NavigationHistory(backStack, onFirstHelpLeft, restarts) {
     internal val isSignedIn: Boolean
         get() = roles.currentAccount().isSignedIn

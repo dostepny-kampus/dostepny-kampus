@@ -117,7 +117,6 @@ class MeasureViewModel
         private val satellites: SatelliteSource,
         private val clock: ElapsedClock,
         private val catalog: BuildingCatalogRepository,
-        private val draft: ReportDraft = ReportDraft(),
     ) : ViewModel() {
         private val result = MutableStateFlow(Run(attempt = 0, finished = null))
         private val catalogBuildings = MutableStateFlow(emptyList<Building>())
@@ -154,11 +153,6 @@ class MeasureViewModel
         /** „Poza budynkiem”: zgłoszenie bez budynku i piętra (BR-G2). */
         fun outside() {
             choose { PlaceChoice.Outside }
-        }
-
-        // Wyjście z C1 kończy zgłoszenie, więc pola odłożone przez „Zmień miejsce” na C2 już nie wrócą (US7.4).
-        override fun onCleared() {
-            draft.clear()
         }
 
         private fun choose(change: (PlaceChoice) -> PlaceChoice?) {
