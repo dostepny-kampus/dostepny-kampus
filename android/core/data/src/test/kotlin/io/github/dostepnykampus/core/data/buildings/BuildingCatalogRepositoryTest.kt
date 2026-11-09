@@ -55,8 +55,10 @@ class BuildingCatalogRepositoryTest {
         assertEquals(1, reads.get())
     }
 
-    // Dwa wywołania naraz: pierwsze czeka na odczyt pliku wstrzymany w kolejce, drugie rusza, zanim odczyt się
-    //   zacznie → jeden odczyt pliku i ten sam katalog dla obu, US1.
+    /**
+     * Dwa wywołania naraz: pierwsze czeka na odczyt pliku wstrzymany w kolejce, drugie rusza, zanim odczyt się
+     *   zacznie → jeden odczyt pliku i ten sam katalog dla obu, US1.
+     */
     @Test
     fun us1_parallel_calls_read_once() {
         val held = ArrayDeque<Runnable>()
@@ -90,7 +92,7 @@ class BuildingCatalogRepositoryTest {
         assertEquals(visitorTypes, catalog.entrances.mapNotNull { it.type }.toSet())
     }
 
-    // Wiersz: wejścia karty w aplikacji pochodzą z `GET /buildings/{symbol}` z dniem i źródłem oznaczenia, US17.3.
+    /** Wiersz: wejścia karty w aplikacji pochodzą z `GET /buildings/{symbol}` z dniem i źródłem oznaczenia, US17.3. */
     @Test
     fun us17_3_app_asks_server() {
         val found =

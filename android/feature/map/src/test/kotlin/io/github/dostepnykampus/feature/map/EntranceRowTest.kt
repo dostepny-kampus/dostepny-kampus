@@ -32,9 +32,11 @@ class EntranceRowTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    // Wiersz: V2, wiersz o wejściach pod nagłówkiem, nad grupą „Wejścia”, słowami: „Wejście dostępne”, „Brak
-    //   wejścia dostępnego”, gdy każde „Niedostępne”, „Brak danych o wejściach”, gdy żadne nie jest „Dostępne”,
-    //   a choć jedno ma „Brak danych”, US2.8, US2.1, US3.1, NFR-21.
+    /**
+     * Wiersz: V2, wiersz o wejściach pod nagłówkiem, nad grupą „Wejścia”, słowami: „Wejście dostępne”, „Brak
+     *   wejścia dostępnego”, gdy każde „Niedostępne”, „Brak danych o wejściach”, gdy żadne nie jest „Dostępne”,
+     *   a choć jedno ma „Brak danych”, US2.8, US2.1, US3.1, NFR-21.
+     */
     @Test
     fun us2_8_row_says_entrance_state() {
         val shown = mutableStateOf("A-1")

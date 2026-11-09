@@ -53,7 +53,7 @@ class LocationPermissionTest {
         compose.onNodeWithText("Pomiar").assertIsDisplayed()
     }
 
-    // Po odmowie „Otwórz ustawienia” zamiast ponownego pytania.
+    /** Po odmowie „Otwórz ustawienia” zamiast ponownego pytania. */
     @Test
     fun nfr27_denied_opens_settings() {
         var opened = 0

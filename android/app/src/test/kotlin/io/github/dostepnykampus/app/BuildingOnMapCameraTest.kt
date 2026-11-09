@@ -63,7 +63,6 @@ private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
 private val SQUARE = arrayOf(0 to 0, 4 to 0, 4 to 4, 0 to 4)
 
-// Litera U o szerokości 400 m: grube ramiona i cienka podstawa, więc środek obrysu leży poza obszarem podpisu.
 private val U_SHAPE = arrayOf(0 to 0, 40 to 0, 40 to 20, 30 to 20, 30 to 4, 10 to 4, 10 to 20, 0 to 20)
 
 private fun building(symbol: String, longitude: Double, latitude: Double, corners: Array<Pair<Int, Int>>): String {
@@ -75,7 +74,6 @@ private fun building(symbol: String, longitude: Double, latitude: Double, corner
     return """{"type":"Feature","properties":{$properties},"geometry":{"type":"Polygon","coordinates":[$ring]}}"""
 }
 
-// A-1 w środku pierwszego widoku, T-9 i C-13 po ponad kilometrze od niego, U-1 w kształcie litery U.
 private val BUILDINGS =
     listOf(
         building(symbol = "A-1", longitude = 17.05, latitude = 51.11, corners = SQUARE),
@@ -93,6 +91,20 @@ private fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latit
  * „Pokaż budynek na mapie” na V2 przez prawdziwe ekrany aplikacji do kamery, którą dostaje widok mapy (podróbka):
  * budynek jest widoczny, a dalsze przesuwanie i obrót zostają przy osobie (US2.9, NFR-22, NFR-53). Katalog
  * „Budynek testowy” jest syntetyczny (nie dane PWr).
+ *
+ * `U_SHAPE`: Litera U o szerokości 400 m: grube ramiona i cienka podstawa, więc środek obrysu leży poza obszarem
+ * podpisu.
+ *
+ * `BUILDINGS`: A-1 w środku pierwszego widoku, T-9 i C-13 po ponad kilometrze od niego, U-1 w kształcie litery U.
+ *
+ * Jak natywna mapa po ruchu: bezczynność z otrzymaną kamerą, gdy test o to prosi.
+ *
+ * `labelPointOf`: Punkt podpisu budynku z danych, które dostała mapa (jeden `labelPoint` na kontur).
+ *
+ * `shows`: Czy [point] leży w widocznej części mapy: środek kamery stoi w środku części niezasłoniętej (Merkator).
+ *
+ * `showOnMap`: Od listy V1 przez V2 otwarte od razu (TalkBack) do „Pokaż budynek na mapie”; przed poleceniem budynku
+ * nie widać.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -113,7 +125,6 @@ class BuildingOnMapCameraTest {
             shown += data to camera
             touch = onBuildingsTouch
             density = LocalDensity.current.density
-            // Jak natywna mapa po ruchu: bezczynność z otrzymaną kamerą, gdy test o to prosi.
             SideEffect { if (isIdleReported) onCameraIdle(camera) }
             Box(modifier.onSizeChanged { mapSize = it })
         }
@@ -169,14 +180,12 @@ class BuildingOnMapCameraTest {
             compose.waitForIdle()
         }
 
-    // Punkt podpisu budynku z danych, które dostała mapa (jeden `labelPoint` na kontur).
     private fun CampusMapData.labelPointOf(symbol: String): GeoPoint {
         val feature = labelPoints.split("""{"type":"Feature"""").first { """"label":"$symbol"""" in it }
         val (longitude, latitude) = Regex("""\[(-?[\d.E-]+),(-?[\d.E-]+)""").find(feature)!!.destructured
         return GeoPoint(longitude = longitude.toDouble(), latitude = latitude.toDouble())
     }
 
-    // Czy [point] leży w widocznej części mapy: środek kamery stoi w środku części niezasłoniętej (Merkator).
     private fun MapCamera.shows(point: GeoPoint): Boolean {
         val world = WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom)
         val dx = (point.longitude - center.longitude) / FULL_TURN_DEGREES * world
@@ -184,7 +193,6 @@ class BuildingOnMapCameraTest {
         return abs(dx) <= mapSize.width / density / 2 && abs(dy) <= (mapSize.height - bottomInset) / density / 2
     }
 
-    // Od listy V1 przez V2 otwarte od razu (TalkBack) do „Pokaż budynek na mapie”; przed poleceniem budynku nie widać.
     private fun showOnMap(symbol: String) {
         val (data, before) = shown.last()
         assertFalse("$symbol widać już przed poleceniem", before.shows(data.labelPointOf(symbol)))
@@ -201,14 +209,14 @@ class BuildingOnMapCameraTest {
         assertTrue("powiększenie mniejsze niż startowe: $camera", camera.zoom >= shown.first().second.zoom)
     }
 
-    // Wiersz: K1, V2 „Pokaż budynek na mapie” → kamera mapy widzi budynek daleko od startu, US2.9, NFR-19, NFR-20.
+    /** Wiersz: K1, V2 „Pokaż budynek na mapie” → kamera mapy widzi budynek daleko od startu, US2.9, NFR-19, NFR-20. */
     @Test
     fun us2_9_far_building_in_view() {
         showOnMap("T-9")
         assertShown("T-9")
     }
 
-    // Wiersz: K2, mapa przesunięta strzałkami → „Pokaż budynek na mapie” dla A-1 wraca do budynku, US2.9, NFR-53.
+    /** Wiersz: K2, mapa przesunięta strzałkami → „Pokaż budynek na mapie” dla A-1 wraca do budynku, US2.9, NFR-53. */
     @Test
     fun us2_9_a1_after_arrows() {
         pan("prawo", times = 4)
@@ -216,14 +224,14 @@ class BuildingOnMapCameraTest {
         assertShown("A-1")
     }
 
-    // Wiersz: K1, budynek w kształcie litery U → kamera widzi punkt podpisu, nie środek obrysu, US2.9.
+    /** Wiersz: K1, budynek w kształcie litery U → kamera widzi punkt podpisu, nie środek obrysu, US2.9. */
     @Test
     fun us2_9_u_shape_label_point() {
         showOnMap("U-1")
         assertShown("U-1")
     }
 
-    // Wiersz: K3 (strażnik), mała karta V2 i „Wstecz” → kamera sprzed karty, decyzja 83.
+    /** Wiersz: K3 (strażnik), mała karta V2 i „Wstecz” → kamera sprzed karty, decyzja 83. */
     @Test
     fun us2_8_back_keeps_view() {
         pan("prawo", times = 2)
@@ -235,7 +243,7 @@ class BuildingOnMapCameraTest {
         assertEquals(before, shown.last().second)
     }
 
-    // Wiersz: K4, po „Pokaż budynek na mapie” strzałka przesuwa mapę i fokus jej nie cofa, US2.9, NFR-53.
+    /** Wiersz: K4, po „Pokaż budynek na mapie” strzałka przesuwa mapę i fokus jej nie cofa, US2.9, NFR-53. */
     @Test
     fun us2_9_pan_after_show() {
         showOnMap("T-9")
@@ -246,7 +254,7 @@ class BuildingOnMapCameraTest {
         assertEquals(before.zoom, after.zoom, 0.0)
     }
 
-    // Wiersz: K5, po „Pokaż budynek na mapie” obrót ekranu → ten sam obszar, nie start, NFR-22.
+    /** Wiersz: K5, po „Pokaż budynek na mapie” obrót ekranu → ten sam obszar, nie start, NFR-22. */
     @Test
     fun nfr22_show_survives_rotation() {
         showOnMap("T-9")
@@ -257,7 +265,7 @@ class BuildingOnMapCameraTest {
         assertEquals(before, shown.last().second)
     }
 
-    // Wiersz: K6, drugie „Pokaż budynek na mapie” po przesunięciu mapy → kamera na drugim budynku, US2.9.
+    /** Wiersz: K6, drugie „Pokaż budynek na mapie” po przesunięciu mapy → kamera na drugim budynku, US2.9. */
     @Test
     fun us2_9_second_show_moves() {
         showOnMap("T-9")
@@ -266,7 +274,7 @@ class BuildingOnMapCameraTest {
         assertShown("C-13")
     }
 
-    // Wiersz: K6, to samo „Pokaż budynek na mapie” po przesunięciu mapy strzałkami → kamera znów na budynku, US2.9.
+    /** Wiersz: K6, to samo „Pokaż budynek na mapie” po przesunięciu mapy strzałkami → kamera znów na budynku, US2.9. */
     @Test
     fun us2_9_same_show_again() {
         showOnMap("T-9")
@@ -275,8 +283,10 @@ class BuildingOnMapCameraTest {
         assertShown("T-9")
     }
 
-    // Wiersz: K3, po „Pokaż” i bezczynności kamery mała karta innego budynku i „Wstecz”
-    // → widok jak przed kartą, decyzja 83.
+    /**
+     * Wiersz: K3, po „Pokaż” i bezczynności kamery mała karta innego budynku i „Wstecz”
+     * → widok jak przed kartą, decyzja 83.
+     */
     @Test
     fun us2_8_back_after_show() {
         isIdleReported = true

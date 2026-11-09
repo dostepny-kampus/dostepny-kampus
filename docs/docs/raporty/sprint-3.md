@@ -31,6 +31,24 @@ Cel pochodzi z planu sprintów w raporcie [Tydzień 2](tydzien-2.md), sekcja „
 
 Najważniejszy wynik: aplikacja bierze kontury i wejścia z serwera, a bez sieci wraca do pliku i do kopii w bazie z datą pobrania. Zgłoszenie z telefonu przechodzi przez kolejkę lokalną do serwera, który pilnuje wersji i przy konflikcie zwraca 409, a zdjęcia leżą w magazynie RustFS. Po powrocie sieci kolejkę wysyła zadanie WorkManagera.
 
+### Dopisek z 09.11.2026: stan na koniec sprintu
+
+Stan ustalono z kodu, nawigacji i testów w [migawce końcowej Sprintu 3][s3-snapshot]. Dostępność oznacza, że funkcja była podpięta do aplikacji w tej migawce. Historycznej aplikacji nie uruchamiano ponownie na telefonie.
+
+| Wiersz tabeli wyników | Stan w aplikacji | Dowód i zakres |
+| --- | --- | --- |
+| Budynki na serwerze | dostępne w aplikacji: katalog i karta. W kodzie, niedostępne: podpowiedź po pomiarze, bo C1 nie miał wejścia z aplikacji | [Kontroler][s3-buildings] korzystał z [zapytań do bazy][s3-query]. Lista zwracała kontury, karta także wejścia, a osobna operacja API wskazywała najbliższy budynek w granicach 50 m. |
+| Import budynków | dostępne w aplikacji przez katalog i kartę | [Migracja Flyway][s3-import] ładowała kontury i wejścia z pliku do bazy serwera. Aplikacja widziała wynik importu przez API. |
+| Zgłoszenia z wersją | w kodzie, niedostępne: V4 był zaślepką, C2 bez trasy | [Serwer przyjmował i odczytywał zgłoszenia][s3-submissions]. [Zapis edycji][s3-version] sprawdzał wersję, a [konflikt][s3-conflict] dawał 409. [Nawigacja aplikacji][s3-routes] nie udostępniała zapisu ani edycji z telefonu. |
+| Zdjęcia | w kodzie, niedostępne: brak dostępnego formularza ze zdjęciem | [API zdjęć][s3-photos] obsługiwało zapis i odczyt. [Konfiguracja][s3-storage] uruchamiała RustFS. Zaślepka V4 przechodziła między krokami bez fotografowania, a C2 nie był podpięty. |
+| Klient API | dostępne w aplikacji: katalog budynków. W kodzie, niedostępne: klient zgłoszeń, bo V4 i C2 nie wysyłały danych z formularza | [Repozytorium katalogu][s3-catalog] pobierało kontury z API. Gdy serwer nie dawał listy, wybierało kopię w Room, jeśli była dostępna, albo dołączony plik. |
+| Baza lokalna | dostępne w aplikacji: kopia katalogu z datą. W kodzie, niedostępne: kolejka zgłoszeń, bo V4 i C2 nie były podpięte do zapisu | [Migracja Room][s3-room] dodawała kopię katalogu. [DAO kolejki][s3-queue] odczytywało zgłoszenia według czasu zapisu i identyfikatora. |
+| Karta budynku | dostępne w aplikacji: V2 i V3. W kodzie, niedostępne: wysłanie zgłoszenia przy wejściu | [V2 i V3][s3-routes] miały trasy, pobierały [dane wejść][s3-card] i pozwalały wrócić do mapy z wybranym wejściem. [Akcja zgłoszenia przy wejściu][s3-navigation] prowadziła do zaślepki V4 albo do ekranu logowania gościa. |
+| Automatyczna wysyłka | w kodzie, niedostępne: V4 i C2 nie były podpięte do zapisu | [Inicjalizator][s3-start] zarejestrowany w [manifeście][s3-manifest] planował pracę przy uruchomieniu. [Harmonogram][s3-schedule] wymagał sieci, a [worker][s3-worker] mógł ponowić wysyłkę. Z dostępnego formularza nie można było dodać wpisu do kolejki. |
+| Testy na emulatorze | sprawdzane w CI: ścieżki V1, V2 i V3 | [Testy][s3-device] obejmowały wyszukanie budynku, kartę, ekran wejść i przejście z listy do karty. [CI][s3-ci] uruchamiało je na API 26 i 36. Testy nie obejmowały wysłania zgłoszenia. |
+
+Cała ścieżka przesłania zgłoszenia z telefonu była **w kodzie, niedostępna z aplikacji**. Przycisk „Wyślij” w [zaślepce V4][s3-stub] wywoływał [przejście do potwierdzenia][s3-navigation]. Nawigacja potrafiła wyświetlić C1, ale nie miała akcji otwierającej C1 ani przejścia z C1 do C2. Dotyczy to także wierszy o kolejce i automatycznej wysyłce w sekcji 4 oraz zdania o przyjmowaniu zgłoszeń z telefonu w sekcji 3.
+
 ## 2. Repozytorium i CI
 
 Kontrole nadal uruchamiane są według zmienionych katalogów. W Sprincie 3 doszły strażnicy zgodności i architektury.
@@ -142,3 +160,26 @@ Według harmonogramu kursu Sprint 4 obejmuje logikę dziedziny.
 2. Conventional Commits 1.0.0: <https://www.conventionalcommits.org/pl/v1.0.0/>
 
 Dostęp do źródeł: 05.11.2026.
+
+[s3-snapshot]: https://github.com/dostepny-kampus/dostepny-kampus/tree/7e861eba050d2393590aa350f92f31565bca7c9c
+[s3-buildings]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/backend/src/main/java/io/github/dostepnykampus/building/BuildingsController.java#L37-L69
+[s3-import]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/backend/src/main/java/io/github/dostepnykampus/building/OsmBuildings.java#L87-L129
+[s3-submissions]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/backend/src/main/java/io/github/dostepnykampus/barrier/web/SubmissionsController.java#L65-L137
+[s3-version]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/backend/src/main/java/io/github/dostepnykampus/barrier/persistence/JdbcSubmissions.java#L103-L124
+[s3-conflict]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/backend/src/main/java/io/github/dostepnykampus/ProblemResponses.java#L66-L74
+[s3-routes]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/android/app/src/main/kotlin/io/github/dostepnykampus/app/AppScreens.kt#L103-L124
+[s3-photos]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/backend/src/main/java/io/github/dostepnykampus/barrier/SubmissionPhotosController.java#L48-L80
+[s3-storage]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/infra/docker-compose.yml#L20-L32
+[s3-catalog]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/android/core/data/src/main/kotlin/io/github/dostepnykampus/core/data/buildings/BuildingCatalogRepository.kt#L145-L185
+[s3-room]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/android/core/database/src/main/kotlin/io/github/dostepnykampus/core/database/Migrations.kt#L12-L22
+[s3-queue]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/android/core/database/src/main/kotlin/io/github/dostepnykampus/core/database/PendingSubmissionDao.kt#L34-L41
+[s3-card]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/android/feature/map/src/main/kotlin/io/github/dostepnykampus/feature/map/BuildingCardViewModel.kt#L70-L95
+[s3-start]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/android/app/src/main/kotlin/io/github/dostepnykampus/app/SubmissionSyncInitializer.kt#L18-L20
+[s3-schedule]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/android/core/data/src/main/kotlin/io/github/dostepnykampus/core/data/submissions/SubmissionSyncScheduler.kt#L22-L29
+[s3-worker]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/android/core/data/src/main/kotlin/io/github/dostepnykampus/core/data/submissions/SubmissionSyncWorker.kt#L26-L43
+[s3-device]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/android/app/src/androidTest/kotlin/io/github/dostepnykampus/app/CampusPathDeviceTest.kt#L57-L79
+[s3-ci]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/.github/workflows/android.yml#L96-L107
+[s3-stub]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/android/app/src/main/kotlin/io/github/dostepnykampus/app/AppScreens.kt#L169-L178
+[s3-query]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/backend/src/main/java/io/github/dostepnykampus/building/BuildingQuery.java#L33-L119
+[s3-navigation]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/android/app/src/main/kotlin/io/github/dostepnykampus/app/navigation/AppNavigator.kt#L196-L221
+[s3-manifest]: https://github.com/dostepny-kampus/dostepny-kampus/blob/7e861eba050d2393590aa350f92f31565bca7c9c/android/app/src/main/AndroidManifest.xml#L25-L35

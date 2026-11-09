@@ -49,7 +49,8 @@ import kotlin.coroutines.EmptyCoroutineContext
 /**
  * Zrzuty oboczki z ekranami: V1 z przyciskami mapy i podpisem OSM, V2 jako arkusz nad V1 i pasek nawigacji.
  * Natywnej mapy MapLibre w testach JVM nie ma: zamiast niej jest tło lądu z palety mapy, bez konturów i ulic.
- * Katalog to „Budynek testowy” C-13, nie dane PWr.
+ * Katalog to „Budynek testowy” C-13, nie dane PWr. Zrzut robi akcja zamiast dotyku, więc na przełączniku nie ma
+ * śladu dotknięcia. Przy dużej czcionce V1 startuje na liście, więc V2 otwiera budynek z listy (NFR-19).
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -117,10 +118,8 @@ class AppShellScreenshotTest {
             }
         }
         compose.waitForIdle()
-        // Akcja zamiast dotyku: zrzut bez śladu dotknięcia na przełączniku.
         val list = compose.onNode(hasContentDescription("Lista budynków") and isSelectable())
         if (isList) list.performSemanticsAction(OnClick)
-        // Przy dużej czcionce V1 startuje na liście, więc V2 otwiera budynek z listy (NFR-19).
         val isFromList = compose.onAllNodes(hasContentDescription("C-13")).fetchSemanticsNodes().isNotEmpty()
         if (isSheetOpen && isFromList) compose.onNodeWithContentDescription("C-13").performSemanticsAction(OnClick)
         if (isSheetOpen && !isFromList) compose.runOnUiThread { touch(listOf("C-13")) }
@@ -131,50 +130,50 @@ class AppShellScreenshotTest {
         compose.onRoot().captureRoboImage()
     }
 
-    // V1: przyciski mapy, podpis OSM i pasek dolny, NFR-16, NFR-37.
+    /** V1: przyciski mapy, podpis OSM i pasek dolny, NFR-16, NFR-37. */
     @Test
     fun nfr37_v1_jasny() {
         capture(isSheetOpen = false)
     }
 
-    // V1: wynik pod polem po wpisaniu „c13”, US1.1.
+    /** V1: wynik pod polem po wpisaniu „c13”, US1.1. */
     @Test
     fun us1_1_v1_wynik_jasny() {
         capture(isSheetOpen = false, query = "c13")
     }
 
-    // V1 przy otwartej klawiaturze: bez przycisków mapy, z podpisem OSM, NFR-53, decyzja 91.
+    /** V1 przy otwartej klawiaturze: bez przycisków mapy, z podpisem OSM, NFR-53, decyzja 91. */
     @Test
     fun nfr53_v1_klawiatura_jasny() {
         capture(isSheetOpen = false, query = "c13", isKeyboardOpen = true)
     }
 
-    // V1: brak wyniku dla „C-31”, UC1 3a, PW-9.
+    /** V1: brak wyniku dla „C-31”, UC1 3a, PW-9. */
     @Test
     fun us1_1_v1_brak_wyniku_jasny() {
         capture(isSheetOpen = false, query = "C-31")
     }
 
-    // V1 bez internetu przy danych z aplikacji: linia „Bez internetu” bez daty, US9.1, NFR-10, decyzja 84.
+    /** V1 bez internetu przy danych z aplikacji: linia „Bez internetu” bez daty, US9.1, NFR-10, decyzja 84. */
     @Test
     fun us9_1_v1_bez_internetu_jasny() {
         capture(isSheetOpen = false, isOnline = false)
     }
 
-    // V1 z wybraną listą budynków, NFR-19.
+    /** V1 z wybraną listą budynków, NFR-19. */
     @Test
     fun nfr19_v1_lista_jasny() {
         capture(isSheetOpen = false, isList = true)
     }
 
-    // Przy czcionce 200 % V1 startuje na liście budynków, a przełącznik ma napis „Lista”, NFR-19, NFR-20.
+    /** Przy czcionce 200 % V1 startuje na liście budynków, a przełącznik ma napis „Lista”, NFR-19, NFR-20. */
     @Test
     @Config(fontScale = 2f)
     fun nfr20_v1_lista_200() {
         capture(isSheetOpen = false)
     }
 
-    // V2 jako mała karta nad V1, decyzja 115, NFR-16.
+    /** V2 jako mała karta nad V1, decyzja 115, NFR-16. */
     @Test
     fun nfr16_v2_arkusz_jasny() {
         capture()
@@ -186,14 +185,14 @@ class AppShellScreenshotTest {
         capture()
     }
 
-    // Czcionka 200 %: nagłówek, uchwyt i pasek dolny, NFR-20.
+    /** Czcionka 200 %: nagłówek, uchwyt i pasek dolny, NFR-20. */
     @Test
     fun nfr20_v2_arkusz_200() {
         RuntimeEnvironment.setFontScale(2f)
         capture()
     }
 
-    // Okno ≥ 600 dp: pasek z boku, a arkusz dalej od dołu, decyzja 69.
+    /** Okno ≥ 600 dp: pasek z boku, a arkusz dalej od dołu, decyzja 69. */
     @Test
     @Config(qualifiers = "w640dp-h480dp-xhdpi")
     fun nfr51_v2_arkusz_szerokie() {

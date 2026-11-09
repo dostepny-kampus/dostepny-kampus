@@ -182,7 +182,26 @@ jobs:
         with:
           cache-provider: external
       - name: Zbuduj aplikację i testy na urządzenie
-        run: ./gradlew assembleDebug assembleDebugAndroidTest
+        run: |
+          set -o pipefail
+          # --profile zapisuje raport czasu zadań Gradle (HTML); log zadań służy do policzenia FROM-CACHE, UP-TO-DATE i wykonanych.
+          ./gradlew assembleDebug assembleDebugAndroidTest --profile --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle-apk.log"
+      - name: Policz zadania Gradle według wyniku
+        if: ${{ !cancelled() }}
+        run: |
+          log="$RUNNER_TEMP/gradle-apk.log"
+          {
+            echo "Zadania Gradle w jobie apk: wszystkie $(grep -c '^> Task ' "$log"), FROM-CACHE $(grep -c '^> Task .* FROM-CACHE$' "$log"), UP-TO-DATE $(grep -c '^> Task .* UP-TO-DATE$' "$log"), NO-SOURCE $(grep -c '^> Task .* NO-SOURCE$' "$log"), SKIPPED $(grep -c '^> Task .* SKIPPED$' "$log"), wykonane $(grep -c '^> Task [^ ]*$' "$log")"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+          cp "$log" build/reports/profile/ 2>/dev/null || true
+      - name: Udostępnij raport czasu Gradle
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: profil-apk
+          path: android/build/reports/profile/
+          if-no-files-found: warn
+          retention-days: 7
       - name: Pokaż zbudowane pakiety
         run: ls -l app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
       - name: Udostępnij APK aplikacji i testów
@@ -279,6 +298,30 @@ jobs:
         with:
           path: ~/.gradle/caches/build-cache-1
           key: ${{ steps.cache-budowania.outputs.cache-primary-key }}
+
+  czyszczenie-cache:
+    # Osobne małe zadanie tylko na push: uprawnienie actions: write nie trafia do zadań uruchamiających kod z PR.
+    needs: testy
+    if: >-
+      ${{ !cancelled() && needs.testy.result == 'success' && github.event_name == 'push' &&
+        (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Usuń poprzednie wpisy cache budowania tej gałęzi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # Na gałąź zostaje najnowszy wpis; limit pamięci cache repozytorium to 10 GB.
+          gh cache list --ref "$GITHUB_REF" --key "android-budowanie-v1-${RUNNER_OS}-${RUNNER_ARCH}-" --limit 100             --sort created_at --order desc --json id --jq '.[1:][] | .id' |
+            while read -r id; do
+              gh cache delete "$id"
+              echo "Usunięto poprzedni wpis cache ${id}."
+            done
 
   budowanie:
     needs: [zmiany, testy, apk, emulator]

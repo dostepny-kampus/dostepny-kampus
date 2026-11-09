@@ -20,7 +20,7 @@ class SearchBuildingsTest {
     private val buildings =
         listOf("C-1", "C-13", "C-3", "D-8a").map { Building(symbol = it, name = null, outline = outline) }
 
-    // Scenariusz (częściowo): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie
+    /** Scenariusz (częściowo): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie. */
     @ParameterizedTest
     @ValueSource(strings = ["C13", "c-13", "C-13"])
     fun us1_1_spelling_finds_c13(query: String) {
@@ -51,7 +51,7 @@ class SearchBuildingsTest {
         assertEquals(emptyList<String>(), symbols(query))
     }
 
-    // Scenariusz (częściowo): przegladanie-mapy.feature: Mapa i wyszukiwanie działają bez logowania
+    /** Scenariusz (częściowo): przegladanie-mapy.feature: Mapa i wyszukiwanie działają bez logowania. */
     @Test
     fun us1_2_real_file_finds_a1() {
         val real = parseBuildingCatalog(File(System.getProperty("dostepnykampus.buildings")).readText())

@@ -56,6 +56,15 @@ private val SERVER_LABELS = listOf("A-1")
  * Geometria mapy V1 od odpowiedzi serwera i zamknięcia ekranu do stanu ViewModelu (NFR-10, NFR-11). Testy czekają na
  * zdarzenia (sygnały z funkcji liczącej, wynik liczenia), nie na upływ czasu, więc wynik nie zależy od szybkości
  * maszyny. Zawieszenie przy błędzie w kodzie kończy limit `runTest`, który nie wpływa na wynik działającego kodu.
+ *
+ * `holdFile`: Liczenie dla pliku: zgłasza start i czeka na zwolnienie; [finished] dostaje prawdę, gdy doczekało, a
+ * fałsz, gdy
+ *   przerwano wątek (wtedy przerwanie idzie dalej).
+ *
+ * `withPool`: Wątki liczące na czas testu. Na końcu czeka, aż skończą, więc żadne wznowienie z nich nie trafi do
+ *   Dispatchers.Main po resetMain i nie wycieknie do następnego testu.
+ *
+ * `show`: Widoczny ekran: subskrypcja stanu trwa do końca testu, więc źródła działają aż do zamknięcia ViewModelu.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapGeometryFlowTest {
@@ -71,8 +80,10 @@ class MapGeometryFlowTest {
         Dispatchers.resetMain()
     }
 
-    // Wiersz: W3, plik, potem serwer → geometria raz na katalog, a stan ma ją z katalogu serwera; liczenie dla pliku,
-    //   które jeszcze trwa, zostaje przerwane i nie wraca po serwerze, NFR-10, NFR-11.
+    /**
+     * Wiersz: W3, plik, potem serwer → geometria raz na katalog, a stan ma ją z katalogu serwera; liczenie dla pliku,
+     *   które jeszcze trwa, zostaje przerwane i nie wraca po serwerze, NFR-10, NFR-11.
+     */
     @Test
     fun nfr11_geometry_per_catalog() =
         runTest {
@@ -104,7 +115,7 @@ class MapGeometryFlowTest {
             }
         }
 
-    // Wiersz: zamknięcie ekranu w trakcie pobierania z serwera → wywołanie przerwane, bez działającej pracy.
+    /** Wiersz: zamknięcie ekranu w trakcie pobierania z serwera → wywołanie przerwane, bez działającej pracy. */
     @Test
     fun closing_map_cancels_call() =
         runTest {
@@ -128,7 +139,9 @@ class MapGeometryFlowTest {
             assertTrue(started.isCompleted && cancelled.isCompleted, "pobranie nie zaczęło się albo trwa po zamknięciu")
         }
 
-    // Wiersz: zamknięcie ekranu w trakcie liczenia geometrii → liczenie czekające w kolejce nie rusza po zamknięciu.
+    /**
+     * Wiersz: zamknięcie ekranu w trakcie liczenia geometrii → liczenie czekające w kolejce nie rusza po zamknięciu.
+     */
     @Test
     fun closing_map_cancels_compute() =
         runTest {
@@ -147,8 +160,10 @@ class MapGeometryFlowTest {
             assertEquals(0, calls.get(), "liczenie ruszyło po zamknięciu ekranu")
         }
 
-    // Wiersz: zamknięcie ekranu w trakcie liczenia geometrii katalogu z wieloma konturami → liczenie nie dochodzi do
-    //   końca katalogu, NFR-11.
+    /**
+     * Wiersz: zamknięcie ekranu w trakcie liczenia geometrii katalogu z wieloma konturami → liczenie nie dochodzi do
+     *   końca katalogu, NFR-11.
+     */
     @Test
     fun closing_map_stops_running() =
         runTest {
@@ -181,8 +196,10 @@ class MapGeometryFlowTest {
             }
         }
 
-    // Wiersz: serwer odpowiada, gdy liczy się katalog z pliku → liczenie katalogu z serwera rusza, zanim skończy się
-    //   liczenie pliku, NFR-11.
+    /**
+     * Wiersz: serwer odpowiada, gdy liczy się katalog z pliku → liczenie katalogu z serwera rusza, zanim skończy się
+     *   liczenie pliku, NFR-11.
+     */
     @Test
     fun server_compute_starts_early() =
         runTest {
@@ -212,8 +229,6 @@ class MapGeometryFlowTest {
             }
         }
 
-    // Liczenie dla pliku: zgłasza start i czeka na zwolnienie; [finished] dostaje prawdę, gdy doczekało, a fałsz, gdy
-    //   przerwano wątek (wtedy przerwanie idzie dalej).
     private fun holdFile(
         running: CompletableDeferred<Unit>,
         held: CountDownLatch,
@@ -229,8 +244,6 @@ class MapGeometryFlowTest {
         }
     }
 
-    // Wątki liczące na czas testu. Na końcu czeka, aż skończą, więc żadne wznowienie z nich nie trafi do
-    //   Dispatchers.Main po resetMain i nie wycieknie do następnego testu.
     private inline fun withPool(threads: Int, block: (CoroutineDispatcher) -> Unit) {
         val pool = Executors.newFixedThreadPool(threads)
         try {
@@ -261,7 +274,6 @@ class MapGeometryFlowTest {
     private fun factoryOf(repository: BuildingCatalogRepository, compute: CoroutineContext) =
         viewModelFactory { initializer { viewModelOf(repository, compute) } }
 
-    // Widoczny ekran: subskrypcja stanu trwa do końca testu, więc źródła działają aż do zamknięcia ViewModelu.
     private fun TestScope.show(viewModel: CampusMapViewModel) {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
     }

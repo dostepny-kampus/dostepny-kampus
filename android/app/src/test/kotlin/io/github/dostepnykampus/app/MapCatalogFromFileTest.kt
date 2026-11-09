@@ -61,14 +61,14 @@ class MapCatalogFromFileTest {
         Dispatchers.resetMain()
     }
 
-    // Wiersz: W1, serwer jeszcze nie odpowiedział → stan mapy ma kontury z pliku, NFR-11.
+    /** Wiersz: W1, serwer jeszcze nie odpowiedział → stan mapy ma kontury z pliku, NFR-11. */
     @Test
     fun nfr11_file_without_server() {
         val screen = openScreen { CompletableDeferred<ApiResult<BuildingList>>().await() }
         assertEquals(fileCatalog, screen.settled(), "mapa czeka na serwer")
     }
 
-    // Wiersz: W2, serwer odpowiada niepustą listą → najpierw kontury z pliku, potem katalog z serwera, NFR-10, US1.
+    /** Wiersz: W2, serwer odpowiada niepustą listą → najpierw kontury z pliku, potem katalog z serwera, NFR-10, US1. */
     @Test
     fun nfr10_server_replaces_file() {
         val answer = CompletableDeferred<ApiResult<BuildingList>>()
@@ -80,14 +80,16 @@ class MapCatalogFromFileTest {
         assertEquals(SERVER_LIST.source, shown?.attribution, "atrybucja nie jest z serwera")
     }
 
-    // Wiersz: W2, brak sieci albo błąd serwera → zostają kontury z pliku, bez null, błędu i pustego katalogu, NFR-10.
+    /**
+     * Wiersz: W2, brak sieci albo błąd serwera → zostają kontury z pliku, bez null, błędu i pustego katalogu, NFR-10.
+     */
     @Test
     fun nfr10_failure_keeps_file() {
         listOf(ApiResult.NetworkError(IOException("brak sieci")), ApiResult.ServerError(code = SERVER_ERROR))
             .forEach { failure -> assertKeepsFile(failure) }
     }
 
-    // Wiersz: W2, serwer odpowiada pustą listą → zostają kontury z pliku, bez pustego katalogu, NFR-10.
+    /** Wiersz: W2, serwer odpowiada pustą listą → zostają kontury z pliku, bez pustego katalogu, NFR-10. */
     @Test
     fun nfr10_empty_list_keeps_file() {
         assertKeepsFile(ApiResult.Success(BuildingList(source = "Serwer", buildings = emptyList())))
@@ -103,8 +105,10 @@ class MapCatalogFromFileTest {
         assertTrue(fromFile.isNotEmpty() && fromFile.all { it == fileCatalog }, "kontury zniknęły: $result")
     }
 
-    // Wiersz: Kolejność, odczyt pliku wstrzymany, a serwer odpowiada niepustą listą → po zwolnieniu odczytu stan
-    //   zostaje przy katalogu z serwera; późniejszy plik go nie nadpisuje, NFR-10.
+    /**
+     * Wiersz: Kolejność, odczyt pliku wstrzymany, a serwer odpowiada niepustą listą → po zwolnieniu odczytu stan
+     *   zostaje przy katalogu z serwera; późniejszy plik go nie nadpisuje, NFR-10.
+     */
     @Test
     fun nfr10_late_file_keeps_server() {
         val screen = openScreen { ApiResult.Success(SERVER_LIST) }

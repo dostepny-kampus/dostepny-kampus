@@ -21,8 +21,10 @@ class MapCameraTest {
         assertEquals(camera.center, camera.zoomedIn().center)
     }
 
-    // Wiersz: V1, „Pomniejsz” oddala tak samo jak gest, do najmniejszego powiększenia, przy którym cały obszar
-    // kampusu mieści się w widoku, także poniżej dawnego powiększenia 12 (NFR-39, NFR-53).
+    /**
+     * Wiersz: V1, „Pomniejsz” oddala tak samo jak gest, do najmniejszego powiększenia, przy którym cały obszar
+     * kampusu mieści się w widoku, także poniżej dawnego powiększenia 12 (NFR-39, NFR-53).
+     */
     @Test
     fun nfr53_zoom_stays_in_range() {
         val campus = CampusBounds(west = 16.9, south = 59.95, east = 17.1, north = 60.05)

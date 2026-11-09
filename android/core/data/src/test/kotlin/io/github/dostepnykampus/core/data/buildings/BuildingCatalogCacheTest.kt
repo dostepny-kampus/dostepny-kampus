@@ -29,7 +29,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 class BuildingCatalogCacheTest {
     private val fake = FakeBuildingCacheDao()
 
-    // Wiersz: pobranie listy z serwera zapisuje kopię z momentem pobrania (NFR-10).
+    /** Wiersz: pobranie listy z serwera zapisuje kopię z momentem pobrania (NFR-10). */
     @Test
     fun nfr10_downloaded_saves_copy() {
         val repository = repository(remote = { listed("A-2") })
@@ -41,7 +41,7 @@ class BuildingCatalogCacheTest {
         }
     }
 
-    // Wiersz: bez sieci katalog przychodzi z kopii, z nazwami i konturami z serwera oraz datą pobrania (NFR-10).
+    /** Wiersz: bez sieci katalog przychodzi z kopii, z nazwami i konturami z serwera oraz datą pobrania (NFR-10). */
     @Test
     fun nfr10_offline_uses_copy() {
         val online = repository(remote = { listed("A-2", "N-1") })
@@ -57,7 +57,7 @@ class BuildingCatalogCacheTest {
         }
     }
 
-    // Wiersz: zepsuty dokument kopii to nie odpowiedź serwera — katalog zostaje z pliku, bez daty (NFR-10).
+    /** Wiersz: zepsuty dokument kopii to nie odpowiedź serwera — katalog zostaje z pliku, bez daty (NFR-10). */
     @Test
     fun nfr10_corrupt_copy_uses_asset() {
         fake.entity = BuildingCacheEntity(id = BUILDING_CACHE_SINGLE_ROW, listJson = "{", syncedAt = 7L)

@@ -57,8 +57,10 @@ class PhotoCameraTest {
         return request to File(File(compose.activity.filesDir, PHOTO_DIR), name)
     }
 
-    // Wiersz: C2, rezygnacja w aparacie → C2 bez zdjęcia, potem „Zrób zdjęcie” → aparat → C2 ze zdjęciem, US7.1.
-    // Jeden test, bo FileProvider zapamiętuje katalog plików pierwszej aktywności na cały proces testów.
+    /**
+     * Wiersz: C2, rezygnacja w aparacie → C2 bez zdjęcia, potem „Zrób zdjęcie” → aparat → C2 ze zdjęciem, US7.1.
+     * Jeden test, bo FileProvider zapamiętuje katalog plików pierwszej aktywności na cały proces testów.
+     */
     @Test
     fun us7_1_cancel_then_photo() {
         show()

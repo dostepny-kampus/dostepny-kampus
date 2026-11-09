@@ -203,8 +203,10 @@ class BuildingCardTest {
             assertEquals(BuildingCardUiState.Missing, viewModel.uiState.value)
         }
 
-    // Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” → katalog czytany od nowa i karta budynku;
-    //   zwykłe otwarcie karty nie czyta katalogu drugi raz, NFR-10.
+    /**
+     * Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” → katalog czytany od nowa i karta budynku;
+     *   zwykłe otwarcie karty nie czyta katalogu drugi raz, NFR-10.
+     */
     @Test
     fun nfr10_retry_shows_new_building() =
         runTest(UnconfinedTestDispatcher()) {

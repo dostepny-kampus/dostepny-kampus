@@ -63,8 +63,10 @@ class SheetTalkBackTest {
     private fun readable(matcher: SemanticsMatcher): SemanticsMatcher =
         matcher and !isHiddenFromAccessibility() and !hasAnyAncestor(isHiddenFromAccessibility())
 
-    // Wiersz: uchwyt małej karty → przycisk „Rozwiń opis budynku” ze stanem „zwinięte”, a po rozwinięciu ten sam
-    // przycisk ze stanem „rozwinięte”, US2.8, NFR-18.
+    /**
+     * Wiersz: uchwyt małej karty → przycisk „Rozwiń opis budynku” ze stanem „zwinięte”, a po rozwinięciu ten sam
+     * przycisk ze stanem „rozwinięte”, US2.8, NFR-18.
+     */
     @Test
     fun nfr18_handle_button_with_state() {
         open()
@@ -72,15 +74,17 @@ class SheetTalkBackTest {
         compose.onNode(sheetHandle(isExpanded = true) and Button).assertExists("uchwyt pełnego ekranu")
     }
 
-    // Wiersz: V1, dotknięcie konturu → mała karta, fokus TalkBack na nagłówku „Budynek A-1, …”, NFR-18.
+    /** Wiersz: V1, dotknięcie konturu → mała karta, fokus TalkBack na nagłówku „Budynek A-1, …”, NFR-18. */
     @Test
     fun nfr18_focus_on_header() {
         open(isCard = true)
         compose.onNode(hasContentDescription("Budynek A-1, ", substring = true)).assertIsFocused()
     }
 
-    // Wiersz: mapa nad małą kartą → TalkBack jej nie czyta, a uchwyt karty czyta; po zamknięciu karty mapa znów
-    // czytana, NFR-19.
+    /**
+     * Wiersz: mapa nad małą kartą → TalkBack jej nie czyta, a uchwyt karty czyta; po zamknięciu karty mapa znów
+     * czytana, NFR-19.
+     */
     @Test
     fun nfr19_map_under_card_silent() {
         compose.setContent { Shell(isCard = false) }
