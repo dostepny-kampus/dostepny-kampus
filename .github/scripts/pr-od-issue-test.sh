@@ -10,7 +10,8 @@ set -euo pipefail
 #                    niedomyślnej GitHub nie wypełnia closingIssuesReferences,
 #   ISSUE_JSON_DIR - katalog z plikami <numer>.json, każdy to odpowiedź `gh issue view --json state,assignees,url,labels`.
 #   PR_OD_ISSUE_OSTRZEGAJ=1 - tryb ostrzegawczy: te same uwagi jako ::warning, ale kod 0.
-# Nazwa gałęzi PR ma mieć postać N-krotki-opis, a #N ma być wśród zamykanych issue (poza gałęziami dependabot/*).
+# Nazwa gałęzi PR ma mieć postać N-krotki-opis, a #N ma być wśród zamykanych issue.
+# PR autora dependabot[bot] jest pomijany (kod 0) niezależnie od gałęzi i opisu.
 # Obszar: PR ma mieć etykietę obszaru (android, backend, api, ci, test, documentation); jeśli zamykane issue ma
 # etykiety obszaru, PR ma mieć przynajmniej jedną z nich.
 # Kod wyjścia 0 = PR spełnia zasady, 1 = naruszenie, 2 = błąd narzędzia gh lub jq (tekst w wyjściu).
@@ -144,6 +145,11 @@ case_gh_issue_not_found() {
   gh_mode=issue
   stub_gh 'echo "GraphQL: Could not resolve to an issue" >&2; exit 1'
 }
+case_gh_repo_missing() {
+  pr_json autor-pr 'Closes #12'
+  gh_mode=issue
+  stub_gh 'echo "GraphQL: Could not resolve to a Repository with the name o/r." >&2; exit 1'
+}
 case_issue_missing_file() { pr_json autor-pr 'Closes #12'; }
 case_jq_fails() {
   mkdir -p "$workdir/bin"
@@ -189,7 +195,7 @@ run_case "issue zamknięte" 1 "$closed" case_closed_issue
 run_case "issue bez przypisanej osoby" 1 "$unassigned" case_unassigned
 run_case "issue przypisane komuś innemu" 1 "$unassigned" case_other_assignee
 run_case "autor jest jedną z przypisanych osób" 0 '' case_author_among_assignees
-run_case "dependabot bez issue" 0 '' case_dependabot
+run_case "dependabot[bot] pomijany: bez issue i z gałęzią dependabot/*" 0 '' case_dependabot
 run_case "kilka issue w opisie, wszystkie poprawne" 0 '' case_two_issues_ok
 run_case "kilka issue w opisie, jedno zamknięte" 1 "$closed" case_second_issue_closed
 run_case "numer jest PR, nie issue" 1 "$is_pull" case_pull_number
@@ -240,5 +246,6 @@ run_case "gh zawodzi przy odczycie issue: błąd narzędzia, kod 2" 2 'błąd na
 run_case "jq zawodzi: błąd narzędzia, kod 2" 2 'błąd narzędzia jq' case_jq_fails
 run_case "gh: issue nie istnieje to naruszenie, kod 1" 1 'issue nie istnieje' case_gh_issue_not_found
 run_case "brak pliku issue w danych testu to issue nie istnieje, kod 1" 1 'issue nie istnieje' case_issue_missing_file
+run_case "gh: brak dostępu do repozytorium to błąd narzędzia, nie brak issue" 2 'błąd narzędzia gh' case_gh_repo_missing
 
 exit "$((failures > 0 ? 1 : 0))"

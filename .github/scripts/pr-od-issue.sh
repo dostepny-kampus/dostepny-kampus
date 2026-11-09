@@ -5,7 +5,7 @@
 set -euo pipefail
 
 # Użycie: pr-od-issue.sh <numer PR>. Każdy PR (poza Dependabotem) musi mieć w opisie słowo zamykające (Closes, Fixed, Resolves … #N),
-# a nazwa gałęzi PR ma mieć postać N-krotki-opis, gdzie #N jest wśród zamykanych issue (poza dependabot/*),
+# a nazwa gałęzi PR ma mieć postać N-krotki-opis, gdzie #N jest wśród zamykanych issue,
 # PR ma mieć etykietę obszaru (android, backend, api, ci, test, documentation), a jeśli zamykane issue ma etykiety
 # obszaru, PR ma mieć co najmniej jedną z nich; każde wskazane issue ma być otwarte i przypisane autorowi PR. Opisu szukamy sami, bo dla PR do gałęzi
 # niedomyślnej GitHub nie wypełnia closingIssuesReferences.
@@ -32,8 +32,9 @@ load_pr() {
 }
 
 data=''
+err_file=''
+trap 'rm -f "$err_file"' EXIT
 load_issue() {
-  local err_file
   data=''
   if [[ -n ${ISSUE_JSON_DIR:-} ]]; then
     if [[ -f $ISSUE_JSON_DIR/$1.json ]]; then
@@ -44,7 +45,7 @@ load_issue() {
   err_file="$(mktemp)"
   if ! data="$(gh issue view "$1" --json state,assignees,url,labels 2>"$err_file")"; then
     data=''
-    if ! grep -qi 'could not resolve\|not found' "$err_file"; then
+    if ! grep -qi 'could not resolve to an issue' "$err_file"; then
       tool_error gh "gh issue view ${1}: $(head -n 1 "$err_file")"
     fi
   fi
@@ -103,12 +104,10 @@ if [[ -z $issues ]]; then
 fi
 
 branch="$(jq -r '.headRefName // ""' <<<"$pr_data")" || tool_error jq "nie odczytano gałęzi PR"
-if [[ $branch != dependabot/* ]]; then
-  if [[ ! $branch =~ ^([0-9]+)- ]]; then
-    report "gałąź ${branch:-<brak>}: nazwa gałęzi nie zaczyna się od numeru issue (N-krotki-opis)."
-  elif ! grep -qx "${BASH_REMATCH[1]}" <<<"$issues"; then
-    report "gałąź ${branch}: numer #${BASH_REMATCH[1]} nie jest wśród zamykanych issue ($(printf '#%s ' $issues))."
-  fi
+if [[ ! $branch =~ ^([0-9]+)- ]]; then
+  report "gałąź ${branch:-<brak>}: nazwa gałęzi nie zaczyna się od numeru issue (N-krotki-opis)."
+elif ! grep -qx "${BASH_REMATCH[1]}" <<<"$issues"; then
+  report "gałąź ${branch}: numer #${BASH_REMATCH[1]} nie jest wśród zamykanych issue ($(printf '#%s ' $issues))."
 fi
 
 area_labels "$pr_data"
