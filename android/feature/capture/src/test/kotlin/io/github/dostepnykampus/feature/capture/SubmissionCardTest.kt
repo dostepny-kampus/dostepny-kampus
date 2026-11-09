@@ -40,7 +40,7 @@ class SubmissionCardTest {
         }
     }
 
-    // Wiersz: C3 zgłoszenie → status, typ, budynek z piętrem i data, US8.1.
+    /** Wiersz: C3 zgłoszenie → status, typ, budynek z piętrem i data, US8.1. */
     @Test
     fun us8_1_item_details() {
         show(item(id = "a", state = SendState.SENT))
@@ -49,7 +49,7 @@ class SubmissionCardTest {
         compose.onNodeWithText("9.11.2026").assertIsDisplayed()
     }
 
-    // Wiersz: C3 „Nie wysłano” → powód odmowy, US9.5, BR-26.
+    /** Wiersz: C3 „Nie wysłano” → powód odmowy, US9.5, BR-26. */
     @Test
     fun us9_5_refusal_reason() {
         show(item(id = "a", state = SendState.REFUSED, refusal = RefusalReason.NO_PERMISSION))
@@ -58,7 +58,7 @@ class SubmissionCardTest {
         compose.onNodeWithText(reason).assertIsDisplayed()
     }
 
-    // Wiersz: C3 „Otwórz” → poprawka w C2, US8.3.
+    /** Wiersz: C3 „Otwórz” → poprawka w C2, US8.3. */
     @Test
     fun us8_3_open_item() {
         show(item(id = "a", state = SendState.LOCAL))
@@ -66,7 +66,7 @@ class SubmissionCardTest {
         assertEquals(1, opened)
     }
 
-    // Wiersz: C3 → TalkBack czyta status przed typem bariery, NFR-18.
+    /** Wiersz: C3 → TalkBack czyta status przed typem bariery, NFR-18. */
     @Test
     fun nfr18_status_before_type() {
         show(item(id = "a", state = SendState.LOCAL))

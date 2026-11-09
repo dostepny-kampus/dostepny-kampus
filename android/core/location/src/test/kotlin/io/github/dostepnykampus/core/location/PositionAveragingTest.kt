@@ -30,7 +30,7 @@ class PositionAveragingTest {
         assertEquals(2, average.fixCount)
     }
 
-    // Waga odczytu to odwrotność kwadratu promienia ufności: odczyt 1 m waży 4 razy więcej niż 2 m.
+    /** Waga odczytu to odwrotność kwadratu promienia ufności: odczyt 1 m waży 4 razy więcej niż 2 m. */
     @Test
     fun us6_1_weights_by_accuracy() {
         val average =
@@ -43,7 +43,7 @@ class PositionAveragingTest {
         assertEquals(1.0 / sqrt(1.25), average.accuracyMeters, PRECISION)
     }
 
-    // Ostatnia znana pozycja sprzed startu i odczyt po 30 s nie wchodzą do średniej.
+    /** Ostatnia znana pozycja sprzed startu i odczyt po 30 s nie wchodzą do średniej. */
     @Test
     fun us6_1_only_fixes_in_window() {
         val average =
@@ -81,7 +81,7 @@ class PositionAveragingTest {
         assertNull(start.average())
     }
 
-    // Napis „Pomiar: zostało 12 s” zaokrągla w górę, więc 0 s pojawia się dopiero na końcu.
+    /** Napis „Pomiar: zostało 12 s” zaokrągla w górę, więc 0 s pojawia się dopiero na końcu. */
     @Test
     fun us6_1_countdown_seconds() {
         assertEquals(
@@ -96,7 +96,7 @@ class PositionAveragingTest {
         assertTrue(start.isFinished(START + AVERAGING_MILLIS))
     }
 
-    // „Powtórz pomiar” zaczyna nowe pełne 30 s bez odczytów poprzedniego pomiaru.
+    /** „Powtórz pomiar” zaczyna nowe pełne 30 s bez odczytów poprzedniego pomiaru. */
     @Test
     fun nfr23_repeat_starts_over() {
         val first = start.withFix(fix(longitude = 17.0, latitude = 51.0, accuracy = 6.0, at = 1_000))

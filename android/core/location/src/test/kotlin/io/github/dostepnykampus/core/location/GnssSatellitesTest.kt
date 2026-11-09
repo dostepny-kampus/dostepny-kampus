@@ -24,7 +24,11 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 
-/** Stan satelitów z odbiornika GNSS telefonu w Robolectric (US6.1, US6.5, NFR-2, NFR-27). */
+/**
+ * Stan satelitów z odbiornika GNSS telefonu w Robolectric (US6.1, US6.5, NFR-2, NFR-27).
+ *
+ * `galileoInFix`: Galileo 11: sygnał 40 dB-Hz, wysokość 35°, azymut 120°, użyty do pozycji.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class GnssSatellitesTest {
@@ -55,7 +59,7 @@ class GnssSatellitesTest {
             assertEquals(listOf(listOf(expected)), updates)
         }
 
-    // Napis „Satelity: GPS 7, Galileo 5, GLONASS 4”: tylko satelity w pozycji, systemy w stałej kolejności.
+    /** Napis „Satelity: GPS 7, Galileo 5, GLONASS 4”: tylko satelity w pozycji, systemy w stałej kolejności. */
     @Test
     fun us6_1_counts_used_in_fix() {
         val satellites =
@@ -89,7 +93,7 @@ class GnssSatellitesTest {
         )
     }
 
-    // Lokalizacja tylko przy otwartym ekranie: po końcu zbierania stan satelitów już nie przychodzi.
+    /** Lokalizacja tylko przy otwartym ekranie: po końcu zbierania stan satelitów już nie przychodzi. */
     @Test
     fun nfr27_stop_ends_updates() =
         runTest {
@@ -118,7 +122,6 @@ class GnssSatellitesTest {
     private fun satellite(system: GnssSystem, used: Boolean): Satellite =
         Satellite(system = system, id = 1, azimuthDegrees = 0.0, elevationDegrees = 0.0, isUsedInFix = used)
 
-    // Galileo 11: sygnał 40 dB-Hz, wysokość 35°, azymut 120°, użyty do pozycji.
     private fun galileoInFix(): GnssStatus {
         val builder = GnssStatus.Builder()
         builder.addSatellite(

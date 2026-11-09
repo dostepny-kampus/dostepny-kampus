@@ -32,7 +32,7 @@ class MapStreamConcurrencyTest {
     private var isFirstCallFailing = false
     private val repository = BuildingCatalogRepository(EmptyCoroutineContext, ::server) { FILE_JSON }
 
-    // Wiersz: mapa zbiera katalog, a inny odbiorca woła catalog() → jedno zapytanie do serwera, NFR-10.
+    /** Wiersz: mapa zbiera katalog, a inny odbiorca woła catalog() → jedno zapytanie do serwera, NFR-10. */
     @Test
     fun nfr10_map_shares_request() {
         inRun {
@@ -46,7 +46,9 @@ class MapStreamConcurrencyTest {
         }
     }
 
-    // Wiersz: niepustą listę przyjmuje refresh(), a zapytanie mapy pada → ostatni stan mapy to katalog z serwera, W2.
+    /**
+     * Wiersz: niepustą listę przyjmuje refresh(), a zapytanie mapy pada → ostatni stan mapy to katalog z serwera, W2.
+     */
     @Test
     fun nfr10_map_sees_other_answer() {
         inRun {
@@ -64,8 +66,10 @@ class MapStreamConcurrencyTest {
         }
     }
 
-    // Wiersz: zapytanie mapy pada, a potem, przy wciąż zbieranym strumieniu, osobny refresh() przyjmuje niepustą
-    //   listę → ostatni stan mapy to katalog z serwera, dwa zapytania, W2.
+    /**
+     * Wiersz: zapytanie mapy pada, a potem, przy wciąż zbieranym strumieniu, osobny refresh() przyjmuje niepustą
+     *   listę → ostatni stan mapy to katalog z serwera, dwa zapytania, W2.
+     */
     @Test
     fun nfr10_map_sees_late_refresh() {
         val offline = ApiResult.NetworkError(IOException("brak"))
@@ -87,7 +91,7 @@ class MapStreamConcurrencyTest {
         }
     }
 
-    // Wiersz: refresh() w toku na wstrzymanym serwerze → pierwsza emisja mapy to plik w ≤ 1 s, W1, NFR-11.
+    /** Wiersz: refresh() w toku na wstrzymanym serwerze → pierwsza emisja mapy to plik w ≤ 1 s, W1, NFR-11. */
     @Test
     fun nfr11_file_while_retry_runs() {
         inRun {

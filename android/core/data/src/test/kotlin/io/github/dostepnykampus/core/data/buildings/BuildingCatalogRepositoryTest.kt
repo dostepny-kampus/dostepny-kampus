@@ -79,7 +79,7 @@ class BuildingCatalogRepositoryTest {
         assertEquals(visitorTypes, catalog.entrances.mapNotNull { it.type }.toSet())
     }
 
-    // Wiersz: wejścia karty w aplikacji pochodzą z `GET /buildings/{symbol}` z dniem i źródłem oznaczenia, US17.3.
+    /** Wiersz: wejścia karty w aplikacji pochodzą z `GET /buildings/{symbol}` z dniem i źródłem oznaczenia, US17.3. */
     @Test
     fun us17_3_app_asks_server() {
         val found =

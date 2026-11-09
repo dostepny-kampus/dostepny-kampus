@@ -22,7 +22,7 @@ class FirstLaunchRepositoryTest {
     @TempDir
     lateinit var directory: File
 
-    // Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu
+    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */
     @Test
     fun us5_1_help_until_marked_seen() {
         val launches =
@@ -35,7 +35,7 @@ class FirstLaunchRepositoryTest {
         assertEquals(listOf(true, true, false), launches)
     }
 
-    // US5.1: proces zamknięty, zanim osoba zamknęła instrukcję, więc po odtworzeniu instrukcja otwiera się znowu.
+    /** US5.1: proces zamknięty, zanim osoba zamknęła instrukcję, więc po odtworzeniu instrukcja otwiera się znowu. */
     @Test
     fun us5_1_unmarked_after_restart() {
         withRepository { it.isFirstLaunch() }
@@ -43,7 +43,7 @@ class FirstLaunchRepositoryTest {
         assertTrue(withRepository { it.isFirstLaunch() })
     }
 
-    // Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy
+    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy. */
     @Test
     fun us5_1_second_launch_no_help() {
         withRepository { it.markHelpSeen() }

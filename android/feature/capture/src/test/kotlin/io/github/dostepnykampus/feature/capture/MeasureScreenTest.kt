@@ -42,7 +42,7 @@ class MeasureScreenTest {
         }
     }
 
-    // Wiersz: C1, szukanie satelitów → komunikat i „Powtórz pomiar” jako czynność główna, NFR-1, PW-9.
+    /** Wiersz: C1, szukanie satelitów → komunikat i „Powtórz pomiar” jako czynność główna, NFR-1, PW-9. */
     @Test
     fun us6_1_searching_message() {
         var repeats = 0
@@ -52,7 +52,9 @@ class MeasureScreenTest {
         assertEquals(1, repeats)
     }
 
-    // Wiersz: C1, pomiar trwa → „Pomiar: zostało 12 s”, „Dokładność: 0,8 m (szacunek)”, satelity tekstem, US6.1, NFR-2.
+    /**
+     * Wiersz: C1, pomiar trwa → „Pomiar: zostało 12 s”, „Dokładność: 0,8 m (szacunek)”, satelity tekstem, US6.1, NFR-2.
+     */
     @Test
     fun us6_1_measuring_texts() {
         show(MeasureUiState.Measuring(remainingSeconds = 12, average = average, satellites = satellites))
@@ -61,7 +63,7 @@ class MeasureScreenTest {
         compose.onNodeWithText("Satelity: GPS 7, Galileo 5, GLONASS 4").assertIsDisplayed()
     }
 
-    // Wiersz: C1, po pomiarze → „Pomiar zakończony” z dokładnością i satelitami z końca pomiaru, US6.1.
+    /** Wiersz: C1, po pomiarze → „Pomiar zakończony” z dokładnością i satelitami z końca pomiaru, US6.1. */
     @Test
     fun us6_1_finished_texts() {
         show(MeasureUiState.Finished(average = average, satellites = satellites))
@@ -70,7 +72,7 @@ class MeasureScreenTest {
         compose.onNodeWithText("Powtórz pomiar").assertIsDisplayed()
     }
 
-    // Wiersz: C1, „Dalej” → C2, US6: po decyzji „poza budynkiem” formularz dostaje punkt bez budynku (BR-G4).
+    /** Wiersz: C1, „Dalej” → C2, US6: po decyzji „poza budynkiem” formularz dostaje punkt bez budynku (BR-G4). */
     @Test
     fun us6_next_after_place_decision() {
         show(MeasureUiState.Finished(average = average, satellites = satellites, place = PlaceChoice.Outside))
@@ -79,7 +81,7 @@ class MeasureScreenTest {
         assertEquals(listOf(route), next)
     }
 
-    // Wiersz: C1, „Dalej” dopiero po decyzji o budynku, US6.2.
+    /** Wiersz: C1, „Dalej” dopiero po decyzji o budynku, US6.2. */
     @Test
     fun us6_2_no_next_while_locating() {
         show(MeasureUiState.Finished(average = average, satellites = satellites))

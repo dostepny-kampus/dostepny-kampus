@@ -32,7 +32,7 @@ class BackHeaderTest {
         compose.onNode(isHeading()).assertTextEquals(TITLE)
     }
 
-    // Zwykła czcionka: tytuł obok „Wstecz”, w tym samym wierszu, makieta hi-fi.
+    /** Zwykła czcionka: tytuł obok „Wstecz”, w tym samym wierszu, makieta hi-fi. */
     @Test
     fun nfr15_title_next_to_back() {
         show()
@@ -41,7 +41,7 @@ class BackHeaderTest {
         assertTrue(title.left > back.right && title.top < back.bottom)
     }
 
-    // Czcionka 200 %: w wierszu tylko „Wstecz”, tytuł pod nim na całą szerokość bez marginesów 16 dp, NFR-20.
+    /** Czcionka 200 %: w wierszu tylko „Wstecz”, tytuł pod nim na całą szerokość bez marginesów 16 dp, NFR-20. */
     @Test
     @Config(fontScale = 2f)
     fun nfr20_title_below_back() {

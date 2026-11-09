@@ -73,7 +73,7 @@ class ServerBuildingCatalogTest {
         assertEquals(catalog(), empty)
     }
 
-    // Wiersz: zwykłe otwarcie karty albo mapy → katalog z pamięci, bez drugiego zapytania do serwera, US1, NFR-10.
+    /** Wiersz: zwykłe otwarcie karty albo mapy → katalog z pamięci, bez drugiego zapytania do serwera, US1, NFR-10. */
     @Test
     fun us1_catalog_asks_server_once() {
         val repository = repository({ listed("A-2") }, { listed("A-2", "N-1") })
@@ -81,8 +81,10 @@ class ServerBuildingCatalogTest {
         assertEquals(1, serverCalls.get())
     }
 
-    // Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” po połączeniu z internetem → katalog z serwera,
-    //   choć pierwsze czytanie poszło z pliku bez sieci, NFR-10.
+    /**
+     * Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” po połączeniu z internetem → katalog z serwera,
+     *   choć pierwsze czytanie poszło z pliku bez sieci, NFR-10.
+     */
     @Test
     fun nfr10_retry_after_offline() {
         val repository = repository({ OFFLINE }, { listed("A-2", "N-1") })
@@ -93,7 +95,7 @@ class ServerBuildingCatalogTest {
         }
     }
 
-    // Wiersz: V2, „Spróbuj ponownie” → widać budynek, który serwer dodał po pierwszym czytaniu, NFR-10.
+    /** Wiersz: V2, „Spróbuj ponownie” → widać budynek, który serwer dodał po pierwszym czytaniu, NFR-10. */
     @Test
     fun nfr10_retry_sees_new_building() {
         val repository = repository({ listed("A-2") }, { listed("A-2", "N-1") })
@@ -104,8 +106,10 @@ class ServerBuildingCatalogTest {
         assertEquals(2, serverCalls.get())
     }
 
-    // Wiersz: „Spróbuj ponownie” bez sieci albo z zerwanym połączeniem → zostają budynki pobrane wcześniej
-    //   z serwera, nie sam plik, NFR-10.
+    /**
+     * Wiersz: „Spróbuj ponownie” bez sieci albo z zerwanym połączeniem → zostają budynki pobrane wcześniej
+     *   z serwera, nie sam plik, NFR-10.
+     */
     @Test
     fun nfr10_failed_retry_keeps_data() {
         val repository =
@@ -124,7 +128,7 @@ class ServerBuildingCatalogTest {
         }
     }
 
-    // Wiersz: otwarcie karty i „Spróbuj ponownie” naraz → jedno zapytanie do serwera, dopóki pierwsze trwa, NFR-10.
+    /** Wiersz: otwarcie karty i „Spróbuj ponownie” naraz → jedno zapytanie do serwera, dopóki pierwsze trwa, NFR-10. */
     @Test
     fun nfr10_retry_waits_for_read() {
         val gate = CompletableDeferred<Unit>()

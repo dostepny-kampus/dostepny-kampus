@@ -31,7 +31,7 @@ class SkyMapTest {
         compose.setContent { DostepnyKampusTheme { SkyMap(Sky(satellites.toList())) } }
     }
 
-    // Wiersz: GPS, Galileo i GLONASS da się odróżnić w odcieniach szarości.
+    /** Wiersz: GPS, Galileo i GLONASS da się odróżnić w odcieniach szarości. */
     @Test
     fun us6_5_systems_differ_by_shape() {
         val marks = listOf(GnssSystem.GPS, GnssSystem.GALILEO, GnssSystem.GLONASS, GnssSystem.BEIDOU).map { it.mark() }
@@ -47,7 +47,7 @@ class SkyMapTest {
         compose.onNodeWithText("QZSS").assertIsDisplayed()
     }
 
-    // Wszystkie widoczne satelity, także nieużyte do pozycji, tekstem dla czytnika ekranu (NFR-18).
+    /** Wszystkie widoczne satelity, także nieużyte do pozycji, tekstem dla czytnika ekranu (NFR-18). */
     @Test
     fun us6_5_screen_reader_text() {
         show(satellite(GnssSystem.GPS), satellite(GnssSystem.GPS, isUsed = false), satellite(GnssSystem.GLONASS))

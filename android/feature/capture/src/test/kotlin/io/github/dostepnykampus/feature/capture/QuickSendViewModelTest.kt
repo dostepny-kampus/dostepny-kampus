@@ -65,7 +65,7 @@ class QuickSendViewModelTest {
         Dispatchers.resetMain()
     }
 
-    // „Wyślij” czeka na pozycję i nie przerywa zgłoszenia upływem czasu (NFR-23).
+    /** „Wyślij” czeka na pozycję i nie przerywa zgłoszenia upływem czasu (NFR-23). */
     @Test
     fun nfr23_send_waits_for_position() =
         runTest(dispatcher) {
@@ -97,7 +97,7 @@ class QuickSendViewModelTest {
             assertEquals(listOf(null), saved.map { it.floor })
         }
 
-    // Drugie „Wyślij” nie wysyła zdjęcia drugi raz (US4.7).
+    /** Drugie „Wyślij” nie wysyła zdjęcia drugi raz (US4.7). */
     @Test
     fun us4_7_sent_once() =
         runTest(dispatcher) {
@@ -111,7 +111,7 @@ class QuickSendViewModelTest {
             assertEquals(1, saved.size)
         }
 
-    // Pełna pamięć: „Spróbuj ponownie” zostaje (NFR-7).
+    /** Pełna pamięć: „Spróbuj ponownie” zostaje (NFR-7). */
     @Test
     fun nfr7_failed_save() =
         runTest(dispatcher) {
