@@ -24,7 +24,9 @@ permissions:
 
 concurrency:
   group: android-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  # Nowszy przebieg anuluje starszy także dla push i merge_group: wynik na głowie gałęzi ma być zawsze dostępny, a bez tego
+  # przy serii scaleń kolejne pushe czekały w grupie i były zastępowane, więc żaden nie kończył się i nie zapisywał cache.
+  cancel-in-progress: true
 
 jobs:
   zmiany:
