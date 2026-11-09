@@ -17,6 +17,9 @@ import java.io.File
  * Komentarz rozpoznaje po składni, nie po tekście linii: napisy zwykłe i surowe, znaki oraz komentarze blokowe
  * są pomijane w całości, więc `//` w adresie albo w surowym napisie nie jest komentarzem.
  *
+ * Ograniczenie (#681): tokenizator nie obsługuje zagnieżdżonych komentarzy blokowych ani cudzysłowów w szablonach
+ * napisów `${...}`.
+ *
  * `offenders`: Wpisy `ścieżka:wiersz` względem katalogu nadrzędnego `android/`, więc komunikat wskazuje miejsce
  * do poprawy.
  */
