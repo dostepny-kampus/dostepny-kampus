@@ -31,7 +31,7 @@ import org.robolectric.annotation.Config
 private const val CHECK = "Sprawdź, którędy wejść"
 private const val VISIT = "Którędy wejść do A-1"
 
-// Klatka zegara Compose: przejście V2 → V3 już trwa, ale się nie skończyło.
+/** Klatka zegara Compose: przejście V2 → V3 już trwa, ale się nie skończyło. */
 private const val MID_TRANSITION_MILLIS = 48L
 
 /**
