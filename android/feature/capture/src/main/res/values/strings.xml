@@ -39,6 +39,8 @@
     <string name="budynek_wybrany">Budynek: %1$s</string>
     <string name="budynek_miejsce_poza">Miejsce: poza budynkiem</string>
     <string name="budynek_anuluj">Anuluj</string>
+    <string name="budynek_najblizej">Najbliżej punktu, od najbliższego:</string>
+    <string name="budynek_na_liscie">Budynek %1$s, %2$d m</string>
     <string name="formularz_naglowek">Opisz barierę</string>
     <string name="formularz_naglowek_edycja">Popraw zgłoszenie</string>
     <string name="formularz_budynek">Budynek %1$s</string>
@@ -58,6 +60,7 @@
     <string name="formularz_polpietro">Półpiętro</string>
     <string name="formularz_typ">Typ bariery</string>
     <string name="formularz_typ_wybierz">Wybierz typ bariery</string>
+    <string name="formularz_zamknij">Zamknij</string>
     <string name="formularz_zapisz">Zapisz</string>
     <string name="formularz_zdjecie">Zdjęcie</string>
     <string name="formularz_wazne">Ważne</string>
@@ -100,4 +103,14 @@
     <string name="szybkie_rezygnacja">Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy. Aby je zachować, wybierz „Wróć do zdjęcia”.</string>
     <string name="szybkie_tak_zrezygnuj">Tak, zrezygnuj</string>
     <string name="szybkie_wroc_do_zdjecia">Wróć do zdjęcia</string>
+    <string name="moje_naglowek">Moje zgłoszenia</string>
+    <string name="moje_czeka">Czeka na wysłanie: %1$d</string>
+    <string name="moje_pusty">Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.</string>
+    <string name="moje_w_telefonie">W telefonie</string>
+    <string name="moje_wyslane">Wysłane</string>
+    <string name="moje_nie_wyslano">Nie wysłano</string>
+    <string name="moje_brak_uprawnien">Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.</string>
+    <string name="moje_nie_przyjal">Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.</string>
+    <string name="moje_otworz">Otwórz</string>
+    <string name="moje_typ_nieznany">Nieznany typ bariery</string>
 </resources>

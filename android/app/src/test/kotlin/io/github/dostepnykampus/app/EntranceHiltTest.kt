@@ -22,8 +22,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.ServerEntrances
 import io.github.dostepnykampus.core.data.di.DataModule
@@ -91,10 +89,6 @@ class EntranceHiltTest {
 
                 override suspend fun markHelpSeen() = Unit
             }
-
-        @Provides
-        @Singleton
-        fun roles(): RoleProvider = GuestRoleProvider
 
         @Provides
         fun ownSubmissions(): OwnSubmissions = OwnSubmissions { flowOf(emptyList()) }
