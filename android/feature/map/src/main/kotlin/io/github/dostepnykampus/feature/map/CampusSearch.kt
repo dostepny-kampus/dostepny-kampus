@@ -65,7 +65,6 @@ private const val ICON_VIEWPORT = 24f
 /** Skala czcionki, od której V1 startuje na liście, a przełącznik ma krótki napis „Lista” (NFR-19, NFR-20). */
 internal const val LIST_FONT_SCALE = 1.5f
 
-// Lupa i „×” z Material Icons, siatka 24 × 24, jak ikony paska dolnego.
 private val SearchIcon =
     icon(
         "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16" +
@@ -82,6 +81,15 @@ private val ClearIcon =
  * np. „A-1 329”, daje stan „brak wyniku” (decyzja 82) z przyciskiem „Lista budynków” (UC1 3a). Komunikat stoi pod
  * polem, więc osoba widzi go tam, gdzie pisała (WCAG 3.3.1), a TalkBack czyta go sam. Przy liście pole zawęża listę
  * zamiast pokazywać wynik.
+ *
+ * Nagłówek, pole i przełącznik stoją na tle powierzchni ekranu. Przełącznik „Mapa” i „Lista budynków” pokazuje
+ * wybraną pozycję tłem i ptaszkiem, nie tylko kolorem (NFR-19, NFR-21); przy dużej czcionce widać „Lista”, a
+ * TalkBack dalej czyta „Lista budynków” (NFR-20). Pole ma kształt kapsuły z lupą, a „×” z nazwą „Wyczyść pole”
+ * pojawia się po wpisaniu tekstu (NFR-53, NFR-18). Wynik albo karta „brak wyniku” stoi pod przełącznikiem i linią
+ * „Bez internetu”; karta mówi „Nie znaleźliśmy budynku »X«.”, daje radę i przycisk „Lista budynków” w białym
+ * kontenerze pod polem (UC1 3a, PW-9), a przy liście przycisku nie ma, bo lista już jest. Lista ma budynki
+ * w kolejności katalogu, jak wynik pola, a wpisany symbol zawęża ją (NFR-19, US2.5). Lupa i „×” to ikony
+ * Material Icons na siatce 24 × 24, jak ikony paska dolnego.
  *
  * @param catalog katalog budynków; `null`, dopóki się wczytuje
  * @param isOnline czy jest internet; bez niego pod przełącznikiem stoi [OfflineLine]
@@ -133,7 +141,6 @@ internal fun CampusSearch(
     }
 }
 
-// Nagłówek, pole i przełącznik na tle powierzchni ekranu.
 @Composable
 private fun SearchHeader(
     query: String,
@@ -158,8 +165,6 @@ private fun SearchHeader(
     }
 }
 
-// „Mapa” i „Lista budynków”; wybraną pozycję widać po tle i ptaszku, nie tylko po kolorze (NFR-19, NFR-21).
-// Przy dużej czcionce widać „Lista”, a TalkBack dalej czyta „Lista budynków” (NFR-20).
 @Composable
 private fun ViewToggle(isList: Boolean, onListChange: (Boolean) -> Unit) {
     val isShort = LocalDensity.current.fontScale >= LIST_FONT_SCALE
@@ -190,7 +195,6 @@ private fun ViewToggle(isList: Boolean, onListChange: (Boolean) -> Unit) {
     }
 }
 
-// Wynik albo karta brak wyniku pod przełącznikiem i linią „Bez internetu”.
 @Composable
 private fun ResultPanel(content: @Composable ColumnScope.() -> Unit) {
     val insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
@@ -203,7 +207,6 @@ private fun ResultPanel(content: @Composable ColumnScope.() -> Unit) {
     }
 }
 
-// Budynki w kolejności katalogu, jak wynik pola; wpisany symbol zawęża listę (NFR-19, US2.5).
 @Composable
 private fun BuildingList(
     catalog: BuildingCatalog?,
@@ -227,7 +230,6 @@ private fun BuildingList(
     }
 }
 
-// Pole w kształcie kapsuły z lupą; „×” z nazwą „Wyczyść pole” pojawia się po wpisaniu tekstu (NFR-53, NFR-18).
 @Composable
 private fun SymbolField(query: String, onQueryChange: (String) -> Unit) {
     OutlinedTextField(
@@ -250,8 +252,6 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit) {
     )
 }
 
-// „Nie znaleźliśmy budynku »X«.” z radą i przyciskiem „Lista budynków”, w białym kontenerze pod polem
-// (UC1 3a, PW-9). Przy liście przycisku nie ma, bo lista już jest.
 @Composable
 private fun NoResult(query: String, onShowList: (() -> Unit)?) {
     Surface(
@@ -275,7 +275,7 @@ private fun NoResult(query: String, onShowList: (() -> Unit)?) {
     }
 }
 
-// Ikona z jednej ścieżki Material Icons na siatce 24 × 24.
+/** Ikona z jednej ścieżki Material Icons [path] na siatce 24 × 24. */
 internal fun icon(path: String): ImageVector {
     val builder =
         ImageVector.Builder(

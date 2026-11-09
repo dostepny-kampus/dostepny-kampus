@@ -66,7 +66,6 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 private const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 
-// Jasność tła, poniżej której motyw jest ciemny i element pływający dostaje obwódkę zamiast samego cienia.
 private const val DARK_SURFACE_LUMINANCE = 0.5f
 private val ButtonSize = 48.dp
 
@@ -81,6 +80,15 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
  * w aplikacji, przyciski powiększania i przesuwania (NFR-53) i podpis OSM (NFR-37). Przyciski i podpis są
  * w `WindowInsets.safeDrawing`. Budynek z listy otwiera V2 jako arkusz na mapie (decyzja 48).
  * Widok kamery jest stanem zapisywanym, więc wraca po „Wstecz” z V2 (decyzja 83).
+ * Kamera to widok zapisany albo startowy; pod arkuszem V2 budynek [focus] stoi w części nad arkuszem, w punkcie
+ * podpisu, który zawsze leży wewnątrz konturu. Jeden trafiony budynek otwiera V2 od razu, a kilka czeka na wybór
+ * w arkuszu „Który budynek?” (decyzja 85). Przyciski mapy są, gdy nie ma arkusza V2 ani klawiatury; stoją
+ * w nim strzałki przesuwania w krzyżu, a pod nimi „Powiększ” i „Pomniejsz” (NFR-53, NFR-17, NFR-18, PW-8).
+ * Każdy przycisk ma pole 48 dp ze znakiem, a TalkBack czyta tylko jego nazwę, np. „Przesuń mapę w górę”.
+ * Podpis „© OpenStreetMap contributors” jest podkreślonym odnośnikiem na niskiej plakietce, jak w hi-fi V1; od
+ * skali czcionki 1,5 skraca się do „© OpenStreetMap” (NFR-37). Pole dotyku ma 48 dp i wystaje poza plakietkę
+ * (NFR-17). Gdy tło jest ciemne (jasność poniżej progu), element pływający dostaje obwódkę zamiast samego
+ * cienia, bo cień słabo widać.
  *
  * @param onBuildingClick symbol budynku, gdy dotknięcie z tolerancją 24 dp trafiło jeden kontur, albo budynku
  *   wybranego w arkuszu „Który budynek?”, gdy trafiło kontur wspólny albo dwa kontury (US2, decyzja 85)
@@ -274,24 +282,20 @@ private fun CampusMap(
     }
 }
 
-// Widok mapy: [own] albo startowy; pod arkuszem V2 budynek [focus] stoi w części nad arkuszem.
 private fun shownCamera(own: MapCamera?, start: GeoPoint?, focus: GeoPoint?, bottomInset: Double): MapCamera? =
     (own ?: start?.let { MapCamera(center = it, zoom = START_ZOOM) })?.aboveSheet(focus, bottomInset)
 
-// Jeden trafiony budynek otwiera V2 od razu, a kilka czeka na wybór w arkuszu „Który budynek?” (decyzja 85).
 private fun touched(symbols: List<String>, onBuildingClick: (String) -> Unit): List<String> {
     symbols.singleOrNull()?.let(onBuildingClick)
     return symbols.takeIf { it.size > 1 }.orEmpty()
 }
 
-// Budynek [symbol] stoi nad arkuszem V2 punktem podpisu, który zawsze leży wewnątrz konturu.
 private fun BuildingCatalog.pointOf(symbol: String?): GeoPoint? =
     buildings.firstOrNull { it.symbol == symbol }?.let { labelPoint(it.outline) }
 
 private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
     symbols.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
 
-// Przyciski mapy, gdy są (bez arkusza V2 i klawiatury), podpis OSM i [content] nad mapą (NFR-53, NFR-37).
 @Composable
 private fun MapOverlay(
     camera: MapCamera,
@@ -307,7 +311,6 @@ private fun MapOverlay(
     }
 }
 
-// Strzałki przesuwania w krzyżu, pod nimi „Powiększ” i „Pomniejsz” (NFR-53, NFR-17, NFR-18, PW-8).
 @Composable
 private fun MapControls(camera: MapCamera, onCameraChange: (MapCamera) -> Unit, modifier: Modifier = Modifier) {
     val move = { direction: PanDirection -> onCameraChange(camera.moved(direction)) }
@@ -328,7 +331,6 @@ private fun MapControls(camera: MapCamera, onCameraChange: (MapCamera) -> Unit, 
     }
 }
 
-// Przycisk 48 dp ze znakiem; TalkBack czyta tylko nazwę, np. „Przesuń mapę w górę”.
 @Composable
 private fun MapButton(name: Int, glyph: String, onClick: () -> Unit) {
     val description = stringResource(name)
@@ -337,9 +339,6 @@ private fun MapButton(name: Int, glyph: String, onClick: () -> Unit) {
     }
 }
 
-// „© OpenStreetMap contributors” jako podkreślony odnośnik na niskiej plakietce, jak w hi-fi V1; od skali czcionki 1,5
-// „© OpenStreetMap” (NFR-37). Pole dotyku ma 48 dp i wystaje poza plakietkę (NFR-17). W ciemnym motywie cień
-// słabo widać, więc plakietka ma też obwódkę.
 @Composable
 private fun OsmAttribution(modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
