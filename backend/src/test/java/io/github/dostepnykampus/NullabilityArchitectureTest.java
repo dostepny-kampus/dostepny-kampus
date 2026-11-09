@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus;
 
-import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
@@ -30,10 +29,8 @@ import java.util.stream.Stream;
 import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,11 +39,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * Strażnik: null tylko na granicy serwera.
  *
- * <p>Każdy pakiet kodu produkcyjnego ma {@code @NullMarked} w package-info,
- * poza listą pakietów czekających na oznaczenie. Lista ma się kurczyć, więc
- * pakiet z listy, który już ma adnotację, łamie regułę. Przykłady negatywne
- * test kompiluje do katalogu tymczasowego; pusty import jest błędem.
- * {@code Optional} jest tylko wynikiem metody. W
+ * <p>Pakiety sprawdzane przez NullAway wskazuje konfiguracja kompilatora w
+ * {@code pom.xml}. Przykłady negatywne test kompiluje do katalogu
+ * tymczasowego; pusty import jest błędem. {@code Optional} jest tylko wynikiem metody. W
  * {@code ..domain..} {@code @Nullable} stoi wyłącznie na komponentach rekordów
  * z zamkniętej listy par klasa i komponent; para z klasą, której jeszcze nie
  * ma w kodzie, jest dozwolona.</p>
@@ -59,12 +54,6 @@ final class NullabilityArchitectureTest {
      * Pakiet klas przykładów, poniżej pakietu bazowego.
      */
     private static final String FIXTURES = "io.github.dostepnykampus.fixture";
-
-    /**
-     * Pakiety (z podpakietami) czekające na oznaczenie; pusta, gdy każdy
-     * pakiet kodu produkcyjnego jest już oznaczony.
-     */
-    private static final List<String> WAITING = List.of();
 
     /**
      * Komponenty rekordów domeny dopuszczone jako {@code @Nullable}. Klasy z
@@ -88,27 +77,6 @@ final class NullabilityArchitectureTest {
      */
     @TempDir
     private Path dir;
-
-    @Test
-    void nullMarkedOutsideWaitingPackages() {
-        Assertions.assertDoesNotThrow(
-            () -> NullabilityArchitectureTest.state(
-                NullabilityArchitectureTest.WAITING, false
-            ).check(NullabilityArchitectureTest.production()),
-            "Pakiet poza listą czekających nie ma @NullMarked"
-        );
-    }
-
-    @Test
-    void waitingPackagesAreNotMarkedYet() {
-        Assumptions.assumeFalse(NullabilityArchitectureTest.WAITING.isEmpty());
-        Assertions.assertDoesNotThrow(
-            () -> NullabilityArchitectureTest.state(
-                NullabilityArchitectureTest.WAITING, true
-            ).check(NullabilityArchitectureTest.production()),
-            "Pakiet z listy czekających ma już @NullMarked albo nie istnieje"
-        );
-    }
 
     @Test
     void productionImportReachesSubpackages() {
@@ -163,50 +131,17 @@ final class NullabilityArchitectureTest {
 
     private static Stream<ArchRule> emptyScopeRules() {
         return Stream.of(
-            NullabilityArchitectureTest.state(NullabilityArchitectureTest.WAITING, false),
-            NullabilityArchitectureTest.state(NullabilityArchitectureTest.WAITING, true),
             NullabilityArchitectureTest.optionals(),
             NullabilityArchitectureTest.nullables(NullabilityArchitectureTest.LISTED)
         );
     }
 
     private static Stream<Sample> samples() {
-        final String pending = String.format("%s.p", NullabilityArchitectureTest.FIXTURES);
-        final String plain = "final class Plain { }";
-        final ArchRule none = NullabilityArchitectureTest.state(List.of(), false);
         final ArchRule optional = NullabilityArchitectureTest.optionals();
         final ArchRule nullable = NullabilityArchitectureTest.nullables(
             Map.of("Listed", Set.of("kept"))
         );
         return Stream.of(
-            new Sample(none, "bez package-info", Map.of("b/Plain", plain), true),
-            new Sample(
-                none, "pakiet tylko z package-info",
-                Map.of("t/package-info", "NullUnmarked"), true
-            ),
-            new Sample(
-                none, "bez NullMarked",
-                Map.of("r/package-info", "NullUnmarked", "r/Plain", plain), true
-            ),
-            new Sample(
-                NullabilityArchitectureTest.state(
-                    List.of(String.format("%s.w", NullabilityArchitectureTest.FIXTURES)), true
-                ), "pakiet z listy",
-                Map.of("w/package-info", "NullMarked", "w/Plain", plain), true
-            ),
-            new Sample(
-                NullabilityArchitectureTest.state(List.of(pending), false),
-                "oznaczony pakiet i pakiet z listy",
-                Map.of(
-                    "o/package-info", "NullMarked", "o/Good", plain,
-                    "p/Plain", plain
-                ), false
-            ),
-            new Sample(
-                NullabilityArchitectureTest.state(List.of(pending), true),
-                "nieoznaczony pakiet z listy",
-                Map.of("p/Plain", plain), false
-            ),
             new Sample(optional, "a/A", "class A { Optional<String> v; }", true),
             new Sample(optional, "a/A", "class A { void f(Optional<String> v) { } }", true),
             new Sample(optional, "a/A", "class A { A(Optional<String> v) { } }", true),
@@ -280,35 +215,6 @@ final class NullabilityArchitectureTest {
             public void check(final JavaClass item, final ConditionEvents events) {
                 for (final String found : check.apply(item.reflect())) {
                     events.add(SimpleConditionEvent.violated(item, found));
-                }
-            }
-        };
-    }
-
-    private static ArchRule state(final List<String> names, final boolean waiting) {
-        return ArchRuleDefinition.classes()
-            .that(NullabilityArchitectureTest.within(names, waiting))
-            .should(NullabilityArchitectureTest.marking(waiting));
-    }
-
-    private static DescribedPredicate<JavaClass> within(
-        final List<String> names, final boolean waiting
-    ) {
-        return DescribedPredicate.describe(
-            "reside in a package selected by the waiting list",
-            item -> waiting == names.stream().anyMatch(
-                name -> item.getPackageName().equals(name)
-                    || item.getPackageName().startsWith(String.format("%s.", name))
-            )
-        );
-    }
-
-    private static ArchCondition<JavaClass> marking(final boolean waiting) {
-        return new ArchCondition<JavaClass>("reside in a package with the expected @NullMarked") {
-            @Override
-            public void check(final JavaClass item, final ConditionEvents events) {
-                if (item.getPackage().isAnnotatedWith(NullMarked.class) == waiting) {
-                    events.add(SimpleConditionEvent.violated(item, item.getName()));
                 }
             }
         };
