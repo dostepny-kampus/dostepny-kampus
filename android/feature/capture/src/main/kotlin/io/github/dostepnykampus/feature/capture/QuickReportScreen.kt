@@ -39,6 +39,7 @@ import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import kotlinx.coroutines.flow.filter
+import java.io.File
 
 /**
  * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (US4.1).
@@ -52,21 +53,46 @@ import kotlinx.coroutines.flow.filter
 fun QuickReportScreen(route: ReportRoute, actions: QuickReportActions, modifier: Modifier = Modifier) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.szybkie_naglowek), onBack = actions.onBack)
+            // „Wstecz” w kroku 1 ze zdjęciem najpierw pyta o rezygnację; wstecz w pytaniu to „Wróć do zdjęcia”.
+            val isPhotoTaken = route.step == ReportStep.PHOTO && route.photoPath != null
+            var isLeaving by rememberSaveable { mutableStateOf(false) }
+            BackHandler(enabled = isPhotoTaken) { isLeaving = !isLeaving }
+            val back: () -> Unit = {
+                if (isPhotoTaken) {
+                    isLeaving = true
+                } else {
+                    actions.onBack()
+                }
+            }
+            BackHeader(title = stringResource(R.string.szybkie_naglowek), onBack = back)
             Column(
                 modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
-                if (route.step == ReportStep.SENT) {
-                    QuickSentMessage()
-                    MainButton(text = stringResource(R.string.szybkie_wroc_do_mapy), onClick = actions.onBackToMap)
-                } else {
-                    Text(stringResource(R.string.szybkie_krok, route.step.ordinal + 1))
-                    WithLocationPermission(onBack = actions.onBack) { QuickStep(route, actions) }
+                when {
+                    route.step == ReportStep.SENT -> {
+                        QuickSentMessage()
+                        MainButton(text = stringResource(R.string.szybkie_wroc_do_mapy), onClick = actions.onBackToMap)
+                    }
+
+                    isLeaving -> {
+                        QuickLeaveQuestion(onLeave = { leave(route, actions) }, onStay = { isLeaving = false })
+                    }
+
+                    else -> {
+                        Text(stringResource(R.string.szybkie_krok, route.step.ordinal + 1))
+                        WithLocationPermission(onBack = actions.onBack) { QuickStep(route, actions) }
+                    }
                 }
             }
         }
     }
+}
+
+// „Tak, zrezygnuj”: zdjęcie znika z telefonu, a zgłoszenie nie powstaje (UC7 1b).
+private fun leave(route: ReportRoute, actions: QuickReportActions) {
+    route.photoPath?.let { File(it).delete() }
+    actions.onBack()
 }
 
 @Composable
