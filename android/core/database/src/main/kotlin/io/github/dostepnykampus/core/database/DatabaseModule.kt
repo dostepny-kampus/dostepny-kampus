@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -28,7 +28,7 @@ object DatabaseModule {
     ): DkDatabase =
         Room
             .databaseBuilder(context, DkDatabase::class.java, NAME)
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
 
     /** Kolejka zgłoszeń z [database]. */
@@ -38,4 +38,8 @@ object DatabaseModule {
     /** Kopia listy budynków z [database] (NFR-10). */
     @Provides
     fun buildingCache(database: DkDatabase): BuildingCacheDao = database.buildingCache()
+
+    /** Historia własnych zgłoszeń z [database] (US8). */
+    @Provides
+    fun ownSubmissions(database: DkDatabase): OwnSubmissionDao = database.ownSubmissions()
 }
