@@ -15,3 +15,5 @@
 <!-- Polecenia albo kroki do powtórzenia. -->
 
 Closes #
+
+<!-- Zasady i kontrole PR: CONTRIBUTING.md. -->
