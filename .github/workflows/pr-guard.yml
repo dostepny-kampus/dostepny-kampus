@@ -245,4 +245,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: bash .github/scripts/todo-issue.sh

@@ -22,14 +22,15 @@ is_pull='to PR, nie issue'
 
 issue_json() { printf '{"state":"%s","url":"https://github.com/o/r/%s/%s"}\n' "$2" "${3:-issues}" "$1" >"$workdir/issues/$1.json"; }
 
-# run_case <nazwa> <oczekiwany kod> <oczekiwany tekst lub pusty> <ścieżka pliku> <zawartość pliku>
+# run_case <nazwa> <oczekiwany kod> <oczekiwany tekst lub pusty> <ścieżka pliku> <zawartość pliku> [<opis PR>]
 run_case() {
-  local name="$1" expected="$2" text="$3" path="$4" content="$5" status=0 out
+  local name="$1" expected="$2" text="$3" path="$4" content="$5" body="${6:-}" status=0 out
   rm -rf "$repo" "$workdir/issues"
   mkdir -p "$repo" "$workdir/issues"
   issue_json 5 OPEN
   issue_json 6 CLOSED
   issue_json 7 OPEN pull
+  issue_json 8 OPEN
   (
     cd "$repo"
     git init --quiet
@@ -41,7 +42,7 @@ run_case() {
     git add -A
     git commit --quiet -m baza
   )
-  out="$(cd "$repo" && ISSUE_JSON_DIR="$workdir/issues" bash "$script" 2>&1)" || status=$?
+  out="$(cd "$repo" && ISSUE_JSON_DIR="$workdir/issues" PR_BODY="$body" bash "$script" 2>&1)" || status=$?
   if ((status == expected)) && [[ $out == *"$text"* ]]; then
     echo "OK: ${name}"
   else
@@ -75,6 +76,11 @@ run_case "Kotlin: identyfikator todoList nie jest znacznikiem" 0 '' app/Main.kt 
 run_case "Kotlin: identyfikator TODOS i MyTODO nie są znacznikami" 0 '' app/Main.kt 'val TODOS = MyTODO()'
 run_case "YAML: nazwa joba znaczniki-todo i ścieżka todo-issue.sh nie są znacznikami" 0 '' .github/workflows/x.yml '  znaczniki-todo: run bash .github/scripts/todo-issue.sh'
 run_case "Kotlin: todo.kt w komentarzu nie jest znacznikiem" 0 '' app/Main.kt '// zob. todo.kt'
+run_case "PR zamyka #5, a kod ma TODO(#5): naruszenie z plikiem i wierszem" 1 'ten PR zamyka #5' app/Main.kt '// TODO(#5): później' 'Closes #5'
+run_case "PR zamyka #5, TODO(#5) małymi literami: naruszenie" 1 'ten PR zamyka #5' app/Main.kt '// todo(#5): później' 'Opis
+
+fixes #5'
+run_case "PR zamyka #5, a kod ma TODO(#8) z otwartym niezamykanym issue: czysto" 0 '' app/Main.kt '// TODO(#8): później' 'Closes #5'
 run_case "Markdown poza zakresem skanowania" 0 '' docs/notatki.md 'TODO: opisać'
 run_case "pliki samego strażnika są pomijane" 0 '' .github/scripts/todo-issue.sh '# TODO: przykład znacznika'
 run_case "plik tekstowy poza zakresem skanowania" 0 '' NOTES.txt 'FIXME bez numeru'

@@ -8,9 +8,15 @@ set -euo pipefail
 # musi mieć postać ZNACZNIK(#N), gdzie issue #N istnieje i jest otwarte. Skanuje pliki śledzone przez git
 # o rozszerzeniach kt, kts, java, yml, yaml, sh, z pominięciem plików samego strażnika (zawierają przykłady).
 # Stan issue z gh (bez dostępu do issue skrypt kończy się kodem 2); w teście zamiast sieci: ISSUE_JSON_DIR z plikami <numer>.json (gh issue view --json state,url).
+# PR_BODY (opis PR, opcjonalny): znacznik wskazujący issue zamykane przez ten PR (Closes|Fixes|Resolves #N) to naruszenie,
+# bo po scaleniu issue się zamknie, a znacznik zostanie i zaczerwieni cudze PR.
 # Kod wyjścia: 0 = czysto, 1 = naruszenie, 2 = błąd narzędzia gh lub jq (nie wiemy, czy issue jest w porządku).
 found=0
 declare -A states=()
+declare -A zamykane=()
+while read -r numer; do
+  [[ -n $numer ]] && zamykane[$numer]=1
+done < <(grep -oiP '(?<!\w)(?:closes|fixes|resolves)\s+#\K\d+' <<<"${PR_BODY:-}" || true)
 state=''
 
 tool_error() {
@@ -68,7 +74,11 @@ while IFS= read -r -d '' path; do
       number="${BASH_REMATCH[1]}"
       load_state "$number"
       case "$state" in
-        OPEN) ;;
+        OPEN)
+          if [[ -n ${zamykane[$number]:-} ]]; then
+            report "$path" "$line" "${marker}: ten PR zamyka #${number}, więc znacznik zostałby z zamkniętym issue; usuń znacznik albo wskaż inne issue."
+          fi
+          ;;
         PULL) report "$path" "$line" "${marker}: to PR, nie issue." ;;
         MISSING) report "$path" "$line" "${marker}: issue nie istnieje." ;;
         *) report "$path" "$line" "${marker}: issue zamknięte." ;;
