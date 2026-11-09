@@ -128,3 +128,4 @@ updates:
         update-types:
           - minor
           - patch
+# TODO sonda strażnika
