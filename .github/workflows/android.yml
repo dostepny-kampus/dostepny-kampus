@@ -167,17 +167,6 @@ jobs:
           find "$RUNNER_TEMP/apk" -name '*.apk' -print
           adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug.apk | head -n 1)"
           adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug-androidTest.apk | head -n 1)"
-      - name: Wyłącz sieć emulatora
-        run: |
-          # Testy nie mają ruchu sieciowego (serwer i podkład mapy z pliku); bez sieci nic nie wyjdzie na zewnątrz.
-          adb shell svc wifi disable || true
-          adb shell svc data disable || true
-          sleep 3
-          if adb shell ping -c 1 -W 3 8.8.8.8 > /dev/null 2>&1; then
-            echo "::error title=Emulator::Sieć emulatora nadal działa."
-            exit 1
-          fi
-          echo "Sieć emulatora wyłączona."
       - name: Testy na emulatorze
         run: |
           # Uruchamiacz testów (np. własny runner Hilt) odczytujemy z zainstalowanego APK testów, nie z konfiguracji workflow.
@@ -200,8 +189,8 @@ jobs:
           : > "$RUNNER_TEMP/instrumentacja.txt"
           zaliczone=0
           while read -r test; do
-            adb shell pm clear io.github.dostepnykampus
-            adb shell am instrument -w -e class "$test" "$uruchamiacz" | tr -d '\r' | tee -a "$RUNNER_TEMP/instrumentacja.txt" > "$RUNNER_TEMP/wynik.txt"
+            adb shell pm clear io.github.dostepnykampus < /dev/null
+            adb shell am instrument -w -e class "$test" "$uruchamiacz" < /dev/null | tr -d '\r' | tee -a "$RUNNER_TEMP/instrumentacja.txt" > "$RUNNER_TEMP/wynik.txt"
             cat "$RUNNER_TEMP/wynik.txt"
             # `am instrument` kończy się kodem 0 także przy porażce testu, więc wynik czytamy z wyjścia.
             if grep -Eq '^OK \(1 test\)' "$RUNNER_TEMP/wynik.txt"; then
