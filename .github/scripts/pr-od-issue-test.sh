@@ -10,7 +10,8 @@ set -euo pipefail
 #                    niedomyślnej GitHub nie wypełnia closingIssuesReferences,
 #   ISSUE_JSON_DIR - katalog z plikami <numer>.json, każdy to odpowiedź `gh issue view --json state,assignees,url`.
 #   PR_OD_ISSUE_OSTRZEGAJ=1 - tryb ostrzegawczy: te same uwagi jako ::warning, ale kod 0.
-# Nazwa gałęzi PR ma mieć postać N-krotki-opis, a #N ma być wśród zamykanych issue (poza gałęziami dependabot/*).
+# Nazwa gałęzi PR ma mieć postać N-krotki-opis, a #N ma być wśród zamykanych issue.
+# PR autora dependabot[bot] jest pomijany (kod 0) niezależnie od gałęzi i opisu.
 # Kod wyjścia 0 = PR spełnia zasady, 1 = naruszenie (tekst w wyjściu).
 script="$(cd "$(dirname "$0")" && pwd)/pr-od-issue.sh"
 workdir="$(mktemp -d)"
@@ -106,7 +107,7 @@ run_case "issue zamknięte" 1 "$closed" case_closed_issue
 run_case "issue bez przypisanej osoby" 1 "$unassigned" case_unassigned
 run_case "issue przypisane komuś innemu" 1 "$unassigned" case_other_assignee
 run_case "autor jest jedną z przypisanych osób" 0 '' case_author_among_assignees
-run_case "dependabot bez issue" 0 '' case_dependabot
+run_case "dependabot[bot] pomijany: bez issue i z gałęzią dependabot/*" 0 '' case_dependabot
 run_case "kilka issue w opisie, wszystkie poprawne" 0 '' case_two_issues_ok
 run_case "kilka issue w opisie, jedno zamknięte" 1 "$closed" case_second_issue_closed
 run_case "numer jest PR, nie issue" 1 "$is_pull" case_pull_number
