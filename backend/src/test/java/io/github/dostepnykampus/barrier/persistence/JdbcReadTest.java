@@ -50,10 +50,6 @@ final class JdbcReadTest {
         final String home = SubmissionData.BUILDING;
         final SubmissionStatus sent = SubmissionStatus.SENT;
         final SubmissionContent ground = SubmissionData.content(home, "p1", "o");
-        final UUID first = JdbcReadTest.created(data, data.seed(3, ground, sent), 0);
-        final UUID rejected = JdbcReadTest.created(
-            data, data.seed(2, ground, SubmissionStatus.REJECTED), 1
-        );
         final UUID upper = JdbcReadTest.created(
             data, data.seed(1, SubmissionData.content(home, "p2", "o"), sent), 2
         );
@@ -62,6 +58,10 @@ final class JdbcReadTest {
         );
         final UUID other = JdbcReadTest.created(
             data, data.seed(4, SubmissionData.content(SubmissionData.OTHER, "p1", "o"), sent), 4
+        );
+        final UUID first = JdbcReadTest.created(data, data.seed(3, ground, sent), 0);
+        final UUID rejected = JdbcReadTest.created(
+            data, data.seed(2, ground, SubmissionStatus.REJECTED), 1
         );
         Assertions.assertEquals(
             List.of(
