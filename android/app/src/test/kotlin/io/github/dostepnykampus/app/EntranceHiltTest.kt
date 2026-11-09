@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.app
@@ -22,14 +22,13 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.ServerEntrances
 import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.start.FirstLaunch
+import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
@@ -92,8 +91,7 @@ class EntranceHiltTest {
             }
 
         @Provides
-        @Singleton
-        fun roles(): RoleProvider = GuestRoleProvider
+        fun ownSubmissions(): OwnSubmissions = OwnSubmissions { flowOf(emptyList()) }
 
         @Provides
         @Singleton

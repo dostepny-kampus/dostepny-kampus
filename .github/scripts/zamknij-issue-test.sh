@@ -17,6 +17,10 @@ cat >"$workdir/bin/gh" <<'SH'
 set -euo pipefail
 case "$1 $2" in
   'pr view') cat "$FAKE_BODY_FILE" ;;
+  'issue view')
+    if [[ " ${FAKE_PULLS:-} " == *" $3 "* ]]; then kind=pull; else kind=issues; fi
+    echo "https://github.com/o/r/$kind/$3"
+    ;;
   'issue close') printf '%s|%s\n' "$3" "$5" >>"$FAKE_LOG" ;;
   *) echo "nieoczekiwane wywołanie gh: $*" >&2; exit 2 ;;
 esac
@@ -25,13 +29,14 @@ chmod +x "$workdir/bin/gh"
 
 # run_case <nazwa> <opis PR> <oczekiwany dziennik: wiersze numer|komentarz, rozdzielone \n>
 run_case() {
-  local name="$1" body="$2" expected="$3" status=0 actual
+  local name="$1" body="$2" expected="$3" pulls="${4:-}" text="${5:-}" status=0 actual
   printf '%b' "$body" >"$workdir/body.txt"
   : >"$workdir/log.txt"
-  PATH="$workdir/bin:$PATH" FAKE_BODY_FILE="$workdir/body.txt" FAKE_LOG="$workdir/log.txt" \
+  PATH="$workdir/bin:$PATH" FAKE_BODY_FILE="$workdir/body.txt" FAKE_LOG="$workdir/log.txt" FAKE_PULLS="$pulls" \
     bash "$script" 7 >"$workdir/out.txt" 2>&1 || status=$?
   actual="$(cat "$workdir/log.txt")"
-  if ((status == 0)) && [[ $actual == "$(printf '%b' "$expected")" ]]; then
+  if ((status == 0)) && [[ $actual == "$(printf '%b' "$expected")" ]] &&
+    [[ $(cat "$workdir/out.txt") == *"$text"* ]]; then
     echo "OK: ${name}"
   else
     echo "BŁĄD: ${name}: kod wyjścia ${status}, zamknięto „${actual//$'\n'/; }”, oczekiwano „${expected}”"
@@ -49,5 +54,7 @@ run_case "samo #N bez słowa kluczowego nie zamyka" 'Część #12, zob. też #13
 run_case "słowo kluczowe jako część innego słowa" 'Discloses #12' ''
 run_case "opis bez odwołań" 'Zwykły opis.' ''
 run_case "pusty opis" '' ''
+run_case "numer PR zamiast issue nie jest zamykany" 'Closes #12' '' 12 'to PR, nie issue'
+run_case "numer PR obok issue: issue zamknięte, PR pominięty" 'Closes #12\nCloses #13' "13|$done7" 12 'to PR, nie issue'
 
 exit "$((failures > 0 ? 1 : 0))"
