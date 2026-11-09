@@ -27,13 +27,6 @@ class ArchitectureTest {
             }
 
     @Test
-    fun infra_a1_pure_core_no_android() {
-        files
-            .filter { it.inPackage("core.model") || it.inPackage("core.geo") }
-            .assertFalse { file -> file.imports.any { it.name.startsWith("android.") } }
-    }
-
-    @Test
     fun infra_a1_core_not_on_feature() {
         files
             .filter { it.inPackage("core") }

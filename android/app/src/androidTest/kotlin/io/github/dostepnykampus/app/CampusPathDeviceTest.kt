@@ -15,6 +15,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -27,11 +29,16 @@ private val BuildingA1InCatalog = hasContentDescription("A-1, ", substring = tru
 
 /**
  * Ścieżka US1–US3 na emulatorze, na prawdziwej aktywności i grafie Hilt aplikacji (NFR-41): wyszukanie budynku, karta
- * V2 i „Którędy wejść” V3. Emulator nie ma serwera, więc katalog i wejścia pochodzą z pliku w aplikacji.
+ * V2 i „Którędy wejść” V3. Sieć w grafie zastępuje [NoServerNetworkModule]: serwera nie ma, więc katalog i wejścia
+ * zawsze pochodzą z pliku w aplikacji.
  */
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class CampusPathDeviceTest {
-    @get:Rule
+    @get:Rule(order = 0)
+    val hilt = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
     val compose = createAndroidComposeRule<MainActivity>()
 
     private fun waitFor(matcher: SemanticsMatcher) {
