@@ -4,6 +4,8 @@ name: pr-od-issue
 # Domyślnie tylko ostrzega w logu. Tryb wymagany (PR bez issue → szkic i komentarz) włącza zmienna repozytorium
 # PR_OD_ISSUE_WYMAGANE=1, ustawiana od daty podanej przez właściciela repozytorium.
 # Zdarzenie pull_request: PR z gałęzi tego repozytorium ma token z zapisem; PR z forków i Dependabota pomijamy.
+# Etykiety obszaru nadaje równolegle workflow etykiet, więc kontrola powtarza się też po zmianie etykiet (labeled, unlabeled);
+# inaczej przy otwarciu PR widziałaby go bez etykiet i już by tego nie sprawdziła.
 # Skrypt pochodzi z gałęzi docelowej (checkout base.ref), nie z kodu PR.
 on:
   pull_request:
@@ -14,6 +16,8 @@ on:
       - opened
       - edited
       - reopened
+      - labeled
+      - unlabeled
 
 permissions:
   contents: read
