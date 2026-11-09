@@ -10,7 +10,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierGroup
 import org.junit.Assert.assertEquals
@@ -49,7 +48,7 @@ class QuickGroupStepTest {
         compose.onNodeWithText("Na którym piętrze?").assertIsDisplayed()
         compose.onNodeWithText("Nie wiem").performClick()
         compose.onNodeWithText("Parter").performClick()
-        compose.onNodeWithText("2").performScrollTo().performClick()
+        compose.onNodeWithText("2").performClick()
         assertEquals(listOf(null, 0, 2), floors)
     }
 }
