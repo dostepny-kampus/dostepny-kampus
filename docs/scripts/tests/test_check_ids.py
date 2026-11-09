@@ -145,6 +145,44 @@ class KotlinParsingTest(unittest.TestCase):
         self.assertEqual(kotlin_markers(source, "\r\n"), [("Zgłoszenie „Brak windy przy wejściu”", "aktywny")])
 
 
+class KdocMarkersTest(unittest.TestCase):
+    def test_full_and_partial_marker_in_multiline_kdoc(self) -> None:
+        for partial in ("", " (częściowo)"):
+            source = f"/**\n * Wiersz: opis.\n * Scenariusz{partial}: kampus.feature: Pełny test\n */\n@Test\nfun a() = Unit\n"
+            self.assertEqual(kotlin_markers(source), [("Pełny test", "aktywny")], partial)
+
+    def test_final_period_of_kdoc_marker_is_not_part_of_the_name(self) -> None:
+        for source in (
+            "/** Scenariusz: kampus.feature: Pełny test. */\n@Test\nfun a() = Unit\n",
+            "/**\n * Scenariusz: kampus.feature: Pełny\n *   test.\n */\n@Test\nfun a() = Unit\n",
+        ):
+            self.assertEqual(kotlin_markers(source), [("Pełny test", "aktywny")], source)
+
+    def test_marker_in_single_line_kdoc(self) -> None:
+        source = "/** Scenariusz: kampus.feature: Pełny test */\n@Test\nfun a() = Unit\n"
+        self.assertEqual(kotlin_markers(source), [("Pełny test", "aktywny")])
+
+    def test_kdoc_continuation_extends_the_name(self) -> None:
+        source = "/**\n * Scenariusz: kampus.feature: Zgłoszenie „Brak windy\n *   przy wejściu”\n */\n@Test\nfun a() = Unit\n"
+        self.assertEqual(kotlin_markers(source), [("Zgłoszenie „Brak windy przy wejściu”", "aktywny")])
+
+    def test_plain_kdoc_line_after_marker_is_not_a_continuation(self) -> None:
+        source = "/**\n * Scenariusz: kampus.feature: Pełny test\n * Zwykły wiersz opisu.\n */\n@Test\nfun a() = Unit\n"
+        self.assertEqual(kotlin_markers(source), [("Pełny test", "aktywny")])
+
+    def test_kdoc_marker_without_test_has_empty_state(self) -> None:
+        self.assertEqual(kotlin_markers("/** Scenariusz: kampus.feature: Pełny test */\nval a = 1\n"), [("Pełny test", "")])
+
+    def test_ordinary_kdoc_and_block_comment_markers(self) -> None:
+        self.assertEqual(kotlin_markers("/**\n * Opis bez znacznika.\n */\n@Test\nfun a() = Unit\n"), [])
+        self.assertEqual(kotlin_markers("/* Scenariusz: kampus.feature: Pełny test */\n@Test\nfun a() = Unit\n"), [])
+
+    def test_kdoc_marker_equals_line_comment_marker(self) -> None:
+        line = kotlin_markers("// Scenariusz (częściowo): kampus.feature: A\n//   b\n@Test\nfun a() = Unit\n")
+        kdoc = kotlin_markers("/**\n * Scenariusz (częściowo): kampus.feature: A\n *   b\n */\n@Test\nfun a() = Unit\n")
+        self.assertEqual(line, kdoc)
+
+
 def table_rows(page: str) -> list[list[str]]:
     """Zwraca komórki wierszy tabel Markdown ze strony `page` (bez nagłówków i separatorów)."""
     rows = [check_ids.table_cells(line) for line in page.splitlines()]
