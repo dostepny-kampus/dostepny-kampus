@@ -213,18 +213,20 @@ final class NullabilityArchitectureTest {
             new ArchCondition<JavaClass>("not switch off NullAway with @NullUnmarked") {
                 @Override
                 public void check(final JavaClass item, final ConditionEvents events) {
-                    if (
-                        item.isAnnotatedWith(NullUnmarked.class)
-                        || item.getPackage().isAnnotatedWith(NullUnmarked.class)
-                        || item.getMembers().stream().anyMatch(
-                            member -> member.isAnnotatedWith(NullUnmarked.class)
-                        )
-                    ) {
+                    if (NullabilityArchitectureTest.switchedOff(item)) {
                         events.add(SimpleConditionEvent.violated(item, item.getName()));
                     }
                 }
             }
         );
+    }
+
+    private static boolean switchedOff(final JavaClass item) {
+        return item.isAnnotatedWith(NullUnmarked.class)
+            || item.getPackage().isAnnotatedWith(NullUnmarked.class)
+            || item.getMembers().stream().anyMatch(
+                member -> member.isAnnotatedWith(NullUnmarked.class)
+            );
     }
 
     private static ArchRule optionals() {
