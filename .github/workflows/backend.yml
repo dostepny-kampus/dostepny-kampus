@@ -74,11 +74,16 @@ jobs:
           cache: maven
           cache-dependency-path: backend/pom.xml
       - name: Zbuduj, przetestuj i sprawdź qulice
+        if: ${{ github.event_name != 'push' }}
         run: ./mvnw -B verify
+      - name: Pobierz zależności do cache Maven
+        # Na push po scaleniu z kolejki kontrole przeszły już w merge_group na tym samym SHA; tu tylko zapis cache zależności.
+        if: ${{ github.event_name == 'push' }}
+        run: ./mvnw -B -DskipTests test-compile
 
   jakosc:
     needs: zmiany
-    if: ${{ !cancelled() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
+    if: ${{ !cancelled() && github.event_name != 'push' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
