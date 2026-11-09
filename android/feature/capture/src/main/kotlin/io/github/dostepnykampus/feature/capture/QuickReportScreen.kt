@@ -43,7 +43,12 @@ import java.io.File
 
 /**
  * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (US4.1).
+ * „Wstecz” w kroku 1 ze zdjęciem najpierw pyta o rezygnację; wstecz w pytaniu to „Wróć do zdjęcia”. Po wysłaniu
+ * ekran pokazuje tylko potwierdzenie (`SENT`); z kroków końcowych zostaje krok 3, wysłanie.
  * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację (NFR-27, BR-8).
+ * Krok 1: „Zrób zdjęcie” otwiera aparat, a zdjęcie od razu prowadzi do kroku 2; po powrocie z kroku 2 jest „Dalej”.
+ * Krok 2: grupa, a w konturze albo przy nieznanej pozycji pytanie o piętro; „Wstecz” z pytania wraca do grup.
+ * „Tak, zrezygnuj”: zdjęcie znika z telefonu, a zgłoszenie nie powstaje (UC7 1b).
  *
  * @param route krok z danymi wcześniejszych kroków
  * @param actions czynności nawigatora
@@ -53,7 +58,6 @@ import java.io.File
 fun QuickReportScreen(route: ReportRoute, actions: QuickReportActions, modifier: Modifier = Modifier) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            // „Wstecz” w kroku 1 ze zdjęciem najpierw pyta o rezygnację; wstecz w pytaniu to „Wróć do zdjęcia”.
             val isPhotoTaken = route.step == ReportStep.PHOTO && route.photoPath != null
             var isLeaving by rememberSaveable { mutableStateOf(false) }
             BackHandler(enabled = isPhotoTaken) { isLeaving = !isLeaving }
@@ -89,7 +93,6 @@ fun QuickReportScreen(route: ReportRoute, actions: QuickReportActions, modifier:
     }
 }
 
-// „Tak, zrezygnuj”: zdjęcie znika z telefonu, a zgłoszenie nie powstaje (UC7 1b).
 private fun leave(route: ReportRoute, actions: QuickReportActions) {
     route.photoPath?.let { File(it).delete() }
     actions.onBack()
@@ -106,14 +109,12 @@ private fun QuickStep(route: ReportRoute, actions: QuickReportActions) {
             QuickGroupStep(route = route, onNext = actions.onNext)
         }
 
-        // Potwierdzenie SENT pokazuje QuickReportScreen bez kroków, więc tu trafia tylko krok 3.
         ReportStep.SEND, ReportStep.SENT -> {
             route.quickReport()?.let { QuickSendStep(route = route, report = it, onSend = actions.onSent) }
         }
     }
 }
 
-// Krok 1: „Zrób zdjęcie” otwiera aparat, a zdjęcie od razu prowadzi do kroku 2; po powrocie z kroku 2 „Dalej”.
 @Composable
 private fun QuickPhotoStep(route: ReportRoute, onNext: (ReportRoute) -> Unit) {
     val takePhoto = rememberPhotoCamera(onPhoto = { onNext(route.copy(photoId = it.photoId, photoPath = it.path)) })
@@ -121,7 +122,6 @@ private fun QuickPhotoStep(route: ReportRoute, onNext: (ReportRoute) -> Unit) {
     if (route.photoPath != null) MainButton(text = stringResource(R.string.pomiar_dalej), onClick = { onNext(route) })
 }
 
-// Krok 2: grupa, a w konturze albo przy nieznanej pozycji pytanie o piętro; „Wstecz” z pytania wraca do grup.
 @Composable
 private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit) {
     var asked by rememberSaveable { mutableStateOf<BarrierGroup?>(null) }

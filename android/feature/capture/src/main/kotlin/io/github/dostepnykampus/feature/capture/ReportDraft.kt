@@ -22,7 +22,8 @@ class ReportDraft {
 
     internal fun restore(form: ReportForm): ReportUiState = saved?.toUiState(form) ?: ReportUiState(form = form)
 
-    internal fun clear() {
+    /** Usuwa pola po zakończeniu zgłoszenia lub wyjściu z C1 i C2. */
+    fun clear() {
         saved = null
     }
 }

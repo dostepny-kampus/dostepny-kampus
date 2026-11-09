@@ -20,6 +20,10 @@ private const val CELL_CENTER = 0.5
  * nad prostokątem tej części (przybliżony „pole of inaccessibility”). Środek ciężkości konturu z dziedzińcem, jak
  * A-1, może wypaść poza kontur, a ten punkt nie. Jeden punkt na kontur daje jeden podpis także przy wielokącie
  * złożonym (US1, reguła 4 wymagań wspólnych).
+ *
+ * Punkt leży wewnątrz konturu, gdy promień z niego przecina krawędzie wszystkich pierścieni nieparzystą liczbę razy;
+ * parzysta liczba przecięć znaczy poza konturem albo w dziedzińcu. Odległość liczy się na płaszczyźnie, w której
+ * stopień długości jest krótszy o cosinus szerokości.
  */
 fun labelPoint(area: GeoArea): GeoPoint {
     val polygon = area.parts().maxBy { abs(it.rings.first().signedArea()) }
@@ -42,7 +46,6 @@ fun labelPoint(area: GeoArea): GeoPoint {
 private fun List<GeoPoint>.signedArea(): Double =
     zipWithNext { a, b -> a.longitude * b.latitude - b.longitude * a.latitude }.sum() / 2
 
-// Parzysta liczba przecięć promienia z krawędziami wszystkich pierścieni: punkt poza konturem albo w dziedzińcu.
 private fun GeoPolygon.contains(point: GeoPoint): Boolean =
     rings.sumOf { ring ->
         ring.zipWithNext().count { (a, b) ->
@@ -57,7 +60,6 @@ private fun GeoPolygon.edgeDistance(point: GeoPoint, scale: Double): Double =
         ring.zipWithNext().minOf { (a, b) -> segmentDistance(point = point, start = a, end = b, scale = scale) }
     }
 
-// Odległość na płaszczyźnie, w której stopień długości jest krótszy o cosinus szerokości.
 private fun segmentDistance(point: GeoPoint, start: GeoPoint, end: GeoPoint, scale: Double): Double {
     val dx = (end.longitude - start.longitude) * scale
     val dy = end.latitude - start.latitude

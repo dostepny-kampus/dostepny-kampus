@@ -6,7 +6,12 @@
 package io.github.dostepnykampus.feature.capture
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -16,6 +21,7 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,6 +38,13 @@ class PlaceSectionTest {
     private val a1 = building(symbol = "A-1", name = "Gmach Główny")
     private val b1 = building(symbol = "B-1", name = "Budynek B-1")
     private val actions = mutableListOf<String>()
+    private val nearest =
+        Buildings(
+            listOf(
+                BuildingHint(a1, distanceMeters = 4.6, isInside = false),
+                BuildingHint(b1, distanceMeters = 31.0, isInside = false),
+            ),
+        )
 
     private fun show(place: PlaceChoice) {
         val record =
@@ -41,7 +54,7 @@ class PlaceSectionTest {
                 onOutside = { actions += "outside" },
             )
         compose.setContent {
-            DostepnyKampusTheme { PlaceSection(place = place, buildings = Buildings(listOf(a1, b1)), actions = record) }
+            DostepnyKampusTheme { PlaceSection(place = place, buildings = nearest, actions = record) }
         }
     }
 
@@ -49,7 +62,10 @@ class PlaceSectionTest {
     @Test
     fun us6_2_hint_name_and_distance() {
         show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 12.4, isInside = false)))
-        compose.onNodeWithText("Czy to budynek A-1?").assertIsDisplayed()
+        compose
+            .onNodeWithText("Czy to budynek A-1?")
+            .assertIsDisplayed()
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
         compose.onNodeWithText("Gmach Główny").assertIsDisplayed()
         compose.onNodeWithText("12 m od punktu").assertIsDisplayed()
         compose.onNodeWithText("Potwierdź").performClick()
@@ -61,8 +77,9 @@ class PlaceSectionTest {
         show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 0.0, isInside = true)))
         compose.onNodeWithText("Punkt leży w obrysie budynku").assertIsDisplayed()
         compose.onNodeWithText("Wybierz inny").performClick()
-        compose.onNodeWithText("B-1 Budynek B-1").performClick()
+        compose.onNodeWithText("Budynek B-1 Budynek B-1, 31 m").performClick()
         assertEquals(listOf("B-1"), actions)
+        compose.onNodeWithText("Wybierz inny").assertIsDisplayed()
     }
 
     @Test
@@ -77,10 +94,28 @@ class PlaceSectionTest {
     fun us6_2_outside_from_list() {
         show(PlaceChoice.Outside)
         compose.onNodeWithText("Wybierz budynek").performClick()
-        compose.onNodeWithText("B-1 Budynek B-1").assertIsDisplayed()
+        compose.onNodeWithText("Budynek B-1 Budynek B-1, 31 m").assertIsDisplayed()
         compose.onNodeWithText("Poza budynkiem").performClick()
         assertEquals(listOf("outside"), actions)
         compose.onNodeWithText("Anuluj").assertDoesNotExist()
+    }
+
+    /** „Wybierz inny” pokazuje sekcję na ekranie, nie okno: najbliższe budynki od najbliższego z odległością. */
+    @Test
+    fun us6_2_nearest_section() {
+        show(PlaceChoice.Chosen(b1))
+        compose.onNodeWithText("Wybierz inny").performClick()
+        compose.onNode(isDialog()).assertDoesNotExist()
+        compose
+            .onNodeWithText("Wybierz budynek")
+            .assertIsDisplayed()
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
+        compose.onNodeWithText("Najbliżej punktu, od najbliższego:").assertIsDisplayed()
+        val first = compose.onNodeWithText("Budynek A-1 Gmach Główny, 5 m").getUnclippedBoundsInRoot().top
+        val second = compose.onNodeWithText("Budynek B-1 Budynek B-1, 31 m").getUnclippedBoundsInRoot().top
+        assertTrue(first < second)
+        compose.onNodeWithText("Anuluj").performClick()
+        compose.onNodeWithText("Budynek: B-1 Budynek B-1").assertIsDisplayed()
     }
 
     // Daleko od budynków: „poza budynkiem” bez komunikatu o błędzie, a budynek można wybrać (BR-G4).

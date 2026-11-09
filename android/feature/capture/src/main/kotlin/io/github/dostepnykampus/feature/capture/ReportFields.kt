@@ -37,7 +37,10 @@ import kotlin.math.roundToInt
 
 private val POLISH = Locale.forLanguageTag("pl-PL")
 
-/** Budynek i miejsce słowami z C1 bez współrzędnych oraz „Zmień miejsce” (US7.4, NFR-19). */
+/**
+ * Budynek i miejsce słowami z C1 bez współrzędnych oraz „Zmień miejsce” (US7.4, NFR-19). Miejsce brzmi np. „ok. 3 m
+ * od wejścia głównego, dokładność 0,8 m”; bez wejść w danych jest sama dokładność (US7.4, US6.1).
+ */
 @Composable
 internal fun PlaceCard(place: ReportPlace, onChangePlace: () -> Unit) {
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
@@ -70,7 +73,6 @@ private fun buildingText(place: ReportPlace): String {
 @Composable
 @ReadOnlyComposable
 private fun placeInWords(place: ReportPlace): String {
-    // Np. „ok. 3 m od wejścia głównego, dokładność 0,8 m”; bez wejść w danych sama dokładność (US7.4, US6.1).
     val accuracy = String.format(POLISH, "%.1f", place.accuracyMeters)
     val nearest = place.nearestEntrance ?: return stringResource(R.string.formularz_dokladnosc, accuracy)
     val name = nearest.entrance.name

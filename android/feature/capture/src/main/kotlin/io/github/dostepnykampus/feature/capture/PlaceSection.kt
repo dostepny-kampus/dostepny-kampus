@@ -8,9 +8,6 @@ package io.github.dostepnykampus.feature.capture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -24,18 +21,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.geo.BuildingHint
 import io.github.dostepnykampus.core.model.Building
 import kotlin.math.roundToInt
 
 /**
- * Budynki do „Wybierz inny”; opakowanie listy, żeby Compose wiedział, że się nie zmienia.
+ * Budynki do sekcji „Wybierz budynek”; opakowanie listy, żeby Compose wiedział, że się nie zmienia.
  *
- * @property items budynki z katalogu
+ * @property items budynki najbliżej punktu, od najbliższego, z odległością
  */
 @Immutable
-data class Buildings(val items: List<Building>)
+data class Buildings(val items: List<BuildingHint>)
 
 /**
  * Czynności wyboru budynku na C1 (US6.2).
@@ -56,6 +55,7 @@ data class PlaceActions(val onConfirm: () -> Unit, val onChoose: (String) -> Uni
 /**
  * Budynek zgłoszenia po pomiarze: „Czy to budynek C-13?” z nazwą i odległością, „Potwierdź”, „Wybierz inny”,
  * „Poza budynkiem” (US6.2, BR-G2). Daleko od budynków od razu „poza budynkiem”, bez komunikatu o błędzie (BR-G4).
+ * Lista budynków do wyboru ma „Poza budynkiem” na końcu, jak w makiecie wyboru budynku C1 (US6.2, BR-G2).
  *
  * @param place stan wyboru
  * @param buildings budynki do wyboru z listy
@@ -71,6 +71,28 @@ internal fun PlaceSection(
 ) {
     var isPicking by rememberSaveable { mutableStateOf(false) }
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        if (isPicking) {
+            NearestSection(
+                buildings = buildings,
+                onPick = { symbol ->
+                    isPicking = false
+                    actions.onChoose(symbol)
+                },
+                onOutside = {
+                    isPicking = false
+                    actions.onOutside()
+                },
+                onCancel = { isPicking = false },
+            )
+        } else {
+            PlaceQuestion(place = place, actions = actions, onPick = { isPicking = true })
+        }
+    }
+}
+
+@Composable
+private fun PlaceQuestion(place: PlaceChoice, actions: PlaceActions, onPick: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         when (place) {
             PlaceChoice.Locating -> {
                 Text(stringResource(R.string.budynek_szukanie))
@@ -79,35 +101,21 @@ internal fun PlaceSection(
             is PlaceChoice.Suggested -> {
                 Hint(place.hint)
                 Button(onClick = actions.onConfirm) { Text(stringResource(R.string.budynek_potwierdz)) }
-                OutlinedButton(onClick = { isPicking = true }) { Text(stringResource(R.string.budynek_wybierz_inny)) }
+                OutlinedButton(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
                 TextButton(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
             }
 
             is PlaceChoice.Chosen -> {
                 Text(stringResource(R.string.budynek_wybrany, place.building.label()))
-                OutlinedButton(onClick = { isPicking = true }) { Text(stringResource(R.string.budynek_wybierz_inny)) }
+                OutlinedButton(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
                 TextButton(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
             }
 
             PlaceChoice.Outside -> {
                 Text(stringResource(R.string.budynek_miejsce_poza))
-                OutlinedButton(onClick = { isPicking = true }) { Text(stringResource(R.string.budynek_wybierz)) }
+                OutlinedButton(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz)) }
             }
         }
-    }
-    if (isPicking) {
-        BuildingPicker(
-            buildings = buildings,
-            onPick = { symbol ->
-                isPicking = false
-                actions.onChoose(symbol)
-            },
-            onOutside = {
-                isPicking = false
-                actions.onOutside()
-            },
-            onDismiss = { isPicking = false },
-        )
     }
 }
 
@@ -116,6 +124,7 @@ private fun Hint(hint: BuildingHint) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(R.string.budynek_pytanie, hint.building.symbol),
+            modifier = Modifier.semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
         )
         hint.building.name?.let { Text(it) }
@@ -129,34 +138,31 @@ private fun Hint(hint: BuildingHint) {
     }
 }
 
-// Lista budynków z „Poza budynkiem” na końcu, jak w makiecie wyboru budynku C1 (US6.2, BR-G2).
 @Composable
-private fun BuildingPicker(
+private fun NearestSection(
     buildings: Buildings,
     onPick: (String) -> Unit,
     onOutside: () -> Unit,
-    onDismiss: () -> Unit,
+    onCancel: () -> Unit,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {},
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.budynek_anuluj)) } },
-        title = { Text(stringResource(R.string.budynek_wybierz)) },
-        text = {
-            LazyColumn {
-                items(buildings.items, key = Building::symbol) { building ->
-                    TextButton(onClick = { onPick(building.symbol) }, modifier = Modifier.fillMaxWidth()) {
-                        Text(text = building.label(), modifier = Modifier.fillMaxWidth())
-                    }
-                }
-                item {
-                    TextButton(onClick = onOutside, modifier = Modifier.fillMaxWidth()) {
-                        Text(text = stringResource(R.string.budynek_poza), modifier = Modifier.fillMaxWidth())
-                    }
-                }
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        Text(
+            text = stringResource(R.string.budynek_wybierz),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(stringResource(R.string.budynek_najblizej))
+        buildings.items.forEach { hint ->
+            val meters = hint.distanceMeters.roundToInt()
+            OutlinedButton(onClick = { onPick(hint.building.symbol) }, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.budynek_na_liscie, hint.building.label(), meters))
             }
-        },
-    )
+        }
+        OutlinedButton(onClick = onOutside, modifier = Modifier.fillMaxWidth()) {
+            Text(stringResource(R.string.budynek_poza))
+        }
+        TextButton(onClick = onCancel) { Text(stringResource(R.string.budynek_anuluj)) }
+    }
 }
 
 private fun Building.label(): String = name?.let { "$symbol $it" } ?: symbol

@@ -101,7 +101,8 @@ private typealias Action = Pair<String, () -> Unit>
  * z grafu Hilt, V2 karta budynku, V3 „Którędy wejść”, C1 i C2 z `feature:capture` i V5 z `feature:help`, reszta
  * to zaślepki: nagłówek „Wstecz” z nazwą z listy ekranów i przyciski czynności bez danych. Ekran z `feature:*`
  * zastępuje swoją gałąź i dostaje czynności jako lambdy. Zaślepki nie zapamiętują stanu, więc nie muszą się
- * odświeżać osobno od nawigatora.
+ * odświeżać osobno od nawigatora. Gdy konto staje się zalogowane (przełącznik ról w debug, potem logowanie),
+ * strona logowania przechodzi do V4 krok 1 albo L2 (US14.2).
  */
 @Composable
 @NonRestartableComposable
@@ -190,7 +191,6 @@ private fun AppNavigator.Account(route: NavKey) {
     val title = stringResource(if (isWork) R.string.nav_konto_i_praca else R.string.nav_konto)
     when {
         route is SignInRoute -> {
-            // Konto staje się zalogowane (przełącznik ról w debug, potem logowanie): V4 krok 1 albo L2 (US14.2).
             val isNowSignedIn = isSignedIn
             SideEffect { if (isNowSignedIn) signedIn() }
             Stub(title, stringResource(R.string.nie_teraz) to { backToMap() })

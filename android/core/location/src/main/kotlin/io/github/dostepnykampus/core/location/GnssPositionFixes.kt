@@ -17,7 +17,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-// Odczyt co sekundę, bo ekran C1 odświeża dokładność co ≤ 1 s (NFR-2).
 private const val INTERVAL_MILLIS = 1_000L
 
 private const val NANOS_IN_MILLI = 1_000_000L
@@ -29,6 +28,7 @@ private const val NANOS_IN_MILLI = 1_000_000L
  * satelitów, a stan satelitów da się czytać z tego samego odbiornika (`GnssStatus`, ADR-0001). Nasłuch trwa, dopóki
  * ktoś zbiera przepływ, i znika razem z nim, więc lokalizacja działa tylko przy otwartym ekranie (NFR-27). Bez
  * zgody na dokładną lokalizację przepływ kończy się [SecurityException]; o zgodę prosi ekran.
+ * Odczyt przychodzi co sekundę, bo ekran C1 odświeża dokładność co najwyżej co 1 s (NFR-2).
  */
 class GnssPositionFixes(private val context: Context) : PositionSource {
     /** Odczyty od teraz, aż do przerwania zbierania; czas odczytu z zegara monotonicznego telefonu. */
@@ -52,7 +52,7 @@ class GnssPositionFixes(private val context: Context) : PositionSource {
         }
 }
 
-// Odczyt bez promienia ufności dostaje NaN, który uśrednianie pomija.
+/** Odczyt bez promienia ufności dostaje dokładność NaN, którą uśrednianie pomija. */
 internal fun Location.toFix(): PositionFix =
     PositionFix(
         point = GeoPoint(longitude = longitude, latitude = latitude),
