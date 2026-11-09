@@ -110,7 +110,7 @@ class OwnHistoryTest {
                     putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
                     update = { id, _, content -> ApiResult.Success(SubmissionEdit.Saved(server(id, content))) },
                 ),
-            newId = { ID },
+            stamps = SubmissionStamps(newId = { ID }),
             history = history,
         )
 
