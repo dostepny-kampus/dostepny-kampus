@@ -10,6 +10,7 @@ import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,15 +44,20 @@ final class JdbcRaceTest {
             Connection lock = context.getBean(DataSource.class).getConnection()
         ) {
             lock.setAutoCommit(false);
+            final int holder;
             try (Statement select = lock.createStatement()) {
                 select.execute(
                     String.format("SELECT 1 FROM submissions WHERE id = '%s' FOR UPDATE", id)
                 );
+                try (ResultSet pid = select.executeQuery("SELECT pg_backend_pid()")) {
+                    pid.next();
+                    holder = pid.getInt(1);
+                }
             }
             final List<Future<EditResult>> edits = List.of(
                 pool.submit(this.edit(data, id, "a")), pool.submit(this.edit(data, id, "b"))
             );
-            this.awaitBlocked(data);
+            JdbcRaceTest.awaitBlocked(data, holder);
             lock.commit();
             for (final Future<EditResult> edit : edits) {
                 results.add(edit.get(20, TimeUnit.SECONDS));
@@ -68,11 +74,27 @@ final class JdbcRaceTest {
         );
     }
 
-    private void awaitBlocked(final SubmissionData data) {
+    /**
+     * Czeka, aż obie edycje czekają na blokadę trzymaną przez sesję holder,
+     * wprost albo za drugą edycją w kolejce do wiersza; sesje bazy spoza
+     * testu nie liczą się.
+     *
+     * @param data Dane testu z dostępem do bazy
+     * @param holder Identyfikator procesu sesji, która trzyma blokadę wiersza
+     */
+    private static void awaitBlocked(final SubmissionData data, final int holder) {
         final long limit = System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
         while (data.jdbc().sql(
-            "SELECT count(*) FROM pg_stat_activity WHERE wait_event_type = 'Lock'"
-        ).query(Integer.class).single() < 2) {
+            """
+            WITH RECURSIVE waiting(pid) AS (
+                SELECT :holder
+                UNION
+                SELECT activity.pid FROM pg_stat_activity AS activity
+                JOIN waiting ON waiting.pid = ANY(pg_blocking_pids(activity.pid))
+            )
+            SELECT count(*) - 1 FROM waiting
+            """
+        ).param("holder", holder).query(Integer.class).single() < 2) {
             Assertions.assertTrue(System.nanoTime() < limit, "Edycje nie czekają na blokadę");
             Thread.onSpinWait();
         }
