@@ -64,7 +64,7 @@ class QuickSendViewModel
         val position: StateFlow<QuickPosition?> =
             positions
                 .fixes()
-                .filter(PositionFix::hasAccuracy)
+                .filter { it.hasAccuracy }
                 .map { fix -> located(fix) }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
