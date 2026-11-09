@@ -35,8 +35,8 @@ run_case() {
   fi
 }
 
-run_case "zwykły PR: czysty tytuł, opis i commit" 0 vlladevk 'build: zmiana' 'opis' 'build: zmiana'
-run_case "zwykły PR: zakazane słowo w opisie" 1 vlladevk 'build: zmiana' 'opis z tajneslowo' 'build: zmiana'
+run_case "zwykły PR: czysty tytuł, opis i commit" 0 autor-pr 'build: zmiana' 'opis' 'build: zmiana'
+run_case "zwykły PR: zakazane słowo w opisie" 1 autor-pr 'build: zmiana' 'opis z tajneslowo' 'build: zmiana'
 run_case "dependabot: zakazane słowo w opisie jest pomijane" 0 "$bot" 'build(deps): podbij' 'notatki z tajneslowo' 'build(deps): podbij'
 run_case "dependabot: zakazane słowo w tytule" 1 "$bot" 'build(deps): tajneslowo' 'opis' 'build(deps): podbij'
 run_case "dependabot: zakazane słowo w commicie" 1 "$bot" 'build(deps): podbij' 'opis' 'build(deps): tajneslowo'
