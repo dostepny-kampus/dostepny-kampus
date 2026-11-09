@@ -157,3 +157,34 @@ jobs:
           persist-credentials: false
       - name: Sprawdź test strażnika jakości na przykładowych zmianach
         run: bash .github/scripts/straznik-jakosci-test.sh
+
+  baza-sprintu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Sprawdź bazę gałęzi sprintu
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          # Kontrolujemy gałąź sprintu, której dotyczy PR: bazową (PR do sprint/N) albo własną (scalenie sprint/N do main).
+          branch=""
+          if [[ $BASE_REF =~ ^sprint/[0-9]+$ ]]; then
+            branch=$BASE_REF
+          elif [[ $HEAD_REF =~ ^sprint/[0-9]+$ && $HEAD_REPO == "$GITHUB_REPOSITORY" ]]; then
+            branch=$HEAD_REF
+          fi
+          if [[ -z $branch ]]; then
+            echo "PR nie dotyczy gałęzi sprintu, kontrola bazy pominięta."
+            exit 0
+          fi
+          previous="sprint/$((${branch#sprint/} - 1))"
+          if ! git rev-parse --quiet --verify "refs/remotes/origin/${previous}" >/dev/null; then
+            echo "::notice title=Baza sprintu::Brak gałęzi ${previous} na origin — pomijam sprawdzenie, że poprzedni sprint jest w main; sprawdzam tylko, czy ${branch} wyrasta z main."
+          fi
+          bash .github/scripts/baza-sprintu.sh "$branch"
