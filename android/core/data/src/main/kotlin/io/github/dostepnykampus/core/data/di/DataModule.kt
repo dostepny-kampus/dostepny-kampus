@@ -25,14 +25,17 @@ import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.start.FirstLaunchRepository
 import io.github.dostepnykampus.core.data.start.startDataStore
+import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
+import io.github.dostepnykampus.core.data.submissions.toOwnSubmission
 import io.github.dostepnykampus.core.database.BuildingCacheDao
 import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.network.BuildingsApi
 import io.github.dostepnykampus.core.network.SubmissionsApi
+import kotlinx.coroutines.flow.map
 import javax.inject.Singleton
 
 /**
@@ -102,4 +105,9 @@ object DataModule {
             onSaved = sync::schedule,
             history = history,
         )
+
+    /** Własne zgłoszenia dla listy C3 z historii w telefonie (US8.1, NFR-5). */
+    @Provides
+    fun ownSubmissions(history: OwnSubmissionDao): OwnSubmissions =
+        OwnSubmissions { history.observe().map { rows -> rows.map { it.toOwnSubmission() } } }
 }
