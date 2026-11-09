@@ -23,7 +23,7 @@ class ReportDraft
             kept = state
         }
 
-        /** Oddaje odłożone pola raz; potem chowek jest pusty. */
+        /** Oddaje odłożone pola raz; potem schowek jest pusty. */
         fun take(): ReportUiState? = kept.also { kept = null }
 
         /** Kasuje odłożone pola. */
@@ -31,9 +31,3 @@ class ReportDraft
             kept = null
         }
     }
-
-/** Pola formularza w nowym miejscu; piętro zostaje tylko w tym samym budynku (US7.4, BR-G4). */
-internal fun ReportForm.movedTo(newPlace: ReportPlace): ReportForm {
-    val isSameBuilding = newPlace.buildingSymbol != null && newPlace.buildingSymbol == place.buildingSymbol
-    return copy(place = newPlace, floor = floor.takeIf { isSameBuilding })
-}
