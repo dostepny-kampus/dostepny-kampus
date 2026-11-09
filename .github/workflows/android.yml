@@ -51,6 +51,7 @@ jobs:
 
   emulator:
     needs: apk
+    # Na push po scaleniu z kolejki emulator przeszedł już w merge_group na tym samym SHA i nie zapisuje cache.
     if: ${{ !cancelled() && github.event_name != 'push' && needs.apk.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -177,7 +178,6 @@ jobs:
           distribution: temurin
           java-version: 25
       - name: Odtwórz pobrane zależności i dystrybucje Gradle
-        id: zaleznosci
         uses: actions/cache/restore@v6.1.0
         with:
           path: |
@@ -188,7 +188,6 @@ jobs:
           restore-keys: |
             android-zaleznosci-v1-${{ runner.os }}-${{ runner.arch }}-
       - name: Odtwórz cache budowania Gradle
-        id: cache-budowania
         uses: actions/cache/restore@v6.1.0
         with:
           path: ~/.gradle/caches/build-cache-1
@@ -231,31 +230,10 @@ jobs:
             android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
           if-no-files-found: error
           retention-days: 7
-      - name: Zapisz pobrane zależności i dystrybucje Gradle
-        if: >-
-          ${{ success() && github.event_name == 'push' &&
-            (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) &&
-            steps.zaleznosci.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v6.1.0
-        with:
-          path: |
-            ~/.gradle/caches/modules-2
-            ~/.gradle/wrapper
-          key: ${{ steps.zaleznosci.outputs.cache-primary-key }}
-      - name: Zapisz cache budowania Gradle
-        if: >-
-          ${{ success() && github.event_name == 'push' &&
-            (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) &&
-            steps.cache-budowania.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v6.1.0
-        with:
-          path: ~/.gradle/caches/build-cache-1
-          key: ${{ steps.cache-budowania.outputs.cache-primary-key }}
 
   testy:
     needs: zmiany
-    # Na push do gałęzi po scaleniu z kolejki te same kontrole przeszły już w merge_group na tym samym SHA; push tylko zapisuje cache (job apk).
-    if: ${{ !cancelled() && github.event_name != 'push' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    if: ${{ !cancelled() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -317,12 +295,32 @@ jobs:
           name: raporty-testy
           path: android/**/build/reports/
           if-no-files-found: ignore
+      - name: Zapisz pobrane zależności i dystrybucje Gradle
+        if: >-
+          ${{ success() && github.event_name == 'push' &&
+            (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) &&
+            steps.zaleznosci.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: |
+            ~/.gradle/caches/modules-2
+            ~/.gradle/wrapper
+          key: ${{ steps.zaleznosci.outputs.cache-primary-key }}
+      - name: Zapisz cache budowania Gradle
+        if: >-
+          ${{ success() && github.event_name == 'push' &&
+            (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) &&
+            steps.cache-budowania.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: ~/.gradle/caches/build-cache-1
+          key: ${{ steps.cache-budowania.outputs.cache-primary-key }}
 
   czyszczenie-cache:
     # Osobne małe zadanie tylko na push: uprawnienie actions: write nie trafia do zadań uruchamiających kod z PR.
-    needs: apk
+    needs: testy
     if: >-
-      ${{ !cancelled() && needs.apk.result == 'success' && github.event_name == 'push' &&
+      ${{ !cancelled() && needs.testy.result == 'success' && github.event_name == 'push' &&
         (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -354,7 +352,7 @@ jobs:
           ZMIANY: ${{ needs.zmiany.result }}
           WYNIKI: ${{ needs.testy.result }} ${{ needs.apk.result }} ${{ needs.emulator.result }}
           ZDARZENIE: ${{ github.event_name }}
-          APK: ${{ needs.apk.result }}
+          EMULATOR: ${{ needs.emulator.result }}
         run: |
           # Wymagany check `budowanie`: zielony tylko, gdy testy, APK i emulatory zakończyły się sukcesem.
           echo "zmiany: ${ZMIANY}; testy, apk, emulator: ${WYNIKI}"
@@ -362,11 +360,11 @@ jobs:
             echo "::error title=Android::Zadanie zmiany zakończyło się wynikiem ${ZMIANY}."
             exit 1
           fi
+          if [[ $ZDARZENIE == push && $EMULATOR == skipped ]]; then
+            # Na push emulator jest pominięty celowo (przeszedł w merge_group); testy i apk dalej muszą się udać, bo zapisują cache.
+            WYNIKI="${WYNIKI% skipped}"
+          fi
           for wynik in ${WYNIKI}; do
-            # Na push testy i emulator są pominięte celowo (przeszły w merge_group); apk musi się udać, bo zapisuje cache.
-            if [[ $wynik == skipped && $ZDARZENIE == push && $wynik != "${APK}" ]]; then
-              continue
-            fi
             if [[ $wynik != success ]]; then
               echo "::error title=Android::Co najmniej jedno zadanie Androida nie zakończyło się sukcesem."
               exit 1
