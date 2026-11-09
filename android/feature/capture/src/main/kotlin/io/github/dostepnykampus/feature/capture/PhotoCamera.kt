@@ -25,7 +25,7 @@ import java.io.File
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
-/** Dostawca plików dla aparatu; nazwa zgodna z `AndroidManifest.xml` modułu. */
+// Dostawca plików dla aparatu; nazwa zgodna z `AndroidManifest.xml` modułu.
 private const val PHOTO_AUTHORITY_SUFFIX = ".zdjecia"
 
 /** Plik zdjęcia [id] w katalogu zdjęć zgłoszeń w [filesDir]; katalog powstaje przy pierwszym zdjęciu. */
@@ -54,11 +54,12 @@ internal fun rememberPhotoCamera(
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
             val id = pendingId
             pendingId = ""
-            if (id.isEmpty()) return@rememberLauncherForActivityResult
-            val file = photoFile(filesDir = context.filesDir, id = id)
-            scope.launch {
-                val isReady = isTaken && withContext(workContext) { shrinkPhoto(file) }
-                if (isReady) deliver(PendingPhotoDraft(photoId = id, path = file.path)) else file.delete()
+            if (id.isNotEmpty()) {
+                val file = photoFile(filesDir = context.filesDir, id = id)
+                scope.launch {
+                    val isReady = isTaken && withContext(workContext) { shrinkPhoto(file) }
+                    if (isReady) deliver(PendingPhotoDraft(photoId = id, path = file.path)) else file.delete()
+                }
             }
         }
     return {
