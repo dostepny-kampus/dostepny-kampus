@@ -53,7 +53,6 @@ import io.github.dostepnykampus.core.designsystem.nameRes
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.BarrierType
 
-
 /**
  * Piętro wpisane liczbą w budynku bez planu PWr, z polem „Półpiętro” (US7.2, BR-G1, PW-6).
  * Wpisany tekst należy do budynku: po „Zmień miejsce” na inny budynek pole startuje od piętra ze stanu.
@@ -137,7 +136,12 @@ internal fun TypeSection(type: BarrierType?, onEdit: (ReportEdit) -> Unit) {
         SectionTitle(stringResource(R.string.formularz_typ))
         OutlinedButton(
             onClick = { isOpen = true },
-            modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk).focusRequester(field).focusable(),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = CeleDotyku.przycisk)
+                    .focusRequester(field)
+                    .focusable(),
         ) {
             Text(
                 text = type?.let { stringResource(it.nameRes()) } ?: stringResource(R.string.formularz_typ_wybierz),
@@ -173,25 +177,30 @@ private fun TypePanel(onPick: (BarrierType) -> Unit, onClose: () -> Unit) {
     Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-                Column(
-                    modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
-                    verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-                ) {
-                    Text(
-                        text = stringResource(R.string.formularz_typ),
-                        modifier = Modifier.focusRequester(title).focusable().semantics { heading() },
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                    OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.przycisk)) {
-                        Text(stringResource(R.string.formularz_zamknij))
-                    }
-                }
+                TypePanelHeader(title = title, onClose = onClose)
                 TypeList(onPick = onPick, modifier = Modifier.weight(1f))
             }
         }
         LaunchedEffect(title) {
             withFrameNanos {}
             title.requestFocus()
+        }
+    }
+}
+
+@Composable
+private fun TypePanelHeader(title: FocusRequester, onClose: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
+        verticalArrangement = Arrangement.spacedBy(Odstepy.s),
+    ) {
+        Text(
+            text = stringResource(R.string.formularz_typ),
+            modifier = Modifier.focusRequester(title).focusable().semantics { heading() },
+            style = MaterialTheme.typography.titleLarge,
+        )
+        OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.przycisk)) {
+            Text(stringResource(R.string.formularz_zamknij))
         }
     }
 }
