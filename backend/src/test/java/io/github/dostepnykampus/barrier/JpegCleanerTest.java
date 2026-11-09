@@ -106,7 +106,7 @@ final class JpegCleanerTest {
         final byte[] segment = new byte[data.length + 4];
         segment[0] = (byte) 0xFF;
         segment[1] = (byte) marker;
-        segment[2] = (byte) (data.length + 2 >> 8);
+        segment[2] = (byte) ((data.length + 2) >> 8);
         segment[3] = (byte) (data.length + 2);
         System.arraycopy(data, 0, segment, 4, data.length);
         return segment;
