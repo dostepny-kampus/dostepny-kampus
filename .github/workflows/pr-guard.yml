@@ -202,3 +202,47 @@ jobs:
             fi
           done
           exit "$failed"
+
+  baza-sprintu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Sprawdź bazę gałęzi sprintu
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          # Kontrolujemy gałąź sprintu, której dotyczy PR: bazową (PR do sprint/N) albo własną (scalenie sprint/N do main).
+          # Komunikaty o braku gałęzi i numerze z zerem wiodącym zgłasza sam skrypt.
+          branch=""
+          if [[ $BASE_REF =~ ^sprint/[0-9]+$ ]]; then
+            branch=$BASE_REF
+          elif [[ $HEAD_REF =~ ^sprint/[0-9]+$ && $HEAD_REPO == "$GITHUB_REPOSITORY" ]]; then
+            branch=$HEAD_REF
+          fi
+          if [[ -z $branch ]]; then
+            echo "PR nie dotyczy gałęzi sprintu, kontrola bazy pominięta."
+            exit 0
+          fi
+          bash .github/scripts/baza-sprintu.sh "$branch"
+
+  znaczniki-todo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Sprawdź, czy każdy znacznik zadania wskazuje otwarte issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: bash .github/scripts/todo-issue.sh

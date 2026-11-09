@@ -45,20 +45,14 @@ class CampusPathDeviceTest {
         compose.waitUntil(timeoutMillis = WAIT_MS) { compose.onAllNodes(matcher).fetchSemanticsNodes().isNotEmpty() }
     }
 
-    private fun exists(matcher: SemanticsMatcher): Boolean =
-        compose
-            .onAllNodes(matcher)
-            .fetchSemanticsNodes()
-            .isNotEmpty()
-
-    // Instrukcja „Pomoc” przy pierwszym uruchomieniu zamyka się gestem wstecz (US5.1); w kolejnych testach jej nie ma.
+    // Każdy test zaczyna od czystych danych aplikacji (job emulatora robi `pm clear` przed każdym testem), więc
+    // instrukcja „Pomoc” z pierwszego uruchomienia (US5.1) jest zawsze i zamyka się gestem wstecz. Lokalnie przed
+    // testem: `adb shell pm clear io.github.dostepnykampus`.
     @Before
     fun leaveHelp() {
-        waitFor(hasSetTextAction() or hasText("Pomoc"))
-        if (!exists(hasSetTextAction())) {
-            Espresso.pressBack()
-            waitFor(hasSetTextAction())
-        }
+        waitFor(hasText("Pomoc"))
+        Espresso.pressBack()
+        waitFor(hasSetTextAction())
     }
 
     // Wiersze: V1, wpisanie symbolu i wybór wyniku → V2; „Sprawdź, którędy wejść” → V3; „Wstecz” → V2, US1.1, US2, US3.
