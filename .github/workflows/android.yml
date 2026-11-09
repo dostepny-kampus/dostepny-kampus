@@ -280,6 +280,30 @@ jobs:
           path: ~/.gradle/caches/build-cache-1
           key: ${{ steps.cache-budowania.outputs.cache-primary-key }}
 
+  czyszczenie-cache:
+    # Osobne małe zadanie tylko na push: uprawnienie actions: write nie trafia do zadań uruchamiających kod z PR.
+    needs: testy
+    if: >-
+      ${{ !cancelled() && needs.testy.result == 'success' && github.event_name == 'push' &&
+        (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Usuń poprzednie wpisy cache budowania tej gałęzi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # Na gałąź zostaje najnowszy wpis; limit pamięci cache repozytorium to 10 GB.
+          gh cache list --ref "$GITHUB_REF" --key "android-budowanie-v1-${RUNNER_OS}-${RUNNER_ARCH}-" --limit 100             --sort created_at --order desc --json id --jq '.[1:][] | .id' |
+            while read -r id; do
+              gh cache delete "$id"
+              echo "Usunięto poprzedni wpis cache ${id}."
+            done
+
   budowanie:
     needs: [zmiany, testy, apk, emulator]
     # always(): także po anulowaniu poprzednich zadań, żeby anulowana część dawała czerwony check, a nie pominięty.
