@@ -142,6 +142,12 @@ fun CampusMapScreen(
 /**
  * Ekran V1 ze stanem [state] z zewnątrz, bez ViewModel; parametry jak w [CampusMapScreen] z ViewModel.
  *
+ * Góra V1 i mapa znikają pod arkuszem V2 albo przy liście; ich stan, np. przewinięcie listy i widok kamery, czeka
+ * na powrót. Pod arkuszem V2 nagłówka nie ma, jak w hi-fi V2: mapa sięga wtedy pod pasek stanu. Budynek z listy
+ * też otwiera V2 jako arkusz na mapie (decyzja 48). Pod arkuszem widok kamery się nie zapisuje, więc po „Wstecz”
+ * wraca widok sprzed V2 (decyzja 83). Przy otwartej klawiaturze mapa jest za niska na przyciski, więc znikają do
+ * jej zamknięcia (decyzja 91).
+ *
  * @param state katalog, gotowa geometria mapy, internet (bez niego pod polem symbolu stoi linia „Bez internetu”,
  *   US9.1, NFR-10) i ostatni wybór w przełączniku; bez wyboru „Mapa”, a przy skali czcionki co najmniej 1,5
  *   „Lista budynków” (NFR-19, NFR-20)
@@ -173,11 +179,8 @@ fun CampusMapScreen(
     val catalog = state.catalog
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
     val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LIST_FONT_SCALE)
-    // Góra V1 i mapa znikają pod arkuszem V2 albo przy liście; ich stan, np. przewinięcie listy i widok kamery,
-    // czeka na powrót.
     val states = rememberSaveableStateHolder()
     Column(modifier.fillMaxSize()) {
-        // Pod arkuszem V2 nagłówka nie ma, jak w hi-fi V2: mapa sięga wtedy pod pasek stanu.
         if (!isCovered) {
             states.SaveableStateProvider(TOP_STATE) {
                 CampusSearch(
@@ -190,7 +193,6 @@ fun CampusMapScreen(
                 )
             }
         }
-        // Budynek z listy też otwiera V2 jako arkusz na mapie (decyzja 48).
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
                 CampusMap(
@@ -232,9 +234,7 @@ private fun CampusMap(
     val isCovered = cover > 0.dp
     val coverPixels = with(LocalDensity.current) { cover.toPx() }.toDouble()
     val focusPoint = remember(catalog, focus) { catalog?.pointOf(focus) }
-    // Pod arkuszem widok kamery się nie zapisuje, więc po „Wstecz” wraca widok sprzed V2 (decyzja 83).
     val keepCamera = { idle: MapCamera -> if (!isCovered) view.keep(idle) }
-    // Przy otwartej klawiaturze mapa jest za niska na przyciski, więc znikają do jej zamknięcia (decyzja 91).
     val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
