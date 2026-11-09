@@ -7,8 +7,8 @@ set -euo pipefail
 # Test strażnika znaczników zadań (todo-issue.sh), uruchamianego w katalogu repozytorium git.
 # Strażnik sprawdza pliki śledzone przez git o rozszerzeniach kt, kts, java, yml, yaml, sh (dokumentacja
 # i inne pliki nie są skanowane; pomijane są też pliki samego strażnika, bo opisują znaczniki).
-# Znacznik to TODO, FIXME, HACK lub @todo jako osobne słowo; poprawny ma postać ZNACZNIK(#N), gdzie
-# issue #N istnieje i jest otwarte. Dane issue: pliki ISSUE_JSON_DIR/<numer>.json (gh issue view --json state);
+# Znacznik to TODO, FIXME, HACK lub @todo jako osobne słowo, bez względu na wielkość liter; poprawny ma postać ZNACZNIK(#N), gdzie
+# issue #N istnieje i jest otwarte. Dane issue: pliki ISSUE_JSON_DIR/<numer>.json (gh issue view --json state,url);
 # brak pliku oznacza, że issue nie istnieje. Kod wyjścia 0 = czysto, 1 = naruszenie (tekst w wyjściu).
 script="$(cd "$(dirname "$0")" && pwd)/todo-issue.sh"
 workdir="$(mktemp -d)"
@@ -18,8 +18,9 @@ failures=0
 no_number='znacznik bez numeru issue'
 closed='issue zamknięte'
 missing='issue nie istnieje'
+is_pull='to PR, nie issue'
 
-issue_json() { printf '{"state":"%s"}\n' "$2" >"$workdir/issues/$1.json"; }
+issue_json() { printf '{"state":"%s","url":"https://github.com/o/r/%s/%s"}\n' "$2" "${3:-issues}" "$1" >"$workdir/issues/$1.json"; }
 
 # run_case <nazwa> <oczekiwany kod> <oczekiwany tekst lub pusty> <ścieżka pliku> <zawartość pliku>
 run_case() {
@@ -28,6 +29,7 @@ run_case() {
   mkdir -p "$repo" "$workdir/issues"
   issue_json 5 OPEN
   issue_json 6 CLOSED
+  issue_json 7 OPEN pull
   (
     cd "$repo"
     git init --quiet
@@ -61,6 +63,14 @@ run_case "shell: @todo bez numeru" 1 "$no_number" scripts/run.sh '# @todo wróć
 run_case "Kotlin: TODO bez numeru po numerze w innym miejscu" 1 "$no_number" app/Main.kt 'val x = 1 // TODO: sprawdź (#5)'
 run_case "Kotlin: TODO(#6) z zamkniętym issue" 1 "$closed" app/Main.kt '// TODO(#6): usuń obejście'
 run_case "Java: FIXME(#99) z nieistniejącym issue" 1 "$missing" backend/Main.java '// FIXME(#99): popraw'
+run_case "Kotlin: TODO(#7) wskazuje PR, nie issue" 1 "$is_pull" app/Main.kt '// TODO(#7): usuń obejście'
+run_case "Kotlin: todo: małymi literami bez numeru" 1 "$no_number" app/Main.kt '// todo: później'
+run_case "Java: Fixme bez numeru" 1 "$no_number" backend/Main.java '// Fixme coś'
+run_case "YAML: hack bez numeru" 1 "$no_number" infra/compose.yml '# hack: obejście'
+run_case "shell: @Todo bez numeru" 1 "$no_number" scripts/run.sh '# @Todo wróć'
+run_case "Kotlin: todo(#6) z zamkniętym issue" 1 "$closed" app/Main.kt '// todo(#6): usuń'
+run_case "Kotlin: Todo(#5) z otwartym issue" 0 '' app/Main.kt '// Todo(#5): obsłuż brak sieci'
+run_case "Kotlin: identyfikatory Todos i todoItem nie są znacznikami" 0 '' app/Main.kt 'val Todos = todoItem()'
 run_case "Kotlin: identyfikator todoList nie jest znacznikiem" 0 '' app/Main.kt 'val todoList = emptyList<String>()'
 run_case "Kotlin: identyfikator TODOS i MyTODO nie są znacznikami" 0 '' app/Main.kt 'val TODOS = MyTODO()'
 run_case "Markdown poza zakresem skanowania" 0 '' docs/notatki.md 'TODO: opisać'
