@@ -55,6 +55,6 @@ run_case "słowo kluczowe jako część innego słowa" 'Discloses #12' ''
 run_case "opis bez odwołań" 'Zwykły opis.' ''
 run_case "pusty opis" '' ''
 run_case "numer PR zamiast issue nie jest zamykany" 'Closes #12' '' 12 'to PR, nie issue'
-run_case "numer PR obok issue: issue zamknięte, PR pominięty" 'Closes #12'\n'Closes #13' "13|$done7" 12 'to PR, nie issue'
+run_case "numer PR obok issue: issue zamknięte, PR pominięty" 'Closes #12\nCloses #13' "13|$done7" 12 'to PR, nie issue'
 
 exit "$((failures > 0 ? 1 : 0))"
