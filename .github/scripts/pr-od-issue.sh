@@ -30,17 +30,30 @@ issue_json() {
   fi
 }
 
-areas=(android backend api ci test documentation)
+# Obszary to etykiety z .github/labeler.yml (jedno źródło; etykiety nadaje labeler według zmienionych plików).
+tool_error() {
+  echo "::error title=Błąd narzędzia::błąd narzędzia $1: $2"
+  exit 2
+}
 
-# area_labels <JSON z polem labels>: etykiety obszaru, w jednym wierszu rozdzielone spacjami.
+labeler="$(dirname "${BASH_SOURCE[0]}")/../labeler.yml"
+mapfile -t areas < <(grep -oP '^[a-z][a-z-]*(?=:)' "$labeler" 2>/dev/null || true)
+if ((${#areas[@]} == 0)); then
+  tool_error labeler "brak etykiet obszaru w ${labeler}"
+fi
+
+# area_labels <JSON z polem labels>: ustawia $area_result na etykiety obszaru rozdzielone spacjami.
+# Bez podpowłoki, żeby błąd jq kończył skrypt.
+area_result=''
 area_labels() {
-  local name found=()
-  for name in $(jq -r '[(.labels // [])[].name] | join(" ")' <<<"$1"); do
+  local names name found=()
+  names="$(jq -r '[(.labels // [])[].name] | join(" ")' <<<"$1")" || tool_error jq "nie odczytano etykiet"
+  for name in $names; do
     if [[ " ${areas[*]} " == *" $name "* ]]; then
       found+=("$name")
     fi
   done
-  echo "${found[*]:-}"
+  area_result="${found[*]:-}"
 }
 
 level=error
@@ -80,7 +93,8 @@ if [[ $branch != dependabot/* ]]; then
   fi
 fi
 
-pr_areas="$(area_labels "$pr_data")"
+area_labels "$pr_data"
+pr_areas="$area_result"
 if [[ -z $pr_areas ]]; then
   report "PR nie ma etykiety obszaru (${areas[*]})."
 fi
@@ -95,7 +109,8 @@ for issue in $issues; do
   elif ! jq -e --arg login "$author" '[.assignees[].login] | index($login)' <<<"$data" >/dev/null; then
     report "#${issue}: issue nieprzypisane autorowi (${author})."
   fi
-  issue_areas="$(area_labels "$data")"
+  area_labels "$data"
+  issue_areas="$area_result"
   if [[ -n $issue_areas && -n $pr_areas ]]; then
     shared=0
     for name in $issue_areas; do
