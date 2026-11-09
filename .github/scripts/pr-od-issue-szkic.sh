@@ -21,7 +21,14 @@ if ((status == 0)); then
   exit 0
 fi
 
+# Naruszenie zasady to kod 1 z co najmniej jedną uwagą „::error title=PR od issue”. Każdy inny przypadek (błąd gh, jq,
+# brak danych) to błąd narzędzia: nie ruszamy PR i kończymy kodem 2, żeby nie robić szkicu z pustą listą braków.
 uwagi="$(sed -n 's/^::error title=PR od issue:://p' <<<"$wynik")"
+if ((status != 1)) || [[ -z $uwagi ]]; then
+  echo "::error title=PR od issue::Błąd narzędzia kontroli (kod ${status}): nie udało się odczytać danych PR #${pr} lub issue. PR bez zmian."
+  grep '^::' <<<"$wynik" | head -n 5 || true
+  exit 2
+fi
 if [[ $wymagane != 1 ]]; then
   while IFS= read -r uwaga; do
     echo "::warning title=PR od issue::${uwaga} (tryb ostrzegawczy: PR zostaje bez zmian)"

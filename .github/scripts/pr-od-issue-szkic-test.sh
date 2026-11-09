@@ -29,7 +29,11 @@ printf '{"state":"OPEN","assignees":[{"login":"ala"}],"url":"https://x/issues/5"
 # run_case <nazwa> <tryb wymagany 0/1> <opis PR> <autor> <czy szkic> <id komentarza> <oczekiwany kod> <oczekiwany dziennik> [<tekst w wyjściu>]
 run_case() {
   local name="$1" required="$2" body="$3" author="$4" draft="$5" comment="$6" code="$7" expected="$8" text="${9:-}" status=0 actual
-  printf '{"author":{"login":"%s"},"body":"%s"}\n' "$author" "$body" >"$workdir/pr.json"
+  if [[ $body == '@BLAD' ]]; then
+    echo 'to nie jest json' >"$workdir/pr.json"
+  else
+    printf '{"author":{"login":"%s"},"body":"%s","headRefName":"5-opis"}\n' "$author" "$body" >"$workdir/pr.json"
+  fi
   : >"$workdir/log.txt"
   PR_JSON_FILE="$workdir/pr.json" ISSUE_JSON_DIR="$workdir/issues" PR_OD_ISSUE_WYMAGANE="$required" \
     GITHUB_REPOSITORY=org/repo FAKE_DRAFT="$draft" FAKE_COMMENT_ID="$comment" FAKE_LOG="$workdir/log.txt" \
@@ -50,6 +54,8 @@ run_case "tryb wymagany: PR już szkic, bez ponownej zamiany" 1 'Opis.' ala true
 run_case "tryb wymagany: komentarz odświeżany, bez duplikatu" 1 'Opis.' ala false 123 1 'szkic\nodświeżenie'
 run_case "tryb wymagany: issue przypisane komuś innemu" 1 'Closes #5' ola false '' 1 'szkic\nkomentarz' 'nieprzypisane autorowi'
 run_case "tryb wymagany: poprawny PR bez zmian" 1 'Closes #5' ala false '' 0 ''
+run_case "tryb wymagany: błąd odczytu danych PR to błąd narzędzia, bez zmiany PR" 1 '@BLAD' ala false '' 2 '' 'Błąd narzędzia kontroli'
+run_case "tryb ostrzegawczy: błąd odczytu danych PR też jest błędem narzędzia" 0 '@BLAD' ala false '' 2 '' 'Błąd narzędzia kontroli'
 run_case "tryb wymagany: Dependabot pominięty" 1 'Opis.' 'dependabot[bot]' false '' 0 '' 'Dependabota'
 
 exit "$((failures > 0 ? 1 : 0))"
