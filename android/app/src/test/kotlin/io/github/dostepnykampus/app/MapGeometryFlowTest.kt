@@ -55,7 +55,11 @@ private const val MANY_OUTLINES = 40
 private val FILE_LABELS = listOf("A-1", "B-2")
 private val SERVER_LABELS = listOf("A-1")
 
-/** Geometria mapy V1 od odpowiedzi serwera i zamknięcia ekranu do stanu ViewModelu (NFR-10, NFR-11). */
+/**
+ * Geometria mapy V1 od odpowiedzi serwera i zamknięcia ekranu do stanu ViewModelu (NFR-10, NFR-11).
+ *
+ * `subscribe`: Jedna subskrypcja startuje źródła; po jej końcu działają jeszcze przez 5 s, aż do zamknięcia ViewModelu.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapGeometryFlowTest {
     private val calls = AtomicInteger()
@@ -70,8 +74,10 @@ class MapGeometryFlowTest {
         Dispatchers.resetMain()
     }
 
-    // Wiersz: W3, plik, potem serwer → geometria najwyżej raz na katalog, a ostatni stan ma ją z katalogu serwera;
-    //   wolna geometria z pliku nie wraca po niej, NFR-10, NFR-11.
+    /**
+     * Wiersz: W3, plik, potem serwer → geometria najwyżej raz na katalog, a ostatni stan ma ją z katalogu serwera;
+     *   wolna geometria z pliku nie wraca po niej, NFR-10, NFR-11.
+     */
     @Test
     fun nfr11_geometry_per_catalog() {
         val answer = CompletableDeferred<ApiResult<BuildingList>>()
@@ -97,7 +103,7 @@ class MapGeometryFlowTest {
         }
     }
 
-    // Wiersz: zamknięcie ekranu w trakcie pobierania z serwera → wywołanie przerwane, bez działającej pracy.
+    /** Wiersz: zamknięcie ekranu w trakcie pobierania z serwera → wywołanie przerwane, bez działającej pracy. */
     @Test
     fun closing_map_cancels_call() {
         val started = CompletableDeferred<Unit>()
@@ -120,7 +126,9 @@ class MapGeometryFlowTest {
         assertTrue(started.isCompleted && cancelled.isCompleted, "pobranie nie zaczęło się albo trwa po zamknięciu")
     }
 
-    // Wiersz: zamknięcie ekranu w trakcie liczenia geometrii → liczenie czekające w kolejce nie rusza po zamknięciu.
+    /**
+     * Wiersz: zamknięcie ekranu w trakcie liczenia geometrii → liczenie czekające w kolejce nie rusza po zamknięciu.
+     */
     @Test
     fun closing_map_cancels_compute() {
         val busy = CountDownLatch(1)
@@ -149,8 +157,10 @@ class MapGeometryFlowTest {
         }
     }
 
-    // Wiersz: zamknięcie ekranu w trakcie liczenia geometrii katalogu z wieloma konturami → liczenie nie dochodzi do
-    //   końca katalogu, NFR-11.
+    /**
+     * Wiersz: zamknięcie ekranu w trakcie liczenia geometrii katalogu z wieloma konturami → liczenie nie dochodzi do
+     *   końca katalogu, NFR-11.
+     */
     @Test
     fun closing_map_stops_running() {
         val started = CompletableDeferred<Unit>()
@@ -179,8 +189,10 @@ class MapGeometryFlowTest {
         }
     }
 
-    // Wiersz: serwer odpowiada, gdy liczy się katalog z pliku → liczenie katalogu z serwera rusza, zanim skończy się
-    //   liczenie pliku, NFR-11.
+    /**
+     * Wiersz: serwer odpowiada, gdy liczy się katalog z pliku → liczenie katalogu z serwera rusza, zanim skończy się
+     *   liczenie pliku, NFR-11.
+     */
     @Test
     fun server_compute_starts_early() {
         val answer = CompletableDeferred<ApiResult<BuildingList>>()
@@ -229,7 +241,6 @@ class MapGeometryFlowTest {
     private fun factoryOf(repository: BuildingCatalogRepository, compute: CoroutineContext) =
         viewModelFactory { initializer { viewModelOf(repository, compute) } }
 
-    // Jedna subskrypcja startuje źródła; po jej końcu działają jeszcze przez 5 s, aż do zamknięcia ViewModelu.
     private fun CampusMapViewModel.subscribe() {
         runBlocking { withTimeoutOrNull(SUBSCRIBE_MS) { uiState.first { false } } }
     }
