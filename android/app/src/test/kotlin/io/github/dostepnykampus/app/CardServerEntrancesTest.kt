@@ -51,6 +51,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 /**
  * Wejścia karty V2 od karty budynku z serwera do stanu karty (US17.3, NFR-10, NFR-12). Praca ViewModelu idzie na
  * dyspozytorze testowym, więc stan karty jest sprawdzany po zakończeniu całej zaplanowanej pracy, nie po upływie czasu.
+ * Sprawdzana jest widoczna karta, czyli subskrypcja z `cardOf`.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class CardServerEntrancesTest {
@@ -155,7 +156,6 @@ class CardServerEntrancesTest {
             cancelled.complete(Unit)
         }
 
-    // Widoczna karta (subskrypcja z cardOf) po wykonaniu całej zaplanowanej pracy.
     private fun TestScope.settled(card: BuildingCardViewModel): BuildingCardUiState {
         advanceUntilIdle()
         return card.uiState.value
