@@ -110,6 +110,7 @@ jobs:
           PR_BRANCH: ${{ github.head_ref }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: bash .github/scripts/zakazane-slowa.sh "$BASE_SHA" "$HEAD_SHA"
 
   sekrety:
@@ -160,18 +161,75 @@ jobs:
           persist-credentials: false
       - name: Sprawdź nagłówek autorski w plikach z kodem
         run: bash .github/scripts/naglowki.sh
-      - name: Sprawdź test sprawdzania nagłówków
-        run: bash .github/scripts/naglowki-test.sh
 
-  straznik-jakosci-test:
+  testy-skryptow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Uruchom wszystkie testy skryptów z .github/scripts
+        run: |
+          # Każdy plik *-test.sh jest wykrywany automatycznie; padnięcie któregokolwiek daje czerwony job.
+          # Testy podstawiają własne `gh`, a reszta narzędzi (jq, java) pochodzi z obrazu runnera.
+          set -o pipefail
+          shopt -s nullglob
+          tests=(.github/scripts/*-test.sh)
+          if ((${#tests[@]} == 0)); then
+            echo "::error title=Testy skryptów::Nie znaleziono żadnego pliku .github/scripts/*-test.sh."
+            exit 1
+          fi
+          failed=0
+          for t in "${tests[@]}"; do
+            echo "::group::${t}"
+            log="$(mktemp)"
+            status=0
+            bash "$t" 2>&1 | tee "$log" || status=$?
+            cases="$(grep -c '^OK:' "$log" || true)"
+            errors="$(grep -c '^BŁĄD:' "$log" || true)"
+            echo "::endgroup::"
+            # Test, który wypisał BŁĄD, ale zwrócił kod 0, też jest porażką.
+            if ((status == 0 && errors > 0)); then
+              status=1
+            fi
+            if ((status == 0)); then
+              echo "${t}: kod 0, zaliczone przypadki: ${cases}"
+              echo "- ${t}: ${cases} przypadków" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "::error title=Testy skryptów::${t} zakończył się kodem ${status} (zaliczone przypadki: ${cases}, błędy: ${errors})."
+              failed=1
+            fi
+          done
+          exit "$failed"
+
+  baza-sprintu:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          fetch-depth: 0
           persist-credentials: false
-      - name: Sprawdź test strażnika jakości na przykładowych zmianach
-        run: bash .github/scripts/straznik-jakosci-test.sh
+      - name: Sprawdź bazę gałęzi sprintu
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          # Kontrolujemy gałąź sprintu, której dotyczy PR: bazową (PR do sprint/N) albo własną (scalenie sprint/N do main).
+          # Komunikaty o braku gałęzi i numerze z zerem wiodącym zgłasza sam skrypt.
+          branch=""
+          if [[ $BASE_REF =~ ^sprint/[0-9]+$ ]]; then
+            branch=$BASE_REF
+          elif [[ $HEAD_REF =~ ^sprint/[0-9]+$ && $HEAD_REPO == "$GITHUB_REPOSITORY" ]]; then
+            branch=$HEAD_REF
+          fi
+          if [[ -z $branch ]]; then
+            echo "PR nie dotyczy gałęzi sprintu, kontrola bazy pominięta."
+            exit 0
+          fi
+          bash .github/scripts/baza-sprintu.sh "$branch"
 
   znaczniki-todo:
     runs-on: ubuntu-latest

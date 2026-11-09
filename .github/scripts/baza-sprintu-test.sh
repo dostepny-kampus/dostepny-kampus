@@ -5,7 +5,7 @@
 set -euo pipefail
 
 # Test kontroli bazy sprintu (baza-sprintu.sh <gałąź PR>): uruchamiany w klonie, widzi origin/main,
-# origin/sprint/N-1 i origin/sprint/N. Zasady: poprzedni sprint jest w main; sprint/N wyrasta z main.
+# origin/sprint/N-1 i origin/sprint/N. Kod 2 = nie da się ocenić (brak gałęzi, zły numer). Zasady: poprzedni sprint jest w main; sprint/N wyrasta z main.
 script="$(cd "$(dirname "$0")" && pwd)/baza-sprintu.sh"
 workdir="$(mktemp -d)"
 trap 'rm -rf "$workdir"' EXIT
@@ -76,6 +76,18 @@ scenario_other_branch() {
   publish main 12-zadanie
 }
 
+# Brak origin/main: wypchnięty tylko sprint/4.
+scenario_no_main() {
+  git checkout --quiet -b sprint/4
+  commit "sprint 4"
+  publish sprint/4
+}
+
+# Brak origin/sprint/4: wypchnięty tylko main.
+scenario_no_sprint_branch() {
+  publish main
+}
+
 # run_case <nazwa> <oczekiwany kod> <oczekiwany tekst lub pusty> <scenariusz> <gałąź PR>
 run_case() {
   local name="$1" expected="$2" text="$3" scenario="$4" branch="$5" status=0 out
@@ -99,5 +111,8 @@ run_case "poprzedni sprint nie jest w main" 1 "$previous_missing" scenario_previ
 run_case "sprint/4 nie wyrasta z main" 1 "$not_from_main" scenario_not_from_main sprint/4
 run_case "pierwszy sprint bez poprzedniego" 0 '' scenario_first_sprint sprint/1
 run_case "gałąź spoza sprintów nie podlega kontroli" 0 '' scenario_other_branch 12-zadanie
+run_case "brak origin/main: osobny komunikat z nazwą gałęzi" 2 'brak gałęzi origin/main' scenario_no_main sprint/4
+run_case "brak origin/sprint/4: osobny komunikat z nazwą gałęzi" 2 'brak gałęzi origin/sprint/4' scenario_no_sprint_branch sprint/4
+run_case "sprint/08: czytelny komunikat, nie błąd powłoki" 2 'zero wiodące' scenario_ok sprint/08
 
 exit "$((failures > 0 ? 1 : 0))"

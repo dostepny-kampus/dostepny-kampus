@@ -514,7 +514,7 @@ Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykres
 | „Zmień miejsce”: powrót do C1, wpisane pola zostają | czynność | US7.4 | C1 |
 | Piętro: wybór z etykiet z danych PWr (budynek szczegółowy) | czynność | US7.2 | — |
 | Piętro: liczba całkowita w polu z etykietą „Numer piętra” i pole „Półpiętro” (budynek podstawowy); nad polem „Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter.” | czynność | US7.2, BR-G1, NFR-15, PW-6 | — |
-| „Typ bariery”, pogrupowany w 6 grup barier | czynność | US7.1, BR-7 | — |
+| „Typ bariery”, pogrupowany w 6 grup barier. Pole otwiera panel na cały ekran. U góry są nagłówek „Typ bariery” i „Zamknij”, które nie przewijają się z listą. Pod nimi są grupy jako nagłówki i typy. Po otwarciu fokus jest na nagłówku, po zamknięciu wraca na pole | czynność | US7.1, BR-7, NFR-18, NFR-53 | — |
 | „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda wartość z opisem i ikoną; pod nagłówkiem „Oceń dla osoby, dla której bariera jest najtrudniejsza.” | czynność | US7.1, NFR-21, PW-13 | — |
 | Zdjęcie, co najmniej jedno: „Zrób zdjęcie” i „Zrób nowe zdjęcie”. Nad nimi komunikat ostrzegawczy jak w kroku 1 V4: „Ważne”, „Nie fotografuj twarzy ani tablic rejestracyjnych.” i „Zdjęcie zobaczą inni użytkownicy.” | czynność | US7.1, NFR-25, PW-8, decyzja 54 | aparat |
 | Opis; obowiązkowy przy TB-29 „inna bariera” | czynność | US7.3 | — |

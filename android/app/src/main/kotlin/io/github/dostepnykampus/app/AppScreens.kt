@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -187,9 +188,20 @@ private fun AppNavigator.Account(route: NavKey) {
     val isWork = hasWork && route == AccountRoute
     val title = stringResource(if (isWork) R.string.nav_konto_i_praca else R.string.nav_konto)
     when {
-        route is SignInRoute -> Stub(title, stringResource(R.string.nie_teraz) to { backToMap() })
-        isWork -> Stub(title, stringResource(R.string.zmierz_i_zglos) to { measure() })
-        else -> Stub(title)
+        route is SignInRoute -> {
+            // Konto staje się zalogowane (przełącznik ról w debug, potem logowanie): V4 krok 1 albo L2 (US14.2).
+            val isNowSignedIn = isSignedIn
+            SideEffect { if (isNowSignedIn) signedIn() }
+            Stub(title, stringResource(R.string.nie_teraz) to { backToMap() })
+        }
+
+        isWork -> {
+            Stub(title, stringResource(R.string.zmierz_i_zglos) to { measure() })
+        }
+
+        else -> {
+            Stub(title)
+        }
     }
 }
 

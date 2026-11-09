@@ -17,7 +17,26 @@ if [[ -z $issues ]]; then
   exit 0
 fi
 
+# Próbujemy zamknąć każde issue; błąd jednego nie może zostawić kolejnych otwartych.
+failed=''
 for issue in $issues; do
-  gh issue close "$issue" --comment "Zrobione w #${pr}."
-  echo "Zamknięto #${issue}."
+  # gh issue view zwraca też dane PR; numer PR nie jest issue i nie jest zamykany.
+  if ! url="$(gh issue view "$issue" --json url --jq .url)"; then
+    failed="${failed:+$failed }#${issue}"
+    continue
+  fi
+  if [[ $url == */pull/* ]]; then
+    echo "::warning title=Zamykanie issue::#${issue}: to PR, nie issue; pominięto."
+    continue
+  fi
+  if gh issue close "$issue" --comment "Zrobione w #${pr}."; then
+    echo "Zamknięto #${issue}."
+  else
+    failed="${failed:+$failed }#${issue}"
+  fi
 done
+
+if [[ -n $failed ]]; then
+  echo "::error title=Zamykanie issue::niezamknięte: ${failed}"
+  exit 1
+fi
