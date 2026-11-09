@@ -19,8 +19,7 @@ case "$1 $2" in
   'pr ready') echo 'szkic' >>"$FAKE_LOG" ;;
   'pr comment') echo 'komentarz' >>"$FAKE_LOG" ;;
   'api -X') echo 'odświeżenie' >>"$FAKE_LOG" ;;
-  'api repos/'*) printf '%s
-' "$FAKE_COMMENT_ID" ;;
+  'api repos/'*) printf '%s\n' "$FAKE_COMMENT_ID" ;;
   *) echo "nieoczekiwane wywołanie gh: $*" >&2; exit 2 ;;
 esac
 SH
