@@ -13,6 +13,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
+import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.ServerEntrances
 import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
@@ -81,6 +82,7 @@ object DataModule {
     fun firstLaunch(app: Application): FirstLaunch = FirstLaunchRepository(app.startDataStore)
 
     /** Bez logowania w aplikacji każda osoba jest Gościem (RO-GOS, US1.2). */
+    @OptIn(TymczasoweRole::class)
     @Provides
     @Singleton
     fun roles(): RoleProvider = GuestRoleProvider
