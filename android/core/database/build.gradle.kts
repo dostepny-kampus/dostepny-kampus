@@ -14,14 +14,14 @@ android {
     testOptions.unitTests.all { it.useJUnitPlatform() }
     testOptions.unitTests.isIncludeAndroidResources = true
 
-    // Schematy Room też do testów jednostkowych (Robolectric), żeby MigrationTestHelper je czytał.
+    /* Schematy Room też do testów jednostkowych (Robolectric), żeby MigrationTestHelper je czytał. */
     sourceSets.getByName("test") {
         assets.srcDir("$projectDir/generated/schemas")
     }
 }
 
 room {
-    // `generated` входить у CI-виключення «**/generated/**», бо снапшот згенерований збіркою.
+    /* Katalog `generated` jest wyłączony z kontroli CI, bo migawka schematu powstaje w budowie. */
     schemaDirectory("$projectDir/generated/schemas")
 }
 
