@@ -123,6 +123,36 @@ class SubmissionQueueTest {
             assertEquals(emptyList<Pair<String, String>>(), store.photos)
         }
 
+    /** Dwa zapisy w tej samej chwili zegara idą na serwer w kolejności zapisu, nie identyfikatorów (US9.2, BR-9). */
+    @Test
+    fun `kolejność jak przy zapisie`() =
+        runBlocking {
+            val ids = ArrayDeque(listOf("z-pierwsze", "a-drugie"))
+            val sent = mutableListOf<String>()
+            val target =
+                SubmissionQueue(
+                    store = store,
+                    ioContext = EmptyCoroutineContext,
+                    server =
+                        SubmissionServer(
+                            create = { id, content ->
+                                sent.add(id)
+                                serverSubmission(content)
+                            },
+                            putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                            update = { _, _, _ -> ApiResult.NotFound },
+                        ),
+                    newId = { ids.removeFirst() },
+                    nowMillis = { SAME_MILLIS },
+                )
+            val content = fullContent().copy(photoIds = emptyList())
+            target.save(content, emptyList())
+            target.save(content, emptyList())
+            target.sendAll()
+
+            assertEquals(listOf("z-pierwsze", "a-drugie"), sent)
+        }
+
     private fun queue(onSaved: () -> Unit = {}): SubmissionQueue =
         SubmissionQueue(
             store = store,
@@ -177,4 +207,8 @@ class SubmissionQueueTest {
             severity = 2,
             description = "Progi przy sekretariacie",
         )
+
+    private companion object {
+        const val SAME_MILLIS = 1_000L
+    }
 }

@@ -23,6 +23,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -84,6 +85,8 @@ data class SubmissionServer(
  * Po 401 wysyłka czeka na ponowne zalogowanie: [loginExpired] i [onLoggedIn] (BR-26, US14.4).
  * Zgłoszenia Zbierającego trafiają też do [history] ze stanem wysyłki dla listy C3 (US8); bez niej kolejka
  * działa jak dotąd.
+ * Chwilę zapisu daje [nowMillis]; kolejne zapisy mają rosnące chwile także w tej samej milisekundzie, więc kolejka
+ * wysyła je w kolejności zapisu (US9.2, BR-9).
  */
 class SubmissionQueue(
     private val store: PendingSubmissionDao,
@@ -92,8 +95,10 @@ class SubmissionQueue(
     private val newId: () -> String = { UUID.randomUUID().toString() },
     private val onSaved: () -> Unit = {},
     private val history: OwnSubmissionDao? = null,
+    private val nowMillis: () -> Long = System::currentTimeMillis,
 ) {
     private val lock = Mutex()
+    private val lastSavedAt = AtomicLong(Long.MIN_VALUE)
     private val expired = MutableStateFlow(false)
 
     /** `true` po odpowiedzi 401 aż do [onLoggedIn]: aplikacja prosi o ponowne zalogowanie (BR-26). */
@@ -126,7 +131,7 @@ class SubmissionQueue(
             "Zdjęcia w kolejce muszą odpowiadać identyfikatorom treści (BR-7, BR-8)"
         }
         val id = newId()
-        val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = System.currentTimeMillis())
+        val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = nextSavedAt())
         store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
         remember(entity)
         // Awaria planowania nie może zgubić zapisanego zgłoszenia (NFR-5).
@@ -147,7 +152,7 @@ class SubmissionQueue(
         }
         val entity =
             content
-                .toPendingSubmissionEntity(id = edited.id, savedAtMillis = System.currentTimeMillis())
+                .toPendingSubmissionEntity(id = edited.id, savedAtMillis = nextSavedAt())
                 .copy(baseVersion = edited.baseVersion)
         lock.withLock {
             store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
@@ -177,6 +182,8 @@ class SubmissionQueue(
         expired.value = false
         runCatching(onSaved)
     }
+
+    private fun nextSavedAt(): Long = lastSavedAt.updateAndGet { last -> maxOf(nowMillis(), last + 1) }
 
     private suspend fun remember(entity: PendingSubmissionEntity) {
         if (entity.isOwnHistory()) history?.save(entity.toOwnSubmissionEntity())
