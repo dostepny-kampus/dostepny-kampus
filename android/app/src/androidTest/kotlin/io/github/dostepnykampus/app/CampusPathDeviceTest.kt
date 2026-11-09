@@ -71,6 +71,7 @@ class CampusPathDeviceTest {
     // Wiersz: V1, „Lista budynków” → budynek → mała karta V2 nad mapą, z pliku bez serwera, US2.8, NFR-11, NFR-19.
     @Test
     fun us2_list_card() {
+        check(false) { "sonda: celowo czerwony test na emulatorze" }
         compose.onAllNodes(hasText("Lista budynków") or hasText("Lista")).onFirst().performClick()
         waitFor(BuildingA1InCatalog)
         compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
