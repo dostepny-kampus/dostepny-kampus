@@ -4,7 +4,7 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
-# Użycie: pr-od-issue.sh <numer PR>. Każdy PR (poza Dependabotem) musi mieć w opisie Closes|Fixes|Resolves #N,
+# Użycie: pr-od-issue.sh <numer PR>. Każdy PR (poza Dependabotem) musi mieć w opisie słowo zamykające (Closes, Fixed, Resolves … #N),
 # a nazwa gałęzi PR ma mieć postać N-krotki-opis, gdzie #N jest wśród zamykanych issue (poza dependabot/*),
 # a każde wskazane issue ma być otwarte i przypisane autorowi PR. Opisu szukamy sami, bo dla PR do gałęzi
 # niedomyślnej GitHub nie wypełnia closingIssuesReferences.
@@ -47,10 +47,11 @@ if [[ $author == 'dependabot[bot]' ]]; then
   exit 0
 fi
 
-# Closes|Fixes|Resolves #N, wielkość liter bez znaczenia; słowo kluczowe nie może być końcem innego słowa.
-issues="$(jq -r '.body // ""' <<<"$pr_data" | grep -oiP '(?<!\w)(?:closes|fixes|resolves)\s+#\K\d+' | sort -un || true)"
+# shellcheck source=slowa-zamykajace.sh
+source "$(dirname "${BASH_SOURCE[0]}")/slowa-zamykajace.sh"
+issues="$(jq -r '.body // ""' <<<"$pr_data" | numery_zamykanych_issue)"
 if [[ -z $issues ]]; then
-  report "brak Closes: opis PR nie zawiera Closes/Fixes/Resolves #N."
+  report "brak Closes: opis PR nie zawiera słowa zamykającego (np. Closes #N)."
   if [[ $level == warning ]]; then
     exit 0
   fi
