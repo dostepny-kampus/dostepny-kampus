@@ -30,7 +30,9 @@ class TemporaryRolesGuardTest {
             fixtures.fixture(name = "TymczasoweRole.kt", source = "package $ACCOUNT\n\n$ANNOTATION") +
                 fixtures.fixture(
                     name = "LoginRepository.kt",
-                    source = "package $ACCOUNT\n\nimport net.openid.appauth.AuthState\n\nclass LoginRepository",
+                    source =
+                        listOf("package $ACCOUNT", "import net.openid.appauth.AuthState", "class LoginRepository")
+                            .joinToString(separator = "\n\n"),
                 )
         assertEquals(setOf("TymczasoweRole.kt"), leftovers(files))
     }
