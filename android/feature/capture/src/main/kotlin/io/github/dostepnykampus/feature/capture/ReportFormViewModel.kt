@@ -36,19 +36,31 @@ fun interface ReportSaver {
 @HiltViewModel
 class ReportFormViewModel
     @Inject
-    constructor(private val saver: ReportSaver) : ViewModel() {
+    constructor(private val draft: ReportDraft = ReportDraft(), private val saver: ReportSaver) : ViewModel() {
         private val state = MutableStateFlow<ReportUiState?>(null)
         private var initial: ReportForm? = null
 
         /** Stan ekranu; `null`, dopóki C1 nie poda miejsca. */
         val uiState: StateFlow<ReportUiState?> = state.asStateFlow()
 
-        /** Otwiera nowy formularz albo edycję; drugie wywołanie nie kasuje wpisanych pól (US7.4). */
+        /**
+         * Otwiera nowy formularz albo edycję; drugie wywołanie nie kasuje wpisanych pól. Po „Zmień miejsce” bierze
+         * odłożone pola z nowym miejscem z [form] (US7.4).
+         */
         fun open(form: ReportForm) {
             if (state.value == null) {
                 initial = form
-                state.value = ReportUiState(form = form)
+                val kept = draft.take()
+                state.value = kept?.copy(form = kept.form.movedTo(form.place)) ?: ReportUiState(form = form)
             }
+        }
+
+        /** „Zmień miejsce”: odkłada pola i wraca do C1 bez pytania, bo nic nie ginie (US7.4). */
+        fun changePlace() {
+            val current = state.value ?: return
+            if (current.isSavingOrSaved) return
+            draft.keep(current.copy(stage = ReportStage.EDITING))
+            state.value = current.copy(stage = ReportStage.LEFT)
         }
 
         /** Zmiana jednego pola formularza (US7.1–US7.4). */
