@@ -21,7 +21,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
@@ -30,12 +29,12 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-private const val WAIT_MS = 1_000L
 private const val COMPUTE_THREAD = "map-geometry-test"
 private const val OUTLINES = 5
 
@@ -86,24 +85,32 @@ class CampusMapGeometryTest {
             geometry = ::counting,
         )
 
-    private fun CampusMapViewModel.ready(): CampusMapUiState =
-        runBlocking { withTimeoutOrNull(WAIT_MS) { uiState.first { it.mapData != null } } ?: uiState.value }
+    // Czeka na zdarzenie (policzona geometria w stanie), nie na upływ czasu; liczenie zapisuje wątek, zanim zwróci
+    //   dane do stanu. Zawieszenie przy błędzie w kodzie kończy limit `runTest`.
+    private suspend fun CampusMapViewModel.ready(): CampusMapUiState = uiState.first { it.mapData != null }
 
     /**
      * Wiersz: W3, O5, katalog z pliku → geometria liczona w kontekście obliczeń, nie w wątku wywołującym, a stan niesie
      *   gotowe dane mapy, NFR-11.
      */
     @Test
-    fun nfr11_geometry_in_compute() {
-        Executors.newSingleThreadExecutor { Thread(it, COMPUTE_THREAD) }.asCoroutineDispatcher().use { compute ->
-            val viewModel = viewModelOf(compute)
-            val state = viewModel.ready()
-            val name = thread.get().substringBefore(" @coroutine")
-            assertEquals(COMPUTE_THREAD, name, "geometria liczona poza kontekstem obliczeń")
-            assertNotEquals(Thread.currentThread().name, thread.get())
-            assertEquals(state.catalog?.let(::campusMapData), state.mapData, "stan bez gotowych danych mapy")
+    fun nfr11_geometry_in_compute() =
+        runTest {
+            val pool = Executors.newSingleThreadExecutor { Thread(it, COMPUTE_THREAD) }
+            try {
+                pool.asCoroutineDispatcher().use { compute ->
+                    val viewModel = viewModelOf(compute)
+                    val state = viewModel.ready()
+                    val name = thread.get().substringBefore(" @coroutine")
+                    assertEquals(COMPUTE_THREAD, name, "geometria liczona poza kontekstem obliczeń")
+                    assertNotEquals(Thread.currentThread().name, thread.get())
+                    assertEquals(state.catalog?.let(::campusMapData), state.mapData, "stan bez gotowych danych mapy")
+                }
+            } finally {
+                // Wątek liczący kończy pracę przed resetMain, więc jego wznowienie nie trafi do następnego testu.
+                pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
+            }
         }
-    }
 
     /**
      * Wiersz: W3, jeden katalog, potem zmiana internetu i wyboru „Lista” → ta sama geometria i jedno wywołanie

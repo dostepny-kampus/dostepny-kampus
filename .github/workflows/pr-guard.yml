@@ -230,3 +230,19 @@ jobs:
             exit 0
           fi
           bash .github/scripts/baza-sprintu.sh "$branch"
+
+  znaczniki-todo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Sprawdź, czy każdy znacznik zadania wskazuje otwarte issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: bash .github/scripts/todo-issue.sh
