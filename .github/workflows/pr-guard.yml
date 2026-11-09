@@ -10,17 +10,20 @@ on:
       - synchronize
       - reopened
       - edited
+  merge_group:
+    types:
+      - checks_requested
 
 permissions:
   contents: read
 
 concurrency:
-  group: pr-guard-${{ github.event.pull_request.number }}
+  group: pr-guard-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
-  BASE_SHA: ${{ github.event.pull_request.base.sha }}
-  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+  HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
   GITLEAKS_VERSION: 8.30.1
   GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
 
@@ -29,11 +32,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Sprawdzone na PR
+        if: github.event_name == 'merge_group'
+        run: echo "Ta kontrola dotyczy danych PR (tytuł, opis, rozmiar, zależności) i przeszła na PR; w kolejce scalania nie jest powtarzana."
       - uses: actions/checkout@v7.0.1
+        if: github.event_name != 'merge_group'
         with:
           fetch-depth: 0
           persist-credentials: false
       - name: Policz zmienione linie
+        if: github.event_name != 'merge_group'
         env:
           BASE_REF: ${{ github.base_ref }}
           HEAD_REF: ${{ github.head_ref }}
@@ -46,6 +54,8 @@ jobs:
           bash .github/scripts/rozmiar-pr.sh "$BASE_SHA" "$HEAD_SHA" 300
 
   commity:
+    # W kolejce scalania sprawdzamy commity grupy (base_sha..head_sha): komunikat commitu squash bierze tytuł PR,
+    # który można zmienić jeszcze w kolejce, więc sprawdzenie sprzed kolejki nie wystarcza.
     if: github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -80,6 +90,7 @@ jobs:
           fi
           npx --no-install commitlint --from "$from" --to "$HEAD_SHA" --verbose
       - name: Sprawdź tytuł PR
+        if: github.event_name != 'merge_group'
         working-directory: .github/commitlint
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
@@ -99,6 +110,7 @@ jobs:
           PR_BRANCH: ${{ github.head_ref }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: bash .github/scripts/zakazane-slowa.sh "$BASE_SHA" "$HEAD_SHA"
 
   sekrety:
@@ -127,7 +139,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Sprawdzone na PR
+        if: github.event_name == 'merge_group'
+        run: echo "Ta kontrola dotyczy danych PR (tytuł, opis, rozmiar, zależności) i przeszła na PR; w kolejce scalania nie jest powtarzana."
       - uses: actions/dependency-review-action@v5.0.0
+        if: github.event_name != 'merge_group'
         with:
           fail-on-severity: high
           fail-on-scopes: runtime, development, unknown
@@ -145,15 +161,88 @@ jobs:
           persist-credentials: false
       - name: Sprawdź nagłówek autorski w plikach z kodem
         run: bash .github/scripts/naglowki.sh
-      - name: Sprawdź test sprawdzania nagłówków
-        run: bash .github/scripts/naglowki-test.sh
 
-  straznik-jakosci-test:
+  testy-skryptow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Uruchom wszystkie testy skryptów z .github/scripts
+        run: |
+          # Każdy plik *-test.sh jest wykrywany automatycznie; padnięcie któregokolwiek daje czerwony job.
+          # Testy podstawiają własne `gh`, a reszta narzędzi (jq, java) pochodzi z obrazu runnera.
+          set -o pipefail
+          shopt -s nullglob
+          tests=(.github/scripts/*-test.sh)
+          if ((${#tests[@]} == 0)); then
+            echo "::error title=Testy skryptów::Nie znaleziono żadnego pliku .github/scripts/*-test.sh."
+            exit 1
+          fi
+          failed=0
+          for t in "${tests[@]}"; do
+            echo "::group::${t}"
+            log="$(mktemp)"
+            status=0
+            bash "$t" 2>&1 | tee "$log" || status=$?
+            cases="$(grep -c '^OK:' "$log" || true)"
+            errors="$(grep -c '^BŁĄD:' "$log" || true)"
+            echo "::endgroup::"
+            # Test, który wypisał BŁĄD, ale zwrócił kod 0, też jest porażką.
+            if ((status == 0 && errors > 0)); then
+              status=1
+            fi
+            if ((status == 0)); then
+              echo "${t}: kod 0, zaliczone przypadki: ${cases}"
+              echo "- ${t}: ${cases} przypadków" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "::error title=Testy skryptów::${t} zakończył się kodem ${status} (zaliczone przypadki: ${cases}, błędy: ${errors})."
+              failed=1
+            fi
+          done
+          exit "$failed"
+
+  baza-sprintu:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          fetch-depth: 0
           persist-credentials: false
-      - name: Sprawdź test strażnika jakości na przykładowych zmianach
-        run: bash .github/scripts/straznik-jakosci-test.sh
+      - name: Sprawdź bazę gałęzi sprintu
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          # Kontrolujemy gałąź sprintu, której dotyczy PR: bazową (PR do sprint/N) albo własną (scalenie sprint/N do main).
+          # Komunikaty o braku gałęzi i numerze z zerem wiodącym zgłasza sam skrypt.
+          branch=""
+          if [[ $BASE_REF =~ ^sprint/[0-9]+$ ]]; then
+            branch=$BASE_REF
+          elif [[ $HEAD_REF =~ ^sprint/[0-9]+$ && $HEAD_REPO == "$GITHUB_REPOSITORY" ]]; then
+            branch=$HEAD_REF
+          fi
+          if [[ -z $branch ]]; then
+            echo "PR nie dotyczy gałęzi sprintu, kontrola bazy pominięta."
+            exit 0
+          fi
+          bash .github/scripts/baza-sprintu.sh "$branch"
+
+  znaczniki-todo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Sprawdź, czy każdy znacznik zadania wskazuje otwarte issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: bash .github/scripts/todo-issue.sh

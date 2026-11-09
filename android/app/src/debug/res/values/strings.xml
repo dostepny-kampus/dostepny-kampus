@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Przełącznik ról tylko w wersji debug (US14.1); release go nie zawiera. -->
+<resources>
+    <string name="debug_rola_tytul">Rola (debug)</string>
+    <string name="debug_rola_gosc">Gość</string>
+    <string name="debug_rola_odwiedzajacy">Odwiedzający</string>
+    <string name="debug_rola_zbierajacy">Zbierający</string>
+    <string name="debug_rola_weryfikator">Weryfikator</string>
+</resources>

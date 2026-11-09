@@ -1,0 +1,70 @@
+name: etykiety
+
+# Zdarzenie pull_request (nie pull_request_target): PR z gałęzi tego repozytorium ma token z zapisem etykiet.
+# PR z forków i PR Dependabota dostają token tylko do odczytu, więc ich nie etykietujemy.
+on:
+  pull_request:
+    branches:
+      - main
+      - "sprint/**"
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+
+permissions:
+  contents: read
+
+concurrency:
+  group: etykiety-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  obszar:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Ustaw etykiety obszaru według zmienionych plików
+        uses: actions/labeler@v7.0.0
+        with:
+          configuration-path: .github/labeler.yml
+          sync-labels: true
+
+  typ:
+    # Po `obszar`: labeler z `sync-labels` zdejmuje etykiety obszaru, a typ dodaje swoje dopiero po nim.
+    needs: obszar
+    if: >-
+      ${{ !cancelled() &&
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Ustaw etykietę typu według tytułu PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          etykiety="$(gh pr view "$PR_NUMBER" --json labels --jq '.labels[].name')"
+          bash .github/scripts/etykieta-typu.sh "$PR_TITLE" "$etykiety" |
+            while IFS=: read -r akcja etykieta; do
+              case "$akcja" in
+                dodaj) gh pr edit "$PR_NUMBER" --add-label "$etykieta"; echo "Dodano etykietę ${etykieta}." ;;
+                zdejmij) gh pr edit "$PR_NUMBER" --remove-label "$etykieta"; echo "Zdjęto etykietę ${etykieta}." ;;
+              esac
+            done
