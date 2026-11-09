@@ -4,17 +4,16 @@ labels:
   - bug
 body:
   - type: textarea
-    id: wymaganie
+    id: problem
     attributes:
-      label: Wymaganie
-      description: Którego wymagania dotyczy błąd (US, AC, BR, NFR) albo jaki dokument opisuje oczekiwane zachowanie.
-      placeholder: "US-1.1, AC-1: ..."
+      label: Problem
+      description: Co się dzieje, wraz z dowodem (komunikat błędu, link do wiersza kodu, przebieg CI, zrzut ekranu).
     validations:
       required: true
   - type: textarea
-    id: kroki
+    id: jak-odtworzyc
     attributes:
-      label: Kroki do odtworzenia
+      label: Jak odtworzyć
       description: Numerowane kroki; wersja aplikacji lub gałąź, urządzenie, rola użytkownika.
       placeholder: |
         1. ...
@@ -24,13 +23,16 @@ body:
   - type: textarea
     id: oczekiwane
     attributes:
-      label: Oczekiwany wynik
+      label: Oczekiwane
+      description: Jak ma działać zgodnie z wymaganiem (US, AC, BR, NFR) lub dokumentem opisującym zachowanie.
+      placeholder: "US-1.1, AC-1: ..."
     validations:
       required: true
   - type: textarea
-    id: rzeczywiste
+    id: gotowe-gdy
     attributes:
-      label: Rzeczywisty wynik
-      description: Co się dzieje; komunikat błędu lub zrzut ekranu, jeśli jest.
+      label: Gotowe, gdy
+      description: Sprawdzalne warunki zakończenia; test, który pada przed poprawką.
+      placeholder: "- [ ] ..."
     validations:
       required: true
