@@ -51,11 +51,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 final class NullabilityArchitectureTest {
 
     /**
-     * Pakiet klas przykładów, poniżej pakietu bazowego.
-     */
-    private static final String FIXTURES = "io.github.dostepnykampus.fixture";
-
-    /**
      * Komponenty rekordów domeny dopuszczone jako {@code @Nullable}. Klasy z
      * listy mogą też mieć {@code @Nullable} w parametrach metod prywatnych:
      * to pomocnicze sprawdzenia własnych komponentów, null nie wychodzi poza
@@ -241,7 +236,7 @@ final class NullabilityArchitectureTest {
         for (final Map.Entry<String, String> file : sample.files().entrySet()) {
             final Path source = dir.resolve(String.format("%s.java", file.getKey()));
             final String pack = String.format(
-                "%s.%s", NullabilityArchitectureTest.FIXTURES,
+                "io.github.dostepnykampus.fixture.%s",
                 file.getKey().replaceFirst("/[^/]+$", "").replace('/', '.')
             );
             final String code;
