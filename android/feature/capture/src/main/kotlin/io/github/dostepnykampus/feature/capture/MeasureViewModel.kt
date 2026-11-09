@@ -32,8 +32,8 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -217,12 +217,18 @@ class MeasureViewModel
                     delay(TICK_MS)
                     publish()
                 }
-            }.onEach { state ->
-                if (state is MeasureUiState.Finished) {
-                    result.update { if (it.attempt == attempt) it.copy(finished = state) else it }
-                    locate(attempt, state.average.point)
-                }
+            }.takeWhile { state ->
+                if (state is MeasureUiState.Finished) finish(attempt, state)
+                state !is MeasureUiState.Finished
             }
+
+        private fun finish(attempt: Int, state: MeasureUiState.Finished) {
+            val run = result.value
+            if (run.attempt != attempt || run.finished != null) return
+            if (result.compareAndSet(expect = run, update = run.copy(finished = state))) {
+                locate(attempt, state.average.point)
+            }
+        }
 
         private fun stateOf(averaging: PositionAveraging?, sky: List<Satellite>): MeasureUiState {
             val average = averaging?.average() ?: return MeasureUiState.Searching

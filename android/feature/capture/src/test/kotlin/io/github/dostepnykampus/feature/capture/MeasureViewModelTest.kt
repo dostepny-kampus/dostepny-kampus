@@ -27,23 +27,29 @@ import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.coroutines.EmptyCoroutineContext
 
 /** Pomiar na ekranie C1 na odczytach testowych w czasie wirtualnym, bez odbiornika GNSS (US6.1, NFR-23, NFR-27). */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MeasureViewModelTest {
     private val dispatcher = StandardTestDispatcher()
-    private val fixes = MutableSharedFlow<PositionFix>()
-    private val satellites = MutableSharedFlow<List<Satellite>>()
+    private val catalogDispatcher = StandardTestDispatcher(dispatcher.scheduler)
+    private var catalogReads = 0
+    private val fixes = MutableSharedFlow<PositionFix>(extraBufferCapacity = 1)
+    private val satellites = MutableSharedFlow<List<Satellite>>(extraBufferCapacity = 1)
     private val clock = ElapsedClock { BOOT + dispatcher.scheduler.currentTime }
     private val viewModel by lazy {
         MeasureViewModel(
             positions = PositionSource { fixes },
             satellites = SatelliteSource { satellites },
             clock = clock,
-            catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS },
+            catalog =
+                BuildingCatalogRepository(catalogDispatcher) {
+                    catalogReads += 1
+                    CAMPUS
+                },
         )
     }
 
@@ -118,6 +124,10 @@ class MeasureViewModelTest {
             runCurrent()
             assertEquals(MeasureUiState.Searching, viewModel.uiState.value)
             assertEquals(1, fixes.subscriptionCount.value)
+
+            fix(accuracy = 6.0)
+            advanceTimeBy(31_000)
+            assertEquals("A-1", (place() as PlaceChoice.Suggested).hint.building.symbol)
         }
 
     // Punkt pomiaru leży w konturze A-1, więc aplikacja podpowiada A-1 (US6.2).
@@ -126,6 +136,27 @@ class MeasureViewModelTest {
         runTest(dispatcher) {
             finish()
             assertEquals("A-1", (place() as PlaceChoice.Suggested).hint.building.symbol)
+        }
+
+    @Test
+    fun us6_2_finish_once_at_deadline() =
+        runTest(dispatcher) {
+            watch()
+            fix(accuracy = 6.0)
+            advanceTimeBy(30_000)
+            assertTrue(fixes.tryEmit(PositionFix(A1_POINT, 6.0, clock.nowMillis())))
+            assertTrue(satellites.tryEmit(listOf(gps(isUsed = true))))
+            runCurrent()
+
+            val finished = viewModel.uiState.value as MeasureUiState.Finished
+            assertEquals(1, catalogReads)
+            assertEquals(emptyList<Satellite>(), finished.sky)
+            assertEquals("A-1", (finished.place as PlaceChoice.Suggested).hint.building.symbol)
+            viewModel.choose("B-1")
+            assertTrue(fixes.tryEmit(PositionFix(A1_POINT, 6.0, clock.nowMillis())))
+            assertTrue(satellites.tryEmit(emptyList()))
+            runCurrent()
+            assertEquals("B-1", (place() as PlaceChoice.Chosen).building.symbol)
         }
 
     @Test
