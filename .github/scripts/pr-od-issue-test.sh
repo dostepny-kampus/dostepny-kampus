@@ -14,7 +14,7 @@ set -euo pipefail
 # PR autora dependabot[bot] jest pomijany (kod 0) niezależnie od gałęzi i opisu.
 # Obszar: PR ma mieć etykietę obszaru (android, backend, api, ci, test, documentation); jeśli zamykane issue ma
 # etykiety obszaru, PR ma mieć przynajmniej jedną z nich.
-# Kod wyjścia 0 = PR spełnia zasady, 1 = naruszenie (tekst w wyjściu).
+# Kod wyjścia 0 = PR spełnia zasady, 1 = naruszenie, 2 = błąd narzędzia gh lub jq (tekst w wyjściu).
 script="$(cd "$(dirname "$0")" && pwd)/pr-od-issue.sh"
 workdir="$(mktemp -d)"
 trap 'rm -rf "$workdir"' EXIT
@@ -68,10 +68,17 @@ run_case() {
   pr_labels=ci
   issue_labels=''
   extra_path=''
-  rm -rf "$workdir/issues" "$workdir/pr.json"
+  gh_mode=files
+  rm -rf "$workdir/issues" "$workdir/pr.json" "$workdir/bin"
   mkdir "$workdir/issues"
   "$@"
-  out="$(PATH="${extra_path:+$extra_path:}$PATH" PR_OD_ISSUE_OSTRZEGAJ="$warn" PR_JSON_FILE="$workdir/pr.json" ISSUE_JSON_DIR="$workdir/issues" bash "$script" 7 2>&1)" || status=$?
+  # gh_mode: files = dane z plików; issue = PR z pliku, issue z gh; all = wszystko z gh (podstawionego w extra_path).
+  local files=()
+  case "$gh_mode" in
+    files) files=(PR_JSON_FILE="$workdir/pr.json" ISSUE_JSON_DIR="$workdir/issues") ;;
+    issue) files=(PR_JSON_FILE="$workdir/pr.json") ;;
+  esac
+  out="$(env PATH="${extra_path:+$extra_path:}$PATH" PR_OD_ISSUE_OSTRZEGAJ="$warn" "${files[@]}" bash "$script" 7 2>&1)" || status=$?
   if ((status == expected)) && [[ $out == *"$text"* ]]; then
     echo "OK: ${name}"
   else
@@ -117,6 +124,36 @@ case_jq_labels_fail() {
 if [[ "$*" == *labels* ]]; then echo "jq: błąd" >&2; exit 3; fi
 PATH="${PATH#"$(dirname "$0")":}" exec jq "$@"
 '     >"$workdir/bin/jq"
+  chmod +x "$workdir/bin/jq"
+  extra_path="$workdir/bin"
+  case_ok
+}
+
+# Podstawione gh (treść skryptu w $1) w katalogu bin; wywołania mają kod i komunikat z $1.
+stub_gh() {
+  mkdir -p "$workdir/bin"
+  printf '#!/usr/bin/env bash\n%s\n' "$1" >"$workdir/bin/gh"
+  chmod +x "$workdir/bin/gh"
+  extra_path="$workdir/bin"
+}
+
+gh_fails='echo "HTTP 500" >&2; exit 1'
+case_gh_pr_fails() { gh_mode=all; stub_gh "$gh_fails"; }
+case_gh_issue_fails() { pr_json autor-pr 'Closes #12'; gh_mode=issue; stub_gh "$gh_fails"; }
+case_gh_issue_not_found() {
+  pr_json autor-pr 'Closes #12'
+  gh_mode=issue
+  stub_gh 'echo "GraphQL: Could not resolve to an issue" >&2; exit 1'
+}
+case_gh_repo_missing() {
+  pr_json autor-pr 'Closes #12'
+  gh_mode=issue
+  stub_gh 'echo "GraphQL: Could not resolve to a Repository with the name o/r." >&2; exit 1'
+}
+case_issue_missing_file() { pr_json autor-pr 'Closes #12'; }
+case_jq_fails() {
+  mkdir -p "$workdir/bin"
+  printf '#!/usr/bin/env bash\necho "jq: błąd" >&2; exit 3\n' >"$workdir/bin/jq"
   chmod +x "$workdir/bin/jq"
   extra_path="$workdir/bin"
   case_ok
@@ -204,5 +241,11 @@ done
 run_case "forma Fixed #N" 0 '' case_fixed
 run_case "forma resolve #N" 0 '' case_resolve
 run_case "wszystkie dziewięć form słów GitHuba daje dziewięć issue" 0 '#12 #13 #14 #15 #16 #17 #18 #19 #20' case_all_forms
+run_case "gh zawodzi przy odczycie PR: błąd narzędzia, kod 2" 2 'błąd narzędzia gh' case_gh_pr_fails
+run_case "gh zawodzi przy odczycie issue: błąd narzędzia, kod 2" 2 'błąd narzędzia gh' case_gh_issue_fails
+run_case "jq zawodzi: błąd narzędzia, kod 2" 2 'błąd narzędzia jq' case_jq_fails
+run_case "gh: issue nie istnieje to naruszenie, kod 1" 1 'issue nie istnieje' case_gh_issue_not_found
+run_case "brak pliku issue w danych testu to issue nie istnieje, kod 1" 1 'issue nie istnieje' case_issue_missing_file
+run_case "gh: brak dostępu do repozytorium to błąd narzędzia, nie brak issue" 2 'błąd narzędzia gh' case_gh_repo_missing
 
 exit "$((failures > 0 ? 1 : 0))"
