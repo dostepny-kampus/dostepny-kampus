@@ -33,7 +33,7 @@ Najważniejszy wynik: Zbierający mierzy pozycję na C1, potwierdza budynek i op
 
 Przepływy CI zostały bez zmian względem Sprintu 3: `pr-guard`, `straznik-jakosci`, `api`, `backend`, `android` z testami na emulatorze API 26 i API 36 oraz `docs`. Próg pokrycia to nadal 80% linii i 70% gałęzi.
 
-Prace ze Sprintu 4 do 08.11 trafiały do `sprint/3`. Od 08.11 nowe PR trafiają do gałęzi `sprint/4`, odgałęzionej od `sprint/3`. W dniu raportu `sprint/3` czeka na scalenie do `main` przez PR z przeglądem (#365).
+Prace ze Sprintu 4 trafiały do `sprint/3` do 8 listopada. Potem nowe PR trafiają do gałęzi `sprint/4`, odgałęzionej od `sprint/3`. W dniu raportu `sprint/3` czeka na scalenie do `main` przez PR z przeglądem (#365).
 
 ## 3. Serwer
 
@@ -47,9 +47,9 @@ Prace ze Sprintu 4 do 08.11 trafiały do `sprint/3`. Od 08.11 nowe PR trafiają 
 | Ekran albo część | Co działa | Odwołanie |
 | --- | --- | --- |
 | C1 Pomiar | zgoda na dokładną lokalizację, 30 s uśredniania, satelity według systemów, mapa nieba, podpowiedź i wybór budynku | #321–#328, #330, #335, #352–#355 |
-| C2 Opisz barierę | miejsce z pomiaru, piętro (z planu PWr w budynku szczegółowym), typ bariery, uciążliwość, zdjęcie z aparatu, opis, braki po „Zapisz”, pytanie przy wyjściu bez zapisu, poprawka z C3 bez duplikatu | #343–#351, #360–#363, #367, #368, #372 |
+| C2 Opisz barierę | miejsce z pomiaru i piętro, w budynku szczegółowym z planu PWr. Typ bariery, uciążliwość, zdjęcie z aparatu i opis. Braki po „Zapisz”, pytanie przy wyjściu bez zapisu i poprawka z C3 bez duplikatu | #343–#351, #360–#363, #367, #368, #372 |
 | Zdjęcia | zdjęcie z aparatu zmniejszone do 2048 px i obrócone według EXIF przed zapisem w kolejce | #369 |
-| V4 Zgłoszenie szybkie | krok 1 zdjęcie, krok 2 grupa barier i piętro według BR-14, krok 3 wysłanie z bieżącą pozycją; „Wstecz” nie gubi zdjęcia ani grupy, a rezygnacja ze zdjęciem wymaga potwierdzenia | #370, #371, #373–#377 |
+| V4 Zgłoszenie szybkie | trzy kroki: zdjęcie, grupa barier z piętrem według BR-14 i wysłanie z bieżącą pozycją. „Wstecz” nie gubi zdjęcia ani grupy, a rezygnacja ze zdjęciem wymaga potwierdzenia | #370, #371, #373–#377 |
 | Mapa | „Pokaż wejście na mapie” i kamera na budynku; geometria mapy liczona poza wątkiem interfejsu | #327, #329, #331–#334, #336, #339–#341 |
 | Kolejka zgłoszeń | wysyłka rozróżnia awarię serwera 5xx i wygasłe logowanie 401; zadanie ponawia tylko przy braku sieci | #342, #359 |
 
