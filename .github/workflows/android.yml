@@ -170,8 +170,9 @@ jobs:
       - name: Wyłącz sieć emulatora
         run: |
           # Testy nie mają ruchu sieciowego (serwer i podkład mapy z pliku); bez sieci nic nie wyjdzie na zewnątrz.
-          adb shell svc wifi disable
-          adb shell svc data disable
+          adb shell svc wifi disable || true
+          adb shell svc data disable || true
+          sleep 3
           if adb shell ping -c 1 -W 3 8.8.8.8 > /dev/null 2>&1; then
             echo "::error title=Emulator::Sieć emulatora nadal działa."
             exit 1
