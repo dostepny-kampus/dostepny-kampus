@@ -1,4 +1,5 @@
 name: pr-od-issue
+# sonda
 
 # Kontrola „PR od issue”: PR musi wskazywać otwarte issue przypisane autorowi (poza Dependabotem).
 # Domyślnie tylko ostrzega w logu. Tryb wymagany (PR bez issue → szkic i komentarz) włącza zmienna repozytorium
