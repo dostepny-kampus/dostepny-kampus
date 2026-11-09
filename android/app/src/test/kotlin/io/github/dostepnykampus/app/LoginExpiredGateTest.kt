@@ -37,7 +37,7 @@ class LoginExpiredGateTest {
 
     // Scenariusz (częściowo): synchronizacja.feature: Wygasłe zalogowanie czeka na ponowne zalogowanie
     @Test
-    fun br26_login_expired_resumes_queue() {
+    fun br26_expired_then_resumed() {
         show()
         compose.onNodeWithText(EXPIRED).assertDoesNotExist()
 
