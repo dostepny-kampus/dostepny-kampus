@@ -133,7 +133,7 @@ class QuickSendViewModelTest {
     private companion object {
         val INSIDE_A1 = GeoPoint(longitude = 17.0605, latitude = 51.1105)
         val OUTSIDE = GeoPoint(longitude = 17.10, latitude = 51.20)
-        val CAMPUS =
+        const val CAMPUS =
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
                 """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"A-1",""" +
                 """"osm_id":"way/A-1"},"geometry":{"type":"Polygon","coordinates":[[[17.06,51.11],""" +
