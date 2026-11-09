@@ -51,7 +51,7 @@ class PhotoCameraTest {
     @Implements(className = "androidx.core.content.FileProvider\$SimplePathStrategy", isInAndroidSdk = false)
     class FileProviderPathShadow {
         @Implementation
-        protected fun belongsToRoot(filePath: String, rootPath: String): Boolean {
+        fun belongsToRoot(filePath: String, rootPath: String): Boolean {
             val file = Path.of(filePath)
             val root = Path.of(rootPath)
             return file != root && file.startsWith(root)
