@@ -44,19 +44,19 @@ class AppNavigatorTest {
 
     private fun stackOf(vararg routes: NavKey) = listOf<NavKey>(MapRoute(), *routes)
 
-    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu */
+    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */
     @Test
     fun us5_1_first_launch_opens_v5() {
         assertEquals(stackOf(HelpRoute(isFirstLaunch = true)), startBackStack(firstLaunch = true))
     }
 
-    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy */
+    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy. */
     @Test
     fun us5_1_next_launch_opens_v1() {
         assertEquals(stackOf(), startBackStack(firstLaunch = false))
     }
 
-    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy */
+    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy. */
     @Test
     fun us5_1_first_launch_back_v1() {
         stack += startBackStack(firstLaunch = true).drop(1)
@@ -91,7 +91,7 @@ class AppNavigatorTest {
         assertEquals(0, helpLeft)
     }
 
-    /** Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość rezygnuje z logowania */
+    /** Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość rezygnuje z logowania. */
     @Test
     fun uc7_1b_guest_not_now_v1() {
         navigator().run {
@@ -161,7 +161,7 @@ class AppNavigatorTest {
     }
 
     /**
-     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość niezalogowany jest proszony o logowanie przed zdjęciem
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość niezalogowany jest proszony o logowanie przed zdjęciem.
      */
     @Test
     fun us14_2_bar_report_guest_l1() {
@@ -169,7 +169,7 @@ class AppNavigatorTest {
         assertEquals(stackOf(SignInRoute(isForReport = true)), stack)
     }
 
-    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy */
+    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy. */
     @Test
     fun us5_1_bar_help_v5_back_returns() {
         navigator(visitor).run {
@@ -379,7 +379,7 @@ class AppNavigatorTest {
 
     /**
      * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie w 3 krokach z pozycją dołączoną
-     *   automatycznie
+     *   automatycznie.
      */
     @Test
     fun us4_1_three_steps_sent_p2() {
@@ -395,7 +395,7 @@ class AppNavigatorTest {
         assertEquals(BuildingRoute("D-2"), stack.last())
     }
 
-    /** Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość po zalogowaniu wraca do zgłoszenia szybkiego */
+    /** Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość po zalogowaniu wraca do zgłoszenia szybkiego. */
     @Test
     fun us14_2_guest_signed_in_v4() {
         navigator().run {
