@@ -39,7 +39,7 @@ class ReportFormViewModel
     constructor(private val saver: ReportSaver) : ViewModel() {
         private val state = MutableStateFlow<ReportUiState?>(null)
         private var initial: ReportForm? = null
-        private var draft: ReportDraft? = null
+        private var draft = ReportDraft()
 
         /** Stan ekranu; `null`, dopóki C1 nie poda miejsca. */
         val uiState: StateFlow<ReportUiState?> = state.asStateFlow()
@@ -48,15 +48,15 @@ class ReportFormViewModel
          * Otwiera nowy formularz albo edycję; drugie wywołanie nie kasuje wpisanych pól. Po „Zmień miejsce” bierze
          * odłożone pola z nowym miejscem z [form] (US7.4).
          */
-        fun open(form: ReportForm, draft: ReportDraft? = null) {
+        fun open(form: ReportForm, draft: ReportDraft = this.draft) {
             val current = state.value
             if (current == null) {
                 initial = form
                 this.draft = draft
-                keep(draft?.restore(form) ?: ReportUiState(form = form))
+                keep(draft.restore(form))
             } else if (this.draft !== draft) {
                 this.draft = draft
-                if (current.stage != ReportStage.LEFT && current.stage != ReportStage.SAVED) draft?.keep(current)
+                if (current.stage != ReportStage.LEFT && current.stage != ReportStage.SAVED) draft.keep(current)
             }
         }
 
@@ -102,12 +102,12 @@ class ReportFormViewModel
             val current = state.value ?: return
             if (current.isSavingOrSaved) return
             val stage = next(current)
-            if (stage == ReportStage.LEFT) draft?.clear()
+            if (stage == ReportStage.LEFT) draft.clear()
             state.value = current.copy(stage = stage)
         }
 
         private fun keep(current: ReportUiState) {
-            draft?.keep(current)
+            draft.keep(current)
             state.value = current
         }
 
@@ -117,7 +117,7 @@ class ReportFormViewModel
                 val stage =
                     try {
                         saver.save(content, current.photos, current.form.editedSubmission)
-                        draft?.clear()
+                        draft.clear()
                         ReportStage.SAVED
                     } catch (_: IOException) {
                         ReportStage.SAVE_FAILED

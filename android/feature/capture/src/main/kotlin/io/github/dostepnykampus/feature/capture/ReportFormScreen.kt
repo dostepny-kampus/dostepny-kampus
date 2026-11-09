@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -37,7 +38,7 @@ fun ReportFormScreen(
     onSave: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ReportFormViewModel = hiltViewModel(),
-    draft: ReportDraft? = null,
+    draft: ReportDraft = remember { ReportDraft() },
 ) {
     SideEffect { viewModel.open(ReportForm(place = route.place()), draft) }
     val state by viewModel.uiState.collectAsStateWithLifecycle()

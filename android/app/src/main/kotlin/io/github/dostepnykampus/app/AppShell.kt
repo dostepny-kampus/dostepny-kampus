@@ -16,6 +16,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.listSaver
@@ -134,8 +135,8 @@ fun AppShell(
 }
 
 @Composable
-private fun rememberCaptureDraft(active: Boolean): ReportDraft? =
-    if (active) rememberSerializable(serializer = ReportDraft.serializer()) { ReportDraft() } else null
+private fun rememberCaptureDraft(active: Boolean): ReportDraft =
+    key(active) { rememberSerializable(serializer = ReportDraft.serializer()) { ReportDraft() } }
 
 private fun isCaptureRoute(route: NavKey): Boolean = route == MeasureRoute || route is ReportFormRoute
 

@@ -20,7 +20,7 @@ class ReportDraft {
         saved = DraftFields(state)
     }
 
-    internal fun restore(form: ReportForm): ReportUiState? = saved?.toUiState(form)
+    internal fun restore(form: ReportForm): ReportUiState = saved?.toUiState(form) ?: ReportUiState(form = form)
 
     internal fun clear() {
         saved = null
@@ -29,6 +29,9 @@ class ReportDraft {
 
 @Serializable
 private data class DraftPhoto(val id: String, val path: String)
+
+@Serializable
+private data class DraftEdit(val id: String, val baseVersion: Int?)
 
 @Serializable
 private data class DraftFields(
@@ -40,8 +43,7 @@ private data class DraftFields(
     val photos: List<DraftPhoto>,
     val description: String,
     val replacesSubmissionId: String?,
-    val editedId: String?,
-    val baseVersion: Int?,
+    val edited: DraftEdit?,
     val isSaveAttempted: Boolean,
 ) {
     constructor(state: ReportUiState) : this(
@@ -53,8 +55,7 @@ private data class DraftFields(
         photos = state.photos.map { DraftPhoto(it.photoId, it.path) },
         description = state.form.description,
         replacesSubmissionId = state.form.replacesSubmissionId,
-        editedId = state.form.editedSubmission?.id,
-        baseVersion = state.form.editedSubmission?.baseVersion,
+        edited = state.form.editedSubmission?.let { DraftEdit(it.id, it.baseVersion) },
         isSaveAttempted = state.isSaveAttempted,
     )
 
@@ -67,7 +68,7 @@ private data class DraftFields(
                 photoIds = photoIds,
                 description = description,
                 replacesSubmissionId = replacesSubmissionId,
-                editedSubmission = editedId?.let { EditedSubmission(it, baseVersion) },
+                editedSubmission = edited?.let { EditedSubmission(it.id, it.baseVersion) },
             )
         return ReportUiState(
             form = restored,
