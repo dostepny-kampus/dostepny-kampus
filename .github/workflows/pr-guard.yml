@@ -158,6 +158,7 @@ jobs:
         run: |
           # Każdy plik *-test.sh jest wykrywany automatycznie; padnięcie któregokolwiek daje czerwony job.
           # Testy podstawiają własne `gh`, a reszta narzędzi (jq, java) pochodzi z obrazu runnera.
+          set -o pipefail
           shopt -s nullglob
           tests=(.github/scripts/*-test.sh)
           if ((${#tests[@]} == 0)); then
@@ -171,12 +172,17 @@ jobs:
             status=0
             bash "$t" 2>&1 | tee "$log" || status=$?
             cases="$(grep -c '^OK:' "$log" || true)"
+            errors="$(grep -c '^BŁĄD:' "$log" || true)"
             echo "::endgroup::"
+            # Test, który wypisał BŁĄD, ale zwrócił kod 0, też jest porażką.
+            if ((status == 0 && errors > 0)); then
+              status=1
+            fi
             if ((status == 0)); then
               echo "${t}: kod 0, zaliczone przypadki: ${cases}"
               echo "- ${t}: ${cases} przypadków" >> "$GITHUB_STEP_SUMMARY"
             else
-              echo "::error title=Testy skryptów::${t} zakończył się kodem ${status} (zaliczone przypadki: ${cases})."
+              echo "::error title=Testy skryptów::${t} zakończył się kodem ${status} (zaliczone przypadki: ${cases}, błędy: ${errors})."
               failed=1
             fi
           done
