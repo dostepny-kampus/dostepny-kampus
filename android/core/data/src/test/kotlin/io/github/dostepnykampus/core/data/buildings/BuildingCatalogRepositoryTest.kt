@@ -10,7 +10,8 @@ import io.github.dostepnykampus.core.model.AssessmentSource.WALKTHROUGH
 import io.github.dostepnykampus.core.model.EntranceAssessment
 import io.github.dostepnykampus.core.network.BuildingsApi
 import io.github.dostepnykampus.core.network.NetworkModule
-import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -21,8 +22,8 @@ import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.time.LocalDate
-import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Katalog budynków na syntetycznym pliku `data/buildings` (nie dane PWr) i wejścia karty z serwera. */
@@ -54,15 +55,25 @@ class BuildingCatalogRepositoryTest {
         assertEquals(1, reads.get())
     }
 
+    // Dwa wywołania naraz: pierwsze czeka na odczyt pliku wstrzymany w kolejce, drugie rusza, zanim odczyt się
+    //   zacznie → jeden odczyt pliku i ten sam katalog dla obu, US1.
     @Test
     fun us1_parallel_calls_read_once() {
-        Executors.newFixedThreadPool(2).asCoroutineDispatcher().use { pool ->
-            val slow =
-                BuildingCatalogRepository(pool) {
-                    Thread.sleep(SLOW_READ_MS)
-                    json.also { reads.incrementAndGet() }
+        val held = ArrayDeque<Runnable>()
+        val io =
+            object : CoroutineDispatcher() {
+                override fun dispatch(context: CoroutineContext, block: Runnable) {
+                    held.addLast(block)
                 }
-            val (first, second) = runBlocking(pool) { List(2) { async { slow.catalog() } }.awaitAll() }
+            }
+        val shared = BuildingCatalogRepository(io) { json.also { reads.incrementAndGet() } }
+        runBlocking {
+            val calls = List(2) { async(start = CoroutineStart.UNDISPATCHED) { shared.catalog() } }
+            val pendingReads = held.size
+            val isAnyDone = calls.any { it.isCompleted }
+            while (held.isNotEmpty()) held.removeFirst().run()
+            val (first, second) = calls.awaitAll()
+            assertEquals(1 to false, pendingReads to isAnyDone, "wywołania nie trwały naraz albo każde czyta plik")
             assertSame(first, second)
             assertEquals(1, reads.get())
         }
@@ -104,7 +115,6 @@ class BuildingCatalogRepositoryTest {
             """"entrance":"$type"},"geometry":{"type":"Point","coordinates":[0,0]}}"""
 
     private companion object {
-        const val SLOW_READ_MS = 50L
         const val CARD =
             """{"symbol":"A-1","name":"Gmach","detailLevel":"BASIC","outline":{"type":"Polygon","coordinates":""" +
                 """[[[0,0],[1,0],[1,1],[0,0]]]},"entrances":[{"id":"a1","buildingSymbol":"A-1","main":true,""" +
