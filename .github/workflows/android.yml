@@ -51,7 +51,8 @@ jobs:
 
   emulator:
     needs: apk
-    if: ${{ !cancelled() && needs.apk.result == 'success' }}
+    # Na push po scaleniu z kolejki emulator przeszedł już w merge_group na tym samym SHA i nie zapisuje cache.
+    if: ${{ !cancelled() && github.event_name != 'push' && needs.apk.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -220,6 +221,7 @@ jobs:
       - name: Pokaż zbudowane pakiety
         run: ls -l app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
       - name: Udostępnij APK aplikacji i testów
+        if: ${{ github.event_name != 'push' }}
         uses: actions/upload-artifact@v7.0.2
         with:
           name: apk-debug
@@ -349,12 +351,18 @@ jobs:
         env:
           ZMIANY: ${{ needs.zmiany.result }}
           WYNIKI: ${{ needs.testy.result }} ${{ needs.apk.result }} ${{ needs.emulator.result }}
+          ZDARZENIE: ${{ github.event_name }}
+          EMULATOR: ${{ needs.emulator.result }}
         run: |
           # Wymagany check `budowanie`: zielony tylko, gdy testy, APK i emulatory zakończyły się sukcesem.
           echo "zmiany: ${ZMIANY}; testy, apk, emulator: ${WYNIKI}"
           if [[ $ZMIANY != success && $ZMIANY != skipped ]]; then
             echo "::error title=Android::Zadanie zmiany zakończyło się wynikiem ${ZMIANY}."
             exit 1
+          fi
+          if [[ $ZDARZENIE == push && $EMULATOR == skipped ]]; then
+            # Na push emulator jest pominięty celowo (przeszedł w merge_group); testy i apk dalej muszą się udać, bo zapisują cache.
+            WYNIKI="${WYNIKI% skipped}"
           fi
           for wynik in ${WYNIKI}; do
             if [[ $wynik != success ]]; then
