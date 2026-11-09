@@ -15,6 +15,9 @@ podany jest plik, który ją egzekwuje; gdy reguła się zmienia, zmienia się t
 5. **Kolejka scalania** scala PR przez squash do gałęzi sprintu. Do `main` trafiają tylko całe sprinty.
    Kolejka uruchamia kontrole także na wyniku scalenia (zdarzenie `merge_group`, np. w [`android.yml`](.github/workflows/android.yml)
    i [`api.yml`](.github/workflows/api.yml)); squash i kolejka to ustawienia repozytorium, nie plik.
+   Do kolejki PR wstawia przycisk „Merge when ready” albo etykieta `do-kolejki`: włącza auto-merge, a zdjęta je
+   wyłącza ([`do-kolejki.yml`](.github/workflows/do-kolejki.yml)). Etykietę doda też samo REST API:
+   `gh api repos/{owner}/{repo}/issues/N/labels -f 'labels[]=do-kolejki'`.
 6. Po scaleniu issue z opisu PR jest zamykane z komentarzem „Zrobione w #PR”
    ([`zamykanie-issue.yml`](.github/workflows/zamykanie-issue.yml), [`zamknij-issue.sh`](.github/scripts/zamknij-issue.sh)).
 
