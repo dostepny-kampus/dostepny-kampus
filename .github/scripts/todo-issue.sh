@@ -4,7 +4,7 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
-# Strażnik znaczników zadań, uruchamiany w katalogu repozytorium git. Znacznik TODO, FIXME, HACK lub @todo
+# Strażnik znaczników zadań, uruchamiany w katalogu repozytorium git. Znacznik TODO, FIXME, HACK lub @todo (wielkość liter bez znaczenia)
 # musi mieć postać ZNACZNIK(#N), gdzie issue #N istnieje i jest otwarte. Skanuje pliki śledzone przez git
 # o rozszerzeniach kt, kts, java, yml, yaml, sh, z pominięciem plików samego strażnika (zawierają przykłady).
 # Stan issue z gh; w teście zamiast sieci: ISSUE_JSON_DIR z plikami <numer>.json (gh issue view --json state,url).
@@ -52,7 +52,7 @@ while IFS= read -r -d '' path; do
     else
       report "$path" "$line" "${marker}: znacznik bez numeru issue; użyj ${marker}(#N)."
     fi
-  done < <(grep -noP '(?<!\w)(?:TODO|FIXME|HACK|@todo)(?!\w)(?:\(#\d+\))?' "$path" || true)
+  done < <(grep -noPi '(?<!\w)(?:TODO|FIXME|HACK|@todo)(?!\w)(?:\(#\d+\))?' "$path" || true)
 done < <(git ls-files -z -- '*.kt' '*.kts' '*.java' '*.yml' '*.yaml' '*.sh' \
   ':!.github/scripts/todo-issue.sh' ':!.github/scripts/todo-issue-test.sh')
 
