@@ -32,7 +32,7 @@ run_case() {
   if [[ $body == '@BLAD' ]]; then
     echo 'to nie jest json' >"$workdir/pr.json"
   else
-    printf '{"author":{"login":"%s"},"body":"%s","headRefName":"5-opis"}\n' "$author" "$body" >"$workdir/pr.json"
+    printf '{"author":{"login":"%s"},"body":"%s","headRefName":"5-opis","labels":[{"name":"ci"}]}\n' "$author" "$body" >"$workdir/pr.json"
   fi
   : >"$workdir/log.txt"
   PR_JSON_FILE="$workdir/pr.json" ISSUE_JSON_DIR="$workdir/issues" PR_OD_ISSUE_WYMAGANE="$required" \
