@@ -88,7 +88,7 @@ final class SimilarSubmissionsHttpTest {
     }
 
     /**
-     * Stałe miejsce na kampusie, przy którym test dodaje zgłoszenia.
+     * Stałe miejsce na kampusie (17,055; 51,108), przy którym test dodaje zgłoszenia.
      *
      * <p>Miejsce leży kilkaset metrów od zgłoszeń, które zapisują na stałe
      * inne klasy testów, więc w promieniu 10 m są tylko zgłoszenia tego testu;
@@ -98,11 +98,6 @@ final class SimilarSubmissionsHttpTest {
      * @since 0.1.0
      */
     private record Place(WebApplicationContext context) {
-
-        /**
-         * Długość geograficzna miejsca.
-         */
-        private static final double LON = 17.055;
 
         /**
          * Dodaje sprawdzane zgłoszenie i drugie w danej odległości.
@@ -132,11 +127,11 @@ final class SimilarSubmissionsHttpTest {
                 """
                 INSERT INTO submissions (id, status, kind, building_symbol, location, content)
                 VALUES (:id, :status, 'QUICK', 'A-1', ST_Project(
-                    ST_SetSRID(ST_MakePoint(:lon, 51.108), 4326)::geography, :meters, 0
+                    ST_SetSRID(ST_MakePoint(17.055, 51.108), 4326)::geography, :meters, 0
                 )::geometry, CAST(:content AS JSONB))
                 """
             ).param("id", id).param("status", status).param("meters", meters)
-                .param("lon", SimilarSubmissionsHttpTest.Place.LON).param(
+                .param(
                     "content",
                     String.join(
                         "", "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
