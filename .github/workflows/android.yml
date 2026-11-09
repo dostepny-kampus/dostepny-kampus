@@ -51,6 +51,9 @@ jobs:
     if: ${{ !cancelled() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: write
     defaults:
       run:
         working-directory: android
@@ -113,6 +116,22 @@ jobs:
         with:
           path: ~/.gradle/caches/build-cache-1
           key: ${{ steps.cache-budowania.outputs.cache-primary-key }}
+      - name: Usuń poprzednie wpisy cache budowania tej gałęzi
+        if: >-
+          ${{ success() && github.event_name == 'push' &&
+            (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) &&
+            steps.cache-budowania.outputs.cache-hit != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          NOWY_KLUCZ: ${{ steps.cache-budowania.outputs.cache-primary-key }}
+        run: |
+          # Na gałąź zostaje tylko wpis zapisany w tym przebiegu; limit pamięci cache repozytorium to 10 GB.
+          gh cache list --ref "$GITHUB_REF" --key "android-budowanie-v1-${RUNNER_OS}-${RUNNER_ARCH}-" --limit 100             --json id,key --jq ".[] | select(.key != \"${NOWY_KLUCZ}\") | .id" |
+            while read -r id; do
+              gh cache delete "$id"
+              echo "Usunięto poprzedni wpis cache ${id}."
+            done
 
   emulator:
     needs: zmiany
