@@ -16,7 +16,7 @@ cat >"$workdir/bin/gh" <<'SH'
 set -euo pipefail
 case "$1 $2" in
   'pr view') printf '%s\n' "$FAKE_DRAFT" ;;
-  'pr ready') echo 'szkic' >>"$FAKE_LOG" ;;
+  'pr ready') if [[ -n ${FAKE_READY_FAIL:-} ]]; then echo 'GraphQL: Resource not accessible by integration' >&2; exit 1; fi; echo 'szkic' >>"$FAKE_LOG" ;;
   'pr comment') echo 'komentarz' >>"$FAKE_LOG" ;;
   'api -X') echo 'odświeżenie' >>"$FAKE_LOG" ;;
   'api repos/'*) printf '%s\n' "$FAKE_COMMENT_ID" ;;
@@ -54,6 +54,7 @@ run_case "tryb wymagany: PR już szkic, bez ponownej zamiany" 1 'Opis.' ala true
 run_case "tryb wymagany: komentarz odświeżany, bez duplikatu" 1 'Opis.' ala false 123 1 'szkic\nodświeżenie'
 run_case "tryb wymagany: issue przypisane komuś innemu" 1 'Closes #5' ola false '' 1 'szkic\nkomentarz' 'nieprzypisane autorowi'
 run_case "tryb wymagany: poprawny PR bez zmian" 1 'Closes #5' ala false '' 0 ''
+FAKE_READY_FAIL=1 run_case "tryb wymagany: token bez prawa do szkicu, zostaje komentarz i kod 1" 1 'Opis.' ala false '' 1 'komentarz' 'Nie udało się zamienić'
 run_case "tryb wymagany: błąd odczytu danych PR to błąd narzędzia, bez zmiany PR" 1 '@BLAD' ala false '' 2 '' 'Błąd narzędzia kontroli'
 run_case "tryb ostrzegawczy: błąd odczytu danych PR też jest błędem narzędzia" 0 '@BLAD' ala false '' 2 '' 'Błąd narzędzia kontroli'
 run_case "tryb wymagany: Dependabot pominięty" 1 'Opis.' 'dependabot[bot]' false '' 0 '' 'Dependabota'

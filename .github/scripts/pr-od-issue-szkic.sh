@@ -41,8 +41,13 @@ while IFS= read -r uwaga; do
 done <<<"$uwagi"
 
 if [[ "$(gh pr view "$pr" --json isDraft --jq .isDraft)" != true ]]; then
-  gh pr ready "$pr" --undo
-  echo "PR #${pr} zamieniony w szkic."
+  # Token workflow (GITHUB_TOKEN) bywa bez prawa do zamiany PR w szkic (GraphQL: convertPullRequestToDraft); wtedy
+  # zostaje komentarz i czerwony wynik zadania, a ostrzeżenie mówi, czemu PR nie jest szkicem.
+  if gh pr ready "$pr" --undo; then
+    echo "PR #${pr} zamieniony w szkic."
+  else
+    echo "::warning title=PR od issue::Nie udało się zamienić PR #${pr} w szkic (brak uprawnienia tokenu); zostaje komentarz i czerwony wynik."
+  fi
 fi
 
 tresc="${znacznik}
