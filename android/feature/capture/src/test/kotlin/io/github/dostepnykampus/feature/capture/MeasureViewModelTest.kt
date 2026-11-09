@@ -146,6 +146,16 @@ class MeasureViewModelTest {
             assertEquals("B-1", (place() as PlaceChoice.Chosen).building.symbol)
         }
 
+    /** Sekcja „Wybierz budynek”: budynki najbliżej punktu, od najbliższego, ten z punktem pierwszy z 0 m (US6.2). */
+    @Test
+    fun us6_2_nearest_for_section() =
+        runTest(dispatcher) {
+            finish()
+            val nearest = viewModel.buildings.value
+            assertEquals(listOf("A-1", "B-1"), nearest.map { it.building.symbol })
+            assertEquals(0.0, nearest.first().distanceMeters, PRECISION)
+        }
+
     @Test
     fun br_g2_leave_outside() =
         runTest(dispatcher) {

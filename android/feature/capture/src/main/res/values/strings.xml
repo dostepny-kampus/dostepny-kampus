@@ -39,6 +39,8 @@
     <string name="budynek_wybrany">Budynek: %1$s</string>
     <string name="budynek_miejsce_poza">Miejsce: poza budynkiem</string>
     <string name="budynek_anuluj">Anuluj</string>
+    <string name="budynek_najblizej">Najbliżej punktu, od najbliższego:</string>
+    <string name="budynek_na_liscie">Budynek %1$s, %2$d m</string>
     <string name="formularz_naglowek">Opisz barierę</string>
     <string name="formularz_naglowek_edycja">Popraw zgłoszenie</string>
     <string name="formularz_budynek">Budynek %1$s</string>
