@@ -50,7 +50,7 @@ class HelpScreenshotTest {
         compose.onRoot().captureRoboImage()
     }
 
-    // Krok 1 przy pierwszym uruchomieniu: pole wyszukiwania V1 jako obraz, US5.1, NFR-18.
+    /** Krok 1 przy pierwszym uruchomieniu: pole wyszukiwania V1 jako obraz, US5.1, NFR-18. */
     @Test
     fun us5_1_v5_krok1_jasny() {
         capture(isFirstStep = true)
@@ -62,14 +62,14 @@ class HelpScreenshotTest {
         capture(isFirstStep = true)
     }
 
-    // Czcionka 200 %: „Dalej” i „Pomiń instrukcję” na końcu treści (reguła 10), NFR-20.
+    /** Czcionka 200 %: „Dalej” i „Pomiń instrukcję” na końcu treści (reguła 10), NFR-20. */
     @Test
     fun nfr20_v5_krok1_200() {
         RuntimeEnvironment.setFontScale(2f)
         capture(isFirstStep = true)
     }
 
-    // Krok 2 z paska „Pomoc”: wejście z oznaczeniem „Dostępne”, US5.1, US2.1, PW-15.
+    /** Krok 2 z paska „Pomoc”: wejście z oznaczeniem „Dostępne”, US5.1, US2.1, PW-15. */
     @Test
     fun us5_1_v5_krok2_jasny() {
         capture(isFirstStep = false)

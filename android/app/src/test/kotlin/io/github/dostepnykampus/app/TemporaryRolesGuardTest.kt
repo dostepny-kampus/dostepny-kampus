@@ -15,6 +15,8 @@ import java.io.File
 /**
  * Strażnik adnotacji `TymczasoweRole`: rola bez logowania jest tymczasowa, więc gdy w kodzie pojawi się logowanie
  * (AppAuth albo repozytorium logowania), adnotacja ma zniknąć, a kompilator wskaże jej użycia (ADR-0003).
+ *
+ * `leftovers`: Pliki z adnotacją albo jej użyciem, ale tylko wtedy, gdy w kodzie jest już logowanie.
  */
 class TemporaryRolesGuardTest {
     @Test
@@ -45,7 +47,6 @@ class TemporaryRolesGuardTest {
         assertEquals(emptySet<String>(), leftovers(files))
     }
 
-    // Pliki z adnotacją albo jej użyciem, ale tylko wtedy, gdy w kodzie jest już logowanie.
     private fun leftovers(files: List<KoFileDeclaration>): Set<String> {
         val hasLogin = files.any { file -> file.hasLogin() }
         val marked = files.filter { it.text.contains(MARKER) }.map { it.nameWithExtension }

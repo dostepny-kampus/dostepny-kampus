@@ -53,8 +53,10 @@ class ShowEntranceTest {
 
     private lateinit var navigator: AppNavigator
 
-    // Wiersz: V2 pełny ekran, wejście zalecane nie jest pierwsze w danych ani główne → „Pokaż wejście na mapie” przy
-    //   nim prowadzi do V1 z zaznaczonym tym wejściem i budynkiem karty, US3.3, US2.1, BR-25.
+    /**
+     * Wiersz: V2 pełny ekran, wejście zalecane nie jest pierwsze w danych ani główne → „Pokaż wejście na mapie” przy
+     *   nim prowadzi do V1 z zaznaczonym tym wejściem i budynkiem karty, US3.3, US2.1, BR-25.
+     */
     @Test
     fun us3_3_show_opens_v1_entrance() {
         compose.setContent {

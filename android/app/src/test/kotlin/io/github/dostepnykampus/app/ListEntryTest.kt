@@ -82,7 +82,7 @@ class ListEntryTest {
         compose.onNodeWithText(BUILDING_ON_MAP).assertDoesNotExist()
     }
 
-    // Wiersz: V1, dotknięcie konturu budynku → V2, mała karta nad mapą także przy TalkBack, US2.8, decyzja 115.
+    /** Wiersz: V1, dotknięcie konturu budynku → V2, mała karta nad mapą także przy TalkBack, US2.8, decyzja 115. */
     @Test
     fun us2_8_contour_talkback_compact() {
         choice.savedChoice.value = false
@@ -93,9 +93,11 @@ class ListEntryTest {
         checkCompact("kontur przy TalkBack")
     }
 
-    // Wiersze: V1 bez TalkBack, dotknięcie budynku na liście przy zwykłej czcionce → V1 w widoku mapy z małą kartą
-    // V2; „Wstecz” → lista, zapamiętany wybór „Lista budynków” bez zmian, także po odtworzeniu aktywności, US2.8,
-    // NFR-19, NFR-22, decyzja 118.
+    /**
+     * Wiersze: V1 bez TalkBack, dotknięcie budynku na liście przy zwykłej czcionce → V1 w widoku mapy z małą kartą
+     * V2; „Wstecz” → lista, zapamiętany wybór „Lista budynków” bez zmian, także po odtworzeniu aktywności, US2.8,
+     * NFR-19, NFR-22, decyzja 118.
+     */
     @Test
     fun nfr19_list_compact_to_list() {
         shadowOf(compose.activity.getSystemService(AccessibilityManager::class.java)).setTouchExplorationEnabled(false)
@@ -111,8 +113,10 @@ class ListEntryTest {
         assertEquals(true, choice.savedChoice.value)
     }
 
-    // Wiersz: V1, wybór wyniku w polu „Wpisz symbol budynku, np. C-13” → V2, mała karta także przy TalkBack, US1.1,
-    // US2.8.
+    /**
+     * Wiersz: V1, wybór wyniku w polu „Wpisz symbol budynku, np. C-13” → V2, mała karta także przy TalkBack, US1.1,
+     * US2.8.
+     */
     @Test
     fun us1_1_search_talkback_compact() {
         choice.savedChoice.value = false

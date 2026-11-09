@@ -73,6 +73,9 @@ private val OTHERS =
  * „Pokaż wejście na mapie” na V3 przez prawdziwy ekran V1 do tego, co dostaje widok mapy (podróbka): zaznaczone
  * wejście, pinezka z podpisem, kamera i nazwa dla TalkBack (US3.3, US2.1, NFR-18, decyzja 134). Katalog
  * „Budynek testowy” jest syntetyczny (nie dane PWr).
+ *
+ * `showEntranceOnMap`: Od dotknięcia budynku na V1 przez V2 i V3 do „Pokaż wejście na mapie”; zwraca to, co dostała
+ * mapa po tym.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -143,7 +146,6 @@ class EntranceOnMapTest {
         compose.waitForIdle()
     }
 
-    // Od dotknięcia budynku na V1 przez V2 i V3 do „Pokaż wejście na mapie”; zwraca to, co dostała mapa po tym.
     private fun showEntranceOnMap(json: String): Pair<CampusMapData, MapCamera> {
         show(json)
         compose.waitUntil { shown.isNotEmpty() }
@@ -158,7 +160,7 @@ class EntranceOnMapTest {
     private fun namedCatalog(): String =
         catalog(entrance(10, NAMED_AT, """"entrance":"yes","ref":"$NAMED","wheelchair":"yes""""), *OTHERS)
 
-    // Wiersz E2 (O1, O2, O4): V3 → V1; mapa dostaje wybrane wejście z punktem i podpisem z nazwą.
+    /** Wiersz E2 (O1, O2, O4): V3 → V1; mapa dostaje wybrane wejście z punktem i podpisem z nazwą. */
     @Test
     fun us3_3_map_gets_entrance() {
         val (data, _) = showEntranceOnMap(namedCatalog())
@@ -166,7 +168,7 @@ class EntranceOnMapTest {
         assertEquals(expected, data.selectedEntrance)
     }
 
-    // Wiersz E2, E4: wejście bez nazwy w danych dostaje podpis zastępczy, także dla TalkBack (decyzja 135).
+    /** Wiersz E2, E4: wejście bez nazwy w danych dostaje podpis zastępczy, także dla TalkBack (decyzja 135). */
     @Test
     fun us3_3_unnamed_gets_fallback() {
         val json = catalog(entrance(10, NAMED_AT, """"entrance":"yes","wheelchair":"yes""""), *OTHERS)
@@ -176,7 +178,7 @@ class EntranceOnMapTest {
         compose.onNode(read("Zaznaczone wejście: »$UNNAMED«, budynek A-1")).assertExists()
     }
 
-    // Wiersz E2 (O5): pozostałe wejścia, także niedostępne i bez danych, zostają w danych mapy.
+    /** Wiersz E2 (O5): pozostałe wejścia, także niedostępne i bez danych, zostają w danych mapy. */
     @Test
     fun us3_3_other_entrances_stay() {
         val (data, _) = showEntranceOnMap(namedCatalog())
@@ -184,21 +186,23 @@ class EntranceOnMapTest {
         assertEquals(3, Regex("\"marking\"").findAll(data.entrances).count())
     }
 
-    // Wiersz E3 (O3): kamera na wejściu, nie na budynku (środek budynku to 0,5; 0,5).
+    /** Wiersz E3 (O3): kamera na wejściu, nie na budynku (środek budynku to 0,5; 0,5). */
     @Test
     fun us3_3_camera_on_entrance() {
         val (_, camera) = showEntranceOnMap(namedCatalog())
         assertEquals(NAMED_AT, camera.center)
     }
 
-    // Wiersz E4: TalkBack czyta nazwę zaznaczonego wejścia i budynek.
+    /** Wiersz E4: TalkBack czyta nazwę zaznaczonego wejścia i budynek. */
     @Test
     fun nfr18_entrance_read_aloud() {
         showEntranceOnMap(namedCatalog())
         compose.onNode(read(SELECTED_NAMED)).assertExists()
     }
 
-    // Wiersz E5 (O6): „Pokaż budynek na mapie” zaznacza budynek jak dziś, bez pinezki wejścia i bez zdania o wejściu.
+    /**
+     * Wiersz E5 (O6): „Pokaż budynek na mapie” zaznacza budynek jak dziś, bez pinezki wejścia i bez zdania o wejściu.
+     */
     @Test
     @Config(fontScale = 2f)
     fun nfr15_building_has_no_pin() {

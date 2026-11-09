@@ -55,8 +55,10 @@ class ReportAtEntranceTest {
 
     private lateinit var navigator: AppNavigator
 
-    // Wiersz: V2 pełny ekran, zalogowany → „Zgłoś barierę przy wejściu” przy każdym wejściu prowadzi do V4 z
-    //   wejściem, przy którym stoi, US4.6.
+    /**
+     * Wiersz: V2 pełny ekran, zalogowany → „Zgłoś barierę przy wejściu” przy każdym wejściu prowadzi do V4 z
+     *   wejściem, przy którym stoi, US4.6.
+     */
     @Test
     fun us4_6_each_entrance_opens_v4() {
         val ids = entranceIds()
@@ -70,7 +72,7 @@ class ReportAtEntranceTest {
         }
     }
 
-    // Wiersz: V2 pełny ekran, Gość → ta sama czynność prowadzi najpierw do L1, który pamięta wejście, US14.2.
+    /** Wiersz: V2 pełny ekran, Gość → ta sama czynność prowadzi najpierw do L1, który pamięta wejście, US14.2. */
     @Test
     fun us14_2_guest_goes_to_l1() {
         val ids = entranceIds()
