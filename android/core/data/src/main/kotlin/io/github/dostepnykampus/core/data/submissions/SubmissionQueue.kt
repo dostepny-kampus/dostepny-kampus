@@ -131,7 +131,7 @@ class SubmissionQueue(
             "Zdjęcia w kolejce muszą odpowiadać identyfikatorom treści (BR-7, BR-8)"
         }
         val id = newId()
-        val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = nextSavedAt())
+        val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = lastSavedAt.nextAfter(nowMillis()))
         store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
         remember(entity)
         // Awaria planowania nie może zgubić zapisanego zgłoszenia (NFR-5).
@@ -152,7 +152,7 @@ class SubmissionQueue(
         }
         val entity =
             content
-                .toPendingSubmissionEntity(id = edited.id, savedAtMillis = nextSavedAt())
+                .toPendingSubmissionEntity(id = edited.id, savedAtMillis = lastSavedAt.nextAfter(nowMillis()))
                 .copy(baseVersion = edited.baseVersion)
         lock.withLock {
             store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
@@ -182,8 +182,6 @@ class SubmissionQueue(
         expired.value = false
         runCatching(onSaved)
     }
-
-    private fun nextSavedAt(): Long = lastSavedAt.updateAndGet { last -> maxOf(nowMillis(), last + 1) }
 
     private suspend fun remember(entity: PendingSubmissionEntity) {
         if (entity.isOwnHistory()) history?.save(entity.toOwnSubmissionEntity())
@@ -267,3 +265,5 @@ internal fun serverOutcome(code: Int): Outcome =
         code == HTTP_UNAUTHORIZED -> Outcome.LOGIN_EXPIRED
         else -> Outcome.REFUSED
     }
+
+private fun AtomicLong.nextAfter(now: Long): Long = updateAndGet { last -> maxOf(now, last + 1) }

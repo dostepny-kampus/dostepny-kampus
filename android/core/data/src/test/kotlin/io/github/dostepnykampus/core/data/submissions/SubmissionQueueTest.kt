@@ -145,9 +145,8 @@ class SubmissionQueueTest {
                     newId = { ids.removeFirst() },
                     nowMillis = { SAME_MILLIS },
                 )
-            val content = fullContent().copy(photoIds = emptyList())
-            target.save(content, emptyList())
-            target.save(content, emptyList())
+            target.save(fullContent(), drafts())
+            target.save(fullContent(), drafts())
             target.sendAll()
 
             assertEquals(listOf("z-pierwsze", "a-drugie"), sent)
