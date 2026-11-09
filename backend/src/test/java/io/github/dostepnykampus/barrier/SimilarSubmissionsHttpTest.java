@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
@@ -9,7 +9,6 @@ import io.github.dostepnykampus.IntegrationTest;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.StreamSupport;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -40,7 +39,7 @@ final class SimilarSubmissionsHttpTest {
     ) throws Exception {
         MatcherAssert.assertThat(
             "Zgłoszenie w promieniu 10 m nie jest na liście podobnych",
-            SimilarSubmissionsHttpTest.Place.random(context).pair(meters, status),
+            new SimilarSubmissionsHttpTest.Place(context).pair(meters, status),
             Matchers.hasSize(1)
         );
     }
@@ -52,7 +51,7 @@ final class SimilarSubmissionsHttpTest {
     ) throws Exception {
         MatcherAssert.assertThat(
             "Zgłoszenie dalej niż 10 m, odrzucone albo archiwalne jest na liście podobnych",
-            SimilarSubmissionsHttpTest.Place.random(context).pair(meters, status),
+            new SimilarSubmissionsHttpTest.Place(context).pair(meters, status),
             Matchers.empty()
         );
     }
@@ -61,7 +60,7 @@ final class SimilarSubmissionsHttpTest {
     void usTenOneSortsFromNearestWithDistanceFromAnyFloor(final WebApplicationContext context)
         throws Exception {
         final SimilarSubmissionsHttpTest.Place place =
-            SimilarSubmissionsHttpTest.Place.random(context);
+            new SimilarSubmissionsHttpTest.Place(context);
         final UUID checked = place.add(0, "IN_REVIEW", "A-1-0");
         final UUID far = place.add(5, "ACCEPTED", "A-1-1");
         final UUID near = place.add(2, "SENT", "A-1-0");
@@ -89,25 +88,21 @@ final class SimilarSubmissionsHttpTest {
     }
 
     /**
-     * Miejsce na kampusie, przy którym test dodaje zgłoszenia.
+     * Stałe miejsce na kampusie, przy którym test dodaje zgłoszenia.
+     *
+     * <p>Miejsce leży kilkaset metrów od zgłoszeń, które zapisują na stałe
+     * inne klasy testów, więc w promieniu 10 m są tylko zgłoszenia tego testu;
+     * każdy test wycofuje je na końcu transakcji.</p>
      *
      * @param context Kontekst aplikacji z bazą i MockMvc
-     * @param lon Długość geograficzna miejsca
      * @since 0.1.0
      */
-    private record Place(WebApplicationContext context, double lon) {
+    private record Place(WebApplicationContext context) {
 
         /**
-         * Losuje miejsce, by zgłoszenia innych testów nie były w promieniu.
-         *
-         * @param context Kontekst aplikacji z bazą i MockMvc
-         * @return Miejsce na kampusie
+         * Długość geograficzna miejsca.
          */
-        static SimilarSubmissionsHttpTest.Place random(final WebApplicationContext context) {
-            return new SimilarSubmissionsHttpTest.Place(
-                context, ThreadLocalRandom.current().nextDouble(17.05, 17.07)
-            );
-        }
+        private static final double LON = 17.055;
 
         /**
          * Dodaje sprawdzane zgłoszenie i drugie w danej odległości.
@@ -141,7 +136,7 @@ final class SimilarSubmissionsHttpTest {
                 )::geometry, CAST(:content AS JSONB))
                 """
             ).param("id", id).param("status", status).param("meters", meters)
-                .param("lon", this.lon).param(
+                .param("lon", SimilarSubmissionsHttpTest.Place.LON).param(
                     "content",
                     String.join(
                         "", "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
