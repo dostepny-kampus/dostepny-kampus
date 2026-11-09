@@ -130,8 +130,8 @@ final class SimilarSubmissionsHttpTest {
                     ST_SetSRID(ST_MakePoint(17.055, 51.108), 4326)::geography, :meters, 0
                 )::geometry, CAST(:content AS JSONB))
                 """
-            ).param("id", id).param("status", status).param("meters", meters)
-                .param(
+            ).param("id", id).param("status", status)
+                .param("meters", meters).param(
                     "content",
                     String.join(
                         "", "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
