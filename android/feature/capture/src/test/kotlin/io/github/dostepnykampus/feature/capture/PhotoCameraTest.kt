@@ -57,31 +57,23 @@ class PhotoCameraTest {
         return request to File(File(compose.activity.filesDir, PHOTO_DIR), name)
     }
 
-    // Wiersz: C2, „Zrób zdjęcie” → aparat, potem C2 ze zdjęciem, US7.1.
+    // Wiersz: C2, rezygnacja w aparacie → C2 bez zdjęcia, potem „Zrób zdjęcie” → aparat → C2 ze zdjęciem, US7.1.
+    // Jeden test, bo FileProvider zapamiętuje katalog plików pierwszej aktywności na cały proces testów.
     @Test
-    fun us7_1_photo_back_in_form() {
+    fun us7_1_cancel_then_photo() {
         show()
+        val (cancelled, empty) = openCamera()
+        shadowOf(compose.activity).receiveResult(cancelled.intent, Activity.RESULT_CANCELED, null)
+        compose.waitForIdle()
+        assertFalse(empty.exists())
+
         val (request, file) = openCamera()
         val image = Bitmap.createBitmap(64, 48, Bitmap.Config.ARGB_8888)
         file.outputStream().use { image.compress(Bitmap.CompressFormat.JPEG, CAMERA_QUALITY, it) }
-
         shadowOf(compose.activity).receiveResult(request.intent, Activity.RESULT_OK, null)
 
         val preview = hasContentDescription("Zrobione zdjęcie 1 z 1")
         compose.waitUntil { compose.onAllNodes(preview).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Zrób nowe zdjęcie").performScrollTo()
-    }
-
-    // Wiersz: C2, rezygnacja w aparacie → C2 bez zdjęcia, plik nie zostaje, US7.1.
-    @Test
-    fun us7_1_cancel_keeps_form() {
-        show()
-        val (request, file) = openCamera()
-
-        shadowOf(compose.activity).receiveResult(request.intent, Activity.RESULT_CANCELED, null)
-
-        compose.waitForIdle()
-        assertFalse(file.exists())
-        compose.onNodeWithText("Zrób zdjęcie").performScrollTo()
     }
 }
