@@ -110,5 +110,6 @@ internal fun ReportUiState.edited(change: ReportEdit): ReportUiState {
     return copy(form = form, photos = photos, errors = if (isSaveAttempted) form.errors() else emptyList())
 }
 
-private fun ReportForm.movedTo(next: ReportPlace): ReportForm =
+/** Pola formularza w nowym miejscu; piętro zostaje tylko w tym samym budynku (US7.4, BR-G4). */
+internal fun ReportForm.movedTo(next: ReportPlace): ReportForm =
     copy(place = next, floor = floor.takeIf { next.buildingSymbol == place.buildingSymbol })
