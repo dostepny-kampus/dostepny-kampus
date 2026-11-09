@@ -20,7 +20,8 @@ import kotlinx.coroutines.flow.map
 
 /**
  * C2 Opisz barierę (US7) z miejscem z [route]. „Wstecz” w nagłówku i wstecz telefonu bez zmian wychodzą od razu,
- * ze zmianami pytają „Wyjść bez zapisu?” (US7.4). „Zmień miejsce” wraca do C1 tą samą drogą co „Wstecz”.
+ * ze zmianami pytają „Wyjść bez zapisu?” (US7.4). „Zmień miejsce” wraca do C1 bez pytania, a wpisane pola
+ * czekają na nowe miejsce.
  *
  * @param route miejsce z pomiaru C1
  * @param onLeave wyjście bez zapisu
@@ -56,7 +57,7 @@ fun ReportFormScreen(
         val actions =
             ReportActions(
                 onEdit = viewModel::edit,
-                onChangePlace = viewModel::back,
+                onChangePlace = viewModel::changePlace,
                 onTakePhoto = takePhoto,
                 onSave = viewModel::save,
                 onBack = viewModel::back,
