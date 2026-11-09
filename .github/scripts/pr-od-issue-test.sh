@@ -5,12 +5,14 @@
 set -euo pipefail
 
 # Test kontroli „PR od issue” (pr-od-issue.sh). Skrypt czyta dane z gh; w teście zamiast sieci dostaje pliki:
-#   PR_JSON_FILE   - odpowiedź `gh pr view --json author,body,headRefName`; issue skrypt wyszukuje w opisie
+#   PR_JSON_FILE   - odpowiedź `gh pr view --json author,body,headRefName,labels`; issue skrypt wyszukuje w opisie
 #                    (Closes|Fixes|Resolves #N, wielkość liter bez znaczenia), bo dla PR do gałęzi
 #                    niedomyślnej GitHub nie wypełnia closingIssuesReferences,
-#   ISSUE_JSON_DIR - katalog z plikami <numer>.json, każdy to odpowiedź `gh issue view --json state,assignees,url`.
+#   ISSUE_JSON_DIR - katalog z plikami <numer>.json, każdy to odpowiedź `gh issue view --json state,assignees,url,labels`.
 #   PR_OD_ISSUE_OSTRZEGAJ=1 - tryb ostrzegawczy: te same uwagi jako ::warning, ale kod 0.
 # Nazwa gałęzi PR ma mieć postać N-krotki-opis, a #N ma być wśród zamykanych issue (poza gałęziami dependabot/*).
+# Obszar: PR ma mieć etykietę obszaru (android, backend, api, ci, test, documentation); jeśli zamykane issue ma
+# etykiety obszaru, PR ma mieć przynajmniej jedną z nich.
 # Kod wyjścia 0 = PR spełnia zasady, 1 = naruszenie (tekst w wyjściu).
 script="$(cd "$(dirname "$0")" && pwd)/pr-od-issue.sh"
 workdir="$(mktemp -d)"
@@ -22,11 +24,24 @@ unassigned='issue nieprzypisane autorowi'
 is_pull='to PR, nie issue'
 no_number='nazwa gałęzi nie zaczyna się od numeru issue'
 wrong_number='nie jest wśród zamykanych issue'
+no_area='PR nie ma etykiety obszaru'
+area_mismatch='etykiety obszaru issue'
+pr_labels=ci
+issue_labels=''
 warn=0
+
+# Etykiety: pr_labels i issue_labels to listy nazw po przecinku (domyślnie PR ma `ci`, issue nie ma etykiet).
+labels_json() {
+  local out='' name
+  while IFS= read -r name; do
+    [[ -n $name ]] && out="${out:+$out,}{\"name\":\"$name\"}"
+  done < <(tr ',' '\n' <<<"$1")
+  printf '%s' "$out"
+}
 
 # pr_json <autor> <opis PR (w JSON, nowy wiersz jako \n)> [gałąź PR, domyślnie 12-zadanie]
 pr_json() {
-  printf '{"author":{"login":"%s"},"body":"%s","headRefName":"%s"}\n' "$1" "$2" "${3:-12-zadanie}" >"$workdir/pr.json"
+  printf '{"author":{"login":"%s"},"body":"%s","headRefName":"%s","labels":[%s]}\n'     "$1" "$2" "${3:-12-zadanie}" "$(labels_json "$pr_labels")" >"$workdir/pr.json"
 }
 
 # issue_json <numer> <OPEN|CLOSED> [osoba przypisana ...]; kind (issues|pull) mówi, czym jest numer
@@ -47,6 +62,8 @@ run_case() {
   shift 3
   warn=0
   kind=issues
+  pr_labels=ci
+  issue_labels=''
   rm -rf "$workdir/issues" "$workdir/pr.json"
   mkdir "$workdir/issues"
   "$@"
@@ -79,6 +96,15 @@ case_branch_second_issue() {
 }
 case_branch_number_only_prefix() { pr_json autor-pr 'Closes #12' 123-inne; issue_json 12 OPEN autor-pr; }
 case_warn_branch() { warn=1; case_branch_wrong_number; }
+
+case_area_match() { pr_labels='backend,bug'; issue_labels='backend'; case_ok; }
+case_no_pr_area() { pr_labels='bug'; case_ok; }
+case_no_pr_labels() { pr_labels=''; case_ok; }
+case_area_mismatch() { pr_labels='backend'; issue_labels='android'; case_ok; }
+case_issue_no_area() { pr_labels='backend'; issue_labels='bug'; case_ok; }
+case_issue_two_areas() { pr_labels='api'; issue_labels='android,api'; case_ok; }
+case_warn_no_area() { warn=1; case_no_pr_area; }
+case_warn_mismatch() { warn=1; case_area_mismatch; }
 
 case_two_issues_ok() {
   pr_json autor-pr 'Closes #12\nresolves #13'
@@ -120,5 +146,13 @@ run_case "numer gałęzi różny od zamykanego issue" 1 "$wrong_number" case_bra
 run_case "numer gałęzi to jedno z kilku zamykanych issue" 0 '' case_branch_second_issue
 run_case "numer gałęzi tylko zaczyna się jak numer issue" 1 "$wrong_number" case_branch_number_only_prefix
 run_case "tryb ostrzegawczy: numer gałęzi różny od issue" 0 '::warning' case_warn_branch
+run_case "obszar: zgodna etykieta PR i issue" 0 '' case_area_match
+run_case "obszar: PR bez etykiety obszaru (tylko bug)" 1 "$no_area" case_no_pr_area
+run_case "obszar: PR bez żadnych etykiet" 1 "$no_area" case_no_pr_labels
+run_case "obszar: issue android, PR tylko backend" 1 "$area_mismatch" case_area_mismatch
+run_case "obszar: issue bez etykiet obszaru" 0 '' case_issue_no_area
+run_case "obszar: PR ma jedną z dwóch etykiet obszaru issue" 0 '' case_issue_two_areas
+run_case "obszar, tryb ostrzegawczy: PR bez etykiety obszaru" 0 '::warning' case_warn_no_area
+run_case "obszar, tryb ostrzegawczy: niezgodny obszar" 0 '::warning' case_warn_mismatch
 
 exit "$((failures > 0 ? 1 : 0))"
