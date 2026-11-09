@@ -50,15 +50,24 @@ final class JdbcReadTest {
         final String home = SubmissionData.BUILDING;
         final SubmissionStatus sent = SubmissionStatus.SENT;
         final SubmissionContent ground = SubmissionData.content(home, "p1", "o");
-        final SubmissionContent upper = SubmissionData.content(home, "p2", "o");
-        final SubmissionContent other = SubmissionData.content(SubmissionData.OTHER, "p1", "o");
-        final UUID first = data.seed(3, ground, sent);
-        final UUID rejected = data.seed(2, ground, SubmissionStatus.REJECTED);
+        final UUID upper = JdbcReadTest.created(
+            data, data.seed(1, SubmissionData.content(home, "p2", "o"), sent), 2
+        );
+        final UUID accepted = JdbcReadTest.created(
+            data, data.seed(5, ground, SubmissionStatus.ACCEPTED), 3
+        );
+        final UUID other = JdbcReadTest.created(
+            data, data.seed(4, SubmissionData.content(SubmissionData.OTHER, "p1", "o"), sent), 4
+        );
+        final UUID first = JdbcReadTest.created(data, data.seed(3, ground, sent), 0);
+        final UUID rejected = JdbcReadTest.created(
+            data, data.seed(2, ground, SubmissionStatus.REJECTED), 1
+        );
         Assertions.assertEquals(
             List.of(
-                List.of(first, rejected, data.seed(1, upper, sent)),
-                List.of(first, rejected, data.seed(5, ground, SubmissionStatus.ACCEPTED)),
-                List.of(data.seed(4, other, sent))
+                List.of(first, rejected, upper),
+                List.of(first, rejected, accepted),
+                List.of(other)
             ),
             List.of(
                 JdbcReadTest.ids(
@@ -96,10 +105,11 @@ final class JdbcReadTest {
         );
     }
 
-    private static void created(final SubmissionData data, final UUID id, final int minutes) {
+    private static UUID created(final SubmissionData data, final UUID id, final int minutes) {
         data.jdbc().sql("UPDATE submissions SET created_at = :at WHERE id = :id")
             .param("at", OffsetDateTime.parse("2026-01-01T10:00:00Z").plusMinutes(minutes))
             .param("id", id).update();
+        return id;
     }
 
     private static List<UUID> ids(final SubmissionData data, final SubmissionQuery query) {

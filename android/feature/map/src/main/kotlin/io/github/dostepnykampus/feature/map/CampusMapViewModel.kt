@@ -58,6 +58,10 @@ data class CampusMapUiState(
  * więc obrót ekranu nie uruchamia ich od nowa, a monitor sieci nie działa w tle. Geometrię mapy liczy [geometry]
  * w [computeContext], raz na katalog. Zamknięcie ekranu i nowszy katalog przerywają trwające liczenie przerwaniem
  * wątku, więc [geometry] musi je respektować (NFR-11).
+ * Katalog trafia do stanu od razu, a jego geometria z kontekstu obliczeń: raz na katalog. Nowszy katalog i
+ * zamknięcie ekranu przerywają liczenie przerwaniem wątku (`runInterruptible`), więc nowe nie czeka na koniec
+ * starego. Do czasu policzenia nowej mapa zostaje na poprzedniej, więc kontury nie znikają przy zmianie katalogu
+ * (NFR-11).
  *
  * @param repository katalog budynków: najpierw plik, potem serwer
  * @param networkStatus stan internetu
@@ -95,9 +99,6 @@ class CampusMapViewModel(
         mapListChoice: MapListChoice,
     ) : this(repository, networkStatus, mapListChoice, Dispatchers.Default, ::campusMapData)
 
-    // Katalog od razu, jego geometria z kontekstu obliczeń: raz na katalog. Nowszy katalog i zamknięcie ekranu
-    // przerywają liczenie przerwaniem wątku (runInterruptible), więc nowe nie czeka na koniec starego.
-    // Do czasu policzenia nowej mapa zostaje na poprzedniej, więc kontury nie znikają przy zmianie katalogu (NFR-11).
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun Flow<BuildingCatalog?>.withGeometry(): Flow<Pair<BuildingCatalog?, CampusMapData?>> =
         flow {

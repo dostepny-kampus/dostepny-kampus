@@ -2,10 +2,17 @@ name: Zadanie
 description: Jedna mała, niezależna zmiana (jedno zadanie = jeden PR).
 body:
   - type: textarea
-    id: wymaganie
+    id: problem
     attributes:
-      label: Wymaganie
-      description: Dlaczego robimy tę zmianę; odwołanie do US, AC, BR lub NFR, jeśli dotyczy.
+      label: Problem
+      description: Co jest nie tak albo czego brakuje, wraz z dowodem (link do wiersza kodu, przebieg CI, wynik polecenia).
+    validations:
+      required: true
+  - type: textarea
+    id: oczekiwane
+    attributes:
+      label: Oczekiwane
+      description: Jak ma działać po zmianie; odwołanie do US, AC, BR lub NFR, jeśli dotyczy.
       placeholder: "US-1.1, AC-1: ..."
     validations:
       required: true
@@ -13,14 +20,7 @@ body:
     id: gotowe-gdy
     attributes:
       label: Gotowe, gdy
-      description: Sprawdzalne warunki zakończenia, po jednym w wierszu.
-      placeholder: "- ..."
+      description: Sprawdzalne warunki zakończenia, po jednym w wierszu, oraz polecenie sprawdzenia.
+      placeholder: "- [ ] ..."
     validations:
       required: true
-  - type: input
-    id: czesc
-    attributes:
-      label: Część
-      description: Numer issue nadrzędnego (np. #123), jeśli zadanie jest częścią większej całości.
-    validations:
-      required: false
