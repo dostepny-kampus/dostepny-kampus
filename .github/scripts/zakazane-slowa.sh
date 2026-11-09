@@ -29,7 +29,10 @@ check() {
 
 check "gałąź" "${PR_BRANCH:-}"
 check "tytuł PR" "${PR_TITLE:-}"
-check "opis PR" "${PR_BODY:-}"
+# Opis PR Dependabota to cudze notatki wydania; dla niego sprawdzamy tytuł i commity, nie opis.
+if [[ "${PR_AUTHOR:-}" != 'dependabot[bot]' ]]; then
+  check "opis PR" "${PR_BODY:-}"
+fi
 commits="$(git rev-list "$base..$head")"
 for sha in $commits; do
   check "commit ${sha:0:7}" "$(git log -1 --format=%B "$sha")"

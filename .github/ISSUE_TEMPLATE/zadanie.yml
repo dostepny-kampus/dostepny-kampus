@@ -1,0 +1,26 @@
+name: Zadanie
+description: Jedna mała, niezależna zmiana (jedno zadanie = jeden PR).
+body:
+  - type: textarea
+    id: wymaganie
+    attributes:
+      label: Wymaganie
+      description: Dlaczego robimy tę zmianę; odwołanie do US, AC, BR lub NFR, jeśli dotyczy.
+      placeholder: "US-1.1, AC-1: ..."
+    validations:
+      required: true
+  - type: textarea
+    id: gotowe-gdy
+    attributes:
+      label: Gotowe, gdy
+      description: Sprawdzalne warunki zakończenia, po jednym w wierszu.
+      placeholder: "- ..."
+    validations:
+      required: true
+  - type: input
+    id: czesc
+    attributes:
+      label: Część
+      description: Numer issue nadrzędnego (np. #123), jeśli zadanie jest częścią większej całości.
+    validations:
+      required: false

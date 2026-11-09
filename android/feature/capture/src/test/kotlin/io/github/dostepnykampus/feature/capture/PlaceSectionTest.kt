@@ -72,6 +72,17 @@ class PlaceSectionTest {
         assertEquals(listOf("outside"), actions)
     }
 
+    // Wiersz: C1 „Wybór innego budynku” → „Poza budynkiem” na końcu listy zamyka wybór, US6.2.
+    @Test
+    fun us6_2_outside_from_list() {
+        show(PlaceChoice.Outside)
+        compose.onNodeWithText("Wybierz budynek").performClick()
+        compose.onNodeWithText("B-1 Budynek B-1").assertIsDisplayed()
+        compose.onNodeWithText("Poza budynkiem").performClick()
+        assertEquals(listOf("outside"), actions)
+        compose.onNodeWithText("Anuluj").assertDoesNotExist()
+    }
+
     // Daleko od budynków: „poza budynkiem” bez komunikatu o błędzie, a budynek można wybrać (BR-G4).
     @Test
     fun br_g4_outside_without_error() {

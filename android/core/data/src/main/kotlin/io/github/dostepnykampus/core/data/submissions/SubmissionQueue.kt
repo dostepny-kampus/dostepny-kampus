@@ -1,10 +1,11 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.PendingPhotoEntity
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.database.PendingSubmissionEntity
@@ -81,6 +82,8 @@ data class SubmissionServer(
  * Poprawka z C3 ([saveEdit]) zastępuje wiersz tego samego zgłoszenia, a do serwera idzie jako edycja
  * [SubmissionServer.update] z wersją bazową (US8.3, BR-10).
  * Po 401 wysyłka czeka na ponowne zalogowanie: [loginExpired] i [onLoggedIn] (BR-26, US14.4).
+ * Zgłoszenia Zbierającego trafiają też do [history] ze stanem wysyłki dla listy C3 (US8); bez niej kolejka
+ * działa jak dotąd.
  */
 class SubmissionQueue(
     private val store: PendingSubmissionDao,
@@ -88,6 +91,7 @@ class SubmissionQueue(
     private val server: SubmissionServer,
     private val newId: () -> String = { UUID.randomUUID().toString() },
     private val onSaved: () -> Unit = {},
+    private val history: OwnSubmissionDao? = null,
 ) {
     private val lock = Mutex()
     private val expired = MutableStateFlow(false)
@@ -124,6 +128,7 @@ class SubmissionQueue(
         val id = newId()
         val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = System.currentTimeMillis())
         store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
+        remember(entity)
         // Awaria planowania nie może zgubić zapisanego zgłoszenia (NFR-5).
         runCatching(onSaved)
         return entity
@@ -144,7 +149,10 @@ class SubmissionQueue(
             content
                 .toPendingSubmissionEntity(id = edited.id, savedAtMillis = System.currentTimeMillis())
                 .copy(baseVersion = edited.baseVersion)
-        lock.withLock { store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) }) }
+        lock.withLock {
+            store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
+            remember(entity)
+        }
         runCatching(onSaved)
     }
 
@@ -170,6 +178,10 @@ class SubmissionQueue(
         runCatching(onSaved)
     }
 
+    private suspend fun remember(entity: PendingSubmissionEntity) {
+        if (entity.isOwnHistory()) history?.save(entity.toOwnSubmissionEntity())
+    }
+
     private suspend fun sendUntilStop(): Outcome? =
         store.all().firstNotNullOfOrNull { item ->
             sendOne(item).takeIf { it == Outcome.LATER || it == Outcome.LOGIN_EXPIRED }
@@ -186,15 +198,21 @@ class SubmissionQueue(
     private suspend fun sendContent(item: PendingSubmissionWithPhotos): Outcome {
         val version = item.submission.baseVersion
         val content = item.toSubmissionContent()
+        val result: ApiResult<*>
         val outcome =
             if (version == null) {
-                outcomeOf(server.create(item.submission.id, content))
+                result = server.create(item.submission.id, content)
+                outcomeOf(result)
             } else {
-                editOutcome(server.update(item.submission.id, version, content))
+                val edit = server.update(item.submission.id, version, content)
+                result = edit
+                editOutcome(edit)
             }
         if (outcome == Outcome.SENT) {
             store.markCreated(id = item.submission.id)
+            versionOf(result)?.let { history?.saveVersion(id = item.submission.id, version = it) }
         }
+        if (outcome == Outcome.REFUSED) refused(item.submission.id, result)
         return outcome
     }
 
@@ -202,12 +220,19 @@ class SubmissionQueue(
         for (photo in item.photos.filterNot { it.isUploaded }) {
             val result = server.putPhoto(item.submission.id, photo.photoId, jpeg(photo.path))
             if (result !is ApiResult.Success) {
-                return outcomeOf(result)
+                val outcome = outcomeOf(result)
+                if (outcome == Outcome.REFUSED) refused(item.submission.id, result)
+                return outcome
             }
             store.markUploaded(submissionId = item.submission.id, photoId = photo.photoId)
         }
         store.delete(item.submission.id)
+        history?.markSent(id = item.submission.id)
         return Outcome.SENT
+    }
+
+    private suspend fun refused(id: String, result: ApiResult<*>) {
+        history?.markRefused(id = id, code = refusalCodeOf(result))
     }
 
     private suspend fun jpeg(path: String): ByteArray = withContext(ioContext) { File(path).readBytes() }

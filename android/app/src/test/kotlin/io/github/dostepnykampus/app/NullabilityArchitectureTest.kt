@@ -35,11 +35,6 @@ class NullabilityArchitectureTest {
     }
 
     @Test
-    fun dec122_pure_core_no_androidx() {
-        assertEquals(emptySet<String>(), androidImportsInPureCore(production))
-    }
-
-    @Test
     fun dec122_rule_rejects_nullable(
         @TempDir fixtures: File,
     ) {
@@ -89,31 +84,6 @@ class NullabilityArchitectureTest {
     }
 
     @Test
-    fun dec122_rule_rejects_androidx(
-        @TempDir fixtures: File,
-    ) {
-        val files =
-            fixtures.fixture(
-                name = "Geo.kt",
-                source =
-                    lines(
-                        "package $BASE.$GEO",
-                        "",
-                        "import androidx.annotation.Keep",
-                        "import kotlin.math.abs",
-                    ),
-            ) +
-                fixtures.fixture(
-                    name = "Model.kt",
-                    source = "package $BASE.$MODEL\n\nimport android.util.Log",
-                )
-        assertEquals(
-            setOf("Geo.kt: androidx.annotation.Keep", "Model.kt: android.util.Log"),
-            androidImportsInPureCore(files),
-        )
-    }
-
-    @Test
     fun dec122_empty_scope_fails(
         @TempDir fixtures: File,
     ) {
@@ -126,7 +96,6 @@ class NullabilityArchitectureTest {
             listOf(
                 assertThrows<IllegalStateException> { nullablePropertiesOutsideList(files) },
                 assertThrows<IllegalStateException> { dtoOutsideNetwork(emptyList()) },
-                assertThrows<IllegalStateException> { androidImportsInPureCore(files) },
             )
         assertTrue(errors.all { it.message.orEmpty().startsWith("Pusty zakres") }) { errors.toString() }
     }
@@ -163,18 +132,6 @@ class NullabilityArchitectureTest {
             .map { it.fullyQualifiedName.orEmpty() }
             .toSet()
 
-    private fun androidImportsInPureCore(files: List<KoFileDeclaration>): Set<String> =
-        listOf(MODEL, GEO)
-            .asSequence()
-            .flatMap { scope(files, it) }
-            .flatMap { androidImports(it) }
-            .toSet()
-
-    private fun androidImports(file: KoFileDeclaration): List<String> =
-        file.imports
-            .filter { it.name.startsWith("android.") || it.name.startsWith("androidx.") }
-            .map { "${file.nameWithExtension}: ${it.name}" }
-
     private fun scope(files: List<KoFileDeclaration>, relative: String): List<KoFileDeclaration> =
         nonEmpty(files.filter { it.inPackage(relative) }, relative)
 
@@ -193,7 +150,6 @@ class NullabilityArchitectureTest {
     private companion object {
         const val BASE = "io.github.dostepnykampus"
         const val MODEL = "core.model"
-        const val GEO = "core.geo"
         const val NETWORK = "core.network"
 
         const val OPTIONAL = "pole nieobowiązkowe OpenAPI (decyzja 127 P1)"

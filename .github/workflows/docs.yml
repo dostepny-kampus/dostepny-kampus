@@ -11,6 +11,9 @@ on:
     paths:
       - "docs/**"
       - ".github/workflows/docs.yml"
+  merge_group:
+    types:
+      - checks_requested
   workflow_dispatch:
 
 permissions:
@@ -32,7 +35,7 @@ env:
 
 jobs:
   zmiany:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -42,11 +45,22 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
-      - name: Sprawdź, czy PR zmienia dokumentację, scenariusze albo testy Androida
+      - name: Sprawdź, czy PR albo grupa w kolejce zmienia dokumentację, scenariusze albo testy Androida
         id: diff
+        env:
+          EVENT: ${{ github.event_name }}
+          GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: |
+          from=HEAD^1
+          to=HEAD
+          if [[ $EVENT == merge_group ]]; then
+            git fetch --no-tags --depth=1 origin "$GROUP_BASE_SHA"
+            from=$GROUP_BASE_SHA
+            to=$GROUP_HEAD_SHA
+          fi
           android_tests=(':(glob)android/**/src/test*/**' ':(glob)android/**/src/*Test*/**')
-          if git diff --quiet HEAD^1 HEAD -- docs specs .github/workflows/docs.yml "${android_tests[@]}"; then
+          if git diff --quiet "$from" "$to" -- docs specs .github/workflows/docs.yml "${android_tests[@]}"; then
             echo "dokumentacja=false" >> "$GITHUB_OUTPUT"
           else
             echo "dokumentacja=true" >> "$GITHUB_OUTPUT"

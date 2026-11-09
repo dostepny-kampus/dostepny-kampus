@@ -27,7 +27,22 @@ Cel pochodzi z planu sprintów w raporcie [Tydzień 2](tydzien-2.md), sekcja „
 | Podobne zgłoszenia | lista zgłoszeń w promieniu 10 m dla Weryfikatora | `GET /submissions/{submissionId}/similar` od najbliższego, z odległością (#366) | zrobione w serwerze |
 | Automatyczna wysyłka | wywołanie kolejki z formularza zgłoszenia | zapis z C2 i V4 trafia do kolejki, a zapis planuje wysyłkę po powrocie sieci; ponowienie tylko przy braku sieci (#342, #347, #359, #374) | zrobione |
 
-Najważniejszy wynik: Zbierający mierzy pozycję na C1, potwierdza budynek i opisuje barierę na C2, a Odwiedzający zgłasza barierę w trzech krokach V4. Oba zgłoszenia trafiają do kolejki w telefonie i wysyłają się same po powrocie sieci. Serwer przelicza punkt na PUWG 1992 i podaje Weryfikatorowi podobne zgłoszenia.
+Najważniejszy wynik: w kodzie aplikacji są ekrany pomiaru C1, formularza C2 i zgłoszenia szybkiego V4 oraz zapis do kolejki w telefonie. W aplikacji nie da się ich jeszcze użyć, bo nie ma logowania ani ról (stan w sekcji 1.1). Serwer przelicza punkt na PUWG 1992 i podaje podobne zgłoszenia, ale eksportu i ekranu Weryfikatora jeszcze nie ma.
+
+### 1.1. Stan w aplikacji (dopisek z 09.11.2026)
+
+Kolumna „Stan” w tabeli wyżej mówi, czy kod jest scalony. Ta tabela mówi, czy osoba może tego użyć w aplikacji. „Dostępne w aplikacji” piszemy tylko wtedy, gdy tak jest. Inaczej piszemy „w kodzie, niedostępne” z powodem.
+
+| Obszar | Stan faktyczny | Odwołanie |
+| --- | --- | --- |
+| Pozycja | w kodzie, niedostępne: pomiar C1 wymaga roli Zbierającego, a aplikacja daje tylko rolę Gościa | US14.1 |
+| Ekran pomiaru | w kodzie, niedostępne: ten sam powód co przy pozycji | US14.1 |
+| Podpowiedź budynku | w kodzie, niedostępne: działa tylko po pomiarze C1 | US6.2 |
+| Współrzędne | częściowo: przeliczenie na PUWG 1992 jest, eksportu nie ma, więc nic go nie używa | US13.2 |
+| Formularz zgłoszenia | w kodzie, niedostępne: C2 wymaga roli Zbierającego. V4 wymaga logowania, a Gość z „Zgłoś barierę” trafia na zaślepkę logowania L1 | US14.1, US14.2 |
+| Podobne zgłoszenia | w serwerze: aplikacja nie ma jeszcze ekranu Weryfikatora | US10.1 |
+| Automatyczna wysyłka | częściowo: aplikacja nie prosi o ponowne logowanie po odpowiedzi 401. Odmowa serwera 4xx zostaje w kolejce bez statusu „Nie wysłano” | BR-26, US8.1 |
+| Piętra obejrzane | nie zrobione: oznaczania pięter obejrzanych (ekran C5) nie ma w kodzie | US15 |
 
 ## 2. Repozytorium i CI
 
@@ -42,6 +57,8 @@ Prace ze Sprintu 4 trafiały do `sprint/3` do 8 listopada. Potem nowe PR trafiaj
 | PUWG 1992 | przeliczenie punktu WGS84 na EPSG:2180 do eksportu dla QGIS | #320, US13.2, NFR-43 |
 | Podobne zgłoszenia | zgłoszenia wysłane, w weryfikacji i przyjęte w promieniu 10 m, z każdego piętra, od najbliższego | #366, US10.1, BR-13 |
 
+Przeliczenia na PUWG 1992 nie używa jeszcze żaden eksport, a podobnych zgłoszeń żaden ekran aplikacji (sekcja 1.1).
+
 ## 4. Aplikacja
 
 | Ekran albo część | Co działa | Odwołanie |
@@ -52,6 +69,8 @@ Prace ze Sprintu 4 trafiały do `sprint/3` do 8 listopada. Potem nowe PR trafiaj
 | V4 Zgłoszenie szybkie | trzy kroki: zdjęcie, grupa barier z piętrem według BR-14 i wysłanie z bieżącą pozycją. „Wstecz” nie gubi zdjęcia ani grupy, a rezygnacja ze zdjęciem wymaga potwierdzenia | #370, #371, #373–#377 |
 | Mapa | „Pokaż wejście na mapie” i kamera na budynku; geometria mapy liczona poza wątkiem interfejsu | #327, #329, #331–#334, #336, #339–#341 |
 | Kolejka zgłoszeń | wysyłka rozróżnia awarię serwera 5xx i wygasłe logowanie 401; zadanie ponawia tylko przy braku sieci | #342, #359 |
+
+Ekrany C1, C2 i V4 są w kodzie, ale bez logowania i ról osoba do nich nie dojdzie (sekcja 1.1).
 
 ## 5. UX w Sprincie 4
 
