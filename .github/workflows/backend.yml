@@ -12,6 +12,9 @@ on:
     paths:
       - "backend/**"
       - ".github/workflows/backend.yml"
+  merge_group:
+    types:
+      - checks_requested
 
 permissions:
   contents: read
@@ -22,7 +25,7 @@ concurrency:
 
 jobs:
   zmiany:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -32,10 +35,21 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
-      - name: Sprawdź, czy PR zmienia serwer
+      - name: Sprawdź, czy PR albo grupa w kolejce zmienia serwer
         id: diff
+        env:
+          EVENT: ${{ github.event_name }}
+          GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: |
-          if git diff --quiet HEAD^1 HEAD -- backend .github/workflows/backend.yml; then
+          from=HEAD^1
+          to=HEAD
+          if [[ $EVENT == merge_group ]]; then
+            git fetch --no-tags --depth=1 origin "$GROUP_BASE_SHA"
+            from=$GROUP_BASE_SHA
+            to=$GROUP_HEAD_SHA
+          fi
+          if git diff --quiet "$from" "$to" -- backend .github/workflows/backend.yml; then
             echo "serwer=false" >> "$GITHUB_OUTPUT"
           else
             echo "serwer=true" >> "$GITHUB_OUTPUT"
