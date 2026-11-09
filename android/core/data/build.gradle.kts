@@ -15,7 +15,7 @@ val buildingsFile: RegularFile = layout.projectDirectory.file("../../../data/bui
 android {
     testOptions.unitTests.all {
         it.useJUnitPlatform()
-        // Test repozytorium na prawdziwym pliku konturów z katalogu data/ w repozytorium.
+        /* Test repozytorium na prawdziwym pliku konturów z katalogu data/ w repozytorium. */
         it.jvmArgumentProviders.add(
             objects.newInstance<BuildingsFile>().apply { file.set(buildingsFile) },
         )

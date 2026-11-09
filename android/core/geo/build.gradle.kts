@@ -19,7 +19,7 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-    // Test na prawdziwym pliku konturów z katalogu data/ w repozytorium.
+    /* Test na prawdziwym pliku konturów z katalogu data/ w repozytorium. */
     jvmArgumentProviders.add(
         objects.newInstance<BuildingsFile>().apply {
             file.set(layout.projectDirectory.file("../../../data/buildings/pwr-buildings.geojson"))

@@ -206,8 +206,9 @@ final class SubmissionsTypedHttpTest {
         final List<String> names = new ArrayList<>(0);
         for (final Map.Entry<String, JsonNode> field
             : SubmissionsTypedHttpTest.json(response, context).properties()) {
-            if (field.getValue().isNull()
-                || field.getValue().isBoolean() && !field.getValue().booleanValue()) {
+            final JsonNode value = field.getValue();
+            final boolean falsy = value.isBoolean() && !value.booleanValue();
+            if (value.isNull() || falsy) {
                 names.add(field.getKey());
             }
         }
