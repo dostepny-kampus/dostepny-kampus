@@ -28,7 +28,7 @@ class BuildingCardScreenTest {
 
     /**
      * Scenariusz (częściowo): przegladanie-mapy.feature: Bez danych o barierach lista i karta budynku
-     *   nic o barierach nie mówią
+     *   nic o barierach nie mówią.
      */
     @Test
     fun us2_7_no_data_says_nothing() {
