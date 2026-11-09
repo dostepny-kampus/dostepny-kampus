@@ -58,6 +58,7 @@
     <string name="formularz_polpietro">Półpiętro</string>
     <string name="formularz_typ">Typ bariery</string>
     <string name="formularz_typ_wybierz">Wybierz typ bariery</string>
+    <string name="formularz_zamknij">Zamknij</string>
     <string name="formularz_zapisz">Zapisz</string>
     <string name="formularz_zdjecie">Zdjęcie</string>
     <string name="formularz_wazne">Ważne</string>
@@ -100,6 +101,9 @@
     <string name="szybkie_rezygnacja">Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy. Aby je zachować, wybierz „Wróć do zdjęcia”.</string>
     <string name="szybkie_tak_zrezygnuj">Tak, zrezygnuj</string>
     <string name="szybkie_wroc_do_zdjecia">Wróć do zdjęcia</string>
+    <string name="moje_naglowek">Moje zgłoszenia</string>
+    <string name="moje_czeka">Czeka na wysłanie: %1$d</string>
+    <string name="moje_pusty">Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.</string>
     <string name="moje_w_telefonie">W telefonie</string>
     <string name="moje_wyslane">Wysłane</string>
     <string name="moje_nie_wyslano">Nie wysłano</string>
