@@ -18,8 +18,11 @@ import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
@@ -32,10 +35,14 @@ class QuickReportScreenTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
+    @get:Rule
+    val folder = TemporaryFolder()
+
     private val next = mutableListOf<ReportRoute>()
     private var toMap = 0
+    private var backs = 0
     private val actions =
-        QuickReportActions(onNext = { next.add(it) }, onSent = {}, onBack = {}, onBackToMap = { toMap++ })
+        QuickReportActions(onNext = { next.add(it) }, onSent = {}, onBack = { backs++ }, onBackToMap = { toMap++ })
     private val atGroup = ReportRoute(step = ReportStep.GROUP, photoId = "zdjecie-1", photoPath = "/zdjecie-1.jpg")
 
     @Test
@@ -60,6 +67,22 @@ class QuickReportScreenTest {
         show(ReportRoute(step = ReportStep.SENT))
         compose.onNodeWithText("Wróć do mapy").performClick()
         assertEquals(1, toMap)
+    }
+
+    // Wiersz: V4 krok 1 ze zdjęciem, „Wstecz” → potwierdzenie rezygnacji, US4.8.
+    @Test
+    fun us4_8_leave_after_confirm() {
+        val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
+        show(ReportRoute(step = ReportStep.PHOTO, photoId = "zdjecie-1", photoPath = photo.path))
+        compose.onNodeWithText("Wstecz").performClick()
+        compose.onNodeWithText("Wróć do zdjęcia").performClick()
+        compose.onNodeWithText("Krok 1 z 3").assertIsDisplayed()
+        assertEquals(0, backs)
+        assertTrue(photo.exists())
+        compose.onNodeWithText("Wstecz").performClick()
+        compose.onNodeWithText("Tak, zrezygnuj").performClick()
+        assertEquals(1, backs)
+        assertFalse(photo.exists())
     }
 
     private fun show(route: ReportRoute) {
