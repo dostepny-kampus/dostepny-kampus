@@ -82,6 +82,7 @@ private val ClearIcon =
  * np. „A-1 329”, daje stan „brak wyniku” (decyzja 82) z przyciskiem „Lista budynków” (UC1 3a). Komunikat stoi pod
  * polem, więc osoba widzi go tam, gdzie pisała (WCAG 3.3.1), a TalkBack czyta go sam. Przy liście pole zawęża listę
  * zamiast pokazywać wynik.
+ * Przy liście wynik to sama lista, więc pod polem zostaje tylko karta „brak wyniku”.
  *
  * @param catalog katalog budynków; `null`, dopóki się wczytuje
  * @param isOnline czy jest internet; bez niego pod przełącznikiem stoi [OfflineLine]
@@ -102,7 +103,6 @@ internal fun CampusSearch(
     var query by rememberSaveable { mutableStateOf("") }
     val results = remember(query, catalog) { catalog?.let { searchBuildings(query, it.buildings) }.orEmpty() }
     val isNoResult = query.isNotBlank() && catalog != null && results.isEmpty()
-    // Przy liście wynik to sama lista, więc pod polem zostaje tylko karta brak wyniku.
     val shown = results.takeUnless { isList }.orEmpty()
     val showList = {
         query = ""
