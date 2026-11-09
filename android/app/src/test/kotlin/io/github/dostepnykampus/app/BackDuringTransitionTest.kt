@@ -31,12 +31,12 @@ import org.robolectric.annotation.Config
 private const val CHECK = "Sprawdź, którędy wejść"
 private const val VISIT = "Którędy wejść do A-1"
 
-/** Klatka zegara Compose: przejście V2 → V3 już trwa, ale się nie skończyło. */
 private const val MID_TRANSITION_MILLIS = 48L
 
 /**
  * „Wstecz” naciśnięte, gdy V3 jest już w drzewie semantyki, a przejście sceny V2 → V3 jeszcze trwa (zegar Compose
- * zatrzymany). Tak robi test emulatora `CampusPathDeviceTest.us3_search_card_entrances`.
+ * zatrzymany). Tak robi test emulatora `CampusPathDeviceTest.us3_search_card_entrances`. `MID_TRANSITION_MILLIS` to
+ * klatka zegara Compose, w której przejście V2 → V3 już trwa, ale się nie skończyło.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -61,7 +61,7 @@ class BackDuringTransitionTest {
      * Wiersz: V2 → „Sprawdź, którędy wejść” → V3; „Wstecz” w trakcie przejścia, gdy V3 jest już widoczne → po końcu
      * przejścia V2, bez V3; kolejne „Wstecz” → V1, US3, US1.1.
      */
-    @Ignore("znikający arkusz V2 przechwytuje „Wstecz” w trakcie przejścia; włączany razem z poprawką")
+    @Ignore("Błąd aplikacji #677: znikający arkusz V2 przechwytuje „Wstecz” w trakcie przejścia")
     @Test
     fun us3_back_mid_transition() {
         compose.setContent { Shell() }
