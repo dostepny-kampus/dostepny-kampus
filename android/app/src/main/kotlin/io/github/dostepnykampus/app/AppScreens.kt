@@ -9,7 +9,6 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Surface
@@ -30,15 +29,15 @@ import io.github.dostepnykampus.app.navigation.measure
 import io.github.dostepnykampus.app.navigation.openReportForm
 import io.github.dostepnykampus.app.navigation.reportSaved
 import io.github.dostepnykampus.core.designsystem.BackHeader
-import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.MeasureScreen
+import io.github.dostepnykampus.feature.capture.QuickReportActions
+import io.github.dostepnykampus.feature.capture.QuickReportScreen
 import io.github.dostepnykampus.feature.capture.ReportFormScreen
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.BuildingCardContent
@@ -109,7 +108,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
     when (route) {
         is BuildingRoute -> HiltBuildingCard(route.symbol)
         is EntrancesRoute -> Entrances(route.symbol)
-        is ReportRoute -> ReportStub(route.step)
+        is ReportRoute -> QuickReport(route)
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
         is ReportFormRoute -> ReportFormScreen(route, onLeave = { back() }, onSave = { reportSaved() })
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
@@ -171,14 +170,15 @@ internal fun AppNavigator.BuildingCard(
 
 @Composable
 @NonRestartableComposable
-private fun AppNavigator.ReportStub(step: ReportStep) {
-    val action: Action =
-        when (step) {
-            ReportStep.PHOTO, ReportStep.GROUP -> stringResource(R.string.dalej) to { nextReportStep() }
-            ReportStep.SEND -> stringResource(R.string.wyslij) to { reportSent() }
-            ReportStep.SENT -> stringResource(R.string.wroc_do_mapy) to { backToMap() }
-        }
-    Stub(stringResource(R.string.nav_zglos_bariere), action, note = step.takeIf { it != ReportStep.SENT })
+private fun AppNavigator.QuickReport(route: ReportRoute) {
+    val actions =
+        QuickReportActions(
+            onNext = { nextReportStep(it) },
+            onSent = { reportSent() },
+            onBack = { back() },
+            onBackToMap = { backToMap() },
+        )
+    QuickReportScreen(route = route, actions = actions)
 }
 
 @Composable
@@ -195,11 +195,10 @@ private fun AppNavigator.Account(route: NavKey) {
 
 @Composable
 @NonRestartableComposable
-private fun AppNavigator.Stub(title: String, vararg actions: Action, note: ReportStep? = null) {
+private fun AppNavigator.Stub(title: String, vararg actions: Action) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = title, onBack = { back() })
-            note?.let { Text(stringResource(R.string.krok_z_3, it.ordinal + 1), Modifier.padding(Odstepy.m)) }
             actions.forEach { (label, onClick) -> TextButton(onClick = onClick) { Text(text = label) } }
         }
     }

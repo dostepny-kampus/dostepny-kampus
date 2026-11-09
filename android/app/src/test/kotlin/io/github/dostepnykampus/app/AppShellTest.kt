@@ -515,14 +515,10 @@ class AppShellTest {
     // Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie w 3 krokach z pozycją dołączoną
     //   automatycznie
     @Test
-    fun us4_1_report_stubs_steps_sent() {
+    fun us4_1_report_opens_step_one() {
         show(roles = visitor)
         compose.onNodeWithText("Zgłoś barierę").performClick()
-        listOf("Dalej", "Dalej", "Wyślij").forEachIndexed { index, action ->
-            compose.onNodeWithText("Krok ${index + 1} z 3").assertExists()
-            compose.onNodeWithText(action).performClick()
-        }
-        compose.onNodeWithText("Wróć do mapy").assertExists()
+        compose.onNodeWithText("Krok 1 z 3").assertExists()
         pressBack()
         compose.onNode(MapTab).assertIsSelected()
     }

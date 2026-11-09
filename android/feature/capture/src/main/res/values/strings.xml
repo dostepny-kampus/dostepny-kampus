@@ -93,4 +93,8 @@
     <string name="szybkie_dolaczymy_miejsce">Dołączymy miejsce, w którym teraz stoisz.</string>
     <string name="szybkie_ustalamy_miejsce">Ustalamy, gdzie jesteś…</string>
     <string name="szybkie_dziekujemy">Dziękujemy. Sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.</string>
+    <string name="szybkie_naglowek">Zgłoś barierę</string>
+    <string name="szybkie_krok">Krok %1$d z 3</string>
+    <string name="szybkie_wyslij">Wyślij</string>
+    <string name="szybkie_wroc_do_mapy">Wróć do mapy</string>
 </resources>
