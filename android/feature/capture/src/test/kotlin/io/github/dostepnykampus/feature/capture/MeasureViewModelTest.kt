@@ -63,7 +63,7 @@ class MeasureViewModelTest {
         Dispatchers.resetMain()
     }
 
-    // „Szukamy satelitów”, dopóki nie ma odczytu ze znaną dokładnością.
+    /** „Szukamy satelitów”, dopóki nie ma odczytu ze znaną dokładnością. */
     @Test
     fun us6_1_searching_without_fix() =
         runTest(dispatcher) {
@@ -86,7 +86,7 @@ class MeasureViewModelTest {
             assertEquals(mapOf(GnssSystem.GPS to 1), state.satellites)
         }
 
-    // Po 30 s wynik zostaje, a odbiornik przestaje nasłuchiwać (NFR-27).
+    /** Po 30 s wynik zostaje, a odbiornik przestaje nasłuchiwać (NFR-27). */
     @Test
     fun us6_1_finished_stops_location() =
         runTest(dispatcher) {
@@ -100,7 +100,7 @@ class MeasureViewModelTest {
             assertEquals(listOf(0, 0), listOf(fixes.subscriptionCount.value, satellites.subscriptionCount.value))
         }
 
-    // Wynik pomiaru zostaje po powrocie na ekran, np. z C2 (US6.1).
+    /** Wynik pomiaru zostaje po powrocie na ekran, np. z C2 (US6.1). */
     @Test
     fun us6_1_result_kept_after_leave() =
         runTest(dispatcher) {
@@ -113,7 +113,7 @@ class MeasureViewModelTest {
             assertEquals(MeasureUiState.Finished::class, viewModel.uiState.value::class)
         }
 
-    // „Powtórz pomiar” zaczyna od szukania satelitów, bez limitu powtórzeń.
+    /** „Powtórz pomiar” zaczyna od szukania satelitów, bez limitu powtórzeń. */
     @Test
     fun nfr23_repeat_starts_over() =
         runTest(dispatcher) {
@@ -130,7 +130,7 @@ class MeasureViewModelTest {
             assertEquals("A-1", (place() as PlaceChoice.Suggested).hint.building.symbol)
         }
 
-    // Punkt pomiaru leży w konturze A-1, więc aplikacja podpowiada A-1 (US6.2).
+    /** Punkt pomiaru leży w konturze A-1, więc aplikacja podpowiada A-1 (US6.2). */
     @Test
     fun us6_2_hint_after_measurement() =
         runTest(dispatcher) {
@@ -196,7 +196,7 @@ class MeasureViewModelTest {
             assertEquals(PlaceChoice.Outside, place())
         }
 
-    // Dalej niż 50 m od konturu: bez podpowiedzi, od razu „poza budynkiem” (BR-G4).
+    /** Dalej niż 50 m od konturu: bez podpowiedzi, od razu „poza budynkiem” (BR-G4). */
     @Test
     fun br_g4_far_point_outside() =
         runTest(dispatcher) {
@@ -204,9 +204,11 @@ class MeasureViewModelTest {
             assertEquals(PlaceChoice.Outside, place())
         }
 
-    // Wiersz: G5, decyzja 120 pkt 3, decyzja 137, US6.2 — punkt na krawędzi konturu A-1: podpowiedź A-1 do
-    // potwierdzenia, nie w konturze i bez przypisania budynku.
-    // Scenariusz: budynki-bez-szczegolow.feature: Punkt dokładnie na krawędzi konturu jest poza budynkiem z propozycją
+    /**
+     * Wiersz: G5, decyzja 120 pkt 3, decyzja 137, US6.2 — punkt na krawędzi konturu A-1: podpowiedź A-1 do
+     * potwierdzenia, nie w konturze i bez przypisania budynku.
+     * Scenariusz: budynki-bez-szczegolow.feature: Punkt dokładnie na krawędzi konturu jest poza budynkiem z propozycją
+     */
     @Test
     fun us6_2_edge_suggests_not_inside() =
         runTest(dispatcher) {

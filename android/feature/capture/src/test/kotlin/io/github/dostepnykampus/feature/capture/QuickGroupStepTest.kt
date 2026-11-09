@@ -26,7 +26,7 @@ class QuickGroupStepTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    // Wiersz: V4 krok 2, wybór grupy → krok 3 albo pytanie o piętro, US4.3.
+    /** Wiersz: V4 krok 2, wybór grupy → krok 3 albo pytanie o piętro, US4.3. */
     @Test
     fun us4_3_six_groups() {
         val chosen = mutableListOf<BarrierGroup>()
@@ -38,7 +38,7 @@ class QuickGroupStepTest {
         assertEquals(listOf(BarrierGroup.OTHER), chosen)
     }
 
-    // Wiersz: V4 krok 2, pytanie o piętro → „Nie wiem” zostawia piętro puste, US4.5.
+    /** Wiersz: V4 krok 2, pytanie o piętro → „Nie wiem” zostawia piętro puste, US4.5. */
     @Test
     fun us4_5_floor_or_unknown() {
         val floors = mutableListOf<Int?>()

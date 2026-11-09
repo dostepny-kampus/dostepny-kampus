@@ -35,7 +35,7 @@ class QuickSendStepTest {
         }
     }
 
-    // Wiersz: V4 krok 3 → grupa, piętro i „Dołączymy miejsce, w którym teraz stoisz.”, US4.1, US4.5.
+    /** Wiersz: V4 krok 3 → grupa, piętro i „Dołączymy miejsce, w którym teraz stoisz.”, US4.1, US4.5. */
     @Test
     fun us4_1_summary_with_floor() {
         val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS, floorNumber = 2)
@@ -45,14 +45,14 @@ class QuickSendStepTest {
         compose.onNodeWithText("Dołączymy miejsce, w którym teraz stoisz.").assertIsDisplayed()
     }
 
-    // Wiersz: V4 krok 3, „Nie wiem” → podsumowanie z „Nie wiem”, US4.5.
+    /** Wiersz: V4 krok 3, „Nie wiem” → podsumowanie z „Nie wiem”, US4.5. */
     @Test
     fun us4_5_unknown_floor() {
         show(QuickReport(photo = photo, group = BarrierGroup.TOILETS), isFloorAsked = true, isPositionKnown = true)
         compose.onNodeWithText("Nie wiem").assertIsDisplayed()
     }
 
-    // Wiersz: V4 krok 3, pozycja jeszcze nieznana → „Ustalamy, gdzie jesteś…”, NFR-23.
+    /** Wiersz: V4 krok 3, pozycja jeszcze nieznana → „Ustalamy, gdzie jesteś…”, NFR-23. */
     @Test
     fun nfr23_position_pending() {
         show(QuickReport(photo = photo, group = BarrierGroup.OTHER), isFloorAsked = false, isPositionKnown = false)
@@ -60,7 +60,7 @@ class QuickSendStepTest {
         compose.onNodeWithText("Nie wiem").assertDoesNotExist()
     }
 
-    // Wiersz: V4 potwierdzenie → zgłoszenie trafi do weryfikacji, US4.4.
+    /** Wiersz: V4 potwierdzenie → zgłoszenie trafi do weryfikacji, US4.4. */
     @Test
     fun us4_4_thank_you() {
         compose.setContent { DostepnyKampusTheme { QuickSentMessage() } }

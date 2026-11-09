@@ -53,7 +53,7 @@ class GnssPositionFixesTest {
             assertEquals(listOf(expected), fixes)
         }
 
-    // Odczyt bez promienia ufności dostaje NaN, więc uśrednianie go pomija.
+    /** Odczyt bez promienia ufności dostaje NaN, więc uśrednianie go pomija. */
     @Test
     fun us6_1_no_accuracy_is_nan() =
         runTest {
@@ -65,7 +65,7 @@ class GnssPositionFixesTest {
             assertTrue(fixes.single().accuracyMeters.isNaN())
         }
 
-    // Lokalizacja tylko przy otwartym ekranie: koniec zbierania zdejmuje nasłuch odbiornika.
+    /** Lokalizacja tylko przy otwartym ekranie: koniec zbierania zdejmuje nasłuch odbiornika. */
     @Test
     fun nfr27_stop_removes_listener() =
         runTest {
@@ -81,7 +81,7 @@ class GnssPositionFixesTest {
             )
         }
 
-    // Bez zgody na lokalizację odbiornik nie rusza, a ekran dostaje błąd, żeby poprosić o zgodę.
+    /** Bez zgody na lokalizację odbiornik nie rusza, a ekran dostaje błąd, żeby poprosić o zgodę. */
     @Test
     fun nfr27_no_permission_fails() {
         shadowOf(app).denyPermissions(Manifest.permission.ACCESS_FINE_LOCATION)

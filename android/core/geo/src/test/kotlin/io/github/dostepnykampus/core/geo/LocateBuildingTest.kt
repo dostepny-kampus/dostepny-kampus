@@ -74,19 +74,19 @@ class LocateBuildingTest {
         assertEquals(LocateResult.InsideOutline(twoPartBuilding), locateBuilding(point(x = 13, y = 7), buildings))
     }
 
-    // Wiersz: G1, decyzja 137, US6.2, BR-G2 — punkt na zewnętrznej krawędzi jest poza budynkiem, z jego propozycją.
+    /** Wiersz: G1, decyzja 137, US6.2, BR-G2 — punkt na zewnętrznej krawędzi jest poza budynkiem, z jego propozycją. */
     @Test
     fun us6_2_on_outline_edge_outside() {
         assertEquals(LocateResult.OutsideBuilding(courtyardBuilding), locateBuilding(point(x = 8, y = 4), buildings))
     }
 
-    // Wiersz: G2, decyzja 137, US6.2, BR-G2 — punkt na krawędzi dziedzińca jest poza budynkiem, z jego propozycją.
+    /** Wiersz: G2, decyzja 137, US6.2, BR-G2 — punkt na krawędzi dziedzińca jest poza budynkiem, z jego propozycją. */
     @Test
     fun us6_2_courtyard_edge_outside() {
         assertEquals(LocateResult.OutsideBuilding(courtyardBuilding), locateBuilding(point(x = 3, y = 4), buildings))
     }
 
-    // Wiersz: G1, decyzja 137, US6.2, BR-G2 — każdy z boków i wierzchołek konturu jest poza budynkiem.
+    /** Wiersz: G1, decyzja 137, US6.2, BR-G2 — każdy z boków i wierzchołek konturu jest poza budynkiem. */
     @Test
     fun us6_2_every_side_corner_out() {
         listOf(0 to 4, 4 to 0, 4 to 8, 0 to 0, 8 to 8).forEach { (x, y) ->
@@ -98,7 +98,9 @@ class LocateBuildingTest {
         }
     }
 
-    // Wiersz: G2, decyzja 137, BR-G2 — krawędź dziedzińca w drugiej części wielokąta złożonego, także poza budynkiem.
+    /**
+     * Wiersz: G2, decyzja 137, BR-G2 — krawędź dziedzińca w drugiej części wielokąta złożonego, także poza budynkiem.
+     */
     @Test
     fun br_g2_compound_hole_edge_out() {
         assertEquals(
@@ -107,7 +109,7 @@ class LocateBuildingTest {
         )
     }
 
-    // Wiersz: G2, decyzja 137, BR-G2 — krawędź zewnętrzna tej samej części złożonej jest poza, a ścisłe wnętrze w.
+    /** Wiersz: G2, decyzja 137, BR-G2 — krawędź zewnętrzna tej samej części złożonej jest poza, a ścisłe wnętrze w. */
     @Test
     fun br_g2_compound_edge_and_body() {
         val compound = listOf(compoundCourtyardBuilding)
@@ -117,7 +119,7 @@ class LocateBuildingTest {
         assertEquals(inside, locateBuilding(point(x = 21, y = 7), compound))
     }
 
-    // Wiersz: G3, US6.2 — punkt ściśle w konturze tuż przy krawędzi i tuż przy dziedzińcu nadal jest w budynku.
+    /** Wiersz: G3, US6.2 — punkt ściśle w konturze tuż przy krawędzi i tuż przy dziedzińcu nadal jest w budynku. */
     @Test
     fun us6_2_near_edges_inside() {
         listOf(7.9375 to 4.0, 0.0625 to 4.0, 3.0 to 2.9375, 3.0 to 5.0625).forEach { (x, y) ->
@@ -129,7 +131,9 @@ class LocateBuildingTest {
         }
     }
 
-    // Wiersz: G1, decyzja 137, US6.2, BR-G2 — punkt dokładnie na ukośnej krawędzi (30,8)-(38,0) jest poza budynkiem.
+    /**
+     * Wiersz: G1, decyzja 137, US6.2, BR-G2 — punkt dokładnie na ukośnej krawędzi (30,8)-(38,0) jest poza budynkiem.
+     */
     @Test
     fun us6_2_diagonal_edge_outside() {
         assertEquals(
@@ -138,7 +142,7 @@ class LocateBuildingTest {
         )
     }
 
-    // Wiersz: G3, decyzja 137, O5 — punkt ściśle w trójkącie, ale w prostokącie ograniczającym ukośną krawędź.
+    /** Wiersz: G3, decyzja 137, O5 — punkt ściśle w trójkącie, ale w prostokącie ograniczającym ukośną krawędź. */
     @Test
     fun us6_2_inside_diagonal_bbox() {
         assertEquals(
@@ -147,14 +151,16 @@ class LocateBuildingTest {
         )
     }
 
-    // Wiersz: G3, decyzja 137, O5 — punkt na przedłużeniu poziomej krawędzi dziedzińca, poza jej odcinkiem, jest w
-    // budynku (korpus między krawędzią zewnętrzną a dziedzińcem).
+    /**
+     * Wiersz: G3, decyzja 137, O5 — punkt na przedłużeniu poziomej krawędzi dziedzińca, poza jej odcinkiem, jest w
+     * budynku (korpus między krawędzią zewnętrzną a dziedzińcem).
+     */
     @Test
     fun us6_2_edge_line_extension_in() {
         assertEquals(LocateResult.InsideOutline(courtyardBuilding), locateBuilding(point(x = 2, y = 3), buildings))
     }
 
-    // Wiersz: G3, decyzja 137, O5 — punkt około 4 mm w głąb od krawędzi (1/4096 kroku siatki) jest w budynku.
+    /** Wiersz: G3, decyzja 137, O5 — punkt około 4 mm w głąb od krawędzi (1/4096 kroku siatki) jest w budynku. */
     @Test
     fun us6_2_four_mm_inside_edge_in() {
         val almostOnEdge = point(x = 8.0 - 1.0 / 4096, y = 4.0)

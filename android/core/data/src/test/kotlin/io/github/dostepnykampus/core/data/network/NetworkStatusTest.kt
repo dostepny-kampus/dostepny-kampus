@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 class NetworkStatusTest {
     private fun internet(vararg capabilities: Int) = hasInternet { it in capabilities }
 
-    // US9.1, NFR-10: internet jest tylko wtedy, gdy sieć go ma i system go sprawdził.
+    /** US9.1, NFR-10: internet jest tylko wtedy, gdy sieć go ma i system go sprawdził. */
     @Test
     fun us9_1_validated_internet() {
         val cases =

@@ -20,7 +20,7 @@ class ReportDraftTest {
     private val photo = PendingPhotoDraft(photoId = "p1", path = "/data/p1.jpg")
     private val moved = A1.copy(location = GeoPoint(longitude = 17.0622, latitude = 51.1079))
 
-    // Wiersz: C2 „Zmień miejsce” → C1 → „Dalej”, typ, uciążliwość i zdjęcie zostają, US7.4.
+    /** Wiersz: C2 „Zmień miejsce” → C1 → „Dalej”, typ, uciążliwość i zdjęcie zostają, US7.4. */
     @Test
     fun us7_4_change_place_keeps_form() {
         val first = filled()
@@ -36,7 +36,7 @@ class ReportDraftTest {
         assertEquals(ReportStage.EDITING, form.stage)
     }
 
-    // Wiersz: C2 „Zmień miejsce” do innego budynku albo na ulicę → piętro znika, US7.4.
+    /** Wiersz: C2 „Zmień miejsce” do innego budynku albo na ulicę → piętro znika, US7.4. */
     @Test
     fun us7_4_floor_same_building() {
         filled().changePlace()

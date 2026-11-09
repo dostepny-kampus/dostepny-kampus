@@ -43,7 +43,7 @@ class MySubmissionsScreenTest {
         }
     }
 
-    // Wiersz: C3 pusty → „Nie masz jeszcze zgłoszeń…” i „Zmierz i zgłoś barierę” do C1, PW-12.
+    /** Wiersz: C3 pusty → „Nie masz jeszcze zgłoszeń…” i „Zmierz i zgłoś barierę” do C1, PW-12. */
     @Test
     fun pw12_empty_list() {
         show()
@@ -52,14 +52,14 @@ class MySubmissionsScreenTest {
         assertEquals(1, measured)
     }
 
-    // Wiersz: C3 → „Czeka na wysłanie: N” przy zgłoszeniach w telefonie, US9.1.
+    /** Wiersz: C3 → „Czeka na wysłanie: N” przy zgłoszeniach w telefonie, US9.1. */
     @Test
     fun us9_1_waiting_count() {
         show(item(id = "a", state = SendState.LOCAL), item(id = "b", state = SendState.LOCAL))
         compose.onNodeWithText("Czeka na wysłanie: 2").assertIsDisplayed()
     }
 
-    // Wiersz: C3 ładowanie → nagłówek bez listy i bez stanu pustego.
+    /** Wiersz: C3 ładowanie → nagłówek bez listy i bez stanu pustego. */
     @Test
     fun us8_1_loading() {
         showState(MySubmissionsUiState.Loading)
@@ -67,7 +67,7 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Zmierz i zgłoś barierę").assertDoesNotExist()
     }
 
-    // Wiersz: C3 same wysłane → bez „Czeka na wysłanie”, US9.1.
+    /** Wiersz: C3 same wysłane → bez „Czeka na wysłanie”, US9.1. */
     @Test
     fun us9_1_nothing_waiting() {
         show(item(id = "a", state = SendState.SENT))
@@ -75,7 +75,7 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Czeka na wysłanie", substring = true).assertDoesNotExist()
     }
 
-    // Wiersz: C3 „Otwórz” w pozycji → poprawka w C2 z identyfikatorem zgłoszenia, US8.3.
+    /** Wiersz: C3 „Otwórz” w pozycji → poprawka w C2 z identyfikatorem zgłoszenia, US8.3. */
     @Test
     fun us8_3_open_item() {
         show(item(id = "a", state = SendState.LOCAL))

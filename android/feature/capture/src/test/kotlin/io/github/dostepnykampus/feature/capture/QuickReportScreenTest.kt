@@ -69,7 +69,7 @@ class QuickReportScreenTest {
         assertEquals(1, toMap)
     }
 
-    // Wiersz: V4 krok 1 ze zdjęciem, „Wstecz” → potwierdzenie rezygnacji, US4.8.
+    /** Wiersz: V4 krok 1 ze zdjęciem, „Wstecz” → potwierdzenie rezygnacji, US4.8. */
     @Test
     fun us4_8_leave_after_confirm() {
         val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
