@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
+// sonda detekt: ten komentarz jest celowo dłuższy niż dozwolona długość wiersza w konfiguracji detekt, więc wywołuje MaxLineLength w jednym pliku testowym
 class AccountTest {
     @Test
     fun us14_2_guest_not_signed_in() {
