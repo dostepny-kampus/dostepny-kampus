@@ -26,7 +26,7 @@ class QuickReportRouteTest {
         )
 
     @Test
-    fun `wypełnione kroki dają zgłoszenie`() {
+    fun `pełne kroki dają zgłoszenie`() {
         val expected =
             QuickReport(
                 photo = PendingPhotoDraft(photoId = "zdjecie-1", path = "/zdjecia/zdjecie-1.jpg"),
@@ -37,7 +37,7 @@ class QuickReportRouteTest {
     }
 
     @Test
-    fun `bez zdjęcia albo grupy nie ma zgłoszenia`() {
+    fun `bez zdjęcia albo grupy null`() {
         assertNull(filled.copy(photoId = null).quickReport())
         assertNull(filled.copy(photoPath = null).quickReport())
         assertNull(filled.copy(group = null).quickReport())
