@@ -293,7 +293,10 @@ class AppShellTest {
         compose.onNode(MapTab).assertIsSelected()
     }
 
-    /** Wiersz: pasek dolny, „Konto i praca” → L2, role pracownicze, US14.1. */
+    /**
+     * Wiersz: pasek dolny, „Konto i praca” → L2, role pracownicze, US14.1. Przy oknie < 600 dp pozycje paska stoją
+     * w jednym rzędzie (decyzja 69, NFR-51).
+     */
     @Test
     fun us14_1_staff_konto_i_praca_l2() {
         show(roles = staff)
@@ -303,7 +306,7 @@ class AppShellTest {
             listOf("Mapa", "Konto i\u00A0praca").map {
                 compose.onNode(hasText(it) and tabRole).getUnclippedBoundsInRoot().top
             }
-        assertEquals(1, ys.distinct().size) // Decyzja 69, NFR-51: okno < 600 dp → pozycje w jednym rzędzie.
+        assertEquals(1, ys.distinct().size)
     }
 
     /** Wymagania wspólne i reguła 8, decyzje 69 i 77: okno ≥ 600 dp → pasek z boku, karty od góry, NFR-18, NFR-51. */

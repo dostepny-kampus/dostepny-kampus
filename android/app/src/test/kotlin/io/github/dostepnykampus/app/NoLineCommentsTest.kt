@@ -5,63 +5,104 @@
  */
 package io.github.dostepnykampus.app
 
-import com.lemonappdev.konsist.api.Konsist
-import com.lemonappdev.konsist.api.declaration.KoFileDeclaration
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
 
 /**
- * Strażnik komentarzy: w kodzie i testach Kotlina nie ma linii zaczynających się od `//`; opis idzie do KDoc
- * deklaracji, której dotyczy.
+ * Strażnik komentarzy: w kodzie i skryptach Kotlina (`*.kt` i `*.kts` w `android/`) nie ma komentarzy liniowych
+ * `//`, ani na początku linii, ani na końcu linii z kodem; opis idzie do KDoc deklaracji, której dotyczy.
  *
- * `offenders`: Wpisy `plik:wiersz` dla każdej takiej linii, więc komunikat wskazuje miejsce do poprawy.
+ * Komentarz rozpoznaje po składni, nie po tekście linii: napisy zwykłe i surowe, znaki oraz komentarze blokowe
+ * są pomijane w całości, więc `//` w adresie albo w surowym napisie nie jest komentarzem.
+ *
+ * `offenders`: Wpisy `ścieżka:wiersz` względem katalogu nadrzędnego `android/`, więc komunikat wskazuje miejsce
+ * do poprawy.
  */
 class NoLineCommentsTest {
     @Test
-    fun `kod i testy bez komentarzy liniowych`() {
-        assertEquals(emptyList<String>(), offenders(Konsist.scopeFromProject().files))
+    fun `kod bez komentarzy liniowych`() {
+        val root =
+            generateSequence(File("").absoluteFile) { it.parentFile }
+                .first { File(it, "settings.gradle.kts").exists() }
+        assertEquals(emptyList<String>(), offenders(root))
     }
 
     @Test
-    fun `komentarz liniowy to błąd z plikiem i wierszem`(
+    fun `komentarz liniowy to błąd`(
         @TempDir fixtures: File,
     ) {
-        val files =
-            fixtures.fixture(
-                name = "Bad.kt",
-                source = "package a\n\nclass Bad {\n    // opis\n    fun f() = 1\n}\n",
-            )
-        assertEquals(listOf("Bad.kt:4"), offenders(files))
+        val source = lines("package a", "", "class Bad {", "    // opis", "}")
+        fixtures.fixture(name = "Bad.kt", source = source)
+        assertEquals(listOf("android/Bad.kt:4"), offenders(File(fixtures, "android")))
     }
 
     @Test
-    fun `KDoc nagłówek licencji i adres w tekście przechodzą`(
+    fun `komentarz na końcu linii`(
         @TempDir fixtures: File,
     ) {
-        val files =
-            fixtures.fixture(
-                name = "Good.kt",
-                source =
-                    "/*\n * Dostępny Kampus\n */\npackage a\n\n/** Opis. */\nclass Good {\n" +
-                        "    val url = \"https://example.org\" // nie na początku linii\n}\n",
-            )
-        assertEquals(emptyList<String>(), offenders(files))
+        val source = lines("package a", "", "val x = 1 // opis")
+        fixtures.fixture(name = "Tail.kt", source = source)
+        assertEquals(listOf("android/Tail.kt:3"), offenders(File(fixtures, "android")))
     }
 
-    private fun offenders(files: List<KoFileDeclaration>): List<String> =
-        files
-            .filterNot { File(it.path).invariantSeparatorsPath.contains("/build/") }
-            .flatMap { file ->
-                file.text.lines().mapIndexedNotNull { index, line ->
-                    if (line.trimStart().startsWith("//")) "${file.nameWithExtension}:${index + 1}" else null
-                }
-            }
+    @Test
+    fun `skrypt kts też jest sprawdzany`(
+        @TempDir fixtures: File,
+    ) {
+        val source = lines("plugins {", "    // opis", "}")
+        fixtures.fixture(name = "build.gradle.kts", source = source)
+        assertEquals(listOf("android/build.gradle.kts:2"), offenders(File(fixtures, "android")))
+    }
 
-    private fun File.fixture(name: String, source: String): List<KoFileDeclaration> {
-        val directory = File(this, name.substringBefore('.')).apply { mkdirs() }
-        File(directory, name).writeText(source)
-        return Konsist.scopeFromExternalDirectory(directory.absolutePath).files
+    @Test
+    fun `surowy napis przechodzi`(
+        @TempDir fixtures: File,
+    ) {
+        val source = lines("val s = $QUOTES", "// to nie komentarz", QUOTES)
+        fixtures.fixture(name = "Raw.kt", source = source)
+        assertEquals(emptyList<String>(), offenders(File(fixtures, "android")))
+    }
+
+    @Test
+    fun `KDoc i adres przechodzą`(
+        @TempDir fixtures: File,
+    ) {
+        val source = lines("/*", " * Dostępny Kampus", " */", "package a", "", "/** Opis. */", "val url = $URL")
+        fixtures.fixture(name = "Good.kt", source = source)
+        assertEquals(emptyList<String>(), offenders(File(fixtures, "android")))
+    }
+
+    private fun offenders(android: File): List<String> =
+        android
+            .walkTopDown()
+            .onEnter { it.name != "build" && it.name != ".gradle" }
+            .filter { it.isFile && (it.extension == "kt" || it.extension == "kts") }
+            .flatMap { file -> lineComments(file, android) }
+            .toList()
+
+    private fun lineComments(file: File, android: File): Sequence<String> {
+        val text = file.readText()
+        val shown = file.relativeTo(android.absoluteFile.parentFile ?: android).invariantSeparatorsPath
+        return TOKEN
+            .findAll(text)
+            .filter { it.value.startsWith("//") }
+            .map { "$shown:${text.take(it.range.first).count { c -> c == '\n' } + 1}" }
+    }
+
+    private fun lines(vararg text: String): String = text.joinToString(separator = "\n")
+
+    private fun File.fixture(name: String, source: String) {
+        File(this, "android").apply { mkdirs() }.resolve(name).writeText(source)
+    }
+
+    private companion object {
+        const val QUOTE = '"'
+        const val QUOTES = "$QUOTE$QUOTE$QUOTE"
+        const val URL = "${QUOTE}https://example.org$QUOTE"
+        const val PATTERN =
+            """$QUOTES[\s\S]*?$QUOTES|$QUOTE(?:\\.|[^$QUOTE\\\n])*$QUOTE|'(?:\\.|[^'\\\n])+'|/\*[\s\S]*?\*/|//[^\n]*"""
+        val TOKEN = Regex(PATTERN)
     }
 }
