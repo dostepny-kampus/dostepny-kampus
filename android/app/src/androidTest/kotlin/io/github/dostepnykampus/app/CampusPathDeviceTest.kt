@@ -61,12 +61,13 @@ class CampusPathDeviceTest {
 
     /**
      * Wiersze: V1, wpisanie symbolu i wybór wyniku → V2; „Sprawdź, którędy wejść” → V3; „Wstecz” → V2, US1.1, US2, US3.
+     *
+     * Symbol jest wpisany akcją semantyki, bez fokusu pola, więc klawiatura ekranowa się nie otwiera. Otwarta
+     * klawiatura pochłania „Wstecz” (chowa się zamiast cofnąć V3), a chwila jej otwarcia i zamknięcia zależy od
+     * emulatora, więc wynik testu zależałby od czasu.
      */
     @Test
     fun us3_search_card_entrances() {
-        // Symbol wpisany akcją semantyki, bez fokusu pola, więc klawiatura ekranowa się nie otwiera. Otwarta
-        //   klawiatura pochłania „Wstecz” (chowa się zamiast cofnąć V3), a chwila jej otwarcia i zamknięcia zależy od
-        //   emulatora, więc wynik testu zależałby od czasu.
         compose
             .onNode(hasSetTextAction())
             .performSemanticsAction(SemanticsActions.SetText) { it(AnnotatedString("A-1")) }
