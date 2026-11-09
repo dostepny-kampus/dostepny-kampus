@@ -27,7 +27,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  kontrola:
+  # Nazwa inna niż `kontrola`: ta nazwa należy do jobu docs i jest wymaganym checkiem rulesetów; ta sama nazwa mieszałaby oba wyniki.
+  pr-od-issue:
     if: >-
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.actor != 'dependabot[bot]'
