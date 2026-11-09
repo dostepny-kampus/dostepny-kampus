@@ -24,6 +24,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.geo.BuildingHint
 import io.github.dostepnykampus.core.model.Building
@@ -116,6 +118,7 @@ private fun Hint(hint: BuildingHint) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(R.string.budynek_pytanie, hint.building.symbol),
+            modifier = Modifier.semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
         )
         hint.building.name?.let { Text(it) }
@@ -141,7 +144,9 @@ private fun BuildingPicker(
         onDismissRequest = onDismiss,
         confirmButton = {},
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.budynek_anuluj)) } },
-        title = { Text(stringResource(R.string.budynek_wybierz)) },
+        title = {
+            Text(stringResource(R.string.budynek_wybierz), modifier = Modifier.semantics { heading() })
+        },
         text = {
             LazyColumn {
                 items(buildings.items, key = Building::symbol) { building ->

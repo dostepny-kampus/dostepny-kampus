@@ -23,6 +23,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.BackHeader
@@ -131,7 +133,12 @@ fun MeasureContent(
 
 @Composable
 private fun Headline(text: String) {
-    Text(text = text, style = MaterialTheme.typography.titleMedium, fontWeight = Typografia.wyroznienieWaga)
+    Text(
+        text = text,
+        modifier = Modifier.semantics { heading() },
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = Typografia.wyroznienieWaga,
+    )
 }
 
 @Composable
