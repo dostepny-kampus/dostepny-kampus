@@ -273,7 +273,7 @@ class AppShellTest {
         compose.waitForIdle()
     }
 
-    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu */
+    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */
     @Test
     fun us5_1_first_launch_v5_back_v1() {
         show(firstLaunch = true)
@@ -530,7 +530,7 @@ class AppShellTest {
 
     /**
      * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie w 3 krokach z pozycją dołączoną
-     *   automatycznie
+     *   automatycznie.
      */
     @Test
     fun us4_1_report_opens_step_one() {

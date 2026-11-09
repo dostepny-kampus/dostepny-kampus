@@ -72,10 +72,7 @@ internal class TestMapListChoice : MapListChoice {
 
 private const val KEYBOARD_HEIGHT = 600
 
-/**
- * Podaje ekranowi [activity] klawiaturę otwartą albo zamkniętą tak, jak system: w odstępach okna. Klawiatura ma
- * wysokość `KEYBOARD_HEIGHT` w pikselach: przy gęstości zrzutów 2× to 300 dp, jak na telefonie.
- */
+/** Podaje ekranowi [activity] klawiaturę otwartą albo zamkniętą tak, jak system: w odstępach okna. */
 internal fun dispatchKeyboard(activity: ComponentActivity, isOpen: Boolean) {
     val ime = WindowInsetsCompat.Type.ime()
     val insets =
@@ -88,7 +85,11 @@ internal fun dispatchKeyboard(activity: ComponentActivity, isOpen: Boolean) {
     ViewCompat.dispatchApplyWindowInsets(content.getChildAt(0), insets)
 }
 
-/** Ekran V1 z widokiem zastępczym zamiast MapLibre i katalogiem „Budynek testowy” (nie dane PWr). */
+/**
+ * Ekran V1 z widokiem zastępczym zamiast MapLibre i katalogiem „Budynek testowy” (nie dane PWr).
+ *
+ * `KEYBOARD_HEIGHT`: Wysokość klawiatury w pikselach: przy gęstości zrzutów 2× to 300 dp, jak na telefonie.
+ */
 @RunWith(RobolectricTestRunner::class)
 class CampusMapScreenTest {
     @get:Rule
