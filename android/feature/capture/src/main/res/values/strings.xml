@@ -89,4 +89,8 @@
     <string name="szybkie_pytanie_pietro">Na którym piętrze?</string>
     <string name="szybkie_nie_wiem">Nie wiem</string>
     <string name="szybkie_parter">Parter</string>
+    <string name="szybkie_pietro">Piętro %1$d</string>
+    <string name="szybkie_dolaczymy_miejsce">Dołączymy miejsce, w którym teraz stoisz.</string>
+    <string name="szybkie_ustalamy_miejsce">Ustalamy, gdzie jesteś…</string>
+    <string name="szybkie_dziekujemy">Dziękujemy. Sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.</string>
 </resources>
