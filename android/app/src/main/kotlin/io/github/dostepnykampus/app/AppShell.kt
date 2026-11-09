@@ -135,7 +135,7 @@ fun AppShell(
 
 @Composable
 private fun rememberCaptureDraft(active: Boolean): ReportDraft? =
-    if (active) rememberSerializable { ReportDraft() } else null
+    if (active) rememberSerializable(serializer = ReportDraft.serializer()) { ReportDraft() } else null
 
 private fun isCaptureRoute(route: NavKey): Boolean = route == MeasureRoute || route is ReportFormRoute
 
