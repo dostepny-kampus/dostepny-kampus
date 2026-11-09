@@ -106,22 +106,19 @@ private typealias Action = Pair<String, () -> Unit>
 @Composable
 @NonRestartableComposable
 internal fun AppNavigator.AppScreen(route: NavKey) {
+    val save = { reportSaved() }
     when (route) {
         is BuildingRoute -> HiltBuildingCard(route.symbol)
         is EntrancesRoute -> Entrances(route.symbol)
         is ReportRoute -> QuickReport(route)
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
-        is ReportFormRoute -> ReportForm(route)
+        is ReportFormRoute -> ReportFormScreen(route = route, onLeave = { back() }, onSave = save, draft = reportDraft)
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute, AccountRoute -> Account(route)
         is MapRoute -> HiltMapScreen(focus = route.focus)
         else -> Unit
     }
 }
-
-@Composable
-private fun AppNavigator.ReportForm(route: ReportFormRoute) =
-    ReportFormScreen(route = route, onLeave = { back() }, onSave = { reportSaved() }, draft = reportDraft)
 
 @Composable
 private fun AppNavigator.Entrances(symbol: String) {
