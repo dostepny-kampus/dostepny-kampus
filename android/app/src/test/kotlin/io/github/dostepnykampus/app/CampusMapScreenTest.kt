@@ -70,10 +70,12 @@ internal class TestMapListChoice : MapListChoice {
     }
 }
 
-// Wysokość klawiatury w pikselach: przy gęstości zrzutów 2× to 300 dp, jak na telefonie.
 private const val KEYBOARD_HEIGHT = 600
 
-/** Podaje ekranowi [activity] klawiaturę otwartą albo zamkniętą tak, jak system: w odstępach okna. */
+/**
+ * Podaje ekranowi [activity] klawiaturę otwartą albo zamkniętą tak, jak system: w odstępach okna. Klawiatura ma
+ * wysokość `KEYBOARD_HEIGHT` w pikselach: przy gęstości zrzutów 2× to 300 dp, jak na telefonie.
+ */
 internal fun dispatchKeyboard(activity: ComponentActivity, isOpen: Boolean) {
     val ime = WindowInsetsCompat.Type.ime()
     val insets =
@@ -140,6 +142,7 @@ class CampusMapScreenTest {
         compose.waitForIdle()
     }
 
+    /** Plakietka jest niska jak w hi-fi, ale odnośnik ma cel dotyku 48 dp (NFR-17). */
     @Test
     fun nfr53_buttons_nfr37_osm_us2() {
         compose.setContent { Screen() }
@@ -151,14 +154,15 @@ class CampusMapScreenTest {
         assertEquals(true, moved.center.latitude > zoomed.center.latitude)
         val names = listOf("Pomniejsz", "Przesuń mapę w dół", "Przesuń mapę w lewo", "Przesuń mapę w prawo")
         names.forEach { compose.onNodeWithContentDescription(it).assertExists() }
-        // Plakietka jest niska jak w hi-fi, ale odnośnik ma cel dotyku 48 dp (NFR-17).
         compose.onNodeWithText("© OpenStreetMap contributors").assertHasClickAction().assertHeightIsAtLeast(48.dp)
         compose.runOnUiThread { listOf(listOf("C-3", "C-4"), listOf("C-13")).forEach(touch) }
         assertEquals(listOf("C-13"), opened)
     }
 
-    // Wiersz: V1, strzałki przesuwania zatrzymują się na granicy obszaru kampusu, czyli konturów powiększonych
-    // o 500 m z każdej strony, bez komunikatu (NFR-39, NFR-53).
+    /**
+     * Wiersz: V1, strzałki przesuwania zatrzymują się na granicy obszaru kampusu, czyli konturów powiększonych
+     * o 500 m z każdej strony, bez komunikatu (NFR-39, NFR-53).
+     */
     @Test
     fun nfr53_arrows_stop_at_edge() {
         compose.setContent { Screen() }
@@ -168,8 +172,10 @@ class CampusMapScreenTest {
         assertEquals(1.0 + 500.0 / 111_195.0, cameras.last().center.longitude, 5e-5)
     }
 
-    // Wiersz: V1, najmniejsze powiększenie pokazuje cały obszar kampusu; bardziej oddalić mapy się nie da, więc
-    // „Pomniejsz” przy małym konturze zatrzymuje się wyżej niż dawne powiększenie 12 (NFR-39, NFR-53).
+    /**
+     * Wiersz: V1, najmniejsze powiększenie pokazuje cały obszar kampusu; bardziej oddalić mapy się nie da, więc
+     * „Pomniejsz” przy małym konturze zatrzymuje się wyżej niż dawne powiększenie 12 (NFR-39, NFR-53).
+     */
     @Test
     fun nfr39_zoom_out_stops_at_campus() {
         ring = "[[0,0],[0.001,0],[0.001,0.001],[0,0]]"
@@ -183,8 +189,10 @@ class CampusMapScreenTest {
         assertEquals(farthest, cameras.last())
     }
 
-    // Wiersz: czcionka 1,5 → start na liście, „Lista” czytane jako „Lista budynków” (NFR-19, NFR-20); wybór „Mapa”
-    // zostaje zapisany, a mapa ma krótki podpis „© OpenStreetMap” (NFR-37).
+    /**
+     * Wiersz: czcionka 1,5 → start na liście, „Lista” czytane jako „Lista budynków” (NFR-19, NFR-20); wybór „Mapa”
+     * zostaje zapisany, a mapa ma krótki podpis „© OpenStreetMap” (NFR-37).
+     */
     @Test
     fun nfr20_list_start_short_osm() {
         compose.setContent { Screen(fontScale = 1.5f) }
@@ -194,7 +202,7 @@ class CampusMapScreenTest {
         assertEquals(false, choice.savedChoice.value)
     }
 
-    // Wiersz: zapisany wybór „Lista budynków” → V1 startuje na liście także przy zwykłej czcionce (NFR-19).
+    /** Wiersz: zapisany wybór „Lista budynków” → V1 startuje na liście także przy zwykłej czcionce (NFR-19). */
     @Test
     fun nfr19_saved_list_choice() {
         choice.savedChoice.value = true
@@ -203,7 +211,7 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
     }
 
-    // Wiersz: kontur wspólny „C-13/C-14” → arkusz „Który budynek?”, przycisk budynku → V2, decyzja 85.
+    /** Wiersz: kontur wspólny „C-13/C-14” → arkusz „Który budynek?”, przycisk budynku → V2, decyzja 85. */
     @Test
     fun us2_which_building_opens_v2() {
         compose.setContent { Screen() }
@@ -219,7 +227,7 @@ class CampusMapScreenTest {
         assertEquals(listOf("C-14"), opened)
     }
 
-    // Wiersz: „Zamknij” w arkuszu „Który budynek?” → V1 bez arkusza.
+    /** Wiersz: „Zamknij” w arkuszu „Który budynek?” → V1 bez arkusza. */
     @Test
     fun us2_which_building_closes() {
         compose.setContent { Screen() }
@@ -231,8 +239,10 @@ class CampusMapScreenTest {
         assertEquals(emptyList<String>(), opened)
     }
 
-    // Wiersz: arkusz „Który budynek?” zamyka tylko przycisk budynku albo „Zamknij”; dotknięcie pustej mapy go
-    // zostawia, decyzja 85.
+    /**
+     * Wiersz: arkusz „Który budynek?” zamyka tylko przycisk budynku albo „Zamknij”; dotknięcie pustej mapy go
+     * zostawia, decyzja 85.
+     */
     @Test
     fun us2_which_building_empty_tap() {
         compose.setContent { Screen() }
@@ -242,8 +252,10 @@ class CampusMapScreenTest {
         compose.onNodeWithText("Który budynek?").assertExists("arkusz po dotknięciu pustej mapy")
     }
 
-    // Wiersz: otwarta klawiatura chowa przyciski mapy, podpis OSM zostaje; po zamknięciu przyciski wracają
-    // (NFR-53, decyzja 91).
+    /**
+     * Wiersz: otwarta klawiatura chowa przyciski mapy, podpis OSM zostaje; po zamknięciu przyciski wracają
+     * (NFR-53, decyzja 91).
+     */
     @Test
     fun nfr53_keyboard_hides_buttons() {
         compose.setContent { Screen() }
@@ -256,7 +268,7 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertExists()
     }
 
-    // Wiersz: V2 jako arkusz nad V1, podpis OSM i przyciski nad arkuszem, decyzja 87.
+    /** Wiersz: V2 jako arkusz nad V1, podpis OSM i przyciski nad arkuszem, decyzja 87. */
     @Test
     @Config(qualifiers = "w360dp-h800dp")
     fun nfr37_osm_above_sheet() {
@@ -269,8 +281,10 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertDoesNotExist()
     }
 
-    // Wiersz: mała karta V2 nad V1, dotknięcie pustej mapy → zamknięcie karty; dotknięcie konturu, także wspólnego,
-    // zamknięciem nie jest, US2.8, NFR-17.
+    /**
+     * Wiersz: mała karta V2 nad V1, dotknięcie pustej mapy → zamknięcie karty; dotknięcie konturu, także wspólnego,
+     * zamknięciem nie jest, US2.8, NFR-17.
+     */
     @Test
     fun us2_8_empty_map_tap() {
         compose.setContent { Screen(focus = "C-13", sheet = 200.dp) }
@@ -281,7 +295,7 @@ class CampusMapScreenTest {
         assertEquals("dotknięcie pustej mapy", 1, emptyTaps)
     }
 
-    // Wiersz: V1 → V2 z budynkiem nad arkuszem, „Wstecz” → widok sprzed otwarcia V2, decyzja 83.
+    /** Wiersz: V1 → V2 z budynkiem nad arkuszem, „Wstecz” → widok sprzed otwarcia V2, decyzja 83. */
     @Test
     fun us1_1_focus_above_sheet() {
         var sheet by mutableStateOf(0.dp)
@@ -298,7 +312,7 @@ class CampusMapScreenTest {
         assertEquals(start, cameras.last())
     }
 
-    // Wiersz: pole symbolu „c14” → wynik „Budynek C-14” → V2 z obrysem, US1.1.
+    /** Wiersz: pole symbolu „c14” → wynik „Budynek C-14” → V2 z obrysem, US1.1. */
     @Test
     fun us1_1_search_result_opens_v2() {
         compose.setContent { Screen() }
@@ -309,7 +323,7 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("Wyczyść pole").assertDoesNotExist()
     }
 
-    // Wiersz: „A-1 329” → stan „brak wyniku”, decyzja 82; „×” „Wyczyść pole” → pole puste.
+    /** Wiersz: „A-1 329” → stan „brak wyniku”, decyzja 82; „×” „Wyczyść pole” → pole puste. */
     @Test
     fun us1_1_no_result_and_clear() {
         compose.setContent { Screen() }
@@ -320,8 +334,10 @@ class CampusMapScreenTest {
         assertEquals(emptyList<String>(), opened)
     }
 
-    // Wiersz: V1, „Lista budynków” → lista z katalogu bez mapy; budynek z listy → V2 jako arkusz na mapie,
-    // a po „Wstecz” znów lista (NFR-19, US2.5, decyzja 48).
+    /**
+     * Wiersz: V1, „Lista budynków” → lista z katalogu bez mapy; budynek z listy → V2 jako arkusz na mapie,
+     * a po „Wstecz” znów lista (NFR-19, US2.5, decyzja 48).
+     */
     @Test
     fun nfr19_list_opens_v2_on_map() {
         var sheet by mutableStateOf(0.dp)
@@ -339,7 +355,7 @@ class CampusMapScreenTest {
         compose.onNodeWithText("© OpenStreetMap contributors").assertDoesNotExist()
     }
 
-    // Wiersz: V1, lista i pole symbolu → lista zawężona do wpisanego budynku (NFR-19, US1.1).
+    /** Wiersz: V1, lista i pole symbolu → lista zawężona do wpisanego budynku (NFR-19, US1.1). */
     @Test
     fun nfr19_symbol_narrows_list() {
         compose.setContent { Screen() }
@@ -349,7 +365,7 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("C-13, Budynek testowy").assertDoesNotExist()
     }
 
-    // Wiersz: V1, brak wyniku → „Lista budynków” w karcie czyści pole i pokazuje całą listę (UC1 3a, PW-9).
+    /** Wiersz: V1, brak wyniku → „Lista budynków” w karcie czyści pole i pokazuje całą listę (UC1 3a, PW-9). */
     @Test
     fun uc1_3a_no_result_opens_list() {
         compose.setContent { Screen() }
@@ -361,8 +377,10 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("C-13, Budynek testowy").assertExists()
     }
 
-    // Wiersz: V1 bez internetu → linia „Bez internetu” bez daty pod polem, czytana jako komunikat stanu, a po powrocie
-    // internetu znika (US9.1, NFR-10, decyzja 84, WCAG 4.1.3).
+    /**
+     * Wiersz: V1 bez internetu → linia „Bez internetu” bez daty pod polem, czytana jako komunikat stanu, a po powrocie
+     * internetu znika (US9.1, NFR-10, decyzja 84, WCAG 4.1.3).
+     */
     @Test
     fun us9_1_offline_line() {
         compose.setContent { Screen() }
@@ -376,7 +394,7 @@ class CampusMapScreenTest {
         compose.onNodeWithText("Bez internetu").assertDoesNotExist()
     }
 
-    // Wiersz: V2 otwarte od razu, „Pokaż budynek na mapie” → V1 z zaznaczonym budynkiem, US2.9, decyzja 116.
+    /** Wiersz: V2 otwarte od razu, „Pokaż budynek na mapie” → V1 z zaznaczonym budynkiem, US2.9, decyzja 116. */
     @Test
     fun us1_1_focus_reaches_map() {
         compose.setContent { Screen(focus = "C-14") }
@@ -384,7 +402,7 @@ class CampusMapScreenTest {
         assertEquals("C-14", focuses.last())
     }
 
-    // Wiersz: V2, „Wstecz” → V1 w poprzednim stanie z tym samym widokiem kamery, decyzja 83.
+    /** Wiersz: V2, „Wstecz” → V1 w poprzednim stanie z tym samym widokiem kamery, decyzja 83. */
     @Test
     fun us1_camera_survives_restore() {
         val restoration = StateRestorationTester(compose)
