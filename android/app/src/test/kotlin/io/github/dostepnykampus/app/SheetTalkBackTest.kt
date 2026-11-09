@@ -3,6 +3,8 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
+@file:OptIn(TymczasoweRole::class)
+
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
@@ -23,6 +25,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
+import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Rule

@@ -13,7 +13,7 @@ plugins {
 
 android {
     buildFeatures.buildConfig = true
-    defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    defaultConfig.testInstrumentationRunner = "io.github.dostepnykampus.app.HiltTestRunner"
     testOptions.unitTests.all { it.useJUnitPlatform() }
 }
 
@@ -57,6 +57,11 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(project(":core:network"))
+    androidTestImplementation(libs.okhttp)
+    androidTestImplementation(libs.kotlinx.serialization.json)
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     testRuntimeOnly(libs.junit.vintage.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
