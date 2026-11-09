@@ -11,6 +11,7 @@ import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,10 +50,7 @@ final class JdbcRaceTest {
                 select.execute(
                     String.format("SELECT 1 FROM submissions WHERE id = '%s' FOR UPDATE", id)
                 );
-                try (ResultSet pid = select.executeQuery("SELECT pg_backend_pid()")) {
-                    pid.next();
-                    holder = pid.getInt(1);
-                }
+                holder = JdbcRaceTest.session(select);
             }
             final List<Future<EditResult>> edits = List.of(
                 pool.submit(this.edit(data, id, "a")), pool.submit(this.edit(data, id, "b"))
@@ -74,18 +72,19 @@ final class JdbcRaceTest {
         );
     }
 
-    /**
-     * Czeka, aż obie edycje czekają na blokadę trzymaną przez sesję holder,
-     * wprost albo za drugą edycją w kolejce do wiersza; sesje bazy spoza
-     * testu nie liczą się.
-     *
-     * @param data Dane testu z dostępem do bazy
-     * @param holder Identyfikator procesu sesji, która trzyma blokadę wiersza
-     */
+    private static int session(final Statement select) throws SQLException {
+        try (ResultSet pid = select.executeQuery("SELECT pg_backend_pid()")) {
+            Assertions.assertTrue(pid.next(), "Baza nie podała identyfikatora sesji");
+            return pid.getInt(1);
+        }
+    }
+
     private static void awaitBlocked(final SubmissionData data, final int holder) {
         final long limit = System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
         while (data.jdbc().sql(
             """
+            -- Sesje czekające na blokadę trzymaną przez sesję testu, wprost albo za drugą
+            -- edycją w kolejce do wiersza; sesje bazy spoza testu nie liczą się.
             WITH RECURSIVE waiting(pid) AS (
                 SELECT :holder
                 UNION
