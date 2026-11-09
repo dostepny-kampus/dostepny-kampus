@@ -40,26 +40,43 @@ while IFS= read -r uwaga; do
   echo "::error title=PR od issue::${uwaga}"
 done <<<"$uwagi"
 
-if [[ "$(gh pr view "$pr" --json isDraft --jq .isDraft)" != true ]]; then
+szkic=nie
+if [[ "$(gh pr view "$pr" --json isDraft --jq .isDraft)" == true ]]; then
+  szkic=tak
+elif blad="$(gh pr ready "$pr" --undo 2>&1)"; then
+  echo "PR #${pr} zamieniony w szkic."
+  szkic=tak
+elif grep -qi 'Resource not accessible' <<<"$blad"; then
   # Token workflow (GITHUB_TOKEN) bywa bez prawa do zamiany PR w szkic (GraphQL: convertPullRequestToDraft); wtedy
   # zostaje komentarz i czerwony wynik zadania, a ostrzeżenie mówi, czemu PR nie jest szkicem.
-  if gh pr ready "$pr" --undo; then
-    echo "PR #${pr} zamieniony w szkic."
-  else
-    echo "::warning title=PR od issue::Nie udało się zamienić PR #${pr} w szkic (brak uprawnienia tokenu); zostaje komentarz i czerwony wynik."
-  fi
+  echo "::warning title=PR od issue::Nie udało się zamienić PR #${pr} w szkic (brak uprawnienia tokenu); zostaje komentarz i czerwony wynik."
+else
+  echo "::error title=PR od issue::Błąd narzędzia kontroli: zamiana PR #${pr} w szkic nie powiodła się (${blad}). Kod 2."
+  exit 2
 fi
 
+if [[ $szkic == tak ]]; then
+  naglowek='Ten PR nie spełnia zasady „PR od issue” i jest szkicem:'
+  zakonczenie='Dopisz w opisie `Closes #N` z otwartym issue przypisanym autorowi PR, potem oznacz PR jako gotowy.'
+else
+  naglowek='Ten PR nie spełnia zasady „PR od issue” (nie udało się zamienić go w szkic automatycznie):'
+  zakonczenie='Dopisz w opisie `Closes #N` z otwartym issue przypisanym autorowi PR; kontrola powtórzy się po zmianie opisu.'
+fi
 tresc="${znacznik}
-Ten PR nie spełnia zasady „PR od issue” i został zamieniony w szkic:
+${naglowek}
 $(sed 's/^/- /' <<<"$uwagi")
 
-Dopisz w opisie \`Closes #N\` z otwartym issue przypisanym autorowi PR, potem oznacz PR jako gotowy."
-id="$(gh api "repos/${repo}/issues/${pr}/comments" --jq ".[] | select(.body | contains(\"${znacznik}\")) | .id" | head -n 1)"
+${zakonczenie}"
+narzedzie() {
+  echo "::error title=PR od issue::Błąd narzędzia kontroli: $1 nie powiodło się (kod $2). Kod 2."
+  exit 2
+}
+id="$(gh api "repos/${repo}/issues/${pr}/comments" --jq ".[] | select(.body | contains(\"${znacznik}\")) | .id" | head -n 1)" ||
+  narzedzie "odczyt komentarzy" "$?"
 if [[ -n $id ]]; then
-  gh api -X PATCH "repos/${repo}/issues/comments/${id}" -f body="$tresc" >/dev/null
+  gh api -X PATCH "repos/${repo}/issues/comments/${id}" -f body="$tresc" >/dev/null || narzedzie "odświeżenie komentarza" "$?"
   echo "Odświeżono komentarz ${id}."
 else
-  gh pr comment "$pr" --body "$tresc"
+  gh pr comment "$pr" --body "$tresc" || narzedzie "dodanie komentarza" "$?"
 fi
 exit 1
