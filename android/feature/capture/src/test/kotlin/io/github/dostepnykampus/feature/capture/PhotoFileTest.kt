@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture
 
-import android.media.ExifInterface
+import androidx.exifinterface.media.ExifInterface
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
