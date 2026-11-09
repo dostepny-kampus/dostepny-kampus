@@ -1,8 +1,10 @@
+# milestone: numer kamienia milowego „Sprint N” (gh api repos/<repo>/milestones); przy otwarciu sprintu zmieniamy go razem z target-branch.
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
     target-branch: sprint/4
+    milestone: 1
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -20,6 +22,7 @@ updates:
   - package-ecosystem: npm
     directory: /docs
     target-branch: sprint/4
+    milestone: 1
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -37,6 +40,7 @@ updates:
   - package-ecosystem: npm
     directory: /.github/commitlint
     target-branch: sprint/4
+    milestone: 1
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -54,6 +58,7 @@ updates:
   - package-ecosystem: pip
     directory: /docs
     target-branch: sprint/4
+    milestone: 1
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -71,6 +76,7 @@ updates:
   - package-ecosystem: pip
     directory: /data
     target-branch: sprint/4
+    milestone: 1
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -88,6 +94,7 @@ updates:
   - package-ecosystem: maven
     directory: /backend
     target-branch: sprint/4
+    milestone: 1
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -105,6 +112,7 @@ updates:
   - package-ecosystem: docker-compose
     directory: /infra
     target-branch: sprint/4
+    milestone: 1
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -115,6 +123,7 @@ updates:
   - package-ecosystem: gradle
     directory: /android
     target-branch: sprint/4
+    milestone: 1
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
