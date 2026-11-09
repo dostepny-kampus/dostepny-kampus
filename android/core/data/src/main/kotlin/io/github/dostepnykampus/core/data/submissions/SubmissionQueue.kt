@@ -117,6 +117,7 @@ class SubmissionQueue(
 
     /**
      * Zapisuje zgłoszenie w kolejce z nowym identyfikatorem w telefonie (BR-9).
+     * Awaria planowania wysyłki nie może zgubić zapisanego zgłoszenia (NFR-5).
      *
      * @param content treść zgłoszenia
      * @param photos zdjęcia do wysłania; identyfikatory wracają w [content] (BR-7, BR-8)
@@ -129,7 +130,6 @@ class SubmissionQueue(
         val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = System.currentTimeMillis())
         store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
         remember(entity)
-        // Awaria planowania nie może zgubić zapisanego zgłoszenia (NFR-5).
         runCatching(onSaved)
         return entity
     }

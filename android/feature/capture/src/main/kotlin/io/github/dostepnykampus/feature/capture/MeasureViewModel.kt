@@ -122,7 +122,10 @@ class MeasureViewModel
         private val result = MutableStateFlow(Run(attempt = 0, finished = null))
         private val catalogBuildings = MutableStateFlow(emptyList<Building>())
 
-        /** Budynki z katalogu do „Wybierz inny”; puste, dopóki pomiar się nie skończy (US6.2). */
+        /**
+         * Budynki z katalogu do „Wybierz inny”; puste, dopóki pomiar się nie skończy (US6.2). Podpowiedź budynku bierze
+         * katalog z pliku albo już pobrany, bez czekania na serwer (NFR-4: do 2 s bez sieci).
+         */
         val buildings: StateFlow<List<Building>> = catalogBuildings
 
         /** Bieżący stan pomiaru. */
@@ -156,7 +159,7 @@ class MeasureViewModel
             choose { PlaceChoice.Outside }
         }
 
-        // Wyjście z C1 kończy zgłoszenie, więc pola odłożone przez „Zmień miejsce” na C2 już nie wrócą (US7.4).
+        /** Wyjście z C1 kończy zgłoszenie, więc pola odłożone przez „Zmień miejsce” na C2 już nie wrócą (US7.4). */
         override fun onCleared() {
             draft.clear()
         }
@@ -169,7 +172,6 @@ class MeasureViewModel
             }
         }
 
-        // Podpowiedź z katalogu z pliku albo już pobranego, bez czekania na serwer (NFR-4: do 2 s bez sieci).
         private fun locate(attempt: Int, point: GeoPoint) {
             viewModelScope.launch {
                 val buildings = catalog.catalogUpdates().first().buildings
