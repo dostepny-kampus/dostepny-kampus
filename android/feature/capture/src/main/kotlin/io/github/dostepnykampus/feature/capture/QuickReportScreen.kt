@@ -46,6 +46,9 @@ import java.io.File
  * „Wstecz” w kroku 1 ze zdjęciem najpierw pyta o rezygnację; wstecz w pytaniu to „Wróć do zdjęcia”. Po wysłaniu
  * ekran pokazuje tylko potwierdzenie (`SENT`); z kroków końcowych zostaje krok 3, wysłanie.
  * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację (NFR-27, BR-8).
+ * Krok 1: „Zrób zdjęcie” otwiera aparat, a zdjęcie od razu prowadzi do kroku 2; po powrocie z kroku 2 jest „Dalej”.
+ * Krok 2: grupa, a w konturze albo przy nieznanej pozycji pytanie o piętro; „Wstecz” z pytania wraca do grup.
+ * „Tak, zrezygnuj”: zdjęcie znika z telefonu, a zgłoszenie nie powstaje (UC7 1b).
  *
  * @param route krok z danymi wcześniejszych kroków
  * @param actions czynności nawigatora
@@ -90,7 +93,6 @@ fun QuickReportScreen(route: ReportRoute, actions: QuickReportActions, modifier:
     }
 }
 
-// „Tak, zrezygnuj”: zdjęcie znika z telefonu, a zgłoszenie nie powstaje (UC7 1b).
 private fun leave(route: ReportRoute, actions: QuickReportActions) {
     route.photoPath?.let { File(it).delete() }
     actions.onBack()
@@ -113,7 +115,6 @@ private fun QuickStep(route: ReportRoute, actions: QuickReportActions) {
     }
 }
 
-// Krok 1: „Zrób zdjęcie” otwiera aparat, a zdjęcie od razu prowadzi do kroku 2; po powrocie z kroku 2 „Dalej”.
 @Composable
 private fun QuickPhotoStep(route: ReportRoute, onNext: (ReportRoute) -> Unit) {
     val takePhoto = rememberPhotoCamera(onPhoto = { onNext(route.copy(photoId = it.photoId, photoPath = it.path)) })
@@ -121,7 +122,6 @@ private fun QuickPhotoStep(route: ReportRoute, onNext: (ReportRoute) -> Unit) {
     if (route.photoPath != null) MainButton(text = stringResource(R.string.pomiar_dalej), onClick = { onNext(route) })
 }
 
-// Krok 2: grupa, a w konturze albo przy nieznanej pozycji pytanie o piętro; „Wstecz” z pytania wraca do grup.
 @Composable
 private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit) {
     var asked by rememberSaveable { mutableStateOf<BarrierGroup?>(null) }
