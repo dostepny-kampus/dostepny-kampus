@@ -83,11 +83,11 @@ case_warn_branch() { warn=1; case_branch_wrong_number; }
 case_fixed() { pr_json autor-pr 'Fixed #12'; issue_json 12 OPEN autor-pr; }
 case_resolve() { pr_json autor-pr 'resolve #12'; issue_json 12 OPEN autor-pr; }
 case_all_forms() {
-  pr_json autor-pr 'close #12\nClosed #13\nfix #14\nresolved #15' 12-zadanie
-  issue_json 12 OPEN autor-pr
-  issue_json 13 CLOSED autor-pr
-  issue_json 14 OPEN autor-pr
-  issue_json 15 OPEN autor-pr
+  local number
+  pr_json autor-pr 'close #12\nCloses #13\nclosed #14\nfix #15\nFixes #16\nFIXED #17\nresolve #18\nresolves #19\nResolved #20' 12-zadanie
+  for number in 12 13 14 15 16 17 18 19 20; do
+    issue_json "$number" OPEN autor-pr
+  done
 }
 
 case_two_issues_ok() {
@@ -132,6 +132,6 @@ run_case "numer gałęzi tylko zaczyna się jak numer issue" 1 "$wrong_number" c
 run_case "tryb ostrzegawczy: numer gałęzi różny od issue" 0 '::warning' case_warn_branch
 run_case "forma Fixed #N" 0 '' case_fixed
 run_case "forma resolve #N" 0 '' case_resolve
-run_case "wszystkie formy słów GitHuba są widziane (zamknięte issue #13 zgłoszone)" 1 '#13: issue zamknięte' case_all_forms
+run_case "wszystkie dziewięć form słów GitHuba daje dziewięć issue" 0 '#12 #13 #14 #15 #16 #17 #18 #19 #20' case_all_forms
 
 exit "$((failures > 0 ? 1 : 0))"
