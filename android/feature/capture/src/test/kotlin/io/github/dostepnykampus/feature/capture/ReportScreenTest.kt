@@ -12,6 +12,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isFocused
+import androidx.compose.ui.test.isHeading
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -182,6 +184,29 @@ class ReportScreenTest {
         compose.onNodeWithText("Próg").performScrollTo().performClick()
 
         assertEquals(ReportEdit.Type(BarrierType.THRESHOLD), edits.last())
+    }
+
+    /** Lista typów: „Zamknij” zamyka ją bez zmiany typu, a fokus wraca na pole (NFR-53). */
+    @Test
+    fun nfr53_type_list_close() {
+        show()
+        compose.onNodeWithText("Wybierz typ bariery").performClick()
+        compose.onNode(hasText("Typ bariery") and isFocused()).assertExists()
+        compose.onNode(hasText("Wejście i drzwi") and isHeading()).assertExists()
+        compose.onNodeWithText("Zamknij").performClick()
+
+        compose.onNodeWithText("Próg").assertDoesNotExist()
+        assertEquals(emptyList<ReportEdit>(), edits.filterIsInstance<ReportEdit.Type>())
+        compose.onNode(hasText("Wybierz typ bariery") and isFocused(), useUnmergedTree = false).assertExists()
+    }
+
+    /** Przy czcionce 200% „Zamknij” jest widoczne bez przewijania listy (NFR-18). */
+    @Test
+    @Config(fontScale = 2f)
+    fun nfr18_type_close_large_font() {
+        show()
+        compose.onNodeWithText("Wybierz typ bariery").performScrollTo().performClick()
+        compose.onNodeWithText("Zamknij").assertIsDisplayed()
     }
 
     @Test
