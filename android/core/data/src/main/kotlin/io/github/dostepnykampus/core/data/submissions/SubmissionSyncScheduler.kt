@@ -17,10 +17,11 @@ import androidx.work.WorkManager
  *
  * Zadanie jest jednorazowe i czeka na internet, więc system uruchomi je w swoim oknie pracy także po
  * zamknięciu aplikacji. Zwołuje je zapis zgłoszenia; start aplikacji powinien zwołać je osobno (`app`), żeby
- * zgłoszenia z poprzedniego procesu wysłały się bez czekania na nowe zgłoszenie.
+ * zgłoszenia z poprzedniego procesu wysłały się bez czekania na nowe zgłoszenie. WorkManager pobiera dopiero
+ * pierwsze planowanie, więc kolejkę można utworzyć, zanim WorkManager wystartuje.
  */
 class SubmissionSyncScheduler(context: Context) {
-    private val workManager: WorkManager = WorkManager.getInstance(context)
+    private val workManager: WorkManager by lazy { WorkManager.getInstance(context.applicationContext) }
 
     /** Planuje wysyłkę; powtórne wywołanie nie dubluje zadania. */
     fun schedule() {
