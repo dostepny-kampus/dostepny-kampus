@@ -142,8 +142,7 @@ class SubmissionQueueTest {
                             putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
                             update = { _, _, _ -> ApiResult.NotFound },
                         ),
-                    newId = { ids.removeFirst() },
-                    nowMillis = { SAME_MILLIS },
+                    stamps = SubmissionStamps(newId = { ids.removeFirst() }, nowMillis = { SAME_MILLIS }),
                 )
             target.save(fullContent(), drafts())
             target.save(fullContent(), drafts())
@@ -168,7 +167,7 @@ class SubmissionQueueTest {
                         editResults.removeFirstOrNull() ?: ApiResult.Success(SubmissionEdit.Saved(edited(id, content)))
                     },
                 ),
-            newId = { SENT_ID },
+            stamps = SubmissionStamps(newId = { SENT_ID }),
             onSaved = onSaved,
         )
 
