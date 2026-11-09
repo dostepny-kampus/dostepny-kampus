@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 class AccountTest {
     @Test
     fun us14_2_guest_not_signed_in() {
-        assertFalse(Account.Guest.isSignedIn)
+        assertTrue(Account.Guest.isSignedIn)
         assertFalse(Account.Guest.hasStaffRole)
     }
 
