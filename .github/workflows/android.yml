@@ -72,6 +72,8 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
       - name: Uruchom emulator API ${{ matrix.api }}
+        # Pobranie obrazu i start (do 10 min na uruchomienie systemu) mają twardy limit, żeby niewstały emulator nie blokował CI.
+        timeout-minutes: 15
         env:
           ANDROID_AVD_HOME: ${{ runner.temp }}/avd
         run: |
@@ -94,12 +96,14 @@ jobs:
             adb shell settings put global "$scale" 0
           done
       - name: Zainstaluj APK aplikacji i testów
+        timeout-minutes: 5
         run: |
           # Artefakt zachowuje strukturę katalogów od najbliższego wspólnego przodka, więc pliki szukamy po nazwie.
           find "$RUNNER_TEMP/apk" -name '*.apk' -print
           adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug.apk | head -n 1)"
           adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug-androidTest.apk | head -n 1)"
       - name: Testy na emulatorze
+        timeout-minutes: 15
         run: |
           # Uruchamiacz testów (np. własny runner Hilt) odczytujemy z zainstalowanego APK testów, nie z konfiguracji workflow.
           uruchamiacz="$(adb shell pm list instrumentation | tr -d '\r' | sed -n 's/^instrumentation:\([^ ]*\) (target=io.github.dostepnykampus)$/\1/p' | head -n 1)"
@@ -137,9 +141,11 @@ jobs:
           fi
       - name: Zapisz logcat i log emulatora
         if: failure()
+        # Bez limitu `adb logcat -d` czeka w nieskończoność na urządzenie, które nie wstało.
+        timeout-minutes: 2
         run: |
           mkdir -p "$RUNNER_TEMP/raporty"
-          adb logcat -d > "$RUNNER_TEMP/raporty/logcat.txt" || true
+          timeout 60 adb logcat -d > "$RUNNER_TEMP/raporty/logcat.txt" || true
           cp "$RUNNER_TEMP/emulator.log" "$RUNNER_TEMP/raporty/" || true
           grep -E 'FATAL EXCEPTION|AndroidRuntime|TestRunner' "$RUNNER_TEMP/raporty/logcat.txt" | head -200 || true
       - name: Zapisz wynik testów na emulatorze
