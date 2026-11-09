@@ -47,6 +47,8 @@ import io.github.dostepnykampus.core.model.Building
  * (US2, decyzja 85). Każdy budynek to jeden przycisk na pełną szerokość, jak wynik pod polem wyszukiwania:
  * symbol, nazwa z danych, gdy jest, i „Budynek C-3”. TalkBack czyta symbol i nazwę, a czynność przycisku to
  * „otwiera opis budynku” (NFR-17, NFR-18). Przy dużej czcionce arkusz się przewija (NFR-20).
+ * Nagłówek „Który budynek?” ma obok obrysowany przycisk „Zamknij” (NFR-53, NFR-17). Przy każdym budynku stoi
+ * symbol na plakietce w kolorze wybranej pozycji przełącznika, jak w hi-fi listy budynków.
  *
  * @param onClose „Zamknij” zostawia samą mapę
  * @param modifier położenie arkusza na mapie
@@ -69,7 +71,6 @@ internal fun BuildingChoiceSheet(
     }
 }
 
-// Nagłówek „Który budynek?” i obok niego obrysowany przycisk „Zamknij” (NFR-53, NFR-17).
 @Composable
 private fun SheetHeader(onClose: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -139,7 +140,6 @@ internal fun BuildingChoice(building: Building, onClick: () -> Unit) {
     }
 }
 
-// Symbol budynku na plakietce w kolorze wybranej pozycji przełącznika, jak w hi-fi listy budynków.
 @Composable
 private fun SymbolBadge(symbol: String) {
     Surface(shape = RoundedCornerShape(Zaokraglenia.srednie), color = MaterialTheme.colorScheme.primaryContainer) {

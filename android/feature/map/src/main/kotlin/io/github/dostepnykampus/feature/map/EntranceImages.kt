@@ -23,7 +23,6 @@ import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import kotlin.math.ceil
 
-// Pinezka w jednostkach 2 dp (14 × 20), czubek na dole obrazu, gdzie stoi kotwica.
 private const val PIN_UNIT_DP = 2f
 private const val PIN_WIDTH = 14f
 private const val PIN_HEIGHT = 20f
@@ -32,7 +31,10 @@ private const val PIN_TOP = 2f
 private const val PIN_BODY = "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
 private const val PIN_DOT = "M12 11.5a2.5 2.5 0 1 1 0-5a2.5 2.5 0 0 1 0 5z"
 
-/** Obrazy wejść: znaki wszystkich oznaczeń, a dla [selected] także pinezka i podpis z nazwą (US2.1, US3.3). */
+/**
+ * Obrazy wejść: znaki wszystkich oznaczeń, a dla [selected] także pinezka i podpis z nazwą (US2.1, US3.3).
+ * Pinezka ma jednostki 2 dp (14 × 20), a jej czubek stoi na dole obrazu, gdzie jest kotwica.
+ */
 internal fun entranceImages(
     selected: SelectedEntrance?,
     colors: MapColors,
