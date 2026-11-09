@@ -28,14 +28,15 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class DebugRolesTest {
+    /** Ekran testowy Compose. */
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val roles = DebugRoles()
 
-    // Wiersz: pasek dolny, rola pracownicza → „Konto i praca”, Gość → „Konto”, US14.1.
+    /** Pasek dolny: rola pracownicza daje „Konto i praca”, Gość „Konto” (US14.1). */
     @Test
-    fun us14_1_debug_role_changes_bar() {
+    fun debugRoleChangesBar() {
         compose.setContent {
             DostepnyKampusTheme {
                 AppShell(firstLaunch = false, roles = roles, onFirstHelpLeft = {}) { Text("Ekran") }
@@ -50,8 +51,9 @@ class DebugRolesTest {
         compose.onNodeWithText("Konto").assertIsDisplayed()
     }
 
+    /** Przełącznik pokazuje cztery role i zwraca wybraną. */
     @Test
-    fun `przełącznik daje cztery role`() {
+    fun switchOffersFourRoles() {
         val chosen = mutableListOf<DebugRole>()
         compose.setContent { DostepnyKampusTheme { RoleSwitch(current = Account.Guest, onChoose = { chosen += it }) } }
         listOf("Gość", "Odwiedzający", "Zbierający").forEach { compose.onNodeWithText(it).assertIsDisplayed() }
