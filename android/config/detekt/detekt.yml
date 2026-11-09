@@ -1,6 +1,10 @@
 # Kod generowany (build/generated) jest w analizie typów, ale bez uwag: nikt go nie pisze ani nie commituje.
 comments:
   excludes: ['**/build/generated/**']
+  DocumentationOverPrivateFunction:
+    active: true
+  DocumentationOverPrivateProperty:
+    active: true
   AbsentOrWrongFileLicense:
     licenseTemplateIsRegex: true
     licenseTemplate: |
