@@ -6,18 +6,19 @@ set -euo pipefail
 
 # Użycie: pr-od-issue.sh <numer PR>. Każdy PR (poza Dependabotem) musi mieć w opisie Closes|Fixes|Resolves #N,
 # a nazwa gałęzi PR ma mieć postać N-krotki-opis, gdzie #N jest wśród zamykanych issue (poza dependabot/*),
-# a każde wskazane issue ma być otwarte i przypisane autorowi PR. Opisu szukamy sami, bo dla PR do gałęzi
+# PR ma mieć etykietę obszaru (android, backend, api, ci, test, documentation), a jeśli zamykane issue ma etykiety
+# obszaru, PR ma mieć co najmniej jedną z nich; każde wskazane issue ma być otwarte i przypisane autorowi PR. Opisu szukamy sami, bo dla PR do gałęzi
 # niedomyślnej GitHub nie wypełnia closingIssuesReferences.
 # Tryb ostrzegawczy: PR_OD_ISSUE_OSTRZEGAJ=1 zgłasza te same uwagi jako ::warning i kończy kodem 0.
-# Dane z gh; w teście zamiast sieci: PR_JSON_FILE (gh pr view --json author,body,headRefName)
-# i ISSUE_JSON_DIR (pliki <numer>.json z gh issue view --json state,assignees,url).
+# Dane z gh; w teście zamiast sieci: PR_JSON_FILE (gh pr view --json author,body,headRefName,labels)
+# i ISSUE_JSON_DIR (pliki <numer>.json z gh issue view --json state,assignees,url,labels).
 pr="${1:?Podaj numer PR}"
 
 pr_json() {
   if [[ -n ${PR_JSON_FILE:-} ]]; then
     cat "$PR_JSON_FILE"
   else
-    gh pr view "$pr" --json author,body,headRefName
+    gh pr view "$pr" --json author,body,headRefName,labels
   fi
 }
 
@@ -25,8 +26,21 @@ issue_json() {
   if [[ -n ${ISSUE_JSON_DIR:-} ]]; then
     cat "$ISSUE_JSON_DIR/$1.json"
   else
-    gh issue view "$1" --json state,assignees,url
+    gh issue view "$1" --json state,assignees,url,labels
   fi
+}
+
+areas=(android backend api ci test documentation)
+
+# area_labels <JSON z polem labels>: etykiety obszaru, w jednym wierszu rozdzielone spacjami.
+area_labels() {
+  local name found=()
+  for name in $(jq -r '[(.labels // [])[].name] | join(" ")' <<<"$1"); do
+    if [[ " ${areas[*]} " == *" $name "* ]]; then
+      found+=("$name")
+    fi
+  done
+  echo "${found[*]:-}"
 }
 
 level=error
@@ -66,6 +80,11 @@ if [[ $branch != dependabot/* ]]; then
   fi
 fi
 
+pr_areas="$(area_labels "$pr_data")"
+if [[ -z $pr_areas ]]; then
+  report "PR nie ma etykiety obszaru (${areas[*]})."
+fi
+
 for issue in $issues; do
   data="$(issue_json "$issue")"
   # gh issue view zwraca też dane PR; numer PR nie jest issue.
@@ -75,6 +94,18 @@ for issue in $issues; do
     report "#${issue}: issue zamknięte."
   elif ! jq -e --arg login "$author" '[.assignees[].login] | index($login)' <<<"$data" >/dev/null; then
     report "#${issue}: issue nieprzypisane autorowi (${author})."
+  fi
+  issue_areas="$(area_labels "$data")"
+  if [[ -n $issue_areas && -n $pr_areas ]]; then
+    shared=0
+    for name in $issue_areas; do
+      if [[ " $pr_areas " == *" $name "* ]]; then
+        shared=1
+      fi
+    done
+    if ((shared == 0)); then
+      report "#${issue}: etykiety obszaru issue (${issue_areas}) nie pasują do etykiet obszaru PR (${pr_areas})."
+    fi
   fi
 done
 
