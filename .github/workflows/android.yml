@@ -199,7 +199,7 @@ jobs:
             zadania: ":feature:map:verifyRoborazziDebug :feature:help:testDebugUnitTest :feature:auth:testDebugUnitTest :feature:progress:testDebugUnitTest :feature:review:testDebugUnitTest"
           - grupa: lint
             testy: false
-            zadania: "lintDebug"
+            zadania: "lint"
           - grupa: detekt
             testy: false
             zadania: "detekt detektDebug detektDebugUnitTest detektDebugAndroidTest detektMain detektTest detektRelease"
@@ -332,13 +332,20 @@ jobs:
       - name: Sprawdź, że żaden test nie wykonał się poza grupami
         run: |
           # Test uruchomiony tu (poza `:app`), a nie odtworzony z wyników grup, oznacza moduł spoza macierzy `grupy`.
-          if grep -E '^> Task :[A-Za-z:]*:(test|testDebugUnitTest|testReleaseUnitTest)$' "$RUNNER_TEMP/gradle.log" | grep -v '^> Task :app:'; then
+          if grep -E '^> Task :[A-Za-z0-9_:-]*:(test|testDebugUnitTest|testReleaseUnitTest)$' "$RUNNER_TEMP/gradle.log" | grep -v '^> Task :app:'; then
             echo "::error title=Grupy testów::Powyższe testy wykonały się poza grupami; dopisz moduł do macierzy grupy."
             exit 1
           fi
           liczba="$(find . -path '*/build/test-results/*' -name 'TEST-*.xml' -print0 |
             xargs -0 -r grep -h '<testsuite ' | grep -o ' tests="[0-9]*"' | tr -dc '0-9\n' | awk '{ s += $1 } END { print s + 0 }')"
           echo "Testy jednostkowe w wynikach wszystkich grup: ${liczba}" | tee -a "$GITHUB_STEP_SUMMARY"
+          liczba_app="$(find app/build/test-results -name 'TEST-*.xml' -print0 2>/dev/null |
+            xargs -0 -r grep -h '<testsuite ' | grep -o ' tests="[0-9]*"' | tr -dc '0-9\n' | awk '{ s += $1 } END { print s + 0 }')"
+          echo "Testy jednostkowe :app wykonane w pokrycie: ${liczba_app}" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [[ $liczba -eq 0 || $liczba_app -eq 0 ]]; then
+            echo "::error title=Testy jednostkowe::Brak wykonanych testów (łącznie ${liczba}, :app ${liczba_app})."
+            exit 1
+          fi
       - name: Zapisz raporty
         if: always()
         uses: actions/upload-artifact@v7.0.2
@@ -369,7 +376,8 @@ jobs:
 
   budowanie:
     needs: [zmiany, grupy, pokrycie, apk, emulator]
-    if: ${{ !cancelled() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    # always(): także po anulowaniu poprzednich zadań, żeby anulowana część dawała czerwony check, a nie pominięty.
+    if: ${{ always() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -380,6 +388,10 @@ jobs:
         run: |
           # Wymagany check `budowanie`: zielony tylko, gdy grupy, pokrycie, APK i emulatory zakończyły się sukcesem.
           echo "zmiany: ${ZMIANY}; grupy, pokrycie, apk, emulator: ${WYNIKI}"
+          if [[ $ZMIANY != success && $ZMIANY != skipped ]]; then
+            echo "::error title=Android::Zadanie zmiany zakończyło się wynikiem ${ZMIANY}."
+            exit 1
+          fi
           for wynik in ${WYNIKI}; do
             if [[ $wynik != success ]]; then
               echo "::error title=Android::Co najmniej jedno zadanie Androida nie zakończyło się sukcesem."
