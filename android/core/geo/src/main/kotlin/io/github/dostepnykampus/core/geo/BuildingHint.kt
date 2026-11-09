@@ -47,3 +47,29 @@ fun hintBuilding(point: GeoPoint, buildings: List<Building>): BuildingHint? =
             }
         }
     }
+
+/** Ile budynków pokazuje sekcja „Wybierz budynek” na C1; makieta ma trzy najbliższe. */
+const val NEAREST_COUNT = 3
+
+/**
+ * Budynki najbliżej punktu dla sekcji „Wybierz budynek” na C1, bez sieci (US6.2, NFR-4): od najbliższego, każdy
+ * z odległością od krawędzi konturu. Budynek, w którego konturze leży punkt, ma 0 m i stoi przed budynkiem, na
+ * którego krawędzi punkt leży.
+ *
+ * @param point uśredniony punkt pomiaru
+ * @param buildings budynki z konturami z katalogu w telefonie
+ * @param limit najwięcej budynków na liście
+ * @return podpowiedzi od najbliższego, najwyżej [limit]
+ */
+fun nearestBuildings(point: GeoPoint, buildings: List<Building>, limit: Int = NEAREST_COUNT): List<BuildingHint> {
+    val hints = buildings.map { building -> building.hintFor(point) }
+    return hints.sortedWith(nearestFirst).take(limit)
+}
+
+private val nearestFirst = compareBy<BuildingHint> { it.distanceMeters }.thenBy { !it.isInside }
+
+private fun Building.hintFor(point: GeoPoint): BuildingHint {
+    val isInside = locateBuilding(point, listOf(this)) is LocateResult.InsideOutline
+    val meters = if (isInside) 0.0 else edgeDistanceMeters(point)
+    return BuildingHint(this, distanceMeters = meters, isInside = isInside)
+}

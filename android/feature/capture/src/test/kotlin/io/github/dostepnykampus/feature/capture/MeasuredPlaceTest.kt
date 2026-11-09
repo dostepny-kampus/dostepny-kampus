@@ -32,21 +32,21 @@ class MeasuredPlaceTest {
 
     private fun finished(place: PlaceChoice) = MeasureUiState.Finished(average, emptyMap(), place = place)
 
-    // Wiersz: C1, „Dalej” → C2, US6: budynek potwierdzony z nazwą idzie do formularza.
+    /** Wiersz: C1, „Dalej” → C2, US6: budynek potwierdzony z nazwą idzie do formularza. */
     @Test
     fun us6_chosen_building_to_c2() {
         val route = finished(PlaceChoice.Chosen(a1)).reportFormRoute()
         assertEquals(route(symbol = "A-1", name = "Gmach Główny"), route)
     }
 
-    // Wiersz: C1, „Poza budynkiem” → C2 bez budynku i piętra, BR-G4.
+    /** Wiersz: C1, „Poza budynkiem” → C2 bez budynku i piętra, BR-G4. */
     @Test
     fun brg4_outside_to_c2() {
         val route = finished(PlaceChoice.Outside).reportFormRoute()
         assertEquals(route(symbol = null, name = null), route)
     }
 
-    // Wiersz: C1, „Czy to budynek A-1?” → „Dalej” czeka na decyzję, US6.2.
+    /** Wiersz: C1, „Czy to budynek A-1?” → „Dalej” czeka na decyzję, US6.2. */
     @Test
     fun us6_2_no_next_before_decision() {
         assertNull(finished(PlaceChoice.Locating).reportFormRoute())

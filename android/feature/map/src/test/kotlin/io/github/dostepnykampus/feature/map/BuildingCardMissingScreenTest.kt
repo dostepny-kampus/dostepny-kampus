@@ -60,8 +60,10 @@ class BuildingCardMissingScreenTest {
         }
     }
 
-    // Wiersz: V2, symbolu nie ma w katalogu → napis „Tego budynku nie ma jeszcze w telefonie” i „Spróbuj ponownie”,
-    //   NFR-10, US2.7.
+    /**
+     * Wiersz: V2, symbolu nie ma w katalogu → napis „Tego budynku nie ma jeszcze w telefonie” i „Spróbuj ponownie”,
+     *   NFR-10, US2.7.
+     */
     @Test
     fun nfr10_unknown_shows_missing() {
         showCard("Z-9")
@@ -69,7 +71,7 @@ class BuildingCardMissingScreenTest {
         compose.onNodeWithText(RETRY_TEXT).assertIsDisplayed()
     }
 
-    // Wiersz: V2, symbol jest w katalogu → brak napisu „Tego budynku nie ma jeszcze w telefonie”, NFR-10, US2.7.
+    /** Wiersz: V2, symbol jest w katalogu → brak napisu „Tego budynku nie ma jeszcze w telefonie”, NFR-10, US2.7. */
     @Test
     fun nfr10_known_hides_missing() {
         showCard("A-1")
@@ -78,8 +80,10 @@ class BuildingCardMissingScreenTest {
         compose.onNodeWithText(RETRY_TEXT).assertDoesNotExist()
     }
 
-    // Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” → katalog czytany od nowa, a gdy budynek już w nim
-    //   jest, karta budynku zamiast napisu, NFR-10.
+    /**
+     * Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” → katalog czytany od nowa, a gdy budynek już w nim
+     *   jest, karta budynku zamiast napisu, NFR-10.
+     */
     @Test
     fun nfr10_retry_click_reads_again() {
         val reads = AtomicInteger()

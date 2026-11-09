@@ -64,7 +64,7 @@ class CampusMapEntrancesStyleTest {
             .jsonArray
             .map { it.jsonObject }
 
-    // Wiersz E1: warstwa znaków wejść; obraz znaku zależy od oznaczenia, więc kształt, nie sam kolor.
+    /** Wiersz E1: warstwa znaków wejść; obraz znaku zależy od oznaczenia, więc kształt, nie sam kolor. */
     @Test
     fun us2_1_entrance_marks_layer() {
         val marks = style().layer(ENTRANCES_LAYER)
@@ -74,7 +74,7 @@ class CampusMapEntrancesStyleTest {
         EntranceMarking.entries.forEach { assertTrue(image.contains(it.name), image) }
     }
 
-    // Wiersz E2 (O2, O4): pinezka czubkiem (dół znaku) w punkcie wejścia, z podpisem z nazwą.
+    /** Wiersz E2 (O2, O4): pinezka czubkiem (dół znaku) w punkcie wejścia, z podpisem z nazwą. */
     @Test
     fun us3_3_pin_tip_at_entrance() {
         val chosen = style(pin)
@@ -86,7 +86,7 @@ class CampusMapEntrancesStyleTest {
         assertTrue((chosen.points(layer).toString() + layer).contains("Wejście dostosowane"))
     }
 
-    // Wiersz E2 (O5): przy zaznaczeniu wszystkie znaki zostają, bez filtra.
+    /** Wiersz E2 (O5): przy zaznaczeniu wszystkie znaki zostają, bez filtra. */
     @Test
     fun us3_3_marks_stay_when_chosen() {
         val marks = style(pin).layer(ENTRANCES_LAYER)
@@ -95,7 +95,7 @@ class CampusMapEntrancesStyleTest {
         assertNull(marks["filter"])
     }
 
-    // Wiersz E5 (O6): bez zaznaczonego wejścia nie ma pinezki.
+    /** Wiersz E5 (O6): bez zaznaczonego wejścia nie ma pinezki. */
     @Test
     fun nfr15_no_pin_without_choice() {
         assertNull(style().layer(ENTRANCE_PIN_LAYER))

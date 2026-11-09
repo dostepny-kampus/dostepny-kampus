@@ -51,8 +51,10 @@ class EntrancesScreenTest {
         }
     }
 
-    // Wiersz: V3, „Brak danych o wejściach”: „z datą” tylko gdy wejścia mają datę i źródło, inaczej „każde wejście”,
-    // PW-10, US17.3.
+    /**
+     * Wiersz: V3, „Brak danych o wejściach”: „z datą” tylko gdy wejścia mają datę i źródło, inaczej „każde wejście”,
+     * PW-10, US17.3.
+     */
     @Test
     fun us17_3_unknown_no_date_promise() {
         val repository =

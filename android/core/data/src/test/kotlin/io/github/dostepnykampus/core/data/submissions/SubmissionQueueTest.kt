@@ -123,6 +123,34 @@ class SubmissionQueueTest {
             assertEquals(emptyList<Pair<String, String>>(), store.photos)
         }
 
+    /** Dwa zapisy w tej samej chwili zegara idą na serwer w kolejności zapisu, nie identyfikatorów (US9.2, BR-9). */
+    @Test
+    fun `kolejność jak przy zapisie`() =
+        runBlocking {
+            val ids = ArrayDeque(listOf("z-pierwsze", "a-drugie"))
+            val sent = mutableListOf<String>()
+            val target =
+                SubmissionQueue(
+                    store = store,
+                    ioContext = EmptyCoroutineContext,
+                    server =
+                        SubmissionServer(
+                            create = { id, content ->
+                                sent.add(id)
+                                serverSubmission(content)
+                            },
+                            putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                            update = { _, _, _ -> ApiResult.NotFound },
+                        ),
+                    stamps = SubmissionStamps(newId = { ids.removeFirst() }, nowMillis = { SAME_MILLIS }),
+                )
+            target.save(fullContent(), drafts())
+            target.save(fullContent(), drafts())
+            target.sendAll()
+
+            assertEquals(listOf("z-pierwsze", "a-drugie"), sent)
+        }
+
     private fun queue(onSaved: () -> Unit = {}): SubmissionQueue =
         SubmissionQueue(
             store = store,
@@ -139,7 +167,7 @@ class SubmissionQueueTest {
                         editResults.removeFirstOrNull() ?: ApiResult.Success(SubmissionEdit.Saved(edited(id, content)))
                     },
                 ),
-            newId = { SENT_ID },
+            stamps = SubmissionStamps(newId = { SENT_ID }),
             onSaved = onSaved,
         )
 
@@ -177,4 +205,8 @@ class SubmissionQueueTest {
             severity = 2,
             description = "Progi przy sekretariacie",
         )
+
+    private companion object {
+        const val SAME_MILLIS = 1_000L
+    }
 }

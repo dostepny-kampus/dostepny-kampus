@@ -20,8 +20,10 @@ class MapListChoiceRepositoryTest {
     @TempDir
     lateinit var directory: File
 
-    // NFR-19, NFR-20: bez wyboru nic nie jest zapisane, a wybór „Mapa”, np. przy dużej czcionce, przetrwa
-    // zamknięcie aplikacji.
+    /**
+     * NFR-19, NFR-20: bez wyboru nic nie jest zapisane, a wybór „Mapa”, np. przy dużej czcionce, przetrwa
+     * zamknięcie aplikacji.
+     */
     @Test
     fun nfr19_choice_survives_restart() {
         val isListBefore =

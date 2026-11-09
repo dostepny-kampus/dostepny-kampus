@@ -59,6 +59,10 @@ private const val LARGE_FONT_SCALE = 1.5f
  * palcem (NFR-53), bez automatycznego przewijania (NFR-23). Krok jest stanem zapisywanym, a ponowne
  * dotknięcie „Pomoc” zaczyna od kroku 1 (decyzja 72). Przy skali czcionki co najmniej 1,5 czynności stoją na
  * końcu treści zamiast w przypiętym pasku (reguła 10 dużej czcionki).
+ * Pasek z odcinków tylko powtarza napis „Krok 2 z 3”, więc TalkBack go nie czyta (NFR-21). Obraz w instrukcji ma
+ * jeden opis zamiast napisów przykładu (NFR-18). Przykład pola wyszukiwania V1 to obraz: ten sam kształt i
+ * podpowiedź, bez lupy i bez możliwości wpisania. Przykład wejścia pokazuje wejście z opisu budynku na tle kroku:
+ * oznaczenie „Dostępne”, nazwę wejścia i szerokość drzwi.
  *
  * @param isFirstLaunch instrukcja otworzyła się sama; „Wstecz” w kroku 1 działa wtedy jak „Pomiń instrukcję”
  * @param onOpenMap „Pomiń instrukcję”, „Zacznij” w ostatnim kroku i „Wstecz” w kroku 1 przy pierwszym uruchomieniu
@@ -102,7 +106,6 @@ fun HelpScreen(isFirstLaunch: Boolean, onOpenMap: () -> Unit, onLeave: () -> Uni
 
 @Composable
 private fun StepNumberAndBar(step: Int) {
-    // Pasek z odcinków tylko powtarza napis „Krok 2 z 3”, więc TalkBack go nie czyta (NFR-21).
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(R.string.pomoc_krok, step + 1, HelpSteps.size),
@@ -136,7 +139,6 @@ private fun StepTitleTextAndImage(content: HelpStep) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                // Obraz w instrukcji: TalkBack czyta jeden opis zamiast napisów przykładu (NFR-18).
                 val description = stringResource(example.description)
                 val image = Modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = description }
                 when (example) {
@@ -150,7 +152,6 @@ private fun StepTitleTextAndImage(content: HelpStep) {
 
 @Composable
 private fun SearchFieldExample(modifier: Modifier = Modifier) {
-    // Pole wyszukiwania V1 jako obraz: ten sam kształt i podpowiedź, bez lupy i bez możliwości wpisania.
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.extraLarge,
@@ -172,7 +173,6 @@ private fun SearchFieldExample(modifier: Modifier = Modifier) {
 
 @Composable
 private fun EntranceExample(modifier: Modifier = Modifier) {
-    // Wejście z opisu budynku na tle kroku: oznaczenie „Dostępne”, nazwa wejścia i szerokość drzwi.
     val frame = modifier.border(Obramowania.ramka, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
     Column(modifier = frame.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         MarkingChip(marking = EntranceMarking.ACCESSIBLE)

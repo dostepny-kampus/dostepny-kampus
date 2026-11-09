@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -100,7 +101,8 @@ private typealias Action = Pair<String, () -> Unit>
  * z grafu Hilt, V2 karta budynku, V3 „Którędy wejść”, C1 i C2 z `feature:capture` i V5 z `feature:help`, reszta
  * to zaślepki: nagłówek „Wstecz” z nazwą z listy ekranów i przyciski czynności bez danych. Ekran z `feature:*`
  * zastępuje swoją gałąź i dostaje czynności jako lambdy. Zaślepki nie zapamiętują stanu, więc nie muszą się
- * odświeżać osobno od nawigatora.
+ * odświeżać osobno od nawigatora. Gdy konto staje się zalogowane (przełącznik ról w debug, potem logowanie),
+ * strona logowania przechodzi do V4 krok 1 albo L2 (US14.2).
  */
 @Composable
 @NonRestartableComposable
@@ -187,9 +189,19 @@ private fun AppNavigator.Account(route: NavKey) {
     val isWork = hasWork && route == AccountRoute
     val title = stringResource(if (isWork) R.string.nav_konto_i_praca else R.string.nav_konto)
     when {
-        route is SignInRoute -> Stub(title, stringResource(R.string.nie_teraz) to { backToMap() })
-        isWork -> Stub(title, stringResource(R.string.zmierz_i_zglos) to { measure() })
-        else -> Stub(title)
+        route is SignInRoute -> {
+            val isNowSignedIn = isSignedIn
+            SideEffect { if (isNowSignedIn) signedIn() }
+            Stub(title, stringResource(R.string.nie_teraz) to { backToMap() })
+        }
+
+        isWork -> {
+            Stub(title, stringResource(R.string.zmierz_i_zglos) to { measure() })
+        }
+
+        else -> {
+            Stub(title)
+        }
     }
 }
 

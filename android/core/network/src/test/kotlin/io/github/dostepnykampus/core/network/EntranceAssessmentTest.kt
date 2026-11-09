@@ -28,8 +28,10 @@ class EntranceAssessmentTest {
         server.shutdown()
     }
 
-    // Wiersz: karta budynku z serwera → każde wejście ma w modelu oznaczenie z dniem i źródłem: import albo
-    //   obchód, US17.3, BR-24.
+    /**
+     * Wiersz: karta budynku z serwera → każde wejście ma w modelu oznaczenie z dniem i źródłem: import albo
+     *   obchód, US17.3, BR-24.
+     */
     @Test
     fun us17_3_assessment_kept() {
         val details =
@@ -43,8 +45,10 @@ class EntranceAssessmentTest {
         )
     }
 
-    // Wiersz: dzień, którego nie ma w kalendarzu, albo nieznane źródło oznaczenia → błąd treści, nie wejście,
-    //   US17.3.
+    /**
+     * Wiersz: dzień, którego nie ma w kalendarzu, albo nieznane źródło oznaczenia → błąd treści, nie wejście,
+     *   US17.3.
+     */
     @Test
     fun us17_3_bad_assessment() {
         val bodies = mapOf("dzień 2026-02-30" to card(date = "2026-02-30"), "źródło SURVEY" to card(source = "SURVEY"))

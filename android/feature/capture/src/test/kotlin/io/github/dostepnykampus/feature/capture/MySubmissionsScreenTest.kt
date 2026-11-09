@@ -1,0 +1,96 @@
+/*
+ * Dostępny Kampus
+ * Author: Yevhenii Lukianenko
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+package io.github.dostepnykampus.feature.capture
+
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import io.github.dostepnykampus.core.data.submissions.SendState
+import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.BarrierType
+import org.junit.Assert.assertEquals
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import java.time.Instant
+
+@RunWith(RobolectricTestRunner::class)
+@Config(qualifiers = "w360dp-h800dp")
+class MySubmissionsScreenTest {
+    @get:Rule
+    val compose = createAndroidComposeRule<ComponentActivity>()
+
+    private val opened = mutableListOf<String>()
+    private var measured = 0
+
+    private fun show(vararg items: OwnSubmissionItem) {
+        showState(MySubmissionsUiState.Ready(MySubmissions(items.toList())))
+    }
+
+    private fun showState(state: MySubmissionsUiState) {
+        val actions = MySubmissionsActions(onBack = {}, onOpen = { opened.add(it) }, onMeasure = { measured++ })
+        compose.setContent {
+            DostepnyKampusTheme {
+                MySubmissionsContent(state = state, actions = actions)
+            }
+        }
+    }
+
+    /** Wiersz: C3 pusty → „Nie masz jeszcze zgłoszeń…” i „Zmierz i zgłoś barierę” do C1, PW-12. */
+    @Test
+    fun pw12_empty_list() {
+        show()
+        compose.onNodeWithText("Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.").assertIsDisplayed()
+        compose.onNodeWithText("Zmierz i zgłoś barierę").performClick()
+        assertEquals(1, measured)
+    }
+
+    /** Wiersz: C3 → „Czeka na wysłanie: N” przy zgłoszeniach w telefonie, US9.1. */
+    @Test
+    fun us9_1_waiting_count() {
+        show(item(id = "a", state = SendState.LOCAL), item(id = "b", state = SendState.LOCAL))
+        compose.onNodeWithText("Czeka na wysłanie: 2").assertIsDisplayed()
+    }
+
+    /** Wiersz: C3 ładowanie → nagłówek bez listy i bez stanu pustego. */
+    @Test
+    fun us8_1_loading() {
+        showState(MySubmissionsUiState.Loading)
+        compose.onNodeWithText("Moje zgłoszenia").assertIsDisplayed()
+        compose.onNodeWithText("Zmierz i zgłoś barierę").assertDoesNotExist()
+    }
+
+    /** Wiersz: C3 same wysłane → bez „Czeka na wysłanie”, US9.1. */
+    @Test
+    fun us9_1_nothing_waiting() {
+        show(item(id = "a", state = SendState.SENT))
+        compose.onNodeWithText("Wysłane").assertIsDisplayed()
+        compose.onNodeWithText("Czeka na wysłanie", substring = true).assertDoesNotExist()
+    }
+
+    /** Wiersz: C3 „Otwórz” w pozycji → poprawka w C2 z identyfikatorem zgłoszenia, US8.3. */
+    @Test
+    fun us8_3_open_item() {
+        show(item(id = "a", state = SendState.LOCAL))
+        compose.onNodeWithText("Otwórz").performClick()
+        assertEquals(listOf("a"), opened)
+    }
+}
+
+private fun item(id: String, state: SendState) =
+    OwnSubmissionItem(
+        id = id,
+        savedAt = Instant.parse("2026-11-09T12:00:00Z"),
+        type = BarrierType.STAIRS_AT_ENTRANCE,
+        buildingSymbol = "A-1",
+        floorNumber = 2,
+        state = state,
+        refusal = null,
+    )

@@ -27,23 +27,29 @@ import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.coroutines.EmptyCoroutineContext
 
 /** Pomiar na ekranie C1 na odczytach testowych w czasie wirtualnym, bez odbiornika GNSS (US6.1, NFR-23, NFR-27). */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MeasureViewModelTest {
     private val dispatcher = StandardTestDispatcher()
-    private val fixes = MutableSharedFlow<PositionFix>()
-    private val satellites = MutableSharedFlow<List<Satellite>>()
+    private val catalogDispatcher = StandardTestDispatcher(dispatcher.scheduler)
+    private var catalogReads = 0
+    private val fixes = MutableSharedFlow<PositionFix>(extraBufferCapacity = 1)
+    private val satellites = MutableSharedFlow<List<Satellite>>(extraBufferCapacity = 1)
     private val clock = ElapsedClock { BOOT + dispatcher.scheduler.currentTime }
     private val viewModel by lazy {
         MeasureViewModel(
             positions = PositionSource { fixes },
             satellites = SatelliteSource { satellites },
             clock = clock,
-            catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS },
+            catalog =
+                BuildingCatalogRepository(catalogDispatcher) {
+                    catalogReads += 1
+                    CAMPUS
+                },
         )
     }
 
@@ -57,7 +63,7 @@ class MeasureViewModelTest {
         Dispatchers.resetMain()
     }
 
-    // „Szukamy satelitów”, dopóki nie ma odczytu ze znaną dokładnością.
+    /** „Szukamy satelitów”, dopóki nie ma odczytu ze znaną dokładnością. */
     @Test
     fun us6_1_searching_without_fix() =
         runTest(dispatcher) {
@@ -80,7 +86,7 @@ class MeasureViewModelTest {
             assertEquals(mapOf(GnssSystem.GPS to 1), state.satellites)
         }
 
-    // Po 30 s wynik zostaje, a odbiornik przestaje nasłuchiwać (NFR-27).
+    /** Po 30 s wynik zostaje, a odbiornik przestaje nasłuchiwać (NFR-27). */
     @Test
     fun us6_1_finished_stops_location() =
         runTest(dispatcher) {
@@ -94,7 +100,7 @@ class MeasureViewModelTest {
             assertEquals(listOf(0, 0), listOf(fixes.subscriptionCount.value, satellites.subscriptionCount.value))
         }
 
-    // Wynik pomiaru zostaje po powrocie na ekran, np. z C2 (US6.1).
+    /** Wynik pomiaru zostaje po powrocie na ekran, np. z C2 (US6.1). */
     @Test
     fun us6_1_result_kept_after_leave() =
         runTest(dispatcher) {
@@ -107,7 +113,7 @@ class MeasureViewModelTest {
             assertEquals(MeasureUiState.Finished::class, viewModel.uiState.value::class)
         }
 
-    // „Powtórz pomiar” zaczyna od szukania satelitów, bez limitu powtórzeń.
+    /** „Powtórz pomiar” zaczyna od szukania satelitów, bez limitu powtórzeń. */
     @Test
     fun nfr23_repeat_starts_over() =
         runTest(dispatcher) {
@@ -118,14 +124,39 @@ class MeasureViewModelTest {
             runCurrent()
             assertEquals(MeasureUiState.Searching, viewModel.uiState.value)
             assertEquals(1, fixes.subscriptionCount.value)
+
+            fix(accuracy = 6.0)
+            advanceTimeBy(31_000)
+            assertEquals("A-1", (place() as PlaceChoice.Suggested).hint.building.symbol)
         }
 
-    // Punkt pomiaru leży w konturze A-1, więc aplikacja podpowiada A-1 (US6.2).
+    /** Punkt pomiaru leży w konturze A-1, więc aplikacja podpowiada A-1 (US6.2). */
     @Test
     fun us6_2_hint_after_measurement() =
         runTest(dispatcher) {
             finish()
             assertEquals("A-1", (place() as PlaceChoice.Suggested).hint.building.symbol)
+        }
+
+    @Test
+    fun us6_2_finish_once_at_deadline() =
+        runTest(dispatcher) {
+            watch()
+            fix(accuracy = 6.0)
+            advanceTimeBy(30_000)
+            assertTrue(fixes.tryEmit(PositionFix(A1_POINT, 6.0, clock.nowMillis())))
+            assertTrue(satellites.tryEmit(listOf(gps(isUsed = true))))
+            runCurrent()
+
+            val finished = viewModel.uiState.value as MeasureUiState.Finished
+            assertEquals(1, catalogReads)
+            assertEquals(emptyList<Satellite>(), finished.sky)
+            assertEquals("A-1", (finished.place as PlaceChoice.Suggested).hint.building.symbol)
+            viewModel.choose("B-1")
+            assertTrue(fixes.tryEmit(PositionFix(A1_POINT, 6.0, clock.nowMillis())))
+            assertTrue(satellites.tryEmit(emptyList()))
+            runCurrent()
+            assertEquals("B-1", (place() as PlaceChoice.Chosen).building.symbol)
         }
 
     @Test
@@ -146,6 +177,16 @@ class MeasureViewModelTest {
             assertEquals("B-1", (place() as PlaceChoice.Chosen).building.symbol)
         }
 
+    /** Sekcja „Wybierz budynek”: budynki najbliżej punktu, od najbliższego, ten z punktem pierwszy z 0 m (US6.2). */
+    @Test
+    fun us6_2_nearest_for_section() =
+        runTest(dispatcher) {
+            finish()
+            val nearest = viewModel.buildings.value
+            assertEquals(listOf("A-1", "B-1"), nearest.map { it.building.symbol })
+            assertEquals(0.0, nearest.first().distanceMeters, PRECISION)
+        }
+
     @Test
     fun br_g2_leave_outside() =
         runTest(dispatcher) {
@@ -155,7 +196,7 @@ class MeasureViewModelTest {
             assertEquals(PlaceChoice.Outside, place())
         }
 
-    // Dalej niż 50 m od konturu: bez podpowiedzi, od razu „poza budynkiem” (BR-G4).
+    /** Dalej niż 50 m od konturu: bez podpowiedzi, od razu „poza budynkiem” (BR-G4). */
     @Test
     fun br_g4_far_point_outside() =
         runTest(dispatcher) {
@@ -163,9 +204,11 @@ class MeasureViewModelTest {
             assertEquals(PlaceChoice.Outside, place())
         }
 
-    // Wiersz: G5, decyzja 120 pkt 3, decyzja 137, US6.2 — punkt na krawędzi konturu A-1: podpowiedź A-1 do
-    // potwierdzenia, nie w konturze i bez przypisania budynku.
-    // Scenariusz: budynki-bez-szczegolow.feature: Punkt dokładnie na krawędzi konturu jest poza budynkiem z propozycją
+    /**
+     * Wiersz: G5, decyzja 120 pkt 3, decyzja 137, US6.2 — punkt na krawędzi konturu A-1: podpowiedź A-1 do
+     * potwierdzenia, nie w konturze i bez przypisania budynku.
+     * Scenariusz: budynki-bez-szczegolow.feature: Punkt dokładnie na krawędzi konturu jest poza budynkiem z propozycją
+     */
     @Test
     fun us6_2_edge_suggests_not_inside() =
         runTest(dispatcher) {

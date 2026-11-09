@@ -5,10 +5,12 @@
 set -euo pipefail
 
 # Test kontroli „PR od issue” (pr-od-issue.sh). Skrypt czyta dane z gh; w teście zamiast sieci dostaje pliki:
-#   PR_JSON_FILE   - odpowiedź `gh pr view --json author,body`; issue skrypt wyszukuje w opisie
+#   PR_JSON_FILE   - odpowiedź `gh pr view --json author,body,headRefName`; issue skrypt wyszukuje w opisie
 #                    (Closes|Fixes|Resolves #N, wielkość liter bez znaczenia), bo dla PR do gałęzi
 #                    niedomyślnej GitHub nie wypełnia closingIssuesReferences,
-#   ISSUE_JSON_DIR - katalog z plikami <numer>.json, każdy to odpowiedź `gh issue view --json state,assignees`.
+#   ISSUE_JSON_DIR - katalog z plikami <numer>.json, każdy to odpowiedź `gh issue view --json state,assignees,url`.
+#   PR_OD_ISSUE_OSTRZEGAJ=1 - tryb ostrzegawczy: te same uwagi jako ::warning, ale kod 0.
+# Nazwa gałęzi PR ma mieć postać N-krotki-opis, a #N ma być wśród zamykanych issue (poza gałęziami dependabot/*).
 # Kod wyjścia 0 = PR spełnia zasady, 1 = naruszenie (tekst w wyjściu).
 script="$(cd "$(dirname "$0")" && pwd)/pr-od-issue.sh"
 workdir="$(mktemp -d)"
@@ -17,30 +19,38 @@ failures=0
 no_closes='brak Closes'
 closed='issue zamknięte'
 unassigned='issue nieprzypisane autorowi'
+is_pull='to PR, nie issue'
+no_number='nazwa gałęzi nie zaczyna się od numeru issue'
+wrong_number='nie jest wśród zamykanych issue'
+warn=0
 
-# pr_json <autor> <opis PR (w JSON, nowy wiersz jako \n)>
+# pr_json <autor> <opis PR (w JSON, nowy wiersz jako \n)> [gałąź PR, domyślnie 12-zadanie]
 pr_json() {
-  printf '{"author":{"login":"%s"},"body":"%s"}\n' "$1" "$2" >"$workdir/pr.json"
+  printf '{"author":{"login":"%s"},"body":"%s","headRefName":"%s"}\n' "$1" "$2" "${3:-12-zadanie}" >"$workdir/pr.json"
 }
 
-# issue_json <numer> <OPEN|CLOSED> [osoba przypisana ...]
+# issue_json <numer> <OPEN|CLOSED> [osoba przypisana ...]; kind (issues|pull) mówi, czym jest numer
+kind=issues
 issue_json() {
   local number="$1" state="$2" people='' person
   shift 2
   for person in "$@"; do
     people="${people:+$people,}{\"login\":\"$person\"}"
   done
-  printf '{"state":"%s","assignees":[%s]}\n' "$state" "$people" >"$workdir/issues/$number.json"
+  printf '{"state":"%s","assignees":[%s],"url":"https://github.com/o/r/%s/%s"}\n' \
+    "$state" "$people" "$kind" "$number" >"$workdir/issues/$number.json"
 }
 
 # run_case <nazwa> <oczekiwany kod> <oczekiwany tekst lub pusty> <polecenie przygotowujące dane...>
 run_case() {
   local name="$1" expected="$2" text="$3" status=0 out
   shift 3
+  warn=0
+  kind=issues
   rm -rf "$workdir/issues" "$workdir/pr.json"
   mkdir "$workdir/issues"
   "$@"
-  out="$(PR_JSON_FILE="$workdir/pr.json" ISSUE_JSON_DIR="$workdir/issues" bash "$script" 7 2>&1)" || status=$?
+  out="$(PR_OD_ISSUE_OSTRZEGAJ="$warn" PR_JSON_FILE="$workdir/pr.json" ISSUE_JSON_DIR="$workdir/issues" bash "$script" 7 2>&1)" || status=$?
   if ((status == expected)) && [[ $out == *"$text"* ]]; then
     echo "OK: ${name}"
   else
@@ -59,7 +69,27 @@ case_closed_issue() { pr_json autor-pr 'Closes #12'; issue_json 12 CLOSED autor-
 case_unassigned() { pr_json autor-pr 'Closes #12'; issue_json 12 OPEN; }
 case_other_assignee() { pr_json autor-pr 'Closes #12'; issue_json 12 OPEN inna-osoba; }
 case_author_among_assignees() { pr_json autor-pr 'Closes #12'; issue_json 12 OPEN inna-osoba autor-pr; }
-case_dependabot() { pr_json 'dependabot[bot]' 'Notatki wydania'; }
+case_dependabot() { pr_json 'dependabot[bot]' 'Notatki wydania' dependabot/npm_and_yarn/docs/x-1.2.3; }
+case_branch_no_number() { pr_json autor-pr 'Closes #12' poprawki-testow; issue_json 12 OPEN autor-pr; }
+case_branch_wrong_number() { pr_json autor-pr 'Closes #12' 99-inne; issue_json 12 OPEN autor-pr; }
+case_branch_second_issue() {
+  pr_json autor-pr 'Closes #12\nCloses #13' 13-drugie
+  issue_json 12 OPEN autor-pr
+  issue_json 13 OPEN autor-pr
+}
+case_branch_number_only_prefix() { pr_json autor-pr 'Closes #12' 123-inne; issue_json 12 OPEN autor-pr; }
+case_warn_branch() { warn=1; case_branch_wrong_number; }
+
+case_fixed() { pr_json autor-pr 'Fixed #12'; issue_json 12 OPEN autor-pr; }
+case_resolve() { pr_json autor-pr 'resolve #12'; issue_json 12 OPEN autor-pr; }
+case_all_forms() {
+  local number
+  pr_json autor-pr 'close #12\nCloses #13\nclosed #14\nfix #15\nFixes #16\nFIXED #17\nresolve #18\nresolves #19\nResolved #20' 12-zadanie
+  for number in 12 13 14 15 16 17 18 19 20; do
+    issue_json "$number" OPEN autor-pr
+  done
+}
+
 case_two_issues_ok() {
   pr_json autor-pr 'Closes #12\nresolves #13'
   issue_json 12 OPEN autor-pr
@@ -70,6 +100,12 @@ case_second_issue_closed() {
   issue_json 12 OPEN autor-pr
   issue_json 13 CLOSED autor-pr
 }
+
+case_pull_number() { pr_json autor-pr 'Closes #12'; kind=pull; issue_json 12 OPEN autor-pr; }
+case_warn_ok() { warn=1; case_ok; }
+case_warn_closed() { warn=1; case_closed_issue; }
+case_warn_no_closes() { warn=1; case_no_closes; }
+case_warn_pull_number() { warn=1; case_pull_number; }
 
 run_case "poprawny PR: otwarte issue przypisane autorowi" 0 '' case_ok
 run_case "słowo kluczowe z małej litery" 0 '' case_lowercase
@@ -83,5 +119,19 @@ run_case "autor jest jedną z przypisanych osób" 0 '' case_author_among_assigne
 run_case "dependabot bez issue" 0 '' case_dependabot
 run_case "kilka issue w opisie, wszystkie poprawne" 0 '' case_two_issues_ok
 run_case "kilka issue w opisie, jedno zamknięte" 1 "$closed" case_second_issue_closed
+run_case "numer jest PR, nie issue" 1 "$is_pull" case_pull_number
+run_case "tryb ostrzegawczy: poprawny PR" 0 '' case_warn_ok
+run_case "tryb ostrzegawczy: issue zamknięte" 0 '::warning' case_warn_closed
+run_case "tryb ostrzegawczy: brak Closes" 0 '::warning' case_warn_no_closes
+run_case "tryb ostrzegawczy: numer jest PR" 0 "$is_pull" case_warn_pull_number
+run_case "gałąź z numerem zamykanego issue" 0 '' case_ok
+run_case "gałąź bez numeru" 1 "$no_number" case_branch_no_number
+run_case "numer gałęzi różny od zamykanego issue" 1 "$wrong_number" case_branch_wrong_number
+run_case "numer gałęzi to jedno z kilku zamykanych issue" 0 '' case_branch_second_issue
+run_case "numer gałęzi tylko zaczyna się jak numer issue" 1 "$wrong_number" case_branch_number_only_prefix
+run_case "tryb ostrzegawczy: numer gałęzi różny od issue" 0 '::warning' case_warn_branch
+run_case "forma Fixed #N" 0 '' case_fixed
+run_case "forma resolve #N" 0 '' case_resolve
+run_case "wszystkie dziewięć form słów GitHuba daje dziewięć issue" 0 '#12 #13 #14 #15 #16 #17 #18 #19 #20' case_all_forms
 
 exit "$((failures > 0 ? 1 : 0))"

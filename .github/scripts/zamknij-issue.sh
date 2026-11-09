@@ -9,15 +9,35 @@ set -euo pipefail
 pr="${1:?Podaj numer PR}"
 
 body="$(gh pr view "$pr" --json body --jq .body)"
-# Closes|Fixes|Resolves #N, wielkość liter bez znaczenia; słowo kluczowe nie może być końcem innego słowa.
-issues="$(printf '%s\n' "$body" | grep -oiP '(?<!\w)(?:closes|fixes|resolves)\s+#\K\d+' | sort -un || true)"
+# shellcheck source=slowa-zamykajace.sh
+source "$(dirname "${BASH_SOURCE[0]}")/slowa-zamykajace.sh"
+issues="$(printf '%s\n' "$body" | numery_zamykanych_issue)"
 
 if [[ -z $issues ]]; then
-  echo "Opis PR #${pr} nie zawiera Closes/Fixes/Resolves #N, nic do zamknięcia."
+  echo "Opis PR #${pr} nie zawiera słowa zamykającego (np. Closes #N), nic do zamknięcia."
   exit 0
 fi
 
+# Próbujemy zamknąć każde issue; błąd jednego nie może zostawić kolejnych otwartych.
+failed=''
 for issue in $issues; do
-  gh issue close "$issue" --comment "Zrobione w #${pr}."
-  echo "Zamknięto #${issue}."
+  # gh issue view zwraca też dane PR; numer PR nie jest issue i nie jest zamykany.
+  if ! url="$(gh issue view "$issue" --json url --jq .url)"; then
+    failed="${failed:+$failed }#${issue}"
+    continue
+  fi
+  if [[ $url == */pull/* ]]; then
+    echo "::warning title=Zamykanie issue::#${issue}: to PR, nie issue; pominięto."
+    continue
+  fi
+  if gh issue close "$issue" --comment "Zrobione w #${pr}."; then
+    echo "Zamknięto #${issue}."
+  else
+    failed="${failed:+$failed }#${issue}"
+  fi
 done
+
+if [[ -n $failed ]]; then
+  echo "::error title=Zamykanie issue::niezamknięte: ${failed}"
+  exit 1
+fi

@@ -26,7 +26,7 @@ class LocationModuleTest {
         assertTrue(LocationModule.satellites(app) is GnssSatellites)
     }
 
-    // Zegar pomiaru to czas od startu telefonu, jak `elapsedRealtimeNanos` w odczytach.
+    /** Zegar pomiaru to czas od startu telefonu, jak `elapsedRealtimeNanos` w odczytach. */
     @Test
     fun us6_1_clock_elapsed() {
         ShadowSystemClock.advanceBy(Duration.ofSeconds(42))

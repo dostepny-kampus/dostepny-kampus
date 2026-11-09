@@ -71,6 +71,8 @@ FUNCTION = re.compile(r"^(?:[a-z]+\s+)*fun\s+(?:<[^>]*>\s*)?(?:[\w.]+\.)?(?:`([^
 CLASS = re.compile(r"^\s*(?:@[\w.]+(?:\([^)]*\))?\s+)*(?:[a-z]+\s+)*(?:class|object)\s+(\w+)[^{]*\{")
 CODE_TOKEN = re.compile(r"""//[^\n]*|/\*|\"\"\"[\s\S]*?\"\"\"|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n]){1,6}'""")
 BLOCK_COMMENT_PART = re.compile(r"/\*|\*/")
+KDOC_FILLER = "/**/"
+KDOC_MARKER_TEXT = re.compile(r"(?i:Scenariusz)|\s{2,}\S")
 TEST_SOURCE = re.compile(r"^(?!(?:.*/)?(?:build|\.gradle)/)(?:.*/)?src/(?:test|\w*Test)\w*/")
 
 
@@ -392,11 +394,47 @@ def scan_kotlin(path: Path, corpus: Corpus, module: str = "") -> None:
             corpus.bad_markers.append(location)
 
 
+def kdoc_lines(token: str) -> str:
+    """Zamienia KDoc `/** … */` na tyle samo linii: wiersz zaczynający się od `Scenariusz` albo kontynuacja z wcięciem
+    co najmniej dwóch spacji po `*` stają się komentarzem `// <treść>` (jak znacznik w `//`), każdy inny wiersz — samym
+    KDOC_FILLER, który test_state pomija.
+
+    Gwarantuje: liczba linii bez zmian; wiersz ` * Scenariusz: …` i kontynuacja ` *   …` czyta read_marker tak samo
+    jak odpowiedniki w `//`; zwykły wiersz KDoc z jedną spacją po `*` nie jest kontynuacją.
+    Kropka na końcu znacznika (ostatniego jego wiersza) nie należy do nazwy scenariusza: zamyka pierwsze zdanie KDoc,
+    którego wymaga detekt.
+    """
+    rows = token.split("\n")
+    out = []
+    for number, row in enumerate(rows):
+        if number == 0:
+            body = row[3:]
+        elif re.match(r"^\s*\*(?!/)", row):
+            body = re.sub(r"^\s*\*", "", row)
+        else:
+            body = row.strip()
+        if number == len(rows) - 1:
+            body = re.sub(r"\s*\*/\s*$", "", body)
+        body = body[1:] if body.startswith(" ") else body
+        indent = "" if number == 0 else re.match(r"\s*", row).group(0)
+        out.append((indent, body.rstrip() if KDOC_MARKER_TEXT.match(body) else None))
+    lines = []
+    for number, (indent, body) in enumerate(out):
+        if body is None:
+            lines.append(f"{indent}{KDOC_FILLER}")
+            continue
+        following = out[number + 1][1] if number + 1 < len(out) else None
+        ends = following is None or not following.startswith("  ")
+        lines.append(f"{indent}// {body[:-1] if ends and body.endswith('.') else body}")
+    return "\n".join(lines)
+
+
 def code_only(text: str) -> str:
     """Zwraca kod Kotlin z treścią komentarzy blokowych `/* */` (także zagnieżdżonych) i napisów (`"…"`, `\"\"\"…\"\"\"`,
     `'…'`) zamienioną na spacje, żeby znacznik, adnotacja ani nawias w nich nie były brane pod uwagę.
 
-    Gwarantuje: liczba linii i komentarze `//` poza komentarzem blokowym i napisem zostają bez zmian.
+    Gwarantuje: liczba linii i komentarze `//` poza komentarzem blokowym i napisem zostają bez zmian; KDoc `/** */`
+    zamienia kdoc_lines (wiersze znacznika jako `//`, reszta jako KDOC_FILLER).
     """
     parts, pos = [], 0
     while match := CODE_TOKEN.search(text, pos):
@@ -406,7 +444,11 @@ def code_only(text: str) -> str:
         if match.group(0) == "/*" and depth:
             end = len(text)
         token = text[match.start() : end]
-        parts += [text[pos : match.start()], token if token.startswith("//") else re.sub(r"[^\n]", " ", token)]
+        if token.startswith("/**") and not token.startswith("/**/"):
+            replacement = kdoc_lines(token)
+        else:
+            replacement = token if token.startswith("//") else re.sub(r"[^\n]", " ", token)
+        parts += [text[pos : match.start()], replacement]
         pos = end
     return "".join(parts) + text[pos:]
 
@@ -443,7 +485,8 @@ def test_state(lines: list[str], start: int) -> tuple[str, str, int]:
     znaczniki i adnotacje (wśród nich adnotacja testu z TEST_ANNOTATIONS), a po nich `fun` z dowolnymi modyfikatorami;
     „wyłączony”, gdy jest też @Ignore albo @Disabled…; inaczej pusty stan, pusta nazwa i 0. Linie są z code_only.
 
-    Gwarantuje: pusta linia, komentarz albo inny kod przed `fun` daje pusty stan; argumenty adnotacji mogą mieć kilka linii.
+    Gwarantuje: pusta linia, komentarz albo inny kod przed `fun` daje pusty stan; wiersze KDoc (KDOC_FILLER) są pomijane;
+    argumenty adnotacji mogą mieć kilka linii.
     """
     names: set[str] = set()
     depth, index = 0, start
@@ -452,6 +495,8 @@ def test_state(lines: list[str], start: int) -> tuple[str, str, int]:
         index += 1
         if depth:
             depth = max(0, depth + text.count("(") - text.count(")"))
+            continue
+        if text == KDOC_FILLER:
             continue
         if not text:
             return "", "", 0
