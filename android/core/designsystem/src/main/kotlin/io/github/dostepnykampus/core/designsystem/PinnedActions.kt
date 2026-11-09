@@ -54,6 +54,9 @@ fun PinnedActionBar(modifier: Modifier = Modifier, content: @Composable FlowRowS
  * Tokeny: wysokość co najmniej [CeleDotyku.przypiety] (rośnie z tekstem, NFR-17, NFR-20), zaokrąglenie
  * [Zaokraglenia.bardzoDuze], napis `labelLarge` z [Typografia.wyroznienieWaga]. Kolory rodzajów opisuje
  * [PinnedButtonKind].
+ *
+ * W ciemnym motywie jasne `primary` jako duże tło świeciłoby, a gruba ramka odróżnia czynność główną od tonalnej także
+ * bez koloru (NFR-16, NFR-21).
  */
 @Composable
 fun PinnedButton(
@@ -74,8 +77,6 @@ fun PinnedButton(
     }
     when (kind) {
         PinnedButtonKind.Filled -> {
-            // W ciemnym motywie jasne `primary` jako duże tło świeciłoby, a gruba ramka odróżnia czynność główną od
-            // tonalnej także bez koloru (NFR-16, NFR-21).
             val colorScheme = MaterialTheme.colorScheme
             val isDarkTheme = DostepnyKampusTheme.isDark
             Button(

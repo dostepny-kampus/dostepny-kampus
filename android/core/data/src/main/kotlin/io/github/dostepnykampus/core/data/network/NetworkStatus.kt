@@ -29,7 +29,10 @@ internal fun hasInternet(hasCapability: (Int) -> Boolean): Boolean =
     hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
         hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
 
-/** [NetworkStatus] z domyślnej sieci telefonu; obserwacja kończy się razem z odbiorcą przepływu. */
+/**
+ * [NetworkStatus] z domyślnej sieci telefonu; obserwacja kończy się razem z odbiorcą przepływu. Bez domyślnej sieci
+ * system nie wywoła żadnej metody, więc stan bieżący idzie od razu.
+ */
 class ConnectivityNetworkStatus(private val connectivity: ConnectivityManager) : NetworkStatus {
     override fun isOnline(): Flow<Boolean> =
         callbackFlow {
@@ -43,7 +46,6 @@ class ConnectivityNetworkStatus(private val connectivity: ConnectivityManager) :
                         trySend(false)
                     }
                 }
-            // Bez domyślnej sieci system nie wywoła żadnej metody, więc stan bieżący idzie od razu.
             val current = connectivity.getNetworkCapabilities(connectivity.activeNetwork)
             trySend(current?.let { hasInternet(it::hasCapability) } == true)
             connectivity.registerDefaultNetworkCallback(callback)

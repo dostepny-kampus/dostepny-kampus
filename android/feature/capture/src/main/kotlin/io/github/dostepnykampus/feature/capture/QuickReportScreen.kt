@@ -43,6 +43,8 @@ import java.io.File
 
 /**
  * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (US4.1).
+ * „Wstecz” w kroku 1 ze zdjęciem najpierw pyta o rezygnację; wstecz w pytaniu to „Wróć do zdjęcia”. Po wysłaniu
+ * ekran pokazuje tylko potwierdzenie (`SENT`); z kroków końcowych zostaje krok 3, wysłanie.
  * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację (NFR-27, BR-8).
  *
  * @param route krok z danymi wcześniejszych kroków
@@ -53,7 +55,6 @@ import java.io.File
 fun QuickReportScreen(route: ReportRoute, actions: QuickReportActions, modifier: Modifier = Modifier) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            // „Wstecz” w kroku 1 ze zdjęciem najpierw pyta o rezygnację; wstecz w pytaniu to „Wróć do zdjęcia”.
             val isPhotoTaken = route.step == ReportStep.PHOTO && route.photoPath != null
             var isLeaving by rememberSaveable { mutableStateOf(false) }
             BackHandler(enabled = isPhotoTaken) { isLeaving = !isLeaving }
@@ -106,7 +107,6 @@ private fun QuickStep(route: ReportRoute, actions: QuickReportActions) {
             QuickGroupStep(route = route, onNext = actions.onNext)
         }
 
-        // Potwierdzenie SENT pokazuje QuickReportScreen bez kroków, więc tu trafia tylko krok 3.
         ReportStep.SEND, ReportStep.SENT -> {
             route.quickReport()?.let { QuickSendStep(route = route, report = it, onSend = actions.onSent) }
         }
