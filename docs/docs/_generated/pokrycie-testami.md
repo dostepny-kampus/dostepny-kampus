@@ -170,7 +170,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `zgloszenia-zbierajacego.feature` | Zgłoszenie „bariera usunięta” zapisuje się bez uciążliwości | BR-7, BR-19, US8.4 | — | brak |
 | `zgloszenie-szybkie-powrot.feature` | Po wysłaniu „Wstecz” wraca do ekranu, z którego zaczęto zgłoszenie | US4.7 | — | brak |
 | `zgloszenie-szybkie-powrot.feature` | Powrót między krokami nie usuwa zdjęcia ani grupy barier | US4.8 | — | brak |
-| `zgloszenie-szybkie.feature` | Zgłoszenie szybkie w 3 krokach z pozycją dołączoną automatycznie | BR-8, US4.1 | `app · AppNavigatorTest.us4_1_three_steps_sent_p2`<br>`app · AppShellTest.us4_1_report_stubs_steps_sent` | częściowo |
+| `zgloszenie-szybkie.feature` | Zgłoszenie szybkie w 3 krokach z pozycją dołączoną automatycznie | BR-8, US4.1 | `app · AppNavigatorTest.us4_1_three_steps_sent_p2`<br>`app · AppShellTest.us4_1_report_opens_step_one` | częściowo |
 | `zgloszenie-szybkie.feature` | Zgłoszenie przy wejściu podpowiada wejście, a miejsce bierze z bieżącej pozycji | BR-8, US4.6 | `app · AppNavigatorTest.us4_6_report_at_entrance` | częściowo |
 | `zgloszenie-szybkie.feature` | Wybór jednej z 6 grup barier dużymi przyciskami | BR-8, US4.3 | — | brak |
 | `zgloszenie-szybkie.feature` | Zgłoszenia szybkiego nie da się wysłać bez zdjęcia albo grupy barier | BR-8, US4.1, US4.3 | — | brak |

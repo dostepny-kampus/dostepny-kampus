@@ -8,6 +8,7 @@ package io.github.dostepnykampus.app.navigation
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.core.model.Account
+import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
@@ -411,5 +412,20 @@ class AppNavigatorTest {
         stack += listOf(AccountRoute, MeasureRoute, form)
         navigator(collector).reportSaved()
         assertEquals(stackOf(AccountRoute), stack)
+    }
+
+    // Wiersz: V4, „Wstecz” między krokami nie usuwa zdjęcia ani grupy, US4.8.
+    @Test
+    fun us4_8_steps_keep_photo() {
+        navigator(visitor).run {
+            report()
+            nextReportStep(ReportRoute(photoId = "z-1", photoPath = "/z-1.jpg"))
+            nextReportStep((current as ReportRoute).copy(group = BarrierGroup.TOILETS))
+            back()
+        }
+        val step = stack.last() as ReportRoute
+        assertEquals(ReportStep.GROUP, step.step)
+        assertEquals(BarrierGroup.TOILETS, step.group)
+        assertEquals("z-1", (stack[1] as ReportRoute).photoId)
     }
 }
