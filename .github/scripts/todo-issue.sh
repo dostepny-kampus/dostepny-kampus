@@ -7,30 +7,53 @@ set -euo pipefail
 # Strażnik znaczników zadań, uruchamiany w katalogu repozytorium git. Znacznik TODO, FIXME, HACK lub @todo (wielkość liter bez znaczenia)
 # musi mieć postać ZNACZNIK(#N), gdzie issue #N istnieje i jest otwarte. Skanuje pliki śledzone przez git
 # o rozszerzeniach kt, kts, java, yml, yaml, sh, z pominięciem plików samego strażnika (zawierają przykłady).
-# Stan issue z gh; w teście zamiast sieci: ISSUE_JSON_DIR z plikami <numer>.json (gh issue view --json state,url).
+# Stan issue z gh (bez dostępu do issue skrypt kończy się kodem 2); w teście zamiast sieci: ISSUE_JSON_DIR z plikami <numer>.json (gh issue view --json state,url).
+# Kod wyjścia: 0 = czysto, 1 = naruszenie, 2 = błąd narzędzia gh lub jq (nie wiemy, czy issue jest w porządku).
 found=0
 declare -A states=()
+state=''
 
-issue_state() {
-  local number="$1" json
-  if [[ -z ${states[$number]:-} ]]; then
-    if [[ -n ${ISSUE_JSON_DIR:-} ]]; then
-      json="$(cat "$ISSUE_JSON_DIR/$number.json" 2>/dev/null)" || json=''
+tool_error() {
+  echo "::error title=Błąd narzędzia::błąd narzędzia $1: $2"
+  exit 2
+}
+
+# Ustawia $state (OPEN, CLOSED, PULL albo MISSING); każde issue pytamy raz, bez podpowłoki, żeby pamięć działała.
+load_state() {
+  local number="$1" json err_file
+  if [[ -n ${states[$number]:-} ]]; then
+    state="${states[$number]}"
+    return
+  fi
+  if [[ -n ${ISSUE_JSON_DIR:-} ]]; then
+    if [[ -f $ISSUE_JSON_DIR/$number.json ]]; then
+      json="$(cat "$ISSUE_JSON_DIR/$number.json")"
     else
-      json="$(gh issue view "$number" --json state,url 2>/dev/null)" || json=''
+      json=''
     fi
-    if [[ -z $json ]]; then
-      states[$number]=MISSING
-    else
-      # gh issue view zwraca też dane PR; numer PR nie jest issue.
-      if [[ "$(jq -r '.url // ""' <<<"$json")" == */pull/* ]]; then
-        states[$number]=PULL
+  else
+    err_file="$(mktemp)"
+    if ! json="$(gh issue view "$number" --json state,url 2>"$err_file")"; then
+      if grep -qi 'could not resolve\|not found' "$err_file"; then
+        json=''
       else
-        states[$number]="$(jq -r '.state' <<<"$json")"
+        tool_error gh "gh issue view ${number}: $(head -n 1 "$err_file")"
       fi
     fi
+    rm -f "$err_file"
   fi
-  printf '%s' "${states[$number]}"
+  if [[ -z $json ]]; then
+    state=MISSING
+  else
+    # gh issue view zwraca też dane PR; numer PR nie jest issue.
+    url="$(jq -r '.url // ""' <<<"$json")" || tool_error jq "nie odczytano url issue #${number}"
+    if [[ $url == */pull/* ]]; then
+      state=PULL
+    else
+      state="$(jq -r '.state' <<<"$json")" || tool_error jq "nie odczytano stanu issue #${number}"
+    fi
+  fi
+  states[$number]="$state"
 }
 
 report() {
@@ -43,7 +66,8 @@ while IFS= read -r -d '' path; do
   while IFS=: read -r line marker; do
     if [[ $marker =~ \(#([0-9]+)\)$ ]]; then
       number="${BASH_REMATCH[1]}"
-      case "$(issue_state "$number")" in
+      load_state "$number"
+      case "$state" in
         OPEN) ;;
         PULL) report "$path" "$line" "${marker}: to PR, nie issue." ;;
         MISSING) report "$path" "$line" "${marker}: issue nie istnieje." ;;
