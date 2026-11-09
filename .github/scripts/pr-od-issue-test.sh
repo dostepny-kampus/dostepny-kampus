@@ -28,6 +28,8 @@ no_area='PR nie ma etykiety obszaru'
 area_mismatch='etykiety obszaru issue'
 pr_labels=ci
 issue_labels=''
+extra_path=''
+labeler="$(cd "$(dirname "$0")/.." && pwd)/labeler.yml"
 warn=0
 
 # Etykiety: pr_labels i issue_labels to listy nazw po przecinku (domyślnie PR ma `ci`, issue nie ma etykiet).
@@ -64,10 +66,11 @@ run_case() {
   kind=issues
   pr_labels=ci
   issue_labels=''
+  extra_path=''
   rm -rf "$workdir/issues" "$workdir/pr.json"
   mkdir "$workdir/issues"
   "$@"
-  out="$(PR_OD_ISSUE_OSTRZEGAJ="$warn" PR_JSON_FILE="$workdir/pr.json" ISSUE_JSON_DIR="$workdir/issues" bash "$script" 7 2>&1)" || status=$?
+  out="$(PATH="${extra_path:+$extra_path:}$PATH" PR_OD_ISSUE_OSTRZEGAJ="$warn" PR_JSON_FILE="$workdir/pr.json" ISSUE_JSON_DIR="$workdir/issues" bash "$script" 7 2>&1)" || status=$?
   if ((status == expected)) && [[ $out == *"$text"* ]]; then
     echo "OK: ${name}"
   else
@@ -105,6 +108,18 @@ case_issue_no_area() { pr_labels='backend'; issue_labels='bug'; case_ok; }
 case_issue_two_areas() { pr_labels='api'; issue_labels='android,api'; case_ok; }
 case_warn_no_area() { warn=1; case_no_pr_area; }
 case_warn_mismatch() { warn=1; case_area_mismatch; }
+
+# Zawodzący jq tylko przy odczycie etykiet (reszta działa przez prawdziwy jq).
+case_jq_labels_fail() {
+  mkdir -p "$workdir/bin"
+  printf '#!/usr/bin/env bash
+if [[ "$*" == *labels* ]]; then echo "jq: błąd" >&2; exit 3; fi
+PATH="${PATH#"$(dirname "$0")":}" exec jq "$@"
+'     >"$workdir/bin/jq"
+  chmod +x "$workdir/bin/jq"
+  extra_path="$workdir/bin"
+  case_ok
+}
 
 case_two_issues_ok() {
   pr_json autor-pr 'Closes #12\nresolves #13'
@@ -154,5 +169,25 @@ run_case "obszar: issue bez etykiet obszaru" 0 '' case_issue_no_area
 run_case "obszar: PR ma jedną z dwóch etykiet obszaru issue" 0 '' case_issue_two_areas
 run_case "obszar, tryb ostrzegawczy: PR bez etykiety obszaru" 0 '::warning' case_warn_no_area
 run_case "obszar, tryb ostrzegawczy: niezgodny obszar" 0 '::warning' case_warn_mismatch
+run_case "błąd jq przy etykietach: błąd narzędzia, nie brak etykiety obszaru" 2 'błąd narzędzia jq' case_jq_labels_fail
+
+# Etykiety obszaru pochodzą z .github/labeler.yml; każda ścieżka w repozytorium ma dostawać etykietę obszaru.
+# labeler_case <ścieżka>: sprawdza, czy któryś wzorzec z labeler.yml pasuje do ścieżki.
+labeler_case() {
+  local path="$1" pattern
+  while IFS= read -r pattern; do
+    # shellcheck disable=SC2053
+    if [[ $path == $pattern ]]; then
+      echo "OK: labeler.yml obejmuje ${path}"
+      return
+    fi
+  done < <(grep -oP '"\K[^"]+(?=")' "$labeler")
+  echo "BŁĄD: labeler.yml nie obejmuje ${path} (PR tylko z tym plikiem nie dostanie etykiety obszaru)"
+  failures=$((failures + 1))
+}
+
+for path in android/app/Main.kt backend/pom.xml api/openapi.yaml .github/workflows/a.yml docs/docs/a.md specs/a.feature   data/campus/budynki.json infra/docker-compose.yml README.md LICENSE .gitignore .gitattributes .editorconfig   commitlint.config.mjs; do
+  labeler_case "$path"
+done
 
 exit "$((failures > 0 ? 1 : 0))"
