@@ -42,7 +42,7 @@ class MainActivityTest {
     @get:Rule(order = 1)
     val compose = createAndroidComposeRule<MainActivity>()
 
-    // Ten sam zapis pierwszego uruchomienia, który dostała aktywność z grafu Hilt.
+    /** Ten sam zapis pierwszego uruchomienia, który dostała aktywność z grafu Hilt. */
     @Inject
     lateinit var firstLaunch: FirstLaunch
 
@@ -59,7 +59,7 @@ class MainActivityTest {
         compose.waitForIdle()
     }
 
-    // Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu
+    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu */
     @Test
     fun us5_1_first_launch_recreate() {
         compose.waitUntil { compose.onAllNodesWithText("Pomoc").fetchSemanticsNodes().isNotEmpty() }
@@ -74,9 +74,11 @@ class MainActivityTest {
         compose.onNode(MapTab).assertIsSelected()
     }
 
-    // Wiersze: V1 z TalkBack, „Lista budynków”, dotknięcie budynku → V2, pełny ekran od razu, także po odtworzeniu
-    // aktywności, US3.2, NFR-19, NFR-22; „Pokaż budynek na mapie” → zapamiętany wybór „Mapa”, US2.9, decyzja 116.
-    // Scenariusz (częściowo): przegladanie-mapy.feature: Z listy przy dużej czcionce opis budynku prowadzi do mapy
+    /**
+     * Wiersze: V1 z TalkBack, „Lista budynków”, dotknięcie budynku → V2, pełny ekran od razu, także po odtworzeniu
+     * aktywności, US3.2, NFR-19, NFR-22; „Pokaż budynek na mapie” → zapamiętany wybór „Mapa”, US2.9, decyzja 116.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Z listy przy dużej czcionce opis budynku prowadzi do mapy
+     */
     @Test
     fun us2_9_talkback_list_restore() {
         shadowOf(compose.activity.getSystemService(AccessibilityManager::class.java)).setTouchExplorationEnabled(true)

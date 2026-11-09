@@ -20,7 +20,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/** Start aplikacji planuje wysyłkę kolejki zgłoszeń z poprzedniego procesu (NFR-6). */
+/**
+ * Start aplikacji planuje wysyłkę kolejki zgłoszeń z poprzedniego procesu (NFR-6). `SYNC_WORK` to nazwa zadania
+ * z `SubmissionSyncScheduler` w `core:data`.
+ */
 @RunWith(RobolectricTestRunner::class)
 class SubmissionSyncAtStartTest {
     private val app = RuntimeEnvironment.getApplication()
@@ -35,7 +38,7 @@ class SubmissionSyncAtStartTest {
         WorkManagerTestInitHelper.closeWorkDatabase()
     }
 
-    // Wiersz: NFR-6, start aplikacji planuje wysyłkę, która czeka na internet.
+    /** Wiersz: NFR-6, start aplikacji planuje wysyłkę, która czeka na internet. */
     @Test
     fun nfr6_start_waits_for_network() {
         SubmissionSyncInitializer().create(app)
@@ -44,7 +47,7 @@ class SubmissionSyncAtStartTest {
         assertEquals(NetworkType.CONNECTED, work.constraints.requiredNetworkType)
     }
 
-    // Wiersz: NFR-6, drugi start w tym samym oknie nie dubluje zadania.
+    /** Wiersz: NFR-6, drugi start w tym samym oknie nie dubluje zadania. */
     @Test
     fun nfr6_second_start_one_work() {
         SubmissionSyncInitializer().create(app)
@@ -52,7 +55,7 @@ class SubmissionSyncAtStartTest {
         assertEquals(1, syncWork().size)
     }
 
-    // Wiersz: NFR-6, inicjalizator jest w manifeście, więc system woła go przy starcie procesu.
+    /** Wiersz: NFR-6, inicjalizator jest w manifeście, więc system woła go przy starcie procesu. */
     @Test
     fun nfr6_initializer_in_manifest() {
         val provider =
@@ -70,5 +73,4 @@ class SubmissionSyncAtStartTest {
             .get()
 }
 
-// Nazwa zadania z `SubmissionSyncScheduler` w `core:data`.
 private const val SYNC_WORK = "wysylka-zgloszen"

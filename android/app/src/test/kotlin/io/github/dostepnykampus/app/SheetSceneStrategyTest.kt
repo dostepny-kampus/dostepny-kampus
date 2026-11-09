@@ -23,7 +23,9 @@ class SheetSceneStrategyTest {
     private fun scene(vararg routes: NavKey): Scene<NavKey>? =
         with(SheetSceneStrategy) { SceneStrategyScope<NavKey>().calculateScene(routes.map(::entry)) }
 
-    // Wiersz: V2, „Sprawdź, którędy wejść” → V3 na cały ekran, US3; inne układy historii rysuje scena z jednym ekranem.
+    /**
+     * Wiersz: V2, „Sprawdź, którędy wejść” → V3 na cały ekran, US3; inne układy historii rysuje scena z jednym ekranem.
+     */
     @Test
     fun us3_v3_single_screen() {
         assertNull(scene(MapRoute(), BuildingRoute("A-1"), EntrancesRoute("A-1")))

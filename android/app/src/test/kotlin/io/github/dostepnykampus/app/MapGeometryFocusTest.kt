@@ -61,8 +61,10 @@ class MapGeometryFocusTest {
     }
     private var focus by mutableStateOf<String?>(null)
 
-    // Wiersz: W3, W4, O5, O6, mapa pokazana, potem zmiana zaznaczonego budynku → widok mapy dostaje geometrię
-    //   policzoną w ViewModelu z nowym zaznaczeniem, a funkcja licząca poszła raz, NFR-11, US1.1.
+    /**
+     * Wiersz: W3, W4, O5, O6, mapa pokazana, potem zmiana zaznaczonego budynku → widok mapy dostaje geometrię
+     *   policzoną w ViewModelu z nowym zaznaczeniem, a funkcja licząca poszła raz, NFR-11, US1.1.
+     */
     @Test
     fun nfr11_focus_keeps_geometry() {
         compose.setContent {

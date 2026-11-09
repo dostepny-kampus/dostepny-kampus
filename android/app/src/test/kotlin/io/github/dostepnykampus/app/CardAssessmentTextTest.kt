@@ -41,8 +41,10 @@ class CardAssessmentTextTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    // Wiersz: odpowiedź serwera `GET /buildings/A-1` z wejściami z importu z dnia 1.10.2026 → na V2 wiersz
-    //   „Z map i opisów, stan z 1.10.2026”, US17.3, BR-24, import.
+    /**
+     * Wiersz: odpowiedź serwera `GET /buildings/A-1` z wejściami z importu z dnia 1.10.2026 → na V2 wiersz
+     *   „Z map i opisów, stan z 1.10.2026”, US17.3, BR-24, import.
+     */
     @Test
     fun us17_3_server_answer_to_screen() {
         val viewModel =

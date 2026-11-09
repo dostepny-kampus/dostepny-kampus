@@ -119,7 +119,7 @@ class EntranceHiltTest {
         compose.waitUntil(timeoutMillis = 5_000) { compose.onAllNodes(matcher).fetchSemanticsNodes().isNotEmpty() }
     }
 
-    // Wiersz: V1 lista, budynek → V2 → V3 → „Pokaż wejście na mapie” → V1, TalkBack czyta wejście i budynek.
+    /** Wiersz: V1 lista, budynek → V2 → V3 → „Pokaż wejście na mapie” → V1, TalkBack czyta wejście i budynek. */
     @Test
     fun us3_3_hilt_entrance_selected() {
         waitFor(ListedA1)

@@ -62,8 +62,10 @@ class CardServerEntrancesTest {
         Dispatchers.resetMain()
     }
 
-    // Wiersz: V2 budynku, który zna serwer → tekst karty od razu z telefonu, a gdy serwer odpowie, wejścia z serwera
-    //   z dniem i źródłem zamiast wejść z pliku, US17.3, NFR-12.
+    /**
+     * Wiersz: V2 budynku, który zna serwer → tekst karty od razu z telefonu, a gdy serwer odpowie, wejścia z serwera
+     *   z dniem i źródłem zamiast wejść z pliku, US17.3, NFR-12.
+     */
     @Test
     fun us17_3_server_after_phone() {
         val answer = CompletableDeferred<ApiResult<BuildingDetails>>()
@@ -73,8 +75,10 @@ class CardServerEntrancesTest {
         assertEquals(listOf(SERVER_ENTRANCE), card.datedEntrances())
     }
 
-    // Wiersz: V2 bez sieci albo przy błędzie serwera → wejścia z pliku bez dnia i źródła, bez błędu i bez pustej
-    //   listy, NFR-10.
+    /**
+     * Wiersz: V2 bez sieci albo przy błędzie serwera → wejścia z pliku bez dnia i źródła, bez błędu i bez pustej
+     *   listy, NFR-10.
+     */
     @Test
     fun nfr10_failure_keeps_file() {
         val failures = listOf(ApiResult.NetworkError(IOException("brak sieci")), ApiResult.ServerError(SERVER_ERROR))
@@ -90,7 +94,7 @@ class CardServerEntrancesTest {
         }
     }
 
-    // Wiersz: kolejne otwarcie V2 bez sieci → zostają wejścia pobrane wcześniej z serwera, NFR-10.
+    /** Wiersz: kolejne otwarcie V2 bez sieci → zostają wejścia pobrane wcześniej z serwera, NFR-10. */
     @Test
     fun nfr10_reopen_keeps_server() {
         val answers = ArrayDeque(listOf(ApiResult.Success(DETAILS), ApiResult.NetworkError(IOException("brak sieci"))))
@@ -99,7 +103,7 @@ class CardServerEntrancesTest {
         assertEquals(listOf(SERVER_ENTRANCE), cardOf(source).datedEntrances())
     }
 
-    // Wiersz: zamknięcie karty w trakcie pobierania → wywołanie serwera przerwane, bez działającego zapytania.
+    /** Wiersz: zamknięcie karty w trakcie pobierania → wywołanie serwera przerwane, bez działającego zapytania. */
     @Test
     fun closing_card_cancels_call() {
         val started = CompletableDeferred<Unit>()

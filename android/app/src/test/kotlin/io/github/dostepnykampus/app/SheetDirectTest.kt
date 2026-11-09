@@ -73,8 +73,10 @@ class SheetDirectTest {
         compose.onNodeWithText(SHOW_ON_MAP).assertDoesNotExist()
     }
 
-    // Wiersz: V2 przy skali czcionki co najmniej 1,5 → od razu pełny ekran bez mapy i bez małej karty,
-    // z „Pokaż budynek na mapie”, NFR-20, reguła 5, US2.9.
+    /**
+     * Wiersz: V2 przy skali czcionki co najmniej 1,5 → od razu pełny ekran bez mapy i bez małej karty,
+     * z „Pokaż budynek na mapie”, NFR-20, reguła 5, US2.9.
+     */
     @Test
     @Config(fontScale = 2f)
     fun nfr20_large_font_v2_direct() {
@@ -82,8 +84,10 @@ class SheetDirectTest {
         checkDirect("czcionka 200 %")
     }
 
-    // Wiersz: V2, pełny ekran otwarty od razu, „Wstecz” w górnym pasku albo telefonu → ekran sprzed V2
-    // jednym krokiem, NFR-15, US2.9.
+    /**
+     * Wiersz: V2, pełny ekran otwarty od razu, „Wstecz” w górnym pasku albo telefonu → ekran sprzed V2
+     * jednym krokiem, NFR-15, US2.9.
+     */
     @Test
     @Config(fontScale = 2f)
     fun nfr15_direct_back_one_step() {
@@ -101,8 +105,10 @@ class SheetDirectTest {
         compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()
     }
 
-    // Wiersz: V2 otwarte, obrót do poziomu albo zmiana czcionki w trakcie → tryb z bieżącego okna: poziomo
-    // i przy czcionce 200 % pełny ekran od razu, pionowo przy zwykłej czcionce mała karta, NFR-51, NFR-20, NFR-22.
+    /**
+     * Wiersz: V2 otwarte, obrót do poziomu albo zmiana czcionki w trakcie → tryb z bieżącego okna: poziomo
+     * i przy czcionce 200 % pełny ekran od razu, pionowo przy zwykłej czcionce mała karta, NFR-51, NFR-20, NFR-22.
+     */
     @Test
     fun nfr22_mode_follows_window() {
         var size by mutableStateOf(DpSize(width = 360.dp, height = 800.dp))

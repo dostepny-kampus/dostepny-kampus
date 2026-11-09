@@ -51,7 +51,9 @@ class CampusPathDeviceTest {
             .fetchSemanticsNodes()
             .isNotEmpty()
 
-    // Instrukcja „Pomoc” przy pierwszym uruchomieniu zamyka się gestem wstecz (US5.1); w kolejnych testach jej nie ma.
+    /**
+     * Instrukcja „Pomoc” przy pierwszym uruchomieniu zamyka się gestem wstecz (US5.1); w kolejnych testach jej nie ma.
+     */
     @Before
     fun leaveHelp() {
         waitFor(hasSetTextAction() or hasText("Pomoc"))
@@ -61,7 +63,9 @@ class CampusPathDeviceTest {
         }
     }
 
-    // Wiersze: V1, wpisanie symbolu i wybór wyniku → V2; „Sprawdź, którędy wejść” → V3; „Wstecz” → V2, US1.1, US2, US3.
+    /**
+     * Wiersze: V1, wpisanie symbolu i wybór wyniku → V2; „Sprawdź, którędy wejść” → V3; „Wstecz” → V2, US1.1, US2, US3.
+     */
     @Test
     fun us3_search_card_entrances() {
         compose.onNode(hasSetTextAction()).performTextInput("A-1")
@@ -74,7 +78,7 @@ class CampusPathDeviceTest {
         waitFor(hasText(CHECK))
     }
 
-    // Wiersz: V1, „Lista budynków” → budynek → mała karta V2 nad mapą, z pliku bez serwera, US2.8, NFR-11, NFR-19.
+    /** Wiersz: V1, „Lista budynków” → budynek → mała karta V2 nad mapą, z pliku bez serwera, US2.8, NFR-11, NFR-19. */
     @Test
     fun us2_list_card() {
         compose.onAllNodes(hasText("Lista budynków") or hasText("Lista")).onFirst().performClick()
