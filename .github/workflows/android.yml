@@ -282,9 +282,9 @@ jobs:
 
   czyszczenie-cache:
     # Osobne małe zadanie tylko na push: uprawnienie actions: write nie trafia do zadań uruchamiających kod z PR.
-    needs: pokrycie
+    needs: testy
     if: >-
-      ${{ !cancelled() && needs.pokrycie.result == 'success' && github.event_name == 'push' &&
+      ${{ !cancelled() && needs.testy.result == 'success' && github.event_name == 'push' &&
         (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
