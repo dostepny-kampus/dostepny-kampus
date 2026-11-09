@@ -73,6 +73,8 @@ run_case "Kotlin: Todo(#5) z otwartym issue" 0 '' app/Main.kt '// Todo(#5): obs�
 run_case "Kotlin: identyfikatory Todos i todoItem nie są znacznikami" 0 '' app/Main.kt 'val Todos = todoItem()'
 run_case "Kotlin: identyfikator todoList nie jest znacznikiem" 0 '' app/Main.kt 'val todoList = emptyList<String>()'
 run_case "Kotlin: identyfikator TODOS i MyTODO nie są znacznikami" 0 '' app/Main.kt 'val TODOS = MyTODO()'
+run_case "YAML: nazwa joba znaczniki-todo i ścieżka todo-issue.sh nie są znacznikami" 0 '' .github/workflows/x.yml '  znaczniki-todo: run bash .github/scripts/todo-issue.sh'
+run_case "Kotlin: todo.kt w komentarzu nie jest znacznikiem" 0 '' app/Main.kt '// zob. todo.kt'
 run_case "Markdown poza zakresem skanowania" 0 '' docs/notatki.md 'TODO: opisać'
 run_case "pliki samego strażnika są pomijane" 0 '' .github/scripts/todo-issue.sh '# TODO: przykład znacznika'
 run_case "plik tekstowy poza zakresem skanowania" 0 '' NOTES.txt 'FIXME bez numeru'
