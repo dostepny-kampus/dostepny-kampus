@@ -5,7 +5,7 @@
 set -euo pipefail
 
 # Użycie: pr-od-issue.sh <numer PR>. Każdy PR (poza Dependabotem) musi mieć w opisie słowo zamykające (Closes, Fixed, Resolves … #N),
-# a nazwa gałęzi PR ma mieć postać N-krotki-opis, gdzie #N jest wśród zamykanych issue (poza dependabot/*),
+# a nazwa gałęzi PR ma mieć postać N-krotki-opis, gdzie #N jest wśród zamykanych issue,
 # PR ma mieć etykietę obszaru (android, backend, api, ci, test, documentation), a jeśli zamykane issue ma etykiety
 # obszaru, PR ma mieć co najmniej jedną z nich; każde wskazane issue ma być otwarte i przypisane autorowi PR. Opisu szukamy sami, bo dla PR do gałęzi
 # niedomyślnej GitHub nie wypełnia closingIssuesReferences.
@@ -86,12 +86,10 @@ if [[ -z $issues ]]; then
 fi
 
 branch="$(jq -r '.headRefName // ""' <<<"$pr_data")"
-if [[ $branch != dependabot/* ]]; then
-  if [[ ! $branch =~ ^([0-9]+)- ]]; then
-    report "gałąź ${branch:-<brak>}: nazwa gałęzi nie zaczyna się od numeru issue (N-krotki-opis)."
-  elif ! grep -qx "${BASH_REMATCH[1]}" <<<"$issues"; then
-    report "gałąź ${branch}: numer #${BASH_REMATCH[1]} nie jest wśród zamykanych issue ($(printf '#%s ' $issues))."
-  fi
+if [[ ! $branch =~ ^([0-9]+)- ]]; then
+  report "gałąź ${branch:-<brak>}: nazwa gałęzi nie zaczyna się od numeru issue (N-krotki-opis)."
+elif ! grep -qx "${BASH_REMATCH[1]}" <<<"$issues"; then
+  report "gałąź ${branch}: numer #${BASH_REMATCH[1]} nie jest wśród zamykanych issue ($(printf '#%s ' $issues))."
 fi
 
 area_labels "$pr_data"
