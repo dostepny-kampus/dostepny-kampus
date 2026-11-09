@@ -53,14 +53,14 @@ run_case() {
   fi
 }
 
-case_ok() { pr_json vlladevk 12; issue_json 12 OPEN vlladevk; }
-case_no_closes() { pr_json vlladevk; }
-case_closed_issue() { pr_json vlladevk 12; issue_json 12 CLOSED vlladevk; }
-case_unassigned() { pr_json vlladevk 12; issue_json 12 OPEN; }
-case_other_assignee() { pr_json vlladevk 12; issue_json 12 OPEN inna-osoba; }
-case_author_among_assignees() { pr_json vlladevk 12; issue_json 12 OPEN inna-osoba vlladevk; }
+case_ok() { pr_json autor-pr 12; issue_json 12 OPEN autor-pr; }
+case_no_closes() { pr_json autor-pr; }
+case_closed_issue() { pr_json autor-pr 12; issue_json 12 CLOSED autor-pr; }
+case_unassigned() { pr_json autor-pr 12; issue_json 12 OPEN; }
+case_other_assignee() { pr_json autor-pr 12; issue_json 12 OPEN inna-osoba; }
+case_author_among_assignees() { pr_json autor-pr 12; issue_json 12 OPEN inna-osoba autor-pr; }
 case_dependabot() { pr_json 'dependabot[bot]'; }
-case_second_issue_closed() { pr_json vlladevk 12 13; issue_json 12 OPEN vlladevk; issue_json 13 CLOSED vlladevk; }
+case_second_issue_closed() { pr_json autor-pr 12 13; issue_json 12 OPEN autor-pr; issue_json 13 CLOSED autor-pr; }
 
 run_case "poprawny PR: otwarte issue przypisane autorowi" 0 '' case_ok
 run_case "brak Closes" 1 "$no_closes" case_no_closes
