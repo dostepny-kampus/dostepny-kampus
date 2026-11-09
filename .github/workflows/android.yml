@@ -12,6 +12,7 @@ on:
     paths:
       - "android/**"
       - "data/buildings/**"
+      - "api/openapi.yaml"
       - "docs/docs/ux/tokeny.yml"
       - ".github/workflows/android.yml"
   merge_group:
@@ -40,7 +41,7 @@ jobs:
       - name: Sprawdź, czy PR zmienia aplikację Android, jej dane albo tokeny
         id: diff
         run: |
-          if git diff --quiet HEAD^1 HEAD -- android data/buildings docs/docs/ux/tokeny.yml .github/workflows/android.yml; then
+          if git diff --quiet HEAD^1 HEAD -- android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/workflows/android.yml; then
             echo "android=false" >> "$GITHUB_OUTPUT"
           else
             echo "android=true" >> "$GITHUB_OUTPUT"
