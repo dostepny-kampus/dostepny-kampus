@@ -91,7 +91,8 @@ class CampusMapGeometryTest {
 
     /**
      * Wiersz: W3, O5, katalog z pliku → geometria liczona w kontekście obliczeń, nie w wątku wywołującym, a stan niesie
-     *   gotowe dane mapy, NFR-11.
+     *   gotowe dane mapy, NFR-11. Wątek liczący kończy pracę przed `resetMain`, więc jego wznowienie nie trafi do
+     *   następnego testu.
      */
     @Test
     fun nfr11_geometry_in_compute() =
@@ -107,7 +108,6 @@ class CampusMapGeometryTest {
                     assertEquals(state.catalog?.let(::campusMapData), state.mapData, "stan bez gotowych danych mapy")
                 }
             } finally {
-                // Wątek liczący kończy pracę przed resetMain, więc jego wznowienie nie trafi do następnego testu.
                 pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
             }
         }
