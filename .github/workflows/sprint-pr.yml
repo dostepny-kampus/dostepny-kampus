@@ -1,0 +1,42 @@
+name: sprint-pr
+
+# Zdarzenie pull_request (nie pull_request_target): PR z gałęzi tego repozytorium ma token z zapisem.
+# PR z forków i PR Dependabota dostają token tylko do odczytu, więc ich tu pomijamy.
+on:
+  pull_request:
+    branches:
+      - "sprint/**"
+    types:
+      - opened
+      - reopened
+      - edited
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sprint-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  kamien-milowy:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Ustaw kamień milowy sprintu i przypisz autora PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_REF: ${{ github.base_ref }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash .github/scripts/sprint-pr.sh "$PR_NUMBER"

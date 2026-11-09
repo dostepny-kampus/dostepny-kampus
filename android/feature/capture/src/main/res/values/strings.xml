@@ -100,4 +100,11 @@
     <string name="szybkie_rezygnacja">Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy. Aby je zachować, wybierz „Wróć do zdjęcia”.</string>
     <string name="szybkie_tak_zrezygnuj">Tak, zrezygnuj</string>
     <string name="szybkie_wroc_do_zdjecia">Wróć do zdjęcia</string>
+    <string name="moje_w_telefonie">W telefonie</string>
+    <string name="moje_wyslane">Wysłane</string>
+    <string name="moje_nie_wyslano">Nie wysłano</string>
+    <string name="moje_brak_uprawnien">Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.</string>
+    <string name="moje_nie_przyjal">Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.</string>
+    <string name="moje_otworz">Otwórz</string>
+    <string name="moje_typ_nieznany">Nieznany typ bariery</string>
 </resources>

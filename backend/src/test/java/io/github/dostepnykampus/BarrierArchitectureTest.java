@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * sprawdzają kod produkcyjny i przykłady negatywne. Przykłady kompiluje test
  * do katalogu tymczasowego pod pakietem {@code archsamples}, poza modułem
  * zgłoszeń. Reguła na pustym zbiorze klas, także przez literówkę w pakiecie,
- * nie przechodzi.</p>
+ * nie przechodzi: pilnuje tego {@code allowEmptyShould(false)}.</p>
  *
  * @since 0.1.0
  */
@@ -99,16 +99,6 @@ final class BarrierArchitectureTest {
             BarrierArchitectureTest.rule(name, BarrierArchitectureTest.SAMPLES)
                 .evaluate(this.compiled(pack, body)).hasViolation(),
             Matchers.is(true)
-        );
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("rules")
-    void barrierFailsOnEmptyImport(final String name, final ArchRule rule) {
-        Assertions.assertThrows(
-            AssertionError.class,
-            () -> rule.check(new ClassFileImporter().importClasses()),
-            String.format("Reguła %s przechodzi, choć nie sprawdziła żadnej klasy", name)
         );
     }
 
