@@ -263,6 +263,7 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
             <arg>-XDcompilePolicy=simple</arg>
             <arg>--should-stop=ifError=FLOW</arg>
             <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=io.github.dostepnykampus -XepOpt:NullAway:JSpecifyMode=true</arg>
+            <arg>-Werror</arg>
           </compilerArgs>
           <annotationProcessorPaths>
             <path>
