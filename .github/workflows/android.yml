@@ -187,10 +187,8 @@ jobs:
       fail-fast: false
       matrix:
         # Kontrole `check` podzielone na równoległe grupy; zadania spoza grup wykonuje i wykrywa job `pokrycie`.
+        # Testy `:app` (Roborazzi, Konsist) Gradle nie odtwarza z cache, więc wykonuje je `pokrycie`.
         include:
-          - grupa: app
-            testy: true
-            zadania: ":app:verifyRoborazziDebug"
           - grupa: core
             testy: true
             zadania: ":core:model:test :core:geo:test :core:location:testDebugUnitTest :core:database:testDebugUnitTest :core:network:testDebugUnitTest :core:data:testDebugUnitTest :core:designsystem:verifyRoborazziDebug"
@@ -334,8 +332,8 @@ jobs:
         run: ./gradlew check -x lint -x lintDebug --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
       - name: Sprawdź, że żaden test nie wykonał się poza grupami
         run: |
-          # Test uruchomiony tu, a nie odtworzony z wyników grup, oznacza moduł spoza macierzy `grupy`.
-          if grep -E '^> Task :[A-Za-z:]*:(test|testDebugUnitTest|testReleaseUnitTest)$' "$RUNNER_TEMP/gradle.log"; then
+          # Test uruchomiony tu (poza `:app`), a nie odtworzony z wyników grup, oznacza moduł spoza macierzy `grupy`.
+          if grep -E '^> Task :[A-Za-z:]*:(test|testDebugUnitTest|testReleaseUnitTest)$' "$RUNNER_TEMP/gradle.log" | grep -v '^> Task :app:'; then
             echo "::error title=Grupy testów::Powyższe testy wykonały się poza grupami; dopisz moduł do macierzy grupy."
             exit 1
           fi
