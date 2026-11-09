@@ -11,6 +11,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.model.SubmissionKind
+import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 
 /**
  * Zgłoszenie szybkie V4 po kroku 2: zdjęcie, grupa barier i odpowiedź na pytanie o piętro (US4.1, US4.3, US4.5).
@@ -49,3 +50,15 @@ fun QuickReport.content(position: QuickPosition): SubmissionContent =
         floor = floorNumber?.takeIf { position.isInBuilding }?.let { SubmissionFloor(number = it) },
         barrierGroup = group,
     )
+
+/** Zgłoszenie z danych kroków 1 i 2 albo `null`, gdy wpis historii ich nie ma. */
+internal fun ReportRoute.quickReport(): QuickReport? {
+    val id = photoId
+    val path = photoPath
+    val chosen = group
+    return if (id != null && path != null && chosen != null) {
+        QuickReport(photo = PendingPhotoDraft(photoId = id, path = path), group = chosen, floorNumber = floorNumber)
+    } else {
+        null
+    }
+}
