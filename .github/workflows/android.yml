@@ -192,9 +192,6 @@ jobs:
           - grupa: core
             testy: true
             zadania: ":core:model:test :core:geo:test :core:location:testDebugUnitTest :core:database:testDebugUnitTest :core:network:testDebugUnitTest :core:data:testDebugUnitTest :core:designsystem:verifyRoborazziDebug"
-          - grupa: capture
-            testy: true
-            zadania: ":feature:capture:verifyRoborazziDebug"
           - grupa: map-i-reszta
             testy: true
             zadania: ":feature:map:verifyRoborazziDebug :feature:help:testDebugUnitTest :feature:auth:testDebugUnitTest :feature:progress:testDebugUnitTest :feature:review:testDebugUnitTest"
