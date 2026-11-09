@@ -21,7 +21,6 @@ import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -61,7 +60,6 @@ class BackDuringTransitionTest {
      * Wiersz: V2 → „Sprawdź, którędy wejść” → V3; „Wstecz” w trakcie przejścia, gdy V3 jest już widoczne → po końcu
      * przejścia V2, bez V3; kolejne „Wstecz” → V1, US3, US1.1.
      */
-    @Ignore("Błąd aplikacji #677: znikający arkusz V2 przechwytuje „Wstecz” w trakcie przejścia")
     @Test
     fun us3_back_mid_transition() {
         compose.setContent { Shell() }
