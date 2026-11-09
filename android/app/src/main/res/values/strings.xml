@@ -6,10 +6,6 @@
     <string name="nav_pomoc">Pomoc</string>
     <string name="nav_konto">Konto</string>
     <string name="nav_konto_i_praca">Konto i praca</string>
-    <string name="krok_z_3">Krok %1$d z 3</string>
-    <string name="dalej">Dalej</string>
-    <string name="wyslij">Wyślij</string>
-    <string name="wroc_do_mapy">Wróć do mapy</string>
     <string name="nie_teraz">Nie teraz</string>
     <string name="zmierz_i_zglos">Zmierz i zgłoś barierę</string>
     <string name="rozwin_opis">Rozwiń opis budynku</string>

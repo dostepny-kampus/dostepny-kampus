@@ -208,10 +208,17 @@ class AppNavigator(
         leaving { add(route) }
     }
 
-    /** Następny krok V4: „Dalej” po zdjęciu, wybór grupy albo piętra (US4.1, US4.3, US4.5). */
-    fun nextReportStep() {
+    /**
+     * Następny krok V4: „Dalej” po zdjęciu, wybór grupy albo piętra (US4.1, US4.3, US4.5). [filled] to bieżący krok
+     * z jego danymi; zostaje w historii, więc „Wstecz” wraca do kroku ze zdjęciem i grupą (US4.8).
+     */
+    fun nextReportStep(filled: ReportRoute? = null) {
         val route = (current as? ReportRoute)?.takeIf { it.step < ReportStep.SEND } ?: return
-        leaving { add(route.copy(step = ReportStep.entries[route.step.ordinal + 1])) }
+        val done = filled?.copy(step = route.step) ?: route
+        leaving {
+            this[lastIndex] = done
+            add(done.copy(step = ReportStep.entries[route.step.ordinal + 1]))
+        }
     }
 
     /** „Wyślij”: potwierdzenie zamiast kroków V4, więc „Wstecz” prowadzi na ekran sprzed V4 (US4.4, P2). */
