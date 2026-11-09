@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.core.designsystem.Odstepy
 
@@ -39,6 +40,7 @@ internal fun QuickSentMessage() {
 }
 
 @Composable
+@ReadOnlyComposable
 private fun floorLabel(floor: Int?): String =
     when (floor) {
         null -> stringResource(R.string.szybkie_nie_wiem)
