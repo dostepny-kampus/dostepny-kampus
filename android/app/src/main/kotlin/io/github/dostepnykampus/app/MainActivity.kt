@@ -20,6 +20,7 @@ import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ActivityComponent
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.map.MapListChoice
+import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.help.FirstLaunchViewModel
 import io.github.dostepnykampus.feature.map.mapUserAgent
@@ -43,13 +44,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             DostepnyKampusTheme {
                 val isFirst by firstLaunch.firstLaunchState.collectAsStateWithLifecycle()
-                isFirst?.let { first ->
-                    AppShell(
-                        firstLaunch = first,
-                        roles = graph.roles(),
-                        onFirstHelpLeft = firstLaunch::markHelpSeen,
-                        onChooseMap = onChooseMap,
-                    )
+                val queue = graph.submissionQueue()
+                val isLoginExpired by queue.loginExpired.collectAsStateWithLifecycle()
+                LoginExpiredGate(isExpired = isLoginExpired, roles = graph.roles(), onLoggedIn = queue::onLoggedIn) {
+                    isFirst?.let { first ->
+                        AppShell(
+                            firstLaunch = first,
+                            roles = graph.roles(),
+                            onFirstHelpLeft = firstLaunch::markHelpSeen,
+                            onChooseMap = onChooseMap,
+                        )
+                    }
                 }
             }
         }
@@ -68,4 +73,7 @@ interface MainActivityEntryPoint {
 
     /** Wybór „Mapa” albo „Lista budynków” w V1 (NFR-19, decyzja 116). */
     fun mapListChoice(): MapListChoice
+
+    /** Kolejka zgłoszeń: prośba o logowanie po 401 i wznowienie po zalogowaniu (BR-26). */
+    fun submissionQueue(): SubmissionQueue
 }
