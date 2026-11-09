@@ -160,8 +160,10 @@ jobs:
           done
       - name: Zainstaluj APK aplikacji i testów
         run: |
-          adb install -r -t "$RUNNER_TEMP/apk/app-debug.apk"
-          adb install -r -t "$RUNNER_TEMP/apk/app-debug-androidTest.apk"
+          # Artefakt zachowuje strukturę katalogów od najbliższego wspólnego przodka, więc pliki szukamy po nazwie.
+          find "$RUNNER_TEMP/apk" -name '*.apk' -print
+          adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug.apk | head -n 1)"
+          adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug-androidTest.apk | head -n 1)"
       - name: Testy na emulatorze
         run: |
           adb shell am instrument -w "$URUCHAMIACZ_TESTOW" | tee "$RUNNER_TEMP/instrumentacja.txt"
