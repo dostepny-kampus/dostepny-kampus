@@ -34,7 +34,8 @@ issue_json() {
   for person in "$@"; do
     people="${people:+$people,}{\"login\":\"$person\"}"
   done
-  printf '{"state":"%s","assignees":[%s]}\n' "$state" "$people" >"$workdir/issues/$number.json"
+  printf '{"state":"%s","assignees":[%s],"url":"https://github.com/o/r/%s/%s"}\n' \
+    "$state" "$people" "$kind" "$number" >"$workdir/issues/$number.json"
 }
 
 # run_case <nazwa> <oczekiwany kod> <oczekiwany tekst lub pusty> <polecenie przygotowujące dane...>
