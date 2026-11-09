@@ -68,7 +68,7 @@ run_case() {
   issue_labels=''
   extra_path=''
   gh_mode=files
-  rm -rf "$workdir/issues" "$workdir/pr.json"
+  rm -rf "$workdir/issues" "$workdir/pr.json" "$workdir/bin"
   mkdir "$workdir/issues"
   "$@"
   # gh_mode: files = dane z plików; issue = PR z pliku, issue z gh; all = wszystko z gh (podstawionego w extra_path).
