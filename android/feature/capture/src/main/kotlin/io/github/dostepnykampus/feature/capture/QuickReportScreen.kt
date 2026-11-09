@@ -44,7 +44,7 @@ import java.io.File
 /**
  * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (US4.1).
  * „Wstecz” w kroku 1 ze zdjęciem najpierw pyta o rezygnację; wstecz w pytaniu to „Wróć do zdjęcia”. Po wysłaniu
- * (`SENT`) ekran pokazuje samo potwierdzenie, bez kroków, więc w krokach zostaje z końcowych tylko krok 3, wysłanie.
+ * ekran pokazuje tylko potwierdzenie (`SENT`); z kroków końcowych zostaje krok 3, wysłanie.
  * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację (NFR-27, BR-8).
  *
  * @param route krok z danymi wcześniejszych kroków
