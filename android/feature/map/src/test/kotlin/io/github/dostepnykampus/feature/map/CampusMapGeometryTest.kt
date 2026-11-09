@@ -38,7 +38,11 @@ import kotlin.coroutines.EmptyCoroutineContext
 private const val COMPUTE_THREAD = "map-geometry-test"
 private const val OUTLINES = 5
 
-/** Gdzie i ile razy ViewModel V1 liczy geometrię mapy: na podróbce funkcji liczącej, bez pomiaru czasu (NFR-11). */
+/**
+ * Gdzie i ile razy ViewModel V1 liczy geometrię mapy: na podróbce funkcji liczącej, bez pomiaru czasu (NFR-11).
+ * Test czeka na zdarzenie (policzona geometria w stanie), nie na upływ czasu; liczenie zapisuje wątek, zanim zwróci
+ * dane do stanu. Zawieszenie przy błędzie w kodzie kończy limit `runTest`.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class CampusMapGeometryTest {
     private val online = MutableStateFlow(true)
@@ -85,8 +89,6 @@ class CampusMapGeometryTest {
             geometry = ::counting,
         )
 
-    // Czeka na zdarzenie (policzona geometria w stanie), nie na upływ czasu; liczenie zapisuje wątek, zanim zwróci
-    //   dane do stanu. Zawieszenie przy błędzie w kodzie kończy limit `runTest`.
     private suspend fun CampusMapViewModel.ready(): CampusMapUiState = uiState.first { it.mapData != null }
 
     // Wiersz: W3, O5, katalog z pliku → geometria liczona w kontekście obliczeń, nie w wątku wywołującym, a stan niesie

@@ -32,7 +32,10 @@ fun interface ReportSaver {
     suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>, edited: EditedSubmission?)
 }
 
-/** Model widoku formularza C2 „Opisz barierę” (US7.1–US7.4). */
+/**
+ * Model widoku formularza C2 „Opisz barierę” (US7.1–US7.4). W czasie zapisu i po nim etap ustala tylko zapis, więc
+ * nie ma dwóch zgłoszeń. Pełna pamięć przy zapisie w bazie Room kończy się etapem nieudanego zapisu (NFR-7).
+ */
 @HiltViewModel
 class ReportFormViewModel
     @Inject
@@ -99,7 +102,6 @@ class ReportFormViewModel
         }
 
         private fun moveToWhileEditable(next: (ReportUiState) -> ReportStage) {
-            // W czasie zapisu i po nim etap ustala tylko zapis, więc nie ma dwóch zgłoszeń.
             state.update { current ->
                 if (current == null || current.isSavingOrSaved) current else current.copy(stage = next(current))
             }
@@ -115,7 +117,6 @@ class ReportFormViewModel
                     } catch (_: IOException) {
                         ReportStage.SAVE_FAILED
                     } catch (_: SQLiteException) {
-                        // Pełna pamięć przy zapisie w bazie Room (NFR-7).
                         ReportStage.SAVE_FAILED
                     }
                 state.update { it?.copy(stage = stage) }

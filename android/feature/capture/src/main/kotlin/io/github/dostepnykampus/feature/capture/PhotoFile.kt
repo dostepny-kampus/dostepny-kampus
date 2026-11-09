@@ -14,7 +14,6 @@ import java.io.File
 /** Katalog zdjęć zgłoszeń w pamięci aplikacji; kopia zapasowa aplikacji jest wyłączona. */
 internal const val PHOTO_DIR = "zdjecia"
 
-// Dłuższy bok zdjęcia po zmniejszeniu: czytelna bariera, a plik daleko poniżej 5 MB (NFR-34).
 private const val PHOTO_PIXELS = 2048
 private const val JPEG_QUALITY = 85
 private const val QUARTER_TURN = 90f
@@ -23,6 +22,7 @@ private const val THREE_QUARTER_TURN = 270f
 
 /**
  * Wymiary po zmniejszeniu tak, by dłuższy bok miał najwyżej [limit] pikseli; mniejszego zdjęcia nie powiększa.
+ * Domyślny [limit] to dłuższy bok po zmniejszeniu: czytelna bariera, a plik daleko poniżej 5 MB (NFR-34).
  *
  * @return szerokość i wysokość z zachowaniem proporcji
  */
