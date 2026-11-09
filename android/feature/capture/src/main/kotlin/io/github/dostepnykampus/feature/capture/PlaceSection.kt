@@ -124,6 +124,7 @@ private fun Hint(hint: BuildingHint) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(R.string.budynek_pytanie, hint.building.symbol),
+            modifier = Modifier.semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
         )
         hint.building.name?.let { Text(it) }
