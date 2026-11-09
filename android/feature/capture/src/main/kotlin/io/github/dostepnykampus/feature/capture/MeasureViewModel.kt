@@ -219,7 +219,7 @@ class MeasureViewModel
         private fun finish(attempt: Int, state: MeasureUiState.Finished) {
             val run = result.value
             if (run.attempt != attempt || run.finished != null) return
-            if (result.compareAndSet(run, run.copy(finished = state))) {
+            if (result.compareAndSet(expect = run, update = run.copy(finished = state))) {
                 locate(attempt, state.average.point)
             }
         }
