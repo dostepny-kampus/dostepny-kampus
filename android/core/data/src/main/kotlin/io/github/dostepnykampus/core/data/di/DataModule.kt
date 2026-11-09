@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.di
@@ -29,6 +29,7 @@ import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
 import io.github.dostepnykampus.core.database.BuildingCacheDao
+import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.network.BuildingsApi
 import io.github.dostepnykampus.core.network.SubmissionsApi
@@ -93,10 +94,12 @@ object DataModule {
         api: SubmissionsApi,
         store: PendingSubmissionDao,
         sync: SubmissionSyncScheduler,
+        history: OwnSubmissionDao,
     ): SubmissionQueue =
         SubmissionQueue(
             store = store,
             server = SubmissionServer(create = api::create, putPhoto = api::putPhoto, update = api::update),
             onSaved = sync::schedule,
+            history = history,
         )
 }
