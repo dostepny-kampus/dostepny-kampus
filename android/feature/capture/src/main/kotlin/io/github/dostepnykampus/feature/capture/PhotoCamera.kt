@@ -25,7 +25,6 @@ import java.io.File
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
-// Dostawca plików dla aparatu; nazwa zgodna z `AndroidManifest.xml` modułu.
 private const val PHOTO_AUTHORITY_SUFFIX = ".zdjecia"
 
 /** Plik zdjęcia [id] w katalogu zdjęć zgłoszeń w [filesDir]; katalog powstaje przy pierwszym zdjęciu. */
@@ -36,6 +35,7 @@ internal fun photoFile(filesDir: File, id: String): File =
  * „Zrób zdjęcie” na C2: aplikacja aparatu zapisuje plik w pamięci aplikacji, a po zrobieniu zdjęcia plik jest
  * przekodowany poza wątkiem interfejsu i trafia do [onPhoto] (US7.1, NFR-26). Rezygnacja w aparacie i telefon bez
  * aparatu zostawiają formularz bez zmian.
+ * Dostawca plików dla aparatu ma nazwę zgodną z `AndroidManifest.xml` modułu.
  *
  * @param onPhoto zdjęcie gotowe do formularza
  * @param workContext wątek przekodowania pliku

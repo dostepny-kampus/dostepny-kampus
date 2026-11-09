@@ -246,7 +246,10 @@ internal fun outcomeOf(result: ApiResult<*>): Outcome =
         is ApiResult.Success -> Outcome.SENT
     }
 
-// Konflikt wersji czeka w telefonie na wybór Zbierającego, bez ponawiania w kółko (US9.3, BR-10).
+/**
+ * Wynik edycji [result]: konflikt wersji czeka w telefonie na wybór Zbierającego, bez ponawiania w kółko
+ * (US9.3, BR-10).
+ */
 internal fun editOutcome(result: ApiResult<SubmissionEdit>): Outcome =
     if (result is ApiResult.Success && result.value is SubmissionEdit.Conflict) {
         Outcome.REFUSED

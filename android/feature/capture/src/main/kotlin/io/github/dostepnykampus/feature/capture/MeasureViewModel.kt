@@ -39,7 +39,6 @@ import javax.inject.Inject
 
 private const val STOP_TIMEOUT_MS = 5_000L
 
-// Odliczanie „Pomiar: zostało 12 s” zmienia się co sekundę także bez nowych odczytów (NFR-2).
 private const val TICK_MS = 1_000L
 
 /** Stan pomiaru na ekranie C1 (US6.1). */
@@ -107,6 +106,7 @@ sealed interface PlaceChoice {
  * (obrót ekranu), a po końcu pomiaru przestaje (NFR-27). Wynik zostaje w ViewModelu, więc powrót na ekran go nie
  * kasuje; [repeat] zaczyna od nowa bez limitu (NFR-23). Po pomiarze podpowiada budynek z katalogu bez sieci,
  * a Zbierający go potwierdza, wybiera inny albo zostawia „poza budynkiem” (US6.2).
+ * Odliczanie „Pomiar: zostało 12 s” zmienia się co sekundę także bez nowych odczytów (NFR-2).
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel

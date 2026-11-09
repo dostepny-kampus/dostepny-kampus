@@ -47,7 +47,6 @@ private const val ZENITH_DEGREES = 90.0
 
 private const val RING_STEP_DEGREES = 30
 
-// Napisy na mapie nieba rosną z czcionką najwyżej 1,4 raza (wymagania ekranów, reguła 4; NFR-20).
 private const val MAX_MAP_FONT_SCALE = 1.4f
 
 private val MAP_SIZE = 240.dp
@@ -110,6 +109,7 @@ internal fun skyOffset(azimuthDegrees: Double, elevationDegrees: Double, radius:
 /**
  * Mapa nieba C1 (US6.5): widoczne satelity na kołach wysokości co 30°, strony świata i legenda kształtów pod mapą.
  * Czytnik ekranu dostaje liczby satelitów według systemów (NFR-18).
+ * Napisy na mapie nieba rosną z czcionką najwyżej 1,4 raza (wymagania ekranów, reguła 4; NFR-20).
  *
  * @param sky widoczne satelity
  * @param modifier wymiary nadane przez ekran
