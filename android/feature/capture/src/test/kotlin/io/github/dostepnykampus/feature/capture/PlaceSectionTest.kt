@@ -6,6 +6,9 @@
 package io.github.dostepnykampus.feature.capture
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.isDialog
@@ -59,7 +62,10 @@ class PlaceSectionTest {
     @Test
     fun us6_2_hint_name_and_distance() {
         show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 12.4, isInside = false)))
-        compose.onNodeWithText("Czy to budynek A-1?").assertIsDisplayed()
+        compose
+            .onNodeWithText("Czy to budynek A-1?")
+            .assertIsDisplayed()
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
         compose.onNodeWithText("Gmach Główny").assertIsDisplayed()
         compose.onNodeWithText("12 m od punktu").assertIsDisplayed()
         compose.onNodeWithText("Potwierdź").performClick()
@@ -100,6 +106,10 @@ class PlaceSectionTest {
         show(PlaceChoice.Chosen(b1))
         compose.onNodeWithText("Wybierz inny").performClick()
         compose.onNode(isDialog()).assertDoesNotExist()
+        compose
+            .onNodeWithText("Wybierz budynek")
+            .assertIsDisplayed()
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
         compose.onNodeWithText("Najbliżej punktu, od najbliższego:").assertIsDisplayed()
         val first = compose.onNodeWithText("Budynek A-1 Gmach Główny, 5 m").getUnclippedBoundsInRoot().top
         val second = compose.onNodeWithText("Budynek B-1 Budynek B-1, 31 m").getUnclippedBoundsInRoot().top

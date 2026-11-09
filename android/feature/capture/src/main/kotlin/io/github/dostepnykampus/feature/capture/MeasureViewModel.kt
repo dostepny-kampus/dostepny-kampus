@@ -40,7 +40,6 @@ import javax.inject.Inject
 
 private const val STOP_TIMEOUT_MS = 5_000L
 
-// Odliczanie „Pomiar: zostało 12 s” zmienia się co sekundę także bez nowych odczytów (NFR-2).
 private const val TICK_MS = 1_000L
 
 /** Stan pomiaru na ekranie C1 (US6.1). */
@@ -108,6 +107,7 @@ sealed interface PlaceChoice {
  * (obrót ekranu), a po końcu pomiaru przestaje (NFR-27). Wynik zostaje w ViewModelu, więc powrót na ekran go nie
  * kasuje; [repeat] zaczyna od nowa bez limitu (NFR-23). Po pomiarze podpowiada budynek z katalogu bez sieci,
  * a Zbierający go potwierdza, wybiera inny albo zostawia „poza budynkiem” (US6.2).
+ * Odliczanie „Pomiar: zostało 12 s” zmienia się co sekundę także bez nowych odczytów (NFR-2).
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -126,7 +126,8 @@ class MeasureViewModel
 
         /**
          * Budynki najbliżej punktu do sekcji „Wybierz budynek”, od najbliższego, z odległością; puste, dopóki pomiar
-         * się nie skończy (US6.2, NFR-4).
+         * się nie skończy (US6.2, NFR-4). Podpowiedź budynku bierze katalog z pliku albo już pobrany, bez czekania
+         * na serwer (NFR-4: do 2 s bez sieci).
          */
         val buildings: StateFlow<List<BuildingHint>> = nearby
 
@@ -161,7 +162,7 @@ class MeasureViewModel
             choose { PlaceChoice.Outside }
         }
 
-        // Wyjście z C1 kończy zgłoszenie, więc pola odłożone przez „Zmień miejsce” na C2 już nie wrócą (US7.4).
+        /** Wyjście z C1 kończy zgłoszenie, więc pola odłożone przez „Zmień miejsce” na C2 już nie wrócą (US7.4). */
         override fun onCleared() {
             draft.clear()
         }
@@ -174,7 +175,6 @@ class MeasureViewModel
             }
         }
 
-        // Podpowiedź z katalogu z pliku albo już pobranego, bez czekania na serwer (NFR-4: do 2 s bez sieci).
         private fun locate(attempt: Int, point: GeoPoint) {
             viewModelScope.launch {
                 val buildings = catalog.catalogUpdates().first().buildings

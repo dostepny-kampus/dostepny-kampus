@@ -121,6 +121,16 @@ PATH="${PATH#"$(dirname "$0")":}" exec jq "$@"
   case_ok
 }
 
+case_fixed() { pr_json autor-pr 'Fixed #12'; issue_json 12 OPEN autor-pr; }
+case_resolve() { pr_json autor-pr 'resolve #12'; issue_json 12 OPEN autor-pr; }
+case_all_forms() {
+  local number
+  pr_json autor-pr 'close #12\nCloses #13\nclosed #14\nfix #15\nFixes #16\nFIXED #17\nresolve #18\nresolves #19\nResolved #20' 12-zadanie
+  for number in 12 13 14 15 16 17 18 19 20; do
+    issue_json "$number" OPEN autor-pr
+  done
+}
+
 case_two_issues_ok() {
   pr_json autor-pr 'Closes #12\nresolves #13'
   issue_json 12 OPEN autor-pr
@@ -189,5 +199,9 @@ labeler_case() {
 for path in android/app/Main.kt backend/pom.xml api/openapi.yaml .github/workflows/a.yml docs/docs/a.md specs/a.feature   data/campus/budynki.json infra/docker-compose.yml README.md LICENSE .gitignore .gitattributes .editorconfig   commitlint.config.mjs; do
   labeler_case "$path"
 done
+
+run_case "forma Fixed #N" 0 '' case_fixed
+run_case "forma resolve #N" 0 '' case_resolve
+run_case "wszystkie dziewięć form słów GitHuba daje dziewięć issue" 0 '#12 #13 #14 #15 #16 #17 #18 #19 #20' case_all_forms
 
 exit "$((failures > 0 ? 1 : 0))"

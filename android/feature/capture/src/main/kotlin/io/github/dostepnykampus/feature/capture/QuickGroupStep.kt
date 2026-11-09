@@ -19,7 +19,6 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.BarrierGroup
 
-// Piętra budynku podstawowego w pytaniu kroku 2, od parteru; budynek szczegółowy dostanie etykiety PWr (US4.5).
 private val BASIC_FLOORS = 0..4
 
 /** Napis grupy barier na V4, prostszy niż nazwa grupy w formularzu C2 (BR-14, PW-7). */
@@ -51,6 +50,7 @@ internal fun QuickGroupQuestion(onGroup: (BarrierGroup) -> Unit) {
 
 /**
  * Krok 2 V4, pytanie o piętro po wyborze [group]: „Nie wiem” i piętra od najniższego (US4.5, BR-14).
+ * W budynku podstawowym piętra to parter i cztery kolejne; budynek szczegółowy dostanie etykiety PWr (US4.5).
  *
  * @param group wybrana grupa, pokazana nad pytaniem
  * @param onFloor numer piętra; `null` to „Nie wiem”
