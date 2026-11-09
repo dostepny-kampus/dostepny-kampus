@@ -63,5 +63,7 @@ FAKE_FAIL=1 WANT_STATUS=1 run_case "błąd pierwszego issue nie zostawia drugieg
 FAKE_FAIL=2 WANT_STATUS=1 run_case "błąd drugiego issue: pierwsze zamknięte, kod różny od 0" 'Closes #1\nCloses #2' "1|$done7" '' 'niezamknięte: #2'
 FAKE_FAIL='1 2' WANT_STATUS=1 run_case "błąd obu issue: lista obu" 'Closes #1\nCloses #2' '' '' 'niezamknięte: #1 #2'
 FAKE_VIEW_FAIL=1 WANT_STATUS=1 run_case "błąd gh issue view: kolejne issue nadal zamykane" 'Closes #1\nCloses #2' "2|$done7" '' 'niezamknięte: #1'
+run_case "formy Fixed i resolve" 'Fixed #3\nresolve #4' "3|$done7\n4|$done7"
+run_case "wszystkie dziewięć form słów GitHuba" 'close #1\nCloses #2\nCLOSED #3\nfix #4\nfixes #5\nFixed #6\nresolve #7\nResolves #8\nresolved #9' "1|$done7\n2|$done7\n3|$done7\n4|$done7\n5|$done7\n6|$done7\n7|$done7\n8|$done7\n9|$done7"
 
 exit "$((failures > 0 ? 1 : 0))"
