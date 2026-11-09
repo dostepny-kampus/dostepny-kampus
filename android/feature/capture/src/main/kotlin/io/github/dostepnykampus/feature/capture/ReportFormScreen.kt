@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.map
  * @param onSave zgłoszenie zapisane w kolejce (NFR-5); dalej C3
  * @param modifier wymiary nadane przez aplikację
  * @param viewModel formularz; w aplikacji z grafu Hilt, w testach z zapisem testowym
+ * @param draft szkic współdzielony z C1 przez nawigację
  */
 @Composable
 fun ReportFormScreen(
@@ -37,8 +39,9 @@ fun ReportFormScreen(
     onSave: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ReportFormViewModel = hiltViewModel(),
+    draft: ReportDraft = remember { ReportDraft() },
 ) {
-    SideEffect { viewModel.open(ReportForm(place = route.place())) }
+    SideEffect { viewModel.open(ReportForm(place = route.place()), draft) }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val leave by rememberUpdatedState(onLeave)
     val save by rememberUpdatedState(onSave)
