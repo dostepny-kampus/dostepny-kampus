@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -85,6 +86,15 @@ final class NullabilityArchitectureTest {
     }
 
     @Test
+    void productionHasNoNullUnmarked() {
+        Assertions.assertDoesNotThrow(
+            () -> NullabilityArchitectureTest.unmarked()
+                .check(NullabilityArchitectureTest.production()),
+            "Kod produkcyjny wyłącza NullAway przez @NullUnmarked"
+        );
+    }
+
+    @Test
     void optionalOnlyAsMethodResult() {
         Assertions.assertDoesNotThrow(
             () -> NullabilityArchitectureTest.optionals()
@@ -126,17 +136,30 @@ final class NullabilityArchitectureTest {
 
     private static Stream<ArchRule> emptyScopeRules() {
         return Stream.of(
+            NullabilityArchitectureTest.unmarked(),
             NullabilityArchitectureTest.optionals(),
             NullabilityArchitectureTest.nullables(NullabilityArchitectureTest.LISTED)
         );
     }
 
     private static Stream<Sample> samples() {
+        final ArchRule unmarked = NullabilityArchitectureTest.unmarked();
         final ArchRule optional = NullabilityArchitectureTest.optionals();
         final ArchRule nullable = NullabilityArchitectureTest.nullables(
             Map.of("Listed", Set.of("kept"))
         );
         return Stream.of(
+            new Sample(
+                unmarked, "bez NullUnmarked", Map.of("u/Plain", "final class Plain { }"), false
+            ),
+            new Sample(
+                unmarked, "pakiet z NullUnmarked",
+                Map.of("v/package-info", "NullUnmarked", "v/Plain", "final class Plain { }"),
+                true
+            ),
+            new Sample(unmarked, "u/A", "@NullUnmarked class A { }", true),
+            new Sample(unmarked, "u/A", "class A { @NullUnmarked void f() { } }", true),
+            new Sample(unmarked, "u/A", "class A { @NullUnmarked A() { } }", true),
             new Sample(optional, "a/A", "class A { Optional<String> v; }", true),
             new Sample(optional, "a/A", "class A { void f(Optional<String> v) { } }", true),
             new Sample(optional, "a/A", "class A { A(Optional<String> v) { } }", true),
@@ -182,6 +205,25 @@ final class NullabilityArchitectureTest {
                     "a/A", "class A { @Nullable String v; }"
                 ), false
             )
+        );
+    }
+
+    private static ArchRule unmarked() {
+        return ArchRuleDefinition.classes().should(
+            new ArchCondition<JavaClass>("not switch off NullAway with @NullUnmarked") {
+                @Override
+                public void check(final JavaClass item, final ConditionEvents events) {
+                    if (
+                        item.isAnnotatedWith(NullUnmarked.class)
+                        || item.getPackage().isAnnotatedWith(NullUnmarked.class)
+                        || item.getMembers().stream().anyMatch(
+                            member -> member.isAnnotatedWith(NullUnmarked.class)
+                        )
+                    ) {
+                        events.add(SimpleConditionEvent.violated(item, item.getName()));
+                    }
+                }
+            }
         );
     }
 
