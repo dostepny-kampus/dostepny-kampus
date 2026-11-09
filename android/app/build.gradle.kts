@@ -59,6 +59,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(project(":core:network"))
     androidTestImplementation(libs.okhttp)
+    androidTestImplementation(libs.maplibre.android)
     androidTestImplementation(libs.kotlinx.serialization.json)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
