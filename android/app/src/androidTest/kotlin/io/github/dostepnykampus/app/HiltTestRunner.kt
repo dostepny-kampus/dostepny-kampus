@@ -19,7 +19,7 @@ class HiltTestRunner : AndroidJUnitRunner() {
     override fun newApplication(cl: ClassLoader?, className: String?, context: Context?): Application =
         super.newApplication(cl, HiltTestApplication::class.java.name, context)
 
-    /** Podkład mapy pochodzi z pliku, a nie z sieci: biblioteka mapy dostaje stan „brak połączenia”. */
+    /** Biblioteka mapy dostaje deklarację „brak połączenia”; to tylko flaga, styl nadal może pobierać kafelki z sieci. */
     override fun callApplicationOnCreate(app: Application?) {
         super.callApplicationOnCreate(app)
         app?.let { MapLibre.getInstance(it) }
