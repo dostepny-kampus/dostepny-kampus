@@ -27,18 +27,36 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import org.robolectric.annotation.Implementation
+import org.robolectric.annotation.Implements
 import org.robolectric.shadows.ShadowActivity
 import java.io.File
+import java.nio.file.Path
 
 private const val CAMERA_QUALITY = 90
 
 /** „Zrób zdjęcie” na C2: aparat zapisuje plik aplikacji, a zdjęcie wraca do formularza (US7.1). */
 @RunWith(RobolectricTestRunner::class)
-@Config(qualifiers = "w360dp-h800dp")
+@Config(
+    qualifiers = "w360dp-h800dp",
+    instrumentedPackages = ["androidx.core.content"],
+    shadows = [PhotoCameraTest.FileProviderPathShadow::class],
+)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class PhotoCameraTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
+
+    // FileProvider zakłada separator Androida, ale Robolectric używa ścieżek systemu hosta.
+    @Implements(className = "androidx.core.content.FileProvider\$SimplePathStrategy", isInAndroidSdk = false)
+    class FileProviderPathShadow {
+        @Implementation
+        protected fun belongsToRoot(filePath: String, rootPath: String): Boolean {
+            val file = Path.of(filePath)
+            val root = Path.of(rootPath)
+            return file != root && file.startsWith(root)
+        }
+    }
 
     private fun show() {
         val viewModel = ReportFormViewModel { _, _, _ -> }
@@ -58,7 +76,6 @@ class PhotoCameraTest {
     }
 
     // Wiersz: C2, rezygnacja w aparacie → C2 bez zdjęcia, potem „Zrób zdjęcie” → aparat → C2 ze zdjęciem, US7.1.
-    // Jeden test, bo FileProvider zapamiętuje katalog plików pierwszej aktywności na cały proces testów.
     @Test
     fun us7_1_cancel_then_photo() {
         show()
