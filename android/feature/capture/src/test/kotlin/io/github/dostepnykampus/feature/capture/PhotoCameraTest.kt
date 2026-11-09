@@ -47,7 +47,7 @@ class PhotoCameraTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    // FileProvider zakłada separator Androida, ale Robolectric używa ścieżek systemu hosta.
+    /** FileProvider zakłada separator Androida, a Robolectric używa ścieżek systemu hosta. */
     @Implements(className = "androidx.core.content.FileProvider\$SimplePathStrategy", isInAndroidSdk = false)
     class FileProviderPathShadow {
         @Implementation
@@ -75,9 +75,15 @@ class PhotoCameraTest {
         return request to File(File(compose.activity.filesDir, PHOTO_DIR), name)
     }
 
-    // Wiersz: C2, rezygnacja w aparacie → C2 bez zdjęcia, potem „Zrób zdjęcie” → aparat → C2 ze zdjęciem, US7.1.
+    /**
+     * C2 wraca z aparatu bez zdjęcia po anulowaniu i ze zdjęciem po zatwierdzeniu (US7.1).
+     * Obie próby używają jednej aktywności, bo FileProvider zapamiętuje katalog plików.
+     */
     @Test
     fun us7_1_cancel_then_photo() {
+        val strategy = Class.forName("androidx.core.content.FileProvider\$SimplePathStrategy")
+        val method = strategy.getDeclaredMethod("belongsToRoot", String::class.java, String::class.java)
+        assertEquals(Boolean::class.javaPrimitiveType, method.returnType)
         show()
         val (cancelled, empty) = openCamera()
         shadowOf(compose.activity).receiveResult(cancelled.intent, Activity.RESULT_CANCELED, null)
