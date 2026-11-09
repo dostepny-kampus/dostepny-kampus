@@ -139,7 +139,7 @@ class AppNavigator(
     restarts: MutableList<Int> = mutableListOf(),
     private val onChooseMap: () -> Unit = {},
 ) : NavigationHistory(backStack, onFirstHelpLeft, restarts) {
-    private val isSignedIn: Boolean
+    internal val isSignedIn: Boolean
         get() = roles.currentAccount().isSignedIn
 
     internal val hasWork: Boolean

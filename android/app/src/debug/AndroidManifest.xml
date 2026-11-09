@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Debug: czysty HTTP tylko do komputera gospodarza z emulatora i do localhost. -->
-    <application android:networkSecurityConfig="@xml/network_security_config" />
+    <application android:networkSecurityConfig="@xml/network_security_config">
+        <!-- Przełącznik ról z osobną ikoną w launcherze, tylko w debug (US14.1). -->
+        <activity
+            android:name=".debug.DebugRoleActivity"
+            android:exported="true"
+            android:label="@string/debug_rola_tytul">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
 </manifest>
