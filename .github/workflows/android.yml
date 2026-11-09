@@ -14,6 +14,9 @@ on:
       - "data/buildings/**"
       - "docs/docs/ux/tokeny.yml"
       - ".github/workflows/android.yml"
+  merge_group:
+    types:
+      - checks_requested
 
 permissions:
   contents: read
