@@ -4,7 +4,9 @@ android:
 
 backend:
   - changed-files:
-      - any-glob-to-any-file: "backend/**"
+      - any-glob-to-any-file:
+          - "backend/**"
+          - "data/**"
 
 api:
   - changed-files:
@@ -12,7 +14,13 @@ api:
 
 ci:
   - changed-files:
-      - any-glob-to-any-file: ".github/**"
+      - any-glob-to-any-file:
+          - ".github/**"
+          - "infra/**"
+          - "commitlint.config.mjs"
+          - ".editorconfig"
+          - ".gitattributes"
+          - ".gitignore"
 
 test:
   - changed-files:
@@ -24,4 +32,7 @@ test:
 
 documentation:
   - changed-files:
-      - any-glob-to-any-file: "docs/**"
+      - any-glob-to-any-file:
+          - "docs/**"
+          - "README.md"
+          - "LICENSE"
