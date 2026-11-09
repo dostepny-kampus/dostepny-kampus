@@ -5,12 +5,15 @@ on:
     branches:
       - main
       - "sprint/**"
+  merge_group:
+    types:
+      - checks_requested
 
 permissions:
   contents: read
 
 concurrency:
-  group: api-${{ github.event.pull_request.number }}
+  group: api-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -29,10 +32,21 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
-      - name: Sprawdź, czy PR zmienia kontrakt API
+      - name: Sprawdź, czy PR albo grupa w kolejce zmienia kontrakt API
         id: diff
+        env:
+          EVENT: ${{ github.event_name }}
+          GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: |
-          if git diff --quiet HEAD^1 HEAD -- api .github/workflows/api.yml; then
+          from=HEAD^1
+          to=HEAD
+          if [[ $EVENT == merge_group ]]; then
+            git fetch --no-tags --depth=1 origin "$GROUP_BASE_SHA"
+            from=$GROUP_BASE_SHA
+            to=$GROUP_HEAD_SHA
+          fi
+          if git diff --quiet "$from" "$to" -- api .github/workflows/api.yml; then
             echo "api=false" >> "$GITHUB_OUTPUT"
           else
             echo "api=true" >> "$GITHUB_OUTPUT"
@@ -60,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
