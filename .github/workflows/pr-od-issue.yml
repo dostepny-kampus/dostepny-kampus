@@ -1,0 +1,53 @@
+name: pr-od-issue
+
+# Kontrola „PR od issue”: PR musi wskazywać otwarte issue przypisane autorowi (poza Dependabotem).
+# Domyślnie tylko ostrzega w logu. Tryb wymagany (PR bez issue → szkic i komentarz) włącza zmienna repozytorium
+# PR_OD_ISSUE_WYMAGANE=1, ustawiana od daty podanej przez właściciela repozytorium.
+# Zdarzenie pull_request: PR z gałęzi tego repozytorium ma token z zapisem; PR z forków i Dependabota pomijamy.
+# Skrypt pochodzi z gałęzi docelowej (checkout base.ref), nie z kodu PR.
+on:
+  pull_request:
+    branches:
+      - main
+      - "sprint/**"
+    types:
+      - opened
+      - edited
+      - reopened
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-od-issue-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  kontrola:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          persist-credentials: false
+      - name: Sprawdź, czy PR zamyka otwarte issue przypisane autorowi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_OD_ISSUE_WYMAGANE: ${{ vars.PR_OD_ISSUE_WYMAGANE }}
+        run: |
+          # PR, który dopiero wprowadza ten skrypt, nie znajdzie go jeszcze w gałęzi docelowej.
+          if [[ ! -f .github/scripts/pr-od-issue-szkic.sh ]]; then
+            echo "::notice title=PR od issue::Skryptu nie ma jeszcze w gałęzi docelowej; kontrola pominięta."
+            exit 0
+          fi
+          bash .github/scripts/pr-od-issue-szkic.sh "$PR_NUMBER"
