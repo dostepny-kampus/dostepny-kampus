@@ -61,12 +61,15 @@ const val NEAREST_COUNT = 3
  * @param limit najwięcej budynków na liście
  * @return podpowiedzi od najbliższego, najwyżej [limit]
  */
-fun nearestBuildings(point: GeoPoint, buildings: List<Building>, limit: Int = NEAREST_COUNT): List<BuildingHint> =
-    buildings
-        .map { building ->
-            val isInside = locateBuilding(point, listOf(building)) is LocateResult.InsideOutline
-            val meters = if (isInside) 0.0 else building.edgeDistanceMeters(point)
-            BuildingHint(building, distanceMeters = meters, isInside = isInside)
-        }
-        .sortedWith(compareBy<BuildingHint> { it.distanceMeters }.thenBy { !it.isInside })
-        .take(limit)
+fun nearestBuildings(point: GeoPoint, buildings: List<Building>, limit: Int = NEAREST_COUNT): List<BuildingHint> {
+    val hints = buildings.map { building -> building.hintFor(point) }
+    return hints.sortedWith(nearestFirst).take(limit)
+}
+
+private val nearestFirst = compareBy<BuildingHint> { it.distanceMeters }.thenBy { !it.isInside }
+
+private fun Building.hintFor(point: GeoPoint): BuildingHint {
+    val isInside = locateBuilding(point, listOf(this)) is LocateResult.InsideOutline
+    val meters = if (isInside) 0.0 else edgeDistanceMeters(point)
+    return BuildingHint(this, distanceMeters = meters, isInside = isInside)
+}
