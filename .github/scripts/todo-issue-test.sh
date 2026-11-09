@@ -80,6 +80,8 @@ run_case "PR zamyka #5, a kod ma TODO(#5): naruszenie z plikiem i wierszem" 1 't
 run_case "PR zamyka #5, TODO(#5) małymi literami: naruszenie" 1 'ten PR zamyka #5' app/Main.kt '// todo(#5): później' 'Opis
 
 fixes #5'
+run_case "PR zamyka #5 słowem Fixed, a kod ma TODO(#5): naruszenie" 1 'ten PR zamyka #5' app/Main.kt '// TODO(#5): później' 'Fixed #5'
+run_case "PR zamyka #5 słowem Resolved, TODO(#5): naruszenie" 1 'ten PR zamyka #5' app/Main.kt '// TODO(#5): później' 'Resolved #5'
 run_case "PR zamyka #5, a kod ma TODO(#8) z otwartym niezamykanym issue: czysto" 0 '' app/Main.kt '// TODO(#8): później' 'Closes #5'
 run_case "Markdown poza zakresem skanowania" 0 '' docs/notatki.md 'TODO: opisać'
 run_case "pliki samego strażnika są pomijane" 0 '' .github/scripts/todo-issue.sh '# TODO: przykład znacznika'

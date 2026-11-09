@@ -8,15 +8,17 @@ set -euo pipefail
 # musi mieć postać ZNACZNIK(#N), gdzie issue #N istnieje i jest otwarte. Skanuje pliki śledzone przez git
 # o rozszerzeniach kt, kts, java, yml, yaml, sh, z pominięciem plików samego strażnika (zawierają przykłady).
 # Stan issue z gh (bez dostępu do issue skrypt kończy się kodem 2); w teście zamiast sieci: ISSUE_JSON_DIR z plikami <numer>.json (gh issue view --json state,url).
-# PR_BODY (opis PR, opcjonalny): znacznik wskazujący issue zamykane przez ten PR (Closes|Fixes|Resolves #N) to naruszenie,
+# PR_BODY (opis PR, opcjonalny): znacznik wskazujący issue zamykane przez ten PR (słowa zamykające z slowa-zamykajace.sh, np. Closes, Fixed) to naruszenie,
 # bo po scaleniu issue się zamknie, a znacznik zostanie i zaczerwieni cudze PR.
 # Kod wyjścia: 0 = czysto, 1 = naruszenie, 2 = błąd narzędzia gh lub jq (nie wiemy, czy issue jest w porządku).
 found=0
 declare -A states=()
+# shellcheck source=slowa-zamykajace.sh
+source "$(dirname "${BASH_SOURCE[0]}")/slowa-zamykajace.sh"
 declare -A zamykane=()
 while read -r numer; do
   [[ -n $numer ]] && zamykane[$numer]=1
-done < <(grep -oiP '(?<!\w)(?:closes|fixes|resolves)\s+#\K\d+' <<<"${PR_BODY:-}" || true)
+done < <(numery_zamykanych_issue <<<"${PR_BODY:-}")
 state=''
 
 tool_error() {
