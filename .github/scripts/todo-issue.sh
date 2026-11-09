@@ -7,7 +7,7 @@ set -euo pipefail
 # Strażnik znaczników zadań, uruchamiany w katalogu repozytorium git. Znacznik TODO, FIXME, HACK lub @todo
 # musi mieć postać ZNACZNIK(#N), gdzie issue #N istnieje i jest otwarte. Skanuje pliki śledzone przez git
 # o rozszerzeniach kt, kts, java, yml, yaml, sh, z pominięciem plików samego strażnika (zawierają przykłady).
-# Stan issue z gh; w teście zamiast sieci: ISSUE_JSON_DIR z plikami <numer>.json (gh issue view --json state).
+# Stan issue z gh; w teście zamiast sieci: ISSUE_JSON_DIR z plikami <numer>.json (gh issue view --json state,url).
 found=0
 declare -A states=()
 
@@ -17,12 +17,17 @@ issue_state() {
     if [[ -n ${ISSUE_JSON_DIR:-} ]]; then
       json="$(cat "$ISSUE_JSON_DIR/$number.json" 2>/dev/null)" || json=''
     else
-      json="$(gh issue view "$number" --json state 2>/dev/null)" || json=''
+      json="$(gh issue view "$number" --json state,url 2>/dev/null)" || json=''
     fi
     if [[ -z $json ]]; then
       states[$number]=MISSING
     else
-      states[$number]="$(jq -r '.state' <<<"$json")"
+      # gh issue view zwraca też dane PR; numer PR nie jest issue.
+      if [[ "$(jq -r '.url // ""' <<<"$json")" == */pull/* ]]; then
+        states[$number]=PULL
+      else
+        states[$number]="$(jq -r '.state' <<<"$json")"
+      fi
     fi
   fi
   printf '%s' "${states[$number]}"
@@ -40,6 +45,7 @@ while IFS= read -r -d '' path; do
       number="${BASH_REMATCH[1]}"
       case "$(issue_state "$number")" in
         OPEN) ;;
+        PULL) report "$path" "$line" "${marker}: to PR, nie issue." ;;
         MISSING) report "$path" "$line" "${marker}: issue nie istnieje." ;;
         *) report "$path" "$line" "${marker}: issue zamknięte." ;;
       esac
