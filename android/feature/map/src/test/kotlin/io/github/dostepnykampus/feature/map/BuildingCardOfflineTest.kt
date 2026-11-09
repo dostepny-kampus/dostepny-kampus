@@ -28,8 +28,10 @@ class BuildingCardOfflineTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    // Wiersz: V2 bez internetu → linia „Bez internetu” bez daty jak na V1, ze stanu sieci telefonu; po powrocie
-    //   sieci linia znika, NFR-10, US2.8, decyzje 84, 115.
+    /**
+     * Wiersz: V2 bez internetu → linia „Bez internetu” bez daty jak na V1, ze stanu sieci telefonu; po powrocie
+     *   sieci linia znika, NFR-10, US2.8, decyzje 84, 115.
+     */
     @Test
     fun nfr10_offline_line_on_card() {
         val online = MutableStateFlow(false)
@@ -62,7 +64,7 @@ class BuildingCardOfflineTest {
         compose.onNodeWithText("Bez internetu").assertDoesNotExist()
     }
 
-    // Wiersz: V2, stan sieci jeszcze nie przyszedł → brak linii „Bez internetu”, żeby nie mignęła, NFR-10, US2.8.
+    /** Wiersz: V2, stan sieci jeszcze nie przyszedł → brak linii „Bez internetu”, żeby nie mignęła, NFR-10, US2.8. */
     @Test
     fun nfr10_no_line_before_state() {
         val repository =

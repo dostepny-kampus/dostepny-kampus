@@ -16,9 +16,11 @@ import kotlin.math.log2
 class MapLimitsTest {
     private val span = 360.0 / 16_384
 
-    // Wiersz: V1, najmniejsze powiększenie pokazuje cały obszar kampusu także na telefonie, na którym dp to kilka
-    // pikseli; przy gęstości 3 widok 1200 × 2400 pikseli ma 400 × 800 dp, a 3072 × 2304 ma 1024 × 768 dp
-    // (NFR-39).
+    /**
+     * Wiersz: V1, najmniejsze powiększenie pokazuje cały obszar kampusu także na telefonie, na którym dp to kilka
+     * pikseli; przy gęstości 3 widok 1200 × 2400 pikseli ma 400 × 800 dp, a 3072 × 2304 ma 1024 × 768 dp
+     * (NFR-39).
+     */
     @Test
     fun nfr39_min_zoom_in_dp() {
         val density = Density(density = 3f)
@@ -30,8 +32,10 @@ class MapLimitsTest {
         assertEquals(14.0 + log2(768.0 / 512), landscape?.minZoom ?: 0.0, ZOOM_DELTA)
     }
 
-    // Wiersz: V1, na 60° szerokości obszar w rzucie mapy jest dwa razy wyższy niż w stopniach, więc najmniejsze
-    // powiększenie obszaru ograniczonego wysokością jest o jeden poziom niższe niż na równiku (NFR-39).
+    /**
+     * Wiersz: V1, na 60° szerokości obszar w rzucie mapy jest dwa razy wyższy niż w stopniach, więc najmniejsze
+     * powiększenie obszaru ograniczonego wysokością jest o jeden poziom niższe niż na równiku (NFR-39).
+     */
     @Test
     fun nfr39_min_zoom_at_60_deg() {
         val tall = CampusBounds(west = 17.0, south = 60.0 - span / 4, east = 17.0 + span / 8, north = 60.0 + span / 4)

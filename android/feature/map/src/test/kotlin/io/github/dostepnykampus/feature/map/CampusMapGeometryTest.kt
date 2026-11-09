@@ -91,8 +91,11 @@ class CampusMapGeometryTest {
 
     private suspend fun CampusMapViewModel.ready(): CampusMapUiState = uiState.first { it.mapData != null }
 
-    // Wiersz: W3, O5, katalog z pliku → geometria liczona w kontekście obliczeń, nie w wątku wywołującym, a stan niesie
-    //   gotowe dane mapy, NFR-11.
+    /**
+     * Wiersz: W3, O5, katalog z pliku → geometria liczona w kontekście obliczeń, nie w wątku wywołującym, a stan niesie
+     *   gotowe dane mapy, NFR-11. Wątek liczący kończy pracę przed `resetMain`, więc jego wznowienie nie trafi do
+     *   następnego testu.
+     */
     @Test
     fun nfr11_geometry_in_compute() =
         runTest {
@@ -107,13 +110,14 @@ class CampusMapGeometryTest {
                     assertEquals(state.catalog?.let(::campusMapData), state.mapData, "stan bez gotowych danych mapy")
                 }
             } finally {
-                // Wątek liczący kończy pracę przed resetMain, więc jego wznowienie nie trafi do następnego testu.
                 pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
             }
         }
 
-    // Wiersz: W3, jeden katalog, potem zmiana internetu i wyboru „Lista” → ta sama geometria i jedno wywołanie
-    //   funkcji liczącej, nie przeliczenie przy każdej zmianie stanu, NFR-11.
+    /**
+     * Wiersz: W3, jeden katalog, potem zmiana internetu i wyboru „Lista” → ta sama geometria i jedno wywołanie
+     *   funkcji liczącej, nie przeliczenie przy każdej zmianie stanu, NFR-11.
+     */
     @Test
     fun nfr11_geometry_once_catalog() =
         runTest(UnconfinedTestDispatcher()) {
@@ -128,8 +132,10 @@ class CampusMapGeometryTest {
             assertEquals(1, calls.get(), "geometria liczona częściej niż raz na katalog")
         }
 
-    // Wiersz: W3, anulowanie, przerwany wątek liczący katalog z kilkoma konturami → liczenie rzuca przerwanie, nie
-    //   zwraca wyniku (zamknięcie ekranu przerywa pracę CPU), NFR-11.
+    /**
+     * Wiersz: W3, anulowanie, przerwany wątek liczący katalog z kilkoma konturami → liczenie rzuca przerwanie, nie
+     *   zwraca wyniku (zamknięcie ekranu przerywa pracę CPU), NFR-11.
+     */
     @Test
     fun nfr11_interrupt_stops_compute() {
         val features =

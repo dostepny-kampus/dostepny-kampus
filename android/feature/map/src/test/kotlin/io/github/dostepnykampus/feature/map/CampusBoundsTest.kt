@@ -23,9 +23,11 @@ class CampusBoundsTest {
     private val bounds = CampusBounds(west = 17.0, south = 60.0, east = 17.04, north = 60.02)
     private val limits = MapLimits(bounds, widthDp = 400.0, heightDp = 800.0)
 
-    // Wiersz: V1, mapa zostaje w prostokącie obejmującym kontury wszystkich budynków, powiększonym o 500 m
-    // z każdej strony (NFR-39), nie tylko budynek startowy. Na 60° szerokości 500 m na wschód to dwa razy więcej
-    // stopni niż 500 m na północ.
+    /**
+     * Wiersz: V1, mapa zostaje w prostokącie obejmującym kontury wszystkich budynków, powiększonym o 500 m
+     * z każdej strony (NFR-39), nie tylko budynek startowy. Na 60° szerokości 500 m na wschód to dwa razy więcej
+     * stopni niż 500 m na północ.
+     */
     @Test
     fun nfr39_bounds_plus_500_m() {
         val start = rectangle(west = 17.0, south = 60.0, east = 17.01, north = 60.004)
@@ -34,8 +36,10 @@ class CampusBoundsTest {
         assertBounds(expected, campusMapData(catalog(START_BUILDING to start, "T-1" to far)).bounds)
     }
 
-    // Wiersz: V1, prostokąt obszaru kampusu wynika z konturów w danych aplikacji, inne kontury dają inny prostokąt
-    // (NFR-39).
+    /**
+     * Wiersz: V1, prostokąt obszaru kampusu wynika z konturów w danych aplikacji, inne kontury dają inny prostokąt
+     * (NFR-39).
+     */
     @Test
     fun nfr39_bounds_from_data() {
         val outline = rectangle(west = -0.01, south = -0.02, east = 0.0, north = 0.0)
@@ -43,8 +47,10 @@ class CampusBoundsTest {
         assertBounds(expected, campusMapData(catalog("T-0" to outline)).bounds)
     }
 
-    // Wiersz: V1, strzałki przesuwania zatrzymują się na granicy obszaru kampusu bez komunikatu; środek widoku nie
-    // wychodzi poza prostokąt (NFR-53, NFR-39).
+    /**
+     * Wiersz: V1, strzałki przesuwania zatrzymują się na granicy obszaru kampusu bez komunikatu; środek widoku nie
+     * wychodzi poza prostokąt (NFR-53, NFR-39).
+     */
     @Test
     fun nfr53_arrows_stop_at_edge() {
         val start = MapCamera(center = GeoPoint(longitude = 17.02, latitude = 60.01), zoom = 15.0)
@@ -61,8 +67,10 @@ class CampusBoundsTest {
         }
     }
 
-    // Wiersz: V1, najmniejsze powiększenie to takie, przy którym cały prostokąt mieści się w widoku; bardziej
-    // oddalić mapy się nie da (NFR-39). Na równiku pas 360/2^14 stopnia ma przy powiększeniu 14 dokładnie 512 dp.
+    /**
+     * Wiersz: V1, najmniejsze powiększenie to takie, przy którym cały prostokąt mieści się w widoku; bardziej
+     * oddalić mapy się nie da (NFR-39). Na równiku pas 360/2^14 stopnia ma przy powiększeniu 14 dokładnie 512 dp.
+     */
     @Test
     fun nfr39_min_zoom_whole_campus() {
         val span = 360.0 / 16_384

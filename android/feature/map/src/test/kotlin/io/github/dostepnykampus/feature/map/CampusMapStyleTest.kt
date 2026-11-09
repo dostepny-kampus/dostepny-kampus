@@ -50,7 +50,7 @@ class CampusMapStyleTest {
         assertEquals("C-13", properties.text("label"))
     }
 
-    // Wiersz: V1, mapa zostaje na obszarze kampusu; podkładu spoza tego prostokąta aplikacja nie pobiera (NFR-39).
+    /** Wiersz: V1, mapa zostaje na obszarze kampusu; podkładu spoza tego prostokąta aplikacja nie pobiera (NFR-39). */
     @Test
     fun nfr39_basemap_only_campus_area() {
         val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
