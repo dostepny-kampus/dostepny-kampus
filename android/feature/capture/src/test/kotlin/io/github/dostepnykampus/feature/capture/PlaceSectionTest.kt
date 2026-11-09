@@ -6,7 +6,13 @@
 package io.github.dostepnykampus.feature.capture
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -50,6 +56,7 @@ class PlaceSectionTest {
     fun us6_2_hint_name_and_distance() {
         show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 12.4, isInside = false)))
         compose.onNodeWithText("Czy to budynek A-1?").assertIsDisplayed()
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
         compose.onNodeWithText("Gmach Główny").assertIsDisplayed()
         compose.onNodeWithText("12 m od punktu").assertIsDisplayed()
         compose.onNodeWithText("Potwierdź").performClick()
@@ -89,6 +96,9 @@ class PlaceSectionTest {
         show(PlaceChoice.Outside)
         compose.onNodeWithText("Miejsce: poza budynkiem").assertIsDisplayed()
         compose.onNodeWithText("Wybierz budynek").assertIsDisplayed()
+        compose.onNodeWithText("Wybierz budynek").performClick()
+        compose.onNode(hasText("Wybierz budynek") and hasAnyAncestor(isDialog())).assertIsDisplayed()
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
     }
 
     @Test
