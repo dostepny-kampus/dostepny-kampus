@@ -56,7 +56,7 @@ class HelpScreenTest {
         }
     }
 
-    /** Scenariusz: przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu */
+    /** Scenariusz: przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */
     @Test
     fun us5_1_first_launch_skip_v1() {
         shell(firstLaunch = true)
@@ -67,7 +67,7 @@ class HelpScreenTest {
         assertEquals(listOf("pokazana"), calls)
     }
 
-    /** Scenariusz: przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy */
+    /** Scenariusz: przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy. */
     @Test
     fun us5_1_help_opens_again() {
         shell(firstLaunch = false)

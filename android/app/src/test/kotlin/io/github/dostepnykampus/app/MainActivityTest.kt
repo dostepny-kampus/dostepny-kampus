@@ -59,7 +59,7 @@ class MainActivityTest {
         compose.waitForIdle()
     }
 
-    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu */
+    /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */
     @Test
     fun us5_1_first_launch_recreate() {
         compose.waitUntil { compose.onAllNodesWithText("Pomoc").fetchSemanticsNodes().isNotEmpty() }
