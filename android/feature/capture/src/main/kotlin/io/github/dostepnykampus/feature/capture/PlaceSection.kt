@@ -91,27 +91,29 @@ internal fun PlaceSection(
 
 @Composable
 private fun PlaceQuestion(place: PlaceChoice, actions: PlaceActions, onPick: () -> Unit) {
-    when (place) {
-        PlaceChoice.Locating -> {
-            Text(stringResource(R.string.budynek_szukanie))
-        }
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        when (place) {
+            PlaceChoice.Locating -> {
+                Text(stringResource(R.string.budynek_szukanie))
+            }
 
-        is PlaceChoice.Suggested -> {
-            Hint(place.hint)
-            Button(onClick = actions.onConfirm) { Text(stringResource(R.string.budynek_potwierdz)) }
-            OutlinedButton(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
-            TextButton(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
-        }
+            is PlaceChoice.Suggested -> {
+                Hint(place.hint)
+                Button(onClick = actions.onConfirm) { Text(stringResource(R.string.budynek_potwierdz)) }
+                OutlinedButton(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
+                TextButton(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
+            }
 
-        is PlaceChoice.Chosen -> {
-            Text(stringResource(R.string.budynek_wybrany, place.building.label()))
-            OutlinedButton(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
-            TextButton(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
-        }
+            is PlaceChoice.Chosen -> {
+                Text(stringResource(R.string.budynek_wybrany, place.building.label()))
+                OutlinedButton(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
+                TextButton(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
+            }
 
-        PlaceChoice.Outside -> {
-            Text(stringResource(R.string.budynek_miejsce_poza))
-            OutlinedButton(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz)) }
+            PlaceChoice.Outside -> {
+                Text(stringResource(R.string.budynek_miejsce_poza))
+                OutlinedButton(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz)) }
+            }
         }
     }
 }
@@ -141,22 +143,24 @@ private fun NearestSection(
     onOutside: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    Text(
-        text = stringResource(R.string.budynek_wybierz),
-        modifier = Modifier.semantics { heading() },
-        style = MaterialTheme.typography.titleMedium,
-    )
-    Text(stringResource(R.string.budynek_najblizej))
-    buildings.items.forEach { hint ->
-        val meters = hint.distanceMeters.roundToInt()
-        OutlinedButton(onClick = { onPick(hint.building.symbol) }, modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(R.string.budynek_na_liscie, hint.building.label(), meters))
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        Text(
+            text = stringResource(R.string.budynek_wybierz),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(stringResource(R.string.budynek_najblizej))
+        buildings.items.forEach { hint ->
+            val meters = hint.distanceMeters.roundToInt()
+            OutlinedButton(onClick = { onPick(hint.building.symbol) }, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.budynek_na_liscie, hint.building.label(), meters))
+            }
         }
+        OutlinedButton(onClick = onOutside, modifier = Modifier.fillMaxWidth()) {
+            Text(stringResource(R.string.budynek_poza))
+        }
+        TextButton(onClick = onCancel) { Text(stringResource(R.string.budynek_anuluj)) }
     }
-    OutlinedButton(onClick = onOutside, modifier = Modifier.fillMaxWidth()) {
-        Text(stringResource(R.string.budynek_poza))
-    }
-    TextButton(onClick = onCancel) { Text(stringResource(R.string.budynek_anuluj)) }
 }
 
 private fun Building.label(): String = name?.let { "$symbol $it" } ?: symbol
