@@ -103,11 +103,12 @@ final class JpegCleanerTest {
 
     private static byte[] segment(final int marker, final String body) {
         final byte[] data = body.getBytes(StandardCharsets.US_ASCII);
+        final int size = data.length + 2;
         final byte[] segment = new byte[data.length + 4];
         segment[0] = (byte) 0xFF;
         segment[1] = (byte) marker;
-        segment[2] = (byte) (data.length + 2 >> 8);
-        segment[3] = (byte) (data.length + 2);
+        segment[2] = (byte) (size >> 8);
+        segment[3] = (byte) size;
         System.arraycopy(data, 0, segment, 4, data.length);
         return segment;
     }
