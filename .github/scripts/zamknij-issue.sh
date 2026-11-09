@@ -17,7 +17,17 @@ if [[ -z $issues ]]; then
   exit 0
 fi
 
+# Próbujemy zamknąć każde issue; błąd jednego nie może zostawić kolejnych otwartych.
+failed=''
 for issue in $issues; do
-  gh issue close "$issue" --comment "Zrobione w #${pr}."
-  echo "Zamknięto #${issue}."
+  if gh issue close "$issue" --comment "Zrobione w #${pr}."; then
+    echo "Zamknięto #${issue}."
+  else
+    failed="${failed:+$failed }#${issue}"
+  fi
 done
+
+if [[ -n $failed ]]; then
+  echo "::error title=Zamykanie issue::niezamknięte: ${failed}"
+  exit 1
+fi
