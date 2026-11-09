@@ -30,13 +30,15 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -46,7 +48,10 @@ import java.io.IOException
 import java.time.LocalDate
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Wejścia karty V2 od karty budynku z serwera do stanu karty (US17.3, NFR-10, NFR-12). */
+/**
+ * Wejścia karty V2 od karty budynku z serwera do stanu karty (US17.3, NFR-10, NFR-12). Praca ViewModelu idzie na
+ * dyspozytorze testowym, więc stan karty jest sprawdzany po zakończeniu całej zaplanowanej pracy, nie po upływie czasu.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class CardServerEntrancesTest {
     private val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON }
@@ -54,7 +59,7 @@ class CardServerEntrancesTest {
 
     @BeforeEach
     fun main() {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
+        Dispatchers.setMain(StandardTestDispatcher())
     }
 
     @AfterEach
@@ -67,74 +72,81 @@ class CardServerEntrancesTest {
      *   z dniem i źródłem zamiast wejść z pliku, US17.3, NFR-12.
      */
     @Test
-    fun us17_3_server_after_phone() {
-        val answer = CompletableDeferred<ApiResult<BuildingDetails>>()
-        val card = openCard { answer.await() }
-        assertEquals(fileCard, card.settled { it is BuildingCardUiState.Ready }, "karta czeka na serwer")
-        answer.complete(ApiResult.Success(DETAILS))
-        assertEquals(listOf(SERVER_ENTRANCE), card.datedEntrances())
-    }
+    fun us17_3_server_after_phone() =
+        runTest {
+            val answer = CompletableDeferred<ApiResult<BuildingDetails>>()
+            val card = openCard { answer.await() }
+            assertEquals(fileCard, settled(card), "karta czeka na serwer")
+            answer.complete(ApiResult.Success(DETAILS))
+            assertEquals(listOf(SERVER_ENTRANCE), datedEntrances(card))
+        }
 
     /**
      * Wiersz: V2 bez sieci albo przy błędzie serwera → wejścia z pliku bez dnia i źródła, bez błędu i bez pustej
      *   listy, NFR-10.
      */
     @Test
-    fun nfr10_failure_keeps_file() {
-        val failures = listOf(ApiResult.NetworkError(IOException("brak sieci")), ApiResult.ServerError(SERVER_ERROR))
-        failures.forEach { failure ->
-            val asked = CompletableDeferred<Unit>()
-            val card =
-                openCard {
-                    asked.complete(Unit)
-                    failure
-                }
-            runBlocking { withTimeoutOrNull(WAIT_MS) { asked.await() } }
-            assertEquals(fileCard, card.settled { it is BuildingCardUiState.Ready }, failure.toString())
+    fun nfr10_failure_keeps_file() =
+        runTest {
+            val failures =
+                listOf(ApiResult.NetworkError(IOException("brak sieci")), ApiResult.ServerError(SERVER_ERROR))
+            failures.forEach { failure ->
+                val asked = CompletableDeferred<Unit>()
+                val card =
+                    openCard {
+                        asked.complete(Unit)
+                        failure
+                    }
+                assertEquals(fileCard, settled(card), failure.toString())
+                assertTrue(asked.isCompleted, "karta nie zapytała serwera: $failure")
+            }
         }
-    }
 
     /** Wiersz: kolejne otwarcie V2 bez sieci → zostają wejścia pobrane wcześniej z serwera, NFR-10. */
     @Test
-    fun nfr10_reopen_keeps_server() {
-        val answers = ArrayDeque(listOf(ApiResult.Success(DETAILS), ApiResult.NetworkError(IOException("brak sieci"))))
-        val source = ServerEntrancesRepository { answers.removeFirst() }
-        cardOf(source).datedEntrances()
-        assertEquals(listOf(SERVER_ENTRANCE), cardOf(source).datedEntrances())
-    }
+    fun nfr10_reopen_keeps_server() =
+        runTest {
+            val answers =
+                ArrayDeque(listOf(ApiResult.Success(DETAILS), ApiResult.NetworkError(IOException("brak sieci"))))
+            val source = ServerEntrancesRepository { answers.removeFirst() }
+            datedEntrances(cardOf(source))
+            assertEquals(listOf(SERVER_ENTRANCE), datedEntrances(cardOf(source)))
+        }
 
     /** Wiersz: zamknięcie karty w trakcie pobierania → wywołanie serwera przerwane, bez działającego zapytania. */
     @Test
-    fun closing_card_cancels_call() {
-        val started = CompletableDeferred<Unit>()
-        val cancelled = CompletableDeferred<Unit>()
-        val store = ViewModelStore()
-        val factory =
-            viewModelFactory {
-                initializer {
-                    openCard {
-                        started.complete(Unit)
-                        waitForever(cancelled)
+    fun closing_card_cancels_call() =
+        runTest {
+            val started = CompletableDeferred<Unit>()
+            val cancelled = CompletableDeferred<Unit>()
+            val store = ViewModelStore()
+            val factory =
+                viewModelFactory {
+                    initializer {
+                        openCard {
+                            started.complete(Unit)
+                            waitForever(cancelled)
+                        }
                     }
                 }
-            }
-        ViewModelProvider.create(store, factory)[BuildingCardViewModel::class].settled { false }
-        runBlocking { withTimeoutOrNull(WAIT_MS) { started.await() } }
-        store.clear()
-        runBlocking { withTimeoutOrNull(WAIT_MS) { cancelled.await() } }
-        assertTrue(started.isCompleted && cancelled.isCompleted, "pobranie nie zaczęło się albo trwa po zamknięciu")
-    }
+            settled(ViewModelProvider.create(store, factory)[BuildingCardViewModel::class])
+            store.clear()
+            advanceUntilIdle()
+            assertTrue(started.isCompleted && cancelled.isCompleted, "pobranie nie zaczęło się albo trwa po zamknięciu")
+        }
 
-    private fun openCard(details: suspend (String) -> ApiResult<BuildingDetails>): BuildingCardViewModel =
+    private fun TestScope.openCard(details: suspend (String) -> ApiResult<BuildingDetails>): BuildingCardViewModel =
         cardOf(ServerEntrancesRepository(details))
 
-    private fun cardOf(source: ServerEntrances): BuildingCardViewModel =
+    private fun TestScope.cardOf(source: ServerEntrances): BuildingCardViewModel =
         BuildingCardViewModel(
             symbol = "A-1",
             repository = catalog,
             networkStatus = { flowOf(true) },
             serverEntrances = source,
-        )
+        ).also { card ->
+            backgroundScope.launch { card.uiState.collect {} }
+        }
 
     private suspend fun waitForever(cancelled: CompletableDeferred<Unit>): Nothing =
         try {
@@ -143,18 +155,20 @@ class CardServerEntrancesTest {
             cancelled.complete(Unit)
         }
 
-    private fun BuildingCardViewModel.settled(until: (BuildingCardUiState) -> Boolean): BuildingCardUiState =
-        runBlocking { withTimeoutOrNull(WAIT_MS) { uiState.first(until) } ?: uiState.value }
+    // Widoczna karta (subskrypcja z cardOf) po wykonaniu całej zaplanowanej pracy.
+    private fun TestScope.settled(card: BuildingCardViewModel): BuildingCardUiState {
+        advanceUntilIdle()
+        return card.uiState.value
+    }
 
-    private fun BuildingCardViewModel.datedEntrances(): List<Entrance> {
-        val dated = settled { it is BuildingCardUiState.Ready && it.entrances.any(::isDated) }
+    private fun TestScope.datedEntrances(card: BuildingCardViewModel): List<Entrance> {
+        val dated = settled(card).takeIf { it is BuildingCardUiState.Ready && it.entrances.any(::isDated) }
         return if (dated is BuildingCardUiState.Ready) dated.entrances.map { it.entrance } else emptyList()
     }
 
     private fun isDated(listed: OrderedEntrance): Boolean = listed.entrance.assessment != null
 
     private companion object {
-        const val WAIT_MS = 1_000L
         const val SERVER_ERROR = 500
 
         val SERVER_ENTRANCE =

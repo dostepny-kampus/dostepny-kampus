@@ -39,7 +39,6 @@ internal const val ENTRANCE_PIN_IMAGE = "wejscie_pinezka"
 /** Wysokość i szerokość znaku wejścia w dp (US2.1, NFR-21). */
 internal const val ENTRANCE_MARK_DP = 28
 
-// Odsunięcie podpisu od punktu wejścia w dp (US3.3): tuż pod znakiem, którego środek stoi w tym punkcie.
 private const val CAPTION_OFFSET_DP = ENTRANCE_MARK_DP / 2 + 2
 
 /** Kafelki podkładu z serwerów OSM, pobierane tylko online i bez zapisu do użytku offline (ADR-0005). */
@@ -69,6 +68,13 @@ data class MapStyleColors(
  * `pwr_wybrany` (US1.1). Każde wejście z [CampusMapData.entrances] ma znak o kształcie według oznaczenia, bez
  * filtra, więc zaznaczenie nie chowa pozostałych (US2.1, NFR-21). Wejście [CampusMapData.selectedEntrance] ma
  * ponadto pinezkę czubkiem w swoim punkcie i pod znakiem podpis z nazwą (US3.3, decyzja 134).
+ * Podkład OSM obejmuje tylko obszar kampusu, więc kafelków spoza niego mapa nie pobiera (NFR-39). Obrys
+ * zaznaczonego budynku obejmuje także kontur wspólny „C-3/C-4”; bez zaznaczenia nie ma tej warstwy. Obraz znaku
+ * zależy od oznaczenia, więc kształt niesie znaczenie, nie barwa (NFR-21); brak filtra i nakładanie są
+ * dozwolone, bo znaki zostają przy zaznaczeniu (decyzja 134 pkt 2). Zaznaczone wejście to źródło z jednym
+ * punktem o właściwościach `label` (nazwa) i `image` (obraz podpisu). Pinezka stoi czubkiem (dół obrazu)
+ * w punkcie wejścia, a podpis z nazwą pod znakiem, w odsunięciu `CAPTION_OFFSET_DP` w dp (US3.3): tuż pod
+ * znakiem, którego środek stoi w tym punkcie; obie warstwy rysują się zawsze.
  */
 fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
     """
@@ -105,14 +111,12 @@ internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${ma
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
 internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 
-// Podkład tylko w obszarze kampusu, więc kafelków spoza niego mapa nie pobiera (NFR-39).
 private fun basemapBounds(data: CampusMapData): String {
     val bounds = data.bounds ?: return ""
     val edges = listOf(bounds.west, bounds.south, bounds.east, bounds.north)
     return ", \"bounds\": ${JsonArray(edges.map { JsonPrimitive(it) })}"
 }
 
-// Obrys konturu z budynkiem zaznaczonym, także konturu wspólnego „C-3/C-4”; bez zaznaczenia brak warstwy.
 private fun selectedLayer(data: CampusMapData, colors: MapStyleColors): String {
     val label = data.labels.firstOrNull { data.focus in symbolsOf(listOf(it)) } ?: return ""
     val filter = """["==", ["get", "label"], ${JsonPrimitive(label)}]"""
@@ -120,8 +124,6 @@ private fun selectedLayer(data: CampusMapData, colors: MapStyleColors): String {
     return """{"id": "$SELECTED_LAYER", "type": "line", "source": "budynki", "filter": $filter, "paint": $paint},"""
 }
 
-// Znak każdego wejścia z danych; obraz zależy od oznaczenia, więc kształt niesie znaczenie, nie barwa (NFR-21).
-// Brak filtra i nakładanie dozwolone: znaki zostają przy zaznaczeniu (decyzja 134 pkt 2).
 private fun marksLayer(): String {
     val (accessible, inaccessible, noData) = EntranceMarking.entries.map(::entranceMarkImage)
     val image =
@@ -131,7 +133,6 @@ private fun marksLayer(): String {
         """"layout": {"icon-image": $image, "icon-allow-overlap": true}}"""
 }
 
-// Źródło z jednym punktem, wejściem zaznaczonym; właściwości: `label` (nazwa) i `image` (obraz podpisu).
 private fun chosenSource(data: CampusMapData): String {
     val chosen = data.selectedEntrance ?: return ""
     val properties =
@@ -144,7 +145,6 @@ private fun chosenSource(data: CampusMapData): String {
     return """, "wejscie": {"type": "geojson", "data": $json}"""
 }
 
-// Pinezka czubkiem (dół obrazu) w punkcie wejścia i pod znakiem podpis z nazwą; obie warstwy rysują się zawsze.
 private fun chosenLayers(data: CampusMapData): String {
     if (data.selectedEntrance == null) return ""
     val pin =

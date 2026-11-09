@@ -38,7 +38,13 @@ private const val LABEL_TEXT_SP = 14f
 private const val LABEL_MAX_FONT_SCALE = 1.4f
 private const val TOUCH_TOLERANCE_DP = 24f
 
-/** Widok MapLibre Android bez kluczy i kont (ADR-0005); logo i podpis biblioteki zastępuje podpis ekranu. */
+/**
+ * Widok MapLibre Android bez kluczy i kont (ADR-0005); logo i podpis biblioteki zastępuje podpis ekranu.
+ * Podpis konturu rośnie z czcionką telefonu najwyżej 1,4 raza (reguła 4 wymagań wspólnych). Dotknięcie do 24 dp od
+ * konturu, połowa celu 48 dp, trafia w kontur (decyzja 85). Kafelki nie są pobierane na zapas, tylko widoczne
+ * (NFR-39). Natywny widok powstaje i zwalnia pamięć raz, razem z ekranem; przy V2 jako arkuszu ten sam widok
+ * przechodzi do innej sceny z innym cyklem życia, więc zmiana cyklu tylko zatrzymuje i wznawia mapę.
+ */
 object MapLibreMapView : CampusMapView {
     @Composable
     override fun Show(
@@ -53,9 +59,7 @@ object MapLibreMapView : CampusMapView {
         val density = LocalDensity.current
         val colors = DostepnyKampusTheme.mapColors
         val style = campusMapStyle(data = data, colors = colors.styleColors())
-        // Podpis rośnie z czcionką telefonu najwyżej 1,4 raza (reguła 4 wymagań wspólnych).
         val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
-        // Dotknięcie do 24 dp od konturu, połowa celu 48 dp, trafia w kontur (decyzja 85).
         val tolerance = TOUCH_TOLERANCE_DP * density.density
         val mapView =
             remember {
@@ -73,7 +77,6 @@ object MapLibreMapView : CampusMapView {
         val buildingsTouch by rememberUpdatedState(onBuildingsTouch)
         DisposableEffect(mapView) {
             mapView.getMapAsync { ready ->
-                // NFR-39: bez pobierania kafelków na zapas, tylko widoczne.
                 ready.prefetchZoomDelta = 0
                 ready.cameraPosition = currentCamera.toPosition()
                 ready.addOnCameraIdleListener { cameraIdle(ready.cameraPosition.toCamera()) }
@@ -111,8 +114,6 @@ object MapLibreMapView : CampusMapView {
 
     @Composable
     private fun FollowScreenLifecycle(mapView: MapView) {
-        // Natywny widok powstaje i zwalnia pamięć raz, razem z ekranem. Przy V2 jako arkuszu ten sam widok
-        // przechodzi do innej sceny z innym cyklem życia, więc zmiana cyklu tylko zatrzymuje i wznawia mapę.
         DisposableEffect(mapView) {
             mapView.onCreate(null)
             onDispose { mapView.onDestroy() }
@@ -154,7 +155,10 @@ object MapLibreMapView : CampusMapView {
     private fun isNativeMapAvailable(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess
 }
 
-// Podpisy konturów, znaki wejść oraz pinezka i podpis zaznaczonego wejścia: obrazy, bo napisy ze stylu wymagają sieci.
+/**
+ * Dodaje do stylu podpisy konturów, znaki wejść oraz pinezkę i podpis zaznaczonego wejścia jako obrazy,
+ * bo napisy ze stylu wymagają sieci.
+ */
 internal fun Style.addMapImages(data: CampusMapData, colors: MapColors, density: Float, labelSize: Float) {
     data.labels.forEach { label -> addImage(label, labelImage(label, colors, labelSize)) }
     val selected = data.selectedEntrance

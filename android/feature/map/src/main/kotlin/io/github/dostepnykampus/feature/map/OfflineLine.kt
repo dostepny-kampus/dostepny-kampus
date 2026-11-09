@@ -31,7 +31,6 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 
-// Fale Wi-Fi z ukośną kreską z Material Icons, siatka 24 × 24, jak lupa w polu symbolu.
 private val NoInternetIcon =
     icon(
         "M21 11l2-2c-3.73-3.73-8.87-5.15-13.7-4.31l2.58 2.58c3.3-.02 6.61 1.22 9.12 3.73zm-2 2c-1.08-1.08-2.36-1.85" +
@@ -45,6 +44,7 @@ private val NoInternetIcon =
  * (US9.1, NFR-10, NFR-21, PW-4). W S2 wszystkie dane są z pakietu aplikacji i nic nie jest pobierane, więc linia
  * nie ma daty „dane z …” (decyzja 84). Linia pojawia się sama, więc TalkBack czyta ją jako komunikat stanu
  * (NFR-15, WCAG 4.1.3).
+ * Ikona to fale Wi-Fi z ukośną kreską z Material Icons, siatka 24 × 24, jak lupa w polu symbolu.
  *
  * @param modifier położenie linii wyznacza wołający
  */

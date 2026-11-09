@@ -16,44 +16,48 @@ import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingList
 import io.github.dostepnykampus.core.network.DetailLevel
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
+import io.github.dostepnykampus.feature.map.data.campusMapData
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
-import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.IOException
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-private const val WAIT_MS = 1_000L
-private const val SETTLE_MS = 300L
-
-/** Kontury mapy V1 od odpowiedzi serwera (wstrzymanej w teście) do stanu ekranu (US1, NFR-10, NFR-11). */
+/**
+ * Kontury mapy V1 od odpowiedzi serwera (wstrzymanej w teście) do stanu ekranu (US1, NFR-10, NFR-11). Odczyt pliku
+ * i liczenie geometrii idą na dyspozytorze testowym, więc stan jest sprawdzany po zakończeniu całej zaplanowanej pracy,
+ * nie po upływie czasu.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapCatalogFromFileTest {
     private val fileCatalog = runBlocking { BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON }.catalog() }
+    private val scheduler = TestCoroutineScheduler()
+    private val background = StandardTestDispatcher(scheduler)
+    private val screens = mutableListOf<Job>()
 
     @BeforeEach
     fun main() {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
+        Dispatchers.setMain(UnconfinedTestDispatcher(scheduler))
     }
 
     @AfterEach
     fun reset() {
+        screens.forEach(Job::cancel)
         Dispatchers.resetMain()
     }
 
@@ -61,7 +65,7 @@ class MapCatalogFromFileTest {
     @Test
     fun nfr11_file_without_server() {
         val screen = openScreen { CompletableDeferred<ApiResult<BuildingList>>().await() }
-        assertEquals(fileCatalog, screen.waitFor { it == fileCatalog }, "mapa czeka na serwer")
+        assertEquals(fileCatalog, screen.settled(), "mapa czeka na serwer")
     }
 
     /** Wiersz: W2, serwer odpowiada niepustą listą → najpierw kontury z pliku, potem katalog z serwera, NFR-10, US1. */
@@ -69,9 +73,9 @@ class MapCatalogFromFileTest {
     fun nfr10_server_replaces_file() {
         val answer = CompletableDeferred<ApiResult<BuildingList>>()
         val screen = openScreen { answer.await() }
-        assertEquals(fileCatalog, screen.waitFor { it == fileCatalog }, "mapa czeka na serwer")
+        assertEquals(fileCatalog, screen.settled(), "mapa czeka na serwer")
         answer.complete(ApiResult.Success(SERVER_LIST))
-        val shown = screen.waitFor { it != fileCatalog }
+        val shown = screen.settled()
         assertEquals(listOf(SERVER_BUILDING), shown?.buildings, "kontury z serwera nie zastąpiły pliku")
         assertEquals(SERVER_LIST.source, shown?.attribution, "atrybucja nie jest z serwera")
     }
@@ -94,10 +98,11 @@ class MapCatalogFromFileTest {
     private fun assertKeepsFile(result: ApiResult<BuildingList>) {
         val answer = CompletableDeferred<ApiResult<BuildingList>>()
         val screen = openScreen { answer.await() }
-        assertEquals(fileCatalog, screen.waitFor { it == fileCatalog }, "mapa czeka na serwer: $result")
+        assertEquals(fileCatalog, screen.settled(), "mapa czeka na serwer: $result")
         answer.complete(result)
-        val seen = screen.watch()
-        assertTrue(seen.isNotEmpty() && seen.all { it == fileCatalog }, "kontury zniknęły: $result")
+        screen.settled()
+        val fromFile = screen.seen.dropWhile { it != fileCatalog }
+        assertTrue(fromFile.isNotEmpty() && fromFile.all { it == fileCatalog }, "kontury zniknęły: $result")
     }
 
     /**
@@ -106,34 +111,22 @@ class MapCatalogFromFileTest {
      */
     @Test
     fun nfr10_late_file_keeps_server() {
-        val fileRead = CountDownLatch(1)
-        Executors.newSingleThreadExecutor().asCoroutineDispatcher().use { reader ->
-            val screen =
-                openScreen(
-                    ioContext = reader,
-                    readGeoJson = {
-                        fileRead.await(WAIT_MS * 2, TimeUnit.MILLISECONDS)
-                        ASSET_JSON
-                    },
-                    listBuildings = { ApiResult.Success(SERVER_LIST) },
-                )
-            fileRead.countDown()
-            screen.waitFor { it.buildings == listOf(SERVER_BUILDING) }
-            val seen = screen.watch()
-            assertEquals(listOf(SERVER_BUILDING), seen.lastOrNull()?.buildings, "plik nadpisał katalog z serwera")
-        }
+        val screen = openScreen { ApiResult.Success(SERVER_LIST) }
+        assertTrue(screen.seen.all { it == null }, "plik wczytany, zanim odczyt ruszył")
+        screen.settled()
+        val fromServer = screen.seen.dropWhile { it?.buildings != listOf(SERVER_BUILDING) }
+        assertTrue(
+            fromServer.isNotEmpty() && fromServer.all { it?.buildings == listOf(SERVER_BUILDING) },
+            "plik nadpisał katalog z serwera: $fromServer",
+        )
     }
 
-    private fun openScreen(
-        ioContext: CoroutineContext = EmptyCoroutineContext,
-        readGeoJson: () -> String = { ASSET_JSON },
-        listBuildings: suspend () -> ApiResult<BuildingList>,
-    ): Screen {
+    private fun openScreen(listBuildings: suspend () -> ApiResult<BuildingList>): Screen {
         val repository =
             BuildingCatalogRepository(
-                ioContext = ioContext,
+                ioContext = background,
                 listBuildings = listBuildings,
-                readGeoJson = readGeoJson,
+                readGeoJson = { ASSET_JSON },
             )
         val choice =
             object : MapListChoice {
@@ -141,22 +134,33 @@ class MapCatalogFromFileTest {
 
                 override suspend fun choose(isList: Boolean) = Unit
             }
-        val viewModel = CampusMapViewModel(repository, { flowOf(true) }, choice)
+        val viewModel =
+            CampusMapViewModel(
+                repository = repository,
+                networkStatus = { flowOf(true) },
+                mapListChoice = choice,
+                computeContext = background,
+                geometry = ::campusMapData,
+            )
         return Screen(viewModel)
     }
 
-    private class Screen(val viewModel: CampusMapViewModel) {
-        /** Katalogi widoczne na ekranie przez [SETTLE_MS] po odpowiedzi serwera. */
-        fun watch(): List<BuildingCatalog?> {
-            val seen = mutableListOf<BuildingCatalog?>()
-            runBlocking { withTimeoutOrNull(SETTLE_MS) { viewModel.uiState.collect { seen += it.catalog } } }
-            return seen
+    /** Widoczny ekran: zbiera każdy katalog ze stanu do końca testu. */
+    private inner class Screen(val viewModel: CampusMapViewModel) {
+        val seen = mutableListOf<BuildingCatalog?>()
+
+        init {
+            screens +=
+                CoroutineScope(UnconfinedTestDispatcher(scheduler)).launch {
+                    viewModel.uiState.collect { seen += it.catalog }
+                }
         }
 
-        fun waitFor(until: (BuildingCatalog) -> Boolean): BuildingCatalog? =
-            runBlocking {
-                withTimeoutOrNull(WAIT_MS) { viewModel.uiState.first { it.catalog?.let(until) == true }.catalog }
-            }
+        /** Wykonuje całą zaplanowaną pracę (odczyt pliku, odpowiedź, geometria) i zwraca katalog na ekranie. */
+        fun settled(): BuildingCatalog? {
+            scheduler.advanceUntilIdle()
+            return viewModel.uiState.value.catalog
+        }
     }
 
     private companion object {
