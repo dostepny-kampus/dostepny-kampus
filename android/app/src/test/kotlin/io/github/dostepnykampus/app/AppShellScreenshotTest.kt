@@ -49,7 +49,8 @@ import kotlin.coroutines.EmptyCoroutineContext
 /**
  * Zrzuty oboczki z ekranami: V1 z przyciskami mapy i podpisem OSM, V2 jako arkusz nad V1 i pasek nawigacji.
  * Natywnej mapy MapLibre w testach JVM nie ma: zamiast niej jest tło lądu z palety mapy, bez konturów i ulic.
- * Katalog to „Budynek testowy” C-13, nie dane PWr.
+ * Katalog to „Budynek testowy” C-13, nie dane PWr. Zrzut robi akcja zamiast dotyku, więc na przełączniku nie ma
+ * śladu dotknięcia. Przy dużej czcionce V1 startuje na liście, więc V2 otwiera budynek z listy (NFR-19).
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -78,11 +79,6 @@ class AppShellScreenshotTest {
                 """"geometry":{"type":"Point","coordinates":[1,0]}}]}"""
         }
 
-    /**
-     * Akcja zamiast dotyku: zrzut bez śladu dotknięcia na przełączniku.
-     *
-     * Przy dużej czcionce V1 startuje na liście, więc V2 otwiera budynek z listy (NFR-19).
-     */
     private fun capture(
         isSheetOpen: Boolean = true,
         query: String? = null,
