@@ -167,6 +167,16 @@ jobs:
           find "$RUNNER_TEMP/apk" -name '*.apk' -print
           adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug.apk | head -n 1)"
           adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug-androidTest.apk | head -n 1)"
+      - name: Wyłącz sieć emulatora
+        run: |
+          # Testy nie mają ruchu sieciowego (serwer i podkład mapy z pliku); bez sieci nic nie wyjdzie na zewnątrz.
+          adb shell svc wifi disable
+          adb shell svc data disable
+          if adb shell ping -c 1 -W 3 8.8.8.8 > /dev/null 2>&1; then
+            echo "::error title=Emulator::Sieć emulatora nadal działa."
+            exit 1
+          fi
+          echo "Sieć emulatora wyłączona."
       - name: Testy na emulatorze
         run: |
           # Uruchamiacz testów (np. własny runner Hilt) odczytujemy z zainstalowanego APK testów, nie z konfiguracji workflow.
@@ -177,11 +187,29 @@ jobs:
             exit 1
           fi
           echo "Uruchamiacz testów: ${uruchamiacz}"
-          adb shell am instrument -w "$uruchamiacz" | tee "$RUNNER_TEMP/instrumentacja.txt"
-          # `am instrument` kończy się kodem 0 także przy porażce testów, więc wynik czytamy z wyjścia;
-          # sukces bez żadnego testu też jest błędem.
-          if ! grep -Eq '^OK \(([1-9][0-9]*) tests?\)' "$RUNNER_TEMP/instrumentacja.txt"; then
-            echo "::error title=Testy na emulatorze::Brak wyniku OK z co najmniej jednym testem."
+          # Lista testów z APK (tryb `log`: bez wykonywania); każdy test idzie osobno, na czystych danych aplikacji,
+          # więc wynik nie zależy od kolejności ani od stanu zostawionego przez poprzedni test.
+          adb shell am instrument -w -r -e log true "$uruchamiacz" | tr -d '\r' |
+            awk -F= '/^INSTRUMENTATION_STATUS: class=/ { klasa = $2 } /^INSTRUMENTATION_STATUS: test=/ { print klasa "#" $2 }' |
+            sort -u > "$RUNNER_TEMP/lista-testow.txt"
+          wszystkie="$(wc -l < "$RUNNER_TEMP/lista-testow.txt")"
+          echo "Testy w APK: ${wszystkie}"
+          cat "$RUNNER_TEMP/lista-testow.txt"
+          : > "$RUNNER_TEMP/instrumentacja.txt"
+          zaliczone=0
+          while read -r test; do
+            adb shell pm clear io.github.dostepnykampus
+            adb shell am instrument -w -e class "$test" "$uruchamiacz" | tr -d '\r' | tee -a "$RUNNER_TEMP/instrumentacja.txt" > "$RUNNER_TEMP/wynik.txt"
+            cat "$RUNNER_TEMP/wynik.txt"
+            # `am instrument` kończy się kodem 0 także przy porażce testu, więc wynik czytamy z wyjścia.
+            if grep -Eq '^OK \(1 test\)' "$RUNNER_TEMP/wynik.txt"; then
+              zaliczone=$((zaliczone + 1))
+            else
+              echo "::error title=Testy na emulatorze::Test ${test} nie zakończył się wynikiem OK."
+            fi
+          done < "$RUNNER_TEMP/lista-testow.txt"
+          echo "Zaliczone testy na emulatorze: ${zaliczone} z ${wszystkie}"
+          if ((wszystkie == 0 || zaliczone != wszystkie)); then
             exit 1
           fi
       - name: Zapisz logcat i log emulatora
