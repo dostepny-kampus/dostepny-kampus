@@ -314,7 +314,10 @@ jobs:
           path: android/**/build/test-results/
           if-no-files-found: ignore
       - name: Zapisz cache budowania Gradle grupy
-        if: ${{ success() && steps.cache-grupy.outputs.cache-hit != 'true' }}
+        if: >-
+          ${{ success() && github.event_name == 'push' &&
+            (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) &&
+            steps.cache-grupy.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6.1.0
         with:
           path: ~/.gradle/caches/build-cache-1
