@@ -18,7 +18,9 @@ case "$1 $2" in
   'pr view') printf '%s\n' "$FAKE_DRAFT" ;;
   'pr ready') echo 'szkic' >>"$FAKE_LOG" ;;
   'pr comment') echo 'komentarz' >>"$FAKE_LOG" ;;
-  'api repos/'*) if [[ $3 == -X ]]; then echo 'odświeżenie' >>"$FAKE_LOG"; else printf '%s\n' "$FAKE_COMMENT_ID"; fi ;;
+  'api -X') echo 'odświeżenie' >>"$FAKE_LOG" ;;
+  'api repos/'*) printf '%s
+' "$FAKE_COMMENT_ID" ;;
   *) echo "nieoczekiwane wywołanie gh: $*" >&2; exit 2 ;;
 esac
 SH
