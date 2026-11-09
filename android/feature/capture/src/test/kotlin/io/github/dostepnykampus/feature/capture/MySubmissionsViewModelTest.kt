@@ -63,6 +63,15 @@ class MySubmissionsViewModelTest {
         }
 
     @Test
+    fun `us8_1 bez kodu typu`() =
+        runTest(dispatcher) {
+            rows.value = listOf(row(id = "a", state = SendState.SENT).copy(barrierType = null))
+            collect()
+
+            assertEquals(null, list().items.single().type)
+        }
+
+    @Test
     fun `us9_1 liczba w telefonie`() =
         runTest(dispatcher) {
             rows.value =

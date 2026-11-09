@@ -34,8 +34,8 @@ class MySubmissionsScreenTest {
         showState(MySubmissionsUiState.Ready(MySubmissions(items.toList())))
     }
 
-    private fun showState(state: MySubmissionsUiState) {
-        val actions = MySubmissionsActions(onBack = {}, onOpen = { opened.add(it) }, onMeasure = { measured++ })
+    private fun showState(state: MySubmissionsUiState, onOpen: ((String) -> Unit)? = { opened.add(it) }) {
+        val actions = MySubmissionsActions(onBack = {}, onMeasure = { measured++ }, onOpen = onOpen)
         compose.setContent {
             DostepnyKampusTheme {
                 MySubmissionsContent(state = state, actions = actions)
@@ -73,6 +73,15 @@ class MySubmissionsScreenTest {
         show(item(id = "a", state = SendState.SENT))
         compose.onNodeWithText("Wysłane").assertIsDisplayed()
         compose.onNodeWithText("Czeka na wysłanie", substring = true).assertDoesNotExist()
+    }
+
+    /** Wiersz: C3, poprawka w C2 jeszcze niedostępna → pozycje bez „Otwórz”, US8.3. */
+    @Test
+    fun us8_3_list_without_open() {
+        val list = MySubmissions(listOf(item(id = "a", state = SendState.LOCAL)))
+        showState(MySubmissionsUiState.Ready(list), onOpen = null)
+        compose.onNodeWithText("W telefonie").assertIsDisplayed()
+        compose.onNodeWithText("Otwórz").assertDoesNotExist()
     }
 
     /** Wiersz: C3 „Otwórz” w pozycji → poprawka w C2 z identyfikatorem zgłoszenia, US8.3. */

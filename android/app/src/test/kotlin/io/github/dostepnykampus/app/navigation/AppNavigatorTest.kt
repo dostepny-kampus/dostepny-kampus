@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.app.navigation
@@ -13,6 +13,7 @@ import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
+import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
@@ -429,13 +430,27 @@ class AppNavigatorTest {
         assertEquals(stackOf(AccountRoute, MeasureRoute, form), stack)
     }
 
-    /** Wiersz: C2, „Zapisz” → C1 i C2 znikają z historii, „Wstecz” wraca do L2, NFR-54, P2. */
+    /** Wiersz: C2, „Zapisz” → C1 i C2 znikają z historii, otwiera się C3, „Wstecz” wraca do L2, NFR-54, P2. */
     @Test
-    fun nfr54_saved_drops_c1_and_c2() {
+    fun nfr54_saved_opens_c3() {
         val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = null)
         stack += listOf(AccountRoute, MeasureRoute, form)
         navigator(collector).reportSaved()
-        assertEquals(stackOf(AccountRoute), stack)
+        assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
+    }
+
+    /** Wiersz: L2 „Moje zgłoszenia” → C3, C3 „Zmierz i zgłoś barierę” → C1, „Zapisz” → ten sam C3, US8.1, NFR-54. */
+    @Test
+    fun us8_1_c3_measure_same_c3() {
+        val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
+        stack += AccountRoute
+        navigator(collector).run {
+            mySubmissions()
+            measure()
+            openReportForm(form)
+            reportSaved()
+        }
+        assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
     }
 
     /** Wiersz: V4, „Wstecz” między krokami nie usuwa zdjęcia ani grupy, US4.8. */

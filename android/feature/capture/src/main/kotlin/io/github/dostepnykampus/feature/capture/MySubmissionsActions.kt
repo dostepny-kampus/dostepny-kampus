@@ -9,7 +9,12 @@ package io.github.dostepnykampus.feature.capture
  * Czynności ekranu C3.
  *
  * @property onBack „Wstecz”
- * @property onOpen „Otwórz” przy zgłoszeniu: poprawka w C2 (US8.3)
  * @property onMeasure „Zmierz i zgłoś barierę”: C1 (PW-12)
+ * @property onOpen „Otwórz” przy zgłoszeniu: poprawka w C2 (US8.3); `null` ukrywa przycisk, dopóki C2 nie umie
+ *   otworzyć zapisanego zgłoszenia
  */
-data class MySubmissionsActions(val onBack: () -> Unit, val onOpen: (id: String) -> Unit, val onMeasure: () -> Unit)
+data class MySubmissionsActions(
+    val onBack: () -> Unit,
+    val onMeasure: () -> Unit,
+    val onOpen: ((id: String) -> Unit)? = null,
+)
