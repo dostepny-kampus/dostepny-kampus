@@ -23,6 +23,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -73,6 +74,17 @@ data class SubmissionServer(
 )
 
 /**
+ * Identyfikator i chwila zapisu nowego zgłoszenia w kolejce; testy podają własne (BR-9).
+ *
+ * @property newId identyfikator zgłoszenia w telefonie, raz na zgłoszenie
+ * @property nowMillis zegar chwili zapisu
+ */
+data class SubmissionStamps(
+    val newId: () -> String = { UUID.randomUUID().toString() },
+    val nowMillis: () -> Long = System::currentTimeMillis,
+)
+
+/**
  * Kolejka zgłoszeń: zapis w telefonie i wysyłanie od najstarszego (NFR-5, US9.1, US9.2, BR-9).
  *
  * Bez sieci albo po błędzie serwera zgłoszenie zostaje w kolejce: zapis w bazie mówi, co serwer
@@ -84,16 +96,19 @@ data class SubmissionServer(
  * Po 401 wysyłka czeka na ponowne zalogowanie: [loginExpired] i [onLoggedIn] (BR-26, US14.4).
  * Zgłoszenia Zbierającego trafiają też do [history] ze stanem wysyłki dla listy C3 (US8); bez niej kolejka
  * działa jak dotąd.
+ * Chwilę zapisu daje [SubmissionStamps.nowMillis]; kolejne zapisy mają rosnące chwile także w tej samej
+ * milisekundzie, więc kolejka wysyła je w kolejności zapisu (US9.2, BR-9).
  */
 class SubmissionQueue(
     private val store: PendingSubmissionDao,
     private val ioContext: CoroutineContext = Dispatchers.IO,
     private val server: SubmissionServer,
-    private val newId: () -> String = { UUID.randomUUID().toString() },
+    private val stamps: SubmissionStamps = SubmissionStamps(),
     private val onSaved: () -> Unit = {},
     private val history: OwnSubmissionDao? = null,
 ) {
     private val lock = Mutex()
+    private val lastSavedAt = AtomicLong(Long.MIN_VALUE)
     private val expired = MutableStateFlow(false)
 
     /** `true` po odpowiedzi 401 aż do [onLoggedIn]: aplikacja prosi o ponowne zalogowanie (BR-26). */
@@ -111,7 +126,7 @@ class SubmissionQueue(
         store = store,
         ioContext = ioContext,
         server = SubmissionServer(create = create, putPhoto = putPhoto, update = { _, _, _ -> ApiResult.NotFound }),
-        newId = newId,
+        stamps = SubmissionStamps(newId = newId),
         onSaved = onSaved,
     )
 
@@ -126,8 +141,9 @@ class SubmissionQueue(
         require(photos.map { it.photoId } == content.photoIds) {
             "Zdjęcia w kolejce muszą odpowiadać identyfikatorom treści (BR-7, BR-8)"
         }
-        val id = newId()
-        val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = System.currentTimeMillis())
+        val id = stamps.newId()
+        val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
+        val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = savedAt)
         store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
         remember(entity)
         runCatching(onSaved)
@@ -147,7 +163,7 @@ class SubmissionQueue(
         }
         val entity =
             content
-                .toPendingSubmissionEntity(id = edited.id, savedAtMillis = System.currentTimeMillis())
+                .toPendingSubmissionEntity(id = edited.id, savedAtMillis = lastSavedAt.nextAfter(stamps.nowMillis()))
                 .copy(baseVersion = edited.baseVersion)
         lock.withLock {
             store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
@@ -260,3 +276,5 @@ internal fun serverOutcome(code: Int): Outcome =
         code == HTTP_UNAUTHORIZED -> Outcome.LOGIN_EXPIRED
         else -> Outcome.REFUSED
     }
+
+internal fun AtomicLong.nextAfter(now: Long): Long = updateAndGet { last -> maxOf(a = now, b = last + 1) }

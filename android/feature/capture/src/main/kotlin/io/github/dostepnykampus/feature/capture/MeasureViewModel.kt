@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.geo.BuildingHint
 import io.github.dostepnykampus.core.geo.hintBuilding
+import io.github.dostepnykampus.core.geo.nearestBuildings
 import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
 import io.github.dostepnykampus.core.location.PositionAverage
@@ -121,12 +122,14 @@ class MeasureViewModel
     ) : ViewModel() {
         private val result = MutableStateFlow(Run(attempt = 0, finished = null))
         private val catalogBuildings = MutableStateFlow(emptyList<Building>())
+        private val nearby = MutableStateFlow(emptyList<BuildingHint>())
 
         /**
-         * Budynki z katalogu do „Wybierz inny”; puste, dopóki pomiar się nie skończy (US6.2). Podpowiedź budynku bierze
-         * katalog z pliku albo już pobrany, bez czekania na serwer (NFR-4: do 2 s bez sieci).
+         * Budynki najbliżej punktu do sekcji „Wybierz budynek”, od najbliższego, z odległością; puste, dopóki pomiar
+         * się nie skończy (US6.2, NFR-4). Podpowiedź budynku bierze katalog z pliku albo już pobrany, bez czekania
+         * na serwer (NFR-4: do 2 s bez sieci).
          */
-        val buildings: StateFlow<List<Building>> = catalogBuildings
+        val buildings: StateFlow<List<BuildingHint>> = nearby
 
         /** Bieżący stan pomiaru. */
         val uiState: StateFlow<MeasureUiState> =
@@ -176,6 +179,7 @@ class MeasureViewModel
             viewModelScope.launch {
                 val buildings = catalog.catalogUpdates().first().buildings
                 catalogBuildings.value = buildings
+                nearby.value = nearestBuildings(point, buildings)
                 val place = hintBuilding(point, buildings)?.let(PlaceChoice::Suggested) ?: PlaceChoice.Outside
                 result.update { run ->
                     val finished = run.finished
