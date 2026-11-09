@@ -154,7 +154,10 @@ object MapLibreMapView : CampusMapView {
     private fun isNativeMapAvailable(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess
 }
 
-// Podpisy konturów, znaki wejść oraz pinezka i podpis zaznaczonego wejścia: obrazy, bo napisy ze stylu wymagają sieci.
+/**
+ * Dodaje do stylu podpisy konturów, znaki wejść oraz pinezkę i podpis zaznaczonego wejścia jako obrazy,
+ * bo napisy ze stylu wymagają sieci.
+ */
 internal fun Style.addMapImages(data: CampusMapData, colors: MapColors, density: Float, labelSize: Float) {
     data.labels.forEach { label -> addImage(label, labelImage(label, colors, labelSize)) }
     val selected = data.selectedEntrance
