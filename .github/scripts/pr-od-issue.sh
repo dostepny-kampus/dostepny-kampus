@@ -47,8 +47,9 @@ if [[ $author == 'dependabot[bot]' ]]; then
   exit 0
 fi
 
-# Closes|Fixes|Resolves #N, wielkość liter bez znaczenia; słowo kluczowe nie może być końcem innego słowa.
-issues="$(jq -r '.body // ""' <<<"$pr_data" | grep -oiP '(?<!\w)(?:closes|fixes|resolves)\s+#\K\d+' | sort -un || true)"
+# shellcheck source=slowa-zamykajace.sh
+source "$(dirname "${BASH_SOURCE[0]}")/slowa-zamykajace.sh"
+issues="$(jq -r '.body // ""' <<<"$pr_data" | numery_zamykanych_issue)"
 if [[ -z $issues ]]; then
   report "brak Closes: opis PR nie zawiera Closes/Fixes/Resolves #N."
   if [[ $level == warning ]]; then
