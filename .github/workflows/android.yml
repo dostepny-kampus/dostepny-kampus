@@ -191,7 +191,8 @@ jobs:
           # Lista testów z APK (tryb `log`: bez wykonywania); każdy test idzie osobno, na czystych danych aplikacji,
           # więc wynik nie zależy od kolejności ani od stanu zostawionego przez poprzedni test.
           adb shell am instrument -w -r -e log true "$uruchamiacz" | tr -d '\r' |
-            awk -F= '/^INSTRUMENTATION_STATUS: class=/ { klasa = $2 } /^INSTRUMENTATION_STATUS: test=/ { print klasa "#" $2 }' |
+            awk -F= '/^INSTRUMENTATION_STATUS: class=/ { klasa = $2 } /^INSTRUMENTATION_STATUS: test=/ { test = $2 }
+              /^INSTRUMENTATION_STATUS_CODE:/ { if (klasa != "" && test != "") print klasa "#" test; klasa = ""; test = "" }' |
             sort -u > "$RUNNER_TEMP/lista-testow.txt"
           wszystkie="$(wc -l < "$RUNNER_TEMP/lista-testow.txt")"
           echo "Testy w APK: ${wszystkie}"
