@@ -52,7 +52,7 @@ private data class DraftFields(
         barrierType = state.form.barrierType,
         severity = state.form.severity,
         photoIds = state.form.photoIds,
-        photos = state.photos.map { DraftPhoto(it.photoId, it.path) },
+        photos = state.photos.map { DraftPhoto(id = it.photoId, path = it.path) },
         description = state.form.description,
         replacesSubmissionId = state.form.replacesSubmissionId,
         edited = state.form.editedSubmission?.let { DraftEdit(it.id, it.baseVersion) },

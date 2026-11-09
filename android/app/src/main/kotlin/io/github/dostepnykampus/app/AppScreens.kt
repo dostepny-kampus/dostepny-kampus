@@ -111,13 +111,17 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is EntrancesRoute -> Entrances(route.symbol)
         is ReportRoute -> QuickReport(route)
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
-        is ReportFormRoute -> ReportFormScreen(route, { back() }, onSave = { reportSaved() }, draft = reportDraft)
+        is ReportFormRoute -> ReportForm(route)
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute, AccountRoute -> Account(route)
         is MapRoute -> HiltMapScreen(focus = route.focus)
         else -> Unit
     }
 }
+
+@Composable
+private fun AppNavigator.ReportForm(route: ReportFormRoute) =
+    ReportFormScreen(route = route, onLeave = { back() }, onSave = { reportSaved() }, draft = reportDraft)
 
 @Composable
 private fun AppNavigator.Entrances(symbol: String) {
