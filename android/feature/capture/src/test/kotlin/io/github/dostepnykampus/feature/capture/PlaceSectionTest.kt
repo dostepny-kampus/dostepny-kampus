@@ -55,7 +55,9 @@ class PlaceSectionTest {
     @Test
     fun us6_2_hint_name_and_distance() {
         show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 12.4, isInside = false)))
-        compose.onNodeWithText("Czy to budynek A-1?").assertIsDisplayed()
+        compose
+            .onNodeWithText("Czy to budynek A-1?")
+            .assertIsDisplayed()
             .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
         compose.onNodeWithText("Gmach Główny").assertIsDisplayed()
         compose.onNodeWithText("12 m od punktu").assertIsDisplayed()
@@ -97,7 +99,9 @@ class PlaceSectionTest {
         compose.onNodeWithText("Miejsce: poza budynkiem").assertIsDisplayed()
         compose.onNodeWithText("Wybierz budynek").assertIsDisplayed()
         compose.onNodeWithText("Wybierz budynek").performClick()
-        compose.onNode(hasText("Wybierz budynek") and hasAnyAncestor(isDialog())).assertIsDisplayed()
+        compose
+            .onNode(hasText("Wybierz budynek") and hasAnyAncestor(isDialog()))
+            .assertIsDisplayed()
             .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
     }
 

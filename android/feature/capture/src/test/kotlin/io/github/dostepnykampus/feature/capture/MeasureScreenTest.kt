@@ -59,7 +59,9 @@ class MeasureScreenTest {
     @Test
     fun us6_1_measuring_texts() {
         show(MeasureUiState.Measuring(remainingSeconds = 12, average = average, satellites = satellites))
-        compose.onNodeWithText("Pomiar: zostało 12 s").assertIsDisplayed()
+        compose
+            .onNodeWithText("Pomiar: zostało 12 s")
+            .assertIsDisplayed()
             .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
         compose.onNodeWithText("Dokładność: 0,8 m (szacunek)").assertIsDisplayed()
         compose.onNodeWithText("Satelity: GPS 7, Galileo 5, GLONASS 4").assertIsDisplayed()
@@ -69,7 +71,9 @@ class MeasureScreenTest {
     @Test
     fun us6_1_finished_texts() {
         show(MeasureUiState.Finished(average = average, satellites = satellites))
-        compose.onNodeWithText("Pomiar zakończony").assertIsDisplayed()
+        compose
+            .onNodeWithText("Pomiar zakończony")
+            .assertIsDisplayed()
             .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
         compose.onNodeWithText("Dokładność: 0,8 m (szacunek)").assertIsDisplayed()
         compose.onNodeWithText("Powtórz pomiar").assertIsDisplayed()
