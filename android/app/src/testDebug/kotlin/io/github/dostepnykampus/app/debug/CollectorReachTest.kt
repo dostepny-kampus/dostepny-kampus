@@ -8,10 +8,16 @@
 package io.github.dostepnykampus.app.debug
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -22,8 +28,12 @@ import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.openReportForm
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.feature.capture.ReportEdit
+import io.github.dostepnykampus.feature.capture.ReportForm
+import io.github.dostepnykampus.feature.capture.ReportFormViewModel
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import io.github.dostepnykampus.feature.capture.place
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Rule
 import org.junit.Test
@@ -44,28 +54,45 @@ class CollectorReachTest {
 
     private val roles = DebugRoles()
 
-    /** Zbierający: „Konto i praca” → „Zmierz i zgłoś barierę” → C1 → „Dalej” → C2. */
+    /** Zbierający wraca z C1 do C2 po odtworzeniu stanu i zaczyna od zera po opuszczeniu pomiaru (US7.4, NFR-7). */
     @Test
-    fun collectorReachesForm() {
+    fun draftSurvivesStateRestore() {
         roles.account = DebugRole.COLLECTOR.account
-        show()
+        val restoration = StateRestorationTester(compose)
+        show(restoration)
+
         compose.onNodeWithText("Konto i praca").performClick()
-        compose.onNodeWithText("Zmierz i zgłoś barierę").performClick()
+        openForm()
+        compose.onNodeWithText("Wpisz opis").performClick()
+        compose.onNodeWithText(CHANGE_PLACE).performClick()
         compose.onNodeWithText(MEASURE).assertIsDisplayed()
-        compose.onNodeWithText("Dalej").performClick()
-        compose.onNodeWithText(FORM).assertIsDisplayed()
+        restoration.emulateSavedInstanceStateRestore()
+
+        compose.onNodeWithText(NEXT).performClick()
+        compose.onNodeWithText(DRAFT_TEXT).assertIsDisplayed()
+        compose.onNodeWithText(CHANGE_PLACE).performClick()
+        compose.onNodeWithText("Opuść pomiar").performClick()
+        openForm()
+        compose.onNodeWithText(DRAFT_TEXT).assertDoesNotExist()
     }
 
-    /** Gość: „Konto” prowadzi do L1 bez „Zmierz i zgłoś barierę”. */
+    /** Gość nie widzi wejścia do pomiaru (US14.1). */
     @Test
     fun guestHasNoMeasure() {
         show()
         compose.onNodeWithText("Konto").performClick()
-        compose.onNodeWithText("Zmierz i zgłoś barierę").assertDoesNotExist()
+        compose.onNodeWithText(MEASURE_ACTION).assertDoesNotExist()
     }
 
-    private fun show() {
-        compose.setContent {
+    private fun openForm() {
+        compose.onNodeWithText(MEASURE_ACTION).performClick()
+        compose.onNodeWithText(MEASURE).assertIsDisplayed()
+        compose.onNodeWithText(NEXT).performClick()
+        compose.onNodeWithText(FORM).assertIsDisplayed()
+    }
+
+    private fun show(restoration: StateRestorationTester = StateRestorationTester(compose)) {
+        restoration.setContent {
             DostepnyKampusTheme {
                 AppShell(firstLaunch = false, roles = roles, onFirstHelpLeft = {}) { route -> Screen(route) }
             }
@@ -80,12 +107,15 @@ class CollectorReachTest {
             }
 
             MeasureRoute -> {
-                Text(MEASURE)
-                Button(onClick = { openReportForm(PLACE) }) { Text("Dalej") }
+                Column {
+                    Text(MEASURE)
+                    Button(onClick = { openReportForm(PLACE) }) { Text(NEXT) }
+                    Button(onClick = { back() }) { Text("Opuść pomiar") }
+                }
             }
 
             is ReportFormRoute -> {
-                Text(FORM)
+                DraftForm(route)
             }
 
             else -> {
@@ -94,7 +124,29 @@ class CollectorReachTest {
         }
     }
 
+    @Composable
+    private fun AppNavigator.DraftForm(route: ReportFormRoute) {
+        val viewModel = remember { ReportFormViewModel { _, _, _ -> } }
+        SideEffect { viewModel.open(ReportForm(place = route.place()), reportDraft) }
+        val state by viewModel.uiState.collectAsState()
+        Column {
+            Text(FORM)
+            Text(state?.run { form.description }.orEmpty())
+            Button(onClick = { viewModel.edit(ReportEdit.Description(DRAFT_TEXT)) }) { Text("Wpisz opis") }
+            Button(
+                onClick = {
+                    viewModel.changePlace()
+                    back()
+                },
+            ) { Text(CHANGE_PLACE) }
+        }
+    }
+
     private companion object {
+        const val CHANGE_PLACE = "Zmień miejsce"
+        const val NEXT = "Dalej"
+        const val MEASURE_ACTION = "Zmierz i zgłoś barierę"
+        const val DRAFT_TEXT = "Próg przy drzwiach"
         const val MEASURE = "C1 Pomiar"
         const val FORM = "C2 Opisz barierę"
         val PLACE =
