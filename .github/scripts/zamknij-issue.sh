@@ -18,6 +18,11 @@ if [[ -z $issues ]]; then
 fi
 
 for issue in $issues; do
+  # gh issue view zwraca też dane PR; numer PR nie jest issue i nie jest zamykany.
+  if [[ "$(gh issue view "$issue" --json url --jq .url)" == */pull/* ]]; then
+    echo "::warning title=Zamykanie issue::#${issue}: to PR, nie issue; pominięto."
+    continue
+  fi
   gh issue close "$issue" --comment "Zrobione w #${pr}."
   echo "Zamknięto #${issue}."
 done
