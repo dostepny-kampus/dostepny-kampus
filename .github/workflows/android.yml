@@ -243,6 +243,7 @@ jobs:
           retention-days: 7
 
   testy:
+    name: testy (${{ matrix.grupa }})
     needs: zmiany
     if: ${{ !cancelled() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
