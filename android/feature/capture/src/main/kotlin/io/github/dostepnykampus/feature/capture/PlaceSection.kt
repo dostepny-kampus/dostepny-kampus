@@ -102,6 +102,10 @@ internal fun PlaceSection(
                 isPicking = false
                 actions.onChoose(symbol)
             },
+            onOutside = {
+                isPicking = false
+                actions.onOutside()
+            },
             onDismiss = { isPicking = false },
         )
     }
@@ -125,8 +129,14 @@ private fun Hint(hint: BuildingHint) {
     }
 }
 
+// Lista budynków z „Poza budynkiem” na końcu, jak w makiecie wyboru budynku C1 (US6.2, BR-G2).
 @Composable
-private fun BuildingPicker(buildings: Buildings, onPick: (String) -> Unit, onDismiss: () -> Unit) {
+private fun BuildingPicker(
+    buildings: Buildings,
+    onPick: (String) -> Unit,
+    onOutside: () -> Unit,
+    onDismiss: () -> Unit,
+) {
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {},
@@ -137,6 +147,11 @@ private fun BuildingPicker(buildings: Buildings, onPick: (String) -> Unit, onDis
                 items(buildings.items, key = Building::symbol) { building ->
                     TextButton(onClick = { onPick(building.symbol) }, modifier = Modifier.fillMaxWidth()) {
                         Text(text = building.label(), modifier = Modifier.fillMaxWidth())
+                    }
+                }
+                item {
+                    TextButton(onClick = onOutside, modifier = Modifier.fillMaxWidth()) {
+                        Text(text = stringResource(R.string.budynek_poza), modifier = Modifier.fillMaxWidth())
                     }
                 }
             }
