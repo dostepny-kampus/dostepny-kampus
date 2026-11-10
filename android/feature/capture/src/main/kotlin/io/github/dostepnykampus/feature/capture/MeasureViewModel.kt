@@ -14,6 +14,7 @@ import io.github.dostepnykampus.core.geo.hintBuilding
 import io.github.dostepnykampus.core.geo.nearestBuildings
 import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
+import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionAverage
 import io.github.dostepnykampus.core.location.PositionAveraging
 import io.github.dostepnykampus.core.location.PositionFix
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -47,6 +49,9 @@ private const val TICK_MS = 1_000L
 sealed interface MeasureUiState {
     /** „Szukamy satelitów”: nie ma jeszcze odczytu ze znaną dokładnością. */
     data object Searching : MeasureUiState
+
+    /** Lokalizacja w telefonie jest wyłączona; po włączeniu pomiar rusza sam (UC7 4c, NFR-27). */
+    data object LocationOff : MeasureUiState
 
     /** Odbiornik zgłosił błąd, np. brak zgody albo brak GPS w telefonie; „Powtórz pomiar” zaczyna od nowa (NFR-50). */
     data object Failed : MeasureUiState
@@ -112,7 +117,8 @@ sealed interface PlaceChoice {
  * kasuje; [repeat] zaczyna od nowa bez limitu (NFR-23). Po pomiarze podpowiada budynek z katalogu bez sieci,
  * a Zbierający go potwierdza, wybiera inny albo zostawia „poza budynkiem” (US6.2).
  * Odliczanie „Pomiar: zostało 12 s” zmienia się co sekundę także bez nowych odczytów (NFR-2). Błąd odbiornika
- * kończy pomiar stanem [MeasureUiState.Failed] zamiast zamykać aplikację (NFR-50).
+ * kończy pomiar stanem [MeasureUiState.Failed] zamiast zamykać aplikację (NFR-50). Wyłączona lokalizacja daje
+ * [MeasureUiState.LocationOff] bez nasłuchu odbiornika, a jej włączenie zaczyna pomiar od nowa (UC7 4c).
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -123,6 +129,7 @@ class MeasureViewModel
         private val satellites: SatelliteSource,
         private val clock: ElapsedClock,
         private val catalog: BuildingCatalogRepository,
+        private val locationSwitch: LocationSwitch,
     ) : ViewModel() {
         private val result = MutableStateFlow(Run(attempt = 0, finished = null))
         private val catalogBuildings = MutableStateFlow(emptyList<Building>())
@@ -138,7 +145,7 @@ class MeasureViewModel
         /** Bieżący stan pomiaru. */
         val uiState: StateFlow<MeasureUiState> =
             result
-                .flatMapLatest { run -> run.finished?.let(::flowOf) ?: measurement(run.attempt) }
+                .flatMapLatest { run -> run.finished?.let(::flowOf) ?: whenLocationOn(run.attempt) }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), MeasureUiState.Searching)
 
         /** „Powtórz pomiar”: nowe szukanie satelitów i pełne 30 s. */
@@ -190,6 +197,12 @@ class MeasureViewModel
                 }
             }
         }
+
+        private fun whenLocationOn(attempt: Int): Flow<MeasureUiState> =
+            locationSwitch
+                .isEnabled()
+                .distinctUntilChanged()
+                .flatMapLatest { isOn -> if (isOn) measurement(attempt) else flowOf(MeasureUiState.LocationOff) }
 
         private fun measurement(attempt: Int): Flow<MeasureUiState> =
             channelFlow {
