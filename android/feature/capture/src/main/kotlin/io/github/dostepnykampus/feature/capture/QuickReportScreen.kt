@@ -53,9 +53,16 @@ import java.io.File
  * @param route krok z danymi wcześniejszych kroków
  * @param actions czynności nawigatora
  * @param modifier wymiary nadane przez aplikację
+ * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu (NFR-22); bez niego z grafu Hilt przy
+ *   kroku zdjęcia
  */
 @Composable
-fun QuickReportScreen(route: ReportRoute, actions: QuickReportActions, modifier: Modifier = Modifier) {
+fun QuickReportScreen(
+    route: ReportRoute,
+    actions: QuickReportActions,
+    modifier: Modifier = Modifier,
+    photoTranscoder: PhotoTranscoder? = null,
+) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             val isPhotoTaken = route.step == ReportStep.PHOTO && route.photoPath != null
@@ -85,7 +92,7 @@ fun QuickReportScreen(route: ReportRoute, actions: QuickReportActions, modifier:
 
                     else -> {
                         Text(stringResource(R.string.szybkie_krok, route.step.ordinal + 1))
-                        WithLocationPermission(onBack = actions.onBack) { QuickStep(route, actions) }
+                        WithLocationPermission(onBack = actions.onBack) { QuickStep(route, actions, photoTranscoder) }
                     }
                 }
             }
@@ -99,10 +106,14 @@ private fun leave(route: ReportRoute, actions: QuickReportActions) {
 }
 
 @Composable
-private fun QuickStep(route: ReportRoute, actions: QuickReportActions) {
+private fun QuickStep(route: ReportRoute, actions: QuickReportActions, photoTranscoder: PhotoTranscoder?) {
     when (route.step) {
         ReportStep.PHOTO -> {
-            QuickPhotoStep(route = route, onNext = actions.onNext)
+            if (photoTranscoder == null) {
+                QuickPhotoStep(route = route, onNext = actions.onNext)
+            } else {
+                QuickPhotoStep(route = route, onNext = actions.onNext, transcoder = photoTranscoder)
+            }
         }
 
         ReportStep.GROUP -> {
@@ -116,8 +127,16 @@ private fun QuickStep(route: ReportRoute, actions: QuickReportActions) {
 }
 
 @Composable
-private fun QuickPhotoStep(route: ReportRoute, onNext: (ReportRoute) -> Unit) {
-    val camera = rememberPhotoCamera(onPhoto = { onNext(route.copy(photoId = it.photoId, photoPath = it.path)) })
+private fun QuickPhotoStep(
+    route: ReportRoute,
+    onNext: (ReportRoute) -> Unit,
+    transcoder: PhotoTranscoder = hiltViewModel(),
+) {
+    val camera =
+        rememberPhotoCamera(
+            onPhoto = { onNext(route.copy(photoId = it.photoId, photoPath = it.path)) },
+            transcoder = transcoder,
+        )
     PhotoSection(photos = PhotoPaths(listOfNotNull(route.photoPath)), camera = camera)
     if (route.photoPath != null) MainButton(text = stringResource(R.string.pomiar_dalej), onClick = { onNext(route) })
 }

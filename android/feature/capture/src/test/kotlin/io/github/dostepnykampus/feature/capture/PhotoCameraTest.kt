@@ -13,6 +13,11 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
@@ -25,6 +30,7 @@ import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -42,6 +48,7 @@ import org.robolectric.shadows.ShadowActivity
 import java.io.File
 import java.io.IOException
 import java.nio.file.Path
+import kotlin.coroutines.EmptyCoroutineContext
 
 private const val CAMERA_QUALITY = 90
 
@@ -58,6 +65,8 @@ class PhotoCameraTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private var photos = 0
+    private var path = ""
+    private var generation by mutableIntStateOf(0)
 
     /** FileProvider zakłada separator Androida, a Robolectric używa ścieżek systemu hosta. */
     @Implements(className = "androidx.core.content.FileProvider\$SimplePathStrategy", isInAndroidSdk = false)
@@ -80,20 +89,42 @@ class PhotoCameraTest {
     private fun show() {
         val viewModel = ReportFormViewModel { _, _, _ -> }
         val route = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = null)
+        val transcoder = PhotoTranscoder()
         compose.setContent {
-            DostepnyKampusTheme { ReportFormScreen(route = route, onLeave = {}, onSave = {}, viewModel = viewModel) }
+            DostepnyKampusTheme {
+                ReportFormScreen(
+                    route = route,
+                    onLeave = {},
+                    onSave = {},
+                    viewModel = viewModel,
+                    photoTranscoder = transcoder,
+                )
+            }
         }
     }
 
-    private fun showBroken() {
-        compose.setContent {
-            DostepnyKampusTheme {
-                val camera = rememberPhotoCamera(onPhoto = { photos++ }, transcode = { throw IOException(BROKEN) })
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    PhotoSection(photos = PhotoPaths(emptyList()), camera = camera)
-                }
-            }
+    private fun showCamera(transcoder: PhotoTranscoder) {
+        compose.setContent { DostepnyKampusTheme { key(generation) { CameraHost(transcoder) } } }
+    }
+
+    @Composable
+    private fun CameraHost(transcoder: PhotoTranscoder) {
+        val camera =
+            rememberPhotoCamera(
+                onPhoto = { photo ->
+                    photos++
+                    path = photo.path
+                },
+                transcoder = transcoder,
+            )
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            PhotoSection(photos = PhotoPaths(listOf(path).filter { it.isNotEmpty() }), camera = camera)
         }
+    }
+
+    private fun writePhoto(file: File) {
+        val image = Bitmap.createBitmap(64, 48, Bitmap.Config.ARGB_8888)
+        file.outputStream().use { image.compress(Bitmap.CompressFormat.JPEG, CAMERA_QUALITY, it) }
     }
 
     private fun openCamera(): Pair<ShadowActivity.IntentForResult, File> {
@@ -121,8 +152,7 @@ class PhotoCameraTest {
         assertFalse(empty.exists())
 
         val (request, file) = openCamera()
-        val image = Bitmap.createBitmap(64, 48, Bitmap.Config.ARGB_8888)
-        file.outputStream().use { image.compress(Bitmap.CompressFormat.JPEG, CAMERA_QUALITY, it) }
+        writePhoto(file)
         shadowOf(compose.activity).receiveResult(request.intent, Activity.RESULT_OK, null)
 
         val preview = hasContentDescription("Zrobione zdjęcie 1 z 1")
@@ -133,7 +163,8 @@ class PhotoCameraTest {
     /** Błąd przekodowania: komunikat, plik usunięty, aplikacja działa, a „Zrób zdjęcie” otwiera aparat ponownie. */
     @Test
     fun nfr50_photo_error_retry() {
-        showBroken()
+        val broken = PhotoTranscoder(EmptyCoroutineContext) { throw IOException(BROKEN) }
+        showCamera(broken)
         val (request, file) = openCamera()
         file.writeText(BROKEN)
         shadowOf(compose.activity).receiveResult(request.intent, Activity.RESULT_OK, null)
@@ -147,6 +178,25 @@ class PhotoCameraTest {
         compose.onNodeWithText(ERROR).assertDoesNotExist()
         assertEquals(MediaStore.ACTION_IMAGE_CAPTURE, retry.intent.action)
         assertNotEquals(file, next)
+    }
+
+    /** Kompozycja odtworzona w trakcie przekodowania, jak po obrocie: zdjęcie dociera, bez plików-sierot (NFR-22). */
+    @Test
+    fun nfr22_photo_kept_on_rotation() {
+        val work = StandardTestDispatcher()
+        showCamera(PhotoTranscoder(work))
+        val (request, file) = openCamera()
+        writePhoto(file)
+        shadowOf(compose.activity).receiveResult(request.intent, Activity.RESULT_OK, null)
+        compose.waitForIdle()
+
+        generation++
+        compose.waitForIdle()
+        work.scheduler.advanceUntilIdle()
+
+        compose.waitUntil { photos == 1 }
+        assertEquals(file.path, path)
+        assertEquals(listOf(file.name), file.parentFile?.list()?.toList())
     }
 
     private companion object {

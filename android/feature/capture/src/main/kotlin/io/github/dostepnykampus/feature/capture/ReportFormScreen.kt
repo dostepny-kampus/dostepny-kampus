@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.map
  * @param modifier wymiary nadane przez aplikację
  * @param viewModel formularz; w aplikacji z grafu Hilt, w testach z zapisem testowym
  * @param draft szkic współdzielony z C1 przez nawigację
+ * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu (NFR-22)
  */
 @Composable
 fun ReportFormScreen(
@@ -40,6 +41,7 @@ fun ReportFormScreen(
     modifier: Modifier = Modifier,
     viewModel: ReportFormViewModel = hiltViewModel(),
     draft: ReportDraft = remember { ReportDraft() },
+    photoTranscoder: PhotoTranscoder = hiltViewModel(),
 ) {
     SideEffect { viewModel.open(ReportForm(place = route.place()), draft) }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -55,7 +57,8 @@ fun ReportFormScreen(
             }
     }
     BackHandler(onBack = viewModel::back)
-    val camera = rememberPhotoCamera(onPhoto = { viewModel.edit(ReportEdit.Photo(it)) })
+    val camera =
+        rememberPhotoCamera(onPhoto = { viewModel.edit(ReportEdit.Photo(it)) }, transcoder = photoTranscoder)
     state?.let { current ->
         val actions =
             ReportActions(
