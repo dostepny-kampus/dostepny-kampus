@@ -89,12 +89,16 @@ jobs:
             from=$COMMITLINT_START
           fi
           npx --no-install commitlint --from "$from" --to "$HEAD_SHA" --verbose
-      - name: Sprawdź tytuł PR
+      - name: Sprawdź tytuł PR z numerem dopisywanym przez squash
         if: github.event_name != 'merge_group'
         working-directory: .github/commitlint
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
-        run: printf '%s\n' "$PR_TITLE" | npx --no-install commitlint --verbose
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Kolejka robi squash z nagłówkiem „<tytuł> (#N)”, więc sprawdzamy go już na PR, razem z dopiskiem.
+          bash ../scripts/naglowek-squasha.sh "$PR_TITLE" "$PR_NUMBER"
+          printf '%s (#%s)\n' "$PR_TITLE" "$PR_NUMBER" | npx --no-install commitlint --verbose
 
   zakazane-slowa:
     runs-on: ubuntu-latest
