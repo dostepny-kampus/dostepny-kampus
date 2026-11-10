@@ -2,9 +2,11 @@ name: do-kolejki
 
 # Etykieta `do-kolejki` włącza auto-merge PR do `sprint/N`; po zielonych wymaganych kontrolach PR sam trafia do kolejki
 # scalania. Etykietę da się dodać przez REST API, więc PR wstawi do kolejki też środowisko bez GraphQL API.
-# Zdjęcie etykiety wyłącza auto-merge. pull_request_target daje token z zapisem, a kod PR nie jest pobierany.
+# Zdjęcie etykiety wyłącza auto-merge. Zdarzenie pull_request, nie pull_request_target: to drugie bierze plik z `main`,
+# więc z gałęzi sprintu by się nie uruchomiło. PR z forków mają token tylko do odczytu, więc je pomijamy; kod PR
+# nie jest pobierany.
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - "sprint/**"
     types:
@@ -20,7 +22,10 @@ concurrency:
 
 jobs:
   auto-merge:
-    if: github.event.label.name == 'do-kolejki' && github.event.pull_request.state == 'open'
+    if: >-
+      github.event.label.name == 'do-kolejki' &&
+      github.event.pull_request.state == 'open' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
