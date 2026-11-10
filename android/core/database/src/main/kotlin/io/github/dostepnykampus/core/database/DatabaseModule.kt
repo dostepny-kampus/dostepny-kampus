@@ -42,4 +42,8 @@ object DatabaseModule {
     /** Historia własnych zgłoszeń z [database] (US8). */
     @Provides
     fun ownSubmissions(database: DkDatabase): OwnSubmissionDao = database.ownSubmissions()
+
+    /** Odczyt zgłoszenia z kolejki do poprawki z [database] (US8.3). */
+    @Provides
+    fun pendingEdits(database: DkDatabase): PendingEditDao = database.pendingEdits()
 }

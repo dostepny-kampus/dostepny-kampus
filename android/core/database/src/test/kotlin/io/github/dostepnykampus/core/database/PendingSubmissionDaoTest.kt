@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -95,6 +96,19 @@ class PendingSubmissionDaoTest {
             assertEquals(listOf("b"), dao.observe().first().map { it.submission.id })
             dao.save(submission(id = "a", savedAt = 3), photos("p1", of = "a"))
             assertEquals(listOf("b", "a"), dao.all().map { it.submission.id })
+        }
+
+    /** Poprawka z C3 wczytuje zgłoszenie po identyfikatorze, także odrzucone; wysłanego już nie ma (US8.3, BR-26). */
+    @Test
+    fun us8_3_found_also_refused() =
+        runTest {
+            dao.save(submission(id = ID, savedAt = 1), photos("p1", "p2", of = ID))
+            dao.markRefused(ID)
+            val found = checkNotNull(database.pendingEdits().find(ID))
+            assertEquals(ID, found.submission.id)
+            assertEquals(setOf("p1", "p2"), found.photos.map { it.photoId }.toSet())
+            dao.delete(ID)
+            assertNull(database.pendingEdits().find(ID))
         }
 
     private fun submission(id: String, savedAt: Long): PendingSubmissionEntity =
