@@ -113,6 +113,11 @@ updates:
     commit-message:
       prefix: build
       include: scope
+    ignore:
+      # Tymczasowo (#750): KSP 2.3.13 gubi symbole bibliotek przy równoległym wykonaniu w jednym procesie (google/ksp#3286),
+      # przez co testy Hilt padają losowo. Nowsze wersje przechodzą normalnie; wpis usunąć po wydaniu poprawki.
+      - dependency-name: "com.google.devtools.ksp:symbol-processing-gradle-plugin"
+        versions: ["2.3.13"]
     groups:
       gradle-minor-patch:
         patterns:
