@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,24 +55,22 @@ import java.io.File
  * @param route krok z danymi wcześniejszych kroków
  * @param actions czynności nawigatora
  * @param modifier wymiary nadane przez aplikację
- * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu (NFR-22); bez niego z grafu Hilt przy
- *   kroku zdjęcia
- * @param entrances wejście z „Zgłoś barierę przy wejściu” do kroku 1 (US4.6); bez niego z grafu Hilt, gdy trasa
- *   ma wejście
+ * Krok 3: „Brak pozycji” ma „Spróbuj ponownie” i „Zrezygnuj”; „Tak, zrezygnuj” stamtąd otwiera mapę.
+ *
+ * @param models modele widoku podane z zewnątrz; brakujące z grafu Hilt
  */
 @Composable
 fun QuickReportScreen(
     route: ReportRoute,
     actions: QuickReportActions,
     modifier: Modifier = Modifier,
-    photoTranscoder: PhotoTranscoder? = null,
-    entrances: QuickEntranceViewModel? = null,
+    models: QuickReportModels = QuickReportModels(),
 ) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             val isPhotoTaken = route.step == ReportStep.PHOTO && route.photoPath != null
             var isLeaving by rememberSaveable { mutableStateOf(false) }
-            BackHandler(enabled = isPhotoTaken) { isLeaving = !isLeaving }
+            BackHandler(enabled = isPhotoTaken || isLeaving) { isLeaving = !isLeaving }
             val back: () -> Unit = {
                 if (isPhotoTaken) {
                     isLeaving = true
@@ -100,8 +99,8 @@ fun QuickReportScreen(
                             QuickStep(
                                 route = route,
                                 actions = actions,
-                                photoTranscoder = photoTranscoder,
-                                entrances = entrances,
+                                models = models,
+                                onGiveUp = { isLeaving = true },
                             )
                         }
                     }
@@ -113,18 +112,20 @@ fun QuickReportScreen(
 
 private fun leave(route: ReportRoute, actions: QuickReportActions) {
     route.photoPath?.let { File(it).delete() }
-    actions.onBack()
+    if (route.step == ReportStep.PHOTO) actions.onBack() else actions.onBackToMap()
 }
 
 @Composable
 private fun QuickStep(
     route: ReportRoute,
     actions: QuickReportActions,
-    photoTranscoder: PhotoTranscoder?,
-    entrances: QuickEntranceViewModel?,
+    models: QuickReportModels,
+    onGiveUp: () -> Unit,
 ) {
     when (route.step) {
         ReportStep.PHOTO -> {
+            val entrances = models.entrances
+            val photoTranscoder = models.photoTranscoder
             route.entranceId?.let { id ->
                 if (entrances == null) QuickEntranceLine(id = id) else QuickEntranceLine(id = id, entrances = entrances)
             }
@@ -140,7 +141,20 @@ private fun QuickStep(
         }
 
         ReportStep.SEND, ReportStep.SENT -> {
-            route.quickReport()?.let { QuickSendStep(route = route, report = it, onSend = actions.onSent) }
+            route.quickReport()?.let { report ->
+                val send = models.send
+                if (send == null) {
+                    QuickSendStep(route = route, report = report, onSend = actions.onSent, onGiveUp = onGiveUp)
+                } else {
+                    QuickSendStep(
+                        route = route,
+                        report = report,
+                        onSend = actions.onSent,
+                        onGiveUp = onGiveUp,
+                        viewModel = send,
+                    )
+                }
+            }
         }
     }
 }
@@ -197,19 +211,27 @@ private fun QuickSendStep(
     route: ReportRoute,
     report: QuickReport,
     onSend: () -> Unit,
+    onGiveUp: () -> Unit,
     viewModel: QuickSendViewModel = hiltViewModel(),
 ) {
-    val position by viewModel.position.collectAsStateWithLifecycle()
+    val lookup by viewModel.lookup.collectAsStateWithLifecycle()
     val stage by viewModel.stage.collectAsStateWithLifecycle()
     val sent by rememberUpdatedState(onSend)
     LaunchedEffect(viewModel) { viewModel.stage.filter { it == QuickSendStage.SENT }.collect { sent() } }
-    QuickSendSummary(report = report, isFloorAsked = route.isFloorAsked, isPositionKnown = position != null)
-    if (stage == QuickSendStage.FAILED) Text(stringResource(R.string.formularz_blad_zapisu))
-    MainButton(
-        text = stringResource(R.string.szybkie_wyslij),
-        onClick = { viewModel.send(report) },
-        isEnabled = position != null && stage != QuickSendStage.SENDING,
-    )
+    QuickSendSummary(report = report, isFloorAsked = route.isFloorAsked, lookup = lookup)
+    if (lookup == QuickLookup.Lost) {
+        MainButton(text = stringResource(R.string.formularz_sprobuj_ponownie), onClick = viewModel::retry)
+        OutlinedButton(onClick = onGiveUp, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)) {
+            Text(stringResource(R.string.szybkie_zrezygnuj))
+        }
+    } else {
+        if (stage == QuickSendStage.FAILED) Text(stringResource(R.string.formularz_blad_zapisu))
+        MainButton(
+            text = stringResource(R.string.szybkie_wyslij),
+            onClick = { viewModel.send(report) },
+            isEnabled = lookup is QuickLookup.Found && stage != QuickSendStage.SENDING,
+        )
+    }
 }
 
 @Composable

@@ -108,6 +108,8 @@
     <string name="szybkie_rezygnacja">Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy. Aby je zachować, wybierz „Wróć do zdjęcia”.</string>
     <string name="szybkie_tak_zrezygnuj">Tak, zrezygnuj</string>
     <string name="szybkie_wroc_do_zdjecia">Wróć do zdjęcia</string>
+    <string name="szybkie_brak_pozycji">Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.</string>
+    <string name="szybkie_zrezygnuj">Zrezygnuj</string>
     <string name="szybkie_wejscie">Wejście: „%1$s”</string>
     <string name="szybkie_wejscie_glowne">Wejście: główne</string>
     <string name="szybkie_wejscie_bez_nazwy">Wejście: bez nazwy</string>

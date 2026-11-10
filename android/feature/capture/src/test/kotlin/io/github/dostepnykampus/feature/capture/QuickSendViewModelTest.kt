@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.capture
 
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
+import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.model.BarrierGroup
@@ -17,7 +18,10 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -27,7 +31,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.IOException
@@ -38,6 +41,8 @@ import kotlin.coroutines.EmptyCoroutineContext
 class QuickSendViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val fixes = MutableSharedFlow<PositionFix>()
+    private var source: Flow<PositionFix> = fixes
+    private val isLocationOn = MutableStateFlow(true)
     private val saved = mutableListOf<SubmissionContent>()
     private var failure: Exception? = null
     private val report =
@@ -48,7 +53,8 @@ class QuickSendViewModelTest {
         )
     private val viewModel by lazy {
         QuickSendViewModel(
-            positions = PositionSource { fixes },
+            positions = PositionSource { source },
+            locationSwitch = LocationSwitch { isLocationOn },
             catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS },
             saver = { content, _, _ ->
                 failure?.let { throw it }
@@ -74,7 +80,7 @@ class QuickSendViewModelTest {
             watch()
             viewModel.send(report)
             runCurrent()
-            assertNull(viewModel.position.value)
+            assertEquals(QuickLookup.Locating, viewModel.lookup.value)
             assertEquals(emptyList<SubmissionContent>(), saved)
         }
 
@@ -118,6 +124,38 @@ class QuickSendViewModelTest {
             assertEquals(listOf("node/6"), saved.map { it.entranceId })
         }
 
+    /** Błąd odbiornika → „Brak pozycji” bez zegara; „Spróbuj ponownie” ustala pozycję od nowa (UC7 4c, NFR-23). */
+    @Test
+    fun uc7_4c_source_error_then_retry() =
+        runTest(dispatcher) {
+            source = flow { throw SecurityException("brak zgody") }
+            watch()
+            assertEquals(QuickLookup.Lost, viewModel.lookup.value)
+            viewModel.send(report)
+            runCurrent()
+            assertEquals(emptyList<SubmissionContent>(), saved)
+            source = fixes
+            viewModel.retry()
+            runCurrent()
+            assertEquals(QuickLookup.Locating, viewModel.lookup.value)
+            fix(INSIDE_A1)
+            viewModel.send(report)
+            runCurrent()
+            assertEquals(1, saved.size)
+        }
+
+    /** Wyłączona lokalizacja → „Brak pozycji”; po włączeniu ustalanie wraca samo (UC7 4c). */
+    @Test
+    fun uc7_4c_location_off_then_on() =
+        runTest(dispatcher) {
+            isLocationOn.value = false
+            watch()
+            assertEquals(QuickLookup.Lost, viewModel.lookup.value)
+            isLocationOn.value = true
+            runCurrent()
+            assertEquals(QuickLookup.Locating, viewModel.lookup.value)
+        }
+
     /** Drugie „Wyślij” nie wysyła zdjęcia drugi raz (US4.7). */
     @Test
     fun us4_7_sent_once() =
@@ -144,7 +182,7 @@ class QuickSendViewModelTest {
             assertEquals(QuickSendStage.FAILED, viewModel.stage.value)
         }
 
-    private fun TestScope.watch() = backgroundScope.launch { viewModel.position.collect {} }.also { runCurrent() }
+    private fun TestScope.watch() = backgroundScope.launch { viewModel.lookup.collect {} }.also { runCurrent() }
 
     private fun TestScope.fix(point: GeoPoint) {
         backgroundScope.launch { fixes.emit(PositionFix(point, 6.0, 0L)) }
