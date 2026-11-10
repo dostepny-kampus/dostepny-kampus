@@ -259,7 +259,7 @@ class SubmissionQueue(
 }
 
 /**
- * Wersja bazowa poprawki [edited]: z C3, z poprzedniej poprawki w kolejce albo z historii po wysłaniu. Gdy serwer
+ * Wersja bazowa poprawki [edited]: z C3, z poprzedniej poprawki w kolejce albo z historii po utworzeniu. Gdy serwer
  * ma już zgłoszenie, a wersja nie jest znana, zapis jest odrzucony, bo utworzenie z tym samym identyfikatorem
  * byłoby duplikatem (BR-9, BR-10); zgłoszenie tylko w telefonie zostaje bez wersji i idzie jako utworzenie.
  */
@@ -268,7 +268,7 @@ internal suspend fun baseVersionOf(
     store: PendingSubmissionDao,
     history: OwnSubmissionDao?,
 ): Int? {
-    val pending = store.find(edited.id)
+    val pending = store.all().firstOrNull { it.submission.id == edited.id }?.submission
     val own = history?.find(edited.id)
     val version = edited.baseVersion ?: pending?.baseVersion ?: own?.serverVersion
     val isOnServer = pending?.isCreatedOnServer == true || own?.state == OwnSubmissionState.SENT

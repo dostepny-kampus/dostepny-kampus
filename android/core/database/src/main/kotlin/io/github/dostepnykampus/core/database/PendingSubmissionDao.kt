@@ -40,14 +40,6 @@ interface PendingSubmissionDao {
     suspend fun all(): List<PendingSubmissionWithPhotos>
 
     /**
-     * Zgłoszenie [id] w kolejce, także odrzucone; `null`, gdy go nie ma.
-     *
-     * @param id identyfikator zgłoszenia
-     */
-    @Query("SELECT * FROM pending_submissions WHERE id = :id")
-    suspend fun find(id: String): PendingSubmissionEntity?
-
-    /**
      * Zaznacza, że serwer ma już zgłoszenie, a czekają tylko zdjęcia.
      *
      * @param id identyfikator zgłoszenia

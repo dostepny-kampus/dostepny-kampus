@@ -29,9 +29,6 @@ internal class FakeStore : PendingSubmissionDao {
             .filterNot { it.submission.isRefused }
             .sortedWith(compareBy({ it.submission.savedAtMillis }, { it.submission.id }))
 
-    override suspend fun find(id: String): PendingSubmissionEntity? =
-        rows.firstOrNull { it.submission.id == id }?.submission
-
     override suspend fun markCreated(id: String) {
         created.add(id)
         rows.replaceAll { item ->
