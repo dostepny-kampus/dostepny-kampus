@@ -52,7 +52,7 @@ COVERAGE_COUNTS = (("Pełny test", "pełny"), ("Tylko częściowo", "częściowo
 COVERAGE_INTRO = """# Pokrycie scenariuszy testami
 
 Jeden wiersz to jeden scenariusz z katalogu `specs/`. Kolumna „Test” wskazuje testy Androida ze znacznikiem
-`// Scenariusz:` (moduł, klasa i funkcja testu). Stan „pełny” znaczy, że test sprawdza wszystkie kroki „Wtedy”,
+`Scenariusz:` w KDoc (moduł, klasa i funkcja testu). Stan „pełny” znaczy, że test sprawdza wszystkie kroki „Wtedy”,
 „częściowo” — tylko część z nich, a „brak” — że scenariusz nie ma testu.
 
 Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą śledzenia:
