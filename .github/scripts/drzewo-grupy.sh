@@ -8,7 +8,8 @@ set -euo pipefail
 # zapisz: na PR zapisuje git tree SHA commitu scalenia (GITHUB_SHA) do $DRZEWO_KATALOG/drzewo.txt (artefakt przebiegu).
 # porownaj: w grupie kolejki porównuje drzewo commitu grupy (GROUP_HEAD_SHA, GROUP_HEAD_REF) z drzewem, na którym ostatni
 # przebieg workflow DRZEWO_WORKFLOW na PR był w pełni zielony; wynik w GITHUB_OUTPUT: `pomin=true` albo `pomin=false`.
-# Każdy błąd odczytu daje `pomin=false`, więc niepewność nigdy nie osłabia kontroli. Środowisko: GH_TOKEN, GH_REPO.
+# Zmiana katalogu .github względem GROUP_BASE_SHA (workflow, skrypty) zawsze daje `pomin=false`. Każdy błąd odczytu też,
+# więc niepewność nigdy nie osłabia kontroli. Środowisko: GH_TOKEN, GH_REPO.
 tryb="${1:?Podaj tryb: zapisz albo porownaj}"
 
 odpowiedz() {
@@ -18,9 +19,7 @@ odpowiedz() {
   exit 0
 }
 
-drzewo_commitu() {
-  gh api "repos/${GH_REPO}/git/commits/$1" --jq .tree.sha
-}
+drzewo_commitu() { gh api "repos/${GH_REPO}/git/commits/$1" --jq .tree.sha; }
 
 if [[ $tryb == zapisz ]]; then
   if drzewo="$(drzewo_commitu "$GITHUB_SHA")" && [[ $drzewo =~ ^[0-9a-f]{40}$ ]]; then
@@ -34,12 +33,15 @@ if [[ $tryb == zapisz ]]; then
 fi
 
 [[ $tryb == porownaj ]] || { echo "Nieznany tryb: ${tryb}" >&2; exit 2; }
-
 [[ $GROUP_HEAD_REF =~ /pr-([0-9]+)-[0-9a-f]+$ ]] || odpowiedz false "nie rozpoznano numeru PR w gałęzi grupy."
 pr="${BASH_REMATCH[1]}"
-
 if ! drzewo_grupy="$(drzewo_commitu "$GROUP_HEAD_SHA")" || [[ ! $drzewo_grupy =~ ^[0-9a-f]{40}$ ]]; then
   odpowiedz false "nie odczytano drzewa commitu grupy."
+fi
+poddrzewo_github() { gh api "repos/${GH_REPO}/git/trees/$1" --jq '.tree[] | select(.path == ".github") | .sha'; }
+if ! github_grupy="$(poddrzewo_github "$drzewo_grupy")" || ! github_bazy="$(poddrzewo_github "$(drzewo_commitu "$GROUP_BASE_SHA")")" ||
+  [[ -z $github_grupy || $github_grupy != "$github_bazy" ]]; then
+  odpowiedz false "grupa zmienia katalog .github względem bazy albo nie odczytano jego drzewa."
 fi
 if ! glowa="$(gh api "repos/${GH_REPO}/pulls/${pr}" --jq .head.sha)" || [[ -z $glowa ]]; then
   odpowiedz false "nie odczytano commitu PR #${pr}."

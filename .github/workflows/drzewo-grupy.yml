@@ -1,7 +1,6 @@
 name: drzewo-grupy
 
-# Pierwszy job `porownanie` workflowów android, backend, api, docs i pr-guard: na PR zapisuje drzewo commitu scalenia,
-# w grupie kolejki porównuje je z drzewem zielonego przebiegu na PR i przy równości daje `pomin` = true.
+# Job `porownanie` (android, backend, api, docs, pr-guard): zapisuje drzewo scalenia na PR, w grupie kolejki je porównuje (pomin).
 on:
   workflow_call:
     inputs:
@@ -32,6 +31,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
           GROUP_HEAD_REF: ${{ github.event.merge_group.head_ref }}
           DRZEWO_KATALOG: ${{ runner.temp }}/drzewo

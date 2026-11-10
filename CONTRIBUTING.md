@@ -18,8 +18,8 @@ podany jest plik, który ją egzekwuje; gdy reguła się zmienia, zmienia się t
    Do kolejki PR wstawia przycisk „Merge when ready” albo etykieta `do-kolejki`: włącza auto-merge, a zdjęta je
    wyłącza ([`do-kolejki.yml`](.github/workflows/do-kolejki.yml)). Etykietę doda też samo REST API:
    `gh api repos/{owner}/{repo}/issues/N/labels -f 'labels[]=do-kolejki'`.
-   Gdy grupa ma to samo drzewo plików, co zielony przebieg na PR, ciężkie joby są pomijane
-   ([`drzewo-grupy.yml`](.github/workflows/drzewo-grupy.yml)); zmiana w `sprint/N` albo w workflow wymusza pełny przebieg.
+   Gdy grupa ma to samo drzewo plików, co zielony przebieg na PR, i nie zmienia `.github/` względem bazy, ciężkie joby są
+   pomijane ([`drzewo-grupy.yml`](.github/workflows/drzewo-grupy.yml)); zmiana `.github/` albo `sprint/N` wymusza pełny przebieg.
    Ryzyko: test niestabilny, który przypadkiem przeszedł na PR, nie jest w kolejce sprawdzany drugi raz.
 6. Po scaleniu issue z opisu PR jest zamykane z komentarzem „Zrobione w #PR”
    ([`zamykanie-issue.yml`](.github/workflows/zamykanie-issue.yml), [`zamknij-issue.sh`](.github/scripts/zamknij-issue.sh)).

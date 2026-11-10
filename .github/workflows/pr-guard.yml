@@ -29,7 +29,6 @@ env:
 
 jobs:
   porownanie:
-    # Pierwszy job: w grupie kolejki pomija ciężkie joby, gdy drzewo plików jest równe sprawdzonemu na PR (drzewo-grupy.yml).
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     permissions:
       actions: read
