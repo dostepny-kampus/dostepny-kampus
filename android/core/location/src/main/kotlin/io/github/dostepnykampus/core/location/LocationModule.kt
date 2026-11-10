@@ -29,6 +29,12 @@ object LocationModule {
         @ApplicationContext context: Context,
     ): SatelliteSource = GnssSatellites(context)
 
+    /** Włącznik lokalizacji telefonu z systemowych zdarzeń zmiany dostawców. */
+    @Provides
+    fun locationSwitch(
+        @ApplicationContext context: Context,
+    ): LocationSwitch = GnssLocationSwitch(context)
+
     /** Czas od startu telefonu, ten sam co w odczytach GNSS. */
     @Provides
     fun clock(): ElapsedClock = ElapsedClock(SystemClock::elapsedRealtime)

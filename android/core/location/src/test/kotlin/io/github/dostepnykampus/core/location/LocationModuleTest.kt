@@ -24,6 +24,7 @@ class LocationModuleTest {
     fun us6_1_sources_from_gnss() {
         assertTrue(LocationModule.positions(app) is GnssPositionFixes)
         assertTrue(LocationModule.satellites(app) is GnssSatellites)
+        assertTrue(LocationModule.locationSwitch(app) is GnssLocationSwitch)
     }
 
     /** Zegar pomiaru to czas od startu telefonu, jak `elapsedRealtimeNanos` w odczytach. */

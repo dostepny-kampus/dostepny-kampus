@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.capture
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
+import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.location.Satellite
@@ -16,6 +17,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -41,6 +43,7 @@ class MeasureViewModelTest {
     private val fixes = MutableSharedFlow<PositionFix>(extraBufferCapacity = 1)
     private val satellites = MutableSharedFlow<List<Satellite>>(extraBufferCapacity = 1)
     private var failure: RuntimeException? = null
+    private val locationOn = MutableStateFlow(true)
     private val clock = ElapsedClock { BOOT + dispatcher.scheduler.currentTime }
     private val viewModel by lazy {
         MeasureViewModel(
@@ -52,6 +55,7 @@ class MeasureViewModelTest {
                     catalogReads += 1
                     CAMPUS
                 },
+            locationSwitch = LocationSwitch { locationOn },
         )
     }
 
@@ -148,6 +152,23 @@ class MeasureViewModelTest {
 
             failure = null
             viewModel.repeat()
+            runCurrent()
+            assertEquals(MeasureUiState.Searching, viewModel.uiState.value)
+            fix(accuracy = 6.0)
+            advanceTimeBy(31_000)
+            assertEquals(MeasureUiState.Finished::class, viewModel.uiState.value::class)
+        }
+
+    /** Wyłączona lokalizacja: stan bez nasłuchu odbiornika; po włączeniu pomiar rusza sam, bez zegara (UC7 4c). */
+    @Test
+    fun uc7_4c_location_off_then_on() =
+        runTest(dispatcher) {
+            locationOn.value = false
+            watch()
+            assertEquals(MeasureUiState.LocationOff, viewModel.uiState.value)
+            assertEquals(listOf(0, 0), listOf(fixes.subscriptionCount.value, satellites.subscriptionCount.value))
+
+            locationOn.value = true
             runCurrent()
             assertEquals(MeasureUiState.Searching, viewModel.uiState.value)
             fix(accuracy = 6.0)

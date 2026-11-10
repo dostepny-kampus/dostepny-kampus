@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture
 
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -23,6 +24,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
 /** Napisy C1 z makiety „zespół w terenie” dla każdego stanu pomiaru (US6.1, NFR-2, NFR-18, NFR-23). */
@@ -112,5 +114,16 @@ class MeasureScreenTest {
         compose.onNodeWithText("Dalej").assertDoesNotExist()
         compose.onNodeWithText("Powtórz pomiar").performClick()
         assertEquals(1, repeats)
+    }
+
+    /** Wiersz: C1, lokalizacja wyłączona → komunikat i „Otwórz ustawienia” lokalizacji, bez „Dalej”, UC7 4c. */
+    @Test
+    fun uc7_4c_location_off_settings() {
+        show(MeasureUiState.LocationOff)
+        compose.onNodeWithText("Lokalizacja w telefonie jest wyłączona", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Dalej").assertDoesNotExist()
+        compose.onNodeWithText("Otwórz ustawienia").performClick()
+        val opened = shadowOf(compose.activity).nextStartedActivity
+        assertEquals(Settings.ACTION_LOCATION_SOURCE_SETTINGS, opened.action)
     }
 }

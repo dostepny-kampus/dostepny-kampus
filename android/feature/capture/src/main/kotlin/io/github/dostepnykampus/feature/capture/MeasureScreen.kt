@@ -5,7 +5,9 @@
  */
 package io.github.dostepnykampus.feature.capture
 
+import android.content.Intent
 import android.content.res.Resources
+import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -21,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -45,7 +48,8 @@ private val POLISH = Locale.forLanguageTag("pl-PL")
 /**
  * C1 Pomiar pozycji (US6.1): szukanie satelitów, pomiar 30 s i „Pomiar zakończony”. Dokładność i satelity są
  * tekstem, nie tylko na mapie nieba (NFR-18, US6.5), a dokładność ma dopisek „szacunek” (NFR-2). „Powtórz pomiar”
- * działa w każdym stanie, bez limitu (NFR-23). Bez zgody na lokalizację pokazuje prośbę o nią (NFR-27).
+ * działa w każdym stanie, bez limitu (NFR-23). Bez zgody na lokalizację pokazuje prośbę o nią (NFR-27), a przy
+ * wyłączonej lokalizacji w telefonie „Otwórz ustawienia” lokalizacji (UC7 4c).
  * Po pomiarze podpowiada budynek (US6.2), a po decyzji o budynku „Dalej” otwiera C2 (US6).
  *
  * @param onBack „Wstecz” do ekranu, z którego otwarto C1 (NFR-15)
@@ -99,49 +103,78 @@ fun MeasureContent(
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = stringResource(R.string.pomiar_naglowek), onBack = onBack)
-            Column(
-                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
-                verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-            ) {
-                val resources = LocalResources.current
-                when (state) {
-                    MeasureUiState.Searching -> {
-                        Text(stringResource(R.string.pomiar_szukanie))
-                    }
-
-                    MeasureUiState.Failed -> {
-                        Text(
-                            text = stringResource(R.string.pomiar_blad),
-                            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                            color = MaterialTheme.colorScheme.error,
-                            fontWeight = Typografia.wyroznienieWaga,
-                        )
-                    }
-
-                    is MeasureUiState.Measuring -> {
-                        Headline(stringResource(R.string.pomiar_zostalo, state.remainingSeconds))
-                        Result(state.average, resources.satellitesLine(state.satellites))
-                        SkyMap(Sky(state.sky))
-                    }
-
-                    is MeasureUiState.Finished -> {
-                        Headline(stringResource(R.string.pomiar_zakonczony))
-                        Result(state.average, resources.satellitesLine(state.satellites))
-                        PlaceSection(place = state.place, buildings = buildings, actions = placeActions)
-                        SkyMap(Sky(state.sky))
-                    }
-                }
+            Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m)) {
+                MeasureBody(state = state, buildings = buildings, placeActions = placeActions)
             }
-            PinnedActionBar {
-                val next = state.reportFormRoute()
-                val isWaiting = state == MeasureUiState.Searching || state == MeasureUiState.Failed
-                val kind = if (isWaiting) PinnedButtonKind.Filled else PinnedButtonKind.Outlined
-                PinnedButton(text = stringResource(R.string.pomiar_powtorz), onClick = onRepeat, kind = kind)
-                next?.let { PinnedButton(text = stringResource(R.string.pomiar_dalej), onClick = { onNext(it) }) }
+            MeasureActions(state = state, onRepeat = onRepeat, onNext = onNext)
+        }
+    }
+}
+
+@Composable
+private fun MeasureBody(state: MeasureUiState, buildings: Buildings, placeActions: PlaceActions) {
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        val resources = LocalResources.current
+        when (state) {
+            MeasureUiState.Searching -> {
+                Text(stringResource(R.string.pomiar_szukanie))
+            }
+
+            MeasureUiState.LocationOff -> {
+                Notice(stringResource(R.string.pomiar_lokalizacja_wylaczona))
+            }
+
+            MeasureUiState.Failed -> {
+                Notice(stringResource(R.string.pomiar_blad))
+            }
+
+            is MeasureUiState.Measuring -> {
+                Headline(stringResource(R.string.pomiar_zostalo, state.remainingSeconds))
+                Result(state.average, resources.satellitesLine(state.satellites))
+                SkyMap(Sky(state.sky))
+            }
+
+            is MeasureUiState.Finished -> {
+                Headline(stringResource(R.string.pomiar_zakonczony))
+                Result(state.average, resources.satellitesLine(state.satellites))
+                PlaceSection(place = state.place, buildings = buildings, actions = placeActions)
+                SkyMap(Sky(state.sky))
             }
         }
     }
 }
+
+@Composable
+private fun MeasureActions(state: MeasureUiState, onRepeat: () -> Unit, onNext: (ReportFormRoute) -> Unit) {
+    val context = LocalContext.current
+    PinnedActionBar {
+        if (state == MeasureUiState.LocationOff) {
+            PinnedButton(
+                text = stringResource(R.string.pomiar_otworz_ustawienia),
+                onClick = { context.startActivity(locationSettings()) },
+            )
+        } else {
+            val next = state.reportFormRoute()
+            val isWaiting = state == MeasureUiState.Searching || state == MeasureUiState.Failed
+            val kind = if (isWaiting) PinnedButtonKind.Filled else PinnedButtonKind.Outlined
+            PinnedButton(text = stringResource(R.string.pomiar_powtorz), onClick = onRepeat, kind = kind)
+            next?.let { PinnedButton(text = stringResource(R.string.pomiar_dalej), onClick = { onNext(it) }) }
+        }
+    }
+}
+
+@Composable
+private fun Notice(text: String) {
+    Text(
+        text = text,
+        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+        color = MaterialTheme.colorScheme.error,
+        fontWeight = Typografia.wyroznienieWaga,
+    )
+}
+
+private fun locationSettings(): Intent =
+    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
 @Composable
 private fun Headline(text: String) {

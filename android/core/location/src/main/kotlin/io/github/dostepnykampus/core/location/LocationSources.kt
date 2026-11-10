@@ -19,6 +19,12 @@ fun interface SatelliteSource {
     fun satellites(): Flow<List<Satellite>>
 }
 
+/** Włącznik lokalizacji telefonu dla ekranu C1: w aplikacji [GnssLocationSwitch], w testach stan ręczny. */
+fun interface LocationSwitch {
+    /** `true`, gdy dostawca GPS jest włączony; nowa wartość po każdym przełączeniu lokalizacji w telefonie. */
+    fun isEnabled(): Flow<Boolean>
+}
+
 /** Zegar monotoniczny telefonu, ten sam co czas odczytów [PositionFix.elapsedMillis]; liczy sekundy pomiaru. */
 fun interface ElapsedClock {
     /** Bieżący czas w milisekundach. */
