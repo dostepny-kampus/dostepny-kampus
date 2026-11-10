@@ -16,7 +16,9 @@ cat >"$workdir/bin/gh" <<'SH'
 set -euo pipefail
 case "$1 $2" in
   'pr view'|'pr ready') echo "PR nie może być zmieniany: gh $1 $2" >>"$FAKE_LOG"; exit 1 ;;
-  'pr comment') echo 'komentarz' >>"$FAKE_LOG"; printf '%s' "${*: -1}" >"$FAKE_BODY" ;;
+  'pr comment')
+    [[ -z ${FAKE_COMMENT_FAIL:-} ]] || { echo 'HTTP 502: Bad Gateway' >&2; exit 1; }
+    echo 'komentarz' >>"$FAKE_LOG"; printf '%s' "${*: -1}" >"$FAKE_BODY" ;;
   'api -X') echo 'odświeżenie' >>"$FAKE_LOG"; printf '%s' "${*: -1}" >"$FAKE_BODY" ;;
   'api repos/'*) printf '%s\n' "$FAKE_COMMENT_ID" ;;
   *) echo "nieoczekiwane wywołanie gh: $*" >&2; exit 2 ;;
@@ -55,6 +57,7 @@ run_case "tryb wymagany: PR będący szkicem dostaje ten sam komentarz" 1 'Opis.
 run_case "tryb wymagany: komentarz odświeżany, bez duplikatu" 1 'Opis.' ala false 123 1 'odświeżenie'
 run_case "tryb wymagany: issue przypisane komuś innemu" 1 'Closes #5' ola false '' 1 'komentarz' 'nieprzypisane autorowi'
 run_case "tryb wymagany: poprawny PR bez zmian" 1 'Closes #5' ala false '' 0 ''
+FAKE_COMMENT_FAIL=1 run_case "tryb wymagany: gh pr comment zawodzi to błąd narzędzia (kod 2), bez zapisanego komentarza" 1 'Opis.' ala true '' 2 '' 'Błąd narzędzia kontroli: dodanie komentarza nie powiodło się (kod 1)'
 run_case "tryb wymagany: błąd odczytu danych PR to błąd narzędzia, bez zmiany PR" 1 '@BLAD' ala false '' 2 '' 'Błąd narzędzia kontroli'
 run_case "tryb ostrzegawczy: błąd odczytu danych PR też jest błędem narzędzia" 0 '@BLAD' ala false '' 2 '' 'Błąd narzędzia kontroli'
 run_case "tryb wymagany: Dependabot pominięty" 1 'Opis.' 'dependabot[bot]' false '' 0 '' 'Dependabota'

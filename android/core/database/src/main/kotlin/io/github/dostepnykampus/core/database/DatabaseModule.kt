@@ -28,7 +28,7 @@ object DatabaseModule {
     ): DkDatabase =
         Room
             .databaseBuilder(context, DkDatabase::class.java, NAME)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
 
     /** Kolejka zgłoszeń z [database]. */

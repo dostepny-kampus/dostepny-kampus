@@ -1,0 +1,36 @@
+name: dependabot-sprint
+
+# pull_request_target: PR Dependabota dostaje tylko token do odczytu, a ten workflow musi zmienić bazę
+# i kamień milowy. Wykonuje się kod z gałęzi domyślnej; kodu PR nie pobieramy ani nie uruchamiamy.
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependabot-sprint-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  baza-i-kamien:
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Przestaw bazę na bieżący sprint i ustaw kamień milowy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash .github/scripts/dependabot-sprint.sh "$PR_NUMBER"

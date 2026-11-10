@@ -1,0 +1,47 @@
+name: drzewo-grupy
+
+# Job `porownanie` (android, backend, api, docs, pr-guard): zapisuje drzewo scalenia na PR, w grupie kolejki je porównuje (pomin).
+on:
+  workflow_call:
+    inputs:
+      workflow:
+        required: true
+        type: string
+    outputs:
+      pomin:
+        value: ${{ jobs.drzewo.outputs.pomin }}
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  drzewo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      pomin: ${{ steps.porownanie.outputs.pomin }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          # Tylko skrypty, nie pozostały kod PR.
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      - id: porownanie
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
+          GROUP_HEAD_REF: ${{ github.event.merge_group.head_ref }}
+          DRZEWO_KATALOG: ${{ runner.temp }}/drzewo
+          DRZEWO_WORKFLOW: ${{ inputs.workflow }}
+          TRYB: ${{ github.event_name == 'merge_group' && 'porownaj' || 'zapisz' }}
+        run: bash .github/scripts/drzewo-grupy.sh "$TRYB"
+      - if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: drzewo-scalenia
+          path: ${{ runner.temp }}/drzewo/drzewo.txt
+          if-no-files-found: ignore
+          retention-days: 7

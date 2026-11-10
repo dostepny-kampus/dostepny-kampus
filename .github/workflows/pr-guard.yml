@@ -28,6 +28,15 @@ env:
   GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
 
 jobs:
+  porownanie:
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/drzewo-grupy.yml
+    with:
+      workflow: pr-guard.yml
+
   rozmiar:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -89,14 +98,20 @@ jobs:
             from=$COMMITLINT_START
           fi
           npx --no-install commitlint --from "$from" --to "$HEAD_SHA" --verbose
-      - name: Sprawdź tytuł PR
+      - name: Sprawdź tytuł PR z numerem dopisywanym przez squash
         if: github.event_name != 'merge_group'
         working-directory: .github/commitlint
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
-        run: printf '%s\n' "$PR_TITLE" | npx --no-install commitlint --verbose
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Kolejka robi squash z nagłówkiem „<tytuł> (#N)”, więc sprawdzamy go już na PR, razem z dopiskiem.
+          bash ../scripts/naglowek-squasha.sh "$PR_TITLE" "$PR_NUMBER"
+          printf '%s (#%s)\n' "$PR_TITLE" "$PR_NUMBER" | npx --no-install commitlint --verbose
 
   zakazane-slowa:
+    needs: porownanie
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -114,6 +129,8 @@ jobs:
         run: bash .github/scripts/zakazane-slowa.sh "$BASE_SHA" "$HEAD_SHA"
 
   sekrety:
+    needs: porownanie
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -153,6 +170,8 @@ jobs:
           allow-dependencies-licenses: pkg:pypi/language-tool-python, pkg:npm/bpmn-js, pkg:maven/org.junit.jupiter/junit-jupiter-api, pkg:maven/org.junit.jupiter/junit-jupiter-params, pkg:maven/org.springframework.modulith/spring-modulith-core, pkg:maven/org.springframework.modulith/spring-modulith-docs, pkg:maven/com.tngtech.archunit/archunit
 
   naglowki:
+    needs: porownanie
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -163,6 +182,8 @@ jobs:
         run: bash .github/scripts/naglowki.sh
 
   testy-skryptow:
+    needs: porownanie
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

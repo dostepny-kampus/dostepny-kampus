@@ -84,6 +84,19 @@ class PendingSubmissionDaoTest {
             assertEquals(emptyList<PendingSubmissionWithPhotos>(), dao.all())
         }
 
+    /** Odrzucone zgłoszenie zostaje w telefonie, ale kolejka go nie oddaje do wysyłki (BR-26). */
+    @Test
+    fun br26_refused_not_queued() =
+        runTest {
+            dao.save(submission(id = "a", savedAt = 1), photos("p1", of = "a"))
+            dao.save(submission(id = "b", savedAt = 2), photos("p2", of = "b"))
+            dao.markRefused("a")
+            assertEquals(listOf("b"), dao.all().map { it.submission.id })
+            assertEquals(listOf("b"), dao.observe().first().map { it.submission.id })
+            dao.save(submission(id = "a", savedAt = 3), photos("p1", of = "a"))
+            assertEquals(listOf("b", "a"), dao.all().map { it.submission.id })
+        }
+
     private fun submission(id: String, savedAt: Long): PendingSubmissionEntity =
         PendingSubmissionEntity(
             id = id,
