@@ -7,6 +7,7 @@
     <string name="nav_konto">Konto</string>
     <string name="nav_konto_i_praca">Konto i praca</string>
     <string name="nie_teraz">Nie teraz</string>
+    <string name="logowanie_wygaslo">Logowanie wygasło. Zaloguj się, a wyślemy zgłoszenia same.</string>
     <string name="zmierz_i_zglos">Zmierz i zgłoś barierę</string>
     <string name="rozwin_opis">Rozwiń opis budynku</string>
     <string name="stan_zwiniete">zwinięte</string>
