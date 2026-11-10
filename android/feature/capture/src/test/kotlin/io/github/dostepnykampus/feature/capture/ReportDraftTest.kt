@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture
@@ -28,7 +28,7 @@ class ReportDraftTest {
     fun us7_4_change_place_keeps_form() {
         val first = filled()
         first.changePlace()
-        assertEquals(ReportStage.LEFT, first.uiState.value?.stage)
+        assertEquals(ReportStage.PLACE_CHANGED, first.uiState.value?.stage)
 
         val form = reopened(moved, draft = restored(draft))
         assertEquals(moved, form.form.place)

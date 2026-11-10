@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture
@@ -116,6 +116,7 @@ internal fun ReportBanner(state: ReportUiState, onRetry: () -> Unit) {
             ReportStage.EXIT_ASKED,
             ReportStage.SAVED,
             ReportStage.LEFT,
+            ReportStage.PLACE_CHANGED,
             -> state.errors.firstOrNull()?.messageRes()
         } ?: return
     Column(

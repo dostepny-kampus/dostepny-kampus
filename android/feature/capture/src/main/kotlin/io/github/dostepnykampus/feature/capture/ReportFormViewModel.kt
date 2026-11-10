@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture
@@ -49,17 +49,17 @@ class ReportFormViewModel
 
         /**
          * Otwiera nowy formularz albo edycję; drugie wywołanie nie kasuje wpisanych pól. Po „Zmień miejsce” bierze
-         * odłożone pola z nowym miejscem z [form] (US7.4).
+         * odłożone pola z nowym miejscem z [form] (US7.4). Poprawka z C3 podaje zapisane [photos] (US8.3).
          */
-        fun open(form: ReportForm, draft: ReportDraft = this.draft) {
+        fun open(form: ReportForm, draft: ReportDraft = this.draft, photos: List<PendingPhotoDraft> = emptyList()) {
             val current = state.value
             if (current == null) {
                 initial = form
                 this.draft = draft
-                keep(draft.restore(form))
+                keep(draft.restore(form, photos))
             } else if (this.draft !== draft) {
                 this.draft = draft
-                if (current.stage != ReportStage.LEFT && current.stage != ReportStage.SAVED) draft.keep(current)
+                if (current.stage !in StagesWithoutNewDraft) draft.keep(current)
             }
         }
 
@@ -67,7 +67,7 @@ class ReportFormViewModel
         fun changePlace() {
             val current = state.value ?: return
             if (current.isSavingOrSaved) return
-            state.value = current.copy(stage = ReportStage.LEFT)
+            state.value = current.copy(stage = ReportStage.PLACE_CHANGED)
         }
 
         /** Zmiana jednego pola formularza (US7.1–US7.4). */
@@ -133,6 +133,8 @@ class ReportFormViewModel
             }
         }
     }
+
+private val StagesWithoutNewDraft = setOf(ReportStage.LEFT, ReportStage.PLACE_CHANGED, ReportStage.SAVED)
 
 internal val ReportUiState.isSavingOrSaved: Boolean
     get() = stage == ReportStage.SAVING || stage == ReportStage.SAVED
