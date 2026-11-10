@@ -103,7 +103,7 @@ class MySubmissionsViewModelTest {
 
     /** „Czeka na wysłanie” nie liczy zgłoszeń, których serwer nie przyjął (US9.1, US9.5). */
     @Test
-    fun `us9_5 odrzucone poza licznikiem`() =
+    fun `us9_5 odrzucone bez licznika`() =
         runTest(dispatcher) {
             rows.value =
                 listOf(

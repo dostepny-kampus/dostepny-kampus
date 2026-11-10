@@ -54,16 +54,16 @@ class RefusedSubmissionTest {
     }
 
     @Test
-    fun `br26 odmowa 400 z kodem bez ponowienia`() = refusedOnce(ApiResult.ServerError(code = 400), code = 400)
+    fun `br26 odmowa 400`() = refusedOnce(ApiResult.ServerError(code = 400), code = 400)
 
     @Test
-    fun `br26 odmowa 403 z kodem bez ponowienia`() = refusedOnce(ApiResult.ServerError(code = 403), code = 403)
+    fun `br26 odmowa 403`() = refusedOnce(ApiResult.ServerError(code = 403), code = 403)
 
     @Test
-    fun `br26 odmowa 404 z kodem bez ponowienia`() = refusedOnce(ApiResult.NotFound, code = 404)
+    fun `br26 odmowa 404`() = refusedOnce(ApiResult.NotFound, code = 404)
 
     @Test
-    fun `br26 odmowa 413 z kodem bez ponowienia`() = refusedOnce(ApiResult.ServerError(code = 413), code = 413)
+    fun `br26 odmowa 413`() = refusedOnce(ApiResult.ServerError(code = 413), code = 413)
 
     @Test
     fun `br26 awaria serwera ponawia`() =
@@ -109,7 +109,7 @@ class RefusedSubmissionTest {
         }
 
     @Test
-    fun `us9_5 ponowny zapis znów wysyła`() =
+    fun `us9_5 ponowny zapis wysyła`() =
         runBlocking {
             queue.save(precise(), photo())
             store.createResults.addLast(ApiResult.ServerError(code = 400))
@@ -135,7 +135,8 @@ class RefusedSubmissionTest {
             val row = history.rows.getValue(ID)
             assertEquals(OwnSubmissionState.REFUSED, row.state)
             assertEquals(code, row.refusalCode)
-            assertTrue(store.rows.single().submission.isRefused)
+            val left = store.rows.single()
+            assertTrue(left.submission.isRefused)
         }
 
     private fun server(id: String, content: SubmissionContent): Submission =
