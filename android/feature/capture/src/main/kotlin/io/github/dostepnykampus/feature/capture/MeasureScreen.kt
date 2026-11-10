@@ -67,8 +67,10 @@ fun MeasureScreen(
     WithLocationPermission(onBack = onBack) {
         val state by viewModel.uiState.collectAsStateWithLifecycle()
         val buildings by viewModel.buildings.collectAsStateWithLifecycle()
+        val isRestarted by viewModel.restarted.collectAsStateWithLifecycle()
         MeasureContent(
             state = state,
+            isRestarted = isRestarted,
             onRepeat = viewModel::repeat,
             onBack = onBack,
             modifier = modifier,
@@ -89,6 +91,7 @@ fun MeasureScreen(
  * @param onNext „Dalej”, widoczne po pomiarze i decyzji o budynku (US6.2)
  * @param buildings budynki do „Wybierz inny”
  * @param placeActions czynności wyboru budynku po pomiarze (US6.2)
+ * @param isRestarted pomiar przerwano i zaczął się od nowa (NFR-23, NFR-27)
  */
 @Composable
 fun MeasureContent(
@@ -99,12 +102,13 @@ fun MeasureContent(
     onNext: (ReportFormRoute) -> Unit = {},
     buildings: Buildings = Buildings(emptyList()),
     placeActions: PlaceActions = PlaceActions.None,
+    isRestarted: Boolean = false,
 ) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = stringResource(R.string.pomiar_naglowek), onBack = onBack)
             Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m)) {
-                MeasureBody(state = state, buildings = buildings, placeActions = placeActions)
+                MeasureBody(state = state, buildings = buildings, placeActions = placeActions, isRestarted = isRestarted)
             }
             MeasureActions(state = state, onRepeat = onRepeat, onNext = onNext)
         }
@@ -112,8 +116,19 @@ fun MeasureContent(
 }
 
 @Composable
-private fun MeasureBody(state: MeasureUiState, buildings: Buildings, placeActions: PlaceActions) {
+private fun MeasureBody(
+    state: MeasureUiState,
+    buildings: Buildings,
+    placeActions: PlaceActions,
+    isRestarted: Boolean,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        if (isRestarted && (state == MeasureUiState.Searching || state is MeasureUiState.Measuring)) {
+            Text(
+                text = stringResource(R.string.pomiar_od_nowa),
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+            )
+        }
         val resources = LocalResources.current
         when (state) {
             MeasureUiState.Searching -> {

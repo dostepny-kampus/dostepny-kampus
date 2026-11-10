@@ -126,4 +126,16 @@ class MeasureScreenTest {
         val opened = shadowOf(compose.activity).nextStartedActivity
         assertEquals(Settings.ACTION_LOCATION_SOURCE_SETTINGS, opened.action)
     }
+
+    /** Wiersz: C1, powrót po przerwie → „Pomiar był przerwany, więc zaczęliśmy go od nowa.” przy szukaniu, NFR-27. */
+    @Test
+    fun nfr27_restart_message() {
+        compose.setContent {
+            DostepnyKampusTheme {
+                MeasureContent(state = MeasureUiState.Searching, onRepeat = {}, onBack = {}, isRestarted = true)
+            }
+        }
+        compose.onNodeWithText("Pomiar był przerwany, więc zaczęliśmy go od nowa.").assertIsDisplayed()
+        compose.onNodeWithText("Szukamy satelitów", substring = true).assertIsDisplayed()
+    }
 }

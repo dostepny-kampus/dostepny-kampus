@@ -490,6 +490,7 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Zwykły | uśrednianie, dokładność, satelity, podpowiedź budynku |
 | Po pomiarze | napis „Pomiar zakończony”, dokładność i satelity z końca uśredniania, „Powtórz pomiar”, podpowiedź budynku i „Dalej” (US6.1, US6.2) |
 | Ładowanie — szukanie satelitów | „Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.” Przycisk „Powtórz pomiar” (NFR-1, PW-9) |
+| Powrót po przerwie | ekran był niewidoczny dłużej niż 5 s w trakcie uśredniania, np. po wizycie w ustawieniach, albo lokalizację wyłączono: pomiar zaczyna się od nowa, a nad nim jest „Pomiar był przerwany, więc zaczęliśmy go od nowa.” Krótsza przerwa, np. obrót ekranu, pomiaru nie przerywa. Gotowy wynik zostaje (NFR-23, NFR-27) |
 | Wybór innego budynku | po „Wybierz inny” w miejscu pytania sekcja „Wybierz budynek”: budynki najbliżej punktu, od najbliższego, każdy z nazwą i odległością, i „Poza budynkiem”. Wybór zamyka listę i pokazuje „Budynek [symbol]” z „Wybierz inny”. Lista działa bez sieci, z konturów w telefonie (US6.2, BR-G2, NFR-4). |
 | Daleko od budynków PWr | „Poza budynkiem”, bez podpowiedzi i bez komunikatu o błędzie (BR-G4, NFR-49) |
 | Budynek podstawowy | bez przełącznika „Plan piętra” i „Mapa”, wyboru piętra i korekty na planie. W ich miejscu napis „Nie mamy planu pięter tego budynku.”, jak na V2. Korekta na mapie działa (US6.4, BR-G1, PW-6). |

@@ -176,6 +176,38 @@ class MeasureViewModelTest {
             assertEquals(MeasureUiState.Finished::class, viewModel.uiState.value::class)
         }
 
+    /** Ekran niewidoczny dłużej niż 5 s w trakcie pomiaru: pomiar od nowa z informacją o przerwie (NFR-23, NFR-27). */
+    @Test
+    fun nfr27_restart_after_leave() =
+        runTest(dispatcher) {
+            val watching = watch()
+            fix(accuracy = 6.0)
+            advanceTimeBy(10_000)
+            watching.cancel()
+            advanceTimeBy(6_000)
+            watch()
+            assertEquals(MeasureUiState.Searching, viewModel.uiState.value)
+            assertTrue(viewModel.restarted.value)
+
+            viewModel.repeat()
+            runCurrent()
+            assertFalse(viewModel.restarted.value)
+        }
+
+    /** Krótka nieobecność (obrót ekranu) nie przerywa pomiaru. */
+    @Test
+    fun nfr27_short_leave_continues() =
+        runTest(dispatcher) {
+            val watching = watch()
+            fix(accuracy = 6.0)
+            advanceTimeBy(10_000)
+            watching.cancel()
+            advanceTimeBy(3_000)
+            watch()
+            assertEquals(MeasureUiState.Measuring::class, viewModel.uiState.value::class)
+            assertFalse(viewModel.restarted.value)
+        }
+
     /** Punkt pomiaru leży w konturze A-1, więc aplikacja podpowiada A-1 (US6.2). */
     @Test
     fun us6_2_hint_after_measurement() =
