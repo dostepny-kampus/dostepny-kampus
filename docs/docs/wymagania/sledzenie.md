@@ -188,7 +188,14 @@ Reguły BR-1…BR-6 opisuje strona [Role i uprawnienia](../biznes/role.md), pozo
 
 ## Scenariusze i testy
 
-Każdy scenariusz ma mieć test Androida oznaczony komentarzem `// Scenariusz: <plik>.feature: <nazwa scenariusza>` tuż nad funkcją testu. Tabela [Pokrycie scenariuszy testami](../_generated/pokrycie-testami.md) ma wiersz dla każdego scenariusza: jego kryteria i reguły, testy (moduł, klasa i funkcja testu) i stan „pełny”, „częściowo” albo „brak”. Ma tyle wierszy, ile scenariuszy, dlatego jest na osobnej stronie.
+Każdy scenariusz ma mieć test Androida ze znacznikiem w KDoc tuż nad funkcją testu:
+
+- pełny: `/** Scenariusz: <plik>.feature: <nazwa scenariusza> */`,
+- tylko część kroków „Wtedy”: `/** Scenariusz (częściowo): <plik>.feature: <nazwa scenariusza> */`.
+
+Przykład: `/** Scenariusz: przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */`. Komentarze `//` nie są dozwolone w kodzie Kotlin.
+
+Tabela [Pokrycie scenariuszy testami](../_generated/pokrycie-testami.md) ma wiersz dla każdego scenariusza: jego kryteria i reguły, testy (moduł, klasa i funkcja testu) i stan „pełny”, „częściowo” albo „brak”. Ma tyle wierszy, ile scenariuszy, dlatego jest na osobnej stronie.
 
 ## Dziury
 
