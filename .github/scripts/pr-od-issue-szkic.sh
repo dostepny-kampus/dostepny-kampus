@@ -6,8 +6,9 @@ set -euo pipefail
 
 # Użycie: pr-od-issue-szkic.sh <numer PR>. Środowisko: PR_OD_ISSUE_WYMAGANE (1 = tryb wymagany), GITHUB_REPOSITORY.
 # Uruchamia kontrolę „PR od issue” (pr-od-issue.sh, ten sam katalog). Domyślnie (tryb ostrzegawczy) tylko loguje
-# uwagi jako ostrzeżenia. W trybie wymaganym przy naruszeniu zamienia PR w szkic i dodaje (albo odświeża) komentarz
-# z listą braków, a skrypt kończy się kodem 1. PR Dependabota kontrola pomija.
+# uwagi jako ostrzeżenia. W trybie wymaganym przy naruszeniu dodaje (albo odświeża) komentarz
+# z listą braków, a skrypt kończy się kodem 1; PR nie jest zamieniany w szkic (token workflow nie ma do tego prawa).
+# PR Dependabota kontrola pomija.
 pr="${1:?Podaj numer PR}"
 wymagane="${PR_OD_ISSUE_WYMAGANE:-0}"
 repo="${GITHUB_REPOSITORY:?Brak GITHUB_REPOSITORY}"
@@ -22,7 +23,7 @@ if ((status == 0)); then
 fi
 
 # Naruszenie zasady to kod 1 z co najmniej jedną uwagą „::error title=PR od issue”. Każdy inny przypadek (błąd gh, jq,
-# brak danych) to błąd narzędzia: nie ruszamy PR i kończymy kodem 2, żeby nie robić szkicu z pustą listą braków.
+# brak danych) to błąd narzędzia: nie ruszamy PR i kończymy kodem 2, żeby nie komentować pustą listą braków.
 uwagi="$(sed -n 's/^::error title=PR od issue:://p' <<<"$wynik")"
 if ((status != 1)) || [[ -z $uwagi ]]; then
   echo "::error title=PR od issue::Błąd narzędzia kontroli (kod ${status}): nie udało się odczytać danych PR #${pr} lub issue. PR bez zmian."
@@ -40,30 +41,9 @@ while IFS= read -r uwaga; do
   echo "::error title=PR od issue::${uwaga}"
 done <<<"$uwagi"
 
-szkic=nie
-if [[ "$(gh pr view "$pr" --json isDraft --jq .isDraft)" == true ]]; then
-  szkic=tak
-elif blad="$(gh pr ready "$pr" --undo 2>&1)"; then
-  echo "PR #${pr} zamieniony w szkic."
-  szkic=tak
-elif grep -qi 'Resource not accessible' <<<"$blad"; then
-  # Token workflow (GITHUB_TOKEN) bywa bez prawa do zamiany PR w szkic (GraphQL: convertPullRequestToDraft); wtedy
-  # zostaje komentarz i czerwony wynik zadania, a ostrzeżenie mówi, czemu PR nie jest szkicem.
-  echo "::warning title=PR od issue::Nie udało się zamienić PR #${pr} w szkic (brak uprawnienia tokenu); zostaje komentarz i czerwony wynik."
-else
-  echo "::error title=PR od issue::Błąd narzędzia kontroli: zamiana PR #${pr} w szkic nie powiodła się (${blad}). Kod 2."
-  exit 2
-fi
-
-if [[ $szkic == tak ]]; then
-  naglowek='Ten PR nie spełnia zasady „PR od issue” i jest szkicem:'
-  zakonczenie='Dopisz w opisie `Closes #N` z otwartym issue przypisanym autorowi PR, potem oznacz PR jako gotowy.'
-else
-  naglowek='Ten PR nie spełnia zasady „PR od issue” (nie udało się zamienić go w szkic automatycznie):'
-  zakonczenie='Dopisz w opisie `Closes #N` z otwartym issue przypisanym autorowi PR; kontrola powtórzy się po zmianie opisu.'
-fi
+zakonczenie='Dopisz w opisie `Closes #N` z otwartym issue przypisanym autorowi PR; kontrola powtórzy się po zmianie opisu.'
 tresc="${znacznik}
-${naglowek}
+Ten PR nie spełnia zasady „PR od issue”:
 $(sed 's/^/- /' <<<"$uwagi")
 
 ${zakonczenie}"
