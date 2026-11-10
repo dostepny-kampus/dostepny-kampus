@@ -16,6 +16,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -72,6 +73,21 @@ class SubmissionQueueTest {
             assertTrue(store.photos.isEmpty())
             val left = store.rows.single()
             assertTrue(left.submission.isCreatedOnServer == false)
+        }
+
+    /** Odmowa serwera (4xx) nie wraca do wysyłki przy kolejnych próbach; ponowna tylko z decyzji osoby (BR-26). */
+    @Test
+    @Disabled("Błąd aplikacji #683: odrzucone zgłoszenie wraca do wysyłki, poprawka w tym samym PR")
+    fun `odrzucone nie jest ponawiane`() =
+        runBlocking {
+            saveTwoPhotos()
+            store.createResults.addLast(ApiResult.ServerError(code = 400))
+
+            queue().sendAll()
+            assertTrue(queue().sendAll())
+            assertTrue(queue().sendAll())
+
+            assertEquals(1, creates)
         }
 
     @Test
