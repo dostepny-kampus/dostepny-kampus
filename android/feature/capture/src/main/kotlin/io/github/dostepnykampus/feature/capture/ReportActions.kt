@@ -34,7 +34,7 @@ import io.github.dostepnykampus.feature.capture.ReportFormError.MISSING_SEVERITY
  *
  * @property onEdit zmiana pola
  * @property onChangePlace „Zmień miejsce”: powrót do C1 (US7.4)
- * @property onTakePhoto „Zrób zdjęcie”: aparat (US7.1)
+ * @property camera „Zrób zdjęcie”: aparat i wynik ostatniej próby (US7.1)
  * @property onSave „Zapisz” i „Spróbuj ponownie”
  * @property onBack „Wstecz”
  * @property onConfirmExit „Wyjdź bez zapisu”
@@ -43,7 +43,7 @@ import io.github.dostepnykampus.feature.capture.ReportFormError.MISSING_SEVERITY
 data class ReportActions(
     val onEdit: (ReportEdit) -> Unit,
     val onChangePlace: () -> Unit,
-    val onTakePhoto: () -> Unit,
+    val camera: PhotoCamera,
     val onSave: () -> Unit,
     val onBack: () -> Unit,
     val onConfirmExit: () -> Unit,
@@ -83,7 +83,7 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
                 FieldError(MISSING_BARRIER_TYPE, isShown = MISSING_BARRIER_TYPE in state.errors)
                 SeveritySection(severity = state.form.severity, onEdit = actions.onEdit)
                 FieldError(MISSING_SEVERITY, isShown = MISSING_SEVERITY in state.errors)
-                PhotoSection(photos = PhotoPaths(state.photos.map { it.path }), onTakePhoto = actions.onTakePhoto)
+                PhotoSection(photos = PhotoPaths(state.photos.map { it.path }), camera = actions.camera)
                 FieldError(MISSING_PHOTO, isShown = MISSING_PHOTO in state.errors)
                 DescriptionSection(text = state.form.description, onEdit = actions.onEdit)
                 FieldError(MISSING_DESCRIPTION, isShown = MISSING_DESCRIPTION in state.errors)

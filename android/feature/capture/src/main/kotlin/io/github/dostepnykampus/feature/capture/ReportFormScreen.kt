@@ -55,13 +55,13 @@ fun ReportFormScreen(
             }
     }
     BackHandler(onBack = viewModel::back)
-    val takePhoto = rememberPhotoCamera(onPhoto = { viewModel.edit(ReportEdit.Photo(it)) })
+    val camera = rememberPhotoCamera(onPhoto = { viewModel.edit(ReportEdit.Photo(it)) })
     state?.let { current ->
         val actions =
             ReportActions(
                 onEdit = viewModel::edit,
                 onChangePlace = viewModel::changePlace,
-                onTakePhoto = takePhoto,
+                camera = camera,
                 onSave = viewModel::save,
                 onBack = viewModel::back,
                 onConfirmExit = viewModel::confirmExit,

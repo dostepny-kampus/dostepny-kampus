@@ -117,8 +117,8 @@ private fun QuickStep(route: ReportRoute, actions: QuickReportActions) {
 
 @Composable
 private fun QuickPhotoStep(route: ReportRoute, onNext: (ReportRoute) -> Unit) {
-    val takePhoto = rememberPhotoCamera(onPhoto = { onNext(route.copy(photoId = it.photoId, photoPath = it.path)) })
-    PhotoSection(photos = PhotoPaths(listOfNotNull(route.photoPath)), onTakePhoto = takePhoto)
+    val camera = rememberPhotoCamera(onPhoto = { onNext(route.copy(photoId = it.photoId, photoPath = it.path)) })
+    PhotoSection(photos = PhotoPaths(listOfNotNull(route.photoPath)), camera = camera)
     if (route.photoPath != null) MainButton(text = stringResource(R.string.pomiar_dalej), onClick = { onNext(route) })
 }
 
