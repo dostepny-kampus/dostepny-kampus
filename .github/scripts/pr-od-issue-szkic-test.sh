@@ -22,7 +22,9 @@ case "$1 $2" in
       uprawnienia) echo 'GraphQL: Resource not accessible by integration (convertPullRequestToDraft)' >&2; exit 1 ;;
       *) echo 'HTTP 502: Bad Gateway' >&2; exit 1 ;;
     esac ;;
-  'pr comment') echo 'komentarz' >>"$FAKE_LOG"; printf '%s' "${*: -1}" >"$FAKE_BODY" ;;
+  'pr comment')
+    [[ -z ${FAKE_COMMENT_FAIL:-} ]] || { echo 'HTTP 502: Bad Gateway' >&2; exit 1; }
+    echo 'komentarz' >>"$FAKE_LOG"; printf '%s' "${*: -1}" >"$FAKE_BODY" ;;
   'api -X') echo 'odświeżenie' >>"$FAKE_LOG"; printf '%s' "${*: -1}" >"$FAKE_BODY" ;;
   'api repos/'*) printf '%s\n' "$FAKE_COMMENT_ID" ;;
   *) echo "nieoczekiwane wywołanie gh: $*" >&2; exit 2 ;;
@@ -63,6 +65,7 @@ run_case "tryb wymagany: issue przypisane komuś innemu" 1 'Closes #5' ola false
 run_case "tryb wymagany: poprawny PR bez zmian" 1 'Closes #5' ala false '' 0 ''
 FAKE_READY_FAIL=uprawnienia run_case "tryb wymagany: token bez prawa do szkicu, komentarz mówi prawdę" 1 'Opis.' ala false '' 1 'komentarz' 'Nie udało się zamienić' 'nie udało się zamienić go w szkic' 'jest szkicem'
 FAKE_READY_FAIL=siec run_case "tryb wymagany: inny błąd zamiany w szkic to błąd narzędzia (kod 2), bez komentarza" 1 'Opis.' ala false '' 2 '' 'Błąd narzędzia kontroli'
+FAKE_COMMENT_FAIL=1 run_case "tryb wymagany: gh pr comment zawodzi to błąd narzędzia (kod 2), bez zapisanego komentarza" 1 'Opis.' ala true '' 2 '' 'Błąd narzędzia kontroli: dodanie komentarza nie powiodło się (kod 1)'
 run_case "tryb wymagany: błąd odczytu danych PR to błąd narzędzia, bez zmiany PR" 1 '@BLAD' ala false '' 2 '' 'Błąd narzędzia kontroli'
 run_case "tryb ostrzegawczy: błąd odczytu danych PR też jest błędem narzędzia" 0 '@BLAD' ala false '' 2 '' 'Błąd narzędzia kontroli'
 run_case "tryb wymagany: Dependabot pominięty" 1 'Opis.' 'dependabot[bot]' false '' 0 '' 'Dependabota'
