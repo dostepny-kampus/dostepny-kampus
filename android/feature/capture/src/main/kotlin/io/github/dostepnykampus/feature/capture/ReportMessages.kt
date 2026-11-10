@@ -99,14 +99,24 @@ internal fun FieldError(error: ReportFormError, isShown: Boolean) {
     }
 }
 
-/** Nad formularzem: pierwszy brak albo „Za mało miejsca w telefonie” ze „Spróbuj ponownie” (PW-10, NFR-7). */
+/**
+ * Nad formularzem: pierwszy brak, „Za mało miejsca w telefonie” ze „Spróbuj ponownie” albo odrzucony zapis
+ * (PW-10, NFR-7, NFR-50).
+ */
 @Composable
 internal fun ReportBanner(state: ReportUiState, onRetry: () -> Unit) {
     val message =
-        if (state.stage == ReportStage.SAVE_FAILED) {
-            R.string.formularz_blad_zapisu
-        } else {
-            state.errors.firstOrNull()?.messageRes()
+        when (state.stage) {
+            ReportStage.SAVE_FAILED -> R.string.formularz_blad_zapisu
+
+            ReportStage.SAVE_REJECTED -> R.string.formularz_zapis_odrzucony
+
+            ReportStage.EDITING,
+            ReportStage.SAVING,
+            ReportStage.EXIT_ASKED,
+            ReportStage.SAVED,
+            ReportStage.LEFT,
+            -> state.errors.firstOrNull()?.messageRes()
         } ?: return
     Column(
         modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Assertive },
