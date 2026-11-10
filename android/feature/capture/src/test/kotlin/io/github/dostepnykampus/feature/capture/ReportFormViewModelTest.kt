@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionContent
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -147,6 +148,32 @@ class ReportFormViewModelTest {
             runCurrent()
             assertEquals(ReportStage.SAVED, state().stage)
             assertEquals(1, saved.size)
+        }
+
+    /** Kolejka odrzuca wpis: błąd zapisu bez awarii, a wpisane pola zostają (NFR-7, NFR-50). */
+    @Test
+    fun `odrzucony wpis zostaje`() =
+        runTest(dispatcher) {
+            failure = IllegalArgumentException("zdjęcia nie pasują do treści")
+            fill()
+            val form = state().form
+            viewModel.save()
+            runCurrent()
+            assertEquals(ReportStage.SAVE_REJECTED, state().stage)
+            assertEquals(form, state().form)
+            assertEquals(listOf(PHOTO), state().photos)
+            assertEquals(0, saved.size)
+        }
+
+    /** Anulowanie zapisu nie zmienia stanu i nie jest błędem zapisu. */
+    @Test
+    fun `anulowanie bez zmiany`() =
+        runTest(dispatcher) {
+            failure = CancellationException("ekran zamknięty")
+            fill()
+            viewModel.save()
+            runCurrent()
+            assertEquals(ReportStage.SAVING, state().stage)
         }
 
     @Test

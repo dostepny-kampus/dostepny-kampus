@@ -126,6 +126,8 @@ class ReportFormViewModel
                         ReportStage.SAVE_FAILED
                     } catch (_: SQLiteException) {
                         ReportStage.SAVE_FAILED
+                    } catch (_: IllegalArgumentException) {
+                        ReportStage.SAVE_REJECTED
                     }
                 state.update { it?.copy(stage = stage) }
             }

@@ -20,6 +20,9 @@ enum class ReportStage {
     /** „Za mało miejsca w telefonie” z „Spróbuj ponownie” (NFR-7). */
     SAVE_FAILED,
 
+    /** Kolejka odrzuciła wpis, np. zdjęcie nie pasuje do treści; pola zostają, aplikacja działa dalej (NFR-50). */
+    SAVE_REJECTED,
+
     /** Pytanie „Wyjść bez zapisu?” po „Wstecz” (US7.4, NFR-23). */
     EXIT_ASKED,
 

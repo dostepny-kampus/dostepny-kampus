@@ -236,6 +236,14 @@ class ReportScreenTest {
     }
 
     @Test
+    fun nfr50_save_rejected_message() {
+        show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.SAVE_REJECTED))
+        val message = "Nie zapisaliśmy zgłoszenia. Zrób zdjęcie jeszcze raz i zapisz ponownie."
+        compose.onNodeWithText(message).assertIsDisplayed()
+        compose.onNodeWithText("Spróbuj ponownie").assertDoesNotExist()
+    }
+
+    @Test
     fun us7_4_exit_dialog() {
         show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.EXIT_ASKED))
         compose.onNodeWithText("Wyjść bez zapisu?").assertIsDisplayed()
