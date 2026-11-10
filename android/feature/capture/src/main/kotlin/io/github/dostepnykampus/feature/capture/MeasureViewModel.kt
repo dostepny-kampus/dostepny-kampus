@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
@@ -118,7 +119,8 @@ sealed interface PlaceChoice {
  * a Zbierający go potwierdza, wybiera inny albo zostawia „poza budynkiem” (US6.2).
  * Odliczanie „Pomiar: zostało 12 s” zmienia się co sekundę także bez nowych odczytów (NFR-2). Błąd odbiornika
  * kończy pomiar stanem [MeasureUiState.Failed] zamiast zamykać aplikację (NFR-50). Wyłączona lokalizacja daje
- * [MeasureUiState.LocationOff] bez nasłuchu odbiornika, a jej włączenie zaczyna pomiar od nowa (UC7 4c).
+ * [MeasureUiState.LocationOff] bez nasłuchu odbiornika, a jej włączenie zaczyna pomiar od nowa (UC7 4c). Przerwany
+ * pomiar zaczyna się od nowa z [restarted], więc nie wygląda jak trwający (NFR-23, NFR-27).
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -142,6 +144,14 @@ class MeasureViewModel
          */
         val buildings: StateFlow<List<BuildingHint>> = nearby
 
+        private val interrupted = MutableStateFlow(false)
+
+        /**
+         * `true`, gdy trwający pomiar przerwano, np. ekran był niewidoczny dłużej niż 5 s albo lokalizację wyłączono,
+         * i pomiar zaczął się od nowa; znika po „Powtórz pomiar” i po końcu pomiaru (NFR-23, NFR-27).
+         */
+        val restarted: StateFlow<Boolean> = interrupted
+
         /** Bieżący stan pomiaru. */
         val uiState: StateFlow<MeasureUiState> =
             result
@@ -150,6 +160,7 @@ class MeasureViewModel
 
         /** „Powtórz pomiar”: nowe szukanie satelitów i pełne 30 s. */
         fun repeat() {
+            interrupted.value = false
             result.update { Run(attempt = it.attempt + 1, finished = null) }
         }
 
@@ -202,7 +213,18 @@ class MeasureViewModel
             locationSwitch
                 .isEnabled()
                 .distinctUntilChanged()
-                .flatMapLatest { isOn -> if (isOn) measurement(attempt) else flowOf(MeasureUiState.LocationOff) }
+                .flatMapLatest { isOn ->
+                    if (isOn) {
+                        measurement(attempt).onCompletion { cause ->
+                            val run = result.value
+                            if (cause != null && run.attempt == attempt && run.finished == null) {
+                                interrupted.value = true
+                            }
+                        }
+                    } else {
+                        flowOf(MeasureUiState.LocationOff)
+                    }
+                }
 
         private fun measurement(attempt: Int): Flow<MeasureUiState> =
             channelFlow {
@@ -254,6 +276,7 @@ class MeasureViewModel
             val run = result.value
             if (run.attempt != attempt || run.finished != null) return
             if (result.compareAndSet(expect = run, update = run.copy(finished = state))) {
+                interrupted.value = false
                 locate(attempt, state.average.point)
             }
         }
