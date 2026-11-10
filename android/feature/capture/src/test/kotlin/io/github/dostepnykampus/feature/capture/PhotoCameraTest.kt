@@ -10,6 +10,10 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
@@ -76,7 +80,9 @@ class PhotoCameraTest {
         compose.setContent {
             DostepnyKampusTheme {
                 val camera = rememberPhotoCamera(onPhoto = { photos++ }, transcode = { throw IOException(BROKEN) })
-                PhotoSection(photos = PhotoPaths(emptyList()), camera = camera)
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    PhotoSection(photos = PhotoPaths(emptyList()), camera = camera)
+                }
             }
         }
     }
