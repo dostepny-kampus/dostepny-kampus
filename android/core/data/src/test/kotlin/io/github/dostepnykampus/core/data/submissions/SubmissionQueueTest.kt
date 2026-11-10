@@ -72,6 +72,21 @@ class SubmissionQueueTest {
             assertTrue(store.photos.isEmpty())
             val left = store.rows.single()
             assertTrue(left.submission.isCreatedOnServer == false)
+            assertTrue(left.submission.isRefused)
+        }
+
+    /** Odmowa serwera (4xx) nie wraca do wysyłki przy kolejnych próbach; ponowna tylko z decyzji osoby (BR-26). */
+    @Test
+    fun `odrzucone nie jest ponawiane`() =
+        runBlocking {
+            saveTwoPhotos()
+            store.createResults.addLast(ApiResult.ServerError(code = 400))
+
+            queue().sendAll()
+            assertTrue(queue().sendAll())
+            assertTrue(queue().sendAll())
+
+            assertEquals(1, creates)
         }
 
     @Test

@@ -19,7 +19,7 @@ import androidx.room.RoomDatabase
         BuildingCacheEntity::class,
         OwnSubmissionEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = true,
 )
 abstract class DkDatabase : RoomDatabase() {

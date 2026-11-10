@@ -29,14 +29,14 @@ interface PendingSubmissionDao {
         upsertPhotos(photos)
     }
 
-    /** Zgłoszenia czekające na wysłanie, od najstarszego; zmienia się po każdym zapisie. */
+    /** Zgłoszenia czekające na wysłanie, bez odrzuconych, od najstarszego; zmienia się po każdym zapisie. */
     @Transaction
-    @Query("SELECT * FROM pending_submissions ORDER BY saved_at, id")
+    @Query("SELECT * FROM pending_submissions WHERE refused = 0 ORDER BY saved_at, id")
     fun observe(): Flow<List<PendingSubmissionWithPhotos>>
 
-    /** Zgłoszenia czekające na wysłanie, od najstarszego. */
+    /** Zgłoszenia czekające na wysłanie, bez odrzuconych, od najstarszego. */
     @Transaction
-    @Query("SELECT * FROM pending_submissions ORDER BY saved_at, id")
+    @Query("SELECT * FROM pending_submissions WHERE refused = 0 ORDER BY saved_at, id")
     suspend fun all(): List<PendingSubmissionWithPhotos>
 
     /**
@@ -46,6 +46,14 @@ interface PendingSubmissionDao {
      */
     @Query("UPDATE pending_submissions SET created_on_server = 1 WHERE id = :id")
     suspend fun markCreated(id: String)
+
+    /**
+     * Zaznacza odrzucenie zgłoszenia przez serwer: zostaje w telefonie, ale [all] go nie zwraca (BR-26).
+     *
+     * @param id identyfikator zgłoszenia
+     */
+    @Query("UPDATE pending_submissions SET refused = 1 WHERE id = :id")
+    suspend fun markRefused(id: String)
 
     /**
      * Zaznacza zdjęcie wysłane na serwer.
