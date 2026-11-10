@@ -108,7 +108,9 @@ internal fun ReportBanner(state: ReportUiState, onRetry: () -> Unit) {
     val message =
         when (state.stage) {
             ReportStage.SAVE_FAILED -> R.string.formularz_blad_zapisu
+
             ReportStage.SAVE_REJECTED -> R.string.formularz_zapis_odrzucony
+
             ReportStage.EDITING,
             ReportStage.SAVING,
             ReportStage.EXIT_ASKED,
