@@ -24,7 +24,7 @@ if [[ -z $number ]]; then
 fi
 
 milestone="Sprint ${number}"
-titles="$(gh api "repos/${GITHUB_REPOSITORY}/milestones?state=all&per_page=100" --jq '.[].title')"
+titles="$(gh api "repos/${GITHUB_REPOSITORY}/milestones?state=open&per_page=100" --jq '.[].title')"
 if ! grep -qxF "$milestone" <<<"$titles"; then
   echo "::error title=Dependabot::Brak kamienia milowego „${milestone}” — PR #${pr} zostaje bez zmian."
   exit 1
