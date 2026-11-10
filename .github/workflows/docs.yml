@@ -34,8 +34,20 @@ env:
   NO_MKDOCS_2_WARNING: "1"
 
 jobs:
-  zmiany:
+  porownanie:
+    # Pierwszy job: w grupie kolejki pomija ciężkie joby, gdy drzewo plików jest równe sprawdzonemu na PR (drzewo-grupy.yml).
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/drzewo-grupy.yml
+    with:
+      workflow: docs.yml
+
+  zmiany:
+    needs: porownanie
+    # Pominięty `zmiany` pomija też kontrolę (potrzebuje go z wynikiem success).
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (github.event_name == 'pull_request' || github.event_name == 'merge_group') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:

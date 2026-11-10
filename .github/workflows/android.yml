@@ -29,6 +29,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  porownanie:
+    # Pierwszy job: w grupie kolejki pomija ciężkie joby, gdy drzewo plików jest równe sprawdzonemu na PR (drzewo-grupy.yml).
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/drzewo-grupy.yml
+    with:
+      workflow: android.yml
+
   zmiany:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -162,8 +172,8 @@ jobs:
           if-no-files-found: ignore
 
   apk:
-    needs: zmiany
-    if: ${{ !cancelled() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    needs: [porownanie, zmiany]
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -232,8 +242,8 @@ jobs:
           retention-days: 7
 
   testy:
-    needs: zmiany
-    if: ${{ !cancelled() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    needs: [porownanie, zmiany]
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -341,9 +351,10 @@ jobs:
             done
 
   budowanie:
-    needs: [zmiany, testy, apk, emulator]
+    needs: [porownanie, zmiany, testy, apk, emulator]
     # always(): także po anulowaniu poprzednich zadań, żeby anulowana część dawała czerwony check, a nie pominięty.
-    if: ${{ always() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    # Gdy grupa kolejki ma drzewo sprawdzone na PR, wszystkie zadania są pominięte, więc i ten check (pominięty = zaliczony).
+    if: ${{ always() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

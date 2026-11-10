@@ -24,8 +24,19 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  zmiany:
+  porownanie:
+    # Pierwszy job: w grupie kolejki pomija ciężkie joby, gdy drzewo plików jest równe sprawdzonemu na PR (drzewo-grupy.yml).
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/drzewo-grupy.yml
+    with:
+      workflow: backend.yml
+
+  zmiany:
+    needs: porownanie
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (github.event_name == 'pull_request' || github.event_name == 'merge_group') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -56,8 +67,8 @@ jobs:
           fi
 
   serwer:
-    needs: zmiany
-    if: ${{ !cancelled() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
+    needs: [porownanie, zmiany]
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
@@ -82,8 +93,8 @@ jobs:
         run: ./mvnw -B -DskipTests test-compile
 
   jakosc:
-    needs: zmiany
-    if: ${{ !cancelled() && github.event_name != 'push' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
+    needs: [porownanie, zmiany]
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && github.event_name != 'push' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
