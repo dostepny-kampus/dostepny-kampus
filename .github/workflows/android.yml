@@ -297,6 +297,23 @@ jobs:
             echo "::error title=Testy jednostkowe::Brak wykonanych testów (łącznie ${liczba}, :app ${liczba_app})."
             exit 1
           fi
+      - name: Zbierz diagnostykę generowania Hilt i KSP po porażce
+        if: failure()
+        run: |
+          # Bez powtarzania zadań: tylko kopia tego, co zostało po porażce (wyjście KSP i Hilt, listing, log Gradle i demona).
+          mkdir -p "$RUNNER_TEMP/diagnostyka"
+          cp -r app/build/generated/ksp app/build/generated/hilt "$RUNNER_TEMP/diagnostyka/" || true
+          find app/build/generated/ksp app/build/generated/hilt app/build/tmp -type f 2>/dev/null | sort > "$RUNNER_TEMP/diagnostyka/lista.txt" || true
+          cp "$RUNNER_TEMP/gradle.log" "$RUNNER_TEMP/diagnostyka/" || true
+          cp ~/.gradle/daemon/*/daemon-*.out.log "$RUNNER_TEMP/diagnostyka/" || true
+      - name: Zapisz diagnostykę Hilt i KSP
+        if: failure()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: diagnostyka-hilt-ksp
+          path: ${{ runner.temp }}/diagnostyka/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Zapisz raporty
         if: always()
         uses: actions/upload-artifact@v7.0.2
