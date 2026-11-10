@@ -17,7 +17,10 @@ cat >"$workdir/bin/gh" <<'SH'
 set -euo pipefail
 case "$1 $2" in
   'api repos/'*'/branches'*) printf '%b\n' "$FAKE_BRANCHES" ;;
-  'api repos/'*'/milestones'*) printf '%b\n' "$FAKE_MILESTONES" ;;
+  'api repos/'*'/milestones'*)
+    # Otwarte kamienie milowe zawsze; zamknięte tylko, gdy zapytanie nie zawęża do state=open.
+    printf '%b\n' "$FAKE_MILESTONES"
+    [[ $2 == *'state=open'* ]] || printf '%b\n' "${FAKE_CLOSED_MILESTONES:-}" ;;
   'pr edit') shift 3; printf '%s\n' "$*" >>"$FAKE_LOG" ;;
   *) echo "nieoczekiwane wywołanie gh: $*" >&2; exit 2 ;;
 esac
@@ -50,5 +53,8 @@ run_case "PR innego autora pominięty" ala "$branches" "$milestones" 0 '' 'nie j
 run_case "brak gałęzi sprintu: błąd, bez zmian" "$bot" 'main\nfeature/x' "$milestones" 1 '' 'Brak gałęzi sprintu'
 run_case "brak kamienia milowego: błąd, bez zmian" "$bot" "$branches" 'Sprint 3\nSprint 4' 1 '' 'Brak kamienia milowego „Sprint 10”'
 run_case "Sprint 1 nie pasuje do Sprint 10" "$bot" 'main\nsprint/1' 'Sprint 10' 1 '' 'Brak kamienia milowego „Sprint 1”'
+
+FAKE_CLOSED_MILESTONES='Sprint 4' run_case "zamknięty kamień milowy to brak kamienia: błąd, bez zmian" "$bot" 'main
+sprint/4' 'Sprint 3' 1 '' 'Brak kamienia milowego „Sprint 4”'
 
 exit "$((failures > 0 ? 1 : 0))"
