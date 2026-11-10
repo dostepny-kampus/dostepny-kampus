@@ -374,26 +374,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
       - name: Sprawdź wyniki wszystkich zadań Androida
         env:
           ZMIANY: ${{ needs.zmiany.result }}
           WYNIKI: ${{ needs.testy.result }} ${{ needs.apk.result }} ${{ needs.emulator.result }}
           ZDARZENIE: ${{ github.event_name }}
           EMULATOR: ${{ needs.emulator.result }}
-        run: |
-          # Wymagany check `budowanie`: zielony tylko, gdy testy, APK i emulatory zakończyły się sukcesem.
-          echo "zmiany: ${ZMIANY}; testy, apk, emulator: ${WYNIKI}"
-          if [[ $ZMIANY != success && $ZMIANY != skipped ]]; then
-            echo "::error title=Android::Zadanie zmiany zakończyło się wynikiem ${ZMIANY}."
-            exit 1
-          fi
-          if [[ $ZDARZENIE == push && $EMULATOR == skipped ]]; then
-            # Na push emulator jest pominięty celowo (przeszedł w merge_group); testy i apk dalej muszą się udać, bo zapisują cache.
-            WYNIKI="${WYNIKI% skipped}"
-          fi
-          for wynik in ${WYNIKI}; do
-            if [[ $wynik != success ]]; then
-              echo "::error title=Android::Co najmniej jedno zadanie Androida nie zakończyło się sukcesem."
-              exit 1
-            fi
-          done
+        run: bash .github/scripts/wyniki-androida.sh
