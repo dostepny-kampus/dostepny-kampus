@@ -56,7 +56,6 @@ import io.github.dostepnykampus.feature.map.data.CampusMapData
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -343,7 +342,6 @@ class CampusMapScreenTest {
      * klawiaturę (US1.1, NFR-15). Klawiaturę podaje atrapa kontrolera, bo Robolectric nie ma okna z klawiaturą.
      */
     @Test
-    @Ignore("Błąd aplikacji #685: wybór wyniku nie chowa klawiatury, poprawka w tym samym PR")
     fun us1_1_result_hides_keyboard() {
         val keyboard = HidingKeyboard()
         compose.setContent { CompositionLocalProvider(LocalSoftwareKeyboardController provides keyboard) { Screen() } }
