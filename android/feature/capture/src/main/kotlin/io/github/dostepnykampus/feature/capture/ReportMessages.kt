@@ -30,9 +30,12 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 
-/** „Zdjęcie”: ostrzeżenie „Ważne” jak w kroku 1 V4, podgląd zdjęć i „Zrób zdjęcie” (US7.1, NFR-25, PW-8). */
+/**
+ * „Zdjęcie”: ostrzeżenie „Ważne” jak w kroku 1 V4, podgląd zdjęć, „Zrób zdjęcie” i komunikat, gdy zdjęcia nie dało
+ * się zapisać (US7.1, NFR-25, NFR-50, PW-8).
+ */
 @Composable
-internal fun PhotoSection(photos: PhotoPaths, onTakePhoto: () -> Unit) {
+internal fun PhotoSection(photos: PhotoPaths, camera: PhotoCamera) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         SectionTitle(stringResource(R.string.formularz_zdjecie))
         OutlinedCard(
@@ -53,10 +56,18 @@ internal fun PhotoSection(photos: PhotoPaths, onTakePhoto: () -> Unit) {
         val hasPhoto = photos.items.isNotEmpty()
         val label = if (hasPhoto) R.string.formularz_zrob_nowe_zdjecie else R.string.formularz_zrob_zdjecie
         FilledTonalButton(
-            onClick = onTakePhoto,
+            onClick = camera.onTake,
             modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk),
         ) {
             Text(stringResource(label))
+        }
+        if (camera.isFailed) {
+            Text(
+                text = stringResource(R.string.formularz_zdjecie_blad),
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                color = MaterialTheme.colorScheme.error,
+                fontWeight = Typografia.wyroznienieWaga,
+            )
         }
     }
 }

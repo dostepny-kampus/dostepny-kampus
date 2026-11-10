@@ -59,7 +59,7 @@ class ReportScreenTest {
             ReportActions(
                 onEdit = { edits.add(it) },
                 onChangePlace = {},
-                onTakePhoto = {},
+                camera = PhotoCamera(onTake = {}),
                 onSave = { saves++ },
                 onBack = {},
                 onConfirmExit = { exits++ },
@@ -149,7 +149,7 @@ class ReportScreenTest {
             ReportActions(
                 onEdit = { edits.add(it) },
                 onChangePlace = {},
-                onTakePhoto = {},
+                camera = PhotoCamera(onTake = {}),
                 onSave = {},
                 onBack = {},
                 onConfirmExit = {},

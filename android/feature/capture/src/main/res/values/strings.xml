@@ -76,6 +76,7 @@
     <string name="formularz_brak_typu">Brakuje typu bariery. Uzupełnij to pole, aby zapisać.</string>
     <string name="formularz_brak_uciazliwosci">Brakuje uciążliwości. Uzupełnij to pole, aby zapisać.</string>
     <string name="formularz_brak_zdjecia">Brakuje zdjęcia. Zrób zdjęcie, aby zapisać.</string>
+    <string name="formularz_zdjecie_blad">Nie zapisaliśmy zdjęcia. Zrób je jeszcze raz.</string>
     <string name="formularz_brak_opisu">Brakuje opisu. Przy typie „inna bariera” opis jest obowiązkowy.</string>
     <string name="formularz_blad_zapisu">Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.</string>
     <string name="formularz_sprobuj_ponownie">Spróbuj ponownie</string>
