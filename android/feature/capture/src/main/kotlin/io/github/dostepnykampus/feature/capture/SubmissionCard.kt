@@ -35,11 +35,11 @@ private val DAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.ROOT)
  * (NFR-18, NFR-21), potem typ, budynek z piętrem, data i powód przy „Nie wysłano” (US9.5).
  *
  * @param item zgłoszenie
- * @param onOpen „Otwórz”: poprawka w C2 (US8.3)
+ * @param onOpen „Otwórz”: poprawka w C2 (US8.3); `null` bez przycisku
  * @param modifier wymiary nadane przez listę
  */
 @Composable
-internal fun SubmissionCard(item: OwnSubmissionItem, onOpen: () -> Unit, modifier: Modifier = Modifier) {
+internal fun SubmissionCard(item: OwnSubmissionItem, onOpen: (() -> Unit)?, modifier: Modifier = Modifier) {
     OutlinedCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
             Column(
@@ -52,13 +52,15 @@ internal fun SubmissionCard(item: OwnSubmissionItem, onOpen: () -> Unit, modifie
                 Text(DAY_FORMAT.format(item.savedAt.atZone(ZoneId.systemDefault())))
                 item.refusal?.let { reason -> Text(stringResource(reason.textRes())) }
             }
-            OutlinedButton(onClick = onOpen) {
-                Text(stringResource(R.string.moje_otworz))
-                Icon(
-                    imageVector = StatusIcons.Open,
-                    contentDescription = null,
-                    modifier = Modifier.padding(start = Odstepy.s),
-                )
+            if (onOpen != null) {
+                OutlinedButton(onClick = onOpen) {
+                    Text(stringResource(R.string.moje_otworz))
+                    Icon(
+                        imageVector = StatusIcons.Open,
+                        contentDescription = null,
+                        modifier = Modifier.padding(start = Odstepy.s),
+                    )
+                }
             }
         }
     }

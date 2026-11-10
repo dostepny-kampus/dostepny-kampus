@@ -32,10 +32,10 @@ class SubmissionCardTest {
 
     private var opened = 0
 
-    private fun show(item: OwnSubmissionItem) {
+    private fun show(item: OwnSubmissionItem, onOpen: (() -> Unit)? = { opened++ }) {
         compose.setContent {
             DostepnyKampusTheme {
-                SubmissionCard(item = item, onOpen = { opened++ })
+                SubmissionCard(item = item, onOpen = onOpen)
             }
         }
     }
@@ -64,6 +64,28 @@ class SubmissionCardTest {
         show(item(id = "a", state = SendState.LOCAL))
         compose.onNodeWithText("Otwórz").performClick()
         assertEquals(1, opened)
+    }
+
+    /** Wiersz: C3 bez poprawki w C2 → pozycja bez „Otwórz”, US8.3. */
+    @Test
+    fun us8_3_no_open_without_edit() {
+        show(item(id = "a", state = SendState.LOCAL), onOpen = null)
+        compose.onNodeWithText("Otwórz").assertDoesNotExist()
+    }
+
+    /** Wiersz: C3 poza budynkiem, nieznany kod typu → „Poza budynkiem”, „Nieznany typ bariery”, US8.1. */
+    @Test
+    fun us8_1_outside_unknown_type() {
+        show(item(id = "a", state = SendState.SENT).copy(type = null, buildingSymbol = null, floorNumber = null))
+        compose.onNodeWithText("Poza budynkiem").assertIsDisplayed()
+        compose.onNodeWithText("Nieznany typ bariery").assertIsDisplayed()
+    }
+
+    /** Wiersz: C3 budynek bez numeru piętra → sam budynek, US8.1. */
+    @Test
+    fun us8_1_building_without_floor() {
+        show(item(id = "a", state = SendState.SENT).copy(floorNumber = null))
+        compose.onNodeWithText("Budynek A-1").assertIsDisplayed()
     }
 
     /** Wiersz: C3 → TalkBack czyta status przed typem bariery, NFR-18. */

@@ -70,7 +70,7 @@ private fun SubmissionList(list: MySubmissions, actions: MySubmissionsActions) {
             ListTop(list = list, onMeasure = actions.onMeasure)
         }
         items(list.items, key = { it.id }) { item ->
-            SubmissionCard(item = item, onOpen = { actions.onOpen(item.id) })
+            SubmissionCard(item = item, onOpen = actions.onOpen?.let { open -> { open(item.id) } })
         }
     }
 }

@@ -27,16 +27,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.measure
+import io.github.dostepnykampus.app.navigation.mySubmissions
 import io.github.dostepnykampus.app.navigation.openReportForm
 import io.github.dostepnykampus.app.navigation.reportSaved
 import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.MeasureScreen
+import io.github.dostepnykampus.feature.capture.MySubmissionsActions
+import io.github.dostepnykampus.feature.capture.MySubmissionsScreen
 import io.github.dostepnykampus.feature.capture.QuickReportActions
 import io.github.dostepnykampus.feature.capture.QuickReportScreen
 import io.github.dostepnykampus.feature.capture.ReportFormScreen
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
+import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.help.HelpScreen
@@ -51,6 +55,7 @@ import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlin.math.roundToInt
+import io.github.dostepnykampus.feature.capture.R as CaptureR
 
 private const val LARGE_FONT_SCALE = 1.5f
 
@@ -98,7 +103,7 @@ private typealias Action = Pair<String, () -> Unit>
 
 /**
  * Ekran trasy [route] z czynnościami podpiętymi do nawigatora. V1 to mapa z `feature:map` ze stanem w ViewModel
- * z grafu Hilt, V2 karta budynku, V3 „Którędy wejść”, C1 i C2 z `feature:capture` i V5 z `feature:help`, reszta
+ * z grafu Hilt, V2 karta budynku, V3 „Którędy wejść”, C1, C2 i C3 z `feature:capture` i V5 z `feature:help`, reszta
  * to zaślepki: nagłówek „Wstecz” z nazwą z listy ekranów i przyciski czynności bez danych. Ekran z `feature:*`
  * zastępuje swoją gałąź i dostaje czynności jako lambdy. Zaślepki nie zapamiętują stanu, więc nie muszą się
  * odświeżać osobno od nawigatora. Gdy konto staje się zalogowane (przełącznik ról w debug, potem logowanie),
@@ -114,6 +119,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is ReportRoute -> QuickReport(route)
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
         is ReportFormRoute -> ReportFormScreen(route = route, onLeave = { back() }, onSave = save, draft = reportDraft)
+        MySubmissionsRoute -> MySubmissionsScreen(MySubmissionsActions(onBack = { back() }, onMeasure = { measure() }))
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute, AccountRoute -> Account(route)
         is MapRoute -> HiltMapScreen(focus = route.focus)
@@ -197,7 +203,11 @@ private fun AppNavigator.Account(route: NavKey) {
         }
 
         isWork -> {
-            Stub(title, stringResource(R.string.zmierz_i_zglos) to { measure() })
+            Stub(
+                title,
+                stringResource(R.string.zmierz_i_zglos) to { measure() },
+                stringResource(CaptureR.string.moje_naglowek) to { mySubmissions() },
+            )
         }
 
         else -> {
