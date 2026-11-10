@@ -31,6 +31,7 @@ class ReportFormScreenTest {
 
     private fun show() {
         val viewModel = ReportFormViewModel { _, _, _ -> }
+        val transcoder = PhotoTranscoder()
         compose.setContent {
             DostepnyKampusTheme {
                 ReportFormScreen(
@@ -45,6 +46,7 @@ class ReportFormScreenTest {
                     onLeave = { left++ },
                     onSave = { saved++ },
                     viewModel = viewModel,
+                    photoTranscoder = transcoder,
                 )
             }
         }

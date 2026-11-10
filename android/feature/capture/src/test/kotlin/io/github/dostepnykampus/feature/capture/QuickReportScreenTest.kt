@@ -88,6 +88,9 @@ class QuickReportScreenTest {
     private fun show(route: ReportRoute) {
         val app = ApplicationProvider.getApplicationContext<Application>()
         shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-        compose.setContent { DostepnyKampusTheme { QuickReportScreen(route = route, actions = actions) } }
+        val transcoder = PhotoTranscoder()
+        compose.setContent {
+            DostepnyKampusTheme { QuickReportScreen(route = route, actions = actions, photoTranscoder = transcoder) }
+        }
     }
 }
