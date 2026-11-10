@@ -72,6 +72,7 @@ class SubmissionQueueTest {
             assertTrue(store.photos.isEmpty())
             val left = store.rows.single()
             assertTrue(left.submission.isCreatedOnServer == false)
+            assertTrue(left.submission.isRefused)
         }
 
     /** Odmowa serwera (4xx) nie wraca do wysyłki przy kolejnych próbach; ponowna tylko z decyzji osoby (BR-26). */

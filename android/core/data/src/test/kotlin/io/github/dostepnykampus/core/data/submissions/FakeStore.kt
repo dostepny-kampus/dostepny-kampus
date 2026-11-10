@@ -25,13 +25,21 @@ internal class FakeStore : PendingSubmissionDao {
     override fun observe(): Flow<List<PendingSubmissionWithPhotos>> = flow { emit(all()) }
 
     override suspend fun all(): List<PendingSubmissionWithPhotos> =
-        rows.sortedWith(compareBy({ it.submission.savedAtMillis }, { it.submission.id }))
+        rows
+            .filterNot { it.submission.isRefused }
+            .sortedWith(compareBy({ it.submission.savedAtMillis }, { it.submission.id }))
 
     override suspend fun markCreated(id: String) {
         created.add(id)
         rows.replaceAll { item ->
             val updated = item.submission.takeIf { it.id != id } ?: item.submission.copy(isCreatedOnServer = true)
             item.copy(submission = updated)
+        }
+    }
+
+    override suspend fun markRefused(id: String) {
+        rows.replaceAll { item ->
+            if (item.submission.id == id) item.copy(submission = item.submission.copy(isRefused = true)) else item
         }
     }
 

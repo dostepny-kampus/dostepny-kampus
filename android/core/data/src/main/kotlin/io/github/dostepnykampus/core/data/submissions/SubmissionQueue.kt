@@ -176,7 +176,8 @@ class SubmissionQueue(
      * Wysyła zgłoszenia z kolejki od najstarszych: treść raz, potem tylko nie wysłane zdjęcia.
      * Bez sieci albo przy awarii serwera (5xx) wysyłanie się kończy do kolejnej próby (BR-9). Po 401 kończy się
      * do ponownego zalogowania, bo bez niego serwer odrzuci każde zgłoszenie (BR-26). Inna odmowa serwera (4xx)
-     * zostawia zgłoszenie w kolejce i przechodzi do następnego (NFR-5, US9.2).
+     * zostawia zgłoszenie w telefonie jako odrzucone, nie wysyła go ponownie i przechodzi do następnego; wraca do
+     * wysyłki dopiero po ponownym zapisie przez osobę ([saveEdit], BR-26, NFR-5, US9.2).
      *
      * @return `false`, gdy trzeba spróbować później; `true`, gdy wysyłka doszła do końca kolejki albo czeka
      *   na zalogowanie, a nie na czas
@@ -248,6 +249,7 @@ class SubmissionQueue(
     }
 
     private suspend fun refused(id: String, result: ApiResult<*>) {
+        store.markRefused(id)
         history?.markRefused(id = id, code = refusalCodeOf(result))
     }
 

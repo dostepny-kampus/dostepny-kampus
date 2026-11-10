@@ -37,6 +37,8 @@ import androidx.room.PrimaryKey
  * @property isBarrierRemoved oznaczenie „bariera usunięta”
  * @property entranceId wejście w zmianie oznaczenia wejścia
  * @property entranceMarking nowe oznaczenie wejścia
+ * @property isRefused czy serwer odrzucił zgłoszenie (4xx); takie zgłoszenie czeka w telefonie na decyzję osoby i nie
+ *   wraca do wysyłki samo (BR-26)
  */
 @Entity(tableName = "pending_submissions")
 data class PendingSubmissionEntity(
@@ -61,6 +63,7 @@ data class PendingSubmissionEntity(
     @ColumnInfo(name = "barrier_removed") val isBarrierRemoved: Boolean?,
     @ColumnInfo(name = "entrance_id") val entranceId: String?,
     @ColumnInfo(name = "entrance_marking") val entranceMarking: String?,
+    @ColumnInfo(name = "refused", defaultValue = "0") val isRefused: Boolean = false,
 )
 
 /**
