@@ -31,4 +31,7 @@ abstract class DkDatabase : RoomDatabase() {
 
     /** Historia własnych zgłoszeń. */
     abstract fun ownSubmissions(): OwnSubmissionDao
+
+    /** Odczyt zgłoszenia z kolejki do poprawki. */
+    abstract fun pendingEdits(): PendingEditDao
 }
