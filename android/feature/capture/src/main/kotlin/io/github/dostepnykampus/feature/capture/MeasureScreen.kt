@@ -199,7 +199,6 @@ private fun Notice(text: String) {
 private fun locationSettings(): Intent =
     Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-/** Nagłówek stanu; [isAnnounced] ogłasza go TalkBackiem, a odliczanie co sekundę zostaje ciche (NFR-18). */
 @Composable
 private fun Headline(text: String, isAnnounced: Boolean = false) {
     Text(
