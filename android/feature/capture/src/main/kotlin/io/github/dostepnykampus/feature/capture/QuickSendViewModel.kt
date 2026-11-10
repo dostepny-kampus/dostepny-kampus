@@ -78,7 +78,7 @@ class QuickSendViewModel
     @Inject
     constructor(
         private val positions: PositionSource,
-        locationSwitch: LocationSwitch,
+        private val locationSwitch: LocationSwitch,
         private val catalog: BuildingCatalogRepository,
         private val saver: ReportSaver,
     ) : ViewModel() {
@@ -89,15 +89,11 @@ class QuickSendViewModel
 
         private val attempts = MutableStateFlow(0)
 
+        private val lookups: Flow<QuickLookup> = attempts.flatMapLatest { whenLocationOn() }
+
         /** Bieżąca pozycja, jej ustalanie albo „Brak pozycji”. */
         val lookup: StateFlow<QuickLookup> =
-            attempts
-                .flatMapLatest {
-                    locationSwitch
-                        .isEnabled()
-                        .distinctUntilChanged()
-                        .flatMapLatest { isOn -> if (isOn) locating() else flowOf(QuickLookup.Lost) }
-                }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), QuickLookup.Locating)
+            lookups.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), QuickLookup.Locating)
 
         /** „Spróbuj ponownie” po „Brak pozycji”: ustalanie od nowa; zdjęcie i grupa zostają. */
         fun retry() {
@@ -121,6 +117,12 @@ class QuickSendViewModel
                     }
             }
         }
+
+        private fun whenLocationOn(): Flow<QuickLookup> =
+            locationSwitch
+                .isEnabled()
+                .distinctUntilChanged()
+                .flatMapLatest { isOn -> if (isOn) locating() else flowOf(QuickLookup.Lost) }
 
         private fun locating(): Flow<QuickLookup> =
             positions
