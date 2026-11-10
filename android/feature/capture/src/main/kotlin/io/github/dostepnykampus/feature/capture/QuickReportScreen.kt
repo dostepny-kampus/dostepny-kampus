@@ -94,7 +94,7 @@ fun QuickReportScreen(
                     }
 
                     else -> {
-                        Text(stringResource(R.string.szybkie_krok, route.step.ordinal + 1))
+                        QuickStepProgress(step = route.step.ordinal + 1)
                         WithLocationPermission(onBack = actions.onBack) {
                             QuickStep(
                                 route = route,
