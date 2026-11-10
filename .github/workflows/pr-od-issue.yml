@@ -44,7 +44,8 @@ jobs:
     steps:
       - name: Kolejka scalania
         if: github.event_name == 'merge_group'
-        run: echo "::notice title=PR od issue::Grupa kolejki scalania: opis PR sprawdzono na PR, tu nic więcej do sprawdzenia."
+        run: |
+          echo "::notice title=PR od issue::Grupa kolejki scalania, opis PR sprawdzono na PR, tu nic więcej do sprawdzenia."
       - uses: actions/checkout@v7.0.1
         if: github.event_name == 'pull_request'
         with:
