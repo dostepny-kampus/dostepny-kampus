@@ -43,7 +43,7 @@ class MeasureViewModelTest {
     private val fixes = MutableSharedFlow<PositionFix>(extraBufferCapacity = 1)
     private val satellites = MutableSharedFlow<List<Satellite>>(extraBufferCapacity = 1)
     private var failure: RuntimeException? = null
-    private val isLocationOn = MutableStateFlow(true)
+    private val locationOn = MutableStateFlow(true)
     private val clock = ElapsedClock { BOOT + dispatcher.scheduler.currentTime }
     private val viewModel by lazy {
         MeasureViewModel(
@@ -55,7 +55,7 @@ class MeasureViewModelTest {
                     catalogReads += 1
                     CAMPUS
                 },
-            locationSwitch = LocationSwitch { isLocationOn },
+            locationSwitch = LocationSwitch { locationOn },
         )
     }
 
@@ -163,12 +163,12 @@ class MeasureViewModelTest {
     @Test
     fun uc7_4c_location_off_then_on() =
         runTest(dispatcher) {
-            isLocationOn.value = false
+            locationOn.value = false
             watch()
             assertEquals(MeasureUiState.LocationOff, viewModel.uiState.value)
             assertEquals(listOf(0, 0), listOf(fixes.subscriptionCount.value, satellites.subscriptionCount.value))
 
-            isLocationOn.value = true
+            locationOn.value = true
             runCurrent()
             assertEquals(MeasureUiState.Searching, viewModel.uiState.value)
             fix(accuracy = 6.0)
