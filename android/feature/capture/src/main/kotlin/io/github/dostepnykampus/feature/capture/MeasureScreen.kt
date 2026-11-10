@@ -108,7 +108,12 @@ fun MeasureContent(
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = stringResource(R.string.pomiar_naglowek), onBack = onBack)
             Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m)) {
-                MeasureBody(state = state, buildings = buildings, placeActions = placeActions, isRestarted = isRestarted)
+                MeasureBody(
+                    state = state,
+                    buildings = buildings,
+                    placeActions = placeActions,
+                    isRestarted = isRestarted,
+                )
             }
             MeasureActions(state = state, onRepeat = onRepeat, onNext = onNext)
         }
