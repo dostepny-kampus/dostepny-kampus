@@ -19,8 +19,14 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
  * @property photo zdjęcie z kroku 1
  * @property group grupa barier z kroku 2
  * @property floorNumber piętro z kroku 2; `null` to „Nie wiem” albo brak pytania (BR-14)
+ * @property entranceId wejście z „Zgłoś barierę przy wejściu” (US4.6); `null`, gdy zgłoszenie zaczęło się z mapy
  */
-data class QuickReport(val photo: PendingPhotoDraft, val group: BarrierGroup, val floorNumber: Int? = null)
+data class QuickReport(
+    val photo: PendingPhotoDraft,
+    val group: BarrierGroup,
+    val floorNumber: Int? = null,
+    val entranceId: String? = null,
+)
 
 /**
  * Bieżąca pozycja do zgłoszenia szybkiego (US4.1, NFR-27).
@@ -39,7 +45,8 @@ fun BarrierGroup.asksFloor(isInBuilding: Boolean?): Boolean = this != BarrierGro
 
 /**
  * Treść zgłoszenia szybkiego z bieżącą pozycją; budynek ustala serwer z konturu (BR-14). Poza konturem
- * zgłoszenie idzie bez piętra, także gdy Odwiedzający je wybrał, zanim telefon ustalił pozycję.
+ * zgłoszenie idzie bez piętra, także gdy Odwiedzający je wybrał, zanim telefon ustalił pozycję. Wejście wybrane
+ * na V2 albo V3 idzie razem z miejscem z pozycji (US4.6).
  */
 fun QuickReport.content(position: QuickPosition): SubmissionContent =
     SubmissionContent(
@@ -49,6 +56,7 @@ fun QuickReport.content(position: QuickPosition): SubmissionContent =
         accuracyMeters = position.accuracyMeters,
         floor = floorNumber?.takeIf { position.isInBuilding }?.let { SubmissionFloor(number = it) },
         barrierGroup = group,
+        entranceId = entranceId,
     )
 
 /** Zgłoszenie z danych kroków 1 i 2 albo `null`, gdy wpis historii ich nie ma. */
@@ -57,7 +65,12 @@ internal fun ReportRoute.quickReport(): QuickReport? {
     val path = photoPath
     val chosen = group
     return if (id != null && path != null && chosen != null) {
-        QuickReport(photo = PendingPhotoDraft(photoId = id, path = path), group = chosen, floorNumber = floorNumber)
+        QuickReport(
+            photo = PendingPhotoDraft(photoId = id, path = path),
+            group = chosen,
+            floorNumber = floorNumber,
+            entranceId = entranceId,
+        )
     } else {
         null
     }

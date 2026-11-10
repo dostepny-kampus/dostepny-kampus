@@ -23,7 +23,7 @@ package io.github.dostepnykampus.core.model
  * @property replacesSubmissionId zgłoszenie przyjęte, które ta zmiana zastąpi (BR-18)
  * @property isBarrierRemoved oznaczenie „bariera usunięta” (US8.4, BR-19); `null` to pole nieobecne,
  *   które kontrakt API traktuje jak `false`
- * @property entranceId wejście w zmianie oznaczenia wejścia (BR-24)
+ * @property entranceId wejście w zmianie oznaczenia wejścia (BR-24) albo w zgłoszeniu szybkim przy wejściu (US4.6)
  * @property entranceMarking nowe oznaczenie wejścia: tylko dostępne albo niedostępne (US17.2)
  */
 data class SubmissionContent(

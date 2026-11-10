@@ -13,6 +13,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
+import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import kotlin.coroutines.EmptyCoroutineContext
 
 /** Ekran V4: krok 2 przekazuje grupę i piętro dalej, a potwierdzenie prowadzi do mapy (US4.1, US4.4, US4.5). */
 @RunWith(RobolectricTestRunner::class)
@@ -85,12 +87,41 @@ class QuickReportScreenTest {
         assertFalse(photo.exists())
     }
 
+    /** Wiersz: V4 krok 1 po „Zgłoś barierę przy wejściu”, napis z wejściem, US4.6. */
+    @Test
+    fun us4_6_entrance_line() {
+        show(ReportRoute(entranceId = "node/6"))
+        compose.onNodeWithText("Wejście: „G”").assertIsDisplayed()
+        compose.onNodeWithText("Zrób zdjęcie").assertIsDisplayed()
+    }
+
+    @Test
+    fun `krok 1 z mapy bez wejścia`() {
+        show(ReportRoute())
+        compose.onNodeWithText("Wejście", substring = true).assertDoesNotExist()
+    }
+
     private fun show(route: ReportRoute) {
         val app = ApplicationProvider.getApplicationContext<Application>()
         shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
         val transcoder = PhotoTranscoder()
+        val entrances = QuickEntranceViewModel(BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS })
         compose.setContent {
-            DostepnyKampusTheme { QuickReportScreen(route = route, actions = actions, photoTranscoder = transcoder) }
+            DostepnyKampusTheme {
+                QuickReportScreen(
+                    route = route,
+                    actions = actions,
+                    photoTranscoder = transcoder,
+                    entrances = entrances,
+                )
+            }
         }
+    }
+
+    private companion object {
+        const val CAMPUS =
+            """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
+                """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/6",""" +
+                """"entrance":"yes","ref":"G"},"geometry":{"type":"Point","coordinates":[17.06,51.11]}}]}"""
     }
 }

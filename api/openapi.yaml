@@ -873,7 +873,7 @@ components:
         description: {type: string, maxLength: 2000, description: "Opis; obowiązkowy przy TB-29 „inna bariera” (US7.3)."}
         replacesSubmissionId: {type: string, format: uuid, description: "Zgłoszenie przyjęte, które ta zmiana zastąpi po przyjęciu (BR-18)."}
         barrierRemoved: {type: boolean, default: false, description: "Oznaczenie „bariera usunięta”; wymaga `replacesSubmissionId` (US8.4, BR-19)."}
-        entranceId: {type: string, description: "Wejście w zmianie oznaczenia wejścia (BR-24)."}
+        entranceId: {type: string, description: "Wejście w zmianie oznaczenia wejścia (BR-24) albo w zgłoszeniu szybkim z „Zgłoś barierę przy wejściu” (US4.6)."}
         entranceMarking: {type: string, enum: [ACCESSIBLE, INACCESSIBLE], description: "Nowe oznaczenie wejścia w zmianie oznaczenia wejścia (US17.2)."}
         photoIds:
           type: array
