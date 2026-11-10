@@ -41,9 +41,9 @@ class QuickReportRouteTest {
     fun `us4_6 wejście z trasy w treści`() {
         val point = GeoPoint(longitude = 17.06, latitude = 51.1)
         val position = QuickPosition(point = point, accuracyMeters = 6.0, isInBuilding = true)
-        val content = filled.copy(entranceId = "A-1-w1").quickReport()?.content(position)
-        assertEquals("A-1-w1", content?.entranceId)
-        assertNull(filled.quickReport()?.content(position)?.entranceId)
+        val atEntrance = requireNotNull(filled.copy(entranceId = "A-1-w1").quickReport())
+        assertEquals("A-1-w1", atEntrance.content(position).entranceId)
+        assertNull(requireNotNull(filled.quickReport()).content(position).entranceId)
     }
 
     @Test

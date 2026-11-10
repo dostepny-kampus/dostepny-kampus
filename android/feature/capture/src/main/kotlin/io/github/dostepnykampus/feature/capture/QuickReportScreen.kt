@@ -97,7 +97,12 @@ fun QuickReportScreen(
                     else -> {
                         Text(stringResource(R.string.szybkie_krok, route.step.ordinal + 1))
                         WithLocationPermission(onBack = actions.onBack) {
-                            QuickStep(route, actions, photoTranscoder, entrances)
+                            QuickStep(
+                                route = route,
+                                actions = actions,
+                                photoTranscoder = photoTranscoder,
+                                entrances = entrances,
+                            )
                         }
                     }
                 }
@@ -155,7 +160,6 @@ private fun QuickPhotoStep(
     if (route.photoPath != null) MainButton(text = stringResource(R.string.pomiar_dalej), onClick = { onNext(route) })
 }
 
-/** Napis z wybranym wejściem nad „Zrób zdjęcie”; wejście spoza katalogu nie ma napisu (US4.6). */
 @Composable
 private fun QuickEntranceLine(id: String, entrances: QuickEntranceViewModel = hiltViewModel()) {
     val updates = remember(entrances, id) { entrances.entrance(id) }
