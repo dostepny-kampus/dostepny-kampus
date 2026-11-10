@@ -14,11 +14,9 @@ import java.io.File
  * Strażnik komentarzy: w kodzie i skryptach Kotlina (`*.kt` i `*.kts` w `android/`) nie ma komentarzy liniowych
  * `//`, ani na początku linii, ani na końcu linii z kodem; opis idzie do KDoc deklaracji, której dotyczy.
  *
- * Komentarz rozpoznaje po składni, nie po tekście linii: napisy zwykłe i surowe, znaki oraz komentarze blokowe
- * są pomijane w całości, więc `//` w adresie albo w surowym napisie nie jest komentarzem.
- *
- * Ograniczenie (#681): tokenizator nie obsługuje zagnieżdżonych komentarzy blokowych ani cudzysłowów w szablonach
- * napisów `${...}`.
+ * Komentarz rozpoznaje po składni, nie po tekście linii (`LineCommentScanner`): napisy zwykłe i surowe z szablonami
+ * `${...}`, znaki oraz komentarze blokowe, także zagnieżdżone, są pomijane w całości, więc `//` w adresie albo
+ * w surowym napisie nie jest komentarzem.
  *
  * `offenders`: Wpisy `ścieżka:wiersz` względem katalogu nadrzędnego `android/`, więc komunikat wskazuje miejsce
  * do poprawy.
@@ -78,7 +76,7 @@ class NoLineCommentsTest {
     }
 
     @Test
-    fun `zagnieżdżony komentarz blokowy z dwoma ukośnikami przechodzi`(
+    fun `blok zagnieżdżony z ukośnikami`(
         @TempDir fixtures: File,
     ) {
         val source = lines("/* zewnętrzny /* wewnętrzny */ // dalej w zewnętrznym */", "val x = 1")
@@ -87,7 +85,7 @@ class NoLineCommentsTest {
     }
 
     @Test
-    fun `cudzysłowy w szablonie napisu nie kończą napisu`(
+    fun `cudzysłów w szablonie napisu`(
         @TempDir fixtures: File,
     ) {
         val source = "val s = $TEMPLATE"
@@ -96,7 +94,7 @@ class NoLineCommentsTest {
     }
 
     @Test
-    fun `komentarz po napisie z szablonem to błąd`(
+    fun `komentarz po szablonie napisu`(
         @TempDir fixtures: File,
     ) {
         val source =
@@ -106,7 +104,7 @@ class NoLineCommentsTest {
     }
 
     @Test
-    fun `komentarz po zagnieżdżonym komentarzu blokowym to błąd`(
+    fun `komentarz po bloku w bloku`(
         @TempDir fixtures: File,
     ) {
         val source = lines("/* a /* b */ c */", "val y = 2 // opis")
@@ -125,10 +123,7 @@ class NoLineCommentsTest {
     private fun lineComments(file: File, android: File): Sequence<String> {
         val text = file.readText()
         val shown = file.relativeTo(android.absoluteFile.parentFile ?: android).invariantSeparatorsPath
-        return TOKEN
-            .findAll(text)
-            .filter { it.value.startsWith("//") }
-            .map { "$shown:${text.take(it.range.first).count { c -> c == '\n' } + 1}" }
+        return LineCommentScanner(text).lineComments().asSequence().map { "$shown:$it" }
     }
 
     private fun lines(vararg text: String): String = text.joinToString(separator = "\n")
@@ -141,10 +136,7 @@ class NoLineCommentsTest {
         const val QUOTE = '"'
         const val QUOTES = "$QUOTE$QUOTE$QUOTE"
         const val DOLLAR = '$'
-        const val TEMPLATE = "$QUOTE$DOLLAR{${QUOTE}a$QUOTE + ${QUOTE}//$QUOTE}$QUOTE"
+        const val TEMPLATE = "$QUOTE$DOLLAR{${QUOTE}a$QUOTE + $QUOTE//$QUOTE}$QUOTE"
         const val URL = "${QUOTE}https://example.org$QUOTE"
-        const val PATTERN =
-            """$QUOTES[\s\S]*?$QUOTES|$QUOTE(?:\\.|[^$QUOTE\\\n])*$QUOTE|'(?:\\.|[^'\\\n])+'|/\*[\s\S]*?\*/|//[^\n]*"""
-        val TOKEN = Regex(PATTERN)
     }
 }
