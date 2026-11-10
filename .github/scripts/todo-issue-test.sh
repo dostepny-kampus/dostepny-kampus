@@ -87,6 +87,33 @@ run_case "Markdown poza zakresem skanowania" 0 '' docs/notatki.md 'TODO: opisać
 run_case "pliki samego strażnika są pomijane" 0 '' .github/scripts/todo-issue.sh '# TODO: przykład znacznika'
 run_case "plik tekstowy poza zakresem skanowania" 0 '' NOTES.txt 'FIXME bez numeru'
 
+# Rozwiązania tymczasowe (#680): @Ignore/@Disabled, tag wykluczający w .feature, @Tymczasowe i @RequiresOptIn wskazują otwarte issue.
+tmp_no_number='rozwiązanie tymczasowe bez numeru issue'
+run_case "Kotlin: @Ignore bez numeru issue" 1 "$tmp_no_number" app/MainTest.kt '    @Ignore("czeka na ekran")'
+run_case "Kotlin: @Ignore bez powodu" 1 "$tmp_no_number" app/MainTest.kt '    @Ignore'
+run_case "Kotlin: @Ignore z otwartym issue" 0 '' app/MainTest.kt '    @Ignore("czeka na ekran #5")'
+run_case "Kotlin: @Ignore z zamkniętym issue" 1 "$closed" app/MainTest.kt '    @Ignore("czeka na ekran #6")'
+run_case "Kotlin: @Ignore z nieistniejącym issue" 1 "$missing" app/MainTest.kt '    @Ignore("czeka na ekran #99")'
+run_case "Java: @Disabled bez numeru issue" 1 "$tmp_no_number" backend/MainTest.java '    @Disabled("czeka na ekran")'
+run_case "Java: @Disabled z otwartym issue" 0 '' backend/MainTest.java '    @Disabled("czeka na ekran #5")'
+run_case "Java: @Disabled z zamkniętym issue" 1 "$closed" backend/MainTest.java '    @Disabled("czeka na ekran #6")'
+run_case "Java: @Disabled z powodem w następnym wierszu" 0 '' backend/MainTest.java $'    @Disabled(\n        "czeka na ekran #5")'
+run_case "Kotlin: @Ignore w napisie i import nie są adnotacją" 0 '' app/MainTest.kt $'import org.junit.Ignore\nval s = "@Ignore"'
+run_case "Kotlin: PR zamyka #5, a @Ignore wskazuje #5: naruszenie" 1 'ten PR zamyka #5' app/MainTest.kt '    @Ignore("czeka #5")' 'Closes #5'
+run_case ".feature: tag @do-zrobienia bez numeru issue" 1 "$tmp_no_number" specs/uprawnienia.feature $'@serwer @do-zrobienia\nScenariusz: x'
+run_case ".feature: tag @do-zrobienia z numerem w komentarzu nad nim" 0 '' specs/uprawnienia.feature $'# Tymczasowo wyłączony, poprawka w #5\n@serwer @do-zrobienia\nScenariusz: x'
+run_case ".feature: tag @do-zrobienia z zamkniętym issue w komentarzu" 1 "$closed" specs/uprawnienia.feature $'# poprawka w #6\n@serwer @do-zrobienia\nScenariusz: x'
+run_case ".feature: tag @wip z numerem w tej samej linii" 0 '' specs/mapa.feature $'@wip #5\nScenariusz: x'
+run_case ".feature: tag @ignore bez numeru" 1 "$tmp_no_number" specs/mapa.feature $'@ignore\nScenariusz: x'
+run_case ".feature: zwykłe tagi bez wykluczenia" 0 '' specs/mapa.feature $'@US1.1 @BR-2\nScenariusz: x'
+run_case "Java: @Tymczasowe bez numeru issue" 1 "$tmp_no_number" backend/Main.java '@Tymczasowe("usunąć po logowaniu")'
+run_case "Java: @Tymczasowe z otwartym issue" 0 '' backend/Main.java '@Tymczasowe("#5 usunąć po logowaniu")'
+run_case "Java: @Tymczasowe z zamkniętym issue" 1 "$closed" backend/Main.java '@Tymczasowe("#6 usunąć po logowaniu")'
+run_case "Kotlin: @RequiresOptIn bez numeru issue w KDoc" 1 "$tmp_no_number" app/Tymczasowa.kt $'/**\n * Usunąć po logowaniu.\n */\n@RequiresOptIn(level = RequiresOptIn.Level.ERROR)\nannotation class Tymczasowa'
+run_case "Kotlin: @RequiresOptIn z otwartym issue w KDoc" 0 '' app/Tymczasowa.kt $'/**\n * Usunąć po logowaniu (#5).\n */\n@RequiresOptIn(level = RequiresOptIn.Level.ERROR)\nannotation class Tymczasowa'
+run_case "Kotlin: @RequiresOptIn z zamkniętym issue w KDoc" 1 "$closed" app/Tymczasowa.kt $'/**\n * Usunąć po logowaniu (#6).\n */\n@RequiresOptIn(level = RequiresOptIn.Level.ERROR)\nannotation class Tymczasowa'
+run_case "dane testowe dokumentacji są pomijane" 0 '' docs/scripts/tests/dane/x/BledneTest.kt '    @Disabled("czeka")'
+
 # Przypadki z podstawionymi narzędziami: fałszywe gh (dziennik wywołań w calls.txt) i jq w katalogu bin.
 # run_tool_case <nazwa> <oczekiwany kod> <oczekiwany tekst> <liczba wywołań gh lub pusta> <treść gh> <treść jq lub pusta> <plik>
 run_tool_case() {
