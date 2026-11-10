@@ -25,6 +25,8 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
+import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
@@ -147,6 +149,17 @@ class CampusMapScreenTest {
                     mapView = fakeMap,
                     viewModel = viewModel,
                 )
+            }
+        }
+    }
+
+    private fun enterTouchMode() {
+        compose.runOnIdle {
+            val view = compose.activity.window.decorView
+            val root = view.javaClass.getMethod("getViewRootImpl").invoke(view)
+            root?.javaClass?.getDeclaredMethod("ensureTouchMode", Boolean::class.javaPrimitiveType)?.run {
+                isAccessible = true
+                invoke(root, true)
             }
         }
     }
@@ -339,15 +352,20 @@ class CampusMapScreenTest {
 
     /**
      * Wiersz: po wyborze wyniku klawiatura ekranowa się chowa, więc pierwsze „Wstecz” na V2 zamyka V2, a nie tylko
-     * klawiaturę (US1.1, NFR-15). Klawiaturę podaje atrapa kontrolera, bo Robolectric nie ma okna z klawiaturą.
+     * klawiaturę (US1.1, NFR-15). Klawiaturę podaje atrapa kontrolera, bo Robolectric nie ma okna z klawiaturą,
+     * a o skutku decyduje fokus pola: po wyborze pole go nie ma. Okno jest w trybie dotyku jak na telefonie; poza nim
+     * Robolectric po `clearFocus` oddaje fokus pierwszemu polu, więc fokus nigdy by nie zszedł.
      */
     @Test
     fun us1_1_result_hides_keyboard() {
         val keyboard = HidingKeyboard()
         compose.setContent { CompositionLocalProvider(LocalSoftwareKeyboardController provides keyboard) { Screen() } }
+        enterTouchMode()
         compose.onNode(hasSetTextAction()).performTextInput("c14")
+        compose.onNode(hasSetTextAction()).assertIsFocused()
         compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
         assertEquals(1, keyboard.hidden)
+        compose.onNode(hasSetTextAction()).assertIsNotFocused()
     }
 
     /** Wiersz: „A-1 329” → stan „brak wyniku”, decyzja 82; „×” „Wyczyść pole” → pole puste. */
