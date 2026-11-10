@@ -104,6 +104,14 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Otwórz").performClick()
         assertEquals(listOf("a"), opened)
     }
+
+    /** Wiersz: C3 „Wysłane” → bez „Otwórz”, bo treść jest tylko na serwerze, US8.3. */
+    @Test
+    fun us8_3_sent_without_open() {
+        show(item(id = "a", state = SendState.SENT), item(id = "b", state = SendState.REFUSED))
+        compose.onNodeWithText("Otwórz").performClick()
+        assertEquals(listOf("b"), opened)
+    }
 }
 
 private fun item(id: String, state: SendState) =

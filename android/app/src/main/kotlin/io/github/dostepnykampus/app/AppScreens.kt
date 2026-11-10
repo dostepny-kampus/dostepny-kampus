@@ -34,13 +34,12 @@ import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.MeasureScreen
-import io.github.dostepnykampus.feature.capture.MySubmissionsActions
-import io.github.dostepnykampus.feature.capture.MySubmissionsScreen
 import io.github.dostepnykampus.feature.capture.QuickReportActions
 import io.github.dostepnykampus.feature.capture.QuickReportScreen
 import io.github.dostepnykampus.feature.capture.ReportFormScreen
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.help.HelpScreen
@@ -119,7 +118,8 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is ReportRoute -> QuickReport(route)
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
         is ReportFormRoute -> ReportFormScreen(route = route, onLeave = { back() }, onSave = save, draft = reportDraft)
-        MySubmissionsRoute -> MySubmissionsScreen(MySubmissionsActions(onBack = { back() }, onMeasure = { measure() }))
+        is ReportEditRoute -> ReportEdit(route)
+        MySubmissionsRoute -> MySubmissions()
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute, AccountRoute -> Account(route)
         is MapRoute -> HiltMapScreen(focus = route.focus)
