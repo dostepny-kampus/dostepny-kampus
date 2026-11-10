@@ -354,17 +354,17 @@ jobs:
       actions: write
       contents: read
     steps:
-      - name: Usuń poprzednie wpisy cache budowania tej gałęzi
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      - name: Usuń poprzednie wpisy cache budowania i zależności tej gałęzi
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          # Na gałąź zostaje najnowszy wpis; limit pamięci cache repozytorium to 10 GB.
-          gh cache list --ref "$GITHUB_REF" --key "android-budowanie-v2-${RUNNER_OS}-${RUNNER_ARCH}-" --limit 100             --sort created_at --order desc --json id --jq '.[1:][] | .id' |
-            while read -r id; do
-              gh cache delete "$id"
-              echo "Usunięto poprzedni wpis cache ${id}."
-            done
+          # Oba wpisy zapisuje zadanie testy (needs), więc czyszczenie rusza po udanym zapisie nowych.
+          bash .github/scripts/czysc-cache.sh "android-budowanie-v2-${RUNNER_OS}-${RUNNER_ARCH}-" "android-zaleznosci-v1-${RUNNER_OS}-${RUNNER_ARCH}-"
 
   budowanie:
     needs: [porownanie, zmiany, testy, apk, emulator]
