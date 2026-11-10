@@ -7,6 +7,10 @@ package io.github.dostepnykampus.feature.capture
 
 import android.provider.Settings
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
@@ -125,6 +129,23 @@ class MeasureScreenTest {
         compose.onNodeWithText("Otwórz ustawienia").performClick()
         val opened = shadowOf(compose.activity).nextStartedActivity
         assertEquals(Settings.ACTION_LOCATION_SOURCE_SETTINGS, opened.action)
+    }
+
+    /** Wiersz: C1, TalkBack ogłasza szukanie i koniec pomiaru, a odliczanie zostaje ciche, NFR-18. */
+    @Test
+    fun nfr18_state_changes_announced() {
+        val polite = SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite)
+        var state by mutableStateOf<MeasureUiState>(MeasureUiState.Searching)
+        compose.setContent {
+            DostepnyKampusTheme { MeasureContent(state = state, onRepeat = {}, onBack = {}) }
+        }
+        compose.onNodeWithText("Szukamy satelitów", substring = true).assert(polite)
+        state = MeasureUiState.Measuring(remainingSeconds = 12, average = average, satellites = satellites)
+        compose
+            .onNodeWithText("Pomiar: zostało 12 s")
+            .assert(SemanticsMatcher.keyNotDefined(SemanticsProperties.LiveRegion))
+        state = MeasureUiState.Finished(average = average, satellites = satellites)
+        compose.onNodeWithText("Pomiar zakończony").assert(polite)
     }
 
     /** Wiersz: C1, powrót po przerwie → „Pomiar był przerwany, więc zaczęliśmy go od nowa.” przy szukaniu, NFR-27. */

@@ -21,7 +21,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.geo.BuildingHint
@@ -124,7 +126,11 @@ private fun Hint(hint: BuildingHint) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(R.string.budynek_pytanie, hint.building.symbol),
-            modifier = Modifier.semantics { heading() },
+            modifier =
+                Modifier.semantics {
+                    heading()
+                    liveRegion = LiveRegionMode.Polite
+                },
             style = MaterialTheme.typography.titleMedium,
         )
         hint.building.name?.let { Text(it) }
@@ -148,7 +154,11 @@ private fun NearestSection(
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(R.string.budynek_wybierz),
-            modifier = Modifier.semantics { heading() },
+            modifier =
+                Modifier.semantics {
+                    heading()
+                    liveRegion = LiveRegionMode.Polite
+                },
             style = MaterialTheme.typography.titleMedium,
         )
         Text(stringResource(R.string.budynek_najblizej))

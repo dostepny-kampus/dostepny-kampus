@@ -137,7 +137,10 @@ private fun MeasureBody(
         val resources = LocalResources.current
         when (state) {
             MeasureUiState.Searching -> {
-                Text(stringResource(R.string.pomiar_szukanie))
+                Text(
+                    text = stringResource(R.string.pomiar_szukanie),
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                )
             }
 
             MeasureUiState.LocationOff -> {
@@ -155,7 +158,7 @@ private fun MeasureBody(
             }
 
             is MeasureUiState.Finished -> {
-                Headline(stringResource(R.string.pomiar_zakonczony))
+                Headline(stringResource(R.string.pomiar_zakonczony), isAnnounced = true)
                 Result(state.average, resources.satellitesLine(state.satellites))
                 PlaceSection(place = state.place, buildings = buildings, actions = placeActions)
                 SkyMap(Sky(state.sky))
@@ -197,10 +200,14 @@ private fun locationSettings(): Intent =
     Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
 @Composable
-private fun Headline(text: String) {
+private fun Headline(text: String, isAnnounced: Boolean = false) {
     Text(
         text = text,
-        modifier = Modifier.semantics { heading() },
+        modifier =
+            Modifier.semantics {
+                heading()
+                if (isAnnounced) liveRegion = LiveRegionMode.Polite
+            },
         style = MaterialTheme.typography.titleMedium,
         fontWeight = Typografia.wyroznienieWaga,
     )

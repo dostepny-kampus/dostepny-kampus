@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.capture
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
@@ -66,6 +67,7 @@ class PlaceSectionTest {
             .onNodeWithText("Czy to budynek A-1?")
             .assertIsDisplayed()
             .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
         compose.onNodeWithText("Gmach Główny").assertIsDisplayed()
         compose.onNodeWithText("12 m od punktu").assertIsDisplayed()
         compose.onNodeWithText("Potwierdź").performClick()
