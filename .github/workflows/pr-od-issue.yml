@@ -51,8 +51,8 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.base.ref }}
           persist-credentials: false
-      - name: Sprawdź, czy PR zamyka
-        if: github.event_name == 'pull_request' otwarte issue przypisane autorowi
+      - name: Sprawdź, czy PR zamyka otwarte issue przypisane autorowi
+        if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
