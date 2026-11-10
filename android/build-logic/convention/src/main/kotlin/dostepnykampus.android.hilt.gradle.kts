@@ -34,5 +34,6 @@ tasks.configureEach {
     }
     val sourceDirs = sourceSets.map { File(moduleDir, "src/$it") }
     val generated = File(moduleBuildDir, "generated/ksp/" + variant.replaceFirstChar { it.lowercase() })
+    doLast { generated.deleteRecursively() }
     doLast { KspHiltGuard.check(taskName, sourceDirs, generated) }
 }
