@@ -91,6 +91,19 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Otwórz").performClick()
         assertEquals(listOf("a"), opened)
     }
+
+    /** Wiersz: C3 „Nie wysłano” → powód i „Otwórz” do poprawki w C2, bez liczenia w „Czeka na wysłanie”, US9.5. */
+    @Test
+    fun us9_5_refused_open() {
+        val refused = item(id = "a", state = SendState.REFUSED).copy(refusal = RefusalReason.NOT_ACCEPTED)
+        show(refused)
+        compose.onNodeWithText("Nie wysłano").assertIsDisplayed()
+        val reason = "Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie."
+        compose.onNodeWithText(reason).assertIsDisplayed()
+        compose.onNodeWithText("Czeka na wysłanie", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("Otwórz").performClick()
+        assertEquals(listOf("a"), opened)
+    }
 }
 
 private fun item(id: String, state: SendState) =

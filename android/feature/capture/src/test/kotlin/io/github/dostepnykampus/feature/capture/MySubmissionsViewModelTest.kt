@@ -100,6 +100,31 @@ class MySubmissionsViewModelTest {
             assertEquals(listOf(RefusalReason.NO_PERMISSION, RefusalReason.NOT_ACCEPTED, null), reasons)
         }
 
+    /** Odmowa 400, 404 i 413 to „Serwer nie przyjął zgłoszenia…”; tylko 403 to brak uprawnień (US9.5, BR-26). */
+    @Test
+    fun `us9_5 inne kody to nieprzyjęte`() =
+        runTest(dispatcher) {
+            rows.value = listOf(400, 404, 413).map { row(id = "k$it", state = SendState.REFUSED, code = it) }
+            collect()
+
+            assertEquals(List(3) { RefusalReason.NOT_ACCEPTED }, list().items.map { it.refusal })
+        }
+
+    /** „Czeka na wysłanie” nie liczy zgłoszeń, których serwer nie przyjął (US9.1, US9.5). */
+    @Test
+    fun `us9_5 odrzucone bez licznika`() =
+        runTest(dispatcher) {
+            rows.value =
+                listOf(
+                    row(id = "a", state = SendState.LOCAL),
+                    row(id = "b", state = SendState.REFUSED, code = 403),
+                    row(id = "c", state = SendState.REFUSED, code = 400),
+                )
+            collect()
+
+            assertEquals(1, list().waitingCount)
+        }
+
     private fun TestScope.collect() {
         backgroundScope.launch { viewModel.state.collect {} }
         runCurrent()
