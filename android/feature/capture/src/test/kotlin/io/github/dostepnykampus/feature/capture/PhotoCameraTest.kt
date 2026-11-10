@@ -21,12 +21,14 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -66,6 +68,13 @@ class PhotoCameraTest {
             val root = Path.of(rootPath)
             return file != root && file.startsWith(root)
         }
+    }
+
+    /** FileProvider trzyma katalogi pierwszej aktywności w statycznej pamięci, a każdy test ma nowy katalog plików. */
+    @Before
+    fun forgetFileProviderRoots() {
+        val cache = FileProvider::class.java.getDeclaredField("sCache").apply { isAccessible = true }
+        (cache.get(null) as MutableMap<*, *>).clear()
     }
 
     private fun show() {
