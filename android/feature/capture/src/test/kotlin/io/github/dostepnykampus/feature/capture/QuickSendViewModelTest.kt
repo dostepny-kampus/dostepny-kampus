@@ -42,7 +42,7 @@ class QuickSendViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val fixes = MutableSharedFlow<PositionFix>()
     private var source: Flow<PositionFix> = fixes
-    private val isLocationOn = MutableStateFlow(true)
+    private val locationOn = MutableStateFlow(true)
     private val saved = mutableListOf<SubmissionContent>()
     private var failure: Exception? = null
     private val report =
@@ -54,7 +54,7 @@ class QuickSendViewModelTest {
     private val viewModel by lazy {
         QuickSendViewModel(
             positions = PositionSource { source },
-            locationSwitch = LocationSwitch { isLocationOn },
+            locationSwitch = LocationSwitch { locationOn },
             catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS },
             saver = { content, _, _ ->
                 failure?.let { throw it }
@@ -148,10 +148,10 @@ class QuickSendViewModelTest {
     @Test
     fun uc7_4c_location_off_then_on() =
         runTest(dispatcher) {
-            isLocationOn.value = false
+            locationOn.value = false
             watch()
             assertEquals(QuickLookup.Lost, viewModel.lookup.value)
-            isLocationOn.value = true
+            locationOn.value = true
             runCurrent()
             assertEquals(QuickLookup.Locating, viewModel.lookup.value)
         }
