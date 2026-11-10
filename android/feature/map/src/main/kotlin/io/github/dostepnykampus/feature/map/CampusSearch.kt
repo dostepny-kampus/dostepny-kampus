@@ -43,6 +43,8 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
@@ -96,7 +98,8 @@ private val ClearIcon =
  * @param isOnline czy jest internet; bez niego pod przełącznikiem stoi [OfflineLine]
  * @param isList czy przełącznik stoi na „Lista budynków”; wtedy pod górą jest lista budynków
  * @param onListChange wybór w przełączniku albo „Lista budynków” w karcie brak wyniku
- * @param onBuildingClick symbol wybranego wyniku albo budynku z listy; ekran otwiera V2 i zaznacza budynek
+ * @param onBuildingClick symbol wybranego wyniku albo budynku z listy; ekran otwiera V2 i zaznacza budynek. Wybór
+ *   zdejmuje fokus z pola i chowa klawiaturę ekranową, a pierwsze „Wstecz” zamyka V2 (US1.1, NFR-15)
  * @param modifier położenie nad mapą; przy liście cała wysokość nad paskiem dolnym
  */
 @Composable
@@ -112,9 +115,17 @@ internal fun CampusSearch(
     val results = remember(query, catalog) { catalog?.let { searchBuildings(query, it.buildings) }.orEmpty() }
     val isNoResult = query.isNotBlank() && catalog != null && results.isEmpty()
     val shown = results.takeUnless { isList }.orEmpty()
+    val focus = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
     val showList = {
         query = ""
         onListChange(true)
+    }
+    val choose = { symbol: String ->
+        query = ""
+        focus.clearFocus(force = true)
+        keyboard?.hide()
+        onBuildingClick(symbol)
     }
     Column(modifier.fillMaxWidth()) {
         SearchHeader(query = query, onQueryChange = { query = it }, isList = isList, onListChange = onListChange)
@@ -122,10 +133,7 @@ internal fun CampusSearch(
         if (isNoResult || shown.isNotEmpty()) {
             ResultPanel {
                 shown.forEach { building ->
-                    BuildingChoice(building) {
-                        query = ""
-                        onBuildingClick(building.symbol)
-                    }
+                    BuildingChoice(building) { choose(building.symbol) }
                 }
                 query.takeIf { isNoResult }?.let { NoResult(it, onShowList = showList.takeUnless { isList }) }
             }
@@ -134,7 +142,7 @@ internal fun CampusSearch(
             BuildingList(
                 catalog = catalog,
                 query = query,
-                onBuildingClick = onBuildingClick,
+                onBuildingClick = choose,
                 modifier = Modifier.weight(1f),
             )
         }
