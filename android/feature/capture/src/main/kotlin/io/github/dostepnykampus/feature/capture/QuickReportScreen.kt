@@ -210,7 +210,7 @@ private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit) {
 private fun QuickSendStep(
     route: ReportRoute,
     report: QuickReport,
-    onSend: () -> Unit,
+    onSend: (isSavedOffline: Boolean) -> Unit,
     onGiveUp: () -> Unit,
     viewModel: QuickSendViewModel = hiltViewModel(),
 ) {
