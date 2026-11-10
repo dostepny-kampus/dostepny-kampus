@@ -1,13 +1,14 @@
-name: pr-od-issue
-
 # Kontrola „PR od issue”: PR musi wskazywać otwarte issue przypisane autorowi (poza Dependabotem).
-# Domyślnie tylko ostrzega w logu. Tryb wymagany (PR bez issue → szkic i komentarz) włącza zmienna repozytorium
-# PR_OD_ISSUE_WYMAGANE=1, ustawiana od daty podanej przez właściciela repozytorium.
+# Check jest wymagany w rulesetach, więc raportuje też w kolejce scalania (merge_group): opis PR sprawdzono już na PR,
+# a w grupie nie ma opisu ani autora do sprawdzenia, więc zadanie kończy się sukcesem z komunikatem.
+# Domyślnie tylko ostrzega w logu. Tryb wymagany (PR bez issue → komentarz i czerwone zadanie, bez szkicu: token
+# workflow nie ma prawa zamiany PR w szkic) włącza zmienna repozytorium PR_OD_ISSUE_WYMAGANE=1.
 # Zdarzenie pull_request: PR z gałęzi tego repozytorium ma token z zapisem; PR z forków i Dependabota pomijamy.
 # Etykiety obszaru nadaje równolegle workflow etykiet, więc kontrola powtarza się też po zmianie etykiet (labeled, unlabeled);
 # inaczej przy otwarciu PR widziałaby go bez etykiet i już by tego nie sprawdziła.
 # Skrypt pochodzi z gałęzi docelowej (checkout base.ref), nie z kodu PR.
 on:
+  merge_group:
   pull_request:
     branches:
       - main
@@ -16,6 +17,7 @@ on:
       - opened
       - edited
       - reopened
+      - synchronize
       - labeled
       - unlabeled
 
@@ -23,15 +25,16 @@ permissions:
   contents: read
 
 concurrency:
-  group: pr-od-issue-${{ github.event.pull_request.number }}
+  group: pr-od-issue-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   # Nazwa inna niż `kontrola`: ta nazwa należy do jobu docs i jest wymaganym checkiem rulesetów; ta sama nazwa mieszałaby oba wyniki.
   pr-od-issue:
     if: >-
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      github.actor != 'dependabot[bot]'
+      github.event_name == 'merge_group' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -39,11 +42,17 @@ jobs:
       pull-requests: write
       issues: read
     steps:
+      - name: Kolejka scalania
+        if: github.event_name == 'merge_group'
+        run: |
+          echo "::notice title=PR od issue::Grupa kolejki scalania, opis PR sprawdzono na PR, tu nic więcej do sprawdzenia."
       - uses: actions/checkout@v7.0.1
+        if: github.event_name == 'pull_request'
         with:
           ref: ${{ github.event.pull_request.base.ref }}
           persist-credentials: false
       - name: Sprawdź, czy PR zamyka otwarte issue przypisane autorowi
+        if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
