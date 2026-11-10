@@ -297,6 +297,8 @@ jobs:
             echo "::error title=Testy jednostkowe::Brak wykonanych testów (łącznie ${liczba}, :app ${liczba_app})."
             exit 1
           fi
+      - name: Wymuszona porażka sondy
+        run: exit 1
       - name: Zbierz diagnostykę generowania Hilt i KSP po porażce
         if: failure()
         run: |
