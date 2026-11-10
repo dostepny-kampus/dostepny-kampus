@@ -396,6 +396,16 @@ class AppNavigatorTest {
         assertEquals(BuildingRoute("D-2"), stack.last())
     }
 
+    /** Wysłanie bez internetu: potwierdzenie mówi, że zdjęcie wyśle się samo (US4.2). */
+    @Test
+    fun us4_2_sent_offline() {
+        navigator(visitor).run {
+            report()
+            reportSent(isSavedOffline = true)
+        }
+        assertEquals(ReportRoute(step = ReportStep.SENT, isSavedOffline = true), stack.last())
+    }
+
     /** Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość po zalogowaniu wraca do zgłoszenia szybkiego. */
     @Test
     fun us14_2_guest_signed_in_v4() {

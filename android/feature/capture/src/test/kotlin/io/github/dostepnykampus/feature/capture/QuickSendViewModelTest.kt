@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.capture
 
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
@@ -51,6 +52,7 @@ class QuickSendViewModelTest {
             group = BarrierGroup.TOILETS,
             floorNumber = 1,
         )
+    private val online = MutableStateFlow(true)
     private val viewModel by lazy {
         QuickSendViewModel(
             positions = PositionSource { source },
@@ -60,6 +62,7 @@ class QuickSendViewModelTest {
                 failure?.let { throw it }
                 saved.add(content)
             },
+            networkStatus = NetworkStatus { online },
         )
     }
 
@@ -154,6 +157,19 @@ class QuickSendViewModelTest {
             locationOn.value = true
             runCurrent()
             assertEquals(QuickLookup.Locating, viewModel.lookup.value)
+        }
+
+    /** Wysłanie bez internetu: zapis w kolejce i potwierdzenie „Zapisaliśmy zdjęcie w telefonie…” (US4.2, NFR-5). */
+    @Test
+    fun us4_2_saved_offline() =
+        runTest(dispatcher) {
+            online.value = false
+            watch()
+            fix(INSIDE_A1)
+            viewModel.send(report)
+            runCurrent()
+            assertEquals(QuickSendStage.SAVED_OFFLINE, viewModel.stage.value)
+            assertEquals(1, saved.size)
         }
 
     /** Drugie „Wyślij” nie wysyła zdjęcia drugi raz (US4.7). */

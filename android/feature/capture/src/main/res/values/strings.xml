@@ -104,6 +104,7 @@
     <string name="szybkie_naglowek">Zgłoś barierę</string>
     <string name="szybkie_krok">Krok %1$d z 3</string>
     <string name="szybkie_wyslij">Wyślij</string>
+    <string name="szybkie_zapisane_bez_sieci">Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet.</string>
     <string name="szybkie_wroc_do_mapy">Wróć do mapy</string>
     <string name="szybkie_rezygnacja">Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy. Aby je zachować, wybierz „Wróć do zdjęcia”.</string>
     <string name="szybkie_tak_zrezygnuj">Tak, zrezygnuj</string>

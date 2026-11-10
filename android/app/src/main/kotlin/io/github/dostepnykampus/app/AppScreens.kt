@@ -183,7 +183,7 @@ private fun AppNavigator.QuickReport(route: ReportRoute) {
     val actions =
         QuickReportActions(
             onNext = { nextReportStep(it) },
-            onSent = { reportSent() },
+            onSent = { reportSent(isSavedOffline = it) },
             onBack = { back() },
             onBackToMap = { backToMap() },
         )

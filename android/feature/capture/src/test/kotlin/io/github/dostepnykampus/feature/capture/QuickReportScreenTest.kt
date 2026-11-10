@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionSource
@@ -99,6 +100,17 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Zrób zdjęcie").assertIsDisplayed()
     }
 
+    /** Wiersz: V4 brak sieci → „Zapisaliśmy zdjęcie w telefonie…” i „Wróć do mapy”, US4.2. */
+    @Test
+    fun us4_2_sent_offline() {
+        show(ReportRoute(step = ReportStep.SENT, isSavedOffline = true))
+        val saved = "Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet."
+        compose.onNodeWithText(saved).assertIsDisplayed()
+        compose.onNodeWithText("Dziękujemy", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("Wróć do mapy").performClick()
+        assertEquals(1, toMap)
+    }
+
     /** Wiersz: V4 brak pozycji → „Zrezygnuj” pyta o rezygnację, zdjęcie zostaje do decyzji, potem mapa, UC7 4c. */
     @Test
     fun uc7_4c_give_up_no_position() {
@@ -133,6 +145,7 @@ class QuickReportScreenTest {
                 locationSwitch = LocationSwitch { flowOf(true) },
                 catalog = catalog,
                 saver = { _, _, _ -> },
+                networkStatus = NetworkStatus { flowOf(true) },
             )
         compose.setContent {
             DostepnyKampusTheme {

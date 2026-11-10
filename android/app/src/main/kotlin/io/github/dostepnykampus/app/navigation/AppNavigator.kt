@@ -223,12 +223,15 @@ class AppNavigator(
         }
     }
 
-    /** „Wyślij”: potwierdzenie zamiast kroków V4, więc „Wstecz” prowadzi na ekran sprzed V4 (US4.4, P2). */
-    fun reportSent() {
+    /**
+     * „Wyślij”: potwierdzenie zamiast kroków V4, więc „Wstecz” prowadzi na ekran sprzed V4 (US4.4, P2).
+     * [isSavedOffline]: zapis bez internetu, potwierdzenie mówi, że zdjęcie wyśle się samo (US4.2).
+     */
+    fun reportSent(isSavedOffline: Boolean = false) {
         if (current !is ReportRoute) return
         leaving {
             dropReport()
-            add(ReportRoute(step = ReportStep.SENT))
+            add(ReportRoute(step = ReportStep.SENT, isSavedOffline = isSavedOffline))
         }
     }
 

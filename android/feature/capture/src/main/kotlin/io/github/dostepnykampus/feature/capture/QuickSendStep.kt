@@ -56,10 +56,15 @@ internal fun QuickSendSummary(report: QuickReport, isFloorAsked: Boolean, lookup
     }
 }
 
-/** Potwierdzenie po „Wyślij”: zgłoszenie trafi do weryfikacji, dalszego statusu Odwiedzający nie widzi (US4.4). */
+/**
+ * Potwierdzenie po „Wyślij”: zgłoszenie trafi do weryfikacji, dalszego statusu Odwiedzający nie widzi (US4.4).
+ * Bez internetu: zdjęcie czeka w telefonie i wyśle się samo po powrocie sieci (US4.2, NFR-5).
+ *
+ * @param isSavedOffline zapis w kolejce bez internetu
+ */
 @Composable
-internal fun QuickSentMessage() {
-    Text(stringResource(R.string.szybkie_dziekujemy))
+internal fun QuickSentMessage(isSavedOffline: Boolean = false) {
+    Text(stringResource(if (isSavedOffline) R.string.szybkie_zapisane_bez_sieci else R.string.szybkie_dziekujemy))
 }
 
 @Composable
