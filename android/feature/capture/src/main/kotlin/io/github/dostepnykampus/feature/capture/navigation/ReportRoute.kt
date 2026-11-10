@@ -21,6 +21,7 @@ import kotlinx.serialization.Serializable
  * @property group grupa barier z kroku 2
  * @property floorNumber piętro z kroku 2; `null` to „Nie wiem” albo brak pytania (BR-14)
  * @property isFloorAsked czy krok 2 pytał o piętro
+ * @property isSavedOffline potwierdzenie po zapisie bez internetu (US4.2)
  */
 @Serializable
 data class ReportRoute(
@@ -31,6 +32,7 @@ data class ReportRoute(
     val group: BarrierGroup? = null,
     val floorNumber: Int? = null,
     val isFloorAsked: Boolean = false,
+    val isSavedOffline: Boolean = false,
 ) : NavKey
 
 /** Krok V4. */

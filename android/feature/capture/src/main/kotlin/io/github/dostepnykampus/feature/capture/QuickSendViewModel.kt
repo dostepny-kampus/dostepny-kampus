@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.geo.hintBuilding
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
@@ -43,8 +44,11 @@ enum class QuickSendStage {
     /** Zapis w kolejce trwa; „Wyślij” jest nieczynne, żeby nie wysłać zdjęcia drugi raz (US4.7). */
     SENDING,
 
-    /** Zapisane w kolejce; dalej potwierdzenie, a wysyłkę po powrocie sieci robi kolejka (US4.2). */
+    /** Zapisane w kolejce przy internecie; dalej „Dziękujemy…” (US4.4). */
     SENT,
+
+    /** Zapisane w kolejce bez internetu; dalej „Zapisaliśmy zdjęcie w telefonie…”, a wysyła kolejka (US4.2). */
+    SAVED_OFFLINE,
 
     /** „Za mało miejsca w telefonie” z ponowieniem (NFR-7). */
     FAILED,
@@ -81,6 +85,7 @@ class QuickSendViewModel
         private val locationSwitch: LocationSwitch,
         private val catalog: BuildingCatalogRepository,
         private val saver: ReportSaver,
+        private val networkStatus: NetworkStatus,
     ) : ViewModel() {
         private val state = MutableStateFlow(QuickSendStage.READY)
 
@@ -103,13 +108,13 @@ class QuickSendViewModel
         /** „Wyślij”: zapis w kolejce z bieżącą pozycją; bez pozycji i w czasie zapisu nic nie robi. */
         fun send(report: QuickReport) {
             val current = (lookup.value as? QuickLookup.Found)?.position ?: return
-            if (state.value == QuickSendStage.SENDING || state.value == QuickSendStage.SENT) return
+            if (state.value != QuickSendStage.READY && state.value != QuickSendStage.FAILED) return
             state.value = QuickSendStage.SENDING
             viewModelScope.launch {
                 state.value =
                     try {
                         saver.save(report.content(current), listOf(report.photo), null)
-                        QuickSendStage.SENT
+                        if (networkStatus.isOnline().first()) QuickSendStage.SENT else QuickSendStage.SAVED_OFFLINE
                     } catch (_: IOException) {
                         QuickSendStage.FAILED
                     } catch (_: SQLiteException) {

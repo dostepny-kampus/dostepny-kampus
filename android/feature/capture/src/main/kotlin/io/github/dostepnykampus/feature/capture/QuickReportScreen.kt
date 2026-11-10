@@ -85,7 +85,7 @@ fun QuickReportScreen(
             ) {
                 when {
                     route.step == ReportStep.SENT -> {
-                        QuickSentMessage()
+                        QuickSentMessage(isSavedOffline = route.isSavedOffline)
                         MainButton(text = stringResource(R.string.szybkie_wroc_do_mapy), onClick = actions.onBackToMap)
                     }
 
@@ -217,7 +217,11 @@ private fun QuickSendStep(
     val lookup by viewModel.lookup.collectAsStateWithLifecycle()
     val stage by viewModel.stage.collectAsStateWithLifecycle()
     val sent by rememberUpdatedState(onSend)
-    LaunchedEffect(viewModel) { viewModel.stage.filter { it == QuickSendStage.SENT }.collect { sent() } }
+    LaunchedEffect(viewModel) {
+        viewModel.stage
+            .filter { it == QuickSendStage.SENT || it == QuickSendStage.SAVED_OFFLINE }
+            .collect { sent(it == QuickSendStage.SAVED_OFFLINE) }
+    }
     QuickSendSummary(report = report, isFloorAsked = route.isFloorAsked, lookup = lookup)
     if (lookup == QuickLookup.Lost) {
         MainButton(text = stringResource(R.string.formularz_sprobuj_ponownie), onClick = viewModel::retry)
