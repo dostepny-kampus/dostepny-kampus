@@ -15,9 +15,13 @@ import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.location.LocationSwitch
+import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -95,6 +99,22 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Zrób zdjęcie").assertIsDisplayed()
     }
 
+    /** Wiersz: V4 brak pozycji → „Zrezygnuj” pyta o rezygnację, zdjęcie zostaje do decyzji, potem mapa, UC7 4c. */
+    @Test
+    fun uc7_4c_give_up_no_position() {
+        val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
+        show(atSend(photo.path))
+        compose.onNodeWithText("Telefon nie ustalił", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Zrezygnuj").performClick()
+        compose.onNodeWithText("Wróć do zdjęcia").performClick()
+        compose.onNodeWithText("Spróbuj ponownie").assertIsDisplayed()
+        assertTrue(photo.exists())
+        compose.onNodeWithText("Zrezygnuj").performClick()
+        compose.onNodeWithText("Tak, zrezygnuj").performClick()
+        assertEquals(1, toMap)
+        assertFalse(photo.exists())
+    }
+
     @Test
     fun `krok 1 z mapy bez wejścia`() {
         show(ReportRoute())
@@ -105,18 +125,28 @@ class QuickReportScreenTest {
         val app = ApplicationProvider.getApplicationContext<Application>()
         shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
         val transcoder = PhotoTranscoder()
-        val entrances = QuickEntranceViewModel(BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS })
+        val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS }
+        val entrances = QuickEntranceViewModel(catalog)
+        val send =
+            QuickSendViewModel(
+                positions = PositionSource { flow { throw SecurityException("brak zgody") } },
+                locationSwitch = LocationSwitch { flowOf(true) },
+                catalog = catalog,
+                saver = { _, _, _ -> },
+            )
         compose.setContent {
             DostepnyKampusTheme {
                 QuickReportScreen(
                     route = route,
                     actions = actions,
-                    photoTranscoder = transcoder,
-                    entrances = entrances,
+                    models = QuickReportModels(photoTranscoder = transcoder, entrances = entrances, send = send),
                 )
             }
         }
     }
+
+    private fun atSend(path: String) =
+        ReportRoute(step = ReportStep.SEND, photoId = "zdjecie-1", photoPath = path, group = BarrierGroup.TOILETS)
 
     private companion object {
         const val CAMPUS =
