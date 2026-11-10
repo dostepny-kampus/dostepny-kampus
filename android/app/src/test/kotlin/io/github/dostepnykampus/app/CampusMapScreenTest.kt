@@ -15,6 +15,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -54,6 +56,7 @@ import io.github.dostepnykampus.feature.map.data.CampusMapData
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -68,6 +71,17 @@ internal class TestMapListChoice : MapListChoice {
     override suspend fun choose(isList: Boolean) {
         savedChoice.value = isList
     }
+}
+
+/** Kontroler klawiatury, który liczy wywołania [hide]. */
+private class HidingKeyboard : SoftwareKeyboardController {
+    var hidden = 0
+
+    override fun hide() {
+        hidden++
+    }
+
+    override fun show() = Unit
 }
 
 private const val KEYBOARD_HEIGHT = 600
@@ -322,6 +336,20 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
         assertEquals(listOf("C-14"), opened)
         compose.onNodeWithContentDescription("Wyczyść pole").assertDoesNotExist()
+    }
+
+    /**
+     * Wiersz: po wyborze wyniku klawiatura ekranowa się chowa, więc pierwsze „Wstecz” na V2 zamyka V2, a nie tylko
+     * klawiaturę (US1.1, NFR-15). Klawiaturę podaje atrapa kontrolera, bo Robolectric nie ma okna z klawiaturą.
+     */
+    @Test
+    @Ignore("Błąd aplikacji #685: wybór wyniku nie chowa klawiatury, poprawka w tym samym PR")
+    fun us1_1_result_hides_keyboard() {
+        val keyboard = HidingKeyboard()
+        compose.setContent { CompositionLocalProvider(LocalSoftwareKeyboardController provides keyboard) { Screen() } }
+        compose.onNode(hasSetTextAction()).performTextInput("c14")
+        compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
+        assertEquals(1, keyboard.hidden)
     }
 
     /** Wiersz: „A-1 329” → stan „brak wyniku”, decyzja 82; „×” „Wyczyść pole” → pole puste. */
