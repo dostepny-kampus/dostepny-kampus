@@ -101,7 +101,7 @@ class QuickReportScreenTest {
 
     /** Wiersz: V4 brak pozycji → „Zrezygnuj” pyta o rezygnację, zdjęcie zostaje do decyzji, potem mapa, UC7 4c. */
     @Test
-    fun uc7_4c_give_up_without_position() {
+    fun uc7_4c_give_up_no_position() {
         val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
         show(atSend(photo.path))
         compose.onNodeWithText("Telefon nie ustalił", substring = true).assertIsDisplayed()

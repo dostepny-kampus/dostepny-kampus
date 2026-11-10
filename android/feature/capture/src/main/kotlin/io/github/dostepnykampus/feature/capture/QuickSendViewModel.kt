@@ -97,8 +97,7 @@ class QuickSendViewModel
                         .isEnabled()
                         .distinctUntilChanged()
                         .flatMapLatest { isOn -> if (isOn) locating() else flowOf(QuickLookup.Lost) }
-                }
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), QuickLookup.Locating)
+                }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), QuickLookup.Locating)
 
         /** „Spróbuj ponownie” po „Brak pozycji”: ustalanie od nowa; zdjęcie i grupa zostają. */
         fun retry() {
