@@ -77,6 +77,43 @@ class NoLineCommentsTest {
         assertEquals(emptyList<String>(), offenders(File(fixtures, "android")))
     }
 
+    @Test
+    fun `zagnieżdżony komentarz blokowy z dwoma ukośnikami przechodzi`(
+        @TempDir fixtures: File,
+    ) {
+        val source = lines("/* zewnętrzny /* wewnętrzny */ // dalej w zewnętrznym */", "val x = 1")
+        fixtures.fixture(name = "Nested.kt", source = source)
+        assertEquals(emptyList<String>(), offenders(File(fixtures, "android")))
+    }
+
+    @Test
+    fun `cudzysłowy w szablonie napisu nie kończą napisu`(
+        @TempDir fixtures: File,
+    ) {
+        val source = "val s = $TEMPLATE"
+        fixtures.fixture(name = "Template.kt", source = source)
+        assertEquals(emptyList<String>(), offenders(File(fixtures, "android")))
+    }
+
+    @Test
+    fun `komentarz po napisie z szablonem to błąd`(
+        @TempDir fixtures: File,
+    ) {
+        val source =
+            lines("val s = $TEMPLATE", "val y = 2 // opis")
+        fixtures.fixture(name = "AfterTemplate.kt", source = source)
+        assertEquals(listOf("android/AfterTemplate.kt:2"), offenders(File(fixtures, "android")))
+    }
+
+    @Test
+    fun `komentarz po zagnieżdżonym komentarzu blokowym to błąd`(
+        @TempDir fixtures: File,
+    ) {
+        val source = lines("/* a /* b */ c */", "val y = 2 // opis")
+        fixtures.fixture(name = "AfterNested.kt", source = source)
+        assertEquals(listOf("android/AfterNested.kt:2"), offenders(File(fixtures, "android")))
+    }
+
     private fun offenders(android: File): List<String> =
         android
             .walkTopDown()
@@ -103,6 +140,8 @@ class NoLineCommentsTest {
     private companion object {
         const val QUOTE = '"'
         const val QUOTES = "$QUOTE$QUOTE$QUOTE"
+        const val DOLLAR = '$'
+        const val TEMPLATE = "$QUOTE$DOLLAR{${QUOTE}a$QUOTE + ${QUOTE}//$QUOTE}$QUOTE"
         const val URL = "${QUOTE}https://example.org$QUOTE"
         const val PATTERN =
             """$QUOTES[\s\S]*?$QUOTES|$QUOTE(?:\\.|[^$QUOTE\\\n])*$QUOTE|'(?:\\.|[^'\\\n])+'|/\*[\s\S]*?\*/|//[^\n]*"""
