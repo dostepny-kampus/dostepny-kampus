@@ -22,7 +22,20 @@ env:
   OASDIFF_SHA256: 75775f65b0adebd26a8e013af51a799342dfdc6262d89efa9e3b7bdf89657d90
 
 jobs:
+  porownanie:
+    # Pierwszy job: w grupie kolejki pomija ciężkie joby, gdy drzewo plików jest równe sprawdzonemu na PR (drzewo-grupy.yml).
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/drzewo-grupy.yml
+    with:
+      workflow: api.yml
+
   zmiany:
+    needs: porownanie
+    # Pominięty `zmiany` pomija też kontrakt i zmiany-lamiace (potrzebują go z wynikiem success).
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
