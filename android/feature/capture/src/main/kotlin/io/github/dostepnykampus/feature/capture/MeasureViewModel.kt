@@ -215,16 +215,16 @@ class MeasureViewModel
                 .distinctUntilChanged()
                 .flatMapLatest { isOn ->
                     if (isOn) {
-                        measurement(attempt).onCompletion { markInterrupted(attempt, it) }
+                        measurement(attempt).onCompletion { cause ->
+                            val run = result.value
+                            if (cause != null && run.attempt == attempt && run.finished == null) {
+                                interrupted.value = true
+                            }
+                        }
                     } else {
                         flowOf(MeasureUiState.LocationOff)
                     }
                 }
-
-        private fun markInterrupted(attempt: Int, cause: Throwable?) {
-            val run = result.value
-            if (cause != null && run.attempt == attempt && run.finished == null) interrupted.value = true
-        }
 
         private fun measurement(attempt: Int): Flow<MeasureUiState> =
             channelFlow {
