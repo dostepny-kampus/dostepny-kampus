@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
     <string name="pomiar_naglowek">Zmierz i zgłoś barierę</string>
     <string name="pomiar_szukanie">Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.</string>
+    <string name="pomiar_blad">Nie odczytaliśmy pozycji z telefonu. Wybierz „Powtórz pomiar”, aby spróbować jeszcze raz.</string>
     <string name="pomiar_zostalo">Pomiar: zostało %1$d s</string>
     <string name="pomiar_zakonczony">Pomiar zakończony</string>
     <string name="pomiar_dokladnosc">Dokładność: %1$s m (szacunek)</string>

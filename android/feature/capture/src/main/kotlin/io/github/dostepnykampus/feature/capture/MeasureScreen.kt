@@ -23,7 +23,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -107,6 +109,15 @@ fun MeasureContent(
                         Text(stringResource(R.string.pomiar_szukanie))
                     }
 
+                    MeasureUiState.Failed -> {
+                        Text(
+                            text = stringResource(R.string.pomiar_blad),
+                            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = Typografia.wyroznienieWaga,
+                        )
+                    }
+
                     is MeasureUiState.Measuring -> {
                         Headline(stringResource(R.string.pomiar_zostalo, state.remainingSeconds))
                         Result(state.average, resources.satellitesLine(state.satellites))
@@ -123,7 +134,8 @@ fun MeasureContent(
             }
             PinnedActionBar {
                 val next = state.reportFormRoute()
-                val kind = if (state == MeasureUiState.Searching) PinnedButtonKind.Filled else PinnedButtonKind.Outlined
+                val isWaiting = state == MeasureUiState.Searching || state == MeasureUiState.Failed
+                val kind = if (isWaiting) PinnedButtonKind.Filled else PinnedButtonKind.Outlined
                 PinnedButton(text = stringResource(R.string.pomiar_powtorz), onClick = onRepeat, kind = kind)
                 next?.let { PinnedButton(text = stringResource(R.string.pomiar_dalej), onClick = { onNext(it) }) }
             }
