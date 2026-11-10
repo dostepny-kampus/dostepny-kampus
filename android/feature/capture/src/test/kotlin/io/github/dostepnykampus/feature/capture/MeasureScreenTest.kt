@@ -102,4 +102,15 @@ class MeasureScreenTest {
         show(MeasureUiState.Measuring(remainingSeconds = 30, average = average, satellites = emptyMap()))
         compose.onNodeWithText("Satelity: brak w pozycji").assertIsDisplayed()
     }
+
+    /** Wiersz: C1, błąd odbiornika → komunikat, co zrobić, i „Powtórz pomiar” bez „Dalej”, NFR-50. */
+    @Test
+    fun nfr50_source_error_message() {
+        var repeats = 0
+        show(MeasureUiState.Failed, onRepeat = { repeats++ })
+        compose.onNodeWithText("Nie odczytaliśmy pozycji", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Dalej").assertDoesNotExist()
+        compose.onNodeWithText("Powtórz pomiar").performClick()
+        assertEquals(1, repeats)
+    }
 }

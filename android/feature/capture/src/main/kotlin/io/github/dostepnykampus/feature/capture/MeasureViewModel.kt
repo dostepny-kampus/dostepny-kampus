@@ -16,6 +16,7 @@ import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
 import io.github.dostepnykampus.core.location.PositionAverage
 import io.github.dostepnykampus.core.location.PositionAveraging
+import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.location.Satellite
 import io.github.dostepnykampus.core.location.SatelliteSource
@@ -46,6 +47,9 @@ private const val TICK_MS = 1_000L
 sealed interface MeasureUiState {
     /** „Szukamy satelitów”: nie ma jeszcze odczytu ze znaną dokładnością. */
     data object Searching : MeasureUiState
+
+    /** Odbiornik zgłosił błąd, np. brak zgody albo brak GPS w telefonie; „Powtórz pomiar” zaczyna od nowa (NFR-50). */
+    data object Failed : MeasureUiState
 
     /**
      * Pomiar trwa: „Pomiar: zostało [remainingSeconds] s”.
@@ -107,7 +111,8 @@ sealed interface PlaceChoice {
  * (obrót ekranu), a po końcu pomiaru przestaje (NFR-27). Wynik zostaje w ViewModelu, więc powrót na ekran go nie
  * kasuje; [repeat] zaczyna od nowa bez limitu (NFR-23). Po pomiarze podpowiada budynek z katalogu bez sieci,
  * a Zbierający go potwierdza, wybiera inny albo zostawia „poza budynkiem” (US6.2).
- * Odliczanie „Pomiar: zostało 12 s” zmienia się co sekundę także bez nowych odczytów (NFR-2).
+ * Odliczanie „Pomiar: zostało 12 s” zmienia się co sekundę także bez nowych odczytów (NFR-2). Błąd odbiornika
+ * kończy pomiar stanem [MeasureUiState.Failed] zamiast zamykać aplikację (NFR-50).
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -194,26 +199,42 @@ class MeasureViewModel
                 suspend fun publish() = send(stateOf(averaging, sky))
 
                 publish()
-                launch {
-                    satellites.satellites().collect { visible ->
-                        sky = visible
-                        publish()
+                val others =
+                    launch {
+                        launch {
+                            satellites.satellites().collect { visible ->
+                                sky = visible
+                                publish()
+                            }
+                        }
+                        while (true) {
+                            delay(TICK_MS)
+                            publish()
+                        }
                     }
-                }
-                launch {
-                    positions.fixes().collect { fix ->
+                val isCollected =
+                    collectFixes { fix ->
                         val current = averaging ?: PositionAveraging(fix.elapsedMillis).takeIf { fix.hasAccuracy }
                         averaging = current?.withFix(fix)
                         publish()
                     }
-                }
-                while (true) {
-                    delay(TICK_MS)
-                    publish()
+                if (!isCollected) {
+                    others.cancel()
+                    send(MeasureUiState.Failed)
                 }
             }.takeWhile { state ->
                 if (state is MeasureUiState.Finished) finish(attempt, state)
                 state !is MeasureUiState.Finished
+            }
+
+        private suspend fun collectFixes(onFix: suspend (PositionFix) -> Unit): Boolean =
+            try {
+                positions.fixes().collect { onFix(it) }
+                true
+            } catch (_: SecurityException) {
+                false
+            } catch (_: IllegalArgumentException) {
+                false
             }
 
         private fun finish(attempt: Int, state: MeasureUiState.Finished) {

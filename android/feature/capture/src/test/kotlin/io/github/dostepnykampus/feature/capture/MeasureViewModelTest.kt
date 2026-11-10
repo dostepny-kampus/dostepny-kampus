@@ -16,6 +16,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -39,10 +40,11 @@ class MeasureViewModelTest {
     private var catalogReads = 0
     private val fixes = MutableSharedFlow<PositionFix>(extraBufferCapacity = 1)
     private val satellites = MutableSharedFlow<List<Satellite>>(extraBufferCapacity = 1)
+    private var failure: RuntimeException? = null
     private val clock = ElapsedClock { BOOT + dispatcher.scheduler.currentTime }
     private val viewModel by lazy {
         MeasureViewModel(
-            positions = PositionSource { fixes },
+            positions = PositionSource { failure?.let { error -> flow { throw error } } ?: fixes },
             satellites = SatelliteSource { satellites },
             clock = clock,
             catalog =
@@ -128,6 +130,29 @@ class MeasureViewModelTest {
             fix(accuracy = 6.0)
             advanceTimeBy(31_000)
             assertEquals("A-1", (place() as PlaceChoice.Suggested).hint.building.symbol)
+        }
+
+    /** Błąd odbiornika: stan błędu bez awarii, a „Powtórz pomiar” zaczyna nowy pomiar (NFR-50, NFR-23). */
+    @Test
+    fun nfr50_source_error_repeat() =
+        runTest(dispatcher) {
+            failure = SecurityException("Brak zgody")
+            watch()
+            assertEquals(MeasureUiState.Failed, viewModel.uiState.value)
+            assertEquals(0, satellites.subscriptionCount.value)
+
+            failure = IllegalArgumentException("Brak GPS")
+            viewModel.repeat()
+            runCurrent()
+            assertEquals(MeasureUiState.Failed, viewModel.uiState.value)
+
+            failure = null
+            viewModel.repeat()
+            runCurrent()
+            assertEquals(MeasureUiState.Searching, viewModel.uiState.value)
+            fix(accuracy = 6.0)
+            advanceTimeBy(31_000)
+            assertEquals(MeasureUiState.Finished::class, viewModel.uiState.value::class)
         }
 
     /** Punkt pomiaru leży w konturze A-1, więc aplikacja podpowiada A-1 (US6.2). */
