@@ -13,6 +13,8 @@ import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
+import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -95,6 +97,25 @@ class QuickSendViewModelTest {
             viewModel.send(report)
             runCurrent()
             assertEquals(listOf(null), saved.map { it.floor })
+        }
+
+    /** Zgłoszenie z „Zgłoś barierę przy wejściu” trafia do kolejki z wejściem (US4.6). */
+    @Test
+    fun us4_6_entrance_in_queue() =
+        runTest(dispatcher) {
+            val route =
+                ReportRoute(
+                    step = ReportStep.SEND,
+                    entranceId = "node/6",
+                    photoId = "zdjecie-1",
+                    photoPath = "/zdjecia/zdjecie-1.jpg",
+                    group = BarrierGroup.ENTRANCE_AND_DOORS,
+                )
+            watch()
+            fix(INSIDE_A1)
+            viewModel.send(requireNotNull(route.quickReport()))
+            runCurrent()
+            assertEquals(listOf("node/6"), saved.map { it.entranceId })
         }
 
     /** Drugie „Wyślij” nie wysyła zdjęcia drugi raz (US4.7). */

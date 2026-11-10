@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -55,6 +56,8 @@ import java.io.File
  * @param modifier wymiary nadane przez aplikację
  * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu (NFR-22); bez niego z grafu Hilt przy
  *   kroku zdjęcia
+ * @param entrances wejście z „Zgłoś barierę przy wejściu” do kroku 1 (US4.6); bez niego z grafu Hilt, gdy trasa
+ *   ma wejście
  */
 @Composable
 fun QuickReportScreen(
@@ -62,6 +65,7 @@ fun QuickReportScreen(
     actions: QuickReportActions,
     modifier: Modifier = Modifier,
     photoTranscoder: PhotoTranscoder? = null,
+    entrances: QuickEntranceViewModel? = null,
 ) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
@@ -92,7 +96,9 @@ fun QuickReportScreen(
 
                     else -> {
                         Text(stringResource(R.string.szybkie_krok, route.step.ordinal + 1))
-                        WithLocationPermission(onBack = actions.onBack) { QuickStep(route, actions, photoTranscoder) }
+                        WithLocationPermission(onBack = actions.onBack) {
+                            QuickStep(route, actions, photoTranscoder, entrances)
+                        }
                     }
                 }
             }
@@ -106,9 +112,17 @@ private fun leave(route: ReportRoute, actions: QuickReportActions) {
 }
 
 @Composable
-private fun QuickStep(route: ReportRoute, actions: QuickReportActions, photoTranscoder: PhotoTranscoder?) {
+private fun QuickStep(
+    route: ReportRoute,
+    actions: QuickReportActions,
+    photoTranscoder: PhotoTranscoder?,
+    entrances: QuickEntranceViewModel?,
+) {
     when (route.step) {
         ReportStep.PHOTO -> {
+            route.entranceId?.let { id ->
+                if (entrances == null) QuickEntranceLine(id = id) else QuickEntranceLine(id = id, entrances = entrances)
+            }
             if (photoTranscoder == null) {
                 QuickPhotoStep(route = route, onNext = actions.onNext)
             } else {
@@ -139,6 +153,23 @@ private fun QuickPhotoStep(
         )
     PhotoSection(photos = PhotoPaths(listOfNotNull(route.photoPath)), camera = camera)
     if (route.photoPath != null) MainButton(text = stringResource(R.string.pomiar_dalej), onClick = { onNext(route) })
+}
+
+/** Napis z wybranym wejściem nad „Zrób zdjęcie”; wejście spoza katalogu nie ma napisu (US4.6). */
+@Composable
+private fun QuickEntranceLine(id: String, entrances: QuickEntranceViewModel = hiltViewModel()) {
+    val updates = remember(entrances, id) { entrances.entrance(id) }
+    val entrance by updates.collectAsStateWithLifecycle(initialValue = null)
+    entrance?.let { chosen ->
+        val name = chosen.name
+        Text(
+            when {
+                name != null -> stringResource(R.string.szybkie_wejscie, name)
+                chosen.isMain -> stringResource(R.string.szybkie_wejscie_glowne)
+                else -> stringResource(R.string.szybkie_wejscie_bez_nazwy)
+            },
+        )
+    }
 }
 
 @Composable

@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.capture
 
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.BarrierGroup
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -34,6 +35,15 @@ class QuickReportRouteTest {
                 floorNumber = 2,
             )
         assertEquals(expected, filled.quickReport())
+    }
+
+    @Test
+    fun `us4_6 wejście z trasy w treści`() {
+        val point = GeoPoint(longitude = 17.06, latitude = 51.1)
+        val position = QuickPosition(point = point, accuracyMeters = 6.0, isInBuilding = true)
+        val content = filled.copy(entranceId = "A-1-w1").quickReport()?.content(position)
+        assertEquals("A-1-w1", content?.entranceId)
+        assertNull(filled.quickReport()?.content(position)?.entranceId)
     }
 
     @Test
