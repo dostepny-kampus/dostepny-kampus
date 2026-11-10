@@ -175,6 +175,9 @@ jobs:
     if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      actions: read
+      contents: read
     defaults:
       run:
         working-directory: android
@@ -203,6 +206,14 @@ jobs:
           key: android-budowanie-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
           restore-keys: |
             android-budowanie-v2-${{ runner.os }}-${{ runner.arch }}-
+      - name: Pobierz cache budowania z ostatniego przebiegu sprintu
+        # Grupa kolejki nie widzi cache zapisanego na gałęzi sprintu; artefakt pochodzi tylko z przebiegu push na tej gałęzi.
+        if: github.event_name == 'merge_group'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BASE_REF: ${{ github.event.merge_group.base_ref }}
+        run: bash ../.github/scripts/cache-budowania-sprintu.sh "${BASE_REF#refs/heads/}" "$HOME/.gradle/caches/build-cache-1"
       - uses: gradle/actions/setup-gradle@v6.4.1
         with:
           cache-provider: external
@@ -245,6 +256,9 @@ jobs:
     if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      actions: read
+      contents: read
     defaults:
       run:
         shell: bash
@@ -276,6 +290,14 @@ jobs:
           key: android-budowanie-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
           restore-keys: |
             android-budowanie-v2-${{ runner.os }}-${{ runner.arch }}-
+      - name: Pobierz cache budowania z ostatniego przebiegu sprintu
+        # Grupa kolejki nie widzi cache zapisanego na gałęzi sprintu; artefakt pochodzi tylko z przebiegu push na tej gałęzi.
+        if: github.event_name == 'merge_group'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BASE_REF: ${{ github.event.merge_group.base_ref }}
+        run: bash ../.github/scripts/cache-budowania-sprintu.sh "${BASE_REF#refs/heads/}" "$HOME/.gradle/caches/build-cache-1"
       - uses: gradle/actions/setup-gradle@v6.4.1
         with:
           cache-provider: external
@@ -341,6 +363,15 @@ jobs:
         with:
           path: ~/.gradle/caches/build-cache-1
           key: ${{ steps.cache-budowania.outputs.cache-primary-key }}
+      - name: Udostępnij cache budowania grupom kolejki
+        # Grupa kolejki nie widzi cache gałęzi sprintu (actions/cache), więc ten sam cache idzie też jako krótko żyjący artefakt.
+        if: ${{ success() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) }}
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: gradle-build-cache
+          path: ~/.gradle/caches/build-cache-1/
+          if-no-files-found: warn
+          retention-days: 1
 
   czyszczenie-cache:
     # Osobne małe zadanie tylko na push: uprawnienie actions: write nie trafia do zadań uruchamiających kod z PR.
