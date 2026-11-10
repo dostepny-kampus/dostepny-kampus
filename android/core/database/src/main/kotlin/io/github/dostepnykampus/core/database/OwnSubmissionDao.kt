@@ -26,6 +26,14 @@ interface OwnSubmissionDao {
     suspend fun save(submission: OwnSubmissionEntity)
 
     /**
+     * Zgłoszenie [id] z historii; `null`, gdy go nie ma.
+     *
+     * @param id identyfikator zgłoszenia
+     */
+    @Query("SELECT * FROM own_submissions WHERE id = :id")
+    suspend fun find(id: String): OwnSubmissionEntity?
+
+    /**
      * Zapamiętuje wersję z serwera po przyjęciu treści; baza dla poprawki z C3 (BR-10).
      *
      * @param id identyfikator zgłoszenia

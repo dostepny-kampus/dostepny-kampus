@@ -22,6 +22,8 @@ internal class FakeHistory : OwnSubmissionDao {
         rows[submission.id] = submission
     }
 
+    override suspend fun find(id: String): OwnSubmissionEntity? = rows[id]
+
     override suspend fun saveVersion(id: String, version: Int) {
         rows.computeIfPresent(id) { _, row -> row.copy(serverVersion = version) }
     }

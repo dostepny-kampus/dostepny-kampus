@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.database.OwnSubmissionDao
+import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.database.PendingPhotoEntity
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.database.PendingSubmissionEntity
@@ -156,16 +157,17 @@ class SubmissionQueue(
      * @param edited poprawiane zgłoszenie
      * @param content nowa treść zgłoszenia
      * @param photos zdjęcia do wysłania; identyfikatory wracają w [content] (BR-7, BR-8)
+     * @throws IllegalArgumentException serwer ma już zgłoszenie, a telefon nie zna jego wersji (BR-10)
      */
     suspend fun saveEdit(edited: EditedSubmission, content: SubmissionContent, photos: List<PendingPhotoDraft>) {
         require(photos.map { it.photoId } == content.photoIds) {
             "Zdjęcia w kolejce muszą odpowiadać identyfikatorom treści (BR-7, BR-8)"
         }
-        val entity =
-            content
-                .toPendingSubmissionEntity(id = edited.id, savedAtMillis = lastSavedAt.nextAfter(stamps.nowMillis()))
-                .copy(baseVersion = edited.baseVersion)
         lock.withLock {
+            val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
+            val baseVersion = baseVersionOf(edited = edited, store = store, history = history)
+            val fresh = content.toPendingSubmissionEntity(id = edited.id, savedAtMillis = savedAt)
+            val entity = fresh.copy(baseVersion = baseVersion)
             store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
             remember(entity)
         }
@@ -254,6 +256,24 @@ class SubmissionQueue(
     }
 
     private suspend fun jpeg(path: String): ByteArray = withContext(ioContext) { File(path).readBytes() }
+}
+
+/**
+ * Wersja bazowa poprawki [edited]: z C3, z poprzedniej poprawki w kolejce albo z historii po wysłaniu. Gdy serwer
+ * ma już zgłoszenie, a wersja nie jest znana, zapis jest odrzucony, bo utworzenie z tym samym identyfikatorem
+ * byłoby duplikatem (BR-9, BR-10); zgłoszenie tylko w telefonie zostaje bez wersji i idzie jako utworzenie.
+ */
+internal suspend fun baseVersionOf(
+    edited: EditedSubmission,
+    store: PendingSubmissionDao,
+    history: OwnSubmissionDao?,
+): Int? {
+    val pending = store.find(edited.id)
+    val own = history?.find(edited.id)
+    val version = edited.baseVersion ?: pending?.baseVersion ?: own?.serverVersion
+    val isOnServer = pending?.isCreatedOnServer == true || own?.state == OwnSubmissionState.SENT
+    require(version != null || !isOnServer) { "Serwer ma już zgłoszenie ${edited.id}, a wersja jest nieznana (BR-10)" }
+    return version
 }
 
 internal fun outcomeOf(result: ApiResult<*>): Outcome =
