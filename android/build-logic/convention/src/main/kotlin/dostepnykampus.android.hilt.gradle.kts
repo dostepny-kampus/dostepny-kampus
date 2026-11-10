@@ -21,7 +21,7 @@ val kspSerial = gradle.sharedServices.registerIfAbsent("kspSerial", KspSerialSer
 }
 val kspTask = Regex("ksp(\\w+)Kotlin")
 val moduleDir = layout.projectDirectory.asFile
-val moduleBuildDir = layout.buildDirectory.asFile
+val moduleBuildDir = layout.buildDirectory.get().asFile
 
 tasks.configureEach {
     val variant = kspTask.matchEntire(name)?.groupValues?.get(1) ?: return@configureEach
