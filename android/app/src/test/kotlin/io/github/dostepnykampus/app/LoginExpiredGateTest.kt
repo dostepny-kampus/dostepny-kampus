@@ -35,7 +35,7 @@ class LoginExpiredGateTest {
     private var isExpired by mutableStateOf(false)
     private var resumes = 0
 
-    /** Scenariusz (częściowo): synchronizacja.feature: Wygasłe zalogowanie czeka na ponowne zalogowanie */
+    /** Scenariusz (częściowo): synchronizacja.feature: Wygasłe zalogowanie czeka na ponowne zalogowanie. */
     @Test
     fun br26_expired_then_resumed() {
         show()
