@@ -13,7 +13,7 @@ plugins {
 
 dependencies {
     "implementation"(libs.findLibrary("hilt-android").get())
-    // "ksp"(libs.findLibrary("hilt-compiler").get())
+    "ksp"(libs.findLibrary("hilt-compiler").get())
 }
 
 val kspSerial = gradle.sharedServices.registerIfAbsent("kspSerial", KspSerialService::class.java) {
