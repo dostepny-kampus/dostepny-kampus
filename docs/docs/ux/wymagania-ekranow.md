@@ -497,7 +497,7 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Brak zgody, zgoda tylko przybliżona albo lokalizacja wyłączona | jak w V4: prośba o zgodę albo o dokładną lokalizację, a po odmowie „Otwórz ustawienia” (NFR-27). Bez przycisku „Wróć do mapy”: rezygnacja przez „Wstecz” do ekranu, z którego otwarto C1, czyli L2, C2 albo C3 (NFR-15) |
 | Brak sieci | pomiar i podpowiedź działają; mapa bez nowego podkładu, a fragmenty obejrzane wcześniej mogą się pokazać z pamięci telefonu (NFR-4, NFR-39) |
 
-Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykresem (NFR-18). Uśrednianie można przerwać i powtórzyć bez limitu (NFR-23).
+Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykresem (NFR-18). Uśrednianie można przerwać i powtórzyć bez limitu (NFR-23). TalkBack ogłasza szukanie satelitów, „Pomiar zakończony”, podpowiedź budynku i błędy, a odliczanie co sekundę nie jest ogłaszane (NFR-18).
 
 ### C2 Formularz zgłoszenia
 
