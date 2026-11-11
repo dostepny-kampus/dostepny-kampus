@@ -23,53 +23,34 @@ const val NEAR_METERS = 50.0
 data class BuildingHint(val building: Building, val distanceMeters: Double, val isInside: Boolean)
 
 /**
- * Podpowiedź budynku dla punktu z pomiaru, bez sieci (US6.2, NFR-4). Punkt ściśle w konturze daje ten budynek, punkt
- * poza konturem lub na jego krawędzi najbliższy budynek do 50 m włącznie, a dalej nic: zgłoszenie będzie
- * „poza budynkiem” (BR-G2, BR-G4).
+ * Wynik dopasowania budynków do punktu pomiaru.
  *
- * @param point uśredniony punkt pomiaru
- * @param buildings budynki z konturami, jak dla [locateBuilding]
- * @return podpowiedź albo `null`, gdy żaden budynek nie jest dość blisko
+ * @property nearby budynki do wyboru w kolejności od najbliższego, także poza zasięgiem podpowiedzi
+ * @property suggested budynek proponowany do potwierdzenia lub `null`, gdy żaden nie jest dostatecznie blisko
  */
-fun hintBuilding(point: GeoPoint, buildings: List<Building>): BuildingHint? =
-    when (val located = locateBuilding(point, buildings)) {
-        is LocateResult.InsideOutline -> {
-            BuildingHint(located.building, distanceMeters = 0.0, isInside = true)
-        }
-
-        is LocateResult.OutsideBuilding -> {
-            val nearest = located.nearest
-            val meters = nearest?.edgeDistanceMeters(point)
-            if (nearest != null && meters != null && meters <= NEAR_METERS) {
-                BuildingHint(nearest, meters, isInside = false)
-            } else {
-                null
-            }
-        }
-    }
+data class BuildingHints(val nearby: List<BuildingHint>, val suggested: BuildingHint?)
 
 /** Ile budynków pokazuje sekcja „Wybierz budynek” na C1; makieta ma trzy najbliższe. */
 const val NEAREST_COUNT = 3
 
 /**
- * Budynki najbliżej punktu dla sekcji „Wybierz budynek” na C1, bez sieci (US6.2, NFR-4): od najbliższego, każdy
- * z odległością od krawędzi konturu. Budynek, w którego konturze leży punkt, ma 0 m i stoi przed budynkiem, na
- * którego krawędzi punkt leży.
+ * Oblicza odległość od konturu raz na budynek (US6.2, NFR-4). Budynek zawierający punkt ma 0 m i stoi przed
+ * budynkiem, na którego krawędzi punkt leży. Podpowiedź obejmuje budynek w konturze albo najbliższy do 50 m.
  *
  * @param point uśredniony punkt pomiaru
  * @param buildings budynki z konturami z katalogu w telefonie
  * @param limit najwięcej budynków na liście
- * @return podpowiedzi od najbliższego, najwyżej [limit]
+ * @return lista od najbliższego, najwyżej [limit], i niezależna od limitu podpowiedź
  */
-fun nearestBuildings(point: GeoPoint, buildings: List<Building>, limit: Int = NEAREST_COUNT): List<BuildingHint> {
-    val hints = buildings.map { building -> building.hintFor(point) }
-    return hints.sortedWith(nearestFirst).take(limit)
+fun buildingHints(point: GeoPoint, buildings: List<Building>, limit: Int = NEAREST_COUNT): BuildingHints {
+    val ranked = buildings.map { building -> building.hintFor(point) }.sortedWith(nearestFirst)
+    return BuildingHints(ranked.take(limit), ranked.firstOrNull()?.takeIf { it.distanceMeters <= NEAR_METERS })
 }
 
 private val nearestFirst = compareBy<BuildingHint> { it.distanceMeters }.thenBy { !it.isInside }
 
 private fun Building.hintFor(point: GeoPoint): BuildingHint {
-    val isInside = locateBuilding(point, listOf(this)) is LocateResult.InsideOutline
+    val isInside = outline.containsStrictly(point)
     val meters = if (isInside) 0.0 else edgeDistanceMeters(point)
     return BuildingHint(this, distanceMeters = meters, isInside = isInside)
 }

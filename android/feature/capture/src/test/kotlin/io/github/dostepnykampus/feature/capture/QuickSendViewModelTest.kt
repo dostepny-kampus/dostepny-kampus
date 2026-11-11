@@ -58,13 +58,13 @@ class QuickSendViewModelTest {
         QuickSendViewModel(
             positions = PositionSource { source },
             locationSwitch = LocationSwitch { locationOn },
-            catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS },
             saver = { content, _, _ ->
                 failure?.let { throw it }
                 saved.add(content)
             },
             networkStatus = NetworkStatus { online },
             buildingFloors = BuildingFloors { null },
+            buildingLookup = BuildingLookup(BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS }, dispatcher),
         )
     }
 
@@ -98,6 +98,16 @@ class QuickSendViewModelTest {
             runCurrent()
             assertEquals(QuickSendStage.SENT, viewModel.stage.value)
             assertEquals(listOf(SubmissionFloor(number = 1)), saved.map { it.floor })
+        }
+
+    /** Następny odczyt nie zmienia budynku używanego w zgłoszeniu V4 (US4.1). */
+    @Test
+    fun us4_1_keeps_first_position() =
+        runTest(dispatcher) {
+            watch()
+            fix(INSIDE_A1)
+            fix(OUTSIDE)
+            assertEquals(INSIDE_A1, (viewModel.lookup.value as QuickLookup.Found).position.point)
         }
 
     @Test
