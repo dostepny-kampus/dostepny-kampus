@@ -6,17 +6,16 @@
 package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.core.model.EntranceMarking
+import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.symbolsOf
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import org.maplibre.spatialk.geojson.Feature
-import org.maplibre.spatialk.geojson.FeatureCollection
-import org.maplibre.spatialk.geojson.GeoJsonObject
-import org.maplibre.spatialk.geojson.Point
-import org.maplibre.spatialk.geojson.Position
 
 /** Warstwa wypełnienia konturów; widok mapy szuka w niej dotkniętego budynku. */
 internal const val BUILDINGS_LAYER = "budynki"
@@ -39,17 +38,22 @@ internal const val ENTRANCE_PIN_IMAGE = "wejscie_pinezka"
 /** Wysokość i szerokość znaku wejścia w dp (US2.1, NFR-21). */
 internal const val ENTRANCE_MARK_DP = 28
 
-private const val CAPTION_OFFSET_DP = ENTRANCE_MARK_DP / 2 + 2
-
 /** Warstwa przyciemnienia obszaru poza terenem (US1.7, BR-G5). */
 internal const val OUTSIDE_LAYER = "teren-poza"
 
 /** Warstwa linii granicy terenu (US1.7, BR-G5). */
 internal const val EDGE_LAYER = "teren-granica"
 
-private const val AREA_SOURCE = "teren"
-private const val WORLD_RING = "[[-180,-85],[180,-85],[180,85],[-180,85],[-180,-85]]"
-private const val DAY_DIM = """{"fill-color": "#3B4950", "fill-opacity": 0.5}"""
+private const val BUILDINGS_SOURCE = BUILDINGS_LAYER
+private const val ENTRANCES_SOURCE = ENTRANCES_LAYER
+private const val BASEMAP = "osm"
+private const val LABELS = "podpisy"
+private const val LABEL = "label"
+private const val STYLE_VERSION = 8
+private const val TILE_SIZE = 256
+private const val TILE_MAX_ZOOM = 19
+private const val OUTLINE_WIDTH = 1.5
+private const val SELECTED_WIDTH = 4.0
 
 /** Kafelki podkładu z serwerów OSM, pobierane tylko online i bez zapisu do użytku offline (ADR-0005). */
 internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -93,35 +97,15 @@ data class MapStyleColors(
  * zostają rozpoznawalne (makieta hi-fi V1, NFR-16). W motywie ciemnym jasność kafelków jest odwrócona.
  * Obszar poza terenem [CampusMapData.bounds] jest przyciemniony, a granicę terenu pokazuje linia (US1.7, BR-G5).
  */
-fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
-    """
-        |{
-        |  "version": 8,
-        |  "sources": {
-        |    "osm": {"type": "raster", "tiles": ["$OSM_TILES"], "tileSize": 256, "maxzoom": 19${basemapBounds(data)}},
-        |    "budynki": {"type": "geojson", "data": ${data.buildings}},
-        |    "podpisy": {"type": "geojson", "data": ${data.labelPoints}},
-        |    "wejscia": {"type": "geojson", "data": ${data.entrances}}${areaSource(data)}${chosenSource(data)}
-        |  },
-        |  "layers": [
-        |    {"id": "lad", "type": "background", "paint": {"background-color": "${colors.land}"}},
-        |    {"id": "osm", "type": "raster", "source": "osm", "paint": ${basemapPaint(colors)}},
-        |    {
-        |      "id": "$BUILDINGS_LAYER", "type": "fill", "source": "budynki",
-        |      "paint": {"fill-color": "${colors.building}"}
-        |    },
-        |    {
-        |      "id": "kontury", "type": "line", "source": "budynki",
-        |      "paint": {"line-color": "${colors.buildingOutline}", "line-width": 1.5}
-        |    },
-        |    ${selectedLayer(data, colors)}
-        |    ${marksLayer()},
-        |    {"id": "podpisy", "type": "symbol", "source": "podpisy", "layout": {"icon-image": ["get", "label"]}}
-        |    ${areaLayers(data, colors)}
-        |    ${chosenLayers(data)}
-        |  ]
-        |}
-    """.trimMargin()
+fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String {
+    val style =
+        buildJsonObject {
+            put(key = "version", value = STYLE_VERSION)
+            put(key = "sources", element = sources(data))
+            put(key = "layers", element = layers(data, colors))
+        }
+    return style.toString()
+}
 
 /** Nazwa obrazu znaku wejścia o oznaczeniu [marking] (US2.1, NFR-21). */
 internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${marking.name}"
@@ -129,79 +113,85 @@ internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${ma
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
 internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 
-private fun basemapPaint(colors: MapStyleColors): String =
-    if (colors.isNight) {
-        """{"raster-opacity": 0.75, "raster-saturation": -0.6, """ +
-            """"raster-brightness-min": 0.3, "raster-brightness-max": 0.06}"""
-    } else {
-        """{"raster-opacity": 0.72, "raster-saturation": -0.4, "raster-contrast": -0.05}"""
+private fun sources(data: CampusMapData): JsonObject =
+    buildJsonObject {
+        put(key = BASEMAP, element = basemapSource(data.bounds))
+        put(key = BUILDINGS_SOURCE, element = geoJsonSource(Json.parseToJsonElement(data.buildings)))
+        put(key = LABELS, element = geoJsonSource(Json.parseToJsonElement(data.labelPoints)))
+        put(key = ENTRANCES_SOURCE, element = geoJsonSource(Json.parseToJsonElement(data.entrances)))
+        data.bounds?.let { put(key = AREA_SOURCE, element = geoJsonSource(featureCollection(areaFeatures(it)))) }
+        data.selectedEntrance?.let {
+            put(key = CHOSEN_SOURCE, element = geoJsonSource(featureCollection(chosenFeatures(it))))
+        }
     }
 
-private fun areaSource(data: CampusMapData): String {
-    val bounds = data.bounds ?: return ""
-    val corners = with(bounds) { listOf(west to south, east to south, east to north, west to north, west to south) }
-    val edge = corners.joinToString(prefix = "[", postfix = "]") { (lon, lat) -> "[$lon,$lat]" }
-    val hole = corners.reversed().joinToString(prefix = "[", postfix = "]") { (lon, lat) -> "[$lon,$lat]" }
-    val outside = """{"type": "Polygon", "coordinates": [$WORLD_RING, $hole]}"""
-    val features =
-        """{"type": "Feature", "properties": {}, "geometry": $outside}, """ +
-            """{"type": "Feature", "properties": {}, "geometry": {"type": "LineString", "coordinates": $edge}}"""
-    return """, "$AREA_SOURCE": {"type": "geojson", "data": {"type": "FeatureCollection", "features": [$features]}}"""
-}
+private fun layers(data: CampusMapData, colors: MapStyleColors): JsonArray =
+    buildJsonArray {
+        add(styleLayer(id = "lad", type = "background") { paint("background-color" to JsonPrimitive(colors.land)) })
+        add(
+            styleLayer(id = BASEMAP, type = "raster", source = BASEMAP) {
+                put(key = "paint", element = basemapPaint(colors))
+            },
+        )
+        add(
+            styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
+                paint("fill-color" to JsonPrimitive(colors.building))
+            },
+        )
+        val outline = colors.buildingOutline
+        add(lineLayer(id = "kontury", source = BUILDINGS_SOURCE, color = outline, width = OUTLINE_WIDTH))
+        selectedLayer(data, colors)?.let { add(it) }
+        add(marksLayer())
+        add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
+        if (data.bounds != null) areaLayers(colors).forEach { add(it) }
+        if (data.selectedEntrance != null) chosenLayers().forEach { add(it) }
+    }
 
-private fun areaLayers(data: CampusMapData, colors: MapStyleColors): String {
-    if (data.bounds == null) return ""
-    val dim = if (colors.isNight) """{"fill-color": "#000000", "fill-opacity": 0.6}""" else DAY_DIM
-    val outside = """["==", ["geometry-type"], "Polygon"]"""
-    val edge = """["==", ["geometry-type"], "LineString"]"""
-    return """, {"id": "$OUTSIDE_LAYER", "type": "fill", "source": "$AREA_SOURCE", """ +
-        """"filter": $outside, "paint": $dim}, """ +
-        """{"id": "$EDGE_LAYER", "type": "line", "source": "$AREA_SOURCE", "filter": $edge, """ +
-        """"paint": {"line-color": "${colors.ink}", "line-width": 2}}"""
-}
+private fun basemapSource(bounds: CampusBounds?): JsonObject =
+    buildJsonObject {
+        put(key = "type", value = "raster")
+        put(key = "tiles", element = JsonArray(listOf(JsonPrimitive(OSM_TILES))))
+        put(key = "tileSize", value = TILE_SIZE)
+        put(key = "maxzoom", value = TILE_MAX_ZOOM)
+        bounds?.let { put(key = "bounds", element = numbers(it.west, it.south, it.east, it.north)) }
+    }
 
-private fun basemapBounds(data: CampusMapData): String {
-    val bounds = data.bounds ?: return ""
-    val edges = listOf(bounds.west, bounds.south, bounds.east, bounds.north)
-    return ", \"bounds\": ${JsonArray(edges.map { JsonPrimitive(it) })}"
-}
-
-private fun selectedLayer(data: CampusMapData, colors: MapStyleColors): String {
-    val label = data.labels.firstOrNull { data.focus in symbolsOf(listOf(it)) } ?: return ""
-    val filter = """["==", ["get", "label"], ${JsonPrimitive(label)}]"""
-    val paint = """{"line-color": "${colors.selectedOutline}", "line-width": 4}"""
-    return """{"id": "$SELECTED_LAYER", "type": "line", "source": "budynki", "filter": $filter, "paint": $paint},"""
-}
-
-private fun marksLayer(): String {
-    val (accessible, inaccessible, noData) = EntranceMarking.entries.map(::entranceMarkImage)
-    val image =
-        """["match", ["get", "marking"], "ACCESSIBLE", "$accessible", """ +
-            """"INACCESSIBLE", "$inaccessible", "$noData"]"""
-    return """{"id": "$ENTRANCES_LAYER", "type": "symbol", "source": "wejscia", """ +
-        """"layout": {"icon-image": $image, "icon-allow-overlap": true}}"""
-}
-
-private fun chosenSource(data: CampusMapData): String {
-    val chosen = data.selectedEntrance ?: return ""
-    val properties =
-        buildJsonObject {
-            put(key = "label", value = chosen.label)
-            put(key = "image", value = entranceCaptionImage(chosen.label))
+private fun basemapPaint(colors: MapStyleColors): JsonObject =
+    buildJsonObject {
+        if (colors.isNight) {
+            put(key = "raster-opacity", value = 0.75)
+            put(key = "raster-saturation", value = -0.6)
+            put(key = "raster-brightness-min", value = 0.3)
+            put(key = "raster-brightness-max", value = 0.06)
+        } else {
+            put(key = "raster-opacity", value = 0.72)
+            put(key = "raster-saturation", value = -0.4)
+            put(key = "raster-contrast", value = -0.05)
         }
-    val point = Point(Position(longitude = chosen.location.longitude, latitude = chosen.location.latitude))
-    val json = GeoJsonObject.toJson(FeatureCollection(listOf(Feature(point, properties))))
-    return """, "wejscie": {"type": "geojson", "data": $json}"""
+    }
+
+private fun selectedLayer(data: CampusMapData, colors: MapStyleColors): JsonObject? {
+    val label = data.labels.firstOrNull { data.focus in symbolsOf(listOf(it)) } ?: return null
+    return lineLayer(
+        id = SELECTED_LAYER,
+        source = BUILDINGS_SOURCE,
+        color = colors.selectedOutline,
+        width = SELECTED_WIDTH,
+        filter = expression("==", property(LABEL), JsonPrimitive(label)),
+    )
 }
 
-private fun chosenLayers(data: CampusMapData): String {
-    if (data.selectedEntrance == null) return ""
-    val pin =
-        """{"id": "$ENTRANCE_PIN_LAYER", "type": "symbol", "source": "wejscie", "layout": """ +
-            """{"icon-image": "$ENTRANCE_PIN_IMAGE", "icon-anchor": "bottom", "icon-allow-overlap": true}}"""
-    val caption =
-        """{"id": "$ENTRANCE_CAPTION_LAYER", "type": "symbol", "source": "wejscie", "layout": """ +
-            """{"icon-image": ["get", "image"], "icon-anchor": "top", "icon-offset": [0, $CAPTION_OFFSET_DP], """ +
-            """"icon-allow-overlap": true}}"""
-    return ", $pin, $caption"
+private fun marksLayer(): JsonObject {
+    val (accessible, inaccessible, noData) = EntranceMarking.entries.map { JsonPrimitive(entranceMarkImage(it)) }
+    val image =
+        expression(
+            "match",
+            property("marking"),
+            JsonPrimitive(EntranceMarking.ACCESSIBLE.name),
+            accessible,
+            JsonPrimitive(EntranceMarking.INACCESSIBLE.name),
+            inaccessible,
+            noData,
+        )
+    return symbolLayer(id = ENTRANCES_LAYER, source = ENTRANCES_SOURCE, image = image, OVERLAP)
 }
