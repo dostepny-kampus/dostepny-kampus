@@ -12,6 +12,12 @@
     <string name="mapa_legenda_wejscie_bez_danych">Wejście bez danych</string>
     <string name="mapa_legenda_zrodla">Mapa ulic i kontury budynków: © OpenStreetMap contributors. Wejścia: Źródło: Politechnika Wrocławska.</string>
     <string name="mapa_legenda_przewin">Przewiń w dół ↓</string>
+    <string name="mapa_informacje">Informacje o mapie</string>
+    <string name="mapa_zrodla">Źródła danych</string>
+    <string name="mapa_zrodla_osm_przed">"Mapa ulic i kontury budynków: "</string>
+    <string name="mapa_zrodla_osm_po">, dane na otwartej licencji ODbL.</string>
+    <string name="mapa_zrodla_pwr">Wejścia i plany pięter: Źródło: Politechnika Wrocławska.</string>
+    <string name="mapa_zrodla_pwr_stan">Wejścia i plany pięter: Źródło: Politechnika Wrocławska, stan z %1$s.</string>
     <string name="mapa_osm">© OpenStreetMap contributors</string>
     <string name="mapa_osm_krotko">© OpenStreetMap</string>
     <string name="mapa_ktory_budynek">Który budynek?</string>

@@ -14,7 +14,7 @@ import io.github.dostepnykampus.core.model.EntranceAssessment
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-private val DAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.ROOT)
+internal val DAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.ROOT)
 
 /**
  * Wspólne oznaczenie wejść [entrances] (US17.3, BR-24): dzień i źródło, gdy każde wejście ma te same.
