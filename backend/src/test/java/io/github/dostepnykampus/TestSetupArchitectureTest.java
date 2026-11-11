@@ -71,6 +71,12 @@ final class TestSetupArchitectureTest {
             " ",
             "sprawdza utworzenie kubełka przy starcie kontekstu,",
             "więc potrzebuje świeżego kontekstu z własną nazwą kubełka"
+        ),
+        "io.github.dostepnykampus.KeycloakTokenTest",
+        String.join(
+            " ",
+            "sprawdza token z prawdziwego Keycloaka domyślnym dekoderem,",
+            "więc potrzebuje kontekstu bez tożsamości testowej"
         )
     );
 
