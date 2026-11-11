@@ -106,7 +106,7 @@ class BuildingsApiTest {
     @Test
     fun us1_outline_not_polygon() {
         val line = """{"type":"LineString","coordinates":[[17,51],[18,51]]}"""
-        enqueue(HTTP_OK, LIST.replace(OUTLINE, line))
+        enqueue(HTTP_OK, LIST.replace(oldValue = OUTLINE, newValue = line))
         val error = assertInstanceOf(ApiResult.ServerError::class.java, blocking { listBuildings() })
         assertEquals(HTTP_OK, error.code)
         assertInstanceOf(IllegalArgumentException::class.java, error.cause)
