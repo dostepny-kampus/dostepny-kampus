@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.app.navigation
 
 import androidx.navigation3.runtime.NavKey
+import io.github.dostepnykampus.app.TestRoles
 import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.BarrierGroup
@@ -39,10 +40,15 @@ class AppNavigatorTest {
     private var mapChosen = 0
 
     private fun navigator(account: Account = Account.Guest) =
-        AppNavigator(backStack = stack, roles = { account }, onFirstHelpLeft = { helpLeft++ }, restarts = restarts)
+        AppNavigator(
+            backStack = stack,
+            roles = TestRoles(account),
+            onFirstHelpLeft = { helpLeft++ },
+            restarts = restarts,
+        )
 
     private fun mapChoiceNavigator() =
-        AppNavigator(backStack = stack, roles = { Account.Guest }, restarts = restarts, onChooseMap = { mapChosen++ })
+        AppNavigator(backStack = stack, roles = TestRoles(), restarts = restarts, onChooseMap = { mapChosen++ })
 
     private fun stackOf(vararg routes: NavKey) = listOf<NavKey>(MapRoute(), *routes)
 

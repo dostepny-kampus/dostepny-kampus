@@ -49,7 +49,7 @@ class GuestSignInTest {
         show()
         compose.onNodeWithText("Zgłoś barierę").performClick()
         compose.onNodeWithText(NOT_NOW).assertIsDisplayed()
-        roles.account = DebugRole.VISITOR.account
+        roles.switchTo(DebugRole.VISITOR.account)
         compose.onNodeWithText("V4 krok 1, wejście: brak").assertIsDisplayed()
     }
 
@@ -58,7 +58,7 @@ class GuestSignInTest {
     fun guestEntranceKeptAfterSignIn() {
         show()
         compose.onNodeWithText(AT_ENTRANCE).performClick()
-        roles.account = DebugRole.COLLECTOR.account
+        roles.switchTo(DebugRole.COLLECTOR.account)
         compose.onNodeWithText("V4 krok 1, wejście: A-1-w1").assertIsDisplayed()
     }
 
@@ -70,7 +70,7 @@ class GuestSignInTest {
         compose.onNodeWithText(NOT_NOW).performClick()
         compose.onNodeWithText(MAP).assertIsDisplayed()
         compose.onNodeWithText(ACCOUNT).performClick()
-        roles.account = DebugRole.VISITOR.account
+        roles.switchTo(DebugRole.VISITOR.account)
         compose.onNodeWithText(NOT_NOW).assertDoesNotExist()
     }
 
