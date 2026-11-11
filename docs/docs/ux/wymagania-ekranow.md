@@ -51,6 +51,7 @@ Dotyczą każdego ekranu. Przy ekranach podajemy tylko to, co do nich dochodzi.
 | Jedna czynność główna na ekranie: pierwsza w kolejności czytania wśród czynności ekranu i jedyna wypełniona, nigdy wyróżniona samym kolorem. Czynność powtarzana w każdej pozycji listy (R1, C5, K1) i wybór jednego z dwóch równorzędnych wariantów (C4) nie mają przycisku wypełnionego; wyróżnia je położenie. | NFR-21, zasada dla osób starszych |
 | Cel dotyku co najmniej 48 × 48 dp. | NFR-17 |
 | „ⓘ” na każdym ekranie z mapą (V1, C1, R1) to ten sam element. TalkBack czyta go jako „Informacje o mapie”. Otwiera panel „Źródła danych” z „Zamknij” i z treścią licencyjną jak na V1. Wymagania i makiety nazywają go „panelem”, nie „arkuszem”. | NFR-37, NFR-40, NFR-18 |
+| Wybór piętra na V4 i C2 to jeden wspólny element. TalkBack czyta go jako wybór jednej opcji i mówi, które piętro jest wybrane. Wybrane piętro widać po obwódce i znaku, nie po samym kolorze. Każda opcja ma cel co najmniej 48 dp. Element ma dwa układy. Na V4 pytanie o piętro jest jedyną treścią kroku, więc opcje stoją w liście przycisków na całą szerokość. Na C2 piętro jest jednym z pól formularza, więc opcje to chipy w zawijanym wierszu. | NFR-17, NFR-18, US4.5, US7.2 |
 | Kontrast tekstu, ikon statusu, ramek pól i fokusu według progów NFR-16. | NFR-16 |
 | Tekst czytelny przy czcionce 200%, bez ucinania i nakładania. Przy skali czcionki co najmniej 1,5 obowiązują reguły z sekcji [Duża czcionka](#duza-czcionka). | NFR-20 |
 | Status, oznaczenie wejścia i uciążliwość zawsze tekstem i ikoną. Uciążliwość 1–3 ma dla wszystkich ról napisy „Utrudnienie”, „Tylko z pomocą”, „Blokada”. Low-fi jest szare, a kolor nie niesie znaczenia. | NFR-21; PW-13 |
@@ -521,7 +522,7 @@ Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykres
 | --- | --- | --- | --- |
 | Budynek i miejsce z C1. Miejsce słowami: najbliższe wejście z danych z odległością i dokładność pomiaru, np. „ok. 3 m od Wejścia Cesarskiego, dokładność 0,8 m”; bez współrzędnych | dane | US7.4, US6.1, NFR-19 | — |
 | „Zmień miejsce”: powrót do C1, wpisane pola zostają | czynność | US7.4 | C1 |
-| Piętro: wybór z etykiet z danych PWr (budynek szczegółowy) | czynność | US7.2 | — |
+| Piętro: wybór z etykiet z danych PWr (budynek szczegółowy), chipy wspólnego wyboru piętra | czynność | US7.2 | — |
 | Piętro: liczba całkowita w polu z etykietą „Numer piętra” i pole „Półpiętro” (budynek podstawowy); nad polem „Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter.” | czynność | US7.2, BR-G1, NFR-15, PW-6 | — |
 | „Typ bariery”, pogrupowany w 6 grup barier. Pole otwiera panel na cały ekran. U góry są nagłówek „Typ bariery” i „Zamknij”, które nie przewijają się z listą. Pod nimi są grupy jako nagłówki i typy. Po otwarciu fokus jest na nagłówku, po zamknięciu wraca na pole | czynność | US7.1, BR-7, NFR-18, NFR-53 | — |
 | „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda wartość z opisem i ikoną; pod nagłówkiem „Oceń dla osoby, dla której bariera jest najtrudniejsza.” | czynność | US7.1, NFR-21, PW-13 | — |
