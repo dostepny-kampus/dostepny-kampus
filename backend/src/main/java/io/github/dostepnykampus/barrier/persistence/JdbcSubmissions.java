@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -44,6 +46,11 @@ import tools.jackson.databind.ObjectMapper;
  */
 @Component
 public final class JdbcSubmissions implements SubmissionRepository, SubmissionFinder {
+
+    /**
+     * Dziennik wierszy, których nie da się odczytać.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcSubmissions.class);
 
     /**
      * Kolumny zgłoszenia czytane do modelu.
@@ -158,8 +165,11 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         ).param("statuses", query.statuses().stream().map(Enum::name).toList())
             .param("building", query.buildingSymbol())
             .param("floor", query.floorId())
-            .query(this.mapping)
-            .list();
+            .query((rows, num) -> this.readable(rows))
+            .list()
+            .stream()
+            .flatMap(Optional::stream)
+            .toList();
     }
 
     @Override
@@ -185,8 +195,15 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         ).param("id", id)
             .param("statuses", SimilarSubmission.STATUSES.stream().map(Enum::name).toList())
             .param("radius", SimilarSubmission.RADIUS_METERS)
-            .query((rows, num) -> new SimilarSubmission(this.row(rows), rows.getDouble("distance")))
-            .list();
+            .query(
+                (rows, num) -> this.readable(rows).map(
+                    submission -> new SimilarSubmission(submission, rows.getDouble("distance"))
+                )
+            )
+            .list()
+            .stream()
+            .flatMap(Optional::stream)
+            .toList();
     }
 
     private Optional<Submission> write(
@@ -224,6 +241,28 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
             result = new InvalidSubmission("Nieznany budynek zgłoszenia");
         } else {
             result = error;
+        }
+        return result;
+    }
+
+    /**
+     * Wiersz listy albo podobnych. Uszkodzona treść pomija wiersz i zostaje w dzienniku.
+     *
+     * @param rows Wiersz zgłoszenia
+     * @return Zgłoszenie albo puste, gdy treści nie da się odczytać
+     * @throws SQLException Gdy kolumny wiersza nie da się odczytać
+     */
+    private Optional<Submission> readable(final ResultSet rows) throws SQLException {
+        final Optional<Submission> result;
+        try {
+            result = Optional.of(this.row(rows));
+        } catch (final IllegalStateException ex) {
+            JdbcSubmissions.LOG.error(
+                "Zgłoszenia {} nie da się odczytać",
+                rows.getObject("id", UUID.class),
+                ex
+            );
+            result = Optional.empty();
         }
         return result;
     }

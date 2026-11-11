@@ -14,6 +14,9 @@ import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -32,6 +35,7 @@ import tools.jackson.databind.ObjectMapper;
  */
 @IntegrationTest
 @Transactional
+@ExtendWith(OutputCaptureExtension.class)
 final class SubmissionsReadHttpTest {
 
     /**
@@ -125,6 +129,43 @@ final class SubmissionsReadHttpTest {
             "Status SENT bez logowania nie daje 400",
             SubmissionsReadHttpTest.get(context, "/submissions?status=SENT").getStatus(),
             Matchers.equalTo(400)
+        );
+    }
+
+    @Test
+    void unreadableRowDoesNotHideTheList(
+        final WebApplicationContext context, final CapturedOutput output
+    ) throws Exception {
+        final Row accepted = SubmissionsReadHttpTest.add(
+            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        );
+        final UUID broken = UUID.randomUUID();
+        context.getBean(JdbcClient.class).sql(
+            """
+            INSERT INTO submissions
+                (id, status, kind, building_symbol, location, content)
+            VALUES (:id, 'ACCEPTED', 'QUICK', 'A-1',
+                ST_SetSRID(ST_MakePoint(17.062, 51.108), 4326),
+                CAST('{"stare":1}' AS JSONB))
+            """
+        ).param("id", broken).update();
+        final MockHttpServletResponse response = SubmissionsReadHttpTest.get(
+            context, "/submissions?buildingSymbol=A-1"
+        );
+        final String body = response.getContentAsString(StandardCharsets.UTF_8);
+        MatcherAssert.assertThat(
+            "Uszkodzony wiersz wyłącza listę albo znika zgłoszenie, które da się odczytać",
+            List.of(
+                response.getStatus(),
+                body.contains(accepted.id().toString()),
+                body.contains(broken.toString())
+            ),
+            Matchers.equalTo(List.of(200, true, false))
+        );
+        MatcherAssert.assertThat(
+            "Uszkodzony wiersz nie zostawia identyfikatora w dzienniku",
+            output.getAll(),
+            Matchers.containsString(broken.toString())
         );
     }
 
