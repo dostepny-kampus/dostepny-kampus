@@ -181,7 +181,7 @@ class BuildingOnMapCameraTest {
         }
 
     private fun CampusMapData.labelPointOf(symbol: String): GeoPoint {
-        val feature = labelPoints.split("""{"type":"Feature"""").first { """"label":"$symbol"""" in it }
+        val feature = labelPoints.toString().split("""{"type":"Feature"""").first { """"label":"$symbol"""" in it }
         val (longitude, latitude) = Regex("""\[(-?[\d.E-]+),(-?[\d.E-]+)""").find(feature)!!.destructured
         return GeoPoint(longitude = longitude.toDouble(), latitude = latitude.toDouble())
     }

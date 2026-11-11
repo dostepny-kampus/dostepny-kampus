@@ -27,6 +27,7 @@ import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapArea
 import io.github.dostepnykampus.feature.map.data.center
+import kotlinx.serialization.json.JsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -53,10 +54,10 @@ class MapOverlayNeighborTest {
         MapAreas(
             data =
                 CampusMapData(
-                    buildings = "",
+                    buildings = JsonObject(emptyMap()),
                     labels = emptyList(),
-                    labelPoints = "",
-                    entrances = "",
+                    labelPoints = JsonObject(emptyMap()),
+                    entrances = JsonObject(emptyMap()),
                     start = null,
                     bounds = main.bounds,
                     areas = listOf(main, other),
