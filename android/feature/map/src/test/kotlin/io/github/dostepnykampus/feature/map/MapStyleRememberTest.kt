@@ -60,7 +60,7 @@ class MapStyleRememberTest {
 
     /** Zmiana danych, zaznaczenia i motywu daje za każdym razem nowy styl. */
     @Test
-    fun data_selection_theme_rebuild_style() {
+    fun change_rebuilds_style() {
         show()
         compose.runOnIdle { data = dataOf(building, other) }
         compose.runOnIdle { selection = data.selection(building = "C-14") }
