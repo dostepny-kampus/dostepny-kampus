@@ -278,6 +278,11 @@ paths:
             image/jpeg:
               schema: {type: string, contentMediaType: image/jpeg, description: "Plik JPEG."}
         '404': {$ref: '#/components/responses/NotFound'}
+        '500':
+          description: Błąd magazynu zdjęć, np. brak skonfigurowanego zasobnika.
+          content:
+            application/problem+json:
+              schema: {$ref: '#/components/schemas/Problem'}
     put:
       operationId: putSubmissionPhoto
       summary: Dodanie zdjęcia do zgłoszenia

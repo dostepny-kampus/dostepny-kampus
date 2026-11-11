@@ -7,6 +7,8 @@ package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.OpenApiContract;
+import io.github.dostepnykampus.ProblemResponses;
+import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
@@ -19,9 +21,11 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import software.amazon.awssdk.services.s3.S3Client;
 
 /**
  * Testy BR-7, US2.2 i NFR-26: zdjęcie z listy photoIds trafia do magazynu
@@ -94,6 +98,43 @@ final class SubmissionPhotosHttpTest {
                 Matchers.startsWith("ÿØ"), Matchers.not(Matchers.containsString("GPS"))
             )
         );
+    }
+
+    @Test
+    void brSevenReturnsNotFoundForMissingObject(final WebApplicationContext context)
+        throws Exception {
+        final PhotoRequests photos = new PhotoRequests(context);
+        final String photo = UUID.randomUUID().toString();
+        MatcherAssert.assertThat(
+            "Brak obiektu w magazynie nie daje 404",
+            photos.get(photos.add("ACCEPTED", photo), photo).getStatus(),
+            Matchers.equalTo(404)
+        );
+    }
+
+    @Test
+    void missingBucketReturnsServerError(final WebApplicationContext context) throws Exception {
+        final PhotoStore store = new PhotoStore(
+            context.getBean(S3Client.class),
+            new PhotoSettings(
+                context.getBean(PhotoSettings.class).endpoint(), "brak-" + UUID.randomUUID(), "", ""
+            )
+        );
+        final SubmissionPhotos photos = new SubmissionPhotos(
+            context.getBean(SubmissionFinder.class), store
+        );
+        MockMvcBuilders.standaloneSetup(new SubmissionPhotosController(photos))
+            .setControllerAdvice(context.getBean(ProblemResponses.class))
+            .build()
+            .perform(
+                MockMvcRequestBuilders.get(
+                    "/submissions/{id}/photos/{photo}",
+                    SubmissionPhotosHttpTest.add(context, "ACCEPTED"),
+                    SubmissionPhotosHttpTest.PHOTO
+                )
+            )
+            .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+            .andExpect(new OpenApiContract());
     }
 
     @Test
