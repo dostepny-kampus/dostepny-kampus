@@ -183,7 +183,9 @@ final class OsmBuildingsTest {
                     FROM osm_reimport.entrances ORDER BY id, building_symbol
                     """
                 ).query(String.class).list(),
-                Matchers.contains("node/1 T-99 NO_DATA IMPORT", "node/3 T-99 ACCESSIBLE WALKTHROUGH")
+                Matchers.contains(
+                    "node/1 T-99 NO_DATA IMPORT", "node/3 T-99 ACCESSIBLE WALKTHROUGH"
+                )
             );
         } finally {
             jdbc.sql("DROP SCHEMA IF EXISTS osm_reimport CASCADE").update();

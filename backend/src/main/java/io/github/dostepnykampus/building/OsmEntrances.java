@@ -20,7 +20,8 @@ import tools.jackson.databind.JsonNode;
  * NO_DATA, tak jak w aplikacji. Wejście z kilkoma symbolami ma wiersz
  * dla każdego budynku. Ponowny import zmienia położenie, opis i rodzaj,
  * ale oznaczenia z obchodu (WALKTHROUGH) nie rusza (US17.3).</p>
- * <p>Z pełnego eksportu znikają nieaktualne powiązania wejść z oznaczeniem IMPORT.</p>
+ *
+ * <p>Ponowny import usuwa nieaktualne powiązania wejść z oznaczeniem IMPORT.</p>
  *
  * @since 0.1.0
  */
@@ -41,17 +42,6 @@ final class OsmEntrances {
                 THEN EXCLUDED.marking_date ELSE entrances.marking_date END,
             marking = CASE WHEN entrances.marking_source = 'IMPORT'
                 THEN EXCLUDED.marking ELSE entrances.marking END
-        """;
-
-    /** Usuwa pary wejście–budynek nieobecne w aktualnym eksporcie. */
-    private static final String PRUNE = """
-        DELETE FROM entrances AS old
-        WHERE old.marking_source = 'IMPORT'
-            AND NOT EXISTS (
-                SELECT 1 FROM unnest(CAST(? AS TEXT[]), CAST(? AS TEXT[]))
-                    AS snapshot(id, building_symbol)
-                WHERE snapshot.id = old.id AND snapshot.building_symbol = old.building_symbol
-            )
         """;
 
     /**
@@ -88,7 +78,20 @@ final class OsmEntrances {
             }
             insert.executeBatch();
         }
-        try (PreparedStatement delete = connection.prepareStatement(OsmEntrances.PRUNE)) {
+        try (
+            PreparedStatement delete = connection.prepareStatement(
+                """
+                DELETE FROM entrances AS old
+                WHERE old.marking_source = 'IMPORT'
+                    AND NOT EXISTS (
+                        SELECT 1 FROM unnest(CAST(? AS TEXT[]), CAST(? AS TEXT[]))
+                            AS snapshot(id, building_symbol)
+                        WHERE snapshot.id = old.id
+                            AND snapshot.building_symbol = old.building_symbol
+                    )
+                """
+            )
+        ) {
             delete.setObject(1, ids.toArray(String[]::new));
             delete.setObject(2, buildings.toArray(String[]::new));
             delete.executeUpdate();
