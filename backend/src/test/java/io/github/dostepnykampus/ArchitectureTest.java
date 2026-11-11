@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus;
@@ -14,6 +14,7 @@ import com.tngtech.archunit.library.GeneralCodingRules;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Testy zadania INFRA: reguły architektury, których Spring Modulith
@@ -23,7 +24,9 @@ import org.springframework.stereotype.Controller;
  * do pakietów persistence lub postgis. ArchUnit zabrania też wstrzykiwania pól.</p>
  *
  * <p>E5: wspólne typy błędów nie zależą od Spring Web ani Jacksona, żeby
- * wyjątki domenowe nie wciągały warstwy HTTP.</p>
+ * wyjątki domenowe nie wciągały warstwy HTTP. Żaden moduł nie rzuca
+ * {@code ResponseStatusException}, więc każdy błąd ma opis w {@code detail}
+ * (#851).</p>
  *
  * @since 0.1.0
  */
@@ -85,6 +88,17 @@ final class ArchitectureTest {
         );
     }
 
+    @Test
+    void errorsGoThroughSharedTypesInEveryModule() {
+        Assertions.assertDoesNotThrow(
+            () -> ArchRuleDefinition.noClasses()
+                .should().dependOnClassesThat().areAssignableTo(ResponseStatusException.class)
+                .because("błędy idą wspólnymi typami z opisem w detail (#851)")
+                .check(ArchitectureTest.classes()),
+            "Kod produkcyjny rzuca ResponseStatusException zamiast wspólnego typu błędu"
+        );
+    }
+
     /**
      * Reguła E5: typy błędów bez Spring Web i Jacksona.
      *
@@ -96,6 +110,7 @@ final class ArchitectureTest {
             .or().areAssignableTo(MissingResource.class)
             .or().areAssignableTo(ConflictingState.class)
             .or().areAssignableTo(ForbiddenChange.class)
+            .or().areAssignableTo(MissingLogin.class)
             .should().dependOnClassesThat().resideInAnyPackage(
                 "org.springframework.web..", "org.springframework.http..",
                 "tools.jackson..", "com.fasterxml.jackson.."

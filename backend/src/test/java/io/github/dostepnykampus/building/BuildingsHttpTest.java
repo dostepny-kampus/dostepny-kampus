@@ -177,6 +177,26 @@ final class BuildingsHttpTest {
     }
 
     @Test
+    void usSixTwoDescribesPointOutsideRange(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Odpowiedź 400 podpowiedzi budynku nie ma opisu w detail",
+            BuildingsHttpTest.detail(context, "/buildings/locate?lat=91&lon=17"),
+            Matchers.not(Matchers.emptyOrNullString())
+        );
+    }
+
+    @Test
+    void usTwoDescribesMissingBuilding(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Odpowiedź 404 karty budynku nie ma opisu w detail",
+            BuildingsHttpTest.detail(context, "/buildings/Z-404"),
+            Matchers.containsString("Z-404")
+        );
+    }
+
+    @Test
     void usSixTwoRejectsLatitudeAboveRange(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
@@ -376,6 +396,17 @@ final class BuildingsHttpTest {
                 .andReturn()
                 .getResponse();
         return "%d %s".formatted(reply.getStatus(), reply.getContentType());
+    }
+
+    private static String detail(final WebApplicationContext context, final String path)
+        throws Exception {
+        return context.getBean(ObjectMapper.class).readTree(
+            context.getBean(MockMvc.class)
+                .perform(MockMvcRequestBuilders.get(path))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8)
+        ).path("detail").asString("");
     }
 
     private static String yard() {
