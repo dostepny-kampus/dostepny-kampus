@@ -31,6 +31,7 @@ import io.github.dostepnykampus.app.navigation.mySubmissions
 import io.github.dostepnykampus.app.navigation.openReportForm
 import io.github.dostepnykampus.app.navigation.reportSaved
 import io.github.dostepnykampus.core.designsystem.BackHeader
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.MeasureScreen
@@ -55,8 +56,6 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlin.math.roundToInt
 import io.github.dostepnykampus.feature.capture.R as CaptureR
-
-private const val LARGE_FONT_SCALE = 1.5f
 
 /** Szerokość okna w dp, od której pasek nawigacji stoi z boku, a V2 otwiera się od razu na pełnym ekranie. */
 internal const val WIDE_WINDOW_DP = 600

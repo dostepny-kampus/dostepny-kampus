@@ -35,8 +35,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 
-private const val LARGE_FONT_SCALE = 1.5f
-
 private val MirroredArrowBack: ImageVector = arrowBack()
 
 private fun arrowBack(): ImageVector {

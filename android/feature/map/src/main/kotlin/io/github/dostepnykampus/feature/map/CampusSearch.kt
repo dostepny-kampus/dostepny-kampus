@@ -55,6 +55,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
@@ -63,9 +64,6 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 
 private const val ICON_VIEWPORT = 24f
-
-/** Skala czcionki, od której V1 startuje na liście, a przełącznik ma krótki napis „Lista” (NFR-19, NFR-20). */
-internal const val LIST_FONT_SCALE = 1.5f
 
 private val SearchIcon =
     icon(
@@ -175,7 +173,7 @@ private fun SearchHeader(
 
 @Composable
 private fun ViewToggle(isList: Boolean, onListChange: (Boolean) -> Unit) {
-    val isShort = LocalDensity.current.fontScale >= LIST_FONT_SCALE
+    val isShort = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val colors =
         SegmentedButtonDefaults.colors(
             activeContainerColor = MaterialTheme.colorScheme.primaryContainer,
