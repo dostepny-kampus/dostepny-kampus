@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)
     testImplementation(project(":core:network"))
+    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit4)
     testImplementation(libs.androidx.compose.ui.test.junit4)
