@@ -16,6 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.FloorOption
+import io.github.dostepnykampus.core.designsystem.FloorOptions
+import io.github.dostepnykampus.core.designsystem.FloorPicker
+import io.github.dostepnykampus.core.designsystem.FloorPickerLayout
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.Floor
@@ -75,21 +79,44 @@ internal fun QuickGroupQuestion(onGroup: (BarrierGroup) -> Unit) {
  */
 @Composable
 internal fun QuickFloorQuestion(group: BarrierGroup, floors: QuickFloors, onFloor: (QuickFloor) -> Unit) {
+    val unknown = stringResource(R.string.szybkie_nie_wiem)
+    val ground = stringResource(R.string.szybkie_parter)
+    val answers = quickFloorAnswers(floors = floors, unknownLabel = unknown, groundLabel = ground)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(stringResource(group.quickLabel()))
         Text(stringResource(R.string.szybkie_pytanie_pietro))
-        BigChoice(text = stringResource(R.string.szybkie_nie_wiem), onClick = { onFloor(QuickFloor()) })
-        floors.items.forEach { floor ->
-            BigChoice(text = floor.label, onClick = { onFloor(QuickFloor(floor = floor)) })
-        }
-        if (floors.items.isEmpty()) {
-            BASIC_FLOORS.forEach { number ->
-                val label = if (number == 0) stringResource(R.string.szybkie_parter) else number.toString()
-                BigChoice(text = label, onClick = { onFloor(QuickFloor(number = number)) })
-            }
-        }
+        FloorPicker(
+            options = FloorOptions(answers.map { it.first }),
+            selectedKey = null,
+            onSelect = { option -> answers.firstOrNull { it.first == option }?.let { onFloor(it.second) } },
+            layout = FloorPickerLayout.LIST,
+        )
     }
 }
+
+/**
+ * Opcje pytania o piętro z odpowiedzią każdej: „Nie wiem” na górze, potem piętra z danych PWr od najniższego
+ * albo numery od -1 do 10 w budynku podstawowym (US4.5, BR-G1).
+ */
+internal fun quickFloorAnswers(
+    floors: QuickFloors,
+    unknownLabel: String,
+    groundLabel: String,
+): List<Pair<FloorOption, QuickFloor>> {
+    val unknown = FloorOption(key = UNKNOWN_KEY, label = unknownLabel) to QuickFloor()
+    val known =
+        if (floors.items.isEmpty()) {
+            BASIC_FLOORS.map { number ->
+                val label = if (number == 0) groundLabel else number.toString()
+                FloorOption(key = "n$number", label = label) to QuickFloor(number = number)
+            }
+        } else {
+            floors.items.map { floor -> FloorOption(key = floor.id, label = floor.label) to QuickFloor(floor = floor) }
+        }
+    return listOf(unknown) + known
+}
+
+private const val UNKNOWN_KEY = "?"
 
 @Composable
 private fun BigChoice(text: String, onClick: () -> Unit) {
