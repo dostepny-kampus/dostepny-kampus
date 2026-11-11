@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
@@ -35,16 +35,6 @@ final class SubmissionsEditHttpTest {
      * Wiersz zarezerwowany dla sekwencyjnych scenariuszy tej klasy, usuwany po każdym teście.
      */
     private static final UUID ID = UUID.fromString("c4e7b2d9-1a3f-4e8c-b6d0-5f9a2e7c1d84");
-
-    /**
-     * Treść zapisanego zgłoszenia zgodna ze schematem SubmissionContent.
-     */
-    private static final String CONTENT = String.join(
-        "",
-        "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
-        "\"coordinates\":[17.0,51.0]},\"barrierGroup\":\"OTHER\",",
-        "\"photoIds\":[\"5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d\"]}"
-    );
 
     @AfterEach
     void clean(final WebApplicationContext context) {
@@ -125,14 +115,12 @@ final class SubmissionsEditHttpTest {
         final WebApplicationContext context, final String status, final int version,
         final String base
     ) throws Exception {
-        context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO submissions (id, version, status, kind, location, content)
-            VALUES (:id, :version, :status, 'QUICK',
-                ST_SetSRID(ST_MakePoint(17.0, 51.0), 4326), CAST(:content AS JSONB))
-            """
-        ).param("id", SubmissionsEditHttpTest.ID).param("version", version)
-            .param("status", status).param("content", SubmissionsEditHttpTest.CONTENT).update();
+        final SampleSubmissions samples = new SampleSubmissions(context);
+        samples.add(
+            SubmissionsEditHttpTest.ID, status,
+            SampleSubmissions.quick(UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"))
+        );
+        samples.version(SubmissionsEditHttpTest.ID, version);
         return SubmissionsEditHttpTest.put(context, SubmissionsEditHttpTest.ID, base);
     }
 
