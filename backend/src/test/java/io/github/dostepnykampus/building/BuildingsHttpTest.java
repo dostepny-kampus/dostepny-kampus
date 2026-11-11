@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
@@ -21,7 +21,8 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Testy US1: GET /buildings zwraca budynki z konturem GeoJSON,
- * posortowane według symbolu, albo pustą listę z atrybucją kontraktu.
+ * posortowane według symbolu, z atrybucją wszystkich źródeł konturów,
+ * albo pustą listę z pustą atrybucją (#852).
  *
  * <p>Każdy test zaczyna od pustej tabeli, bez budynków z pliku konturów;
  * transakcja testu przywraca je po teście.</p>
@@ -85,9 +86,27 @@ final class BuildingsHttpTest {
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
         MatcherAssert.assertThat(
-            "Pusta tabela budynków nie daje listy z atrybucją OpenStreetMap",
+            "Pusta tabela budynków nie daje pustej listy z pustą atrybucją",
             mapper.readTree(BuildingsHttpTest.body(context)),
             Matchers.equalTo(mapper.readTree(BuildingsHttpTest.empty()))
+        );
+    }
+
+    @Test
+    void nfrFortyAttributesEverySourceOfList(final WebApplicationContext context)
+        throws Exception {
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        BuildingsHttpTest.insert(jdbc, "A-1", "BASIC", BuildingsHttpTest.west());
+        BuildingsHttpTest.insert(jdbc, "C-13", "DETAILED", BuildingsHttpTest.east());
+        BuildingsHttpTest.insert(jdbc, "C-14", "BASIC", BuildingsHttpTest.west());
+        jdbc.sql("UPDATE buildings SET source = '© Politechnika Wrocławska' WHERE symbol = 'A-1'")
+            .update();
+        MatcherAssert.assertThat(
+            "Atrybucja listy pomija któreś źródło konturów albo je powtarza",
+            context.getBean(ObjectMapper.class)
+                .readTree(BuildingsHttpTest.body(context))
+                .get("source").asString(),
+            Matchers.equalTo("© OpenStreetMap contributors; © Politechnika Wrocławska")
         );
     }
 
@@ -314,7 +333,7 @@ final class BuildingsHttpTest {
 
     private static String empty() {
         return """
-            {"source":"© OpenStreetMap contributors","buildings":[]}
+            {"source":"","buildings":[]}
             """;
     }
 
