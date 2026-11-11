@@ -32,13 +32,13 @@ class FirstLaunchViewModel
         /** Czy to pierwsze uruchomienie; `null`, dopóki zapis nie jest odczytany. */
         val firstLaunchState: StateFlow<Boolean?> =
             flow {
-                val first =
+                val isFirst =
                     try {
                         firstLaunch.isFirstLaunch()
                     } catch (_: IOException) {
                         false
                     }
-                emit(first)
+                emit(isFirst)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
         /**
