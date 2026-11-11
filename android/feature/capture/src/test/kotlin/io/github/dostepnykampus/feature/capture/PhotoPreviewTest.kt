@@ -12,12 +12,12 @@ import org.junit.jupiter.api.Test
 class PhotoPreviewTest {
     @Test
     fun `małe zdjęcie bez zmniejszania`() {
-        assertEquals(1, sampleSize(1439))
+        assertEquals(1, decodeSample(longerSide = 1439, limit = 720))
     }
 
     @Test
     fun `duże zdjęcie zmniejszone`() {
-        assertEquals(2, sampleSize(1440))
-        assertEquals(4, sampleSize(4000))
+        assertEquals(2, decodeSample(longerSide = 1440, limit = 720))
+        assertEquals(4, decodeSample(longerSide = 4000, limit = 720))
     }
 }
