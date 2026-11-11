@@ -234,6 +234,10 @@ class SubmissionQueue(
             store.markCreated(id = item.submission.id)
             versionOf(result)?.let { history?.saveVersion(id = item.submission.id, version = it) }
         }
+        conflictVersionOf(result)?.let { server ->
+            store.upsertSubmission(item.submission.copy(baseVersion = server))
+            history?.saveVersion(id = item.submission.id, version = server)
+        }
         if (outcome == Outcome.REFUSED) refused(item.submission.id, refusalCodeOf(result))
         return outcome
     }
@@ -297,8 +301,8 @@ internal fun outcomeOf(result: ApiResult<*>): Outcome =
     }
 
 /**
- * Wynik edycji [result]: konflikt wersji czeka w telefonie na wybór Zbierającego, bez ponawiania w kółko
- * (US9.3, BR-10).
+ * Wynik edycji [result]: konflikt wersji (409) zostaje w telefonie jako „Nie wysłano”, bez ponawiania w kółko.
+ * Wersja z serwera trafia do wiersza kolejki i historii, więc ponowny zapis poprawki idzie od niej (US9.3, BR-10).
  */
 internal fun editOutcome(result: ApiResult<SubmissionEdit>): Outcome =
     if (result is ApiResult.Success && result.value is SubmissionEdit.Conflict) {

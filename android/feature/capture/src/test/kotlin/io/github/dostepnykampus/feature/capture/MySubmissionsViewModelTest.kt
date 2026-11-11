@@ -103,12 +103,19 @@ class MySubmissionsViewModelTest {
                     row(id = "b", state = SendState.REFUSED, code = 422),
                     row(id = "c", state = SendState.SENT),
                     row(id = "d", state = SendState.REFUSED, code = null),
+                    row(id = "e", state = SendState.REFUSED, code = 409),
                 )
             collect()
 
             val reasons = list().items.map { it.refusal }
             assertEquals(
-                listOf(RefusalReason.NO_PERMISSION, RefusalReason.NOT_ACCEPTED, null, RefusalReason.UNREADABLE),
+                listOf(
+                    RefusalReason.NO_PERMISSION,
+                    RefusalReason.NOT_ACCEPTED,
+                    null,
+                    RefusalReason.UNREADABLE,
+                    RefusalReason.CHANGED_ON_SERVER,
+                ),
                 reasons,
             )
         }
