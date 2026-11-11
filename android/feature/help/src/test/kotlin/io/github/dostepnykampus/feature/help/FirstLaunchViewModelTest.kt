@@ -68,7 +68,7 @@ class FirstLaunchViewModelTest {
     }
 
     @Test
-    fun us5_1_read_error_is_not_first_launch() {
+    fun us5_1_read_error_skips_help() {
         val broken =
             object : FirstLaunch {
                 override suspend fun isFirstLaunch(): Boolean = throw IOException("odczyt")
@@ -80,7 +80,7 @@ class FirstLaunchViewModelTest {
     }
 
     @Test
-    fun us5_1_write_error_stays_in_view_model() {
+    fun us5_1_write_error_is_kept() {
         val broken =
             object : FirstLaunch {
                 override suspend fun isFirstLaunch(): Boolean = false

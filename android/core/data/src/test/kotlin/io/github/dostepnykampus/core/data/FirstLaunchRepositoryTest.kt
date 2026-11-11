@@ -50,15 +50,13 @@ class FirstLaunchRepositoryTest {
 
     /** Błąd odczytu pliku ustawień nie zamyka aplikacji i nie otwiera instrukcji od nowa. */
     @Test
-    fun us5_1_read_error_is_not_first_launch() {
-        val first = runBlocking { FirstLaunchRepository(UnreadableSettings()).isFirstLaunch() }
-
-        assertFalse(first)
+    fun us5_1_read_error_skips_help() {
+        assertFalse(runBlocking { FirstLaunchRepository(UnreadableSettings()).isFirstLaunch() })
     }
 
     /** Błąd zapisu pliku ustawień zostaje w repozytorium. */
     @Test
-    fun us5_1_write_error_stays_in_repository() {
+    fun us5_1_write_error_is_kept() {
         runBlocking { FirstLaunchRepository(UnreadableSettings()).markHelpSeen() }
     }
 

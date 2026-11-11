@@ -51,8 +51,7 @@ class FirstLaunchRepository(private val dataStore: DataStore<Preferences>) : Fir
                 } else {
                     throw error
                 }
-            }
-            .first()
+            }.first()
 
     override suspend fun markHelpSeen() {
         try {
