@@ -44,10 +44,10 @@ class DebugRolesTest {
         }
         compose.onNodeWithText("Konto").assertIsDisplayed()
 
-        roles.account = DebugRole.COLLECTOR.account
+        roles.switchTo(DebugRole.COLLECTOR.account)
         compose.onNodeWithText("Konto i praca").assertIsDisplayed()
 
-        roles.account = DebugRole.GUEST.account
+        roles.switchTo(DebugRole.GUEST.account)
         compose.onNodeWithText("Konto").assertIsDisplayed()
     }
 

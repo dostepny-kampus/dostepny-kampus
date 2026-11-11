@@ -64,8 +64,6 @@ internal data class AreaList(val choices: List<AreaChoice>)
  * terenów. Wiersz terenu ma nazwę, pod nią np. „9 budynków · 2 km”, a pokazany teren „· wybrany” i znak „✓”
  * (US1.7). Po otwarciu fokus stoi na nagłówku (NFR-20).
  *
- * TODO(#787): panel otwiera przycisk terenu na mapie V1.
- *
  * @param areas lista terenów
  * @param onClose dotknięcie „Zamknij”
  * @param onChoose nazwa terenu wybranego na liście

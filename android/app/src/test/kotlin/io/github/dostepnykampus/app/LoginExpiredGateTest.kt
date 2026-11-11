@@ -13,7 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import org.junit.Assert.assertEquals
@@ -30,8 +29,7 @@ class LoginExpiredGateTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private var account: Account by mutableStateOf(Account.Guest)
-    private val roles = RoleProvider { account }
+    private val roles = TestRoles()
     private var isExpired by mutableStateOf(false)
     private var resumes = 0
 
@@ -45,7 +43,7 @@ class LoginExpiredGateTest {
         compose.onNodeWithText(EXPIRED).assertIsDisplayed()
         compose.onNodeWithText("Aplikacja").assertIsDisplayed()
 
-        account = Account.SignedIn()
+        roles.account.value = Account.SignedIn()
         compose.waitForIdle()
         assertEquals(1, resumes)
 
@@ -55,7 +53,7 @@ class LoginExpiredGateTest {
 
     @Test
     fun `bez zmiany konta czeka`() {
-        account = Account.SignedIn()
+        roles.account.value = Account.SignedIn()
         isExpired = true
         show()
         compose.onNodeWithText(EXPIRED).assertIsDisplayed()

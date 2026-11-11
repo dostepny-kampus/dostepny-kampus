@@ -6,8 +6,10 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -31,17 +34,20 @@ import java.time.LocalDate
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 
 /** Panel otwarty na mapie V1. Naraz otwarty jest najwyżej jeden, więc stanem nakładki jest jedna wartość. */
-private enum class MapPanel { Legend, Info }
+private enum class MapPanel { Area, Legend, Info }
 
 /**
- * Nakładka mapy V1: przyciski powiększania i przesuwania (NFR-53), „Legenda”, przycisk „ⓘ” i podpis OSM (NFR-37),
- * a nad nimi [content], np. arkusz „Który budynek?”. Otwarty panel zasłania przyciski mapy, a otwarte „ⓘ” także
- * „Legendę”. Otwarty panel jest stanem zapisywanym.
+ * Nakładka mapy V1: przyciski powiększania i przesuwania (NFR-53), przycisk terenu nad „Legendą” (US1.6, US1.7),
+ * przycisk „ⓘ” i podpis OSM (NFR-37), a nad nimi [content], np. arkusz „Który budynek?”. Otwarty panel zasłania
+ * przyciski mapy, otwarte „ⓘ” także przycisk terenu i „Legendę”, a otwarty panel „Teren na mapie” także
+ * „Legendę”; dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem zapisywanym.
  *
  * @param camera widok kamery, od którego liczą się przyciski mapy
  * @param hasControls czy mapa ma przyciski; nie ma ich pod arkuszem V2 i przy otwartej klawiaturze (decyzja 91)
  * @param dataDay dzień danych pokazany w panelu „ⓘ”
  * @param onCameraChange widok kamery po dotknięciu przycisku mapy
+ * @param areas tereny mapy: lista do panelu „Teren na mapie” i wybór terenu
+ * @param onAreaShow widok startowy terenu wybranego w panelu
  * @param modifier wymiary nakładki, zwykle cała mapa bez części zasłoniętej
  * @param content elementy nad nakładką
  */
@@ -51,6 +57,8 @@ internal fun MapOverlay(
     hasControls: Boolean,
     dataDay: LocalDate?,
     onCameraChange: (MapCamera) -> Unit,
+    areas: MapAreas,
+    onAreaShow: (MapCamera) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -59,11 +67,16 @@ internal fun MapOverlay(
         if (hasControls && open == null) {
             MapControls(camera, onCameraChange, modifier = Modifier.align(Alignment.TopEnd))
         }
+        if (open == MapPanel.Area) {
+            Box(Modifier.matchParentSize().pointerInput(Unit) { detectTapGestures { open = null } })
+        }
         if (hasControls && open != MapPanel.Info) {
             val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
-            MapLegend(
-                isOpen = open == MapPanel.Legend,
-                onOpenChange = { open = MapPanel.Legend.takeIf { _ -> it } },
+            AreaAndLegendColumn(
+                areas = areas,
+                open = open,
+                onOpenChange = { open = it },
+                onAreaShow = onAreaShow,
                 modifier = above,
             )
         }
@@ -77,6 +90,37 @@ internal fun MapOverlay(
             )
         }
         content()
+    }
+}
+
+@Composable
+private fun AreaAndLegendColumn(
+    areas: MapAreas,
+    open: MapPanel?,
+    onOpenChange: (MapPanel?) -> Unit,
+    onAreaShow: (MapCamera) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier) {
+        MapAreaSwitch(
+            areas = AreaList(areas.choices),
+            isOpen = open == MapPanel.Area,
+            onOpenChange = { onOpenChange(MapPanel.Area.takeIf { _ -> it }) },
+            onChoose = { name ->
+                areas.show(name)?.let(onAreaShow)
+                onOpenChange(null)
+            },
+            modifier =
+                Modifier
+                    .weight(weight = 1f, fill = false)
+                    .padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
+        )
+        if (open != MapPanel.Area) {
+            MapLegend(
+                isOpen = open == MapPanel.Legend,
+                onOpenChange = { onOpenChange(MapPanel.Legend.takeIf { _ -> it }) },
+            )
+        }
     }
 }
 

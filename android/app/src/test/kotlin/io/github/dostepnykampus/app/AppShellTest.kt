@@ -219,8 +219,8 @@ class AppShellTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private val staff = RoleProvider { Account.SignedIn(setOf(StaffRole.COLLECTOR)) }
-    private val visitor = RoleProvider { Account.SignedIn() }
+    private val staff = TestRoles(Account.SignedIn(setOf(StaffRole.COLLECTOR)))
+    private val visitor = TestRoles(Account.SignedIn())
     private val tabRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
     private var helpLeft = 0
     private lateinit var mapViewModel: CampusMapViewModel
@@ -291,6 +291,19 @@ class AppShellTest {
         compose.onAllNodesWithText("Mapa").assertCountEquals(0)
         pressBack()
         compose.onNode(MapTab).assertIsSelected()
+    }
+
+    /** Zalogowanie po starcie: pasek dolny pokazuje pozycję pracownika bez ponownego otwarcia ekranu (US14.1). */
+    @Test
+    fun us14_1_bar_after_sign_in() {
+        val roles = TestRoles()
+        show(roles = roles)
+        compose.onNode(hasText("Konto") and tabRole).assertExists()
+
+        roles.account.value = Account.SignedIn(setOf(StaffRole.COLLECTOR))
+        compose.waitForIdle()
+
+        compose.onNode(hasText("Konto i\u00A0praca") and tabRole).assertExists()
     }
 
     /**
