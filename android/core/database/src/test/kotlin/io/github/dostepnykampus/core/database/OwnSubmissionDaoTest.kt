@@ -37,6 +37,22 @@ class OwnSubmissionDaoTest {
         database.close()
     }
 
+    /** Wiersz: C3 po odświeżeniu → status, powód i wersja z serwera, stan wysyłki zostaje, US8.2, BR-16. */
+    @Test
+    fun us8_2_server_status_saved() =
+        runTest {
+            dao.save(own(id = "a", savedAt = 1))
+            dao.markSent(id = "a")
+            dao.saveServerStatus(id = "a", status = "REJECTED", reason = "Zdjęcie nieostre", version = 3)
+
+            val row = dao.observe().first().single()
+
+            assertEquals(OwnSubmissionState.SENT, row.state)
+            assertEquals("REJECTED", row.serverStatus)
+            assertEquals("Zdjęcie nieostre", row.rejectionReason)
+            assertEquals(3, row.serverVersion)
+        }
+
     @Test
     fun us8_newest_first() =
         runTest {

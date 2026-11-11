@@ -58,4 +58,18 @@ interface OwnSubmissionDao {
      */
     @Query("UPDATE own_submissions SET state = 'REFUSED', refusal_code = :code WHERE id = :id")
     suspend fun markRefused(id: String, code: Int?)
+
+    /**
+     * Zapisuje status z serwera po odświeżeniu listy C3; stan wysyłki z telefonu zostaje (US8.2, BR-16).
+     *
+     * @param id identyfikator zgłoszenia
+     * @param status status z serwera
+     * @param reason powód odrzucenia; `null` poza odrzuceniem
+     * @param version wersja z serwera; baza dla poprawki (BR-10)
+     */
+    @Query(
+        "UPDATE own_submissions SET server_status = :status, rejection_reason = :reason, server_version = :version " +
+            "WHERE id = :id",
+    )
+    suspend fun saveServerStatus(id: String, status: String, reason: String?, version: Int)
 }

@@ -15,7 +15,8 @@ import org.robolectric.RobolectricTestRunner
 
 /**
  * Migracje bazy: nowa tabela powstaje pusta, a kolejka zgłoszeń zostaje.
- * 1→2: kopia listy budynków (NFR-10); 2→3: historia własnych zgłoszeń (US8); 3→4: znacznik odrzuconego (BR-26).
+ * 1→2: kopia listy budynków (NFR-10); 2→3: historia własnych zgłoszeń (US8); 3→4: znacznik odrzuconego (BR-26);
+ * 4→5: status z serwera w historii (US8.2).
  */
 @RunWith(RobolectricTestRunner::class)
 class MigrationTest {
@@ -82,6 +83,24 @@ class MigrationTest {
                     }
 
                 assertEquals(1, waiting)
+            }
+    }
+
+    @Test
+    fun migrate_4_to_5_keeps_history() {
+        helper.createDatabase(DB_NAME, 4).use { fourth ->
+            fourth.execSQL("INSERT INTO own_submissions (id, saved_at, kind, state) VALUES ('a', 7, 'PRECISE', 'SENT')")
+        }
+
+        helper
+            .runMigrationsAndValidate(DB_NAME, 5, true, MIGRATION_4_5)
+            .use { fifth ->
+                val unknown =
+                    fifth.query("SELECT COUNT(*) FROM own_submissions WHERE server_status IS NULL").use { row ->
+                        readCount(row)
+                    }
+
+                assertEquals(1, unknown)
             }
     }
 }

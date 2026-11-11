@@ -35,4 +35,10 @@ internal class FakeHistory : OwnSubmissionDao {
     override suspend fun markRefused(id: String, code: Int?) {
         rows.computeIfPresent(id) { _, row -> row.copy(state = OwnSubmissionState.REFUSED, refusalCode = code) }
     }
+
+    override suspend fun saveServerStatus(id: String, status: String, reason: String?, version: Int) {
+        rows.computeIfPresent(id) { _, row ->
+            row.copy(serverStatus = status, rejectionReason = reason, serverVersion = version)
+        }
+    }
 }

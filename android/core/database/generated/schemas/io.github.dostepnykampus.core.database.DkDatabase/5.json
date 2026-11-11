@@ -1,0 +1,315 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 5,
+    "identityHash": "a1fd75836290828319f12504b6ec6ed3",
+    "entities": [
+      {
+        "tableName": "pending_submissions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `base_version` INTEGER, `saved_at` INTEGER NOT NULL, `created_on_server` INTEGER NOT NULL, `kind` TEXT NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `accuracy_meters` REAL, `manual_correction` INTEGER, `building_symbol` TEXT, `floor_id` TEXT, `floor_number` INTEGER, `mezzanine` INTEGER, `barrier_group` TEXT, `barrier_type` TEXT, `severity` INTEGER, `description` TEXT, `replaces_submission_id` TEXT, `barrier_removed` INTEGER, `entrance_id` TEXT, `entrance_marking` TEXT, `refused` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseVersion",
+            "columnName": "base_version",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "savedAtMillis",
+            "columnName": "saved_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isCreatedOnServer",
+            "columnName": "created_on_server",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kind",
+            "columnName": "kind",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "accuracyMeters",
+            "columnName": "accuracy_meters",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "isManualCorrection",
+            "columnName": "manual_correction",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "buildingSymbol",
+            "columnName": "building_symbol",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "floorId",
+            "columnName": "floor_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "floorNumber",
+            "columnName": "floor_number",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isMezzanine",
+            "columnName": "mezzanine",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "barrierGroup",
+            "columnName": "barrier_group",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "barrierType",
+            "columnName": "barrier_type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "severity",
+            "columnName": "severity",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "replacesSubmissionId",
+            "columnName": "replaces_submission_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "isBarrierRemoved",
+            "columnName": "barrier_removed",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "entranceId",
+            "columnName": "entrance_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "entranceMarking",
+            "columnName": "entrance_marking",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "isRefused",
+            "columnName": "refused",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "pending_photos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`submission_id` TEXT NOT NULL, `photo_id` TEXT NOT NULL, `path` TEXT NOT NULL, `uploaded` INTEGER NOT NULL, PRIMARY KEY(`submission_id`, `photo_id`), FOREIGN KEY(`submission_id`) REFERENCES `pending_submissions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "submissionId",
+            "columnName": "submission_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "photoId",
+            "columnName": "photo_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "path",
+            "columnName": "path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isUploaded",
+            "columnName": "uploaded",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "submission_id",
+            "photo_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_pending_photos_submission_id",
+            "unique": false,
+            "columnNames": [
+              "submission_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_pending_photos_submission_id` ON `${TABLE_NAME}` (`submission_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "pending_submissions",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "submission_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "building_cache",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `list_json` TEXT NOT NULL, `synced_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "listJson",
+            "columnName": "list_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncedAt",
+            "columnName": "synced_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "own_submissions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `saved_at` INTEGER NOT NULL, `kind` TEXT NOT NULL, `building_symbol` TEXT, `floor_number` INTEGER, `floor_id` TEXT, `barrier_type` TEXT, `severity` INTEGER, `state` TEXT NOT NULL, `server_version` INTEGER, `refusal_code` INTEGER, `server_status` TEXT, `rejection_reason` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "savedAtMillis",
+            "columnName": "saved_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kind",
+            "columnName": "kind",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "buildingSymbol",
+            "columnName": "building_symbol",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "floorNumber",
+            "columnName": "floor_number",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "floorId",
+            "columnName": "floor_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "barrierType",
+            "columnName": "barrier_type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "severity",
+            "columnName": "severity",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serverVersion",
+            "columnName": "server_version",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "refusalCode",
+            "columnName": "refusal_code",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "serverStatus",
+            "columnName": "server_status",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "rejectionReason",
+            "columnName": "rejection_reason",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a1fd75836290828319f12504b6ec6ed3')"
+    ]
+  }
+}
