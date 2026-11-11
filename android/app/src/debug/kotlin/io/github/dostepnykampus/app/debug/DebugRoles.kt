@@ -22,8 +22,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Rola wybrana w przełączniku wersji debug (US14.1). Bez logowania i bez tokenu; logowanie użytkownikiem testowym
- * dochodzi w osobnym zadaniu. Konto jest stanem Compose, więc zmiana roli od razu odświeża pasek i ekrany.
+ * Konto wybrane w przełączniku wersji debug (US14.1). Po wyborze roli ustawia je [DebugSignIn] z ról w tokenie
+ * użytkownika testowego. Konto jest stanem Compose, więc zmiana roli od razu odświeża pasek i ekrany.
  */
 @TymczasoweRole
 @Singleton

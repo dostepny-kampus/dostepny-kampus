@@ -25,8 +25,13 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,24 +43,30 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.Account
+import kotlinx.coroutines.launch
 
 /**
- * Przełącznik ról wersji debug, z osobną ikoną w launcherze: wybór roli zmienia konto w aplikacji i zamyka ekran
- * (US14.1). Wersja release go nie zawiera.
+ * Przełącznik ról wersji debug, z osobną ikoną w launcherze: wybór roli loguje jej użytkownika testowego i zamyka
+ * ekran, a błąd logowania zostawia rolę z komunikatem (US14.1). Wersja release go nie zawiera.
  */
 @AndroidEntryPoint
 class DebugRoleActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val roles = EntryPointAccessors.fromApplication<DebugRolesEntryPoint>(this).roles()
+        val signIn = EntryPointAccessors.fromApplication<DebugRolesEntryPoint>(this).signIn()
         setContent {
+            var isFailed by rememberSaveable { mutableStateOf(false) }
             DostepnyKampusTheme {
                 RoleSwitch(
                     current = roles.account,
                     onChoose = { role ->
-                        roles.account = role.account
-                        finish()
+                        lifecycleScope.launch {
+                            isFailed = !signIn.choose(role)
+                            if (!isFailed) finish()
+                        }
                     },
+                    isFailed = isFailed,
                 )
             }
         }
@@ -68,6 +79,9 @@ class DebugRoleActivity : ComponentActivity() {
 interface DebugRolesEntryPoint {
     /** Rola wybrana w przełączniku. */
     fun roles(): DebugRoles
+
+    /** Logowanie użytkownikiem testowym wybranej roli. */
+    fun signIn(): DebugSignIn
 }
 
 /**
@@ -76,15 +90,22 @@ interface DebugRolesEntryPoint {
  * @param current bieżące konto
  * @param onChoose wybrana rola
  * @param modifier wymiary nadane przez aktywność
+ * @param isFailed czy ostatnie logowanie się nie udało
  */
 @Composable
-fun RoleSwitch(current: Account, onChoose: (DebugRole) -> Unit, modifier: Modifier = Modifier) {
+fun RoleSwitch(
+    current: Account,
+    onChoose: (DebugRole) -> Unit,
+    modifier: Modifier = Modifier,
+    isFailed: Boolean = false,
+) {
     Surface(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing).padding(Odstepy.m),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
             Text(stringResource(R.string.debug_rola_tytul), style = MaterialTheme.typography.titleLarge)
+            if (isFailed) Text(stringResource(R.string.debug_rola_blad), color = MaterialTheme.colorScheme.error)
             DebugRole.entries.forEach { role ->
                 val size = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)
                 val label = stringResource(role.label)

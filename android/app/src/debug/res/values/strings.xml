@@ -6,4 +6,5 @@
     <string name="debug_rola_odwiedzajacy">Odwiedzający</string>
     <string name="debug_rola_zbierajacy">Zbierający</string>
     <string name="debug_rola_weryfikator">Weryfikator</string>
+    <string name="debug_rola_blad">Nie udało się zalogować użytkownikiem testowym. Czy działa Keycloak z infra/?</string>
 </resources>

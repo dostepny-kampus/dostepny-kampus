@@ -64,6 +64,9 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(project(":core:network"))
+    debugImplementation(libs.okhttp)
+    testDebugImplementation(libs.okhttp.mockwebserver)
     testRuntimeOnly(libs.junit.vintage.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
     constraints {
