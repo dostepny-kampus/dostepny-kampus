@@ -8,6 +8,8 @@ package io.github.dostepnykampus.building;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import tools.jackson.databind.JsonNode;
 
 /**
@@ -18,6 +20,7 @@ import tools.jackson.databind.JsonNode;
  * NO_DATA, tak jak w aplikacji. Wejście z kilkoma symbolami ma wiersz
  * dla każdego budynku. Ponowny import zmienia położenie, opis i rodzaj,
  * ale oznaczenia z obchodu (WALKTHROUGH) nie rusza (US17.3).</p>
+ * <p>Z pełnego eksportu znikają nieaktualne powiązania wejść z oznaczeniem IMPORT.</p>
  *
  * @since 0.1.0
  */
@@ -40,6 +43,17 @@ final class OsmEntrances {
                 THEN EXCLUDED.marking ELSE entrances.marking END
         """;
 
+    /** Usuwa pary wejście–budynek nieobecne w aktualnym eksporcie. */
+    private static final String PRUNE = """
+        DELETE FROM entrances AS old
+        WHERE old.marking_source = 'IMPORT'
+            AND NOT EXISTS (
+                SELECT 1 FROM unnest(CAST(? AS TEXT[]), CAST(? AS TEXT[]))
+                    AS snapshot(id, building_symbol)
+                WHERE snapshot.id = old.id AND snapshot.building_symbol = old.building_symbol
+            )
+        """;
+
     /**
      * Wejścia z pliku, czyli obiekty z kind = entrance.
      */
@@ -50,12 +64,18 @@ final class OsmEntrances {
     }
 
     void save(final Connection connection) throws SQLException {
+        final List<String> ids = new ArrayList<>(64);
+        final List<String> buildings = new ArrayList<>(64);
         try (PreparedStatement insert = connection.prepareStatement(OsmEntrances.UPSERT)) {
             for (final JsonNode feature : this.features) {
                 final JsonNode props = feature.required("properties");
+                final String id = props.required("osm_id").asString();
                 for (final JsonNode symbol : props.required("symbols")) {
-                    insert.setString(1, props.required("osm_id").asString());
-                    insert.setString(2, symbol.asString());
+                    final String building = symbol.asString();
+                    ids.add(id);
+                    buildings.add(building);
+                    insert.setString(1, id);
+                    insert.setString(2, building);
                     insert.setString(3, props.path("ref").asString(null));
                     insert.setString(4, props.path("entrance").asString(null));
                     insert.setBoolean(5, "main".equals(props.path("entrance").asString(null)));
@@ -67,6 +87,11 @@ final class OsmEntrances {
                 }
             }
             insert.executeBatch();
+        }
+        try (PreparedStatement delete = connection.prepareStatement(OsmEntrances.PRUNE)) {
+            delete.setObject(1, ids.toArray(String[]::new));
+            delete.setObject(2, buildings.toArray(String[]::new));
+            delete.executeUpdate();
         }
     }
 
