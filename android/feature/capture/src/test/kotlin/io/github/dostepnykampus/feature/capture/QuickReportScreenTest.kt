@@ -194,7 +194,7 @@ class QuickReportScreenTest {
                 catalog = catalog,
                 saver = { _, _, _ -> },
                 networkStatus = NetworkStatus { flowOf(true) },
-                floors = floors,
+                buildingFloors = floors,
             )
         compose.setContent {
             DostepnyKampusTheme {

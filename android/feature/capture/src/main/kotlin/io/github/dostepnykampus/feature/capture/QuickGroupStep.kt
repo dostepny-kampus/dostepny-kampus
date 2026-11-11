@@ -30,6 +30,13 @@ private val BASIC_FLOORS = -1..10
  */
 data class QuickFloor(val number: Int? = null, val floor: Floor? = null)
 
+/**
+ * Piętra budynku do pytania w kroku 2, od najniższego; pusta lista to budynek podstawowy (BR-G1).
+ *
+ * @property items piętra z danych PWr
+ */
+data class QuickFloors(val items: List<Floor> = emptyList())
+
 /** Napis grupy barier na V4, prostszy niż nazwa grupy w formularzu C2 (BR-14, PW-7). */
 @StringRes
 internal fun BarrierGroup.quickLabel(): Int =
@@ -63,17 +70,19 @@ internal fun QuickGroupQuestion(onGroup: (BarrierGroup) -> Unit) {
  * do 10, z „Parter” zamiast 0.
  *
  * @param group wybrana grupa, pokazana nad pytaniem
- * @param floors piętra budynku z danych PWr od najniższego; pusta lista to budynek podstawowy
+ * @param floors piętra budynku z danych PWr od najniższego
  * @param onFloor odpowiedź
  */
 @Composable
-internal fun QuickFloorQuestion(group: BarrierGroup, floors: List<Floor>, onFloor: (QuickFloor) -> Unit) {
+internal fun QuickFloorQuestion(group: BarrierGroup, floors: QuickFloors, onFloor: (QuickFloor) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(stringResource(group.quickLabel()))
         Text(stringResource(R.string.szybkie_pytanie_pietro))
         BigChoice(text = stringResource(R.string.szybkie_nie_wiem), onClick = { onFloor(QuickFloor()) })
-        floors.forEach { floor -> BigChoice(text = floor.label, onClick = { onFloor(QuickFloor(floor = floor)) }) }
-        if (floors.isEmpty()) {
+        floors.items.forEach { floor ->
+            BigChoice(text = floor.label, onClick = { onFloor(QuickFloor(floor = floor)) })
+        }
+        if (floors.items.isEmpty()) {
             BASIC_FLOORS.forEach { number ->
                 val label = if (number == 0) stringResource(R.string.szybkie_parter) else number.toString()
                 BigChoice(text = label, onClick = { onFloor(QuickFloor(number = number)) })

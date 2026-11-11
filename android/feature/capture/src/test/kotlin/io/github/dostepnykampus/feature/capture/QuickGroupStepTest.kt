@@ -75,7 +75,11 @@ class QuickGroupStepTest {
     private fun show(floors: List<Floor>, answers: MutableList<QuickFloor>) {
         compose.setContent {
             DostepnyKampusTheme {
-                QuickFloorQuestion(group = BarrierGroup.TOILETS, floors = floors, onFloor = { answers.add(it) })
+                QuickFloorQuestion(
+                    group = BarrierGroup.TOILETS,
+                    floors = QuickFloors(floors),
+                    onFloor = { answers.add(it) },
+                )
             }
         }
     }

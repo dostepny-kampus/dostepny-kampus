@@ -91,7 +91,7 @@ class QuickSendViewModel
         private val catalog: BuildingCatalogRepository,
         private val saver: ReportSaver,
         private val networkStatus: NetworkStatus,
-        private val floors: BuildingFloors,
+        private val buildingFloors: BuildingFloors,
     ) : ViewModel() {
         private val state = MutableStateFlow(QuickSendStage.READY)
 
@@ -111,7 +111,7 @@ class QuickSendViewModel
             lookup
                 .map { (it as? QuickLookup.Found)?.run { position.buildingSymbol } }
                 .distinctUntilChanged()
-                .mapLatest { symbol -> symbol?.let { floors.floors(it)?.floors }.orEmpty() }
+                .mapLatest { symbol -> symbol?.let { buildingFloors.floors(it)?.floors }.orEmpty() }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())
 
         /** „Spróbuj ponownie” po „Brak pozycji”: ustalanie od nowa; zdjęcie i grupa zostają. */
@@ -161,7 +161,7 @@ class QuickSendViewModel
                 point = fix.point,
                 accuracyMeters = fix.accuracyMeters,
                 isInBuilding = inside != null,
-                buildingSymbol = inside?.building?.symbol,
+                buildingSymbol = inside?.run { building.symbol },
             )
         }
     }

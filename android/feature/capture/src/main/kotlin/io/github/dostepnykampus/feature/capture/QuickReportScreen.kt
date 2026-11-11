@@ -209,7 +209,7 @@ private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, wh
         })
     } else {
         BackHandler { asked = null }
-        QuickFloorQuestion(group = group, floors = floors, onFloor = { answer ->
+        QuickFloorQuestion(group = group, floors = QuickFloors(floors), onFloor = { answer ->
             val floor = answer.floor
             val answered = route.copy(floorNumber = answer.number, floorId = floor?.id, floorLabel = floor?.label)
             onNext(answered.copy(group = group, isFloorAsked = true))

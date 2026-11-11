@@ -64,7 +64,7 @@ class QuickSendViewModelTest {
                 saved.add(content)
             },
             networkStatus = NetworkStatus { online },
-            floors = BuildingFloors { null },
+            buildingFloors = BuildingFloors { null },
         )
     }
 
