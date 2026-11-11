@@ -51,12 +51,14 @@ internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
  * @property building wypełnienie budynków PWr (`pwr`)
  * @property buildingOutline kontur budynków PWr (`pwr_kontur`)
  * @property selectedOutline obrys zaznaczonego budynku (`pwr_wybrany`), grubszy niż kontur
+ * @property isNight motyw ciemny: podkład jest wtedy odwrócony, żeby mapa nie raziła na ciemnym ekranie
  */
 data class MapStyleColors(
     val land: String,
     val building: String,
     val buildingOutline: String,
     val selectedOutline: String,
+    val isNight: Boolean = false,
 )
 
 /**
@@ -74,7 +76,9 @@ data class MapStyleColors(
  * dozwolone, bo znaki zostają przy zaznaczeniu (decyzja 134 pkt 2). Zaznaczone wejście to źródło z jednym
  * punktem o właściwościach `label` (nazwa) i `image` (obraz podpisu). Pinezka stoi czubkiem (dół obrazu)
  * w punkcie wejścia, a podpis z nazwą pod znakiem, w odsunięciu `CAPTION_OFFSET_DP` w dp (US3.3): tuż pod
- * znakiem, którego środek stoi w tym punkcie; obie warstwy rysują się zawsze.
+ * znakiem, którego środek stoi w tym punkcie; obie warstwy rysują się zawsze. Podkład ma przygaszone barwy
+ * i prześwituje przez niego tło lądu, więc budynki PWr i znaki są na mapie najwyraźniejsze, a zieleń, woda i ulice
+ * zostają rozpoznawalne (makieta hi-fi V1, NFR-16). W motywie ciemnym jasność kafelków jest odwrócona.
  */
 fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
     """
@@ -88,7 +92,7 @@ fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
         |  },
         |  "layers": [
         |    {"id": "lad", "type": "background", "paint": {"background-color": "${colors.land}"}},
-        |    {"id": "osm", "type": "raster", "source": "osm"},
+        |    {"id": "osm", "type": "raster", "source": "osm", "paint": ${basemapPaint(colors)}},
         |    {
         |      "id": "$BUILDINGS_LAYER", "type": "fill", "source": "budynki",
         |      "paint": {"fill-color": "${colors.building}"}
@@ -110,6 +114,14 @@ internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${ma
 
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
 internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
+
+private fun basemapPaint(colors: MapStyleColors): String =
+    if (colors.isNight) {
+        """{"raster-opacity": 0.75, "raster-saturation": -0.6, """ +
+            """"raster-brightness-min": 0.3, "raster-brightness-max": 0.06}"""
+    } else {
+        """{"raster-opacity": 0.72, "raster-saturation": -0.4, "raster-contrast": -0.05}"""
+    }
 
 private fun basemapBounds(data: CampusMapData): String {
     val bounds = data.bounds ?: return ""
