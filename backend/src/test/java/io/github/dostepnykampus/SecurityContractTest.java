@@ -39,8 +39,7 @@ import tools.jackson.databind.JsonNode;
  * lista ról dowolną zalogowaną osobę. Każdą operację z handlerem test wywołuje
  * przez HTTP bez tokenu i z tokenem każdej roli. Bez tokenu operacja
  * zamknięta odpowiada 401, z rolą spoza kontraktu 403, a dozwolone wywołanie
- * dostaje status inny niż 401 i 403. Operacje bez handlera z listy
- * {@code RouteParityTest} są pominięte, więc zakres rośnie razem z serwerem.</p>
+ * dostaje inny status. Operacje bez handlera z {@code RouteParityTest} są pominięte.</p>
  *
  * @since 0.1.0
  */
@@ -60,8 +59,7 @@ final class SecurityContractTest {
     private static final String ANONYMOUS = "bez tokenu";
 
     /**
-     * Kontrakt próbny: operacja roli, operacja dwóch ról, publiczna, z wariantem
-     * bez tokenu i bez własnego wpisu.
+     * Kontrakt próbny z każdym rodzajem wpisu {@code security}.
      */
     private static final String DRAFT = """
         servers: [{url: /api}]
@@ -179,10 +177,12 @@ final class SecurityContractTest {
                 final int wanted = SecurityContractTest.wanted(rule.getValue(), who);
                 final int status = probe.status(rule.getKey(), who);
                 String label = "innego niż 401 i 403";
+                boolean fine = status != 401 && status != 403;
                 if (wanted != 0) {
                     label = String.valueOf(wanted);
+                    fine = wanted == status;
                 }
-                if (wanted == 0 && (status == 401 || status == 403) || wanted > 0 && wanted != status) {
+                if (!fine) {
                     found.add(
                         "%s, %s: status %d, kontrakt wymaga %s"
                             .formatted(rule.getKey(), who, status, label)
