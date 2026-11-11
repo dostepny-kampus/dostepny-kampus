@@ -74,7 +74,9 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Na którym piętrze?").assertDoesNotExist()
         assertEquals(listOf(atGroup.copy(group = BarrierGroup.TOILETS)), next)
         val position = QuickPosition(point = OUTSIDE, accuracyMeters = ACCURACY, isInBuilding = false)
-        assertNull(next.single().quickReport()?.content(position)?.floor)
+        val sent = next.single()
+        val report = requireNotNull(sent.quickReport())
+        assertNull(report.content(position).floor)
     }
 
     /** Wiersz: V4 krok 2, pozycja w konturze → pytanie o piętro, BR-14. */
