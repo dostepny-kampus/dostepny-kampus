@@ -52,8 +52,8 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import java.time.LocalDate
 
-private const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 
 private const val TOP_STATE = "top"
@@ -250,6 +250,7 @@ private fun CampusMap(
             MapOverlay(
                 camera = shown,
                 hasControls = !isCovered && !isKeyboardOpen,
+                dataDay = catalog?.dataDay(),
                 onCameraChange = { view.keep(limits.clamp(it)) },
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
             ) {
@@ -288,20 +289,30 @@ private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
 private fun MapOverlay(
     camera: MapCamera,
     hasControls: Boolean,
+    dataDay: LocalDate?,
     onCameraChange: (MapCamera) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit,
 ) {
     var isLegendOpen by rememberSaveable { mutableStateOf(false) }
+    var isInfoOpen by rememberSaveable { mutableStateOf(false) }
     Box(modifier) {
-        if (hasControls && !isLegendOpen) {
+        if (hasControls && !isLegendOpen && !isInfoOpen) {
             MapControls(camera, onCameraChange, modifier = Modifier.align(Alignment.TopEnd))
         }
-        if (hasControls) {
+        if (hasControls && !isInfoOpen) {
             val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
             MapLegend(isOpen = isLegendOpen, onOpenChange = { isLegendOpen = it }, modifier = above)
         }
         OsmAttribution(Modifier.align(Alignment.BottomStart))
+        if (hasControls) {
+            val open = { isOpen: Boolean ->
+                isInfoOpen = isOpen
+                isLegendOpen = false
+            }
+            val corner = Modifier.align(Alignment.BottomEnd)
+            MapInfo(isOpen = isInfoOpen, dataDay = dataDay, onOpenChange = open, modifier = corner)
+        }
         content()
     }
 }

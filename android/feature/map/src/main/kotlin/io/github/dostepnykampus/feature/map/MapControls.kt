@@ -83,7 +83,8 @@ internal fun MapControls(camera: MapCamera, onCameraChange: (MapCamera) -> Unit,
 }
 
 @Composable
-private fun MapButton(name: Int, icon: ImageVector, onClick: () -> Unit) {
+internal fun MapButton(name: Int, icon: ImageVector, isActive: Boolean = false, onClick: () -> Unit) {
+    val scheme = MaterialTheme.colorScheme
     val interactions = remember { MutableInteractionSource() }
     Box(
         modifier =
@@ -99,8 +100,8 @@ private fun MapButton(name: Int, icon: ImageVector, onClick: () -> Unit) {
         Surface(
             modifier = Modifier.size(ControlCircleSize),
             shape = CircleShape,
-            color = MaterialTheme.colorScheme.surfaceContainerLowest,
-            contentColor = MaterialTheme.colorScheme.onSurface,
+            color = if (isActive) scheme.primaryContainer else scheme.surfaceContainerLowest,
+            contentColor = scheme.onSurface,
             shadowElevation = Wysokosci.kontrolkiMapy,
             border = mapControlBorder(),
         ) {
@@ -121,6 +122,12 @@ internal object MapControlIcons {
     val Minus: ImageVector = icon("M19 13H5v-2h14v2z")
     val Legend: ImageVector =
         icon("M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z")
+
+    val Info: ImageVector =
+        icon(
+            "M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18" +
+                "c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z",
+        )
 
     private fun icon(path: String): ImageVector {
         val builder =
