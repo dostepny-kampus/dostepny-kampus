@@ -200,9 +200,10 @@ private fun CampusMap(
     onEmptyMapClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val building = (focus as? MapFocus.Building)?.symbol
-    val chosen = rememberChosenEntrance(catalog, focus as? MapFocus.Entrance)
-    val data = rememberMapData(layers = layers, focus = building, chosen = chosen)
+    val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus)
+    val selection = scene?.selection
+    val building = selection?.building
+    val chosen = selection?.entrance
     val view = rememberCameraView(focus, catalog)
     var choice by rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val cover = contentPadding.calculateBottomPadding()
@@ -213,19 +214,19 @@ private fun CampusMap(
     val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val limits = with(LocalDensity.current) { mapLimits(data?.bounds, size) }
+    val limits = with(LocalDensity.current) { mapLimits(selection?.bounds, size) }
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
-        val loaded = data
         val shown =
             shownCamera(
                 own = view.camera ?: chosen?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) },
-                start = loaded?.start,
+                start = layers?.start,
                 focus = focusPoint.takeIf { isCovered },
                 bottomInset = coverPixels,
             )
-        if (loaded != null && shown != null && limits != null) {
+        if (scene != null && shown != null && limits != null) {
             mapView.Show(
-                data = loaded,
+                data = scene.data,
+                selection = scene.selection,
                 camera = shown,
                 onCameraIdle = keepCamera,
                 onBuildingsTouch = { symbols ->

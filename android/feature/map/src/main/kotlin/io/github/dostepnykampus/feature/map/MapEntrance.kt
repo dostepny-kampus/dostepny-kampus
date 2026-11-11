@@ -15,9 +15,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
-import io.github.dostepnykampus.feature.map.data.onAreaOf
 import io.github.dostepnykampus.feature.map.data.selectedEntrance
+import io.github.dostepnykampus.feature.map.data.selection
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 /**
@@ -41,6 +42,20 @@ internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocu
     }
 }
 
+/** Dane katalogu [data] razem z bieżącym zaznaczeniem [selection]: mapa jest, gdy są oba. */
+internal data class MapScene(val data: CampusMapData, val selection: MapSelection)
+
+/**
+ * Scena mapy z danych [layers] i zaznaczenia [focus] z trasy; wejście bierze nazwę i punkt z [catalog]. `null`,
+ * dopóki nie ma danych mapy. Zmiana zaznaczenia nie kopiuje danych katalogu.
+ */
+@Composable
+internal fun rememberMapScene(layers: CampusMapData?, catalog: BuildingCatalog?, focus: MapFocus?): MapScene? {
+    val building = (focus as? MapFocus.Building)?.symbol
+    val chosen = rememberChosenEntrance(catalog, focus as? MapFocus.Entrance)
+    return remember(layers, building, chosen) { layers?.let { MapScene(it, it.selection(building, chosen)) } }
+}
+
 /**
  * Węzeł dla TalkBack: natywna mapa nie opisuje pinezki, więc czytany jest tekst „Zaznaczone wejście: »nazwa«,
  * budynek X” dla [chosen], z budynkiem ekranu (NFR-18, decyzja 135).
@@ -49,16 +64,4 @@ internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocu
 internal fun EntranceDescription(chosen: SelectedEntrance) {
     val text = stringResource(R.string.mapa_zaznaczone_wejscie, chosen.label, chosen.buildingSymbol)
     Spacer(Modifier.fillMaxSize().semantics { contentDescription = text })
-}
-
-/**
- * Dane mapy z zaznaczeniem [focus] i wejściem [chosen] na terenie budynku [focus], a bez niego budynku wejścia.
- * Budynek z innego terenu przenosi na swój teren granicę mapy (US1.8, BR-G5).
- */
-@Composable
-internal fun rememberMapData(layers: CampusMapData?, focus: String?, chosen: SelectedEntrance?): CampusMapData? {
-    val symbol = focus ?: chosen?.buildingSymbol
-    return remember(layers, focus, chosen, symbol) {
-        layers?.run { onAreaOf(symbol).copy(focus = focus, selectedEntrance = chosen) }
-    }
 }

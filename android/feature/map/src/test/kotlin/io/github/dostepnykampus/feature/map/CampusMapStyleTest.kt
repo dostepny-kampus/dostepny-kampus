@@ -10,8 +10,10 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.feature.map.data.CampusBounds
+import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.campusMapData
+import io.github.dostepnykampus.feature.map.data.selection
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -32,8 +34,8 @@ class CampusMapStyleTest {
     private val catalog = BuildingCatalog(buildings = listOf(building), entrances = emptyList(), attribution = "")
     private val colors =
         MapStyleColors(land = "#E8EDEE", building = "#BFE0EC", buildingOutline = "#004E5E", selectedOutline = "#001F27")
-    private val style =
-        Json.parseToJsonElement(campusMapStyle(data = campusMapData(catalog), colors = colors)).jsonObject
+    private val data = campusMapData(catalog)
+    private val style = Json.parseToJsonElement(styled()).jsonObject
 
     @Test
     fun nfr39_outlines_over_basemap() {
@@ -69,7 +71,7 @@ class CampusMapStyleTest {
     /** W motywie ciemnym jasność kafelków jest odwrócona: najjaśniejsze miejsca kafelka wychodzą najciemniej. */
     @Test
     fun nfr16_night_basemap_inverted() {
-        val night = campusMapStyle(data = campusMapData(catalog), colors = colors.copy(isNight = true))
+        val night = styled(colors = colors.copy(isNight = true))
         val layers = Json.parseToJsonElement(night).jsonObject.array("layers")
         val paint = layers[1].jsonObject.obj("paint")
         assertTrue(paint.number("raster-brightness-min") > paint.number("raster-brightness-max"))
@@ -82,7 +84,7 @@ class CampusMapStyleTest {
     @Test
     fun us1_7_outside_dimmed_edge_line() {
         val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
-        val json = campusMapStyle(campusMapData(catalog).copy(bounds = bounds), colors.copy(ink = "#111111"))
+        val json = styled(MapSelection(bounds = bounds), colors.copy(ink = "#111111"))
         val styled = Json.parseToJsonElement(json).jsonObject
         val area = styled.obj("sources").obj("teren")
         val listed = area.obj("data").array("features")
@@ -103,8 +105,7 @@ class CampusMapStyleTest {
     @Test
     fun nfr39_basemap_only_campus_area() {
         val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
-        val data = campusMapData(catalog).copy(bounds = bounds)
-        val bounded = Json.parseToJsonElement(campusMapStyle(data, colors)).jsonObject
+        val bounded = Json.parseToJsonElement(styled(MapSelection(bounds = bounds))).jsonObject
         val osm = bounded.obj("sources").obj("osm")
         assertEquals(listOf(16.9, 59.9, 17.1, 60.1), osm["bounds"]?.run { jsonArray.map { it.jsonPrimitive.double } })
     }
@@ -121,8 +122,7 @@ class CampusMapStyleTest {
 
     @Test
     fun us1_1_focused_outline() {
-        val data = campusMapData(catalog).copy(focus = "C-13")
-        val focused = Json.parseToJsonElement(campusMapStyle(data, colors)).jsonObject
+        val focused = Json.parseToJsonElement(styled(data.selection(building = "C-13"))).jsonObject
         val layers = focused.array("layers")
         val selected = layers.map { it.jsonObject }.single { it.text("id") == SELECTED_LAYER }
         val label = selected.array("filter").last()
@@ -134,18 +134,20 @@ class CampusMapStyleTest {
     /** Warstwy warunkowe stoją w stałej kolejności; bez granic i zaznaczeń ich nie ma (US1.7, US3.3). */
     @Test
     fun us1_7_optional_layer_order() {
-        val bare = Json.parseToJsonElement(campusMapStyle(campusMapData(catalog).copy(bounds = null), colors))
+        val bare = Json.parseToJsonElement(styled(MapSelection()))
         val base = listOf("lad", "osm", BUILDINGS_LAYER, "kontury")
         val marks = listOf(ENTRANCES_LAYER, "podpisy")
         assertEquals(base + marks, bare.jsonObject.array("layers").map { it.jsonObject.text("id") })
         assertEquals(setOf("osm", "budynki", "podpisy", "wejscia"), bare.jsonObject.obj("sources").keys)
         val entrance = SelectedEntrance(id = "w1", location = a, label = "Główne", buildingSymbol = "C-13")
-        val data = campusMapData(catalog).copy(focus = "C-13", selectedEntrance = entrance)
-        val full = Json.parseToJsonElement(campusMapStyle(data, colors))
+        val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
         val area = listOf(OUTSIDE_LAYER, EDGE_LAYER, ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
         val expected = base + SELECTED_LAYER + marks + area
         assertEquals(expected, full.jsonObject.array("layers").map { it.jsonObject.text("id") })
     }
+
+    private fun styled(selection: MapSelection = data.selection(), colors: MapStyleColors = this.colors): String =
+        campusMapStyle(data = data, selection = selection, colors = colors)
 
     private fun JsonObject.obj(key: String): JsonObject = getValue(key).jsonObject
 

@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.symbolsOf
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -82,9 +83,9 @@ data class MapStyleColors(
  * online. Bez sieci warstwa podkładu jest pusta i dalej widać kontury na tle lądu (NFR-10, NFR-39). Podpis konturu
  * to obraz o nazwie z właściwości `label`, który dodaje widok mapy, bo napisy z czcionek stylu wymagają sieci.
  * Obraz stoi w jednym punkcie wewnątrz konturu, więc każdy kontur ma jeden podpis przy każdym przybliżeniu.
- * Podpisy się nie nakładają (reguła 4 wymagań wspólnych). Kontur budynku [CampusMapData.focus] ma grubszy obrys
+ * Podpisy się nie nakładają (reguła 4 wymagań wspólnych). Kontur budynku [MapSelection.building] ma grubszy obrys
  * `pwr_wybrany` (US1.1). Każde wejście z [CampusMapData.entrances] ma znak o kształcie według oznaczenia, bez
- * filtra, więc zaznaczenie nie chowa pozostałych (US2.1, NFR-21). Wejście [CampusMapData.selectedEntrance] ma
+ * filtra, więc zaznaczenie nie chowa pozostałych (US2.1, NFR-21). Wejście [MapSelection.entrance] ma
  * ponadto pinezkę czubkiem w swoim punkcie i pod znakiem podpis z nazwą (US3.3, decyzja 134).
  * Podkład OSM obejmuje tylko obszar kampusu, więc kafelków spoza niego mapa nie pobiera (NFR-39). Obrys
  * zaznaczonego budynku obejmuje także kontur wspólny „C-3/C-4”; bez zaznaczenia nie ma tej warstwy. Obraz znaku
@@ -95,14 +96,14 @@ data class MapStyleColors(
  * znakiem, którego środek stoi w tym punkcie; obie warstwy rysują się zawsze. Podkład ma przygaszone barwy
  * i prześwituje przez niego tło lądu, więc budynki PWr i znaki są na mapie najwyraźniejsze, a zieleń, woda i ulice
  * zostają rozpoznawalne (makieta hi-fi V1, NFR-16). W motywie ciemnym jasność kafelków jest odwrócona.
- * Obszar poza terenem [CampusMapData.bounds] jest przyciemniony, a granicę terenu pokazuje linia (US1.7, BR-G5).
+ * Obszar poza terenem [MapSelection.bounds] jest przyciemniony, a granicę terenu pokazuje linia (US1.7, BR-G5).
  */
-fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String {
+fun campusMapStyle(data: CampusMapData, selection: MapSelection, colors: MapStyleColors): String {
     val style =
         buildJsonObject {
             put(key = "version", value = STYLE_VERSION)
-            put(key = "sources", element = sources(data))
-            put(key = "layers", element = layers(data, colors))
+            put(key = "sources", element = sources(data, selection))
+            put(key = "layers", element = layers(data.labels, selection, colors))
         }
     return style.toString()
 }
@@ -113,19 +114,21 @@ internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${ma
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
 internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 
-private fun sources(data: CampusMapData): JsonObject =
+private fun sources(data: CampusMapData, selection: MapSelection): JsonObject =
     buildJsonObject {
-        put(key = BASEMAP, element = basemapSource(data.bounds))
+        put(key = BASEMAP, element = basemapSource(selection.bounds))
         put(key = BUILDINGS_SOURCE, element = geoJsonSource(Json.parseToJsonElement(data.buildings)))
         put(key = LABELS, element = geoJsonSource(Json.parseToJsonElement(data.labelPoints)))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(Json.parseToJsonElement(data.entrances)))
-        data.bounds?.let { put(key = AREA_SOURCE, element = geoJsonSource(featureCollection(areaFeatures(it)))) }
-        data.selectedEntrance?.let {
+        selection.bounds?.let {
+            put(key = AREA_SOURCE, element = geoJsonSource(featureCollection(areaFeatures(it))))
+        }
+        selection.entrance?.let {
             put(key = CHOSEN_SOURCE, element = geoJsonSource(featureCollection(chosenFeatures(it))))
         }
     }
 
-private fun layers(data: CampusMapData, colors: MapStyleColors): JsonArray =
+private fun layers(labels: List<String>, selection: MapSelection, colors: MapStyleColors): JsonArray =
     buildJsonArray {
         add(styleLayer(id = "lad", type = "background") { paint("background-color" to JsonPrimitive(colors.land)) })
         add(
@@ -140,11 +143,11 @@ private fun layers(data: CampusMapData, colors: MapStyleColors): JsonArray =
         )
         val outline = colors.buildingOutline
         add(lineLayer(id = "kontury", source = BUILDINGS_SOURCE, color = outline, width = OUTLINE_WIDTH))
-        selectedLayer(data, colors)?.let { add(it) }
+        selectedLayer(labels, selection.building, colors)?.let { add(it) }
         add(marksLayer())
         add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
-        if (data.bounds != null) areaLayers(colors).forEach { add(it) }
-        if (data.selectedEntrance != null) chosenLayers().forEach { add(it) }
+        if (selection.bounds != null) areaLayers(colors).forEach { add(it) }
+        if (selection.entrance != null) chosenLayers().forEach { add(it) }
     }
 
 private fun basemapSource(bounds: CampusBounds?): JsonObject =
@@ -170,8 +173,8 @@ private fun basemapPaint(colors: MapStyleColors): JsonObject =
         }
     }
 
-private fun selectedLayer(data: CampusMapData, colors: MapStyleColors): JsonObject? {
-    val label = data.labels.firstOrNull { data.focus in symbolsOf(listOf(it)) } ?: return null
+private fun selectedLayer(labels: List<String>, building: String?, colors: MapStyleColors): JsonObject? {
+    val label = labels.firstOrNull { building in symbolsOf(listOf(it)) } ?: return null
     return lineLayer(
         id = SELECTED_LAYER,
         source = BUILDINGS_SOURCE,
