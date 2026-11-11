@@ -99,7 +99,8 @@ class BuildingCatalogRepositoryTest {
         val found =
             MockWebServer().use { server ->
                 server.enqueue(MockResponse().setBody(CARD))
-                val api = BuildingsApi(NetworkModule.okHttp(AccessTokens()), NetworkModule.json(), server.url("/").toString())
+                val http = NetworkModule.okHttp(AccessTokens())
+                val api = BuildingsApi(http, NetworkModule.json(), server.url("/").toString())
                 runBlocking { DataModule.cardEntrances(api).entrances("A-1") }
             }
         assertEquals(listOf(EntranceAssessment(LocalDate.of(2026, 10, 1), WALKTHROUGH)), found.map { it.assessment })
