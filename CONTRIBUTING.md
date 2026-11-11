@@ -15,9 +15,8 @@ podany jest plik, który ją egzekwuje; gdy reguła się zmienia, zmienia się t
 5. **Kolejka scalania** scala PR przez squash do gałęzi sprintu. Do `main` trafiają tylko całe sprinty.
    Kolejka uruchamia kontrole także na wyniku scalenia (zdarzenie `merge_group`, np. w [`android.yml`](.github/workflows/android.yml)
    i [`api.yml`](.github/workflows/api.yml)); squash i kolejka to ustawienia repozytorium, nie plik.
-   Do kolejki PR wstawia przycisk „Merge when ready” albo etykieta `do-kolejki`: włącza auto-merge, a zdjęta je
-   wyłącza ([`do-kolejki.yml`](.github/workflows/do-kolejki.yml)). Etykietę doda też samo REST API:
-   `gh api repos/{owner}/{repo}/issues/N/labels -f 'labels[]=do-kolejki'`.
+   Aby dodać PR do kolejki, użyj przycisku „Merge when ready” lub polecenia `gh pr merge N` po zalogowaniu
+   na konto z prawem scalania w repozytorium.
    Gdy grupa ma to samo drzewo plików, co zielony przebieg na PR, i nie zmienia `.github/` względem bazy, ciężkie joby są
    pomijane ([`drzewo-grupy.yml`](.github/workflows/drzewo-grupy.yml)); zmiana `.github/` albo `sprint/N` wymusza pełny przebieg.
    Ryzyko: test niestabilny, który przypadkiem przeszedł na PR, nie jest w kolejce sprawdzany drugi raz.
