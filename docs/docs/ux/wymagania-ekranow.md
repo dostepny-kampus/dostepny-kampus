@@ -102,7 +102,7 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | --- | --- |
 | Cel | Osoba znajduje budynek na kampusie. |
 | Role | wszystkie, bez logowania (US1.2) |
-| Realizuje | US1.1…US1.5, US2.3, US2.5, US2.7, US10.6, US16.1, US18.1…US18.3, początek US3.2 |
+| Realizuje | US1.1…US1.8, US2.3, US2.5, US2.7, US10.6, US16.1, US18.1…US18.3, początek US3.2 |
 | Czynność główna | wyszukanie budynku po symbolu |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
@@ -128,7 +128,11 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | Dotknięcie tuż obok konturu liczy się jako dotknięcie konturu. Zasięg to co najmniej połowa celu dotyku, czyli 24 dp od konturu. Gdy w zasięgu są dwa kontury, otwiera się arkusz „Który budynek?” z ich symbolami | czynność | US2, NFR-17, decyzja 85 | V2 albo arkusz „Który budynek?” |
 | Przyciski „Powiększ” i „Pomniejsz” | czynność | NFR-53; WCAG 2.5.1 [1]; PW-8 | — |
 | Cztery przyciski przesuwania mapy na mapie, w krzyżu: strzałka w górę u góry, w lewo i w prawo po bokach, w dół u dołu. Każdy ma co najmniej 48 dp i nazwę dla TalkBack, np. „Przesuń mapę w górę” | czynność | NFR-53, NFR-17, NFR-18; WCAG 2.5.7 [7]; PW-8, PW-11 | — |
-| Mapa zostaje na obszarze kampusu: w prostokącie, który obejmuje kontury wszystkich budynków PWr, powiększonym o 500 m z każdej strony. Środek widoku nie wychodzi poza ten prostokąt. Najmniejsze powiększenie to takie, przy którym cały prostokąt mieści się w widoku; bardziej oddalić mapy się nie da. Strzałki przesuwania i przeciąganie palcem zatrzymują się na granicy bez komunikatu | czynność | NFR-39, NFR-53; ustalenie zespołu | — |
+| Mapa zostaje na wybranym terenie: w prostokącie, który obejmuje kontury budynków tego terenu, powiększonym o 500 m z każdej strony. Środek widoku nie wychodzi poza ten prostokąt. Najmniejsze powiększenie to takie, przy którym cały prostokąt mieści się w widoku; bardziej oddalić mapy się nie da. Obszar poza terenem jest przyciemniony, a granicę pokazuje linia. Strzałki przesuwania i przeciąganie palcem zatrzymują się na granicy bez komunikatu | czynność | US1.7, BR-G5, NFR-39, NFR-53 | — |
+| Przycisk terenu w lewym górnym rogu mapy, nad „Legendą”: znak „⊙”, nazwa wybranego terenu, np. „Kampus główny”, i znak rozwinięcia „▾”. Nazwa dla TalkBack „Teren: Kampus główny. Zmień teren” | czynność | US1.6, US1.7, NFR-17, NFR-18 | panel „Teren na mapie” na tym ekranie |
+| Panel „Teren na mapie” pod przyciskiem terenu: nagłówek z „Zamknij”, który się nie przewija, i lista terenów. Każdy teren to jeden przycisk z nazwą, liczbą budynków (symboli budynków) i odległością od wybranego terenu, np. „Wittigowo · 8 budynków · 2 km”. Wybrany teren ma znak „✓” i napis „wybrany”. Po otwarciu fokus TalkBack stoi na nagłówku, a po zamknięciu wraca na przycisk terenu. „Wstecz” i dotknięcie obok zamykają panel. Panel i „Legenda” nie są otwarte razem | czynność | US1.7, NFR-17, NFR-18, NFR-20, NFR-21 | V1 z wybranym terenem |
+| Przycisk sąsiedniego terenu przy krawędzi mapy. Pojawia się, gdy widok stoi na granicy terenu, a w tę stronę leży inny teren. Ma nazwę terenu, odległość, np. „2 km”, i strzałkę w stronę granicy. Znika po odsunięciu widoku od granicy, bez limitu czasu. Nie zasłania symboli budynków. TalkBack ogłasza raz: „Tu kończy się teren Kampus główny. Obok: Wittigowo, 2 km” | czynność | US1.7, NFR-17, NFR-18, NFR-23, NFR-53 | V1 z tym terenem |
+| Wynik wyszukiwania budynku z innego terenu ma dopisek z nazwą terenu, np. „Wittigowo · inny teren”. Wybranie go albo budynku z innego terenu na liście zmienia teren, a nad mapą pojawia się napis „Pokazuję teren: Wittigowo”. Lista budynków ma nagłówki terenów z liczbą budynków, np. „Wittigowo · 8” | czynność | US1.8, NFR-18, NFR-19 | V1 z tym terenem; dalej jak przy każdym wyniku |
 | Gdy klawiatura jest otwarta, przyciski mapy, czyli „Powiększ”, „Pomniejsz” i strzałki przesuwania, są schowane, bo mapa nad klawiaturą jest za niska na cały zestaw. Po zamknięciu klawiatury przyciski wracają. Podpis OpenStreetMap zostaje widoczny | czynność | NFR-53, NFR-37; decyzja 91 | — |
 | Napis „© OpenStreetMap contributors” w jednym wierszu w rogu mapy, jako odnośnik; przy skali czcionki co najmniej 1,5 „© OpenStreetMap” | dane | NFR-37 | strona praw autorskich OSM |
 | „ⓘ” w rogu mapy, nazwa dla TalkBack „Informacje o mapie”. Panel ma nagłówek „Źródła danych”. Pod nim „Mapa ulic i kontury budynków: © OpenStreetMap contributors” z odnośnikiem i nazwą licencji ODbL. Dalej „Wejścia i plany pięter: Źródło: Politechnika Wrocławska” z datą stanu danych | czynność | NFR-18, NFR-37, NFR-40 | arkusz informacji na tym ekranie |
@@ -169,6 +173,8 @@ Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na piętrze 
 | Plan piętra | plan wybranego piętra, przełącznik pięter, „Legenda” i podpis źródła (US16.1, NFR-40) |
 | Znaleziona sala | plan piętra sali z wyróżnioną salą i arkusz z krokami. Nagłówek i przełącznik „Mapa” i „Lista budynków” się chowają, a na górze zostaje samo pole z numerem sali (US18.1, US18.2) |
 | Bariera na mapie | wybrany znak bariery i arkusz z typem, uciążliwością, miejscem i zdjęciem (US1.5) |
+| Wybór terenu | panel „Teren na mapie” z listą terenów (US1.7) |
+| Granica terenu | obszar poza terenem przyciemniony; przy krawędzi przycisk sąsiedniego terenu, gdy w tę stronę leży inny teren (US1.7, BR-G5) |
 | Wybór budynku | arkusz „Który budynek?” z przyciskiem dla każdego symbolu konturu wspólnego albo dwóch konturów w zasięgu dotknięcia (US2, decyzja 85) |
 | Duża czcionka | start na liście budynków; karta budynku to jeden przycisk, a „Pokaż budynek na mapie” jest na pełnym ekranie V2 (NFR-19, NFR-20, US2.9) |
 | Sala bez drogi | brak wejścia zalecanego albo windy z piętra wejścia na piętro sali. Zamiast kroków: „Nie znaleźliśmy w danych wejścia i windy, którymi dotrzesz do tej sali bez schodów.” Przycisk „Pokaż opis budynku” (US18.3, BR-25) |
@@ -298,7 +304,7 @@ Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu,
 | --- | --- |
 | Cel | Odwiedzający przekazuje informację o barierze w 3 krokach, bez formularza. |
 | Role | RO-ODW i role pracownicze; Gość niezalogowany przechodzi najpierw do L1 (US14.2) |
-| Realizuje | US4.1…US4.8, US14.2, US14.4 |
+| Realizuje | US4.1…US4.9, US14.2, US14.4 |
 | Czynność główna | krok 1: „Zrób zdjęcie”, a po powrocie z kroku 2 „Dalej”; krok 2: wybór grupy, w budynku też piętra; krok 3: „Wyślij” |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
@@ -332,6 +338,7 @@ O piętro aplikacja pyta tylko w konturze budynku i przy każdej grupie poza „
 | Lokalizacja wyłączona w telefonie | „Lokalizacja w telefonie jest wyłączona. Włącz ją, aby wysłać zdjęcie bariery.” Przyciski „Otwórz ustawienia” i „Wróć do mapy” (UC7 4c) |
 | Ładowanie — pozycja jeszcze nieznana w kroku 3 | „Ustalamy, gdzie jesteś…”; „Wyślij” czeka, aż telefon poda pozycję albo zgłosi, że jej nie ustali. Aplikacja nie przerywa zgłoszenia upływem czasu (NFR-23) |
 | Brak pozycji | telefon zgłosił, że nie ustali pozycji: „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” Przyciski „Spróbuj ponownie” i „Zrezygnuj” (PW-5). Zdjęcie i grupa zostają do ponownej próby (UC7 4c). „Zrezygnuj” otwiera potwierdzenie rezygnacji |
+| Poza terenem PWr | bieżąca pozycja leży dalej niż 500 m od każdego budynku PWr: „Jesteś poza terenem PWr. Zdjęcie bariery wyślesz tylko przy budynkach Politechniki.” Przyciski „Spróbuj ponownie” i „Zrezygnuj” (PW-5). Zdjęcie i grupa zostają do ponownej próby (US4.9, BR-G5, NFR-23) |
 | Potwierdzenie rezygnacji | pojawia się przed usunięciem zrobionego zdjęcia. Wywołuje je „Zrezygnuj” w stanie „brak pozycji” albo „Wstecz” w kroku 1 po zrobieniu zdjęcia. Komunikat: „Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy. Aby je zachować, wybierz »Wróć do zdjęcia«.” Przyciski „Tak, zrezygnuj” i „Wróć do zdjęcia”, tej samej wielkości. „Tak, zrezygnuj” usuwa zdjęcie, a zgłoszenie nie powstaje, jak przy rezygnacji z logowania (UC7 1b). Po „Zrezygnuj” aplikacja otwiera mapę (V1), a po „Wstecz” ekran sprzed V4. „Wróć do zdjęcia” wraca tam, skąd osoba przyszła, a zdjęcie i grupa zostają (US4.8; heurystyki Nielsena 3 i 5 [5]) |
 | Brak sieci | potwierdzenie: „Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet.” Przycisk „Wróć do mapy” (US4.2, UC7 7a) |
 | Błąd zapisu | „W telefonie brakuje miejsca, więc nie zapisaliśmy zdjęcia bariery. Usuń niepotrzebne zdjęcia albo filmy i spróbuj ponownie.” Przycisk „Spróbuj ponownie”. Zdjęcie i grupa zostają (NFR-5, NFR-7) |
@@ -896,6 +903,9 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | | US1.3 | V1, V2 | tylko zgłoszenia przyjęte |
 | | US1.4 | V1, V2, V3 | wejścia, ścieżki i legenda |
 | | US1.5 | V1 | arkusz bariery |
+| | US1.6 | V1 | przycisk terenu z nazwą |
+| | US1.7 | V1 | panel „Teren na mapie”, granica terenu, przycisk sąsiedniego terenu |
+| | US1.8 | V1 | wynik i lista z innego terenu, nagłówki terenów |
 | Karta budynku | US2.1 | V2, V3 | oznaczenie tekstem i ikoną |
 | | US2.2 | V2, V3 | zdjęcie i data weryfikacji |
 | | US2.3 | V1, V2 | chipy i kolejność grup |
@@ -916,6 +926,7 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | | US4.6 | V2, V3, V4 | „Zgłoś barierę przy wejściu” i nazwa wejścia w kroku 1 |
 | | US4.7 | V4 | „Wstecz” z potwierdzenia |
 | | US4.8 | V4 | zdjęcie i grupa po powrocie, pytanie o rezygnację |
+| | US4.9 | V4 | stan „Poza terenem PWr” |
 | Pomoc | US5.1 | V5 | — |
 | Pomiar pozycji | US6.1 | C1 | — |
 | | US6.2 | C1 | podpowiedź budynku |

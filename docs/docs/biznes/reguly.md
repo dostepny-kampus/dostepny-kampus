@@ -73,6 +73,7 @@ Reguły dotyczą budynków bez planów pięter i miejsc poza budynkiem. Poziomy 
 | BR-G2 | Punkt poza konturem każdego budynku daje stan „Poza budynkiem”, bez komunikatu o błędzie. W pomiarze precyzyjnym aplikacja proponuje najbliższy budynek, który można wybrać albo odrzucić. Zgłoszenie szybkie zostaje „poza budynkiem” bez pytania (BR-14). | Krawężnik czy pochylnia przed wejściem to też bariery. Pozycja z GNSS przy ścianie bywa niedokładna. | produkt §6a, US6.2, T4, NFR-49 |
 | BR-G3 | Gdy import planów budynku się nie uda albo danych brak, budynek działa jako budynek podstawowy. Pozostałe budynki zachowują swoje plany. Import kończy się raportem. | Błąd danych jednego budynku nie psuje aplikacji w pozostałych. | produkt §6a, decyzja 26, NFR-47, NFR-48 |
 | BR-G4 | Punkt dalej niż 50 m od konturu każdego budynku PWr nie dostaje propozycji budynku. Odległość liczymy w metrach na ziemi. Mapa i zgłoszenie działają, a zgłoszenie zapisuje się jako „poza budynkiem”, bez piętra. | Bariery na trasie do budynku też utrudniają wizytę (N1, N3). | produkt §5 (bufor budynku), produkt §6a, decyzja 26, US6.2, T4, NFR-49 |
+| BR-G5 | Budynki PWr dzielą się na tereny. Do jednego terenu należą budynki, z których każdy leży najwyżej 600 m od innego budynku tego terenu. Teren obejmuje wszystko do 500 m od konturu któregokolwiek z jego budynków. Jest pięć terenów: „Kampus główny”, „Wittigowo”, „Bartoszowice”, „Długa” i „T-9 Atol”. Zgłoszenie można złożyć tylko na terenie PWr: punkt dalej niż 500 m od konturu każdego budynku PWr nie dostaje zgłoszenia ani w aplikacji, ani na serwerze. Odległości liczymy w metrach na ziemi. | Budynki PWr leżą w pięciu miejscach Wrocławia oddalonych od siebie o 2–4 km. Jedna mapa obejmowałaby centrum miasta, gdzie budynków PWr nie ma, a zgłoszenie stamtąd nie dotyczy uczelni (N1, N3). | decyzja 138, US1.6…US1.8, US4.9, NFR-39 |
 
 Próg 50 m (BR-G4) pokrywa z zapasem błąd GNSS przy ścianach, szacowany na 5–15 m (hipoteza, R-4, NFR-3). Bariera na chodniku po drugiej stronie ulicy nie dostaje już propozycji budynku. W odległości do 50 m włącznie aplikacja proponuje najbliższy budynek do potwierdzenia (US6.2).
 
@@ -123,7 +124,7 @@ Niewysłana edycja nie zmienia statusu. Lista zgłoszeń (C3) pokazuje przy zgł
 
 - Decyzje zespołu nr 16, 26, 29, 30, 32, 33, 36 i 48 (dziennik decyzji projektu).
 - [Wymagania do ekranów](../ux/wymagania-ekranow.md) — ekrany C3 i R2, decyzje fazy B.
-- Opis produktu: §5 (bufor budynku), §6a (poziomy szczegółowości, BR-G1…BR-G4) i §8 (potrzeby, historyjki, kryteria akceptacji).
+- Opis produktu: §5 (bufor budynku), §6a (poziomy szczegółowości, BR-G1…BR-G4; tereny, BR-G5) i §8 (potrzeby, historyjki, kryteria akceptacji).
 - [Role i uprawnienia](role.md) — BR-1…BR-6, macierz uprawnień, przypisy 2 i 3.
 - [Słownik pojęć](slownik.md) — statusy zgłoszenia, klasyfikacja barier.
 - [Proces TO-BE](procesy/to-be.md) — kroki T1…T29, w tym T6b i T17b.
