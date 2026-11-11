@@ -215,8 +215,6 @@ internal fun assetRepository(
         buildingCache = buildingCache,
     )
 
-private val NOT_FOR_VISITORS = setOf("emergency", "exit", "garage")
-
 private val NATURAL_ORDER =
     compareBy<Building>(
         { it.symbol.substringBefore('-') },
@@ -224,9 +222,9 @@ private val NATURAL_ORDER =
         { it.symbol },
     )
 
-/** Katalog dla odwiedzających: budynki w kolejności naturalnej, wejścia bez rodzajów z [NOT_FOR_VISITORS]. */
+/** Katalog dla odwiedzających z budynkami w kolejności naturalnej i wejściami zgodnymi z BR-25. */
 internal fun BuildingCatalog.forVisitors(): BuildingCatalog =
     copy(
         buildings = buildings.sortedWith(NATURAL_ORDER),
-        entrances = entrances.filterNot { it.type in NOT_FOR_VISITORS },
+        entrances = entrances.filter { it.isForVisitors },
     )
