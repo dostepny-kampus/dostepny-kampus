@@ -24,7 +24,7 @@ rule_files+='|^\.github/(workflows|scripts|commitlint)/|^\.github/dependabot\.ya
 rule_files+='|^\.commitlintrc|(^|/)\.gitleaks|(^|/)\.editorconfig$|(^|/)\.gitattributes$|(^|/)lint\.xml$'
 rule_files+='|(^|/)\.mvn/(jvm|maven)\.config$|^backend/src/test/(.*/)?([^/]*ArchitectureTest|ModularityTest)\.java$'
 rule_files+='|^android/(.*/)?src/test/(.*/)?[^/]*ArchitectureTest\.kt$'
-rule_files+='|^api/redocly\.yaml$|^docs/(\.vale\.ini$|\.markdownlint|styles/|scripts/verify\.py$|scripts/check_ids\.py$)'
+rule_files+='|^api/(redocly\.yaml|package(-lock)?\.json)$|^docs/(\.vale\.ini$|\.markdownlint|styles/|scripts/verify\.py$|scripts/check_ids\.py$)'
 
 pom_words='jacoco|qulice|<minimum>|<exclude|skip|haltOnFailure|testFailureIgnore'
 pom_words+='|(?i:errorprone|nullaway|jspecify)|-Xep|-Xplugin'
