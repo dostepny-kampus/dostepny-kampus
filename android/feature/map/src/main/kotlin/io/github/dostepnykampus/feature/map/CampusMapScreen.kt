@@ -56,7 +56,6 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 private const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 
-
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
 

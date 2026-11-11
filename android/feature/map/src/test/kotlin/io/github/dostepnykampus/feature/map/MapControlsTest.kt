@@ -59,11 +59,11 @@ class MapControlsTest {
 
     /** Każdy przycisk mapy jest przyciskiem o celu dotyku co najmniej 48 dp z własną nazwą (NFR-17, NFR-18). */
     @Test
-    fun nfr17_nfr18_every_control_is_a_named_button_of_48dp() {
+    fun nfr17_nfr18_named_48dp_buttons() {
         compose.setContent { Controls {} }
         names.forEach { name ->
             compose
-                .onNodeWithContentDescription(name, useUnmergedTree = false)
+                .onNodeWithContentDescription(name)
                 .assertHasClickAction()
                 .assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button))
                 .assertWidthIsAtLeast(48.dp)
@@ -73,7 +73,7 @@ class MapControlsTest {
 
     /** Przyciski zmieniają widok bez gestu: „Powiększ” przybliża, strzałka w górę przesuwa na północ (NFR-53). */
     @Test
-    fun nfr53_buttons_change_camera_without_gestures() {
+    fun nfr53_buttons_change_camera() {
         val seen = mutableListOf<MapCamera>()
         compose.setContent { Controls(seen::add) }
         compose.onNodeWithContentDescription("Powiększ").performClick()
@@ -83,14 +83,14 @@ class MapControlsTest {
 
     /** Zrzut do porównania z makietą hi-fi V1, motyw jasny: białe koła z cieniem i szewronami. */
     @Test
-    fun nfr53_makieta_hifi_motyw_jasny() {
+    fun nfr53_hifi_motyw_jasny() {
         compose.setContent { Controls {} }
         compose.onRoot().captureRoboImage()
     }
 
     /** Zrzut do porównania z makietą hi-fi V1, motyw ciemny: koła z obwódką zamiast cienia. */
     @Test
-    fun nfr53_makieta_hifi_motyw_ciemny() {
+    fun nfr53_hifi_motyw_ciemny() {
         RuntimeEnvironment.setQualifiers("+night")
         compose.setContent { Controls {} }
         compose.onRoot().captureRoboImage()
