@@ -75,7 +75,7 @@ final class SecurityContractTest {
         """;
 
     @Test
-    @Disabled("Serwer nie sprawdza jeszcze tokenu ani roli; włączyć z warstwą zabezpieczeń (#460)")
+    @Disabled("Serwer nie sprawdza jeszcze tokenu ani roli; włączyć z zabezpieczeniami (#460)")
     void nfrThirtyThreeEveryOperationFollowsContractSecurity(
         final WebApplicationContext context
     ) throws Exception {
