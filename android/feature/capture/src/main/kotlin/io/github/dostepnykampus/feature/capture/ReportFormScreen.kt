@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture
@@ -52,7 +52,7 @@ fun ReportFormScreen(
             .map { it?.stage }
             .distinctUntilChanged()
             .collect { stage ->
-                if (stage == ReportStage.LEFT) leave()
+                if (stage == ReportStage.LEFT || stage == ReportStage.PLACE_CHANGED) leave()
                 if (stage == ReportStage.SAVED) save()
             }
     }

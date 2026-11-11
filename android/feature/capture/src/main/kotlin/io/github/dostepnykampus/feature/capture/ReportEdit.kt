@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture
@@ -31,6 +31,9 @@ enum class ReportStage {
 
     /** Wyjście bez zapisu. */
     LEFT,
+
+    /** „Zmień miejsce”: pola czekają w szkicu na nowe miejsce z C1 (US7.4). */
+    PLACE_CHANGED,
 }
 
 /**

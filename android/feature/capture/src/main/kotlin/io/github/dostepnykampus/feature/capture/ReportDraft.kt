@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture
@@ -20,7 +20,8 @@ class ReportDraft {
         saved = DraftFields(state)
     }
 
-    internal fun restore(form: ReportForm): ReportUiState = saved?.toUiState(form) ?: ReportUiState(form = form)
+    internal fun restore(form: ReportForm, photos: List<PendingPhotoDraft> = emptyList()): ReportUiState =
+        saved?.toUiState(form) ?: ReportUiState(form = form, photos = photos)
 
     /** Usuwa pola po zakończeniu zgłoszenia lub wyjściu z C1 i C2. */
     fun clear() {
