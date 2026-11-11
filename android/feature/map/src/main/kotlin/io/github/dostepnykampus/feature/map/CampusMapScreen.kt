@@ -246,6 +246,7 @@ private fun CampusMap(
                 modifier = Modifier.fillMaxSize(),
             )
             chosen?.let { EntranceDescription(it) }
+            MapStatusBar(topInset, isShown = isCovered)
             MapOverlay(
                 camera = shown,
                 hasControls = !isCovered && !isKeyboardOpen,

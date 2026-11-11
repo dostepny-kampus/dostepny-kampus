@@ -38,6 +38,7 @@ import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -53,6 +54,7 @@ import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapView
+import io.github.dostepnykampus.feature.map.MAP_STATUS_BAR_TAG
 import io.github.dostepnykampus.feature.map.MapCamera
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -96,6 +98,16 @@ internal fun dispatchKeyboard(activity: ComponentActivity, isOpen: Boolean) {
             .setInsets(ime, Insets.of(0, 0, 0, if (isOpen) KEYBOARD_HEIGHT else 0))
             .setVisible(ime, isOpen)
             .build()
+    val content = activity.findViewById<ViewGroup>(android.R.id.content)
+    ViewCompat.dispatchApplyWindowInsets(content.getChildAt(0), insets)
+}
+
+private const val STATUS_BAR_HEIGHT = 96
+
+/** Podaje ekranowi [activity] systemowy pasek stanu o wysokości [STATUS_BAR_HEIGHT] pikseli w odstępach okna. */
+internal fun dispatchStatusBar(activity: ComponentActivity) {
+    val bars = WindowInsetsCompat.Type.statusBars()
+    val insets = WindowInsetsCompat.Builder().setInsets(bars, Insets.of(0, STATUS_BAR_HEIGHT, 0, 0)).build()
     val content = activity.findViewById<ViewGroup>(android.R.id.content)
     ViewCompat.dispatchApplyWindowInsets(content.getChildAt(0), insets)
 }
@@ -306,6 +318,23 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("Pomniejsz").assertDoesNotExist()
         compose.onNodeWithText("Mapa kampusu").assertDoesNotExist()
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertDoesNotExist()
+    }
+
+    /**
+     * Mapa pod arkuszem nie ma nagłówka i sięga pod systemowy pasek stanu: pasek dostaje tło o swojej wysokości,
+     * więc zegar i ikony nie leżą na podkładzie mapy (NFR-16). Z nagłówkiem V1 tła nie ma.
+     */
+    @Test
+    fun nfr16_status_bar_background() {
+        var sheet by mutableStateOf(200.dp)
+        compose.setContent { Screen(focus = "C-13", sheet = sheet) }
+        compose.runOnUiThread { dispatchStatusBar(compose.activity) }
+        compose.waitForIdle()
+        val bar = compose.onNodeWithTag(MAP_STATUS_BAR_TAG).getBoundsInRoot()
+        val expected = with(compose.density) { STATUS_BAR_HEIGHT.toDp() }
+        assertEquals(0.dp to expected, bar.top to bar.bottom)
+        sheet = 0.dp
+        compose.onNodeWithTag(MAP_STATUS_BAR_TAG).assertDoesNotExist()
     }
 
     /**
