@@ -71,7 +71,8 @@ sealed interface QuickLookup {
 }
 
 /**
- * Krok 3 V4: bieżąca pozycja i „Wyślij” (US4.1, NFR-27). Pozycja to pierwszy odczyt ze znaną dokładnością, a budynek
+ * Pozycja w krokach 1–2 V4 i krok 3: bieżąca pozycja i „Wyślij” (US4.1, NFR-27). Krok 2 pomija pytanie o piętro,
+ * gdy pozycja jest już znana i leży poza konturem (BR-14). Pozycja to pierwszy odczyt ze znaną dokładnością, a budynek
  * z konturu w katalogu bez sieci decyduje, czy piętro idzie do zgłoszenia (BR-14, BR-G2). Odbiornik nasłuchuje, gdy
  * ekran jest widoczny; „Wyślij” czeka na pozycję bez limitu czasu (NFR-23). „Brak pozycji” wywołuje zdarzenie
  * odbiornika albo wyłączenie lokalizacji, nie upływ czasu; „Spróbuj ponownie” ustala pozycję od nowa.

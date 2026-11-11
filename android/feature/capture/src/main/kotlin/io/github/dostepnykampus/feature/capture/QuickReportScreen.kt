@@ -50,6 +50,7 @@ import java.io.File
  * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację (NFR-27, BR-8).
  * Krok 1: „Zrób zdjęcie” otwiera aparat, a zdjęcie od razu prowadzi do kroku 2; po powrocie z kroku 2 jest „Dalej”.
  * Krok 2: grupa, a w konturze albo przy nieznanej pozycji pytanie o piętro; „Wstecz” z pytania wraca do grup.
+ * Pozycja jest ustalana od kroku 1, więc krok 2 zwykle wie już, czy osoba stoi w budynku (BR-14, BR-G2).
  * „Tak, zrezygnuj”: zdjęcie znika z telefonu, a zgłoszenie nie powstaje (UC7 1b).
  *
  * @param route krok z danymi wcześniejszych kroków
@@ -122,8 +123,10 @@ private fun QuickStep(
     models: QuickReportModels,
     onGiveUp: () -> Unit,
 ) {
+    val where = models.sendModel()
     when (route.step) {
         ReportStep.PHOTO -> {
+            QuickPositionWarmUp(where)
             val entrances = models.entrances
             val photoTranscoder = models.photoTranscoder
             route.entranceId?.let { id ->
@@ -137,26 +140,29 @@ private fun QuickStep(
         }
 
         ReportStep.GROUP -> {
-            QuickGroupStep(route = route, onNext = actions.onNext)
+            QuickGroupStep(route = route, onNext = actions.onNext, where = where)
         }
 
         ReportStep.SEND, ReportStep.SENT -> {
             route.quickReport()?.let { report ->
-                val send = models.send
-                if (send == null) {
-                    QuickSendStep(route = route, report = report, onSend = actions.onSent, onGiveUp = onGiveUp)
-                } else {
-                    QuickSendStep(
-                        route = route,
-                        report = report,
-                        onSend = actions.onSent,
-                        onGiveUp = onGiveUp,
-                        viewModel = send,
-                    )
-                }
+                QuickSendStep(
+                    route = route,
+                    report = report,
+                    onSend = actions.onSent,
+                    onGiveUp = onGiveUp,
+                    viewModel = where,
+                )
             }
         }
     }
+}
+
+@Composable
+private fun QuickReportModels.sendModel(): QuickSendViewModel = send ?: hiltViewModel()
+
+@Composable
+private fun QuickPositionWarmUp(where: QuickSendViewModel) {
+    where.lookup.collectAsStateWithLifecycle()
 }
 
 @Composable
@@ -191,12 +197,14 @@ private fun QuickEntranceLine(id: String, entrances: QuickEntranceViewModel = hi
 }
 
 @Composable
-private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit) {
+private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, where: QuickSendViewModel) {
     var asked by rememberSaveable { mutableStateOf<BarrierGroup?>(null) }
+    val lookup by where.lookup.collectAsStateWithLifecycle()
+    val isInBuilding = (lookup as? QuickLookup.Found)?.position?.isInBuilding
     val group = asked
     if (group == null) {
         QuickGroupQuestion(onGroup = { chosen ->
-            if (chosen.asksFloor(isInBuilding = null)) asked = chosen else onNext(route.copy(group = chosen))
+            if (chosen.asksFloor(isInBuilding)) asked = chosen else onNext(route.copy(group = chosen))
         })
     } else {
         BackHandler { asked = null }

@@ -17,14 +17,17 @@ import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.location.LocationSwitch
+import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.model.BarrierGroup
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -52,6 +55,7 @@ class QuickReportScreenTest {
         QuickReportActions(onNext = { next.add(it) }, onSent = {}, onBack = { backs++ }, onBackToMap = { toMap++ })
     private val atGroup = ReportRoute(step = ReportStep.GROUP, photoId = "zdjecie-1", photoPath = "/zdjecie-1.jpg")
 
+    /** Pozycja nieznana (odbiornik bez odczytu): pytanie o piętro jak w budynku podstawowym, BR-14. */
     @Test
     fun `grupa z piętrem do kroku 3`() {
         show(atGroup)
@@ -60,6 +64,26 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Parter").performClick()
         val expected = atGroup.copy(group = BarrierGroup.TOILETS, floorNumber = 0, isFloorAsked = true)
         assertEquals(listOf(expected), next)
+    }
+
+    /** Wiersz: V4 krok 2, pozycja poza konturem → bez pytania o piętro, zgłoszenie bez piętra, BR-14. */
+    @Test
+    fun us4_5_outside_no_floor() {
+        show(atGroup, positions = PositionSource { flowOf(PositionFix(OUTSIDE, ACCURACY, 0L)) })
+        compose.onNodeWithText("Toalety").performClick()
+        compose.onNodeWithText("Na którym piętrze?").assertDoesNotExist()
+        assertEquals(listOf(atGroup.copy(group = BarrierGroup.TOILETS)), next)
+        val position = QuickPosition(point = OUTSIDE, accuracyMeters = ACCURACY, isInBuilding = false)
+        assertNull(next.single().quickReport()?.content(position)?.floor)
+    }
+
+    /** Wiersz: V4 krok 2, pozycja w konturze → pytanie o piętro, BR-14. */
+    @Test
+    fun us4_5_inside_asks_floor() {
+        show(atGroup, positions = PositionSource { flowOf(PositionFix(INSIDE, ACCURACY, 0L)) })
+        compose.onNodeWithText("Toalety").performClick()
+        compose.onNodeWithText("Na którym piętrze?").assertIsDisplayed()
+        assertEquals(emptyList<ReportRoute>(), next)
     }
 
     @Test
@@ -133,7 +157,10 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Wejście", substring = true).assertDoesNotExist()
     }
 
-    private fun show(route: ReportRoute) {
+    private fun show(
+        route: ReportRoute,
+        positions: PositionSource = PositionSource { flow { throw SecurityException("brak zgody") } },
+    ) {
         val app = ApplicationProvider.getApplicationContext<Application>()
         shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
         val transcoder = PhotoTranscoder()
@@ -141,7 +168,7 @@ class QuickReportScreenTest {
         val entrances = QuickEntranceViewModel(catalog)
         val send =
             QuickSendViewModel(
-                positions = PositionSource { flow { throw SecurityException("brak zgody") } },
+                positions = positions,
                 locationSwitch = LocationSwitch { flowOf(true) },
                 catalog = catalog,
                 saver = { _, _, _ -> },
@@ -162,8 +189,14 @@ class QuickReportScreenTest {
         ReportRoute(step = ReportStep.SEND, photoId = "zdjecie-1", photoPath = path, group = BarrierGroup.TOILETS)
 
     private companion object {
+        const val ACCURACY = 6.0
+        val INSIDE = GeoPoint(longitude = 17.0605, latitude = 51.1105)
+        val OUTSIDE = GeoPoint(longitude = 17.07, latitude = 51.12)
         const val CAMPUS =
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"A-1",""" +
+                """"osm_id":"way/A-1"},"geometry":{"type":"Polygon","coordinates":[[[17.06,51.11],""" +
+                """[17.061,51.11],[17.061,51.111],[17.06,51.111],[17.06,51.11]]]}},""" +
                 """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/6",""" +
                 """"entrance":"yes","ref":"G"},"geometry":{"type":"Point","coordinates":[17.06,51.11]}}]}"""
     }
