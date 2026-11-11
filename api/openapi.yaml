@@ -382,7 +382,7 @@ paths:
         Zgłoszenia wysłane, w weryfikacji i przyjęte w promieniu 10 m od sprawdzanego, z każdego piętra, z odległością
         (US10.1, BR-13). System sam niczego nie odrzuca ani nie łączy.
         Zgłoszenie z nieczytelną zapisaną treścią jest pomijane na liście.
-      tags: [review]
+      tags: [barrier]
       security: [{keycloak: [VERIFIER]}]
       parameters:
         - $ref: '#/components/parameters/SubmissionId'
