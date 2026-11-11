@@ -41,6 +41,16 @@ internal const val ENTRANCE_MARK_DP = 28
 
 private const val CAPTION_OFFSET_DP = ENTRANCE_MARK_DP / 2 + 2
 
+/** Warstwa przyciemnienia obszaru poza terenem (US1.7, BR-G5). */
+internal const val OUTSIDE_LAYER = "teren-poza"
+
+/** Warstwa linii granicy terenu (US1.7, BR-G5). */
+internal const val EDGE_LAYER = "teren-granica"
+
+private const val AREA_SOURCE = "teren"
+private const val WORLD_RING = "[[-180,-85],[180,-85],[180,85],[-180,85],[-180,-85]]"
+private const val DAY_DIM = """{"fill-color": "#3B4950", "fill-opacity": 0.5}"""
+
 /** Kafelki podkładu z serwerów OSM, pobierane tylko online i bez zapisu do użytku offline (ADR-0005). */
 internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
@@ -52,6 +62,7 @@ internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
  * @property buildingOutline kontur budynków PWr (`pwr_kontur`)
  * @property selectedOutline obrys zaznaczonego budynku (`pwr_wybrany`), grubszy niż kontur
  * @property isNight motyw ciemny: podkład jest wtedy odwrócony, żeby mapa nie raziła na ciemnym ekranie
+ * @property ink linia granicy terenu (`tusz`)
  */
 data class MapStyleColors(
     val land: String,
@@ -59,6 +70,7 @@ data class MapStyleColors(
     val buildingOutline: String,
     val selectedOutline: String,
     val isNight: Boolean = false,
+    val ink: String = buildingOutline,
 )
 
 /**
@@ -79,6 +91,7 @@ data class MapStyleColors(
  * znakiem, którego środek stoi w tym punkcie; obie warstwy rysują się zawsze. Podkład ma przygaszone barwy
  * i prześwituje przez niego tło lądu, więc budynki PWr i znaki są na mapie najwyraźniejsze, a zieleń, woda i ulice
  * zostają rozpoznawalne (makieta hi-fi V1, NFR-16). W motywie ciemnym jasność kafelków jest odwrócona.
+ * Obszar poza terenem [CampusMapData.bounds] jest przyciemniony, a granicę terenu pokazuje linia (US1.7, BR-G5).
  */
 fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
     """
@@ -88,7 +101,7 @@ fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
         |    "osm": {"type": "raster", "tiles": ["$OSM_TILES"], "tileSize": 256, "maxzoom": 19${basemapBounds(data)}},
         |    "budynki": {"type": "geojson", "data": ${data.buildings}},
         |    "podpisy": {"type": "geojson", "data": ${data.labelPoints}},
-        |    "wejscia": {"type": "geojson", "data": ${data.entrances}}${chosenSource(data)}
+        |    "wejscia": {"type": "geojson", "data": ${data.entrances}}${areaSource(data)}${chosenSource(data)}
         |  },
         |  "layers": [
         |    {"id": "lad", "type": "background", "paint": {"background-color": "${colors.land}"}},
@@ -104,6 +117,7 @@ fun campusMapStyle(data: CampusMapData, colors: MapStyleColors): String =
         |    ${selectedLayer(data, colors)}
         |    ${marksLayer()},
         |    {"id": "podpisy", "type": "symbol", "source": "podpisy", "layout": {"icon-image": ["get", "label"]}}
+        |    ${areaLayers(data, colors)}
         |    ${chosenLayers(data)}
         |  ]
         |}
@@ -122,6 +136,29 @@ private fun basemapPaint(colors: MapStyleColors): String =
     } else {
         """{"raster-opacity": 0.72, "raster-saturation": -0.4, "raster-contrast": -0.05}"""
     }
+
+private fun areaSource(data: CampusMapData): String {
+    val bounds = data.bounds ?: return ""
+    val corners = with(bounds) { listOf(west to south, east to south, east to north, west to north, west to south) }
+    val edge = corners.joinToString(prefix = "[", postfix = "]") { (lon, lat) -> "[$lon,$lat]" }
+    val hole = corners.reversed().joinToString(prefix = "[", postfix = "]") { (lon, lat) -> "[$lon,$lat]" }
+    val outside = """{"type": "Polygon", "coordinates": [$WORLD_RING, $hole]}"""
+    val features =
+        """{"type": "Feature", "properties": {}, "geometry": $outside}, """ +
+            """{"type": "Feature", "properties": {}, "geometry": {"type": "LineString", "coordinates": $edge}}"""
+    return """, "$AREA_SOURCE": {"type": "geojson", "data": {"type": "FeatureCollection", "features": [$features]}}"""
+}
+
+private fun areaLayers(data: CampusMapData, colors: MapStyleColors): String {
+    if (data.bounds == null) return ""
+    val dim = if (colors.isNight) """{"fill-color": "#000000", "fill-opacity": 0.6}""" else DAY_DIM
+    val outside = """["==", ["geometry-type"], "Polygon"]"""
+    val edge = """["==", ["geometry-type"], "LineString"]"""
+    return """, {"id": "$OUTSIDE_LAYER", "type": "fill", "source": "$AREA_SOURCE", """ +
+        """"filter": $outside, "paint": $dim}, """ +
+        """{"id": "$EDGE_LAYER", "type": "line", "source": "$AREA_SOURCE", "filter": $edge, """ +
+        """"paint": {"line-color": "${colors.ink}", "line-width": 2}}"""
+}
 
 private fun basemapBounds(data: CampusMapData): String {
     val bounds = data.bounds ?: return ""

@@ -37,7 +37,8 @@ class CampusMapStyleTest {
     @Test
     fun nfr39_outlines_over_basemap() {
         val layers = style.array("layers").map { it.jsonObject }
-        val expected = listOf("lad", "osm", BUILDINGS_LAYER, "kontury", ENTRANCES_LAYER, "podpisy")
+        val expected =
+            listOf("lad", "osm", BUILDINGS_LAYER, "kontury", ENTRANCES_LAYER, "podpisy", OUTSIDE_LAYER, EDGE_LAYER)
         assertEquals(expected, layers.map { it.text("id") })
         assertEquals("#E8EDEE", layers.first().obj("paint").text("background-color"))
     }
@@ -71,6 +72,30 @@ class CampusMapStyleTest {
         val layers = Json.parseToJsonElement(night).jsonObject.array("layers")
         val paint = layers[1].jsonObject.obj("paint")
         assertTrue(paint.number("raster-brightness-min") > paint.number("raster-brightness-max"))
+    }
+
+    /**
+     * Wiersz: V1, obszar poza terenem jest przyciemniony, a granicę pokazuje linia (US1.7, BR-G5): wielokąt
+     * przyciemnienia ma otwór o brzegach terenu, a linia biegnie po tych samych brzegach.
+     */
+    @Test
+    fun us1_7_outside_dimmed_edge_line() {
+        val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
+        val json = campusMapStyle(campusMapData(catalog).copy(bounds = bounds), colors.copy(ink = "#111111"))
+        val styled = Json.parseToJsonElement(json).jsonObject
+        val area = styled.obj("sources").obj("teren")
+        val listed = area.obj("data").array("features")
+        val features = listed.map { it.jsonObject }
+        val outside = features.first().obj("geometry")
+        val hole = outside.array("coordinates")[1].jsonArray
+        val line = features.last().obj("geometry")
+        val edge = line.array("coordinates")
+        val corners = setOf(listOf(16.9, 59.9), listOf(17.1, 59.9), listOf(17.1, 60.1), listOf(16.9, 60.1))
+        assertEquals(corners, hole.map { point -> point.jsonArray.map { it.jsonPrimitive.double } }.toSet())
+        assertEquals(hole.reversed(), edge.toList())
+        val layers = styled.array("layers").map { it.jsonObject }
+        assertEquals(0.5, layers.single { it.text("id") == OUTSIDE_LAYER }.obj("paint").number("fill-opacity"))
+        assertEquals("#111111", layers.single { it.text("id") == EDGE_LAYER }.obj("paint").text("line-color"))
     }
 
     /** Wiersz: V1, mapa zostaje na obszarze kampusu; podkładu spoza tego prostokąta aplikacja nie pobiera (NFR-39). */
