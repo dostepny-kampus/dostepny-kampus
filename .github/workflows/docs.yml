@@ -52,8 +52,6 @@ jobs:
     outputs:
       dokumentacja: ${{ steps.diff.outputs.dokumentacja }}
     steps:
-      - name: Force change detection failure for CI verification
-        run: exit 1
       - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 2
