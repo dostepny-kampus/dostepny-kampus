@@ -79,8 +79,9 @@ internal class MapSceneState(
 }
 
 /**
- * Stan sceny mapy z danych [layers], katalogu [catalog] i zaznaczenia [focus] z trasy, dla mapy o rozmiarze [size]
- * zasłoniętej od dołu arkuszem V2 na wysokość [cover]. Widok kamery i lista budynków do wyboru są zapisywane,
+ * Stan sceny mapy z danych [layers], katalogu [catalog], zaznaczenia [focus] z trasy i nazwy terenu [area]
+ * wybranego przez osobę (US1.7), dla mapy o rozmiarze [size] zasłoniętej od dołu arkuszem V2 na wysokość
+ * [cover]. Widok kamery i lista budynków do wyboru są zapisywane,
  * więc wracają po „Wstecz” z V2 i po obrocie ekranu (decyzja 83, NFR-22).
  */
 @Composable
@@ -88,10 +89,11 @@ internal fun rememberMapSceneState(
     layers: CampusMapData?,
     catalog: BuildingCatalog?,
     focus: MapFocus?,
+    area: String?,
     cover: Dp,
     size: IntSize,
 ): MapSceneState {
-    val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus)
+    val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus, area = area)
     val selection = scene?.selection
     val view = rememberCameraView(focus, catalog)
     val choices = rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
