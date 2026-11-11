@@ -137,16 +137,26 @@ private fun OfflineWhen(isOnline: Boolean) {
     if (!isOnline) OfflineLine()
 }
 
+/**
+ * Nagłówek karty (US2, NFR-18, decyzja 152): symbol dużym napisem `displayLarge` w kolorze `primary`, a pod nim
+ * nazwa z danych `headlineMedium`. Budynek bez nazwy ma sam symbol. TalkBack czyta jeden nagłówek:
+ * „Budynek A-1, Gmach Główny” albo „Budynek A-4”; po otwarciu karty fokus staje na nim.
+ */
 @Composable
 private fun BuildingName(symbol: String, name: String?) {
-    val visible = name ?: stringResource(R.string.mapa_budynek, symbol)
-    val spoken = if (name == null) visible else stringResource(R.string.karta_czytaj, symbol, name)
+    val spoken =
+        name?.let { stringResource(R.string.karta_czytaj, symbol, it) } ?: stringResource(R.string.mapa_budynek, symbol)
     val focus = remember { FocusRequester() }
-    Text(
-        text = visible,
-        modifier = Modifier.semantics { contentDescription = spoken }.focusRequester(focus).focusable(),
-        style = MaterialTheme.typography.titleLarge,
-    )
+    Column(
+        modifier =
+            Modifier
+                .semantics(mergeDescendants = true) { contentDescription = spoken }
+                .focusRequester(focus)
+                .focusable(),
+    ) {
+        Text(text = symbol, style = MaterialTheme.typography.displayLarge, color = MaterialTheme.colorScheme.primary)
+        name?.let { Text(text = it, style = MaterialTheme.typography.headlineMedium) }
+    }
     LaunchedEffect(focus) { withFrameMillis { focus.requestFocus() } }
 }
 
