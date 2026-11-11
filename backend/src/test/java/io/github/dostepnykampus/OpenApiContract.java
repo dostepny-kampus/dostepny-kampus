@@ -107,7 +107,7 @@ public final class OpenApiContract implements ResultMatcher {
     /**
      * Wartości wyliczenia w schemacie lub w jego polu.
      *
-     * @param pointer Ścieżka względem components/schemas
+     * @param pointer Względna ścieżka od components/schemas
      * @return Wartości JSON w kolejności z kontraktu
      */
     public List<JsonNode> enumValues(final String pointer) {
