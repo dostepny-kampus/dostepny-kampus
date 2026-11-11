@@ -38,13 +38,17 @@ import org.maplibre.spatialk.units.International
  * @throws IllegalArgumentException gdy kontur ma pierścień niezamknięty albo krótszy niż 4 punkty
  */
 fun locateBuilding(point: GeoPoint, buildings: List<Building>): LocateResult {
-    val inside = buildings.firstOrNull { building -> building.outline.containsStrictly(point) }
+    val inside = containingBuilding(point, buildings)
     return if (inside != null) {
         LocateResult.InsideOutline(inside)
     } else {
         LocateResult.OutsideBuilding(buildings.minByOrNull { building -> building.edgeDistanceMeters(point) })
     }
 }
+
+/** Pierwszy budynek, którego kontur zawiera punkt ściśle, bez punktów na krawędzi. */
+fun containingBuilding(point: GeoPoint, buildings: List<Building>): Building? =
+    buildings.firstOrNull { building -> building.outline.containsStrictly(point) }
 
 /** Odległość w metrach na ziemi od [point] do najbliższej krawędzi konturu, także krawędzi otworu. */
 internal fun Building.edgeDistanceMeters(point: GeoPoint): Double {
@@ -54,7 +58,7 @@ internal fun Building.edgeDistanceMeters(point: GeoPoint): Double {
     }
 }
 
-private fun GeoArea.containsStrictly(point: GeoPoint): Boolean =
+internal fun GeoArea.containsStrictly(point: GeoPoint): Boolean =
     point.toPosition() in toTurf() && !hasPointOnEdge(point)
 
 private fun GeoArea.hasPointOnEdge(point: GeoPoint): Boolean =

@@ -195,6 +195,7 @@ class QuickReportScreenTest {
                 saver = { _, _, _ -> },
                 networkStatus = NetworkStatus { flowOf(true) },
                 buildingFloors = floors,
+                buildingLookup = BuildingLookup(EmptyCoroutineContext),
             )
         compose.setContent {
             DostepnyKampusTheme {

@@ -14,6 +14,7 @@ import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.location.Satellite
 import io.github.dostepnykampus.core.location.SatelliteSource
 import io.github.dostepnykampus.core.model.GeoPoint
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,12 +34,21 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.coroutines.CoroutineContext
 
 /** Pomiar na ekranie C1 na odczytach testowych w czasie wirtualnym, bez odbiornika GNSS (US6.1, NFR-23, NFR-27). */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MeasureViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val catalogDispatcher = StandardTestDispatcher(dispatcher.scheduler)
+    private var lookupDispatches = 0
+    private val lookupDispatcher =
+        object : CoroutineDispatcher() {
+            override fun dispatch(context: CoroutineContext, block: Runnable) {
+                lookupDispatches += 1
+                dispatcher.dispatch(context, block)
+            }
+        }
     private var catalogReads = 0
     private val fixes = MutableSharedFlow<PositionFix>(extraBufferCapacity = 1)
     private val satellites = MutableSharedFlow<List<Satellite>>(extraBufferCapacity = 1)
@@ -56,6 +66,7 @@ class MeasureViewModelTest {
                     CAMPUS
                 },
             locationSwitch = LocationSwitch { locationOn },
+            buildingLookup = BuildingLookup(lookupDispatcher),
         )
     }
 
@@ -263,6 +274,7 @@ class MeasureViewModelTest {
             val nearest = viewModel.buildings.value
             assertEquals(listOf("A-1", "B-1"), nearest.map { it.building.symbol })
             assertEquals(0.0, nearest.first().distanceMeters, PRECISION)
+            assertEquals(1, lookupDispatches)
         }
 
     @Test

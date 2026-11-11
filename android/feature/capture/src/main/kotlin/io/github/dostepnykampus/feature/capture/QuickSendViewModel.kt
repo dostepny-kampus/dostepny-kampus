@@ -12,7 +12,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.network.NetworkStatus
-import io.github.dostepnykampus.core.geo.hintBuilding
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
@@ -33,6 +32,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
@@ -92,6 +92,7 @@ class QuickSendViewModel
         private val saver: ReportSaver,
         private val networkStatus: NetworkStatus,
         private val buildingFloors: BuildingFloors,
+        private val buildingLookup: BuildingLookup,
     ) : ViewModel() {
         private val state = MutableStateFlow(QuickSendStage.READY)
 
@@ -147,6 +148,7 @@ class QuickSendViewModel
             positions
                 .fixes()
                 .filter { it.hasAccuracy }
+                .take(1)
                 .map<PositionFix, QuickLookup> { fix -> QuickLookup.Found(located(fix)) }
                 .onStart { emit(QuickLookup.Locating) }
                 .catch { cause ->
@@ -159,12 +161,12 @@ class QuickSendViewModel
 
         private suspend fun located(fix: PositionFix): QuickPosition {
             val buildings = catalog.catalogUpdates().first().buildings
-            val inside = hintBuilding(fix.point, buildings)?.takeIf { it.isInside }
+            val inside = buildingLookup.containing(fix.point, buildings)
             return QuickPosition(
                 point = fix.point,
                 accuracyMeters = fix.accuracyMeters,
                 isInBuilding = inside != null,
-                buildingSymbol = inside?.run { building.symbol },
+                buildingSymbol = inside?.symbol,
             )
         }
     }
