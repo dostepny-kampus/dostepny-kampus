@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
@@ -11,6 +11,8 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.Entrance
 import io.github.dostepnykampus.core.model.EntranceAssessment
 import io.github.dostepnykampus.core.model.EntranceMarking
+import io.github.dostepnykampus.core.model.Floor
+import io.github.dostepnykampus.core.model.FloorList
 import io.github.dostepnykampus.core.model.GeoPoint
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -99,6 +101,12 @@ internal data class EntranceDto(
 )
 
 @Serializable
+internal data class FloorListDto(val source: String, val floors: List<FloorDto>)
+
+@Serializable
+internal data class FloorDto(val id: String, val label: String, val order: Int)
+
+@Serializable
 internal data class GeoPointDto(val type: String, val coordinates: List<Double>)
 
 @Serializable
@@ -124,6 +132,13 @@ internal fun BuildingDetailsDto.toModel(): BuildingDetails =
         building = Building(symbol = symbol, name = name, outline = parseGeoArea(outline.toString())),
         detailLevel = detailLevel,
         entrances = entrances.map(EntranceDto::toModel),
+    )
+
+/** Piętra od najniższego, także gdy serwer poda je w innej kolejności (US16.1). */
+internal fun FloorListDto.toModel(): FloorList =
+    FloorList(
+        source = source,
+        floors = floors.map { Floor(id = it.id, label = it.label, order = it.order) }.sortedBy(Floor::order),
     )
 
 internal fun EntranceDto.toModel(): Entrance =

@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
@@ -166,6 +166,8 @@ class DtoContractTest {
                 "EntranceDto" to Row("Entrance"),
                 "GeoPointDto" to Row("GeoPoint"),
                 "LocateResultDto" to Row("LocateResult"),
+                "FloorListDto" to Row("FloorList"),
+                "FloorDto" to Row("Floor"),
                 "DetailLevel" to Row("DetailLevel"),
                 "MarkingSource" to Row("Entrance/properties/markingSource"),
                 "SubmissionFloorDto" to Row("SubmissionFloor"),
