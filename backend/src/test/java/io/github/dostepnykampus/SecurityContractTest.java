@@ -9,8 +9,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -75,9 +73,7 @@ final class SecurityContractTest {
             MatcherAssert.assertThat(
                 "Serwer wpuszcza albo odrzuca wywołania inaczej, niż opisuje kontrakt",
                 SecurityContractTest.problems(
-                    SecurityContractTest.rules(
-                        Files.readString(Path.of("..", "api", "openapi.yaml")), Set.of()
-                    ),
+                    SecurityContractTest.rules(new OpenApiContract(), Set.of()),
                     (operation, who) -> SecurityContractTest.status(client, base, operation, who)
                 ),
                 Matchers.empty()
@@ -125,7 +121,9 @@ final class SecurityContractTest {
         MatcherAssert.assertThat(
             "Serwer otwarty dla każdego przeszedł kontrolę zabezpieczeń",
             SecurityContractTest.problems(
-                SecurityContractTest.rules(SecurityContractTest.DRAFT, Set.of()),
+                SecurityContractTest.rules(
+                    new OpenApiContract(() -> SecurityContractTest.DRAFT), Set.of()
+                ),
                 (operation, who) -> 200
             ),
             Matchers.contains(
@@ -151,7 +149,9 @@ final class SecurityContractTest {
         MatcherAssert.assertThat(
             "Serwer zgodny z kontraktem nie przeszedł kontroli zabezpieczeń",
             SecurityContractTest.problems(
-                SecurityContractTest.rules(SecurityContractTest.DRAFT, Set.of()),
+                SecurityContractTest.rules(
+                    new OpenApiContract(() -> SecurityContractTest.DRAFT), Set.of()
+                ),
                 (operation, who) -> {
                     int status = 404;
                     if (allowed.containsKey(operation) && !allowed.get(operation).contains(who)) {
@@ -173,7 +173,7 @@ final class SecurityContractTest {
             "Operacja publiczna zamknięta przez serwer przeszła kontrolę",
             SecurityContractTest.problems(
                 SecurityContractTest.rules(
-                    SecurityContractTest.DRAFT,
+                    new OpenApiContract(() -> SecurityContractTest.DRAFT),
                     Set.of("GET /api/role", "DELETE /api/two/{}", "POST /api/global")
                 ),
                 (operation, who) -> {
@@ -235,10 +235,10 @@ final class SecurityContractTest {
     }
 
     private static Map<String, JsonNode> rules(
-        final String text, final Set<String> skipped
+        final OpenApiContract contract, final Set<String> skipped
     ) {
         final Map<String, JsonNode> rules = new TreeMap<>();
-        for (final ContractOperation operation : new OpenApiContract(() -> text).operations()) {
+        for (final ContractOperation operation : contract.operations()) {
             if (!skipped.contains(operation.name())) {
                 rules.put(operation.name(), operation.security());
             }
