@@ -1,16 +1,18 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 /**
  * Zdjęcia zgłoszeń w magazynie S3: jeden obiekt na zdjęcie, pod kluczem
@@ -20,6 +22,11 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
  */
 @Service
 final class PhotoStore {
+
+    /**
+     * Rozszerzenie klucza zdjęcia w magazynie.
+     */
+    private static final String JPEG = ".jpg";
 
     /**
      * Klient magazynu zdjęć.
@@ -74,7 +81,43 @@ final class PhotoStore {
         return found;
     }
 
+    /**
+     * Zdjęcia zgłoszenia zapisane w magazynie, także spoza bieżącej listy
+     * photoIds (#839).
+     *
+     * @param submission Identyfikator zgłoszenia
+     * @return Identyfikatory zdjęć pod kluczami zgłoszenia
+     */
+    List<UUID> stored(final UUID submission) {
+        return this.client.listObjectsV2Paginator(
+            request -> request.bucket(this.settings.bucket())
+                .prefix(String.format("%s/", submission))
+        ).contents().stream()
+            .map(S3Object::key)
+            .map(PhotoStore::photo)
+            .toList();
+    }
+
+    /**
+     * Usuwa zdjęcie; brak zdjęcia nie jest błędem.
+     *
+     * @param submission Identyfikator zgłoszenia
+     * @param photo Identyfikator zdjęcia
+     */
+    void delete(final UUID submission, final UUID photo) {
+        this.client.deleteObject(
+            request -> request.bucket(this.settings.bucket())
+                .key(PhotoStore.key(submission, photo))
+        );
+    }
+
     private static String key(final UUID submission, final UUID photo) {
-        return String.format("%s/%s.jpg", submission, photo);
+        return String.format("%s/%s%s", submission, photo, PhotoStore.JPEG);
+    }
+
+    private static UUID photo(final String key) {
+        return UUID.fromString(
+            key.substring(key.indexOf('/') + 1, key.length() - PhotoStore.JPEG.length())
+        );
     }
 }
