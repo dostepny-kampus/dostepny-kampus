@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.OpenApiContract;
 import io.github.dostepnykampus.ProblemResponses;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import java.nio.charset.StandardCharsets;
@@ -20,6 +21,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -216,6 +218,8 @@ final class SubmissionPhotosHttpTest {
                     )
                 )
             )
-        ).setControllerAdvice(context.getBean(ProblemResponses.class)).build();
+        ).setControllerAdvice(context.getBean(ProblemResponses.class))
+            .alwaysExpect(new OpenApiContract())
+            .build();
     }
 }
