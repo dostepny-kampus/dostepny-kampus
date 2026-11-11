@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 
@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)
+    testImplementation(project(":core:network"))
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit4)
     testImplementation(libs.androidx.compose.ui.test.junit4)
