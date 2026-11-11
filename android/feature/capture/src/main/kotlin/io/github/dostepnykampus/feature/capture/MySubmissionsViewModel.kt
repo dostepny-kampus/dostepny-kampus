@@ -27,6 +27,7 @@ import javax.inject.Inject
 
 private const val STOP_TIMEOUT_MS = 5_000L
 private const val HTTP_FORBIDDEN = 403
+private const val HTTP_CONFLICT = 409
 
 /** Powód „Nie wysłano” na C3 (US9.5, BR-26). */
 enum class RefusalReason {
@@ -35,6 +36,12 @@ enum class RefusalReason {
 
     /** Inna odmowa: „Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.” */
     NOT_ACCEPTED,
+
+    /** Odmowa bez kodu: telefon nie odczytał zgłoszenia, np. brakuje pliku zdjęcia. */
+    UNREADABLE,
+
+    /** Konflikt wersji (409): ktoś zmienił zgłoszenie na serwerze po rozpoczęciu poprawki (US9.3, BR-10). */
+    CHANGED_ON_SERVER,
 }
 
 /**
@@ -149,6 +156,8 @@ internal fun OwnSubmission.toItem(): OwnSubmissionItem =
 private fun refusalOf(row: OwnSubmission): RefusalReason? =
     when {
         row.state != SendState.REFUSED -> null
+        row.refusalCode == null -> RefusalReason.UNREADABLE
         row.refusalCode == HTTP_FORBIDDEN -> RefusalReason.NO_PERMISSION
+        row.refusalCode == HTTP_CONFLICT -> RefusalReason.CHANGED_ON_SERVER
         else -> RefusalReason.NOT_ACCEPTED
     }

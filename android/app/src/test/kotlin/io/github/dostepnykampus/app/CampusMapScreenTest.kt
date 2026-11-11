@@ -57,6 +57,7 @@ import io.github.dostepnykampus.feature.map.CampusMapView
 import io.github.dostepnykampus.feature.map.MAP_STATUS_BAR_TAG
 import io.github.dostepnykampus.feature.map.MapCamera
 import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -128,9 +129,9 @@ class CampusMapScreenTest {
     private var emptyTaps = 0
     private var touch: (List<String>) -> Unit = {}
     private val fakeMap =
-        CampusMapView { data: CampusMapData, camera, _, onBuildingsTouch, _: Modifier ->
+        CampusMapView { _: CampusMapData, selection, camera, _, onBuildingsTouch, _: Modifier ->
             cameras += camera
-            focuses += data.focus
+            focuses += selection.building
             touch = onBuildingsTouch
         }
     private val online = MutableStateFlow(true)
@@ -155,7 +156,7 @@ class CampusMapScreenTest {
             CompositionLocalProvider(LocalDensity provides density) {
                 CampusMapScreen(
                     onBuildingClick = { opened += it },
-                    focus = focus,
+                    focus = focus?.let { MapFocus.Building(it) },
                     contentPadding = PaddingValues(bottom = sheet),
                     onEmptyMapClick = { emptyTaps++ },
                     mapView = fakeMap,

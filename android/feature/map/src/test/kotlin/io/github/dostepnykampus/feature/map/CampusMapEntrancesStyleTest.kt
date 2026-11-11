@@ -13,6 +13,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.campusMapData
+import io.github.dostepnykampus.feature.map.data.selection
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -44,8 +45,8 @@ class CampusMapEntrancesStyleTest {
         SelectedEntrance(id = "node/0", location = at, label = "Wejście dostosowane", buildingSymbol = "A-1")
 
     private fun style(chosen: SelectedEntrance? = null): JsonObject =
-        campusMapData(catalog).copy(selectedEntrance = chosen).let {
-            Json.parseToJsonElement(campusMapStyle(it, colors)).jsonObject
+        campusMapData(catalog).let {
+            Json.parseToJsonElement(campusMapStyle(it, it.selection(entrance = chosen), colors)).jsonObject
         }
 
     private fun JsonObject.layer(id: String): JsonObject? =

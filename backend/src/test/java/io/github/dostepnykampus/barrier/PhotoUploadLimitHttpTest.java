@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.OpenApiContract;
 import jakarta.servlet.ServletInputStream;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
@@ -24,7 +23,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -118,7 +116,6 @@ final class PhotoUploadLimitHttpTest {
             request.addHeader(HttpHeaders.CONTENT_LENGTH, declared);
         }
         return PhotoUploadLimitHttpTest.mvc(context).perform(servlet -> request)
-            .andExpect(new OpenApiContract())
             .andReturn().getResponse();
     }
 
@@ -129,11 +126,10 @@ final class PhotoUploadLimitHttpTest {
             .param("id", id).update();
         return PhotoUploadLimitHttpTest.mvc(context).perform(
             MockMvcRequestBuilders.get("/submissions/{id}/photos/{photo}", id, id)
-        ).andExpect(new OpenApiContract())
-            .andReturn().getResponse().getStatus();
+        ).andReturn().getResponse().getStatus();
     }
 
     private static MockMvc mvc(final WebApplicationContext context) {
-        return MockMvcBuilders.webAppContextSetup(context).build();
+        return context.getBean(MockMvc.class);
     }
 }

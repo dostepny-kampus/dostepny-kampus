@@ -25,6 +25,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.data.MapSelection
+import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.symbolsOf
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraUpdateFactory
@@ -49,6 +51,7 @@ object MapLibreMapView : CampusMapView {
     @Composable
     override fun Show(
         data: CampusMapData,
+        selection: MapSelection,
         camera: MapCamera,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
@@ -58,7 +61,7 @@ object MapLibreMapView : CampusMapView {
         val context = LocalContext.current
         val density = LocalDensity.current
         val colors = DostepnyKampusTheme.mapColors
-        val style = campusMapStyle(data = data, colors = colors.styleColors())
+        val style = campusMapStyle(data = data, selection = selection, colors = colors.styleColors())
         val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
         val tolerance = TOUCH_TOLERANCE_DP * density.density
         val mapView =
@@ -71,7 +74,7 @@ object MapLibreMapView : CampusMapView {
         FollowScreenLifecycle(mapView)
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
         var size by remember { mutableStateOf(IntSize.Zero) }
-        val limits = remember(data.bounds, size, density) { density.mapLimits(data.bounds, size) }
+        val limits = remember(selection.bounds, size, density) { density.mapLimits(selection.bounds, size) }
         val currentCamera by rememberUpdatedState(camera)
         val cameraIdle by rememberUpdatedState(onCameraIdle)
         val buildingsTouch by rememberUpdatedState(onBuildingsTouch)
@@ -94,7 +97,8 @@ object MapLibreMapView : CampusMapView {
         }
         DisposableEffect(map, style, labelSize) {
             map?.setStyle(Style.Builder().fromJson(style)) { loaded ->
-                loaded.addMapImages(data = data, colors = colors, density = density.density, labelSize = labelSize)
+                val images = MapImages(colors = colors, density = density.density, labelSize = labelSize)
+                loaded.addMapImages(labels = data.labels, selected = selection.entrance, images = images)
             }
             onDispose {}
         }
@@ -159,9 +163,15 @@ object MapLibreMapView : CampusMapView {
  * Dodaje do stylu podpisy konturów, znaki wejść oraz pinezkę i podpis zaznaczonego wejścia jako obrazy,
  * bo napisy ze stylu wymagają sieci.
  */
-internal fun Style.addMapImages(data: CampusMapData, colors: MapColors, density: Float, labelSize: Float) {
-    data.labels.forEach { label -> addImage(label, labelImage(label, colors, labelSize)) }
-    val selected = data.selectedEntrance
-    entranceImages(selected = selected, colors = colors, density = density, labelSize = labelSize)
-        .forEach { (name, image) -> addImage(name, image) }
+internal fun Style.addMapImages(labels: List<String>, selected: SelectedEntrance?, images: MapImages) {
+    labels.forEach { label -> addImage(label, labelImage(label, images.colors, images.labelSize)) }
+    entranceImages(
+        selected = selected,
+        colors = images.colors,
+        density = images.density,
+        labelSize = images.labelSize,
+    ).forEach { (name, image) -> addImage(name, image) }
 }
+
+/** Wygląd obrazów mapy: barwy [colors], gęstość ekranu [density] i wysokość podpisu [labelSize] w pikselach. */
+internal data class MapImages(val colors: MapColors, val density: Float, val labelSize: Float)

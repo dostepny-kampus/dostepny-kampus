@@ -59,6 +59,15 @@ class QuickReportTest {
         assertNull(content.floor)
     }
 
+    /** Wiersz: V4 krok 2 w budynku szczegółowym, piętro z danych PWr → zgłoszenie z identyfikatorem piętra, US4.5. */
+    @Test
+    fun us4_5_detailed_floor_id() {
+        val report =
+            QuickReport(photo = photo, group = BarrierGroup.TOILETS, floorId = "A-1/p-1", floorLabel = "Piwnica")
+        val content = report.content(QuickPosition(point = point, accuracyMeters = 6.0, isInBuilding = true))
+        assertEquals(SubmissionFloor(floorId = "A-1/p-1"), content.floor)
+    }
+
     @Test
     fun `nie wiem zostawia piętro puste`() {
         val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS)

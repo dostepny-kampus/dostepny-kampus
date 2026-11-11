@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Import;
         PostgisTestConfiguration.class,
         RustfsTestConfiguration.class,
         IdentityTestConfiguration.class,
+        MockMvcTestConfiguration.class,
         FailingController.class,
         StrictJsonHttpTest.Binding.class
     }

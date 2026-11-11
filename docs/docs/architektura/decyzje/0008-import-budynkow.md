@@ -21,6 +21,7 @@ Wybieramy migrację Java `OsmBuildings` w module `building`.
 - Maven kopiuje plik z `data/buildings` do zasobów serwera. Plik zostaje jedynym źródłem konturów dla aplikacji i serwera.
 - Migracja jest powtarzalna. Suma CRC32 obejmuje treść pliku i wersję importu (`FORMAT`). Flyway wykonuje migrację przy pierwszym starcie oraz po zmianie sumy [2].
 - Zapis to `INSERT … ON CONFLICT (symbol) DO UPDATE`. Ponowny import zmienia kontur, nazwę i atrybucję, ale nie usuwa budynków i nie zmienia poziomu szczegółowości.
+- Eksport jest pełnym wykazem wejść objętych importem. W tej samej transakcji serwer usuwa pary wejście–budynek ze źródłem oznaczenia `IMPORT`, których brakuje w eksporcie. Zachowuje wpisy `WALKTHROUGH` wraz z oceną z obchodu.
 - Reguły są takie jak w aplikacji: kontury z tym samym symbolem tworzą jeden wielokąt złożony, a kontur z kilkoma symbolami daje budynek dla każdego symbolu.
 
 Opcję z `ogr2ogr` odrzucamy, bo wymaga GDAL u każdej osoby i ręcznego kroku, a testy w CI dalej widziałyby pustą bazę. Migrację SQL odrzucamy, bo powiela dane z pliku, a po każdym eksporcie z OSM trzeba ją generować od nowa.

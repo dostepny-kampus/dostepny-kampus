@@ -13,8 +13,8 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.START_BUILDING
+import io.github.dostepnykampus.feature.map.data.boundsOf
 import io.github.dostepnykampus.feature.map.data.campusMapData
-import io.github.dostepnykampus.feature.map.data.onAreaOf
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.math.log2
@@ -49,8 +49,8 @@ class CampusBoundsTest {
         val data = campusMapData(catalog("T-1" to far, START_BUILDING to start))
         assertBounds(expected, data.bounds)
         val other = listOf(17.05 - 2 * LAT_500_M, 60.03 - LAT_500_M, 17.06 + 2 * LAT_500_M, 60.04 + LAT_500_M)
-        assertBounds(other, data.onAreaOf(symbol = "T-1").bounds)
-        assertBounds(expected, data.onAreaOf(symbol = null).bounds)
+        assertBounds(other, data.boundsOf(symbol = "T-1"))
+        assertBounds(expected, data.boundsOf(symbol = null))
     }
 
     /**

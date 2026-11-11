@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
@@ -58,9 +58,11 @@ internal class FakeStore : PendingSubmissionDao {
         rows.removeAll { it.submission.id == id }
     }
 
+    /** Jak `@Upsert` w Room: istniejący wiersz zmienia się w miejscu, a jego zdjęcia zostają. */
     override suspend fun upsertSubmission(submission: PendingSubmissionEntity) {
+        val photos = rows.find { it.submission.id == submission.id }?.photos.orEmpty()
         rows.removeAll { it.submission.id == submission.id }
-        rows.add(PendingSubmissionWithPhotos(submission, emptyList()))
+        rows.add(PendingSubmissionWithPhotos(submission, photos))
     }
 
     override suspend fun upsertPhotos(photos: List<PendingPhotoEntity>) {

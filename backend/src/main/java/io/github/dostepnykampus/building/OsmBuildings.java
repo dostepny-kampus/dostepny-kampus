@@ -59,9 +59,9 @@ final class OsmBuildings implements JavaMigration {
 
     /**
      * Wersja importu w sumie kontrolnej: zmiana wykonuje import ponownie
-     * także bez zmiany pliku; 3 to nazwy bez symboli.
+     * także bez zmiany pliku; 4 synchronizuje wejścia z eksportem.
      */
-    static final int FORMAT = 3;
+    static final int FORMAT = 4;
 
     /**
      * Nazwa złożona wyłącznie z symboli budynków, np. C-13 albo C-3/C-4.

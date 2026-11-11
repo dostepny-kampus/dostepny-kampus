@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
@@ -38,6 +38,17 @@ internal fun PendingSubmissionWithPhotos.toSubmissionContent(): SubmissionConten
         entranceMarking = row.entranceMarking?.toEnum(),
     )
 }
+
+/**
+ * Treść zgłoszenia albo `null`, gdy wiersza nie da się odczytać: nieznana wartość wyliczenia, np. z wiersza
+ * zapisanego starszą wersją aplikacji, albo treść niezgodna z regułami zgłoszenia.
+ */
+internal fun PendingSubmissionWithPhotos.toSubmissionContentOrNull(): SubmissionContent? =
+    try {
+        toSubmissionContent()
+    } catch (_: IllegalArgumentException) {
+        null
+    }
 
 /** Wiersz kolejki z treści zgłoszenia; identyfikator i chwila zapisu powstają w telefonie. */
 internal fun SubmissionContent.toPendingSubmissionEntity(id: String, savedAtMillis: Long): PendingSubmissionEntity =

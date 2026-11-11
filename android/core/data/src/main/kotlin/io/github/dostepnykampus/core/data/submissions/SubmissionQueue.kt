@@ -23,6 +23,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.CoroutineContext
@@ -179,7 +180,9 @@ class SubmissionQueue(
      * Bez sieci albo przy awarii serwera (5xx) wysyłanie się kończy do kolejnej próby (BR-9). Po 401 kończy się
      * do ponownego zalogowania, bo bez niego serwer odrzuci każde zgłoszenie (BR-26). Inna odmowa serwera (4xx)
      * zostawia zgłoszenie w telefonie jako odrzucone, nie wysyła go ponownie i przechodzi do następnego; wraca do
-     * wysyłki dopiero po ponownym zapisie przez osobę ([saveEdit], BR-26, NFR-5, US9.2).
+     * wysyłki dopiero po ponownym zapisie przez osobę ([saveEdit], BR-26, NFR-5, US9.2). Tak samo kończy się
+     * zgłoszenie, którego telefon nie odczyta (brak pliku zdjęcia, nieznana wartość w bazie), ale bez kodu odmowy,
+     * więc jeden zły wiersz nie zatrzymuje kolejki.
      *
      * @return `false`, gdy trzeba spróbować później; `true`, gdy wysyłka doszła do końca kolejki albo czeka
      *   na zalogowanie, a nie na czas
@@ -216,7 +219,7 @@ class SubmissionQueue(
 
     private suspend fun sendContent(item: PendingSubmissionWithPhotos): Outcome {
         val version = item.submission.baseVersion
-        val content = item.toSubmissionContent()
+        val content = item.toSubmissionContentOrNull() ?: return refused(item.submission.id, code = null)
         val result: ApiResult<*>
         val outcome =
             if (version == null) {
@@ -231,16 +234,21 @@ class SubmissionQueue(
             store.markCreated(id = item.submission.id)
             versionOf(result)?.let { history?.saveVersion(id = item.submission.id, version = it) }
         }
-        if (outcome == Outcome.REFUSED) refused(item.submission.id, result)
+        conflictVersionOf(result)?.let { server ->
+            store.upsertSubmission(item.submission.copy(baseVersion = server))
+            history?.saveVersion(id = item.submission.id, version = server)
+        }
+        if (outcome == Outcome.REFUSED) refused(item.submission.id, refusalCodeOf(result))
         return outcome
     }
 
     private suspend fun sendRemaining(item: PendingSubmissionWithPhotos): Outcome {
         for (photo in item.photos.filterNot { it.isUploaded }) {
-            val result = server.putPhoto(item.submission.id, photo.photoId, jpeg(photo.path))
+            val jpeg = jpeg(photo.path)
+            val result = jpeg?.let { server.putPhoto(item.submission.id, photo.photoId, it) }
             if (result !is ApiResult.Success) {
-                val outcome = outcomeOf(result)
-                if (outcome == Outcome.REFUSED) refused(item.submission.id, result)
+                val outcome = result?.let(::outcomeOf) ?: Outcome.REFUSED
+                if (outcome == Outcome.REFUSED) refused(item.submission.id, result?.let(::refusalCodeOf))
                 return outcome
             }
             store.markUploaded(submissionId = item.submission.id, photoId = photo.photoId)
@@ -250,12 +258,20 @@ class SubmissionQueue(
         return Outcome.SENT
     }
 
-    private suspend fun refused(id: String, result: ApiResult<*>) {
+    private suspend fun refused(id: String, code: Int?): Outcome {
         store.markRefused(id)
-        history?.markRefused(id = id, code = refusalCodeOf(result))
+        history?.markRefused(id = id, code = code)
+        return Outcome.REFUSED
     }
 
-    private suspend fun jpeg(path: String): ByteArray = withContext(ioContext) { File(path).readBytes() }
+    private suspend fun jpeg(path: String): ByteArray? =
+        withContext(ioContext) {
+            try {
+                File(path).readBytes()
+            } catch (_: IOException) {
+                null
+            }
+        }
 }
 
 /**
@@ -285,8 +301,8 @@ internal fun outcomeOf(result: ApiResult<*>): Outcome =
     }
 
 /**
- * Wynik edycji [result]: konflikt wersji czeka w telefonie na wybór Zbierającego, bez ponawiania w kółko
- * (US9.3, BR-10).
+ * Wynik edycji [result]: konflikt wersji (409) zostaje w telefonie jako „Nie wysłano”, bez ponawiania w kółko.
+ * Wersja z serwera trafia do wiersza kolejki i historii, więc ponowny zapis poprawki idzie od niej (US9.3, BR-10).
  */
 internal fun editOutcome(result: ApiResult<SubmissionEdit>): Outcome =
     if (result is ApiResult.Success && result.value is SubmissionEdit.Conflict) {

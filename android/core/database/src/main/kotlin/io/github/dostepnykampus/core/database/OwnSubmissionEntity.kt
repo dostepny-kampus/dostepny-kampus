@@ -36,7 +36,7 @@ enum class OwnSubmissionState {
  * @property severity uciążliwość 1–3
  * @property state stan wysyłki
  * @property serverVersion wersja z serwera po wysłaniu; baza dla poprawki z C3 (BR-10)
- * @property refusalCode kod odpowiedzi HTTP przy odmowie; `null`, gdy serwer nie podał kodu
+ * @property refusalCode kod odpowiedzi HTTP przy odmowie; `null`, gdy telefon nie odczytał zgłoszenia
  * @property serverStatus status z serwera (`SubmissionStatus`, US8.2); `null` przed pierwszym odświeżeniem
  * @property rejectionReason powód odrzucenia od Weryfikatora (BR-16); `null` poza odrzuceniem
  */

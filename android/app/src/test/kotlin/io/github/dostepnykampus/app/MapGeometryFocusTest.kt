@@ -18,6 +18,7 @@ import io.github.dostepnykampus.feature.map.CampusMapView
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.campusMapData
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -40,7 +41,12 @@ class MapGeometryFocusTest {
 
     private val calls = AtomicInteger()
     private val shown = mutableListOf<CampusMapData>()
-    private val fakeMap = CampusMapView { data: CampusMapData, _, _, _, _: Modifier -> shown += data }
+    private val focuses = mutableListOf<String?>()
+    private val fakeMap =
+        CampusMapView { data: CampusMapData, selection, _, _, _, _: Modifier ->
+            shown += data
+            focuses += selection.building
+        }
     private val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
@@ -59,7 +65,7 @@ class MapGeometryFocusTest {
             },
         )
     }
-    private var focus by mutableStateOf<String?>(null)
+    private var focus by mutableStateOf<MapFocus?>(null)
 
     /**
      * Wiersz: W3, W4, O5, O6, mapa pokazana, potem zmiana zaznaczonego budynku → widok mapy dostaje geometrię
@@ -73,9 +79,9 @@ class MapGeometryFocusTest {
             }
         }
         compose.waitUntil { shown.isNotEmpty() }
-        compose.runOnIdle { focus = "C-13" }
+        compose.runOnIdle { focus = MapFocus.Building("C-13") }
         compose.waitForIdle()
-        assertEquals("zaznaczenie nie doszło do mapy", "C-13", shown.last().focus)
+        assertEquals("zaznaczenie nie doszło do mapy", "C-13", focuses.last())
         assertEquals("ekran liczy geometrię sam", listOf(MARKER), shown.map { it.labelPoints }.distinct())
         assertEquals("geometria liczona od nowa po zmianie zaznaczenia", 1, calls.get())
     }

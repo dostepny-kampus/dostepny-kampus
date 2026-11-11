@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.stream.StreamSupport;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -101,6 +102,22 @@ public final class OpenApiContract implements ResultMatcher {
      */
     public List<String> violations(final String name, final String json) {
         return this.validate("/components/schemas/".concat(name), json);
+    }
+
+    /**
+     * Wartości wyliczenia w schemacie lub w jego polu.
+     *
+     * @param pointer Względna ścieżka od components/schemas
+     * @return Wartości JSON w kolejności z kontraktu
+     */
+    public List<JsonNode> enumValues(final String pointer) {
+        final JsonNode values = this.tree().at(
+            this.resolve("/components/schemas/".concat(pointer)).concat("/enum")
+        );
+        if (!values.isArray()) {
+            throw new AssertionError("Brak wyliczenia OpenAPI dla ".concat(pointer));
+        }
+        return StreamSupport.stream(values.spliterator(), false).toList();
     }
 
     private List<String> exchange(final MvcResult result) throws Exception {

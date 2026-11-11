@@ -54,7 +54,7 @@ interface OwnSubmissionDao {
      * Oznacza odmowę serwera z kodem odpowiedzi.
      *
      * @param id identyfikator zgłoszenia
-     * @param code kod odpowiedzi HTTP; `null`, gdy serwer nie podał kodu
+     * @param code kod odpowiedzi HTTP; `null`, gdy telefon nie odczytał zgłoszenia (brak pliku zdjęcia, zły wiersz)
      */
     @Query("UPDATE own_submissions SET state = 'REFUSED', refusal_code = :code WHERE id = :id")
     suspend fun markRefused(id: String, code: Int?)

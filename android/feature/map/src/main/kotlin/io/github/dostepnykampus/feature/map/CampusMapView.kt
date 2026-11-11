@@ -21,6 +21,7 @@ import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.data.MapSelection
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import org.maplibre.android.camera.CameraPosition
@@ -36,13 +37,14 @@ private const val NIGHT_LAND_LUMINANCE = 0.5f
 /** Widok mapy za interfejsem: ekran i jego testy nie zależą od natywnej biblioteki mapy. */
 fun interface CampusMapView {
     /**
-     * Mapa [data] w widoku [camera]. Po geście widok zgłasza nowy widok przez [onCameraIdle], a po dotknięciu
-     * konturu albo miejsca obok niego symbole trafionych budynków przez [onBuildingsTouch], a po dotknięciu pustej
-     * mapy pustą listę.
+     * Mapa [data] z zaznaczeniem [selection] w widoku [camera]. Po geście widok zgłasza nowy widok przez
+     * [onCameraIdle], a po dotknięciu konturu albo miejsca obok niego symbole trafionych budynków przez
+     * [onBuildingsTouch], a po dotknięciu pustej mapy pustą listę.
      */
     @Composable
     fun Show(
         data: CampusMapData,
+        selection: MapSelection,
         camera: MapCamera,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
