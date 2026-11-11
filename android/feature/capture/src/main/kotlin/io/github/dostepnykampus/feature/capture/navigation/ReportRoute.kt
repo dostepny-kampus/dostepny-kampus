@@ -20,6 +20,8 @@ import kotlinx.serialization.Serializable
  * @property photoPath plik zdjęcia z kroku 1
  * @property group grupa barier z kroku 2
  * @property floorNumber piętro z kroku 2; `null` to „Nie wiem” albo brak pytania (BR-14)
+ * @property floorId piętro z danych PWr w budynku szczegółowym (US4.5)
+ * @property floorLabel etykieta piętra [floorId]
  * @property isFloorAsked czy krok 2 pytał o piętro
  * @property isSavedOffline potwierdzenie po zapisie bez internetu (US4.2)
  */
@@ -31,6 +33,8 @@ data class ReportRoute(
     val photoPath: String? = null,
     val group: BarrierGroup? = null,
     val floorNumber: Int? = null,
+    val floorId: String? = null,
+    val floorLabel: String? = null,
     val isFloorAsked: Boolean = false,
     val isSavedOffline: Boolean = false,
 ) : NavKey

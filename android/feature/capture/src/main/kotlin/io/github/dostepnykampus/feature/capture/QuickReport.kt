@@ -19,12 +19,16 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
  * @property photo zdjęcie z kroku 1
  * @property group grupa barier z kroku 2
  * @property floorNumber piętro z kroku 2; `null` to „Nie wiem” albo brak pytania (BR-14)
+ * @property floorId piętro z danych PWr w budynku szczegółowym zamiast [floorNumber] (US4.5)
+ * @property floorLabel etykieta piętra [floorId] do podsumowania w kroku 3
  * @property entranceId wejście z „Zgłoś barierę przy wejściu” (US4.6); `null`, gdy zgłoszenie zaczęło się z mapy
  */
 data class QuickReport(
     val photo: PendingPhotoDraft,
     val group: BarrierGroup,
     val floorNumber: Int? = null,
+    val floorId: String? = null,
+    val floorLabel: String? = null,
     val entranceId: String? = null,
 )
 
@@ -34,8 +38,14 @@ data class QuickReport(
  * @property point miejsce, w którym stoi Odwiedzający
  * @property accuracyMeters dokładność pozycji w metrach
  * @property isInBuilding czy pozycja leży w konturze budynku (BR-G2)
+ * @property buildingSymbol budynek, w którego konturze leży pozycja
  */
-data class QuickPosition(val point: GeoPoint, val accuracyMeters: Double, val isInBuilding: Boolean)
+data class QuickPosition(
+    val point: GeoPoint,
+    val accuracyMeters: Double,
+    val isInBuilding: Boolean,
+    val buildingSymbol: String? = null,
+)
 
 /**
  * Czy krok 2 pyta o piętro po wyborze grupy (BR-14): w konturze budynku i przy każdej grupie poza „Coś innego”.
@@ -54,10 +64,17 @@ fun QuickReport.content(position: QuickPosition): SubmissionContent =
         location = position.point,
         photoIds = listOf(photo.photoId),
         accuracyMeters = position.accuracyMeters,
-        floor = floorNumber?.takeIf { position.isInBuilding }?.let { SubmissionFloor(number = it) },
+        floor = floor().takeIf { position.isInBuilding },
         barrierGroup = group,
         entranceId = entranceId,
     )
+
+private fun QuickReport.floor(): SubmissionFloor? =
+    when {
+        floorId != null -> SubmissionFloor(floorId = floorId)
+        floorNumber != null -> SubmissionFloor(number = floorNumber)
+        else -> null
+    }
 
 /** Zgłoszenie z danych kroków 1 i 2 albo `null`, gdy wpis historii ich nie ma. */
 internal fun ReportRoute.quickReport(): QuickReport? {
@@ -69,6 +86,8 @@ internal fun ReportRoute.quickReport(): QuickReport? {
             photo = PendingPhotoDraft(photoId = id, path = path),
             group = chosen,
             floorNumber = floorNumber,
+            floorId = floorId,
+            floorLabel = floorLabel,
             entranceId = entranceId,
         )
     } else {
