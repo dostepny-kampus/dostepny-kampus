@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.AsCollector;
+import io.github.dostepnykampus.AsVerifier;
 import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -64,6 +65,19 @@ final class SubmissionRequests {
         return this.context.getBean(MockMvc.class)
             .perform(MockMvcRequestBuilders.get(uri))
             .andReturn().getResponse();
+    }
+
+    /**
+     * Pobiera podobne zgłoszenia jako Weryfikator.
+     *
+     * @param id Identyfikator sprawdzanego zgłoszenia
+     * @return Odpowiedź GET /submissions/{id}/similar
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    MockHttpServletResponse similar(final UUID id) throws Exception {
+        return this.context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.get("/submissions/{id}/similar", id).with(new AsVerifier())
+        ).andReturn().getResponse();
     }
 
     private MockHttpServletResponse send(

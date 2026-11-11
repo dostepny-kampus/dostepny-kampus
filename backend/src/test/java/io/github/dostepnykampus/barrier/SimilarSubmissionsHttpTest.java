@@ -100,7 +100,7 @@ final class SimilarSubmissionsHttpTest {
         MatcherAssert.assertThat(
             "Podobne zgłoszenia nieistniejącego zgłoszenia nie dają 404",
             new SubmissionRequests(context)
-                .get("/submissions/%s/similar".formatted(UUID.randomUUID())).getStatus(),
+                .similar(UUID.randomUUID()).getStatus(),
             Matchers.equalTo(404)
         );
     }
@@ -171,7 +171,7 @@ final class SimilarSubmissionsHttpTest {
          */
         List<JsonNode> similar(final UUID checked, final List<UUID> own) throws Exception {
             final MockHttpServletResponse response = new SubmissionRequests(this.context)
-                .get("/submissions/%s/similar".formatted(checked));
+                .similar(checked);
             MatcherAssert.assertThat(
                 "Podobne zgłoszenia nie dają 200", response.getStatus(), Matchers.equalTo(200)
             );
