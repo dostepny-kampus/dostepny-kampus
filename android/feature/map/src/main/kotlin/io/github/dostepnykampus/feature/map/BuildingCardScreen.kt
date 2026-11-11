@@ -39,7 +39,9 @@ import io.github.dostepnykampus.core.model.EntranceMarking
 
 /**
  * V2 Karta budynku (US2, BR-25): symbol, nazwa, wiersz o wejściach (US2.8), wejścia z oznaczeniem tekstem
- * i ikoną, zalecane pierwsze. Po otwarciu fokus, a z nim TalkBack, stoi na nagłówku (NFR-18).
+ * i ikoną, zalecane pierwsze. Nagłówek to symbol dużym napisem `displayLarge` w kolorze `primary`, a pod nim
+ * nazwa z danych `headlineMedium`; budynek bez nazwy ma sam symbol (decyzja 152). TalkBack czyta jeden nagłówek,
+ * „Budynek A-1, Gmach Główny” albo „Budynek A-4”, i po otwarciu fokus stoi na nim (NFR-18).
  * Karta nic nie mówi o barierach, bo aplikacja nie ma jeszcze ich źródła (US2.7). Czynności stoją w przewijanej
  * treści pod wierszem o wejściach, bez przypiętego pasa (reguła 10): „Sprawdź, którędy wejść” w każdym trybie,
  * „Zamknij” w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]. Pasek „Wstecz” i grupę „Wejścia”
@@ -117,7 +119,7 @@ fun BuildingCardContent(
         ) {
             OfflineWhen(isOnline = isOnline)
             if (card is BuildingCardUiState.Ready) {
-                BuildingName(symbol = symbol, name = card.name)
+                SymbolOverName(symbol = symbol, name = card.name)
                 EntranceSummaryRow(entranceSummary(card.entrances))
                 CardActions(
                     mode = mode,
@@ -138,15 +140,20 @@ private fun OfflineWhen(isOnline: Boolean) {
 }
 
 @Composable
-private fun BuildingName(symbol: String, name: String?) {
-    val visible = name ?: stringResource(R.string.mapa_budynek, symbol)
-    val spoken = if (name == null) visible else stringResource(R.string.karta_czytaj, symbol, name)
+private fun SymbolOverName(symbol: String, name: String?) {
+    val spoken =
+        name?.let { stringResource(R.string.karta_czytaj, symbol, it) } ?: stringResource(R.string.mapa_budynek, symbol)
     val focus = remember { FocusRequester() }
-    Text(
-        text = visible,
-        modifier = Modifier.semantics { contentDescription = spoken }.focusRequester(focus).focusable(),
-        style = MaterialTheme.typography.titleLarge,
-    )
+    Column(
+        modifier =
+            Modifier
+                .semantics(mergeDescendants = true) { contentDescription = spoken }
+                .focusRequester(focus)
+                .focusable(),
+    ) {
+        Text(text = symbol, style = MaterialTheme.typography.displayLarge, color = MaterialTheme.colorScheme.primary)
+        name?.let { Text(text = it, style = MaterialTheme.typography.headlineMedium) }
+    }
     LaunchedEffect(focus) { withFrameMillis { focus.requestFocus() } }
 }
 
