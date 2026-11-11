@@ -9,10 +9,13 @@ import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import org.maplibre.spatialk.geojson.LineString
 import org.maplibre.spatialk.geojson.MultiPolygon
 import org.maplibre.spatialk.geojson.Polygon
 import org.maplibre.spatialk.geojson.PolygonGeometry
 import org.maplibre.spatialk.geojson.Position
+import org.maplibre.spatialk.turf.measurement.distance
+import org.maplibre.spatialk.units.International
 
 /** Punkt modelu jako pozycja GeoJSON spatialk: długość, potem szerokość (#819). */
 fun GeoPoint.toPosition(): Position = Position(longitude = longitude, latitude = latitude)
@@ -30,6 +33,14 @@ fun GeoArea.allRings(): List<List<GeoPoint>> =
         is GeoPolygon -> rings
         is GeoMultiPolygon -> polygons.flatMap(GeoPolygon::rings)
     }
+
+/** Odległość w metrach na ziemi od [point] do najbliższej krawędzi konturu, także krawędzi otworu (Turf). */
+internal fun GeoArea.edgeDistanceMeters(point: GeoPoint): Double {
+    val position = point.toPosition()
+    return allRings().minOf { ring ->
+        distance(position, LineString(ring.map(GeoPoint::toPosition))).toDouble(International.Meters)
+    }
+}
 
 private fun positions(polygon: GeoPolygon): List<List<Position>> =
     polygon.rings.map { ring -> ring.map(GeoPoint::toPosition) }
