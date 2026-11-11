@@ -265,6 +265,13 @@ class ReportScreenTest {
     }
 
     @Test
+    fun br10_version_unknown_message() {
+        show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.VERSION_UNKNOWN))
+        compose.onNodeWithText("Nie zapisaliśmy poprawki", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Zrób zdjęcie jeszcze raz", substring = true).assertDoesNotExist()
+    }
+
+    @Test
     fun us7_4_exit_dialog() {
         show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.EXIT_ASKED))
         compose.onNodeWithText("Wyjść bez zapisu?").assertIsDisplayed()

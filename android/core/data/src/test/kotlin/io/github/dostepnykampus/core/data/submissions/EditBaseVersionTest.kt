@@ -72,9 +72,11 @@ class EditBaseVersionTest {
             store.photoResults.addLast(ApiResult.NetworkError(IOException("sieć")))
             target.sendAll()
 
-            assertThrows<IllegalArgumentException> {
-                runBlocking { target.saveEdit(EditedSubmission(ID, baseVersion = null), precise(), photo()) }
-            }
+            val refused =
+                assertThrows<SaveRefusedException> {
+                    runBlocking { target.saveEdit(EditedSubmission(ID, baseVersion = null), precise(), photo()) }
+                }
+            assertEquals(SaveRefusal.UNKNOWN_VERSION, refused.reason)
             target.sendAll()
 
             assertEquals(listOf(ID), creates)
