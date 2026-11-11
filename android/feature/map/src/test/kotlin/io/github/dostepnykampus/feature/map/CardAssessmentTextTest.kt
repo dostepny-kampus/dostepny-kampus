@@ -1,9 +1,9 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.app
+package io.github.dostepnykampus.feature.map
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.hasText
@@ -22,9 +22,6 @@ import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingDetails
 import io.github.dostepnykampus.core.network.DetailLevel
-import io.github.dostepnykampus.feature.map.BuildingCardScreen
-import io.github.dostepnykampus.feature.map.BuildingCardViewModel
-import io.github.dostepnykampus.feature.map.CardMode
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
