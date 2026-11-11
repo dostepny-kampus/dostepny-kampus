@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.SampleBuilding;
 import io.github.dostepnykampus.building.locate.Placement;
 import java.util.Optional;
 import org.hamcrest.MatcherAssert;
@@ -60,19 +61,10 @@ final class OutlinesOverlapTest {
     }
 
     private static void overlapping(final ApplicationContext context) {
-        context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO buildings (symbol, name, detail_level, outline, source)
-            VALUES ('G-902', 'Budynek drugi', 'BASIC',
-                ST_Multi(ST_GeomFromText(
-                    'POLYGON((0.001 0,0.003 0,0.003 0.001,0.001 0.001,0.001 0))',
-                    4326)),
-                '© OpenStreetMap contributors'),
-                ('G-901', 'Budynek pierwszy', 'BASIC',
-                ST_Multi(ST_GeomFromText(
-                    'POLYGON((0 0,0.002 0,0.002 0.001,0 0.001,0 0))', 4326)),
-                '© OpenStreetMap contributors')
-            """
-        ).update();
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        new SampleBuilding("G-902", "Budynek drugi", "BASIC")
+            .wkt(jdbc, "POLYGON((0.001 0,0.003 0,0.003 0.001,0.001 0.001,0.001 0))");
+        new SampleBuilding("G-901", "Budynek pierwszy", "BASIC")
+            .wkt(jdbc, "POLYGON((0 0,0.002 0,0.002 0.001,0 0.001,0 0))");
     }
 }

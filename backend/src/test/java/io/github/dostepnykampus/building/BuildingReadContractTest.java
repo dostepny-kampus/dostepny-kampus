@@ -1,11 +1,12 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.SampleBuilding;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -36,15 +37,9 @@ final class BuildingReadContractTest {
 
     @BeforeEach
     void insertBuilding(final WebApplicationContext context) {
-        context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO buildings (symbol, name, detail_level, outline, source)
-            VALUES ('G-900', 'Budynek próbny', 'BASIC',
-                ST_Multi(ST_GeomFromText(
-                    'POLYGON((0 0,0.001 0,0.001 0.001,0 0.001,0 0))', 4326)),
-                '© OpenStreetMap contributors')
-            """
-        ).update();
+        new SampleBuilding("G-900", "Budynek próbny", "BASIC").wkt(
+            context.getBean(JdbcClient.class), "POLYGON((0 0,0.001 0,0.001 0.001,0 0.001,0 0))"
+        );
     }
 
     @Test
