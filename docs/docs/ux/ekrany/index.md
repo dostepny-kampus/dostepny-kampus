@@ -104,6 +104,56 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 | --- | --- | --- |
 | [![Pierwsze otwarcie bez internetu: pole symbolu, przełącznik Mapa i Lista budynków, pod nim pasek „Bez internetu” bez daty, mapa bez mapy ulic i bez znaków barier, tylko kontury budynków z symbolami](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp) | [![Ta sama mapa przy pierwszym otwarciu w motywie ciemnym](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp) | [![Ta sama mapa przy pierwszym otwarciu przy czcionce 200%: pole symbolu w dwóch wierszach, przełącznik Mapa i Lista, pasek Bez internetu](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp) |
 
+### V1: przycisk terenu
+
+`m-v1-mapa-teren` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.6
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Mapa kampusu z przyciskiem terenu „Kampus główny” w lewym górnym rogu, nad przyciskiem Legenda; obok strzałki przesuwania mapy, plus i minus](obrazy/m-v1-mapa-teren-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-jasny.webp) | [![Ta sama mapa z przyciskiem terenu w motywie ciemnym](obrazy/m-v1-mapa-teren-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-ciemny.webp) | [![Ta sama mapa przy czcionce 200%: przycisk terenu w osobnym wierszu, Legenda i przyciski mapy pod nim](obrazy/m-v1-mapa-teren-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-jasny-200.webp) |
+
+### V1: panel „Teren na mapie”
+
+`m-v1-mapa-teren-panel` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.7
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Otwarty panel „Teren na mapie” pod przyciskiem terenu: nagłówek z przyciskiem Zamknij i pięć terenów; Kampus główny, 78 budynków, wybrany, ze znakiem wyboru; Wittigowo, 9 budynków, 2 km; Długa; T-9 Atol; Bartoszowice](obrazy/m-v1-mapa-teren-panel-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-panel-jasny.webp) | [![Ten sam panel w motywie ciemnym](obrazy/m-v1-mapa-teren-panel-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-panel-ciemny.webp) | [![Ten sam panel przy czcionce 200%: panel zastępuje przycisk terenu, widać dwa tereny i napis „Przewiń w dół”](obrazy/m-v1-mapa-teren-panel-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-panel-jasny-200.webp) |
+
+### V1: granica terenu
+
+`m-v1-mapa-teren-granica` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.7, BR-G5
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Mapa przy wschodniej granicy terenu Kampus główny: obszar poza terenem przyciemniony, granicę pokazuje linia, przy prawej krawędzi przycisk „Wittigowo 2 km” ze strzałką](obrazy/m-v1-mapa-teren-granica-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-jasny.webp) | [![Ta sama granica terenu w motywie ciemnym](obrazy/m-v1-mapa-teren-granica-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-ciemny.webp) | [![Ta sama granica terenu przy czcionce 200%: przycisk „Wittigowo 2 km” pod przyciskami mapy](obrazy/m-v1-mapa-teren-granica-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-jasny-200.webp) |
+
+### V1: wynik z innego terenu
+
+`m-v1-mapa-teren-wynik` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Wpisany symbol T-15 i wynik pod polem: Dom Studencki „Hades”, Budynek T-15, dopisek „Wittigowo · inny teren”; pod wynikiem mapa terenu Kampus główny](obrazy/m-v1-mapa-teren-wynik-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-wynik-jasny.webp) | [![Ten sam wynik w motywie ciemnym](obrazy/m-v1-mapa-teren-wynik-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-wynik-ciemny.webp) | [![Ten sam wynik przy czcionce 200%: nazwa budynku i dopisek terenu w kilku wierszach](obrazy/m-v1-mapa-teren-wynik-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-wynik-jasny-200.webp) |
+
+### V1: mapa po zmianie terenu
+
+`m-v1-mapa-teren-zmiana` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Mapa terenu Wittigowo po wybraniu budynku T-15: przycisk terenu „Wittigowo”, budynki T-15, T-16, T-17, T-22, P-20, P-22 i P-23, nad podpisem mapy napis „Pokazuję teren: Wittigowo”](obrazy/m-v1-mapa-teren-zmiana-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-jasny.webp) | [![Ta sama mapa terenu Wittigowo w motywie ciemnym](obrazy/m-v1-mapa-teren-zmiana-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-ciemny.webp) | [![Ta sama mapa terenu Wittigowo przy czcionce 200%: napis „Pokazuję teren: Wittigowo” w dwóch wierszach](obrazy/m-v1-mapa-teren-zmiana-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-jasny-200.webp) |
+
+### V1: lista budynków według terenów
+
+`m-v1-mapa-teren-lista` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8, NFR-19
+
+Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista ma wszystkie budynki.
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Lista budynków z nagłówkami terenów: „Kampus główny · 78”, „Wittigowo · 9”, „Długa · 4”, „T-9 Atol · 1”, „Bartoszowice · 3”; pod każdym nagłówkiem karty budynków](obrazy/m-v1-mapa-teren-lista-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-lista-jasny.webp) | [![Ta sama lista z nagłówkami terenów w motywie ciemnym](obrazy/m-v1-mapa-teren-lista-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-lista-ciemny.webp) | [![Ta sama lista z nagłówkami terenów przy czcionce 200%](obrazy/m-v1-mapa-teren-lista-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-lista-jasny-200.webp) |
+
 ## V2 Karta budynku
 
 Wymagania: [V2 Karta budynku](../wymagania-ekranow.md#v2-karta-budynku).
