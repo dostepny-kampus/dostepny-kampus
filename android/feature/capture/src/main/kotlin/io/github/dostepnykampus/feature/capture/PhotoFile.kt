@@ -20,9 +20,6 @@ internal const val PHOTO_DIR = "zdjecia"
 
 private const val PHOTO_PIXELS = 2048
 private const val JPEG_QUALITY = 85
-private const val QUARTER_TURN = 90f
-private const val HALF_TURN = 180f
-private const val THREE_QUARTER_TURN = 270f
 private const val TEMP_SUFFIX = ".tmp"
 
 /**
@@ -38,15 +35,6 @@ internal fun scaledSize(width: Int, height: Int, limit: Int = PHOTO_PIXELS): Pai
     return maxOf(a = 1, b = (width * scale).toInt()) to maxOf(a = 1, b = (height * scale).toInt())
 }
 
-/** Obrót w stopniach z orientacji EXIF aparatu, żeby zdjęcie po przekodowaniu nie leżało bokiem. */
-internal fun rotationDegrees(orientation: Int): Float =
-    when (orientation) {
-        ExifInterface.ORIENTATION_ROTATE_90 -> QUARTER_TURN
-        ExifInterface.ORIENTATION_ROTATE_180 -> HALF_TURN
-        ExifInterface.ORIENTATION_ROTATE_270 -> THREE_QUARTER_TURN
-        else -> 0f
-    }
-
 /** Największa potęga dwójki, po której dłuższy bok zostaje co najmniej [limit] pikseli. */
 internal fun decodeSample(longerSide: Int, limit: Int = PHOTO_PIXELS): Int {
     var sample = 1
@@ -55,24 +43,34 @@ internal fun decodeSample(longerSide: Int, limit: Int = PHOTO_PIXELS): Int {
 }
 
 /**
- * Przekodowuje zdjęcie z aparatu: obraca według EXIF, zmniejsza do [PHOTO_PIXELS] i zapisuje jako JPEG
+ * Odczytuje obraz z [path] co potęgę dwójki tak, by dłuższy bok został co najmniej [limit] pikseli, bez czytania
+ * do pamięci pełnego JPEG z aparatu.
+ *
+ * @return obraz albo `null`, gdy pliku nie da się odczytać jako obrazu
+ */
+internal fun decodeSampled(path: String, limit: Int = PHOTO_PIXELS): Bitmap? {
+    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeFile(path, bounds)
+    val sample = decodeSample(longerSide = maxOf(a = bounds.outWidth, b = bounds.outHeight), limit = limit)
+    return BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sample })
+}
+
+/**
+ * Przekodowuje zdjęcie z aparatu: obraca i odbija według EXIF, zmniejsza do [PHOTO_PIXELS] i zapisuje jako JPEG
  * bez metadanych, więc w pliku nie zostaje położenie z aparatu ani model telefonu (NFR-34).
  * Nowy plik zastępuje oryginał dopiero po udanym zapisie, przez [replaceFile].
  *
  * @return `false`, gdy pliku nie da się odczytać jako obrazu, np. aparat nic nie zapisał, albo zapis się nie udał
  */
 internal fun shrinkPhoto(file: File): Boolean {
-    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    BitmapFactory.decodeFile(file.path, bounds)
-    val sample = decodeSample(longerSide = maxOf(a = bounds.outWidth, b = bounds.outHeight))
-    val decoded =
-        BitmapFactory.decodeFile(file.path, BitmapFactory.Options().apply { inSampleSize = sample }) ?: return false
-    val orientation = ExifInterface(file.path).getAttributeInt(ExifInterface.TAG_ORIENTATION, 0)
+    val decoded = decodeSampled(file.path) ?: return false
+    val exif = ExifInterface(file.path)
     val (width, height) = scaledSize(width = decoded.width, height = decoded.height)
     val matrix =
         Matrix().apply {
             postScale(width.toFloat() / decoded.width, height.toFloat() / decoded.height)
-            postRotate(rotationDegrees(orientation))
+            if (exif.isFlipped) postScale(-1f, 1f)
+            postRotate(exif.rotationDegrees.toFloat())
         }
     val result = Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height, matrix, true)
     return replaceFile(file) { result.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, it) }
