@@ -178,15 +178,14 @@ final class SecurityContractTest {
             for (final String who : callers) {
                 final int wanted = SecurityContractTest.wanted(rule.getValue(), who);
                 final int status = probe.status(rule.getKey(), who);
-                if (wanted == 0 && (status == 401 || status == 403)) {
+                String label = "innego niż 401 i 403";
+                if (wanted != 0) {
+                    label = String.valueOf(wanted);
+                }
+                if (wanted == 0 && (status == 401 || status == 403) || wanted > 0 && wanted != status) {
                     found.add(
-                        "%s, %s: status %d, kontrakt wymaga innego niż 401 i 403"
-                            .formatted(rule.getKey(), who, status)
-                    );
-                } else if (wanted != 0 && wanted != status) {
-                    found.add(
-                        "%s, %s: status %d, kontrakt wymaga %d"
-                            .formatted(rule.getKey(), who, status, wanted)
+                        "%s, %s: status %d, kontrakt wymaga %s"
+                            .formatted(rule.getKey(), who, status, label)
                     );
                 }
             }
