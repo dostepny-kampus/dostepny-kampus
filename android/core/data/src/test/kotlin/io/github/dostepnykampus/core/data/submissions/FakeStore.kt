@@ -71,6 +71,11 @@ internal class FakeStore : PendingSubmissionDao {
         }
     }
 
+    override suspend fun photoPaths(submissionId: String): List<String> {
+        val row = rows.find { it.submission.id == submissionId } ?: return emptyList()
+        return row.photos.map { it.path }
+    }
+
     override suspend fun deletePhotos(submissionId: String) {
         rows.replaceAll { item -> if (item.submission.id == submissionId) item.copy(photos = emptyList()) else item }
     }

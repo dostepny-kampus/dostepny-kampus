@@ -169,7 +169,8 @@ class SubmissionQueue(
             val baseVersion = baseVersionOf(edited = edited, store = store, history = history)
             val fresh = content.toPendingSubmissionEntity(id = edited.id, savedAtMillis = savedAt)
             val entity = fresh.copy(baseVersion = baseVersion)
-            store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
+            val replaced = store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
+            deletePhotoFiles(replaced, ioContext)
             remember(entity)
         }
         runCatching(onSaved)
@@ -254,6 +255,7 @@ class SubmissionQueue(
             store.markUploaded(submissionId = item.submission.id, photoId = photo.photoId)
         }
         store.delete(item.submission.id)
+        deletePhotoFiles(item.photos.map { it.path }, ioContext)
         history?.markSent(id = item.submission.id)
         return Outcome.SENT
     }
@@ -272,6 +274,14 @@ class SubmissionQueue(
                 null
             }
         }
+}
+
+/**
+ * Usuwa pliki zdjęć, których kolejka już nie potrzebuje: po wysłaniu całego zgłoszenia albo po zastąpieniu zdjęcia
+ * poprawką (#857). Pliki zgłoszenia czekającego zostają, bo poprawka z C3 może je jeszcze pokazać i wysłać.
+ */
+internal suspend fun deletePhotoFiles(paths: List<String>, ioContext: CoroutineContext) {
+    if (paths.isNotEmpty()) withContext(ioContext) { paths.forEach { File(it).delete() } }
 }
 
 /**
