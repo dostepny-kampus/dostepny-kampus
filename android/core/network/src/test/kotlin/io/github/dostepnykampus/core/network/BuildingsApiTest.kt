@@ -23,7 +23,10 @@ import java.net.HttpURLConnection.HTTP_INTERNAL_ERROR
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_OK
 
-/** Odczyty budynków i pięter na MockWebServer: sukces, 404, zły JSON, zerwane połączenie i błąd serwera. */
+/**
+ * Odczyty budynków i pięter na MockWebServer: sukces, 404, zły JSON, kontur niebędący wielokątem,
+ * zerwane połączenie i błąd serwera.
+ */
 class BuildingsApiTest {
     private val server = MockWebServer()
     private val json = Json
@@ -95,6 +98,15 @@ class BuildingsApiTest {
     @Test
     fun malformed_json() {
         enqueue(HTTP_OK, "{")
+        val error = assertInstanceOf(ApiResult.ServerError::class.java, blocking { listBuildings() })
+        assertEquals(HTTP_OK, error.code)
+        assertInstanceOf(IllegalArgumentException::class.java, error.cause)
+    }
+
+    @Test
+    fun us1_outline_not_polygon() {
+        val line = """{"type":"LineString","coordinates":[[17,51],[18,51]]}"""
+        enqueue(HTTP_OK, LIST.replace(OUTLINE, line))
         val error = assertInstanceOf(ApiResult.ServerError::class.java, blocking { listBuildings() })
         assertEquals(HTTP_OK, error.code)
         assertInstanceOf(IllegalArgumentException::class.java, error.cause)
