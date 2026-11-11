@@ -183,7 +183,8 @@ class SubmissionQueue(
      * zostawia zgłoszenie w telefonie jako odrzucone, nie wysyła go ponownie i przechodzi do następnego; wraca do
      * wysyłki dopiero po ponownym zapisie przez osobę ([saveEdit], BR-26, NFR-5, US9.2). Tak samo kończy się
      * zgłoszenie, którego telefon nie odczyta (brak pliku zdjęcia, nieznana wartość w bazie), ale bez kodu odmowy,
-     * więc jeden zły wiersz nie zatrzymuje kolejki.
+     * więc jeden zły wiersz nie zatrzymuje kolejki. Kolejka jest czytana po każdym zgłoszeniu, więc zgłoszenie
+     * zapisane w trakcie wysyłki idzie w tym samym przebiegu; każde jest próbowane raz na przebieg (#854).
      *
      * @return `false`, gdy trzeba spróbować później; `true`, gdy wysyłka doszła do końca kolejki albo czeka
      *   na zalogowanie, a nie na czas
@@ -205,10 +206,17 @@ class SubmissionQueue(
         if (entity.isOwnHistory()) history?.save(entity.toOwnSubmissionEntity())
     }
 
-    private suspend fun sendUntilStop(): Outcome? =
-        store.all().firstNotNullOfOrNull { item ->
-            sendOne(item).takeIf { it == Outcome.LATER || it == Outcome.LOGIN_EXPIRED }
+    private suspend fun sendUntilStop(): Outcome? {
+        val tried = mutableSetOf<String>()
+        var stop: Outcome? = null
+        var next = store.all().firstOrNull()
+        while (next != null && stop == null) {
+            tried += next.submission.id
+            stop = sendOne(next).takeIf { it == Outcome.LATER || it == Outcome.LOGIN_EXPIRED }
+            next = store.all().firstOrNull { it.submission.id !in tried }
         }
+        return stop
+    }
 
     private suspend fun sendOne(item: PendingSubmissionWithPhotos): Outcome =
         if (item.submission.isCreatedOnServer) {

@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
@@ -23,11 +23,23 @@ import androidx.work.WorkManager
 class SubmissionSyncScheduler(context: Context) {
     private val workManager: WorkManager by lazy { WorkManager.getInstance(context.applicationContext) }
 
-    /** Planuje wysyłkę; powtórne wywołanie nie dubluje zadania. */
+    /** Planuje wysyłkę przy starcie aplikacji; powtórne wywołanie nie dubluje zadania. */
     fun schedule() {
+        enqueue(ExistingWorkPolicy.KEEP)
+    }
+
+    /**
+     * Planuje wysyłkę po zapisie zgłoszenia. Zadanie, które już działa, mogło przeczytać kolejkę przed zapisem, więc
+     * nowe zadanie dochodzi po nim zamiast przepaść; dwa zadania nigdy nie działają naraz (#854).
+     */
+    fun scheduleAfterSave() {
+        enqueue(ExistingWorkPolicy.APPEND_OR_REPLACE)
+    }
+
+    private fun enqueue(policy: ExistingWorkPolicy) {
         val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
         val work = OneTimeWorkRequestBuilder<SubmissionSyncWorker>().setConstraints(constraints).build()
-        workManager.enqueueUniqueWork(SUBMISSION_SYNC_WORK, ExistingWorkPolicy.KEEP, work)
+        workManager.enqueueUniqueWork(SUBMISSION_SYNC_WORK, policy, work)
     }
 }
 
