@@ -36,14 +36,20 @@ fun CampusMapData.areaOf(chosen: String?, symbol: String?): MapArea? =
  * się między środkami prostokątów terenów (US1.7).
  */
 fun CampusMapData.areaChoices(current: MapArea): List<AreaChoice> {
-    val from = current.bounds.center.toPosition()
-    val away = (areas - current).associateWith { distance(from, it.bounds.center.toPosition()).inKilometers }
+    val away = (areas - current).associateWith { current.bounds.kilometersTo(it.bounds) }
     val others = away.entries.sortedBy { it.value }.map { (area, kilometers) -> area.choice(kilometers) }
     val shown = AreaChoice(name = current.name, buildings = current.symbols.size, kilometers = null)
     return listOf(shown) + others
 }
 
 private fun MapArea.choice(kilometers: Double) =
-    AreaChoice(name = name, buildings = symbols.size, kilometers = kilometers.roundToInt().coerceAtLeast(1))
+    AreaChoice(name = name, buildings = symbols.size, kilometers = fullKilometers(kilometers))
+
+/** Odległość w kilometrach między środkami prostokątów terenów (US1.7). */
+internal fun CampusBounds.kilometersTo(other: CampusBounds): Double =
+    distance(from = center.toPosition(), to = other.center.toPosition()).inKilometers
+
+/** Odległość [kilometers] w pełnych kilometrach, co najmniej 1: tak czyta ją osoba na liście i przycisku (US1.7). */
+internal fun fullKilometers(kilometers: Double): Int = kilometers.roundToInt().coerceAtLeast(1)
 
 private fun GeoPoint.toPosition(): Position = Position(longitude, latitude)
