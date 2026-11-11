@@ -216,6 +216,14 @@ Nad kartą zostają przyciski mapy, a zaznaczony budynek mieści się w części
 | --- | --- | --- |
 | [![Opis budynku A-1 z telefonu: nad nazwą „Bez internetu · dane z 27.10.2026”, a przy jednej barierze zamiast rysunku napis „Zdjęcie zobaczysz po połączeniu z internetem.”](obrazy/m-v2-karta-budynku-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-brak-sieci-jasny.webp) | [![Ten sam opis bez internetu w motywie ciemnym](obrazy/m-v2-karta-budynku-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-brak-sieci-ciemny.webp) | [![Ten sam opis bez internetu przy czcionce 200%: pasek Bez internetu w dwóch wierszach nad nazwą budynku](obrazy/m-v2-karta-budynku-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-brak-sieci-jasny-200.webp) |
 
+### V2: mała karta bez internetu
+
+`m-v2-karta-budynku-mala-brak-sieci`. Plakietka „Bez internetu” stoi nad symbolem, w tym samym miejscu co na pełnym ekranie. Mapa nad kartą nie ma podkładu.
+
+| Jasny | Ciemny |
+| --- | --- |
+| [![Mała karta budynku A-1 bez internetu: mapa bez podkładu z konturami, podpisami budynków i przyciskami mapy, a na karcie plakietka Bez internetu · dane z 27.10.2026 nad symbolem A-1, nazwa Gmach Główny, wiersz Wejście dostępne i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-brak-sieci-jasny.webp) | [![Ta sama mała karta bez internetu w motywie ciemnym](obrazy/m-v2-karta-budynku-mala-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-brak-sieci-ciemny.webp) |
+
 ### V2: budynku nie ma w telefonie (C-13)
 
 `m-v2-karta-budynku-brak-w-telefonie` · [makieta low-fi](../makiety/odwiedzajacy.md#v2-budynku-nie-ma-w-telefonie)
