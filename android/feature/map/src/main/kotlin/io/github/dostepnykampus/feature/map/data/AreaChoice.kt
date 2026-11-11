@@ -1,12 +1,12 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map.data
 
+import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.core.model.GeoPoint
-import org.maplibre.spatialk.geojson.Position
 import org.maplibre.spatialk.turf.measurement.distance
 import org.maplibre.spatialk.units.extensions.inKilometers
 import kotlin.math.roundToInt
@@ -51,5 +51,3 @@ internal fun CampusBounds.kilometersTo(other: CampusBounds): Double =
 
 /** Odległość [kilometers] w pełnych kilometrach, co najmniej 1: tak czyta ją osoba na liście i przycisku (US1.7). */
 internal fun fullKilometers(kilometers: Double): Int = kilometers.roundToInt().coerceAtLeast(1)
-
-private fun GeoPoint.toPosition(): Position = Position(longitude, latitude)

@@ -1,18 +1,19 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map.data
 
+import io.github.dostepnykampus.core.geo.allRings
 import io.github.dostepnykampus.core.geo.campusAreas
 import io.github.dostepnykampus.core.geo.labelPoint
+import io.github.dostepnykampus.core.geo.toGeometry
+import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoArea
-import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.GeoPolygon
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -21,10 +22,7 @@ import org.maplibre.spatialk.geojson.BoundingBox
 import org.maplibre.spatialk.geojson.Feature
 import org.maplibre.spatialk.geojson.FeatureCollection
 import org.maplibre.spatialk.geojson.GeoJsonObject
-import org.maplibre.spatialk.geojson.MultiPolygon
 import org.maplibre.spatialk.geojson.Point
-import org.maplibre.spatialk.geojson.Polygon
-import org.maplibre.spatialk.geojson.PolygonGeometry
 import org.maplibre.spatialk.geojson.Position
 import org.maplibre.spatialk.turf.measurement.computeBbox
 import org.maplibre.spatialk.turf.measurement.offset
@@ -170,13 +168,11 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
  */
 fun symbolsOf(labels: List<String>): List<String> = labels.flatMap { it.split(LABEL_SEPARATOR) }.distinct()
 
-private fun center(points: List<GeoPoint>): GeoPoint? =
-    points.takeIf { it.isNotEmpty() }?.let { all ->
-        GeoPoint(
-            longitude = (all.minOf(GeoPoint::longitude) + all.maxOf(GeoPoint::longitude)) / 2,
-            latitude = (all.minOf(GeoPoint::latitude) + all.maxOf(GeoPoint::latitude)) / 2,
-        )
-    }
+private fun center(points: List<GeoPoint>): GeoPoint? {
+    if (points.isEmpty()) return null
+    val box = computeBbox(points.map(GeoPoint::toPosition))
+    return GeoPoint(longitude = (box.west + box.east) / 2, latitude = (box.south + box.north) / 2)
+}
 
 private fun campusBounds(points: List<GeoPoint>): CampusBounds? =
     points.takeIf { it.isNotEmpty() }?.let { all -> computeBbox(all.map(GeoPoint::toPosition)).withCampusMargin() }
@@ -191,18 +187,4 @@ private fun BoundingBox.withCampusMargin(): CampusBounds {
     )
 }
 
-private fun GeoPoint.toPosition(): Position = Position(longitude, latitude)
-
-private fun GeoPolygon.toPositions(): List<List<Position>> = rings.map { ring -> ring.map(GeoPoint::toPosition) }
-
-private fun GeoArea.toGeometry(): PolygonGeometry =
-    when (this) {
-        is GeoPolygon -> Polygon(toPositions())
-        is GeoMultiPolygon -> MultiPolygon(polygons.map(GeoPolygon::toPositions))
-    }
-
-private fun GeoArea.points(): List<GeoPoint> =
-    when (this) {
-        is GeoPolygon -> rings.flatten()
-        is GeoMultiPolygon -> polygons.flatMap { it.rings.flatten() }
-    }
+private fun GeoArea.points(): List<GeoPoint> = allRings().flatten()
