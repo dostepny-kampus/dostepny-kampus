@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.SampleBuilding;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -290,19 +291,7 @@ final class BuildingsHttpTest {
         final String level,
         final String outline
     ) {
-        jdbc.sql(
-            """
-            INSERT INTO buildings (symbol, name, detail_level, outline, source)
-            VALUES (:symbol, :name, :level,
-                ST_SetSRID(ST_GeomFromGeoJSON(:outline), 4326),
-                :source)
-            """
-        ).param("symbol", symbol)
-            .param("name", "Budynek %s".formatted(symbol))
-            .param("level", level)
-            .param("outline", outline)
-            .param("source", "© OpenStreetMap contributors")
-            .update();
+        new SampleBuilding(symbol, "Budynek %s".formatted(symbol), level).geoJson(jdbc, outline);
     }
 
     private static void insertUnnamed(
@@ -311,18 +300,7 @@ final class BuildingsHttpTest {
         final String level,
         final String outline
     ) {
-        jdbc.sql(
-            """
-            INSERT INTO buildings (symbol, name, detail_level, outline, source)
-            VALUES (:symbol, NULL, :level,
-                ST_SetSRID(ST_GeomFromGeoJSON(:outline), 4326),
-                :source)
-            """
-        ).param("symbol", symbol)
-            .param("level", level)
-            .param("outline", outline)
-            .param("source", "© OpenStreetMap contributors")
-            .update();
+        new SampleBuilding(symbol, null, level).geoJson(jdbc, outline);
     }
 
     private static String listedUnnamed() {

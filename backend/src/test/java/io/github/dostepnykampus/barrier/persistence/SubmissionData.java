@@ -1,10 +1,11 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier.persistence;
 
+import io.github.dostepnykampus.SampleBuilding;
 import io.github.dostepnykampus.barrier.domain.BarrierDetails;
 import io.github.dostepnykampus.barrier.domain.BarrierGroup;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
@@ -51,15 +52,10 @@ final class SubmissionData {
         final SubmissionData data = new SubmissionData(
             context.getBean(JdbcClient.class), context.getBean(JdbcSubmissions.class)
         );
-        data.jdbc.sql(
-            """
-            INSERT INTO buildings (symbol, name, detail_level, outline, source)
-            SELECT symbol, 'Budynek próbny', 'BASIC', ST_Multi(ST_GeomFromText(
-                'POLYGON((0 0,0.001 0,0.001 0.001,0 0.001,0 0))', 4326)), 'OSM'
-            FROM (VALUES ('J-900'), ('J-901')) AS b (symbol)
-            ON CONFLICT (symbol) DO NOTHING
-            """
-        ).update();
+        for (final String symbol : List.of(SubmissionData.BUILDING, SubmissionData.OTHER)) {
+            new SampleBuilding(symbol, "Budynek próbny", "BASIC")
+                .wkt(data.jdbc, "POLYGON((0 0,0.001 0,0.001 0.001,0 0.001,0 0))");
+        }
         return data;
     }
 
