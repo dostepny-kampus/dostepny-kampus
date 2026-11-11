@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.database.OwnSubmissionEntity
+import io.github.dostepnykampus.core.model.SubmissionStatus
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
 
@@ -31,6 +32,8 @@ enum class SendState {
  * @property floorNumber numer piętra budynku podstawowego
  * @property state stan wysyłki
  * @property refusalCode kod odpowiedzi HTTP odmowy; `null`, gdy serwer nie odmówił albo nie podał kodu
+ * @property serverStatus status z serwera po odświeżeniu (US8.2); `null`, gdy telefon go jeszcze nie zna
+ * @property rejectionReason powód odrzucenia od Weryfikatora (BR-16); `null` poza odrzuceniem
  */
 data class OwnSubmission(
     val id: String,
@@ -40,6 +43,8 @@ data class OwnSubmission(
     val floorNumber: Int?,
     val state: SendState,
     val refusalCode: Int?,
+    val serverStatus: SubmissionStatus? = null,
+    val rejectionReason: String? = null,
 )
 
 /** Własne zgłoszenia od najnowszego; w aplikacji z historii Room (US8.1, NFR-5). */
@@ -57,4 +62,6 @@ internal fun OwnSubmissionEntity.toOwnSubmission(): OwnSubmission =
         floorNumber = floorNumber,
         state = SendState.valueOf(state.name),
         refusalCode = refusalCode,
+        serverStatus = SubmissionStatus.entries.find { it.name == serverStatus },
+        rejectionReason = rejectionReason,
     )

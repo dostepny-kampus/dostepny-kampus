@@ -23,11 +23,13 @@ import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.start.FirstLaunchRepository
 import io.github.dostepnykampus.core.data.start.startDataStore
+import io.github.dostepnykampus.core.data.submissions.OwnStatuses
 import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
 import io.github.dostepnykampus.core.data.submissions.PendingEdits
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
+import io.github.dostepnykampus.core.data.submissions.ownStatusesOf
 import io.github.dostepnykampus.core.data.submissions.pendingEditsOf
 import io.github.dostepnykampus.core.data.submissions.toOwnSubmission
 import io.github.dostepnykampus.core.database.BuildingCacheDao
@@ -110,4 +112,8 @@ object DataModule {
     /** Zgłoszenia z kolejki telefonu do poprawki w C2 (US8.3). */
     @Provides
     fun pendingEdits(store: PendingEditDao): PendingEdits = pendingEditsOf(store)
+
+    /** Odświeżenie statusów listy C3 z serwera (US8.2). */
+    @Provides
+    fun ownStatuses(api: SubmissionsApi, history: OwnSubmissionDao): OwnStatuses = ownStatusesOf(api::mine, history)
 }
