@@ -29,7 +29,7 @@ data class Entrance(
     val marking: EntranceMarking,
     val assessment: EntranceAssessment? = null,
 ) {
-    /** Czy wejście jest dostępne dla odwiedzających ze względu na jego rodzaj (BR-25). */
+    /** Czy rodzaj wejścia kwalifikuje je do pokazania odwiedzającym (BR-25). */
     val isForVisitors: Boolean
         get() =
             when (type) {

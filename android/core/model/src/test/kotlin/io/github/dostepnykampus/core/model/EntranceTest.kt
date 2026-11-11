@@ -47,7 +47,7 @@ class EntranceTest {
     }
 
     @Test
-    fun br25_only_visitor_entrance_types_are_included() {
+    fun br25_filters_entrance_types() {
         val types = listOf("main", "emergency", "service", "exit", "staircase", "garage", "yes", null)
         val visitors = types.map { sideEntrance.copy(type = it) }.filter(Entrance::isForVisitors)
 
