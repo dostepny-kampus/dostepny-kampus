@@ -123,6 +123,7 @@
     <string name="moje_nie_wyslano">Nie wysłano</string>
     <string name="moje_brak_uprawnien">Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.</string>
     <string name="moje_nie_odczytano">Telefon nie może odczytać tego zgłoszenia, np. brakuje pliku zdjęcia. Otwórz je, popraw i zapisz ponownie.</string>
+    <string name="moje_zmienione_na_serwerze">Ktoś zmienił to zgłoszenie na serwerze po rozpoczęciu poprawki. Otwórz je, sprawdź i zapisz ponownie.</string>
     <string name="moje_nie_przyjal">Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.</string>
     <string name="moje_otworz">Otwórz</string>
     <string name="moje_w_weryfikacji">W weryfikacji</string>

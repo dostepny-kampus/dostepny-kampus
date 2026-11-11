@@ -145,4 +145,5 @@ private fun RefusalReason.textRes(): Int =
         RefusalReason.NO_PERMISSION -> R.string.moje_brak_uprawnien
         RefusalReason.NOT_ACCEPTED -> R.string.moje_nie_przyjal
         RefusalReason.UNREADABLE -> R.string.moje_nie_odczytano
+        RefusalReason.CHANGED_ON_SERVER -> R.string.moje_zmienione_na_serwerze
     }

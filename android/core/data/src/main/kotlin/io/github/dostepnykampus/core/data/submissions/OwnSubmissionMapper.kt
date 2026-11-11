@@ -41,6 +41,12 @@ internal fun versionOf(result: ApiResult<*>): Int? {
     }
 }
 
+/** Wersja z serwera z odpowiedzi 409 na edycję; `null` przy innym wyniku (US9.3, BR-10). */
+internal fun conflictVersionOf(result: ApiResult<*>): Int? {
+    val conflict = (result as? ApiResult.Success)?.value as? SubmissionEdit.Conflict
+    return conflict?.run { server.version }
+}
+
 /** Kod odpowiedzi HTTP odmowy do pokazania przy „Nie wysłano”; `null`, gdy serwer nie odmówił. */
 internal fun refusalCodeOf(result: ApiResult<*>): Int? =
     when (result) {
