@@ -292,8 +292,15 @@ private fun MapOverlay(
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit,
 ) {
+    var isLegendOpen by rememberSaveable { mutableStateOf(false) }
     Box(modifier) {
-        if (hasControls) MapControls(camera, onCameraChange, modifier = Modifier.align(Alignment.TopEnd))
+        if (hasControls && !isLegendOpen) {
+            MapControls(camera, onCameraChange, modifier = Modifier.align(Alignment.TopEnd))
+        }
+        if (hasControls) {
+            val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
+            MapLegend(isOpen = isLegendOpen, onOpenChange = { isLegendOpen = it }, modifier = above)
+        }
         OsmAttribution(Modifier.align(Alignment.BottomStart))
         content()
     }
