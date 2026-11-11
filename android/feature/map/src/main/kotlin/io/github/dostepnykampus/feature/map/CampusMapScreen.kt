@@ -226,7 +226,7 @@ private fun CampusMap(
     modifier: Modifier = Modifier,
 ) {
     val chosen = rememberChosenEntrance(catalog, entrance)
-    val data = remember(layers, focus, chosen) { layers?.copy(focus = focus, selectedEntrance = chosen) }
+    val data = rememberMapData(layers = layers, focus = focus, chosen = chosen, shown = show?.symbol)
     val showPoint = remember(catalog, show) { catalog?.pointOf(show?.symbol) }
     val view = rememberCameraView(entranceId = entrance?.id, show = show, showPoint = showPoint)
     var choice by rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }

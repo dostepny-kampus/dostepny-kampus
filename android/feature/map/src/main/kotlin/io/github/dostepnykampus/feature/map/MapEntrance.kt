@@ -14,7 +14,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
+import io.github.dostepnykampus.feature.map.data.onAreaOf
 import io.github.dostepnykampus.feature.map.data.selectedEntrance
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
@@ -47,4 +49,21 @@ internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocu
 internal fun EntranceDescription(chosen: SelectedEntrance) {
     val text = stringResource(R.string.mapa_zaznaczone_wejscie, chosen.label, chosen.buildingSymbol)
     Spacer(Modifier.fillMaxSize().semantics { contentDescription = text })
+}
+
+/**
+ * Dane mapy z zaznaczeniem [focus] i wejściem [chosen] na terenie pokazanego budynku: [shown], a bez niego [focus]
+ * albo budynek wejścia. Budynek z innego terenu przenosi na swój teren granicę mapy (US1.8, BR-G5).
+ */
+@Composable
+internal fun rememberMapData(
+    layers: CampusMapData?,
+    focus: String?,
+    chosen: SelectedEntrance?,
+    shown: String?,
+): CampusMapData? {
+    val symbol = shown ?: focus ?: chosen?.buildingSymbol
+    return remember(layers, focus, chosen, symbol) {
+        layers?.run { onAreaOf(symbol).copy(focus = focus, selectedEntrance = chosen) }
+    }
 }

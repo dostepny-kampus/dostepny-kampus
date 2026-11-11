@@ -56,6 +56,7 @@ private val CAMPUS_MARGIN = 500.meters
  * @property bounds teren pokazany na mapie: najmniejszy prostokąt z konturami budynków terenu, na którym stoi
  *   [START_BUILDING], powiększony o 500 m z każdej strony (BR-G5, NFR-39). Bez tego budynku to pierwszy teren
  *   katalogu; `null` bez budynków
+ * @property areas tereny PWr z katalogu, każdy z prostokątem jak [bounds] (BR-G5)
  */
 data class CampusMapData(
     val buildings: String,
@@ -66,7 +67,24 @@ data class CampusMapData(
     val focus: String? = null,
     val selectedEntrance: SelectedEntrance? = null,
     val bounds: CampusBounds? = null,
+    val areas: List<MapArea> = emptyList(),
 )
+
+/**
+ * Te same dane z mapą na terenie budynku [symbol]: budynek pokazany z V2 albo z wyszukiwania może stać na innym
+ * terenie niż [START_BUILDING] (US1.8, BR-G5). Bez symbolu i dla symbolu spoza katalogu teren się nie zmienia.
+ */
+fun CampusMapData.onAreaOf(symbol: String?): CampusMapData =
+    areas.firstOrNull { symbol in it.symbols }?.let { copy(bounds = it.bounds) } ?: this
+
+/**
+ * Teren PWr na mapie (BR-G5).
+ *
+ * @property name nazwa terenu, np. „Kampus główny”
+ * @property symbols symbole budynków terenu
+ * @property bounds prostokąt konturów budynków terenu powiększony o 500 m z każdej strony (NFR-39)
+ */
+data class MapArea(val name: String, val symbols: List<String>, val bounds: CampusBounds)
 
 /**
  * Wejście zaznaczone na mapie pinezką z podpisem (US3.3, decyzja 134).
@@ -135,16 +153,19 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
             Feature(Point(entrance.location.toPosition()), properties)
         }
     val startBuildings = catalog.buildings.filter { it.symbol == START_BUILDING }.ifEmpty { catalog.buildings }
-    val areas = campusAreas(catalog.buildings)
+    val areas =
+        campusAreas(catalog.buildings).mapNotNull { area ->
+            campusBounds(area.buildings.flatMap { it.outline.points() })?.let { MapArea(area.name, area.symbols, it) }
+        }
     val startArea = areas.firstOrNull { START_BUILDING in it.symbols } ?: areas.firstOrNull()
-    val areaPoints = startArea?.buildings.orEmpty().flatMap { it.outline.points() }
     return CampusMapData(
         buildings = GeoJsonObject.toJson(FeatureCollection(buildings)),
         labels = outlines.values.map { it.joinToString(separator = LABEL_SEPARATOR) },
         labelPoints = GeoJsonObject.toJson(FeatureCollection(labelPoints)),
         entrances = GeoJsonObject.toJson(FeatureCollection(entrances)),
         start = center(startBuildings.flatMap { it.outline.points() }),
-        bounds = campusBounds(areaPoints),
+        bounds = startArea?.bounds,
+        areas = areas,
     )
 }
 
