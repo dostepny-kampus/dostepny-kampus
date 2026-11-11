@@ -1,0 +1,119 @@
+{
+  "realm": "dostepny-kampus",
+  "displayName": "Dostępny Kampus (realm deweloperski)",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "roles": {
+    "realm": [
+      {
+        "name": "VISITOR",
+        "description": "Odwiedzający (konto z kontraktu API)"
+      },
+      {
+        "name": "COLLECTOR",
+        "description": "Zbierający (konto z kontraktu API)"
+      },
+      {
+        "name": "VERIFIER",
+        "description": "Weryfikator (konto z kontraktu API)"
+      },
+      {
+        "name": "COORDINATOR",
+        "description": "Koordynator (konto z kontraktu API)"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "dostepny-kampus-android",
+      "name": "Aplikacja Dostępny Kampus",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "io.github.dostepnykampus:/oauth2redirect"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "odwiedzajacy.test",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "odwiedzajacy@example.test",
+      "firstName": "Konto testowe",
+      "lastName": "Odwiedzający",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "haslo-testowe-odwiedzajacy",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "VISITOR"
+      ]
+    },
+    {
+      "username": "zbierajacy.test",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "zbierajacy@example.test",
+      "firstName": "Konto testowe",
+      "lastName": "Zbierający",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "haslo-testowe-zbierajacy",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "COLLECTOR"
+      ]
+    },
+    {
+      "username": "weryfikator.test",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "weryfikator@example.test",
+      "firstName": "Konto testowe",
+      "lastName": "Weryfikator",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "haslo-testowe-weryfikator",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "VERIFIER"
+      ]
+    },
+    {
+      "username": "koordynator.test",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "koordynator@example.test",
+      "firstName": "Konto testowe",
+      "lastName": "Koordynator",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "haslo-testowe-koordynator",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "COORDINATOR"
+      ]
+    }
+  ]
+}
