@@ -14,26 +14,43 @@ import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.START_BUILDING
 import io.github.dostepnykampus.feature.map.data.campusMapData
+import io.github.dostepnykampus.feature.map.data.onAreaOf
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.math.log2
 
-/** Obszar kampusu V1 i granice widoku na konturach testowych „Budynek testowy” (nie dane PWr). */
+/** Teren mapy V1 i granice widoku na konturach testowych „Budynek testowy” (nie dane PWr). */
 class CampusBoundsTest {
     private val bounds = CampusBounds(west = 17.0, south = 60.0, east = 17.04, north = 60.02)
     private val limits = MapLimits(bounds, widthDp = 400.0, heightDp = 800.0)
 
     /**
-     * Wiersz: V1, mapa zostaje w prostokącie obejmującym kontury wszystkich budynków, powiększonym o 500 m
-     * z każdej strony (NFR-39), nie tylko budynek startowy. Na 60° szerokości 500 m na wschód to dwa razy więcej
-     * stopni niż 500 m na północ.
+     * Wiersz: V1, mapa zostaje na wybranym terenie: w prostokącie z konturami budynków tego terenu, powiększonym
+     * o 500 m z każdej strony (US1.7, BR-G5, NFR-39), nie tylko przy budynku startowym. Na 60° szerokości 500 m
+     * na wschód to dwa razy więcej stopni niż 500 m na północ.
      */
     @Test
-    fun nfr39_bounds_plus_500_m() {
+    fun nfr39_area_plus_500_m() {
         val start = rectangle(west = 17.0, south = 60.0, east = 17.01, north = 60.004)
-        val far = GeoMultiPolygon(listOf(rectangle(west = 17.05, south = 60.03, east = 17.06, north = 60.04)))
-        val expected = listOf(17.0 - 2 * LAT_500_M, 60.0 - LAT_500_M, 17.06 + 2 * LAT_500_M, 60.04 + LAT_500_M)
-        assertBounds(expected, campusMapData(catalog(START_BUILDING to start, "T-1" to far)).bounds)
+        val near = GeoMultiPolygon(listOf(rectangle(west = 17.012, south = 60.006, east = 17.02, north = 60.01)))
+        val expected = listOf(17.0 - 2 * LAT_500_M, 60.0 - LAT_500_M, 17.02 + 2 * LAT_500_M, 60.01 + LAT_500_M)
+        assertBounds(expected, campusMapData(catalog(START_BUILDING to start, "T-1" to near)).bounds)
+    }
+
+    /**
+     * Wiersz: V1, budynek innego terenu, dalej niż 600 m od budynków terenu z budynkiem startowym, nie powiększa
+     * prostokąta mapy, a mapa pokazana na tym budynku ma prostokąt jego terenu (US1.8, BR-G5, NFR-39).
+     */
+    @Test
+    fun br_g5_other_area_left_out() {
+        val start = rectangle(west = 17.0, south = 60.0, east = 17.01, north = 60.004)
+        val far = rectangle(west = 17.05, south = 60.03, east = 17.06, north = 60.04)
+        val expected = listOf(17.0 - 2 * LAT_500_M, 60.0 - LAT_500_M, 17.01 + 2 * LAT_500_M, 60.004 + LAT_500_M)
+        val data = campusMapData(catalog("T-1" to far, START_BUILDING to start))
+        assertBounds(expected, data.bounds)
+        val other = listOf(17.05 - 2 * LAT_500_M, 60.03 - LAT_500_M, 17.06 + 2 * LAT_500_M, 60.04 + LAT_500_M)
+        assertBounds(other, data.onAreaOf(symbol = "T-1").bounds)
+        assertBounds(expected, data.onAreaOf(symbol = null).bounds)
     }
 
     /**

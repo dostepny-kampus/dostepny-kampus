@@ -81,7 +81,7 @@ private fun GeoArea.toTurf(): PolygonGeometry =
         is GeoMultiPolygon -> MultiPolygon(polygons.map(GeoPolygon::toPositions))
     }
 
-private fun GeoArea.allRings(): List<List<GeoPoint>> =
+internal fun GeoArea.allRings(): List<List<GeoPoint>> =
     when (this) {
         is GeoPolygon -> rings
         is GeoMultiPolygon -> polygons.flatMap(GeoPolygon::rings)
