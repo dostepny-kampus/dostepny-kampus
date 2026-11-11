@@ -77,6 +77,24 @@ final class SimilarSubmissionsHttpTest {
     }
 
     @Test
+    void skipsCorruptNeighbor(final WebApplicationContext context) throws Exception {
+        final SimilarSubmissionsHttpTest.Place place =
+            new SimilarSubmissionsHttpTest.Place(context);
+        final UUID checked = place.add(0, "IN_REVIEW", "A-1-0");
+        final UUID corrupt = place.add(2, "SENT", "A-1-0");
+        final UUID valid = place.add(5, "ACCEPTED", "A-1-1");
+        context.getBean(JdbcClient.class)
+            .sql("UPDATE submissions SET content = '{}'::jsonb WHERE id = :id")
+            .param("id", corrupt).update();
+        MatcherAssert.assertThat(
+            "Lista podobnych zgłoszeń ma zawierać tylko czytelne zgłoszenie",
+            place.similar(checked, List.of(corrupt, valid)).stream()
+                .map(item -> item.path("id").asString()).toList(),
+            Matchers.contains(valid.toString())
+        );
+    }
+
+    @Test
     void usTenOneAnswersNotFoundForMissingSubmission(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(

@@ -14,6 +14,9 @@ import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -84,6 +87,34 @@ final class SubmissionsReadHttpTest {
                 )
             ),
             Matchers.equalTo(List.of(accepted.expected(context)))
+        );
+    }
+
+    @Test
+    @ExtendWith(OutputCaptureExtension.class)
+    void listsReadableSubmissionsAndLogsCorruptRow(
+        final WebApplicationContext context, final CapturedOutput output
+    ) throws Exception {
+        final Row valid = SubmissionsReadHttpTest.add(
+            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        );
+        final Row corrupt = SubmissionsReadHttpTest.add(
+            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        );
+        context.getBean(JdbcClient.class)
+            .sql("UPDATE submissions SET content = 'null'::jsonb WHERE id = :id")
+            .param("id", corrupt.id()).update();
+        final MockHttpServletResponse response = SubmissionsReadHttpTest.get(
+            context, "/submissions?buildingSymbol=A-1"
+        );
+        MatcherAssert.assertThat(
+            "Lista zgłoszeń albo diagnostyka uszkodzonego wiersza jest niepoprawna",
+            List.of(
+                response.getStatus(), SubmissionsReadHttpTest.json(context, response).size(),
+                SubmissionsReadHttpTest.json(context, response).path(0),
+                output.getOut().contains("Pominięto nieczytelne zgłoszenie %s".formatted(corrupt.id()))
+            ),
+            Matchers.equalTo(List.of(200, 1, valid.expected(context), true))
         );
     }
 

@@ -22,12 +22,16 @@ import io.github.dostepnykampus.barrier.json.SubmissionContentJson;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
@@ -44,6 +48,9 @@ import tools.jackson.databind.ObjectMapper;
  */
 @Component
 public final class JdbcSubmissions implements SubmissionRepository, SubmissionFinder {
+
+    /** Diagnostyka wierszy pomijanych w listach. */
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcSubmissions.class);
 
     /**
      * Kolumny zgłoszenia czytane do modelu.
@@ -158,8 +165,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         ).param("statuses", query.statuses().stream().map(Enum::name).toList())
             .param("building", query.buildingSymbol())
             .param("floor", query.floorId())
-            .query(this.mapping)
-            .list();
+            .query(JdbcSubmissions.readable(this.mapping));
     }
 
     @Override
@@ -185,8 +191,25 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         ).param("id", id)
             .param("statuses", SimilarSubmission.STATUSES.stream().map(Enum::name).toList())
             .param("radius", SimilarSubmission.RADIUS_METERS)
-            .query((rows, num) -> new SimilarSubmission(this.row(rows), rows.getDouble("distance")))
-            .list();
+            .query(JdbcSubmissions.readable(
+                (row, num) -> new SimilarSubmission(this.row(row), row.getDouble("distance"))
+            ));
+    }
+
+    private static <T> ResultSetExtractor<List<T>> readable(final RowMapper<T> mapping) {
+        return rows -> {
+            final List<T> results = new ArrayList<>();
+            int number = 0;
+            while (rows.next()) {
+                try {
+                    results.add(mapping.mapRow(rows, number));
+                } catch (final UnreadableSubmission ex) {
+                    JdbcSubmissions.LOG.error("Pominięto nieczytelne zgłoszenie {}", ex.id);
+                }
+                ++number;
+            }
+            return results;
+        };
     }
 
     private Optional<Submission> write(
@@ -236,13 +259,13 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 rows.getInt("version"),
                 SubmissionStatus.valueOf(rows.getString("status")),
                 rows.getObject("created_at", OffsetDateTime.class).toInstant(),
-                this.mapper.readValue(rows.getString("content"), SubmissionContentJson.class)
+                Optional.ofNullable(
+                    this.mapper.readValue(rows.getString("content"), SubmissionContentJson.class)
+                ).orElseThrow(() -> new InvalidSubmission("Brak zapisanej treści zgłoszenia"))
                     .toContent()
             );
         } catch (final JacksonException | InvalidSubmission ex) {
-            throw new IllegalStateException(
-                String.format("Zgłoszenia %s nie da się odczytać", id), ex
-            );
+            throw new UnreadableSubmission(id, ex);
         }
     }
 
@@ -252,5 +275,21 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
             .map(after)
             .map(Enum::name)
             .toArray(String[]::new);
+    }
+
+    /**
+     * Błąd treści jednego zapisanego zgłoszenia.
+     *
+     * @since 0.1.0
+     */
+    private static final class UnreadableSubmission extends IllegalStateException {
+
+        /** Identyfikator nieczytelnego zgłoszenia. */
+        private final UUID id;
+
+        private UnreadableSubmission(final UUID id, final RuntimeException cause) {
+            super(String.format("Zgłoszenia %s nie da się odczytać", id), cause);
+            this.id = id;
+        }
     }
 }

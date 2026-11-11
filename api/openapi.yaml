@@ -182,6 +182,7 @@ paths:
       description: >-
         Bez tokenu i dla Odwiedzającego tylko zgłoszenia przyjęte do mapy i karty budynku (US1.3, US2.2, BR-6).
         Zbierający z `mine=true` dostaje własne zgłoszenia w każdym statusie, odrzucone z powodem odrzucenia (US8.1).
+        Zgłoszenie z nieczytelną zapisaną treścią jest pomijane na liście.
       tags: [barrier]
       security: [{}, {keycloak: []}]
       parameters:
@@ -375,6 +376,7 @@ paths:
       description: >-
         Zgłoszenia wysłane, w weryfikacji i przyjęte w promieniu 10 m od sprawdzanego, z każdego piętra, z odległością
         (US10.1, BR-13). System sam niczego nie odrzuca ani nie łączy.
+        Zgłoszenie z nieczytelną zapisaną treścią jest pomijane na liście.
       tags: [review]
       security: [{keycloak: [VERIFIER]}]
       parameters:
