@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map
@@ -8,7 +8,6 @@ package io.github.dostepnykampus.feature.map
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -36,7 +35,6 @@ import io.github.dostepnykampus.core.designsystem.MarkingChip
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.PinnedButton
 import io.github.dostepnykampus.core.designsystem.PinnedButtonKind
-import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.EntranceMarking
 
 /**
@@ -177,57 +175,13 @@ private fun BuildingFacts(
     common?.let { AssessmentLine(it) }
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
         card.entrances.forEach { entrance ->
-            EntranceLine(
+            EntranceRow(
                 listed = entrance,
                 withAssessment = common == null,
+                onShowEntrance = onShowEntrance.takeIf { entrance.isRecommended },
                 onReportEntrance = onReportEntrance,
-                onShowEntrance = onShowEntrance,
             )
         }
-    }
-}
-
-@Composable
-private fun EntranceLine(
-    listed: OrderedEntrance,
-    withAssessment: Boolean,
-    onReportEntrance: (String) -> Unit,
-    onShowEntrance: (String) -> Unit,
-) {
-    val title = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
-    val spokenShow = stringResource(R.string.wizyta_pokaz_czytaj, title)
-    val spoken = stringResource(R.string.karta_zglos_czytaj, title)
-    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
-            verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
-        ) {
-            MarkingChip(marking = listed.entrance.marking)
-            if (listed.isRecommended) {
-                Text(
-                    text = stringResource(R.string.karta_zalecane),
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = Typografia.wyroznienieWaga,
-                    style = MaterialTheme.typography.labelLarge,
-                )
-            }
-        }
-        Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
-        if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }
-        if (listed.isRecommended) {
-            PinnedButton(
-                text = stringResource(R.string.wizyta_pokaz),
-                onClick = { onShowEntrance(listed.entrance.id) },
-                modifier = Modifier.fillMaxWidth().semantics { contentDescription = spokenShow },
-                kind = PinnedButtonKind.Tonal,
-            )
-        }
-        PinnedButton(
-            text = stringResource(R.string.karta_zglos),
-            onClick = { onReportEntrance(listed.entrance.id) },
-            modifier = Modifier.fillMaxWidth().semantics { contentDescription = spoken },
-            kind = PinnedButtonKind.Tonal,
-        )
     }
 }
 
