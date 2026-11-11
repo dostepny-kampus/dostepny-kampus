@@ -18,7 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Profile("archunit-fixture")
 final class JdbcControllerSample {
 
-    Integer query(final JdbcClient jdbc) {
-        return jdbc.sql("SELECT 1").query(Integer.class).single();
+    /** Klient używany bezpośrednio w kontrolerze. */
+    private final JdbcClient jdbc;
+
+    JdbcControllerSample(final JdbcClient jdbc) {
+        this.jdbc = jdbc;
+    }
+
+    Integer query() {
+        return this.jdbc.sql("SELECT 1").query(Integer.class).single();
     }
 }
