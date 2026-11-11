@@ -8,6 +8,7 @@ package io.github.dostepnykampus.core.data.buildings
 import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.model.AssessmentSource.WALKTHROUGH
 import io.github.dostepnykampus.core.model.EntranceAssessment
+import io.github.dostepnykampus.core.network.AccessTokens
 import io.github.dostepnykampus.core.network.BuildingsApi
 import io.github.dostepnykampus.core.network.NetworkModule
 import kotlinx.coroutines.CoroutineDispatcher
@@ -98,7 +99,8 @@ class BuildingCatalogRepositoryTest {
         val found =
             MockWebServer().use { server ->
                 server.enqueue(MockResponse().setBody(CARD))
-                val api = BuildingsApi(NetworkModule.okHttp(), NetworkModule.json(), server.url("/").toString())
+                val http = NetworkModule.okHttp(AccessTokens())
+                val api = BuildingsApi(http, NetworkModule.json(), server.url("/").toString())
                 runBlocking { DataModule.cardEntrances(api).entrances("A-1") }
             }
         assertEquals(listOf(EntranceAssessment(LocalDate.of(2026, 10, 1), WALKTHROUGH)), found.map { it.assessment })

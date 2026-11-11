@@ -28,15 +28,16 @@ object NetworkModule {
      * Klient HTTP: całe wywołanie, z połączeniem i odczytem, trwa najwyżej 3 s. Mapa czeka na listę budynków
      * z serwera przed pierwszym pokazaniem, a bez serwera bierze plik konturów, więc nie może czekać dłużej
      * niż próg mapy z danymi w telefonie (NFR-10, NFR-11). Wysyłka zdjęć ustawi dłuższy limit na kopii klienta
-     * z `newBuilder()`.
+     * z `newBuilder()`. Żądania do serwera aplikacji niosą token konta z [tokens] ([AccessTokenInterceptor]).
      */
     @Provides
     @Singleton
-    fun okHttp(): OkHttpClient =
+    fun okHttp(tokens: AccessTokens): OkHttpClient =
         OkHttpClient
             .Builder()
             .connectTimeout(CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .callTimeout(CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .addInterceptor(AccessTokenInterceptor(serverUrl = BuildConfig.API_BASE_URL, tokens = tokens))
             .build()
 
     /** Parser kontraktu. Nieznane pole odpowiedzi jest pomijane, bo serwer może dodać pola później. */
