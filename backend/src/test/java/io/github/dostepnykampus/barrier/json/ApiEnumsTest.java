@@ -14,7 +14,6 @@ import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.opentest4j.AssertionFailedError;
 import org.springframework.context.ApplicationContext;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -67,12 +66,14 @@ final class ApiEnumsTest {
         changed.putObject("components").putObject("schemas").putObject("SubmissionStatus")
             .putArray("enum").addAll(new OpenApiContract().enumValues("SubmissionStatus"))
             .add("TEST_ONLY");
-        Assertions.assertThrows(
-            AssertionFailedError.class,
-            () -> ApiEnumsTest.assertMatches(
-                new OpenApiContract(changed::toString), context, "SubmissionStatus",
-                Stream.of(SubmissionStatus.values())
-            ),
+        Assertions.assertTrue(
+            Assertions.assertThrows(
+                AssertionError.class,
+                () -> ApiEnumsTest.assertMatches(
+                    new OpenApiContract(changed::toString), context, "SubmissionStatus",
+                    Stream.of(SubmissionStatus.values())
+                )
+            ).getMessage().contains("TEST_ONLY"),
             "Dodatkowa wartość w kontrakcie musi złamać zgodność enumu"
         );
     }
