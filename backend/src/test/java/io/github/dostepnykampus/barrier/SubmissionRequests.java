@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.AsCollector;
 import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -70,6 +71,7 @@ final class SubmissionRequests {
     ) throws Exception {
         return this.context.getBean(MockMvc.class).perform(
             request.contentType(MediaType.APPLICATION_JSON).content(json)
+                .with(new AsCollector())
         ).andReturn().getResponse();
     }
 }

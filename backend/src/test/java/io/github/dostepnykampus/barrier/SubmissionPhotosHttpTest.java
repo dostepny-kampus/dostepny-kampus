@@ -5,10 +5,12 @@
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.AsCollector;
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.OpenApiContract;
 import io.github.dostepnykampus.ProblemResponses;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
+import jakarta.servlet.Filter;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
@@ -147,6 +149,7 @@ final class SubmissionPhotosHttpTest {
                     SubmissionPhotosHttpTest.add(context, "SENT"), SubmissionPhotosHttpTest.PHOTO
                 ).contentType(MediaType.IMAGE_JPEG)
                     .content(content.getBytes(StandardCharsets.ISO_8859_1))
+                    .with(new AsCollector())
             ).andReturn().getResponse().getStatus(),
             Matchers.equalTo(400)
         );
@@ -183,6 +186,7 @@ final class SubmissionPhotosHttpTest {
             MockMvcRequestBuilders.put("/submissions/{id}/photos/{photo}", id, photo)
                 .contentType(MediaType.IMAGE_JPEG)
                 .content(JpegCleanerTest.photo())
+                .with(new AsCollector())
         ).andReturn().getResponse();
     }
 
@@ -219,6 +223,7 @@ final class SubmissionPhotosHttpTest {
                 )
             )
         ).setControllerAdvice(context.getBean(ProblemResponses.class))
+            .addFilters(context.getBean("springSecurityFilterChain", Filter.class))
             .alwaysExpect(new OpenApiContract())
             .build();
     }

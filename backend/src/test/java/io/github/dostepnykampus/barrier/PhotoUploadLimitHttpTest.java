@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.AsCollector;
 import io.github.dostepnykampus.IntegrationTest;
 import jakarta.servlet.ServletInputStream;
 import java.io.ByteArrayInputStream;
@@ -112,6 +113,7 @@ final class PhotoUploadLimitHttpTest {
         request.setMethod("PUT");
         request.setRequestURI("/submissions/%s/photos/%s".formatted(id, id));
         request.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        new AsCollector().postProcessRequest(request);
         if (declared >= 0) {
             request.addHeader(HttpHeaders.CONTENT_LENGTH, declared);
         }
