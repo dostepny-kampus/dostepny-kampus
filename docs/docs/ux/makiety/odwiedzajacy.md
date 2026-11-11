@@ -255,7 +255,7 @@ Czynność główna: „Sprawdź, którędy wejść”.
 
 ### V2: brak sieci
 
-![Makieta V2 budynku A-1 bez internetu: wskaźnik z datą danych, chipy, wiersz o wejściach, wejścia, grupy z planów PWr, pierwsza bariera ze zdjęciem z telefonu, druga z napisem o zdjęciu po połączeniu](../../_generated/m-v2-karta-budynku-brak-sieci.svg)
+![Makieta V2 budynku A-1 bez internetu: nad nagłówkiem wskaźnik z datą danych, chipy, wiersz o wejściach, wejścia, grupy z planów PWr, pierwsza bariera ze zdjęciem z telefonu, druga z napisem o zdjęciu po połączeniu](../../_generated/m-v2-karta-budynku-brak-sieci.svg)
 
 Czynność główna: „Sprawdź, którędy wejść”; V3 działa na danych z telefonu.
 
