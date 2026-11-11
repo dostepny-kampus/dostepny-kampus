@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.core.designsystem
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
@@ -32,8 +31,8 @@ private val MinHeight = 36.dp
  * projektu nr 48 pkt 3). Znaczenie niesie kształt i słowo, nie barwa: koło ze znakiem ✓ i „Dostępne”,
  * ośmiokąt ze znakiem ✕ i „Niedostępne”, romb ze znakiem ? i „Brak danych”.
  *
- * Tokeny: kontener `status…Container`, kształt i słowo `onStatus…Container`, ramka [Obramowania.ramka] w
- * kolorze `outline`, zaokrąglenie [Zaokraglenia.standard], napis `labelLarge` z [Typografia.wyroznienieWaga],
+ * Tokeny: kontener `status…Container` bez ramki, bo oznaczenie nie jest przyciskiem, kształt i słowo
+ * `onStatus…Container`, zaokrąglenie [Zaokraglenia.standard], napis `labelLarge` z [Typografia.wyroznienieWaga],
  * ikona [Ikony.rozmiar] skalowana jak tekst w sp (NFR-20). Wysokość co najmniej 36 dp jak w makietach V2 i V3;
  * oznaczenie nie jest celem dotyku. Ikona jest ozdobna: TalkBack czyta słowo.
  *
@@ -47,7 +46,7 @@ fun MarkingChip(marking: EntranceMarking, modifier: Modifier = Modifier, label: 
     val container = look.container(DostepnyKampusTheme.statusColors)
     val content = look.content(DostepnyKampusTheme.statusColors)
     Surface(
-        modifier = modifier.border(Obramowania.ramka, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small),
+        modifier = modifier,
         shape = MaterialTheme.shapes.small,
         color = container,
         contentColor = content,
