@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -67,7 +67,7 @@ data class PendingSubmissionEntity(
 )
 
 /**
- * Zdjęcie zgłoszenia czekające w telefonie; plik leży w pamięci aplikacji do chwili wysłania (NFR-5).
+ * Zdjęcie zgłoszenia czekające w telefonie; plik leży w pamięci aplikacji do wysłania całego zgłoszenia (NFR-5).
  *
  * @property submissionId zgłoszenie, do którego należy zdjęcie
  * @property photoId identyfikator UUID zdjęcia nadany w telefonie
