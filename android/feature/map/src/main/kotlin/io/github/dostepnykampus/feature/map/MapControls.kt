@@ -112,7 +112,7 @@ internal fun MapButton(name: Int, icon: ImageVector, isActive: Boolean = false, 
     }
 }
 
-/** Ikony mapy: szewrony, plus, minus, znak wyboru i lista legendy z Material Icons, siatka 24 × 24. */
+/** Ikony mapy: szewrony, plus, minus, znak wyboru, znak terenu i lista legendy z Material Icons, siatka 24 × 24. */
 internal object MapControlIcons {
     val Up: ImageVector = icon("M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z")
     val Down: ImageVector = icon("M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z")
@@ -121,6 +121,11 @@ internal object MapControlIcons {
     val Plus: ImageVector = icon("M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z")
     val Minus: ImageVector = icon("M19 13H5v-2h14v2z")
     val Check: ImageVector = icon("M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z")
+    val Area: ImageVector =
+        icon(
+            "M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 " +
+                "8 3.59 8 8-3.59 8-8 8zm3-8c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3z",
+        )
     val Legend: ImageVector =
         icon("M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z")
 
