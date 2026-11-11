@@ -10,10 +10,6 @@ plugins {
     id("dostepnykampus.android.roborazzi")
 }
 
-android {
-    testOptions.unitTests.all { it.useJUnitPlatform() }
-}
-
 dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:data"))
@@ -28,12 +24,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit4)
     testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(libs.androidx.compose.ui.test.manifest)
-    testRuntimeOnly(libs.junit.vintage.engine)
-    testRuntimeOnly(libs.junit.platform.launcher)
 }

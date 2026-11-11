@@ -14,7 +14,6 @@ plugins {
 android {
     buildFeatures.buildConfig = true
     defaultConfig.testInstrumentationRunner = "io.github.dostepnykampus.app.HiltTestRunner"
-    testOptions.unitTests.all { it.useJUnitPlatform() }
 }
 
 tasks.withType<Test>().configureEach {
@@ -42,8 +41,6 @@ dependencies {
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.startup.runtime)
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit.jupiter)
     testImplementation(libs.konsist)
     testImplementation(project(":core:network"))
     testImplementation(libs.kotlinx.coroutines.test)
@@ -67,8 +64,6 @@ dependencies {
     debugImplementation(project(":core:network"))
     debugImplementation(libs.okhttp)
     testDebugImplementation(libs.okhttp.mockwebserver)
-    testRuntimeOnly(libs.junit.vintage.engine)
-    testRuntimeOnly(libs.junit.platform.launcher)
     constraints {
         implementation(libs.androidx.lifecycle.runtime)
     }

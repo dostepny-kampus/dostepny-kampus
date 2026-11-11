@@ -14,7 +14,6 @@ val buildingsFile: RegularFile = layout.projectDirectory.file("../../../data/bui
 
 android {
     testOptions.unitTests.all {
-        it.useJUnitPlatform()
         /* Test repozytorium na prawdziwym pliku konturów z katalogu data/ w repozytorium. */
         it.jvmArgumentProviders.add(
             objects.newInstance<BuildingsFile>().apply { file.set(buildingsFile) },
@@ -31,11 +30,8 @@ dependencies {
     implementation(libs.androidx.work.runtime)
     implementation(libs.kotlinx.serialization.json)
     api(libs.kotlinx.coroutines.core)
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit.jupiter)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.kotlinx.serialization.json)
-    testRuntimeOnly(libs.junit.platform.launcher)
 }
 
 /** Kopiuje plik konturów z `data/buildings` do zasobów aplikacji przy budowie, bez kopii w repozytorium (US1). */
