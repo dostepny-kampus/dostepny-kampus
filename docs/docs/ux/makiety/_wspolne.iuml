@@ -335,7 +335,8 @@ $tekst($opis)
 !endif
 !endprocedure
 
-' Wybór piętra: „Piętro:” robi makieta, tu etykiety z danych PWr jako zastępniki.
+' Wybór piętra: „Piętro:” robi makieta, tu etykiety z danych PWr jako zastępniki. Ten sam element
+' w aplikacji ma dwa układy: chipy w wierszu (C2, ta makra) i lista na całą szerokość (V4).
 ' $wybrane: numer wybranego piętra albo 0 (nic nie wybrano). $liczba: ile pięter.
 !procedure $pietra($wybrane=0, $liczba=5)
 !local $w = ""
