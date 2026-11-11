@@ -705,7 +705,7 @@ components:
       description: Budynki z atrybucją źródła konturów.
       required: [source, buildings]
       properties:
-        source: {type: string, description: "Atrybucja konturów budynków: „© OpenStreetMap contributors”."}
+        source: {type: string, description: "Atrybucja konturów budynków: wszystkie źródła z listy bez powtórzeń, alfabetycznie, rozdzielone „; ”, np. „© OpenStreetMap contributors”. Pusta lista ma pustą atrybucję."}
         buildings:
           type: array
           description: Budynki.

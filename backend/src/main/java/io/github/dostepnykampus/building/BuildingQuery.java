@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -21,7 +23,9 @@ import tools.jackson.databind.ObjectMapper;
  * (US2). Wejścia karty są czytane osobnym zapytaniem po zmapowaniu wiersza
  * budynku. Zawieranie punktu ma jedną implementację w {@link Outlines}, więc
  * podpowiedź i budynek zapisany przy zgłoszeniu szybkim są zawsze równe
- * (BR-14).
+ * (BR-14). Atrybucja listy to wszystkie źródła konturów bez powtórzeń,
+ * alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą atrybucję
+ * (NFR-40, #852).
  *
  * @since 0.1.0
  */
@@ -150,14 +154,12 @@ final class BuildingQuery {
 
     private BuildingList rows(final ResultSet rows) throws SQLException {
         final List<Building> found = new ArrayList<>(8);
-        String chosen = "© OpenStreetMap contributors";
+        final SortedSet<String> sources = new TreeSet<>();
         while (rows.next()) {
-            if (found.isEmpty()) {
-                chosen = BuildingQuery.text(rows, "source");
-            }
+            sources.add(BuildingQuery.text(rows, "source"));
             found.add(this.one(rows));
         }
-        return new BuildingList(chosen, found);
+        return new BuildingList(String.join("; ", sources), found);
     }
 
     private Building one(final ResultSet rows) throws SQLException {
