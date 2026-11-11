@@ -22,6 +22,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.feature.map.data.CampusMapData
@@ -35,6 +36,7 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
+import org.maplibre.android.module.http.HttpRequestUtil
 
 private const val LABEL_TEXT_SP = 14f
 private const val LABEL_MAX_FONT_SCALE = 1.4f
@@ -67,7 +69,8 @@ object MapLibreMapView : CampusMapView {
         val mapView =
             remember {
                 MapLibre.getInstance(context)
-                mapHttpClient.value
+                val tiles = EntryPointAccessors.fromApplication<MapTileHttpEntryPoint>(context.applicationContext)
+                HttpRequestUtil.setOkHttpClient(tiles.mapTileHttp().calls)
                 val options = MapLibreMapOptions.createFromAttributes(context)
                 MapView(context, options.textureMode(true).logoEnabled(false).attributionEnabled(false))
             }
