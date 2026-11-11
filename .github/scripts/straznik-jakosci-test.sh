@@ -129,7 +129,7 @@ run_case() {
     git add -A
     git commit --quiet --allow-empty -m zmiana
   )
-  out="$(cd "$repo" && PR_BODY='' PR_AUTHOR='' bash "$script" HEAD~1 HEAD 2>&1)" || status=$?
+  out="$(cd "$repo" && PR_BODY='' PR_AUTHOR="${CASE_AUTHOR:-}" bash "$script" HEAD~1 HEAD 2>&1)" || status=$?
   if [[ -z $expected && $status -eq 0 && $out == *"$clean"* ]] ||
     [[ -n $expected && $status -eq 1 && $out == *"$expected"* ]]; then
     echo "OK: ${name}"
@@ -254,5 +254,35 @@ run_case "S5, S6: nowy pakiet z @NullMarked" "" package_new
 run_case "S5, S6: usunięty package-info.java bez @NullMarked" "" package_unmarked_delete package_unmarked_base
 
 run_case "S6: zwykła zmiana kodu src/main" "" code_rename_method
+
+commitlint_base() {
+  mkdir -p .github/commitlint
+  cat >.github/commitlint/package.json <<'JSON'
+{
+  "devDependencies": {
+    "@commitlint/cli": "19.8.0"
+  }
+}
+JSON
+  printf '%s\n' '{"lockfileVersion":3,"packages":{"":{"devDependencies":{"@commitlint/cli":"19.8.0"}}}}' \
+    >.github/commitlint/package-lock.json
+}
+commitlint_bump() {
+  sed -i 's/19\.8\.0/19.8.1/g' .github/commitlint/package.json .github/commitlint/package-lock.json
+}
+commitlint_add_pkg() {
+  cat >.github/commitlint/package.json <<'JSON'
+{
+  "devDependencies": {
+    "@commitlint/cli": "19.8.0",
+    "left-pad": "1.0.0"
+  }
+}
+JSON
+}
+
+CASE_AUTHOR='dependabot[bot]' run_case "Dependabot: podbicie wersji npm commitlint" "" commitlint_bump commitlint_base
+CASE_AUTHOR='dependabot[bot]' run_case "Dependabot: nowy pakiet w commitlint" "$changed" commitlint_add_pkg commitlint_base
+run_case "autor: to samo podbicie wersji npm wymaga powodu" "$changed" commitlint_bump commitlint_base
 
 exit "$((failures > 0 ? 1 : 0))"

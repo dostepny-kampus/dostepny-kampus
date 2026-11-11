@@ -120,6 +120,34 @@ only_version_bumps() {
   [[ "$(grep -P '^-\t' <<<"$lines" | normalize_versions)" == "$(grep -P '^\+\t' <<<"$lines" | normalize_versions)" ]]
 }
 
+# Dependabot: w package.json commitlint zmienia się tylko wartość wersji przy tej samej nazwie pakietu.
+npm_version_line='^[[:space:]]*"[^"]+":[[:space:]]*"[\^~]?[0-9]+\.[0-9]+\.[0-9]+[^"]*"[[:space:]]*,?[[:space:]]*$'
+
+npm_keys() {
+  cut -f3- | sed -E 's/^[[:space:]]*"([^"]+)".*/\1/' | sort
+}
+
+npm_version_bump() {
+  local lines="$1" minus plus
+  [[ -n $lines ]] || return 1
+  if cut -f3- <<<"$lines" | grep -vE "$npm_version_line" | grep -q .; then
+    return 1
+  fi
+  minus="$(grep -P '^-\t' <<<"$lines" | npm_keys || true)"
+  plus="$(grep -P '^\+\t' <<<"$lines" | npm_keys || true)"
+  [[ -n $minus && $minus == "$plus" ]]
+}
+
+# package-lock.json przechodzi tylko obok takiego podbicia package.json w tym samym diffie.
+commitlint_lock_follows_bump() {
+  local json=.github/commitlint/package.json lines
+  if git diff --quiet "$range" -- "$json"; then
+    return 1
+  fi
+  lines="$(diff_lines "$json" "$json")"
+  npm_version_bump "$lines"
+}
+
 # Plik w bazie miał @NullMarked, a w PR go nie ma: usunięta adnotacja albo plik,
 # albo package-info.java przeniesiony pod inną ścieżkę (pakiet traci adnotację).
 null_marked_removed() {
@@ -146,6 +174,10 @@ check_file() {
   fi
   if ((dependabot)) && [[ $status == M ]] && only_version_bumps "$lines"; then
     echo "Dependabot: w ${path} zmieniły się tylko wersje."
+  elif ((dependabot)) && [[ $path == .github/commitlint/package.json ]] && npm_version_bump "$lines"; then
+    echo "Dependabot: w ${path} zmieniły się tylko wersje pakietów npm."
+  elif ((dependabot)) && [[ $path == .github/commitlint/package-lock.json ]] && commitlint_lock_follows_bump; then
+    echo "Dependabot: ${path} towarzyszy podbiciu wersji npm."
   elif ((rule)); then
     add_soft "$path" "" "zmieniony plik reguł jakości"
   elif [[ $path =~ (^|/)pom\.xml$ ]]; then
