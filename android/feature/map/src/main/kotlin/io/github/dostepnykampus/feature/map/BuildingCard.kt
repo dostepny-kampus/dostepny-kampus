@@ -9,8 +9,6 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.Entrance
 import io.github.dostepnykampus.core.model.EntranceMarking
 
-private val NOT_FOR_VISITORS = setOf("emergency", "exit", "garage")
-
 private val MARKING_ORDER = listOf(EntranceMarking.ACCESSIBLE, EntranceMarking.INACCESSIBLE, EntranceMarking.NO_DATA)
 
 /**
@@ -26,11 +24,10 @@ data class OrderedEntrance(val entrance: Entrance, val isRecommended: Boolean)
  *
  * Zalecane jest jedyne: wejście „dostępne”, a gdy jest ich kilka — wejście główne, a gdy żadne dostępne nie jest
  * główne — pierwsze „dostępne” w kolejności z danych. Wejście „brak danych” nigdy nie jest zalecane. Bez wejścia
- * „dostępne” nie ma zalecanego, a lista zaczyna się od „niedostępne”. Wejścia `emergency`, `exit` i `garage` nie
- * są wejściami dla odwiedzających: nie ma ich na liście i nie są zalecane.
+ * „dostępne” nie ma zalecanego, a lista zaczyna się od „niedostępne”.
  */
 fun orderedEntrances(entrances: List<Entrance>): List<OrderedEntrance> {
-    val visitors = entrances.filterNot { it.type in NOT_FOR_VISITORS }
+    val visitors = entrances.filter(Entrance::isForVisitors)
     val accessible = visitors.filter { it.marking == EntranceMarking.ACCESSIBLE }
     val recommended = accessible.firstOrNull { it.isMain } ?: accessible.firstOrNull()
     val rest = visitors.filter { it !== recommended }.sortedBy { MARKING_ORDER.indexOf(it.marking) }
