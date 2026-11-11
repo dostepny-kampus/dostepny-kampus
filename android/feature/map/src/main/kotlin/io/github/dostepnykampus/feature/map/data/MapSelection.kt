@@ -12,8 +12,8 @@ package io.github.dostepnykampus.feature.map.data
  * @property building symbol budynku z grubszym obrysem, np. po „Wstecz” z V2 (US1.1); `null` bez zaznaczenia
  * @property entrance wejście z pinezką i podpisem, np. po „Pokaż wejście na mapie” (US3.3, decyzja 134); `null`
  *   bez zaznaczenia
- * @property bounds teren pokazany na mapie: teren zaznaczonego budynku, a bez niego teren startowy z
- *   [CampusMapData.bounds] (US1.8, BR-G5); `null` bez budynków
+ * @property bounds teren pokazany na mapie: teren wybrany przez osobę (US1.7), bez wyboru teren zaznaczonego
+ *   budynku, a bez niego teren startowy z [CampusMapData.bounds] (US1.8, BR-G5); `null` bez budynków
  */
 data class MapSelection(
     val building: String? = null,
@@ -22,8 +22,17 @@ data class MapSelection(
 )
 
 /**
- * Zaznaczenie budynku [building] i wejścia [entrance] na terenie budynku, a bez niego budynku wejścia. Budynek
- * z innego terenu przenosi na swój teren granicę mapy (US1.8, BR-G5).
+ * Zaznaczenie budynku [building] i wejścia [entrance] na terenie o nazwie [area] wybranym przez osobę (US1.7),
+ * a bez wyboru na terenie budynku albo budynku wejścia. Budynek z innego terenu przenosi na swój teren granicę
+ * mapy (US1.8, BR-G5).
  */
-fun CampusMapData.selection(building: String? = null, entrance: SelectedEntrance? = null): MapSelection =
-    MapSelection(building = building, entrance = entrance, bounds = boundsOf(building ?: entrance?.buildingSymbol))
+fun CampusMapData.selection(
+    building: String? = null,
+    entrance: SelectedEntrance? = null,
+    area: String? = null,
+): MapSelection =
+    MapSelection(
+        building = building,
+        entrance = entrance,
+        bounds = areaOf(chosen = area, symbol = building ?: entrance?.buildingSymbol)?.bounds,
+    )
