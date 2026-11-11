@@ -34,7 +34,7 @@ internal fun QuickSendSummary(report: QuickReport, isFloorAsked: Boolean, lookup
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         PhotoPreviews(PhotoPaths(listOf(report.photo.path)))
         Text(stringResource(report.group.quickLabel()))
-        if (isFloorAsked) Text(floorLabel(report.floorNumber))
+        if (isFloorAsked) Text(report.floorLabel ?: floorLabel(report.floorNumber))
         when (lookup) {
             is QuickLookup.Found -> {
                 Text(stringResource(R.string.szybkie_dolaczymy_miejsce))

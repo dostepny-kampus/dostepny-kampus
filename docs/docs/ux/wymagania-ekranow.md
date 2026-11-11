@@ -316,7 +316,7 @@ Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu,
 | Krok 1 po powrocie z kroku 2: miniatura zdjęcia i „Dalej” nad „Zrób nowe zdjęcie”. Przy skali czcionki co najmniej 1,5 „Dalej” zostaje przypięte na dole, a „Zrób nowe zdjęcie” stoi na końcu treści | czynność główna | US4.8, NFR-52 | krok 2; zdjęcie i grupa zostają |
 | Krok 1 po „Zgłoś barierę przy wejściu” na V2 albo V3: napis „Wejście: »nazwa wejścia«” nad „Zrób zdjęcie” | dane | US4.6; znaczenie wejścia: V2 | — |
 | Krok 2: pytanie „Czego dotyczy bariera?” i 6 przycisków grup barier na całą szerokość ekranu, każdy co najmniej 48 dp wysokości. Napisy bez ikon: „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego” | czynność | US4.3, NFR-17, PW-7 | krok 3 albo pytanie o piętro |
-| Krok 2, pytanie o piętro: wybrana grupa, pytanie „Na którym piętrze?”. Pod nim przyciski na całą szerokość ekranu: „Nie wiem” i piętra od najniższego. W budynku szczegółowym etykiety z danych PWr, w podstawowym „Parter”, „1”, „2”… | czynność | US4.5, BR-14, NFR-17 | krok 3 |
+| Krok 2, pytanie o piętro: wybrana grupa, pytanie „Na którym piętrze?”. Pod nim przyciski na całą szerokość ekranu: „Nie wiem” i piętra od najniższego. W budynku szczegółowym etykiety z danych PWr, w podstawowym numery od -1 do 10 z „Parter” zamiast 0 | czynność | US4.5, BR-14, NFR-17 | krok 3 |
 | Krok 3: miniatura zdjęcia, wybrana grupa oraz piętro albo „Nie wiem”, jeśli było pytanie | dane | US4.1, US4.5 | — |
 | Krok 3: napis „Dołączymy miejsce, w którym teraz stoisz.” | dane | US4.1, NFR-27 | — |
 | Krok 3: „Wyślij” | czynność główna | US4.1 | potwierdzenie |
@@ -325,7 +325,7 @@ Dostępność i osoby starsze: odpowiedź jest pełnym zdaniem na górze ekranu,
 
 Aplikacja nie pyta o typ bariery, uciążliwość ani budynek (US4.3, BR-14). Pozycję zaczyna ustalać po wejściu na ekran, w trakcie kroków 1 i 2 (NFR-27).
 
-O piętro aplikacja pyta tylko w konturze budynku i przy każdej grupie poza „Coś innego” (US4.5, tabela w [regułach](../biznes/reguly.md#pietro-w-zgloszeniu-szybkim)). Zakres numerów pięter w budynku podstawowym, także pięter pod parterem, ustalimy w fazie implementacji.
+O piętro aplikacja pyta tylko w konturze budynku i przy każdej grupie poza „Coś innego” (US4.5, tabela w [regułach](../biznes/reguly.md#pietro-w-zgloszeniu-szybkim)). W budynku podstawowym, a także zanim telefon ustali pozycję, przyciski pięter to numery od -1 do 10, z „Parter” zamiast 0. W budynku szczegółowym są to piętra z danych PWr, a zgłoszenie dostaje identyfikator piętra zamiast numeru.
 
 | Stan | Co widać |
 | --- | --- |

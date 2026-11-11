@@ -201,6 +201,7 @@ private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, wh
     var asked by rememberSaveable { mutableStateOf<BarrierGroup?>(null) }
     val lookup by where.lookup.collectAsStateWithLifecycle()
     val isInBuilding = (lookup as? QuickLookup.Found)?.run { position.isInBuilding }
+    val floors by where.floorChoices.collectAsStateWithLifecycle()
     val group = asked
     if (group == null) {
         QuickGroupQuestion(onGroup = { chosen ->
@@ -208,8 +209,10 @@ private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, wh
         })
     } else {
         BackHandler { asked = null }
-        QuickFloorQuestion(group = group, onFloor = { floor ->
-            onNext(route.copy(group = group, floorNumber = floor, isFloorAsked = true))
+        QuickFloorQuestion(group = group, floors = floors, onFloor = { answer ->
+            val floor = answer.floor
+            val answered = route.copy(floorNumber = answer.number, floorId = floor?.id, floorLabel = floor?.label)
+            onNext(answered.copy(group = group, isFloorAsked = true))
         })
     }
 }

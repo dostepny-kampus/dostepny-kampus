@@ -18,8 +18,17 @@ import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.BarrierGroup
+import io.github.dostepnykampus.core.model.Floor
 
-private val BASIC_FLOORS = 0..4
+private val BASIC_FLOORS = -1..10
+
+/**
+ * Odpowiedź na pytanie o piętro (US4.5, BR-14); oba pola `null` to „Nie wiem”.
+ *
+ * @property number numer piętra w budynku podstawowym albo przy nieznanej pozycji
+ * @property floor piętro z danych PWr w budynku szczegółowym
+ */
+data class QuickFloor(val number: Int? = null, val floor: Floor? = null)
 
 /** Napis grupy barier na V4, prostszy niż nazwa grupy w formularzu C2 (BR-14, PW-7). */
 @StringRes
@@ -49,21 +58,26 @@ internal fun QuickGroupQuestion(onGroup: (BarrierGroup) -> Unit) {
 }
 
 /**
- * Krok 2 V4, pytanie o piętro po wyborze [group]: „Nie wiem” i piętra od najniższego (US4.5, BR-14).
- * W budynku podstawowym piętra to parter i cztery kolejne; budynek szczegółowy dostanie etykiety PWr (US4.5).
+ * Krok 2 V4, pytanie o piętro po wyborze [group]: „Nie wiem” na górze i piętra od najniższego (US4.5, BR-14).
+ * W budynku szczegółowym etykiety z danych PWr ([floors]); w podstawowym i przy nieznanej pozycji numery od -1
+ * do 10, z „Parter” zamiast 0.
  *
  * @param group wybrana grupa, pokazana nad pytaniem
- * @param onFloor numer piętra; `null` to „Nie wiem”
+ * @param floors piętra budynku z danych PWr od najniższego; pusta lista to budynek podstawowy
+ * @param onFloor odpowiedź
  */
 @Composable
-internal fun QuickFloorQuestion(group: BarrierGroup, onFloor: (Int?) -> Unit) {
+internal fun QuickFloorQuestion(group: BarrierGroup, floors: List<Floor>, onFloor: (QuickFloor) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(stringResource(group.quickLabel()))
         Text(stringResource(R.string.szybkie_pytanie_pietro))
-        BigChoice(text = stringResource(R.string.szybkie_nie_wiem), onClick = { onFloor(null) })
-        BASIC_FLOORS.forEach { floor ->
-            val label = if (floor == 0) stringResource(R.string.szybkie_parter) else floor.toString()
-            BigChoice(text = label, onClick = { onFloor(floor) })
+        BigChoice(text = stringResource(R.string.szybkie_nie_wiem), onClick = { onFloor(QuickFloor()) })
+        floors.forEach { floor -> BigChoice(text = floor.label, onClick = { onFloor(QuickFloor(floor = floor)) }) }
+        if (floors.isEmpty()) {
+            BASIC_FLOORS.forEach { number ->
+                val label = if (number == 0) stringResource(R.string.szybkie_parter) else number.toString()
+                BigChoice(text = label, onClick = { onFloor(QuickFloor(number = number)) })
+            }
         }
     }
 }
