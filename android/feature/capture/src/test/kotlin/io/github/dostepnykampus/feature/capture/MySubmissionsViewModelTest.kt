@@ -7,7 +7,10 @@ package io.github.dostepnykampus.feature.capture
 
 import io.github.dostepnykampus.core.data.submissions.OwnSubmission
 import io.github.dostepnykampus.core.data.submissions.SendState
+import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.model.BarrierType
+import io.github.dostepnykampus.core.model.SubmissionStatus
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +31,13 @@ import java.time.Instant
 class MySubmissionsViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val rows = MutableStateFlow<List<OwnSubmission>>(emptyList())
-    private val viewModel by lazy { MySubmissionsViewModel { rows } }
+    private val refreshes = mutableListOf<CompletableDeferred<StatusRefresh>>()
+    private val viewModel by lazy {
+        MySubmissionsViewModel(
+            history = { rows },
+            statuses = { CompletableDeferred<StatusRefresh>().also(refreshes::add).await() },
+        )
+    }
 
     @BeforeEach
     fun main() {
@@ -46,7 +55,7 @@ class MySubmissionsViewModelTest {
             assertEquals(MySubmissionsUiState.Loading, viewModel.state.value)
             collect()
 
-            assertEquals(MySubmissionsUiState.Ready(MySubmissions(emptyList())), viewModel.state.value)
+            assertEquals(MySubmissions(emptyList()), list())
         }
 
     @Test
@@ -124,6 +133,41 @@ class MySubmissionsViewModelTest {
 
             assertEquals(1, list().waitingCount)
         }
+
+    /** Wiersz: C3 → „Sprawdzamy statusy…”, błąd z „Spróbuj ponownie”, potem statusy, US8.2, NFR-50, PW-10. */
+    @Test
+    fun `us8_2 sprawdzanie i ponowienie`() =
+        runTest(dispatcher) {
+            collect()
+            assertEquals(StatusCheck.CHECKING, check())
+
+            refreshes.single().complete(StatusRefresh.FAILED)
+            runCurrent()
+            assertEquals(StatusCheck.FAILED, check())
+
+            viewModel.retry()
+            viewModel.retry()
+            runCurrent()
+            assertEquals(StatusCheck.CHECKING, check())
+            refreshes.last().complete(StatusRefresh.OFFLINE)
+            runCurrent()
+            assertEquals(StatusCheck.DONE, check())
+            assertEquals(2, refreshes.size)
+        }
+
+    @Test
+    fun `us8_2 status z serwera`() =
+        runTest(dispatcher) {
+            val rejected = row(id = "a", state = SendState.SENT).copy(serverStatus = SubmissionStatus.REJECTED)
+            rows.value = listOf(rejected.copy(rejectionReason = "Nieostre"))
+            collect()
+
+            val item = list().items.single()
+            assertEquals(SubmissionStatus.REJECTED, item.serverStatus)
+            assertEquals("Nieostre", item.rejectionReason)
+        }
+
+    private fun check(): StatusCheck = (viewModel.state.value as MySubmissionsUiState.Ready).check
 
     private fun TestScope.collect() {
         backgroundScope.launch { viewModel.state.collect {} }

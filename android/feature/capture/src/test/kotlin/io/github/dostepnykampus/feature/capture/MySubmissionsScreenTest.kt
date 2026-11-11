@@ -6,6 +6,9 @@
 package io.github.dostepnykampus.feature.capture
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -103,6 +106,27 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Czeka na wysłanie", substring = true).assertDoesNotExist()
         compose.onNodeWithText("Otwórz").performClick()
         assertEquals(listOf("a"), opened)
+    }
+
+    /** Wiersz: C3 → „Sprawdzamy statusy…”, przy błędzie komunikat i „Spróbuj ponownie”, US8.2, NFR-50, PW-10. */
+    @Test
+    fun us8_2_checking_and_retry() {
+        var retried = 0
+        var check by mutableStateOf(StatusCheck.CHECKING)
+        compose.setContent {
+            DostepnyKampusTheme {
+                val actions = MySubmissionsActions(onBack = {}, onMeasure = {})
+                val state = MySubmissionsUiState.Ready(MySubmissions(emptyList()), check)
+                MySubmissionsContent(state = state, actions = actions, onRetry = { retried++ })
+            }
+        }
+        compose.onNodeWithText("Sprawdzamy statusy…").assertIsDisplayed()
+        check = StatusCheck.FAILED
+        compose.onNodeWithText("Nie udało się sprawdzić statusów", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Spróbuj ponownie").performClick()
+        assertEquals(1, retried)
+        check = StatusCheck.DONE
+        compose.onNodeWithText("Spróbuj ponownie").assertDoesNotExist()
     }
 
     /** Wiersz: C3 „Wysłane” → bez „Otwórz”, bo treść jest tylko na serwerze, US8.3. */

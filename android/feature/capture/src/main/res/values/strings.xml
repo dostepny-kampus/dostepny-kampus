@@ -123,5 +123,12 @@
     <string name="moje_brak_uprawnien">Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.</string>
     <string name="moje_nie_przyjal">Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.</string>
     <string name="moje_otworz">Otwórz</string>
+    <string name="moje_w_weryfikacji">W weryfikacji</string>
+    <string name="moje_przyjete">Przyjęte</string>
+    <string name="moje_odrzucone">Odrzucone</string>
+    <string name="moje_archiwalne">Archiwalne</string>
+    <string name="moje_powod_odrzucenia">Powód odrzucenia: %1$s</string>
+    <string name="moje_sprawdzamy">Sprawdzamy statusy…</string>
+    <string name="moje_blad_statusow">Nie udało się sprawdzić statusów, ale zgłoszenia są bezpieczne w telefonie. Spróbuj ponownie za chwilę.</string>
     <string name="moje_typ_nieznany">Nieznany typ bariery</string>
 </resources>
