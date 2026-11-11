@@ -85,6 +85,8 @@ internal fun MapColors.styleColors(): MapStyleColors =
         selectedOutline = pwrWybrany.hex(),
         isNight = lad.luminance() < NIGHT_LAND_LUMINANCE,
         ink = tusz.hex(),
+        dimmed = budynek.hex(),
+        dimmedOutline = budynekKontur.hex(),
     )
 
 internal fun Color.hex(): String = "#%06X".format(Locale.ROOT, toArgb() and RGB_MASK)

@@ -50,7 +50,8 @@ private val CAMPUS_MARGIN = 500.meters
  * @property labelPoints punkty podpisów, jeden na kontur, wewnątrz konturu, z właściwością `label`. Podpis przy
  *   konturze dzielonym na kafelki pojawiałby się w każdym kawałku albo w żadnym (US1, reguła 4 wymagań wspólnych)
  * @property entrances wejścia, każde raz po identyfikatorze, także wejście wspólne kilku budynków; obiekt ma
- *   właściwości `id`, `marking` (`ACCESSIBLE`, `INACCESSIBLE` albo `NO_DATA`) i `main`
+ *   właściwości `id`, `marking` (`ACCESSIBLE`, `INACCESSIBLE` albo `NO_DATA`) i `main` oraz listę `symbols`
+ *   budynków, do których prowadzi
  * @property start środek pierwszego widoku: środek budynku [START_BUILDING] (US1, US1.2, decyzja 80), a bez niego
  *   środek wszystkich konturów; `null` bez budynków
  * @property bounds teren startowy mapy: najmniejszy prostokąt z konturami budynków terenu, na którym stoi
@@ -148,12 +149,14 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
             Feature(Point(point.toPosition()), properties)
         }
     val entrances =
-        catalog.entrances.distinctBy { it.id }.map { entrance ->
+        catalog.entrances.groupBy { it.id }.values.map { shared ->
+            val entrance = shared.first()
             val properties =
                 buildJsonObject {
                     put(key = "id", value = entrance.id)
                     put(key = "marking", value = entrance.marking.name)
                     put(key = "main", value = entrance.isMain)
+                    put(key = "symbols", element = JsonArray(shared.map { JsonPrimitive(it.buildingSymbol) }))
                 }
             Feature(Point(entrance.location.toPosition()), properties)
         }
