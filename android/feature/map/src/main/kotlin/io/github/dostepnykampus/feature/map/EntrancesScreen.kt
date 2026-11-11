@@ -1,16 +1,14 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -24,17 +22,11 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.GroupContainer
-import io.github.dostepnykampus.core.designsystem.MarkingChip
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.PinnedButton
-import io.github.dostepnykampus.core.designsystem.PinnedButtonKind
-import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.EntranceMarking
 
 /**
@@ -91,13 +83,23 @@ private fun VisitBody(card: BuildingCardUiState.Ready, onShowEntrance: (String) 
         common?.let { AssessmentLine(it) }
         if (recommended != null) {
             GroupContainer(title = stringResource(R.string.wizyta_zalecane)) {
-                AccessibleEntrance(recommended, withAssessment = common == null, onShowEntrance = onShowEntrance)
+                EntranceRow(
+                    listed = recommended,
+                    withAssessment = common == null,
+                    onShowEntrance = onShowEntrance,
+                    onReportEntrance = null,
+                )
             }
         }
         if (others.isNotEmpty()) {
             GroupContainer(title = stringResource(R.string.wizyta_inne)) {
-                others.forEach {
-                    AccessibleEntrance(it, withAssessment = common == null, onShowEntrance = onShowEntrance)
+                others.forEach { entrance ->
+                    EntranceRow(
+                        listed = entrance,
+                        withAssessment = common == null,
+                        onShowEntrance = onShowEntrance,
+                        onReportEntrance = null,
+                    )
                 }
             }
         }
@@ -113,35 +115,5 @@ private fun answerSentence(symbol: String, answer: VisitAnswer): String {
         is VisitAnswer.Accessible -> stringResource(R.string.wizyta_dostepne, symbol, answer.name ?: unnamed)
         VisitAnswer.NoAccessible -> stringResource(R.string.wizyta_brak, symbol)
         is VisitAnswer.Unknown -> stringResource(R.string.wizyta_nie_wiemy, symbol, answer.missing, answer.total)
-    }
-}
-
-@Composable
-private fun AccessibleEntrance(listed: OrderedEntrance, withAssessment: Boolean, onShowEntrance: (String) -> Unit) {
-    val name = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
-    val spoken = stringResource(R.string.wizyta_pokaz_czytaj, name)
-    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
-            verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
-        ) {
-            MarkingChip(marking = listed.entrance.marking)
-            if (listed.isRecommended) {
-                Text(
-                    text = stringResource(R.string.karta_zalecane),
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = Typografia.wyroznienieWaga,
-                    style = MaterialTheme.typography.labelLarge,
-                )
-            }
-        }
-        Text(text = name, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
-        if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }
-        PinnedButton(
-            text = stringResource(R.string.wizyta_pokaz),
-            onClick = { onShowEntrance(listed.entrance.id) },
-            modifier = Modifier.fillMaxWidth().semantics { contentDescription = spoken },
-            kind = PinnedButtonKind.Tonal,
-        )
     }
 }
