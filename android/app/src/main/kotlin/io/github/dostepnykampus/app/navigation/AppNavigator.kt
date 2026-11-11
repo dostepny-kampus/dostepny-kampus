@@ -7,6 +7,7 @@ package io.github.dostepnykampus.app.navigation
 
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.core.data.account.RoleProvider
+import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.core.model.isSignedIn
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
@@ -19,6 +20,7 @@ import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
+import kotlinx.coroutines.flow.StateFlow
 
 /** Pozycja paska dolnego (wymagania wspólne). */
 enum class TopLevel {
@@ -141,11 +143,15 @@ class AppNavigator(
     private val onChooseMap: () -> Unit = {},
     internal val reportDraft: ReportDraft = ReportDraft(),
 ) : NavigationHistory(backStack, onFirstHelpLeft, restarts) {
+    /** Konto osoby do obserwowania przez ekrany; zmienia się po zalogowaniu i wylogowaniu. */
+    internal val account: StateFlow<Account>
+        get() = roles.account
+
     internal val isSignedIn: Boolean
-        get() = roles.currentAccount().isSignedIn
+        get() = roles.account.value.isSignedIn
 
     internal val hasWork: Boolean
-        get() = roles.currentAccount().hasStaffRole
+        get() = roles.account.value.hasStaffRole
 
     /**
      * Pozycja [item] paska: „Mapa” wraca do V1, inna otwiera swój ekran nad bieżącym. Ponowne dotknięcie wybranej

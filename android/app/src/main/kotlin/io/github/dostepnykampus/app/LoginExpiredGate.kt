@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -31,8 +30,10 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.isSignedIn
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 
 /**
  * Prośba o ponowne zalogowanie po odpowiedzi 401 przy wysyłce kolejki (BR-26, US9.4, US14.4). Gdy [isExpired], nad
@@ -55,7 +56,9 @@ fun LoginExpiredGate(
 ) {
     val loggedIn by rememberUpdatedState(onLoggedIn)
     LaunchedEffect(roles) {
-        snapshotFlow { roles.currentAccount().isSignedIn }
+        roles.account
+            .map { it.isSignedIn }
+            .distinctUntilChanged()
             .drop(1)
             .filter { it }
             .collect { loggedIn() }
