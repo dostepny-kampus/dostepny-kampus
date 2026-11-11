@@ -33,7 +33,7 @@ jobs:
 
   zmiany:
     needs: porownanie
-    # Pominięty `zmiany` pomija też kontrakt i zmiany-lamiace (potrzebują go z wynikiem success).
+    # Nieudane `zmiany` uruchamia kontrakt i zmiany-lamiace. Równe drzewo grupy dalej je pomija.
     if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -65,8 +65,8 @@ jobs:
           fi
 
   kontrakt:
-    needs: zmiany
-    if: needs.zmiany.outputs.api == 'true'
+    needs: [porownanie, zmiany]
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.api == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -81,8 +81,8 @@ jobs:
         run: npx --yes "@redocly/cli@${REDOCLY_VERSION}" lint --format=github-actions openapi.yaml
 
   zmiany-lamiace:
-    needs: zmiany
-    if: needs.zmiany.outputs.api == 'true'
+    needs: [porownanie, zmiany]
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.api == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:

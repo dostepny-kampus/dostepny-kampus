@@ -45,7 +45,7 @@ jobs:
 
   zmiany:
     needs: porownanie
-    # Pominięty `zmiany` pomija też kontrolę (potrzebuje go z wynikiem success).
+    # Nieudane `zmiany` uruchamia kontrolę. Równe drzewo grupy dalej ją pomija.
     if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (github.event_name == 'pull_request' || github.event_name == 'merge_group') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -78,8 +78,8 @@ jobs:
           fi
 
   kontrola:
-    needs: zmiany
-    if: needs.zmiany.outputs.dokumentacja == 'true'
+    needs: [porownanie, zmiany]
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (github.event_name == 'pull_request' || github.event_name == 'merge_group') && (needs.zmiany.result != 'success' || needs.zmiany.outputs.dokumentacja == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
