@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus;
@@ -118,6 +118,34 @@ public final class OpenApiContract implements ResultMatcher {
             throw new AssertionError("Brak wyliczenia OpenAPI dla ".concat(pointer));
         }
         return StreamSupport.stream(values.spliterator(), false).toList();
+    }
+
+    /**
+     * Operacje kontraktu w kolejności z pliku: metoda HTTP pod każdą ścieżką, z prefiksem
+     * serwera i wpisem {@code security} operacji albo globalnym.
+     *
+     * @return Operacje kontraktu
+     */
+    List<ContractOperation> operations() {
+        final JsonNode tree = this.tree();
+        final String prefix = ContractOperation.prefix(tree);
+        final List<ContractOperation> found = new ArrayList<>(0);
+        for (final Map.Entry<String, JsonNode> path : tree.path("paths").properties()) {
+            for (final Map.Entry<String, JsonNode> verb : path.getValue().properties()) {
+                if (ContractOperation.verb(verb.getKey())) {
+                    JsonNode security = verb.getValue().path("security");
+                    if (security.isMissingNode()) {
+                        security = tree.path("security");
+                    }
+                    found.add(
+                        new ContractOperation(
+                            ContractOperation.name(verb.getKey(), prefix, path.getKey()), security
+                        )
+                    );
+                }
+            }
+        }
+        return found;
     }
 
     private List<String> exchange(final MvcResult result) throws Exception {
