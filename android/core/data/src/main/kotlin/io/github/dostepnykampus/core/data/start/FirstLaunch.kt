@@ -42,16 +42,19 @@ interface FirstLaunch {
 
 /** [FirstLaunch] zapisany w [dataStore], więc przetrwa zamknięcie aplikacji i restart telefonu. */
 class FirstLaunchRepository(private val dataStore: DataStore<Preferences>) : FirstLaunch {
-    override suspend fun isFirstLaunch(): Boolean =
-        dataStore.data
-            .map { preferences -> preferences[HELP_SEEN] != true }
-            .catch { error ->
-                if (error is IOException) {
-                    emit(false)
-                } else {
-                    throw error
+    override suspend fun isFirstLaunch(): Boolean {
+        val readings =
+            dataStore.data
+                .map { preferences -> preferences[HELP_SEEN] != true }
+                .catch { error ->
+                    if (error is IOException) {
+                        emit(false)
+                    } else {
+                        throw error
+                    }
                 }
-            }.first()
+        return readings.first()
+    }
 
     override suspend fun markHelpSeen() {
         try {
