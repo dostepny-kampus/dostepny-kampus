@@ -9,9 +9,9 @@ import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
-import io.github.dostepnykampus.feature.map.data.symbolsOf
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
@@ -45,16 +45,15 @@ internal const val OUTSIDE_LAYER = "teren-poza"
 /** Warstwa linii granicy terenu (US1.7, BR-G5). */
 internal const val EDGE_LAYER = "teren-granica"
 
-private const val BUILDINGS_SOURCE = BUILDINGS_LAYER
+internal const val BUILDINGS_SOURCE = BUILDINGS_LAYER
 private const val ENTRANCES_SOURCE = ENTRANCES_LAYER
 private const val BASEMAP = "osm"
 private const val LABELS = "podpisy"
-private const val LABEL = "label"
+internal const val LABEL = "label"
 private const val STYLE_VERSION = 8
 private const val TILE_SIZE = 256
 private const val TILE_MAX_ZOOM = 19
 private const val OUTLINE_WIDTH = 1.5
-private const val SELECTED_WIDTH = 4.0
 
 /** Kafelki podkładu z serwerów OSM, pobierane tylko online i bez zapisu do użytku offline (ADR-0005). */
 internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -68,6 +67,8 @@ internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
  * @property selectedOutline obrys zaznaczonego budynku (`pwr_wybrany`), grubszy niż kontur
  * @property isNight motyw ciemny: podkład jest wtedy odwrócony, żeby mapa nie raziła na ciemnym ekranie
  * @property ink linia granicy terenu (`tusz`)
+ * @property dimmed wypełnienie budynków obok zaznaczonego (`budynek`)
+ * @property dimmedOutline kontur budynków obok zaznaczonego (`budynek_kontur`)
  */
 data class MapStyleColors(
     val land: String,
@@ -76,6 +77,8 @@ data class MapStyleColors(
     val selectedOutline: String,
     val isNight: Boolean = false,
     val ink: String = buildingOutline,
+    val dimmed: String = building,
+    val dimmedOutline: String = buildingOutline,
 )
 
 /**
@@ -84,13 +87,15 @@ data class MapStyleColors(
  * to obraz o nazwie z właściwości `label`, który dodaje widok mapy, bo napisy z czcionek stylu wymagają sieci.
  * Obraz stoi w jednym punkcie wewnątrz konturu, więc każdy kontur ma jeden podpis przy każdym przybliżeniu.
  * Podpisy się nie nakładają (reguła 4 wymagań wspólnych). Kontur budynku [MapSelection.building] ma grubszy obrys
- * `pwr_wybrany` (US1.1). Każde wejście z [CampusMapData.entrances] ma znak o kształcie według oznaczenia, bez
- * filtra, więc zaznaczenie nie chowa pozostałych (US2.1, NFR-21). Wejście [MapSelection.entrance] ma
- * ponadto pinezkę czubkiem w swoim punkcie i pod znakiem podpis z nazwą (US3.3, decyzja 134).
+ * `pwr_wybrany` (US1.1). Pozostałe budynki są wtedy przygaszone, ale zachowują podpisy, a znaki wejść ma tylko
+ * zaznaczony budynek (US1.4, US2.8, decyzja 153). Bez zaznaczonego budynku każde wejście
+ * z [CampusMapData.entrances] ma znak o kształcie według oznaczenia, bez filtra, więc zaznaczenie wejścia nie
+ * chowa pozostałych (US2.1, NFR-21). Wejście [MapSelection.entrance] ma ponadto pinezkę czubkiem w swoim
+ * punkcie i pod znakiem podpis z nazwą (US3.3, decyzja 134).
  * Podkład OSM obejmuje tylko obszar kampusu, więc kafelków spoza niego mapa nie pobiera (NFR-39). Obrys
  * zaznaczonego budynku obejmuje także kontur wspólny „C-3/C-4”; bez zaznaczenia nie ma tej warstwy. Obraz znaku
  * zależy od oznaczenia, więc kształt niesie znaczenie, nie barwa (NFR-21); brak filtra i nakładanie są
- * dozwolone, bo znaki zostają przy zaznaczeniu (decyzja 134 pkt 2). Zaznaczone wejście to źródło z jednym
+ * dozwolone, bo znaki zostają przy zaznaczonym wejściu (decyzja 134 pkt 2). Zaznaczone wejście to źródło z jednym
  * punktem o właściwościach `label` (nazwa) i `image` (obraz podpisu). Pinezka stoi czubkiem (dół obrazu)
  * w punkcie wejścia, a podpis z nazwą pod znakiem, w odsunięciu `CAPTION_OFFSET_DP` w dp (US3.3): tuż pod
  * znakiem, którego środek stoi w tym punkcie; obie warstwy rysują się zawsze. Podkład ma przygaszone barwy
@@ -136,15 +141,21 @@ private fun layers(labels: List<String>, selection: MapSelection, colors: MapSty
                 put(key = "paint", element = basemapPaint(colors))
             },
         )
+        val chosen = selectedLabel(labels, selection.building)
+        val alone = chosen.takeIf { selection.entrance == null }
         add(
             styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
-                paint("fill-color" to JsonPrimitive(colors.building))
+                paint("fill-color" to tone(alone, own = colors.building, other = colors.dimmed))
             },
         )
-        val outline = colors.buildingOutline
-        add(lineLayer(id = "kontury", source = BUILDINGS_SOURCE, color = outline, width = OUTLINE_WIDTH))
-        selectedLayer(labels, selection.building, colors)?.let { add(it) }
-        add(marksLayer())
+        add(
+            styleLayer(id = "kontury", type = "line", source = BUILDINGS_SOURCE) {
+                val outline = tone(alone, own = colors.buildingOutline, other = colors.dimmedOutline)
+                paint("line-color" to outline, "line-width" to JsonPrimitive(OUTLINE_WIDTH))
+            },
+        )
+        chosen?.let { add(selectedLayer(it, colors)) }
+        add(marksLayer(filter = alone?.let(::entrancesOf)))
         add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
         if (selection.bounds != null) areaLayers(colors).forEach { add(it) }
         if (selection.entrance != null) chosenLayers().forEach { add(it) }
@@ -173,18 +184,7 @@ private fun basemapPaint(colors: MapStyleColors): JsonObject =
         }
     }
 
-private fun selectedLayer(labels: List<String>, building: String?, colors: MapStyleColors): JsonObject? {
-    val label = labels.firstOrNull { building in symbolsOf(listOf(it)) } ?: return null
-    return lineLayer(
-        id = SELECTED_LAYER,
-        source = BUILDINGS_SOURCE,
-        color = colors.selectedOutline,
-        width = SELECTED_WIDTH,
-        filter = expression("==", property(LABEL), JsonPrimitive(label)),
-    )
-}
-
-private fun marksLayer(): JsonObject {
+private fun marksLayer(filter: JsonElement?): JsonObject {
     val (accessible, inaccessible, noData) = EntranceMarking.entries.map { JsonPrimitive(entranceMarkImage(it)) }
     val image =
         expression(
@@ -196,5 +196,6 @@ private fun marksLayer(): JsonObject {
             inaccessible,
             noData,
         )
-    return symbolLayer(id = ENTRANCES_LAYER, source = ENTRANCES_SOURCE, image = image, OVERLAP)
+    val marks = symbolLayer(id = ENTRANCES_LAYER, source = ENTRANCES_SOURCE, image = image, OVERLAP)
+    return filter?.let { JsonObject(marks + ("filter" to it)) } ?: marks
 }
