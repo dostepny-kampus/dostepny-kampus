@@ -37,9 +37,9 @@ private const val NIGHT_LAND_LUMINANCE = 0.5f
 /** Widok mapy za interfejsem: ekran i jego testy nie zależą od natywnej biblioteki mapy. */
 fun interface CampusMapView {
     /**
-     * Mapa [data] z zaznaczeniem [selection] w widoku [camera]. Po geście widok zgłasza nowy widok przez [onCameraIdle], a po dotknięciu
-     * konturu albo miejsca obok niego symbole trafionych budynków przez [onBuildingsTouch], a po dotknięciu pustej
-     * mapy pustą listę.
+     * Mapa [data] z zaznaczeniem [selection] w widoku [camera]. Po geście widok zgłasza nowy widok przez
+     * [onCameraIdle], a po dotknięciu konturu albo miejsca obok niego symbole trafionych budynków przez
+     * [onBuildingsTouch], a po dotknięciu pustej mapy pustą listę.
      */
     @Composable
     fun Show(

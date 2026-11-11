@@ -51,6 +51,7 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.selection
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import java.time.LocalDate
@@ -203,7 +204,7 @@ private fun CampusMap(
 ) {
     val building = (focus as? MapFocus.Building)?.symbol
     val chosen = rememberChosenEntrance(catalog, focus as? MapFocus.Entrance)
-    val selection = remember(layers, building, chosen) { layers?.selection(building, chosen) }
+    val scene = remember(layers, building, chosen) { layers?.let { MapScene(it, it.selection(building, chosen)) } }
     val view = rememberCameraView(focus, catalog)
     var choice by rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val cover = contentPadding.calculateBottomPadding()
@@ -214,19 +215,19 @@ private fun CampusMap(
     val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val limits = with(LocalDensity.current) { mapLimits(selection?.bounds, size) }
+    val limits = with(LocalDensity.current) { mapLimits(scene?.selection?.bounds, size) }
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val shown =
             shownCamera(
                 own = view.camera ?: chosen?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) },
-                start = layers?.start,
+                start = scene?.data?.start,
                 focus = focusPoint.takeIf { isCovered },
                 bottomInset = coverPixels,
             )
-        if (layers != null && selection != null && shown != null && limits != null) {
+        if (scene != null && shown != null && limits != null) {
             mapView.Show(
-                data = layers,
-                selection = selection,
+                data = scene.data,
+                selection = scene.selection,
                 camera = shown,
                 onCameraIdle = keepCamera,
                 onBuildingsTouch = { symbols ->
@@ -259,6 +260,9 @@ private fun CampusMap(
         }
     }
 }
+
+/** Dane katalogu [data] razem z bieżącym zaznaczeniem [selection]: mapa jest, gdy są oba. */
+private class MapScene(val data: CampusMapData, val selection: MapSelection)
 
 private fun shownCamera(own: MapCamera?, start: GeoPoint?, focus: GeoPoint?, bottomInset: Double): MapCamera? =
     (own ?: start?.let { MapCamera(center = it, zoom = START_ZOOM) })?.aboveSheet(focus, bottomInset)
