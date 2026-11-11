@@ -51,7 +51,7 @@ class SelectedEntranceTest {
     /** Wiersz E1: każdy znak na mapie ma identyfikator wejścia, więc da się go wskazać. */
     @Test
     fun us2_1_feature_has_id() {
-        val json = campusMapData(catalog).entrances
+        val json = campusMapData(catalog).entrances.toString()
         val ids = FeatureCollection.fromJson<Geometry?, JsonObject?>(json).features.map { it.properties?.get("id") }
         assertEquals(listOf("node/1", "node/2"), ids.map { it?.run { jsonPrimitive.content } })
     }

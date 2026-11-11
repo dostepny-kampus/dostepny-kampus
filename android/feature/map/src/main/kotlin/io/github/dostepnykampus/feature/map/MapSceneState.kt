@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map
@@ -95,10 +95,10 @@ internal fun rememberMapSceneState(
 ): MapSceneState {
     val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus, area = area)
     val selection = scene?.selection
-    val view = rememberCameraView(focus, catalog)
+    val view = rememberCameraView(focus, layers)
     val choices = rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val isCovered = cover > 0.dp
-    val focusPoint = remember(catalog, selection?.building) { catalog?.pointOf(selection?.building) }
+    val focusPoint = remember(layers, selection?.building) { layers?.pointOf(selection?.building) }
     val density = LocalDensity.current
     val camera =
         shownCamera(

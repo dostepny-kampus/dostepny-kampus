@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.data
 
 import io.github.dostepnykampus.core.model.GeoPoint
+import kotlinx.serialization.json.JsonObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
@@ -19,10 +20,10 @@ class AreaNeighborTest {
     private val center = middle.bounds.center
     private val data =
         CampusMapData(
-            buildings = "",
+            buildings = JsonObject(emptyMap()),
             labels = emptyList(),
-            labelPoints = "",
-            entrances = "",
+            labelPoints = JsonObject(emptyMap()),
+            entrances = JsonObject(emptyMap()),
             start = null,
             areas =
                 listOf(
@@ -38,6 +39,7 @@ class AreaNeighborTest {
     fun us1_7_neighbor_beyond_edge() {
         val expected = AreaNeighbor(name = "Wschód", kilometers = 2, edge = MapEdge.EAST)
         assertEquals(expected, data.areaNeighbor(middle, view(longitude = middle.bounds.east)))
+        assertEquals(expected, data.areaNeighbor(middle, view(longitude = middle.bounds.east - AFTER_GESTURE)))
     }
 
     /** Wiersz: V1, widok w środku terenu: bez przycisku sąsiedniego terenu (US1.7). */
@@ -73,5 +75,6 @@ class AreaNeighborTest {
 
     private companion object {
         const val SIDE = 0.01
+        const val AFTER_GESTURE = 1e-6
     }
 }

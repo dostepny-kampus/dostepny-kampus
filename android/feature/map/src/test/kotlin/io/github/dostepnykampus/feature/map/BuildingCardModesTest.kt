@@ -22,6 +22,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -161,7 +162,7 @@ class BuildingCardModesTest {
     @Test
     fun us4_6_report_passes_entrance() {
         card(CardMode.Expanded)
-        ENTRANCES.forEach { (name, _) -> reportButton(name).performClick() }
+        ENTRANCES.forEach { (name, _) -> reportButton(name).performScrollTo().performClick() }
         assertEquals(ENTRANCES.map { (_, id) -> "report $id" }, calls)
     }
 

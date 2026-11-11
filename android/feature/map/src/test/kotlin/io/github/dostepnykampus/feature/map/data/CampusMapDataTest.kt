@@ -15,6 +15,7 @@ import io.github.dostepnykampus.core.model.EntranceMarking.NO_DATA
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
@@ -105,7 +106,7 @@ class CampusMapDataTest {
         assertEquals(0, parse(empty.buildings).size)
     }
 
-    private fun parse(json: String) = FeatureCollection.fromJson<Geometry?, JsonObject?>(json).features
+    private fun parse(json: JsonElement) = FeatureCollection.fromJson<Geometry?, JsonObject?>(json.toString()).features
 
     private fun JsonObject?.text(key: String): String? = this?.get(key)?.run { jsonPrimitive.content }
 

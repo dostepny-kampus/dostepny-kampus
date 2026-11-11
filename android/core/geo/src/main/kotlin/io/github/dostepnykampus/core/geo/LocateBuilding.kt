@@ -7,17 +7,8 @@ package io.github.dostepnykampus.core.geo
 
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoArea
-import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.GeoPolygon
-import org.maplibre.spatialk.geojson.LineString
-import org.maplibre.spatialk.geojson.MultiPolygon
-import org.maplibre.spatialk.geojson.Polygon
-import org.maplibre.spatialk.geojson.PolygonGeometry
-import org.maplibre.spatialk.geojson.Position
 import org.maplibre.spatialk.turf.booleans.contains
-import org.maplibre.spatialk.turf.measurement.distance
-import org.maplibre.spatialk.units.International
 
 /**
  * Podpowiedź budynku dla punktu, bez sieci (US6.2, to-be T3 i T4, BR-G2). Obliczenia wykonuje Turf.
@@ -51,15 +42,10 @@ fun containingBuilding(point: GeoPoint, buildings: List<Building>): Building? =
     buildings.firstOrNull { building -> building.outline.containsStrictly(point) }
 
 /** Odległość w metrach na ziemi od [point] do najbliższej krawędzi konturu, także krawędzi otworu. */
-internal fun Building.edgeDistanceMeters(point: GeoPoint): Double {
-    val position = point.toPosition()
-    return outline.allRings().minOf { ring ->
-        distance(position, LineString(ring.map(GeoPoint::toPosition))).toDouble(International.Meters)
-    }
-}
+internal fun Building.edgeDistanceMeters(point: GeoPoint): Double = outline.edgeDistanceMeters(point)
 
 internal fun GeoArea.containsStrictly(point: GeoPoint): Boolean =
-    point.toPosition() in toTurf() && !hasPointOnEdge(point)
+    point.toPosition() in toGeometry() && !hasPointOnEdge(point)
 
 private fun GeoArea.hasPointOnEdge(point: GeoPoint): Boolean =
     allRings().any { ring -> ring.zipWithNext().any { (from, to) -> point.isOnSegment(from, to) } }
@@ -74,19 +60,3 @@ private fun GeoPoint.isOnSegment(from: GeoPoint, to: GeoPoint): Boolean {
 
 private fun Double.isBetween(first: Double, second: Double): Boolean =
     if (first <= second) this in first..second else this in second..first
-
-private fun GeoPoint.toPosition(): Position = Position(longitude, latitude)
-
-private fun GeoPolygon.toPositions(): List<List<Position>> = rings.map { ring -> ring.map(GeoPoint::toPosition) }
-
-private fun GeoArea.toTurf(): PolygonGeometry =
-    when (this) {
-        is GeoPolygon -> Polygon(toPositions())
-        is GeoMultiPolygon -> MultiPolygon(polygons.map(GeoPolygon::toPositions))
-    }
-
-internal fun GeoArea.allRings(): List<List<GeoPoint>> =
-    when (this) {
-        is GeoPolygon -> rings
-        is GeoMultiPolygon -> polygons.flatMap(GeoPolygon::rings)
-    }

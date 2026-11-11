@@ -10,10 +10,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.AreaChoice
+import io.github.dostepnykampus.feature.map.data.AreaNeighbor
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapArea
 import io.github.dostepnykampus.feature.map.data.areaChoices
+import io.github.dostepnykampus.feature.map.data.areaNeighbor
 import io.github.dostepnykampus.feature.map.data.areaOf
 import io.github.dostepnykampus.feature.map.data.center
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -38,6 +41,9 @@ internal class MapAreas(
 
     /** Lista terenów: pokazany pierwszy, pozostałe od najbliższego, z liczbą budynków i odległością (US1.7). */
     val choices: List<AreaChoice> get() = current?.let { data?.areaChoices(it) }.orEmpty()
+
+    /** Sąsiedni teren dla środka widoku [view] na granicy pokazanego terenu; `null` z dala od granicy (US1.7). */
+    fun neighbor(view: GeoPoint): AreaNeighbor? = current?.let { data?.areaNeighbor(it, view) }
 
     /**
      * Wybiera teren [name] i zwraca jego widok startowy: środek terenu w powiększeniu startowym (US1.7, BR-G5).

@@ -1,13 +1,12 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.geo
 
 import io.github.dostepnykampus.core.model.Entrance
 import io.github.dostepnykampus.core.model.GeoPoint
-import org.maplibre.spatialk.geojson.Position
 import org.maplibre.spatialk.turf.measurement.distance
 import org.maplibre.spatialk.units.International
 
@@ -33,6 +32,6 @@ fun nearestEntrance(point: GeoPoint, entrances: List<Entrance>): EntranceDistanc
 
 private fun GeoPoint.metersTo(other: GeoPoint): Double =
     distance(
-        from = Position(longitude = longitude, latitude = latitude),
-        to = Position(longitude = other.longitude, latitude = other.latitude),
+        from = toPosition(),
+        to = other.toPosition(),
     ).toDouble(International.Meters)

@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.feature.map
 
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -13,10 +12,6 @@ import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import org.maplibre.spatialk.geojson.Feature
-import org.maplibre.spatialk.geojson.FeatureCollection
-import org.maplibre.spatialk.geojson.GeoJsonObject
-import org.maplibre.spatialk.geojson.Geometry
 
 /** Układ znaku, który rysuje się także wtedy, gdy nachodzi na inny znak. */
 internal val OVERLAP: Pair<String, JsonElement> = "icon-allow-overlap" to JsonPrimitive(true)
@@ -80,7 +75,3 @@ internal fun geoJsonSource(data: JsonElement): JsonObject =
         put(key = "type", value = "geojson")
         put(key = "data", element = data)
     }
-
-/** Kolekcja GeoJSON z obiektów [features] jako element JSON. */
-internal fun featureCollection(features: List<Feature<Geometry, JsonObject?>>): JsonElement =
-    Json.parseToJsonElement(GeoJsonObject.toJson(FeatureCollection(features)))
