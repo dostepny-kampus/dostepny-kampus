@@ -1,12 +1,10 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import org.hamcrest.MatcherAssert;
@@ -96,7 +94,7 @@ final class OpenApiContractTest {
         final OpenApiContract contract = new OpenApiContract(
             () -> {
                 reads.incrementAndGet();
-                return Files.readString(Path.of("..", "api", "openapi.yaml"));
+                return OpenApiContract.text();
             }
         );
         for (int done = 0; done < 3; done += 1) {

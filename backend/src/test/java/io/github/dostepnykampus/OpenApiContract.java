@@ -10,6 +10,7 @@ import com.networknt.schema.Schema;
 import com.networknt.schema.SchemaLocation;
 import com.networknt.schema.SchemaRegistry;
 import com.networknt.schema.dialect.Dialects;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,9 +57,7 @@ public final class OpenApiContract implements ResultMatcher {
      * Kontrakt z repozytorium, wspólny dla wszystkich testów; ścieżka
      * względna od modułu serwera.
      */
-    private static final Supplier<Schema> REPOSITORY = OpenApiContract.load(
-        () -> Files.readString(Path.of("..", "api", "openapi.yaml"))
-    );
+    private static final Supplier<Schema> REPOSITORY = OpenApiContract.load(OpenApiContract::text);
 
     /**
      * Cały kontrakt jako schemat z rejestrem.
@@ -118,6 +117,16 @@ public final class OpenApiContract implements ResultMatcher {
             throw new AssertionError("Brak wyliczenia OpenAPI dla ".concat(pointer));
         }
         return StreamSupport.stream(values.spliterator(), false).toList();
+    }
+
+    /**
+     * Tekst kontraktu z repozytorium; jedyne miejsce testów, które czyta plik (#895).
+     *
+     * @return Tekst YAML kontraktu, ścieżka względna od modułu serwera
+     * @throws IOException Gdy pliku nie da się przeczytać
+     */
+    static String text() throws IOException {
+        return Files.readString(Path.of("..", "api", "openapi.yaml"));
     }
 
     /**

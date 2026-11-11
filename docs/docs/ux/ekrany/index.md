@@ -54,7 +54,7 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Po dotknięciu budynku: u góry mapa z wyróżnionym konturem A-1 i jego wejściami, niżej mała karta z uchwytem, symbolem A-1, nazwą Gmach Główny, wierszem Wejście dostępne i przyciskami Sprawdź, którędy wejść oraz Zamknij, na dole pasek dolny](obrazy/m-v1-mapa-budynek-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-jasny.webp) | [![Ta sama mała karta w motywie ciemnym nad nocną mapą](obrazy/m-v1-mapa-budynek-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-ciemny.webp) | [![Opis budynku A-1 przy czcionce 200% od razu na cały ekran, bez mapy: nazwa, wiersz Wejście dostępne, przyciski Sprawdź, którędy wejść i Pokaż budynek na mapie, potem chipy, wejścia, bariery, winda i toaleta oraz piętra](obrazy/m-v1-mapa-budynek-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-jasny-200.webp) |
+| [![Po dotknięciu budynku: u góry mapa z wyróżnionym konturem A-1 i jego wejściami, przygaszonymi sąsiednimi budynkami z podpisami oraz strzałkami przesuwania, plusem i minusem, niżej mała karta z uchwytem, symbolem A-1, nazwą Gmach Główny, wierszem Wejście dostępne i przyciskami Sprawdź, którędy wejść oraz Zamknij, na dole pasek dolny](obrazy/m-v1-mapa-budynek-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-jasny.webp) | [![Ta sama mała karta w motywie ciemnym nad nocną mapą](obrazy/m-v1-mapa-budynek-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-ciemny.webp) | [![Opis budynku A-1 przy czcionce 200% od razu na cały ekran, bez mapy: nazwa, wiersz Wejście dostępne, przyciski Sprawdź, którędy wejść i Pokaż budynek na mapie, potem chipy, wejścia, bariery, winda i toaleta oraz piętra](obrazy/m-v1-mapa-budynek-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-jasny-200.webp) |
 
 ### V1: arkusz bariery po dotknięciu znaku
 
@@ -170,9 +170,11 @@ Wymagania: [V2 Karta budynku](../wymagania-ekranow.md#v2-karta-budynku).
 
 `m-v2-karta-budynku-mala`. Ta sama karta co [V1: mała karta budynku A-1 nad mapą](#v1-mala-karta): mapa otwiera V2 jako małą kartę o wysokości treści. Nie ma na niej chipów ani listy wejść. Uchwyt, przewinięcie albo przeciągnięcie w górę otwiera pełny ekran.
 
+Nad kartą zostają przyciski mapy, a zaznaczony budynek mieści się w części mapy obok nich (NFR-53).
+
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Mała karta budynku A-1 nad mapą z wyróżnionym konturem: uchwyt, symbol A-1, nazwa Gmach Główny, wiersz Wejście dostępne i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny.webp) | [![Ta sama mała karta w motywie ciemnym](obrazy/m-v2-karta-budynku-mala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-ciemny.webp) | [![Ten sam budynek przy czcionce 200%: zamiast małej karty od razu pełny ekran bez mapy, z przyciskami Sprawdź, którędy wejść i Pokaż budynek na mapie](obrazy/m-v2-karta-budynku-mala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny-200.webp) |
+| [![Mała karta budynku A-1 nad mapą z wyróżnionym konturem, podpisami sąsiednich budynków i przyciskami mapy: uchwyt, symbol A-1, nazwa Gmach Główny, wiersz Wejście dostępne i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny.webp) | [![Ta sama mała karta w motywie ciemnym](obrazy/m-v2-karta-budynku-mala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-ciemny.webp) | [![Ten sam budynek przy czcionce 200%: zamiast małej karty od razu pełny ekran bez mapy, z przyciskami Sprawdź, którędy wejść i Pokaż budynek na mapie](obrazy/m-v2-karta-budynku-mala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny-200.webp) |
 
 ### V2: budynek bez planu pięter (H-4)
 
