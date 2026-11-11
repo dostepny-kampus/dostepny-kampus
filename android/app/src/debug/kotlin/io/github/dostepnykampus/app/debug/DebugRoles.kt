@@ -6,9 +6,6 @@
 package io.github.dostepnykampus.app.debug
 
 import androidx.annotation.StringRes
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,22 +15,30 @@ import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
  * Konto wybrane w przełączniku wersji debug (US14.1). Po wyborze roli ustawia je [DebugSignIn] z ról w tokenie
- * użytkownika testowego. Konto jest stanem Compose, więc zmiana roli od razu odświeża pasek i ekrany.
+ * użytkownika testowego. Zmiana konta od razu odświeża pasek i ekrany, które je obserwują.
  */
 @TymczasoweRole
 @Singleton
 class DebugRoles
     @Inject
     constructor() : RoleProvider {
-        /** Bieżące konto; na starcie Gość. */
-        var account: Account by mutableStateOf(Account.Guest)
+        private val state = MutableStateFlow<Account>(Account.Guest)
 
-        override fun currentAccount(): Account = account
+        /** Bieżące konto; na starcie Gość. */
+        override val account: StateFlow<Account> = state.asStateFlow()
+
+        /** Ustawia konto po zalogowaniu albo wylogowaniu w przełączniku. */
+        fun switchTo(account: Account) {
+            state.value = account
+        }
     }
 
 /**

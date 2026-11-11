@@ -31,6 +31,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -57,9 +58,10 @@ class DebugRoleActivity : ComponentActivity() {
         val signIn = EntryPointAccessors.fromApplication<DebugRolesEntryPoint>(this).signIn()
         setContent {
             var isFailed by rememberSaveable { mutableStateOf(false) }
+            val current by roles.account.collectAsStateWithLifecycle()
             DostepnyKampusTheme {
                 RoleSwitch(
-                    current = roles.account,
+                    current = current,
                     onChoose = { role ->
                         lifecycleScope.launch {
                             isFailed = !signIn.choose(role)
