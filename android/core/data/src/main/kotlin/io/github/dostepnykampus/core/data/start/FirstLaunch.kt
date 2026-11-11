@@ -58,7 +58,6 @@ class FirstLaunchRepository(private val dataStore: DataStore<Preferences>) : Fir
         try {
             dataStore.edit { preferences -> preferences[HELP_SEEN] = true }
         } catch (_: IOException) {
-            Unit
         }
     }
 

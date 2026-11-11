@@ -51,7 +51,6 @@ class FirstLaunchViewModel
                     try {
                         firstLaunch.markHelpSeen()
                     } catch (_: IOException) {
-                        Unit
                     }
                 }
             }
