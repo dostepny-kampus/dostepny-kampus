@@ -13,13 +13,14 @@ import org.junit.jupiter.api.Test
 class NetworkModuleTest {
     @Test
     fun client_from_module() {
-        val http = NetworkModule.okHttp()
+        val http = NetworkModule.okHttp(AccessTokens())
         val json = NetworkModule.json()
         val api = NetworkModule.buildingsApi(http = http, json = json)
         assertEquals(CALL_MS, http.connectTimeoutMillis)
         assertEquals(CALL_MS, http.callTimeoutMillis)
         assertEquals(BASE_URL, BuildConfig.API_BASE_URL)
         assertInstanceOf(BuildingsApi::class.java, api)
+        assertInstanceOf(AccessTokenInterceptor::class.java, http.interceptors.single())
         val parsed = json.decodeFromString<BuildingListDto>("""{"source":"x","extra":1,"buildings":[]}""")
         assertEquals("x", parsed.source)
         assertEquals(emptyList<BuildingDto>(), parsed.buildings)
