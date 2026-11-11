@@ -76,7 +76,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, arkusz bariery | „Pokaż opis budynku”; „Zamknij” | V2 budynku bariery; V1 | wszystkie | US2 |
 | V1 | napis „© OpenStreetMap contributors” | strona praw autorskich OSM | wszystkie | NFR-37 |
 | V1 | „Powiększ”, „Pomniejsz” i strzałki „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | V1, mapa powiększona albo przesunięta | wszystkie | NFR-15, PW-8, PW-11 |
-| V1 | „ⓘ” („Informacje o mapie”) | V1, arkusz ze źródłami mapy | wszystkie | NFR-37, NFR-40 |
+| V1 | „ⓘ” („Informacje o mapie”) | V1, panel ze źródłami mapy | wszystkie | NFR-37, NFR-40 |
 | V1, stan „brak wyniku” | „Lista budynków” | V1, lista | wszystkie | UC1 3a |
 | V1 | „Legenda” | V1, legenda rozwinięta | wszystkie | NFR-21 |
 | V1 | przycisk terenu, np. „Kampus główny” | V1, panel „Teren na mapie” | wszystkie | US1.6, US1.7 |
