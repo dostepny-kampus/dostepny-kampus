@@ -72,27 +72,13 @@ internal fun MapOverlay(
         }
         if (hasControls && open != MapPanel.Info) {
             val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
-            Column(above) {
-                MapAreaSwitch(
-                    areas = AreaList(areas.choices),
-                    isOpen = open == MapPanel.Area,
-                    onOpenChange = { open = MapPanel.Area.takeIf { _ -> it } },
-                    onChoose = { name ->
-                        areas.show(name)?.let(onAreaShow)
-                        open = null
-                    },
-                    modifier =
-                        Modifier
-                            .weight(weight = 1f, fill = false)
-                            .padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
-                )
-                if (open != MapPanel.Area) {
-                    MapLegend(
-                        isOpen = open == MapPanel.Legend,
-                        onOpenChange = { open = MapPanel.Legend.takeIf { _ -> it } },
-                    )
-                }
-            }
+            AreaAndLegendColumn(
+                areas = areas,
+                open = open,
+                onOpenChange = { open = it },
+                onAreaShow = onAreaShow,
+                modifier = above,
+            )
         }
         OsmAttribution(Modifier.align(Alignment.BottomStart))
         if (hasControls) {
@@ -104,6 +90,37 @@ internal fun MapOverlay(
             )
         }
         content()
+    }
+}
+
+@Composable
+private fun AreaAndLegendColumn(
+    areas: MapAreas,
+    open: MapPanel?,
+    onOpenChange: (MapPanel?) -> Unit,
+    onAreaShow: (MapCamera) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier) {
+        MapAreaSwitch(
+            areas = AreaList(areas.choices),
+            isOpen = open == MapPanel.Area,
+            onOpenChange = { onOpenChange(MapPanel.Area.takeIf { _ -> it }) },
+            onChoose = { name ->
+                areas.show(name)?.let(onAreaShow)
+                onOpenChange(null)
+            },
+            modifier =
+                Modifier
+                    .weight(weight = 1f, fill = false)
+                    .padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
+        )
+        if (open != MapPanel.Area) {
+            MapLegend(
+                isOpen = open == MapPanel.Legend,
+                onOpenChange = { onOpenChange(MapPanel.Legend.takeIf { _ -> it }) },
+            )
+        }
     }
 }
 
