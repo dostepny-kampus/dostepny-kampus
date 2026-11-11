@@ -23,7 +23,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -36,7 +35,7 @@ import tools.jackson.databind.JsonNode;
  * <p>Test czyta {@code security} operacji albo wpis globalny. Pusta lista albo wariant
  * {@code {}} to dostęp bez tokenu, kilka wpisów z rolami to którakolwiek z nich, a pusta lista
  * ról to dowolna zalogowana osoba. Operacja zamknięta odpowiada 401 bez tokenu i 403 dla roli
- * spoza kontraktu. Operacje bez handlera z {@code RouteParityTest} są pominięte.</p>
+ * spoza kontraktu. Operacje bez handlera też są sprawdzane: serwer zna ich reguły.</p>
  *
  * @since 0.1.0
  */
@@ -70,7 +69,6 @@ final class SecurityContractTest {
         """;
 
     @Test
-    @Disabled("Serwer nie sprawdza jeszcze tokenu ani roli; włączyć z zabezpieczeniami (#460)")
     void nfrThirtyThreeEveryOperationFollowsContractSecurity(
         final WebApplicationContext context
     ) throws Exception {
@@ -82,12 +80,46 @@ final class SecurityContractTest {
                 "Serwer wpuszcza albo odrzuca wywołania inaczej, niż opisuje kontrakt",
                 SecurityContractTest.problems(
                     SecurityContractTest.rules(
-                        Files.readString(Path.of("..", "api", "openapi.yaml")),
-                        RouteParityTest.PENDING.keySet()
+                        Files.readString(Path.of("..", "api", "openapi.yaml")), Set.of()
                     ),
                     (operation, who) -> SecurityContractTest.status(client, base, operation, who)
                 ),
                 Matchers.empty()
+            );
+        }
+    }
+
+    @Test
+    void nfrThirtyThreeRejectionIsContractProblem(
+        final WebApplicationContext context
+    ) throws Exception {
+        final String base = "http://localhost:%s".formatted(
+            context.getEnvironment().getProperty("local.server.port")
+        );
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            final List<String> found = new ArrayList<>(0);
+            final List<String> callers = List.of(
+                SecurityContractTest.ANONYMOUS, "zly-token", "VISITOR"
+            );
+            for (final String who : callers) {
+                final HttpResponse<String> reply = SecurityContractTest.reply(
+                    client, base, "GET /review/queue", who
+                );
+                found.add(
+                    "%d %s %s".formatted(
+                        reply.statusCode(),
+                        reply.headers().firstValue(HttpHeaders.CONTENT_TYPE).orElse(""),
+                        new OpenApiContract().violations("Problem", reply.body())
+                    )
+                );
+            }
+            MatcherAssert.assertThat(
+                "Odmowa nie jest odpowiedzią Problem z kontraktu albo zły token nie daje 401",
+                found,
+                Matchers.contains(
+                    "401 application/problem+json []", "401 application/problem+json []",
+                    "403 application/problem+json []"
+                )
             );
         }
     }
@@ -239,6 +271,12 @@ final class SecurityContractTest {
     private static int status(
         final HttpClient client, final String base, final String operation, final String who
     ) throws Exception {
+        return SecurityContractTest.reply(client, base, operation, who).statusCode();
+    }
+
+    private static HttpResponse<String> reply(
+        final HttpClient client, final String base, final String operation, final String who
+    ) throws Exception {
         final String[] parts = operation.split(" ", 2);
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.noBody();
         if (Set.of("POST", "PUT", "PATCH").contains(parts[0])) {
@@ -250,7 +288,7 @@ final class SecurityContractTest {
         if (!SecurityContractTest.ANONYMOUS.equals(who)) {
             request.header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(who));
         }
-        return client.send(request.build(), HttpResponse.BodyHandlers.discarding()).statusCode();
+        return client.send(request.build(), HttpResponse.BodyHandlers.ofString());
     }
 
     /**
