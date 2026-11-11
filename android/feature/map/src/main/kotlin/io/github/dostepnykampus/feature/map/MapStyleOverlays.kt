@@ -1,10 +1,11 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map
 
+import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import kotlinx.serialization.json.JsonObject
@@ -63,7 +64,7 @@ internal fun chosenFeatures(chosen: SelectedEntrance): List<Feature<Geometry, Js
             put(key = "label", value = chosen.label)
             put(key = "image", value = entranceCaptionImage(chosen.label))
         }
-    val point = Point(Position(longitude = chosen.location.longitude, latitude = chosen.location.latitude))
+    val point = Point(chosen.location.toPosition())
     return listOf(Feature(point, properties))
 }
 
