@@ -35,6 +35,9 @@ enum class RefusalReason {
 
     /** Inna odmowa: „Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.” */
     NOT_ACCEPTED,
+
+    /** Odmowa bez kodu: telefon nie odczytał zgłoszenia, np. brakuje pliku zdjęcia. */
+    UNREADABLE,
 }
 
 /**
@@ -149,6 +152,7 @@ internal fun OwnSubmission.toItem(): OwnSubmissionItem =
 private fun refusalOf(row: OwnSubmission): RefusalReason? =
     when {
         row.state != SendState.REFUSED -> null
+        row.refusalCode == null -> RefusalReason.UNREADABLE
         row.refusalCode == HTTP_FORBIDDEN -> RefusalReason.NO_PERMISSION
         else -> RefusalReason.NOT_ACCEPTED
     }

@@ -144,4 +144,5 @@ private fun RefusalReason.textRes(): Int =
     when (this) {
         RefusalReason.NO_PERMISSION -> R.string.moje_brak_uprawnien
         RefusalReason.NOT_ACCEPTED -> R.string.moje_nie_przyjal
+        RefusalReason.UNREADABLE -> R.string.moje_nie_odczytano
     }

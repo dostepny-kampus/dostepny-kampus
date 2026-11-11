@@ -102,11 +102,15 @@ class MySubmissionsViewModelTest {
                     row(id = "a", state = SendState.REFUSED, code = 403),
                     row(id = "b", state = SendState.REFUSED, code = 422),
                     row(id = "c", state = SendState.SENT),
+                    row(id = "d", state = SendState.REFUSED, code = null),
                 )
             collect()
 
             val reasons = list().items.map { it.refusal }
-            assertEquals(listOf(RefusalReason.NO_PERMISSION, RefusalReason.NOT_ACCEPTED, null), reasons)
+            assertEquals(
+                listOf(RefusalReason.NO_PERMISSION, RefusalReason.NOT_ACCEPTED, null, RefusalReason.UNREADABLE),
+                reasons,
+            )
         }
 
     /** Odmowa 400, 404 i 413 to „Serwer nie przyjął zgłoszenia…”; tylko 403 to brak uprawnień (US9.5, BR-26). */

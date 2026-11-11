@@ -31,7 +31,7 @@ enum class SendState {
  * @property buildingSymbol budynek; `null` to „poza budynkiem”
  * @property floorNumber numer piętra budynku podstawowego
  * @property state stan wysyłki
- * @property refusalCode kod odpowiedzi HTTP odmowy; `null`, gdy serwer nie odmówił albo nie podał kodu
+ * @property refusalCode kod odpowiedzi HTTP odmowy; `null` bez odmowy albo gdy telefon nie odczytał zgłoszenia
  * @property serverStatus status z serwera po odświeżeniu (US8.2); `null`, gdy telefon go jeszcze nie zna
  * @property rejectionReason powód odrzucenia od Weryfikatora (BR-16); `null` poza odrzuceniem
  */
