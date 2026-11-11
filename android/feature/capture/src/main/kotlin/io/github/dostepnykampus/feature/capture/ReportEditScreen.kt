@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.feature.capture
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -16,9 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 
 /**
  * C2 z polami zgłoszenia [route] z C3 (US8.3). „Zapisz” zastępuje to samo zgłoszenie, „Zmień miejsce” idzie
@@ -47,44 +44,18 @@ fun ReportEditScreen(
     val load by loader.load.collectAsStateWithLifecycle()
     val start = (load as? ReportEditLoad.Ready)?.start
     if (start != null) SideEffect { viewModel.open(start.form, draft, start.photos) }
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val leave by rememberUpdatedState(exits.onLeave)
-    val save by rememberUpdatedState(exits.onSave)
-    val changePlace by rememberUpdatedState(exits.onChangePlace)
     LaunchedEffect(loader) {
         loader.load.first { it == ReportEditLoad.Missing }
         leave()
     }
-    LaunchedEffect(viewModel) {
-        viewModel.uiState
-            .map { it?.stage }
-            .distinctUntilChanged()
-            .collect { stage ->
-                if (stage == ReportStage.LEFT) leave()
-                if (stage == ReportStage.PLACE_CHANGED) changePlace()
-                if (stage == ReportStage.SAVED) save()
-            }
-    }
-    BackHandler(onBack = viewModel::back)
     val camera =
         rememberPhotoCamera(onPhoto = { viewModel.edit(ReportEdit.Photo(it)) }, transcoder = photoTranscoder)
-    state?.let { current ->
-        val actions =
-            ReportActions(
-                onEdit = viewModel::edit,
-                onChangePlace = viewModel::changePlace,
-                camera = camera,
-                onSave = viewModel::save,
-                onBack = viewModel::back,
-                onConfirmExit = viewModel::confirmExit,
-                onStay = viewModel::stay,
-            )
-        ReportContent(state = current, actions = actions, modifier = modifier)
-    }
+    ReportFormHost(controls = viewModel.controls(), camera = camera, exits = exits, modifier = modifier)
 }
 
 /**
- * Wyjścia z poprawki C2.
+ * Wyjścia z formularza C2; w nowym zgłoszeniu „Zmień miejsce” wychodzi tak samo jak [onLeave].
  *
  * @property onLeave wyjście bez zapisu albo brak zgłoszenia; powrót do C3
  * @property onSave poprawka zapisana; powrót do C3
