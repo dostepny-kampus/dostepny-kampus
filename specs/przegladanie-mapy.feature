@@ -129,6 +129,22 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz po „Wstecz” widzi znowu małą kartę nad mapą
     Oraz po „Zamknij” widzi mapę bez zaznaczonego budynku
 
+  @US2.8 @US1.4 @NFR-53
+  Scenariusz: Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
+    Jeżeli dotknie budynku A-1
+    Wtedy cały kontur budynku A-1 i jego wejścia mieszczą się w części mapy nad małą kartą
+    Oraz nad małą kartą są „Powiększ”, „Pomniejsz” i strzałki przesuwania mapy
+    Oraz po „Pomniejsz” mapa się oddala, a mała karta budynku A-1 zostaje otwarta
+    Ale nad małą kartą nie ma pola „Wpisz symbol budynku, np. C-13” ani przełącznika „Mapa” i „Lista budynków”
+
+  @US2.8 @NFR-53
+  Scenariusz: Przy niskiej mapie nad małą kartą nie ma przycisków mapy
+    Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
+    Oraz nad małą kartą zostaje mniej niż 300 dp mapy
+    Wtedy nad małą kartą nie ma „Powiększ”, „Pomniejsz” ani strzałek przesuwania mapy
+    Oraz po „Zamknij” przyciski mapy wracają
+
   @US2.9
   Scenariusz: Z listy przy dużej czcionce opis budynku prowadzi do mapy
     Zakładając, że Gość niezalogowany ma skalę czcionki 2,0 i otwartą listę budynków
