@@ -52,6 +52,8 @@ private val CAMPUS_MARGIN = 500.meters
  *   [START_BUILDING], powiększony o 500 m z każdej strony (BR-G5, NFR-39). Bez tego budynku to pierwszy teren
  *   katalogu; `null` bez budynków
  * @property areas tereny PWr z katalogu, każdy z prostokątem jak [bounds] (BR-G5)
+ * @property labelPointsBySymbol punkt podpisu konturu każdego symbolu, ten sam co w [labelPoints]; symbole konturu
+ *   wspólnego mają jeden punkt. Kamera bierze punkt stąd i nie liczy go drugi raz na wątku interfejsu (NFR-11)
  */
 data class CampusMapData(
     val buildings: String,
@@ -61,6 +63,7 @@ data class CampusMapData(
     val start: GeoPoint?,
     val bounds: CampusBounds? = null,
     val areas: List<MapArea> = emptyList(),
+    val labelPointsBySymbol: Map<String, GeoPoint> = emptyMap(),
 )
 
 /**
@@ -129,11 +132,15 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
                 }
             Feature(outline.toGeometry(), properties)
         }
-    val labelPoints =
+    val labelled =
         outlines.map { (outline, symbols) ->
-            val properties = buildJsonObject { put(key = "label", value = symbols.joinToString(LABEL_SEPARATOR)) }
             if (Thread.interrupted()) throw InterruptedException("liczenie geometrii przerwane")
-            Feature(Point(labelPoint(outline).toPosition()), properties)
+            symbols to labelPoint(outline)
+        }
+    val labelPoints =
+        labelled.map { (symbols, point) ->
+            val properties = buildJsonObject { put(key = "label", value = symbols.joinToString(LABEL_SEPARATOR)) }
+            Feature(Point(point.toPosition()), properties)
         }
     val entrances =
         catalog.entrances.distinctBy { it.id }.map { entrance ->
@@ -159,6 +166,7 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
         start = center(startBuildings.flatMap { it.outline.points() }),
         bounds = startArea?.bounds,
         areas = areas,
+        labelPointsBySymbol = labelled.flatMap { (symbols, point) -> symbols.map { it to point } }.toMap(),
     )
 }
 
