@@ -217,6 +217,8 @@ private fun CampusMap(
                 hasControls = !state.isCovered && !isKeyboardOpen,
                 dataDay = catalog?.dataDay(),
                 onCameraChange = state::move,
+                areas = areas,
+                onAreaShow = state::keep,
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
             ) {
                 val chosen = catalog?.buildingsOf(state.choice).orEmpty()
