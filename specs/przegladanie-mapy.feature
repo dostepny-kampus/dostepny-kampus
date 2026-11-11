@@ -241,3 +241,53 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | C-13    | 5      |
       | D-1     | 5      |
       | D-2     | 5      |
+
+  @US1.6 @BR-G5
+  Scenariusz: Mapa otwiera się na terenie „Kampus główny”
+    Zakładając, że Gość niezalogowany pierwszy raz otwiera aplikację i pomija instrukcję
+    Jeżeli otworzy mapę kampusu
+    Wtedy widzi mapę terenu „Kampus główny” z budynkiem A-1
+    Oraz na mapie widzi nazwę terenu „Kampus główny”
+
+  @US1.7 @BR-G5
+  Scenariusz: Lista terenów podaje nazwę, liczbę budynków i odległość
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
+    Jeżeli otworzy listę terenów
+    Wtedy widzi tereny „Kampus główny”, „Wittigowo”, „Bartoszowice”, „Długa” i „T-9 Atol”
+    Oraz teren „Kampus główny” jest oznaczony jako wybrany
+    Oraz przy każdym innym terenie widzi liczbę budynków i odległość
+
+  @US1.7
+  Scenariusz: Wybór terenu z listy pokazuje jego mapę
+    Zakładając, że Gość niezalogowany ma otwartą listę terenów
+    Jeżeli wybierze teren „Wittigowo”
+    Wtedy widzi mapę terenu „Wittigowo” z budynkiem T-15
+    Oraz na mapie widzi nazwę terenu „Wittigowo”
+
+  @US1.7 @BR-G5 @NFR-39
+  Scenariusz: Mapa nie wychodzi poza wybrany teren
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
+    Jeżeli przesunie mapę do granicy terenu w stronę terenu „Wittigowo”
+    Wtedy mapa dalej się nie przesuwa
+    Oraz obszar poza terenem jest przyciemniony
+    Oraz przy krawędzi mapy widzi przycisk terenu „Wittigowo” z odległością
+
+  @US1.7
+  Scenariusz: Przycisk przy krawędzi mapy przechodzi do sąsiedniego terenu
+    Zakładając, że Gość niezalogowany widzi przy krawędzi mapy przycisk terenu „Wittigowo”
+    Jeżeli wybierze ten przycisk
+    Wtedy widzi mapę terenu „Wittigowo”
+
+  @US1.8 @BR-G5
+  Scenariusz: Wyszukanie budynku z innego terenu zmienia teren
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
+    Jeżeli wyszuka „T-15” i wybierze wynik
+    Wtedy widzi mapę terenu „Wittigowo” z zaznaczonym budynkiem T-15
+    Oraz widzi napis „Pokazuję teren: Wittigowo”
+
+  @US1.8
+  Scenariusz: Lista budynków jest podzielona na tereny
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
+    Jeżeli otworzy listę budynków
+    Wtedy widzi nagłówki terenów z liczbą budynków
+    Oraz budynek T-15 stoi pod nagłówkiem „Wittigowo”

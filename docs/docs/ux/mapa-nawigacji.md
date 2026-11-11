@@ -79,6 +79,10 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1 | „ⓘ” („Informacje o mapie”) | V1, arkusz ze źródłami mapy | wszystkie | NFR-37, NFR-40 |
 | V1, stan „brak wyniku” | „Lista budynków” | V1, lista | wszystkie | UC1 3a |
 | V1 | „Legenda” | V1, legenda rozwinięta | wszystkie | NFR-21 |
+| V1 | przycisk terenu, np. „Kampus główny” | V1, panel „Teren na mapie” | wszystkie | US1.6, US1.7 |
+| V1, panel „Teren na mapie” | teren z listy; „Zamknij” | V1 z wybranym terenem; V1 | wszystkie | US1.7 |
+| V1, widok przy granicy terenu | przycisk sąsiedniego terenu, np. „Wittigowo 2 km” | V1 z tym terenem | wszystkie | US1.7 |
+| V1 | wybór wyniku albo budynku z listy, który leży na innym terenie | V1 z terenem tego budynku; dalej jak przy każdym wyniku | wszystkie | US1.8 |
 | V1 | wybór sali w wynikach pola, np. „A-1 329” | V1, stan „znaleziona sala”: plan piętra i kroki | wszystkie | BR-25, decyzja 44 |
 | V1, stan „plan piętra” albo „znaleziona sala” | przełącznik pięter | V1, plan innego piętra | wszystkie | US16.1 |
 | V1, stan „znaleziona sala”, „sala bez drogi” albo „brak sali” | „Pokaż opis budynku” | V2 | wszystkie | US2 |

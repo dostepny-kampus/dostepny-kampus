@@ -57,6 +57,9 @@ Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. 
 | US1.3 | Na mapie są tylko zgłoszenia przyjęte. | BR-6 |
 | US1.4 | Na mapie widać wejścia budynków ze znakiem oznaczenia oraz ścieżki dostosowane i pochylnie z danych PWr albo OpenStreetMap. Legenda objaśnia słowem każdy znak mapy i planu, także „brak danych”. | NFR-21, US2.1 |
 | US1.5 | Dotknięcie znaku bariery na mapie pokazuje jej typ, uciążliwość, miejsce, zdjęcie i datę weryfikacji oraz przejście do karty budynku. | US2.2, BR-17 |
+| US1.6 | Mapa pokazuje jeden teren PWr naraz: „Kampus główny”, „Wittigowo”, „Bartoszowice”, „Długa” albo „T-9 Atol”. Przy pierwszym otwarciu jest to „Kampus główny”. Nazwę wybranego terenu widać na mapie przez cały czas. | BR-G5 |
+| US1.7 | Osoba zmienia teren z listy terenów albo przyciskiem przy krawędzi mapy. Lista podaje przy każdym terenie nazwę, liczbę budynków i odległość od wybranego terenu. Przycisk pojawia się, gdy w tę stronę leży inny teren. Mapa nie przesuwa się poza wybrany teren, a obszar poza nim jest przyciemniony. | BR-G5, NFR-39, NFR-53 |
+| US1.8 | Wybór budynku z innego terenu w wynikach wyszukiwania albo na liście budynków sam zmienia teren, a aplikacja mówi o tym napisem. Lista budynków jest podzielona nagłówkami terenów. | US1.1, BR-G5, NFR-19 |
 | US2.1 | Każde wejście ma jedno z trzech oznaczeń: „dostępne”, „niedostępne” albo „brak danych”, tekstem i ikoną, nie tylko kolorem. | NFR-21, US17.1 |
 | US2.2 | Każde zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę weryfikacji. | BR-6 |
 | US2.3 | Karta budynku zaczyna się od skrótu faktów z danych: wejście dostępne, winda, toaleta dostosowana. Wejścia i bariery w budynku osoba widzi bez przewijania przez opisy pięter. Faktu bez potwierdzenia w danych skrót nie pokazuje. | US2.1, US2.2 |
@@ -77,6 +80,7 @@ Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. 
 | US4.6 | Zgłoszenie zaczęte przy wejściu na karcie budynku albo na ekranie „Którędy wejść” pokazuje w kroku 1 nazwę tego wejścia i dołącza ją jako wskazówkę. Miejsce zgłoszenia nadal pochodzi z bieżącej pozycji. | BR-8, BR-14 |
 | US4.7 | Po wysłaniu „Wstecz” z potwierdzenia wraca do ekranu, z którego zaczęto zgłoszenie. Kroków zgłoszenia nie da się otworzyć ponownie ani wysłać zdjęcia drugi raz. | NFR-8 |
 | US4.8 | Powrót między krokami nie usuwa zdjęcia ani wybranej grupy. Zdjęcie znika tylko wtedy, gdy Odwiedzający potwierdzi rezygnację. | NFR-23 |
+| US4.9 | Zgłoszenie można złożyć tylko na terenie PWr. Gdy bieżąca pozycja leży dalej niż 500 m od każdego budynku PWr, aplikacja mówi „Jesteś poza terenem PWr” i nie wysyła zgłoszenia. Zdjęcie i grupa zostają do ponownej próby. Serwer odrzuca zgłoszenie z takim miejscem. | BR-G5, NFR-23 |
 | US5.1 | Instrukcja pojawia się przy pierwszym uruchomieniu. Można ją pominąć i otworzyć ponownie z pomocy. | — |
 | US16.1 | W budynku szczegółowym przełącznik pięter pokazuje etykiety pięter z danych PWr. Wybrane piętro pokazuje plan z windami, schodami, toaletami, wejściami i zgłoszeniami przyjętymi. | NFR-40 |
 | US16.2 | W budynku podstawowym przełącznika pięter nie ma, a w miejscu planu widać napis „Nie mamy planu pięter tego budynku.” | BR-G1, NFR-48 |

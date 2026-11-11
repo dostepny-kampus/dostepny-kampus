@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | --- | --- |
 | Pełny test | 3 |
 | Tylko częściowo | 13 |
-| Bez testu | 158 |
+| Bez testu | 167 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -98,6 +98,13 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `przegladanie-mapy.feature` | Instrukcja przy pierwszym uruchomieniu | US5.1 | `app · AppNavigatorTest.us5_1_first_launch_opens_v5`<br>`app · AppShellTest.us5_1_first_launch_v5_back_v1`<br>`app · HelpScreenTest.us5_1_first_launch_skip_v1`<br>`app · MainActivityTest.us5_1_first_launch_recreate`<br>`core/data · FirstLaunchRepositoryTest.us5_1_help_until_marked_seen` | pełny |
 | `przegladanie-mapy.feature` | Instrukcję można otworzyć ponownie z pomocy | US5.1 | `app · AppNavigatorTest.us5_1_bar_help_v5_back_returns`<br>`app · AppNavigatorTest.us5_1_first_launch_back_v1`<br>`app · AppNavigatorTest.us5_1_next_launch_opens_v1`<br>`app · HelpScreenTest.us5_1_help_opens_again`<br>`core/data · FirstLaunchRepositoryTest.us5_1_second_launch_no_help` | pełny |
 | `przegladanie-mapy.feature` | Plan piętra w budynku szczegółowym | US16.1 | — | brak |
+| `przegladanie-mapy.feature` | Mapa otwiera się na terenie „Kampus główny” | BR-G5, US1.6 | — | brak |
+| `przegladanie-mapy.feature` | Lista terenów podaje nazwę, liczbę budynków i odległość | BR-G5, US1.7 | — | brak |
+| `przegladanie-mapy.feature` | Wybór terenu z listy pokazuje jego mapę | US1.7 | — | brak |
+| `przegladanie-mapy.feature` | Mapa nie wychodzi poza wybrany teren | BR-G5, US1.7 | — | brak |
+| `przegladanie-mapy.feature` | Przycisk przy krawędzi mapy przechodzi do sąsiedniego terenu | US1.7 | — | brak |
+| `przegladanie-mapy.feature` | Wyszukanie budynku z innego terenu zmienia teren | BR-G5, US1.8 | — | brak |
+| `przegladanie-mapy.feature` | Lista budynków jest podzielona na tereny | US1.8 | — | brak |
 | `scenariusz-demo.feature` | Schody przy wejściu głównym A-1 od pomiaru do eksportu | US2.1, US6.1, US6.2, US7.1, US9.2, US10.1, US11.1, US13.1 | — | brak |
 | `synchronizacja.feature` | Bez sieci widać wskaźnik, a zgłoszenie czeka ze statusem „lokalne” | BR-9, US9.1 | — | brak |
 | `synchronizacja.feature` | Zgłoszenia zapisane bez sieci przetrwają restart telefonu | BR-9, US4.2, US9.1 | — | brak |
@@ -189,3 +196,5 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `zgloszenie-szybkie.feature` | Gość niezalogowany jest proszony o logowanie przed zdjęciem | BR-8, US14.2 | `app · AppNavigatorTest.us14_2_bar_report_guest_l1` | częściowo |
 | `zgloszenie-szybkie.feature` | Gość po zalogowaniu wraca do zgłoszenia szybkiego | BR-8, US14.2 | `app · AppNavigatorTest.us14_2_guest_signed_in_v4` | częściowo |
 | `zgloszenie-szybkie.feature` | Gość rezygnuje z logowania | BR-8, US14.2 | `app · AppNavigatorTest.uc7_1b_guest_not_now_v1` | częściowo |
+| `zgloszenie-szybkie.feature` | Zgłoszenie szybkie tylko na terenie PWr | BR-8, BR-G5, US4.9 | — | brak |
+| `zgloszenie-szybkie.feature` | Serwer odrzuca zgłoszenie spoza terenu PWr | BR-8, BR-G5, US4.9 | — | brak |
