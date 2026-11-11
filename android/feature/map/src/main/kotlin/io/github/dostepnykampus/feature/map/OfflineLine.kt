@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +42,7 @@ private val NoInternetIcon =
     )
 
 /**
- * Wskaźnik braku sieci na V1 i V2: jedna linia z ikoną i napisem „Bez internetu” na całą szerokość, pod górą ekranu
+ * Wskaźnik braku sieci na V1: jedna linia z ikoną i napisem „Bez internetu” na całą szerokość, pod górą ekranu
  * (US9.1, NFR-10, NFR-21, PW-4). W S2 wszystkie dane są z pakietu aplikacji i nic nie jest pobierane, więc linia
  * nie ma daty „dane z …” (decyzja 84). Linia pojawia się sama, więc TalkBack czyta ją jako komunikat stanu
  * (NFR-15, WCAG 4.1.3).
@@ -70,6 +72,38 @@ internal fun OfflineLine(modifier: Modifier = Modifier) {
                 )
             }
             HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)
+        }
+    }
+}
+
+/**
+ * Wskaźnik braku sieci na karcie V2: zaokrąglona plakietka z ikoną i napisem „Bez internetu”, szeroka jak jej treść,
+ * nad nagłówkiem karty, tak samo na małej karcie i na pełnym ekranie (US2.8, NFR-10, NFR-21, decyzja 153). Daty
+ * „dane z …” nie ma, dopóki dane są tylko z pakietu aplikacji (decyzja 84). Plakietka pojawia się sama, więc
+ * TalkBack czyta ją jako komunikat stanu (NFR-15, WCAG 4.1.3).
+ *
+ * @param modifier położenie plakietki wyznacza wołający
+ */
+@Composable
+internal fun OfflinePill(modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.semantics { liveRegion = LiveRegionMode.Polite },
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.outline),
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = Odstepy.m, vertical = Odstepy.s),
+            horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(NoInternetIcon, contentDescription = null)
+            Text(
+                text = stringResource(R.string.mapa_bez_internetu),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = Typografia.wyroznienieWaga,
+            )
         }
     }
 }
