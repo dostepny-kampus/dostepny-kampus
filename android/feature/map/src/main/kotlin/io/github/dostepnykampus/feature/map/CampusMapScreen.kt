@@ -5,9 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,44 +13,34 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.geo.labelPoint
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
-import java.time.LocalDate
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -251,65 +239,3 @@ internal fun BuildingCatalog.pointOf(symbol: String?): GeoPoint? =
 
 private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
     symbols.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
-
-@Composable
-private fun MapOverlay(
-    camera: MapCamera,
-    hasControls: Boolean,
-    dataDay: LocalDate?,
-    onCameraChange: (MapCamera) -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable BoxScope.() -> Unit,
-) {
-    var isLegendOpen by rememberSaveable { mutableStateOf(false) }
-    var isInfoOpen by rememberSaveable { mutableStateOf(false) }
-    Box(modifier) {
-        if (hasControls && !isLegendOpen && !isInfoOpen) {
-            MapControls(camera, onCameraChange, modifier = Modifier.align(Alignment.TopEnd))
-        }
-        if (hasControls && !isInfoOpen) {
-            val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
-            MapLegend(isOpen = isLegendOpen, onOpenChange = { isLegendOpen = it }, modifier = above)
-        }
-        OsmAttribution(Modifier.align(Alignment.BottomStart))
-        if (hasControls) {
-            val open = { isOpen: Boolean ->
-                isInfoOpen = isOpen
-                isLegendOpen = false
-            }
-            val corner = Modifier.align(Alignment.BottomEnd)
-            MapInfo(isOpen = isInfoOpen, dataDay = dataDay, onOpenChange = open, modifier = corner)
-        }
-        content()
-    }
-}
-
-@Composable
-private fun OsmAttribution(modifier: Modifier = Modifier) {
-    val uriHandler = LocalUriHandler.current
-    val isShort = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
-    Box(
-        modifier =
-            modifier
-                .padding(horizontal = Odstepy.s)
-                .clickable { uriHandler.openUri(OSM_COPYRIGHT) }
-                .heightIn(min = MapControlTouchSize),
-        contentAlignment = Alignment.Center,
-    ) {
-        Surface(
-            shape = MaterialTheme.shapes.small,
-            color = MaterialTheme.colorScheme.surfaceContainerLowest,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            shadowElevation = Wysokosci.kontrolkiMapy,
-            border = mapControlBorder(),
-        ) {
-            Text(
-                text = stringResource(if (isShort) R.string.mapa_osm_krotko else R.string.mapa_osm),
-                modifier = Modifier.padding(horizontal = Odstepy.s),
-                maxLines = 1,
-                textDecoration = TextDecoration.Underline,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
-    }
-}
