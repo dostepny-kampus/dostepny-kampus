@@ -1,25 +1,18 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.buildings
 
-import io.github.dostepnykampus.core.geo.parseGeoArea
+import io.github.dostepnykampus.core.geo.GeoAreaJson
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoArea
-import io.github.dostepnykampus.core.model.GeoMultiPolygon
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.network.ApiBuilding
 import io.github.dostepnykampus.core.network.BuildingList
 import io.github.dostepnykampus.core.network.DetailLevel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 private val cacheJson = Json { ignoreUnknownKeys = true }
 
@@ -35,7 +28,7 @@ internal fun BuildingList.toCacheJson(): String =
                         symbol = item.building.symbol,
                         name = item.building.name,
                         detailLevel = item.detailLevel,
-                        outline = item.building.outline.toGeoJson(),
+                        outline = item.building.outline,
                     )
                 },
         ),
@@ -60,44 +53,11 @@ private data class CachedBuilding(
     val symbol: String,
     val name: String? = null,
     val detailLevel: DetailLevel,
-    val outline: JsonElement,
+    @Serializable(with = GeoAreaJson::class) val outline: GeoArea,
 )
 
 private fun CachedBuilding.toApi(): ApiBuilding =
     ApiBuilding(
-        building = Building(symbol = symbol, name = name, outline = parseGeoArea(outline.toString())),
+        building = Building(symbol = symbol, name = name, outline = outline),
         detailLevel = detailLevel,
-    )
-
-private fun GeoArea.toGeoJson(): JsonElement =
-    when (this) {
-        is GeoPolygon -> {
-            polygonJson(rings)
-        }
-
-        is GeoMultiPolygon -> {
-            JsonObject(
-                mapOf(
-                    "type" to JsonPrimitive("MultiPolygon"),
-                    "coordinates" to JsonArray(polygons.map { polygon -> polygonRingsJson(polygon.rings) }),
-                ),
-            )
-        }
-    }
-
-private fun polygonJson(rings: List<List<GeoPoint>>): JsonElement =
-    JsonObject(
-        mapOf(
-            "type" to JsonPrimitive("Polygon"),
-            "coordinates" to polygonRingsJson(rings),
-        ),
-    )
-
-private fun polygonRingsJson(rings: List<List<GeoPoint>>): JsonArray = JsonArray(rings.map { ring -> ringJson(ring) })
-
-private fun ringJson(ring: List<GeoPoint>): JsonArray =
-    JsonArray(
-        ring.map { point ->
-            JsonArray(listOf(JsonPrimitive(point.longitude), JsonPrimitive(point.latitude)))
-        },
     )
