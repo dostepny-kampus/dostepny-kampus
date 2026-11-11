@@ -19,6 +19,8 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /** Styl mapy V1 z jednym konturem „Budynek testowy” (nie dane PWr). */
@@ -48,6 +50,27 @@ class CampusMapStyleTest {
         val buildings = sources.obj("budynki").obj("data").array("features")
         val properties = buildings.single().jsonObject.obj("properties")
         assertEquals("C-13", properties.text("label"))
+    }
+
+    /**
+     * Podkład jest przygaszony i prześwituje przez niego tło lądu, więc budynki PWr są najwyraźniejsze; zieleń, woda
+     * i ulice zostają rozpoznawalne, bo barwy nie znikają całkiem (makieta hi-fi V1, NFR-16).
+     */
+    @Test
+    fun nfr16_basemap_muted_not_grey() {
+        val paint = style.array("layers")[1].jsonObject.obj("paint")
+        assertEquals(-0.4, paint.number("raster-saturation"))
+        assertEquals(0.72, paint.number("raster-opacity"))
+        assertNull(paint["raster-brightness-min"])
+    }
+
+    /** W motywie ciemnym jasność kafelków jest odwrócona: najjaśniejsze miejsca kafelka wychodzą najciemniej. */
+    @Test
+    fun nfr16_night_basemap_inverted() {
+        val night = campusMapStyle(data = campusMapData(catalog), colors = colors.copy(isNight = true))
+        val layers = Json.parseToJsonElement(night).jsonObject.array("layers")
+        val paint = layers[1].jsonObject.obj("paint")
+        assertTrue(paint.number("raster-brightness-min") > paint.number("raster-brightness-max"))
     }
 
     /** Wiersz: V1, mapa zostaje na obszarze kampusu; podkładu spoza tego prostokąta aplikacja nie pobiera (NFR-39). */
@@ -85,6 +108,8 @@ class CampusMapStyleTest {
     private fun JsonObject.obj(key: String): JsonObject = getValue(key).jsonObject
 
     private fun JsonObject.array(key: String): JsonArray = getValue(key).jsonArray
+
+    private fun JsonObject.number(key: String): Double = getValue(key).jsonPrimitive.double
 
     private fun JsonObject.text(key: String): String = getValue(key).jsonPrimitive.content
 }

@@ -12,6 +12,7 @@ import android.graphics.Typeface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
@@ -30,6 +31,7 @@ import kotlin.math.ceil
 
 private const val LABEL_HALO_PER_TEXT = 0.25f
 private const val RGB_MASK = 0xFFFFFF
+private const val NIGHT_LAND_LUMINANCE = 0.5f
 
 /** Widok mapy za interfejsem: ekran i jego testy nie zależą od natywnej biblioteki mapy. */
 fun interface CampusMapView {
@@ -99,6 +101,7 @@ internal fun MapColors.styleColors(): MapStyleColors =
         building = pwr.hex(),
         buildingOutline = pwrKontur.hex(),
         selectedOutline = pwrWybrany.hex(),
+        isNight = lad.luminance() < NIGHT_LAND_LUMINANCE,
     )
 
 internal fun Color.hex(): String = "#%06X".format(Locale.ROOT, toArgb() and RGB_MASK)

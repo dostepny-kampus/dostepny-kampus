@@ -165,7 +165,7 @@ Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na piętrze 
 
 | Stan | Co widać |
 | --- | --- |
-| Zwykły | mapa z podkładem OpenStreetMap, konturami i barierami |
+| Zwykły | mapa z podkładem OpenStreetMap, konturami i barierami. Podkład ma przygaszone barwy, więc budynki PWr i znaki są najwyraźniejsze, a zieleń, woda i ulice zostają rozpoznawalne; w motywie ciemnym podkład jest ciemny (NFR-16) |
 | Plan piętra | plan wybranego piętra, przełącznik pięter, „Legenda” i podpis źródła (US16.1, NFR-40) |
 | Znaleziona sala | plan piętra sali z wyróżnioną salą i arkusz z krokami. Nagłówek i przełącznik „Mapa” i „Lista budynków” się chowają, a na górze zostaje samo pole z numerem sali (US18.1, US18.2) |
 | Bariera na mapie | wybrany znak bariery i arkusz z typem, uciążliwością, miejscem i zdjęciem (US1.5) |
