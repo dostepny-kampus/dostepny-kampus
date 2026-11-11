@@ -153,13 +153,14 @@ Jak we wzorcu, makiety pokazują pełny ekran V2 bez mapy. Po dotknięciu budynk
 
 ### V2: mała karta nad mapą
 
-![Makieta małej karty A-1 nad mapą: mapa z wyróżnionym konturem A-1, a pod nią uchwyt, symbol, nazwa, wiersz Wejście dostępne, Sprawdź, którędy wejść i Zamknij](../../_generated/m-v2-karta-budynku-mala.svg)
+![Makieta małej karty A-1 nad mapą: mapa z wyróżnionym konturem A-1 i przyciskami Powiększ, Pomniejsz oraz strzałkami, a pod nią uchwyt, symbol, nazwa, wiersz Wejście dostępne, Sprawdź, którędy wejść i Zamknij](../../_generated/m-v2-karta-budynku-mala.svg)
 
 Czynność główna: „Sprawdź, którędy wejść”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Mapa z konturem budynku na środku, wyróżnionym; mapa pod kartą bez nazw dla TalkBack | US2.8, NFR-19 |
+| Przyciski mapy nad kartą: „Powiększ”, „Pomniejsz” i strzałki; bez nagłówka, pola symbolu i przełącznika | NFR-53, decyzja 151 |
 | Uchwyt: przycisk „Rozwiń opis budynku” ze stanem; otwiera pełny ekran | US2.8, NFR-18, NFR-53 |
 | Wiersz o wejściach zamiast chipów; inne napisy: „Brak wejścia dostępnego”, „Brak danych o wejściach” | US2.8, US3.1, NFR-21 |
 | „Sprawdź, którędy wejść” wypełniony i obrysowany „Zamknij”; bez „Pokaż budynek na mapie” | US2.8, US3.2, NFR-53 |
