@@ -13,7 +13,10 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import java.io.IOException
 
 /** Plik ustawień startu aplikacji; jeden DataStore na proces, bo tak wymaga DataStore dla jednego pliku. */
 internal val Context.startDataStore by preferencesDataStore(
@@ -25,20 +28,39 @@ internal val Context.startDataStore by preferencesDataStore(
 interface FirstLaunch {
     /**
      * Prawda, dopóki nie wywołano [markHelpSeen]. Sam odczyt niczego nie zapisuje, więc obrót telefonu
-     * i odtworzenie procesu przed zamknięciem instrukcji dają ten sam wynik.
+     * i odtworzenie procesu przed zamknięciem instrukcji dają ten sam wynik. Gdy pliku nie da się odczytać,
+     * zwraca fałsz: aplikacja startuje tak, jakby instrukcja była już pokazana.
      */
     suspend fun isFirstLaunch(): Boolean
 
-    /** Zapisuje, że osoba zamknęła instrukcję otwartą przy pierwszym uruchomieniu albo ją pominęła. */
+    /**
+     * Zapisuje, że osoba zamknęła instrukcję otwartą przy pierwszym uruchomieniu albo ją pominęła.
+     * Błąd zapisu nie wychodzi z tej metody.
+     */
     suspend fun markHelpSeen()
 }
 
 /** [FirstLaunch] zapisany w [dataStore], więc przetrwa zamknięcie aplikacji i restart telefonu. */
 class FirstLaunchRepository(private val dataStore: DataStore<Preferences>) : FirstLaunch {
-    override suspend fun isFirstLaunch(): Boolean = dataStore.data.first()[HELP_SEEN] != true
+    override suspend fun isFirstLaunch(): Boolean {
+        val readings =
+            dataStore.data
+                .map { preferences -> preferences[HELP_SEEN] != true }
+                .catch { error ->
+                    if (error is IOException) {
+                        emit(false)
+                    } else {
+                        throw error
+                    }
+                }
+        return readings.first()
+    }
 
     override suspend fun markHelpSeen() {
-        dataStore.edit { preferences -> preferences[HELP_SEEN] = true }
+        try {
+            dataStore.edit { preferences -> preferences[HELP_SEEN] = true }
+        } catch (_: IOException) {
+        }
     }
 
     private companion object {
