@@ -10,7 +10,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
 /**
@@ -69,7 +68,7 @@ final class PhotoStore {
                         .key(PhotoStore.key(submission, photo))
                 ).asByteArray()
             );
-        } catch (final NoSuchKeyException | NoSuchBucketException ex) {
+        } catch (final NoSuchKeyException ex) {
             found = Optional.empty();
         }
         return found;
