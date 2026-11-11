@@ -18,10 +18,7 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 /** Obliczenia położenia względem konturów dla ekranów zgłoszeń. */
-class BuildingLookup(
-    private val catalog: BuildingCatalogRepository,
-    private val computeContext: CoroutineContext,
-) {
+class BuildingLookup(private val catalog: BuildingCatalogRepository, private val computeContext: CoroutineContext) {
     @Inject
     constructor(catalog: BuildingCatalogRepository) : this(catalog, Dispatchers.Default)
 
