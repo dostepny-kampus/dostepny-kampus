@@ -32,6 +32,8 @@ SeaweedFS odrzucamy, bo dostęp do S3 wymaga osobnego pliku z kluczami. PostgreS
 - Gorzej: RustFS to młody projekt. Wersję podnosimy tylko po teście zapisu i odczytu zdjęcia.
 - Gorzej: AWS SDK jest większy niż klient jednego magazynu.
 
+Przy odczycie zdjęcia brak obiektu daje HTTP `404`. Brak skonfigurowanego zasobnika daje HTTP `500`, a szczegóły błędu trafiają do logu serwera.
+
 ## Źródła
 
 1. [RustFS: repozytorium i licencja](https://github.com/rustfs/rustfs)

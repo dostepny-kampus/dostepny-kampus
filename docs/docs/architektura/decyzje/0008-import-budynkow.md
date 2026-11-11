@@ -6,7 +6,7 @@ Status: przyjęta. Data: 2026-11-03.
 
 Kontury i wejścia budynków PWr są w pliku `data/buildings/pwr-buildings.geojson` z OpenStreetMap. Aplikacja ma kopię tego pliku, a serwer ma tabelę `buildings` z migracji `V1__budynki.sql`. Tabela była pusta, więc `GET /buildings` zwracał pustą listę, a `GET /buildings/locate` nigdy nie wskazywał budynku.
 
-Nie mamy jednej wspólnej bazy. Każda osoba z zespołu uruchamia bazę u siebie przez `infra/docker-compose.yml`, a każdy test serwera w CI dostaje nową bazę w Testcontainers. Ręczne wgranie danych do jednej bazy nie wystarczy.
+Nie mamy jednej wspólnej bazy. Każda osoba z zespołu uruchamia bazę u siebie przez `infra/docker-compose.yml`, a testy integracyjne serwera korzystają z osobnej bazy uruchamianej przez Testcontainers. Ręczne wgranie danych do jednej bazy nie wystarczy.
 
 ## Rozważone opcje
 
@@ -19,7 +19,7 @@ Nie mamy jednej wspólnej bazy. Każda osoba z zespołu uruchamia bazę u siebie
 Wybieramy migrację Java `OsmBuildings` w module `building`.
 
 - Maven kopiuje plik z `data/buildings` do zasobów serwera. Plik zostaje jedynym źródłem konturów dla aplikacji i serwera.
-- Migracja jest powtarzalna. Jej suma kontrolna to CRC32 pliku, więc Flyway wykonuje ją przy pierwszym starcie i po każdej zmianie pliku [2].
+- Migracja jest powtarzalna. Suma CRC32 obejmuje treść pliku i wersję importu (`FORMAT`). Flyway wykonuje migrację przy pierwszym starcie oraz po zmianie sumy [2].
 - Zapis to `INSERT … ON CONFLICT (symbol) DO UPDATE`. Ponowny import zmienia kontur, nazwę i atrybucję, ale nie usuwa budynków i nie zmienia poziomu szczegółowości.
 - Reguły są takie jak w aplikacji: kontury z tym samym symbolem tworzą jeden wielokąt złożony, a kontur z kilkoma symbolami daje budynek dla każdego symbolu.
 

@@ -7,6 +7,8 @@ package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.OpenApiContract;
+import io.github.dostepnykampus.ProblemResponses;
+import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
@@ -22,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import software.amazon.awssdk.services.s3.S3Client;
 
 /**
  * Testy BR-7, US2.2 i NFR-26: zdjęcie z listy photoIds trafia do magazynu
@@ -97,6 +100,30 @@ final class SubmissionPhotosHttpTest {
     }
 
     @Test
+    void brSevenReturnsNotFoundForMissingObject(final WebApplicationContext context)
+        throws Exception {
+        final PhotoRequests photos = new PhotoRequests(context);
+        final String photo = UUID.randomUUID().toString();
+        MatcherAssert.assertThat(
+            "Brak obiektu w magazynie nie daje 404",
+            photos.get(photos.add("ACCEPTED", photo), photo).getStatus(),
+            Matchers.equalTo(404)
+        );
+    }
+
+    @Test
+    void missingBucketReturnsServerError(final WebApplicationContext context) throws Exception {
+        MatcherAssert.assertThat(
+            "Brak zasobnika nie daje 500",
+            SubmissionPhotosHttpTest.get(
+                SubmissionPhotosHttpTest.missingBucketMvc(context),
+                SubmissionPhotosHttpTest.add(context, "ACCEPTED")
+            ).getStatus(),
+            Matchers.equalTo(500)
+        );
+    }
+
+    @Test
     void brSixHidesPhotoOfSentSubmission(final WebApplicationContext context) throws Exception {
         final UUID id = SubmissionPhotosHttpTest.add(context, "SENT");
         SubmissionPhotosHttpTest.put(context, id, SubmissionPhotosHttpTest.PHOTO);
@@ -164,7 +191,11 @@ final class SubmissionPhotosHttpTest {
     private static MockHttpServletResponse get(
         final WebApplicationContext context, final UUID id
     ) throws Exception {
-        return SubmissionPhotosHttpTest.mvc(context).perform(
+        return SubmissionPhotosHttpTest.get(SubmissionPhotosHttpTest.mvc(context), id);
+    }
+
+    private static MockHttpServletResponse get(final MockMvc mvc, final UUID id) throws Exception {
+        return mvc.perform(
             MockMvcRequestBuilders.get(
                 "/submissions/{id}/photos/{photo}", id, SubmissionPhotosHttpTest.PHOTO
             )
@@ -174,5 +205,22 @@ final class SubmissionPhotosHttpTest {
 
     private static MockMvc mvc(final WebApplicationContext context) {
         return MockMvcBuilders.webAppContextSetup(context).build();
+    }
+
+    private static MockMvc missingBucketMvc(final WebApplicationContext context) {
+        return MockMvcBuilders.standaloneSetup(
+            new SubmissionPhotosController(
+                new SubmissionPhotos(
+                    context.getBean(SubmissionFinder.class),
+                    new PhotoStore(
+                        context.getBean(S3Client.class),
+                        new PhotoSettings(
+                            context.getBean(PhotoSettings.class).endpoint(),
+                            String.format("brak-%s", UUID.randomUUID()), "", ""
+                        )
+                    )
+                )
+            )
+        ).setControllerAdvice(context.getBean(ProblemResponses.class)).build();
     }
 }
