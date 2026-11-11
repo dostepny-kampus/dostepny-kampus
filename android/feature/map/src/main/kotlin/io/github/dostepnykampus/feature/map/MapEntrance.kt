@@ -52,17 +52,12 @@ internal fun EntranceDescription(chosen: SelectedEntrance) {
 }
 
 /**
- * Dane mapy z zaznaczeniem [focus] i wejściem [chosen] na terenie pokazanego budynku: [shown], a bez niego [focus]
- * albo budynek wejścia. Budynek z innego terenu przenosi na swój teren granicę mapy (US1.8, BR-G5).
+ * Dane mapy z zaznaczeniem [focus] i wejściem [chosen] na terenie budynku [focus], a bez niego budynku wejścia.
+ * Budynek z innego terenu przenosi na swój teren granicę mapy (US1.8, BR-G5).
  */
 @Composable
-internal fun rememberMapData(
-    layers: CampusMapData?,
-    focus: String?,
-    chosen: SelectedEntrance?,
-    shown: String?,
-): CampusMapData? {
-    val symbol = shown ?: focus ?: chosen?.buildingSymbol
+internal fun rememberMapData(layers: CampusMapData?, focus: String?, chosen: SelectedEntrance?): CampusMapData? {
+    val symbol = focus ?: chosen?.buildingSymbol
     return remember(layers, focus, chosen, symbol) {
         layers?.run { onAreaOf(symbol).copy(focus = focus, selectedEntrance = chosen) }
     }
