@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture
@@ -41,9 +41,10 @@ data class ReportPlace(
  * Piętra z planu PWr; opakowanie listy, żeby Compose wiedział, że się nie zmienia.
  *
  * @property items piętra od najniższego
+ * @property source źródło do podpisu przy liście, „Politechnika Wrocławska” (NFR-40)
  */
 @Immutable
-data class PlanFloors(val items: List<PlanFloor>)
+data class PlanFloors(val items: List<PlanFloor>, val source: String = "")
 
 /**
  * Piętro z planu PWr budynku szczegółowego (US7.2).
