@@ -46,21 +46,9 @@ import tools.jackson.databind.JsonNode;
 final class RouteParityTest {
 
     /**
-     * Zmienna w szablonie ścieżki, także z wyrażeniem regularnym Springa.
-     */
-    private static final Pattern VARIABLE = Pattern.compile("\\{[^}]*}");
-
-    /**
-     * Metody HTTP, które kontrakt może opisywać pod ścieżką.
-     */
-    private static final Set<String> VERBS = Set.of(
-        "get", "put", "post", "delete", "patch", "head", "options", "trace"
-    );
-
-    /**
      * Operacje kontraktu bez handlera i powód każdej; lista tylko się kurczy.
      */
-    private static final Map<String, String> PENDING = Map.ofEntries(
+    static final Map<String, String> PENDING = Map.ofEntries(
         Map.entry("GET /buildings/{}/floors", "piętra budynku: moduł budynków"),
         Map.entry("GET /buildings/{}/floors/{}/rooms", "sale piętra: moduł budynków"),
         Map.entry("GET /rooms", "wyszukiwanie sal: moduł budynków"),
@@ -75,6 +63,18 @@ final class RouteParityTest {
         Map.entry("GET /export.csv", "eksport CSV: moduł eksportu"),
         Map.entry("GET /me", "profil użytkownika: moduł tożsamości"),
         Map.entry("POST /invitations", "zaproszenia: moduł tożsamości")
+    );
+
+    /**
+     * Zmienna w szablonie ścieżki, także z wyrażeniem regularnym Springa.
+     */
+    private static final Pattern VARIABLE = Pattern.compile("\\{[^}]*}");
+
+    /**
+     * Metody HTTP, które kontrakt może opisywać pod ścieżką.
+     */
+    private static final Set<String> VERBS = Set.of(
+        "get", "put", "post", "delete", "patch", "head", "options", "trace"
     );
 
     @Test
