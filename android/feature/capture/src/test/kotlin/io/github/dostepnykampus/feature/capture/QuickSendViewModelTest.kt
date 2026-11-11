@@ -58,14 +58,13 @@ class QuickSendViewModelTest {
         QuickSendViewModel(
             positions = PositionSource { source },
             locationSwitch = LocationSwitch { locationOn },
-            catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS },
             saver = { content, _, _ ->
                 failure?.let { throw it }
                 saved.add(content)
             },
             networkStatus = NetworkStatus { online },
             buildingFloors = BuildingFloors { null },
-            buildingLookup = BuildingLookup(dispatcher),
+            buildingLookup = BuildingLookup(BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS }, dispatcher),
         )
     }
 
@@ -103,7 +102,7 @@ class QuickSendViewModelTest {
 
     /** Następny odczyt nie zmienia budynku używanego w zgłoszeniu V4 (US4.1). */
     @Test
-    fun us4_1_keeps_first_accurate_position() =
+    fun us4_1_keeps_first_position() =
         runTest(dispatcher) {
             watch()
             fix(INSIDE_A1)

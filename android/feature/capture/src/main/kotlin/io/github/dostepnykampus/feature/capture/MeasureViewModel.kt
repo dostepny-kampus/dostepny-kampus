@@ -8,7 +8,6 @@ package io.github.dostepnykampus.feature.capture
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.geo.BuildingHint
 import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
@@ -30,7 +29,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
@@ -128,7 +126,6 @@ class MeasureViewModel
         private val positions: PositionSource,
         private val satellites: SatelliteSource,
         private val clock: ElapsedClock,
-        private val catalog: BuildingCatalogRepository,
         private val locationSwitch: LocationSwitch,
         private val buildingLookup: BuildingLookup,
     ) : ViewModel() {
@@ -193,18 +190,18 @@ class MeasureViewModel
 
         private fun locate(attempt: Int, point: GeoPoint) {
             viewModelScope.launch {
-                val buildings = catalog.catalogUpdates().first().buildings
-                val hints = buildingLookup.hints(point, buildings)
-                if (result.value.attempt != attempt) return@launch
-                catalogBuildings.value = buildings
-                nearby.value = hints.nearby
-                val place = hints.suggested?.let(PlaceChoice::Suggested) ?: PlaceChoice.Outside
-                result.update { run ->
-                    val finished = run.finished
-                    if (run.attempt == attempt && finished?.place == PlaceChoice.Locating) {
-                        run.copy(finished = finished.copy(place = place))
-                    } else {
-                        run
+                val (buildings, hints) = buildingLookup.measure(point)
+                if (result.value.attempt == attempt) {
+                    catalogBuildings.value = buildings
+                    nearby.value = hints.nearby
+                    val place = hints.suggested?.let(PlaceChoice::Suggested) ?: PlaceChoice.Outside
+                    result.update { run ->
+                        val finished = run.finished
+                        if (run.attempt == attempt && finished?.place == PlaceChoice.Locating) {
+                            run.copy(finished = finished.copy(place = place))
+                        } else {
+                            run
+                        }
                     }
                 }
             }

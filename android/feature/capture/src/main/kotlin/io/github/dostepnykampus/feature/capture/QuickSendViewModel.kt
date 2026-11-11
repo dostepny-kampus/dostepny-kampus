@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.location.LocationSwitch
@@ -88,7 +87,6 @@ class QuickSendViewModel
     constructor(
         private val positions: PositionSource,
         private val locationSwitch: LocationSwitch,
-        private val catalog: BuildingCatalogRepository,
         private val saver: ReportSaver,
         private val networkStatus: NetworkStatus,
         private val buildingFloors: BuildingFloors,
@@ -160,8 +158,7 @@ class QuickSendViewModel
             if (symbol == null) emptyList() else buildingFloors.floors(symbol)?.floors.orEmpty()
 
         private suspend fun located(fix: PositionFix): QuickPosition {
-            val buildings = catalog.catalogUpdates().first().buildings
-            val inside = buildingLookup.containing(fix.point, buildings)
+            val inside = buildingLookup.containing(fix.point)
             return QuickPosition(
                 point = fix.point,
                 accuracyMeters = fix.accuracyMeters,

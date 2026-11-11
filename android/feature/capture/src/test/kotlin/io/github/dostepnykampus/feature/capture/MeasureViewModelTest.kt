@@ -60,13 +60,15 @@ class MeasureViewModelTest {
             positions = PositionSource { failure?.let { error -> flow { throw error } } ?: fixes },
             satellites = SatelliteSource { satellites },
             clock = clock,
-            catalog =
-                BuildingCatalogRepository(catalogDispatcher) {
-                    catalogReads += 1
-                    CAMPUS
-                },
             locationSwitch = LocationSwitch { locationOn },
-            buildingLookup = BuildingLookup(lookupDispatcher),
+            buildingLookup =
+                BuildingLookup(
+                    BuildingCatalogRepository(catalogDispatcher) {
+                        catalogReads += 1
+                        CAMPUS
+                    },
+                    lookupDispatcher,
+                ),
         )
     }
 
