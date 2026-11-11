@@ -36,6 +36,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.TopLevel
+import io.github.dostepnykampus.app.navigation.isCaptureRoute
 import io.github.dostepnykampus.app.navigation.selectedItem
 import io.github.dostepnykampus.app.navigation.startBackStack
 import io.github.dostepnykampus.core.data.account.RoleProvider
@@ -46,9 +47,6 @@ import io.github.dostepnykampus.core.designsystem.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.SideBar
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.feature.capture.ReportDraft
-import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 
 private val WideWindow = WIDE_WINDOW_DP.dp
 
@@ -77,7 +75,7 @@ fun AppShell(
 ) {
     val backStack = rememberNavBackStack(elements = startBackStack(firstLaunch).toTypedArray())
     val restarts = rememberSaveable(saver = RestartsSaver) { SnapshotStateList() }
-    val draft = rememberCaptureDraft(backStack.any(::isCaptureRoute))
+    val draft = rememberCaptureDraft(backStack.any { it.isCaptureRoute() })
     val currentOnFirstHelpLeft by rememberUpdatedState(onFirstHelpLeft)
     val currentOnChooseMap by rememberUpdatedState(onChooseMap)
     val navigator =
@@ -141,9 +139,6 @@ private fun rememberCaptureDraft(active: Boolean): ReportDraft {
     if (!active) SideEffect { draft.clear() }
     return draft
 }
-
-private fun isCaptureRoute(route: NavKey): Boolean =
-    route == MeasureRoute || route is ReportFormRoute || route is ReportEditRoute
 
 @Composable
 private fun bottomBarItems(hasWork: Boolean): BottomBarItems {
