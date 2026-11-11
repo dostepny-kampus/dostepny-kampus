@@ -1,0 +1,62 @@
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+
+name: Gradle Androida
+description: JDK 25, cache zależności i budowania oraz setup-gradle.
+
+# prefiks-cache: android-budowanie-v2-
+# prefiks-cache: android-zaleznosci-v1-
+
+outputs:
+  klucz-zaleznosci:
+    description: Główny klucz cache zależności, do zapisu po udanym pushu.
+    value: ${{ steps.zaleznosci.outputs.cache-primary-key }}
+  trafienie-zaleznosci:
+    description: Czy odtworzenie zależności trafiło w główny klucz.
+    value: ${{ steps.zaleznosci.outputs.cache-hit }}
+  klucz-budowania:
+    description: Główny klucz cache budowania, do zapisu po udanym pushu.
+    value: ${{ steps.cache-budowania.outputs.cache-primary-key }}
+  trafienie-budowania:
+    description: Czy odtworzenie budowania trafiło w główny klucz.
+    value: ${{ steps.cache-budowania.outputs.cache-hit }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v6.2.0
+      with:
+        distribution: temurin
+        java-version: 25
+    - name: Odtwórz pobrane zależności i dystrybucje Gradle
+      id: zaleznosci
+      uses: actions/cache/restore@v6.1.0
+      with:
+        path: |
+          ~/.gradle/caches/modules-2
+          ~/.gradle/wrapper
+        key: >-
+          android-zaleznosci-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('android/**/*.gradle.kts', 'android/**/gradle.properties', 'android/**/*.toml', 'android/**/gradle.lockfile', 'android/gradle/verification-metadata.xml', 'android/gradle/wrapper/gradle-wrapper.properties', '.github/workflows/android.yml', '.github/actions/android-gradle/action.yml') }}
+        restore-keys: |
+          android-zaleznosci-v1-${{ runner.os }}-${{ runner.arch }}-
+    - name: Odtwórz cache budowania Gradle
+      id: cache-budowania
+      uses: actions/cache/restore@v6.1.0
+      with:
+        path: ~/.gradle/caches/build-cache-1
+        key: android-budowanie-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+        restore-keys: |
+          android-budowanie-v2-${{ runner.os }}-${{ runner.arch }}-
+    - name: Pobierz cache budowania z ostatniego przebiegu sprintu
+      # Grupa kolejki nie widzi cache zapisanego na gałęzi sprintu; artefakt pochodzi tylko z przebiegu push na tej gałęzi.
+      if: github.event_name == 'merge_group'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+        BASE_REF: ${{ github.event.merge_group.base_ref }}
+      run: bash .github/scripts/cache-budowania-sprintu.sh "${BASE_REF#refs/heads/}" "$HOME/.gradle/caches/build-cache-1"
+    - uses: gradle/actions/setup-gradle@v6.4.1
+      with:
+        cache-provider: external

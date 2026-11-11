@@ -198,38 +198,8 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-java@v6.2.0
-        with:
-          distribution: temurin
-          java-version: 25
-      - name: Odtwórz pobrane zależności i dystrybucje Gradle
-        uses: actions/cache/restore@v6.1.0
-        with:
-          path: |
-            ~/.gradle/caches/modules-2
-            ~/.gradle/wrapper
-          key: >-
-            android-zaleznosci-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('android/**/*.gradle.kts', 'android/**/gradle.properties', 'android/**/*.toml', 'android/**/gradle.lockfile', 'android/gradle/verification-metadata.xml', 'android/gradle/wrapper/gradle-wrapper.properties', '.github/workflows/android.yml') }}
-          restore-keys: |
-            android-zaleznosci-v1-${{ runner.os }}-${{ runner.arch }}-
-      - name: Odtwórz cache budowania Gradle
-        uses: actions/cache/restore@v6.1.0
-        with:
-          path: ~/.gradle/caches/build-cache-1
-          key: android-budowanie-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
-          restore-keys: |
-            android-budowanie-v2-${{ runner.os }}-${{ runner.arch }}-
-      - name: Pobierz cache budowania z ostatniego przebiegu sprintu
-        # Grupa kolejki nie widzi cache zapisanego na gałęzi sprintu; artefakt pochodzi tylko z przebiegu push na tej gałęzi.
-        if: github.event_name == 'merge_group'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          BASE_REF: ${{ github.event.merge_group.base_ref }}
-        run: bash ../.github/scripts/cache-budowania-sprintu.sh "${BASE_REF#refs/heads/}" "$HOME/.gradle/caches/build-cache-1"
-      - uses: gradle/actions/setup-gradle@v6.4.1
-        with:
-          cache-provider: external
+      - name: Przygotuj JDK i cache Gradle
+        uses: ./.github/actions/android-gradle
       - name: Zbuduj aplikację i testy na urządzenie
         run: |
           set -o pipefail
@@ -280,40 +250,9 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-java@v6.2.0
-        with:
-          distribution: temurin
-          java-version: 25
-      - name: Odtwórz pobrane zależności i dystrybucje Gradle
-        id: zaleznosci
-        uses: actions/cache/restore@v6.1.0
-        with:
-          path: |
-            ~/.gradle/caches/modules-2
-            ~/.gradle/wrapper
-          key: >-
-            android-zaleznosci-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('android/**/*.gradle.kts', 'android/**/gradle.properties', 'android/**/*.toml', 'android/**/gradle.lockfile', 'android/gradle/verification-metadata.xml', 'android/gradle/wrapper/gradle-wrapper.properties', '.github/workflows/android.yml') }}
-          restore-keys: |
-            android-zaleznosci-v1-${{ runner.os }}-${{ runner.arch }}-
-      - name: Odtwórz cache budowania Gradle
-        id: cache-budowania
-        uses: actions/cache/restore@v6.1.0
-        with:
-          path: ~/.gradle/caches/build-cache-1
-          key: android-budowanie-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
-          restore-keys: |
-            android-budowanie-v2-${{ runner.os }}-${{ runner.arch }}-
-      - name: Pobierz cache budowania z ostatniego przebiegu sprintu
-        # Grupa kolejki nie widzi cache zapisanego na gałęzi sprintu; artefakt pochodzi tylko z przebiegu push na tej gałęzi.
-        if: github.event_name == 'merge_group'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          BASE_REF: ${{ github.event.merge_group.base_ref }}
-        run: bash ../.github/scripts/cache-budowania-sprintu.sh "${BASE_REF#refs/heads/}" "$HOME/.gradle/caches/build-cache-1"
-      - uses: gradle/actions/setup-gradle@v6.4.1
-        with:
-          cache-provider: external
+      - name: Przygotuj JDK i cache Gradle
+        id: gradle
+        uses: ./.github/actions/android-gradle
       - name: Testy, lint, detekt, Kover i zrzuty Roborazzi
         run: |
           # check: testy jednostkowe wszystkich modułów i Kover; lint: wszystkie warianty (w tym lintJvm modułów JVM);
@@ -360,22 +299,22 @@ jobs:
         if: >-
           ${{ success() && github.event_name == 'push' &&
             (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) &&
-            steps.zaleznosci.outputs.cache-hit != 'true' }}
+            steps.gradle.outputs.trafienie-zaleznosci != 'true' }}
         uses: actions/cache/save@v6.1.0
         with:
           path: |
             ~/.gradle/caches/modules-2
             ~/.gradle/wrapper
-          key: ${{ steps.zaleznosci.outputs.cache-primary-key }}
+          key: ${{ steps.gradle.outputs.klucz-zaleznosci }}
       - name: Zapisz cache budowania Gradle
         if: >-
           ${{ success() && github.event_name == 'push' &&
             (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) &&
-            steps.cache-budowania.outputs.cache-hit != 'true' }}
+            steps.gradle.outputs.trafienie-budowania != 'true' }}
         uses: actions/cache/save@v6.1.0
         with:
           path: ~/.gradle/caches/build-cache-1
-          key: ${{ steps.cache-budowania.outputs.cache-primary-key }}
+          key: ${{ steps.gradle.outputs.klucz-budowania }}
       - name: Udostępnij cache budowania grupom kolejki
         # Grupa kolejki nie widzi cache gałęzi sprintu (actions/cache), więc ten sam cache idzie też jako krótko żyjący artefakt.
         if: ${{ success() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) }}
@@ -400,7 +339,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
-          sparse-checkout: .github/scripts
+          sparse-checkout: |
+            .github/scripts
+            .github/actions/android-gradle/action.yml
           persist-credentials: false
       - name: Usuń poprzednie wpisy cache budowania i zależności tej gałęzi
         env:
@@ -408,7 +349,11 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           # Oba wpisy zapisuje zadanie testy (needs), więc czyszczenie rusza po udanym zapisie nowych.
-          bash .github/scripts/czysc-cache.sh "android-budowanie-v2-${RUNNER_OS}-${RUNNER_ARCH}-" "android-zaleznosci-v1-${RUNNER_OS}-${RUNNER_ARCH}-"
+          # Prefiksy są w akcji Gradle, żeby klucz nie był zapisany drugi raz.
+          mapfile -t prefiks < <(sed -n 's/^# prefiks-cache: //p' .github/actions/android-gradle/action.yml)
+          bash .github/scripts/czysc-cache.sh \
+            "${prefiks[0]}${RUNNER_OS}-${RUNNER_ARCH}-" \
+            "${prefiks[1]}${RUNNER_OS}-${RUNNER_ARCH}-"
 
   budowanie:
     needs: [porownanie, zmiany, testy, apk, emulator]
