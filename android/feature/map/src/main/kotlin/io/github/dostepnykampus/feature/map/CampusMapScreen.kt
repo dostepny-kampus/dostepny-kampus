@@ -200,7 +200,6 @@ private fun CampusMap(
     val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
-    // TODO(#787): przycisk terenu i panel „Teren na mapie” pokażą `areas.choices` i wywołają `areas.show`.
     val areas = rememberMapAreas(layers, focus)
     val state =
         rememberMapSceneState(

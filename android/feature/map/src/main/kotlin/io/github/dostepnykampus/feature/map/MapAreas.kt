@@ -21,6 +21,8 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 /**
  * Tereny mapy V1: który teren mapa pokazuje i na jakie można go zmienić (US1.6, US1.7).
  *
+ * TODO(#787): przycisk terenu i panel „Teren na mapie” pokażą [choices] i wywołają [show].
+ *
  * @param data dane mapy z terenami; `null`, dopóki ich nie ma
  * @param symbol budynek zaznaczenia z trasy; bez wyboru osoby to on wyznacza teren (US1.8)
  * @param chosen zapisywana nazwa terenu wybranego przez osobę; `null` bez wyboru
