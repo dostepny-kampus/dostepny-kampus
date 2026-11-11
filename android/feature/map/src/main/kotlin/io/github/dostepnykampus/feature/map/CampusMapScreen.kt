@@ -51,6 +51,7 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.data.selection
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import java.time.LocalDate
 
@@ -202,7 +203,7 @@ private fun CampusMap(
 ) {
     val building = (focus as? MapFocus.Building)?.symbol
     val chosen = rememberChosenEntrance(catalog, focus as? MapFocus.Entrance)
-    val data = rememberMapData(layers = layers, focus = building, chosen = chosen)
+    val selection = remember(layers, building, chosen) { layers?.selection(building, chosen) }
     val view = rememberCameraView(focus, catalog)
     var choice by rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val cover = contentPadding.calculateBottomPadding()
@@ -213,19 +214,19 @@ private fun CampusMap(
     val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val limits = with(LocalDensity.current) { mapLimits(data?.bounds, size) }
+    val limits = with(LocalDensity.current) { mapLimits(selection?.bounds, size) }
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
-        val loaded = data
         val shown =
             shownCamera(
                 own = view.camera ?: chosen?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) },
-                start = loaded?.start,
+                start = layers?.start,
                 focus = focusPoint.takeIf { isCovered },
                 bottomInset = coverPixels,
             )
-        if (loaded != null && shown != null && limits != null) {
+        if (layers != null && selection != null && shown != null && limits != null) {
             mapView.Show(
-                data = loaded,
+                data = layers,
+                selection = selection,
                 camera = shown,
                 onCameraIdle = keepCamera,
                 onBuildingsTouch = { symbols ->

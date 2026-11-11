@@ -129,9 +129,9 @@ class CampusMapScreenTest {
     private var emptyTaps = 0
     private var touch: (List<String>) -> Unit = {}
     private val fakeMap =
-        CampusMapView { data: CampusMapData, camera, _, onBuildingsTouch, _: Modifier ->
+        CampusMapView { _: CampusMapData, selection, camera, _, onBuildingsTouch, _: Modifier ->
             cameras += camera
-            focuses += data.focus
+            focuses += selection.building
             touch = onBuildingsTouch
         }
     private val online = MutableStateFlow(true)

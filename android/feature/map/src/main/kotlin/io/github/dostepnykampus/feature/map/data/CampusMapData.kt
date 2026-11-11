@@ -50,10 +50,7 @@ private val CAMPUS_MARGIN = 500.meters
  *   właściwości `id`, `marking` (`ACCESSIBLE`, `INACCESSIBLE` albo `NO_DATA`) i `main`
  * @property start środek pierwszego widoku: środek budynku [START_BUILDING] (US1, US1.2, decyzja 80), a bez niego
  *   środek wszystkich konturów; `null` bez budynków
- * @property focus symbol budynku zaznaczonego na mapie, np. po „Wstecz” z V2 (US1.1); `null` bez zaznaczenia
- * @property selectedEntrance wejście zaznaczone pinezką z podpisem, np. po „Pokaż wejście na mapie” (US3.3,
- *   decyzja 134); `null` bez zaznaczenia
- * @property bounds teren pokazany na mapie: najmniejszy prostokąt z konturami budynków terenu, na którym stoi
+ * @property bounds teren startowy mapy: najmniejszy prostokąt z konturami budynków terenu, na którym stoi
  *   [START_BUILDING], powiększony o 500 m z każdej strony (BR-G5, NFR-39). Bez tego budynku to pierwszy teren
  *   katalogu; `null` bez budynków
  * @property areas tereny PWr z katalogu, każdy z prostokątem jak [bounds] (BR-G5)
@@ -64,18 +61,16 @@ data class CampusMapData(
     val labelPoints: String,
     val entrances: String,
     val start: GeoPoint?,
-    val focus: String? = null,
-    val selectedEntrance: SelectedEntrance? = null,
     val bounds: CampusBounds? = null,
     val areas: List<MapArea> = emptyList(),
 )
 
 /**
- * Te same dane z mapą na terenie budynku [symbol]: budynek pokazany z V2 albo z wyszukiwania może stać na innym
- * terenie niż [START_BUILDING] (US1.8, BR-G5). Bez symbolu i dla symbolu spoza katalogu teren się nie zmienia.
+ * Prostokąt terenu budynku [symbol]: budynek pokazany z V2 albo z wyszukiwania może stać na innym terenie niż
+ * [START_BUILDING] (US1.8, BR-G5). Bez symbolu i dla symbolu spoza katalogu to teren startowy.
  */
-fun CampusMapData.onAreaOf(symbol: String?): CampusMapData =
-    areas.firstOrNull { symbol in it.symbols }?.let { copy(bounds = it.bounds) } ?: this
+fun CampusMapData.boundsOf(symbol: String?): CampusBounds? =
+    areas.firstOrNull { symbol in it.symbols }?.bounds ?: bounds
 
 /**
  * Teren PWr na mapie (BR-G5).
