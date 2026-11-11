@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.app
@@ -43,9 +43,12 @@ class ArchitectureTest {
             }
     }
 
+    /** Kod ekranów bez sieci i bazy; testy modułu feature mogą budować repozytorium z wynikami sieci (#874). */
     @Test
     fun infra_a1_ui_no_network_or_db() {
-        files
+        Konsist
+            .scopeFromProduction()
+            .files
             .filter { it.inPackage("feature") }
             .assertFalse { file ->
                 file.imports.any { import ->
