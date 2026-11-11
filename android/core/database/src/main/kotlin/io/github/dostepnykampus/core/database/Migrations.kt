@@ -41,3 +41,12 @@ val MIGRATION_3_4: Migration =
             db.execSQL("ALTER TABLE `pending_submissions` ADD COLUMN `refused` INTEGER NOT NULL DEFAULT 0")
         }
     }
+
+/** Migracja 4→5: status z serwera i powód odrzucenia w historii własnych zgłoszeń (US8.2, BR-16). */
+val MIGRATION_4_5: Migration =
+    object : Migration(4, 5) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `own_submissions` ADD COLUMN `server_status` TEXT")
+            db.execSQL("ALTER TABLE `own_submissions` ADD COLUMN `rejection_reason` TEXT")
+        }
+    }

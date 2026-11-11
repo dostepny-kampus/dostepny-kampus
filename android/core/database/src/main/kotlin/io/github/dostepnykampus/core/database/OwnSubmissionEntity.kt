@@ -37,6 +37,8 @@ enum class OwnSubmissionState {
  * @property state stan wysyłki
  * @property serverVersion wersja z serwera po wysłaniu; baza dla poprawki z C3 (BR-10)
  * @property refusalCode kod odpowiedzi HTTP przy odmowie; `null`, gdy serwer nie podał kodu
+ * @property serverStatus status z serwera (`SubmissionStatus`, US8.2); `null` przed pierwszym odświeżeniem
+ * @property rejectionReason powód odrzucenia od Weryfikatora (BR-16); `null` poza odrzuceniem
  */
 @Entity(tableName = "own_submissions")
 data class OwnSubmissionEntity(
@@ -51,4 +53,6 @@ data class OwnSubmissionEntity(
     @ColumnInfo(name = "state") val state: OwnSubmissionState = OwnSubmissionState.LOCAL,
     @ColumnInfo(name = "server_version") val serverVersion: Int? = null,
     @ColumnInfo(name = "refusal_code") val refusalCode: Int? = null,
+    @ColumnInfo(name = "server_status") val serverStatus: String? = null,
+    @ColumnInfo(name = "rejection_reason") val rejectionReason: String? = null,
 )
