@@ -12,8 +12,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.buildings.ServerEntrances
 import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
+import io.github.dostepnykampus.core.data.buildings.ServerFloorsRepository
 import io.github.dostepnykampus.core.data.buildings.assetRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.map.MapListChoiceRepository
@@ -66,6 +68,11 @@ object DataModule {
     @Provides
     @Singleton
     fun cardEntrances(api: BuildingsApi): ServerEntrances = ServerEntrancesRepository(api::building)
+
+    /** Piętra budynku szczegółowego z serwera do formularza C2 (US7.2). */
+    @Provides
+    @Singleton
+    fun buildingFloors(api: BuildingsApi): BuildingFloors = ServerFloorsRepository(api::floors)
 
     /** Wybór „Mapa” albo „Lista budynków” w pliku ustawień mapy (NFR-19). */
     @Provides

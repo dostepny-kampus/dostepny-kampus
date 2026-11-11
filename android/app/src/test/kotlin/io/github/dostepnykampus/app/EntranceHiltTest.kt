@@ -23,6 +23,7 @@ import dagger.hilt.android.testing.HiltTestApplication
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.buildings.ServerEntrances
 import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.data.map.MapListChoice
@@ -75,6 +76,9 @@ class EntranceHiltTest {
         @Provides
         @Singleton
         fun serverEntrances(): ServerEntrances = ServerEntrances { emptyList() }
+
+        @Provides
+        fun buildingFloors(): BuildingFloors = BuildingFloors { null }
 
         @Provides
         @Singleton

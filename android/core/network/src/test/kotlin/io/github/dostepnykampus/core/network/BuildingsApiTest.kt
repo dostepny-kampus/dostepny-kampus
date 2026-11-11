@@ -1,10 +1,12 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
 
+import io.github.dostepnykampus.core.model.Floor
+import io.github.dostepnykampus.core.model.FloorList
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -21,7 +23,7 @@ import java.net.HttpURLConnection.HTTP_INTERNAL_ERROR
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_OK
 
-/** Trzy odczyty budynków na MockWebServer: sukces, 404, zły JSON, zerwane połączenie i błąd serwera. */
+/** Odczyty budynków i pięter na MockWebServer: sukces, 404, zły JSON, zerwane połączenie i błąd serwera. */
 class BuildingsApiTest {
     private val server = MockWebServer()
     private val json = Json
@@ -65,6 +67,19 @@ class BuildingsApiTest {
         enqueue(HTTP_OK, """{"insideOutline":false}""")
         val outside = json.decodeFromString<LocateResultDto>("""{"insideOutline":false}""").toModel()
         assertEquals(ApiResult.Success(outside), blocking { locate(latitude = 51.0, longitude = 17.0) })
+    }
+
+    @Test
+    fun us7_2_floors() {
+        enqueue(HTTP_OK, FLOORS)
+        val floors = blocking { floors("C-13") }
+        val lowest =
+            listOf("c13-p" to "Piwnica", "c13-0" to "Parter", "c13-1" to "1 piętro")
+                .mapIndexed { index, (id, label) -> Floor(id = id, label = label, order = index - 1) }
+        assertEquals(ApiResult.Success(FloorList(source = "Politechnika Wrocławska", floors = lowest)), floors)
+        assertEquals("/buildings/C-13/floors", server.takeRequest().path)
+        enqueue(code = HTTP_NOT_FOUND, body = """{"status":404}""", contentType = PROBLEM)
+        assertEquals(ApiResult.NotFound, blocking { floors("C-99") })
     }
 
     @Test
@@ -122,6 +137,9 @@ class BuildingsApiTest {
         const val LIST =
             """{"source":"© OpenStreetMap contributors","buildings":[""" +
                 """{"symbol":"C-13","name":"Budynek C-13","detailLevel":"DETAILED","outline":$OUTLINE}]}"""
+        const val FLOORS =
+            """{"source":"Politechnika Wrocławska","floors":[{"id":"c13-1","label":"1 piętro","order":1},""" +
+                """{"id":"c13-p","label":"Piwnica","order":-1},{"id":"c13-0","label":"Parter","order":0}]}"""
         const val DETAILS =
             """{"symbol":"C-13","name":"Budynek C-13","detailLevel":"BASIC","outline":$OUTLINE,""" +
                 """"entrances":[{"id":"c13-main","buildingSymbol":"C-13","name":"Wejście główne","main":true,""" +

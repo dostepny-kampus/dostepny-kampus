@@ -1,10 +1,11 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
 
+import io.github.dostepnykampus.core.model.FloorList
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -15,7 +16,7 @@ import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_OK
 
 /**
- * Klient HTTP listy budynków, karty i podpowiedzi punktu (`GET /buildings`).
+ * Klient HTTP listy budynków, karty, pięter i podpowiedzi punktu (`GET /buildings`).
  *
  * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek. Anulowanie korutyny wywołującej
  * każdą funkcję `suspend` przerywa jej żądanie HTTP, także w trakcie czytania odpowiedzi, i kończy się
@@ -39,6 +40,15 @@ class BuildingsApi(private val http: OkHttpClient, private val json: Json, baseU
      */
     suspend fun building(symbol: String): ApiResult<BuildingDetails> =
         fetch(endpoint(listOf(BUILDINGS, symbol))) { json.decodeFromString<BuildingDetailsDto>(it).toModel() }
+
+    /**
+     * Piętra budynku [symbol] od najniższego; budynek podstawowy ma pustą listę (US7.2, BR-G1).
+     * Nieznany symbol daje [ApiResult.NotFound].
+     *
+     * @param symbol symbol budynku
+     */
+    suspend fun floors(symbol: String): ApiResult<FloorList> =
+        fetch(endpoint(listOf(BUILDINGS, symbol, FLOORS))) { json.decodeFromString<FloorListDto>(it).toModel() }
 
     /**
      * Podpowiedź budynku dla punktu WGS84.
@@ -87,6 +97,7 @@ class BuildingsApi(private val http: OkHttpClient, private val json: Json, baseU
         const val JSON = "application/json"
         const val BUILDINGS = "buildings"
         const val LOCATE = "locate"
+        const val FLOORS = "floors"
     }
 }
 
