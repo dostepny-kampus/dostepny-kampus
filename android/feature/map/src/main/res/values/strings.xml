@@ -29,6 +29,8 @@
     <string name="mapa_teren_budynkow">%1$d budynków</string>
     <string name="mapa_teren_km">%1$d km</string>
     <string name="mapa_teren_wybrany">wybrany</string>
+    <string name="mapa_teren_sasiad">Tu kończy się teren %1$s. Obok: %2$s, %3$s</string>
+    <string name="mapa_teren_sasiad_pokaz">pokazać teren %1$s</string>
     <string name="mapa_budynek">Budynek %1$s</string>
     <string name="mapa_zaznaczone_wejscie">Zaznaczone wejście: »%1$s«, budynek %2$s</string>
     <string name="mapa_otwiera_opis_budynku">otwiera opis budynku</string>
