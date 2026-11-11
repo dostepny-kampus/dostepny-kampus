@@ -83,6 +83,7 @@
     <string name="formularz_brak_opisu">Brakuje opisu. Przy typie „inna bariera” opis jest obowiązkowy.</string>
     <string name="formularz_blad_zapisu">Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.</string>
     <string name="formularz_zapis_odrzucony">Nie zapisaliśmy zgłoszenia. Zrób zdjęcie jeszcze raz i zapisz ponownie.</string>
+    <string name="formularz_wersja_nieznana">Nie zapisaliśmy poprawki, bo telefon nie zna aktualnej wersji zgłoszenia. Otwórz „Moje zgłoszenia”, poczekaj na statusy i popraw je jeszcze raz.</string>
     <string name="formularz_sprobuj_ponownie">Spróbuj ponownie</string>
     <string name="formularz_wyjsc_pytanie">Wyjść bez zapisu?</string>
     <string name="formularz_wyjsc_opis">Wpisane pola nie zostaną zapisane.</string>

@@ -12,6 +12,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
+import io.github.dostepnykampus.core.data.submissions.SaveRefusal
+import io.github.dostepnykampus.core.data.submissions.SaveRefusedException
 import io.github.dostepnykampus.core.model.FloorList
 import io.github.dostepnykampus.core.model.SubmissionContent
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -147,8 +149,8 @@ class ReportFormViewModel
                         ReportStage.SAVE_FAILED
                     } catch (_: SQLiteException) {
                         ReportStage.SAVE_FAILED
-                    } catch (_: IllegalArgumentException) {
-                        ReportStage.SAVE_REJECTED
+                    } catch (refused: SaveRefusedException) {
+                        refused.reason.toStage()
                     }
                 state.update { it?.copy(stage = stage) }
             }
@@ -169,6 +171,13 @@ internal fun ReportForm.withPlan(symbol: String, plan: PlanFloors): ReportForm =
 /** Piętra z planu do formularza albo `null` dla budynku podstawowego z pustą listą (BR-G1). */
 internal fun FloorList.toPlanFloors(): PlanFloors? =
     if (floors.isEmpty()) null else PlanFloors(items = floors.map { PlanFloor(id = it.id, label = it.label) }, source)
+
+/** Etap formularza po odmowie zapisu: inny komunikat dla zdjęć, inny dla nieznanej wersji (NFR-50, BR-10). */
+internal fun SaveRefusal.toStage(): ReportStage =
+    when (this) {
+        SaveRefusal.PHOTOS_MISMATCH -> ReportStage.SAVE_REJECTED
+        SaveRefusal.UNKNOWN_VERSION -> ReportStage.VERSION_UNKNOWN
+    }
 
 private val StagesWithoutNewDraft = setOf(ReportStage.LEFT, ReportStage.PLACE_CHANGED, ReportStage.SAVED)
 

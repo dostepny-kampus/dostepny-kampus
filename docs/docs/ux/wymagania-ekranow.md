@@ -540,7 +540,7 @@ Poza budynkiem pola piętra nie ma (BR-G4). C2 otwiera się z C1, z C3 przy edyc
 | Wyjście bez zapisu | po „Wstecz” z niezapisanymi zmianami: „Wyjść bez zapisu? Wpisane pola nie zostaną zapisane.” Przyciski „Wyjdź bez zapisu” i „Wróć do formularza” (US7.4, NFR-23) |
 | Błąd walidacji | po „Zapisz” nad formularzem pierwszy brak, np. „Brakuje typu bariery. Uzupełnij to pole, aby zapisać.”, a przy każdym brakującym polu jego tekst: „Brakuje uciążliwości. Uzupełnij to pole, aby zapisać.”, „Brakuje zdjęcia. Zrób zdjęcie, aby zapisać.”, „Brakuje opisu. Przy typie „inna bariera” opis jest obowiązkowy.” (PW-10); opis z samych spacji to brak opisu. Po pierwszej próbie braki znikają na bieżąco, gdy pole zostanie uzupełnione; zapis się nie wykonuje (US7.1, US7.3) |
 | Brak sieci | zapis działa, zgłoszenie dostaje status „lokalne”, na ekranie „W telefonie” (US9.1, PW-12) |
-| Błąd zapisu | „Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.” (NFR-7). Gdy telefon odrzuci zgłoszenie z innego powodu: „Nie zapisaliśmy zgłoszenia. Zrób zdjęcie jeszcze raz i zapisz ponownie.” Wpisane pola zostają (NFR-50) |
+| Błąd zapisu | „Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.” (NFR-7). Gdy zdjęcia nie pasują do treści: „Nie zapisaliśmy zgłoszenia. Zrób zdjęcie jeszcze raz i zapisz ponownie.” Gdy telefon nie zna wersji poprawianego zgłoszenia: „Nie zapisaliśmy poprawki, bo telefon nie zna aktualnej wersji zgłoszenia. Otwórz „Moje zgłoszenia”, poczekaj na statusy i popraw je jeszcze raz.” (BR-10). Wpisane pola zostają (NFR-50) |
 
 Dostępność: błąd walidacji jest tekstem przy polu i w podsumowaniu, a fokus TalkBack przechodzi do pierwszego brakującego pola (NFR-15, WCAG 3.3.1).
 
