@@ -102,7 +102,7 @@ Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie pr
 | Warunki wstępne | Odwiedzający jest zalogowany (BR-8). |
 | Wyzwalacz | Odwiedzający widzi barierę, np. niesprawną windę, i wybiera zgłoszenie szybkie. |
 | Warunki końcowe | Zgłoszenie czeka w telefonie ze statusem „lokalne” albo na serwerze ze statusem „wysłane”. Na mapie pojawi się dopiero po przyjęciu (BR-6). |
-| Odwołania | US4.1…US4.8, US14.2, BR-6, BR-8, BR-9, BR-14, BR-G1, BR-G2, BR-G4, NFR-5, NFR-6, NFR-14, NFR-17, NFR-25, NFR-27, NFR-49, T7–T10 |
+| Odwołania | US4.1…US4.9, US14.2, BR-6, BR-8, BR-9, BR-14, BR-G1, BR-G2, BR-G4, BR-G5, NFR-5, NFR-6, NFR-14, NFR-17, NFR-25, NFR-27, NFR-49, T7–T10 |
 
 #### Przepływ główny UC7
 
@@ -128,6 +128,7 @@ Aplikacja nie pyta o typ bariery ani uciążliwość; ustala je Weryfikator w UC
 | 4a | Pozycja poza konturem budynku | Zgłoszenie zapisuje się z pozycją, bez komunikatu o błędzie (BR-G2, BR-G4, NFR-49). |
 | 4b | Budynek podstawowy | Zgłoszenie działa tak samo, jak w budynku szczegółowym (BR-G1). |
 | 4c | Telefon nie ustala pozycji | Bez pozycji zgłoszenia nie da się wysłać (BR-8). Aplikacja szuka pozycji od wejścia na ekran, bez limitu czasu (NFR-23). Gdy przy wysłaniu jej brak, radzi podejść do okna albo wyjść na zewnątrz. Zdjęcie i grupa zostają do ponownej próby. Wyłączoną lokalizację w telefonie aplikacja wskazuje razem z przyciskiem do ustawień. |
+| 4d | Pozycja poza terenem PWr | Zgłoszenia nie da się wysłać. Aplikacja mówi „Jesteś poza terenem PWr”, a zdjęcie i grupa zostają do ponownej próby (US4.9, BR-G5). |
 | 5a | Żadna grupa nie pasuje | Odwiedzający wybiera grupę „inne”. Weryfikator ustali typ, także z innej grupy (BR-14). |
 | 5b | Odwiedzający nie wie, na którym jest piętrze | Wybiera „Nie wiem”. Zgłoszenie zapisuje się bez piętra i da się je wysłać (US4.5). |
 | 5c | Odwiedzający wraca do poprzedniego kroku | Zdjęcie i grupa zostają. Zdjęcie znika dopiero po potwierdzeniu rezygnacji (US4.8). |
@@ -226,9 +227,9 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Warunki wstępne | Brak; logowanie nie jest potrzebne (US1.2). |
 | Wyzwalacz | Osoba zna symbol budynku z planu zajęć albo zaproszenia. |
 | Przepływ główny | 1. Osoba otwiera mapę kampusu. <br> 2. Wpisuje symbol budynku, np. „c13”. <br> 3. System znajduje C-13 niezależnie od zapisu (US1.1). <br> 4. System pokazuje budynek na mapie z barierami ze zgłoszeń przyjętych (US1.3). |
-| Alternatywy i wyjątki | 1a. Brak sieci: dane z ostatniej synchronizacji z datą (NFR-10). <br> 2a. Czytnik ekranu: osoba wybiera budynek z listy (NFR-19). <br> 3a. Brak wyniku: system mówi to zdaniem z przykładem symbolu i proponuje listę budynków (NFR-19). |
+| Alternatywy i wyjątki | 1a. Brak sieci: dane z ostatniej synchronizacji z datą (NFR-10). <br> 2a. Czytnik ekranu: osoba wybiera budynek z listy (NFR-19). <br> 3a. Brak wyniku: system mówi to zdaniem z przykładem symbolu i proponuje listę budynków (NFR-19). <br> 3b. Budynek leży na innym terenie: system zmienia teren i mówi o tym napisem (US1.8, BR-G5). |
 | Warunki końcowe | Budynek jest zaznaczony na mapie; dalej można otworzyć UC2. |
-| Odwołania | US1.1…US1.5, BR-6, NFR-11, NFR-19, NFR-37, T20 |
+| Odwołania | US1.1…US1.8, BR-6, BR-G5, NFR-11, NFR-19, NFR-37, T20 |
 
 ### Wyszukanie sali (UC19)
 

@@ -189,3 +189,22 @@ Funkcja: Zgłoszenie szybkie
     Jeżeli zrezygnuje z logowania
     Wtedy zgłoszenie nie powstaje
     Oraz aplikacja wraca do mapy kampusu
+
+  @US4.9 @BR-G5
+  Szablon scenariusza: Zgłoszenie szybkie tylko na terenie PWr
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz zrobił zdjęcie bariery i wybrał grupę barier „komunikacja pozioma”
+    Jeżeli telefon ustali pozycję <odległość> od konturu najbliższego budynku PWr
+    Wtedy <wynik>
+
+    Przykłady:
+      | odległość | wynik                                                              |
+      | 500 m     | może wysłać zgłoszenie, które jest „poza budynkiem”                |
+      | 510 m     | widzi napis „Jesteś poza terenem PWr” i nie może wysłać zgłoszenia |
+
+  @US4.9 @BR-G5
+  Scenariusz: Serwer odrzuca zgłoszenie spoza terenu PWr
+    Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
+    Jeżeli aplikacja wyśle zgłoszenie z miejscem 510 m od konturu najbliższego budynku PWr
+    Wtedy serwer odrzuca zgłoszenie
+    Oraz zgłoszenie zostaje w telefonie ze statusem „Nie wysłano”
