@@ -14,8 +14,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.selectedEntrance
+import io.github.dostepnykampus.feature.map.data.selection
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 /**
@@ -37,6 +40,20 @@ internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocu
             )
         }
     }
+}
+
+/** Dane katalogu [data] razem z bieżącym zaznaczeniem [selection]: mapa jest, gdy są oba. */
+internal data class MapScene(val data: CampusMapData, val selection: MapSelection)
+
+/**
+ * Scena mapy z danych [layers] i zaznaczenia [focus] z trasy; wejście bierze nazwę i punkt z [catalog]. `null`,
+ * dopóki nie ma danych mapy. Zmiana zaznaczenia nie kopiuje danych katalogu.
+ */
+@Composable
+internal fun rememberMapScene(layers: CampusMapData?, catalog: BuildingCatalog?, focus: MapFocus?): MapScene? {
+    val building = (focus as? MapFocus.Building)?.symbol
+    val chosen = rememberChosenEntrance(catalog, focus as? MapFocus.Entrance)
+    return remember(layers, building, chosen) { layers?.let { MapScene(it, it.selection(building, chosen)) } }
 }
 
 /**
