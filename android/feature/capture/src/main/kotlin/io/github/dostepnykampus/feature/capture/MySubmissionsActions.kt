@@ -10,8 +10,8 @@ package io.github.dostepnykampus.feature.capture
  *
  * @property onBack „Wstecz”
  * @property onMeasure „Zmierz i zgłoś barierę”: C1 (PW-12)
- * @property onOpen „Otwórz” przy zgłoszeniu: poprawka w C2 (US8.3); `null` ukrywa przycisk, dopóki C2 nie umie
- *   otworzyć zapisanego zgłoszenia
+ * @property onOpen „Otwórz” przy zgłoszeniu z telefonu: poprawka w C2 (US8.3); wysłane go nie mają, bo ich treść jest
+ *   tylko na serwerze; `null` ukrywa przycisk wszędzie
  */
 data class MySubmissionsActions(
     val onBack: () -> Unit,

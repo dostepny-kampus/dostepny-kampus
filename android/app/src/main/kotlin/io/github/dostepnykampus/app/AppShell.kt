@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.app
@@ -47,6 +47,7 @@ import io.github.dostepnykampus.core.designsystem.SideBar
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.feature.capture.ReportDraft
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 
 private val WideWindow = WIDE_WINDOW_DP.dp
@@ -141,7 +142,8 @@ private fun rememberCaptureDraft(active: Boolean): ReportDraft {
     return draft
 }
 
-private fun isCaptureRoute(route: NavKey): Boolean = route == MeasureRoute || route is ReportFormRoute
+private fun isCaptureRoute(route: NavKey): Boolean =
+    route == MeasureRoute || route is ReportFormRoute || route is ReportEditRoute
 
 @Composable
 private fun bottomBarItems(hasWork: Boolean): BottomBarItems {

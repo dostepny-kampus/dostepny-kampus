@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.dostepnykampus.core.data.submissions.SendState
 import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.Odstepy
 
@@ -70,7 +71,8 @@ private fun SubmissionList(list: MySubmissions, actions: MySubmissionsActions) {
             ListTop(list = list, onMeasure = actions.onMeasure)
         }
         items(list.items, key = { it.id }) { item ->
-            SubmissionCard(item = item, onOpen = actions.onOpen?.let { open -> { open(item.id) } })
+            val open = actions.onOpen.takeIf { item.state != SendState.SENT }
+            SubmissionCard(item = item, onOpen = open?.let { { it(item.id) } })
         }
     }
 }

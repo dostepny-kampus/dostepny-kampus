@@ -14,6 +14,7 @@ import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
@@ -461,6 +462,43 @@ class AppNavigatorTest {
             reportSaved()
         }
         assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
+    }
+
+    /** Wiersz: C3 „Otwórz” → poprawka C2, „Zapisz” → to samo C3, US8.3, NFR-54. */
+    @Test
+    fun us8_3_open_edit_saved_same_c3() {
+        stack += listOf(AccountRoute, MySubmissionsRoute)
+        navigator(collector).run {
+            openEdit("s1")
+            assertEquals(ReportEditRoute("s1"), current)
+            reportSaved()
+        }
+        assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
+    }
+
+    /** Wiersz: poprawka C2 „Zmień miejsce” → C1, „Dalej” → C2, „Zapisz” → to samo C3, US7.4, US8.3. */
+    @Test
+    fun us8_3_edit_change_place() {
+        val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
+        stack += listOf(AccountRoute, MySubmissionsRoute, ReportEditRoute("s1"))
+        navigator(collector).run {
+            changeEditPlace()
+            assertEquals(MeasureRoute, current)
+            openReportForm(form)
+            reportSaved()
+        }
+        assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
+    }
+
+    /** Wiersz: „Otwórz” i „Zmień miejsce” poza C3 i poprawką nic nie robią, US8.3. */
+    @Test
+    fun us8_3_edit_only_from_c3() {
+        stack += AccountRoute
+        navigator(collector).run {
+            openEdit("s1")
+            changeEditPlace()
+        }
+        assertEquals(stackOf(AccountRoute), stack)
     }
 
     /** Wiersz: V4, „Wstecz” między krokami nie usuwa zdjęcia ani grupy, US4.8. */
