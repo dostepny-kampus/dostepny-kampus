@@ -112,7 +112,9 @@ final class SubmissionsReadHttpTest {
             List.of(
                 response.getStatus(), SubmissionsReadHttpTest.json(context, response).size(),
                 SubmissionsReadHttpTest.json(context, response).path(0),
-                output.getOut().contains("Pominięto nieczytelne zgłoszenie %s".formatted(corrupt.id()))
+                output.getOut().contains(
+                    "Pominięto nieczytelne zgłoszenie %s".formatted(corrupt.id())
+                )
             ),
             Matchers.equalTo(List.of(200, 1, valid.expected(context), true))
         );
