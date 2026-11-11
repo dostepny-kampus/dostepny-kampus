@@ -5,28 +5,22 @@
  */
 package io.github.dostepnykampus;
 
-import com.tngtech.archunit.base.DescribedPredicate;
-import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
-import com.tngtech.archunit.library.Architectures;
 import com.tngtech.archunit.library.GeneralCodingRules;
-import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.stereotype.Controller;
 
 /**
  * Testy zadania INFRA: reguły architektury, których Spring Modulith
  * nie sprawdza.
  *
- * <p>Źródło: propozycja projektu, zakazy zależności serwera. „Kontroler,
- * usługa, repozytorium; kontroler nie widzi repozytorium”, „encja nie
- * wycieka poza moduł” i „pole {@code @Autowired} zabronione” (gotowa
- * reguła ArchUnit). Reguły dopuszczają brak klas, bo moduły są puste.</p>
+ * <p>Kontrolery korzystają z usług i portów. Implementacje JDBC należą
+ * do pakietów persistence lub postgis. ArchUnit zabrania też wstrzykiwania pól.</p>
  *
  * <p>E5: wspólne typy błędów nie zależą od Spring Web ani Jacksona, żeby
  * wyjątki domenowe nie wciągały warstwy HTTP.</p>
@@ -36,18 +30,40 @@ import org.junit.jupiter.api.Test;
 final class ArchitectureTest {
 
     @Test
-    void infraKeepsControllerServiceRepositoryChain() {
+    void controllersStayOutsidePersistence() {
         Assertions.assertDoesNotThrow(
-            () -> ArchitectureTest.layers().check(ArchitectureTest.classes()),
-            "Kontroler sięga do repozytorium albo warstwy idą pod prąd"
+            () -> ArchitectureTest.controllerBoundary().check(ArchitectureTest.classes()),
+            "Kontroler sięga bezpośrednio do warstwy dostępu do danych"
         );
     }
 
     @Test
-    void infraKeepsEntitiesInsideTheirModule() {
+    void jdbcStaysInPersistencePackages() {
         Assertions.assertDoesNotThrow(
-            () -> ArchitectureTest.entities().check(ArchitectureTest.classes()),
-            "Encja JPA jest używana poza swoim modułem"
+            () -> ArchitectureTest.jdbcPlacement().check(ArchitectureTest.classes()),
+            "Spring JDBC jest używane poza warstwą dostępu do danych"
+        );
+    }
+
+    @Test
+    void controllerUsingJdbcIsRejected() {
+        Assertions.assertTrue(
+            ArchitectureTest.controllerBoundary()
+                .evaluate(new ClassFileImporter().importClasses(JdbcControllerSample.class))
+                .getFailureReport().getDetails().stream()
+                .anyMatch(detail -> detail.contains("JdbcClient")),
+            "Reguła kontrolerów nie wykryła zależności od JdbcClient"
+        );
+    }
+
+    @Test
+    void controllerBoundaryRejectsEmptySelection() {
+        Assertions.assertThrows(
+            AssertionError.class,
+            () -> ArchitectureTest.controllerBoundary().check(
+                new ClassFileImporter().importClasses(InvalidInput.class)
+            ),
+            "Reguła bez żadnego kontrolera powinna zawieść"
         );
     }
 
@@ -87,44 +103,21 @@ final class ArchitectureTest {
             .allowEmptyShould(false);
     }
 
-    private static ArchRule layers() {
-        return Architectures.layeredArchitecture()
-            .consideringOnlyDependenciesInLayers()
-            .withOptionalLayers(true)
-            .layer("Kontrolery")
-            .definedBy(ArchitectureTest.stereotype("Controller"))
-            .layer("Usługi")
-            .definedBy(ArchitectureTest.stereotype("Service"))
-            .layer("Repozytoria").definedBy(
-                JavaClass.Predicates.assignableTo(
-                    "org.springframework.data.repository.Repository"
-                ).or(ArchitectureTest.stereotype("Repository"))
-            )
-            .whereLayer("Kontrolery").mayNotBeAccessedByAnyLayer()
-            .whereLayer("Usługi").mayOnlyBeAccessedByLayers("Kontrolery")
-            .whereLayer("Repozytoria").mayOnlyBeAccessedByLayers("Usługi");
+    private static ArchRule controllerBoundary() {
+        return ArchRuleDefinition.noClasses().that().areMetaAnnotatedWith(Controller.class)
+            .should().dependOnClassesThat().resideInAnyPackage(
+                "org.springframework.jdbc..", "java.sql..", "javax.sql..",
+                "..persistence..", "..postgis.."
+            ).allowEmptyShould(false);
     }
 
-    private static ArchRule entities() {
-        return SlicesRuleDefinition.slices()
-            .matching("io.github.dostepnykampus.(*)..")
-            .should().notDependOnEachOther().ignoreDependency(
-                DescribedPredicate.alwaysTrue(),
-                DescribedPredicate.not(
-                    CanBeAnnotated.Predicates.annotatedWith(
-                        "jakarta.persistence.Entity"
-                    )
-                )
-            )
-            .allowEmptyShould(true);
-    }
-
-    private static DescribedPredicate<CanBeAnnotated> stereotype(
-        final String name
-    ) {
-        return CanBeAnnotated.Predicates.metaAnnotatedWith(
-            String.format("org.springframework.stereotype.%s", name)
-        );
+    private static ArchRule jdbcPlacement() {
+        return ArchRuleDefinition.noClasses()
+            .that().resideOutsideOfPackages("..persistence..", "..postgis..")
+            .and().doNotHaveFullyQualifiedName("io.github.dostepnykampus.building.BuildingQuery")
+            .should().dependOnClassesThat().resideInAnyPackage("org.springframework.jdbc..")
+            .because("BuildingQuery pozostaje wyjątkiem do uporządkowania zapytań w #849")
+            .allowEmptyShould(false);
     }
 
     private static JavaClasses classes() {
