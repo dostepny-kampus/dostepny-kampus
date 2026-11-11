@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.feature.map.data.CampusBounds
+import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -128,6 +129,22 @@ class CampusMapStyleTest {
         assertEquals("C-13", label.jsonPrimitive.content)
         assertEquals("#001F27", selected.obj("paint").text("line-color"))
         assertEquals(null, style.array("layers").find { it.jsonObject.text("id") == SELECTED_LAYER })
+    }
+
+    /** Warstwy warunkowe stoją w stałej kolejności; bez granic i zaznaczeń ich nie ma (US1.7, US3.3). */
+    @Test
+    fun us1_7_optional_layer_order() {
+        val bare = Json.parseToJsonElement(campusMapStyle(campusMapData(catalog).copy(bounds = null), colors))
+        val base = listOf("lad", "osm", BUILDINGS_LAYER, "kontury")
+        val marks = listOf(ENTRANCES_LAYER, "podpisy")
+        assertEquals(base + marks, bare.jsonObject.array("layers").map { it.jsonObject.text("id") })
+        assertEquals(setOf("osm", "budynki", "podpisy", "wejscia"), bare.jsonObject.obj("sources").keys)
+        val entrance = SelectedEntrance(id = "w1", location = a, label = "Główne", buildingSymbol = "C-13")
+        val data = campusMapData(catalog).copy(focus = "C-13", selectedEntrance = entrance)
+        val full = Json.parseToJsonElement(campusMapStyle(data, colors))
+        val area = listOf(OUTSIDE_LAYER, EDGE_LAYER, ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
+        val expected = base + SELECTED_LAYER + marks + area
+        assertEquals(expected, full.jsonObject.array("layers").map { it.jsonObject.text("id") })
     }
 
     private fun JsonObject.obj(key: String): JsonObject = getValue(key).jsonObject
