@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map
@@ -9,8 +9,8 @@ import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
+import io.github.dostepnykampus.feature.map.data.featureCollection
 import io.github.dostepnykampus.feature.map.data.symbolsOf
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -117,9 +117,9 @@ internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 private fun sources(data: CampusMapData, selection: MapSelection): JsonObject =
     buildJsonObject {
         put(key = BASEMAP, element = basemapSource(selection.bounds))
-        put(key = BUILDINGS_SOURCE, element = geoJsonSource(Json.parseToJsonElement(data.buildings)))
-        put(key = LABELS, element = geoJsonSource(Json.parseToJsonElement(data.labelPoints)))
-        put(key = ENTRANCES_SOURCE, element = geoJsonSource(Json.parseToJsonElement(data.entrances)))
+        put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
+        put(key = LABELS, element = geoJsonSource(data.labelPoints))
+        put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         selection.bounds?.let {
             put(key = AREA_SOURCE, element = geoJsonSource(featureCollection(areaFeatures(it))))
         }

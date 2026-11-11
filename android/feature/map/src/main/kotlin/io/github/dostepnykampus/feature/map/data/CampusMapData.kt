@@ -14,14 +14,18 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoPoint
+import kotlinx.serialization.builtins.nullable
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.maplibre.spatialk.geojson.BoundingBox
 import org.maplibre.spatialk.geojson.Feature
 import org.maplibre.spatialk.geojson.FeatureCollection
-import org.maplibre.spatialk.geojson.GeoJsonObject
+import org.maplibre.spatialk.geojson.Geometry
 import org.maplibre.spatialk.geojson.Point
 import org.maplibre.spatialk.geojson.Position
 import org.maplibre.spatialk.turf.measurement.computeBbox
@@ -37,7 +41,8 @@ private const val LABEL_SEPARATOR = "/"
 private val CAMPUS_MARGIN = 500.meters
 
 /**
- * Dane warstw mapy V1 z katalogu budynków jako GeoJSON dla źródeł mapy, bez sieci (US1, US1.4, NFR-10).
+ * Dane warstw mapy V1 z katalogu budynków jako kolekcje GeoJSON w elementach JSON dla źródeł mapy, bez sieci
+ * (US1, US1.4, NFR-10). Styl wstawia je do źródeł bez parsowania napisu (#835).
  *
  * @property buildings kontury budynków; obiekt ma właściwość `label`, czyli podpis konturu na mapie, i listę
  *   `symbols`. Kontur wspólny kilku symboli to jeden obiekt z podpisem „C-3/C-4” (decyzja 79)
@@ -56,10 +61,10 @@ private val CAMPUS_MARGIN = 500.meters
  *   wspólnego mają jeden punkt. Kamera bierze punkt stąd i nie liczy go drugi raz na wątku interfejsu (NFR-11)
  */
 data class CampusMapData(
-    val buildings: String,
+    val buildings: JsonElement,
     val labels: List<String>,
-    val labelPoints: String,
-    val entrances: String,
+    val labelPoints: JsonElement,
+    val entrances: JsonElement,
     val start: GeoPoint?,
     val bounds: CampusBounds? = null,
     val areas: List<MapArea> = emptyList(),
@@ -159,10 +164,10 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
         }
     val startArea = areas.firstOrNull { START_BUILDING in it.symbols } ?: areas.firstOrNull()
     return CampusMapData(
-        buildings = GeoJsonObject.toJson(FeatureCollection(buildings)),
+        buildings = featureCollection(buildings),
         labels = outlines.values.map { it.joinToString(separator = LABEL_SEPARATOR) },
-        labelPoints = GeoJsonObject.toJson(FeatureCollection(labelPoints)),
-        entrances = GeoJsonObject.toJson(FeatureCollection(entrances)),
+        labelPoints = featureCollection(labelPoints),
+        entrances = featureCollection(entrances),
         start = center(startBuildings.flatMap { it.outline.points() }),
         bounds = startArea?.bounds,
         areas = areas,
@@ -196,3 +201,13 @@ private fun BoundingBox.withCampusMargin(): CampusBounds {
 }
 
 private fun GeoArea.points(): List<GeoPoint> = allRings().flatten()
+
+/**
+ * Kolekcja GeoJSON z obiektów [features] jako element JSON, bez napisu po drodze. Napis powstaje raz, gdy styl
+ * mapy idzie do MapLibre (#835).
+ */
+internal fun featureCollection(features: List<Feature<Geometry, JsonObject?>>): JsonElement =
+    Json.encodeToJsonElement(
+        FeatureCollection.serializer(Geometry.serializer(), JsonObject.serializer().nullable),
+        FeatureCollection(features),
+    )

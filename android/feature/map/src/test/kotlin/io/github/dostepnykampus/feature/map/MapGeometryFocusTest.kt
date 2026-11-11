@@ -22,6 +22,7 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.serialization.json.JsonPrimitive
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +31,7 @@ import org.robolectric.RobolectricTestRunner
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 
-private const val MARKER = "geometria z ViewModelu"
+private val MARKER = JsonPrimitive("geometria z ViewModelu")
 
 private val POINT_NOT_FROM_LABEL_POINT = GeoPoint(longitude = 0.6, latitude = 0.2)
 
