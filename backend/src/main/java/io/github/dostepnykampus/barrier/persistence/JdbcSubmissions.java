@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier.persistence;
@@ -48,6 +48,37 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         "id, version, status, created_at, content::text AS content";
 
     /**
+     * Wstawienie nowego zgłoszenia; istniejący identyfikator niczego nie zmienia.
+     */
+    private static final String INSERT = String.format(
+        """
+            INSERT INTO submissions (id, kind, building_symbol, location, content)
+            VALUES (:id, :kind, :building,
+                ST_SetSRID(ST_MakePoint(:lon, :lat), 4326), CAST(:content AS JSONB))
+            ON CONFLICT (id) DO NOTHING
+            RETURNING %s
+        """,
+        JdbcSubmissions.COLUMNS
+    );
+
+    /**
+     * Edycja zgłoszenia z oczekiwaną wersją i dozwolonym przejściem statusu.
+     */
+    private static final String UPDATE = String.format(
+        """
+            UPDATE submissions SET version = version + 1, status = edited.new_status,
+                kind = :kind, building_symbol = :building,
+                location = ST_SetSRID(ST_MakePoint(:lon, :lat), 4326),
+                content = CAST(:content AS JSONB)
+            FROM unnest(CAST(:from AS TEXT[]), CAST(:to AS TEXT[]))
+                AS edited (old_status, new_status)
+            WHERE id = :id AND version = :version AND status = edited.old_status
+            RETURNING %s
+        """,
+        JdbcSubmissions.COLUMNS
+    );
+
+    /**
      * Dostęp do tabeli submissions.
      */
     private final JdbcClient jdbc;
@@ -76,20 +107,10 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
 
     @Override
     public CreateResult create(final NewSubmission submission) {
-        final CreateResult result;
         final Optional<Submission> created = this.write(
-            String.format(
-                """
-                INSERT INTO submissions (id, kind, building_symbol, location, content)
-                VALUES (:id, :kind, :building,
-                    ST_SetSRID(ST_MakePoint(:lon, :lat), 4326), CAST(:content AS JSONB))
-                ON CONFLICT (id) DO NOTHING
-                RETURNING %s
-                """,
-                JdbcSubmissions.COLUMNS
-            ),
-            submission.id(), 1, submission.content()
+            this.jdbc.sql(JdbcSubmissions.INSERT), submission.id(), submission.content()
         );
+        final CreateResult result;
         if (created.isPresent()) {
             result = new CreateResult.Created(created.get());
         } else {
@@ -107,20 +128,12 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     @Override
     public EditResult update(final SubmissionEdit edit) {
         final Optional<Submission> saved = this.write(
-            String.format(
-                """
-                UPDATE submissions SET version = version + 1, status = edited.new_status,
-                    kind = :kind, building_symbol = :building,
-                    location = ST_SetSRID(ST_MakePoint(:lon, :lat), 4326),
-                    content = CAST(:content AS JSONB)
-                FROM unnest(CAST(:from AS TEXT[]), CAST(:to AS TEXT[]))
-                    AS edited (old_status, new_status)
-                WHERE id = :id AND version = :version AND status = edited.old_status
-                RETURNING %s
-                """,
-                JdbcSubmissions.COLUMNS
-            ),
-            edit.id(), edit.expectedVersion(), edit.content()
+            this.jdbc.sql(JdbcSubmissions.UPDATE)
+                .param("version", edit.expectedVersion())
+                .param("from", JdbcSubmissions.editable(Function.identity()))
+                .param("to", JdbcSubmissions.editable(SubmissionStatus::afterEdit)),
+            edit.id(),
+            edit.content()
         );
         final EditResult result;
         if (saved.isPresent()) {
@@ -189,20 +202,17 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     }
 
     private Optional<Submission> write(
-        final String sql, final UUID id, final int version, final SubmissionContent content
+        final JdbcClient.StatementSpec statement, final UUID id, final SubmissionContent content
     ) {
         final SubmissionPlace place = content.place();
         try {
-            return this.jdbc.sql(sql)
+            return statement
                 .param("id", id)
-                .param("version", version)
                 .param("kind", content.kind().name())
                 .param("building", place.buildingSymbol())
                 .param("lon", place.point().longitude())
                 .param("lat", place.point().latitude())
                 .param("content", this.json(content))
-                .param("from", JdbcSubmissions.editable(Function.identity()))
-                .param("to", JdbcSubmissions.editable(SubmissionStatus::afterEdit))
                 .query(this.rows)
                 .optional();
         } catch (final DataIntegrityViolationException ex) {
