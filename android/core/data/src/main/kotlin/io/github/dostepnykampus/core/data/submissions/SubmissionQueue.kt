@@ -304,7 +304,7 @@ internal suspend fun baseVersionOf(
     return version
 }
 
-private fun requireMatchingPhotos(content: SubmissionContent, photos: List<PendingPhotoDraft>) {
+internal fun requireMatchingPhotos(content: SubmissionContent, photos: List<PendingPhotoDraft>) {
     if (photos.map { it.photoId } != content.photoIds) {
         throw SaveRefusedException(
             reason = SaveRefusal.PHOTOS_MISMATCH,
