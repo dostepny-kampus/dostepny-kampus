@@ -7,23 +7,26 @@ package io.github.dostepnykampus.feature.map.data
 
 import io.github.dostepnykampus.core.model.GeoPoint
 
+private const val EDGE_SLACK_DEGREES = 1e-5
+
 /**
  * Krawędź mapy, przy której stoi widok na granicy terenu (US1.7).
  *
- * @property isReached czy punkt leży na tym brzegu prostokąta terenu albo za nim
+ * @property isReached czy punkt leży na tym brzegu prostokąta terenu albo za nim. Brzeg ma zapas około 1 m,
+ *   bo widok zatrzymany gestem staje o ułamek stopnia przed nim
  */
 enum class MapEdge(internal val isReached: (CampusBounds, GeoPoint) -> Boolean) {
     /** Górna krawędź mapy. */
-    NORTH({ bounds, point -> point.latitude >= bounds.north }),
+    NORTH({ bounds, point -> point.latitude >= bounds.north - EDGE_SLACK_DEGREES }),
 
     /** Prawa krawędź mapy. */
-    EAST({ bounds, point -> point.longitude >= bounds.east }),
+    EAST({ bounds, point -> point.longitude >= bounds.east - EDGE_SLACK_DEGREES }),
 
     /** Dolna krawędź mapy. */
-    SOUTH({ bounds, point -> point.latitude <= bounds.south }),
+    SOUTH({ bounds, point -> point.latitude <= bounds.south + EDGE_SLACK_DEGREES }),
 
     /** Lewa krawędź mapy. */
-    WEST({ bounds, point -> point.longitude <= bounds.west }),
+    WEST({ bounds, point -> point.longitude <= bounds.west + EDGE_SLACK_DEGREES }),
 }
 
 /**

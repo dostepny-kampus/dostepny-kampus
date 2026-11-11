@@ -38,6 +38,7 @@ class AreaNeighborTest {
     fun us1_7_neighbor_beyond_edge() {
         val expected = AreaNeighbor(name = "Wschód", kilometers = 2, edge = MapEdge.EAST)
         assertEquals(expected, data.areaNeighbor(middle, view(longitude = middle.bounds.east)))
+        assertEquals(expected, data.areaNeighbor(middle, view(longitude = middle.bounds.east - AFTER_GESTURE)))
     }
 
     /** Wiersz: V1, widok w środku terenu: bez przycisku sąsiedniego terenu (US1.7). */
@@ -73,5 +74,6 @@ class AreaNeighborTest {
 
     private companion object {
         const val SIDE = 0.01
+        const val AFTER_GESTURE = 1e-6
     }
 }

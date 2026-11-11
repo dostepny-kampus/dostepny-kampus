@@ -38,9 +38,10 @@ private enum class MapPanel { Area, Legend, Info }
 
 /**
  * Nakładka mapy V1: przyciski powiększania i przesuwania (NFR-53), przycisk terenu nad „Legendą” (US1.6, US1.7),
- * przycisk „ⓘ” i podpis OSM (NFR-37), a nad nimi [content], np. arkusz „Który budynek?”. Otwarty panel zasłania
- * przyciski mapy, otwarte „ⓘ” także przycisk terenu i „Legendę”, a otwarty panel „Teren na mapie” także
- * „Legendę”; dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem zapisywanym.
+ * pod nimi przy granicy terenu przycisk sąsiedniego terenu (US1.7), przycisk „ⓘ” i podpis OSM (NFR-37), a nad
+ * nimi [content], np. arkusz „Który budynek?”. Otwarty panel zasłania przyciski mapy i przycisk sąsiedniego
+ * terenu, otwarte „ⓘ” także przycisk terenu i „Legendę”, a otwarty panel „Teren na mapie” także „Legendę”;
+ * dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem zapisywanym.
  *
  * @param camera widok kamery, od którego liczą się przyciski mapy
  * @param hasControls czy mapa ma przyciski; nie ma ich pod arkuszem V2 i przy otwartej klawiaturze (decyzja 91)
@@ -65,7 +66,10 @@ internal fun MapOverlay(
     var open by rememberSaveable { mutableStateOf<MapPanel?>(null) }
     Box(modifier) {
         if (hasControls && open == null) {
-            MapControls(camera, onCameraChange, modifier = Modifier.align(Alignment.TopEnd))
+            Column(Modifier.align(Alignment.TopEnd), horizontalAlignment = Alignment.End) {
+                MapControls(camera, onCameraChange)
+                MapAreaNeighbor(areas = areas, camera = camera, isAtStart = false, onShow = onAreaShow)
+            }
         }
         if (open == MapPanel.Area) {
             Box(Modifier.matchParentSize().pointerInput(Unit) { detectTapGestures { open = null } })
@@ -74,6 +78,7 @@ internal fun MapOverlay(
             val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
             AreaAndLegendColumn(
                 areas = areas,
+                camera = camera,
                 open = open,
                 onOpenChange = { open = it },
                 onAreaShow = onAreaShow,
@@ -96,6 +101,7 @@ internal fun MapOverlay(
 @Composable
 private fun AreaAndLegendColumn(
     areas: MapAreas,
+    camera: MapCamera,
     open: MapPanel?,
     onOpenChange: (MapPanel?) -> Unit,
     onAreaShow: (MapCamera) -> Unit,
@@ -121,6 +127,7 @@ private fun AreaAndLegendColumn(
                 onOpenChange = { onOpenChange(MapPanel.Legend.takeIf { _ -> it }) },
             )
         }
+        if (open == null) MapAreaNeighbor(areas = areas, camera = camera, isAtStart = true, onShow = onAreaShow)
     }
 }
 
