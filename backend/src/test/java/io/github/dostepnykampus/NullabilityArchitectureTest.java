@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus;
@@ -9,6 +9,8 @@ import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
@@ -32,7 +34,6 @@ import org.hamcrest.Matchers;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -49,6 +50,10 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * @since 0.1.0
  */
+@AnalyzeClasses(
+    packagesOf = DostepnyKampusApplication.class,
+    importOptions = ImportOption.DoNotIncludeTests.class
+)
 final class NullabilityArchitectureTest {
 
     /**
@@ -74,41 +79,30 @@ final class NullabilityArchitectureTest {
     @TempDir
     private Path dir;
 
-    @Test
-    void productionImportReachesSubpackages() {
-        MatcherAssert.assertThat(
-            "Import kodu produkcyjnego pomija podpakiety",
-            NullabilityArchitectureTest.production().contain(
-                "io.github.dostepnykampus.barrier.domain.SubmissionPoint"
-            ),
-            Matchers.is(true)
-        );
-    }
-
-    @Test
-    void productionHasNoNullUnmarked() {
+    @ArchTest
+    void productionHasNoNullUnmarked(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
             () -> NullabilityArchitectureTest.unmarked()
-                .check(NullabilityArchitectureTest.production()),
+                .check(classes),
             "Kod produkcyjny wyłącza NullAway przez @NullUnmarked"
         );
     }
 
-    @Test
-    void optionalOnlyAsMethodResult() {
+    @ArchTest
+    void optionalOnlyAsMethodResult(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
             () -> NullabilityArchitectureTest.optionals()
-                .check(NullabilityArchitectureTest.production()),
+                .check(classes),
             "Optional jest polem, parametrem albo komponentem rekordu"
         );
     }
 
-    @Test
-    void nullableInDomainOnlyOnListedComponents() {
+    @ArchTest
+    void nullableInDomainOnlyOnListedComponents(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
             () -> NullabilityArchitectureTest.nullables(
                 NullabilityArchitectureTest.LISTED
-            ).check(NullabilityArchitectureTest.production()),
+            ).check(classes),
             "W domenie @Nullable stoi poza listą par klasa i komponent"
         );
     }
@@ -257,12 +251,6 @@ final class NullabilityArchitectureTest {
                 }
             }
         };
-    }
-
-    private static JavaClasses production() {
-        return new ClassFileImporter()
-            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
-            .importPackagesOf(DostepnyKampusApplication.class);
     }
 
     private static boolean violated(final Path dir, final Sample sample)
