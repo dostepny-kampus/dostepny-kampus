@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.geo.labelPoint
@@ -52,8 +53,6 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import java.time.LocalDate
-
-private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -154,7 +153,7 @@ fun CampusMapScreen(
 ) {
     val catalog = state.catalog
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
-    val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LIST_FONT_SCALE)
+    val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LARGE_FONT_SCALE)
     val states = rememberSaveableStateHolder()
     Column(modifier.fillMaxSize()) {
         if (!isCovered) {
@@ -279,7 +278,7 @@ private fun MapOverlay(
 @Composable
 private fun OsmAttribution(modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
-    val isShort = LocalDensity.current.fontScale >= SHORT_ATTRIBUTION_FONT_SCALE
+    val isShort = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     Box(
         modifier =
             modifier

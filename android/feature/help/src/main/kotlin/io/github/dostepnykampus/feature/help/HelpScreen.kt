@@ -43,6 +43,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.MarkingChip
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
@@ -51,8 +52,6 @@ import io.github.dostepnykampus.core.designsystem.PinnedButton
 import io.github.dostepnykampus.core.designsystem.PinnedButtonKind.Outlined
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.EntranceMarking
-
-private const val LARGE_FONT_SCALE = 1.5f
 
 /**
  * Ekran V5 „Pomoc” (US5.1): instrukcja krok po kroku, przejście przyciskiem „Dalej” zamiast przesunięcia
