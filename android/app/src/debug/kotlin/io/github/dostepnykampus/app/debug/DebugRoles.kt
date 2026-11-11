@@ -37,51 +37,26 @@ class DebugRoles
     }
 
 /**
- * Użytkownik testowy realmu deweloperskiego z `infra/keycloak/realm.json`.
- *
- * @property login nazwa użytkownika
- * @property password hasło użytkownika testowego, tylko w wersji debug
- */
-class DebugUser(val login: String, val password: String) {
-    /** Bez hasła, gdyby obiekt trafił do logów (NFR-35). */
-    override fun toString(): String = "DebugUser($login)"
-}
-
-/**
  * Rola do wyboru w przełączniku: Gość, Odwiedzający i dwie role pracownicze (BR-1).
  *
  * @property label napis przycisku
- * @property account konto tej roli, jakie daje token jej użytkownika testowego
- * @property user użytkownik testowy tej roli; `null` dla Gościa
+ * @property account konto tej roli
  */
 enum class DebugRole(
     @param:StringRes val label: Int,
     val account: Account,
-    val user: DebugUser?,
 ) {
     /** Gość niezalogowany (RO-GOS). */
-    GUEST(R.string.debug_rola_gosc, Account.Guest, null),
+    GUEST(R.string.debug_rola_gosc, Account.Guest),
 
     /** Odwiedzający (RO-ODW). */
-    VISITOR(
-        R.string.debug_rola_odwiedzajacy,
-        Account.SignedIn(),
-        DebugUser(login = "odwiedzajacy.test", password = "haslo-testowe-odwiedzajacy"),
-    ),
+    VISITOR(R.string.debug_rola_odwiedzajacy, Account.SignedIn()),
 
     /** Zbierający (RO-ZBI). */
-    COLLECTOR(
-        R.string.debug_rola_zbierajacy,
-        Account.SignedIn(setOf(StaffRole.COLLECTOR)),
-        DebugUser(login = "zbierajacy.test", password = "haslo-testowe-zbierajacy"),
-    ),
+    COLLECTOR(R.string.debug_rola_zbierajacy, Account.SignedIn(setOf(StaffRole.COLLECTOR))),
 
     /** Weryfikator (RO-WER). */
-    VERIFIER(
-        R.string.debug_rola_weryfikator,
-        Account.SignedIn(setOf(StaffRole.VERIFIER)),
-        DebugUser(login = "weryfikator.test", password = "haslo-testowe-weryfikator"),
-    ),
+    VERIFIER(R.string.debug_rola_weryfikator, Account.SignedIn(setOf(StaffRole.VERIFIER))),
 }
 
 /** Role w wersji debug: dostawca z przełącznikiem zamiast stałego Gościa. */

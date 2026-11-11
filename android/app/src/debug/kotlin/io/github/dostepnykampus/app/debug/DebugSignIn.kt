@@ -13,6 +13,7 @@ import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.network.AccessTokens
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
@@ -26,12 +27,13 @@ import java.util.Base64
 /**
  * Logowanie użytkownikiem testowym roli wybranej w przełączniku debug (US14.1, BR-1). Token z realmu
  * deweloperskiego trafia tylko do [AccessTokens] w pamięci procesu, a rola konta wynika z ról zapisanych w tokenie.
- * Ani token, ani hasło nie trafiają do logów (NFR-35).
+ * Ani token, ani hasło użytkownika testowego (`infra/keycloak/realm.json`) nie trafiają do logów (NFR-35).
  *
  * @param roles konto pokazywane przez aplikację
  * @param tokens token dołączany do żądań do serwera
  * @param http klient HTTP
  * @param tokenUrl adres wydawania tokenów realmu, np. z emulatora `http://10.0.2.2:8180/realms/…/token`
+ * @param io wątki do żądania HTTP
  */
 @TymczasoweRole
 class DebugSignIn(
@@ -39,6 +41,7 @@ class DebugSignIn(
     private val tokens: AccessTokens,
     private val http: OkHttpClient,
     private val tokenUrl: String,
+    private val io: CoroutineDispatcher = Dispatchers.IO,
 ) {
     /**
      * Gość usuwa token; inna rola loguje jej użytkownika testowego. Błąd logowania nie zmienia roli ani tokenu.
@@ -46,27 +49,30 @@ class DebugSignIn(
      * @return `true`, gdy konto pasuje już do wybranej roli
      */
     suspend fun choose(role: DebugRole): Boolean {
-        val user = role.user
-        if (user == null) {
-            tokens.signOut()
-            roles.account = Account.Guest
-            return true
+        val user = USERS[role] ?: return signOut()
+        val token = withContext(io) { fetch(login = user.first, password = user.second) }
+        val account = token?.let(::accountOf)
+        if (token != null && account != null) {
+            tokens.signIn(token)
+            roles.account = account
         }
-        val token = withContext(Dispatchers.IO) { fetch(user) } ?: return false
-        val account = accountOf(token) ?: return false
-        tokens.signIn(token)
-        roles.account = account
+        return account != null
+    }
+
+    private fun signOut(): Boolean {
+        tokens.signOut()
+        roles.account = Account.Guest
         return true
     }
 
-    private fun fetch(user: DebugUser): String? {
+    private fun fetch(login: String, password: String): String? {
         val form =
             FormBody
                 .Builder()
                 .add(name = "grant_type", value = "password")
                 .add(name = "client_id", value = CLIENT_ID)
-                .add(name = "username", value = user.login)
-                .add(name = "password", value = user.password)
+                .add(name = "username", value = login)
+                .add(name = "password", value = password)
                 .build()
         val request =
             Request
@@ -96,6 +102,12 @@ class DebugSignIn(
     private companion object {
         const val CLIENT_ID = "dostepny-kampus-android"
         const val ACCESS_TOKEN = "access_token"
+        val USERS =
+            mapOf(
+                DebugRole.VISITOR to ("odwiedzajacy.test" to "haslo-testowe-odwiedzajacy"),
+                DebugRole.COLLECTOR to ("zbierajacy.test" to "haslo-testowe-zbierajacy"),
+                DebugRole.VERIFIER to ("weryfikator.test" to "haslo-testowe-weryfikator"),
+            )
     }
 }
 

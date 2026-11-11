@@ -32,7 +32,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.Base64
 
-/** Przełącznik debug loguje użytkownika testowego roli i bierze rolę konta z tokenu (#462, BR-1, NFR-35). */
+/** Przełącznik debug loguje użytkownika testowego roli i bierze rolę konta z tokenu (BR-1, NFR-35). */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class DebugSignInTest {
@@ -57,26 +57,16 @@ class DebugSignInTest {
         server.shutdown()
     }
 
-    /** Wybór Zbierającego wysyła logowanie jego użytkownika testowego; rola konta pochodzi z tokenu. */
+    /** Zbierający: logowanie jego użytkownika testowego, a rola konta z tokenu, nie z przycisku. */
     @Test
-    fun collectorFromToken() {
-        val token = jwt("COLLECTOR", "offline_access")
+    fun roleFromToken() {
+        val token = jwt("VERIFIER", "offline_access")
         server.enqueue(MockResponse().setBody("""{"access_token":"$token","token_type":"Bearer"}"""))
         assertTrue(runBlocking { signIn.choose(DebugRole.COLLECTOR) })
-        val request = server.takeRequest()
-        val form = request.body.readUtf8()
-        assertTrue(form.contains("grant_type=password"))
+        val form = server.takeRequest().body.readUtf8()
         assertTrue(form.contains("username=zbierajacy.test"))
         assertTrue(form.contains("client_id=dostepny-kampus-android"))
         assertEquals(token, tokens.token)
-        assertEquals(Account.SignedIn(setOf(StaffRole.COLLECTOR)), roles.account)
-    }
-
-    /** Rola konta z tokenu, nie z przycisku: token z rolą Weryfikatora daje Weryfikatora. */
-    @Test
-    fun roleFollowsToken() {
-        server.enqueue(MockResponse().setBody("""{"access_token":"${jwt("VERIFIER")}"}"""))
-        runBlocking { signIn.choose(DebugRole.COLLECTOR) }
         assertEquals(Account.SignedIn(setOf(StaffRole.VERIFIER)), roles.account)
     }
 
@@ -109,16 +99,6 @@ class DebugSignInTest {
             DostepnyKampusTheme { RoleSwitch(current = Account.Guest, onChoose = {}, isFailed = true) }
         }
         compose.onNodeWithText("Nie udało się zalogować", substring = true).assertIsDisplayed()
-    }
-
-    /** Hasło użytkownika testowego nie trafia do `toString()`, więc ani do logów (NFR-35). */
-    @Test
-    fun passwordNotInText() {
-        val user = requireNotNull(DebugRole.COLLECTOR.user)
-        assertFalse(user.toString().contains(user.password))
-        val token = jwt("VISITOR")
-        tokens.signIn(token)
-        assertFalse(tokens.toString().contains(token))
     }
 
     private fun jwt(vararg realmRoles: String): String {

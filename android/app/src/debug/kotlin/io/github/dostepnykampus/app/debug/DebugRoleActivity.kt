@@ -46,17 +46,15 @@ import io.github.dostepnykampus.core.model.Account
 import kotlinx.coroutines.launch
 
 /**
- * Przełącznik ról wersji debug, z osobną ikoną w launcherze: wybór roli loguje jej użytkownika testowego, zmienia
- * konto w aplikacji i zamyka ekran; błąd logowania zostawia rolę i pokazuje komunikat (US14.1). Wersja release
- * go nie zawiera.
+ * Przełącznik ról wersji debug, z osobną ikoną w launcherze: wybór roli loguje jej użytkownika testowego i zamyka
+ * ekran, a błąd logowania zostawia rolę z komunikatem (US14.1). Wersja release go nie zawiera.
  */
 @AndroidEntryPoint
 class DebugRoleActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val graph = EntryPointAccessors.fromApplication<DebugRolesEntryPoint>(this)
-        val roles = graph.roles()
-        val signIn = graph.signIn()
+        val roles = EntryPointAccessors.fromApplication<DebugRolesEntryPoint>(this).roles()
+        val signIn = EntryPointAccessors.fromApplication<DebugRolesEntryPoint>(this).signIn()
         setContent {
             var isFailed by rememberSaveable { mutableStateOf(false) }
             DostepnyKampusTheme {
