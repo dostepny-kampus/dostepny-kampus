@@ -36,9 +36,12 @@ fun interface PendingEdits {
 /** Poprawki z kolejki w bazie Room [store]. */
 fun pendingEditsOf(store: PendingEditDao): PendingEdits = PendingEdits { id -> store.find(id)?.toPendingEdit() }
 
-internal fun PendingSubmissionWithPhotos.toPendingEdit(): PendingEdit =
-    PendingEdit(
-        edited = EditedSubmission(id = submission.id, baseVersion = submission.baseVersion),
-        content = toSubmissionContent(),
-        photos = photos.map { PendingPhotoDraft(photoId = it.photoId, path = it.path) },
-    )
+/** Poprawka z wiersza albo `null`, gdy telefon nie odczyta treści; C2 wraca wtedy do listy jak bez zgłoszenia. */
+internal fun PendingSubmissionWithPhotos.toPendingEdit(): PendingEdit? =
+    toSubmissionContentOrNull()?.let { content ->
+        PendingEdit(
+            edited = EditedSubmission(id = submission.id, baseVersion = submission.baseVersion),
+            content = content,
+            photos = photos.map { PendingPhotoDraft(photoId = it.photoId, path = it.path) },
+        )
+    }
