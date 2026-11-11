@@ -20,7 +20,8 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.migration.Context;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.jspecify.annotations.Nullable;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -31,7 +32,7 @@ import tools.jackson.databind.node.ArrayNode;
  * buildings i entrances (US1, US17.1, ADR-0008).
  *
  * <p>Migracja powtarzalna: Flyway wykonuje ją przy pierwszym starcie
- * i ponownie po każdej zmianie pliku, bo suma kontrolna to CRC32 pliku.
+ * i ponownie po zmianie pliku lub wersji importu zapisanej w sumie kontrolnej.
  * Kontury z tym samym symbolem tworzą jeden wielokąt złożony, a kontur
  * z kilkoma symbolami daje osobny budynek dla każdego symbolu, tak jak
  * w aplikacji. Nazwa złożona wyłącznie z symboli budynków albo jej brak
@@ -44,11 +45,6 @@ import tools.jackson.databind.node.ArrayNode;
  */
 @Component
 final class OsmBuildings implements JavaMigration {
-
-    /**
-     * Plik konturów na ścieżce klas, kopiowany przez Maven z data/buildings.
-     */
-    static final String FILE = "data/pwr-buildings.geojson";
 
     /**
      * Zapis budynku: nowy symbol dodaje wiersz, znany symbol zmienia kontur,
@@ -79,8 +75,17 @@ final class OsmBuildings implements JavaMigration {
      */
     private final ObjectMapper mapper;
 
-    OsmBuildings(final ObjectMapper mapper) {
+    /**
+     * Plik konturów kopiowany przez Maven z data/buildings.
+     */
+    private final Resource file;
+
+    OsmBuildings(
+        final ObjectMapper mapper,
+        @Value("classpath:data/pwr-buildings.geojson") final Resource file
+    ) {
         this.mapper = mapper;
+        this.file = file;
     }
 
     @Override
@@ -95,10 +100,7 @@ final class OsmBuildings implements JavaMigration {
 
     @Override
     public Integer getChecksum() {
-        final CRC32 crc = new CRC32();
-        crc.update(OsmBuildings.content());
-        crc.update(OsmBuildings.FORMAT);
-        return (int) crc.getValue();
+        return OsmBuildings.checksum(this.content(), OsmBuildings.FORMAT);
     }
 
     @Override
@@ -108,7 +110,7 @@ final class OsmBuildings implements JavaMigration {
 
     @Override
     public void migrate(final Context context) throws SQLException {
-        final JsonNode root = this.mapper.readTree(OsmBuildings.content());
+        final JsonNode root = this.mapper.readTree(this.content());
         final String source = root.required("attribution").asString();
         final Map<String, ArrayNode> outlines = new LinkedHashMap<>(128);
         final Map<String, @Nullable String> names = new LinkedHashMap<>(128);
@@ -127,6 +129,13 @@ final class OsmBuildings implements JavaMigration {
         }
         this.save(context.getConnection(), outlines, names, source);
         new OsmEntrances(entrances).save(context.getConnection());
+    }
+
+    static int checksum(final byte[] content, final int format) {
+        final CRC32 crc = new CRC32();
+        crc.update(content);
+        crc.update(format);
+        return (int) crc.getValue();
     }
 
     private void save(
@@ -178,9 +187,9 @@ final class OsmBuildings implements JavaMigration {
         return result;
     }
 
-    private static byte[] content() {
+    private byte[] content() {
         try {
-            return new ClassPathResource(OsmBuildings.FILE).getContentAsByteArray();
+            return this.file.getContentAsByteArray();
         } catch (final IOException ex) {
             throw new UncheckedIOException(ex);
         }
