@@ -56,6 +56,7 @@ class MapBarrierNamesTest {
             CampusMapScreen(
                 state = CampusMapUiState(isListSaved = false, barriers = listOf(stairs, curb, untyped)),
                 onListChange = {},
+                onSearch = {},
                 onBuildingClick = {},
                 contentPadding = PaddingValues(bottom = sheet),
                 mapView = { _, _, _, _, _, _, _ -> },

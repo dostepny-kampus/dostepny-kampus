@@ -195,6 +195,7 @@ internal fun AppNavigator.TestAppScreen(
             focus = route.focus,
             state = state,
             onListChange = mapViewModel::chooseList,
+            onSearch = mapViewModel::search,
             mapView = mapView,
         )
     } else if (route is BuildingRoute) {

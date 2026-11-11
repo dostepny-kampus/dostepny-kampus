@@ -96,6 +96,7 @@ fun CampusMapScreen(
     CampusMapScreen(
         state = state,
         onListChange = viewModel::chooseList,
+        onSearch = viewModel::search,
         onBuildingClick = onBuildingClick,
         modifier = modifier,
         focus = focus,
@@ -119,6 +120,7 @@ fun CampusMapScreen(
  *   US9.1, NFR-10) i ostatni wybór w przełączniku; bez wyboru „Mapa”, a przy skali czcionki co najmniej 1,5
  *   „Lista budynków” (NFR-19, NFR-20)
  * @param onListChange wybór w przełączniku: prawda dla „Lista budynków”
+ * @param onSearch zapytanie z pola symbolu do policzenia w modelu widoku; wynik wraca w [CampusMapUiState.search]
  * @param onBuildingClick budynek dotknięty na mapie, wybrany w arkuszu albo na liście (US2)
  * @param modifier wymiary ekranu nadane przez aplikację
  * @param focus zaznaczenie z trasy: budynek z obrysem (US1.1), także z poleceniem „Pokaż” (US2.9), albo wejście
@@ -132,6 +134,7 @@ fun CampusMapScreen(
 fun CampusMapScreen(
     state: CampusMapUiState,
     onListChange: (Boolean) -> Unit,
+    onSearch: (String) -> Unit,
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     focus: MapFocus? = null,
@@ -150,6 +153,8 @@ fun CampusMapScreen(
             states.SaveableStateProvider(TOP_STATE) {
                 CampusSearch(
                     catalog = catalog,
+                    search = state.search,
+                    onSearch = onSearch,
                     isOnline = state.isOnline,
                     isList = isList,
                     areas = areas.order,

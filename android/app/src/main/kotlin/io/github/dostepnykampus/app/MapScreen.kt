@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.app
@@ -24,26 +24,34 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 @Composable
 internal fun AppNavigator.HiltMapScreen(focus: MapFocus?, viewModel: CampusMapViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    MapScreen(focus = focus, state = state, onListChange = viewModel::chooseList)
+    MapScreen(
+        focus = focus,
+        state = state,
+        onListChange = viewModel::chooseList,
+        onSearch = viewModel::search,
+    )
 }
 
 /**
  * V1 ze stanem [state] i zaznaczeniem [focus] z trasy, np. po „Wstecz” z V2 albo „Pokaż na mapie” (US1.1, US2.1),
  * z czynnościami podpiętymi do nawigatora; [onListChange] zapisuje wybór w przełączniku „Mapa” i „Lista budynków”
- * (NFR-19). Budynek z listy przy TalkBack otwiera V2 od razu na pełnym ekranie (NFR-19, decyzja 115). Przyciski
- * i podpis OSM stoją nad arkuszem V2 (decyzja 87). [mapView] w aplikacji to MapLibre, testy podają podróbkę.
+ * (NFR-19), a [onSearch] liczy wyszukiwanie w modelu widoku (#1053). Budynek z listy przy TalkBack otwiera V2
+ * od razu na pełnym ekranie (NFR-19, decyzja 115). Przyciski i podpis OSM stoją nad arkuszem V2 (decyzja 87).
+ * [mapView] w aplikacji to MapLibre, testy podają podróbkę.
  */
 @Composable
 internal fun AppNavigator.MapScreen(
     focus: MapFocus?,
     state: CampusMapUiState,
     onListChange: (Boolean) -> Unit,
+    onSearch: (String) -> Unit,
     mapView: CampusMapView = MapLibreMapView,
 ) {
     val accessibility = checkNotNull(LocalContext.current.getSystemService(AccessibilityManager::class.java))
     CampusMapScreen(
         state = state,
         onListChange = onListChange,
+        onSearch = onSearch,
         onBuildingClick = { openBuilding(it) },
         focus = focus,
         contentPadding = LocalSheetPadding.current,
