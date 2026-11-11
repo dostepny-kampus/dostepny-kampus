@@ -22,7 +22,12 @@ const val NEAR_METERS = 50.0
  */
 data class BuildingHint(val building: Building, val distanceMeters: Double, val isInside: Boolean)
 
-/** Lista budynków do wyboru i podpowiedź obliczone dla tego samego pomiaru. */
+/**
+ * Wynik dopasowania budynków do punktu pomiaru.
+ *
+ * @property nearby budynki do wyboru w kolejności od najbliższego, także poza zasięgiem podpowiedzi
+ * @property suggested budynek proponowany do potwierdzenia lub `null`, gdy żaden nie jest dostatecznie blisko
+ */
 data class BuildingHints(val nearby: List<BuildingHint>, val suggested: BuildingHint?)
 
 /** Ile budynków pokazuje sekcja „Wybierz budynek” na C1; makieta ma trzy najbliższe. */
