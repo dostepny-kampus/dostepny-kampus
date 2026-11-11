@@ -12,8 +12,8 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.CoroutineContext
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 /** Obliczenia położenia względem konturów dla ekranów zgłoszeń. */
 class BuildingLookup(private val computeContext: CoroutineContext) {
