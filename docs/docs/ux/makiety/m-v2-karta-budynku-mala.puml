@@ -1,12 +1,10 @@
 @startsalt
 ' V2 Karta budynku, mała karta nad mapą V1 po dotknięciu konturu A-1 (US2.8; decyzje 115, 116).
+' Nad kartą sama mapa z przyciskami, bez nagłówka, pola symbolu i przełącznika (NFR-53; decyzja 151).
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek_startowy("Mapa kampusu")
-$pole_tekstowe("Wpisz symbol budynku, np. C-13")
-$przelacznik("Mapa", "Lista budynków", 1)
-$mapa("mapa ulic OpenStreetMap; kontur A-1 na środku i wyróżniony, sąsiednie przygaszone, wejścia A-1 ze znakami oznaczeń", "", "info")
+$mapa("mapa ulic OpenStreetMap; kontur A-1 na środku i wyróżniony, sąsiednie przygaszone, wejścia A-1 ze znakami oznaczeń", "", "przyciski")
 $ramka()
 $tekst("[uchwyt; TalkBack: Rozwiń opis budynku, zwinięte]", "i")
 <b>A-1</b>
