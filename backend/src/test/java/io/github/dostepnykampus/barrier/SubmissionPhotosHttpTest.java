@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.OpenApiContract;
 import io.github.dostepnykampus.ProblemResponses;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +20,6 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -147,8 +145,7 @@ final class SubmissionPhotosHttpTest {
                     SubmissionPhotosHttpTest.add(context, "SENT"), SubmissionPhotosHttpTest.PHOTO
                 ).contentType(MediaType.IMAGE_JPEG)
                     .content(content.getBytes(StandardCharsets.ISO_8859_1))
-            ).andExpect(new OpenApiContract())
-                .andReturn().getResponse().getStatus(),
+            ).andReturn().getResponse().getStatus(),
             Matchers.equalTo(400)
         );
     }
@@ -184,8 +181,7 @@ final class SubmissionPhotosHttpTest {
             MockMvcRequestBuilders.put("/submissions/{id}/photos/{photo}", id, photo)
                 .contentType(MediaType.IMAGE_JPEG)
                 .content(JpegCleanerTest.photo())
-        ).andExpect(new OpenApiContract())
-            .andReturn().getResponse();
+        ).andReturn().getResponse();
     }
 
     private static MockHttpServletResponse get(
@@ -199,12 +195,11 @@ final class SubmissionPhotosHttpTest {
             MockMvcRequestBuilders.get(
                 "/submissions/{id}/photos/{photo}", id, SubmissionPhotosHttpTest.PHOTO
             )
-        ).andExpect(new OpenApiContract())
-            .andReturn().getResponse();
+        ).andReturn().getResponse();
     }
 
     private static MockMvc mvc(final WebApplicationContext context) {
-        return MockMvcBuilders.webAppContextSetup(context).build();
+        return context.getBean(MockMvc.class);
     }
 
     private static MockMvc missingBucketMvc(final WebApplicationContext context) {
