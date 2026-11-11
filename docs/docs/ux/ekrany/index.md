@@ -168,7 +168,9 @@ Wymagania: [V2 Karta budynku](../wymagania-ekranow.md#v2-karta-budynku).
 
 ### V2: mała karta nad mapą
 
-`m-v2-karta-budynku-mala`. Ta sama karta co [V1: mała karta budynku A-1 nad mapą](#v1-mala-karta): mapa otwiera V2 jako małą kartę o wysokości treści. Nie ma na niej chipów ani listy wejść. Nad kartą zostają przyciski mapy, a zaznaczony budynek mieści się w części mapy obok nich (NFR-53). Uchwyt, przewinięcie albo przeciągnięcie w górę otwiera pełny ekran.
+`m-v2-karta-budynku-mala`. Ta sama karta co [V1: mała karta budynku A-1 nad mapą](#v1-mala-karta): mapa otwiera V2 jako małą kartę o wysokości treści. Nie ma na niej chipów ani listy wejść. Uchwyt, przewinięcie albo przeciągnięcie w górę otwiera pełny ekran.
+
+Nad kartą zostają przyciski mapy, a zaznaczony budynek mieści się w części mapy obok nich (NFR-53).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
