@@ -201,7 +201,9 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Mapa nad małą kartą: kontur budynku wyróżniony, sąsiednie przygaszone, tylko wejścia tego budynku ze znakiem oznaczenia; napis „© OpenStreetMap contributors”. TalkBack nie czyta mapy pod kartą, bo tę samą treść ma lista (NFR-19). Na pełnym ekranie mapy nie ma | dane | US1.4, US2.1, US2.8, NFR-19, NFR-21, NFR-37 | — |
+| Mapa nad małą kartą: kontur budynku wyróżniony, sąsiednie przygaszone, tylko wejścia tego budynku ze znakiem oznaczenia; napis „© OpenStreetMap contributors”. Nagłówka „Mapa kampusu”, pola symbolu, przełącznika „Mapa” i „Lista budynków” ani przycisku informacji nad małą kartą nie ma. TalkBack nie czyta mapy pod kartą, bo tę samą treść ma lista (NFR-19). Na pełnym ekranie mapy nie ma | dane | US1.4, US2.1, US2.8, NFR-19, NFR-21, NFR-37; decyzja 151 | — |
+| Mapę nad małą kartą da się przesuwać i powiększać. Nad kartą stoją te same przyciski co na V1: „Powiększ”, „Pomniejsz” i strzałki przesuwania. Gdy nad kartą zostaje mniej niż 300 dp mapy, przycisków nie ma | czynność | NFR-53, NFR-17; decyzja 151 | — |
+| Po zaznaczeniu budynku kamera ustawia się raz: cały kontur budynku i jego wejścia mieszczą się w części mapy, której nie zasłaniają karta ani przyciski. Potem widok zmienia tylko osoba | dane | US1.4, US2.8, NFR-53; decyzja 151 | — |
 | Mała karta nad mapą, o wysokości treści: nagłówek, wiersz o wejściach, „Sprawdź, którędy wejść” i obrysowany „Zamknij”. Chipów na niej nie ma, a wiersz o wejściach zastępuje chip „Wejście dostępne”. Bez internetu nad przyciskami stoi linia „Bez internetu” z wymagań wspólnych | dane, czynność | US2.8, NFR-10, NFR-53 | „Zamknij”: V1 bez zaznaczenia |
 | Uchwyt u góry małej karty to przycisk „Rozwiń opis budynku” ze stanem „zwinięte” dla TalkBack. Pełny ekran otwiera też przewinięcie treści albo przeciągnięcie w górę | czynność | US2.8, NFR-18, NFR-53 | V2, pełny ekran |
 | Dotknięcie innego budynku na mapie zastępuje treść małej karty. Dotknięcie pustej mapy zamyka kartę | czynność | US2.8, NFR-17 | V2 innego budynku; V1 bez zaznaczenia |
@@ -247,7 +249,7 @@ Mapa nad małą kartą i plany pięter pokazują to, co już jest na liście, wi
 
 | Stan | Co widać |
 | --- | --- |
-| Mała karta | mapa z wyróżnionym budynkiem, a nad nią nagłówek, wiersz o wejściach, „Sprawdź, którędy wejść” i „Zamknij”, bez chipów. Fokus TalkBack na nagłówku (US2.8, NFR-18) |
+| Mała karta | mapa z wyróżnionym budynkiem i przyciskami mapy, a nad nią nagłówek, wiersz o wejściach, „Sprawdź, którędy wejść” i „Zamknij”, bez chipów. Fokus TalkBack na nagłówku (US2.8, NFR-18, NFR-53) |
 | Pełny ekran od razu | duża czcionka, okno co najmniej 600 dp, poziomo albo wybór z listy przy TalkBack. Bez małej karty i mapy, z „Pokaż budynek na mapie” (US2.9, NFR-20, NFR-22) |
 | Zwykły — budynek szczegółowy | pełny ekran: chipy, wejścia, lista barier, winda i toaleta, piętra ze zwiniętymi opisami (US2.3, US16.3) |
 | Zwykły — budynek podstawowy | pełny ekran: chipy, wejścia, lista barier, napis o braku planu (US16.2, NFR-48) |
