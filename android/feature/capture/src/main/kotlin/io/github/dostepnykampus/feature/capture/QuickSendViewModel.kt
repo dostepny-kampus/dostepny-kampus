@@ -111,7 +111,7 @@ class QuickSendViewModel
             lookup
                 .map { (it as? QuickLookup.Found)?.run { position.buildingSymbol } }
                 .distinctUntilChanged()
-                .mapLatest { symbol -> symbol?.let { buildingFloors.floors(it)?.floors }.orEmpty() }
+                .mapLatest { symbol -> floorsOf(symbol) }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())
 
         /** „Spróbuj ponownie” po „Brak pozycji”: ustalanie od nowa; zdjęcie i grupa zostają. */
@@ -153,6 +153,9 @@ class QuickSendViewModel
                     if (cause !is SecurityException && cause !is IllegalArgumentException) throw cause
                     emit(QuickLookup.Lost)
                 }
+
+        private suspend fun floorsOf(symbol: String?): List<Floor> =
+            if (symbol == null) emptyList() else buildingFloors.floors(symbol)?.floors.orEmpty()
 
         private suspend fun located(fix: PositionFix): QuickPosition {
             val buildings = catalog.catalogUpdates().first().buildings
