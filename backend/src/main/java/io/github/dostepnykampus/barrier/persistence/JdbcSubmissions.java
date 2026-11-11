@@ -234,5 +234,4 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
             .map(Enum::name)
             .toArray(String[]::new);
     }
-
 }
