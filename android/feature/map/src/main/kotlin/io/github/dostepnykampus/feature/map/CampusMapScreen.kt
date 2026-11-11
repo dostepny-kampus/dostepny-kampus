@@ -5,15 +5,11 @@
  */
 package io.github.dostepnykampus.feature.map
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -26,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,20 +35,15 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.geo.labelPoint
@@ -66,8 +56,6 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 private const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 
-private const val DARK_SURFACE_LUMINANCE = 0.5f
-private val ButtonSize = 48.dp
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -312,45 +300,15 @@ private fun MapOverlay(
 }
 
 @Composable
-private fun MapControls(camera: MapCamera, onCameraChange: (MapCamera) -> Unit, modifier: Modifier = Modifier) {
-    val move = { direction: PanDirection -> onCameraChange(camera.moved(direction)) }
-    Column(
-        modifier.padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        MapButton(name = R.string.mapa_przesun_w_gore, glyph = "↑") { move(PanDirection.UP) }
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            MapButton(name = R.string.mapa_przesun_w_lewo, glyph = "←") { move(PanDirection.LEFT) }
-            Spacer(Modifier.size(ButtonSize))
-            MapButton(name = R.string.mapa_przesun_w_prawo, glyph = "→") { move(PanDirection.RIGHT) }
-        }
-        MapButton(name = R.string.mapa_przesun_w_dol, glyph = "↓") { move(PanDirection.DOWN) }
-        MapButton(name = R.string.mapa_powieksz, glyph = "+") { onCameraChange(camera.zoomedIn()) }
-        MapButton(name = R.string.mapa_pomniejsz, glyph = "−") { onCameraChange(camera.zoomedOut()) }
-    }
-}
-
-@Composable
-private fun MapButton(name: Int, glyph: String, onClick: () -> Unit) {
-    val description = stringResource(name)
-    FilledTonalIconButton(onClick, Modifier.size(ButtonSize).semantics { contentDescription = description }) {
-        Text(text = glyph, modifier = Modifier.clearAndSetSemantics {}, style = MaterialTheme.typography.titleLarge)
-    }
-}
-
-@Composable
 private fun OsmAttribution(modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
     val isShort = LocalDensity.current.fontScale >= SHORT_ATTRIBUTION_FONT_SCALE
-    val isDark = MaterialTheme.colorScheme.surface.luminance() < DARK_SURFACE_LUMINANCE
-    val border = BorderStroke(Obramowania.ramka, Wysokosci.kontrolkiMapyObwodkaCiemny).takeIf { isDark }
     Box(
         modifier =
             modifier
                 .padding(horizontal = Odstepy.s)
                 .clickable { uriHandler.openUri(OSM_COPYRIGHT) }
-                .heightIn(min = ButtonSize),
+                .heightIn(min = MapControlTouchSize),
         contentAlignment = Alignment.Center,
     ) {
         Surface(
@@ -358,7 +316,7 @@ private fun OsmAttribution(modifier: Modifier = Modifier) {
             color = MaterialTheme.colorScheme.surfaceContainerLowest,
             contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             shadowElevation = Wysokosci.kontrolkiMapy,
-            border = border,
+            border = mapControlBorder(),
         ) {
             Text(
                 text = stringResource(if (isShort) R.string.mapa_osm_krotko else R.string.mapa_osm),
