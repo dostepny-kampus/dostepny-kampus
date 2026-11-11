@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
@@ -29,29 +29,20 @@ final class PhotoRequests {
     }
 
     /**
-     * Wstawia zgłoszenie z jednym zdjęciem na liście photoIds.
+     * Wstawia zgłoszenie z jednym zdjęciem na liście photoIds, zapisanym w JSON
+     * dokładnie tak, jak podano, np. wielkimi literami.
      *
      * @param status Status zgłoszenia
      * @param photo Identyfikator zdjęcia tak, jak trafia do JSON
      * @return Identyfikator zgłoszenia
      */
     UUID add(final String status, final String photo) {
-        final UUID id = UUID.randomUUID();
+        final UUID id = new SampleSubmissions(this.context)
+            .add(status, SampleSubmissions.quick(UUID.fromString(photo)));
         this.context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO submissions (id, status, kind, location, content)
-            VALUES (:id, :status, 'QUICK', ST_SetSRID(ST_MakePoint(17.0, 51.0), 4326),
-                CAST(:content AS JSONB))
-            """
-        ).param("id", id).param("status", status).param(
-            "content",
-            String.join(
-                "",
-                "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
-                "\"coordinates\":[17.0,51.0]},\"barrierGroup\":\"OTHER\",",
-                "\"photoIds\":[\"%s\"]}"
-            ).formatted(photo)
-        ).update();
+            "UPDATE submissions SET content = jsonb_set(content, '{photoIds}', CAST(:photos AS JSONB))"
+                .concat(" WHERE id = :id")
+        ).param("photos", "[\"%s\"]".formatted(photo)).param("id", id).update();
         return id;
     }
 

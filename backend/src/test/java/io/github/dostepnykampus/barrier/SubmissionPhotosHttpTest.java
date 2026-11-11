@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
@@ -155,28 +155,9 @@ final class SubmissionPhotosHttpTest {
         );
     }
 
-    private static String content() {
-        return String.join(
-            "",
-            "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
-            "\"coordinates\":[17.0,51.0]},\"barrierGroup\":\"OTHER\",",
-            "\"photoIds\":[\"%s\"]}"
-        ).formatted(SubmissionPhotosHttpTest.PHOTO);
-    }
-
     private static UUID add(final WebApplicationContext context, final String status) {
-        final UUID id = UUID.randomUUID();
-        context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO submissions (id, status, kind, location, content)
-            VALUES (:id, :status, 'QUICK', ST_SetSRID(ST_MakePoint(17.0, 51.0), 4326),
-                CAST(:content AS JSONB))
-            """
-        ).param("id", id)
-            .param("status", status)
-            .param("content", SubmissionPhotosHttpTest.content())
-            .update();
-        return id;
+        return new SampleSubmissions(context)
+            .add(status, SampleSubmissions.quick(SubmissionPhotosHttpTest.PHOTO));
     }
 
     private static MockHttpServletResponse put(

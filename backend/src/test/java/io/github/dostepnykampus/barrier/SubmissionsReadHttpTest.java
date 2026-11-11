@@ -1,11 +1,14 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.barrier.domain.SubmissionFloor;
+import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
+import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -197,17 +200,19 @@ final class SubmissionsReadHttpTest {
         final WebApplicationContext context, final String status, final String floor
     ) {
         final Row row = new Row(UUID.randomUUID(), status, floor, UUID.randomUUID());
-        context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO submissions
-                (id, status, kind, building_symbol, location, content, created_at)
-            VALUES (:id, :status, 'QUICK', 'A-1',
-                ST_SetSRID(ST_MakePoint(17.062, 51.108), 4326),
-                CAST(:content AS JSONB), CAST(:created AS TIMESTAMPTZ))
-            """
-        ).param("id", row.id()).param("status", status)
-            .param("content", row.content().concat("}"))
-            .param("created", SubmissionsReadHttpTest.CREATED).update();
+        new SampleSubmissions(context).add(
+            row.id(), status,
+            SampleSubmissions.quick(
+                new SubmissionPlace(
+                    new SubmissionPoint(17.062, 51.108), null, false, "A-1",
+                    new SubmissionFloor(floor, null, false)
+                ),
+                "Próg przy wejściu", row.photo()
+            )
+        );
+        context.getBean(JdbcClient.class)
+            .sql("UPDATE submissions SET created_at = CAST(:created AS TIMESTAMPTZ) WHERE id = :id")
+            .param("created", SubmissionsReadHttpTest.CREATED).param("id", row.id()).update();
         return row;
     }
 
