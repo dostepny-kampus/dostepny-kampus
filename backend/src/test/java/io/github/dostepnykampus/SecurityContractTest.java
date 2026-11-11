@@ -33,13 +33,10 @@ import tools.jackson.databind.JsonNode;
 /**
  * Zabezpieczenia operacji według kontraktu {@code api/openapi.yaml} (NFR-33, US14.1).
  *
- * <p>Test czyta {@code security} każdej operacji, a gdy operacja go nie ma,
- * bierze wpis globalny. Pusta lista albo wariant {@code {}} oznacza dostęp
- * bez tokenu. Kilka wpisów z rolami oznacza którąkolwiek z tych ról, a pusta
- * lista ról dowolną zalogowaną osobę. Każdą operację z handlerem test wywołuje
- * przez HTTP bez tokenu i z tokenem każdej roli. Bez tokenu operacja
- * zamknięta odpowiada 401, z rolą spoza kontraktu 403, a dozwolone wywołanie
- * dostaje inny status. Operacje bez handlera z {@code RouteParityTest} są pominięte.</p>
+ * <p>Test czyta {@code security} operacji albo wpis globalny. Pusta lista albo wariant
+ * {@code {}} to dostęp bez tokenu, kilka wpisów z rolami to którakolwiek z nich, a pusta lista
+ * ról to dowolna zalogowana osoba. Operacja zamknięta odpowiada 401 bez tokenu i 403 dla roli
+ * spoza kontraktu. Operacje bez handlera z {@code RouteParityTest} są pominięte.</p>
  *
  * @since 0.1.0
  */
