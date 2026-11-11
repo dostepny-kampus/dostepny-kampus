@@ -15,6 +15,7 @@ import androidx.compose.ui.test.printToString
 import io.github.dostepnykampus.core.data.submissions.SendState
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierType
+import io.github.dostepnykampus.core.model.SubmissionStatus
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -47,6 +48,26 @@ class SubmissionCardTest {
         compose.onNodeWithText("Wysłane").assertIsDisplayed()
         compose.onNodeWithText("Budynek A-1, Piętro 2").assertIsDisplayed()
         compose.onNodeWithText("9.11.2026").assertIsDisplayed()
+    }
+
+    /** Wiersz: C3 po sprawdzeniu → status z serwera, przy odrzuconym powód; poprawka „W telefonie”, US8.2, BR-9. */
+    @Test
+    fun us8_2_server_statuses() {
+        val words =
+            mapOf(
+                SubmissionStatus.SENT to "Wysłane",
+                SubmissionStatus.IN_REVIEW to "W weryfikacji",
+                SubmissionStatus.ACCEPTED to "Przyjęte",
+                SubmissionStatus.ARCHIVED to "Archiwalne",
+            )
+        val shown = words.keys.map { item(id = "a", state = SendState.SENT).copy(serverStatus = it).shownStatus() }
+        assertEquals(listOf(ShownStatus.SENT, ShownStatus.IN_REVIEW, ShownStatus.ACCEPTED, ShownStatus.ARCHIVED), shown)
+        val local = item(id = "a", state = SendState.LOCAL).copy(serverStatus = SubmissionStatus.ACCEPTED)
+        assertEquals(ShownStatus.LOCAL, local.shownStatus())
+        val rejected = item(id = "a", state = SendState.SENT).copy(serverStatus = SubmissionStatus.REJECTED)
+        show(rejected.copy(rejectionReason = "Zdjęcie nieostre"))
+        compose.onNodeWithText("Odrzucone").assertIsDisplayed()
+        compose.onNodeWithText("Powód odrzucenia: Zdjęcie nieostre").assertIsDisplayed()
     }
 
     /** Wiersz: C3 „Nie wysłano” → powód odmowy, US9.5, BR-26. */

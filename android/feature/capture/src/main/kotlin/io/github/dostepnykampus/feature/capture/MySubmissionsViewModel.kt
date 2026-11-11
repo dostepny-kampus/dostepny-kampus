@@ -9,14 +9,19 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.submissions.OwnStatuses
 import io.github.dostepnykampus.core.data.submissions.OwnSubmission
 import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
 import io.github.dostepnykampus.core.data.submissions.SendState
+import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.model.BarrierType
+import io.github.dostepnykampus.core.model.SubmissionStatus
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.Instant
 import javax.inject.Inject
 
@@ -42,6 +47,8 @@ enum class RefusalReason {
  * @property floorNumber numer piętra budynku podstawowego
  * @property state stan wysyłki
  * @property refusal powód przy „Nie wysłano”; `null` w pozostałych stanach
+ * @property serverStatus status z serwera po odświeżeniu (US8.2); `null`, gdy telefon go nie zna
+ * @property rejectionReason powód odrzucenia od Weryfikatora (BR-16)
  */
 data class OwnSubmissionItem(
     val id: String,
@@ -51,6 +58,8 @@ data class OwnSubmissionItem(
     val floorNumber: Int?,
     val state: SendState,
     val refusal: RefusalReason?,
+    val serverStatus: SubmissionStatus? = null,
+    val rejectionReason: String? = null,
 )
 
 /**
@@ -64,6 +73,18 @@ data class MySubmissions(val items: List<OwnSubmissionItem>) {
     val waitingCount: Int get() = items.count { it.state == SendState.LOCAL }
 }
 
+/** Sprawdzanie statusów z serwera na C3 (US8.2, US9.1, NFR-50). */
+enum class StatusCheck {
+    /** „Sprawdzamy statusy…” obok listy z telefonu. */
+    CHECKING,
+
+    /** Statusy sprawdzone albo brak sieci: lista ze statusami z ostatniej synchronizacji. */
+    DONE,
+
+    /** „Nie udało się sprawdzić statusów…” z „Spróbuj ponownie” (PW-10). */
+    FAILED,
+}
+
 /** Stan ekranu C3. */
 sealed interface MySubmissionsUiState {
     /** Pierwszy odczyt z bazy telefonu trwa. */
@@ -73,24 +94,43 @@ sealed interface MySubmissionsUiState {
      * Lista z telefonu; pusta pokazuje „Nie masz jeszcze zgłoszeń…” (PW-12).
      *
      * @property list zgłoszenia
+     * @property check sprawdzanie statusów z serwera
      */
-    data class Ready(val list: MySubmissions) : MySubmissionsUiState
+    data class Ready(val list: MySubmissions, val check: StatusCheck = StatusCheck.DONE) : MySubmissionsUiState
 }
 
 /**
  * C3 „Moje zgłoszenia”: własne zgłoszenia z historii w telefonie, więc lista działa bez sieci (US8.1, US9.1, NFR-5).
- * Statusy z serwera (w weryfikacji, przyjęte, odrzucone) dojdą po logowaniu (US8.2).
+ * Przy otwarciu i na „Spróbuj ponownie” sprawdza statusy z serwera (US8.2); brak sieci zostawia ostatnie statusy.
  */
 @HiltViewModel
 class MySubmissionsViewModel
     @Inject
-    constructor(history: OwnSubmissions) : ViewModel() {
-        /** Lista od najnowszego; zmienia się po każdym zapisie i wysyłce z kolejki. */
+    constructor(history: OwnSubmissions, private val statuses: OwnStatuses) :
+    ViewModel() {
+        private val check = MutableStateFlow(StatusCheck.CHECKING)
+
+        /** Lista od najnowszego; zmienia się po każdym zapisie, wysyłce z kolejki i sprawdzeniu statusów. */
         val state: StateFlow<MySubmissionsUiState> =
-            history
-                .observe()
-                .map { rows -> MySubmissionsUiState.Ready(MySubmissions(rows.map { it.toItem() })) }
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), MySubmissionsUiState.Loading)
+            combine(history.observe(), check) { rows, current ->
+                MySubmissionsUiState.Ready(MySubmissions(rows.map { it.toItem() }), current)
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), MySubmissionsUiState.Loading)
+
+        init {
+            refresh()
+        }
+
+        /** „Spróbuj ponownie” po błędzie sprawdzania statusów (NFR-50, PW-10). */
+        fun retry() {
+            if (check.value != StatusCheck.CHECKING) refresh()
+        }
+
+        private fun refresh() {
+            check.value = StatusCheck.CHECKING
+            viewModelScope.launch {
+                check.value = if (statuses.refresh() == StatusRefresh.FAILED) StatusCheck.FAILED else StatusCheck.DONE
+            }
+        }
     }
 
 internal fun OwnSubmission.toItem(): OwnSubmissionItem =
@@ -102,6 +142,8 @@ internal fun OwnSubmission.toItem(): OwnSubmissionItem =
         floorNumber = floorNumber,
         state = state,
         refusal = refusalOf(this),
+        serverStatus = serverStatus,
+        rejectionReason = rejectionReason,
     )
 
 private fun refusalOf(row: OwnSubmission): RefusalReason? =
