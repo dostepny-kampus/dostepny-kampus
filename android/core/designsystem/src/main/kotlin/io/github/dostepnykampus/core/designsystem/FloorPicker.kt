@@ -72,8 +72,12 @@ fun FloorPicker(
         FloorPickerLayout.LIST -> {
             Column(modifier = modifier.selectableGroup(), verticalArrangement = spacing) {
                 options.items.forEach { option ->
-                    val size = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)
-                    FloorChoice(option, isSelected = option.key == selectedKey, onSelect = onSelect, size = size)
+                    FloorChoice(
+                        option = option,
+                        isSelected = option.key == selectedKey,
+                        onSelect = onSelect,
+                        modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk),
+                    )
                 }
             }
         }
@@ -85,8 +89,12 @@ fun FloorPicker(
                 verticalArrangement = spacing,
             ) {
                 options.items.forEach { option ->
-                    val size = Modifier.heightIn(min = CeleDotyku.minimum)
-                    FloorChoice(option, isSelected = option.key == selectedKey, onSelect = onSelect, size = size)
+                    FloorChoice(
+                        option = option,
+                        isSelected = option.key == selectedKey,
+                        onSelect = onSelect,
+                        modifier = Modifier.heightIn(min = CeleDotyku.minimum),
+                    )
                 }
             }
         }
@@ -94,7 +102,12 @@ fun FloorPicker(
 }
 
 @Composable
-private fun FloorChoice(option: FloorOption, isSelected: Boolean, onSelect: (FloorOption) -> Unit, size: Modifier) {
+private fun FloorChoice(
+    option: FloorOption,
+    isSelected: Boolean,
+    onSelect: (FloorOption) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = MaterialTheme.colorScheme
     val border =
         if (isSelected) {
@@ -104,7 +117,7 @@ private fun FloorChoice(option: FloorOption, isSelected: Boolean, onSelect: (Flo
         }
     Surface(
         modifier =
-            size.selectable(selected = isSelected, role = Role.RadioButton, onClick = { onSelect(option) }),
+            modifier.selectable(selected = isSelected, role = Role.RadioButton, onClick = { onSelect(option) }),
         shape = MaterialTheme.shapes.small,
         color = if (isSelected) colors.primaryContainer else colors.surfaceContainerLowest,
         contentColor = if (isSelected) colors.onPrimaryContainer else colors.onSurface,

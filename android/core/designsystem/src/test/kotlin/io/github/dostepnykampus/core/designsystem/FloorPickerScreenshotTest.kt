@@ -55,8 +55,13 @@ class FloorPickerScreenshotTest {
                             .padding(Odstepy.m),
                     verticalArrangement = Arrangement.spacedBy(Odstepy.l),
                 ) {
-                    FloorPicker(options, selectedKey = "Parter", onSelect = {}, layout = FloorPickerLayout.CHIPS)
-                    FloorPicker(options, selectedKey = null, onSelect = {}, layout = FloorPickerLayout.LIST)
+                    FloorPicker(
+                        options = options,
+                        selectedKey = "Parter",
+                        onSelect = {},
+                        layout = FloorPickerLayout.CHIPS,
+                    )
+                    FloorPicker(options = options, selectedKey = null, onSelect = {}, layout = FloorPickerLayout.LIST)
                 }
             }
         }

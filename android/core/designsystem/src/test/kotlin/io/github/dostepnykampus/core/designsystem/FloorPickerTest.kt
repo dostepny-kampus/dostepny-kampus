@@ -31,7 +31,8 @@ class FloorPickerTest {
     @get:Rule
     val compose = createComposeRule()
 
-    private val options = FloorOptions(listOf(FloorOption("p0", "Parter"), FloorOption("p1", "1 piętro")))
+    private val options =
+        FloorOptions(listOf(FloorOption(key = "p0", label = "Parter"), FloorOption(key = "p1", label = "1 piętro")))
     private val chosen = mutableListOf<FloorOption>()
 
     private fun show(layout: FloorPickerLayout) {
@@ -48,7 +49,10 @@ class FloorPickerTest {
         show(FloorPickerLayout.CHIPS)
         val radio = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
         compose.onNodeWithText("1 piętro").assert(radio).assertIsSelected()
-        compose.onNodeWithText("Parter").assert(radio).assertIsNotSelected().performClick()
+        val parter = compose.onNodeWithText("Parter")
+        parter.assert(radio)
+        parter.assertIsNotSelected()
+        parter.performClick()
         assertEquals(listOf(options.items.first()), chosen)
         val bounds = compose.onNodeWithText("Parter").getUnclippedBoundsInRoot()
         assertTrue(bounds.bottom - bounds.top >= 48.dp)
