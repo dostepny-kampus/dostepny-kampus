@@ -61,7 +61,7 @@ object MapLibreMapView : CampusMapView {
         val context = LocalContext.current
         val density = LocalDensity.current
         val colors = DostepnyKampusTheme.mapColors
-        val style = campusMapStyle(data = data, selection = selection, colors = colors.styleColors())
+        val style = rememberMapStyle(data = data, selection = selection, colors = colors.styleColors())
         val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
         val tolerance = TOUCH_TOLERANCE_DP * density.density
         val mapView =
@@ -158,6 +158,18 @@ object MapLibreMapView : CampusMapView {
 
     private fun isNativeMapAvailable(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess
 }
+
+/**
+ * Styl mapy jako napis JSON. Powstaje od nowa tylko po zmianie danych [data], zaznaczenia [selection] albo barw
+ * [colors]; ruch kamery rekomponuje widok mapy, ale stylu nie buduje. Funkcja [build] składa styl.
+ */
+@Composable
+internal fun rememberMapStyle(
+    data: CampusMapData,
+    selection: MapSelection,
+    colors: MapStyleColors,
+    build: (CampusMapData, MapSelection, MapStyleColors) -> String = ::campusMapStyle,
+): String = remember(data, selection, colors) { build(data, selection, colors) }
 
 /**
  * Dodaje do stylu podpisy konturów, znaki wejść oraz pinezkę i podpis zaznaczonego wejścia jako obrazy,
