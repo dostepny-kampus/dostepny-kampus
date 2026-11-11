@@ -42,7 +42,7 @@ cd android
 
 ## Dokumentacja
 
-Jak zbudować i sprawdzić dokumentację, opisuje [`docs/README.md`](docs/README.md). Strona dokumentacji jest publikowana na GitHub Pages z gałęzi `main`: <https://dostepny-kampus.github.io/dostepny-kampus/>.
+Jak zbudować i sprawdzić dokumentację, opisuje [`docs/README.md`](docs/README.md). Strona dokumentacji jest publikowana na GitHub Pages: z gałęzi `main` pod <https://dostepny-kampus.github.io/dostepny-kampus/>, a z bieżącej gałęzi `sprint/N` pod <https://dostepny-kampus.github.io/dostepny-kampus/sprint/>.
 
 ## Zespół
 
