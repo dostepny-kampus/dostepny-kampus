@@ -149,8 +149,10 @@ class SubmissionQueue(
         val id = stamps.newId()
         val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
         val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = savedAt)
-        store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
-        remember(entity)
+        store.together {
+            store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
+            remember(entity)
+        }
         runCatching(onSaved)
         return entity
     }
@@ -167,15 +169,20 @@ class SubmissionQueue(
         require(photos.map { it.photoId } == content.photoIds) {
             "Zdjęcia w kolejce muszą odpowiadać identyfikatorom treści (BR-7, BR-8)"
         }
-        results.locked {
-            val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
-            val baseVersion = baseVersionOf(edited = edited, store = store, history = history)
-            val fresh = content.toPendingSubmissionEntity(id = edited.id, savedAtMillis = savedAt)
-            val entity = fresh.copy(baseVersion = baseVersion)
-            val replaced = store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
-            deletePhotoFiles(replaced, ioContext)
-            remember(entity)
-        }
+        val replaced =
+            results.locked {
+                val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
+                val baseVersion = baseVersionOf(edited = edited, store = store, history = history)
+                val fresh = content.toPendingSubmissionEntity(id = edited.id, savedAtMillis = savedAt)
+                val entity = fresh.copy(baseVersion = baseVersion)
+                var paths = emptyList<String>()
+                store.together {
+                    paths = store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
+                    remember(entity)
+                }
+                paths
+            }
+        deletePhotoFiles(replaced, ioContext)
         runCatching(onSaved)
     }
 

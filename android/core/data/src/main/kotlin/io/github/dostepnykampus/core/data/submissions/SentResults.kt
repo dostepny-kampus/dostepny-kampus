@@ -20,6 +20,7 @@ import kotlin.coroutines.CoroutineContext
  * Blokada chroni tylko odczyt i zapis wierszy, nie wywołania serwera, więc poprawka z C3 zapisuje się od razu,
  * także gdy wysyłka czeka na sieć. Wynik trafia do wiersza tylko wtedy, gdy wiersza nie zastąpiła w tym czasie
  * poprawka: inaczej kolejka oznaczyłaby jako wysłaną albo usunęła treść, której serwer nie dostał.
+ * Zapisy wiersza kolejki i historii jednego wyniku są jedną transakcją bazy (#859).
  */
 internal class SentResults(
     private val store: PendingSubmissionDao,
@@ -37,8 +38,10 @@ internal class SentResults(
      */
     suspend fun content(item: PendingSubmissionWithPhotos, result: ApiResult<*>, outcome: Outcome): Outcome =
         lock.withLock {
-            val replacement = store.replacementOf(item)
-            if (replacement == null) contentOf(item, result, outcome) else keepVersion(replacement, result)
+            inTransaction {
+                val replacement = store.replacementOf(item)
+                if (replacement == null) contentOf(item, result, outcome) else keepVersion(replacement, result)
+            }
         }
 
     /** Wynik wysłania zdjęcia [photoId]; `null`, gdy telefon nie odczytał pliku. */
@@ -55,20 +58,29 @@ internal class SentResults(
         }
 
     /** Serwer ma całe zgłoszenie [item]: wiersz i pliki zdjęć znikają z telefonu (NFR-5, #857). */
-    suspend fun finish(item: PendingSubmissionWithPhotos): Outcome =
-        ifCurrent(item) {
-            store.delete(item.submission.id)
-            deletePhotoFiles(item.photos.map { it.path }, ioContext)
-            history?.markSent(id = item.submission.id)
-            Outcome.SENT
-        }
+    suspend fun finish(item: PendingSubmissionWithPhotos): Outcome {
+        val outcome =
+            ifCurrent(item) {
+                store.delete(item.submission.id)
+                history?.markSent(id = item.submission.id)
+                Outcome.SENT
+            }
+        if (outcome == Outcome.SENT) deletePhotoFiles(item.photos.map { it.path }, ioContext)
+        return outcome
+    }
 
     /** Telefon nie odczytał [item]; odmowa bez kodu, więc jeden zły wiersz nie zatrzymuje kolejki (#856). */
     suspend fun unreadable(item: PendingSubmissionWithPhotos): Outcome =
         ifCurrent(item) { refused(item.submission.id, code = null) }
 
     private suspend fun ifCurrent(item: PendingSubmissionWithPhotos, write: suspend () -> Outcome): Outcome =
-        lock.withLock { if (store.replacementOf(item) == null) write() else Outcome.REPLACED }
+        lock.withLock { inTransaction { if (store.replacementOf(item) == null) write() else Outcome.REPLACED } }
+
+    private suspend fun inTransaction(write: suspend () -> Outcome): Outcome {
+        var outcome = Outcome.LATER
+        store.together { outcome = write() }
+        return outcome
+    }
 
     private suspend fun contentOf(item: PendingSubmissionWithPhotos, result: ApiResult<*>, outcome: Outcome): Outcome {
         if (outcome == Outcome.SENT) {
