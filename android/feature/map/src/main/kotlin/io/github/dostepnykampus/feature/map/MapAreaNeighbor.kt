@@ -46,11 +46,33 @@ private val TailSize = 18.dp
 private val TailOut = 4.dp
 
 /**
+ * Przycisk sąsiedniego terenu dla widoku [camera], gdy stoi on na granicy terenu z [areas], a w tę stronę leży
+ * inny teren (US1.7). Dotknięcie wybiera ten teren i oddaje jego widok startowy przez [onShow]. Teren za lewą
+ * krawędzią mapy stoi po lewej stronie nakładki, pozostałe po prawej: [isAtStart] mówi, którą stronę rysuje to
+ * wywołanie.
+ */
+@Composable
+internal fun MapAreaNeighbor(
+    areas: MapAreas,
+    camera: MapCamera,
+    isAtStart: Boolean,
+    onShow: (MapCamera) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val from = areas.current?.name ?: return
+    val neighbor = areas.neighbor(camera.center)?.takeIf { isAtStart == (it.edge == MapEdge.WEST) } ?: return
+    AreaNeighborButton(
+        from = from,
+        neighbor = neighbor,
+        onClick = { areas.show(neighbor.name)?.let(onShow) },
+        modifier = modifier.padding(Odstepy.s),
+    )
+}
+
+/**
  * Przycisk sąsiedniego terenu według makiety hi-fi: nazwa terenu, odległość i strzałka w stronę granicy, przy
  * której stoi widok, a od tej strony ogonek. TalkBack ogłasza go raz po pojawieniu się: „Tu kończy się teren
  * Kampus główny. Obok: Wittigowo, 2 km” (US1.7, NFR-18); cel dotyku ma co najmniej 48 dp (NFR-17).
- *
- * TODO(#788): przycisk nie jest jeszcze podłączony do nakładki mapy.
  *
  * @param from nazwa terenu pokazanego na mapie
  * @param neighbor sąsiedni teren
