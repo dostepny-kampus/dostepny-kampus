@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.asImageBitmap
@@ -53,7 +53,6 @@ private val SampleWidth = 34.dp
 private val SampleHeight = 26.dp
 private val SampleInset = 4.dp
 private val SampleStroke = 2.5.dp
-private val SampleCorner = 4.dp
 
 private val ENTRANCE_WORDS =
     listOf(
@@ -121,8 +120,7 @@ private fun LegendPanel(onClose: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 private fun LegendHeader(onClose: () -> Unit) {
-    val edges = Modifier.padding(start = Odstepy.m, end = Odstepy.s, top = Odstepy.xs, bottom = Odstepy.xs)
-    Row(edges, verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.padding(start = Odstepy.m, end = Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = stringResource(R.string.mapa_legenda),
             modifier = Modifier.weight(1f).semantics { heading() },
@@ -158,7 +156,6 @@ private fun ScrollHint() {
             text = stringResource(R.string.mapa_legenda_przewin),
             modifier = Modifier.padding(horizontal = Odstepy.m, vertical = Odstepy.s),
             style = MaterialTheme.typography.labelLarge,
-            fontWeight = Typografia.wyroznienieWaga,
             color = MaterialTheme.colorScheme.primary,
         )
     }
@@ -176,7 +173,6 @@ private fun LegendRow(word: String, content: @Composable () -> Unit) {
 private fun BuildingSample() {
     val colors = DostepnyKampusTheme.mapColors
     Canvas(Modifier.size(width = SampleWidth, height = SampleHeight)) {
-        drawRoundRect(color = colors.lad, cornerRadius = CornerRadius(SampleCorner.toPx()))
         val inset = SampleInset.toPx()
         val inner = Size(width = size.width - 2 * inset, height = size.height - 2 * inset)
         drawRect(color = colors.pwr, topLeft = Offset(inset, inset), size = inner)
@@ -189,11 +185,7 @@ private fun BuildingSample() {
 private fun EntranceSample(marking: EntranceMarking) {
     val colors = DostepnyKampusTheme.mapColors
     val sizePx = with(LocalDensity.current) { ENTRANCE_MARK_DP.dp.roundToPx() }
-    val image =
-        remember(marking, colors, sizePx) {
-            markingImage(marking = marking, sizePx = sizePx, shapeColor = colors.tusz, markColor = colors.papier)
-        }
-    Row(Modifier.size(width = SampleWidth, height = ENTRANCE_MARK_DP.dp), horizontalArrangement = Arrangement.Center) {
-        Image(bitmap = image.asImageBitmap(), contentDescription = null)
-    }
+    val draw = { markingImage(marking = marking, sizePx = sizePx, shapeColor = colors.tusz, markColor = colors.papier) }
+    val image = remember(marking, colors, sizePx) { draw() }
+    Image(bitmap = image.asImageBitmap(), contentDescription = null, modifier = Modifier.width(SampleWidth))
 }

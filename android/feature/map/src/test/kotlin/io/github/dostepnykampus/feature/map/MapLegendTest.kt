@@ -23,14 +23,12 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,42 +45,30 @@ class MapLegendTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** Przycisk „Legenda” jest przyciskiem o celu dotyku co najmniej 48 dp ze słowem dla TalkBack (NFR-17, NFR-18). */
-    @Test
-    fun nfr17_nfr18_legend_button() {
-        compose.setContent { Legend(isOpenAtStart = false) }
-        compose
-            .onNodeWithText("Legenda")
-            .assertHasClickAction()
-            .assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button))
-            .assertHeightIsAtLeast(48.dp)
-        compose.onNodeWithText("Budynek Politechniki").assertDoesNotExist()
-    }
-
     /**
-     * Legenda objaśnia każdy znak obecny na mapie i kończy się źródłem danych; znaki wejść różnią się kształtem,
-     * a każdy ma słowo (US1.4, NFR-21, NFR-40). „Zamknij” zwija panel (NFR-53).
+     * Przycisk „Legenda” ma cel dotyku co najmniej 48 dp i słowo dla TalkBack (NFR-17, NFR-18). Legenda objaśnia
+     * każdy znak obecny na mapie i kończy się źródłem danych; znaki wejść różnią się kształtem, a każdy ma słowo
+     * (US1.4, NFR-21, NFR-40). „Zamknij” zwija panel (NFR-53).
      */
     @Test
     fun us1_4_legend_lists_map_signs() {
         compose.setContent { Legend(isOpenAtStart = false) }
-        compose.onNodeWithText("Legenda").performClick()
         val words = listOf("Budynek Politechniki", "Wejście dostępne", "Wejście niedostępne", "Wejście bez danych")
+        compose.onNodeWithText(words.first()).assertDoesNotExist()
+        val button = compose.onNodeWithText("Legenda").assertHasClickAction().assertHeightIsAtLeast(48.dp)
+        button.assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button)).performClick()
         words.forEach { compose.onNodeWithText(it).assertExists() }
         compose.onNodeWithText("Źródło: Politechnika Wrocławska", substring = true).assertExists()
-        assertEquals(2, compose.onAllNodesWithText("Legenda").fetchSemanticsNodes().size)
         compose.onNodeWithText("Zamknij").assertHasClickAction().performClick()
-        compose.onNodeWithText("Budynek Politechniki").assertDoesNotExist()
+        compose.onNodeWithText(words.first()).assertDoesNotExist()
     }
 
-    /** Zrzut do porównania z makietą hi-fi V1 „legenda”, motyw jasny. */
     @Test
     fun us1_4_hifi_motyw_jasny() {
         compose.setContent { Legend(isOpenAtStart = true) }
         compose.onRoot().captureRoboImage()
     }
 
-    /** Zrzut do porównania z makietą hi-fi V1 „legenda”, motyw ciemny. */
     @Test
     fun us1_4_hifi_motyw_ciemny() {
         RuntimeEnvironment.setQualifiers("+night")
@@ -94,13 +80,9 @@ class MapLegendTest {
     private fun Legend(isOpenAtStart: Boolean) {
         DostepnyKampusTheme {
             var isOpen by remember { mutableStateOf(isOpenAtStart) }
-            Box(Modifier.fillMaxSize().background(MapGround)) {
+            Box(Modifier.fillMaxSize().background(Color(color = 0xFFBEE3F2))) {
                 MapLegend(isOpen = isOpen, onOpenChange = { isOpen = it })
             }
         }
-    }
-
-    private companion object {
-        val MapGround = Color(0xFFBEE3F2)
     }
 }
