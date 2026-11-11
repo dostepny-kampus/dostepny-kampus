@@ -9,8 +9,10 @@ import android.database.sqlite.SQLiteException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
+import io.github.dostepnykampus.core.model.FloorList
 import io.github.dostepnykampus.core.model.SubmissionContent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,11 +37,18 @@ fun interface ReportSaver {
 /**
  * Model widoku formularza C2 „Opisz barierę” (US7.1–US7.4). W czasie zapisu i po nim etap ustala tylko zapis, więc
  * nie ma dwóch zgłoszeń. Pełna pamięć przy zapisie w bazie Room kończy się etapem nieudanego zapisu (NFR-7).
+ * Po otwarciu w budynku pobiera piętra z planu PWr (US7.2); bez nich zostaje wpisanie piętra (BR-G1).
+ *
+ * @param floors piętra budynku z serwera; domyślnie brak, jak budynek podstawowy
+ * @param saver zapis w kolejce telefonu
  */
 @HiltViewModel
 class ReportFormViewModel
     @Inject
-    constructor(private val saver: ReportSaver) : ViewModel() {
+    constructor(
+        private val floors: BuildingFloors = BuildingFloors { null },
+        private val saver: ReportSaver,
+    ) : ViewModel() {
         private val state = MutableStateFlow<ReportUiState?>(null)
         private var initial: ReportForm? = null
         private var draft = ReportDraft()
@@ -57,6 +66,7 @@ class ReportFormViewModel
                 initial = form
                 this.draft = draft
                 keep(draft.restore(form, photos))
+                form.place.buildingSymbol?.let(::loadFloors)
             } else if (this.draft !== draft) {
                 this.draft = draft
                 if (current.stage !in StagesWithoutNewDraft) draft.keep(current)
@@ -109,6 +119,17 @@ class ReportFormViewModel
             state.value = current.copy(stage = stage)
         }
 
+        private fun loadFloors(symbol: String) {
+            viewModelScope.launch {
+                val plan = floors.floors(symbol)?.toPlanFloors()
+                val current = state.value
+                if (plan != null && current != null && !current.isSavingOrSaved) {
+                    initial = initial?.withPlan(symbol, plan)
+                    keep(current.copy(form = current.form.withPlan(symbol, plan)))
+                }
+            }
+        }
+
         private fun keep(current: ReportUiState) {
             draft.keep(current)
             state.value = current
@@ -133,6 +154,21 @@ class ReportFormViewModel
             }
         }
     }
+
+/**
+ * Formularz z piętrami z planu, gdy miejsce jest w budynku [symbol]. Piętro wpisane liczbą przed pobraniem planu
+ * znika, bo w budynku szczegółowym piętro wybiera się z etykiet PWr (US7.2).
+ */
+internal fun ReportForm.withPlan(symbol: String, plan: PlanFloors): ReportForm =
+    if (place.buildingSymbol != symbol) {
+        this
+    } else {
+        copy(place = place.copy(floors = plan), floor = floor as? ReportFloor.Planned)
+    }
+
+/** Piętra z planu do formularza albo `null` dla budynku podstawowego z pustą listą (BR-G1). */
+internal fun FloorList.toPlanFloors(): PlanFloors? =
+    if (floors.isEmpty()) null else PlanFloors(items = floors.map { PlanFloor(id = it.id, label = it.label) }, source)
 
 private val StagesWithoutNewDraft = setOf(ReportStage.LEFT, ReportStage.PLACE_CHANGED, ReportStage.SAVED)
 

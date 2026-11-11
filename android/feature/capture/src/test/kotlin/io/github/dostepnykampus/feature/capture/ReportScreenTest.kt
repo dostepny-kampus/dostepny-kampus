@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture
@@ -168,8 +168,9 @@ class ReportScreenTest {
     @Test
     fun us7_2_floor_from_plan() {
         val floors = listOf(PlanFloor(id = "A-1-p", label = "Piwnica"), PlanFloor(id = "A-1-3", label = "3 piętro"))
-        show(A1.copy(floors = PlanFloors(floors)))
+        show(A1.copy(floors = PlanFloors(floors, source = "Politechnika Wrocławska")))
 
+        compose.onNodeWithText("Źródło: Politechnika Wrocławska.").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("3 piętro").performScrollTo().performClick()
 
         assertEquals(ReportEdit.Floor(ReportFloor.Planned("A-1-3")), edits.last())

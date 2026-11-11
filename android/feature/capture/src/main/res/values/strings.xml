@@ -57,6 +57,7 @@
     <string name="formularz_uciazliwosc">Uciążliwość</string>
     <string name="formularz_uciazliwosc_podpowiedz">Oceń dla osoby, dla której bariera jest najtrudniejsza.</string>
     <string name="formularz_pietro">Piętro</string>
+    <string name="formularz_zrodlo_pieter">Źródło: %1$s.</string>
     <string name="formularz_pietro_bez_planu">Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter.</string>
     <string name="formularz_numer_pietra">Numer piętra</string>
     <string name="formularz_numer_pietra_blad">Wpisz liczbę całkowitą, np. 0 albo -1.</string>

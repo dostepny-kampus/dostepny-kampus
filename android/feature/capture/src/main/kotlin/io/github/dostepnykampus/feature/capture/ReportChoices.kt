@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture
@@ -115,6 +115,12 @@ internal fun PlanFloorSection(floors: PlanFloors, floor: ReportFloor?, onEdit: (
                 RadioButton(selected = option.id == chosen, onClick = null)
                 Text(text = option.label, modifier = Modifier.padding(start = Odstepy.s))
             }
+        }
+        if (floors.source.isNotEmpty()) {
+            Text(
+                text = stringResource(R.string.formularz_zrodlo_pieter, floors.source),
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
     }
 }
