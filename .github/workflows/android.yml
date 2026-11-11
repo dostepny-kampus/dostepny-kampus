@@ -39,7 +39,9 @@ jobs:
       workflow: android.yml
 
   zmiany:
-    if: github.event_name == 'pull_request'
+    # Także dla grupy kolejki: bez tego każda grupa budowała aplikację i uruchamiała emulatory, choć PR nie zmieniał Androida.
+    # Na push zadanie jest pominięte, więc pozostałe idą zawsze; gdy się nie powiedzie, check `budowanie` jest czerwony.
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -49,10 +51,21 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
-      - name: Sprawdź, czy PR zmienia aplikację Android, jej dane albo tokeny
+      - name: Sprawdź, czy PR albo grupa w kolejce zmienia aplikację Android, jej dane albo tokeny
         id: diff
+        env:
+          EVENT: ${{ github.event_name }}
+          GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: |
-          if git diff --quiet HEAD^1 HEAD -- android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/workflows/android.yml; then
+          from=HEAD^1
+          to=HEAD
+          if [[ $EVENT == merge_group ]]; then
+            git fetch --no-tags --depth=1 origin "$GROUP_BASE_SHA"
+            from=$GROUP_BASE_SHA
+            to=$GROUP_HEAD_SHA
+          fi
+          if git diff --quiet "$from" "$to" -- android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/workflows/android.yml; then
             echo "android=false" >> "$GITHUB_OUTPUT"
           else
             echo "android=true" >> "$GITHUB_OUTPUT"
