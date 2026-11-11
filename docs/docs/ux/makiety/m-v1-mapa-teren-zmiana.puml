@@ -1,0 +1,14 @@
+@startsalt
+' V1 Mapa kampusu po zmianie terenu wynikiem z innego terenu (US1.8).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$przelacznik("Mapa", "Lista budynków", 1)
+$przycisk("Wittigowo ▾")
+$przycisk("Legenda")
+$mapa("mapa terenu Wittigowo z zaznaczonym budynkiem T-15; nad podpisem mapy napis: Pokazuję teren: Wittigowo", "", "info")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

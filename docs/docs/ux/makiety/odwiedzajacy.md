@@ -31,6 +31,7 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | Nagłówek „Mapa kampusu” bez „Wstecz”, bo to ekran startowy | wymagania wspólne, NFR-15 |
 | Pole „Wpisz symbol budynku, np. C-13” na pełną szerokość, pierwsze pod nagłówkiem | US1.1, PW-8 |
 | Przełącznik „Mapa” i „Lista budynków”; wybraną pozycję widać po kształcie pola | NFR-19, NFR-21 |
+| Przycisk terenu nad „Legendą” z nazwą wybranego terenu, np. „Kampus główny”; otwiera panel „Teren na mapie” | US1.6, US1.7, NFR-17, NFR-18 |
 | „Legenda” nad mapą: znaki mapy i planu z napisami | NFR-21, decyzja 48 |
 | Zastępnik mapy: mapa ulic, kontury budynków, bariery ze zgłoszeń przyjętych | US1, US1.3, US10.6, NFR-11 |
 | Bariera na mapie: znak uciążliwości, a słowo, np. „Blokada”, gdy mieści się bez nakładania | US1.3, NFR-20, NFR-21, PW-13 |
@@ -72,6 +73,7 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 | Lista daje tę samą informację co mapa, więc jest drogą dla TalkBack | NFR-19, NFR-18 |
 | Dotknięcie pozycji: mapa z zaznaczonym budynkiem i małą kartą V2. Przy TalkBack, dużej czcionce albo szerokim oknie od razu pełny ekran V2. Zamknięcie małej karty wraca do listy | US2.8, NFR-19 |
 | Przy dużej czcionce lista jest widokiem startowym | NFR-20 |
+| Lista jest podzielona nagłówkami terenów z liczbą budynków, np. „Wittigowo · 9”; wybranie budynku z innego terenu zmienia teren | US1.8, NFR-18, NFR-19 |
 | Bez przycisków mapy i podpisu OpenStreetMap, bo lista nie pokazuje mapy | decyzja 16 |
 
 ### V1: brak wyniku
@@ -144,6 +146,53 @@ Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 | Typ bariery jako zastępnik, uciążliwość napisem i ikoną | US1.3, BR-7, NFR-21 |
 | Miejsce: budynek i wejście albo piętro, „Sprawdzone [data]” | US2.2, PW-3 |
 | „Zamknij” chowa arkusz, a mapa zostaje | wymagania do ekranów (V1) |
+
+### V1: panel „Teren na mapie”
+
+![Makieta V1 z otwartym panelem Teren na mapie pod przyciskiem terenu: nagłówek z przyciskiem Zamknij i lista terenów z liczbą budynków i odległością; Kampus główny jest wybrany](../../_generated/m-v1-mapa-teren-panel.svg)
+
+Czynność główna: wybranie terenu z listy, które pokazuje mapę tego terenu.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Przycisk terenu z nazwą wybranego terenu otwiera panel pod sobą; panel i „Legenda” nie są otwarte razem | US1.6, US1.7 |
+| Nagłówek „Teren na mapie” z „Zamknij”; po otwarciu fokus TalkBack stoi na nagłówku, po zamknięciu wraca na przycisk terenu | US1.7, NFR-18, NFR-20 |
+| Teren na liście: nazwa, liczba budynków i odległość od wybranego terenu; wybrany ma znak „✓” i napis „wybrany” | US1.7, NFR-21 |
+| Wybranie terenu zamyka panel i pokazuje mapę tego terenu | US1.7, BR-G5 |
+
+### V1: granica terenu
+
+![Makieta V1 przy granicy terenu Kampus główny: obszar poza terenem przyciemniony, linia granicy i przycisk sąsiedniego terenu Wittigowo, 2 km, ze strzałką](../../_generated/m-v1-mapa-teren-granica.svg)
+
+Czynność główna: przycisk sąsiedniego terenu, który pokazuje mapę tego terenu.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Mapa nie wychodzi poza wybrany teren; obszar poza nim jest przyciemniony, a granicę pokazuje linia | US1.7, BR-G5, NFR-39 |
+| Przycisk sąsiedniego terenu z nazwą, odległością i strzałką pojawia się, gdy widok stoi na granicy, a w tę stronę leży inny teren | US1.7, NFR-53 |
+| TalkBack ogłasza raz: „Tu kończy się teren Kampus główny. Obok: Wittigowo, 2 km” | US1.7, NFR-18 |
+
+### V1: wynik z innego terenu
+
+![Makieta V1 z wpisanym t15: wynik Budynek T-15 z dopiskiem Wittigowo, inny teren; pod wynikiem mapa terenu Kampus główny](../../_generated/m-v1-mapa-teren-wynik.svg)
+
+Czynność główna: wybranie wyniku, które zmienia teren mapy i otwiera V2.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Wynik budynku z innego terenu ma dopisek z nazwą terenu: „Wittigowo · inny teren” | US1.8, US1.1 |
+| Wybranie wyniku zmienia teren na teren budynku | US1.8, BR-G5 |
+
+### V1: po zmianie terenu
+
+![Makieta V1 po wybraniu budynku T-15: przycisk terenu Wittigowo, mapa terenu Wittigowo z zaznaczonym budynkiem i napis Pokazuję teren: Wittigowo](../../_generated/m-v1-mapa-teren-zmiana.svg)
+
+Czynność główna: jak w stanie zwykłym, na nowym terenie.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Przycisk terenu pokazuje nową nazwę: „Wittigowo” | US1.6, US1.8 |
+| Napis „Pokazuję teren: Wittigowo” nad mapą mówi o zmianie terenu | US1.8, NFR-18 |
 
 ## V2 Karta budynku
 
