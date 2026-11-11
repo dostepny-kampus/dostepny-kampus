@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.data
 
+import io.github.dostepnykampus.core.geo.campusAreas
 import io.github.dostepnykampus.core.geo.labelPoint
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
@@ -52,8 +53,9 @@ private val CAMPUS_MARGIN = 500.meters
  * @property focus symbol budynku zaznaczonego na mapie, np. po „Wstecz” z V2 (US1.1); `null` bez zaznaczenia
  * @property selectedEntrance wejście zaznaczone pinezką z podpisem, np. po „Pokaż wejście na mapie” (US3.3,
  *   decyzja 134); `null` bez zaznaczenia
- * @property bounds obszar kampusu: najmniejszy prostokąt ze wszystkimi konturami powiększony o 500 m z każdej strony
- *   (NFR-39); `null` bez budynków
+ * @property bounds teren pokazany na mapie: najmniejszy prostokąt z konturami budynków terenu, na którym stoi
+ *   [START_BUILDING], powiększony o 500 m z każdej strony (BR-G5, NFR-39). Bez tego budynku to pierwszy teren
+ *   katalogu; `null` bez budynków
  */
 data class CampusMapData(
     val buildings: String,
@@ -133,14 +135,16 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
             Feature(Point(entrance.location.toPosition()), properties)
         }
     val startBuildings = catalog.buildings.filter { it.symbol == START_BUILDING }.ifEmpty { catalog.buildings }
-    val allPoints = catalog.buildings.flatMap { it.outline.points() }
+    val areas = campusAreas(catalog.buildings)
+    val startArea = areas.firstOrNull { START_BUILDING in it.symbols } ?: areas.firstOrNull()
+    val areaPoints = startArea?.buildings.orEmpty().flatMap { it.outline.points() }
     return CampusMapData(
         buildings = GeoJsonObject.toJson(FeatureCollection(buildings)),
         labels = outlines.values.map { it.joinToString(separator = LABEL_SEPARATOR) },
         labelPoints = GeoJsonObject.toJson(FeatureCollection(labelPoints)),
         entrances = GeoJsonObject.toJson(FeatureCollection(entrances)),
         start = center(startBuildings.flatMap { it.outline.points() }),
-        bounds = campusBounds(allPoints),
+        bounds = campusBounds(areaPoints),
     )
 }
 
