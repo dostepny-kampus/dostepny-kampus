@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.AsCollector;
 import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -68,6 +69,7 @@ final class PhotoRequests {
         return this.context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.put("/submissions/{id}/photos/{photo}", id, photo)
                 .contentType(MediaType.IMAGE_JPEG).content(body)
+                .with(new AsCollector())
         ).andReturn().getResponse();
     }
 

@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.AsCollector;
 import io.github.dostepnykampus.IntegrationTest;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -142,6 +143,7 @@ final class SubmissionsEditHttpTest {
             MockMvcRequestBuilders.put("/submissions/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(SubmissionsEditHttpTest.body(base))
+                .with(new AsCollector())
         ).andReturn().getResponse();
     }
 
