@@ -27,10 +27,14 @@ class AccessTokenInterceptor(serverUrl: String, private val tokens: AccessTokens
         val isServer = request.url.isOnServer()
         val token = tokens.token?.takeIf { isServer && !request.url.isPublic() }
         val sent =
-            if (token == null) request else request.newBuilder().header(AUTHORIZATION, "$BEARER $token").build()
-        val response = chain.proceed(sent)
-        if (isServer && response.code == HTTP_UNAUTHORIZED) tokens.reject()
-        return response
+            if (token == null) {
+                request
+            } else {
+                request.newBuilder().header(name = AUTHORIZATION, value = "$BEARER $token").build()
+            }
+        return chain.proceed(sent).also { response ->
+            if (isServer && response.code == HTTP_UNAUTHORIZED) tokens.reject()
+        }
     }
 
     private fun HttpUrl.isOnServer(): Boolean = toString().startsWith(server.toString())
