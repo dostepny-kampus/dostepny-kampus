@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +48,7 @@ private val ControlCircleSize = 44.dp
  * `wysokosci.kontrolki_mapy`).
  */
 @Composable
+@ReadOnlyComposable
 internal fun mapControlBorder(): BorderStroke? {
     val isDark = MaterialTheme.colorScheme.surface.luminance() < DARK_SURFACE_LUMINANCE
     return BorderStroke(Obramowania.ramka, Wysokosci.kontrolkiMapyObwodkaCiemny).takeIf { isDark }
