@@ -27,6 +27,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -89,7 +90,7 @@ fun AppShell(
                 reportDraft = draft,
             )
         }
-    val items = bottomBarItems(hasWork = roles.currentAccount().hasStaffRole)
+    val items = bottomBarItems(hasWork = roles.hasWork())
     val entries =
         rememberDecoratedNavEntries(
             entries =
@@ -156,4 +157,10 @@ private fun bottomBarItems(hasWork: Boolean): BottomBarItems {
             ),
         )
     }
+}
+
+@Composable
+private fun RoleProvider.hasWork(): Boolean {
+    val account by account.collectAsStateWithLifecycle()
+    return account.hasStaffRole
 }
