@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -58,8 +57,6 @@ private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
-
-private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore = { it })
 
 /**
  * Ekran V1 „Mapa kampusu” (US1): nagłówek z polem symbolu budynku (US1.1) i przełącznikiem „Mapa” i „Lista
@@ -200,72 +197,44 @@ private fun CampusMap(
     onEmptyMapClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus)
-    val selection = scene?.selection
-    val building = selection?.building
-    val chosen = selection?.entrance
-    val view = rememberCameraView(focus, catalog)
-    var choice by rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val cover = contentPadding.calculateBottomPadding()
-    val isCovered = cover > 0.dp
-    val coverPixels = with(LocalDensity.current) { cover.toPx() }.toDouble()
-    val focusPoint = remember(catalog, building) { catalog?.pointOf(building) }
-    val keepCamera = { idle: MapCamera -> if (!isCovered) view.keep(idle) }
     val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val limits = with(LocalDensity.current) { mapLimits(selection?.bounds, size) }
+    val state = rememberMapSceneState(layers = layers, catalog = catalog, focus = focus, cover = cover, size = size)
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
-        val shown =
-            shownCamera(
-                own = view.camera ?: chosen?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) },
-                start = layers?.start,
-                focus = focusPoint.takeIf { isCovered },
-                bottomInset = coverPixels,
-            )
-        if (scene != null && shown != null && limits != null) {
+        val scene = state.scene
+        val camera = state.camera
+        if (scene != null && camera != null && state.limits != null) {
             mapView.Show(
                 data = scene.data,
                 selection = scene.selection,
-                camera = shown,
-                onCameraIdle = keepCamera,
-                onBuildingsTouch = { symbols ->
-                    if (symbols.isEmpty()) onEmptyMapClick() else choice = touched(symbols, onBuildingClick)
-                },
+                camera = camera,
+                onCameraIdle = state::keep,
+                onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick) },
                 modifier = Modifier.fillMaxSize(),
             )
-            chosen?.let { EntranceDescription(it) }
-            MapStatusBar(topInset, isShown = isCovered)
+            scene.selection.entrance?.let { EntranceDescription(it) }
+            MapStatusBar(topInset, isShown = state.isCovered)
             MapOverlay(
-                camera = shown,
-                hasControls = !isCovered && !isKeyboardOpen,
+                camera = camera,
+                hasControls = !state.isCovered && !isKeyboardOpen,
                 dataDay = catalog?.dataDay(),
-                onCameraChange = { view.keep(limits.clamp(it)) },
+                onCameraChange = state::move,
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
             ) {
-                val chosen = catalog?.buildingsOf(choice).orEmpty()
+                val chosen = catalog?.buildingsOf(state.choice).orEmpty()
                 if (chosen.isNotEmpty()) {
                     val sheetModifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
-                    BuildingChoiceSheet(onClose = { choice = emptyList() }, modifier = sheetModifier) {
+                    BuildingChoiceSheet(onClose = state::dismiss, modifier = sheetModifier) {
                         chosen.forEach { building ->
-                            BuildingChoice(building) {
-                                choice = emptyList()
-                                onBuildingClick(building.symbol)
-                            }
+                            BuildingChoice(building) { state.choose(building.symbol, onBuildingClick) }
                         }
                     }
                 }
             }
         }
     }
-}
-
-private fun shownCamera(own: MapCamera?, start: GeoPoint?, focus: GeoPoint?, bottomInset: Double): MapCamera? =
-    (own ?: start?.let { MapCamera(center = it, zoom = START_ZOOM) })?.aboveSheet(focus, bottomInset)
-
-private fun touched(symbols: List<String>, onBuildingClick: (String) -> Unit): List<String> {
-    symbols.singleOrNull()?.let(onBuildingClick)
-    return symbols.takeIf { it.size > 1 }.orEmpty()
 }
 
 /** Punkt podpisu budynku o symbolu [symbol]; `null`, gdy katalog go nie zna. */
