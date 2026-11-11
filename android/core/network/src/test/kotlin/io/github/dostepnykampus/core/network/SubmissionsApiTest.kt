@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
@@ -107,6 +107,22 @@ class SubmissionsApiTest {
         assertEquals(ApiResult.Success::class, result::class)
         assertEquals(1, (result as ApiResult.Success).value.size)
         assertEquals("/submissions?buildingSymbol=A-1", server.takeRequest().path)
+    }
+
+    /** Wiersz: C3 → własne zgłoszenia z serwera w każdym statusie, US8.1, US8.2. */
+    @Test
+    fun us8_1_mine_list() {
+        enqueue(code = 200, body = "[${submission(version = 2)}]")
+        val result = blocking { mine() }
+        assertEquals(2, (result as ApiResult.Success).value.single().version)
+        assertEquals("/submissions?mine=true", server.takeRequest().path)
+    }
+
+    /** Wiersz: C3 bez roli Zbierającego → błąd z kodem, nie lista, US8.1. */
+    @Test
+    fun us8_1_mine_forbidden() {
+        enqueue(code = 403, body = "")
+        assertEquals(ApiResult.ServerError(403), blocking { mine() })
     }
 
     @Test

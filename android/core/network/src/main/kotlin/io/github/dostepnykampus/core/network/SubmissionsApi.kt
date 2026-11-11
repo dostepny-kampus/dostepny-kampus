@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
@@ -94,6 +94,17 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
             } else {
                 other(code)
             }
+        }
+    }
+
+    /**
+     * Własne zgłoszenia Zbierającego w każdym statusie, odrzucone z powodem (`mine=true`, US8.1, US8.2).
+     * Bez tokenu z rolą Zbierającego serwer odpowiada 401 albo 403.
+     */
+    suspend fun mine(): ApiResult<List<Submission>> {
+        val target = path().newBuilder().addQueryParameter(name = "mine", value = "true").build()
+        return http.exchange(request(target, body = null, method = GET)) { code, body ->
+            if (code == HTTP_OK) success(code) { json.decodeSubmissions(body) } else other(code)
         }
     }
 
