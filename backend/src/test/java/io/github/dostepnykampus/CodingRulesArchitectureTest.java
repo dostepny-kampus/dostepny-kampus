@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus;
@@ -8,12 +8,13 @@ package io.github.dostepnykampus;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.CompositeArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import com.tngtech.archunit.library.GeneralCodingRules;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -30,53 +31,46 @@ import org.junit.jupiter.api.Test;
  *
  * @since 0.1.0
  */
+@AnalyzeClasses(
+    packagesOf = DostepnyKampusApplication.class,
+    importOptions = ImportOption.DoNotIncludeTests.class
+)
 final class CodingRulesArchitectureTest {
 
-    @Test
-    void codingForbidsJavaUtilLogging() {
+    @ArchTest
+    void codingForbidsJavaUtilLogging(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
             () -> CodingRulesArchitectureTest.logging()
-                .check(CodingRulesArchitectureTest.production()),
+                .check(classes),
             "Kod produkcyjny używa java.util.logging"
         );
     }
 
-    @Test
-    void codingForbidsStandardStreams() {
+    @ArchTest
+    void codingForbidsStandardStreams(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
             () -> CodingRulesArchitectureTest.streams()
-                .check(CodingRulesArchitectureTest.production()),
+                .check(classes),
             "Kod produkcyjny pisze do System.out, System.err albo woła printStackTrace"
         );
     }
 
-    @Test
-    void codingForbidsGenericExceptions() {
+    @ArchTest
+    void codingForbidsGenericExceptions(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
             () -> CodingRulesArchitectureTest.exceptions()
-                .check(CodingRulesArchitectureTest.production()),
+                .check(classes),
             "Kod produkcyjny rzuca Throwable, Exception albo RuntimeException"
         );
     }
 
     @Test
-    void codingImportsProductionSubpackages() {
-        MatcherAssert.assertThat(
-            "Import kodu produkcyjnego pomija podpakiety modułów",
-            CodingRulesArchitectureTest.production().contain(
-                "io.github.dostepnykampus.barrier.domain.SubmissionPoint"
-            ),
-            Matchers.is(true)
-        );
-    }
-
-    @Test
-    void codingImportsNoTestClasses() {
-        MatcherAssert.assertThat(
-            "Import kodu produkcyjnego obejmuje klasy testowe",
-            CodingRulesArchitectureTest.production()
-                .contain(CodingRulesArchitectureTest.class),
-            Matchers.is(false)
+    void codingLoggingRuleCatchesCallWithoutField() {
+        Assertions.assertTrue(
+            CodingRulesArchitectureTest.logging()
+                .evaluate(new ClassFileImporter().importClasses(JulCallSample.class))
+                .hasViolation(),
+            "Reguła loggingu nie wykryła wywołania java.util.logging bez pola"
         );
     }
 
@@ -96,9 +90,20 @@ final class CodingRulesArchitectureTest {
         return GeneralCodingRules.NO_CLASSES_SHOULD_THROW_GENERIC_EXCEPTIONS;
     }
 
-    private static JavaClasses production() {
-        return new ClassFileImporter()
-            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
-            .importPackagesOf(DostepnyKampusApplication.class);
+    /**
+     * Przykład negatywny: wywołanie {@code java.util.logging} bez pola loggera.
+     *
+     * @since 0.1.0
+     */
+    static final class JulCallSample {
+
+        /**
+         * Pobiera logger tylko na czas wywołania.
+         *
+         * @return Nazwa loggera
+         */
+        String name() {
+            return Logger.getLogger("przyklad").getName();
+        }
     }
 }
