@@ -471,7 +471,8 @@ class AppShellTest {
 
     /**
      * Wiersz: pełny ekran po małej karcie, „Wstecz” w górnym pasku karty → znowu mała karta, NFR-15; „Zamknij”
-     * małej karty → V1 bez zaznaczenia budynku, US2.8, decyzja 116.
+     * małej karty → V1 bez zaznaczenia budynku, US2.8, decyzja 116. Nad małą kartą zostaje co najmniej 300 dp
+     * mapy, czyli miejsce na przyciski mapy (NFR-53, decyzja 151).
      * Scenariusz (częściowo): przegladanie-mapy.feature: Z małej karty osoba rozwija opis albo wraca do mapy
      */
     @Test
@@ -486,9 +487,8 @@ class AppShellTest {
             }
         }
         compose.onNodeWithText("V1").performClick()
-        val window = compose.onRoot().getUnclippedBoundsInRoot().bottom
         val compact = compose.onNodeWithContentDescription(EXPAND_HANDLE).getUnclippedBoundsInRoot().top
-        assertTrue("mapa nad małą kartą widoczna: uchwyt $compact, okno $window", compact > window / 2)
+        assertTrue("nad małą kartą zostaje mapa z miejscem na przyciski mapy: uchwyt $compact", compact >= 300.dp)
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
         compose.onNodeWithText("Wstecz").performClick()
         compose.onNodeWithContentDescription(EXPAND_HANDLE).assertExists("mała karta po „Wstecz” w górnym pasku")
