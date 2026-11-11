@@ -48,9 +48,14 @@ fun AppNavigator.changeEditPlace() {
  */
 fun AppNavigator.reportSaved() {
     leaving {
-        while (last().isCaptureStep()) removeAt(lastIndex)
+        while (last().isCaptureRoute()) removeAt(lastIndex)
         if (last() != MySubmissionsRoute) add(MySubmissionsRoute)
     }
 }
 
-private fun NavKey.isCaptureStep(): Boolean = this is ReportFormRoute || this is ReportEditRoute || this == MeasureRoute
+/**
+ * Czy trasa należy do zbierania zgłoszenia (C1 i C2): od niej zależy życie szkicu zgłoszenia i zdejmowanie ekranów
+ * ze stosu po zapisie. Jedyna lista takich tras; nową trasę zbierania dopisuje się tylko tutaj.
+ */
+internal fun NavKey.isCaptureRoute(): Boolean =
+    this == MeasureRoute || this is ReportFormRoute || this is ReportEditRoute
