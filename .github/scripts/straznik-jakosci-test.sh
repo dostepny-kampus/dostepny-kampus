@@ -112,7 +112,7 @@ JAVA
 }
 
 run_case() {
-  local name="$1" expected="$2" change="$3" prepare="${4:-}" status=0 out
+  local name="$1" expected="$2" change="$3" prepare="${4:-}" author="${5:-}" status=0 out
   rm -rf "$repo"
   mkdir -p "$repo"
   (
@@ -129,7 +129,7 @@ run_case() {
     git add -A
     git commit --quiet --allow-empty -m zmiana
   )
-  out="$(cd "$repo" && PR_BODY='' PR_AUTHOR='' bash "$script" HEAD~1 HEAD 2>&1)" || status=$?
+  out="$(cd "$repo" && PR_BODY='' PR_AUTHOR="$author" bash "$script" HEAD~1 HEAD 2>&1)" || status=$?
   if [[ -z $expected && $status -eq 0 && $out == *"$clean"* ]] ||
     [[ -n $expected && $status -eq 1 && $out == *"$expected"* ]]; then
     echo "OK: ${name}"
@@ -139,6 +139,33 @@ run_case() {
     failures=$((failures + 1))
   fi
 }
+
+npm_fixture() {
+  local dir
+  for dir in .github/commitlint api; do
+    mkdir -p "$dir"
+    printf '%s\n' '{"devDependencies":{"tool":"1.2.3"}}' >"$dir/package.json"
+    printf '%s\n' '{"lockfileVersion":3,"packages":{"":{"devDependencies":{"tool":"1.2.3"}}}}' >"$dir/package-lock.json"
+  done
+}
+
+npm_bump_commitlint() { sed -i 's/1\.2\.3/1.2.4/g' .github/commitlint/package{,-lock}.json; }
+npm_bump_api() { sed -i 's/1\.2\.3/1.2.4/g' api/package{,-lock}.json; }
+npm_bump_with_script() {
+  npm_bump_commitlint
+  sed -i 's/^{/{"scripts":{"test":"true"},/' .github/commitlint/package.json
+}
+npm_bump_with_new_package() {
+  npm_bump_commitlint
+  sed -i 's/"tool":"1.2.4"/"tool":"1.2.4","other":"2.0.0"/' .github/commitlint/package{,-lock}.json
+}
+npm_bump_with_old_lock() { sed -i 's/1\.2\.3/1.2.4/g' api/package.json; }
+npm_bump_lock_only() { sed -i 's/1\.2\.3/1.2.4/g' api/package-lock.json; }
+npm_bump_with_mismatched_lock() {
+  npm_bump_api
+  sed -i 's/1\.2\.4/1.2.5/g' api/package-lock.json
+}
+npm_change_source() { sed -i 's#1\.2\.3#file:../tool#g' api/package{,-lock}.json; }
 
 pom_nullaway_warn() { sed -i 's/-Xep:NullAway:ERROR/-Xep:NullAway:WARN/' backend/pom.xml; }
 pom_drop_compiler_arg() { sed -i '/--should-stop=ifError=FLOW/d' backend/pom.xml; }
@@ -254,5 +281,16 @@ run_case "S5, S6: nowy pakiet z @NullMarked" "" package_new
 run_case "S5, S6: usunięty package-info.java bez @NullMarked" "" package_unmarked_delete package_unmarked_base
 
 run_case "S6: zwykła zmiana kodu src/main" "" code_rename_method
+
+bot='dependabot[bot]'
+run_case "npm: Dependabot aktualizuje commitlint i plik lock" "" npm_bump_commitlint npm_fixture "$bot"
+run_case "npm: Dependabot aktualizuje Redocly i plik lock" "" npm_bump_api npm_fixture "$bot"
+run_case "npm: skrypt w manifeście nadal zmienia reguły" "$changed" npm_bump_with_script npm_fixture "$bot"
+run_case "npm: nowy pakiet nadal zmienia reguły" "$changed" npm_bump_with_new_package npm_fixture "$bot"
+run_case "npm: sama zmiana manifestu nie wystarcza" "$changed" npm_bump_with_old_lock npm_fixture "$bot"
+run_case "npm: sam plik lock nadal zmienia reguły" "$changed" npm_bump_lock_only npm_fixture "$bot"
+run_case "npm: niespójne wersje manifestu i pliku lock" "$changed" npm_bump_with_mismatched_lock npm_fixture "$bot"
+run_case "npm: zmiana źródła pakietu nadal zmienia reguły" "$changed" npm_change_source npm_fixture "$bot"
+run_case "npm: autor inny niż Dependabot podaje powód" "$changed" npm_bump_commitlint npm_fixture vlladevk
 
 exit "$((failures > 0 ? 1 : 0))"

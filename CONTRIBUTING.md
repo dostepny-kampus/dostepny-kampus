@@ -26,6 +26,8 @@ podany jest plik, który ją egzekwuje; gdy reguła się zmienia, zmienia się t
 
 Aktualizacje zależności otwiera Dependabot do gałęzi sprintu ([`dependabot.yml`](.github/dependabot.yml)); PR Dependabota
 jest zwolniony z kontroli „PR od issue”.
+Strażnik jakości przepuszcza zmianę wersji istniejących pakietów npm przez Dependabota w `.github/commitlint/` i `api/`,
+gdy manifest i odpowiadający mu plik lock są aktualizowane razem.
 
 ## Reguły PR i jak są egzekwowane
 
