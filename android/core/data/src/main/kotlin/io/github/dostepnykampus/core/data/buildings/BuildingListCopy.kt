@@ -41,7 +41,7 @@ internal class BuildingListCopy(private val dao: BuildingCacheDao, private val i
     /** Lista z kopii z chwilą pobrania; `null`, gdy kopii nie ma albo jest zepsuta. */
     suspend fun restore(): SyncedBuildingList? {
         val row = withContext(ioContext) { dao.get() }
-        val list = row?.listJson?.toCachedBuildingList()
+        val list = row?.run { listJson.toCachedBuildingList() }
         return if (row == null || list == null) null else SyncedBuildingList(list = list, syncedAtMillis = row.syncedAt)
     }
 }

@@ -119,7 +119,7 @@ class BuildingCatalogRepository(
      * Chwila ostatniego, udanego pobrania listy budynków z serwera, które widzi katalog; `null`, gdy katalog
      * jest z pliku (NFR-10).
      */
-    fun syncedAt(): Instant? = downloaded.value?.syncedAtMillis?.let(Instant::ofEpochMilli)
+    fun syncedAt(): Instant? = downloaded.value?.run { Instant.ofEpochMilli(syncedAtMillis) }
 
     private suspend fun fetched(isFresh: Boolean): BuildingCatalog {
         val ready = if (isFresh) null else cached
