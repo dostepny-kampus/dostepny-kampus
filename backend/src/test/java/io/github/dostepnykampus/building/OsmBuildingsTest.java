@@ -7,15 +7,24 @@ package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.OpenApiContract;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import javax.sql.DataSource;
+import org.flywaydb.core.Flyway;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Testy US1: po starcie serwera tabela buildings ma budynki z pliku
@@ -111,16 +120,74 @@ final class OsmBuildingsTest {
     }
 
     @Test
-    void usOneRunsAgainWhenFileChanges(final WebApplicationContext context) {
+    void usOneRunsAgainWhenFileChanges(
+        final WebApplicationContext context, @TempDir final Path directory
+    ) throws IOException {
+        final Path file = directory.resolve("buildings.geojson");
+        OsmBuildingsTest.writeBuilding(file, "Pierwsza nazwa");
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        try {
+            final Flyway flyway = Flyway.configure()
+                .dataSource(context.getBean(DataSource.class))
+                .schemas("osm_reimport").javaMigrations(
+                    new OsmBuildings(
+                        context.getBean(ObjectMapper.class), new FileSystemResource(file)
+                    )
+                ).load();
+            flyway.migrate();
+            final String original = OsmBuildingsTest.importedName(jdbc);
+            final int repeated = flyway.migrate().migrationsExecuted;
+            OsmBuildingsTest.writeBuilding(file, "Druga nazwa");
+            flyway.migrate();
+            Assertions.assertAll(
+                () -> Assertions.assertEquals(
+                    "Pierwsza nazwa", original, "Pierwszy import nie wczytał nazwy z pliku"
+                ),
+                () -> Assertions.assertEquals(
+                    0, repeated, "Flyway ponowił import pliku o tej samej treści"
+                ),
+                () -> Assertions.assertEquals(
+                    "Druga nazwa", OsmBuildingsTest.importedName(jdbc),
+                    "Flyway nie wczytał nowej nazwy po zmianie treści pliku"
+                )
+            );
+        } finally {
+            jdbc.sql("DROP SCHEMA IF EXISTS osm_reimport CASCADE").update();
+        }
+    }
+
+    @Test
+    void usOneChangesChecksumWhenImportFormatChanges() {
+        final byte[] content = "{}".getBytes(StandardCharsets.UTF_8);
         MatcherAssert.assertThat(
-            "Historia Flyway nie ma sumy kontrolnej pliku konturów",
-            context.getBean(JdbcClient.class).sql(
-                """
-                SELECT checksum FROM flyway_schema_history
-                WHERE description = 'budynki z OpenStreetMap' AND success
-                """
-            ).query(Integer.class).single(),
-            Matchers.equalTo(context.getBean(OsmBuildings.class).getChecksum())
+            "Zmiana wersji importu nie zmienia sumy kontrolnej",
+            OsmBuildings.checksum(content, OsmBuildings.FORMAT),
+            Matchers.not(OsmBuildings.checksum(content, OsmBuildings.FORMAT + 1))
+        );
+    }
+
+    private static String importedName(final JdbcClient jdbc) {
+        return jdbc.sql("SELECT name FROM osm_reimport.buildings WHERE symbol = 'T-99'")
+            .query(String.class).single();
+    }
+
+    private static void writeBuilding(final Path file, final String name) throws IOException {
+        Files.writeString(
+            file,
+            """
+            {
+                "type": "FeatureCollection",
+                "attribution": "Dane testowe",
+                "features": [{
+                    "type": "Feature",
+                    "properties": {"kind": "building", "symbols": ["T-99"], "name": "%s"},
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[[17,51],[17.001,51],[17.001,51.001],[17,51]]]
+                    }
+                }]
+            }
+            """.formatted(name)
         );
     }
 
