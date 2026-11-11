@@ -24,9 +24,9 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: pr-od-issue-${{ github.event.pull_request.number || github.run_id }}
-  cancel-in-progress: true
+# Bez grupy współbieżności: otwarcie PR z etykietami daje kilka zdarzeń naraz, a przebiegi nie startują w kolejności
+# utworzenia. Anulowanie zostawiało czasem wynik `cancelled` jako ostatni dla głowy PR i blokowało go przed kolejką.
+# Każdy przebieg czyta bieżący stan PR i trwa kilka sekund, więc równoległe przebiegi dają ten sam wynik.
 
 jobs:
   # Nazwa inna niż `kontrola`: ta nazwa należy do jobu docs i jest wymaganym checkiem rulesetów; ta sama nazwa mieszałaby oba wyniki.
