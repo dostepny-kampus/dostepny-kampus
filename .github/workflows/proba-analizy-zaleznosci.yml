@@ -1,0 +1,85 @@
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+name: proba-analizy-zaleznosci
+
+on:
+  push:
+    branches:
+      - 894-analiza-zaleznosci
+
+permissions:
+  contents: read
+
+jobs:
+  zgodnosc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6.2.0
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v6.4.1
+        with:
+          cache-read-only: true
+      - name: Włącz wtyczkę w kopii roboczej CI
+        run: |
+          python3 - <<'PY'
+          import tomllib
+          from pathlib import Path
+
+          versions = tomllib.loads(Path("gradle/libs.versions.toml").read_text())["versions"]
+          settings = Path("settings.gradle.kts")
+          anchor = "dependencyResolutionManagement {"
+          text = settings.read_text()
+          if text.count(anchor) != 1:
+              raise SystemExit("Brak jednoznacznego miejsca na konfigurację próby")
+          plugins = f"""
+          plugins {{
+              id("com.autonomousapps.build-health") version "3.20.2"
+              id("com.android.application") version "{versions["agp"]}" apply false
+              id("org.jetbrains.kotlin.jvm") version "{versions["kotlin"]}" apply false
+          }}
+
+          """
+          settings.write_text(text.replace(anchor, plugins + anchor))
+          Path("build.gradle.kts").write_text("""
+          dependencyAnalysis {
+              issues {
+                  all {
+                      onUsedTransitiveDependencies {
+                          severity("warn")
+                      }
+                  }
+              }
+          }
+          """)
+          PY
+      - name: Uruchom analizę modułu mapy
+        run: |
+          ./gradlew buildHealth --console=plain --no-configuration-cache --stacktrace \
+            '-Pdependency.analysis.project.includes=^:feature:map$'
+          if grep -F 'kotlinx-serialization-json' \
+            build/reports/dependency-analysis/build-health-report.txt; then
+            echo 'Biblioteka JSON wymaga wyjaśnienia przed próbą negatywną.'
+            exit 1
+          fi
+      - name: Sprawdź wykrycie niejawnej biblioteki JSON
+        run: |
+          sed -i '/^[[:space:]]*implementation(libs.kotlinx.serialization.json)$/d' \
+            feature/map/build.gradle.kts
+          sed -i 's/severity("warn")/severity("fail")/' build.gradle.kts
+          if ./gradlew buildHealth --console=plain --no-configuration-cache \
+            '-Pdependency.analysis.project.includes=^:feature:map$'; then
+            echo 'Analiza nie wykryła użytej zależności przechodniej.'
+            exit 1
+          fi
+          grep -F 'kotlinx-serialization-json' \
+            build/reports/dependency-analysis/build-health-report.txt
