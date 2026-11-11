@@ -147,8 +147,7 @@ final class SubmissionPhotosHttpTest {
                     SubmissionPhotosHttpTest.add(context, "SENT"), SubmissionPhotosHttpTest.PHOTO
                 ).contentType(MediaType.IMAGE_JPEG)
                     .content(content.getBytes(StandardCharsets.ISO_8859_1))
-            ).andExpect(new OpenApiContract())
-                .andReturn().getResponse().getStatus(),
+            ).andReturn().getResponse().getStatus(),
             Matchers.equalTo(400)
         );
     }
@@ -184,8 +183,7 @@ final class SubmissionPhotosHttpTest {
             MockMvcRequestBuilders.put("/submissions/{id}/photos/{photo}", id, photo)
                 .contentType(MediaType.IMAGE_JPEG)
                 .content(JpegCleanerTest.photo())
-        ).andExpect(new OpenApiContract())
-            .andReturn().getResponse();
+        ).andReturn().getResponse();
     }
 
     private static MockHttpServletResponse get(
@@ -199,12 +197,11 @@ final class SubmissionPhotosHttpTest {
             MockMvcRequestBuilders.get(
                 "/submissions/{id}/photos/{photo}", id, SubmissionPhotosHttpTest.PHOTO
             )
-        ).andExpect(new OpenApiContract())
-            .andReturn().getResponse();
+        ).andReturn().getResponse();
     }
 
     private static MockMvc mvc(final WebApplicationContext context) {
-        return MockMvcBuilders.webAppContextSetup(context).build();
+        return context.getBean(MockMvc.class);
     }
 
     private static MockMvc missingBucketMvc(final WebApplicationContext context) {
@@ -221,6 +218,8 @@ final class SubmissionPhotosHttpTest {
                     )
                 )
             )
-        ).setControllerAdvice(context.getBean(ProblemResponses.class)).build();
+        ).setControllerAdvice(context.getBean(ProblemResponses.class))
+            .alwaysExpect(new OpenApiContract())
+            .build();
     }
 }

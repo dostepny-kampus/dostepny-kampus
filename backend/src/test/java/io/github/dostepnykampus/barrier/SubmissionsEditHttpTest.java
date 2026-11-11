@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.OpenApiContract;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
@@ -16,8 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.ObjectMapper;
 
@@ -139,12 +138,11 @@ final class SubmissionsEditHttpTest {
     private static MockHttpServletResponse put(
         final WebApplicationContext context, final UUID id, final String base
     ) throws Exception {
-        return MockMvcBuilders.webAppContextSetup(context).build().perform(
+        return context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.put("/submissions/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(SubmissionsEditHttpTest.body(base))
-        ).andExpect(new OpenApiContract())
-            .andReturn().getResponse();
+        ).andReturn().getResponse();
     }
 
     private static String body(final String base) {

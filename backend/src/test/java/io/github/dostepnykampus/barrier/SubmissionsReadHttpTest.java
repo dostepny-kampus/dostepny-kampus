@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.OpenApiContract;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +18,8 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.JsonNode;
@@ -223,9 +222,8 @@ final class SubmissionsReadHttpTest {
     private static MockHttpServletResponse get(
         final WebApplicationContext context, final String uri
     ) throws Exception {
-        return MockMvcBuilders.webAppContextSetup(context).build()
+        return context.getBean(MockMvc.class)
             .perform(MockMvcRequestBuilders.get(uri))
-            .andExpect(new OpenApiContract())
             .andReturn()
             .getResponse();
     }

@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.OpenApiContract;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -21,8 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.ObjectMapper;
 
@@ -110,11 +109,10 @@ final class OsmBuildingsTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Punkt w konturze A-1 z pliku nie wskazuje A-1",
-            MockMvcBuilders.webAppContextSetup(context).build().perform(
+            context.getBean(MockMvc.class).perform(
                 MockMvcRequestBuilders.get("/buildings/locate").param("lat", "51.10785")
                     .param("lon", "17.06209")
-            ).andExpect(new OpenApiContract())
-                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+            ).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
             Matchers.containsString("\"buildingSymbol\":\"A-1\"")
         );
     }

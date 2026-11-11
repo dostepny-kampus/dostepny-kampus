@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.OpenApiContract;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -14,8 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.ObjectMapper;
@@ -239,9 +238,8 @@ final class BuildingsHttpTest {
     }
 
     private static String body(final WebApplicationContext context) throws Exception {
-        return MockMvcBuilders.webAppContextSetup(context).build()
+        return context.getBean(MockMvc.class)
             .perform(MockMvcRequestBuilders.get("/buildings"))
-            .andExpect(new OpenApiContract())
             .andReturn()
             .getResponse()
             .getContentAsString(StandardCharsets.UTF_8);
@@ -343,11 +341,10 @@ final class BuildingsHttpTest {
         final String lat,
         final String lon
     ) throws Exception {
-        return MockMvcBuilders.webAppContextSetup(context).build().perform(
+        return context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.get("/buildings/locate").param("lat", lat)
                 .param("lon", lon)
-        ).andExpect(new OpenApiContract())
-            .andReturn()
+        ).andReturn()
             .getResponse()
             .getContentAsString(StandardCharsets.UTF_8);
     }
@@ -355,9 +352,8 @@ final class BuildingsHttpTest {
     private static String failure(final WebApplicationContext context, final String path)
         throws Exception {
         final MockHttpServletResponse reply =
-            MockMvcBuilders.webAppContextSetup(context).build()
+            context.getBean(MockMvc.class)
                 .perform(MockMvcRequestBuilders.get(path))
-                .andExpect(new OpenApiContract())
                 .andReturn()
                 .getResponse();
         return "%d %s".formatted(reply.getStatus(), reply.getContentType());
@@ -374,9 +370,8 @@ final class BuildingsHttpTest {
 
     private static String card(final WebApplicationContext context, final String symbol)
         throws Exception {
-        return MockMvcBuilders.webAppContextSetup(context).build()
+        return context.getBean(MockMvc.class)
             .perform(MockMvcRequestBuilders.get("/buildings/{symbol}", symbol))
-            .andExpect(new OpenApiContract())
             .andReturn()
             .getResponse()
             .getContentAsString(StandardCharsets.UTF_8);

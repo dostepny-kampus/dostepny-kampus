@@ -6,16 +6,15 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.OpenApiContract;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -115,14 +114,13 @@ final class SubmissionPointHttpTest {
         final WebApplicationContext context, final MockHttpServletRequestBuilder request,
         final String fields
     ) throws Exception {
-        return MockMvcBuilders.webAppContextSetup(context).build().perform(
+        return context.getBean(MockMvc.class).perform(
             request.contentType(MediaType.APPLICATION_JSON).content(
                 String.format(
                     "{%s,\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\",\"photoIds\":[\"%s\"]}",
                     fields, "5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"
                 )
             )
-        ).andExpect(new OpenApiContract())
-            .andReturn().getResponse().getStatus();
+        ).andReturn().getResponse().getStatus();
     }
 }

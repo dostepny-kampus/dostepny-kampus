@@ -6,13 +6,12 @@
 package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.OpenApiContract;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.ObjectMapper;
 
@@ -63,9 +62,8 @@ final class EntrancesHttpTest {
 
     private static String card(final WebApplicationContext context, final String symbol)
         throws Exception {
-        return MockMvcBuilders.webAppContextSetup(context).build()
+        return context.getBean(MockMvc.class)
             .perform(MockMvcRequestBuilders.get("/buildings/{symbol}", symbol))
-            .andExpect(new OpenApiContract())
             .andReturn()
             .getResponse()
             .getContentAsString(StandardCharsets.UTF_8);
