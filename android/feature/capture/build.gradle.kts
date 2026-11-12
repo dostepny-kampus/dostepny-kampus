@@ -15,6 +15,7 @@ dependencies {
     api(libs.androidx.compose.runtime)
     api(libs.androidx.compose.ui)
     api(libs.androidx.lifecycle.viewmodel)
+    api(libs.androidx.navigation3.runtime)
     api(libs.dagger)
     api(libs.javax.inject)
     api(libs.kotlinx.coroutines.core)

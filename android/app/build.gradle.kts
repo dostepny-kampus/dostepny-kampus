@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.javax.inject)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.core)
+    runtimeOnly(libs.kotlinx.coroutines.android)
     testImplementation(libs.konsist)
     testImplementation(project(":core:network"))
     testImplementation(libs.kotlinx.coroutines.test)
