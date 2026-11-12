@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.barriers.AcceptedBarrier
 import io.github.dostepnykampus.core.data.barriers.AcceptedBarriers
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.di.ComputeContext
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.geo.searchBuildings
@@ -20,7 +21,6 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import io.github.dostepnykampus.feature.map.data.withBarriers
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -98,7 +98,7 @@ fun BuildingSearch.foundFor(shown: String): List<Building>? = buildings.takeIf {
  * @param repository katalog budynków: najpierw plik, potem serwer
  * @param networkStatus stan internetu
  * @param mapListChoice zapamiętany wybór „Mapa” albo „Lista budynków”
- * @property computeContext kontekst obliczeń geometrii; w aplikacji `Dispatchers.Default`
+ * @property computeContext kontekst obliczeń geometrii; w aplikacji `Dispatchers.Default` z grafu Hilt
  * @property geometry funkcja licząca dane mapy z katalogu, przerywalna przerwaniem wątku; w aplikacji `campusMapData`
  * @param barriers bariery ze zgłoszeń przyjętych; w testach bez barier
  */
@@ -150,7 +150,8 @@ class CampusMapViewModel(
         networkStatus: NetworkStatus,
         mapListChoice: MapListChoice,
         barriers: AcceptedBarriers,
-    ) : this(repository, networkStatus, mapListChoice, Dispatchers.Default, ::campusMapData, barriers)
+        @ComputeContext computeContext: CoroutineContext,
+    ) : this(repository, networkStatus, mapListChoice, computeContext, ::campusMapData, barriers)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun Flow<Boolean>.onNetworkChange(barriers: AcceptedBarriers): Flow<List<AcceptedBarrier>> =

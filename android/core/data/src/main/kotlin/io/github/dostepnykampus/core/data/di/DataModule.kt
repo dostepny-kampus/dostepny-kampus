@@ -42,6 +42,7 @@ import io.github.dostepnykampus.core.network.BuildingsApi
 import io.github.dostepnykampus.core.network.SubmissionsApi
 import kotlinx.coroutines.flow.map
 import javax.inject.Singleton
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Źródła danych `core:data` w grafie Hilt aplikacji (decyzja 97). Każde ma jedną instancję na proces, więc po obrocie
@@ -57,9 +58,11 @@ object DataModule {
         app: Application,
         api: BuildingsApi,
         buildingCache: BuildingCacheDao,
+        @IoContext ioContext: CoroutineContext,
     ): BuildingCatalogRepository =
         assetRepository(
             assets = app.assets,
+            ioContext = ioContext,
             listBuildings = api::listBuildings,
             buildingCache = buildingCache,
         )
@@ -103,9 +106,11 @@ object DataModule {
         store: PendingSubmissionDao,
         sync: SubmissionSyncScheduler,
         history: OwnSubmissionDao,
+        @IoContext ioContext: CoroutineContext,
     ): SubmissionQueue =
         SubmissionQueue(
             store = store,
+            ioContext = ioContext,
             server = SubmissionServer(create = api::create, putPhoto = api::putPhoto, update = api::update),
             onSaved = sync::scheduleAfterSave,
             history = history,
