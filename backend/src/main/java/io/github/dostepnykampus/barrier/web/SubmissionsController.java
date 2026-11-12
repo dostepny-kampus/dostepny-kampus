@@ -100,7 +100,7 @@ public final class SubmissionsController {
         return this.finder.visible(
             id,
             new Reader(
-                Optional.ofNullable(request.getUserPrincipal()).map(Principal::getName),
+                Optional.ofNullable(request.getUserPrincipal()).map(Principal::getName).orElse(""),
                 request.isUserInRole("VERIFIER")
             )
         ).map(SubmissionResponse::new)

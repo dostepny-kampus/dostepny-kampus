@@ -157,7 +157,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     public Optional<Submission> visible(final UUID id, final Reader reader) {
         return this.find(id).filter(
             found -> found.status().publiclyVisible() || reader.verifier()
-                || reader.account().filter(name -> !this.foreign(id, name)).isPresent()
+                || !reader.account().isEmpty() && !this.foreign(id, reader.account())
         );
     }
 

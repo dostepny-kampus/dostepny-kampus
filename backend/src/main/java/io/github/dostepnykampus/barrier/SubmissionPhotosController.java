@@ -86,7 +86,7 @@ public final class SubmissionPhotosController {
         return this.photos.get(
             submission, photo,
             new Reader(
-                Optional.ofNullable(request.getUserPrincipal()).map(Principal::getName),
+                Optional.ofNullable(request.getUserPrincipal()).map(Principal::getName).orElse(""),
                 request.isUserInRole("VERIFIER")
             )
         );
