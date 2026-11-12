@@ -9,9 +9,9 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Stan | Liczba |
 | --- | --- |
-| Pełny test | 5 |
+| Pełny test | 6 |
 | Tylko częściowo | 14 |
-| Bez testu | 166 |
+| Bez testu | 165 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -109,7 +109,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `przegladanie-mapy.feature` | Lista budynków jest podzielona na tereny | US1.8 | — | brak |
 | `scenariusz-demo.feature` | Schody przy wejściu głównym A-1 od pomiaru do eksportu | US2.1, US6.1, US6.2, US7.1, US9.2, US10.1, US11.1, US13.1 | — | brak |
 | `synchronizacja.feature` | Bez sieci widać wskaźnik, a zgłoszenie czeka ze statusem „lokalne” | BR-9, US9.1 | — | brak |
-| `synchronizacja.feature` | Zgłoszenia zapisane bez sieci przetrwają restart telefonu | BR-9, US4.2, US9.1 | — | brak |
+| `synchronizacja.feature` | Zgłoszenia zapisane bez sieci przetrwają restart telefonu | BR-9, US4.2, US9.1 | `core/database · QueueAfterRestartTest.us9_1_local_after_restart` | pełny |
 | `synchronizacja.feature` | Po powrocie sieci synchronizacja rusza sama | BR-9, US9.2 | — | brak |
 | `synchronizacja.feature` | Przerwana synchronizacja nie gubi zgłoszenia i nie tworzy drugiego | BR-9, US9.2 | — | brak |
 | `synchronizacja.feature` | Awaria serwera działa jak brak sieci | BR-9, US9.4 | — | brak |
