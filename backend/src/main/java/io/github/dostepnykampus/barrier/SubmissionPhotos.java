@@ -52,6 +52,19 @@ final class SubmissionPhotos {
     }
 
     /**
+     * Odmawia kontu, które nie jest autorem zgłoszenia: zdjęcie dodaje tylko
+     * autor (BR-3). Brak zgłoszenia zostawia dalszej obsłudze.
+     *
+     * @param submission Identyfikator zgłoszenia
+     * @param account Identyfikator konta z tokenu
+     */
+    void author(final UUID submission, final String account) {
+        if (this.submissions.foreign(submission, account)) {
+            throw new ForbiddenChange("Zdjęcie dodaje tylko autor zgłoszenia");
+        }
+    }
+
+    /**
      * Zapisuje zdjęcie bez metadanych (NFR-26); ponowne wysłanie tego samego
      * zdjęcia je zastępuje (BR-9).
      *

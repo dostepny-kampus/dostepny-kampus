@@ -25,6 +25,16 @@ public interface SubmissionFinder {
     Optional<Submission> find(UUID id);
 
     /**
+     * Sprawdza, czy zgłoszenie istnieje i złożyło je inne konto (BR-3).
+     * Zgłoszenie bez zapisanego autora też jest cudze.
+     *
+     * @param id Identyfikator zgłoszenia
+     * @param account Identyfikator konta, które chce zmienić zgłoszenie
+     * @return Prawda dla cudzego zgłoszenia; fałsz dla własnego i dla braku zgłoszenia
+     */
+    boolean foreign(UUID id, String account);
+
+    /**
      * Wyszukuje zgłoszenia według zapytania.
      *
      * @param query Statusy oraz opcjonalny budynek i piętro

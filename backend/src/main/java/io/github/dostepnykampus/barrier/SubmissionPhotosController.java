@@ -54,6 +54,7 @@ public final class SubmissionPhotosController {
         @PathVariable("photoId") final UUID photo,
         final HttpServletRequest request
     ) throws IOException {
+        this.photos.author(submission, request.getUserPrincipal().getName());
         this.photos.put(
             submission, photo,
             new PhotoUpload(request.getInputStream(), request.getContentLengthLong())
