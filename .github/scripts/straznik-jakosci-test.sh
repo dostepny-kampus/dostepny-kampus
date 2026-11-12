@@ -181,6 +181,10 @@ pom_boot_layers() { pom_insert_after '<artifactId>spring-boot-maven-plugin</arti
 pom_excluded_paths() { pom_insert_after 'compilePolicy=simple</arg>$' '<arg>-XepExcludedPaths:.*/web/.*</arg>'; }
 pom_disable_all() { pom_insert_after '<java.version>25</java.version>$' '<ep.flags>-XepDisableAllChecks</ep.flags>'; }
 pom_nullaway_off() { sed -i 's/-Xep:NullAway:ERROR/-Xep:NullAway:OFF/' backend/pom.xml; }
+pom_pit_threshold() { pom_insert_after '<java.version>25</java.version>$' '<mutationThreshold>90</mutationThreshold>'; }
+pom_pit_plugin() {
+  pom_insert_after '^    <plugins>$' '      <plugin><artifactId>pitest-maven</artifactId><configuration><threads>2</threads></configuration></plugin>'
+}
 
 jvm_config_delete() { git rm --quiet backend/.mvn/jvm.config; }
 jvm_config_edit() { sed -i '/--add-opens/d' backend/.mvn/jvm.config; }
@@ -250,6 +254,8 @@ run_case "S1: zmieniona wersja errorprone poza blokiem" "$config" pom_errorprone
 run_case "S1: dodana zależność jspecify" "$config" pom_add_jspecify
 run_case "S1, S6, O5: zwykła zależność w pom.xml" "" pom_add_dependency
 run_case "S1, S6, O5: zwykła właściwość w pom.xml" "" pom_java_version
+run_case "S1, #900: próg mutacji PIT" "$config" pom_pit_threshold
+run_case "S1, #900: zmiana w bloku pitest-maven" "$config" pom_pit_plugin
 run_case "S1, S6, O5: konfiguracja innej wtyczki niż kompilator" "" pom_boot_layers
 
 run_case "S2, O2: usunięty jvm.config" "$removed" jvm_config_delete

@@ -27,7 +27,7 @@ rule_files+='|^android/(.*/)?src/test/(.*/)?[^/]*ArchitectureTest\.kt$'
 rule_files+='|^api/(redocly\.yaml|package(-lock)?\.json)$|^docs/(\.vale\.ini$|\.markdownlint|styles/|scripts/verify\.py$|scripts/check_ids\.py$)'
 
 pom_words='jacoco|qulice|<minimum>|<exclude|skip|haltOnFailure|testFailureIgnore'
-pom_words+='|(?i:errorprone|nullaway|jspecify)|-Xep|-Xplugin'
+pom_words+='|(?i:errorprone|nullaway|jspecify)|-Xep|-Xplugin|pitest|mutationThreshold|excludedClasses'
 gradle_words='kover|detekt|\blint\b|baseline|ignoreFailures|abortOnError|[wW]arningsAsErrors'
 gradle_words+='|checkAllWarnings|suppressWarnings|nowarn|Xsuppress|Xwarning-level|failOnSeverity'
 gradle_words+='|verifyRoborazzi|enabled\s*=\s*false|[iI]sEnabled|setEnabled|onlyIf|excludedTaskNames'
@@ -57,7 +57,7 @@ diff_lines() {
     /^-/ { print "-\t" o++ "\t" substr($0, 2) }'
 }
 
-# Numery linii wewnątrz <plugin> JaCoCo, qulice albo kompilatora (Error Prone, NullAway).
+# Numery linii wewnątrz <plugin> JaCoCo, qulice, PIT albo kompilatora (Error Prone, NullAway).
 pom_context() {
   awk '
     /<plugin>/ { inside = 1; n = 0; aid = "" }
@@ -66,7 +66,7 @@ pom_context() {
       if (aid == "" && match($0, /<artifactId>[^<]*/)) aid = substr($0, RSTART + 12, RLENGTH - 12)
     }
     /<\/plugin>/ {
-      if (aid ~ /jacoco|qulice|maven-compiler-plugin/) for (i = 1; i <= n; i++) print buf[i]
+      if (aid ~ /jacoco|qulice|pitest|maven-compiler-plugin/) for (i = 1; i <= n; i++) print buf[i]
       inside = 0
     }'
 }
