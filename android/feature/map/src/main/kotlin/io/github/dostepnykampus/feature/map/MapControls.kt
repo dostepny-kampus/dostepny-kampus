@@ -35,6 +35,7 @@ import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.pathIcon
 
 private const val DARK_SURFACE_LUMINANCE = 0.5f
+
 /** Cel dotyku pływającej kontrolki mapy (NFR-17). */
 internal val MapControlTouchSize = 48.dp
 internal val ControlCircleSize = 44.dp

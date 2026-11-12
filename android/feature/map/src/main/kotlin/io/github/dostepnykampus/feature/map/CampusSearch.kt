@@ -251,4 +251,3 @@ private fun NoResult(query: String, onShowList: (() -> Unit)?) {
         }
     }
 }
-
