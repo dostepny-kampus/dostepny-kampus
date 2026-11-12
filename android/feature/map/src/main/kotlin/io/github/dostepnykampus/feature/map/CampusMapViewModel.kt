@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -71,9 +70,10 @@ data class CampusMapUiState(
  * zamknięcie ekranu przerywają liczenie przerwaniem wątku (`runInterruptible`), więc nowe nie czeka na koniec
  * starego. Do czasu policzenia nowej mapa zostaje na poprzedniej, więc kontury nie znikają przy zmianie katalogu
  * (NFR-11).
- * Bariery ze zgłoszeń przyjętych są pobierane, gdy jest internet, i od nowa po każdym jego powrocie. Do pierwszej
- * odpowiedzi i bez internetu mapa działa bez znaków barier (US1.3, NFR-11). Dane mapy powstają od nowa tylko po
- * zmianie katalogu albo barier, nie przy każdej zmianie stanu ekranu.
+ * O bariery ze zgłoszeń przyjętych ekran pyta źródło na starcie i od nowa po każdej zmianie stanu sieci: z internetem
+ * źródło daje odpowiedź serwera, a bez niego ostatnią kopię z telefonu (US1.3, NFR-10). Do pierwszej odpowiedzi mapa
+ * działa bez znaków barier (NFR-11). Dane mapy powstają od nowa tylko po zmianie katalogu albo barier, nie przy
+ * każdej zmianie stanu ekranu ani wtedy, gdy źródło dało te same bariery.
  *
  * @param repository katalog budynków: najpierw plik, potem serwer
  * @param networkStatus stan internetu
@@ -100,7 +100,7 @@ class CampusMapViewModel(
                     .map<BuildingCatalog, BuildingCatalog?> { it }
                     .onStart { emit(null) }
                     .withGeometry()
-                    .combine(networkStatus.isOnline().whenOnline(barriers)) { (catalog, data), shown ->
+                    .combine(networkStatus.isOnline().onNetworkChange(barriers)) { (catalog, data), shown ->
                         Triple(catalog, data?.withBarriers(shown), shown)
                     },
             flow2 = networkStatus.isOnline(),
@@ -124,11 +124,11 @@ class CampusMapViewModel(
     ) : this(repository, networkStatus, mapListChoice, Dispatchers.Default, ::campusMapData, barriers)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun Flow<Boolean>.whenOnline(barriers: AcceptedBarriers): Flow<List<AcceptedBarrier>> =
+    private fun Flow<Boolean>.onNetworkChange(barriers: AcceptedBarriers): Flow<List<AcceptedBarrier>> =
         distinctUntilChanged()
-            .filter { isOnline -> isOnline }
             .mapLatest { barriers.barriers() }
             .onStart { emit(emptyList()) }
+            .distinctUntilChanged()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun Flow<BuildingCatalog?>.withGeometry(): Flow<Pair<BuildingCatalog?, CampusMapData?>> =
