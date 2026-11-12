@@ -10,11 +10,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import java.io.IOException
 
 /** Historia własnych zgłoszeń w bazie Room: od najnowszego, bez duplikatów, ze stanem wysyłki (US8, NFR-5). */
 @RunWith(RobolectricTestRunner::class)
@@ -51,6 +53,28 @@ class OwnSubmissionDaoTest {
             assertEquals("REJECTED", row.serverStatus)
             assertEquals("Zdjęcie nieostre", row.rejectionReason)
             assertEquals(3, row.serverVersion)
+        }
+
+    /** Zapis historii w [PendingSubmissionDao.together] jest cofany razem z transakcją kolejki (#859). */
+    @Test
+    fun nfr5_together_rolls_back() =
+        runTest {
+            dao.save(own(id = "a", savedAt = 1))
+
+            val failure =
+                try {
+                    database.pendingSubmissions().together {
+                        dao.markSent(id = "a")
+                        throw IOException("Proces zabity w środku zapisu")
+                    }
+                    null
+                } catch (expected: IOException) {
+                    expected
+                }
+
+            assertTrue(failure != null)
+            val row = dao.observe().first().single()
+            assertEquals(OwnSubmissionState.LOCAL, row.state)
         }
 
     @Test

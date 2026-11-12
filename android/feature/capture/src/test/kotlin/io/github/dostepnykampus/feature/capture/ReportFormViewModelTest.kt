@@ -7,6 +7,8 @@ package io.github.dostepnykampus.feature.capture
 
 import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
+import io.github.dostepnykampus.core.data.submissions.SaveRefusal
+import io.github.dostepnykampus.core.data.submissions.SaveRefusedException
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionContent
@@ -154,7 +156,7 @@ class ReportFormViewModelTest {
     @Test
     fun `odrzucony wpis zostaje`() =
         runTest(dispatcher) {
-            failure = IllegalArgumentException("zdjęcia nie pasują do treści")
+            failure = SaveRefusedException(SaveRefusal.PHOTOS_MISMATCH, "zdjęcia nie pasują do treści")
             fill()
             val form = state().form
             viewModel.save()
@@ -163,6 +165,19 @@ class ReportFormViewModelTest {
             assertEquals(form, state().form)
             assertEquals(listOf(PHOTO), state().photos)
             assertEquals(0, saved.size)
+        }
+
+    /** Nieznana wersja poprawki nie prosi o nowe zdjęcie, bo zdjęcie nic by nie zmieniło (BR-10, NFR-50). */
+    @Test
+    fun `nieznana wersja bez zdjecia`() =
+        runTest(dispatcher) {
+            failure = SaveRefusedException(SaveRefusal.UNKNOWN_VERSION, "wersja nieznana")
+            fill()
+            val form = state().form
+            viewModel.save()
+            runCurrent()
+            assertEquals(ReportStage.VERSION_UNKNOWN, state().stage)
+            assertEquals(form, state().form)
         }
 
     /** Anulowanie zapisu nie zmienia stanu i nie jest błędem zapisu. */

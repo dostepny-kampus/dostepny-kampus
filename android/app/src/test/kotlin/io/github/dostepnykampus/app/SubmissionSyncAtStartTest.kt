@@ -12,6 +12,7 @@ import androidx.work.NetworkType
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
+import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -53,6 +54,20 @@ class SubmissionSyncAtStartTest {
         SubmissionSyncInitializer().create(app)
         SubmissionSyncInitializer().create(app)
         assertEquals(1, syncWork().size)
+    }
+
+    /**
+     * Wiersz: NFR-6, #854, planowanie po zapisie nie przepada przy zadaniu w kolejce WorkManagera: dochodzi po nim,
+     * więc zadanie, które czytało kolejkę przed zapisem, nie zostawia zgłoszenia do kolejnego startu.
+     */
+    @Test
+    fun nfr6_save_appends_work() {
+        val scheduler = SubmissionSyncScheduler(app)
+        scheduler.schedule()
+        scheduler.scheduleAfterSave()
+        val states = syncWork().map { it.state }.toSet()
+        assertEquals(2, syncWork().size)
+        assertEquals(setOf(WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED), states)
     }
 
     /** Wiersz: NFR-6, inicjalizator jest w manifeście, więc system woła go przy starcie procesu. */

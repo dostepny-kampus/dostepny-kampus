@@ -57,9 +57,11 @@ final class JdbcRowTest {
         final UUID id = SubmissionData.id(1);
         data.jdbc().sql(
             """
-            INSERT INTO submissions (id, kind, location, content)
-            VALUES (:id, 'QUICK', ST_SetSRID(ST_MakePoint(17, 51), 4326),
-                CAST('{"stare":1}' AS JSONB))
+            INSERT INTO submissions (id, content)
+            VALUES (:id, CAST(
+                '{"kind": "QUICK", "location": {"type": "Point", "coordinates": [17, 51]},
+                    "photoIds": "zepsute"}' AS JSONB
+            ))
             """
         ).param("id", id).update();
         Assertions.assertTrue(

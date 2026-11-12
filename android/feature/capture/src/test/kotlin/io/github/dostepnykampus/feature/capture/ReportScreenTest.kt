@@ -8,12 +8,17 @@ package io.github.dostepnykampus.feature.capture
 import android.graphics.Bitmap
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyChild
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.test.isHeading
+import androidx.compose.ui.test.isNotSelected
+import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -178,6 +183,21 @@ class ReportScreenTest {
         assertEquals(0, compose.onAllNodes(hasText("Nie mamy planu", substring = true)).fetchSemanticsNodes().size)
     }
 
+    /** Budynek szczegółowy: piętra we wspólnym wyborze piętra, wybrane widać w stanie opcji (US7.2, NFR-18). */
+    @Test
+    fun us7_2_shared_floor_picker() {
+        val floors = listOf(PlanFloor(id = "A-1-p", label = "Piwnica"), PlanFloor(id = "A-1-3", label = "3 piętro"))
+        val place = A1.copy(floors = PlanFloors(floors, source = "Politechnika Wrocławska"))
+        show(ReportUiState(form = ReportForm(place = place, floor = ReportFloor.Planned("A-1-3"))))
+
+        val group = SemanticsMatcher.keyIsDefined(SemanticsProperties.SelectableGroup)
+        compose.onNode(group and hasAnyChild(hasText("Piwnica"))).assertExists()
+        compose.onNode(hasText("3 piętro") and isSelected()).performScrollTo().assertIsDisplayed()
+        compose.onNode(hasText("Piwnica") and isNotSelected()).performScrollTo().performClick()
+
+        assertEquals(ReportEdit.Floor(ReportFloor.Planned("A-1-p")), edits.last())
+    }
+
     @Test
     fun us7_1_type_from_list() {
         show()
@@ -242,6 +262,13 @@ class ReportScreenTest {
         val message = "Nie zapisaliśmy zgłoszenia. Zrób zdjęcie jeszcze raz i zapisz ponownie."
         compose.onNodeWithText(message).assertIsDisplayed()
         compose.onNodeWithText("Spróbuj ponownie").assertDoesNotExist()
+    }
+
+    @Test
+    fun br10_version_unknown_message() {
+        show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.VERSION_UNKNOWN))
+        compose.onNodeWithText("Nie zapisaliśmy poprawki", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Zrób zdjęcie jeszcze raz", substring = true).assertDoesNotExist()
     }
 
     @Test

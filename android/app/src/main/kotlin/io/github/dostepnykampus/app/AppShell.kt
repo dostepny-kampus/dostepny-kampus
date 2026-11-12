@@ -27,6 +27,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -36,6 +37,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.TopLevel
+import io.github.dostepnykampus.app.navigation.isCaptureRoute
 import io.github.dostepnykampus.app.navigation.selectedItem
 import io.github.dostepnykampus.app.navigation.startBackStack
 import io.github.dostepnykampus.core.data.account.RoleProvider
@@ -46,9 +48,6 @@ import io.github.dostepnykampus.core.designsystem.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.SideBar
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.feature.capture.ReportDraft
-import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 
 private val WideWindow = WIDE_WINDOW_DP.dp
 
@@ -77,7 +76,7 @@ fun AppShell(
 ) {
     val backStack = rememberNavBackStack(elements = startBackStack(firstLaunch).toTypedArray())
     val restarts = rememberSaveable(saver = RestartsSaver) { SnapshotStateList() }
-    val draft = rememberCaptureDraft(backStack.any(::isCaptureRoute))
+    val draft = rememberCaptureDraft(backStack.any { it.isCaptureRoute() })
     val currentOnFirstHelpLeft by rememberUpdatedState(onFirstHelpLeft)
     val currentOnChooseMap by rememberUpdatedState(onChooseMap)
     val navigator =
@@ -91,7 +90,7 @@ fun AppShell(
                 reportDraft = draft,
             )
         }
-    val items = bottomBarItems(hasWork = roles.currentAccount().hasStaffRole)
+    val items = bottomBarItems(hasWork = roles.hasWork())
     val entries =
         rememberDecoratedNavEntries(
             entries =
@@ -142,9 +141,6 @@ private fun rememberCaptureDraft(active: Boolean): ReportDraft {
     return draft
 }
 
-private fun isCaptureRoute(route: NavKey): Boolean =
-    route == MeasureRoute || route is ReportFormRoute || route is ReportEditRoute
-
 @Composable
 private fun bottomBarItems(hasWork: Boolean): BottomBarItems {
     val map = stringResource(R.string.nav_mapa)
@@ -161,4 +157,10 @@ private fun bottomBarItems(hasWork: Boolean): BottomBarItems {
             ),
         )
     }
+}
+
+@Composable
+private fun RoleProvider.hasWork(): Boolean {
+    val account by account.collectAsStateWithLifecycle()
+    return account.hasStaffRole
 }

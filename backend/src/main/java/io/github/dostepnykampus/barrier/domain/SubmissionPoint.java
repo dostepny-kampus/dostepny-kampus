@@ -1,15 +1,18 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier.domain;
+
+import io.github.dostepnykampus.Wgs84;
 
 /**
  * Punkt zgłoszenia w WGS84, w kolejności długość, szerokość (US4, US7).
  *
  * <p>Każda droga utworzenia punktu przyjmuje tylko skończone współrzędne
- * w domkniętym zakresie WGS84; poza nim rzuca {@link InvalidSubmission}.</p>
+ * w domkniętym zakresie WGS84 ({@link Wgs84}); poza nim rzuca
+ * {@link InvalidSubmission}.</p>
  *
  * @param longitude Długość geograficzna w stopniach, od -180 do 180
  * @param latitude Szerokość geograficzna w stopniach, od -90 do 90
@@ -24,12 +27,12 @@ public record SubmissionPoint(double longitude, double latitude) {
      *  albo poza zakresem
      */
     public SubmissionPoint {
-        SubmissionPoint.requireWithin(longitude, 180.0, "Długość");
-        SubmissionPoint.requireWithin(latitude, 90.0, "Szerokość");
+        SubmissionPoint.requireWithin(longitude, Wgs84.LONGITUDE, "Długość");
+        SubmissionPoint.requireWithin(latitude, Wgs84.LATITUDE, "Szerokość");
     }
 
-    private static void requireWithin(final double value, final double limit, final String name) {
-        if (Double.isNaN(value) || Math.abs(value) > limit) {
+    private static void requireWithin(final double value, final Wgs84 axis, final String name) {
+        if (!axis.holds(value)) {
             throw new InvalidSubmission(
                 String.format("%s %s jest poza zakresem WGS84 punktu zgłoszenia", name, value)
             );

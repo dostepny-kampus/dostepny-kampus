@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
@@ -8,12 +8,18 @@ package io.github.dostepnykampus.barrier;
 import io.github.dostepnykampus.ForbiddenChange;
 import io.github.dostepnykampus.InvalidInput;
 import io.github.dostepnykampus.MissingResource;
+import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionalEventListener;
+import software.amazon.awssdk.core.exception.SdkException;
 
 /**
  * Zdjęcia zgłoszeń: zapis zdjęcia z listy photoIds (BR-7, BR-8) i odczyt
@@ -23,10 +29,16 @@ import org.springframework.stereotype.Service;
  * zgłoszenie może zostać przyjęte pomiędzy sprawdzeniem a zapisem i zdjęcie je
  * zastąpi. Wyścig przyjęty do sprintu 5 (weryfikator); S3 i SQL nie są atomowe.</p>
  *
+ * <p>Po zatwierdzonej edycji zdjęcia spoza nowej listy photoIds znikają z
+ * magazynu, więc nie zostają dane, których nikt nie może usunąć (#839).</p>
+ *
  * @since 0.1.0
  */
 @Service
 final class SubmissionPhotos {
+
+    /** Dziennik błędów usuwania starych zdjęć. */
+    private static final Logger LOG = LoggerFactory.getLogger(SubmissionPhotos.class);
 
     /** Zgłoszenia z listą zdjęć. */
     private final SubmissionFinder submissions;
@@ -70,6 +82,28 @@ final class SubmissionPhotos {
             .filter(item -> item.status().publiclyVisible())
             .flatMap(item -> this.photos.get(submission, photo))
             .orElseThrow(() -> new MissingResource("Nie ma takiego zdjęcia zgłoszenia"));
+    }
+
+    /**
+     * Usuwa z magazynu zdjęcia spoza listy photoIds zapisanej edycji. Działa
+     * po zatwierdzeniu transakcji; błąd magazynu nie cofa edycji, trafia do
+     * logu (#839).
+     *
+     * @param saved Zapisana edycja zgłoszenia
+     */
+    @TransactionalEventListener
+    void prune(final EditResult.Saved saved) {
+        final Submission submission = saved.submission();
+        final List<UUID> kept = submission.content().photoIds();
+        try {
+            this.photos.stored(submission.id()).stream()
+                .filter(photo -> !kept.contains(photo))
+                .forEach(photo -> this.photos.delete(submission.id(), photo));
+        } catch (final SdkException ex) {
+            SubmissionPhotos.LOG.warn(
+                String.format("Nie usunięto starych zdjęć zgłoszenia %s", submission.id()), ex
+            );
+        }
     }
 
     private static byte[] clean(final byte[] raw) {

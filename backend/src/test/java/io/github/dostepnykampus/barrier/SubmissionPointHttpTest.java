@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.AsCollector;
 import io.github.dostepnykampus.IntegrationTest;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -71,7 +72,7 @@ final class SubmissionPointHttpTest {
     void usEightRejectsInvalidPointOnEdit(final WebApplicationContext context)
         throws Exception {
         final UUID id = UUID.randomUUID();
-        SubmissionPointHttpTest.post(context, id, SubmissionPointHttpTest.point("[17.0,51.0]"));
+        SubmissionPointHttpTest.post(context, id, SubmissionPointHttpTest.point("[17.05,51.108]"));
         Assertions.assertAll(
             () -> Assertions.assertEquals(
                 400, SubmissionPointHttpTest.put(context, id, "[181,0]"), "PUT [181,0] bez 400"
@@ -115,7 +116,7 @@ final class SubmissionPointHttpTest {
         final String fields
     ) throws Exception {
         return context.getBean(MockMvc.class).perform(
-            request.contentType(MediaType.APPLICATION_JSON).content(
+            request.contentType(MediaType.APPLICATION_JSON).with(new AsCollector()).content(
                 String.format(
                     "{%s,\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\",\"photoIds\":[\"%s\"]}",
                     fields, "5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"

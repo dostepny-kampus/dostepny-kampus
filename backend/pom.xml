@@ -29,6 +29,7 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
     <nullaway.version>0.14.3</nullaway.version>
     <jspecify.version>1.0.1</jspecify.version>
     <json-schema-validator.version>3.0.9</json-schema-validator.version>
+    <proj4j.version>1.4.3</proj4j.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -42,6 +43,16 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
       <dependency>
         <groupId>com.tngtech.archunit</groupId>
         <artifactId>archunit</artifactId>
+        <version>${archunit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.tngtech.archunit</groupId>
+        <artifactId>archunit-junit5-api</artifactId>
+        <version>${archunit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.tngtech.archunit</groupId>
+        <artifactId>archunit-junit5-engine</artifactId>
         <version>${archunit.version}</version>
       </dependency>
       <dependency>
@@ -65,6 +76,11 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-imaging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.proj4j</groupId>
+      <artifactId>proj4j</artifactId>
+      <version>${proj4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jspecify</groupId>
@@ -256,6 +272,16 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
     <dependency>
       <groupId>com.tngtech.archunit</groupId>
       <artifactId>archunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5-engine</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

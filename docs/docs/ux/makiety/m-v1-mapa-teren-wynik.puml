@@ -1,0 +1,19 @@
+@startsalt
+' V1 Mapa kampusu, wynik wyszukiwania z innego terenu (US1.8).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("t15")
+$ramka()
+<b>Budynek T-15</b>
+<i>[nazwa budynku z danych]</i>
+<i>Wittigowo · inny teren</i>
+}
+$przelacznik("Mapa", "Lista budynków", 1)
+$przycisk("Kampus główny ▾")
+$przycisk("Legenda")
+$mapa("mapa terenu Kampus główny; teren zmieni się po wybraniu wyniku", "", "info")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

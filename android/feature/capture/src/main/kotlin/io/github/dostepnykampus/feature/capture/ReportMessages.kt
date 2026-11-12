@@ -111,6 +111,8 @@ internal fun ReportBanner(state: ReportUiState, onRetry: () -> Unit) {
 
             ReportStage.SAVE_REJECTED -> R.string.formularz_zapis_odrzucony
 
+            ReportStage.VERSION_UNKNOWN -> R.string.formularz_wersja_nieznana
+
             ReportStage.EDITING,
             ReportStage.SAVING,
             ReportStage.EXIT_ASKED,

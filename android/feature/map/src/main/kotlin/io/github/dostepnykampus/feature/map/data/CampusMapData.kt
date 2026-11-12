@@ -1,30 +1,32 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map.data
 
+import io.github.dostepnykampus.core.geo.allRings
 import io.github.dostepnykampus.core.geo.campusAreas
 import io.github.dostepnykampus.core.geo.labelPoint
+import io.github.dostepnykampus.core.geo.toGeometry
+import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoArea
-import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.GeoPolygon
+import kotlinx.serialization.builtins.nullable
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.maplibre.spatialk.geojson.BoundingBox
 import org.maplibre.spatialk.geojson.Feature
 import org.maplibre.spatialk.geojson.FeatureCollection
-import org.maplibre.spatialk.geojson.GeoJsonObject
-import org.maplibre.spatialk.geojson.MultiPolygon
+import org.maplibre.spatialk.geojson.Geometry
 import org.maplibre.spatialk.geojson.Point
-import org.maplibre.spatialk.geojson.Polygon
-import org.maplibre.spatialk.geojson.PolygonGeometry
 import org.maplibre.spatialk.geojson.Position
 import org.maplibre.spatialk.turf.measurement.computeBbox
 import org.maplibre.spatialk.turf.measurement.offset
@@ -39,7 +41,8 @@ private const val LABEL_SEPARATOR = "/"
 private val CAMPUS_MARGIN = 500.meters
 
 /**
- * Dane warstw mapy V1 z katalogu budynków jako GeoJSON dla źródeł mapy, bez sieci (US1, US1.4, NFR-10).
+ * Dane warstw mapy V1 z katalogu budynków jako kolekcje GeoJSON w elementach JSON dla źródeł mapy, bez sieci
+ * (US1, US1.4, NFR-10). Styl wstawia je do źródeł bez parsowania napisu (#835).
  *
  * @property buildings kontury budynków; obiekt ma właściwość `label`, czyli podpis konturu na mapie, i listę
  *   `symbols`. Kontur wspólny kilku symboli to jeden obiekt z podpisem „C-3/C-4” (decyzja 79)
@@ -47,22 +50,29 @@ private val CAMPUS_MARGIN = 500.meters
  * @property labelPoints punkty podpisów, jeden na kontur, wewnątrz konturu, z właściwością `label`. Podpis przy
  *   konturze dzielonym na kafelki pojawiałby się w każdym kawałku albo w żadnym (US1, reguła 4 wymagań wspólnych)
  * @property entrances wejścia, każde raz po identyfikatorze, także wejście wspólne kilku budynków; obiekt ma
- *   właściwości `id`, `marking` (`ACCESSIBLE`, `INACCESSIBLE` albo `NO_DATA`) i `main`
+ *   właściwości `id`, `marking` (`ACCESSIBLE`, `INACCESSIBLE` albo `NO_DATA`) i `main` oraz listę `symbols`
+ *   budynków, do których prowadzi
  * @property start środek pierwszego widoku: środek budynku [START_BUILDING] (US1, US1.2, decyzja 80), a bez niego
  *   środek wszystkich konturów; `null` bez budynków
  * @property bounds teren startowy mapy: najmniejszy prostokąt z konturami budynków terenu, na którym stoi
  *   [START_BUILDING], powiększony o 500 m z każdej strony (BR-G5, NFR-39). Bez tego budynku to pierwszy teren
  *   katalogu; `null` bez budynków
  * @property areas tereny PWr z katalogu, każdy z prostokątem jak [bounds] (BR-G5)
+ * @property labelPointsBySymbol punkt podpisu konturu każdego symbolu, ten sam co w [labelPoints]; symbole konturu
+ *   wspólnego mają jeden punkt. Kamera bierze punkt stąd i nie liczy go drugi raz na wątku interfejsu (NFR-11)
+ * @property outlinesBySymbol najmniejszy prostokąt z konturem budynku każdego symbolu, bez marginesu; kamera
+ *   wpisuje w niego budynek nad małą kartą V2 (US2.8, decyzja 151)
  */
 data class CampusMapData(
-    val buildings: String,
+    val buildings: JsonElement,
     val labels: List<String>,
-    val labelPoints: String,
-    val entrances: String,
+    val labelPoints: JsonElement,
+    val entrances: JsonElement,
     val start: GeoPoint?,
     val bounds: CampusBounds? = null,
     val areas: List<MapArea> = emptyList(),
+    val labelPointsBySymbol: Map<String, GeoPoint> = emptyMap(),
+    val outlinesBySymbol: Map<String, CampusBounds> = emptyMap(),
 )
 
 /**
@@ -131,19 +141,25 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
                 }
             Feature(outline.toGeometry(), properties)
         }
-    val labelPoints =
+    val labelled =
         outlines.map { (outline, symbols) ->
-            val properties = buildJsonObject { put(key = "label", value = symbols.joinToString(LABEL_SEPARATOR)) }
             if (Thread.interrupted()) throw InterruptedException("liczenie geometrii przerwane")
-            Feature(Point(labelPoint(outline).toPosition()), properties)
+            symbols to labelPoint(outline)
+        }
+    val labelPoints =
+        labelled.map { (symbols, point) ->
+            val properties = buildJsonObject { put(key = "label", value = symbols.joinToString(LABEL_SEPARATOR)) }
+            Feature(Point(point.toPosition()), properties)
         }
     val entrances =
-        catalog.entrances.distinctBy { it.id }.map { entrance ->
+        catalog.entrances.groupBy { it.id }.values.map { shared ->
+            val entrance = shared.first()
             val properties =
                 buildJsonObject {
                     put(key = "id", value = entrance.id)
                     put(key = "marking", value = entrance.marking.name)
                     put(key = "main", value = entrance.isMain)
+                    put(key = "symbols", element = JsonArray(shared.map { JsonPrimitive(it.buildingSymbol) }))
                 }
             Feature(Point(entrance.location.toPosition()), properties)
         }
@@ -154,13 +170,15 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
         }
     val startArea = areas.firstOrNull { START_BUILDING in it.symbols } ?: areas.firstOrNull()
     return CampusMapData(
-        buildings = GeoJsonObject.toJson(FeatureCollection(buildings)),
+        buildings = featureCollection(buildings),
         labels = outlines.values.map { it.joinToString(separator = LABEL_SEPARATOR) },
-        labelPoints = GeoJsonObject.toJson(FeatureCollection(labelPoints)),
-        entrances = GeoJsonObject.toJson(FeatureCollection(entrances)),
+        labelPoints = featureCollection(labelPoints),
+        entrances = featureCollection(entrances),
         start = center(startBuildings.flatMap { it.outline.points() }),
         bounds = startArea?.bounds,
         areas = areas,
+        labelPointsBySymbol = labelled.flatMap { (symbols, point) -> symbols.map { it to point } }.toMap(),
+        outlinesBySymbol = catalog.buildings.mapNotNull { it.outlineBounds() }.toMap(),
     )
 }
 
@@ -170,12 +188,16 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
  */
 fun symbolsOf(labels: List<String>): List<String> = labels.flatMap { it.split(LABEL_SEPARATOR) }.distinct()
 
-private fun center(points: List<GeoPoint>): GeoPoint? =
-    points.takeIf { it.isNotEmpty() }?.let { all ->
-        GeoPoint(
-            longitude = (all.minOf(GeoPoint::longitude) + all.maxOf(GeoPoint::longitude)) / 2,
-            latitude = (all.minOf(GeoPoint::latitude) + all.maxOf(GeoPoint::latitude)) / 2,
-        )
+private fun center(points: List<GeoPoint>): GeoPoint? {
+    if (points.isEmpty()) return null
+    val box = computeBbox(points.map(GeoPoint::toPosition))
+    return GeoPoint(longitude = (box.west + box.east) / 2, latitude = (box.south + box.north) / 2)
+}
+
+private fun Building.outlineBounds(): Pair<String, CampusBounds>? =
+    outline.points().takeIf { it.isNotEmpty() }?.let { all ->
+        val box = computeBbox(all.map(GeoPoint::toPosition))
+        symbol to CampusBounds(west = box.west, south = box.south, east = box.east, north = box.north)
     }
 
 private fun campusBounds(points: List<GeoPoint>): CampusBounds? =
@@ -191,18 +213,14 @@ private fun BoundingBox.withCampusMargin(): CampusBounds {
     )
 }
 
-private fun GeoPoint.toPosition(): Position = Position(longitude, latitude)
+private fun GeoArea.points(): List<GeoPoint> = allRings().flatten()
 
-private fun GeoPolygon.toPositions(): List<List<Position>> = rings.map { ring -> ring.map(GeoPoint::toPosition) }
-
-private fun GeoArea.toGeometry(): PolygonGeometry =
-    when (this) {
-        is GeoPolygon -> Polygon(toPositions())
-        is GeoMultiPolygon -> MultiPolygon(polygons.map(GeoPolygon::toPositions))
-    }
-
-private fun GeoArea.points(): List<GeoPoint> =
-    when (this) {
-        is GeoPolygon -> rings.flatten()
-        is GeoMultiPolygon -> polygons.flatMap { it.rings.flatten() }
-    }
+/**
+ * Kolekcja GeoJSON z obiektów [features] jako element JSON, bez napisu po drodze. Napis powstaje raz, gdy styl
+ * mapy idzie do MapLibre (#835).
+ */
+internal fun featureCollection(features: List<Feature<Geometry, JsonObject?>>): JsonElement =
+    Json.encodeToJsonElement(
+        FeatureCollection.serializer(Geometry.serializer(), JsonObject.serializer().nullable),
+        FeatureCollection(features),
+    )

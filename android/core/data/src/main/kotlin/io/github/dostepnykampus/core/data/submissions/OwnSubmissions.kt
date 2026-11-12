@@ -22,6 +22,21 @@ enum class SendState {
     REFUSED,
 }
 
+/** Powód „Nie wysłano” na C3; ekran zna tylko powód, nie kody HTTP (US9.5, BR-26, #861). */
+enum class RefusalReason {
+    /** Serwer odebrał rolę (403): „Nie masz już uprawnień do tej czynności…”. */
+    NO_PERMISSION,
+
+    /** Inna odmowa: „Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.” */
+    NOT_ACCEPTED,
+
+    /** Odmowa bez kodu: telefon nie odczytał zgłoszenia, np. brakuje pliku zdjęcia. */
+    UNREADABLE,
+
+    /** Konflikt wersji (409): ktoś zmienił zgłoszenie na serwerze po rozpoczęciu poprawki (US9.3, BR-10). */
+    CHANGED_ON_SERVER,
+}
+
 /**
  * Własne zgłoszenie z historii w telefonie (US8.1).
  *
@@ -31,7 +46,7 @@ enum class SendState {
  * @property buildingSymbol budynek; `null` to „poza budynkiem”
  * @property floorNumber numer piętra budynku podstawowego
  * @property state stan wysyłki
- * @property refusalCode kod odpowiedzi HTTP odmowy; `null` bez odmowy albo gdy telefon nie odczytał zgłoszenia
+ * @property refusal powód „Nie wysłano”; `null` bez odmowy
  * @property serverStatus status z serwera po odświeżeniu (US8.2); `null`, gdy telefon go jeszcze nie zna
  * @property rejectionReason powód odrzucenia od Weryfikatora (BR-16); `null` poza odrzuceniem
  */
@@ -42,7 +57,7 @@ data class OwnSubmission(
     val buildingSymbol: String?,
     val floorNumber: Int?,
     val state: SendState,
-    val refusalCode: Int?,
+    val refusal: RefusalReason?,
     val serverStatus: SubmissionStatus? = null,
     val rejectionReason: String? = null,
 )
@@ -61,7 +76,7 @@ internal fun OwnSubmissionEntity.toOwnSubmission(): OwnSubmission =
         buildingSymbol = buildingSymbol,
         floorNumber = floorNumber,
         state = SendState.valueOf(state.name),
-        refusalCode = refusalCode,
+        refusal = refusalReasonOf(state, refusalCode),
         serverStatus = SubmissionStatus.entries.find { it.name == serverStatus },
         rejectionReason = rejectionReason,
     )

@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isSelectable
@@ -181,7 +182,7 @@ class BuildingOnMapCameraTest {
         }
 
     private fun CampusMapData.labelPointOf(symbol: String): GeoPoint {
-        val feature = labelPoints.split("""{"type":"Feature"""").first { """"label":"$symbol"""" in it }
+        val feature = labelPoints.toString().split("""{"type":"Feature"""").first { """"label":"$symbol"""" in it }
         val (longitude, latitude) = Regex("""\[(-?[\d.E-]+),(-?[\d.E-]+)""").find(feature)!!.destructured
         return GeoPoint(longitude = longitude.toDouble(), latitude = latitude.toDouble())
     }
@@ -198,7 +199,7 @@ class BuildingOnMapCameraTest {
         assertFalse("$symbol widać już przed poleceniem", before.shows(data.labelPointOf(symbol)))
         val count = shown.size
         click(hasText("Lista budynków") and isSelectable())
-        click(hasContentDescription("$symbol, ", substring = true))
+        click(hasContentDescription("$symbol, ", substring = true) and hasClickAction())
         click(hasText(BUILDING_ON_MAP))
         compose.waitUntil { shown.size > count }
     }
@@ -284,8 +285,9 @@ class BuildingOnMapCameraTest {
     }
 
     /**
-     * Wiersz: K3, po „Pokaż” i bezczynności kamery mała karta innego budynku i „Wstecz”
-     * → widok jak przed kartą, decyzja 83.
+     * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta innego budynku i „Wstecz” bez ruszania mapy
+     * → widok jak przed kartą, decyzje 83 i 153. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy
+     * otwartej karcie atrapa nic nie zgłasza.
      */
     @Test
     fun us2_8_back_after_show() {
@@ -293,6 +295,7 @@ class BuildingOnMapCameraTest {
         showOnMap("T-9")
         compose.waitForIdle()
         val before = shown.last().second
+        isIdleReported = false
         compose.runOnUiThread { touch(listOf("A-1")) }
         compose.waitForIdle()
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }

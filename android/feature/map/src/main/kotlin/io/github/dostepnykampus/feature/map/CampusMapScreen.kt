@@ -1,59 +1,46 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.Wysokosci
-import io.github.dostepnykampus.core.geo.labelPoint
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
-import java.time.LocalDate
-
-private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -154,8 +141,9 @@ fun CampusMapScreen(
 ) {
     val catalog = state.catalog
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
-    val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LIST_FONT_SCALE)
+    val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LARGE_FONT_SCALE)
     val states = rememberSaveableStateHolder()
+    val areas = rememberMapAreas(state.mapData, focus)
     Column(modifier.fillMaxSize()) {
         if (!isCovered) {
             states.SaveableStateProvider(TOP_STATE) {
@@ -163,6 +151,7 @@ fun CampusMapScreen(
                     catalog = catalog,
                     isOnline = state.isOnline,
                     isList = isList,
+                    areas = areas.order,
                     onListChange = onListChange,
                     onBuildingClick = if (isList) onListBuildingClick else onBuildingClick,
                     modifier = if (isList) Modifier.weight(1f) else Modifier,
@@ -175,6 +164,7 @@ fun CampusMapScreen(
                     catalog = catalog,
                     layers = state.mapData,
                     focus = focus,
+                    areas = areas,
                     contentPadding = contentPadding,
                     mapView = mapView,
                     onBuildingClick = onBuildingClick,
@@ -191,6 +181,7 @@ private fun CampusMap(
     catalog: BuildingCatalog?,
     layers: CampusMapData?,
     focus: MapFocus?,
+    areas: MapAreas,
     contentPadding: PaddingValues,
     mapView: CampusMapView,
     onBuildingClick: (String) -> Unit,
@@ -201,7 +192,15 @@ private fun CampusMap(
     val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val state = rememberMapSceneState(layers = layers, catalog = catalog, focus = focus, cover = cover, size = size)
+    val state =
+        rememberMapSceneState(
+            layers = layers,
+            catalog = catalog,
+            focus = focus,
+            area = areas.chosenName,
+            cover = cover,
+            size = size,
+        )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val scene = state.scene
         val camera = state.camera
@@ -216,12 +215,17 @@ private fun CampusMap(
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
             MapStatusBar(topInset, isShown = state.isCovered)
+            val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues()
+            val aboveSheet = Modifier.padding(underBar).padding(contentPadding)
             MapOverlay(
                 camera = camera,
-                hasControls = !state.isCovered && !isKeyboardOpen,
+                hasControls = state.hasControls && !isKeyboardOpen,
                 dataDay = catalog?.dataDay(),
                 onCameraChange = state::move,
-                modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
+                areas = areas,
+                onAreaShow = state::keep,
+                modifier = Modifier.fillMaxSize().safeDrawingPadding().then(aboveSheet),
+                hasPanels = !state.isCovered && !isKeyboardOpen,
             ) {
                 val chosen = catalog?.buildingsOf(state.choice).orEmpty()
                 if (chosen.isNotEmpty()) {
@@ -237,71 +241,8 @@ private fun CampusMap(
     }
 }
 
-/** Punkt podpisu budynku o symbolu [symbol]; `null`, gdy katalog go nie zna. */
-internal fun BuildingCatalog.pointOf(symbol: String?): GeoPoint? =
-    buildings.firstOrNull { it.symbol == symbol }?.let { labelPoint(it.outline) }
+/** Punkt podpisu budynku o symbolu [symbol] z gotowych danych mapy; `null`, gdy dane go nie znają (#818). */
+internal fun CampusMapData.pointOf(symbol: String?): GeoPoint? = symbol?.let(labelPointsBySymbol::get)
 
 private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
     symbols.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
-
-@Composable
-private fun MapOverlay(
-    camera: MapCamera,
-    hasControls: Boolean,
-    dataDay: LocalDate?,
-    onCameraChange: (MapCamera) -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable BoxScope.() -> Unit,
-) {
-    var isLegendOpen by rememberSaveable { mutableStateOf(false) }
-    var isInfoOpen by rememberSaveable { mutableStateOf(false) }
-    Box(modifier) {
-        if (hasControls && !isLegendOpen && !isInfoOpen) {
-            MapControls(camera, onCameraChange, modifier = Modifier.align(Alignment.TopEnd))
-        }
-        if (hasControls && !isInfoOpen) {
-            val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
-            MapLegend(isOpen = isLegendOpen, onOpenChange = { isLegendOpen = it }, modifier = above)
-        }
-        OsmAttribution(Modifier.align(Alignment.BottomStart))
-        if (hasControls) {
-            val open = { isOpen: Boolean ->
-                isInfoOpen = isOpen
-                isLegendOpen = false
-            }
-            val corner = Modifier.align(Alignment.BottomEnd)
-            MapInfo(isOpen = isInfoOpen, dataDay = dataDay, onOpenChange = open, modifier = corner)
-        }
-        content()
-    }
-}
-
-@Composable
-private fun OsmAttribution(modifier: Modifier = Modifier) {
-    val uriHandler = LocalUriHandler.current
-    val isShort = LocalDensity.current.fontScale >= SHORT_ATTRIBUTION_FONT_SCALE
-    Box(
-        modifier =
-            modifier
-                .padding(horizontal = Odstepy.s)
-                .clickable { uriHandler.openUri(OSM_COPYRIGHT) }
-                .heightIn(min = MapControlTouchSize),
-        contentAlignment = Alignment.Center,
-    ) {
-        Surface(
-            shape = MaterialTheme.shapes.small,
-            color = MaterialTheme.colorScheme.surfaceContainerLowest,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            shadowElevation = Wysokosci.kontrolkiMapy,
-            border = mapControlBorder(),
-        ) {
-            Text(
-                text = stringResource(if (isShort) R.string.mapa_osm_krotko else R.string.mapa_osm),
-                modifier = Modifier.padding(horizontal = Odstepy.s),
-                maxLines = 1,
-                textDecoration = TextDecoration.Underline,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
-    }
-}

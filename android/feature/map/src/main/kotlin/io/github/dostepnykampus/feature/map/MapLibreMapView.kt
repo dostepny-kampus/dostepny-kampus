@@ -22,6 +22,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.feature.map.data.CampusMapData
@@ -32,9 +33,11 @@ import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE
 import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
+import org.maplibre.android.module.http.HttpRequestUtil
 
 private const val LABEL_TEXT_SP = 14f
 private const val LABEL_MAX_FONT_SCALE = 1.4f
@@ -44,8 +47,12 @@ private const val TOUCH_TOLERANCE_DP = 24f
  * Widok MapLibre Android bez kluczy i kont (ADR-0005); logo i podpis biblioteki zastępuje podpis ekranu.
  * Podpis konturu rośnie z czcionką telefonu najwyżej 1,4 raza (reguła 4 wymagań wspólnych). Dotknięcie do 24 dp od
  * konturu, połowa celu 48 dp, trafia w kontur (decyzja 85). Kafelki nie są pobierane na zapas, tylko widoczne
- * (NFR-39). Natywny widok powstaje i zwalnia pamięć raz, razem z ekranem; przy V2 jako arkuszu ten sam widok
- * przechodzi do innej sceny z innym cyklem życia, więc zmiana cyklu tylko zatrzymuje i wznawia mapę.
+ * (NFR-39). Widok kamery zgłasza tylko po geście osoby, nie po ruchu zleconym przez ekran, więc wpisanie budynku
+ * nad małą kartą nie liczy się jako ruch osoby (decyzja 151). Zmiana rozmiaru mapy przerywa ruch kamery, więc po
+ * niej widok znów idzie do zleconej kamery i „Wstecz” z V2 wraca dokładnie do widoku sprzed karty (decyzja 83).
+ * Natywny widok powstaje i zwalnia pamięć raz, razem
+ * z ekranem; przy V2 jako arkuszu ten sam widok przechodzi do innej sceny z innym cyklem życia, więc zmiana cyklu
+ * tylko zatrzymuje i wznawia mapę.
  */
 object MapLibreMapView : CampusMapView {
     @Composable
@@ -61,13 +68,14 @@ object MapLibreMapView : CampusMapView {
         val context = LocalContext.current
         val density = LocalDensity.current
         val colors = DostepnyKampusTheme.mapColors
-        val style = campusMapStyle(data = data, selection = selection, colors = colors.styleColors())
+        val style = rememberMapStyle(data = data, selection = selection, colors = colors.styleColors())
         val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
         val tolerance = TOUCH_TOLERANCE_DP * density.density
         val mapView =
             remember {
                 MapLibre.getInstance(context)
-                mapHttpClient.value
+                val tiles = EntryPointAccessors.fromApplication<MapTileHttpEntryPoint>(context.applicationContext)
+                HttpRequestUtil.setOkHttpClient(tiles.mapTileHttp().calls)
                 val options = MapLibreMapOptions.createFromAttributes(context)
                 MapView(context, options.textureMode(true).logoEnabled(false).attributionEnabled(false))
             }
@@ -82,7 +90,7 @@ object MapLibreMapView : CampusMapView {
             mapView.getMapAsync { ready ->
                 ready.prefetchZoomDelta = 0
                 ready.cameraPosition = currentCamera.toPosition()
-                ready.addOnCameraIdleListener { cameraIdle(ready.cameraPosition.toCamera()) }
+                ready.onPersonIdle { cameraIdle(it) }
                 ready.addOnMapClickListener { point ->
                     val at = ready.projection.toScreenLocation(point)
                     val area = RectF(at.x - tolerance, at.y - tolerance, at.x + tolerance, at.y + tolerance)
@@ -106,7 +114,7 @@ object MapLibreMapView : CampusMapView {
             if (size != IntSize.Zero) limits?.let { map?.limitTo(it) }
             onDispose {}
         }
-        DisposableEffect(map, camera) {
+        DisposableEffect(map, camera, limits) {
             val ready = map
             if (ready != null && ready.cameraPosition.toCamera() != camera) {
                 ready.animateCamera(CameraUpdateFactory.newCameraPosition(camera.toPosition()))
@@ -143,6 +151,15 @@ object MapLibreMapView : CampusMapView {
         }
     }
 
+    private fun MapLibreMap.onPersonIdle(report: (MapCamera) -> Unit) {
+        var isByPerson = false
+        addOnCameraMoveStartedListener { reason -> isByPerson = reason == REASON_API_GESTURE }
+        addOnCameraIdleListener {
+            if (isByPerson) report(cameraPosition.toCamera())
+            isByPerson = false
+        }
+    }
+
     private fun MapLibreMap.limitTo(limits: MapLimits) {
         val bounds = limits.bounds
         val target =
@@ -158,6 +175,18 @@ object MapLibreMapView : CampusMapView {
 
     private fun isNativeMapAvailable(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess
 }
+
+/**
+ * Styl mapy jako napis JSON. Powstaje od nowa tylko po zmianie danych [data], zaznaczenia [selection] albo barw
+ * [colors]; ruch kamery rekomponuje widok mapy, ale stylu nie buduje. Funkcja [build] składa styl.
+ */
+@Composable
+internal fun rememberMapStyle(
+    data: CampusMapData,
+    selection: MapSelection,
+    colors: MapStyleColors,
+    build: (CampusMapData, MapSelection, MapStyleColors) -> String = ::campusMapStyle,
+): String = remember(data, selection, colors) { build(data, selection, colors) }
 
 /**
  * Dodaje do stylu podpisy konturów, znaki wejść oraz pinezkę i podpis zaznaczonego wejścia jako obrazy,

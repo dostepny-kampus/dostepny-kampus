@@ -1,11 +1,12 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier.web;
 
 import io.github.dostepnykampus.ConflictingState;
+import io.github.dostepnykampus.MissingLogin;
 import io.github.dostepnykampus.MissingResource;
 import io.github.dostepnykampus.barrier.SubmissionService;
 import io.github.dostepnykampus.barrier.domain.CreateResult;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Zgłoszenia barier: wysłanie nowego zgłoszenia (US4, US7, BR-9), edycja
@@ -66,9 +66,7 @@ public final class SubmissionsController {
     @GetMapping("/submissions")
     List<SubmissionResponse> listSubmissions(final SubmissionFilter filter) {
         if (filter.mine()) {
-            throw new ResponseStatusException(
-                HttpStatus.UNAUTHORIZED, "Własne zgłoszenia wymagają logowania"
-            );
+            throw new MissingLogin("Własne zgłoszenia wymagają logowania");
         }
         return this.finder.list(filter.toQuery()).stream().map(SubmissionResponse::new).toList();
     }

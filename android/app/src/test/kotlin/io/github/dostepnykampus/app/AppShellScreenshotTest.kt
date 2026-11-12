@@ -160,6 +160,12 @@ class AppShellScreenshotTest {
         capture(isSheetOpen = false, isOnline = false)
     }
 
+    /** V2 mała karta bez internetu: plakietka „Bez internetu” nad symbolem, US2.8, NFR-10, decyzja 153. */
+    @Test
+    fun nfr10_v2_arkusz_bez_internetu() {
+        capture(isOnline = false)
+    }
+
     /** V1 z wybraną listą budynków, NFR-19. */
     @Test
     fun nfr19_v1_lista_jasny() {

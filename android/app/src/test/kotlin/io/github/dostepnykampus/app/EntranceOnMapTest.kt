@@ -187,7 +187,7 @@ class EntranceOnMapTest {
     fun us3_3_other_entrances_stay() {
         val (data, _) = showEntranceOnMap(namedCatalog())
         assertEquals(NAMED_ID, selections.last().entrance?.id)
-        assertEquals(3, Regex("\"marking\"").findAll(data.entrances).count())
+        assertEquals(3, Regex("\"marking\"").findAll(data.entrances.toString()).count())
     }
 
     /** Wiersz E3 (O3): kamera na wejściu, nie na budynku (środek budynku to 0,5; 0,5). */

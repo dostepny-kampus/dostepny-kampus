@@ -11,6 +11,9 @@ plugins {
     id("dev.detekt")
 }
 
+/** Moduł reguł projektu (#873); sam siebie nie wczytuje, a jego pliki sprawdza zadanie `detektScripts` w nim. */
+val rulesModule = ":detekt-rules"
+
 detekt {
     buildUponDefaultConfig = true
     allRules = true
@@ -22,6 +25,9 @@ detekt {
 dependencies {
     detektPlugins(libs.findLibrary("detekt-rules-ktlint").get())
     detektPlugins(libs.findLibrary("compose-rules-detekt").get())
+    if (path != rulesModule) {
+        detektPlugins(project(rulesModule))
+    }
 }
 
 tasks.named("check") {

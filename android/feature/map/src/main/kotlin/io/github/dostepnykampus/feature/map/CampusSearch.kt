@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.FilledTonalButton
@@ -55,17 +53,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.geo.searchBuildings
-import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 
 private const val ICON_VIEWPORT = 24f
-
-/** Skala czcionki, od której V1 startuje na liście, a przełącznik ma krótki napis „Lista” (NFR-19, NFR-20). */
-internal const val LIST_FONT_SCALE = 1.5f
 
 private val SearchIcon =
     icon(
@@ -97,6 +92,7 @@ private val ClearIcon =
  * @param catalog katalog budynków; `null`, dopóki się wczytuje
  * @param isOnline czy jest internet; bez niego pod przełącznikiem stoi [OfflineLine]
  * @param isList czy przełącznik stoi na „Lista budynków”; wtedy pod górą jest lista budynków
+ * @param areas tereny w kolejności nagłówków listy budynków (US1.8)
  * @param onListChange wybór w przełączniku albo „Lista budynków” w karcie brak wyniku
  * @param onBuildingClick symbol wybranego wyniku albo budynku z listy; ekran otwiera V2 i zaznacza budynek. Wybór
  *   zdejmuje fokus z pola i chowa klawiaturę ekranową, a pierwsze „Wstecz” zamyka V2 (US1.1, NFR-15)
@@ -107,6 +103,7 @@ internal fun CampusSearch(
     catalog: BuildingCatalog?,
     isOnline: Boolean,
     isList: Boolean,
+    areas: AreaOrder,
     onListChange: (Boolean) -> Unit,
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -133,7 +130,7 @@ internal fun CampusSearch(
         if (isNoResult || shown.isNotEmpty()) {
             ResultPanel {
                 shown.forEach { building ->
-                    BuildingChoice(building) { choose(building.symbol) }
+                    BuildingChoice(building, areas.otherAreaOf(building.symbol)) { choose(building.symbol) }
                 }
                 query.takeIf { isNoResult }?.let { NoResult(it, onShowList = showList.takeUnless { isList }) }
             }
@@ -142,6 +139,7 @@ internal fun CampusSearch(
             BuildingList(
                 catalog = catalog,
                 query = query,
+                areas = areas,
                 onBuildingClick = choose,
                 modifier = Modifier.weight(1f),
             )
@@ -175,7 +173,7 @@ private fun SearchHeader(
 
 @Composable
 private fun ViewToggle(isList: Boolean, onListChange: (Boolean) -> Unit) {
-    val isShort = LocalDensity.current.fontScale >= LIST_FONT_SCALE
+    val isShort = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val colors =
         SegmentedButtonDefaults.colors(
             activeContainerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -212,29 +210,6 @@ private fun ResultPanel(content: @Composable ColumnScope.() -> Unit) {
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
             content = content,
         )
-    }
-}
-
-@Composable
-private fun BuildingList(
-    catalog: BuildingCatalog?,
-    query: String,
-    onBuildingClick: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val buildings =
-        remember(query, catalog) {
-            catalog?.run { if (query.isBlank()) buildings else searchBuildings(query, buildings) }.orEmpty()
-        }
-    val insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
-    LazyColumn(
-        modifier = modifier.fillMaxWidth().windowInsetsPadding(insets),
-        contentPadding = PaddingValues(Odstepy.m),
-        verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-    ) {
-        items(buildings, key = Building::symbol) { building ->
-            BuildingChoice(building) { onBuildingClick(building.symbol) }
-        }
     }
 }
 

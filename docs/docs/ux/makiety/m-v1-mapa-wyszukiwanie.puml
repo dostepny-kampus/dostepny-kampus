@@ -10,6 +10,7 @@ $ramka()
 <i>[nazwa budynku z danych]</i>
 }
 $przelacznik("Mapa", "Lista budynków", 1)
+$przycisk("Kampus główny ▾")
 $przycisk("Legenda")
 $mapa("mapa ulic OpenStreetMap, kontury budynków z symbolami, bariery", $blokada() + $dk_spacje(6) + $utrudnienie(), "info")
 $pasek_dolny_konto()

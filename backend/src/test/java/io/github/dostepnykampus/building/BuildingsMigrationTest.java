@@ -1,11 +1,12 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.SampleBuilding;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -80,14 +81,8 @@ final class BuildingsMigrationTest {
             "[17.0583,51.1097],[17.0583,51.1092]",
             "]]]}"
         );
-        context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO buildings (symbol, name, detail_level, outline, source)
-            VALUES ('TEST-1', 'Budynek testowy', 'DETAILED',
-                ST_SetSRID(ST_GeomFromGeoJSON(:outline), 4326),
-                '© OpenStreetMap contributors')
-            """
-        ).param("outline", outline).update();
+        new SampleBuilding("TEST-1", "Budynek testowy", "DETAILED")
+            .geoJson(context.getBean(JdbcClient.class), outline);
         MatcherAssert.assertThat(
             "Odczytany kontur budynku różni się od zapisanego",
             context.getBean(JdbcClient.class).sql(

@@ -1,10 +1,14 @@
 @startsalt
-' V2 Karta budynku, brak sieci: opis budynku z telefonu, zdjęcie spoza telefonu zastąpione napisem.
+' V2 Karta budynku, brak sieci: plakietka nad nagłówkiem, opis budynku z telefonu, zdjęcie spoza telefonu
+' zastąpione napisem.
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek("Budynek A-1", "<i>[nazwa budynku z danych]</i>")
+{ [<&arrow-left> Wstecz] }
 $brak_internetu("dane z <i>[data]</i>")
+<b>Budynek A-1</b>
+<i>[nazwa budynku z danych]</i>
+--
 $karta_gora()
 Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")

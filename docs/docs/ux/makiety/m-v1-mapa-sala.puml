@@ -6,6 +6,7 @@ $ekran_poczatek()
 $naglowek_startowy("Mapa kampusu")
 $pole_tekstowe("A-1 329")
 $pietra(3)
+$przycisk("Kampus główny ▾")
 $przycisk("Legenda")
 $mapa("plan 2 piętra A-1 z wyróżnioną salą; krótkie podpisy: Winda, Toaleta, Sala 329", "", "info")
 Źródło: Politechnika Wrocławska

@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus;
@@ -10,6 +10,7 @@ import com.networknt.schema.Schema;
 import com.networknt.schema.SchemaLocation;
 import com.networknt.schema.SchemaRegistry;
 import com.networknt.schema.dialect.Dialects;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,9 +57,7 @@ public final class OpenApiContract implements ResultMatcher {
      * Kontrakt z repozytorium, wspólny dla wszystkich testów; ścieżka
      * względna od modułu serwera.
      */
-    private static final Supplier<Schema> REPOSITORY = OpenApiContract.load(
-        () -> Files.readString(Path.of("..", "api", "openapi.yaml"))
-    );
+    private static final Supplier<Schema> REPOSITORY = OpenApiContract.load(OpenApiContract::text);
 
     /**
      * Cały kontrakt jako schemat z rejestrem.
@@ -118,6 +117,44 @@ public final class OpenApiContract implements ResultMatcher {
             throw new AssertionError("Brak wyliczenia OpenAPI dla ".concat(pointer));
         }
         return StreamSupport.stream(values.spliterator(), false).toList();
+    }
+
+    /**
+     * Tekst kontraktu z repozytorium; jedyne miejsce testów, które czyta plik (#895).
+     *
+     * @return Tekst YAML kontraktu, ścieżka względna od modułu serwera
+     * @throws IOException Gdy pliku nie da się przeczytać
+     */
+    static String text() throws IOException {
+        return Files.readString(Path.of("..", "api", "openapi.yaml"));
+    }
+
+    /**
+     * Operacje kontraktu w kolejności z pliku: metoda HTTP pod każdą ścieżką, z prefiksem
+     * serwera i wpisem {@code security} operacji albo globalnym.
+     *
+     * @return Operacje kontraktu
+     */
+    List<ContractOperation> operations() {
+        final JsonNode tree = this.tree();
+        final String prefix = ContractOperation.prefix(tree);
+        final List<ContractOperation> found = new ArrayList<>(0);
+        for (final Map.Entry<String, JsonNode> path : tree.path("paths").properties()) {
+            for (final Map.Entry<String, JsonNode> verb : path.getValue().properties()) {
+                if (ContractOperation.verb(verb.getKey())) {
+                    JsonNode security = verb.getValue().path("security");
+                    if (security.isMissingNode()) {
+                        security = tree.path("security");
+                    }
+                    found.add(
+                        new ContractOperation(
+                            ContractOperation.name(verb.getKey(), prefix, path.getKey()), security
+                        )
+                    );
+                }
+            }
+        }
+        return found;
     }
 
     private List<String> exchange(final MvcResult result) throws Exception {

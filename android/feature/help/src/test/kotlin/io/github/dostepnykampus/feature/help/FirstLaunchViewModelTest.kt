@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.io.IOException
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
@@ -64,6 +65,30 @@ class FirstLaunchViewModelTest {
         start.markHelpSeen()
         assertEquals(true, isHelpSeen)
         assertEquals(false, FirstLaunchViewModel(firstLaunch).firstLaunchState.value)
+    }
+
+    @Test
+    fun us5_1_read_error_skips_help() {
+        val broken =
+            object : FirstLaunch {
+                override suspend fun isFirstLaunch(): Boolean = throw IOException("odczyt")
+
+                override suspend fun markHelpSeen() = Unit
+            }
+
+        assertEquals(false, FirstLaunchViewModel(broken).firstLaunchState.value)
+    }
+
+    @Test
+    fun us5_1_write_error_is_kept() {
+        val broken =
+            object : FirstLaunch {
+                override suspend fun isFirstLaunch(): Boolean = false
+
+                override suspend fun markHelpSeen() = throw IOException("zapis")
+            }
+
+        FirstLaunchViewModel(broken).markHelpSeen()
     }
 
     @Test

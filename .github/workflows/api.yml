@@ -17,7 +17,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  REDOCLY_VERSION: 2.71.2
   OASDIFF_VERSION: 1.34.1
   OASDIFF_SHA256: 75775f65b0adebd26a8e013af51a799342dfdc6262d89efa9e3b7bdf89657d90
 
@@ -33,7 +32,7 @@ jobs:
 
   zmiany:
     needs: porownanie
-    # Pominięty `zmiany` pomija też kontrakt i zmiany-lamiace (potrzebują go z wynikiem success).
+    # Nieudane `zmiany` uruchamia kontrakt i zmiany-lamiace. Równe drzewo grupy dalej je pomija.
     if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -65,8 +64,8 @@ jobs:
           fi
 
   kontrakt:
-    needs: zmiany
-    if: needs.zmiany.outputs.api == 'true'
+    needs: [porownanie, zmiany]
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.api == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -76,13 +75,18 @@ jobs:
       - uses: actions/setup-node@v7.1.0
         with:
           node-version: 24
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Zainstaluj Redocly z pliku lock
+        working-directory: api
+        run: npm ci --no-audit --no-fund
       - name: Sprawdź kontrakt regułami Redocly
         working-directory: api
-        run: npx --yes "@redocly/cli@${REDOCLY_VERSION}" lint --format=github-actions openapi.yaml
+        run: npx --no-install redocly lint --format=github-actions openapi.yaml
 
   zmiany-lamiace:
-    needs: zmiany
-    if: needs.zmiany.outputs.api == 'true'
+    needs: [porownanie, zmiany]
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.api == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:

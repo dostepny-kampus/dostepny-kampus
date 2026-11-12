@@ -1,0 +1,15 @@
+@startsalt
+' V1 Mapa kampusu, widok przy granicy terenu (US1.7, BR-G5).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$przelacznik("Mapa", "Lista budynków", 1)
+$przycisk("Kampus główny ▾")
+$przycisk("Legenda")
+$mapa("mapa przy wschodniej granicy terenu Kampus główny: obszar poza terenem przyciemniony, granicę pokazuje linia", "", "info")
+$przycisk("Wittigowo · 2 km →")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

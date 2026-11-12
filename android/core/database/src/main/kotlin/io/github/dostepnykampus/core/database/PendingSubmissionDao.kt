@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -15,18 +15,30 @@ import kotlinx.coroutines.flow.Flow
 
 /** Kolejka zgłoszeń zapisanych w telefonie (NFR-5, US9.1, US9.2). */
 @Dao
-interface PendingSubmissionDao {
+interface PendingSubmissionDao : PendingSubmissionRows {
     /**
      * Zapisuje zgłoszenie razem ze zdjęciami. Ten sam identyfikator zastępuje poprzedni zapis.
      *
      * @param submission zgłoszenie
      * @param photos zdjęcia zgłoszenia
+     * @return ścieżki plików zdjęć poprzedniego zapisu, których nowy zapis już nie ma; pliki można usunąć
      */
     @Transaction
-    suspend fun save(submission: PendingSubmissionEntity, photos: List<PendingPhotoEntity>) {
+    suspend fun save(submission: PendingSubmissionEntity, photos: List<PendingPhotoEntity>): List<String> {
+        val previous = photoPaths(submission.id)
         upsertSubmission(submission)
         deletePhotos(submission.id)
         upsertPhotos(photos)
+        return previous - photos.map { it.path }.toSet()
+    }
+
+    /**
+     * [writes] jako jedna transakcja bazy, razem z zapisami historii [OwnSubmissionDao]: błąd albo zabicie procesu
+     * w środku cofa wszystkie, więc kolejka i historia nie zostają w sprzeczności (#859).
+     */
+    @Transaction
+    suspend fun together(writes: suspend () -> Unit) {
+        writes()
     }
 
     /** Zgłoszenia czekające na wysłanie, bez odrzuconych, od najstarszego; zmienia się po każdym zapisie. */
@@ -71,16 +83,23 @@ interface PendingSubmissionDao {
      */
     @Query("DELETE FROM pending_submissions WHERE id = :id")
     suspend fun delete(id: String)
+}
 
-    /** Zapis wiersza zgłoszenia; tylko dla [save]. */
+/** Pojedyncze kroki zapisu w [PendingSubmissionDao.save]; poza nim nie są używane. */
+interface PendingSubmissionRows {
+    /** Zapis wiersza zgłoszenia; tylko dla [PendingSubmissionDao.save]. */
     @Upsert
     suspend fun upsertSubmission(submission: PendingSubmissionEntity)
 
-    /** Zapis wierszy zdjęć; tylko dla [save]. */
+    /** Zapis wierszy zdjęć; tylko dla [PendingSubmissionDao.save]. */
     @Upsert
     suspend fun upsertPhotos(photos: List<PendingPhotoEntity>)
 
-    /** Usunięcie zdjęć zgłoszenia przed nowym zapisem; tylko dla [save]. */
+    /** Ścieżki plików zdjęć zgłoszenia przed nowym zapisem; tylko dla [PendingSubmissionDao.save]. */
+    @Query("SELECT path FROM pending_photos WHERE submission_id = :submissionId")
+    suspend fun photoPaths(submissionId: String): List<String>
+
+    /** Usunięcie zdjęć zgłoszenia przed nowym zapisem; tylko dla [PendingSubmissionDao.save]. */
     @Query("DELETE FROM pending_photos WHERE submission_id = :submissionId")
     suspend fun deletePhotos(submissionId: String)
 }

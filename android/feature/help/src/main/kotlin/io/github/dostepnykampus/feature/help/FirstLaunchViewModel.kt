@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import javax.inject.Inject
 
 /**
@@ -30,13 +31,28 @@ class FirstLaunchViewModel
     constructor(private val firstLaunch: FirstLaunch) : ViewModel() {
         /** Czy to pierwsze uruchomienie; `null`, dopóki zapis nie jest odczytany. */
         val firstLaunchState: StateFlow<Boolean?> =
-            flow { emit(firstLaunch.isFirstLaunch()) }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+            flow {
+                val isFirst =
+                    try {
+                        firstLaunch.isFirstLaunch()
+                    } catch (_: IOException) {
+                        false
+                    }
+                emit(isFirst)
+            }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
         /**
          * Zapisuje, że instrukcja z pierwszego uruchomienia została zamknięta. Zapis kończy się także wtedy, gdy
          * aktywność zniknie w trakcie, np. po drugim „wstecz” zaraz po instrukcji.
          */
         fun markHelpSeen() {
-            viewModelScope.launch { withContext(NonCancellable) { firstLaunch.markHelpSeen() } }
+            viewModelScope.launch {
+                withContext(NonCancellable) {
+                    try {
+                        firstLaunch.markHelpSeen()
+                    } catch (_: IOException) {
+                    }
+                }
+            }
         }
     }

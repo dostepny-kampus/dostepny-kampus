@@ -57,7 +57,7 @@ class CollectorReachTest {
     /** Zbierający wraca z C1 do C2 po odtworzeniu stanu i zaczyna od zera po opuszczeniu pomiaru (US7.4, NFR-7). */
     @Test
     fun draftSurvivesStateRestore() {
-        roles.account = DebugRole.COLLECTOR.account
+        roles.switchTo(DebugRole.COLLECTOR.account)
         val restoration = StateRestorationTester(compose)
         show(restoration)
 

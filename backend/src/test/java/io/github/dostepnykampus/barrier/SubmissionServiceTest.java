@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
@@ -12,6 +12,7 @@ import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.NewEntranceMarking;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
+import io.github.dostepnykampus.barrier.domain.OutsideCampus;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
@@ -121,7 +122,7 @@ final class SubmissionServiceTest {
                         new SubmissionServiceTest.RecordingSubmissions(result, null);
                     Assertions.assertSame(
                         result,
-                        new SubmissionService(fake, SubmissionServiceTest.FORBIDDEN)
+                        SubmissionServiceTest.service(fake, SubmissionServiceTest.FORBIDDEN)
                             .create(command),
                         "Wynik utworzenia nie wrócił tym samym obiektem"
                     );
@@ -150,7 +151,7 @@ final class SubmissionServiceTest {
                         new SubmissionServiceTest.RecordingSubmissions(null, result);
                     Assertions.assertSame(
                         result,
-                        new SubmissionService(fake, SubmissionServiceTest.FORBIDDEN)
+                        SubmissionServiceTest.service(fake, SubmissionServiceTest.FORBIDDEN)
                             .update(command),
                         "Wynik edycji nie wrócił tym samym obiektem"
                     );
@@ -166,7 +167,7 @@ final class SubmissionServiceTest {
     void ioneFiveUpdateAppliesSameBuildingRulesAsCreate() {
         final SubmissionServiceTest.RecordingSubmissions fake =
             new SubmissionServiceTest.RecordingSubmissions(null, null);
-        new SubmissionService(fake, SubmissionServiceTest.CONTOUR).update(
+        SubmissionServiceTest.service(fake, SubmissionServiceTest.CONTOUR).update(
             new SubmissionEdit(SubmissionServiceTest.ID, 2, SubmissionServiceTest.quick("Z9"))
         );
         Assertions.assertEquals(
@@ -178,12 +179,70 @@ final class SubmissionServiceTest {
         );
     }
 
+    @Test
+    void brEightPublishesOnlySavedEditForPhotoCleanup() {
+        final List<Object> published = new ArrayList<>(1);
+        final EditResult saved = new EditResult.Saved(SubmissionServiceTest.STORED);
+        Stream.of(
+            saved,
+            new EditResult.Conflict(SubmissionServiceTest.STORED),
+            new EditResult.Missing(SubmissionServiceTest.ID)
+        ).forEach(
+            result -> new SubmissionService(
+                new SubmissionServiceTest.RecordingSubmissions(null, result),
+                SubmissionServiceTest.FORBIDDEN, (lat, lon) -> true,
+                published::add
+            ).update(
+                new SubmissionEdit(
+                    SubmissionServiceTest.ID, 1,
+                    SubmissionServiceTest.content(SubmissionKind.PRECISE, "Z9")
+                )
+            )
+        );
+        Assertions.assertEquals(
+            List.of(saved), published, "Sprzątanie zdjęć dostało inną edycję niż zapisaną"
+        );
+    }
+
+    @Test
+    void brGFiveRejectsSubmissionOutsideCampusWithoutSaving() {
+        final SubmissionServiceTest.RecordingSubmissions fake =
+            new SubmissionServiceTest.RecordingSubmissions(null, null);
+        final List<Double> asked = new ArrayList<>(2);
+        final SubmissionService service = new SubmissionService(
+            fake, SubmissionServiceTest.EMPTY,
+            (lat, lon) -> {
+                asked.add(lat);
+                asked.add(lon);
+                return false;
+            },
+            event -> { }
+        );
+        final NewSubmission command = new NewSubmission(
+            SubmissionServiceTest.ID,
+            SubmissionServiceTest.content(SubmissionKind.QUICK, null)
+        );
+        Assertions.assertThrows(OutsideCampus.class, () -> service.create(command));
+        final SubmissionPoint point = command.content().place().point();
+        Assertions.assertEquals(
+            List.of(point.latitude(), point.longitude(), 0),
+            List.of(asked.get(0), asked.get(1), fake.seen().size()),
+            "Teren PWr pytany nie szerokością i długością albo zgłoszenie zapisane mimo odmowy"
+        );
+    }
+
+    private static SubmissionService service(
+        final SubmissionRepository repository, final Outlines outlines
+    ) {
+        return new SubmissionService(repository, outlines, (lat, lon) -> true, event -> { });
+    }
+
     private static SubmissionContent created(
         final Outlines outlines, final SubmissionKind kind, final String building
     ) {
         final SubmissionServiceTest.RecordingSubmissions fake =
             new SubmissionServiceTest.RecordingSubmissions(null, null);
-        new SubmissionService(fake, outlines).create(
+        SubmissionServiceTest.service(fake, outlines).create(
             new NewSubmission(
                 SubmissionServiceTest.ID, SubmissionServiceTest.content(kind, building)
             )

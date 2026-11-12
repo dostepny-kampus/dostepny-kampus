@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus;
@@ -9,6 +9,7 @@ import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.domain.JavaMethodCall;
 import com.tngtech.archunit.core.domain.properties.HasAnnotations;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchCondition;
@@ -16,6 +17,7 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
+import jakarta.servlet.Filter;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -46,6 +48,8 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Strażnik: testy na pełnym kontekście dzielą jeden kontekst Springa.
@@ -57,6 +61,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
  * {@code @DynamicPropertySource}, zakłada osobny kontekst, więc też musi być
  * na liście. {@code @DirtiesContext} jest zakazany, mocki Mockito tylko
  * z listy.</p>
+ *
+ * <p>Klienta testowego HTTP ({@code MockMvcBuilders}, {@code MockMvcTester},
+ * {@code WebTestClient}) buduje tylko {@link MockMvcTestConfiguration}, więc
+ * każdy test HTTP dostaje wspólne {@code MockMvc} z kontrolą kontraktu (#896).
+ * Wyjątki są na liście z powodem, a lista może tylko maleć (#841).</p>
  *
  * @since 0.1.0
  */
@@ -93,6 +102,35 @@ final class TestSetupArchitectureTest {
      */
     private static final Map<String, String> MOCKED = Map.of();
 
+    /**
+     * Klasy, które budują klienta HTTP same, z powodem; lista może tylko maleć (#841).
+     */
+    private static final Map<String, String> OWN_CLIENT = Map.of(
+        "io.github.dostepnykampus.OpenApiContractTest",
+        String.join(
+            " ",
+            "sprawdza samą kontrolę kontraktu na kontrolerze z gotową odpowiedzią,",
+            "bez kontekstu aplikacji"
+        ),
+        "io.github.dostepnykampus.barrier.SubmissionPhotosHttpTest",
+        String.join(
+            " ",
+            "buduje kontroler zdjęć z kubełkiem, którego nie ma,",
+            "a wspólne MockMvc ma kubełek z konfiguracji"
+        )
+    );
+
+    /**
+     * Metody budujące klienta testowego HTTP, po klasie właściciela.
+     */
+    private static final Map<String, Predicate<String>> BUILDERS = Map.of(
+        "org.springframework.test.web.servlet.setup.MockMvcBuilders", name -> true,
+        "org.springframework.test.web.servlet.assertj.MockMvcTester",
+        name -> List.of("create", "from", "of").contains(name),
+        "org.springframework.test.web.reactive.server.WebTestClient",
+        name -> name.startsWith("bindTo")
+    );
+
     /** Klasy testowe aplikacji, importowane raz. */
     private static final JavaClasses TESTS = new ClassFileImporter()
         .withImportOption(location -> location.contains("/test-classes/"))
@@ -128,6 +166,13 @@ final class TestSetupArchitectureTest {
             TestSetupArchitectureTest.MOCKED.keySet(),
             List.of(MockitoBean.class, MockitoSpyBean.class)
         ).check(TestSetupArchitectureTest.TESTS);
+    }
+
+    @Test
+    void httpClientsOnlyInConfiguration() {
+        final Set<String> all = TestSetupArchitectureTest.OWN_CLIENT.keySet();
+        TestSetupArchitectureTest.clients(all).check(TestSetupArchitectureTest.TESTS);
+        TestSetupArchitectureTest.ownClients(all).check(TestSetupArchitectureTest.TESTS);
     }
 
     @ParameterizedTest
@@ -173,6 +218,12 @@ final class TestSetupArchitectureTest {
             .forbidden(Set.of(), List.of(DirtiesContext.class));
         final Function<Set<String>, ArchRule> mock = kept -> TestSetupArchitectureTest
             .forbidden(kept, List.of(MockitoBean.class, MockitoSpyBean.class));
+        final Function<Set<String>, ArchRule> client = TestSetupArchitectureTest::clients;
+        final Function<Set<String>, ArchRule> owned = TestSetupArchitectureTest::ownClients;
+        final String context = String.join(
+            " ", "Object f(WebApplicationContext c) {",
+            "return MockMvcBuilders.webAppContextSetup(c); } }"
+        );
         return List.of(
             new Sample(bare, "@SpringBootTest class A { }", true),
             new Sample(bare, "@SpringBootTest class Kept { }", false),
@@ -200,7 +251,22 @@ final class TestSetupArchitectureTest {
             new Sample(dirty, "class A { void f() { } }", false),
             new Sample(mock, "class A { @MockitoBean Object v; }", true),
             new Sample(mock, "class A { @MockitoSpyBean Object v; }", true),
-            new Sample(mock, "class Kept { @MockitoBean Object v; }", false)
+            new Sample(mock, "class Kept { @MockitoBean Object v; }", false),
+            new Sample(client, "class A { ".concat(context), true),
+            new Sample(
+                client,
+                "class A { Object f(Object c) { return MockMvcBuilders.standaloneSetup(c); } }", true
+            ),
+            new Sample(
+                client, "class A { Object f(MockMvc m) { return MockMvcTester.create(m); } }", true
+            ),
+            new Sample(
+                client,
+                "class A { Object f(MockMvc m) throws Exception { return m.perform(null); } }", false
+            ),
+            new Sample(client, "class Kept { ".concat(context), false),
+            new Sample(owned, "class Kept { ".concat(context), false),
+            new Sample(owned, "class Kept { }", true)
         );
     }
 
@@ -255,6 +321,38 @@ final class TestSetupArchitectureTest {
             item -> TestSetupArchitectureTest.own(item) && !allowed.contains(item.getName()),
             Set.of()
         );
+    }
+
+    private static ArchRule clients(final Set<String> allowed) {
+        return TestSetupArchitectureTest.rule(
+            String.join(
+                " ",
+                "build HTTP test clients only in MockMvcTestConfiguration:",
+                "wstrzyknij wspólne MockMvc, które samo sprawdza kontrakt"
+            ),
+            item -> TestSetupArchitectureTest.builds(item)
+                && !allowed.contains(item.getName())
+                && !MockMvcTestConfiguration.class.getName().equals(item.getName()),
+            Set.of()
+        );
+    }
+
+    private static ArchRule ownClients(final Set<String> names) {
+        return TestSetupArchitectureTest.rule(
+            "be listed only while it builds its own HTTP test client",
+            item -> names.contains(item.getName()) && !TestSetupArchitectureTest.builds(item),
+            names
+        );
+    }
+
+    private static boolean builds(final JavaClass item) {
+        return item.getMethodCallsFromSelf().stream().anyMatch(TestSetupArchitectureTest::builds);
+    }
+
+    private static boolean builds(final JavaMethodCall call) {
+        return TestSetupArchitectureTest.BUILDERS
+            .getOrDefault(call.getTargetOwner().getName(), name -> false)
+            .test(call.getName());
     }
 
     private static boolean own(final JavaClass item) {
@@ -312,7 +410,11 @@ final class TestSetupArchitectureTest {
                             "import org.springframework.test.context.*;",
                             "import org.springframework.boot.test.context.*;",
                             "import org.springframework.test.annotation.*;",
-                            "import org.springframework.test.context.bean.override.mockito.*;"
+                            "import org.springframework.test.context.bean.override.mockito.*;",
+                            "import org.springframework.test.web.servlet.*;",
+                            "import org.springframework.test.web.servlet.setup.*;",
+                            "import org.springframework.test.web.servlet.assertj.*;",
+                            "import org.springframework.web.context.*;"
                         ), samples.get(idx).code()
                     )
                 );
@@ -330,9 +432,10 @@ final class TestSetupArchitectureTest {
     }
 
     private static String classpath() throws URISyntaxException {
-        final List<String> parts = new ArrayList<>(4);
+        final List<String> parts = new ArrayList<>(8);
         for (final Class<?> type : List.of(
-            SpringBootTest.class, Import.class, MockitoBean.class, IntegrationTest.class
+            SpringBootTest.class, Import.class, MockitoBean.class, IntegrationTest.class,
+            WebApplicationContext.class, Filter.class, MockMvcTester.class
         )) {
             parts.add(
                 Path.of(type.getProtectionDomain().getCodeSource().getLocation().toURI())

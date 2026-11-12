@@ -1,19 +1,22 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
 
-import org.springframework.http.HttpStatus;
+import io.github.dostepnykampus.InvalidInput;
+import io.github.dostepnykampus.MissingResource;
+import io.github.dostepnykampus.Wgs84;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Publiczny odczyt budynków: lista, karta i podpowiedź dla punktu.
+ * Publiczny odczyt budynków: lista, karta i podpowiedź dla punktu. Błędy
+ * idą wspólnymi typami z opisem w {@code detail}, a zakres współrzędnych
+ * sprawdza {@link Wgs84} (#851).
  *
  * @since 0.1.0
  */
@@ -51,8 +54,10 @@ public final class BuildingsController {
         @RequestParam("lat") final double lat,
         @RequestParam("lon") final double lon
     ) {
-        if (BuildingsController.outside(lat, lon)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        if (!Wgs84.LATITUDE.holds(lat) || !Wgs84.LONGITUDE.holds(lon)) {
+            throw new InvalidInput(
+                String.format("Punkt %s, %s jest poza zakresem WGS84", lat, lon)
+            );
         }
         return new LocateResults(this.query.locate(lat, lon)).result();
     }
@@ -66,21 +71,8 @@ public final class BuildingsController {
      */
     @GetMapping("/buildings/{symbol}")
     BuildingCard getBuilding(@PathVariable("symbol") final String symbol) {
-        return this.query.building(symbol).orElseThrow(BuildingsController::missing);
-    }
-
-    private static boolean outside(final double lat, final double lon) {
-        return BuildingsController.bad(lat, -90, 90)
-            || BuildingsController.bad(lon, -180, 180);
-    }
-
-    private static boolean bad(
-        final double value, final double lower, final double upper
-    ) {
-        return !Double.isFinite(value) || value < lower || value > upper;
-    }
-
-    private static ResponseStatusException missing() {
-        return new ResponseStatusException(HttpStatus.NOT_FOUND);
+        return this.query.building(symbol).orElseThrow(
+            () -> new MissingResource(String.format("Nie ma budynku %s", symbol))
+        );
     }
 }
