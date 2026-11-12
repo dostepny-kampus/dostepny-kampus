@@ -36,6 +36,9 @@ import org.maplibre.spatialk.units.extensions.meters
 /** Budynek w środku pierwszego widoku mapy: główny kampus (decyzja 80). */
 const val START_BUILDING = "A-1"
 
+/** Właściwość obiektu konturu z jego numerem w [CampusMapData.outlines]; czyta ją dotknięcie mapy. */
+const val OUTLINE_NUMBER = "outline"
+
 private const val LABEL_SEPARATOR = "/"
 
 private val CAMPUS_MARGIN = 500.meters
@@ -44,8 +47,9 @@ private val CAMPUS_MARGIN = 500.meters
  * Dane warstw mapy V1 z katalogu budynków jako kolekcje GeoJSON w elementach JSON dla źródeł mapy, bez sieci
  * (US1, US1.4, NFR-10). Styl wstawia je do źródeł bez parsowania napisu (#835).
  *
- * @property buildings kontury budynków; obiekt ma właściwość `label`, czyli podpis konturu na mapie, i listę
- *   `symbols`. Kontur wspólny kilku symboli to jeden obiekt z podpisem „C-3/C-4” (decyzja 79)
+ * @property buildings kontury budynków; obiekt ma właściwość `label`, czyli podpis konturu na mapie, listę
+ *   `symbols` i numer `outline` konturu w [outlines]. Kontur wspólny kilku symboli to jeden obiekt z podpisem
+ *   „C-3/C-4” (decyzja 79)
  * @property labels podpisy konturów, każdy raz, w kolejności katalogu; widok mapy rysuje z nich obrazy podpisów
  * @property labelPoints punkty podpisów, jeden na kontur, wewnątrz konturu, z właściwością `label`. Podpis przy
  *   konturze dzielonym na kafelki pojawiałby się w każdym kawałku albo w żadnym (US1, reguła 4 wymagań wspólnych)
@@ -62,6 +66,8 @@ private val CAMPUS_MARGIN = 500.meters
  *   wspólnego mają jeden punkt. Kamera bierze punkt stąd i nie liczy go drugi raz na wątku interfejsu (NFR-11)
  * @property outlinesBySymbol najmniejszy prostokąt z konturem budynku każdego symbolu, bez marginesu; kamera
  *   wpisuje w niego budynek nad małą kartą V2 (US2.8, decyzja 151)
+ * @property outlines symbole budynków każdego konturu, w kolejności katalogu. Tożsamość konturu idzie stąd,
+ *   a podpis jest tylko tekstem do pokazania (US1.1, decyzja 85)
  */
 data class CampusMapData(
     val buildings: JsonElement,
@@ -73,7 +79,19 @@ data class CampusMapData(
     val areas: List<MapArea> = emptyList(),
     val labelPointsBySymbol: Map<String, GeoPoint> = emptyMap(),
     val outlinesBySymbol: Map<String, CampusBounds> = emptyMap(),
+    val outlines: List<List<String>> = emptyList(),
 )
+
+/**
+ * Symbole budynków konturów o numerach [numbers] trafionych jednym dotknięciem, każdy raz; numeru spoza
+ * [CampusMapData.outlines] nie ma w wyniku. Kontur wspólny „C-3/C-4” daje oba symbole, a wtedy ekran pyta
+ * „Który budynek?” (decyzja 85).
+ */
+fun CampusMapData.symbolsAt(numbers: List<Int>): List<String> =
+    numbers.flatMap { outlines.getOrElse(it) { emptyList() } }.distinct()
+
+/** Symbole konturu, do którego należy budynek [building]; `null` bez budynku i dla budynku spoza katalogu. */
+fun CampusMapData.outlineOf(building: String?): List<String>? = outlines.firstOrNull { building in it }
 
 /**
  * Prostokąt terenu budynku [symbol]: budynek pokazany z V2 albo z wyszukiwania może stać na innym terenie niż
@@ -133,11 +151,12 @@ data class CampusBounds(val west: Double, val south: Double, val east: Double, v
 fun campusMapData(catalog: BuildingCatalog): CampusMapData {
     val outlines = catalog.buildings.groupBy(keySelector = Building::outline, valueTransform = Building::symbol)
     val buildings =
-        outlines.map { (outline, symbols) ->
+        outlines.entries.mapIndexed { number, (outline, symbols) ->
             val properties =
                 buildJsonObject {
                     put(key = "label", value = symbols.joinToString(separator = LABEL_SEPARATOR))
                     put(key = "symbols", element = JsonArray(symbols.map { JsonPrimitive(it) }))
+                    put(key = OUTLINE_NUMBER, value = number)
                 }
             Feature(outline.toGeometry(), properties)
         }
@@ -179,14 +198,9 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
         areas = areas,
         labelPointsBySymbol = labelled.flatMap { (symbols, point) -> symbols.map { it to point } }.toMap(),
         outlinesBySymbol = catalog.buildings.mapNotNull { it.outlineBounds() }.toMap(),
+        outlines = outlines.values.toList(),
     )
 }
-
-/**
- * Symbole budynków z podpisów [labels] konturów trafionych jednym dotknięciem, każdy raz. Kontur wspólny
- * „C-3/C-4” daje oba symbole, a wtedy ekran pyta „Który budynek?” (decyzja 85).
- */
-fun symbolsOf(labels: List<String>): List<String> = labels.flatMap { it.split(LABEL_SEPARATOR) }.distinct()
 
 private fun center(points: List<GeoPoint>): GeoPoint? {
     if (points.isEmpty()) return null

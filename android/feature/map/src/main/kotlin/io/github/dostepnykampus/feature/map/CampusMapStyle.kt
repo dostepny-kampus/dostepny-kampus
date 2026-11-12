@@ -10,6 +10,7 @@ import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.featureCollection
+import io.github.dostepnykampus.feature.map.data.outlineOf
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -109,7 +110,7 @@ fun campusMapStyle(data: CampusMapData, selection: MapSelection, colors: MapStyl
         buildJsonObject {
             put(key = "version", value = STYLE_VERSION)
             put(key = "sources", element = sources(data, selection))
-            put(key = "layers", element = layers(data.labels, selection, colors))
+            put(key = "layers", element = layers(data.outlineOf(selection.building), selection, colors))
         }
     return style.toString()
 }
@@ -137,7 +138,7 @@ private fun sources(data: CampusMapData, selection: MapSelection): JsonObject =
         }
     }
 
-private fun layers(labels: List<String>, selection: MapSelection, colors: MapStyleColors): JsonArray =
+private fun layers(chosen: List<String>?, selection: MapSelection, colors: MapStyleColors): JsonArray =
     buildJsonArray {
         add(styleLayer(id = "lad", type = "background") { paint("background-color" to JsonPrimitive(colors.land)) })
         add(
@@ -145,7 +146,6 @@ private fun layers(labels: List<String>, selection: MapSelection, colors: MapSty
                 put(key = "paint", element = basemapPaint(colors))
             },
         )
-        val chosen = selectedLabel(labels, selection.building)
         val alone = chosen.takeIf { selection.entrance == null }
         add(
             styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
@@ -159,7 +159,7 @@ private fun layers(labels: List<String>, selection: MapSelection, colors: MapSty
             },
         )
         chosen?.let { add(selectedLayer(it, colors)) }
-        add(marksLayer(filter = alone?.let(::entrancesOf)))
+        add(marksLayer(filter = alone?.let(::ofBuildings)))
         add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
         if (selection.bounds != null) areaLayers(colors).forEach { add(it) }
         if (selection.entrance != null) chosenLayers().forEach { add(it) }

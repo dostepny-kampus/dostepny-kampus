@@ -54,7 +54,7 @@ class CampusMapSelectionStyleTest {
     @Test
     fun us2_8_neighbours_dimmed() {
         val style = style(building = "A-1")
-        val own = """["==",["get","label"],"A-1"]"""
+        val own = """["any",["in","A-1",["get","symbols"]]]"""
         val fill = style.layer(BUILDINGS_LAYER).paint("fill-color")
         val line = style.layer("kontury").paint("line-color")
         assertEquals("""["case",$own,"#BFE0EC","#D6DBDD"]""", fill)
