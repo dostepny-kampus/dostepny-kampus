@@ -391,8 +391,8 @@ class CampusMapScreenTest {
 
     /**
      * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: V1 → V2 z budynkiem
-     * wpisanym nad arkuszem, „Powiększ” zmienia widok nad kartą, „Wstecz” → widok sprzed otwarcia V2 (US2.8,
-     * NFR-53, decyzje 83 i 151).
+     * nad arkuszem, „Wstecz” bez ruszania mapy → widok sprzed otwarcia V2; po „Powiększ” nad kartą zostaje
+     * widok osoby (US2.8, NFR-53, decyzje 83, 151 i 153).
      */
     @Test
     @Config(qualifiers = "w360dp-h800dp")
@@ -406,12 +406,17 @@ class CampusMapScreenTest {
         val aboveSheet = cameras.last()
         assertEquals(true, aboveSheet.bottomInset > 0)
         assertEquals(true, aboveSheet.copy(bottomInset = 0.0) != start)
-        compose.onNodeWithContentDescription("Powiększ").performClick()
-        compose.waitForIdle()
-        assertEquals(aboveSheet.copy(zoom = aboveSheet.zoom + 1), cameras.last())
         sheet = 0.dp
         compose.waitForIdle()
         assertEquals(start, cameras.last())
+        sheet = 400.dp
+        compose.onNodeWithContentDescription("Powiększ").performClick()
+        compose.waitForIdle()
+        val closer = aboveSheet.copy(zoom = aboveSheet.zoom + 1)
+        assertEquals(closer, cameras.last())
+        sheet = 0.dp
+        compose.waitForIdle()
+        assertEquals(closer.copy(bottomInset = 0.0), cameras.last())
     }
 
     /** Wiersz: pole symbolu „c14” → wynik „Budynek C-14” → V2 z obrysem, US1.1. */

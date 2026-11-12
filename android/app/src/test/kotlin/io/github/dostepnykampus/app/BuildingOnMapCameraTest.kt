@@ -285,8 +285,9 @@ class BuildingOnMapCameraTest {
     }
 
     /**
-     * Wiersz: K3, po „Pokaż” i bezczynności kamery mała karta innego budynku i „Wstecz”
-     * → widok jak przed kartą, decyzja 83.
+     * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta innego budynku i „Wstecz” bez ruszania mapy
+     * → widok jak przed kartą, decyzje 83 i 153. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy
+     * otwartej karcie atrapa nic nie zgłasza.
      */
     @Test
     fun us2_8_back_after_show() {
@@ -294,6 +295,7 @@ class BuildingOnMapCameraTest {
         showOnMap("T-9")
         compose.waitForIdle()
         val before = shown.last().second
+        isIdleReported = false
         compose.runOnUiThread { touch(listOf("A-1")) }
         compose.waitForIdle()
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
