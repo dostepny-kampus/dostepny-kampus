@@ -87,6 +87,10 @@ interface PendingSubmissionDao : PendingSubmissionRows {
 
 /** Pojedyncze kroki zapisu w [PendingSubmissionDao.save]; poza nim nie są używane. */
 interface PendingSubmissionRows {
+    /** Ścieżki plików wszystkich zdjęć w kolejce, także zgłoszeń odrzuconych, do sprzątania przy starcie (#927). */
+    @Query("SELECT path FROM pending_photos")
+    suspend fun allPhotoPaths(): List<String>
+
     /** Zapis wiersza zgłoszenia; tylko dla [PendingSubmissionDao.save]. */
     @Upsert
     suspend fun upsertSubmission(submission: PendingSubmissionEntity)

@@ -98,6 +98,8 @@ internal class FakeStore : PendingSubmissionDao {
         return row.photos.map { it.path }
     }
 
+    override suspend fun allPhotoPaths(): List<String> = rows.flatMap { row -> row.photos.map { it.path } }
+
     override suspend fun deletePhotos(submissionId: String) {
         rows.replaceAll { item -> if (item.submission.id == submissionId) item.copy(photos = emptyList()) else item }
     }

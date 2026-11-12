@@ -22,6 +22,7 @@ import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.feature.capture.photoDir
 import io.github.dostepnykampus.feature.help.FirstLaunchViewModel
 import kotlinx.coroutines.launch
 
@@ -51,12 +52,17 @@ class MainActivity : ComponentActivity() {
                             roles = graph.roles(),
                             onFirstHelpLeft = firstLaunch::markHelpSeen,
                             onChooseMap = onChooseMap,
+                            onRestore = { kept -> lifecycleScope.launch { deleteOrphanPhotos(queue, kept) } },
                         )
                     }
                 }
             }
         }
     }
+}
+
+internal suspend fun MainActivity.deleteOrphanPhotos(queue: SubmissionQueue, kept: Set<String>) {
+    queue.deleteOrphanPhotos(dir = photoDir(filesDir), kept = kept)
 }
 
 /**

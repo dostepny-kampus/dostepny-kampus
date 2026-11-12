@@ -157,6 +157,16 @@ class SubmissionQueue(
     }
 
     /**
+     * Sprzątanie przy starcie: usuwa z [dir] pliki zdjęć, których nie ma w kolejce ani w [kept] (NFR-5, #927).
+     *
+     * @param dir katalog zdjęć zgłoszeń
+     * @param kept pliki zdjęć odtworzonych szkiców
+     */
+    suspend fun deleteOrphanPhotos(dir: File, kept: Set<String>) {
+        deleteOrphanPhotos(store = store, dir = dir, kept = kept, nowMillis = stamps.nowMillis(), ioContext = ioContext)
+    }
+
+    /**
      * Zapisuje poprawkę zgłoszenia z C3 pod jego identyfikatorem, więc kolejka nie ma dwóch wersji (US8.3, BR-9).
      *
      * @param edited poprawiane zgłoszenie
