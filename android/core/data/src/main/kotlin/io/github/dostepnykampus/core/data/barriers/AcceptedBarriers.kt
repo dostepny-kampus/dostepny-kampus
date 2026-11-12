@@ -35,8 +35,9 @@ data class AcceptedBarrier(
 /** Bariery ze zgłoszeń przyjętych dla mapy (US1.3, BR-6). */
 fun interface AcceptedBarriers {
     /**
-     * Bariery z ostatniej odpowiedzi serwera. Pusta lista, gdy serwer ich nie podał (brak sieci, błąd serwera),
-     * więc mapa działa dalej bez znaków barier (NFR-11).
+     * Bariery z ostatniej odpowiedzi serwera, a gdy serwer ich nie podał (brak sieci, błąd serwera), z ostatniej
+     * kopii (NFR-10). Pusta lista, gdy nie ma ani odpowiedzi, ani kopii, więc mapa działa dalej bez znaków barier
+     * (NFR-11).
      */
     suspend fun barriers(): List<AcceptedBarrier>
 }
@@ -44,16 +45,25 @@ fun interface AcceptedBarriers {
 /**
  * [AcceptedBarriers] ze zgłoszeń przyjętych z serwera (`GET /submissions?status=ACCEPTED`).
  *
- * Każde wywołanie pyta serwer przez [accepted] i daje bariery tylko z tej odpowiedzi, więc zgłoszenie, które
- * przestało być przyjęte, znika. Zmiana oznaczenia wejścia, zgłoszenie „bariera usunięta” i zgłoszenie bez
- * uciążliwości nie są barierą do pokazania.
+ * Każde wywołanie pyta serwer przez [accepted]. Udana odpowiedź daje bariery tylko z niej i zastępuje kopię w bazie
+ * [copy], więc zgłoszenie, które przestało być przyjęte, znika także z kopii. Gdy serwer nie odpowie, bariery
+ * przychodzą z kopii, a bez niej lista jest pusta (NFR-10). Zmiana oznaczenia wejścia, zgłoszenie „bariera
+ * usunięta” i zgłoszenie bez uciążliwości nie są barierą do pokazania.
  *
+ * @param copy kopia ostatnich barier w bazie; `null` zostawia źródło bez kopii
  * @param accepted zgłoszenia przyjęte z serwera, np. `SubmissionsApi::accepted` bez budynku
  */
-class ServerAcceptedBarriers(private val accepted: suspend () -> ApiResult<List<Submission>>) : AcceptedBarriers {
+class ServerAcceptedBarriers(
+    private val copy: BarrierListCopy? = null,
+    private val accepted: suspend () -> ApiResult<List<Submission>>,
+) : AcceptedBarriers {
     override suspend fun barriers(): List<AcceptedBarrier> {
         val result = accepted()
-        return if (result is ApiResult.Success) result.value.mapNotNull { it.toBarrier() } else emptyList()
+        return if (result is ApiResult.Success) {
+            result.value.mapNotNull { it.toBarrier() }.also { copy?.save(it) }
+        } else {
+            copy?.restore().orEmpty()
+        }
     }
 }
 
