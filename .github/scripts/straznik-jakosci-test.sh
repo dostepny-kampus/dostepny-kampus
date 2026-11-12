@@ -217,6 +217,12 @@ code_require_non_null() {
 code_split_unmarked() { sed -i 's/^public final class Building {$/@\nNullUnmarked\n&/' "$main_dir/Building.java"; }
 code_marked_base() { sed -i 's/^public final class Building {$/@NullMarked\n&/' "$main_dir/Building.java"; }
 code_drop_marked() { sed -i '/^@NullMarked$/d' "$main_dir/Building.java"; }
+code_jscpd_ignore() { sed -i 's#^public final class Building {$#// jscpd:ignore-start\n&#' "$main_dir/Building.java"; }
+jscpd_config_new() {
+  mkdir -p .github/jscpd
+  printf '%s
+' '{"minTokens":999}' >.github/jscpd/jscpd.json
+}
 code_rename_class() { git mv "$main_dir/Building.java" "$main_dir/Edifice.java"; }
 code_rename_method() { sed -i 's/name()/label()/' "$main_dir/Building.java"; }
 
@@ -256,6 +262,7 @@ run_case "S3: przeniesiony ArchitectureTest.java" "$changed" architecture_rename
 run_case "S3: zmieniony ArchitectureTest.kt w Androidzie" "$changed" konsist_edit
 run_case "S3: nowy plik reguł w backendzie" "$changed" architecture_new_backend
 run_case "S3: nowy plik reguł w module Androida" "$changed" architecture_new_android
+run_case "S3: nowa konfiguracja wykrywania kopii" "$changed" jscpd_config_new
 run_case "S3, S6: klasa pomocnicza o podobnej nazwie" "" architecture_support
 run_case "S3, S6: zwykły test backendu" "" test_edit
 run_case "S3, S6: zwykły test Androida" "" android_test_edit
@@ -267,6 +274,7 @@ run_case "S4: @ i NullUnmarked w osobnych liniach" "$silenced" code_split_unmark
 run_case "S4: -XepExcludedPaths w kompilatorze" "$silenced" pom_excluded_paths
 run_case "S4: -XepDisableAllChecks w nowej linii" "$silenced" pom_disable_all
 run_case "S4: NullAway:OFF" "$silenced" pom_nullaway_off
+run_case "S4: komentarz jscpd:ignore" "$silenced" code_jscpd_ignore
 run_case "S4, S6: Objects.requireNonNull" "" code_require_non_null
 
 run_case "S5, O6: usunięte @NullMarked" "$unmarked" package_drop_marked
