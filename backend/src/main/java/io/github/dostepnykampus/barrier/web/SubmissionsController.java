@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier.web;
 
 import io.github.dostepnykampus.ConflictingState;
+import io.github.dostepnykampus.ForbiddenChange;
 import io.github.dostepnykampus.MissingLogin;
 import io.github.dostepnykampus.MissingResource;
 import io.github.dostepnykampus.barrier.SubmissionService;
@@ -141,17 +142,22 @@ public final class SubmissionsController {
 
     /**
      * Zapisuje edycję zgłoszenia, jeśli na serwerze jest ta sama wersja,
-     * od której zaczęto edycję (US8.3, US9.3, BR-10).
+     * od której zaczęto edycję (US8.3, US9.3, BR-10). Cudzego zgłoszenia
+     * nie zmienia nikt poza autorem (BR-3).
      *
      * @param id Identyfikator zgłoszenia
      * @param body Edycja według schematu SubmissionUpdate
+     * @param account Zalogowane konto; jego nazwa to identyfikator z tokenu
      * @return Zgłoszenie po edycji z kolejną wersją
      */
     @PutMapping("/submissions/{submissionId}")
     SubmissionResponse updateSubmission(
         @PathVariable("submissionId") final UUID id,
-        @RequestBody final SubmissionUpdateRequest body
+        @RequestBody final SubmissionUpdateRequest body, final Principal account
     ) {
+        if (this.finder.foreign(id, account.getName())) {
+            throw new ForbiddenChange("Zgłoszenie zmienia tylko jego autor");
+        }
         return switch (this.service.update(body.toCommand(id))) {
             case EditResult.Saved saved -> new SubmissionResponse(saved.submission());
             case EditResult.Conflict conflict -> throw new ConflictingState(
