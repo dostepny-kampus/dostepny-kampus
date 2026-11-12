@@ -84,6 +84,15 @@ internal fun DrawScope.drawMarking(shape: Path, mark: Path, shapeColor: Color, m
  */
 fun markingImage(marking: EntranceMarking, sizePx: Int, shapeColor: Color, markColor: Color): Bitmap {
     val look = marking.look()
+    val shape = PathParser().parsePathString(look.shape).toPath()
+    val mark = PathParser().parsePathString(look.mark).toPath()
+    return signBitmap(sizePx) {
+        drawMarking(shape = shape, mark = mark, shapeColor = shapeColor, markColor = markColor)
+    }
+}
+
+/** Obraz [sizePx] × [sizePx] ze znakiem narysowanym przez [draw], dla warstw mapy. */
+internal fun signBitmap(sizePx: Int, draw: DrawScope.() -> Unit): Bitmap {
     val image = ImageBitmap(width = sizePx, height = sizePx)
     val size = Size(width = sizePx.toFloat(), height = sizePx.toFloat())
     CanvasDrawScope().draw(
@@ -91,13 +100,7 @@ fun markingImage(marking: EntranceMarking, sizePx: Int, shapeColor: Color, markC
         layoutDirection = LayoutDirection.Ltr,
         canvas = Canvas(image),
         size = size,
-    ) {
-        drawMarking(
-            shape = PathParser().parsePathString(look.shape).toPath(),
-            mark = PathParser().parsePathString(look.mark).toPath(),
-            shapeColor = shapeColor,
-            markColor = markColor,
-        )
-    }
+        block = draw,
+    )
     return image.asAndroidBitmap()
 }
