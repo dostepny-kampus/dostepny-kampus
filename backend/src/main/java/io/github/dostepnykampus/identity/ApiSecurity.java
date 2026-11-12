@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.identity;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import tools.jackson.databind.json.JsonMapper;
  *
  * <p>Serwer jest serwerem zasobów OAuth 2.0 bez własnego logowania; role są
  * w {@code realm_access.roles} tokenu. Operacje publiczne nie wymagają tokenu.
+ * Lista własnych zgłoszeń (mine=true) wymaga roli Zbierającego (US8.1).
  * Pozostałe bez ważnego tokenu dają 401, a bez wymaganej roli 403, obie jako
  * {@code application/problem+json}. Ścieżka spoza tabeli jest odrzucana.
  * Zgodność tabeli z kontraktem sprawdza {@code SecurityContractTest}.</p>
@@ -88,6 +90,7 @@ public final class ApiSecurity {
         final AuthorizeHttpRequestsConfigurer<HttpSecurity>
             .AuthorizationManagerRequestMatcherRegistry rules
     ) {
+        rules.requestMatchers(ApiSecurity::ownSubmissions).hasRole("COLLECTOR");
         rules.requestMatchers(
             HttpMethod.GET, "/buildings", "/buildings/locate", "/buildings/{symbol}",
             "/buildings/{symbol}/floors", "/buildings/{symbol}/floors/{floor}/rooms",
@@ -109,6 +112,12 @@ public final class ApiSecurity {
         rules.requestMatchers(HttpMethod.PUT, "/submissions/{id}/photos/{photo}").authenticated();
         rules.requestMatchers(HttpMethod.GET, "/sync/pull", "/me").authenticated();
         rules.anyRequest().denyAll();
+    }
+
+    private static boolean ownSubmissions(final HttpServletRequest request) {
+        return HttpMethod.GET.matches(request.getMethod())
+            && request.getContextPath().concat("/submissions").equals(request.getRequestURI())
+            && Boolean.parseBoolean(request.getParameter("mine"));
     }
 
     private static Collection<GrantedAuthority> authorities(final Jwt token) {

@@ -11,10 +11,13 @@ import io.github.dostepnykampus.MissingResource;
 import io.github.dostepnykampus.barrier.SubmissionService;
 import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
+import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
+import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,17 +62,25 @@ public final class SubmissionsController {
     }
 
     /**
-     * Zwraca zgłoszenia przyjęte według filtrów (US1.3, US2.2, BR-6).
+     * Zwraca zgłoszenia przyjęte według filtrów (US1.3, US2.2, BR-6), a z
+     * mine=true własne zgłoszenia zalogowanej osoby w każdym statusie (US8.1).
      *
      * @param filter Filtry z parametrów zapytania
-     * @return Zgłoszenia przyjęte od najstarszego
+     * @param account Zalogowane konto albo null bez logowania
+     * @return Zgłoszenia od najstarszego
      */
     @GetMapping("/submissions")
-    List<SubmissionResponse> listSubmissions(final SubmissionFilter filter) {
+    List<SubmissionResponse> listSubmissions(
+        final SubmissionFilter filter, @Nullable final Principal account
+    ) {
+        final SubmissionQuery query = filter.toQuery();
+        final List<Submission> found;
         if (filter.mine()) {
-            throw new MissingLogin("Własne zgłoszenia wymagają logowania");
+            found = this.finder.own(SubmissionsController.name(account), query);
+        } else {
+            found = this.finder.list(query);
         }
-        return this.finder.list(filter.toQuery()).stream().map(SubmissionResponse::new).toList();
+        return found.stream().map(SubmissionResponse::new).toList();
     }
 
     /**
@@ -151,5 +162,12 @@ public final class SubmissionsController {
             case EditResult.Missing _ -> throw new MissingResource(SubmissionsController.MISSING);
             case null -> throw new IllegalStateException("Brak wyniku edycji zgłoszenia");
         };
+    }
+
+    private static String name(@Nullable final Principal account) {
+        if (account == null) {
+            throw new MissingLogin("Własne zgłoszenia wymagają logowania");
+        }
+        return account.getName();
     }
 }

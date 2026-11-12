@@ -33,6 +33,15 @@ public interface SubmissionFinder {
     List<Submission> list(SubmissionQuery query);
 
     /**
+     * Wyszukuje zgłoszenia jednego autora według zapytania (US8.1).
+     *
+     * @param author Identyfikator konta autora
+     * @param query Statusy oraz opcjonalny budynek i piętro
+     * @return Zgłoszenia autora posortowane po chwili utworzenia, potem po identyfikatorze
+     */
+    List<Submission> own(String author, SubmissionQuery query);
+
+    /**
      * Wyszukuje zgłoszenia podobne do danego (US10.1, BR-13), bez niego samego.
      *
      * @param id Identyfikator sprawdzanego zgłoszenia
