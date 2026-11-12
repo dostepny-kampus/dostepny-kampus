@@ -8,6 +8,8 @@ package io.github.dostepnykampus.barrier;
 import io.github.dostepnykampus.barrier.domain.Reader;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.security.Principal;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -69,7 +71,7 @@ public final class SubmissionPhotosController {
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia z listy photoIds
-     * @param request Żądanie z kontem i rolą czytelnika
+     * @param request Wejściowe żądanie z kontem i rolą czytelnika
      * @return Plik JPEG bez metadanych
      */
     @GetMapping(
@@ -83,7 +85,10 @@ public final class SubmissionPhotosController {
     ) {
         return this.photos.get(
             submission, photo,
-            new Reader(request.getUserPrincipal(), request.isUserInRole("VERIFIER"))
+            new Reader(
+                Optional.ofNullable(request.getUserPrincipal()).map(Principal::getName),
+                request.isUserInRole("VERIFIER")
+            )
         );
     }
 

@@ -19,7 +19,6 @@ import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import io.github.dostepnykampus.barrier.json.SubmissionContentJson;
-import java.security.Principal;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -158,7 +157,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     public Optional<Submission> visible(final UUID id, final Reader reader) {
         return this.find(id).filter(
             found -> found.status().publiclyVisible() || reader.verifier()
-                || this.wrote(id, reader.account())
+                || reader.account().filter(name -> !this.foreign(id, name)).isPresent()
         );
     }
 
@@ -212,10 +211,6 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                     )
                 )
             );
-    }
-
-    private boolean wrote(final UUID id, @Nullable final Principal account) {
-        return account != null && !this.foreign(id, account.getName());
     }
 
     private List<Submission> select(final SubmissionQuery query, @Nullable final String author) {

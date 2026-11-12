@@ -19,6 +19,7 @@ import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
@@ -89,15 +90,18 @@ public final class SubmissionsController {
      * jak przy jego braku.
      *
      * @param id Identyfikator zgłoszenia
-     * @param request Żądanie z kontem i rolą czytelnika
+     * @param request Wejściowe żądanie z kontem i rolą czytelnika
      * @return Zgłoszenie widoczne dla czytelnika
      */
     @GetMapping("/submissions/{submissionId}")
     SubmissionResponse getSubmission(
         @PathVariable("submissionId") final UUID id, final HttpServletRequest request
     ) {
-        return this.finder
-            .visible(id, new Reader(request.getUserPrincipal(), request.isUserInRole("VERIFIER")))
+        final Reader reader = new Reader(
+            Optional.ofNullable(request.getUserPrincipal()).map(Principal::getName),
+            request.isUserInRole("VERIFIER")
+        );
+        return this.finder.visible(id, reader)
             .map(SubmissionResponse::new)
             .orElseThrow(() -> new MissingResource(SubmissionsController.MISSING));
     }

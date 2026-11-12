@@ -5,16 +5,14 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
-import java.security.Principal;
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 /**
  * Osoba, która czyta zgłoszenie albo jego zdjęcie (BR-5, BR-6).
  *
- * @param account Zalogowane konto albo {@code null} bez logowania; jego nazwa
- *  to identyfikator z tokenu
+ * @param account Identyfikator konta z tokenu; pusty bez logowania
  * @param verifier Czy konto ma rolę Weryfikatora
  * @since 0.1.0
  */
-public record Reader(@Nullable Principal account, boolean verifier) {
+public record Reader(Optional<String> account, boolean verifier) {
 }
