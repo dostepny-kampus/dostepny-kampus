@@ -8,6 +8,7 @@ package io.github.dostepnykampus.core.data.barriers
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.core.model.SubmissionFloor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -32,7 +33,13 @@ private data class CachedBarrier(
     val type: String? = null,
     val buildingSymbol: String? = null,
     val verifiedAt: Long? = null,
+    val entranceId: String? = null,
+    val floor: CachedFloor? = null,
+    val photoIds: List<String> = emptyList(),
 )
+
+@Serializable
+private data class CachedFloor(val floorId: String? = null, val number: Int? = null, val isMezzanine: Boolean? = null)
 
 private fun cached(barrier: AcceptedBarrier): CachedBarrier =
     CachedBarrier(
@@ -43,6 +50,9 @@ private fun cached(barrier: AcceptedBarrier): CachedBarrier =
         type = barrier.type?.code,
         buildingSymbol = barrier.buildingSymbol,
         verifiedAt = barrier.verifiedAt?.toEpochMilli(),
+        entranceId = barrier.entranceId,
+        floor = barrier.floor?.run { CachedFloor(floorId = floorId, number = number, isMezzanine = isMezzanine) },
+        photoIds = barrier.photoIds,
     )
 
 private fun CachedBarrier.toBarrier(): AcceptedBarrier =
@@ -53,4 +63,7 @@ private fun CachedBarrier.toBarrier(): AcceptedBarrier =
         type = type?.let(BarrierType::fromCode),
         buildingSymbol = buildingSymbol,
         verifiedAt = verifiedAt?.let(Instant::ofEpochMilli),
+        entranceId = entranceId,
+        floor = floor?.run { SubmissionFloor(floorId = floorId, number = number, isMezzanine = isMezzanine) },
+        photoIds = photoIds,
     )
