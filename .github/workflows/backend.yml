@@ -11,6 +11,7 @@ on:
       - "sprint/**"
     paths:
       - "backend/**"
+      - "data/**"
       - ".github/workflows/backend.yml"
   merge_group:
     types:
@@ -45,7 +46,7 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
-      - name: Sprawdź, czy PR albo grupa w kolejce zmienia serwer
+      - name: Sprawdź, czy PR albo grupa w kolejce zmienia serwer albo dane, które serwer importuje
         id: diff
         env:
           EVENT: ${{ github.event_name }}
@@ -59,7 +60,7 @@ jobs:
             from=$GROUP_BASE_SHA
             to=$GROUP_HEAD_SHA
           fi
-          if git diff --quiet "$from" "$to" -- backend .github/workflows/backend.yml; then
+          if git diff --quiet "$from" "$to" -- backend data .github/workflows/backend.yml; then
             echo "serwer=false" >> "$GITHUB_OUTPUT"
           else
             echo "serwer=true" >> "$GITHUB_OUTPUT"
@@ -83,6 +84,10 @@ jobs:
           java-version: 25
           cache: maven
           cache-dependency-path: backend/pom.xml
+      - name: Testy skryptów danych
+        if: ${{ github.event_name != 'push' }}
+        working-directory: data/scripts
+        run: python3 -X utf8 -m unittest discover -s tests -v
       - name: Zbuduj, przetestuj i sprawdź qulice
         if: ${{ github.event_name != 'push' }}
         run: ./mvnw -B verify

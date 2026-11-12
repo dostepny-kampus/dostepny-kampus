@@ -3,8 +3,7 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 """Testy nazwy budynku do pokazania: wszystkie postaci nazw z symbolem w `data/buildings/pwr-buildings.geojson`.
 
-TODO(#1107): CI nie uruchamia jeszcze testów skryptów danych; lokalnie
-`python -X utf8 -m unittest discover -s data/scripts/tests`.
+Uruchamia je workflow `backend`; lokalnie `python -X utf8 -m unittest discover -s data/scripts/tests`.
 """
 
 from __future__ import annotations
