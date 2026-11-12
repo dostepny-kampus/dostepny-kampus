@@ -9,9 +9,9 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Stan | Liczba |
 | --- | --- |
-| Pełny test | 8 |
+| Pełny test | 9 |
 | Tylko częściowo | 14 |
-| Bez testu | 163 |
+| Bez testu | 162 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -116,7 +116,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `synchronizacja.feature` | Wygasłe zalogowanie czeka na ponowne zalogowanie | BR-26, US9.4, US14.4 | `app · LoginExpiredGateTest.br26_expired_then_resumed` | częściowo |
 | `synchronizacja.feature` | Odebrana rola zostawia zgłoszenie w telefonie ze statusem „Nie wysłano” | BR-26, US9.5, US14.1 | — | brak |
 | `synchronizacja.feature` | Odrzucona treść albo zdjęcie zostawia zgłoszenie ze statusem „Nie wysłano” | BR-26, US9.5 | — | brak |
-| `synchronizacja.feature` | Licznik oczekujących nie liczy zgłoszeń „Nie wysłano” | BR-26, US9.5 | — | brak |
+| `synchronizacja.feature` | Licznik oczekujących nie liczy zgłoszeń „Nie wysłano” | BR-26, US9.5 | `feature/capture · MySubmissionsScreenTest.us9_1_waiting_count` | pełny |
 | `synchronizacja.feature` | Ponowny zapis wysyła zgłoszenie „Nie wysłano” znów | BR-26, US9.5 | `core/data · RefusedResaveTest.br26 ponowny zapis wysyła` | pełny |
 | `synchronizacja.feature` | Przy konflikcie wersji aplikacja pokazuje obie wersje | BR-10, US9.3 | — | brak |
 | `synchronizacja.feature` | Przy konflikcie wersji Zbierający wybiera wersję | BR-10, US9.3 | — | brak |
