@@ -62,6 +62,7 @@ detekt-gradlePlugin = { module = "dev.detekt:detekt-gradle-plugin", version.ref 
 moduleGraphAssert-gradlePlugin = { module = "com.jraska.module.graph.assertion:plugin", version.ref = "moduleGraphAssert" }
 detekt-api = { module = "dev.detekt:detekt-api", version.ref = "detekt" }
 detekt-test = { module = "dev.detekt:detekt-test", version.ref = "detekt" }
+detekt-test-utils = { module = "dev.detekt:detekt-test-utils", version.ref = "detekt" }
 detekt-rules-ktlint = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
 compose-rules-detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "composeRules" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
