@@ -158,6 +158,68 @@ class ArchitectureTest {
         assertEquals(expected.map { "$BASE.feature.map.$it" }.toSet(), globalState(files))
     }
 
+    /** Pliki z `@Composable` nie liczą geometrii `core.geo`; wynik przychodzi w stanie z modelu widoku (#892). */
+    @Test
+    fun nfr11_composable_no_geometry() {
+        val production = Konsist.scopeFromProduction().files
+        assertEquals(emptySet<String>(), composableGeometry(production) - GEOMETRY_OUTSIDE_VM.keys, GEOMETRY_HINT)
+    }
+
+    /** #892: obliczenia `core.geo` importują tylko modele widoku i pakiety `data`, więc nie ma pliku pośredniego. */
+    @Test
+    fun nfr11_geometry_only_in_vm() {
+        val production = Konsist.scopeFromProduction().files
+        val found = geometryOutsideViewModels(production)
+        assertEquals(emptySet<String>(), found - GEOMETRY_OUTSIDE_VM.keys, GEOMETRY_HINT)
+        assertEquals(emptySet<String>(), GEOMETRY_OUTSIDE_VM.keys - found)
+    }
+
+    /** #892: `@Composable` z importem obliczeń geometrii łamie obie reguły, a model widoku żadnej. */
+    @Test
+    fun nfr11_geometry_rule_rejects(
+        @TempDir fixtures: File,
+    ) {
+        val directory = File(fixtures, "geo").apply { mkdirs() }
+        val compute = "package $BASE.core.geo\nfun labelPoint(x: Int): Int = x"
+        File(directory, "LabelPoint.kt").writeText(compute)
+        val screen =
+            listOf(
+                "package $BASE.feature.map",
+                "import $BASE.core.geo.labelPoint",
+                "@Composable fun Pin() { labelPoint(1) }",
+            ).joinToString(separator = System.lineSeparator())
+        File(directory, "Pin.kt").writeText(screen)
+        val model =
+            "package $BASE.feature.map\nimport $BASE.core.geo.labelPoint\nclass PinViewModel { val p = labelPoint(1) }"
+        File(directory, "PinViewModel.kt").writeText(model)
+        val files = Konsist.scopeFromExternalDirectory(directory.absolutePath).files
+        assertEquals(setOf("$BASE.feature.map.Pin"), composableGeometry(files))
+        assertEquals(setOf("$BASE.feature.map.Pin"), geometryOutsideViewModels(files))
+    }
+
+    private fun geometryImporters(files: List<KoFileDeclaration>): List<KoFileDeclaration> {
+        val computations =
+            files
+                .filter { it.packagePath() == "$BASE.core.geo" && it.name !in GEOMETRY_CONVERSIONS }
+                .flatMap { file -> file.functions(includeNested = false).map { "${file.packagePath()}.${it.name}" } }
+                .toSet()
+        return files
+            .filter { it.inPackage("feature") || it.inPackage("app") }
+            .filter { file -> file.imports.any { it.name in computations } }
+    }
+
+    private fun composableGeometry(files: List<KoFileDeclaration>): Set<String> =
+        geometryImporters(files)
+            .filter { file -> file.functions(includeNested = true).any { it.hasAnnotationWithName("Composable") } }
+            .map { "${it.packagePath()}.${it.name}" }
+            .toSet()
+
+    private fun geometryOutsideViewModels(files: List<KoFileDeclaration>): Set<String> =
+        geometryImporters(files)
+            .filterNot { it.name.endsWith("ViewModel") || it.packagePath().split('.').contains("data") }
+            .map { "${it.packagePath()}.${it.name}" }
+            .toSet()
+
     private fun globalState(files: List<KoFileDeclaration>): Set<String> {
         val topLevel =
             files
@@ -234,6 +296,23 @@ class ArchitectureTest {
                 "Mutable(List|Map|Set)",
                 "ArrayList|HashMap|HashSet",
             ).joinToString(separator = "|", prefix = """\b(""", postfix = """)\b""").toRegex()
+
+        const val GEOMETRY_HINT =
+            "Geometria poza modelem widoku: policz w modelu widoku poza wątkiem głównym i podaj wynik w stanie ekranu"
+
+        /** Zamiany modelu na typy spatialk, bez obliczeń geometrii. */
+        val GEOMETRY_CONVERSIONS = setOf("SpatialkGeometry")
+
+        /** Pliki z obliczeniami `core.geo` poza modelem widoku i pakietem `data`; lista może tylko maleć (#892). */
+        val GEOMETRY_OUTSIDE_VM =
+            mapOf(
+                "$BASE.feature.map.BuildingList" to
+                    "#1053: lista z nagłówkami terenów (#1058) liczy wyszukiwanie w kompozycji",
+                "$BASE.feature.map.CampusSearch" to
+                    "#1053: wyszukiwanie liczone w kompozycji, jak punkt podpisu w #818",
+                "$BASE.feature.capture.BuildingLookup" to
+                    "#892: liczy w computeContext dla modeli widoku, poza wątkiem głównym; do pakietu data",
+            )
 
         /** Stan globalny w kodzie produkcyjnym, z numerem zadania; lista może tylko maleć (#887). */
         val GLOBAL_STATE = emptyMap<String, String>()
