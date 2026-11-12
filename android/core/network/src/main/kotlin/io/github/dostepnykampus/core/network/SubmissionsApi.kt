@@ -81,12 +81,12 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
         }
 
     /**
-     * Zgłoszenia przyjęte do mapy i karty budynku (US1.3, US2.2, BR-6).
+     * Zgłoszenia przyjęte do mapy i karty budynku (`status=ACCEPTED`, US1.3, US2.2, BR-6).
      *
      * @param buildingSymbol tylko zgłoszenia z tego budynku; `null` dla wszystkich
      */
     suspend fun accepted(buildingSymbol: String? = null): ApiResult<List<Submission>> {
-        val builder = path().newBuilder()
+        val builder = path().newBuilder().addQueryParameter(name = "status", value = "ACCEPTED")
         buildingSymbol?.let { builder.addQueryParameter(name = "buildingSymbol", value = it) }
         return http.exchange(request(builder.build(), body = null, method = GET)) { code, body ->
             if (code == HTTP_OK) {
