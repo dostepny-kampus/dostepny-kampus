@@ -33,6 +33,7 @@ import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE
 import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
@@ -46,8 +47,12 @@ private const val TOUCH_TOLERANCE_DP = 24f
  * Widok MapLibre Android bez kluczy i kont (ADR-0005); logo i podpis biblioteki zastępuje podpis ekranu.
  * Podpis konturu rośnie z czcionką telefonu najwyżej 1,4 raza (reguła 4 wymagań wspólnych). Dotknięcie do 24 dp od
  * konturu, połowa celu 48 dp, trafia w kontur (decyzja 85). Kafelki nie są pobierane na zapas, tylko widoczne
- * (NFR-39). Natywny widok powstaje i zwalnia pamięć raz, razem z ekranem; przy V2 jako arkuszu ten sam widok
- * przechodzi do innej sceny z innym cyklem życia, więc zmiana cyklu tylko zatrzymuje i wznawia mapę.
+ * (NFR-39). Widok kamery zgłasza tylko po geście osoby, nie po ruchu zleconym przez ekran, więc wpisanie budynku
+ * nad małą kartą nie liczy się jako ruch osoby (decyzja 151). Zmiana rozmiaru mapy przerywa ruch kamery, więc po
+ * niej widok znów idzie do zleconej kamery i „Wstecz” z V2 wraca dokładnie do widoku sprzed karty (decyzja 83).
+ * Natywny widok powstaje i zwalnia pamięć raz, razem
+ * z ekranem; przy V2 jako arkuszu ten sam widok przechodzi do innej sceny z innym cyklem życia, więc zmiana cyklu
+ * tylko zatrzymuje i wznawia mapę.
  */
 object MapLibreMapView : CampusMapView {
     @Composable
@@ -85,7 +90,7 @@ object MapLibreMapView : CampusMapView {
             mapView.getMapAsync { ready ->
                 ready.prefetchZoomDelta = 0
                 ready.cameraPosition = currentCamera.toPosition()
-                ready.addOnCameraIdleListener { cameraIdle(ready.cameraPosition.toCamera()) }
+                ready.onPersonIdle { cameraIdle(it) }
                 ready.addOnMapClickListener { point ->
                     val at = ready.projection.toScreenLocation(point)
                     val area = RectF(at.x - tolerance, at.y - tolerance, at.x + tolerance, at.y + tolerance)
@@ -109,7 +114,7 @@ object MapLibreMapView : CampusMapView {
             if (size != IntSize.Zero) limits?.let { map?.limitTo(it) }
             onDispose {}
         }
-        DisposableEffect(map, camera) {
+        DisposableEffect(map, camera, limits) {
             val ready = map
             if (ready != null && ready.cameraPosition.toCamera() != camera) {
                 ready.animateCamera(CameraUpdateFactory.newCameraPosition(camera.toPosition()))
@@ -143,6 +148,15 @@ object MapLibreMapView : CampusMapView {
                 if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) mapView.onPause()
                 if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) mapView.onStop()
             }
+        }
+    }
+
+    private fun MapLibreMap.onPersonIdle(report: (MapCamera) -> Unit) {
+        var isByPerson = false
+        addOnCameraMoveStartedListener { reason -> isByPerson = reason == REASON_API_GESTURE }
+        addOnCameraIdleListener {
+            if (isByPerson) report(cameraPosition.toCamera())
+            isByPerson = false
         }
     }
 
