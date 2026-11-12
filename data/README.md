@@ -17,7 +17,7 @@ Plik to jeden `FeatureCollection` w GeoJSON (RFC 7946, EPSG:4326), gotowy jako j
 
 | `kind` | Geometria | Pozostałe właściwości |
 | --- | --- | --- |
-| `building` | `Polygon` albo `MultiPolygon` | `symbols` (np. `["C-13"]`), `name` (tag `name` z OSM albo `null`), `osm_id` (np. `way/101124650`) |
+| `building` | `Polygon` albo `MultiPolygon` | `symbols` (np. `["C-13"]`), `name` (tag `name` z OSM albo `null`), `display_name` (nazwa do pokazania obok symbolu; pola nie ma, gdy takiej nazwy brak), `osm_id` (np. `way/101124650`) |
 | `entrance` | `Point` | `symbols`, `osm_id`, `entrance` (np. `main`, `yes`), `ref`, `wheelchair` (wartość tagu z OSM albo `null`) |
 
 Każdy obiekt OSM występuje raz. Kontury są pierwsze, wejścia po nich, każda grupa posortowana po `osm_id`. Lista `symbols` jest posortowana naturalnie (`A-2` przed `A-10`).
@@ -47,6 +47,8 @@ Skrypt wysyła do Overpass API jedno zapytanie w granicach prostokąta obejmują
 3. węzły z tagiem `entrance` leżące na obrysach tych budynków.
 
 Symbol budynku pochodzi z tagu `ref` (`A1`, `C19`, `D8a` zamieniamy na `A-1`, `C-19`, `D-8a`). Gdy `ref` nie ma symbolu, bierzemy symbol z `name` (np. `Dom Studencki T-6 "Alcatraz"` daje `T-6`). Budynek bez symbolu pomijamy.
+
+Pole `display_name` to nazwa budynku do pokazania obok jego symbolu: aplikacja i serwer czytają ją z pliku i same nazwy nie przerabiają. Powstaje z `name` w `scripts/display_name.py`: symbol swojego budynku znika razem z łącznikiem `/` albo `-`, także ze środka nazwy (`A-1 / Budynek główny` daje `Budynek główny`, `Dom Studencki T-6 "Alcatraz"` daje `Dom Studencki "Alcatraz"`). Kontur bez nazwy albo z nazwą z samych symboli (`C-3/C-4`) nie ma tego pola. Gdy po symbolu zostają mniej niż 4 litery (`M-6 bis`), `display_name` jest równy `name`. Cudzysłowy zostają jak w OSM.
 
 ## Licencja i atrybucja
 
