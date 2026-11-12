@@ -151,7 +151,7 @@ Arkusz bariery na dole mapy otwiera dotknięcie znaku. Bariery nie trzeba szuka�
 | --- | --- | --- | --- |
 | Typ bariery tymi samymi napisami co na V2, uciążliwość napisem i ikoną | dane | US1.5, NFR-21 | — |
 | Miejsce: budynek i wejście albo piętro, zdjęcie, „Sprawdzone 12.11.2026” | dane | US1.5, US2.5, PW-3 | — |
-| „Pokaż opis budynku” i „Zamknij” | czynność główna stanu, czynność | US1.5, PW-5 | V2; „Zamknij”: V1 |
+| „Pokaż opis budynku” i „Zamknij”. Bariera poza budynkiem ma w miejscu napis „Poza budynkiem” i nie ma „Pokaż opis budynku”, bo nie ma budynku do pokazania | czynność główna stanu, czynność | US1.5, PW-5, BR-G2 | V2; „Zamknij”: V1 |
 
 Arkusz „Który budynek?” na dole mapy otwiera dotknięcie konturu wspólnego albo dotknięcie w zasięgu dwóch konturów (decyzja 85):
 

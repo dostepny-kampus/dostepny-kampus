@@ -42,6 +42,9 @@
     <string name="mapa_bariera_typ">%1$s: %2$s</string>
     <string name="mapa_bariera_w_budynku">%1$s, budynek %2$s</string>
     <string name="mapa_bariera_poza_budynkiem">%1$s, poza budynkiem</string>
+    <string name="mapa_bariera_bez_typu">Bariera</string>
+    <string name="mapa_bariera_opis_budynku">Pokaż opis budynku</string>
+    <string name="mapa_bariera_sprawdzone">Sprawdzone %1$s</string>
     <string name="mapa_bariera_miejsce_poza">Poza budynkiem</string>
     <string name="mapa_bariera_budynek_z_nazwa">%1$s %2$s</string>
     <string name="mapa_bariera_parter">parter</string>
