@@ -38,7 +38,8 @@ import tools.jackson.databind.json.JsonMapper;
  * operację, parametry ścieżki, zapytania i nagłówków, treść żądania, status,
  * typ treści i treść odpowiedzi. Operacja, status albo typ treści spoza
  * kontraktu jest naruszeniem. Żądanie niezgodne z kontraktem jest dopuszczone,
- * gdy odpowiedź ma status 4xx opisany w kontrakcie. Tożsamość testy dają
+ * gdy odpowiedź ma status 4xx opisany w kontrakcie. Żądanie złożone ręcznie,
+ * bez {@code pathInfo}, biblioteka czyta po adresie żądania. Tożsamość testy dają
  * przez filtry zabezpieczeń, nie nagłówkiem, więc biblioteka nie sprawdza
  * {@code security}. Biblioteka nie dopisuje też {@code additionalProperties:
  * false}, bo kontrakt zamyka obiekty przez {@code unevaluatedProperties}.
@@ -120,6 +121,9 @@ public final class OpenApiContract implements ResultMatcher {
     @Override
     public void match(final MvcResult result) {
         final MockHttpServletRequest request = result.getRequest();
+        if (request.getPathInfo() == null) {
+            request.setPathInfo(request.getRequestURI());
+        }
         final int status = result.getResponse().getStatus();
         final String name = "%s %s %d".formatted(
             request.getMethod(), request.getRequestURI(), status

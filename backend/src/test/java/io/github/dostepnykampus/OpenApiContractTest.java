@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -113,6 +114,13 @@ final class OpenApiContractTest {
             Arguments.of(
                 MockMvcRequestBuilders.get("/buildings/A-1"),
                 OpenApiContractTest.json(200, OpenApiContractTest.CARD), "karta budynku"
+            ),
+            Arguments.of(
+                (RequestBuilder) servlet -> new MockHttpServletRequest(
+                    servlet, "GET", "/buildings/A-1"
+                ),
+                OpenApiContractTest.json(200, OpenApiContractTest.CARD),
+                "żądanie złożone ręcznie, bez pathInfo"
             ),
             Arguments.of(
                 OpenApiContractTest.locate("51.1"),
