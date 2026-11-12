@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import org.jspecify.annotations.Nullable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
@@ -153,20 +154,12 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
 
     @Override
     public List<Submission> list(final SubmissionQuery query) {
-        return this.jdbc.sql(
-            String.format(
-                """
-                SELECT %s FROM submissions WHERE status IN (:statuses)
-                    AND (CAST(:building AS TEXT) IS NULL OR building_symbol = :building)
-                    AND (CAST(:floor AS TEXT) IS NULL OR floor_id = :floor)
-                ORDER BY created_at, id
-                """,
-                JdbcSubmissions.COLUMNS
-            )
-        ).param("statuses", query.statuses().stream().map(Enum::name).toList())
-            .param("building", query.buildingSymbol())
-            .param("floor", query.floorId())
-            .query(SubmissionRows.readable(this.rows));
+        return this.select(query, null);
+    }
+
+    @Override
+    public List<Submission> own(final String author, final SubmissionQuery query) {
+        return this.select(query, author);
     }
 
     @Override
@@ -198,6 +191,25 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                     )
                 )
             );
+    }
+
+    private List<Submission> select(final SubmissionQuery query, @Nullable final String author) {
+        return this.jdbc.sql(
+            String.format(
+                """
+                SELECT %s FROM submissions WHERE status IN (:statuses)
+                    AND (CAST(:building AS TEXT) IS NULL OR building_symbol = :building)
+                    AND (CAST(:floor AS TEXT) IS NULL OR floor_id = :floor)
+                    AND (CAST(:author AS TEXT) IS NULL OR author = :author)
+                ORDER BY created_at, id
+                """,
+                JdbcSubmissions.COLUMNS
+            )
+        ).param("statuses", query.statuses().stream().map(Enum::name).toList())
+            .param("building", query.buildingSymbol())
+            .param("floor", query.floorId())
+            .param("author", author)
+            .query(SubmissionRows.readable(this.rows));
     }
 
     private Optional<Submission> write(

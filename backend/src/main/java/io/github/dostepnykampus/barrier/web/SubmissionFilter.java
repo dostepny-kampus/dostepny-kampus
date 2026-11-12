@@ -58,7 +58,7 @@ record SubmissionFilter(
         final Set<SubmissionStatus> result;
         if (this.status == null) {
             result = Stream.of(SubmissionStatus.values())
-                .filter(SubmissionStatus::publiclyVisible)
+                .filter(value -> this.mine || value.publiclyVisible())
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(SubmissionStatus.class)));
         } else {
             result = Set.copyOf(this.status);
