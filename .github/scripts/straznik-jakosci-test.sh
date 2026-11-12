@@ -296,6 +296,28 @@ run_case "S5, S6: usunięty package-info.java bez @NullMarked" "" package_unmark
 
 run_case "S6: zwykła zmiana kodu src/main" "" code_rename_method
 
+# gate_case <nazwa> <oczekiwany kod wyjścia> <oczekiwany fragment wyniku> <opis PR> <osoba zatwierdzająca>
+gate_case() {
+  local name="$1" code="$2" expected="$3" body="$4" approver="$5" status=0 out
+  out="$(cd "$repo" && PR_BODY="$body" PR_AUTHOR=autorka PR_APPROVED_BY="$approver" bash "$script" HEAD~1 HEAD 2>&1)" ||
+    status=$?
+  if [[ $status -eq $code && $out == *"$expected"* ]]; then
+    echo "OK: ${name}"
+  else
+    echo "BŁĄD: ${name}: kod wyjścia ${status}, oczekiwano ${code} i „${expected}”"
+    printf '%s\n' "$out" | sed 's/^/    /'
+    failures=$((failures + 1))
+  fi
+}
+
+line='Zmiana reguł jakości: próg pokrycia po nowym module'
+needs_other='zatwierdza osoba inna niż autor PR'
+run_case "bramka: zmiana reguł bez linii w opisie" "$config" pom_nullaway_warn
+gate_case "bramka: linia w opisie bez zatwierdzenia nie przechodzi" 1 "$needs_other" "$line" ''
+gate_case "bramka: zatwierdzenie przez autora PR nie przechodzi" 1 "$needs_other" "$line" Autorka
+gate_case "bramka: linia i zatwierdzenie drugiej osoby przechodzą" 0 'zatwierdził(a) recenzent' "$line" recenzent
+gate_case "bramka: samo zatwierdzenie bez linii nie przechodzi" 1 'wymaga w opisie PR linii' '' recenzent
+
 bot='dependabot[bot]'
 run_case "npm: Dependabot aktualizuje commitlint i plik lock" "" npm_bump_commitlint npm_fixture "$bot"
 run_case "npm: Dependabot aktualizuje Redocly i plik lock" "" npm_bump_api npm_fixture "$bot"
