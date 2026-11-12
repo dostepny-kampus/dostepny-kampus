@@ -10,9 +10,11 @@ plugins {
 
 dependencies {
     api(project(":core:model"))
+    api(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)
+    implementation(libs.spatialk.units)
 }
 
 tasks.test {
