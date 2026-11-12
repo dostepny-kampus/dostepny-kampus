@@ -193,6 +193,31 @@ jobs:
       - name: Uruchom wszystkie testy skryptów z .github/scripts
         run: bash .github/scripts/testy-skryptow.sh
 
+  kopie:
+    needs: porownanie
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: .github/jscpd/package-lock.json
+      - name: Zainstaluj jscpd z pliku lock
+        working-directory: .github/jscpd
+        run: npm ci --no-audit --no-fund
+      - name: Szukaj skopiowanych fragmentów kodu, konfiguracji i skryptów
+        run: |
+          ignore="$(grep -v '^#' .github/jscpd/wyjatki.txt | cut -f1 | paste -sd, -)"
+          if ! .github/jscpd/node_modules/.bin/jscpd --config .github/jscpd/jscpd.json --ignore "$ignore" .; then
+            echo "::error::Skopiowany fragment: obie lokalizacje są w wyniku wyżej. Wydziel wspólną funkcję albo krok."
+            exit 1
+          fi
+
   baza-sprintu:
     runs-on: ubuntu-latest
     timeout-minutes: 5
