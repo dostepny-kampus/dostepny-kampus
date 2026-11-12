@@ -197,6 +197,45 @@ class ArchitectureTest {
         assertEquals(setOf("$BASE.feature.map.Pin"), geometryOutsideViewModels(files))
     }
 
+    /** Ikony ze ścieżki buduje tylko `core:designsystem` jedną wspólną funkcją (#897). */
+    @Test
+    fun nfr16_icons_in_design_system() {
+        val found = iconBuilders(Konsist.scopeFromProduction().files)
+        assertEquals(emptySet<String>(), found - OWN_ICONS.keys, ICON_HINT)
+        assertEquals(emptySet<String>(), OWN_ICONS.keys - found)
+    }
+
+    /** #897: `ImageVector.Builder` w module funkcji łamie regułę, także pełną nazwą bez importu; sam typ nie. */
+    @Test
+    fun nfr16_icon_rule_rejects(
+        @TempDir fixtures: File,
+    ) {
+        val directory = File(fixtures, "icons").apply { mkdirs() }
+        val vector = "androidx.compose.ui.graphics.vector"
+        val samples =
+            mapOf(
+                "Pin" to listOf("feature.map", "import $vector.ImageVector", "val pin = ImageVector.Builder()"),
+                "Nodes" to listOf("feature.map", "", "val n = $vector.addPathNodes()"),
+                "Row" to listOf("feature.map", "import $vector.ImageVector", "class Row(val i: ImageVector)"),
+                "Icons" to listOf("core.designsystem", "", "val n = $vector.addPathNodes()"),
+            )
+        samples.forEach { (name, parts) ->
+            val (pack, import, body) = parts
+            val source = listOf("package $BASE.$pack", import, body).joinToString(separator = System.lineSeparator())
+            File(directory, "$name.kt").writeText(source)
+        }
+        val files = Konsist.scopeFromExternalDirectory(directory.absolutePath).files
+        assertEquals(setOf("$BASE.feature.map.Pin", "$BASE.feature.map.Nodes"), iconBuilders(files))
+    }
+
+    private fun iconBuilders(files: List<KoFileDeclaration>): Set<String> =
+        files
+            .asSequence()
+            .filterNot { it.inPackage("core.designsystem") }
+            .filter { file -> ICON_CALLS.any { it in file.text } }
+            .map { "${it.packagePath()}.${it.name}" }
+            .toSet()
+
     private fun geometryImporters(files: List<KoFileDeclaration>): List<KoFileDeclaration> {
         val computations =
             files
@@ -309,6 +348,14 @@ class ArchitectureTest {
                 "$BASE.feature.capture.BuildingLookup" to
                     "#892: liczy w computeContext dla modeli widoku, poza wątkiem głównym; do pakietu data",
             )
+
+        const val ICON_HINT = "Ikona budowana poza wzornictwem: dodaj ikonę w core:designsystem wspólną funkcją"
+
+        /** Wywołania budujące ikonę; tekst pliku łapie też pełną nazwę bez importu. */
+        val ICON_CALLS = listOf("ImageVector.Builder(", "addPathNodes(")
+
+        /** Pliki budujące ikony poza `core:designsystem`; lista może tylko maleć (#897). */
+        val OWN_ICONS = emptyMap<String, String>()
 
         /** Stan globalny w kodzie produkcyjnym, z numerem zadania; lista może tylko maleć (#887). */
         val GLOBAL_STATE = emptyMap<String, String>()
