@@ -215,7 +215,7 @@ private fun CampusMap(
         if (scene != null && camera != null && state.limits != null) {
             mapView.Show(
                 data = scene.data,
-                selection = scene.selection,
+                selection = scene.selection.copy(barrier = barrierId),
                 camera = camera,
                 onCameraIdle = state::keep,
                 onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick).also { barrierId = null } },

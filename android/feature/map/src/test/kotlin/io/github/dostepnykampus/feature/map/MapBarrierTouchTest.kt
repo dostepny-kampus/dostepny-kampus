@@ -38,8 +38,10 @@ class MapBarrierTouchTest {
     private val opened = mutableListOf<String>()
     private var touchBarrier: (String) -> Unit = {}
     private var touchBuildings: (List<String>) -> Unit = {}
+    private var marked: String? = null
     private val fakeMap =
-        CampusMapView { _: CampusMapData, _, _, _, onBuildingsTouch, onBarrierTouch, _: Modifier ->
+        CampusMapView { _: CampusMapData, selection, _, _, onBuildingsTouch, onBarrierTouch, _: Modifier ->
+            marked = selection.barrier
             touchBuildings = onBuildingsTouch
             touchBarrier = onBarrierTouch
         }
@@ -63,6 +65,19 @@ class MapBarrierTouchTest {
         compose.onNodeWithText("Budynek C-13").assertExists()
         compose.onNodeWithText("Zamknij").performClick()
         compose.onNodeWithText("Próg").assertDoesNotExist()
+    }
+
+    /** Wiersz: V1, „Wstecz” przy otwartym arkuszu bariery zamyka arkusz i zdejmuje wyróżnienie znaku (US1.5). */
+    @Test
+    fun us1_5_back_closes_sheet() {
+        start()
+        compose.runOnIdle { touchBarrier("z1") }
+        compose.onNodeWithText("Próg").assertExists()
+        compose.runOnIdle { assertEquals("z1", marked) }
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+
+        compose.onNodeWithText("Próg").assertDoesNotExist()
+        compose.runOnIdle { assertEquals(null, marked) }
     }
 
     /** Wiersz: arkusz bariery, „Pokaż opis budynku” otwiera V2 budynku bariery i zamyka arkusz (US1.5, PW-5). */
