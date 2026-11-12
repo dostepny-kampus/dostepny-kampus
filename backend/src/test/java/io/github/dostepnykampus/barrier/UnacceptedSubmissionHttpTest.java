@@ -8,6 +8,7 @@ package io.github.dostepnykampus.barrier;
 import io.github.dostepnykampus.AsCollector;
 import io.github.dostepnykampus.AsVerifier;
 import io.github.dostepnykampus.IntegrationTest;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
@@ -84,7 +85,7 @@ final class UnacceptedSubmissionHttpTest {
         );
     }
 
-    private static UUID sent(final WebApplicationContext context) {
+    private static UUID sent(final WebApplicationContext context) throws IOException {
         final UUID id = new SampleSubmissions(context)
             .add("SENT", SampleSubmissions.quick(UnacceptedSubmissionHttpTest.PHOTO));
         context.getBean(PhotoStore.class)
