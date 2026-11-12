@@ -1,0 +1,15 @@
+# Joby, które reguły gałęzi mają wymagać: nazwa joba, potem zestawy reguł (main, sprint).
+# Plik reguł jakości: zmiana wymaga linii „Zmiana reguł jakości” w opisie PR.
+rozmiar main sprint
+commity main sprint
+zakazane-slowa main sprint
+sekrety main sprint
+zaleznosci main sprint
+kontrola main sprint
+serwer main sprint
+kontrakt main sprint
+zmiany-lamiace main sprint
+budowanie main sprint
+pr-od-issue sprint
+testy-skryptow main sprint
+baza-sprintu main sprint
