@@ -28,7 +28,9 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
     <errorprone.version>2.52.0</errorprone.version>
     <nullaway.version>0.14.3</nullaway.version>
     <jspecify.version>1.0.1</jspecify.version>
-    <json-schema-validator.version>3.0.9</json-schema-validator.version>
+    <!-- Wersja, której wymaga openapi-request-validator (#830); 3.x ma inne API na Jackson 3. -->
+    <json-schema-validator.version>2.0.1</json-schema-validator.version>
+    <openapi-request-validator.version>3.0.0</openapi-request-validator.version>
     <proj4j.version>1.4.3</proj4j.version>
   </properties>
   <dependencyManagement>
@@ -302,6 +304,23 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.atlassian.oai</groupId>
+      <artifactId>openapi-request-validator-mockmvc</artifactId>
+      <version>${openapi-request-validator.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.atlassian.oai</groupId>
+      <artifactId>openapi-request-validator-core</artifactId>
+      <version>${openapi-request-validator.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
