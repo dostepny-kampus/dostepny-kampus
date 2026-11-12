@@ -97,7 +97,7 @@ while IFS= read -r -d '' path; do
     fi
   done < <(grep -noPi '(?<![\w/.-])(?:TODO|FIXME|HACK|@todo)(?![\w]|-\w|\.\w)(?:\(#\d+\))?' "$path" || true)
 done < <(git ls-files -z -- '*.kt' '*.kts' '*.java' '*.yml' '*.yaml' '*.sh' \
-  ':!.github/scripts/todo-issue.sh' ':!.github/scripts/todo-issue-test.sh'   ':!android/app/src/test/kotlin/io/github/dostepnykampus/app/LineCommentScanner.kt'   ':!android/detekt-rules/src/main/kotlin/io/github/dostepnykampus/detekt/NoLineComment.kt'   ':!android/detekt-rules/src/test/kotlin/io/github/dostepnykampus/detekt/NoLineCommentTest.kt')
+  ':!.github/scripts/todo-issue.sh' ':!.github/scripts/todo-issue-test.sh'   ':!android/detekt-rules/src/main/kotlin/io/github/dostepnykampus/detekt/NoLineComment.kt'   ':!android/detekt-rules/src/test/kotlin/io/github/dostepnykampus/detekt/NoLineCommentTest.kt')
 
 # Rozwiązania tymczasowe (decyzja 147): @Ignore/@Disabled/@Tymczasowe (powód w nawiasie, do 3 wierszy), tag wykluczający
 # w .feature (#N w tej samej linii albo w komentarzu tuż nad nim) i @RequiresOptIn (#N w KDoc nad adnotacją) wskazują
