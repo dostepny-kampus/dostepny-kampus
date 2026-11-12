@@ -157,7 +157,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     public Optional<Submission> visible(final UUID id, final Reader reader) {
         return this.find(id).filter(
             found -> found.status().publiclyVisible() || reader.verifier()
-                || (!reader.account().isEmpty() && !this.foreign(id, reader.account()))
+                || this.wrote(id, reader.account())
         );
     }
 
@@ -211,6 +211,10 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                     )
                 )
             );
+    }
+
+    private boolean wrote(final UUID id, final String account) {
+        return !account.isEmpty() && !this.foreign(id, account);
     }
 
     private List<Submission> select(final SubmissionQuery query, @Nullable final String author) {
