@@ -97,12 +97,13 @@ public final class SubmissionsController {
     SubmissionResponse getSubmission(
         @PathVariable("submissionId") final UUID id, final HttpServletRequest request
     ) {
-        final Reader reader = new Reader(
-            Optional.ofNullable(request.getUserPrincipal()).map(Principal::getName),
-            request.isUserInRole("VERIFIER")
-        );
-        return this.finder.visible(id, reader)
-            .map(SubmissionResponse::new)
+        return this.finder.visible(
+            id,
+            new Reader(
+                Optional.ofNullable(request.getUserPrincipal()).map(Principal::getName),
+                request.isUserInRole("VERIFIER")
+            )
+        ).map(SubmissionResponse::new)
             .orElseThrow(() -> new MissingResource(SubmissionsController.MISSING));
     }
 
