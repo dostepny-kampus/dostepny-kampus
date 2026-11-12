@@ -56,10 +56,17 @@ class MySubmissionsScreenTest {
         assertEquals(1, measured)
     }
 
-    /** Wiersz: C3 → „Czeka na wysłanie: N” przy zgłoszeniach w telefonie, US9.1. */
+    /**
+     * Wiersz: C3 → „Czeka na wysłanie: N” przy zgłoszeniach w telefonie bez „Nie wysłano”, US9.1, BR-26.
+     * Scenariusz: synchronizacja.feature: Licznik oczekujących nie liczy zgłoszeń „Nie wysłano”
+     */
     @Test
     fun us9_1_waiting_count() {
-        show(item(id = "a", state = SendState.LOCAL), item(id = "b", state = SendState.LOCAL))
+        show(
+            item(id = "a", state = SendState.LOCAL),
+            item(id = "b", state = SendState.LOCAL),
+            item(id = "c", state = SendState.REFUSED),
+        )
         compose.onNodeWithText("Czeka na wysłanie: 2").assertIsDisplayed()
     }
 

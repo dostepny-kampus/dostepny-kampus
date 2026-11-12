@@ -89,6 +89,7 @@ class MySubmissionsViewModelTest {
                     row(id = "a", state = SendState.LOCAL),
                     row(id = "b", state = SendState.SENT),
                     row(id = "c", state = SendState.LOCAL),
+                    row(id = "d", state = SendState.REFUSED),
                 )
             collect()
 
