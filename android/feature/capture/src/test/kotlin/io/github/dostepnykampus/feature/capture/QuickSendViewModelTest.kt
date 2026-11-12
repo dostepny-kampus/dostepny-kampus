@@ -110,6 +110,10 @@ class QuickSendViewModelTest {
             assertEquals(INSIDE_A1, (viewModel.lookup.value as QuickLookup.Found).position.point)
         }
 
+    /**
+     * Poza konturem zgłoszenie zapisuje się z bieżącą pozycją, bez piętra i bez błędu (BR-14, BR-G2).
+     * Scenariusz: budynki-bez-szczegolow.feature: Zgłoszenie szybkie poza konturem budynku zapisuje się bez błędu
+     */
     @Test
     fun br14_no_floor_outside() =
         runTest(dispatcher) {
@@ -118,6 +122,8 @@ class QuickSendViewModelTest {
             viewModel.send(report)
             runCurrent()
             assertEquals(listOf(null), saved.map { it.floor })
+            assertEquals(listOf(OUTSIDE), saved.map { it.location })
+            assertEquals(QuickSendStage.SENT, viewModel.stage.value)
         }
 
     /** Zgłoszenie z „Zgłoś barierę przy wejściu” trafia do kolejki z wejściem (US4.6). */
