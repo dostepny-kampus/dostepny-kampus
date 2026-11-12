@@ -39,7 +39,33 @@ class MapAreasTest {
         )
     private val chosen = mutableStateOf<String?>(null)
 
-    private fun areas(symbol: String? = null) = MapAreas(data = data, symbol = symbol, chosen = chosen)
+    private val seen = mutableStateOf<String?>(null)
+
+    private fun areas(symbol: String? = null) = MapAreas(data = data, symbol = symbol, chosen = chosen, seen = seen)
+
+    /**
+     * Wiersz: V1, budynek z innego terenu zmienia teren i daje napis „Pokazuję teren: Wittigowo”; napis znika,
+     * gdy osoba ruszy mapę, i nie wraca dla tego terenu (US1.8).
+     */
+    @Test
+    fun us1_8_notice_after_building() {
+        assertNull(areas().notice)
+        assertNull(areas(symbol = START_BUILDING).notice)
+        assertEquals("Wittigowo", areas(symbol = "T-15").notice)
+        areas(symbol = "T-15").acknowledge()
+        assertNull(areas(symbol = "T-15").notice)
+        assertEquals("Kampus główny", areas(symbol = "A-2").notice)
+    }
+
+    /** Wiersz: V1, teren wybrany przez osobę w panelu nie daje napisu o zmianie terenu (US1.7, US1.8). */
+    @Test
+    fun us1_8_no_notice_for_own_choice() {
+        areas().show("Wittigowo")
+        assertNull(areas().notice)
+        chosen.value = null
+        assertNull(areas(symbol = "T-15").notice)
+        assertEquals("Bartoszowice", areas(symbol = "P-14").notice)
+    }
 
     /** Wiersz: V1, lista terenów: wybrany pierwszy, pozostałe od najbliższego, z liczbą budynków i km (US1.7). */
     @Test

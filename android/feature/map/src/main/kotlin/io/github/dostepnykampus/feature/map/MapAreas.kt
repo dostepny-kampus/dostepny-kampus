@@ -40,11 +40,14 @@ internal fun AreaOrder.otherAreaOf(symbol: String): String? =
  * @param data dane mapy z terenami; `null`, dopóki ich nie ma
  * @param symbol budynek zaznaczenia z trasy; bez wyboru osoby to on wyznacza teren (US1.8)
  * @param chosen zapisywana nazwa terenu wybranego przez osobę; `null` bez wyboru
+ * @param seen zapisywana nazwa terenu, o którym osoba już wie: wybrała go albo ruszyła na nim mapę; `null`, dopóki
+ *   widziała tylko teren startowy
  */
 internal class MapAreas(
     private val data: CampusMapData?,
     private val symbol: String?,
     private val chosen: MutableState<String?>,
+    private val seen: MutableState<String?>,
 ) {
     /** Nazwa terenu wybranego przez osobę; `null`, gdy teren wynika z zaznaczenia albo jest startowy. */
     val chosenName: String? get() = chosen.value
@@ -62,6 +65,23 @@ internal class MapAreas(
             return AreaOrder(choices.mapNotNull { known[it.name] })
         }
 
+    /**
+     * Nazwa terenu do napisu „Pokazuję teren: Wittigowo”: mapa zmieniła teren sama, bo zaznaczony budynek, np.
+     * z wyszukiwania albo z listy, leży na innym terenie niż ten, o którym osoba wie (US1.8). `null`, gdy teren
+     * wybrała osoba albo już o nim wie.
+     */
+    val notice: String?
+        get() {
+            val known = seen.value ?: data?.areaOf(chosen = null, symbol = null)?.name
+            val shown = current?.name
+            return shown.takeIf { chosen.value == null && it != known }
+        }
+
+    /** Osoba wie o pokazanym terenie, np. ruszyła mapę przyciskiem: napis o zmianie terenu znika (US1.8). */
+    fun acknowledge() {
+        current?.let { seen.value = it.name }
+    }
+
     /** Sąsiedni teren dla środka widoku [view] na granicy pokazanego terenu; `null` z dala od granicy (US1.7). */
     fun neighbor(view: GeoPoint): AreaNeighbor? = current?.let { data?.areaNeighbor(it, view) }
 
@@ -72,6 +92,7 @@ internal class MapAreas(
     fun show(name: String): MapCamera? =
         data?.areas?.firstOrNull { it.name == name }?.let { area ->
             chosen.value = name
+            seen.value = name
             MapCamera(center = area.bounds.center, zoom = START_ZOOM)
         }
 }
@@ -90,5 +111,6 @@ internal fun rememberMapAreas(layers: CampusMapData?, focus: MapFocus?): MapArea
             is MapFocus.Entrance -> focus.buildingSymbol
             null -> null
         }
-    return remember(layers, symbol, chosen) { MapAreas(data = layers, symbol = symbol, chosen = chosen) }
+    val seen = rememberSaveable { mutableStateOf<String?>(null) }
+    return remember(layers, symbol, chosen) { MapAreas(data = layers, symbol = symbol, chosen = chosen, seen = seen) }
 }
