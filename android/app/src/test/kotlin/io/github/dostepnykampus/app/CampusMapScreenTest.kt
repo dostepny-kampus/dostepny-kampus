@@ -308,7 +308,10 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertExists()
     }
 
-    /** Wiersz: V2 jako arkusz nad V1, podpis OSM i przyciski nad arkuszem, decyzja 87. */
+    /**
+     * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: podpis OSM i przyciski
+     * mapy stoją nad arkuszem V2, a nagłówka, „Legendy” i „ⓘ” nad nim nie ma (US2.8, NFR-37, NFR-53, decyzja 151).
+     */
     @Test
     @Config(qualifiers = "w360dp-h800dp")
     fun nfr37_osm_above_sheet() {
@@ -316,9 +319,28 @@ class CampusMapScreenTest {
         val bottom = compose.onRoot().getBoundsInRoot().bottom
         val osm = compose.onNodeWithText("© OpenStreetMap contributors").getBoundsInRoot()
         assertEquals(true, osm.bottom <= bottom - 400.dp)
-        compose.onNodeWithContentDescription("Pomniejsz").assertDoesNotExist()
+        val down = compose.onNodeWithContentDescription("Pomniejsz").getBoundsInRoot()
+        assertEquals(true, down.bottom <= bottom - 400.dp)
+        compose.onNodeWithContentDescription("Przesuń mapę w górę").assertExists()
         compose.onNodeWithText("Mapa kampusu").assertDoesNotExist()
+        compose.onNodeWithText("Legenda").assertDoesNotExist()
+        compose.onNodeWithContentDescription("O danych mapy").assertDoesNotExist()
+    }
+
+    /**
+     * Scenariusz „Przy niskiej mapie nad małą kartą nie ma przycisków mapy”: poniżej 300 dp wolnej mapy przycisków
+     * nie ma, a po zamknięciu karty wracają (US2.8, NFR-53, decyzja 151).
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun us2_8_low_map_has_no_buttons() {
+        var sheet by mutableStateOf(560.dp)
+        compose.setContent { Screen(focus = "C-13", sheet = sheet) }
+        compose.onNodeWithContentDescription("Pomniejsz").assertDoesNotExist()
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertDoesNotExist()
+        compose.onNodeWithText("© OpenStreetMap contributors").assertExists()
+        sheet = 0.dp
+        compose.onNodeWithContentDescription("Pomniejsz").assertExists()
     }
 
     /**
@@ -339,6 +361,21 @@ class CampusMapScreenTest {
     }
 
     /**
+     * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: mapa pod arkuszem sięga
+     * pod pasek stanu, ale przyciski mapy stoją pod jego tłem (US2.8, NFR-16, NFR-53).
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun nfr53_buttons_below_status_bar() {
+        compose.setContent { Screen(focus = "C-13", sheet = 400.dp) }
+        compose.runOnUiThread { dispatchStatusBar(compose.activity) }
+        compose.waitForIdle()
+        val bar = compose.onNodeWithTag(MAP_STATUS_BAR_TAG).getBoundsInRoot()
+        val up = compose.onNodeWithContentDescription("Przesuń mapę w górę").getBoundsInRoot()
+        assertEquals(true, bar.bottom > 0.dp && up.top >= bar.bottom)
+    }
+
+    /**
      * Wiersz: mała karta V2 nad V1, dotknięcie pustej mapy → zamknięcie karty; dotknięcie konturu, także wspólnego,
      * zamknięciem nie jest, US2.8, NFR-17.
      */
@@ -352,8 +389,13 @@ class CampusMapScreenTest {
         assertEquals("dotknięcie pustej mapy", 1, emptyTaps)
     }
 
-    /** Wiersz: V1 → V2 z budynkiem nad arkuszem, „Wstecz” → widok sprzed otwarcia V2, decyzja 83. */
+    /**
+     * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: V1 → V2 z budynkiem
+     * wpisanym nad arkuszem, „Powiększ” zmienia widok nad kartą, „Wstecz” → widok sprzed otwarcia V2 (US2.8,
+     * NFR-53, decyzje 83 i 151).
+     */
     @Test
+    @Config(qualifiers = "w360dp-h800dp")
     fun us1_1_focus_above_sheet() {
         var sheet by mutableStateOf(0.dp)
         compose.setContent { Screen(focus = "C-14", sheet = sheet) }
@@ -362,8 +404,11 @@ class CampusMapScreenTest {
         sheet = 400.dp
         compose.waitForIdle()
         val aboveSheet = cameras.last()
-        assertEquals(listOf(start.zoom, true), listOf(aboveSheet.zoom, aboveSheet.bottomInset > 0))
-        assertEquals(true, aboveSheet.center != start.center)
+        assertEquals(true, aboveSheet.bottomInset > 0)
+        assertEquals(true, aboveSheet.copy(bottomInset = 0.0) != start)
+        compose.onNodeWithContentDescription("Powiększ").performClick()
+        compose.waitForIdle()
+        assertEquals(aboveSheet.copy(zoom = aboveSheet.zoom + 1), cameras.last())
         sheet = 0.dp
         compose.waitForIdle()
         assertEquals(start, cameras.last())

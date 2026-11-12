@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -214,14 +215,17 @@ private fun CampusMap(
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
             MapStatusBar(topInset, isShown = state.isCovered)
+            val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues()
+            val aboveSheet = Modifier.padding(underBar).padding(contentPadding)
             MapOverlay(
                 camera = camera,
-                hasControls = !state.isCovered && !isKeyboardOpen,
+                hasControls = state.hasControls && !isKeyboardOpen,
                 dataDay = catalog?.dataDay(),
                 onCameraChange = state::move,
                 areas = areas,
                 onAreaShow = state::keep,
-                modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(contentPadding),
+                modifier = Modifier.fillMaxSize().safeDrawingPadding().then(aboveSheet),
+                hasPanels = !state.isCovered && !isKeyboardOpen,
             ) {
                 val chosen = catalog?.buildingsOf(state.choice).orEmpty()
                 if (chosen.isNotEmpty()) {

@@ -16,7 +16,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
-private val CameraSaver =
+internal val CameraSaver =
     listSaver<MapCamera?, Double>(
         save = { camera -> camera?.run { listOf(center.longitude, center.latitude, zoom) }.orEmpty() },
         restore = { saved ->
