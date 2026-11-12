@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.zip.CRC32;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.migration.Context;
@@ -35,9 +34,10 @@ import tools.jackson.databind.node.ArrayNode;
  * i ponownie po zmianie pliku lub wersji importu zapisanej w sumie kontrolnej.
  * Kontury z tym samym symbolem tworzą jeden wielokąt złożony, a kontur
  * z kilkoma symbolami daje osobny budynek dla każdego symbolu, tak jak
- * w aplikacji. Nazwa złożona wyłącznie z symboli budynków albo jej brak
- * to budynek bez nazwy (decyzja 75). Ta sama reguła działa w aplikacji
- * w buildingName() w BuildingName.kt (core:geo); obie muszą być zgodne.
+ * w aplikacji. Nazwą budynku jest pole display_name z pliku: nazwa gotowa
+ * do pokazania obok symbolu, bez powtórzonego symbolu (US2, decyzja 75).
+ * Regułę stosuje skrypt danych, więc serwer i aplikacja mają tę samą nazwę,
+ * a budynek bez tego pola nie ma nazwy.
  * Istniejący budynek dostaje nowy kontur, nazwę i atrybucję, a poziom
  * szczegółowości zostaje bez zmian.</p>
  *
@@ -59,16 +59,9 @@ final class OsmBuildings implements JavaMigration {
 
     /**
      * Wersja importu w sumie kontrolnej: zmiana wykonuje import ponownie
-     * także bez zmiany pliku; 4 synchronizuje wejścia z eksportem.
+     * także bez zmiany pliku; 5 bierze nazwę z pola display_name.
      */
-    static final int FORMAT = 4;
-
-    /**
-     * Nazwa złożona wyłącznie z symboli budynków, np. C-13 albo C-3/C-4.
-     */
-    private static final Pattern SYMBOLS = Pattern.compile(
-        "[A-Z]-\\d+[a-z]?(\\s*/\\s*[A-Z]-\\d+[a-z]?)*"
-    );
+    static final int FORMAT = 5;
 
     /**
      * Parser pliku GeoJSON.
@@ -123,7 +116,7 @@ final class OsmBuildings implements JavaMigration {
             if ("building".equals(props.required("kind").asString())) {
                 for (final JsonNode symbol : props.required("symbols")) {
                     this.add(outlines, symbol.asString(), feature.required("geometry"));
-                    names.putIfAbsent(symbol.asString(), props.path("name").asString(null));
+                    names.putIfAbsent(symbol.asString(), props.path("display_name").asString(null));
                 }
             }
         }
@@ -147,7 +140,7 @@ final class OsmBuildings implements JavaMigration {
         try (PreparedStatement insert = connection.prepareStatement(OsmBuildings.UPSERT)) {
             for (final Map.Entry<String, ArrayNode> entry : outlines.entrySet()) {
                 insert.setString(1, entry.getKey());
-                insert.setString(2, OsmBuildings.named(names.get(entry.getKey())));
+                insert.setString(2, names.get(entry.getKey()));
                 insert.setString(3, this.multi(entry.getValue()));
                 insert.setString(4, source);
                 insert.addBatch();
@@ -175,16 +168,6 @@ final class OsmBuildings implements JavaMigration {
                 .put("type", "MultiPolygon")
                 .set("coordinates", polygons)
         );
-    }
-
-    private static @Nullable String named(final @Nullable String name) {
-        final @Nullable String result;
-        if (name == null || OsmBuildings.SYMBOLS.matcher(name.trim()).matches()) {
-            result = null;
-        } else {
-            result = name;
-        }
-        return result;
     }
 
     private byte[] content() {

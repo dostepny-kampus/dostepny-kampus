@@ -96,11 +96,11 @@ final class OsmBuildingsTest {
     }
 
     @Test
-    void usOneKeepsNameWithSymbolAndAddition(final WebApplicationContext context) {
+    void usTwoSavesNameWithoutOwnSymbol(final WebApplicationContext context) {
         MatcherAssert.assertThat(
-            "Nazwa z symbolem i dodatkiem nie została zachowana",
-            OsmBuildingsTest.names(context, "A-1"),
-            Matchers.contains("A-1 / Budynek główny")
+            "Nazwa budynku na serwerze powtarza symbol albo różni się od nazwy w aplikacji",
+            OsmBuildingsTest.names(context, "A-1", "M-6", "T-6"),
+            Matchers.contains("Budynek główny", "M-6 bis", "Dom Studencki \"Alcatraz\"")
         );
     }
 
@@ -221,7 +221,10 @@ final class OsmBuildingsTest {
                 "attribution": "Dane testowe",
                 "features": [{
                     "type": "Feature",
-                    "properties": {"kind": "building", "symbols": ["T-98", "T-99"], "name": "%s"},
+                    "properties": {
+                        "kind": "building", "symbols": ["T-98", "T-99"],
+                        "name": "T-99 %s", "display_name": "%s"
+                    },
                     "geometry": {
                         "type": "Polygon",
                         "coordinates": [[[17,51],[17.001,51],[17.001,51.001],[17,51]]]
@@ -232,7 +235,7 @@ final class OsmBuildingsTest {
                     "geometry": {"type": "Point", "coordinates": [17,51]}
                 }]
             }
-            """.formatted(name)
+            """.formatted(name, name)
         );
     }
 
