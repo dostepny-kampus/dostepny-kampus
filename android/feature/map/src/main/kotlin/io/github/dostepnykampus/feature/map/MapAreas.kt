@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,6 +21,14 @@ import io.github.dostepnykampus.feature.map.data.areaNeighbor
 import io.github.dostepnykampus.feature.map.data.areaOf
 import io.github.dostepnykampus.feature.map.data.center
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+
+/**
+ * Tereny w kolejności nagłówków listy budynków: pokazany na mapie pierwszy, pozostałe od najbliższego (US1.8).
+ *
+ * @property areas tereny z symbolami swoich budynków; puste, dopóki nie ma danych mapy
+ */
+@Immutable
+internal data class AreaOrder(val areas: List<MapArea>)
 
 /**
  * Tereny mapy V1: który teren mapa pokazuje i na jakie można go zmienić (US1.6, US1.7).
@@ -41,6 +50,13 @@ internal class MapAreas(
 
     /** Lista terenów: pokazany pierwszy, pozostałe od najbliższego, z liczbą budynków i odległością (US1.7). */
     val choices: List<AreaChoice> get() = current?.let { data?.areaChoices(it) }.orEmpty()
+
+    /** Tereny w kolejności nagłówków listy budynków: pokazany pierwszy, pozostałe od najbliższego (US1.8). */
+    val order: AreaOrder
+        get() {
+            val known = data?.areas.orEmpty().associateBy(MapArea::name)
+            return AreaOrder(choices.mapNotNull { known[it.name] })
+        }
 
     /** Sąsiedni teren dla środka widoku [view] na granicy pokazanego terenu; `null` z dala od granicy (US1.7). */
     fun neighbor(view: GeoPoint): AreaNeighbor? = current?.let { data?.areaNeighbor(it, view) }

@@ -143,6 +143,7 @@ fun CampusMapScreen(
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
     val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LARGE_FONT_SCALE)
     val states = rememberSaveableStateHolder()
+    val areas = rememberMapAreas(state.mapData, focus)
     Column(modifier.fillMaxSize()) {
         if (!isCovered) {
             states.SaveableStateProvider(TOP_STATE) {
@@ -150,6 +151,7 @@ fun CampusMapScreen(
                     catalog = catalog,
                     isOnline = state.isOnline,
                     isList = isList,
+                    areas = areas.order,
                     onListChange = onListChange,
                     onBuildingClick = if (isList) onListBuildingClick else onBuildingClick,
                     modifier = if (isList) Modifier.weight(1f) else Modifier,
@@ -162,6 +164,7 @@ fun CampusMapScreen(
                     catalog = catalog,
                     layers = state.mapData,
                     focus = focus,
+                    areas = areas,
                     contentPadding = contentPadding,
                     mapView = mapView,
                     onBuildingClick = onBuildingClick,
@@ -178,6 +181,7 @@ private fun CampusMap(
     catalog: BuildingCatalog?,
     layers: CampusMapData?,
     focus: MapFocus?,
+    areas: MapAreas,
     contentPadding: PaddingValues,
     mapView: CampusMapView,
     onBuildingClick: (String) -> Unit,
@@ -188,7 +192,6 @@ private fun CampusMap(
     val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val areas = rememberMapAreas(layers, focus)
     val state =
         rememberMapSceneState(
             layers = layers,

@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isSelectable
@@ -198,7 +199,7 @@ class BuildingOnMapCameraTest {
         assertFalse("$symbol widać już przed poleceniem", before.shows(data.labelPointOf(symbol)))
         val count = shown.size
         click(hasText("Lista budynków") and isSelectable())
-        click(hasContentDescription("$symbol, ", substring = true))
+        click(hasContentDescription("$symbol, ", substring = true) and hasClickAction())
         click(hasText(BUILDING_ON_MAP))
         compose.waitUntil { shown.size > count }
     }

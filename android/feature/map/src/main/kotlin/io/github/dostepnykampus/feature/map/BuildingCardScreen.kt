@@ -46,7 +46,7 @@ import io.github.dostepnykampus.core.model.EntranceMarking
  * treści pod wierszem o wejściach, bez przypiętego pasa (reguła 10): „Sprawdź, którędy wejść” w każdym trybie,
  * „Zamknij” w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]. Pasek „Wstecz” i grupę „Wejścia”
  * ma tylko pełny ekran.
- * Nieznany symbol: „budynku nie ma w telefonie” (US2.7). Bez internetu nad treścią stoi [OfflineLine] jak na V1,
+ * Nieznany symbol: „budynku nie ma w telefonie” (US2.7). Bez internetu nad nagłówkiem stoi [OfflinePill],
  * bez daty (NFR-10, US2.8).
  *
  * @param symbol symbol z trasy, widoczny w nagłówku także w trakcie wczytywania
@@ -117,7 +117,7 @@ fun BuildingCardContent(
             modifier = Modifier.weight(1f, isFullScreen).verticalScroll(rememberScrollState()).padding(Odstepy.m),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
-            OfflineWhen(isOnline = isOnline)
+            if (!isOnline) OfflinePill()
             if (card is BuildingCardUiState.Ready) {
                 SymbolOverName(symbol = symbol, name = card.name)
                 EntranceSummaryRow(entranceSummary(card.entrances))
@@ -127,16 +127,28 @@ fun BuildingCardContent(
                     onShowOnMap = onShowOnMap,
                     onClose = onClose,
                 )
-                if (isFullScreen) BuildingFacts(card, onReportEntrance, onShowEntrance)
             }
-            if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
+            FactsOrMissing(
+                card = card,
+                isFullScreen = isFullScreen,
+                onReportEntrance = onReportEntrance,
+                onShowEntrance = onShowEntrance,
+                onRetry = onRetry,
+            )
         }
     }
 }
 
 @Composable
-private fun OfflineWhen(isOnline: Boolean) {
-    if (!isOnline) OfflineLine()
+private fun FactsOrMissing(
+    card: BuildingCardUiState,
+    isFullScreen: Boolean,
+    onReportEntrance: (String) -> Unit,
+    onShowEntrance: (String) -> Unit,
+    onRetry: () -> Unit,
+) {
+    if (card is BuildingCardUiState.Ready && isFullScreen) BuildingFacts(card, onReportEntrance, onShowEntrance)
+    if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
 }
 
 @Composable
