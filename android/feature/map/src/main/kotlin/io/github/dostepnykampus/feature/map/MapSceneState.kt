@@ -9,21 +9,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
-private const val CONTROLS_COLUMNS = 3
-private const val FIT_MARGIN_DP = 24.0
 private val ControlsMinFreeMap = 300.dp
 
 private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore = { it })
@@ -33,7 +30,7 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
  *
  * @property scene dane katalogu z zaznaczeniem; `null`, dopóki nie ma danych mapy
  * @property camera widok do pokazania: zapisany, na zaznaczonym wejściu albo startowy; nad arkuszem V2 zaznaczony
- *   budynek mieści się w wolnej części mapy, dopóki osoba nie ruszy mapy (decyzja 151); `null` bez danych
+ *   budynek stoi w części nad arkuszem (decyzja 87), dopóki osoba nie ruszy mapy (decyzja 151); `null` bez danych
  * @property limits granice kamery dla terenu i rozmiaru mapy (BR-G5, NFR-39); `null` przed pomiarem mapy
  * @property cover czy arkusz V2 zasłania dół mapy i czy nad nim mieszczą się przyciski mapy
  * @param choices zapisywana lista budynków do wyboru
@@ -111,19 +108,18 @@ internal fun rememberMapSceneState(
     val choices = rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val isCovered = cover > 0.dp
     val density = LocalDensity.current
-    val free = density.freeMap(size, cover)
-    val limits = density.mapLimits(selection?.bounds, size)
-    val outline = layers?.run { outlinesBySymbol[selection?.building] }.takeIf { isCovered }
-    val fit = outline?.run { fitted(this, free) }
-    val card = rememberCardCamera(building = selection?.building, fit = fit?.run { limits?.clamp(this) ?: this })
+    val focusPoint = remember(layers, selection?.building) { layers?.pointOf(selection?.building) }
     val own = view.camera ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
     val uncovered = own ?: layers?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
     val inset = with(density) { cover.toPx() }.toDouble()
+    val onBuilding = uncovered.takeIf { isCovered && focusPoint != null }?.aboveSheet(focusPoint, inset)
+    val card = rememberCardCamera(building = selection?.building, fit = onBuilding)
+    val hasRoom = with(density) { size.height.toDp() } - cover >= ControlsMinFreeMap
     return MapSceneState(
         scene = scene,
         camera = card.camera?.takeIf { isCovered }?.copy(bottomInset = inset) ?: uncovered,
-        limits = limits,
-        cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
+        limits = density.mapLimits(selection?.bounds, size),
+        cover = mapCover(isCovered, hasControls = hasRoom),
         choices = choices,
         onCamera = cameraKeeper(isCovered, onMap = view.keep, onCard = card.keep),
     )
@@ -162,18 +158,4 @@ internal fun cameraKeeper(
 internal fun rememberCardCamera(building: String?, fit: MapCamera?): CameraView {
     var moved by rememberSaveable(building, stateSaver = CameraSaver) { mutableStateOf<MapCamera?>(null) }
     return CameraView(camera = moved ?: fit, keep = { moved = it })
-}
-
-/** Wolna część mapy o rozmiarze [size] w pikselach nad arkuszem V2 wysokim na [cover]. */
-internal fun Density.freeMap(size: IntSize, cover: Dp): FreeMap {
-    val width = size.width.toDp()
-    val height = size.height.toDp() - cover
-    val controls = MapControlTouchSize * CONTROLS_COLUMNS + Odstepy.s * 2
-    val hasControls = cover == 0.dp || height >= ControlsMinFreeMap
-    return FreeMap(
-        widthDp = width.value.toDouble(),
-        heightDp = height.value.toDouble(),
-        endDp = if (hasControls) controls.value.toDouble() else 0.0,
-        marginDp = FIT_MARGIN_DP,
-    )
 }
