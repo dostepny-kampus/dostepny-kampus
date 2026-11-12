@@ -41,15 +41,19 @@ private enum class MapPanel { Area, Legend, Info }
  * pod nimi przy granicy terenu przycisk sąsiedniego terenu (US1.7), przycisk „ⓘ” i podpis OSM (NFR-37), a nad
  * nimi [content], np. arkusz „Który budynek?”. Otwarty panel zasłania przyciski mapy i przycisk sąsiedniego
  * terenu, otwarte „ⓘ” także przycisk terenu i „Legendę”, a otwarty panel „Teren na mapie” także „Legendę”;
- * dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem zapisywanym.
+ * dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem zapisywanym. Nad małą kartą V2 zostają
+ * tylko przyciski powiększania i przesuwania oraz podpis OSM (US2.8, decyzja 151).
  *
  * @param camera widok kamery, od którego liczą się przyciski mapy
- * @param hasControls czy mapa ma przyciski; nie ma ich pod arkuszem V2 i przy otwartej klawiaturze (decyzja 91)
+ * @param hasControls czy mapa ma przyciski powiększania i przesuwania; nie ma ich przy otwartej klawiaturze
+ *   (decyzja 91) ani nad arkuszem V2, gdy wolnej mapy jest mniej niż 300 dp (decyzja 151)
  * @param dataDay dzień danych pokazany w panelu „ⓘ”
  * @param onCameraChange widok kamery po dotknięciu przycisku mapy
  * @param areas tereny mapy: lista do panelu „Teren na mapie” i wybór terenu
  * @param onAreaShow widok startowy terenu wybranego w panelu
  * @param modifier wymiary nakładki, zwykle cała mapa bez części zasłoniętej
+ * @param hasPanels czy mapa ma przycisk terenu, „Legendę”, „ⓘ” i przycisk sąsiedniego terenu; nie ma ich nad
+ *   arkuszem V2
  * @param content elementy nad nakładką
  */
 @Composable
@@ -61,36 +65,38 @@ internal fun MapOverlay(
     areas: MapAreas,
     onAreaShow: (MapCamera) -> Unit,
     modifier: Modifier = Modifier,
+    hasPanels: Boolean = hasControls,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    var open by rememberSaveable { mutableStateOf<MapPanel?>(null) }
+    var saved by rememberSaveable { mutableStateOf<MapPanel?>(null) }
+    val open = saved.takeIf { hasPanels }
     Box(modifier) {
         if (hasControls && open == null) {
             Column(Modifier.align(Alignment.TopEnd), horizontalAlignment = Alignment.End) {
                 MapControls(camera, onCameraChange)
-                MapAreaNeighbor(areas = areas, camera = camera, isAtStart = false, onShow = onAreaShow)
+                if (hasPanels) MapAreaNeighbor(areas = areas, camera = camera, isAtStart = false, onShow = onAreaShow)
             }
         }
         if (open == MapPanel.Area) {
-            Box(Modifier.matchParentSize().pointerInput(Unit) { detectTapGestures { open = null } })
+            Box(Modifier.matchParentSize().pointerInput(Unit) { detectTapGestures { saved = null } })
         }
-        if (hasControls && open != MapPanel.Info) {
+        if (hasPanels && open != MapPanel.Info) {
             val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
             AreaAndLegendColumn(
                 areas = areas,
                 camera = camera,
                 open = open,
-                onOpenChange = { open = it },
+                onOpenChange = { saved = it },
                 onAreaShow = onAreaShow,
                 modifier = above,
             )
         }
         OsmAttribution(Modifier.align(Alignment.BottomStart))
-        if (hasControls) {
+        if (hasPanels) {
             MapInfo(
                 isOpen = open == MapPanel.Info,
                 dataDay = dataDay,
-                onOpenChange = { open = MapPanel.Info.takeIf { _ -> it } },
+                onOpenChange = { saved = MapPanel.Info.takeIf { _ -> it } },
                 modifier = Modifier.align(Alignment.BottomEnd),
             )
         }

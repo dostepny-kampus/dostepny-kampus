@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test
 class MapSceneStateTest {
     private val start = MapCamera(center = GeoPoint(longitude = 17.0, latitude = 51.0), zoom = 16.0)
     private val cameras = mutableListOf<MapCamera>()
+    private val cardCameras = mutableListOf<MapCamera>()
     private val opened = mutableListOf<String>()
     private val choices = mutableStateOf(listOf("stary wybór"))
     private var emptyTaps = 0
@@ -27,6 +28,7 @@ class MapSceneStateTest {
             isCovered = isCovered,
             choices = choices,
             onCamera = { cameras += it },
+            onCardCamera = { cardCameras += it },
         )
 
     private fun touch(vararg symbols: String) =
@@ -64,13 +66,30 @@ class MapSceneStateTest {
         assertEquals(emptyList<String>(), choices.value)
     }
 
-    /** Wiersz: widok po geście jest zapisywany, a pod arkuszem V2 nie, więc „Wstecz” wraca do widoku sprzed V2. */
+    /**
+     * Wiersz: widok po geście jest zapisywany; nad arkuszem V2 osobno, jako widok karty, więc „Wstecz” wraca do
+     * widoku sprzed V2 (decyzje 83 i 151).
+     */
     @Test
     fun d83_camera_kept_uncovered() {
         state(isCovered = true).keep(start)
         assertEquals(emptyList<MapCamera>(), cameras)
+        assertEquals(listOf(start), cardCameras)
         state().keep(start)
         assertEquals(listOf(start), cameras)
+    }
+
+    /**
+     * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: przycisk nad małą kartą
+     * zmienia widok karty w granicach terenu, a widok V1 zostaje (US2.8, NFR-53).
+     */
+    @Test
+    fun us2_8_button_moves_card_view() {
+        val bounds = CampusBounds(west = 16.9, south = 50.9, east = 17.1, north = 51.1)
+        val limits = MapLimits(bounds = bounds, widthDp = 360.0, heightDp = 640.0)
+        state(isCovered = true, limits = limits).move(start.zoomedOut())
+        assertEquals(listOf(limits.clamp(start.zoomedOut())), cardCameras)
+        assertEquals(emptyList<MapCamera>(), cameras)
     }
 
     /** Wiersz: przycisk przesuwa kamerę tylko w granicach terenu (NFR-53, BR-G5); bez granic nic nie zapisuje. */

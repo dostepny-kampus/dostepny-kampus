@@ -59,6 +59,8 @@ private val CAMPUS_MARGIN = 500.meters
  * @property areas tereny PWr z katalogu, każdy z prostokątem jak [bounds] (BR-G5)
  * @property labelPointsBySymbol punkt podpisu konturu każdego symbolu, ten sam co w [labelPoints]; symbole konturu
  *   wspólnego mają jeden punkt. Kamera bierze punkt stąd i nie liczy go drugi raz na wątku interfejsu (NFR-11)
+ * @property outlinesBySymbol najmniejszy prostokąt z konturem budynku każdego symbolu, bez marginesu; kamera
+ *   wpisuje w niego budynek nad małą kartą V2 (US2.8, decyzja 151)
  */
 data class CampusMapData(
     val buildings: JsonElement,
@@ -69,6 +71,7 @@ data class CampusMapData(
     val bounds: CampusBounds? = null,
     val areas: List<MapArea> = emptyList(),
     val labelPointsBySymbol: Map<String, GeoPoint> = emptyMap(),
+    val outlinesBySymbol: Map<String, CampusBounds> = emptyMap(),
 )
 
 /**
@@ -172,6 +175,7 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
         bounds = startArea?.bounds,
         areas = areas,
         labelPointsBySymbol = labelled.flatMap { (symbols, point) -> symbols.map { it to point } }.toMap(),
+        outlinesBySymbol = catalog.buildings.mapNotNull { it.outlineBounds() }.toMap(),
     )
 }
 
@@ -186,6 +190,12 @@ private fun center(points: List<GeoPoint>): GeoPoint? {
     val box = computeBbox(points.map(GeoPoint::toPosition))
     return GeoPoint(longitude = (box.west + box.east) / 2, latitude = (box.south + box.north) / 2)
 }
+
+private fun Building.outlineBounds(): Pair<String, CampusBounds>? =
+    outline.points().takeIf { it.isNotEmpty() }?.let { all ->
+        val box = computeBbox(all.map(GeoPoint::toPosition))
+        symbol to CampusBounds(west = box.west, south = box.south, east = box.east, north = box.north)
+    }
 
 private fun campusBounds(points: List<GeoPoint>): CampusBounds? =
     points.takeIf { it.isNotEmpty() }?.let { all -> computeBbox(all.map(GeoPoint::toPosition)).withCampusMargin() }
