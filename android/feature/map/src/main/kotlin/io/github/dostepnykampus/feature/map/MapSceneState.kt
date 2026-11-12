@@ -35,32 +35,30 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
  * @property camera widok do pokazania: zapisany, na zaznaczonym wejściu albo startowy; nad arkuszem V2 zaznaczony
  *   budynek mieści się w wolnej części mapy, dopóki osoba nie ruszy mapy (decyzja 151); `null` bez danych
  * @property limits granice kamery dla terenu i rozmiaru mapy (BR-G5, NFR-39); `null` przed pomiarem mapy
- * @property isCovered arkusz V2 zasłania dół mapy
+ * @property cover czy arkusz V2 zasłania dół mapy i czy nad nim mieszczą się przyciski mapy
  * @param choices zapisywana lista budynków do wyboru
- * @param onCamera zapis widoku kamery V1
- * @property hasControls czy mapa mieści przyciski mapy: zawsze bez arkusza V2, a nad arkuszem przy co najmniej
- *   300 dp wolnej mapy (NFR-53, decyzja 151)
- * @param onCardCamera zapis widoku, który osoba ustawiła nad arkuszem V2
+ * @param onCamera zapis widoku kamery po ruchu osoby, zob. [cameraKeeper]
  */
 internal class MapSceneState(
     val scene: MapScene?,
     val camera: MapCamera?,
     val limits: MapLimits?,
-    val isCovered: Boolean,
+    val cover: MapCover,
     private val choices: MutableState<List<String>>,
     private val onCamera: (MapCamera) -> Unit,
-    val hasControls: Boolean = !isCovered,
-    private val onCardCamera: (MapCamera) -> Unit = {},
 ) {
+    /** Arkusz V2 zasłania dół mapy. */
+    val isCovered: Boolean get() = cover != MapCover.NONE
+
+    /** Mapa ma miejsce na przyciski powiększania i przesuwania (NFR-53, decyzja 151). */
+    val hasControls: Boolean get() = cover != MapCover.SHEET_WITHOUT_CONTROLS
+
     /** Symbole budynków czekających na wybór w arkuszu „Który budynek?” (decyzja 85). */
     val choice: List<String> get() = choices.value
 
-    /**
-     * Zapisuje widok [idle] po geście. Nad arkuszem V2 to widok karty, osobny od widoku V1, więc po „Wstecz” wraca
-     * widok sprzed V2 (decyzja 83), a kamera nie wpisuje już budynku na nowo (decyzja 151).
-     */
+    /** Zapisuje widok [idle] po geście osoby. */
     fun keep(idle: MapCamera) {
-        if (isCovered) onCardCamera(idle) else onCamera(idle)
+        onCamera(idle)
     }
 
     /** Przesuwa kamerę przyciskiem na [next], w granicach terenu, także nad arkuszem V2 (NFR-53, BR-G5). */
@@ -115,9 +113,9 @@ internal fun rememberMapSceneState(
     val density = LocalDensity.current
     val free = density.freeMap(size, cover)
     val limits = density.mapLimits(selection?.bounds, size)
-    val outline = layers?.outlinesBySymbol?.get(selection?.building).takeIf { isCovered }
-    val fit = outline?.let { fitted(it, free) }?.let { limits?.clamp(it) ?: it }
-    val card = rememberCardCamera(building = selection?.building, fit = fit)
+    val outline = layers?.run { outlinesBySymbol[selection?.building] }.takeIf { isCovered }
+    val fit = outline?.run { fitted(this, free) }
+    val card = rememberCardCamera(building = selection?.building, fit = fit?.run { limits?.clamp(this) ?: this })
     val own = view.camera ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
     val uncovered = own ?: layers?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
     val inset = with(density) { cover.toPx() }.toDouble()
@@ -125,13 +123,36 @@ internal fun rememberMapSceneState(
         scene = scene,
         camera = card.camera?.takeIf { isCovered }?.copy(bottomInset = inset) ?: uncovered,
         limits = limits,
-        isCovered = isCovered,
+        cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
         choices = choices,
-        onCamera = view.keep,
-        hasControls = free.hasRoomForControls,
-        onCardCamera = card.keep,
+        onCamera = cameraKeeper(isCovered, onMap = view.keep, onCard = card.keep),
     )
 }
+
+/**
+ * Zasłonięcie mapy V1 przez arkusz V2. Nad arkuszem przyciski mapy stoją tylko przy co najmniej 300 dp wolnej mapy
+ * (US2.8, NFR-53, decyzja 151).
+ */
+internal enum class MapCover { NONE, SHEET, SHEET_WITHOUT_CONTROLS }
+
+/** Zasłonięcie mapy: bez arkusza ([isCovered]) żadne, z arkuszem zależne od miejsca na przyciski [hasControls]. */
+internal fun mapCover(isCovered: Boolean, hasControls: Boolean): MapCover =
+    when {
+        !isCovered -> MapCover.NONE
+        hasControls -> MapCover.SHEET
+        else -> MapCover.SHEET_WITHOUT_CONTROLS
+    }
+
+/**
+ * Zapis widoku kamery po ruchu osoby. Nad arkuszem V2 ([isCovered]) widok trafia do [onCard], osobno od widoku V1
+ * w [onMap], więc po „Wstecz” wraca widok sprzed V2 (decyzja 83), a kamera nie wpisuje już budynku na nowo
+ * (decyzja 151).
+ */
+internal fun cameraKeeper(
+    isCovered: Boolean,
+    onMap: (MapCamera) -> Unit,
+    onCard: (MapCamera) -> Unit,
+): (MapCamera) -> Unit = if (isCovered) onCard else onMap
 
 /**
  * Zapisywany widok mapy nad arkuszem V2 budynku [building]: [fit], dopóki osoba nie ruszy mapy gestem albo

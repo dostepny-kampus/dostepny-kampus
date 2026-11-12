@@ -25,14 +25,28 @@ class MapSceneStateTest {
             scene = null,
             camera = start,
             limits = limits,
-            isCovered = isCovered,
+            cover = mapCover(isCovered, hasControls = true),
             choices = choices,
-            onCamera = { cameras += it },
-            onCardCamera = { cardCameras += it },
+            onCamera = cameraKeeper(isCovered, onMap = { cameras += it }, onCard = { cardCameras += it }),
         )
 
     private fun touch(vararg symbols: String) =
         state().touch(symbols = symbols.toList(), onBuilding = { opened += it }, onEmpty = { emptyTaps++ })
+
+    /**
+     * Scenariusz „Przy niskiej mapie nad małą kartą nie ma przycisków mapy”: bez arkusza przyciski są zawsze,
+     * nad arkuszem tylko wtedy, gdy się mieszczą (US2.8, NFR-53, decyzja 151).
+     */
+    @Test
+    fun us2_8_cover_decides_buttons() {
+        val covers =
+            listOf(true to true, true to false, false to false).map { (isCovered, hasRoom) ->
+                mapCover(isCovered, hasControls = hasRoom)
+            }
+        assertEquals(listOf(MapCover.SHEET, MapCover.SHEET_WITHOUT_CONTROLS, MapCover.NONE), covers)
+        assertEquals(true to true, state(isCovered = true).run { isCovered to hasControls })
+        assertEquals(false to true, state().run { isCovered to hasControls })
+    }
 
     /** Wiersz: dotknięcie dwóch konturów → oba symbole czekają na wybór, żaden budynek się nie otwiera (decyzja 85). */
     @Test

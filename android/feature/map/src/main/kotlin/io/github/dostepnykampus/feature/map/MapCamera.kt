@@ -60,7 +60,7 @@ internal fun fitted(outline: CampusBounds, free: FreeMap): MapCamera {
     val height = (free.heightDp - 2 * free.marginDp).coerceAtLeast(minimumValue = 1.0)
     val across = fitZoom(viewDp = width, worldShare = (outline.east - outline.west) / FULL_TURN_DEGREES)
     val along = fitZoom(viewDp = height, worldShare = (mercatorY(outline.north) - mercatorY(outline.south)) / (2 * PI))
-    val zoom = minOf(across, along, FIT_MAX_ZOOM)
+    val zoom = minOf(a = across, b = along, c = FIT_MAX_ZOOM)
     val behindControls = free.endDp / 2 * FULL_TURN_DEGREES / (WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom))
     val center =
         GeoPoint(
