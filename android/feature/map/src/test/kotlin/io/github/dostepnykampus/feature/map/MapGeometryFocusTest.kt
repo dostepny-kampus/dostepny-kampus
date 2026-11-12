@@ -15,7 +15,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -31,9 +31,11 @@ import org.robolectric.RobolectricTestRunner
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 
+private const val DELTA = 1e-9
+
 private val MARKER = JsonPrimitive("geometria z ViewModelu")
 
-private val POINT_NOT_FROM_LABEL_POINT = GeoPoint(longitude = 0.6, latitude = 0.2)
+private val OUTLINE_NOT_FROM_CATALOG = CampusBounds(west = 0.2, south = 0.6, east = 0.4, north = 0.8)
 
 /**
  * Ekran V1 z widokiem zastępczym: geometria mapy idzie z ViewModelu, a zmiana zaznaczenia jej nie liczy, także punktu
@@ -70,7 +72,7 @@ class MapGeometryFocusTest {
             geometry = { catalog ->
                 calls.incrementAndGet()
                 campusMapData(catalog)
-                    .copy(labelPoints = MARKER, labelPointsBySymbol = mapOf("C-13" to POINT_NOT_FROM_LABEL_POINT))
+                    .copy(labelPoints = MARKER, outlinesBySymbol = mapOf("C-13" to OUTLINE_NOT_FROM_CATALOG))
             },
         )
     }
@@ -96,9 +98,9 @@ class MapGeometryFocusTest {
     }
 
     /**
-     * Wiersz: W3, W4, arkusz V2 zasłania dół mapy, budynek C-13 zaznaczony → środek kamery nad arkuszem to punkt
-     *   podpisu C-13 z danych mapy policzonych w ViewModelu, inny niż wynik `labelPoint`, więc nie liczony na
-     *   ekranie (#818, NFR-11).
+     * Wiersz: W3, W4, arkusz V2 zasłania dół mapy, budynek C-13 zaznaczony → środek kamery nad arkuszem to środek
+     *   prostokąta C-13 z danych mapy policzonych w ViewModelu, inny niż kontur z katalogu, więc nie liczony na
+     *   ekranie (#818, NFR-11, decyzja 151).
      */
     @Test
     fun nfr11_sheet_camera_from_data() {
@@ -115,6 +117,8 @@ class MapGeometryFocusTest {
         }
         compose.waitUntil { cameras.isNotEmpty() }
         compose.waitForIdle()
-        assertEquals(POINT_NOT_FROM_LABEL_POINT, cameras.last().center)
+        val center = cameras.last().center
+        assertEquals(0.3, center.longitude, DELTA)
+        assertEquals(0.7, center.latitude, DELTA)
     }
 }
