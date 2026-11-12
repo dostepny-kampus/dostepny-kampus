@@ -142,7 +142,7 @@ class CampusMapScreenTest {
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
                 """{"type":"Feature","properties":{"kind":"building","symbols":["C-13","C-14"],""" +
-                """"name":"Budynek testowy",""" +
+                """"display_name":"Budynek testowy",""" +
                 """"osm_id":"way/1"},""" +
                 """"geometry":{"type":"Polygon","coordinates":[$ring]}}]}"""
         }
