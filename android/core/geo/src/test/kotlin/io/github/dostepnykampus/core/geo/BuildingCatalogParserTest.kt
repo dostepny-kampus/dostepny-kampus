@@ -99,7 +99,7 @@ class BuildingCatalogParserTest {
         "C-3/C-4, ",
         "T-22, ",
         "C-3 / D-8a, ",
-        "A-1 / Budynek główny, A-1 / Budynek główny",
+        "A-1 / Budynek główny, Budynek główny",
         "M-6 bis, M-6 bis",
     )
     fun us1_symbol_name_is_no_name(name: String, expected: String?) {
