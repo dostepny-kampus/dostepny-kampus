@@ -25,9 +25,11 @@ import java.util.UUID
 
 private const val PHOTO_AUTHORITY_SUFFIX = ".zdjecia"
 
+/** Katalog zdjęć zgłoszeń w [filesDir], także dla sprzątania przy starcie (#927). */
+fun photoDir(filesDir: File): File = File(filesDir, PHOTO_DIR)
+
 /** Plik zdjęcia [id] w katalogu zdjęć zgłoszeń w [filesDir]; katalog powstaje przy pierwszym zdjęciu. */
-internal fun photoFile(filesDir: File, id: String): File =
-    File(filesDir, PHOTO_DIR).apply { mkdirs() }.resolve("$id.jpg")
+internal fun photoFile(filesDir: File, id: String): File = photoDir(filesDir).apply { mkdirs() }.resolve("$id.jpg")
 
 /**
  * „Zrób zdjęcie” z wynikiem ostatniej próby.

@@ -23,6 +23,9 @@ class ReportDraft {
     internal fun restore(form: ReportForm, photos: List<PendingPhotoDraft> = emptyList()): ReportUiState =
         saved?.toUiState(form) ?: ReportUiState(form = form, photos = photos)
 
+    /** Pliki zdjęć odłożonego szkicu; sprzątanie przy starcie ich nie usuwa (#927). */
+    fun photoPaths(): List<String> = saved?.run { photos.map(DraftPhoto::path) }.orEmpty()
+
     /** Usuwa pola po zakończeniu zgłoszenia lub wyjściu z C1 i C2. */
     fun clear() {
         saved = null

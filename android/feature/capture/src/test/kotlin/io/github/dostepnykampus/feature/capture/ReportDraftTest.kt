@@ -67,6 +67,15 @@ class ReportDraftTest {
         assertEquals(ReportForm(place = A1), reopened(A1).form)
     }
 
+    /** Wiersz: proces zabity na C2 → sprzątanie przy starcie zna plik zdjęcia odtworzonego szkicu, #927. */
+    @Test
+    fun nfr5_restored_draft_photo() {
+        filled()
+        assertEquals(listOf(photo.path), restored(draft).photoPaths())
+        draft.clear()
+        assertEquals(emptyList<String>(), draft.photoPaths())
+    }
+
     private fun restored(draft: ReportDraft): ReportDraft = Json.decodeFromString(Json.encodeToString(draft))
 
     private fun filled(): ReportFormViewModel =
