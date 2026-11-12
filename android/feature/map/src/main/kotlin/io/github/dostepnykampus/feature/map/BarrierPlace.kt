@@ -29,8 +29,6 @@ internal data class ChosenBarrier(val barrier: AcceptedBarrier, val building: Bu
  * Miejsce bariery [chosen] słowami do arkusza bariery (US1.5): „A-1 Gmach Główny · Wejście Cesarskie, parter”.
  * Budynek bez nazwy to „Budynek C-13”, a bariera poza budynkiem ma „Poza budynkiem” (BR-G2). Piętro budynku
  * podstawowego to „parter” albo „piętro 2”, z dopiskiem „półpiętro”.
- *
- * TODO(#1131): napis pokazuje arkusz bariery.
  */
 @Composable
 @ReadOnlyComposable
