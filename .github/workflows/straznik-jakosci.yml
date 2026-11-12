@@ -2,6 +2,8 @@ name: straznik-jakosci
 
 # Przepływ i skrypt pochodzą z gałęzi docelowej (pull_request_target), więc PR nie może ich podmienić.
 # Kod z PR nie jest uruchamiany: commity PR są tylko danymi dla `git diff`.
+# W kolejce scalania (merge_group) job tylko zalicza grupę: każdy jej PR przeszedł strażnika na PR, a bez wyniku
+# w grupie kontroli nie dałoby się ustawić jako wymaganej (#881).
 on:
   pull_request_target:
     branches:
@@ -12,25 +14,64 @@ on:
       - synchronize
       - reopened
       - edited
+      - labeled
+      - unlabeled
+  merge_group:
+    types:
+      - checks_requested
 
 permissions:
   contents: read
 
 concurrency:
-  group: straznik-jakosci-${{ github.event.pull_request.number }}
+  group: straznik-jakosci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   straznik-jakosci:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    env:
+      APPROVAL_LABEL: zmiana-regul-zatwierdzona
+      GH_TOKEN: ${{ github.token }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
     steps:
+      # Zatwierdzenie dotyczy commitów, które druga osoba widziała: nowe commity je zdejmują.
+      - name: Zdejmij zatwierdzenie zmiany reguł po nowych commitach
+        if: github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, env.APPROVAL_LABEL)
+        run: gh api -X DELETE "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${APPROVAL_LABEL}"
+      # Login osoby, która ostatnia nadała etykietę zatwierdzenia; pusty, gdy PR jej nie ma albo właśnie ją zdjęto.
+      - name: Ustal, kto zatwierdził zmianę reguł
+        id: zatwierdzenie
+        if: github.event_name != 'merge_group'
+        run: |
+          login=''
+          if [[ $ACTION != synchronize ]]; then
+            labels="$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels" --paginate --jq '.[].name')"
+            if grep -qxF "$APPROVAL_LABEL" <<<"$labels"; then
+              login="$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/events" --paginate \
+                --jq ".[] | select(.event == \"labeled\" and .label.name == \"${APPROVAL_LABEL}\") | .actor.login" |
+                tail -n 1)"
+            fi
+          fi
+          echo "login=${login}" >>"$GITHUB_OUTPUT"
+        env:
+          ACTION: ${{ github.event.action }}
+      - name: Sprawdzone na PR
+        if: github.event_name == 'merge_group'
+        run: echo "Strażnik jakości przeszedł na każdym PR grupy; w kolejce scalania nie jest powtarzany."
       - uses: actions/checkout@v7.0.1
+        if: github.event_name != 'merge_group'
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Pobierz commity PR jako dane
+        if: github.event_name != 'merge_group'
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -39,6 +80,7 @@ jobs:
           test "$(git rev-parse refs/remotes/pr/head)" = "$HEAD_SHA" || git fetch --no-tags origin "$HEAD_SHA"
           git cat-file -e "${HEAD_SHA}^{commit}"
       - name: Sprawdź wyciszenia analizy, pliki baseline i zmiany reguł jakości
+        if: github.event_name != 'merge_group'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -47,6 +89,8 @@ jobs:
           HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
           PR_BODY: ${{ github.event.pull_request.body }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_APPROVED_BY: ${{ steps.zatwierdzenie.outputs.login }}
+          RULES_OWNER: vlladevk
         run: |
           if [[ $BASE_REF == main && $HEAD_REF =~ ^sprint/[0-9]+$ && $HEAD_REPO == "$GITHUB_REPOSITORY" ]]; then
             echo "Scalenie sprintu do main: każda zmiana przeszła strażnika w PR do gałęzi sprintu."
