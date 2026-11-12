@@ -24,7 +24,7 @@ Numery pytań pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md). W
 | --- | --- | --- | --- | --- |
 | US1 | V1 | N1 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę znaleźć budynek na mapie po symbolu budynku, aby wiedzieć, gdzie jest. |
 | US2 | V2 | N1, N2 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę otworzyć kartę budynku, aby zobaczyć wejścia dostępne i bariery. |
-| US3 | V3 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać budynek i dostać pasujące wejście, aby zaplanować wizytę. |
+| US3 | V3 | N1 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać budynek i dostać pasujące wejście, aby zaplanować wizytę. |
 | US4 | V4 | N3, N4 | Musi być | Jako Odwiedzający, chcę zgłosić barierę zdjęciem i bieżącą pozycją, aby po weryfikacji inni o niej wiedzieli. |
 | US5 | V5 | N4 | Powinno być | Jako Gość niezalogowany, który pierwszy raz otwiera aplikację, chcę krótką instrukcję, aby się nie zgubić. |
 | US6 | C1 | N5 | Musi być | Jako Zbierający, chcę uśrednić pozycję i wskazać budynek, aby miejsce bariery było dokładne. |
@@ -41,7 +41,7 @@ Numery pytań pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md). W
 | US17 | V2, V3; zmiana: C6 | N1, N2 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę widzieć przy każdym wejściu aktualne oznaczenie z datą i źródłem, aby wiedzieć, czy mogę mu ufać. |
 | US18 | V1 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę znaleźć salę po numerze, aby wiedzieć, na którym jest piętrze i jak dojdę do niej bez schodów. |
 
-Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. Historyjki „Musi być” tworzą MVP.
+Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. Historyjki „Musi być” tworzą MVP. Priorytet wynika z ważności historyjki według reguły na stronie [QFD](../ux/qfd.md).
 
 - **US14 jest historyjką umożliwiającą US4 i US6–US13.** Logowanie nie ma własnej potrzeby, a dla N3 jest dodatkowym krokiem. Konto służy N2 i N8: chroni dane przed spamem, a o publikacji decyduje tylko osoba z rolą nadaną przez Koordynatora (BR-2).
 - **US15 i US16 to nowe historyjki.** US15 daje podstawę postępu z US11, US16 opisuje plan piętra w budynkach szczegółowych.
@@ -172,9 +172,9 @@ Uprawnienia każdej roli podaje macierz na stronie [Role i uprawnienia](../bizne
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Kto | każda rola | RO-GOS, RO-ODW | RO-ODW | RO-ZBI | RO-ZBI | RO-WER | RO-ZBI, RO-KOO |
 | Kroki TO-BE | przed T7 | T20–T23 | T7–T10 | T1–T6 | T6a, T6b, T10–T13, T19 | T14–T19 | T24–T29 |
-| **Musi być (MVP)** | US14 logowanie | US1 wyszukiwanie<br>US2 karta budynku<br>US17 oznaczenie wejścia | US4 zgłoszenie szybkie | US6 pomiar bez US6.3, US6.5<br>US7 formularz | US8 statusy, „bariera usunięta”<br>US17.2 zmiana oznaczenia wejścia<br>US9 synchronizacja | US10 z podobnymi zgłoszeniami | US15 piętro obejrzane<br>US11 postęp<br>US13 eksport |
+| **Musi być (MVP)** | US14 logowanie | US1 wyszukiwanie<br>US2 karta budynku<br>US3 „Którędy wejść”<br>US17 oznaczenie wejścia | US4 zgłoszenie szybkie | US6 pomiar bez US6.3, US6.5<br>US7 formularz | US8 statusy, „bariera usunięta”<br>US17.2 zmiana oznaczenia wejścia<br>US9 synchronizacja | US10 z podobnymi zgłoszeniami | US15 piętro obejrzane<br>US11 postęp<br>US13 eksport |
 | **— linia MVP —** | | | | | | | |
-| **Powinno być** | US5 pomoc | US3 „Którędy wejść”<br>US16 plan piętra<br>US18 wyszukanie sali | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | — | US12 zaproszenie |
+| **Powinno być** | US5 pomoc | US16 plan piętra<br>US18 wyszukanie sali | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | — | US12 zaproszenie |
 | **Może być** | wersja angielska, tryb ciemny | kolejne budynki szczegółowe, dane z deklaracji dostępności | — | — | — | — | — |
 
 Kolumny idą w kolejności korzystania z aplikacji, od Gościa niezalogowanego do Koordynatora. Kroki TO-BE każdej aktywności podaje drugi wiersz. Wiersze nad linią MVP muszą działać na pokazie. Pozycje „Może być” nie mają jeszcze historyjek; dostaną je, gdy wejdą do planu sprintu.

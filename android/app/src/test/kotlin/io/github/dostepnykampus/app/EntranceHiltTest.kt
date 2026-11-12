@@ -129,7 +129,8 @@ class EntranceHiltTest {
     }
 
     private fun waitFor(matcher: SemanticsMatcher) {
-        compose.waitUntil(timeoutMillis = 5_000) { compose.onAllNodes(matcher).fetchSemanticsNodes().isNotEmpty() }
+        compose.waitForIdle()
+        compose.onAllNodes(matcher).onFirst().assertExists()
     }
 
     /** Wiersz: V1 lista, budynek → V2 → V3 → „Pokaż wejście na mapie” → V1, TalkBack czyta wejście i budynek. */
