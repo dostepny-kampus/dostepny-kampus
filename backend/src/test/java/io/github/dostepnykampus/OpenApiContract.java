@@ -5,44 +5,48 @@
  */
 package io.github.dostepnykampus;
 
+import com.atlassian.oai.validator.OpenApiInteractionValidator;
+import com.atlassian.oai.validator.mockmvc.MockMvcRequest;
+import com.atlassian.oai.validator.mockmvc.MockMvcResponse;
+import com.atlassian.oai.validator.report.LevelResolver;
+import com.atlassian.oai.validator.report.ValidationReport;
 import com.networknt.schema.InputFormat;
 import com.networknt.schema.Schema;
 import com.networknt.schema.SchemaLocation;
 import com.networknt.schema.SchemaRegistry;
 import com.networknt.schema.dialect.Dialects;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
-import org.jspecify.annotations.Nullable;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.util.function.SingletonSupplier;
 import org.springframework.util.function.ThrowingSupplier;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Zgodność wymiany HTTP z kontraktem {@code api/openapi.yaml} (decyzja 122).
  *
- * <p>Operację wybiera po metodzie i ścieżce; ścieżka z mniejszą liczbą
- * szablonów ma pierwszeństwo. Odpowiedź wybiera po statusie, potem po
- * zakresie, np. {@code 4XX}, i po typie treści. Operacja, status albo typ
- * treści spoza kontraktu jest naruszeniem. Treść innego typu niż JSON, np.
- * {@code image/jpeg}, jest sprawdzana tylko co do typu. Żądanie niezgodne ze
- * schematem jest dopuszczone, gdy odpowiedź ma status 4xx opisany w kontrakcie.
- * Kontrakt jest wczytywany raz.</p>
+ * <p>Wymianę sprawdza biblioteka {@code openapi-request-validator} (#830):
+ * operację, parametry ścieżki, zapytania i nagłówków, treść żądania, status,
+ * typ treści i treść odpowiedzi. Operacja, status albo typ treści spoza
+ * kontraktu jest naruszeniem. Żądanie niezgodne z kontraktem jest dopuszczone,
+ * gdy odpowiedź ma status 4xx opisany w kontrakcie. Żądanie złożone ręcznie,
+ * bez {@code pathInfo}, biblioteka czyta po adresie żądania. Tożsamość testy dają
+ * przez filtry zabezpieczeń, nie nagłówkiem, więc biblioteka nie sprawdza
+ * {@code security}. Brak treści żądania nie jest naruszeniem, bo test może
+ * podać treść strumieniem, którego biblioteka nie widzi, jak przy limicie
+ * zdjęcia. Biblioteka nie dopisuje też {@code additionalProperties:
+ * false}, bo kontrakt zamyka obiekty przez {@code unevaluatedProperties}.
+ * Schematy treści dla testów JSON daje rejestr schematów. Kontrakt jest
+ * wczytywany raz.</p>
  *
  * @since 0.1.0
  */
@@ -54,10 +58,19 @@ public final class OpenApiContract implements ResultMatcher {
     private static final String SPEC = "https://dostepny-kampus.test/openapi.yaml";
 
     /**
-     * Kontrakt z repozytorium, wspólny dla wszystkich testów; ścieżka
+     * Tekst kontraktu z repozytorium, wspólny dla wszystkich testów; ścieżka
      * względna od modułu serwera.
      */
-    private static final Supplier<Schema> REPOSITORY = OpenApiContract.load(OpenApiContract::text);
+    private static final Supplier<String> REPOSITORY = SingletonSupplier.of(
+        ThrowingSupplier.of(OpenApiContract::text)
+    );
+
+    /**
+     * Kontrakt z repozytorium jako schemat z rejestrem.
+     */
+    private static final Supplier<Schema> REPOSITORY_SPEC = OpenApiContract.load(
+        OpenApiContract.REPOSITORY
+    );
 
     /**
      * Cały kontrakt jako schemat z rejestrem.
@@ -65,10 +78,20 @@ public final class OpenApiContract implements ResultMatcher {
     private final Supplier<Schema> spec;
 
     /**
+     * Drzewo kontraktu w Jackson 3; rejestr schematów działa na Jackson 2.
+     */
+    private final Supplier<JsonNode> tree;
+
+    /**
+     * Walidator wymiany HTTP z biblioteki (#830).
+     */
+    private final Supplier<OpenApiInteractionValidator> validator;
+
+    /**
      * Kontrakt z repozytorium.
      */
     public OpenApiContract() {
-        this(OpenApiContract.REPOSITORY);
+        this(OpenApiContract.REPOSITORY_SPEC, OpenApiContract.REPOSITORY);
     }
 
     /**
@@ -77,16 +100,42 @@ public final class OpenApiContract implements ResultMatcher {
      * @param text Tekst kontraktu, czytany najwyżej raz
      */
     public OpenApiContract(final ThrowingSupplier<String> text) {
-        this(OpenApiContract.load(text));
+        this(SingletonSupplier.of(text));
     }
 
-    private OpenApiContract(final Supplier<Schema> spec) {
+    private OpenApiContract(final Supplier<String> text) {
+        this(OpenApiContract.load(text), text);
+    }
+
+    private OpenApiContract(final Supplier<Schema> spec, final Supplier<String> text) {
+        this(spec, OpenApiContract.jackson(spec), OpenApiContract.interactions(text));
+    }
+
+    private OpenApiContract(
+        final Supplier<Schema> spec, final Supplier<JsonNode> tree,
+        final Supplier<OpenApiInteractionValidator> validator
+    ) {
         this.spec = spec;
+        this.tree = tree;
+        this.validator = validator;
     }
 
     @Override
-    public void match(final MvcResult result) throws Exception {
-        final List<String> found = this.exchange(result);
+    public void match(final MvcResult result) {
+        final MockHttpServletRequest request = result.getRequest();
+        if (request.getPathInfo() == null) {
+            request.setPathInfo(request.getRequestURI());
+        }
+        final int status = result.getResponse().getStatus();
+        final String name = "%s %s %d".formatted(
+            request.getMethod(), request.getRequestURI(), status
+        );
+        final List<String> found = this.validator.get().validate(
+            MockMvcRequest.of(request), MockMvcResponse.of(result.getResponse())
+        ).getMessages().stream().filter(
+            message -> message.getLevel() == ValidationReport.Level.ERROR
+                && (status / 100 != 4 || !OpenApiContract.asked(message.getKey()))
+        ).map(message -> "%s: %s".formatted(name, OpenApiContract.describe(message))).toList();
         if (!found.isEmpty()) {
             throw new AssertionError(String.join(System.lineSeparator(), found));
         }
@@ -136,15 +185,15 @@ public final class OpenApiContract implements ResultMatcher {
      * @return Operacje kontraktu
      */
     List<ContractOperation> operations() {
-        final JsonNode tree = this.tree();
-        final String prefix = ContractOperation.prefix(tree);
+        final JsonNode root = this.tree();
+        final String prefix = ContractOperation.prefix(root);
         final List<ContractOperation> found = new ArrayList<>(0);
-        for (final Map.Entry<String, JsonNode> path : tree.path("paths").properties()) {
+        for (final Map.Entry<String, JsonNode> path : root.path("paths").properties()) {
             for (final Map.Entry<String, JsonNode> verb : path.getValue().properties()) {
                 if (ContractOperation.verb(verb.getKey())) {
                     JsonNode security = verb.getValue().path("security");
                     if (security.isMissingNode()) {
-                        security = tree.path("security");
+                        security = root.path("security");
                     }
                     found.add(
                         new ContractOperation(
@@ -152,63 +201,6 @@ public final class OpenApiContract implements ResultMatcher {
                         )
                     );
                 }
-            }
-        }
-        return found;
-    }
-
-    private List<String> exchange(final MvcResult result) throws Exception {
-        final MockHttpServletRequest request = result.getRequest();
-        final MockHttpServletResponse response = result.getResponse();
-        final String verb = Objects.toString(request.getMethod(), "");
-        final String path = this.template(Objects.toString(request.getRequestURI(), ""));
-        final String operation = "/paths/%s/%s".formatted(
-            OpenApiContract.escape(path), verb.toLowerCase(Locale.ROOT)
-        );
-        final String name = "%s %s".formatted(verb, path);
-        final List<String> found = new ArrayList<>(0);
-        final String sent = new String(
-            Objects.requireNonNullElse(request.getContentAsByteArray(), new byte[0]),
-            StandardCharsets.UTF_8
-        );
-        final String reply = this.resolve(this.status(operation, response.getStatus()));
-        final String body = response.getContentAsString(StandardCharsets.UTF_8);
-        final List<String> asked = new ArrayList<>(0);
-        if (!sent.isEmpty()) {
-            this.content(operation.concat("/requestBody"), request.getContentType(), sent)
-                .forEach(line -> asked.add("%s, żądanie: %s".formatted(name, line)));
-        }
-        if (this.tree().at(operation).isMissingNode()) {
-            found.add("%s: brak operacji w kontrakcie".formatted(name));
-        } else if (this.tree().at(reply).isMissingNode()) {
-            found.add("%s %d: brak statusu w kontrakcie".formatted(name, response.getStatus()));
-        } else if (!body.isEmpty() || this.tree().at(reply).has("content")) {
-            this.content(reply, response.getContentType(), body).forEach(
-                line -> found.add("%s %d: %s".formatted(name, response.getStatus(), line))
-            );
-        }
-        if (response.getStatus() / 100 != 4) {
-            found.addAll(asked);
-        }
-        return found;
-    }
-
-    private List<String> content(
-        final String pointer, final @Nullable String type, final String json
-    ) {
-        String key = "";
-        if (type != null) {
-            final MediaType media = MediaType.parseMediaType(type);
-            key = "%s/%s".formatted(media.getType(), media.getSubtype());
-        }
-        final String schema = "%s/content/%s/schema".formatted(
-            this.resolve(pointer), OpenApiContract.escape(key)
-        );
-        List<String> found = List.of("typ treści '%s' spoza kontraktu".formatted(key));
-        if (!this.tree().at(schema).isMissingNode()) {
-            found = List.of();
-            if (OpenApiContract.json(type)) {
-                found = this.validate(schema, json);
             }
         }
         return found;
@@ -222,14 +214,6 @@ public final class OpenApiContract implements ResultMatcher {
         ).toList();
     }
 
-    private String status(final String operation, final int code) {
-        String key = String.valueOf(code);
-        if (this.tree().at(operation).path("responses").path(key).isMissingNode()) {
-            key = "%dXX".formatted(code / 100);
-        }
-        return "%s/responses/%s".formatted(operation, key);
-    }
-
     private String resolve(final String pointer) {
         String target = pointer;
         while (this.tree().at(target).has("$ref")) {
@@ -238,19 +222,11 @@ public final class OpenApiContract implements ResultMatcher {
         return target;
     }
 
-    private String template(final String uri) {
-        return this.tree().path("paths").propertyNames().stream().filter(
-            candidate -> Pattern.compile(
-                Pattern.quote(candidate).replaceAll("\\{[^/]+}", "\\\\E[^/]+\\\\Q")
-            ).matcher(uri).matches()
-        ).min(Comparator.comparingInt(candidate -> candidate.split("\\{").length)).orElse(uri);
-    }
-
     private JsonNode tree() {
-        return this.spec.get().getSchemaNode();
+        return this.tree.get();
     }
 
-    private static Supplier<Schema> load(final ThrowingSupplier<String> text) {
+    private static Supplier<Schema> load(final Supplier<String> text) {
         return SingletonSupplier.of(
             () -> SchemaRegistry.withDialect(
                 Dialects.getOpenApi31(),
@@ -259,15 +235,43 @@ public final class OpenApiContract implements ResultMatcher {
         );
     }
 
-    private static boolean json(final @Nullable String type) {
-        String subtype = "";
-        if (type != null) {
-            subtype = MediaType.parseMediaType(type).getSubtype();
-        }
-        return "json".equals(subtype) || subtype.endsWith("+json");
+    private static Supplier<JsonNode> jackson(final Supplier<Schema> spec) {
+        return SingletonSupplier.of(
+            () -> JsonMapper.shared().readTree(spec.get().getSchemaNode().toString())
+        );
     }
 
-    private static String escape(final String segment) {
-        return segment.replace("~", "~0").replace("/", "~1");
+    private static Supplier<OpenApiInteractionValidator> interactions(
+        final Supplier<String> text
+    ) {
+        return SingletonSupplier.of(
+            () -> OpenApiInteractionValidator.createForInlineApiSpecification(text.get())
+                .withLevelResolver(OpenApiContract.levels()).build()
+        );
+    }
+
+    private static LevelResolver levels() {
+        return LevelResolver.create().withLevel(
+            "validation.request.security", ValidationReport.Level.IGNORE
+        ).withLevel(
+            "validation.request.body.missing", ValidationReport.Level.IGNORE
+        ).withLevel(
+            "validation.schema.additionalProperties", ValidationReport.Level.IGNORE
+        ).build();
+    }
+
+    private static String describe(final ValidationReport.Message message) {
+        return "%s %s %s".formatted(
+            message.getKey(),
+            message.getContext().flatMap(ValidationReport.MessageContext::getPointers)
+                .map(ValidationReport.MessageContext.Pointers::getInstance).orElse(""),
+            message.getMessage()
+        );
+    }
+
+    private static boolean asked(final String key) {
+        return key.startsWith("validation.request.")
+            && !"validation.request.path.missing".equals(key)
+            && !"validation.request.operation.notAllowed".equals(key);
     }
 }

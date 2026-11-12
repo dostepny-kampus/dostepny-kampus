@@ -58,7 +58,7 @@ final class MockMvcContractTest {
                     () -> mvc.perform(MockMvcRequestBuilders.get("/proba-bledow/poza-kontraktem"))
                 ).getMessage()
             ),
-            Matchers.containsString("brak operacji w kontrakcie")
+            Matchers.containsString("validation.request.path.missing")
         );
     }
 }
