@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.capture
 
 import android.graphics.Bitmap
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -39,6 +40,7 @@ import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.coroutines.EmptyCoroutineContext
 
 /** Ekran C2: miejsce z C1, piętro liczbą, typ bariery z listy, uciążliwość i „Zapisz” (US7.1, US7.2, US7.4). */
 @RunWith(RobolectricTestRunner::class)
@@ -70,7 +72,13 @@ class ReportScreenTest {
                 onConfirmExit = { exits++ },
                 onStay = {},
             )
-        compose.setContent { DostepnyKampusTheme { ReportContent(state = state, actions = actions) } }
+        compose.setContent {
+            DostepnyKampusTheme {
+                CompositionLocalProvider(LocalPhotoDecodeContext provides EmptyCoroutineContext) {
+                    ReportContent(state = state, actions = actions)
+                }
+            }
+        }
     }
 
     @Test
@@ -306,11 +314,8 @@ class ReportScreenTest {
         val photo = PendingPhotoDraft(photoId = "p1", path = file.path)
         show(ReportUiState(form = ReportForm(place = A1), photos = listOf(photo)))
 
-        val preview = hasContentDescription("Zrobione zdjęcie 1 z 1")
-        compose.waitUntil(timeoutMillis = DECODE_TIMEOUT_MILLIS) {
-            compose.onAllNodes(preview).fetchSemanticsNodes().isNotEmpty()
-        }
-        compose.onNode(preview).performScrollTo().assertIsDisplayed()
+        compose.waitForIdle()
+        compose.onNode(hasContentDescription("Zrobione zdjęcie 1 z 1")).performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Zrób nowe zdjęcie").performScrollTo().assertIsDisplayed()
     }
 
@@ -331,4 +336,3 @@ class ReportScreenTest {
 }
 
 private const val JPEG_QUALITY = 90
-private const val DECODE_TIMEOUT_MILLIS = 5_000L

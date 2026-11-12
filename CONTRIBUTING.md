@@ -15,9 +15,8 @@ podany jest plik, który ją egzekwuje; gdy reguła się zmienia, zmienia się t
 5. **Kolejka scalania** scala PR przez squash do gałęzi sprintu. Do `main` trafiają tylko całe sprinty.
    Kolejka uruchamia kontrole także na wyniku scalenia (zdarzenie `merge_group`, np. w [`android.yml`](.github/workflows/android.yml)
    i [`api.yml`](.github/workflows/api.yml)); squash i kolejka to ustawienia repozytorium, nie plik.
-   Do kolejki PR wstawia przycisk „Merge when ready” albo etykieta `do-kolejki`: włącza auto-merge, a zdjęta je
-   wyłącza ([`do-kolejki.yml`](.github/workflows/do-kolejki.yml)). Etykietę doda też samo REST API:
-   `gh api repos/{owner}/{repo}/issues/N/labels -f 'labels[]=do-kolejki'`.
+   Aby dodać PR do kolejki, użyj przycisku „Merge when ready” lub polecenia `gh pr merge N` po zalogowaniu
+   na konto z prawem scalania w repozytorium.
    Gdy grupa ma to samo drzewo plików, co zielony przebieg na PR, i nie zmienia `.github/` względem bazy, ciężkie joby są
    pomijane ([`drzewo-grupy.yml`](.github/workflows/drzewo-grupy.yml)); zmiana `.github/` albo `sprint/N` wymusza pełny przebieg.
    Ryzyko: test niestabilny, który przypadkiem przeszedł na PR, nie jest w kolejce sprawdzany drugi raz.
@@ -41,7 +40,7 @@ gdy manifest i odpowiadający mu plik lock są aktualizowane razem.
 | Tytuł PR i każdy commit mają postać Conventional Commits po polsku: `typ(zakres): opis`, typ jeden z `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test`; opis małą literą, nagłówek do 100 znaków. | [`commitlint.config.mjs`](commitlint.config.mjs), zadanie `commity` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Commit scalający sprint do gałęzi robocznej ma domyślny komunikat („Merge remote-tracking branch …”) — commitlint go pomija; własny komunikat z typem spoza listy jest odrzucany. | [`commitlint.config.mjs`](commitlint.config.mjs) |
 | Gałąź sprintu: poprzedni sprint jest w `main`, a `sprint/N` wyrasta z `main`. | [`baza-sprintu.sh`](.github/scripts/baza-sprintu.sh), zadanie `baza-sprintu` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
-| PR zmieniający workflow, konfigurację linterów albo pliki reguł jakości ma w opisie linię `Zmiana reguł jakości: <powód>`. Wyciszenia analizy w kodzie są zabronione. | [`straznik-jakosci.sh`](.github/scripts/straznik-jakosci.sh), [`straznik-jakosci.yml`](.github/workflows/straznik-jakosci.yml) |
+| PR zmieniający workflow, konfigurację linterów albo pliki reguł jakości ma w opisie linię `Zmiana reguł jakości: <powód>` i etykietę `zmiana-regul-zatwierdzona` nadaną przez osobę inną niż autor PR; właściciel repozytorium może nadać ją także we własnym PR; nowe commity zdejmują etykietę. Wyciszenia analizy w kodzie są zabronione. | [`straznik-jakosci.sh`](.github/scripts/straznik-jakosci.sh), [`straznik-jakosci.yml`](.github/workflows/straznik-jakosci.yml) |
 | Znacznik zadania w kodzie (`TODO`, `FIXME`, `HACK`, `@todo`; wielkość liter bez znaczenia) ma postać `ZNACZNIK(#N)` z otwartym issue. | [`todo-issue.sh`](.github/scripts/todo-issue.sh), zadanie `znaczniki-todo` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Każde rozwiązanie tymczasowe wskazuje otwarte issue z docelową poprawką: `@Ignore("… #N")` i `@Disabled("… #N")` (powód z numerem), tag wykluczający w `.feature` (`@do-zrobienia`, `@ignore`, `@skip`, `@wip`, `@pominiete`, `@tymczasowe`) z `#N` w tej samej linii albo w komentarzu nad nim, `@Tymczasowe("#N …")` (Java), `@RequiresOptIn` z `#N` w KDoc (Kotlin). Brak numeru, issue zamknięte albo nieistniejące to błąd; dotyczy to też issue zamykanego przez ten PR. | [`todo-issue.sh`](.github/scripts/todo-issue.sh), zadanie `znaczniki-todo` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Pliki z kodem mają nagłówek autorski. | [`naglowki.sh`](.github/scripts/naglowki.sh) |

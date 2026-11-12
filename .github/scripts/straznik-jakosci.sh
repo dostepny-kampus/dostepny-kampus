@@ -248,9 +248,21 @@ report() {
 }
 
 # Linia w komentarzu HTML albo w bloku kodu nie jest widoczna w opisie PR, więc się nie liczy.
+# Linia z powodem tylko wyjaśnia zmianę. Bramkę otwiera druga osoba: PR_APPROVED_BY to login osoby, która nadała
+# PR etykietę `zmiana-regul-zatwierdzona` (podaje go przepływ straznik-jakosci.yml); autor PR sam jej nie otworzy.
+# Wyjątek: właściciel repozytorium (RULES_OWNER z przepływu) ustala reguły, więc jego etykieta liczy się także
+# w jego własnym PR.
+reason=0
 gate=0
+approver="${PR_APPROVED_BY:-}"
+author="${PR_AUTHOR:-}"
+owner="${RULES_OWNER:-}"
 body="$(printf '%s\n' "${PR_BODY:-}" | tr -d '\r' | perl -0pe 's/<!--.*?-->//gs; s/^```.*?^```//gms')"
 if ((!dependabot)) && grep -qE '^Zmiana reguł jakości:[[:space:]]*[^[:space:]]' <<<"$body"; then
+  reason=1
+fi
+if ((reason)) && [[ -n $approver ]] &&
+  { [[ ${approver,,} != "${author,,}" ]] || [[ -n $owner && ${approver,,} == "${owner,,}" ]]; }; then
   gate=1
 fi
 
@@ -261,10 +273,14 @@ if ((${#hard[@]})); then
 fi
 if ((${#soft[@]} && gate)); then
   report warning "${soft[@]}"
-  echo "Opis PR ma linię „Zmiana reguł jakości:”, więc zmiany reguł są ostrzeżeniami do przeglądu."
+  echo "Opis PR ma linię „Zmiana reguł jakości:”, a zmianę zatwierdził(a) ${approver}: zmiany reguł są ostrzeżeniami."
+elif ((${#soft[@]} && reason)); then
+  report error "${soft[@]}"
+  echo "Zmianę reguł jakości zatwierdza osoba inna niż autor PR: etykietą „zmiana-regul-zatwierdzona”."
+  result=1
 elif ((${#soft[@]})); then
   report error "${soft[@]}"
-  echo "Zmiana reguł jakości wymaga w opisie PR linii „Zmiana reguł jakości: <powód>”."
+  echo "Zmiana reguł jakości wymaga w opisie PR linii „Zmiana reguł jakości: <powód>” i zatwierdzenia drugiej osoby."
   result=1
 fi
 if ((${#hard[@]} + ${#soft[@]} == 0)); then
