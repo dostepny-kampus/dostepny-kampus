@@ -36,7 +36,8 @@ fun interface CampusMapView {
     /**
      * Mapa [data] z zaznaczeniem [selection] w widoku [camera]. Po geście widok zgłasza nowy widok przez
      * [onCameraIdle], a po dotknięciu konturu albo miejsca obok niego symbole trafionych budynków przez
-     * [onBuildingsTouch], a po dotknięciu pustej mapy pustą listę.
+     * [onBuildingsTouch], a po dotknięciu pustej mapy pustą listę. Dotknięcie znaku bariery zgłasza identyfikator
+     * jej zgłoszenia przez [onBarrierTouch] i nie zgłasza konturu pod znakiem (US1.5).
      */
     @Composable
     fun Show(
@@ -45,6 +46,7 @@ fun interface CampusMapView {
         camera: MapCamera,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
+        onBarrierTouch: (String) -> Unit,
         modifier: Modifier,
     )
 }

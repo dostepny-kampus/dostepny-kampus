@@ -124,7 +124,7 @@ class BuildingOnMapCameraTest {
     private val choice = TestMapListChoice()
     private val repository = BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { CATALOG }
     private val fakeMap =
-        CampusMapView { data: CampusMapData, _, camera, onCameraIdle, onBuildingsTouch, modifier: Modifier ->
+        CampusMapView { data: CampusMapData, _, camera, onCameraIdle, onBuildingsTouch, _, modifier: Modifier ->
             shown += data to camera
             touch = onBuildingsTouch
             density = LocalDensity.current.density

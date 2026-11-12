@@ -12,6 +12,9 @@ import kotlinx.serialization.json.put
 import org.maplibre.spatialk.geojson.Feature
 import org.maplibre.spatialk.geojson.Point
 
+/** Właściwość punktu bariery z identyfikatorem zgłoszenia; po niej dotknięcie znaku wskazuje barierę (US1.5). */
+const val BARRIER_ID = "id"
+
 /** Właściwość punktu bariery z nazwą uciążliwości: `HINDRANCE`, `ONLY_WITH_HELP` albo `BLOCKING`. */
 const val BARRIER_SEVERITY = "severity"
 
@@ -24,7 +27,7 @@ fun CampusMapData.withBarriers(barriers: List<AcceptedBarrier>): CampusMapData {
         barriers.map { barrier ->
             val properties =
                 buildJsonObject {
-                    put(key = "id", value = barrier.id)
+                    put(key = BARRIER_ID, value = barrier.id)
                     put(key = BARRIER_SEVERITY, value = barrier.severity.name)
                 }
             Feature(Point(barrier.location.toPosition()), properties)
