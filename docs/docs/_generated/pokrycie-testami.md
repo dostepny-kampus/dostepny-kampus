@@ -9,9 +9,9 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Stan | Liczba |
 | --- | --- |
-| Pełny test | 10 |
+| Pełny test | 11 |
 | Tylko częściowo | 14 |
-| Bez testu | 161 |
+| Bez testu | 160 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -164,7 +164,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `zgloszenia-zbierajacego.feature` | Każde własne zgłoszenie ma jeden status tekstem i ikoną | US8.1 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Zgłoszenie odrzucone pokazuje powód odrzucenia | BR-16, US8.1 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Zgłoszenie ze zmianą czekającą w telefonie ma napis przy statusie | US8.1 | — | brak |
-| `zgloszenia-zbierajacego.feature` | Lista nie pokazuje własnych zgłoszeń szybkich | US4.4, US8.1 | — | brak |
+| `zgloszenia-zbierajacego.feature` | Lista nie pokazuje własnych zgłoszeń szybkich | US4.4, US8.1 | `core/data · OwnListTest.us4_4 lista bez szybkich` | pełny |
 | `zgloszenia-zbierajacego.feature` | „Otwórz” mają tylko zgłoszenia, które można poprawić | US8.1 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Najnowsze zgłoszenia są na górze listy | US8.1 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Status „wysłane” dopiero po potwierdzeniu odbioru przez serwer | BR-9, US8.2 | — | brak |
