@@ -110,6 +110,10 @@ has_header() {
 allowed_authors="$(printf '%s, ' "${authors[@]}")"
 allowed_authors="${allowed_authors%, }"
 
+# shellcheck source=pliki-kodu.sh
+source "$(dirname "${BASH_SOURCE[0]}")/pliki-kodu.sh"
+mapfile -t kod < <(wzorce_plikow_kodu)
+
 found=0
 checked=0
 while IFS= read -r -d '' path; do
@@ -118,9 +122,9 @@ while IFS= read -r -d '' path; do
     echo "::error file=${path},line=1::Brak nagłówka autorskiego albo nagłówek niezgodny ze wzorcem (${form}); Author: wymaga różnych osób z listy ${allowed_authors}, rozdzielonych przecinkiem i spacją."
     found=1
   fi
-done < <(git ls-files -z -- '*.kt' '*.kts' '*.java' '*.py' '*.sh' '*.sql' "${excluded[@]}")
+done < <(git ls-files -z -- "${kod[@]}" "${excluded[@]}")
 
 if ((found == 0)); then
-  echo "Nagłówek autorski jest we wszystkich ${checked} plikach z kodem (.kt, .kts, .java, .py, .sh, .sql)."
+  echo "Nagłówek autorski jest we wszystkich ${checked} plikach z kodem (${kod[*]})."
 fi
 exit "$found"
