@@ -89,7 +89,7 @@ class EntranceOnMapTest {
     private var touch: (List<String>) -> Unit = {}
     private val choice = TestMapListChoice()
     private val fakeMap =
-        CampusMapView { data: CampusMapData, selection, camera, _, onBuildingsTouch, _: Modifier ->
+        CampusMapView { data: CampusMapData, selection, camera, _, onBuildingsTouch, _, _: Modifier ->
             shown += data to camera
             selections += selection
             touch = onBuildingsTouch

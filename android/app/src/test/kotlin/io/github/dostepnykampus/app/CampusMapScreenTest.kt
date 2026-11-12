@@ -129,7 +129,7 @@ class CampusMapScreenTest {
     private var emptyTaps = 0
     private var touch: (List<String>) -> Unit = {}
     private val fakeMap =
-        CampusMapView { _: CampusMapData, selection, camera, _, onBuildingsTouch, _: Modifier ->
+        CampusMapView { _: CampusMapData, selection, camera, _, onBuildingsTouch, _, _: Modifier ->
             cameras += camera
             focuses += selection.building
             touch = onBuildingsTouch

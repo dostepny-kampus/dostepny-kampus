@@ -28,6 +28,7 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.nameRes
 import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.feature.map.data.BARRIER_ID
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.OUTLINE_NUMBER
@@ -66,6 +67,7 @@ object MapLibreMapView : CampusMapView {
         camera: MapCamera,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
+        onBarrierTouch: (String) -> Unit,
         modifier: Modifier,
     ) {
         if (!remember { isNativeMapAvailable() }) return
@@ -92,15 +94,14 @@ object MapLibreMapView : CampusMapView {
         val currentData by rememberUpdatedState(data)
         val cameraIdle by rememberUpdatedState(onCameraIdle)
         val buildingsTouch by rememberUpdatedState(onBuildingsTouch)
+        val barrierTouch by rememberUpdatedState(onBarrierTouch)
         DisposableEffect(mapView) {
             mapView.getMapAsync { ready ->
                 ready.prefetchZoomDelta = 0
                 ready.cameraPosition = currentCamera.toPosition()
                 ready.onPersonIdle { cameraIdle(it) }
-                ready.onOutlinesTouch(tolerance) { numbers ->
-                    val symbols = currentData.symbolsAt(numbers)
-                    buildingsTouch(symbols)
-                    symbols.isNotEmpty()
+                ready.onSignOrOutlinesTouch(tolerance, onBarrier = { barrierTouch(it) }) { numbers ->
+                    currentData.symbolsAt(numbers).also { buildingsTouch(it) }.isNotEmpty()
                 }
                 map = ready
             }
@@ -155,12 +156,23 @@ object MapLibreMapView : CampusMapView {
         }
     }
 
-    private fun MapLibreMap.onOutlinesTouch(tolerance: Float, isTaken: (List<Int>) -> Boolean) {
+    private fun MapLibreMap.onSignOrOutlinesTouch(
+        tolerance: Float,
+        onBarrier: (String) -> Unit,
+        isTaken: (List<Int>) -> Boolean,
+    ) {
         addOnMapClickListener { point ->
             val at = projection.toScreenLocation(point)
             val area = RectF(at.x - tolerance, at.y - tolerance, at.x + tolerance, at.y + tolerance)
-            val features = queryRenderedFeatures(area, BUILDINGS_LAYER)
-            isTaken(features.mapNotNull { it.getNumberProperty(OUTLINE_NUMBER)?.toInt() })
+            val signs = queryRenderedFeatures(area, BARRIERS_LAYER)
+            val barrier = signs.firstNotNullOfOrNull { it.getStringProperty(BARRIER_ID) }
+            if (barrier == null) {
+                val outlines = queryRenderedFeatures(area, BUILDINGS_LAYER)
+                isTaken(outlines.mapNotNull { it.getNumberProperty(OUTLINE_NUMBER)?.toInt() })
+            } else {
+                onBarrier(barrier)
+                true
+            }
         }
     }
 

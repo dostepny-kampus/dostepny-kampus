@@ -52,7 +52,7 @@ class MapGeometryFocusTest {
     private val focuses = mutableListOf<String?>()
     private val cameras = mutableListOf<MapCamera>()
     private val fakeMap =
-        CampusMapView { data: CampusMapData, selection, camera, _, _, _: Modifier ->
+        CampusMapView { data: CampusMapData, selection, camera, _, _, _, _: Modifier ->
             shown += data
             focuses += selection.building
             cameras += camera

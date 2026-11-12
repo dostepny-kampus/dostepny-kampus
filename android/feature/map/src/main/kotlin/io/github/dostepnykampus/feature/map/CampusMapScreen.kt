@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -161,9 +162,11 @@ fun CampusMapScreen(
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
                 Box(Modifier.weight(1f).fillMaxWidth()) {
+                    val shown = ShownBarriers(state.barriers.takeUnless { isCovered }.orEmpty())
                     CampusMap(
                         catalog = catalog,
                         layers = state.mapData,
+                        barriers = shown,
                         focus = focus,
                         areas = areas,
                         contentPadding = contentPadding,
@@ -172,7 +175,7 @@ fun CampusMapScreen(
                         onEmptyMapClick = onEmptyMapClick,
                         modifier = Modifier.fillMaxSize(),
                     )
-                    BarrierDescriptions(ShownBarriers(state.barriers.takeUnless { isCovered }.orEmpty()))
+                    BarrierDescriptions(shown)
                 }
             }
         }
@@ -183,6 +186,7 @@ fun CampusMapScreen(
 private fun CampusMap(
     catalog: BuildingCatalog?,
     layers: CampusMapData?,
+    barriers: ShownBarriers,
     focus: MapFocus?,
     areas: MapAreas,
     contentPadding: PaddingValues,
@@ -195,6 +199,7 @@ private fun CampusMap(
     val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
+    var barrierId by rememberSaveable { mutableStateOf<String?>(null) }
     val state =
         rememberMapSceneState(
             layers = layers,
@@ -213,7 +218,8 @@ private fun CampusMap(
                 selection = scene.selection,
                 camera = camera,
                 onCameraIdle = state::keep,
-                onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick) },
+                onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick).also { barrierId = null } },
+                onBarrierTouch = { barrierId = it.also { state.dismiss() } },
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
@@ -230,15 +236,33 @@ private fun CampusMap(
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().then(aboveSheet),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
             ) {
-                val chosen = catalog?.buildingsOf(state.choice).orEmpty()
-                if (chosen.isNotEmpty()) {
-                    val sheetModifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
-                    BuildingChoiceSheet(onClose = state::dismiss, modifier = sheetModifier) {
-                        chosen.forEach { building ->
-                            BuildingChoice(building) { state.choose(building.symbol, onBuildingClick) }
-                        }
-                    }
-                }
+                val sheetModifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
+                ChosenBarrierSheet(
+                    id = barrierId,
+                    barriers = barriers,
+                    catalog = catalog,
+                    onClose = { barrierId = null },
+                    onBuildingClick = onBuildingClick,
+                    modifier = sheetModifier,
+                )
+                BuildingChoices(catalog = catalog, state = state, onChoose = onBuildingClick, modifier = sheetModifier)
+            }
+        }
+    }
+}
+
+@Composable
+private fun BuildingChoices(
+    catalog: BuildingCatalog?,
+    state: MapSceneState,
+    onChoose: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val chosen = catalog?.buildingsOf(state.choice).orEmpty()
+    if (chosen.isNotEmpty()) {
+        BuildingChoiceSheet(onClose = state::dismiss, modifier = modifier) {
+            chosen.forEach { building ->
+                BuildingChoice(building) { state.choose(building.symbol, onChoose) }
             }
         }
     }
