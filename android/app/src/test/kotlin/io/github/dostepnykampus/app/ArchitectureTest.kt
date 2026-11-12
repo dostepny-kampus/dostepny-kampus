@@ -11,6 +11,8 @@ import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.declaration.KoClassDeclaration
 import com.lemonappdev.konsist.api.declaration.KoFileDeclaration
 import com.lemonappdev.konsist.api.declaration.KoImportDeclaration
+import com.lemonappdev.konsist.api.declaration.KoObjectDeclaration
+import com.lemonappdev.konsist.api.declaration.KoPropertyDeclaration
 import com.lemonappdev.konsist.api.verify.assertFalse
 import com.lemonappdev.konsist.api.verify.assertTrue
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -126,6 +128,64 @@ class ArchitectureTest {
         assertEquals(setOf("$BASE.feature.map.Tiles", "$BASE.feature.map.Url"), httpFiles(files))
     }
 
+    /** Stan zmienny tylko w klasach z grafu Hilt, nie na poziomie pliku ani w `object` (#887). */
+    @Test
+    fun infra_a1_no_global_state() {
+        val production = Konsist.scopeFromProduction().files
+        assertEquals(emptySet<String>(), globalState(production) - GLOBAL_STATE.keys, STATE_HINT)
+        assertEquals(emptySet<String>(), GLOBAL_STATE.keys - globalState(production))
+    }
+
+    /** #887: `var` na poziomie pliku i w `object`, `MutableStateFlow` w `companion object` łamią regułę. */
+    @Test
+    fun infra_a1_global_state_rejects(
+        @TempDir fixtures: File,
+    ) {
+        val directory = File(fixtures, "state").apply { mkdirs() }
+        val source =
+            listOf(
+                "package $BASE.feature.map",
+                "import kotlinx.coroutines.flow.MutableStateFlow",
+                "var agent: String? = null",
+                "val fixed = 1",
+                "object Cache { var last = 0\n val seen = mutableListOf<String>() }",
+                "class Screen { var local = 0\n companion object { val state = MutableStateFlow(0) } }",
+                "@Singleton class Store { companion object { val held = MutableStateFlow(0) } }",
+            ).joinToString(separator = System.lineSeparator())
+        File(directory, "State.kt").writeText(source)
+        val files = Konsist.scopeFromExternalDirectory(directory.absolutePath).files
+        val expected = setOf("agent", "Cache.last", "Cache.seen", "Screen.Companion.state")
+        assertEquals(expected.map { "$BASE.feature.map.$it" }.toSet(), globalState(files))
+    }
+
+    private fun globalState(files: List<KoFileDeclaration>): Set<String> {
+        val topLevel =
+            files
+                .asSequence()
+                .flatMap { it.properties(includeNested = false) }
+                .filter { it.isMutable() }
+                .map { "${it.containingFile.packagePath()}.${it.name}" }
+        val inObjects =
+            files
+                .asSequence()
+                .flatMap { it.objects(includeNested = true) }
+                .filterNot { it.isInSingleton() }
+                .flatMap { owner -> owner.mutableProperties().map { "${owner.fullyQualifiedName.orEmpty()}.$it" } }
+        return (topLevel + inObjects).toSet()
+    }
+
+    private fun KoObjectDeclaration.mutableProperties(): List<String> =
+        properties(includeNested = false).filter { it.isMutable() }.map { it.name }
+
+    private fun KoObjectDeclaration.isInSingleton(): Boolean =
+        (containingDeclaration as? KoClassDeclaration)?.hasAnnotationWithName("Singleton") == true
+
+    private fun KoPropertyDeclaration.isMutable(): Boolean {
+        val declaration = text.substringBefore('=')
+        val shape = if (':' in declaration) declaration.substringAfter(':') else text.substringAfter('=')
+        return isVar || MUTABLE_TYPE.containsMatchIn(shape)
+    }
+
     private fun fixture(imports: String, body: String): String =
         listOf("package $BASE.feature.map", imports, body).joinToString(separator = System.lineSeparator())
 
@@ -162,6 +222,21 @@ class ArchitectureTest {
                 pattern = """^\s*(implementation|api|compileOnly|runtimeOnly)\(libs\.(okhttp|retrofit)\b""",
                 option = RegexOption.MULTILINE,
             )
+
+        const val STATE_HINT =
+            "Stan globalny: przenieś stan do klasy wstrzykiwanej przez Hilt i podaj go przez konstruktor"
+
+        val MUTABLE_TYPE =
+            listOf(
+                "Mutable(State|Shared)Flow",
+                """Atomic[A-Z]\w*""",
+                "mutable(List|Map|Set)Of",
+                "Mutable(List|Map|Set)",
+                "ArrayList|HashMap|HashSet",
+            ).joinToString(separator = "|", prefix = """\b(""", postfix = """)\b""").toRegex()
+
+        /** Stan globalny w kodzie produkcyjnym, z numerem zadania; lista może tylko maleć (#887). */
+        val GLOBAL_STATE = emptyMap<String, String>()
 
         /** Pliki modułów funkcji z importem HTTP, z powodem; lista może tylko maleć (#888). */
         val OWN_HTTP =

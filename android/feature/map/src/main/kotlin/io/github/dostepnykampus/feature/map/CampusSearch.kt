@@ -130,7 +130,7 @@ internal fun CampusSearch(
         if (isNoResult || shown.isNotEmpty()) {
             ResultPanel {
                 shown.forEach { building ->
-                    BuildingChoice(building) { choose(building.symbol) }
+                    BuildingChoice(building, areas.otherAreaOf(building.symbol)) { choose(building.symbol) }
                 }
                 query.takeIf { isNoResult }?.let { NoResult(it, onShowList = showList.takeUnless { isList }) }
             }

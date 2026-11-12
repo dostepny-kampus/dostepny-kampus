@@ -64,6 +64,7 @@ class MapOverlayNeighborTest {
                 ),
             symbol = null,
             chosen = mutableStateOf(null),
+            seen = mutableStateOf(null),
         )
     private val atEdge = GeoPoint(longitude = main.bounds.east, latitude = main.bounds.center.latitude)
     private val shown = mutableListOf<MapCamera>()

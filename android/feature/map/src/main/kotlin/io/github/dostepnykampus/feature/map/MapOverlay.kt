@@ -38,7 +38,8 @@ private enum class MapPanel { Area, Legend, Info }
 
 /**
  * Nakładka mapy V1: przyciski powiększania i przesuwania (NFR-53), przycisk terenu nad „Legendą” (US1.6, US1.7),
- * pod nimi przy granicy terenu przycisk sąsiedniego terenu (US1.7), przycisk „ⓘ” i podpis OSM (NFR-37), a nad
+ * pod nimi przy granicy terenu przycisk sąsiedniego terenu (US1.7), przycisk „ⓘ” i podpis OSM (NFR-37), nad
+ * podpisem napis „Pokazuję teren: Wittigowo” po zmianie terenu przez zaznaczony budynek (US1.8), a nad
  * nimi [content], np. arkusz „Który budynek?”. Otwarty panel zasłania przyciski mapy i przycisk sąsiedniego
  * terenu, otwarte „ⓘ” także przycisk terenu i „Legendę”, a otwarty panel „Teren na mapie” także „Legendę”;
  * dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem zapisywanym. Nad małą kartą V2 zostają
@@ -73,7 +74,13 @@ internal fun MapOverlay(
     Box(modifier) {
         if (hasControls && open == null) {
             Column(Modifier.align(Alignment.TopEnd), horizontalAlignment = Alignment.End) {
-                MapControls(camera, onCameraChange)
+                MapControls(
+                    camera = camera,
+                    onCameraChange = { moved ->
+                        areas.acknowledge()
+                        onCameraChange(moved)
+                    },
+                )
                 if (hasPanels) MapAreaNeighbor(areas = areas, camera = camera, isAtStart = false, onShow = onAreaShow)
             }
         }
@@ -91,7 +98,10 @@ internal fun MapOverlay(
                 modifier = above,
             )
         }
-        OsmAttribution(Modifier.align(Alignment.BottomStart))
+        Column(Modifier.align(Alignment.BottomStart)) {
+            areas.notice?.takeIf { hasPanels && open == null }?.let { AreaNotice(it) }
+            OsmAttribution()
+        }
         if (hasPanels) {
             MapInfo(
                 isOpen = open == MapPanel.Info,
