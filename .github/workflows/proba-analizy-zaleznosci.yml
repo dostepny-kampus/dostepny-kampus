@@ -73,7 +73,7 @@ jobs:
           fi
       - name: Sprawdź wykrycie niejawnej biblioteki JSON
         run: |
-          sed -i '/^[[:space:]]*implementation(libs.kotlinx.serialization.json)$/d' \
+          sed -i -E '/^[[:space:]]*(api|implementation)\(libs\.kotlinx\.serialization\.json\)$/d' \
             feature/map/build.gradle.kts
           sed -i 's/severity("warn")/severity("fail")/' build.gradle.kts
           if ./gradlew buildHealth --console=plain --no-configuration-cache \
