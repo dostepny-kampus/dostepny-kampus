@@ -37,6 +37,9 @@ final class SubmissionData {
     /** Drugi budynek próbny. */
     static final String OTHER = "J-901";
 
+    /** Konto, które składa zgłoszenia testów. */
+    static final String AUTHOR = "konto-testowe";
+
     /** Dostęp do bazy. */
     private final JdbcClient jdbc;
 
@@ -99,10 +102,15 @@ final class SubmissionData {
 
     UUID seed(final long number, final SubmissionContent content, final SubmissionStatus status) {
         final UUID id = SubmissionData.id(number);
-        this.adapter.create(new NewSubmission(id, content));
+        this.adapter.create(new NewSubmission(id, content, SubmissionData.AUTHOR));
         this.jdbc.sql("UPDATE submissions SET status = :status WHERE id = :id")
             .param("status", status.name()).param("id", id).update();
         return id;
+    }
+
+    String author(final UUID id) {
+        return this.jdbc.sql("SELECT author FROM submissions WHERE id = :id")
+            .param("id", id).query(String.class).single();
     }
 
     Instant created(final UUID id) {

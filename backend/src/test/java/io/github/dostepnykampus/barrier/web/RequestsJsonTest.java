@@ -26,10 +26,10 @@ final class RequestsJsonTest {
     @Test
     void wfourOneNewRequestGivesCommandWithIdAndContent() {
         Assertions.assertEquals(
-            new NewSubmission(WebBodies.ID, WebBodies.content()),
+            new NewSubmission(WebBodies.ID, WebBodies.content(), "konto"),
             WebBodies.MAPPER.readValue(
                 WebBodies.newBody("'extra':'x'"), NewSubmissionRequest.class
-            ).toCommand(),
+            ).toCommand("konto"),
             "Komenda bez identyfikatora z ciała albo bez treści"
         );
     }
@@ -42,7 +42,7 @@ final class RequestsJsonTest {
                 InvalidSubmission.class,
                 () -> WebBodies.MAPPER.readValue(
                     WebBodies.body("'extra':'x'"), NewSubmissionRequest.class
-                ).toCommand(),
+                ).toCommand("konto"),
                 "Zgłoszenie bez id nie dało błędu 400"
             ).getMessage(),
             "Zły komunikat błędu"
@@ -81,7 +81,7 @@ final class RequestsJsonTest {
                 WebBodies.MAPPER.readValue(
                     WebBodies.newBody(extra),
                     NewSubmissionRequest.class
-                ).toCommand().id(),
+                ).toCommand("konto").id(),
                 "Nieznane pole zepsuło wiązanie POST"
             ),
             () -> Assertions.assertEquals(

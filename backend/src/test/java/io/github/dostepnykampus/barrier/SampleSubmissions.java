@@ -95,7 +95,8 @@ final class SampleSubmissions {
      * @return Identyfikator zgłoszenia
      */
     UUID add(final UUID id, final String status, final SubmissionContent content) {
-        this.context.getBean(JdbcSubmissions.class).create(new NewSubmission(id, content));
+        this.context.getBean(JdbcSubmissions.class)
+            .create(new NewSubmission(id, content, "konto-testowe"));
         this.context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET status = :status WHERE id = :id")
             .param("status", status).param("id", id).update();

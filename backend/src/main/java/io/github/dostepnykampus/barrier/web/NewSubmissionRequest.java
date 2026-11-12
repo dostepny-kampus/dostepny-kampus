@@ -26,12 +26,13 @@ record NewSubmissionRequest(
     /**
      * Przenosi ciało żądania do komendy domeny.
      *
+     * @param author Identyfikator konta z tokenu
      * @return Komenda utworzenia zgłoszenia
      */
-    NewSubmission toCommand() {
+    NewSubmission toCommand(final String author) {
         if (this.id == null) {
             throw new InvalidSubmission("Brak identyfikatora zgłoszenia w polu id");
         }
-        return new NewSubmission(this.id, this.content.toContent());
+        return new NewSubmission(this.id, this.content.toContent(), author);
     }
 }
