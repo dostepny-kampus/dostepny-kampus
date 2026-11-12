@@ -1,0 +1,29 @@
+name: reguly-galezi
+
+# Reguły gałęzi zmienia się w ustawieniach repozytorium, poza PR. Kontrola porównuje je z listą wymaganych
+# kontroli po wypchnięciu na sprint/* i raz dziennie.
+on:
+  push:
+    branches:
+      - 'sprint/**'
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reguly-galezi:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: .github
+          persist-credentials: false
+      - name: Porównaj reguły gałęzi z listą wymaganych kontroli
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: bash .github/scripts/reguly-galezi.sh
