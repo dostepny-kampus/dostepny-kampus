@@ -9,9 +9,9 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Stan | Liczba |
 | --- | --- |
-| Pełny test | 9 |
+| Pełny test | 10 |
 | Tylko częściowo | 14 |
-| Bez testu | 162 |
+| Bez testu | 161 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -112,7 +112,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `synchronizacja.feature` | Zgłoszenia zapisane bez sieci przetrwają restart telefonu | BR-9, US4.2, US9.1 | `core/database · QueueAfterRestartTest.us9_1_local_after_restart` | pełny |
 | `synchronizacja.feature` | Po powrocie sieci synchronizacja rusza sama | BR-9, US9.2 | — | brak |
 | `synchronizacja.feature` | Przerwana synchronizacja nie gubi zgłoszenia i nie tworzy drugiego | BR-9, US9.2 | — | brak |
-| `synchronizacja.feature` | Awaria serwera działa jak brak sieci | BR-9, US9.4 | — | brak |
+| `synchronizacja.feature` | Awaria serwera działa jak brak sieci | BR-9, US9.4 | `core/data · OwnHistoryTest.nfr50 awaria serwera lokalne` | pełny |
 | `synchronizacja.feature` | Wygasłe zalogowanie czeka na ponowne zalogowanie | BR-26, US9.4, US14.4 | `app · LoginExpiredGateTest.br26_expired_then_resumed` | częściowo |
 | `synchronizacja.feature` | Odebrana rola zostawia zgłoszenie w telefonie ze statusem „Nie wysłano” | BR-26, US9.5, US14.1 | — | brak |
 | `synchronizacja.feature` | Odrzucona treść albo zdjęcie zostawia zgłoszenie ze statusem „Nie wysłano” | BR-26, US9.5 | — | brak |
