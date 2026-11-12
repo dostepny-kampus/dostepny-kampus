@@ -26,7 +26,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.geo.searchBuildings
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.MapArea
@@ -39,6 +38,7 @@ import io.github.dostepnykampus.feature.map.data.MapArea
  *
  * @param catalog katalog budynków; `null`, dopóki się wczytuje
  * @param query tekst z pola symbolu
+ * @param search wynik wyszukiwania z modelu widoku; lista pokazuje go tylko dla [query] (NFR-11, #1053)
  * @param areas tereny w kolejności nagłówków
  * @param onBuildingClick symbol budynku wybranego na liście
  * @param modifier wymiary listy
@@ -47,14 +47,12 @@ import io.github.dostepnykampus.feature.map.data.MapArea
 internal fun BuildingList(
     catalog: BuildingCatalog?,
     query: String,
+    search: BuildingSearch,
     areas: AreaOrder,
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val buildings =
-        remember(query, catalog) {
-            catalog?.run { if (query.isBlank()) buildings else searchBuildings(query, buildings) }.orEmpty()
-        }
+    val buildings = if (query.isBlank()) catalog?.buildings.orEmpty() else search.foundFor(query).orEmpty()
     val groups =
         remember(buildings, areas) {
             areas.areas.associateWith { area -> buildings.filter { it.symbol in area.symbols } }

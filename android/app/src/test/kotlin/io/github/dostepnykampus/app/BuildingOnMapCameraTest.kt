@@ -156,7 +156,13 @@ class BuildingOnMapCameraTest {
             is MapRoute -> {
                 val model = remember { inlineMapViewModel(repository, { flowOf(true) }, choice) }
                 val state by model.uiState.collectAsStateWithLifecycle()
-                MapScreen(focus = route.focus, state = state, onListChange = model::chooseList, mapView = fakeMap)
+                MapScreen(
+                    focus = route.focus,
+                    state = state,
+                    onListChange = model::chooseList,
+                    onSearch = model::search,
+                    mapView = fakeMap,
+                )
             }
 
             is BuildingRoute -> {

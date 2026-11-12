@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map
@@ -30,9 +30,9 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -53,7 +53,6 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.pathIcon
-import io.github.dostepnykampus.core.geo.searchBuildings
 import io.github.dostepnykampus.core.model.BuildingCatalog
 
 private val SearchIcon =
@@ -84,6 +83,8 @@ private val ClearIcon =
  * Material Icons na siatce 24 × 24, jak ikony paska dolnego.
  *
  * @param catalog katalog budynków; `null`, dopóki się wczytuje
+ * @param search wynik wyszukiwania z modelu widoku; ekran pokazuje go tylko dla zapytania z pola (NFR-11, #1053)
+ * @param onSearch nowe zapytanie z pola, do policzenia w modelu widoku
  * @param isOnline czy jest internet; bez niego pod przełącznikiem stoi [OfflineLine]
  * @param isList czy przełącznik stoi na „Lista budynków”; wtedy pod górą jest lista budynków
  * @param areas tereny w kolejności nagłówków listy budynków (US1.8)
@@ -95,6 +96,8 @@ private val ClearIcon =
 @Composable
 internal fun CampusSearch(
     catalog: BuildingCatalog?,
+    search: BuildingSearch,
+    onSearch: (String) -> Unit,
     isOnline: Boolean,
     isList: Boolean,
     areas: AreaOrder,
@@ -103,8 +106,10 @@ internal fun CampusSearch(
     modifier: Modifier = Modifier,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
-    val results = remember(query, catalog) { catalog?.let { searchBuildings(query, it.buildings) }.orEmpty() }
-    val isNoResult = query.isNotBlank() && catalog != null && results.isEmpty()
+    SideEffect { onSearch(query) }
+    val found = search.foundFor(query)
+    val results = found.orEmpty()
+    val isNoResult = query.isNotBlank() && found?.isEmpty() == true
     val shown = results.takeUnless { isList }.orEmpty()
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
@@ -134,6 +139,7 @@ internal fun CampusSearch(
                 catalog = catalog,
                 query = query,
                 areas = areas,
+                search = search,
                 onBuildingClick = choose,
                 modifier = Modifier.weight(1f),
             )

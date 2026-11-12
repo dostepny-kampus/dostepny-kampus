@@ -17,6 +17,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.geo.searchBuildings
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -95,7 +96,13 @@ class BuildingListTest {
     @Composable
     private fun List(query: String) {
         DostepnyKampusTheme {
-            BuildingList(catalog = catalog, query = query, areas = areas, onBuildingClick = { chosen += it })
+            BuildingList(
+                catalog = catalog,
+                query = query,
+                search = BuildingSearch(query, searchBuildings(query, catalog.buildings)),
+                areas = areas,
+                onBuildingClick = { chosen += it },
+            )
         }
     }
 

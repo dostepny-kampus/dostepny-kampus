@@ -306,10 +306,6 @@ class ArchitectureTest {
         /** Pliki z obliczeniami `core.geo` poza modelem widoku i pakietem `data`; lista może tylko maleć (#892). */
         val GEOMETRY_OUTSIDE_VM =
             mapOf(
-                "$BASE.feature.map.BuildingList" to
-                    "#1053: lista z nagłówkami terenów (#1058) liczy wyszukiwanie w kompozycji",
-                "$BASE.feature.map.CampusSearch" to
-                    "#1053: wyszukiwanie liczone w kompozycji, jak punkt podpisu w #818",
                 "$BASE.feature.capture.BuildingLookup" to
                     "#892: liczy w computeContext dla modeli widoku, poza wątkiem głównym; do pakietu data",
             )

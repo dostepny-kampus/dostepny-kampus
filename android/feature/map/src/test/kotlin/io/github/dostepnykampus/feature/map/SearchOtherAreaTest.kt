@@ -7,6 +7,10 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -15,6 +19,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performTextInput
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.geo.searchBuildings
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -73,9 +78,12 @@ class SearchOtherAreaTest {
 
     @Composable
     private fun Search() {
+        var search by remember { mutableStateOf(BuildingSearch()) }
         DostepnyKampusTheme {
             CampusSearch(
                 catalog = catalog,
+                search = search,
+                onSearch = { query -> search = BuildingSearch(query, searchBuildings(query, catalog.buildings)) },
                 isOnline = true,
                 isList = false,
                 areas = areas,
