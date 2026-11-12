@@ -12,9 +12,11 @@ import io.github.dostepnykampus.MissingResource;
 import io.github.dostepnykampus.barrier.SubmissionService;
 import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
+import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
@@ -30,12 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Zgłoszenia barier: wysłanie nowego zgłoszenia (US4, US7, BR-9), edycja
- * z kontrolą wersji (US8.3, BR-10), odczyt zgłoszeń przyjętych (BR-6)
+ * z kontrolą wersji (US8.3, BR-10), odczyt zgłoszeń przyjętych (BR-6),
+ * odczyt zgłoszenia nieprzyjętego przez autora i Weryfikatora (BR-5)
  * i podobne zgłoszenia dla Weryfikatora (US10.1, BR-13).
- *
- * <p>Logowanie przez Keycloak dochodzi w sprincie 5. Do tego czasu serwer
- * przyjmuje zgłoszenia bez tokenu i bez autora, a pokazuje tylko zgłoszenia
- * przyjęte, jak osobie niezalogowanej.</p>
  *
  * @since 0.1.0
  */
@@ -85,16 +84,20 @@ public final class SubmissionsController {
     }
 
     /**
-     * Zwraca zgłoszenie przyjęte; pozostałe zobaczy po logowaniu autor
-     * i Weryfikator (BR-5, BR-6).
+     * Zwraca zgłoszenie przyjęte każdemu, a pozostałe po logowaniu autorowi
+     * i Weryfikatorowi (BR-5, BR-6). Kto zgłoszenia nie widzi, dostaje 404
+     * jak przy jego braku.
      *
      * @param id Identyfikator zgłoszenia
-     * @return Zgłoszenie przyjęte
+     * @param request Żądanie z kontem i rolą czytelnika
+     * @return Zgłoszenie widoczne dla czytelnika
      */
     @GetMapping("/submissions/{submissionId}")
-    SubmissionResponse getSubmission(@PathVariable("submissionId") final UUID id) {
-        return this.finder.find(id)
-            .filter(submission -> submission.status().publiclyVisible())
+    SubmissionResponse getSubmission(
+        @PathVariable("submissionId") final UUID id, final HttpServletRequest request
+    ) {
+        return this.finder
+            .visible(id, new Reader(request.getUserPrincipal(), request.isUserInRole("VERIFIER")))
             .map(SubmissionResponse::new)
             .orElseThrow(() -> new MissingResource(SubmissionsController.MISSING));
     }

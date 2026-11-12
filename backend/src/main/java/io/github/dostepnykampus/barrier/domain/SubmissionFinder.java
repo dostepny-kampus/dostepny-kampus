@@ -25,6 +25,16 @@ public interface SubmissionFinder {
     Optional<Submission> find(UUID id);
 
     /**
+     * Szuka zgłoszenia, które czytelnik może zobaczyć: przyjęte widzi każdy,
+     * pozostałe tylko autor i Weryfikator (BR-5, BR-6).
+     *
+     * @param id Identyfikator zgłoszenia
+     * @param reader Osoba, która czyta zgłoszenie
+     * @return Zgłoszenie albo puste, gdy go nie ma albo czytelnik go nie widzi
+     */
+    Optional<Submission> visible(UUID id, Reader reader);
+
+    /**
      * Sprawdza, czy zgłoszenie istnieje i złożyło je inne konto (BR-3).
      * Zgłoszenie bez zapisanego autora też jest cudze.
      *

@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.barrier.domain.Reader;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.UUID;
@@ -63,10 +64,12 @@ public final class SubmissionPhotosController {
     }
 
     /**
-     * Zwraca zdjęcie zgłoszenia przyjętego (US2.2, BR-6).
+     * Zwraca zdjęcie zgłoszenia przyjętego każdemu (US2.2, BR-6), a zdjęcie
+     * pozostałych zgłoszeń autorowi i Weryfikatorowi (BR-5).
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia z listy photoIds
+     * @param request Żądanie z kontem i rolą czytelnika
      * @return Plik JPEG bez metadanych
      */
     @GetMapping(
@@ -75,9 +78,13 @@ public final class SubmissionPhotosController {
     )
     byte[] getSubmissionPhoto(
         @PathVariable("submissionId") final UUID submission,
-        @PathVariable("photoId") final UUID photo
+        @PathVariable("photoId") final UUID photo,
+        final HttpServletRequest request
     ) {
-        return this.photos.get(submission, photo);
+        return this.photos.get(
+            submission, photo,
+            new Reader(request.getUserPrincipal(), request.isUserInRole("VERIFIER"))
+        );
     }
 
     @ExceptionHandler
