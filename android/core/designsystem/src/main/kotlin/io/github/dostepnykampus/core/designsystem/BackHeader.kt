@@ -25,34 +25,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.addPathNodes
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 
 private val MirroredArrowBack: ImageVector = arrowBack()
 
-private fun arrowBack(): ImageVector {
-    val builder =
-        ImageVector.Builder(
-            name = "ArrowBack",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f,
-            autoMirror = true,
-        )
-    builder.addPath(
-        pathData = addPathNodes("M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"),
-        fill = SolidColor(Color.Black),
+private fun arrowBack(): ImageVector =
+    pathIcon(
+        path = "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z",
+        name = "ArrowBack",
+        autoMirror = true,
     )
-    return builder.build()
-}
 
 /**
  * Nagłówek ekranu: przycisk „Wstecz” (strzałka ← i słowo, zawsze w tym samym miejscu, NFR-15) i tytuł ekranu
