@@ -29,10 +29,18 @@ tasks.withType<Test>().configureEach {
 
 dependencies {
     api(project(":core:model"))
+    api(libs.dagger)
+    api(libs.javax.inject)
+    api(libs.kotlinx.serialization.core)
     implementation(project(":core:geo"))
+    implementation(libs.hilt.core)
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.json.schema.validator)
+    testImplementation(libs.jackson.databind)
+    testImplementation(libs.junit.platform.commons)
+    testImplementation(libs.okio)
+    testImplementation(libs.opentest4j)
 }
