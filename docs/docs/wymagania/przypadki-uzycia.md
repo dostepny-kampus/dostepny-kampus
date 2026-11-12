@@ -31,7 +31,7 @@ QGIS nie jest aktorem. Koordynator otwiera w nim plik eksportu poza systemem, a 
 | UC1 | Wyszukanie budynku | Gość niezalogowany | US1 | V1 | Musi być |
 | UC2 | Przegląd karty budynku | Gość niezalogowany | US2, US17.1, US17.3 | V2 | Musi być |
 | UC3 | Przegląd planu piętra | Gość niezalogowany | US16 | V2 | Powinno być |
-| UC4 | Wyszukanie wejścia dostępnego | Gość niezalogowany | US3 | V3 | Powinno być |
+| UC4 | Wyszukanie wejścia dostępnego | Gość niezalogowany | US3 | V3 | Musi być |
 | UC5 | Instrukcja i pomoc | Gość niezalogowany | US5 | V5 | Powinno być |
 | UC6 | Logowanie i rejestracja | Gość niezalogowany | US14 | L1, L2 | Musi być |
 | UC7 | Zgłoszenie szybkie | Odwiedzający | US4 | V4 | Musi być |
