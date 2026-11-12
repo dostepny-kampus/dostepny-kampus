@@ -13,16 +13,18 @@ import java.util.UUID;
  *
  * @param id Identyfikator zgłoszenia nadany przez klienta
  * @param content Treść zgłoszenia
+ * @param author Identyfikator konta z tokenu osoby, która składa zgłoszenie
  * @since 0.1.0
  */
-public record NewSubmission(UUID id, SubmissionContent content) {
+public record NewSubmission(UUID id, SubmissionContent content, String author) {
 
     /**
-     * Komenda z identyfikatorem i treścią; brak któregokolwiek kończy się
+     * Komenda z identyfikatorem, treścią i autorem; brak któregokolwiek kończy się
      * niekontrolowanym wyjątkiem NullPointerException.
      */
     public NewSubmission {
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(content, "content");
+        Objects.requireNonNull(author, "author");
     }
 }

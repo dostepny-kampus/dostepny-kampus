@@ -43,7 +43,9 @@ final class JdbcBuildingTest {
             List.of(
                 Assertions.assertThrows(
                     InvalidSubmission.class,
-                    () -> data.repo().create(new NewSubmission(SubmissionData.id(2), unknown))
+                    () -> data.repo().create(
+                        new NewSubmission(SubmissionData.id(2), unknown, SubmissionData.AUTHOR)
+                    )
                 ).getMessage(),
                 Assertions.assertThrows(
                     InvalidSubmission.class,
@@ -68,7 +70,8 @@ final class JdbcBuildingTest {
                 () -> data.repo().create(
                     new NewSubmission(
                         SubmissionData.id(1),
-                        SubmissionData.content(SubmissionData.OTHER, "p1", "x")
+                        SubmissionData.content(SubmissionData.OTHER, "p1", "x"),
+                        SubmissionData.AUTHOR
                     )
                 ),
                 "Błąd inny niż brak budynku został zamaskowany"

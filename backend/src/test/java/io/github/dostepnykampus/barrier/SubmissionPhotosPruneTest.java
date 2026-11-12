@@ -68,7 +68,9 @@ final class SubmissionPhotosPruneTest {
         final UUID kept = UUID.randomUUID();
         final UUID dropped = UUID.randomUUID();
         service.create(
-            new NewSubmission(submission, SubmissionPhotosPruneTest.content(kept, dropped))
+            new NewSubmission(
+                submission, SubmissionPhotosPruneTest.content(kept, dropped), "konto"
+            )
         );
         store.put(submission, kept, new byte[] {1});
         store.put(submission, dropped, new byte[] {2});

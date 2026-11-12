@@ -12,6 +12,7 @@ import io.github.dostepnykampus.barrier.SubmissionService;
 import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
@@ -106,16 +107,18 @@ public final class SubmissionsController {
 
     /**
      * Zapisuje nowe zgłoszenie. Ponowne wysłanie tego samego id zwraca
-     * zapisane zgłoszenie i nie tworzy drugiego (BR-9).
+     * zapisane zgłoszenie i nie tworzy drugiego (BR-9). Autorem zostaje konto
+     * z tokenu (BR-3).
      *
      * @param body Zgłoszenie według schematu NewSubmission
+     * @param account Zalogowane konto; jego nazwa to identyfikator z tokenu
      * @return Nowe zgłoszenie z kodem 201 albo zapisane wcześniej z kodem 200
      */
     @PostMapping("/submissions")
     ResponseEntity<SubmissionResponse> createSubmission(
-        @RequestBody final NewSubmissionRequest body
+        @RequestBody final NewSubmissionRequest body, final Principal account
     ) {
-        final CreateResult result = this.service.create(body.toCommand());
+        final CreateResult result = this.service.create(body.toCommand(account.getName()));
         final HttpStatus status;
         if (result instanceof CreateResult.Created) {
             status = HttpStatus.CREATED;

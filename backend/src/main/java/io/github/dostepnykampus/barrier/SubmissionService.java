@@ -65,7 +65,7 @@ public class SubmissionService {
             throw new OutsideCampus();
         }
         return this.repository.create(
-            new NewSubmission(command.id(), this.placed(command.content()))
+            new NewSubmission(command.id(), this.placed(command.content()), command.author())
         );
     }
 

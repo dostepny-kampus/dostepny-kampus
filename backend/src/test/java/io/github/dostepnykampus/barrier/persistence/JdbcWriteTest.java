@@ -41,16 +41,21 @@ final class JdbcWriteTest {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = SubmissionData.id(1);
         final CreateResult created = data.repo().create(
-            new NewSubmission(id, SubmissionData.content("pierwsza"))
+            new NewSubmission(id, SubmissionData.content("pierwsza"), SubmissionData.AUTHOR)
+        );
+        final CreateResult repeated = data.repo().create(
+            new NewSubmission(id, SubmissionData.content("druga"), "inne-konto")
         );
         final Submission expected = new Submission(
             id, 1, SubmissionStatus.SENT, data.created(id), SubmissionData.content("pierwsza")
         );
         Assertions.assertEquals(
-            List.of(new CreateResult.Created(expected), new CreateResult.Existing(expected)),
             List.of(
-                created, data.repo().create(new NewSubmission(id, SubmissionData.content("druga")))
-            )
+                new CreateResult.Created(expected), new CreateResult.Existing(expected),
+                SubmissionData.AUTHOR
+            ),
+            List.of(created, repeated, data.author(id)),
+            "Ponowne wysłanie zmieniło zgłoszenie albo autora"
         );
     }
 

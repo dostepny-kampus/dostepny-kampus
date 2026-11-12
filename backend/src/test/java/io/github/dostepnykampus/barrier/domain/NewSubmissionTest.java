@@ -18,7 +18,7 @@ final class NewSubmissionTest {
     @Test
     void mthreeTwoKeepsIdAndContent() {
         final NewSubmission command = new NewSubmission(
-            SubmissionSamples.ID, SubmissionSamples.content()
+            SubmissionSamples.ID, SubmissionSamples.content(), "konto"
         );
         Assertions.assertAll(
             () -> Assertions.assertEquals(
@@ -26,7 +26,8 @@ final class NewSubmissionTest {
             ),
             () -> Assertions.assertEquals(
                 SubmissionSamples.content(), command.content(), "Zła treść"
-            )
+            ),
+            () -> Assertions.assertEquals("konto", command.author(), "Zły autor")
         );
     }
 
@@ -35,13 +36,18 @@ final class NewSubmissionTest {
         Assertions.assertAll(
             () -> Assertions.assertThrows(
                 NullPointerException.class,
-                () -> new NewSubmission(null, SubmissionSamples.content()),
+                () -> new NewSubmission(null, SubmissionSamples.content(), "konto"),
                 "Komenda bez identyfikatora przeszła"
             ),
             () -> Assertions.assertThrows(
                 NullPointerException.class,
-                () -> new NewSubmission(SubmissionSamples.ID, null),
+                () -> new NewSubmission(SubmissionSamples.ID, null, "konto"),
                 "Komenda bez treści przeszła"
+            ),
+            () -> Assertions.assertThrows(
+                NullPointerException.class,
+                () -> new NewSubmission(SubmissionSamples.ID, SubmissionSamples.content(), null),
+                "Komenda bez autora przeszła"
             )
         );
     }

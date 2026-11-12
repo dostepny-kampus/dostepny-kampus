@@ -65,6 +65,19 @@ final class SubmissionsHttpTest {
     }
 
     @Test
+    void brThreeSavesAccountAsAuthor(final WebApplicationContext context)
+        throws Exception {
+        SubmissionsHttpTest.quick(context);
+        MatcherAssert.assertThat(
+            "Zgłoszenie nie ma autora z tokenu",
+            context.getBean(JdbcClient.class)
+                .sql("SELECT author FROM submissions WHERE id = :id")
+                .param("id", SubmissionsHttpTest.ID).query(String.class).single(),
+            Matchers.equalTo("konto-testowe")
+        );
+    }
+
+    @Test
     void brNineReturnsSavedSubmissionOnRetry(final WebApplicationContext context)
         throws Exception {
         final String body = SubmissionsHttpTest.body("QUICK", SubmissionsHttpTest.IN_A1);
