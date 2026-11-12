@@ -277,14 +277,14 @@ class BuildingCardModesTest {
         val repository =
             BuildingCatalogRepository(EmptyCoroutineContext) {
                 listOf(
-                    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"$NAME",""" +
+                    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"display_name":"$NAME",""" +
                         """"osm_id":"way/1"},""" +
                         """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}""",
                     entrance(id = "node/1", tags = """"entrance":"main","wheelchair":"yes","ref":"Główne""""),
                     entrance(id = "node/2", tags = """"entrance":"yes","wheelchair":"no","ref":"Schody""""),
                     entrance(id = "node/3", tags = """"entrance":"yes","wheelchair":"no""""),
-                    """{"type":"Feature","properties":{"kind":"building","symbols":["B-4"],"name":"Budynek B",""" +
-                        """"osm_id":"way/4"},""" +
+                    """{"type":"Feature","properties":{"kind":"building","symbols":["B-4"],""" +
+                        """"display_name":"Budynek B","osm_id":"way/4"},""" +
                         """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}""",
                     entrance(id = "node/4", tags = """"wheelchair":"no","ref":"Zamknięte"""", symbol = "B-4"),
                 ).joinToString(

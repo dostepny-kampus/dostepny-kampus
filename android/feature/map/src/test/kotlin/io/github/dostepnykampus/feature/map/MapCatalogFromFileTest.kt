@@ -184,9 +184,9 @@ class MapCatalogFromFileTest {
 
         const val ASSET_JSON =
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"Z pliku",""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"display_name":"Z pliku",""" +
                 """"osm_id":"way/1"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["B-2"],"name":"Drugi",""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["B-2"],"display_name":"Drugi",""" +
                 """"osm_id":"way/2"},"geometry":{"type":"Polygon","coordinates":[[[2,0],[3,0],[3,1],[2,0]]]}}]}"""
     }
 }

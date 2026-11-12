@@ -71,7 +71,9 @@ private fun building(symbol: String, longitude: Double, latitude: Double, corner
         (corners.toList() + corners.first()).joinToString(separator = ",", prefix = "[", postfix = "]") { (x, y) ->
             "[${longitude + x * UNIT},${latitude + y * UNIT}]"
         }
-    val properties = """"kind":"building","symbols":["$symbol"],"name":"Budynek testowy","osm_id":"way/$symbol""""
+    val properties =
+        """"kind":"building","symbols":["$symbol"],"display_name":"Budynek testowy",""" +
+            """"osm_id":"way/$symbol""""
     return """{"type":"Feature","properties":{$properties},"geometry":{"type":"Polygon","coordinates":[$ring]}}"""
 }
 

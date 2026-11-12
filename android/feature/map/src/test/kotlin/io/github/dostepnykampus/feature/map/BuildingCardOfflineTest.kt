@@ -39,7 +39,7 @@ class BuildingCardOfflineTest {
             BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
                 """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
                     """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],""" +
-                    """"name":"Gmach Główny","osm_id":"way/1"},""" +
+                    """"display_name":"Gmach Główny","osm_id":"way/1"},""" +
                     """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
             }
         val viewModel = BuildingCardViewModel(symbol = "A-1", repository = repository, networkStatus = { online })
@@ -71,7 +71,7 @@ class BuildingCardOfflineTest {
             BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
                 """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
                     """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],""" +
-                    """"name":"Gmach Główny","osm_id":"way/1"},""" +
+                    """"display_name":"Gmach Główny","osm_id":"way/1"},""" +
                     """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
             }
         val viewModel =

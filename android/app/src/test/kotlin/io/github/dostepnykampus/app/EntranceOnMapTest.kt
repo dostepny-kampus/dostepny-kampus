@@ -46,7 +46,7 @@ import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
 
 private const val BUILDING =
-    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"Budynek testowy",""" +
+    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"display_name":"Budynek testowy",""" +
         """"osm_id":"way/1"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,1],[0,0]]]}}"""
 
 private const val NAMED_ID = "node/10"
