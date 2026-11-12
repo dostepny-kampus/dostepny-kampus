@@ -5,7 +5,7 @@
 set -euo pipefail
 
 # Test strażnika znaczników zadań (todo-issue.sh), uruchamianego w katalogu repozytorium git.
-# Strażnik sprawdza pliki śledzone przez git o rozszerzeniach kt, kts, java, yml, yaml, sh (dokumentacja
+# Strażnik sprawdza pliki śledzone przez git o rozszerzeniach kt, kts, java, py, sh, sql, yml, yaml (dokumentacja
 # i inne pliki nie są skanowane; pomijane są też pliki samego strażnika, bo opisują znaczniki).
 # Znacznik to TODO, FIXME, HACK lub @todo jako osobne słowo, bez względu na wielkość liter; poprawny ma postać ZNACZNIK(#N), gdzie
 # issue #N istnieje i jest otwarte. Dane issue: pliki ISSUE_JSON_DIR/<numer>.json (gh issue view --json state,url);
@@ -112,6 +112,15 @@ run_case "Java: @Tymczasowe z zamkniętym issue" 1 "$closed" backend/Main.java '
 run_case "Kotlin: @RequiresOptIn bez numeru issue w KDoc" 1 "$tmp_no_number" app/Tymczasowa.kt $'/**\n * Usunąć po logowaniu.\n */\n@RequiresOptIn(level = RequiresOptIn.Level.ERROR)\nannotation class Tymczasowa'
 run_case "Kotlin: @RequiresOptIn z otwartym issue w KDoc" 0 '' app/Tymczasowa.kt $'/**\n * Usunąć po logowaniu (#5).\n */\n@RequiresOptIn(level = RequiresOptIn.Level.ERROR)\nannotation class Tymczasowa'
 run_case "Kotlin: @RequiresOptIn z zamkniętym issue w KDoc" 1 "$closed" app/Tymczasowa.kt $'/**\n * Usunąć po logowaniu (#6).\n */\n@RequiresOptIn(level = RequiresOptIn.Level.ERROR)\nannotation class Tymczasowa'
+run_case "Python: TODO bez numeru" 1 "$no_number" docs/scripts/verify.py '# TODO: sprawdź odnośniki'
+run_case "SQL: TODO bez numeru" 1 "$no_number" backend/db/V2__indeks.sql '-- TODO: dodaj indeks'
+run_case "SQL: TODO(#5) z otwartym issue" 0 '' backend/db/V2__indeks.sql '-- TODO(#5): dodaj indeks'
+run_case "Java: @Test @Disabled w jednej linii bez numeru" 1 "$tmp_no_number" backend/MainTest.java '    @Test @Disabled("czeka na ekran")'
+run_case "Java: @Test @Disabled w jednej linii z otwartym issue" 0 '' backend/MainTest.java '    @Test @Disabled("czeka na ekran #5")'
+run_case "Java: @Disabled z nazwą pakietu bez numeru" 1 "$tmp_no_number" backend/MainTest.java '    @org.junit.jupiter.api.Disabled("czeka na ekran")'
+run_case "Kotlin: @Ignore z nazwą pakietu bez powodu" 1 "$tmp_no_number" app/MainTest.kt '    @org.junit.Ignore fun test() = Unit'
+run_case "Kotlin: @Ignore z celem użycia bez numeru" 1 "$tmp_no_number" app/Main.kt '    @field:Ignore val x = 1'
+run_case "Kotlin: @Disabled w komentarzu nie jest adnotacją" 0 '' app/MainTest.kt $'/**\n * Zamiast @Disabled test czeka na dane.\n */\n// @Disabled wraca później'
 run_case "dane testowe dokumentacji są pomijane" 0 '' docs/scripts/tests/dane/x/BledneTest.kt '    @Disabled("czeka")'
 
 # Przypadki z podstawionymi narzędziami: fałszywe gh (dziennik wywołań w calls.txt) i jq w katalogu bin.
