@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import android.content.Context
 import android.graphics.RectF
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -83,8 +84,7 @@ object MapLibreMapView : CampusMapView {
                 MapLibre.getInstance(context)
                 val tiles = EntryPointAccessors.fromApplication<MapTileHttpEntryPoint>(context.applicationContext)
                 HttpRequestUtil.setOkHttpClient(tiles.mapTileHttp().calls)
-                val options = MapLibreMapOptions.createFromAttributes(context)
-                MapView(context, options.textureMode(true).logoEnabled(false).attributionEnabled(false))
+                MapView(context, northUpOptions(context))
             }
         FollowScreenLifecycle(mapView)
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
@@ -200,6 +200,20 @@ object MapLibreMapView : CampusMapView {
 
     private fun isNativeMapAvailable(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess
 }
+
+/**
+ * Ustawienia widoku mapy V1: bez logo i podpisu biblioteki, bez gestu obrotu i pochylenia. Północ jest zawsze
+ * u góry, bo tak liczą strzałki przesuwania, granica terenu i przycisk sąsiedniego terenu, a [MapCamera] nie zna
+ * obrotu. Przesuwanie i powiększanie gestem zostają.
+ */
+internal fun northUpOptions(context: Context): MapLibreMapOptions =
+    MapLibreMapOptions
+        .createFromAttributes(context)
+        .textureMode(true)
+        .logoEnabled(false)
+        .attributionEnabled(false)
+        .rotateGesturesEnabled(false)
+        .tiltGesturesEnabled(false)
 
 /**
  * Styl mapy jako napis JSON. Powstaje od nowa tylko po zmianie danych [data], zaznaczenia [selection] albo barw
