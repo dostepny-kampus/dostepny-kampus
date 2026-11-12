@@ -144,15 +144,19 @@ internal fun mapCover(isCovered: Boolean, hasControls: Boolean): MapCover =
     }
 
 /**
- * Zapis widoku kamery po ruchu osoby. Nad arkuszem V2 ([isCovered]) widok trafia do [onCard], osobno od widoku V1
- * w [onMap], więc po „Wstecz” wraca widok sprzed V2 (decyzja 83), a kamera nie wpisuje już budynku na nowo
- * (decyzja 151).
+ * Zapis widoku kamery po ruchu osoby. Nad arkuszem V2 ([isCovered]) widok trafia do [onCard], więc kamera nie
+ * ustawia już budynku na nowo (decyzja 151). Trafia też do [onMap], bez dopełnienia arkusza, więc po zamknięciu
+ * karty zostaje widok osoby, a widok sprzed karty wraca tylko wtedy, gdy osoba nie ruszyła mapy (decyzje 83 i 153).
  */
 internal fun cameraKeeper(
     isCovered: Boolean,
     onMap: (MapCamera) -> Unit,
     onCard: (MapCamera) -> Unit,
-): (MapCamera) -> Unit = if (isCovered) onCard else onMap
+): (MapCamera) -> Unit =
+    { idle ->
+        if (isCovered) onCard(idle)
+        onMap(idle.copy(bottomInset = 0.0))
+    }
 
 /**
  * Zapisywany widok mapy nad arkuszem V2 budynku [building]: [fit], dopóki osoba nie ruszy mapy gestem albo

@@ -81,21 +81,33 @@ class MapSceneStateTest {
     }
 
     /**
-     * Wiersz: widok po geście jest zapisywany; nad arkuszem V2 osobno, jako widok karty, więc „Wstecz” wraca do
-     * widoku sprzed V2 (decyzje 83 i 151).
+     * Wiersz: V1 z małą kartą V2, osoba przesunęła mapę → jej widok jest widokiem karty i zostaje po zamknięciu
+     * karty, bez dopełnienia arkusza (decyzja 153 pkt 3, US2.8).
      */
     @Test
-    fun d83_camera_kept_uncovered() {
-        state(isCovered = true).keep(start)
-        assertEquals(emptyList<MapCamera>(), cameras)
-        assertEquals(listOf(start), cardCameras)
-        state().keep(start)
+    fun us2_8_moved_view_stays() {
+        val underSheet = start.copy(bottomInset = 400.0)
+        state(isCovered = true).keep(underSheet)
+        assertEquals(listOf(underSheet), cardCameras)
         assertEquals(listOf(start), cameras)
     }
 
     /**
+     * Wiersz: V1 z małą kartą V2, osoba nie ruszyła mapy → widok V1 bez zmian, więc wraca widok sprzed karty
+     * (decyzja 83); gest bez karty zapisuje tylko widok V1.
+     */
+    @Test
+    fun d83_untouched_view_returns() {
+        state(isCovered = true).touch(symbols = listOf("C-13"), onBuilding = {}, onEmpty = {})
+        assertEquals(emptyList<MapCamera>(), cameras + cardCameras)
+        state().keep(start)
+        assertEquals(listOf(start), cameras)
+        assertEquals(emptyList<MapCamera>(), cardCameras)
+    }
+
+    /**
      * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: przycisk nad małą kartą
-     * zmienia widok karty w granicach terenu, a widok V1 zostaje (US2.8, NFR-53).
+     * zmienia widok karty w granicach terenu i zostaje po zamknięciu karty (US2.8, NFR-53, decyzja 153).
      */
     @Test
     fun us2_8_button_moves_card_view() {
@@ -103,7 +115,7 @@ class MapSceneStateTest {
         val limits = MapLimits(bounds = bounds, widthDp = 360.0, heightDp = 640.0)
         state(isCovered = true, limits = limits).move(start.zoomedOut())
         assertEquals(listOf(limits.clamp(start.zoomedOut())), cardCameras)
-        assertEquals(emptyList<MapCamera>(), cameras)
+        assertEquals(cardCameras, cameras)
     }
 
     /** Wiersz: przycisk przesuwa kamerę tylko w granicach terenu (NFR-53, BR-G5); bez granic nic nie zapisuje. */
