@@ -11,6 +11,7 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.feature.map.data.BARRIER_ID
 import io.github.dostepnykampus.feature.map.data.BARRIER_SEVERITY
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.campusMapData
@@ -62,6 +63,25 @@ class CampusMapBarriersStyleTest {
         val order = style.getValue("layers").jsonArray.map { it.jsonObject.text("id") }
         assertEquals(true, order.indexOf(BARRIER_WORDS_LAYER) < order.indexOf(BARRIERS_LAYER))
         assertEquals(true, order.indexOf(BARRIERS_LAYER) < order.indexOf("podpisy"))
+    }
+
+    /** Wiersz: V1, wybrana bariera ma osobną warstwę z większym znakiem nad pozostałymi (US1.5, NFR-21). */
+    @Test
+    fun us1_5_chosen_barrier_layer() {
+        val data = campusMapData(catalog).withBarriers(barriers)
+        val chosen = barriers.first().id
+        val plain = Json.parseToJsonElement(campusMapStyle(data, data.selection(), colors)).jsonObject
+        val marked = data.selection().copy(barrier = chosen)
+        val style = Json.parseToJsonElement(campusMapStyle(data, marked, colors)).jsonObject
+        val order = style.getValue("layers").jsonArray.map { it.jsonObject.text("id") }
+        assertEquals(false, plain.getValue("layers").jsonArray.any { it.jsonObject.text("id") == CHOSEN_BARRIER_LAYER })
+        assertEquals(true, order.indexOf(BARRIERS_LAYER) < order.indexOf(CHOSEN_BARRIER_LAYER))
+        val layer = style.layer(CHOSEN_BARRIER_LAYER)
+        assertEquals("""["==",["get","$BARRIER_ID"],"$chosen"]""", layer.getValue("filter").toString())
+        val layout = layer.obj("layout")
+        val images = layout.getValue("icon-image").jsonArray.map { it.toString() }
+        val expected = Severity.entries.map { JsonPrimitive(chosenBarrierImage(it)).toString() }
+        assertEquals(true, images.containsAll(expected))
     }
 
     /** Wiersz: V1 bez pobranych barier działa bez znaków barier (NFR-11). */

@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.feature.map.data.BARRIER_ID
 import io.github.dostepnykampus.feature.map.data.BARRIER_SEVERITY
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -17,11 +18,17 @@ internal const val BARRIERS_LAYER = "bariery"
 /** Warstwa stylu ze słowami uciążliwości obok znaków barier (US1.3, NFR-20). */
 internal const val BARRIER_WORDS_LAYER = "bariery_slowa"
 
+/** Warstwa stylu z wyróżnionym znakiem wybranej bariery (US1.5, NFR-21). */
+internal const val CHOSEN_BARRIER_LAYER = "bariera_wybrana"
+
 /** Źródło stylu z punktami barier. */
 internal const val BARRIERS_SOURCE = BARRIERS_LAYER
 
 /** Bok obrazu znaku bariery na mapie w dp. */
 internal const val BARRIER_SIGN_DP = 32
+
+/** Bok obrazu znaku wybranej bariery w dp: większy znak w obwódce. */
+internal const val CHOSEN_BARRIER_DP = 64
 
 /** Powiększenie, od którego obok znaku bariery stoi słowo uciążliwości. */
 internal const val BARRIER_WORD_ZOOM = 17
@@ -30,6 +37,9 @@ private const val WORD_OFFSET_DP = BARRIER_SIGN_DP / 2 + 4
 
 /** Nazwa obrazu znaku bariery o uciążliwości [severity] (NFR-21). */
 internal fun barrierSignImage(severity: Severity): String = "bariera_${severity.name}"
+
+/** Nazwa obrazu wyróżnionego znaku wybranej bariery o uciążliwości [severity] (NFR-21). */
+internal fun chosenBarrierImage(severity: Severity): String = "bariera_wybrana_${severity.name}"
 
 /** Nazwa obrazu słowa uciążliwości [severity] obok znaku bariery. */
 internal fun barrierWordImage(severity: Severity): String = "bariera_slowo_${severity.name}"
@@ -54,6 +64,21 @@ internal fun barrierLayers(): List<JsonObject> {
     val signs =
         symbolLayer(id = BARRIERS_LAYER, source = BARRIERS_SOURCE, image = bySeverity(::barrierSignImage), OVERLAP)
     return listOf(JsonObject(words + ("minzoom" to JsonPrimitive(BARRIER_WORD_ZOOM))), signs)
+}
+
+/**
+ * Warstwa wybranej bariery [id]: jej znak jest większy i w obwódce, więc wyróżnia go rozmiar i kształt, a nie sama
+ * barwa (US1.5, NFR-21). Warstwa stoi nad pozostałymi znakami i rysuje się zawsze.
+ */
+internal fun chosenBarrierLayer(id: String): JsonObject {
+    val sign =
+        symbolLayer(
+            id = CHOSEN_BARRIER_LAYER,
+            source = BARRIERS_SOURCE,
+            image = bySeverity(::chosenBarrierImage),
+            OVERLAP,
+        )
+    return JsonObject(sign + ("filter" to expression("==", property(BARRIER_ID), JsonPrimitive(id))))
 }
 
 private fun bySeverity(image: (Severity) -> String): JsonArray {

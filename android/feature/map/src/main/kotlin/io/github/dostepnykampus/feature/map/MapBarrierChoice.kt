@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.dostepnykampus.core.model.BuildingCatalog
@@ -12,7 +13,7 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 /**
  * Arkusz bariery o identyfikatorze [id] po dotknięciu jej znaku na mapie V1 (US1.5). Budynek i nazwę wejścia
  * bierze z [catalog]. Bez [id] i wtedy, gdy bariery nie ma już wśród [barriers], np. przestała być przyjęta,
- * arkusza nie ma.
+ * arkusza nie ma. Systemowe „Wstecz” przy otwartym arkuszu zamyka go i zostawia V1, jak „Zamknij”.
  *
  * @param id identyfikator zgłoszenia dotkniętego znaku; `null` bez wybranej bariery
  * @param barriers bariery pokazane na mapie
@@ -31,6 +32,7 @@ internal fun ChosenBarrierSheet(
     modifier: Modifier = Modifier,
 ) {
     val chosen = id?.let { barriers.chosen(it, catalog) }
+    BackHandler(enabled = chosen != null, onBack = onClose)
     if (chosen != null) {
         BarrierSheet(
             chosen = chosen,

@@ -14,11 +14,14 @@ package io.github.dostepnykampus.feature.map.data
  *   bez zaznaczenia
  * @property bounds teren pokazany na mapie: teren wybrany przez osobę (US1.7), bez wyboru teren zaznaczonego
  *   budynku, a bez niego teren startowy z [CampusMapData.bounds] (US1.8, BR-G5); `null` bez budynków
+ * @property barrier identyfikator bariery z otwartym arkuszem; jej znak jest na mapie większy i w obwódce
+ *   (US1.5, NFR-21); `null` bez wybranej bariery
  */
 data class MapSelection(
     val building: String? = null,
     val entrance: SelectedEntrance? = null,
     val bounds: CampusBounds? = null,
+    val barrier: String? = null,
 )
 
 /**

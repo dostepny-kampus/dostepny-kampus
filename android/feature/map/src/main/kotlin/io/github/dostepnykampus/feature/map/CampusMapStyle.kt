@@ -164,6 +164,7 @@ private fun layers(chosen: List<String>?, selection: MapSelection, colors: MapSt
         add(marksLayer(filter = alone?.let(::ofBuildings)))
         barrierLayers().forEach { add(it) }
         add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
+        selection.barrier?.let { add(chosenBarrierLayer(it)) }
         if (selection.bounds != null) areaLayers(colors).forEach { add(it) }
         if (selection.entrance != null) chosenLayers().forEach { add(it) }
     }

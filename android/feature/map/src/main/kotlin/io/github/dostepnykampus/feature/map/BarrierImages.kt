@@ -6,6 +6,10 @@
 package io.github.dostepnykampus.feature.map
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.createBitmap
 import io.github.dostepnykampus.core.designsystem.severityImage
 import io.github.dostepnykampus.core.model.Severity
 import kotlin.math.ceil
@@ -13,7 +17,8 @@ import kotlin.math.ceil
 /**
  * Obrazy barier: znak każdej uciążliwości i jej słowo z [MapImages.words] (US1.3, NFR-21). Znak ma kształt
  * według uciążliwości w barwach `tusz` i `papier`, jak znaki wejść; słowo wygląda jak podpis budynku. Bez słów
- * są same znaki.
+ * są same znaki. Każda uciążliwość ma też znak wybranej bariery: większy znak na kole `papier` w obwódce
+ * `tusz` (US1.5, NFR-21).
  */
 internal fun barrierImages(images: MapImages): Map<String, Bitmap> {
     val size = ceil(BARRIER_SIGN_DP * images.density).toInt()
@@ -32,5 +37,37 @@ internal fun barrierImages(images: MapImages): Map<String, Bitmap> {
         Severity.entries.zip(images.words).associate { (severity, word) ->
             barrierWordImage(severity) to labelImage(word, images.colors, images.labelSize)
         }
-    return signs + words
+    val chosen = Severity.entries.associate { chosenBarrierImage(it) to chosenSign(it, images) }
+    return signs + words + chosen
+}
+
+private const val CHOSEN_RING_DP = 3
+private const val CHOSEN_SIGN_DP = 40
+
+private fun chosenSign(severity: Severity, images: MapImages): Bitmap {
+    val size = ceil(CHOSEN_BARRIER_DP * images.density).toInt()
+    val signSize = ceil(CHOSEN_SIGN_DP * images.density).toInt()
+    val ring = CHOSEN_RING_DP * images.density
+    val sign =
+        severityImage(
+            severity = severity,
+            sizePx = signSize,
+            shapeColor = images.colors.tusz,
+            markColor = images.colors.papier,
+        )
+    val image = createBitmap(size, size)
+    val canvas = Canvas(image)
+    val center = size / 2f
+    val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = images.colors.papier.toArgb() }
+    val outline =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = ring
+            color = images.colors.tusz.toArgb()
+        }
+    canvas.drawCircle(center, center, center - ring, fill)
+    canvas.drawCircle(center, center, center - ring, outline)
+    val corner = (size - signSize) / 2f
+    canvas.drawBitmap(sign, corner, corner, null)
+    return image
 }

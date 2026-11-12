@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.Severity
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,7 +31,8 @@ class BarrierImagesTest {
     fun us1_3_sign_and_word() {
         val images = barrierImages(images(words = listOf("Utrudnienie", "Tylko z pomocą", "Blokada")))
 
-        val names = Severity.entries.flatMap { listOf(barrierSignImage(it), barrierWordImage(it)) }
+        val names =
+            Severity.entries.flatMap { listOf(barrierSignImage(it), barrierWordImage(it), chosenBarrierImage(it)) }
         assertEquals(names.toSet(), images.keys)
         val signs = Severity.entries.map { images.getValue(barrierSignImage(it)) }
         assertEquals(listOf(SIGN_PX), signs.map { it.width }.distinct())
@@ -41,7 +43,19 @@ class BarrierImagesTest {
     fun us1_3_signs_without_words() {
         val images = barrierImages(images(words = emptyList()))
 
-        assertEquals(Severity.entries.map(::barrierSignImage).toSet(), images.keys)
+        val names = Severity.entries.flatMap { listOf(barrierSignImage(it), chosenBarrierImage(it)) }
+        assertEquals(names.toSet(), images.keys)
+    }
+
+    /** Wiersz: V1, znak wybranej bariery jest osobnym, większym obrazem dla każdej uciążliwości (US1.5, NFR-21). */
+    @Test
+    fun us1_5_chosen_sign_is_bigger() {
+        val images = barrierImages(images(words = emptyList()))
+
+        val chosen = Severity.entries.map { images.getValue(chosenBarrierImage(it)) }
+        assertEquals(listOf(CHOSEN_BARRIER_DP * 2), chosen.map { it.width }.distinct())
+        assertTrue(chosen.first().width > images.getValue(barrierSignImage(Severity.entries.first())).width)
+        assertFalse(chosen.first().sameAs(chosen.last()))
     }
 
     private fun images(words: List<String>): MapImages {
