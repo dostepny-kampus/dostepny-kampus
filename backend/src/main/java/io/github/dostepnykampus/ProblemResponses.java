@@ -51,7 +51,11 @@ public final class ProblemResponses {
     @ExceptionHandler
     ProblemDetail invalid(final InvalidInput error) {
         this.log.debug("Niepoprawne dane żądania: {}", error.getMessage());
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, error.getMessage());
+        final ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST, error.getMessage()
+        );
+        error.type().ifPresent(problem::setType);
+        return problem;
     }
 
     @ExceptionHandler
