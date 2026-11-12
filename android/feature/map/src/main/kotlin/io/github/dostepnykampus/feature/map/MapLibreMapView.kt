@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
@@ -25,6 +26,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
+import io.github.dostepnykampus.core.designsystem.nameRes
+import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.OUTLINE_NUMBER
@@ -72,6 +75,7 @@ object MapLibreMapView : CampusMapView {
         val style = rememberMapStyle(data = data, selection = selection, colors = colors.styleColors())
         val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
         val tolerance = TOUCH_TOLERANCE_DP * density.density
+        val words = Severity.entries.map { stringResource(it.nameRes()) }
         val mapView =
             remember {
                 MapLibre.getInstance(context)
@@ -104,7 +108,8 @@ object MapLibreMapView : CampusMapView {
         }
         DisposableEffect(map, style, labelSize) {
             map?.setStyle(styleBuilder(style)) { loaded ->
-                val images = MapImages(colors = colors, density = density.density, labelSize = labelSize)
+                val images =
+                    MapImages(colors = colors, density = density.density, labelSize = labelSize, words = words)
                 loaded.addMapImages(labels = data.labels, selected = selection.entrance, images = images)
             }
             onDispose {}
@@ -197,8 +202,8 @@ internal fun rememberMapStyle(
 ): String = remember(data, selection, colors) { build(data, selection, colors) }
 
 /**
- * Dodaje do stylu podpisy konturów, znaki wejść oraz pinezkę i podpis zaznaczonego wejścia jako obrazy,
- * bo napisy ze stylu wymagają sieci.
+ * Dodaje do stylu podpisy konturów, znaki wejść, pinezkę i podpis zaznaczonego wejścia oraz znaki i słowa
+ * uciążliwości barier jako obrazy, bo napisy ze stylu wymagają sieci.
  */
 internal fun Style.addMapImages(labels: List<String>, selected: SelectedEntrance?, images: MapImages) {
     labels.forEach { label -> addImage(label, labelImage(label, images.colors, images.labelSize)) }
@@ -208,7 +213,16 @@ internal fun Style.addMapImages(labels: List<String>, selected: SelectedEntrance
         density = images.density,
         labelSize = images.labelSize,
     ).forEach { (name, image) -> addImage(name, image) }
+    barrierImages(images).forEach { (name, image) -> addImage(name, image) }
 }
 
-/** Wygląd obrazów mapy: barwy [colors], gęstość ekranu [density] i wysokość podpisu [labelSize] w pikselach. */
-internal data class MapImages(val colors: MapColors, val density: Float, val labelSize: Float)
+/**
+ * Wygląd obrazów mapy: barwy [colors], gęstość ekranu [density], wysokość podpisu [labelSize] w pikselach i słowa
+ * uciążliwości [words] w kolejności [Severity]; bez słów bariery mają same znaki.
+ */
+internal data class MapImages(
+    val colors: MapColors,
+    val density: Float,
+    val labelSize: Float,
+    val words: List<String> = emptyList(),
+)

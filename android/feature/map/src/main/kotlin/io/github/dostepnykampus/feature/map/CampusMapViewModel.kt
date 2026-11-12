@@ -8,21 +8,27 @@ package io.github.dostepnykampus.feature.map
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.barriers.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barriers.AcceptedBarriers
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.campusMapData
+import io.github.dostepnykampus.feature.map.data.withBarriers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
@@ -43,7 +49,8 @@ private const val STOP_TIMEOUT_MS = 5_000L
  * @property isListSaved ostatni wybór w przełączniku: prawda dla „Lista budynków”, fałsz dla „Mapa”, `null`, gdy osoba
  *   jeszcze nie wybierała (NFR-19)
  * @property mapData gotowe dane warstw mapy, policzone poza wątkiem interfejsu raz na katalog; `null`, dopóki pierwsza
- *   geometria nie jest gotowa, a po zmianie katalogu poprzednie dane, aż policzy się nowa (NFR-11)
+ *   geometria nie jest gotowa, a po zmianie katalogu poprzednie dane, aż policzy się nowa (NFR-11). Dane mają
+ *   bariery ze zgłoszeń przyjętych, gdy serwer je podał (US1.3)
  */
 data class CampusMapUiState(
     val catalog: BuildingCatalog? = null,
@@ -62,12 +69,16 @@ data class CampusMapUiState(
  * zamknięcie ekranu przerywają liczenie przerwaniem wątku (`runInterruptible`), więc nowe nie czeka na koniec
  * starego. Do czasu policzenia nowej mapa zostaje na poprzedniej, więc kontury nie znikają przy zmianie katalogu
  * (NFR-11).
+ * Bariery ze zgłoszeń przyjętych są pobierane, gdy jest internet, i od nowa po każdym jego powrocie. Do pierwszej
+ * odpowiedzi i bez internetu mapa działa bez znaków barier (US1.3, NFR-11). Dane mapy powstają od nowa tylko po
+ * zmianie katalogu albo barier, nie przy każdej zmianie stanu ekranu.
  *
  * @param repository katalog budynków: najpierw plik, potem serwer
  * @param networkStatus stan internetu
  * @param mapListChoice zapamiętany wybór „Mapa” albo „Lista budynków”
  * @property computeContext kontekst obliczeń geometrii; w aplikacji `Dispatchers.Default`
  * @property geometry funkcja licząca dane mapy z katalogu, przerywalna przerwaniem wątku; w aplikacji `campusMapData`
+ * @param barriers bariery ze zgłoszeń przyjętych; w testach bez barier
  */
 @HiltViewModel
 class CampusMapViewModel(
@@ -76,6 +87,7 @@ class CampusMapViewModel(
     private val mapListChoice: MapListChoice,
     internal val computeContext: CoroutineContext,
     internal val geometry: (BuildingCatalog) -> CampusMapData,
+    barriers: AcceptedBarriers = AcceptedBarriers { emptyList() },
 ) : ViewModel() {
     /** Bieżący stan ekranu. */
     val uiState: StateFlow<CampusMapUiState> =
@@ -85,7 +97,10 @@ class CampusMapViewModel(
                     .catalogUpdates()
                     .map<BuildingCatalog, BuildingCatalog?> { it }
                     .onStart { emit(null) }
-                    .withGeometry(),
+                    .withGeometry()
+                    .combine(networkStatus.isOnline().whenOnline(barriers)) { (catalog, data), shown ->
+                        catalog to data?.withBarriers(shown)
+                    },
             flow2 = networkStatus.isOnline(),
             flow3 = mapListChoice.savedChoice,
         ) { (catalog, data), isOnline, isListSaved ->
@@ -97,7 +112,15 @@ class CampusMapViewModel(
         repository: BuildingCatalogRepository,
         networkStatus: NetworkStatus,
         mapListChoice: MapListChoice,
-    ) : this(repository, networkStatus, mapListChoice, Dispatchers.Default, ::campusMapData)
+        barriers: AcceptedBarriers,
+    ) : this(repository, networkStatus, mapListChoice, Dispatchers.Default, ::campusMapData, barriers)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun Flow<Boolean>.whenOnline(barriers: AcceptedBarriers): Flow<List<AcceptedBarrier>> =
+        distinctUntilChanged()
+            .filter { isOnline -> isOnline }
+            .mapLatest { barriers.barriers() }
+            .onStart { emit(emptyList()) }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun Flow<BuildingCatalog?>.withGeometry(): Flow<Pair<BuildingCatalog?, CampusMapData?>> =
