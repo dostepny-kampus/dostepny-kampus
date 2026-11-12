@@ -30,6 +30,10 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 @Immutable
 internal data class AreaOrder(val areas: List<MapArea>)
 
+/** Nazwa terenu budynku [symbol], gdy to inny teren niż pokazany na mapie (US1.8); inaczej `null`. */
+internal fun AreaOrder.otherAreaOf(symbol: String): String? =
+    areas.drop(n = 1).firstOrNull { symbol in it.symbols }?.name
+
 /**
  * Tereny mapy V1: który teren mapa pokazuje i na jakie można go zmienić (US1.6, US1.7).
  *
