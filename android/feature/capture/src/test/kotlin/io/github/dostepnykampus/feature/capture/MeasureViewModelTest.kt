@@ -310,6 +310,49 @@ class MeasureViewModelTest {
             assertFalse(suggested.hint.isInside)
         }
 
+    /**
+     * 30 m na północ od konturu A-1: podpowiedź A-1 do potwierdzenia, punkt nie leży w konturze (BR-G4).
+     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
+     *   konturu
+     */
+    @Test
+    fun br_g4_30_m_suggests_a1() =
+        runTest(dispatcher) {
+            finish(northOfA1(meters = 30.0))
+            val suggested = place() as PlaceChoice.Suggested
+            assertEquals("A-1", suggested.hint.building.symbol)
+            assertFalse(suggested.hint.isInside)
+        }
+
+    /**
+     * Tuż poniżej progu 50 m od konturu A-1: nadal podpowiedź A-1 do potwierdzenia (BR-G4).
+     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
+     *   konturu
+     */
+    @Test
+    fun br_g4_49_m_suggests_a1() =
+        runTest(dispatcher) {
+            finish(northOfA1(meters = 49.0))
+            val suggested = place() as PlaceChoice.Suggested
+            assertEquals("A-1", suggested.hint.building.symbol)
+            assertFalse(suggested.hint.isInside)
+        }
+
+    /**
+     * 60 m od konturu A-1 i dalej od innych budynków: bez podpowiedzi, od razu „poza budynkiem” (BR-G4).
+     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
+     *   konturu
+     */
+    @Test
+    fun br_g4_60_m_outside() =
+        runTest(dispatcher) {
+            finish(northOfA1(meters = 60.0))
+            assertEquals(PlaceChoice.Outside, place())
+        }
+
+    private fun northOfA1(meters: Double): GeoPoint =
+        GeoPoint(longitude = A1_POINT.longitude, latitude = A1_NORTH_EDGE + meters / METERS_PER_DEGREE)
+
     private fun TestScope.finish(point: GeoPoint = A1_POINT) {
         watch()
         backgroundScope.launch { fixes.emit(PositionFix(point, 6.0, clock.nowMillis())) }
@@ -335,6 +378,8 @@ class MeasureViewModelTest {
         const val PRECISION = 1e-9
         val A1_POINT = GeoPoint(longitude = 17.0605, latitude = 51.1105)
         val A1_EDGE_POINT = GeoPoint(longitude = 17.06, latitude = 51.1105)
+        const val A1_NORTH_EDGE = 51.111
+        const val METERS_PER_DEGREE = 111_195.0
         val CAMPUS =
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
                 feature("A-1", west = 17.06) +
