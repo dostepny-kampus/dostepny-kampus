@@ -1,0 +1,9 @@
+{
+  "minTokens": 150,
+  "minLines": 10,
+  "threshold": 0,
+  "mode": "weak",
+  "format": ["kotlin", "java", "yaml", "bash"],
+  "reporters": ["consoleFull"],
+  "gitignore": true
+}
