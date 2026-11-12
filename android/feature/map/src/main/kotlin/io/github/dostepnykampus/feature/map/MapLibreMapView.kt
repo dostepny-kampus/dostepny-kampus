@@ -27,8 +27,9 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
+import io.github.dostepnykampus.feature.map.data.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
-import io.github.dostepnykampus.feature.map.data.symbolsOf
+import io.github.dostepnykampus.feature.map.data.symbolsAt
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLngBounds
@@ -84,6 +85,7 @@ object MapLibreMapView : CampusMapView {
         var size by remember { mutableStateOf(IntSize.Zero) }
         val limits = remember(selection.bounds, size, density) { density.mapLimits(selection.bounds, size) }
         val currentCamera by rememberUpdatedState(camera)
+        val currentData by rememberUpdatedState(data)
         val cameraIdle by rememberUpdatedState(onCameraIdle)
         val buildingsTouch by rememberUpdatedState(onBuildingsTouch)
         DisposableEffect(mapView) {
@@ -95,7 +97,8 @@ object MapLibreMapView : CampusMapView {
                     val at = ready.projection.toScreenLocation(point)
                     val area = RectF(at.x - tolerance, at.y - tolerance, at.x + tolerance, at.y + tolerance)
                     val features = ready.queryRenderedFeatures(area, BUILDINGS_LAYER)
-                    val symbols = symbolsOf(features.mapNotNull { it.getStringProperty("label") })
+                    val numbers = features.mapNotNull { it.getNumberProperty(OUTLINE_NUMBER)?.toInt() }
+                    val symbols = currentData.symbolsAt(numbers)
                     buildingsTouch(symbols)
                     symbols.isNotEmpty()
                 }

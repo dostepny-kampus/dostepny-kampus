@@ -125,8 +125,8 @@ class CampusMapStyleTest {
         val focused = Json.parseToJsonElement(styled(data.selection(building = "C-13"))).jsonObject
         val layers = focused.array("layers")
         val selected = layers.map { it.jsonObject }.single { it.text("id") == SELECTED_LAYER }
-        val label = selected.array("filter").last()
-        assertEquals("C-13", label.jsonPrimitive.content)
+        val own = """["case",["any",["in","C-13",["get","symbols"]]],true,false]"""
+        assertEquals(own, selected.array("filter").toString())
         assertEquals("#001F27", selected.obj("paint").text("line-color"))
         assertEquals(null, style.array("layers").find { it.jsonObject.text("id") == SELECTED_LAYER })
     }
