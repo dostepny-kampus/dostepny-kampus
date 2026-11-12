@@ -28,7 +28,7 @@ object DatabaseModule {
     ): DkDatabase =
         Room
             .databaseBuilder(context, DkDatabase::class.java, NAME)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .build()
 
     /** Kolejka zgłoszeń z [database]. */
@@ -46,4 +46,8 @@ object DatabaseModule {
     /** Odczyt zgłoszenia z kolejki do poprawki z [database] (US8.3). */
     @Provides
     fun pendingEdits(database: DkDatabase): PendingEditDao = database.pendingEdits()
+
+    /** Kopia barier ze zgłoszeń przyjętych z [database] (NFR-10). */
+    @Provides
+    fun barrierCache(database: DkDatabase): BarrierCacheDao = database.barrierCache()
 }

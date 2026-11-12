@@ -16,7 +16,7 @@ import org.robolectric.RobolectricTestRunner
 /**
  * Migracje bazy: nowa tabela powstaje pusta, a kolejka zgłoszeń zostaje.
  * 1→2: kopia listy budynków (NFR-10); 2→3: historia własnych zgłoszeń (US8); 3→4: znacznik odrzuconego (BR-26);
- * 4→5: status z serwera w historii (US8.2).
+ * 4→5: status z serwera w historii (US8.2); 5→6: kopia barier ze zgłoszeń przyjętych (NFR-10).
  */
 @RunWith(RobolectricTestRunner::class)
 class MigrationTest {
@@ -101,6 +101,24 @@ class MigrationTest {
                     }
 
                 assertEquals(1, unknown)
+            }
+    }
+
+    @Test
+    fun migrate_5_to_6_keeps_history() {
+        helper.createDatabase(DB_NAME, 5).use { fifth ->
+            fifth.execSQL("INSERT INTO own_submissions (id, saved_at, kind, state) VALUES ('a', 7, 'PRECISE', 'SENT')")
+            fifth.execSQL("INSERT INTO building_cache (id, list_json, synced_at) VALUES (1, '{}', 7)")
+        }
+
+        helper
+            .runMigrationsAndValidate(DB_NAME, 6, true, MIGRATION_5_6)
+            .use { sixth ->
+                val history = sixth.query("SELECT COUNT(*) FROM own_submissions").use { row -> readCount(row) }
+                val buildings = sixth.query("SELECT COUNT(*) FROM building_cache").use { row -> readCount(row) }
+                val barriers = sixth.query("SELECT COUNT(*) FROM barrier_cache").use { row -> readCount(row) }
+
+                assertEquals(listOf(1, 1, 0), listOf(history, buildings, barriers))
             }
     }
 }
