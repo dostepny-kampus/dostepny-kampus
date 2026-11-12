@@ -79,7 +79,8 @@ class CampusMapBarriersStyleTest {
         val layer = style.layer(CHOSEN_BARRIER_LAYER)
         assertEquals("""["==",["get","$BARRIER_ID"],"$chosen"]""", layer.getValue("filter").toString())
         val images = layer.obj("layout").getValue("icon-image").jsonArray.map { it.toString() }
-        assertEquals(true, images.containsAll(Severity.entries.map { JsonPrimitive(chosenBarrierImage(it)).toString() }))
+        val expected = Severity.entries.map { JsonPrimitive(chosenBarrierImage(it)).toString() }
+        assertEquals(true, images.containsAll(expected))
     }
 
     /** Wiersz: V1 bez pobranych barier działa bez znaków barier (NFR-11). */
