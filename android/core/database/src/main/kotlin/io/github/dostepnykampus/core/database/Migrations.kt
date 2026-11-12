@@ -8,15 +8,14 @@ package io.github.dostepnykampus.core.database
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
+private const val LIST_COPY_COLUMNS =
+    "(`id` INTEGER NOT NULL, `list_json` TEXT NOT NULL, `synced_at` INTEGER NOT NULL, PRIMARY KEY(`id`))"
+
 /** Migracja 1→2: tabela kopii listy budynków z serwera (NFR-10). */
 val MIGRATION_1_2: Migration =
     object : Migration(1, 2) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            db.execSQL(
-                "CREATE TABLE IF NOT EXISTS `building_cache` (" +
-                    "`id` INTEGER NOT NULL, `list_json` TEXT NOT NULL, `synced_at` INTEGER NOT NULL, " +
-                    "PRIMARY KEY(`id`))",
-            )
+            db.execSQL("CREATE TABLE IF NOT EXISTS `building_cache` $LIST_COPY_COLUMNS")
         }
     }
 
@@ -48,5 +47,13 @@ val MIGRATION_4_5: Migration =
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL("ALTER TABLE `own_submissions` ADD COLUMN `server_status` TEXT")
             db.execSQL("ALTER TABLE `own_submissions` ADD COLUMN `rejection_reason` TEXT")
+        }
+    }
+
+/** Migracja 5→6: tabela kopii barier ze zgłoszeń przyjętych (NFR-10). */
+val MIGRATION_5_6: Migration =
+    object : Migration(5, 6) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS `barrier_cache` $LIST_COPY_COLUMNS")
         }
     }
