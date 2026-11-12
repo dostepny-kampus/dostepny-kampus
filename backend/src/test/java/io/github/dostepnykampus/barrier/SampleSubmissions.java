@@ -52,7 +52,7 @@ final class SampleSubmissions {
      */
     static SubmissionContent quick(final UUID photo) {
         return SampleSubmissions.quick(
-            new SubmissionPlace(new SubmissionPoint(17.0, 51.0), null, false, null, null),
+            new SubmissionPlace(new SubmissionPoint(17.05, 51.108), null, false, null, null),
             null, photo
         );
     }

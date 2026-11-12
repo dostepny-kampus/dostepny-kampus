@@ -86,9 +86,9 @@ final class SimilarSubmissionsHttpTest {
         final UUID checked = place.add(0, "IN_REVIEW", "A-1-0");
         final UUID corrupt = place.add(2, "SENT", "A-1-0");
         final UUID valid = place.add(5, "ACCEPTED", "A-1-1");
-        context.getBean(JdbcClient.class)
-            .sql("UPDATE submissions SET content = '{}'::jsonb WHERE id = :id")
-            .param("id", corrupt).update();
+        context.getBean(JdbcClient.class).sql(
+            "UPDATE submissions SET content = content || '{\"photoIds\": \"zepsute\"}' WHERE id = :id"
+        ).param("id", corrupt).update();
         MatcherAssert.assertThat(
             "Lista podobnych zgłoszeń ma zawierać tylko czytelne zgłoszenie",
             place.similar(checked, List.of(corrupt, valid)).stream()
@@ -147,7 +147,7 @@ final class SimilarSubmissionsHttpTest {
                 status,
                 SampleSubmissions.quick(
                     new SubmissionPlace(
-                        new SubmissionPoint(17.062, 51.108), null, false, "A-1",
+                        new SubmissionPoint(17.055, 51.108), null, false, "A-1",
                         new SubmissionFloor(floor, null, false)
                     ),
                     "Próg", UUID.randomUUID()
@@ -155,9 +155,13 @@ final class SimilarSubmissionsHttpTest {
             );
             this.context.getBean(JdbcClient.class).sql(
                 """
-                UPDATE submissions SET location = ST_Project(
-                    ST_SetSRID(ST_MakePoint(17.055, 51.108), 4326)::geography, :meters, 0
-                )::geometry WHERE id = :id
+                UPDATE submissions SET content = jsonb_set(
+                    content, '{location,coordinates}', jsonb_build_array(ST_X(moved), ST_Y(moved))
+                ) FROM (
+                    SELECT ST_Project(
+                        ST_SetSRID(ST_MakePoint(17.055, 51.108), 4326)::geography, :meters, 0
+                    )::geometry AS moved
+                ) AS place WHERE id = :id
                 """
             ).param("meters", meters).param("id", id).update();
             return id;

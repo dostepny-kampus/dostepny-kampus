@@ -14,7 +14,6 @@ import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
-import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
@@ -32,7 +31,9 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Adapter portów zgłoszeń na tabeli submissions (BR-9, BR-10, BR-18). Zapis
- * i edycja to pojedyncze atomowe zapytania, bez odczytu przed zapisem. Klasa
+ * i edycja to pojedyncze atomowe zapytania, bez odczytu przed zapisem.
+ * Zapisuje tylko treść JSON; rodzaj, budynek, punkt i piętro baza liczy
+ * z niej w kolumnach generowanych, więc mają jedno źródło (#837). Klasa
  * nie jest repozytorium Springa, bo proxy tłumaczące wyjątki nie powstaje
  * dla klasy finalnej, a JdbcClient tłumaczy wyjątki sam.
  *
@@ -52,9 +53,8 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
      */
     private static final String INSERT = String.format(
         """
-            INSERT INTO submissions (id, kind, building_symbol, location, content)
-            VALUES (:id, :kind, :building,
-                ST_SetSRID(ST_MakePoint(:lon, :lat), 4326), CAST(:content AS JSONB))
+            INSERT INTO submissions (id, content)
+            VALUES (:id, CAST(:content AS JSONB))
             ON CONFLICT (id) DO NOTHING
             RETURNING %s
         """,
@@ -67,8 +67,6 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     private static final String UPDATE = String.format(
         """
             UPDATE submissions SET version = version + 1, status = edited.new_status,
-                kind = :kind, building_symbol = :building,
-                location = ST_SetSRID(ST_MakePoint(:lon, :lat), 4326),
                 content = CAST(:content AS JSONB)
             FROM unnest(CAST(:from AS TEXT[]), CAST(:to AS TEXT[]))
                 AS edited (old_status, new_status)
@@ -159,7 +157,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 """
                 SELECT %s FROM submissions WHERE status IN (:statuses)
                     AND (CAST(:building AS TEXT) IS NULL OR building_symbol = :building)
-                    AND (CAST(:floor AS TEXT) IS NULL OR content #>> '{floor,floorId}' = :floor)
+                    AND (CAST(:floor AS TEXT) IS NULL OR floor_id = :floor)
                 ORDER BY created_at, id
                 """,
                 JdbcSubmissions.COLUMNS
@@ -204,14 +202,9 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     private Optional<Submission> write(
         final JdbcClient.StatementSpec statement, final UUID id, final SubmissionContent content
     ) {
-        final SubmissionPlace place = content.place();
         try {
             return statement
                 .param("id", id)
-                .param("kind", content.kind().name())
-                .param("building", place.buildingSymbol())
-                .param("lon", place.point().longitude())
-                .param("lat", place.point().latitude())
                 .param("content", this.json(content))
                 .query(this.rows)
                 .optional();

@@ -212,6 +212,8 @@ paths:
         Ponowne wysłanie tego samego `id` zwraca zapisane zgłoszenie i nie tworzy drugiego (BR-9).
         Do kolejki weryfikacji zgłoszenie trafia, gdy serwer ma wszystkie zdjęcia z `photoIds` (BR-7, BR-8, US8.2).
         Walidacja według BR-7, BR-8, BR-14, BR-19 i BR-24.
+        Miejsce dalej niż 500 m od konturu każdego budynku PWr (odległość na ziemi, liczy baza) daje 400 z `type`
+        równym `urn:dostepny-kampus:poza-terenem-pwr`; aplikacja pokazuje wtedy stan „Poza terenem PWr” (BR-G5, US4.9).
       tags: [barrier]
       security: [{keycloak: []}]
       requestBody:
