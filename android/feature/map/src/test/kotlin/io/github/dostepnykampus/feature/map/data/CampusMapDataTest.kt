@@ -101,7 +101,7 @@ class CampusMapDataTest {
 
     /** Dotknięcie konturu wspólnego czyta jego numer z obiektu i daje oba symbole, bez dzielenia podpisu. */
     @Test
-    fun us2_shared_outline_touch_gives_both() {
+    fun us2_shared_outline_both() {
         val numbers = parse(data.buildings).mapNotNull { it.properties.text(OUTLINE_NUMBER)?.toInt() }
         assertEquals(listOf(0, 1), numbers)
         assertEquals(listOf("C-3", "C-4"), data.symbolsAt(numbers.take(n = 1)))

@@ -93,11 +93,7 @@ object MapLibreMapView : CampusMapView {
                 ready.prefetchZoomDelta = 0
                 ready.cameraPosition = currentCamera.toPosition()
                 ready.onPersonIdle { cameraIdle(it) }
-                ready.addOnMapClickListener { point ->
-                    val at = ready.projection.toScreenLocation(point)
-                    val area = RectF(at.x - tolerance, at.y - tolerance, at.x + tolerance, at.y + tolerance)
-                    val features = ready.queryRenderedFeatures(area, BUILDINGS_LAYER)
-                    val numbers = features.mapNotNull { it.getNumberProperty(OUTLINE_NUMBER)?.toInt() }
+                ready.onOutlinesTouch(tolerance) { numbers ->
                     val symbols = currentData.symbolsAt(numbers)
                     buildingsTouch(symbols)
                     symbols.isNotEmpty()
@@ -151,6 +147,15 @@ object MapLibreMapView : CampusMapView {
                 if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) mapView.onPause()
                 if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) mapView.onStop()
             }
+        }
+    }
+
+    private fun MapLibreMap.onOutlinesTouch(tolerance: Float, isTaken: (List<Int>) -> Boolean) {
+        addOnMapClickListener { point ->
+            val at = projection.toScreenLocation(point)
+            val area = RectF(at.x - tolerance, at.y - tolerance, at.x + tolerance, at.y + tolerance)
+            val features = queryRenderedFeatures(area, BUILDINGS_LAYER)
+            isTaken(features.mapNotNull { it.getNumberProperty(OUTLINE_NUMBER)?.toInt() })
         }
     }
 
