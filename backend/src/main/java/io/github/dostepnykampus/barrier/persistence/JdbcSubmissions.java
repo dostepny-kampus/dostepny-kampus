@@ -9,6 +9,7 @@ import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
+import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.SimilarSubmission;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionContent;
@@ -153,6 +154,14 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     }
 
     @Override
+    public Optional<Submission> visible(final UUID id, final Reader reader) {
+        return this.find(id).filter(
+            found -> found.status().publiclyVisible() || reader.verifier()
+                || this.wrote(id, reader.account())
+        );
+    }
+
+    @Override
     public boolean foreign(final UUID id, final String account) {
         return this.jdbc.sql(
             """
@@ -202,6 +211,10 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                     )
                 )
             );
+    }
+
+    private boolean wrote(final UUID id, final String account) {
+        return !account.isEmpty() && !this.foreign(id, account);
     }
 
     private List<Submission> select(final SubmissionQuery query, @Nullable final String author) {
