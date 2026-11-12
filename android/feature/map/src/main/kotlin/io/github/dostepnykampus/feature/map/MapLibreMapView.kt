@@ -48,7 +48,9 @@ private const val TOUCH_TOLERANCE_DP = 24f
  * Podpis konturu rośnie z czcionką telefonu najwyżej 1,4 raza (reguła 4 wymagań wspólnych). Dotknięcie do 24 dp od
  * konturu, połowa celu 48 dp, trafia w kontur (decyzja 85). Kafelki nie są pobierane na zapas, tylko widoczne
  * (NFR-39). Widok kamery zgłasza tylko po geście osoby, nie po ruchu zleconym przez ekran, więc wpisanie budynku
- * nad małą kartą nie liczy się jako ruch osoby (decyzja 151). Natywny widok powstaje i zwalnia pamięć raz, razem
+ * nad małą kartą nie liczy się jako ruch osoby (decyzja 151). Zmiana rozmiaru mapy przerywa ruch kamery, więc po
+ * niej widok znów idzie do zleconej kamery i „Wstecz” z V2 wraca dokładnie do widoku sprzed karty (decyzja 83).
+ * Natywny widok powstaje i zwalnia pamięć raz, razem
  * z ekranem; przy V2 jako arkuszu ten sam widok przechodzi do innej sceny z innym cyklem życia, więc zmiana cyklu
  * tylko zatrzymuje i wznawia mapę.
  */
@@ -112,7 +114,7 @@ object MapLibreMapView : CampusMapView {
             if (size != IntSize.Zero) limits?.let { map?.limitTo(it) }
             onDispose {}
         }
-        DisposableEffect(map, camera) {
+        DisposableEffect(map, camera, limits) {
             val ready = map
             if (ready != null && ready.cameraPosition.toCamera() != camera) {
                 ready.animateCamera(CameraUpdateFactory.newCameraPosition(camera.toPosition()))
