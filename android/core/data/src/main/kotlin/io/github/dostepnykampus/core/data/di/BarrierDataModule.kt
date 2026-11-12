@@ -10,7 +10,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.barriers.AcceptedBarriers
+import io.github.dostepnykampus.core.data.barriers.BarrierListCopy
 import io.github.dostepnykampus.core.data.barriers.ServerAcceptedBarriers
+import io.github.dostepnykampus.core.database.BarrierCacheDao
 import io.github.dostepnykampus.core.network.SubmissionsApi
 import javax.inject.Singleton
 
@@ -18,8 +20,9 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object BarrierDataModule {
-    /** Bariery ze zgłoszeń przyjętych dla mapy (US1.3, BR-6). */
+    /** Bariery ze zgłoszeń przyjętych dla mapy, z kopią w bazie na czas bez sieci (US1.3, BR-6, NFR-10). */
     @Provides
     @Singleton
-    fun acceptedBarriers(api: SubmissionsApi): AcceptedBarriers = ServerAcceptedBarriers { api.accepted() }
+    fun acceptedBarriers(api: SubmissionsApi, cache: BarrierCacheDao): AcceptedBarriers =
+        ServerAcceptedBarriers(BarrierListCopy(cache)) { api.accepted() }
 }
