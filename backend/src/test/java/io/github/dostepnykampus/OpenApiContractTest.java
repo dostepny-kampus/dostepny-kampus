@@ -135,6 +135,12 @@ final class OpenApiContractTest {
                 "zgodne ciało żądania"
             ),
             Arguments.of(
+                MockMvcRequestBuilders.put(OpenApiContractTest.PHOTO)
+                    .contentType(MediaType.IMAGE_JPEG),
+                ResponseEntity.noContent().<String>build(),
+                "treść żądania strumieniem, niewidoczna dla biblioteki"
+            ),
+            Arguments.of(
                 OpenApiContractTest.photo(MediaType.IMAGE_JPEG),
                 ResponseEntity.noContent().<String>build(), "zdjęcie JPEG jako treść nie-JSON"
             ),

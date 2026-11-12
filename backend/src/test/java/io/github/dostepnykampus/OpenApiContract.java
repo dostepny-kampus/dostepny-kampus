@@ -133,6 +133,8 @@ public final class OpenApiContract implements ResultMatcher {
         final List<String> found = this.validator.get().validate(
             MockMvcRequest.of(request), MockMvcResponse.of(result.getResponse())
         ).getMessages().stream().filter(
+            message -> message.getLevel() == ValidationReport.Level.ERROR
+        ).filter(
             message -> status / 100 != 4 || !OpenApiContract.asked(message.getKey())
         ).map(message -> "%s: %s".formatted(name, OpenApiContract.describe(message))).toList();
         if (!found.isEmpty()) {
