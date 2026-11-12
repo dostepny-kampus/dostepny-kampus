@@ -63,6 +63,17 @@ class NoLineCommentTest {
         assertEquals(listOf(2), lines("val s = $TEMPLATE", "val y = 2 // opis"))
     }
 
+    @Test
+    fun `znacznik z numerem przechodzi`() {
+        assertEquals(emptyList<Int>(), lines("class Later {", "    $MARKER", "    val x = 1 $MARKER", "}"))
+    }
+
+    @Test
+    fun `znacznik niepełny to błąd`() {
+        val loose = listOf("// TODO: opis", "// TODO(#12)", "// TODO(12): opis", "// TODO(#12):")
+        assertEquals(listOf(1, 2, 3, 4), lines(*loose.toTypedArray()))
+    }
+
     private fun lines(vararg text: String): List<Int> =
         rule.lint(text.joinToString(separator = "\n"), compile = false).map(::line)
 
@@ -74,6 +85,7 @@ class NoLineCommentTest {
         const val DOLLAR = '$'
         const val DOLLARS = "$DOLLAR$DOLLAR"
         const val TEMPLATE = "$QUOTE$DOLLAR{${QUOTE}a$QUOTE + $QUOTE//$QUOTE}$QUOTE"
+        const val MARKER = "// TODO(#12): opis"
         const val URL = "${QUOTE}https://example.org$QUOTE"
     }
 }

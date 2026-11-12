@@ -103,9 +103,9 @@ final class SubmissionsReadHttpTest {
         final Row corrupt = SubmissionsReadHttpTest.add(
             context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
         );
-        context.getBean(JdbcClient.class)
-            .sql("UPDATE submissions SET content = 'null'::jsonb WHERE id = :id")
-            .param("id", corrupt.id()).update();
+        context.getBean(JdbcClient.class).sql(
+            "UPDATE submissions SET content = content || '{\"photoIds\": \"zepsute\"}' WHERE id = :id"
+        ).param("id", corrupt.id()).update();
         final MockHttpServletResponse response = SubmissionsReadHttpTest.get(
             context, "/submissions?buildingSymbol=A-1"
         );
