@@ -160,17 +160,20 @@ fun CampusMapScreen(
         }
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
-                CampusMap(
-                    catalog = catalog,
-                    layers = state.mapData,
-                    focus = focus,
-                    areas = areas,
-                    contentPadding = contentPadding,
-                    mapView = mapView,
-                    onBuildingClick = onBuildingClick,
-                    onEmptyMapClick = onEmptyMapClick,
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                )
+                Box(Modifier.weight(1f).fillMaxWidth()) {
+                    CampusMap(
+                        catalog = catalog,
+                        layers = state.mapData,
+                        focus = focus,
+                        areas = areas,
+                        contentPadding = contentPadding,
+                        mapView = mapView,
+                        onBuildingClick = onBuildingClick,
+                        onEmptyMapClick = onEmptyMapClick,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                    BarrierDescriptions(ShownBarriers(state.barriers.takeUnless { isCovered }.orEmpty()))
+                }
             }
         }
     }
