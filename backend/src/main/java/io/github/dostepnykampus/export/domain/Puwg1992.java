@@ -5,55 +5,45 @@
  */
 package io.github.dostepnykampus.export.domain;
 
+import org.locationtech.proj4j.CRSFactory;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
+import org.locationtech.proj4j.CoordinateTransformFactory;
+import org.locationtech.proj4j.ProjCoordinate;
+
 /**
  * Punkt WGS84 przeliczony na PUWG 1992 (EPSG:2180) dla eksportu CSV
  * (US13.2, NFR-43).
  *
- * <p>Odwzorowanie Gaussa-Krügera na elipsoidzie GRS80: południk osiowy
- * 19°E, skala 0,9993, przesunięcie 500 000 m na wschód i -5 300 000 m na
- * północ. Szereg Krügera do czwartej potęgi trzeciego spłaszczenia różni się
- * od PROJ o mniej niż milimetr na obszarze Polski. Różnicę między WGS84
- * a ETRF2000 (poniżej metra) pomijamy, tak jak PROJ dla EPSG:2180.</p>
+ * <p>Przeliczenie robi biblioteka proj4j (ADR-0004, #832). Parametry układu
+ * są te same co w PROJ dla EPSG:2180: odwzorowanie Gaussa-Krügera na
+ * elipsoidzie GRS80, południk osiowy 19°E, skala 0,9993, przesunięcie
+ * 500 000 m na wschód i -5 300 000 m na północ. Różnicę między WGS84
+ * a ETRF2000 (poniżej metra) pomijamy, tak jak PROJ dla EPSG:2180. Bazy
+ * EPSG ({@code proj4j-epsg}) nie dodajemy, bo ma własną licencję, a układ
+ * jest jeden.</p>
  *
  * @since 0.1.0
  */
 public final class Puwg1992 {
 
     /**
-     * Spłaszczenie elipsoidy GRS80.
+     * Układ WGS84 w stopniach.
      */
-    private static final double FLATTENING = 1.0 / 298.257_222_101;
+    private static final CoordinateReferenceSystem WGS84 = new CRSFactory().createFromParameters(
+        "EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs"
+    );
 
     /**
-     * Trzecie spłaszczenie n.
+     * Układ PUWG 1992 w metrach, parametry jak w PROJ dla EPSG:2180.
      */
-    private static final double THIRD = Puwg1992.FLATTENING / (2.0 - Puwg1992.FLATTENING);
-
-    /**
-     * Mimośród elipsoidy.
-     */
-    private static final double ECCENTRICITY =
-        Math.sqrt(Puwg1992.FLATTENING * (2.0 - Puwg1992.FLATTENING));
-
-    /**
-     * Promień rektyfikacyjny GRS80 (półoś wielka 6 378 137 m) razy skala
-     * 0,9993, w metrach.
-     */
-    private static final double RADIUS = 0.999_3 * 6_378_137.0 / (1.0 + Puwg1992.THIRD)
-        * (1.0 + Math.pow(Puwg1992.THIRD, 2) / 4.0 + Math.pow(Puwg1992.THIRD, 4) / 64.0);
-
-    /**
-     * Współczynniki szeregu Krügera α1…α4.
-     */
-    private static final double[] ALPHA = {
-        Puwg1992.THIRD / 2.0 - 2.0 * Math.pow(Puwg1992.THIRD, 2) / 3.0
-            + 5.0 * Math.pow(Puwg1992.THIRD, 3) / 16.0
-            + 41.0 * Math.pow(Puwg1992.THIRD, 4) / 180.0,
-        13.0 * Math.pow(Puwg1992.THIRD, 2) / 48.0 - 3.0 * Math.pow(Puwg1992.THIRD, 3) / 5.0
-            + 557.0 * Math.pow(Puwg1992.THIRD, 4) / 1440.0,
-        61.0 * Math.pow(Puwg1992.THIRD, 3) / 240.0 - 103.0 * Math.pow(Puwg1992.THIRD, 4) / 140.0,
-        49_561.0 * Math.pow(Puwg1992.THIRD, 4) / 161_280.0,
-    };
+    private static final CoordinateReferenceSystem PUWG = new CRSFactory().createFromParameters(
+        "EPSG:2180",
+        String.join(
+            " ",
+            "+proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 +x_0=500000 +y_0=-5300000",
+            "+ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+        )
+    );
 
     /**
      * Długość geograficzna w stopniach.
@@ -79,33 +69,16 @@ public final class Puwg1992 {
     /**
      * Współrzędne punktu w PUWG 1992.
      *
+     * <p>Przekształcenie powstaje przy każdym wywołaniu, bo obiekt proj4j
+     * trzyma stan pośredni i nie jest bezpieczny dla wielu wątków.</p>
+     *
      * @return Współrzędne wschodnia i północna w metrach
      */
     public Puwg1992Point point() {
-        final double lambda = Math.toRadians(this.longitude - 19.0);
-        final double sine = Math.sin(Math.toRadians(this.latitude));
-        final double conformal = Math.sinh(
-            Puwg1992.atanh(sine)
-                - Puwg1992.ECCENTRICITY * Puwg1992.atanh(Puwg1992.ECCENTRICITY * sine)
-        );
-        final double northbase = Math.atan2(conformal, Math.cos(lambda));
-        final double eastbase = Puwg1992.atanh(
-            Math.sin(lambda) / Math.sqrt(1.0 + conformal * conformal)
-        );
-        double north = northbase;
-        double east = eastbase;
-        for (int order = 1; order <= Puwg1992.ALPHA.length; ++order) {
-            final double alpha = Puwg1992.ALPHA[order - 1];
-            north += alpha * Math.sin(2.0 * order * northbase) * Math.cosh(2.0 * order * eastbase);
-            east += alpha * Math.cos(2.0 * order * northbase) * Math.sinh(2.0 * order * eastbase);
-        }
-        return new Puwg1992Point(
-            Puwg1992.RADIUS * east + 500_000.0,
-            Puwg1992.RADIUS * north - 5_300_000.0
-        );
-    }
-
-    private static double atanh(final double value) {
-        return 0.5 * Math.log((1.0 + value) / (1.0 - value));
+        final ProjCoordinate target = new ProjCoordinate();
+        new CoordinateTransformFactory()
+            .createTransform(Puwg1992.WGS84, Puwg1992.PUWG)
+            .transform(new ProjCoordinate(this.longitude, this.latitude), target);
+        return new Puwg1992Point(target.x, target.y);
     }
 }
