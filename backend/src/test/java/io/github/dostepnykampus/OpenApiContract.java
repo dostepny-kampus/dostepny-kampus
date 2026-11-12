@@ -41,7 +41,9 @@ import tools.jackson.databind.json.JsonMapper;
  * gdy odpowiedź ma status 4xx opisany w kontrakcie. Żądanie złożone ręcznie,
  * bez {@code pathInfo}, biblioteka czyta po adresie żądania. Tożsamość testy dają
  * przez filtry zabezpieczeń, nie nagłówkiem, więc biblioteka nie sprawdza
- * {@code security}. Biblioteka nie dopisuje też {@code additionalProperties:
+ * {@code security}. Brak treści żądania nie jest naruszeniem, bo test może
+ * podać treść strumieniem, którego biblioteka nie widzi, jak przy limicie
+ * zdjęcia. Biblioteka nie dopisuje też {@code additionalProperties:
  * false}, bo kontrakt zamyka obiekty przez {@code unevaluatedProperties}.
  * Schematy treści dla testów JSON daje rejestr schematów. Kontrakt jest
  * wczytywany raz.</p>
@@ -250,6 +252,8 @@ public final class OpenApiContract implements ResultMatcher {
     private static LevelResolver levels() {
         return LevelResolver.create().withLevel(
             "validation.request.security", ValidationReport.Level.IGNORE
+        ).withLevel(
+            "validation.request.body.missing", ValidationReport.Level.IGNORE
         ).withLevel(
             "validation.schema.additionalProperties", ValidationReport.Level.IGNORE
         ).build();
