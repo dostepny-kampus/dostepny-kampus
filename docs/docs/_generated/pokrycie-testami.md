@@ -9,9 +9,9 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Stan | Liczba |
 | --- | --- |
-| Pełny test | 6 |
+| Pełny test | 7 |
 | Tylko częściowo | 14 |
-| Bez testu | 165 |
+| Bez testu | 164 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -160,7 +160,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `weryfikacja.feature` | Zmiany zgłoszenia archiwalnego nie da się przyjąć | BR-23 | — | brak |
 | `weryfikacja.feature` | Zmianę zgłoszenia archiwalnego Weryfikator odrzuca z powodem „nieaktualne” | BR-23 | — | brak |
 | `weryfikacja.feature` | Zmianę odrzuconą jako „nieaktualne” Zbierający wysyła ponownie do bieżącego zgłoszenia | BR-23 | — | brak |
-| `weryfikacja.feature` | Po przyjęciu „bariera usunięta” barierę, która nadal istnieje, zgłasza się od nowa | BR-23 | — | brak |
+| `weryfikacja.feature` | Po przyjęciu „bariera usunięta” barierę, która nadal istnieje, zgłasza się od nowa | BR-23 | `core/data · OwnHistoryTest.br23 nowe po nieaktualnej` | pełny |
 | `zgloszenia-zbierajacego.feature` | Każde własne zgłoszenie ma jeden status tekstem i ikoną | US8.1 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Zgłoszenie odrzucone pokazuje powód odrzucenia | BR-16, US8.1 | — | brak |
 | `zgloszenia-zbierajacego.feature` | Zgłoszenie ze zmianą czekającą w telefonie ma napis przy statusie | US8.1 | — | brak |

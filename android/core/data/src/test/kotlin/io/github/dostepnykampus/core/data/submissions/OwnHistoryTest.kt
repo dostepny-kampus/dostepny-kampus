@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.database.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
@@ -100,6 +101,34 @@ class OwnHistoryTest {
             assertNull(row.serverVersion)
         }
 
+    /**
+     * Zmiana autora odrzucona jako „nieaktualne” zostaje w historii, a nowe zgłoszenie tej samej bariery jest osobne.
+     * Scenariusz: weryfikacja.feature: Po przyjęciu „bariera usunięta” barierę, która nadal istnieje,
+     *   zgłasza się od nowa
+     */
+    @Test
+    fun `br23 nowe po nieaktualnej`() =
+        runBlocking {
+            history.rows[OLD] =
+                OwnSubmissionEntity(id = OLD, savedAtMillis = 1, kind = "PRECISE", barrierType = "TB-9")
+            history.saveServerStatus(
+                id = OLD,
+                status = SubmissionStatus.REJECTED.name,
+                reason = "nieaktualne",
+                version = 2,
+            )
+
+            queue().save(precise().copy(barrierType = "TB-9", buildingSymbol = "D-2"), photo())
+
+            val row = history.rows.getValue(ID)
+            assertEquals(OwnSubmissionState.LOCAL, row.state)
+            assertEquals("TB-9", row.barrierType)
+            val pending = store.rows.single().submission
+            assertNull(pending.replacesSubmissionId)
+            assertNull(pending.baseVersion)
+            assertEquals("nieaktualne", history.rows.getValue(OLD).rejectionReason)
+        }
+
     private fun queue(): SubmissionQueue =
         SubmissionQueue(
             store = store,
@@ -144,3 +173,4 @@ class OwnHistoryTest {
 
 private const val ID = "s1"
 private const val PHOTO = "p1"
+private const val OLD = "s-old"
