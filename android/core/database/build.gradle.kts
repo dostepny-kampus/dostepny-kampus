@@ -25,11 +25,19 @@ room {
 }
 
 dependencies {
+    api(libs.dagger)
+    api(libs.javax.inject)
+    implementation(libs.androidx.collection)
+    implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.sqlite)
+    implementation(libs.hilt.core)
     ksp(libs.androidx.room.compiler)
     implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.androidx.room.testing)
     testImplementation(libs.junit4)
+    testImplementation(libs.androidx.test.monitor)
     testImplementation(libs.robolectric)
+    testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.kotlinx.coroutines.test)
 }
