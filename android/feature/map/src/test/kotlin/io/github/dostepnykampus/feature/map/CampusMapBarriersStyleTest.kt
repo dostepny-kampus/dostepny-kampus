@@ -78,7 +78,8 @@ class CampusMapBarriersStyleTest {
         assertEquals(true, order.indexOf(BARRIERS_LAYER) < order.indexOf(CHOSEN_BARRIER_LAYER))
         val layer = style.layer(CHOSEN_BARRIER_LAYER)
         assertEquals("""["==",["get","$BARRIER_ID"],"$chosen"]""", layer.getValue("filter").toString())
-        val images = layer.obj("layout").getValue("icon-image").jsonArray.map { it.toString() }
+        val layout = layer.obj("layout")
+        val images = layout.getValue("icon-image").jsonArray.map { it.toString() }
         val expected = Severity.entries.map { JsonPrimitive(chosenBarrierImage(it)).toString() }
         assertEquals(true, images.containsAll(expected))
     }

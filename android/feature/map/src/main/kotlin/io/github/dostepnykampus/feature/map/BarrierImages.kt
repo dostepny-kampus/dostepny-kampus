@@ -16,7 +16,8 @@ import kotlin.math.ceil
 /**
  * Obrazy barier: znak każdej uciążliwości i jej słowo z [MapImages.words] (US1.3, NFR-21). Znak ma kształt
  * według uciążliwości w barwach `tusz` i `papier`, jak znaki wejść; słowo wygląda jak podpis budynku. Bez słów
- * są same znaki. Każda uciążliwość ma też znak wybranej bariery: większy, w obwódce (US1.5, NFR-21).
+ * są same znaki. Każda uciążliwość ma też znak wybranej bariery: większy znak na kole `papier` w obwódce
+ * `tusz` (US1.5, NFR-21).
  */
 internal fun barrierImages(images: MapImages): Map<String, Bitmap> {
     val size = ceil(BARRIER_SIGN_DP * images.density).toInt()
@@ -42,7 +43,6 @@ internal fun barrierImages(images: MapImages): Map<String, Bitmap> {
 private const val CHOSEN_RING_DP = 3
 private const val CHOSEN_SIGN_DP = 40
 
-/** Znak wybranej bariery: większy znak uciążliwości na kole `papier` w obwódce `tusz`. */
 private fun chosenSign(severity: Severity, images: MapImages): Bitmap {
     val size = ceil(CHOSEN_BARRIER_DP * images.density).toInt()
     val signSize = ceil(CHOSEN_SIGN_DP * images.density).toInt()
