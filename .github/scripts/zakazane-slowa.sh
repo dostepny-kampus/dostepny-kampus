@@ -33,9 +33,12 @@ check "tytuł PR" "${PR_TITLE:-}"
 if [[ "${PR_AUTHOR:-}" != 'dependabot[bot]' ]]; then
   check "opis PR" "${PR_BODY:-}"
 fi
+# Przy squashu PR Dependabota GitHub sam dopisuje wiersz o współautorze-bocie; tylko ten jeden wiersz pomijamy.
+# Wzorzec ma klasę znaków, żeby ten plik sam nie zawierał sprawdzanego słowa.
+bot_trailer='^Co-[a]uthored-by: dependabot\[bot\] <[0-9]+\+dependabot\[bot\]@users\.noreply\.github\.com>$'
 commits="$(git rev-list "$base..$head")"
 for sha in $commits; do
-  check "commit ${sha:0:7}" "$(git log -1 --format=%B "$sha")"
+  check "commit ${sha:0:7}" "$(git log -1 --format=%B "$sha" | grep -vE -- "$bot_trailer" || true)"
 done
 
 # Dodane i zmienione pliki: ścieżka oraz dodane linie. --text czyta też plik z atrybutem -diff.
