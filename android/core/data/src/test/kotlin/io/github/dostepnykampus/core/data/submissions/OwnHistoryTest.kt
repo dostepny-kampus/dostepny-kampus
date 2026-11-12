@@ -16,6 +16,7 @@ import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.SubmissionEdit
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -72,6 +73,27 @@ class OwnHistoryTest {
             target.sendAll()
 
             assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state)
+        }
+
+    /**
+     * Odpowiedź 503 kończy przebieg do kolejnej próby jak brak sieci; następny przebieg wysyła zgłoszenie sam.
+     * Scenariusz: synchronizacja.feature: Awaria serwera działa jak brak sieci
+     */
+    @Test
+    fun `nfr50 awaria serwera lokalne`() =
+        runBlocking {
+            val target = queue()
+            target.save(precise(), photo())
+            store.createResults.addLast(ApiResult.ServerError(code = SERVICE_UNAVAILABLE))
+
+            assertFalse(target.sendAll())
+            val row = history.rows.getValue(ID)
+            assertEquals(OwnSubmissionState.LOCAL, row.state)
+            assertNull(row.refusalCode)
+            assertEquals(listOf(ID), store.all().map { it.submission.id })
+
+            assertTrue(target.sendAll())
+            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state)
         }
 
     @Test
@@ -174,3 +196,4 @@ class OwnHistoryTest {
 private const val ID = "s1"
 private const val PHOTO = "p1"
 private const val OLD = "s-old"
+private const val SERVICE_UNAVAILABLE = 503
