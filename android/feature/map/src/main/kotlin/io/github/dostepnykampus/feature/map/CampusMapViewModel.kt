@@ -51,12 +51,14 @@ private const val STOP_TIMEOUT_MS = 5_000L
  * @property mapData gotowe dane warstw mapy, policzone poza wątkiem interfejsu raz na katalog; `null`, dopóki pierwsza
  *   geometria nie jest gotowa, a po zmianie katalogu poprzednie dane, aż policzy się nowa (NFR-11). Dane mają
  *   bariery ze zgłoszeń przyjętych, gdy serwer je podał (US1.3)
+ * @property barriers bariery pokazane na mapie, do nazw znaków dla TalkBack (NFR-18)
  */
 data class CampusMapUiState(
     val catalog: BuildingCatalog? = null,
     val isOnline: Boolean = true,
     val isListSaved: Boolean? = null,
     val mapData: CampusMapData? = null,
+    val barriers: List<AcceptedBarrier> = emptyList(),
 )
 
 /**
@@ -99,12 +101,18 @@ class CampusMapViewModel(
                     .onStart { emit(null) }
                     .withGeometry()
                     .combine(networkStatus.isOnline().whenOnline(barriers)) { (catalog, data), shown ->
-                        catalog to data?.withBarriers(shown)
+                        Triple(catalog, data?.withBarriers(shown), shown)
                     },
             flow2 = networkStatus.isOnline(),
             flow3 = mapListChoice.savedChoice,
-        ) { (catalog, data), isOnline, isListSaved ->
-            CampusMapUiState(catalog = catalog, isOnline = isOnline, isListSaved = isListSaved, mapData = data)
+        ) { (catalog, data, shown), isOnline, isListSaved ->
+            CampusMapUiState(
+                catalog = catalog,
+                isOnline = isOnline,
+                isListSaved = isListSaved,
+                mapData = data,
+                barriers = shown,
+            )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), CampusMapUiState())
 
     @Inject
