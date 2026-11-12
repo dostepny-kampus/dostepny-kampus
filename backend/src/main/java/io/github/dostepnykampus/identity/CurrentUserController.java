@@ -19,10 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 public final class CurrentUserController {
 
     /**
-     * Tworzy kontroler; konstruktor wywołuje tylko Spring.
+     * Tworzy kontroler; konstruktor wywołuje tylko Spring przez refleksję.
      */
-    CurrentUserController() {
-        // Bez stanu: profil pochodzi z tokenu żądania.
+    private CurrentUserController() {
     }
 
     /**
