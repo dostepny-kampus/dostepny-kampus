@@ -39,7 +39,8 @@ Compose:
   CompositionLocalAllowlist:
     # Role tokenów spoza Material 3 (kolory oznaczeń wejścia i mapy) dostarcza motyw, jak MaterialTheme.
     # Część V1 zasłoniętą przez arkusz V2 podaje scena arkusza ekranowi pod nim (LocalSheetPadding w :app).
-    allowedCompositionLocals: ['LocalStatusColors', 'LocalMapColors', 'LocalSheetPadding']
+    # Wątek czytania podglądu zdjęć podmieniają testy, żeby nie czekać oknem zegara (LocalPhotoDecodeContext, #622).
+    allowedCompositionLocals: ['LocalStatusColors', 'LocalMapColors', 'LocalSheetPadding', 'LocalPhotoDecodeContext']
 
 coroutines:
   excludes: ['**/build/generated/**']
