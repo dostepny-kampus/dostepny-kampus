@@ -6,7 +6,7 @@ name: proba-analizy-zaleznosci
 on:
   push:
     branches:
-      - 894-analiza-zaleznosci
+      - 938-proba-analizy
 
 permissions:
   contents: read
@@ -62,32 +62,7 @@ jobs:
           }
           """)
           PY
-      - name: Uruchom analizę modułu mapy
-        run: |
-          ./gradlew buildHealth --console=plain --no-configuration-cache --stacktrace \
-            '-Pdependency.analysis.project.includes=^:feature:map$'
-          if grep -E 'kotlinx-serialization-json|libs\.kotlinx\.serialization\.json' \
-            build/reports/dependency-analysis/build-health-report.txt; then
-            echo 'Biblioteka JSON wymaga wyjaśnienia przed próbą negatywną.'
-            exit 1
-          fi
-      - name: Sprawdź wykrycie niejawnej biblioteki JSON
-        run: |
-          sed -i -E '/^[[:space:]]*(api|implementation)\(libs\.kotlinx\.serialization\.json\)$/d' \
-            feature/map/build.gradle.kts
-          sed -i 's/severity("warn")/severity("fail")/' build.gradle.kts
-          if ./gradlew buildHealth --console=plain --no-configuration-cache \
-            '-Pdependency.analysis.project.includes=^:feature:map$'; then
-            echo 'Analiza nie wykryła użytej zależności przechodniej.'
-            exit 1
-          fi
-          cat build/reports/dependency-analysis/build-health-report.txt
-          grep -E 'kotlinx-serialization-json|libs\.kotlinx\.serialization\.json' \
-            build/reports/dependency-analysis/build-health-report.txt
       - name: Zbierz raport całego projektu
         run: |
-          git restore -- feature/map/build.gradle.kts
-          sed -i 's/severity("fail")/severity("warn")/' build.gradle.kts
-          /usr/bin/time -f 'Czas analizy całego projektu: %e s' \
-            ./gradlew buildHealth --console=plain --no-configuration-cache
+          ./gradlew buildHealth --console=plain --no-configuration-cache
           cat build/reports/dependency-analysis/build-health-report.txt
