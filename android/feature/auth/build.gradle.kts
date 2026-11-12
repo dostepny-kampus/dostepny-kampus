@@ -7,3 +7,8 @@
 plugins {
     id("dostepnykampus.android.feature")
 }
+
+dependencies {
+    api(libs.kotlinx.serialization.core)
+    implementation(libs.androidx.compose.runtime)
+}
