@@ -27,7 +27,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Bariery ze zgłoszeń przyjętych w danych mapy V1, na podróbkach źródeł (US1.3, NFR-11). */
+/** Bariery ze zgłoszeń przyjętych w danych mapy V1, na podróbkach źródeł (US1.3, NFR-10). */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapBarriersLoadTest {
     private val online = MutableStateFlow(true)
@@ -58,23 +58,25 @@ class MapBarriersLoadTest {
             assertEquals(Severity.entries.size, shownBarriers())
         }
 
-    /** Wiersz: V1 bez internetu działa bez znaków barier, a po jego powrocie je pobiera (NFR-11). */
+    /** Wiersz: brak sieci, bariery z telefonu; po powrocie sieci mapa pyta źródło ponownie (NFR-10). */
     @Test
-    fun nfr11_offline_then_online() =
+    fun nfr10_offline_then_online() =
         runTest(UnconfinedTestDispatcher()) {
             online.value = false
             answers += listOf(barrier(Severity.BLOCKING))
+            answers += Severity.entries.map(::barrier)
             val viewModel = started()
 
-            assertEquals(0, viewModel.barrierCount())
-            online.value = true
             assertEquals(1, viewModel.barrierCount())
+            online.value = true
+            assertEquals(Severity.entries.size, viewModel.barrierCount())
         }
 
     /** Wiersz: zgłoszenie, które przestało być przyjęte, znika z mapy po kolejnym pobraniu (US1.3). */
     @Test
     fun us1_3_no_longer_accepted_gone() =
         runTest(UnconfinedTestDispatcher()) {
+            answers += listOf(barrier(Severity.BLOCKING))
             answers += listOf(barrier(Severity.BLOCKING))
             answers += emptyList<AcceptedBarrier>()
             val viewModel = started()
