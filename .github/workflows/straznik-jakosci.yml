@@ -2,6 +2,8 @@ name: straznik-jakosci
 
 # Przepływ i skrypt pochodzą z gałęzi docelowej (pull_request_target), więc PR nie może ich podmienić.
 # Kod z PR nie jest uruchamiany: commity PR są tylko danymi dla `git diff`.
+# W kolejce scalania (merge_group) job tylko zalicza grupę: każdy jej PR przeszedł strażnika na PR, a bez wyniku
+# w grupie kontroli nie dałoby się ustawić jako wymaganej (#881).
 on:
   pull_request_target:
     branches:
@@ -12,12 +14,15 @@ on:
       - synchronize
       - reopened
       - edited
+  merge_group:
+    types:
+      - checks_requested
 
 permissions:
   contents: read
 
 concurrency:
-  group: straznik-jakosci-${{ github.event.pull_request.number }}
+  group: straznik-jakosci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -25,12 +30,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Sprawdzone na PR
+        if: github.event_name == 'merge_group'
+        run: echo "Strażnik jakości przeszedł na każdym PR grupy; w kolejce scalania nie jest powtarzany."
       - uses: actions/checkout@v7.0.1
+        if: github.event_name != 'merge_group'
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Pobierz commity PR jako dane
+        if: github.event_name != 'merge_group'
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -39,6 +49,7 @@ jobs:
           test "$(git rev-parse refs/remotes/pr/head)" = "$HEAD_SHA" || git fetch --no-tags origin "$HEAD_SHA"
           git cat-file -e "${HEAD_SHA}^{commit}"
       - name: Sprawdź wyciszenia analizy, pliki baseline i zmiany reguł jakości
+        if: github.event_name != 'merge_group'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
