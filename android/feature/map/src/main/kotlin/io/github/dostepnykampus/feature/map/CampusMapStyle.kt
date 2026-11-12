@@ -104,6 +104,7 @@ data class MapStyleColors(
  * i prześwituje przez niego tło lądu, więc budynki PWr i znaki są na mapie najwyraźniejsze, a zieleń, woda i ulice
  * zostają rozpoznawalne (makieta hi-fi V1, NFR-16). W motywie ciemnym jasność kafelków jest odwrócona.
  * Obszar poza terenem [MapSelection.bounds] jest przyciemniony, a granicę terenu pokazuje linia (US1.7, BR-G5).
+ * Bariery z [CampusMapData.barriers] mają znak uciążliwości i od powiększenia 17 słowo obok niego (US1.3).
  */
 fun campusMapStyle(data: CampusMapData, selection: MapSelection, colors: MapStyleColors): String {
     val style =
@@ -130,6 +131,7 @@ private fun sources(data: CampusMapData, selection: MapSelection): JsonObject =
         put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
         put(key = LABELS, element = geoJsonSource(data.labelPoints))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
+        put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
         selection.bounds?.let {
             put(key = AREA_SOURCE, element = geoJsonSource(featureCollection(areaFeatures(it))))
         }
@@ -160,6 +162,7 @@ private fun layers(chosen: List<String>?, selection: MapSelection, colors: MapSt
         )
         chosen?.let { add(selectedLayer(it, colors)) }
         add(marksLayer(filter = alone?.let(::ofBuildings)))
+        barrierLayers().forEach { add(it) }
         add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
         if (selection.bounds != null) areaLayers(colors).forEach { add(it) }
         if (selection.entrance != null) chosenLayers().forEach { add(it) }
