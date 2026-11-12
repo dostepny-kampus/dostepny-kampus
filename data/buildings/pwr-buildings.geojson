@@ -12,6 +12,7 @@
           "A-1"
         ],
         "name": "A-1 / Budynek główny",
+        "display_name": "Budynek główny",
         "osm_id": "relation/1442262"
       },
       "geometry": {
@@ -2688,6 +2689,7 @@
           "T-16"
         ],
         "name": "T-16 \"Tower\"",
+        "display_name": "\"Tower\"",
         "osm_id": "way/101130491"
       },
       "geometry": {
@@ -3070,6 +3072,7 @@
           "T-7"
         ],
         "name": "T-7 Dom doktoranta",
+        "display_name": "Dom doktoranta",
         "osm_id": "way/101133223"
       },
       "geometry": {
@@ -4526,6 +4529,7 @@
           "T-19"
         ],
         "name": "T-19 \"Piast\"",
+        "display_name": "\"Piast\"",
         "osm_id": "way/101139941"
       },
       "geometry": {
@@ -5230,6 +5234,7 @@
           "T-15"
         ],
         "name": "T-15 \"Hades\"",
+        "display_name": "\"Hades\"",
         "osm_id": "way/101141734"
       },
       "geometry": {
@@ -5378,6 +5383,7 @@
           "T-17"
         ],
         "name": "T-17 \"Ikar\"",
+        "display_name": "\"Ikar\"",
         "osm_id": "way/101144158"
       },
       "geometry": {
@@ -6098,6 +6104,7 @@
           "G-10"
         ],
         "name": "Akademicki Inkubator Przedsiębiorczości",
+        "display_name": "Akademicki Inkubator Przedsiębiorczości",
         "osm_id": "way/101201575"
       },
       "geometry": {
@@ -6184,6 +6191,7 @@
           "T-6"
         ],
         "name": "Dom Studencki T-6 \"Alcatraz\"",
+        "display_name": "Dom Studencki \"Alcatraz\"",
         "osm_id": "way/101202674"
       },
       "geometry": {
@@ -6740,6 +6748,7 @@
           "T-4"
         ],
         "name": "Dom Studencki T-4 \"Czworak\"",
+        "display_name": "Dom Studencki \"Czworak\"",
         "osm_id": "way/101203158"
       },
       "geometry": {
@@ -6896,6 +6905,7 @@
           "T-2"
         ],
         "name": "T-2 \"Telemik\"",
+        "display_name": "\"Telemik\"",
         "osm_id": "way/101206671"
       },
       "geometry": {
@@ -7076,6 +7086,7 @@
           "T-3"
         ],
         "name": "T-3 \"Straszny Dwór\"",
+        "display_name": "\"Straszny Dwór\"",
         "osm_id": "way/101213887"
       },
       "geometry": {
@@ -7488,6 +7499,7 @@
           "M-6"
         ],
         "name": "M-6 bis",
+        "display_name": "M-6 bis",
         "osm_id": "way/101432214"
       },
       "geometry": {
@@ -7984,6 +7996,7 @@
           "C-18"
         ],
         "name": "Strefa Kultury Studenckiej",
+        "display_name": "Strefa Kultury Studenckiej",
         "osm_id": "way/292599429"
       },
       "geometry": {
@@ -8497,6 +8510,7 @@
           "T-9"
         ],
         "name": "Dom Studencki T-9 \"Atol\"",
+        "display_name": "Dom Studencki \"Atol\"",
         "osm_id": "way/369098934"
       },
       "geometry": {
@@ -8709,6 +8723,7 @@
           "P-22"
         ],
         "name": "P-22 - Hala Widowiskowo-Sportowa",
+        "display_name": "Hala Widowiskowo-Sportowa",
         "osm_id": "way/435866011"
       },
       "geometry": {
