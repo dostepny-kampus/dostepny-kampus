@@ -72,7 +72,7 @@ final class SubmissionPointHttpTest {
     void usEightRejectsInvalidPointOnEdit(final WebApplicationContext context)
         throws Exception {
         final UUID id = UUID.randomUUID();
-        SubmissionPointHttpTest.post(context, id, SubmissionPointHttpTest.point("[17.0,51.0]"));
+        SubmissionPointHttpTest.post(context, id, SubmissionPointHttpTest.point("[17.05,51.108]"));
         Assertions.assertAll(
             () -> Assertions.assertEquals(
                 400, SubmissionPointHttpTest.put(context, id, "[181,0]"), "PUT [181,0] bez 400"

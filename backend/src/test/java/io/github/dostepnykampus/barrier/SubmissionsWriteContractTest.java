@@ -149,7 +149,7 @@ final class SubmissionsWriteContractTest {
         return String.format(
             """
             {"id":"%s","kind":"QUICK","barrierGroup":"OTHER","description":"%s",
-            "location":{"type":"Point","coordinates":[17.0,51.0]},"photoIds":["%s"]%s}
+            "location":{"type":"Point","coordinates":[17.05,51.108]},"photoIds":["%s"]%s}
             """, id, description, UUID.randomUUID(), version
         );
     }
