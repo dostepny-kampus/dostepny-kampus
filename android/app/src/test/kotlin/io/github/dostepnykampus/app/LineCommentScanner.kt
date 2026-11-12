@@ -8,7 +8,8 @@ package io.github.dostepnykampus.app
 /**
  * Skaner źródła Kotlina, który zwraca numery wierszy komentarzy liniowych `//`. Rozpoznaje składnię: napisy zwykłe
  * i surowe razem z szablonami `${...}` (także z cudzysłowami w środku), znaki oraz komentarze blokowe, w tym
- * zagnieżdżone, są pomijane w całości.
+ * zagnieżdżone, są pomijane w całości. Znacznik pracy odłożonej z numerem issue i opisem, `TODO(#12): opis`, nie
+ * jest zgłaszany: stoi przy wierszu, którego dotyczy.
  */
 internal class LineCommentScanner(private val text: String) {
     private var pos = 0
@@ -56,8 +57,9 @@ internal class LineCommentScanner(private val text: String) {
     }
 
     private fun lineComment() {
-        comments += line
+        val start = pos
         while (pos < text.length && text[pos] != '\n') pos++
+        if (!ISSUE_MARKER.matches(text.substring(startIndex = start, endIndex = pos).trimEnd())) comments += line
     }
 
     private fun blockComment() {
@@ -142,5 +144,6 @@ internal class LineCommentScanner(private val text: String) {
     private companion object {
         const val RAW = "\"\"\""
         const val TEMPLATE = "\${"
+        val ISSUE_MARKER = Regex("""// TODO\(#\d+\): \S.*""")
     }
 }

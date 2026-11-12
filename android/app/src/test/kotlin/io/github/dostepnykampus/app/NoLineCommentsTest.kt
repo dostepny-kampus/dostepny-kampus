@@ -13,6 +13,7 @@ import java.io.File
 /**
  * Strażnik komentarzy: w kodzie i skryptach Kotlina (`*.kt` i `*.kts` w `android/`) nie ma komentarzy liniowych
  * `//`, ani na początku linii, ani na końcu linii z kodem; opis idzie do KDoc deklaracji, której dotyczy.
+ * Wyjątkiem jest znacznik pracy odłożonej z numerem issue i opisem, `TODO(#12): opis`.
  *
  * Komentarz rozpoznaje po składni, nie po tekście linii (`LineCommentScanner`): napisy zwykłe i surowe z szablonami
  * `${...}`, znaki oraz komentarze blokowe, także zagnieżdżone, są pomijane w całości, więc `//` w adresie albo
@@ -46,6 +47,25 @@ class NoLineCommentsTest {
         val source = lines("package a", "", "val x = 1 // opis")
         fixtures.fixture(name = "Tail.kt", source = source)
         assertEquals(listOf("android/Tail.kt:3"), offenders(File(fixtures, "android")))
+    }
+
+    @Test
+    fun `znacznik z numerem przechodzi`(
+        @TempDir fixtures: File,
+    ) {
+        val source = lines("class Later {", "    $MARKER", "    val x = 1 $MARKER", "}")
+        fixtures.fixture(name = "Later.kt", source = source)
+        assertEquals(emptyList<String>(), offenders(File(fixtures, "android")))
+    }
+
+    @Test
+    fun `znacznik niepełny to błąd`(
+        @TempDir fixtures: File,
+    ) {
+        val source = lines("// TODO: opis", "// TODO(#12)", "// TODO(12): opis", "// TODO(#12):")
+        fixtures.fixture(name = "Loose.kt", source = source)
+        val expected = (1..source.lines().size).map { "android/Loose.kt:$it" }
+        assertEquals(expected, offenders(File(fixtures, "android")))
     }
 
     @Test
@@ -137,6 +157,7 @@ class NoLineCommentsTest {
         const val QUOTES = "$QUOTE$QUOTE$QUOTE"
         const val DOLLAR = '$'
         const val TEMPLATE = "$QUOTE$DOLLAR{${QUOTE}a$QUOTE + $QUOTE//$QUOTE}$QUOTE"
+        const val MARKER = "// TODO(#12): opis"
         const val URL = "${QUOTE}https://example.org$QUOTE"
     }
 }
