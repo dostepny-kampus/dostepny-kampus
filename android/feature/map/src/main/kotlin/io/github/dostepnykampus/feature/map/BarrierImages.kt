@@ -9,6 +9,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.createBitmap
 import io.github.dostepnykampus.core.designsystem.severityImage
 import io.github.dostepnykampus.core.model.Severity
 import kotlin.math.ceil
@@ -54,7 +55,7 @@ private fun chosenSign(severity: Severity, images: MapImages): Bitmap {
             shapeColor = images.colors.tusz,
             markColor = images.colors.papier,
         )
-    val image = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val image = createBitmap(size, size)
     val canvas = Canvas(image)
     val center = size / 2f
     val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = images.colors.papier.toArgb() }
