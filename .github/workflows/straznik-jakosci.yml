@@ -90,6 +90,7 @@ jobs:
           PR_BODY: ${{ github.event.pull_request.body }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           PR_APPROVED_BY: ${{ steps.zatwierdzenie.outputs.login }}
+          RULES_OWNER: vlladevk
         run: |
           if [[ $BASE_REF == main && $HEAD_REF =~ ^sprint/[0-9]+$ && $HEAD_REPO == "$GITHUB_REPOSITORY" ]]; then
             echo "Scalenie sprintu do main: każda zmiana przeszła strażnika w PR do gałęzi sprintu."
