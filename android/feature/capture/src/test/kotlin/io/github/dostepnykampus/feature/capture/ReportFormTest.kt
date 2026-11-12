@@ -96,9 +96,12 @@ class ReportFormTest {
         assertEquals(SubmissionFloor(number = -1, isMezzanine = true), check.content.floor)
     }
 
-    /** Scenariusz: budynki-bez-szczegolow.feature: Zgłoszenie w budynku po nieudanym imporcie planów */
+    /**
+     * Budynek bez planów pięter przyjmuje zgłoszenie z piętrem wpisanym liczbą (BR-G3).
+     * Scenariusz: budynki-bez-szczegolow.feature: Zgłoszenie w budynku po nieudanym imporcie planów
+     */
     @Test
-    fun `budynek bez planów z piętrem liczbą`() {
+    fun `budynek bez planów, piętro 3`() {
         val form =
             complete().copy(
                 place = A1.copy(buildingSymbol = "B-1"),
