@@ -1,0 +1,10 @@
+{
+  "name": "dostepny-kampus-api",
+  "version": "0.1.0",
+  "private": true,
+  "author": "Vladyslav Yevkov",
+  "description": "Redocly do sprawdzania kontraktu OpenAPI w CI",
+  "devDependencies": {
+    "@redocly/cli": "2.71.2"
+  }
+}

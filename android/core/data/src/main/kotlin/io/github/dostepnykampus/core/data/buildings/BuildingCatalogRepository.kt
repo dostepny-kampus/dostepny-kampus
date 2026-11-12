@@ -1,16 +1,13 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.buildings
 
 import android.content.res.AssetManager
-import io.github.dostepnykampus.core.database.BUILDING_CACHE_SINGLE_ROW
 import io.github.dostepnykampus.core.database.BuildingCacheDao
-import io.github.dostepnykampus.core.database.BuildingCacheEntity
 import io.github.dostepnykampus.core.geo.parseBuildingCatalog
-import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingList
@@ -21,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
@@ -59,9 +57,9 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
  * blokujący, więc anulowanie działa dopiero po nim. Gdy anulowany zostanie ten, kto prowadził wspólne pobranie,
  * pozostali czekający pytają serwer od nowa.
  *
- * Pobranie listy z serwera zapisuje jej kopię w bazie [buildingCache] z chwilą pobrania; bez odpowiedzi serwera
- * i bez katalogu pobranego w tym procesie katalog może wrócić z tej kopii (NFR-10). [syncedAt] podaje moment
- * ostatniego pobrania z serwera, które widzi katalog.
+ * Pobranie listy z serwera zapisuje jej kopię w bazie [buildingCache] z chwilą pobrania ([BuildingListCopy]); bez
+ * odpowiedzi serwera i bez katalogu pobranego w tym procesie katalog może wrócić z tej kopii (NFR-10). [syncedAt]
+ * podaje moment ostatniego pobrania z serwera, które widzi katalog: katalog i chwila zmieniają się razem.
  *
  * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
  * @param listBuildings lista z serwera; `null` zostawia katalog wyłącznie z pliku
@@ -78,13 +76,12 @@ class BuildingCatalogRepository(
 ) {
     private val lock = Any()
     private var inflight: CompletableDeferred<BuildingCatalog>? = null
-    private val downloaded = MutableStateFlow<BuildingCatalog?>(null)
+    private val downloaded = MutableStateFlow<Downloaded?>(null)
+    private val copy = buildingCache?.let { dao -> BuildingListCopy(dao, ioContext) }
 
     @Volatile private var cached: BuildingCatalog? = null
 
     @Volatile private var bundled: BuildingCatalog? = null
-
-    @Volatile private var syncedAtMillis: Long? = null
 
     /**
      * Zwraca katalog budynków; gdy trwa pobranie z serwera, czeka na jego wynik.
@@ -103,10 +100,10 @@ class BuildingCatalogRepository(
      */
     fun catalogUpdates(): Flow<BuildingCatalog> =
         channelFlow {
-            val first = downloaded.value ?: readBundled(isFresh = false)
+            val first = downloaded.value?.catalog ?: readBundled(isFresh = false)
             send(first)
             launch { fetched(isFresh = false) }
-            send(downloaded.filterNotNull().first { server -> server !== first })
+            send(downloaded.filterNotNull().map { server -> server.catalog }.first { server -> server !== first })
         }
 
     /**
@@ -122,7 +119,7 @@ class BuildingCatalogRepository(
      * Chwila ostatniego, udanego pobrania listy budynków z serwera, które widzi katalog; `null`, gdy katalog
      * jest z pliku (NFR-10).
      */
-    fun syncedAt(): Instant? = syncedAtMillis?.let(Instant::ofEpochMilli)
+    fun syncedAt(): Instant? = downloaded.value?.run { Instant.ofEpochMilli(syncedAtMillis) }
 
     private suspend fun fetched(isFresh: Boolean): BuildingCatalog {
         val ready = if (isFresh) null else cached
@@ -147,22 +144,14 @@ class BuildingCatalogRepository(
             val file = readBundled(isFresh)
             val server = nonEmptyServerList()
             if (server != null) {
-                downloaded.value = fromServer(file, server)
-                val savedAtMillis = nowMillis()
-                syncedAtMillis = savedAtMillis
-                withContext(ioContext) {
-                    buildingCache?.save(
-                        BuildingCacheEntity(
-                            id = BUILDING_CACHE_SINGLE_ROW,
-                            listJson = server.toCacheJson(),
-                            syncedAt = savedAtMillis,
-                        ),
-                    )
-                }
+                val synced = SyncedBuildingList(list = server, syncedAtMillis = nowMillis())
+                downloaded.value = Downloaded(file.withServerList(server), synced.syncedAtMillis)
+                copy?.save(synced)
             } else if (downloaded.value == null) {
-                downloaded.value = cachedCatalog(file)
+                val restored = copy?.restore()
+                downloaded.value = restored?.let { Downloaded(file.withServerList(it.list), it.syncedAtMillis) }
             }
-            val result = downloaded.value ?: file
+            val result = downloaded.value?.catalog ?: file
             cached = result
             mine.complete(result)
             return result
@@ -176,29 +165,13 @@ class BuildingCatalogRepository(
         (if (isFresh) null else bundled)
             ?: withContext(ioContext) { parseBuildingCatalog(readGeoJson()).forVisitors() }.also { bundled = it }
 
-    private suspend fun cachedCatalog(file: BuildingCatalog): BuildingCatalog? {
-        val document = buildingCache?.let { cache -> withContext(ioContext) { cache.get() } }
-        val restored = document?.run { listJson.toCachedBuildingList() }
-        if (document == null || restored == null) return null
-        syncedAtMillis = document.syncedAt
-        return fromServer(file, restored)
-    }
-
-    private fun fromServer(bundled: BuildingCatalog, server: BuildingList): BuildingCatalog {
-        val symbols = server.buildings.map { item -> item.building.symbol }.toSet()
-        val outlines =
-            bundled.copy(
-                buildings = server.buildings.map { item -> item.building },
-                entrances = bundled.entrances.filter { entrance -> entrance.buildingSymbol in symbols },
-                attribution = server.source,
-            )
-        return outlines.forVisitors()
-    }
-
     private suspend fun nonEmptyServerList(): BuildingList? {
         val result = listBuildings?.invoke()
         return if (result is ApiResult.Success && result.value.buildings.isNotEmpty()) result.value else null
     }
+
+    /** Katalog z serwera (albo z jego kopii w bazie) razem z chwilą pobrania listy: jedna wartość stanu. */
+    private data class Downloaded(val catalog: BuildingCatalog, val syncedAtMillis: Long)
 }
 
 /** [BuildingCatalogRepository] na pliku [BUILDINGS_ASSET]; [listBuildings] to lista z serwera, a bez niej sam plik. */
@@ -213,20 +186,4 @@ internal fun assetRepository(
         listBuildings = listBuildings,
         readGeoJson = { assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() } },
         buildingCache = buildingCache,
-    )
-
-private val NOT_FOR_VISITORS = setOf("emergency", "exit", "garage")
-
-private val NATURAL_ORDER =
-    compareBy<Building>(
-        { it.symbol.substringBefore('-') },
-        { it.symbol.filter(Char::isDigit).toIntOrNull() },
-        { it.symbol },
-    )
-
-/** Katalog dla odwiedzających: budynki w kolejności naturalnej, wejścia bez rodzajów z [NOT_FOR_VISITORS]. */
-internal fun BuildingCatalog.forVisitors(): BuildingCatalog =
-    copy(
-        buildings = buildings.sortedWith(NATURAL_ORDER),
-        entrances = entrances.filterNot { it.type in NOT_FOR_VISITORS },
     )

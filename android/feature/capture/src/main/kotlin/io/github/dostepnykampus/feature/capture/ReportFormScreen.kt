@@ -5,25 +5,17 @@
  */
 package io.github.dostepnykampus.feature.capture
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 
 /**
  * C2 Opisz barierę (US7) z miejscem z [route]. „Wstecz” w nagłówku i wstecz telefonu bez zmian wychodzą od razu,
  * ze zmianami pytają „Wyjść bez zapisu?” (US7.4). „Zmień miejsce” wraca do C1 bez pytania, a wpisane pola
  * czekają na nowe miejsce.
- * Każdy etap formularza jest obsługiwany raz, więc wyjście i zapis zdejmują ekran z historii tylko raz.
  *
  * @param route miejsce z pomiaru C1
  * @param onLeave wyjście bez zapisu
@@ -44,32 +36,8 @@ fun ReportFormScreen(
     photoTranscoder: PhotoTranscoder = hiltViewModel(),
 ) {
     SideEffect { viewModel.open(ReportForm(place = route.place()), draft) }
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val leave by rememberUpdatedState(onLeave)
-    val save by rememberUpdatedState(onSave)
-    LaunchedEffect(viewModel) {
-        viewModel.uiState
-            .map { it?.stage }
-            .distinctUntilChanged()
-            .collect { stage ->
-                if (stage == ReportStage.LEFT || stage == ReportStage.PLACE_CHANGED) leave()
-                if (stage == ReportStage.SAVED) save()
-            }
-    }
-    BackHandler(onBack = viewModel::back)
     val camera =
         rememberPhotoCamera(onPhoto = { viewModel.edit(ReportEdit.Photo(it)) }, transcoder = photoTranscoder)
-    state?.let { current ->
-        val actions =
-            ReportActions(
-                onEdit = viewModel::edit,
-                onChangePlace = viewModel::changePlace,
-                camera = camera,
-                onSave = viewModel::save,
-                onBack = viewModel::back,
-                onConfirmExit = viewModel::confirmExit,
-                onStay = viewModel::stay,
-            )
-        ReportContent(state = current, actions = actions, modifier = modifier)
-    }
+    val exits = ReportEditExits(onLeave = onLeave, onSave = onSave, onChangePlace = onLeave)
+    ReportFormHost(controls = viewModel.controls(), camera = camera, exits = exits, modifier = modifier)
 }

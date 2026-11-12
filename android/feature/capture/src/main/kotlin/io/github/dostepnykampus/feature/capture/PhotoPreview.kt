@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.feature.capture
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -62,17 +61,5 @@ internal fun PhotoPreviews(photos: PhotoPaths, decodeContext: CoroutineContext =
  *
  * @return obraz albo `null`, gdy pliku nie da się odczytać
  */
-internal fun decodePreview(path: String): ImageBitmap? {
-    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    BitmapFactory.decodeFile(path, bounds)
-    val longerSide = maxOf(a = bounds.outWidth, b = bounds.outHeight)
-    val options = BitmapFactory.Options().apply { inSampleSize = sampleSize(longerSide) }
-    return BitmapFactory.decodeFile(path, options)?.asImageBitmap()
-}
-
-/** Największa potęga dwójki, po której dłuższy bok ma co najmniej [PREVIEW_PIXELS]. */
-internal fun sampleSize(longerSide: Int): Int {
-    var sample = 1
-    while (longerSide / (sample * 2) >= PREVIEW_PIXELS) sample *= 2
-    return sample
-}
+internal fun decodePreview(path: String): ImageBitmap? =
+    decodeSampled(path = path, limit = PREVIEW_PIXELS)?.asImageBitmap()

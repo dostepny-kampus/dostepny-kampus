@@ -6,6 +6,7 @@ $ekran_poczatek()
 $naglowek_startowy("Mapa kampusu")
 $pole_tekstowe("Wpisz symbol budynku, np. C-13")
 $przelacznik("Mapa", "Lista budynków", 2)
+$sekcja("Kampus główny · 78")
 $ramka()
 <b>Budynek A-1</b>
 <i>[nazwa budynku z danych]</i>
@@ -17,8 +18,9 @@ $ramka()
 <i>[nazwa budynku z danych]</i>
 $tekst("[bariery z danych: typ, uciążliwość]", "i")
 }
+$sekcja("Wittigowo · 9")
 $ramka()
-<b>Budynek <i>[symbol]</i></b>
+<b>Budynek T-15</b>
 <i>[nazwa budynku z danych]</i>
 $tekst("[bariery z danych: typ, uciążliwość]", "i")
 }

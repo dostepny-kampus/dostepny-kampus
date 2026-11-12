@@ -67,7 +67,7 @@ class DebugSignInTest {
         assertTrue(form.contains("username=zbierajacy.test"))
         assertTrue(form.contains("client_id=dostepny-kampus-android"))
         assertEquals(token, tokens.token)
-        assertEquals(Account.SignedIn(setOf(StaffRole.VERIFIER)), roles.account)
+        assertEquals(Account.SignedIn(setOf(StaffRole.VERIFIER)), roles.account.value)
     }
 
     /** „Gość” usuwa token i wylogowuje. */
@@ -77,7 +77,7 @@ class DebugSignInTest {
         runBlocking { signIn.choose(DebugRole.VISITOR) }
         assertTrue(runBlocking { signIn.choose(DebugRole.GUEST) })
         assertNull(tokens.token)
-        assertEquals(Account.Guest, roles.account)
+        assertEquals(Account.Guest, roles.account.value)
     }
 
     /** Błąd serwera tokenów nie zmienia roli ani tokenu. */
@@ -89,7 +89,7 @@ class DebugSignInTest {
         server.enqueue(MockResponse().setResponseCode(UNAUTHORIZED).setBody("""{"error":"invalid_grant"}"""))
         assertFalse(runBlocking { signIn.choose(DebugRole.VERIFIER) })
         assertEquals(before, tokens.token)
-        assertEquals(Account.SignedIn(), roles.account)
+        assertEquals(Account.SignedIn(), roles.account.value)
     }
 
     /** Po błędzie logowania przełącznik pokazuje komunikat. */

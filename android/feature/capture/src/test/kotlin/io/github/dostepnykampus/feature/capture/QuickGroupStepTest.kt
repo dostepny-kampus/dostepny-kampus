@@ -6,12 +6,25 @@
 package io.github.dostepnykampus.feature.capture
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierGroup
+import io.github.dostepnykampus.core.model.Floor
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -41,14 +54,75 @@ class QuickGroupStepTest {
     /** Wiersz: V4 krok 2, pytanie o piętro → „Nie wiem” zostawia piętro puste, US4.5. */
     @Test
     fun us4_5_floor_or_unknown() {
-        val floors = mutableListOf<Int?>()
-        compose.setContent {
-            DostepnyKampusTheme { QuickFloorQuestion(group = BarrierGroup.TOILETS, onFloor = { floors.add(it) }) }
-        }
+        val answers = mutableListOf<QuickFloor>()
+        show(floors = emptyList(), answers = answers)
         compose.onNodeWithText("Na którym piętrze?").assertIsDisplayed()
         compose.onNodeWithText("Nie wiem").performClick()
         compose.onNodeWithText("Parter").performClick()
         compose.onNodeWithText("2").performClick()
-        assertEquals(listOf(null, 0, 2), floors)
+        assertEquals(listOf(QuickFloor(), QuickFloor(number = 0), QuickFloor(number = 2)), answers)
+    }
+
+    /** Wiersz: V4 krok 2 w budynku podstawowym, piętra pod parterem i wyższe niż 4, US4.5. */
+    @Test
+    fun us4_5_basic_range() {
+        show(floors = emptyList(), answers = mutableListOf())
+        listOf("-1", "Parter", "5", "10").forEach { compose.onNodeWithText(it).assertExists() }
+        compose.onNodeWithText("-2").assertDoesNotExist()
+        compose.onNodeWithText("11").assertDoesNotExist()
+    }
+
+    /** Wiersz: V4 krok 2 w budynku szczegółowym, etykiety pięter z danych PWr od najniższego, US4.5. */
+    @Test
+    fun us4_5_detailed_labels() {
+        val answers = mutableListOf<QuickFloor>()
+        val basement = Floor(id = "A-1/p-1", label = "Piwnica", order = -1)
+        show(floors = listOf(basement, Floor(id = "A-1/p0", label = "Parter", order = 0)), answers = answers)
+        compose.onNodeWithText("Nie wiem").assertIsDisplayed()
+        compose.onNodeWithText("2").assertDoesNotExist()
+        compose.onNodeWithText("Piwnica").performClick()
+        assertEquals(listOf(QuickFloor(floor = basement)), answers)
+    }
+
+    /** Wiersz: V4 krok 2 to wspólny wybór piętra: grupa jednej opcji, a każda opcja jest przyciskiem radiowym. */
+    @Test
+    fun us4_5_shared_picker() {
+        show(floors = emptyList(), answers = mutableListOf())
+        val radios = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
+        compose.onAllNodes(radios).assertCountEquals(BASIC_FLOOR_COUNT + 1)
+        compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.SelectableGroup)).assertExists()
+    }
+
+    /** Wiersz: V4 krok 2 przy czcionce 200%: każde piętro ma cel co najmniej 48 dp i pełny napis, NFR-17, NFR-20. */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp", fontScale = 2f)
+    fun nfr20_floor_targets() {
+        show(floors = emptyList(), answers = mutableListOf())
+        listOf("Nie wiem", "-1", "Parter", "10").forEach { label ->
+            compose
+                .onNodeWithText(label)
+                .performScrollTo()
+                .assertHeightIsAtLeast(48.dp)
+                .assertIsDisplayed()
+            compose.onNodeWithText(label).assertTextEquals(label)
+        }
+    }
+
+    private fun show(floors: List<Floor>, answers: MutableList<QuickFloor>) {
+        compose.setContent {
+            DostepnyKampusTheme {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    QuickFloorQuestion(
+                        group = BarrierGroup.TOILETS,
+                        floors = QuickFloors(floors),
+                        onFloor = { answers.add(it) },
+                    )
+                }
+            }
+        }
+    }
+
+    private companion object {
+        const val BASIC_FLOOR_COUNT = 12
     }
 }

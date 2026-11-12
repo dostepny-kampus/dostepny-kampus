@@ -31,6 +31,9 @@ import io.github.dostepnykampus.app.navigation.mySubmissions
 import io.github.dostepnykampus.app.navigation.openReportForm
 import io.github.dostepnykampus.app.navigation.reportSaved
 import io.github.dostepnykampus.core.designsystem.BackHeader
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
+import io.github.dostepnykampus.core.model.hasStaffRole
+import io.github.dostepnykampus.core.model.isSignedIn
 import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
 import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.MeasureScreen
@@ -55,8 +58,6 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlin.math.roundToInt
 import io.github.dostepnykampus.feature.capture.R as CaptureR
-
-private const val LARGE_FONT_SCALE = 1.5f
 
 /** Szerokość okna w dp, od której pasek nawigacji stoi z boku, a V2 otwiera się od razu na pełnym ekranie. */
 internal const val WIDE_WINDOW_DP = 600
@@ -193,11 +194,12 @@ private fun AppNavigator.QuickReport(route: ReportRoute) {
 @Composable
 @NonRestartableComposable
 private fun AppNavigator.Account(route: NavKey) {
-    val isWork = hasWork && route == AccountRoute
+    val current by account.collectAsStateWithLifecycle()
+    val isWork = current.hasStaffRole && route == AccountRoute
     val title = stringResource(if (isWork) R.string.nav_konto_i_praca else R.string.nav_konto)
     when {
         route is SignInRoute -> {
-            val isNowSignedIn = isSignedIn
+            val isNowSignedIn = current.isSignedIn
             SideEffect { if (isNowSignedIn) signedIn() }
             Stub(title, stringResource(R.string.nie_teraz) to { backToMap() })
         }

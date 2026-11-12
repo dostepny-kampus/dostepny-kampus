@@ -182,6 +182,7 @@ paths:
       description: >-
         Bez tokenu i dla Odwiedzającego tylko zgłoszenia przyjęte do mapy i karty budynku (US1.3, US2.2, BR-6).
         Zbierający z `mine=true` dostaje własne zgłoszenia w każdym statusie, odrzucone z powodem odrzucenia (US8.1).
+        Zgłoszenie z nieczytelną zapisaną treścią jest pomijane na liście.
       tags: [barrier]
       security: [{}, {keycloak: []}]
       parameters:
@@ -211,6 +212,8 @@ paths:
         Ponowne wysłanie tego samego `id` zwraca zapisane zgłoszenie i nie tworzy drugiego (BR-9).
         Do kolejki weryfikacji zgłoszenie trafia, gdy serwer ma wszystkie zdjęcia z `photoIds` (BR-7, BR-8, US8.2).
         Walidacja według BR-7, BR-8, BR-14, BR-19 i BR-24.
+        Miejsce dalej niż 500 m od konturu każdego budynku PWr (odległość na ziemi, liczy baza) daje 400 z `type`
+        równym `urn:dostepny-kampus:poza-terenem-pwr`; aplikacja pokazuje wtedy stan „Poza terenem PWr” (BR-G5, US4.9).
       tags: [barrier]
       security: [{keycloak: []}]
       requestBody:
@@ -380,7 +383,8 @@ paths:
       description: >-
         Zgłoszenia wysłane, w weryfikacji i przyjęte w promieniu 10 m od sprawdzanego, z każdego piętra, z odległością
         (US10.1, BR-13). System sam niczego nie odrzuca ani nie łączy.
-      tags: [review]
+        Zgłoszenie z nieczytelną zapisaną treścią jest pomijane na liście.
+      tags: [barrier]
       security: [{keycloak: [VERIFIER]}]
       parameters:
         - $ref: '#/components/parameters/SubmissionId'
@@ -703,7 +707,7 @@ components:
       description: Budynki z atrybucją źródła konturów.
       required: [source, buildings]
       properties:
-        source: {type: string, description: "Atrybucja konturów budynków: „© OpenStreetMap contributors”."}
+        source: {type: string, description: "Atrybucja konturów budynków: wszystkie źródła z listy bez powtórzeń, alfabetycznie, rozdzielone „; ”, np. „© OpenStreetMap contributors”. Pusta lista ma pustą atrybucję."}
         buildings:
           type: array
           description: Budynki.

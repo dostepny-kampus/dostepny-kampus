@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map
@@ -25,7 +25,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.concurrent.atomic.AtomicInteger
@@ -117,7 +116,7 @@ class BuildingCardTest {
     fun us3_answer_when_none() {
         val stairs = orderedEntrances(listOf(entrance(id = "schody", marking = EntranceMarking.INACCESSIBLE)))
         assertEquals(VisitAnswer.NoAccessible, visitAnswer(stairs))
-        assertNotEquals(VisitAnswer.NoAccessible, visitAnswer(emptyList()))
+        assertEquals(VisitAnswer.NoData, visitAnswer(emptyList()))
     }
 
     /** US3.1, US17.1: istniejący budynek bez wejść odwiedzających ma osobną odpowiedź o braku danych. */
@@ -137,9 +136,7 @@ class BuildingCardTest {
             )
         val card = buildingCard(catalog, "A-1") as BuildingCardUiState.Ready
         assertEquals(emptyList<OrderedEntrance>(), card.entrances)
-        val answer = visitAnswer(card.entrances)
-        assertNotEquals(VisitAnswer.NoAccessible, answer)
-        assertNotEquals(VisitAnswer.Unknown(missing = 0, total = 0), answer)
+        assertEquals(VisitAnswer.NoData, visitAnswer(card.entrances))
     }
 
     @Test

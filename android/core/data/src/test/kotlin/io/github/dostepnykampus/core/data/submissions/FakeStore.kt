@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
@@ -22,7 +22,29 @@ internal class FakeStore : PendingSubmissionDao {
     val createResults = ArrayDeque<ApiResult<Submission>>()
     val photoResults = ArrayDeque<ApiResult<Unit>>()
 
+    /** Historia cofana razem z kolejką w [together], jak w jednej transakcji Room (#859). */
+    var history: FakeHistory? = null
+
     override fun observe(): Flow<List<PendingSubmissionWithPhotos>> = flow { emit(all()) }
+
+    /** Jak `@Transaction` w Room: błąd w środku przywraca kolejkę i [history] sprzed transakcji. */
+    override suspend fun together(writes: suspend () -> Unit) {
+        val before = rows.toList()
+        val ownRows = history?.rows
+        val ownBefore = ownRows?.toMap().orEmpty()
+        var isDone = false
+        try {
+            writes()
+            isDone = true
+        } finally {
+            if (!isDone) {
+                rows.clear()
+                rows.addAll(before)
+                ownRows?.clear()
+                ownRows?.putAll(ownBefore)
+            }
+        }
+    }
 
     override suspend fun all(): List<PendingSubmissionWithPhotos> =
         rows
@@ -58,15 +80,22 @@ internal class FakeStore : PendingSubmissionDao {
         rows.removeAll { it.submission.id == id }
     }
 
+    /** Jak `@Upsert` w Room: istniejący wiersz zmienia się w miejscu, a jego zdjęcia zostają. */
     override suspend fun upsertSubmission(submission: PendingSubmissionEntity) {
+        val photos = rows.find { it.submission.id == submission.id }?.photos.orEmpty()
         rows.removeAll { it.submission.id == submission.id }
-        rows.add(PendingSubmissionWithPhotos(submission, emptyList()))
+        rows.add(PendingSubmissionWithPhotos(submission, photos))
     }
 
     override suspend fun upsertPhotos(photos: List<PendingPhotoEntity>) {
         rows.replaceAll { item ->
             if (item.submission.id != photos.first().submissionId) item else item.copy(photos = item.photos + photos)
         }
+    }
+
+    override suspend fun photoPaths(submissionId: String): List<String> {
+        val row = rows.find { it.submission.id == submissionId } ?: return emptyList()
+        return row.photos.map { it.path }
     }
 
     override suspend fun deletePhotos(submissionId: String) {

@@ -1,12 +1,14 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.OpenApiContract;
+import io.github.dostepnykampus.barrier.domain.SubmissionFloor;
+import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
+import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +16,13 @@ import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.JsonNode;
@@ -84,6 +89,36 @@ final class SubmissionsReadHttpTest {
                 )
             ),
             Matchers.equalTo(List.of(accepted.expected(context)))
+        );
+    }
+
+    @Test
+    @ExtendWith(OutputCaptureExtension.class)
+    void listsReadableSubmissionsAndLogsCorruptRow(
+        final WebApplicationContext context, final CapturedOutput output
+    ) throws Exception {
+        final Row valid = SubmissionsReadHttpTest.add(
+            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        );
+        final Row corrupt = SubmissionsReadHttpTest.add(
+            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        );
+        context.getBean(JdbcClient.class).sql(
+            "UPDATE submissions SET content = content || '{\"photoIds\": \"zepsute\"}' WHERE id = :id"
+        ).param("id", corrupt.id()).update();
+        final MockHttpServletResponse response = SubmissionsReadHttpTest.get(
+            context, "/submissions?buildingSymbol=A-1"
+        );
+        MatcherAssert.assertThat(
+            "Lista zgłoszeń albo diagnostyka uszkodzonego wiersza jest niepoprawna",
+            List.of(
+                response.getStatus(), SubmissionsReadHttpTest.json(context, response).size(),
+                SubmissionsReadHttpTest.json(context, response).path(0),
+                output.getOut().contains(
+                    "Pominięto nieczytelne zgłoszenie %s".formatted(corrupt.id())
+                )
+            ),
+            Matchers.equalTo(List.of(200, 1, valid.expected(context), true))
         );
     }
 
@@ -165,17 +200,19 @@ final class SubmissionsReadHttpTest {
         final WebApplicationContext context, final String status, final String floor
     ) {
         final Row row = new Row(UUID.randomUUID(), status, floor, UUID.randomUUID());
-        context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO submissions
-                (id, status, kind, building_symbol, location, content, created_at)
-            VALUES (:id, :status, 'QUICK', 'A-1',
-                ST_SetSRID(ST_MakePoint(17.062, 51.108), 4326),
-                CAST(:content AS JSONB), CAST(:created AS TIMESTAMPTZ))
-            """
-        ).param("id", row.id()).param("status", status)
-            .param("content", row.content().concat("}"))
-            .param("created", SubmissionsReadHttpTest.CREATED).update();
+        new SampleSubmissions(context).add(
+            row.id(), status,
+            SampleSubmissions.quick(
+                new SubmissionPlace(
+                    new SubmissionPoint(17.062, 51.108), null, false, "A-1",
+                    new SubmissionFloor(floor, null, false)
+                ),
+                "Próg przy wejściu", row.photo()
+            )
+        );
+        context.getBean(JdbcClient.class)
+            .sql("UPDATE submissions SET created_at = CAST(:created AS TIMESTAMPTZ) WHERE id = :id")
+            .param("created", SubmissionsReadHttpTest.CREATED).param("id", row.id()).update();
         return row;
     }
 
@@ -190,9 +227,8 @@ final class SubmissionsReadHttpTest {
     private static MockHttpServletResponse get(
         final WebApplicationContext context, final String uri
     ) throws Exception {
-        return MockMvcBuilders.webAppContextSetup(context).build()
+        return context.getBean(MockMvc.class)
             .perform(MockMvcRequestBuilders.get(uri))
-            .andExpect(new OpenApiContract())
             .andReturn()
             .getResponse();
     }

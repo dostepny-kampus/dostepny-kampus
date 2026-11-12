@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map
@@ -8,7 +8,6 @@ package io.github.dostepnykampus.feature.map
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -36,17 +35,18 @@ import io.github.dostepnykampus.core.designsystem.MarkingChip
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.PinnedButton
 import io.github.dostepnykampus.core.designsystem.PinnedButtonKind
-import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.EntranceMarking
 
 /**
  * V2 Karta budynku (US2, BR-25): symbol, nazwa, wiersz o wejściach (US2.8), wejścia z oznaczeniem tekstem
- * i ikoną, zalecane pierwsze. Po otwarciu fokus, a z nim TalkBack, stoi na nagłówku (NFR-18).
+ * i ikoną, zalecane pierwsze. Nagłówek to symbol dużym napisem `displayLarge` w kolorze `primary`, a pod nim
+ * nazwa z danych `headlineMedium`; budynek bez nazwy ma sam symbol (decyzja 152). TalkBack czyta jeden nagłówek,
+ * „Budynek A-1, Gmach Główny” albo „Budynek A-4”, i po otwarciu fokus stoi na nim (NFR-18).
  * Karta nic nie mówi o barierach, bo aplikacja nie ma jeszcze ich źródła (US2.7). Czynności stoją w przewijanej
  * treści pod wierszem o wejściach, bez przypiętego pasa (reguła 10): „Sprawdź, którędy wejść” w każdym trybie,
  * „Zamknij” w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]. Pasek „Wstecz” i grupę „Wejścia”
  * ma tylko pełny ekran.
- * Nieznany symbol: „budynku nie ma w telefonie” (US2.7). Bez internetu nad treścią stoi [OfflineLine] jak na V1,
+ * Nieznany symbol: „budynku nie ma w telefonie” (US2.7). Bez internetu nad nagłówkiem stoi [OfflinePill],
  * bez daty (NFR-10, US2.8).
  *
  * @param symbol symbol z trasy, widoczny w nagłówku także w trakcie wczytywania
@@ -117,9 +117,9 @@ fun BuildingCardContent(
             modifier = Modifier.weight(1f, isFullScreen).verticalScroll(rememberScrollState()).padding(Odstepy.m),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
-            OfflineWhen(isOnline = isOnline)
+            if (!isOnline) OfflinePill()
             if (card is BuildingCardUiState.Ready) {
-                BuildingName(symbol = symbol, name = card.name)
+                SymbolOverName(symbol = symbol, name = card.name)
                 EntranceSummaryRow(entranceSummary(card.entrances))
                 CardActions(
                     mode = mode,
@@ -127,28 +127,45 @@ fun BuildingCardContent(
                     onShowOnMap = onShowOnMap,
                     onClose = onClose,
                 )
-                if (isFullScreen) BuildingFacts(card, onReportEntrance, onShowEntrance)
             }
-            if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
+            FactsOrMissing(
+                card = card,
+                isFullScreen = isFullScreen,
+                onReportEntrance = onReportEntrance,
+                onShowEntrance = onShowEntrance,
+                onRetry = onRetry,
+            )
         }
     }
 }
 
 @Composable
-private fun OfflineWhen(isOnline: Boolean) {
-    if (!isOnline) OfflineLine()
+private fun FactsOrMissing(
+    card: BuildingCardUiState,
+    isFullScreen: Boolean,
+    onReportEntrance: (String) -> Unit,
+    onShowEntrance: (String) -> Unit,
+    onRetry: () -> Unit,
+) {
+    if (card is BuildingCardUiState.Ready && isFullScreen) BuildingFacts(card, onReportEntrance, onShowEntrance)
+    if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
 }
 
 @Composable
-private fun BuildingName(symbol: String, name: String?) {
-    val visible = name ?: stringResource(R.string.mapa_budynek, symbol)
-    val spoken = if (name == null) visible else stringResource(R.string.karta_czytaj, symbol, name)
+private fun SymbolOverName(symbol: String, name: String?) {
+    val spoken =
+        name?.let { stringResource(R.string.karta_czytaj, symbol, it) } ?: stringResource(R.string.mapa_budynek, symbol)
     val focus = remember { FocusRequester() }
-    Text(
-        text = visible,
-        modifier = Modifier.semantics { contentDescription = spoken }.focusRequester(focus).focusable(),
-        style = MaterialTheme.typography.titleLarge,
-    )
+    Column(
+        modifier =
+            Modifier
+                .semantics(mergeDescendants = true) { contentDescription = spoken }
+                .focusRequester(focus)
+                .focusable(),
+    ) {
+        Text(text = symbol, style = MaterialTheme.typography.displayLarge, color = MaterialTheme.colorScheme.primary)
+        name?.let { Text(text = it, style = MaterialTheme.typography.headlineMedium) }
+    }
     LaunchedEffect(focus) { withFrameMillis { focus.requestFocus() } }
 }
 
@@ -177,57 +194,13 @@ private fun BuildingFacts(
     common?.let { AssessmentLine(it) }
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
         card.entrances.forEach { entrance ->
-            EntranceLine(
+            EntranceRow(
                 listed = entrance,
                 withAssessment = common == null,
+                onShowEntrance = onShowEntrance.takeIf { entrance.isRecommended },
                 onReportEntrance = onReportEntrance,
-                onShowEntrance = onShowEntrance,
             )
         }
-    }
-}
-
-@Composable
-private fun EntranceLine(
-    listed: OrderedEntrance,
-    withAssessment: Boolean,
-    onReportEntrance: (String) -> Unit,
-    onShowEntrance: (String) -> Unit,
-) {
-    val title = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
-    val spokenShow = stringResource(R.string.wizyta_pokaz_czytaj, title)
-    val spoken = stringResource(R.string.karta_zglos_czytaj, title)
-    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
-            verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
-        ) {
-            MarkingChip(marking = listed.entrance.marking)
-            if (listed.isRecommended) {
-                Text(
-                    text = stringResource(R.string.karta_zalecane),
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = Typografia.wyroznienieWaga,
-                    style = MaterialTheme.typography.labelLarge,
-                )
-            }
-        }
-        Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
-        if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }
-        if (listed.isRecommended) {
-            PinnedButton(
-                text = stringResource(R.string.wizyta_pokaz),
-                onClick = { onShowEntrance(listed.entrance.id) },
-                modifier = Modifier.fillMaxWidth().semantics { contentDescription = spokenShow },
-                kind = PinnedButtonKind.Tonal,
-            )
-        }
-        PinnedButton(
-            text = stringResource(R.string.karta_zglos),
-            onClick = { onReportEntrance(listed.entrance.id) },
-            modifier = Modifier.fillMaxWidth().semantics { contentDescription = spoken },
-            kind = PinnedButtonKind.Tonal,
-        )
     }
 }
 

@@ -9,17 +9,10 @@ plugins {
     id("dostepnykampus.android.hilt")
 }
 
-android {
-    testOptions.unitTests.all { it.useJUnitPlatform() }
-}
-
 dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:designsystem"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotlinx.coroutines.test)
-    testRuntimeOnly(libs.junit.platform.launcher)
 }

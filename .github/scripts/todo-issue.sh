@@ -6,7 +6,8 @@ set -euo pipefail
 
 # Strażnik znaczników zadań, uruchamiany w katalogu repozytorium git. Znacznik TODO, FIXME, HACK lub @todo (wielkość liter bez znaczenia)
 # musi mieć postać ZNACZNIK(#N), gdzie issue #N istnieje i jest otwarte. Skanuje pliki śledzone przez git
-# o rozszerzeniach kt, kts, java, yml, yaml, sh, z pominięciem plików samego strażnika (zawierają przykłady).
+# o rozszerzeniach kt, kts, java, yml, yaml, sh, z pominięciem plików samego strażnika i reguły detekt NoLineComment
+# w android/ (zawierają przykłady).
 # Rozwiązania tymczasowe (@Ignore, @Disabled, @Tymczasowe, @RequiresOptIn, tag wykluczający w .feature) też muszą wskazywać otwarte issue.
 # Stan issue z gh (bez dostępu do issue skrypt kończy się kodem 2); w teście zamiast sieci: ISSUE_JSON_DIR z plikami <numer>.json (gh issue view --json state,url).
 # PR_BODY (opis PR, opcjonalny): znacznik wskazujący issue zamykane przez ten PR (słowa zamykające z slowa-zamykajace.sh, np. Closes, Fixed) to naruszenie,
@@ -96,7 +97,7 @@ while IFS= read -r -d '' path; do
     fi
   done < <(grep -noPi '(?<![\w/.-])(?:TODO|FIXME|HACK|@todo)(?![\w]|-\w|\.\w)(?:\(#\d+\))?' "$path" || true)
 done < <(git ls-files -z -- '*.kt' '*.kts' '*.java' '*.yml' '*.yaml' '*.sh' \
-  ':!.github/scripts/todo-issue.sh' ':!.github/scripts/todo-issue-test.sh')
+  ':!.github/scripts/todo-issue.sh' ':!.github/scripts/todo-issue-test.sh'   ':!android/detekt-rules/src/main/kotlin/io/github/dostepnykampus/detekt/NoLineComment.kt'   ':!android/detekt-rules/src/test/kotlin/io/github/dostepnykampus/detekt/NoLineCommentTest.kt')
 
 # Rozwiązania tymczasowe (decyzja 147): @Ignore/@Disabled/@Tymczasowe (powód w nawiasie, do 3 wierszy), tag wykluczający
 # w .feature (#N w tej samej linii albo w komentarzu tuż nad nim) i @RequiresOptIn (#N w KDoc nad adnotacją) wskazują

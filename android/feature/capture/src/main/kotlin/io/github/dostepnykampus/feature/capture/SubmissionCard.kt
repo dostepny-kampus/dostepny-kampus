@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
+import io.github.dostepnykampus.core.data.submissions.RefusalReason
 import io.github.dostepnykampus.core.data.submissions.SendState
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.nameRes
@@ -144,4 +145,6 @@ private fun RefusalReason.textRes(): Int =
     when (this) {
         RefusalReason.NO_PERMISSION -> R.string.moje_brak_uprawnien
         RefusalReason.NOT_ACCEPTED -> R.string.moje_nie_przyjal
+        RefusalReason.UNREADABLE -> R.string.moje_nie_odczytano
+        RefusalReason.CHANGED_ON_SERVER -> R.string.moje_zmienione_na_serwerze
     }

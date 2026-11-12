@@ -38,4 +38,5 @@ include(
     ":feature:review",
     ":feature:progress",
     ":feature:help",
+    ":detekt-rules",
 )

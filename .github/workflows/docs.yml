@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - "sprint/**"
     paths:
       - "docs/**"
       - ".github/workflows/docs.yml"
@@ -45,7 +46,7 @@ jobs:
 
   zmiany:
     needs: porownanie
-    # Pominięty `zmiany` pomija też kontrolę (potrzebuje go z wynikiem success).
+    # Nieudane `zmiany` uruchamia kontrolę. Równe drzewo grupy dalej ją pomija.
     if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (github.event_name == 'pull_request' || github.event_name == 'merge_group') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -78,8 +79,8 @@ jobs:
           fi
 
   kontrola:
-    needs: zmiany
-    if: needs.zmiany.outputs.dokumentacja == 'true'
+    needs: [porownanie, zmiany]
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (github.event_name == 'pull_request' || github.event_name == 'merge_group') && (needs.zmiany.result != 'success' || needs.zmiany.outputs.dokumentacja == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -150,28 +151,65 @@ jobs:
           PLANTUML_JAR: ${{ runner.temp }}/narzedzia/plantuml.jar
         run: python -X utf8 scripts/render.py --force --out "${RUNNER_TEMP}/diagramy"
 
+  # Jedna publikacja zawiera dwie wersje: main w katalogu głównym i najwyższy sprint/N pod /sprint/.
   strona:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: >-
+      github.event_name != 'pull_request' &&
+      (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/'))
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: docs
+    timeout-minutes: 20
+    # Wspólna grupa dla main i sprintów: publikacje idą po kolei, a czekająca zastępuje starszą czekającą.
+    concurrency:
+      group: docs-strona
+      cancel-in-progress: false
     steps:
+      - name: Ustal bieżący sprint
+        id: sprint
+        env:
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          galaz="$(git ls-remote --heads "$REPO_URL" 'refs/heads/sprint/*' | sed 's|.*refs/heads/||' | sort -V | tail -n 1)"
+          if [[ -z "$galaz" ]]; then
+            echo "::error title=Strona sprintu::brak gałęzi sprint/N w repozytorium."
+            exit 1
+          fi
+          echo "Bieżący sprint: ${galaz}"
+          echo "galaz=${galaz}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v7.0.1
         with:
+          ref: main
+          path: main
+          persist-credentials: false
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ steps.sprint.outputs.galaz }}
+          path: sprint
           persist-credentials: false
       - uses: actions/setup-python@v7.1.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-          cache-dependency-path: docs/requirements.txt
-      - name: Zainstaluj zależności Pythona
-        run: python -m pip install -r requirements.txt
-      - name: Wygeneruj skróty ze słownika
-        run: python -X utf8 scripts/abbr.py
-      - name: Zbuduj stronę
-        run: python -m mkdocs build --strict --site-dir "${RUNNER_TEMP}/strona"
+          cache-dependency-path: |
+            main/docs/requirements.txt
+            sprint/docs/requirements.txt
+      - name: Zbuduj stronę z main i z bieżącego sprintu
+        env:
+          STRONA: ${{ runner.temp }}/strona
+        # Każde drzewo ma własne środowisko, bo main i sprint mogą mieć różne wersje zależności.
+        # Najpierw main: mkdocs czyści katalog docelowy, więc sprint trafia do podkatalogu po nim.
+        run: |
+          zbuduj() {
+            local drzewo="$1" konfiguracja="$2" cel="$3" python="${RUNNER_TEMP}/venv-$1/bin/python"
+            python -m venv "${RUNNER_TEMP}/venv-${drzewo}"
+            "$python" -m pip install -r "${drzewo}/docs/requirements.txt"
+            (
+              cd "${drzewo}/docs"
+              "$python" -X utf8 scripts/abbr.py
+              "$python" -m mkdocs build --strict -f "$konfiguracja" --site-dir "$cel"
+            )
+          }
+          zbuduj main mkdocs.yml "$STRONA"
+          zbuduj sprint mkdocs-sprint.yml "${STRONA}/sprint"
       - uses: actions/upload-pages-artifact@v5.0.0
         with:
           path: ${{ runner.temp }}/strona
@@ -180,6 +218,9 @@ jobs:
     needs: strona
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    concurrency:
+      group: docs-publikacja
+      cancel-in-progress: false
     permissions:
       pages: write
       id-token: write

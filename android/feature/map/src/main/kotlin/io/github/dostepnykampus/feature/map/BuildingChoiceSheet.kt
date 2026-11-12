@@ -88,15 +88,19 @@ private fun SheetHeader(onClose: () -> Unit) {
 /**
  * Karta budynku [building] w arkuszu „Który budynek?”, pod polem symbolu i na liście budynków (US2, US1.1, NFR-19):
  * symbol na plakietce, nazwa z danych, a gdy nazwa jest, pod nią „Budynek C-3”; bez nazwy samo „Budynek C-3”.
- * Cała karta to jeden cel dotyku, a TalkBack czyta „C-3, nazwa” i czynność „otwiera opis budynku”.
+ * Cała karta to jeden cel dotyku, a TalkBack czyta „C-3, nazwa” i czynność „otwiera opis budynku”. Wynik
+ * wyszukiwania z innego terenu niż pokazany na mapie ma pod spodem dopisek „Wittigowo · inny teren”, a TalkBack
+ * dodaje „teren Wittigowo, inny teren” (US1.8, NFR-18, NFR-21).
  *
  * @param building budynek z katalogu: symbol i nazwa z danych, gdy jest
+ * @param otherArea nazwa terenu budynku, gdy to inny teren niż pokazany na mapie
  * @param onClick otwiera V2 tego budynku
  */
 @Composable
-internal fun BuildingChoice(building: Building, onClick: () -> Unit) {
+internal fun BuildingChoice(building: Building, otherArea: String? = null, onClick: () -> Unit) {
     val action = stringResource(R.string.mapa_otwiera_opis_budynku)
-    val description = listOfNotNull(building.symbol, building.name).joinToString(separator = ", ")
+    val spokenArea = otherArea?.let { stringResource(R.string.mapa_teren_inny_opis, it) }
+    val description = listOfNotNull(building.symbol, building.name, spokenArea).joinToString(separator = ", ")
     val shape = RoundedCornerShape(Zaokraglenia.duze)
     val choiceSemantics =
         Modifier.clearAndSetSemantics {
@@ -135,6 +139,7 @@ internal fun BuildingChoice(building: Building, onClick: () -> Unit) {
                     val color = MaterialTheme.colorScheme.onSurfaceVariant
                     Text(text = generic, style = MaterialTheme.typography.bodyLarge, color = color)
                 }
+                otherArea?.let { OtherAreaNote(it) }
             }
         }
     }
@@ -155,4 +160,15 @@ private fun SymbolBadge(symbol: String) {
             )
         }
     }
+}
+
+@Composable
+private fun OtherAreaNote(area: String, modifier: Modifier = Modifier) {
+    Text(
+        text = stringResource(R.string.mapa_teren_inny, area),
+        modifier = modifier,
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.primary,
+        fontWeight = Typografia.wyroznienieWaga,
+    )
 }

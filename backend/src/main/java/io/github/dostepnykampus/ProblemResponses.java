@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * rzuconych w obsłudze żądania.
  *
  * <p>{@link InvalidInput} daje 400, {@link MissingResource} 404,
- * {@link ForbiddenChange} 403,
+ * {@link MissingLogin} 401, {@link ForbiddenChange} 403,
  * wszystkie z opisem wyjątku w {@code detail}. {@link ConflictingState} daje 409
  * z opisem w {@code detail} i bieżącym stanem jako obiektem JSON we właściwości
  * o nazwie {@link ConflictingState#property()}. Pozostały wyjątek daje 500 bez nazwy
@@ -51,13 +51,22 @@ public final class ProblemResponses {
     @ExceptionHandler
     ProblemDetail invalid(final InvalidInput error) {
         this.log.debug("Niepoprawne dane żądania: {}", error.getMessage());
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, error.getMessage());
+        final ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST, error.getMessage()
+        );
+        error.type().ifPresent(problem::setType);
+        return problem;
     }
 
     @ExceptionHandler
     ProblemDetail missing(final MissingResource error) {
         this.log.debug("Brak zasobu: {}", error.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.getMessage());
+    }
+
+    @ExceptionHandler
+    static ProblemDetail unauthorized(final MissingLogin error) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, error.getMessage());
     }
 
     @ExceptionHandler

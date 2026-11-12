@@ -5,13 +5,14 @@
  */
 package io.github.dostepnykampus.barrier;
 
-import io.github.dostepnykampus.OpenApiContract;
+import io.github.dostepnykampus.AsCollector;
+import io.github.dostepnykampus.AsVerifier;
 import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -61,18 +62,30 @@ final class SubmissionRequests {
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
     MockHttpServletResponse get(final String uri) throws Exception {
-        return MockMvcBuilders.webAppContextSetup(this.context).build()
+        return this.context.getBean(MockMvc.class)
             .perform(MockMvcRequestBuilders.get(uri))
-            .andExpect(new OpenApiContract())
             .andReturn().getResponse();
+    }
+
+    /**
+     * Pobiera podobne zgłoszenia jako Weryfikator.
+     *
+     * @param id Identyfikator sprawdzanego zgłoszenia
+     * @return Odpowiedź GET /submissions/{id}/similar
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    MockHttpServletResponse similar(final UUID id) throws Exception {
+        return this.context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.get("/submissions/{id}/similar", id).with(new AsVerifier())
+        ).andReturn().getResponse();
     }
 
     private MockHttpServletResponse send(
         final MockHttpServletRequestBuilder request, final String json
     ) throws Exception {
-        return MockMvcBuilders.webAppContextSetup(this.context).build().perform(
+        return this.context.getBean(MockMvc.class).perform(
             request.contentType(MediaType.APPLICATION_JSON).content(json)
-        ).andExpect(new OpenApiContract())
-            .andReturn().getResponse();
+                .with(new AsCollector())
+        ).andReturn().getResponse();
     }
 }

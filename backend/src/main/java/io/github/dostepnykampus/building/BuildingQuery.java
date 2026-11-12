@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -19,8 +21,11 @@ import tools.jackson.databind.ObjectMapper;
  * Odczyt REST budynków z tabeli buildings: lista na mapie (US1), podpowiedź
  * budynku dla punktu (BR-G2) i karta budynku z wejściami z tabeli entrances
  * (US2). Wejścia karty są czytane osobnym zapytaniem po zmapowaniu wiersza
- * budynku. Wąskie zawieranie punktu dla innych modułów jest w
- * {@code PostgisOutlines} w podpakiecie postgis.
+ * budynku. Zawieranie punktu ma jedną implementację w {@link Outlines}, więc
+ * podpowiedź i budynek zapisany przy zgłoszeniu szybkim są zawsze równe
+ * (BR-14). Atrybucja listy to wszystkie źródła konturów bez powtórzeń,
+ * alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą atrybucję
+ * (NFR-40, #852).
  *
  * @since 0.1.0
  */
@@ -42,9 +47,17 @@ final class BuildingQuery {
      */
     private final ObjectMapper mapper;
 
-    BuildingQuery(final JdbcClient jdbc, final ObjectMapper mapper) {
+    /**
+     * Budynek, w którego konturze leży punkt.
+     */
+    private final Outlines outlines;
+
+    BuildingQuery(
+        final JdbcClient jdbc, final ObjectMapper mapper, final Outlines outlines
+    ) {
         this.jdbc = jdbc;
         this.mapper = mapper;
+        this.outlines = outlines;
     }
 
     BuildingList listBuildings() {
@@ -59,27 +72,9 @@ final class BuildingQuery {
     }
 
     Placement locate(final double lat, final double lon) {
-        return this.jdbc.sql(
-            """
-            WITH point AS (
-                SELECT ST_SetSRID(ST_MakePoint(:lon, :lat), 4326) AS geom
-            )
-            SELECT buildings.symbol AS symbol,
-                ST_Contains(buildings.outline, point.geom) AS inside
-            FROM buildings CROSS JOIN point
-            WHERE ST_Contains(buildings.outline, point.geom)
-                OR ST_DWithin(buildings.outline::geography,
-                    point.geom::geography, :meters)
-            ORDER BY inside DESC,
-                ST_Distance(buildings.outline::geography,
-                    point.geom::geography),
-                buildings.symbol
-            LIMIT 1
-            """
-        ).param("lat", lat)
-            .param("lon", lon)
-            .param("meters", BuildingQuery.NEAR_METERS)
-            .query(BuildingQuery::hit);
+        return this.outlines.containing(lat, lon)
+            .<Placement>map(Placement.Inside::new)
+            .orElseGet(() -> this.near(lat, lon));
     }
 
     Optional<BuildingCard> building(final String symbol) {
@@ -94,6 +89,30 @@ final class BuildingQuery {
             .query((rows, num) -> this.one(rows))
             .optional()
             .map(this::card);
+    }
+
+    private Placement near(final double lat, final double lon) {
+        return this.jdbc.sql(
+            """
+            WITH point AS (
+                SELECT ST_SetSRID(ST_MakePoint(:lon, :lat), 4326) AS geom
+            )
+            SELECT buildings.symbol
+            FROM buildings CROSS JOIN point
+            WHERE ST_DWithin(buildings.outline::geography,
+                point.geom::geography, :meters)
+            ORDER BY ST_Distance(buildings.outline::geography,
+                point.geom::geography),
+                buildings.symbol
+            LIMIT 1
+            """
+        ).param("lat", lat)
+            .param("lon", lon)
+            .param("meters", BuildingQuery.NEAR_METERS)
+            .query(String.class)
+            .optional()
+            .<Placement>map(Placement.Near::new)
+            .orElseGet(Placement.None::new);
     }
 
     private BuildingCard card(final Building item) {
@@ -135,14 +154,12 @@ final class BuildingQuery {
 
     private BuildingList rows(final ResultSet rows) throws SQLException {
         final List<Building> found = new ArrayList<>(8);
-        String chosen = "© OpenStreetMap contributors";
+        final SortedSet<String> sources = new TreeSet<>();
         while (rows.next()) {
-            if (found.isEmpty()) {
-                chosen = BuildingQuery.text(rows, "source");
-            }
+            sources.add(BuildingQuery.text(rows, "source"));
             found.add(this.one(rows));
         }
-        return new BuildingList(chosen, found);
+        return new BuildingList(String.join("; ", sources), found);
     }
 
     private Building one(final ResultSet rows) throws SQLException {
@@ -152,21 +169,6 @@ final class BuildingQuery {
             BuildingQuery.text(rows, "detail_level"),
             this.mapper.readTree(BuildingQuery.text(rows, "outline"))
         );
-    }
-
-    private static Placement hit(final ResultSet rows) throws SQLException {
-        final Placement found;
-        if (rows.next()) {
-            final String symbol = BuildingQuery.text(rows, "symbol");
-            if (rows.getBoolean("inside")) {
-                found = new Placement.Inside(symbol);
-            } else {
-                found = new Placement.Near(symbol);
-            }
-        } else {
-            found = new Placement.None();
-        }
-        return found;
     }
 
     private static String text(final ResultSet rows, final String column)

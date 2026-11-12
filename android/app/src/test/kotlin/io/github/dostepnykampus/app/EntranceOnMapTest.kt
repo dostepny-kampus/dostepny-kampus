@@ -29,6 +29,7 @@ import io.github.dostepnykampus.feature.map.CampusMapView
 import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.MapCamera
 import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
@@ -84,11 +85,13 @@ class EntranceOnMapTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val shown = mutableListOf<Pair<CampusMapData, MapCamera>>()
+    private val selections = mutableListOf<MapSelection>()
     private var touch: (List<String>) -> Unit = {}
     private val choice = TestMapListChoice()
     private val fakeMap =
-        CampusMapView { data: CampusMapData, camera, _, onBuildingsTouch, _: Modifier ->
+        CampusMapView { data: CampusMapData, selection, camera, _, onBuildingsTouch, _: Modifier ->
             shown += data to camera
+            selections += selection
             touch = onBuildingsTouch
         }
 
@@ -163,16 +166,17 @@ class EntranceOnMapTest {
     /** Wiersz E2 (O1, O2, O4): V3 → V1; mapa dostaje wybrane wejście z punktem i podpisem z nazwą. */
     @Test
     fun us3_3_map_gets_entrance() {
-        val (data, _) = showEntranceOnMap(namedCatalog())
+        showEntranceOnMap(namedCatalog())
         val expected = SelectedEntrance(id = NAMED_ID, location = NAMED_AT, label = NAMED, buildingSymbol = "A-1")
-        assertEquals(expected, data.selectedEntrance)
+        assertEquals(expected, selections.last().entrance)
     }
 
     /** Wiersz E2, E4: wejście bez nazwy w danych dostaje podpis zastępczy, także dla TalkBack (decyzja 135). */
     @Test
     fun us3_3_unnamed_gets_fallback() {
         val json = catalog(entrance(10, NAMED_AT, """"entrance":"yes","wheelchair":"yes""""), *OTHERS)
-        val selected = showEntranceOnMap(json).first.selectedEntrance
+        showEntranceOnMap(json)
+        val selected = selections.last().entrance
         assertEquals(UNNAMED, selected?.label)
         assertEquals(NAMED_AT, selected?.location)
         compose.onNode(read("Zaznaczone wejście: »$UNNAMED«, budynek A-1")).assertExists()
@@ -182,8 +186,8 @@ class EntranceOnMapTest {
     @Test
     fun us3_3_other_entrances_stay() {
         val (data, _) = showEntranceOnMap(namedCatalog())
-        assertEquals(NAMED_ID, data.selectedEntrance?.id)
-        assertEquals(3, Regex("\"marking\"").findAll(data.entrances).count())
+        assertEquals(NAMED_ID, selections.last().entrance?.id)
+        assertEquals(3, Regex("\"marking\"").findAll(data.entrances.toString()).count())
     }
 
     /** Wiersz E3 (O3): kamera na wejściu, nie na budynku (środek budynku to 0,5; 0,5). */
@@ -211,9 +215,8 @@ class EntranceOnMapTest {
         compose.onNode(ListedA1).performClick()
         click(BUILDING_ON_MAP)
         compose.waitUntil { shown.isNotEmpty() }
-        val data = shown.last().first
-        assertEquals("A-1", data.focus)
-        assertNull(data.selectedEntrance)
+        assertEquals("A-1", selections.last().building)
+        assertNull(selections.last().entrance)
         compose.onNode(hasText("Zaznaczone wejście", substring = true)).assertDoesNotExist()
         compose.onNode(hasContentDescription("Zaznaczone wejście", substring = true)).assertDoesNotExist()
     }

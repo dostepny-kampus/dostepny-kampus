@@ -54,7 +54,7 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Po dotknięciu budynku: u góry mapa z wyróżnionym konturem A-1 i jego wejściami, niżej mała karta z uchwytem, symbolem A-1, nazwą Gmach Główny, wierszem Wejście dostępne i przyciskami Sprawdź, którędy wejść oraz Zamknij, na dole pasek dolny](obrazy/m-v1-mapa-budynek-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-jasny.webp) | [![Ta sama mała karta w motywie ciemnym nad nocną mapą](obrazy/m-v1-mapa-budynek-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-ciemny.webp) | [![Opis budynku A-1 przy czcionce 200% od razu na cały ekran, bez mapy: nazwa, wiersz Wejście dostępne, przyciski Sprawdź, którędy wejść i Pokaż budynek na mapie, potem chipy, wejścia, bariery, winda i toaleta oraz piętra](obrazy/m-v1-mapa-budynek-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-jasny-200.webp) |
+| [![Po dotknięciu budynku: u góry mapa z wyróżnionym konturem A-1 i jego wejściami, przygaszonymi sąsiednimi budynkami z podpisami oraz strzałkami przesuwania, plusem i minusem, niżej mała karta z uchwytem, symbolem A-1, nazwą Gmach Główny, wierszem Wejście dostępne i przyciskami Sprawdź, którędy wejść oraz Zamknij, na dole pasek dolny](obrazy/m-v1-mapa-budynek-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-jasny.webp) | [![Ta sama mała karta w motywie ciemnym nad nocną mapą](obrazy/m-v1-mapa-budynek-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-ciemny.webp) | [![Opis budynku A-1 przy czcionce 200% od razu na cały ekran, bez mapy: nazwa, wiersz Wejście dostępne, przyciski Sprawdź, którędy wejść i Pokaż budynek na mapie, potem chipy, wejścia, bariery, winda i toaleta oraz piętra](obrazy/m-v1-mapa-budynek-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-jasny-200.webp) |
 
 ### V1: arkusz bariery po dotknięciu znaku
 
@@ -170,9 +170,11 @@ Wymagania: [V2 Karta budynku](../wymagania-ekranow.md#v2-karta-budynku).
 
 `m-v2-karta-budynku-mala`. Ta sama karta co [V1: mała karta budynku A-1 nad mapą](#v1-mala-karta): mapa otwiera V2 jako małą kartę o wysokości treści. Nie ma na niej chipów ani listy wejść. Uchwyt, przewinięcie albo przeciągnięcie w górę otwiera pełny ekran.
 
+Nad kartą zostają przyciski mapy, a zaznaczony budynek mieści się w części mapy obok nich (NFR-53).
+
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Mała karta budynku A-1 nad mapą z wyróżnionym konturem: uchwyt, symbol A-1, nazwa Gmach Główny, wiersz Wejście dostępne i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny.webp) | [![Ta sama mała karta w motywie ciemnym](obrazy/m-v2-karta-budynku-mala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-ciemny.webp) | [![Ten sam budynek przy czcionce 200%: zamiast małej karty od razu pełny ekran bez mapy, z przyciskami Sprawdź, którędy wejść i Pokaż budynek na mapie](obrazy/m-v2-karta-budynku-mala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny-200.webp) |
+| [![Mała karta budynku A-1 nad mapą z wyróżnionym konturem, podpisami sąsiednich budynków i przyciskami mapy: uchwyt, symbol A-1, nazwa Gmach Główny, wiersz Wejście dostępne i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny.webp) | [![Ta sama mała karta w motywie ciemnym](obrazy/m-v2-karta-budynku-mala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-ciemny.webp) | [![Ten sam budynek przy czcionce 200%: zamiast małej karty od razu pełny ekran bez mapy, z przyciskami Sprawdź, którędy wejść i Pokaż budynek na mapie](obrazy/m-v2-karta-budynku-mala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny-200.webp) |
 
 ### V2: budynek bez planu pięter (H-4)
 
@@ -188,7 +190,7 @@ Wymagania: [V2 Karta budynku](../wymagania-ekranow.md#v2-karta-budynku).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Opis budynku C-4: wiersz Brak wejścia dostępnego pod nazwą, jedyne wejście z oznaczeniem Niedostępne na górze, z opisem przeszkód z danych i odnośnikiem Zgłoś barierę przy wejściu, bez napisu Zalecane, niżej Bariery w budynku](obrazy/m-v2-karta-budynku-bez-zalecanego-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-bez-zalecanego-jasny.webp) | [![Ten sam opis budynku C-4 w motywie ciemnym](obrazy/m-v2-karta-budynku-bez-zalecanego-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-bez-zalecanego-ciemny.webp) | [![Ten sam opis budynku C-4 przy czcionce 200%: pod nazwą wiersz Brak wejścia dostępnego i przyciski Sprawdź, którędy wejść oraz Pokaż budynek na mapie, potem wejście Niedostępne](obrazy/m-v2-karta-budynku-bez-zalecanego-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-bez-zalecanego-jasny-200.webp) |
+| [![Opis budynku C-4: wiersz Brak wejścia dostępnego pod samym symbolem C-4, jedyne wejście z oznaczeniem Niedostępne na górze, z opisem przeszkód z danych i odnośnikiem Zgłoś barierę przy wejściu, bez napisu Zalecane, niżej Bariery w budynku](obrazy/m-v2-karta-budynku-bez-zalecanego-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-bez-zalecanego-jasny.webp) | [![Ten sam opis budynku C-4 w motywie ciemnym](obrazy/m-v2-karta-budynku-bez-zalecanego-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-bez-zalecanego-ciemny.webp) | [![Ten sam opis budynku C-4 przy czcionce 200%: pod samym symbolem C-4 wiersz Brak wejścia dostępnego i przyciski Sprawdź, którędy wejść oraz Pokaż budynek na mapie, potem wejście Niedostępne](obrazy/m-v2-karta-budynku-bez-zalecanego-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-bez-zalecanego-jasny-200.webp) |
 
 ### V2: wejście bez danych (C-7)
 
@@ -196,7 +198,7 @@ Wymagania: [V2 Karta budynku](../wymagania-ekranow.md#v2-karta-budynku).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Opis budynku C-7: wiersz Brak danych o wejściach pod nazwą, w grupie Wejścia data Z map i opisów, 18.12.2023, Wejście 1 Niedostępne z opisem schodów i drzwiami 90 cm, Wejście 2 i 3 z oznaczeniem Brak danych i rombem z minusem, przy każdym Zgłoś barierę przy wejściu](obrazy/m-v2-karta-budynku-wejscie-brak-danych-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-wejscie-brak-danych-jasny.webp) | [![Ten sam opis budynku C-7 w motywie ciemnym](obrazy/m-v2-karta-budynku-wejscie-brak-danych-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-wejscie-brak-danych-ciemny.webp) | [![Ten sam opis budynku C-7 przy czcionce 200%: wiersz Brak danych o wejściach, przyciski Sprawdź, którędy wejść i Pokaż budynek na mapie, potem Wejście 1 Niedostępne oraz Wejście 2 i 3 Brak danych](obrazy/m-v2-karta-budynku-wejscie-brak-danych-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-wejscie-brak-danych-jasny-200.webp) |
+| [![Opis budynku C-7: wiersz Brak danych o wejściach pod samym symbolem C-7, w grupie Wejścia data Z map i opisów, 18.12.2023, Wejście 1 Niedostępne z opisem schodów i drzwiami 90 cm, Wejście 2 i 3 z oznaczeniem Brak danych i rombem z minusem, przy każdym Zgłoś barierę przy wejściu](obrazy/m-v2-karta-budynku-wejscie-brak-danych-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-wejscie-brak-danych-jasny.webp) | [![Ten sam opis budynku C-7 w motywie ciemnym](obrazy/m-v2-karta-budynku-wejscie-brak-danych-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-wejscie-brak-danych-ciemny.webp) | [![Ten sam opis budynku C-7 przy czcionce 200%: wiersz Brak danych o wejściach, przyciski Sprawdź, którędy wejść i Pokaż budynek na mapie, potem Wejście 1 Niedostępne oraz Wejście 2 i 3 Brak danych](obrazy/m-v2-karta-budynku-wejscie-brak-danych-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-wejscie-brak-danych-jasny-200.webp) |
 
 ### V2: brak zgłoszonych barier
 
@@ -213,6 +215,14 @@ Wymagania: [V2 Karta budynku](../wymagania-ekranow.md#v2-karta-budynku).
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
 | [![Opis budynku A-1 z telefonu: nad nazwą „Bez internetu · dane z 27.10.2026”, a przy jednej barierze zamiast rysunku napis „Zdjęcie zobaczysz po połączeniu z internetem.”](obrazy/m-v2-karta-budynku-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-brak-sieci-jasny.webp) | [![Ten sam opis bez internetu w motywie ciemnym](obrazy/m-v2-karta-budynku-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-brak-sieci-ciemny.webp) | [![Ten sam opis bez internetu przy czcionce 200%: pasek Bez internetu w dwóch wierszach nad nazwą budynku](obrazy/m-v2-karta-budynku-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-brak-sieci-jasny-200.webp) |
+
+### V2: mała karta bez internetu
+
+`m-v2-karta-budynku-mala-brak-sieci`. Plakietka „Bez internetu” stoi nad symbolem, w tym samym miejscu co na pełnym ekranie. Mapa nad kartą nie ma podkładu.
+
+| Jasny | Ciemny |
+| --- | --- |
+| [![Mała karta budynku A-1 bez internetu: mapa bez podkładu z konturami, podpisami budynków i przyciskami mapy, a na karcie plakietka Bez internetu · dane z 27.10.2026 nad symbolem A-1, nazwa Gmach Główny, wiersz Wejście dostępne i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-brak-sieci-jasny.webp) | [![Ta sama mała karta bez internetu w motywie ciemnym](obrazy/m-v2-karta-budynku-mala-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-brak-sieci-ciemny.webp) |
 
 ### V2: budynku nie ma w telefonie (C-13)
 

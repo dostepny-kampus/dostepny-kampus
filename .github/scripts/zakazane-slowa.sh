@@ -38,10 +38,14 @@ for sha in $commits; do
   check "commit ${sha:0:7}" "$(git log -1 --format=%B "$sha")"
 done
 
-# Dodane i zmienione pliki: ścieżka oraz dodane linie (pliki binarne git pomija w diffie).
+# Dodane i zmienione pliki: ścieżka oraz dodane linie. --text czyta też plik z atrybutem -diff.
 while IFS= read -r -d '' path; do
   check "nazwa pliku $path" "$path"
-  check "plik $path" "$(git diff --unified=0 --no-color "$base...$head" -- "$path" | sed -n '/^+++ /d; s/^+//p')"
+  # Plik binarny (ma bajt zerowy), np. zrzut PNG: przypadkowe bajty układały się w zakazane słowo. Sprawdzamy tylko nazwę.
+  if (($(git show "$head:$path" | LC_ALL=C tr -dc '\000' | wc -c) > 0)); then
+    continue
+  fi
+  check "plik $path" "$(git diff --text --unified=0 --no-color "$base...$head" -- "$path" | sed -n '/^+++ /d; s/^+//p')"
 done < <(git diff -z --name-only --diff-filter=AMR "$base...$head")
 
 if ((found == 0)); then

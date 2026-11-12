@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.app
@@ -10,9 +10,15 @@ import androidx.lifecycle.ViewModel
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.declaration.KoClassDeclaration
 import com.lemonappdev.konsist.api.declaration.KoFileDeclaration
+import com.lemonappdev.konsist.api.declaration.KoImportDeclaration
+import com.lemonappdev.konsist.api.declaration.KoObjectDeclaration
+import com.lemonappdev.konsist.api.declaration.KoPropertyDeclaration
 import com.lemonappdev.konsist.api.verify.assertFalse
 import com.lemonappdev.konsist.api.verify.assertTrue
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.io.File
 
 class ArchitectureTest {
     private val files = Konsist.scopeFromProject().files
@@ -43,9 +49,12 @@ class ArchitectureTest {
             }
     }
 
+    /** Kod ekranów bez sieci i bazy; testy modułu feature mogą budować repozytorium z wynikami sieci (#874). */
     @Test
     fun infra_a1_ui_no_network_or_db() {
-        files
+        Konsist
+            .scopeFromProduction()
+            .files
             .filter { it.inPackage("feature") }
             .assertFalse { file ->
                 file.imports.any { import ->
@@ -75,6 +84,127 @@ class ArchitectureTest {
             .assertFalse { !it.containingFile.inPackage("core.data") }
     }
 
+    /** Moduły funkcji biorą klienta HTTP z `core:network` przez Hilt, bez własnych importów HTTP (#888). */
+    @Test
+    fun infra_a1_feature_no_own_http() {
+        assertEquals(emptySet<String>(), httpFiles(featureFiles()) - OWN_HTTP.keys, HTTP_HINT)
+    }
+
+    /** #888: wpis listy wyjątków bez importu HTTP trzeba usunąć, więc lista może tylko maleć. */
+    @Test
+    fun infra_a1_http_list_shrinks() {
+        assertEquals(emptySet<String>(), OWN_HTTP.keys - httpFiles(featureFiles()))
+    }
+
+    /** #888: pełna nazwa bez importu też wymaga biblioteki HTTP w zależnościach modułu funkcji. */
+    @Test
+    fun infra_a1_build_without_http() {
+        val allowed = OWN_HTTP.keys.map { it.removePrefix("$BASE.feature.").substringBefore('.') }.toSet()
+        val modules =
+            File("../feature")
+                .listFiles()
+                .orEmpty()
+                .asSequence()
+                .filter { HTTP_DEPENDENCY.containsMatchIn(File(it, "build.gradle.kts").readTextOrEmpty()) }
+                .map { it.name }
+                .toSet()
+        assertEquals(emptySet<String>(), modules - allowed, HTTP_HINT)
+    }
+
+    /**
+     * #888: import klienta HTTP w module funkcji łamie regułę, także z gwiazdką. Konsist podaje import z gwiazdką
+     * bez niej, z `isWildcard`, więc reguła dokleja ją z powrotem.
+     */
+    @Test
+    fun infra_a1_own_http_rule_rejects(
+        @TempDir fixtures: File,
+    ) {
+        val directory = File(fixtures, "map").apply { mkdirs() }
+        val client = fixture(imports = "import okhttp3.OkHttpClient", body = "val c = OkHttpClient()")
+        File(directory, "Tiles.kt").writeText(client)
+        File(directory, "Url.kt").writeText(fixture(imports = "import java.net.*", body = "val u = URL(\"https://x\")"))
+        File(directory, "Plain.kt").writeText(fixture(imports = "", body = "val a = 1"))
+        val files = Konsist.scopeFromExternalDirectory(directory.absolutePath).files
+        assertEquals(setOf("$BASE.feature.map.Tiles", "$BASE.feature.map.Url"), httpFiles(files))
+    }
+
+    /** Stan zmienny tylko w klasach z grafu Hilt, nie na poziomie pliku ani w `object` (#887). */
+    @Test
+    fun infra_a1_no_global_state() {
+        val production = Konsist.scopeFromProduction().files
+        assertEquals(emptySet<String>(), globalState(production) - GLOBAL_STATE.keys, STATE_HINT)
+        assertEquals(emptySet<String>(), GLOBAL_STATE.keys - globalState(production))
+    }
+
+    /** #887: `var` na poziomie pliku i w `object`, `MutableStateFlow` w `companion object` łamią regułę. */
+    @Test
+    fun infra_a1_global_state_rejects(
+        @TempDir fixtures: File,
+    ) {
+        val directory = File(fixtures, "state").apply { mkdirs() }
+        val source =
+            listOf(
+                "package $BASE.feature.map",
+                "import kotlinx.coroutines.flow.MutableStateFlow",
+                "var agent: String? = null",
+                "val fixed = 1",
+                "object Cache { var last = 0\n val seen = mutableListOf<String>() }",
+                "class Screen { var local = 0\n companion object { val state = MutableStateFlow(0) } }",
+                "@Singleton class Store { companion object { val held = MutableStateFlow(0) } }",
+            ).joinToString(separator = System.lineSeparator())
+        File(directory, "State.kt").writeText(source)
+        val files = Konsist.scopeFromExternalDirectory(directory.absolutePath).files
+        val expected = setOf("agent", "Cache.last", "Cache.seen", "Screen.Companion.state")
+        assertEquals(expected.map { "$BASE.feature.map.$it" }.toSet(), globalState(files))
+    }
+
+    private fun globalState(files: List<KoFileDeclaration>): Set<String> {
+        val topLevel =
+            files
+                .asSequence()
+                .flatMap { it.properties(includeNested = false) }
+                .filter { it.isMutable() }
+                .map { "${it.containingFile.packagePath()}.${it.name}" }
+        val inObjects =
+            files
+                .asSequence()
+                .flatMap { it.objects(includeNested = true) }
+                .filterNot { it.isInSingleton() }
+                .flatMap { owner -> owner.mutableProperties().map { "${owner.fullyQualifiedName.orEmpty()}.$it" } }
+        return (topLevel + inObjects).toSet()
+    }
+
+    private fun KoObjectDeclaration.mutableProperties(): List<String> =
+        properties(includeNested = false).filter { it.isMutable() }.map { it.name }
+
+    private fun KoObjectDeclaration.isInSingleton(): Boolean =
+        (containingDeclaration as? KoClassDeclaration)?.hasAnnotationWithName("Singleton") == true
+
+    private fun KoPropertyDeclaration.isMutable(): Boolean {
+        val declaration = text.substringBefore('=')
+        val shape = if (':' in declaration) declaration.substringAfter(':') else text.substringAfter('=')
+        return isVar || MUTABLE_TYPE.containsMatchIn(shape)
+    }
+
+    private fun fixture(imports: String, body: String): String =
+        listOf("package $BASE.feature.map", imports, body).joinToString(separator = System.lineSeparator())
+
+    private fun File.readTextOrEmpty(): String = takeIf(File::exists)?.readText().orEmpty()
+
+    private fun featureFiles(): List<KoFileDeclaration> =
+        Konsist.scopeFromProduction().files.filter { it.inPackage("feature") }
+
+    private fun httpFiles(files: List<KoFileDeclaration>): Set<String> =
+        files
+            .filter { file -> file.imports.any { it.importsHttp() } }
+            .map { "${it.packagePath()}.${it.name}" }
+            .toSet()
+
+    private fun KoImportDeclaration.importsHttp(): Boolean {
+        val full = if (isWildcard) "$name.*" else name
+        return HTTP_IMPORTS.any { full.startsWith(it) }
+    }
+
     private fun KoFileDeclaration.packagePath(): String = packagee?.name.orEmpty()
 
     private fun KoFileDeclaration.inPackage(relative: String): Boolean =
@@ -82,5 +212,37 @@ class ArchitectureTest {
 
     private companion object {
         const val BASE = "io.github.dostepnykampus"
+
+        const val HTTP_HINT = "Moduł funkcji buduje własnego klienta HTTP: weź klienta z core:network przez Hilt"
+
+        val HTTP_IMPORTS = listOf("okhttp3.", "retrofit2.", "java.net.HttpURLConnection", "java.net.URL", "java.net.*")
+
+        val HTTP_DEPENDENCY =
+            Regex(
+                pattern = """^\s*(implementation|api|compileOnly|runtimeOnly)\(libs\.(okhttp|retrofit)\b""",
+                option = RegexOption.MULTILINE,
+            )
+
+        const val STATE_HINT =
+            "Stan globalny: przenieś stan do klasy wstrzykiwanej przez Hilt i podaj go przez konstruktor"
+
+        val MUTABLE_TYPE =
+            listOf(
+                "Mutable(State|Shared)Flow",
+                """Atomic[A-Z]\w*""",
+                "mutable(List|Map|Set)Of",
+                "Mutable(List|Map|Set)",
+                "ArrayList|HashMap|HashSet",
+            ).joinToString(separator = "|", prefix = """\b(""", postfix = """)\b""").toRegex()
+
+        /** Stan globalny w kodzie produkcyjnym, z numerem zadania; lista może tylko maleć (#887). */
+        val GLOBAL_STATE = emptyMap<String, String>()
+
+        /** Pliki modułów funkcji z importem HTTP, z powodem; lista może tylko maleć (#888). */
+        val OWN_HTTP =
+            mapOf(
+                "$BASE.feature.map.MapTileHttp" to
+                    "#822: MapLibre przyjmuje tylko Call.Factory z okhttp; klient powstaje z klienta core:network",
+            )
     }
 }

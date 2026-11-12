@@ -51,7 +51,7 @@ class ListEntryTest {
 
     private val choice = TestMapListChoice().apply { savedChoice.value = true }
     private var touch: (List<String>) -> Unit = {}
-    private val fakeMap = CampusMapView { _, _, _, onBuildingsTouch, _ -> touch = onBuildingsTouch }
+    private val fakeMap = CampusMapView { _, _, _, _, onBuildingsTouch, _ -> touch = onBuildingsTouch }
     private lateinit var appViewModel: CampusMapViewModel
 
     @Before

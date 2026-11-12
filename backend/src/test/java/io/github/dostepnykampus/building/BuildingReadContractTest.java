@@ -1,21 +1,21 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.OpenApiContract;
+import io.github.dostepnykampus.SampleBuilding;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.JsonNode;
@@ -37,15 +37,9 @@ final class BuildingReadContractTest {
 
     @BeforeEach
     void insertBuilding(final WebApplicationContext context) {
-        context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO buildings (symbol, name, detail_level, outline, source)
-            VALUES ('G-900', 'Budynek próbny', 'BASIC',
-                ST_Multi(ST_GeomFromText(
-                    'POLYGON((0 0,0.001 0,0.001 0.001,0 0.001,0 0))', 4326)),
-                '© OpenStreetMap contributors')
-            """
-        ).update();
+        new SampleBuilding("G-900", "Budynek próbny", "BASIC").wkt(
+            context.getBean(JdbcClient.class), "POLYGON((0 0,0.001 0,0.001 0.001,0 0.001,0 0))"
+        );
     }
 
     @Test
@@ -145,10 +139,9 @@ final class BuildingReadContractTest {
     private static JsonNode get(final WebApplicationContext context, final String path)
         throws Exception {
         return context.getBean(ObjectMapper.class).readTree(
-            MockMvcBuilders.webAppContextSetup(context).build()
+            context.getBean(MockMvc.class)
                 .perform(MockMvcRequestBuilders.get(path))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(new OpenApiContract())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
         );
     }

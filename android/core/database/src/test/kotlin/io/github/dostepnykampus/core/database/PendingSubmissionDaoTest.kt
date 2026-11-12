@@ -60,10 +60,11 @@ class PendingSubmissionDaoTest {
     fun br9_resave_replaces() =
         runTest {
             dao.save(submission(id = ID, savedAt = 1), photos("p1", "p2", of = ID))
-            dao.save(submission(id = ID, savedAt = 1).copy(severity = 3), photos("p3", of = ID))
+            val replaced = dao.save(submission(id = ID, savedAt = 1).copy(severity = 3), photos("p2", "p3", of = ID))
+            assertEquals(listOf("zdjecia/p1.jpg"), replaced)
             val saved = dao.all().single()
             assertEquals(3, saved.submission.severity)
-            assertEquals(listOf("p3"), saved.photos.map { it.photoId })
+            assertEquals(setOf("p2", "p3"), saved.photos.map { it.photoId }.toSet())
         }
 
     @Test

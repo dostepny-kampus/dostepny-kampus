@@ -24,7 +24,7 @@ rule_files+='|^\.github/(workflows|scripts|commitlint)/|^\.github/dependabot\.ya
 rule_files+='|^\.commitlintrc|(^|/)\.gitleaks|(^|/)\.editorconfig$|(^|/)\.gitattributes$|(^|/)lint\.xml$'
 rule_files+='|(^|/)\.mvn/(jvm|maven)\.config$|^backend/src/test/(.*/)?([^/]*ArchitectureTest|ModularityTest)\.java$'
 rule_files+='|^android/(.*/)?src/test/(.*/)?[^/]*ArchitectureTest\.kt$'
-rule_files+='|^api/redocly\.yaml$|^docs/(\.vale\.ini$|\.markdownlint|styles/|scripts/verify\.py$|scripts/check_ids\.py$)'
+rule_files+='|^api/(redocly\.yaml|package(-lock)?\.json)$|^docs/(\.vale\.ini$|\.markdownlint|styles/|scripts/verify\.py$|scripts/check_ids\.py$)'
 
 pom_words='jacoco|qulice|<minimum>|<exclude|skip|haltOnFailure|testFailureIgnore'
 pom_words+='|(?i:errorprone|nullaway|jspecify)|-Xep|-Xplugin'
@@ -120,6 +120,47 @@ only_version_bumps() {
   [[ "$(grep -P '^-\t' <<<"$lines" | normalize_versions)" == "$(grep -P '^\+\t' <<<"$lines" | normalize_versions)" ]]
 }
 
+# Dependabot npm: manifest i jego lock zmieniają się razem, a manifest zmienia tylko wersje pakietów.
+npm_version_bump() {
+  local manifest lock object
+  case "$1" in
+    .github/commitlint/package.json | .github/commitlint/package-lock.json | api/package.json | api/package-lock.json)
+      manifest="${1%/*}/package.json"
+      lock="${1%/*}/package-lock.json"
+      ;;
+    *) return 1 ;;
+  esac
+  [[ "$(git diff --name-status --no-renames "$range" -- "$lock" "$manifest")" == $'M\t'"$lock"$'\nM\t'"$manifest" ]] ||
+    return 1
+  [[ -z "$(git diff --summary "$range" -- "$lock" "$manifest")" ]] || return 1
+
+  for object in "$merge_base:$manifest" "$head:$manifest" "$merge_base:$lock" "$head:$lock"; do
+    git show "$object" || return 1
+    printf '\n'
+  done | jq -es '
+    def dependency_sections: {dependencies, devDependencies, optionalDependencies, peerDependencies};
+    def without_versions:
+      reduce (dependency_sections | keys[]) as $section (.;
+        if has($section) then .[$section] |= map_values(null) else . end);
+    def versions:
+      dependency_sections | to_entries[] | .key as $section |
+      (.value // {}) | to_entries[] | {path: [$section, .key], value};
+    def registry_version:
+      type == "string" and test("^[~^]?[0-9]+[.][0-9]+[.][0-9]+(-[0-9A-Za-z.-]+)?([+][0-9A-Za-z.-]+)?$");
+    length == 4 and (
+      . as [$before, $after, $old_lock, $new_lock] |
+      $before != $after and
+      ($before | without_versions) == ($after | without_versions) and
+      all($before | versions; . as $entry | ($after | getpath($entry.path)) as $next |
+        $entry.value == $next or ([$entry.value, $next] | all(registry_version))) and
+      ($old_lock | del(.packages)) == ($new_lock | del(.packages)) and
+      ($old_lock.packages[""] | type) == "object" and ($new_lock.packages[""] | type) == "object" and
+      ($old_lock.packages[""] | dependency_sections) == ($before | dependency_sections) and
+      ($new_lock.packages[""] | dependency_sections) == ($after | dependency_sections) and
+      ($old_lock.packages[""] | without_versions) == ($new_lock.packages[""] | without_versions)
+    )'
+}
+
 # Plik w bazie miał @NullMarked, a w PR go nie ma: usunięta adnotacja albo plik,
 # albo package-info.java przeniesiony pod inną ścieżkę (pakiet traci adnotację).
 null_marked_removed() {
@@ -144,7 +185,7 @@ check_file() {
   if ((rule && dependabot)) || [[ $path =~ (^|/)pom\.xml$|\.gradle$|\.(kt|kts|java|xml)$ ]]; then
     lines="$(diff_lines "$old" "$path")"
   fi
-  if ((dependabot)) && [[ $status == M ]] && only_version_bumps "$lines"; then
+  if ((dependabot)) && [[ $status == M ]] && { only_version_bumps "$lines" || npm_version_bump "$path" >/dev/null; }; then
     echo "Dependabot: w ${path} zmieniły się tylko wersje."
   elif ((rule)); then
     add_soft "$path" "" "zmieniony plik reguł jakości"

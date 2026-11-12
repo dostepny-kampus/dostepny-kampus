@@ -45,4 +45,12 @@ class EntranceTest {
     fun us2_1_main_flag_distinguishes() {
         assertNotEquals(sideEntrance, sideEntrance.copy(isMain = true))
     }
+
+    @Test
+    fun br25_filters_entrance_types() {
+        val types = listOf("main", "emergency", "service", "exit", "staircase", "garage", "yes", null)
+        val visitors = types.map { sideEntrance.copy(type = it) }.filter(Entrance::isForVisitors)
+
+        assertEquals(listOf("main", "service", "staircase", "yes", null), visitors.map(Entrance::type))
+    }
 }

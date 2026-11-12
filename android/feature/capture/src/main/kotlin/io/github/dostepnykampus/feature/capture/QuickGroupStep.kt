@@ -16,10 +16,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.FloorOption
+import io.github.dostepnykampus.core.designsystem.FloorOptions
+import io.github.dostepnykampus.core.designsystem.FloorPicker
+import io.github.dostepnykampus.core.designsystem.FloorPickerLayout
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.BarrierGroup
+import io.github.dostepnykampus.core.model.Floor
 
-private val BASIC_FLOORS = 0..4
+private val BASIC_FLOORS = -1..10
+
+/**
+ * Odpowiedź na pytanie o piętro (US4.5, BR-14); oba pola `null` to „Nie wiem”.
+ *
+ * @property number numer piętra w budynku podstawowym albo przy nieznanej pozycji
+ * @property floor piętro z danych PWr w budynku szczegółowym
+ */
+data class QuickFloor(val number: Int? = null, val floor: Floor? = null)
+
+/**
+ * Piętra budynku do pytania w kroku 2, od najniższego; pusta lista to budynek podstawowy (BR-G1).
+ *
+ * @property items piętra z danych PWr
+ */
+data class QuickFloors(val items: List<Floor> = emptyList())
 
 /** Napis grupy barier na V4, prostszy niż nazwa grupy w formularzu C2 (BR-14, PW-7). */
 @StringRes
@@ -49,24 +69,54 @@ internal fun QuickGroupQuestion(onGroup: (BarrierGroup) -> Unit) {
 }
 
 /**
- * Krok 2 V4, pytanie o piętro po wyborze [group]: „Nie wiem” i piętra od najniższego (US4.5, BR-14).
- * W budynku podstawowym piętra to parter i cztery kolejne; budynek szczegółowy dostanie etykiety PWr (US4.5).
+ * Krok 2 V4, pytanie o piętro po wyborze [group]: „Nie wiem” na górze i piętra od najniższego (US4.5, BR-14).
+ * W budynku szczegółowym etykiety z danych PWr ([floors]); w podstawowym i przy nieznanej pozycji numery od -1
+ * do 10, z „Parter” zamiast 0.
  *
  * @param group wybrana grupa, pokazana nad pytaniem
- * @param onFloor numer piętra; `null` to „Nie wiem”
+ * @param floors piętra budynku z danych PWr od najniższego
+ * @param onFloor odpowiedź
  */
 @Composable
-internal fun QuickFloorQuestion(group: BarrierGroup, onFloor: (Int?) -> Unit) {
+internal fun QuickFloorQuestion(group: BarrierGroup, floors: QuickFloors, onFloor: (QuickFloor) -> Unit) {
+    val unknown = stringResource(R.string.szybkie_nie_wiem)
+    val ground = stringResource(R.string.szybkie_parter)
+    val answers = quickFloorAnswers(floors = floors, unknownLabel = unknown, groundLabel = ground)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(stringResource(group.quickLabel()))
         Text(stringResource(R.string.szybkie_pytanie_pietro))
-        BigChoice(text = stringResource(R.string.szybkie_nie_wiem), onClick = { onFloor(null) })
-        BASIC_FLOORS.forEach { floor ->
-            val label = if (floor == 0) stringResource(R.string.szybkie_parter) else floor.toString()
-            BigChoice(text = label, onClick = { onFloor(floor) })
-        }
+        FloorPicker(
+            options = FloorOptions(answers.map { it.first }),
+            selectedKey = null,
+            onSelect = { option -> answers.firstOrNull { it.first == option }?.let { onFloor(it.second) } },
+            layout = FloorPickerLayout.LIST,
+        )
     }
 }
+
+/**
+ * Opcje pytania o piętro z odpowiedzią każdej: „Nie wiem” na górze, potem piętra z danych PWr od najniższego
+ * albo numery od -1 do 10 w budynku podstawowym (US4.5, BR-G1).
+ */
+internal fun quickFloorAnswers(
+    floors: QuickFloors,
+    unknownLabel: String,
+    groundLabel: String,
+): List<Pair<FloorOption, QuickFloor>> {
+    val unknown = FloorOption(key = UNKNOWN_KEY, label = unknownLabel) to QuickFloor()
+    val known =
+        if (floors.items.isEmpty()) {
+            BASIC_FLOORS.map { number ->
+                val label = if (number == 0) groundLabel else number.toString()
+                FloorOption(key = "n$number", label = label) to QuickFloor(number = number)
+            }
+        } else {
+            floors.items.map { floor -> FloorOption(key = floor.id, label = floor.label) to QuickFloor(floor = floor) }
+        }
+    return listOf(unknown) + known
+}
+
+private const val UNKNOWN_KEY = "?"
 
 @Composable
 private fun BigChoice(text: String, onClick: () -> Unit) {

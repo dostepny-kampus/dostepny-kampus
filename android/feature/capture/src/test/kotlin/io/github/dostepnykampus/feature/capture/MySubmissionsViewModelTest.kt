@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.capture
 
 import io.github.dostepnykampus.core.data.submissions.OwnSubmission
+import io.github.dostepnykampus.core.data.submissions.RefusalReason
 import io.github.dostepnykampus.core.data.submissions.SendState
 import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.model.BarrierType
@@ -97,26 +98,11 @@ class MySubmissionsViewModelTest {
     @Test
     fun `us9_5 powód odmowy`() =
         runTest(dispatcher) {
-            rows.value =
-                listOf(
-                    row(id = "a", state = SendState.REFUSED, code = 403),
-                    row(id = "b", state = SendState.REFUSED, code = 422),
-                    row(id = "c", state = SendState.SENT),
-                )
+            val reasons = RefusalReason.entries
+            rows.value = reasons.map { row(id = it.name, state = SendState.REFUSED, refusal = it) }
             collect()
 
-            val reasons = list().items.map { it.refusal }
-            assertEquals(listOf(RefusalReason.NO_PERMISSION, RefusalReason.NOT_ACCEPTED, null), reasons)
-        }
-
-    /** Odmowa 400, 404 i 413 to „Serwer nie przyjął zgłoszenia…”; tylko 403 to brak uprawnień (US9.5, BR-26). */
-    @Test
-    fun `us9_5 inne kody to nieprzyjęte`() =
-        runTest(dispatcher) {
-            rows.value = listOf(400, 404, 413).map { row(id = "k$it", state = SendState.REFUSED, code = it) }
-            collect()
-
-            assertEquals(List(3) { RefusalReason.NOT_ACCEPTED }, list().items.map { it.refusal })
+            assertEquals(reasons, list().items.map { it.refusal })
         }
 
     /** „Czeka na wysłanie” nie liczy zgłoszeń, których serwer nie przyjął (US9.1, US9.5). */
@@ -126,8 +112,8 @@ class MySubmissionsViewModelTest {
             rows.value =
                 listOf(
                     row(id = "a", state = SendState.LOCAL),
-                    row(id = "b", state = SendState.REFUSED, code = 403),
-                    row(id = "c", state = SendState.REFUSED, code = 400),
+                    row(id = "b", state = SendState.REFUSED, refusal = RefusalReason.NO_PERMISSION),
+                    row(id = "c", state = SendState.REFUSED, refusal = RefusalReason.NOT_ACCEPTED),
                 )
             collect()
 
@@ -177,7 +163,7 @@ class MySubmissionsViewModelTest {
     private fun list(): MySubmissions = (viewModel.state.value as MySubmissionsUiState.Ready).list
 }
 
-private fun row(id: String, state: SendState, code: Int? = null) =
+private fun row(id: String, state: SendState, refusal: RefusalReason? = null) =
     OwnSubmission(
         id = id,
         savedAt = Instant.ofEpochMilli(SAVED_AT),
@@ -185,7 +171,7 @@ private fun row(id: String, state: SendState, code: Int? = null) =
         buildingSymbol = "A-1",
         floorNumber = 2,
         state = state,
-        refusalCode = code,
+        refusal = refusal,
     )
 
 private const val SAVED_AT = 1_762_700_000_000L

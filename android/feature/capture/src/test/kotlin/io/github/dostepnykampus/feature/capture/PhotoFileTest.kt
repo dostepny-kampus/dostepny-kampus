@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.feature.capture
 
-import androidx.exifinterface.media.ExifInterface
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -20,14 +19,6 @@ class PhotoFileTest {
     @Test
     fun `małe zdjęcie bez powiększania`() {
         assertEquals(1600 to 1200, scaledSize(width = 1600, height = 1200))
-    }
-
-    @Test
-    fun `obrót z orientacji EXIF`() {
-        assertEquals(90f, rotationDegrees(ExifInterface.ORIENTATION_ROTATE_90))
-        assertEquals(180f, rotationDegrees(ExifInterface.ORIENTATION_ROTATE_180))
-        assertEquals(270f, rotationDegrees(ExifInterface.ORIENTATION_ROTATE_270))
-        assertEquals(0f, rotationDegrees(ExifInterface.ORIENTATION_NORMAL))
     }
 
     @Test

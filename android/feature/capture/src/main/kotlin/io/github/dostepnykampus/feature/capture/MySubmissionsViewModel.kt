@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.submissions.OwnStatuses
 import io.github.dostepnykampus.core.data.submissions.OwnSubmission
 import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
+import io.github.dostepnykampus.core.data.submissions.RefusalReason
 import io.github.dostepnykampus.core.data.submissions.SendState
 import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.model.BarrierType
@@ -26,16 +27,6 @@ import java.time.Instant
 import javax.inject.Inject
 
 private const val STOP_TIMEOUT_MS = 5_000L
-private const val HTTP_FORBIDDEN = 403
-
-/** Powód „Nie wysłano” na C3 (US9.5, BR-26). */
-enum class RefusalReason {
-    /** Serwer odebrał rolę (403): „Nie masz już uprawnień do tej czynności…”. */
-    NO_PERMISSION,
-
-    /** Inna odmowa: „Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.” */
-    NOT_ACCEPTED,
-}
 
 /**
  * Pozycja listy C3 (US8.1).
@@ -141,14 +132,7 @@ internal fun OwnSubmission.toItem(): OwnSubmissionItem =
         buildingSymbol = buildingSymbol,
         floorNumber = floorNumber,
         state = state,
-        refusal = refusalOf(this),
+        refusal = refusal,
         serverStatus = serverStatus,
         rejectionReason = rejectionReason,
     )
-
-private fun refusalOf(row: OwnSubmission): RefusalReason? =
-    when {
-        row.state != SendState.REFUSED -> null
-        row.refusalCode == HTTP_FORBIDDEN -> RefusalReason.NO_PERMISSION
-        else -> RefusalReason.NOT_ACCEPTED
-    }

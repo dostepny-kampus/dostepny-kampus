@@ -83,6 +83,7 @@
     <string name="formularz_brak_opisu">Brakuje opisu. Przy typie „inna bariera” opis jest obowiązkowy.</string>
     <string name="formularz_blad_zapisu">Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.</string>
     <string name="formularz_zapis_odrzucony">Nie zapisaliśmy zgłoszenia. Zrób zdjęcie jeszcze raz i zapisz ponownie.</string>
+    <string name="formularz_wersja_nieznana">Nie zapisaliśmy poprawki, bo telefon nie zna aktualnej wersji zgłoszenia. Otwórz „Moje zgłoszenia”, poczekaj na statusy i popraw je jeszcze raz.</string>
     <string name="formularz_sprobuj_ponownie">Spróbuj ponownie</string>
     <string name="formularz_wyjsc_pytanie">Wyjść bez zapisu?</string>
     <string name="formularz_wyjsc_opis">Wpisane pola nie zostaną zapisane.</string>
@@ -122,6 +123,8 @@
     <string name="moje_wyslane">Wysłane</string>
     <string name="moje_nie_wyslano">Nie wysłano</string>
     <string name="moje_brak_uprawnien">Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.</string>
+    <string name="moje_nie_odczytano">Telefon nie może odczytać tego zgłoszenia, np. brakuje pliku zdjęcia. Otwórz je, popraw i zapisz ponownie.</string>
+    <string name="moje_zmienione_na_serwerze">Ktoś zmienił to zgłoszenie na serwerze po rozpoczęciu poprawki. Otwórz je, sprawdź i zapisz ponownie.</string>
     <string name="moje_nie_przyjal">Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.</string>
     <string name="moje_otworz">Otwórz</string>
     <string name="moje_w_weryfikacji">W weryfikacji</string>

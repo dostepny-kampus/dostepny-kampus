@@ -1,12 +1,12 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.OpenApiContract;
+import io.github.dostepnykampus.SampleBuilding;
 import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -14,15 +14,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.ObjectMapper;
 
 /**
  * Testy US1: GET /buildings zwraca budynki z konturem GeoJSON,
- * posortowane według symbolu, albo pustą listę z atrybucją kontraktu.
+ * posortowane według symbolu, z atrybucją wszystkich źródeł konturów,
+ * albo pustą listę z pustą atrybucją (#852).
  *
  * <p>Każdy test zaczyna od pustej tabeli, bez budynków z pliku konturów;
  * transakcja testu przywraca je po teście.</p>
@@ -86,9 +87,27 @@ final class BuildingsHttpTest {
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
         MatcherAssert.assertThat(
-            "Pusta tabela budynków nie daje listy z atrybucją OpenStreetMap",
+            "Pusta tabela budynków nie daje pustej listy z pustą atrybucją",
             mapper.readTree(BuildingsHttpTest.body(context)),
             Matchers.equalTo(mapper.readTree(BuildingsHttpTest.empty()))
+        );
+    }
+
+    @Test
+    void nfrFortyAttributesEverySourceOfList(final WebApplicationContext context)
+        throws Exception {
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        BuildingsHttpTest.insert(jdbc, "A-1", "BASIC", BuildingsHttpTest.west());
+        BuildingsHttpTest.insert(jdbc, "C-13", "DETAILED", BuildingsHttpTest.east());
+        BuildingsHttpTest.insert(jdbc, "C-14", "BASIC", BuildingsHttpTest.west());
+        jdbc.sql("UPDATE buildings SET source = '© Politechnika Wrocławska' WHERE symbol = 'A-1'")
+            .update();
+        MatcherAssert.assertThat(
+            "Atrybucja listy pomija któreś źródło konturów albo je powtarza",
+            context.getBean(ObjectMapper.class)
+                .readTree(BuildingsHttpTest.body(context))
+                .get("source").asString(),
+            Matchers.equalTo("© OpenStreetMap contributors; © Politechnika Wrocławska")
         );
     }
 
@@ -155,6 +174,26 @@ final class BuildingsHttpTest {
             "Punkt daleko od budynków dostał podpowiedź budynku",
             mapper.readTree(BuildingsHttpTest.locate(context, "51.113", "17.0605")),
             Matchers.equalTo(mapper.readTree(BuildingsHttpTest.away()))
+        );
+    }
+
+    @Test
+    void usSixTwoDescribesPointOutsideRange(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Odpowiedź 400 podpowiedzi budynku nie ma opisu w detail",
+            BuildingsHttpTest.detail(context, "/buildings/locate?lat=91&lon=17"),
+            Matchers.not(Matchers.emptyOrNullString())
+        );
+    }
+
+    @Test
+    void usTwoDescribesMissingBuilding(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Odpowiedź 404 karty budynku nie ma opisu w detail",
+            BuildingsHttpTest.detail(context, "/buildings/Z-404"),
+            Matchers.containsString("Z-404")
         );
     }
 
@@ -239,9 +278,8 @@ final class BuildingsHttpTest {
     }
 
     private static String body(final WebApplicationContext context) throws Exception {
-        return MockMvcBuilders.webAppContextSetup(context).build()
+        return context.getBean(MockMvc.class)
             .perform(MockMvcRequestBuilders.get("/buildings"))
-            .andExpect(new OpenApiContract())
             .andReturn()
             .getResponse()
             .getContentAsString(StandardCharsets.UTF_8);
@@ -253,19 +291,7 @@ final class BuildingsHttpTest {
         final String level,
         final String outline
     ) {
-        jdbc.sql(
-            """
-            INSERT INTO buildings (symbol, name, detail_level, outline, source)
-            VALUES (:symbol, :name, :level,
-                ST_SetSRID(ST_GeomFromGeoJSON(:outline), 4326),
-                :source)
-            """
-        ).param("symbol", symbol)
-            .param("name", "Budynek %s".formatted(symbol))
-            .param("level", level)
-            .param("outline", outline)
-            .param("source", "© OpenStreetMap contributors")
-            .update();
+        new SampleBuilding(symbol, "Budynek %s".formatted(symbol), level).geoJson(jdbc, outline);
     }
 
     private static void insertUnnamed(
@@ -274,18 +300,7 @@ final class BuildingsHttpTest {
         final String level,
         final String outline
     ) {
-        jdbc.sql(
-            """
-            INSERT INTO buildings (symbol, name, detail_level, outline, source)
-            VALUES (:symbol, NULL, :level,
-                ST_SetSRID(ST_GeomFromGeoJSON(:outline), 4326),
-                :source)
-            """
-        ).param("symbol", symbol)
-            .param("level", level)
-            .param("outline", outline)
-            .param("source", "© OpenStreetMap contributors")
-            .update();
+        new SampleBuilding(symbol, null, level).geoJson(jdbc, outline);
     }
 
     private static String listedUnnamed() {
@@ -316,7 +331,7 @@ final class BuildingsHttpTest {
 
     private static String empty() {
         return """
-            {"source":"© OpenStreetMap contributors","buildings":[]}
+            {"source":"","buildings":[]}
             """;
     }
 
@@ -343,11 +358,10 @@ final class BuildingsHttpTest {
         final String lat,
         final String lon
     ) throws Exception {
-        return MockMvcBuilders.webAppContextSetup(context).build().perform(
+        return context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.get("/buildings/locate").param("lat", lat)
                 .param("lon", lon)
-        ).andExpect(new OpenApiContract())
-            .andReturn()
+        ).andReturn()
             .getResponse()
             .getContentAsString(StandardCharsets.UTF_8);
     }
@@ -355,12 +369,22 @@ final class BuildingsHttpTest {
     private static String failure(final WebApplicationContext context, final String path)
         throws Exception {
         final MockHttpServletResponse reply =
-            MockMvcBuilders.webAppContextSetup(context).build()
+            context.getBean(MockMvc.class)
                 .perform(MockMvcRequestBuilders.get(path))
-                .andExpect(new OpenApiContract())
                 .andReturn()
                 .getResponse();
         return "%d %s".formatted(reply.getStatus(), reply.getContentType());
+    }
+
+    private static String detail(final WebApplicationContext context, final String path)
+        throws Exception {
+        return context.getBean(ObjectMapper.class).readTree(
+            context.getBean(MockMvc.class)
+                .perform(MockMvcRequestBuilders.get(path))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8)
+        ).path("detail").asString("");
     }
 
     private static String yard() {
@@ -374,9 +398,8 @@ final class BuildingsHttpTest {
 
     private static String card(final WebApplicationContext context, final String symbol)
         throws Exception {
-        return MockMvcBuilders.webAppContextSetup(context).build()
+        return context.getBean(MockMvc.class)
             .perform(MockMvcRequestBuilders.get("/buildings/{symbol}", symbol))
-            .andExpect(new OpenApiContract())
             .andReturn()
             .getResponse()
             .getContentAsString(StandardCharsets.UTF_8);

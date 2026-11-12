@@ -1,17 +1,17 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
-import io.github.dostepnykampus.OpenApiContract;
+import io.github.dostepnykampus.AsCollector;
 import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -29,29 +29,20 @@ final class PhotoRequests {
     }
 
     /**
-     * Wstawia zgłoszenie z jednym zdjęciem na liście photoIds.
+     * Wstawia zgłoszenie z jednym zdjęciem na liście photoIds, zapisanym w JSON
+     * dokładnie tak, jak podano, np. wielkimi literami.
      *
      * @param status Status zgłoszenia
      * @param photo Identyfikator zdjęcia tak, jak trafia do JSON
      * @return Identyfikator zgłoszenia
      */
     UUID add(final String status, final String photo) {
-        final UUID id = UUID.randomUUID();
+        final UUID id = new SampleSubmissions(this.context)
+            .add(status, SampleSubmissions.quick(UUID.fromString(photo)));
         this.context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO submissions (id, status, kind, location, content)
-            VALUES (:id, :status, 'QUICK', ST_SetSRID(ST_MakePoint(17.0, 51.0), 4326),
-                CAST(:content AS JSONB))
-            """
-        ).param("id", id).param("status", status).param(
-            "content",
-            String.join(
-                "",
-                "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
-                "\"coordinates\":[17.0,51.0]},\"barrierGroup\":\"OTHER\",",
-                "\"photoIds\":[\"%s\"]}"
-            ).formatted(photo)
-        ).update();
+            "UPDATE submissions SET content = jsonb_set(content, '{photoIds}', CAST(:photos AS JSONB))"
+                .concat(" WHERE id = :id")
+        ).param("photos", "[\"%s\"]".formatted(photo)).param("id", id).update();
         return id;
     }
 
@@ -66,11 +57,11 @@ final class PhotoRequests {
      */
     MockHttpServletResponse put(final UUID id, final UUID photo, final byte[] body)
         throws Exception {
-        return MockMvcBuilders.webAppContextSetup(this.context).build().perform(
+        return this.context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.put("/submissions/{id}/photos/{photo}", id, photo)
                 .contentType(MediaType.IMAGE_JPEG).content(body)
-        ).andExpect(new OpenApiContract())
-            .andReturn().getResponse();
+                .with(new AsCollector())
+        ).andReturn().getResponse();
     }
 
     /**
@@ -82,9 +73,8 @@ final class PhotoRequests {
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
     MockHttpServletResponse get(final UUID id, final String photo) throws Exception {
-        return MockMvcBuilders.webAppContextSetup(this.context).build().perform(
+        return this.context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.get("/submissions/{id}/photos/{photo}", id, photo)
-        ).andExpect(new OpenApiContract())
-            .andReturn().getResponse();
+        ).andReturn().getResponse();
     }
 }

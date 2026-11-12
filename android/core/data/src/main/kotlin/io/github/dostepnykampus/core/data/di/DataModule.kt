@@ -107,7 +107,7 @@ object DataModule {
         SubmissionQueue(
             store = store,
             server = SubmissionServer(create = api::create, putPhoto = api::putPhoto, update = api::update),
-            onSaved = sync::schedule,
+            onSaved = sync::scheduleAfterSave,
             history = history,
         )
 

@@ -14,12 +14,15 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.model.BarrierGroup
+import io.github.dostepnykampus.core.model.Floor
+import io.github.dostepnykampus.core.model.FloorList
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
@@ -86,6 +89,21 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Toalety").performClick()
         compose.onNodeWithText("Na którym piętrze?").assertIsDisplayed()
         assertEquals(emptyList<ReportRoute>(), next)
+    }
+
+    /** Wiersz: V4 krok 2 w budynku szczegółowym, piętro z danych PWr do kroku 3, US4.5. */
+    @Test
+    fun us4_5_detailed_to_step_3() {
+        val plan = FloorList(source = "PWr", floors = listOf(Floor(id = "A-1/p-1", label = "Piwnica", order = -1)))
+        show(
+            atGroup,
+            positions = PositionSource { flowOf(PositionFix(INSIDE, ACCURACY, 0L)) },
+            floors = { symbol -> plan.takeIf { symbol == "A-1" } },
+        )
+        compose.onNodeWithText("Toalety").performClick()
+        compose.onNodeWithText("Piwnica").performClick()
+        val chosen = atGroup.copy(group = BarrierGroup.TOILETS, floorId = "A-1/p-1", floorLabel = "Piwnica")
+        assertEquals(listOf(chosen.copy(isFloorAsked = true)), next)
     }
 
     @Test
@@ -162,6 +180,7 @@ class QuickReportScreenTest {
     private fun show(
         route: ReportRoute,
         positions: PositionSource = PositionSource { flow { throw SecurityException("brak zgody") } },
+        floors: BuildingFloors = BuildingFloors { null },
     ) {
         val app = ApplicationProvider.getApplicationContext<Application>()
         shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -172,9 +191,10 @@ class QuickReportScreenTest {
             QuickSendViewModel(
                 positions = positions,
                 locationSwitch = LocationSwitch { flowOf(true) },
-                catalog = catalog,
                 saver = { _, _, _ -> },
                 networkStatus = NetworkStatus { flowOf(true) },
+                buildingFloors = floors,
+                buildingLookup = BuildingLookup(catalog, EmptyCoroutineContext),
             )
         compose.setContent {
             DostepnyKampusTheme {

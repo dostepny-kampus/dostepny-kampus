@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
@@ -31,6 +32,17 @@ class OwnSubmissionMapperTest {
             ).map { refusalCodeOf(it) }
 
         assertEquals(listOf(422, 404, 409, null, null), codes)
+    }
+
+    /** 403 to brak uprawnień, 409 konflikt wersji, inne kody to nieprzyjęte, brak kodu to nieodczytane (#861). */
+    @Test
+    fun `us9_5 powód z kodu`() {
+        val reasons = listOf(403, 409, 400, 404, 413, 422, null).map { refusalReasonOf(OwnSubmissionState.REFUSED, it) }
+
+        val others = List(4) { RefusalReason.NOT_ACCEPTED }
+        val expected = listOf(RefusalReason.NO_PERMISSION, RefusalReason.CHANGED_ON_SERVER) + others
+        assertEquals(expected + RefusalReason.UNREADABLE, reasons)
+        assertEquals(null, refusalReasonOf(OwnSubmissionState.SENT, 403))
     }
 
     @Test
