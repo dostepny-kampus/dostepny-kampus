@@ -9,6 +9,7 @@ plugins {
 }
 
 dependencies {
+    api(libs.androidx.navigation3.runtime)
     api(libs.kotlinx.serialization.core)
     implementation(libs.androidx.compose.runtime)
 }

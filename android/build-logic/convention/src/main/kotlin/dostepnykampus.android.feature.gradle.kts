@@ -9,7 +9,3 @@ plugins {
     id("dostepnykampus.android.compose")
     id("org.jetbrains.kotlin.plugin.serialization")
 }
-
-dependencies {
-    "implementation"(libs.findLibrary("androidx-navigation3-runtime").get())
-}
