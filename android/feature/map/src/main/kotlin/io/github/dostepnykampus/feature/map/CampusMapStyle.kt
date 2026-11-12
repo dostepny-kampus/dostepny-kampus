@@ -17,6 +17,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import org.maplibre.android.maps.Style
 
 /** Warstwa wypełnienia konturów; widok mapy szuka w niej dotkniętego budynku. */
 internal const val BUILDINGS_LAYER = "budynki"
@@ -112,6 +113,9 @@ fun campusMapStyle(data: CampusMapData, selection: MapSelection, colors: MapStyl
         }
     return style.toString()
 }
+
+/** Budowniczy stylu MapLibre z tekstu [style] z [campusMapStyle]; MapLibre przyjmuje styl tylko jako tekst. */
+internal fun styleBuilder(style: String): Style.Builder = Style.Builder().fromJson(style)
 
 /** Nazwa obrazu znaku wejścia o oznaczeniu [marking] (US2.1, NFR-21). */
 internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${marking.name}"

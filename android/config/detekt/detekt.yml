@@ -58,3 +58,45 @@ potential-bugs:
 
 style:
   excludes: ['**/build/generated/**']
+  # Tekst JSON powstaje i jest czytany tylko w plikach granicznych (NFR-46). Osobny egzemplarz reguły, więc
+  # domyślna lista ForbiddenMethodCall działa dalej wszędzie. Wyjątki to ścieżki plików, nie pakiety; lista
+  # może tylko maleć. Wywołanie toString na typie JsonElement kompilator widzi jako Any.toString, więc reguła
+  # łapie je tylko dla typów JsonObject, JsonArray i JsonPrimitive.
+  ForbiddenMethodCall/tekst-json:
+    active: true
+    excludes:
+      - '**/build/generated/**'
+      # Testy porównują tekst JSON z oczekiwanym i czytają odpowiedzi atrap serwera.
+      - '**/src/test/**'
+      - '**/src/testDebug/**'
+      - '**/src/androidTest/**'
+      # Klient sieci: treść żądań i odpowiedzi HTTP.
+      - '**/core/network/src/main/kotlin/io/github/dostepnykampus/core/network/BuildingsApi.kt'
+      - '**/core/network/src/main/kotlin/io/github/dostepnykampus/core/network/SubmissionJson.kt'
+      # Kodek pamięci podręcznej: dokument JSON w wierszu building_cache.
+      - '**/core/data/src/main/kotlin/io/github/dostepnykampus/core/data/buildings/BuildingCacheCodec.kt'
+      # Styl mapy: MapLibre przyjmuje styl tylko jako tekst (#806, #809, #828).
+      - '**/feature/map/src/main/kotlin/io/github/dostepnykampus/feature/map/CampusMapStyle.kt'
+    methods:
+      - reason: 'Tekst JSON poza plikiem granicznym. Użyj typów GeoJSON z biblioteki albo przenieś zamianę do pliku granicznego.'
+        value: 'org.maplibre.android.maps.Style.Builder.fromJson'
+      - reason: 'Tekst JSON poza plikiem granicznym. Użyj typów GeoJSON z biblioteki albo przenieś zamianę do pliku granicznego.'
+        value: 'kotlinx.serialization.StringFormat.encodeToString'
+      - reason: 'Tekst JSON poza plikiem granicznym. Użyj typów GeoJSON z biblioteki albo przenieś zamianę do pliku granicznego.'
+        value: 'kotlinx.serialization.json.Json.encodeToString'
+      - reason: 'Tekst JSON poza plikiem granicznym. Użyj typów GeoJSON z biblioteki albo przenieś zamianę do pliku granicznego.'
+        value: 'kotlinx.serialization.encodeToString'
+      - reason: 'Tekst JSON poza plikiem granicznym. Użyj typów GeoJSON z biblioteki albo przenieś zamianę do pliku granicznego.'
+        value: 'kotlinx.serialization.StringFormat.decodeFromString'
+      - reason: 'Tekst JSON poza plikiem granicznym. Użyj typów GeoJSON z biblioteki albo przenieś zamianę do pliku granicznego.'
+        value: 'kotlinx.serialization.json.Json.decodeFromString'
+      - reason: 'Tekst JSON poza plikiem granicznym. Użyj typów GeoJSON z biblioteki albo przenieś zamianę do pliku granicznego.'
+        value: 'kotlinx.serialization.decodeFromString'
+      - reason: 'Tekst JSON poza plikiem granicznym. Użyj typów GeoJSON z biblioteki albo przenieś zamianę do pliku granicznego.'
+        value: 'kotlinx.serialization.json.Json.parseToJsonElement'
+      - reason: 'Tekst JSON poza plikiem granicznym. Użyj typów GeoJSON z biblioteki albo przenieś zamianę do pliku granicznego.'
+        value: 'kotlinx.serialization.json.JsonObject.toString'
+      - reason: 'Tekst JSON poza plikiem granicznym. Użyj typów GeoJSON z biblioteki albo przenieś zamianę do pliku granicznego.'
+        value: 'kotlinx.serialization.json.JsonArray.toString'
+      - reason: 'Tekst JSON poza plikiem granicznym. Użyj typów GeoJSON z biblioteki albo przenieś zamianę do pliku granicznego.'
+        value: 'kotlinx.serialization.json.JsonPrimitive.toString'

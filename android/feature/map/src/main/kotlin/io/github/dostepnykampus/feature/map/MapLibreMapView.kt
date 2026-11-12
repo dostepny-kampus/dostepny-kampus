@@ -104,7 +104,7 @@ object MapLibreMapView : CampusMapView {
             onDispose { map = null }
         }
         DisposableEffect(map, style, labelSize) {
-            map?.setStyle(Style.Builder().fromJson(style)) { loaded ->
+            map?.setStyle(styleBuilder(style)) { loaded ->
                 val images = MapImages(colors = colors, density = density.density, labelSize = labelSize)
                 loaded.addMapImages(labels = data.labels, selected = selection.entrance, images = images)
             }
