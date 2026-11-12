@@ -6,8 +6,6 @@
 package io.github.dostepnykampus.identity;
 
 import java.util.List;
-import java.util.Objects;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 /**
@@ -43,18 +41,24 @@ record CurrentUserResponse(String id, String displayName, String email, List<Str
     CurrentUserResponse(final JwtAuthenticationToken account) {
         this(
             account.getName(),
-            CurrentUserResponse.name(account.getToken(), account.getName()),
-            Objects.requireNonNullElse(account.getToken().getClaimAsString("email"), ""),
+            CurrentUserResponse.claim(
+                account, "name",
+                CurrentUserResponse.claim(account, "preferred_username", account.getName())
+            ),
+            CurrentUserResponse.claim(account, "email", ""),
             CurrentUserResponse.ROLES.stream()
                 .filter(role -> CurrentUserResponse.granted(account, role)).toList()
         );
     }
 
-    private static String name(final Jwt token, final String fallback) {
-        return Objects.requireNonNullElse(
-            token.getClaimAsString("name"),
-            Objects.requireNonNullElse(token.getClaimAsString("preferred_username"), fallback)
-        );
+    private static String claim(
+        final JwtAuthenticationToken account, final String name, final String fallback
+    ) {
+        String text = fallback;
+        if (account.getTokenAttributes().get(name) instanceof String found) {
+            text = found;
+        }
+        return text;
     }
 
     private static boolean granted(final JwtAuthenticationToken account, final String role) {
