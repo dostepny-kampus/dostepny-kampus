@@ -96,7 +96,23 @@ class CampusMapDataTest {
 
     @Test
     fun us2_touched_symbols_once() {
-        assertEquals(listOf("C-3", "C-4", "C-13"), symbolsOf(listOf("C-3/C-4", "C-13", "C-3/C-4")))
+        assertEquals(listOf("C-3", "C-4", "C-13"), data.symbolsAt(listOf(0, 1, 0)))
+    }
+
+    /** Dotknięcie konturu wspólnego czyta jego numer z obiektu i daje oba symbole, bez dzielenia podpisu. */
+    @Test
+    fun us2_shared_outline_both() {
+        val numbers = parse(data.buildings).mapNotNull { it.properties.text(OUTLINE_NUMBER)?.toInt() }
+        assertEquals(listOf(0, 1), numbers)
+        assertEquals(listOf("C-3", "C-4"), data.symbolsAt(numbers.take(n = 1)))
+        assertEquals(emptyList<String>(), data.symbolsAt(listOf(2)))
+    }
+
+    @Test
+    fun us1_1_outline_of_building() {
+        assertEquals(listOf("C-3", "C-4"), data.outlineOf("C-4"))
+        assertEquals(null, data.outlineOf("X-1"))
+        assertEquals(null, data.outlineOf(building = null))
     }
 
     @Test
