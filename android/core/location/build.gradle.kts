@@ -15,8 +15,11 @@ android {
 
 dependencies {
     api(project(":core:model"))
+    api(libs.dagger)
     api(libs.kotlinx.coroutines.core)
+    implementation(libs.hilt.core)
     testImplementation(libs.junit4)
     testImplementation(libs.robolectric)
+    testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.kotlinx.coroutines.test)
 }

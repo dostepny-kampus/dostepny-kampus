@@ -107,6 +107,10 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | V1 | pierwsze otwarcie bez internetu | [`m-v1-mapa-pierwsze-otwarcie`](../../_generated/m-v1-mapa-pierwsze-otwarcie.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | znaleziona sala | [`m-v1-mapa-sala`](../../_generated/m-v1-mapa-sala.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | bariera na mapie | [`m-v1-mapa-bariera`](../../_generated/m-v1-mapa-bariera.svg) | [odwiedzający](odwiedzajacy.md) |
+| V1 | panel „Teren na mapie” | [`m-v1-mapa-teren-panel`](../../_generated/m-v1-mapa-teren-panel.svg) | [odwiedzający](odwiedzajacy.md) |
+| V1 | granica terenu | [`m-v1-mapa-teren-granica`](../../_generated/m-v1-mapa-teren-granica.svg) | [odwiedzający](odwiedzajacy.md) |
+| V1 | wynik z innego terenu | [`m-v1-mapa-teren-wynik`](../../_generated/m-v1-mapa-teren-wynik.svg) | [odwiedzający](odwiedzajacy.md) |
+| V1 | po zmianie terenu | [`m-v1-mapa-teren-zmiana`](../../_generated/m-v1-mapa-teren-zmiana.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | mała karta nad mapą | [`m-v2-karta-budynku-mala`](../../_generated/m-v2-karta-budynku-mala.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | zwykły, budynek szczegółowy (wzorzec) | [`m-v2-karta-budynku`](../../_generated/m-v2-karta-budynku.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | budynek podstawowy bez wejścia zalecanego | [`m-v2-karta-budynku-podstawowy`](../../_generated/m-v2-karta-budynku-podstawowy.svg) | [odwiedzający](odwiedzajacy.md) |

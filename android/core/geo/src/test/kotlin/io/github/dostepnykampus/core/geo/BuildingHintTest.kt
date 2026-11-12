@@ -48,7 +48,8 @@ class BuildingHintTest {
 
     @Test
     fun us6_2_inside_outline() {
-        val hint = hintBuilding(GeoPoint(longitude = LON + SIDE / 2, latitude = LAT + SIDE / 2), listOf(building))
+        val point = GeoPoint(longitude = LON + SIDE / 2, latitude = LAT + SIDE / 2)
+        val hint = buildingHints(point, listOf(building)).suggested
         assertEquals(BuildingHint(building, distanceMeters = 0.0, isInside = true), hint)
         assertTrue(hint?.isInside == true)
     }
@@ -58,7 +59,7 @@ class BuildingHintTest {
      */
     @Test
     fun us6_2_edge_hint_not_inside() {
-        val hint = checkNotNull(hintBuilding(gridPoint(x = 8.0, y = 4.0), listOf(gridBuilding)))
+        val hint = checkNotNull(buildingHints(gridPoint(x = 8.0, y = 4.0), listOf(gridBuilding)).suggested)
         assertEquals(gridBuilding, hint.building)
         assertEquals(0.0, hint.distanceMeters, EXACT)
         assertFalse(hint.isInside)
@@ -67,7 +68,7 @@ class BuildingHintTest {
     /** Wiersz: G2, decyzja 137, BR-G2 — to samo dla krawędzi dziedzińca. */
     @Test
     fun br_g2_courtyard_hint_not_in() {
-        val hint = checkNotNull(hintBuilding(gridPoint(x = 3.0, y = 4.0), listOf(gridBuilding)))
+        val hint = checkNotNull(buildingHints(gridPoint(x = 3.0, y = 4.0), listOf(gridBuilding)).suggested)
         assertEquals(gridBuilding, hint.building)
         assertEquals(0.0, hint.distanceMeters, EXACT)
         assertFalse(hint.isInside)
@@ -76,7 +77,7 @@ class BuildingHintTest {
     /** Wiersz: G3, US6.2 — punkt ściśle w konturze tuż przy krawędzi: ten budynek, 0 m, w konturze. */
     @Test
     fun us6_2_near_edge_hint_inside() {
-        val hint = checkNotNull(hintBuilding(gridPoint(x = 7.9375, y = 4.0), listOf(gridBuilding)))
+        val hint = checkNotNull(buildingHints(gridPoint(x = 7.9375, y = 4.0), listOf(gridBuilding)).suggested)
         assertEquals(gridBuilding, hint.building)
         assertEquals(0.0, hint.distanceMeters, EXACT)
         assertTrue(hint.isInside)
@@ -86,19 +87,20 @@ class BuildingHintTest {
     @Test
     fun br_g4_hint_within_50_m() {
         listOf(30.0, 49.0).forEach { meters ->
-            assertEquals(meters, checkNotNull(hintBuilding(north(meters), listOf(building))).distanceMeters, METER)
+            val hint = checkNotNull(buildingHints(north(meters), listOf(building)).suggested)
+            assertEquals(meters, hint.distanceMeters, METER)
         }
     }
 
     /** Wiersz: 60 m od konturu → bez podpowiedzi, zgłoszenie „poza budynkiem”. */
     @Test
     fun br_g4_no_hint_beyond_50_m() {
-        assertNull(hintBuilding(north(meters = 60.0), listOf(building)))
+        assertNull(buildingHints(north(meters = 60.0), listOf(building)).suggested)
     }
 
     @Test
     fun br_g2_no_buildings_no_hint() {
-        assertNull(hintBuilding(north(meters = 1.0), emptyList()))
+        assertNull(buildingHints(north(meters = 1.0), emptyList()).suggested)
     }
 
     private fun gridSquare(origin: Int, size: Int): List<GeoPoint> =

@@ -27,6 +27,7 @@ skinparam note {
 state "V5 Pomoc" as V5
 state "V1 Mapa kampusu" as V1
 state "Plan piętra,\nznaleziona sala" as PLAN <<stan>>
+state "Panel terenów:\nTeren na mapie" as TEREN <<stan>>
 state "V2 Karta budynku" as V2
 state "V3 Którędy wejść" as V3
 state "Pasek dolny\nna V1, V2, V3, V5, L2" as PASEK <<stan>>
@@ -56,6 +57,9 @@ V2 --> V3 : „Sprawdź,\nktórędy wejść”
 V3 --> V2 : „Wstecz”
 V3 --> V1 : „Pokaż wejście\nna mapie”
 V1 --> PLAN : wynik z salą,\nnp. „A-1 329”
+V1 --> TEREN : przycisk terenu,\nnp. „Kampus główny”
+TEREN --> V1 : teren z listy\n(mapa tego terenu),\n„Zamknij”
+V1 --> V1 : przycisk sąsiedniego\nterenu; wynik albo budynek\nz innego terenu
 V2 --> PLAN : „Pokaż na planie”
 PLAN --> V2 : „Pokaż opis\nbudynku”
 V2 --> ZG : „Zgłoś barierę\nprzy wejściu”\n(wejście wybrane)

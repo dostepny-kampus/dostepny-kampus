@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus;
@@ -8,6 +8,8 @@ package io.github.dostepnykampus;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import java.io.IOException;
@@ -39,6 +41,10 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * @since 0.1.0
  */
+@AnalyzeClasses(
+    packagesOf = DostepnyKampusApplication.class,
+    importOptions = ImportOption.DoNotIncludeTests.class
+)
 final class BarrierArchitectureTest {
 
     /**
@@ -80,12 +86,16 @@ final class BarrierArchitectureTest {
     @TempDir
     private Path dir;
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("rules")
-    void barrierPassesOnCurrentCode(final String name, final ArchRule rule) {
-        Assertions.assertDoesNotThrow(
-            () -> rule.check(BarrierArchitectureTest.production()),
-            String.format("Reguła %s jest złamana w kodzie produkcyjnym", name)
+    @ArchTest
+    void barrierPassesOnCurrentCode(final JavaClasses classes) {
+        Assertions.assertAll(
+            Stream.of("A-1", "A-2", "A-3", "A-4", "A-5", "A-6", "A-7", "A-8", "A-9").map(
+                name -> () -> Assertions.assertDoesNotThrow(
+                    () -> BarrierArchitectureTest.rule(name, BarrierArchitectureTest.MODULE)
+                        .check(classes),
+                    String.format("Reguła %s jest złamana w kodzie produkcyjnym", name)
+                )
+            )
         );
     }
 
@@ -99,14 +109,6 @@ final class BarrierArchitectureTest {
             BarrierArchitectureTest.rule(name, BarrierArchitectureTest.SAMPLES)
                 .evaluate(this.compiled(pack, body)).hasViolation(),
             Matchers.is(true)
-        );
-    }
-
-    private static Stream<Arguments> rules() {
-        return Stream.of("A-1", "A-2", "A-3", "A-4", "A-5", "A-6", "A-7", "A-8", "A-9").map(
-            name -> Arguments.of(
-                name, BarrierArchitectureTest.rule(name, BarrierArchitectureTest.MODULE)
-            )
         );
     }
 
@@ -204,12 +206,6 @@ final class BarrierArchitectureTest {
                 .should().dependOnClassesThat().resideInAPackage(adapter),
             "A-9", ArchitectureTest.errorTypes()
         );
-    }
-
-    private static JavaClasses production() {
-        return new ClassFileImporter()
-            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
-            .importPackagesOf(DostepnyKampusApplication.class);
     }
 
     private JavaClasses compiled(final String pack, final String body) throws IOException {

@@ -1,23 +1,15 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus;
 
-import com.networknt.schema.SchemaLocation;
-import com.networknt.schema.SchemaRegistry;
-import com.networknt.schema.dialect.Dialects;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -27,13 +19,12 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import tools.jackson.databind.JsonNode;
 
 /**
  * Parytet tras serwera i kontraktu {@code api/openapi.yaml} (decyzja 122).
  *
- * <p>Operacja to para "METODA ścieżka"; nazwy zmiennych w ścieżce nie
- * mają znaczenia, a prefiks z {@code servers} kontraktu jest doliczany.
+ * <p>Operacja to para "METODA ścieżka" z {@link ContractOperation}; nazwy
+ * zmiennych w ścieżce nie mają znaczenia, a prefiks z {@code servers} jest doliczany.
  * Każda operacja kontraktu ma handler w kontekście Springa albo stoi
  * na zamkniętej liście operacji jeszcze niezrobionych, z powodem. Każdy
  * handler aplikacji ma operację w kontrakcie. Operacja z listy, która
@@ -61,20 +52,7 @@ final class RouteParityTest {
         Map.entry("GET /progress", "postęp inspekcji: moduł inspekcji"),
         Map.entry("GET /export.geojson", "eksport GeoJSON: moduł eksportu"),
         Map.entry("GET /export.csv", "eksport CSV: moduł eksportu"),
-        Map.entry("GET /me", "profil użytkownika: moduł tożsamości"),
         Map.entry("POST /invitations", "zaproszenia: moduł tożsamości")
-    );
-
-    /**
-     * Zmienna w szablonie ścieżki, także z wyrażeniem regularnym Springa.
-     */
-    private static final Pattern VARIABLE = Pattern.compile("\\{[^}]*}");
-
-    /**
-     * Metody HTTP, które kontrakt może opisywać pod ścieżką.
-     */
-    private static final Set<String> VERBS = Set.of(
-        "get", "put", "post", "delete", "patch", "head", "options", "trace"
     );
 
     @Test
@@ -175,17 +153,6 @@ final class RouteParityTest {
         );
     }
 
-    @Test
-    void routeParityVariableNamesAndServerPrefixAreNormalized() {
-        MatcherAssert.assertThat(
-            "Nazwy zmiennych albo prefiks serwera wpływają na parytet",
-            RouteParityTest.normalized("get", "/api/", "/buildings/{id:[A-Z]+}/floors"),
-            Matchers.equalTo(
-                RouteParityTest.normalized("GET", "/api", "/buildings/{symbol}/floors")
-            )
-        );
-    }
-
     private static List<String> problems(
         final Set<String> spec, final Set<String> handlers, final Map<String, String> pending
     ) {
@@ -237,37 +204,12 @@ final class RouteParityTest {
         }
         return verbs.stream().flatMap(
             verb -> info.getPatternValues().stream()
-                .map(pattern -> RouteParityTest.normalized(verb, "", pattern))
+                .map(pattern -> ContractOperation.name(verb, "", pattern))
         ).toList();
     }
 
-    private static Set<String> operations() throws Exception {
-        final String location = "https://dostepny-kampus.test/openapi.yaml";
-        final String text = Files.readString(Path.of("..", "api", "openapi.yaml"));
-        final JsonNode tree = SchemaRegistry.withDialect(
-            Dialects.getOpenApi31(),
-            builder -> builder.schemas(Map.of(location, text))
-        ).getSchema(SchemaLocation.of(location)).getSchemaNode();
-        final String prefix = RouteParityTest.prefix(tree);
-        return tree.path("paths").properties().stream().flatMap(
-            path -> path.getValue().propertyNames().stream()
-                .filter(RouteParityTest.VERBS::contains)
-                .map(verb -> RouteParityTest.normalized(verb, prefix, path.getKey()))
-        ).collect(Collectors.toCollection(TreeSet::new));
-    }
-
-    private static String prefix(final JsonNode tree) {
-        return URI.create(
-            tree.path("servers").path(0).path("url").asString("/")
-                .replace("{", "").replace("}", "")
-        ).getPath();
-    }
-
-    private static String normalized(final String verb, final String prefix, final String path) {
-        return "%s %s%s".formatted(
-            verb.toUpperCase(Locale.ROOT),
-            prefix.replaceAll("/+$", ""),
-            RouteParityTest.VARIABLE.matcher(path).replaceAll("{}")
-        );
+    private static Set<String> operations() {
+        return new OpenApiContract().operations().stream().map(ContractOperation::name)
+            .collect(Collectors.toCollection(TreeSet::new));
     }
 }

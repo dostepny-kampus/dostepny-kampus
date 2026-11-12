@@ -46,7 +46,7 @@ import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
 
 private const val BUILDING =
-    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"Budynek testowy",""" +
+    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"display_name":"Budynek testowy",""" +
         """"osm_id":"way/1"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,1],[0,0]]]}}"""
 
 private const val NAMED_ID = "node/10"
@@ -89,7 +89,7 @@ class EntranceOnMapTest {
     private var touch: (List<String>) -> Unit = {}
     private val choice = TestMapListChoice()
     private val fakeMap =
-        CampusMapView { data: CampusMapData, selection, camera, _, onBuildingsTouch, _: Modifier ->
+        CampusMapView { data: CampusMapData, selection, camera, _, onBuildingsTouch, _, _: Modifier ->
             shown += data to camera
             selections += selection
             touch = onBuildingsTouch
@@ -102,7 +102,13 @@ class EntranceOnMapTest {
             is MapRoute -> {
                 val model = remember { inlineMapViewModel(repository, { flowOf(true) }, choice) }
                 val state by model.uiState.collectAsStateWithLifecycle()
-                MapScreen(focus = route.focus, state = state, onListChange = model::chooseList, mapView = fakeMap)
+                MapScreen(
+                    focus = route.focus,
+                    state = state,
+                    onListChange = model::chooseList,
+                    onSearch = model::search,
+                    mapView = fakeMap,
+                )
             }
 
             is BuildingRoute -> {
@@ -187,7 +193,7 @@ class EntranceOnMapTest {
     fun us3_3_other_entrances_stay() {
         val (data, _) = showEntranceOnMap(namedCatalog())
         assertEquals(NAMED_ID, selections.last().entrance?.id)
-        assertEquals(3, Regex("\"marking\"").findAll(data.entrances).count())
+        assertEquals(3, Regex("\"marking\"").findAll(data.entrances.toString()).count())
     }
 
     /** Wiersz E3 (O3): kamera na wejściu, nie na budynku (środek budynku to 0,5; 0,5). */

@@ -50,7 +50,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 private const val CATALOG =
     """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
-        """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"Budynek testowy",""" +
+        """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"display_name":"Budynek testowy",""" +
         """"osm_id":"way/1"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,1],[0,0]]]}},""" +
         """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/10",""" +
         """"entrance":"yes","ref":"Wejście dostosowane","wheelchair":"yes"},""" +

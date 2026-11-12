@@ -24,10 +24,10 @@ class BuildingCatalogParserTest {
     private val catalog =
         parseBuildingCatalog(
             collection(
-                building(id = 1, symbols = C13, name = "\"Budynek testowy\"", geometry = square(x = 0)),
-                building(id = 2, symbols = """["H-14"]""", name = "null", geometry = square(x = 2)),
-                building(id = 3, symbols = """["H-14"]""", name = "\"H-14\"", geometry = square(x = 4)),
-                building(id = 4, symbols = """["C-3","C-4"]""", name = "\"C-3/C-4\"", geometry = square(x = 6)),
+                building(id = 1, symbols = C13, shown = "Budynek testowy", geometry = square(x = 0)),
+                building(id = 2, symbols = """["H-14"]""", shown = null, geometry = square(x = 2)),
+                building(id = 3, symbols = """["H-14"]""", shown = "Budynek drugi", geometry = square(x = 4)),
+                building(id = 4, symbols = """["C-3","C-4"]""", shown = null, geometry = square(x = 6)),
                 entrance(id = 5, symbols = C13, tags = """"entrance":"main","wheelchair":"yes""""),
                 entrance(id = 6, symbols = C13, tags = """"entrance":"yes","ref":"G","wheelchair":"no""""),
                 entrance(id = 7, symbols = C13, tags = """"entrance":"yes","wheelchair":"limited""""),
@@ -55,7 +55,7 @@ class BuildingCatalogParserTest {
     fun us1_same_symbol_merges() {
         val h14 = catalog.buildings.single { it.symbol == "H-14" }
         assertEquals(GeoMultiPolygon(listOf(polygon(x = 2), polygon(x = 4))), h14.outline)
-        assertEquals(null, h14.name)
+        assertEquals("Budynek drugi", h14.name)
     }
 
     @Test
@@ -93,18 +93,27 @@ class BuildingCatalogParserTest {
         assertEquals(listOf(marking), parseBuildingCatalog(json).entrances.map { it.marking })
     }
 
+    /** Wiersz: nazwa budynku obok symbolu to nazwa do pokazania z danych, a nie dokładna nazwa z OSM. */
     @ParameterizedTest
     @CsvSource(
-        "C-13, ",
-        "C-3/C-4, ",
-        "T-22, ",
-        "C-3 / D-8a, ",
-        "A-1 / Budynek główny, A-1 / Budynek główny",
-        "M-6 bis, M-6 bis",
+        delimiter = '|',
+        value = ["A-1 / Budynek testowy | Budynek testowy", "C-3/C-4 | "],
     )
-    fun us1_symbol_name_is_no_name(name: String, expected: String?) {
-        val json = collection(building(id = 1, symbols = """["T-18"]""", name = "\"$name\"", geometry = square(x = 0)))
-        assertEquals(expected, parseBuildingCatalog(json).buildings.single().name)
+    fun us2_name_is_shown_from_data(osmName: String, shown: String?) {
+        val outline =
+            building(id = 1, symbols = """["A-1"]""", shown = shown, geometry = square(x = 0), name = "\"$osmName\"")
+        assertEquals(shown, parseBuildingCatalog(collection(outline)).buildings.single().name)
+    }
+
+    /** Wiersz: w prawdziwych danych nazwa nie powtarza symbolu swojego budynku; wyjątkiem jest „M-6 bis”. */
+    @Test
+    fun us2_real_names_without_symbol() {
+        val names = real.buildings.associate { it.symbol to it.name }
+        val repeated = names.filter { (symbol, name) -> name?.contains(symbol) == true }
+        assertEquals(mapOf("M-6" to "M-6 bis"), repeated)
+        assertEquals("Budynek główny", names["A-1"])
+        assertEquals("Dom Studencki \"Alcatraz\"", names["T-6"])
+        assertEquals(null, names["C-3"])
     }
 
     @Test
@@ -112,9 +121,9 @@ class BuildingCatalogParserTest {
         listOf(
             """{"type":"FeatureCollection","features":[]}""",
             collection(feature(properties = """{"kind":"droga","symbols":$C13,"osm_id":"way/1"}""", geometry = POINT)),
-            collection(building(id = 1, symbols = "[]", name = "null", geometry = square(x = 0))),
-            collection(building(id = 1, symbols = "[null]", name = "null", geometry = square(x = 0))),
-            collection(building(id = 1, symbols = C13, name = "null", geometry = POINT)),
+            collection(building(id = 1, symbols = "[]", shown = null, geometry = square(x = 0))),
+            collection(building(id = 1, symbols = "[null]", shown = null, geometry = square(x = 0))),
+            collection(building(id = 1, symbols = C13, shown = null, geometry = POINT)),
             collection(feature(properties = """{"kind":"entrance","symbols":$C13,"osm_id":"n/1"}""", geometry = AREA)),
         ).forEach { json -> assertThrows<IllegalArgumentException>(json) { parseBuildingCatalog(json) } }
     }
@@ -131,9 +140,12 @@ class BuildingCatalogParserTest {
         """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors",""" +
             """"features":[${features.joinToString(",")}]}"""
 
-    private fun building(id: Int, symbols: String, name: String, geometry: String): String =
+    private fun building(id: Int, symbols: String, shown: String?, geometry: String, name: String = "null"): String =
         feature(
-            properties = """{"kind":"building","symbols":$symbols,"name":$name,"osm_id":"way/$id"}""",
+            properties =
+                """{"kind":"building","symbols":$symbols,"name":$name,""" +
+                    shown?.let { """"display_name":"$it",""" }.orEmpty() +
+                    """"osm_id":"way/$id"}""",
             geometry = geometry,
         )
 

@@ -25,6 +25,8 @@ podany jest plik, który ją egzekwuje; gdy reguła się zmienia, zmienia się t
 
 Aktualizacje zależności otwiera Dependabot do gałęzi sprintu ([`dependabot.yml`](.github/dependabot.yml)); PR Dependabota
 jest zwolniony z kontroli „PR od issue”.
+Strażnik jakości przepuszcza zmianę wersji istniejących pakietów npm przez Dependabota w `.github/commitlint/` i `api/`,
+gdy manifest i odpowiadający mu plik lock są aktualizowane razem.
 
 ## Reguły PR i jak są egzekwowane
 
@@ -38,7 +40,7 @@ jest zwolniony z kontroli „PR od issue”.
 | Tytuł PR i każdy commit mają postać Conventional Commits po polsku: `typ(zakres): opis`, typ jeden z `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test`; opis małą literą, nagłówek do 100 znaków. | [`commitlint.config.mjs`](commitlint.config.mjs), zadanie `commity` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Commit scalający sprint do gałęzi robocznej ma domyślny komunikat („Merge remote-tracking branch …”) — commitlint go pomija; własny komunikat z typem spoza listy jest odrzucany. | [`commitlint.config.mjs`](commitlint.config.mjs) |
 | Gałąź sprintu: poprzedni sprint jest w `main`, a `sprint/N` wyrasta z `main`. | [`baza-sprintu.sh`](.github/scripts/baza-sprintu.sh), zadanie `baza-sprintu` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
-| PR zmieniający workflow, konfigurację linterów albo pliki reguł jakości ma w opisie linię `Zmiana reguł jakości: <powód>`. Wyciszenia analizy w kodzie są zabronione. | [`straznik-jakosci.sh`](.github/scripts/straznik-jakosci.sh), [`straznik-jakosci.yml`](.github/workflows/straznik-jakosci.yml) |
+| PR zmieniający workflow, konfigurację linterów albo pliki reguł jakości ma w opisie linię `Zmiana reguł jakości: <powód>` i etykietę `zmiana-regul-zatwierdzona` nadaną przez osobę inną niż autor PR; nowe commity zdejmują etykietę. Wyciszenia analizy w kodzie są zabronione. | [`straznik-jakosci.sh`](.github/scripts/straznik-jakosci.sh), [`straznik-jakosci.yml`](.github/workflows/straznik-jakosci.yml) |
 | Znacznik zadania w kodzie (`TODO`, `FIXME`, `HACK`, `@todo`; wielkość liter bez znaczenia) ma postać `ZNACZNIK(#N)` z otwartym issue. | [`todo-issue.sh`](.github/scripts/todo-issue.sh), zadanie `znaczniki-todo` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Każde rozwiązanie tymczasowe wskazuje otwarte issue z docelową poprawką: `@Ignore("… #N")` i `@Disabled("… #N")` (powód z numerem), tag wykluczający w `.feature` (`@do-zrobienia`, `@ignore`, `@skip`, `@wip`, `@pominiete`, `@tymczasowe`) z `#N` w tej samej linii albo w komentarzu nad nim, `@Tymczasowe("#N …")` (Java), `@RequiresOptIn` z `#N` w KDoc (Kotlin). Brak numeru, issue zamknięte albo nieistniejące to błąd; dotyczy to też issue zamykanego przez ten PR. | [`todo-issue.sh`](.github/scripts/todo-issue.sh), zadanie `znaczniki-todo` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Pliki z kodem mają nagłówek autorski. | [`naglowki.sh`](.github/scripts/naglowki.sh) |

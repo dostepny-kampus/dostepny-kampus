@@ -200,7 +200,7 @@ class ServerBuildingCatalogTest {
             "]}"
 
     private fun building(symbol: String, name: String): String =
-        """{"type":"Feature","properties":{"kind":"building","symbols":["$symbol"],"name":"$name",""" +
+        """{"type":"Feature","properties":{"kind":"building","symbols":["$symbol"],"display_name":"$name",""" +
             """"osm_id":"way/$symbol"},"geometry":$POLYGON}"""
 
     private fun entrance(symbol: String, type: String): String =

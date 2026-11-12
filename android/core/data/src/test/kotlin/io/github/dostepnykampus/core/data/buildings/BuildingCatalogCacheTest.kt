@@ -103,7 +103,7 @@ class BuildingCatalogCacheTest {
         val OFFLINE = ApiResult.NetworkError(IOException("brak sieci"))
 
         const val BUILDING_FEATURE =
-            """{"type":"Feature","properties":{"kind":"building","symbols":["A-2"],"name":"Stary A-2",""" +
+            """{"type":"Feature","properties":{"kind":"building","symbols":["A-2"],"display_name":"Stary A-2",""" +
                 """"osm_id":"way/A-2"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}"""
 
         const val ENTRANCE_FEATURE =

@@ -9,12 +9,12 @@ import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
+import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.SimilarSubmission;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
-import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import org.jspecify.annotations.Nullable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,9 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Adapter portów zgłoszeń na tabeli submissions (BR-9, BR-10, BR-18). Zapis
- * i edycja to pojedyncze atomowe zapytania, bez odczytu przed zapisem. Klasa
+ * i edycja to pojedyncze atomowe zapytania, bez odczytu przed zapisem.
+ * Zapisuje tylko treść JSON; rodzaj, budynek, punkt i piętro baza liczy
+ * z niej w kolumnach generowanych, więc mają jedno źródło (#837). Klasa
  * nie jest repozytorium Springa, bo proxy tłumaczące wyjątki nie powstaje
  * dla klasy finalnej, a JdbcClient tłumaczy wyjątki sam.
  *
@@ -52,9 +55,8 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
      */
     private static final String INSERT = String.format(
         """
-            INSERT INTO submissions (id, kind, building_symbol, location, content)
-            VALUES (:id, :kind, :building,
-                ST_SetSRID(ST_MakePoint(:lon, :lat), 4326), CAST(:content AS JSONB))
+            INSERT INTO submissions (id, content, author)
+            VALUES (:id, CAST(:content AS JSONB), :author)
             ON CONFLICT (id) DO NOTHING
             RETURNING %s
         """,
@@ -67,8 +69,6 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     private static final String UPDATE = String.format(
         """
             UPDATE submissions SET version = version + 1, status = edited.new_status,
-                kind = :kind, building_symbol = :building,
-                location = ST_SetSRID(ST_MakePoint(:lon, :lat), 4326),
                 content = CAST(:content AS JSONB)
             FROM unnest(CAST(:from AS TEXT[]), CAST(:to AS TEXT[]))
                 AS edited (old_status, new_status)
@@ -108,7 +108,8 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     @Override
     public CreateResult create(final NewSubmission submission) {
         final Optional<Submission> created = this.write(
-            this.jdbc.sql(JdbcSubmissions.INSERT), submission.id(), submission.content()
+            this.jdbc.sql(JdbcSubmissions.INSERT).param("author", submission.author()),
+            submission.id(), submission.content()
         );
         final CreateResult result;
         if (created.isPresent()) {
@@ -153,21 +154,32 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     }
 
     @Override
-    public List<Submission> list(final SubmissionQuery query) {
+    public Optional<Submission> visible(final UUID id, final Reader reader) {
+        return this.find(id).filter(
+            found -> found.status().publiclyVisible() || reader.verifier()
+                || this.wrote(id, reader.account())
+        );
+    }
+
+    @Override
+    public boolean foreign(final UUID id, final String account) {
         return this.jdbc.sql(
-            String.format(
-                """
-                SELECT %s FROM submissions WHERE status IN (:statuses)
-                    AND (CAST(:building AS TEXT) IS NULL OR building_symbol = :building)
-                    AND (CAST(:floor AS TEXT) IS NULL OR content #>> '{floor,floorId}' = :floor)
-                ORDER BY created_at, id
-                """,
-                JdbcSubmissions.COLUMNS
+            """
+            SELECT EXISTS (
+                SELECT 1 FROM submissions WHERE id = :id AND author IS DISTINCT FROM :account
             )
-        ).param("statuses", query.statuses().stream().map(Enum::name).toList())
-            .param("building", query.buildingSymbol())
-            .param("floor", query.floorId())
-            .query(SubmissionRows.readable(this.rows));
+            """
+        ).param("id", id).param("account", account).query(Boolean.class).single();
+    }
+
+    @Override
+    public List<Submission> list(final SubmissionQuery query) {
+        return this.select(query, null);
+    }
+
+    @Override
+    public List<Submission> own(final String author, final SubmissionQuery query) {
+        return this.select(query, author);
     }
 
     @Override
@@ -201,17 +213,35 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
             );
     }
 
+    private boolean wrote(final UUID id, final String account) {
+        return !account.isEmpty() && !this.foreign(id, account);
+    }
+
+    private List<Submission> select(final SubmissionQuery query, @Nullable final String author) {
+        return this.jdbc.sql(
+            String.format(
+                """
+                SELECT %s FROM submissions WHERE status IN (:statuses)
+                    AND (CAST(:building AS TEXT) IS NULL OR building_symbol = :building)
+                    AND (CAST(:floor AS TEXT) IS NULL OR floor_id = :floor)
+                    AND (CAST(:author AS TEXT) IS NULL OR author = :author)
+                ORDER BY created_at, id
+                """,
+                JdbcSubmissions.COLUMNS
+            )
+        ).param("statuses", query.statuses().stream().map(Enum::name).toList())
+            .param("building", query.buildingSymbol())
+            .param("floor", query.floorId())
+            .param("author", author)
+            .query(SubmissionRows.readable(this.rows));
+    }
+
     private Optional<Submission> write(
         final JdbcClient.StatementSpec statement, final UUID id, final SubmissionContent content
     ) {
-        final SubmissionPlace place = content.place();
         try {
             return statement
                 .param("id", id)
-                .param("kind", content.kind().name())
-                .param("building", place.buildingSymbol())
-                .param("lon", place.point().longitude())
-                .param("lat", place.point().latitude())
                 .param("content", this.json(content))
                 .query(this.rows)
                 .optional();

@@ -191,10 +191,10 @@ class QuickReportScreenTest {
             QuickSendViewModel(
                 positions = positions,
                 locationSwitch = LocationSwitch { flowOf(true) },
-                catalog = catalog,
                 saver = { _, _, _ -> },
                 networkStatus = NetworkStatus { flowOf(true) },
                 buildingFloors = floors,
+                buildingLookup = BuildingLookup(catalog, EmptyCoroutineContext),
             )
         compose.setContent {
             DostepnyKampusTheme {

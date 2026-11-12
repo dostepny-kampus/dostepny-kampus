@@ -68,7 +68,9 @@ final class SubmissionPhotosPruneTest {
         final UUID kept = UUID.randomUUID();
         final UUID dropped = UUID.randomUUID();
         service.create(
-            new NewSubmission(submission, SubmissionPhotosPruneTest.content(kept, dropped))
+            new NewSubmission(
+                submission, SubmissionPhotosPruneTest.content(kept, dropped), "konto"
+            )
         );
         store.put(submission, kept, new byte[] {1});
         store.put(submission, dropped, new byte[] {2});
@@ -116,7 +118,7 @@ final class SubmissionPhotosPruneTest {
         return new SubmissionContent(
             SubmissionKind.PRECISE,
             new SubmissionPlace(
-                new SubmissionPoint(17.06, 51.1), 4.5, true, "A-1",
+                new SubmissionPoint(17.062_09, 51.107_85), 4.5, true, "A-1",
                 new SubmissionFloor("p2", 2, false)
             ),
             new BarrierDetails(BarrierGroup.OTHER, new BarrierType(5), 2, "opis", false),

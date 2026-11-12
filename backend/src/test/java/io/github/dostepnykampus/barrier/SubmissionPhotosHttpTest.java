@@ -1,14 +1,16 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Vladyslav Yevkov
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.AsCollector;
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.OpenApiContract;
 import io.github.dostepnykampus.ProblemResponses;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
+import jakarta.servlet.Filter;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
@@ -147,33 +149,15 @@ final class SubmissionPhotosHttpTest {
                     SubmissionPhotosHttpTest.add(context, "SENT"), SubmissionPhotosHttpTest.PHOTO
                 ).contentType(MediaType.IMAGE_JPEG)
                     .content(content.getBytes(StandardCharsets.ISO_8859_1))
+                    .with(new AsCollector())
             ).andReturn().getResponse().getStatus(),
             Matchers.equalTo(400)
         );
     }
 
-    private static String content() {
-        return String.join(
-            "",
-            "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
-            "\"coordinates\":[17.0,51.0]},\"barrierGroup\":\"OTHER\",",
-            "\"photoIds\":[\"%s\"]}"
-        ).formatted(SubmissionPhotosHttpTest.PHOTO);
-    }
-
     private static UUID add(final WebApplicationContext context, final String status) {
-        final UUID id = UUID.randomUUID();
-        context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO submissions (id, status, kind, location, content)
-            VALUES (:id, :status, 'QUICK', ST_SetSRID(ST_MakePoint(17.0, 51.0), 4326),
-                CAST(:content AS JSONB))
-            """
-        ).param("id", id)
-            .param("status", status)
-            .param("content", SubmissionPhotosHttpTest.content())
-            .update();
-        return id;
+        return new SampleSubmissions(context)
+            .add(status, SampleSubmissions.quick(SubmissionPhotosHttpTest.PHOTO));
     }
 
     private static MockHttpServletResponse put(
@@ -183,6 +167,7 @@ final class SubmissionPhotosHttpTest {
             MockMvcRequestBuilders.put("/submissions/{id}/photos/{photo}", id, photo)
                 .contentType(MediaType.IMAGE_JPEG)
                 .content(JpegCleanerTest.photo())
+                .with(new AsCollector())
         ).andReturn().getResponse();
     }
 
@@ -219,6 +204,7 @@ final class SubmissionPhotosHttpTest {
                 )
             )
         ).setControllerAdvice(context.getBean(ProblemResponses.class))
+            .addFilters(context.getBean("springSecurityFilterChain", Filter.class))
             .alwaysExpect(new OpenApiContract())
             .build();
     }

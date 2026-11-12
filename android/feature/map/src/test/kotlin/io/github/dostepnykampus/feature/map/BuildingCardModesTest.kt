@@ -21,7 +21,9 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +37,7 @@ import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
 
 private const val NAME = "Gmach Główny"
+private const val WIDE_PILL_SHARE = 0.75f
 private const val CHECK = "Sprawdź, którędy wejść"
 private const val SHOW = "Pokaż budynek na mapie"
 private const val CLOSE = "Zamknij"
@@ -75,12 +78,22 @@ class BuildingCardModesTest {
         assertOrder(NAME, ROW, CHECK)
     }
 
-    /** Wiersz: V2 bez internetu, mała karta: linia „Bez internetu” nad przyciskami, NFR-10, US2.8, decyzja 115. */
+    /**
+     * Wiersz: V2 bez internetu: plakietka „Bez internetu” nad nagłówkiem, w tym samym miejscu na małej karcie
+     *   i na pełnym ekranie, węższa niż karta, NFR-10, US2.8, decyzje 115, 153.
+     */
     @Test
-    fun nfr10_offline_above_compact() {
+    fun nfr10_offline_pill_above_name() {
         online.value = false
         card(CardMode.Compact)
-        assertOrder("Bez internetu", CHECK, CLOSE)
+        listOf(CardMode.Compact, CardMode.Expanded).forEach { mode ->
+            show(mode)
+            assertOrder("Bez internetu", NAME, CHECK)
+            val pill = compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.LiveRegion))
+            val width = pill.getUnclippedBoundsInRoot().run { right - left }
+            val card = compose.onRoot().getUnclippedBoundsInRoot().run { right - left }
+            assertTrue("plakietka węższa niż karta: $width z $card", width < card * WIDE_PILL_SHARE)
+        }
     }
 
     /**
@@ -161,7 +174,7 @@ class BuildingCardModesTest {
     @Test
     fun us4_6_report_passes_entrance() {
         card(CardMode.Expanded)
-        ENTRANCES.forEach { (name, _) -> reportButton(name).performClick() }
+        ENTRANCES.forEach { (name, _) -> reportButton(name).performScrollTo().performClick() }
         assertEquals(ENTRANCES.map { (_, id) -> "report $id" }, calls)
     }
 
@@ -264,14 +277,14 @@ class BuildingCardModesTest {
         val repository =
             BuildingCatalogRepository(EmptyCoroutineContext) {
                 listOf(
-                    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"$NAME",""" +
+                    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"display_name":"$NAME",""" +
                         """"osm_id":"way/1"},""" +
                         """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}""",
                     entrance(id = "node/1", tags = """"entrance":"main","wheelchair":"yes","ref":"Główne""""),
                     entrance(id = "node/2", tags = """"entrance":"yes","wheelchair":"no","ref":"Schody""""),
                     entrance(id = "node/3", tags = """"entrance":"yes","wheelchair":"no""""),
-                    """{"type":"Feature","properties":{"kind":"building","symbols":["B-4"],"name":"Budynek B",""" +
-                        """"osm_id":"way/4"},""" +
+                    """{"type":"Feature","properties":{"kind":"building","symbols":["B-4"],""" +
+                        """"display_name":"Budynek B","osm_id":"way/4"},""" +
                         """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}""",
                     entrance(id = "node/4", tags = """"wheelchair":"no","ref":"Zamknięte"""", symbol = "B-4"),
                 ).joinToString(

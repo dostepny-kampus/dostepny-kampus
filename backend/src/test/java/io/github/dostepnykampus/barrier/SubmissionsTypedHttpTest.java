@@ -1,11 +1,13 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
+import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +18,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -244,16 +245,16 @@ final class SubmissionsTypedHttpTest {
     private static void add(
         final WebApplicationContext context, final String status, final int version
     ) {
-        context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO submissions (id, version, status, kind, location, content)
-            VALUES (:id, :version, :status, 'QUICK',
-                ST_SetSRID(ST_MakePoint(17.06209, 51.10785), 4326),
-                CAST(:content AS JSONB))
-            """
-        ).param("id", SubmissionsTypedHttpTest.ID).param("version", version)
-            .param("status", status)
-            .param("content", "{".concat(SubmissionsTypedHttpTest.CONTENT).concat("}"))
-            .update();
+        final SampleSubmissions samples = new SampleSubmissions(context);
+        samples.add(
+            SubmissionsTypedHttpTest.ID, status,
+            SampleSubmissions.quick(
+                new SubmissionPlace(
+                    new SubmissionPoint(17.062_09, 51.107_85), null, false, null, null
+                ),
+                null, UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d")
+            )
+        );
+        samples.version(SubmissionsTypedHttpTest.ID, version);
     }
 }

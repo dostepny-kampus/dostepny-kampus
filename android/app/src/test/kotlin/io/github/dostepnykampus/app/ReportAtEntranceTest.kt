@@ -62,7 +62,7 @@ class ReportAtEntranceTest {
     @Test
     fun us4_6_each_entrance_opens_v4() {
         val ids = entranceIds()
-        show(RoleProvider { Account.SignedIn() })
+        show(TestRoles(Account.SignedIn()))
         ids.forEachIndexed { index, id ->
             val button = compose.onAllNodes(ReportButton)[index]
             button.performScrollTo()

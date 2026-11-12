@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.app
@@ -22,8 +22,8 @@ import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.feature.capture.photoDir
 import io.github.dostepnykampus.feature.help.FirstLaunchViewModel
-import io.github.dostepnykampus.feature.map.mapUserAgent
 import kotlinx.coroutines.launch
 
 /**
@@ -38,7 +38,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        mapUserAgent = "DostepnyKampus/${BuildConfig.VERSION_NAME} (${BuildConfig.APPLICATION_ID})"
         val graph = EntryPointAccessors.fromActivity<MainActivityEntryPoint>(this)
         val onChooseMap: () -> Unit = { lifecycleScope.launch { graph.mapListChoice().choose(isList = false) } }
         setContent {
@@ -53,12 +52,17 @@ class MainActivity : ComponentActivity() {
                             roles = graph.roles(),
                             onFirstHelpLeft = firstLaunch::markHelpSeen,
                             onChooseMap = onChooseMap,
+                            onRestore = { kept -> lifecycleScope.launch { deleteOrphanPhotos(queue, kept) } },
                         )
                     }
                 }
             }
         }
     }
+}
+
+internal suspend fun MainActivity.deleteOrphanPhotos(queue: SubmissionQueue, kept: Set<String>) {
+    queue.deleteOrphanPhotos(dir = photoDir(filesDir), kept = kept)
 }
 
 /**

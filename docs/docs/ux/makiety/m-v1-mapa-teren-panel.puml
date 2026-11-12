@@ -1,0 +1,25 @@
+@startsalt
+' V1 Mapa kampusu, otwarty panel „Teren na mapie” (US1.7).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$przelacznik("Mapa", "Lista budynków", 1)
+$przycisk("Kampus główny ▴")
+$ramka()
+<b>Teren na mapie</b>
+$przycisk("Zamknij")
+..
+<b>Kampus główny</b> ✓
+<i>78 budynków · wybrany</i>
+<b>Wittigowo</b>
+<i>9 budynków · 2 km</i>
+<b>T-9 Atol</b>
+<i>1 budynek · 4 km</i>
+$tekst("[pozostałe tereny z danych: nazwa, liczba budynków, odległość]", "i")
+}
+$mapa("mapa terenu Kampus główny pod panelem; bez przycisków mapy i „Legendy”, dopóki panel jest otwarty")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

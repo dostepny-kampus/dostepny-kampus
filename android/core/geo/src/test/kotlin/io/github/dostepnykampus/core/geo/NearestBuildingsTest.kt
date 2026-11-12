@@ -24,7 +24,7 @@ class NearestBuildingsTest {
     @Test
     fun us6_2_nearest_sorted() {
         val point = GeoPoint(longitude = LON + SIDE / 2, latitude = LAT - SIDE / 10)
-        val hints = nearestBuildings(point, listOf(farthest, far, near, middle))
+        val hints = buildingHints(point, listOf(farthest, far, near, middle)).nearby
 
         assertEquals(listOf("A-1", "A-2", "A-3"), hints.map { it.building.symbol })
         assertEquals(SIDE / 10 * METERS_PER_DEGREE, hints.first().distanceMeters, METER)
@@ -36,7 +36,7 @@ class NearestBuildingsTest {
     @Test
     fun us6_2_nearest_inside_first() {
         val point = GeoPoint(longitude = LON + SIDE / 2, latitude = LAT + 2.4 * SIDE)
-        val hints = nearestBuildings(point, listOf(near, middle, far), limit = 2)
+        val hints = buildingHints(point, listOf(near, middle, far), limit = 2).nearby
 
         assertEquals(listOf("A-2", "A-1"), hints.map { it.building.symbol })
         assertEquals(0.0, hints.first().distanceMeters)

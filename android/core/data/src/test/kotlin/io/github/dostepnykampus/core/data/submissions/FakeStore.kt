@@ -22,7 +22,29 @@ internal class FakeStore : PendingSubmissionDao {
     val createResults = ArrayDeque<ApiResult<Submission>>()
     val photoResults = ArrayDeque<ApiResult<Unit>>()
 
+    /** Historia cofana razem z kolejką w [together], jak w jednej transakcji Room (#859). */
+    var history: FakeHistory? = null
+
     override fun observe(): Flow<List<PendingSubmissionWithPhotos>> = flow { emit(all()) }
+
+    /** Jak `@Transaction` w Room: błąd w środku przywraca kolejkę i [history] sprzed transakcji. */
+    override suspend fun together(writes: suspend () -> Unit) {
+        val before = rows.toList()
+        val ownRows = history?.rows
+        val ownBefore = ownRows?.toMap().orEmpty()
+        var isDone = false
+        try {
+            writes()
+            isDone = true
+        } finally {
+            if (!isDone) {
+                rows.clear()
+                rows.addAll(before)
+                ownRows?.clear()
+                ownRows?.putAll(ownBefore)
+            }
+        }
+    }
 
     override suspend fun all(): List<PendingSubmissionWithPhotos> =
         rows
@@ -75,6 +97,8 @@ internal class FakeStore : PendingSubmissionDao {
         val row = rows.find { it.submission.id == submissionId } ?: return emptyList()
         return row.photos.map { it.path }
     }
+
+    override suspend fun allPhotoPaths(): List<String> = rows.flatMap { row -> row.photos.map { it.path } }
 
     override suspend fun deletePhotos(submissionId: String) {
         rows.replaceAll { item -> if (item.submission.id == submissionId) item.copy(photos = emptyList()) else item }

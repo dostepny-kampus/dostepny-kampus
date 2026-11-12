@@ -112,7 +112,7 @@ JAVA
 }
 
 run_case() {
-  local name="$1" expected="$2" change="$3" prepare="${4:-}" status=0 out
+  local name="$1" expected="$2" change="$3" prepare="${4:-}" author="${5:-}" status=0 out
   rm -rf "$repo"
   mkdir -p "$repo"
   (
@@ -129,7 +129,7 @@ run_case() {
     git add -A
     git commit --quiet --allow-empty -m zmiana
   )
-  out="$(cd "$repo" && PR_BODY='' PR_AUTHOR='' bash "$script" HEAD~1 HEAD 2>&1)" || status=$?
+  out="$(cd "$repo" && PR_BODY='' PR_AUTHOR="$author" bash "$script" HEAD~1 HEAD 2>&1)" || status=$?
   if [[ -z $expected && $status -eq 0 && $out == *"$clean"* ]] ||
     [[ -n $expected && $status -eq 1 && $out == *"$expected"* ]]; then
     echo "OK: ${name}"
@@ -139,6 +139,33 @@ run_case() {
     failures=$((failures + 1))
   fi
 }
+
+npm_fixture() {
+  local dir
+  for dir in .github/commitlint api; do
+    mkdir -p "$dir"
+    printf '%s\n' '{"devDependencies":{"tool":"1.2.3"}}' >"$dir/package.json"
+    printf '%s\n' '{"lockfileVersion":3,"packages":{"":{"devDependencies":{"tool":"1.2.3"}}}}' >"$dir/package-lock.json"
+  done
+}
+
+npm_bump_commitlint() { sed -i 's/1\.2\.3/1.2.4/g' .github/commitlint/package{,-lock}.json; }
+npm_bump_api() { sed -i 's/1\.2\.3/1.2.4/g' api/package{,-lock}.json; }
+npm_bump_with_script() {
+  npm_bump_commitlint
+  sed -i 's/^{/{"scripts":{"test":"true"},/' .github/commitlint/package.json
+}
+npm_bump_with_new_package() {
+  npm_bump_commitlint
+  sed -i 's/"tool":"1.2.4"/"tool":"1.2.4","other":"2.0.0"/' .github/commitlint/package{,-lock}.json
+}
+npm_bump_with_old_lock() { sed -i 's/1\.2\.3/1.2.4/g' api/package.json; }
+npm_bump_lock_only() { sed -i 's/1\.2\.3/1.2.4/g' api/package-lock.json; }
+npm_bump_with_mismatched_lock() {
+  npm_bump_api
+  sed -i 's/1\.2\.4/1.2.5/g' api/package-lock.json
+}
+npm_change_source() { sed -i 's#1\.2\.3#file:../tool#g' api/package{,-lock}.json; }
 
 pom_nullaway_warn() { sed -i 's/-Xep:NullAway:ERROR/-Xep:NullAway:WARN/' backend/pom.xml; }
 pom_drop_compiler_arg() { sed -i '/--should-stop=ifError=FLOW/d' backend/pom.xml; }
@@ -154,6 +181,10 @@ pom_boot_layers() { pom_insert_after '<artifactId>spring-boot-maven-plugin</arti
 pom_excluded_paths() { pom_insert_after 'compilePolicy=simple</arg>$' '<arg>-XepExcludedPaths:.*/web/.*</arg>'; }
 pom_disable_all() { pom_insert_after '<java.version>25</java.version>$' '<ep.flags>-XepDisableAllChecks</ep.flags>'; }
 pom_nullaway_off() { sed -i 's/-Xep:NullAway:ERROR/-Xep:NullAway:OFF/' backend/pom.xml; }
+pom_pit_threshold() { pom_insert_after '<java.version>25</java.version>$' '<mutationThreshold>90</mutationThreshold>'; }
+pom_pit_plugin() {
+  pom_insert_after '^    <plugins>$' '      <plugin><artifactId>pitest-maven</artifactId><configuration><threads>2</threads></configuration></plugin>'
+}
 
 jvm_config_delete() { git rm --quiet backend/.mvn/jvm.config; }
 jvm_config_edit() { sed -i '/--add-opens/d' backend/.mvn/jvm.config; }
@@ -190,6 +221,12 @@ code_require_non_null() {
 code_split_unmarked() { sed -i 's/^public final class Building {$/@\nNullUnmarked\n&/' "$main_dir/Building.java"; }
 code_marked_base() { sed -i 's/^public final class Building {$/@NullMarked\n&/' "$main_dir/Building.java"; }
 code_drop_marked() { sed -i '/^@NullMarked$/d' "$main_dir/Building.java"; }
+code_jscpd_ignore() { sed -i 's#^public final class Building {$#// jscpd:ignore-start\n&#' "$main_dir/Building.java"; }
+jscpd_config_new() {
+  mkdir -p .github/jscpd
+  printf '%s
+' '{"minTokens":999}' >.github/jscpd/jscpd.json
+}
 code_rename_class() { git mv "$main_dir/Building.java" "$main_dir/Edifice.java"; }
 code_rename_method() { sed -i 's/name()/label()/' "$main_dir/Building.java"; }
 
@@ -217,6 +254,8 @@ run_case "S1: zmieniona wersja errorprone poza blokiem" "$config" pom_errorprone
 run_case "S1: dodana zależność jspecify" "$config" pom_add_jspecify
 run_case "S1, S6, O5: zwykła zależność w pom.xml" "" pom_add_dependency
 run_case "S1, S6, O5: zwykła właściwość w pom.xml" "" pom_java_version
+run_case "S1, #900: próg mutacji PIT" "$config" pom_pit_threshold
+run_case "S1, #900: zmiana w bloku pitest-maven" "$config" pom_pit_plugin
 run_case "S1, S6, O5: konfiguracja innej wtyczki niż kompilator" "" pom_boot_layers
 
 run_case "S2, O2: usunięty jvm.config" "$removed" jvm_config_delete
@@ -229,6 +268,7 @@ run_case "S3: przeniesiony ArchitectureTest.java" "$changed" architecture_rename
 run_case "S3: zmieniony ArchitectureTest.kt w Androidzie" "$changed" konsist_edit
 run_case "S3: nowy plik reguł w backendzie" "$changed" architecture_new_backend
 run_case "S3: nowy plik reguł w module Androida" "$changed" architecture_new_android
+run_case "S3: nowa konfiguracja wykrywania kopii" "$changed" jscpd_config_new
 run_case "S3, S6: klasa pomocnicza o podobnej nazwie" "" architecture_support
 run_case "S3, S6: zwykły test backendu" "" test_edit
 run_case "S3, S6: zwykły test Androida" "" android_test_edit
@@ -240,6 +280,7 @@ run_case "S4: @ i NullUnmarked w osobnych liniach" "$silenced" code_split_unmark
 run_case "S4: -XepExcludedPaths w kompilatorze" "$silenced" pom_excluded_paths
 run_case "S4: -XepDisableAllChecks w nowej linii" "$silenced" pom_disable_all
 run_case "S4: NullAway:OFF" "$silenced" pom_nullaway_off
+run_case "S4: komentarz jscpd:ignore" "$silenced" code_jscpd_ignore
 run_case "S4, S6: Objects.requireNonNull" "" code_require_non_null
 
 run_case "S5, O6: usunięte @NullMarked" "$unmarked" package_drop_marked
@@ -254,5 +295,38 @@ run_case "S5, S6: nowy pakiet z @NullMarked" "" package_new
 run_case "S5, S6: usunięty package-info.java bez @NullMarked" "" package_unmarked_delete package_unmarked_base
 
 run_case "S6: zwykła zmiana kodu src/main" "" code_rename_method
+
+# gate_case <nazwa> <oczekiwany kod wyjścia> <oczekiwany fragment wyniku> <opis PR> <osoba zatwierdzająca>
+gate_case() {
+  local name="$1" code="$2" expected="$3" body="$4" approver="$5" status=0 out
+  out="$(cd "$repo" && PR_BODY="$body" PR_AUTHOR=autorka PR_APPROVED_BY="$approver" bash "$script" HEAD~1 HEAD 2>&1)" ||
+    status=$?
+  if [[ $status -eq $code && $out == *"$expected"* ]]; then
+    echo "OK: ${name}"
+  else
+    echo "BŁĄD: ${name}: kod wyjścia ${status}, oczekiwano ${code} i „${expected}”"
+    printf '%s\n' "$out" | sed 's/^/    /'
+    failures=$((failures + 1))
+  fi
+}
+
+line='Zmiana reguł jakości: próg pokrycia po nowym module'
+needs_other='zatwierdza osoba inna niż autor PR'
+run_case "bramka: zmiana reguł bez linii w opisie" "$config" pom_nullaway_warn
+gate_case "bramka: linia w opisie bez zatwierdzenia nie przechodzi" 1 "$needs_other" "$line" ''
+gate_case "bramka: zatwierdzenie przez autora PR nie przechodzi" 1 "$needs_other" "$line" Autorka
+gate_case "bramka: linia i zatwierdzenie drugiej osoby przechodzą" 0 'zatwierdził(a) recenzent' "$line" recenzent
+gate_case "bramka: samo zatwierdzenie bez linii nie przechodzi" 1 'wymaga w opisie PR linii' '' recenzent
+
+bot='dependabot[bot]'
+run_case "npm: Dependabot aktualizuje commitlint i plik lock" "" npm_bump_commitlint npm_fixture "$bot"
+run_case "npm: Dependabot aktualizuje Redocly i plik lock" "" npm_bump_api npm_fixture "$bot"
+run_case "npm: skrypt w manifeście nadal zmienia reguły" "$changed" npm_bump_with_script npm_fixture "$bot"
+run_case "npm: nowy pakiet nadal zmienia reguły" "$changed" npm_bump_with_new_package npm_fixture "$bot"
+run_case "npm: sama zmiana manifestu nie wystarcza" "$changed" npm_bump_with_old_lock npm_fixture "$bot"
+run_case "npm: sam plik lock nadal zmienia reguły" "$changed" npm_bump_lock_only npm_fixture "$bot"
+run_case "npm: niespójne wersje manifestu i pliku lock" "$changed" npm_bump_with_mismatched_lock npm_fixture "$bot"
+run_case "npm: zmiana źródła pakietu nadal zmienia reguły" "$changed" npm_change_source npm_fixture "$bot"
+run_case "npm: autor inny niż Dependabot podaje powód" "$changed" npm_bump_commitlint npm_fixture vlladevk
 
 exit "$((failures > 0 ? 1 : 0))"

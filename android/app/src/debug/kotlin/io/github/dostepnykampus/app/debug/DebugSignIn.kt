@@ -54,14 +54,14 @@ class DebugSignIn(
         val account = token?.let(::accountOf)
         if (token != null && account != null) {
             tokens.signIn(token)
-            roles.account = account
+            roles.switchTo(account)
         }
         return account != null
     }
 
     private fun signOut(): Boolean {
         tokens.signOut()
-        roles.account = Account.Guest
+        roles.switchTo(Account.Guest)
         return true
     }
 

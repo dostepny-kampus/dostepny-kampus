@@ -15,6 +15,8 @@ import osm2geojson
 import requests
 import shapely
 
+from display_name import display_name
+
 OUTPUT = Path(__file__).resolve().parent.parent / "buildings" / "pwr-buildings.geojson"
 OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 USER_AGENT = "dostepny-kampus-data (projekt studencki; https://github.com/dostepny-kampus/dostepny-kampus)"
@@ -106,16 +108,28 @@ def features(found: list[Element]) -> list[dict]:
         (e for e in found if "building" in e.tags and e.shape.geom_type in POLYGONS and symbols(e.tags)),
         key=Element.sort_key,
     )
-    result = [
-        feature(o, {"kind": "building", "symbols": symbols(o.tags), "name": o.tags.get("name"), "osm_id": o.osm_id})
-        for o in outlines
-    ]
+    result = [feature(o, building_properties(o)) for o in outlines]
     for e in sorted((e for e in found if "entrance" in e.tags and e.shape.geom_type == "Point"), key=Element.sort_key):
         owners = {s for o in outlines if e.shape.distance(o.shape.boundary) <= ON_OUTLINE for s in symbols(o.tags)}
         if owners:
             props = {"kind": "entrance", "symbols": sorted(owners, key=symbol_key), "osm_id": e.osm_id}
             result.append(feature(e, props | {k: e.tags.get(k) for k in ("entrance", "ref", "wheelchair")}))
     return result
+
+
+def building_properties(outline: Element) -> dict:
+    """Właściwości konturu: `name` to dokładna nazwa z OSM, a `display_name` nazwa do pokazania obok symbolu.
+
+    Kontur bez nazwy do pokazania nie ma pola `display_name`.
+    """
+    own = symbols(outline.tags)
+    name = outline.tags.get("name")
+    shown = display_name(name, own)
+    return (
+        {"kind": "building", "symbols": own, "name": name}
+        | ({"display_name": shown} if shown else {})
+        | {"osm_id": outline.osm_id}
+    )
 
 
 def feature(element: Element, properties: dict) -> dict:

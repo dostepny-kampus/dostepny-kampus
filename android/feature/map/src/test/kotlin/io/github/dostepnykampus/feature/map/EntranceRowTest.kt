@@ -9,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -60,10 +61,11 @@ class EntranceRowTest {
         }
         listOf("A-1" to ROWS[0], "B-4" to ROWS[1], "C-13" to ROWS[2]).forEach { (symbol, row) ->
             shown.value = symbol
-            compose.waitUntil { compose.onAllNodes(hasText("Budynek $symbol")).fetchSemanticsNodes().isNotEmpty() }
+            val header = hasContentDescription("Budynek $symbol")
+            compose.waitUntil { compose.onAllNodes(header).fetchSemanticsNodes().isNotEmpty() }
             val tops =
-                listOf("Budynek $symbol", row, "Wejścia").map {
-                    compose.onNodeWithText(it).getUnclippedBoundsInRoot().top
+                listOf(header, hasText(row), hasText("Wejścia")).map {
+                    compose.onNode(it).getUnclippedBoundsInRoot().top
                 }
             assertTrue("$symbol: nagłówek, „$row”, „Wejścia” od góry, a są na $tops", tops == tops.sorted())
             (ROWS - row).forEach { compose.onNodeWithText(it).assertDoesNotExist() }

@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
 
 /**
  * Baza lokalna aplikacji (Room): zgłoszenia czekające na wysłanie (NFR-5),
- * historia własnych zgłoszeń (US8) i kopia listy budynków (NFR-10).
+ * historia własnych zgłoszeń (US8) oraz kopie listy budynków i barier ze zgłoszeń przyjętych (NFR-10).
  */
 @Database(
     entities = [
@@ -18,8 +18,9 @@ import androidx.room.RoomDatabase
         PendingPhotoEntity::class,
         BuildingCacheEntity::class,
         OwnSubmissionEntity::class,
+        BarrierCacheEntity::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = true,
 )
 abstract class DkDatabase : RoomDatabase() {
@@ -34,4 +35,7 @@ abstract class DkDatabase : RoomDatabase() {
 
     /** Odczyt zgłoszenia z kolejki do poprawki. */
     abstract fun pendingEdits(): PendingEditDao
+
+    /** Kopia barier ze zgłoszeń przyjętych. */
+    abstract fun barrierCache(): BarrierCacheDao
 }

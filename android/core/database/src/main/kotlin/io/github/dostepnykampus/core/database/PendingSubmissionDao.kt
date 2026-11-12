@@ -32,6 +32,15 @@ interface PendingSubmissionDao : PendingSubmissionRows {
         return previous - photos.map { it.path }.toSet()
     }
 
+    /**
+     * [writes] jako jedna transakcja bazy, razem z zapisami historii [OwnSubmissionDao]: błąd albo zabicie procesu
+     * w środku cofa wszystkie, więc kolejka i historia nie zostają w sprzeczności (#859).
+     */
+    @Transaction
+    suspend fun together(writes: suspend () -> Unit) {
+        writes()
+    }
+
     /** Zgłoszenia czekające na wysłanie, bez odrzuconych, od najstarszego; zmienia się po każdym zapisie. */
     @Transaction
     @Query("SELECT * FROM pending_submissions WHERE refused = 0 ORDER BY saved_at, id")
@@ -78,6 +87,10 @@ interface PendingSubmissionDao : PendingSubmissionRows {
 
 /** Pojedyncze kroki zapisu w [PendingSubmissionDao.save]; poza nim nie są używane. */
 interface PendingSubmissionRows {
+    /** Ścieżki plików wszystkich zdjęć w kolejce, także zgłoszeń odrzuconych, do sprzątania przy starcie (#927). */
+    @Query("SELECT path FROM pending_photos")
+    suspend fun allPhotoPaths(): List<String>
+
     /** Zapis wiersza zgłoszenia; tylko dla [PendingSubmissionDao.save]. */
     @Upsert
     suspend fun upsertSubmission(submission: PendingSubmissionEntity)

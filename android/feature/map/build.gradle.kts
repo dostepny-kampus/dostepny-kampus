@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 
@@ -11,21 +11,53 @@ plugins {
 }
 
 dependencies {
+    api(libs.androidx.compose.foundation.layout)
+    api(libs.androidx.compose.runtime)
+    api(libs.androidx.compose.ui)
+    api(libs.androidx.lifecycle.viewmodel)
+    api(libs.androidx.navigation3.runtime)
+    api(libs.dagger)
+    api(libs.javax.inject)
+    api(libs.kotlinx.coroutines.core)
+    api(libs.kotlinx.serialization.core)
     implementation(project(":core:model"))
     implementation(project(":core:data"))
     implementation(project(":core:geo"))
     implementation(project(":core:designsystem"))
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.runtime.annotation)
+    implementation(libs.androidx.compose.runtime.saveable)
+    implementation(libs.androidx.compose.ui.geometry)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.text)
+    implementation(libs.androidx.compose.ui.unit)
+    implementation(libs.androidx.lifecycle.common)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.core)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.hilt.core)
+    api(libs.kotlinx.serialization.json)
     implementation(libs.maplibre.android)
+    implementation(libs.maplibre.geojson)
     implementation(libs.okhttp)
     implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)
+    implementation(libs.spatialk.units)
+    testImplementation(project(":core:database"))
+    testImplementation(project(":core:network"))
+    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit4)
+    testImplementation(libs.androidx.activity)
+    testImplementation(libs.androidx.compose.ui.test)
     testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.roborazzi.core)
+    testImplementation(libs.robolectric.annotations)
+    testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.androidx.compose.ui.test.manifest)
 }

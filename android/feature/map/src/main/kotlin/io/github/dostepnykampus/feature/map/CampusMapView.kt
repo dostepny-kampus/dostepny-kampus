@@ -22,11 +22,8 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
-import okhttp3.Call
-import okhttp3.OkHttpClient
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
-import org.maplibre.android.module.http.HttpRequestUtil
 import java.util.Locale
 import kotlin.math.ceil
 
@@ -39,7 +36,8 @@ fun interface CampusMapView {
     /**
      * Mapa [data] z zaznaczeniem [selection] w widoku [camera]. Po geście widok zgłasza nowy widok przez
      * [onCameraIdle], a po dotknięciu konturu albo miejsca obok niego symbole trafionych budynków przez
-     * [onBuildingsTouch], a po dotknięciu pustej mapy pustą listę.
+     * [onBuildingsTouch], a po dotknięciu pustej mapy pustą listę. Dotknięcie znaku bariery zgłasza identyfikator
+     * jej zgłoszenia przez [onBarrierTouch] i nie zgłasza konturu pod znakiem (US1.5).
      */
     @Composable
     fun Show(
@@ -48,25 +46,9 @@ fun interface CampusMapView {
         camera: MapCamera,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
+        onBarrierTouch: (String) -> Unit,
         modifier: Modifier,
     )
-}
-
-/**
- * Nagłówek User-Agent aplikacji dla kafelków OSM, np. „DostepnyKampus/0.1.0 (io.github.dostepnykampus)” (NFR-39).
- * Klient HTTP z nim powstaje raz na proces, przy pierwszym widoku mapy z biblioteką natywną.
- */
-@Volatile
-var mapUserAgent: String? = null
-
-internal val mapHttpClient = lazy { mapUserAgent?.let { HttpRequestUtil.setOkHttpClient(osmClient(it)) } }
-
-/** Klient HTTP mapy z nagłówkiem [userAgent]; bez regionów offline, kafelki tylko na bieżący widok (NFR-39). */
-internal fun osmClient(userAgent: String): Call.Factory {
-    val client = OkHttpClient()
-    return Call.Factory { request ->
-        client.newCall(request.newBuilder().header(name = "User-Agent", value = userAgent).build())
-    }
 }
 
 /** Obraz podpisu konturu: tekst `napis_pwr` z obwódką `obwodka` (para kontrastu z tokenów, NFR-16). */
@@ -105,6 +87,8 @@ internal fun MapColors.styleColors(): MapStyleColors =
         selectedOutline = pwrWybrany.hex(),
         isNight = lad.luminance() < NIGHT_LAND_LUMINANCE,
         ink = tusz.hex(),
+        dimmed = budynek.hex(),
+        dimmedOutline = budynekKontur.hex(),
     )
 
 internal fun Color.hex(): String = "#%06X".format(Locale.ROOT, toArgb() and RGB_MASK)

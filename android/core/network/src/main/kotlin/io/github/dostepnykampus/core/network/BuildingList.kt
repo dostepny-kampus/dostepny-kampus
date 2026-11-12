@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.core.network
 
-import io.github.dostepnykampus.core.geo.parseGeoArea
+import io.github.dostepnykampus.core.geo.GeoAreaJson
 import io.github.dostepnykampus.core.model.AssessmentSource
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.Entrance
@@ -13,10 +13,10 @@ import io.github.dostepnykampus.core.model.EntranceAssessment
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.Floor
 import io.github.dostepnykampus.core.model.FloorList
+import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoPoint
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
@@ -75,7 +75,7 @@ internal data class BuildingDto(
     val symbol: String,
     val name: String? = null,
     val detailLevel: DetailLevel,
-    val outline: JsonElement,
+    @Serializable(with = GeoAreaJson::class) val outline: GeoArea,
 )
 
 @Serializable
@@ -83,7 +83,7 @@ internal data class BuildingDetailsDto(
     val symbol: String,
     val name: String? = null,
     val detailLevel: DetailLevel,
-    val outline: JsonElement,
+    @Serializable(with = GeoAreaJson::class) val outline: GeoArea,
     val entrances: List<EntranceDto>,
 )
 
@@ -123,13 +123,13 @@ internal fun BuildingListDto.toModel(): BuildingList =
 
 internal fun BuildingDto.toModel(): ApiBuilding =
     ApiBuilding(
-        building = Building(symbol = symbol, name = name, outline = parseGeoArea(outline.toString())),
+        building = Building(symbol = symbol, name = name, outline = outline),
         detailLevel = detailLevel,
     )
 
 internal fun BuildingDetailsDto.toModel(): BuildingDetails =
     BuildingDetails(
-        building = Building(symbol = symbol, name = name, outline = parseGeoArea(outline.toString())),
+        building = Building(symbol = symbol, name = name, outline = outline),
         detailLevel = detailLevel,
         entrances = entrances.map(EntranceDto::toModel),
     )

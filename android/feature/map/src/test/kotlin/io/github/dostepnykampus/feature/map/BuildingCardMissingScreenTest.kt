@@ -24,10 +24,12 @@ import kotlin.coroutines.EmptyCoroutineContext
 private const val MISSING_TEXT = "Tego budynku nie ma jeszcze w telefonie"
 private const val RETRY_TEXT = "Spróbuj ponownie"
 private const val GMACH =
-    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"Gmach Główny","osm_id":"way/1"},""" +
+    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],""" +
+        """"display_name":"Gmach Główny","osm_id":"way/1"},""" +
         """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}"""
 private const val NEW_BUILDING =
-    """{"type":"Feature","properties":{"kind":"building","symbols":["N-1"],"name":"Nowy budynek","osm_id":"way/2"},""" +
+    """{"type":"Feature","properties":{"kind":"building","symbols":["N-1"],""" +
+        """"display_name":"Nowy budynek","osm_id":"way/2"},""" +
         """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}"""
 
 /** V2 Karta budynku, gdy budynku nie ma w katalogu zapisanym w telefonie (US2.7, NFR-10). */

@@ -1,0 +1,10 @@
+{
+  "name": "dostepny-kampus-jscpd",
+  "version": "0.1.0",
+  "private": true,
+  "author": "Vladyslav Yevkov",
+  "description": "jscpd do wykrywania skopiowanych fragmentów kodu, konfiguracji i skryptów w CI",
+  "devDependencies": {
+    "jscpd": "5.4.3"
+  }
+}

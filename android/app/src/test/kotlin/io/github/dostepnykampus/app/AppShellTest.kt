@@ -195,6 +195,7 @@ internal fun AppNavigator.TestAppScreen(
             focus = route.focus,
             state = state,
             onListChange = mapViewModel::chooseList,
+            onSearch = mapViewModel::search,
             mapView = mapView,
         )
     } else if (route is BuildingRoute) {
@@ -219,8 +220,8 @@ class AppShellTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private val staff = RoleProvider { Account.SignedIn(setOf(StaffRole.COLLECTOR)) }
-    private val visitor = RoleProvider { Account.SignedIn() }
+    private val staff = TestRoles(Account.SignedIn(setOf(StaffRole.COLLECTOR)))
+    private val visitor = TestRoles(Account.SignedIn())
     private val tabRole = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
     private var helpLeft = 0
     private lateinit var mapViewModel: CampusMapViewModel
@@ -291,6 +292,19 @@ class AppShellTest {
         compose.onAllNodesWithText("Mapa").assertCountEquals(0)
         pressBack()
         compose.onNode(MapTab).assertIsSelected()
+    }
+
+    /** Zalogowanie po starcie: pasek dolny pokazuje pozycję pracownika bez ponownego otwarcia ekranu (US14.1). */
+    @Test
+    fun us14_1_bar_after_sign_in() {
+        val roles = TestRoles()
+        show(roles = roles)
+        compose.onNode(hasText("Konto") and tabRole).assertExists()
+
+        roles.account.value = Account.SignedIn(setOf(StaffRole.COLLECTOR))
+        compose.waitForIdle()
+
+        compose.onNode(hasText("Konto i\u00A0praca") and tabRole).assertExists()
     }
 
     /**
@@ -471,7 +485,8 @@ class AppShellTest {
 
     /**
      * Wiersz: pełny ekran po małej karcie, „Wstecz” w górnym pasku karty → znowu mała karta, NFR-15; „Zamknij”
-     * małej karty → V1 bez zaznaczenia budynku, US2.8, decyzja 116.
+     * małej karty → V1 bez zaznaczenia budynku, US2.8, decyzja 116. Nad małą kartą zostaje co najmniej 300 dp
+     * mapy, czyli miejsce na przyciski mapy (NFR-53, decyzja 151).
      * Scenariusz (częściowo): przegladanie-mapy.feature: Z małej karty osoba rozwija opis albo wraca do mapy
      */
     @Test
@@ -486,9 +501,8 @@ class AppShellTest {
             }
         }
         compose.onNodeWithText("V1").performClick()
-        val window = compose.onRoot().getUnclippedBoundsInRoot().bottom
         val compact = compose.onNodeWithContentDescription(EXPAND_HANDLE).getUnclippedBoundsInRoot().top
-        assertTrue("mapa nad małą kartą widoczna: uchwyt $compact, okno $window", compact > window / 2)
+        assertTrue("nad małą kartą zostaje mapa z miejscem na przyciski mapy: uchwyt $compact", compact >= 300.dp)
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
         compose.onNodeWithText("Wstecz").performClick()
         compose.onNodeWithContentDescription(EXPAND_HANDLE).assertExists("mała karta po „Wstecz” w górnym pasku")

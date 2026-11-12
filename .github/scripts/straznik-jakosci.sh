@@ -15,19 +15,19 @@ android_rule+=' z powodem w PR.'
 # Samo słowo, bez wymogu `@`: łapie też pełne nazwy (`@kotlin.Suppress`), aliasy importu i typealias.
 suppression='\b(Suppress(Lint|Warnings|FBWarnings)?|TargetApi)\b|@\s*([\w.]+\.)?Generated\b'
 suppression+='|NOPMD|CHECKSTYLE[:.]OFF|@checkstyle|ktlint-disable|noinspection|<!--\s*suppress\b'
-suppression+='|detekt:disable|lint:ignore|[\w-]+:(ignore|targetApi)\s*='
+suppression+='|detekt:disable|lint:ignore|jscpd:ignore|[\w-]+:(ignore|targetApi)\s*='
 suppression+='|\bNullUnmarked\b|\bcastToNonNull\b|NullAway:(OFF|WARN)\b'
 suppression+='|-XepExcludedPaths|-XepDisableAllChecks'
 
 rule_files='^android/config/|^android/build-logic/|^android/buildSrc/|(^|/)gradle\.properties$'
-rule_files+='|^\.github/(workflows|scripts|commitlint)/|^\.github/dependabot\.ya?ml$|^commitlint\.config\.'
+rule_files+='|^\.github/(workflows|scripts|commitlint|jscpd)/|^\.github/dependabot\.ya?ml$|^commitlint\.config\.'
 rule_files+='|^\.commitlintrc|(^|/)\.gitleaks|(^|/)\.editorconfig$|(^|/)\.gitattributes$|(^|/)lint\.xml$'
 rule_files+='|(^|/)\.mvn/(jvm|maven)\.config$|^backend/src/test/(.*/)?([^/]*ArchitectureTest|ModularityTest)\.java$'
 rule_files+='|^android/(.*/)?src/test/(.*/)?[^/]*ArchitectureTest\.kt$'
 rule_files+='|^api/(redocly\.yaml|package(-lock)?\.json)$|^docs/(\.vale\.ini$|\.markdownlint|styles/|scripts/verify\.py$|scripts/check_ids\.py$)'
 
 pom_words='jacoco|qulice|<minimum>|<exclude|skip|haltOnFailure|testFailureIgnore'
-pom_words+='|(?i:errorprone|nullaway|jspecify)|-Xep|-Xplugin'
+pom_words+='|(?i:errorprone|nullaway|jspecify)|-Xep|-Xplugin|pitest|mutationThreshold|excludedClasses'
 gradle_words='kover|detekt|\blint\b|baseline|ignoreFailures|abortOnError|[wW]arningsAsErrors'
 gradle_words+='|checkAllWarnings|suppressWarnings|nowarn|Xsuppress|Xwarning-level|failOnSeverity'
 gradle_words+='|verifyRoborazzi|enabled\s*=\s*false|[iI]sEnabled|setEnabled|onlyIf|excludedTaskNames'
@@ -57,7 +57,7 @@ diff_lines() {
     /^-/ { print "-\t" o++ "\t" substr($0, 2) }'
 }
 
-# Numery linii wewnątrz <plugin> JaCoCo, qulice albo kompilatora (Error Prone, NullAway).
+# Numery linii wewnątrz <plugin> JaCoCo, qulice, PIT albo kompilatora (Error Prone, NullAway).
 pom_context() {
   awk '
     /<plugin>/ { inside = 1; n = 0; aid = "" }
@@ -66,7 +66,7 @@ pom_context() {
       if (aid == "" && match($0, /<artifactId>[^<]*/)) aid = substr($0, RSTART + 12, RLENGTH - 12)
     }
     /<\/plugin>/ {
-      if (aid ~ /jacoco|qulice|maven-compiler-plugin/) for (i = 1; i <= n; i++) print buf[i]
+      if (aid ~ /jacoco|qulice|pitest|maven-compiler-plugin/) for (i = 1; i <= n; i++) print buf[i]
       inside = 0
     }'
 }
@@ -120,6 +120,47 @@ only_version_bumps() {
   [[ "$(grep -P '^-\t' <<<"$lines" | normalize_versions)" == "$(grep -P '^\+\t' <<<"$lines" | normalize_versions)" ]]
 }
 
+# Dependabot npm: manifest i jego lock zmieniają się razem, a manifest zmienia tylko wersje pakietów.
+npm_version_bump() {
+  local manifest lock object
+  case "$1" in
+    .github/commitlint/package.json | .github/commitlint/package-lock.json | api/package.json | api/package-lock.json)
+      manifest="${1%/*}/package.json"
+      lock="${1%/*}/package-lock.json"
+      ;;
+    *) return 1 ;;
+  esac
+  [[ "$(git diff --name-status --no-renames "$range" -- "$lock" "$manifest")" == $'M\t'"$lock"$'\nM\t'"$manifest" ]] ||
+    return 1
+  [[ -z "$(git diff --summary "$range" -- "$lock" "$manifest")" ]] || return 1
+
+  for object in "$merge_base:$manifest" "$head:$manifest" "$merge_base:$lock" "$head:$lock"; do
+    git show "$object" || return 1
+    printf '\n'
+  done | jq -es '
+    def dependency_sections: {dependencies, devDependencies, optionalDependencies, peerDependencies};
+    def without_versions:
+      reduce (dependency_sections | keys[]) as $section (.;
+        if has($section) then .[$section] |= map_values(null) else . end);
+    def versions:
+      dependency_sections | to_entries[] | .key as $section |
+      (.value // {}) | to_entries[] | {path: [$section, .key], value};
+    def registry_version:
+      type == "string" and test("^[~^]?[0-9]+[.][0-9]+[.][0-9]+(-[0-9A-Za-z.-]+)?([+][0-9A-Za-z.-]+)?$");
+    length == 4 and (
+      . as [$before, $after, $old_lock, $new_lock] |
+      $before != $after and
+      ($before | without_versions) == ($after | without_versions) and
+      all($before | versions; . as $entry | ($after | getpath($entry.path)) as $next |
+        $entry.value == $next or ([$entry.value, $next] | all(registry_version))) and
+      ($old_lock | del(.packages)) == ($new_lock | del(.packages)) and
+      ($old_lock.packages[""] | type) == "object" and ($new_lock.packages[""] | type) == "object" and
+      ($old_lock.packages[""] | dependency_sections) == ($before | dependency_sections) and
+      ($new_lock.packages[""] | dependency_sections) == ($after | dependency_sections) and
+      ($old_lock.packages[""] | without_versions) == ($new_lock.packages[""] | without_versions)
+    )'
+}
+
 # Plik w bazie miał @NullMarked, a w PR go nie ma: usunięta adnotacja albo plik,
 # albo package-info.java przeniesiony pod inną ścieżkę (pakiet traci adnotację).
 null_marked_removed() {
@@ -144,7 +185,7 @@ check_file() {
   if ((rule && dependabot)) || [[ $path =~ (^|/)pom\.xml$|\.gradle$|\.(kt|kts|java|xml)$ ]]; then
     lines="$(diff_lines "$old" "$path")"
   fi
-  if ((dependabot)) && [[ $status == M ]] && only_version_bumps "$lines"; then
+  if ((dependabot)) && [[ $status == M ]] && { only_version_bumps "$lines" || npm_version_bump "$path" >/dev/null; }; then
     echo "Dependabot: w ${path} zmieniły się tylko wersje."
   elif ((rule)); then
     add_soft "$path" "" "zmieniony plik reguł jakości"
@@ -207,9 +248,17 @@ report() {
 }
 
 # Linia w komentarzu HTML albo w bloku kodu nie jest widoczna w opisie PR, więc się nie liczy.
+# Linia z powodem tylko wyjaśnia zmianę. Bramkę otwiera druga osoba: PR_APPROVED_BY to login osoby, która nadała
+# PR etykietę `zmiana-regul-zatwierdzona` (podaje go przepływ straznik-jakosci.yml); autor PR sam jej nie otworzy.
+reason=0
 gate=0
+approver="${PR_APPROVED_BY:-}"
+author="${PR_AUTHOR:-}"
 body="$(printf '%s\n' "${PR_BODY:-}" | tr -d '\r' | perl -0pe 's/<!--.*?-->//gs; s/^```.*?^```//gms')"
 if ((!dependabot)) && grep -qE '^Zmiana reguł jakości:[[:space:]]*[^[:space:]]' <<<"$body"; then
+  reason=1
+fi
+if ((reason)) && [[ -n $approver && ${approver,,} != "${author,,}" ]]; then
   gate=1
 fi
 
@@ -220,10 +269,14 @@ if ((${#hard[@]})); then
 fi
 if ((${#soft[@]} && gate)); then
   report warning "${soft[@]}"
-  echo "Opis PR ma linię „Zmiana reguł jakości:”, więc zmiany reguł są ostrzeżeniami do przeglądu."
+  echo "Opis PR ma linię „Zmiana reguł jakości:”, a zmianę zatwierdził(a) ${approver}: zmiany reguł są ostrzeżeniami."
+elif ((${#soft[@]} && reason)); then
+  report error "${soft[@]}"
+  echo "Zmianę reguł jakości zatwierdza osoba inna niż autor PR: etykietą „zmiana-regul-zatwierdzona”."
+  result=1
 elif ((${#soft[@]})); then
   report error "${soft[@]}"
-  echo "Zmiana reguł jakości wymaga w opisie PR linii „Zmiana reguł jakości: <powód>”."
+  echo "Zmiana reguł jakości wymaga w opisie PR linii „Zmiana reguł jakości: <powód>” i zatwierdzenia drugiej osoby."
   result=1
 fi
 if ((${#hard[@]} + ${#soft[@]} == 0)); then

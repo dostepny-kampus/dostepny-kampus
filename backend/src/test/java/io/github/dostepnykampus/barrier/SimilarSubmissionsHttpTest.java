@@ -6,6 +6,9 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.barrier.domain.SubmissionFloor;
+import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
+import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
@@ -83,9 +86,9 @@ final class SimilarSubmissionsHttpTest {
         final UUID checked = place.add(0, "IN_REVIEW", "A-1-0");
         final UUID corrupt = place.add(2, "SENT", "A-1-0");
         final UUID valid = place.add(5, "ACCEPTED", "A-1-1");
-        context.getBean(JdbcClient.class)
-            .sql("UPDATE submissions SET content = '{}'::jsonb WHERE id = :id")
-            .param("id", corrupt).update();
+        context.getBean(JdbcClient.class).sql(
+            "UPDATE submissions SET content = content || '{\"photoIds\": \"zepsute\"}' WHERE id = :id"
+        ).param("id", corrupt).update();
         MatcherAssert.assertThat(
             "Lista podobnych zgłoszeń ma zawierać tylko czytelne zgłoszenie",
             place.similar(checked, List.of(corrupt, valid)).stream()
@@ -100,7 +103,7 @@ final class SimilarSubmissionsHttpTest {
         MatcherAssert.assertThat(
             "Podobne zgłoszenia nieistniejącego zgłoszenia nie dają 404",
             new SubmissionRequests(context)
-                .get("/submissions/%s/similar".formatted(UUID.randomUUID())).getStatus(),
+                .similar(UUID.randomUUID()).getStatus(),
             Matchers.equalTo(404)
         );
     }
@@ -140,24 +143,27 @@ final class SimilarSubmissionsHttpTest {
          * @return Identyfikator zgłoszenia
          */
         UUID add(final int meters, final String status, final String floor) {
-            final UUID id = UUID.randomUUID();
+            final UUID id = new SampleSubmissions(this.context).add(
+                status,
+                SampleSubmissions.quick(
+                    new SubmissionPlace(
+                        new SubmissionPoint(17.055, 51.108), null, false, "A-1",
+                        new SubmissionFloor(floor, null, false)
+                    ),
+                    "Próg", UUID.randomUUID()
+                )
+            );
             this.context.getBean(JdbcClient.class).sql(
                 """
-                INSERT INTO submissions (id, status, kind, building_symbol, location, content)
-                VALUES (:id, :status, 'QUICK', 'A-1', ST_Project(
-                    ST_SetSRID(ST_MakePoint(17.055, 51.108), 4326)::geography, :meters, 0
-                )::geometry, CAST(:content AS JSONB))
+                UPDATE submissions SET content = jsonb_set(
+                    content, '{location,coordinates}', jsonb_build_array(ST_X(moved), ST_Y(moved))
+                ) FROM (
+                    SELECT ST_Project(
+                        ST_SetSRID(ST_MakePoint(17.055, 51.108), 4326)::geography, :meters, 0
+                    )::geometry AS moved
+                ) AS place WHERE id = :id
                 """
-            ).param("id", id).param("status", status)
-                .param("meters", meters).param(
-                    "content",
-                    String.join(
-                        "", "{\"kind\":\"QUICK\",\"location\":{\"type\":\"Point\",",
-                        "\"coordinates\":[17.062,51.108]},\"buildingSymbol\":\"A-1\",",
-                        "\"floor\":{\"floorId\":\"%s\"},\"barrierGroup\":\"OTHER\",",
-                        "\"description\":\"Próg\",\"photoIds\":[\"%s\"]}"
-                    ).formatted(floor, UUID.randomUUID())
-                ).update();
+            ).param("meters", meters).param("id", id).update();
             return id;
         }
 
@@ -171,7 +177,7 @@ final class SimilarSubmissionsHttpTest {
          */
         List<JsonNode> similar(final UUID checked, final List<UUID> own) throws Exception {
             final MockHttpServletResponse response = new SubmissionRequests(this.context)
-                .get("/submissions/%s/similar".formatted(checked));
+                .similar(checked);
             MatcherAssert.assertThat(
                 "Podobne zgłoszenia nie dają 200", response.getStatus(), Matchers.equalTo(200)
             );

@@ -106,7 +106,7 @@ class SubmissionsApiTest {
         val result = blocking { accepted("A-1") }
         assertEquals(ApiResult.Success::class, result::class)
         assertEquals(1, (result as ApiResult.Success).value.size)
-        assertEquals("/submissions?buildingSymbol=A-1", server.takeRequest().path)
+        assertEquals("/submissions?status=ACCEPTED&buildingSymbol=A-1", server.takeRequest().path)
     }
 
     /** Wiersz: C3 → własne zgłoszenia z serwera w każdym statusie, US8.1, US8.2. */

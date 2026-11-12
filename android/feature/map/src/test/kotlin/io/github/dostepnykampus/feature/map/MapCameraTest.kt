@@ -9,6 +9,8 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.math.cos
+import kotlin.math.pow
 
 /** Przyciski powiększania i przesuwania mapy bez gestów (NFR-53) na punkcie testowym, nie na danych PWr. */
 class MapCameraTest {
@@ -35,12 +37,33 @@ class MapCameraTest {
         assertEquals(limits.minZoom, farthest.zoom)
     }
 
+    /**
+     * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: prostokąt budynku mieści
+     * się w wolnej części mapy na lewo od pasa przycisków, z odstępem od brzegów (US2.8, US1.4, decyzja 151).
+     */
     @Test
-    fun us1_1_building_above_sheet() {
-        val building = GeoPoint(longitude = 17.1, latitude = 60.1)
-        val aboveSheet = camera.aboveSheet(building, bottomInset = 800.0)
-        assertEquals(MapCamera(center = building, zoom = START_ZOOM, bottomInset = 800.0), aboveSheet)
-        assertEquals(camera, camera.aboveSheet(focus = null, bottomInset = 800.0))
+    fun us2_8_building_fits_free_map() {
+        val outline = CampusBounds(west = 17.0, south = 60.0, east = 17.004, north = 60.001)
+        val free = FreeMap(widthDp = 411.0, heightDp = 400.0, endDp = 160.0, marginDp = 24.0)
+        val fit = fitted(outline, free)
+        val dpPerDegree = 512.0 * 2.0.pow(fit.zoom) / 360.0
+        val left = free.widthDp / 2 - (fit.center.longitude - outline.west) * dpPerDegree
+        val right = free.widthDp / 2 + (outline.east - fit.center.longitude) * dpPerDegree
+        assertEquals(24.0, left, DP)
+        assertEquals(411.0 - 160.0 - 24.0, right, DP)
+        assertEquals(60.0005, fit.center.latitude, DELTA)
+        val tall = (outline.north - outline.south) * dpPerDegree / cos(Math.toRadians(60.0005))
+        assertEquals(true, tall <= free.heightDp - 2 * free.marginDp)
+    }
+
+    /** Wiersz: mały budynek nie jest powiększany ponad poziom 18, więc sąsiednie budynki zostają widoczne. */
+    @Test
+    fun us2_8_small_keeps_context() {
+        val outline = CampusBounds(west = 17.0, south = 60.0, east = 17.0001, north = 60.0001)
+        val free = FreeMap(widthDp = 411.0, heightDp = 400.0, endDp = 0.0, marginDp = 24.0)
+        val fit = fitted(outline, free)
+        assertEquals(18.0, fit.zoom)
+        assertEquals(17.00005, fit.center.longitude, DELTA)
     }
 
     @Test
@@ -63,5 +86,6 @@ class MapCameraTest {
 
     private companion object {
         const val DELTA = 1e-12
+        const val DP = 1e-6
     }
 }

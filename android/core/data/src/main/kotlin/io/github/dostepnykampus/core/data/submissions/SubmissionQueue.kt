@@ -55,9 +55,10 @@ internal fun PendingPhotoDraft.toPendingPhotoEntity(submissionId: String): Pendi
 
 /**
  * SENT: wysłane; LATER: brak sieci albo awaria serwera (5xx), spróbować później (BR-9);
- * LOGIN_EXPIRED: 401, czekać na ponowne zalogowanie (BR-26); REFUSED: inna odmowa serwera.
+ * LOGIN_EXPIRED: 401, czekać na ponowne zalogowanie (BR-26); REFUSED: inna odmowa serwera;
+ * REPLACED: w trakcie wysyłki zapisano poprawkę, więc wynik dotyczy starej treści i wiersz idzie od nowa (#855).
  */
-internal enum class Outcome { SENT, LATER, LOGIN_EXPIRED, REFUSED }
+internal enum class Outcome { SENT, LATER, LOGIN_EXPIRED, REFUSED, REPLACED }
 
 private const val HTTP_UNAUTHORIZED = 401
 private const val FIRST_SERVER_FAULT_CODE = 500
@@ -100,6 +101,7 @@ data class SubmissionStamps(
  * działa jak dotąd.
  * Chwilę zapisu daje [SubmissionStamps.nowMillis]; kolejne zapisy mają rosnące chwile także w tej samej
  * milisekundzie, więc kolejka wysyła je w kolejności zapisu (US9.2, BR-9).
+ * Wywołania serwera idą poza blokadą wierszy ([SentResults]), więc zapis poprawki nie czeka na sieć (#855).
  */
 class SubmissionQueue(
     private val store: PendingSubmissionDao,
@@ -109,7 +111,8 @@ class SubmissionQueue(
     private val onSaved: () -> Unit = {},
     private val history: OwnSubmissionDao? = null,
 ) {
-    private val lock = Mutex()
+    private val sending = Mutex()
+    private val results = SentResults(store = store, history = history, ioContext = ioContext)
     private val lastSavedAt = AtomicLong(Long.MIN_VALUE)
     private val expired = MutableStateFlow(false)
 
@@ -138,18 +141,29 @@ class SubmissionQueue(
      *
      * @param content treść zgłoszenia
      * @param photos zdjęcia do wysłania; identyfikatory wracają w [content] (BR-7, BR-8)
+     * @throws SaveRefusedException zdjęcia nie odpowiadają treści
      */
     suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>): PendingSubmissionEntity {
-        require(photos.map { it.photoId } == content.photoIds) {
-            "Zdjęcia w kolejce muszą odpowiadać identyfikatorom treści (BR-7, BR-8)"
-        }
+        requireMatchingPhotos(content, photos)
         val id = stamps.newId()
         val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
         val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = savedAt)
-        store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
-        remember(entity)
+        store.together {
+            store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
+            remember(entity)
+        }
         runCatching(onSaved)
         return entity
+    }
+
+    /**
+     * Sprzątanie przy starcie: usuwa z [dir] pliki zdjęć, których nie ma w kolejce ani w [kept] (NFR-5, #927).
+     *
+     * @param dir katalog zdjęć zgłoszeń
+     * @param kept pliki zdjęć odtworzonych szkiców
+     */
+    suspend fun deleteOrphanPhotos(dir: File, kept: Set<String>) {
+        deleteOrphanPhotos(store = store, dir = dir, kept = kept, nowMillis = stamps.nowMillis(), ioContext = ioContext)
     }
 
     /**
@@ -158,21 +172,25 @@ class SubmissionQueue(
      * @param edited poprawiane zgłoszenie
      * @param content nowa treść zgłoszenia
      * @param photos zdjęcia do wysłania; identyfikatory wracają w [content] (BR-7, BR-8)
-     * @throws IllegalArgumentException serwer ma już zgłoszenie, a telefon nie zna jego wersji (BR-10)
+     * @throws SaveRefusedException zdjęcia nie odpowiadają treści albo serwer ma już zgłoszenie, a telefon nie zna
+     *   jego wersji (BR-10)
      */
     suspend fun saveEdit(edited: EditedSubmission, content: SubmissionContent, photos: List<PendingPhotoDraft>) {
-        require(photos.map { it.photoId } == content.photoIds) {
-            "Zdjęcia w kolejce muszą odpowiadać identyfikatorom treści (BR-7, BR-8)"
-        }
-        lock.withLock {
-            val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
-            val baseVersion = baseVersionOf(edited = edited, store = store, history = history)
-            val fresh = content.toPendingSubmissionEntity(id = edited.id, savedAtMillis = savedAt)
-            val entity = fresh.copy(baseVersion = baseVersion)
-            val replaced = store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
-            deletePhotoFiles(replaced, ioContext)
-            remember(entity)
-        }
+        requireMatchingPhotos(content, photos)
+        val replaced =
+            results.locked {
+                val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
+                val baseVersion = baseVersionOf(edited = edited, store = store, history = history)
+                val fresh = content.toPendingSubmissionEntity(id = edited.id, savedAtMillis = savedAt)
+                val entity = fresh.copy(baseVersion = baseVersion)
+                var paths = emptyList<String>()
+                store.together {
+                    paths = store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
+                    remember(entity)
+                }
+                paths
+            }
+        deletePhotoFiles(replaced, ioContext)
         runCatching(onSaved)
     }
 
@@ -184,13 +202,14 @@ class SubmissionQueue(
      * wysyłki dopiero po ponownym zapisie przez osobę ([saveEdit], BR-26, NFR-5, US9.2). Tak samo kończy się
      * zgłoszenie, którego telefon nie odczyta (brak pliku zdjęcia, nieznana wartość w bazie), ale bez kodu odmowy,
      * więc jeden zły wiersz nie zatrzymuje kolejki. Kolejka jest czytana po każdym zgłoszeniu, więc zgłoszenie
-     * zapisane w trakcie wysyłki idzie w tym samym przebiegu; każde jest próbowane raz na przebieg (#854).
+     * zapisane w trakcie wysyłki idzie w tym samym przebiegu; każde jest próbowane raz na przebieg (#854), a poprawka
+     * zapisana w trakcie wysyłki tego samego zgłoszenia idzie od razu po niej (#855).
      *
      * @return `false`, gdy trzeba spróbować później; `true`, gdy wysyłka doszła do końca kolejki albo czeka
      *   na zalogowanie, a nie na czas
      */
     suspend fun sendAll(): Boolean =
-        lock.withLock {
+        sending.withLock {
             val stop = if (expired.value) Outcome.LOGIN_EXPIRED else sendUntilStop()
             if (stop == Outcome.LOGIN_EXPIRED) expired.value = true
             stop != Outcome.LATER
@@ -211,8 +230,9 @@ class SubmissionQueue(
         var stop: Outcome? = null
         var next = store.all().firstOrNull()
         while (next != null && stop == null) {
-            tried += next.submission.id
-            stop = sendOne(next).takeIf { it == Outcome.LATER || it == Outcome.LOGIN_EXPIRED }
+            val outcome = sendOne(next)
+            if (outcome != Outcome.REPLACED) tried += next.submission.id
+            stop = outcome.takeIf { it == Outcome.LATER || it == Outcome.LOGIN_EXPIRED }
             next = store.all().firstOrNull { it.submission.id !in tried }
         }
         return stop
@@ -228,7 +248,7 @@ class SubmissionQueue(
 
     private suspend fun sendContent(item: PendingSubmissionWithPhotos): Outcome {
         val version = item.submission.baseVersion
-        val content = item.toSubmissionContentOrNull() ?: return refused(item.submission.id, code = null)
+        val content = item.toSubmissionContentOrNull() ?: return results.unreadable(item)
         val result: ApiResult<*>
         val outcome =
             if (version == null) {
@@ -239,50 +259,29 @@ class SubmissionQueue(
                 result = edit
                 editOutcome(edit)
             }
-        if (outcome == Outcome.SENT) {
-            store.markCreated(id = item.submission.id)
-            versionOf(result)?.let { history?.saveVersion(id = item.submission.id, version = it) }
-        }
-        conflictVersionOf(result)?.let { server ->
-            store.upsertSubmission(item.submission.copy(baseVersion = server))
-            history?.saveVersion(id = item.submission.id, version = server)
-        }
-        if (outcome == Outcome.REFUSED) refused(item.submission.id, refusalCodeOf(result))
-        return outcome
+        return results.content(item, result, outcome)
     }
 
     private suspend fun sendRemaining(item: PendingSubmissionWithPhotos): Outcome {
         for (photo in item.photos.filterNot { it.isUploaded }) {
-            val jpeg = jpeg(photo.path)
+            val jpeg = jpeg(photo.path, ioContext)
             val result = jpeg?.let { server.putPhoto(item.submission.id, photo.photoId, it) }
-            if (result !is ApiResult.Success) {
-                val outcome = result?.let(::outcomeOf) ?: Outcome.REFUSED
-                if (outcome == Outcome.REFUSED) refused(item.submission.id, result?.let(::refusalCodeOf))
-                return outcome
-            }
-            store.markUploaded(submissionId = item.submission.id, photoId = photo.photoId)
+            val outcome = results.photo(item, photo.photoId, result)
+            if (outcome != Outcome.SENT) return outcome
         }
-        store.delete(item.submission.id)
-        deletePhotoFiles(item.photos.map { it.path }, ioContext)
-        history?.markSent(id = item.submission.id)
-        return Outcome.SENT
+        return results.finish(item)
     }
-
-    private suspend fun refused(id: String, code: Int?): Outcome {
-        store.markRefused(id)
-        history?.markRefused(id = id, code = code)
-        return Outcome.REFUSED
-    }
-
-    private suspend fun jpeg(path: String): ByteArray? =
-        withContext(ioContext) {
-            try {
-                File(path).readBytes()
-            } catch (_: IOException) {
-                null
-            }
-        }
 }
+
+/** Plik zdjęcia do wysłania; `null`, gdy telefon go nie odczyta (#856). */
+internal suspend fun jpeg(path: String, ioContext: CoroutineContext): ByteArray? =
+    withContext(ioContext) {
+        try {
+            File(path).readBytes()
+        } catch (_: IOException) {
+            null
+        }
+    }
 
 /**
  * Usuwa pliki zdjęć, których kolejka już nie potrzebuje: po wysłaniu całego zgłoszenia albo po zastąpieniu zdjęcia
@@ -306,8 +305,22 @@ internal suspend fun baseVersionOf(
     val own = history?.find(edited.id)
     val version = edited.baseVersion ?: pending?.baseVersion ?: own?.serverVersion
     val isOnServer = pending?.isCreatedOnServer == true || own?.state == OwnSubmissionState.SENT
-    require(version != null || !isOnServer) { "Serwer ma już zgłoszenie ${edited.id}, a wersja jest nieznana (BR-10)" }
+    if (version == null && isOnServer) {
+        throw SaveRefusedException(
+            reason = SaveRefusal.UNKNOWN_VERSION,
+            message = "Serwer ma już zgłoszenie ${edited.id}, a wersja jest nieznana (BR-10)",
+        )
+    }
     return version
+}
+
+internal fun requireMatchingPhotos(content: SubmissionContent, photos: List<PendingPhotoDraft>) {
+    if (photos.map { it.photoId } != content.photoIds) {
+        throw SaveRefusedException(
+            reason = SaveRefusal.PHOTOS_MISMATCH,
+            message = "Zdjęcia w kolejce muszą odpowiadać identyfikatorom treści (BR-7, BR-8)",
+        )
+    }
 }
 
 internal fun outcomeOf(result: ApiResult<*>): Outcome =

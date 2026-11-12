@@ -46,14 +46,22 @@ internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocu
 internal data class MapScene(val data: CampusMapData, val selection: MapSelection)
 
 /**
- * Scena mapy z danych [layers] i zaznaczenia [focus] z trasy; wejście bierze nazwę i punkt z [catalog]. `null`,
- * dopóki nie ma danych mapy. Zmiana zaznaczenia nie kopiuje danych katalogu.
+ * Scena mapy z danych [layers], zaznaczenia [focus] z trasy i nazwy terenu [area] wybranego przez osobę (US1.7);
+ * wejście bierze nazwę i punkt z [catalog]. `null`, dopóki nie ma danych mapy. Zmiana zaznaczenia nie kopiuje
+ * danych katalogu.
  */
 @Composable
-internal fun rememberMapScene(layers: CampusMapData?, catalog: BuildingCatalog?, focus: MapFocus?): MapScene? {
+internal fun rememberMapScene(
+    layers: CampusMapData?,
+    catalog: BuildingCatalog?,
+    focus: MapFocus?,
+    area: String?,
+): MapScene? {
     val building = (focus as? MapFocus.Building)?.symbol
     val chosen = rememberChosenEntrance(catalog, focus as? MapFocus.Entrance)
-    return remember(layers, building, chosen) { layers?.let { MapScene(it, it.selection(building, chosen)) } }
+    return remember(layers, building, chosen, area) {
+        layers?.let { MapScene(it, it.selection(building, chosen, area)) }
+    }
 }
 
 /**

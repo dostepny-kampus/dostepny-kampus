@@ -6,7 +6,8 @@ set -euo pipefail
 
 # Strażnik znaczników zadań, uruchamiany w katalogu repozytorium git. Znacznik TODO, FIXME, HACK lub @todo (wielkość liter bez znaczenia)
 # musi mieć postać ZNACZNIK(#N), gdzie issue #N istnieje i jest otwarte. Skanuje pliki śledzone przez git
-# o rozszerzeniach kt, kts, java, yml, yaml, sh, z pominięciem plików samego strażnika (zawierają przykłady).
+# z kodem (lista z pliki-kodu.sh, wspólna z kontrolą nagłówków) oraz yml i yaml, z pominięciem plików samego strażnika i reguły detekt NoLineComment
+# w android/ (zawierają przykłady).
 # Rozwiązania tymczasowe (@Ignore, @Disabled, @Tymczasowe, @RequiresOptIn, tag wykluczający w .feature) też muszą wskazywać otwarte issue.
 # Stan issue z gh (bez dostępu do issue skrypt kończy się kodem 2); w teście zamiast sieci: ISSUE_JSON_DIR z plikami <numer>.json (gh issue view --json state,url).
 # PR_BODY (opis PR, opcjonalny): znacznik wskazujący issue zamykane przez ten PR (słowa zamykające z slowa-zamykajace.sh, np. Closes, Fixed) to naruszenie,
@@ -14,6 +15,9 @@ set -euo pipefail
 # Kod wyjścia: 0 = czysto, 1 = naruszenie, 2 = błąd narzędzia gh lub jq (nie wiemy, czy issue jest w porządku).
 found=0
 declare -A states=()
+# shellcheck source=pliki-kodu.sh
+source "$(dirname "${BASH_SOURCE[0]}")/pliki-kodu.sh"
+mapfile -t kod < <(wzorce_plikow_kodu)
 # shellcheck source=slowa-zamykajace.sh
 source "$(dirname "${BASH_SOURCE[0]}")/slowa-zamykajace.sh"
 declare -A zamykane=()
@@ -95,10 +99,11 @@ while IFS= read -r -d '' path; do
       report "$path" "$line" "${marker}: znacznik bez numeru issue; użyj ${marker}(#N)."
     fi
   done < <(grep -noPi '(?<![\w/.-])(?:TODO|FIXME|HACK|@todo)(?![\w]|-\w|\.\w)(?:\(#\d+\))?' "$path" || true)
-done < <(git ls-files -z -- '*.kt' '*.kts' '*.java' '*.yml' '*.yaml' '*.sh' \
-  ':!.github/scripts/todo-issue.sh' ':!.github/scripts/todo-issue-test.sh')
+done < <(git ls-files -z -- "${kod[@]}" '*.yml' '*.yaml' \
+  ':!.github/scripts/todo-issue.sh' ':!.github/scripts/todo-issue-test.sh'   ':!android/detekt-rules/src/main/kotlin/io/github/dostepnykampus/detekt/NoLineComment.kt'   ':!android/detekt-rules/src/test/kotlin/io/github/dostepnykampus/detekt/NoLineCommentTest.kt')
 
-# Rozwiązania tymczasowe (decyzja 147): @Ignore/@Disabled/@Tymczasowe (powód w nawiasie, do 3 wierszy), tag wykluczający
+# Rozwiązania tymczasowe (decyzja 147): @Ignore/@Disabled/@Tymczasowe w dowolnym miejscu linii kodu, także z nazwą
+# pakietu albo celem użycia (powód w nawiasie, do 3 wierszy; napisy i linie komentarza nie są adnotacją), tag wykluczający
 # w .feature (#N w tej samej linii albo w komentarzu tuż nad nim) i @RequiresOptIn (#N w KDoc nad adnotacją) wskazują
 # otwarte issue. Wynik awk: wiersz|znacznik|numer (numer pusty, gdy go brak). Dane testowe dokumentacji są pomijane.
 read -r -d '' tymczasowe_awk <<'AWK' || true
@@ -120,10 +125,15 @@ END {
       text = line
       if (text !~ /#[0-9]+/ && i > 1 && l[i - 1] ~ /^[[:space:]]*#/) text = l[i - 1]
       emit(i, tag, text)
-    } else if (line ~ /^[[:space:]]*@(Ignore|Disabled|Tymczasowe)([^[:alnum:]_]|$)/) {
-      name = line
-      sub(/^[[:space:]]*/, "", name)
-      sub(/[^@[:alnum:]_].*$/, "", name)
+      continue
+    }
+    code = line
+    gsub(/"([^"\\]|\\.)*"/, "\"\"", code)
+    if (code ~ /^[[:space:]]*(\/\/|\/\*|\*)/) code = ""
+    if (match(code, /@([[:alnum:]_]+:)?([[:alnum:]_]+\.)*(Ignore|Disabled|Tymczasowe)([^[:alnum:]_]|$)/)) {
+      name = substr(code, RSTART, RLENGTH)
+      sub(/[^[:alnum:]_]$/, "", name)
+      sub(/^@.*[.:]/, "@", name)
       text = line
       if (line ~ /\(/) {
         text = line " " l[i + 1] " " l[i + 2]

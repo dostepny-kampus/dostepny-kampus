@@ -1,10 +1,11 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.AsCollector;
 import io.github.dostepnykampus.IntegrationTest;
 import jakarta.servlet.ServletInputStream;
 import java.io.ByteArrayInputStream;
@@ -76,20 +77,7 @@ final class PhotoUploadLimitHttpTest {
 
     private static UUID add(final WebApplicationContext context) {
         final UUID id = UUID.randomUUID();
-        context.getBean(JdbcClient.class).sql(
-            """
-            INSERT INTO submissions (id, status, kind, location, content)
-            VALUES (:id, 'SENT', 'QUICK', ST_SetSRID(ST_MakePoint(17.0, 51.0), 4326),
-                CAST(:content AS JSONB))
-            """
-        ).param("id", id).param(
-            "content",
-            """
-            {"kind":"QUICK","location":{"type":"Point","coordinates":[17,51]},
-            "barrierGroup":"OTHER","photoIds":["%s"]}
-            """.formatted(id)
-        ).update();
-        return id;
+        return new SampleSubmissions(context).add(id, "SENT", SampleSubmissions.quick(id));
     }
 
     private static MockHttpServletResponse put(
@@ -112,6 +100,7 @@ final class PhotoUploadLimitHttpTest {
         request.setMethod("PUT");
         request.setRequestURI("/submissions/%s/photos/%s".formatted(id, id));
         request.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        new AsCollector().postProcessRequest(request);
         if (declared >= 0) {
             request.addHeader(HttpHeaders.CONTENT_LENGTH, declared);
         }

@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | --- | --- |
 | Pełny test | 3 |
 | Tylko częściowo | 13 |
-| Bez testu | 167 |
+| Bez testu | 169 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -84,6 +84,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `przegladanie-mapy.feature` | Wejście dostępne najwyżej 3 dotknięcia od mapy | US3.2 | `app · AppNavigatorTest.us3_2_v1_v2_v3_back_v2` | częściowo |
 | `przegladanie-mapy.feature` | Mała karta nad mapą mówi słowami o wejściach | US2.8 | `feature/map · BuildingCardModesTest.us2_8_compact_card` | częściowo |
 | `przegladanie-mapy.feature` | Z małej karty osoba rozwija opis albo wraca do mapy | US2.8 | `app · AppShellTest.us2_8_card_back_then_close` | częściowo |
+| `przegladanie-mapy.feature` | Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski | US1.4, US2.8 | — | brak |
+| `przegladanie-mapy.feature` | Przy niskiej mapie nad małą kartą nie ma przycisków mapy | US2.8 | — | brak |
 | `przegladanie-mapy.feature` | Z listy przy dużej czcionce opis budynku prowadzi do mapy | US2.9 | `app · AppNavigatorTest.us2_9_show_on_map_chooses_map`<br>`app · MainActivityTest.us2_9_talkback_list_restore`<br>`feature/map · BuildingCardModesTest.nfr20_large_font_all_scrolls` | częściowo |
 | `przegladanie-mapy.feature` | Brak wejścia dostępnego jest powiedziany wprost | US3.1 | — | brak |
 | `przegladanie-mapy.feature` | Mapa pokazuje wejścia i ścieżki, a legenda objaśnia znaki słowem | US1.4 | — | brak |

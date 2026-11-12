@@ -36,7 +36,7 @@ class BuildingCardScreenTest {
             BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
                 """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
                     """{"type":"Feature","properties":{"kind":"building","symbols":["C-13"],""" +
-                    """"name":"Budynek testowy","osm_id":"way/1"},""" +
+                    """"display_name":"Budynek testowy","osm_id":"way/1"},""" +
                     """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
                     """{"type":"Feature","properties":{"kind":"entrance","symbols":["C-13"],"osm_id":"node/1",""" +
                     """"entrance":"main","wheelchair":"yes","ref":"Główne"},""" +

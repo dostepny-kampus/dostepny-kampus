@@ -105,6 +105,27 @@ final class JdbcReadTest {
         );
     }
 
+    @Test
+    void usEightOwnListLeavesOtherAuthorsOut(final ApplicationContext context) {
+        final SubmissionData data = SubmissionData.of(context);
+        final SubmissionContent content = SubmissionData.content("o");
+        final UUID own = data.seed(1, content, SubmissionStatus.REJECTED);
+        final UUID foreign = data.seed(2, content, SubmissionStatus.SENT);
+        data.jdbc().sql("UPDATE submissions SET author = 'inne-konto' WHERE id = :id")
+            .param("id", foreign).update();
+        final SubmissionQuery all = new SubmissionQuery(
+            Set.of(SubmissionStatus.values()), SubmissionData.BUILDING, null
+        );
+        Assertions.assertEquals(
+            List.of(List.of(own), List.of(foreign)),
+            List.of(
+                data.repo().own(SubmissionData.AUTHOR, all).stream().map(Submission::id).toList(),
+                data.repo().own("inne-konto", all).stream().map(Submission::id).toList()
+            ),
+            "Lista własnych zgłoszeń ma cudze albo gubi własne"
+        );
+    }
+
     private static UUID created(final SubmissionData data, final UUID id, final int minutes) {
         data.jdbc().sql("UPDATE submissions SET created_at = :at WHERE id = :id")
             .param("at", OffsetDateTime.parse("2026-01-01T10:00:00Z").plusMinutes(minutes))

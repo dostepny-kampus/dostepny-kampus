@@ -15,6 +15,7 @@ import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldLayout
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -27,7 +28,9 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
@@ -47,6 +50,7 @@ import io.github.dostepnykampus.core.designsystem.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.SideBar
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.feature.capture.ReportDraft
+import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 
 private val WideWindow = WIDE_WINDOW_DP.dp
 
@@ -63,6 +67,7 @@ private val RestartsSaver =
  * które zajmuje pasek, są dla treści zużyte: ekran dopełnia resztę przez `WindowInsets.safeDrawing` albo rysuje pod
  * nią, jak mapa. V2 jest arkuszem nad V1 ([SheetSceneStrategy]),
  * a gdy okno daje kartę `Direct` (duża czcionka, szerokie okno, poziomo), osobnym ekranem bez mapy (US2.9, NFR-51).
+ * Po odtworzeniu historii [onRestore] dostaje pliki zdjęć odtworzonych szkiców, których sprzątanie nie usuwa (#927).
  */
 @Composable
 fun AppShell(
@@ -71,11 +76,12 @@ fun AppShell(
     onFirstHelpLeft: () -> Unit,
     modifier: Modifier = Modifier,
     onChooseMap: () -> Unit = {},
+    onRestore: (keptPhotos: Set<String>) -> Unit = {},
     content: @Composable AppNavigator.(NavKey) -> Unit = { AppScreen(it) },
 ) {
     val backStack = rememberNavBackStack(elements = startBackStack(firstLaunch).toTypedArray())
     val restarts = rememberSaveable(saver = RestartsSaver) { SnapshotStateList() }
-    val draft = rememberCaptureDraft(backStack.any { it.isCaptureRoute() })
+    val draft = rememberCaptureDraft(routes = backStack, onRestore = onRestore)
     val currentOnFirstHelpLeft by rememberUpdatedState(onFirstHelpLeft)
     val currentOnChooseMap by rememberUpdatedState(onChooseMap)
     val navigator =
@@ -89,7 +95,7 @@ fun AppShell(
                 reportDraft = draft,
             )
         }
-    val items = bottomBarItems(hasWork = roles.currentAccount().hasStaffRole)
+    val items = bottomBarItems(hasWork = roles.hasWork())
     val entries =
         rememberDecoratedNavEntries(
             entries =
@@ -133,10 +139,19 @@ fun AppShell(
     }
 }
 
+/** Pliki zdjęć odtworzonych szkiców: zgłoszenia szybkiego w [routes] i C2 w [draft] (#927). */
+internal fun keptPhotos(routes: List<NavKey>, draft: ReportDraft): Set<String> =
+    (routes.mapNotNull { (it as? ReportRoute)?.photoPath } + draft.photoPaths()).toSet()
+
 @Composable
-private fun rememberCaptureDraft(active: Boolean): ReportDraft {
+private fun rememberCaptureDraft(routes: NavBackStack<NavKey>, onRestore: (Set<String>) -> Unit): ReportDraft {
     val draft = rememberSerializable(serializer = ReportDraft.serializer()) { ReportDraft() }
-    if (!active) SideEffect { draft.clear() }
+    if (routes.none { it.isCaptureRoute() }) SideEffect { draft.clear() }
+    val currentOnRestore by rememberUpdatedState(onRestore)
+    DisposableEffect(Unit) {
+        currentOnRestore(keptPhotos(routes = routes, draft = draft))
+        onDispose {}
+    }
     return draft
 }
 
@@ -156,4 +171,10 @@ private fun bottomBarItems(hasWork: Boolean): BottomBarItems {
             ),
         )
     }
+}
+
+@Composable
+private fun RoleProvider.hasWork(): Boolean {
+    val account by account.collectAsStateWithLifecycle()
+    return account.hasStaffRole
 }

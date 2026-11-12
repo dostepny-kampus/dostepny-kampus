@@ -62,7 +62,7 @@ class AppShellScreenshotTest {
     private var touch: (List<String>) -> Unit = {}
     private val choice = TestMapListChoice()
     private val landOnly =
-        CampusMapView { _: CampusMapData, _, _, _, onBuildingsTouch, modifier: Modifier ->
+        CampusMapView { _: CampusMapData, _, _, _, onBuildingsTouch, _, modifier: Modifier ->
             touch = onBuildingsTouch
             Box(modifier = modifier.fillMaxSize().background(DostepnyKampusTheme.mapColors.lad))
         }
@@ -158,6 +158,12 @@ class AppShellScreenshotTest {
     @Test
     fun us9_1_v1_bez_internetu_jasny() {
         capture(isSheetOpen = false, isOnline = false)
+    }
+
+    /** V2 mała karta bez internetu: plakietka „Bez internetu” nad symbolem, US2.8, NFR-10, decyzja 153. */
+    @Test
+    fun nfr10_v2_arkusz_bez_internetu() {
+        capture(isOnline = false)
     }
 
     /** V1 z wybraną listą budynków, NFR-19. */

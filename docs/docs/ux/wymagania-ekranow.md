@@ -11,7 +11,7 @@ Napisy przycisków i treść komunikatów w cudzysłowie pochodzą ze [słownika
 | Ekran | Nazwa robocza | Nagłówek na ekranie | Role z dostępem | Historyjki | Nowy w fazie B |
 | --- | --- | --- | --- | --- | --- |
 | V1 | Mapa kampusu | „Mapa kampusu” | wszystkie | US1, US10.6, US16.1, US18 | — |
-| V2 | Karta budynku | symbol, np. „A-1”, i nazwa z danych | wszystkie; czynności Zbierającego tylko RO-ZBI | US2, US16, US17, US3.2; start US8.4, US15, US17.2 | — |
+| V2 | Karta budynku | symbol, np. „A-1”, i nazwa budynku | wszystkie; czynności Zbierającego tylko RO-ZBI | US2, US16, US17, US3.2; start US8.4, US15, US17.2 | — |
 | V3 | Którędy wejść | „Którędy wejść do C-13” | wszystkie | US3 | — |
 | V4 | Zgłoszenie szybkie | „Zgłoś barierę” | RO-ODW i role pracownicze; RO-GOS przechodzi do L1 | US4, US14.2 | — |
 | V5 | Pomoc | „Jak korzystać z aplikacji” | wszystkie | US5 | — |
@@ -51,6 +51,7 @@ Dotyczą każdego ekranu. Przy ekranach podajemy tylko to, co do nich dochodzi.
 | Jedna czynność główna na ekranie: pierwsza w kolejności czytania wśród czynności ekranu i jedyna wypełniona, nigdy wyróżniona samym kolorem. Czynność powtarzana w każdej pozycji listy (R1, C5, K1) i wybór jednego z dwóch równorzędnych wariantów (C4) nie mają przycisku wypełnionego; wyróżnia je położenie. | NFR-21, zasada dla osób starszych |
 | Cel dotyku co najmniej 48 × 48 dp. | NFR-17 |
 | „ⓘ” na każdym ekranie z mapą (V1, C1, R1) to ten sam element. TalkBack czyta go jako „Informacje o mapie”. Otwiera panel „Źródła danych” z „Zamknij” i z treścią licencyjną jak na V1. Wymagania i makiety nazywają go „panelem”, nie „arkuszem”. | NFR-37, NFR-40, NFR-18 |
+| Wybór piętra na V4 i C2 to jeden wspólny element. TalkBack czyta go jako wybór jednej opcji i mówi, które piętro jest wybrane. Wybrane piętro widać po obwódce i znaku, nie po samym kolorze. Każda opcja ma cel co najmniej 48 dp. Element ma dwa układy. Na V4 pytanie o piętro jest jedyną treścią kroku, więc opcje stoją w liście przycisków na całą szerokość. Na C2 piętro jest jednym z pól formularza, więc opcje to chipy w zawijanym wierszu. | NFR-17, NFR-18, US4.5, US7.2 |
 | Kontrast tekstu, ikon statusu, ramek pól i fokusu według progów NFR-16. | NFR-16 |
 | Tekst czytelny przy czcionce 200%, bez ucinania i nakładania. Przy skali czcionki co najmniej 1,5 obowiązują reguły z sekcji [Duża czcionka](#duza-czcionka). | NFR-20 |
 | Status, oznaczenie wejścia i uciążliwość zawsze tekstem i ikoną. Uciążliwość 1–3 ma dla wszystkich ról napisy „Utrudnienie”, „Tylko z pomocą”, „Blokada”. Low-fi jest szare, a kolor nie niesie znaczenia. | NFR-21; PW-13 |
@@ -60,6 +61,7 @@ Dotyczą każdego ekranu. Przy ekranach podajemy tylko to, co do nich dochodzi.
 | Brak limitów czasu na odpowiedź użytkownika. | NFR-23 |
 | Komunikat o błędzie mówi, co się stało i co zrobić, bez żargonu technicznego, w najwyżej 2 zdaniach. Aplikacja mówi o sobie „my”, np. „Wczytujemy”, „Nie znaleźliśmy”. | NFR-42, NFR-50 [2]; WCAG 3.3.1, 3.3.3 [1]; PW-9, PW-10 |
 | Gość i Odwiedzający nie widzą słów „zgłoszenie”, „karta budynku”, „synchronizacja”, „sieć”. Zamiast nich są napisy ze słownika użytkownika, np. „zdjęcie bariery”, „opis budynku”, „Bez internetu”. | NFR-42; PW-4, PW-5 |
+| Nazwa budynku stoi zawsze obok jego symbolu, więc nie powtarza symbolu. Gdy nazwa z danych zawiera symbol swojego budynku, aplikacja pokazuje ją bez symbolu i bez łącznika przy nim. Przykłady: „A-1 / Budynek główny” to „Budynek główny”, a „Dom Studencki T-6 "Alcatraz"” to „Dom Studencki "Alcatraz"”. Gdy po symbolu zostają mniej niż 4 litery, np. „M-6 bis”, nazwa zostaje jak w danych. Nazwa z samych symboli, np. „C-3/C-4”, to brak nazwy. Cudzysłowy zostają jak w danych. Nazwę bez symbolu niosą dane budynków (pole `label`), więc aplikacja i serwer czytają tę samą. Każdy ekran i TalkBack podają tę samą nazwę. | US1.1, US2, NFR-18; WCAG 3.2.4 |
 | Bez wymaganej roli ekranu nie ma w aplikacji, a serwer odrzuca żądanie. | US14.1, NFR-33 |
 | Po wysłaniu, zapisie albo decyzji formularz i kroki przed nim znikają z historii „Wstecz”. Dotyczy to V4 po „Wyślij”, C1 i C2 po „Zapisz”, C6 i C7 po „Wyślij do sprawdzenia”, C4 po wyborze wersji i R2 po decyzji. „Wstecz” z ekranu, który się wtedy otwiera, wraca tam, skąd zaczęła się praca, np. z C3 do L2 albo V2, z R1 do L2. | NFR-54, US4.7; WCAG 3.2.3 [1]; [mapa nawigacji](mapa-nawigacji.md), P2 |
 
@@ -111,11 +113,11 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | Mapa z konturami budynków. Pierwszy widok to budynek A-1 i sąsiednie budynki w powiększeniu 17, przy którym symbole budynków są czytelne | dane | US1, NFR-11, decyzja 80 | — |
 | Bariery ze zgłoszeń przyjętych jako znak uciążliwości: kształt, nie kolor. Słowo obok znaku od powiększenia 17, nie przy krawędzi mapy i tylko wtedy, gdy mieści się bez nakładania; symbole budynków mają pierwszeństwo. Znak ma nazwę dla TalkBack, np. „Blokada: schody przy wejściu, budynek A-1” | dane | US1.3, US10.6, NFR-18, NFR-20, NFR-21 | — |
 | Dotknięcie znaku bariery | czynność | US1.5, NFR-17 | arkusz bariery na tym ekranie |
-| Wejścia do budynków z danych jako znaki: ✓ dla „Dostępne”, ✗ dla „Niedostępne” i romb ze znakiem ? dla „Brak danych”. Znaki różnią się kształtem, nie samym kolorem. Wszystkie wejścia są widoczne także wtedy, gdy żadne nie jest zaznaczone | dane | US2.1, NFR-21; decyzja 134 | — |
+| Wejścia do budynków z danych jako znaki: ✓ dla „Dostępne”, ✗ dla „Niedostępne” i romb ze znakiem ? dla „Brak danych”. Znaki różnią się kształtem, nie samym kolorem. Wszystkie wejścia są widoczne także wtedy, gdy żadne nie jest zaznaczone. Przy zaznaczonym budynku znaki mają tylko jego wejścia, a sąsiednie budynki są przygaszone i zachowują podpisy | dane | US1.4, US2.1, US2.8, NFR-21; decyzje 134, 153 | — |
 | Wejście zaznaczone przez „Pokaż wejście na mapie” z V2 albo V3 ma pinezkę, której czubek stoi w punkcie wejścia, i podpis z nazwą wejścia. Wejście bez nazwy w danych ma podpis „Wejście bez nazwy w danych”. Pozostałe wejścia zostają widoczne. Kamera ustawia się na tym wejściu, nie na budynku. „Pokaż wejście na mapie” wybiera na V1 widok „Mapa”, jak „Pokaż budynek na mapie”. TalkBack czyta np. „Zaznaczone wejście: »Wejście dostosowane«, budynek A-1”, z budynkiem ekranu, z którego użyto przycisku, a bez nazwy „Wejście bez nazwy w danych” | dane | US3.3, US2.1, NFR-19, NFR-18; decyzje 134, 135 | — |
 | Pole symbolu budynku z podpowiedzią „Wpisz symbol budynku, np. C-13”; przyjmuje też zapis „c13” i symbol z numerem sali, np. „A-1 329” | czynność główna | US1.1, US18.1, PW-8 | V2; sala: stan „znaleziona sala” |
 | „×” w polu po wpisaniu tekstu; nazwa dla TalkBack „Wyczyść pole” | czynność | US1.1, NFR-53, NFR-17, NFR-18 | pole puste, mapa |
-| Wynik pod polem: symbol, nazwa z danych i „Budynek C-13”; cała karta jest jednym przyciskiem | czynność główna | US1.1, NFR-17, NFR-18 | V2 |
+| Wynik pod polem: symbol, nazwa budynku według wymagań wspólnych i „Budynek C-13”; cała karta jest jednym przyciskiem | czynność główna | US1.1, NFR-17, NFR-18 | V2 |
 | „Legenda”: rozwijana lista znaków mapy i planu, każdy z napisem; na końcu „Źródło: Politechnika Wrocławska”. Gdy treść się nie mieści, na dole stoi „Przewiń w dół ↓” | czynność | US1.4, NFR-21, NFR-40 | legenda na tym ekranie |
 | Plan piętra budynku szczegółowego na mapie: pomieszczenia z podpisami najwyżej 2 słowa („Winda”, „Toaleta”, „Sala 329”), wejścia, zgłoszenia przyjęte | dane | US16.1, decyzja 44 | — |
 | Przełącznik pięter nad planem: napis „Piętro:” i etykiety pięter z danych PWr skrócone do numeru, np. „2”; TalkBack czyta pełną etykietę „2 piętro”. Wybrane piętro widać po obwódce, nie po kolorze | czynność | US16.1, NFR-17, NFR-21 | plan innego piętra |
@@ -133,7 +135,7 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | Przycisk terenu w lewym górnym rogu mapy, nad „Legendą”: znak „⊙”, nazwa wybranego terenu, np. „Kampus główny”, i znak rozwinięcia „▾”. Nazwa dla TalkBack „Teren: Kampus główny. Zmień teren” | czynność | US1.6, US1.7, NFR-17, NFR-18 | panel „Teren na mapie” na tym ekranie |
 | Panel „Teren na mapie” pod przyciskiem terenu: nagłówek z „Zamknij”, który się nie przewija, i lista terenów. Każdy teren to jeden przycisk z nazwą, liczbą budynków (symboli budynków) i odległością od wybranego terenu, np. „Wittigowo · 9 budynków · 2 km”. Wybrany teren ma znak „✓” i napis „wybrany”. Po otwarciu fokus TalkBack stoi na nagłówku, a po zamknięciu wraca na przycisk terenu. „Wstecz” i dotknięcie obok zamykają panel. Panel i „Legenda” nie są otwarte razem | czynność | US1.7, NFR-17, NFR-18, NFR-20, NFR-21 | V1 z wybranym terenem |
 | Przycisk sąsiedniego terenu przy krawędzi mapy. Pojawia się, gdy widok stoi na granicy terenu, a w tę stronę leży inny teren. Ma nazwę terenu, odległość, np. „2 km”, i strzałkę w stronę granicy. Znika po odsunięciu widoku od granicy, bez limitu czasu. Nie zasłania symboli budynków. TalkBack ogłasza raz: „Tu kończy się teren Kampus główny. Obok: Wittigowo, 2 km” | czynność | US1.7, NFR-17, NFR-18, NFR-23, NFR-53 | V1 z tym terenem |
-| Wynik wyszukiwania budynku z innego terenu ma dopisek z nazwą terenu, np. „Wittigowo · inny teren”. Wybranie go albo budynku z innego terenu na liście zmienia teren, a nad mapą pojawia się napis „Pokazuję teren: Wittigowo”. Lista budynków ma nagłówki terenów z liczbą budynków, np. „Wittigowo · 9” | czynność | US1.8, NFR-18, NFR-19 | V1 z tym terenem; dalej jak przy każdym wyniku |
+| Wynik wyszukiwania budynku z innego terenu ma dopisek z nazwą terenu, np. „Wittigowo · inny teren”. Wybranie go albo budynku z innego terenu na liście zmienia teren, a nad mapą pojawia się napis „Pokazuję teren: Wittigowo”. Napis nie znika sam (NFR-23): zostaje, dopóki osoba nie przesunie mapy przyciskami albo nie wybierze terenu. Lista budynków ma nagłówki terenów z liczbą budynków, np. „Wittigowo · 9” | czynność | US1.8, NFR-18, NFR-19 | V1 z tym terenem; dalej jak przy każdym wyniku |
 | Gdy klawiatura jest otwarta, przyciski mapy, czyli „Powiększ”, „Pomniejsz” i strzałki przesuwania, są schowane, bo mapa nad klawiaturą jest za niska na cały zestaw. Po zamknięciu klawiatury przyciski wracają. Podpis OpenStreetMap zostaje widoczny | czynność | NFR-53, NFR-37; decyzja 91 | — |
 | Napis „© OpenStreetMap contributors” w jednym wierszu w rogu mapy, jako odnośnik; przy skali czcionki co najmniej 1,5 „© OpenStreetMap” | dane | NFR-37 | strona praw autorskich OSM |
 | „ⓘ” w rogu mapy, nazwa dla TalkBack „Informacje o mapie”. Panel ma nagłówek „Źródła danych”. Pod nim „Mapa ulic i kontury budynków: © OpenStreetMap contributors” z odnośnikiem i nazwą licencji ODbL. Dalej „Wejścia i plany pięter: Źródło: Politechnika Wrocławska” z datą stanu danych | czynność | NFR-18, NFR-37, NFR-40 | V1, panel „ⓘ” |
@@ -149,14 +151,14 @@ Arkusz bariery na dole mapy otwiera dotknięcie znaku. Bariery nie trzeba szuka�
 | --- | --- | --- | --- |
 | Typ bariery tymi samymi napisami co na V2, uciążliwość napisem i ikoną | dane | US1.5, NFR-21 | — |
 | Miejsce: budynek i wejście albo piętro, zdjęcie, „Sprawdzone 12.11.2026” | dane | US1.5, US2.5, PW-3 | — |
-| „Pokaż opis budynku” i „Zamknij” | czynność główna stanu, czynność | US1.5, PW-5 | V2; „Zamknij”: V1 |
+| „Pokaż opis budynku” i „Zamknij”. Bariera poza budynkiem ma w miejscu napis „Poza budynkiem” i nie ma „Pokaż opis budynku”, bo nie ma budynku do pokazania | czynność główna stanu, czynność | US1.5, PW-5, BR-G2 | V2; „Zamknij”: V1 |
 
 Arkusz „Który budynek?” na dole mapy otwiera dotknięcie konturu wspólnego albo dotknięcie w zasięgu dwóch konturów (decyzja 85):
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Nagłówek „Który budynek?” i „Zamknij” | dane, czynność | NFR-53, NFR-17 | „Zamknij”: V1 |
-| Przycisk na pełną szerokość dla każdego symbolu, jak wynik pod polem: symbol, nazwa z danych, gdy jest, i „Budynek C-3”. Cały przycisk to jeden cel dotyku, a TalkBack czyta symbol, nazwę i „otwiera opis budynku” | czynność główna stanu | US2, NFR-17, NFR-18 | V2 tego budynku |
+| Przycisk na pełną szerokość dla każdego symbolu, jak wynik pod polem: symbol, nazwa budynku, gdy jest, i „Budynek C-3”. Cały przycisk to jeden cel dotyku, a TalkBack czyta symbol, nazwę i „otwiera opis budynku” | czynność główna stanu | US2, NFR-17, NFR-18 | V2 tego budynku |
 
 Arkusz znalezionej sali na dole mapy (US18.1, US18.2):
 
@@ -200,12 +202,14 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Mapa nad małą kartą: kontur budynku wyróżniony, sąsiednie przygaszone, tylko wejścia tego budynku ze znakiem oznaczenia; napis „© OpenStreetMap contributors”. TalkBack nie czyta mapy pod kartą, bo tę samą treść ma lista (NFR-19). Na pełnym ekranie mapy nie ma | dane | US1.4, US2.1, US2.8, NFR-19, NFR-21, NFR-37 | — |
-| Mała karta nad mapą, o wysokości treści: nagłówek, wiersz o wejściach, „Sprawdź, którędy wejść” i obrysowany „Zamknij”. Chipów na niej nie ma, a wiersz o wejściach zastępuje chip „Wejście dostępne”. Bez internetu nad przyciskami stoi linia „Bez internetu” z wymagań wspólnych | dane, czynność | US2.8, NFR-10, NFR-53 | „Zamknij”: V1 bez zaznaczenia |
+| Mapa nad małą kartą: kontur budynku wyróżniony, sąsiednie przygaszone, ale z podpisami symboli, tylko wejścia tego budynku ze znakiem oznaczenia; napis „© OpenStreetMap contributors”. Nagłówka „Mapa kampusu”, pola symbolu, przełącznika „Mapa” i „Lista budynków” ani przycisku informacji nad małą kartą nie ma. TalkBack nie czyta mapy pod kartą, bo tę samą treść ma lista (NFR-19). Na pełnym ekranie mapy nie ma | dane | US1.4, US2.1, US2.8, NFR-19, NFR-21, NFR-37; decyzje 151, 153 | — |
+| Mapę nad małą kartą da się przesuwać i powiększać. Nad kartą stoją te same przyciski co na V1: „Powiększ”, „Pomniejsz” i strzałki przesuwania. Gdy nad kartą zostaje mniej niż 300 dp mapy, przycisków nie ma | czynność | NFR-53, NFR-17; decyzja 151 | — |
+| Po zaznaczeniu budynku kamera ustawia się raz: cały kontur budynku i jego wejścia mieszczą się w części mapy, której nie zasłaniają karta ani przyciski. Potem widok zmienia tylko osoba | dane | US1.4, US2.8, NFR-53; decyzja 151 | — |
+| Mała karta nad mapą, o wysokości treści: nagłówek, wiersz o wejściach, „Sprawdź, którędy wejść” i obrysowany „Zamknij”. Chipów na niej nie ma, a wiersz o wejściach zastępuje chip „Wejście dostępne”. Bez internetu nad nagłówkiem stoi plakietka „Bez internetu”, w tym samym miejscu co na pełnym ekranie (decyzja 153) | dane, czynność | US2.8, NFR-10, NFR-53 | „Zamknij”: V1 bez zaznaczenia |
 | Uchwyt u góry małej karty to przycisk „Rozwiń opis budynku” ze stanem „zwinięte” dla TalkBack. Pełny ekran otwiera też przewinięcie treści albo przeciągnięcie w górę | czynność | US2.8, NFR-18, NFR-53 | V2, pełny ekran |
 | Dotknięcie innego budynku na mapie zastępuje treść małej karty. Dotknięcie pustej mapy zamyka kartę | czynność | US2.8, NFR-17 | V2 innego budynku; V1 bez zaznaczenia |
 | „Wstecz” telefonu zamyka małą kartę, a na pełnym ekranie wraca do małej karty. Gdy pełny ekran otworzył się od razu, „Wstecz” wraca do ekranu sprzed V2. Nie prowadzi przez historię oglądanych budynków. Mała karta otwarta z listy budynków zamyka się do listy, także po „Zamknij” i dotknięciu pustej mapy; zapamiętany wybór „Lista budynków” się nie zmienia | czynność | NFR-15, NFR-19, US2.8, decyzja 118 | mała karta; V1 bez zaznaczenia |
-| Nagłówek: symbol budynku dużym napisem, np. „A-1”, a pod nim nazwa z danych. Gdy nazwy brak, pod symbolem stoi „Budynek C-4”. TalkBack czyta „Budynek A-1, Gmach Główny”, a po otwarciu karty fokus TalkBack staje na nagłówku | dane | US2, NFR-18 | — |
+| Nagłówek: symbol budynku dużym napisem, np. „A-1”, a pod nim nazwa budynku według wymagań wspólnych, bez powtórzonego symbolu. Gdy nazwy brak, nagłówek ma sam symbol, bez drugiego wiersza. TalkBack czyta „Budynek A-1, Budynek główny”, a bez nazwy „Budynek C-4”. Po otwarciu karty fokus TalkBack staje na nagłówku | dane | US2, NFR-18; decyzja 152 | — |
 | Wiersz o wejściach pod nagłówkiem, zawsze słowami i ikoną: „Wejście dostępne”, „Brak wejścia dostępnego” albo „Brak danych o wejściach”. Drugi napis, gdy każde wejście jest „Niedostępne”; trzeci, gdy wejść nie ma w danych albo żadne nie jest „Dostępne”, a choć jedno ma „Brak danych”. Na pełnym ekranie wiersz zostaje pod nagłówkiem jako podsumowanie grupy „Wejścia” | dane | US2.8, US2.1, US3.1, NFR-21 | — |
 | Rząd chipów z ikoną i napisem: „Winda”, „Toaleta dostosowana”, tylko na pełnym ekranie, pod czynnościami. Chipa „Wejście dostępne” nie ma, bo ten fakt podaje wiersz o wejściach. Chip jest tylko wtedy, gdy dane to potwierdzają; dotknięcie przewija do grupy | czynność | US2.3, US2.8, NFR-17, NFR-21 | grupa na tym ekranie |
 | Nad grupą „Wejścia” jeden wiersz z datą i źródłem, np. „Z map i opisów, stan z 1.10.2026”, gdy wszystkie wejścia mają to samo źródło i datę. Inaczej data i źródło stoją przy każdym wejściu | dane | US17.3, BR-24, PW-3, decyzja 48 | — |
@@ -246,7 +250,7 @@ Mapa nad małą kartą i plany pięter pokazują to, co już jest na liście, wi
 
 | Stan | Co widać |
 | --- | --- |
-| Mała karta | mapa z wyróżnionym budynkiem, a nad nią nagłówek, wiersz o wejściach, „Sprawdź, którędy wejść” i „Zamknij”, bez chipów. Fokus TalkBack na nagłówku (US2.8, NFR-18) |
+| Mała karta | mapa z wyróżnionym budynkiem i przyciskami mapy, a nad nią nagłówek, wiersz o wejściach, „Sprawdź, którędy wejść” i „Zamknij”, bez chipów. Fokus TalkBack na nagłówku (US2.8, NFR-18, NFR-53) |
 | Pełny ekran od razu | duża czcionka, okno co najmniej 600 dp, poziomo albo wybór z listy przy TalkBack. Bez małej karty i mapy, z „Pokaż budynek na mapie” (US2.9, NFR-20, NFR-22) |
 | Zwykły — budynek szczegółowy | pełny ekran: chipy, wejścia, lista barier, winda i toaleta, piętra ze zwiniętymi opisami (US2.3, US16.3) |
 | Zwykły — budynek podstawowy | pełny ekran: chipy, wejścia, lista barier, napis o braku planu (US16.2, NFR-48) |
@@ -255,7 +259,7 @@ Mapa nad małą kartą i plany pięter pokazują to, co już jest na liście, wi
 | Pusty — brak zgłoszeń przyjętych | w grupie „Bariery w budynku” nagłówek „Brak zgłoszonych barier”, zdanie „Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.” i przycisk „Zgłoś barierę” (V4, Gość: L1). Bez wybranego wejścia ten przycisk stoi w treści karty tylko tutaj (US2.4, UC2 2a, PW-6) |
 | Bez danych o barierach | telefon nie ma jeszcze danych o barierach budynku: karta nie mówi nic o barierach, także nie „Brak zgłoszonych barier” (US2.7, NFR-10) |
 | Wejście bez danych | wejście z oznaczeniem „Brak danych” tekstem i ikoną `minus`, bez napisu „Zalecane”; data i źródło oceny jak przy innych wejściach (US17.1, US2.1) |
-| Brak sieci | karta z telefonu z linią „Bez internetu · dane z 12.11.2026”, mapa bez nowego podkładu, a obejrzany wcześniej może się pokazać z pamięci telefonu. Zdjęcia, których nie ma w telefonie, zastępuje napis „Zdjęcie zobaczysz po połączeniu z internetem.” (NFR-10) |
+| Brak sieci | karta z telefonu z plakietką „Bez internetu · dane z 12.11.2026” nad nagłówkiem, także na małej karcie. Daty nie ma, dopóki dane pochodzą tylko z pakietu aplikacji (decyzja 84). Mapa bez nowego podkładu, a obejrzany wcześniej może się pokazać z pamięci telefonu. Zdjęcia, których nie ma w telefonie, zastępuje napis „Zdjęcie zobaczysz po połączeniu z internetem.” (NFR-10) |
 | Brak sieci, budynku nie ma w telefonie | „Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.” Przycisk „Spróbuj ponownie” (NFR-10) |
 | Błąd zdjęcia | „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” Przycisk „Spróbuj ponownie” (NFR-50) |
 
@@ -521,7 +525,7 @@ Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykres
 | --- | --- | --- | --- |
 | Budynek i miejsce z C1. Miejsce słowami: najbliższe wejście z danych z odległością i dokładność pomiaru, np. „ok. 3 m od Wejścia Cesarskiego, dokładność 0,8 m”; bez współrzędnych | dane | US7.4, US6.1, NFR-19 | — |
 | „Zmień miejsce”: powrót do C1, wpisane pola zostają | czynność | US7.4 | C1 |
-| Piętro: wybór z etykiet z danych PWr (budynek szczegółowy) | czynność | US7.2 | — |
+| Piętro: wybór z etykiet z danych PWr (budynek szczegółowy), chipy wspólnego wyboru piętra | czynność | US7.2 | — |
 | Piętro: liczba całkowita w polu z etykietą „Numer piętra” i pole „Półpiętro” (budynek podstawowy); nad polem „Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter.” | czynność | US7.2, BR-G1, NFR-15, PW-6 | — |
 | „Typ bariery”, pogrupowany w 6 grup barier. Pole otwiera panel na cały ekran. U góry są nagłówek „Typ bariery” i „Zamknij”, które nie przewijają się z listą. Pod nimi są grupy jako nagłówki i typy. Po otwarciu fokus jest na nagłówku, po zamknięciu wraca na pole | czynność | US7.1, BR-7, NFR-18, NFR-53 | — |
 | „Uciążliwość”: „Utrudnienie”, „Tylko z pomocą”, „Blokada”, każda wartość z opisem i ikoną; pod nagłówkiem „Oceń dla osoby, dla której bariera jest najtrudniejsza.” | czynność | US7.1, NFR-21, PW-13 | — |
@@ -539,7 +543,7 @@ Poza budynkiem pola piętra nie ma (BR-G4). C2 otwiera się z C1, z C3 przy edyc
 | Wyjście bez zapisu | po „Wstecz” z niezapisanymi zmianami: „Wyjść bez zapisu? Wpisane pola nie zostaną zapisane.” Przyciski „Wyjdź bez zapisu” i „Wróć do formularza” (US7.4, NFR-23) |
 | Błąd walidacji | po „Zapisz” nad formularzem pierwszy brak, np. „Brakuje typu bariery. Uzupełnij to pole, aby zapisać.”, a przy każdym brakującym polu jego tekst: „Brakuje uciążliwości. Uzupełnij to pole, aby zapisać.”, „Brakuje zdjęcia. Zrób zdjęcie, aby zapisać.”, „Brakuje opisu. Przy typie „inna bariera” opis jest obowiązkowy.” (PW-10); opis z samych spacji to brak opisu. Po pierwszej próbie braki znikają na bieżąco, gdy pole zostanie uzupełnione; zapis się nie wykonuje (US7.1, US7.3) |
 | Brak sieci | zapis działa, zgłoszenie dostaje status „lokalne”, na ekranie „W telefonie” (US9.1, PW-12) |
-| Błąd zapisu | „Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.” (NFR-7). Gdy telefon odrzuci zgłoszenie z innego powodu: „Nie zapisaliśmy zgłoszenia. Zrób zdjęcie jeszcze raz i zapisz ponownie.” Wpisane pola zostają (NFR-50) |
+| Błąd zapisu | „Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.” (NFR-7). Gdy zdjęcia nie pasują do treści: „Nie zapisaliśmy zgłoszenia. Zrób zdjęcie jeszcze raz i zapisz ponownie.” Gdy telefon nie zna wersji poprawianego zgłoszenia: „Nie zapisaliśmy poprawki, bo telefon nie zna aktualnej wersji zgłoszenia. Otwórz „Moje zgłoszenia”, poczekaj na statusy i popraw je jeszcze raz.” (BR-10). Wpisane pola zostają (NFR-50) |
 
 Dostępność: błąd walidacji jest tekstem przy polu i w podsumowaniu, a fokus TalkBack przechodzi do pierwszego brakującego pola (NFR-15, WCAG 3.3.1).
 

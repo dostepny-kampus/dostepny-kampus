@@ -40,8 +40,9 @@ class CampusMapStyleTest {
     @Test
     fun nfr39_outlines_over_basemap() {
         val layers = style.array("layers").map { it.jsonObject }
-        val expected =
-            listOf("lad", "osm", BUILDINGS_LAYER, "kontury", ENTRANCES_LAYER, "podpisy", OUTSIDE_LAYER, EDGE_LAYER)
+        val below = listOf("lad", "osm", BUILDINGS_LAYER, "kontury", ENTRANCES_LAYER)
+        val barriers = listOf(BARRIER_WORDS_LAYER, BARRIERS_LAYER)
+        val expected = below + barriers + listOf("podpisy", OUTSIDE_LAYER, EDGE_LAYER)
         assertEquals(expected, layers.map { it.text("id") })
         assertEquals("#E8EDEE", layers.first().obj("paint").text("background-color"))
     }
@@ -125,8 +126,8 @@ class CampusMapStyleTest {
         val focused = Json.parseToJsonElement(styled(data.selection(building = "C-13"))).jsonObject
         val layers = focused.array("layers")
         val selected = layers.map { it.jsonObject }.single { it.text("id") == SELECTED_LAYER }
-        val label = selected.array("filter").last()
-        assertEquals("C-13", label.jsonPrimitive.content)
+        val own = """["case",["any",["in","C-13",["get","symbols"]]],true,false]"""
+        assertEquals(own, selected.array("filter").toString())
         assertEquals("#001F27", selected.obj("paint").text("line-color"))
         assertEquals(null, style.array("layers").find { it.jsonObject.text("id") == SELECTED_LAYER })
     }
@@ -136,9 +137,9 @@ class CampusMapStyleTest {
     fun us1_7_optional_layer_order() {
         val bare = Json.parseToJsonElement(styled(MapSelection()))
         val base = listOf("lad", "osm", BUILDINGS_LAYER, "kontury")
-        val marks = listOf(ENTRANCES_LAYER, "podpisy")
+        val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy")
         assertEquals(base + marks, bare.jsonObject.array("layers").map { it.jsonObject.text("id") })
-        assertEquals(setOf("osm", "budynki", "podpisy", "wejscia"), bare.jsonObject.obj("sources").keys)
+        assertEquals(setOf("osm", "budynki", "podpisy", "wejscia", "bariery"), bare.jsonObject.obj("sources").keys)
         val entrance = SelectedEntrance(id = "w1", location = a, label = "Główne", buildingSymbol = "C-13")
         val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
         val area = listOf(OUTSIDE_LAYER, EDGE_LAYER, ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)

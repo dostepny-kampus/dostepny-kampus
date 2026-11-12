@@ -1,0 +1,4 @@
+INHERIT: mkdocs.yml
+site_name: Dostępny Kampus — dokumentacja (bieżący sprint)
+theme:
+  custom_dir: overrides/sprint

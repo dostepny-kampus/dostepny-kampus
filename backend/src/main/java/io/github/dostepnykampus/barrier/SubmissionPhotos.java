@@ -9,11 +9,11 @@ import io.github.dostepnykampus.ForbiddenChange;
 import io.github.dostepnykampus.InvalidInput;
 import io.github.dostepnykampus.MissingResource;
 import io.github.dostepnykampus.barrier.domain.EditResult;
+import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +52,19 @@ final class SubmissionPhotos {
     }
 
     /**
+     * Odmawia kontu, które nie jest autorem zgłoszenia: zdjęcie dodaje tylko
+     * autor (BR-3). Brak zgłoszenia zostawia dalszej obsłudze.
+     *
+     * @param submission Identyfikator zgłoszenia
+     * @param account Identyfikator konta z tokenu
+     */
+    void author(final UUID submission, final String account) {
+        if (this.submissions.foreign(submission, account)) {
+            throw new ForbiddenChange("Zdjęcie dodaje tylko autor zgłoszenia");
+        }
+    }
+
+    /**
      * Zapisuje zdjęcie bez metadanych (NFR-26); ponowne wysłanie tego samego
      * zdjęcia je zastępuje (BR-9).
      *
@@ -71,15 +84,17 @@ final class SubmissionPhotos {
     }
 
     /**
-     * Czyta zdjęcie zgłoszenia przyjętego (US2.2, BR-6).
+     * Czyta zdjęcie zgłoszenia, które czytelnik może zobaczyć: przyjętego
+     * każdy (US2.2, BR-6), pozostałych autor i Weryfikator (BR-5).
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia z listy photoIds
+     * @param reader Osoba, która czyta zdjęcie
      * @return Plik JPEG bez metadanych
      */
-    byte[] get(final UUID submission, final UUID photo) {
-        return Optional.of(this.find(submission, photo))
-            .filter(item -> item.status().publiclyVisible())
+    byte[] get(final UUID submission, final UUID photo, final Reader reader) {
+        return this.submissions.visible(submission, reader)
+            .filter(item -> item.content().photoIds().contains(photo))
             .flatMap(item -> this.photos.get(submission, photo))
             .orElseThrow(() -> new MissingResource("Nie ma takiego zdjęcia zgłoszenia"));
     }

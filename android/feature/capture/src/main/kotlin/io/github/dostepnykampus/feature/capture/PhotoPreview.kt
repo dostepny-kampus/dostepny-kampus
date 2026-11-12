@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.feature.capture
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -35,13 +35,23 @@ private val PREVIEW_HEIGHT = 200.dp
 data class PhotoPaths(val items: List<String>)
 
 /**
- * Podgląd zrobionych zdjęć nad „Zrób nowe zdjęcie”, jak w hi-fi C2 w stanie edycji (US7.1).
+ * Wątek czytania plików podglądu zdjęć, poza wątkiem interfejsu. Testy podają kontekst testowy, więc
+ * `waitForIdle` obejmuje czytanie pliku bez czekania oknem zegara (#622). W aplikacji to `Dispatchers.IO`,
+ * podany parametrem domyślnym jak w [PhotoTranscoder].
+ */
+internal val LocalPhotoDecodeContext = staticCompositionLocalOf { photoDecodeContext() }
+
+private fun photoDecodeContext(context: CoroutineContext = Dispatchers.IO): CoroutineContext = context
+
+/**
+ * Podgląd zrobionych zdjęć nad „Zrób nowe zdjęcie”, jak w hi-fi C2 w stanie edycji (US7.1). Pliki czyta
+ * w [LocalPhotoDecodeContext].
  *
  * @param photos zdjęcia formularza
- * @param decodeContext wątek czytania plików, poza wątkiem interfejsu
  */
 @Composable
-internal fun PhotoPreviews(photos: PhotoPaths, decodeContext: CoroutineContext = Dispatchers.IO) {
+internal fun PhotoPreviews(photos: PhotoPaths) {
+    val decodeContext = LocalPhotoDecodeContext.current
     photos.items.forEachIndexed { index, path ->
         val bitmap by produceState<ImageBitmap?>(initialValue = null, path) {
             value = withContext(decodeContext) { decodePreview(path) }
@@ -62,17 +72,5 @@ internal fun PhotoPreviews(photos: PhotoPaths, decodeContext: CoroutineContext =
  *
  * @return obraz albo `null`, gdy pliku nie da się odczytać
  */
-internal fun decodePreview(path: String): ImageBitmap? {
-    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    BitmapFactory.decodeFile(path, bounds)
-    val longerSide = maxOf(a = bounds.outWidth, b = bounds.outHeight)
-    val options = BitmapFactory.Options().apply { inSampleSize = sampleSize(longerSide) }
-    return BitmapFactory.decodeFile(path, options)?.asImageBitmap()
-}
-
-/** Największa potęga dwójki, po której dłuższy bok ma co najmniej [PREVIEW_PIXELS]. */
-internal fun sampleSize(longerSide: Int): Int {
-    var sample = 1
-    while (longerSide / (sample * 2) >= PREVIEW_PIXELS) sample *= 2
-    return sample
-}
+internal fun decodePreview(path: String): ImageBitmap? =
+    decodeSampled(path = path, limit = PREVIEW_PIXELS)?.asImageBitmap()

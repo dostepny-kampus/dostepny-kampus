@@ -17,15 +17,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,6 +45,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.FloorOption
+import io.github.dostepnykampus.core.designsystem.FloorOptions
+import io.github.dostepnykampus.core.designsystem.FloorPicker
+import io.github.dostepnykampus.core.designsystem.FloorPickerLayout
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.nameRes
 import io.github.dostepnykampus.core.model.BarrierGroup
@@ -98,24 +99,20 @@ internal fun FloorSection(building: String, floor: ReportFloor?, onEdit: (Report
     }
 }
 
-/** Piętro z etykiet planu PWr w budynku szczegółowym, bez wpisywania liczby (US7.2, BR-G1). */
+/**
+ * Piętro z etykiet planu PWr w budynku szczegółowym, bez wpisywania liczby (US7.2, BR-G1). Wspólny wybór piętra
+ * w układzie chipów, jak w makiecie C2 (decyzja z #903).
+ */
 @Composable
 internal fun PlanFloorSection(floors: PlanFloors, floor: ReportFloor?, onEdit: (ReportEdit) -> Unit) {
-    val chosen = (floor as? ReportFloor.Planned)?.floorId
-    Column(modifier = Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         SectionTitle(stringResource(R.string.formularz_pietro))
-        floors.items.forEach { option ->
-            Row(
-                modifier =
-                    Modifier.fillMaxWidth().selectable(selected = option.id == chosen, role = Role.RadioButton) {
-                        onEdit(ReportEdit.Floor(ReportFloor.Planned(option.id)))
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                RadioButton(selected = option.id == chosen, onClick = null)
-                Text(text = option.label, modifier = Modifier.padding(start = Odstepy.s))
-            }
-        }
+        FloorPicker(
+            options = FloorOptions(floors.items.map { FloorOption(key = it.id, label = it.label) }),
+            selectedKey = (floor as? ReportFloor.Planned)?.floorId,
+            onSelect = { option -> onEdit(ReportEdit.Floor(ReportFloor.Planned(option.key))) },
+            layout = FloorPickerLayout.CHIPS,
+        )
         if (floors.source.isNotEmpty()) {
             Text(
                 text = stringResource(R.string.formularz_zrodlo_pieter, floors.source),

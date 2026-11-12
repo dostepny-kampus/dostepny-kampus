@@ -21,8 +21,9 @@ import org.springframework.security.web.SecurityFilterChain;
 /**
  * Tożsamość testowa zamiast Usługi logowania.
  *
- * <p>Token to nazwa roli z kontraktu, np. {@code COLLECTOR}; każdy inny napis
- * dekoder odrzuca. Podpisu, wystawcy i ważności tokenu testy tu nie sprawdzają.
+ * <p>Token to nazwa roli z kontraktu, np. {@code COLLECTOR}, albo kilka ról
+ * połączonych znakiem {@code +}; każdy inny napis dekoder odrzuca. Podpisu,
+ * wystawcy i ważności tokenu testy tu nie sprawdzają.
  * Punkty HTTP tylko dla testów są poza kontraktem, więc mają osobny łańcuch
  * bez zabezpieczeń; bez niego serwer by je odrzucał.</p>
  *
@@ -47,16 +48,19 @@ public final class IdentityTestConfiguration {
     /**
      * Dekoder tokenów testowych.
      *
-     * @return Dekoder, który przyjmuje nazwę roli jako token
+     * @return Dekoder, który przyjmuje jako token nazwę roli albo kilka nazw
+     *  połączonych znakiem {@code +}
      */
     @Bean
     static JwtDecoder decoder() {
         return token -> {
-            if (!IdentityTestConfiguration.ROLES.contains(token)) {
+            final List<String> roles = List.of(token.split("\\+"));
+            if (!IdentityTestConfiguration.ROLES.containsAll(roles)) {
                 throw new BadJwtException("Nieznany token testowy");
             }
             return Jwt.withTokenValue(token).header("alg", "none").subject("konto-testowe")
-                .claim("realm_access", Map.of("roles", List.of(token))).build();
+                .claim("name", "Konto testowe").claim("email", "konto@example.com")
+                .claim("realm_access", Map.of("roles", roles)).build();
         };
     }
 

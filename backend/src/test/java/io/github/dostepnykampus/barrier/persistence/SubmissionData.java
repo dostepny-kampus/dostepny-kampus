@@ -1,10 +1,11 @@
 /*
  * Dostępny Kampus
- * Author: Vladyslav Yevkov
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.barrier.persistence;
 
+import io.github.dostepnykampus.SampleBuilding;
 import io.github.dostepnykampus.barrier.domain.BarrierDetails;
 import io.github.dostepnykampus.barrier.domain.BarrierGroup;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
@@ -36,6 +37,9 @@ final class SubmissionData {
     /** Drugi budynek próbny. */
     static final String OTHER = "J-901";
 
+    /** Konto, które składa zgłoszenia testów. */
+    static final String AUTHOR = "konto-testowe";
+
     /** Dostęp do bazy. */
     private final JdbcClient jdbc;
 
@@ -51,15 +55,10 @@ final class SubmissionData {
         final SubmissionData data = new SubmissionData(
             context.getBean(JdbcClient.class), context.getBean(JdbcSubmissions.class)
         );
-        data.jdbc.sql(
-            """
-            INSERT INTO buildings (symbol, name, detail_level, outline, source)
-            SELECT symbol, 'Budynek próbny', 'BASIC', ST_Multi(ST_GeomFromText(
-                'POLYGON((0 0,0.001 0,0.001 0.001,0 0.001,0 0))', 4326)), 'OSM'
-            FROM (VALUES ('J-900'), ('J-901')) AS b (symbol)
-            ON CONFLICT (symbol) DO NOTHING
-            """
-        ).update();
+        for (final String symbol : List.of(SubmissionData.BUILDING, SubmissionData.OTHER)) {
+            new SampleBuilding(symbol, "Budynek próbny", "BASIC")
+                .wkt(data.jdbc, "POLYGON((0 0,0.001 0,0.001 0.001,0 0.001,0 0))");
+        }
         return data;
     }
 
@@ -103,10 +102,15 @@ final class SubmissionData {
 
     UUID seed(final long number, final SubmissionContent content, final SubmissionStatus status) {
         final UUID id = SubmissionData.id(number);
-        this.adapter.create(new NewSubmission(id, content));
+        this.adapter.create(new NewSubmission(id, content, SubmissionData.AUTHOR));
         this.jdbc.sql("UPDATE submissions SET status = :status WHERE id = :id")
             .param("status", status.name()).param("id", id).update();
         return id;
+    }
+
+    String author(final UUID id) {
+        return this.jdbc.sql("SELECT author FROM submissions WHERE id = :id")
+            .param("id", id).query(String.class).single();
     }
 
     Instant created(final UUID id) {
