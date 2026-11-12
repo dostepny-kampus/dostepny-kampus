@@ -42,6 +42,11 @@
     <string name="mapa_bariera_typ">%1$s: %2$s</string>
     <string name="mapa_bariera_w_budynku">%1$s, budynek %2$s</string>
     <string name="mapa_bariera_poza_budynkiem">%1$s, poza budynkiem</string>
+    <string name="mapa_bariera_miejsce_poza">Poza budynkiem</string>
+    <string name="mapa_bariera_budynek_z_nazwa">%1$s %2$s</string>
+    <string name="mapa_bariera_parter">parter</string>
+    <string name="mapa_bariera_pietro">piętro %1$d</string>
+    <string name="mapa_bariera_polpietro">półpiętro</string>
     <string name="mapa_otwiera_opis_budynku">otwiera opis budynku</string>
     <string name="mapa_kampusu">Mapa kampusu</string>
     <string name="mapa_szukaj_podpowiedz">Wpisz symbol budynku, np. C-13</string>
