@@ -68,6 +68,8 @@ private val CAMPUS_MARGIN = 500.meters
  *   wpisuje w niego budynek nad małą kartą V2 (US2.8, decyzja 151)
  * @property outlines symbole budynków każdego konturu, w kolejności katalogu. Tożsamość konturu idzie stąd,
  *   a podpis jest tylko tekstem do pokazania (US1.1, decyzja 85)
+ * @property barriers bariery ze zgłoszeń przyjętych, każda jako punkt z właściwościami `id` i `severity`
+ *   (`HINDRANCE`, `ONLY_WITH_HELP` albo `BLOCKING`); pusta kolekcja, dopóki ich nie ma (US1.3, NFR-11)
  */
 data class CampusMapData(
     val buildings: JsonElement,
@@ -80,6 +82,7 @@ data class CampusMapData(
     val labelPointsBySymbol: Map<String, GeoPoint> = emptyMap(),
     val outlinesBySymbol: Map<String, CampusBounds> = emptyMap(),
     val outlines: List<List<String>> = emptyList(),
+    val barriers: JsonElement = featureCollection(emptyList()),
 )
 
 /**
