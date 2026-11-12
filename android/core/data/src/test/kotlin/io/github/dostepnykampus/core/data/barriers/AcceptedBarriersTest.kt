@@ -37,6 +37,7 @@ class AcceptedBarriersTest {
                     type = BarrierType.THRESHOLD,
                     buildingSymbol = "A-1",
                     verifiedAt = VERIFIED,
+                    photoIds = listOf("p1"),
                 )
             assertEquals(first, barriers.first())
         }

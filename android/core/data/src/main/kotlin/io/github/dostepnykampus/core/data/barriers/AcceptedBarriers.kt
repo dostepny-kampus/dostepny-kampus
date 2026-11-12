@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.Submission
+import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.network.ApiResult
 import java.time.Instant
@@ -22,6 +23,9 @@ import java.time.Instant
  * @property type typ bariery; `null`, gdy zgłoszenie go nie ma albo kod jest spoza klasyfikacji
  * @property buildingSymbol budynek; `null` to „poza budynkiem” (BR-G2)
  * @property verifiedAt chwila przyjęcia zgłoszenia (BR-17)
+ * @property entranceId wejście, przy którym jest bariera; `null`, gdy zgłoszenie go nie wskazuje
+ * @property floor piętro bariery; `null`, gdy zgłoszenie go nie wskazuje
+ * @property photoIds zdjęcia zgłoszenia do arkusza bariery (US1.5)
  */
 data class AcceptedBarrier(
     val id: String,
@@ -30,6 +34,9 @@ data class AcceptedBarrier(
     val type: BarrierType?,
     val buildingSymbol: String?,
     val verifiedAt: Instant?,
+    val entranceId: String? = null,
+    val floor: SubmissionFloor? = null,
+    val photoIds: List<String> = emptyList(),
 )
 
 /** Bariery ze zgłoszeń przyjętych dla mapy (US1.3, BR-6). */
@@ -80,6 +87,9 @@ internal fun Submission.toBarrier(): AcceptedBarrier? {
             type = content.barrierType?.let(BarrierType::fromCode),
             buildingSymbol = content.buildingSymbol,
             verifiedAt = verifiedAt,
+            entranceId = content.entranceId,
+            floor = content.floor,
+            photoIds = content.photoIds,
         )
     }
 }
