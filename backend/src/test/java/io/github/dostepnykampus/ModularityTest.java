@@ -8,6 +8,8 @@ package io.github.dostepnykampus;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -17,6 +19,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.modulith.core.ApplicationModule;
 import org.springframework.modulith.core.ApplicationModules;
 import org.springframework.modulith.core.JavaPackage;
@@ -25,9 +28,10 @@ import org.springframework.modulith.docs.Documenter;
 /**
  * Testy zadania INFRA: moduły serwera według Spring Modulith.
  *
- * <p>Moduły z propozycji projektu to podpakiety pakietu bazowego.
- * Weryfikacja odrzuca cykle, dostęp do wnętrza cudzego modułu i zależność
- * od modułu spoza listy {@code allowedDependencies}. Każdy moduł zapisuje
+ * <p>Moduły to podpakiety pakietu bazowego; każdy ma klasę produkcyjną
+ * i opis w Javadoc {@code package-info.java}. Weryfikacja odrzuca cykle,
+ * dostęp do wnętrza cudzego modułu i zależność od modułu spoza listy
+ * {@code allowedDependencies}. Każdy moduł zapisuje
  * tę listę w {@code @ApplicationModule}, także pustą. Spring Modulith czyta
  * {@code package-info} przez class loader, więc w testach widzi wersję z
  * katalogu testów; ta wersja powtarza listę z kodu produkcyjnego.</p>
@@ -41,17 +45,43 @@ final class ModularityTest {
      */
     private static final String SAMPLES = "io.github.dostepnykampus.archsamples.modules";
 
+    /**
+     * Katalog na przykładowe źródła, nowy w każdym teście.
+     */
+    @TempDir
+    private Path dir;
+
     @Test
-    void infraDetectsSixServerModules() {
-        MatcherAssert.assertThat(
-            "Spring Modulith nie wykrył dokładnie sześciu modułów serwera",
-            ApplicationModules.of(DostepnyKampusApplication.class).stream()
-                .map(ApplicationModule::getIdentifier)
-                .map(Object::toString)
-                .toList(),
-            Matchers.containsInAnyOrder(
-                "identity", "building", "barrier", "review", "sync", "export"
-            )
+    void modulesHaveClassesAndDescription() {
+        Assertions.assertEquals(
+            List.of(),
+            ModularityTest.incomplete(
+                ModularityTest.production(), Path.of("src", "main", "java"),
+                ModularityTest.packages(ApplicationModules.of(DostepnyKampusApplication.class))
+            ),
+            "Moduł serwera nie ma klasy produkcyjnej albo opisu w package-info.java"
+        );
+    }
+
+    @Test
+    void rejectsModuleWithoutClassesOrDescription() throws IOException {
+        this.description("alpha", "/** Opis. */%n");
+        this.description("beta", "");
+        this.description("empty", "/** Opis. */%n");
+        Assertions.assertEquals(
+            List.of(
+                String.format("%s.beta", ModularityTest.SAMPLES),
+                String.format("%s.empty", ModularityTest.SAMPLES)
+            ),
+            ModularityTest.incomplete(
+                new ClassFileImporter().importPackages(ModularityTest.SAMPLES), this.dir,
+                List.of(
+                    String.format("%s.alpha", ModularityTest.SAMPLES),
+                    String.format("%s.beta", ModularityTest.SAMPLES),
+                    String.format("%s.empty", ModularityTest.SAMPLES)
+                )
+            ),
+            "Reguła przepuściła moduł bez klas albo bez opisu w package-info.java"
         );
     }
 
@@ -121,6 +151,51 @@ final class ModularityTest {
             "Documenter nie zapisał diagramu modułów",
             Files.exists(Path.of(folder, "components.puml")),
             Matchers.is(true)
+        );
+    }
+
+    private static List<String> incomplete(
+        final JavaClasses classes, final Path sources, final List<String> modules
+    ) {
+        return modules.stream()
+            .filter(name -> ModularityTest.incomplete(classes, sources, name))
+            .sorted()
+            .toList();
+    }
+
+    private static boolean incomplete(
+        final JavaClasses classes, final Path sources, final String name
+    ) {
+        final String prefix = String.format("%s.", name);
+        return classes.stream()
+            .filter(type -> !"package-info".equals(type.getSimpleName()))
+            .noneMatch(type -> String.format("%s.", type.getPackageName()).startsWith(prefix))
+            || !ModularityTest.described(sources, name);
+    }
+
+    private static boolean described(final Path sources, final String name) {
+        final Path info = sources.resolve(name.replace('.', '/')).resolve("package-info.java");
+        boolean result = false;
+        if (Files.isRegularFile(info)) {
+            try {
+                result = Files.readString(info).contains("/**");
+            } catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        }
+        return result;
+    }
+
+    private void description(final String module, final String javadoc) throws IOException {
+        final Path folder = this.dir.resolve(
+            String.format("%s.%s", ModularityTest.SAMPLES, module).replace('.', '/')
+        );
+        Files.createDirectories(folder);
+        Files.writeString(
+            folder.resolve("package-info.java"),
+            String.format(
+                String.format("%s%s", javadoc, "package %s.%s;%n"), ModularityTest.SAMPLES, module
+            )
         );
     }
 
