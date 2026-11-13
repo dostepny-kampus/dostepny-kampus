@@ -7,7 +7,7 @@
 plugins {
     id("dostepnykampus.android.library")
     id("dostepnykampus.android.hilt")
-    alias(libs.plugins.kotlin.serialization)
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
