@@ -62,8 +62,10 @@ class ModuleReadmeArchitectureTest {
         MODULE
             .findAll(File(root, "settings.gradle.kts").readText())
             .map { it.groupValues[1] }
-            .mapNotNull { name -> problem(File(root, name.removePrefix(":").replace(':', '/')))?.let { name to it } }
+            .mapNotNull { name -> problem(File(root, path(name)))?.let { name to it } }
             .toMap()
+
+    private fun path(module: String): String = module.removePrefix(":").replace(oldChar = ':', newChar = '/')
 
     private fun problem(dir: File): String? {
         val text = File(dir, "README.md").takeIf(File::isFile)?.readText()
@@ -79,7 +81,7 @@ class ModuleReadmeArchitectureTest {
     }
 
     private fun section(text: String): String =
-        text.substringAfter("## $DEPENDENCIES", "").substringBefore("\n## ")
+        text.substringAfter(delimiter = "## $DEPENDENCIES", missingDelimiterValue = "").substringBefore("\n## ")
 
     private fun projectRoot(): File =
         generateSequence(File("").absoluteFile) { it.parentFile }
