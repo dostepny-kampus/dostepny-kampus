@@ -1,0 +1,23 @@
+skinparam defaultFontSize 14
+skinparam ArrowColor #444444
+skinparam ArrowFontSize 12
+skinparam activity {
+  BackgroundColor #F2F2F2
+  BorderColor #444444
+  FontStyle bold
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #444444
+}
+skinparam activity<<stan>> {
+  BackgroundColor #FFFFFF
+  FontStyle normal
+}
+skinparam activity<<poza>> {
+  BackgroundColor #FFFFFF
+  BorderColor #888888
+  FontStyle italic
+}
+skinparam note {
+  BackgroundColor #FFFFFF
+  BorderColor #888888
+}

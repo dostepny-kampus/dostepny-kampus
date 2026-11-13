@@ -4,27 +4,42 @@ Strona pokazuje, dokąd prowadzi każda czynność na ekranach z [wymagań do ek
 
 ## Jak czytać diagramy
 
+Każdy diagram pokazuje jedno zadanie osoby i czyta się go z góry na dół. Wszystkie przejścia, także rzadkie i powroty, są w tabeli przejść na końcu strony.
+
 | Znak | Znaczenie |
 | --- | --- |
-| Prostokąt pogrubiony | ekran z ID z listy ekranów |
-| Prostokąt zwykły | stan ekranu, który zmienia dalszą drogę, np. brak zgody na lokalizację |
-| Prostokąt kursywą | miejsce poza aplikacją: przeglądarka, ustawienia telefonu, pobrane pliki |
+| Prostokąt szary, pogrubiony | ekran z ID z listy ekranów |
+| Prostokąt biały | stan ekranu albo miejsce, z którego osoba zaczyna, np. pasek dolny |
+| Prostokąt biały, kursywą | miejsce poza aplikacją: przeglądarka, pobrane pliki |
 | Strzałka z podpisem | czynność, która prowadzi dalej; podpis w cudzysłowie to napis przycisku ze [słownika użytkownika](slownik-uzytkownika.md) |
-| „Pasek dolny” | jeden węzeł zamiast czterech strzałek z każdego z ekranów V1, V2, V3, V5 i L2 |
+| Romb | pytanie, od którego zależy dalsza droga |
+| Pozioma linia z kilkoma strzałkami | osoba wybiera jedną z dróg |
 
 „Wstecz” jest na każdym ekranie poza V1 i wraca do poprzedniego ekranu (wymagania wspólne, NFR-15). Wysłany formularz znika z historii „Wstecz” (P2). Diagramy pokazują „Wstecz” tylko tam, gdzie cel nie jest oczywisty. „Zalogowani” w tabelach to RO-ODW i role pracownicze (BR-1).
 
-Czwarta pozycja paska dolnego to „Konto”, a osoby z rolą pracowniczą widzą na niej „Konto i praca” ([słownik użytkownika](slownik-uzytkownika.md#nazwa-wejscia)). Obie prowadzą do L2 (P1).
+Pasek dolny jest na ekranach V1, V2, V3, V5 i L2. Prowadzi do mapy, zgłoszenia szybkiego, pomocy i konta. Czwarta pozycja to „Konto”, a osoby z rolą pracowniczą widzą na niej „Konto i praca” ([słownik użytkownika](slownik-uzytkownika.md#nazwa-wejscia)). Obie prowadzą do L2 (P1).
 
 ## Gość i Odwiedzający
 
-![Diagram przejść Gościa i Odwiedzającego: V1, V2, V3, V4 z krokami, V5, L1, L2](../_generated/nawigacja-odwiedzajacy.svg)
+### Od mapy do wejścia
 
-Główna droga to V1, V2, V3 i z powrotem. Z V2 wraca się też na mapę z planem piętra albo wejściem. „Zgłoś barierę przy wejściu” na V2 i V3 otwiera V4 z wybranym wejściem.
+![Diagram: od uruchomienia przez V1 i V2 do V3, planu piętra i zgłoszenia szybkiego](../_generated/nawigacja-gosc-mapa.svg)
 
-Zgłoszenie szybkie V4 ma trzy kroki, a każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]).
+Główna droga to V1, V2, V3 i z powrotem na mapę z zaznaczonym wejściem. Z V2 osoba otwiera też plan piętra albo zgłasza barierę przy wejściu. Mapa ma jeszcze listę terenów i wynik wyszukiwania z salą, który otwiera plan piętra od razu.
 
-Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”. Po zalogowaniu wraca do kroku 1 V4 albo trafia do L2 (P3).
+### Zgłoszenie szybkie
+
+![Diagram: zgłoszenie szybkie V4 od przycisku przez logowanie, zgodę na lokalizację i trzy kroki do potwierdzenia](../_generated/nawigacja-gosc-zgloszenie.svg)
+
+Zgłoszenie szybkie V4 ma trzy kroki. Gość najpierw trafia do L1, a po zalogowaniu wraca do kroku 1 z wybranym wejściem. „Nie teraz” na L1 wraca do mapy.
+
+Każdy stan błędu lokalizacji ma wyjście „Wróć do mapy”, a brak zgody także „Otwórz ustawienia”. Rezygnacja ze zrobionego zdjęcia wymaga potwierdzenia (heurystyki Nielsena 3 i 5 [1]). „Tak, zrezygnuj” i „Wstecz” z potwierdzenia wracają do ekranu sprzed V4.
+
+### Konto
+
+![Diagram: konto od paska dolnego przez L1 i logowanie do L2 z klauzulą, wycofaniem zgody i wylogowaniem](../_generated/nawigacja-gosc-konto.svg)
+
+Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”. Po zalogowaniu z „Konto” otwiera się L2 (P3).
 
 ## Zbierający
 
