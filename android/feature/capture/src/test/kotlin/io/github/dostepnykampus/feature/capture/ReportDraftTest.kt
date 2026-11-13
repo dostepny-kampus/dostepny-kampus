@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture
@@ -23,7 +23,10 @@ class ReportDraftTest {
     private val edited = EditedSubmission(id = "s1", baseVersion = 2)
     private val moved = A1.copy(location = GeoPoint(longitude = 17.0622, latitude = 51.1079))
 
-    /** Wiersz: C2 „Zmień miejsce” → C1 → „Dalej”, typ, uciążliwość i zdjęcie zostają, US7.4. */
+    /**
+     * Wiersz: C2 „Zmień miejsce” → C1 → „Dalej”, typ, uciążliwość i zdjęcie zostają, US7.4.
+     * Scenariusz: pomiar-precyzyjny.feature: Powrót do pomiaru zmienia miejsce, a wpisane pola zostają
+     */
     @Test
     fun us7_4_change_place_keeps_form() {
         val first = filled()
