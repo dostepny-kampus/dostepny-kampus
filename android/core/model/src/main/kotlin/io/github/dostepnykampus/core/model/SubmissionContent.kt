@@ -66,7 +66,11 @@ public data class SubmissionContent(
  * @property isMezzanine dopisek „półpiętro” w budynku podstawowym; `null` to pole nieobecne,
  *   które kontrakt API traktuje jak `false`
  */
-public data class SubmissionFloor(val floorId: String? = null, val number: Int? = null, val isMezzanine: Boolean? = null)
+public data class SubmissionFloor(
+    val floorId: String? = null,
+    val number: Int? = null,
+    val isMezzanine: Boolean? = null,
+)
 
 /** Rodzaj zgłoszenia (`kind` w `SubmissionContent`). */
 public enum class SubmissionKind {
