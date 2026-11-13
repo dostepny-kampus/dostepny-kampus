@@ -74,7 +74,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | Ekran | Nagłówek na ekranie | Strona |
 | --- | --- | --- |
 | V1 | „Mapa kampusu” | [odwiedzający](odwiedzajacy.md) |
-| V2 | „Budynek C-13” | [odwiedzający](odwiedzajacy.md) |
+| V2 | „C-13” i nazwa budynku | [odwiedzający](odwiedzajacy.md) |
 | V3 | „Którędy wejść do C-13” | [odwiedzający](odwiedzajacy.md) |
 | V4 | „Zgłoś barierę” | [odwiedzający](odwiedzajacy.md) |
 | V5 | „Jak korzystać z aplikacji” | [odwiedzający](odwiedzajacy.md) |
@@ -95,7 +95,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 
 ## Wszystkie makiety
 
-74 makiety ekranów i katalog fragmentów. Stan zwykły nie ma dopisku w nazwie pliku. Stany, które różnią się jednym napisem, opisuje tabela pod makietą na stronie grupy.
+79 makiet ekranów i katalog fragmentów. Stan zwykły nie ma dopisku w nazwie pliku. Stany, które różnią się jednym napisem, opisuje tabela pod makietą na stronie grupy.
 
 | Ekran | Stan | Makieta | Strona |
 | --- | --- | --- | --- |
