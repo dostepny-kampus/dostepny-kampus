@@ -54,14 +54,10 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.EntranceMarking
 
 /**
- * Ekran V5 „Pomoc”: instrukcja krok po kroku, przejście przyciskiem „Dalej” zamiast przesunięcia
- * palcem, bez automatycznego przewijania. Krok jest stanem zapisywanym, a ponowne
- * dotknięcie „Pomoc” zaczyna od kroku 1. Przy skali czcionki co najmniej 1,5 czynności stoją na
- * końcu treści zamiast w przypiętym pasku (reguła 10 dużej czcionki).
- * Pasek z odcinków tylko powtarza napis „Krok 2 z 3”, więc TalkBack go nie czyta. Obraz w instrukcji ma
- * jeden opis zamiast napisów przykładu. Przykład pola wyszukiwania V1 to obraz: ten sam kształt i
- * podpowiedź, bez lupy i bez możliwości wpisania. Przykład wejścia pokazuje wejście z opisu budynku na tle kroku:
- * oznaczenie „Dostępne”, nazwę wejścia i szerokość drzwi.
+ * Ekran V5 „Pomoc”: instrukcja krok po kroku, przejście przyciskiem „Dalej”, bez automatycznego przewijania. Krok jest
+ * stanem zapisywanym, a ponowne dotknięcie „Pomoc” zaczyna od kroku 1. Od skali czcionki 1,5 czynności stoją na końcu
+ * treści zamiast w przypiętym pasku. TalkBack nie czyta paska odcinków, który powtarza „Krok 2 z 3”, a obraz ma jeden
+ * opis. Przykłady pola wyszukiwania i wejścia są obrazami bez lupy i bez możliwości wpisania.
  *
  * Wymagania: US5.1, NFR-53, NFR-23, NFR-21, NFR-18
  *
