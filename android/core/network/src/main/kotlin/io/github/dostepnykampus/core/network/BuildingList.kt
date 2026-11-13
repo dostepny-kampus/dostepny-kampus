@@ -40,8 +40,10 @@ data class ApiBuilding(val building: Building, val detailLevel: DetailLevel)
  * Karta budynku (`BuildingDetails`).
  *
  * Kontrakt nie podaje rodzaju wejścia OSM, więc [Entrance.type] jest puste.
- * Dzień i źródło oznaczenia trafiają do [Entrance.assessment] (US17.3); nieistniejący dzień
+ * Dzień i źródło oznaczenia trafiają do [Entrance.assessment]; nieistniejący dzień
  * albo nieznane źródło to błąd treści odpowiedzi.
+ *
+ * Wymagania: US17.3
  *
  * @property building symbol, nazwa i kontur
  * @property detailLevel poziom szczegółowości
@@ -52,7 +54,9 @@ data class BuildingDetails(val building: Building, val detailLevel: DetailLevel,
 /**
  * Podpowiedź budynku dla punktu (`LocateResult`).
  *
- * @property buildingSymbol budynek w konturze albo najbliższy; `null` poza budynkiem (BR-G4)
+ * Wymagania: BR-G4
+ *
+ * @property buildingSymbol budynek w konturze albo najbliższy; `null` poza budynkiem
  * @property isInsideOutline czy punkt leży w konturze tego budynku (pole `insideOutline`)
  */
 data class BuildingAtPoint(val buildingSymbol: String?, val isInsideOutline: Boolean)
@@ -134,7 +138,7 @@ internal fun BuildingDetailsDto.toModel(): BuildingDetails =
         entrances = entrances.map(EntranceDto::toModel),
     )
 
-/** Piętra od najniższego, także gdy serwer poda je w innej kolejności (US16.1). */
+/** Piętra od najniższego, także gdy serwer poda je w innej kolejności. Wymagania: US16.1 */
 internal fun FloorListDto.toModel(): FloorList =
     FloorList(
         source = source,

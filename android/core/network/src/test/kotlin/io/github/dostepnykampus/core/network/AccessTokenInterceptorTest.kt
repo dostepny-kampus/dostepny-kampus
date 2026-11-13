@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-/** Token konta w żądaniach do serwera aplikacji; operacje publiczne i inne adresy bez tokenu (#463, NFR-35). */
+/** Token konta w żądaniach do serwera aplikacji; operacje publiczne i inne adresy bez tokenu. Wymagania: NFR-35 */
 class AccessTokenInterceptorTest {
     private val server = MockWebServer()
     private val tokens = AccessTokens()

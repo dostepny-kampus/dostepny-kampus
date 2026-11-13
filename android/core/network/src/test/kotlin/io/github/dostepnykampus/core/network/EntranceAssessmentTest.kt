@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-/** Dzień i źródło oznaczenia wejścia z karty budynku `GET /buildings/{symbol}` (US17.3). */
+/** Dzień i źródło oznaczenia wejścia z karty budynku `GET /buildings/{symbol}`. Wymagania: US17.3 */
 class EntranceAssessmentTest {
     private val server = MockWebServer()
 
@@ -30,7 +30,9 @@ class EntranceAssessmentTest {
 
     /**
      * Wiersz: karta budynku z serwera → każde wejście ma w modelu oznaczenie z dniem i źródłem: import albo
-     *   obchód, US17.3, BR-24.
+     *   obchód.
+     *
+     * Wymagania: US17.3, BR-24
      */
     @Test
     fun us17_3_assessment_kept() {
@@ -46,8 +48,9 @@ class EntranceAssessmentTest {
     }
 
     /**
-     * Wiersz: dzień, którego nie ma w kalendarzu, albo nieznane źródło oznaczenia → błąd treści, nie wejście,
-     *   US17.3.
+     * Wiersz: dzień, którego nie ma w kalendarzu, albo nieznane źródło oznaczenia → błąd treści, nie wejście.
+     *
+     * Wymagania: US17.3
      */
     @Test
     fun us17_3_bad_assessment() {

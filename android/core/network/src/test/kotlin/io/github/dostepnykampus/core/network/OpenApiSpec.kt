@@ -18,7 +18,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 /**
- * Kontrakt `api/openapi.yaml` (decyzja 122) jako drzewo i walidator schematów, dialekt OpenAPI 3.1 jak na serwerze.
+ * Kontrakt `api/openapi.yaml` jako drzewo i walidator schematów, dialekt OpenAPI 3.1 jak na serwerze.
  * Brak pliku to błąd, więc zła ścieżka nie daje zielonego testu.
  *
  * @param path ścieżka kontraktu względem modułu

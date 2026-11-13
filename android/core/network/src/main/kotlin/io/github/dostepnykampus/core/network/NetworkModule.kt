@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 /**
- * Klient HTTP `core:network` w grafie Hilt aplikacji (decyzja 97).
+ * Klient HTTP `core:network` w grafie Hilt aplikacji.
  *
  * Jedna instancja klienta, parsera, [BuildingsApi] i [SubmissionsApi] na proces.
  */
@@ -27,8 +27,10 @@ object NetworkModule {
     /**
      * Klient HTTP: całe wywołanie, z połączeniem i odczytem, trwa najwyżej 3 s. Mapa czeka na listę budynków
      * z serwera przed pierwszym pokazaniem, a bez serwera bierze plik konturów, więc nie może czekać dłużej
-     * niż próg mapy z danymi w telefonie (NFR-10, NFR-11). Wysyłka zdjęć ustawi dłuższy limit na kopii klienta
+     * niż próg mapy z danymi w telefonie. Wysyłka zdjęć ustawi dłuższy limit na kopii klienta
      * z `newBuilder()`. Żądania do serwera aplikacji niosą token konta z [tokens] ([AccessTokenInterceptor]).
+     *
+     * Wymagania: NFR-10, NFR-11
      */
     @Provides
     @Singleton

@@ -12,21 +12,21 @@ internal enum class HelpExample(
     @param:StringRes val caption: Int,
     @param:StringRes val description: Int,
 ) {
-    /** Pole wyszukiwania z V1 (US1.1), bez lupy. */
+    /** Pole wyszukiwania z V1, bez lupy. Wymagania: US1.1 */
     SEARCH_FIELD(R.string.pomoc_budynek_podpis, R.string.pomoc_budynek_opis),
 
-    /** Wejście z opisu budynku z oznaczeniem „Dostępne” (US2.1). */
+    /** Wejście z opisu budynku z oznaczeniem „Dostępne”. Wymagania: US2.1 */
     ENTRANCE(R.string.pomoc_dostepne_podpis, R.string.pomoc_dostepne_opis),
 }
 
-/** Krok instrukcji: tytuł [title], najwyżej 3 zdania [text] i opcjonalny obraz [example] (US5.1, NFR-18). */
+/** Krok instrukcji: tytuł [title], najwyżej 3 zdania [text] i opcjonalny obraz [example]. Wymagania: US5.1, NFR-18 */
 internal data class HelpStep(
     @param:StringRes val title: Int,
     @param:StringRes val text: Int,
     val example: HelpExample? = null,
 )
 
-/** Kroki według makiety hi-fi i wymagań V5; krok 3 ma zdanie o koncie (US14.2, PW-5, decyzja 89). */
+/** Kroki według makiety hi-fi i wymagań V5; krok 3 ma zdanie o koncie (PW-5). Wymagania: US14.2 */
 internal val HelpSteps =
     listOf(
         HelpStep(
@@ -42,7 +42,7 @@ internal val HelpSteps =
         HelpStep(title = R.string.pomoc_konto_tytul, text = R.string.pomoc_konto_tekst),
     )
 
-/** Skutek „Wstecz” w instrukcji (wymagania V5, NFR-15). */
+/** Skutek „Wstecz” w instrukcji (wymagania V5). Wymagania: NFR-15 */
 internal enum class HelpBack {
     /** Poprzedni krok instrukcji. */
     PREVIOUS_STEP,
@@ -54,7 +54,7 @@ internal enum class HelpBack {
     LEAVE,
 }
 
-/** Skutek „Wstecz” w kroku [step] (od 0); [isFirstLaunch]: instrukcja otworzyła się sama (US5.1). */
+/** Skutek „Wstecz” w kroku [step] (od 0); [isFirstLaunch]: instrukcja otworzyła się sama. Wymagania: US5.1 */
 internal fun helpBack(step: Int, isFirstLaunch: Boolean): HelpBack =
     when {
         step > 0 -> HelpBack.PREVIOUS_STEP

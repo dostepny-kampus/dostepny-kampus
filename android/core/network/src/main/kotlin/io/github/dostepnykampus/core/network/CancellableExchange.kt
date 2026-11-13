@@ -19,8 +19,10 @@ import kotlin.coroutines.resume
  * Wysyła [request] bez blokowania wątku wywołującego i czyta całą odpowiedź, zanim wznowi korutynę.
  *
  * Anulowanie korutyny przerywa żądanie HTTP, także w trakcie czytania ciała, i kończy się
- * [kotlinx.coroutines.CancellationException], nie [ApiResult.NetworkError] (NFR-55). Odpowiedź jest zamykana
+ * [kotlinx.coroutines.CancellationException], nie [ApiResult.NetworkError]. Odpowiedź jest zamykana
  * zawsze, także gdy przyszła już po anulowaniu.
+ *
+ * Wymagania: NFR-55
  *
  * @param T typ odczytanych danych
  * @param request żądanie
