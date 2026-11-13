@@ -57,6 +57,9 @@ class MapTileNetworkDeviceTest {
     @Test(expected = ConnectException::class)
     fun other_hosts_are_blocked() {
         val request = Request.Builder().url("https://example.org/0/0/0.png").build()
-        tiles.calls.newCall(request).execute().use { error("Obcy host dostał odpowiedź: ${it.code}") }
+        tiles.calls
+            .newCall(request)
+            .execute()
+            .use { error("Obcy host dostał odpowiedź: ${it.code}") }
     }
 }

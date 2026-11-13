@@ -14,6 +14,7 @@ import io.github.dostepnykampus.core.network.BuildingsApi
 import io.github.dostepnykampus.core.network.NetworkModule
 import io.github.dostepnykampus.core.network.SubmissionsApi
 import kotlinx.serialization.json.Json
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
@@ -43,24 +44,15 @@ object NoServerNetworkModule {
         return OkHttpClient
             .Builder()
             .dns { host -> error("Test próbuje użyć sieci: $host") }
-            .addInterceptor { chain ->
-                val request = chain.request()
-                if (request.url.host != "tile.openstreetmap.org") {
-                    throw ConnectException("Brak serwera w teście: ${request.url}")
-                }
-                tileResponse(request, tile)
-            }.build()
-    }
-
-    private fun tileResponse(request: Request, tile: ByteArray): Response {
-        val body = tile.toResponseBody("image/png".toMediaType())
-        return Response
-            .Builder()
-            .request(request)
-            .protocol(Protocol.HTTP_1_1)
-            .code(200)
-            .message("Lokalny kafelek testowy")
-            .body(body)
+            .addInterceptor(
+                Interceptor { chain ->
+                    val request = chain.request()
+                    if (request.url.host != "tile.openstreetmap.org") {
+                        throw ConnectException("Brak serwera w teście: ${request.url}")
+                    }
+                    LocalTileResponse(request, tile).response
+                },
+            )
             .build()
     }
 
@@ -90,4 +82,19 @@ object NoServerNetworkModule {
     @Provides
     @Singleton
     fun submissionsApi(http: OkHttpClient, json: Json): SubmissionsApi = NetworkModule.submissionsApi(http, json)
+
+    /** Jedna odpowiedź ma własny strumień PNG; odbiorca zamyka go razem z [response], jak odpowiedź sieciową. */
+    private class LocalTileResponse(request: Request, tile: ByteArray) {
+        private val body = tile.toResponseBody("image/png".toMediaType())
+
+        val response: Response =
+            Response
+                .Builder()
+                .request(request)
+                .protocol(Protocol.HTTP_1_1)
+                .code(200)
+                .message("Lokalny kafelek testowy")
+                .body(body)
+                .build()
+    }
 }
