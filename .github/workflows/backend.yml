@@ -102,7 +102,7 @@ jobs:
           for cele in 'io.github.dostepnykampus.*.domain.*' 'io.github.dostepnykampus.barrier.[A-Z]*'             'io.github.dostepnykampus.barrier.json.*' 'io.github.dostepnykampus.barrier.web.*'             'io.github.dostepnykampus.barrier.persistence.*' 'io.github.dostepnykampus.building.[A-Z]*'             'io.github.dostepnykampus.building.locate.*' 'io.github.dostepnykampus.building.postgis.*'             'io.github.dostepnykampus.[A-Z]*' 'io.github.dostepnykampus.identity.*'; do
             rm -rf target/pit-reports
             start=$SECONDS
-            ./mvnw -B -q -Dqulice.skip=true -Djacoco.skip=true "-Dpit.cele=$cele" org.pitest:pitest-maven:mutationCoverage || true
+            ./mvnw -B -q -Dqulice.skip=true -Djacoco.skip=true "-Dpit.cele=$cele" test-compile org.pitest:pitest-maven:mutationCoverage || true
             czas=$((SECONDS - start))
             f=target/pit-reports/mutations.xml
             wynik="$(grep -o 'status=.[A-Z_]*' "$f" 2>/dev/null | sort | uniq -c | tr '\n' ' ' || true)"
