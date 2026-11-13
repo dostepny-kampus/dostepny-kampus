@@ -136,12 +136,15 @@ final class BarrierArchitectureTest {
             Arguments.of(
                 "A-9", "errors",
                 String.format(
-                    subtype, "shared.error.ForbiddenChange", "org.springframework.http.HttpStatus", "\"x\""
+                    subtype, "shared.error.ForbiddenChange",
+                    "org.springframework.http.HttpStatus", "\"x\""
                 )
             ),
             Arguments.of(
                 "A-9", "errors",
-                String.format(subtype, "shared.error.ConflictingState", jackson, "\"x\", \"y\", null")
+                String.format(
+                    subtype, "shared.error.ConflictingState", jackson, "\"x\", \"y\", null"
+                )
             )
         );
     }
