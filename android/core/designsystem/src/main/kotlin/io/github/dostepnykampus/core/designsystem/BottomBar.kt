@@ -58,17 +58,11 @@ class BottomBarItems(items: List<BottomBarItem>) {
 }
 
 /**
- * Pasek dolny z pozycjami [items] w jednym rzędzie, wybrana [selectedIndex]; dotknięcie pozycji wywołuje [onSelect]
- * z jej numerem. Stoi poza przewijaną treścią (`bottomBar` w `Scaffold`), więc nigdy się nie chowa.
- * TalkBack czyta napis, rolę karty i stan wybrany.
- *
- * Napisy (reguła 8) mają jeden rozmiar i najwyżej dwa wiersze: rosną z czcionką, dopóki najdłuższe słowo
- * wszystkich napisów mieści się w pozycji, ale co najmniej 1,3 raza. Pozycje dzieli [Odstepy.s] od siebie i od
- * krawędzi. Po jednoliterowym słowie stoi twarda spacja, więc „Konto i praca” łamie się jako „Konto / i praca”.
- *
- * Tokeny: tło `surfaceContainerLow`, górna krawędź [Obramowania.ramka] w kolorze `outlineVariant`; napis
- * `labelMedium` w kolorze `onSurfaceVariant`, wybrany `onSurface` z [Typografia.wyroznienieWaga]; ikona
- * [Ikony.rozmiar] w kolorze `onSurfaceVariant`, wybrana `onPrimaryContainer` na wskaźniku `primaryContainer`.
+ * Pasek dolny z pozycjami [items] w jednym rzędzie, wybrana [selectedIndex]; dotknięcie wywołuje [onSelect] z numerem
+ * pozycji. Stoi poza przewijaną treścią, więc się nie chowa; TalkBack czyta napis, rolę karty i stan wybrany. Napisy
+ * mają jeden rozmiar i najwyżej dwa wiersze: rosną z czcionką, dopóki najdłuższe słowo mieści się w pozycji, ale co
+ * najmniej 1,3 raza. Po jednoliterowym słowie stoi twarda spacja („Konto / i praca”). Wybrana pozycja ma wskaźnik
+ * `primaryContainer` i pogrubiony napis.
  *
  * Wymagania: NFR-52, NFR-18, NFR-20
  */

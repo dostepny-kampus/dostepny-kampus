@@ -58,16 +58,12 @@ private val RestartsSaver =
     listSaver<SnapshotStateList<Int>, Int>(save = { it.toList() }, restore = { it.toMutableStateList() })
 
 /**
- * Oboczka aplikacji: ekran z wierzchu historii i pasek nawigacji na ekranach, które go mają (wymagania wspólne).
- * W oknie o szerokości co najmniej 600 dp pasek stoi z boku, w węższym na dole. Historia zaczyna się
- * od V5 przy [firstLaunch], inaczej od V1, i przetrwa odtworzenie aktywności. [roles] wybiera
- * cele Gościa i napis czwartej pozycji, a [onFirstHelpLeft] dostaje znać, gdy instrukcja z pierwszego
- * uruchomienia przestanie być na wierzchu, a [onChooseMap] zapisuje wybór „Mapa” po „Pokaż budynek na mapie”.
- * [content] rysuje ekran trasy i podpina jego czynności do nawigatora, domyślnie [AppScreen]. Wcięcia systemowe,
- * które zajmuje pasek, są dla treści zużyte: ekran dopełnia resztę przez `WindowInsets.safeDrawing` albo rysuje pod
- * nią, jak mapa. V2 jest arkuszem nad V1 ([SheetSceneStrategy]),
- * a gdy okno daje kartę `Direct` (duża czcionka, szerokie okno, poziomo), osobnym ekranem bez mapy.
- * Po odtworzeniu historii [onRestore] dostaje pliki zdjęć odtworzonych szkiców, których sprzątanie nie usuwa.
+ * Oboczka aplikacji: ekran z wierzchu historii i pasek nawigacji na ekranach, które go mają; w oknie od 600 dp pasek
+ * stoi z boku, inaczej na dole. Historia zaczyna się od V5 przy [firstLaunch], inaczej od V1, i przetrwa odtworzenie
+ * aktywności. [roles] wybiera cele Gościa i napis czwartej pozycji; [onFirstHelpLeft] dostaje znać, gdy instrukcja
+ * pierwszego uruchomienia zejdzie z wierzchu, a [onChooseMap] zapisuje wybór „Mapa” po „Pokaż budynek na mapie”.
+ * [content] rysuje ekran trasy; wcięcia zajęte przez pasek są dla treści zużyte. V2 jest arkuszem nad V1
+ * ([SheetSceneStrategy]) albo osobnym ekranem karty `Direct`; [onRestore] dostaje zdjęcia odtworzonych szkiców.
  *
  * Wymagania: US5.1, NFR-22, US2.9, NFR-51
  */
