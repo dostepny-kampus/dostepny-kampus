@@ -15,7 +15,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.ObjectMapper;
 
 /**
  * Odczyt REST budynków: lista na mapie, podpowiedź budynku dla punktu i karta budynku
@@ -43,20 +42,12 @@ final class BuildingQuery {
     private final JdbcClient jdbc;
 
     /**
-     * Parser GeoJSON zwracanego przez ST_AsGeoJSON.
-     */
-    private final ObjectMapper mapper;
-
-    /**
      * Budynek, w którego konturze leży punkt.
      */
     private final Outlines outlines;
 
-    BuildingQuery(
-        final JdbcClient jdbc, final ObjectMapper mapper, final Outlines outlines
-    ) {
+    BuildingQuery(final JdbcClient jdbc, final Outlines outlines) {
         this.jdbc = jdbc;
-        this.mapper = mapper;
         this.outlines = outlines;
     }
 
@@ -142,7 +133,7 @@ final class BuildingQuery {
                 rows.getString("name"),
                 rows.getString("type"),
                 rows.getBoolean("main"),
-                this.mapper.readTree(BuildingQuery.text(rows, "location")),
+                BuildingQuery.text(rows, "location"),
                 new Entrance.Marking(
                     BuildingQuery.text(rows, "marking"),
                     BuildingQuery.text(rows, "marking_date"),
@@ -167,7 +158,7 @@ final class BuildingQuery {
             BuildingQuery.text(rows, "symbol"),
             rows.getString("name"),
             BuildingQuery.text(rows, "detail_level"),
-            this.mapper.readTree(BuildingQuery.text(rows, "outline"))
+            BuildingQuery.text(rows, "outline")
         );
     }
 

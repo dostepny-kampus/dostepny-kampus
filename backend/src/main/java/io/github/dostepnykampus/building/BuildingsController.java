@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.building;
 
+import io.github.dostepnykampus.building.web.BuildingCardResponse;
+import io.github.dostepnykampus.building.web.BuildingListResponse;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import io.github.dostepnykampus.shared.geo.Wgs84;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Publiczny odczyt budynków: lista, karta i podpowiedź dla punktu. Błędy
@@ -28,8 +31,14 @@ public final class BuildingsController {
      */
     private final BuildingQuery query;
 
-    BuildingsController(final BuildingQuery query) {
+    /**
+     * Parser konturów i położeń GeoJSON do odpowiedzi.
+     */
+    private final ObjectMapper mapper;
+
+    BuildingsController(final BuildingQuery query, final ObjectMapper mapper) {
         this.query = query;
+        this.mapper = mapper;
     }
 
     /**
@@ -38,8 +47,8 @@ public final class BuildingsController {
      * @return Lista budynków z atrybucją konturów
      */
     @GetMapping("/buildings")
-    BuildingList listBuildings() {
-        return this.query.listBuildings();
+    BuildingListResponse listBuildings() {
+        return BuildingListResponse.of(this.query.listBuildings(), this.mapper);
     }
 
     /**
@@ -70,8 +79,10 @@ public final class BuildingsController {
      * @return Karta budynku z konturem i wejściami
      */
     @GetMapping("/buildings/{symbol}")
-    BuildingCard getBuilding(@PathVariable("symbol") final String symbol) {
-        return this.query.building(symbol).orElseThrow(
+    BuildingCardResponse getBuilding(@PathVariable("symbol") final String symbol) {
+        return this.query.building(symbol).map(
+            card -> BuildingCardResponse.of(card, this.mapper)
+        ).orElseThrow(
             () -> new MissingResource(String.format("Nie ma budynku %s", symbol))
         );
     }
