@@ -89,18 +89,11 @@ data class BuildingSearch(val query: String = "", val buildings: List<Building>?
 fun BuildingSearch.foundFor(shown: String): List<Building>? = buildings.takeIf { query == shown }
 
 /**
- * Stan V1 z katalogu budynków (najpierw z pliku, potem z serwera), stanu internetu i zapamiętanego wyboru „Mapa” albo
- * „Lista budynków”. Źródła są obserwowane, gdy ekran jest widoczny, i jeszcze 5 s po zniknięciu,
- * więc obrót ekranu nie uruchamia ich od nowa, a monitor sieci nie działa w tle. Geometrię mapy liczy [geometry]
- * w [computeContext], raz na katalog. Zamknięcie ekranu i nowszy katalog przerywają trwające liczenie przerwaniem
- * wątku, więc [geometry] musi je respektować.
- * Katalog trafia do stanu od razu, a jego geometria z kontekstu obliczeń: raz na katalog. Nowszy katalog i
- * zamknięcie ekranu przerywają liczenie przerwaniem wątku (`runInterruptible`), więc nowe nie czeka na koniec
- * starego. Do czasu policzenia nowej mapa zostaje na poprzedniej, więc kontury nie znikają przy zmianie katalogu.
- * O bariery ze zgłoszeń przyjętych ekran pyta źródło na starcie i od nowa po każdej zmianie stanu sieci: z internetem
- * źródło daje odpowiedź serwera, a bez niego ostatnią kopię z telefonu. Do pierwszej odpowiedzi mapa
- * działa bez znaków barier. Dane mapy powstają od nowa tylko po zmianie katalogu albo barier, nie przy
- * każdej zmianie stanu ekranu ani wtedy, gdy źródło dało te same bariery.
+ * Stan V1 z katalogu budynków (najpierw plik, potem serwer), stanu internetu, barier i zapamiętanego wyboru „Mapa” albo
+ * „Lista budynków”. Źródła są obserwowane, gdy ekran jest widoczny, i 5 s po zniknięciu. Geometrię liczy [geometry] w
+ * [computeContext] raz na katalog; nowszy katalog i zamknięcie ekranu przerywają liczenie przerwaniem wątku, a do czasu
+ * nowej mapa zostaje na poprzedniej. O bariery ekran pyta na starcie i po każdej zmianie stanu sieci; do pierwszej
+ * odpowiedzi mapa nie ma znaków barier. Dane mapy powstają od nowa tylko po zmianie katalogu albo barier.
  *
  * Wymagania: US1, US9.1, NFR-19, NFR-11, US1.3, NFR-10
  *

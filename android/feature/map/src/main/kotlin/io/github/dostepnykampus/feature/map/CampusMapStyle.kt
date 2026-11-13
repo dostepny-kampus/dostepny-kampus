@@ -84,27 +84,12 @@ data class MapStyleColors(
 )
 
 /**
- * Styl mapy V1 (ADR-0005). Kontury i podpisy ze źródła w aplikacji są zawsze, a podkład kafelków OSM tylko
- * online. Bez sieci warstwa podkładu jest pusta i dalej widać kontury na tle lądu. Podpis konturu
- * to obraz o nazwie z właściwości `label`, który dodaje widok mapy, bo napisy z czcionek stylu wymagają sieci.
- * Obraz stoi w jednym punkcie wewnątrz konturu, więc każdy kontur ma jeden podpis przy każdym przybliżeniu.
- * Podpisy się nie nakładają (reguła 4 wymagań wspólnych). Kontur budynku [MapSelection.building] ma grubszy obrys
- * `pwr_wybrany`. Pozostałe budynki są wtedy przygaszone, ale zachowują podpisy, a znaki wejść ma tylko
- * zaznaczony budynek. Bez zaznaczonego budynku każde wejście
- * z [CampusMapData.entrances] ma znak o kształcie według oznaczenia, bez filtra, więc zaznaczenie wejścia nie
- * chowa pozostałych. Wejście [MapSelection.entrance] ma ponadto pinezkę czubkiem w swoim
- * punkcie i pod znakiem podpis z nazwą.
- * Podkład OSM obejmuje tylko obszar kampusu, więc kafelków spoza niego mapa nie pobiera. Obrys
- * zaznaczonego budynku obejmuje także kontur wspólny „C-3/C-4”; bez zaznaczenia nie ma tej warstwy. Obraz znaku
- * zależy od oznaczenia, więc kształt niesie znaczenie, nie barwa; brak filtra i nakładanie są
- * dozwolone, bo znaki zostają przy zaznaczonym wejściu. Zaznaczone wejście to źródło z jednym
- * punktem o właściwościach `label` (nazwa) i `image` (obraz podpisu). Pinezka stoi czubkiem (dół obrazu)
- * w punkcie wejścia, a podpis z nazwą pod znakiem, w odsunięciu `CAPTION_OFFSET_DP` w dp: tuż pod
- * znakiem, którego środek stoi w tym punkcie; obie warstwy rysują się zawsze. Podkład ma przygaszone barwy
- * i prześwituje przez niego tło lądu, więc budynki PWr i znaki są na mapie najwyraźniejsze, a zieleń, woda i ulice
- * zostają rozpoznawalne (makieta hi-fi V1). W motywie ciemnym jasność kafelków jest odwrócona.
- * Obszar poza terenem [MapSelection.bounds] jest przyciemniony, a granicę terenu pokazuje linia.
- * Bariery z [CampusMapData.barriers] mają znak uciążliwości i od powiększenia 17 słowo obok niego.
+ * Styl mapy V1 (ADR-0005): kontury i podpisy ze źródła w aplikacji zawsze, a podkład OSM tylko online i tylko w
+ * obszarze kampusu, przygaszony. Podpis konturu to obraz z właściwości `label` w jednym punkcie wewnątrz konturu;
+ * podpisy się nie nakładają. Zaznaczony budynek [MapSelection.building] ma grubszy obrys `pwr_wybrany` i jako jedyny
+ * znaki wejść, pozostałe są przygaszone; bez zaznaczenia każde wejście ma znak o kształcie według oznaczenia. Wejście
+ * [MapSelection.entrance] ma pinezkę czubkiem w punkcie i podpis z nazwą pod znakiem. Obszar poza [MapSelection.bounds]
+ * jest przyciemniony z linią granicy; bariery mają znak uciążliwości, od powiększenia 17 ze słowem.
  *
  * Wymagania: NFR-10, NFR-39, US1.1, US1.4, US2.8, US2.1, NFR-21, US3.3, NFR-16, US1.7, BR-G5, US1.3
  */
