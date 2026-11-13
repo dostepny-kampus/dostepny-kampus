@@ -10,7 +10,6 @@ import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.featureCollection
-import io.github.dostepnykampus.feature.map.data.outlineOf
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -46,6 +45,15 @@ internal const val OUTSIDE_LAYER = "teren-poza"
 
 /** Warstwa linii granicy terenu (US1.7, BR-G5). */
 internal const val EDGE_LAYER = "teren-granica"
+
+/** Warstwa konturów wszystkich budynków. */
+internal const val OUTLINES_LAYER = "kontury"
+
+/** Pole barwy wypełnienia warstwy [BUILDINGS_LAYER]. */
+internal const val BUILDINGS_FILL = "fill-color"
+
+/** Pole barwy linii warstwy [OUTLINES_LAYER]. */
+internal const val OUTLINES_COLOR = "line-color"
 
 internal const val BUILDINGS_SOURCE = BUILDINGS_LAYER
 private const val ENTRANCES_SOURCE = ENTRANCES_LAYER
@@ -95,8 +103,8 @@ data class MapStyleColors(
  * chowa pozostałych (US2.1, NFR-21). Wejście [MapSelection.entrance] ma ponadto pinezkę czubkiem w swoim
  * punkcie i pod znakiem podpis z nazwą (US3.3, decyzja 134).
  * Podkład OSM obejmuje tylko obszar kampusu, więc kafelków spoza niego mapa nie pobiera (NFR-39). Obrys
- * zaznaczonego budynku obejmuje także kontur wspólny „C-3/C-4”; bez zaznaczenia nie ma tej warstwy. Obraz znaku
- * zależy od oznaczenia, więc kształt niesie znaczenie, nie barwa (NFR-21); brak filtra i nakładanie są
+ * zaznaczonego budynku obejmuje także kontur wspólny „C-3/C-4”; bez zaznaczenia ta warstwa nic nie rysuje.
+ * Obraz znaku zależy od oznaczenia, więc kształt niesie znaczenie, nie barwa (NFR-21); brak filtra i nakładanie są
  * dozwolone, bo znaki zostają przy zaznaczonym wejściu (decyzja 134 pkt 2). Zaznaczone wejście to źródło z jednym
  * punktem o właściwościach `label` (nazwa) i `image` (obraz podpisu). Pinezka stoi czubkiem (dół obrazu)
  * w punkcie wejścia, a podpis z nazwą pod znakiem, w odsunięciu `CAPTION_OFFSET_DP` w dp (US3.3): tuż pod
@@ -105,13 +113,16 @@ data class MapStyleColors(
  * zostają rozpoznawalne (makieta hi-fi V1, NFR-16). W motywie ciemnym jasność kafelków jest odwrócona.
  * Obszar poza terenem [MapSelection.bounds] jest przyciemniony, a granicę terenu pokazuje linia (US1.7, BR-G5).
  * Bariery z [CampusMapData.barriers] mają znak uciążliwości i od powiększenia 17 słowo obok niego (US1.3).
+ * Warstwy i źródła zaznaczenia są w stylu przy każdym zaznaczeniu, a ich filtry, barwy i dane to [selectionLook],
+ * więc styl dla innego budynku, wejścia albo bariery różni się tylko polami z [SelectionLook].
  */
 fun campusMapStyle(data: CampusMapData, selection: MapSelection, colors: MapStyleColors): String {
+    val look = selectionLook(data, selection, colors)
     val style =
         buildJsonObject {
             put(key = "version", value = STYLE_VERSION)
-            put(key = "sources", element = sources(data, selection))
-            put(key = "layers", element = layers(data.outlineOf(selection.building), selection, colors))
+            put(key = "sources", element = sources(data, selection.bounds, look))
+            put(key = "layers", element = layers(look, isBounded = selection.bounds != null, colors = colors))
         }
     return style.toString()
 }
@@ -125,22 +136,18 @@ internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${ma
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
 internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 
-private fun sources(data: CampusMapData, selection: MapSelection): JsonObject =
+private fun sources(data: CampusMapData, bounds: CampusBounds?, look: SelectionLook): JsonObject =
     buildJsonObject {
-        put(key = BASEMAP, element = basemapSource(selection.bounds))
+        put(key = BASEMAP, element = basemapSource(bounds))
         put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
         put(key = LABELS, element = geoJsonSource(data.labelPoints))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
-        selection.bounds?.let {
-            put(key = AREA_SOURCE, element = geoJsonSource(featureCollection(areaFeatures(it))))
-        }
-        selection.entrance?.let {
-            put(key = CHOSEN_SOURCE, element = geoJsonSource(featureCollection(chosenFeatures(it))))
-        }
+        bounds?.let { put(key = AREA_SOURCE, element = geoJsonSource(featureCollection(areaFeatures(it)))) }
+        put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
     }
 
-private fun layers(chosen: List<String>?, selection: MapSelection, colors: MapStyleColors): JsonArray =
+private fun layers(look: SelectionLook, isBounded: Boolean, colors: MapStyleColors): JsonArray =
     buildJsonArray {
         add(styleLayer(id = "lad", type = "background") { paint("background-color" to JsonPrimitive(colors.land)) })
         add(
@@ -148,25 +155,23 @@ private fun layers(chosen: List<String>?, selection: MapSelection, colors: MapSt
                 put(key = "paint", element = basemapPaint(colors))
             },
         )
-        val alone = chosen.takeIf { selection.entrance == null }
         add(
             styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
-                paint("fill-color" to tone(alone, own = colors.building, other = colors.dimmed))
+                paint(BUILDINGS_FILL to look.buildingsFill)
             },
         )
         add(
-            styleLayer(id = "kontury", type = "line", source = BUILDINGS_SOURCE) {
-                val outline = tone(alone, own = colors.buildingOutline, other = colors.dimmedOutline)
-                paint("line-color" to outline, "line-width" to JsonPrimitive(OUTLINE_WIDTH))
+            styleLayer(id = OUTLINES_LAYER, type = "line", source = BUILDINGS_SOURCE) {
+                paint(OUTLINES_COLOR to look.outlinesColor, "line-width" to JsonPrimitive(OUTLINE_WIDTH))
             },
         )
-        chosen?.let { add(selectedLayer(it, colors)) }
-        add(marksLayer(filter = alone?.let(::ofBuildings)))
+        add(selectedLayer(look.selectedFilter, colors))
+        add(marksLayer(look.entrancesFilter))
         barrierLayers().forEach { add(it) }
         add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
-        selection.barrier?.let { add(chosenBarrierLayer(it)) }
-        if (selection.bounds != null) areaLayers(colors).forEach { add(it) }
-        if (selection.entrance != null) chosenLayers().forEach { add(it) }
+        add(chosenBarrierLayer(look.chosenBarrierFilter))
+        if (isBounded) areaLayers(colors).forEach { add(it) }
+        chosenLayers().forEach { add(it) }
     }
 
 private fun basemapSource(bounds: CampusBounds?): JsonObject =
@@ -192,7 +197,7 @@ private fun basemapPaint(colors: MapStyleColors): JsonObject =
         }
     }
 
-private fun marksLayer(filter: JsonElement?): JsonObject {
+private fun marksLayer(filter: JsonElement): JsonObject {
     val (accessible, inaccessible, noData) = EntranceMarking.entries.map { JsonPrimitive(entranceMarkImage(it)) }
     val image =
         expression(
@@ -205,5 +210,5 @@ private fun marksLayer(filter: JsonElement?): JsonObject {
             noData,
         )
     val marks = symbolLayer(id = ENTRANCES_LAYER, source = ENTRANCES_SOURCE, image = image, OVERLAP)
-    return filter?.let { JsonObject(marks + ("filter" to it)) } ?: marks
+    return JsonObject(marks + ("filter" to filter))
 }
