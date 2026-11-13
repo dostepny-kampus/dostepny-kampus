@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
  * z konturu (BR-14) i odmowa poza terenem PWr (US4.9, BR-G5).
  *
  * <p>Miejsca ze scenariusza kroki wyliczają z konturów budynków w bazie.
- * Kroki o aplikacji nie mają tu działania: sprawdza je test aplikacji.</p>
+ * Kroki o aplikacji pilnują tu tylko kolejności: sprawdza je test aplikacji.</p>
  *
  * @since 0.1.0
  */
@@ -228,19 +228,25 @@ public final class QuickPlaceSteps {
     }
 
     /**
-     * Krok aplikacji; serwer nie ma tu działania.
+     * Krok aplikacji; serwer pilnuje tylko kolejności kroków.
      */
     @Then("aplikacja nie pyta o budynek ani o piętro")
     public void appDoesNotAsk() {
-        // Pytania aplikacji sprawdza test aplikacji tego scenariusza.
+        MatcherAssert.assertThat(
+            "Krok aplikacji stoi przed wysłaniem zgłoszenia",
+            this.answer, Matchers.not(Matchers.emptyString())
+        );
     }
 
     /**
-     * Krok aplikacji; serwer nie ma tu działania.
+     * Krok aplikacji; serwer pilnuje tylko kolejności kroków.
      */
     @Then("zgłoszenie zostaje w telefonie ze statusem „Nie wysłano”")
     public void staysInPhone() {
-        // Stan w telefonie sprawdza test aplikacji tego scenariusza.
+        MatcherAssert.assertThat(
+            "Krok aplikacji stoi przed wysłaniem zgłoszenia",
+            this.answer, Matchers.not(Matchers.emptyString())
+        );
     }
 
     /**
