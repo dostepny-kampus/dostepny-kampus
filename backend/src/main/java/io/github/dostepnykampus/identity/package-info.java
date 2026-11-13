@@ -5,11 +5,20 @@
  */
 
 /**
- * Moduł identity: profil zalogowanej osoby i zaproszenia do zespołu.
+ * Moduł identity: profil zalogowanej osoby i zabezpieczenie API.
  *
- * <p>Obsługuje logowanie z rolą i zaproszenie osoby z wybraną rolą
- * przez Koordynatora. Konta i hasła trzyma Keycloak, moduł tylko czyta
- * role z tokenu.</p>
+ * <p>Zadanie: role zalogowanej osoby z tokenu Keycloak i dostęp do
+ * operacji API według tych ról.</p>
+ *
+ * <p>API: brak typów dla innych modułów; operacja HTTP {@code /me}.</p>
+ *
+ * <p>Zależności: brak.</p>
+ *
+ * <p>Nie robi: nie przechowuje kont ani haseł (trzyma je Keycloak) i nie
+ * zaprasza osób do zespołu.</p>
+ *
+ * <p>Kiedy dodawać tutaj: kod, który czyta tożsamość albo role zalogowanej
+ * osoby. Reguła dostępu jednej operacji zostaje w module tej operacji.</p>
  *
  * <p>Wymagania: US14, US12</p>
  *

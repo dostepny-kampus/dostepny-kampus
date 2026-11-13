@@ -7,10 +7,19 @@
 /**
  * Moduł barrier: zgłoszenia barier i ich zdjęcia.
  *
- * <p>Obsługuje zgłoszenie bariery przez Odwiedzającego, formularz
- * zgłoszenia Zbierającego, status zgłoszeń autora i podgląd
- * podobnych zgłoszeń dla Weryfikatora. Zapis zdjęcia blokuje wiersz zgłoszenia,
- * aby przyjęcie nie wyprzedziło zapisu obiektu do magazynu.</p>
+ * <p>Zadanie: przyjęcie, edycja i status zgłoszenia bariery ze zdjęciami
+ * oraz podgląd podobnych zgłoszeń.</p>
+ *
+ * <p>API: brak typów dla innych modułów; operacje HTTP
+ * {@code /submissions}.</p>
+ *
+ * <p>Zależności: {@code building}, {@code shared}.</p>
+ *
+ * <p>Nie robi: nie przechowuje budynków i nie podejmuje decyzji
+ * Weryfikatora.</p>
+ *
+ * <p>Kiedy dodawać tutaj: kod zgłoszenia bariery albo jego zdjęcia.
+ * Decyzja weryfikacji to osobny moduł, gdy powstanie jej kod.</p>
  *
  * <p>Wymagania: US4, US7, US8, US10.1, BR-13</p>
  *
