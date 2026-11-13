@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Warstwa | Pełny test | Tylko częściowo | Bez testu |
 | --- | --- | --- | --- |
-| Aplikacja | 16 | 14 | 103 |
+| Aplikacja | 19 | 14 | 100 |
 | Serwer | 0 | 0 | 62 |
 
 | Plik | Scenariusz | Kryteria i reguły | Warstwa | Test | Stan |
@@ -52,10 +52,10 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `pomiar-precyzyjny.feature` | Korekta punktu na planie piętra w budynku szczegółowym | US6.3 | aplikacja | — | brak |
 | `pomiar-precyzyjny.feature` | Mapa nieba rozróżnia systemy GNSS nie tylko kolorem | US6.5 | aplikacja | — | brak |
 | `pomiar-precyzyjny.feature` | Piętro w budynku szczegółowym wybiera się z etykiet z danych PWr | BR-7, US7.2 | aplikacja | — | brak |
-| `pomiar-precyzyjny.feature` | Bez typu bariery, uciążliwości albo zdjęcia zgłoszenia nie da się zapisać | BR-7, US7.1 | aplikacja | — | brak |
-| `pomiar-precyzyjny.feature` | W budynku trzeba podać piętro | BR-7 | aplikacja | — | brak |
+| `pomiar-precyzyjny.feature` | Bez typu bariery, uciążliwości albo zdjęcia zgłoszenia nie da się zapisać | BR-7, US7.1 | aplikacja | `feature/capture · ReportMissingFieldTest.us7_1_no_photo_not_saved`<br>`feature/capture · ReportMissingFieldTest.us7_1_no_severity_not_saved`<br>`feature/capture · ReportMissingFieldTest.us7_1_no_type_not_saved` | pełny |
+| `pomiar-precyzyjny.feature` | W budynku trzeba podać piętro | BR-7 | aplikacja | `feature/capture · ReportMissingFieldTest.br7_no_floor_not_saved` | pełny |
 | `pomiar-precyzyjny.feature` | Kompletne zgłoszenie zapisuje się ze statusem „lokalne” | BR-7, US7.1 | aplikacja | `app · SavedReportTest.us7_1_complete_saved_local` | pełny |
-| `pomiar-precyzyjny.feature` | Typ TB-29 „inna bariera” wymaga opisu | BR-7, US7.3 | aplikacja | — | brak |
+| `pomiar-precyzyjny.feature` | Typ TB-29 „inna bariera” wymaga opisu | BR-7, US7.3 | aplikacja | `feature/capture · ReportMissingFieldTest.us7_3_other_no_description` | pełny |
 | `pomiar-precyzyjny.feature` | Typ TB-29 „inna bariera” z opisem zapisuje się | BR-7, US7.3 | aplikacja | `app · SavedReportTest.us7_3_other_described_saved` | pełny |
 | `pomiar-precyzyjny.feature` | Powrót do pomiaru zmienia miejsce, a wpisane pola zostają | US7.4 | aplikacja | `feature/capture · ReportDraftTest.us7_4_change_place_keeps_form` | pełny |
 | `pomiar-precyzyjny.feature` | Piętro zostaje po zmianie miejsca tylko w tym samym budynku | US7.4 | aplikacja | — | brak |
