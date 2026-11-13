@@ -39,7 +39,9 @@ import kotlin.math.roundToInt
 data class Buildings(val items: List<BuildingHint>)
 
 /**
- * Czynności wyboru budynku na C1 (US6.2).
+ * Czynności wyboru budynku na C1.
+ *
+ * Wymagania: US6.2
  *
  * @property onConfirm „Potwierdź”
  * @property onChoose „Wybierz inny” z symbolem budynku z listy
@@ -56,8 +58,10 @@ data class PlaceActions(val onConfirm: () -> Unit, val onChoose: (String) -> Uni
 
 /**
  * Budynek zgłoszenia po pomiarze: „Czy to budynek C-13?” z nazwą i odległością, „Potwierdź”, „Wybierz inny”,
- * „Poza budynkiem” (US6.2, BR-G2). Daleko od budynków od razu „poza budynkiem”, bez komunikatu o błędzie (BR-G4).
- * Lista budynków do wyboru ma „Poza budynkiem” na końcu, jak w makiecie wyboru budynku C1 (US6.2, BR-G2).
+ * „Poza budynkiem”. Daleko od budynków od razu „poza budynkiem”, bez komunikatu o błędzie.
+ * Lista budynków do wyboru ma „Poza budynkiem” na końcu, jak w makiecie wyboru budynku C1.
+ *
+ * Wymagania: US6.2, BR-G2, BR-G4
  *
  * @param place stan wyboru
  * @param buildings budynki do wyboru z listy

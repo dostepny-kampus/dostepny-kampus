@@ -36,7 +36,7 @@ data class PhotoPaths(val items: List<String>)
 
 /**
  * Wątek czytania plików podglądu zdjęć, poza wątkiem interfejsu. Testy podają kontekst testowy, więc
- * `waitForIdle` obejmuje czytanie pliku bez czekania oknem zegara (#622). W aplikacji to `Dispatchers.IO`,
+ * `waitForIdle` obejmuje czytanie pliku bez czekania oknem zegara. W aplikacji to `Dispatchers.IO`,
  * podany parametrem domyślnym jak w [PhotoTranscoder].
  */
 internal val LocalPhotoDecodeContext = staticCompositionLocalOf { photoDecodeContext() }
@@ -44,8 +44,10 @@ internal val LocalPhotoDecodeContext = staticCompositionLocalOf { photoDecodeCon
 private fun photoDecodeContext(context: CoroutineContext = Dispatchers.IO): CoroutineContext = context
 
 /**
- * Podgląd zrobionych zdjęć nad „Zrób nowe zdjęcie”, jak w hi-fi C2 w stanie edycji (US7.1). Pliki czyta
+ * Podgląd zrobionych zdjęć nad „Zrób nowe zdjęcie”, jak w hi-fi C2 w stanie edycji. Pliki czyta
  * w [LocalPhotoDecodeContext].
+ *
+ * Wymagania: US7.1
  *
  * @param photos zdjęcia formularza
  */

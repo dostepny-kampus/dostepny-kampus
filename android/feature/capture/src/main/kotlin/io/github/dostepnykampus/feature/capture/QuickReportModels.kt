@@ -9,9 +9,11 @@ package io.github.dostepnykampus.feature.capture
  * Modele widoku V4 podane z zewnątrz, np. w testach; brakujący model ekran bierze z grafu Hilt dopiero w kroku,
  * który go potrzebuje.
  *
- * @property photoTranscoder przekodowanie zdjęcia w kroku 1, które przetrwa obrót ekranu (NFR-22)
- * @property entrances wejście z „Zgłoś barierę przy wejściu” do kroku 1 (US4.6)
- * @property send pozycja i zapis w kroku 3 (US4.1, NFR-23)
+ * Wymagania: NFR-22, US4.6, US4.1, NFR-23
+ *
+ * @property photoTranscoder przekodowanie zdjęcia w kroku 1, które przetrwa obrót ekranu
+ * @property entrances wejście z „Zgłoś barierę przy wejściu” do kroku 1
+ * @property send pozycja i zapis w kroku 3
  */
 data class QuickReportModels(
     val photoTranscoder: PhotoTranscoder? = null,

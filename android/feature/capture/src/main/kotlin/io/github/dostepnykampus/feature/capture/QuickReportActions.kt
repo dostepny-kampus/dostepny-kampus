@@ -10,8 +10,10 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 /**
  * Czynności V4 przekazywane z nawigatora aplikacji.
  *
+ * Wymagania: US4.2
+ *
  * @property onNext następny krok z danymi tego kroku
- * @property onSent zapisane w kolejce; dalej potwierdzenie, z `true`, gdy zapis był bez internetu (US4.2)
+ * @property onSent zapisane w kolejce; dalej potwierdzenie, z `true`, gdy zapis był bez internetu
  * @property onBack „Wstecz” w nagłówku
  * @property onBackToMap „Wróć do mapy” po wysłaniu
  */
