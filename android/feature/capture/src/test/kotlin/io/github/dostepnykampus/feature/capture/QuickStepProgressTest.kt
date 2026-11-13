@@ -24,14 +24,18 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Pasek kroków V4: 3 odcinki, wykonane wypełnione, a TalkBack czyta „Krok N z 3” z postępem (US4.1, NFR-18). */
+/**
+ * Pasek kroków V4: 3 odcinki, wykonane wypełnione, a TalkBack czyta „Krok N z 3” z postępem.
+ *
+ * Wymagania: US4.1, NFR-18
+ */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class QuickStepProgressTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** Wiersz: V4 „Krok N z 3” i pod nim pasek z 3 odcinków; wykonane odcinki są wypełnione, NFR-21. */
+    /** Wiersz: V4 „Krok N z 3” i pod nim pasek z 3 odcinków; wykonane odcinki są wypełnione. Wymagania: NFR-21 */
     @Test
     fun us4_1_progress_segments() {
         var step by mutableIntStateOf(1)
@@ -43,7 +47,7 @@ class QuickStepProgressTest {
         }
     }
 
-    /** Wiersz: V4 pasek kroków ma dla TalkBack opis „Krok N z 3” i postęp, nie sam kolor, NFR-18. */
+    /** Wiersz: V4 pasek kroków ma dla TalkBack opis „Krok N z 3” i postęp, nie sam kolor. Wymagania: NFR-18 */
     @Test
     fun nfr18_progress_semantics() {
         compose.setContent { DostepnyKampusTheme { QuickStepProgress(step = 2) } }

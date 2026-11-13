@@ -16,7 +16,11 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-/** Formularz C2: bez typu, uciążliwości, zdjęcia i piętra w budynku nie ma zapisu; TB-29 wymaga opisu (BR-7). */
+/**
+ * Formularz C2: bez typu, uciążliwości, zdjęcia i piętra w budynku nie ma zapisu; TB-29 wymaga opisu.
+ *
+ * Wymagania: BR-7
+ */
 class ReportFormTest {
     @Test
     fun `pusty ma wszystkie braki`() {
@@ -90,8 +94,10 @@ class ReportFormTest {
 
     /**
      * W budynku podstawowym B-8 wpis tekstu daje piętro w treści zgłoszenia; „1,5” nie jest liczbą całkowitą, więc
-     * piętra brak i formularz się nie zapisuje (US7.2).
+     * piętra brak i formularz się nie zapisuje.
      * Scenariusz: budynki-bez-szczegolow.feature: Piętro w budynku podstawowym wpisuje się jako liczbę całkowitą
+     *
+     * Wymagania: US7.2
      */
     @Test
     fun `piętro budynku podstawowego`() {
@@ -118,8 +124,10 @@ class ReportFormTest {
     }
 
     /**
-     * Budynek bez planów pięter przyjmuje zgłoszenie z piętrem wpisanym liczbą (BR-G3).
+     * Budynek bez planów pięter przyjmuje zgłoszenie z piętrem wpisanym liczbą.
      * Scenariusz: budynki-bez-szczegolow.feature: Zgłoszenie w budynku po nieudanym imporcie planów
+     *
+     * Wymagania: BR-G3
      */
     @Test
     fun `budynek bez planów, piętro 3`() {
