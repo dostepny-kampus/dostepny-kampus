@@ -21,7 +21,7 @@ package io.github.dostepnykampus.core.model
  * @property assessment dzień i źródło oznaczenia z serwera; `null` dla wejścia z pliku konturów,
  *   który ich nie podaje
  */
-data class Entrance(
+public data class Entrance(
     val id: String,
     val buildingSymbol: String,
     val name: String?,

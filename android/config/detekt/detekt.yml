@@ -59,6 +59,10 @@ potential-bugs:
 
 style:
   excludes: ['**/build/generated/**']
+  # Moduły z explicitApi() wymagają jawnego `public`, a widoczność w nich sprawdza kompilator. Detekt nie widzi
+  # trybu jawnego API i uznaje ten modyfikator za zbędny. Lista rośnie razem z modułami w trybie jawnego API.
+  RedundantVisibilityModifier:
+    excludes: ['**/build/generated/**', '**/core/model/**']
   # Tekst JSON powstaje i jest czytany tylko w plikach granicznych (NFR-46). Osobny egzemplarz reguły, więc
   # domyślna lista ForbiddenMethodCall działa dalej wszędzie. Wyjątki to ścieżki plików, nie pakiety; lista
   # może tylko maleć. Wywołanie toString na typie JsonElement kompilator widzi jako Any.toString, więc reguła

@@ -8,3 +8,7 @@ plugins {
     id("dostepnykampus.jvm.library")
 }
 
+
+kotlin {
+    explicitApi()
+}

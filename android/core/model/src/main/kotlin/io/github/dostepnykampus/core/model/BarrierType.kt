@@ -14,7 +14,7 @@ package io.github.dostepnykampus.core.model
  * @property code kod typu wysyłany w polu `barrierType` zgłoszenia, np. `TB-13`
  * @property group grupa barier, w której formularz C2 pokazuje typ
  */
-enum class BarrierType(val code: String, val group: BarrierGroup) {
+public enum class BarrierType(public val code: String, public val group: BarrierGroup) {
     /** Schody przy wejściu. */
     STAIRS_AT_ENTRANCE("TB-1", BarrierGroup.ENTRANCE_AND_DOORS),
 
@@ -104,13 +104,13 @@ enum class BarrierType(val code: String, val group: BarrierGroup) {
     ;
 
     /** Opis jest obowiązkowy tylko przy TB-29 „inna bariera”. Wymagania: US7.3 */
-    val isDescriptionRequired: Boolean
+    public val isDescriptionRequired: Boolean
         get() = this == OTHER_BARRIER
 
     /** Wyszukiwanie typu po kodzie z kontraktu. */
-    companion object {
+    public companion object {
         /** Typ o kodzie z kontraktu albo `null`, gdy serwer lub kolejka podały kod spoza klasyfikacji. */
-        fun fromCode(code: String): BarrierType? = entries.firstOrNull { it.code == code }
+        public fun fromCode(code: String): BarrierType? = entries.firstOrNull { it.code == code }
     }
 }
 
@@ -121,7 +121,7 @@ enum class BarrierType(val code: String, val group: BarrierGroup) {
  *
  * @property value wartość pola `severity` w kontrakcie
  */
-enum class Severity(val value: Int) {
+public enum class Severity(public val value: Int) {
     /** „Utrudnienie”. */
     HINDRANCE(1),
 
@@ -133,9 +133,9 @@ enum class Severity(val value: Int) {
     ;
 
     /** Wyszukiwanie uciążliwości po wartości z kontraktu. */
-    companion object {
+    public companion object {
         /** Uciążliwość o wartości z kontraktu albo `null` spoza zakresu 1–3. */
-        fun fromValue(value: Int): Severity? = entries.firstOrNull { it.value == value }
+        public fun fromValue(value: Int): Severity? = entries.firstOrNull { it.value == value }
     }
 }
 
