@@ -3,7 +3,7 @@
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek("Budynek <i>[symbol]</i>")
+$naglowek("<i>[symbol]</i>")
 $brak_internetu()
 $komunikat("Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.", "Spróbuj ponownie")
 $pasek_dolny_konto()
