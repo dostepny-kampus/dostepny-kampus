@@ -172,17 +172,15 @@ final class ModuleLayersArchitectureTest {
     }
 
     private static Set<String> production() {
-        final List<String> roots = ApplicationModules.of(DostepnyKampusApplication.class)
-            .stream()
-            .filter(module -> !module.isOpen())
-            .map(ApplicationModule::getBasePackage)
-            .map(JavaPackage::getName)
-            .toList();
         return ModuleLayersArchitectureTest.violations(
             new ClassFileImporter()
                 .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
                 .importPackages(ModuleLayersArchitectureTest.BASE),
-            roots,
+            ApplicationModules.of(DostepnyKampusApplication.class).stream()
+                .filter(module -> !module.isOpen())
+                .map(ApplicationModule::getBasePackage)
+                .map(JavaPackage::getName)
+                .toList(),
             ModuleLayersArchitectureTest.TOPICS.stream()
                 .map(topic -> String.format("%s.%s", ModuleLayersArchitectureTest.BASE, topic))
                 .collect(Collectors.toSet())
@@ -240,14 +238,14 @@ final class ModuleLayersArchitectureTest {
     }
 
     private static Optional<String> rootOf(final JavaClass type, final Collection<String> roots) {
+        final String name = String.format("%s.", type.getPackageName());
         return roots.stream()
-            .filter(root -> String.format("%s.", type.getPackageName()).startsWith(root + "."))
+            .filter(root -> name.startsWith(String.format("%s.", root)))
             .findFirst();
     }
 
     private static String subpackage(final JavaClass type, final String root) {
-        final String rest = type.getPackageName().substring(root.length() + 1);
-        return rest.split("\\.", 2)[0];
+        return type.getPackageName().substring(root.length() + 1).split("\\.", 2)[0];
     }
 
     private static String layer(final String root, final String sub, final Set<String> topics) {
