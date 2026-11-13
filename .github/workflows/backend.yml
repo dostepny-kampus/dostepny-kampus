@@ -87,6 +87,8 @@ jobs:
           java-version: 25
           cache: maven
           cache-dependency-path: backend/pom.xml
+          # Zapis tylko z pusha do sprintu: kopie PR i kolejki wypierały jego wpis.
+          cache-read-only: ${{ github.event_name != 'push' }}
       - name: Testy skryptów danych
         if: ${{ github.event_name != 'push' }}
         working-directory: data/scripts
@@ -132,5 +134,7 @@ jobs:
           java-version: 25
           cache: maven
           cache-dependency-path: backend/pom.xml
+          # Zapis tylko z pusha do sprintu: kopie PR i kolejki wypierały jego wpis.
+          cache-read-only: ${{ github.event_name != 'push' }}
       - name: Sprawdź qulice niezależnie od wyniku testów
         run: ./mvnw -B -DskipTests test-compile qulice:check
