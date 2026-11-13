@@ -94,7 +94,7 @@ class ReportFormTest {
      * Scenariusz: budynki-bez-szczegolow.feature: Piętro w budynku podstawowym wpisuje się jako liczbę całkowitą
      */
     @Test
-    fun `piętro budynku podstawowego od wpisu do treści`() {
+    fun `piętro budynku podstawowego`() {
         val examples =
             listOf(
                 Triple("0", false, SubmissionFloor(number = 0, isMezzanine = false)),
