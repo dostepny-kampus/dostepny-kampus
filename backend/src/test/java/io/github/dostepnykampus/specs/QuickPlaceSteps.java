@@ -39,6 +39,13 @@ public final class QuickPlaceSteps {
     );
 
     /**
+     * Fragment odpowiedzi, którego nie może być, gdy zgłoszenie czegoś nie ma.
+     */
+    private static final Map<String, String> ABSENT = Map.of(
+        "jest „poza budynkiem”", "\"buildingSymbol\":\"", "nie ma piętra", "\"floor\":{"
+    );
+
+    /**
      * Zgłoszenie scenariusza.
      */
     private static final UUID SUBMISSION =
@@ -187,28 +194,19 @@ public final class QuickPlaceSteps {
     }
 
     /**
-     * Serwer zapisał zgłoszenie bez budynku.
+     * Serwer zapisał zgłoszenie bez budynku albo bez piętra.
+     *
+     * @param lack Czego zgłoszenie nie ma, słowami scenariusza
      */
-    @Then("zgłoszenie jest „poza budynkiem”")
-    public void hasNoBuilding() {
+    @Then("^zgłoszenie (jest „poza budynkiem”|nie ma piętra)$")
+    public void lacks(final String lack) {
         MatcherAssert.assertThat(
-            "Serwer przypisał budynek miejscu poza konturem",
+            String.format("Serwer zapisał zgłoszenie inaczej, niż „%s”", lack),
             String.format("%d %s", this.status, this.answer),
             Matchers.allOf(
                 Matchers.startsWith("201 "),
-                Matchers.not(Matchers.containsString("\"buildingSymbol\":\""))
+                Matchers.not(Matchers.containsString(QuickPlaceSteps.ABSENT.get(lack)))
             )
-        );
-    }
-
-    /**
-     * Zgłoszenie nie ma piętra.
-     */
-    @Then("zgłoszenie nie ma piętra")
-    public void hasNoFloor() {
-        MatcherAssert.assertThat(
-            "Zgłoszenie szybkie z grupą „inne” dostało piętro",
-            this.answer, Matchers.not(Matchers.containsString("\"floor\":{"))
         );
     }
 
@@ -228,21 +226,11 @@ public final class QuickPlaceSteps {
     }
 
     /**
-     * Krok aplikacji; serwer pilnuje tylko kolejności kroków.
+     * Kroki aplikacji; serwer pilnuje tylko kolejności kroków.
      */
     @Then("aplikacja nie pyta o budynek ani o piętro")
-    public void appDoesNotAsk() {
-        MatcherAssert.assertThat(
-            "Krok aplikacji stoi przed wysłaniem zgłoszenia",
-            this.answer, Matchers.not(Matchers.emptyString())
-        );
-    }
-
-    /**
-     * Krok aplikacji; serwer pilnuje tylko kolejności kroków.
-     */
     @Then("zgłoszenie zostaje w telefonie ze statusem „Nie wysłano”")
-    public void staysInPhone() {
+    public void appStep() {
         MatcherAssert.assertThat(
             "Krok aplikacji stoi przed wysłaniem zgłoszenia",
             this.answer, Matchers.not(Matchers.emptyString())
