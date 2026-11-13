@@ -345,26 +345,28 @@ jobs:
         uses: ./.github/actions/android-gradle
         with:
           tylko-klucze: 'true'
-      - name: Pobierz cache budowania z grupy kolejki tego commita
+      - name: Pobierz cache budowania z grupy kolejki commitów tego pusha
         id: budowanie
         if: ${{ steps.gradle.outputs.trafienie-budowania != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: bash .github/scripts/cache-z-kolejki.sh "$GITHUB_SHA" gradle-build-cache "$HOME/.gradle/caches/build-cache-1"
+          PRZED: ${{ github.event.before }}
+        run: bash .github/scripts/cache-z-kolejki.sh "$GITHUB_SHA" gradle-build-cache "$HOME/.gradle/caches/build-cache-1" "$PRZED"
       - name: Zapisz cache budowania Gradle
         if: ${{ steps.budowanie.outputs.jest == 'true' }}
         uses: actions/cache/save@v6.1.0
         with:
           path: ~/.gradle/caches/build-cache-1
           key: ${{ steps.gradle.outputs.klucz-budowania }}
-      - name: Pobierz zależności z grupy kolejki tego commita
+      - name: Pobierz zależności z grupy kolejki commitów tego pusha
         id: zaleznosci
         if: ${{ steps.gradle.outputs.trafienie-zaleznosci != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: bash .github/scripts/cache-z-kolejki.sh "$GITHUB_SHA" gradle-zaleznosci "$RUNNER_TEMP/zaleznosci"
+          PRZED: ${{ github.event.before }}
+        run: bash .github/scripts/cache-z-kolejki.sh "$GITHUB_SHA" gradle-zaleznosci "$RUNNER_TEMP/zaleznosci" "$PRZED"
       - name: Rozpakuj zależności
         if: ${{ steps.zaleznosci.outputs.jest == 'true' }}
         run: mkdir -p "$HOME/.gradle" && tar -C "$HOME/.gradle" -xf "$RUNNER_TEMP/zaleznosci/zaleznosci.tar"
