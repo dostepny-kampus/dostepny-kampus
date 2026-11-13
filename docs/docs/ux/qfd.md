@@ -6,7 +6,7 @@ Wersja uproszczona nie ma „dachu” (zależności między funkcjami) ani oceny
 
 ## Wagi potrzeb
 
-Skala 1–5, gdzie 5 to potrzeba najważniejsza. Wagi ustala zespół (hipoteza, do potwierdzenia w wywiadach), a grupą docelową kursu UX są osoby starsze.
+Skala 1–5, gdzie 5 to potrzeba najważniejsza. Wagi ustala zespół, a grupą docelową kursu UX są osoby starsze. Wywiady z etapu 2 nie zmieniły wag N1–N4; wagi N5–N9 zostają hipotezą.
 
 Reguła wag: potrzeba grupy docelowej (RO-GOS, RO-ODW) ma wagę co najmniej 4, a potrzeba ról zespołu (RO-ZBI, RO-WER, RO-KOO) — wagę 3.
 

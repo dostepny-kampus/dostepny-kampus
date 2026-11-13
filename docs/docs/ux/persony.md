@@ -25,7 +25,7 @@ Persona łączy wywiady z 6 osobami w wieku 61–75 lat (etap 2 kursu PDU) z wcz
 | Wiek | 72 lata | założenie |
 | Kontekst | emerytka z Wrocławia, słuchaczka Politechniki Trzeciego Wieku, programu PWr dla osób 60+ [1]. Mieszka sama, córka Ania mieszka w tym samym mieście. Pierwszy raz idzie na wykład do A-1 | założenie; córka jako pomoc — wywiady |
 | Jak planuje wizytę | nie szuka informacji sama: przed wizytą córka sprawdza adres i salę i zapisuje je na kartce. Na miejscu pyta portiera albo przechodniów | wywiady: 2 z 6 osób planuje z rodziną, 6 z 6 pyta ludzi na miejscu |
-| Sprzęt | smartfon z Androidem z powiększoną czcionką, którą ustawił wnuk; okulary do czytania | wywiady: 4 z 6 ma powiększone litery albo uproszczony ekran, u dwóch ustawił je wnuk albo pokazał, jak to zrobić |
+| Sprzęt | smartfon z Androidem z powiększoną czcionką, którą ustawił wnuk; okulary do czytania | wywiady: 3 z 6 ma powiększone litery albo uproszczony ekran, u dwóch ustawił je wnuk albo pokazał, jak to zrobić |
 | Umiejętności cyfrowe | dzwoni do rodziny i ogląda zdjęcia od wnuków; pisanie w telefonie jest dla niej niewygodne. W nowej aplikacji myli się przy małych przyciskach i niejasnych komunikatach, czasem przypadkowo coś naciśnie i nie wie, jak wrócić. Winę przypisuje sobie | wywiady; obwinianie siebie — założenie i [3] |
 | Wzrok | słabo czyta drobny i blady tekst, zwłaszcza w słońcu; prosi o większe oznaczenia w budynkach | założenie; oznaczenia — wywiady |
 | Dłonie | lekkie drżenie; chybia małe przyciski, nie lubi przeciągania i rozsuwania palcami | założenie i [3] |
@@ -181,7 +181,7 @@ Wywiady z etapu 2 sprawdziły założenia o PE-1. Zadaliśmy 8 pytań o ostatni�
 | data sprawdzenia i zdjęcie budzą zaufanie bardziej niż opis | częściowo: 3 z 6 osób trafiło na informację niezgodną z rzeczywistością; o zdjęciach nikt nie mówił | bez zmian |
 | w kłopocie prosi o pomoc portiera lub rodzinę, a barier nie zgłasza | potwierdzone: 6 z 6 pyta ludzi na miejscu, nikt nie zgłaszał barier | zgłoszenie to potrzeba poboczna |
 | zgłosi barierę, jeśli zajmie to chwilę i wystarczy zdjęcie | niepotwierdzone: nikt o tym nie mówił, a pisanie jest dla rozmówców niewygodne | zgłosi tylko wtedy, gdy wystarczy jedno zdjęcie |
-| ma powiększoną czcionkę i chybia małe przyciski | potwierdzone: 4 z 6 ma powiększone litery albo uproszczony ekran; zdarzają się przypadkowe dotknięcia | doszło: nie wie, jak wrócić po przypadkowym dotknięciu |
+| ma powiększoną czcionkę i chybia małe przyciski | potwierdzone: 3 z 6 ma powiększone litery albo uproszczony ekran; zdarzają się przypadkowe dotknięcia | doszło: nie wie, jak wrócić po przypadkowym dotknięciu |
 | rezygnuje z aplikacji przy zakładaniu konta albo wielu krokach | nie badaliśmy | bez zmian |
 
 Założenia o PE-2 i PE-3 nadal czekają na sprawdzenie (sekcja 10 scenariusza wywiadu):
