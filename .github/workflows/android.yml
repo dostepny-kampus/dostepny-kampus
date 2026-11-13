@@ -405,6 +405,32 @@ jobs:
             "${prefiks[0]}${RUNNER_OS}-${RUNNER_ARCH}-" \
             "${prefiks[1]}${RUNNER_OS}-${RUNNER_ARCH}-"
 
+  analiza-zaleznosci:
+    # buildHealth kompiluje wszystkie moduły, więc działa po wypchnięciu na gałąź, nie w każdym PR i nie w grupie kolejki.
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Przygotuj JDK i cache Gradle
+        uses: ./.github/actions/android-gradle
+      - name: Sprawdź, czy każdy moduł deklaruje biblioteki, których używa
+        run: ./gradlew buildHealth --console=plain
+      - name: Zapisz raport analizy zależności
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: analiza-zaleznosci
+          path: android/build/reports/dependency-analysis/
+          if-no-files-found: ignore
+          retention-days: 7
+
   budowanie:
     needs: [porownanie, zmiany, testy, apk, emulator]
     # always(): także po anulowaniu poprzednich zadań, żeby anulowana część dawała czerwony check, a nie pominięty.
