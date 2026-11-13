@@ -3,7 +3,7 @@
 Macierz pokazuje, z czego wynika każde wymaganie: potrzeba N → historyjka US → kryterium akceptacji USx.y → przypadek użycia UC → scenariusz. Dzięki niej widać, że nie ma historyjki bez potrzeby ani kryterium bez scenariusza. Testy pokazuje osobna strona opisana niżej, a w kolejnych fazach do łańcucha dojdą zadania, PR i kod.
 
 !!! warning "Tabele generowane — nie edytuj ich ręcznie"
-    Tabelę „Jak czytać” pisze się ręcznie. Pozostałe tabele i liczby oraz stronę pokrycia testami tworzy skrypt z bieżących dokumentów, plików `.feature` i testów Androida. Po zmianie dokumentów, scenariuszy albo testów odśwież je poleceniem `python scripts/check_ids.py --matrix docs/wymagania/sledzenie.md`. Kontrola `python scripts/verify.py` kończy się błędem, gdy zapisana macierz albo strona pokrycia różni się od wygenerowanej.
+    Tabelę „Jak czytać” pisze się ręcznie. Pozostałe tabele i liczby tworzy skrypt z bieżących dokumentów i plików `.feature`. Po zmianie dokumentów albo scenariuszy odśwież je poleceniem `python scripts/check_ids.py --matrix docs/wymagania/sledzenie.md`. Kontrola `python scripts/verify.py` kończy się błędem, gdy zapisana macierz różni się od wygenerowanej. Stronę pokrycia testami tworzy budowa dokumentacji.
 
 ## Jak czytać
 
@@ -219,7 +219,7 @@ Przykład: `/** Scenariusz: przegladanie-mapy.feature: Instrukcja przy pierwszym
 
 Pokrycie nie może spaść: scenariusz, który miał test pełny albo częściowy, nie może go stracić. Nowy scenariusz i scenariusz ze zmienionymi krokami wchodzi z pełnym testem. Gdy testu jeszcze nie ma, scenariusz dostaje tag `@do-zrobienia`, a komentarz nad tagiem podaje numer otwartego zadania, na przykład `# test w #1189`. Obie reguły sprawdza CI względem gałęzi docelowej.
 
-Tabela [Pokrycie scenariuszy testami](../_generated/pokrycie-testami.md) ma wiersz dla każdego scenariusza: jego kryteria i reguły, testy (moduł, klasa i funkcja testu) i stan „pełny”, „częściowo” albo „brak”. Ma tyle wierszy, ile scenariuszy, dlatego jest na osobnej stronie.
+Tabela [Pokrycie scenariuszy testami](../_generated/pokrycie-testami.md) ma wiersz dla każdego scenariusza: jego kryteria i reguły, testy (moduł, klasa i funkcja testu) i stan „pełny”, „częściowo” albo „brak”. Ma tyle wierszy, ile scenariuszy, dlatego jest na osobnej stronie. Strony nie ma w repozytorium: powstaje przy budowie dokumentacji, więc zmiana testu nie zmienia żadnego pliku dokumentacji.
 
 ## Dziury
 

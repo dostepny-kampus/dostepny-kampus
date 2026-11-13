@@ -250,17 +250,22 @@ class CoverageTest(unittest.TestCase):
         self.assertIn("| `kampus.feature` | Bez testu | — | aplikacja | — | brak |", page.splitlines())
         self.assertNotIn("  |", page)
 
-    def test_check_matrix_fails_when_coverage_page_is_stale_or_missing(self) -> None:
-        with tempfile.TemporaryDirectory() as docs, contextlib.redirect_stdout(io.StringIO()) as output:
+    def test_check_matrix_does_not_need_the_coverage_page(self) -> None:
+        with tempfile.TemporaryDirectory() as docs, contextlib.redirect_stdout(io.StringIO()):
             args = ["--docs", docs, "--specs", str(DATA / "scenariusze"), "--android", str(DATA / "android-poprawne")]
             page, coverage = str(Path(docs) / "sledzenie.md"), Path(docs) / check_ids.COVERAGE_PAGE
             check_ids.main([*args, "--matrix", page])
-            self.assertEqual(check_ids.main([*args, "--check-matrix", page]), 0)
-            coverage.write_text(coverage.read_text(encoding="utf-8") + "zmiana\n", encoding="utf-8")
-            self.assertEqual(check_ids.main([*args, "--check-matrix", page]), 1)
-            self.assertIn(f"nieaktualne albo brak: {coverage}; odśwież", output.getvalue())
+            self.assertTrue(coverage.is_file())
             coverage.unlink()
-            self.assertEqual(check_ids.main([*args, "--check-matrix", page]), 1)
+            self.assertEqual(check_ids.main([*args, "--check-matrix", page]), 0)
+
+    def test_coverage_page_with_the_same_content_is_not_rewritten(self) -> None:
+        with tempfile.TemporaryDirectory() as docs:
+            corpus = check_ids.collect(DATA / "brak", DATA / "scenariusze", DATA / "android-poprawne")
+            page = check_ids.write_coverage(Path(docs), corpus)
+            written = page.stat().st_mtime_ns
+            self.assertEqual(check_ids.write_coverage(Path(docs), corpus).stat().st_mtime_ns, written)
+            self.assertEqual(page.read_text(encoding="utf-8"), check_ids.render_coverage(corpus))
 
 
 LAYERED = (
@@ -357,9 +362,8 @@ class ExampleRowsTest(unittest.TestCase):
 
 
 def drops(before: check_ids.Corpus, after: check_ids.Corpus) -> list[str]:
-    """Zwraca komunikaty spadku pokrycia między stroną pokrycia korpusu `before` a korpusem `after`."""
-    baseline = check_ids.baseline_states(check_ids.render_coverage(before))
-    return [f.message for f in check_ids.coverage_drops(after, baseline)]
+    """Zwraca komunikaty spadku pokrycia między korpusem `before` a korpusem `after`."""
+    return [f.message for f in check_ids.coverage_drops(after, before)]
 
 
 class CoverageDropTest(unittest.TestCase):
@@ -381,13 +385,19 @@ class CoverageDropTest(unittest.TestCase):
         self.assertEqual(drops(covered, layered("")), [])
         self.assertEqual(drops(layered(layer_marker("W aplikacji", "a")), outline()), [])
 
-    def test_baseline_page_in_the_old_format_is_read_by_header(self) -> None:
-        page = "| Plik | Scenariusz | Kryteria i reguły | Test | Stan |\n| --- | --- | --- | --- | --- |\n"
-        page += "| `warstwy.feature` | W aplikacji | US1.1 | `T.a` | pełny |\n"
-        self.assertEqual(check_ids.baseline_states(page), {("warstwy.feature", "W aplikacji"): "pełny"})
+    def test_baseline_is_counted_from_files_of_the_revision(self) -> None:
+        specs, android = check_ids.ROOT / "specs", check_ids.ROOT / "android"
+        before = check_ids.baseline_corpus("HEAD", specs, android)
+        self.assertIsNotNone(before)
+        self.assertGreater(len(before.all_scenarios), 0)
+        self.assertGreater(len(before.markers), 0)
+        self.assertEqual(check_ids.coverage_drops(before, before), [])
 
-    def test_missing_file_in_revision_gives_no_baseline(self) -> None:
-        self.assertIsNone(check_ids.git_show("HEAD", "nie/ma/takiego/pliku.md"))
+    def test_directory_absent_from_revision_is_empty(self) -> None:
+        before = check_ids.baseline_corpus("HEAD", check_ids.ROOT / "specs", check_ids.ROOT / "nie-ma-takiego-katalogu")
+        self.assertIsNotNone(before)
+        self.assertEqual(before.markers, [])
+        self.assertGreater(len(before.all_scenarios), 0)
 
 
 def specs(feature: str, tests: str = "") -> check_ids.Corpus:
@@ -433,7 +443,8 @@ class NewScenarioTest(unittest.TestCase):
         self.assertEqual(unplanned(table, table.replace("| 1 |", "| 2 |")), ["Stary"])
 
     def test_unreadable_revision_gives_no_baseline(self) -> None:
-        self.assertIsNone(check_ids.baseline_specs("nie-ma-takiej-rewizji", "specs"))
+        root = check_ids.ROOT
+        self.assertIsNone(check_ids.baseline_corpus("nie-ma-takiej-rewizji", root / "specs", root / "android"))
 
     def test_scenario_keeps_its_requirement_tags_and_body(self) -> None:
         corpus = specs(OLD.replace("  Scenariusz: Stary", "  @US1.1\n  Scenariusz: Stary"))

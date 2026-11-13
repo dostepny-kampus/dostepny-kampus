@@ -7,9 +7,11 @@ odwołania wierszy w wymaganiach ekranów, znaczniki scenariuszy w testach Andro
 from __future__ import annotations
 
 import argparse
+import io
 import re
 import subprocess
 import sys
+import tarfile
 import tempfile
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -63,8 +65,8 @@ Jeden wiersz to jeden scenariusz z katalogu `specs/`. Kolumna „Warstwa” mów
 scenariusza, „częściowo” — tylko część z nich albo tylko jedną z dwóch warstw, a „brak” — że scenariusz nie ma
 testu. Pierwsza tabela liczy scenariusze osobno w każdej warstwie; scenariusz z dwiema warstwami jest w obu wierszach.
 
-Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą śledzenia:
-`python scripts/check_ids.py --matrix docs/wymagania/sledzenie.md`.
+Stronę tworzy budowa dokumentacji z bieżących scenariuszy i testów; nie ma jej w repozytorium. Lokalnie zapisuje ją
+też `python scripts/check_ids.py --matrix docs/wymagania/sledzenie.md`.
 
 """
 SCREEN_REF_HEADER = "Odwołanie"
@@ -752,6 +754,19 @@ def coverage_states(corpus: Corpus) -> dict[Scenario, tuple[list[Marker], str]]:
     return states
 
 
+def write_coverage(docs: Path, corpus: Corpus) -> Path:
+    """Zapisuje stronę pokrycia testami do katalogu dokumentacji `docs` i zwraca jej ścieżkę.
+
+    Gwarantuje: plik o tej samej treści nie jest zapisywany ponownie (podgląd dokumentacji nie buduje się w kółko).
+    Wyjątki: OSError przy błędzie zapisu.
+    """
+    page, text = docs / COVERAGE_PAGE, render_coverage(corpus)
+    if not page.is_file() or page.read_text(encoding="utf-8") != text:
+        page.parent.mkdir(parents=True, exist_ok=True)
+        page.write_text(text, encoding="utf-8", newline="\n")
+    return page
+
+
 def render_coverage(corpus: Corpus) -> str:
     """Zwraca stronę pokrycia: liczby stanów i tabelę [plik, scenariusz, kryteria i reguły, testy, stan] w kolejności
     plików i scenariuszy, poprzedzoną liczbami stanów osobno dla każdej warstwy. Test to jego stały identyfikator
@@ -775,32 +790,16 @@ def render_coverage(corpus: Corpus) -> str:
     return COVERAGE_INTRO + "\n".join(tables) + "\n"
 
 
-def baseline_states(page: str) -> dict[tuple[str, str], str]:
-    """Zwraca stan każdego scenariusza zapisany na stronie pokrycia `page`: klucz to plik i nazwa scenariusza.
-
-    Gwarantuje: kolumny „Plik”, „Scenariusz” i „Stan” są szukane po nagłówku, więc strona może mieć inne kolumny
-    niż bieżąca; wiersz z nieznanym stanem jest pomijany.
-    """
-    states: dict[tuple[str, str], str] = {}
-    columns: tuple[int, int, int] | None = None
-    for line in page.splitlines():
-        cells = table_cells(line) or []
-        if {"Plik", "Scenariusz", "Stan"} <= set(cells):
-            columns = (cells.index("Plik"), cells.index("Scenariusz"), cells.index("Stan"))
-        elif columns and len(cells) > max(columns) and cells[columns[2]] in STATE_RANK:
-            states[(cells[columns[0]].strip("`"), cells[columns[1]].replace("\\|", "|"))] = cells[columns[2]]
-    return states
-
-
-def coverage_drops(corpus: Corpus, baseline: dict[tuple[str, str], str]) -> list[Finding]:
-    """Zwraca „BŁĄD” dla każdego scenariusza, którego stan pokrycia jest niższy niż w `baseline` (baseline_states).
+def coverage_drops(corpus: Corpus, baseline: Corpus) -> list[Finding]:
+    """Zwraca „BŁĄD” dla każdego scenariusza, którego stan pokrycia jest niższy niż w korpusie `baseline`.
 
     Gwarantuje: scenariusz, którego w `baseline` nie ma (nowy albo z nową nazwą), i scenariusz usunięty z katalogu
     scenariuszy nie są spadkiem.
     """
     findings = []
+    states = {(s.feature, s.name): state for s, (_, state) in coverage_states(baseline).items()}
     for scenario, (_, state) in coverage_states(corpus).items():
-        before = baseline.get((scenario.feature, scenario.name), state)
+        before = states.get((scenario.feature, scenario.name), state)
         if STATE_RANK[state] < STATE_RANK[before]:
             message = f"pokrycie scenariusza spadło z „{before}” na „{state}”: {scenario.name}"
             findings.append(Finding("BŁĄD", str(scenario.location), message))
@@ -823,36 +822,27 @@ def unplanned_scenarios(corpus: Corpus, baseline: Corpus) -> list[Finding]:
     return findings
 
 
-def baseline_specs(revision: str, specs: str) -> Corpus | None:
-    """Zwraca korpus scenariuszy z katalogu `specs` (względem korzenia repozytorium) w rewizji `revision` albo None,
-    gdy rewizji nie da się odczytać.
+def baseline_corpus(revision: str, specs: Path, android: Path) -> Corpus | None:
+    """Zwraca korpus scenariuszy i testów Androida z rewizji `revision` (katalogi `specs` i `android` z repozytorium)
+    albo None, gdy rewizji nie da się odczytać.
 
-    Wyjątki: OSError, gdy nie ma programu git albo nie da się zapisać pliku tymczasowego.
+    Gwarantuje: pliki rewizji trafiają do katalogu tymczasowego, katalog roboczy zostaje bez zmian; katalog, którego
+    w rewizji nie ma, jest pusty.
+    Wyjątki: OSError, gdy nie ma programu git albo nie da się zapisać plików tymczasowych.
     """
-    listing = subprocess.run(
-        ["git", "ls-tree", "-r", "--name-only", "-z", revision, "--", specs],
-        cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=False,
-    )
-    if listing.returncode != 0:
+    paths = [path.resolve().relative_to(ROOT).as_posix() for path in (specs, android)]
+    if subprocess.run(["git", "rev-parse", "--verify", "--quiet", f"{revision}^{{tree}}"], cwd=ROOT, capture_output=True, check=False).returncode:
         return None
-    corpus = Corpus()
+    present = [p for p in paths if subprocess.run(["git", "cat-file", "-e", f"{revision}:{p}"], cwd=ROOT, capture_output=True, check=False).returncode == 0]
     with tempfile.TemporaryDirectory() as directory:
-        for number, path in enumerate(p for p in listing.stdout.split("\0") if p.endswith(".feature")):
-            copy = Path(directory) / f"{number}.feature"
-            copy.write_text(git_show(revision, path) or "", encoding="utf-8", newline="\n")
-            scan_feature(copy, corpus, Path(path).relative_to(specs).as_posix())
-    return corpus
-
-
-def git_show(revision: str, path: str) -> str | None:
-    """Zwraca treść pliku `path` (względem korzenia repozytorium) w rewizji `revision` albo None, gdy go tam nie ma.
-
-    Wyjątki: OSError, gdy nie ma programu git.
-    """
-    result = subprocess.run(
-        ["git", "show", f"{revision}:{path}"], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=False
-    )
-    return result.stdout if result.returncode == 0 else None
+        if present:
+            archive = subprocess.run(["git", "archive", "--format=tar", revision, "--", *present], cwd=ROOT, capture_output=True, check=False)
+            if archive.returncode != 0:
+                return None
+            with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as tar:
+                tar.extractall(directory, filter="data")
+        root = Path(directory)
+        return collect(root / "brak", root / paths[0], root / paths[1])
 
 
 def undefined_references(corpus: Corpus, partial: bool = False) -> list[Finding]:
@@ -1135,12 +1125,12 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     """Punkt wejścia. Zwraca 1 przy błędach w trybie --strict, 2 przy błędzie odczytu/zapisu, w pozostałych razach 0.
 
-    Gwarantuje: --matrix zapisuje też stronę pokrycia testami (COVERAGE_PAGE w katalogu dokumentacji). Z --check-matrix
-    tylko porównuje macierz i stronę pokrycia z wygenerowanymi z bieżących plików, bez raportu kontroli ID; zwraca 0,
-    gdy obie są aktualne, 1, gdy któraś jest nieaktualna albo jej brak, 2 przy błędzie odczytu. Z --baseline-rev
-    porównuje stan każdego scenariusza ze stroną pokrycia z podanej rewizji (coverage_drops) i wymaga testu albo
-    tagu zadania dla scenariuszy nowych i zmienionych względem niej (unplanned_scenarios); gdy rewizja nie ma
-    strony pokrycia albo nie da się jej odczytać, danego porównania nie ma.
+    Gwarantuje: --matrix zapisuje też stronę pokrycia testami (COVERAGE_PAGE w katalogu dokumentacji); strony nie ma
+    w repozytorium. Z --check-matrix tylko porównuje macierz z wygenerowaną z bieżących plików, bez raportu kontroli
+    ID; zwraca 0, gdy jest aktualna, 1, gdy jest nieaktualna albo jej brak, 2 przy błędzie odczytu. Z --baseline-rev
+    liczy pokrycie z plików podanej rewizji (baseline_corpus), porównuje z nim stan każdego scenariusza
+    (coverage_drops) i wymaga testu albo tagu zadania dla scenariuszy nowych i zmienionych względem niej
+    (unplanned_scenarios); gdy rewizji nie da się odczytać, porównania nie ma.
     """
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
@@ -1148,23 +1138,17 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
         corpus = collect(args.docs, args.specs, args.android)
-        coverage = args.docs / COVERAGE_PAGE
         if args.check_matrix:
             stale = [] if matrix_is_current(args.check_matrix, render_blocks(corpus)) else [args.check_matrix]
-            if not coverage.is_file() or coverage.read_text(encoding="utf-8") != render_coverage(corpus):
-                stale.append(coverage)
             return report_matrix_state(args.check_matrix, stale)
         if args.matrix:
             write_matrix(args.matrix, render_blocks(corpus))
-            coverage.parent.mkdir(parents=True, exist_ok=True)
-            coverage.write_text(render_coverage(corpus), encoding="utf-8", newline="\n")
+            coverage = write_coverage(args.docs, corpus)
             print(f"check_ids: macierz zapisana do {args.matrix}, pokrycie testami do {coverage}")
         findings = check(corpus, args.partial) + check_tests(corpus, args.release) + check_screen_page(args.docs)
         if args.baseline_rev:
-            page = git_show(args.baseline_rev, coverage.resolve().relative_to(ROOT).as_posix())
-            findings += coverage_drops(corpus, baseline_states(page or ""))
-            before = baseline_specs(args.baseline_rev, args.specs.resolve().relative_to(ROOT).as_posix())
-            findings += unplanned_scenarios(corpus, before) if before else []
+            before = baseline_corpus(args.baseline_rev, args.specs, args.android)
+            findings += coverage_drops(corpus, before) + unplanned_scenarios(corpus, before) if before else []
     except (OSError, UnicodeDecodeError) as exc:
         print(f"check_ids: BŁĄD: {exc}", file=sys.stderr)
         return 2
