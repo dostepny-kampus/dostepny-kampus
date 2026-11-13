@@ -207,6 +207,19 @@ final class SubmissionServiceTest {
     }
 
     @Test
+    void lockedTakesLockBeforeWrite() {
+        final SubmissionServiceTest.RecordingSubmissions repository =
+            new SubmissionServiceTest.RecordingSubmissions(null, null);
+        final List<Object> order = new ArrayList<>(2);
+        SubmissionServiceTest.service(repository, SubmissionServiceTest.EMPTY)
+            .locked(SubmissionServiceTest.ID, () -> order.addAll(repository.seen()));
+        Assertions.assertEquals(
+            List.of(SubmissionServiceTest.ID), order,
+            "Zapis zdjęcia ruszył bez blokady zgłoszenia"
+        );
+    }
+
+    @Test
     void brGFiveRejectsSubmissionOutsideCampusWithoutSaving() {
         final SubmissionServiceTest.RecordingSubmissions fake =
             new SubmissionServiceTest.RecordingSubmissions(null, null);
@@ -289,7 +302,7 @@ final class SubmissionServiceTest {
 
         @Override
         public void lock(final UUID id) {
-            throw new UnsupportedOperationException("Zapis treści nie blokuje zdjęć");
+            this.seen.add(id);
         }
 
         @Override
