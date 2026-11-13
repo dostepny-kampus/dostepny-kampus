@@ -27,8 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
  *
  * <p>E5: wspólne typy błędów nie zależą od Spring Web ani Jacksona, żeby
  * wyjątki domenowe nie wciągały warstwy HTTP. Żaden moduł nie rzuca
- * {@code ResponseStatusException}, więc każdy błąd ma opis w {@code detail}
- * (#851).</p>
+ * {@code ResponseStatusException}, więc każdy błąd ma opis w {@code detail}.</p>
  *
  * @since 0.1.0
  */

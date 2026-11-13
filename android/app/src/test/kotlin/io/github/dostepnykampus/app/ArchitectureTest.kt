@@ -49,7 +49,7 @@ class ArchitectureTest {
             }
     }
 
-    /** Kod ekranów bez sieci i bazy; testy modułu feature mogą budować repozytorium z wynikami sieci (#874). */
+    /** Kod ekranów bez sieci i bazy; testy modułu feature mogą budować repozytorium z wynikami sieci. */
     @Test
     fun infra_a1_ui_no_network_or_db() {
         Konsist
@@ -84,19 +84,19 @@ class ArchitectureTest {
             .assertFalse { !it.containingFile.inPackage("core.data") }
     }
 
-    /** Moduły funkcji biorą klienta HTTP z `core:network` przez Hilt, bez własnych importów HTTP (#888). */
+    /** Moduły funkcji biorą klienta HTTP z `core:network` przez Hilt, bez własnych importów HTTP. */
     @Test
     fun infra_a1_feature_no_own_http() {
         assertEquals(emptySet<String>(), httpFiles(featureFiles()) - OWN_HTTP.keys, HTTP_HINT)
     }
 
-    /** #888: wpis listy wyjątków bez importu HTTP trzeba usunąć, więc lista może tylko maleć. */
+    /** wpis listy wyjątków bez importu HTTP trzeba usunąć, więc lista może tylko maleć. */
     @Test
     fun infra_a1_http_list_shrinks() {
         assertEquals(emptySet<String>(), OWN_HTTP.keys - httpFiles(featureFiles()))
     }
 
-    /** #888: pełna nazwa bez importu też wymaga biblioteki HTTP w zależnościach modułu funkcji. */
+    /** pełna nazwa bez importu też wymaga biblioteki HTTP w zależnościach modułu funkcji. */
     @Test
     fun infra_a1_build_without_http() {
         val allowed = OWN_HTTP.keys.map { it.removePrefix("$BASE.feature.").substringBefore('.') }.toSet()
@@ -112,7 +112,7 @@ class ArchitectureTest {
     }
 
     /**
-     * #888: import klienta HTTP w module funkcji łamie regułę, także z gwiazdką. Konsist podaje import z gwiazdką
+     * import klienta HTTP w module funkcji łamie regułę, także z gwiazdką. Konsist podaje import z gwiazdką
      * bez niej, z `isWildcard`, więc reguła dokleja ją z powrotem.
      */
     @Test
@@ -128,7 +128,7 @@ class ArchitectureTest {
         assertEquals(setOf("$BASE.feature.map.Tiles", "$BASE.feature.map.Url"), httpFiles(files))
     }
 
-    /** Stan zmienny tylko w klasach z grafu Hilt, nie na poziomie pliku ani w `object` (#887). */
+    /** Stan zmienny tylko w klasach z grafu Hilt, nie na poziomie pliku ani w `object`. */
     @Test
     fun infra_a1_no_global_state() {
         val production = Konsist.scopeFromProduction().files
@@ -136,7 +136,7 @@ class ArchitectureTest {
         assertEquals(emptySet<String>(), GLOBAL_STATE.keys - globalState(production))
     }
 
-    /** #887: `var` na poziomie pliku i w `object`, `MutableStateFlow` w `companion object` łamią regułę. */
+    /** `var` na poziomie pliku i w `object`, `MutableStateFlow` w `companion object` łamią regułę. */
     @Test
     fun infra_a1_global_state_rejects(
         @TempDir fixtures: File,
@@ -158,14 +158,14 @@ class ArchitectureTest {
         assertEquals(expected.map { "$BASE.feature.map.$it" }.toSet(), globalState(files))
     }
 
-    /** Pliki z `@Composable` nie liczą geometrii `core.geo`; wynik przychodzi w stanie z modelu widoku (#892). */
+    /** Pliki z `@Composable` nie liczą geometrii `core.geo`; wynik przychodzi w stanie z modelu widoku. */
     @Test
     fun nfr11_composable_no_geometry() {
         val production = Konsist.scopeFromProduction().files
         assertEquals(emptySet<String>(), composableGeometry(production) - GEOMETRY_OUTSIDE_VM.keys, GEOMETRY_HINT)
     }
 
-    /** #892: obliczenia `core.geo` importują tylko modele widoku i pakiety `data`, więc nie ma pliku pośredniego. */
+    /** obliczenia `core.geo` importują tylko modele widoku i pakiety `data`, więc nie ma pliku pośredniego. */
     @Test
     fun nfr11_geometry_only_in_vm() {
         val production = Konsist.scopeFromProduction().files
@@ -174,7 +174,7 @@ class ArchitectureTest {
         assertEquals(emptySet<String>(), GEOMETRY_OUTSIDE_VM.keys - found)
     }
 
-    /** #892: `@Composable` z importem obliczeń geometrii łamie obie reguły, a model widoku żadnej. */
+    /** `@Composable` z importem obliczeń geometrii łamie obie reguły, a model widoku żadnej. */
     @Test
     fun nfr11_geometry_rule_rejects(
         @TempDir fixtures: File,
@@ -197,7 +197,7 @@ class ArchitectureTest {
         assertEquals(setOf("$BASE.feature.map.Pin"), geometryOutsideViewModels(files))
     }
 
-    /** Ikony ze ścieżki buduje tylko `core:designsystem` jedną wspólną funkcją (#897). */
+    /** Ikony ze ścieżki buduje tylko `core:designsystem` jedną wspólną funkcją. */
     @Test
     fun nfr16_icons_in_design_system() {
         val found = iconBuilders(Konsist.scopeFromProduction().files)
@@ -205,7 +205,7 @@ class ArchitectureTest {
         assertEquals(emptySet<String>(), OWN_ICONS.keys - found)
     }
 
-    /** #897: `ImageVector.Builder` w module funkcji łamie regułę, także pełną nazwą bez importu; sam typ nie. */
+    /** `ImageVector.Builder` w module funkcji łamie regułę, także pełną nazwą bez importu; sam typ nie. */
     @Test
     fun nfr16_icon_rule_rejects(
         @TempDir fixtures: File,
@@ -342,7 +342,7 @@ class ArchitectureTest {
         /** Zamiany modelu na typy spatialk, bez obliczeń geometrii. */
         val GEOMETRY_CONVERSIONS = setOf("SpatialkGeometry")
 
-        /** Pliki z obliczeniami `core.geo` poza modelem widoku i pakietem `data`; lista może tylko maleć (#892). */
+        /** Pliki z obliczeniami `core.geo` poza modelem widoku i pakietem `data`; lista może tylko maleć. */
         val GEOMETRY_OUTSIDE_VM =
             mapOf(
                 "$BASE.feature.capture.BuildingLookup" to
@@ -354,13 +354,13 @@ class ArchitectureTest {
         /** Wywołania budujące ikonę; tekst pliku łapie też pełną nazwę bez importu. */
         val ICON_CALLS = listOf("ImageVector.Builder(", "addPathNodes(")
 
-        /** Pliki budujące ikony poza `core:designsystem`; lista może tylko maleć (#897). */
+        /** Pliki budujące ikony poza `core:designsystem`; lista może tylko maleć. */
         val OWN_ICONS = emptyMap<String, String>()
 
-        /** Stan globalny w kodzie produkcyjnym, z numerem zadania; lista może tylko maleć (#887). */
+        /** Stan globalny w kodzie produkcyjnym, z numerem zadania; lista może tylko maleć. */
         val GLOBAL_STATE = emptyMap<String, String>()
 
-        /** Pliki modułów funkcji z importem HTTP, z powodem; lista może tylko maleć (#888). */
+        /** Pliki modułów funkcji z importem HTTP, z powodem; lista może tylko maleć. */
         val OWN_HTTP =
             mapOf(
                 "$BASE.feature.map.MapTileHttp" to
