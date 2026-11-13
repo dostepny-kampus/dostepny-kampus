@@ -13,11 +13,13 @@ import org.hamcrest.Matchers;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
- * Kroki szablonu „W budynku podstawowym zgłoszenie można złożyć zawsze”
- * (BR-G1): serwer przyjmuje zgłoszenie w budynku bez planów pięter.
+ * Kroki szablonu „W budynku podstawowym zgłoszenie można złożyć zawsze”:
+ * serwer przyjmuje zgłoszenie w budynku bez planów pięter.
  *
  * <p>Osobę, jej miejsce i wysyłkę prowadzą kroki {@link QuickPlaceSteps}
  * tego samego scenariusza.</p>
+ *
+ * <p>Wymagania: BR-G1</p>
  *
  * @since 0.1.0
  */

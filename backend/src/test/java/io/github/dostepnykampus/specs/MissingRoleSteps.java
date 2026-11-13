@@ -20,10 +20,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 /**
  * Kroki szablonu „Bez wymaganej roli czynność jest niedostępna w aplikacji
- * i na serwerze” (US14.1).
+ * i na serwerze”.
  *
  * <p>Serwer sprawdza krok o próbie z pominięciem aplikacji. Kroki o ekranach
  * aplikacji pilnują tu tylko kolejności: sprawdza je test aplikacji.</p>
+ *
+ * <p>Wymagania: US14.1</p>
  *
  * @since 0.1.0
  */

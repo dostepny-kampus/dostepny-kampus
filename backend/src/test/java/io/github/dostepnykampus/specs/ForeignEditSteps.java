@@ -21,12 +21,14 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 /**
- * Kroki scenariuszy „Zbierający nie edytuje cudzego zgłoszenia” (BR-3, US14.1)
+ * Kroki scenariuszy „Zbierający nie edytuje cudzego zgłoszenia”
  * i „Zwykłą zmianę przyjętego zgłoszenia z pomiaru precyzyjnego składa tylko
- * autor” (BR-18).
+ * autor”.
  *
  * <p>Token testowy ma zawsze to samo konto, więc autorem zgłoszenia zostaje
  * inne konto w bazie, a próbę zmiany wykonuje konto z tokenu.</p>
+ *
+ * <p>Wymagania: BR-3, US14.1, BR-18</p>
  *
  * @since 0.1.0
  */
