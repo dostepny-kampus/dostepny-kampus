@@ -255,6 +255,23 @@ class ReportScreenTest {
         assertEquals(2, compose.onAllNodes(hasText(text)).fetchSemanticsNodes().size)
     }
 
+    /**
+     * Brak opisu jest nazwany w podsumowaniu i przy polu, gdy wybrano TB-29 (PW-10, BR-7).
+     * Scenariusz (częściowo): pomiar-precyzyjny.feature: Typ TB-29 „inna bariera” wymaga opisu
+     */
+    @Test
+    fun br7_missing_description_shown() {
+        show(
+            ReportUiState(
+                form = ReportForm(place = A1, barrierType = BarrierType.OTHER_BARRIER),
+                errors = listOf(ReportFormError.MISSING_DESCRIPTION),
+            ),
+        )
+
+        val text = "Brakuje opisu. Przy typie „inna bariera” opis jest obowiązkowy."
+        assertEquals(2, compose.onAllNodes(hasText(text)).fetchSemanticsNodes().size)
+    }
+
     @Test
     fun nfr7_save_failed_retry() {
         show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.SAVE_FAILED))

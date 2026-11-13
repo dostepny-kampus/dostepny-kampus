@@ -93,6 +93,47 @@ class ReportFormViewModelTest {
             assertEquals(listOf(PHOTO), photos)
         }
 
+    /**
+     * Zapis TB-29 przekazuje opis, typ i zdjęcie do kolejki; trwałość jest sprawdzana po stronie danych.
+     * Scenariusz (częściowo): pomiar-precyzyjny.feature: Typ TB-29 „inna bariera” z opisem zapisuje się
+     */
+    @Test
+    fun `tb29 opis trafia do zapisu`() =
+        runTest(dispatcher) {
+            fill()
+            val description = "Na długim korytarzu nie ma gdzie usiąść i odpocząć"
+            viewModel.edit(ReportEdit.Type(BarrierType.OTHER_BARRIER))
+            viewModel.edit(ReportEdit.Description(description))
+
+            viewModel.save()
+            runCurrent()
+
+            assertEquals(ReportStage.SAVED, state().stage)
+            val (content, photos) = saved.single()
+            assertEquals("TB-29", content.barrierType)
+            assertEquals(description, content.description)
+            assertEquals(listOf("p1"), content.photoIds)
+            assertEquals(listOf(PHOTO), photos)
+        }
+
+    /**
+     * Brak opisu TB-29 blokuje przekazanie do zapisu, mimo uzupełnienia pozostałych pól.
+     * Scenariusz (częściowo): pomiar-precyzyjny.feature: Typ TB-29 „inna bariera” wymaga opisu
+     */
+    @Test
+    fun `tb29 bez opisu nie zapisuje`() =
+        runTest(dispatcher) {
+            fill()
+            viewModel.edit(ReportEdit.Type(BarrierType.OTHER_BARRIER))
+
+            viewModel.save()
+            runCurrent()
+
+            assertEquals(ReportStage.EDITING, state().stage)
+            assertEquals(listOf(ReportFormError.MISSING_DESCRIPTION), state().errors)
+            assertEquals(emptyList<Any>(), saved)
+        }
+
     @Test
     fun `poprawka zapisuje to samo`() =
         runTest(dispatcher) {
