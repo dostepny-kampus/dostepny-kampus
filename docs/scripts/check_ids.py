@@ -128,7 +128,7 @@ class Marker:
 class Corpus:
     """Zebrane definicje, odwołania, powiązania (nieskierowane), scenariusze i wiersze przykładów szablonów
     (`examples`: klucz to plik i nazwa scenariusza, wartość to komórki kolejnych wierszy bez nagłówków tabel).
-    `bodies` to treść scenariusza: jego kroki i tabele bez tagów, komentarzy i odstępów na brzegach; `todo` to
+    `bodies` to treść scenariusza: jego kroki i tabele bez tagów, komentarzy i odstępów na brzegach; `planned` to
     scenariusze z tagiem PLANNED_TAG."""
 
     definitions: dict[str, list[Location]] = field(default_factory=lambda: defaultdict(list))
@@ -142,7 +142,7 @@ class Corpus:
     markers: list[Marker] = field(default_factory=list)
     examples: dict[tuple[str, str], list[tuple[str, ...]]] = field(default_factory=lambda: defaultdict(list))
     bodies: dict[tuple[str, str], list[str]] = field(default_factory=lambda: defaultdict(list))
-    todo: set[tuple[str, str]] = field(default_factory=set)
+    planned: set[tuple[str, str]] = field(default_factory=set)
     bad_markers: list[Location] = field(default_factory=list)
 
     def link(self, owner: str, other: str) -> None:
@@ -330,7 +330,7 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
     `feature` to ścieżka pliku względna do katalogu scenariuszy, jak w znaczniku testu (domyślnie nazwa pliku).
     Wiersze tabel pod „Przykłady:” (bez nagłówka każdej tabeli) trafiają do `corpus.examples` scenariusza;
     tabela danych przy kroku nie jest tabelą przykładów. Kroki i tabele scenariusza trafiają do `corpus.bodies`,
-    a scenariusz z tagiem PLANNED_TAG (własnym, funkcji albo reguły) do `corpus.todo`.
+    a scenariusz z tagiem PLANNED_TAG (własnym, funkcji albo reguły) do `corpus.planned`.
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
     rel = relative(path)
@@ -375,7 +375,7 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
             rows = corpus.examples[(feature, scenario.name)]
             body = corpus.bodies[(feature, scenario.name)]
             if PLANNED_TAG in found:
-                corpus.todo.add((feature, scenario.name))
+                corpus.planned.add((feature, scenario.name))
             for tag in dict.fromkeys(feature_tags + rule_tags + tags):
                 corpus.scenarios[tag].append(scenario)
         else:
@@ -817,7 +817,7 @@ def unplanned_scenarios(corpus: Corpus, baseline: Corpus) -> list[Finding]:
     for scenario, (_, state) in coverage_states(corpus).items():
         key = (scenario.feature, scenario.name)
         same = key in baseline.bodies and baseline.bodies[key] == corpus.bodies[key]
-        if not same and state != "pełny" and key not in corpus.todo:
+        if not same and state != "pełny" and key not in corpus.planned:
             message = f"nowy albo zmieniony scenariusz bez pełnego testu i bez tagu @{PLANNED_TAG} z numerem zadania: {scenario.name}"
             findings.append(Finding("BŁĄD", str(scenario.location), message))
     return findings
