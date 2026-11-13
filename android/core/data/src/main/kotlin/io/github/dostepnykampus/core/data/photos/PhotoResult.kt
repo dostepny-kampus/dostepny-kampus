@@ -31,6 +31,7 @@ sealed interface PhotoResult {
     /**
      * Nieudana próba bez pliku do zachowania.
      *
+     * @property request żądanie zdjęcia, którego dotyczy błąd
      * @property reason powód błędu aparatu lub przetwarzania zdjęcia
      */
     data class Failed(override val request: PhotoRequest, val reason: PhotoFailure) : PhotoResult
