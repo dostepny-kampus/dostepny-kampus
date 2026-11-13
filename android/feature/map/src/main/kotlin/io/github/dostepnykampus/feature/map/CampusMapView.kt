@@ -37,7 +37,9 @@ fun interface CampusMapView {
      * Mapa [data] z zaznaczeniem [selection] w widoku [camera]. Po geście widok zgłasza nowy widok przez
      * [onCameraIdle], a po dotknięciu konturu albo miejsca obok niego symbole trafionych budynków przez
      * [onBuildingsTouch], a po dotknięciu pustej mapy pustą listę. Dotknięcie znaku bariery zgłasza identyfikator
-     * jej zgłoszenia przez [onBarrierTouch] i nie zgłasza konturu pod znakiem (US1.5).
+     * jej zgłoszenia przez [onBarrierTouch] i nie zgłasza konturu pod znakiem.
+     *
+     * Wymagania: US1.5
      */
     @Composable
     fun Show(
@@ -51,7 +53,7 @@ fun interface CampusMapView {
     )
 }
 
-/** Obraz podpisu konturu: tekst `napis_pwr` z obwódką `obwodka` (para kontrastu z tokenów, NFR-16). */
+/** Obraz podpisu konturu: tekst `napis_pwr` z obwódką `obwodka` (para kontrastu z tokenów). Wymagania: NFR-16 */
 internal fun labelImage(label: String, colors: MapColors, size: Float): Bitmap {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     paint.textSize = size
@@ -71,7 +73,11 @@ internal fun labelImage(label: String, colors: MapColors, size: Float): Bitmap {
     return bitmap
 }
 
-/** Granice widoku mapy o rozmiarze [size] w pikselach w obszarze [bounds]; `null` bez obszaru (NFR-39, NFR-53). */
+/**
+ * Granice widoku mapy o rozmiarze [size] w pikselach w obszarze [bounds]; `null` bez obszaru.
+ *
+ * Wymagania: NFR-39, NFR-53
+ */
 internal fun Density.mapLimits(bounds: CampusBounds?, size: IntSize): MapLimits? =
     bounds?.let { area ->
         val width = size.width.toDp().value

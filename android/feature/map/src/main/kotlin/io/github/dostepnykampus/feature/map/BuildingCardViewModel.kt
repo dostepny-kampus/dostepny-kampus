@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 
 private const val STOP_TIMEOUT_MS = 5_000L
 
-/** Stan karty budynku V2 (US2). */
+/** Stan karty budynku V2. Wymagania: US2 */
 sealed interface BuildingCardUiState {
     /** Katalog jeszcze się wczytuje. */
     data object Loading : BuildingCardUiState
@@ -37,21 +37,25 @@ sealed interface BuildingCardUiState {
     /**
      * Karta budynku z katalogu.
      *
+     * Wymagania: BR-25
+     *
      * @property symbol symbol budynku, np. `A-1`
      * @property name nazwa z danych; `null`, gdy danych nazwy nie ma
-     * @property entrances wejścia odwiedzających, zalecane pierwsze (BR-25)
+     * @property entrances wejścia odwiedzających, zalecane pierwsze
      */
     data class Ready(val symbol: String, val name: String?, val entrances: List<OrderedEntrance>) : BuildingCardUiState
 }
 
 /**
- * Karta budynku [symbol] z katalogu w telefonie (US2, BR-25). Katalog jest czytany, gdy ekran jest widoczny,
+ * Karta budynku [symbol] z katalogu w telefonie. Katalog jest czytany, gdy ekran jest widoczny,
  * i jeszcze 5 s po zniknięciu, więc obrót ekranu nie czyta go od nowa. [retry] pyta serwer i czyta plik od nowa.
  *
- * Tekst karty i wejścia z pliku pokazują się od razu, bez czekania na sieć (NFR-12). Równolegle, w zasięgu
- * ViewModelu, karta pyta `serverEntrances` o wejścia z dniem i źródłem oznaczenia (US17.3); niepusta lista
+ * Tekst karty i wejścia z pliku pokazują się od razu, bez czekania na sieć. Równolegle, w zasięgu
+ * ViewModelu, karta pyta `serverEntrances` o wejścia z dniem i źródłem oznaczenia; niepusta lista
  * zastępuje wejścia z pliku. Pusta lista (brak sieci, błąd serwera, nic pobranego wcześniej) zostawia wejścia
- * z pliku bez komunikatu błędu (NFR-10). Zamknięcie karty przerywa pobieranie.
+ * z pliku bez komunikatu błędu. Zamknięcie karty przerywa pobieranie.
+ *
+ * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10
  */
 @HiltViewModel(assistedFactory = BuildingCardViewModel.Factory::class)
 class BuildingCardViewModel
@@ -73,7 +77,7 @@ class BuildingCardViewModel
                 .combine(fromServer, ::withServerEntrances)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), BuildingCardUiState.Loading)
 
-        /** Czy jest internet; na start prawda, żeby linia „Bez internetu” nie mignęła (NFR-10, US2.8). */
+        /** Czy jest internet; na start prawda, żeby linia „Bez internetu” nie mignęła. Wymagania: NFR-10, US2.8 */
         val online: StateFlow<Boolean> =
             networkStatus
                 .isOnline()
@@ -83,7 +87,7 @@ class BuildingCardViewModel
             viewModelScope.launch { fromServer.value = serverEntrances.entrances(symbol) }
         }
 
-        /** „Spróbuj ponownie”, gdy budynku nie ma w telefonie (NFR-10). */
+        /** „Spróbuj ponownie”, gdy budynku nie ma w telefonie. Wymagania: NFR-10 */
         fun retry() {
             attempts.value++
         }
