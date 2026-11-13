@@ -16,7 +16,6 @@ import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.SocketPolicy
-import okio.Buffer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
@@ -104,12 +103,12 @@ class SubmissionsApiTest {
     /** Wiersz: arkusz bariery pobiera zdjęcie zgłoszenia przyjętego; brak zdjęcia to `NotFound` (US1.5, #1298). */
     @Test
     fun us1_5_photo_download() {
-        server.enqueue(MockResponse().setResponseCode(200).setBody(Buffer().write(byteArrayOf(-1, -40, -1))))
+        server.enqueue(MockResponse().setResponseCode(200).setBody("plik JPEG"))
         val result = blocking { photo(submissionId = ID, photoId = PHOTO) }
         val recorded = server.takeRequest()
         enqueue(code = 404, body = """{"status":404}""")
 
-        assertEquals(listOf<Byte>(-1, -40, -1), (result as ApiResult.Success).value.toList())
+        assertEquals("plik JPEG", (result as ApiResult.Success).value.decodeToString())
         assertEquals("/submissions/$ID/photos/$PHOTO" to "GET", recorded.path to recorded.method)
         assertEquals(ApiResult.NotFound, blocking { photo(submissionId = ID, photoId = PHOTO) })
     }
