@@ -7,19 +7,15 @@
 /**
  * Moduł building: budynki kampusu z konturami i wejściami.
  *
- * <p>Zadanie: lista i karta budynku z wejściami oraz dopasowanie punktu do
- * budynku.</p>
+ * <p>Zadanie: lista i karta budynku z wejściami oraz dopasowanie punktu do budynku.</p>
  *
- * <p>API: {@code CampusArea} i {@code Outlines} dla innych modułów;
- * operacje HTTP {@code /buildings}.</p>
+ * <p>API: {@code CampusArea} i {@code Outlines}; operacje HTTP {@code /buildings}.</p>
  *
  * <p>Zależności: {@code shared}.</p>
  *
  * <p>Nie robi: nie przyjmuje ani nie weryfikuje zgłoszeń barier.</p>
  *
- * <p>Kiedy dodawać tutaj: dane budynku, wejścia albo geometrii kampusu.
- * Kod, który tylko czyta te dane na potrzeby zgłoszenia, zostaje w module
- * zgłoszeń.</p>
+ * <p>Kiedy dodawać tutaj: dane budynku, wejść i geometrii kampusu, nie ich odczyt dla zgłoszeń.</p>
  *
  * <p>Wymagania: US1, US2, US17, US3, US16, US15</p>
  *

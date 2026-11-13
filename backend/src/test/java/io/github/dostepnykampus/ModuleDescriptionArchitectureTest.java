@@ -109,7 +109,7 @@ final class ModuleDescriptionArchitectureTest {
     }
 
     private static String problem(final String text, final Set<String> allowed) {
-        final List<String> parts = new ArrayList<>();
+        final List<String> parts = new ArrayList<>(5);
         final Matcher part = ModuleDescriptionArchitectureTest.PART.matcher(text);
         while (part.find()) {
             parts.add(part.group(1));
@@ -122,13 +122,14 @@ final class ModuleDescriptionArchitectureTest {
                 described.add(name.group(1));
             }
         }
+        final boolean complete = ModuleDescriptionArchitectureTest.PARTS.equals(parts);
         final String result;
-        if (!ModuleDescriptionArchitectureTest.PARTS.equals(parts)) {
-            result = "akapity";
-        } else if (!new TreeSet<>(allowed).equals(described)) {
+        if (complete && new TreeSet<>(allowed).equals(described)) {
+            result = "";
+        } else if (complete) {
             result = "zależności";
         } else {
-            result = "";
+            result = "akapity";
         }
         return result;
     }
