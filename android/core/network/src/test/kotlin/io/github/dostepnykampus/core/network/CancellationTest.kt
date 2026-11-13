@@ -227,6 +227,7 @@ class CancellationTest {
                 "create" to call { it.submissions.create(ID, quick) },
                 "update" to call { it.submissions.update(ID, 1, quick) },
                 PHOTO_CALL to call { it.submissions.putPhoto(ID, photoId = PHOTO, jpeg = JPEG) },
+                "getPhoto" to call { it.submissions.getPhoto(ID, photoId = PHOTO) },
                 "accepted" to call { it.submissions.accepted("C-13") },
             )
 
