@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Miejsce zgłoszenia (US6, BR-G2): dokładność pozycji i kopie z innym
+ * Miejsce zgłoszenia: dokładność pozycji i kopie z innym
  * budynkiem.
+ *
+ * <p>Wymagania: US6, BR-G2</p>
  *
  * @since 0.1.0
  */

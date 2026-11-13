@@ -26,7 +26,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 private val ROWS = listOf("Wejście dostępne", "Brak wejścia dostępnego", "Brak danych o wejściach")
 
-/** Wiersz o wejściach na V2 Karta budynku (US2.8, US3.1). */
+/** Wiersz o wejściach na V2 Karta budynku. Wymagania: US2.8, US3.1 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class EntranceRowTest {
@@ -36,7 +36,9 @@ class EntranceRowTest {
     /**
      * Wiersz: V2, wiersz o wejściach pod nagłówkiem, nad grupą „Wejścia”, słowami: „Wejście dostępne”, „Brak
      *   wejścia dostępnego”, gdy każde „Niedostępne”, „Brak danych o wejściach”, gdy żadne nie jest „Dostępne”,
-     *   a choć jedno ma „Brak danych”, US2.8, US2.1, US3.1, NFR-21.
+     *   a choć jedno ma „Brak danych”.
+     *
+     * Wymagania: US2.8, US2.1, US3.1, NFR-21
      */
     @Test
     fun us2_8_row_says_entrance_state() {

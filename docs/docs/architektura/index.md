@@ -6,6 +6,8 @@ Ta część pokazuje, z czego składa się system i dlaczego wybraliśmy takie r
 | --- | --- |
 | [Kontekst systemu](kontekst.md) | role i systemy zewnętrzne wokół systemu (C4, poziom 1) |
 | [Kontenery](kontenery.md) | aplikację, serwer, bazy danych, Usługę logowania i połączenia między nimi (C4, poziom 2) |
+| [Struktura modułów](moduly.md) | moduły serwera i aplikacji, ich granice i kontrole, które ich pilnują |
+| [Opisy w kodzie](opisy-w-kodzie.md) | co wolno pisać w KDoc i Javadoc i które kontrole tego pilnują |
 
 ## Decyzje architektoniczne
 
@@ -20,7 +22,7 @@ Ta część pokazuje, z czego składa się system i dlaczego wybraliśmy takie r
 | [ADR-0007](decyzje/0007-hilt-i-mvvm.md) | zależności z Hilt, stan ekranu w ViewModel z jednym `UiState` | nr 97, 100 |
 | [ADR-0008](decyzje/0008-import-budynkow.md) | budynki z pliku konturów OSM w bazie serwera przez powtarzalną migrację Java we Flyway | — |
 | [ADR-0009](decyzje/0009-magazyn-zdjec.md) | zdjęcia zgłoszeń w RustFS przez S3 zamiast MinIO bez obrazów | — |
-| [ADR-0010](decyzje/0010-testy-mutacyjne.md) | testy mutacyjne dziedziny serwera w PIT po scaleniu do sprintu, wyjątek od ADR-0004 dla wtyczki JUnit | — |
+| [ADR-0010](decyzje/0010-testy-mutacyjne.md) | testy mutacyjne dziedziny serwera w PIT przed scaleniem, wyjątek od ADR-0004 dla wtyczki JUnit | — |
 
 ADR nie zmieniamy po przyjęciu. Nową decyzję zapisujemy kolejnym numerem ze statusem „zastępuje ADR-…”.
 

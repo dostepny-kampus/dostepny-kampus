@@ -32,21 +32,12 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Zgodność wymiany HTTP z kontraktem {@code api/openapi.yaml} (decyzja 122).
- *
- * <p>Wymianę sprawdza biblioteka {@code openapi-request-validator} (#830):
- * operację, parametry ścieżki, zapytania i nagłówków, treść żądania, status,
- * typ treści i treść odpowiedzi. Operacja, status albo typ treści spoza
- * kontraktu jest naruszeniem. Żądanie niezgodne z kontraktem jest dopuszczone,
- * gdy odpowiedź ma status 4xx opisany w kontrakcie. Żądanie złożone ręcznie,
- * bez {@code pathInfo}, biblioteka czyta po adresie żądania. Tożsamość testy dają
- * przez filtry zabezpieczeń, nie nagłówkiem, więc biblioteka nie sprawdza
- * {@code security}. Brak treści żądania nie jest naruszeniem, bo test może
- * podać treść strumieniem, którego biblioteka nie widzi, jak przy limicie
- * zdjęcia. Biblioteka nie dopisuje też {@code additionalProperties:
- * false}, bo kontrakt zamyka obiekty przez {@code unevaluatedProperties}.
- * Schematy treści dla testów JSON daje rejestr schematów. Kontrakt jest
- * wczytywany raz.</p>
+ * Zgodność wymiany HTTP z kontraktem {@code api/openapi.yaml} według biblioteki
+ * {@code openapi-request-validator}; operacja, status albo typ treści spoza kontraktu jest
+ * naruszeniem. Żądanie niezgodne jest dopuszczone, gdy odpowiedź ma opisany status 4xx.
+ * Bez sprawdzania: {@code security} (tożsamość dają filtry), braku treści żądania (treść
+ * strumieniem, np. limit zdjęcia) i {@code additionalProperties} (kontrakt zamyka obiekty
+ * przez {@code unevaluatedProperties}). Kontrakt jest wczytywany raz.
  *
  * @since 0.1.0
  */
@@ -83,7 +74,7 @@ public final class OpenApiContract implements ResultMatcher {
     private final Supplier<JsonNode> tree;
 
     /**
-     * Walidator wymiany HTTP z biblioteki (#830).
+     * Walidator wymiany HTTP z biblioteki.
      */
     private final Supplier<OpenApiInteractionValidator> validator;
 
@@ -169,7 +160,7 @@ public final class OpenApiContract implements ResultMatcher {
     }
 
     /**
-     * Tekst kontraktu z repozytorium; jedyne miejsce testów, które czyta plik (#895).
+     * Tekst kontraktu z repozytorium; jedyne miejsce testów, które czyta plik.
      *
      * @return Tekst YAML kontraktu, ścieżka względna od modułu serwera
      * @throws IOException Gdy pliku nie da się przeczytać

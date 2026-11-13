@@ -57,8 +57,10 @@ public record SubmissionContentJson(
 
     /**
      * Czy takie zgłoszenie składa tylko Zbierający: każde poza szybkim oraz
-     * zmiana zgłoszenia przyjętego (US7, US17.2, US8.4, BR-18, BR-19).
+     * zmiana zgłoszenia przyjętego.
      * Zgłoszenie bez rodzaju odrzuca dopiero walidacja treści.
+     *
+     * <p>Wymagania: US7, US17.2, US8.4, BR-18, BR-19</p>
      *
      * @return Prawda dla pomiaru precyzyjnego, zmiany oznaczenia wejścia
      *  i każdego zgłoszenia z polem replacesSubmissionId
@@ -69,8 +71,9 @@ public record SubmissionContentJson(
     }
 
     /**
-     * Zastępowane zgłoszenie, gdy zmiana nie ma oznaczenia „bariera usunięta”
-     * (BR-18, BR-19).
+     * Zastępowane zgłoszenie, gdy zmiana nie ma oznaczenia „bariera usunięta”.
+     *
+     * <p>Wymagania: BR-18, BR-19</p>
      *
      * @return Identyfikator z pola replacesSubmissionId albo puste dla zgłoszenia
      *  bez tego pola i dla zmiany „bariera usunięta”

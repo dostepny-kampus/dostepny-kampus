@@ -24,7 +24,9 @@ private const val TEMP_SUFFIX = ".tmp"
 
 /**
  * Wymiary po zmniejszeniu tak, by dłuższy bok miał najwyżej [limit] pikseli; mniejszego zdjęcia nie powiększa.
- * Domyślny [limit] to dłuższy bok po zmniejszeniu: czytelna bariera, a plik daleko poniżej 5 MB (NFR-34).
+ * Domyślny [limit] to dłuższy bok po zmniejszeniu: czytelna bariera, a plik daleko poniżej 5 MB.
+ *
+ * Wymagania: NFR-34
  *
  * @return szerokość i wysokość z zachowaniem proporcji
  */
@@ -57,8 +59,10 @@ internal fun decodeSampled(path: String, limit: Int = PHOTO_PIXELS): Bitmap? {
 
 /**
  * Przekodowuje zdjęcie z aparatu: obraca i odbija według EXIF, zmniejsza do [PHOTO_PIXELS] i zapisuje jako JPEG
- * bez metadanych, więc w pliku nie zostaje położenie z aparatu ani model telefonu (NFR-34).
+ * bez metadanych, więc w pliku nie zostaje położenie z aparatu ani model telefonu.
  * Nowy plik zastępuje oryginał dopiero po udanym zapisie, przez [replaceFile].
+ *
+ * Wymagania: NFR-34
  *
  * @return `false`, gdy pliku nie da się odczytać jako obrazu, np. aparat nic nie zapisał, albo zapis się nie udał
  */

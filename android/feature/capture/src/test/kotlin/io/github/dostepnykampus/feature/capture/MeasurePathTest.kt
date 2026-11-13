@@ -39,7 +39,9 @@ import org.robolectric.annotation.Config
 
 /**
  * Ekran C1 z modelem widoku na odczytach testowych w czasie wirtualnym: od otwarcia nowego zgłoszenia do końca
- * pomiaru (US6.1, NFR-1, NFR-2).
+ * pomiaru.
+ *
+ * Wymagania: US6.1, NFR-1, NFR-2
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)

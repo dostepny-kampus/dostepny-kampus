@@ -29,8 +29,10 @@ import org.springframework.web.context.WebApplicationContext;
 import software.amazon.awssdk.services.s3.S3Client;
 
 /**
- * Testy BR-7, US2.2 i NFR-26: zdjęcie z listy photoIds trafia do magazynu
+ * Zdjęcie z listy photoIds trafia do magazynu
  * bez metadanych, a odczyt zdjęcia działa dla zgłoszenia przyjętego.
+ *
+ * <p>Wymagania: BR-7, US2.2, NFR-26</p>
  *
  * @since 0.1.0
  */
@@ -200,7 +202,8 @@ final class SubmissionPhotosHttpTest {
                             context.getBean(PhotoSettings.class).endpoint(),
                             String.format("brak-%s", UUID.randomUUID()), "", ""
                         )
-                    )
+                    ),
+                    context.getBean(SubmissionService.class)
                 )
             )
         ).setControllerAdvice(context.getBean(ProblemResponses.class))

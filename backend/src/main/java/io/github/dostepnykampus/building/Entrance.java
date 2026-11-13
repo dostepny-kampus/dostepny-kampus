@@ -11,7 +11,9 @@ import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 /**
- * Wejście budynku na karcie, zgodne ze schematem Entrance (US2, US17, BR-24).
+ * Wejście budynku na karcie, zgodne ze schematem Entrance.
+ *
+ * <p>Wymagania: US2, US17, BR-24</p>
  *
  * @param id Identyfikator wejścia, np. node/1167953448
  * @param buildingSymbol Budynek, do którego prowadzi wejście
@@ -34,7 +36,9 @@ public record Entrance(
 ) {
 
     /**
-     * Oznaczenie wejścia z datą i źródłem (BR-24, US17.3).
+     * Oznaczenie wejścia z datą i źródłem.
+     *
+     * <p>Wymagania: BR-24, US17.3</p>
      *
      * @param marking Oznaczenie: ACCESSIBLE, INACCESSIBLE albo NO_DATA
      * @param markingDate Dzień oznaczenia w zapisie RRRR-MM-DD

@@ -13,16 +13,13 @@ import org.apache.commons.imaging.formats.jpeg.JpegConstants;
 import org.apache.commons.imaging.formats.jpeg.xmp.JpegRewriter;
 
 /**
- * Usuwa metadane ze zdjęcia JPEG przed zapisem (NFR-26): EXIF i XMP
- * z miejscem, modelem telefonu i czasem, IPTC i komentarze.
+ * Usuwa metadane ze zdjęcia JPEG przed zapisem, bez ponownego kodowania obrazu:
+ * segmenty APP1 (EXIF, XMP), APP3–APP15 (m.in. IPTC) i COM przed pierwszym SOS.
+ * Zostają APP0 (JFIF) i APP2 z profilem ICC; dane od pierwszego SOS nie są analizowane.
+ * Z EXIF znika orientacja, więc zdjęcie ma przyjść już obrócone. Obce bajty pomiędzy
+ * segmentami są odrzucane, także gdy parser biblioteki umie je pominąć.
  *
- * <p>Obraz zostaje bez ponownego kodowania. Usuwane są segmenty APP1 (EXIF, XMP),
- * APP3–APP15 (m.in. IPTC) i COM przed pierwszym SOS. Zostaje APP0 (JFIF)
- * i APP2 z profilem kolorów ICC. Dane od pierwszego SOS nie są analizowane.
- * Razem z EXIF znika orientacja, więc telefon wysyła zdjęcie już obrócone.</p>
- *
- * <p>Obce bajty pomiędzy segmentami są odrzucane, także gdy parser biblioteki
- * potrafi je pominąć i odczytać dalszy ciąg nagłówka.</p>
+ * <p>Wymagania: NFR-26</p>
  *
  * @since 0.1.0
  */

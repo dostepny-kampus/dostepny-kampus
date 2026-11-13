@@ -17,15 +17,17 @@ import io.github.dostepnykampus.core.model.SubmissionKind
 import kotlinx.serialization.Serializable
 
 /**
- * Miejsce bariery z pomiaru C1, pokazywane na górze formularza C2 (US7.4, US6.1).
+ * Miejsce bariery z pomiaru C1, pokazywane na górze formularza C2.
+ *
+ * Wymagania: US7.4, US6.1, BR-G4, US6.3, BR-G1
  *
  * @property location uśredniony punkt pomiaru
  * @property accuracyMeters dokładność pomiaru w metrach
- * @property buildingSymbol budynek potwierdzony na C1 albo `null` poza budynkiem (BR-G4)
- * @property isManualCorrection czy punkt poprawiono ręcznie na planie piętra (US6.3)
+ * @property buildingSymbol budynek potwierdzony na C1 albo `null` poza budynkiem
+ * @property isManualCorrection czy punkt poprawiono ręcznie na planie piętra
  * @property buildingName nazwa budynku obok symbolu albo `null`, gdy dane jej nie mają
  * @property nearestEntrance najbliższe wejście z odległością do opisu miejsca słowami albo `null` bez wejść w danych
- * @property floors piętra z planu PWr budynku szczegółowego, od najniższego; pusta lista to budynek bez planu (BR-G1)
+ * @property floors piętra z planu PWr budynku szczegółowego, od najniższego; pusta lista to budynek bez planu
  */
 data class ReportPlace(
     val location: GeoPoint,
@@ -40,21 +42,25 @@ data class ReportPlace(
 /**
  * Piętra z planu PWr; opakowanie listy, żeby Compose wiedział, że się nie zmienia.
  *
+ * Wymagania: NFR-40
+ *
  * @property items piętra od najniższego
- * @property source źródło do podpisu przy liście, „Politechnika Wrocławska” (NFR-40)
+ * @property source źródło do podpisu przy liście, „Politechnika Wrocławska”
  */
 @Immutable
 data class PlanFloors(val items: List<PlanFloor>, val source: String = "")
 
 /**
- * Piętro z planu PWr budynku szczegółowego (US7.2).
+ * Piętro z planu PWr budynku szczegółowego.
+ *
+ * Wymagania: US7.2
  *
  * @property id identyfikator piętra z danych PWr
  * @property label etykieta piętra z danych PWr, np. „Piwnica” albo „3 piętro”
  */
 data class PlanFloor(val id: String, val label: String)
 
-/** Piętro bariery w formularzu C2 (US7.2, BR-G1). */
+/** Piętro bariery w formularzu C2. Wymagania: US7.2, BR-G1 */
 @Serializable
 sealed interface ReportFloor {
     /**
@@ -75,9 +81,9 @@ sealed interface ReportFloor {
     data class Numbered(val number: Int, val isMezzanine: Boolean) : ReportFloor
 }
 
-/** Brakujące pole formularza C2, w kolejności pól na ekranie (US7.1–US7.3, BR-7). */
+/** Brakujące pole formularza C2, w kolejności pól na ekranie (US7.1–US7.3). Wymagania: BR-7 */
 enum class ReportFormError {
-    /** Brak piętra w budynku; poza budynkiem piętra nie ma (BR-7, BR-G4). */
+    /** Brak piętra w budynku; poza budynkiem piętra nie ma. Wymagania: BR-7, BR-G4 */
     MISSING_FLOOR,
 
     /** „Brakuje typu bariery”. */
@@ -111,17 +117,19 @@ sealed interface ReportCheck {
 }
 
 /**
- * Pola formularza C2 „Opisz barierę” (US7). Stan jest niezmienny: każda zmiana pola daje nową kopię,
- * więc porównanie z wartościami startowymi mówi, czy wyjście wymaga potwierdzenia (US7.4).
+ * Pola formularza C2 „Opisz barierę”. Stan jest niezmienny: każda zmiana pola daje nową kopię,
+ * więc porównanie z wartościami startowymi mówi, czy wyjście wymaga potwierdzenia.
+ *
+ * Wymagania: US7, US7.4, BR-G4, BR-7, BR-18, US8.3
  *
  * @property place miejsce z pomiaru
- * @property floor piętro; poza budynkiem zawsze `null` (BR-G4)
+ * @property floor piętro; poza budynkiem zawsze `null`
  * @property barrierType typ bariery
  * @property severity uciążliwość
- * @property photoIds identyfikatory zrobionych zdjęć (BR-7)
+ * @property photoIds identyfikatory zrobionych zdjęć
  * @property description opis wpisany przez Zbierającego
- * @property replacesSubmissionId zgłoszenie przyjęte, które zapis zastąpi nowym (BR-18)
- * @property editedSubmission własne zgłoszenie poprawiane z C3; zapis zmienia je, a nie tworzy nowego (US8.3)
+ * @property replacesSubmissionId zgłoszenie przyjęte, które zapis zastąpi nowym
+ * @property editedSubmission własne zgłoszenie poprawiane z C3; zapis zmienia je, a nie tworzy nowego
  */
 data class ReportForm(
     val place: ReportPlace,
@@ -138,7 +146,7 @@ data class ReportForm(
     }
 }
 
-/** Braki, które blokują „Zapisz” (US7.1–US7.3, BR-7). */
+/** Braki, które blokują „Zapisz” (US7.1–US7.3). Wymagania: BR-7 */
 fun ReportForm.errors(): List<ReportFormError> =
     buildList {
         if (place.buildingSymbol != null && floor == null) add(ReportFormError.MISSING_FLOOR)
@@ -150,7 +158,7 @@ fun ReportForm.errors(): List<ReportFormError> =
         }
     }
 
-/** Sprawdza formularz i przelicza go na treść pomiaru precyzyjnego z kontraktu (BR-7). */
+/** Sprawdza formularz i przelicza go na treść pomiaru precyzyjnego z kontraktu. Wymagania: BR-7 */
 fun ReportForm.check(): ReportCheck {
     val errors = errors()
     val type = barrierType
@@ -185,7 +193,9 @@ private fun ReportFloor.toSubmissionFloor(): SubmissionFloor =
     }
 
 /**
- * Numer piętra z pola „Numer piętra” w budynku podstawowym: liczba całkowita, także ujemna (US7.2).
+ * Numer piętra z pola „Numer piętra” w budynku podstawowym: liczba całkowita, także ujemna.
+ *
+ * Wymagania: US7.2
  *
  * @return numer albo `null`, gdy tekst nie jest liczbą całkowitą
  */

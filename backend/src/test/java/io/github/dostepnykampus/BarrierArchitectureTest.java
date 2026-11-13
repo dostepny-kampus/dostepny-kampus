@@ -29,15 +29,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Strażnik architektury modułu zgłoszeń (reguły A-1 do A-9).
- *
- * <p>Źródło: kontrakt modułu zgłoszeń (reguły ArchUnit) oraz decyzja 136:
- * {@code JdbcSubmissions} jest komponentem, więc granice adaptera pilnują
- * jawne reguły pakietów. Reguły dostają korzeń pakietów, więc te same reguły
- * sprawdzają kod produkcyjny i przykłady negatywne. Przykłady kompiluje test
- * do katalogu tymczasowego pod pakietem {@code archsamples}, poza modułem
- * zgłoszeń. Reguła na pustym zbiorze klas, także przez literówkę w pakiecie,
- * nie przechodzi: pilnuje tego {@code allowEmptyShould(false)}.</p>
+ * Strażnik architektury modułu zgłoszeń (reguły A-1 do A-9). {@code JdbcSubmissions} jest
+ * komponentem, więc granice adaptera pilnują jawne reguły pakietów. Te same reguły sprawdzają
+ * kod produkcyjny i przykłady negatywne, kompilowane do katalogu tymczasowego pod pakietem
+ * {@code archsamples}. Reguła na pustym zbiorze klas nie przechodzi
+ * ({@code allowEmptyShould(false)}).
  *
  * @since 0.1.0
  */

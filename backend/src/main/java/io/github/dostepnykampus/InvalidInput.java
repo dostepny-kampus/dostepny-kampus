@@ -10,14 +10,13 @@ import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Niepoprawne dane żądania: wartość, której serwer nie przyjmuje.
+ * Niepoprawne dane żądania: wartość, której serwer nie przyjmuje. Obsługa błędów HTTP
+ * zamienia ten typ i podtypy na 400 {@code application/problem+json} z komunikatem
+ * w {@code detail}, więc komunikat nie zawiera szczegółów wewnętrznych. Błąd z osobnym
+ * stanem ekranu w aplikacji ma też rodzaj w {@code type}, np. zgłoszenie spoza terenu PWr.
+ * Typ nie zależy od Spring Web ani Jacksona.
  *
- * <p>Obsługa błędów HTTP zamienia ten typ i jego podtypy (wyjątki domenowe
- * modułów) na 400 {@code application/problem+json} z komunikatem
- * w {@code detail}, więc komunikat nie zawiera szczegółów wewnętrznych.
- * Błąd, po którym aplikacja pokazuje osobny stan ekranu, ma też rodzaj
- * w {@code type} (RFC 9457), np. zgłoszenie spoza terenu PWr (BR-G5).
- * Typ nie zależy od Spring Web ani Jacksona.</p>
+ * <p>Wymagania: BR-G5</p>
  *
  * @since 0.1.0
  */

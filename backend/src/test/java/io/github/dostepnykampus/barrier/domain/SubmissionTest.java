@@ -12,7 +12,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 /**
- * Zgłoszenie z serwera (US8, V3): wersja co najmniej 1 i komplet pól.
+ * Zgłoszenie z serwera (V3): wersja co najmniej 1 i komplet pól.
+ *
+ * <p>Wymagania: US8</p>
  *
  * @since 0.1.0
  */

@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-/** Odczyt zdjęć z kontraktu: bajty JPEG, właściwy zasób i błędy jako wyniki (US2.2, #1138). */
+/** Odczyt zdjęć z kontraktu: bajty JPEG, właściwy zasób i błędy jako wyniki. Wymagania: US2.2 */
 class SubmissionPhotoReadTest {
     private val server = MockWebServer()
     private val http = OkHttpClient.Builder().retryOnConnectionFailure(false).build()

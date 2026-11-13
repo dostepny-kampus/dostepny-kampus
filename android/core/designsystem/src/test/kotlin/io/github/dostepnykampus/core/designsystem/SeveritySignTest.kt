@@ -29,12 +29,12 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** Znak uciążliwości bariery: trzy kształty w tych samych dwóch kolorach (US1.3, NFR-21). */
+/** Znak uciążliwości bariery: trzy kształty w tych samych dwóch kolorach. Wymagania: US1.3, NFR-21 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h240dp-xhdpi")
 class SeveritySignTest {
-    /** Wiersz: V1, bariery jako znak uciążliwości, kształt, nie kolor (NFR-21). */
+    /** Wiersz: V1, bariery jako znak uciążliwości, kształt, nie kolor. Wymagania: NFR-21 */
     @Test
     fun nfr21_three_shapes_same_colors() {
         val images =

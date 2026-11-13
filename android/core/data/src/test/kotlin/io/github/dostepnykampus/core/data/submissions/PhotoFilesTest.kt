@@ -22,7 +22,7 @@ import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Pliki zdjęć znikają z pamięci aplikacji po wysłaniu zgłoszenia i po zastąpieniu poprawką (NFR-5, #857). */
+/** Pliki zdjęć znikają z pamięci aplikacji po wysłaniu zgłoszenia i po zastąpieniu poprawką. Wymagania: NFR-5 */
 class PhotoFilesTest {
     @TempDir
     lateinit var tempDir: File

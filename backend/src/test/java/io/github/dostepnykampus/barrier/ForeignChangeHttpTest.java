@@ -20,7 +20,9 @@ import org.springframework.web.context.WebApplicationContext;
 /**
  * Zwykłą zmianę przyjętego zgłoszenia z pomiaru precyzyjnego składa tylko
  * autor, a zmianę zgłoszenia szybkiego i zmianę „bariera usunięta” dowolny
- * Zbierający (BR-3, BR-18, BR-19).
+ * Zbierający.
+ *
+ * <p>Wymagania: BR-3, BR-18, BR-19</p>
  *
  * @since 0.1.0
  */

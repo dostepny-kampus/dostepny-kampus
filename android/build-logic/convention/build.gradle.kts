@@ -18,6 +18,7 @@ dependencies {
     implementation(libs.hilt.gradlePlugin)
     implementation(libs.ksp.gradlePlugin)
     implementation(libs.moduleGraphAssert.gradlePlugin)
+    implementation(libs.dependencyAnalysis.gradlePlugin)
     implementation(libs.roborazzi.gradlePlugin)
     implementation(libs.snakeyaml.engine)
     implementation(libs.kotlinpoet)

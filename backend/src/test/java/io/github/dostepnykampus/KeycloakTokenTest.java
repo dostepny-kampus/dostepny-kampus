@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -25,15 +26,18 @@ import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Serwer z domyślnym dekoderem ocenia token z prawdziwego Keycloaka
- * (NFR-33, US14.1, ADR-0003): podpis i wystawcę realmu oraz role z
+ * (ADR-0003): podpis i wystawcę realmu oraz role z
  * {@code realm_access.roles}.
  *
  * <p>Ma własny kontekst bez tożsamości testowej, bo sprawdza drogę używaną
  * w działającym systemie: adres realmu z ustawień, klucze pobrane z realmu
  * i odczyt ról z tokenu konta z {@code infra/keycloak/realm.json}.</p>
  *
+ * <p>Wymagania: NFR-33, US14.1</p>
+ *
  * @since 0.1.0
  */
+@Tag("kontekst-springa")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import(
     {

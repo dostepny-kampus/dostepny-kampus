@@ -10,11 +10,13 @@ import java.util.regex.Pattern;
 
 /**
  * Typ bariery z klasyfikacji barier TB-1…TB-29, schemat BarrierType
- * w OpenAPI (US7.3).
+ * w OpenAPI.
  *
  * <p>Każda droga utworzenia przyjmuje tylko numer od 1 do 29; poza nim
  * rzuca {@link InvalidSubmission} z opisem „Typ bariery spoza
  * TB-1…TB-29”.</p>
+ *
+ * <p>Wymagania: US7.3</p>
  *
  * @param number Numer typu w klasyfikacji, od 1 do 29
  * @since 0.1.0
@@ -64,7 +66,9 @@ public record BarrierType(int number) {
     }
 
     /**
-     * Czy to typ „inna bariera”, który wymaga opisu (US7.3).
+     * Czy to typ „inna bariera”, który wymaga opisu.
+     *
+     * <p>Wymagania: US7.3</p>
      *
      * @return Prawda tylko dla TB-29
      */

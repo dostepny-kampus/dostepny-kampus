@@ -15,12 +15,12 @@ import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.CoroutineContext
 
 /**
- * Zapis wyników wysyłki w kolejce i historii pod blokadą wierszy (#855).
+ * Zapis wyników wysyłki w kolejce i historii pod blokadą wierszy.
  *
  * Blokada chroni tylko odczyt i zapis wierszy, nie wywołania serwera, więc poprawka z C3 zapisuje się od razu,
  * także gdy wysyłka czeka na sieć. Wynik trafia do wiersza tylko wtedy, gdy wiersza nie zastąpiła w tym czasie
  * poprawka: inaczej kolejka oznaczyłaby jako wysłaną albo usunęła treść, której serwer nie dostał.
- * Zapisy wiersza kolejki i historii jednego wyniku są jedną transakcją bazy (#859).
+ * Zapisy wiersza kolejki i historii jednego wyniku są jedną transakcją bazy.
  */
 internal class SentResults(
     private val store: PendingSubmissionDao,
@@ -34,7 +34,9 @@ internal class SentResults(
 
     /**
      * Wynik wysłania treści [item]. Gdy w tym czasie zapisano poprawkę, wersja nadana starej treści staje się jej
-     * wersją bazową, więc poprawka idzie jako edycja, a nie drugie utworzenie (BR-9, BR-10).
+     * wersją bazową, więc poprawka idzie jako edycja, a nie drugie utworzenie.
+     *
+     * Wymagania: BR-9, BR-10
      */
     suspend fun content(item: PendingSubmissionWithPhotos, result: ApiResult<*>, outcome: Outcome): Outcome =
         lock.withLock {
@@ -57,7 +59,7 @@ internal class SentResults(
             }
         }
 
-    /** Serwer ma całe zgłoszenie [item]: wiersz i pliki zdjęć znikają z telefonu (NFR-5, #857). */
+    /** Serwer ma całe zgłoszenie [item]: wiersz i pliki zdjęć znikają z telefonu. Wymagania: NFR-5 */
     suspend fun finish(item: PendingSubmissionWithPhotos): Outcome {
         val outcome =
             ifCurrent(item) {
@@ -69,7 +71,7 @@ internal class SentResults(
         return outcome
     }
 
-    /** Telefon nie odczytał [item]; odmowa bez kodu, więc jeden zły wiersz nie zatrzymuje kolejki (#856). */
+    /** Telefon nie odczytał [item]; odmowa bez kodu, więc jeden zły wiersz nie zatrzymuje kolejki. */
     suspend fun unreadable(item: PendingSubmissionWithPhotos): Outcome =
         ifCurrent(item) { refused(item.submission.id, code = null) }
 

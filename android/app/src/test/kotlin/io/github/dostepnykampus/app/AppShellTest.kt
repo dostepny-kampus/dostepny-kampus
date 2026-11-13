@@ -110,13 +110,13 @@ import org.robolectric.shadows.ShadowNetworkCapabilities
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Pozycja „Mapa” paska dolnego; V1 ma też „Mapa” w przełączniku „Mapa” i „Lista budynków” (NFR-19). */
+/** Pozycja „Mapa” paska dolnego; V1 ma też „Mapa” w przełączniku „Mapa” i „Lista budynków”. Wymagania: NFR-19 */
 internal val MapTab = hasText("Mapa") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
 
-/** Opis uchwytu arkusza V2 dla TalkBack, ten sam na małej karcie i na pełnym ekranie (US2.8, NFR-18). */
+/** Opis uchwytu arkusza V2 dla TalkBack, ten sam na małej karcie i na pełnym ekranie. Wymagania: US2.8, NFR-18 */
 internal const val EXPAND_HANDLE = "Rozwiń opis budynku"
 
-/** Uchwyt arkusza V2: przycisk [EXPAND_HANDLE] ze stanem „rozwinięte” albo „zwinięte” (US2.8, NFR-18). */
+/** Uchwyt arkusza V2: przycisk [EXPAND_HANDLE] ze stanem „rozwinięte” albo „zwinięte”. Wymagania: US2.8, NFR-18 */
 internal fun sheetHandle(isExpanded: Boolean): SemanticsMatcher =
     hasContentDescription(EXPAND_HANDLE) and hasStateDescription(if (isExpanded) "rozwinięte" else "zwinięte")
 
@@ -226,7 +226,11 @@ class AppShellTest {
     private var helpLeft = 0
     private lateinit var mapViewModel: CampusMapViewModel
 
-    /** Telefon z internetem: w Robolectric sieć nie jest sprawdzona, więc V1 pokazałoby „Bez internetu” (US9.1). */
+    /**
+     * Telefon z internetem: w Robolectric sieć nie jest sprawdzona, więc V1 pokazałoby „Bez internetu”.
+     *
+     * Wymagania: US9.1
+     */
     @Before
     fun online() {
         val connectivity = compose.activity.getSystemService(ConnectivityManager::class.java)
@@ -284,7 +288,7 @@ class AppShellTest {
         assertEquals(1, helpLeft)
     }
 
-    /** Wiersz: pasek dolny, „Zgłoś barierę” → L1 bez paska dolnego, RO-GOS, US14.2. */
+    /** Wiersz: pasek dolny, „Zgłoś barierę” → L1 bez paska dolnego. Wymagania: RO-GOS, US14.2 */
     @Test
     fun us14_2_guest_report_l1_no_bar() {
         show()
@@ -295,8 +299,10 @@ class AppShellTest {
     }
 
     /**
-     * Gość na prośbie o logowanie wybiera „Nie teraz”: wraca mapa, kroków zgłoszenia nie ma (RO-GOS, US14.2).
+     * Gość na prośbie o logowanie wybiera „Nie teraz”: wraca mapa, kroków zgłoszenia nie ma.
      * Scenariusz: zgloszenie-szybkie.feature: Gość rezygnuje z logowania
+     *
+     * Wymagania: RO-GOS, US14.2
      */
     @Test
     fun us14_2_guest_not_now_to_map() {
@@ -307,7 +313,11 @@ class AppShellTest {
         compose.onAllNodesWithText("Krok 1 z 3").assertCountEquals(0)
     }
 
-    /** Zalogowanie po starcie: pasek dolny pokazuje pozycję pracownika bez ponownego otwarcia ekranu (US14.1). */
+    /**
+     * Zalogowanie po starcie: pasek dolny pokazuje pozycję pracownika bez ponownego otwarcia ekranu.
+     *
+     * Wymagania: US14.1
+     */
     @Test
     fun us14_1_bar_after_sign_in() {
         val roles = TestRoles()
@@ -321,8 +331,10 @@ class AppShellTest {
     }
 
     /**
-     * Wiersz: pasek dolny, „Konto i praca” → L2, role pracownicze, US14.1. Przy oknie < 600 dp pozycje paska stoją
-     * w jednym rzędzie (decyzja 69, NFR-51).
+     * Wiersz: pasek dolny, „Konto i praca” → L2, role pracownicze. Przy oknie < 600 dp pozycje paska stoją
+     * w jednym rzędzie.
+     *
+     * Wymagania: NFR-51, US14.1
      */
     @Test
     fun us14_1_staff_konto_i_praca_l2() {
@@ -336,7 +348,7 @@ class AppShellTest {
         assertEquals(1, ys.distinct().size)
     }
 
-    /** Wymagania wspólne i reguła 8, decyzje 69 i 77: okno ≥ 600 dp → pasek z boku, karty od góry, NFR-18, NFR-51. */
+    /** Wymagania wspólne i reguła 8: okno ≥ 600 dp → pasek z boku, karty od góry. Wymagania: NFR-18, NFR-51 */
     @Test
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(qualifiers = "w640dp-h360dp-xhdpi")
@@ -346,10 +358,12 @@ class AppShellTest {
     }
 
     /**
-     * Reguła 8, decyzje 69 i 77: pasek z boku przy czcionce 200 % ma te same zasady napisów i się przewija, NFR-20.
+     * Reguła 8: pasek z boku przy czcionce 200 % ma te same zasady napisów i się przewija.
      *
-     * Zrzut po wczytaniu listy, od której V1 startuje przy dużej czcionce (NFR-19): bez tego zależy od tego,
+     * Zrzut po wczytaniu listy, od której V1 startuje przy dużej czcionce: bez tego zależy od tego,
      * czy katalog zdążył się wczytać.
+     *
+     * Wymagania: NFR-19, NFR-20
      */
     @Test
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -362,7 +376,7 @@ class AppShellTest {
         checkSideBar()
     }
 
-    /** Reguła 8, decyzja 77: gdy cztery pozycje nie mieszczą się w wysokości okna, pasek z boku się przewija. */
+    /** Reguła 8: gdy cztery pozycje nie mieszczą się w wysokości okna, pasek z boku się przewija. */
     @Test
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(qualifiers = "w640dp-h240dp", fontScale = 2f)
@@ -373,8 +387,10 @@ class AppShellTest {
     }
 
     /**
-     * Wiersz: V2, „Wstecz” → V1 w poprzednim stanie, US1.1, decyzja 83; ponowne „Mapa” → świeże V1, decyzja 72.
-     * V1 żyje pod arkuszem V2, więc zostaje nawet stan z remember (decyzja 48).
+     * Wiersz: V2, „Wstecz” → V1 w poprzednim stanie; ponowne „Mapa” → świeże V1.
+     * V1 żyje pod arkuszem V2, więc zostaje nawet stan z remember.
+     *
+     * Wymagania: US1.1
      */
     @Test
     fun us1_1_v2_back_keeps_v1_state() {
@@ -400,8 +416,10 @@ class AppShellTest {
     }
 
     /**
-     * Wiersz: V3, „Wstecz” → V2 → V1 w poprzednim stanie, US1.1, decyzja 83: ViewModel V1 żyje tyle, co wpis V1
-     * w historii, także gdy V1 nie jest rysowane pod V3; ponowne „Mapa” → nowy ViewModel, decyzja 72.
+     * Wiersz: V3, „Wstecz” → V2 → V1 w poprzednim stanie: ViewModel V1 żyje tyle, co wpis V1
+     * w historii, także gdy V1 nie jest rysowane pod V3; ponowne „Mapa” → nowy ViewModel.
+     *
+     * Wymagania: US1.1
      */
     @Test
     fun us1_1_v3_back_keeps_v1_model() {
@@ -436,8 +454,10 @@ class AppShellTest {
 
     /**
      * Wiersz: V1, dotknięcie konturu → V2, mała karta o wysokości treści nad mapą, a V1 dostaje zasłoniętą część
-     * jako dopełnienie od dołu, US2.8, decyzje 87, 115; uchwyt, przewinięcie treści albo przeciągnięcie w górę
-     * rozwija ją na całe okno z kartą w trybie pełnego ekranu, US2.8, NFR-53.
+     * jako dopełnienie od dołu; uchwyt, przewinięcie treści albo przeciągnięcie w górę
+     * rozwija ją na całe okno z kartą w trybie pełnego ekranu.
+     *
+     * Wymagania: US2.8, NFR-53
      */
     @Test
     fun us2_8_compact_then_expands() {
@@ -479,7 +499,7 @@ class AppShellTest {
         }
     }
 
-    /** Wiersz: V2 rozwinięte, „Wstecz” → V1, dotknięcie konturu → nowe V2 znów jako mała karta, US2.8, decyzja 115. */
+    /** Wiersz: V2 rozwinięte, „Wstecz” → V1, dotknięcie konturu → nowe V2 znów jako mała karta. Wymagania: US2.8 */
     @Test
     fun us2_8_new_v2_starts_compact() {
         compose.setContent {
@@ -497,10 +517,12 @@ class AppShellTest {
     }
 
     /**
-     * Wiersz: pełny ekran po małej karcie, „Wstecz” w górnym pasku karty → znowu mała karta, NFR-15; „Zamknij”
-     * małej karty → V1 bez zaznaczenia budynku, US2.8, decyzja 116. Nad małą kartą zostaje co najmniej 300 dp
-     * mapy, czyli miejsce na przyciski mapy (NFR-53, decyzja 151).
+     * Wiersz: pełny ekran po małej karcie, „Wstecz” w górnym pasku karty → znowu mała karta; „Zamknij”
+     * małej karty → V1 bez zaznaczenia budynku. Nad małą kartą zostaje co najmniej 300 dp
+     * mapy, czyli miejsce na przyciski mapy.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Z małej karty osoba rozwija opis albo wraca do mapy
+     *
+     * Wymagania: NFR-53, NFR-15, US2.8
      */
     @Test
     fun us2_8_card_back_then_close() {
@@ -524,8 +546,10 @@ class AppShellTest {
     }
 
     /**
-     * Wiersz: V1 pod arkuszem V2, dotknięcie konturu innego budynku → jego V2 jako arkusz nad tą samą mapą, US2,
-     * decyzja 48; „Wstecz” → V1, US1.1.
+     * Wiersz: V1 pod arkuszem V2, dotknięcie konturu innego budynku → jego V2 jako arkusz nad tą samą mapą;
+     * „Wstecz” → V1.
+     *
+     * Wymagania: US2, US1.1
      */
     @Test
     fun us2_other_v2_sheet_over_v1() {
@@ -546,7 +570,7 @@ class AppShellTest {
         compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()
     }
 
-    /** Wiersz: każdy ekran poza V1, „Wstecz”: historia przetrwa odtworzenie aktywności, NFR-15, NFR-22. */
+    /** Wiersz: każdy ekran poza V1, „Wstecz”: historia przetrwa odtworzenie aktywności. Wymagania: NFR-15, NFR-22 */
     @Test
     fun nfr22_history_survives_restore() {
         val restoration = StateRestorationTester(compose)
@@ -572,8 +596,10 @@ class AppShellTest {
     }
 
     /**
-     * Wiersz: V2 → „Sprawdź, którędy wejść” → V3, „Wstecz” → V2 → V1 bez zaznaczenia budynku, decyzja 116; historia
-     * z parametrami tras przetrwa odtworzenie aktywności, US3, US1.1, NFR-22.
+     * Wiersz: V2 → „Sprawdź, którędy wejść” → V3, „Wstecz” → V2 → V1 bez zaznaczenia budynku; historia
+     * z parametrami tras przetrwa odtworzenie aktywności.
+     *
+     * Wymagania: US3, US1.1, NFR-22
      */
     @Test
     fun nfr22_params_survive_restore() {
@@ -605,7 +631,7 @@ class AppShellTest {
         compose.onNodeWithText("V1").assertExists("V1 bez zaznaczenia budynku po zamknięciu małej karty")
     }
 
-    /** Wiersz: wymagania wspólne, pasek dolny na V1, bez niego na L1: treść nie wchodzi pod paski, NFR-52. */
+    /** Wiersz: wymagania wspólne, pasek dolny na V1, bez niego na L1: treść nie wchodzi pod paski. Wymagania: NFR-52 */
     @Test
     fun nfr52_content_insets_after_bar() {
         compose.setContent {

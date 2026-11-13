@@ -22,8 +22,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
 /**
- * Start aplikacji planuje wysyłkę kolejki zgłoszeń z poprzedniego procesu (NFR-6). `SYNC_WORK` to nazwa zadania
+ * Start aplikacji planuje wysyłkę kolejki zgłoszeń z poprzedniego procesu. `SYNC_WORK` to nazwa zadania
  * z `SubmissionSyncScheduler` w `core:data`.
+ *
+ * Wymagania: NFR-6
  */
 @RunWith(RobolectricTestRunner::class)
 class SubmissionSyncAtStartTest {
@@ -39,7 +41,7 @@ class SubmissionSyncAtStartTest {
         WorkManagerTestInitHelper.closeWorkDatabase()
     }
 
-    /** Wiersz: NFR-6, start aplikacji planuje wysyłkę, która czeka na internet. */
+    /** Wiersz: start aplikacji planuje wysyłkę, która czeka na internet. Wymagania: NFR-6 */
     @Test
     fun nfr6_start_waits_for_network() {
         SubmissionSyncInitializer().create(app)
@@ -48,7 +50,7 @@ class SubmissionSyncAtStartTest {
         assertEquals(NetworkType.CONNECTED, work.constraints.requiredNetworkType)
     }
 
-    /** Wiersz: NFR-6, drugi start w tym samym oknie nie dubluje zadania. */
+    /** Wiersz: drugi start w tym samym oknie nie dubluje zadania. Wymagania: NFR-6 */
     @Test
     fun nfr6_second_start_one_work() {
         SubmissionSyncInitializer().create(app)
@@ -57,8 +59,10 @@ class SubmissionSyncAtStartTest {
     }
 
     /**
-     * Wiersz: NFR-6, #854, planowanie po zapisie nie przepada przy zadaniu w kolejce WorkManagera: dochodzi po nim,
+     * Wiersz: planowanie po zapisie nie przepada przy zadaniu w kolejce WorkManagera: dochodzi po nim,
      * więc zadanie, które czytało kolejkę przed zapisem, nie zostawia zgłoszenia do kolejnego startu.
+     *
+     * Wymagania: NFR-6
      */
     @Test
     fun nfr6_save_appends_work() {
@@ -70,7 +74,7 @@ class SubmissionSyncAtStartTest {
         assertEquals(setOf(WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED), states)
     }
 
-    /** Wiersz: NFR-6, inicjalizator jest w manifeście, więc system woła go przy starcie procesu. */
+    /** Wiersz: inicjalizator jest w manifeście, więc system woła go przy starcie procesu. Wymagania: NFR-6 */
     @Test
     fun nfr6_initializer_in_manifest() {
         val provider =

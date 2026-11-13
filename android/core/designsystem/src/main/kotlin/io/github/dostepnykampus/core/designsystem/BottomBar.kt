@@ -58,17 +58,13 @@ class BottomBarItems(items: List<BottomBarItem>) {
 }
 
 /**
- * Pasek dolny z pozycjami [items] w jednym rzędzie, wybrana [selectedIndex]; dotknięcie pozycji wywołuje [onSelect]
- * z jej numerem. Stoi poza przewijaną treścią (`bottomBar` w `Scaffold`), więc nigdy się nie chowa (NFR-52).
- * TalkBack czyta napis, rolę karty i stan wybrany (NFR-18).
+ * Pasek dolny z pozycjami [items] w jednym rzędzie, wybrana [selectedIndex]; dotknięcie wywołuje [onSelect] z numerem
+ * pozycji. Stoi poza przewijaną treścią, więc się nie chowa; TalkBack czyta napis, rolę karty i stan wybrany. Napisy
+ * mają jeden rozmiar i najwyżej dwa wiersze: rosną z czcionką, dopóki najdłuższe słowo mieści się w pozycji, ale co
+ * najmniej 1,3 raza. Po jednoliterowym słowie stoi twarda spacja („Konto / i praca”). Wybrana pozycja ma wskaźnik
+ * `primaryContainer` i pogrubiony napis.
  *
- * Napisy (reguła 8, NFR-20) mają jeden rozmiar i najwyżej dwa wiersze: rosną z czcionką, dopóki najdłuższe słowo
- * wszystkich napisów mieści się w pozycji, ale co najmniej 1,3 raza. Pozycje dzieli [Odstepy.s] od siebie i od
- * krawędzi. Po jednoliterowym słowie stoi twarda spacja, więc „Konto i praca” łamie się jako „Konto / i praca”.
- *
- * Tokeny: tło `surfaceContainerLow`, górna krawędź [Obramowania.ramka] w kolorze `outlineVariant`; napis
- * `labelMedium` w kolorze `onSurfaceVariant`, wybrany `onSurface` z [Typografia.wyroznienieWaga]; ikona
- * [Ikony.rozmiar] w kolorze `onSurfaceVariant`, wybrana `onPrimaryContainer` na wskaźniku `primaryContainer`.
+ * Wymagania: NFR-52, NFR-18, NFR-20
  */
 @Composable
 fun BottomBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
@@ -102,12 +98,14 @@ fun BottomBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit
 }
 
 /**
- * Pasek nawigacji z boku ekranu w oknie o szerokości co najmniej 600 dp (wymagania wspólne, decyzja 69): te same
+ * Pasek nawigacji z boku ekranu w oknie o szerokości co najmniej 600 dp (wymagania wspólne): te same
  * pozycje [items], napisy, kolejność i tokeny co [BottomBar], od góry, z krawędzią po stronie treści. Nie zabiera
- * wysokości okna i nigdy się nie chowa (NFR-52). TalkBack czyta napis, rolę karty i stan wybrany (NFR-18).
+ * wysokości okna i nigdy się nie chowa. TalkBack czyta napis, rolę karty i stan wybrany.
  *
  * Reguła 8: stała szerokość pozycji jak w pasku dolnym w oknie 360 dp (80 dp), ten sam rozmiar napisów, 2 wiersze,
  * [Odstepy.s] od sąsiada i krawędzi. Gdy pozycje nie mieszczą się w wysokości okna, pasek się przewija.
+ *
+ * Wymagania: NFR-52, NFR-18
  */
 @Composable
 fun SideBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {

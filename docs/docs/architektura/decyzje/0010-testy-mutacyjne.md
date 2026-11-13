@@ -14,16 +14,15 @@ Próg pokrycia nie widzi testu, który wykonuje linię, ale nie sprawdza jej wyn
 
 ## Decyzja
 
-- PIT 1.30.2 z `pitest-junit5-plugin` 1.2.3 działa w jobie `mutacje` przepływu `backend.yml` po wypchnięciu na `sprint/*`, nie w każdym PR.
-- Zakres na start: pakiety `*.domain`, bez bazy danych. Pakiet `barrier.json` dojdzie po skróceniu czasu jego testów: lokalnie nie skończył się w 10 minut.
+- PIT 1.30.2 z `pitest-junit5-plugin` 1.2.3 działa w jobie `serwer` przepływu `backend.yml`, po `verify`, w PR i w grupie kolejki scalania. Do 13 listopada 2026 roku działał w osobnym jobie po wypchnięciu na `sprint/*`; pomiar pokazał około 20 sekund analizy, więc powód kosztu odpadł (#1308).
+- Zakres: kod sprawdzany szybkimi testami, bez kontekstu Springa, bazy i kontenerów. Testy z kontekstem Springa mają znacznik JUnit `kontekst-springa`, który PIT wyklucza; znacznik na każdej klasie z `@SpringBootTest` i na zestawie scenariuszy wymusza `SpringTestTagArchitectureTest`. Zakres klas rośnie po dopisaniu testów dla mutacji bez pokrycia (pomiar w #1311).
 - Próg zabitych mutacji to dzisiejszy wynik, 100% (70 z 70), i może tylko rosnąć. Zmianę `pitest`, `mutationThreshold` albo `excludedClasses` w `pom.xml` zgłasza strażnik jakości.
 - Wyjątek od ADR-0004: ostatnie wydanie `pitest-junit5-plugin` jest z 20 maja 2025 roku, starsze niż 12 miesięcy. Innej wtyczki PIT dla JUnit nie ma, a Arcmutate nie ma wolnej licencji. Wtyczka działa z Javą 25 i JUnit 6.0.3 projektu. Wyjątek przyjęty 12 listopada 2026 roku w #900.
 
 ## Konsekwencje
 
-- Dobrze: test bez asercji zachowania w dziedzinie daje czerwony przebieg sprintu, a raport PIT wskazuje linię i mutację.
-- Gorzej: błąd widać dopiero po scaleniu, nie w PR.
-- Gorzej: wtyczka bez nowych wydań może przestać działać po aktualizacji JUnit. Wtedy job `mutacje` pokaże błąd uruchomienia.
+- Dobrze: test bez asercji zachowania w dziedzinie daje czerwony job `serwer` w PR, a raport PIT wskazuje linię i mutację.
+- Gorzej: wtyczka bez nowych wydań może przestać działać po aktualizacji JUnit. Wtedy krok PIT pokaże błąd uruchomienia, a komunikat odróżni go od mutacji, która przeżyła.
 
 ## Źródła
 

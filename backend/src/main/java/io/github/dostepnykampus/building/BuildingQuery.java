@@ -18,14 +18,12 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Odczyt REST budynków z tabeli buildings: lista na mapie (US1), podpowiedź
- * budynku dla punktu (BR-G2) i karta budynku z wejściami z tabeli entrances
- * (US2). Wejścia karty są czytane osobnym zapytaniem po zmapowaniu wiersza
- * budynku. Zawieranie punktu ma jedną implementację w {@link Outlines}, więc
- * podpowiedź i budynek zapisany przy zgłoszeniu szybkim są zawsze równe
- * (BR-14). Atrybucja listy to wszystkie źródła konturów bez powtórzeń,
- * alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą atrybucję
- * (NFR-40, #852).
+ * Odczyt REST budynków: lista na mapie, podpowiedź budynku dla punktu i karta budynku
+ * z wejściami. Zawieranie punktu liczy tylko {@link Outlines}, więc podpowiedź i budynek
+ * zapisany przy zgłoszeniu szybkim są zawsze równe. Atrybucja listy to źródła konturów
+ * bez powtórzeń, alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą atrybucję.
+ *
+ * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40</p>
  *
  * @since 0.1.0
  */
@@ -33,7 +31,9 @@ import tools.jackson.databind.ObjectMapper;
 final class BuildingQuery {
 
     /**
-     * Promień podpowiedzi budynku w metrach, większy niż błąd GNSS 15 m (NFR-3).
+     * Promień podpowiedzi budynku w metrach, większy niż błąd GNSS 15 m.
+     *
+     * <p>Wymagania: NFR-3</p>
      */
     static final int NEAR_METERS = 50;
 

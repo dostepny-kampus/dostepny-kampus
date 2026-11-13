@@ -36,7 +36,7 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 
 /**
- * Testy #839: po zapisanej edycji zdjęcia spoza nowej listy photoIds znikają
+ * Po zapisanej edycji zdjęcia spoza nowej listy photoIds znikają
  * z magazynu RustFS, a błąd magazynu nie zmienia wyniku edycji.
  *
  * @since 0.1.0
@@ -96,7 +96,8 @@ final class SubmissionPhotosPruneTest {
             new PhotoStore(
                 new SubmissionPhotosPruneTest.NoBucket(),
                 new PhotoSettings(URI.create("http://magazyn"), "brak-kubelka", "", "")
-            )
+            ),
+            context.getBean(SubmissionService.class)
         );
         final UUID submission = UUID.randomUUID();
         Assertions.assertDoesNotThrow(

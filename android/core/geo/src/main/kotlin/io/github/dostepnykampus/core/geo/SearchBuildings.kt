@@ -8,12 +8,14 @@ package io.github.dostepnykampus.core.geo
 import io.github.dostepnykampus.core.model.Building
 
 /**
- * Wyszukanie budynku po symbolu w różnym zapisie (US1.1), bez sieci.
+ * Wyszukanie budynku po symbolu w różnym zapisie, bez sieci.
  *
  * Wielkość liter nie ma znaczenia, a między literą i numerem może stać dywiz, inna kreska, odstęp albo nic,
  * np. „c13”, „c-13”, „C 13” i „C–13” znajdują C-13. Symbol musi się zgadzać w całości: „C1” znajduje C-1,
  * a nie C-13.
  * Tekst, który nie jest symbolem budynku, np. „A-1 329”, albo symbol spoza [buildings] daje pusty wynik.
+ *
+ * Wymagania: US1.1
  *
  * @param query tekst wpisany w pole symbolu budynku
  * @param buildings budynki, wśród których szukamy

@@ -26,8 +26,9 @@ import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * Zgłoszenie, którego telefon nie odczyta, zostaje „Nie wysłano” bez kodu odmowy, a kolejka wysyła następne
- * (BR-26, US9.5, NFR-5).
+ * Zgłoszenie, którego telefon nie odczyta, zostaje „Nie wysłano” bez kodu odmowy, a kolejka wysyła następne.
+ *
+ * Wymagania: BR-26, US9.5, NFR-5
  */
 class UnreadableSubmissionTest {
     @TempDir

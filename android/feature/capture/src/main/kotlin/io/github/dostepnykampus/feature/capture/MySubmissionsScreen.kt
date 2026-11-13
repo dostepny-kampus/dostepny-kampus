@@ -32,7 +32,9 @@ import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.Odstepy
 
 /**
- * C3 „Moje zgłoszenia” z listą z telefonu (US8.1, NFR-5).
+ * C3 „Moje zgłoszenia” z listą z telefonu.
+ *
+ * Wymagania: US8.1, NFR-5
  *
  * @param actions czynności ekranu
  * @param modifier wymiary nadane przez aplikację
@@ -49,13 +51,15 @@ fun MySubmissionsScreen(
 }
 
 /**
- * Widok C3 bez modelu widoku: lista od najnowszego albo stan pusty (US8.1, PW-12), nad listą sprawdzanie
- * statusów z serwera (US8.2).
+ * Widok C3 bez modelu widoku: lista od najnowszego albo stan pusty (PW-12), nad listą sprawdzanie
+ * statusów z serwera.
+ *
+ * Wymagania: US8.1, US8.2, NFR-50
  *
  * @param state stan ekranu
  * @param actions czynności ekranu
  * @param modifier wymiary nadane przez aplikację
- * @param onRetry „Spróbuj ponownie” po błędzie sprawdzania statusów (NFR-50)
+ * @param onRetry „Spróbuj ponownie” po błędzie sprawdzania statusów
  */
 @Composable
 fun MySubmissionsContent(
@@ -82,7 +86,7 @@ private fun SubmissionList(state: MySubmissionsUiState.Ready, actions: MySubmiss
             ListTop(list = state.list, onMeasure = actions.onMeasure)
         }
         item {
-            StatusCheckLine(check = state.check, onRetry = onRetry)
+            StatusCheckLine(check = state.check, isOnline = state.isOnline, onRetry = onRetry)
         }
         items(state.list.items, key = { it.id }) { item ->
             val open = actions.onOpen.takeIf { item.state != SendState.SENT }
@@ -107,11 +111,14 @@ private fun ListTop(list: MySubmissions, onMeasure: () -> Unit) {
 }
 
 @Composable
-private fun StatusCheckLine(check: StatusCheck, onRetry: () -> Unit) {
+private fun StatusCheckLine(check: StatusCheck, isOnline: Boolean, onRetry: () -> Unit) {
     Column(
         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
         verticalArrangement = Arrangement.spacedBy(Odstepy.s),
     ) {
+        if (!isOnline) {
+            Text(stringResource(R.string.moje_bez_internetu), style = MaterialTheme.typography.bodyMedium)
+        }
         when (check) {
             StatusCheck.CHECKING -> {
                 Text(stringResource(R.string.moje_sprawdzamy), style = MaterialTheme.typography.bodyMedium)

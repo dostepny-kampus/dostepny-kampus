@@ -9,12 +9,14 @@ import io.github.dostepnykampus.core.model.FloorList
 import io.github.dostepnykampus.core.network.ApiResult
 import java.util.concurrent.ConcurrentHashMap
 
-/** Piętra budynku z serwera dla formularza C2 (US7.2, US16.1). */
+/** Piętra budynku z serwera dla formularza C2. Wymagania: US7.2, US16.1 */
 fun interface BuildingFloors {
     /**
-     * Piętra budynku [symbol] od najniższego; pusta lista dla budynku podstawowego (BR-G1). `null`, gdy serwer ich
+     * Piętra budynku [symbol] od najniższego; pusta lista dla budynku podstawowego. `null`, gdy serwer ich
      * nie podał (brak sieci, błąd serwera, nieznany budynek) i nic nie pobrano wcześniej; formularz zostaje wtedy przy
-     * wpisaniu piętra, bo brak planu nie blokuje zgłoszenia (BR-G1).
+     * wpisaniu piętra, bo brak planu nie blokuje zgłoszenia.
+     *
+     * Wymagania: BR-G1
      *
      * @param symbol symbol budynku
      */

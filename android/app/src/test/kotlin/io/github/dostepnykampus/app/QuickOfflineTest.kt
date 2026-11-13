@@ -51,7 +51,11 @@ import java.io.IOException
 import javax.inject.Inject
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** „Wyślij” w kroku 3 V4 bez sieci: model widoku, zapis aplikacji i kolejka na bazie z grafu Hilt (US4.2, BR-9). */
+/**
+ * „Wyślij” w kroku 3 V4 bez sieci: model widoku, zapis aplikacji i kolejka na bazie z grafu Hilt.
+ *
+ * Wymagania: US4.2, BR-9
+ */
 @HiltAndroidTest
 @RunWith(RobolectricTestRunner::class)
 @Config(application = HiltTestApplication::class, qualifiers = "w360dp-h800dp")

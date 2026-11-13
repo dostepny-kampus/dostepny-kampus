@@ -13,11 +13,12 @@ plugins {
 /**
  * Moduły poza progiem pokrycia: kod `core:designsystem` uruchamiają tylko testy Robolectric (zrzuty Roborazzi),
  * a ich wykonania Kover nie rejestruje, więc moduł sprawdzają zrzuty.
+ * Moduł `systemtest` to sam APK testów aplikacji uruchamiany z serwerem; nie ma kodu do pokrycia.
  */
-val coverageExcludedProjects = setOf(":core:designsystem")
+val coverageExcludedProjects = setOf(":core:designsystem", ":systemtest")
 
 /**
- * Klasy poza progiem pokrycia: widok MapLibre (`feature:map`, decyzja 86) uruchamia natywną bibliotekę mapy na ARM,
+ * Klasy poza progiem pokrycia: widok MapLibre (`feature:map`) uruchamia natywną bibliotekę mapy na ARM,
  * której Robolectric nie wczytuje, więc testy JVM go nie wykonają. Widok sprawdza zrzut na emulatorze, a jego logika
  * (kamera, styl, dane, trafienie dotknięcia, nagłówek HTTP) jest w funkcjach JVM z testami i zostaje pod progiem.
  */
@@ -28,7 +29,7 @@ val coverageExcludedClasses =
     )
 
 /**
- * Klasy generowane przez Hilt i Dagger (decyzja 97): nikt ich nie pisze, a graf sprawdza Hilt przy budowie. Nazwy
+ * Klasy generowane przez Hilt i Dagger: nikt ich nie pisze, a graf sprawdza Hilt przy budowie. Nazwy
  * z podkreśleniem tworzy tylko generator, bo ręczny kod ma nazwy klas bez podkreśleń (detekt `ClassNaming`).
  */
 val generatedDiClasses =

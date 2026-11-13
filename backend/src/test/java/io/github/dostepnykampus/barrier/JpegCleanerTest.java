@@ -18,8 +18,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Testy NFR-26: zdjęcie po zapisie nie ma EXIF z miejscem ani komentarza,
+ * Zdjęcie po zapisie nie ma EXIF z miejscem ani komentarza,
  * a obraz i profil kolorów zostają.
+ *
+ * <p>Wymagania: NFR-26</p>
  *
  * @since 0.1.0
  */

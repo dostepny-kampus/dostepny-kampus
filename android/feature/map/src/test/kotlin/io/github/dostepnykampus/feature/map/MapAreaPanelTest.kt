@@ -32,7 +32,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** Panel „Teren na mapie” mapy V1: lista terenów i wybór (US1.7, NFR-18, NFR-20). */
+/** Panel „Teren na mapie” mapy V1: lista terenów i wybór. Wymagania: US1.7, NFR-18, NFR-20 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp-xhdpi")
@@ -53,7 +53,9 @@ class MapAreaPanelTest {
 
     /**
      * Wiersz: V1, panel podaje przy każdym terenie nazwę, liczbę budynków i odległość, a pokazany teren jest
-     * „wybrany” (US1.7). Po otwarciu fokus stoi na nagłówku (NFR-20).
+     * „wybrany”. Po otwarciu fokus stoi na nagłówku.
+     *
+     * Wymagania: US1.7, NFR-20
      */
     @Test
     fun us1_7_panel_lists_areas() {
@@ -65,7 +67,7 @@ class MapAreaPanelTest {
         compose.onNodeWithText("1 budynek · 4 km").assertExists()
     }
 
-    /** Wiersz: V1, wybranie terenu z listy zgłasza jego nazwę, a „Zamknij” zamknięcie panelu (US1.7). */
+    /** Wiersz: V1, wybranie terenu z listy zgłasza jego nazwę, a „Zamknij” zamknięcie panelu. Wymagania: US1.7 */
     @Test
     fun us1_7_choice_close_reported() {
         compose.setContent { Panel() }
@@ -75,7 +77,7 @@ class MapAreaPanelTest {
         assertEquals(1, closed)
     }
 
-    /** Wiersz: V1, forma słowa „budynek” przy liczbie budynków terenu (US1.7). */
+    /** Wiersz: V1, forma słowa „budynek” przy liczbie budynków terenu. Wymagania: US1.7 */
     @Test
     fun us1_7_buildings_word() {
         val few = listOf(2, 3, 4, 22, 72, 104).map(::buildingsWord).distinct()

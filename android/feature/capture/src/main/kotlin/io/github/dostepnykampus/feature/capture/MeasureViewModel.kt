@@ -42,24 +42,30 @@ private const val STOP_TIMEOUT_MS = 5_000L
 
 private const val TICK_MS = 1_000L
 
-/** Stan pomiaru na ekranie C1 (US6.1). */
+/** Stan pomiaru na ekranie C1. Wymagania: US6.1 */
 sealed interface MeasureUiState {
     /** „Szukamy satelitów”: nie ma jeszcze odczytu ze znaną dokładnością. */
     data object Searching : MeasureUiState
 
-    /** Lokalizacja w telefonie jest wyłączona; po włączeniu pomiar rusza sam (UC7 4c, NFR-27). */
+    /** Lokalizacja w telefonie jest wyłączona; po włączeniu pomiar rusza sam. Wymagania: UC7, NFR-27 */
     data object LocationOff : MeasureUiState
 
-    /** Odbiornik zgłosił błąd, np. brak zgody albo brak GPS w telefonie; „Powtórz pomiar” zaczyna od nowa (NFR-50). */
+    /**
+     * Odbiornik zgłosił błąd, np. brak zgody albo brak GPS w telefonie; „Powtórz pomiar” zaczyna od nowa.
+     *
+     * Wymagania: NFR-50
+     */
     data object Failed : MeasureUiState
 
     /**
      * Pomiar trwa: „Pomiar: zostało [remainingSeconds] s”.
      *
+     * Wymagania: NFR-2, US6.5
+     *
      * @property remainingSeconds pełne sekundy do końca pomiaru
-     * @property average bieżąca średnia z szacowaną dokładnością (NFR-2)
+     * @property average bieżąca średnia z szacowaną dokładnością
      * @property satellites satelity użyte do pozycji według systemów
-     * @property sky wszystkie widoczne satelity do mapy nieba (US6.5)
+     * @property sky wszystkie widoczne satelity do mapy nieba
      */
     data class Measuring(
         val remainingSeconds: Int,
@@ -71,20 +77,27 @@ sealed interface MeasureUiState {
     /**
      * „Pomiar zakończony”: wynik i satelity z końca pomiaru.
      *
+     * Wymagania: US6.5, US6.2
+     *
      * @property average średnia z 30 s
      * @property satellites satelity użyte do pozycji według systemów na koniec pomiaru
-     * @property sky widoczne satelity na koniec pomiaru (US6.5)
-     * @property place budynek zgłoszenia: podpowiedź albo decyzja Zbierającego (US6.2)
+     * @property sky widoczne satelity na koniec pomiaru
+     * @property place budynek zgłoszenia: podpowiedź albo decyzja Zbierającego
+     * @property corrected punkt przesunięty przez Zbierającego po pomiarze albo `null` bez korekty (US6.4, NFR-3)
      */
     data class Finished(
         val average: PositionAverage,
         val satellites: Map<GnssSystem, Int>,
         val sky: List<Satellite> = emptyList(),
         val place: PlaceChoice = PlaceChoice.Locating,
-    ) : MeasureUiState
+        val corrected: GeoPoint? = null,
+    ) : MeasureUiState {
+        /** Punkt bariery: po korekcie przesunięty, bez niej średnia z pomiaru. Wymagania: US6.4 */
+        val point: GeoPoint get() = corrected ?: average.point
+    }
 }
 
-/** Budynek zgłoszenia po pomiarze (US6.2, BR-G2, BR-G4). */
+/** Budynek zgłoszenia po pomiarze. Wymagania: US6.2, BR-G2, BR-G4 */
 sealed interface PlaceChoice {
     /** Podpowiedź jeszcze się liczy. */
     data object Locating : PlaceChoice
@@ -103,20 +116,22 @@ sealed interface PlaceChoice {
      */
     data class Chosen(val building: Building) : PlaceChoice
 
-    /** „Poza budynkiem”: wybór Zbierającego albo brak budynku w promieniu 50 m; zgłoszenie bez piętra (BR-G4). */
+    /**
+     * „Poza budynkiem”: wybór Zbierającego albo brak budynku w promieniu 50 m; zgłoszenie bez piętra.
+     *
+     * Wymagania: BR-G4
+     */
     data object Outside : PlaceChoice
 }
 
 /**
- * Pomiar pozycji na ekranie C1 (US6.1, NFR-1). 30 s liczy się od pierwszego odczytu ze znaną dokładnością, więc czas
- * szukania satelitów nie skraca pomiaru. Odbiornik nasłuchuje, gdy ekran jest widoczny i jeszcze 5 s po zniknięciu
- * (obrót ekranu), a po końcu pomiaru przestaje (NFR-27). Wynik zostaje w ViewModelu, więc powrót na ekran go nie
- * kasuje; [repeat] zaczyna od nowa bez limitu (NFR-23). Po pomiarze podpowiada budynek z katalogu bez sieci,
- * a Zbierający go potwierdza, wybiera inny albo zostawia „poza budynkiem” (US6.2).
- * Odliczanie „Pomiar: zostało 12 s” zmienia się co sekundę także bez nowych odczytów (NFR-2). Błąd odbiornika
- * kończy pomiar stanem [MeasureUiState.Failed] zamiast zamykać aplikację (NFR-50). Wyłączona lokalizacja daje
- * [MeasureUiState.LocationOff] bez nasłuchu odbiornika, a jej włączenie zaczyna pomiar od nowa (UC7 4c). Przerwany
- * pomiar zaczyna się od nowa z [restarted], więc nie wygląda jak trwający (NFR-23, NFR-27).
+ * Pomiar pozycji na ekranie C1: 30 s od pierwszego odczytu ze znaną dokładnością, odliczanie co sekundę. Odbiornik
+ * nasłuchuje, gdy ekran jest widoczny i 5 s po zniknięciu, a po pomiarze przestaje; wynik zostaje w ViewModelu, a
+ * [repeat] zaczyna od nowa. Po pomiarze podpowiada budynek z katalogu bez sieci do potwierdzenia albo zmiany. Błąd
+ * odbiornika daje [MeasureUiState.Failed], wyłączona lokalizacja [MeasureUiState.LocationOff] bez nasłuchu, a jej
+ * włączenie i przerwany pomiar ([restarted]) zaczynają pomiar od nowa.
+ *
+ * Wymagania: US6.1, NFR-1, NFR-27, NFR-23, US6.2, NFR-2, NFR-50, UC7
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -135,8 +150,10 @@ class MeasureViewModel
 
         /**
          * Budynki najbliżej punktu do sekcji „Wybierz budynek”, od najbliższego, z odległością; puste, dopóki pomiar
-         * się nie skończy (US6.2, NFR-4). Podpowiedź budynku bierze katalog z pliku albo już pobrany, bez czekania
-         * na serwer (NFR-4: do 2 s bez sieci).
+         * się nie skończy. Podpowiedź budynku bierze katalog z pliku albo już pobrany, bez czekania
+         * na serwer.
+         *
+         * Wymagania: US6.2, NFR-4
          */
         val buildings: StateFlow<List<BuildingHint>> = nearby
 
@@ -144,7 +161,9 @@ class MeasureViewModel
 
         /**
          * `true`, gdy trwający pomiar przerwano, np. ekran był niewidoczny dłużej niż 5 s albo lokalizację wyłączono,
-         * i pomiar zaczął się od nowa; znika po „Powtórz pomiar” i po końcu pomiaru (NFR-23, NFR-27).
+         * i pomiar zaczął się od nowa; znika po „Powtórz pomiar” i po końcu pomiaru.
+         *
+         * Wymagania: NFR-23, NFR-27
          */
         val restarted: StateFlow<Boolean> = interrupted
 
@@ -175,9 +194,21 @@ class MeasureViewModel
             choose { PlaceChoice.Chosen(building) }
         }
 
-        /** „Poza budynkiem”: zgłoszenie bez budynku i piętra (BR-G2). */
+        /** „Poza budynkiem”: zgłoszenie bez budynku i piętra. Wymagania: BR-G2 */
         fun outside() {
             choose { PlaceChoice.Outside }
+        }
+
+        /**
+         * Korekta ręczna: punkt bariery przesunięty na mapie po pomiarze. Przed końcem pomiaru nic nie zmienia,
+         * a „Powtórz pomiar” ją kasuje.
+         *
+         * Wymagania: US6.4, NFR-3, BR-G2
+         *
+         * @param point nowe położenie punktu bariery
+         */
+        fun movePoint(point: GeoPoint) {
+            result.update { run -> run.copy(finished = run.finished?.copy(corrected = point)) }
         }
 
         private fun choose(change: (PlaceChoice) -> PlaceChoice?) {
@@ -229,7 +260,7 @@ class MeasureViewModel
                 var averaging: PositionAveraging? = null
                 var sky = emptyList<Satellite>()
 
-                suspend fun publish() = send(stateOf(averaging, sky))
+                suspend fun publish() = send(stateOf(averaging, sky, clock.nowMillis()))
 
                 publish()
                 val others =
@@ -279,20 +310,20 @@ class MeasureViewModel
             }
         }
 
-        private fun stateOf(averaging: PositionAveraging?, sky: List<Satellite>): MeasureUiState {
-            val average = averaging?.average() ?: return MeasureUiState.Searching
-            val now = clock.nowMillis()
-            return if (averaging.isFinished(now)) {
-                MeasureUiState.Finished(average, sky.countsInFix(), sky)
-            } else {
-                MeasureUiState.Measuring(
-                    remainingSeconds = averaging.remainingSeconds(now),
-                    average = average,
-                    satellites = sky.countsInFix(),
-                    sky = sky,
-                )
-            }
-        }
-
         private data class Run(val attempt: Int, val finished: MeasureUiState.Finished?)
     }
+
+/** Stan C1 z uśredniania [averaging] i nieba [sky] w chwili [now]. Wymagania: US6.1, US6.5 */
+internal fun stateOf(averaging: PositionAveraging?, sky: List<Satellite>, now: Long): MeasureUiState {
+    val average = averaging?.average() ?: return MeasureUiState.Searching
+    return if (averaging.isFinished(now)) {
+        MeasureUiState.Finished(average, sky.countsInFix(), sky)
+    } else {
+        MeasureUiState.Measuring(
+            remainingSeconds = averaging.remainingSeconds(now),
+            average = average,
+            satellites = sky.countsInFix(),
+            sky = sky,
+        )
+    }
+}

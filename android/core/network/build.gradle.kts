@@ -7,7 +7,7 @@
 plugins {
     id("dostepnykampus.android.library")
     id("dostepnykampus.android.hilt")
-    alias(libs.plugins.kotlin.serialization)
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -37,6 +37,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.core)
+    testImplementation(libs.junit.jupiter.params)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.json.schema.validator)
     testImplementation(libs.jackson.databind)

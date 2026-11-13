@@ -11,8 +11,10 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 /**
- * Testy BR-G2 i BR-G4: położenie punktu staje się odpowiedzią REST bez
+ * Położenie punktu staje się odpowiedzią REST bez
  * pomyłki między konturem, sąsiedztwem i brakiem budynku.
+ *
+ * <p>Wymagania: BR-G2, BR-G4</p>
  *
  * @since 0.1.0
  */

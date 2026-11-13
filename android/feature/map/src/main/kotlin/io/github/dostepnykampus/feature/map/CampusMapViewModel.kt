@@ -45,22 +45,24 @@ import kotlin.coroutines.CoroutineContext
 private const val STOP_TIMEOUT_MS = 5_000L
 
 /**
- * Stan ekranu V1 „Mapa kampusu” (US1).
+ * Stan ekranu V1 „Mapa kampusu”.
+ *
+ * Wymagania: US1, NFR-10, NFR-11, US9.1, NFR-19, US1.3, NFR-18
  *
  * @property catalog katalog budynków; `null`, dopóki plik konturów się wczytuje, potem katalog z pliku, a gdy serwer
- *   odpowie niepustą listą, katalog z serwera (NFR-10, NFR-11)
+ *   odpowie niepustą listą, katalog z serwera
  * @property isOnline czy jest internet; na start prawda, żeby linia „Bez internetu” nie mignęła, zanim przyjdzie stan
- *   bieżący (US9.1)
+ *   bieżący
  * @property isListSaved ostatni wybór w przełączniku: prawda dla „Lista budynków”, fałsz dla „Mapa”, `null`, gdy osoba
- *   jeszcze nie wybierała (NFR-19)
+ *   jeszcze nie wybierała
  * @property mapData gotowe dane warstw mapy, policzone poza wątkiem interfejsu raz na katalog; `null`, dopóki pierwsza
- *   geometria nie jest gotowa, a po zmianie katalogu poprzednie dane, aż policzy się nowa (NFR-11). Dane mają
- *   bariery ze zgłoszeń przyjętych, gdy serwer je podał (US1.3)
- * @property barriers bariery pokazane na mapie, do nazw znaków dla TalkBack (NFR-18)
+ *   geometria nie jest gotowa, a po zmianie katalogu poprzednie dane, aż policzy się nowa. Dane mają
+ *   bariery ze zgłoszeń przyjętych, gdy serwer je podał
+ * @property barriers bariery pokazane na mapie, do nazw znaków dla TalkBack
  * @property syncedAt chwila pobrania najstarszych danych z serwera pokazanych na mapie: listy budynków albo barier,
- *   do daty w linii „Bez internetu” (NFR-10, #1127); `null`, gdy na mapie są tylko dane z pakietu aplikacji
+ *   do daty w linii „Bez internetu”; `null`, gdy na mapie są tylko dane z pakietu aplikacji
  * @property search wyniki wyszukiwania budynku dla ostatniego zapytania z [CampusMapViewModel.search], policzone
- *   poza wątkiem interfejsu (NFR-11, #1053)
+ *   poza wątkiem interfejsu
  */
 data class CampusMapUiState(
     val catalog: BuildingCatalog? = null,
@@ -73,7 +75,9 @@ data class CampusMapUiState(
 )
 
 /**
- * Wynik wyszukiwania budynku po symbolu (US1.3).
+ * Wynik wyszukiwania budynku po symbolu.
+ *
+ * Wymagania: US1.3
  *
  * @property query zapytanie, dla którego policzono wynik; ekran pokazuje wynik tylko dla zapytania z pola
  * @property buildings budynki o tym symbolu w kolejności katalogu; `null`, dopóki katalog się wczytuje
@@ -85,19 +89,13 @@ data class BuildingSearch(val query: String = "", val buildings: List<Building>?
 fun BuildingSearch.foundFor(shown: String): List<Building>? = buildings.takeIf { query == shown }
 
 /**
- * Stan V1 z katalogu budynków (najpierw z pliku, potem z serwera), stanu internetu i zapamiętanego wyboru „Mapa” albo
- * „Lista budynków” (US1, US9.1, NFR-19). Źródła są obserwowane, gdy ekran jest widoczny, i jeszcze 5 s po zniknięciu,
- * więc obrót ekranu nie uruchamia ich od nowa, a monitor sieci nie działa w tle. Geometrię mapy liczy [geometry]
- * w [computeContext], raz na katalog. Zamknięcie ekranu i nowszy katalog przerywają trwające liczenie przerwaniem
- * wątku, więc [geometry] musi je respektować (NFR-11).
- * Katalog trafia do stanu od razu, a jego geometria z kontekstu obliczeń: raz na katalog. Nowszy katalog i
- * zamknięcie ekranu przerywają liczenie przerwaniem wątku (`runInterruptible`), więc nowe nie czeka na koniec
- * starego. Do czasu policzenia nowej mapa zostaje na poprzedniej, więc kontury nie znikają przy zmianie katalogu
- * (NFR-11).
- * O bariery ze zgłoszeń przyjętych ekran pyta źródło na starcie i od nowa po każdej zmianie stanu sieci: z internetem
- * źródło daje odpowiedź serwera, a bez niego ostatnią kopię z telefonu (US1.3, NFR-10). Do pierwszej odpowiedzi mapa
- * działa bez znaków barier (NFR-11). Dane mapy powstają od nowa tylko po zmianie katalogu albo barier, nie przy
- * każdej zmianie stanu ekranu ani wtedy, gdy źródło dało te same bariery.
+ * Stan V1 z katalogu budynków (najpierw plik, potem serwer), stanu internetu, barier i zapamiętanego wyboru „Mapa” albo
+ * „Lista budynków”. Źródła są obserwowane, gdy ekran jest widoczny, i 5 s po zniknięciu. Geometrię liczy [geometry] w
+ * [computeContext] raz na katalog; nowszy katalog i zamknięcie ekranu przerywają liczenie przerwaniem wątku, a do czasu
+ * nowej mapa zostaje na poprzedniej. O bariery ekran pyta na starcie i po każdej zmianie stanu sieci; do pierwszej
+ * odpowiedzi mapa nie ma znaków barier. Dane mapy powstają od nowa tylko po zmianie katalogu albo barier.
+ *
+ * Wymagania: US1, US9.1, NFR-19, NFR-11, US1.3, NFR-10
  *
  * @param repository katalog budynków: najpierw plik, potem serwer
  * @param networkStatus stan internetu
@@ -180,7 +178,7 @@ class CampusMapViewModel(
             )
         }
 
-    /** Szuka budynku po symbolu [query] w [computeContext]; wynik przychodzi w [CampusMapUiState.search] (#1053). */
+    /** Szuka budynku po symbolu [query] w [computeContext]; wynik przychodzi w [CampusMapUiState.search]. */
     fun search(query: String) {
         queries.value = query
     }
@@ -197,10 +195,10 @@ class CampusMapViewModel(
         return results.onStart { emit(BuildingSearch()) }
     }
 
-    /** Bariery z jednego pytania źródła razem z chwilą ich pobrania z serwera (#1127). */
+    /** Bariery z jednego pytania źródła razem z chwilą ich pobrania z serwera. */
     private data class FetchedBarriers(val barriers: List<AcceptedBarrier>, val syncedAt: Instant?)
 
-    /** Zapamiętuje wybór w przełączniku: „Lista budynków” przy [isList], inaczej „Mapa” (NFR-19). */
+    /** Zapamiętuje wybór w przełączniku: „Lista budynków” przy [isList], inaczej „Mapa”. Wymagania: NFR-19 */
     fun chooseList(isList: Boolean) {
         viewModelScope.launch { mapListChoice.choose(isList) }
     }

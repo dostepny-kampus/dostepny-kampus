@@ -25,9 +25,11 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 
 /**
- * Stan satelitów z odbiornika GNSS telefonu w Robolectric (US6.1, US6.5, NFR-2, NFR-27).
+ * Stan satelitów z odbiornika GNSS telefonu w Robolectric.
  *
  * `galileoInFix`: Galileo 11: sygnał 40 dB-Hz, wysokość 35°, azymut 120°, użyty do pozycji.
+ *
+ * Wymagania: US6.1, US6.5, NFR-2, NFR-27
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)

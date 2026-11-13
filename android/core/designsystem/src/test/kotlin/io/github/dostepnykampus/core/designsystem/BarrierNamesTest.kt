@@ -15,7 +15,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-/** Każdy typ, grupa i uciążliwość mają własną nazwę ze słownika projektu (BR-7, US7.1). */
+/** Każdy typ, grupa i uciążliwość mają własną nazwę ze słownika projektu. Wymagania: BR-7, US7.1 */
 @RunWith(RobolectricTestRunner::class)
 class BarrierNamesTest {
     private val context: Context = ApplicationProvider.getApplicationContext()

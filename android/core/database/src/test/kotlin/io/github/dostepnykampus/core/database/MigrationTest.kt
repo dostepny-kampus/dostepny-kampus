@@ -15,8 +15,10 @@ import org.robolectric.RobolectricTestRunner
 
 /**
  * Migracje bazy: nowa tabela powstaje pusta, a kolejka zgłoszeń zostaje.
- * 1→2: kopia listy budynków (NFR-10); 2→3: historia własnych zgłoszeń (US8); 3→4: znacznik odrzuconego (BR-26);
- * 4→5: status z serwera w historii (US8.2); 5→6: kopia barier ze zgłoszeń przyjętych (NFR-10).
+ * 1→2: kopia listy budynków; 2→3: historia własnych zgłoszeń; 3→4: znacznik odrzuconego;
+ * 4→5: status z serwera w historii; 5→6: kopia barier ze zgłoszeń przyjętych.
+ *
+ * Wymagania: NFR-10, US8, BR-26, US8.2
  */
 @RunWith(RobolectricTestRunner::class)
 class MigrationTest {

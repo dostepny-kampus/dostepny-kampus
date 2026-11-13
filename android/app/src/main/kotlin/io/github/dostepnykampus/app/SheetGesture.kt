@@ -22,15 +22,21 @@ internal fun sheetBackOffset(progress: Float, height: Dp): Dp = height * progres
  */
 internal data class SheetState(val isExpanded: Boolean = false, val progress: Float = 0f)
 
-/** Tryb karty V2 w arkuszu przy skali [fontScale]: `Direct` od 1,5, inaczej z rozwinięcia (US2.8, US2.9, NFR-20). */
+/**
+ * Tryb karty V2 w arkuszu przy skali [fontScale]: `Direct` od 1,5, inaczej z rozwinięcia.
+ *
+ * Wymagania: US2.8, US2.9, NFR-20
+ */
 internal fun SheetState.cardMode(fontScale: Float): CardMode {
     val fullScreen = cardModeFor(fontScale)
     return if (isExpanded || fullScreen == CardMode.Direct) fullScreen else CardMode.Compact
 }
 
 /**
- * Dotknięcie pustej mapy V1: zamyka kartę V2 nad mapą, więc V1 wraca bez zaznaczenia budynku (US2.8, NFR-17,
- * decyzja 116); bez karty na wierzchu historia zostaje bez zmian.
+ * Dotknięcie pustej mapy V1: zamyka kartę V2 nad mapą, więc V1 wraca bez zaznaczenia budynku;
+ * bez karty na wierzchu historia zostaje bez zmian.
+ *
+ * Wymagania: US2.8, NFR-17
  */
 internal val closeCardOnEmptyMap: AppNavigator.() -> Unit = { if (current is BuildingRoute) back() }
 
@@ -45,11 +51,11 @@ internal sealed interface BackGesture {
     /** Gest anulowany: V2 zostaje. */
     data object Cancelled : BackGesture
 
-    /** Gest zakończony: pełny ekran wraca do małej karty, a mała karta zamyka V2 (NFR-15). */
+    /** Gest zakończony: pełny ekran wraca do małej karty, a mała karta zamyka V2. Wymagania: NFR-15 */
     data object Completed : BackGesture
 }
 
-/** Stan arkusza po zdarzeniu [gesture]; zakończony gest zwija pełny ekran do małej karty (NFR-15, decyzja 115). */
+/** Stan arkusza po zdarzeniu [gesture]; zakończony gest zwija pełny ekran do małej karty. Wymagania: NFR-15 */
 internal fun SheetState.after(gesture: BackGesture): SheetState =
     when (gesture) {
         BackGesture.Started, BackGesture.Cancelled -> copy(progress = 0f)
@@ -57,7 +63,11 @@ internal fun SheetState.after(gesture: BackGesture): SheetState =
         BackGesture.Completed -> if (isExpanded) SheetState() else copy(progress = 1f)
     }
 
-/** Czy zdarzenie [gesture] zamyka V2: tylko zakończony gest nad małą kartą, pełny ekran najpierw się zwija (NFR-15). */
+/**
+ * Czy zdarzenie [gesture] zamyka V2: tylko zakończony gest nad małą kartą, pełny ekran najpierw się zwija.
+ *
+ * Wymagania: NFR-15
+ */
 internal fun SheetState.closesOn(gesture: BackGesture): Boolean = gesture == BackGesture.Completed && !isExpanded
 
 /**

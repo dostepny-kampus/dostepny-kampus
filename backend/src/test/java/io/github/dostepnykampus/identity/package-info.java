@@ -5,8 +5,13 @@
  */
 
 /**
- * Testy modułu tożsamości: profil zalogowanej osoby (US14.1, BR-1).
+ * Testy modułu tożsamości: profil zalogowanej osoby.
+ *
+ * <p>Wymagania: US14.1, BR-1</p>
  *
  * @since 0.1.0
  */
+@ApplicationModule(allowedDependencies = {})
 package io.github.dostepnykampus.identity;
+
+import org.springframework.modulith.ApplicationModule;

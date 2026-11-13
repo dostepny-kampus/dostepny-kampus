@@ -11,9 +11,11 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
 /**
- * Kontury budynków w PostGIS dla innych modułów (BR-14): tylko zawieranie
+ * Kontury budynków w PostGIS dla innych modułów: tylko zawieranie
  * punktu w konturze, bez promienia podpowiedzi i bez odpowiedzi REST.
  * Przy nachodzących konturach wygrywa najmniejszy symbol.
+ *
+ * <p>Wymagania: BR-14</p>
  *
  * @since 0.1.0
  */

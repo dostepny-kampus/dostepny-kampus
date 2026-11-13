@@ -33,7 +33,9 @@ import io.github.dostepnykampus.core.model.Floor
 private val BASIC_FLOORS = -1..10
 
 /**
- * Odpowiedź na pytanie o piętro (US4.5, BR-14); oba pola `null` to „Nie wiem”.
+ * Odpowiedź na pytanie o piętro; oba pola `null` to „Nie wiem”.
+ *
+ * Wymagania: US4.5, BR-14
  *
  * @property number numer piętra w budynku podstawowym albo przy nieznanej pozycji
  * @property floor piętro z danych PWr w budynku szczegółowym
@@ -41,13 +43,15 @@ private val BASIC_FLOORS = -1..10
 data class QuickFloor(val number: Int? = null, val floor: Floor? = null)
 
 /**
- * Piętra budynku do pytania w kroku 2, od najniższego; pusta lista to budynek podstawowy (BR-G1).
+ * Piętra budynku do pytania w kroku 2, od najniższego; pusta lista to budynek podstawowy.
+ *
+ * Wymagania: BR-G1
  *
  * @property items piętra z danych PWr
  */
 data class QuickFloors(val items: List<Floor> = emptyList())
 
-/** Napis grupy barier na V4, prostszy niż nazwa grupy w formularzu C2 (BR-14, PW-7). */
+/** Napis grupy barier na V4, prostszy niż nazwa grupy w formularzu C2 (PW-7). Wymagania: BR-14 */
 @StringRes
 internal fun BarrierGroup.quickLabel(): Int =
     when (this) {
@@ -60,9 +64,11 @@ internal fun BarrierGroup.quickLabel(): Int =
     }
 
 /**
- * Krok 2 V4: „Czego dotyczy bariera?” i 6 dużych przycisków grup na całą szerokość, bez ikon (US4.3, NFR-17).
+ * Krok 2 V4: „Czego dotyczy bariera?” i 6 dużych przycisków grup na całą szerokość, bez ikon.
  * Grupa wybrana wcześniej, np. po powrocie z kroku 3, jest zaznaczona obwódką, tłem i znakiem „✓”, a TalkBack czyta
- * ją jako wybraną (US4.8, NFR-21).
+ * ją jako wybraną.
+ *
+ * Wymagania: US4.3, NFR-17, US4.8, NFR-21
  *
  * @param selected grupa wybrana wcześniej; `null` przy pierwszym wejściu do kroku
  * @param onGroup wybrana grupa
@@ -82,9 +88,11 @@ internal fun QuickGroupQuestion(selected: BarrierGroup? = null, onGroup: (Barrie
 }
 
 /**
- * Krok 2 V4, pytanie o piętro po wyborze [group]: „Nie wiem” na górze i piętra od najniższego (US4.5, BR-14).
+ * Krok 2 V4, pytanie o piętro po wyborze [group]: „Nie wiem” na górze i piętra od najniższego.
  * W budynku szczegółowym etykiety z danych PWr ([floors]); w podstawowym i przy nieznanej pozycji numery od -1
  * do 10, z „Parter” zamiast 0.
+ *
+ * Wymagania: US4.5, BR-14
  *
  * @param group wybrana grupa, pokazana nad pytaniem
  * @param floors piętra budynku z danych PWr od najniższego
@@ -109,7 +117,9 @@ internal fun QuickFloorQuestion(group: BarrierGroup, floors: QuickFloors, onFloo
 
 /**
  * Opcje pytania o piętro z odpowiedzią każdej: „Nie wiem” na górze, potem piętra z danych PWr od najniższego
- * albo numery od -1 do 10 w budynku podstawowym (US4.5, BR-G1).
+ * albo numery od -1 do 10 w budynku podstawowym.
+ *
+ * Wymagania: US4.5, BR-G1
  */
 internal fun quickFloorAnswers(
     floors: QuickFloors,

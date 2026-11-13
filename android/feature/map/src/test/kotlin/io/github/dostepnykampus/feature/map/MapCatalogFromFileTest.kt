@@ -38,9 +38,11 @@ import java.io.IOException
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * Kontury mapy V1 od odpowiedzi serwera (wstrzymanej w teście) do stanu ekranu (US1, NFR-10, NFR-11). Odczyt pliku
+ * Kontury mapy V1 od odpowiedzi serwera (wstrzymanej w teście) do stanu ekranu. Odczyt pliku
  * i liczenie geometrii idą na dyspozytorze testowym, więc stan jest sprawdzany po zakończeniu całej zaplanowanej pracy,
  * nie po upływie czasu.
+ *
+ * Wymagania: US1, NFR-10, NFR-11
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapCatalogFromFileTest {
@@ -60,14 +62,18 @@ class MapCatalogFromFileTest {
         Dispatchers.resetMain()
     }
 
-    /** Wiersz: W1, serwer jeszcze nie odpowiedział → stan mapy ma kontury z pliku, NFR-11. */
+    /** Wiersz: W1, serwer jeszcze nie odpowiedział → stan mapy ma kontury z pliku. Wymagania: NFR-11 */
     @Test
     fun nfr11_file_without_server() {
         val screen = openScreen { CompletableDeferred<ApiResult<BuildingList>>().await() }
         assertEquals(fileCatalog, screen.settled(), "mapa czeka na serwer")
     }
 
-    /** Wiersz: W2, serwer odpowiada niepustą listą → najpierw kontury z pliku, potem katalog z serwera, NFR-10, US1. */
+    /**
+     * Wiersz: W2, serwer odpowiada niepustą listą → najpierw kontury z pliku, potem katalog z serwera.
+     *
+     * Wymagania: NFR-10, US1
+     */
     @Test
     fun nfr10_server_replaces_file() {
         val answer = CompletableDeferred<ApiResult<BuildingList>>()
@@ -80,7 +86,9 @@ class MapCatalogFromFileTest {
     }
 
     /**
-     * Wiersz: W2, brak sieci albo błąd serwera → zostają kontury z pliku, bez null, błędu i pustego katalogu, NFR-10.
+     * Wiersz: W2, brak sieci albo błąd serwera → zostają kontury z pliku, bez null, błędu i pustego katalogu.
+     *
+     * Wymagania: NFR-10
      */
     @Test
     fun nfr10_failure_keeps_file() {
@@ -88,7 +96,7 @@ class MapCatalogFromFileTest {
             .forEach { failure -> assertKeepsFile(failure) }
     }
 
-    /** Wiersz: W2, serwer odpowiada pustą listą → zostają kontury z pliku, bez pustego katalogu, NFR-10. */
+    /** Wiersz: W2, serwer odpowiada pustą listą → zostają kontury z pliku, bez pustego katalogu. Wymagania: NFR-10 */
     @Test
     fun nfr10_empty_list_keeps_file() {
         assertKeepsFile(ApiResult.Success(BuildingList(source = "Serwer", buildings = emptyList())))
@@ -106,7 +114,9 @@ class MapCatalogFromFileTest {
 
     /**
      * Wiersz: Kolejność, odczyt pliku wstrzymany, a serwer odpowiada niepustą listą → po zwolnieniu odczytu stan
-     *   zostaje przy katalogu z serwera; późniejszy plik go nie nadpisuje, NFR-10.
+     *   zostaje przy katalogu z serwera; późniejszy plik go nie nadpisuje.
+     *
+     * Wymagania: NFR-10
      */
     @Test
     fun nfr10_late_file_keeps_server() {

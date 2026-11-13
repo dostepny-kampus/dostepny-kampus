@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("org.jetbrains.kotlin.jvm")
     id("com.android.lint")
+    id("com.autonomousapps.dependency-analysis")
     id("dostepnykampus.detekt")
     id("dostepnykampus.junit")
     id("dostepnykampus.kover")

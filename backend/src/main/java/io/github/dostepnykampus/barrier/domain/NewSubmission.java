@@ -9,7 +9,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Komenda utworzenia zgłoszenia, schemat NewSubmission w OpenAPI (BR-9).
+ * Komenda utworzenia zgłoszenia, schemat NewSubmission w OpenAPI.
+ *
+ * <p>Wymagania: BR-9</p>
  *
  * @param id Identyfikator zgłoszenia nadany przez klienta
  * @param content Treść zgłoszenia

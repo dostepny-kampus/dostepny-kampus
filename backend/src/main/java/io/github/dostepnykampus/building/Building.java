@@ -10,7 +10,9 @@ import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 /**
- * Budynek PWr na mapie kampusu, zgodny ze schematem Building (US1).
+ * Budynek PWr na mapie kampusu, zgodny ze schematem Building.
+ *
+ * <p>Wymagania: US1</p>
  *
  * @param symbol Symbol budynku, np. C-13
  * @param name Nazwa budynku albo null, gdy budynek jej nie ma

@@ -6,6 +6,7 @@
 
 /**
  * Adapter zapisu i odczytu zgłoszeń w bazie PostGIS.
+ * Blokada wiersza chroni zapis zdjęcia przed równoczesną zmianą zgłoszenia.
  *
  * @since 0.1.0
  */

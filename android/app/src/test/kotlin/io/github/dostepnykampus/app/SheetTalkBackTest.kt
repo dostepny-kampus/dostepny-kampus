@@ -36,7 +36,7 @@ import org.robolectric.annotation.Config
 
 private val Button = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button)
 
-/** Arkusz V2 nad V1 z TalkBack: uchwyt, fokus po otwarciu i mapa pod małą kartą (US2.8, NFR-18, NFR-19). */
+/** Arkusz V2 nad V1 z TalkBack: uchwyt, fokus po otwarciu i mapa pod małą kartą. Wymagania: US2.8, NFR-18, NFR-19 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class SheetTalkBackTest {
@@ -65,7 +65,9 @@ class SheetTalkBackTest {
 
     /**
      * Wiersz: uchwyt małej karty → przycisk „Rozwiń opis budynku” ze stanem „zwinięte”, a po rozwinięciu ten sam
-     * przycisk ze stanem „rozwinięte”, US2.8, NFR-18.
+     * przycisk ze stanem „rozwinięte”.
+     *
+     * Wymagania: US2.8, NFR-18
      */
     @Test
     fun nfr18_handle_button_with_state() {
@@ -74,7 +76,7 @@ class SheetTalkBackTest {
         compose.onNode(sheetHandle(isExpanded = true) and Button).assertExists("uchwyt pełnego ekranu")
     }
 
-    /** Wiersz: V1, dotknięcie konturu → mała karta, fokus TalkBack na nagłówku „Budynek A-1, …”, NFR-18. */
+    /** Wiersz: V1, dotknięcie konturu → mała karta, fokus TalkBack na nagłówku „Budynek A-1, …”. Wymagania: NFR-18 */
     @Test
     fun nfr18_focus_on_header() {
         open(isCard = true)
@@ -83,7 +85,9 @@ class SheetTalkBackTest {
 
     /**
      * Wiersz: mapa nad małą kartą → TalkBack jej nie czyta, a uchwyt karty czyta; po zamknięciu karty mapa znów
-     * czytana, NFR-19.
+     * czytana.
+     *
+     * Wymagania: NFR-19
      */
     @Test
     fun nfr19_map_under_card_silent() {

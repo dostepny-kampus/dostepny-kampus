@@ -5,12 +5,24 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
+import java.util.UUID;
+
 /**
- * Port zapisu zgłoszeń; z niego korzysta wyłącznie usługa zgłoszeń (BR-3, BR-9, BR-10).
+ * Port zapisu zgłoszeń; z niego korzysta wyłącznie usługa zgłoszeń.
+ *
+ * <p>Wymagania: BR-3, BR-9, BR-10</p>
  *
  * @since 0.1.0
  */
 public interface SubmissionRepository {
+
+    /**
+     * Blokuje istniejące zgłoszenie przed zmianą do końca bieżącej transakcji.
+     * Brak zgłoszenia nie jest błędem; wywołujący sprawdza go przy odczycie.
+     *
+     * @param id Identyfikator zgłoszenia
+     */
+    void lock(UUID id);
 
     /**
      * Zapisuje nowe zgłoszenie albo zwraca już zapisane o tym identyfikatorze.

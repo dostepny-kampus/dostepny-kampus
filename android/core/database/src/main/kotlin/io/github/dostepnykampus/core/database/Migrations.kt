@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 private const val LIST_COPY_COLUMNS =
     "(`id` INTEGER NOT NULL, `list_json` TEXT NOT NULL, `synced_at` INTEGER NOT NULL, PRIMARY KEY(`id`))"
 
-/** Migracja 1→2: tabela kopii listy budynków z serwera (NFR-10). */
+/** Migracja 1→2: tabela kopii listy budynków z serwera. Wymagania: NFR-10 */
 val MIGRATION_1_2: Migration =
     object : Migration(1, 2) {
         override fun migrate(db: SupportSQLiteDatabase) {
@@ -19,7 +19,7 @@ val MIGRATION_1_2: Migration =
         }
     }
 
-/** Migracja 2→3: historia własnych zgłoszeń dla listy C3 (US8, NFR-5). */
+/** Migracja 2→3: historia własnych zgłoszeń dla listy C3. Wymagania: US8, NFR-5 */
 val MIGRATION_2_3: Migration =
     object : Migration(2, 3) {
         override fun migrate(db: SupportSQLiteDatabase) {
@@ -33,7 +33,7 @@ val MIGRATION_2_3: Migration =
         }
     }
 
-/** Migracja 3→4: znacznik odrzuconego zgłoszenia w kolejce, które nie wraca do wysyłki samo (BR-26). */
+/** Migracja 3→4: znacznik odrzuconego zgłoszenia w kolejce, które nie wraca do wysyłki samo. Wymagania: BR-26 */
 val MIGRATION_3_4: Migration =
     object : Migration(3, 4) {
         override fun migrate(db: SupportSQLiteDatabase) {
@@ -41,7 +41,7 @@ val MIGRATION_3_4: Migration =
         }
     }
 
-/** Migracja 4→5: status z serwera i powód odrzucenia w historii własnych zgłoszeń (US8.2, BR-16). */
+/** Migracja 4→5: status z serwera i powód odrzucenia w historii własnych zgłoszeń. Wymagania: US8.2, BR-16 */
 val MIGRATION_4_5: Migration =
     object : Migration(4, 5) {
         override fun migrate(db: SupportSQLiteDatabase) {
@@ -50,7 +50,7 @@ val MIGRATION_4_5: Migration =
         }
     }
 
-/** Migracja 5→6: tabela kopii barier ze zgłoszeń przyjętych (NFR-10). */
+/** Migracja 5→6: tabela kopii barier ze zgłoszeń przyjętych. Wymagania: NFR-10 */
 val MIGRATION_5_6: Migration =
     object : Migration(5, 6) {
         override fun migrate(db: SupportSQLiteDatabase) {

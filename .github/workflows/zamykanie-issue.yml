@@ -3,10 +3,15 @@ name: zamykanie-issue
 # GitHub zamyka issue z „Closes #N” tylko po scaleniu PR do gałęzi domyślnej, więc po scaleniu PR do `sprint/*`
 # zamykamy je tu. Skrypt pochodzi z gałęzi docelowej (po scaleniu), nie z kodu PR; PR z forków mają token tylko
 # do odczytu, więc je pomijamy.
+# Issue zamknięte inną drogą (PR do gałęzi domyślnej, ręcznie) też zamyka issue nadrzędne, gdy było ostatnim
+# otwartym sub-issue. Zdarzenie `issues` uruchamia workflow z gałęzi domyślnej.
 on:
   pull_request:
     branches:
       - "sprint/**"
+    types:
+      - closed
+  issues:
     types:
       - closed
 
@@ -16,6 +21,7 @@ permissions:
 jobs:
   zamknij:
     if: >-
+      github.event_name == 'pull_request' &&
       github.event.pull_request.merged == true &&
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
@@ -35,3 +41,22 @@ jobs:
           GH_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: bash .github/scripts/zamknij-issue.sh "$PR_NUMBER"
+
+  nadrzedne:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      - name: Zamknij issue nadrzędne, gdy to było ostatnie otwarte sub-issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: bash .github/scripts/zamknij-nadrzedne.sh "$ISSUE_NUMBER"

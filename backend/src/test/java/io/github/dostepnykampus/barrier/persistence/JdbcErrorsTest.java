@@ -19,7 +19,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Wynik edycji jako własny zapis oraz strażnik kluczy obcych (BR-10, B-07).
+ * Wynik edycji jako własny zapis oraz strażnik kluczy obcych (B-07).
+ *
+ * <p>Wymagania: BR-10</p>
  *
  * @since 0.1.0
  */

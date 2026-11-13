@@ -31,7 +31,7 @@ import org.robolectric.annotation.Config
 import java.time.LocalDate
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Od odpowiedzi serwera o budynku do napisu o dniu i źródle oznaczenia na V2 (US17.3). */
+/** Od odpowiedzi serwera o budynku do napisu o dniu i źródle oznaczenia na V2. Wymagania: US17.3 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class CardAssessmentTextTest {
@@ -40,7 +40,9 @@ class CardAssessmentTextTest {
 
     /**
      * Wiersz: odpowiedź serwera `GET /buildings/A-1` z wejściami z importu z dnia 1.10.2026 → na V2 wiersz
-     *   „Z map i opisów, stan z 1.10.2026”, US17.3, BR-24, import.
+     *   „Z map i opisów, stan z 1.10.2026”, import.
+     *
+     * Wymagania: US17.3, BR-24
      */
     @Test
     fun us17_3_server_answer_to_screen() {

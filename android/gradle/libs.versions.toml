@@ -4,6 +4,7 @@ kotlin = "2.4.21"
 detekt = "2.0.0-alpha.6"
 composeRules = "0.6.8"
 moduleGraphAssert = "2.9.1"
+dependencyAnalysis = "3.20.2"
 composeBom = "2026.09.00"
 activityCompose = "1.13.0"
 lifecycle = "2.11.0"
@@ -63,6 +64,7 @@ compose-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-
 kotlin-serialization-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 detekt-gradlePlugin = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 moduleGraphAssert-gradlePlugin = { module = "com.jraska.module.graph.assertion:plugin", version.ref = "moduleGraphAssert" }
+dependencyAnalysis-gradlePlugin = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
 detekt-api = { module = "dev.detekt:detekt-api", version.ref = "detekt" }
 detekt-test = { module = "dev.detekt:detekt-test", version.ref = "detekt" }
 detekt-test-utils = { module = "dev.detekt:detekt-test-utils", version.ref = "detekt" }
@@ -173,5 +175,4 @@ javax-inject = { module = "javax.inject:javax.inject", version.ref = "javaxInjec
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerialization" }
 
 [plugins]
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 androidx-room = { id = "androidx.room", version.ref = "room" }

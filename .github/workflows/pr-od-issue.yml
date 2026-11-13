@@ -4,8 +4,9 @@
 # Domyślnie tylko ostrzega w logu. Tryb wymagany (PR bez issue → komentarz i czerwone zadanie, bez szkicu: token
 # workflow nie ma prawa zamiany PR w szkic) włącza zmienna repozytorium PR_OD_ISSUE_WYMAGANE=1.
 # Zdarzenie pull_request: PR z gałęzi tego repozytorium ma token z zapisem; PR z forków i Dependabota pomijamy.
-# Etykiety obszaru nadaje równolegle workflow etykiet, więc kontrola powtarza się też po zmianie etykiet (labeled, unlabeled);
-# inaczej przy otwarciu PR widziałaby go bez etykiet i już by tego nie sprawdziła.
+# Etykiety obszaru nadaje równolegle workflow etykiet tokenem workflow, a takie nadanie nie uruchamia nowych przebiegów,
+# więc kontrola najpierw czeka na etykietę obszaru (czekaj-na-obszar.sh, #1086). Zdarzenia labeled i unlabeled zostają
+# dla etykiet nadanych ręcznie.
 # Skrypt pochodzi z gałęzi docelowej (checkout base.ref), nie z kodu PR.
 on:
   merge_group:
@@ -63,5 +64,9 @@ jobs:
           if [[ ! -f .github/scripts/pr-od-issue-szkic.sh ]]; then
             echo "::notice title=PR od issue::Skryptu nie ma jeszcze w gałęzi docelowej; kontrola pominięta."
             exit 0
+          fi
+          # Etykiety z workflow `etykiety` nie uruchamiają tej kontroli ponownie, więc czekamy na nie tu (#1086).
+          if [[ -f .github/scripts/czekaj-na-obszar.sh ]]; then
+            bash .github/scripts/czekaj-na-obszar.sh "$PR_NUMBER"
           fi
           bash .github/scripts/pr-od-issue-szkic.sh "$PR_NUMBER"

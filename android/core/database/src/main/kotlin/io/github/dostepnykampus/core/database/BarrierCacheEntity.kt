@@ -10,10 +10,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * Kopia barier ze zgłoszeń przyjętych pobranych z serwera, do czytania bez sieci (NFR-10).
+ * Kopia barier ze zgłoszeń przyjętych pobranych z serwera, do czytania bez sieci.
  *
  * Jeden wiersz o stałym identyfikatorze; nowy zapis zastępuje poprzedni, więc zgłoszenie, które przestało być
  * przyjęte, znika także z kopii.
+ *
+ * Wymagania: NFR-10
  *
  * @property id identyfikator wiersza, zawsze [BARRIER_CACHE_SINGLE_ROW]
  * @property listJson lista barier jako dokument JSON

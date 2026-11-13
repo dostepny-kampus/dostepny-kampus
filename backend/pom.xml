@@ -295,6 +295,10 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
     </dependency>
     <dependency>
       <groupId>org.springframework.modulith</groupId>
+      <artifactId>spring-modulith-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.modulith</groupId>
       <artifactId>spring-modulith-core</artifactId>
       <scope>test</scope>
     </dependency>
@@ -362,12 +366,23 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
         <artifactId>pitest-maven</artifactId>
         <version>${pitest.version}</version>
         <configuration>
+          <!-- Mutowany jest kod sprawdzany szybkimi testami. Testy z kontekstem Springa, bazą albo kontenerami
+               mają znacznik kontekst-springa (pilnuje go SpringTestTagArchitectureTest) i nie biorą udziału. -->
           <targetClasses>
             <param>io.github.dostepnykampus.*.domain.*</param>
+            <param>io.github.dostepnykampus.building.locate.*</param>
+            <param>io.github.dostepnykampus.barrier.JpegCleaner*</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionService*</param>
+            <param>io.github.dostepnykampus.StrictJsonConfiguration*</param>
+            <param>io.github.dostepnykampus.CanonicalUuidDeserializer*</param>
+            <param>io.github.dostepnykampus.Wgs84*</param>
           </targetClasses>
           <targetTests>
-            <param>io.github.dostepnykampus.*.domain.*</param>
+            <param>io.github.dostepnykampus.*</param>
           </targetTests>
+          <excludedGroups>
+            <param>kontekst-springa</param>
+          </excludedGroups>
           <threads>4</threads>
           <mutationThreshold>100</mutationThreshold>
           <outputFormats>

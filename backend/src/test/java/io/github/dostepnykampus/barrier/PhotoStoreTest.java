@@ -15,8 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Testy BR-7 i BR-9: zdjęcie zgłoszenia zapisuje się w magazynie RustFS
+ * Zdjęcie zgłoszenia zapisuje się w magazynie RustFS
  * pod identyfikatorami z telefonu, a ponowny zapis je zastępuje.
+ *
+ * <p>Wymagania: BR-7, BR-9</p>
  *
  * @since 0.1.0
  */

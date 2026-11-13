@@ -12,15 +12,16 @@ import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
@@ -39,12 +40,15 @@ private const val COMPUTE_THREAD = "map-geometry-test"
 private const val OUTLINES = 5
 
 /**
- * Gdzie i ile razy ViewModel V1 liczy geometrię mapy: na podróbce funkcji liczącej, bez pomiaru czasu (NFR-11).
+ * Gdzie i ile razy ViewModel V1 liczy geometrię mapy: na podróbce funkcji liczącej, bez pomiaru czasu.
  * Test czeka na zdarzenie (policzona geometria w stanie), nie na upływ czasu; liczenie zapisuje wątek, zanim zwróci
  * dane do stanu. Zawieszenie przy błędzie w kodzie kończy limit `runTest`.
+ *
+ * Wymagania: NFR-11
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class CampusMapGeometryTest {
+    private val viewModels = TestViewModels()
     private val online = MutableStateFlow(true)
     private val saved = MutableStateFlow<Boolean?>(null)
     private val choice =
@@ -71,7 +75,7 @@ class CampusMapGeometryTest {
 
     @AfterEach
     fun reset() {
-        Dispatchers.resetMain()
+        viewModels.resetMain()
     }
 
     private fun counting(catalog: BuildingCatalog): CampusMapData {
@@ -81,20 +85,24 @@ class CampusMapGeometryTest {
     }
 
     private fun viewModelOf(compute: CoroutineContext) =
-        CampusMapViewModel(
-            repository = repository,
-            networkStatus = { online },
-            mapListChoice = choice,
-            computeContext = compute,
-            geometry = ::counting,
+        viewModels.keep(
+            CampusMapViewModel(
+                repository = repository,
+                networkStatus = { online },
+                mapListChoice = choice,
+                computeContext = compute,
+                geometry = ::counting,
+            ),
         )
 
     private suspend fun CampusMapViewModel.ready(): CampusMapUiState = uiState.first { it.mapData != null }
 
     /**
      * Wiersz: W3, O5, katalog z pliku → geometria liczona w kontekście obliczeń, nie w wątku wywołującym, a stan niesie
-     *   gotowe dane mapy, NFR-11. Wątek liczący kończy pracę przed `resetMain`, więc jego wznowienie nie trafi do
+     *   gotowe dane mapy. Wątek liczący kończy pracę przed `resetMain`, więc jego wznowienie nie trafi do
      *   następnego testu.
+     *
+     * Wymagania: NFR-11
      */
     @Test
     fun nfr11_geometry_in_compute() =
@@ -102,12 +110,20 @@ class CampusMapGeometryTest {
             val pool = Executors.newSingleThreadExecutor { Thread(it, COMPUTE_THREAD) }
             try {
                 pool.asCoroutineDispatcher().use { compute ->
-                    val viewModel = viewModelOf(compute)
-                    val state = viewModel.ready()
-                    val name = thread.get().substringBefore(" @coroutine")
-                    assertEquals(COMPUTE_THREAD, name, "geometria liczona poza kontekstem obliczeń")
-                    assertNotEquals(Thread.currentThread().name, thread.get())
-                    assertEquals(state.catalog?.let(::campusMapData), state.mapData, "stan bez gotowych danych mapy")
+                    try {
+                        val viewModel = viewModelOf(compute)
+                        val state = viewModel.ready()
+                        val name = thread.get().substringBefore(" @coroutine")
+                        assertEquals(COMPUTE_THREAD, name, "geometria liczona poza kontekstem obliczeń")
+                        assertNotEquals(Thread.currentThread().name, thread.get())
+                        assertEquals(
+                            state.catalog?.let(::campusMapData),
+                            state.mapData,
+                            "stan bez gotowych danych mapy",
+                        )
+                    } finally {
+                        withContext(NonCancellable) { viewModels.cancelAndJoin() }
+                    }
                 }
             } finally {
                 pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
@@ -116,7 +132,9 @@ class CampusMapGeometryTest {
 
     /**
      * Wiersz: W3, jeden katalog, potem zmiana internetu i wyboru „Lista” → ta sama geometria i jedno wywołanie
-     *   funkcji liczącej, nie przeliczenie przy każdej zmianie stanu, NFR-11.
+     *   funkcji liczącej, nie przeliczenie przy każdej zmianie stanu.
+     *
+     * Wymagania: NFR-11
      */
     @Test
     fun nfr11_geometry_once_catalog() =
@@ -134,7 +152,9 @@ class CampusMapGeometryTest {
 
     /**
      * Wiersz: W3, anulowanie, przerwany wątek liczący katalog z kilkoma konturami → liczenie rzuca przerwanie, nie
-     *   zwraca wyniku (zamknięcie ekranu przerywa pracę CPU), NFR-11.
+     *   zwraca wyniku (zamknięcie ekranu przerywa pracę CPU).
+     *
+     * Wymagania: NFR-11
      */
     @Test
     fun nfr11_interrupt_stops_compute() {

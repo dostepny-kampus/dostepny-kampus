@@ -6,7 +6,9 @@
 package io.github.dostepnykampus.barrier.domain;
 
 /**
- * Osoba, która czyta zgłoszenie albo jego zdjęcie (BR-5, BR-6).
+ * Osoba, która czyta zgłoszenie albo jego zdjęcie.
+ *
+ * <p>Wymagania: BR-5, BR-6</p>
  *
  * @param account Identyfikator konta z tokenu; pusty napis bez logowania
  * @param verifier Czy konto ma rolę Weryfikatora

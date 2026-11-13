@@ -14,10 +14,10 @@ import kotlin.math.log2
 import kotlin.math.pow
 import kotlin.math.tan
 
-/** Powiększenie pierwszego widoku: symbole budynków są czytelne (decyzja 80). */
+/** Powiększenie pierwszego widoku: symbole budynków są czytelne. */
 internal const val START_ZOOM = 17.0
 
-/** Powiększenie po zaznaczeniu wejścia: pinezka i sąsiednie wejścia są czytelne (US3.3). */
+/** Powiększenie po zaznaczeniu wejścia: pinezka i sąsiednie wejścia są czytelne. Wymagania: US3.3 */
 internal const val ENTRANCE_ZOOM = 19.0
 
 private const val MAX_ZOOM = 20.0
@@ -27,8 +27,9 @@ private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
 
 /**
- * Widok mapy V1. Przyciski „Powiększ”, „Pomniejsz” i cztery strzałki zmieniają go bez gestów (NFR-53,
- * WCAG 2.5.1, WCAG 2.5.7).
+ * Widok mapy V1. Przyciski „Powiększ”, „Pomniejsz” i cztery strzałki zmieniają go bez gestów (WCAG 2.5.1, WCAG 2.5.7).
+ *
+ * Wymagania: NFR-53
  *
  * @property center środek widoku
  * @property zoom powiększenie mapy
@@ -46,14 +47,16 @@ data class MapCamera(val center: GeoPoint, val zoom: Double, val bottomInset: Do
  * @property marginDp odstęp wpisanego budynku od brzegów wolnej części
  */
 internal data class FreeMap(val widthDp: Double, val heightDp: Double, val endDp: Double, val marginDp: Double) {
-    /** Czy w wolnej części stoją przyciski mapy: mają tam zarezerwowany pas [endDp] (NFR-53, decyzja 151). */
+    /** Czy w wolnej części stoją przyciski mapy: mają tam zarezerwowany pas [endDp]. Wymagania: NFR-53 */
     val hasRoomForControls: Boolean get() = endDp > 0
 }
 
 /**
- * Widok, w którym prostokąt [outline] budynku mieści się cały w wolnej części mapy [free], obok przycisków mapy
- * (US1.4, US2.8, decyzja 151). Mały budynek nie jest powiększany ponad [FIT_MAX_ZOOM], więc sąsiednie zostają
+ * Widok, w którym prostokąt [outline] budynku mieści się cały w wolnej części mapy [free], obok przycisków mapy.
+ * Mały budynek nie jest powiększany ponad [FIT_MAX_ZOOM], więc sąsiednie zostają
  * widoczne. Środek widoku liczy się dla części nad arkuszem; [MapCamera.bottomInset] ustawia wołający.
+ *
+ * Wymagania: US1.4, US2.8
  */
 internal fun fitted(outline: CampusBounds, free: FreeMap): MapCamera {
     val width = (free.widthDp - free.endDp - 2 * free.marginDp).coerceAtLeast(minimumValue = 1.0)
@@ -93,8 +96,10 @@ internal fun MapCamera.moved(direction: PanDirection): MapCamera {
 }
 
 /**
- * Granice widoku V1 na mapie o rozmiarze [widthDp] × [heightDp] dp (NFR-39, NFR-53). Te same wartości dostaje
+ * Granice widoku V1 na mapie o rozmiarze [widthDp] × [heightDp] dp. Te same wartości dostaje
  * MapLibre dla gestów.
+ *
+ * Wymagania: NFR-39, NFR-53
  *
  * @property bounds obszar kampusu, poza który środek widoku nie wychodzi
  * @property widthDp szerokość widoku mapy w dp
@@ -127,7 +132,9 @@ internal fun fitZoom(viewDp: Double, worldShare: Double): Double = log2(viewDp /
 internal fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latitude)))
 
 /**
- * Kierunek strzałki przesuwania mapy, np. „Przesuń mapę w górę” (NFR-53).
+ * Kierunek strzałki przesuwania mapy, np. „Przesuń mapę w górę”.
+ *
+ * Wymagania: NFR-53
  *
  * @property east przesunięcie środka na wschód: 1, na zachód: −1
  * @property north przesunięcie środka na północ: 1, na południe: −1

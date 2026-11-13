@@ -45,7 +45,9 @@ class MapAreasTest {
 
     /**
      * Wiersz: V1, budynek z innego terenu zmienia teren i daje napis „Pokazuję teren: Wittigowo”; napis znika,
-     * gdy osoba ruszy mapę, i nie wraca dla tego terenu (US1.8).
+     * gdy osoba ruszy mapę, i nie wraca dla tego terenu.
+     *
+     * Wymagania: US1.8
      */
     @Test
     fun us1_8_notice_after_building() {
@@ -57,7 +59,7 @@ class MapAreasTest {
         assertEquals("Kampus główny", areas(symbol = "A-2").notice)
     }
 
-    /** Wiersz: V1, teren wybrany przez osobę w panelu nie daje napisu o zmianie terenu (US1.7, US1.8). */
+    /** Wiersz: V1, teren wybrany przez osobę w panelu nie daje napisu o zmianie terenu. Wymagania: US1.7, US1.8 */
     @Test
     fun us1_8_no_notice_for_own_choice() {
         areas().show("Wittigowo")
@@ -67,7 +69,11 @@ class MapAreasTest {
         assertEquals("Bartoszowice", areas(symbol = "P-14").notice)
     }
 
-    /** Wiersz: V1, lista terenów: wybrany pierwszy, pozostałe od najbliższego, z liczbą budynków i km (US1.7). */
+    /**
+     * Wiersz: V1, lista terenów: wybrany pierwszy, pozostałe od najbliższego, z liczbą budynków i km.
+     *
+     * Wymagania: US1.7
+     */
     @Test
     fun us1_7_choices_nearest_first() {
         val expected =
@@ -79,7 +85,7 @@ class MapAreasTest {
         assertEquals(expected, areas().choices)
     }
 
-    /** Wiersz: V1, odległość na liście liczy się od wybranego terenu, nie od startowego (US1.7). */
+    /** Wiersz: V1, odległość na liście liczy się od wybranego terenu, nie od startowego. Wymagania: US1.7 */
     @Test
     fun us1_7_distance_from_chosen() {
         chosen.value = "Wittigowo"
@@ -87,7 +93,11 @@ class MapAreasTest {
         assertEquals(listOf(null, 2, 4), areas().choices.map(AreaChoice::kilometers))
     }
 
-    /** Wiersz: V1, wybranie terenu przenosi granicę mapy na ten teren i daje jego widok startowy (US1.7, BR-G5). */
+    /**
+     * Wiersz: V1, wybranie terenu przenosi granicę mapy na ten teren i daje jego widok startowy.
+     *
+     * Wymagania: US1.7, BR-G5
+     */
     @Test
     fun us1_7_show_moves_to_area() {
         val camera = requireNotNull(areas().show("Wittigowo"))
@@ -98,14 +108,18 @@ class MapAreasTest {
         assertEquals(60.0205, camera.center.latitude, DEGREE_DELTA)
     }
 
-    /** Wiersz: V1, teren spoza danych nie zmienia wyboru (US1.7). */
+    /** Wiersz: V1, teren spoza danych nie zmienia wyboru. Wymagania: US1.7 */
     @Test
     fun us1_7_unknown_area_ignored() {
         assertNull(areas().show("Nieznany"))
         assertNull(areas().chosenName)
     }
 
-    /** Wiersz: V1, bez wyboru terenem jest teren zaznaczonego budynku, a bez zaznaczenia startowy (US1.6, US1.8). */
+    /**
+     * Wiersz: V1, bez wyboru terenem jest teren zaznaczonego budynku, a bez zaznaczenia startowy.
+     *
+     * Wymagania: US1.6, US1.8
+     */
     @Test
     fun us1_8_area_follows_building() {
         assertEquals("Kampus główny", areas().current?.name)

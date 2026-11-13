@@ -20,9 +20,11 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Testy US4, US7 i BR-9: POST /submissions zapisuje zgłoszenie ze statusem
- * „wysłane”, a budynek zgłoszenia szybkiego ustala z konturu (BR-14).
+ * POST /submissions zapisuje zgłoszenie ze statusem
+ * „wysłane”, a budynek zgłoszenia szybkiego ustala z konturu.
  * Bez transakcji testowej, jak na produkcji; wiersze usuwane po teście.
+ *
+ * <p>Wymagania: BR-14, US4, US7, BR-9</p>
  *
  * @since 0.1.0
  */
@@ -79,9 +81,11 @@ final class SubmissionsHttpTest {
     }
 
     /**
-     * Ponowiony POST zwraca zapisane zgłoszenie bez drugiego wiersza (BR-9).
+     * Ponowiony POST zwraca zapisane zgłoszenie bez drugiego wiersza.
      * Scenariusz (częściowo): synchronizacja.feature: Przerwana synchronizacja
      * nie gubi zgłoszenia i nie tworzy drugiego
+     *
+     * <p>Wymagania: BR-9</p>
      *
      * @param context Kontekst aplikacji z bazą danych
      * @throws Exception Gdy nie uda się wykonać żądania HTTP

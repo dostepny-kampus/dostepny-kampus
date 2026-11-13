@@ -9,6 +9,7 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.submissions.OwnStatuses
 import io.github.dostepnykampus.core.data.submissions.OwnSubmission
 import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
@@ -29,17 +30,19 @@ import javax.inject.Inject
 private const val STOP_TIMEOUT_MS = 5_000L
 
 /**
- * Pozycja listy C3 (US8.1).
+ * Pozycja listy C3.
  *
- * @property id identyfikator zgłoszenia; „Otwórz” przekazuje go do poprawki w C2 (US8.3)
+ * Wymagania: US8.1, US8.3, US8.2, BR-16
+ *
+ * @property id identyfikator zgłoszenia; „Otwórz” przekazuje go do poprawki w C2
  * @property savedAt chwila ostatniego zapisu w telefonie
  * @property type typ bariery albo `null`, gdy kod nie jest w słowniku
  * @property buildingSymbol budynek; `null` to „poza budynkiem”
  * @property floorNumber numer piętra budynku podstawowego
  * @property state stan wysyłki
  * @property refusal powód przy „Nie wysłano”; `null` w pozostałych stanach
- * @property serverStatus status z serwera po odświeżeniu (US8.2); `null`, gdy telefon go nie zna
- * @property rejectionReason powód odrzucenia od Weryfikatora (BR-16)
+ * @property serverStatus status z serwera po odświeżeniu; `null`, gdy telefon go nie zna
+ * @property rejectionReason powód odrzucenia od Weryfikatora
  */
 data class OwnSubmissionItem(
     val id: String,
@@ -54,17 +57,19 @@ data class OwnSubmissionItem(
 )
 
 /**
- * Lista C3 od najnowszego (US8.1).
+ * Lista C3 od najnowszego.
+ *
+ * Wymagania: US8.1
  *
  * @property items zgłoszenia
  */
 @Immutable
 data class MySubmissions(val items: List<OwnSubmissionItem>) {
-    /** Liczba zgłoszeń „W telefonie” do napisu „Czeka na wysłanie: N” (US9.1). */
+    /** Liczba zgłoszeń „W telefonie” do napisu „Czeka na wysłanie: N”. Wymagania: US9.1 */
     val waitingCount: Int get() = items.count { it.state == SendState.LOCAL }
 }
 
-/** Sprawdzanie statusów z serwera na C3 (US8.2, US9.1, NFR-50). */
+/** Sprawdzanie statusów z serwera na C3. Wymagania: US8.2, US9.1, NFR-50 */
 enum class StatusCheck {
     /** „Sprawdzamy statusy…” obok listy z telefonu. */
     CHECKING,
@@ -86,32 +91,42 @@ sealed interface MySubmissionsUiState {
      *
      * @property list zgłoszenia
      * @property check sprawdzanie statusów z serwera
+     * @property isOnline czy telefon ma połączenie z internetem
      */
-    data class Ready(val list: MySubmissions, val check: StatusCheck = StatusCheck.DONE) : MySubmissionsUiState
+    data class Ready(
+        val list: MySubmissions,
+        val check: StatusCheck = StatusCheck.DONE,
+        val isOnline: Boolean = true,
+    ) : MySubmissionsUiState
 }
 
 /**
- * C3 „Moje zgłoszenia”: własne zgłoszenia z historii w telefonie, więc lista działa bez sieci (US8.1, US9.1, NFR-5).
- * Przy otwarciu i na „Spróbuj ponownie” sprawdza statusy z serwera (US8.2); brak sieci zostawia ostatnie statusy.
+ * C3 „Moje zgłoszenia”: własne zgłoszenia z historii w telefonie, więc lista działa bez sieci.
+ * Przy otwarciu i na „Spróbuj ponownie” sprawdza statusy z serwera; brak sieci zostawia ostatnie statusy.
+ *
+ * Wymagania: US8.1, US9.1, NFR-5, US8.2
  */
 @HiltViewModel
 class MySubmissionsViewModel
     @Inject
-    constructor(history: OwnSubmissions, private val statuses: OwnStatuses) :
-    ViewModel() {
+    constructor(
+        history: OwnSubmissions,
+        private val statuses: OwnStatuses,
+        networkStatus: NetworkStatus,
+    ) : ViewModel() {
         private val check = MutableStateFlow(StatusCheck.CHECKING)
 
         /** Lista od najnowszego; zmienia się po każdym zapisie, wysyłce z kolejki i sprawdzeniu statusów. */
         val state: StateFlow<MySubmissionsUiState> =
-            combine(history.observe(), check) { rows, current ->
-                MySubmissionsUiState.Ready(MySubmissions(rows.map { it.toItem() }), current)
+            combine(history.observe(), check, networkStatus.isOnline()) { rows, current, online ->
+                MySubmissionsUiState.Ready(MySubmissions(rows.map { it.toItem() }), current, isOnline = online)
             }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), MySubmissionsUiState.Loading)
 
         init {
             refresh()
         }
 
-        /** „Spróbuj ponownie” po błędzie sprawdzania statusów (NFR-50, PW-10). */
+        /** „Spróbuj ponownie” po błędzie sprawdzania statusów (PW-10). Wymagania: NFR-50 */
         fun retry() {
             if (check.value != StatusCheck.CHECKING) refresh()
         }

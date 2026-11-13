@@ -17,10 +17,10 @@ import org.maplibre.spatialk.geojson.Position
 import org.maplibre.spatialk.turf.measurement.distance
 import org.maplibre.spatialk.units.International
 
-/** Punkt modelu jako pozycja GeoJSON spatialk: długość, potem szerokość (#819). */
+/** Punkt modelu jako pozycja GeoJSON spatialk: długość, potem szerokość. */
 fun GeoPoint.toPosition(): Position = Position(longitude = longitude, latitude = latitude)
 
-/** Kontur modelu jako geometria spatialk: `Polygon` albo `MultiPolygon` (#819). */
+/** Kontur modelu jako geometria spatialk: `Polygon` albo `MultiPolygon`. */
 fun GeoArea.toGeometry(): PolygonGeometry =
     when (this) {
         is GeoPolygon -> Polygon(positions(this))

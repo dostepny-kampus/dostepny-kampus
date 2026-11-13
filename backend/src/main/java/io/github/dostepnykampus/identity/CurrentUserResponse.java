@@ -9,7 +9,9 @@ import java.util.List;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 /**
- * Profil zalogowanej osoby, schemat CurrentUser w OpenAPI (US14.1, BR-1).
+ * Profil zalogowanej osoby, schemat CurrentUser w OpenAPI.
+ *
+ * <p>Wymagania: US14.1, BR-1</p>
  *
  * @param id Identyfikator konta w Usłudze logowania
  * @param displayName Imię i nazwisko albo nazwa konta
@@ -20,7 +22,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 record CurrentUserResponse(String id, String displayName, String email, List<String> roles) {
 
     /**
-     * Rola, którą ma każde konto (BR-1, US14.3).
+     * Rola, którą ma każde konto.
+     *
+     * <p>Wymagania: BR-1, US14.3</p>
      */
     private static final String VISITOR = "VISITOR";
 

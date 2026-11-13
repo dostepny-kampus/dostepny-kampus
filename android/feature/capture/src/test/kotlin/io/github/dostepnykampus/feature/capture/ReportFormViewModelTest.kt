@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.IOException
 
-/** Ekran C2: braki po „Zapisz”, zapis w kolejce, błąd zapisu i pytanie przy wyjściu (US7.1, US7.4, NFR-7). */
+/** Ekran C2: braki po „Zapisz”, zapis w kolejce, błąd zapisu i pytanie przy wyjściu. Wymagania: US7.1, US7.4, NFR-7 */
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReportFormViewModelTest {
     private val dispatcher = StandardTestDispatcher()
@@ -193,7 +193,7 @@ class ReportFormViewModelTest {
             assertEquals(1, saved.size)
         }
 
-    /** Kolejka odrzuca wpis: błąd zapisu bez awarii, a wpisane pola zostają (NFR-7, NFR-50). */
+    /** Kolejka odrzuca wpis: błąd zapisu bez awarii, a wpisane pola zostają. Wymagania: NFR-7, NFR-50 */
     @Test
     fun `odrzucony wpis zostaje`() =
         runTest(dispatcher) {
@@ -208,7 +208,7 @@ class ReportFormViewModelTest {
             assertEquals(0, saved.size)
         }
 
-    /** Nieznana wersja poprawki nie prosi o nowe zdjęcie, bo zdjęcie nic by nie zmieniło (BR-10, NFR-50). */
+    /** Nieznana wersja poprawki nie prosi o nowe zdjęcie, bo zdjęcie nic by nie zmieniło. Wymagania: BR-10, NFR-50 */
     @Test
     fun `nieznana wersja bez zdjecia`() =
         runTest(dispatcher) {
@@ -256,8 +256,10 @@ class ReportFormViewModelTest {
 
     /**
      * Wybrany TB-1 bez zapisu: rezygnacja z wyjścia zostawia formularz z TB-1, a potwierdzone wyjście zamyka go bez
-     * zapisu w kolejce (US7.4).
+     * zapisu w kolejce.
      * Scenariusz: pomiar-precyzyjny.feature: Wyjście z formularza z niezapisanymi zmianami wymaga potwierdzenia
+     *
+     * Wymagania: US7.4
      */
     @Test
     fun `wyjście z wybranym typem`() =

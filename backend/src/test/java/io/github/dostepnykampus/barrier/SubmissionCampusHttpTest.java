@@ -20,10 +20,12 @@ import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Zgłoszenie tylko na terenie PWr: do 500 m od konturu budynku (BR-G5, US4.9).
+ * Zgłoszenie tylko na terenie PWr: do 500 m od konturu budynku.
  *
  * <p>Punkty są te same co w {@code CampusAreaTest}, który sprawdza ich
  * odległość od budynków w bazie.</p>
+ *
+ * <p>Wymagania: BR-G5, US4.9</p>
  *
  * @since 0.1.0
  */

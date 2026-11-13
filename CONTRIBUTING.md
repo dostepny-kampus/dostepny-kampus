@@ -2,6 +2,8 @@
 
 Ten dokument opisuje tylko reguły, które dziś sprawdzają skrypty i workflow w tym repozytorium. Przy każdej regule
 podany jest plik, który ją egzekwuje; gdy reguła się zmienia, zmienia się ten plik i ten dokument w tym samym PR.
+Jak prowadzić zmianę tam, gdzie skrypt niczego nie sprawdzi (kolejność pracy, podział na PR, gdzie kłaść kod,
+opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
 
 ## Przebieg zmiany
 
@@ -25,6 +27,11 @@ podany jest plik, który ją egzekwuje; gdy reguła się zmienia, zmienia się t
 
 Aktualizacje zależności otwiera Dependabot do gałęzi sprintu ([`dependabot.yml`](.github/dependabot.yml)); PR Dependabota
 jest zwolniony z kontroli „PR od issue”.
+Przepływ strażnika jakości ([`straznik-jakosci.yml`](.github/workflows/straznik-jakosci.yml)) uruchamia się zdarzeniem
+`pull_request_target`, więc GitHub bierze go z gałęzi domyślnej (`main`), a skrypt
+[`straznik-jakosci.sh`](.github/scripts/straznik-jakosci.sh) z bazy PR (`sprint/N`). Dzięki temu PR nie podmieni ani
+jednego, ani drugiego. Zmiana przepływu scalona do `sprint/N` działa dla kolejnych PR dopiero po przeniesieniu pliku do
+`main`, a skrypt ze sprintu musi działać z przepływem z `main`; strażnik ostrzega o tym przy zmianie przepływu (#1173).
 Strażnik jakości przepuszcza zmianę wersji istniejących pakietów npm przez Dependabota w `.github/commitlint/` i `api/`,
 gdy manifest i odpowiadający mu plik lock są aktualizowane razem.
 
@@ -44,7 +51,7 @@ gdy manifest i odpowiadający mu plik lock są aktualizowane razem.
 | Znacznik zadania w kodzie (`TODO`, `FIXME`, `HACK`, `@todo`; wielkość liter bez znaczenia) ma postać `ZNACZNIK(#N)` z otwartym issue. | [`todo-issue.sh`](.github/scripts/todo-issue.sh), zadanie `znaczniki-todo` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Każde rozwiązanie tymczasowe wskazuje otwarte issue z docelową poprawką: `@Ignore("… #N")` i `@Disabled("… #N")` (powód z numerem), tag wykluczający w `.feature` (`@do-zrobienia`, `@ignore`, `@skip`, `@wip`, `@pominiete`, `@tymczasowe`) z `#N` w tej samej linii albo w komentarzu nad nim, `@Tymczasowe("#N …")` (Java), `@RequiresOptIn` z `#N` w KDoc (Kotlin). Brak numeru, issue zamknięte albo nieistniejące to błąd; dotyczy to też issue zamykanego przez ten PR. | [`todo-issue.sh`](.github/scripts/todo-issue.sh), zadanie `znaczniki-todo` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Pliki z kodem mają nagłówek autorski. | [`naglowki.sh`](.github/scripts/naglowki.sh) |
-| Brak zakazanych słów w gałęzi, tytule, opisie, commitach i dodanych liniach (dla Dependabota opis jest pomijany). | [`zakazane-slowa.sh`](.github/scripts/zakazane-slowa.sh) |
+| Brak zakazanych słów w gałęzi, tytule, opisie, commitach i dodanych liniach (dla Dependabota opis jest pomijany). Commity jednego autora w gałęzi PR: cudzy commit (np. scalenie gałęzi sprintu przez inną osobę) daje w kolejce zakazany dopisek GitHuba o współautorze, więc cudzą gałąź aktualizuje jej autor albo `git rebase`. | [`zakazane-slowa.sh`](.github/scripts/zakazane-slowa.sh) |
 | Brak sekretów w commitach, licencje i podatności nowych zależności. | zadania `sekrety` i `zaleznosci` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Skrypty kontroli mają testy `*-test.sh`, uruchamiane razem. | zadanie `testy-skryptow` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 
@@ -95,5 +102,5 @@ z odnośnikiem do jobu.
 ## Przed otwarciem PR
 
 - Uruchom lokalnie testy skryptów, które zmieniasz, np. `bash .github/scripts/pr-od-issue-test.sh`.
-- Pełną budowę aplikacji i serwera wykonuje CI; wynik bierz z zadań PR.
+- Testy, analizę i pełną budowę aplikacji i serwera wykonuje CI; wynik bierz z zadań PR ([AGENTS.md](AGENTS.md), punkt 8).
 - Wypchnij gałąź i otwórz PR do `sprint/N`; szablon opisu uzupełnia się sam.

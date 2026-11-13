@@ -29,8 +29,9 @@ import java.util.concurrent.TimeUnit
  * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek. Odpowiedź z kodem spoza kontraktu,
  * np. 400 przy złamanej regule zgłoszenia, to [ApiResult.ServerError] z tym kodem. Anulowanie korutyny
  * wywołującej każdą funkcję `suspend`, także wysyłkę zdjęcia, przerywa jej żądanie HTTP, również w trakcie
- * czytania odpowiedzi, i kończy się [kotlinx.coroutines.CancellationException], nie [ApiResult.NetworkError]
- * (NFR-55).
+ * czytania odpowiedzi, i kończy się [kotlinx.coroutines.CancellationException], nie [ApiResult.NetworkError].
+ *
+ * Wymagania: NFR-55
  *
  * @param http klient OkHttp; wysyłka zdjęcia używa jego kopii z dłuższym limitem czasu
  * @param json parser JSON kontraktu
@@ -41,7 +42,9 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
     private val photoHttp by lazy { http.newBuilder().callTimeout(PHOTO_TIMEOUT_SECONDS, TimeUnit.SECONDS).build() }
 
     /**
-     * Wysyła nowe zgłoszenie. Ponowne wysłanie tego samego [id] zwraca zgłoszenie zapisane wcześniej (BR-9).
+     * Wysyła nowe zgłoszenie. Ponowne wysłanie tego samego [id] zwraca zgłoszenie zapisane wcześniej.
+     *
+     * Wymagania: BR-9
      *
      * @param id identyfikator UUID nadany w telefonie
      * @param content treść zgłoszenia
@@ -53,7 +56,9 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
 
     /**
      * Wysyła edycję zaczętą od wersji [version]. Inna wersja na serwerze daje [SubmissionEdit.Conflict]
-     * z wersją z serwera; nic nie zapisuje się samo (NFR-9, BR-10).
+     * z wersją z serwera; nic nie zapisuje się samo.
+     *
+     * Wymagania: NFR-9, BR-10
      *
      * @param id identyfikator zgłoszenia
      * @param version wersja, od której zaczęto edycję w telefonie
@@ -69,11 +74,13 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
         }
 
     /**
-     * Wysyła zdjęcie z listy `photoIds` zgłoszenia; ponowne wysłanie je zastępuje (BR-9).
+     * Wysyła zdjęcie z listy `photoIds` zgłoszenia; ponowne wysłanie je zastępuje.
+     *
+     * Wymagania: BR-9, NFR-26
      *
      * @param submissionId identyfikator zgłoszenia
      * @param photoId identyfikator zdjęcia nadany w telefonie
-     * @param jpeg plik JPEG już obrócony, bo serwer usuwa EXIF z orientacją (NFR-26)
+     * @param jpeg plik JPEG już obrócony, bo serwer usuwa EXIF z orientacją
      */
     suspend fun putPhoto(submissionId: String, photoId: String, jpeg: ByteArray): ApiResult<Unit> =
         photoHttp.exchange(request(path(submissionId, PHOTOS, photoId), JPEG.body(jpeg), PUT)) { code, _ ->
@@ -81,8 +88,10 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
         }
 
     /**
-     * Zdjęcie zgłoszenia przyjętego jako JPEG do arkusza bariery i karty budynku (US1.5, US2.2, BR-6). Zdjęcie,
+     * Zdjęcie zgłoszenia przyjętego jako JPEG do arkusza bariery i karty budynku. Zdjęcie,
      * którego serwer nie pokazuje, daje [ApiResult.NotFound].
+     *
+     * Wymagania: US1.5, US2.2, BR-6
      *
      * @param submissionId identyfikator zgłoszenia
      * @param photoId identyfikator zdjęcia z listy `photoIds`
@@ -96,7 +105,9 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
     }
 
     /**
-     * Zgłoszenia przyjęte do mapy i karty budynku (`status=ACCEPTED`, US1.3, US2.2, BR-6).
+     * Zgłoszenia przyjęte do mapy i karty budynku (`status=ACCEPTED`).
+     *
+     * Wymagania: US1.3, US2.2, BR-6
      *
      * @param buildingSymbol tylko zgłoszenia z tego budynku; `null` dla wszystkich
      */
@@ -113,8 +124,10 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
     }
 
     /**
-     * Własne zgłoszenia Zbierającego w każdym statusie, odrzucone z powodem (`mine=true`, US8.1, US8.2).
+     * Własne zgłoszenia Zbierającego w każdym statusie, odrzucone z powodem (`mine=true`).
      * Bez tokenu z rolą Zbierającego serwer odpowiada 401 albo 403.
+     *
+     * Wymagania: US8.1, US8.2
      */
     suspend fun mine(): ApiResult<List<Submission>> {
         val target = path().newBuilder().addQueryParameter(name = "mine", value = "true").build()
@@ -168,7 +181,7 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
     }
 }
 
-/** Wynik edycji zgłoszenia, które serwer przyjął do sprawdzenia wersji (NFR-9). */
+/** Wynik edycji zgłoszenia, które serwer przyjął do sprawdzenia wersji. Wymagania: NFR-9 */
 sealed interface SubmissionEdit {
     /**
      * Serwer zapisał edycję jako kolejną wersję.
@@ -178,7 +191,9 @@ sealed interface SubmissionEdit {
     data class Saved(val submission: Submission) : SubmissionEdit
 
     /**
-     * Serwer ma inną wersję albo zgłoszenie nie pozwala na zmianę; edycja czeka w telefonie na wybór (US9.3).
+     * Serwer ma inną wersję albo zgłoszenie nie pozwala na zmianę; edycja czeka w telefonie na wybór.
+     *
+     * Wymagania: US9.3
      *
      * @property server zgłoszenie w wersji z serwera
      */

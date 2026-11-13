@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.specs;
 
 import io.cucumber.junit.platform.engine.Constants;
+import org.junit.jupiter.api.Tag;
 import org.junit.platform.suite.api.ConfigurationParameter;
 import org.junit.platform.suite.api.IncludeEngines;
 import org.junit.platform.suite.api.SelectFile;
@@ -20,6 +21,7 @@ import org.junit.platform.suite.api.Suite;
  * @since 0.1.0
  */
 @Suite
+@Tag("kontekst-springa")
 @IncludeEngines("cucumber")
 @SelectFile("../specs/budynki-bez-szczegolow.feature")
 @SelectFile("../specs/przegladanie-mapy.feature")

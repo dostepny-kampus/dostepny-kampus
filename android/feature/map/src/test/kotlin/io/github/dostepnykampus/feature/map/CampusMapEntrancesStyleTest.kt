@@ -22,11 +22,10 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-/** Styl mapy V1 z wejściami z syntetycznego katalogu „Budynek testowy” (nie dane PWr): US2.1, US3.3, decyzja 134. */
+/** Styl mapy V1 z wejściami z syntetycznego katalogu „Budynek testowy” (nie dane PWr): US2.1. Wymagania: US3.3 */
 class CampusMapEntrancesStyleTest {
     private val at = GeoPoint(longitude = 0.25, latitude = 0.5)
     private val ring =
@@ -93,13 +92,14 @@ class CampusMapEntrancesStyleTest {
         val marks = style(pin).layer(ENTRANCES_LAYER)
         assertNotNull(marks, "brak warstwy znaków wejść")
         assertEquals(markings.size, style(pin).points(checkNotNull(marks)).size)
-        assertNull(marks["filter"])
+        assertEquals(JsonPrimitive(true), marks["filter"])
     }
 
-    /** Wiersz E5 (O6): bez zaznaczonego wejścia nie ma pinezki. */
+    /** Wiersz E5 (O6): bez zaznaczonego wejścia pinezka nie ma punktu, więc jej nie widać. */
     @Test
     fun nfr15_no_pin_without_choice() {
-        assertNull(style().layer(ENTRANCE_PIN_LAYER))
+        val plain = style()
+        assertEquals(emptyList<JsonObject>(), plain.points(checkNotNull(plain.layer(ENTRANCE_PIN_LAYER))))
     }
 
     private fun entrance(id: String, marking: EntranceMarking) =

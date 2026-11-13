@@ -9,7 +9,12 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -57,8 +62,37 @@ class MySubmissionsScreenTest {
     }
 
     /**
-     * Wiersz: C3 → „Czeka na wysłanie: N” przy zgłoszeniach w telefonie bez „Nie wysłano”, US9.1, BR-26.
+     * Wskaźnik sieci znika po połączeniu, a zgłoszenie nadal jest w telefonie; zmianę odczytuje TalkBack.
+     * Scenariusz (częściowo): synchronizacja.feature: Bez sieci widać wskaźnik,
+     *   a zgłoszenie czeka ze statusem „lokalne”
+     */
+    @Test
+    fun us9_1_offline_indicator() {
+        var isOnline by mutableStateOf(false)
+        val list = MySubmissions(listOf(item(id = "a", state = SendState.LOCAL)))
+        compose.setContent {
+            DostepnyKampusTheme {
+                MySubmissionsContent(
+                    state = MySubmissionsUiState.Ready(list, isOnline = isOnline),
+                    actions = MySubmissionsActions(onBack = {}, onMeasure = {}),
+                )
+            }
+        }
+        compose.onNodeWithText("Bez internetu").assertIsDisplayed()
+        compose.onNodeWithText("W telefonie").assertIsDisplayed()
+        val polite = SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite)
+        compose.onNode(polite and hasAnyDescendant(hasText("Bez internetu"))).assertExists()
+
+        isOnline = true
+        compose.onNodeWithText("Bez internetu").assertDoesNotExist()
+        compose.onNodeWithText("W telefonie").assertIsDisplayed()
+    }
+
+    /**
+     * Wiersz: C3 → „Czeka na wysłanie: N” przy zgłoszeniach w telefonie bez „Nie wysłano”.
      * Scenariusz: synchronizacja.feature: Licznik oczekujących nie liczy zgłoszeń „Nie wysłano”
+     *
+     * Wymagania: US9.1, BR-26
      */
     @Test
     fun us9_1_waiting_count() {
@@ -78,7 +112,7 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Zmierz i zgłoś barierę").assertDoesNotExist()
     }
 
-    /** Wiersz: C3 same wysłane → bez „Czeka na wysłanie”, US9.1. */
+    /** Wiersz: C3 same wysłane → bez „Czeka na wysłanie”. Wymagania: US9.1 */
     @Test
     fun us9_1_nothing_waiting() {
         show(item(id = "a", state = SendState.SENT))
@@ -86,7 +120,7 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Czeka na wysłanie", substring = true).assertDoesNotExist()
     }
 
-    /** Wiersz: C3, poprawka w C2 jeszcze niedostępna → pozycje bez „Otwórz”, US8.3. */
+    /** Wiersz: C3, poprawka w C2 jeszcze niedostępna → pozycje bez „Otwórz”. Wymagania: US8.3 */
     @Test
     fun us8_3_list_without_open() {
         val list = MySubmissions(listOf(item(id = "a", state = SendState.LOCAL)))
@@ -95,7 +129,7 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Otwórz").assertDoesNotExist()
     }
 
-    /** Wiersz: C3 „Otwórz” w pozycji → poprawka w C2 z identyfikatorem zgłoszenia, US8.3. */
+    /** Wiersz: C3 „Otwórz” w pozycji → poprawka w C2 z identyfikatorem zgłoszenia. Wymagania: US8.3 */
     @Test
     fun us8_3_open_item() {
         show(item(id = "a", state = SendState.LOCAL))
@@ -103,7 +137,13 @@ class MySubmissionsScreenTest {
         assertEquals(listOf("a"), opened)
     }
 
-    /** Wiersz: C3 „Nie wysłano” → powód i „Otwórz” do poprawki w C2, bez liczenia w „Czeka na wysłanie”, US9.5. */
+    /**
+     * Wiersz: C3 „Nie wysłano” → powód i „Otwórz” do poprawki w C2, bez liczenia w „Czeka na wysłanie”.
+     * Scenariusz (częściowo): synchronizacja.feature: Odrzucona treść albo zdjęcie
+     *   zostawia zgłoszenie ze statusem „Nie wysłano”
+     *
+     * Wymagania: US9.5
+     */
     @Test
     fun us9_5_refused_open() {
         val refused = item(id = "a", state = SendState.REFUSED).copy(refusal = RefusalReason.NOT_ACCEPTED)
@@ -116,7 +156,11 @@ class MySubmissionsScreenTest {
         assertEquals(listOf("a"), opened)
     }
 
-    /** Wiersz: C3 → „Sprawdzamy statusy…”, przy błędzie komunikat i „Spróbuj ponownie”, US8.2, NFR-50, PW-10. */
+    /**
+     * Wiersz: C3 → „Sprawdzamy statusy…”, przy błędzie komunikat i „Spróbuj ponownie”, PW-10.
+     *
+     * Wymagania: US8.2, NFR-50
+     */
     @Test
     fun us8_2_checking_and_retry() {
         var retried = 0
@@ -137,7 +181,7 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Spróbuj ponownie").assertDoesNotExist()
     }
 
-    /** Wiersz: C3 „Wysłane” → bez „Otwórz”, bo treść jest tylko na serwerze, US8.3. */
+    /** Wiersz: C3 „Wysłane” → bez „Otwórz”, bo treść jest tylko na serwerze. Wymagania: US8.3 */
     @Test
     fun us8_3_sent_without_open() {
         show(item(id = "a", state = SendState.SENT), item(id = "b", state = SendState.REFUSED))

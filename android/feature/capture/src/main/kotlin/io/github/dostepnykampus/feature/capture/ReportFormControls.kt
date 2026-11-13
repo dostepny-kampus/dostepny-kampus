@@ -50,9 +50,11 @@ internal fun ReportFormViewModel.controls(): ReportFormControls =
     )
 
 /**
- * Formularz C2 spięty z modelem widoku, wspólny dla nowego zgłoszenia i poprawki z C3 (US7, US8.3). Każdy etap jest
+ * Formularz C2 spięty z modelem widoku, wspólny dla nowego zgłoszenia i poprawki z C3. Każdy etap jest
  * obsługiwany raz, więc wyjście i zapis zdejmują ekran z historii tylko raz. „Wstecz” telefonu działa jak „Wstecz”
- * w nagłówku (US7.4).
+ * w nagłówku.
+ *
+ * Wymagania: US7, US8.3, US7.4
  *
  * @param controls wywołania modelu widoku
  * @param camera aparat zdjęć formularza

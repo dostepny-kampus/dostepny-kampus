@@ -38,16 +38,13 @@ import io.github.dostepnykampus.core.designsystem.PinnedButtonKind
 import io.github.dostepnykampus.core.model.EntranceMarking
 
 /**
- * V2 Karta budynku (US2, BR-25): symbol, nazwa, wiersz o wejściach (US2.8), wejścia z oznaczeniem tekstem
- * i ikoną, zalecane pierwsze. Nagłówek to symbol dużym napisem `displayLarge` w kolorze `primary`, a pod nim
- * nazwa z danych `headlineMedium`; budynek bez nazwy ma sam symbol (decyzja 152). TalkBack czyta jeden nagłówek,
- * „Budynek A-1, Gmach Główny” albo „Budynek A-4”, i po otwarciu fokus stoi na nim (NFR-18).
- * Karta nic nie mówi o barierach, bo aplikacja nie ma jeszcze ich źródła (US2.7). Czynności stoją w przewijanej
- * treści pod wierszem o wejściach, bez przypiętego pasa (reguła 10): „Sprawdź, którędy wejść” w każdym trybie,
- * „Zamknij” w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]. Pasek „Wstecz” i grupę „Wejścia”
- * ma tylko pełny ekran.
- * Nieznany symbol: „budynku nie ma w telefonie” (US2.7). Bez internetu nad nagłówkiem stoi [OfflinePill],
- * bez daty (NFR-10, US2.8).
+ * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako
+ * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu. Pod nim wiersz o wejściach i wejścia z oznaczeniem
+ * tekstem i ikoną, zalecane pierwsze. Czynności stoją w przewijanej treści: „Sprawdź, którędy wejść” zawsze, „Zamknij”
+ * w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]; pasek „Wstecz” i grupę „Wejścia” ma pełny ekran.
+ * Nieznany symbol: „budynku nie ma w telefonie”. Bez internetu nad nagłówkiem stoi [OfflinePill] bez daty.
+ *
+ * Wymagania: US2, BR-25, US2.8, NFR-18, US2.7, NFR-10
  *
  * @param symbol symbol z trasy, widoczny w nagłówku także w trakcie wczytywania
  * @param mode mała karta nad mapą, pełny ekran rozwinięty z niej albo pełny ekran otwarty od razu
@@ -170,8 +167,10 @@ private fun SymbolOverName(symbol: String, name: String?) {
 }
 
 /**
- * Wiersz o wejściach pod nagłówkiem (US2.8, NFR-21): słowo i ikona oznaczenia jak w [MarkingChip] (kształt, nie
+ * Wiersz o wejściach pod nagłówkiem: słowo i ikona oznaczenia jak w [MarkingChip] (kształt, nie
  * para zielony/czerwony).
+ *
+ * Wymagania: US2.8, NFR-21
  */
 @Composable
 internal fun EntranceSummaryRow(summary: EntranceSummary) {

@@ -50,7 +50,7 @@ import java.io.File
 import javax.inject.Inject
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Odmowa 403: kolejka na bazie z grafu Hilt, historia i ViewModel aż do karty C3 (US9.5, US14.1, BR-26). */
+/** Odmowa 403: kolejka na bazie z grafu Hilt, historia i ViewModel aż do karty C3. Wymagania: US9.5, US14.1, BR-26 */
 @HiltAndroidTest
 @RunWith(RobolectricTestRunner::class)
 @Config(application = HiltTestApplication::class, qualifiers = "w360dp-h800dp")
@@ -100,6 +100,7 @@ class RevokedRoleTest {
             MySubmissionsViewModel(
                 history = OwnSubmissions { flowOf(list) },
                 statuses = OwnStatuses { StatusRefresh.OFFLINE },
+                networkStatus = { flowOf(false) },
             )
         compose.setContent {
             val state by viewModel.state.collectAsState()

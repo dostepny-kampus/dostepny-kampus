@@ -14,7 +14,9 @@ import java.time.Instant
 import kotlin.coroutines.CoroutineContext
 
 /**
- * Bariery z kopii razem z chwilą ich pobrania z serwera (NFR-10).
+ * Bariery z kopii razem z chwilą ich pobrania z serwera.
+ *
+ * Wymagania: NFR-10
  *
  * @property barriers bariery z kopii
  * @property syncedAt chwila pobrania z serwera
@@ -22,7 +24,9 @@ import kotlin.coroutines.CoroutineContext
 data class SyncedBarriers(val barriers: List<AcceptedBarrier>, val syncedAt: Instant)
 
 /**
- * Kopia ostatnich barier z serwera w jednym wierszu `barrier_cache` (NFR-10).
+ * Kopia ostatnich barier z serwera w jednym wierszu `barrier_cache`.
+ *
+ * Wymagania: NFR-10
  *
  * @param dao wiersz kopii w bazie
  * @param ioContext kontekst zapisu i odczytu bazy
@@ -44,7 +48,7 @@ class BarrierListCopy(
     /** Bariery z kopii; `null`, gdy kopii nie ma albo jest zepsuta. */
     suspend fun restore(): List<AcceptedBarrier>? = restoreSynced()?.barriers
 
-    /** Bariery z kopii z chwilą pobrania (#1127); `null`, gdy kopii nie ma albo jest zepsuta. */
+    /** Bariery z kopii z chwilą pobrania; `null`, gdy kopii nie ma albo jest zepsuta. */
     suspend fun restoreSynced(): SyncedBarriers? {
         val row = withContext(ioContext) { dao.get() }
         val barriers = row?.run { listJson.toCachedBarriers() }

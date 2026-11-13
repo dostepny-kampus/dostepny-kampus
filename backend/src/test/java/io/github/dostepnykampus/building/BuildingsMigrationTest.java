@@ -14,8 +14,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
- * Testy US1: migracja V1 zakłada tabelę budynków, w której serwer
+ * Migracja V1 zakłada tabelę budynków, w której serwer
  * przechowuje symbol, nazwę i kontur budynku do wyszukiwania na mapie.
+ *
+ * <p>Wymagania: US1</p>
  *
  * @since 0.1.0
  */

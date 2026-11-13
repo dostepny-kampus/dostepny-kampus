@@ -16,7 +16,9 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 
 /**
  * Zdjęcia zgłoszeń w magazynie S3: jeden obiekt na zdjęcie, pod kluczem
- * z identyfikatorem zgłoszenia i zdjęcia nadanymi w telefonie (BR-9).
+ * z identyfikatorem zgłoszenia i zdjęcia nadanymi w telefonie.
+ *
+ * <p>Wymagania: BR-9</p>
  *
  * @since 0.1.0
  */
@@ -83,7 +85,7 @@ final class PhotoStore {
 
     /**
      * Zdjęcia zgłoszenia zapisane w magazynie, także spoza bieżącej listy
-     * photoIds (#839).
+     * photoIds.
      *
      * @param submission Identyfikator zgłoszenia
      * @return Identyfikatory zdjęć pod kluczami zgłoszenia

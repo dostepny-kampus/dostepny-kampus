@@ -22,8 +22,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Konto wybrane w przełączniku wersji debug (US14.1). Po wyborze roli ustawia je [DebugSignIn] z ról w tokenie
+ * Konto wybrane w przełączniku wersji debug. Po wyborze roli ustawia je [DebugSignIn] z ról w tokenie
  * użytkownika testowego. Zmiana konta od razu odświeża pasek i ekrany, które je obserwują.
+ *
+ * Wymagania: US14.1
  */
 @TymczasoweRole
 @Singleton
@@ -42,7 +44,9 @@ class DebugRoles
     }
 
 /**
- * Rola do wyboru w przełączniku: Gość, Odwiedzający i dwie role pracownicze (BR-1).
+ * Rola do wyboru w przełączniku: Gość, Odwiedzający i dwie role pracownicze.
+ *
+ * Wymagania: BR-1
  *
  * @property label napis przycisku
  * @property account konto tej roli
@@ -51,16 +55,16 @@ enum class DebugRole(
     @param:StringRes val label: Int,
     val account: Account,
 ) {
-    /** Gość niezalogowany (RO-GOS). */
+    /** Gość niezalogowany. Wymagania: RO-GOS */
     GUEST(R.string.debug_rola_gosc, Account.Guest),
 
-    /** Odwiedzający (RO-ODW). */
+    /** Odwiedzający. Wymagania: RO-ODW */
     VISITOR(R.string.debug_rola_odwiedzajacy, Account.SignedIn()),
 
-    /** Zbierający (RO-ZBI). */
+    /** Zbierający. Wymagania: RO-ZBI */
     COLLECTOR(R.string.debug_rola_zbierajacy, Account.SignedIn(setOf(StaffRole.COLLECTOR))),
 
-    /** Weryfikator (RO-WER). */
+    /** Weryfikator. Wymagania: RO-WER */
     VERIFIER(R.string.debug_rola_weryfikator, Account.SignedIn(setOf(StaffRole.VERIFIER))),
 }
 

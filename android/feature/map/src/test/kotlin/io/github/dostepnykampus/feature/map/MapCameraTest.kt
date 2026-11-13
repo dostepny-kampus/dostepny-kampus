@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 import kotlin.math.cos
 import kotlin.math.pow
 
-/** Przyciski powiększania i przesuwania mapy bez gestów (NFR-53) na punkcie testowym, nie na danych PWr. */
+/** Przyciski powiększania i przesuwania mapy bez gestów na punkcie testowym, nie na danych PWr. Wymagania: NFR-53 */
 class MapCameraTest {
     private val camera = MapCamera(center = GeoPoint(longitude = 17.0, latitude = 60.0), zoom = START_ZOOM)
 
@@ -25,7 +25,9 @@ class MapCameraTest {
 
     /**
      * Wiersz: V1, „Pomniejsz” oddala tak samo jak gest, do najmniejszego powiększenia, przy którym cały obszar
-     * kampusu mieści się w widoku, także poniżej dawnego powiększenia 12 (NFR-39, NFR-53).
+     * kampusu mieści się w widoku, także poniżej dawnego powiększenia 12.
+     *
+     * Wymagania: NFR-39, NFR-53
      */
     @Test
     fun nfr53_zoom_stays_in_range() {
@@ -39,7 +41,9 @@ class MapCameraTest {
 
     /**
      * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: prostokąt budynku mieści
-     * się w wolnej części mapy na lewo od pasa przycisków, z odstępem od brzegów (US2.8, US1.4, decyzja 151).
+     * się w wolnej części mapy na lewo od pasa przycisków, z odstępem od brzegów.
+     *
+     * Wymagania: US2.8, US1.4
      */
     @Test
     fun us2_8_building_fits_free_map() {

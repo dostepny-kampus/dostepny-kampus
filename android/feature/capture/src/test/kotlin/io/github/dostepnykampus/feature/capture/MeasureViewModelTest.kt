@@ -36,7 +36,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.coroutines.CoroutineContext
 
-/** Pomiar na ekranie C1 na odczytach testowych w czasie wirtualnym, bez odbiornika GNSS (US6.1, NFR-23, NFR-27). */
+/**
+ * Pomiar na ekranie C1 na odczytach testowych w czasie wirtualnym, bez odbiornika GNSS.
+ *
+ * Wymagania: US6.1, NFR-23, NFR-27
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MeasureViewModelTest {
     private val dispatcher = StandardTestDispatcher()
@@ -105,7 +109,7 @@ class MeasureViewModelTest {
             assertEquals(mapOf(GnssSystem.GPS to 1), state.satellites)
         }
 
-    /** Po 30 s wynik zostaje, a odbiornik przestaje nasłuchiwać (NFR-27). */
+    /** Po 30 s wynik zostaje, a odbiornik przestaje nasłuchiwać. Wymagania: NFR-27 */
     @Test
     fun us6_1_finished_stops_location() =
         runTest(dispatcher) {
@@ -119,7 +123,7 @@ class MeasureViewModelTest {
             assertEquals(listOf(0, 0), listOf(fixes.subscriptionCount.value, satellites.subscriptionCount.value))
         }
 
-    /** Wynik pomiaru zostaje po powrocie na ekran, np. z C2 (US6.1). */
+    /** Wynik pomiaru zostaje po powrocie na ekran, np. z C2. Wymagania: US6.1 */
     @Test
     fun us6_1_result_kept_after_leave() =
         runTest(dispatcher) {
@@ -134,8 +138,10 @@ class MeasureViewModelTest {
 
     /**
      * „Powtórz pomiar” po 10 s uśredniania zaczyna je od nowa: 29 s po nowym odczycie pomiar trwa, po 31 s jest
-     * zakończony (US6.1).
+     * zakończony.
      * Scenariusz: pomiar-precyzyjny.feature: Uśrednianie można przerwać i zacząć od nowa
+     *
+     * Wymagania: US6.1
      */
     @Test
     fun us6_1_repeat_while_averaging() =
@@ -172,7 +178,7 @@ class MeasureViewModelTest {
             assertEquals("A-1", (place() as PlaceChoice.Suggested).hint.building.symbol)
         }
 
-    /** Błąd odbiornika: stan błędu bez awarii, a „Powtórz pomiar” zaczyna nowy pomiar (NFR-50, NFR-23). */
+    /** Błąd odbiornika: stan błędu bez awarii, a „Powtórz pomiar” zaczyna nowy pomiar. Wymagania: NFR-50, NFR-23 */
     @Test
     fun nfr50_source_error_repeat() =
         runTest(dispatcher) {
@@ -195,7 +201,11 @@ class MeasureViewModelTest {
             assertEquals(MeasureUiState.Finished::class, viewModel.uiState.value::class)
         }
 
-    /** Wyłączona lokalizacja: stan bez nasłuchu odbiornika; po włączeniu pomiar rusza sam, bez zegara (UC7 4c). */
+    /**
+     * Wyłączona lokalizacja: stan bez nasłuchu odbiornika; po włączeniu pomiar rusza sam, bez zegara.
+     *
+     * Wymagania: UC7
+     */
     @Test
     fun uc7_4c_location_off_then_on() =
         runTest(dispatcher) {
@@ -212,7 +222,11 @@ class MeasureViewModelTest {
             assertEquals(MeasureUiState.Finished::class, viewModel.uiState.value::class)
         }
 
-    /** Ekran niewidoczny dłużej niż 5 s w trakcie pomiaru: pomiar od nowa z informacją o przerwie (NFR-23, NFR-27). */
+    /**
+     * Ekran niewidoczny dłużej niż 5 s w trakcie pomiaru: pomiar od nowa z informacją o przerwie.
+     *
+     * Wymagania: NFR-23, NFR-27
+     */
     @Test
     fun nfr27_restart_after_leave() =
         runTest(dispatcher) {
@@ -244,7 +258,7 @@ class MeasureViewModelTest {
             assertFalse(viewModel.restarted.value)
         }
 
-    /** Punkt pomiaru leży w konturze A-1, więc aplikacja podpowiada A-1 (US6.2). */
+    /** Punkt pomiaru leży w konturze A-1, więc aplikacja podpowiada A-1. Wymagania: US6.2 */
     @Test
     fun us6_2_hint_after_measurement() =
         runTest(dispatcher) {
@@ -291,7 +305,11 @@ class MeasureViewModelTest {
             assertEquals("B-1", (place() as PlaceChoice.Chosen).building.symbol)
         }
 
-    /** Sekcja „Wybierz budynek”: budynki najbliżej punktu, od najbliższego, ten z punktem pierwszy z 0 m (US6.2). */
+    /**
+     * Sekcja „Wybierz budynek”: budynki najbliżej punktu, od najbliższego, ten z punktem pierwszy z 0 m.
+     *
+     * Wymagania: US6.2
+     */
     @Test
     fun us6_2_nearest_for_section() =
         runTest(dispatcher) {
@@ -311,7 +329,21 @@ class MeasureViewModelTest {
             assertEquals(PlaceChoice.Outside, place())
         }
 
-    /** Dalej niż 50 m od konturu: bez podpowiedzi, od razu „poza budynkiem” (BR-G4). */
+    /** Korekta ręczna po pomiarze zmienia punkt, a „Powtórz pomiar” ją kasuje. Wymagania: US6.4, NFR-3 */
+    @Test
+    fun us6_4_move_point_until_repeat() =
+        runTest(dispatcher) {
+            viewModel.movePoint(MOVED)
+            finish()
+            viewModel.movePoint(MOVED)
+            runCurrent()
+            val moved = (viewModel.uiState.value as MeasureUiState.Finished).point
+            viewModel.repeat()
+            finish()
+            assertEquals(MOVED to A1_POINT, moved to (viewModel.uiState.value as MeasureUiState.Finished).point)
+        }
+
+    /** Dalej niż 50 m od konturu: bez podpowiedzi, od razu „poza budynkiem”. Wymagania: BR-G4 */
     @Test
     fun br_g4_far_point_outside() =
         runTest(dispatcher) {
@@ -320,9 +352,11 @@ class MeasureViewModelTest {
         }
 
     /**
-     * Wiersz: G5, decyzja 120 pkt 3, decyzja 137, US6.2 — punkt na krawędzi konturu A-1: podpowiedź A-1 do
+     * Wiersz: G5 — punkt na krawędzi konturu A-1: podpowiedź A-1 do
      * potwierdzenia, nie w konturze i bez przypisania budynku.
      * Scenariusz: budynki-bez-szczegolow.feature: Punkt dokładnie na krawędzi konturu jest poza budynkiem z propozycją
+     *
+     * Wymagania: US6.2
      */
     @Test
     fun us6_2_edge_suggests_not_inside() =
@@ -334,9 +368,11 @@ class MeasureViewModelTest {
         }
 
     /**
-     * 30 m na północ od konturu A-1: podpowiedź A-1 do potwierdzenia, punkt nie leży w konturze (BR-G4).
+     * 30 m na północ od konturu A-1: podpowiedź A-1 do potwierdzenia, punkt nie leży w konturze.
      * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
      *   konturu
+     *
+     * Wymagania: BR-G4
      */
     @Test
     fun br_g4_30_m_suggests_a1() =
@@ -348,9 +384,11 @@ class MeasureViewModelTest {
         }
 
     /**
-     * Tuż poniżej progu 50 m od konturu A-1: nadal podpowiedź A-1 do potwierdzenia (BR-G4).
+     * Tuż poniżej progu 50 m od konturu A-1: nadal podpowiedź A-1 do potwierdzenia.
      * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
      *   konturu
+     *
+     * Wymagania: BR-G4
      */
     @Test
     fun br_g4_49_m_suggests_a1() =
@@ -362,9 +400,11 @@ class MeasureViewModelTest {
         }
 
     /**
-     * 60 m od konturu A-1 i dalej od innych budynków: bez podpowiedzi, od razu „poza budynkiem” (BR-G4).
+     * 60 m od konturu A-1 i dalej od innych budynków: bez podpowiedzi, od razu „poza budynkiem”.
      * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
      *   konturu
+     *
+     * Wymagania: BR-G4
      */
     @Test
     fun br_g4_60_m_outside() =
@@ -400,6 +440,7 @@ class MeasureViewModelTest {
         const val BOOT = 1_000_000L
         const val PRECISION = 1e-9
         val A1_POINT = GeoPoint(longitude = 17.0605, latitude = 51.1105)
+        val MOVED = GeoPoint(longitude = 17.0606, latitude = 51.1106)
         val A1_EDGE_POINT = GeoPoint(longitude = 17.06, latitude = 51.1105)
         const val A1_NORTH_EDGE = 51.111
         const val METERS_PER_DEGREE = 111_195.0

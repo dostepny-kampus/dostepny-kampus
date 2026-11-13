@@ -6,10 +6,12 @@
 package io.github.dostepnykampus.core.model
 
 /**
- * Budynki z konturami i ich wejścia z jednego zbioru danych, np. z konturów OpenStreetMap w aplikacji (US1, US17.1).
+ * Budynki z konturami i ich wejścia z jednego zbioru danych, np. z konturów OpenStreetMap w aplikacji.
+ *
+ * Wymagania: US1, US17.1, NFR-37
  *
  * @property buildings budynki, każdy symbol raz
  * @property entrances wejścia budynków z [buildings]
- * @property attribution atrybucja źródła danych do podpisu na mapie, np. „© OpenStreetMap contributors” (NFR-37)
+ * @property attribution atrybucja źródła danych do podpisu na mapie, np. „© OpenStreetMap contributors”
  */
-data class BuildingCatalog(val buildings: List<Building>, val entrances: List<Entrance>, val attribution: String)
+public data class BuildingCatalog(val buildings: List<Building>, val entrances: List<Entrance>, val attribution: String)

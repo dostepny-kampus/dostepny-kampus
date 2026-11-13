@@ -11,9 +11,11 @@ import androidx.work.WorkManagerInitializer
 import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
 
 /**
- * Planuje wysyłkę kolejki zgłoszeń przy starcie procesu (NFR-6), więc zgłoszenia zapisane przed zamknięciem aplikacji
+ * Planuje wysyłkę kolejki zgłoszeń przy starcie procesu, więc zgłoszenia zapisane przed zamknięciem aplikacji
  * wysyłają się po powrocie sieci bez czekania na nowe zgłoszenie. Uruchamia go `androidx.startup` z manifestu, po
  * inicjalizacji WorkManagera; Robolectric nie tworzy dostawców z manifestu, więc testy ekranów go nie wołają.
+ *
+ * Wymagania: NFR-6
  */
 class SubmissionSyncInitializer : Initializer<SubmissionSyncScheduler> {
     override fun create(context: Context): SubmissionSyncScheduler =

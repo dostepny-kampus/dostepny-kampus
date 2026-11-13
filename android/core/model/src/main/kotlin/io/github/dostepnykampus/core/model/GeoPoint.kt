@@ -11,4 +11,4 @@ package io.github.dostepnykampus.core.model
  * @property longitude długość geograficzna w stopniach
  * @property latitude szerokość geograficzna w stopniach
  */
-data class GeoPoint(val longitude: Double, val latitude: Double)
+public data class GeoPoint(val longitude: Double, val latitude: Double)

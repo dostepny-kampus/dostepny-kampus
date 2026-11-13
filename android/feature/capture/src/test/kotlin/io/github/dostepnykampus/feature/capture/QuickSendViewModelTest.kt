@@ -38,7 +38,11 @@ import org.junit.jupiter.api.Test
 import java.io.IOException
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Krok 3 V4: bieżąca pozycja, piętro tylko w konturze i jeden zapis w kolejce (US4.1, US4.7, BR-14, NFR-7). */
+/**
+ * Krok 3 V4: bieżąca pozycja, piętro tylko w konturze i jeden zapis w kolejce.
+ *
+ * Wymagania: US4.1, US4.7, BR-14, NFR-7
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class QuickSendViewModelTest {
     private val dispatcher = StandardTestDispatcher()
@@ -78,7 +82,7 @@ class QuickSendViewModelTest {
         Dispatchers.resetMain()
     }
 
-    /** „Wyślij” czeka na pozycję i nie przerywa zgłoszenia upływem czasu (NFR-23). */
+    /** „Wyślij” czeka na pozycję i nie przerywa zgłoszenia upływem czasu. Wymagania: NFR-23 */
     @Test
     fun nfr23_send_waits_for_position() =
         runTest(dispatcher) {
@@ -90,8 +94,10 @@ class QuickSendViewModelTest {
         }
 
     /**
-     * W konturze budynku wybrane piętro trafia do treści zgłoszenia; budynek dopisuje serwer z konturu (BR-G2).
+     * W konturze budynku wybrane piętro trafia do treści zgłoszenia; budynek dopisuje serwer z konturu.
      * Scenariusz (częściowo): zgloszenie-szybkie.feature: Wybrane piętro trafia do zgłoszenia
+     *
+     * Wymagania: BR-G2
      */
     @Test
     fun brg2_floor_inside_contour() =
@@ -104,7 +110,7 @@ class QuickSendViewModelTest {
             assertEquals(listOf(SubmissionFloor(number = 1)), saved.map { it.floor })
         }
 
-    /** Następny odczyt nie zmienia budynku używanego w zgłoszeniu V4 (US4.1). */
+    /** Następny odczyt nie zmienia budynku używanego w zgłoszeniu V4. Wymagania: US4.1 */
     @Test
     fun us4_1_keeps_first_position() =
         runTest(dispatcher) {
@@ -115,9 +121,11 @@ class QuickSendViewModelTest {
         }
 
     /**
-     * Poza konturem zgłoszenie zapisuje się z bieżącą pozycją, bez piętra i bez błędu (BR-14, BR-G2).
+     * Poza konturem zgłoszenie zapisuje się z bieżącą pozycją, bez piętra i bez błędu.
      * Scenariusz: budynki-bez-szczegolow.feature: Zgłoszenie szybkie poza konturem budynku zapisuje się bez błędu
      * Scenariusz: zgloszenie-szybkie.feature: Pozycja poza konturem przy wysłaniu zostawia piętro puste
+     *
+     * Wymagania: BR-14, BR-G2
      */
     @Test
     fun br14_no_floor_outside() =
@@ -132,7 +140,7 @@ class QuickSendViewModelTest {
             assertEquals(QuickSendStage.SENT, viewModel.stage.value)
         }
 
-    /** Zgłoszenie z „Zgłoś barierę przy wejściu” trafia do kolejki z wejściem (US4.6). */
+    /** Zgłoszenie z „Zgłoś barierę przy wejściu” trafia do kolejki z wejściem. Wymagania: US4.6 */
     @Test
     fun us4_6_entrance_in_queue() =
         runTest(dispatcher) {
@@ -151,7 +159,11 @@ class QuickSendViewModelTest {
             assertEquals(listOf("node/6"), saved.map { it.entranceId })
         }
 
-    /** Błąd odbiornika → „Brak pozycji” bez zegara; „Spróbuj ponownie” ustala pozycję od nowa (UC7 4c, NFR-23). */
+    /**
+     * Błąd odbiornika → „Brak pozycji” bez zegara; „Spróbuj ponownie” ustala pozycję od nowa.
+     *
+     * Wymagania: UC7, NFR-23
+     */
     @Test
     fun uc7_4c_source_error_then_retry() =
         runTest(dispatcher) {
@@ -171,7 +183,7 @@ class QuickSendViewModelTest {
             assertEquals(1, saved.size)
         }
 
-    /** Wyłączona lokalizacja → „Brak pozycji”; po włączeniu ustalanie wraca samo (UC7 4c). */
+    /** Wyłączona lokalizacja → „Brak pozycji”; po włączeniu ustalanie wraca samo. Wymagania: UC7 */
     @Test
     fun uc7_4c_location_off_then_on() =
         runTest(dispatcher) {
@@ -183,7 +195,11 @@ class QuickSendViewModelTest {
             assertEquals(QuickLookup.Locating, viewModel.lookup.value)
         }
 
-    /** Wysłanie bez internetu: zapis w kolejce i potwierdzenie „Zapisaliśmy zdjęcie w telefonie…” (US4.2, NFR-5). */
+    /**
+     * Wysłanie bez internetu: zapis w kolejce i potwierdzenie „Zapisaliśmy zdjęcie w telefonie…”.
+     *
+     * Wymagania: US4.2, NFR-5
+     */
     @Test
     fun us4_2_saved_offline() =
         runTest(dispatcher) {
@@ -196,7 +212,7 @@ class QuickSendViewModelTest {
             assertEquals(1, saved.size)
         }
 
-    /** Drugie „Wyślij” nie wysyła zdjęcia drugi raz (US4.7). */
+    /** Drugie „Wyślij” nie wysyła zdjęcia drugi raz. Wymagania: US4.7 */
     @Test
     fun us4_7_sent_once() =
         runTest(dispatcher) {
@@ -210,7 +226,7 @@ class QuickSendViewModelTest {
             assertEquals(1, saved.size)
         }
 
-    /** Pełna pamięć: „Spróbuj ponownie” zostaje (NFR-7). */
+    /** Pełna pamięć: „Spróbuj ponownie” zostaje. Wymagania: NFR-7 */
     @Test
     fun nfr7_failed_save() =
         runTest(dispatcher) {

@@ -25,7 +25,7 @@ import java.util.UUID
 
 private const val PHOTO_AUTHORITY_SUFFIX = ".zdjecia"
 
-/** Katalog zdjęć zgłoszeń w [filesDir], także dla sprzątania przy starcie (#927). */
+/** Katalog zdjęć zgłoszeń w [filesDir], także dla sprzątania przy starcie. */
 fun photoDir(filesDir: File): File = File(filesDir, PHOTO_DIR)
 
 /** Plik zdjęcia [id] w katalogu zdjęć zgłoszeń w [filesDir]; katalog powstaje przy pierwszym zdjęciu. */
@@ -42,10 +42,12 @@ data class PhotoCamera(val onTake: () -> Unit, val isFailed: Boolean = false)
 
 /**
  * „Zrób zdjęcie” na C2: aplikacja aparatu zapisuje plik w pamięci aplikacji, a po zrobieniu zdjęcia plik jest
- * przekodowany poza wątkiem interfejsu i trafia do [onPhoto] (US7.1, NFR-26). Rezygnacja w aparacie i telefon bez
+ * przekodowany poza wątkiem interfejsu i trafia do [onPhoto]. Rezygnacja w aparacie i telefon bez
  * aparatu zostawiają formularz bez zmian. Błąd przekodowania usuwa plik i ustawia [PhotoCamera.isFailed], a aplikacja
- * działa dalej (NFR-50). Przekodowanie trwa w [PhotoTranscoder], więc obrót ekranu nie gubi zdjęcia (NFR-22).
+ * działa dalej. Przekodowanie trwa w [PhotoTranscoder], więc obrót ekranu nie gubi zdjęcia.
  * Dostawca plików dla aparatu ma nazwę zgodną z `AndroidManifest.xml` modułu.
+ *
+ * Wymagania: US7.1, NFR-26, NFR-50, NFR-22
  *
  * @param onPhoto zdjęcie gotowe do formularza
  * @param transcoder przekodowanie zdjęcia, które przetrwa obrót ekranu

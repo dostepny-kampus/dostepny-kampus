@@ -40,7 +40,11 @@ class FirstLaunchRepositoryTest {
         assertEquals(listOf(true, true, false), launches)
     }
 
-    /** US5.1: proces zamknięty, zanim osoba zamknęła instrukcję, więc po odtworzeniu instrukcja otwiera się znowu. */
+    /**
+     * Proces zamknięty, zanim osoba zamknęła instrukcję, więc po odtworzeniu instrukcja otwiera się znowu.
+     *
+     * Wymagania: US5.1
+     */
     @Test
     fun us5_1_unmarked_after_restart() {
         withRepository { it.isFirstLaunch() }

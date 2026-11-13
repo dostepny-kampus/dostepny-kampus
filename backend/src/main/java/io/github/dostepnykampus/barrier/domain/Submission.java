@@ -10,7 +10,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Zgłoszenie zapisane na serwerze, schemat Submission w OpenAPI (US8, BR-3).
+ * Zgłoszenie zapisane na serwerze, schemat Submission w OpenAPI.
+ *
+ * <p>Wymagania: US8, BR-3</p>
  *
  * @param id Identyfikator zgłoszenia nadany przez klienta
  * @param version Wersja zgłoszenia, co najmniej 1
@@ -42,7 +44,9 @@ public record Submission(
     }
 
     /**
-     * Czy Weryfikator przyjął zgłoszenie (BR-6, BR-18).
+     * Czy Weryfikator przyjął zgłoszenie.
+     *
+     * <p>Wymagania: BR-6, BR-18</p>
      *
      * @return Prawda dla statusu ACCEPTED
      */

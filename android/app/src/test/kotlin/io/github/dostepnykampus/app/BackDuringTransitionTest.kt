@@ -58,7 +58,9 @@ class BackDuringTransitionTest {
 
     /**
      * Wiersz: V2 → „Sprawdź, którędy wejść” → V3; „Wstecz” w trakcie przejścia, gdy V3 jest już widoczne → po końcu
-     * przejścia V2, bez V3; kolejne „Wstecz” → V1, US3, US1.1.
+     * przejścia V2, bez V3; kolejne „Wstecz” → V1.
+     *
+     * Wymagania: US3, US1.1
      */
     @Test
     fun us3_back_mid_transition() {
@@ -80,7 +82,7 @@ class BackDuringTransitionTest {
         compose.onNodeWithText("A-1").assertExists("drugie „Wstecz” nie wróciło do V1")
     }
 
-    /** Wiersz kontrolny: V2 → V3, „Wstecz” po końcu przejścia → V2; kolejne „Wstecz” → V1, US3, US1.1. */
+    /** Wiersz kontrolny: V2 → V3, „Wstecz” po końcu przejścia → V2; kolejne „Wstecz” → V1. Wymagania: US3, US1.1 */
     @Test
     fun us3_back_after_transition() {
         compose.setContent { Shell() }

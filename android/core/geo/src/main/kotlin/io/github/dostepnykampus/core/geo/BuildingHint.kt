@@ -8,11 +8,17 @@ package io.github.dostepnykampus.core.geo
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint
 
-/** Najdalsza odległość od konturu, z której aplikacja proponuje budynek (BR-G4); ten sam próg co na serwerze. */
+/**
+ * Najdalsza odległość od konturu, z której aplikacja proponuje budynek; ten sam próg co na serwerze.
+ *
+ * Wymagania: BR-G4
+ */
 const val NEAR_METERS = 50.0
 
 /**
- * Podpowiedź budynku po pomiarze na C1: „Czy to budynek C-13?” z nazwą i odległością (US6.2).
+ * Podpowiedź budynku po pomiarze na C1: „Czy to budynek C-13?” z nazwą i odległością.
+ *
+ * Wymagania: US6.2
  *
  * @property building budynek, w którego konturze leży punkt, albo najbliższy
  * @property distanceMeters odległość od punktu do krawędzi konturu w metrach; 0 także dla punktu leżącego dokładnie
@@ -34,8 +40,10 @@ data class BuildingHints(val nearby: List<BuildingHint>, val suggested: Building
 const val NEAREST_COUNT = 3
 
 /**
- * Oblicza odległość od konturu raz na budynek (US6.2, NFR-4). Budynek zawierający punkt ma 0 m i stoi przed
+ * Oblicza odległość od konturu raz na budynek. Budynek zawierający punkt ma 0 m i stoi przed
  * budynkiem, na którego krawędzi punkt leży. Podpowiedź obejmuje budynek w konturze albo najbliższy do 50 m.
+ *
+ * Wymagania: US6.2, NFR-4
  *
  * @param point uśredniony punkt pomiaru
  * @param buildings budynki z konturami z katalogu w telefonie

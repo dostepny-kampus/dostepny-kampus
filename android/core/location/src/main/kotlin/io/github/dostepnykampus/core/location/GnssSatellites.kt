@@ -16,7 +16,11 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-/** System GNSS satelity w kolejności napisu na ekranie C1, np. „Satelity: GPS 7, Galileo 5, GLONASS 4” (US6.1). */
+/**
+ * System GNSS satelity w kolejności napisu na ekranie C1, np. „Satelity: GPS 7, Galileo 5, GLONASS 4”.
+ *
+ * Wymagania: US6.1
+ */
 enum class GnssSystem {
     /** Amerykański GPS. */
     GPS,
@@ -44,7 +48,9 @@ enum class GnssSystem {
 }
 
 /**
- * Satelita widoczny dla odbiornika GNSS telefonu (US6.1, US6.5).
+ * Satelita widoczny dla odbiornika GNSS telefonu.
+ *
+ * Wymagania: US6.1, US6.5
  *
  * @property system system GNSS satelity
  * @property id numer satelity w jego systemie
@@ -61,10 +67,12 @@ data class Satellite(
 )
 
 /**
- * Stan satelitów z odbiornika GNSS telefonu dla ekranu C1 (US6.1, US6.5, NFR-2).
+ * Stan satelitów z odbiornika GNSS telefonu dla ekranu C1.
  *
- * Nasłuch `GnssStatus` trwa, dopóki ktoś zbiera przepływ, i znika razem z nim, więc działa tylko przy otwartym ekranie
- * (NFR-27). Bez zgody na dokładną lokalizację przepływ kończy się [SecurityException]; o zgodę prosi ekran.
+ * Nasłuch `GnssStatus` trwa, dopóki ktoś zbiera przepływ, i znika razem z nim, więc działa tylko przy otwartym ekranie.
+ * Bez zgody na dokładną lokalizację przepływ kończy się [SecurityException]; o zgodę prosi ekran.
+ *
+ * Wymagania: US6.1, US6.5, NFR-2, NFR-27
  */
 class GnssSatellites(private val context: Context) : SatelliteSource {
     /** Wszystkie widoczne satelity po każdej zmianie stanu odbiornika. */

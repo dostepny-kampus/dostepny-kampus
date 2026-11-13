@@ -24,6 +24,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.first
@@ -31,9 +32,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -52,22 +53,17 @@ private val FILE_LABELS = listOf("A-1", "B-2")
 private val SERVER_LABELS = listOf("A-1")
 
 /**
- * Geometria mapy V1 od odpowiedzi serwera i zamknięcia ekranu do stanu ViewModelu (NFR-10, NFR-11). Testy czekają na
- * zdarzenia (sygnały z funkcji liczącej, wynik liczenia), nie na upływ czasu, więc wynik nie zależy od szybkości
- * maszyny. Zawieszenie przy błędzie w kodzie kończy limit `runTest`, który nie wpływa na wynik działającego kodu.
+ * Geometria mapy V1 od odpowiedzi serwera i zamknięcia ekranu do stanu ViewModelu. Testy czekają na zdarzenia z funkcji
+ * liczącej, nie na upływ czasu; zawieszenie przy błędzie kończy limit `runTest`. `holdFile` zgłasza start liczenia i
+ * czeka na zwolnienie albo przerwanie wątku, `withPool` daje wątki liczące, na które czeka na końcu testu, a `show`
+ * trzyma subskrypcję stanu do końca testu.
  *
- * `holdFile`: Liczenie dla pliku: zgłasza start i czeka na zwolnienie; [finished] dostaje prawdę, gdy doczekało, a
- * fałsz, gdy
- *   przerwano wątek (wtedy przerwanie idzie dalej).
- *
- * `withPool`: Wątki liczące na czas testu. Na końcu czeka, aż skończą, więc żadne wznowienie z nich nie trafi do
- *   Dispatchers.Main po resetMain i nie wycieknie do następnego testu.
- *
- * `show`: Widoczny ekran: subskrypcja stanu trwa do końca testu, więc źródła działają aż do zamknięcia ViewModelu.
+ * Wymagania: NFR-10, NFR-11
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapGeometryFlowTest {
     private val calls = AtomicInteger()
+    private val viewModels = TestViewModels()
 
     @BeforeEach
     fun main() {
@@ -76,12 +72,14 @@ class MapGeometryFlowTest {
 
     @AfterEach
     fun reset() {
-        Dispatchers.resetMain()
+        viewModels.resetMain()
     }
 
     /**
      * Wiersz: W3, plik, potem serwer → geometria raz na katalog, a stan ma ją z katalogu serwera; liczenie dla pliku,
-     *   które jeszcze trwa, zostaje przerwane i nie wraca po serwerze, NFR-10, NFR-11.
+     *   które jeszcze trwa, zostaje przerwane i nie wraca po serwerze.
+     *
+     * Wymagania: NFR-10, NFR-11
      */
     @Test
     fun nfr11_geometry_per_catalog() =
@@ -161,7 +159,9 @@ class MapGeometryFlowTest {
 
     /**
      * Wiersz: zamknięcie ekranu w trakcie liczenia geometrii katalogu z wieloma konturami → liczenie nie dochodzi do
-     *   końca katalogu, NFR-11.
+     *   końca katalogu.
+     *
+     * Wymagania: NFR-11
      */
     @Test
     fun closing_map_stops_running() =
@@ -197,7 +197,9 @@ class MapGeometryFlowTest {
 
     /**
      * Wiersz: serwer odpowiada, gdy liczy się katalog z pliku → liczenie katalogu z serwera rusza, zanim skończy się
-     *   liczenie pliku, NFR-11.
+     *   liczenie pliku.
+     *
+     * Wymagania: NFR-11
      */
     @Test
     fun server_compute_starts_early() =
@@ -243,10 +245,16 @@ class MapGeometryFlowTest {
         }
     }
 
-    private inline fun withPool(threads: Int, block: (CoroutineDispatcher) -> Unit) {
+    private suspend inline fun withPool(threads: Int, block: (CoroutineDispatcher) -> Unit) {
         val pool = Executors.newFixedThreadPool(threads)
         try {
-            pool.asCoroutineDispatcher().use(block)
+            pool.asCoroutineDispatcher().use { compute ->
+                try {
+                    block(compute)
+                } finally {
+                    withContext(NonCancellable) { viewModels.cancelAndJoin() }
+                }
+            }
         } finally {
             pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
         }
@@ -262,12 +270,14 @@ class MapGeometryFlowTest {
             calls.incrementAndGet()
             campusMapData(catalog)
         },
-    ) = CampusMapViewModel(
-        repository = repository,
-        networkStatus = { flowOf(true) },
-        mapListChoice = TestMapListChoice(),
-        computeContext = compute,
-        geometry = geometry,
+    ) = viewModels.keep(
+        CampusMapViewModel(
+            repository = repository,
+            networkStatus = { flowOf(true) },
+            mapListChoice = TestMapListChoice(),
+            computeContext = compute,
+            geometry = geometry,
+        ),
     )
 
     private fun factoryOf(repository: BuildingCatalogRepository, compute: CoroutineContext) =

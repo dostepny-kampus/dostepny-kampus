@@ -39,7 +39,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.time.Instant
 
-/** Arkusz bariery na V1 po dotknięciu znaku (US1.5, NFR-21, NFR-53). */
+/** Arkusz bariery na V1 po dotknięciu znaku. Wymagania: US1.5, NFR-21, NFR-53 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp-xhdpi")
@@ -50,9 +50,11 @@ class BarrierSheetTest {
     private val clicks = mutableListOf<String>()
 
     /**
-     * Wiersz: arkusz bariery, typ, uciążliwość, miejsce, data sprawdzenia i przyciski (US1.5, PW-5). Zdjęcia w arkuszu
-     * jeszcze nie ma (#1138).
+     * Wiersz: arkusz bariery, typ, uciążliwość, miejsce, data sprawdzenia i przyciski (PW-5). Zdjęcia w arkuszu
+     * jeszcze nie ma.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Dotknięcie znaku bariery pokazuje jej opis z miejscem
+     *
+     * Wymagania: US1.5
      */
     @Test
     fun us1_5_barrier_in_building() {
@@ -66,7 +68,7 @@ class BarrierSheetTest {
         assertEquals(listOf("zamknij", "A-1"), clicks)
     }
 
-    /** Wiersz: bariera poza budynkiem ma „Poza budynkiem” i nie ma „Pokaż opis budynku” (US1.5, BR-G2). */
+    /** Wiersz: bariera poza budynkiem ma „Poza budynkiem” i nie ma „Pokaż opis budynku”. Wymagania: US1.5, BR-G2 */
     @Test
     fun us1_5_barrier_outside() {
         val barrier = barrier(type = null, symbol = null, floor = null).copy(verifiedAt = null)
@@ -77,7 +79,7 @@ class BarrierSheetTest {
         compose.onNodeWithText("Sprawdzone", substring = true).assertDoesNotExist()
     }
 
-    /** Wiersz: przy czcionce 200% arkusz się przewija, a przycisk budynku jest osiągalny (NFR-20). */
+    /** Wiersz: przy czcionce 200% arkusz się przewija, a przycisk budynku jest osiągalny. Wymagania: NFR-20 */
     @Test
     @Config(fontScale = 2f)
     fun nfr20_hifi_czcionka_200() {

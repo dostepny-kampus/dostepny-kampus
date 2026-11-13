@@ -25,12 +25,14 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 /**
- * Kroki szablonu „Na mapie są tylko zgłoszenia przyjęte” (US1.3, BR-6)
+ * Kroki szablonu „Na mapie są tylko zgłoszenia przyjęte”
  * i założeń pliku o przeglądaniu mapy.
  *
  * <p>Status zgłoszenia kroki ustawiają w bazie, bo decyzje Weryfikatora
  * serwer dostaje z modułem weryfikacji. Zgłoszenie „lokalne” istnieje tylko
  * w telefonie, więc serwer nie ma dla niego wiersza.</p>
+ *
+ * <p>Wymagania: US1.3, BR-6</p>
  *
  * @since 0.1.0
  */

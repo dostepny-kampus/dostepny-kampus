@@ -24,11 +24,11 @@ import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Kopia barier w bazie: zapis przy udanej odpowiedzi serwera i czytanie, gdy serwer nie odpowie (NFR-10). */
+/** Kopia barier w bazie: zapis przy udanej odpowiedzi serwera i czytanie, gdy serwer nie odpowie. Wymagania: NFR-10 */
 class AcceptedBarriersCopyTest {
     private val dao = FakeBarrierCacheDao()
 
-    /** Wiersz: bez sieci bariery przychodzą z kopii ze wszystkimi polami (NFR-10). */
+    /** Wiersz: bez sieci bariery przychodzą z kopii ze wszystkimi polami. Wymagania: NFR-10 */
     @Test
     fun nfr10_offline_uses_copy() =
         runBlocking {
@@ -42,7 +42,7 @@ class AcceptedBarriersCopyTest {
             assertEquals(SYNCED, dao.entity?.syncedAt)
         }
 
-    /** Wiersz: źródło podaje chwilę pobrania barier z odpowiedzi i z kopii; bez obu jej nie ma (NFR-10, #1127). */
+    /** Wiersz: źródło podaje chwilę pobrania barier z odpowiedzi i z kopii; bez obu jej nie ma. Wymagania: NFR-10 */
     @Test
     fun nfr10_synced_at() =
         runBlocking {
@@ -55,7 +55,11 @@ class AcceptedBarriersCopyTest {
             assertEquals(listOf(null, synced, synced), listOf(none, online, offline))
         }
 
-    /** Wiersz: arkusz bariery, miejsce i zdjęcie także z kopii; starsza kopia bez tych pól dalej się czyta (US1.5). */
+    /**
+     * Wiersz: arkusz bariery, miejsce i zdjęcie także z kopii; starsza kopia bez tych pól dalej się czyta.
+     *
+     * Wymagania: US1.5
+     */
     @Test
     fun us1_5_place_and_photos() =
         runBlocking {
@@ -70,7 +74,7 @@ class AcceptedBarriersCopyTest {
             assertEquals(Triple(null, null, emptyList<String>()), old.run { Triple(entranceId, this.floor, photoIds) })
         }
 
-    /** Wiersz: bez kopii i przy zepsutej kopii brak odpowiedzi serwera daje pustą listę (NFR-11). */
+    /** Wiersz: bez kopii i przy zepsutej kopii brak odpowiedzi serwera daje pustą listę. Wymagania: NFR-11 */
     @Test
     fun nfr11_no_copy_is_empty() =
         runBlocking {
@@ -83,7 +87,7 @@ class AcceptedBarriersCopyTest {
             assertEquals(List(3) { emptyList<AcceptedBarrier>() }, listOf(without, broken, unknown))
         }
 
-    /** Wiersz: udana pusta odpowiedź zastępuje kopię, więc nieprzyjęta bariera nie wraca z kopii (US1.3). */
+    /** Wiersz: udana pusta odpowiedź zastępuje kopię, więc nieprzyjęta bariera nie wraca z kopii. Wymagania: US1.3 */
     @Test
     fun us1_3_empty_replaces_copy() =
         runBlocking {

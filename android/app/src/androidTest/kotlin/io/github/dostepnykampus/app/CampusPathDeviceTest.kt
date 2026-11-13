@@ -35,9 +35,11 @@ private const val CHECK = "Sprawdź, którędy wejść"
 private val BuildingA1InCatalog = hasContentDescription("A-1, ", substring = true)
 
 /**
- * Ścieżka US1–US3 na emulatorze, na prawdziwej aktywności i grafie Hilt aplikacji (NFR-41): wyszukanie budynku, karta
- * V2 i „Którędy wejść” V3. Sieć w grafie zastępuje [NoServerNetworkModule]: serwera nie ma, więc katalog i wejścia
- * zawsze pochodzą z pliku w aplikacji.
+ * Ścieżka od wyszukania budynku do wejścia na emulatorze, na prawdziwej aktywności i grafie Hilt aplikacji:
+ * wyszukanie budynku, karta V2 i „Którędy wejść” V3. Sieć w grafie zastępuje [NoServerNetworkModule]: serwera
+ * nie ma, więc katalog i wejścia zawsze pochodzą z pliku w aplikacji.
+ *
+ * Wymagania: US1, US2, US3, NFR-41
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -54,8 +56,10 @@ class CampusPathDeviceTest {
 
     /**
      * Każdy test zaczyna od czystych danych aplikacji (job emulatora robi `pm clear` przed każdym testem), więc
-     * instrukcja „Pomoc” z pierwszego uruchomienia (US5.1) jest zawsze i zamyka się gestem wstecz. Lokalnie przed
+     * instrukcja „Pomoc” z pierwszego uruchomienia jest zawsze i zamyka się gestem wstecz. Lokalnie przed
      * testem: `adb shell pm clear io.github.dostepnykampus`.
+     *
+     * Wymagania: US5.1
      */
     @Before
     fun leaveHelp() {
@@ -65,11 +69,13 @@ class CampusPathDeviceTest {
     }
 
     /**
-     * Wiersze: V1, wpisanie symbolu i wybór wyniku → V2; „Sprawdź, którędy wejść” → V3; „Wstecz” → V2, US1.1, US2, US3.
+     * Wiersze: V1, wpisanie symbolu i wybór wyniku → V2; „Sprawdź, którędy wejść” → V3; „Wstecz” → V2.
      *
      * Symbol jest wpisany akcją semantyki, bez fokusu pola, więc klawiatura ekranowa się nie otwiera. Otwarta
      * klawiatura pochłania „Wstecz” (chowa się zamiast cofnąć V3), a chwila jej otwarcia i zamknięcia zależy od
      * emulatora, więc wynik testu zależałby od czasu.
+     *
+     * Wymagania: US1.1, US2, US3
      */
     @Test
     fun us3_search_card_entrances() {
@@ -85,7 +91,11 @@ class CampusPathDeviceTest {
         waitFor(hasText(CHECK))
     }
 
-    /** Wiersz: V1, „Lista budynków” → budynek → mała karta V2 nad mapą, z pliku bez serwera, US2.8, NFR-11, NFR-19. */
+    /**
+     * Wiersz: V1, „Lista budynków” → budynek → mała karta V2 nad mapą, z pliku bez serwera.
+     *
+     * Wymagania: US2.8, NFR-11, NFR-19
+     */
     @Test
     fun us2_list_card() {
         compose.onAllNodes(hasText("Lista budynków") or hasText("Lista")).onFirst().performClick()

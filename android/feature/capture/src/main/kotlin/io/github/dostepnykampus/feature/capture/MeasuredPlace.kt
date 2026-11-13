@@ -10,12 +10,15 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 
 /**
  * Trasa do C2 po „Dalej” na C1 albo `null`, gdy „Dalej” jeszcze nie działa: pomiar trwa albo budynek czeka na decyzję
- * Zbierającego (US6.2). Budynek potwierdzony albo wybrany idzie z nazwą, „poza budynkiem” bez budynku (BR-G4).
+ * Zbierającego. Budynek potwierdzony albo wybrany idzie z nazwą, „poza budynkiem” bez budynku.
+ *
+ * Wymagania: US6.2, BR-G4
  */
 fun MeasureUiState.reportFormRoute(): ReportFormRoute? {
     val finished = this as? MeasureUiState.Finished ?: return null
-    val point = finished.average.point
+    val point = finished.point
     val accuracy = finished.average.accuracyMeters
+    val isCorrected = finished.corrected != null
     return when (val place = finished.place) {
         is PlaceChoice.Chosen -> {
             ReportFormRoute(
@@ -24,6 +27,7 @@ fun MeasureUiState.reportFormRoute(): ReportFormRoute? {
                 accuracyMeters = accuracy,
                 buildingSymbol = place.building.symbol,
                 buildingName = place.building.name,
+                isManualCorrection = isCorrected,
             )
         }
 
@@ -33,6 +37,7 @@ fun MeasureUiState.reportFormRoute(): ReportFormRoute? {
                 latitude = point.latitude,
                 accuracyMeters = accuracy,
                 buildingSymbol = null,
+                isManualCorrection = isCorrected,
             )
         }
 
@@ -42,12 +47,12 @@ fun MeasureUiState.reportFormRoute(): ReportFormRoute? {
     }
 }
 
-/** Miejsce na górze formularza C2 z trasy po pomiarze; punkt nie jest jeszcze poprawiany ręcznie (US6.3). */
+/** Miejsce na górze formularza C2 z trasy po pomiarze, z oznaczeniem korekty ręcznej. Wymagania: US6.3, US6.4 */
 fun ReportFormRoute.place(): ReportPlace =
     ReportPlace(
         location = GeoPoint(longitude = longitude, latitude = latitude),
         accuracyMeters = accuracyMeters,
         buildingSymbol = buildingSymbol,
-        isManualCorrection = false,
+        isManualCorrection = isManualCorrection,
         buildingName = buildingName,
     )

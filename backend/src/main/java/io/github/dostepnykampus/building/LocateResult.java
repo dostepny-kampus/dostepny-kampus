@@ -11,7 +11,9 @@ import org.jspecify.annotations.Nullable;
 /**
  * Podpowiedź budynku dla punktu, zgodna ze schematem LocateResult.
  *
- * <p>Brak {@code buildingSymbol} oznacza punkt poza budynkiem (BR-G4).</p>
+ * <p>Brak {@code buildingSymbol} oznacza punkt poza budynkiem.</p>
+ *
+ * <p>Wymagania: BR-G4</p>
  *
  * @param buildingSymbol Budynek w konturze albo najbliższy w promieniu, null poza budynkiem
  * @param insideOutline Czy punkt leży w konturze tego budynku

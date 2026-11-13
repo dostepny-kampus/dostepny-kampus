@@ -17,10 +17,10 @@ import java.time.Instant
 private val cacheJson = Json { ignoreUnknownKeys = true }
 private val cachedList = ListSerializer(CachedBarrier.serializer())
 
-/** Bariery jako dokument JSON do wiersza `barrier_cache` (NFR-10). */
+/** Bariery jako dokument JSON do wiersza `barrier_cache`. Wymagania: NFR-10 */
 internal fun List<AcceptedBarrier>.toCacheJson(): String = cacheJson.encodeToString(cachedList, map(::cached))
 
-/** Bariery z dokumentu kopii; `null` dla zepsutego dokumentu albo nieznanej uciążliwości (NFR-10). */
+/** Bariery z dokumentu kopii; `null` dla zepsutego dokumentu albo nieznanej uciążliwości. Wymagania: NFR-10 */
 internal fun String.toCachedBarriers(): List<AcceptedBarrier>? =
     runCatching { cacheJson.decodeFromString(cachedList, this).map(CachedBarrier::toBarrier) }.getOrNull()
 

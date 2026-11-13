@@ -16,8 +16,10 @@ import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Testy US2 i US17.1: karta budynku GET /buildings/{symbol} ma wejścia
+ * Karta budynku GET /buildings/{symbol} ma wejścia
  * z bazy w kształcie schematu Entrance.
+ *
+ * <p>Wymagania: US2, US17.1</p>
  *
  * @since 0.1.0
  */

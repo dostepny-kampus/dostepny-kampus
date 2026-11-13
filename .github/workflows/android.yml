@@ -15,6 +15,11 @@ on:
       - "api/openapi.yaml"
       - "docs/docs/ux/tokeny.yml"
       - ".github/workflows/android.yml"
+      - ".github/actions/android-gradle/**"
+      - ".github/scripts/cache-budowania-sprintu.sh"
+      - ".github/scripts/cache-z-kolejki.sh"
+      - ".github/scripts/czysc-cache.sh"
+      - ".github/scripts/wyniki-androida.sh"
   merge_group:
     types:
       - checks_requested
@@ -23,9 +28,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: android-${{ github.ref }}
-  # Nowszy przebieg anuluje starszy także dla push i merge_group: wynik na głowie gałęzi ma być zawsze dostępny, a bez tego
-  # przy serii scaleń kolejne pushe czekały w grupie i były zastępowane, więc żaden nie kończył się i nie zapisywał cache.
+  # Push po scaleniu tylko przekłada cache z grupy kolejki, więc każdy commit ma własną grupę i nic go nie anuluje.
+  # Dla PR i grupy kolejki nowszy przebieg anuluje starszy.
+  group: android-${{ github.event_name == 'push' && github.sha || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -40,7 +45,7 @@ jobs:
 
   zmiany:
     # Także dla grupy kolejki: bez tego każda grupa budowała aplikację i uruchamiała emulatory, choć PR nie zmieniał Androida.
-    # Na push zadanie jest pominięte, więc pozostałe idą zawsze; gdy się nie powiedzie, check `budowanie` jest czerwony.
+    # Gdy zadanie się nie powiedzie, pozostałe idą mimo to, a check `budowanie` jest czerwony.
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -51,7 +56,7 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
-      - name: Sprawdź, czy PR albo grupa w kolejce zmienia aplikację Android, jej dane albo tokeny
+      - name: Sprawdź, czy PR albo grupa w kolejce zmienia aplikację Android, jej dane, tokeny albo własne kroki CI
         id: diff
         env:
           EVENT: ${{ github.event_name }}
@@ -65,7 +70,8 @@ jobs:
             from=$GROUP_BASE_SHA
             to=$GROUP_HEAD_SHA
           fi
-          if git diff --quiet "$from" "$to" -- android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/workflows/android.yml; then
+          if git diff --quiet "$from" "$to" -- android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/workflows/android.yml \
+            .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/wyniki-androida.sh; then
             echo "android=false" >> "$GITHUB_OUTPUT"
           else
             echo "android=true" >> "$GITHUB_OUTPUT"
@@ -73,18 +79,48 @@ jobs:
 
   emulator:
     needs: apk
-    # Na push po scaleniu z kolejki emulator przeszedł już w merge_group na tym samym SHA i nie zapisuje cache.
     if: ${{ !cancelled() && github.event_name != 'push' && needs.apk.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    # Test systemowy dopiero zbiera historię stabilności, więc jego porażka nie czerwieni `budowanie`.
+    continue-on-error: ${{ matrix.zestaw == 'system' }}
     strategy:
       fail-fast: false
       matrix:
-        # Wersja minimalna i docelowa z NFR-41.
-        api: [26, 36]
+        # Testy aplikacji na wersji minimalnej i docelowej z NFR-41; w grupie kolejki także test systemowy
+        # (moduł `systemtest`) z serwerem i bazą uruchomionymi na runnerze.
+        include: ${{ fromJSON(github.event_name == 'merge_group' && '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"},{"api":36,"zestaw":"system"}]' || '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"}]') }}
     env:
       IMAGE: system-images;android-${{ matrix.api }};default;x86_64
     steps:
+      - uses: actions/checkout@v7.0.1
+        if: matrix.zestaw == 'system'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6.2.0
+        if: matrix.zestaw == 'system'
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Uruchom bazę, magazyn zdjęć, logowanie i serwer
+        if: matrix.zestaw == 'system'
+        timeout-minutes: 15
+        run: |
+          cp infra/.env.example infra/.env
+          docker compose -f infra/docker-compose.yml up -d --wait
+          (cd backend && ./mvnw -B -q -DskipTests -Dqulice.skip=true -Djacoco.skip=true package)
+          set -a
+          . infra/.env
+          set +a
+          jar="$(find backend/target -maxdepth 1 -name '*.jar' ! -name '*-plain.jar' | head -n 1)"
+          nohup java -jar "$jar" > "$RUNNER_TEMP/serwer.log" 2>&1 &
+          if ! timeout 180 bash -c 'until curl -fs -o /dev/null http://127.0.0.1:8080/buildings; do sleep 3; done'; then
+            echo "::error title=Test systemowy::Serwer nie odpowiedział na /buildings w 3 minuty."
+            cat "$RUNNER_TEMP/serwer.log"
+            exit 1
+          fi
       - name: Pobierz APK aplikacji i testów
         uses: actions/download-artifact@v8.0.2
         with:
@@ -122,11 +158,17 @@ jobs:
           done
       - name: Zainstaluj APK aplikacji i testów
         timeout-minutes: 5
+        env:
+          ZESTAW: ${{ matrix.zestaw }}
         run: |
           # Artefakt zachowuje strukturę katalogów od najbliższego wspólnego przodka, więc pliki szukamy po nazwie.
           find "$RUNNER_TEMP/apk" -name '*.apk' -print
           adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug.apk | head -n 1)"
-          adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug-androidTest.apk | head -n 1)"
+          testy=app-debug-androidTest.apk
+          if [[ $ZESTAW == system ]]; then
+            testy=systemtest-debug.apk
+          fi
+          adb install -r -t "$(find "$RUNNER_TEMP/apk" -name "$testy" | head -n 1)"
       - name: Testy na emulatorze
         timeout-minutes: 15
         run: |
@@ -172,12 +214,15 @@ jobs:
           mkdir -p "$RUNNER_TEMP/raporty"
           timeout 60 adb logcat -d > "$RUNNER_TEMP/raporty/logcat.txt" || true
           cp "$RUNNER_TEMP/emulator.log" "$RUNNER_TEMP/raporty/" || true
+          cp "$RUNNER_TEMP/serwer.log" "$RUNNER_TEMP/raporty/" 2>/dev/null || true
           grep -E 'FATAL EXCEPTION|AndroidRuntime|TestRunner' "$RUNNER_TEMP/raporty/logcat.txt" | head -200 || true
       - name: Zapisz wynik testów na emulatorze
         if: always()
         uses: actions/upload-artifact@v7.0.2
+        # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
+        continue-on-error: true
         with:
-          name: raporty-emulator-api-${{ matrix.api }}
+          name: raporty-emulator-api-${{ matrix.api }}-${{ matrix.zestaw }}
           path: |
             ${{ runner.temp }}/instrumentacja.txt
             ${{ runner.temp }}/raporty/
@@ -185,7 +230,7 @@ jobs:
 
   apk:
     needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    if: ${{ !cancelled() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -216,29 +261,33 @@ jobs:
       - name: Udostępnij raport czasu Gradle
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7.0.2
+        # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
+        continue-on-error: true
         with:
           name: profil-apk
           path: android/build/reports/profile/
           if-no-files-found: warn
           retention-days: 7
       - name: Pokaż zbudowane pakiety
-        run: ls -l app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+        run: |
+          ls -l app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            systemtest/build/outputs/apk/debug/systemtest-debug.apk
       - name: Udostępnij APK aplikacji i testów
-        if: ${{ github.event_name != 'push' }}
         uses: actions/upload-artifact@v7.0.2
         with:
           name: apk-debug
           path: |
             android/app/build/outputs/apk/debug/app-debug.apk
             android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+            android/systemtest/build/outputs/apk/debug/systemtest-debug.apk
           if-no-files-found: error
           retention-days: 7
 
   testy:
     needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    if: ${{ !cancelled() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
     permissions:
       actions: read
       contents: read
@@ -283,6 +332,8 @@ jobs:
       - name: Zapisz diagnostykę Hilt i KSP
         if: failure()
         uses: actions/upload-artifact@v7.0.2
+        # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
+        continue-on-error: true
         with:
           name: diagnostyka-hilt-ksp
           path: ${{ runner.temp }}/diagnostyka/
@@ -291,46 +342,102 @@ jobs:
       - name: Zapisz raporty
         if: always()
         uses: actions/upload-artifact@v7.0.2
+        # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
+        continue-on-error: true
         with:
           name: raporty-testy
           path: android/**/build/reports/
           if-no-files-found: ignore
+      - name: Udostępnij cache budowania zadaniu po scaleniu i następnym grupom kolejki
+        # Cache zapisany w grupie kolejki należy do jej tymczasowej gałęzi, której inne przebiegi nie widzą; artefakt widzą.
+        if: ${{ success() && github.event_name == 'merge_group' }}
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: gradle-build-cache
+          path: ~/.gradle/caches/build-cache-1/
+          if-no-files-found: warn
+          retention-days: 3
+      - name: Sprawdź, czy gałąź docelowa ma już cache tych zależności
+        # Bez tego każda grupa kolejki po zmianie zależności wysyłałaby całe archiwum, choć cache gałęzi już je ma.
+        id: zaleznosci-galezi
+        if: ${{ success() && github.event_name == 'merge_group' && steps.gradle.outputs.trafienie-zaleznosci != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          KLUCZ: ${{ steps.gradle.outputs.klucz-zaleznosci }}
+          BASE_REF: ${{ github.event.merge_group.base_ref }}
+        run: |
+          liczba="$(gh cache list --ref "$BASE_REF" --key "$KLUCZ" --json id --jq length)"
+          echo "brak=$([[ $liczba == 0 ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - name: Spakuj pobrane zależności i dystrybucje Gradle
+        # Archiwum tar zachowuje uprawnienia plików dystrybucji Gradle, których artefakt nie przenosi.
+        if: ${{ success() && steps.zaleznosci-galezi.outputs.brak == 'true' }}
+        run: tar -C "$HOME/.gradle" -cf "$RUNNER_TEMP/zaleznosci.tar" caches/modules-2 wrapper
+      - name: Udostępnij pobrane zależności zadaniu po scaleniu
+        if: ${{ success() && steps.zaleznosci-galezi.outputs.brak == 'true' }}
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: gradle-zaleznosci
+          path: ${{ runner.temp }}/zaleznosci.tar
+          if-no-files-found: error
+          retention-days: 1
+
+  cache:
+    # Po scaleniu nic się nie buduje ani nie testuje: grupa kolejki sprawdziła ten sam commit. Zadanie przekłada cache
+    # tej grupy z artefaktów do cache gałęzi, bo tylko cache gałęzi docelowej widzą przebiegi PR.
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Policz klucze cache Gradle
+        id: gradle
+        uses: ./.github/actions/android-gradle
+        with:
+          tylko-klucze: 'true'
+      - name: Pobierz cache budowania z grupy kolejki commitów tego pusha
+        id: budowanie
+        if: ${{ steps.gradle.outputs.trafienie-budowania != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PRZED: ${{ github.event.before }}
+        run: bash .github/scripts/cache-z-kolejki.sh "$GITHUB_SHA" gradle-build-cache "$HOME/.gradle/caches/build-cache-1" "$PRZED"
+      - name: Zapisz cache budowania Gradle
+        if: ${{ steps.budowanie.outputs.jest == 'true' }}
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: ~/.gradle/caches/build-cache-1
+          key: ${{ steps.gradle.outputs.klucz-budowania }}
+      - name: Pobierz zależności z grupy kolejki commitów tego pusha
+        id: zaleznosci
+        if: ${{ steps.gradle.outputs.trafienie-zaleznosci != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PRZED: ${{ github.event.before }}
+        run: bash .github/scripts/cache-z-kolejki.sh "$GITHUB_SHA" gradle-zaleznosci "$RUNNER_TEMP/zaleznosci" "$PRZED"
+      - name: Rozpakuj zależności
+        if: ${{ steps.zaleznosci.outputs.jest == 'true' }}
+        run: mkdir -p "$HOME/.gradle" && tar -C "$HOME/.gradle" -xf "$RUNNER_TEMP/zaleznosci/zaleznosci.tar"
       - name: Zapisz pobrane zależności i dystrybucje Gradle
-        if: >-
-          ${{ success() && github.event_name == 'push' &&
-            (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) &&
-            steps.gradle.outputs.trafienie-zaleznosci != 'true' }}
+        if: ${{ steps.zaleznosci.outputs.jest == 'true' }}
         uses: actions/cache/save@v6.1.0
         with:
           path: |
             ~/.gradle/caches/modules-2
             ~/.gradle/wrapper
           key: ${{ steps.gradle.outputs.klucz-zaleznosci }}
-      - name: Zapisz cache budowania Gradle
-        if: >-
-          ${{ success() && github.event_name == 'push' &&
-            (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) &&
-            steps.gradle.outputs.trafienie-budowania != 'true' }}
-        uses: actions/cache/save@v6.1.0
-        with:
-          path: ~/.gradle/caches/build-cache-1
-          key: ${{ steps.gradle.outputs.klucz-budowania }}
-      - name: Udostępnij cache budowania grupom kolejki
-        # Grupa kolejki nie widzi cache gałęzi sprintu (actions/cache), więc ten sam cache idzie też jako krótko żyjący artefakt.
-        if: ${{ success() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) }}
-        uses: actions/upload-artifact@v7.0.2
-        with:
-          name: gradle-build-cache
-          path: ~/.gradle/caches/build-cache-1/
-          if-no-files-found: warn
-          retention-days: 1
 
   czyszczenie-cache:
     # Osobne małe zadanie tylko na push: uprawnienie actions: write nie trafia do zadań uruchamiających kod z PR.
-    needs: testy
-    if: >-
-      ${{ !cancelled() && needs.testy.result == 'success' && github.event_name == 'push' &&
-        (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sprint/')) }}
+    needs: cache
+    if: ${{ !cancelled() && needs.cache.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -348,18 +455,44 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          # Oba wpisy zapisuje zadanie testy (needs), więc czyszczenie rusza po udanym zapisie nowych.
+          # Oba wpisy zapisuje zadanie cache (needs), więc czyszczenie rusza po udanym zapisie nowych.
           # Prefiksy są w akcji Gradle, żeby klucz nie był zapisany drugi raz.
           mapfile -t prefiks < <(sed -n 's/^# prefiks-cache: //p' .github/actions/android-gradle/action.yml)
           bash .github/scripts/czysc-cache.sh \
             "${prefiks[0]}${RUNNER_OS}-${RUNNER_ARCH}-" \
             "${prefiks[1]}${RUNNER_OS}-${RUNNER_ARCH}-"
 
+  analiza-zaleznosci:
+    # buildHealth kompiluje wszystkie moduły, więc działa po wypchnięciu na gałąź, nie w każdym PR i nie w grupie kolejki.
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Przygotuj JDK i cache Gradle
+        uses: ./.github/actions/android-gradle
+      - name: Sprawdź, czy każdy moduł deklaruje biblioteki, których używa
+        run: ./gradlew buildHealth --console=plain
+      - name: Zapisz raport analizy zależności
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: analiza-zaleznosci
+          path: android/build/reports/dependency-analysis/
+          if-no-files-found: ignore
+          retention-days: 7
+
   budowanie:
     needs: [porownanie, zmiany, testy, apk, emulator]
     # always(): także po anulowaniu poprzednich zadań, żeby anulowana część dawała czerwony check, a nie pominięty.
     # Gdy grupa kolejki ma drzewo sprawdzone na PR, wszystkie zadania są pominięte, więc i ten check (pominięty = zaliczony).
-    if: ${{ always() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    if: ${{ always() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -371,6 +504,4 @@ jobs:
         env:
           ZMIANY: ${{ needs.zmiany.result }}
           WYNIKI: ${{ needs.testy.result }} ${{ needs.apk.result }} ${{ needs.emulator.result }}
-          ZDARZENIE: ${{ github.event_name }}
-          EMULATOR: ${{ needs.emulator.result }}
         run: bash .github/scripts/wyniki-androida.sh

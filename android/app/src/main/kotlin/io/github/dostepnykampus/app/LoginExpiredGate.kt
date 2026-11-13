@@ -36,9 +36,11 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 /**
- * Prośba o ponowne zalogowanie po odpowiedzi 401 przy wysyłce kolejki (BR-26, US9.4, US14.4). Gdy [isExpired], nad
+ * Prośba o ponowne zalogowanie po odpowiedzi 401 przy wysyłce kolejki. Gdy [isExpired], nad
  * aplikacją jest napis „Logowanie wygasło…”, a zgłoszenia czekają w telefonie. Gdy konto z [roles] staje się
  * zalogowane, [onLoggedIn] wznawia wysyłkę bez dotykania ekranu.
+ *
+ * Wymagania: BR-26, US9.4, US14.4
  *
  * @param isExpired czy kolejka czeka na ponowne zalogowanie
  * @param roles konto osoby; przejście do zalogowanego wznawia wysyłkę

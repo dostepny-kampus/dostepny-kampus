@@ -25,8 +25,10 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Kontury z serwera i wejścia z pliku. Przy błędzie sieci albo serwera cały katalog jest z pliku, ale tylko gdy
- * z serwera nic jeszcze nie pobrano; inaczej zostaje katalog pobrany z serwera (NFR-10). Ponowna próba pyta
+ * z serwera nic jeszcze nie pobrano; inaczej zostaje katalog pobrany z serwera. Ponowna próba pyta
  * serwer od nowa, a zwykłe czytanie bierze katalog z pamięci.
+ *
+ * Wymagania: NFR-10
  */
 class ServerBuildingCatalogTest {
     private val serverCalls = AtomicInteger()
@@ -73,7 +75,11 @@ class ServerBuildingCatalogTest {
         assertEquals(catalog(), empty)
     }
 
-    /** Wiersz: zwykłe otwarcie karty albo mapy → katalog z pamięci, bez drugiego zapytania do serwera, US1, NFR-10. */
+    /**
+     * Wiersz: zwykłe otwarcie karty albo mapy → katalog z pamięci, bez drugiego zapytania do serwera.
+     *
+     * Wymagania: US1, NFR-10
+     */
     @Test
     fun us1_catalog_asks_server_once() {
         val repository = repository({ listed("A-2") }, { listed("A-2", "N-1") })
@@ -83,7 +89,9 @@ class ServerBuildingCatalogTest {
 
     /**
      * Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” po połączeniu z internetem → katalog z serwera,
-     *   choć pierwsze czytanie poszło z pliku bez sieci, NFR-10.
+     *   choć pierwsze czytanie poszło z pliku bez sieci.
+     *
+     * Wymagania: NFR-10
      */
     @Test
     fun nfr10_retry_after_offline() {
@@ -95,7 +103,7 @@ class ServerBuildingCatalogTest {
         }
     }
 
-    /** Wiersz: V2, „Spróbuj ponownie” → widać budynek, który serwer dodał po pierwszym czytaniu, NFR-10. */
+    /** Wiersz: V2, „Spróbuj ponownie” → widać budynek, który serwer dodał po pierwszym czytaniu. Wymagania: NFR-10 */
     @Test
     fun nfr10_retry_sees_new_building() {
         val repository = repository({ listed("A-2") }, { listed("A-2", "N-1") })
@@ -108,7 +116,9 @@ class ServerBuildingCatalogTest {
 
     /**
      * Wiersz: „Spróbuj ponownie” bez sieci albo z zerwanym połączeniem → zostają budynki pobrane wcześniej
-     *   z serwera, nie sam plik, NFR-10.
+     *   z serwera, nie sam plik.
+     *
+     * Wymagania: NFR-10
      */
     @Test
     fun nfr10_failed_retry_keeps_data() {
@@ -128,7 +138,11 @@ class ServerBuildingCatalogTest {
         }
     }
 
-    /** Wiersz: otwarcie karty i „Spróbuj ponownie” naraz → jedno zapytanie do serwera, dopóki pierwsze trwa, NFR-10. */
+    /**
+     * Wiersz: otwarcie karty i „Spróbuj ponownie” naraz → jedno zapytanie do serwera, dopóki pierwsze trwa.
+     *
+     * Wymagania: NFR-10
+     */
     @Test
     fun nfr10_retry_waits_for_read() {
         val gate = CompletableDeferred<Unit>()

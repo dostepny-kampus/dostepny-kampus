@@ -29,9 +29,11 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Testy BR-6, US1.3 i US2.2: bez logowania GET /submissions pokazuje tylko
+ * Bez logowania GET /submissions pokazuje tylko
  * zgłoszenia przyjęte w kształcie schematu Submission, a własne zgłoszenia
- * wymagają logowania (US8.1).
+ * wymagają logowania.
+ *
+ * <p>Wymagania: US8.1, BR-6, US1.3, US2.2</p>
  *
  * @since 0.1.0
  */

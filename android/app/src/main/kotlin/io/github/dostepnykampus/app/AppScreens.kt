@@ -62,14 +62,18 @@ import io.github.dostepnykampus.feature.capture.R as CaptureR
 /** Szerokość okna w dp, od której pasek nawigacji stoi z boku, a V2 otwiera się od razu na pełnym ekranie. */
 internal const val WIDE_WINDOW_DP = 600
 
-/** Tryb karty z trasy (US2.9, NFR-20): `Direct` od skali czcionki 1,5, inaczej `Expanded`. */
+/** Tryb karty z trasy: `Direct` od skali czcionki 1,5, inaczej `Expanded`. Wymagania: US2.9, NFR-20 */
 internal fun cardModeFor(fontScale: Float): CardMode =
     if (fontScale >= LARGE_FONT_SCALE) CardMode.Direct else CardMode.Expanded
 
 /** Bieżące okno aplikacji dla trybu karty V2: skala czcionki [fontScale], szerokość [widthDp] i [isLandscape]. */
 internal data class CardWindow(val fontScale: Float, val widthDp: Int, val isLandscape: Boolean)
 
-/** Tryb karty V2 w oknie: `Direct` w oknie od 600 dp albo poziomo (NFR-51, NFR-22), inaczej jak [cardModeFor]. */
+/**
+ * Tryb karty V2 w oknie: `Direct` w oknie od 600 dp albo poziomo, inaczej jak [cardModeFor].
+ *
+ * Wymagania: NFR-51, NFR-22
+ */
 internal fun CardWindow.cardMode(): CardMode =
     if (widthDp >= WIDE_WINDOW_DP || isLandscape) CardMode.Direct else cardModeFor(fontScale)
 
@@ -82,12 +86,18 @@ internal fun currentCardWindow(): CardWindow {
     return CardWindow(density.fontScale, widthDp, isLandscape = window.width > window.height)
 }
 
-/** Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku [onBack] i „Zamknij” małej karty [onClose] (US2.8). */
+/**
+ * Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku [onBack] i „Zamknij” małej karty [onClose].
+ *
+ * Wymagania: US2.8
+ */
 internal data class SheetCard(val mode: CardMode, val onBack: () -> Unit, val onClose: () -> Unit)
 
 /**
- * Karta V2: `Direct`, gdy okno go wymaga albo V2 otwarto od razu na pełnym ekranie (NFR-19), inaczej tryb z rozwinięcia
- * arkusza; „Wstecz” jak wstecz telefonu, „Zamknij” zamyka V2 (US2.8, US2.9, NFR-15).
+ * Karta V2: `Direct`, gdy okno go wymaga albo V2 otwarto od razu na pełnym ekranie, inaczej tryb z rozwinięcia
+ * arkusza; „Wstecz” jak wstecz telefonu, „Zamknij” zamyka V2.
+ *
+ * Wymagania: NFR-19, US2.8, US2.9, NFR-15
  */
 @Composable
 internal fun AppNavigator.sheetCard(): SheetCard {
@@ -107,7 +117,9 @@ private typealias Action = Pair<String, () -> Unit>
  * to zaślepki: nagłówek „Wstecz” z nazwą z listy ekranów i przyciski czynności bez danych. Ekran z `feature:*`
  * zastępuje swoją gałąź i dostaje czynności jako lambdy. Zaślepki nie zapamiętują stanu, więc nie muszą się
  * odświeżać osobno od nawigatora. Gdy konto staje się zalogowane (przełącznik ról w debug, potem logowanie),
- * strona logowania przechodzi do V4 krok 1 albo L2 (US14.2).
+ * strona logowania przechodzi do V4 krok 1 albo L2.
+ *
+ * Wymagania: US14.2
  */
 @Composable
 @NonRestartableComposable
@@ -152,8 +164,10 @@ private fun AppNavigator.HiltBuildingCard(
 
 /**
  * V2 ze stanem [state] i czynnościami podpiętymi do nawigatora; „Zgłoś barierę przy wejściu” prowadzi do V4
- * z wybranym wejściem, a Gościa najpierw do L1 (US4.6, US14.2). „Pokaż wejście na mapie” prowadzi do V1
- * z zaznaczonym wejściem tego budynku (US3.3, US2.1). [onRetry] to „Spróbuj ponownie”.
+ * z wybranym wejściem, a Gościa najpierw do L1. „Pokaż wejście na mapie” prowadzi do V1
+ * z zaznaczonym wejściem tego budynku. [onRetry] to „Spróbuj ponownie”.
+ *
+ * Wymagania: US4.6, US14.2, US3.3, US2.1
  */
 @Composable
 internal fun AppNavigator.BuildingCard(

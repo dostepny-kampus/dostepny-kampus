@@ -22,13 +22,15 @@ private const val INTERVAL_MILLIS = 1_000L
 private const val NANOS_IN_MILLI = 1_000_000L
 
 /**
- * Odczyty z odbiornika GNSS telefonu dla pomiaru na ekranie C1 (US6.1).
+ * Odczyty z odbiornika GNSS telefonu dla pomiaru na ekranie C1.
  *
  * Bierze tylko dostawcę GPS z systemowego [LocationManager], bez pozycji z sieci, więc każdy odczyt pochodzi z
  * satelitów, a stan satelitów da się czytać z tego samego odbiornika (`GnssStatus`, ADR-0001). Nasłuch trwa, dopóki
- * ktoś zbiera przepływ, i znika razem z nim, więc lokalizacja działa tylko przy otwartym ekranie (NFR-27). Bez
+ * ktoś zbiera przepływ, i znika razem z nim, więc lokalizacja działa tylko przy otwartym ekranie. Bez
  * zgody na dokładną lokalizację przepływ kończy się [SecurityException]; o zgodę prosi ekran.
- * Odczyt przychodzi co sekundę, bo ekran C1 odświeża dokładność co najwyżej co 1 s (NFR-2).
+ * Odczyt przychodzi co sekundę, bo ekran C1 odświeża dokładność co najwyżej co 1 s.
+ *
+ * Wymagania: US6.1, NFR-27, NFR-2
  */
 class GnssPositionFixes(private val context: Context) : PositionSource {
     /** Odczyty od teraz, aż do przerwania zbierania; czas odczytu z zegara monotonicznego telefonu. */

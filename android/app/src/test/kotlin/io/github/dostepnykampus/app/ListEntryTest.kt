@@ -34,15 +34,15 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
-/** Przycisk pełnego ekranu V2 otwartego od razu (US2.9). */
+/** Przycisk pełnego ekranu V2 otwartego od razu. Wymagania: US2.9 */
 internal const val BUILDING_ON_MAP = "Pokaż budynek na mapie"
 
-/** Budynek A-1 na liście V1 z katalogu w zasobach aplikacji (NFR-19). */
+/** Budynek A-1 na liście V1 z katalogu w zasobach aplikacji. Wymagania: NFR-19 */
 internal val ListedA1 = hasContentDescription("A-1, ", substring = true)
 
 private const val OSM = "© OpenStreetMap contributors"
 
-/** Budynek z listy V1, z wyszukiwania albo z mapy: tryb karty V2 przy TalkBack i bez niego (NFR-19, decyzja 118). */
+/** Budynek z listy V1, z wyszukiwania albo z mapy: tryb karty V2 przy TalkBack i bez niego. Wymagania: NFR-19 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class ListEntryTest {
@@ -82,7 +82,7 @@ class ListEntryTest {
         compose.onNodeWithText(BUILDING_ON_MAP).assertDoesNotExist()
     }
 
-    /** Wiersz: V1, dotknięcie konturu budynku → V2, mała karta nad mapą także przy TalkBack, US2.8, decyzja 115. */
+    /** Wiersz: V1, dotknięcie konturu budynku → V2, mała karta nad mapą także przy TalkBack. Wymagania: US2.8 */
     @Test
     fun us2_8_contour_talkback_compact() {
         choice.savedChoice.value = false
@@ -95,8 +95,9 @@ class ListEntryTest {
 
     /**
      * Wiersze: V1 bez TalkBack, dotknięcie budynku na liście przy zwykłej czcionce → V1 w widoku mapy z małą kartą
-     * V2; „Wstecz” → lista, zapamiętany wybór „Lista budynków” bez zmian, także po odtworzeniu aktywności, US2.8,
-     * NFR-19, NFR-22, decyzja 118.
+     * V2; „Wstecz” → lista, zapamiętany wybór „Lista budynków” bez zmian, także po odtworzeniu aktywności.
+     *
+     * Wymagania: US2.8, NFR-19, NFR-22
      */
     @Test
     fun nfr19_list_compact_to_list() {
@@ -114,8 +115,9 @@ class ListEntryTest {
     }
 
     /**
-     * Wiersz: V1, wybór wyniku w polu „Wpisz symbol budynku, np. C-13” → V2, mała karta także przy TalkBack, US1.1,
-     * US2.8.
+     * Wiersz: V1, wybór wyniku w polu „Wpisz symbol budynku, np. C-13” → V2, mała karta także przy TalkBack.
+     *
+     * Wymagania: US1.1, US2.8
      */
     @Test
     fun us1_1_search_talkback_compact() {

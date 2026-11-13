@@ -26,8 +26,10 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Testy US10.1 i BR-13: podobne zgłoszenia w promieniu 10 m z każdego
+ * Podobne zgłoszenia w promieniu 10 m z każdego
  * piętra, od najbliższego, bez odrzuconych, archiwalnych i samego sprawdzanego.
+ *
+ * <p>Wymagania: US10.1, BR-13</p>
  *
  * @since 0.1.0
  */

@@ -47,7 +47,7 @@ class LabelPointTest {
         assertTrue(point.longitude < 4.0)
     }
 
-    /** US1, #820: punkt podpisu każdego konturu z repozytorium leży w tym konturze według [locateBuilding]. */
+    /** Punkt podpisu każdego konturu z repozytorium leży w tym konturze według [locateBuilding]. Wymagania: US1 */
     @Test
     fun us1_real_labels_inside_outline() {
         val real = parseBuildingCatalog(File(System.getProperty("dostepnykampus.buildings")).readText())

@@ -50,15 +50,13 @@ private const val LABEL_MAX_FONT_SCALE = 1.4f
 private const val TOUCH_TOLERANCE_DP = 24f
 
 /**
- * Widok MapLibre Android bez kluczy i kont (ADR-0005); logo i podpis biblioteki zastępuje podpis ekranu.
- * Podpis konturu rośnie z czcionką telefonu najwyżej 1,4 raza (reguła 4 wymagań wspólnych). Dotknięcie do 24 dp od
- * konturu, połowa celu 48 dp, trafia w kontur (decyzja 85). Kafelki nie są pobierane na zapas, tylko widoczne
- * (NFR-39). Widok kamery zgłasza tylko po geście osoby, nie po ruchu zleconym przez ekran, więc wpisanie budynku
- * nad małą kartą nie liczy się jako ruch osoby (decyzja 151). Zmiana rozmiaru mapy przerywa ruch kamery, więc po
- * niej widok znów idzie do zleconej kamery i „Wstecz” z V2 wraca dokładnie do widoku sprzed karty (decyzja 83).
- * Natywny widok powstaje i zwalnia pamięć raz, razem
- * z ekranem; przy V2 jako arkuszu ten sam widok przechodzi do innej sceny z innym cyklem życia, więc zmiana cyklu
- * tylko zatrzymuje i wznawia mapę.
+ * Widok MapLibre Android bez kluczy i kont (ADR-0005); logo i podpis biblioteki zastępuje podpis ekranu. Podpis konturu
+ * rośnie z czcionką najwyżej 1,4 raza, a dotknięcie do 24 dp od konturu trafia w kontur. Pobiera tylko widoczne
+ * kafelki. Widok kamery zgłasza tylko po geście osoby; zmiana rozmiaru mapy przerywa ruch kamery i wraca do zleconej
+ * kamery. Natywny widok powstaje i zwalnia pamięć raz, z ekranem; zmiana cyklu życia sceny tylko zatrzymuje i wznawia
+ * mapę.
+ *
+ * Wymagania: NFR-39
  */
 object MapLibreMapView : CampusMapView {
     @Composable

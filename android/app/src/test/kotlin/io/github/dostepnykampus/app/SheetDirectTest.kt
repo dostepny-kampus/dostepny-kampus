@@ -38,7 +38,7 @@ import org.robolectric.annotation.Config
 
 private const val SHOW_ON_MAP = "Pokaż budynek na mapie"
 
-/** V2 otwarte od razu na pełnym ekranie: duża czcionka, szerokie okno albo poziomo (US2.9, NFR-20, NFR-51). */
+/** V2 otwarte od razu na pełnym ekranie: duża czcionka, szerokie okno albo poziomo. Wymagania: US2.9, NFR-20, NFR-51 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class SheetDirectTest {
@@ -75,7 +75,9 @@ class SheetDirectTest {
 
     /**
      * Wiersz: V2 przy skali czcionki co najmniej 1,5 → od razu pełny ekran bez mapy i bez małej karty,
-     * z „Pokaż budynek na mapie”, NFR-20, reguła 5, US2.9.
+     * z „Pokaż budynek na mapie”, reguła 5.
+     *
+     * Wymagania: US2.9, NFR-20
      */
     @Test
     @Config(fontScale = 2f)
@@ -86,7 +88,9 @@ class SheetDirectTest {
 
     /**
      * Wiersz: V2, pełny ekran otwarty od razu, „Wstecz” w górnym pasku albo telefonu → ekran sprzed V2
-     * jednym krokiem, NFR-15, US2.9.
+     * jednym krokiem.
+     *
+     * Wymagania: NFR-15, US2.9
      */
     @Test
     @Config(fontScale = 2f)
@@ -107,7 +111,9 @@ class SheetDirectTest {
 
     /**
      * Wiersz: V2 otwarte, obrót do poziomu albo zmiana czcionki w trakcie → tryb z bieżącego okna: poziomo
-     * i przy czcionce 200 % pełny ekran od razu, pionowo przy zwykłej czcionce mała karta, NFR-51, NFR-20, NFR-22.
+     * i przy czcionce 200 % pełny ekran od razu, pionowo przy zwykłej czcionce mała karta.
+     *
+     * Wymagania: NFR-51, NFR-20, NFR-22
      */
     @Test
     fun nfr22_mode_follows_window() {

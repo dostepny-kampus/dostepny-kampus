@@ -11,8 +11,10 @@ import org.junit.jupiter.api.Test;
 import tools.jackson.databind.exc.MismatchedInputException;
 
 /**
- * Identyfikator w ciele POST zgłoszenia (US4, BR-9): tekst, który nie jest
+ * Identyfikator w ciele POST zgłoszenia: tekst, który nie jest
  * UUID, i ciało, które nie jest obiektem, kończą wiązanie błędem.
+ *
+ * <p>Wymagania: US4, BR-9</p>
  *
  * @since 0.1.0
  */

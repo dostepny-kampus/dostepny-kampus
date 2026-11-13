@@ -15,10 +15,12 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
- * Podpowiedź budynku po pomiarze z progiem 50 m od konturu (US6.2, BR-G4); punkty na północ od budynku A-1.
+ * Podpowiedź budynku po pomiarze z progiem 50 m od konturu; punkty na północ od budynku A-1.
  *
  * `gridBuilding`: Siatka o kroku 1/4096 stopnia (około 17 m), dokładnie zapisywalna w `Double`: punkt na krawędzi leży
  * na niej.
+ *
+ * Wymagania: US6.2, BR-G4
  */
 class BuildingHintTest {
     private val building =
@@ -55,7 +57,9 @@ class BuildingHintTest {
     }
 
     /**
-     * Wiersz: G1, decyzja 137, US6.2, BR-G2 — punkt na krawędzi konturu: podpowiedź budynku, 0 m, ale nie w konturze.
+     * Wiersz: G1 — punkt na krawędzi konturu: podpowiedź budynku, 0 m, ale nie w konturze.
+     *
+     * Wymagania: US6.2, BR-G2
      */
     @Test
     fun us6_2_edge_hint_not_inside() {
@@ -65,7 +69,7 @@ class BuildingHintTest {
         assertFalse(hint.isInside)
     }
 
-    /** Wiersz: G2, decyzja 137, BR-G2 — to samo dla krawędzi dziedzińca. */
+    /** Wiersz: G2 — to samo dla krawędzi dziedzińca. Wymagania: BR-G2 */
     @Test
     fun br_g2_courtyard_hint_not_in() {
         val hint = checkNotNull(buildingHints(gridPoint(x = 3.0, y = 4.0), listOf(gridBuilding)).suggested)
@@ -74,7 +78,7 @@ class BuildingHintTest {
         assertFalse(hint.isInside)
     }
 
-    /** Wiersz: G3, US6.2 — punkt ściśle w konturze tuż przy krawędzi: ten budynek, 0 m, w konturze. */
+    /** Wiersz: G3 — punkt ściśle w konturze tuż przy krawędzi: ten budynek, 0 m, w konturze. Wymagania: US6.2 */
     @Test
     fun us6_2_near_edge_hint_inside() {
         val hint = checkNotNull(buildingHints(gridPoint(x = 7.9375, y = 4.0), listOf(gridBuilding)).suggested)

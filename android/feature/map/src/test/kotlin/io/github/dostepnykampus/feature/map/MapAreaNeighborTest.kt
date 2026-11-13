@@ -34,7 +34,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** Przycisk sąsiedniego terenu mapy V1 (US1.7, NFR-17, NFR-18). */
+/** Przycisk sąsiedniego terenu mapy V1. Wymagania: US1.7, NFR-17, NFR-18 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h160dp-xhdpi")
@@ -46,7 +46,9 @@ class MapAreaNeighborTest {
 
     /**
      * Wiersz: V1, przycisk sąsiedniego terenu ma nazwę dla TalkBack „Tu kończy się teren Kampus główny. Obok:
-     * Wittigowo, 2 km” i cel dotyku 48 dp; dotknięcie jest zgłoszone (US1.7, NFR-17, NFR-18).
+     * Wittigowo, 2 km” i cel dotyku 48 dp; dotknięcie jest zgłoszone.
+     *
+     * Wymagania: US1.7, NFR-17, NFR-18
      */
     @Test
     fun us1_7_button_named_clickable() {

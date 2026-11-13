@@ -9,7 +9,9 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 /**
- * C2 w trybie poprawki zgłoszenia z C3 (US8.3).
+ * C2 w trybie poprawki zgłoszenia z C3.
+ *
+ * Wymagania: US8.3
  *
  * @property submissionId identyfikator zgłoszenia z kolejki telefonu
  */

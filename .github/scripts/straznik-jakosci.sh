@@ -32,6 +32,7 @@ gradle_words='kover|detekt|\blint\b|baseline|ignoreFailures|abortOnError|[wW]arn
 gradle_words+='|checkAllWarnings|suppressWarnings|nowarn|Xsuppress|Xwarning-level|failOnSeverity'
 gradle_words+='|verifyRoborazzi|enabled\s*=\s*false|[iI]sEnabled|setEnabled|onlyIf|excludedTaskNames'
 gradle_words+='|setDependsOn|tasks\.(named|getByName)\("check"\)'
+gradle_words+='|dependencyAnalysis'
 
 hard=()
 soft=()
@@ -71,13 +72,13 @@ pom_context() {
     }'
 }
 
-# Numery linii wewnątrz bloków kover, detekt, lint i opcji kompilatora skryptu Gradle.
+# Numery linii wewnątrz bloków kover, detekt, lint, analizy zależności i opcji kompilatora skryptu Gradle.
 gradle_context() {
   awk '
     {
       line = $0; sub(/\/\/.*/, "", line)
       for (i = 1; i <= depth; i++) {
-        if (stack[i] ~ /(^|\.)(kover|detekt|lint|compilerOptions|kotlinOptions)$/) { print NR; break }
+        if (stack[i] ~ /(^|\.)(kover|detekt|lint|compilerOptions|kotlinOptions|dependencyAnalysis)$/) { print NR; break }
       }
       while (match(line, /[A-Za-z_][A-Za-z0-9_.]*[ \t]*(\([^)]*\))?[ \t]*\{|\{|\}/)) {
         tok = substr(line, RSTART, RLENGTH); line = substr(line, RSTART + RLENGTH)
@@ -224,6 +225,14 @@ while IFS= read -r -d '' status; do
   check_file "${status:0:1}" "$path" "$old"
 done < <(git diff -z -M --name-status --diff-filter=ACDMR "$range")
 
+# pull_request_target bierze przepływ strażnika z gałęzi domyślnej, a ten skrypt z bazy PR (#1173). Zmiana przepływu
+# scalona do sprint/N nie działa więc dla kolejnych PR, dopóki nie trafi do main.
+guard_workflow=.github/workflows/straznik-jakosci.yml
+if [[ ${BASE_REF:-} != main ]] && ! git diff --quiet "$range" -- "$guard_workflow"; then
+  echo "::warning file=${guard_workflow},title=${title}::Przepływ strażnika działa z gałęzi domyślnej (main):" \
+    "ta zmiana zadziała dla PR do ${BASE_REF:-gałęzi sprintu} dopiero po przeniesieniu pliku do main (#1173)."
+fi
+
 esc_data() {
   local s="${1//%/%25}"
   s="${s//$'\r'/%0D}"
@@ -274,6 +283,10 @@ fi
 if ((${#soft[@]} && gate)); then
   report warning "${soft[@]}"
   echo "Opis PR ma linię „Zmiana reguł jakości:”, a zmianę zatwierdził(a) ${approver}: zmiany reguł są ostrzeżeniami."
+elif ((${#soft[@]} && reason)) && [[ -z ${PR_APPROVED_BY+x} ]]; then
+  report error "${soft[@]}"
+  echo "Przepływ strażnika nie podał PR_APPROVED_BY: przepływ z main i skrypt z bazy PR są z różnych wersji (#1173)."
+  result=1
 elif ((${#soft[@]} && reason)); then
   report error "${soft[@]}"
   echo "Zmianę reguł jakości zatwierdza osoba inna niż autor PR: etykietą „zmiana-regul-zatwierdzona”."

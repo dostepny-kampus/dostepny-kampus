@@ -28,7 +28,9 @@ private const val SIGN_VIEWPORT = 24f
 private const val HALO = 1f
 
 /**
- * Kształty znaku uciążliwości na siatce 24 × 24, jak w makiecie hi-fi V1 (NFR-21).
+ * Kształty znaku uciążliwości na siatce 24 × 24, jak w makiecie hi-fi V1.
+ *
+ * Wymagania: NFR-21
  *
  * @property shape wypełniony kształt: trójkąt, tarcza albo prostokąt
  * @property mark kreski w kształcie: wykrzyknik, ramiona osób albo ukośne pasy
@@ -92,8 +94,10 @@ internal fun DrawScope.drawSeverity(paths: SeverityPaths, shapeColor: Color, mar
 }
 
 /**
- * Znak uciążliwości [severity] jako obraz [sizePx] × [sizePx] dla warstwy mapy (US1.3, NFR-21), z tych samych
+ * Znak uciążliwości [severity] jako obraz [sizePx] × [sizePx] dla warstwy mapy, z tych samych
  * kształtów co [SeverityIcon]: [shapeColor] to kształt, [markColor] znak w nim i obwódka wokół kształtu.
+ *
+ * Wymagania: US1.3, NFR-21
  */
 fun severityImage(severity: Severity, sizePx: Int, shapeColor: Color, markColor: Color): Bitmap {
     val paths = SeverityPaths(severity.look())
@@ -104,10 +108,12 @@ fun severityImage(severity: Severity, sizePx: Int, shapeColor: Color, markColor:
 
 /**
  * Znak uciążliwości obok napisu: trójkąt ze znakiem „!” dla „Utrudnienie”, tarcza z dwiema osobami dla „Tylko
- * z pomocą”, prostokąt z ukośnymi pasami dla „Blokada”. Znaczenie niesie kształt, nie barwa (NFR-21).
+ * z pomocą”, prostokąt z ukośnymi pasami dla „Blokada”. Znaczenie niesie kształt, nie barwa.
  *
- * Kształt ma kolor `onSurface`, znak w nim `surface`; rozmiar [Ikony.rozmiar] skalowany jak tekst w sp (NFR-20).
+ * Kształt ma kolor `onSurface`, znak w nim `surface`; rozmiar [Ikony.rozmiar] skalowany jak tekst w sp.
  * Ikona jest ozdobna: TalkBack czyta nazwę uciążliwości z napisu obok.
+ *
+ * Wymagania: NFR-21, NFR-20
  *
  * @param severity uciążliwość, która wyznacza kształt
  * @param modifier modyfikator zewnętrzny

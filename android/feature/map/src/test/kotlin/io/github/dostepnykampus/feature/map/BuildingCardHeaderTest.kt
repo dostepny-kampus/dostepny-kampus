@@ -18,7 +18,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Nagłówek karty V2: symbol dużym napisem i nazwa pod nim; budynek bez nazwy ma sam symbol (US2, NFR-18). */
+/** Nagłówek karty V2: symbol dużym napisem i nazwa pod nim; budynek bez nazwy ma sam symbol. Wymagania: US2, NFR-18 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class BuildingCardHeaderTest {
@@ -34,7 +34,7 @@ class BuildingCardHeaderTest {
         compose.onNode(hasContentDescription("Budynek A-1, Gmach Główny")).assertIsFocused()
     }
 
-    /** Wiersz wymagań V2 „Nagłówek”: bez nazwy sam symbol, a TalkBack czyta „Budynek A-4” (decyzja 152). */
+    /** Wiersz wymagań V2 „Nagłówek”: bez nazwy sam symbol, a TalkBack czyta „Budynek A-4”. */
     @Test
     fun us2_nameless_symbol_only() {
         show(symbol = "A-4", name = null)

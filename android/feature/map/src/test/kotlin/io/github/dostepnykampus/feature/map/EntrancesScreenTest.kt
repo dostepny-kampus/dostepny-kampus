@@ -19,7 +19,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** V3 przy pustych danych o wejściach istniejącego budynku (US3.1, US17.1, PW-10). */
+/** V3 przy pustych danych o wejściach istniejącego budynku (PW-10). Wymagania: US3.1, US17.1 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class EntrancesScreenTest {
@@ -51,7 +51,9 @@ class EntrancesScreenTest {
 
     /**
      * Wiersz: V3, „Brak danych o wejściach”: „z datą” tylko gdy wejścia mają datę i źródło, inaczej „każde wejście”,
-     * PW-10, US17.3.
+     * PW-10.
+     *
+     * Wymagania: US17.3
      */
     @Test
     fun us17_3_unknown_no_date_promise() {

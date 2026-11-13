@@ -15,7 +15,9 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Filtr listy zgłoszeń (W4-5): bez statusu tylko publiczne, status niepubliczny
- * wymaga mine=true, budynek i piętro trafiają do zapytania (BR-6).
+ * wymaga mine=true, budynek i piętro trafiają do zapytania.
+ *
+ * <p>Wymagania: BR-6</p>
  *
  * @since 0.1.0
  */

@@ -33,8 +33,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Usługa zapisu zgłoszeń (BR-14, BR-G2, BR-9, BR-10): budynek zgłoszenia
+ * Usługa zapisu zgłoszeń: budynek zgłoszenia
  * szybkiego ustala serwer z konturu, wyniki portu zapisu wracają bez zmian.
+ *
+ * <p>Wymagania: BR-14, BR-G2, BR-9, BR-10</p>
  *
  * @since 0.1.0
  */
@@ -205,6 +207,19 @@ final class SubmissionServiceTest {
     }
 
     @Test
+    void lockedTakesLockBeforeWrite() {
+        final SubmissionServiceTest.RecordingSubmissions repository =
+            new SubmissionServiceTest.RecordingSubmissions(null, null);
+        final List<Object> order = new ArrayList<>(2);
+        SubmissionServiceTest.service(repository, SubmissionServiceTest.EMPTY)
+            .locked(SubmissionServiceTest.ID, () -> order.addAll(repository.seen()));
+        Assertions.assertEquals(
+            List.of(SubmissionServiceTest.ID), order,
+            "Zapis zdjęcia ruszył bez blokady zgłoszenia"
+        );
+    }
+
+    @Test
     void brGFiveRejectsSubmissionOutsideCampusWithoutSaving() {
         final SubmissionServiceTest.RecordingSubmissions fake =
             new SubmissionServiceTest.RecordingSubmissions(null, null);
@@ -283,6 +298,11 @@ final class SubmissionServiceTest {
             this.created = created;
             this.edited = edited;
             this.seen = new ArrayList<>(1);
+        }
+
+        @Override
+        public void lock(final UUID id) {
+            this.seen.add(id);
         }
 
         @Override

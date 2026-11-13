@@ -46,7 +46,7 @@ private const val SYMBOL = "C-13"
 
 private val ReportButton = hasClickAction() and hasContentDescription("Zgłoś barierę przy wejściu", substring = true)
 
-/** „Zgłoś barierę przy wejściu” na V2 od dotknięcia do ekranu zgłoszenia albo logowania (US4.6, US14.2). */
+/** „Zgłoś barierę przy wejściu” na V2 od dotknięcia do ekranu zgłoszenia albo logowania. Wymagania: US4.6, US14.2 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class ReportAtEntranceTest {
@@ -57,7 +57,9 @@ class ReportAtEntranceTest {
 
     /**
      * Wiersz: V2 pełny ekran, zalogowany → „Zgłoś barierę przy wejściu” przy każdym wejściu prowadzi do V4 z
-     *   wejściem, przy którym stoi, US4.6.
+     *   wejściem, przy którym stoi.
+     *
+     * Wymagania: US4.6
      */
     @Test
     fun us4_6_each_entrance_opens_v4() {
@@ -72,7 +74,11 @@ class ReportAtEntranceTest {
         }
     }
 
-    /** Wiersz: V2 pełny ekran, Gość → ta sama czynność prowadzi najpierw do L1, który pamięta wejście, US14.2. */
+    /**
+     * Wiersz: V2 pełny ekran, Gość → ta sama czynność prowadzi najpierw do L1, który pamięta wejście.
+     *
+     * Wymagania: US14.2
+     */
     @Test
     fun us14_2_guest_goes_to_l1() {
         val ids = entranceIds()

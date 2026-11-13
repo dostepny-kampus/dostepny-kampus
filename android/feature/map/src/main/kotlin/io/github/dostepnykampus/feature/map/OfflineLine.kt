@@ -45,11 +45,13 @@ private val NoInternetIcon =
 
 /**
  * Wskaźnik braku sieci na V1: jedna linia z ikoną i napisem „Bez internetu” na całą szerokość, pod górą ekranu
- * (US9.1, NFR-10, NFR-21, PW-4). Gdy na mapie są dane pobrane z serwera, linia ma dopisek „dane z …” z dniem
- * pobrania najstarszych z nich (#1127); przy samych danych z pakietu aplikacji daty nie ma (decyzja 84). Linia
+ * (PW-4). Gdy na mapie są dane pobrane z serwera, linia ma dopisek „dane z …” z dniem
+ * pobrania najstarszych z nich; przy samych danych z pakietu aplikacji daty nie ma. Linia
  * pojawia się sama, więc TalkBack czyta ją jako komunikat stanu
- * (NFR-15, WCAG 4.1.3).
+ * (WCAG 4.1.3).
  * Ikona to fale Wi-Fi z ukośną kreską z Material Icons, siatka 24 × 24, jak lupa w polu symbolu.
+ *
+ * Wymagania: US9.1, NFR-10, NFR-21, NFR-15
  *
  * @param syncedAt chwila pobrania najstarszych danych z serwera na mapie; `null` dla danych z pakietu aplikacji
  * @param modifier położenie linii wyznacza wołający
@@ -86,9 +88,11 @@ internal fun OfflineLine(syncedAt: Instant?, modifier: Modifier = Modifier) {
 
 /**
  * Wskaźnik braku sieci na karcie V2: zaokrąglona plakietka z ikoną i napisem „Bez internetu”, szeroka jak jej treść,
- * nad nagłówkiem karty, tak samo na małej karcie i na pełnym ekranie (US2.8, NFR-10, NFR-21, decyzja 153). Daty
- * „dane z …” nie ma, dopóki dane są tylko z pakietu aplikacji (decyzja 84). Plakietka pojawia się sama, więc
- * TalkBack czyta ją jako komunikat stanu (NFR-15, WCAG 4.1.3).
+ * nad nagłówkiem karty, tak samo na małej karcie i na pełnym ekranie. Daty
+ * „dane z …” nie ma, dopóki dane są tylko z pakietu aplikacji. Plakietka pojawia się sama, więc
+ * TalkBack czyta ją jako komunikat stanu (WCAG 4.1.3).
+ *
+ * Wymagania: US2.8, NFR-10, NFR-21, NFR-15
  *
  * @param modifier położenie plakietki wyznacza wołający
  */

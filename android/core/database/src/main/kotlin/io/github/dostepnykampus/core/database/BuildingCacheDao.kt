@@ -10,7 +10,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
-/** Odczyt i zapis kopii listy budynków z serwera (NFR-10). */
+/** Odczyt i zapis kopii listy budynków z serwera. Wymagania: NFR-10 */
 @Dao
 interface BuildingCacheDao {
     /** Kopia listy albo `null`, gdy serwer dotąd nie odpowiedział. */

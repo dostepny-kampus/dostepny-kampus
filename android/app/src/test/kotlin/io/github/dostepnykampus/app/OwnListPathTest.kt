@@ -55,7 +55,9 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Lista „Moje zgłoszenia” na prawdziwej kolejce i historii z grafu Hilt: zapis, przebieg wysyłki z odpowiedzią
- * serwera i karty C3 (US8.1, US8.2, BR-9).
+ * serwera i karty C3.
+ *
+ * Wymagania: US8.1, US8.2, BR-9
  */
 @HiltAndroidTest
 @RunWith(RobolectricTestRunner::class)
@@ -143,6 +145,7 @@ class OwnListPathTest {
             MySubmissionsViewModel(
                 history = OwnSubmissions { flowOf(list) },
                 statuses = OwnStatuses { StatusRefresh.OFFLINE },
+                networkStatus = { flowOf(false) },
             )
         compose.setContent {
             val state by viewModel.state.collectAsState()

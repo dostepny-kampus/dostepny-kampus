@@ -20,7 +20,9 @@ import java.net.HttpURLConnection.HTTP_OK
  *
  * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek. Anulowanie korutyny wywołującej
  * każdą funkcję `suspend` przerywa jej żądanie HTTP, także w trakcie czytania odpowiedzi, i kończy się
- * [kotlinx.coroutines.CancellationException], nie [ApiResult.NetworkError] (NFR-55).
+ * [kotlinx.coroutines.CancellationException], nie [ApiResult.NetworkError].
+ *
+ * Wymagania: NFR-55
  *
  * @param http klient OkHttp
  * @param json parser JSON kontraktu; nieznane pole jest pomijane, serwer może je dodać później
@@ -42,8 +44,10 @@ class BuildingsApi(private val http: OkHttpClient, private val json: Json, baseU
         fetch(endpoint(listOf(BUILDINGS, symbol))) { json.decodeFromString<BuildingDetailsDto>(it).toModel() }
 
     /**
-     * Piętra budynku [symbol] od najniższego; budynek podstawowy ma pustą listę (US7.2, BR-G1).
+     * Piętra budynku [symbol] od najniższego; budynek podstawowy ma pustą listę.
      * Nieznany symbol daje [ApiResult.NotFound].
+     *
+     * Wymagania: US7.2, BR-G1
      *
      * @param symbol symbol budynku
      */

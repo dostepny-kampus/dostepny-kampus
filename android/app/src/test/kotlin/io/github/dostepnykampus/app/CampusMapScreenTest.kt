@@ -182,7 +182,7 @@ class CampusMapScreenTest {
         compose.waitForIdle()
     }
 
-    /** Plakietka jest niska jak w hi-fi, ale odnośnik ma cel dotyku 48 dp (NFR-17). */
+    /** Plakietka jest niska jak w hi-fi, ale odnośnik ma cel dotyku 48 dp. Wymagania: NFR-17 */
     @Test
     fun nfr53_buttons_nfr37_osm_us2() {
         compose.setContent { Screen() }
@@ -201,7 +201,9 @@ class CampusMapScreenTest {
 
     /**
      * Wiersz: V1, strzałki przesuwania zatrzymują się na granicy obszaru kampusu, czyli konturów powiększonych
-     * o 500 m z każdej strony, bez komunikatu (NFR-39, NFR-53).
+     * o 500 m z każdej strony, bez komunikatu.
+     *
+     * Wymagania: NFR-39, NFR-53
      */
     @Test
     fun nfr53_arrows_stop_at_edge() {
@@ -214,7 +216,9 @@ class CampusMapScreenTest {
 
     /**
      * Wiersz: V1, najmniejsze powiększenie pokazuje cały obszar kampusu; bardziej oddalić mapy się nie da, więc
-     * „Pomniejsz” przy małym konturze zatrzymuje się wyżej niż dawne powiększenie 12 (NFR-39, NFR-53).
+     * „Pomniejsz” przy małym konturze zatrzymuje się wyżej niż dawne powiększenie 12.
+     *
+     * Wymagania: NFR-39, NFR-53
      */
     @Test
     fun nfr39_zoom_out_stops_at_campus() {
@@ -230,8 +234,10 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Wiersz: czcionka 1,5 → start na liście, „Lista” czytane jako „Lista budynków” (NFR-19, NFR-20); wybór „Mapa”
-     * zostaje zapisany, a mapa ma krótki podpis „© OpenStreetMap” (NFR-37).
+     * Wiersz: czcionka 1,5 → start na liście, „Lista” czytane jako „Lista budynków”; wybór „Mapa”
+     * zostaje zapisany, a mapa ma krótki podpis „© OpenStreetMap”.
+     *
+     * Wymagania: NFR-19, NFR-20, NFR-37
      */
     @Test
     fun nfr20_list_start_short_osm() {
@@ -242,7 +248,11 @@ class CampusMapScreenTest {
         assertEquals(false, choice.savedChoice.value)
     }
 
-    /** Wiersz: zapisany wybór „Lista budynków” → V1 startuje na liście także przy zwykłej czcionce (NFR-19). */
+    /**
+     * Wiersz: zapisany wybór „Lista budynków” → V1 startuje na liście także przy zwykłej czcionce.
+     *
+     * Wymagania: NFR-19
+     */
     @Test
     fun nfr19_saved_list_choice() {
         choice.savedChoice.value = true
@@ -251,7 +261,7 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
     }
 
-    /** Wiersz: kontur wspólny „C-13/C-14” → arkusz „Który budynek?”, przycisk budynku → V2, decyzja 85. */
+    /** Wiersz: kontur wspólny „C-13/C-14” → arkusz „Który budynek?”, przycisk budynku → V2. */
     @Test
     fun us2_which_building_opens_v2() {
         compose.setContent { Screen() }
@@ -281,7 +291,7 @@ class CampusMapScreenTest {
 
     /**
      * Wiersz: arkusz „Który budynek?” zamyka tylko przycisk budynku albo „Zamknij”; dotknięcie pustej mapy go
-     * zostawia, decyzja 85.
+     * zostawia.
      */
     @Test
     fun us2_which_building_empty_tap() {
@@ -293,8 +303,9 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Wiersz: otwarta klawiatura chowa przyciski mapy, podpis OSM zostaje; po zamknięciu przyciski wracają
-     * (NFR-53, decyzja 91).
+     * Wiersz: otwarta klawiatura chowa przyciski mapy, podpis OSM zostaje; po zamknięciu przyciski wracają.
+     *
+     * Wymagania: NFR-53
      */
     @Test
     fun nfr53_keyboard_hides_buttons() {
@@ -310,7 +321,9 @@ class CampusMapScreenTest {
 
     /**
      * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: podpis OSM i przyciski
-     * mapy stoją nad arkuszem V2, a nagłówka, „Legendy” i „ⓘ” nad nim nie ma (US2.8, NFR-37, NFR-53, decyzja 151).
+     * mapy stoją nad arkuszem V2, a nagłówka, „Legendy” i „ⓘ” nad nim nie ma.
+     *
+     * Wymagania: US2.8, NFR-37, NFR-53
      */
     @Test
     @Config(qualifiers = "w360dp-h800dp")
@@ -329,7 +342,9 @@ class CampusMapScreenTest {
 
     /**
      * Scenariusz „Przy niskiej mapie nad małą kartą nie ma przycisków mapy”: poniżej 300 dp wolnej mapy przycisków
-     * nie ma, a po zamknięciu karty wracają (US2.8, NFR-53, decyzja 151).
+     * nie ma, a po zamknięciu karty wracają.
+     *
+     * Wymagania: US2.8, NFR-53
      */
     @Test
     @Config(qualifiers = "w360dp-h800dp")
@@ -345,7 +360,9 @@ class CampusMapScreenTest {
 
     /**
      * Mapa pod arkuszem nie ma nagłówka i sięga pod systemowy pasek stanu: pasek dostaje tło o swojej wysokości,
-     * więc zegar i ikony nie leżą na podkładzie mapy (NFR-16). Z nagłówkiem V1 tła nie ma.
+     * więc zegar i ikony nie leżą na podkładzie mapy. Z nagłówkiem V1 tła nie ma.
+     *
+     * Wymagania: NFR-16
      */
     @Test
     fun nfr16_status_bar_background() {
@@ -362,7 +379,9 @@ class CampusMapScreenTest {
 
     /**
      * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: mapa pod arkuszem sięga
-     * pod pasek stanu, ale przyciski mapy stoją pod jego tłem (US2.8, NFR-16, NFR-53).
+     * pod pasek stanu, ale przyciski mapy stoją pod jego tłem.
+     *
+     * Wymagania: US2.8, NFR-16, NFR-53
      */
     @Test
     @Config(qualifiers = "w360dp-h800dp")
@@ -377,7 +396,9 @@ class CampusMapScreenTest {
 
     /**
      * Wiersz: mała karta V2 nad V1, dotknięcie pustej mapy → zamknięcie karty; dotknięcie konturu, także wspólnego,
-     * zamknięciem nie jest, US2.8, NFR-17.
+     * zamknięciem nie jest.
+     *
+     * Wymagania: US2.8, NFR-17
      */
     @Test
     fun us2_8_empty_map_tap() {
@@ -392,7 +413,9 @@ class CampusMapScreenTest {
     /**
      * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: V1 → V2 z budynkiem
      * nad arkuszem, „Wstecz” bez ruszania mapy → widok sprzed otwarcia V2; po „Powiększ” nad kartą zostaje
-     * widok osoby (US2.8, NFR-53, decyzje 83, 151 i 153).
+     * widok osoby (151 i 153).
+     *
+     * Wymagania: US2.8, NFR-53
      */
     @Test
     @Config(qualifiers = "w360dp-h800dp")
@@ -420,8 +443,10 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Zapis „C13” w polu symbolu daje wynik „Budynek C-13” (US1.1).
+     * Zapis „C13” w polu symbolu daje wynik „Budynek C-13”.
      * Scenariusz (przykład: C13): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie
+     *
+     * Wymagania: US1.1
      */
     @Test
     fun us1_1_search_c13_no_dash() {
@@ -429,8 +454,10 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Zapis „c-13” w polu symbolu daje wynik „Budynek C-13” (US1.1).
+     * Zapis „c-13” w polu symbolu daje wynik „Budynek C-13”.
      * Scenariusz (przykład: c-13): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie
+     *
+     * Wymagania: US1.1
      */
     @Test
     fun us1_1_search_c13_lowercase() {
@@ -438,8 +465,10 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Zapis „C-13” w polu symbolu daje wynik „Budynek C-13” (US1.1).
+     * Zapis „C-13” w polu symbolu daje wynik „Budynek C-13”.
      * Scenariusz (przykład: C-13): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie
+     *
+     * Wymagania: US1.1
      */
     @Test
     fun us1_1_search_c13_exact() {
@@ -453,7 +482,7 @@ class CampusMapScreenTest {
         compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertDoesNotExist()
     }
 
-    /** Wiersz: pole symbolu „c14” → wynik „Budynek C-14” → V2 z obrysem, US1.1. */
+    /** Wiersz: pole symbolu „c14” → wynik „Budynek C-14” → V2 z obrysem. Wymagania: US1.1 */
     @Test
     fun us1_1_search_result_opens_v2() {
         compose.setContent { Screen() }
@@ -466,9 +495,11 @@ class CampusMapScreenTest {
 
     /**
      * Wiersz: po wyborze wyniku klawiatura ekranowa się chowa, więc pierwsze „Wstecz” na V2 zamyka V2, a nie tylko
-     * klawiaturę (US1.1, NFR-15). Klawiaturę podaje atrapa kontrolera, bo Robolectric nie ma okna z klawiaturą,
+     * klawiaturę. Klawiaturę podaje atrapa kontrolera, bo Robolectric nie ma okna z klawiaturą,
      * a o skutku decyduje fokus pola: po wyborze pole go nie ma. Okno jest w trybie dotyku jak na telefonie; poza nim
      * Robolectric po `clearFocus` oddaje fokus pierwszemu polu, więc fokus nigdy by nie zszedł.
+     *
+     * Wymagania: US1.1, NFR-15
      */
     @Test
     fun us1_1_result_hides_keyboard() {
@@ -482,7 +513,7 @@ class CampusMapScreenTest {
         compose.onNode(hasSetTextAction()).assertIsNotFocused()
     }
 
-    /** Wiersz: „A-1 329” → stan „brak wyniku”, decyzja 82; „×” „Wyczyść pole” → pole puste. */
+    /** Wiersz: „A-1 329” → stan „brak wyniku”; „×” „Wyczyść pole” → pole puste. */
     @Test
     fun us1_1_no_result_and_clear() {
         compose.setContent { Screen() }
@@ -495,7 +526,9 @@ class CampusMapScreenTest {
 
     /**
      * Wiersz: V1, „Lista budynków” → lista z katalogu bez mapy; budynek z listy → V2 jako arkusz na mapie,
-     * a po „Wstecz” znów lista (NFR-19, US2.5, decyzja 48).
+     * a po „Wstecz” znów lista.
+     *
+     * Wymagania: NFR-19, US2.5
      */
     @Test
     fun nfr19_list_opens_v2_on_map() {
@@ -514,7 +547,7 @@ class CampusMapScreenTest {
         compose.onNodeWithText("© OpenStreetMap contributors").assertDoesNotExist()
     }
 
-    /** Wiersz: V1, lista i pole symbolu → lista zawężona do wpisanego budynku (NFR-19, US1.1). */
+    /** Wiersz: V1, lista i pole symbolu → lista zawężona do wpisanego budynku. Wymagania: NFR-19, US1.1 */
     @Test
     fun nfr19_symbol_narrows_list() {
         compose.setContent { Screen() }
@@ -524,7 +557,7 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("C-13, Budynek testowy").assertDoesNotExist()
     }
 
-    /** Wiersz: V1, brak wyniku → „Lista budynków” w karcie czyści pole i pokazuje całą listę (UC1 3a, PW-9). */
+    /** Wiersz: V1, brak wyniku → „Lista budynków” w karcie czyści pole i pokazuje całą listę (PW-9). Wymagania: UC1 */
     @Test
     fun uc1_3a_no_result_opens_list() {
         compose.setContent { Screen() }
@@ -538,7 +571,9 @@ class CampusMapScreenTest {
 
     /**
      * Wiersz: V1 bez internetu → linia „Bez internetu” bez daty pod polem, czytana jako komunikat stanu, a po powrocie
-     * internetu znika (US9.1, NFR-10, decyzja 84, WCAG 4.1.3).
+     * internetu znika (WCAG 4.1.3).
+     *
+     * Wymagania: US9.1, NFR-10
      */
     @Test
     fun us9_1_offline_line() {
@@ -553,7 +588,7 @@ class CampusMapScreenTest {
         compose.onNodeWithText("Bez internetu").assertDoesNotExist()
     }
 
-    /** Wiersz: V2 otwarte od razu, „Pokaż budynek na mapie” → V1 z zaznaczonym budynkiem, US2.9, decyzja 116. */
+    /** Wiersz: V2 otwarte od razu, „Pokaż budynek na mapie” → V1 z zaznaczonym budynkiem. Wymagania: US2.9 */
     @Test
     fun us1_1_focus_reaches_map() {
         compose.setContent { Screen(focus = "C-14") }
@@ -561,7 +596,7 @@ class CampusMapScreenTest {
         assertEquals("C-14", focuses.last())
     }
 
-    /** Wiersz: V2, „Wstecz” → V1 w poprzednim stanie z tym samym widokiem kamery, decyzja 83. */
+    /** Wiersz: V2, „Wstecz” → V1 w poprzednim stanie z tym samym widokiem kamery. */
     @Test
     fun us1_camera_survives_restore() {
         val restoration = StateRestorationTester(compose)

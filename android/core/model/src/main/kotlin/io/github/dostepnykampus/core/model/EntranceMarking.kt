@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.core.model
 
-/** Oznaczenie wejścia (`EntranceMarking` z kontraktu API, BR-24). */
-enum class EntranceMarking {
+/** Oznaczenie wejścia (`EntranceMarking` z kontraktu API). Wymagania: BR-24 */
+public enum class EntranceMarking {
     /** Dostępne: osoba na wózku wejdzie bez pokonywania stopni. */
     ACCESSIBLE,
 

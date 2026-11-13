@@ -11,7 +11,7 @@ plugins {
     id("dev.detekt")
 }
 
-/** Moduł reguł projektu (#873); sam siebie nie wczytuje, a jego pliki sprawdza zadanie `detektScripts` w nim. */
+/** Moduł reguł projektu; sam siebie nie wczytuje, a jego pliki sprawdza zadanie `detektScripts` w nim. */
 val rulesModule = ":detekt-rules"
 
 detekt {

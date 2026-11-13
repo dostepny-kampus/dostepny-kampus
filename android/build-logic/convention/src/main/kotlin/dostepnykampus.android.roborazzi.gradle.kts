@@ -29,7 +29,6 @@ tasks.named("check") {
 dependencies {
     "testImplementation"(libs.findLibrary("robolectric").get())
     "testImplementation"(libs.findLibrary("roborazzi").get())
-    "testImplementation"(libs.findLibrary("roborazzi-compose").get())
     constraints {
         "testImplementation"(libs.findLibrary("androidx-test-espresso-core").get())
     }

@@ -5,8 +5,13 @@
  */
 
 /**
- * Testy modułu zgłoszeń: zapis zgłoszeń na serwerze (US4, US7, BR-9).
+ * Testy modułu zgłoszeń: zapis zgłoszeń na serwerze.
+ *
+ * <p>Wymagania: US4, US7, BR-9</p>
  *
  * @since 0.1.0
  */
+@ApplicationModule(allowedDependencies = "building")
 package io.github.dostepnykampus.barrier;
+
+import org.springframework.modulith.ApplicationModule;

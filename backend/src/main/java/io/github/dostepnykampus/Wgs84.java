@@ -7,7 +7,7 @@ package io.github.dostepnykampus;
 
 /**
  * Zakres współrzędnych WGS84, jedna definicja dla podpowiedzi budynku
- * i punktu zgłoszenia (#851): wartość skończona w domkniętym zakresie osi.
+ * i punktu zgłoszenia: wartość skończona w domkniętym zakresie osi.
  *
  * @since 0.1.0
  */

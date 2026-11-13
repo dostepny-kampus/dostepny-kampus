@@ -10,8 +10,10 @@ import java.net.URI;
 
 /**
  * Zgłoszenie spoza terenu PWr: punkt leży dalej niż 500 m od konturu każdego
- * budynku PWr (BR-G5, US4.9). Odpowiedź 400 ma rodzaj {@link #TYPE}, po
+ * budynku PWr. Odpowiedź 400 ma rodzaj {@link #TYPE}, po
  * którym aplikacja pokazuje stan „Poza terenem PWr”.
+ *
+ * <p>Wymagania: BR-G5, US4.9</p>
  *
  * @since 0.1.0
  */

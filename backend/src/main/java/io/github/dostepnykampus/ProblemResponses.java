@@ -13,18 +13,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * Odpowiedzi {@code application/problem+json} (RFC 9457) dla wyjątków
- * rzuconych w obsłudze żądania.
- *
- * <p>{@link InvalidInput} daje 400, {@link MissingResource} 404,
- * {@link MissingLogin} 401, {@link ForbiddenChange} 403,
- * wszystkie z opisem wyjątku w {@code detail}. {@link ConflictingState} daje 409
- * z opisem w {@code detail} i bieżącym stanem jako obiektem JSON we właściwości
- * o nazwie {@link ConflictingState#property()}. Pozostały wyjątek daje 500 bez nazwy
- * klasy i komunikatu; trafia tylko do dziennika serwera.
- * {@code ResponseStatusException} i {@code ErrorResponseException} obsługuje
- * wcześniej Spring Boot ({@code spring.mvc.problemdetails.enabled}), więc ich
- * odpowiedzi się nie zmieniają.</p>
+ * Odpowiedzi {@code application/problem+json} (RFC 9457) dla wyjątków obsługi żądania:
+ * {@link InvalidInput} 400, {@link MissingLogin} 401, {@link ForbiddenChange} 403
+ * i {@link MissingResource} 404 z opisem wyjątku w {@code detail}; {@link ConflictingState}
+ * 409 też z bieżącym stanem we właściwości {@link ConflictingState#property()}. Inny wyjątek
+ * daje 500 bez nazwy klasy i komunikatu. {@code ResponseStatusException}
+ * i {@code ErrorResponseException} obsługuje wcześniej Spring Boot.
  *
  * @since 0.1.0
  */

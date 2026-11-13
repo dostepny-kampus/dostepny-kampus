@@ -10,7 +10,7 @@ import io.github.dostepnykampus.core.model.SubmissionStatus
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
 
-/** Stan wysyłki własnego zgłoszenia, te same nazwy co w bazie (US8.1, NFR-5). */
+/** Stan wysyłki własnego zgłoszenia, te same nazwy co w bazie. Wymagania: US8.1, NFR-5 */
 enum class SendState {
     /** „W telefonie”: czeka na wysłanie. */
     LOCAL,
@@ -22,7 +22,7 @@ enum class SendState {
     REFUSED,
 }
 
-/** Powód „Nie wysłano” na C3; ekran zna tylko powód, nie kody HTTP (US9.5, BR-26, #861). */
+/** Powód „Nie wysłano” na C3; ekran zna tylko powód, nie kody HTTP. Wymagania: US9.5, BR-26 */
 enum class RefusalReason {
     /** Serwer odebrał rolę (403): „Nie masz już uprawnień do tej czynności…”. */
     NO_PERMISSION,
@@ -33,22 +33,24 @@ enum class RefusalReason {
     /** Odmowa bez kodu: telefon nie odczytał zgłoszenia, np. brakuje pliku zdjęcia. */
     UNREADABLE,
 
-    /** Konflikt wersji (409): ktoś zmienił zgłoszenie na serwerze po rozpoczęciu poprawki (US9.3, BR-10). */
+    /** Konflikt wersji (409): ktoś zmienił zgłoszenie na serwerze po rozpoczęciu poprawki. Wymagania: US9.3, BR-10 */
     CHANGED_ON_SERVER,
 }
 
 /**
- * Własne zgłoszenie z historii w telefonie (US8.1).
+ * Własne zgłoszenie z historii w telefonie.
  *
- * @property id identyfikator zgłoszenia (BR-9)
+ * Wymagania: US8.1, BR-9, US8.2, BR-16
+ *
+ * @property id identyfikator zgłoszenia
  * @property savedAt chwila ostatniego zapisu w telefonie
  * @property barrierType kod typu bariery TB-1…TB-29
  * @property buildingSymbol budynek; `null` to „poza budynkiem”
  * @property floorNumber numer piętra budynku podstawowego
  * @property state stan wysyłki
  * @property refusal powód „Nie wysłano”; `null` bez odmowy
- * @property serverStatus status z serwera po odświeżeniu (US8.2); `null`, gdy telefon go jeszcze nie zna
- * @property rejectionReason powód odrzucenia od Weryfikatora (BR-16); `null` poza odrzuceniem
+ * @property serverStatus status z serwera po odświeżeniu; `null`, gdy telefon go jeszcze nie zna
+ * @property rejectionReason powód odrzucenia od Weryfikatora; `null` poza odrzuceniem
  */
 data class OwnSubmission(
     val id: String,
@@ -62,7 +64,7 @@ data class OwnSubmission(
     val rejectionReason: String? = null,
 )
 
-/** Własne zgłoszenia od najnowszego; w aplikacji z historii Room (US8.1, NFR-5). */
+/** Własne zgłoszenia od najnowszego; w aplikacji z historii Room. Wymagania: US8.1, NFR-5 */
 fun interface OwnSubmissions {
     /** Lista od najnowszego; zmienia się po każdym zapisie i wysyłce z kolejki. */
     fun observe(): Flow<List<OwnSubmission>>

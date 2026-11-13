@@ -9,9 +9,13 @@ import dev.detekt.api.RuleSet
 import dev.detekt.api.RuleSetId
 import dev.detekt.api.RuleSetProvider
 
-/** Reguły detekt projektu; detekt wczytuje je z `detektPlugins` przez `ServiceLoader` (#873). */
+/** Reguły detekt projektu; detekt wczytuje je z `detektPlugins` przez `ServiceLoader`. */
 class DostepnyKampusRuleSetProvider : RuleSetProvider {
     override val ruleSetId: RuleSetId = RuleSetId("dostepnykampus")
 
-    override fun instance(): RuleSet = RuleSet(ruleSetId, listOf(::NoLineComment))
+    override fun instance(): RuleSet =
+        RuleSet(
+            ruleSetId,
+            listOf(::NoLineComment, ::NoHistoryNumberInKDoc, ::KDocDescriptionLength),
+        )
 }

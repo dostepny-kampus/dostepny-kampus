@@ -8,7 +8,7 @@ package io.github.dostepnykampus.feature.capture
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-/** Podgląd zdjęcia w C2 czyta zmniejszony obraz, a nie pełny JPEG z aparatu (US7.1). */
+/** Podgląd zdjęcia w C2 czyta zmniejszony obraz, a nie pełny JPEG z aparatu. Wymagania: US7.1 */
 class PhotoPreviewTest {
     @Test
     fun `małe zdjęcie bez zmniejszania`() {
