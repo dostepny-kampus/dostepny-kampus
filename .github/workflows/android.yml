@@ -242,7 +242,7 @@ jobs:
     needs: [porownanie, zmiany]
     if: ${{ !cancelled() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
     permissions:
       actions: read
       contents: read
