@@ -356,5 +356,39 @@ class ExampleRowsTest(unittest.TestCase):
         self.assertEqual(outline_state(*markers), "częściowo")
 
 
+def drops(before: check_ids.Corpus, after: check_ids.Corpus) -> list[str]:
+    """Zwraca komunikaty spadku pokrycia między stroną pokrycia korpusu `before` a korpusem `after`."""
+    baseline = check_ids.baseline_states(check_ids.render_coverage(before))
+    return [f.message for f in check_ids.coverage_drops(after, baseline)]
+
+
+class CoverageDropTest(unittest.TestCase):
+    def test_removed_full_marker_is_an_error(self) -> None:
+        found = drops(layered(layer_marker("W aplikacji", "a")), layered(""))
+        self.assertEqual(found, ["pokrycie scenariusza spadło z „pełny” na „brak”: W aplikacji"])
+
+    def test_full_marker_turned_partial_is_an_error(self) -> None:
+        partial = "// Scenariusz (częściowo): warstwy.feature: W aplikacji\n@Test\nfun a() = Unit\n"
+        found = drops(layered(layer_marker("W aplikacji", "a")), layered(partial))
+        self.assertEqual(found, ["pokrycie scenariusza spadło z „pełny” na „częściowo”: W aplikacji"])
+
+    def test_new_marker_and_unchanged_state_are_not_errors(self) -> None:
+        self.assertEqual(drops(layered(""), layered(layer_marker("W aplikacji", "a"))), [])
+        self.assertEqual(drops(layered(""), layered("")), [])
+
+    def test_scenario_absent_from_either_side_is_not_a_drop(self) -> None:
+        covered = outline(": szablon.feature: Decyzja")
+        self.assertEqual(drops(covered, layered("")), [])
+        self.assertEqual(drops(layered(layer_marker("W aplikacji", "a")), outline()), [])
+
+    def test_baseline_page_in_the_old_format_is_read_by_header(self) -> None:
+        page = "| Plik | Scenariusz | Kryteria i reguły | Test | Stan |\n| --- | --- | --- | --- | --- |\n"
+        page += "| `warstwy.feature` | W aplikacji | US1.1 | `T.a` | pełny |\n"
+        self.assertEqual(check_ids.baseline_states(page), {("warstwy.feature", "W aplikacji"): "pełny"})
+
+    def test_missing_file_in_revision_gives_no_baseline(self) -> None:
+        self.assertIsNone(check_ids.git_show("HEAD", "nie/ma/takiego/pliku.md"))
+
+
 if __name__ == "__main__":
     unittest.main()

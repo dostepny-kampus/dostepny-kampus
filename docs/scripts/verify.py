@@ -223,9 +223,12 @@ def step_check_ids(options: Options) -> StepResult:
     """Krok: kontrola ID (scripts/check_ids.py --strict, w trybie --partial także --partial).
 
     Gwarantuje: każdy błąd daje FAIL; same uwagi dają WARN. W trybie --partial błędy klas ID, które nie mają
-    jeszcze żadnej definicji (strona jeszcze nie powstała), check_ids zgłasza jako uwagi.
+    jeszcze żadnej definicji (strona jeszcze nie powstała), check_ids zgłasza jako uwagi. Gdy zmienna środowiska
+    BAZA_POKRYCIA podaje rewizję gałęzi docelowej, spadek pokrycia scenariusza względem niej też jest błędem.
     """
     flags = ["--strict", "--partial"] if options.partial else ["--strict"]
+    if os.environ.get("BAZA_POKRYCIA"):
+        flags += ["--baseline-rev", os.environ["BAZA_POKRYCIA"]]
     code, output = run_command(python_script("check_ids.py", *flags), capture=True)
     summary = CHECK_IDS_SUMMARY.search(output)
     if code != 0:

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import re
+import subprocess
 import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -50,6 +51,7 @@ COVERAGE_PAGE = Path("_generated") / "pokrycie-testami.md"
 COVERAGE_HEADER = ["Plik", "Scenariusz", "Kryteria i reguły", "Warstwa", "Test", "Stan"]
 LAYERS = (("aplikacja", "Aplikacja"), ("serwer", "Serwer"))
 LAYER_NAMES = dict(LAYERS)
+STATE_RANK = {"brak": 0, "częściowo": 1, "pełny": 2}
 COVERAGE_COUNTS = (("Pełny test", "pełny"), ("Tylko częściowo", "częściowo"), ("Bez testu", "brak"))
 COVERAGE_INTRO = """# Pokrycie scenariuszy testami
 
@@ -759,6 +761,49 @@ def render_coverage(corpus: Corpus) -> str:
     return COVERAGE_INTRO + "\n".join(tables) + "\n"
 
 
+def baseline_states(page: str) -> dict[tuple[str, str], str]:
+    """Zwraca stan każdego scenariusza zapisany na stronie pokrycia `page`: klucz to plik i nazwa scenariusza.
+
+    Gwarantuje: kolumny „Plik”, „Scenariusz” i „Stan” są szukane po nagłówku, więc strona może mieć inne kolumny
+    niż bieżąca; wiersz z nieznanym stanem jest pomijany.
+    """
+    states: dict[tuple[str, str], str] = {}
+    columns: tuple[int, int, int] | None = None
+    for line in page.splitlines():
+        cells = table_cells(line) or []
+        if {"Plik", "Scenariusz", "Stan"} <= set(cells):
+            columns = (cells.index("Plik"), cells.index("Scenariusz"), cells.index("Stan"))
+        elif columns and len(cells) > max(columns) and cells[columns[2]] in STATE_RANK:
+            states[(cells[columns[0]].strip("`"), cells[columns[1]].replace("\\|", "|"))] = cells[columns[2]]
+    return states
+
+
+def coverage_drops(corpus: Corpus, baseline: dict[tuple[str, str], str]) -> list[Finding]:
+    """Zwraca „BŁĄD” dla każdego scenariusza, którego stan pokrycia jest niższy niż w `baseline` (baseline_states).
+
+    Gwarantuje: scenariusz, którego w `baseline` nie ma (nowy albo z nową nazwą), i scenariusz usunięty z katalogu
+    scenariuszy nie są spadkiem.
+    """
+    findings = []
+    for scenario, (_, state) in coverage_states(corpus).items():
+        before = baseline.get((scenario.feature, scenario.name), state)
+        if STATE_RANK[state] < STATE_RANK[before]:
+            message = f"pokrycie scenariusza spadło z „{before}” na „{state}”: {scenario.name}"
+            findings.append(Finding("BŁĄD", str(scenario.location), message))
+    return findings
+
+
+def git_show(revision: str, path: str) -> str | None:
+    """Zwraca treść pliku `path` (względem korzenia repozytorium) w rewizji `revision` albo None, gdy go tam nie ma.
+
+    Wyjątki: OSError, gdy nie ma programu git.
+    """
+    result = subprocess.run(
+        ["git", "show", f"{revision}:{path}"], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=False
+    )
+    return result.stdout if result.returncode == 0 else None
+
+
 def undefined_references(corpus: Corpus, partial: bool = False) -> list[Finding]:
     """Zwraca błędy dla odwołań do ID bez definicji (każde miejsce osobno, bez powtórzeń); poziom jak w error_level."""
     seen: set[tuple[str, Location]] = set()
@@ -1029,6 +1074,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--strict", action="store_true", help="kod wyjścia 1, gdy są błędy")
     parser.add_argument("--partial", action="store_true", help="błędy klas ID bez żadnej definicji jako uwagi")
     parser.add_argument("--release", action="store_true", help="na wydanie: scenariusz bez pełnego testu jest błędem")
+    parser.add_argument("--baseline-rev", help="rewizja git gałęzi docelowej: spadek pokrycia względem niej jest błędem")
     return parser.parse_args(argv)
 
 
@@ -1037,7 +1083,9 @@ def main(argv: list[str] | None = None) -> int:
 
     Gwarantuje: --matrix zapisuje też stronę pokrycia testami (COVERAGE_PAGE w katalogu dokumentacji). Z --check-matrix
     tylko porównuje macierz i stronę pokrycia z wygenerowanymi z bieżących plików, bez raportu kontroli ID; zwraca 0,
-    gdy obie są aktualne, 1, gdy któraś jest nieaktualna albo jej brak, 2 przy błędzie odczytu.
+    gdy obie są aktualne, 1, gdy któraś jest nieaktualna albo jej brak, 2 przy błędzie odczytu. Z --baseline-rev
+    porównuje stan każdego scenariusza ze stroną pokrycia z podanej rewizji (coverage_drops); gdy rewizja nie ma
+    strony pokrycia, porównania nie ma.
     """
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
@@ -1057,6 +1105,9 @@ def main(argv: list[str] | None = None) -> int:
             coverage.write_text(render_coverage(corpus), encoding="utf-8", newline="\n")
             print(f"check_ids: macierz zapisana do {args.matrix}, pokrycie testami do {coverage}")
         findings = check(corpus, args.partial) + check_tests(corpus, args.release) + check_screen_page(args.docs)
+        if args.baseline_rev:
+            page = git_show(args.baseline_rev, coverage.resolve().relative_to(ROOT).as_posix())
+            findings += coverage_drops(corpus, baseline_states(page or ""))
     except (OSError, UnicodeDecodeError) as exc:
         print(f"check_ids: BŁĄD: {exc}", file=sys.stderr)
         return 2
