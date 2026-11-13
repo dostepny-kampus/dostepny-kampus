@@ -62,7 +62,6 @@ class PackageSizeArchitectureTest {
         val OVERSIZED =
             mapOf(
                 "$BASE.feature.map" to 1330,
-                "$BASE.feature.capture" to 1550,
             )
     }
 }
