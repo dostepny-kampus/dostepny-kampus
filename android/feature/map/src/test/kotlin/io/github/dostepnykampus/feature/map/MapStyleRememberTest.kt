@@ -20,7 +20,6 @@ import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.campusMapData
-import io.github.dostepnykampus.feature.map.data.selection
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -65,8 +64,8 @@ class MapStyleRememberTest {
     fun selection_keeps_style() {
         show()
         val entrance = SelectedEntrance(id = "w1", location = a, label = "Główne", buildingSymbol = "C-13")
-        compose.runOnIdle { selection = data.selection(building = "C-13") }
-        compose.runOnIdle { selection = data.selection(building = "C-13", entrance = entrance) }
+        compose.runOnIdle { selection = selection.copy(building = "C-13") }
+        compose.runOnIdle { selection = selection.copy(entrance = entrance) }
         compose.runOnIdle { selection = selection.copy(barrier = "b1") }
         compose.runOnIdle {
             assertEquals(1, builds.size)
