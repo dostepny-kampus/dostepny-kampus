@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture
@@ -89,6 +89,10 @@ class QuickSendViewModelTest {
             assertEquals(emptyList<SubmissionContent>(), saved)
         }
 
+    /**
+     * W konturze budynku wybrane piętro trafia do treści zgłoszenia; budynek dopisuje serwer z konturu (BR-G2).
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Wybrane piętro trafia do zgłoszenia
+     */
     @Test
     fun brg2_floor_inside_contour() =
         runTest(dispatcher) {
@@ -113,6 +117,7 @@ class QuickSendViewModelTest {
     /**
      * Poza konturem zgłoszenie zapisuje się z bieżącą pozycją, bez piętra i bez błędu (BR-14, BR-G2).
      * Scenariusz: budynki-bez-szczegolow.feature: Zgłoszenie szybkie poza konturem budynku zapisuje się bez błędu
+     * Scenariusz: zgloszenie-szybkie.feature: Pozycja poza konturem przy wysłaniu zostawia piętro puste
      */
     @Test
     fun br14_no_floor_outside() =
@@ -123,6 +128,7 @@ class QuickSendViewModelTest {
             runCurrent()
             assertEquals(listOf(null), saved.map { it.floor })
             assertEquals(listOf(OUTSIDE), saved.map { it.location })
+            assertEquals(listOf(null), saved.map { it.buildingSymbol })
             assertEquals(QuickSendStage.SENT, viewModel.stage.value)
         }
 

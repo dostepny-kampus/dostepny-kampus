@@ -294,6 +294,19 @@ class AppShellTest {
         compose.onNode(MapTab).assertIsSelected()
     }
 
+    /**
+     * Gość na prośbie o logowanie wybiera „Nie teraz”: wraca mapa, kroków zgłoszenia nie ma (RO-GOS, US14.2).
+     * Scenariusz: zgloszenie-szybkie.feature: Gość rezygnuje z logowania
+     */
+    @Test
+    fun us14_2_guest_not_now_to_map() {
+        show()
+        compose.onNodeWithText("Zgłoś barierę").performClick()
+        compose.onNodeWithText("Nie teraz").performClick()
+        compose.onNode(MapTab).assertIsSelected()
+        compose.onAllNodesWithText("Krok 1 z 3").assertCountEquals(0)
+    }
+
     /** Zalogowanie po starcie: pasek dolny pokazuje pozycję pracownika bez ponownego otwarcia ekranu (US14.1). */
     @Test
     fun us14_1_bar_after_sign_in() {
