@@ -5,16 +5,20 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import android.graphics.Bitmap
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.Entrance
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import io.github.dostepnykampus.feature.map.data.selection
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonArray
@@ -98,6 +102,27 @@ class CampusMapSelectionStyleTest {
         assertEquals(JsonPrimitive("#BFE0EC").toString(), style.layer(BUILDINGS_LAYER).paint("fill-color"))
     }
 
+    /**
+     * Zaznaczenie pokazane w gotowym stylu daje ten sam styl co styl zbudowany z zaznaczeniem, więc zmiana
+     * budynku, wejścia albo bariery nie wymaga nowego stylu, a mapa wygląda tak samo (US1.1, US1.5, US3.3).
+     */
+    @Test
+    fun us1_1_selection_shown_in_ready_style() {
+        val chosen = SelectedEntrance(id = "w1", location = at, label = "Główne", buildingSymbol = "A-1")
+        val selections =
+            listOf(
+                data.selection(),
+                data.selection(building = "A-1"),
+                data.selection(building = "A-2", entrance = chosen),
+                data.selection().copy(barrier = "b1"),
+            )
+        selections.forEach { selection ->
+            val ready = JsonStyle(campusMapStyle(data, MapSelection(bounds = selection.bounds), colors))
+            ready.showSelection(selectionLook(data, selection, colors))
+            assertEquals(Json.parseToJsonElement(campusMapStyle(data, selection, colors)), ready.json, "$selection")
+        }
+    }
+
     private fun style(building: String? = null, entrance: SelectedEntrance? = null): JsonObject =
         Json.parseToJsonElement(campusMapStyle(data, data.selection(building, entrance), colors)).jsonObject
 
@@ -132,4 +157,35 @@ class CampusMapSelectionStyleTest {
             location = at,
             marking = EntranceMarking.NO_DATA,
         )
+}
+
+/** Styl jako JSON, w którym [MapStyleTarget] zmienia pola tak jak widok mapy w stylu MapLibre. */
+private class JsonStyle(style: String) : MapStyleTarget {
+    var json: JsonObject = Json.parseToJsonElement(style).jsonObject
+
+    override fun filter(layer: String, filter: String) =
+        edit(layer) { it + ("filter" to Json.parseToJsonElement(filter)) }
+
+    override fun paint(layer: String, property: String, value: String) =
+        edit(layer) {
+            val paint = it.getValue("paint").jsonObject + (property to Json.parseToJsonElement(value))
+            it + ("paint" to JsonObject(paint))
+        }
+
+    override fun data(source: String, geoJson: String) {
+        val sources = json.getValue("sources").jsonObject
+        val changed = sources.getValue(source).jsonObject + ("data" to Json.parseToJsonElement(geoJson))
+        json = JsonObject(json + ("sources" to JsonObject(sources + (source to JsonObject(changed)))))
+    }
+
+    override fun image(name: String, image: Bitmap) = Unit
+
+    private fun edit(layer: String, change: (JsonObject) -> Map<String, JsonElement>) {
+        val layers =
+            json.getValue("layers").jsonArray.map {
+                val found = it.jsonObject
+                if (found.getValue("id").jsonPrimitive.content == layer) JsonObject(change(found)) else found
+            }
+        json = JsonObject(json + ("layers" to JsonArray(layers)))
+    }
 }

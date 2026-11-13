@@ -74,7 +74,7 @@ class CampusMapBarriersStyleTest {
         val marked = data.selection().copy(barrier = chosen)
         val style = Json.parseToJsonElement(campusMapStyle(data, marked, colors)).jsonObject
         val order = style.getValue("layers").jsonArray.map { it.jsonObject.text("id") }
-        assertEquals(false, plain.getValue("layers").jsonArray.any { it.jsonObject.text("id") == CHOSEN_BARRIER_LAYER })
+        assertEquals(JsonPrimitive(false), plain.layer(CHOSEN_BARRIER_LAYER)["filter"])
         assertEquals(true, order.indexOf(BARRIERS_LAYER) < order.indexOf(CHOSEN_BARRIER_LAYER))
         val layer = style.layer(CHOSEN_BARRIER_LAYER)
         assertEquals("""["==",["get","$BARRIER_ID"],"$chosen"]""", layer.getValue("filter").toString())
