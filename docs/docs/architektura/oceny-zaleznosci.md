@@ -6,7 +6,8 @@ Wynik przeglądu dotyczy wskazanej wersji i dnia sprawdzenia.
 ## OkHttp 5.5.1
 
 Zadanie: [#477](https://github.com/dostepny-kampus/dostepny-kampus/issues/477).
-Data sprawdzenia: 13.11.2026. Decyzja: zostają OkHttp i MockWebServer w wersji 5.5.1.
+
+Data sprawdzenia: 13 listopada 2026. Decyzja: zostają OkHttp i MockWebServer w wersji `5.5.1`.
 
 | Kryterium | Wynik |
 | --- | --- |
@@ -17,7 +18,7 @@ Data sprawdzenia: 13.11.2026. Decyzja: zostają OkHttp i MockWebServer w wersji 
 | Potrzeba w mapie | MapLibre przyjmuje `okhttp3.Call.Factory`. `MapTileHttp` dodaje nagłówek User-Agent i dzieli pulę połączeń z klientem aplikacji. Zależność jest używana wprost, więc pozostaje jawna. |
 | Potrzeba w testach | MockWebServer sprawdza żądania, kody odpowiedzi, przerwane połączenia, opóźnione odpowiedzi i anulowanie w `core:network` oraz `core:data`. |
 
-Wersja 5.5.1 blokuje osiem skompromitowanych certyfikatów pośrednich eMudhra.
+Wersja `5.5.1` blokuje osiem skompromitowanych certyfikatów pośrednich eMudhra.
 Według [opisu poprawki](https://github.com/lysine-dev/okhttp/blob/parent-5.5.1/CHANGELOG.md#version-551)
 chroni to także urządzenia AOSP bez aktualizacji z Google Play Services.
 Jest to dodatkowy powód utrzymania tego wydania.
