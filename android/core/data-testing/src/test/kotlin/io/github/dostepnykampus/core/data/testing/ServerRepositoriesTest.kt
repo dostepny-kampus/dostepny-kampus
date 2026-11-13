@@ -73,6 +73,8 @@ class ServerRepositoriesTest {
         runBlocking { serverBuildingCatalog(EmptyCoroutineContext, list = { reply }) { ASSET }.catalog() }
 
     private companion object {
+        val ORIGIN = GeoPoint(longitude = 0.0, latitude = 0.0)
+
         const val SYMBOL = "A-1"
         const val SOURCE = "© serwer"
         const val SERVER_ERROR = 500
@@ -87,7 +89,12 @@ class ServerRepositoriesTest {
                 outline =
                     GeoPolygon(
                         listOf(
-                            listOf(GeoPoint(0.0, 0.0), GeoPoint(0.0, 2.0), GeoPoint(2.0, 2.0), GeoPoint(0.0, 0.0)),
+                            listOf(
+                                ORIGIN,
+                                GeoPoint(longitude = 0.0, latitude = 2.0),
+                                GeoPoint(longitude = 2.0, latitude = 2.0),
+                                ORIGIN,
+                            ),
                         ),
                     ),
             )
@@ -98,7 +105,7 @@ class ServerRepositoriesTest {
                 name = null,
                 isMain = true,
                 type = null,
-                location = GeoPoint(0.0, 0.0),
+                location = ORIGIN,
                 marking = EntranceMarking.NO_DATA,
             )
     }
