@@ -45,6 +45,18 @@ public interface SubmissionFinder {
     boolean foreign(UUID id, String account);
 
     /**
+     * Sprawdza, czy zwykłą zmianę zgłoszenia przyjętego może złożyć tylko
+     * autor, a konto nim nie jest (BR-18): zgłoszenie istnieje, złożyło je
+     * inne konto i nie jest zgłoszeniem szybkim.
+     *
+     * @param id Identyfikator zastępowanego zgłoszenia
+     * @param account Identyfikator konta, które składa zmianę
+     * @return Prawda dla cudzego zgłoszenia innego niż szybkie; fałsz dla
+     *  własnego, dla szybkiego i dla braku zgłoszenia
+     */
+    boolean authorOnly(UUID id, String account);
+
+    /**
      * Wyszukuje zgłoszenia według zapytania.
      *
      * @param query Statusy oraz opcjonalny budynek i piętro

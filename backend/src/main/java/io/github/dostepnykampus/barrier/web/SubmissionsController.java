@@ -130,6 +130,8 @@ public final class SubmissionsController {
      * zapisane zgłoszenie i nie tworzy drugiego (BR-9). Autorem zostaje konto
      * z tokenu (BR-3). Zgłoszenie inne niż szybkie i zmianę zgłoszenia
      * przyjętego składa tylko Zbierający (US7, US17.2, US8.4, BR-18, BR-19).
+     * Zmianę cudzego zgłoszenia innego niż szybkie składa tylko autor, chyba
+     * że zmiana ma oznaczenie „bariera usunięta” (BR-18, BR-19).
      *
      * @param body Zgłoszenie według schematu NewSubmission
      * @param account Zalogowane konto; jego nazwa to identyfikator z tokenu
@@ -143,6 +145,10 @@ public final class SubmissionsController {
     ) {
         if (body.content().forCollector() && !request.isUserInRole("COLLECTOR")) {
             throw new ForbiddenChange("To zgłoszenie składa tylko Zbierający");
+        }
+        if (body.content().ordinaryChange()
+            .filter(replaced -> this.finder.authorOnly(replaced, account.getName())).isPresent()) {
+            throw new ForbiddenChange("Zwykłą zmianę tego zgłoszenia składa tylko jego autor");
         }
         final CreateResult result = this.service.create(body.toCommand(account.getName()));
         final HttpStatus status;
