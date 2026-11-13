@@ -88,11 +88,13 @@ final class ModuleDescriptionArchitectureTest {
 
     @Test
     void rejectsMissingPartAndWrongDependencies() {
-        final String full = String.join(
-            "\n", "<p>Zadanie: a.</p>", "<p>API: b.</p>",
-            "<p>Zależności: {@code shared}.</p>", "<p>Nie robi: c.</p>",
-            "<p>Kiedy dodawać tutaj: d.</p>"
-        );
+        final String full = """
+            <p>Zadanie: a.</p>
+            <p>API: b.</p>
+            <p>Zależności: {@code shared}.</p>
+            <p>Nie robi: c.</p>
+            <p>Kiedy dodawać tutaj: d.</p>
+            """;
         Assertions.assertEquals(
             List.of("", "akapity", "zależności"),
             List.of(
