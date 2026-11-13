@@ -16,45 +16,43 @@ class KDocDescriptionLengthTest {
 
     @Test
     fun `siedem linii opisu to błąd`() {
-        assertEquals(listOf(1), lines(*kdoc(description = 7)))
+        assertEquals(listOf(1), lines(kdoc(description = 7)))
     }
 
     @Test
     fun `sześć linii opisu przechodzi`() {
-        assertEquals(emptyList<Int>(), lines(*kdoc(description = 6)))
+        assertEquals(emptyList<Int>(), lines(kdoc(description = 6)))
     }
 
     @Test
     fun `znaczniki nie są liczone`() {
-        assertEquals(emptyList<Int>(), lines(*kdoc(description = 6, tags = 5)))
+        assertEquals(emptyList<Int>(), lines(kdoc(description = 6, tags = 5)))
     }
 
     @Test
     fun `linia wymagań nie jest liczona`() {
-        val text = (kdoc(description = 6).toList().dropLast(2) + listOf(" *", " * Wymagania: US1", " */", "fun a() = 1"))
-        assertEquals(emptyList<Int>(), lines(*text.toTypedArray()))
+        val text = kdoc(description = 6).dropLast(2) + listOf(" *", " * Wymagania: US1", " */", "fun a() = 1")
+        assertEquals(emptyList<Int>(), lines(text))
     }
 
     @Test
     fun `puste linie nie są liczone`() {
         val text = listOf("/**", " * a", " *", " * b", " *", " * c", " *", " * d", " * e", " * f", " */", "fun a() = 1")
-        assertEquals(emptyList<Int>(), lines(*text.toTypedArray()))
+        assertEquals(emptyList<Int>(), lines(text))
     }
 
     @Test
     fun `opis w linii otwarcia liczony`() {
         val text = listOf("/** a", " * b", " * c", " * d", " * e", " * f", " * g */", "fun a() = 1")
-        assertEquals(listOf(1), lines(*text.toTypedArray()))
+        assertEquals(listOf(1), lines(text))
     }
 
-    private fun kdoc(description: Int, tags: Int = 0): Array<String> =
-        (
-            listOf("/**") +
-                List(description) { " * linia $it" } +
-                List(tags) { " * @param p$it znaczenie" } +
-                listOf(" */", "fun a() = 1")
-        ).toTypedArray()
+    private fun kdoc(description: Int, tags: Int = 0): List<String> =
+        listOf("/**") +
+            List(description) { " * linia $it" } +
+            List(tags) { " * @param p$it znaczenie" } +
+            listOf(" */", "fun a() = 1")
 
-    private fun lines(vararg text: String): List<Int> =
+    private fun lines(text: List<String>): List<Int> =
         rule.lint(text.joinToString(separator = "\n"), compile = false).map { it.entity.location.source.line }
 }
