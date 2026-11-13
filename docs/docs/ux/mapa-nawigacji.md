@@ -43,13 +43,23 @@ Gość trafia do L1 zarówno ze „Zgłoś barierę”, jak i z „Konto”. Po 
 
 ## Zbierający
 
-![Diagram przejść Zbierającego: V2, L2 i ekrany C1–C7](../_generated/nawigacja-zespol-zbierajacy.svg)
+Zbierający zaczyna pracę w dwóch miejscach. Każdy zapis i wysłanie kończy się na C3, a „Wstecz” z C3 wraca tam, skąd zaczęła się praca (P2).
 
-Zbierający zaczyna pracę w dwóch miejscach. Pomiar i listę zgłoszeń otwiera z L2 („Konto i praca”), a zmiany przy budynku (C2, C5, C6, C7) z karty budynku V2. Każdy zapis i wysłanie kończy się na C3, a „Wstecz” z C3 wraca tam, skąd zaczęła się praca (P2).
+### Pomiar i lista zgłoszeń
+
+![Diagram: Zbierający z L2 otwiera pomiar C1 i formularz C2 albo listę C3 z poprawą i wyborem wersji C4](../_generated/nawigacja-zbierajacy-pomiar.svg)
+
+Pomiar i listę zgłoszeń Zbierający otwiera z L2 („Konto i praca”). Z listy C3 poprawia zgłoszenie, wybiera wersję po synchronizacji albo zaczyna nowy pomiar. Zmianę oznaczenia i „bariera usunięta” do poprawy C3 otwiera w C6 i C7.
+
+### Zmiany przy budynku
+
+![Diagram: Zbierający z karty budynku V2 otwiera C2, C6, C7 i C5](../_generated/nawigacja-zbierajacy-budynek.svg)
+
+Zmiany przy budynku (C2, C5, C6, C7) Zbierający otwiera z karty budynku V2.
 
 ## Weryfikator i Koordynator
 
-![Diagram przejść Weryfikatora i Koordynatora: L2, R1, R2, K1–K3, C5](../_generated/nawigacja-zespol-weryfikacja.svg)
+![Diagram: Weryfikator z L2 otwiera R1 i R2, Koordynator K1 z C5, K2 i K3](../_generated/nawigacja-weryfikacja.svg)
 
 Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 (P2). Koordynator otwiera K1, K2 i K3 z L2, a z K1 przechodzi do C5, by cofnąć znacznik. Stan „brak uprawnień” na R1, R2 i K1–K3 prowadzi prosto do mapy.
 
