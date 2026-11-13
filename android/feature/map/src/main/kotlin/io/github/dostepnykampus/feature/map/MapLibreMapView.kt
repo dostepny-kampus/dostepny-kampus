@@ -315,7 +315,7 @@ internal fun Style.addMapImages(labels: List<String>, images: MapImages) {
     barrierImages(images).forEach { (name, image) -> addImage(name, image) }
 }
 
-/** Obrazy zależne od zaznaczonego wejścia [selected]: tylko podpis z jego nazwą (US3.3). */
+/** Obrazy zależne od zaznaczonego wejścia [selected]: tylko podpis z jego nazwą. Wymagania: US3.3 */
 internal fun selectionImages(selected: SelectedEntrance?, images: MapImages): Map<String, Bitmap> =
     entranceCaption(selected = selected, colors = images.colors, labelSize = images.labelSize)
 

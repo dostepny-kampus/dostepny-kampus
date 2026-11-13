@@ -25,7 +25,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
 
-/** Obrazy przy zmianie zaznaczenia na mapie „Budynek testowy” (nie dane PWr; US1.1, US3.3). */
+/** Obrazy przy zmianie zaznaczenia na mapie „Budynek testowy” (nie dane PWr). Wymagania: US1.1, US3.3 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class MapSelectionImagesTest {

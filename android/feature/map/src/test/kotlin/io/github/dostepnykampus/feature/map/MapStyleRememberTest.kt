@@ -60,7 +60,7 @@ class MapStyleRememberTest {
         }
     }
 
-    /** Zmiana zaznaczonego budynku, wejścia i bariery nie buduje stylu drugi raz (US1.1, US1.5, US3.3). */
+    /** Zmiana zaznaczonego budynku, wejścia i bariery nie buduje stylu drugi raz. Wymagania: US1.1, US1.5, US3.3 */
     @Test
     fun selection_keeps_style() {
         show()
