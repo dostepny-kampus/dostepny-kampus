@@ -31,7 +31,7 @@ class ModuleContentArchitectureTest {
         File(root, "feature/empty/build.gradle.kts").writeText("")
         val code = File(root, "feature/full/src/main/kotlin").apply { mkdirs() }
         File(code, "Full.kt").writeText("package $BASE.sample\nval full = 1")
-        val settings = "include(\n    \":feature:empty\",\n    \":feature:full\",\n)"
+        val settings = """include(":feature:empty", ":feature:full")"""
         assertEquals(listOf(":feature:empty"), empty(root, modules(settings)))
     }
 
