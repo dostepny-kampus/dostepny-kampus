@@ -15,8 +15,11 @@ Strona prowadzi od potrzeby użytkownika do sprawdzalnego kryterium: potrzeba N 
 | N7 | RO-ZBI, RO-WER | Przy równoczesnej edycji nie nadpisać wcześniejszej zmiany zapisanej na serwerze. | hipoteza; wywiad opcjonalny, pytanie 10.4 |
 | N8 | RO-WER | Odsiać błędy i duplikaty przed publikacją. | hipoteza; wywiad opcjonalny, pytania 10.4–10.5 |
 | N9 | RO-KOO | Widzieć postęp inwentaryzacji i przekazywać dane do QGIS. | hipoteza; wywiad opcjonalny, pytania 10.1, 10.6–10.7 |
+| N10 | RO-GOS, RO-ODW | W budynku wiedzieć, na którym piętrze jest sala i toaleta i jak do nich dojść. | nowa po wywiadach: 3 z 6 osób miało kłopot z trafieniem w środku budynku |
 
-Wywiady z 6 osobami w wieku 61–75 lat sprawdziły N1–N4. Wyniki opisuje sekcja „Co sprawdziły wywiady” na stronie [Persony](../ux/persony.md). Numery pytań przy N5–N9 pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md), a wywiad ze Zbierającym jest opcjonalny. Potrzeba niepotwierdzona w wywiadach kieruje swoje historyjki do przeglądu (R-7).
+Wywiady z 6 osobami w wieku 61–75 lat sprawdziły N1–N4 i dały nową potrzebę N10. Wyniki opisuje sekcja „Co sprawdziły wywiady” na stronie [Persony](../ux/persony.md). Numery pytań przy N5–N9 pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md), a wywiad ze Zbierającym jest opcjonalny. Potrzeba niepotwierdzona w wywiadach kieruje swoje historyjki do przeglądu (R-7).
+
+Wywiady wskazały jeszcze jedną potrzebę: pomoc człowieka na miejscu, bo w kłopocie wszyscy rozmówcy pytają ludzi. Nie ma ona jeszcze numeru ani historyjki. Pierwsza propozycja „Może być” to miejsce portierni na karcie budynku.
 
 ## Historyjki
 
@@ -37,9 +40,9 @@ Wywiady z 6 osobami w wieku 61–75 lat sprawdziły N1–N4. Wyniki opisuje sekc
 | US13 | K3 | N9 | Musi być | Jako Koordynator, chcę pobrać eksport, aby otworzyć zgłoszenia przyjęte w QGIS. |
 | US14 | L1, L2 | N2, N8 | Musi być | Jako Odwiedzający lub osoba z rolą pracowniczą, chcę się zalogować, aby korzystać z czynności mojej roli. |
 | US15 | C5 (z V2 i K1) | N6, N9 | Musi być | Jako Zbierający, chcę oznaczyć piętro obejrzane, aby postęp inwentaryzacji odpowiadał stanowi obchodu. |
-| US16 | V1, V2 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać piętro budynku szczegółowego, aby zobaczyć na planie piętra windy, toalety i bariery. |
+| US16 | V1, V2 | N1, N10 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać piętro budynku szczegółowego, aby zobaczyć na planie piętra windy, toalety i bariery. |
 | US17 | V2, V3; zmiana: C6 | N1, N2 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę widzieć przy każdym wejściu aktualne oznaczenie z datą i źródłem, aby wiedzieć, czy mogę mu ufać. |
-| US18 | V1 | N1 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę znaleźć salę po numerze, aby wiedzieć, na którym jest piętrze i jak dojdę do niej bez schodów. |
+| US18 | V1 | N1, N10 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę znaleźć salę po numerze, aby wiedzieć, na którym jest piętrze i jak dojdę do niej bez schodów. |
 
 Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. Historyjki „Musi być” tworzą MVP. Priorytet wynika z ważności historyjki według reguły na stronie [QFD](../ux/qfd.md).
 
