@@ -16,6 +16,8 @@ import androidx.test.core.app.ApplicationProvider
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.network.NetworkStatus
+import io.github.dostepnykampus.core.data.reports.QuickPosition
+import io.github.dostepnykampus.core.data.reports.content
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
