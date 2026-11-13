@@ -10,6 +10,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.junit.jupiter.api.Tag;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
@@ -26,11 +27,14 @@ import org.springframework.context.annotation.Import;
  * {@code @MockitoBean}, bo każdy z nich zakłada osobny kontekst.
  * Pilnuje tego {@code TestSetupArchitectureTest}.</p>
  *
+ * <p>Znacznik {@code kontekst-springa} wyłącza te testy z analizy PIT.</p>
+ *
  * @since 0.1.0
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@Tag("kontekst-springa")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import(
     {
