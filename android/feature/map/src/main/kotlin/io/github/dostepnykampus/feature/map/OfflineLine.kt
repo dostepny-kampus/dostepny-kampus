@@ -55,7 +55,7 @@ private val NoInternetIcon =
  * @param modifier położenie linii wyznacza wołający
  */
 @Composable
-internal fun OfflineLine(syncedAt: Instant? = null, modifier: Modifier = Modifier) {
+internal fun OfflineLine(syncedAt: Instant?, modifier: Modifier = Modifier) {
     val insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
     Surface(
         modifier = modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
@@ -71,8 +71,8 @@ internal fun OfflineLine(syncedAt: Instant? = null, modifier: Modifier = Modifie
                 Icon(NoInternetIcon, contentDescription = null)
                 Text(
                     text =
-                        syncedAt?.let {
-                            val day = DAY_FORMAT.format(it.atZone(CampusZone).toLocalDate())
+                        syncedAt?.let { synced ->
+                            val day = DAY_FORMAT.format(synced.atZone(CampusZone).toLocalDate())
                             stringResource(R.string.mapa_bez_internetu_dane_z, day)
                         } ?: stringResource(R.string.mapa_bez_internetu),
                     style = MaterialTheme.typography.bodyLarge,

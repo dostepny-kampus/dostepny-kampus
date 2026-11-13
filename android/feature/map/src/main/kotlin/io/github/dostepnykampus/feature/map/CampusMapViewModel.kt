@@ -108,7 +108,7 @@ fun BuildingSearch.foundFor(shown: String): List<Building>? = buildings.takeIf {
  */
 @HiltViewModel
 class CampusMapViewModel(
-    private val repository: BuildingCatalogRepository,
+    repository: BuildingCatalogRepository,
     networkStatus: NetworkStatus,
     private val mapListChoice: MapListChoice,
     internal val computeContext: CoroutineContext,
