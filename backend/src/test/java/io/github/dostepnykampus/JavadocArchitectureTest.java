@@ -30,11 +30,6 @@ import org.junit.jupiter.api.Test;
 final class JavadocArchitectureTest {
 
     /**
-     * Największa liczba niepustych linii części opisowej.
-     */
-    private static final int MAX_LINES = 6;
-
-    /**
      * Blok Javadoc.
      */
     private static final Pattern BLOCK = Pattern.compile("/\\*\\*(.*?)\\*/", Pattern.DOTALL);
@@ -97,7 +92,9 @@ final class JavadocArchitectureTest {
         MatcherAssert.assertThat(
             "Numer issue albo decyzji w Javadoc nie jest zgłaszany",
             JavadocArchitectureTest.problems(
-                "/** Zwraca listę (#123). */\n/**\n * Lista (decyzja\n * 82).\n */\n"
+                JavadocArchitectureTest.text(
+                    "/** Zwraca listę (#123). */", "/**", " * Lista (decyzja", " * 82).", " */"
+                )
             ),
             Matchers.contains("1 historia", "2 historia")
         );
@@ -107,7 +104,7 @@ final class JavadocArchitectureTest {
     void deferredWorkMarkerPasses() {
         MatcherAssert.assertThat(
             "Znacznik pracy odłożonej jest zgłaszany jak historia",
-            JavadocArchitectureTest.problems("/** Lista. T" + "ODO(#12): sortowanie. */\n"),
+            JavadocArchitectureTest.problems("/** Lista. %sODO(#12): sortowanie. */".formatted("T")),
             Matchers.empty()
         );
     }
@@ -117,28 +114,28 @@ final class JavadocArchitectureTest {
         MatcherAssert.assertThat(
             "Długość opisu liczy znaczniki albo nie zgłasza siedmiu linii",
             JavadocArchitectureTest.problems(
-                """
-                /**
-                 * a
-                 * b
-                 * c
-                 * d
-                 * e
-                 * f
-                 *
-                 * @param x znaczenie
-                 * @since 0.1.0
-                 */
-                /**
-                 * a
-                 * b
-                 * c
-                 * d
-                 * e
-                 * f
-                 * g
-                 */
-                """
+                JavadocArchitectureTest.text(
+                    "/**",
+                    " * a",
+                    " * b",
+                    " * c",
+                    " * d",
+                    " * e",
+                    " * f",
+                    " *",
+                    " * @param x Znaczenie",
+                    " * @since 0.1.0",
+                    " */",
+                    "/**",
+                    " * a",
+                    " * b",
+                    " * c",
+                    " * d",
+                    " * e",
+                    " * f",
+                    " * g",
+                    " */"
+                )
             ),
             Matchers.contains("12 długość")
         );
@@ -149,19 +146,19 @@ final class JavadocArchitectureTest {
         MatcherAssert.assertThat(
             "Identyfikator wymagania poza linią Wymagania nie jest zgłaszany",
             JavadocArchitectureTest.problems(
-                """
-                /** Odczyt budynków (US1). */
-                /**
-                 * Odczyt budynków.
-                 *
-                 * <p>Wymagania: US1, BR-G2</p>
-                 */
-                /** Odczyt. Wymagania: NFR-3 */
-                /** Budynek C-13, typ TB-29 i {@code US1}. */
-                /**
-                 * @param a próg z NFR-3
-                 */
-                """
+                JavadocArchitectureTest.text(
+                    "/** Odczyt budynków (US1). */",
+                    "/**",
+                    " * Odczyt budynków.",
+                    " *",
+                    " * <p>Wymagania: US1, BR-G2</p>",
+                    " */",
+                    "/** Odczyt. Wymagania: NFR-3 */",
+                    "/** Budynek C-13, typ TB-29 i {@code US1}. */",
+                    "/**",
+                    " * @param a Próg z NFR-3",
+                    " */"
+                )
             ),
             Matchers.contains("1 wymagania", "9 wymagania")
         );
@@ -203,13 +200,13 @@ final class JavadocArchitectureTest {
                 || JavadocArchitectureTest.DECISION.matcher(flat).find()) {
                 found.add("%d historia".formatted(line));
             }
-            final List<String> lines = Arrays.stream(body.split("\n"))
+            final List<String> lines = Arrays.stream(body.split("\\R"))
                 .map(text -> JavadocArchitectureTest.DECORATION.matcher(text).replaceFirst(""))
                 .toList();
             if (lines.stream().takeWhile(text -> !text.startsWith("@"))
                 .filter(text -> !text.isBlank())
                 .filter(text -> !JavadocArchitectureTest.REQUIREMENTS.matcher(text).find())
-                .count() > JavadocArchitectureTest.MAX_LINES) {
+                .count() > 6) {
                 found.add("%d długość".formatted(line));
             }
             if (lines.stream()
@@ -220,6 +217,10 @@ final class JavadocArchitectureTest {
             }
         }
         return found;
+    }
+
+    private static String text(final String... lines) {
+        return String.join(String.valueOf('\n'), lines);
     }
 
     private static int newlines(final String text) {
