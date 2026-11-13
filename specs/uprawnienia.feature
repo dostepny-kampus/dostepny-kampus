@@ -3,8 +3,8 @@ Funkcja: Logowanie, role i zaproszenia
   Każda osoba korzysta tylko z czynności swojej roli. Role pracownicze nadaje Koordynator,
   więc o publikacji decydują osoby mu znane (N2, N8, N9).
 
-  # kroki serwera: #675
-  @US14.1 @aplikacja @serwer @do-zrobienia
+  # test aplikacji: #708
+  @US14.1 @aplikacja @serwer
   Szablon scenariusza: Bez wymaganej roli czynność jest niedostępna w aplikacji i na serwerze
     Zakładając, że osoba jest zalogowana tylko z rolą <rola>
     Jeżeli przejrzy dostępne ekrany aplikacji
