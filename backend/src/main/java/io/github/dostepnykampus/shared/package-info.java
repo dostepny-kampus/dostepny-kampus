@@ -7,9 +7,15 @@
 /**
  * Moduł shared: typy wspólne dla wszystkich modułów serwera.
  *
- * <p>Moduł otwarty: inne moduły używają typów z podpakietów {@code error},
- * {@code json} i {@code geo} bezpośrednio. Inne podpakiety nie powstają.
- * Moduł nie ma logiki dziedziny ani kontrolerów.</p>
+ * <p>Zadanie: typy błędów, ścisłe wiązanie JSON i układy współrzędnych.</p>
+ *
+ * <p>API: wszystkie typy {@code error}, {@code json} i {@code geo}; moduł jest otwarty.</p>
+ *
+ * <p>Zależności: brak.</p>
+ *
+ * <p>Nie robi: nie ma logiki dziedziny, kontrolerów ani zapisu do bazy.</p>
+ *
+ * <p>Kiedy dodawać tutaj: typ z co najmniej dwóch modułów pasujący do istniejącego podpakietu.</p>
  *
  * @since 0.1.0
  */
