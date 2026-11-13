@@ -66,6 +66,11 @@ final class JavadocArchitectureTest {
     );
 
     /**
+     * Koniec linii.
+     */
+    private static final Pattern LINE = Pattern.compile("\\R");
+
+    /**
      * Ozdobnik linii Javadoc.
      */
     private static final Pattern DECORATION = Pattern.compile("^\\s*\\*?\\s?");
@@ -104,7 +109,9 @@ final class JavadocArchitectureTest {
     void deferredWorkMarkerPasses() {
         MatcherAssert.assertThat(
             "Znacznik pracy odłożonej jest zgłaszany jak historia",
-            JavadocArchitectureTest.problems("/** Lista. %sODO(#12): sortowanie. */".formatted("T")),
+            JavadocArchitectureTest.problems(
+                "/** Lista. %sODO(#12): sortowanie. */".formatted("T")
+            ),
             Matchers.empty()
         );
     }
@@ -200,7 +207,7 @@ final class JavadocArchitectureTest {
                 || JavadocArchitectureTest.DECISION.matcher(flat).find()) {
                 found.add("%d historia".formatted(line));
             }
-            final List<String> lines = Arrays.stream(body.split("\\R"))
+            final List<String> lines = Arrays.stream(JavadocArchitectureTest.LINE.split(body))
                 .map(text -> JavadocArchitectureTest.DECORATION.matcher(text).replaceFirst(""))
                 .toList();
             if (lines.stream().takeWhile(text -> !text.startsWith("@"))
