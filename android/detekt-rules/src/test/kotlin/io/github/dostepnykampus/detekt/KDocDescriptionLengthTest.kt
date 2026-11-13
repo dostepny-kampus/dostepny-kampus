@@ -30,6 +30,12 @@ class KDocDescriptionLengthTest {
     }
 
     @Test
+    fun `linia wymagań nie jest liczona`() {
+        val text = (kdoc(description = 6).toList().dropLast(2) + listOf(" *", " * Wymagania: US1", " */", "fun a() = 1"))
+        assertEquals(emptyList<Int>(), lines(*text.toTypedArray()))
+    }
+
+    @Test
     fun `puste linie nie są liczone`() {
         val text = listOf("/**", " * a", " *", " * b", " *", " * c", " *", " * d", " * e", " * f", " */", "fun a() = 1")
         assertEquals(emptyList<Int>(), lines(*text.toTypedArray()))

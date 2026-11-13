@@ -15,7 +15,8 @@ import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 
 /**
  * Zgłasza blok KDoc, którego część opisowa ma więcej niż [MAX_LINES] niepustych linii.
- * Część opisowa kończy się na pierwszej linii zaczynającej się znacznikiem `@`; linie znaczników nie są liczone.
+ * Część opisowa kończy się na pierwszej linii zaczynającej się znacznikiem `@`; linie znaczników i linia
+ * `Wymagania:` nie są liczone.
  */
 class KDocDescriptionLength(config: Config) :
     Rule(config, "Opis KDoc dłuższy niż $MAX_LINES linii: zostaw kontrakt, wymagania są w dokumentacji wymagań.") {
@@ -38,6 +39,6 @@ class KDocDescriptionLength(config: Config) :
                 .lines()
                 .map { it.replace(DECORATION, "") }
                 .takeWhile { !it.startsWith("@") }
-                .count { it.isNotBlank() }
+                .count { it.isNotBlank() && !it.startsWith("Wymagania:") }
     }
 }
