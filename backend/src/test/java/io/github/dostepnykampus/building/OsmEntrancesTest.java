@@ -19,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Testy US17.1 i BR-24: wejścia z pliku konturów OpenStreetMap trafiają
+ * Wejścia z pliku konturów OpenStreetMap trafiają
  * do tabeli entrances z oznaczeniem z tagu wheelchair (ADR-0008).
+ *
+ * <p>Wymagania: US17.1, BR-24</p>
  *
  * @since 0.1.0
  */

@@ -21,12 +21,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 /**
- * Kroki scenariusza „Przyjęte zgłoszenie szybkie zmienia dowolny Zbierający”
- * (BR-18).
+ * Kroki scenariusza „Przyjęte zgłoszenie szybkie zmienia dowolny Zbierający”.
  *
  * <p>Token testowy ma zawsze to samo konto, więc autorem zgłoszenia szybkiego
  * zostaje inne konto w bazie. Status „przyjęte” krok ustawia w bazie, bo
  * decyzje Weryfikatora serwer dostaje z modułem weryfikacji.</p>
+ *
+ * <p>Wymagania: BR-18</p>
  *
  * @since 0.1.0
  */

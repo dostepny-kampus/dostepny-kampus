@@ -5,7 +5,9 @@
  */
 
 /**
- * Testy modułu budynków: przechowywanie budynków w bazie (US1).
+ * Testy modułu budynków: przechowywanie budynków w bazie.
+ *
+ * <p>Wymagania: US1</p>
  *
  * @since 0.1.0
  */
