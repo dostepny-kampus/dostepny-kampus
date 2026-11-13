@@ -37,7 +37,7 @@ class RequirementIdOutsideLineTest {
 
     @Test
     fun `symbol budynku i kod barier przechodzą`() {
-        assertEquals(emptyList<Int>(), lines("/** Budynek C-13, M-6 i typ TB-29, adres US1.1 w `US1.1`. */", "fun a() = 1"))
+        assertEquals(emptyList<Int>(), lines("/** Budynek C-13, M-6 i typ TB-29, kod `US1.1`. */", "fun a() = 1"))
     }
 
     @Test
