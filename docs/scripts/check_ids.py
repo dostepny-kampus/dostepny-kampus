@@ -66,7 +66,9 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 SCREEN_REF_HEADER = "Odwołanie"
 SCREEN_COMMON_REF = "wymagania wspólne"
 REQUIREMENT_RE = re.compile(r"(?<![\w-])(?:US\d+(?:\.\d+)?|UC\d+|BR-G?\d+|NFR-\d+)(?![\w-])")
-MARKER = re.compile(r"^\s*// Scenariusz( \(częściowo\))?: (\S[^:]*?\.feature):(?: (\S.*?))?\s*$")
+MARKER = re.compile(
+    r"^\s*// Scenariusz(?: \((?:(częściowo)(?:, przykład: (.+?))?|przykład: (.+?))\))?: (\S[^:]*?\.feature):(?: (\S.*?))?\s*$"
+)
 MARKER_CONTINUATION = re.compile(r"^\s*//\s{2,}(\S.*?)\s*$")
 MARKER_HINT = re.compile(r"^\s*//\s*scenariusz\b[^:]{0,20}:", re.IGNORECASE)
 ANNOTATION = re.compile(r"@([\w.:]+)(\((?:[^()]|\([^()]*\))*\))?\s*")
@@ -105,7 +107,8 @@ class Scenario:
 class Marker:
     """Znacznik `// Scenariusz: <plik>.feature: <nazwa>` w teście; `test` — stan funkcji tuż pod znacznikiem:
     „aktywny”, „wyłączony” (@Ignore, @Disabled…) albo pusty, gdy pod znacznikiem nie ma funkcji testu; `test_id` —
-    stały identyfikator testu „moduł · Klasa.funkcja”, niezależny od numerów linii."""
+    stały identyfikator testu „moduł · Klasa.funkcja”, niezależny od numerów linii; `example` — wiersz przykładów
+    szablonu wskazany dopiskiem „przykład: …” (pusty, gdy znacznik dotyczy całego scenariusza)."""
 
     feature: str
     scenario: str
@@ -114,11 +117,13 @@ class Marker:
     location: Location
     test_id: str = ""
     function_line: int = 0
+    example: str = ""
 
 
 @dataclass
 class Corpus:
-    """Zebrane definicje, odwołania, powiązania (nieskierowane) i scenariusze."""
+    """Zebrane definicje, odwołania, powiązania (nieskierowane), scenariusze i wiersze przykładów szablonów
+    (`examples`: klucz to plik i nazwa scenariusza, wartość to komórki kolejnych wierszy bez nagłówków tabel)."""
 
     definitions: dict[str, list[Location]] = field(default_factory=lambda: defaultdict(list))
     references: list[tuple[str, Location]] = field(default_factory=list)
@@ -129,6 +134,7 @@ class Corpus:
     feature_files: int = 0
     features: set[str] = field(default_factory=set)
     markers: list[Marker] = field(default_factory=list)
+    examples: dict[tuple[str, str], list[tuple[str, ...]]] = field(default_factory=lambda: defaultdict(list))
     bad_markers: list[Location] = field(default_factory=list)
 
     def link(self, owner: str, other: str) -> None:
@@ -314,6 +320,8 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
     """Dodaje do `corpus` scenariusze, ich tagi-ID i warstwy z pliku .feature (tagi funkcji i reguły są dziedziczone).
 
     `feature` to ścieżka pliku względna do katalogu scenariuszy, jak w znaczniku testu (domyślnie nazwa pliku).
+    Wiersze tabel pod „Przykłady:” (bez nagłówka każdej tabeli) trafiają do `corpus.examples` scenariusza;
+    tabela danych przy kroku nie jest tabelą przykładów.
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
     rel = relative(path)
@@ -324,6 +332,8 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
     rule_tags: list[str] = []
     pending: list[tuple[str, Location]] = []
     layers: dict[str, set[str]] = {"feature": set(), "rule": set(), "pending": set()}
+    rows: list[tuple[str, ...]] = []
+    header: bool | None = None
     for number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         line = raw.strip()
         if line.startswith("@"):
@@ -332,6 +342,12 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
             continue
         if line.startswith("#") or not line:
             continue
+        if line.startswith("|"):
+            if header:
+                rows.append(tuple(cell.strip() for cell in line.strip("|").split("|")))
+            header = header if header is None else True
+            continue
+        header = False if keyword_of(line, EXAMPLES_KEYWORDS) is not None else None
         tags, own = [t for t, _ in pending], layers["pending"]
         corpus.references.extend(pending)
         pending, layers["pending"] = [], set()
@@ -345,6 +361,7 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
             ordered = tuple(layer for layer, _ in LAYERS if layer in found)
             scenario = Scenario(name or "(bez nazwy)", Location(rel, number), feature, ordered)
             corpus.all_scenarios.append(scenario)
+            rows = corpus.examples[(feature, scenario.name)]
             for tag in dict.fromkeys(feature_tags + rule_tags + tags):
                 corpus.scenarios[tag].append(scenario)
 
@@ -398,7 +415,9 @@ def scan_kotlin(path: Path, corpus: Corpus, module: str = "") -> None:
             state, function, line_number = test_state(lines, marker.end)
             owner = ".".join(name for _, name in owners) or path.stem
             test_id = f"{module} · {owner}.{function}" if module else f"{owner}.{function}"
-            found = Marker(marker.feature, marker.scenario, marker.partial, state, location, test_id, line_number)
+            found = Marker(
+                marker.feature, marker.scenario, marker.partial, state, location, test_id, line_number, marker.example
+            )
             corpus.markers.append(found)
         elif marker or MARKER_HINT.match(line):
             corpus.bad_markers.append(location)
@@ -465,12 +484,14 @@ def code_only(text: str) -> str:
 
 @dataclass(frozen=True)
 class MarkerText:
-    """Znacznik odczytany z linii kodu: „częściowo”, plik, nazwa scenariusza i indeks pierwszej linii po znaczniku."""
+    """Znacznik odczytany z linii kodu: „częściowo”, plik, nazwa scenariusza, indeks pierwszej linii po znaczniku
+    i wskazany wiersz przykładów (pusty, gdy znacznik dotyczy całego scenariusza)."""
 
     partial: bool
     feature: str
     scenario: str
     end: int
+    example: str = ""
 
 
 def read_marker(lines: list[str], index: int) -> MarkerText | None:
@@ -482,12 +503,13 @@ def read_marker(lines: list[str], index: int) -> MarkerText | None:
     match = MARKER.match(lines[index])
     if not match:
         return None
-    parts = [match.group(3)] if match.group(3) else []
+    parts = [match.group(5)] if match.group(5) else []
     end = index + 1
     while end < len(lines) and (continuation := MARKER_CONTINUATION.match(lines[end])):
         parts.append(continuation.group(1))
         end += 1
-    return MarkerText(bool(match.group(1)), match.group(2), " ".join(parts), end)
+    example = (match.group(2) or match.group(3) or "").strip()
+    return MarkerText(bool(match.group(1)), match.group(4), " ".join(parts), end, example)
 
 
 def test_state(lines: list[str], start: int) -> tuple[str, str, int]:
@@ -621,7 +643,8 @@ def check_tests(corpus: Corpus, release: bool = False) -> list[Finding]:
     (znacznik byłby niejednoznaczny). Scenariusz bez testu i scenariusz tylko z testami „częściowo” to „UWAGI”
     w dwóch osobnych listach, a w trybie `release` — „BŁĘDY”. Ten sam identyfikator testu u dwóch różnych funkcji
     to „BŁĄD” (wiersz tabeli pokrycia byłby niejednoznaczny). Scenariusz bez tagu warstwy (`@aplikacja`, `@serwer`)
-    to „BŁĄD”, tak samo znacznik testu Androida przy scenariuszu bez tagu `@aplikacja`.
+    to „BŁĄD”, tak samo znacznik testu Androida przy scenariuszu bez tagu `@aplikacja` i znacznik wiersza przykładów,
+    którego scenariusz nie ma albo który pasuje do kilku wierszy (example_row).
     """
     form = "znacznik niezgodny ze wzorem „// Scenariusz: <plik>.feature: <nazwa>”"
     findings = [Finding("BŁĄD", str(loc), form) for loc in corpus.bad_markers]
@@ -649,6 +672,8 @@ def check_tests(corpus: Corpus, release: bool = False) -> list[Finding]:
             severity, problem = "UWAGA", f"test wyłączony, nie pokrywa scenariusza: {marker.scenario}"
         elif first[key].layers and "aplikacja" not in first[key].layers:
             problem = f"znacznik testu Androida przy scenariuszu bez tagu @aplikacja: {marker.scenario}"
+        elif marker.example and example_row(corpus, marker) is None:
+            problem = f"znacznik wskazuje wiersz przykładów, którego nie ma albo który nie jest jednoznaczny: {marker.example}"
         else:
             continue
         findings.append(Finding(severity, str(marker.location), problem))
@@ -666,14 +691,30 @@ def check_tests(corpus: Corpus, release: bool = False) -> list[Finding]:
     return findings + [Finding(level, str(s.location), f"scenariusz tylko z testem częściowym: {s.name}") for s in partial]
 
 
-def layer_states(scenario: Scenario, markers: list[Marker]) -> dict[str, str]:
+def example_row(corpus: Corpus, marker: Marker) -> tuple[str, ...] | None:
+    """Zwraca wiersz przykładów scenariusza wskazany przez znacznik albo None, gdy takiego nie ma lub pasuje kilka.
+
+    Gwarantuje: wiersz wskazują wszystkie jego komórki rozdzielone ` | ` albo sama pierwsza komórka, gdy ma ją
+    tylko jeden wiersz.
+    """
+    rows = corpus.examples.get((marker.feature, marker.scenario), [])
+    cells = tuple(cell.strip() for cell in marker.example.split("|"))
+    found = [row for row in rows if row == cells] or [row for row in rows if len(cells) == 1 and row[:1] == cells]
+    return found[0] if len(set(found)) == 1 else None
+
+
+def layer_states(corpus: Corpus, scenario: Scenario, markers: list[Marker]) -> dict[str, str]:
     """Zwraca stan pokrycia scenariusza w każdej jego warstwie: „pełny”, „częściowo” albo „brak”.
 
     Gwarantuje: warstwę aplikacji pokrywają znaczniki testów Androida (`markers`); stan „pełny”, gdy choć jeden
-    nie jest „częściowo”. Warstwa serwera nie ma jeszcze źródła testów, więc ma stan „brak”. Scenariusz bez tagu
+    znacznik całego scenariusza nie jest „częściowo” albo gdy każdy wiersz przykładów szablonu ma własny znacznik,
+    który nie jest „częściowo”. Warstwa serwera nie ma jeszcze źródła testów, więc ma stan „brak”. Scenariusz bez tagu
     warstwy jest liczony jak scenariusz aplikacji.
     """
-    app = "brak" if not markers else "częściowo" if all(m.partial for m in markers) else "pełny"
+    rows = set(corpus.examples.get((scenario.feature, scenario.name), []))
+    whole = any(not m.partial and not m.example for m in markers)
+    by_rows = bool(rows) and rows <= {example_row(corpus, m) for m in markers if m.example and not m.partial}
+    app = "brak" if not markers else "pełny" if whole or by_rows else "częściowo"
     return {layer: app if layer == "aplikacja" else "brak" for layer in scenario.layers or ("aplikacja",)}
 
 
@@ -690,7 +731,7 @@ def coverage_states(corpus: Corpus) -> dict[Scenario, tuple[list[Marker], str]]:
     states = {}
     for scenario in corpus.all_scenarios:
         markers = covering.get((scenario.feature, scenario.name), [])
-        found = set(layer_states(scenario, markers).values())
+        found = set(layer_states(corpus, scenario, markers).values())
         states[scenario] = (markers, found.pop() if len(found) == 1 else "częściowo")
     return states
 
@@ -706,7 +747,7 @@ def render_coverage(corpus: Corpus) -> str:
     rows = []
     per_layer: dict[str, list[str]] = defaultdict(list)
     for scenario, (markers, state) in coverage_states(corpus).items():
-        for layer, layer_state in layer_states(scenario, markers).items():
+        for layer, layer_state in layer_states(corpus, scenario, markers).items():
             per_layer[layer].append(layer_state)
         layers = join([LAYER_NAMES[layer].lower() for layer in scenario.layers])
         tests = [f"`{test_id}`".replace("|", "\\|") for test_id in sorted(dict.fromkeys(m.test_id for m in markers))]

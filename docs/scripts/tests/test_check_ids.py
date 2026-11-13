@@ -306,5 +306,55 @@ class LayersTest(unittest.TestCase):
         self.assertEqual(found, [("BŁĄD", "znacznik testu Androida przy scenariuszu bez tagu @aplikacja: Na serwerze")])
 
 
+OUTLINE = (
+    "@aplikacja\nFunkcja: Szablon\n\n  Szablon scenariusza: Decyzja\n    Jeżeli osoba <decyzja>\n    Wtedy <wynik>\n\n"
+    "    Przykłady:\n      | decyzja  | wynik |\n      | potwierdzi | A-1 |\n      | wybierze | B-1 |\n\n"
+    "    Przykłady: poza budynkiem\n      | decyzja  | wynik |\n      | wybierze | poza |\n\n"
+    "  Scenariusz: Zwykły\n    Wtedy a\n      | a | b |\n      | a | c |\n"
+)
+
+
+def outline(*markers: str) -> check_ids.Corpus:
+    """Zwraca korpus z plikiem `szablon.feature` (OUTLINE) i testami Androida ze znacznikami o kwalifikatorach `markers`."""
+    tests = "".join(f"// Scenariusz{m}\n@Test\nfun t{n}() = Unit\n\n" for n, m in enumerate(markers))
+    with tempfile.TemporaryDirectory() as root:
+        (Path(root) / "specs").mkdir()
+        (Path(root) / "specs" / "szablon.feature").write_text(OUTLINE, encoding="utf-8")
+        (Path(root) / "android" / "src" / "test").mkdir(parents=True)
+        (Path(root) / "android" / "src" / "test" / "SzablonTest.kt").write_text(tests, encoding="utf-8")
+        return check_ids.collect(DATA / "brak", Path(root) / "specs", Path(root) / "android")
+
+
+def outline_state(*markers: str) -> str:
+    """Zwraca stan szablonu „Decyzja” na stronie pokrycia dla znaczników `markers`."""
+    rows = table_rows(check_ids.render_coverage(outline(*markers)))
+    return {r[1]: r[5] for r in rows[2:]}["Decyzja"]
+
+
+ROW = " (przykład: {}): szablon.feature: Decyzja"
+
+
+class ExampleRowsTest(unittest.TestCase):
+    def test_outline_is_full_when_every_row_has_a_full_marker(self) -> None:
+        rows = [ROW.format("potwierdzi"), ROW.format("wybierze | B-1"), ROW.format("wybierze | poza")]
+        self.assertEqual(outline_state(*rows), "pełny")
+        self.assertEqual([f for f in check_ids.check_tests(outline(*rows)) if f.level == "BŁĄD"], [])
+
+    def test_outline_is_partial_when_a_row_has_no_full_marker(self) -> None:
+        self.assertEqual(outline_state(ROW.format("potwierdzi"), ROW.format("wybierze | B-1")), "częściowo")
+        partial = " (częściowo, przykład: wybierze | poza): szablon.feature: Decyzja"
+        self.assertEqual(outline_state(ROW.format("potwierdzi"), ROW.format("wybierze | B-1"), partial), "częściowo")
+
+    def test_whole_scenario_marker_still_covers_an_outline(self) -> None:
+        self.assertEqual(outline_state(": szablon.feature: Decyzja"), "pełny")
+
+    def test_unknown_or_ambiguous_row_and_row_of_plain_scenario_are_errors(self) -> None:
+        markers = [ROW.format("odrzuci"), ROW.format("wybierze"), " (przykład: a): szablon.feature: Zwykły"]
+        errors = [f for f in check_ids.check_tests(outline(*markers)) if f.level == "BŁĄD"]
+        self.assertEqual(lines_of(errors), [1, 5, 9])
+        self.assertTrue(all("wiersz przykładów, którego nie ma albo który nie jest jednoznaczny" in f.message for f in errors))
+        self.assertEqual(outline_state(*markers), "częściowo")
+
+
 if __name__ == "__main__":
     unittest.main()
