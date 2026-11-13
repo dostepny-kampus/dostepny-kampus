@@ -19,7 +19,8 @@ push_paths="$(awk '
   push && paths && /^      - / { sub(/^      - /, ""); gsub(/["\047]/, ""); sub(/\/\*\*$/, ""); print; next }
   push && paths { paths = 0 }
 ' "$workflow" | sort -u)"
-diff_paths="$({ grep -oE 'git diff --quiet [^;]* -- [^;]+; then' "$workflow" || true; } | head -n 1 |
+diff_paths="$({ sed -e ':a' -e '/\\$/N; s/\\\n[[:space:]]*//; ta' "$workflow" |
+  grep -oE 'git diff --quiet [^;]* -- [^;]+; then' || true; } | head -n 1 |
   sed -E 's/.* -- //; s/; then$//' | tr ' ' '\n' | sed '/^$/d' | sort -u)"
 
 failed=0
