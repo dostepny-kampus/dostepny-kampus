@@ -6,7 +6,7 @@ Strona prowadzi od potrzeby użytkownika do sprawdzalnego kryterium: potrzeba N 
 
 | N | Rola (RO-*) | Potrzeba | Status |
 | --- | --- | --- | --- |
-| N1 | RO-GOS, RO-ODW | Przed wyjściem z domu wiedzieć, czy wejdę do budynku bez barier i którym wejściem. | zmieniona po wywiadach: 2 z 6 osób starszych planuje wizytę z rodziną, a tylko 1 z 6 sama sprawdziła coś w telefonie; u osób na wózku potwierdzona analizą źródeł |
+| N1 | RO-GOS, RO-ODW | Przed wyjściem z domu wiedzieć, czy wejdę do budynku bez barier i którym wejściem. | zmieniona po wywiadach: 2 z 6 osób starszych planuje wizytę z rodziną. Tylko 1 z 6 sama sprawdziła coś w telefonie. U osób na wózku potwierdzona analizą źródeł |
 | N2 | RO-GOS, RO-ODW | Ufać informacji: widzieć datę sprawdzenia i zdjęcie bariery. | potwierdzona częściowo: 3 z 6 osób trafiło na informację niezgodną z rzeczywistością, ale o dacie sprawdzenia i zdjęciu nikt nie mówił |
 | N3 | RO-ODW | Zgłosić nową barierę bez trudnego formularza. | zmieniona po wywiadach: nikt z 6 rozmówców nie zgłaszał barier, w kłopocie pytają ludzi; zgłaszać będą głównie studenci, pracownicy i osoby na wózku |
 | N4 | RO-GOS, RO-ODW | Korzystać z aplikacji przy słabym wzroku i niepewnych dłoniach. | potwierdzona: 3 z 6 osób ma powiększone litery albo uproszczony ekran, zdarzają się przypadkowe dotknięcia |
