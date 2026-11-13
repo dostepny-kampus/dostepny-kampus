@@ -10,14 +10,13 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.testing.ServerBuildings
+import io.github.dostepnykampus.core.data.testing.ServerReply
+import io.github.dostepnykampus.core.data.testing.serverBuildingCatalog
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.network.ApiBuilding
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.BuildingList
-import io.github.dostepnykampus.core.network.DetailLevel
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import kotlinx.coroutines.CompletableDeferred
@@ -84,7 +83,7 @@ class MapGeometryFlowTest {
     @Test
     fun nfr11_geometry_per_catalog() =
         runTest {
-            val answer = CompletableDeferred<ApiResult<BuildingList>>()
+            val answer = CompletableDeferred<ServerReply<ServerBuildings>>()
             val fileRunning = CompletableDeferred<Unit>()
             val fileHeld = CountDownLatch(1)
             val fileFinished = CompletableDeferred<Boolean>()
@@ -100,7 +99,7 @@ class MapGeometryFlowTest {
                     val viewModel = viewModelOf(repository { answer.await() }, compute, geometry)
                     show(viewModel)
                     fileRunning.await()
-                    answer.complete(ApiResult.Success(SERVER_LIST))
+                    answer.complete(ServerReply.Ok(SERVER_LIST))
                     val state =
                         viewModel.uiState.first { it.catalog?.run { buildings.size } == 1 && it.mapData != null }
                     assertEquals(SERVER_LABELS, state.mapData?.labels, "geometria nie z serwera")
@@ -204,7 +203,7 @@ class MapGeometryFlowTest {
     @Test
     fun server_compute_starts_early() =
         runTest {
-            val answer = CompletableDeferred<ApiResult<BuildingList>>()
+            val answer = CompletableDeferred<ServerReply<ServerBuildings>>()
             val fileRunning = CompletableDeferred<Unit>()
             val serverStarted = CompletableDeferred<Unit>()
             val hold = CountDownLatch(1)
@@ -221,7 +220,7 @@ class MapGeometryFlowTest {
                     }
                     show(viewModelOf(repository { answer.await() }, compute, geometry))
                     fileRunning.await()
-                    answer.complete(ApiResult.Success(SERVER_LIST))
+                    answer.complete(ServerReply.Ok(SERVER_LIST))
                     serverStarted.await()
                     assertFalse(fileFinished.await(), "serwer czekał na koniec liczenia pliku")
                 } finally {
@@ -260,8 +259,9 @@ class MapGeometryFlowTest {
         }
     }
 
-    private fun repository(json: String = ASSET_JSON, list: (suspend () -> ApiResult<BuildingList>)? = null) =
-        BuildingCatalogRepository(ioContext = EmptyCoroutineContext, listBuildings = list) { json }
+    private fun repository(json: String = ASSET_JSON, list: (suspend () -> ServerReply<ServerBuildings>)? = null) =
+        list?.let { serverBuildingCatalog(EmptyCoroutineContext, it) { json } }
+            ?: BuildingCatalogRepository(EmptyCoroutineContext) { json }
 
     private fun viewModelOf(
         repository: BuildingCatalogRepository,
@@ -303,7 +303,7 @@ class MapGeometryFlowTest {
         val SERVER_BUILDING = Building(symbol = "A-1", name = "Z serwera", outline = SERVER_OUTLINE)
 
         val SERVER_LIST =
-            BuildingList(source = "Serwer", buildings = listOf(ApiBuilding(SERVER_BUILDING, DetailLevel.BASIC)))
+            ServerBuildings(source = "Serwer", buildings = listOf(SERVER_BUILDING))
 
         val MANY_FEATURES =
             (1..MANY_OUTLINES).joinToString(separator = ",") { i ->
