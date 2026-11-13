@@ -34,11 +34,13 @@ import java.util.Locale
 private val DAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.ROOT)
 
 /**
- * Pozycja listy C3 (US8.1): status słowem z ikoną na początku, więc TalkBack czyta go przed typem bariery
- * (NFR-18, NFR-21), potem typ, budynek z piętrem, data i powód przy „Nie wysłano” (US9.5).
+ * Pozycja listy C3: status słowem z ikoną na początku, więc TalkBack czyta go przed typem bariery,
+ * potem typ, budynek z piętrem, data i powód przy „Nie wysłano”.
+ *
+ * Wymagania: US8.1, NFR-18, NFR-21, US9.5, US8.3
  *
  * @param item zgłoszenie
- * @param onOpen „Otwórz”: poprawka w C2 (US8.3); `null` bez przycisku
+ * @param onOpen „Otwórz”: poprawka w C2; `null` bez przycisku
  * @param modifier wymiary nadane przez listę
  */
 @Composable
@@ -102,8 +104,10 @@ private fun placeText(item: OwnSubmissionItem): String {
 }
 
 /**
- * Status na karcie C3: słowo i ikona (NFR-21). Stan z telefonu ma pierwszeństwo, bo poprawka czeka w kolejce;
- * po wysłaniu karta pokazuje status z serwera, gdy telefon już go zna (US8.1, US8.2).
+ * Status na karcie C3: słowo i ikona. Stan z telefonu ma pierwszeństwo, bo poprawka czeka w kolejce;
+ * po wysłaniu karta pokazuje status z serwera, gdy telefon już go zna.
+ *
+ * Wymagania: NFR-21, US8.1, US8.2
  *
  * @property textRes słowo statusu
  * @property icon ikona wzmacniająca słowo
@@ -127,7 +131,7 @@ internal enum class ShownStatus(
     /** „Przyjęte”. */
     ACCEPTED(R.string.moje_przyjete, StatusIcons.Accepted),
 
-    /** „Odrzucone” z powodem (BR-16). */
+    /** „Odrzucone” z powodem. Wymagania: BR-16 */
     REJECTED(R.string.moje_odrzucone, StatusIcons.Rejected),
 
     /** „Archiwalne”. */
