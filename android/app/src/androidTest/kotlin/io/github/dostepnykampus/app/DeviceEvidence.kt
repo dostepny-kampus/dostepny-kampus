@@ -19,7 +19,9 @@ private const val CHUNK_SIZE = 32_000
 internal object DeviceEvidence {
     fun shell(command: String): String =
         ParcelFileDescriptor
-            .AutoCloseInputStream(InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(command))
+            .AutoCloseInputStream(
+                InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(command),
+            )
             .bufferedReader()
             .use { it.readText() }
 
