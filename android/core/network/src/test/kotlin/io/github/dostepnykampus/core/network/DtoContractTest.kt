@@ -23,7 +23,7 @@ import java.nio.file.Path
 import java.util.jar.JarFile
 
 /**
- * Klasy `@Serializable` z `core:network` zgodne ze schematami `api/openapi.yaml` (decyzja 122). Spec ma niewiele
+ * Klasy `@Serializable` z `core:network` zgodne ze schematami `api/openapi.yaml`. Spec ma niewiele
  * przykładów, więc strażnik porównuje pola i nullowalność DTO ze schematami oraz waliduje ciała żądań.
  * Kontrakt jest czytany raz na klasę testu.
  */

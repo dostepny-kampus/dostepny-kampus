@@ -101,7 +101,7 @@ class SubmissionsApiTest {
         assertEquals("image/jpeg", recorded.getHeader("Content-Type"))
     }
 
-    /** Wiersz: arkusz bariery, zdjęcie zgłoszenia przyjętego jako JPEG, US1.5, US2.2. */
+    /** Wiersz: arkusz bariery, zdjęcie zgłoszenia przyjętego jako JPEG. Wymagania: US1.5, US2.2 */
     @Test
     fun us1_5_photo_download() {
         val content = "zdjecie-jpeg"
@@ -116,7 +116,7 @@ class SubmissionsApiTest {
         assertTrue(recorded.getHeader("Accept").orEmpty().startsWith("image/jpeg"))
     }
 
-    /** Wiersz: arkusz bariery, zdjęcia nie ma na serwerze → brak zdjęcia, nie błąd, US1.5. */
+    /** Wiersz: arkusz bariery, zdjęcia nie ma na serwerze → brak zdjęcia, nie błąd. Wymagania: US1.5 */
     @Test
     fun us1_5_photo_missing() {
         enqueue(code = 404, body = """{"status":404}""")
@@ -132,7 +132,7 @@ class SubmissionsApiTest {
         assertEquals("/submissions?status=ACCEPTED&buildingSymbol=A-1", server.takeRequest().path)
     }
 
-    /** Wiersz: C3 → własne zgłoszenia z serwera w każdym statusie, US8.1, US8.2. */
+    /** Wiersz: C3 → własne zgłoszenia z serwera w każdym statusie. Wymagania: US8.1, US8.2 */
     @Test
     fun us8_1_mine_list() {
         enqueue(code = 200, body = "[${submission(version = 2)}]")
@@ -141,7 +141,7 @@ class SubmissionsApiTest {
         assertEquals("/submissions?mine=true", server.takeRequest().path)
     }
 
-    /** Wiersz: C3 bez roli Zbierającego → błąd z kodem, nie lista, US8.1. */
+    /** Wiersz: C3 bez roli Zbierającego → błąd z kodem, nie lista. Wymagania: US8.1 */
     @Test
     fun us8_1_mine_forbidden() {
         enqueue(code = 403, body = "")

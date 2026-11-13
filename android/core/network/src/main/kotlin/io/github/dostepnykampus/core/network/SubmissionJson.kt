@@ -26,7 +26,7 @@ import java.time.format.DateTimeParseException
 internal fun Json.encodeNewSubmission(id: String, content: SubmissionContent): String =
     withoutNulls().encodeToString(SubmissionRequest.serializer(), content.toRequest(id = id))
 
-/** Treść `SubmissionUpdate` dla `PUT /submissions/{id}`: pola [content] i wersja bazowa [version] (BR-10). */
+/** Treść `SubmissionUpdate` dla `PUT /submissions/{id}`: pola [content] i wersja bazowa [version]. Wymagania: BR-10 */
 internal fun Json.encodeSubmissionUpdate(version: Int, content: SubmissionContent): String =
     withoutNulls().encodeToString(SubmissionRequest.serializer(), content.toRequest(version = version))
 

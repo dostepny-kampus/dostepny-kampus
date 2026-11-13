@@ -20,8 +20,10 @@ import java.io.IOException
 import javax.inject.Inject
 
 /**
- * Czy instrukcja V5 ma się otworzyć sama, bo to pierwsze uruchomienie aplikacji (US5.1). Zapis jest czytany raz,
+ * Czy instrukcja V5 ma się otworzyć sama, bo to pierwsze uruchomienie aplikacji. Zapis jest czytany raz,
  * więc obrót ekranu nie czyta go od nowa.
+ *
+ * Wymagania: US5.1
  *
  * @param firstLaunch zapis pierwszego uruchomienia w pliku ustawień startu
  */

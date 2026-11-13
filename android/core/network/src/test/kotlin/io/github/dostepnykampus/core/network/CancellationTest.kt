@@ -49,12 +49,14 @@ import java.util.concurrent.TimeUnit.NANOSECONDS
 import java.util.concurrent.TimeUnit.SECONDS
 
 /**
- * Anulowanie każdej funkcji `suspend` obu klientów (NFR-55): serwer wstrzymuje nagłówki albo ciało odpowiedzi
+ * Anulowanie każdej funkcji `suspend` obu klientów: serwer wstrzymuje nagłówki albo ciało odpowiedzi
  * na 5 s, wywołujący anuluje korutynę dopiero po potwierdzonym starcie żądania.
  *
  * Próg 500 ms bez zegara ściennego: klient przerywa żądanie HTTP w wątku anulującym, zanim `cancel` wróci, więc
  * przerwanie jest sprawdzane w chwili powrotu z anulowania. Czas do przerwania to tylko praca tego wątku, mierzona
  * czasem procesora wątku, do którego nie wliczają się pauzy GC ani oczekiwanie na procesor na obciążonym runnerze.
+ *
+ * Wymagania: NFR-55
  */
 class CancellationTest {
     private val server = MockWebServer()
