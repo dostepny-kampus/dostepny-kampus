@@ -41,18 +41,18 @@ object NoServerNetworkModule {
     @Singleton
     fun okHttp(): OkHttpClient {
         val tile = blankTile()
+        val local =
+            Interceptor { chain ->
+                val request = chain.request()
+                if (request.url.host != "tile.openstreetmap.org") {
+                    throw ConnectException("Brak serwera w teście: ${request.url}")
+                }
+                LocalTileResponse(request, tile).response
+            }
         return OkHttpClient
             .Builder()
             .dns { host -> error("Test próbuje użyć sieci: $host") }
-            .addInterceptor(
-                Interceptor { chain ->
-                    val request = chain.request()
-                    if (request.url.host != "tile.openstreetmap.org") {
-                        throw ConnectException("Brak serwera w teście: ${request.url}")
-                    }
-                    LocalTileResponse(request, tile).response
-                },
-            )
+            .addInterceptor(local)
             .build()
     }
 
