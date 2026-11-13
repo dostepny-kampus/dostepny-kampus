@@ -9,6 +9,7 @@ import io.github.dostepnykampus.ForbiddenChange;
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,7 +42,7 @@ final class SubmissionPhotoRaceTest {
         store.put(id, photo, original);
         try (ByteArrayInputStream input = new ByteArrayInputStream(JpegCleanerTest.photo()) {
             @Override
-            public synchronized byte[] readNBytes(final int length) {
+            public synchronized byte[] readNBytes(final int length) throws IOException {
                 SubmissionPhotoRaceTest.accept(jdbc, id);
                 return super.readNBytes(length);
             }
