@@ -49,7 +49,11 @@ class BarrierSheetTest {
 
     private val clicks = mutableListOf<String>()
 
-    /** Wiersz: arkusz bariery, typ, uciążliwość, miejsce, data sprawdzenia i przyciski (US1.5, PW-5). */
+    /**
+     * Wiersz: arkusz bariery, typ, uciążliwość, miejsce, data sprawdzenia i przyciski (US1.5, PW-5). Zdjęcia w arkuszu
+     * jeszcze nie ma (#1138).
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Dotknięcie znaku bariery pokazuje jej opis z miejscem
+     */
     @Test
     fun us1_5_barrier_in_building() {
         compose.setContent { Sheet(inBuilding()) }
