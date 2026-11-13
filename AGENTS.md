@@ -62,12 +62,16 @@ Decyzja zapisana w rozmowie albo w dokumencie od razu staje się issue; numery w
 
 ## 6. Gdzie kłaść kod i kiedy zakładać moduł
 
-Moduł działa jak mała usługa: jedno zadanie, jawne API, jawne zależności.
+Moduł działa jak mała usługa: jedno zadanie, jawne API, jawne zależności. Moduły dzielimy według
+dziedziny, warstwy są wewnątrz modułu. Pełny standard z kontrolami: `docs/docs/architektura/moduly.md`.
 
-- Serwer: korzeń pakietu modułu zawiera tylko typy wołane przez inne moduły. Reszta leży w podpakietach
-  `domain`, `web`, `persistence` albo w podpakiecie tematycznym, gdy temat ma co najmniej pięć plików.
-- Android: granicę modułu wyznaczają zależności Gradle i widoczność `internal`. Moduł funkcji nie sięga
-  do sieci ani do bazy; robi to przez `core/data`.
+- Serwer: moduły `identity`, `building`, `barrier`, `shared`. Korzeń pakietu modułu zawiera tylko typy
+  wołane przez inne moduły. Reszta leży w warstwach `domain`, `application`, `web`, `persistence`, `json`
+  albo w podpakiecie tematycznym, gdy temat ma co najmniej pięć plików. Zależności modułu są w
+  `@ApplicationModule(allowedDependencies = …)`; `shared` ma tylko `error`, `json`, `geo`.
+- Android: granicę modułu wyznacza Gradle. Moduł funkcji nie zależy od innego modułu funkcji ani od
+  `core:database` i `core:network`, także w testach; dane bierze z `core:data`. W `core` działa
+  `explicitApi()`. Pakiety funkcji dzielimy według ścieżki użytkownika albo tematu.
 - Nowa zależność między modułami to świadoma decyzja, widoczna w PR, nie skutek uboczny importu.
 
 Nowy moduł zakładasz, gdy naraz: ma kod już teraz; jego zadanie da się opisać jednym zdaniem bez „i”;
