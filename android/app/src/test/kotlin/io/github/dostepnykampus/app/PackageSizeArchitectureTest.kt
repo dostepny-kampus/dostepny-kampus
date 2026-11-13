@@ -16,7 +16,7 @@ import java.io.File
  * Pakiet kodu produkcyjnego ma najwyżej [LIMIT] plików Kotlin. Pakiety ponad limitem są na liście wyjątków
  * z numerem issue, a lista może tylko maleć.
  */
-class PackageSizeTest {
+class PackageSizeArchitectureTest {
     /** Pakiety spoza listy wyjątków mieszczą się w limicie. */
     @Test
     fun infra_package_fits_limit() {
@@ -44,7 +44,7 @@ class PackageSizeTest {
         assertEquals(mapOf("$BASE.sample.full" to LIMIT + 1), oversized(files))
     }
 
-    private fun source(name: String, index: Int): String ="package $BASE.sample.$name\nval $name$index = $index"
+    private fun source(name: String, index: Int): String = "package $BASE.sample.$name\nval $name$index = $index"
 
     private fun oversized(files: List<KoFileDeclaration>): Map<String, Int> =
         files
