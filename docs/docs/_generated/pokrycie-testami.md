@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Warstwa | Pełny test | Tylko częściowo | Bez testu |
 | --- | --- | --- | --- |
-| Aplikacja | 12 | 14 | 107 |
+| Aplikacja | 14 | 14 | 105 |
 | Serwer | 0 | 0 | 62 |
 
 | Plik | Scenariusz | Kryteria i reguły | Warstwa | Test | Stan |
@@ -47,7 +47,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `oznaczenie-wejscia.feature` | Po przyjęciu jednej zmiany wejścia drugą czekającą odrzuca się jako „nieaktualne” | BR-23, BR-24, US17.2 | serwer | — | brak |
 | `pomiar-precyzyjny.feature` | Uśrednianie pozycji trwa 30 s i pokazuje dane o satelitach | US6.1 | aplikacja | — | brak |
 | `pomiar-precyzyjny.feature` | Uśrednianie można przerwać i zacząć od nowa | US6.1 | aplikacja | — | brak |
-| `pomiar-precyzyjny.feature` | Zbierający decyduje o podpowiedzianym budynku | US6.2 | aplikacja | — | brak |
+| `pomiar-precyzyjny.feature` | Zbierający decyduje o podpowiedzianym budynku | US6.2 | aplikacja | `feature/capture · MeasuredReportTest.br_g2_outside_no_building`<br>`feature/capture · MeasuredReportTest.us6_2_confirmed_building_saved`<br>`feature/capture · MeasuredReportTest.us6_2_other_building_saved` | pełny |
 | `pomiar-precyzyjny.feature` | Podpowiedź budynku działa bez sieci | US6.2 | aplikacja | — | brak |
 | `pomiar-precyzyjny.feature` | Korekta punktu na planie piętra w budynku szczegółowym | US6.3 | aplikacja | — | brak |
 | `pomiar-precyzyjny.feature` | Mapa nieba rozróżnia systemy GNSS nie tylko kolorem | US6.5 | aplikacja | — | brak |
@@ -57,7 +57,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `pomiar-precyzyjny.feature` | Kompletne zgłoszenie zapisuje się ze statusem „lokalne” | BR-7, US7.1 | aplikacja | — | brak |
 | `pomiar-precyzyjny.feature` | Typ TB-29 „inna bariera” wymaga opisu | BR-7, US7.3 | aplikacja | — | brak |
 | `pomiar-precyzyjny.feature` | Typ TB-29 „inna bariera” z opisem zapisuje się | BR-7, US7.3 | aplikacja | — | brak |
-| `pomiar-precyzyjny.feature` | Powrót do pomiaru zmienia miejsce, a wpisane pola zostają | US7.4 | aplikacja | — | brak |
+| `pomiar-precyzyjny.feature` | Powrót do pomiaru zmienia miejsce, a wpisane pola zostają | US7.4 | aplikacja | `feature/capture · ReportDraftTest.us7_4_change_place_keeps_form` | pełny |
 | `pomiar-precyzyjny.feature` | Piętro zostaje po zmianie miejsca tylko w tym samym budynku | US7.4 | aplikacja | — | brak |
 | `pomiar-precyzyjny.feature` | Wyjście z formularza z niezapisanymi zmianami wymaga potwierdzenia | US7.4 | aplikacja | — | brak |
 | `postep-inwentaryzacji.feature` | Oznaczenie piętra albo budynku jako obejrzanego | BR-20, US15.1 | serwer | — | brak |
