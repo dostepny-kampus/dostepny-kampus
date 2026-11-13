@@ -13,6 +13,8 @@ import io.github.dostepnykampus.core.model.FloorList
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
+import io.github.dostepnykampus.feature.capture.measure.place
+import io.github.dostepnykampus.feature.capture.quick.content
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

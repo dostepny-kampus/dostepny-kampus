@@ -15,6 +15,7 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
