@@ -20,7 +20,7 @@ import org.junit.runner.RunWith
 import java.net.ConnectException
 import javax.inject.Inject
 
-/** Klient używany przez MapLibre dostaje lokalny podkład, z DNS blokującym wyjście do sieci (#609). */
+/** Klient używany przez MapLibre dostaje lokalny podkład, z DNS blokującym wyjście do sieci. */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class MapTileNetworkDeviceTest {
