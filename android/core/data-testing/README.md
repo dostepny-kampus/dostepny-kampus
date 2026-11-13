@@ -11,6 +11,7 @@ Repozytoria `:core:data` dla testów modułów funkcji: odpowiedzi serwera bez t
 ## Zależności
 
 - `:core:data`
+- `:core:database`
 - `:core:model`
 - `:core:network`
 

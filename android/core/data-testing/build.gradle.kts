@@ -11,5 +11,7 @@ plugins {
 dependencies {
     api(project(":core:data"))
     api(project(":core:model"))
+    implementation(project(":core:database"))
     implementation(project(":core:network"))
+    testImplementation(libs.kotlinx.coroutines.core)
 }

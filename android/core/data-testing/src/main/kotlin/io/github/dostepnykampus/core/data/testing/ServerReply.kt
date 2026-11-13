@@ -19,6 +19,7 @@ sealed interface ServerReply<out T> {
     /**
      * Serwer odpowiedział treścią.
      *
+     * @param T treść odpowiedzi
      * @property value treść odpowiedzi
      */
     data class Ok<T>(val value: T) : ServerReply<T>
