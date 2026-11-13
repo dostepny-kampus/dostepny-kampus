@@ -127,7 +127,9 @@ final class BarrierArchitectureTest {
             BarrierArchitectureTest.sample("A-4", "web", BarrierArchitectureTest.JDBC),
             BarrierArchitectureTest.sample("A-4", "web", BarrierArchitectureTest.REPO),
             BarrierArchitectureTest.sample("A-5", "json", BarrierArchitectureTest.REPO),
+            BarrierArchitectureTest.sample("A-5", "photo", BarrierArchitectureTest.REPO),
             BarrierArchitectureTest.sample("A-6", "web", BarrierArchitectureTest.OUTLINES),
+            BarrierArchitectureTest.sample("A-6", "photo", BarrierArchitectureTest.OUTLINES),
             BarrierArchitectureTest.sample("A-7", "domain", BarrierArchitectureTest.HTTP),
             BarrierArchitectureTest.sample(
                 "A-7", "web", "org.springframework.web.server.ServerWebInputException"
@@ -161,9 +163,7 @@ final class BarrierArchitectureTest {
     private static Map<String, ArchRule> all(final String root) {
         final String pkg = String.format("%s..", root);
         final String out = String.format("%s.persistence..", root);
-        final String service = String.format(
-            "%s.SubmissionService", BarrierArchitectureTest.MODULE
-        );
+        final String service = String.format("%s.application..", root);
         final String controller = String.format(
             "%s\\.web\\.SubmissionsController(\\$.*)?", Pattern.quote(BarrierArchitectureTest.MODULE)
         );
@@ -189,11 +189,11 @@ final class BarrierArchitectureTest {
                 .haveFullyQualifiedName(BarrierArchitectureTest.REPO),
             "A-5", ArchRuleDefinition.noClasses()
                 .that().resideInAPackage(pkg).and().resideOutsideOfPackage(out)
-                .and().doNotHaveFullyQualifiedName(service)
+                .and().resideOutsideOfPackage(service)
                 .should().dependOnClassesThat()
                 .haveFullyQualifiedName(BarrierArchitectureTest.REPO),
             "A-6", ArchRuleDefinition.noClasses()
-                .that().resideInAPackage(pkg).and().doNotHaveFullyQualifiedName(service)
+                .that().resideInAPackage(pkg).and().resideOutsideOfPackage(service)
                 .should().dependOnClassesThat()
                 .haveFullyQualifiedName(BarrierArchitectureTest.OUTLINES),
             "A-7", ArchRuleDefinition.noClasses()

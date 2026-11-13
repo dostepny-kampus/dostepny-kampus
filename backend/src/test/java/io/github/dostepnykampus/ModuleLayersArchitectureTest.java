@@ -73,7 +73,7 @@ final class ModuleLayersArchitectureTest {
     /**
      * Zapisane podpakiety tematyczne modułów, względem pakietu bazowego serwera.
      */
-    private static final Set<String> TOPICS = Set.of();
+    private static final Set<String> TOPICS = Set.of("barrier.photo");
 
     /**
      * Naruszenia, które dziś istnieją, i issue, które je usuwa.

@@ -49,15 +49,7 @@ final class ModuleRootArchitectureTest {
     /**
      * Klasy w korzeniu modułu, których nie woła inny moduł, i issue, które je przenosi.
      */
-    private static final Map<String, Integer> INTERNAL = Stream.of(
-        ModuleRootArchitectureTest.listed(
-            1323, "barrier", "JpegCleaner", "PhotoBucket", "PhotoSettings", "PhotoStorage",
-            "PhotoStore", "PhotoTooLargeException", "PhotoUpload", "SubmissionPhotos",
-            "SubmissionPhotosController", "SubmissionService"
-        )
-    ).flatMap(map -> map.entrySet().stream()).collect(
-        Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue)
-    );
+    private static final Map<String, Integer> INTERNAL = Map.of();
 
     /**
      * Pakiet przykładów kompilowanych przez test.
@@ -105,19 +97,6 @@ final class ModuleRootArchitectureTest {
             Set.of(String.format("%s.Hidden", alpha)),
             ModuleRootArchitectureTest.internal(this.compiled(), List.of(alpha)),
             "Reguła przepuściła klasę korzenia używaną tylko wewnątrz modułu"
-        );
-    }
-
-    private static Map<String, Integer> listed(
-        final int issue, final String module, final String... names
-    ) {
-        return Stream.of(names).collect(
-            Collectors.toMap(
-                name -> String.format(
-                    "%s.%s.%s", ModuleRootArchitectureTest.BASE, module, name
-                ),
-                name -> issue
-            )
         );
     }
 

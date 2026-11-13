@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.web;
 
-import io.github.dostepnykampus.barrier.SubmissionService;
+import io.github.dostepnykampus.barrier.application.SubmissionService;
 import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.Reader;

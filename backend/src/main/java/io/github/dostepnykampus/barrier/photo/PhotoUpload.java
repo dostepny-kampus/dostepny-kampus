@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus.barrier.photo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +18,7 @@ import java.io.InputStream;
  * @param declared Zadeklarowany rozmiar albo -1, gdy nieznany
  * @since 0.1.0
  */
-record PhotoUpload(InputStream source, long declared) {
+public record PhotoUpload(InputStream source, long declared) {
 
     /**
      * Maksymalny rozmiar wejściowego JPEG.
@@ -32,7 +32,7 @@ record PhotoUpload(InputStream source, long declared) {
      * @throws IOException Gdy odczyt się nie uda lub rozmiar przekracza limit
      *  (PhotoTooLargeException)
      */
-    byte[] read() throws IOException {
+    public byte[] read() throws IOException {
         if (this.declared > PhotoUpload.MAX_BYTES) {
             throw new PhotoTooLargeException();
         }

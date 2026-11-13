@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus.barrier.photo;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +36,7 @@ public final class PhotoStorage {
      * @return Klient S3 z adresami w ścieżce, bez nazw kubełków w domenie
      */
     @Bean
-    static S3Client photoClient(final PhotoSettings settings) {
+    public static S3Client photoClient(final PhotoSettings settings) {
         return S3Client.builder()
             .endpointOverride(settings.endpoint())
             .region(Region.US_EAST_1)

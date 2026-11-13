@@ -371,12 +371,12 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
           <targetClasses>
             <param>io.github.dostepnykampus.*.domain.*</param>
             <param>io.github.dostepnykampus.barrier.json.*</param>
-            <param>io.github.dostepnykampus.barrier.Photo*</param>
+            <param>io.github.dostepnykampus.barrier.photo.Photo*</param>
             <param>io.github.dostepnykampus.barrier.web.NewSubmissionRequest*</param>
             <param>io.github.dostepnykampus.barrier.web.SubmissionFilter*</param>
             <param>io.github.dostepnykampus.barrier.web.SubmissionUpdateRequest*</param>
-            <param>io.github.dostepnykampus.barrier.JpegCleaner*</param>
-            <param>io.github.dostepnykampus.barrier.SubmissionService*</param>
+            <param>io.github.dostepnykampus.barrier.photo.JpegCleaner*</param>
+            <param>io.github.dostepnykampus.barrier.application.SubmissionService*</param>
             <param>io.github.dostepnykampus.shared.json.StrictJsonConfiguration*</param>
             <param>io.github.dostepnykampus.shared.json.CanonicalUuidDeserializer*</param>
             <param>io.github.dostepnykampus.shared.json.NullRejectingDeserializer*</param>

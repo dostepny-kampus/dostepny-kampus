@@ -3,12 +3,15 @@
  * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus.barrier.application;
 
 import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
+import io.github.dostepnykampus.barrier.photo.JpegCleaner;
+import io.github.dostepnykampus.barrier.photo.PhotoStore;
+import io.github.dostepnykampus.barrier.photo.PhotoUpload;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import io.github.dostepnykampus.shared.error.MissingResource;
@@ -36,7 +39,7 @@ import software.amazon.awssdk.core.exception.SdkException;
  * @since 0.1.0
  */
 @Service
-final class SubmissionPhotos {
+public final class SubmissionPhotos {
 
     /** Dziennik błędów usuwania starych zdjęć. */
     private static final Logger LOG = LoggerFactory.getLogger(SubmissionPhotos.class);
@@ -50,7 +53,7 @@ final class SubmissionPhotos {
     /** Blokada wiersza podczas kontroli statusu i zapisu zdjęcia. */
     private final SubmissionService service;
 
-    SubmissionPhotos(
+    public SubmissionPhotos(
         final SubmissionFinder submissions, final PhotoStore photos, final SubmissionService service
     ) {
         this.submissions = submissions;
@@ -67,7 +70,7 @@ final class SubmissionPhotos {
      * @param submission Identyfikator zgłoszenia
      * @param account Identyfikator konta z tokenu
      */
-    void author(final UUID submission, final String account) {
+    public void author(final UUID submission, final String account) {
         if (this.submissions.foreign(submission, account)) {
             throw new ForbiddenChange("Zdjęcie dodaje tylko autor zgłoszenia");
         }
@@ -85,7 +88,7 @@ final class SubmissionPhotos {
      * @throws IOException Gdy odczyt ciała się nie uda albo przekracza limit
      *  rozmiaru (PhotoTooLargeException)
      */
-    void put(final UUID submission, final UUID photo, final PhotoUpload upload)
+    public void put(final UUID submission, final UUID photo, final PhotoUpload upload)
         throws IOException {
         this.editable(submission, photo);
         final byte[] jpeg = SubmissionPhotos.clean(upload.read());
@@ -108,7 +111,7 @@ final class SubmissionPhotos {
      * @param reader Osoba, która czyta zdjęcie
      * @return Plik JPEG bez metadanych
      */
-    byte[] get(final UUID submission, final UUID photo, final Reader reader) {
+    public byte[] get(final UUID submission, final UUID photo, final Reader reader) {
         return this.submissions.visible(submission, reader)
             .filter(item -> item.content().photoIds().contains(photo))
             .flatMap(item -> this.photos.get(submission, photo))

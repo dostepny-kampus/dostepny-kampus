@@ -5,7 +5,7 @@
  */
 
 /**
- * Ciała żądań i odpowiedzi HTTP zgłoszeń oraz filtr listy.
+ * Operacje HTTP zgłoszeń i ich zdjęć, ciała żądań i odpowiedzi oraz filtr listy.
  *
  * @since 0.1.0
  */
