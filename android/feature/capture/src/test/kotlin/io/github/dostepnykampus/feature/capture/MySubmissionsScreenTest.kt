@@ -68,12 +68,12 @@ class MySubmissionsScreenTest {
      */
     @Test
     fun us9_1_offline_indicator() {
-        var online by mutableStateOf(false)
+        var isOnline by mutableStateOf(false)
         val list = MySubmissions(listOf(item(id = "a", state = SendState.LOCAL)))
         compose.setContent {
             DostepnyKampusTheme {
                 MySubmissionsContent(
-                    state = MySubmissionsUiState.Ready(list, isOnline = online),
+                    state = MySubmissionsUiState.Ready(list, isOnline = isOnline),
                     actions = MySubmissionsActions(onBack = {}, onMeasure = {}),
                 )
             }
@@ -83,7 +83,7 @@ class MySubmissionsScreenTest {
         val polite = SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite)
         compose.onNode(polite and hasAnyDescendant(hasText("Bez internetu"))).assertExists()
 
-        online = true
+        isOnline = true
         compose.onNodeWithText("Bez internetu").assertDoesNotExist()
         compose.onNodeWithText("W telefonie").assertIsDisplayed()
     }
