@@ -17,6 +17,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import java.io.ByteArrayOutputStream
@@ -47,15 +48,19 @@ object NoServerNetworkModule {
                 if (request.url.host != "tile.openstreetmap.org") {
                     throw ConnectException("Brak serwera w teście: ${request.url}")
                 }
-                Response
-                    .Builder()
-                    .request(request)
-                    .protocol(Protocol.HTTP_1_1)
-                    .code(200)
-                    .message("Lokalny kafelek testowy")
-                    .body(tile.toResponseBody("image/png".toMediaType()))
-                    .build()
-            }
+                tileResponse(request, tile)
+            }.build()
+    }
+
+    private fun tileResponse(request: Request, tile: ByteArray): Response {
+        val body = tile.toResponseBody("image/png".toMediaType())
+        return Response
+            .Builder()
+            .request(request)
+            .protocol(Protocol.HTTP_1_1)
+            .code(200)
+            .message("Lokalny kafelek testowy")
+            .body(body)
             .build()
     }
 

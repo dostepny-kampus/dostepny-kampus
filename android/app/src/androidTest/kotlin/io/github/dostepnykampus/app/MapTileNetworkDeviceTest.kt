@@ -37,12 +37,12 @@ class MapTileNetworkDeviceTest {
 
     /** Żądanie do prawdziwego adresu OSM przechodzi z blokadą DNS i zwraca przezroczysty lokalny PNG. */
     @Test
-    fun tiles_are_local_with_network_blocked() {
+    fun tiles_work_without_network() {
         val request = Request.Builder().url("https://tile.openstreetmap.org/0/0/0.png").build()
         tiles.calls.newCall(request).execute().use { response ->
             assertEquals(200, response.code)
-            assertEquals("image/png", response.body.contentType().toString())
-            val bitmap = checkNotNull(BitmapFactory.decodeStream(response.body.byteStream()))
+            assertEquals("image/png", checkNotNull(response.body.contentType()).toString())
+            val bitmap = response.body.byteStream().use { checkNotNull(BitmapFactory.decodeStream(it)) }
             try {
                 assertEquals(256, bitmap.width)
                 assertEquals(256, bitmap.height)
@@ -57,6 +57,6 @@ class MapTileNetworkDeviceTest {
     @Test(expected = ConnectException::class)
     fun other_hosts_are_blocked() {
         val request = Request.Builder().url("https://example.org/0/0/0.png").build()
-        tiles.calls.newCall(request).execute().close()
+        tiles.calls.newCall(request).execute().use { error("Obcy host dostał odpowiedź: ${it.code}") }
     }
 }
