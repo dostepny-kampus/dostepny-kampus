@@ -2,7 +2,8 @@
 
 Ten plik mówi, jak prowadzić zmianę w Dostępnym Kampusie. Reguły, które sprawdza CI, są w
 [CONTRIBUTING.md](CONTRIBUTING.md) razem z plikiem, który je egzekwuje; tu są wymienione tylko z nazwy.
-Szczegółowo opisane jest to, czego CI nie sprawdzi.
+Szczegółowo opisane jest to, czego CI nie sprawdzi. Plik czyta się w całości przy każdej zmianie, więc ma
+najwyżej 150 linii (`.github/scripts/dlugosc-pliku-test.sh`).
 
 ## 1. Mapa repozytorium
 
