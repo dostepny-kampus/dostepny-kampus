@@ -16,17 +16,17 @@ class KDocDescriptionLengthTest {
 
     @Test
     fun `siedem linii opisu to błąd`() {
-        assertEquals(listOf(1), lines(kdoc(description = 7)))
+        assertEquals(listOf(1), lines(*kdoc(description = 7)))
     }
 
     @Test
     fun `sześć linii opisu przechodzi`() {
-        assertEquals(emptyList<Int>(), lines(kdoc(description = 6)))
+        assertEquals(emptyList<Int>(), lines(*kdoc(description = 6)))
     }
 
     @Test
-    fun `linie znaczników nie są liczone`() {
-        assertEquals(emptyList<Int>(), lines(kdoc(description = 6, tags = 5)))
+    fun `znaczniki nie są liczone`() {
+        assertEquals(emptyList<Int>(), lines(*kdoc(description = 6, tags = 5)))
     }
 
     @Test
@@ -42,7 +42,7 @@ class KDocDescriptionLengthTest {
     }
 
     @Test
-    fun `opis w linii otwarcia jest liczony`() {
+    fun `opis w linii otwarcia liczony`() {
         val text = listOf("/** a", " * b", " * c", " * d", " * e", " * f", " * g */", "fun a() = 1")
         assertEquals(listOf(1), lines(*text.toTypedArray()))
     }
