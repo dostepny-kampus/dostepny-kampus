@@ -91,7 +91,13 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
      */
     suspend fun photo(submissionId: String, photoId: String): ApiResult<ByteArray> {
         val target = path(submissionId, PHOTOS, photoId)
-        val get = Request.Builder().url(target).header(name = ACCEPT, value = PHOTO_TYPES).get().build()
+        val get =
+            Request
+                .Builder()
+                .url(target)
+                .header(name = ACCEPT, value = PHOTO_TYPES)
+                .get()
+                .build()
         return photoHttp.exchangeBody(get) { code, body ->
             if (code == HTTP_OK) ApiResult.Success(body.bytes()) else other(code)
         }
