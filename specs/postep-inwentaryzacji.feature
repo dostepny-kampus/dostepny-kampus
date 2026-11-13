@@ -6,7 +6,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
   @BR-20
   Reguła: Piętro obejrzane oznacza Zbierający, a cofa ten sam Zbierający albo Koordynator
 
-    @US15.1
+    @US15.1 @serwer
     Szablon scenariusza: Oznaczenie piętra albo budynku jako obejrzanego
       Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
       Oraz telefon ma sieć
@@ -20,7 +20,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
         | B-1     | jedno z 7 pięter jako obejrzane    | 1 z 7 pięter             |
         | B-8     | cały budynek jako „obejrzany”      | znacznik „obejrzany”     |
 
-    @US15.2
+    @US15.2 @aplikacja
     Scenariusz: Zbierający cofa własny znacznik po potwierdzeniu
       Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
       Jeżeli wybierze „Cofnij znacznik”
@@ -28,14 +28,14 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Jeżeli potwierdzi cofnięcie
       Wtedy piętro nie jest już obejrzane
 
-    @US15.2
+    @US15.2 @serwer
     Scenariusz: Inny Zbierający nie cofnie cudzego znacznika
       Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
       Jeżeli inny Zbierający spróbuje cofnąć ten znacznik
       Wtedy próba jest odrzucona
       Oraz piętro jest nadal obejrzane
 
-    @US11.3
+    @US11.3 @aplikacja
     Scenariusz: Koordynator cofa znacznik dowolnego Zbierającego po potwierdzeniu
       Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
       Jeżeli Koordynator wybierze „Cofnij znacznik”
@@ -44,7 +44,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Wtedy piętro nie jest już obejrzane
       Oraz postęp budynku A-1 pokazuje o jedno piętro obejrzane mniej
 
-    @US11.3 @US15.2
+    @US11.3 @US15.2 @aplikacja
     Szablon scenariusza: Bez potwierdzenia znacznik zostaje
       Zakładając, że Zbierający oznaczył piętro budynku A-1 jako obejrzane
       Jeżeli <osoba> wybierze „Cofnij znacznik”
@@ -56,7 +56,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
         | Zbierający  |
         | Koordynator |
 
-    @US15.3 @BR-9
+    @US15.3 @BR-9 @aplikacja
     Szablon scenariusza: Znacznik i jego cofnięcie bez sieci czekają w telefonie
       Zakładając, że Zbierający oznaczył 3 z 5 pięter budynku A-1 jako obejrzane
       Oraz telefon nie ma sieci
@@ -69,7 +69,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
         | oznaczy kolejne piętro jako obejrzane                |
         | cofnie swój znacznik jednego z obejrzanych pięter    |
 
-    @US15.3 @BR-9
+    @US15.3 @BR-9 @aplikacja
     Szablon scenariusza: Po powrocie sieci znacznik i jego cofnięcie wysyłają się same
       Zakładając, że Zbierający oznaczył 3 z 5 pięter budynku A-1 jako obejrzane
       Oraz bez sieci <czynność>
@@ -88,7 +88,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
     Założenia:
       Zakładając, że Koordynator jest zalogowany z rolą Koordynatora
 
-    @US11.1
+    @US11.1 @serwer
     Scenariusz: Postęp budynku szczegółowego i podstawowego z liczbami zgłoszeń
       Zakładając, że w budynku A-1 obejrzano 3 z 5 pięter, a budynek B-8 ma znacznik „obejrzany”
       Oraz w budynku A-1 są 2 zgłoszenia „wysłane”, 1 „w weryfikacji” i 4 „przyjęte”
@@ -96,7 +96,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Wtedy przy budynku A-1 widzi 60 procent pięter obejrzanych, 3 zgłoszenia czekające i 4 przyjęte
       Oraz przy budynku B-8 widzi znacznik „obejrzany”
 
-    @US11.2
+    @US11.2 @serwer
     Szablon scenariusza: Postęp pokazuje nową wartość po dotarciu znacznika na serwer
       Zakładając, że w budynku A-1 obejrzano <przed> z 5 pięter
       Jeżeli na serwer dotrze <zmiana>
@@ -108,7 +108,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
         | 4     | cofnięcie znacznika jednego piętra       | 3  | 60      |
         | 4     | drugi znacznik już obejrzanego piętra    | 4  | 80      |
 
-    @US11.2
+    @US11.2 @aplikacja
     Scenariusz: Postęp podaje datę i godzinę odczytu i daje się odświeżyć
       Zakładając, że Koordynator otworzył postęp inwentaryzacji 28.10.2026 o 10:15
       Oraz potem na serwer dotarł znacznik kolejnego piętra budynku A-1
@@ -116,6 +116,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Wtedy widzi nową wartość postępu budynku A-1
       Oraz datę i godzinę nowego odczytu
 
+    @serwer
     Szablon scenariusza: Do postępu nie wchodzą zgłoszenia nieznane serwerowi, archiwalne ani poza budynkiem
       Zakładając, że przy budynku A-1 są 4 zgłoszenia przyjęte
       Oraz jest też <zgłoszenie>
@@ -136,7 +137,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       # Dane testowe, a nie stan faktyczny budynku A-1.
       Oraz budynek A-1 ma w danych testowych 6 wejść
 
-    @US11.4
+    @US11.4 @serwer
     Szablon scenariusza: Liczba wejść ze źródłem „obchód” w budynku szczegółowym
       Zakładając, że liczba wejść A-1 ze źródłem oznaczenia „obchód” to <obchód>, a pozostałe mają źródło „import”
       Oraz liczba wejść A-1 ze zmianą oznaczenia czekającą na decyzję Weryfikatora to <czeka>
@@ -150,7 +151,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
         | 4      | 2     |
         | 6      | 0     |
 
-    @US11.4
+    @US11.4 @serwer
     Scenariusz: Przyjęta zmiana oznaczenia wejścia zwiększa liczbę wejść sprawdzonych na miejscu
       Zakładając, że 4 wejścia A-1 mają oznaczenie ze źródłem „obchód”
       Jeżeli Weryfikator przyjmie zmianę oznaczenia jednego z pozostałych wejść A-1

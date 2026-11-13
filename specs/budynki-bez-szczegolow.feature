@@ -9,14 +9,14 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   @BR-G1
   Reguła: Budynek bez planów pięter nie ma przełącznika pięter, a piętro wpisuje się ręcznie
 
-    @US16.2
+    @US16.2 @aplikacja
     Scenariusz: Karta budynku podstawowego zamiast planu piętra pokazuje napis
       Jeżeli Gość niezalogowany otworzy kartę budynku B-8
       Wtedy nie widzi przełącznika pięter
       Oraz w miejscu planu piętra widzi napis „Nie mamy planu pięter tego budynku.”
       Oraz widzi wejścia budynku B-8 i jego zgłoszenia przyjęte
 
-    @US7.2
+    @US7.2 @aplikacja
     Szablon scenariusza: Piętro w budynku podstawowym wpisuje się jako liczbę całkowitą
       Zakładając, że Zbierający wypełnia formularz zgłoszenia w budynku B-8
       Jeżeli wpisze piętro <piętro>
@@ -30,7 +30,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | „1” z dopiskiem „półpiętro” | ma piętro 1 z dopiskiem „półpiętro”                    |
         | „1,5”                       | nie zapisuje się z piętrem „1,5”                       |
 
-    @US6.4 @BR-G2
+    @US6.4 @BR-G2 @aplikacja
     Szablon scenariusza: Korekta punktu na mapie w każdym budynku i poza budynkiem
       Zakładając, że Zbierający skończył uśrednianie pozycji <miejsce>
       Jeżeli przesunie punkt bariery na mapie
@@ -43,6 +43,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | w budynku szczegółowym A-1                      |
         | na chodniku przed wejściem głównym A-1          |
 
+    @serwer
     Szablon scenariusza: W budynku podstawowym zgłoszenie można złożyć zawsze
       Zakładając, że <osoba> jest zalogowany z rolą <rola>
       Oraz stoi w budynku B-8
@@ -58,14 +59,14 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   @BR-G2
   Reguła: Punkt poza konturem budynku to stan „Poza budynkiem”, a nie błąd
 
-    @US6.2
+    @US6.2 @aplikacja
     Scenariusz: Poza konturem aplikacja pokazuje stan „Poza budynkiem” i proponuje najbliższy budynek
       Zakładając, że Zbierający stoi na chodniku przed wejściem głównym A-1, poza konturem budynku
       Jeżeli skończy uśrednianie pozycji
       Wtedy widzi stan „Poza budynkiem” bez komunikatu o błędzie
       Oraz aplikacja podpowiada budynek A-1
 
-    @US6.2
+    @US6.2 @aplikacja
     Szablon scenariusza: Propozycję najbliższego budynku można wybrać albo odrzucić
       Zakładając, że Zbierający stoi na chodniku przed wejściem głównym A-1, poza konturem budynku
       Oraz po uśrednianiu pozycji aplikacja podpowiada budynek A-1
@@ -77,7 +78,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | wybierze budynek A-1          | ma budynek A-1          |
         | odrzuci podpowiedź budynku    | jest „poza budynkiem”   |
 
-    @US6.2
+    @US6.2 @aplikacja
     Szablon scenariusza: Punkt dokładnie na krawędzi konturu jest poza budynkiem z propozycją
       Zakładając, że Zbierający stoi dokładnie <miejsce> budynku A-1
       Jeżeli skończy uśrednianie pozycji
@@ -90,6 +91,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | na krawędzi konturu          |
         | na krawędzi dziedzińca       |
 
+    @aplikacja
     Scenariusz: Zgłoszenie szybkie poza konturem budynku zapisuje się bez błędu
       Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
       Oraz stoi na chodniku przed wejściem głównym A-1, poza konturem budynku
@@ -100,7 +102,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   @BR-G3
   Reguła: Nieudany import planów nie psuje pozostałych budynków
 
-    @US16.2
+    @US16.2 @aplikacja
     Scenariusz: Budynek z uszkodzonymi danymi planów działa jako budynek podstawowy
       Zakładając, że dane planów pięter budynku B-1 są uszkodzone
       Jeżeli import planów pięter się zakończy
@@ -108,6 +110,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
       Oraz budynki A-1, C-13, D-1 i D-2 mają plany pięter
       Oraz raport importu wskazuje budynek B-1
 
+    @aplikacja
     Scenariusz: Zgłoszenie w budynku po nieudanym imporcie planów
       Zakładając, że import planów pięter budynku B-1 się nie udał
       Jeżeli Zbierający złoży zgłoszenie w budynku B-1 i wpisze piętro 3
@@ -117,7 +120,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   @BR-G4
   Reguła: Dalej niż 50 m od budynków PWr zgłoszenie zapisuje się jako „poza budynkiem”
 
-    @US6.2
+    @US6.2 @aplikacja
     Szablon scenariusza: Propozycja budynku po pomiarze zależy od odległości od konturu
       Zakładając, że Zbierający stoi poza konturem, <odległość> od konturu budynku A-1, a dalej od innych budynków PWr
       Jeżeli skończy uśrednianie pozycji
@@ -130,6 +133,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | 50 m      | aplikacja podpowiada budynek A-1 do potwierdzenia                                                     |
         | 60 m      | aplikacja nie podpowiada żadnego budynku, a po zapisaniu zgłoszenie jest „poza budynkiem”, bez piętra |
 
+    @aplikacja
     Scenariusz: Mapa działa daleko od budynków PWr
       Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
       Oraz stoi przy kampusie 60 m od konturu najbliższego budynku PWr

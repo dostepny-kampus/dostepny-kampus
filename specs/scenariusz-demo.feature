@@ -10,7 +10,7 @@ Funkcja: Scenariusz demo w budynku A-1
     Oraz Zbierający oznaczył wcześniej 4 z 5 pięter budynku A-1 jako obejrzane
     Oraz 5 m od wejścia głównego A-1 jest przyjęte zgłoszenie TB-13 „próg”, które opisuje inną barierę
 
-  @US6.1 @US6.2 @US7.1 @US9.2 @US10.1 @US2.1 @US11.1 @US13.1
+  @US6.1 @US6.2 @US7.1 @US9.2 @US10.1 @US2.1 @US11.1 @US13.1 @aplikacja @serwer
   Scenariusz: Schody przy wejściu głównym A-1 od pomiaru do eksportu
     Zakładając, że Zbierający przy wejściu głównym A-1 po 30 s uśredniania pozycji potwierdza podpowiedziany budynek A-1
     Jeżeli zapisze zgłoszenie TB-1 „schody przy wejściu” z uciążliwością 3 i zdjęciem, gdy telefon nie ma sieci
