@@ -99,6 +99,7 @@ dependencies {
     androidTestUtil(libs.androidx.test.services)
     androidTestImplementation(libs.androidx.compose.ui.test)
     androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.core)
     androidTestImplementation(libs.junit4)
     androidTestImplementation(project(":core:network"))
     androidTestImplementation(libs.okhttp)
