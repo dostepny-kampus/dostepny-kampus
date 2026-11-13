@@ -206,6 +206,15 @@ Scenariusz z tagiem `@aplikacja` ma mieć test Androida ze znacznikiem w KDoc tu
 - pełny: `/** Scenariusz: <plik>.feature: <nazwa scenariusza> */`,
 - tylko część kroków „Wtedy”: `/** Scenariusz (częściowo): <plik>.feature: <nazwa scenariusza> */`.
 
+Znacznik pełny stoi nad testem, który przechodzi cały scenariusz. Taki test wykonuje krok „Jeżeli” i sprawdza wszystkie kroki „Wtedy”. Sprawdza też połączenie części aplikacji, których scenariusz dotyczy. Kilka testów, z których każdy sprawdza jeden krok osobno, nie daje pełnego pokrycia.
+
+Wiersze tabeli „Przykłady” to warianty scenariusza. Każdy wariant może mieć własny test całej ścieżki ze znacznikiem wiersza:
+
+- `/** Scenariusz (przykład: <wiersz>): <plik>.feature: <nazwa scenariusza> */`,
+- `/** Scenariusz (częściowo, przykład: <wiersz>): <plik>.feature: <nazwa scenariusza> */`.
+
+Wiersz podaje się pierwszą komórką, gdy ma ją tylko jeden wiersz. W innym razie podaje się wszystkie komórki rozdzielone znakiem `|`. Szablon jest „pełny”, gdy ma pełny znacznik całego scenariusza albo pełny znacznik każdego wiersza.
+
 Przykład: `/** Scenariusz: przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */`. Komentarze `//` nie są dozwolone w kodzie Kotlin.
 
 Tabela [Pokrycie scenariuszy testami](../_generated/pokrycie-testami.md) ma wiersz dla każdego scenariusza: jego kryteria i reguły, testy (moduł, klasa i funkcja testu) i stan „pełny”, „częściowo” albo „brak”. Ma tyle wierszy, ile scenariuszy, dlatego jest na osobnej stronie.
