@@ -44,6 +44,7 @@ dependencies {
     testImplementation(libs.androidx.compose.ui.test)
     testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(libs.androidx.test.core)
+    testImplementation(libs.roborazzi.compose)
     testImplementation(libs.roborazzi.core)
     testImplementation(libs.robolectric.annotations)
     testImplementation(libs.robolectric.shadows.framework)

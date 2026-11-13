@@ -29,7 +29,6 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.core)
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.exifinterface)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material3)
