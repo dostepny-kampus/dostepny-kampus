@@ -38,11 +38,9 @@ barrier/
 - Korzeń pakietu modułu zawiera tylko `package-info.java` i typy wołane przez inne moduły, także
   w małym module.
 - Warstwy mają stałe nazwy: `domain`, `application`, `web`, `persistence`, `json`. Warstwa powstaje,
-  gdy ma choć jeden plik. Kierunek zależności:
-    - `web` → `application` → `domain`, a `web` może też wołać `domain`;
-    - `persistence` → `domain`;
-    - `web` i `persistence` → `json` → `domain`;
-    - `domain` nie zależy od innych warstw ani od frameworków.
+  gdy ma choć jeden plik. Kierunek zależności: `web` → `application` → `domain`, a `web` może też wołać
+  `domain`; `persistence` → `domain`; `web` i `persistence` → `json` → `domain`; `domain` nie zależy
+  od innych warstw ani od frameworków.
 - Podpakiet tematyczny powstaje, gdy temat ma co najmniej pięć plików. Wewnątrz warstwy
   (`barrier.domain.content`) podlega regułom swojej warstwy; na poziomie modułu (`barrier.photo`) jest
   adapterem jak `persistence`: zależy od `domain`, `domain` od niego nie zależy.
