@@ -16,7 +16,7 @@ import java.io.IOException
  *
  * Wymagania: NFR-5, US9.1
  */
-public fun interface ReportSaver {
+fun interface ReportSaver {
     /**
      * Zapisuje treść i zdjęcia; rzuca [IOException] albo [SQLiteException], gdy telefon nie może zapisać.
      *
@@ -26,9 +26,9 @@ public fun interface ReportSaver {
      * @param photos zdjęcia zgłoszenia
      * @param edited poprawiane zgłoszenie z C3 albo `null` dla nowego
      */
-    public suspend fun save(
+    suspend fun save(
         content: SubmissionContent,
         photos: List<PendingPhotoDraft>,
         edited: EditedSubmission?,
-    ): Unit
+    )
 }

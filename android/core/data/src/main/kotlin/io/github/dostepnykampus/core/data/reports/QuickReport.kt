@@ -24,13 +24,13 @@ import io.github.dostepnykampus.core.model.SubmissionKind
  * @property floorLabel etykieta piętra [floorId] do prezentacji
  * @property entranceId wejście z „Zgłoś barierę przy wejściu”; `null`, gdy zgłoszenie zaczęło się z mapy
  */
-public data class QuickReport(
-    public val photo: PendingPhotoDraft,
-    public val group: BarrierGroup,
-    public val floorNumber: Int? = null,
-    public val floorId: String? = null,
-    public val floorLabel: String? = null,
-    public val entranceId: String? = null,
+data class QuickReport(
+    val photo: PendingPhotoDraft,
+    val group: BarrierGroup,
+    val floorNumber: Int? = null,
+    val floorId: String? = null,
+    val floorLabel: String? = null,
+    val entranceId: String? = null,
 )
 
 /**
@@ -43,11 +43,11 @@ public data class QuickReport(
  * @property isInBuilding czy pozycja leży w konturze budynku
  * @property buildingSymbol budynek, w którego konturze leży pozycja
  */
-public data class QuickPosition(
-    public val point: GeoPoint,
-    public val accuracyMeters: Double,
-    public val isInBuilding: Boolean,
-    public val buildingSymbol: String? = null,
+data class QuickPosition(
+    val point: GeoPoint,
+    val accuracyMeters: Double,
+    val isInBuilding: Boolean,
+    val buildingSymbol: String? = null,
 )
 
 /**
@@ -57,7 +57,7 @@ public data class QuickPosition(
  *
  * Wymagania: BR-14, US4.6
  */
-public fun QuickReport.content(position: QuickPosition): SubmissionContent =
+fun QuickReport.content(position: QuickPosition): SubmissionContent =
     SubmissionContent(
         kind = SubmissionKind.QUICK,
         location = position.point,
