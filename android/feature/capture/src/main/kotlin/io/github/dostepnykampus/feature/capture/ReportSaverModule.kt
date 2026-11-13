@@ -11,11 +11,15 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 
-/** Formularz C2 zapisuje do kolejki zgłoszeń z `core:data` (NFR-5). */
+/** Formularz C2 zapisuje do kolejki zgłoszeń z `core:data`. Wymagania: NFR-5 */
 @Module
 @InstallIn(SingletonComponent::class)
 object ReportSaverModule {
-    /** Zapis przez kolejkę; poprawka z C3 zastępuje swoje zgłoszenie (US8.3). Wynik nie jest ekranowi potrzebny. */
+    /**
+     * Zapis przez kolejkę; poprawka z C3 zastępuje swoje zgłoszenie. Wynik nie jest ekranowi potrzebny.
+     *
+     * Wymagania: US8.3
+     */
     @Provides
     fun reportSaver(queue: SubmissionQueue): ReportSaver =
         ReportSaver { content, photos, edited ->

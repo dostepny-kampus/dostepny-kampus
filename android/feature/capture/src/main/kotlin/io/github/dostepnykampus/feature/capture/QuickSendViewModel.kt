@@ -38,25 +38,29 @@ import javax.inject.Inject
 
 private const val STOP_TIMEOUT_MS = 5_000L
 
-/** Etap kroku 3 V4 (US4.1, US4.4). */
+/** Etap kroku 3 V4. Wymagania: US4.1, US4.4 */
 enum class QuickSendStage {
     /** Podsumowanie przed „Wyślij”. */
     READY,
 
-    /** Zapis w kolejce trwa; „Wyślij” jest nieczynne, żeby nie wysłać zdjęcia drugi raz (US4.7). */
+    /** Zapis w kolejce trwa; „Wyślij” jest nieczynne, żeby nie wysłać zdjęcia drugi raz. Wymagania: US4.7 */
     SENDING,
 
-    /** Zapisane w kolejce przy internecie; dalej „Dziękujemy…” (US4.4). */
+    /** Zapisane w kolejce przy internecie; dalej „Dziękujemy…”. Wymagania: US4.4 */
     SENT,
 
-    /** Zapisane w kolejce bez internetu; dalej „Zapisaliśmy zdjęcie w telefonie…”, a wysyła kolejka (US4.2). */
+    /**
+     * Zapisane w kolejce bez internetu; dalej „Zapisaliśmy zdjęcie w telefonie…”, a wysyła kolejka.
+     *
+     * Wymagania: US4.2
+     */
     SAVED_OFFLINE,
 
-    /** „Za mało miejsca w telefonie” z ponowieniem (NFR-7). */
+    /** „Za mało miejsca w telefonie” z ponowieniem. Wymagania: NFR-7 */
     FAILED,
 }
 
-/** Ustalanie pozycji w kroku 3 V4 (NFR-23). */
+/** Ustalanie pozycji w kroku 3 V4. Wymagania: NFR-23 */
 sealed interface QuickLookup {
     /** „Ustalamy, gdzie jesteś…”; „Wyślij” czeka. */
     data object Locating : QuickLookup
@@ -73,12 +77,14 @@ sealed interface QuickLookup {
 }
 
 /**
- * Pozycja w krokach 1–2 V4 i krok 3: bieżąca pozycja i „Wyślij” (US4.1, NFR-27). Krok 2 pomija pytanie o piętro,
- * gdy pozycja jest już znana i leży poza konturem, a w budynku szczegółowym pokazuje jego piętra z serwera (US4.5).
+ * Pozycja w krokach 1–2 V4 i krok 3: bieżąca pozycja i „Wyślij”. Krok 2 pomija pytanie o piętro,
+ * gdy pozycja jest już znana i leży poza konturem, a w budynku szczegółowym pokazuje jego piętra z serwera.
  * Pozycja to pierwszy odczyt ze znaną dokładnością, a budynek z konturu w katalogu bez sieci decyduje, czy piętro
- * idzie do zgłoszenia (BR-14, BR-G2). Odbiornik nasłuchuje, gdy ekran jest widoczny; „Wyślij” czeka na pozycję bez
- * limitu czasu (NFR-23). „Brak pozycji” wywołuje zdarzenie odbiornika albo wyłączenie lokalizacji, nie upływ czasu;
+ * idzie do zgłoszenia. Odbiornik nasłuchuje, gdy ekran jest widoczny; „Wyślij” czeka na pozycję bez
+ * limitu czasu. „Brak pozycji” wywołuje zdarzenie odbiornika albo wyłączenie lokalizacji, nie upływ czasu;
  * „Spróbuj ponownie” ustala pozycję od nowa.
+ *
+ * Wymagania: US4.1, NFR-27, US4.5, BR-14, BR-G2, NFR-23
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
