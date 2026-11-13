@@ -11,8 +11,7 @@ import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
 /**
- * Punkt WGS84 przeliczony na PUWG 1992 (EPSG:2180) dla eksportu CSV
- * (US13.2, NFR-43).
+ * Punkt WGS84 przeliczony na PUWG 1992 (EPSG:2180) dla eksportu CSV.
  *
  * <p>Przeliczenie robi biblioteka proj4j (ADR-0004). Parametry układu
  * są te same co w PROJ dla EPSG:2180: odwzorowanie Gaussa-Krügera na
@@ -21,6 +20,8 @@ import org.locationtech.proj4j.ProjCoordinate;
  * a ETRF2000 (poniżej metra) pomijamy, tak jak PROJ dla EPSG:2180. Bazy
  * EPSG ({@code proj4j-epsg}) nie dodajemy, bo ma własną licencję, a układ
  * jest jeden.</p>
+ *
+ * <p>Wymagania: US13.2, NFR-43</p>
  *
  * @since 0.1.0
  */

@@ -10,8 +10,10 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
 /**
- * Teren PWr w PostGIS (BR-G5): odległość punktu od konturów budynków liczy
+ * Teren PWr w PostGIS: odległość punktu od konturów budynków liczy
  * baza na elipsoidzie, w metrach na ziemi.
+ *
+ * <p>Wymagania: BR-G5</p>
  *
  * @since 0.1.0
  */

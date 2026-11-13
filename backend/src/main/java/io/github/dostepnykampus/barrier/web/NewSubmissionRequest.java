@@ -42,10 +42,12 @@ record NewSubmissionRequest(
     }
 
     /**
-     * Sprawdza zgłoszenie zastępowane przez zmianę (BR-3, BR-5, BR-18): brak
+     * Sprawdza zgłoszenie zastępowane przez zmianę: brak
      * albo zgłoszenie, którego składający nie widzi, daje 404, a zgłoszenie
      * nieprzyjęte 409 z tym zgłoszeniem. Ponowne wysłanie zapisanego już
-     * zgłoszenia nie jest sprawdzane, bo serwer zwraca zapisane (BR-9).
+     * zgłoszenia nie jest sprawdzane, bo serwer zwraca zapisane.
+     *
+     * <p>Wymagania: BR-3, BR-5, BR-18, BR-9</p>
      *
      * @param finder Odczyt zgłoszeń
      * @param reader Osoba, która składa zmianę

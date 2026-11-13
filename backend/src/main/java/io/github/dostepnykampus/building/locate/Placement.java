@@ -9,8 +9,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Położenie punktu względem budynków kampusu (BR-G2, BR-G4): w konturze,
+ * Położenie punktu względem budynków kampusu: w konturze,
  * blisko konturu albo poza zasięgiem podpowiedzi.
+ *
+ * <p>Wymagania: BR-G2, BR-G4</p>
  *
  * @since 0.1.0
  */
