@@ -13,15 +13,11 @@ import java.util.List;
 import tools.jackson.databind.JsonNode;
 
 /**
- * Wejścia z pliku konturów OpenStreetMap w tabeli entrances.
- *
- * <p>Oznaczenie pochodzi z tagu wheelchair: yes i designated dają
- * ACCESSIBLE, no daje INACCESSIBLE, a każda inna wartość i brak tagu
- * NO_DATA, tak jak w aplikacji. Wejście z kilkoma symbolami ma wiersz
- * dla każdego budynku. Ponowny import zmienia położenie, opis i rodzaj,
- * ale oznaczenia z obchodu (WALKTHROUGH) nie rusza.</p>
- *
- * <p>Ponowny import usuwa nieaktualne powiązania wejść z oznaczeniem IMPORT.</p>
+ * Wejścia z pliku konturów OpenStreetMap w tabeli entrances. Oznaczenie z tagu wheelchair:
+ * yes i designated dają ACCESSIBLE, no daje INACCESSIBLE, inna wartość i brak tagu NO_DATA.
+ * Wejście z kilkoma symbolami ma wiersz dla każdego budynku. Ponowny import zmienia
+ * położenie, opis i rodzaj, nie rusza oznaczeń z obchodu (WALKTHROUGH) i usuwa nieaktualne
+ * powiązania wejść z oznaczeniem IMPORT.
  *
  * <p>Wymagania: US17.1, BR-24, US17.3</p>
  *

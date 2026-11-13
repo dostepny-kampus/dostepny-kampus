@@ -18,14 +18,11 @@ import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.type.LogicalType;
 
 /**
- * Konfiguracja ścisłego wiązania ciał JSON żądań w całym serwerze; nieznane
- * pola są pomijane, jak w domyślnym ustawieniu Spring Boot.
- *
- * <p>Wartość innego typu niż pole (napis zamiast liczby albo wartości logicznej,
- * liczba zamiast napisu, liczba z ułamkiem w polu całkowitym, pusty napis),
- * jawny {@code null} w polu i identyfikator spoza postaci 8-4-4-4-12 kończą
- * wiązanie błędem danych, który Spring zamienia na 400; brak pola daje
- * {@code null} (OpenAPI nie dopuszcza {@code null} w polach ciał żądań).</p>
+ * Konfiguracja ścisłego wiązania ciał JSON żądań w całym serwerze; nieznane pola są pomijane.
+ * Wartość innego typu niż pole (napis zamiast liczby albo wartości logicznej, liczba zamiast
+ * napisu, ułamek w polu całkowitym, pusty napis), jawny {@code null} i identyfikator spoza
+ * postaci 8-4-4-4-12 dają błąd danych, który Spring zamienia na 400; brak pola daje
+ * {@code null}.
  *
  * @since 0.1.0
  */
