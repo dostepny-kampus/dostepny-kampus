@@ -5,9 +5,9 @@
  */
 package io.github.dostepnykampus.barrier;
 
-import io.github.dostepnykampus.ForbiddenChange;
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
+import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.Connection;
