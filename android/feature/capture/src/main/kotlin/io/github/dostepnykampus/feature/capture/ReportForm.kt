@@ -82,7 +82,7 @@ sealed interface ReportFloor {
     data class Numbered(val number: Int, val isMezzanine: Boolean) : ReportFloor
 }
 
-/** Brakujące pole formularza C2, w kolejności pól na ekranie (US7.1–US7.3). Wymagania: BR-7 */
+/** Brakujące pole formularza C2, w kolejności pól na ekranie. Wymagania: US7.1, US7.2, US7.3, BR-7 */
 enum class ReportFormError {
     /** Brak piętra w budynku; poza budynkiem piętra nie ma. Wymagania: BR-7, BR-G4 */
     MISSING_FLOOR,
@@ -147,7 +147,7 @@ data class ReportForm(
     }
 }
 
-/** Braki, które blokują „Zapisz” (US7.1–US7.3). Wymagania: BR-7 */
+/** Braki, które blokują „Zapisz”. Wymagania: US7.1, US7.2, US7.3, BR-7 */
 fun ReportForm.errors(): List<ReportFormError> =
     buildList {
         if (place.buildingSymbol != null && floor == null) add(ReportFormError.MISSING_FLOOR)

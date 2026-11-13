@@ -21,7 +21,7 @@ import org.maplibre.spatialk.geojson.Geometry
 
 private const val UNNAMED = "Wejście bez nazwy w danych"
 
-/** Dane wejść dla mapy V1 z syntetycznego katalogu „Budynek testowy” (nie dane PWr): US2.1. Wymagania: US3.3 */
+/** Dane wejść dla mapy V1 z syntetycznego katalogu „Budynek testowy” (nie dane PWr). Wymagania: US2.1, US3.3 */
 class SelectedEntranceTest {
     private val at = GeoPoint(longitude = 0.25, latitude = 0.5)
     private val ring =

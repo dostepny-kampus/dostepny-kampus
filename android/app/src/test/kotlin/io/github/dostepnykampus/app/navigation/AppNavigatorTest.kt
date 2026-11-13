@@ -203,7 +203,11 @@ class AppNavigatorTest {
         assertEquals(stackOf(SignInRoute(isForReport = false)), stack)
     }
 
-    /** Wiersze: pasek dolny, „Konto” → L2, RO-ODW i „Konto i praca” → L2, role pracownicze, P1. Wymagania: US14.1 */
+    /**
+     * Wiersze: pasek dolny, „Konto” → L2, Odwiedzający i „Konto i praca” → L2, role pracownicze, P1.
+     *
+     * Wymagania: US14.1, RO-ODW
+     */
     @Test
     fun us14_1_bar_account_l2() {
         listOf(visitor, Account.SignedIn(setOf(StaffRole.VERIFIER))).forEach { account ->

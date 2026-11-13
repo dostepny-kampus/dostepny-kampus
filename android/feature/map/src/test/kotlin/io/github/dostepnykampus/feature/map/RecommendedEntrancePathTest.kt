@@ -22,8 +22,10 @@ import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * V2 Karta budynku: które wejście ma napis „Zalecane” i w jakiej kolejności stoją wejścia (BR-25, US2.1, US3.1).
+ * V2 Karta budynku: które wejście ma napis „Zalecane” i w jakiej kolejności stoją wejścia.
  * Każdy test przechodzi cały scenariusz: dane wejść z katalogu, otwarta karta, lista wejść na ekranie.
+ *
+ * Wymagania: BR-25, US2.1, US3.1
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
