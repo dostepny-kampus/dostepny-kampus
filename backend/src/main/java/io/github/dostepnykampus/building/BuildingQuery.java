@@ -59,7 +59,7 @@ final class BuildingQuery {
             FROM buildings
             ORDER BY symbol
             """
-        ).query(this::rows);
+        ).query(BuildingQuery::rows);
     }
 
     Placement locate(final double lat, final double lon) {
@@ -143,7 +143,7 @@ final class BuildingQuery {
         ).list();
     }
 
-    private BuildingList rows(final ResultSet rows) throws SQLException {
+    private static BuildingList rows(final ResultSet rows) throws SQLException {
         final List<Building> found = new ArrayList<>(8);
         final SortedSet<String> sources = new TreeSet<>();
         while (rows.next()) {
