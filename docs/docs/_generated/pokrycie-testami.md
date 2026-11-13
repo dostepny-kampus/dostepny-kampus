@@ -9,9 +9,9 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Stan | Liczba |
 | --- | --- |
-| Pełny test | 11 |
+| Pełny test | 12 |
 | Tylko częściowo | 14 |
-| Bez testu | 160 |
+| Bez testu | 159 |
 
 | Plik | Scenariusz | Kryteria i reguły | Test | Stan |
 | --- | --- | --- | --- | --- |
@@ -114,7 +114,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `synchronizacja.feature` | Przerwana synchronizacja nie gubi zgłoszenia i nie tworzy drugiego | BR-9, US9.2 | — | brak |
 | `synchronizacja.feature` | Awaria serwera działa jak brak sieci | BR-9, US9.4 | `core/data · OwnHistoryTest.nfr50 awaria serwera lokalne` | pełny |
 | `synchronizacja.feature` | Wygasłe zalogowanie czeka na ponowne zalogowanie | BR-26, US9.4, US14.4 | `app · LoginExpiredGateTest.br26_expired_then_resumed` | częściowo |
-| `synchronizacja.feature` | Odebrana rola zostawia zgłoszenie w telefonie ze statusem „Nie wysłano” | BR-26, US9.5, US14.1 | — | brak |
+| `synchronizacja.feature` | Odebrana rola zostawia zgłoszenie w telefonie ze statusem „Nie wysłano” | BR-26, US9.5, US14.1 | `app · RevokedRoleTest.us9_5_revoked_role` | pełny |
 | `synchronizacja.feature` | Odrzucona treść albo zdjęcie zostawia zgłoszenie ze statusem „Nie wysłano” | BR-26, US9.5 | — | brak |
 | `synchronizacja.feature` | Licznik oczekujących nie liczy zgłoszeń „Nie wysłano” | BR-26, US9.5 | `feature/capture · MySubmissionsScreenTest.us9_1_waiting_count` | pełny |
 | `synchronizacja.feature` | Ponowny zapis wysyła zgłoszenie „Nie wysłano” znów | BR-26, US9.5 | `core/data · RefusedResaveTest.br26 ponowny zapis wysyła` | pełny |
