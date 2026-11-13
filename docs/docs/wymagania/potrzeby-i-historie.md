@@ -36,7 +36,7 @@ Wywiady wskazały jeszcze jedną potrzebę: pomoc człowieka na miejscu, bo w k�
 | US9 | C4 | N6, N7 | Musi być | Jako Zbierający, chcę synchronizacji po pracy w trybie offline, aby nie stracić zgłoszeń i nie nadpisać wcześniejszej zmiany zapisanej na serwerze. |
 | US10 | R1, R2 | N2, N7, N8 | Musi być | Jako Weryfikator, chcę sprawdzić zgłoszenie i zobaczyć podobne zgłoszenia, aby nie przepuścić błędu ani duplikatu. |
 | US11 | K1 | N9 | Musi być | Jako Koordynator, chcę widzieć postęp inwentaryzacji według budynków, aby wiedzieć, gdzie trzeba jeszcze pójść. |
-| US12 | K2 | N9 | Powinno być | Jako Koordynator, chcę zaprosić osobę z wybraną rolą, aby dołączyła do inwentaryzacji bez pomocy administratora. |
+| US12 | K2 | N9 | Może być | Jako Koordynator, chcę zaprosić osobę z wybraną rolą, aby dołączyła do inwentaryzacji bez pomocy administratora. |
 | US13 | K3 | N9 | Musi być | Jako Koordynator, chcę pobrać eksport, aby otworzyć zgłoszenia przyjęte w QGIS. |
 | US14 | L1, L2 | N2, N8 | Musi być | Jako Odwiedzający lub osoba z rolą pracowniczą, chcę się zalogować, aby korzystać z czynności mojej roli. |
 | US15 | C5 (z V2 i K1) | N6, N9 | Musi być | Jako Zbierający, chcę oznaczyć piętro obejrzane, aby postęp inwentaryzacji odpowiadał stanowi obchodu. |
@@ -177,12 +177,12 @@ Uprawnienia każdej roli podaje macierz na stronie [Role i uprawnienia](../bizne
 | Kroki TO-BE | przed T7 | T20–T23 | T7–T10 | T1–T6 | T6a, T6b, T10–T13, T19 | T14–T19 | T24–T29 |
 | **Musi być (MVP)** | US14 logowanie | US1 wyszukiwanie<br>US2 karta budynku<br>US3 „Którędy wejść”<br>US17 oznaczenie wejścia | US4 zgłoszenie szybkie | US6 pomiar bez US6.3, US6.5<br>US7 formularz | US8 statusy, „bariera usunięta”<br>US17.2 zmiana oznaczenia wejścia<br>US9 synchronizacja | US10 z podobnymi zgłoszeniami | US15 piętro obejrzane<br>US11 postęp<br>US13 eksport |
 | **— linia MVP —** | | | | | | | |
-| **Powinno być** | US5 pomoc | US16 plan piętra<br>US18 wyszukanie sali | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | — | US12 zaproszenie |
-| **Może być** | wersja angielska, tryb ciemny | kolejne budynki szczegółowe, dane z deklaracji dostępności | — | — | — | — | — |
+| **Powinno być** | US5 pomoc | US16 plan piętra<br>US18 wyszukanie sali | — | US6.3 korekta na planie<br>US6.5 mapa nieba | — | — | — |
+| **Może być** | wersja angielska, tryb ciemny | kolejne budynki szczegółowe, dane z deklaracji dostępności, miejsce portierni na karcie budynku | — | — | — | — | US12 zaproszenie |
 
-Kolumny idą w kolejności korzystania z aplikacji, od Gościa niezalogowanego do Koordynatora. Kroki TO-BE każdej aktywności podaje drugi wiersz. Wiersze nad linią MVP muszą działać na pokazie. Pozycje „Może być” nie mają jeszcze historyjek; dostaną je, gdy wejdą do planu sprintu.
+Kolumny idą w kolejności korzystania z aplikacji, od Gościa niezalogowanego do Koordynatora. Kroki TO-BE każdej aktywności podaje drugi wiersz. Wiersze nad linią MVP muszą działać na pokazie. Pozycje „Może być” bez numeru nie mają jeszcze historyjek; dostaną je, gdy wejdą do planu sprintu.
 
-**Nie tym razem:** nawigacja po trasie (także w budynkach), iOS, Google Play, sztuczna inteligencja, czat, powiadomienia push, osobny proces usuwania bariery, lista własnych zgłoszeń Odwiedzającego.
+**Nie tym razem:** nawigacja po trasie (także w budynkach), iOS, Google Play, sztuczna inteligencja, czat, powiadomienia push. Poza zakresem są też szerokość korytarzy i wymiary wind, awarie bez sprawdzenia przez Weryfikatora, osobny proces usuwania bariery, lista własnych zgłoszeń Odwiedzającego.
 
 ## Źródła
 
