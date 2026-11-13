@@ -59,9 +59,6 @@ final class ModuleRootArchitectureTest {
             1324, "building", "Building", "BuildingCard", "BuildingList", "BuildingQuery",
             "BuildingsController", "Entrance", "LocateResult", "LocateResults", "OsmBuildings",
             "OsmEntrances"
-        ),
-        ModuleRootArchitectureTest.listed(
-            1442, "identity", "ApiSecurity", "CurrentUserController", "CurrentUserResponse"
         )
     ).flatMap(map -> map.entrySet().stream()).collect(
         Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue)

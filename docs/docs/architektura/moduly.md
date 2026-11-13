@@ -87,7 +87,7 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | --- | --- |
 | serwer ma puste moduły `review`, `sync`, a `ModularityTest` wymaga sześciu nazw | #1320 |
 | `shared` nie istnieje: błędy, JSON i `Wgs84` leżą w pakiecie głównym, geometria PUWG w `export` | #1321 |
-| korzenie `barrier`, `building`, `identity` zawierają wnętrze modułu | #1323, #1324, #1442 |
+| korzenie `barrier` i `building` zawierają wnętrze modułu | #1323, #1324 |
 | `barrier.domain` ma 22 pliki | #1439 |
 | Android ma moduły `:feature:auth`, `:feature:progress`, `:feature:review` bez kodu albo z jednym plikiem | #1327 |
 | `:core:data` udostępnia `:core:database` przez `api(...)`, testy funkcji zależą od bazy i sieci | #1328 |
