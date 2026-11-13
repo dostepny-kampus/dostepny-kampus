@@ -7,7 +7,7 @@ package io.github.dostepnykampus.core.geo
 
 import io.github.dostepnykampus.core.model.Building
 
-/** Podpowiedź budynku dla punktu (US6.2, BR-G2), odpowiednik `LocateResult` z kontraktu API. */
+/** Podpowiedź budynku dla punktu, odpowiednik `LocateResult` z kontraktu API. Wymagania: US6.2, BR-G2 */
 sealed interface LocateResult {
     /**
      * Punkt leży w konturze budynku.
@@ -17,7 +17,9 @@ sealed interface LocateResult {
     data class InsideOutline(val building: Building) : LocateResult
 
     /**
-     * Stan „Poza budynkiem”: punkt nie leży w konturze żadnego budynku. To stan normalny, nie błąd (BR-G2).
+     * Stan „Poza budynkiem”: punkt nie leży w konturze żadnego budynku. To stan normalny, nie błąd.
+     *
+     * Wymagania: BR-G2
      *
      * @property nearest najbliższy budynek do potwierdzenia albo odrzucenia; `null`, gdy lista budynków jest pusta
      */
