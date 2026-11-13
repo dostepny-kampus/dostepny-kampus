@@ -8,7 +8,7 @@ package io.github.dostepnykampus.building;
 import java.util.List;
 
 /**
- * Lista budynków z atrybucją konturów, zgodna ze schematem BuildingList.
+ * Lista budynków z atrybucją konturów.
  *
  * @param source Atrybucja konturów budynków
  * @param buildings Budynki posortowane według symbolu
