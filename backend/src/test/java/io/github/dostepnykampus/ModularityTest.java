@@ -26,15 +26,11 @@ import org.springframework.modulith.core.JavaPackage;
 import org.springframework.modulith.docs.Documenter;
 
 /**
- * Testy zadania INFRA: moduły serwera według Spring Modulith.
- *
- * <p>Moduły to podpakiety pakietu bazowego; każdy ma klasę produkcyjną
- * i opis w Javadoc {@code package-info.java}. Weryfikacja odrzuca cykle,
- * dostęp do wnętrza cudzego modułu i zależność od modułu spoza listy
- * {@code allowedDependencies}. Każdy moduł zapisuje
- * tę listę w {@code @ApplicationModule}, także pustą. Spring Modulith czyta
- * {@code package-info} przez class loader, więc w testach widzi wersję z
- * katalogu testów; ta wersja powtarza listę z kodu produkcyjnego.</p>
+ * Moduły serwera według Spring Modulith: podpakiety pakietu bazowego, każdy z klasą produkcyjną
+ * i opisem w Javadoc {@code package-info.java}. Bez cykli, bez dostępu do wnętrza cudzego modułu
+ * i bez zależności spoza listy {@code allowedDependencies}, którą każdy moduł zapisuje
+ * w {@code @ApplicationModule}, także pustą. Spring Modulith czyta {@code package-info}
+ * z katalogu testów, więc ta wersja powtarza listę z kodu produkcyjnego.
  *
  * @since 0.1.0
  */
