@@ -1,6 +1,6 @@
 # QFD: potrzeby a funkcje
 
-Strona to uproszczony dom jakości (QFD): potrzeby N1–N9 z wagami w wierszach, historyjki US1–US18 w kolumnach. Ważność techniczna historyjki to suma iloczynów wagi potrzeby i siły związku. Z ważności wynika priorytet MoSCoW historyjki na stronie [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md). Regułę podaje sekcja „Od ważności do priorytetu”.
+Strona to uproszczony dom jakości (QFD): potrzeby N1–N10 z wagami w wierszach, historyjki US1–US18 w kolumnach. Ważność techniczna historyjki to suma iloczynów wagi potrzeby i siły związku. Z ważności wynika priorytet MoSCoW historyjki na stronie [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md). Regułę podaje sekcja „Od ważności do priorytetu”.
 
 Wersja uproszczona nie ma „dachu” (zależności między funkcjami) ani oceny konkurencji.
 
@@ -21,6 +21,7 @@ Reguła wag: potrzeba grupy docelowej (RO-GOS, RO-ODW) ma wagę co najmniej 4, a
 | 3 | N7 | Potrzeba ról zespołu (RO-ZBI, RO-WER). Konflikt wymaga równoczesnej edycji (hipoteza: rzadko), ale grozi utratą zmiany (NFR-9). |
 | 3 | N8 | Potrzeba roli zespołu (RO-WER). Grupie docelowej służy pośrednio: od odsiewu błędów zależy zaufanie z N2 (M-7). |
 | 3 | N9 | Potrzeba roli zespołu (RO-KOO). Eksport służy uczelni, nie grupie docelowej kursu UX. |
+| 4 | N10 | Nowa potrzeba grupy docelowej z wywiadów: 3 z 6 rozmówców miało kłopot z trafieniem w środku budynku. |
 
 ## Siła związku
 
@@ -58,11 +59,13 @@ Związki N ↔ US pochodzą z tabeli historyjek i z [macierzy śledzenia](../wym
 | 9 | US15 | N6 | US15.3: znacznik bez sieci czeka w telefonie i wysyła się sam jak zgłoszenie w US9.1 i US9.2. |
 | 9 | US15 | N9 | US15.1: znacznik piętra obejrzanego jest podstawą postępu z US11.1. |
 | 3 | US16 | N1 | Plan piętra pokazuje windy i toalety w środku, a nie wybór wejścia z zewnątrz. |
+| 9 | US16 | N10 | US16.1: plan piętra pokazuje windy, schody i toalety. |
 | 9 | US17 | N1 | US17.1: oznaczenie każdego wejścia. |
 | 9 | US17 | N2 | US17.3: data i źródło oznaczenia. |
 | 3 | US18 | N1 | Wyszukanie sali podaje piętro i drogę do sali w środku, a nie wybór wejścia z zewnątrz. |
+| 9 | US18 | N10 | US18.1 i US18.2: piętro sali i kroki do niej. |
 
-Związki z siłą 1 dotyczą tylko N4. Inne NFR łączące potrzebę z historyjką (NFR-5, NFR-41, NFR-50 i ścieżki US6–US9 w NFR-23) nie dotyczą dostępności albo historyjek Gościa i Odwiedzającego. Pozostałych 26 związków to dokładnie powiązania z macierzy śledzenia, bez dopisków.
+Związki z siłą 1 dotyczą tylko N4. Inne NFR łączące potrzebę z historyjką (NFR-5, NFR-41, NFR-50 i ścieżki US6–US9 w NFR-23) nie dotyczą dostępności albo historyjek Gościa i Odwiedzającego. Pozostałych 28 związków to dokładnie powiązania z macierzy śledzenia, bez dopisków.
 
 ## Macierz
 
@@ -79,50 +82,53 @@ Puste pole oznacza brak związku. W wierszu „Priorytet” M to „Musi być”
 | Bez nadpisania (N7) | 3 | | | | | | | | | 9 | 3 | | | | | | | | |
 | Odsiew błędów (N8) | 3 | | | | | | | | | | 9 | | | | 3 | | | | |
 | Postęp i QGIS (N9) | 3 | | | | | | | | | | | 9 | 3 | 9 | | 9 | | | |
-| **Ważność techniczna** | | **20** | **86** | **50** | **81** | **15** | **27** | **9** | **9** | **54** | **48** | **27** | **9** | **27** | **21** | **54** | **15** | **81** | **15** |
-| Miejsce | | 12 | 1 | 6 | 2 | 13 | 8 | 16 | 16 | 4 | 7 | 8 | 16 | 8 | 11 | 4 | 13 | 2 | 13 |
+| Orientacja w budynku (N10) | 4 | | | | | | | | | | | | | | | | 9 | | 9 |
+| **Ważność techniczna** | | **20** | **86** | **50** | **81** | **15** | **27** | **9** | **9** | **54** | **48** | **27** | **9** | **27** | **21** | **54** | **51** | **81** | **51** |
+| Miejsce | | 14 | 1 | 8 | 2 | 15 | 10 | 16 | 16 | 4 | 9 | 10 | 16 | 10 | 13 | 4 | 6 | 2 | 6 |
 | Priorytet | | M | M | M | M | P | M | M | M | M | M | M | P | M | M | M | P | M | P |
 
-Przykład dla US2: 5 × 9 + 4 × 9 + 5 × 1 = 86. Suma ważności wszystkich historyjek wynosi 648.
+Przykład dla US2: 5 × 9 + 4 × 9 + 5 × 1 = 86. Suma ważności wszystkich historyjek wynosi 720.
 
 ## Od ważności do priorytetu
 
-Priorytet historyjki wynika z jej ważności. Zadajemy po kolei dwa pytania:
+Priorytet historyjki wynika z jej ważności. Zadajemy po kolei trzy pytania:
 
 1. **Czy historyjka wprost zaspokaja potrzebę?** Tak, gdy ma ważność co najmniej 27. To najniższy wynik historyjki, która ma choć jeden związek o sile 9. Taka historyjka dostaje „Musi być”.
-2. **Gdy ważność jest niższa niż 27: czy bez niej nie działa historyjka „Musi być”?** Jeśli tak, dostaje „Musi być” jako warunek, a tabela wskazuje historyjkę, której służy. Jeśli nie, dostaje „Powinno być”.
+2. **Czy zadziała w pierwszej wersji na całym kampusie?** Plany pięter ma tylko 25 budynków, a zespół ogląda na miejscu 5 z nich. Historyjka, która zależy od planów, dostaje „Powinno być”, nawet gdy jest ważna.
+3. **Gdy ważność jest niższa niż 27: czy bez niej nie działa historyjka „Musi być”?** Jeśli tak, dostaje „Musi być” jako warunek, a tabela wskazuje historyjkę, której służy. Jeśli nie, dostaje „Powinno być”.
 
 | Miejsce | Historyjka | Ważność | Udział | Priorytet | Powód |
 | --- | --- | --- | --- | --- | --- |
-| 1 | US2 | 86 | 13,3% | Musi być | wprost zaspokaja N1 i N2 |
-| 2 | US4 | 81 | 12,5% | Musi być | wprost zaspokaja N3 i N4 |
-| 2 | US17 | 81 | 12,5% | Musi być | wprost zaspokaja N1 i N2 |
-| 4 | US9 | 54 | 8,3% | Musi być | wprost zaspokaja N6 i N7 |
-| 4 | US15 | 54 | 8,3% | Musi być | wprost zaspokaja N6 i N9 |
-| 6 | US3 | 50 | 7,7% | Musi być | wprost zaspokaja N1 |
-| 7 | US10 | 48 | 7,4% | Musi być | wprost zaspokaja N8 |
-| 8 | US6 | 27 | 4,2% | Musi być | wprost zaspokaja N5 |
-| 8 | US11 | 27 | 4,2% | Musi być | wprost zaspokaja N9 |
-| 8 | US13 | 27 | 4,2% | Musi być | wprost zaspokaja N9 |
-| 11 | US14 | 21 | 3,2% | Musi być | warunek: bez konta nie ma zgłoszenia szybkiego (US4) ani czynności ról pracowniczych (US6–US13) |
-| 12 | US1 | 20 | 3,1% | Musi być | warunek: bez wyszukania nie ma ścieżki do karty budynku (US2) |
-| 13 | US5 | 15 | 2,3% | Powinno być | wspiera N4, żadna historyjka „Musi być” od niej nie zależy |
-| 13 | US16 | 15 | 2,3% | Powinno być | wspiera N1, żadna historyjka „Musi być” od niej nie zależy |
-| 13 | US18 | 15 | 2,3% | Powinno być | wspiera N1, żadna historyjka „Musi być” od niej nie zależy |
-| 16 | US7 | 9 | 1,4% | Musi być | warunek: bez formularza pomiaru z US6 nie da się zapisać jako zgłoszenia |
-| 16 | US8 | 9 | 1,4% | Musi być | warunek: status mówi Zbierającemu, co dotarło (US9) i co poprawić po odrzuceniu (US10) |
-| 16 | US12 | 9 | 1,4% | Powinno być | wspiera N9; do czasu K2 role nadaje administrator usługi logowania (BR-2) |
+| 1 | US2 | 86 | 11,9% | Musi być | wprost zaspokaja N1 i N2 |
+| 2 | US4 | 81 | 11,3% | Musi być | wprost zaspokaja N3 i N4 |
+| 2 | US17 | 81 | 11,3% | Musi być | wprost zaspokaja N1 i N2 |
+| 4 | US9 | 54 | 7,5% | Musi być | wprost zaspokaja N6 i N7 |
+| 4 | US15 | 54 | 7,5% | Musi być | wprost zaspokaja N6 i N9 |
+| 6 | US16 | 51 | 7,1% | Powinno być | wprost zaspokaja N10, ale zależy od planów pięter, które ma tylko 25 budynków |
+| 6 | US18 | 51 | 7,1% | Powinno być | wprost zaspokaja N10, ale zależy od planów pięter, które ma tylko 25 budynków |
+| 8 | US3 | 50 | 6,9% | Musi być | wprost zaspokaja N1 |
+| 9 | US10 | 48 | 6,7% | Musi być | wprost zaspokaja N8 |
+| 10 | US6 | 27 | 3,8% | Musi być | wprost zaspokaja N5 |
+| 10 | US11 | 27 | 3,8% | Musi być | wprost zaspokaja N9 |
+| 10 | US13 | 27 | 3,8% | Musi być | wprost zaspokaja N9 |
+| 13 | US14 | 21 | 2,9% | Musi być | warunek: bez konta nie ma zgłoszenia szybkiego (US4) ani czynności ról pracowniczych (US6–US13) |
+| 14 | US1 | 20 | 2,8% | Musi być | warunek: bez wyszukania nie ma ścieżki do karty budynku (US2) |
+| 15 | US5 | 15 | 2,1% | Powinno być | wspiera N4, żadna historyjka „Musi być” od niej nie zależy |
+| 16 | US7 | 9 | 1,3% | Musi być | warunek: bez formularza pomiaru z US6 nie da się zapisać jako zgłoszenia |
+| 16 | US8 | 9 | 1,3% | Musi być | warunek: status mówi Zbierającemu, co dotarło (US9) i co poprawić po odrzuceniu (US10) |
+| 16 | US12 | 9 | 1,3% | Powinno być | wspiera N9; do czasu K2 role nadaje administrator usługi logowania (BR-2) |
 
-Udział to ważność podzielona przez 648, zaokrąglona do 0,1 punktu procentowego. Równe wyniki dzielą miejsce.
+Udział to ważność podzielona przez 720, zaokrąglona do 0,1 punktu procentowego. Równe wyniki dzielą miejsce.
 
 ## Wnioski
 
-1. **Najważniejsze są karta budynku (US2), oznaczenie wejścia (US17) i zgłoszenie szybkie (US4).** Razem dają 38% sumy ważności. To rdzeń wartości dla grupy docelowej.
+1. **Najważniejsze są karta budynku (US2), oznaczenie wejścia (US17) i zgłoszenie szybkie (US4).** Razem dają 34% sumy ważności. To rdzeń wartości dla grupy docelowej.
 2. **US3 „Którędy wejść” ma ważność 50 i priorytet „Musi być”.** Wcześniej miała „Powinno być”, choć stała wyżej niż 8 historyjek „Musi być”. Cel M-4 mierzy US3.2, a N1 ma najwyższą wagę.
-3. **„Musi być” ma 14 z 18 historyjek.** Pierwsza wersja musi zamknąć cały obieg: zebrać dane, zweryfikować je i pokazać. Ważność ustala kolejność prac w tej grupie i mówi, co odpada najpierw, gdy zabraknie czasu: historyjki z końca rankingu.
-4. **US14, US1, US7 i US8 mają niski wynik, bo QFD liczy tylko wkład bezpośredni.** Każda jest warunkiem historyjki „Musi być”, którą wskazuje tabela, więc sama też musi być.
-5. **US8 może mieć niedoszacowany związek z N2.** Zbierający zaczyna zmianę „bariera usunięta” w US8.4, a po jej przyjęciu bariera znika z mapy (US10.6), co tekst pod kryteriami wiąże z N2. Macierz liczy N2 tylko po stronie Weryfikatora (US10), bo tabela historyjek nie wiąże US8 z N2.
-6. **N4 ma wagę 5, a w macierzy tylko jeden silny związek (US4).** Potrzebę N4 realizują głównie wymagania przekrojowe NFR-15…NFR-24, NFR-51, obecne na każdym ekranie. Dlatego wymagania ekranów i makiety sprawdzają dostępność na każdym ekranie, a nie tylko w historyjkach z N4.
+3. **Plan piętra (US16) i wyszukanie sali (US18) mają ważność 51, a priorytet „Powinno być”.** Zyskały po wywiadach, bo doszła potrzeba N10. Zatrzymuje je drugie pytanie: plany pięter ma tylko 25 budynków.
+4. **„Musi być” ma 14 z 18 historyjek.** Pierwsza wersja musi zamknąć cały obieg: zebrać dane, zweryfikować je i pokazać. Ważność ustala kolejność prac w tej grupie i mówi, co odpada najpierw, gdy zabraknie czasu: historyjki z końca rankingu.
+5. **US14, US1, US7 i US8 mają niski wynik, bo QFD liczy tylko wkład bezpośredni.** Każda jest warunkiem historyjki „Musi być”, którą wskazuje tabela, więc sama też musi być.
+6. **US8 może mieć niedoszacowany związek z N2.** Zbierający zaczyna zmianę „bariera usunięta” w US8.4, a po jej przyjęciu bariera znika z mapy (US10.6), co tekst pod kryteriami wiąże z N2. Macierz liczy N2 tylko po stronie Weryfikatora (US10), bo tabela historyjek nie wiąże US8 z N2.
+7. **N4 ma wagę 5, a w macierzy tylko jeden silny związek (US4).** Potrzebę N4 realizują głównie wymagania przekrojowe NFR-15…NFR-24, NFR-51, obecne na każdym ekranie. Dlatego wymagania ekranów i makiety sprawdzają dostępność na każdym ekranie, a nie tylko w historyjkach z N4.
 7. **Wynik zależy od wag pod kurs UX.** US6, US11 i US13 są w środku rankingu, bo potrzeby zespołu N5–N9 mają wagę 3. Dla kursu Mobilne, gdzie pomiar GNSS i eksport są rdzeniem, te wagi byłyby wyższe.
 
 ## Źródła

@@ -27,7 +27,7 @@ Druga strona to uczelnia. Dostaje sprawdzone dane o barierach w formacie GIS, pr
 
 ## Interesariusze
 
-Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N9 opisuje strona [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md).
+Role w systemie opisuje strona [Role i uprawnienia](role.md). Potrzeby N1…N10 opisuje strona [Potrzeby i historyjki](../wymagania/potrzeby-i-historie.md).
 
 | Interesariusz | Rola w systemie | Czego potrzebuje | Co zyskuje |
 | --- | --- | --- | --- |
