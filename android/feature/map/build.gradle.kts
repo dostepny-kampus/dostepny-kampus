@@ -48,7 +48,6 @@ dependencies {
     implementation(libs.spatialk.units)
     testImplementation(project(":core:data-testing"))
     testImplementation(project(":core:database"))
-    testImplementation(project(":core:network"))
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit4)
