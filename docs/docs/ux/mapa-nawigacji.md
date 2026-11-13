@@ -4,7 +4,7 @@ Strona pokazuje, dokąd prowadzi każda czynność na ekranach z [wymagań do ek
 
 ## Jak czytać diagramy
 
-Każdy diagram pokazuje jedno zadanie osoby i czyta się go z góry na dół. Wszystkie przejścia, także rzadkie i powroty, są w [tabeli przejść](#tabela-przejsc).
+Każdy diagram pokazuje jedno zadanie osoby i czyta się go z góry na dół. Wszystkie przejścia, także rzadkie i powroty, są w tabeli przejść na końcu strony.
 
 | Znak | Znaczenie |
 | --- | --- |
