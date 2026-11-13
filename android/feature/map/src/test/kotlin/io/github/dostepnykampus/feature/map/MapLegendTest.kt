@@ -37,7 +37,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** „Legenda” mapy V1: przycisk, panel ze znakami mapy i „Zamknij” (US1.4, NFR-17, NFR-18, NFR-40). */
+/** „Legenda” mapy V1: przycisk, panel ze znakami mapy i „Zamknij”. Wymagania: US1.4, NFR-17, NFR-18, NFR-40 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp-xhdpi")
@@ -46,9 +46,11 @@ class MapLegendTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     /**
-     * Przycisk „Legenda” ma cel dotyku co najmniej 48 dp i słowo dla TalkBack (NFR-17, NFR-18). Legenda objaśnia
-     * każdy znak obecny na mapie i kończy się źródłem danych; znaki wejść różnią się kształtem, a każdy ma słowo
-     * (US1.4, NFR-21, NFR-40). „Zamknij” zwija panel (NFR-53).
+     * Przycisk „Legenda” ma cel dotyku co najmniej 48 dp i słowo dla TalkBack. Legenda objaśnia
+     * każdy znak obecny na mapie i kończy się źródłem danych; znaki wejść różnią się kształtem, a każdy ma słowo.
+     * „Zamknij” zwija panel.
+     *
+     * Wymagania: NFR-17, NFR-18, US1.4, NFR-21, NFR-40, NFR-53
      */
     @Test
     fun us1_4_legend_lists_map_signs() {

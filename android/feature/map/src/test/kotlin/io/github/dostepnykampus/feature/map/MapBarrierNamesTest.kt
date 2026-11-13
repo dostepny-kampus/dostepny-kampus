@@ -22,7 +22,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-/** Nazwy znaków barier dla TalkBack na mapie V1 (US1.3, NFR-18). */
+/** Nazwy znaków barier dla TalkBack na mapie V1. Wymagania: US1.3, NFR-18 */
 @RunWith(RobolectricTestRunner::class)
 class MapBarrierNamesTest {
     @get:Rule
@@ -32,7 +32,11 @@ class MapBarrierNamesTest {
     private val curb = barrier(Severity.HINDRANCE, type = BarrierType.CURB, symbol = null)
     private val untyped = barrier(Severity.ONLY_WITH_HELP, type = null, symbol = "C-13")
 
-    /** Wiersz: V1, znak bariery ma nazwę dla TalkBack, np. „Blokada: schody przy wejściu, budynek A-1” (NFR-18). */
+    /**
+     * Wiersz: V1, znak bariery ma nazwę dla TalkBack, np. „Blokada: schody przy wejściu, budynek A-1”.
+     *
+     * Wymagania: NFR-18
+     */
     @Test
     fun nfr18_sign_names() {
         compose.setContent { Screen() }
@@ -42,7 +46,7 @@ class MapBarrierNamesTest {
         compose.onNodeWithContentDescription("Tylko z pomocą, budynek C-13").assertExists()
     }
 
-    /** Wiersz: mapa nad małą kartą, TalkBack nie czyta mapy pod kartą (NFR-19). */
+    /** Wiersz: mapa nad małą kartą, TalkBack nie czyta mapy pod kartą. Wymagania: NFR-19 */
     @Test
     fun nfr19_no_names_under_card() {
         compose.setContent { Screen(sheet = 300.dp) }

@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Dotknięcie znaku bariery na mapie V1 otwiera arkusz bariery, na widoku zastępczym mapy (US1.5, NFR-17). */
+/** Dotknięcie znaku bariery na mapie V1 otwiera arkusz bariery, na widoku zastępczym mapy. Wymagania: US1.5, NFR-17 */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class MapBarrierTouchTest {
@@ -55,7 +55,7 @@ class MapBarrierTouchTest {
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[$features]}"""
         }
 
-    /** Wiersz: V1, dotknięcie znaku bariery otwiera arkusz bariery; „Zamknij” wraca do samej mapy (US1.5). */
+    /** Wiersz: V1, dotknięcie znaku bariery otwiera arkusz bariery; „Zamknij” wraca do samej mapy. Wymagania: US1.5 */
     @Test
     fun us1_5_touch_opens_sheet() {
         start()
@@ -67,7 +67,11 @@ class MapBarrierTouchTest {
         compose.onNodeWithText("Próg").assertDoesNotExist()
     }
 
-    /** Wiersz: V1, „Wstecz” przy otwartym arkuszu bariery zamyka arkusz i zdejmuje wyróżnienie znaku (US1.5). */
+    /**
+     * Wiersz: V1, „Wstecz” przy otwartym arkuszu bariery zamyka arkusz i zdejmuje wyróżnienie znaku.
+     *
+     * Wymagania: US1.5
+     */
     @Test
     fun us1_5_back_closes_sheet() {
         start()
@@ -80,7 +84,11 @@ class MapBarrierTouchTest {
         compose.runOnIdle { assertEquals(null, marked) }
     }
 
-    /** Wiersz: arkusz bariery, „Pokaż opis budynku” otwiera V2 budynku bariery i zamyka arkusz (US1.5, PW-5). */
+    /**
+     * Wiersz: arkusz bariery, „Pokaż opis budynku” otwiera V2 budynku bariery i zamyka arkusz (PW-5).
+     *
+     * Wymagania: US1.5
+     */
     @Test
     fun us1_5_sheet_opens_building() {
         start()
@@ -91,7 +99,7 @@ class MapBarrierTouchTest {
         compose.onNodeWithText("Próg").assertDoesNotExist()
     }
 
-    /** Wiersz: arkusz bariery i arkusz „Który budynek?” nie są otwarte jednocześnie (US1.5, decyzja 85). */
+    /** Wiersz: arkusz bariery i arkusz „Który budynek?” nie są otwarte jednocześnie. Wymagania: US1.5 */
     @Test
     fun us1_5_one_sheet_at_a_time() {
         start()

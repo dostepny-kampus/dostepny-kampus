@@ -45,7 +45,7 @@ private val hasDate =
         node.config.getOrNull(SemanticsProperties.Text)?.any { DATE_TEXT.containsMatchIn(it.text) } == true
     }
 
-/** Data i źródło oznaczenia wejść na V2 Karta budynku i V3 Którędy wejść (US17.3, BR-24, PW-3). */
+/** Data i źródło oznaczenia wejść na V2 Karta budynku i V3 Którędy wejść (PW-3). Wymagania: US17.3, BR-24 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class EntranceAssessmentTextTest {
@@ -54,8 +54,10 @@ class EntranceAssessmentTextTest {
 
     /**
      * Wiersz: V2, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
-     *   nad grupą „Wejścia”, US17.3, BR-24, import. Przy wejściach nie ma osobnej daty ani źródła.
+     *   nad grupą „Wejścia”, import. Przy wejściach nie ma osobnej daty ani źródła.
      * Scenariusz: oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz nad listą wejść
+     *
+     * Wymagania: US17.3, BR-24
      */
     @Test
     fun us17_3_v2_common_row_import() {
@@ -68,7 +70,9 @@ class EntranceAssessmentTextTest {
 
     /**
      * Wiersz: V2, wszystkie wejścia z obchodu z tym samym dniem → jeden wiersz „Sprawdzone na miejscu 5.3.2026”
-     *   (bez zer wiodących, bez „Z map i opisów”), US17.3, BR-24, obchód.
+     *   (bez zer wiodących, bez „Z map i opisów”), obchód.
+     *
+     * Wymagania: US17.3, BR-24
      */
     @Test
     fun us17_3_v2_row_walkthrough() {
@@ -80,8 +84,10 @@ class EntranceAssessmentTextTest {
     }
 
     /**
-     * Wiersz: V2, wejścia z różnym źródłem → napis przy każdym wejściu, nad grupą go nie ma, US17.3, BR-24.
+     * Wiersz: V2, wejścia z różnym źródłem → napis przy każdym wejściu, nad grupą go nie ma.
      * Scenariusz: oznaczenie-wejscia.feature: Różne źródła stoją przy każdym wejściu
+     *
+     * Wymagania: US17.3, BR-24
      */
     @Test
     fun us17_3_v2_per_entrance() {
@@ -90,8 +96,9 @@ class EntranceAssessmentTextTest {
     }
 
     /**
-     * Wiersz: V2, wejścia z tym samym źródłem i różnym dniem → napis przy każdym wejściu, nad grupą go nie ma,
-     *   US17.3, BR-24, import.
+     * Wiersz: V2, wejścia z tym samym źródłem i różnym dniem → napis przy każdym wejściu, nad grupą go nie ma, import.
+     *
+     * Wymagania: US17.3, BR-24
      */
     @Test
     fun us17_3_v2_per_day() {
@@ -101,7 +108,9 @@ class EntranceAssessmentTextTest {
 
     /**
      * Wiersz: V3, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
-     *   nad wejściami, US17.3, BR-24, import.
+     *   nad wejściami, import.
+     *
+     * Wymagania: US17.3, BR-24
      */
     @Test
     fun us17_3_v3_common_row() {
@@ -111,14 +120,22 @@ class EntranceAssessmentTextTest {
         assertTrue(top(IMPORT_TEXT) < top(GROUP_V3))
     }
 
-    /** Wiersz: V3, wejścia z różnym źródłem → napis przy każdym wejściu, nad wejściami go nie ma, US17.3, BR-24. */
+    /**
+     * Wiersz: V3, wejścia z różnym źródłem → napis przy każdym wejściu, nad wejściami go nie ma.
+     *
+     * Wymagania: US17.3, BR-24
+     */
     @Test
     fun us17_3_v3_per_entrance() {
         showVisit(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
         assertPerEntrance(first = IMPORT_TEXT, second = WALK_TEXT, group = GROUP_V3)
     }
 
-    /** Wiersz: V2, wejścia z pliku bez dnia i źródła → brak wiersza i brak jakiejkolwiek daty, US17.3, BR-24. */
+    /**
+     * Wiersz: V2, wejścia z pliku bez dnia i źródła → brak wiersza i brak jakiejkolwiek daty.
+     *
+     * Wymagania: US17.3, BR-24
+     */
     @Test
     fun us17_3_v2_file_has_no_date() {
         showCard(emptyList())
@@ -126,7 +143,11 @@ class EntranceAssessmentTextTest {
         listOf("stan z", "Sprawdzone").forEach { compose.onNodeWithText(it, substring = true).assertDoesNotExist() }
     }
 
-    /** Wiersz: V3, wejścia z pliku → brak daty, zdanie „brak danych o wejściach” bez „z datą”, US17.3, PW-10. */
+    /**
+     * Wiersz: V3, wejścia z pliku → brak daty, zdanie „brak danych o wejściach” bez „z datą”, PW-10.
+     *
+     * Wymagania: US17.3
+     */
     @Test
     fun us17_3_v3_file_has_no_date() {
         showVisit(emptyList())
