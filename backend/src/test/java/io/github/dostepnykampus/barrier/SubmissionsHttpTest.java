@@ -14,6 +14,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -77,15 +78,30 @@ final class SubmissionsHttpTest {
         );
     }
 
+    /**
+     * Ponowiony POST zwraca zapisane zgłoszenie bez drugiego wiersza (BR-9).
+     * Scenariusz (częściowo): synchronizacja.feature: Przerwana synchronizacja
+     * nie gubi zgłoszenia i nie tworzy drugiego
+     */
     @Test
     void brNineReturnsSavedSubmissionOnRetry(final WebApplicationContext context)
         throws Exception {
         final String body = SubmissionsHttpTest.body("QUICK", SubmissionsHttpTest.IN_A1);
-        new SubmissionRequests(context).post(body);
+        final SubmissionRequests requests = new SubmissionRequests(context);
+        final MockHttpServletResponse first = requests.post(body);
+        final MockHttpServletResponse retry = requests.post(body);
         MatcherAssert.assertThat(
-            "Ponowne wysłanie tego samego id nie zwraca 200",
-            new SubmissionRequests(context).post(body).getStatus(),
-            Matchers.equalTo(200)
+            "Ponowienie zmieniło zapisane zgłoszenie albo utworzyło duplikat",
+            List.of(
+                first.getStatus(), retry.getStatus(),
+                retry.getContentAsString(StandardCharsets.UTF_8),
+                context.getBean(JdbcClient.class)
+                    .sql("SELECT count(*) FROM submissions WHERE id = :id")
+                    .param("id", SubmissionsHttpTest.ID).query(Integer.class).single()
+            ),
+            Matchers.equalTo(
+                List.of(201, 200, first.getContentAsString(StandardCharsets.UTF_8), 1)
+            )
         );
     }
 
