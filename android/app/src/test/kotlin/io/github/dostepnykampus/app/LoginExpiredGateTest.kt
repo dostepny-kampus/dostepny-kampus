@@ -22,7 +22,11 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Po 401 aplikacja prosi o ponowne zalogowanie, a zalogowanie wznawia kolejkę bez dotykania ekranu (BR-26). */
+/**
+ * Po 401 aplikacja prosi o ponowne zalogowanie, a zalogowanie wznawia kolejkę bez dotykania ekranu.
+ *
+ * Wymagania: BR-26
+ */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class LoginExpiredGateTest {
