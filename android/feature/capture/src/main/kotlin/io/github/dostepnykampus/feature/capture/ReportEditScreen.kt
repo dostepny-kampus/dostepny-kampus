@@ -18,9 +18,11 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import kotlinx.coroutines.flow.first
 
 /**
- * C2 z polami zgłoszenia [route] z C3 (US8.3). „Zapisz” zastępuje to samo zgłoszenie, „Zmień miejsce” idzie
- * przez C1 z polami w [draft] (US7.4), a „Wstecz” wraca do C3 (NFR-54). Gdy zgłoszenia nie ma już w telefonie,
+ * C2 z polami zgłoszenia [route] z C3. „Zapisz” zastępuje to samo zgłoszenie, „Zmień miejsce” idzie
+ * przez C1 z polami w [draft], a „Wstecz” wraca do C3. Gdy zgłoszenia nie ma już w telefonie,
  * ekran od razu wraca do C3.
+ *
+ * Wymagania: US8.3, US7.4, NFR-54, NFR-22
  *
  * @param route zgłoszenie do poprawki
  * @param exits wyjścia do nawigacji
@@ -28,7 +30,7 @@ import kotlinx.coroutines.flow.first
  * @param draft szkic współdzielony z C1 przez nawigację
  * @param loader wczytanie z kolejki; w aplikacji z grafu Hilt, w testach z atrapą
  * @param viewModel formularz; w aplikacji z grafu Hilt, w testach z zapisem testowym
- * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu (NFR-22)
+ * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu
  */
 @Composable
 fun ReportEditScreen(

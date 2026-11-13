@@ -11,7 +11,7 @@ import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
 import kotlinx.serialization.Serializable
 
-/** Pola C2 wspólne dla formularza i powrotu przez C1 (US7.4). Stan zapisuje właściciel nawigacji. */
+/** Pola C2 wspólne dla formularza i powrotu przez C1. Stan zapisuje właściciel nawigacji. Wymagania: US7.4 */
 @Serializable
 class ReportDraft {
     private var saved: DraftFields? = null
@@ -23,7 +23,7 @@ class ReportDraft {
     internal fun restore(form: ReportForm, photos: List<PendingPhotoDraft> = emptyList()): ReportUiState =
         saved?.toUiState(form) ?: ReportUiState(form = form, photos = photos)
 
-    /** Pliki zdjęć odłożonego szkicu; sprzątanie przy starcie ich nie usuwa (#927). */
+    /** Pliki zdjęć odłożonego szkicu; sprzątanie przy starcie ich nie usuwa. */
     fun photoPaths(): List<String> = saved?.run { photos.map(DraftPhoto::path) }.orEmpty()
 
     /** Usuwa pola po zakończeniu zgłoszenia lub wyjściu z C1 i C2. */

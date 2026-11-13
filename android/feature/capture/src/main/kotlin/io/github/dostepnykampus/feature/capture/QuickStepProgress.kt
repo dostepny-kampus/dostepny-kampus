@@ -26,7 +26,7 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 
-/** Liczba kroków V4 przed wysłaniem (US4.1). */
+/** Liczba kroków V4 przed wysłaniem. Wymagania: US4.1 */
 internal const val QUICK_STEPS = 3
 
 /** Znacznik testowy odcinka paska wykonanego kroku. */
@@ -37,8 +37,10 @@ internal const val STEP_AHEAD_TAG = "krok-przed"
 
 /**
  * „Krok N z 3” i pod nim pasek z 3 odcinków; wykonane są wypełnione, a pozostałe mają tylko obrys, więc stan nie
- * zależy od samego koloru (US4.1, NFR-21). Napis i pasek są jednym elementem dla TalkBack: czyta „Krok N z 3”
- * z postępem (NFR-18).
+ * zależy od samego koloru. Napis i pasek są jednym elementem dla TalkBack: czyta „Krok N z 3”
+ * z postępem.
+ *
+ * Wymagania: US4.1, NFR-21, NFR-18
  *
  * @param step bieżący krok od 1
  * @param modifier wymiary nadane przez ekran
