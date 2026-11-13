@@ -19,14 +19,14 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
 
-/** Obrazy barier dla mapy V1: znak i słowo każdej uciążliwości (US1.3, NFR-21). */
+/** Obrazy barier dla mapy V1: znak i słowo każdej uciążliwości. Wymagania: US1.3, NFR-21 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class BarrierImagesTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** Wiersz: V1, bariery jako znak uciążliwości i słowo obok znaku (US1.3, NFR-21). */
+    /** Wiersz: V1, bariery jako znak uciążliwości i słowo obok znaku. Wymagania: US1.3, NFR-21 */
     @Test
     fun us1_3_sign_and_word() {
         val images = barrierImages(images(words = listOf("Utrudnienie", "Tylko z pomocą", "Blokada")))
@@ -47,7 +47,11 @@ class BarrierImagesTest {
         assertEquals(names.toSet(), images.keys)
     }
 
-    /** Wiersz: V1, znak wybranej bariery jest osobnym, większym obrazem dla każdej uciążliwości (US1.5, NFR-21). */
+    /**
+     * Wiersz: V1, znak wybranej bariery jest osobnym, większym obrazem dla każdej uciążliwości.
+     *
+     * Wymagania: US1.5, NFR-21
+     */
     @Test
     fun us1_5_chosen_sign_is_bigger() {
         val images = barrierImages(images(words = emptyList()))
