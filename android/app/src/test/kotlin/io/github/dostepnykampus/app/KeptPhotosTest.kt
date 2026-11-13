@@ -5,9 +5,9 @@
  */
 package io.github.dostepnykampus.app
 
-import io.github.dostepnykampus.feature.capture.ReportDraft
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
+import io.github.dostepnykampus.feature.capture.report.ReportDraft
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

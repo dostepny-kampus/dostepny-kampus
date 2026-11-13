@@ -49,8 +49,8 @@ import io.github.dostepnykampus.core.designsystem.BottomBarItems
 import io.github.dostepnykampus.core.designsystem.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.SideBar
 import io.github.dostepnykampus.core.model.hasStaffRole
-import io.github.dostepnykampus.feature.capture.ReportDraft
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
+import io.github.dostepnykampus.feature.capture.report.ReportDraft
 
 private val WideWindow = WIDE_WINDOW_DP.dp
 

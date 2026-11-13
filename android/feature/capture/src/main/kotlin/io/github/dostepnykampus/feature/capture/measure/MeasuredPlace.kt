@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.feature.capture.measure
 
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.capture.ReportPlace
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import io.github.dostepnykampus.feature.capture.report.ReportPlace
 
 /**
  * Trasa do C2 po „Dalej” na C1 albo `null`, gdy „Dalej” jeszcze nie działa: pomiar trwa albo budynek czeka na decyzję

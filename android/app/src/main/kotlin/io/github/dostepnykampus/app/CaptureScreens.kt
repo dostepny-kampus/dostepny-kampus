@@ -11,11 +11,11 @@ import io.github.dostepnykampus.app.navigation.changeEditPlace
 import io.github.dostepnykampus.app.navigation.measure
 import io.github.dostepnykampus.app.navigation.openEdit
 import io.github.dostepnykampus.app.navigation.reportSaved
-import io.github.dostepnykampus.feature.capture.MySubmissionsActions
-import io.github.dostepnykampus.feature.capture.MySubmissionsScreen
-import io.github.dostepnykampus.feature.capture.ReportEditExits
-import io.github.dostepnykampus.feature.capture.ReportEditScreen
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
+import io.github.dostepnykampus.feature.capture.report.ReportEditExits
+import io.github.dostepnykampus.feature.capture.report.ReportEditScreen
 
 /** C3 „Moje zgłoszenia”: „Otwórz” prowadzi do poprawki w C2, „Zmierz i zgłoś barierę” do C1. Wymagania: US8.1, US8.3 */
 @Composable

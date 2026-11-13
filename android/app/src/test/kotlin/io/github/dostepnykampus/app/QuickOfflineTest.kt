@@ -30,11 +30,11 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.feature.capture.BuildingLookup
-import io.github.dostepnykampus.feature.capture.ReportSaverModule
 import io.github.dostepnykampus.feature.capture.quick.QuickLookup
 import io.github.dostepnykampus.feature.capture.quick.QuickReport
 import io.github.dostepnykampus.feature.capture.quick.QuickSendStage
 import io.github.dostepnykampus.feature.capture.quick.QuickSendViewModel
+import io.github.dostepnykampus.feature.capture.report.ReportSaverModule
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals

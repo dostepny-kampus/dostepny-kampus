@@ -10,7 +10,7 @@ import io.github.dostepnykampus.core.location.PositionAverage
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.feature.capture.A1
+import io.github.dostepnykampus.feature.capture.report.A1
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull

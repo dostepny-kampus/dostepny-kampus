@@ -31,9 +31,9 @@ import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.feature.capture.MySubmissionsActions
-import io.github.dostepnykampus.feature.capture.MySubmissionsContent
-import io.github.dostepnykampus.feature.capture.MySubmissionsViewModel
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsContent
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking

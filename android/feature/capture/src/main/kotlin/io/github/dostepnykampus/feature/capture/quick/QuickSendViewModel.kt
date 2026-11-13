@@ -16,7 +16,7 @@ import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.model.Floor
 import io.github.dostepnykampus.feature.capture.BuildingLookup
-import io.github.dostepnykampus.feature.capture.ReportSaver
+import io.github.dostepnykampus.feature.capture.report.ReportSaver
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
