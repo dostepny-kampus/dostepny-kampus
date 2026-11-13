@@ -29,7 +29,11 @@ Główna droga to V1, V2, V3 i z powrotem na mapę z zaznaczonym wejściem. Z V2
 
 ### Zgłoszenie szybkie
 
-![Diagram: zgłoszenie szybkie V4 od przycisku przez logowanie, zgodę na lokalizację i trzy kroki do potwierdzenia](../_generated/nawigacja-gosc-zgloszenie.svg)
+![Diagram: wejście do zgłoszenia szybkiego od przycisku przez logowanie i zgodę na lokalizację do kroku 1](../_generated/nawigacja-gosc-zgloszenie-wejscie.svg)
+
+Pierwszy rysunek pokazuje drogę do kroku 1, drugi trzy kroki i potwierdzenie.
+
+![Diagram: trzy kroki zgłoszenia szybkiego V4, ustalenie pozycji, wysłanie i potwierdzenie](../_generated/nawigacja-gosc-zgloszenie-kroki.svg)
 
 Zgłoszenie szybkie V4 ma trzy kroki. Gość najpierw trafia do L1, a po zalogowaniu wraca do kroku 1 z wybranym wejściem. „Nie teraz” na L1 wraca do mapy.
 
