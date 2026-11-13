@@ -88,6 +88,27 @@ class ReportFormTest {
         assertNull(check.content.description)
     }
 
+    /**
+     * W budynku podstawowym B-8 wpis tekstu daje piętro w treści zgłoszenia; „1,5” nie jest liczbą całkowitą, więc
+     * piętra brak i formularz się nie zapisuje (US7.2).
+     * Scenariusz: budynki-bez-szczegolow.feature: Piętro w budynku podstawowym wpisuje się jako liczbę całkowitą
+     */
+    @Test
+    fun `piętro budynku podstawowego od wpisu do treści`() {
+        val examples =
+            listOf(
+                Triple("0", false, SubmissionFloor(number = 0, isMezzanine = false)),
+                Triple("2", false, SubmissionFloor(number = 2, isMezzanine = false)),
+                Triple("-1", false, SubmissionFloor(number = -1, isMezzanine = false)),
+                Triple("1", true, SubmissionFloor(number = 1, isMezzanine = true)),
+            )
+        examples.forEach { (typed, isMezzanine, expected) ->
+            val check = basicBuilding(typed, isMezzanine).check() as ReportCheck.Complete
+            assertEquals(expected, check.content.floor, typed)
+        }
+        assertEquals(ReportCheck.Incomplete(listOf(ReportFormError.MISSING_FLOOR)), basicBuilding("1,5").check())
+    }
+
     @Test
     fun `piętro wpisane liczbą`() {
         val form = complete().copy(floor = ReportFloor.Numbered(number = -1, isMezzanine = true))
@@ -147,6 +168,12 @@ class ReportFormTest {
         assertNull(parseFloorNumber("1,5"))
         assertNull(parseFloorNumber("parter"))
     }
+
+    private fun basicBuilding(typed: String, isMezzanine: Boolean = false): ReportForm =
+        complete().copy(
+            place = A1.copy(buildingSymbol = "B-8"),
+            floor = parseFloorNumber(typed)?.let { ReportFloor.Numbered(number = it, isMezzanine = isMezzanine) },
+        )
 
     private fun complete(): ReportForm =
         ReportForm(
