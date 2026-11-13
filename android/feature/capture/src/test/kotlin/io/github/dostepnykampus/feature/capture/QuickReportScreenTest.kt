@@ -69,6 +69,20 @@ class QuickReportScreenTest {
         assertEquals(listOf(expected), next)
     }
 
+    /**
+     * Wiersz: V4 krok 2, „Nie wiem” → krok 3 bez piętra, z odnotowanym pytaniem o piętro, US4.5. Budynek zgłoszenia
+     * ustala serwer z konturu, więc ten krok sprawdzają testy serwera.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Odpowiedź „Nie wiem” zostawia piętro puste i pozwala
+     *   wysłać zgłoszenie
+     */
+    @Test
+    fun us4_5_unknown_floor_to_step_3() {
+        show(atGroup)
+        compose.onNodeWithText("Schody i windy").performClick()
+        compose.onNodeWithText("Nie wiem").performClick()
+        assertEquals(listOf(atGroup.copy(group = BarrierGroup.VERTICAL_CIRCULATION, isFloorAsked = true)), next)
+    }
+
     /** Wiersz: V4 krok 2, pozycja poza konturem → bez pytania o piętro, zgłoszenie bez piętra, BR-14. */
     @Test
     fun us4_5_outside_no_floor() {
