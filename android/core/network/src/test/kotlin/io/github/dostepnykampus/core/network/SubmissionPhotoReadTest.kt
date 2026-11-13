@@ -42,7 +42,11 @@ class SubmissionPhotoReadTest {
     @Test
     fun us2_2_reads_jpeg_bytes() {
         Buffer().write(jpeg).use { body ->
-            server.enqueue(MockResponse().setHeader("Content-Type", "image/jpeg").setBody(body))
+            server.enqueue(
+                MockResponse()
+                    .setHeader(name = "Content-Type", value = "image/jpeg")
+                    .setBody(body),
+            )
         }
         val result = read()
         assertArrayEquals(jpeg, (result as ApiResult.Success).value)
@@ -76,6 +80,7 @@ class SubmissionPhotoReadTest {
 
     private fun read(): ApiResult<ByteArray> =
         runBlocking {
-            SubmissionsApi(http, NetworkModule.json(), server.url("/").toString()).photo(ID, PHOTO)
+            val api = SubmissionsApi(http, NetworkModule.json(), server.url("/").toString())
+            api.photo(submissionId = ID, photoId = PHOTO)
         }
 }
