@@ -30,6 +30,7 @@ kotlinxSerialization = "1.12.0"
 navigation3 = "1.2.0"
 maplibre = "13.7.1"
 maplibreGeojson = "6.0.1"
+# Ocena wersji: docs/docs/architektura/oceny-zaleznosci.md#okhttp-551 (#477).
 okhttp = "5.5.1"
 okio = "3.18.1"
 jsonSchemaValidator = "3.0.9"
