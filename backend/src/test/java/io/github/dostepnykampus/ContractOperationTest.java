@@ -10,7 +10,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 /**
- * Lista operacji kontraktu: prefiks serwera, nazwy zmiennych i klucze spoza metod (#829).
+ * Lista operacji kontraktu: prefiks serwera, nazwy zmiennych i klucze spoza metod.
  *
  * @since 0.1.0
  */

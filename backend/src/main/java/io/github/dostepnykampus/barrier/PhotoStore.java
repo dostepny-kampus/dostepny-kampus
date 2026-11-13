@@ -83,7 +83,7 @@ final class PhotoStore {
 
     /**
      * Zdjęcia zgłoszenia zapisane w magazynie, także spoza bieżącej listy
-     * photoIds (#839).
+     * photoIds.
      *
      * @param submission Identyfikator zgłoszenia
      * @return Identyfikatory zdjęć pod kluczami zgłoszenia

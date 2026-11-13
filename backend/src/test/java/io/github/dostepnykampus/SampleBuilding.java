@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
  * Budynek próbny w tabeli {@code buildings}: jedyne miejsce testów, które zna jej
- * kolumny (#843).
+ * kolumny.
  *
  * <p>Kontur jest w EPSG:4326 i zawsze jako wielokąt złożony, jak wymaga kolumna, a
  * źródłem jest atrybucja OpenStreetMap. Budynek o symbolu, który już jest w tabeli,
