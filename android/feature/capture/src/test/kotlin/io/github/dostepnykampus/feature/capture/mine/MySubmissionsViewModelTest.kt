@@ -11,7 +11,6 @@ import io.github.dostepnykampus.core.data.submissions.SendState
 import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.SubmissionStatus
-import io.github.dostepnykampus.feature.capture.report.check
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
