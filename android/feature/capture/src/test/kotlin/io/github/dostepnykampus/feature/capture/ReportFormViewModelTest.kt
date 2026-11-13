@@ -12,6 +12,8 @@ import io.github.dostepnykampus.core.data.submissions.SaveRefusedException
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionContent
+import io.github.dostepnykampus.feature.capture.measure.place
+import io.github.dostepnykampus.feature.capture.quick.content
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

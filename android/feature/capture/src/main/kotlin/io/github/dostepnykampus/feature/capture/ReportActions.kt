@@ -28,6 +28,9 @@ import io.github.dostepnykampus.feature.capture.ReportFormError.MISSING_DESCRIPT
 import io.github.dostepnykampus.feature.capture.ReportFormError.MISSING_FLOOR
 import io.github.dostepnykampus.feature.capture.ReportFormError.MISSING_PHOTO
 import io.github.dostepnykampus.feature.capture.ReportFormError.MISSING_SEVERITY
+import io.github.dostepnykampus.feature.capture.measure.place
+import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
+import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 
 /**
  * Czynności ekranu C2 przekazywane z ViewModelu.

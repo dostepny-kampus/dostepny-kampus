@@ -29,6 +29,9 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
+import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
+import io.github.dostepnykampus.feature.capture.photo.PhotoPreviews
 
 /**
  * „Zdjęcie”: ostrzeżenie „Ważne” jak w kroku 1 V4, podgląd zdjęć, „Zrób zdjęcie” i komunikat, gdy zdjęcia nie dało

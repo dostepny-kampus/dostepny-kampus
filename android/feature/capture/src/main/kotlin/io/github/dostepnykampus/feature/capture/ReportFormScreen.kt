@@ -10,7 +10,10 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
+import io.github.dostepnykampus.feature.capture.photo.rememberPhotoCamera
 
 /**
  * C2 Opisz barierę z miejscem z [route]. „Wstecz” w nagłówku i wstecz telefonu bez zmian wychodzą od razu,

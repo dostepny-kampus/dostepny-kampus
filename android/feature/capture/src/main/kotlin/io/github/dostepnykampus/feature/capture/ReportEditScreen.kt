@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
+import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
+import io.github.dostepnykampus.feature.capture.photo.rememberPhotoCamera
 import kotlinx.coroutines.flow.first
 
 /**

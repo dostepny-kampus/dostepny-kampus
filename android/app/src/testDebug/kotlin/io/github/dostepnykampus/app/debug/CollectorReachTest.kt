@@ -31,9 +31,9 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.capture.ReportEdit
 import io.github.dostepnykampus.feature.capture.ReportForm
 import io.github.dostepnykampus.feature.capture.ReportFormViewModel
+import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
-import io.github.dostepnykampus.feature.capture.place
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Rule
 import org.junit.Test

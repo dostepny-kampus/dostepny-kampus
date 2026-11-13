@@ -32,6 +32,7 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.descriptionRes
 import io.github.dostepnykampus.core.designsystem.nameRes
 import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.feature.capture.measure.place
 import java.util.Locale
 import kotlin.math.roundToInt
 

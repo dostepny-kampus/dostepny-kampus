@@ -13,6 +13,8 @@ import io.github.dostepnykampus.core.data.submissions.PendingEdits
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionFloor
+import io.github.dostepnykampus.feature.capture.measure.place
+import io.github.dostepnykampus.feature.capture.quick.content
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

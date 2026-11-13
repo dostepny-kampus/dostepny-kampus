@@ -21,6 +21,8 @@ import io.github.dostepnykampus.core.geo.BuildingHint
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.feature.capture.measure.PlaceChoice
+import io.github.dostepnykampus.feature.capture.measure.place
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule

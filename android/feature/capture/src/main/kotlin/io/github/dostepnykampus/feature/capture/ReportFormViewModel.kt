@@ -16,6 +16,8 @@ import io.github.dostepnykampus.core.data.submissions.SaveRefusal
 import io.github.dostepnykampus.core.data.submissions.SaveRefusedException
 import io.github.dostepnykampus.core.model.FloorList
 import io.github.dostepnykampus.core.model.SubmissionContent
+import io.github.dostepnykampus.feature.capture.measure.place
+import io.github.dostepnykampus.feature.capture.quick.content
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

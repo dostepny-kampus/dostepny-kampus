@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.capture
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.feature.capture.measure.place
 
 /** Co ekran C2 robi po „Zapisz”. Wymagania: US7 */
 enum class ReportStage {
