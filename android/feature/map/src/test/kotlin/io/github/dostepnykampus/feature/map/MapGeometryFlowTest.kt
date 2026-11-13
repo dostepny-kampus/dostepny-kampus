@@ -7,8 +7,8 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.model.Building
@@ -259,7 +259,10 @@ class MapGeometryFlowTest {
 
     private suspend fun stopViewModels() {
         viewModels.forEach { it.viewModelScope.cancel() }
-        viewModels.forEach { it.viewModelScope.coroutineContext.job.join() }
+        for (viewModel in viewModels) {
+            val scope = viewModel.viewModelScope
+            scope.coroutineContext.job.join()
+        }
     }
 
     private fun repository(json: String = ASSET_JSON, list: (suspend () -> ApiResult<BuildingList>)? = null) =
