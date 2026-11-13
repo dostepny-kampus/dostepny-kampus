@@ -66,8 +66,7 @@ final class ForeignChangeHttpTest {
     @Test
     void brEighteenAcceptsOrdinaryChangeFromAuthor(final WebApplicationContext context)
         throws Exception {
-        final UUID own = UUID.randomUUID();
-        ForeignChangeHttpTest.send(context, own, ForeignChangeHttpTest.PRECISE);
+        final UUID own = ForeignChangeHttpTest.accepted(context, "konto-testowe");
         Assertions.assertEquals(
             "201, zapisanych 1",
             ForeignChangeHttpTest.change(
@@ -84,7 +83,7 @@ final class ForeignChangeHttpTest {
         final UUID quick = UUID.randomUUID();
         ForeignChangeHttpTest.send(context, quick, "\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\"");
         context.getBean(JdbcClient.class)
-            .sql("UPDATE submissions SET author = 'inne-konto' WHERE id = :id")
+            .sql("UPDATE submissions SET author = 'inne-konto', status = 'ACCEPTED' WHERE id = :id")
             .param("id", quick).update();
         Assertions.assertEquals(
             "201, zapisanych 1",

@@ -16,6 +16,7 @@ import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
+import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
@@ -131,7 +132,10 @@ public final class SubmissionsController {
      * z tokenu (BR-3). Zgłoszenie inne niż szybkie i zmianę zgłoszenia
      * przyjętego składa tylko Zbierający (US7, US17.2, US8.4, BR-18, BR-19).
      * Zmianę cudzego zgłoszenia innego niż szybkie składa tylko autor, chyba
-     * że zmiana ma oznaczenie „bariera usunięta” (BR-18, BR-19).
+     * że zmiana ma oznaczenie „bariera usunięta” (BR-18, BR-19). Zmiana
+     * zgłoszenia, którego nie ma albo którego składający nie widzi, daje 404,
+     * a zmiana zgłoszenia widocznego, ale nieprzyjętego, 409 z tym
+     * zgłoszeniem (BR-3, BR-5, BR-18).
      *
      * @param body Zgłoszenie według schematu NewSubmission
      * @param account Zalogowane konto; jego nazwa to identyfikator z tokenu
@@ -146,6 +150,9 @@ public final class SubmissionsController {
         if (body.content().forCollector() && !request.isUserInRole("COLLECTOR")) {
             throw new ForbiddenChange("To zgłoszenie składa tylko Zbierający");
         }
+        this.checkReplaced(
+            body, new Reader(account.getName(), request.isUserInRole("VERIFIER"))
+        );
         if (body.content().ordinaryChange()
             .filter(replaced -> this.finder.authorOnly(replaced, account.getName())).isPresent()) {
             throw new ForbiddenChange("Zwykłą zmianę tego zgłoszenia składa tylko jego autor");
@@ -188,6 +195,22 @@ public final class SubmissionsController {
             case EditResult.Missing _ -> throw new MissingResource(SubmissionsController.MISSING);
             case null -> throw new IllegalStateException("Brak wyniku edycji zgłoszenia");
         };
+    }
+
+    private void checkReplaced(final NewSubmissionRequest body, final Reader reader) {
+        final UUID replaced = body.content().replaces();
+        final UUID id = body.id();
+        if (replaced != null && (id == null || this.finder.find(id).isEmpty())) {
+            final Submission current = this.finder.visible(replaced, reader)
+                .orElseThrow(() -> new MissingResource("Nie ma zastępowanego zgłoszenia"));
+            if (current.status() != SubmissionStatus.ACCEPTED) {
+                throw new ConflictingState(
+                    "Zmienić można tylko zgłoszenie przyjęte; nieprzyjęte edytuje autor",
+                    "serverSubmission",
+                    new SubmissionResponse(current)
+                );
+            }
+        }
     }
 
     private static String name(@Nullable final Principal account) {
