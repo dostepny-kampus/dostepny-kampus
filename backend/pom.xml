@@ -366,6 +366,7 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
                mają znacznik kontekst-springa (pilnuje go SpringTestTagArchitectureTest) i nie biorą udziału. -->
           <targetClasses>
             <param>io.github.dostepnykampus.*.domain.*</param>
+            <param>io.github.dostepnykampus.barrier.json.*</param>
             <param>io.github.dostepnykampus.building.locate.*</param>
             <param>io.github.dostepnykampus.barrier.JpegCleaner*</param>
             <param>io.github.dostepnykampus.barrier.SubmissionService*</param>
