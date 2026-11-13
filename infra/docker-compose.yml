@@ -40,6 +40,9 @@ services:
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${DK_AUTH_ADMIN_USER:?ustaw DK_AUTH_ADMIN_USER w infra/.env}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${DK_AUTH_ADMIN_PASSWORD:?ustaw DK_AUTH_ADMIN_PASSWORD w infra/.env}
+      # Stały adres wystawcy tokenów: token pobrany z emulatora przez 10.0.2.2 ma tego samego wystawcę,
+      # którego oczekuje serwer (DK_AUTH_ISSUER).
+      KC_HOSTNAME: http://localhost:${DK_AUTH_PORT:-8180}
     ports:
       - "127.0.0.1:${DK_AUTH_PORT:-8180}:8180"
     volumes:
