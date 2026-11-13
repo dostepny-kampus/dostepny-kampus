@@ -103,7 +103,7 @@ internal fun FieldError(error: ReportFormError, isShown: Boolean) {
 
 /**
  * Nad formularzem: pierwszy brak, „Za mało miejsca w telefonie” ze „Spróbuj ponownie” albo odrzucony zapis
- *  (PW-10).
+ * (PW-10).
  *
  * Wymagania: NFR-7, NFR-50
  */
