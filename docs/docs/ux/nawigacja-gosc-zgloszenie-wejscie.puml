@@ -15,18 +15,6 @@ if (zgoda na lokalizację?) then (nie)
   -> „Pozwól na\nlokalizację”;
 else (jest)
 endif
-:V4 Krok 1 z 3\nzdjęcie;
--> „Zrób zdjęcie”,\npotem „Dalej”;
-:V4 Krok 2 z 3\ngrupa barier, w budynku piętro;
--> wybór grupy;
-:V4 Krok 3 z 3\nwysłanie;
-while (telefon ustalił pozycję?) is (nie)
-  :Brak pozycji; <<stan>>
-  -> „Spróbuj\nponownie”;
-endwhile (tak)
--> „Wyślij”;\nbez sieci zapis w telefonie;
-:V4 Potwierdzenie;
--> „Wróć do mapy”;
-:V1 Mapa kampusu;
+:V4 Krok 1 z 3\n(następny rysunek);
 stop
 @enduml
