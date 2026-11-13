@@ -18,10 +18,10 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
-import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.AnnotatedString
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
@@ -101,10 +101,11 @@ class CampusPathDeviceTest {
         check(previous in setOf("0", "1", "null")) { "Nieznane ustawienie klawiatury: $previous" }
         try {
             DeviceEvidence.shell("settings put secure show_ime_with_hard_keyboard 1")
-            compose.onNode(hasSetTextAction()).performClick().performTextInput("A-1")
-            compose.onNode(hasSetTextAction()).assertIsFocused()
+            compose.onNode(hasSetTextAction()).performClick()
             compose.waitUntil(timeoutMillis = WAIT_MS) { DeviceEvidence.isKeyboardVisible() }
+            InstrumentationRegistry.getInstrumentation().sendStringSync("A-1")
             waitFor(BuildingA1InCatalog)
+            compose.onNode(hasSetTextAction()).assertIsFocused()
             DeviceEvidence.record("v1-keyboard")
             compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
             waitFor(hasText(CHECK))
@@ -116,6 +117,9 @@ class CampusPathDeviceTest {
                 compose.onAllNodes(hasText(CHECK)).fetchSemanticsNodes().isEmpty()
             }
             waitFor(hasSetTextAction())
+            compose.waitUntil(timeoutMillis = WAIT_MS) {
+                compose.onAllNodes(hasSetTextAction() and isFocused()).fetchSemanticsNodes().isEmpty()
+            }
             compose.onNode(hasSetTextAction()).assertIsNotFocused()
             compose.waitUntil(timeoutMillis = WAIT_MS) { !DeviceEvidence.isKeyboardVisible() }
             DeviceEvidence.record("v1-after-back")
