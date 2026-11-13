@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Warstwa | Pełny test | Tylko częściowo | Bez testu |
 | --- | --- | --- | --- |
-| Aplikacja | 20 | 14 | 99 |
+| Aplikacja | 21 | 13 | 99 |
 | Serwer | 0 | 0 | 62 |
 
 | Plik | Scenariusz | Kryteria i reguły | Warstwa | Test | Stan |
@@ -73,7 +73,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `postep-inwentaryzacji.feature` | Do postępu nie wchodzą zgłoszenia nieznane serwerowi, archiwalne ani poza budynkiem | BR-21 | serwer | — | brak |
 | `postep-inwentaryzacji.feature` | Liczba wejść ze źródłem „obchód” w budynku szczegółowym | BR-24, US11.4 | serwer | — | brak |
 | `postep-inwentaryzacji.feature` | Przyjęta zmiana oznaczenia wejścia zwiększa liczbę wejść sprawdzonych na miejscu | BR-24, US11.4 | serwer | — | brak |
-| `przegladanie-mapy.feature` | Wyszukanie budynku po symbolu w różnym zapisie | US1.1 | aplikacja | `core/geo · SearchBuildingsTest.us1_1_spelling_finds_c13` | częściowo |
+| `przegladanie-mapy.feature` | Wyszukanie budynku po symbolu w różnym zapisie | US1.1 | aplikacja | `app · CampusMapScreenTest.us1_1_search_c13_exact`<br>`app · CampusMapScreenTest.us1_1_search_c13_lowercase`<br>`app · CampusMapScreenTest.us1_1_search_c13_no_dash`<br>`core/geo · SearchBuildingsTest.us1_1_spelling_finds_c13` | pełny |
 | `przegladanie-mapy.feature` | Mapa i wyszukiwanie działają bez logowania | US1.2 | aplikacja | `core/geo · SearchBuildingsTest.us1_2_real_file_finds_a1` | częściowo |
 | `przegladanie-mapy.feature` | Na mapie są tylko zgłoszenia przyjęte | BR-6, US1.3 | serwer | — | brak |
 | `przegladanie-mapy.feature` | Wejście ma oznaczenie tekstem i ikoną, nie tylko kolorem | US2.1 | aplikacja | — | brak |

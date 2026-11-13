@@ -419,6 +419,40 @@ class CampusMapScreenTest {
         assertEquals(closer.copy(bottomInset = 0.0), cameras.last())
     }
 
+    /**
+     * Zapis „C13” w polu symbolu daje wynik „Budynek C-13” (US1.1).
+     * Scenariusz (przykład: C13): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie
+     */
+    @Test
+    fun us1_1_search_c13_no_dash() {
+        assertFindsC13("C13")
+    }
+
+    /**
+     * Zapis „c-13” w polu symbolu daje wynik „Budynek C-13” (US1.1).
+     * Scenariusz (przykład: c-13): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie
+     */
+    @Test
+    fun us1_1_search_c13_lowercase() {
+        assertFindsC13("c-13")
+    }
+
+    /**
+     * Zapis „C-13” w polu symbolu daje wynik „Budynek C-13” (US1.1).
+     * Scenariusz (przykład: C-13): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie
+     */
+    @Test
+    fun us1_1_search_c13_exact() {
+        assertFindsC13("C-13")
+    }
+
+    private fun assertFindsC13(query: String) {
+        compose.setContent { Screen() }
+        compose.onNode(hasSetTextAction()).performTextInput(query)
+        compose.onNodeWithText("Budynek C-13", useUnmergedTree = true).assertExists()
+        compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertDoesNotExist()
+    }
+
     /** Wiersz: pole symbolu „c14” → wynik „Budynek C-14” → V2 z obrysem, US1.1. */
     @Test
     fun us1_1_search_result_opens_v2() {
