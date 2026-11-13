@@ -35,9 +35,9 @@ class ModuleReadmeArchitectureTest {
         @TempDir root: File,
     ) {
         File(root, "settings.gradle.kts").writeText("""include(":core:ok", ":core:partial", ":core:wrong")""")
-        module(root, "core/ok", listOf(":core:base"), listOf(":core:base"), SECTIONS)
-        module(root, "core/partial", emptyList(), emptyList(), SECTIONS - "API")
-        module(root, "core/wrong", listOf(":core:base"), listOf(":core:other"), SECTIONS)
+        module(root = root, path = "core/ok", built = listOf(":core:base"), described = listOf(":core:base"), sections = SECTIONS)
+        module(root = root, path = "core/partial", built = emptyList(), described = emptyList(), sections = SECTIONS - "API")
+        module(root = root, path = "core/wrong", built = listOf(":core:base"), described = listOf(":core:other"), sections = SECTIONS)
         assertEquals(setOf(":core:partial", ":core:wrong"), problems(root).keys)
     }
 
