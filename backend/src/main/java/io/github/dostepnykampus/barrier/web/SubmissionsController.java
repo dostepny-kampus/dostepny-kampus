@@ -16,7 +16,6 @@ import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
-import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
@@ -203,7 +202,7 @@ public final class SubmissionsController {
         if (replaced != null && (id == null || this.finder.find(id).isEmpty())) {
             final Submission current = this.finder.visible(replaced, reader)
                 .orElseThrow(() -> new MissingResource("Nie ma zastępowanego zgłoszenia"));
-            if (current.status() != SubmissionStatus.ACCEPTED) {
+            if (!current.accepted()) {
                 throw new ConflictingState(
                     "Zmienić można tylko zgłoszenie przyjęte; nieprzyjęte edytuje autor",
                     "serverSubmission",

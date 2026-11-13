@@ -66,11 +66,10 @@ final class ForeignChangeHttpTest {
     @Test
     void brEighteenAcceptsOrdinaryChangeFromAuthor(final WebApplicationContext context)
         throws Exception {
-        final UUID own = ForeignChangeHttpTest.accepted(context, "konto-testowe");
         Assertions.assertEquals(
             "201, zapisanych 1",
             ForeignChangeHttpTest.change(
-                context, own,
+                context, ForeignChangeHttpTest.accepted(context, "konto-testowe"),
                 ForeignChangeHttpTest.PRECISE.replace("\"severity\":2", "\"severity\":3")
             ),
             "Serwer odrzucił zwykłą zmianę od autora zgłoszenia"
