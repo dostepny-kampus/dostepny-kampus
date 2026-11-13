@@ -407,7 +407,7 @@ jobs:
 
   analiza-zaleznosci:
     # buildHealth kompiluje wszystkie moduły, więc działa po wypchnięciu na gałąź, nie w każdym PR i nie w grupie kolejki.
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
