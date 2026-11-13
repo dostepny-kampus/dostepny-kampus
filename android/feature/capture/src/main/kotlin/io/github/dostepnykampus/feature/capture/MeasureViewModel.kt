@@ -260,7 +260,7 @@ class MeasureViewModel
                 var averaging: PositionAveraging? = null
                 var sky = emptyList<Satellite>()
 
-                suspend fun publish() = send(stateOf(averaging, sky))
+                suspend fun publish() = send(stateOf(averaging, sky, clock.nowMillis()))
 
                 publish()
                 val others =
@@ -310,20 +310,20 @@ class MeasureViewModel
             }
         }
 
-        private fun stateOf(averaging: PositionAveraging?, sky: List<Satellite>): MeasureUiState {
-            val average = averaging?.average() ?: return MeasureUiState.Searching
-            val now = clock.nowMillis()
-            return if (averaging.isFinished(now)) {
-                MeasureUiState.Finished(average, sky.countsInFix(), sky)
-            } else {
-                MeasureUiState.Measuring(
-                    remainingSeconds = averaging.remainingSeconds(now),
-                    average = average,
-                    satellites = sky.countsInFix(),
-                    sky = sky,
-                )
-            }
-        }
-
         private data class Run(val attempt: Int, val finished: MeasureUiState.Finished?)
     }
+
+/** Stan C1 z uśredniania [averaging] i nieba [sky] w chwili [now]. Wymagania: US6.1, US6.5 */
+private fun stateOf(averaging: PositionAveraging?, sky: List<Satellite>, now: Long): MeasureUiState {
+    val average = averaging?.average() ?: return MeasureUiState.Searching
+    return if (averaging.isFinished(now)) {
+        MeasureUiState.Finished(average, sky.countsInFix(), sky)
+    } else {
+        MeasureUiState.Measuring(
+            remainingSeconds = averaging.remainingSeconds(now),
+            average = average,
+            satellites = sky.countsInFix(),
+            sky = sky,
+        )
+    }
+}
