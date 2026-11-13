@@ -22,4 +22,6 @@ Testy wymagają serwera, bazy i Keycloak z `infra/docker-compose.yml`.
 ## Granice
 
 Nie zastępuje sieci atrapą i nie wyłącza kontroli podpisu ani wystawcy tokenu na serwerze.
+Token z wystawcą `10.0.2.2` musi dać 401. Logowanie przez `localhost` kieruje tylko DNS do
+`10.0.2.2`, aby Keycloak zachował wystawcę oczekiwanego przez serwer.
 Nie sprawdza interfejsu ekranów ani fizycznego aparatu; wykonuje się w zestawie systemowym CI.

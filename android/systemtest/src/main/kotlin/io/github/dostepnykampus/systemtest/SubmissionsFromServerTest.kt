@@ -19,6 +19,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
 import java.util.UUID
 
 /** Zapisuje zgłoszenie klientem aplikacji i odczytuje je z prawdziwego serwera jako zalogowany autor. */
@@ -28,7 +29,6 @@ class SubmissionsFromServerTest {
     fun createAndReadOwnSubmission() {
         runBlocking {
             val tokens = AccessTokens()
-            tokens.signIn(collectorToken())
             val api = NetworkModule.submissionsApi(NetworkModule.okHttp(tokens), NetworkModule.json())
             val id = UUID.randomUUID().toString()
             val content =
@@ -38,6 +38,9 @@ class SubmissionsFromServerTest {
                     photoIds = listOf(UUID.randomUUID().toString()),
                     barrierGroup = BarrierGroup.OTHER,
                 )
+            tokens.signIn(collectorToken(host = "10.0.2.2"))
+            assertEquals(ApiResult.ServerError(HTTP_UNAUTHORIZED), api.create(id, content))
+            tokens.signIn(collectorToken(host = "localhost"))
             val created = api.create(id, content)
             assertTrue("Zapis zgłoszenia: $created", created is ApiResult.Success)
             val saved = (created as ApiResult.Success).value

@@ -8,14 +8,19 @@ package io.github.dostepnykampus.systemtest
 import io.github.dostepnykampus.core.network.NetworkModule
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import okhttp3.Dns
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.junit.Assert.assertEquals
 import java.net.HttpURLConnection.HTTP_OK
+import java.net.InetAddress
 
-/** Pobiera token testowego Zbierającego z realmu deweloperskiego bez zapisu danych logowania. */
-internal fun collectorToken(): String {
+/**
+ * Pobiera token testowego Zbierającego bez zapisu danych logowania.
+ * Adresuje gospodarza emulatora, zachowując nazwę [host] w żądaniu do realmu.
+ */
+internal fun collectorToken(host: String): String {
     val form =
         FormBody
             .Builder()
@@ -27,10 +32,15 @@ internal fun collectorToken(): String {
     val request =
         Request
             .Builder()
-            .url("http://10.0.2.2:8180/realms/dostepny-kampus/protocol/openid-connect/token")
+            .url("http://$host:8180/realms/dostepny-kampus/protocol/openid-connect/token")
             .post(form)
             .build()
-    val http = OkHttpClient()
+    val http =
+        OkHttpClient
+            .Builder()
+            .dns { name ->
+                if (name == "localhost") InetAddress.getAllByName("10.0.2.2").toList() else Dns.SYSTEM.lookup(name)
+            }.build()
     return http.newCall(request).execute().use { response ->
         assertEquals("Logowanie Zbierającego", HTTP_OK, response.code)
         val fields = NetworkModule.json().parseToJsonElement(response.body.string()).jsonObject
