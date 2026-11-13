@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.building.web;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.github.dostepnykampus.building.BuildingCard;
+import io.github.dostepnykampus.building.domain.BuildingCard;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;

@@ -5,8 +5,8 @@
  */
 
 /**
- * Ciała odpowiedzi HTTP budynków: model budynku z konturami GeoJSON jako
- * drzewem JSON.
+ * Operacje HTTP budynków i ich odpowiedzi z konturami GeoJSON jako drzewem
+ * JSON.
  *
  * @since 0.1.0
  */

@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.building.postgis;
+package io.github.dostepnykampus.building.persistence;
 
 import io.github.dostepnykampus.building.Outlines;
 import java.util.Optional;

@@ -78,10 +78,7 @@ final class ModuleLayersArchitectureTest {
     /**
      * Naruszenia, które dziś istnieją, i issue, które je usuwa.
      */
-    private static final Map<String, Integer> KNOWN = Map.of(
-        "io.github.dostepnykampus.building.locate", 1324,
-        "io.github.dostepnykampus.building.postgis", 1324
-    );
+    private static final Map<String, Integer> KNOWN = Map.of();
 
     /**
      * Pakiet przykładów kompilowanych przez test.

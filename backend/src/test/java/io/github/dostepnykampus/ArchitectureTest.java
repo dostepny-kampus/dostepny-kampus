@@ -134,9 +134,7 @@ final class ArchitectureTest {
     private static ArchRule jdbcPlacement() {
         return ArchRuleDefinition.noClasses()
             .that().resideOutsideOfPackages("..persistence..", "..postgis..")
-            .and().doNotHaveFullyQualifiedName("io.github.dostepnykampus.building.BuildingQuery")
             .should().dependOnClassesThat().resideInAnyPackage("org.springframework.jdbc..")
-            .because("BuildingQuery pozostaje wyjątkiem do uporządkowania zapytań w #849")
             .allowEmptyShould(false);
     }
 }

@@ -5,11 +5,11 @@
  */
 
 /**
- * Położenie punktu względem budynków kampusu, wewnętrzne dla modułu building.
+ * Zapis i odczyt budynków w bazie PostGIS oraz import danych OpenStreetMap.
  *
  * @since 0.1.0
  */
 @NullMarked
-package io.github.dostepnykampus.building.locate;
+package io.github.dostepnykampus.building.persistence;
 
 import org.jspecify.annotations.NullMarked;

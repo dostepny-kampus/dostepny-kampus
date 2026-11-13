@@ -3,9 +3,9 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.building;
+package io.github.dostepnykampus.building.web;
 
-import io.github.dostepnykampus.building.locate.Placement;
+import io.github.dostepnykampus.building.domain.Placement;
 
 /**
  * Jedyne miejsce, w którym położenie punktu staje się odpowiedzią REST

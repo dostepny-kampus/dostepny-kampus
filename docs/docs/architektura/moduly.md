@@ -88,7 +88,7 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 
 | Odstępstwo | Issue |
 | --- | --- |
-| korzenie `barrier` i `building` zawierają wnętrze modułu | #1323, #1324 |
+| korzeń `barrier` zawiera wnętrze modułu | #1323 |
 | `barrier.domain` ma 22 pliki | #1439 |
 | `:core:data` udostępnia `:core:database` przez `api(...)`, testy funkcji zależą od bazy i sieci | #1328 |
 | pakiet główny `:feature:map` (30 plików) przekracza limit 15 | #1570 |
