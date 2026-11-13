@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.area
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -12,6 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.MapCamera
+import io.github.dostepnykampus.feature.map.START_ZOOM
 import io.github.dostepnykampus.feature.map.data.AreaChoice
 import io.github.dostepnykampus.feature.map.data.AreaNeighbor
 import io.github.dostepnykampus.feature.map.data.CampusMapData
@@ -21,6 +23,7 @@ import io.github.dostepnykampus.feature.map.data.areaNeighbor
 import io.github.dostepnykampus.feature.map.data.areaOf
 import io.github.dostepnykampus.feature.map.data.center
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.style.property
 
 /**
  * Tereny w kolejności nagłówków listy budynków: pokazany na mapie pierwszy, pozostałe od najbliższego.

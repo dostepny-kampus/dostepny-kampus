@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.area
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,7 +43,11 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
+import io.github.dostepnykampus.feature.map.MapControlIcons
+import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.data.AreaChoice
+import io.github.dostepnykampus.feature.map.mapControlBorder
+import io.github.dostepnykampus.feature.map.style.property
 
 private val AreaRowHeight = 56.dp
 private const val TEN = 10

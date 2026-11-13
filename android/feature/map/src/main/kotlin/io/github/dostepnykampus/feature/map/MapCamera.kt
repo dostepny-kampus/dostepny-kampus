@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusBounds
+import io.github.dostepnykampus.feature.map.style.property
 import kotlin.math.PI
 import kotlin.math.asinh
 import kotlin.math.cos

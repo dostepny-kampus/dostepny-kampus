@@ -16,6 +16,7 @@ import io.github.dostepnykampus.core.data.buildings.ServerEntrances
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.Entrance
+import io.github.dostepnykampus.feature.map.style.property
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

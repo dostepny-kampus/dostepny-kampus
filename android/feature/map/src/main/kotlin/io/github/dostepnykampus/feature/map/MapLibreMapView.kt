@@ -37,6 +37,13 @@ import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.symbolsAt
+import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
+import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
+import io.github.dostepnykampus.feature.map.style.MapStyleColors
+import io.github.dostepnykampus.feature.map.style.MapTileHttpEntryPoint
+import io.github.dostepnykampus.feature.map.style.campusMapStyle
+import io.github.dostepnykampus.feature.map.style.numbers
+import io.github.dostepnykampus.feature.map.style.styleBuilder
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.boolean

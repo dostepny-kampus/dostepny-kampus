@@ -9,7 +9,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.dostepnykampus.feature.map.MapUserAgent
+import io.github.dostepnykampus.feature.map.style.MapUserAgent
 
 /** Nagłówek User-Agent kafelków mapy z wersji i identyfikatora aplikacji, w grafie Hilt. Wymagania: NFR-39 */
 @Module

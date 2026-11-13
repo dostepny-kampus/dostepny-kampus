@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.Entrance
 import io.github.dostepnykampus.core.model.EntranceMarking
+import io.github.dostepnykampus.feature.map.style.property
 
 private val MARKING_ORDER = listOf(EntranceMarking.ACCESSIBLE, EntranceMarking.INACCESSIBLE, EntranceMarking.NO_DATA)
 
