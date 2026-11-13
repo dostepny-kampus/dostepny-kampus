@@ -76,6 +76,48 @@ class OwnHistoryTest {
         }
 
     /**
+     * Serwer zapisał treść, ale telefon nie dostał odpowiedzi: ponawia to samo id i treść, potem wysyła zdjęcie.
+     * Scenariusz (częściowo): synchronizacja.feature: Przerwana synchronizacja
+     *   nie gubi zgłoszenia i nie tworzy drugiego
+     */
+    @Test
+    fun `br9 zgubiona odpowiedź`() =
+        runBlocking {
+            val sent = mutableListOf<Pair<String, SubmissionContent>>()
+            val remote = mutableMapOf<String, Submission>()
+            val target =
+                queue { id, content ->
+                    sent.add(id to content)
+                    val saved = remote.getOrPut(id) { server(id, content) }
+                    if (sent.size == 1) {
+                        ApiResult.NetworkError(IOException("Odpowiedź zginęła po zapisie treści"))
+                    } else {
+                        ApiResult.Success(saved)
+                    }
+                }
+            val photos = photo()
+            target.save(precise(), photos)
+
+            assertFalse(target.sendAll())
+            assertEquals(setOf(ID), remote.keys)
+            val pending = store.rows.single().submission
+            assertEquals(ID, pending.id)
+            assertFalse(pending.isCreatedOnServer)
+            assertTrue(store.photos.isEmpty())
+            assertTrue(File(photos.single().path).exists())
+            assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state)
+
+            assertTrue(target.sendAll())
+            assertEquals(listOf(ID, ID), sent.map { it.first })
+            assertEquals(sent.first(), sent.last())
+            assertEquals(1, remote.size)
+            assertEquals(listOf(ID to PHOTO), store.photos)
+            assertTrue(store.rows.isEmpty())
+            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state)
+            assertEquals(3, history.rows.getValue(ID).serverVersion)
+        }
+
+    /**
      * Odpowiedź 503 kończy przebieg do kolejnej próby jak brak sieci; następny przebieg wysyła zgłoszenie sam.
      * Scenariusz: synchronizacja.feature: Awaria serwera działa jak brak sieci
      */
@@ -151,13 +193,17 @@ class OwnHistoryTest {
             assertEquals("nieaktualne", history.rows.getValue(OLD).rejectionReason)
         }
 
-    private fun queue(): SubmissionQueue =
+    private fun queue(
+        create: suspend (String, SubmissionContent) -> ApiResult<Submission> = { id, content ->
+            store.createResults.removeFirstOrNull() ?: accepted(id, content)
+        },
+    ): SubmissionQueue =
         SubmissionQueue(
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { id, content -> store.createResults.removeFirstOrNull() ?: accepted(id, content) },
+                    create = create,
                     putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
                     update = { id, _, content -> ApiResult.Success(SubmissionEdit.Saved(server(id, content))) },
                 ),
