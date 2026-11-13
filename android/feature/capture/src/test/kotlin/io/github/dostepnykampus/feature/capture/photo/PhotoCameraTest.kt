@@ -29,10 +29,10 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.feature.capture.PhotoSection
-import io.github.dostepnykampus.feature.capture.ReportFormScreen
-import io.github.dostepnykampus.feature.capture.ReportFormViewModel
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import io.github.dostepnykampus.feature.capture.report.PhotoSection
+import io.github.dostepnykampus.feature.capture.report.ReportFormScreen
+import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
