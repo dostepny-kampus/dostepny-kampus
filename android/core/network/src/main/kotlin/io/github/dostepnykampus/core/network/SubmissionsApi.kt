@@ -88,8 +88,9 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
      * @param photoId identyfikator zdjęcia z listy `photoIds`
      */
     suspend fun photo(submissionId: String, photoId: String): ApiResult<ByteArray> {
-        val target = path(submissionId, PHOTOS, photoId)
-        return photoHttp.exchangeBody(request(target, body = null, method = GET, accept = PHOTO_TYPES)) { code, body ->
+        val photoRequest =
+            request(target = path(submissionId, PHOTOS, photoId), body = null, method = GET, accept = PHOTO_TYPES)
+        return photoHttp.exchangeBody(photoRequest) { code, body ->
             if (code == HTTP_OK) ApiResult.Success(body.bytes()) else other(code)
         }
     }

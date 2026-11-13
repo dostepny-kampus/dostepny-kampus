@@ -16,7 +16,6 @@ import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.SocketPolicy
-import okio.Buffer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -105,9 +104,10 @@ class SubmissionsApiTest {
     /** Wiersz: arkusz bariery, zdjęcie zgłoszenia przyjętego jako JPEG, US1.5, US2.2. */
     @Test
     fun us1_5_photo_download() {
-        val jpeg = byteArrayOf(-1, -40, -1, -39)
-        val response = MockResponse().setResponseCode(200).setHeader("Content-Type", "image/jpeg")
-        server.enqueue(response.setBody(Buffer().write(jpeg)))
+        val content = "zdjecie-jpeg"
+        val response = MockResponse().setResponseCode(200).setHeader(name = "Content-Type", value = "image/jpeg")
+        server.enqueue(response.setBody(content))
+        val jpeg = content.toByteArray()
         val result = blocking { photo(submissionId = ID, photoId = PHOTO) }
         assertArrayEquals(jpeg, (result as ApiResult.Success).value)
         val recorded = server.takeRequest()
