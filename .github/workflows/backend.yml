@@ -91,6 +91,21 @@ jobs:
       - name: Zbuduj, przetestuj i sprawdź qulice
         if: ${{ github.event_name != 'push' }}
         run: ./mvnw -B verify
+      - name: Testy mutacyjne PIT dziedziny serwera
+        # Po verify kod i testy są już skompilowane; PIT działa przed scaleniem, w PR i w grupie kolejki.
+        if: ${{ github.event_name != 'push' }}
+        run: |
+          status=0
+          ./mvnw -B -Dqulice.skip=true -Djacoco.skip=true test-compile org.pitest:pitest-maven:mutationCoverage || status=$?
+          bash ../.github/scripts/wynik-pit.sh "$status" target/pit-reports/mutations.xml
+      - name: Raport PIT
+        if: ${{ !cancelled() && github.event_name != 'push' }}
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: pit-raport
+          path: backend/target/pit-reports
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Pobierz zależności do cache Maven
         # Na push po scaleniu z kolejki kontrole przeszły już w merge_group na tym samym SHA; tu tylko zapis cache zależności.
         if: ${{ github.event_name == 'push' }}
@@ -116,35 +131,3 @@ jobs:
           cache-dependency-path: backend/pom.xml
       - name: Sprawdź qulice niezależnie od wyniku testów
         run: ./mvnw -B -DskipTests test-compile qulice:check
-
-  mutacje:
-    # PIT jest kosztowny, więc działa po scaleniu do sprintu, nie w każdym PR (#900).
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/sprint/') }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: backend
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-java@v6.2.0
-        with:
-          distribution: temurin
-          java-version: 25
-          cache: maven
-          cache-dependency-path: backend/pom.xml
-      - name: Testy mutacyjne PIT dziedziny serwera
-        run: |
-          if ! ./mvnw -B -Dqulice.skip=true -Djacoco.skip=true test-compile org.pitest:pitest-maven:mutationCoverage; then
-            echo "::error::Mutacja przeżyła: raport PIT w artefakcie pit-raport wskazuje linię i mutację. Dopisz w teście asercję zachowania, którą ta mutacja psuje."
-            exit 1
-          fi
-      - name: Raport PIT
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v7.0.2
-        with:
-          name: pit-raport
-          path: backend/target/pit-reports
-          retention-days: 14
