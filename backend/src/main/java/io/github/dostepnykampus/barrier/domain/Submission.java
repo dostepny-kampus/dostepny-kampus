@@ -40,4 +40,13 @@ public record Submission(
             );
         }
     }
+
+    /**
+     * Czy Weryfikator przyjął zgłoszenie (BR-6, BR-18).
+     *
+     * @return Prawda dla statusu ACCEPTED
+     */
+    public boolean accepted() {
+        return this.status == SubmissionStatus.ACCEPTED;
+    }
 }

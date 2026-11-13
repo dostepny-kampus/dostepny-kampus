@@ -6,8 +6,13 @@
 package io.github.dostepnykampus.barrier.web;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import io.github.dostepnykampus.ConflictingState;
+import io.github.dostepnykampus.MissingResource;
 import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
+import io.github.dostepnykampus.barrier.domain.Reader;
+import io.github.dostepnykampus.barrier.domain.Submission;
+import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import io.github.dostepnykampus.barrier.json.SubmissionContentJson;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
@@ -34,5 +39,30 @@ record NewSubmissionRequest(
             throw new InvalidSubmission("Brak identyfikatora zgłoszenia w polu id");
         }
         return new NewSubmission(this.id, this.content.toContent(), author);
+    }
+
+    /**
+     * Sprawdza zgłoszenie zastępowane przez zmianę (BR-3, BR-5, BR-18): brak
+     * albo zgłoszenie, którego składający nie widzi, daje 404, a zgłoszenie
+     * nieprzyjęte 409 z tym zgłoszeniem. Ponowne wysłanie zapisanego już
+     * zgłoszenia nie jest sprawdzane, bo serwer zwraca zapisane (BR-9).
+     *
+     * @param finder Odczyt zgłoszeń
+     * @param reader Osoba, która składa zmianę
+     */
+    void checkReplaced(final SubmissionFinder finder, final Reader reader) {
+        final @Nullable UUID replaced = this.content.replaces();
+        final @Nullable UUID saved = this.id;
+        if (replaced != null && (saved == null || finder.find(saved).isEmpty())) {
+            final Submission current = finder.visible(replaced, reader)
+                .orElseThrow(() -> new MissingResource("Nie ma zastępowanego zgłoszenia"));
+            if (!current.accepted()) {
+                throw new ConflictingState(
+                    "Zmienić można tylko zgłoszenie przyjęte; nieprzyjęte edytuje autor",
+                    "serverSubmission",
+                    new SubmissionResponse(current)
+                );
+            }
+        }
     }
 }

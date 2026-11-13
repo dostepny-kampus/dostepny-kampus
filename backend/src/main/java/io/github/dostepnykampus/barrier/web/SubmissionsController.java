@@ -131,7 +131,10 @@ public final class SubmissionsController {
      * z tokenu (BR-3). Zgłoszenie inne niż szybkie i zmianę zgłoszenia
      * przyjętego składa tylko Zbierający (US7, US17.2, US8.4, BR-18, BR-19).
      * Zmianę cudzego zgłoszenia innego niż szybkie składa tylko autor, chyba
-     * że zmiana ma oznaczenie „bariera usunięta” (BR-18, BR-19).
+     * że zmiana ma oznaczenie „bariera usunięta” (BR-18, BR-19). Zmiana
+     * zgłoszenia, którego nie ma albo którego składający nie widzi, daje 404,
+     * a zmiana zgłoszenia widocznego, ale nieprzyjętego, 409 z tym
+     * zgłoszeniem (BR-3, BR-5, BR-18).
      *
      * @param body Zgłoszenie według schematu NewSubmission
      * @param account Zalogowane konto; jego nazwa to identyfikator z tokenu
@@ -146,6 +149,9 @@ public final class SubmissionsController {
         if (body.content().forCollector() && !request.isUserInRole("COLLECTOR")) {
             throw new ForbiddenChange("To zgłoszenie składa tylko Zbierający");
         }
+        body.checkReplaced(
+            this.finder, new Reader(account.getName(), request.isUserInRole("VERIFIER"))
+        );
         if (body.content().ordinaryChange()
             .filter(replaced -> this.finder.authorOnly(replaced, account.getName())).isPresent()) {
             throw new ForbiddenChange("Zwykłą zmianę tego zgłoszenia składa tylko jego autor");

@@ -210,6 +210,8 @@ paths:
         zalogowana osoba (US4, BR-8), pomiar precyzyjny, zmianę oznaczenia wejścia i zmianę zgłoszenia przyjętego
         (`replacesSubmissionId`) tylko Zbierający (US7, US17.2, US8.4, BR-18, BR-19).
         Ponowne wysłanie tego samego `id` zwraca zapisane zgłoszenie i nie tworzy drugiego (BR-9).
+        Zmiana zgłoszenia, którego nie ma albo którego składający nie widzi, daje 404; zmiana zgłoszenia nieprzyjętego
+        daje 409 z tym zgłoszeniem, bo zgłoszenie przed decyzją Weryfikatora autor edytuje (BR-3, BR-5, BR-18).
         Do kolejki weryfikacji zgłoszenie trafia, gdy serwer ma wszystkie zdjęcia z `photoIds` (BR-7, BR-8, US8.2).
         Walidacja według BR-7, BR-8, BR-14, BR-19 i BR-24.
         Miejsce dalej niż 500 m od konturu każdego budynku PWr (odległość na ziemi, liczy baza) daje 400 z `type`
@@ -227,6 +229,8 @@ paths:
         '400': {$ref: '#/components/responses/BadRequest'}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/VersionConflict'}
   /submissions/{submissionId}:
     parameters:
       - $ref: '#/components/parameters/SubmissionId'
