@@ -78,13 +78,19 @@ class CampusMapViewModelTest {
 
     /** Wiersz: bariery pobrane przed listą budynków → linia „Bez internetu” z dniem pobrania barier (#1127). */
     @Test
-    fun nfr10_offline_date_from_older_barriers() =
+    fun nfr10_older_barriers_date() =
         runTest(UnconfinedTestDispatcher()) {
             val outline = parseGeoArea("""{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}""")
             val server =
                 BuildingList(
                     source = "serwer",
-                    buildings = listOf(ApiBuilding(Building("C-13", "Serwer C-13", outline), DetailLevel.BASIC)),
+                    buildings =
+                        listOf(
+                            ApiBuilding(
+                                building = Building(symbol = "C-13", name = "Serwer C-13", outline = outline),
+                                detailLevel = DetailLevel.BASIC,
+                            ),
+                        ),
                 )
             val catalog =
                 BuildingCatalogRepository(
