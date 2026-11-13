@@ -359,6 +359,32 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 
 ## Metafory i ikony
 
+### Metafory
+
+Metafora to obraz albo pojęcie, które osoba zna spoza aplikacji. Może nią być ikona, ale też słowo, układ ekranu albo sposób działania. Ikony z tej tabeli opisuje dokładnie podsekcja „Ikony”.
+
+| Metafora ze świata użytkownika | Element aplikacji | Forma | Dlaczego zrozumiała | Wymaganie |
+| --- | --- | --- | --- | --- |
+| papierowa mapa kampusu | ekran „Mapa kampusu” i pozycja „Mapa” na pasku dolnym | ikona i słowo | Każdy zna mapę miasta i mapy w telefonie. | US1 |
+| tablica informacyjna przy wejściu do budynku | góra karty budynku: wejście, winda i toaleta | układ ekranu | Najważniejsze fakty są na górze, jak na tablicy przy drzwiach. | US2 |
+| kartka od córki z adresem | kroki do sali: wejście, winda, piętro, sala | lista kroków | Osoba starsza dostaje adres na kartce od rodziny (wywiady). Aplikacja dopisuje do adresu drogę do sali. | US18.2 |
+| plan piętra na ścianie korytarza | plan piętra z windami i toaletami, „Pokaż na planie” | układ ekranu | Plany pięter, np. plan ewakuacji, wiszą na korytarzach wielu budynków. | US16.1 |
+| aparat fotograficzny | „Zgłoś barierę” | ikona i słowo | Zdjęcie to znana czynność i nie wymaga pisania. | US4.1 |
+| ptaszek, krzyżyk i znak zapytania z listy kontrolnej | „Dostępne”, „Niedostępne”, „Brak danych” | ikona i słowo | Ptaszek znaczy „tak”, krzyżyk „nie”, a znak zapytania „nie wiadomo”. | US17.1, NFR-21 |
+| znaki drogowe: trójkąt ostrzegawczy, dwie osoby, zapora | uciążliwość „Utrudnienie”, „Tylko z pomocą”, „Blokada” | ikona i słowo | Znaki drogowe zna każdy kierowca i pieszy. | NFR-21 |
+| pieczątka z datą przeglądu, jak na gaśnicy | „Sprawdzone 12.11.2026” przy wejściu i barierze | słowo i data | Data mówi, kiedy ktoś to sprawdził, więc wiadomo, czy można ufać (N2). | US2.2, US17.3 |
+| strzałka „wróć” | „Wstecz” ze strzałką w lewo | ikona i słowo | Strzałkę osoba zna z telefonu, a słowo mówi, co się stanie. | NFR-15 |
+| instrukcja krok po kroku | „Krok 1 z 3” w zgłoszeniu | słowo i numer | Osoba wie, ile jeszcze zostało. | US4 |
+| pytanie do portiera | pytania zamiast pól: „Czego dotyczy bariera?”, „Na którym piętrze?” z odpowiedzią „Nie wiem” | sposób działania | W kłopocie rozmówcy pytają ludzi (wywiady). Aplikacja też pyta, jak człowiek. | US4 |
+| punkt informacji ze znakiem zapytania | „Pomoc” na pasku dolnym | ikona i słowo | Znak zapytania znaczy „mam pytanie”. | US5 |
+| spis w książce telefonicznej | „Lista budynków” zamiast mapy | układ ekranu | Lista pomaga osobie, której mapa sprawia kłopot, i czytnikowi TalkBack. | NFR-19 |
+| droga listu poleconego | statusy zgłoszenia: „W telefonie”, „Wysłane”, „W weryfikacji”, „Przyjęte” | ikona i słowo | Osoba śledzi zgłoszenie jak przesyłkę: jest u mnie, poszło, ktoś je ogląda, przyjęte. | US8, NFR-21 |
+| legenda papierowej mapy | przycisk „Legenda” na mapie: objaśnienie znaków wejść i barier | słowo | Legendę ma każda papierowa mapa i plan miasta. | US1.4 |
+
+Ikonami jest 7 z 15 metafor (47%). Pozostałe to słowa, układ ekranu i sposób działania.
+
+### Ikony
+
 Ikony pochodzą z zestawu OpenIconic dostępnego w PlantUML Salt [3], [4]. Każda ikona stoi obok tekstu, a tekst niesie znaczenie sam. Kolor nie niesie znaczenia (NFR-21) [5].
 
 Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości własnymi kształtami, tymi samymi na mapie i w treści. Tabela podaje je po słowie „hi-fi”.
@@ -407,7 +433,9 @@ Zasady ikon. Ikona stoi tylko w przypadkach z tabel w tej sekcji, a pozostałe e
 
 ### Udział ikon
 
-Kurs „Projektowanie doświadczeń użytkownika” w etapie 4 dopuszcza najwyżej 50% ikon w całym interfejsie [7]. Udział liczymy tylko na zatwierdzonych makietach hi-fi (decyzja 60). Teraz to 42 stany ekranów partii 1, a po partii 2 cały interfejs.
+Kurs „Projektowanie doświadczeń użytkownika” w etapie 4.2 pozwala, by najwyżej 50% metafor było ikonami [7]. Tabela metafor spełnia to wymaganie: ikonami jest 7 z 15 metafor.
+
+Zespół ma też własny, ostrzejszy limit: najwyżej 50% elementów interfejsu z ikoną. Ten udział liczymy tylko na zatwierdzonych makietach hi-fi (decyzja 60). Teraz to 42 stany ekranów partii 1, a po partii 2 cały interfejs.
 
 Element to miejsce, które osoba czyta albo dotyka osobno: nagłówek, akapit, pozycja listy lub legendy, przycisk, pole albo chip. Element z ikoną ma ikonę w sobie albo tuż obok, a karta budynku z kilkoma znakami to jeden element. Zdjęcie ani rysunek nie są ikoną.
 
@@ -470,7 +498,7 @@ Propozycje PW-1…PW-15 są wprowadzone w [wymaganiach do ekranów](wymagania-ek
 4. PlantUML Salt, ikony OpenIconic w makietach: <https://plantuml.com/salt>
 5. WCAG 2.1 (W3C), m.in. 1.4.1 „Use of Color”, 3.2.4 „Consistent Identification”: <https://www.w3.org/TR/WCAG21/>
 6. A. Harley, „Icon Usability”, NN/g (ikona z etykietą tekstową): <https://www.nngroup.com/articles/icon-usability/>
-7. Kurs „Projektowanie doświadczeń użytkownika” (PWr), wymagania etapu 4: metafory i ikony, najwyżej 50% ikon w interfejsie.
+7. Kurs „Projektowanie doświadczeń użytkownika” (PWr), wymagania etapu 4.2: najwyżej 50% metafor może być ikonami.
 
 Wewnętrzne źródła: [Wymagania do ekranów](wymagania-ekranow.md), [Słownik pojęć](../biznes/slownik.md), [Persony](persony.md), [Scenariusz wywiadu](scenariusz-wywiadu.md).
 
