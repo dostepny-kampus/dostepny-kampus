@@ -380,6 +380,7 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
             <param>io.github.dostepnykampus.barrier.SubmissionService*</param>
             <param>io.github.dostepnykampus.shared.json.StrictJsonConfiguration*</param>
             <param>io.github.dostepnykampus.shared.json.CanonicalUuidDeserializer*</param>
+            <param>io.github.dostepnykampus.shared.json.NullRejectingDeserializer*</param>
             <param>io.github.dostepnykampus.shared.geo.Wgs84*</param>
           </targetClasses>
           <targetTests>
