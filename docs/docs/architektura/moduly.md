@@ -5,7 +5,8 @@ dziedziny (bariery, budynki, konta), a nie według warstw technicznych; warstwy 
 Reguł pilnują testy architektury i kompilator.
 
 Strona opisuje stan docelowy. Kod dochodzi do niego w epiku #1335; odstępstwa, które jeszcze istnieją,
-są wymienione w części „Stan dziś” razem z issue, które je usuwa.
+są wymienione w części „Stan dziś” razem z issue, które je usuwa. Ta część jest przejściowa
+i zniknie w #1445.
 
 ## Serwer
 
