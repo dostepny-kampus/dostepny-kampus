@@ -55,6 +55,9 @@ markdown_extensions:
 exclude_docs: |
   includes/
 
+hooks:
+  - scripts/mkdocs_pokrycie.py
+
 nav:
   - Start: index.md
   - Biznes:
