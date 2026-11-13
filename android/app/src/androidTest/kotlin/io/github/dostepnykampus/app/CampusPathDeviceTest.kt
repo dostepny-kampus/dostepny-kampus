@@ -129,5 +129,4 @@ class CampusPathDeviceTest {
             DeviceEvidence.shell(command)
         }
     }
-
 }
