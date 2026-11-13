@@ -134,15 +134,11 @@ public final class SubmissionsController {
     }
 
     /**
-     * Zapisuje nowe zgłoszenie. Ponowne wysłanie tego samego id zwraca
-     * zapisane zgłoszenie i nie tworzy drugiego. Autorem zostaje konto
-     * z tokenu. Zgłoszenie inne niż szybkie i zmianę zgłoszenia
-     * przyjętego składa tylko Zbierający.
-     * Zmianę cudzego zgłoszenia innego niż szybkie składa tylko autor, chyba
-     * że zmiana ma oznaczenie „bariera usunięta”. Zmiana
-     * zgłoszenia, którego nie ma albo którego składający nie widzi, daje 404,
-     * a zmiana zgłoszenia widocznego, ale nieprzyjętego, 409 z tym
-     * zgłoszeniem.
+     * Zapisuje nowe zgłoszenie; ponowne wysłanie tego samego id zwraca zapisane i nie tworzy
+     * drugiego. Autorem zostaje konto z tokenu. Zgłoszenie inne niż szybkie i zmianę zgłoszenia
+     * przyjętego składa tylko Zbierający, a zmianę cudzego zgłoszenia innego niż szybkie tylko
+     * autor, chyba że zmiana oznacza „bariera usunięta”. Zmiana zgłoszenia, którego nie ma albo
+     * którego składający nie widzi, daje 404, a widocznego, ale nieprzyjętego, 409 z nim.
      *
      * <p>Wymagania: BR-9, BR-3, US7, US17.2, US8.4, BR-18, BR-19, BR-5</p>
      *

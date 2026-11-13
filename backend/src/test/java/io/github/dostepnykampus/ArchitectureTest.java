@@ -19,15 +19,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Testy zadania INFRA: reguły architektury, których Spring Modulith
- * nie sprawdza.
- *
- * <p>Kontrolery korzystają z usług i portów. Implementacje JDBC należą
- * do pakietów persistence lub postgis. ArchUnit zabrania też wstrzykiwania pól.</p>
- *
- * <p>E5: wspólne typy błędów nie zależą od Spring Web ani Jacksona, żeby
- * wyjątki domenowe nie wciągały warstwy HTTP. Żaden moduł nie rzuca
- * {@code ResponseStatusException}, więc każdy błąd ma opis w {@code detail}.</p>
+ * Reguły architektury, których Spring Modulith nie sprawdza: kontrolery korzystają z usług
+ * i portów, implementacje JDBC należą do pakietów persistence lub postgis, bez wstrzykiwania
+ * pól. Wspólne typy błędów nie zależą od Spring Web ani Jacksona, a żaden moduł nie rzuca
+ * {@code ResponseStatusException}, więc każdy błąd ma opis w {@code detail}.
  *
  * @since 0.1.0
  */

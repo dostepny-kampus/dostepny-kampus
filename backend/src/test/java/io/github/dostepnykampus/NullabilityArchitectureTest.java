@@ -39,14 +39,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Strażnik: null tylko na granicy serwera.
- *
- * <p>Pakiety sprawdzane przez NullAway wskazuje konfiguracja kompilatora w
- * {@code pom.xml}. Przykłady negatywne test kompiluje do katalogu
- * tymczasowego; pusty import jest błędem. {@code Optional} jest tylko wynikiem metody. W
- * {@code ..domain..} {@code @Nullable} stoi wyłącznie na komponentach rekordów
- * z zamkniętej listy par klasa i komponent; para z klasą, której jeszcze nie
- * ma w kodzie, jest dozwolona.</p>
+ * Strażnik: null tylko na granicy serwera. Pakiety dla NullAway wskazuje {@code pom.xml};
+ * przykłady negatywne są kompilowane do katalogu tymczasowego, a pusty import jest błędem.
+ * {@code Optional} jest tylko wynikiem metody. W {@code ..domain..} {@code @Nullable} stoi
+ * wyłącznie na komponentach rekordów z zamkniętej listy par klasa i komponent; para z klasą,
+ * której jeszcze nie ma w kodzie, jest dozwolona.
  *
  * @since 0.1.0
  */

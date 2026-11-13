@@ -52,20 +52,12 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Strażnik: testy na pełnym kontekście dzielą jeden kontekst Springa.
- *
- * <p>{@code @SpringBootTest} tylko w {@code IntegrationTest} i w klasach
- * z listy z powodem. Klasa z {@code @IntegrationTest}, która dokłada
- * {@code @TestPropertySource}, {@code @ActiveProfiles},
- * {@code @ContextConfiguration}, własny {@code @Import} albo metodę
- * {@code @DynamicPropertySource}, zakłada osobny kontekst, więc też musi być
- * na liście. {@code @DirtiesContext} jest zakazany, mocki Mockito tylko
- * z listy.</p>
- *
- * <p>Klienta testowego HTTP ({@code MockMvcBuilders}, {@code MockMvcTester},
- * {@code WebTestClient}) buduje tylko {@link MockMvcTestConfiguration}, więc
- * każdy test HTTP dostaje wspólne {@code MockMvc} z kontrolą kontraktu.
- * Wyjątki są na liście z powodem, a lista może tylko maleć.</p>
+ * Strażnik: testy na pełnym kontekście dzielą jeden kontekst Springa. {@code @SpringBootTest}
+ * tylko w {@code IntegrationTest} i klasach z listy; na liście musi być też klasa dokładająca
+ * konfigurację kontekstu ({@code @TestPropertySource}, {@code @ActiveProfiles},
+ * {@code @ContextConfiguration}, {@code @Import}, {@code @DynamicPropertySource}).
+ * {@code @DirtiesContext} jest zakazany, mocki Mockito tylko z listy. Klienta HTTP buduje tylko
+ * {@link MockMvcTestConfiguration}; wyjątki są na liście z powodem, a lista tylko maleje.
  *
  * @since 0.1.0
  */

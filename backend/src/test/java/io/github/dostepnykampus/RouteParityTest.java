@@ -21,15 +21,11 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
- * Parytet tras serwera i kontraktu {@code api/openapi.yaml}.
- *
- * <p>Operacja to para "METODA ścieżka" z {@link ContractOperation}; nazwy
- * zmiennych w ścieżce nie mają znaczenia, a prefiks z {@code servers} jest doliczany.
- * Każda operacja kontraktu ma handler w kontekście Springa albo stoi
- * na zamkniętej liście operacji jeszcze niezrobionych, z powodem. Każdy
- * handler aplikacji ma operację w kontrakcie. Operacja z listy, która
- * ma już handler, jest błędem, więc lista tylko się kurczy. Handlery
- * Springa, Actuatora i klasy testowe z {@code @TestComponent} są poza zakresem.</p>
+ * Parytet tras serwera i kontraktu {@code api/openapi.yaml}. Operacja to para „METODA
+ * ścieżka” z {@link ContractOperation}; nazwy zmiennych nie mają znaczenia, a prefiks
+ * z {@code servers} jest doliczany. Każda operacja kontraktu ma handler albo stoi z powodem
+ * na zamkniętej liście niezrobionych, która tylko się kurczy; każdy handler ma operację
+ * w kontrakcie. Handlery Springa, Actuatora i klasy z {@code @TestComponent} są poza zakresem.
  *
  * @since 0.1.0
  */
