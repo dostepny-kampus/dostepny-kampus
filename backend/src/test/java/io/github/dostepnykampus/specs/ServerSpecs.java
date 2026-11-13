@@ -22,6 +22,7 @@ import org.junit.platform.suite.api.Suite;
 @Suite
 @IncludeEngines("cucumber")
 @SelectFile("../specs/uprawnienia.feature")
+@SelectFile("../specs/zgloszenie-szybkie.feature")
 @ConfigurationParameter(
     key = Constants.GLUE_PROPERTY_NAME, value = "io.github.dostepnykampus.specs"
 )
