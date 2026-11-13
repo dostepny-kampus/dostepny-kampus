@@ -16,6 +16,8 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -49,6 +51,18 @@ class QuickGroupStepTest {
             .forEach { compose.onNodeWithText(it).assertIsDisplayed() }
         compose.onNodeWithText("Coś innego").performClick()
         assertEquals(listOf(BarrierGroup.OTHER), chosen)
+    }
+
+    /**
+     * Wiersz: V4 krok 2 po powrocie, grupa wybrana wcześniej jest zaznaczona dla oka i dla TalkBack, US4.8, NFR-21.
+     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Powrót między krokami nie usuwa zdjęcia ani grupy
+     *   barier
+     */
+    @Test
+    fun us4_8_group_stays_selected() {
+        compose.setContent { DostepnyKampusTheme { QuickGroupQuestion(selected = BarrierGroup.TOILETS, onGroup = {}) } }
+        compose.onNodeWithText("✓ Toalety").assertIsSelected()
+        compose.onNodeWithText("Coś innego").assertIsNotSelected()
     }
 
     /** Wiersz: V4 krok 2, pytanie o piętro → „Nie wiem” zostawia piętro puste, US4.5. */

@@ -204,7 +204,7 @@ private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, wh
     val floors by where.floorChoices.collectAsStateWithLifecycle()
     val group = asked
     if (group == null) {
-        QuickGroupQuestion(onGroup = { chosen ->
+        QuickGroupQuestion(selected = route.group, onGroup = { chosen ->
             if (chosen.asksFloor(isInBuilding)) asked = chosen else onNext(route.copy(group = chosen))
         })
     } else {
