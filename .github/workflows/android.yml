@@ -181,6 +181,8 @@ jobs:
       - name: Zapisz wynik testów na emulatorze
         if: always()
         uses: actions/upload-artifact@v7.0.2
+        # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
+        continue-on-error: true
         with:
           name: raporty-emulator-api-${{ matrix.api }}
           path: |
@@ -221,6 +223,8 @@ jobs:
       - name: Udostępnij raport czasu Gradle
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7.0.2
+        # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
+        continue-on-error: true
         with:
           name: profil-apk
           path: android/build/reports/profile/
@@ -287,6 +291,8 @@ jobs:
       - name: Zapisz diagnostykę Hilt i KSP
         if: failure()
         uses: actions/upload-artifact@v7.0.2
+        # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
+        continue-on-error: true
         with:
           name: diagnostyka-hilt-ksp
           path: ${{ runner.temp }}/diagnostyka/
@@ -295,6 +301,8 @@ jobs:
       - name: Zapisz raporty
         if: always()
         uses: actions/upload-artifact@v7.0.2
+        # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
+        continue-on-error: true
         with:
           name: raporty-testy
           path: android/**/build/reports/
