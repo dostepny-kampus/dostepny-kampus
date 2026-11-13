@@ -106,6 +106,8 @@ jobs:
       - name: Raport PIT
         if: ${{ !cancelled() && github.event_name != 'push' }}
         uses: actions/upload-artifact@v7.0.2
+        # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
+        continue-on-error: true
         with:
           name: pit-raport
           path: backend/target/pit-reports
