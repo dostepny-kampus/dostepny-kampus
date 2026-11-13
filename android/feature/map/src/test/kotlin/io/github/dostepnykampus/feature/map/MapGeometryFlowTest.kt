@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.model.Building
@@ -26,8 +27,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -54,14 +57,15 @@ private val SERVER_LABELS = listOf("A-1")
 /**
  * Geometria mapy V1 od odpowiedzi serwera i zamknięcia ekranu do stanu ViewModelu. Testy czekają na zdarzenia z funkcji
  * liczącej, nie na upływ czasu; zawieszenie przy błędzie kończy limit `runTest`. `holdFile` zgłasza start liczenia i
- * czeka na zwolnienie albo przerwanie wątku, `withPool` daje wątki liczące, na które czeka na końcu testu, a `show`
- * trzyma subskrypcję stanu do końca testu.
+ * czeka na zwolnienie albo przerwanie wątku, `withPool` daje wątki liczące i na końcu czeka na nie oraz na pracę
+ * ViewModeli przed `resetMain`, a `show` trzyma subskrypcję stanu do końca testu.
  *
  * Wymagania: NFR-10, NFR-11
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapGeometryFlowTest {
     private val calls = AtomicInteger()
+    private val viewModels = mutableListOf<CampusMapViewModel>()
 
     @BeforeEach
     fun main() {
@@ -243,13 +247,19 @@ class MapGeometryFlowTest {
         }
     }
 
-    private inline fun withPool(threads: Int, block: (CoroutineDispatcher) -> Unit) {
+    private suspend inline fun withPool(threads: Int, block: (CoroutineDispatcher) -> Unit) {
         val pool = Executors.newFixedThreadPool(threads)
         try {
             pool.asCoroutineDispatcher().use(block)
         } finally {
             pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
+            stopViewModels()
         }
+    }
+
+    private suspend fun stopViewModels() {
+        viewModels.forEach { it.viewModelScope.cancel() }
+        viewModels.forEach { it.viewModelScope.coroutineContext.job.join() }
     }
 
     private fun repository(json: String = ASSET_JSON, list: (suspend () -> ApiResult<BuildingList>)? = null) =
@@ -268,7 +278,7 @@ class MapGeometryFlowTest {
         mapListChoice = TestMapListChoice(),
         computeContext = compute,
         geometry = geometry,
-    )
+    ).also(viewModels::add)
 
     private fun factoryOf(repository: BuildingCatalogRepository, compute: CoroutineContext) =
         viewModelFactory { initializer { viewModelOf(repository, compute) } }
