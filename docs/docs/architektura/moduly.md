@@ -66,6 +66,9 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | `:core:geo`, `:core:location`, `:core:designsystem` | geometria, pozycja GNSS, wygląd | `:core:model` |
 | `:core:model` | typy dziedziny wspólne dla modułów | — |
 
+`core:data.photos` udostępnia kontrakt `PhotoCapture`: żądanie zdjęcia oraz wynik z plikiem,
+rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy składającej ścieżkę użytkownika.
+
 - Moduł funkcji nie zależy od innego modułu funkcji ani od `:core:database` i `:core:network`, także
   pośrednio przez `api(...)` i w testach. Testy dostają repozytoria z `testFixtures` modułu `:core:data`.
 - Tylko `:core:data` i `:app` zależą od `:core:database` i `:core:network`.
