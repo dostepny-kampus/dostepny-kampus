@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.springframework.http.HttpHeaders;
@@ -42,6 +43,11 @@ public final class MapSteps {
         "wysłane", "SENT", "w weryfikacji", "IN_REVIEW", "odrzucone", "REJECTED",
         "archiwalne", "ARCHIVED", "przyjęte", "ACCEPTED"
     );
+
+    /**
+     * Przecinek albo spójnik „i” między symbolami budynków.
+     */
+    private static final Pattern BETWEEN = Pattern.compile(", | i ");
 
     /**
      * Zgłoszenie scenariusza.
@@ -84,7 +90,7 @@ public final class MapSteps {
      */
     @Given("^w aplikacji są między innymi budynki szczegółowe (.+)$")
     public void hasBuildings(final String symbols) {
-        final List<String> wanted = List.of(symbols.split(", | i "));
+        final List<String> wanted = List.of(MapSteps.BETWEEN.split(symbols));
         MatcherAssert.assertThat(
             "Serwer nie ma budynku z założeń scenariusza",
             this.jdbc.sql("SELECT symbol FROM buildings WHERE symbol IN (:symbols)")
