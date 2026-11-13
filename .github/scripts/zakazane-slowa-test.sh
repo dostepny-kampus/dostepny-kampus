@@ -61,6 +61,39 @@ run_case "dependabot: zakazane słowo obok dopisku nadal jest błędem" 1 "$bot"
 ' "$bot_line")"
 patterns='tajneslowo'
 
+# authors_case <nazwa> <oczekiwany kod> <wzorce> <autor PR> <e-mail autora drugiego commitu>
+# Gałąź PR ma dwa commity; drugi ma podanego autora. Przy innym autorze GitHub dopisze w kolejce wiersz
+# o współautorze, więc kontrola na PR ma to zgłosić, gdy ten wiersz jest zakazany.
+authors_case() {
+  local name="$1" expected="$2" forbidden="$3" author="$4" email="$5" status=0 out
+  rm -rf "$repo"
+  mkdir -p "$repo"
+  (
+    cd "$repo"
+    git init --quiet
+    git config user.name Test
+    git config user.email test@example.com
+    git commit --quiet --allow-empty -m baza
+    git commit --quiet --allow-empty -m 'build: zmiana'
+    git -c user.name=Inny -c user.email="$email" commit --quiet --allow-empty -m 'build: druga zmiana'
+  )
+  out="$(cd "$repo" && FORBIDDEN_PATTERNS="$forbidden" PR_AUTHOR="$author" PR_BRANCH=gałąź \
+    PR_TITLE='build: zmiana' PR_BODY=opis bash "$script" HEAD~2 HEAD 2>&1)" || status=$?
+  if ((status == expected)); then
+    echo "OK: ${name}"
+  else
+    echo "BŁĄD: ${name}: kod wyjścia ${status}, oczekiwano ${expected}"
+    printf '%s\n' "$out" | sed 's/^/    /'
+    failures=$((failures + 1))
+  fi
+}
+
+authors_case "#1447: commit innej osoby w gałęzi PR" 1 "tajneslowo|$trailer" autor-pr inny@example.com
+authors_case "#1447: wszystkie commity jednej osoby" 0 "tajneslowo|$trailer" autor-pr test@example.com
+authors_case "#1447: dopisek o współautorze nie jest zakazany" 0 tajneslowo autor-pr inny@example.com
+authors_case "#1447: grupa kolejki bez autora PR" 0 "tajneslowo|$trailer" '' inny@example.com
+authors_case "#1447: Dependabot ma własny wyjątek" 0 "tajneslowo|$trailer" "$bot" inny@example.com
+
 begin_tree() {
   rm -rf "$repo"
   mkdir -p "$repo"
