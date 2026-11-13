@@ -18,7 +18,11 @@ import org.junit.jupiter.params.provider.EnumSource
 
 class QuickSubmissionContentTest {
     private val position =
-        QuickReportLocation(point = GeoPoint(longitude = 17.06209, latitude = 51.10785), accuracyMeters = 6.0, isInBuilding = true)
+        QuickReportLocation(
+            point = GeoPoint(longitude = 17.06209, latitude = 51.10785),
+            accuracyMeters = 6.0,
+            isInBuilding = true,
+        )
 
     @ParameterizedTest
     @EnumSource(BarrierGroup::class)
