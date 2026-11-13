@@ -37,7 +37,7 @@ fun interface OwnStatuses {
  *
  * Wymagania: US4.4, BR-9
  */
-fun ownStatusesOf(mine: suspend () -> ApiResult<List<Submission>>, history: OwnSubmissionDao): OwnStatuses =
+internal fun ownStatusesOf(mine: suspend () -> ApiResult<List<Submission>>, history: OwnSubmissionDao): OwnStatuses =
     OwnStatuses {
         when (val result = mine()) {
             is ApiResult.Success -> {

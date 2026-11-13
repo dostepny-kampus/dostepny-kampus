@@ -73,10 +73,17 @@ fun interface AcceptedBarriers {
  * @param copy kopia ostatnich barier w bazie; `null` zostawia źródło bez kopii
  * @param accepted zgłoszenia przyjęte z serwera, np. `SubmissionsApi::accepted` bez budynku
  */
-class ServerAcceptedBarriers(
-    private val copy: BarrierListCopy? = null,
+class ServerAcceptedBarriers internal constructor(
+    private val copy: BarrierListCopy?,
     private val accepted: suspend () -> ApiResult<List<Submission>>,
 ) : AcceptedBarriers {
+    /**
+     * Bariery bez kopii w bazie.
+     *
+     * @param accepted zgłoszenia przyjęte z serwera, np. `SubmissionsApi::accepted` bez budynku
+     */
+    constructor(accepted: suspend () -> ApiResult<List<Submission>>) : this(null, accepted)
+
     @Volatile private var synced: Instant? = null
 
     override suspend fun barriers(): List<AcceptedBarrier> {

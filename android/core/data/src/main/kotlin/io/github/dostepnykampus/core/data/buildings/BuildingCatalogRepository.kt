@@ -43,13 +43,28 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
  * @param nowMillis zegar chwili pobrania listy z serwera
  * @param readGeoJson odczyt treści pliku konturów
  */
-class BuildingCatalogRepository(
+class BuildingCatalogRepository internal constructor(
+    private val buildingCache: BuildingCacheDao?,
     private val ioContext: CoroutineContext,
     private val listBuildings: (suspend () -> ApiResult<BuildingList>)? = null,
-    private val buildingCache: BuildingCacheDao? = null,
     private val nowMillis: () -> Long = System::currentTimeMillis,
     private val readGeoJson: () -> String,
 ) {
+    /**
+     * Katalog bez kopii listy budynków w bazie.
+     *
+     * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
+     * @param listBuildings lista z serwera; `null` zostawia katalog wyłącznie z pliku
+     * @param nowMillis zegar chwili pobrania listy z serwera
+     * @param readGeoJson odczyt treści pliku konturów
+     */
+    constructor(
+        ioContext: CoroutineContext,
+        listBuildings: (suspend () -> ApiResult<BuildingList>)? = null,
+        nowMillis: () -> Long = System::currentTimeMillis,
+        readGeoJson: () -> String,
+    ) : this(null, ioContext, listBuildings, nowMillis, readGeoJson)
+
     private val lock = Any()
     private var inflight: CompletableDeferred<BuildingCatalog>? = null
     private val downloaded = MutableStateFlow<Downloaded?>(null)
