@@ -10,6 +10,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.dostepnykampus.AsCollector;
+import java.util.List;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -20,7 +21,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 /**
- * Kroki scenariusza „Zbierający nie edytuje cudzego zgłoszenia” (BR-3, US14.1).
+ * Kroki scenariuszy „Zbierający nie edytuje cudzego zgłoszenia” (BR-3, US14.1)
+ * i „Zwykłą zmianę przyjętego zgłoszenia z pomiaru precyzyjnego składa tylko
+ * autor” (BR-18).
  *
  * <p>Token testowy ma zawsze to samo konto, więc autorem zgłoszenia zostaje
  * inne konto w bazie, a próbę zmiany wykonuje konto z tokenu.</p>
@@ -34,6 +37,12 @@ public final class ForeignEditSteps {
      */
     private static final UUID SUBMISSION =
         UUID.fromString("3c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f");
+
+    /**
+     * Zmiana zgłoszenia przyjętego, którą próbuje złożyć inny Zbierający.
+     */
+    private static final UUID CHANGE =
+        UUID.fromString("6f4a5b62-7d8e-4f90-8b12-2d3e4f5a6b72");
 
     /**
      * Klient żądań HTTP do aplikacji.
@@ -94,6 +103,49 @@ public final class ForeignEditSteps {
     }
 
     /**
+     * Weryfikator przyjął zgłoszenie, którego autorem jest inne konto.
+     *
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @Given(
+        "przyjęte zgłoszenie TB-13 „próg” w C-13 z pomiaru precyzyjnego złożył inny Zbierający"
+    )
+    public void otherCollectorAccepted() throws Exception {
+        this.collectorSent();
+        this.jdbc.sql("UPDATE submissions SET status = 'ACCEPTED' WHERE id = :id")
+            .param("id", ForeignEditSteps.SUBMISSION).update();
+    }
+
+    /**
+     * Zbierający wysyła wprost do serwera zmianę cudzego zgłoszenia przyjętego.
+     *
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @When("Zbierający spróbuje zmienić jego uciążliwość z pominięciem aplikacji")
+    public void collectorReplaces() throws Exception {
+        this.refused = this.send(
+            MockMvcRequestBuilders.post("/submissions"),
+            String.format(
+                "\"id\":\"%s\",\"replacesSubmissionId\":\"%%s\"", ForeignEditSteps.CHANGE
+            ),
+            3
+        );
+    }
+
+    /**
+     * Serwer nie zapisał zmiany.
+     */
+    @Then("nie powstaje nowe zgłoszenie")
+    public void nothingCreated() {
+        MatcherAssert.assertThat(
+            "Serwer zapisał zmianę cudzego zgłoszenia",
+            this.jdbc.sql("SELECT count(*) FROM submissions WHERE id = :id")
+                .param("id", ForeignEditSteps.CHANGE).query(Integer.class).single(),
+            Matchers.equalTo(0)
+        );
+    }
+
+    /**
      * Serwer odmawia zmiany.
      */
     @Then("próba jest odrzucona")
@@ -117,12 +169,13 @@ public final class ForeignEditSteps {
     }
 
     /**
-     * Usuwa zgłoszenie scenariusza.
+     * Usuwa zgłoszenia scenariusza.
      */
     @After
     public void removeSubmission() {
-        this.jdbc.sql("DELETE FROM submissions WHERE id = :id")
-            .param("id", ForeignEditSteps.SUBMISSION).update();
+        this.jdbc.sql("DELETE FROM submissions WHERE id IN (:ids)")
+            .param("ids", List.of(ForeignEditSteps.SUBMISSION, ForeignEditSteps.CHANGE))
+            .update();
     }
 
     private int send(

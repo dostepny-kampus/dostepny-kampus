@@ -77,7 +77,8 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
       | nie potwierdzi odbioru zgłoszenia  | lokalne  |
       | potwierdzi odbiór zgłoszenia       | wysłane  |
 
-  @US8.2 @serwer
+  # kroki serwera: #1262
+  @US8.2 @serwer @do-zrobienia
   Scenariusz: Status „w weryfikacji” po wzięciu zgłoszenia przez Weryfikatora
     Zakładając, że zgłoszenie Zbierającego ma status „wysłane”
     Jeżeli Weryfikator weźmie je z kolejki
@@ -96,7 +97,8 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
       | wysłane       |
       | w weryfikacji |
 
-  @US8.3 @BR-3 @BR-16 @serwer
+  # kroki serwera: #1262
+  @US8.3 @BR-3 @BR-16 @serwer @do-zrobienia
   Scenariusz: Poprawa i ponowne wysłanie zgłoszenia odrzuconego
     Zakładając, że zgłoszenie Zbierającego odrzucono z powodem „Zdjęcie nie pokazuje progu”
     Jeżeli Zbierający zrobi nowe zdjęcie progu
@@ -122,7 +124,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
   Scenariusz: Przyjęte zgłoszenie szybkie zmienia dowolny Zbierający
     Zakładając, że przyjęte zgłoszenie szybkie Odwiedzającego w budynku C-13 ma typ TB-13 „próg” i uciążliwość 1
     Jeżeli Zbierający, który nie jest autorem tego zgłoszenia, zmieni uciążliwość na 2
-    Wtedy powstaje nowe zgłoszenie powiązane z poprzednim, ze statusem „lokalne”
+    Wtedy powstaje nowe zgłoszenie powiązane z poprzednim, ze statusem „wysłane”
     Oraz autorem nowego zgłoszenia jest ten Zbierający
     Oraz poprzednie zgłoszenie nadal jest przyjęte i widoczne na mapie
 
