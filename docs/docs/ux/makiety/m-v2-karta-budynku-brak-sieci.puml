@@ -6,7 +6,7 @@
 $ekran_poczatek()
 { [<&arrow-left> Wstecz] }
 $brak_internetu("dane z <i>[data]</i>")
-<b>Budynek A-1</b>
+<b>A-1</b>
 <i>[nazwa budynku z danych]</i>
 --
 $karta_gora()

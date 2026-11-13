@@ -187,11 +187,11 @@ Wejście główne ma schody, a dostępne jest wejście z tyłu budynku, bramą o
 
 Makiety V2 pokazują pełny ekran bez mapy. Po dotknięciu budynku na mapie V2 jest najpierw małą kartą nad mapą V1 (wymagania V2, decyzja 115), osobna makieta `m-v2-karta-budynku-mala`.
 
-![Makieta V2 Karta budynku: nagłówek Budynek A-1, wiersz Wejście dostępne, Sprawdź, którędy wejść, chipy Winda i Toaleta dostosowana, wiersz daty i źródła, trzy wejścia z wejściem zalecanym na górze, grupy Winda i toaleta oraz Piętra, dwie bariery i pasek dolny](../../_generated/m-v2-karta-budynku.svg)
+![Makieta V2 Karta budynku: nagłówek A-1, wiersz Wejście dostępne, Sprawdź, którędy wejść, chipy Winda i Toaleta dostosowana, wiersz daty i źródła, trzy wejścia z wejściem zalecanym na górze, grupy Winda i toaleta oraz Piętra, dwie bariery i pasek dolny](../../_generated/m-v2-karta-budynku.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Wstecz” i nagłówek „Budynek A-1” | US2, NFR-15 (wymagania wspólne) |
+| „Wstecz” i nagłówek „A-1” | US2, NFR-15 (wymagania wspólne) |
 | Nazwa budynku z danych, zastępnik | US2 |
 | Chipy „Winda”, „Toaleta dostosowana” pod czynnościami: fakty z danych, dotknięcie przewija do grupy; wejście dostępne podaje wiersz o wejściach | US2.3, US2.8, US16.1, NFR-17 |
 | Wejście zalecane pierwsze, z napisem „Zalecane” bez piętra i „Pokaż wejście na mapie” | BR-25, decyzja 48, decyzja 53 |

@@ -3,7 +3,7 @@
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek("Budynek <i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
+$naglowek("<i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
 $karta_gora()
 $sekcja("Wejścia")
 $wejscie_karty($dostepne(), "<i>[nazwa wejścia z danych]</i>", "Zalecane, <i>[piętro]</i>", "Sprawdzone na miejscu <i>[data]</i>")
