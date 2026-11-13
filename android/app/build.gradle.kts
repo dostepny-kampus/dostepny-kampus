@@ -9,6 +9,7 @@ plugins {
     id("dostepnykampus.android.compose")
     id("dostepnykampus.android.roborazzi")
     id("dostepnykampus.android.hilt")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -25,11 +26,8 @@ tasks.withType<Test>().configureEach {
 }
 
 dependencies {
-    implementation(project(":feature:auth"))
     implementation(project(":feature:map"))
     implementation(project(":feature:capture"))
-    implementation(project(":feature:review"))
-    implementation(project(":feature:progress"))
     implementation(project(":feature:help"))
     implementation(project(":core:data"))
     implementation(project(":core:database"))

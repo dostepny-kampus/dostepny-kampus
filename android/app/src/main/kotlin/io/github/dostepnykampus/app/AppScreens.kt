@@ -25,7 +25,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import io.github.dostepnykampus.app.navigation.AccountRoute
 import io.github.dostepnykampus.app.navigation.AppNavigator
+import io.github.dostepnykampus.app.navigation.SignInRoute
 import io.github.dostepnykampus.app.navigation.measure
 import io.github.dostepnykampus.app.navigation.mySubmissions
 import io.github.dostepnykampus.app.navigation.openReportForm
@@ -34,8 +36,6 @@ import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.core.model.isSignedIn
-import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
-import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
 import io.github.dostepnykampus.feature.capture.MeasureScreen
 import io.github.dostepnykampus.feature.capture.QuickReportActions
 import io.github.dostepnykampus.feature.capture.QuickReportScreen
