@@ -52,18 +52,10 @@ private val FILE_LABELS = listOf("A-1", "B-2")
 private val SERVER_LABELS = listOf("A-1")
 
 /**
- * Geometria mapy V1 od odpowiedzi serwera i zamknięcia ekranu do stanu ViewModelu. Testy czekają na
- * zdarzenia (sygnały z funkcji liczącej, wynik liczenia), nie na upływ czasu, więc wynik nie zależy od szybkości
- * maszyny. Zawieszenie przy błędzie w kodzie kończy limit `runTest`, który nie wpływa na wynik działającego kodu.
- *
- * `holdFile`: Liczenie dla pliku: zgłasza start i czeka na zwolnienie; [finished] dostaje prawdę, gdy doczekało, a
- * fałsz, gdy
- *   przerwano wątek (wtedy przerwanie idzie dalej).
- *
- * `withPool`: Wątki liczące na czas testu. Na końcu czeka, aż skończą, więc żadne wznowienie z nich nie trafi do
- *   Dispatchers.Main po resetMain i nie wycieknie do następnego testu.
- *
- * `show`: Widoczny ekran: subskrypcja stanu trwa do końca testu, więc źródła działają aż do zamknięcia ViewModelu.
+ * Geometria mapy V1 od odpowiedzi serwera i zamknięcia ekranu do stanu ViewModelu. Testy czekają na zdarzenia z funkcji
+ * liczącej, nie na upływ czasu; zawieszenie przy błędzie kończy limit `runTest`. `holdFile` zgłasza start liczenia i
+ * czeka na zwolnienie albo przerwanie wątku, `withPool` daje wątki liczące, na które czeka na końcu testu, a `show`
+ * trzyma subskrypcję stanu do końca testu.
  *
  * Wymagania: NFR-10, NFR-11
  */
