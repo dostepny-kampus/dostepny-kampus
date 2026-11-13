@@ -6,6 +6,7 @@ Ta część pokazuje, z czego składa się system i dlaczego wybraliśmy takie r
 | --- | --- |
 | [Kontekst systemu](kontekst.md) | role i systemy zewnętrzne wokół systemu (C4, poziom 1) |
 | [Kontenery](kontenery.md) | aplikację, serwer, bazy danych, Usługę logowania i połączenia między nimi (C4, poziom 2) |
+| [Struktura modułów](moduly.md) | moduły serwera i aplikacji, ich granice i kontrole, które ich pilnują |
 | [Opisy w kodzie](opisy-w-kodzie.md) | co wolno pisać w KDoc i Javadoc i które kontrole tego pilnują |
 
 ## Decyzje architektoniczne

@@ -11,7 +11,7 @@
 | Magazyn zdjęć | RustFS, zgodny z S3 ([ADR-0009](decyzje/0009-magazyn-zdjec.md)) | zdjęcia zgłoszeń bez metadanych (NFR-26) |
 | Usługa logowania | Keycloak | hasła i e-maile; serwer zna tylko identyfikator konta, nazwę i rolę (NFR-28) |
 
-Serwer ma moduły `identity`, `building`, `barrier`, `review`, `sync` i `export`. Moduł sięga do innego tylko przez jego publiczny pakiet, co sprawdzają testy architektury.
+Moduły serwera i aplikacji, ich zależności i kontrole granic opisuje [Struktura modułów](moduly.md).
 
 Na diagramie kontekstu Usługa logowania jest systemem zewnętrznym, bo to gotowy produkt z własnymi danymi. Tu leży w granicy systemu, bo uruchamiamy ją sami z konfiguracją z repozytorium ([ADR-0003](decyzje/0003-keycloak.md)).
 
