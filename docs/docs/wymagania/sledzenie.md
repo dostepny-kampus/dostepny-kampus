@@ -217,6 +217,8 @@ Wiersz podaje się pierwszą komórką, gdy ma ją tylko jeden wiersz. W innym r
 
 Przykład: `/** Scenariusz: przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */`. Komentarze `//` nie są dozwolone w kodzie Kotlin.
 
+Scenariusz z tagiem `@serwer` nie ma znacznika. Wykonuje go zestaw Cucumber w testach serwera, który czyta plik z katalogu `specs/` wprost. Zestaw wykonuje scenariusze `@serwer` bez tagu `@do-zrobienia`, a krok bez definicji daje czerwony test. Strona pokrycia liczy taki scenariusz jako „pełny” w warstwie serwera, gdy zestaw wskazuje jego plik.
+
 Pokrycie nie może spaść: scenariusz, który miał test pełny albo częściowy, nie może go stracić. Nowy scenariusz i scenariusz ze zmienionymi krokami wchodzi z pełnym testem. Gdy testu jeszcze nie ma, scenariusz dostaje tag `@do-zrobienia`, a komentarz nad tagiem podaje numer otwartego zadania, na przykład `# test w #1189`. Obie reguły sprawdza CI względem gałęzi docelowej.
 
 Tabela [Pokrycie scenariuszy testami](../_generated/pokrycie-testami.md) ma wiersz dla każdego scenariusza: jego kryteria i reguły, testy (moduł, klasa i funkcja testu) i stan „pełny”, „częściowo” albo „brak”. Ma tyle wierszy, ile scenariuszy, dlatego jest na osobnej stronie. Strony nie ma w repozytorium: powstaje przy budowie dokumentacji, więc zmiana testu nie zmienia żadnego pliku dokumentacji.

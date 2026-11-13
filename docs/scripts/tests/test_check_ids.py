@@ -274,14 +274,20 @@ LAYERED = (
 )
 
 
-def layered(tests: str) -> check_ids.Corpus:
-    """Zwraca korpus z plikiem `warstwy.feature` (LAYERED) i testami Androida o treści `tests`."""
+def layered(tests: str, suite: str = "") -> check_ids.Corpus:
+    """Zwraca korpus z plikiem `warstwy.feature` (LAYERED), testami Androida o treści `tests` i zestawem Cucumber
+    serwera o treści `suite` (pusty: serwer bez zestawu)."""
     with tempfile.TemporaryDirectory() as root:
+        (Path(root) / "backend" / "src" / "test" / "java").mkdir(parents=True)
+        (Path(root) / "backend" / "src" / "test" / "java" / "ServerSpecs.java").write_text(suite, encoding="utf-8")
         (Path(root) / "specs").mkdir()
         (Path(root) / "specs" / "warstwy.feature").write_text(LAYERED, encoding="utf-8")
         (Path(root) / "android" / "src" / "test").mkdir(parents=True)
         (Path(root) / "android" / "src" / "test" / "WarstwyTest.kt").write_text(tests, encoding="utf-8")
-        return check_ids.collect(DATA / "brak", Path(root) / "specs", Path(root) / "android")
+        return check_ids.collect(DATA / "brak", Path(root) / "specs", Path(root) / "android", Path(root) / "backend")
+
+
+SUITE = '@Suite\n@SelectFile("../specs/warstwy.feature")\npublic final class ServerSpecs {\n}\n'
 
 
 def layer_marker(name: str, function: str) -> str:
@@ -304,6 +310,32 @@ class LayersTest(unittest.TestCase):
         rows = table_rows(check_ids.render_coverage(layered(layer_marker("W obu", "o"))))
         self.assertEqual({r[1]: r[5] for r in rows[2:]}["W obu"], "częściowo")
         self.assertEqual(rows[:2], [["Aplikacja", "1", "0", "2"], ["Serwer", "0", "0", "2"]])
+
+    def test_scenario_run_by_server_suite_is_full_on_server(self) -> None:
+        rows = table_rows(check_ids.render_coverage(layered("", SUITE)))
+        self.assertEqual(rows[:2], [["Aplikacja", "0", "0", "3"], ["Serwer", "2", "0", "0"]])
+        self.assertEqual({r[1]: (r[4], r[5]) for r in rows[2:]}["Na serwerze"], ("`backend · ServerSpecs`", "pełny"))
+
+    def test_two_layer_scenario_needs_app_test_and_server_suite(self) -> None:
+        only_server = table_rows(check_ids.render_coverage(layered("", SUITE)))
+        both = table_rows(check_ids.render_coverage(layered(layer_marker("W obu", "o"), SUITE)))
+        self.assertEqual({r[1]: r[5] for r in only_server[2:]}["W obu"], "częściowo")
+        self.assertEqual({r[1]: r[5] for r in both[2:]}["W obu"], "pełny")
+
+    def test_planned_scenario_is_not_run_by_server_suite(self) -> None:
+        with tempfile.TemporaryDirectory() as root:
+            (Path(root) / "specs").mkdir()
+            text = LAYERED.replace("  @serwer\n  Scenariusz: Na serwerze", "  @serwer @do-zrobienia\n  Scenariusz: Na serwerze")
+            (Path(root) / "specs" / "warstwy.feature").write_text(text, encoding="utf-8")
+            (Path(root) / "src" / "test" / "java").mkdir(parents=True)
+            (Path(root) / "src" / "test" / "java" / "ServerSpecs.java").write_text(SUITE, encoding="utf-8")
+            corpus = check_ids.collect(DATA / "brak", Path(root) / "specs", DATA / "brak", Path(root))
+        rows = table_rows(check_ids.render_coverage(corpus))
+        self.assertEqual({r[1]: r[5] for r in rows[2:]}["Na serwerze"], "brak")
+
+    def test_suite_of_another_file_does_not_cover(self) -> None:
+        rows = table_rows(check_ids.render_coverage(layered("", SUITE.replace("warstwy", "inne"))))
+        self.assertEqual(rows[1], ["Serwer", "0", "0", "2"])
 
     def test_android_marker_on_server_only_scenario_is_an_error(self) -> None:
         findings = check_ids.check_tests(layered(layer_marker("Na serwerze", "s")))
@@ -387,14 +419,15 @@ class CoverageDropTest(unittest.TestCase):
 
     def test_baseline_is_counted_from_files_of_the_revision(self) -> None:
         specs, android = check_ids.ROOT / "specs", check_ids.ROOT / "android"
-        before = check_ids.baseline_corpus("HEAD", specs, android)
+        before = check_ids.baseline_corpus("HEAD", specs, android, check_ids.ROOT / "backend")
         self.assertIsNotNone(before)
         self.assertGreater(len(before.all_scenarios), 0)
         self.assertGreater(len(before.markers), 0)
         self.assertEqual(check_ids.coverage_drops(before, before), [])
 
     def test_directory_absent_from_revision_is_empty(self) -> None:
-        before = check_ids.baseline_corpus("HEAD", check_ids.ROOT / "specs", check_ids.ROOT / "nie-ma-takiego-katalogu")
+        root = check_ids.ROOT
+        before = check_ids.baseline_corpus("HEAD", root / "specs", root / "nie-ma-takiego-katalogu", root / "backend")
         self.assertIsNotNone(before)
         self.assertEqual(before.markers, [])
         self.assertGreater(len(before.all_scenarios), 0)
@@ -444,7 +477,7 @@ class NewScenarioTest(unittest.TestCase):
 
     def test_unreadable_revision_gives_no_baseline(self) -> None:
         root = check_ids.ROOT
-        self.assertIsNone(check_ids.baseline_corpus("nie-ma-takiej-rewizji", root / "specs", root / "android"))
+        self.assertIsNone(check_ids.baseline_corpus("nie-ma-takiej-rewizji", root / "specs", root / "android", root / "backend"))
 
     def test_scenario_keeps_its_requirement_tags_and_body(self) -> None:
         corpus = specs(OLD.replace("  Scenariusz: Stary", "  @US1.1\n  Scenariusz: Stary"))

@@ -61,7 +61,7 @@ COVERAGE_INTRO = """# Pokrycie scenariuszy testami
 
 Jeden wiersz to jeden scenariusz z katalogu `specs/`. Kolumna „Warstwa” mówi, gdzie scenariusz jest sprawdzany
 (tag `@aplikacja` albo `@serwer`). Kolumna „Test” wskazuje testy Androida ze znacznikiem `Scenariusz:` w KDoc
-(moduł, klasa i funkcja testu). Stan „pełny” znaczy, że test sprawdza wszystkie kroki „Wtedy” w każdej warstwie
+(moduł, klasa i funkcja testu) oraz zestaw Cucumber serwera, który wykonuje scenariusz wprost z pliku. Stan „pełny” znaczy, że test sprawdza wszystkie kroki „Wtedy” w każdej warstwie
 scenariusza, „częściowo” — tylko część z nich albo tylko jedną z dwóch warstw, a „brak” — że scenariusz nie ma
 testu. Pierwsza tabela liczy scenariusze osobno w każdej warstwie; scenariusz z dwiema warstwami jest w obu wierszach.
 
@@ -85,6 +85,8 @@ CODE_TOKEN = re.compile(r"""//[^\n]*|/\*|\"\"\"[\s\S]*?\"\"\"|"(?:\\.|[^"\\\n])*
 BLOCK_COMMENT_PART = re.compile(r"/\*|\*/")
 KDOC_FILLER = "/**/"
 KDOC_MARKER_TEXT = re.compile(r"(?i:Scenariusz)|\s{2,}\S")
+SUITE_FILE = re.compile(r'@SelectFile\(\s*"(?:[^"]*/)?specs/([^"]+\.feature)"\s*\)')
+SUITE_SOURCE = "src/test/java"
 TEST_SOURCE = re.compile(r"^(?!(?:.*/)?(?:build|\.gradle)/)(?:.*/)?src/(?:test|\w*Test)\w*/")
 
 
@@ -131,7 +133,7 @@ class Corpus:
     """Zebrane definicje, odwołania, powiązania (nieskierowane), scenariusze i wiersze przykładów szablonów
     (`examples`: klucz to plik i nazwa scenariusza, wartość to komórki kolejnych wierszy bez nagłówków tabel).
     `bodies` to treść scenariusza: jego kroki i tabele bez tagów, komentarzy i odstępów na brzegach; `planned` to
-    scenariusze z tagiem PLANNED_TAG."""
+    scenariusze z tagiem PLANNED_TAG; `suites` to zestawy Cucumber serwera, które wykonują dany plik .feature."""
 
     definitions: dict[str, list[Location]] = field(default_factory=lambda: defaultdict(list))
     references: list[tuple[str, Location]] = field(default_factory=list)
@@ -145,6 +147,7 @@ class Corpus:
     examples: dict[tuple[str, str], list[tuple[str, ...]]] = field(default_factory=lambda: defaultdict(list))
     bodies: dict[tuple[str, str], list[str]] = field(default_factory=lambda: defaultdict(list))
     planned: set[tuple[str, str]] = field(default_factory=set)
+    suites: dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
     bad_markers: list[Location] = field(default_factory=list)
 
     def link(self, owner: str, other: str) -> None:
@@ -384,8 +387,9 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
             body.append(" ".join(line.split()))
 
 
-def collect(docs: Path, specs: Path, android: Path | None = None) -> Corpus:
-    """Zbiera korpus z `docs/**/*.md` (bez `_generated`), `specs/**/*.feature` i `android/**/*.kt`. Brak katalogów nie jest błędem.
+def collect(docs: Path, specs: Path, android: Path | None = None, backend: Path | None = None) -> Corpus:
+    """Zbiera korpus z `docs/**/*.md` (bez `_generated`), `specs/**/*.feature`, `android/**/*.kt` i zestawów Cucumber
+    w testach serwera (`backend`). Brak katalogów nie jest błędem.
 
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu pliku.
     """
@@ -399,7 +403,19 @@ def collect(docs: Path, specs: Path, android: Path | None = None) -> Corpus:
         if TEST_SOURCE.match(path.relative_to(android).as_posix()):
             parts = path.relative_to(android).parts
             scan_kotlin(path, corpus, "/".join(parts[: parts.index("src")]))
+    for path in files_in(backend / SUITE_SOURCE if backend else None, "*.java"):
+        scan_suite(path, corpus)
     return corpus
+
+
+def scan_suite(path: Path, corpus: Corpus) -> None:
+    """Dodaje do `corpus.suites` zestaw Cucumber z pliku testu serwera: klasę z `@SelectFile` na plik z `specs/`.
+
+    Gwarantuje: zestaw ma identyfikator „backend · Klasa”; plik bez `@SelectFile` niczego nie dodaje.
+    Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
+    """
+    for feature in SUITE_FILE.findall(path.read_text(encoding="utf-8")):
+        corpus.suites[feature].append(f"backend · {path.stem}")
 
 
 def files_in(root: Path | None, pattern: str) -> list[Path]:
@@ -726,14 +742,25 @@ def layer_states(corpus: Corpus, scenario: Scenario, markers: list[Marker]) -> d
 
     Gwarantuje: warstwę aplikacji pokrywają znaczniki testów Androida (`markers`); stan „pełny”, gdy choć jeden
     znacznik całego scenariusza nie jest „częściowo” albo gdy każdy wiersz przykładów szablonu ma własny znacznik,
-    który nie jest „częściowo”. Warstwa serwera nie ma jeszcze źródła testów, więc ma stan „brak”. Scenariusz bez tagu
-    warstwy jest liczony jak scenariusz aplikacji.
+    który nie jest „częściowo”. Warstwę serwera pokrywa zestaw Cucumber, który wykonuje plik scenariusza
+    (server_suites): stan „pełny” albo „brak”. Scenariusz bez tagu warstwy jest liczony jak scenariusz aplikacji.
     """
     rows = set(corpus.examples.get((scenario.feature, scenario.name), []))
     whole = any(not m.partial and not m.example for m in markers)
     by_rows = bool(rows) and rows <= {example_row(corpus, m) for m in markers if m.example and not m.partial}
     app = "brak" if not markers else "pełny" if whole or by_rows else "częściowo"
-    return {layer: app if layer == "aplikacja" else "brak" for layer in scenario.layers or ("aplikacja",)}
+    server = "pełny" if server_suites(corpus, scenario) else "brak"
+    return {layer: app if layer == "aplikacja" else server for layer in scenario.layers or ("aplikacja",)}
+
+
+def server_suites(corpus: Corpus, scenario: Scenario) -> list[str]:
+    """Zwraca zestawy Cucumber serwera, które wykonują scenariusz.
+
+    Gwarantuje: zestaw wykonuje scenariusze `@serwer` swojego pliku bez tagu PLANNED_TAG; krok bez definicji
+    zatrzymuje zestaw błędem, więc wykonywany scenariusz ma wszystkie kroki.
+    """
+    planned = (scenario.feature, scenario.name) in corpus.planned
+    return [] if planned or "serwer" not in scenario.layers else corpus.suites.get(scenario.feature, [])
 
 
 def coverage_states(corpus: Corpus) -> dict[Scenario, tuple[list[Marker], str]]:
@@ -781,7 +808,8 @@ def render_coverage(corpus: Corpus) -> str:
         for layer, layer_state in layer_states(corpus, scenario, markers).items():
             per_layer[layer].append(layer_state)
         layers = join([LAYER_NAMES[layer].lower() for layer in scenario.layers])
-        tests = [f"`{test_id}`".replace("|", "\\|") for test_id in sorted(dict.fromkeys(m.test_id for m in markers))]
+        ids = sorted(dict.fromkeys(m.test_id for m in markers)) + server_suites(corpus, scenario)
+        tests = [f"`{test_id}`".replace("|", "\\|") for test_id in ids]
         name = scenario.name.replace("|", "\\|")
         rows.append([f"`{scenario.feature}`", name, join(sorted(tags[scenario], key=natural_key)), layers, join(tests, "<br>"), state])
     counts = [[name, *(str(per_layer[layer].count(state)) for _, state in COVERAGE_COUNTS)] for layer, name in LAYERS]
@@ -822,18 +850,19 @@ def unplanned_scenarios(corpus: Corpus, baseline: Corpus) -> list[Finding]:
     return findings
 
 
-def baseline_corpus(revision: str, specs: Path, android: Path) -> Corpus | None:
-    """Zwraca korpus scenariuszy i testów Androida z rewizji `revision` (katalogi `specs` i `android` z repozytorium)
-    albo None, gdy rewizji nie da się odczytać.
+def baseline_corpus(revision: str, specs: Path, android: Path, backend: Path) -> Corpus | None:
+    """Zwraca korpus scenariuszy, testów Androida i zestawów Cucumber serwera z rewizji `revision` (katalogi `specs`,
+    `android` i testy z `backend` z repozytorium) albo None, gdy rewizji nie da się odczytać.
 
     Gwarantuje: pliki rewizji trafiają do katalogu tymczasowego, katalog roboczy zostaje bez zmian; katalog, którego
     w rewizji nie ma, jest pusty.
     Wyjątki: OSError, gdy nie ma programu git albo nie da się zapisać plików tymczasowych.
     """
-    paths = [path.resolve().relative_to(ROOT).as_posix() for path in (specs, android)]
+    paths = [path.resolve().relative_to(ROOT).as_posix() for path in (specs, android, backend)]
     if subprocess.run(["git", "rev-parse", "--verify", "--quiet", f"{revision}^{{tree}}"], cwd=ROOT, capture_output=True, check=False).returncode:
         return None
-    present = [p for p in paths if subprocess.run(["git", "cat-file", "-e", f"{revision}:{p}"], cwd=ROOT, capture_output=True, check=False).returncode == 0]
+    stored = [*paths[:2], f"{paths[2]}/{SUITE_SOURCE}"]
+    present = [p for p in stored if subprocess.run(["git", "cat-file", "-e", f"{revision}:{p}"], cwd=ROOT, capture_output=True, check=False).returncode == 0]
     with tempfile.TemporaryDirectory() as directory:
         if present:
             archive = subprocess.run(["git", "archive", "--format=tar", revision, "--", *present], cwd=ROOT, capture_output=True, check=False)
@@ -842,7 +871,7 @@ def baseline_corpus(revision: str, specs: Path, android: Path) -> Corpus | None:
             with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as tar:
                 tar.extractall(directory, filter="data")
         root = Path(directory)
-        return collect(root / "brak", root / paths[0], root / paths[1])
+        return collect(root / "brak", root / paths[0], root / paths[1], root / paths[2])
 
 
 def undefined_references(corpus: Corpus, partial: bool = False) -> list[Finding]:
@@ -1043,7 +1072,7 @@ def matrix_is_current(target: Path, blocks: dict[str, str]) -> bool:
 def report_matrix_state(target: Path, stale: list[Path]) -> int:
     """Wypisuje wynik kontroli aktualności macierzy w `target` i zwraca kod wyjścia: 0 aktualna, 1 nieaktualna."""
     if not stale:
-        print(f"check_ids: macierz w {target} i strona pokrycia testami są aktualne")
+        print(f"check_ids: macierz w {target} jest aktualna")
         return 0
     names = ", ".join(str(path) for path in stale)
     print(f"check_ids: BŁĄD: nieaktualne albo brak: {names}; odśwież: python scripts/check_ids.py --matrix {target}")
@@ -1109,6 +1138,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--docs", type=Path, default=REPO / "docs", help="katalog dokumentacji")
     parser.add_argument("--specs", type=Path, default=ROOT / "specs", help="katalog plików .feature")
     parser.add_argument("--android", type=Path, default=ROOT / "android", help="katalog z testami Androida (.kt)")
+    parser.add_argument("--backend", type=Path, default=ROOT / "backend", help="katalog serwera z zestawami Cucumber")
     target = parser.add_mutually_exclusive_group()
     target.add_argument("--matrix", type=Path, help="zapisz macierz N → US → AC → UC → scenariusz do pliku")
     target.add_argument("--check-matrix", type=Path, help="tylko sprawdź, czy macierz w pliku jest aktualna")
@@ -1137,7 +1167,7 @@ def main(argv: list[str] | None = None) -> int:
             stream.reconfigure(encoding="utf-8", errors="replace")
     args = parse_args(argv)
     try:
-        corpus = collect(args.docs, args.specs, args.android)
+        corpus = collect(args.docs, args.specs, args.android, args.backend)
         if args.check_matrix:
             stale = [] if matrix_is_current(args.check_matrix, render_blocks(corpus)) else [args.check_matrix]
             return report_matrix_state(args.check_matrix, stale)
@@ -1147,7 +1177,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"check_ids: macierz zapisana do {args.matrix}, pokrycie testami do {coverage}")
         findings = check(corpus, args.partial) + check_tests(corpus, args.release) + check_screen_page(args.docs)
         if args.baseline_rev:
-            before = baseline_corpus(args.baseline_rev, args.specs, args.android)
+            before = baseline_corpus(args.baseline_rev, args.specs, args.android, args.backend)
             findings += coverage_drops(corpus, before) + unplanned_scenarios(corpus, before) if before else []
     except (OSError, UnicodeDecodeError) as exc:
         print(f"check_ids: BŁĄD: {exc}", file=sys.stderr)

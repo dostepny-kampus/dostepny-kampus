@@ -57,7 +57,7 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
-      - name: Sprawdź, czy PR albo grupa w kolejce zmienia dokumentację, scenariusze albo testy Androida
+      - name: Sprawdź, czy PR albo grupa w kolejce zmienia dokumentację, scenariusze, testy Androida albo zestawy scenariuszy serwera
         id: diff
         env:
           EVENT: ${{ github.event_name }}
@@ -72,7 +72,7 @@ jobs:
             to=$GROUP_HEAD_SHA
           fi
           android_tests=(':(glob)android/**/src/test*/**' ':(glob)android/**/src/*Test*/**')
-          if git diff --quiet "$from" "$to" -- docs specs .github/workflows/docs.yml "${android_tests[@]}"; then
+          if git diff --quiet "$from" "$to" -- docs specs .github/workflows/docs.yml backend/src/test/java "${android_tests[@]}"; then
             echo "dokumentacja=false" >> "$GITHUB_OUTPUT"
           else
             echo "dokumentacja=true" >> "$GITHUB_OUTPUT"

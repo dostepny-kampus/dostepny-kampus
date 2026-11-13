@@ -21,4 +21,5 @@ def on_pre_build(config: object) -> None:
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu albo zapisu zatrzymują budowę.
     """
     docs = Path(config["docs_dir"])
-    check_ids.write_coverage(docs, check_ids.collect(docs, check_ids.ROOT / "specs", check_ids.ROOT / "android"))
+    root = check_ids.ROOT
+    check_ids.write_coverage(docs, check_ids.collect(docs, root / "specs", root / "android", root / "backend"))
