@@ -224,6 +224,14 @@ while IFS= read -r -d '' status; do
   check_file "${status:0:1}" "$path" "$old"
 done < <(git diff -z -M --name-status --diff-filter=ACDMR "$range")
 
+# pull_request_target bierze przepływ strażnika z gałęzi domyślnej, a ten skrypt z bazy PR (#1173). Zmiana przepływu
+# scalona do sprint/N nie działa więc dla kolejnych PR, dopóki nie trafi do main.
+guard_workflow=.github/workflows/straznik-jakosci.yml
+if [[ ${BASE_REF:-} != main ]] && ! git diff --quiet "$range" -- "$guard_workflow"; then
+  echo "::warning file=${guard_workflow},title=${title}::Przepływ strażnika działa z gałęzi domyślnej (main):" \
+    "ta zmiana zadziała dla PR do ${BASE_REF:-gałęzi sprintu} dopiero po przeniesieniu pliku do main (#1173)."
+fi
+
 esc_data() {
   local s="${1//%/%25}"
   s="${s//$'\r'/%0D}"
@@ -274,6 +282,10 @@ fi
 if ((${#soft[@]} && gate)); then
   report warning "${soft[@]}"
   echo "Opis PR ma linię „Zmiana reguł jakości:”, a zmianę zatwierdził(a) ${approver}: zmiany reguł są ostrzeżeniami."
+elif ((${#soft[@]} && reason)) && [[ -z ${PR_APPROVED_BY+x} ]]; then
+  report error "${soft[@]}"
+  echo "Przepływ strażnika nie podał PR_APPROVED_BY: przepływ z main i skrypt z bazy PR są z różnych wersji (#1173)."
+  result=1
 elif ((${#soft[@]} && reason)); then
   report error "${soft[@]}"
   echo "Zmianę reguł jakości zatwierdza osoba inna niż autor PR: etykietą „zmiana-regul-zatwierdzona”."
