@@ -7,7 +7,9 @@ package io.github.dostepnykampus.barrier.domain;
 
 /**
  * Status zgłoszenia na serwerze, wartości jak schemat SubmissionStatus
- * w OpenAPI (US8.1, US8.2).
+ * w OpenAPI.
+ *
+ * <p>Wymagania: US8.1, US8.2</p>
  *
  * @since 0.1.0
  */
@@ -25,12 +27,14 @@ public enum SubmissionStatus {
     /** Odrzucone przez Weryfikatora. */
     REJECTED,
 
-    /** Zastąpione przyjętą zmianą (BR-18). */
+    /** Zastąpione przyjętą zmianą. Wymagania: BR-18 */
     ARCHIVED;
 
     /**
-     * Czy autor może zmienić zgłoszenie i jego zdjęcia (BR-3, BR-18):
+     * Czy autor może zmienić zgłoszenie i jego zdjęcia:
      * tylko przed decyzją Weryfikatora albo po odrzuceniu.
+     *
+     * <p>Wymagania: BR-3, BR-18</p>
      *
      * @return Prawda dla SENT, IN_REVIEW i REJECTED
      */
@@ -41,9 +45,11 @@ public enum SubmissionStatus {
     }
 
     /**
-     * Status po zapisaniu edycji autora (BR-3): odrzucone wraca do
+     * Status po zapisaniu edycji autora: odrzucone wraca do
      * wysłanych, pozostałe edytowalne zostają; dla statusu, którego nie
      * wolno edytować, rzuca IllegalStateException.
+     *
+     * <p>Wymagania: BR-3</p>
      *
      * @return Status zgłoszenia po edycji
      */
@@ -63,7 +69,9 @@ public enum SubmissionStatus {
     }
 
     /**
-     * Czy zgłoszenie widzi Gość i Odwiedzający (BR-6).
+     * Czy zgłoszenie widzi Gość i Odwiedzający.
+     *
+     * <p>Wymagania: BR-6</p>
      *
      * @return Prawda tylko dla ACCEPTED
      */

@@ -9,7 +9,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Komenda edycji zgłoszenia, schemat SubmissionUpdate w OpenAPI (BR-10).
+ * Komenda edycji zgłoszenia, schemat SubmissionUpdate w OpenAPI.
+ *
+ * <p>Wymagania: BR-10</p>
  *
  * @param id Identyfikator edytowanego zgłoszenia
  * @param expectedVersion Wersja, na której oparto edycję, co najmniej 1

@@ -9,12 +9,14 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Miejsce zgłoszenia: punkt, dokładność, budynek i piętro (US6, BR-G2).
+ * Miejsce zgłoszenia: punkt, dokładność, budynek i piętro.
+ *
+ * <p>Wymagania: US6, BR-G2, US6.1, US6.3</p>
  *
  * @param point Położenie zgłoszenia
  * @param accuracyMeters Dokładność pozycji w metrach albo null, gdy nie
- *  podano (US6.1)
- * @param manualCorrection Czy użytkownik poprawił pozycję ręcznie (US6.3)
+ *  podano
+ * @param manualCorrection Czy użytkownik poprawił pozycję ręcznie
  * @param buildingSymbol Symbol budynku albo null, gdy zgłoszenie jest poza
  *  budynkami
  * @param floor Piętro albo null, gdy nie podano

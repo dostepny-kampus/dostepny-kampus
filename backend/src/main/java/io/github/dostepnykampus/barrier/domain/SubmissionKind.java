@@ -7,8 +7,10 @@ package io.github.dostepnykampus.barrier.domain;
 
 /**
  * Rodzaj zgłoszenia, wartości jak pole kind schematu SubmissionContent
- * w OpenAPI: pomiar precyzyjny (BR-7), zgłoszenie szybkie (BR-8)
- * i zmiana oznaczenia wejścia (BR-24).
+ * w OpenAPI: pomiar precyzyjny, zgłoszenie szybkie
+ * i zmiana oznaczenia wejścia.
+ *
+ * <p>Wymagania: BR-7, BR-8, BR-24</p>
  *
  * @since 0.1.0
  */
@@ -25,7 +27,9 @@ public enum SubmissionKind {
 
     /**
      * Czy budynek zgłoszenia przypisuje system z konturu, w którym leży
-     * pozycja (BR-14).
+     * pozycja.
+     *
+     * <p>Wymagania: BR-14</p>
      *
      * @return Prawda tylko dla QUICK
      */

@@ -8,17 +8,19 @@ package io.github.dostepnykampus.barrier.domain;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Szczegóły bariery zgłoszenia (US7).
+ * Szczegóły bariery zgłoszenia.
  *
  * <p>Uciążliwość poza zakresem 1–3 albo opis dłuższy niż 2000 znaków
  * kończy się niekontrolowanym wyjątkiem {@link InvalidSubmission}; brak
  * wartości (null) jest poprawny.</p>
  *
+ * <p>Wymagania: US7, US7.3, BR-19</p>
+ *
  * @param group Grupa bariery albo null, gdy nie podano
  * @param type Typ bariery TB-1…TB-29 albo null, gdy nie podano
  * @param severity Uciążliwość od 1 do 3 albo null, gdy nie podano
- * @param description Opis bariery albo null, gdy nie podano (US7.3)
- * @param removed Czy zgłoszenie dotyczy usuniętej bariery (BR-19)
+ * @param description Opis bariery albo null, gdy nie podano
+ * @param removed Czy zgłoszenie dotyczy usuniętej bariery
  * @since 0.1.0
  */
 public record BarrierDetails(

@@ -9,7 +9,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Wynik edycji zgłoszenia (BR-3, BR-10, BR-18).
+ * Wynik edycji zgłoszenia.
+ *
+ * <p>Wymagania: BR-3, BR-10, BR-18</p>
  *
  * @since 0.1.0
  */
