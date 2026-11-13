@@ -1,6 +1,6 @@
 # language: pl
+@aplikacja
 Funkcja: Przykład do kontroli „scenariusz → test”
-
   Scenariusz: Pełny test
     Wtedy test sprawdza wszystko
   Scenariusz: Wyszukanie „A-1 329”
