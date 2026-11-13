@@ -24,7 +24,8 @@ import java.net.HttpURLConnection.HTTP_OK
 import java.util.concurrent.TimeUnit
 
 /**
- * Klient HTTP zgłoszeń: wysłanie, edycja z kontrolą wersji, zdjęcia i zgłoszenia przyjęte (`/submissions`).
+ * Klient HTTP zgłoszeń: wysłanie, edycja z kontrolą wersji, wysłanie i pobranie zdjęć oraz zgłoszenia przyjęte
+ * (`/submissions`).
  *
  * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek. Odpowiedź z kodem spoza kontraktu,
  * np. 400 przy złamanej regule zgłoszenia, to [ApiResult.ServerError] z tym kodem. Anulowanie korutyny
@@ -32,7 +33,7 @@ import java.util.concurrent.TimeUnit
  * czytania odpowiedzi, i kończy się [kotlinx.coroutines.CancellationException], nie [ApiResult.NetworkError]
  * (NFR-55).
  *
- * @param http klient OkHttp; wysyłka zdjęcia używa jego kopii z dłuższym limitem czasu
+ * @param http klient OkHttp; wysyłka i pobranie zdjęcia używają jego kopii z dłuższym limitem czasu
  * @param json parser JSON kontraktu
  * @param baseUrl adres serwera, np. `http://10.0.2.2:8080/` z emulatora
  */
@@ -81,6 +82,22 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
         }
 
     /**
+     * Pobiera plik JPEG zdjęcia z listy `photoIds` zgłoszenia (`getSubmissionPhoto`, US1.5, #1298). Zdjęcie
+     * zgłoszenia przyjętego jest publiczne; zdjęcia, którego serwer nie ma albo czytelnik nie widzi, daje
+     * [ApiResult.NotFound].
+     *
+     * @param submissionId identyfikator zgłoszenia
+     * @param photoId identyfikator zdjęcia
+     */
+    suspend fun photo(submissionId: String, photoId: String): ApiResult<ByteArray> {
+        val target = path(submissionId, PHOTOS, photoId)
+        val get = Request.Builder().url(target).header(name = ACCEPT, value = PHOTO_TYPES).get().build()
+        return photoHttp.exchangeBody(get) { code, body ->
+            if (code == HTTP_OK) ApiResult.Success(body.bytes()) else other(code)
+        }
+    }
+
+    /**
      * Zgłoszenia przyjęte do mapy i karty budynku (`status=ACCEPTED`, US1.3, US2.2, BR-6).
      *
      * @param buildingSymbol tylko zgłoszenia z tego budynku; `null` dla wszystkich
@@ -123,6 +140,7 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
         const val PHOTO_TIMEOUT_SECONDS = 60L
         const val ACCEPT = "Accept"
         const val ACCEPTED_TYPES = "application/json, application/problem+json"
+        const val PHOTO_TYPES = "image/jpeg, application/problem+json"
         const val SUBMISSIONS = "submissions"
         const val PHOTOS = "photos"
         const val GET = "GET"
