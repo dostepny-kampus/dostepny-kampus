@@ -4,8 +4,8 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
-# Test zgodności ścieżek workflow (sciezki-przeplywu.sh): przykładowe workflow oraz prawdziwy backend.yml
-# z listą ścieżek, które czytają testy serwera.
+# Test zgodności ścieżek workflow (sciezki-przeplywu.sh): przykładowe workflow oraz prawdziwe backend.yml
+# i android.yml z listą ścieżek, od których zależą ich zadania.
 here="$(cd "$(dirname "$0")" && pwd)"
 script="$here/sciezki-przeplywu.sh"
 work="$(mktemp -d)"
@@ -69,5 +69,11 @@ run_case "workflow bez filtra i bez zadania zmiany" 1 "nie znaleziono filtra" "$
 # Testy serwera czytają: kontrakt (OpenApiContract), scenariusze (ServerSpecs), obrazy i realm z infra/ (konfiguracje testów).
 run_case "backend.yml repozytorium" 0 "ścieżki zgodne" "$here/../workflows/backend.yml" \
   backend data api/openapi.yaml specs infra .github/workflows/backend.yml
+
+# Zadania Androida wykonują wspólną akcję Gradle i cztery skrypty; ich zmiana ma uruchomić budowanie.
+run_case "android.yml repozytorium" 0 "ścieżki zgodne" "$here/../workflows/android.yml" \
+  android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/workflows/android.yml \
+  .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh .github/scripts/cache-z-kolejki.sh \
+  .github/scripts/czysc-cache.sh .github/scripts/wyniki-androida.sh
 
 exit "$((failures > 0 ? 1 : 0))"
