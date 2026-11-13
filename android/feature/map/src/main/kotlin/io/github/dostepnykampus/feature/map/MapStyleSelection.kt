@@ -77,10 +77,7 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection, colors:
     )
 }
 
-/**
- * Styl wczytany na mapie, w którym zmienia się filtry, barwy, dane źródeł i obrazy bez wczytywania stylu.
- * TODO(#816): widok mapy MapLibre jeszcze go nie używa.
- */
+/** Styl wczytany na mapie, w którym zmienia się filtry, barwy, dane źródeł i obrazy bez wczytywania stylu. */
 internal interface MapStyleTarget {
     /** Ustawia filtr [filter] warstwy [layer]: wyrażenie stylu albo stała `true` lub `false`. */
     fun filter(layer: String, filter: JsonElement)
@@ -106,7 +103,7 @@ internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<Strin
     filter(layer = SELECTED_LAYER, filter = look.selectedFilter)
     filter(layer = ENTRANCES_LAYER, filter = look.entrancesFilter)
     filter(layer = CHOSEN_BARRIER_LAYER, filter = look.chosenBarrierFilter)
-    data(source = CHOSEN_SOURCE, geoJson = look.chosenEntrance.toString())
+    data(source = CHOSEN_SOURCE, geoJson = look.chosenEntrance.asStyleText())
 }
 
 /**

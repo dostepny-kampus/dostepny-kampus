@@ -32,17 +32,12 @@ private const val PIN_BODY = "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-
 private const val PIN_DOT = "M12 11.5a2.5 2.5 0 1 1 0-5a2.5 2.5 0 0 1 0 5z"
 
 /**
- * Obrazy wejść: znaki wszystkich oznaczeń, a dla [selected] także pinezka i podpis z nazwą.
+ * Obrazy wejść niezależne od zaznaczenia: znaki wszystkich oznaczeń i pinezka zaznaczonego wejścia.
  * Pinezka ma jednostki 2 dp (14 × 20), a jej czubek stoi na dole obrazu, gdzie jest kotwica.
  *
  * Wymagania: US2.1, US3.3
  */
-internal fun entranceImages(
-    selected: SelectedEntrance?,
-    colors: MapColors,
-    density: Float,
-    labelSize: Float,
-): Map<String, Bitmap> {
+internal fun entranceImages(colors: MapColors, density: Float): Map<String, Bitmap> {
     val marks =
         EntranceMarking.entries.associate { marking ->
             val image =
@@ -54,16 +49,12 @@ internal fun entranceImages(
                 )
             entranceMarkImage(marking) to image
         }
-    val chosen =
-        selected?.let { entrance ->
-            val pin = pinImage(unitPx = density * PIN_UNIT_DP, colors = colors)
-            mapOf(
-                ENTRANCE_PIN_IMAGE to pin,
-                entranceCaptionImage(entrance.label) to labelImage(entrance.label, colors, labelSize),
-            )
-        }
-    return marks + chosen.orEmpty()
+    return marks + (ENTRANCE_PIN_IMAGE to pinImage(unitPx = density * PIN_UNIT_DP, colors = colors))
 }
+
+/** Obraz podpisu z nazwą zaznaczonego wejścia [selected] o wysokości [labelSize]; bez zaznaczenia brak obrazów. */
+internal fun entranceCaption(selected: SelectedEntrance?, colors: MapColors, labelSize: Float): Map<String, Bitmap> =
+    selected?.let { mapOf(entranceCaptionImage(it.label) to labelImage(it.label, colors, labelSize)) }.orEmpty()
 
 private fun pinImage(unitPx: Float, colors: MapColors): Bitmap {
     val size = Size(width = ceil(PIN_WIDTH * unitPx), height = ceil(PIN_HEIGHT * unitPx))
