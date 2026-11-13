@@ -31,14 +31,11 @@ import org.springframework.modulith.core.ApplicationModules;
 import org.springframework.modulith.core.JavaPackage;
 
 /**
- * Strażnik warstw w każdym module serwera.
- *
- * <p>Warstwą klasy jest pierwszy podpakiet pod pakietem bazowym modułu.
- * Warstwa może zależeć tylko od warstw ze swojego wiersza tabeli i od korzenia
- * modułu; {@code domain} nie zależy też od Springa, Jacksona ani JDBC.
- * Podpakiet spoza listy warstw jest dozwolony tylko jako zapisany temat modułu
- * i zachowuje się jak adapter. Moduły otwarte nie podlegają regule.
- * Naruszenia z listy wyjątków mają numer issue; lista może tylko maleć.</p>
+ * Strażnik warstw w każdym module serwera: warstwą klasy jest pierwszy podpakiet pod pakietem
+ * modułu i zależy ona tylko od warstw ze swojego wiersza tabeli i od korzenia modułu;
+ * {@code domain} nie zależy też od Springa, Jacksona ani JDBC. Podpakiet spoza listy warstw jest
+ * dozwolony tylko jako zapisany temat modułu i zachowuje się jak adapter. Moduły otwarte nie
+ * podlegają regule. Wyjątki mają numer issue, a ich lista tylko maleje.
  *
  * @since 0.1.0
  */
