@@ -36,6 +36,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
     api(libs.kotlinx.coroutines.core)
+    testImplementation(libs.junit.jupiter.params)
     testImplementation(libs.okhttp)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.kotlinx.serialization.json)

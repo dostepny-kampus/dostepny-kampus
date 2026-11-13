@@ -15,6 +15,8 @@ dependencies {
     implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)
     implementation(libs.spatialk.units)
+
+    testImplementation(libs.junit.jupiter.params)
 }
 
 tasks.test {
