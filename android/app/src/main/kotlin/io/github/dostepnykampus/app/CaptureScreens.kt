@@ -17,13 +17,17 @@ import io.github.dostepnykampus.feature.capture.ReportEditExits
 import io.github.dostepnykampus.feature.capture.ReportEditScreen
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 
-/** C3 „Moje zgłoszenia”: „Otwórz” prowadzi do poprawki w C2, „Zmierz i zgłoś barierę” do C1 (US8.1, US8.3). */
+/** C3 „Moje zgłoszenia”: „Otwórz” prowadzi do poprawki w C2, „Zmierz i zgłoś barierę” do C1. Wymagania: US8.1, US8.3 */
 @Composable
 internal fun AppNavigator.MySubmissions() {
     MySubmissionsScreen(MySubmissionsActions(onBack = { back() }, onMeasure = { measure() }, onOpen = { openEdit(it) }))
 }
 
-/** Poprawka C2 zgłoszenia [route] z C3; zapis i wyjście wracają do C3, „Zmień miejsce” idzie przez C1 (US8.3). */
+/**
+ * Poprawka C2 zgłoszenia [route] z C3; zapis i wyjście wracają do C3, „Zmień miejsce” idzie przez C1.
+ *
+ * Wymagania: US8.3
+ */
 @Composable
 internal fun AppNavigator.ReportEdit(route: ReportEditRoute) {
     ReportEditScreen(
