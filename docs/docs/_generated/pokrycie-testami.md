@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Warstwa | Pełny test | Tylko częściowo | Bez testu |
 | --- | --- | --- | --- |
-| Aplikacja | 22 | 13 | 98 |
+| Aplikacja | 24 | 13 | 96 |
 | Serwer | 0 | 0 | 62 |
 
 | Plik | Scenariusz | Kryteria i reguły | Warstwa | Test | Stan |
@@ -167,8 +167,8 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `zgloszenia-zbierajacego.feature` | Zgłoszenie ze zmianą czekającą w telefonie ma napis przy statusie | US8.1 | aplikacja | — | brak |
 | `zgloszenia-zbierajacego.feature` | Lista nie pokazuje własnych zgłoszeń szybkich | US4.4, US8.1 | aplikacja | `core/data · OwnListTest.us4_4 lista bez szybkich` | pełny |
 | `zgloszenia-zbierajacego.feature` | „Otwórz” mają tylko zgłoszenia, które można poprawić | US8.1 | aplikacja | — | brak |
-| `zgloszenia-zbierajacego.feature` | Najnowsze zgłoszenia są na górze listy | US8.1 | aplikacja | — | brak |
-| `zgloszenia-zbierajacego.feature` | Status „wysłane” dopiero po potwierdzeniu odbioru przez serwer | BR-9, US8.2 | aplikacja | — | brak |
+| `zgloszenia-zbierajacego.feature` | Najnowsze zgłoszenia są na górze listy | US8.1 | aplikacja | `app · OwnListPathTest.us8_1_newest_first_on_list` | pełny |
+| `zgloszenia-zbierajacego.feature` | Status „wysłane” dopiero po potwierdzeniu odbioru przez serwer | BR-9, US8.2 | aplikacja | `app · OwnListPathTest.us8_2_confirmed_is_sent`<br>`app · OwnListPathTest.us8_2_unconfirmed_stays_local` | pełny |
 | `zgloszenia-zbierajacego.feature` | Status „w weryfikacji” po wzięciu zgłoszenia przez Weryfikatora | US8.2 | serwer | — | brak |
 | `zgloszenia-zbierajacego.feature` | Edycja zgłoszenia przed decyzją Weryfikatora | BR-3, US8.3 | aplikacja | — | brak |
 | `zgloszenia-zbierajacego.feature` | Poprawa i ponowne wysłanie zgłoszenia odrzuconego | BR-3, BR-16, US8.3 | serwer | — | brak |
