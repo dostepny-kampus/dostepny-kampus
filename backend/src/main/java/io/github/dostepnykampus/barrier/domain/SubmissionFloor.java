@@ -8,7 +8,9 @@ package io.github.dostepnykampus.barrier.domain;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Piętro zgłoszenia, schemat SubmissionFloor w OpenAPI (BR-G1).
+ * Piętro zgłoszenia, schemat SubmissionFloor w OpenAPI.
+ *
+ * <p>Wymagania: BR-G1</p>
  *
  * @param floorId Identyfikator piętra albo null, gdy nie podano
  * @param number Numer piętra albo null, gdy nie podano

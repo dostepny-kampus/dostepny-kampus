@@ -10,7 +10,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Port odczytu zgłoszeń; z niego korzystają kontrolery (US8).
+ * Port odczytu zgłoszeń; z niego korzystają kontrolery.
+ *
+ * <p>Wymagania: US8</p>
  *
  * @since 0.1.0
  */
@@ -26,7 +28,9 @@ public interface SubmissionFinder {
 
     /**
      * Szuka zgłoszenia, które czytelnik może zobaczyć: przyjęte widzi każdy,
-     * pozostałe tylko autor i Weryfikator (BR-5, BR-6).
+     * pozostałe tylko autor i Weryfikator.
+     *
+     * <p>Wymagania: BR-5, BR-6</p>
      *
      * @param id Identyfikator zgłoszenia
      * @param reader Osoba, która czyta zgłoszenie
@@ -35,8 +39,10 @@ public interface SubmissionFinder {
     Optional<Submission> visible(UUID id, Reader reader);
 
     /**
-     * Sprawdza, czy zgłoszenie istnieje i złożyło je inne konto (BR-3).
+     * Sprawdza, czy zgłoszenie istnieje i złożyło je inne konto.
      * Zgłoszenie bez zapisanego autora też jest cudze.
+     *
+     * <p>Wymagania: BR-3</p>
      *
      * @param id Identyfikator zgłoszenia
      * @param account Identyfikator konta, które chce zmienić zgłoszenie
@@ -46,8 +52,10 @@ public interface SubmissionFinder {
 
     /**
      * Sprawdza, czy zwykłą zmianę zgłoszenia przyjętego może złożyć tylko
-     * autor, a konto nim nie jest (BR-18): zgłoszenie istnieje, złożyło je
+     * autor, a konto nim nie jest: zgłoszenie istnieje, złożyło je
      * inne konto i nie jest zgłoszeniem szybkim.
+     *
+     * <p>Wymagania: BR-18</p>
      *
      * @param id Identyfikator zastępowanego zgłoszenia
      * @param account Identyfikator konta, które składa zmianę
@@ -65,7 +73,9 @@ public interface SubmissionFinder {
     List<Submission> list(SubmissionQuery query);
 
     /**
-     * Wyszukuje zgłoszenia jednego autora według zapytania (US8.1).
+     * Wyszukuje zgłoszenia jednego autora według zapytania.
+     *
+     * <p>Wymagania: US8.1</p>
      *
      * @param author Identyfikator konta autora
      * @param query Statusy oraz opcjonalny budynek i piętro
@@ -74,7 +84,9 @@ public interface SubmissionFinder {
     List<Submission> own(String author, SubmissionQuery query);
 
     /**
-     * Wyszukuje zgłoszenia podobne do danego (US10.1, BR-13), bez niego samego.
+     * Wyszukuje zgłoszenia podobne do danego, bez niego samego.
+     *
+     * <p>Wymagania: US10.1, BR-13</p>
      *
      * @param id Identyfikator sprawdzanego zgłoszenia
      * @return Podobne zgłoszenia od najbliższego; puste, gdy zgłoszenia nie ma

@@ -98,20 +98,11 @@ data class SubmissionStamps(
 )
 
 /**
- * Kolejka zgłoszeń: zapis w telefonie i wysyłanie od najstarszego.
- *
- * Bez sieci albo po błędzie serwera zgłoszenie zostaje w kolejce: zapis w bazie mówi, co serwer
- * już ma, więc kolejna próba wysyła treść raz i tylko brakujące zdjęcia.
- * Identyfikator powstaje raz, więc serwer nie dostanie drugiego zgłoszenia.
- * Po zapisie [onSaved] planuje wysyłkę po powrocie sieci; zapis działa także bez niego.
- * Poprawka z C3 ([saveEdit]) zastępuje wiersz tego samego zgłoszenia, a do serwera idzie jako edycja
- * [SubmissionServer.update] z wersją bazową.
- * Po 401 wysyłka czeka na ponowne zalogowanie: [loginExpired] i [onLoggedIn].
- * Zgłoszenia Zbierającego trafiają też do [history] ze stanem wysyłki dla listy C3; bez niej kolejka
- * działa jak dotąd.
- * Chwilę zapisu daje [SubmissionStamps.nowMillis]; kolejne zapisy mają rosnące chwile także w tej samej
- * milisekundzie, więc kolejka wysyła je w kolejności zapisu.
- * Wywołania serwera idą poza blokadą wierszy ([SentResults]), więc zapis poprawki nie czeka na sieć.
+ * Kolejka zgłoszeń: zapis w telefonie i wysyłanie od najstarszego. Bez sieci albo po błędzie serwera zgłoszenie
+ * zostaje, a kolejna próba wysyła treść raz i tylko brakujące zdjęcia, z tym samym identyfikatorem. [onSaved] planuje
+ * wysyłkę po powrocie sieci. Poprawka ([saveEdit]) zastępuje wiersz zgłoszenia i idzie jako [SubmissionServer.update] z
+ * wersją bazową. Po 401 wysyłka czeka na [onLoggedIn] ([loginExpired]). Zgłoszenia Zbierającego trafiają też do
+ * [history]. Chwile zapisu z [SubmissionStamps.nowMillis] rosną ściśle, a serwer jest wołany poza blokadą wierszy.
  *
  * Wymagania: NFR-5, US9.1, US9.2, BR-9, NFR-8, NFR-6, US8.3, BR-10, BR-26, US14.4, US8
  */
@@ -213,15 +204,11 @@ class SubmissionQueue(
     }
 
     /**
-     * Wysyła zgłoszenia z kolejki od najstarszych: treść raz, potem tylko nie wysłane zdjęcia.
-     * Bez sieci albo przy awarii serwera (5xx) wysyłanie się kończy do kolejnej próby. Po 401 kończy się
-     * do ponownego zalogowania, bo bez niego serwer odrzuci każde zgłoszenie. Inna odmowa serwera (4xx)
-     * zostawia zgłoszenie w telefonie jako odrzucone, nie wysyła go ponownie i przechodzi do następnego; wraca do
-     * wysyłki dopiero po ponownym zapisie przez osobę ([saveEdit]). Tak samo kończy się
-     * zgłoszenie, którego telefon nie odczyta (brak pliku zdjęcia, nieznana wartość w bazie), ale bez kodu odmowy,
-     * więc jeden zły wiersz nie zatrzymuje kolejki. Kolejka jest czytana po każdym zgłoszeniu, więc zgłoszenie
-     * zapisane w trakcie wysyłki idzie w tym samym przebiegu; każde jest próbowane raz na przebieg, a poprawka
-     * zapisana w trakcie wysyłki tego samego zgłoszenia idzie od razu po niej.
+     * Wysyła zgłoszenia od najstarszych: treść raz, potem tylko nie wysłane zdjęcia. Bez sieci, przy 5xx albo po 401
+     * kończy do kolejnej próby albo zalogowania. Inna odmowa (4xx) i wiersz, którego telefon nie odczyta, zostawiają
+     * zgłoszenie jako odrzucone do ponownego zapisu ([saveEdit]), a wysyłka idzie dalej. Kolejka jest czytana po każdym
+     * zgłoszeniu, więc zapisane w trakcie idzie w tym samym przebiegu; każde jest próbowane raz na przebieg, a poprawka
+     * zapisana w trakcie wysyłki tego zgłoszenia idzie zaraz po niej.
      *
      * Wymagania: BR-9, BR-26, NFR-5, US9.2
      *

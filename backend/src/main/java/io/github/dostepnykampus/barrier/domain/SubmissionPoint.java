@@ -8,11 +8,13 @@ package io.github.dostepnykampus.barrier.domain;
 import io.github.dostepnykampus.Wgs84;
 
 /**
- * Punkt zgłoszenia w WGS84, w kolejności długość, szerokość (US4, US7).
+ * Punkt zgłoszenia w WGS84, w kolejności długość, szerokość.
  *
  * <p>Każda droga utworzenia punktu przyjmuje tylko skończone współrzędne
  * w domkniętym zakresie WGS84 ({@link Wgs84}); poza nim rzuca
  * {@link InvalidSubmission}.</p>
+ *
+ * <p>Wymagania: US4, US7</p>
  *
  * @param longitude Długość geograficzna w stopniach, od -180 do 180
  * @param latitude Szerokość geograficzna w stopniach, od -90 do 90

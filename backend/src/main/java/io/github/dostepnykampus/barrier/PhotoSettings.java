@@ -11,7 +11,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Ustawienia magazynu zdjęć {@code dk.photos} (ADR-0009).
  *
- * <p>Puste klucze są dozwolone; tekst ustawień ich nie zawiera (NFR-35).</p>
+ * <p>Puste klucze są dozwolone; tekst ustawień ich nie zawiera.</p>
+ *
+ * <p>Wymagania: NFR-35</p>
  *
  * @param endpoint Adres S3 magazynu, np. http://127.0.0.1:9000
  * @param bucket Kubełek ze zdjęciami

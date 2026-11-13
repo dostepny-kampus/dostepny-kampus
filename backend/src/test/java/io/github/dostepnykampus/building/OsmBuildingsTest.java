@@ -26,8 +26,10 @@ import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Testy US1: po starcie serwera tabela buildings ma budynki z pliku
+ * Po starcie serwera tabela buildings ma budynki z pliku
  * konturów OpenStreetMap (ADR-0008), a punkty końcowe je zwracają.
+ *
+ * <p>Wymagania: US1</p>
  *
  * @since 0.1.0
  */

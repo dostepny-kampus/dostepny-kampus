@@ -6,7 +6,9 @@
 
 /**
  * Typy eksportu niezależne od transportu i zapisu: przeliczenie
- * współrzędnych na PUWG 1992 (US13.2, NFR-43).
+ * współrzędnych na PUWG 1992.
+ *
+ * <p>Wymagania: US13.2, NFR-43</p>
  *
  * @since 0.1.0
  */

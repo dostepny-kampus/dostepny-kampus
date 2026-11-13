@@ -11,7 +11,9 @@ import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 /**
- * Karta budynku, zgodna ze schematem BuildingDetails (US2).
+ * Karta budynku, zgodna ze schematem BuildingDetails.
+ *
+ * <p>Wymagania: US2</p>
  *
  * @param symbol Symbol budynku, np. C-13
  * @param name Nazwa budynku albo null, gdy budynek jej nie ma

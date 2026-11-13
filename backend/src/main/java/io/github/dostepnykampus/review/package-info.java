@@ -8,8 +8,10 @@
  * Moduł review: weryfikacja zgłoszeń.
  *
  * <p>Obsługuje kolejkę weryfikacji i decyzję Weryfikatora z powodem
- * odrzucenia (US10). Podgląd podobnych zgłoszeń (US10.1) należy do modułu
+ * odrzucenia. Podgląd podobnych zgłoszeń należy do modułu
  * barrier, bo składa odpowiedź z wewnętrznego zapisu zgłoszenia w JSON.</p>
+ *
+ * <p>Wymagania: US10, US10.1</p>
  *
  * @since 0.1.0
  */

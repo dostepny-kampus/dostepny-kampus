@@ -22,10 +22,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 /**
  * Kroki scenariuszy zgłoszenia szybkiego, które rozstrzyga serwer: budynek
- * z konturu (BR-14) i odmowa poza terenem PWr (US4.9, BR-G5).
+ * z konturu i odmowa poza terenem PWr.
  *
  * <p>Miejsca ze scenariusza kroki wyliczają z konturów budynków w bazie.
  * Kroki o aplikacji pilnują tu tylko kolejności: sprawdza je test aplikacji.</p>
+ *
+ * <p>Wymagania: BR-14, US4.9, BR-G5</p>
  *
  * @since 0.1.0
  */
