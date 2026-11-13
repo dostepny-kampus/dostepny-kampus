@@ -34,16 +34,15 @@ public record BuildingCardResponse(
 ) {
 
     /**
-     * Buduje odpowiedź z karty budynku.
+     * Odpowiedź z karty budynku.
      *
      * @param card Karta budynku
      * @param mapper Parser konturu i położeń GeoJSON
-     * @return Odpowiedź z wejściami w kolejności karty
      */
-    public static BuildingCardResponse of(final BuildingCard card, final ObjectMapper mapper) {
-        return new BuildingCardResponse(
+    public BuildingCardResponse(final BuildingCard card, final ObjectMapper mapper) {
+        this(
             card.symbol(), card.name(), card.detailLevel(), mapper.readTree(card.outline()),
-            card.entrances().stream().map(item -> EntranceResponse.of(item, mapper)).toList()
+            card.entrances().stream().map(item -> new EntranceResponse(item, mapper)).toList()
         );
     }
 }

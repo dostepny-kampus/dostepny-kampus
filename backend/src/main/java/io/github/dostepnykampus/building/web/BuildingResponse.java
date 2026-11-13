@@ -31,14 +31,13 @@ public record BuildingResponse(
 ) {
 
     /**
-     * Buduje odpowiedź z budynku.
+     * Odpowiedź z budynku.
      *
      * @param building Budynek
      * @param mapper Parser konturu GeoJSON
-     * @return Odpowiedź z konturem jako drzewem JSON
      */
-    public static BuildingResponse of(final Building building, final ObjectMapper mapper) {
-        return new BuildingResponse(
+    public BuildingResponse(final Building building, final ObjectMapper mapper) {
+        this(
             building.symbol(), building.name(), building.detailLevel(),
             mapper.readTree(building.outline())
         );

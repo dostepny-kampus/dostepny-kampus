@@ -38,14 +38,13 @@ public record EntranceResponse(
 ) {
 
     /**
-     * Buduje odpowiedź z wejścia.
+     * Odpowiedź z wejścia.
      *
      * @param entrance Wejście
      * @param mapper Parser położenia GeoJSON
-     * @return Odpowiedź z położeniem jako drzewem JSON
      */
-    public static EntranceResponse of(final Entrance entrance, final ObjectMapper mapper) {
-        return new EntranceResponse(
+    public EntranceResponse(final Entrance entrance, final ObjectMapper mapper) {
+        this(
             entrance.id(), entrance.buildingSymbol(), entrance.name(), entrance.type(),
             entrance.main(), mapper.readTree(entrance.location()), entrance.marking()
         );

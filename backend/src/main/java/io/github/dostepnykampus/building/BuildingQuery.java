@@ -77,7 +77,7 @@ final class BuildingQuery {
             WHERE symbol = :symbol
             """
         ).param("symbol", symbol)
-            .query((rows, num) -> this.one(rows))
+            .query((rows, num) -> BuildingQuery.one(rows))
             .optional()
             .map(this::card);
     }
@@ -148,12 +148,12 @@ final class BuildingQuery {
         final SortedSet<String> sources = new TreeSet<>();
         while (rows.next()) {
             sources.add(BuildingQuery.text(rows, "source"));
-            found.add(this.one(rows));
+            found.add(BuildingQuery.one(rows));
         }
         return new BuildingList(String.join("; ", sources), found);
     }
 
-    private Building one(final ResultSet rows) throws SQLException {
+    private static Building one(final ResultSet rows) throws SQLException {
         return new Building(
             BuildingQuery.text(rows, "symbol"),
             rows.getString("name"),

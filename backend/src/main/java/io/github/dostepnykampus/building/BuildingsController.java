@@ -48,7 +48,7 @@ public final class BuildingsController {
      */
     @GetMapping("/buildings")
     BuildingListResponse listBuildings() {
-        return BuildingListResponse.of(this.query.listBuildings(), this.mapper);
+        return new BuildingListResponse(this.query.listBuildings(), this.mapper);
     }
 
     /**
@@ -81,7 +81,7 @@ public final class BuildingsController {
     @GetMapping("/buildings/{symbol}")
     BuildingCardResponse getBuilding(@PathVariable("symbol") final String symbol) {
         return this.query.building(symbol).map(
-            card -> BuildingCardResponse.of(card, this.mapper)
+            card -> new BuildingCardResponse(card, this.mapper)
         ).orElseThrow(
             () -> new MissingResource(String.format("Nie ma budynku %s", symbol))
         );

@@ -19,16 +19,15 @@ import tools.jackson.databind.ObjectMapper;
 public record BuildingListResponse(String source, List<BuildingResponse> buildings) {
 
     /**
-     * Buduje odpowiedź z listy budynków.
+     * Odpowiedź z listy budynków.
      *
      * @param list Lista budynków
      * @param mapper Parser konturów GeoJSON
-     * @return Odpowiedź w kolejności listy
      */
-    public static BuildingListResponse of(final BuildingList list, final ObjectMapper mapper) {
-        return new BuildingListResponse(
+    public BuildingListResponse(final BuildingList list, final ObjectMapper mapper) {
+        this(
             list.source(),
-            list.buildings().stream().map(item -> BuildingResponse.of(item, mapper)).toList()
+            list.buildings().stream().map(item -> new BuildingResponse(item, mapper)).toList()
         );
     }
 }
