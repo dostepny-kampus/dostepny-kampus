@@ -44,22 +44,17 @@ import kotlinx.coroutines.flow.filter
 import java.io.File
 
 /**
- * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie.
- * „Wstecz” w kroku 1 ze zdjęciem najpierw pyta o rezygnację; wstecz w pytaniu to „Wróć do zdjęcia”. Po wysłaniu
- * ekran pokazuje tylko potwierdzenie (`SENT`); z kroków końcowych zostaje krok 3, wysłanie.
- * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację.
- * Krok 1: „Zrób zdjęcie” otwiera aparat, a zdjęcie od razu prowadzi do kroku 2; po powrocie z kroku 2 jest „Dalej”.
- * Krok 2: grupa, a w konturze albo przy nieznanej pozycji pytanie o piętro; „Wstecz” z pytania wraca do grup.
- * Pozycja jest ustalana od kroku 1, więc krok 2 zwykle wie już, czy osoba stoi w budynku.
- * „Tak, zrezygnuj”: zdjęcie znika z telefonu, a zgłoszenie nie powstaje.
+ * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie; kroki przed
+ * wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1. Krok 1: „Zrób zdjęcie” otwiera
+ * aparat i prowadzi do kroku 2; „Wstecz” ze zdjęciem pyta o rezygnację, a „Tak, zrezygnuj” usuwa zdjęcie. Krok 2:
+ * grupa, a w konturze albo przy nieznanej pozycji pytanie o piętro. Krok 3: „Brak pozycji” ma „Spróbuj ponownie” i
+ * „Zrezygnuj”, a „Tak, zrezygnuj” otwiera mapę. Po wysłaniu ekran pokazuje tylko potwierdzenie (`SENT`).
  *
  * Wymagania: US4.1, NFR-27, BR-8, BR-14, BR-G2, UC7
  *
  * @param route krok z danymi wcześniejszych kroków
  * @param actions czynności nawigatora
  * @param modifier wymiary nadane przez aplikację
- * Krok 3: „Brak pozycji” ma „Spróbuj ponownie” i „Zrezygnuj”; „Tak, zrezygnuj” stamtąd otwiera mapę.
- *
  * @param models modele widoku podane z zewnątrz; brakujące z grafu Hilt
  */
 @Composable
