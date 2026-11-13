@@ -31,10 +31,12 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
 /**
  * Stan sceny mapy V1: co mapa pokazuje i jak odpowiada na gesty. Układ ekranu tylko go czyta i przekazuje gesty.
  *
+ * Wymagania: BR-G5, NFR-39
+ *
  * @property scene dane katalogu z zaznaczeniem; `null`, dopóki nie ma danych mapy
  * @property camera widok do pokazania: zapisany, na zaznaczonym wejściu albo startowy; nad arkuszem V2 zaznaczony
- *   budynek mieści się w wolnej części mapy, dopóki osoba nie ruszy mapy (decyzja 151); `null` bez danych
- * @property limits granice kamery dla terenu i rozmiaru mapy (BR-G5, NFR-39); `null` przed pomiarem mapy
+ *   budynek mieści się w wolnej części mapy, dopóki osoba nie ruszy mapy; `null` bez danych
+ * @property limits granice kamery dla terenu i rozmiaru mapy; `null` przed pomiarem mapy
  * @property cover czy arkusz V2 zasłania dół mapy i czy nad nim mieszczą się przyciski mapy
  * @param choices zapisywana lista budynków do wyboru
  * @param onCamera zapis widoku kamery po ruchu osoby, zob. [cameraKeeper]
@@ -50,10 +52,10 @@ internal class MapSceneState(
     /** Arkusz V2 zasłania dół mapy. */
     val isCovered: Boolean get() = cover != MapCover.NONE
 
-    /** Mapa ma miejsce na przyciski powiększania i przesuwania (NFR-53, decyzja 151). */
+    /** Mapa ma miejsce na przyciski powiększania i przesuwania. Wymagania: NFR-53 */
     val hasControls: Boolean get() = cover != MapCover.SHEET_WITHOUT_CONTROLS
 
-    /** Symbole budynków czekających na wybór w arkuszu „Który budynek?” (decyzja 85). */
+    /** Symbole budynków czekających na wybór w arkuszu „Który budynek?”. */
     val choice: List<String> get() = choices.value
 
     /** Zapisuje widok [idle] po geście osoby. */
@@ -61,14 +63,16 @@ internal class MapSceneState(
         onCamera(idle)
     }
 
-    /** Przesuwa kamerę przyciskiem na [next], w granicach terenu, także nad arkuszem V2 (NFR-53, BR-G5). */
+    /** Przesuwa kamerę przyciskiem na [next], w granicach terenu, także nad arkuszem V2. Wymagania: NFR-53, BR-G5 */
     fun move(next: MapCamera) {
         limits?.run { keep(clamp(next)) }
     }
 
     /**
      * Dotknięcie konturów [symbols]: jeden budynek otwiera [onBuilding], kilka czeka na wybór w arkuszu, a puste
-     * miejsce zgłasza [onEmpty] (decyzja 85, US2.8).
+     * miejsce zgłasza [onEmpty].
+     *
+     * Wymagania: US2.8
      */
     fun touch(symbols: List<String>, onBuilding: (String) -> Unit, onEmpty: () -> Unit) {
         when (symbols.size) {
@@ -92,9 +96,11 @@ internal class MapSceneState(
 
 /**
  * Stan sceny mapy z danych [layers], katalogu [catalog], zaznaczenia [focus] z trasy i nazwy terenu [area]
- * wybranego przez osobę (US1.7), dla mapy o rozmiarze [size] zasłoniętej od dołu arkuszem V2 na wysokość
+ * wybranego przez osobę, dla mapy o rozmiarze [size] zasłoniętej od dołu arkuszem V2 na wysokość
  * [cover]. Widok kamery i lista budynków do wyboru są zapisywane,
- * więc wracają po „Wstecz” z V2 i po obrocie ekranu (decyzja 83, NFR-22).
+ * więc wracają po „Wstecz” z V2 i po obrocie ekranu.
+ *
+ * Wymagania: US1.7, NFR-22
  */
 @Composable
 internal fun rememberMapSceneState(
@@ -130,8 +136,9 @@ internal fun rememberMapSceneState(
 }
 
 /**
- * Zasłonięcie mapy V1 przez arkusz V2. Nad arkuszem przyciski mapy stoją tylko przy co najmniej 300 dp wolnej mapy
- * (US2.8, NFR-53, decyzja 151).
+ * Zasłonięcie mapy V1 przez arkusz V2. Nad arkuszem przyciski mapy stoją tylko przy co najmniej 300 dp wolnej mapy.
+ *
+ * Wymagania: US2.8, NFR-53
  */
 internal enum class MapCover { NONE, SHEET, SHEET_WITHOUT_CONTROLS }
 
@@ -145,8 +152,8 @@ internal fun mapCover(isCovered: Boolean, hasControls: Boolean): MapCover =
 
 /**
  * Zapis widoku kamery po ruchu osoby. Nad arkuszem V2 ([isCovered]) widok trafia do [onCard], więc kamera nie
- * ustawia już budynku na nowo (decyzja 151). Trafia też do [onMap], bez dopełnienia arkusza, więc po zamknięciu
- * karty zostaje widok osoby, a widok sprzed karty wraca tylko wtedy, gdy osoba nie ruszyła mapy (decyzje 83 i 153).
+ * ustawia już budynku na nowo. Trafia też do [onMap], bez dopełnienia arkusza, więc po zamknięciu
+ * karty zostaje widok osoby, a widok sprzed karty wraca tylko wtedy, gdy osoba nie ruszyła mapy.
  */
 internal fun cameraKeeper(
     isCovered: Boolean,
@@ -160,7 +167,9 @@ internal fun cameraKeeper(
 
 /**
  * Zapisywany widok mapy nad arkuszem V2 budynku [building]: [fit], dopóki osoba nie ruszy mapy gestem albo
- * przyciskiem, potem jej widok (US2.8, NFR-53, decyzja 151). Inny budynek zaczyna od swojego [fit].
+ * przyciskiem, potem jej widok. Inny budynek zaczyna od swojego [fit].
+ *
+ * Wymagania: US2.8, NFR-53
  */
 @Composable
 internal fun rememberCardCamera(building: String?, fit: MapCamera?): CameraView {

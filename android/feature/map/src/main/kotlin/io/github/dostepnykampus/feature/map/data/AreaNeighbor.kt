@@ -10,7 +10,9 @@ import io.github.dostepnykampus.core.model.GeoPoint
 private const val EDGE_SLACK_DEGREES = 1e-5
 
 /**
- * Krawędź mapy, przy której stoi widok na granicy terenu (US1.7).
+ * Krawędź mapy, przy której stoi widok na granicy terenu.
+ *
+ * Wymagania: US1.7
  *
  * @property isReached czy punkt leży na tym brzegu prostokąta terenu albo za nim. Brzeg ma zapas około 1 m,
  *   bo widok zatrzymany gestem staje o ułamek stopnia przed nim
@@ -30,7 +32,9 @@ enum class MapEdge(internal val isReached: (CampusBounds, GeoPoint) -> Boolean) 
 }
 
 /**
- * Sąsiedni teren dla widoku na granicy wybranego terenu (US1.7).
+ * Sąsiedni teren dla widoku na granicy wybranego terenu.
+ *
+ * Wymagania: US1.7
  *
  * @property name nazwa terenu, np. „Wittigowo”
  * @property kilometers odległość od wybranego terenu w pełnych kilometrach, co najmniej 1
@@ -41,7 +45,9 @@ data class AreaNeighbor(val name: String, val kilometers: Int, val edge: MapEdge
 /**
  * Sąsiedni teren dla środka widoku [view] na terenie [current]: widok stoi na brzegu prostokąta terenu, a za tym
  * brzegiem leży środek innego terenu. Przy kilku wygrywa najbliższy. `null`, gdy widok nie stoi na brzegu albo
- * w tę stronę nie ma terenu (US1.7).
+ * w tę stronę nie ma terenu.
+ *
+ * Wymagania: US1.7
  */
 fun CampusMapData.areaNeighbor(current: MapArea, view: GeoPoint): AreaNeighbor? =
     MapEdge.entries

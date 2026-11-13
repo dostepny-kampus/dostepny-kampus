@@ -21,8 +21,10 @@ const val MAP_STATUS_BAR_TAG = "map-status-bar"
 
 /**
  * Tło systemowego paska stanu nad mapą, gdy nagłówka V1 nie ma, bo mapę przykrywa arkusz. Ma barwę nagłówka, więc
- * zegar i ikony paska nie leżą na podkładzie mapy i zachowują kontrast w motywie jasnym i ciemnym (NFR-16).
+ * zegar i ikony paska nie leżą na podkładzie mapy i zachowują kontrast w motywie jasnym i ciemnym.
  * Wysokość to górny odstęp [insets]; bez [isShown] tła nie ma.
+ *
+ * Wymagania: NFR-16
  */
 @Composable
 internal fun MapStatusBar(insets: WindowInsets, isShown: Boolean, modifier: Modifier = Modifier) {
