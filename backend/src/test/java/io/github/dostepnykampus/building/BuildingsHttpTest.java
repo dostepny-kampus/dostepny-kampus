@@ -23,7 +23,7 @@ import tools.jackson.databind.ObjectMapper;
 /**
  * Testy US1: GET /buildings zwraca budynki z konturem GeoJSON,
  * posortowane według symbolu, z atrybucją wszystkich źródeł konturów,
- * albo pustą listę z pustą atrybucją (#852).
+ * albo pustą listę z pustą atrybucją.
  *
  * <p>Każdy test zaczyna od pustej tabeli, bez budynków z pliku konturów;
  * transakcja testu przywraca je po teście.</p>

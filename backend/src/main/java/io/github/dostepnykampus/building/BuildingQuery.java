@@ -25,7 +25,7 @@ import tools.jackson.databind.ObjectMapper;
  * podpowiedź i budynek zapisany przy zgłoszeniu szybkim są zawsze równe
  * (BR-14). Atrybucja listy to wszystkie źródła konturów bez powtórzeń,
  * alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą atrybucję
- * (NFR-40, #852).
+ * (NFR-40).
  *
  * @since 0.1.0
  */

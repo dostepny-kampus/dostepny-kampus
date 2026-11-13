@@ -37,7 +37,7 @@ public class SubmissionService {
     /** Teren PWr, poza którym nowe zgłoszenie jest odrzucane (BR-G5). */
     private final CampusArea area;
 
-    /** Zdarzenie zapisanej edycji dla sprzątania zdjęć po zatwierdzeniu (#839). */
+    /** Zdarzenie zapisanej edycji dla sprzątania zdjęć po zatwierdzeniu. */
     private final ApplicationEventPublisher events;
 
     SubmissionService(
@@ -72,7 +72,7 @@ public class SubmissionService {
     /**
      * Zapisuje edycję zgłoszenia (BR-3, BR-10). Zapisana edycja idzie jako
      * zdarzenie, więc po zatwierdzeniu zdjęcia spoza nowej listy znikają z
-     * magazynu (#839).
+     * magazynu.
      *
      * @param command Komenda edycji
      * @return Wynik edycji

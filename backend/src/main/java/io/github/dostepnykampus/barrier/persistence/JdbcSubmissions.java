@@ -35,7 +35,7 @@ import tools.jackson.databind.ObjectMapper;
  * Adapter portów zgłoszeń na tabeli submissions (BR-9, BR-10, BR-18). Zapis
  * i edycja to pojedyncze atomowe zapytania, bez odczytu przed zapisem.
  * Zapisuje tylko treść JSON; rodzaj, budynek, punkt i piętro baza liczy
- * z niej w kolumnach generowanych, więc mają jedno źródło (#837). Klasa
+ * z niej w kolumnach generowanych, więc mają jedno źródło. Klasa
  * nie jest repozytorium Springa, bo proxy tłumaczące wyjątki nie powstaje
  * dla klasy finalnej, a JdbcClient tłumaczy wyjątki sam.
  *

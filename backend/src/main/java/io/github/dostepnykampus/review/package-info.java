@@ -9,8 +9,7 @@
  *
  * <p>Obsługuje kolejkę weryfikacji i decyzję Weryfikatora z powodem
  * odrzucenia (US10). Podgląd podobnych zgłoszeń (US10.1) należy do modułu
- * barrier, bo składa odpowiedź z wewnętrznego zapisu zgłoszenia w JSON
- * (#847).</p>
+ * barrier, bo składa odpowiedź z wewnętrznego zapisu zgłoszenia w JSON.</p>
  *
  * @since 0.1.0
  */

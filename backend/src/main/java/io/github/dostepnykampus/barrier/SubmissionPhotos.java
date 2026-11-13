@@ -30,7 +30,7 @@ import software.amazon.awssdk.core.exception.SdkException;
  * zastąpi. Wyścig przyjęty do sprintu 5 (weryfikator); S3 i SQL nie są atomowe.</p>
  *
  * <p>Po zatwierdzonej edycji zdjęcia spoza nowej listy photoIds znikają z
- * magazynu, więc nie zostają dane, których nikt nie może usunąć (#839).</p>
+ * magazynu, więc nie zostają dane, których nikt nie może usunąć.</p>
  *
  * @since 0.1.0
  */
@@ -102,7 +102,7 @@ final class SubmissionPhotos {
     /**
      * Usuwa z magazynu zdjęcia spoza listy photoIds zapisanej edycji. Działa
      * po zatwierdzeniu transakcji; błąd magazynu nie cofa edycji, trafia do
-     * logu (#839).
+     * logu.
      *
      * @param saved Zapisana edycja zgłoszenia
      */
