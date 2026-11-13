@@ -49,13 +49,13 @@ import org.maplibre.android.maps.MapLibreMap.OnCameraMoveStartedListener.REASON_
 import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
+import org.maplibre.android.module.http.HttpRequestUtil
 import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.FillLayer
 import org.maplibre.android.style.layers.LineLayer
 import org.maplibre.android.style.layers.PaintPropertyValue
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
-import org.maplibre.android.module.http.HttpRequestUtil
 
 private const val LABEL_TEXT_SP = 14f
 private const val LABEL_MAX_FONT_SCALE = 1.4f
@@ -121,7 +121,7 @@ object MapLibreMapView : CampusMapView {
         }
         map.FollowStyle(
             style = style,
-            labels = data.labels,
+            data = data,
             look = look,
             entrance = selection.entrance,
             images = images,
@@ -140,28 +140,23 @@ object MapLibreMapView : CampusMapView {
         AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
     }
 
-    /**
-     * Wczytuje styl [style] z obrazami podpisów [labels] i obrazami [images] tylko po zmianie stylu albo obrazów.
-     * Zaznaczenie [look] z podpisem wejścia [entrance] zmienia w wczytanym stylu filtry, barwy i dane jednego
-     * źródła, bez wczytywania stylu.
-     */
     @Composable
     private fun MapLibreMap?.FollowStyle(
         style: String,
-        labels: List<String>,
+        data: CampusMapData,
         look: SelectionLook,
         entrance: SelectedEntrance?,
         images: MapImages,
     ) {
         val map = this
         var loaded by remember { mutableStateOf<Style?>(null) }
-        val currentLabels by rememberUpdatedState(labels)
+        val currentData by rememberUpdatedState(data)
         val currentLook by rememberUpdatedState(look)
         val currentEntrance by rememberUpdatedState(entrance)
         DisposableEffect(map, style, images) {
             loaded = null
             map?.setStyle(styleBuilder(style)) { ready ->
-                ready.addMapImages(labels = currentLabels, images = images)
+                ready.addMapImages(labels = currentData.labels, images = images)
                 StyleTarget(ready).showSelection(currentLook, selectionImages(currentEntrance, images))
                 loaded = ready
             }
@@ -269,7 +264,7 @@ object MapLibreMapView : CampusMapView {
 
         private fun expressionOf(value: JsonElement): Expression =
             if (value is JsonArray) {
-                Expression.Converter.convert(value.toString())
+                Expression.Converter.convert(value.asStyleText())
             } else {
                 Expression.literal(value.jsonPrimitive.boolean)
             }

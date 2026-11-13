@@ -114,6 +114,9 @@ fun campusMapStyle(data: CampusMapData, selection: MapSelection, colors: MapStyl
     return style.toString()
 }
 
+/** Tekst JSON fragmentu stylu [this], bo MapLibre przyjmuje wyrażenia warstw tylko jako tekst. */
+internal fun JsonElement.asStyleText(): String = toString()
+
 /** Budowniczy stylu MapLibre z tekstu [style] z [campusMapStyle]; MapLibre przyjmuje styl tylko jako tekst. */
 internal fun styleBuilder(style: String): Style.Builder = Style.Builder().fromJson(style)
 

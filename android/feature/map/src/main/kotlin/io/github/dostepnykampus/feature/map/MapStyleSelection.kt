@@ -103,7 +103,7 @@ internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<Strin
     filter(layer = SELECTED_LAYER, filter = look.selectedFilter)
     filter(layer = ENTRANCES_LAYER, filter = look.entrancesFilter)
     filter(layer = CHOSEN_BARRIER_LAYER, filter = look.chosenBarrierFilter)
-    data(source = CHOSEN_SOURCE, geoJson = look.chosenEntrance.toString())
+    data(source = CHOSEN_SOURCE, geoJson = look.chosenEntrance.asStyleText())
 }
 
 /**
