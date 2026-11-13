@@ -17,7 +17,7 @@ import java.io.File
 class ModuleContentArchitectureTest {
     /** Moduły projektu mają kod produkcyjny. */
     @Test
-    fun infra_module_has_production_code() {
+    fun infra_module_has_code() {
         val root = projectRoot()
         assertEquals(emptyList<String>(), empty(root, modules(File(root, "settings.gradle.kts").readText())), HINT)
     }
@@ -37,10 +37,7 @@ class ModuleContentArchitectureTest {
 
     private fun modules(settings: String): List<String> = MODULE.findAll(settings).map { it.groupValues[1] }.toList()
 
-    private fun empty(
-        root: File,
-        modules: List<String>,
-    ): List<String> =
+    private fun empty(root: File, modules: List<String>): List<String> =
         modules.filter { module ->
             File(root, module.removePrefix(":").replace(':', '/') + "/src/main")
                 .walk()
