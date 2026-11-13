@@ -390,5 +390,56 @@ class CoverageDropTest(unittest.TestCase):
         self.assertIsNone(check_ids.git_show("HEAD", "nie/ma/takiego/pliku.md"))
 
 
+def specs(feature: str, tests: str = "") -> check_ids.Corpus:
+    """Zwraca korpus z plikiem `nowe.feature` o treści `feature` i testami Androida o treści `tests`."""
+    with tempfile.TemporaryDirectory() as root:
+        (Path(root) / "specs").mkdir()
+        (Path(root) / "specs" / "nowe.feature").write_text(feature, encoding="utf-8")
+        (Path(root) / "android" / "src" / "test").mkdir(parents=True)
+        (Path(root) / "android" / "src" / "test" / "NoweTest.kt").write_text(tests, encoding="utf-8")
+        return check_ids.collect(DATA / "brak", Path(root) / "specs", Path(root) / "android")
+
+
+OLD = "@aplikacja\nFunkcja: Nowe\n\n  Scenariusz: Stary\n    Jeżeli a\n    Wtedy b\n"
+NEW = OLD + "\n  Scenariusz: Nowy\n    Wtedy c\n"
+NEW_TEST = "// Scenariusz: nowe.feature: Nowy\n@Test\nfun n() = Unit\n"
+
+
+def unplanned(before: str, after: str, tests: str = "") -> list[str]:
+    """Zwraca nazwy scenariuszy z błędem „nowy albo zmieniony” między treścią `before` a `after`."""
+    findings = check_ids.unplanned_scenarios(specs(after, tests), specs(before))
+    return [f.message.rsplit(": ", 1)[1] for f in findings if f.level == "BŁĄD"]
+
+
+class NewScenarioTest(unittest.TestCase):
+    def test_new_scenario_without_test_and_task_tag_is_an_error(self) -> None:
+        self.assertEqual(unplanned(OLD, NEW), ["Nowy"])
+
+    def test_new_scenario_with_full_test_passes(self) -> None:
+        self.assertEqual(unplanned(OLD, NEW, NEW_TEST), [])
+        self.assertEqual(unplanned(OLD, NEW, NEW_TEST.replace("Scenariusz:", "Scenariusz (częściowo):")), ["Nowy"])
+
+    def test_new_scenario_with_task_tag_passes(self) -> None:
+        tagged = NEW.replace("  Scenariusz: Nowy", "  # test w #5\n  @do-zrobienia\n  Scenariusz: Nowy")
+        self.assertEqual(unplanned(OLD, tagged), [])
+
+    def test_unchanged_scenario_without_test_is_not_an_error(self) -> None:
+        self.assertEqual(unplanned(OLD, OLD), [])
+        self.assertEqual(unplanned(OLD, OLD.replace("@aplikacja\n", "@aplikacja @US1.1\n")), [])
+
+    def test_changed_steps_or_examples_make_the_scenario_new(self) -> None:
+        self.assertEqual(unplanned(OLD, OLD.replace("Wtedy b", "Wtedy c")), ["Stary"])
+        table = OLD.replace("Scenariusz: Stary", "Szablon scenariusza: Stary") + "    Przykłady:\n      | x |\n      | 1 |\n"
+        self.assertEqual(unplanned(table, table.replace("| 1 |", "| 2 |")), ["Stary"])
+
+    def test_unreadable_revision_gives_no_baseline(self) -> None:
+        self.assertIsNone(check_ids.baseline_specs("nie-ma-takiej-rewizji", "specs"))
+
+    def test_scenario_keeps_its_requirement_tags_and_body(self) -> None:
+        corpus = specs(OLD.replace("  Scenariusz: Stary", "  @US1.1\n  Scenariusz: Stary"))
+        self.assertEqual([s.name for s in corpus.scenarios["US1.1"]], ["Stary"])
+        self.assertEqual(corpus.bodies[("nowe.feature", "Stary")], ["Jeżeli a", "Wtedy b"])
+
+
 if __name__ == "__main__":
     unittest.main()
