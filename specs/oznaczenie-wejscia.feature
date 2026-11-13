@@ -9,7 +9,7 @@ Funkcja: Oznaczenie wejścia
     # Dane testowe, a nie stan faktyczny budynku B-8.
     Oraz w danych testowych wejście boczne B-8 nie ma informacji o dostępności ani w danych PWr, ani w OpenStreetMap
 
-  @US14.1
+  @US14.1 @aplikacja @serwer
   Szablon scenariusza: Bez roli Zbierającego zmiany oznaczenia wejścia nie da się złożyć
     Zakładając, że osoba jest zalogowana tylko z rolą <rola>
     Jeżeli przejrzy dostępne ekrany aplikacji
@@ -24,7 +24,7 @@ Funkcja: Oznaczenie wejścia
 
   Reguła: Import nadaje oznaczenie z danych, a bez danych „brak danych”
 
-    @US17.1 @US17.3 @US2.1
+    @US17.1 @US17.3 @US2.1 @aplikacja
     Szablon scenariusza: Import nadaje wejściu oznaczenie z danych PWr
       Zakładając, że dane PWr opisują <wejście> A-1 jako <opis>
       Jeżeli 3.11.2026 zakończy się import budynków
@@ -36,7 +36,7 @@ Funkcja: Oznaczenie wejścia
         | wejście główne | wejście ze schodami   | niedostępne |
         | inne wejście   | wejście dostosowane   | dostępne    |
 
-    @US17.1 @US17.3 @US2.1
+    @US17.1 @US17.3 @US2.1 @aplikacja
     Scenariusz: Import bez danych daje oznaczenie „brak danych”
       Jeżeli 3.11.2026 zakończy się import budynków
       Wtedy na karcie budynku B-8 wejście boczne ma napis „brak danych” i ikonę
@@ -46,14 +46,14 @@ Funkcja: Oznaczenie wejścia
 
   Reguła: Wspólną datę i źródło ekran podaje raz, a różne przy każdym wejściu
 
-    @US17.3
+    @US17.3 @aplikacja
     Scenariusz: Wspólna data i źródło stoją raz nad listą wejść
       Zakładając, że wszystkie wejścia A-1 mają oznaczenie z datą 3.11.2026 i źródłem „import”
       Jeżeli Gość niezalogowany otworzy kartę budynku A-1
       Wtedy nad listą wejść widnieje jeden wiersz z datą 3.11.2026 i źródłem „import”
       Ale przy wejściach nie ma osobnej daty ani źródła
 
-    @US17.3
+    @US17.3 @aplikacja
     Scenariusz: Różne źródła stoją przy każdym wejściu
       Zakładając, że wejście główne A-1 ma oznaczenie z datą 12.11.2026 i źródłem „obchód”
       Oraz pozostałe wejścia A-1 mają oznaczenie z datą 3.11.2026 i źródłem „import”
@@ -67,7 +67,7 @@ Funkcja: Oznaczenie wejścia
       Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
       Oraz pierwszy i drugi Weryfikator są zalogowani z rolą Weryfikatora
 
-    @US17.2 @BR-9
+    @US17.2 @BR-9 @aplikacja
     Scenariusz: Zmiana oznaczenia wejścia przechodzi te same statusy co zgłoszenie
       Zakładając, że wejście boczne B-8 ma oznaczenie „brak danych”
       Oraz telefon nie ma sieci
@@ -77,13 +77,13 @@ Funkcja: Oznaczenie wejścia
       Wtedy zgłoszenie zmiany oznaczenia ma status „wysłane” i jest w kolejce weryfikacji
       Oraz wejście boczne B-8 nadal ma oznaczenie „brak danych”
 
-    @US17.2 @BR-7
+    @US17.2 @BR-7 @aplikacja
     Scenariusz: Zmiany oznaczenia wejścia nie da się zapisać bez zdjęcia
       Jeżeli Zbierający wybierze dla wejścia bocznego B-8 oznaczenie „dostępne” i nie zrobi zdjęcia
       Wtedy aplikacja wskazuje brak zdjęcia i nie zapisuje zgłoszenia
       Ale nie pyta o typ bariery ani uciążliwość
 
-    @US17.2 @US17.3
+    @US17.2 @US17.3 @serwer
     Scenariusz: Przyjęta zmiana zmienia oznaczenie, datę i źródło na karcie budynku
       Zakładając, że wejście boczne B-8 ma oznaczenie „brak danych” ze źródłem „import”
       Oraz Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne” z nowym zdjęciem
@@ -93,7 +93,7 @@ Funkcja: Oznaczenie wejścia
       Oraz przy tym wejściu widnieje data oznaczenia 12.11.2026 i źródło „obchód”
       Ale zgłoszenie zmiany oznaczenia nie jest widoczne na mapie ani w eksporcie
 
-    @US17.2 @US17.3
+    @US17.2 @US17.3 @serwer
     Scenariusz: Zmiana może potwierdzić dotychczasowe oznaczenie
       Zakładając, że wejście główne A-1 ma oznaczenie „niedostępne” z datą 3.11.2026 i źródłem „import”
       Oraz Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne” z nowym zdjęciem
@@ -101,7 +101,7 @@ Funkcja: Oznaczenie wejścia
       Wtedy wejście główne A-1 nadal ma oznaczenie „niedostępne”
       Oraz przy tym wejściu widnieje data oznaczenia 12.11.2026 i źródło „obchód”
 
-    @US17.2 @BR-16
+    @US17.2 @BR-16 @serwer
     Scenariusz: Odrzucona zmiana nie zmienia oznaczenia wejścia
       Zakładając, że inne wejście A-1 ma oznaczenie „dostępne” z datą 3.11.2026 i źródłem „import”
       Oraz Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne” ze zdjęciem innego miejsca
@@ -110,7 +110,7 @@ Funkcja: Oznaczenie wejścia
       Oraz inne wejście A-1 nadal ma oznaczenie „dostępne” z datą 3.11.2026 i źródłem „import”
       Oraz Zbierający widzi powód odrzucenia na liście swoich zgłoszeń
 
-    @US17.2 @US10.5 @BR-4
+    @US17.2 @US10.5 @BR-4 @serwer
     Scenariusz: Weryfikator nie sprawdza zmiany oznaczenia, którą sam złożył
       Zakładając, że pierwszy Weryfikator ma też rolę Zbierającego
       Oraz jako Zbierający wysłał zmianę oznaczenia wejścia bocznego B-8 na „dostępne”
@@ -119,7 +119,7 @@ Funkcja: Oznaczenie wejścia
       Oraz próba przyjęcia tej zmiany przez pierwszego Weryfikatora z pominięciem aplikacji jest odrzucona
       Ale drugi Weryfikator widzi tę zmianę w swojej kolejce
 
-    @US17.2 @BR-23
+    @US17.2 @BR-23 @serwer
     Scenariusz: Po przyjęciu jednej zmiany wejścia drugą czekającą odrzuca się jako „nieaktualne”
       Zakładając, że Zbierający wysłał zmianę oznaczenia wejścia bocznego B-8 na „dostępne”
       Oraz inny Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne”

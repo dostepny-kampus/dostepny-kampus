@@ -7,7 +7,7 @@ Funkcja: Eksport zgłoszeń przyjętych do QGIS
     Zakładając, że Koordynator jest zalogowany z rolą Koordynatora
     Oraz przy wejściu głównym A-1 jest przyjęte zgłoszenie TB-1 „schody przy wejściu” z uciążliwością 3
 
-  @US13.1
+  @US13.1 @serwer
   Scenariusz: Plik GeoJSON otwiera się w QGIS bez ustawiania układu współrzędnych
     Jeżeli Koordynator pobierze eksport GeoJSON
     Oraz otworzy plik w QGIS
@@ -15,7 +15,7 @@ Funkcja: Eksport zgłoszeń przyjętych do QGIS
     Oraz plik ma współrzędne w WGS84
     Oraz bariera TB-1 leży przy wejściu głównym A-1 na podkładzie OpenStreetMap
 
-  @US13.2
+  @US13.2 @serwer
   Scenariusz: Plik CSV ma współrzędne w PUWG 1992 i otwiera się jako warstwa punktów
     Jeżeli Koordynator pobierze eksport CSV
     Oraz otworzy plik w QGIS ze wskazanym układem EPSG:2180
@@ -23,7 +23,7 @@ Funkcja: Eksport zgłoszeń przyjętych do QGIS
     Oraz bariera TB-1 leży przy wejściu głównym A-1
     Oraz typ „schody przy wejściu” ma polskie znaki bez zniekształceń
 
-  @US13.3 @BR-22 @BR-6
+  @US13.3 @BR-22 @BR-6 @serwer
   Szablon scenariusza: Eksport zawiera tylko bieżące zgłoszenia przyjęte
     Zakładając, że w budynku C-13 jest zgłoszenie TB-13 „próg” ze statusem „<status>”
     Jeżeli Koordynator pobierze eksport <format>
@@ -38,14 +38,14 @@ Funkcja: Eksport zgłoszeń przyjętych do QGIS
       | odrzucone     | GeoJSON | nie występuje   |
       | archiwalne    | CSV     | nie występuje   |
 
-  @US13.3 @BR-22 @BR-19
+  @US13.3 @BR-22 @BR-19 @serwer
   Scenariusz: Bariera usunięta nie trafia do eksportu
     Zakładając, że przyjęto zgłoszenie „bariera usunięta” dla niesprawnej windy TB-9 w budynku D-2
     Jeżeli Koordynator pobierze eksport GeoJSON
     Wtedy w pliku nie ma niesprawnej windy z budynku D-2
     Oraz w pliku jest bariera TB-1 przy wejściu głównym A-1
 
-  @US13.3 @BR-6
+  @US13.3 @BR-6 @serwer
   Szablon scenariusza: Eksport nie zawiera danych autora
     Jeżeli Koordynator pobierze eksport <format>
     Wtedy w pliku nie ma imienia, adresu e-mail, identyfikatora konta ani pseudonimu autora
