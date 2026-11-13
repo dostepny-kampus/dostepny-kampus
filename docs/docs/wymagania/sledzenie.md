@@ -193,7 +193,9 @@ Reguły BR-1…BR-6 opisuje strona [Role i uprawnienia](../biznes/role.md), pozo
 
 ## Scenariusze i testy
 
-Każdy scenariusz ma mieć test Androida ze znacznikiem w KDoc tuż nad funkcją testu:
+Każdy scenariusz ma tag warstwy, w której jest sprawdzany: `@aplikacja`, gdy kroki „Wtedy” opisują to, co osoba widzi albo co zostaje w telefonie, i `@serwer`, gdy opisują to, co rozstrzyga serwer: odrzucenie próby, stan zgłoszenia, wynik obliczony na serwerze albo plik eksportu. Scenariusz ma oba tagi, gdy kroki „Wtedy” mówią wprost o obu stronach, na przykład „nie widzi ekranu” i „próba z pominięciem aplikacji jest odrzucona”.
+
+Scenariusz z tagiem `@aplikacja` ma mieć test Androida ze znacznikiem w KDoc tuż nad funkcją testu:
 
 - pełny: `/** Scenariusz: <plik>.feature: <nazwa scenariusza> */`,
 - tylko część kroków „Wtedy”: `/** Scenariusz (częściowo): <plik>.feature: <nazwa scenariusza> */`.
