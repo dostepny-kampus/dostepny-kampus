@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
@@ -62,6 +61,7 @@ private val SERVER_LABELS = listOf("A-1")
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapGeometryFlowTest {
     private val calls = AtomicInteger()
+    private val viewModels = TestViewModels()
 
     @BeforeEach
     fun main() {
@@ -70,7 +70,7 @@ class MapGeometryFlowTest {
 
     @AfterEach
     fun reset() {
-        Dispatchers.resetMain()
+        viewModels.resetMain()
     }
 
     /**
@@ -243,10 +243,16 @@ class MapGeometryFlowTest {
         }
     }
 
-    private inline fun withPool(threads: Int, block: (CoroutineDispatcher) -> Unit) {
+    private suspend inline fun withPool(threads: Int, block: (CoroutineDispatcher) -> Unit) {
         val pool = Executors.newFixedThreadPool(threads)
         try {
-            pool.asCoroutineDispatcher().use(block)
+            pool.asCoroutineDispatcher().use { compute ->
+                try {
+                    block(compute)
+                } finally {
+                    viewModels.cancelAndJoin()
+                }
+            }
         } finally {
             pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
         }
@@ -262,13 +268,16 @@ class MapGeometryFlowTest {
             calls.incrementAndGet()
             campusMapData(catalog)
         },
-    ) = CampusMapViewModel(
-        repository = repository,
-        networkStatus = { flowOf(true) },
-        mapListChoice = TestMapListChoice(),
-        computeContext = compute,
-        geometry = geometry,
-    )
+    ) =
+        viewModels.keep(
+            CampusMapViewModel(
+                repository = repository,
+                networkStatus = { flowOf(true) },
+                mapListChoice = TestMapListChoice(),
+                computeContext = compute,
+                geometry = geometry,
+            ),
+        )
 
     private fun factoryOf(repository: BuildingCatalogRepository, compute: CoroutineContext) =
         viewModelFactory { initializer { viewModelOf(repository, compute) } }

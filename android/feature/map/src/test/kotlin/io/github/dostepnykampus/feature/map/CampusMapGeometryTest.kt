@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
@@ -47,6 +46,7 @@ private const val OUTLINES = 5
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class CampusMapGeometryTest {
+    private val viewModels = TestViewModels()
     private val online = MutableStateFlow(true)
     private val saved = MutableStateFlow<Boolean?>(null)
     private val choice =
@@ -73,7 +73,7 @@ class CampusMapGeometryTest {
 
     @AfterEach
     fun reset() {
-        Dispatchers.resetMain()
+        viewModels.resetMain()
     }
 
     private fun counting(catalog: BuildingCatalog): CampusMapData {
@@ -83,12 +83,14 @@ class CampusMapGeometryTest {
     }
 
     private fun viewModelOf(compute: CoroutineContext) =
-        CampusMapViewModel(
-            repository = repository,
-            networkStatus = { online },
-            mapListChoice = choice,
-            computeContext = compute,
-            geometry = ::counting,
+        viewModels.keep(
+            CampusMapViewModel(
+                repository = repository,
+                networkStatus = { online },
+                mapListChoice = choice,
+                computeContext = compute,
+                geometry = ::counting,
+            ),
         )
 
     private suspend fun CampusMapViewModel.ready(): CampusMapUiState = uiState.first { it.mapData != null }
@@ -106,12 +108,20 @@ class CampusMapGeometryTest {
             val pool = Executors.newSingleThreadExecutor { Thread(it, COMPUTE_THREAD) }
             try {
                 pool.asCoroutineDispatcher().use { compute ->
-                    val viewModel = viewModelOf(compute)
-                    val state = viewModel.ready()
-                    val name = thread.get().substringBefore(" @coroutine")
-                    assertEquals(COMPUTE_THREAD, name, "geometria liczona poza kontekstem obliczeń")
-                    assertNotEquals(Thread.currentThread().name, thread.get())
-                    assertEquals(state.catalog?.let(::campusMapData), state.mapData, "stan bez gotowych danych mapy")
+                    try {
+                        val viewModel = viewModelOf(compute)
+                        val state = viewModel.ready()
+                        val name = thread.get().substringBefore(" @coroutine")
+                        assertEquals(COMPUTE_THREAD, name, "geometria liczona poza kontekstem obliczeń")
+                        assertNotEquals(Thread.currentThread().name, thread.get())
+                        assertEquals(
+                            state.catalog?.let(::campusMapData),
+                            state.mapData,
+                            "stan bez gotowych danych mapy",
+                        )
+                    } finally {
+                        viewModels.cancelAndJoin()
+                    }
                 }
             } finally {
                 pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
