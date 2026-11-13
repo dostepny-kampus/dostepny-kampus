@@ -109,7 +109,7 @@ class SubmissionsApiTest {
         val response = MockResponse().setResponseCode(200).setHeader("Content-Type", "image/jpeg")
         server.enqueue(response.setBody(Buffer().write(jpeg)))
         val result = blocking { photo(submissionId = ID, photoId = PHOTO) }
-        assertArrayEquals(jpeg, assertInstanceOf(ApiResult.Success::class.java, result).value)
+        assertArrayEquals(jpeg, (result as ApiResult.Success).value)
         val recorded = server.takeRequest()
         assertEquals("GET", recorded.method)
         assertEquals("/submissions/$ID/photos/$PHOTO", recorded.path)
