@@ -77,7 +77,8 @@ class OwnHistoryTest {
 
     /**
      * Serwer zapisał treść, ale telefon nie dostał odpowiedzi: ponawia to samo id i treść, potem wysyła zdjęcie.
-     * Scenariusz (częściowo): synchronizacja.feature: Przerwana synchronizacja nie gubi zgłoszenia i nie tworzy drugiego
+     * Scenariusz (częściowo): synchronizacja.feature: Przerwana synchronizacja
+     *   nie gubi zgłoszenia i nie tworzy drugiego
      */
     @Test
     fun `br9 zgubiona odpowiedź`() =
@@ -99,8 +100,9 @@ class OwnHistoryTest {
 
             assertFalse(target.sendAll())
             assertEquals(setOf(ID), remote.keys)
-            assertEquals(ID, store.rows.single().submission.id)
-            assertFalse(store.rows.single().submission.isCreatedOnServer)
+            val pending = store.rows.single().submission
+            assertEquals(ID, pending.id)
+            assertFalse(pending.isCreatedOnServer)
             assertTrue(store.photos.isEmpty())
             assertTrue(File(photos.single().path).exists())
             assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state)
