@@ -59,4 +59,9 @@ dependencies {
     testImplementation(libs.robolectric.annotations)
     testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.androidx.compose.ui.test.manifest)
+    constraints {
+        implementation(libs.androidx.core.ktx) {
+            because("Core zawiera rozszerzenia Kotlin; starszy Core KTX dubluje klasy.")
+        }
+    }
 }

@@ -4,10 +4,10 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
-# Wymagany check `budowanie`: zielony tylko, gdy testy, APK i emulatory zakończyły się sukcesem.
-# Wejście ze zmiennych środowiskowych: ZMIANY, WYNIKI (testy apk emulator). Po scaleniu (push) check nie działa:
+# Wymagany check `budowanie`: zielony tylko, gdy testy, APK, emulatory i analiza zależności zakończyły się sukcesem.
+# Wejście ze zmiennych środowiskowych: ZMIANY, WYNIKI (testy apk emulator analiza-zaleznosci). Po scaleniu (push) check nie działa:
 # commit sprawdziła grupa kolejki, a zadanie po scaleniu tylko przekłada cache.
-echo "zmiany: ${ZMIANY}; testy, apk, emulator: ${WYNIKI}"
+echo "zmiany: ${ZMIANY}; testy, apk, emulator, analiza zależności: ${WYNIKI}"
 if [[ $ZMIANY != success && $ZMIANY != skipped ]]; then
   echo "::error title=Android::Zadanie zmiany zakończyło się wynikiem ${ZMIANY}."
   exit 1

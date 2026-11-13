@@ -15,17 +15,18 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
+import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.campusMapData
-import io.github.dostepnykampus.feature.map.data.selection
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-/** Styl mapy V1 w kompozycji: buduje go zmiana danych, zaznaczenia albo barw, a nie ruch kamery. */
+/** Styl mapy V1 w kompozycji: buduje go zmiana danych, terenu albo barw, a nie zaznaczenie ani ruch kamery. */
 @RunWith(RobolectricTestRunner::class)
 class MapStyleRememberTest {
     @get:Rule
@@ -58,12 +59,27 @@ class MapStyleRememberTest {
         }
     }
 
-    /** Zmiana danych, zaznaczenia i motywu daje za każdym razem nowy styl. */
+    /** Zmiana zaznaczonego budynku, wejścia i bariery nie buduje stylu drugi raz. Wymagania: US1.1, US1.5, US3.3 */
+    @Test
+    fun selection_keeps_style() {
+        show()
+        val entrance = SelectedEntrance(id = "w1", location = a, label = "Główne", buildingSymbol = "C-13")
+        compose.runOnIdle { selection = selection.copy(building = "C-13") }
+        compose.runOnIdle { selection = selection.copy(entrance = entrance) }
+        compose.runOnIdle { selection = selection.copy(barrier = "b1") }
+        compose.runOnIdle {
+            assertEquals(1, builds.size)
+            assertEquals(styles.first(), styles.last())
+        }
+    }
+
+    /** Zmiana danych, terenu i motywu daje za każdym razem nowy styl. */
     @Test
     fun change_rebuilds_style() {
         show()
+        val area = CampusBounds(west = 0.0, south = 0.0, east = 1.0, north = 1.0)
         compose.runOnIdle { data = dataOf(building, other) }
-        compose.runOnIdle { selection = data.selection(building = "C-14") }
+        compose.runOnIdle { selection = MapSelection(bounds = area) }
         compose.runOnIdle { colors = day.copy(isNight = true) }
         compose.runOnIdle {
             assertEquals(4, builds.size)
@@ -76,8 +92,8 @@ class MapStyleRememberTest {
         compose.setContent {
             val seen = camera
             val style =
-                rememberMapStyle(data = data, selection = selection, colors = colors) { mapData, chosen, palette ->
-                    campusMapStyle(data = mapData, selection = chosen, colors = palette).also(builds::add)
+                rememberMapStyle(data = data, bounds = selection.bounds, colors = colors) { mapData, area, palette ->
+                    campusMapStyle(mapData, MapSelection(bounds = area), palette).also(builds::add)
                 }
             SideEffect {
                 cameras += seen
