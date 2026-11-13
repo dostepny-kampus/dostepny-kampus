@@ -56,9 +56,10 @@ class MeasuredPlaceTest {
     }
 
     /**
-     * Wiersz: C1 po pomiarze, punkt przesunięty w B-8, w A-1 i przed wejściem A-1 poza budynkiem → miejsce zgłoszenia
-     *   ma nowe położenie i oznaczenie „korekta ręczna”. Gest na mapie C1 dochodzi w #1273.
+     * Przekazuje skorygowany punkt do zgłoszenia z oznaczeniem korekty ręcznej.
      * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Korekta punktu na mapie w każdym budynku i poza budynkiem
+     *
+     * Wymagania: US6.4
      */
     @Test
     fun us6_4_corrected_point() {
