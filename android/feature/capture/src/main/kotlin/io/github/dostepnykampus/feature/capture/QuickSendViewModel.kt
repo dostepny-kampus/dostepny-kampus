@@ -11,10 +11,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.network.NetworkStatus
-import io.github.dostepnykampus.core.data.reports.QuickPosition
-import io.github.dostepnykampus.core.data.reports.QuickReport
-import io.github.dostepnykampus.core.data.reports.ReportSaver
-import io.github.dostepnykampus.core.data.reports.content
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource

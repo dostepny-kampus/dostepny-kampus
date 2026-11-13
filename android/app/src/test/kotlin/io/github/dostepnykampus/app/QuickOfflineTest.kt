@@ -16,9 +16,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.BuildingFloors
-import io.github.dostepnykampus.core.data.di.ReportSaverModule
 import io.github.dostepnykampus.core.data.network.NetworkStatus
-import io.github.dostepnykampus.core.data.reports.QuickReport
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
@@ -33,8 +31,10 @@ import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.feature.capture.BuildingLookup
 import io.github.dostepnykampus.feature.capture.QuickLookup
+import io.github.dostepnykampus.feature.capture.QuickReport
 import io.github.dostepnykampus.feature.capture.QuickSendStage
 import io.github.dostepnykampus.feature.capture.QuickSendViewModel
+import io.github.dostepnykampus.feature.capture.ReportSaverModule
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals

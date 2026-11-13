@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.buildings.BuildingFloors
-import io.github.dostepnykampus.core.data.reports.ReportSaver
+import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submissions.SaveRefusal
 import io.github.dostepnykampus.core.data.submissions.SaveRefusedException
@@ -23,6 +23,24 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
+
+/**
+ * Zapis zgłoszenia w kolejce telefonu; w aplikacji to `SubmissionQueue.save` albo `saveEdit`.
+ *
+ * Wymagania: NFR-5, US9.1
+ */
+fun interface ReportSaver {
+    /**
+     * Zapisuje treść i zdjęcia; rzuca [IOException] albo [SQLiteException], gdy telefon nie może zapisać.
+     *
+     * Wymagania: NFR-7, US8.3
+     *
+     * @param content treść zgłoszenia
+     * @param photos zdjęcia zgłoszenia
+     * @param edited poprawiane zgłoszenie z C3 albo `null` dla nowego
+     */
+    suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>, edited: EditedSubmission?)
+}
 
 /**
  * Model widoku formularza C2 „Opisz barierę”. W czasie zapisu i po nim etap ustala tylko zapis, więc

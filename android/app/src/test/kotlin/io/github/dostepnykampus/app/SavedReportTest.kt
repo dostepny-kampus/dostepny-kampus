@@ -16,7 +16,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.core.data.di.DataModule
-import io.github.dostepnykampus.core.data.di.ReportSaverModule
 import io.github.dostepnykampus.core.data.submissions.OwnStatuses
 import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
@@ -38,6 +37,7 @@ import io.github.dostepnykampus.feature.capture.ReportFloor
 import io.github.dostepnykampus.feature.capture.ReportForm
 import io.github.dostepnykampus.feature.capture.ReportFormViewModel
 import io.github.dostepnykampus.feature.capture.ReportPlace
+import io.github.dostepnykampus.feature.capture.ReportSaverModule
 import io.github.dostepnykampus.feature.capture.ReportStage
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf

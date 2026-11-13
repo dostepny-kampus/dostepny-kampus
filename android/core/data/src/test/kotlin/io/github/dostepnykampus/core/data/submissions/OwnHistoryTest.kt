@@ -38,6 +38,15 @@ class OwnHistoryTest {
     private var photoAttempts = 0
 
     @Test
+    fun `wynik zapisu wskazuje wiersz`() =
+        runBlocking {
+            val saved: SavedSubmission = queue().save(precise(), photo())
+            assertEquals(ID, saved.id)
+            assertEquals(saved.id, store.all().single().submission.id)
+            assertEquals(saved.id, history.rows.getValue(saved.id).id)
+        }
+
+    @Test
     fun `us8 zapis to W telefonie`() =
         runBlocking {
             queue().save(precise(), photo())

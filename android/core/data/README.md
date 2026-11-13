@@ -6,8 +6,8 @@ Udostępnia dane aplikacji przez repozytoria i kolejkę wysyłki.
 
 ## API
 
-Pakiet `reports` udostępnia `ReportSaver`, `QuickReport`, `QuickPosition` i zamianę na `SubmissionContent`.
-Zapis zgłoszenia zwraca `Unit`; repozytoria udostępniają odczyty katalogu, zgłoszeń oraz stanu sieci.
+`SubmissionQueue.save` zwraca `SavedSubmission` z identyfikatorem zgłoszenia, bez encji Room.
+Repozytoria udostępniają odczyty katalogu, zgłoszeń oraz stanu sieci.
 
 ## Od kogo zależy
 

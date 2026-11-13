@@ -8,7 +8,6 @@ package io.github.dostepnykampus.feature.capture
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.network.NetworkStatus
-import io.github.dostepnykampus.core.data.reports.QuickReport
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix

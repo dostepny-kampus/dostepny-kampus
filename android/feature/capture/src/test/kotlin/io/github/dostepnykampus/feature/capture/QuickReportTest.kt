@@ -5,9 +5,6 @@
  */
 package io.github.dostepnykampus.feature.capture
 
-import io.github.dostepnykampus.core.data.reports.QuickPosition
-import io.github.dostepnykampus.core.data.reports.QuickReport
-import io.github.dostepnykampus.core.data.reports.content
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
