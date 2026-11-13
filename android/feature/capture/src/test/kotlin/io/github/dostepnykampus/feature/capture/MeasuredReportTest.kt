@@ -37,7 +37,9 @@ import org.junit.jupiter.api.Test
 
 /**
  * Cała ścieżka od pomiaru C1 do zapisanego zgłoszenia: pomiar podpowiada budynek, Zbierający decyduje, „Dalej”
- * przekazuje miejsce do formularza C2, a „Zapisz” oddaje treść zgłoszenia (US6.2, BR-G2).
+ * przekazuje miejsce do formularza C2, a „Zapisz” oddaje treść zgłoszenia.
+ *
+ * Wymagania: US6.2, BR-G2
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MeasuredReportTest {

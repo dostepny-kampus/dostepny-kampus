@@ -26,7 +26,11 @@ import java.io.IOException
 
 private const val CAMERA_QUALITY = 95
 
-/** Plik z aparatu przekodowany przez plik tymczasowy: mniejszy JPEG, a pusty plik nie udaje zdjęcia (US7.1, NFR-34). */
+/**
+ * Plik z aparatu przekodowany przez plik tymczasowy: mniejszy JPEG, a pusty plik nie udaje zdjęcia.
+ *
+ * Wymagania: US7.1, NFR-34
+ */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class PhotoShrinkTest {

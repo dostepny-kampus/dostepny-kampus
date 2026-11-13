@@ -19,7 +19,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Krok 3 V4 i potwierdzenie: podsumowanie, zdanie o miejscu i podziękowanie (US4.1, US4.4, US4.5). */
+/** Krok 3 V4 i potwierdzenie: podsumowanie, zdanie o miejscu i podziękowanie. Wymagania: US4.1, US4.4, US4.5 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class QuickSendStepTest {
@@ -37,7 +37,7 @@ class QuickSendStepTest {
         }
     }
 
-    /** Wiersz: V4 krok 3 → grupa, piętro i „Dołączymy miejsce, w którym teraz stoisz.”, US4.1, US4.5. */
+    /** Wiersz: V4 krok 3 → grupa, piętro i „Dołączymy miejsce, w którym teraz stoisz.”. Wymagania: US4.1, US4.5 */
     @Test
     fun us4_1_summary_with_floor() {
         val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS, floorNumber = 2)
@@ -47,14 +47,14 @@ class QuickSendStepTest {
         compose.onNodeWithText("Dołączymy miejsce, w którym teraz stoisz.").assertIsDisplayed()
     }
 
-    /** Wiersz: V4 krok 3, „Nie wiem” → podsumowanie z „Nie wiem”, US4.5. */
+    /** Wiersz: V4 krok 3, „Nie wiem” → podsumowanie z „Nie wiem”. Wymagania: US4.5 */
     @Test
     fun us4_5_unknown_floor() {
         show(QuickReport(photo = photo, group = BarrierGroup.TOILETS), isFloorAsked = true, lookup = here)
         compose.onNodeWithText("Nie wiem").assertIsDisplayed()
     }
 
-    /** Wiersz: V4 krok 3, pozycja jeszcze nieznana → „Ustalamy, gdzie jesteś…”, NFR-23. */
+    /** Wiersz: V4 krok 3, pozycja jeszcze nieznana → „Ustalamy, gdzie jesteś…”. Wymagania: NFR-23 */
     @Test
     fun nfr23_position_pending() {
         val report = QuickReport(photo = photo, group = BarrierGroup.OTHER)
@@ -63,7 +63,7 @@ class QuickSendStepTest {
         compose.onNodeWithText("Nie wiem").assertDoesNotExist()
     }
 
-    /** Wiersz: V4 brak pozycji → komunikat, co zrobić, zamiast „Ustalamy…”; grupa zostaje, UC7 4c. */
+    /** Wiersz: V4 brak pozycji → komunikat, co zrobić, zamiast „Ustalamy…”; grupa zostaje. Wymagania: UC7 */
     @Test
     fun uc7_4c_position_lost() {
         show(QuickReport(photo = photo, group = BarrierGroup.TOILETS), isFloorAsked = false, lookup = QuickLookup.Lost)
@@ -72,7 +72,7 @@ class QuickSendStepTest {
         compose.onNodeWithText("Ustalamy, gdzie jesteś…").assertDoesNotExist()
     }
 
-    /** Wiersz: V4 potwierdzenie → zgłoszenie trafi do weryfikacji, US4.4. */
+    /** Wiersz: V4 potwierdzenie → zgłoszenie trafi do weryfikacji. Wymagania: US4.4 */
     @Test
     fun us4_4_thank_you() {
         compose.setContent { DostepnyKampusTheme { QuickSentMessage() } }
