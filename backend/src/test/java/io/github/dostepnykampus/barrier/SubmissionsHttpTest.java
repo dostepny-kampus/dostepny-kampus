@@ -82,6 +82,9 @@ final class SubmissionsHttpTest {
      * Ponowiony POST zwraca zapisane zgłoszenie bez drugiego wiersza (BR-9).
      * Scenariusz (częściowo): synchronizacja.feature: Przerwana synchronizacja
      * nie gubi zgłoszenia i nie tworzy drugiego
+     *
+     * @param context Kontekst aplikacji z bazą danych
+     * @throws Exception Gdy nie uda się wykonać żądania HTTP
      */
     @Test
     void brNineReturnsSavedSubmissionOnRetry(final WebApplicationContext context)
