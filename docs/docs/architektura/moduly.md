@@ -100,7 +100,7 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | brak cykli i dostępu do wnętrza cudzego modułu serwera | `ModularityTest.infraVerifiesModuleBoundaries` |
 | moduł serwera ma kod i opis, bez stałej listy nazw | #1320 |
 | pakiet główny i lista podpakietów `shared` | #1321 |
-| jawna lista zależności modułu serwera | #1322 |
+| jawna lista zależności modułu serwera | `ModularityTest` (`modulesDeclareAllowedDependencies`, `infraVerifiesModuleBoundaries`) |
 | korzeń modułu serwera zawiera tylko API | #1443 |
 | `domain` bez frameworków, na `persistence` zależy tylko `persistence` | `BarrierArchitectureTest` (A-1…A-9), dziś tylko `barrier` |
 | kierunek i nazwy warstw w każdym module serwera | #1325 |
