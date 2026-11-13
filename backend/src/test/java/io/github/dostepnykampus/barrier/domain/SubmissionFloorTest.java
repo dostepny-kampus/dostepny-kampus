@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Piętro zgłoszenia (BR-G1): dowolna kombinacja pól jest dozwolona,
+ * Piętro zgłoszenia: dowolna kombinacja pól jest dozwolona,
  * a piętro rozpoznane to takie z identyfikatorem albo numerem.
+ *
+ * <p>Wymagania: BR-G1</p>
  *
  * @since 0.1.0
  */

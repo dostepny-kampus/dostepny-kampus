@@ -10,9 +10,11 @@ import org.junit.jupiter.api.Test;
 import tools.jackson.databind.exc.MismatchedInputException;
 
 /**
- * Typy pól treści zgłoszenia w JSON (US4, US7): nieznany rodzaj, zdjęcie bez
+ * Typy pól treści zgłoszenia w JSON: nieznany rodzaj, zdjęcie bez
  * UUID, liczba zamiast symbolu budynku i ciało, które nie jest obiektem,
  * kończą wiązanie błędem.
+ *
+ * <p>Wymagania: US4, US7</p>
  *
  * @since 0.1.0
  */

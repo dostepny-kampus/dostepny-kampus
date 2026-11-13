@@ -25,9 +25,11 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Testy US1.3, US4, US8.1, US8.3, BR-6, BR-9 i BR-10: kontroler zgłoszeń
+ * Kontroler zgłoszeń
  * odpowiada błędami application/problem+json, a w odpowiedziach pomija
  * pola puste. Transakcja testu wycofuje zapisane wiersze.
+ *
+ * <p>Wymagania: US1.3, US4, US8.1, US8.3, BR-6, BR-9, BR-10</p>
  *
  * @since 0.1.0
  */

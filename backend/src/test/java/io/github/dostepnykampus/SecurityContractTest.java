@@ -24,12 +24,14 @@ import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.JsonNode;
 
 /**
- * Zabezpieczenia operacji według kontraktu {@code api/openapi.yaml} (NFR-33, US14.1).
+ * Zabezpieczenia operacji według kontraktu {@code api/openapi.yaml}.
  *
  * <p>Test czyta {@code security} operacji albo wpis globalny. Pusta lista albo wariant
  * {@code {}} to dostęp bez tokenu, kilka wpisów z rolami to którakolwiek z nich, a pusta lista
  * ról to dowolna zalogowana osoba. Operacja zamknięta odpowiada 401 bez tokenu i 403 dla roli
  * spoza kontraktu. Operacje bez handlera też są sprawdzane: serwer zna ich reguły.</p>
+ *
+ * <p>Wymagania: NFR-33, US14.1</p>
  *
  * @since 0.1.0
  */

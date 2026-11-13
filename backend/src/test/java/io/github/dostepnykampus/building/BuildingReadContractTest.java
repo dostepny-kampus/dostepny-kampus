@@ -22,12 +22,14 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Kontrakt odczytu budynku: pełne metadane wejść (US17.3), wejście główne
- * przed pozostałymi (US2.1) i próg podpowiedzi 50 m (BR-G4).
+ * Kontrakt odczytu budynku: pełne metadane wejść, wejście główne
+ * przed pozostałymi i próg podpowiedzi 50 m.
  *
  * <p>Geometria przy równiku jest niezależna od danych kampusu. Punkty
  * oddalone o 49 i 51 m od północnej krawędzi powstają przez ST_Project;
  * margines jednego metra nie zależy od zaokrąglenia na granicy 50 m.</p>
+ *
+ * <p>Wymagania: US17.3, US2.1, BR-G4</p>
  *
  * @since 0.1.0
  */

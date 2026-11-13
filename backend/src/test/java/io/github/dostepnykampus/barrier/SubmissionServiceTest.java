@@ -33,8 +33,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Usługa zapisu zgłoszeń (BR-14, BR-G2, BR-9, BR-10): budynek zgłoszenia
+ * Usługa zapisu zgłoszeń: budynek zgłoszenia
  * szybkiego ustala serwer z konturu, wyniki portu zapisu wracają bez zmian.
+ *
+ * <p>Wymagania: BR-14, BR-G2, BR-9, BR-10</p>
  *
  * @since 0.1.0
  */

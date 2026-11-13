@@ -40,7 +40,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 /**
  * Ustawienia magazynu zdjęć (ADR-0009): plik {@code application.yaml}
  * ze zmiennymi środowiskowymi, jeden rekord {@code dk.photos}, czytelny
- * błąd startu przy złej wartości i klucze ukryte w tekście (NFR-35).
+ * błąd startu przy złej wartości i klucze ukryte w tekście.
+ *
+ * <p>Wymagania: NFR-35</p>
  *
  * @since 0.1.0
  */

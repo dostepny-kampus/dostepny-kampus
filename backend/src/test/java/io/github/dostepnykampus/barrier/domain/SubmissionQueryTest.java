@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Zapytanie o listę zgłoszeń (US8): statusy i opcjonalne filtry.
+ * Zapytanie o listę zgłoszeń: statusy i opcjonalne filtry.
+ *
+ * <p>Wymagania: US8</p>
  *
  * @since 0.1.0
  */

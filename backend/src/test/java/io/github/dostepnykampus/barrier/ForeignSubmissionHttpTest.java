@@ -19,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Testy BR-3 i US14.1: Zbierający nie zmienia cudzego zgłoszenia ani nie
+ * Zbierający nie zmienia cudzego zgłoszenia ani nie
  * dodaje do niego zdjęcia; serwer odpowiada 403 i niczego nie zapisuje.
+ *
+ * <p>Wymagania: BR-3, US14.1</p>
  *
  * @since 0.1.0
  */

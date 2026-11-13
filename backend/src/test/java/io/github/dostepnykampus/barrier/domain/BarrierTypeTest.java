@@ -11,8 +11,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Typ bariery z klasyfikacji TB-1…TB-29 (US7.3): kod ze wzorca schematu
+ * Typ bariery z klasyfikacji TB-1…TB-29: kod ze wzorca schematu
  * BarrierType w OpenAPI, numer i typ „inna bariera”.
+ *
+ * <p>Wymagania: US7.3</p>
  *
  * @since 0.1.0
  */

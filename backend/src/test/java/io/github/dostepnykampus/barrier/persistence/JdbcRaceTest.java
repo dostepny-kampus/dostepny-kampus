@@ -28,7 +28,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Dwie równoległe edycje tej samej wersji, kolejność wymuszona blokadą wiersza (BR-10).
+ * Dwie równoległe edycje tej samej wersji, kolejność wymuszona blokadą wiersza.
+ *
+ * <p>Wymagania: BR-10</p>
  *
  * @since 0.1.0
  */

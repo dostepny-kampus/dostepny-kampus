@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Szczegóły bariery (US7): zakres uciążliwości i długość opisu.
+ * Szczegóły bariery: zakres uciążliwości i długość opisu.
+ *
+ * <p>Wymagania: US7</p>
  *
  * @since 0.1.0
  */

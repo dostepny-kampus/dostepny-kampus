@@ -22,8 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Testy BR-5: zgłoszenie nieprzyjęte i jego zdjęcie widzi po logowaniu autor
+ * Zgłoszenie nieprzyjęte i jego zdjęcie widzi po logowaniu autor
  * i Weryfikator; inna osoba i osoba bez tokenu dostają 404 jak przy braku.
+ *
+ * <p>Wymagania: BR-5</p>
  *
  * @since 0.1.0
  */

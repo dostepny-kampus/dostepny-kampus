@@ -21,7 +21,9 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Zapis przez HTTP bez transakcji testowej: retry i konflikty zachowują
- * treść, a poprawna edycja zapisuje treść i wersję (BR-3, BR-9, BR-10).
+ * treść, a poprawna edycja zapisuje treść i wersję.
+ *
+ * <p>Wymagania: BR-3, BR-9, BR-10</p>
  *
  * @since 0.1.0
  */

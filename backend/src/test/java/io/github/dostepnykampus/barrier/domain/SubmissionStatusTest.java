@@ -14,8 +14,10 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Reguły statusu zgłoszenia po wszystkich wartościach enumu: edycja
- * przed decyzją i po odrzuceniu (BR-3, BR-18), status po edycji
- * i widoczność publiczna (BR-6).
+ * przed decyzją i po odrzuceniu, status po edycji
+ * i widoczność publiczna.
+ *
+ * <p>Wymagania: BR-3, BR-18, BR-6</p>
  *
  * @since 0.1.0
  */

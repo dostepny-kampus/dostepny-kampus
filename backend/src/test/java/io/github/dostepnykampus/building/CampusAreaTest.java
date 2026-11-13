@@ -14,12 +14,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
- * Teren PWr to wszystko do 500 m od konturu budynku (BR-G5): punkt 400 m od
+ * Teren PWr to wszystko do 500 m od konturu budynku: punkt 400 m od
  * budynku leży na terenie, a punkt 600 m od każdego budynku poza nim.
  *
  * <p>Oba punkty leżą na zachód od kampusu głównego. Odległość od najbliższego
  * konturu liczy w teście ta sama baza, z dokładnością do 50 m, więc test
  * pokazuje, że punkty są w odległości z nazwy.</p>
+ *
+ * <p>Wymagania: BR-G5</p>
  *
  * @since 0.1.0
  */
