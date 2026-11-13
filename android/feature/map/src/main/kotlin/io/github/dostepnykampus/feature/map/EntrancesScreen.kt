@@ -30,8 +30,10 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.EntranceMarking
 
 /**
- * V3 „Którędy wejść” (US3, BR-25): jedno zdanie i tylko wejścia dostępne, zalecane pierwsze.
+ * V3 „Którędy wejść”: jedno zdanie i tylko wejścia dostępne, zalecane pierwsze.
  * „Pokaż wejście na mapie” zaznacza to wejście na V1. Nieznany symbol: jak karta, „budynku nie ma w telefonie”.
+ *
+ * Wymagania: US3, BR-25
  *
  * @param symbol symbol z trasy, także w nagłówku w trakcie wczytywania
  * @param onShowEntrance „Pokaż wejście na mapie” dla identyfikatora wejścia

@@ -66,33 +66,35 @@ private val ClearIcon =
     pathIcon("M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z")
 
 /**
- * Góra V1: nagłówek „Mapa kampusu”, pole symbolu budynku, przełącznik „Mapa” i „Lista budynków” (NFR-19) i wynik
- * pod nimi (US1.1). Pole przyjmuje zapis „c13” i szuka bez sieci w katalogu z aplikacji. Wynik to ten sam przycisk
+ * Góra V1: nagłówek „Mapa kampusu”, pole symbolu budynku, przełącznik „Mapa” i „Lista budynków” i wynik
+ * pod nimi. Pole przyjmuje zapis „c13” i szuka bez sieci w katalogu z aplikacji. Wynik to ten sam przycisk
  * co w arkuszu „Który budynek?”: symbol, nazwa z danych i „Budynek C-13”. Tekst, który nie jest symbolem budynku,
- * np. „A-1 329”, daje stan „brak wyniku” (decyzja 82) z przyciskiem „Lista budynków” (UC1 3a). Komunikat stoi pod
+ * np. „A-1 329”, daje stan „brak wyniku” z przyciskiem „Lista budynków”. Komunikat stoi pod
  * polem, więc osoba widzi go tam, gdzie pisała (WCAG 3.3.1), a TalkBack czyta go sam. Przy liście pole zawęża listę
  * zamiast pokazywać wynik.
  * Przy liście wynik to sama lista, więc pod polem zostaje tylko karta „brak wyniku”.
  *
  * Nagłówek, pole i przełącznik stoją na tle powierzchni ekranu. Przełącznik „Mapa” i „Lista budynków” pokazuje
- * wybraną pozycję tłem i ptaszkiem, nie tylko kolorem (NFR-19, NFR-21); przy dużej czcionce widać „Lista”, a
- * TalkBack dalej czyta „Lista budynków” (NFR-20). Pole ma kształt kapsuły z lupą, a „×” z nazwą „Wyczyść pole”
- * pojawia się po wpisaniu tekstu (NFR-53, NFR-18). Wynik albo karta „brak wyniku” stoi pod przełącznikiem i linią
+ * wybraną pozycję tłem i ptaszkiem, nie tylko kolorem; przy dużej czcionce widać „Lista”, a
+ * TalkBack dalej czyta „Lista budynków”. Pole ma kształt kapsuły z lupą, a „×” z nazwą „Wyczyść pole”
+ * pojawia się po wpisaniu tekstu. Wynik albo karta „brak wyniku” stoi pod przełącznikiem i linią
  * „Bez internetu”; karta mówi „Nie znaleźliśmy budynku »X«.”, daje radę i przycisk „Lista budynków” w białym
- * kontenerze pod polem (UC1 3a, PW-9), a przy liście przycisku nie ma, bo lista już jest. Lista ma budynki
- * w kolejności katalogu, jak wynik pola, a wpisany symbol zawęża ją (NFR-19, US2.5). Lupa i „×” to ikony
+ * kontenerze pod polem (PW-9), a przy liście przycisku nie ma, bo lista już jest. Lista ma budynki
+ * w kolejności katalogu, jak wynik pola, a wpisany symbol zawęża ją. Lupa i „×” to ikony
  * Material Icons na siatce 24 × 24, jak ikony paska dolnego.
  *
+ * Wymagania: NFR-19, US1.1, UC1, NFR-21, NFR-20, NFR-53, NFR-18, US2.5, NFR-11, US1.8, NFR-15
+ *
  * @param catalog katalog budynków; `null`, dopóki się wczytuje
- * @param search wynik wyszukiwania z modelu widoku; ekran pokazuje go tylko dla zapytania z pola (NFR-11, #1053)
+ * @param search wynik wyszukiwania z modelu widoku; ekran pokazuje go tylko dla zapytania z pola
  * @param onSearch nowe zapytanie z pola, do policzenia w modelu widoku
  * @param isOnline czy jest internet; bez niego pod przełącznikiem stoi [OfflineLine]
- * @param syncedAt chwila pobrania najstarszych danych z serwera do daty w [OfflineLine] (#1127)
+ * @param syncedAt chwila pobrania najstarszych danych z serwera do daty w [OfflineLine]
  * @param isList czy przełącznik stoi na „Lista budynków”; wtedy pod górą jest lista budynków
- * @param areas tereny w kolejności nagłówków listy budynków (US1.8)
+ * @param areas tereny w kolejności nagłówków listy budynków
  * @param onListChange wybór w przełączniku albo „Lista budynków” w karcie brak wyniku
  * @param onBuildingClick symbol wybranego wyniku albo budynku z listy; ekran otwiera V2 i zaznacza budynek. Wybór
- *   zdejmuje fokus z pola i chowa klawiaturę ekranową, a pierwsze „Wstecz” zamyka V2 (US1.1, NFR-15)
+ *   zdejmuje fokus z pola i chowa klawiaturę ekranową, a pierwsze „Wstecz” zamyka V2
  * @param modifier położenie nad mapą; przy liście cała wysokość nad paskiem dolnym
  */
 @Composable
