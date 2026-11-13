@@ -28,18 +28,20 @@ import tools.jackson.databind.node.ArrayNode;
 
 /**
  * Budynki i ich wejścia z pliku konturów OpenStreetMap w tabelach
- * buildings i entrances (US1, US17.1, ADR-0008).
+ * buildings i entrances (ADR-0008).
  *
  * <p>Migracja powtarzalna: Flyway wykonuje ją przy pierwszym starcie
  * i ponownie po zmianie pliku lub wersji importu zapisanej w sumie kontrolnej.
  * Kontury z tym samym symbolem tworzą jeden wielokąt złożony, a kontur
  * z kilkoma symbolami daje osobny budynek dla każdego symbolu, tak jak
  * w aplikacji. Nazwą budynku jest pole display_name z pliku: nazwa gotowa
- * do pokazania obok symbolu, bez powtórzonego symbolu (US2).
+ * do pokazania obok symbolu, bez powtórzonego symbolu.
  * Regułę stosuje skrypt danych, więc serwer i aplikacja mają tę samą nazwę,
  * a budynek bez tego pola nie ma nazwy.
  * Istniejący budynek dostaje nowy kontur, nazwę i atrybucję, a poziom
  * szczegółowości zostaje bez zmian.</p>
+ *
+ * <p>Wymagania: US1, US17.1, US2</p>
  *
  * @since 0.1.0
  */

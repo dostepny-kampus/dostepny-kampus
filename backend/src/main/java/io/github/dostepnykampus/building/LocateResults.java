@@ -9,7 +9,9 @@ import io.github.dostepnykampus.building.locate.Placement;
 
 /**
  * Jedyne miejsce, w którym położenie punktu staje się odpowiedzią REST
- * LocateResult; brak symbolu pojawia się dopiero tutaj, na granicy (BR-G4).
+ * LocateResult; brak symbolu pojawia się dopiero tutaj, na granicy.
+ *
+ * <p>Wymagania: BR-G4</p>
  *
  * @since 0.1.0
  */
