@@ -186,13 +186,13 @@ class KdocMarkersTest(unittest.TestCase):
 def table_rows(page: str) -> list[list[str]]:
     """Zwraca komórki wierszy tabel Markdown ze strony `page` (bez nagłówków i separatorów)."""
     rows = [check_ids.table_cells(line) for line in page.splitlines()]
-    return [r for r in rows if r and r[0] not in ("Stan", "Plik")]
+    return [r for r in rows if r and r[0] not in ("Warstwa", "Plik")]
 
 
 class CoverageTest(unittest.TestCase):
     def test_duplicate_scenario_name_in_one_file_is_an_error(self) -> None:
         with tempfile.TemporaryDirectory() as specs:
-            feature = "Funkcja: Dwa razy\n\n  Scenariusz: Taki sam\n    Wtedy a\n\n  Scenariusz: Taki sam\n    Wtedy b\n"
+            feature = "@aplikacja\nFunkcja: Dwa razy\n  Scenariusz: Taki sam\n    Wtedy a\n\n  Scenariusz: Taki sam\n    Wtedy b\n"
             (Path(specs) / "dwa.feature").write_text(feature, encoding="utf-8")
             corpus = check_ids.collect(DATA / "brak", Path(specs), DATA / "brak")
         errors = [f for f in check_ids.check_tests(corpus) if f.level == "BŁĄD"]
@@ -202,8 +202,8 @@ class CoverageTest(unittest.TestCase):
     def test_coverage_page_lists_counts_and_tests_of_each_scenario(self) -> None:
         corpus = check_ids.collect(DATA / "brak", DATA / "scenariusze", DATA / "android-poprawne")
         rows = table_rows(check_ids.render_coverage(corpus))
-        self.assertEqual(rows[:3], [["Pełny test", "5"], ["Tylko częściowo", "1"], ["Bez testu", "1"]])
-        by_name = {r[1]: (r[0], r[3], r[4]) for r in rows[3:]}
+        self.assertEqual(rows[:2], [["Aplikacja", "5", "1", "1"], ["Serwer", "0", "0", "0"]])
+        by_name = {r[1]: (r[0], r[4], r[5]) for r in rows[2:]}
         self.assertEqual(len(by_name), 7)
         both = "`PoprawneTest.calosc`<br>`PoprawneTest.wyszukanie`"
         self.assertEqual(by_name["Częściowo i w całości"], ("`kampus.feature`", both, "pełny"))
@@ -247,7 +247,7 @@ class CoverageTest(unittest.TestCase):
 
     def test_coverage_table_is_not_padded(self) -> None:
         page = check_ids.render_coverage(check_ids.collect(DATA / "brak", DATA / "scenariusze", DATA / "android-poprawne"))
-        self.assertIn("| `kampus.feature` | Bez testu | — | — | brak |", page.splitlines())
+        self.assertIn("| `kampus.feature` | Bez testu | — | aplikacja | — | brak |", page.splitlines())
         self.assertNotIn("  |", page)
 
     def test_check_matrix_fails_when_coverage_page_is_stale_or_missing(self) -> None:
@@ -261,6 +261,49 @@ class CoverageTest(unittest.TestCase):
             self.assertIn(f"nieaktualne albo brak: {coverage}; odśwież", output.getvalue())
             coverage.unlink()
             self.assertEqual(check_ids.main([*args, "--check-matrix", page]), 1)
+
+
+LAYERED = (
+    "Funkcja: Warstwy\n\n  @aplikacja\n  Scenariusz: W aplikacji\n    Wtedy a\n\n  @serwer\n  Scenariusz: Na serwerze\n"
+    "    Wtedy b\n\n  @aplikacja @serwer\n  Scenariusz: W obu\n    Wtedy c\n\n  Scenariusz: Bez warstwy\n    Wtedy d\n"
+)
+
+
+def layered(tests: str) -> check_ids.Corpus:
+    """Zwraca korpus z plikiem `warstwy.feature` (LAYERED) i testami Androida o treści `tests`."""
+    with tempfile.TemporaryDirectory() as root:
+        (Path(root) / "specs").mkdir()
+        (Path(root) / "specs" / "warstwy.feature").write_text(LAYERED, encoding="utf-8")
+        (Path(root) / "android" / "src" / "test").mkdir(parents=True)
+        (Path(root) / "android" / "src" / "test" / "WarstwyTest.kt").write_text(tests, encoding="utf-8")
+        return check_ids.collect(DATA / "brak", Path(root) / "specs", Path(root) / "android")
+
+
+def layer_marker(name: str, function: str) -> str:
+    """Zwraca test Kotlin ze znacznikiem pełnego pokrycia scenariusza `name` z pliku `warstwy.feature`."""
+    return f"// Scenariusz: warstwy.feature: {name}\n@Test\nfun {function}() = Unit\n\n"
+
+
+class LayersTest(unittest.TestCase):
+    def test_scenario_without_layer_tag_is_an_error_with_its_place(self) -> None:
+        errors = [f for f in check_ids.check_tests(layered("")) if f.level == "BŁĄD"]
+        self.assertEqual(lines_of(errors), [15])
+        self.assertIn("scenariusz bez tagu warstwy (@aplikacja albo @serwer): Bez warstwy", errors[0].message)
+
+    def test_summary_counts_each_layer_separately(self) -> None:
+        rows = table_rows(check_ids.render_coverage(layered(layer_marker("W aplikacji", "a"))))
+        self.assertEqual(rows[:2], [["Aplikacja", "1", "0", "2"], ["Serwer", "0", "0", "2"]])
+        self.assertEqual([r[3] for r in rows[2:]], ["aplikacja", "serwer", "aplikacja, serwer", "—"])
+
+    def test_two_layer_scenario_with_app_test_only_is_partial(self) -> None:
+        rows = table_rows(check_ids.render_coverage(layered(layer_marker("W obu", "o"))))
+        self.assertEqual({r[1]: r[5] for r in rows[2:]}["W obu"], "częściowo")
+        self.assertEqual(rows[:2], [["Aplikacja", "1", "0", "2"], ["Serwer", "0", "0", "2"]])
+
+    def test_android_marker_on_server_only_scenario_is_an_error(self) -> None:
+        findings = check_ids.check_tests(layered(layer_marker("Na serwerze", "s")))
+        found = [(f.level, f.message) for f in findings if "Androida" in f.message]
+        self.assertEqual(found, [("BŁĄD", "znacznik testu Androida przy scenariuszu bez tagu @aplikacja: Na serwerze")])
 
 
 if __name__ == "__main__":

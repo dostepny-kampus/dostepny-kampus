@@ -47,13 +47,17 @@ SCENARIO_KEYWORDS = ("Scenario Outline", "Scenario Template", "Scenario", "Examp
 EXAMPLES_KEYWORDS = ("Examples", "Scenarios", "Przykłady")
 SCREEN_PAGE = Path("ux") / "wymagania-ekranow.md"
 COVERAGE_PAGE = Path("_generated") / "pokrycie-testami.md"
-COVERAGE_HEADER = ["Plik", "Scenariusz", "Kryteria i reguły", "Test", "Stan"]
+COVERAGE_HEADER = ["Plik", "Scenariusz", "Kryteria i reguły", "Warstwa", "Test", "Stan"]
+LAYERS = (("aplikacja", "Aplikacja"), ("serwer", "Serwer"))
+LAYER_NAMES = dict(LAYERS)
 COVERAGE_COUNTS = (("Pełny test", "pełny"), ("Tylko częściowo", "częściowo"), ("Bez testu", "brak"))
 COVERAGE_INTRO = """# Pokrycie scenariuszy testami
 
-Jeden wiersz to jeden scenariusz z katalogu `specs/`. Kolumna „Test” wskazuje testy Androida ze znacznikiem
-`Scenariusz:` w KDoc (moduł, klasa i funkcja testu). Stan „pełny” znaczy, że test sprawdza wszystkie kroki „Wtedy”,
-„częściowo” — tylko część z nich, a „brak” — że scenariusz nie ma testu.
+Jeden wiersz to jeden scenariusz z katalogu `specs/`. Kolumna „Warstwa” mówi, gdzie scenariusz jest sprawdzany
+(tag `@aplikacja` albo `@serwer`). Kolumna „Test” wskazuje testy Androida ze znacznikiem `Scenariusz:` w KDoc
+(moduł, klasa i funkcja testu). Stan „pełny” znaczy, że test sprawdza wszystkie kroki „Wtedy” w każdej warstwie
+scenariusza, „częściowo” — tylko część z nich albo tylko jedną z dwóch warstw, a „brak” — że scenariusz nie ma
+testu. Pierwsza tabela liczy scenariusze osobno w każdej warstwie; scenariusz z dwiema warstwami jest w obu wierszach.
 
 Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą śledzenia:
 `python scripts/check_ids.py --matrix docs/wymagania/sledzenie.md`.
@@ -89,11 +93,12 @@ class Location:
 
 @dataclass(frozen=True)
 class Scenario:
-    """Scenariusz Gherkin z nazwą i miejscem definicji."""
+    """Scenariusz Gherkin z nazwą, miejscem definicji i warstwami z tagów `@aplikacja`, `@serwer` (w kolejności LAYERS)."""
 
     name: str
     location: Location
     feature: str = ""
+    layers: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -306,7 +311,7 @@ def keyword_of(line: str, keywords: tuple[str, ...]) -> str | None:
 
 
 def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
-    """Dodaje do `corpus` scenariusze i ich tagi-ID z pliku .feature (tagi funkcji i reguły są dziedziczone).
+    """Dodaje do `corpus` scenariusze, ich tagi-ID i warstwy z pliku .feature (tagi funkcji i reguły są dziedziczone).
 
     `feature` to ścieżka pliku względna do katalogu scenariuszy, jak w znaczniku testu (domyślnie nazwa pliku).
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
@@ -318,22 +323,27 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
     feature_tags: list[str] = []
     rule_tags: list[str] = []
     pending: list[tuple[str, Location]] = []
+    layers: dict[str, set[str]] = {"feature": set(), "rule": set(), "pending": set()}
     for number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         line = raw.strip()
         if line.startswith("@"):
             pending += [(t, Location(rel, number)) for t in TAG_RE.findall(line) if ID_FULL.fullmatch(t)]
+            layers["pending"] |= {t for t in TAG_RE.findall(line) if t in LAYER_NAMES}
             continue
         if line.startswith("#") or not line:
             continue
-        tags = [t for t, _ in pending]
+        tags, own = [t for t, _ in pending], layers["pending"]
         corpus.references.extend(pending)
-        pending = []
+        pending, layers["pending"] = [], set()
         if keyword_of(line, FEATURE_KEYWORDS) is not None:
             feature_tags, rule_tags = tags, []
+            layers["feature"], layers["rule"] = own, set()
         elif keyword_of(line, RULE_KEYWORDS) is not None:
-            rule_tags = tags
+            rule_tags, layers["rule"] = tags, own
         elif (name := keyword_of(line, SCENARIO_KEYWORDS)) is not None:
-            scenario = Scenario(name or "(bez nazwy)", Location(rel, number), feature)
+            found = layers["feature"] | layers["rule"] | own
+            ordered = tuple(layer for layer, _ in LAYERS if layer in found)
+            scenario = Scenario(name or "(bez nazwy)", Location(rel, number), feature, ordered)
             corpus.all_scenarios.append(scenario)
             for tag in dict.fromkeys(feature_tags + rule_tags + tags):
                 corpus.scenarios[tag].append(scenario)
@@ -610,7 +620,8 @@ def check_tests(corpus: Corpus, release: bool = False) -> list[Finding]:
     to „UWAGA”. Żaden z nich nie pokrywa scenariusza. Dwa scenariusze o tej samej nazwie w jednym pliku to „BŁĄD”
     (znacznik byłby niejednoznaczny). Scenariusz bez testu i scenariusz tylko z testami „częściowo” to „UWAGI”
     w dwóch osobnych listach, a w trybie `release` — „BŁĘDY”. Ten sam identyfikator testu u dwóch różnych funkcji
-    to „BŁĄD” (wiersz tabeli pokrycia byłby niejednoznaczny).
+    to „BŁĄD” (wiersz tabeli pokrycia byłby niejednoznaczny). Scenariusz bez tagu warstwy (`@aplikacja`, `@serwer`)
+    to „BŁĄD”, tak samo znacznik testu Androida przy scenariuszu bez tagu `@aplikacja`.
     """
     form = "znacznik niezgodny ze wzorem „// Scenariusz: <plik>.feature: <nazwa>”"
     findings = [Finding("BŁĄD", str(loc), form) for loc in corpus.bad_markers]
@@ -619,6 +630,11 @@ def check_tests(corpus: Corpus, release: bool = False) -> list[Finding]:
         if (twin := first.setdefault((scenario.feature, scenario.name), scenario)) is not scenario:
             line = twin.location.line
             message = f"scenariusz o tej samej nazwie co w linii {line}, znacznik byłby niejednoznaczny: {scenario.name}"
+            findings.append(Finding("BŁĄD", str(scenario.location), message))
+    layer_tags = " albo ".join(f"@{layer}" for layer, _ in LAYERS)
+    for scenario in corpus.all_scenarios:
+        if not scenario.layers:
+            message = f"scenariusz bez tagu warstwy ({layer_tags}): {scenario.name}"
             findings.append(Finding("BŁĄD", str(scenario.location), message))
     names = set(first)
     for marker in corpus.markers:
@@ -631,6 +647,8 @@ def check_tests(corpus: Corpus, release: bool = False) -> list[Finding]:
             problem = "znacznik nie stoi tuż nad funkcją testu"
         elif marker.test == "wyłączony":
             severity, problem = "UWAGA", f"test wyłączony, nie pokrywa scenariusza: {marker.scenario}"
+        elif first[key].layers and "aplikacja" not in first[key].layers:
+            problem = f"znacznik testu Androida przy scenariuszu bez tagu @aplikacja: {marker.scenario}"
         else:
             continue
         findings.append(Finding(severity, str(marker.location), problem))
@@ -648,10 +666,22 @@ def check_tests(corpus: Corpus, release: bool = False) -> list[Finding]:
     return findings + [Finding(level, str(s.location), f"scenariusz tylko z testem częściowym: {s.name}") for s in partial]
 
 
+def layer_states(scenario: Scenario, markers: list[Marker]) -> dict[str, str]:
+    """Zwraca stan pokrycia scenariusza w każdej jego warstwie: „pełny”, „częściowo” albo „brak”.
+
+    Gwarantuje: warstwę aplikacji pokrywają znaczniki testów Androida (`markers`); stan „pełny”, gdy choć jeden
+    nie jest „częściowo”. Warstwa serwera nie ma jeszcze źródła testów, więc ma stan „brak”. Scenariusz bez tagu
+    warstwy jest liczony jak scenariusz aplikacji.
+    """
+    app = "brak" if not markers else "częściowo" if all(m.partial for m in markers) else "pełny"
+    return {layer: app if layer == "aplikacja" else "brak" for layer in scenario.layers or ("aplikacja",)}
+
+
 def coverage_states(corpus: Corpus) -> dict[Scenario, tuple[list[Marker], str]]:
     """Zwraca dla każdego scenariusza znaczniki, które go pokrywają, i stan: „pełny”, „częściowo” albo „brak”.
 
-    Gwarantuje: pokrywa tylko znacznik nad aktywnym testem; stan „pełny”, gdy choć jeden znacznik nie jest „częściowo”.
+    Gwarantuje: pokrywa tylko znacznik nad aktywnym testem; stan „pełny”, gdy każda warstwa scenariusza jest „pełna”
+    (layer_states), „brak”, gdy żadna nie ma testu, w pozostałych razach „częściowo”.
     """
     covering = defaultdict(list)
     for marker in corpus.markers:
@@ -660,25 +690,31 @@ def coverage_states(corpus: Corpus) -> dict[Scenario, tuple[list[Marker], str]]:
     states = {}
     for scenario in corpus.all_scenarios:
         markers = covering.get((scenario.feature, scenario.name), [])
-        state = "brak" if not markers else "częściowo" if all(m.partial for m in markers) else "pełny"
-        states[scenario] = (markers, state)
+        found = set(layer_states(scenario, markers).values())
+        states[scenario] = (markers, found.pop() if len(found) == 1 else "częściowo")
     return states
 
 
 def render_coverage(corpus: Corpus) -> str:
     """Zwraca stronę pokrycia: liczby stanów i tabelę [plik, scenariusz, kryteria i reguły, testy, stan] w kolejności
-    plików i scenariuszy. Test to jego stały identyfikator (Marker.test_id), bez numeru linii."""
+    plików i scenariuszy, poprzedzoną liczbami stanów osobno dla każdej warstwy. Test to jego stały identyfikator
+    (Marker.test_id), bez numeru linii."""
     tags: dict[Scenario, list[str]] = defaultdict(list)
     for tag, items in corpus.scenarios.items():
         for scenario in items if AC_RE.match(tag) or BR_RE.match(tag) else []:
             tags[scenario].append(tag)
     rows = []
+    per_layer: dict[str, list[str]] = defaultdict(list)
     for scenario, (markers, state) in coverage_states(corpus).items():
+        for layer, layer_state in layer_states(scenario, markers).items():
+            per_layer[layer].append(layer_state)
+        layers = join([LAYER_NAMES[layer].lower() for layer in scenario.layers])
         tests = [f"`{test_id}`".replace("|", "\\|") for test_id in sorted(dict.fromkeys(m.test_id for m in markers))]
         name = scenario.name.replace("|", "\\|")
-        rows.append([f"`{scenario.feature}`", name, join(sorted(tags[scenario], key=natural_key)), join(tests, "<br>"), state])
-    counts = [[label, str(sum(row[-1] == state for row in rows))] for label, state in COVERAGE_COUNTS]
-    tables = [*plain_table(["Stan", "Liczba"], counts), "", *plain_table(COVERAGE_HEADER, rows)]
+        rows.append([f"`{scenario.feature}`", name, join(sorted(tags[scenario], key=natural_key)), layers, join(tests, "<br>"), state])
+    counts = [[name, *(str(per_layer[layer].count(state)) for _, state in COVERAGE_COUNTS)] for layer, name in LAYERS]
+    header = ["Warstwa", *(label for label, _ in COVERAGE_COUNTS)]
+    tables = [*plain_table(header, counts), "", *plain_table(COVERAGE_HEADER, rows)]
     return COVERAGE_INTRO + "\n".join(tables) + "\n"
 
 
