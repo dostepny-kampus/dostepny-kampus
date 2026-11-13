@@ -55,6 +55,19 @@ public record SubmissionContentJson(
     }
 
     /**
+     * Czy takie zgłoszenie składa tylko Zbierający: każde poza szybkim oraz
+     * zmiana zgłoszenia przyjętego (US7, US17.2, US8.4, BR-18, BR-19).
+     * Zgłoszenie bez rodzaju odrzuca dopiero walidacja treści.
+     *
+     * @return Prawda dla pomiaru precyzyjnego, zmiany oznaczenia wejścia
+     *  i każdego zgłoszenia z polem replacesSubmissionId
+     */
+    public boolean forCollector() {
+        return this.replaces != null
+            || !(this.kind == null || this.kind == SubmissionKind.QUICK);
+    }
+
+    /**
      * Przenosi treść z JSON do domeny.
      *
      * @return Treść zgłoszenia

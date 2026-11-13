@@ -128,16 +128,22 @@ public final class SubmissionsController {
     /**
      * Zapisuje nowe zgłoszenie. Ponowne wysłanie tego samego id zwraca
      * zapisane zgłoszenie i nie tworzy drugiego (BR-9). Autorem zostaje konto
-     * z tokenu (BR-3).
+     * z tokenu (BR-3). Zgłoszenie inne niż szybkie i zmianę zgłoszenia
+     * przyjętego składa tylko Zbierający (US7, US17.2, US8.4, BR-18, BR-19).
      *
      * @param body Zgłoszenie według schematu NewSubmission
      * @param account Zalogowane konto; jego nazwa to identyfikator z tokenu
+     * @param request Wejściowe żądanie z rolami konta
      * @return Nowe zgłoszenie z kodem 201 albo zapisane wcześniej z kodem 200
      */
     @PostMapping("/submissions")
     ResponseEntity<SubmissionResponse> createSubmission(
-        @RequestBody final NewSubmissionRequest body, final Principal account
+        @RequestBody final NewSubmissionRequest body, final Principal account,
+        final HttpServletRequest request
     ) {
+        if (body.content().forCollector() && !request.isUserInRole("COLLECTOR")) {
+            throw new ForbiddenChange("To zgłoszenie składa tylko Zbierający");
+        }
         final CreateResult result = this.service.create(body.toCommand(account.getName()));
         final HttpStatus status;
         if (result instanceof CreateResult.Created) {
