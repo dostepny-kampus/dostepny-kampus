@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus;
+package io.github.dostepnykampus.shared.json;
 
 import java.util.UUID;
 import java.util.regex.Pattern;

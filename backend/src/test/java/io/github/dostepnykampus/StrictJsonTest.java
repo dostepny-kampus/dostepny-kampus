@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus;
 
+import io.github.dostepnykampus.shared.json.StrictJsonConfiguration;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;

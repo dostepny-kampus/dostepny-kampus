@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
-import io.github.dostepnykampus.Wgs84;
+import io.github.dostepnykampus.shared.geo.Wgs84;
 
 /**
  * Punkt zgłoszenia w WGS84, w kolejności długość, szerokość.

@@ -15,7 +15,7 @@
  *
  * @since 0.1.0
  */
-@ApplicationModule(allowedDependencies = {})
+@ApplicationModule(allowedDependencies = "shared")
 @NullMarked
 package io.github.dostepnykampus.building;
 

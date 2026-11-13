@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus;
+package io.github.dostepnykampus.shared.json;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -27,7 +27,14 @@ import tools.jackson.databind.type.LogicalType;
  * @since 0.1.0
  */
 @Configuration(proxyBeanMethods = false)
-final class StrictJsonConfiguration implements JsonMapperBuilderCustomizer {
+public final class StrictJsonConfiguration implements JsonMapperBuilderCustomizer {
+
+    /**
+     * Tworzy konfigurację bez stanu.
+     */
+    public StrictJsonConfiguration() {
+        // Bez stanu: reguły wiązania są stałe.
+    }
 
     @Override
     public void customize(final JsonMapper.Builder builder) {

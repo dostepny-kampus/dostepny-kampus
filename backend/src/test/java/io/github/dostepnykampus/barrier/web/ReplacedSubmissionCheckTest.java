@@ -5,8 +5,6 @@
  */
 package io.github.dostepnykampus.barrier.web;
 
-import io.github.dostepnykampus.ConflictingState;
-import io.github.dostepnykampus.MissingResource;
 import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.SimilarSubmission;
 import io.github.dostepnykampus.barrier.domain.Submission;
@@ -15,6 +13,8 @@ import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import io.github.dostepnykampus.barrier.json.SubmissionContentJson;
+import io.github.dostepnykampus.shared.error.ConflictingState;
+import io.github.dostepnykampus.shared.error.MissingResource;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;

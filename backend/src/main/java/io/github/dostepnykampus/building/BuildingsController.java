@@ -5,9 +5,9 @@
  */
 package io.github.dostepnykampus.building;
 
-import io.github.dostepnykampus.InvalidInput;
-import io.github.dostepnykampus.MissingResource;
-import io.github.dostepnykampus.Wgs84;
+import io.github.dostepnykampus.shared.error.InvalidInput;
+import io.github.dostepnykampus.shared.error.MissingResource;
+import io.github.dostepnykampus.shared.geo.Wgs84;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;

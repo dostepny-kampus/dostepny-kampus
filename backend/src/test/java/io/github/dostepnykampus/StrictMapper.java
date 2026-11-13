@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus;
 
+import io.github.dostepnykampus.shared.json.StrictJsonConfiguration;
 import java.util.function.Supplier;
 import tools.jackson.databind.json.JsonMapper;
 

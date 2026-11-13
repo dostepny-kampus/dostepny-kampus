@@ -16,7 +16,7 @@
  *
  * @since 0.1.0
  */
-@ApplicationModule(allowedDependencies = "building")
+@ApplicationModule(allowedDependencies = {"building", "shared"})
 @NullMarked
 package io.github.dostepnykampus.barrier;
 

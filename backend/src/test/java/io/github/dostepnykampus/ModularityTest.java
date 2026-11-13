@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus;
 
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -14,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -40,6 +42,11 @@ final class ModularityTest {
      * Pakiet przykładowych modułów w katalogu testów.
      */
     private static final String SAMPLES = "io.github.dostepnykampus.archsamples.modules";
+
+    /**
+     * Jedyne podpakiety otwartego modułu shared.
+     */
+    private static final Set<String> SHARED = Set.of("error", "json", "geo");
 
     /**
      * Katalog na przykładowe źródła, nowy w każdym teście.
@@ -78,6 +85,42 @@ final class ModularityTest {
                 )
             ),
             "Reguła przepuściła moduł bez klas albo bez opisu w package-info.java"
+        );
+    }
+
+    @Test
+    void sharedHasOnlyErrorJsonAndGeo() {
+        Assertions.assertEquals(
+            List.of(),
+            ModularityTest.foreign(
+                ModularityTest.production(), "io.github.dostepnykampus.shared"
+            ),
+            "Moduł shared ma klasę poza podpakietami error, json i geo"
+        );
+    }
+
+    @Test
+    void basePackageHoldsOnlyApplication() {
+        Assertions.assertEquals(
+            List.of(DostepnyKampusApplication.class.getName()),
+            ModularityTest.production().stream()
+                .filter(type -> "io.github.dostepnykampus".equals(type.getPackageName()))
+                .filter(type -> !"package-info".equals(type.getSimpleName()))
+                .map(JavaClass::getName)
+                .toList(),
+            "Pakiet główny ma klasę inną niż klasa aplikacji; przenieś ją do modułu albo do shared"
+        );
+    }
+
+    @Test
+    void rejectsSharedSubpackageOutsideList() {
+        Assertions.assertEquals(
+            List.of("alpha", "beta"),
+            ModularityTest.foreign(
+                new ClassFileImporter().importPackages(ModularityTest.SAMPLES),
+                ModularityTest.SAMPLES
+            ),
+            "Reguła przepuściła podpakiet shared spoza error, json i geo"
         );
     }
 
@@ -193,6 +236,19 @@ final class ModularityTest {
                 String.format("%s%s", javadoc, "package %s.%s;%n"), ModularityTest.SAMPLES, module
             )
         );
+    }
+
+    private static List<String> foreign(final JavaClasses classes, final String shared) {
+        final String prefix = String.format("%s.", shared);
+        return classes.stream()
+            .filter(type -> !"package-info".equals(type.getSimpleName()))
+            .map(JavaClass::getPackageName)
+            .filter(name -> String.format("%s.", name).startsWith(prefix))
+            .map(name -> String.format("%s.", name).substring(prefix.length()).split("\\.", 2)[0])
+            .filter(sub -> !ModularityTest.SHARED.contains(sub))
+            .distinct()
+            .sorted()
+            .toList();
     }
 
     private static List<String> undeclared(
