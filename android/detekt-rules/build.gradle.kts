@@ -19,8 +19,8 @@ dependencies {
 
 /**
  * Pliki poza źródłami modułów, których nie widzą zadania detekt modułów: skrypty `*.kts`, `build-logic` i ten moduł
- * (sam siebie nie wczytuje jako wtyczki). Zadanie uruchamia tylko reguły projektu, więc zakres zakazu `//` jest ten
- * sam co w dawnym teście `NoLineCommentsTest`: każdy plik `*.kt` i `*.kts` w `android/` (#873).
+ * (sam siebie nie wczytuje jako wtyczki). Zadanie uruchamia tylko reguły projektu; razem z zadaniami modułów obejmują
+ * każdy plik `*.kt` i `*.kts` w `android/`.
  */
 val detektScripts by tasks.registering(Detekt::class) {
     description = "Reguły projektu na skryptach Gradle, build-logic i module reguł."

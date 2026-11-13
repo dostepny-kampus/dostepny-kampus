@@ -12,7 +12,7 @@ import dev.detekt.test.utils.compileContentForTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-/** Reguła [NoLineComment] na krótkich źródłach: zgłasza komentarze `//`, a pomija `//` w napisach (#873). */
+/** Reguła [NoLineComment] na krótkich źródłach: zgłasza komentarze `//`, a pomija `//` w napisach. */
 class NoLineCommentTest {
     private val rule = NoLineComment(Config.empty)
 
