@@ -213,6 +213,29 @@ class ReportFormViewModelTest {
         assertEquals(ReportStage.LEFT, state().stage)
     }
 
+    /**
+     * Wybrany TB-1 bez zapisu: rezygnacja z wyjścia zostawia formularz z TB-1, a potwierdzone wyjście zamyka go bez
+     * zapisu w kolejce (US7.4).
+     * Scenariusz: pomiar-precyzyjny.feature: Wyjście z formularza z niezapisanymi zmianami wymaga potwierdzenia
+     */
+    @Test
+    fun `wyjście z wybranym typem`() =
+        runTest(dispatcher) {
+            viewModel.edit(ReportEdit.Type(BarrierType.STAIRS_AT_ENTRANCE))
+            viewModel.back()
+            assertEquals(ReportStage.EXIT_ASKED, state().stage)
+
+            viewModel.stay()
+            assertEquals(ReportStage.EDITING, state().stage)
+            assertEquals(BarrierType.STAIRS_AT_ENTRANCE, state().form.barrierType)
+
+            viewModel.back()
+            viewModel.confirmExit()
+            runCurrent()
+            assertEquals(ReportStage.LEFT, state().stage)
+            assertEquals(emptyList<Any>(), saved)
+        }
+
     @Test
     fun `drugie otwarcie nie kasuje`() {
         viewModel.edit(ReportEdit.Description("Próg"))
