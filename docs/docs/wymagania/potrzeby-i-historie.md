@@ -4,19 +4,19 @@ Strona prowadzi od potrzeby użytkownika do sprawdzalnego kryterium: potrzeba N 
 
 ## Potrzeby
 
-| N | Rola (RO-*) | Potrzeba | Status (hipoteza — do potwierdzenia w wywiadach) |
+| N | Rola (RO-*) | Potrzeba | Status |
 | --- | --- | --- | --- |
-| N1 | RO-GOS, RO-ODW | Przed wyjściem z domu wiedzieć, czy wejdę do budynku bez barier i którym wejściem. | hipoteza; pytania 2.1–2.4, 4.1–4.2 i zadanie z części 5 |
-| N2 | RO-GOS, RO-ODW | Ufać informacji: widzieć datę sprawdzenia i zdjęcie bariery. | hipoteza; pytania 2.5, 4.3–4.4 |
-| N3 | RO-ODW | Zgłosić nową barierę bez trudnego formularza. | hipoteza; pytania 3.4, 4.5–4.6 |
-| N4 | RO-GOS, RO-ODW | Korzystać z aplikacji przy słabym wzroku i niepewnych dłoniach. | hipoteza; pytania 3.1–3.4, 4.7–4.8 |
+| N1 | RO-GOS, RO-ODW | Przed wyjściem z domu wiedzieć, czy wejdę do budynku bez barier i którym wejściem. | zmieniona po wywiadach: 2 z 6 osób starszych planuje wizytę z rodziną. Tylko 1 z 6 sama sprawdziła coś w telefonie. U osób na wózku potwierdzona analizą źródeł |
+| N2 | RO-GOS, RO-ODW | Ufać informacji: widzieć datę sprawdzenia i zdjęcie bariery. | potwierdzona częściowo: 3 z 6 osób trafiło na informację niezgodną z rzeczywistością, ale o dacie sprawdzenia i zdjęciu nikt nie mówił |
+| N3 | RO-ODW | Zgłosić nową barierę bez trudnego formularza. | zmieniona po wywiadach: nikt z 6 rozmówców nie zgłaszał barier, w kłopocie pytają ludzi; zgłaszać będą głównie studenci, pracownicy i osoby na wózku |
+| N4 | RO-GOS, RO-ODW | Korzystać z aplikacji przy słabym wzroku i niepewnych dłoniach. | potwierdzona: 3 z 6 osób ma powiększone litery albo uproszczony ekran, zdarzają się przypadkowe dotknięcia |
 | N5 | RO-ZBI | Szybko i dokładnie, poniżej 1 m, zapisać miejsce bariery. | hipoteza; wywiad opcjonalny, pytanie 10.2 |
 | N6 | RO-ZBI | Pracować tam, gdzie nie ma sieci, i nie tracić danych. | hipoteza; wywiad opcjonalny, pytanie 10.3 |
 | N7 | RO-ZBI, RO-WER | Przy równoczesnej edycji nie nadpisać wcześniejszej zmiany zapisanej na serwerze. | hipoteza; wywiad opcjonalny, pytanie 10.4 |
 | N8 | RO-WER | Odsiać błędy i duplikaty przed publikacją. | hipoteza; wywiad opcjonalny, pytania 10.4–10.5 |
 | N9 | RO-KOO | Widzieć postęp inwentaryzacji i przekazywać dane do QGIS. | hipoteza; wywiad opcjonalny, pytania 10.1, 10.6–10.7 |
 
-Numery pytań pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md). Wywiady z osobami 60+ sprawdzają N1–N4, a wywiad ze Zbierającym jest opcjonalny. Potrzeba niepotwierdzona w wywiadach kieruje swoje historyjki do przeglądu (R-7).
+Wywiady z 6 osobami w wieku 61–75 lat sprawdziły N1–N4. Wyniki opisuje sekcja „Co sprawdziły wywiady” na stronie [Persony](../ux/persony.md). Numery pytań przy N5–N9 pochodzą ze [scenariusza wywiadu](../ux/scenariusz-wywiadu.md), a wywiad ze Zbierającym jest opcjonalny. Potrzeba niepotwierdzona w wywiadach kieruje swoje historyjki do przeglądu (R-7).
 
 ## Historyjki
 
