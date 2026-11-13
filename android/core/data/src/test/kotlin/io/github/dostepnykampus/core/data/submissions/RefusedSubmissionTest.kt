@@ -26,7 +26,9 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Odmowa serwera (4xx poza 401) daje stan końcowy „Nie wysłano” z kodem i nie wraca do wysyłki, aż osoba zapisze
- * zgłoszenie ponownie; 5xx i brak sieci ponawiają się, a 401 czeka na zalogowanie (BR-26, US9.5).
+ * zgłoszenie ponownie; 5xx i brak sieci ponawiają się, a 401 czeka na zalogowanie.
+ *
+ * Wymagania: BR-26, US9.5
  */
 class RefusedSubmissionTest {
     @TempDir

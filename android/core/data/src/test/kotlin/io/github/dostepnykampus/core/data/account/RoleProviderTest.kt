@@ -12,7 +12,11 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class RoleProviderTest {
-    /** RO-GOS, US1.2: bez logowania w aplikacji każda osoba jest Gościem niezalogowanym (mapa nawigacji, rola Gość). */
+    /**
+     * Bez logowania w aplikacji każda osoba jest Gościem niezalogowanym (mapa nawigacji, rola Gość).
+     *
+     * Wymagania: RO-GOS, US1.2
+     */
     @Test
     fun ro_gos_everyone_is_guest() {
         assertEquals(Account.Guest, GuestRoleProvider.account.value)

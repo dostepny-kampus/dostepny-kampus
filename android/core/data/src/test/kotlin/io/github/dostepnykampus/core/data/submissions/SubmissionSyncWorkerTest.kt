@@ -25,7 +25,7 @@ import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Zadanie WorkManagera ponawia wysyłkę, gdy kolejka każe spróbować później (NFR-6, US9.2, BR-9, BR-26). */
+/** Zadanie WorkManagera ponawia wysyłkę, gdy kolejka każe spróbować później. Wymagania: NFR-6, US9.2, BR-9, BR-26 */
 class SubmissionSyncWorkerTest {
     @TempDir
     lateinit var tempDir: File
