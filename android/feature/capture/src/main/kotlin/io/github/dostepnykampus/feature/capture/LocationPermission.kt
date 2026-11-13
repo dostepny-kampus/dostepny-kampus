@@ -40,13 +40,15 @@ import io.github.dostepnykampus.core.designsystem.PinnedButton
 
 private val LOCATION = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
 
-/** Czy aplikacja ma zgodę na dokładną lokalizację; przybliżona nie wystarczy do pomiaru (US6.1). */
+/** Czy aplikacja ma zgodę na dokładną lokalizację; przybliżona nie wystarczy do pomiaru. Wymagania: US6.1 */
 internal fun Context.hasFineLocation(): Boolean =
     checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
 /**
- * Pokazuje [content] dopiero ze zgodą na dokładną lokalizację, a bez niej prośbę o zgodę (NFR-27). Po odmowie
+ * Pokazuje [content] dopiero ze zgodą na dokładną lokalizację, a bez niej prośbę o zgodę. Po odmowie
  * prowadzi do ustawień aplikacji, a po powrocie z nich sprawdza zgodę jeszcze raz.
+ *
+ * Wymagania: NFR-27
  *
  * @param onBack „Wstecz” z ekranu prośby
  * @param content ekran, który używa lokalizacji
@@ -78,7 +80,9 @@ fun WithLocationPermission(onBack: () -> Unit, content: @Composable () -> Unit) 
 }
 
 /**
- * Prośba o zgodę na lokalizację: przed pytaniem „Zezwól na lokalizację”, po odmowie „Otwórz ustawienia” (NFR-27).
+ * Prośba o zgodę na lokalizację: przed pytaniem „Zezwól na lokalizację”, po odmowie „Otwórz ustawienia”.
+ *
+ * Wymagania: NFR-27
  *
  * @param isDenied czy użytkownik już odmówił
  * @param onAllow systemowe pytanie o zgodę

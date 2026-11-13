@@ -19,7 +19,9 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 
 /**
  * V4, potwierdzenie rezygnacji przed usunięciem zrobionego zdjęcia: komunikat i dwa przyciski tej samej wielkości,
- * bez limitu czasu (US4.8, UC7 1b, NFR-23).
+ * bez limitu czasu.
+ *
+ * Wymagania: US4.8, UC7, NFR-23
  *
  * @param onLeave „Tak, zrezygnuj”: zdjęcie znika, a zgłoszenie nie powstaje
  * @param onStay „Wróć do zdjęcia”: zdjęcie i grupa zostają

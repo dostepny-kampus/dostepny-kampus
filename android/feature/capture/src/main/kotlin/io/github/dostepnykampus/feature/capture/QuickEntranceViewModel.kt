@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-/** Wejście z „Zgłoś barierę przy wejściu” do kroku 1 V4, z katalogu budynków bez sieci (US4.6). */
+/** Wejście z „Zgłoś barierę przy wejściu” do kroku 1 V4, z katalogu budynków bez sieci. Wymagania: US4.6 */
 @HiltViewModel
 class QuickEntranceViewModel
     @Inject
