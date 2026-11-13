@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Warstwa | Pełny test | Tylko częściowo | Bez testu |
 | --- | --- | --- | --- |
-| Aplikacja | 21 | 13 | 99 |
+| Aplikacja | 22 | 13 | 98 |
 | Serwer | 0 | 0 | 62 |
 
 | Plik | Scenariusz | Kryteria i reguły | Warstwa | Test | Stan |
@@ -37,7 +37,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `oznaczenie-wejscia.feature` | Import nadaje wejściu oznaczenie z danych PWr | BR-24, US2.1, US17.1, US17.3 | aplikacja | — | brak |
 | `oznaczenie-wejscia.feature` | Import bez danych daje oznaczenie „brak danych” | BR-24, US2.1, US17.1, US17.3 | aplikacja | — | brak |
 | `oznaczenie-wejscia.feature` | Wspólna data i źródło stoją raz nad listą wejść | BR-24, US17.3 | aplikacja | — | brak |
-| `oznaczenie-wejscia.feature` | Różne źródła stoją przy każdym wejściu | BR-24, US17.3 | aplikacja | — | brak |
+| `oznaczenie-wejscia.feature` | Różne źródła stoją przy każdym wejściu | BR-24, US17.3 | aplikacja | `feature/map · EntranceAssessmentTextTest.us17_3_v2_per_entrance` | pełny |
 | `oznaczenie-wejscia.feature` | Zmiana oznaczenia wejścia przechodzi te same statusy co zgłoszenie | BR-9, BR-24, US17.2 | aplikacja | — | brak |
 | `oznaczenie-wejscia.feature` | Zmiany oznaczenia wejścia nie da się zapisać bez zdjęcia | BR-7, BR-24, US17.2 | aplikacja | — | brak |
 | `oznaczenie-wejscia.feature` | Przyjęta zmiana zmienia oznaczenie, datę i źródło na karcie budynku | BR-24, US17.2, US17.3 | serwer | — | brak |
