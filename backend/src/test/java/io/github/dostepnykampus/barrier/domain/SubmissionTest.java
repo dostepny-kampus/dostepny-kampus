@@ -8,6 +8,8 @@ package io.github.dostepnykampus.barrier.domain;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  * Zgłoszenie z serwera (US8, V3): wersja co najmniej 1 i komplet pól.
@@ -15,6 +17,23 @@ import org.junit.jupiter.api.Test;
  * @since 0.1.0
  */
 final class SubmissionTest {
+
+    @Test
+    void brEighteenRecognizesAcceptedSubmission() {
+        Assertions.assertTrue(
+            SubmissionSamples.submission(1, SubmissionStatus.ACCEPTED).accepted(),
+            "Przyjęte zgłoszenie nie zostało rozpoznane"
+        );
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = SubmissionStatus.class, names = "ACCEPTED", mode = EnumSource.Mode.EXCLUDE)
+    void brEighteenDoesNotTreatOtherStatusesAsAccepted(final SubmissionStatus status) {
+        Assertions.assertFalse(
+            SubmissionSamples.submission(1, status).accepted(),
+            String.format("Zgłoszenie w statusie %s uznano za przyjęte", status)
+        );
+    }
 
     @Test
     void mthreeOneRejectsVersionBelowOneAsServerData() {
