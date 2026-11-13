@@ -39,7 +39,7 @@ class ModuleContentArchitectureTest {
 
     private fun empty(root: File, modules: List<String>): List<String> =
         modules.filter { module ->
-            File(root, module.removePrefix(":").replace(':', '/') + "/src/main")
+            File(root, module.removePrefix(":").replace(oldChar = ':', newChar = '/') + "/src/main")
                 .walk()
                 .none { it.isFile && it.extension in SOURCES }
         }
