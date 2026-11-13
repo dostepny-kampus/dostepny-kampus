@@ -1,24 +1,24 @@
-# core:data
+# :core:data
 
 ## Zadanie
 
-Udostępnia dane aplikacji przez repozytoria i kolejkę wysyłki.
+Repozytoria: łączą sieć i bazę w dane dla ekranów, prowadzą kolejkę wysyłki zgłoszeń.
 
 ## API
 
-`SubmissionQueue.save` zwraca `SavedSubmission` z identyfikatorem zgłoszenia, bez encji Room.
-Repozytoria udostępniają odczyty katalogu, zgłoszeń oraz stanu sieci.
+Repozytoria i przypadki użycia w podpakietach `account`, `barriers`, `buildings`, `submissions`, `map`, `network`, `start`; wiązania Hilt w `di`. `SubmissionQueue.save` zwraca `SavedSubmission` z identyfikatorem zgłoszenia, bez encji Room.
 
-## Od kogo zależy
+## Zależności
 
-Moduły Gradle: `:core:model`, `:core:database`, `:core:network`, `:core:geo`.
-Pełna lista bibliotek jest w `build.gradle.kts`.
+- `:core:database`
+- `:core:geo`
+- `:core:model`
+- `:core:network`
 
-## Czego nie robi
+## Czego moduł nie robi
 
-Nie renderuje ekranów ani nie zależy od modułów funkcji.
+Nie zawiera ekranów ani stanu interfejsu i nie zależy od modułów funkcji.
 
-## Kiedy dodawać kod
+## Kiedy dodawać tutaj
 
-Tutaj trafia wspólny dostęp do danych aplikacji. Ekrany należą do modułów funkcji, a typy dziedziny do `core:model`.
-Nowy moduł wymaga własnego zadania, danych albo ścieżki użytkownika oraz małego API.
+Źródło danych dla więcej niż jednej funkcji albo dane, które muszą przetrwać bez sieci. Stan jednego ekranu zostaje w jego ViewModel, a typy dziedziny w `:core:model`.
