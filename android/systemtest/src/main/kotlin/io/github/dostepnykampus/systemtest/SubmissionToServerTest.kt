@@ -16,12 +16,10 @@ import io.github.dostepnykampus.core.network.AccessTokens
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.NetworkModule
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONObject
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -83,10 +81,10 @@ class SubmissionToServerTest {
         val form =
             FormBody
                 .Builder()
-                .add("grant_type", "password")
-                .add("client_id", "dostepny-kampus-android")
-                .add("username", "zbierajacy.test")
-                .add("password", "haslo-testowe-zbierajacy")
+                .add(name = "grant_type", value = "password")
+                .add(name = "client_id", value = "dostepny-kampus-android")
+                .add(name = "username", value = "zbierajacy.test")
+                .add(name = "password", value = "haslo-testowe-zbierajacy")
                 .build()
         val request =
             Request
@@ -95,12 +93,7 @@ class SubmissionToServerTest {
                 .post(form)
                 .build()
         val body = OkHttpClient().newCall(request).execute().use { it.body.string() }
-        return Json
-            .parseToJsonElement(body)
-            .jsonObject
-            .getValue("access_token")
-            .jsonPrimitive
-            .content
+        return JSONObject(body).getString("access_token")
     }
 
     private companion object {
