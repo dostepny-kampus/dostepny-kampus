@@ -4,3 +4,5 @@ dostepnykampus:
     active: true
   NoHistoryNumberInKDoc:
     active: true
+  KDocDescriptionLength:
+    active: true

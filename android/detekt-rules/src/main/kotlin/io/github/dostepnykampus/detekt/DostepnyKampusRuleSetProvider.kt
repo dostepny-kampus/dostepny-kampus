@@ -13,5 +13,9 @@ import dev.detekt.api.RuleSetProvider
 class DostepnyKampusRuleSetProvider : RuleSetProvider {
     override val ruleSetId: RuleSetId = RuleSetId("dostepnykampus")
 
-    override fun instance(): RuleSet = RuleSet(ruleSetId, listOf(::NoLineComment, ::NoHistoryNumberInKDoc))
+    override fun instance(): RuleSet =
+        RuleSet(
+            ruleSetId,
+            listOf(::NoLineComment, ::NoHistoryNumberInKDoc, ::KDocDescriptionLength),
+        )
 }
