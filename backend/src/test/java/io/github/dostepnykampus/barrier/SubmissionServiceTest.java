@@ -286,6 +286,11 @@ final class SubmissionServiceTest {
         }
 
         @Override
+        public void lock(final UUID id) {
+            throw new UnsupportedOperationException("Zapis treści nie blokuje zdjęć");
+        }
+
+        @Override
         public CreateResult create(final NewSubmission submission) {
             this.seen.add(submission);
             return this.created;

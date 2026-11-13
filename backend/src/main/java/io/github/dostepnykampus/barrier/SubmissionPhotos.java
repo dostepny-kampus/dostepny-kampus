@@ -12,22 +12,24 @@ import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
+import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.transaction.support.TransactionTemplate;
 import software.amazon.awssdk.core.exception.SdkException;
 
 /**
  * Zdjęcia zgłoszeń: zapis zdjęcia z listy photoIds i odczyt
  * zdjęcia zgłoszenia przyjętego.
  *
- * <p>Status jest sprawdzany przed zapisem do S3, bez wspólnej transakcji z bazą:
- * zgłoszenie może zostać przyjęte pomiędzy sprawdzeniem a zapisem i zdjęcie je
- * zastąpi. Wyścig przyjęty do sprintu 5 (weryfikator); S3 i SQL nie są atomowe.</p>
+ * <p>Kontrola statusu i zapis do S3 utrzymują blokadę wiersza zgłoszenia,
+ * więc przyjęcie lub edycja treści czekają na zakończenie zapisu zdjęcia.</p>
  *
  * <p>Po zatwierdzonej edycji zdjęcia spoza nowej listy photoIds znikają z
  * magazynu, więc nie zostają dane, których nikt nie może usunąć.</p>
@@ -48,9 +50,20 @@ final class SubmissionPhotos {
     /** Magazyn zdjęć. */
     private final PhotoStore photos;
 
-    SubmissionPhotos(final SubmissionFinder submissions, final PhotoStore photos) {
+    /** Blokada wiersza podczas kontroli statusu i zapisu zdjęcia. */
+    private final SubmissionRepository repository;
+
+    /** Transakcja obejmująca kontrolę statusu i zapis zdjęcia. */
+    private final TransactionTemplate transaction;
+
+    SubmissionPhotos(
+        final SubmissionFinder submissions, final PhotoStore photos,
+        final SubmissionRepository repository, final PlatformTransactionManager manager
+    ) {
         this.submissions = submissions;
         this.photos = photos;
+        this.repository = repository;
+        this.transaction = new TransactionTemplate(manager);
     }
 
     /**
@@ -82,11 +95,13 @@ final class SubmissionPhotos {
      */
     void put(final UUID submission, final UUID photo, final PhotoUpload upload)
         throws IOException {
-        final Submission found = this.find(submission, photo);
-        if (!found.status().editable()) {
-            throw new ForbiddenChange("Zdjęcie zgłoszenia przyjętego zmienia tylko Weryfikator");
-        }
-        this.photos.put(submission, photo, SubmissionPhotos.clean(upload.read()));
+        this.editable(submission, photo);
+        final byte[] jpeg = SubmissionPhotos.clean(upload.read());
+        this.transaction.executeWithoutResult(status -> {
+            this.repository.lock(submission);
+            this.editable(submission, photo);
+            this.photos.put(submission, photo, jpeg);
+        });
     }
 
     /**
@@ -141,5 +156,11 @@ final class SubmissionPhotos {
         return this.submissions.find(submission)
             .filter(item -> item.content().photoIds().contains(photo))
             .orElseThrow(() -> new MissingResource("Nie ma takiego zdjęcia zgłoszenia"));
+    }
+
+    private void editable(final UUID submission, final UUID photo) {
+        if (!this.find(submission, photo).status().editable()) {
+            throw new ForbiddenChange("Zdjęcie zgłoszenia przyjętego zmienia tylko Weryfikator");
+        }
     }
 }
