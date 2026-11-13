@@ -53,7 +53,7 @@ COVERAGE_HEADER = ["Plik", "Scenariusz", "Kryteria i reguły", "Warstwa", "Test"
 LAYERS = (("aplikacja", "Aplikacja"), ("serwer", "Serwer"))
 LAYER_NAMES = dict(LAYERS)
 STATE_RANK = {"brak": 0, "częściowo": 1, "pełny": 2}
-TODO_TAG = "do-zrobienia"
+PLANNED_TAG = "do-zrobienia"
 COVERAGE_COUNTS = (("Pełny test", "pełny"), ("Tylko częściowo", "częściowo"), ("Bez testu", "brak"))
 COVERAGE_INTRO = """# Pokrycie scenariuszy testami
 
@@ -129,7 +129,7 @@ class Corpus:
     """Zebrane definicje, odwołania, powiązania (nieskierowane), scenariusze i wiersze przykładów szablonów
     (`examples`: klucz to plik i nazwa scenariusza, wartość to komórki kolejnych wierszy bez nagłówków tabel).
     `bodies` to treść scenariusza: jego kroki i tabele bez tagów, komentarzy i odstępów na brzegach; `todo` to
-    scenariusze z tagiem TODO_TAG."""
+    scenariusze z tagiem PLANNED_TAG."""
 
     definitions: dict[str, list[Location]] = field(default_factory=lambda: defaultdict(list))
     references: list[tuple[str, Location]] = field(default_factory=list)
@@ -330,7 +330,7 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
     `feature` to ścieżka pliku względna do katalogu scenariuszy, jak w znaczniku testu (domyślnie nazwa pliku).
     Wiersze tabel pod „Przykłady:” (bez nagłówka każdej tabeli) trafiają do `corpus.examples` scenariusza;
     tabela danych przy kroku nie jest tabelą przykładów. Kroki i tabele scenariusza trafiają do `corpus.bodies`,
-    a scenariusz z tagiem TODO_TAG (własnym, funkcji albo reguły) do `corpus.todo`.
+    a scenariusz z tagiem PLANNED_TAG (własnym, funkcji albo reguły) do `corpus.todo`.
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
     rel = relative(path)
@@ -348,7 +348,7 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
         line = raw.strip()
         if line.startswith("@"):
             pending += [(t, Location(rel, number)) for t in TAG_RE.findall(line) if ID_FULL.fullmatch(t)]
-            layers["pending"] |= {t for t in TAG_RE.findall(line) if t in LAYER_NAMES or t == TODO_TAG}
+            layers["pending"] |= {t for t in TAG_RE.findall(line) if t in LAYER_NAMES or t == PLANNED_TAG}
             continue
         if line.startswith("#") or not line:
             continue
@@ -374,7 +374,7 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
             corpus.all_scenarios.append(scenario)
             rows = corpus.examples[(feature, scenario.name)]
             body = corpus.bodies[(feature, scenario.name)]
-            if TODO_TAG in found:
+            if PLANNED_TAG in found:
                 corpus.todo.add((feature, scenario.name))
             for tag in dict.fromkeys(feature_tags + rule_tags + tags):
                 corpus.scenarios[tag].append(scenario)
@@ -809,7 +809,7 @@ def coverage_drops(corpus: Corpus, baseline: dict[tuple[str, str], str]) -> list
 
 def unplanned_scenarios(corpus: Corpus, baseline: Corpus) -> list[Finding]:
     """Zwraca „BŁĄD” dla każdego scenariusza, którego nie ma w `baseline` albo który ma tam inną treść (kroki, tabele),
-    a który nie ma pełnego testu ani tagu TODO_TAG.
+    a który nie ma pełnego testu ani tagu PLANNED_TAG.
 
     Gwarantuje: scenariusz o treści takiej jak w `baseline` nie daje wyniku; zmiana samych tagów nie jest zmianą treści.
     """
@@ -818,7 +818,7 @@ def unplanned_scenarios(corpus: Corpus, baseline: Corpus) -> list[Finding]:
         key = (scenario.feature, scenario.name)
         same = key in baseline.bodies and baseline.bodies[key] == corpus.bodies[key]
         if not same and state != "pełny" and key not in corpus.todo:
-            message = f"nowy albo zmieniony scenariusz bez pełnego testu i bez tagu @{TODO_TAG} z numerem zadania: {scenario.name}"
+            message = f"nowy albo zmieniony scenariusz bez pełnego testu i bez tagu @{PLANNED_TAG} z numerem zadania: {scenario.name}"
             findings.append(Finding("BŁĄD", str(scenario.location), message))
     return findings
 
