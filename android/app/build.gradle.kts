@@ -14,6 +14,8 @@ plugins {
 android {
     buildFeatures.buildConfig = true
     defaultConfig.testInstrumentationRunner = "io.github.dostepnykampus.app.HiltTestRunner"
+    defaultConfig.testInstrumentationRunnerArguments["clearPackageData"] = "true"
+    testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
 }
 
 tasks.withType<Test>().configureEach {
@@ -93,6 +95,8 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestUtil(libs.androidx.test.orchestrator)
+    androidTestUtil(libs.androidx.test.services)
     androidTestImplementation(libs.androidx.compose.ui.test)
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.junit4)
