@@ -40,9 +40,10 @@ class CampusMapStyleTest {
     @Test
     fun nfr39_outlines_over_basemap() {
         val layers = style.array("layers").map { it.jsonObject }
-        val below = listOf("lad", "osm", BUILDINGS_LAYER, "kontury", ENTRANCES_LAYER)
+        val below = listOf("lad", "osm", BUILDINGS_LAYER, "kontury", SELECTED_LAYER, ENTRANCES_LAYER)
         val barriers = listOf(BARRIER_WORDS_LAYER, BARRIERS_LAYER)
-        val expected = below + barriers + listOf("podpisy", OUTSIDE_LAYER, EDGE_LAYER)
+        val above = listOf("podpisy", CHOSEN_BARRIER_LAYER, OUTSIDE_LAYER, EDGE_LAYER)
+        val expected = below + barriers + above + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
         assertEquals(expected, layers.map { it.text("id") })
         assertEquals("#E8EDEE", layers.first().obj("paint").text("background-color"))
     }

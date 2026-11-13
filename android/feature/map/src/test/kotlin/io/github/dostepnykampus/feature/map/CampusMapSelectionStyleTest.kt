@@ -90,7 +90,7 @@ class CampusMapSelectionStyleTest {
         val style = style()
         assertEquals(JsonPrimitive("#BFE0EC").toString(), style.layer(BUILDINGS_LAYER).paint("fill-color"))
         assertEquals(JsonPrimitive("#004E5E").toString(), style.layer("kontury").paint("line-color"))
-        assertNull(style.layer(ENTRANCES_LAYER)["filter"])
+        assertEquals(JsonPrimitive(true), style.layer(ENTRANCES_LAYER)["filter"])
     }
 
     /** Wiersz: V1, zaznaczone wejście: pozostałe wejścia i budynki zostają jak bez zaznaczenia (decyzja 134). */
@@ -98,7 +98,7 @@ class CampusMapSelectionStyleTest {
     fun us3_3_chosen_keeps_all_marks() {
         val pin = SelectedEntrance(id = "w1", location = at, label = "Wejście dostosowane", buildingSymbol = "A-1")
         val style = style(building = "A-1", entrance = pin)
-        assertNull(style.layer(ENTRANCES_LAYER)["filter"])
+        assertEquals(JsonPrimitive(true), style.layer(ENTRANCES_LAYER)["filter"])
         assertEquals(JsonPrimitive("#BFE0EC").toString(), style.layer(BUILDINGS_LAYER).paint("fill-color"))
     }
 
@@ -166,9 +166,9 @@ private class JsonStyle(style: String) : MapStyleTarget {
     override fun filter(layer: String, filter: JsonElement) = edit(layer) { it + ("filter" to filter) }
 
     override fun paint(layer: String, property: String, value: JsonElement) =
-        edit(layer) {
-            val paint = it.getValue("paint").jsonObject + (property to value)
-            it + ("paint" to JsonObject(paint))
+        edit(layer) { found ->
+            val paint = found.getValue("paint").jsonObject + (property to value)
+            found + ("paint" to JsonObject(paint))
         }
 
     override fun data(source: String, geoJson: String) {
@@ -181,8 +181,8 @@ private class JsonStyle(style: String) : MapStyleTarget {
 
     private fun edit(layer: String, change: (JsonObject) -> Map<String, JsonElement>) {
         val layers =
-            json.getValue("layers").jsonArray.map {
-                val found = it.jsonObject
+            json.getValue("layers").jsonArray.map { element ->
+                val found = element.jsonObject
                 if (found.getValue("id").jsonPrimitive.content == layer) JsonObject(change(found)) else found
             }
         json = JsonObject(json + ("layers" to JsonArray(layers)))
