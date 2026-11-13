@@ -23,22 +23,26 @@ import io.github.dostepnykampus.feature.map.data.center
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 /**
- * Tereny w kolejności nagłówków listy budynków: pokazany na mapie pierwszy, pozostałe od najbliższego (US1.8).
+ * Tereny w kolejności nagłówków listy budynków: pokazany na mapie pierwszy, pozostałe od najbliższego.
+ *
+ * Wymagania: US1.8
  *
  * @property areas tereny z symbolami swoich budynków; puste, dopóki nie ma danych mapy
  */
 @Immutable
 internal data class AreaOrder(val areas: List<MapArea>)
 
-/** Nazwa terenu budynku [symbol], gdy to inny teren niż pokazany na mapie (US1.8); inaczej `null`. */
+/** Nazwa terenu budynku [symbol], gdy to inny teren niż pokazany na mapie; inaczej `null`. Wymagania: US1.8 */
 internal fun AreaOrder.otherAreaOf(symbol: String): String? =
     areas.drop(n = 1).firstOrNull { symbol in it.symbols }?.name
 
 /**
- * Tereny mapy V1: który teren mapa pokazuje i na jakie można go zmienić (US1.6, US1.7).
+ * Tereny mapy V1: który teren mapa pokazuje i na jakie można go zmienić.
+ *
+ * Wymagania: US1.6, US1.7, US1.8
  *
  * @param data dane mapy z terenami; `null`, dopóki ich nie ma
- * @param symbol budynek zaznaczenia z trasy; bez wyboru osoby to on wyznacza teren (US1.8)
+ * @param symbol budynek zaznaczenia z trasy; bez wyboru osoby to on wyznacza teren
  * @param chosen zapisywana nazwa terenu wybranego przez osobę; `null` bez wyboru
  * @param seen zapisywana nazwa terenu, o którym osoba już wie: wybrała go albo ruszyła na nim mapę; `null`, dopóki
  *   widziała tylko teren startowy
@@ -55,10 +59,14 @@ internal class MapAreas(
     /** Teren pokazany na mapie; `null` bez danych mapy. */
     val current: MapArea? get() = data?.areaOf(chosen.value, symbol)
 
-    /** Lista terenów: pokazany pierwszy, pozostałe od najbliższego, z liczbą budynków i odległością (US1.7). */
+    /**
+     * Lista terenów: pokazany pierwszy, pozostałe od najbliższego, z liczbą budynków i odległością.
+     *
+     * Wymagania: US1.7
+     */
     val choices: List<AreaChoice> get() = current?.let { data?.areaChoices(it) }.orEmpty()
 
-    /** Tereny w kolejności nagłówków listy budynków: pokazany pierwszy, pozostałe od najbliższego (US1.8). */
+    /** Tereny w kolejności nagłówków listy budynków: pokazany pierwszy, pozostałe od najbliższego. Wymagania: US1.8 */
     val order: AreaOrder
         get() {
             val known = data?.areas.orEmpty().associateBy(MapArea::name)
@@ -67,8 +75,10 @@ internal class MapAreas(
 
     /**
      * Nazwa terenu do napisu „Pokazuję teren: Wittigowo”: mapa zmieniła teren sama, bo zaznaczony budynek, np.
-     * z wyszukiwania albo z listy, leży na innym terenie niż ten, o którym osoba wie (US1.8). `null`, gdy teren
+     * z wyszukiwania albo z listy, leży na innym terenie niż ten, o którym osoba wie. `null`, gdy teren
      * wybrała osoba albo już o nim wie.
+     *
+     * Wymagania: US1.8
      */
     val notice: String?
         get() {
@@ -77,17 +87,23 @@ internal class MapAreas(
             return shown.takeIf { chosen.value == null && it != known }
         }
 
-    /** Osoba wie o pokazanym terenie, np. ruszyła mapę przyciskiem: napis o zmianie terenu znika (US1.8). */
+    /** Osoba wie o pokazanym terenie, np. ruszyła mapę przyciskiem: napis o zmianie terenu znika. Wymagania: US1.8 */
     fun acknowledge() {
         current?.let { seen.value = it.name }
     }
 
-    /** Sąsiedni teren dla środka widoku [view] na granicy pokazanego terenu; `null` z dala od granicy (US1.7). */
+    /**
+     * Sąsiedni teren dla środka widoku [view] na granicy pokazanego terenu; `null` z dala od granicy.
+     *
+     * Wymagania: US1.7
+     */
     fun neighbor(view: GeoPoint): AreaNeighbor? = current?.let { data?.areaNeighbor(it, view) }
 
     /**
-     * Wybiera teren [name] i zwraca jego widok startowy: środek terenu w powiększeniu startowym (US1.7, BR-G5).
+     * Wybiera teren [name] i zwraca jego widok startowy: środek terenu w powiększeniu startowym.
      * `null` i brak zmiany, gdy dane nie mają takiego terenu.
+     *
+     * Wymagania: US1.7, BR-G5
      */
     fun show(name: String): MapCamera? =
         data?.areas?.firstOrNull { it.name == name }?.let { area ->
@@ -99,8 +115,9 @@ internal class MapAreas(
 
 /**
  * Tereny mapy z danych [layers] i zaznaczenia [focus] z trasy. Wybór osoby jest zapisywany, więc wraca po obrocie
- * ekranu i po „Wstecz” z V2 (NFR-22); nowe zaznaczenie z trasy, np. budynek z wyszukiwania, znów wyznacza teren
- * (US1.8).
+ * ekranu i po „Wstecz” z V2; nowe zaznaczenie z trasy, np. budynek z wyszukiwania, znów wyznacza teren.
+ *
+ * Wymagania: NFR-22, US1.8
  */
 @Composable
 internal fun rememberMapAreas(layers: CampusMapData?, focus: MapFocus?): MapAreas {

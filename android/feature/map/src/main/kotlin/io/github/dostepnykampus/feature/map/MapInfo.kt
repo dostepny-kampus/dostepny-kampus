@@ -38,7 +38,7 @@ import io.github.dostepnykampus.core.model.AssessmentSource
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import java.time.LocalDate
 
-/** Strona praw autorskich OpenStreetMap, cel odnośnika w podpisie mapy i w panelu „Źródła danych” (NFR-37). */
+/** Strona praw autorskich OpenStreetMap, cel odnośnika w podpisie mapy i w panelu „Źródła danych”. Wymagania: NFR-37 */
 internal const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 
 /** Dzień stanu danych z importu: najpóźniejszy dzień oznaczenia wejść ze źródła PWr; `null`, gdy takich nie ma. */
@@ -49,8 +49,10 @@ internal fun BuildingCatalog.dataDay(): LocalDate? {
 
 /**
  * Przycisk „ⓘ” mapy V1 według makiety hi-fi: koło w prawym dolnym rogu mapy, a nad nim, gdy [isOpen], panel
- * „Źródła danych” z licencją i źródłami (NFR-37, NFR-40). Cel dotyku 48 dp, nazwę „Informacje o mapie” czyta
- * TalkBack (NFR-17, NFR-18).
+ * „Źródła danych” z licencją i źródłami. Cel dotyku 48 dp, nazwę „Informacje o mapie” czyta
+ * TalkBack.
+ *
+ * Wymagania: NFR-37, NFR-40, NFR-17, NFR-18
  *
  * @param isOpen czy panel jest otwarty
  * @param dataDay dzień stanu danych PWr albo `null`, gdy dane go nie podają

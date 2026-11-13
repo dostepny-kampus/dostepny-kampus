@@ -36,7 +36,7 @@ import io.github.dostepnykampus.core.designsystem.pathIcon
 
 private const val DARK_SURFACE_LUMINANCE = 0.5f
 
-/** Cel dotyku pływającej kontrolki mapy (NFR-17). */
+/** Cel dotyku pływającej kontrolki mapy. Wymagania: NFR-17 */
 internal val MapControlTouchSize = 48.dp
 internal val ControlCircleSize = 44.dp
 
@@ -54,8 +54,10 @@ internal fun mapControlBorder(): BorderStroke? {
 /**
  * Przyciski mapy V1 według makiety hi-fi: białe koła z cieniem i szewronami w prawym górnym rogu. Strzałki
  * stoją w krzyżu, „Powiększ” i „Pomniejsz” w prawej kolumnie. Każdy przycisk zmienia [camera] bez gestu
- * i oddaje nowy widok przez [onCameraChange] (NFR-53, WCAG 2.5.1, WCAG 2.5.7). Jedna kontrolka to cel dotyku
- * 48 dp (NFR-17), a w nim koło z cieniem; jej nazwę czyta TalkBack (NFR-18), ikona jest tylko ozdobą.
+ * i oddaje nowy widok przez [onCameraChange] (WCAG 2.5.1, WCAG 2.5.7). Jedna kontrolka to cel dotyku
+ * 48 dp, a w nim koło z cieniem; jej nazwę czyta TalkBack, ikona jest tylko ozdobą.
+ *
+ * Wymagania: NFR-53, NFR-17, NFR-18
  */
 @Composable
 internal fun MapControls(camera: MapCamera, onCameraChange: (MapCamera) -> Unit, modifier: Modifier = Modifier) {

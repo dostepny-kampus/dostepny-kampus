@@ -23,8 +23,10 @@ import io.github.dostepnykampus.core.designsystem.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.Typografia
 
 /**
- * Wiersz wejścia na karcie budynku i na liście wejść: oznaczenie, znacznik „zalecane”, nazwa, ocena i przyciski
- * (US2, US17). Jeden układ dla obu ekranów, więc wygląd i opis dla czytnika ekranu się nie rozjadą (#868).
+ * Wiersz wejścia na karcie budynku i na liście wejść: oznaczenie, znacznik „zalecane”, nazwa, ocena i przyciski.
+ * Jeden układ dla obu ekranów, więc wygląd i opis dla czytnika ekranu się nie rozjadą.
+ *
+ * Wymagania: US2, US17
  *
  * @param listed wejście z kolejnością i znacznikiem „zalecane”
  * @param withAssessment czy pokazać ocenę wejścia; bez niej, gdy wszystkie wejścia mają tę samą ocenę nad listą

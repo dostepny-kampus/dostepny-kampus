@@ -40,10 +40,12 @@ import io.github.dostepnykampus.core.designsystem.Wysokosci
 
 /**
  * Przycisk terenu mapy V1 według makiety hi-fi: znak „⊙”, nazwa pokazanego terenu i znak rozwinięcia, a pod nim,
- * gdy [isOpen], panel „Teren na mapie” z listą terenów (US1.6, US1.7). Przycisk ma cel dotyku 48 dp i nazwę dla
- * TalkBack „Teren: Kampus główny. Zmień teren” (NFR-17, NFR-18). Po otwarciu panelu fokus stoi na nagłówku, a po
- * zamknięciu wraca na przycisk (NFR-20), dlatego przycisk przyjmuje fokus także w trybie dotyku; „Wstecz” zamyka
+ * gdy [isOpen], panel „Teren na mapie” z listą terenów. Przycisk ma cel dotyku 48 dp i nazwę dla
+ * TalkBack „Teren: Kampus główny. Zmień teren”. Po otwarciu panelu fokus stoi na nagłówku, a po
+ * zamknięciu wraca na przycisk, dlatego przycisk przyjmuje fokus także w trybie dotyku; „Wstecz” zamyka
  * panel.
+ *
+ * Wymagania: US1.6, US1.7, NFR-17, NFR-18, NFR-20
  *
  * @param areas lista terenów; pusta nie pokazuje przycisku
  * @param isOpen czy panel jest otwarty
