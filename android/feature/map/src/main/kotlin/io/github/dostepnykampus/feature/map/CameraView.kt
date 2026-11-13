@@ -31,12 +31,14 @@ internal val CameraSaver =
 internal data class CameraView(val camera: MapCamera?, val keep: (MapCamera) -> Unit)
 
 /**
- * Zapisywany widok mapy dla zaznaczenia [focus]. Nowe wejście zaczyna od nowa (US3.3). Budynek z poleceniem
+ * Zapisywany widok mapy dla zaznaczenia [focus]. Nowe wejście zaczyna od nowa. Budynek z poleceniem
  * „Pokaż budynek na mapie” stawia kamerę na swoim punkcie podpisu z danych mapy [layers], dopóki osoba nie ruszy
- * mapy ani widok nie zostanie zapisany; budynek bez polecenia kamery nie rusza (decyzja 83). Potem kamera
- * idzie za osobą, także po obrocie ekranu (US2.9, NFR-53, NFR-22). Wykonane polecenie jest zapamiętane razem
+ * mapy ani widok nie zostanie zapisany; budynek bez polecenia kamery nie rusza. Potem kamera
+ * idzie za osobą, także po obrocie ekranu. Wykonane polecenie jest zapamiętane razem
  * z zapisanym widokiem przez jego tożsamość ([MapFocus.Building.command]), więc nowe polecenie, także dla tego
  * samego budynku, znów przesuwa kamerę, niezależnie od tego, czy mapa była między nimi składana.
+ *
+ * Wymagania: US3.3, US2.9, NFR-53, NFR-22
  */
 @Composable
 internal fun rememberCameraView(focus: MapFocus?, layers: CampusMapData?): CameraView {

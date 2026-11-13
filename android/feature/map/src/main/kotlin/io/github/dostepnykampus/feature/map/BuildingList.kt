@@ -31,14 +31,16 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.MapArea
 
 /**
- * Lista budynków V1 podzielona nagłówkami terenów z liczbą budynków, np. „Wittigowo · 9” (US1.8, NFR-19). W terenie
+ * Lista budynków V1 podzielona nagłówkami terenów z liczbą budynków, np. „Wittigowo · 9”. W terenie
  * budynki stoją w kolejności katalogu, a wpisany symbol [query] zawęża listę; teren bez pasującego budynku nie ma
- * nagłówka. Nagłówek jest nagłówkiem dla TalkBack, który czyta „Wittigowo, 9 budynków” (NFR-18). Bez danych mapy
+ * nagłówka. Nagłówek jest nagłówkiem dla TalkBack, który czyta „Wittigowo, 9 budynków”. Bez danych mapy
  * lista nie ma nagłówków.
+ *
+ * Wymagania: US1.8, NFR-19, NFR-18, NFR-11
  *
  * @param catalog katalog budynków; `null`, dopóki się wczytuje
  * @param query tekst z pola symbolu
- * @param search wynik wyszukiwania z modelu widoku; lista pokazuje go tylko dla [query] (NFR-11, #1053)
+ * @param search wynik wyszukiwania z modelu widoku; lista pokazuje go tylko dla [query]
  * @param areas tereny w kolejności nagłówków
  * @param onBuildingClick symbol budynku wybranego na liście
  * @param modifier wymiary listy
