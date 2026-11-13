@@ -15,6 +15,7 @@ import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
 import io.github.dostepnykampus.building.CampusArea;
 import io.github.dostepnykampus.building.Outlines;
+import java.util.UUID;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +51,19 @@ public class SubmissionService {
         this.outlines = outlines;
         this.area = area;
         this.events = events;
+    }
+
+    /**
+     * Wykonuje operację z blokadą istniejącego zgłoszenia do końca transakcji.
+     * Brak zgłoszenia obsługuje operacja; błąd operacji zwalnia blokadę.
+     *
+     * @param id Identyfikator zgłoszenia
+     * @param write Kontrola statusu i zapis zdjęcia
+     */
+    @Transactional
+    public void locked(final UUID id, final Runnable write) {
+        this.repository.lock(id);
+        write.run();
     }
 
     /**

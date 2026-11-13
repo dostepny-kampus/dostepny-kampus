@@ -108,6 +108,12 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     }
 
     @Override
+    public void lock(final UUID id) {
+        this.jdbc.sql("SELECT id FROM submissions WHERE id = :id FOR UPDATE")
+            .param("id", id).query(UUID.class).optional();
+    }
+
+    @Override
     public CreateResult create(final NewSubmission submission) {
         final Optional<Submission> created = this.write(
             this.jdbc.sql(JdbcSubmissions.INSERT).param("author", submission.author()),

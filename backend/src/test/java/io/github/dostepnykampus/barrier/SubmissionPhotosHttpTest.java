@@ -202,7 +202,8 @@ final class SubmissionPhotosHttpTest {
                             context.getBean(PhotoSettings.class).endpoint(),
                             String.format("brak-%s", UUID.randomUUID()), "", ""
                         )
-                    )
+                    ),
+                    context.getBean(SubmissionService.class)
                 )
             )
         ).setControllerAdvice(context.getBean(ProblemResponses.class))

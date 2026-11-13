@@ -9,7 +9,8 @@
  *
  * <p>Obsługuje zgłoszenie bariery przez Odwiedzającego, formularz
  * zgłoszenia Zbierającego, status zgłoszeń autora i podgląd
- * podobnych zgłoszeń dla Weryfikatora.</p>
+ * podobnych zgłoszeń dla Weryfikatora. Zapis zdjęcia blokuje wiersz zgłoszenia,
+ * aby przyjęcie nie wyprzedziło zapisu obiektu do magazynu.</p>
  *
  * <p>Wymagania: US4, US7, US8, US10.1, BR-13</p>
  *

@@ -96,7 +96,8 @@ final class SubmissionPhotosPruneTest {
             new PhotoStore(
                 new SubmissionPhotosPruneTest.NoBucket(),
                 new PhotoSettings(URI.create("http://magazyn"), "brak-kubelka", "", "")
-            )
+            ),
+            context.getBean(SubmissionService.class)
         );
         final UUID submission = UUID.randomUUID();
         Assertions.assertDoesNotThrow(
