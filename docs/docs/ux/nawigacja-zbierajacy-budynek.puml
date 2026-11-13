@@ -1,0 +1,33 @@
+@startuml
+!include _nawigacja.iuml
+
+start
+:V1 Mapa kampusu;
+-> budynek;
+:V2 Karta budynku\n(przyciski Zbierającego);
+split
+  -> „Popraw\nzgłoszenie”;
+  :C2 Formularz zgłoszenia;
+  -> „Zapisz”;
+  :C3 Moje zgłoszenia;
+  detach
+split again
+  -> „Zmień\noznaczenie”;
+  :C6 Zmiana oznaczenia\nwejścia;
+  -> „Wyślij do\nsprawdzenia”;
+  :C3 Moje zgłoszenia;
+  detach
+split again
+  -> „Zgłoś, że\nbariery nie ma”;
+  :C7 Usunięcie bariery;
+  -> „Wyślij do\nsprawdzenia”;
+  :C3 Moje zgłoszenia;
+  detach
+split again
+  -> „Oznacz obejrzane\npiętra”;
+  :C5 Piętra obejrzane;
+  -> „Wstecz”;
+  :V2 Karta budynku;
+  detach
+end split
+@enduml

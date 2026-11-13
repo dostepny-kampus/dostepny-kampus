@@ -1,0 +1,37 @@
+@startuml
+!include _nawigacja.iuml
+
+start
+:V1 Mapa kampusu;
+-> „Konto i praca”\nw pasku dolnym;
+:L2 Konto i praca;
+split
+  -> Weryfikator:\n„Zgłoszenia\ndo sprawdzenia”;
+  :R1 Kolejka weryfikacji;
+  -> „Weź do\nsprawdzenia”;
+  :R2 Sprawdzenie\nzgłoszenia;
+  -> „Przyjmij”\nalbo „Odrzuć”;
+  :R1 Kolejka weryfikacji;
+  detach
+split again
+  -> Koordynator:\n„Postęp\ninwentaryzacji”;
+  :K1 Postęp\ninwentaryzacji;
+  -> dotknięcie\nbudynku;
+  :C5 Piętra obejrzane\n(tylko cofanie);
+  -> „Cofnij znacznik”;
+  :Potwierdzenie\ncofnięcia; <<stan>>
+  -> „Cofnij znacznik”\nalbo „Zostaw znacznik”;
+  :C5 Piętra obejrzane;
+  detach
+split again
+  -> Koordynator:\n„Zaproś osobę”;
+  :K2 Zaproszenie;
+  detach
+split again
+  -> Koordynator:\n„Pobierz eksport”;
+  :K3 Eksport;
+  -> „Pobierz plik”;
+  :Pobrane pliki\ntelefonu; <<poza>>
+  detach
+end split
+@enduml
