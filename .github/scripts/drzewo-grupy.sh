@@ -9,7 +9,9 @@ set -euo pipefail
 # porownaj: w grupie kolejki porównuje drzewo commitu grupy (GROUP_HEAD_SHA, GROUP_HEAD_REF) z drzewem, na którym ostatni
 # przebieg workflow DRZEWO_WORKFLOW na PR był w pełni zielony; wynik w GITHUB_OUTPUT: `pomin=true` albo `pomin=false`.
 # Zmiana katalogu .github względem GROUP_BASE_SHA (workflow, skrypty) zawsze daje `pomin=false`. Każdy błąd odczytu też,
-# więc niepewność nigdy nie osłabia kontroli. Środowisko: GH_TOKEN, GH_REPO.
+# więc niepewność nigdy nie osłabia kontroli. Przebieg z innym tytułem niż bieżący tytuł PR też daje `pomin=false`:
+# kolejka bierze tytuł do nagłówka squasha, więc zielony przebieg musi dotyczyć tego tytułu (#726).
+# Środowisko: GH_TOKEN, GH_REPO.
 tryb="${1:?Podaj tryb: zapisz albo porownaj}"
 
 odpowiedz() {
@@ -43,19 +45,24 @@ if ! github_grupy="$(poddrzewo_github "$drzewo_grupy")" || ! github_bazy="$(podd
   [[ -z $github_grupy || $github_grupy != "$github_bazy" ]]; then
   odpowiedz false "grupa zmienia katalog .github względem bazy albo nie odczytano jego drzewa."
 fi
-if ! glowa="$(gh api "repos/${GH_REPO}/pulls/${pr}" --jq .head.sha)" || [[ -z $glowa ]]; then
+if ! dane_pr="$(gh api "repos/${GH_REPO}/pulls/${pr}" --jq '[.head.sha, .title] | @tsv')"; then
   odpowiedz false "nie odczytano commitu PR #${pr}."
 fi
+IFS=$'\t' read -r glowa tytul_pr <<<"$dane_pr"
+[[ -n ${glowa:-} ]] || odpowiedz false "nie odczytano commitu PR #${pr}."
 if ! przebiegi="$(gh api "repos/${GH_REPO}/actions/workflows/${DRZEWO_WORKFLOW}/runs?event=pull_request&head_sha=${glowa}&per_page=100" \
-  --jq '.workflow_runs[] | [.id, .status, (.conclusion // "-"), .created_at, .html_url] | @tsv')"; then
+  --jq '.workflow_runs[] | [.id, .status, (.conclusion // "-"), .created_at, .html_url, .display_title] | @tsv')"; then
   odpowiedz false "nie odczytano przebiegów ${DRZEWO_WORKFLOW} na PR #${pr}."
 fi
 # Liczy się najnowszy przebieg na ostatnim commicie PR: późniejsza zmiana tytułu albo opisu (pr-guard) go zastępuje.
 najnowszy="$(printf '%s\n' "$przebiegi" | sort -t "$(printf '\t')" -k4,4r | head -n 1)"
 [[ -n $najnowszy ]] || odpowiedz false "brak przebiegu ${DRZEWO_WORKFLOW} na PR #${pr}."
-IFS=$'\t' read -r id status wynik _ link <<<"$najnowszy"
+IFS=$'\t' read -r id status wynik _ link tytul_przebiegu <<<"$najnowszy"
 if [[ $status != completed || $wynik != success ]]; then
   odpowiedz false "przebieg ${DRZEWO_WORKFLOW} na PR #${pr} nie jest w pełni zielony (${status}, ${wynik}): ${link}"
+fi
+if [[ ${tytul_przebiegu:-} != "${tytul_pr:-}" ]]; then
+  odpowiedz false "tytuł PR #${pr} zmienił się po zielonym przebiegu ${DRZEWO_WORKFLOW}: ${link}"
 fi
 rm -rf "$DRZEWO_KATALOG"
 if ! gh run download "$id" --repo "$GH_REPO" --name drzewo-scalenia --dir "$DRZEWO_KATALOG" || [[ ! -s $DRZEWO_KATALOG/drzewo.txt ]]; then

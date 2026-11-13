@@ -33,14 +33,14 @@ group_sha=$(printf '1%.0s' {1..40})
 base_sha=$(printf '3%.0s' {1..40})
 head_sha=$(printf '2%.0s' {1..40})
 t=$'\t'
-green="900${t}completed${t}success${t}2026-11-10T10:00:00Z${t}https://example/runs/900"
+green="900${t}completed${t}success${t}2026-11-10T10:00:00Z${t}https://example/runs/900${t}ci: tytuł"
 # przypadek <nazwa> <pomin> <fragment komunikatu> <przebiegi lub BRAK> <drzewo artefaktu lub BRAK> [gałąź grupy]
 przypadek() {
   local name="$1" want="$2" text="$3" runs="$4" artifact="$5" ref="${6:-refs/heads/gh-readonly-queue/sprint/4/pr-42-${group_sha}}" status=0
   rm -rf "$fake" "$workdir/out"
   mkdir "$fake"
   printf '%s\n' "$a" >"$fake/drzewo-${group_sha}"
-  printf '%s\n' "$head_sha" >"$fake/glowa-42"
+  printf '%s\t%s\n' "$head_sha" "${TYTUL_PR:-ci: tytuł}" >"$fake/glowa-42"
   printf '%s
 ' "$b" >"$fake/drzewo-${base_sha}"
   printf 'x
@@ -80,6 +80,8 @@ przypadek "starszy czerwony nie zasłania nowszego zielonego: pomiń" true "runs
 BEZ="drzewo-${group_sha}" przypadek "nieodczytane drzewo grupy: pełny przebieg" false "nie odczytano drzewa commitu grupy" "$green" "$a"
 
 BEZ=glowa-42 przypadek "nieodczytana głowa PR: pełny przebieg" false "nie odczytano commitu PR" "$green" "$a"
+TYTUL_PR="ci: nowy tytuł" przypadek "tytuł PR zmieniony po zielonym przebiegu: pełny przebieg" false \
+  "tytuł PR #42 zmienił się" "$green" "$a"
 GITHUB_BAZY=y przypadek "zmiana katalogu .github względem bazy przy równych drzewach: pełny przebieg" false "zmienia katalog .github" "$green" "$a"
 
 # Tryb `zapisz`: drzewo commitu scalenia trafia do pliku, a błąd odczytu nie wywraca joba.
