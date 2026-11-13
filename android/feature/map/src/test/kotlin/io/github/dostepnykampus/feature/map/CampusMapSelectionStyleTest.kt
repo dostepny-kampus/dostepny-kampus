@@ -107,7 +107,7 @@ class CampusMapSelectionStyleTest {
      * budynku, wejścia albo bariery nie wymaga nowego stylu, a mapa wygląda tak samo (US1.1, US1.5, US3.3).
      */
     @Test
-    fun us1_1_selection_shown_in_ready_style() {
+    fun us1_1_selection_on_ready() {
         val chosen = SelectedEntrance(id = "w1", location = at, label = "Główne", buildingSymbol = "A-1")
         val selections =
             listOf(

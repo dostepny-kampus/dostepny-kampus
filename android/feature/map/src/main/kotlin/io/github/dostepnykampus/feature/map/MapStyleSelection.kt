@@ -97,12 +97,12 @@ internal interface MapStyleTarget {
  */
 internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<String, Bitmap> = emptyMap()) {
     images.forEach { (name, image) -> image(name, image) }
-    paint(BUILDINGS_LAYER, BUILDINGS_FILL, look.buildingsFill)
-    paint(OUTLINES_LAYER, OUTLINES_COLOR, look.outlinesColor)
-    filter(SELECTED_LAYER, look.selectedFilter)
-    filter(ENTRANCES_LAYER, look.entrancesFilter)
-    filter(CHOSEN_BARRIER_LAYER, look.chosenBarrierFilter)
-    data(CHOSEN_SOURCE, look.chosenEntrance.toString())
+    paint(layer = BUILDINGS_LAYER, property = BUILDINGS_FILL, value = look.buildingsFill)
+    paint(layer = OUTLINES_LAYER, property = OUTLINES_COLOR, value = look.outlinesColor)
+    filter(layer = SELECTED_LAYER, filter = look.selectedFilter)
+    filter(layer = ENTRANCES_LAYER, filter = look.entrancesFilter)
+    filter(layer = CHOSEN_BARRIER_LAYER, filter = look.chosenBarrierFilter)
+    data(source = CHOSEN_SOURCE, geoJson = look.chosenEntrance.toString())
 }
 
 /**
