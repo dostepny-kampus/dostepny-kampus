@@ -12,6 +12,9 @@ on:
     paths:
       - "backend/**"
       - "data/**"
+      - "api/openapi.yaml"
+      - "specs/**"
+      - "infra/**"
       - ".github/workflows/backend.yml"
   merge_group:
     types:
@@ -46,7 +49,7 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
-      - name: Sprawdź, czy PR albo grupa w kolejce zmienia serwer albo dane, które serwer importuje
+      - name: Sprawdź, czy PR albo grupa w kolejce zmienia serwer albo pliki, które czytają jego testy
         id: diff
         env:
           EVENT: ${{ github.event_name }}
@@ -60,7 +63,7 @@ jobs:
             from=$GROUP_BASE_SHA
             to=$GROUP_HEAD_SHA
           fi
-          if git diff --quiet "$from" "$to" -- backend data .github/workflows/backend.yml; then
+          if git diff --quiet "$from" "$to" -- backend data api/openapi.yaml specs infra .github/workflows/backend.yml; then
             echo "serwer=false" >> "$GITHUB_OUTPUT"
           else
             echo "serwer=true" >> "$GITHUB_OUTPUT"
