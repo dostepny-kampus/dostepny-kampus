@@ -96,6 +96,7 @@ nav:
       - Kontekst systemu: architektura/kontekst.md
       - Kontenery: architektura/kontenery.md
       - Oceny zależności: architektura/oceny-zaleznosci.md
+      - Opisy w kodzie: architektura/opisy-w-kodzie.md
       - Decyzje:
           - ADR-0001 Stos technologiczny: architektura/decyzje/0001-stos-technologiczny.md
           - ADR-0002 Jedno repozytorium: architektura/decyzje/0002-monorepo.md

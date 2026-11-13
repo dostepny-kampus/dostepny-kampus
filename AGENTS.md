@@ -89,6 +89,7 @@ Opis nie zawiera:
 
 Identyfikatory wymagań stoją w jednej linii na końcu opisu: `Wymagania: US1.1, NFR-19`.
 Powód zmiany jest w opisie PR i w issue. Opis modułu zmienia się w tym samym PR co moduł.
+Przykład „przed” i „po” oraz kontrole każdego punktu: `docs/docs/architektura/opisy-w-kodzie.md`.
 Reguły i czyszczenie istniejących opisów: epik #1336.
 
 ## 8. Testy uruchamia CI
