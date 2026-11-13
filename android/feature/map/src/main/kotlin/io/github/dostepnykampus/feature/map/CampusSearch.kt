@@ -54,6 +54,7 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.BuildingCatalog
+import java.time.Instant
 
 private val SearchIcon =
     pathIcon(
@@ -86,6 +87,7 @@ private val ClearIcon =
  * @param search wynik wyszukiwania z modelu widoku; ekran pokazuje go tylko dla zapytania z pola (NFR-11, #1053)
  * @param onSearch nowe zapytanie z pola, do policzenia w modelu widoku
  * @param isOnline czy jest internet; bez niego pod przełącznikiem stoi [OfflineLine]
+ * @param syncedAt chwila pobrania najstarszych danych z serwera do daty w [OfflineLine] (#1127)
  * @param isList czy przełącznik stoi na „Lista budynków”; wtedy pod górą jest lista budynków
  * @param areas tereny w kolejności nagłówków listy budynków (US1.8)
  * @param onListChange wybór w przełączniku albo „Lista budynków” w karcie brak wyniku
@@ -99,6 +101,7 @@ internal fun CampusSearch(
     search: BuildingSearch,
     onSearch: (String) -> Unit,
     isOnline: Boolean,
+    syncedAt: Instant?,
     isList: Boolean,
     areas: AreaOrder,
     onListChange: (Boolean) -> Unit,
@@ -125,7 +128,7 @@ internal fun CampusSearch(
     }
     Column(modifier.fillMaxWidth()) {
         SearchHeader(query = query, onQueryChange = { query = it }, isList = isList, onListChange = onListChange)
-        if (!isOnline) OfflineLine()
+        if (!isOnline) OfflineLine(syncedAt)
         if (isNoResult || shown.isNotEmpty()) {
             ResultPanel {
                 shown.forEach { building ->

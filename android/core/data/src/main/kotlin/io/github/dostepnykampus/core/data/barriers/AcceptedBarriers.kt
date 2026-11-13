@@ -47,6 +47,12 @@ fun interface AcceptedBarriers {
      * (NFR-11).
      */
     suspend fun barriers(): List<AcceptedBarrier>
+
+    /**
+     * Chwila pobrania z serwera barier z ostatniego wywołania [barriers]: odpowiedzi albo kopii (NFR-10, #1127);
+     * `null`, gdy bariery nie są ani z serwera, ani z kopii.
+     */
+    fun syncedAt(): Instant? = null
 }
 
 /**
@@ -64,14 +70,22 @@ class ServerAcceptedBarriers(
     private val copy: BarrierListCopy? = null,
     private val accepted: suspend () -> ApiResult<List<Submission>>,
 ) : AcceptedBarriers {
+    @Volatile private var synced: Instant? = null
+
     override suspend fun barriers(): List<AcceptedBarrier> {
         val result = accepted()
         return if (result is ApiResult.Success) {
-            result.value.mapNotNull { it.toBarrier() }.also { copy?.save(it) }
+            val shown = result.value.mapNotNull { it.toBarrier() }
+            synced = copy?.save(shown) ?: Instant.now()
+            shown
         } else {
-            copy?.restore().orEmpty()
+            val restored = copy?.restoreSynced()
+            synced = restored?.syncedAt
+            restored?.barriers.orEmpty()
         }
     }
+
+    override fun syncedAt(): Instant? = synced
 }
 
 internal fun Submission.toBarrier(): AcceptedBarrier? {

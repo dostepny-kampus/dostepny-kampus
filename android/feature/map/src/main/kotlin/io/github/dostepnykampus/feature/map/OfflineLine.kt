@@ -33,6 +33,7 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.pathIcon
+import java.time.Instant
 
 private val NoInternetIcon =
     pathIcon(
@@ -44,15 +45,17 @@ private val NoInternetIcon =
 
 /**
  * Wskaźnik braku sieci na V1: jedna linia z ikoną i napisem „Bez internetu” na całą szerokość, pod górą ekranu
- * (US9.1, NFR-10, NFR-21, PW-4). W S2 wszystkie dane są z pakietu aplikacji i nic nie jest pobierane, więc linia
- * nie ma daty „dane z …” (decyzja 84). Linia pojawia się sama, więc TalkBack czyta ją jako komunikat stanu
+ * (US9.1, NFR-10, NFR-21, PW-4). Gdy na mapie są dane pobrane z serwera, linia ma dopisek „dane z …” z dniem
+ * pobrania najstarszych z nich (#1127); przy samych danych z pakietu aplikacji daty nie ma (decyzja 84). Linia
+ * pojawia się sama, więc TalkBack czyta ją jako komunikat stanu
  * (NFR-15, WCAG 4.1.3).
  * Ikona to fale Wi-Fi z ukośną kreską z Material Icons, siatka 24 × 24, jak lupa w polu symbolu.
  *
+ * @param syncedAt chwila pobrania najstarszych danych z serwera na mapie; `null` dla danych z pakietu aplikacji
  * @param modifier położenie linii wyznacza wołający
  */
 @Composable
-internal fun OfflineLine(modifier: Modifier = Modifier) {
+internal fun OfflineLine(syncedAt: Instant? = null, modifier: Modifier = Modifier) {
     val insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
     Surface(
         modifier = modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
@@ -67,7 +70,11 @@ internal fun OfflineLine(modifier: Modifier = Modifier) {
             ) {
                 Icon(NoInternetIcon, contentDescription = null)
                 Text(
-                    text = stringResource(R.string.mapa_bez_internetu),
+                    text =
+                        syncedAt?.let {
+                            val day = DAY_FORMAT.format(it.atZone(CampusZone).toLocalDate())
+                            stringResource(R.string.mapa_bez_internetu_dane_z, day)
+                        } ?: stringResource(R.string.mapa_bez_internetu),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = Typografia.wyroznienieWaga,
                 )
