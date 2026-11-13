@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
  * i na serwerze” (US14.1).
  *
  * <p>Serwer sprawdza krok o próbie z pominięciem aplikacji. Kroki o ekranach
- * aplikacji nie mają tu działania: sprawdza je test aplikacji.</p>
+ * aplikacji pilnują tu tylko kolejności: sprawdza je test aplikacji.</p>
  *
  * @since 0.1.0
  */
@@ -72,21 +72,27 @@ public final class MissingRoleSteps {
     }
 
     /**
-     * Krok aplikacji; serwer nie ma tu działania.
+     * Krok aplikacji; serwer pilnuje tylko kolejności kroków.
      */
     @When("przejrzy dostępne ekrany aplikacji")
     public void browsesScreens() {
-        // Ekrany sprawdza test aplikacji tego scenariusza.
+        MatcherAssert.assertThat(
+            "Krok aplikacji stoi przed logowaniem osoby",
+            this.token, Matchers.not(Matchers.emptyString())
+        );
     }
 
     /**
-     * Krok aplikacji; serwer nie ma tu działania.
+     * Krok aplikacji; serwer pilnuje tylko kolejności kroków.
      *
      * @param screen Nazwa ekranu ze scenariusza
      */
     @Then("^nie widzi ekranu „(.+)”$")
     public void screenHidden(final String screen) {
-        // Ekran sprawdza test aplikacji tego scenariusza.
+        MatcherAssert.assertThat(
+            String.format("Krok o ekranie „%s” stoi przed logowaniem osoby", screen),
+            this.token, Matchers.not(Matchers.emptyString())
+        );
     }
 
     /**
@@ -118,7 +124,7 @@ public final class MissingRoleSteps {
             case "eksport" -> MockMvcRequestBuilders.get("/export.geojson");
             case "zaproszenie" -> MockMvcRequestBuilders.post("/invitations")
                 .contentType(MediaType.APPLICATION_JSON).content("{}");
-            default -> throw new IllegalArgumentException(
+            case null, default -> throw new IllegalArgumentException(
                 String.format("Scenariusz podaje czynność bez żądania: %s", action)
             );
         };
