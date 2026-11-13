@@ -122,20 +122,20 @@ class RecommendedEntrancePathTest {
         }
     }
 
-    private fun shown(wanted: Set<String>): List<String> =
-        compose
-            .onAllNodes(
-                SemanticsMatcher("napis z listy wejść") { node ->
-                    node.config
-                        .getOrNull(SemanticsProperties.Text)
-                        .orEmpty()
-                        .any { it.text in wanted }
-                },
-                useUnmergedTree = true,
-            )
+    private fun shown(wanted: Set<String>): List<String> {
+        val matcher =
+            SemanticsMatcher("napis z listy wejść") { node ->
+                node.config
+                    .getOrNull(SemanticsProperties.Text)
+                    .orEmpty()
+                    .any { it.text in wanted }
+            }
+        return compose
+            .onAllNodes(matcher, useUnmergedTree = true)
             .fetchSemanticsNodes()
             .sortedBy { it.positionInRoot.y }
             .map { node -> node.config[SemanticsProperties.Text].first().text }
+    }
 
     private companion object {
         val NAMES = setOf("Zalecane", "Główne", "Boczne", "Od dziedzińca", "Północne", "Południowe", "Zachodnie")
