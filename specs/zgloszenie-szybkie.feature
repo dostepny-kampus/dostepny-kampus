@@ -4,7 +4,7 @@ Funkcja: Zgłoszenie szybkie
   Odwiedzający zgłasza nową barierę zdjęciem i bieżącą pozycją, bez trudnego formularza (N3, N4).
   Typ bariery i uciążliwość ustala później Weryfikator.
 
-  @US4.1
+  @US4.1 @aplikacja
   Scenariusz: Zgłoszenie szybkie w 3 krokach z pozycją dołączoną automatycznie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz stoi przy niesprawnej windzie w budynku D-2
@@ -14,7 +14,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie powstaje po 3 krokach
     Oraz ma dołączoną bieżącą pozycję telefonu, o którą aplikacja nie pytała
 
-  @US4.6
+  @US4.6 @aplikacja
   Szablon scenariusza: Zgłoszenie przy wejściu podpowiada wejście, a miejsce bierze z bieżącej pozycji
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz otworzył <ekran> budynku A-1
@@ -28,7 +28,7 @@ Funkcja: Zgłoszenie szybkie
       | kartę                   |
       | ekran „Którędy wejść” |
 
-  @US4.3
+  @US4.3 @aplikacja
   Scenariusz: Wybór jednej z 6 grup barier dużymi przyciskami
     Zakładając, że Odwiedzający zrobił zdjęcie bariery w zgłoszeniu szybkim
     Jeżeli przejdzie do wyboru grupy barier
@@ -36,7 +36,7 @@ Funkcja: Zgłoszenie szybkie
     Oraz każdy przycisk ma co najmniej 48 × 48 dp
     Ale aplikacja nie pyta o typ bariery ani o uciążliwość
 
-  @US4.1 @US4.3
+  @US4.1 @US4.3 @aplikacja
   Szablon scenariusza: Zgłoszenia szybkiego nie da się wysłać bez zdjęcia albo grupy barier
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz zaczął zgłoszenie szybkie w budynku C-13
@@ -48,7 +48,7 @@ Funkcja: Zgłoszenie szybkie
       | zdjęcia       |
       | grupy barier  |
 
-  @US4.1
+  @US4.1 @aplikacja
   Scenariusz: Bez zgody na lokalizację aparat się nie otwiera
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz aplikacja nie ma zgody na lokalizację
@@ -59,7 +59,7 @@ Funkcja: Zgłoszenie szybkie
     Oraz widzi przycisk otwierający ustawienia telefonu
     Ale zgłoszenie nie powstaje
 
-  @US4.1
+  @US4.1 @aplikacja
   Scenariusz: Bez bieżącej pozycji zgłoszenie czeka na ponowną próbę
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz telefon nie ustala bieżącej pozycji
@@ -71,7 +71,7 @@ Funkcja: Zgłoszenie szybkie
     Oraz widzi komunikat, że telefon nie ustalił miejsca, z radą, co zrobić
     Oraz zdjęcie i grupa barier zostają do ponownej próby
 
-  @US4.1
+  @US4.1 @aplikacja
   Scenariusz: Pozycja ustalona przy ponownej próbie pozwala wysłać zgłoszenie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz zrobił zdjęcie bariery i wybrał grupę barier „inne”
@@ -82,7 +82,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie zostaje wysłane z tym samym zdjęciem, grupą barier i bieżącą pozycją
     Oraz Odwiedzający widzi potwierdzenie, że zgłoszenie trafi do weryfikacji
 
-  @BR-14
+  @BR-14 @aplikacja @serwer
   Szablon scenariusza: Budynek zgłoszenia szybkiego przypisuje system, a przy grupie „inne” piętro zostaje puste
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz stoi <miejsce>
@@ -96,7 +96,7 @@ Funkcja: Zgłoszenie szybkie
       | w budynku C-13                                                 | ma budynek C-13       |
       | na chodniku przed wejściem głównym A-1, poza konturem budynku  | jest „poza budynkiem” |
 
-  @US4.5 @BR-14
+  @US4.5 @BR-14 @aplikacja
   Szablon scenariusza: Pytanie o piętro tylko w budynku i przy grupie, która go wymaga
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz zrobił zdjęcie bariery, stojąc <miejsce>
@@ -112,7 +112,7 @@ Funkcja: Zgłoszenie szybkie
       | w budynku C-13                       | „inne”                | przechodzi do kroku 3 bez pytania o piętro                                |
       | na chodniku przed A-1, poza konturem | „komunikacja pozioma” | przechodzi do kroku 3 bez pytania o piętro                                |
 
-  @US4.5
+  @US4.5 @aplikacja
   Scenariusz: Odpowiedź „Nie wiem” zostawia piętro puste i pozwala wysłać zgłoszenie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz w budynku D-2 wybrał grupę barier „komunikacja pionowa” i widzi pytanie o piętro
@@ -122,7 +122,7 @@ Funkcja: Zgłoszenie szybkie
     Oraz zgłoszenie nie ma piętra
     Oraz zgłoszenie powstało po 3 krokach
 
-  @US4.5
+  @US4.5 @aplikacja
   Scenariusz: Wybrane piętro trafia do zgłoszenia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz w budynku B-4 wybrał grupę barier „toalety” i widzi pytanie o piętro
@@ -130,7 +130,7 @@ Funkcja: Zgłoszenie szybkie
     Oraz wyśle zgłoszenie
     Wtedy zgłoszenie ma budynek B-4 i piętro 2
 
-  @US4.5 @BR-14
+  @US4.5 @BR-14 @aplikacja
   Scenariusz: Pozycja poza konturem przy wysłaniu zostawia piętro puste
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz wybrał grupę barier „komunikacja pozioma”, zanim telefon ustalił bieżącą pozycję
@@ -140,14 +140,14 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie jest „poza budynkiem”
     Oraz zgłoszenie nie ma piętra
 
-  @US4.2 @BR-9
+  @US4.2 @BR-9 @aplikacja
   Scenariusz: Zgłoszenie szybkie bez sieci zapisuje się w telefonie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz telefon nie ma sieci
     Jeżeli wyśle zgłoszenie szybkie z grupą barier „komunikacja pozioma”
     Wtedy zgłoszenie zapisuje się w telefonie
 
-  @US4.2 @BR-9
+  @US4.2 @BR-9 @aplikacja
   Scenariusz: Zgłoszenie szybkie zapisane bez sieci wysyła się samo po powrocie sieci
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz w telefonie czeka zgłoszenie szybkie zapisane bez sieci
@@ -155,7 +155,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie dociera na serwer bez działania Odwiedzającego
     Oraz na serwerze jest dokładnie jedno takie zgłoszenie
 
-  @US4.4
+  @US4.4 @aplikacja
   Scenariusz: Potwierdzenie po wysłaniu bez dalszego statusu
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz telefon ma sieć
@@ -163,34 +163,34 @@ Funkcja: Zgłoszenie szybkie
     Wtedy widzi potwierdzenie, że zgłoszenie trafi do weryfikacji
     Ale aplikacja nie pokazuje mu listy jego zgłoszeń ani ich statusów
 
-  @US4.4 @US4.2
+  @US4.4 @US4.2 @aplikacja
   Scenariusz: Potwierdzenie bez sieci mówi o późniejszej wysyłce
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz telefon nie ma sieci
     Jeżeli wyśle zgłoszenie szybkie z grupą barier „inne”
     Wtedy widzi potwierdzenie, że zgłoszenie wyśle się po powrocie sieci i trafi do weryfikacji
 
-  @US14.2 @RO-GOS
+  @US14.2 @RO-GOS @aplikacja
   Scenariusz: Gość niezalogowany jest proszony o logowanie przed zdjęciem
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli wybierze zgłoszenie szybkie
     Wtedy widzi prośbę o logowanie albo rejestrację
     Ale aparat się nie otwiera
 
-  @US14.2 @RO-GOS
+  @US14.2 @RO-GOS @aplikacja
   Scenariusz: Gość po zalogowaniu wraca do zgłoszenia szybkiego
     Zakładając, że Gość niezalogowany wybrał zgłoszenie szybkie i widzi prośbę o logowanie
     Jeżeli zaloguje się jako Odwiedzający
     Wtedy aplikacja otwiera aparat do zdjęcia bariery
 
-  @US14.2 @RO-GOS
+  @US14.2 @RO-GOS @aplikacja
   Scenariusz: Gość rezygnuje z logowania
     Zakładając, że Gość niezalogowany wybrał zgłoszenie szybkie i widzi prośbę o logowanie
     Jeżeli zrezygnuje z logowania
     Wtedy zgłoszenie nie powstaje
     Oraz aplikacja wraca do mapy kampusu
 
-  @US4.9 @BR-G5
+  @US4.9 @BR-G5 @aplikacja
   Szablon scenariusza: Zgłoszenie szybkie tylko na terenie PWr
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz zrobił zdjęcie bariery i wybrał grupę barier „komunikacja pozioma”
@@ -202,7 +202,7 @@ Funkcja: Zgłoszenie szybkie
       | 500 m     | może wysłać zgłoszenie, które jest „poza budynkiem”                |
       | 510 m     | widzi napis „Jesteś poza terenem PWr” i nie może wysłać zgłoszenia |
 
-  @US4.9 @BR-G5
+  @US4.9 @BR-G5 @aplikacja @serwer
   Scenariusz: Serwer odrzuca zgłoszenie spoza terenu PWr
     Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
     Jeżeli aplikacja wyśle zgłoszenie z miejscem 510 m od konturu najbliższego budynku PWr
