@@ -148,7 +148,7 @@ class SubmissionQueue(
      * @param photos zdjęcia do wysłania; identyfikatory wracają w [content]
      * @throws SaveRefusedException zdjęcia nie odpowiadają treści
      */
-    suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>): PendingSubmissionEntity {
+    suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>): SavedSubmission {
         requireMatchingPhotos(content, photos)
         val id = stamps.newId()
         val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
@@ -158,7 +158,7 @@ class SubmissionQueue(
             remember(entity)
         }
         runCatching(onSaved)
-        return entity
+        return SavedSubmission(id = id)
     }
 
     /**
