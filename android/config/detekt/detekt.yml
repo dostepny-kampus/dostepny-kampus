@@ -117,5 +117,3 @@ dostepnykampus:
   KDocDescriptionLength:
     excludes:
       - '**/build/generated/**'
-      - '**/app/src/test/kotlin/io/github/dostepnykampus/app/BuildingOnMapCameraTest.kt'
-      - '**/feature/help/src/main/kotlin/io/github/dostepnykampus/feature/help/HelpScreen.kt'
