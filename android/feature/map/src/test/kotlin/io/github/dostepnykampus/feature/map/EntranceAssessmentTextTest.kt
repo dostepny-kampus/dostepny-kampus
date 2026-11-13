@@ -74,7 +74,10 @@ class EntranceAssessmentTextTest {
         assertTrue(top(WALK_TEXT) < top(GROUP_V2))
     }
 
-    /** Wiersz: V2, wejścia z różnym źródłem → napis przy każdym wejściu, nad grupą go nie ma, US17.3, BR-24. */
+    /**
+     * Wiersz: V2, wejścia z różnym źródłem → napis przy każdym wejściu, nad grupą go nie ma, US17.3, BR-24.
+     * Scenariusz: oznaczenie-wejscia.feature: Różne źródła stoją przy każdym wejściu
+     */
     @Test
     fun us17_3_v2_per_entrance() {
         showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
