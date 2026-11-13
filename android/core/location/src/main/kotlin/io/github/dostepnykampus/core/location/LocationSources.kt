@@ -12,25 +12,25 @@ import kotlinx.coroutines.flow.Flow
  *
  * Wymagania: US6.1
  */
-fun interface PositionSource {
+public fun interface PositionSource {
     /** Odczyty od teraz, aż do przerwania zbierania. */
-    fun fixes(): Flow<PositionFix>
+    public fun fixes(): Flow<PositionFix>
 }
 
 /** Stan satelitów do napisu na ekranie C1: w aplikacji [GnssSatellites], w testach stan ręczny. Wymagania: US6.1 */
-fun interface SatelliteSource {
+public fun interface SatelliteSource {
     /** Widoczne satelity po każdej zmianie stanu odbiornika. */
-    fun satellites(): Flow<List<Satellite>>
+    public fun satellites(): Flow<List<Satellite>>
 }
 
 /** Włącznik lokalizacji telefonu dla ekranu C1: w aplikacji [GnssLocationSwitch], w testach stan ręczny. */
-fun interface LocationSwitch {
+public fun interface LocationSwitch {
     /** `true`, gdy dostawca GPS jest włączony; nowa wartość po każdym przełączeniu lokalizacji w telefonie. */
-    fun isEnabled(): Flow<Boolean>
+    public fun isEnabled(): Flow<Boolean>
 }
 
 /** Zegar monotoniczny telefonu, ten sam co czas odczytów [PositionFix.elapsedMillis]; liczy sekundy pomiaru. */
-fun interface ElapsedClock {
+public fun interface ElapsedClock {
     /** Bieżący czas w milisekundach. */
-    fun nowMillis(): Long
+    public fun nowMillis(): Long
 }

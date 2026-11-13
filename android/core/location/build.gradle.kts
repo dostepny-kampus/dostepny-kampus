@@ -13,6 +13,10 @@ android {
     testOptions.unitTests.isIncludeAndroidResources = true
 }
 
+kotlin {
+    explicitApi()
+}
+
 dependencies {
     api(project(":core:model"))
     api(libs.dagger)
