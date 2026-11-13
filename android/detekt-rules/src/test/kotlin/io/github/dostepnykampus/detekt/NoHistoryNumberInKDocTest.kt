@@ -25,12 +25,12 @@ class NoHistoryNumberInKDocTest {
     }
 
     @Test
-    fun `numer decyzji po złamaniu linii`() {
+    fun `numer decyzji w dwóch liniach`() {
         assertEquals(listOf(1), lines("/**", " * Zwraca listę (decyzja", " * 82).", " */", "fun a() = 1"))
     }
 
     @Test
-    fun `decyzje z numerem w środku zdania`() {
+    fun `decyzje z numerem w zdaniu`() {
         assertEquals(listOf(1), lines("/** Motyw z tokenów (decyzje projektu nr 48 i 50). */", "fun a() = 1"))
     }
 
@@ -40,12 +40,12 @@ class NoHistoryNumberInKDocTest {
     }
 
     @Test
-    fun `znacznik pracy odłożonej przechodzi`() {
+    fun `znacznik odłożenia przechodzi`() {
         assertEquals(emptyList<Int>(), lines("/** Zwraca listę. ${MARKER}sortowanie. */", "fun a() = 1"))
     }
 
     @Test
-    fun `decyzja osoby bez numeru przechodzi`() {
+    fun `decyzja bez numeru przechodzi`() {
         assertEquals(emptyList<Int>(), lines("/** Czeka na decyzję osoby (BR-26). */", "fun a() = 1"))
     }
 
@@ -55,7 +55,7 @@ class NoHistoryNumberInKDocTest {
     }
 
     @Test
-    fun `komentarz blokowy nie jest sprawdzany`() {
+    fun `komentarz blokowy pominięty`() {
         assertEquals(emptyList<Int>(), lines("/* Nagłówek (#123). */", "fun a() = 1"))
     }
 
