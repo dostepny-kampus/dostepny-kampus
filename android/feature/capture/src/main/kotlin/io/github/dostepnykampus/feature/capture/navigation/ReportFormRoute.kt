@@ -19,6 +19,7 @@ import kotlinx.serialization.Serializable
  * @property accuracyMeters dokładność pomiaru w metrach
  * @property buildingSymbol budynek potwierdzony albo wybrany na C1; `null` to „poza budynkiem”
  * @property buildingName nazwa budynku obok symbolu albo `null`, gdy dane jej nie mają
+ * @property isManualCorrection Zbierający przesunął punkt na mapie po pomiarze (US6.4, NFR-3)
  */
 @Serializable
 data class ReportFormRoute(
@@ -27,4 +28,5 @@ data class ReportFormRoute(
     val accuracyMeters: Double,
     val buildingSymbol: String?,
     val buildingName: String? = null,
+    val isManualCorrection: Boolean = false,
 ) : NavKey
