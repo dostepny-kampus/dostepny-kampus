@@ -13,11 +13,9 @@ import com.tngtech.archunit.junit.ArchTest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
@@ -71,16 +69,15 @@ final class MutationTargetsArchitectureTest {
 
     @Test
     void rejectsPatternWithoutClass() {
-        final String pom = """
-            <targetClasses>
-              <param>a.*.domain.*</param>
-              <param>a.Moved*</param>
-            </targetClasses>
-            """;
         Assertions.assertEquals(
             List.of("a.Moved*"),
             MutationTargetsArchitectureTest.unmatched(
-                MutationTargetsArchitectureTest.patterns(pom),
+                MutationTargetsArchitectureTest.patterns(
+                    String.join(
+                        "", "<targetClasses>", "<param>a.*.domain.*</param>",
+                        "<param>a.Moved*</param>", "</targetClasses>"
+                    )
+                ),
                 Set.of("a.b.domain.Model", "a.shared.Moved")
             ),
             "Reguła przepuściła wzorzec bez pasującej klasy"
@@ -88,15 +85,9 @@ final class MutationTargetsArchitectureTest {
     }
 
     private static List<String> patterns(final String pom) {
-        final List<String> found = new ArrayList<>();
-        final Matcher block = MutationTargetsArchitectureTest.TARGETS.matcher(pom);
-        while (block.find()) {
-            final Matcher param = MutationTargetsArchitectureTest.PARAM.matcher(block.group(1));
-            while (param.find()) {
-                found.add(param.group(1));
-            }
-        }
-        return found;
+        return MutationTargetsArchitectureTest.TARGETS.matcher(pom).results().flatMap(
+            block -> MutationTargetsArchitectureTest.PARAM.matcher(block.group(1)).results()
+        ).map(param -> param.group(1)).toList();
     }
 
     private static List<String> unmatched(final List<String> patterns, final Set<String> names) {
