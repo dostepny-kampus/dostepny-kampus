@@ -130,17 +130,15 @@ final class ModuleRootArchitectureTest {
     }
 
     private static Set<String> production() {
-        final List<String> roots = ApplicationModules.of(DostepnyKampusApplication.class)
-            .stream()
-            .filter(module -> !module.isOpen())
-            .map(ApplicationModule::getBasePackage)
-            .map(JavaPackage::getName)
-            .toList();
         return ModuleRootArchitectureTest.internal(
             new ClassFileImporter()
                 .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
                 .importPackages(ModuleRootArchitectureTest.BASE),
-            roots
+            ApplicationModules.of(DostepnyKampusApplication.class).stream()
+                .filter(module -> !module.isOpen())
+                .map(ApplicationModule::getBasePackage)
+                .map(JavaPackage::getName)
+                .toList()
         );
     }
 
@@ -151,23 +149,21 @@ final class ModuleRootArchitectureTest {
             .filter(JavaClass::isTopLevelClass)
             .filter(type -> !"package-info".equals(type.getSimpleName()))
             .filter(type -> roots.contains(type.getPackageName()))
-            .filter(type -> type.getDirectDependenciesToSelf().stream()
-                .map(Dependency::getOriginClass)
-                .noneMatch(
-                    origin -> ModuleRootArchitectureTest.outside(origin, type.getPackageName())
-                ))
+            .filter(type -> !ModuleRootArchitectureTest.usedOutside(type))
             .map(JavaClass::getName)
             .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    private static boolean outside(final JavaClass origin, final String root) {
-        final String name = origin.getPackageName();
-        return !name.equals(root) && !name.startsWith(String.format("%s.", root));
+    private static boolean usedOutside(final JavaClass type) {
+        final String root = String.format("%s.", type.getPackageName());
+        return type.getDirectDependenciesToSelf().stream()
+            .map(Dependency::getOriginClass)
+            .anyMatch(origin -> !String.format("%s.", origin.getPackageName()).startsWith(root));
     }
 
     private JavaClasses compiled() throws IOException {
         final List<String> args = new ArrayList<>(List.of("-d", this.dir.toString()));
-        try (var files = Files.walk(this.dir)) {
+        try (Stream<Path> files = Files.walk(this.dir)) {
             files.filter(file -> file.toString().endsWith(".java"))
                 .map(Path::toString)
                 .forEach(args::add);
