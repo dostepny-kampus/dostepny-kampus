@@ -22,9 +22,11 @@ import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Testy US8.3, US9.3 i BR-10: PUT /submissions/{id} zapisuje edycję tylko
+ * PUT /submissions/{id} zapisuje edycję tylko
  * z wersji, którą ma serwer; inaczej daje 409 z wersją z serwera.
  * Bez transakcji testowej, jak na produkcji; wiersze usuwane po teście.
+ *
+ * <p>Wymagania: US8.3, US9.3, BR-10</p>
  *
  * @since 0.1.0
  */

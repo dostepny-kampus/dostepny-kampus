@@ -25,12 +25,14 @@ import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Serwer z domyślnym dekoderem ocenia token z prawdziwego Keycloaka
- * (NFR-33, US14.1, ADR-0003): podpis i wystawcę realmu oraz role z
+ * (ADR-0003): podpis i wystawcę realmu oraz role z
  * {@code realm_access.roles}.
  *
  * <p>Ma własny kontekst bez tożsamości testowej, bo sprawdza drogę używaną
  * w działającym systemie: adres realmu z ustawień, klucze pobrane z realmu
  * i odczyt ról z tokenu konta z {@code infra/keycloak/realm.json}.</p>
+ *
+ * <p>Wymagania: NFR-33, US14.1</p>
  *
  * @since 0.1.0
  */

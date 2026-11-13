@@ -64,8 +64,8 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * <p>Klienta testowego HTTP ({@code MockMvcBuilders}, {@code MockMvcTester},
  * {@code WebTestClient}) buduje tylko {@link MockMvcTestConfiguration}, więc
- * każdy test HTTP dostaje wspólne {@code MockMvc} z kontrolą kontraktu (#896).
- * Wyjątki są na liście z powodem, a lista może tylko maleć (#841).</p>
+ * każdy test HTTP dostaje wspólne {@code MockMvc} z kontrolą kontraktu.
+ * Wyjątki są na liście z powodem, a lista może tylko maleć.</p>
  *
  * @since 0.1.0
  */
@@ -103,7 +103,7 @@ final class TestSetupArchitectureTest {
     private static final Map<String, String> MOCKED = Map.of();
 
     /**
-     * Klasy, które budują klienta HTTP same, z powodem; lista może tylko maleć (#841).
+     * Klasy, które budują klienta HTTP same, z powodem; lista może tylko maleć.
      */
     private static final Map<String, String> OWN_CLIENT = Map.of(
         "io.github.dostepnykampus.OpenApiContractTest",

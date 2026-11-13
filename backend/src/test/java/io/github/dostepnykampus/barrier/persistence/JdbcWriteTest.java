@@ -24,7 +24,9 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * Zapis zgłoszeń na prawdziwej bazie, bez transakcji testowej: idempotentne
- * utworzenie oraz edycja z wersją i statusem (BR-3, BR-9, BR-10, BR-18).
+ * utworzenie oraz edycja z wersją i statusem.
+ *
+ * <p>Wymagania: BR-3, BR-9, BR-10, BR-18</p>
  *
  * @since 0.1.0
  */

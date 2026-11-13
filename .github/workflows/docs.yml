@@ -96,22 +96,30 @@ jobs:
       - uses: actions/setup-python@v7.1.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
-          cache-dependency-path: docs/requirements.txt
       - uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: docs/package-lock.json
+          package-manager-cache: false
       - uses: actions/setup-java@v6.2.0
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
+      # PR i kolejka tylko odtwarzają wpisy gałęzi sprintu; zapisuje je zadanie pamiec po pushu.
+      - name: Przywróć pakiety pip z pamięci podręcznej
+        uses: actions/cache/restore@v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: pip-docs-${{ hashFiles('docs/requirements.txt') }}
+      - name: Przywróć pakiety npm z pamięci podręcznej
+        uses: actions/cache/restore@v6.1.0
+        with:
+          path: ~/.npm
+          key: npm-docs-${{ hashFiles('docs/package-lock.json') }}
       - name: Przywróć serwer LanguageTool z pamięci podręcznej
-        uses: actions/cache@v6.1.0
+        uses: actions/cache/restore@v6.1.0
         with:
           path: ~/.cache/language_tool_python
-          key: languagetool-${{ runner.os }}-${{ hashFiles('docs/requirements.txt') }}
+          key: languagetool-Linux-${{ hashFiles('docs/requirements.txt') }}
       - name: Zainstaluj zależności Pythona
         run: python -m pip install -r requirements.txt
       - name: Zainstaluj zależności Node
@@ -153,6 +161,71 @@ jobs:
         run: python -X utf8 scripts/render.py --force --out "${RUNNER_TEMP}/diagramy"
 
   # Jedna publikacja zawiera dwie wersje: main w katalogu głównym i najwyższy sprint/N pod /sprint/.
+  pamiec:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/sprint/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - id: pip
+        uses: actions/cache/restore@v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: pip-docs-${{ hashFiles('docs/requirements.txt') }}
+          lookup-only: true
+      - id: npm
+        uses: actions/cache/restore@v6.1.0
+        with:
+          path: ~/.npm
+          key: npm-docs-${{ hashFiles('docs/package-lock.json') }}
+          lookup-only: true
+      - id: lt
+        uses: actions/cache/restore@v6.1.0
+        with:
+          path: ~/.cache/language_tool_python
+          key: languagetool-Linux-${{ hashFiles('docs/requirements.txt') }}
+          lookup-only: true
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          package-manager-cache: false
+      - uses: actions/setup-java@v6.2.0
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Pobierz pakiety pip
+        if: steps.pip.outputs.cache-hit != 'true' || steps.lt.outputs.cache-hit != 'true'
+        run: python -m pip install -r requirements.txt
+      - name: Pobierz pakiety npm
+        if: steps.npm.outputs.cache-hit != 'true'
+        run: npm ci --no-audit --no-fund
+      - name: Pobierz serwer LanguageTool
+        if: steps.lt.outputs.cache-hit != 'true'
+        run: python -c "import language_tool_python; language_tool_python.LanguageTool('pl-PL').close()"
+      - if: steps.pip.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: pip-docs-${{ hashFiles('docs/requirements.txt') }}
+      - if: steps.npm.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: ~/.npm
+          key: npm-docs-${{ hashFiles('docs/package-lock.json') }}
+      - if: steps.lt.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: ~/.cache/language_tool_python
+          key: languagetool-Linux-${{ hashFiles('docs/requirements.txt') }}
+
   strona:
     if: >-
       github.event_name != 'pull_request' &&
@@ -189,10 +262,6 @@ jobs:
       - uses: actions/setup-python@v7.1.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
-          cache-dependency-path: |
-            main/docs/requirements.txt
-            sprint/docs/requirements.txt
       - name: Zbuduj stronę z main i z bieżącego sprintu
         env:
           STRONA: ${{ runner.temp }}/strona

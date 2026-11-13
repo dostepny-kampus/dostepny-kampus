@@ -20,8 +20,10 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Test I2b-2 (NFR-34, BR-7, BR-15): błędy zapisu zdjęcia (403, 404, 400, 413)
+ * Test I2b-2: błędy zapisu zdjęcia (403, 404, 400, 413)
  * to {@code application/problem+json} z {@code status} i {@code detail}.
+ *
+ * <p>Wymagania: NFR-34, BR-7, BR-15</p>
  *
  * @since 0.1.0
  */

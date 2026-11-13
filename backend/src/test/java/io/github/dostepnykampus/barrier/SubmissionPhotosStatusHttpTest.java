@@ -20,9 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Testy I2b-1 i I2b-3 (BR-3, BR-6, BR-18): zdjęcia zmienia autor tylko
+ * Testy I2b-1 i I2b-3: zdjęcia zmienia autor tylko
  * w statusie edytowalnym, czyta Gość tylko w publicznym; zdjęcie spoza
  * photoIds nie istnieje, a identyfikatory porównuje się jako UUID.
+ *
+ * <p>Wymagania: BR-3, BR-6, BR-18</p>
  *
  * @since 0.1.0
  */

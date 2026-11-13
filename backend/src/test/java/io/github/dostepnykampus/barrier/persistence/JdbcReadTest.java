@@ -22,7 +22,9 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * Odczyt zgłoszeń na prawdziwej bazie, bez transakcji testowej: wyszukiwanie,
- * filtry listy i uszkodzony wiersz (US8, B-02).
+ * filtry listy i uszkodzony wiersz (B-02).
+ *
+ * <p>Wymagania: US8</p>
  *
  * @since 0.1.0
  */

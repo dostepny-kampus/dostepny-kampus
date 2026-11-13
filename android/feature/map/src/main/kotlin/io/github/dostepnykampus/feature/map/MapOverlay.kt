@@ -37,13 +37,10 @@ private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 private enum class MapPanel { Area, Legend, Info }
 
 /**
- * Nakładka mapy V1: przyciski powiększania i przesuwania, przycisk terenu nad „Legendą”,
- * pod nimi przy granicy terenu przycisk sąsiedniego terenu, przycisk „ⓘ” i podpis OSM, nad
- * podpisem napis „Pokazuję teren: Wittigowo” po zmianie terenu przez zaznaczony budynek, a nad
- * nimi [content], np. arkusz „Który budynek?”. Otwarty panel zasłania przyciski mapy i przycisk sąsiedniego
- * terenu, otwarte „ⓘ” także przycisk terenu i „Legendę”, a otwarty panel „Teren na mapie” także „Legendę”;
- * dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem zapisywanym. Nad małą kartą V2 zostają
- * tylko przyciski powiększania i przesuwania oraz podpis OSM.
+ * Nakładka mapy V1: przyciski powiększania i przesuwania, przycisk terenu nad „Legendą”, przy granicy terenu przycisk
+ * sąsiedniego terenu, „ⓘ”, podpis OSM, po zmianie terenu napis „Pokazuję teren: …” i nad nimi [content]. Otwarty panel
+ * zasłania przyciski, które by na nim leżały; dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem
+ * zapisywanym. Nad małą kartą V2 zostają tylko przyciski powiększania i przesuwania oraz podpis OSM.
  *
  * Wymagania: NFR-53, US1.6, US1.7, NFR-37, US1.8, US2.8
  *

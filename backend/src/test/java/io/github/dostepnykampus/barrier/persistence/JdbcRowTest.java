@@ -17,7 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Edycja ze starą wersją, edycja brakującego zgłoszenia i uszkodzony wiersz (BR-10, B-02).
+ * Edycja ze starą wersją, edycja brakującego zgłoszenia i uszkodzony wiersz (B-02).
+ *
+ * <p>Wymagania: BR-10</p>
  *
  * @since 0.1.0
  */

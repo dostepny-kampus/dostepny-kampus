@@ -13,7 +13,9 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Reguła rodzaju zgłoszenia po wszystkich wartościach enumu: budynek
- * z konturu tylko w zgłoszeniu szybkim (BR-14).
+ * z konturu tylko w zgłoszeniu szybkim.
+ *
+ * <p>Wymagania: BR-14</p>
  *
  * @since 0.1.0
  */

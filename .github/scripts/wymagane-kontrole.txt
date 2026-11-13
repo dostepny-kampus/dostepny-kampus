@@ -13,3 +13,6 @@ budowanie main sprint
 pr-od-issue sprint
 testy-skryptow main sprint
 baza-sprintu main sprint
+straznik-jakosci main sprint
+naglowki main sprint
+znaczniki-todo main sprint

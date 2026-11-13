@@ -13,8 +13,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
- * Testy BR-9 i BR-10: migracja V3 zakłada tabelę zgłoszeń z kluczem
+ * Migracja V3 zakłada tabelę zgłoszeń z kluczem
  * nadanym w telefonie i wersją zaczynającą się od 1.
+ *
+ * <p>Wymagania: BR-9, BR-10</p>
  *
  * @since 0.1.0
  */

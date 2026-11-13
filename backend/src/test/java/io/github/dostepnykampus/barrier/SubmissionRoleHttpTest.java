@@ -20,8 +20,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Zgłoszenie inne niż szybkie i zmianę zgłoszenia przyjętego serwer przyjmuje
- * tylko od Zbierającego, a zgłoszenie szybkie od każdej zalogowanej osoby
- * (US4, US7, US17.2, US8.4, BR-8, BR-18, BR-19).
+ * tylko od Zbierającego, a zgłoszenie szybkie od każdej zalogowanej osoby.
+ *
+ * <p>Wymagania: US4, US7, US17.2, US8.4, BR-8, BR-18, BR-19</p>
  *
  * @since 0.1.0
  */
