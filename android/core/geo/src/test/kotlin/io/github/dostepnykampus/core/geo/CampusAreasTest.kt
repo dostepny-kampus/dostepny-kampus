@@ -12,11 +12,13 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.File
 
-/** Tereny PWr z budynków katalogu (BR-G5); kontury „Budynek testowy” nie są danymi PWr. */
+/** Tereny PWr z budynków katalogu; kontury „Budynek testowy” nie są danymi PWr. Wymagania: BR-G5 */
 class CampusAreasTest {
     /**
-     * BR-G5: jest pięć terenów. Na pliku konturów z repozytorium wychodzą „Kampus główny” (78 budynków),
+     * Jest pięć terenów. Na pliku konturów z repozytorium wychodzą „Kampus główny” (78 budynków),
      * „Wittigowo” (9), „Bartoszowice” (3), „Długa” (4) i „T-9 Atol” (1), a każdy budynek ma jeden teren.
+     *
+     * Wymagania: BR-G5
      */
     @Test
     fun br_g5_five_areas_real_data() {
@@ -31,8 +33,10 @@ class CampusAreasTest {
     }
 
     /**
-     * BR-G5: budynek najwyżej 600 m od innego budynku terenu należy do tego terenu, także przez pośredni budynek;
+     * Budynek najwyżej 600 m od innego budynku terenu należy do tego terenu, także przez pośredni budynek;
      * budynek dalej niż 600 m od każdego tworzy osobny teren.
+     *
+     * Wymagania: BR-G5
      */
     @Test
     fun br_g5_chain_within_600_m() {
@@ -45,7 +49,7 @@ class CampusAreasTest {
         assertEquals(listOf("T-3", "Kampus główny"), areas.map(CampusArea::name))
     }
 
-    /** US1.7: liczba budynków terenu to liczba symboli; dwa kontury jednego symbolu liczą się raz. */
+    /** Liczba budynków terenu to liczba symboli; dwa kontury jednego symbolu liczą się raz. Wymagania: US1.7 */
     @Test
     fun us1_7_symbols_counted_once() {
         val outlines = listOf(square(symbol = "H-14", south = LAT), square(symbol = "H-14", south = LAT + 2 * SIDE))

@@ -92,7 +92,7 @@ private fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latit
 
 /**
  * „Pokaż budynek na mapie” na V2 przez prawdziwe ekrany aplikacji do kamery, którą dostaje widok mapy (podróbka):
- * budynek jest widoczny, a dalsze przesuwanie i obrót zostają przy osobie (US2.9, NFR-22, NFR-53). Katalog
+ * budynek jest widoczny, a dalsze przesuwanie i obrót zostają przy osobie. Katalog
  * „Budynek testowy” jest syntetyczny (nie dane PWr).
  *
  * `U_SHAPE`: Litera U o szerokości 400 m: grube ramiona i cienka podstawa, więc środek obrysu leży poza obszarem
@@ -108,6 +108,8 @@ private fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latit
  *
  * `showOnMap`: Od listy V1 przez V2 otwarte od razu (TalkBack) do „Pokaż budynek na mapie”; przed poleceniem budynku
  * nie widać.
+ *
+ * Wymagania: US2.9, NFR-22, NFR-53
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -218,14 +220,22 @@ class BuildingOnMapCameraTest {
         assertTrue("powiększenie mniejsze niż startowe: $camera", camera.zoom >= shown.first().second.zoom)
     }
 
-    /** Wiersz: K1, V2 „Pokaż budynek na mapie” → kamera mapy widzi budynek daleko od startu, US2.9, NFR-19, NFR-20. */
+    /**
+     * Wiersz: K1, V2 „Pokaż budynek na mapie” → kamera mapy widzi budynek daleko od startu.
+     *
+     * Wymagania: US2.9, NFR-19, NFR-20
+     */
     @Test
     fun us2_9_far_building_in_view() {
         showOnMap("T-9")
         assertShown("T-9")
     }
 
-    /** Wiersz: K2, mapa przesunięta strzałkami → „Pokaż budynek na mapie” dla A-1 wraca do budynku, US2.9, NFR-53. */
+    /**
+     * Wiersz: K2, mapa przesunięta strzałkami → „Pokaż budynek na mapie” dla A-1 wraca do budynku.
+     *
+     * Wymagania: US2.9, NFR-53
+     */
     @Test
     fun us2_9_a1_after_arrows() {
         pan("prawo", times = 4)
@@ -233,14 +243,14 @@ class BuildingOnMapCameraTest {
         assertShown("A-1")
     }
 
-    /** Wiersz: K1, budynek w kształcie litery U → kamera widzi punkt podpisu, nie środek obrysu, US2.9. */
+    /** Wiersz: K1, budynek w kształcie litery U → kamera widzi punkt podpisu, nie środek obrysu. Wymagania: US2.9 */
     @Test
     fun us2_9_u_shape_label_point() {
         showOnMap("U-1")
         assertShown("U-1")
     }
 
-    /** Wiersz: K3 (strażnik), mała karta V2 i „Wstecz” → kamera sprzed karty, decyzja 83. */
+    /** Wiersz: K3 (strażnik), mała karta V2 i „Wstecz” → kamera sprzed karty. */
     @Test
     fun us2_8_back_keeps_view() {
         pan("prawo", times = 2)
@@ -252,7 +262,7 @@ class BuildingOnMapCameraTest {
         assertEquals(before, shown.last().second)
     }
 
-    /** Wiersz: K4, po „Pokaż budynek na mapie” strzałka przesuwa mapę i fokus jej nie cofa, US2.9, NFR-53. */
+    /** Wiersz: K4, po „Pokaż budynek na mapie” strzałka przesuwa mapę i fokus jej nie cofa. Wymagania: US2.9, NFR-53 */
     @Test
     fun us2_9_pan_after_show() {
         showOnMap("T-9")
@@ -263,7 +273,7 @@ class BuildingOnMapCameraTest {
         assertEquals(before.zoom, after.zoom, 0.0)
     }
 
-    /** Wiersz: K5, po „Pokaż budynek na mapie” obrót ekranu → ten sam obszar, nie start, NFR-22. */
+    /** Wiersz: K5, po „Pokaż budynek na mapie” obrót ekranu → ten sam obszar, nie start. Wymagania: NFR-22 */
     @Test
     fun nfr22_show_survives_rotation() {
         showOnMap("T-9")
@@ -274,7 +284,7 @@ class BuildingOnMapCameraTest {
         assertEquals(before, shown.last().second)
     }
 
-    /** Wiersz: K6, drugie „Pokaż budynek na mapie” po przesunięciu mapy → kamera na drugim budynku, US2.9. */
+    /** Wiersz: K6, drugie „Pokaż budynek na mapie” po przesunięciu mapy → kamera na drugim budynku. Wymagania: US2.9 */
     @Test
     fun us2_9_second_show_moves() {
         showOnMap("T-9")
@@ -283,7 +293,11 @@ class BuildingOnMapCameraTest {
         assertShown("C-13")
     }
 
-    /** Wiersz: K6, to samo „Pokaż budynek na mapie” po przesunięciu mapy strzałkami → kamera znów na budynku, US2.9. */
+    /**
+     * Wiersz: K6, to samo „Pokaż budynek na mapie” po przesunięciu mapy strzałkami → kamera znów na budynku.
+     *
+     * Wymagania: US2.9
+     */
     @Test
     fun us2_9_same_show_again() {
         showOnMap("T-9")
@@ -294,7 +308,7 @@ class BuildingOnMapCameraTest {
 
     /**
      * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta innego budynku i „Wstecz” bez ruszania mapy
-     * → widok jak przed kartą, decyzje 83 i 153. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy
+     * → widok jak przed kartą. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy
      * otwartej karcie atrapa nic nie zgłasza.
      */
     @Test

@@ -38,8 +38,10 @@ import kotlin.math.roundToInt
 private val POLISH = Locale.forLanguageTag("pl-PL")
 
 /**
- * Budynek i miejsce słowami z C1 bez współrzędnych oraz „Zmień miejsce” (US7.4, NFR-19). Miejsce brzmi np. „ok. 3 m
- * od wejścia głównego, dokładność 0,8 m”; bez wejść w danych jest sama dokładność (US7.4, US6.1).
+ * Budynek i miejsce słowami z C1 bez współrzędnych oraz „Zmień miejsce”. Miejsce brzmi np. „ok. 3 m
+ * od wejścia głównego, dokładność 0,8 m”; bez wejść w danych jest sama dokładność.
+ *
+ * Wymagania: US7.4, NFR-19, US6.1
  */
 @Composable
 internal fun PlaceCard(place: ReportPlace, onChangePlace: () -> Unit) {
@@ -86,7 +88,11 @@ private fun placeInWords(place: ReportPlace): String {
     return stringResource(R.string.formularz_miejsce, meters, entrance, accuracy)
 }
 
-/** „Uciążliwość”: trzy wybory z opisem, oceniane dla osoby, dla której bariera jest najtrudniejsza (US7.1, PW-13). */
+/**
+ * „Uciążliwość”: trzy wybory z opisem, oceniane dla osoby, dla której bariera jest najtrudniejsza (PW-13).
+ *
+ * Wymagania: US7.1
+ */
 @Composable
 internal fun SeveritySection(severity: Severity?, onEdit: (ReportEdit) -> Unit) {
     Column(modifier = Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {

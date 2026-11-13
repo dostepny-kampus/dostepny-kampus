@@ -15,7 +15,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import java.io.File
 
-/** Kolejka i historia w pliku bazy z [DatabaseModule] po zamknięciu i ponownym otwarciu (NFR-5, BR-9). */
+/** Kolejka i historia w pliku bazy z [DatabaseModule] po zamknięciu i ponownym otwarciu. Wymagania: NFR-5, BR-9 */
 @RunWith(RobolectricTestRunner::class)
 class QueueAfterRestartTest {
     private val app = RuntimeEnvironment.getApplication()

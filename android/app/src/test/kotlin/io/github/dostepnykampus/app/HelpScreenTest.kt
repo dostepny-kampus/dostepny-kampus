@@ -80,7 +80,7 @@ class HelpScreenTest {
         compose.onNodeWithText("Krok 1 z 3").assertExists()
     }
 
-    /** Wiersz: „Wstecz”: poprzedni krok; w pierwszym kroku przy pierwszym uruchomieniu jak „Pomiń”, US5.1. */
+    /** Wiersz: „Wstecz”: poprzedni krok; w pierwszym kroku przy pierwszym uruchomieniu jak „Pomiń”. Wymagania: US5.1 */
     @Test
     fun us5_1_first_launch_wstecz() {
         show(isFirstLaunch = true)
@@ -93,8 +93,10 @@ class HelpScreenTest {
     }
 
     /**
-     * Wiersz: „Dalej”, a w ostatnim kroku „Zacznij” → następny krok albo V1, numer kroku, US5.1, NFR-21;
-     * systemowe „Wstecz” cofa krok, a w kroku 1 po otwarciu z paska wraca do poprzedniego ekranu, NFR-15.
+     * Wiersz: „Dalej”, a w ostatnim kroku „Zacznij” → następny krok albo V1, numer kroku;
+     * systemowe „Wstecz” cofa krok, a w kroku 1 po otwarciu z paska wraca do poprzedniego ekranu.
+     *
+     * Wymagania: US5.1, NFR-21, NFR-15
      */
     @Test
     fun us5_1_bar_dalej_back_zacznij() {
@@ -113,7 +115,7 @@ class HelpScreenTest {
         assertEquals(listOf("wyjście", "mapa"), calls)
     }
 
-    /** Wiersz: obraz pokazuje prawdziwy element aplikacji i ma opis dla TalkBack, US5.1, NFR-18. */
+    /** Wiersz: obraz pokazuje prawdziwy element aplikacji i ma opis dla TalkBack. Wymagania: US5.1, NFR-18 */
     @Test
     fun nfr18_example_talkback() {
         show()
@@ -124,7 +126,7 @@ class HelpScreenTest {
         compose.onAllNodesWithText("Wejście dostosowane").assertCountEquals(0)
     }
 
-    /** Wiersz: reguła 10 dużej czcionki, czynności V5 na końcu treści, po tekście kroku, NFR-20, NFR-52. */
+    /** Wiersz: reguła 10 dużej czcionki, czynności V5 na końcu treści, po tekście kroku. Wymagania: NFR-20, NFR-52 */
     @Test
     fun nfr20_actions_after_text() {
         RuntimeEnvironment.setFontScale(2f)

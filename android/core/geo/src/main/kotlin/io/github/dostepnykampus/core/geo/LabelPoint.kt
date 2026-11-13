@@ -18,10 +18,12 @@ private const val CELL_CENTER = 0.5
  * Punkt podpisu konturu [area]: wewnątrz największej części i najdalej od jej krawędzi, szukany w siatce 32 × 32
  * nad prostokątem tej części (przybliżony „pole of inaccessibility”). Środek ciężkości konturu z dziedzińcem, jak
  * A-1, może wypaść poza kontur, a ten punkt nie. Jeden punkt na kontur daje jeden podpis także przy wielokącie
- * złożonym (US1, reguła 4 wymagań wspólnych).
+ * złożonym (reguła 4 wymagań wspólnych).
  *
- * Pole części, test „wewnątrz” i odległość do krawędzi liczy Turf, jak w [locateBuilding] (#820). Własne jest tylko
+ * Pole części, test „wewnątrz” i odległość do krawędzi liczy Turf, jak w [locateBuilding]. Własne jest tylko
  * przeszukanie siatki, bo spatialk 0.8.0 nie ma `pointOnFeature` ani „polylabel”.
+ *
+ * Wymagania: US1
  */
 fun labelPoint(area: GeoArea): GeoPoint {
     val polygon = area.parts().maxBy { part -> part.toGeometry().area().toDouble(International.SquareMeters) }

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Sprawdzenie zgodności z {@code api/openapi.yaml} na sztucznych wymianach
- * HTTP (decyzja 122): zgodne przechodzą, a niezgodne dają błąd testu
+ * HTTP: zgodne przechodzą, a niezgodne dają błąd testu
  * z operacją, statusem i ścieżką JSON naruszenia.
  *
  * @since 0.1.0

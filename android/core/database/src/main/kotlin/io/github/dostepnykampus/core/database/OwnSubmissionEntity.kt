@@ -9,7 +9,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-/** Stan wysyłki własnego zgłoszenia na liście C3 (US8, NFR-5). */
+/** Stan wysyłki własnego zgłoszenia na liście C3. Wymagania: US8, NFR-5 */
 enum class OwnSubmissionState {
     /** Zapisane w telefonie, czeka na wysłanie („W telefonie”). */
     LOCAL,
@@ -22,11 +22,13 @@ enum class OwnSubmissionState {
 }
 
 /**
- * Własne zgłoszenie Zbierającego na liście „Moje zgłoszenia” (C3, US8).
+ * Własne zgłoszenie Zbierającego na liście „Moje zgłoszenia” (C3).
  *
- * Wiersz zostaje po wysłaniu, gdy kolejka usuwa już swój zapis, więc lista działa bez sieci (NFR-5).
+ * Wiersz zostaje po wysłaniu, gdy kolejka usuwa już swój zapis, więc lista działa bez sieci.
  *
- * @property id identyfikator UUID zgłoszenia, ten sam co w kolejce i na serwerze (BR-9)
+ * Wymagania: US8, NFR-5, BR-9, BR-10, US8.2, BR-16
+ *
+ * @property id identyfikator UUID zgłoszenia, ten sam co w kolejce i na serwerze
  * @property savedAtMillis chwila ostatniego zapisu w telefonie w milisekundach od epoki Unix
  * @property kind rodzaj zgłoszenia: `PRECISE` albo `ENTRANCE_MARKING`
  * @property buildingSymbol budynek; `null` to „poza budynkiem”
@@ -35,10 +37,10 @@ enum class OwnSubmissionState {
  * @property barrierType typ bariery TB-1…TB-29
  * @property severity uciążliwość 1–3
  * @property state stan wysyłki
- * @property serverVersion wersja z serwera po wysłaniu; baza dla poprawki z C3 (BR-10)
+ * @property serverVersion wersja z serwera po wysłaniu; baza dla poprawki z C3
  * @property refusalCode kod odpowiedzi HTTP przy odmowie; `null`, gdy telefon nie odczytał zgłoszenia
- * @property serverStatus status z serwera (`SubmissionStatus`, US8.2); `null` przed pierwszym odświeżeniem
- * @property rejectionReason powód odrzucenia od Weryfikatora (BR-16); `null` poza odrzuceniem
+ * @property serverStatus status z serwera (`SubmissionStatus`); `null` przed pierwszym odświeżeniem
+ * @property rejectionReason powód odrzucenia od Weryfikatora; `null` poza odrzuceniem
  */
 @Entity(tableName = "own_submissions")
 data class OwnSubmissionEntity(

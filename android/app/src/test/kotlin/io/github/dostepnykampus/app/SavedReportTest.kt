@@ -58,7 +58,9 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * „Zapisz” na C2 aż do karty na C3: formularz, zapis przez kolejkę w bazie z grafu Hilt, historia i lista
- * „Moje zgłoszenia” ze statusem „W telefonie” (US7.1, US7.3, BR-7, NFR-5).
+ * „Moje zgłoszenia” ze statusem „W telefonie”.
+ *
+ * Wymagania: US7.1, US7.3, BR-7, NFR-5
  */
 @HiltAndroidTest
 @RunWith(RobolectricTestRunner::class)

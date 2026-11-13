@@ -64,8 +64,10 @@ jobs:
 
   commity:
     # W kolejce scalania sprawdzamy commity grupy (base_sha..head_sha): komunikat commitu squash bierze tytuł PR,
-    # który można zmienić jeszcze w kolejce, więc sprawdzenie sprzed kolejki nie wystarcza.
-    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    # który można zmienić jeszcze w kolejce. Grupę z drzewem i tytułem równym w pełni zielonemu przebiegowi na PR
+    # (który sprawdził nagłówek squasha) job pomija, jak pozostałe kontrole (#726).
+    needs: porownanie
+    if: ${{ !cancelled() && github.event.pull_request.user.login != 'dependabot[bot]' && needs.porownanie.outputs.pomin != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -104,10 +106,16 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_COMMITS: ${{ github.event.pull_request.commits }}
         run: |
-          # Kolejka robi squash z nagłówkiem „<tytuł> (#N)”, więc sprawdzamy go już na PR, razem z dopiskiem.
-          bash ../scripts/naglowek-squasha.sh "$PR_TITLE" "$PR_NUMBER"
-          printf '%s (#%s)\n' "$PR_TITLE" "$PR_NUMBER" | npx --no-install commitlint --verbose
+          # Kolejka robi squash z nagłówkiem „<tytuł> (#N)”, a przy jednym commicie z nagłówkiem tego commita (#1093),
+          # więc sprawdzamy go już na PR, razem z dopiskiem.
+          commit=''
+          if [[ $PR_COMMITS == 1 ]]; then
+            commit="$(git log -1 --format=%s "$HEAD_SHA")"
+          fi
+          bash ../scripts/naglowek-squasha.sh "$PR_TITLE" "$PR_NUMBER" "$commit"
+          printf '%s (#%s)\n' "${commit:-$PR_TITLE}" "$PR_NUMBER" | npx --no-install commitlint --verbose
 
   zakazane-slowa:
     needs: porownanie

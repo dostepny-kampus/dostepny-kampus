@@ -41,12 +41,14 @@ import java.time.ZoneId
 internal val CampusZone: ZoneId = ZoneId.of("Europe/Warsaw")
 
 /**
- * Arkusz bariery na dole mapy V1 po dotknięciu znaku (US1.5): plakietka uciążliwości ze znakiem i słowem (NFR-21),
- * obrysowany „Zamknij” (NFR-53, NFR-17), typ bariery tymi samymi napisami co na V2 jako nagłówek, miejsce
+ * Arkusz bariery na dole mapy V1 po dotknięciu znaku: plakietka uciążliwości ze znakiem i słowem,
+ * obrysowany „Zamknij”, typ bariery tymi samymi napisami co na V2 jako nagłówek, miejsce
  * i „Sprawdzone 14.10.2026”. „Pokaż opis budynku” jest tylko dla bariery w budynku z katalogu: bariera poza
- * budynkiem nie ma budynku do pokazania (PW-5). Przy dużej czcionce arkusz się przewija (NFR-20).
+ * budynkiem nie ma budynku do pokazania (PW-5). Przy dużej czcionce arkusz się przewija.
  *
  * Miejsce składa [barrierPlace]. Dzień sprawdzenia liczy się w strefie czasu kampusu, nie telefonu.
+ *
+ * Wymagania: US1.5, NFR-21, NFR-53, NFR-17, NFR-20
  *
  * @param chosen bariera z budynkiem i wejściem
  * @param onClose „Zamknij” zostawia samą mapę

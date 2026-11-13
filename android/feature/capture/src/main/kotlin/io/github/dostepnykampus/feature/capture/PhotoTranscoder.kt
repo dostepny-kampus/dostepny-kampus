@@ -21,8 +21,10 @@ import kotlin.coroutines.CoroutineContext
 
 /**
  * Przekodowanie zdjęcia z aparatu w zasięgu modelu widoku, więc obrót ekranu go nie przerywa, a gotowe zdjęcie
- * czeka na nową kompozycję (NFR-22, US4.8). Plik, którego nie dało się przekodować albo którego przekodowanie
- * przerwano razem z ekranem, jest usuwany, więc w pamięci aplikacji nie zostają pliki bez wpisu (NFR-50).
+ * czeka na nową kompozycję. Plik, którego nie dało się przekodować albo którego przekodowanie
+ * przerwano razem z ekranem, jest usuwany, więc w pamięci aplikacji nie zostają pliki bez wpisu.
+ *
+ * Wymagania: NFR-22, US4.8, NFR-50
  *
  * @param workContext wątek przekodowania pliku
  * @param transcode przekodowanie pliku z aparatu; `false`, gdy plik nie jest obrazem

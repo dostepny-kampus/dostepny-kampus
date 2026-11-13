@@ -10,12 +10,14 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * Kopia listy budynków pobranej z serwera, do czytania bez sieci (NFR-10).
+ * Kopia listy budynków pobranej z serwera, do czytania bez sieci.
  *
  * Jeden wiersz o stałym identyfikatorze; nowy zapis zastępuje poprzedni.
  *
+ * Wymagania: NFR-10
+ *
  * @property id identyfikator wiersza, zawsze [BUILDING_CACHE_SINGLE_ROW]
- * @property listJson lista budynków jako dokument JSON zgodny z listą z serwera (NFR-10)
+ * @property listJson lista budynków jako dokument JSON zgodny z listą z serwera
  * @property syncedAt chwila pobrania listy w milisekundach epochy
  */
 @Entity(tableName = "building_cache")

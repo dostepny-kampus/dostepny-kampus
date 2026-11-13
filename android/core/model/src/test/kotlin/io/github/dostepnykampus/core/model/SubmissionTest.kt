@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.Instant
 
-/** Zgłoszenie z serwera jako wartość: reguły treści i wersji z kontraktu (BR-7, BR-8, BR-10, BR-24). */
+/** Zgłoszenie z serwera jako wartość: reguły treści i wersji z kontraktu. Wymagania: BR-7, BR-8, BR-10, BR-24 */
 class SubmissionTest {
     private val quick =
         SubmissionContent(

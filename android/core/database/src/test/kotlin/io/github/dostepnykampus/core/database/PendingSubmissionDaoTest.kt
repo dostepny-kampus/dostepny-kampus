@@ -18,7 +18,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/** Kolejka zgłoszeń w bazie Room w pamięci: zapis, ponowny zapis, postęp wysyłki i usunięcie (NFR-5, BR-9). */
+/** Kolejka zgłoszeń w bazie Room w pamięci: zapis, ponowny zapis, postęp wysyłki i usunięcie. Wymagania: NFR-5, BR-9 */
 @RunWith(RobolectricTestRunner::class)
 class PendingSubmissionDaoTest {
     private lateinit var database: DkDatabase
@@ -86,7 +86,7 @@ class PendingSubmissionDaoTest {
             assertEquals(emptyList<PendingSubmissionWithPhotos>(), dao.all())
         }
 
-    /** Odrzucone zgłoszenie zostaje w telefonie, ale kolejka go nie oddaje do wysyłki (BR-26). */
+    /** Odrzucone zgłoszenie zostaje w telefonie, ale kolejka go nie oddaje do wysyłki. Wymagania: BR-26 */
     @Test
     fun br26_refused_not_queued() =
         runTest {
@@ -99,7 +99,11 @@ class PendingSubmissionDaoTest {
             assertEquals(listOf("b", "a"), dao.all().map { it.submission.id })
         }
 
-    /** Poprawka z C3 wczytuje zgłoszenie po identyfikatorze, także odrzucone; wysłanego już nie ma (US8.3, BR-26). */
+    /**
+     * Poprawka z C3 wczytuje zgłoszenie po identyfikatorze, także odrzucone; wysłanego już nie ma.
+     *
+     * Wymagania: US8.3, BR-26
+     */
     @Test
     fun us8_3_found_also_refused() =
         runTest {

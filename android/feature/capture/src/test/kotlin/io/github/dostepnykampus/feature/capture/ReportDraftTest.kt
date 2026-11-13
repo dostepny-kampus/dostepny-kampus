@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-/** „Zmień miejsce” na C2: powrót do C1 z nowym miejscem zostawia wpisane pola (US7.4). */
+/** „Zmień miejsce” na C2: powrót do C1 z nowym miejscem zostawia wpisane pola. Wymagania: US7.4 */
 class ReportDraftTest {
     private val draft = ReportDraft()
     private val floor = ReportFloor.Planned("A-1-0")
@@ -24,8 +24,10 @@ class ReportDraftTest {
     private val moved = A1.copy(location = GeoPoint(longitude = 17.0622, latitude = 51.1079))
 
     /**
-     * Wiersz: C2 „Zmień miejsce” → C1 → „Dalej”, typ, uciążliwość i zdjęcie zostają, US7.4.
+     * Wiersz: C2 „Zmień miejsce” → C1 → „Dalej”, typ, uciążliwość i zdjęcie zostają.
      * Scenariusz: pomiar-precyzyjny.feature: Powrót do pomiaru zmienia miejsce, a wpisane pola zostają
+     *
+     * Wymagania: US7.4
      */
     @Test
     fun us7_4_change_place_keeps_form() {
@@ -45,7 +47,7 @@ class ReportDraftTest {
         assertEquals(ReportStage.EDITING, form.stage)
     }
 
-    /** Wiersz: C2 „Zmień miejsce” do innego budynku albo na ulicę → piętro znika, US7.4. */
+    /** Wiersz: C2 „Zmień miejsce” do innego budynku albo na ulicę → piętro znika. Wymagania: US7.4 */
     @Test
     fun us7_4_floor_same_building() {
         filled().changePlace()
@@ -70,7 +72,7 @@ class ReportDraftTest {
         assertEquals(ReportForm(place = A1), reopened(A1).form)
     }
 
-    /** Wiersz: proces zabity na C2 → sprzątanie przy starcie zna plik zdjęcia odtworzonego szkicu, #927. */
+    /** Wiersz: proces zabity na C2 → sprzątanie przy starcie zna plik zdjęcia odtworzonego szkicu. */
     @Test
     fun nfr5_restored_draft_photo() {
         filled()

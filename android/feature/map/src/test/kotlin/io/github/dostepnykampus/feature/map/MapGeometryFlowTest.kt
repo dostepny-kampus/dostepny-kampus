@@ -52,7 +52,7 @@ private val FILE_LABELS = listOf("A-1", "B-2")
 private val SERVER_LABELS = listOf("A-1")
 
 /**
- * Geometria mapy V1 od odpowiedzi serwera i zamknięcia ekranu do stanu ViewModelu (NFR-10, NFR-11). Testy czekają na
+ * Geometria mapy V1 od odpowiedzi serwera i zamknięcia ekranu do stanu ViewModelu. Testy czekają na
  * zdarzenia (sygnały z funkcji liczącej, wynik liczenia), nie na upływ czasu, więc wynik nie zależy od szybkości
  * maszyny. Zawieszenie przy błędzie w kodzie kończy limit `runTest`, który nie wpływa na wynik działającego kodu.
  *
@@ -64,6 +64,8 @@ private val SERVER_LABELS = listOf("A-1")
  *   Dispatchers.Main po resetMain i nie wycieknie do następnego testu.
  *
  * `show`: Widoczny ekran: subskrypcja stanu trwa do końca testu, więc źródła działają aż do zamknięcia ViewModelu.
+ *
+ * Wymagania: NFR-10, NFR-11
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapGeometryFlowTest {
@@ -81,7 +83,9 @@ class MapGeometryFlowTest {
 
     /**
      * Wiersz: W3, plik, potem serwer → geometria raz na katalog, a stan ma ją z katalogu serwera; liczenie dla pliku,
-     *   które jeszcze trwa, zostaje przerwane i nie wraca po serwerze, NFR-10, NFR-11.
+     *   które jeszcze trwa, zostaje przerwane i nie wraca po serwerze.
+     *
+     * Wymagania: NFR-10, NFR-11
      */
     @Test
     fun nfr11_geometry_per_catalog() =
@@ -161,7 +165,9 @@ class MapGeometryFlowTest {
 
     /**
      * Wiersz: zamknięcie ekranu w trakcie liczenia geometrii katalogu z wieloma konturami → liczenie nie dochodzi do
-     *   końca katalogu, NFR-11.
+     *   końca katalogu.
+     *
+     * Wymagania: NFR-11
      */
     @Test
     fun closing_map_stops_running() =
@@ -197,7 +203,9 @@ class MapGeometryFlowTest {
 
     /**
      * Wiersz: serwer odpowiada, gdy liczy się katalog z pliku → liczenie katalogu z serwera rusza, zanim skończy się
-     *   liczenie pliku, NFR-11.
+     *   liczenie pliku.
+     *
+     * Wymagania: NFR-11
      */
     @Test
     fun server_compute_starts_early() =

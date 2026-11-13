@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-/** Najbliższe wejście do punktu pomiaru z odległością w metrach (US7.4). */
+/** Najbliższe wejście do punktu pomiaru z odległością w metrach. Wymagania: US7.4 */
 class EntranceDistanceTest {
     private val point = GeoPoint(longitude = LON, latitude = LAT)
 

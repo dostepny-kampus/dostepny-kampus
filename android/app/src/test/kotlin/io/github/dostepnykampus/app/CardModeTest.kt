@@ -9,9 +9,13 @@ import io.github.dostepnykampus.feature.map.CardMode
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-/** Wybór trybu karty budynku ze skali czcionki, szerokości i orientacji okna (US2.9, NFR-20, NFR-51). */
+/** Wybór trybu karty budynku ze skali czcionki, szerokości i orientacji okna. Wymagania: US2.9, NFR-20, NFR-51 */
 class CardModeTest {
-    /** Wiersz: V2, pełny ekran od razu od skali czcionki 1,5; poniżej rozwinięty z małej karty, US2.9, NFR-20. */
+    /**
+     * Wiersz: V2, pełny ekran od razu od skali czcionki 1,5; poniżej rozwinięty z małej karty.
+     *
+     * Wymagania: US2.9, NFR-20
+     */
     @Test
     fun nfr20_large_font_opens_direct() {
         val modes = listOf(1f, 1.49f, 1.5f, 2f).map { cardModeFor(fontScale = it) }
@@ -20,7 +24,9 @@ class CardModeTest {
 
     /**
      * Wiersz: V2 przy skali czcionki co najmniej 1,5, w oknie co najmniej 600 dp albo poziomo → pełny ekran od razu;
-     * pionowo w węższym oknie przy mniejszej czcionce mała karta rozwijana do pełnego ekranu, NFR-20, NFR-51, NFR-22.
+     * pionowo w węższym oknie przy mniejszej czcionce mała karta rozwijana do pełnego ekranu.
+     *
+     * Wymagania: NFR-20, NFR-51, NFR-22
      */
     @Test
     fun nfr51_wide_or_landscape_direct() {

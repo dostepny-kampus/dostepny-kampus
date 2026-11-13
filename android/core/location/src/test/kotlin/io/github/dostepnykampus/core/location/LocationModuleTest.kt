@@ -15,7 +15,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.shadows.ShadowSystemClock
 import java.time.Duration
 
-/** Źródła pomiaru C1 w grafie Hilt to odbiornik GNSS i zegar telefonu (US6.1). */
+/** Źródła pomiaru C1 w grafie Hilt to odbiornik GNSS i zegar telefonu. Wymagania: US6.1 */
 @RunWith(RobolectricTestRunner::class)
 class LocationModuleTest {
     private val app = RuntimeEnvironment.getApplication()

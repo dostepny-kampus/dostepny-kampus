@@ -45,13 +45,13 @@ import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
 /**
- * Źródła danych `core:data` w grafie Hilt aplikacji (decyzja 97). Każde ma jedną instancję na proces, więc po obrocie
+ * Źródła danych `core:data` w grafie Hilt aplikacji. Każde ma jedną instancję na proces, więc po obrocie
  * ekranu albo na innym ekranie katalog budynków jest ten sam i czytany raz.
  */
 @Module
 @InstallIn(SingletonComponent::class)
 object DataModule {
-    /** Katalog: kontury z serwera, a przy innej odpowiedzi z kopii w bazie albo z pliku (US1, NFR-10). */
+    /** Katalog: kontury z serwera, a przy innej odpowiedzi z kopii w bazie albo z pliku. Wymagania: US1, NFR-10 */
     @Provides
     @Singleton
     fun buildingCatalog(
@@ -67,38 +67,38 @@ object DataModule {
             buildingCache = buildingCache,
         )
 
-    /** Wejścia karty budynku z serwera z dniem i źródłem oznaczenia (US17.3). */
+    /** Wejścia karty budynku z serwera z dniem i źródłem oznaczenia. Wymagania: US17.3 */
     @Provides
     @Singleton
     fun cardEntrances(api: BuildingsApi): ServerEntrances = ServerEntrancesRepository(api::building)
 
-    /** Piętra budynku szczegółowego z serwera do formularza C2 (US7.2). */
+    /** Piętra budynku szczegółowego z serwera do formularza C2. Wymagania: US7.2 */
     @Provides
     @Singleton
     fun buildingFloors(api: BuildingsApi): BuildingFloors = ServerFloorsRepository(api::floors)
 
-    /** Wybór „Mapa” albo „Lista budynków” w pliku ustawień mapy (NFR-19). */
+    /** Wybór „Mapa” albo „Lista budynków” w pliku ustawień mapy. Wymagania: NFR-19 */
     @Provides
     @Singleton
     fun mapListChoice(app: Application): MapListChoice = MapListChoiceRepository(app.mapDataStore)
 
-    /** Stan internetu z usługi systemowej telefonu (US9.1). */
+    /** Stan internetu z usługi systemowej telefonu. Wymagania: US9.1 */
     @Provides
     @Singleton
     fun networkStatus(app: Application): NetworkStatus =
         ConnectivityNetworkStatus(app.getSystemService(ConnectivityManager::class.java))
 
-    /** Pierwsze uruchomienie w pliku ustawień startu (US5.1). */
+    /** Pierwsze uruchomienie w pliku ustawień startu. Wymagania: US5.1 */
     @Provides
     @Singleton
     fun firstLaunch(app: Application): FirstLaunch = FirstLaunchRepository(app.startDataStore)
 
-    /** Planowanie wysyłki kolejki po powrocie sieci (NFR-6); start aplikacji zwołuje je osobno. */
+    /** Planowanie wysyłki kolejki po powrocie sieci; start aplikacji zwołuje je osobno. Wymagania: NFR-6 */
     @Provides
     @Singleton
     fun submissionSync(app: Application): SubmissionSyncScheduler = SubmissionSyncScheduler(app)
 
-    /** Kolejka zgłoszeń: zapis w bazie Room, wysyłka klientem zgłoszeń (NFR-5, US9.2). */
+    /** Kolejka zgłoszeń: zapis w bazie Room, wysyłka klientem zgłoszeń. Wymagania: NFR-5, US9.2 */
     @Provides
     @Singleton
     fun submissionQueue(
@@ -116,16 +116,16 @@ object DataModule {
             history = history,
         )
 
-    /** Własne zgłoszenia dla listy C3 z historii w telefonie (US8.1, NFR-5). */
+    /** Własne zgłoszenia dla listy C3 z historii w telefonie. Wymagania: US8.1, NFR-5 */
     @Provides
     fun ownSubmissions(history: OwnSubmissionDao): OwnSubmissions =
         OwnSubmissions { history.observe().map { rows -> rows.map { it.toOwnSubmission() } } }
 
-    /** Zgłoszenia z kolejki telefonu do poprawki w C2 (US8.3). */
+    /** Zgłoszenia z kolejki telefonu do poprawki w C2. Wymagania: US8.3 */
     @Provides
     fun pendingEdits(store: PendingEditDao): PendingEdits = pendingEditsOf(store)
 
-    /** Odświeżenie statusów listy C3 z serwera (US8.2). */
+    /** Odświeżenie statusów listy C3 z serwera. Wymagania: US8.2 */
     @Provides
     fun ownStatuses(api: SubmissionsApi, history: OwnSubmissionDao): OwnStatuses = ownStatusesOf(api::mine, history)
 }

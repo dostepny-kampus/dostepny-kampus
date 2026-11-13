@@ -7,13 +7,17 @@ package io.github.dostepnykampus.core.location
 
 import kotlinx.coroutines.flow.Flow
 
-/** Odczyty pozycji do pomiaru na ekranie C1 (US6.1): w aplikacji [GnssPositionFixes], w testach odczyty ręczne. */
+/**
+ * Odczyty pozycji do pomiaru na ekranie C1: w aplikacji [GnssPositionFixes], w testach odczyty ręczne.
+ *
+ * Wymagania: US6.1
+ */
 fun interface PositionSource {
     /** Odczyty od teraz, aż do przerwania zbierania. */
     fun fixes(): Flow<PositionFix>
 }
 
-/** Stan satelitów do napisu na ekranie C1 (US6.1): w aplikacji [GnssSatellites], w testach stan ręczny. */
+/** Stan satelitów do napisu na ekranie C1: w aplikacji [GnssSatellites], w testach stan ręczny. Wymagania: US6.1 */
 fun interface SatelliteSource {
     /** Widoczne satelity po każdej zmianie stanu odbiornika. */
     fun satellites(): Flow<List<Satellite>>

@@ -20,7 +20,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
- * Zgłoszenia próbne w bazie (#842): wiersz i treść JSON zapisuje produkcyjny
+ * Zgłoszenia próbne w bazie: wiersz i treść JSON zapisuje produkcyjny
  * {@link JdbcSubmissions}, a test ustawia tylko status.
  *
  * <p>Treść powstaje z próbki dziedziny, więc nowe pole treści albo nowa kolumna

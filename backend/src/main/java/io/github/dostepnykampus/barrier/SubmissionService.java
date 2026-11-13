@@ -20,8 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Zapis zgłoszeń: budynek zgłoszenia szybkiego ustala serwer z konturu (BR-14, BR-G2),
- * a nowe zgłoszenie spoza terenu PWr odrzuca (BR-G5, US4.9).
+ * Zapis zgłoszeń: budynek zgłoszenia szybkiego ustala serwer z konturu,
+ * a nowe zgłoszenie spoza terenu PWr odrzuca.
+ *
+ * <p>Wymagania: BR-14, BR-G2, BR-G5, US4.9</p>
  *
  * @since 0.1.0
  */
@@ -31,13 +33,13 @@ public class SubmissionService {
     /** Zapis zgłoszeń. */
     private final SubmissionRepository repository;
 
-    /** Kontury budynków do budynku zgłoszenia szybkiego (BR-14). */
+    /** Kontury budynków do budynku zgłoszenia szybkiego. Wymagania: BR-14 */
     private final Outlines outlines;
 
-    /** Teren PWr, poza którym nowe zgłoszenie jest odrzucane (BR-G5). */
+    /** Teren PWr, poza którym nowe zgłoszenie jest odrzucane. Wymagania: BR-G5 */
     private final CampusArea area;
 
-    /** Zdarzenie zapisanej edycji dla sprzątania zdjęć po zatwierdzeniu (#839). */
+    /** Zdarzenie zapisanej edycji dla sprzątania zdjęć po zatwierdzeniu. */
     private final ApplicationEventPublisher events;
 
     SubmissionService(
@@ -51,9 +53,11 @@ public class SubmissionService {
     }
 
     /**
-     * Zapisuje nowe zgłoszenie albo zwraca zapisane wcześniej (BR-9).
+     * Zapisuje nowe zgłoszenie albo zwraca zapisane wcześniej.
      * Miejsce dalej niż 500 m od każdego budynku PWr daje {@link OutsideCampus};
-     * odległość od budynków liczy baza (BR-G5).
+     * odległość od budynków liczy baza.
+     *
+     * <p>Wymagania: BR-9, BR-G5</p>
      *
      * @param command Komenda utworzenia
      * @return Wynik zapisu
@@ -70,9 +74,11 @@ public class SubmissionService {
     }
 
     /**
-     * Zapisuje edycję zgłoszenia (BR-3, BR-10). Zapisana edycja idzie jako
+     * Zapisuje edycję zgłoszenia. Zapisana edycja idzie jako
      * zdarzenie, więc po zatwierdzeniu zdjęcia spoza nowej listy znikają z
-     * magazynu (#839).
+     * magazynu.
+     *
+     * <p>Wymagania: BR-3, BR-10</p>
      *
      * @param command Komenda edycji
      * @return Wynik edycji

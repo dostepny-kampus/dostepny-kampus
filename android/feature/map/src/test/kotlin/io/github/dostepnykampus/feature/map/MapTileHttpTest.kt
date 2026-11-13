@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 private const val AGENT = "DostepnyKampus/1.0 (io.example.test)"
 
-/** Klient kafelków mapy z grafu Hilt na serwerze testowym, nie na serwerze OSM (NFR-39, #822). */
+/** Klient kafelków mapy z grafu Hilt na serwerze testowym, nie na serwerze OSM. Wymagania: NFR-39 */
 class MapTileHttpTest {
     private val server = MockWebServer()
     private val app = OkHttpClient.Builder().callTimeout(3, TimeUnit.SECONDS).build()
@@ -28,8 +28,10 @@ class MapTileHttpTest {
     }
 
     /**
-     * NFR-39: żądanie kafelka ma nagłówek User-Agent aplikacji. Klient powstaje z wartości podanej przez graf, bez
+     * Żądanie kafelka ma nagłówek User-Agent aplikacji. Klient powstaje z wartości podanej przez graf, bez
      * zmiennej globalnej, więc wynik nie zależy od tego, czy mapa powstała przed aktywnością.
+     *
+     * Wymagania: NFR-39
      */
     @Test
     fun nfr39_tile_has_app_user_agent() {
@@ -39,7 +41,7 @@ class MapTileHttpTest {
         assertEquals(AGENT, server.takeRequest().getHeader("User-Agent"))
     }
 
-    /** #822: klient mapy dzieli pulę połączeń z klientem aplikacji, a kafelki nie mają jego limitu 3 s. */
+    /** klient mapy dzieli pulę połączeń z klientem aplikacji, a kafelki nie mają jego limitu 3 s. */
     @Test
     fun nfr39_tiles_share_app_pool() {
         val tiles = MapTileHttp(http = app, userAgent = AGENT).client

@@ -8,7 +8,9 @@ package io.github.dostepnykampus.barrier.domain;
 import java.util.Objects;
 
 /**
- * Wynik utworzenia zgłoszenia (BR-9).
+ * Wynik utworzenia zgłoszenia.
+ *
+ * <p>Wymagania: BR-9</p>
  *
  * @since 0.1.0
  */

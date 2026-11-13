@@ -17,14 +17,14 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.time.Instant
 
-/** Linia „Bez internetu” na V1 z dniem pobrania danych z serwera (US9.1, NFR-10, #1127). */
+/** Linia „Bez internetu” na V1 z dniem pobrania danych z serwera. Wymagania: US9.1, NFR-10 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class OfflineLineTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** Wiersz: dane pobrane 27.10.2026 przed północą czasu Wrocławia → „dane z 27.10.2026” (NFR-10, #1127). */
+    /** Wiersz: dane pobrane 27.10.2026 przed północą czasu Wrocławia → „dane z 27.10.2026”. Wymagania: NFR-10 */
     @Test
     fun nfr10_line_has_download_day() {
         compose.setContent {

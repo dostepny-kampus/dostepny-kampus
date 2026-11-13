@@ -96,34 +96,40 @@ private val SheetStateSaver =
         restore = { SheetState(isExpanded = it) },
     )
 
-/** Część V1 zasłonięta przez arkusz [cover] i rozwinięcie arkusza [isExpanded] dla trybu karty w nim (US2.8). */
+/**
+ * Część V1 zasłonięta przez arkusz [cover] i rozwinięcie arkusza [isExpanded] dla trybu karty w nim.
+ *
+ * Wymagania: US2.8
+ */
 internal data class SheetLayout(val cover: Dp = 0.dp, val isExpanded: Boolean = false) :
     PaddingValues by PaddingValues(bottom = cover)
 
 /**
  * Część V1 zasłonięta przez arkusz V2, jako dopełnienie od dołu; bez arkusza zero. Mapa rysuje się dalej pod
- * arkuszem, a ekran V1 przesuwa o nie tylko swoje przyciski i podpis OSM, żeby stały nad arkuszem (NFR-37).
- * Treść arkusza dostaje tu [SheetLayout] bez dopełnienia, z rozwinięciem arkusza, z którego karta bierze tryb (US2.8).
+ * arkuszem, a ekran V1 przesuwa o nie tylko swoje przyciski i podpis OSM, żeby stały nad arkuszem.
+ * Treść arkusza dostaje tu [SheetLayout] bez dopełnienia, z rozwinięciem arkusza, z którego karta bierze tryb.
+ *
+ * Wymagania: NFR-37, US2.8
  */
 internal val LocalSheetPadding = compositionLocalOf { SheetLayout() }
 
-/** Strategie sceny w oknie: bez arkusza, gdy karta V2 jest od razu na pełnym ekranie (US2.9, NFR-20, NFR-51). */
+/**
+ * Strategie sceny w oknie: bez arkusza, gdy karta V2 jest od razu na pełnym ekranie.
+ *
+ * Wymagania: US2.9, NFR-20, NFR-51
+ */
 internal fun CardWindow.sceneStrategies(): List<SceneStrategy<NavKey>> =
     if (cardMode() == CardMode.Direct) emptyList() else listOf(SheetSceneStrategy)
 
 /**
- * Strategia sceny dla V2: wpis z metadanymi arkusza ([metadata]) nad samym V1 rysuje się jako arkusz od dołu,
- * a V1 zostaje pod nim widoczne i żywe, z tym samym stanem (decyzje 48 i 83), chyba że V2 otwiera się od razu na
- * pełnym ekranie ([sceneStrategies]). Samo V1 to ta sama scena bez arkusza, więc otwarcie i zamknięcie V2 nie zmienia
- * sceny i nie uruchamia przenikania całego ekranu. Przewidywany gest „Wstecz” obsługuje sam arkusz: zjeżdża w dół
- * z postępem gestu nad niezmienioną mapą (za palcem, bez animacji), po anulowaniu płynnie wraca na swoje miejsce,
- * a po zakończeniu gestu albo „Wstecz” bez gestu pełny ekran zwija do małej karty, a mała karta dojeżdża w dół
- * do końca i dopiero wtedy raz zamyka V2 (NFR-15); kolejne „Wstecz” w trakcie dojazdu pochłania. Dojazd i powrót
- * mają czas `medium2` (300 ms) i krzywą standardową
- * `(0,2; 0; 0; 1)` z tokenów ruchu Material 3. Inne układy historii zostawia scenie z jednym ekranem.
+ * Strategia sceny dla V2: wpis z metadanymi arkusza ([metadata]) nad samym V1 rysuje się jako arkusz od dołu nad żywym
+ * V1, chyba że V2 otwiera się od razu na pełnym ekranie ([sceneStrategies]); otwarcie i zamknięcie V2 nie zmienia
+ * sceny. Przewidywany gest „Wstecz” przesuwa arkusz za palcem, po anulowaniu arkusz wraca, a po zakończeniu pełny ekran
+ * zwija się do małej karty, która dojeżdża w dół i raz zamyka V2; „Wstecz” w trakcie dojazdu jest pochłaniane. Ruch ma
+ * czas `medium2` i krzywą standardową Material 3. Scena, z której NavDisplay przechodzi do innej, nie odbiera „Wstecz”.
+ * Inne układy historii zostawia scenie z jednym ekranem.
  *
- * Scena, z której NavDisplay właśnie przechodzi do innej (V2 → V3), nie odbiera „Wstecz”: dostaje je NavDisplay
- * i cofa przejście, a arkusz nie zostaje w stanie zamykania, który pochłaniałby kolejne „Wstecz” (US3).
+ * Wymagania: NFR-15, US3
  */
 internal object SheetSceneStrategy : SceneStrategy<NavKey> {
     private val sheet: Map<String, Any> = mapOf(SHEET_KEY to true)

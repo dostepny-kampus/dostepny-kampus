@@ -45,9 +45,11 @@ import java.time.LocalDate
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * Wejścia karty V2 od karty budynku z serwera do stanu karty (US17.3, NFR-10, NFR-12). Praca ViewModelu idzie na
+ * Wejścia karty V2 od karty budynku z serwera do stanu karty. Praca ViewModelu idzie na
  * dyspozytorze testowym, więc stan karty jest sprawdzany po zakończeniu całej zaplanowanej pracy, nie po upływie czasu.
  * Sprawdzana jest widoczna karta, czyli subskrypcja z `cardOf`.
+ *
+ * Wymagania: US17.3, NFR-10, NFR-12
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class CardServerEntrancesTest {
@@ -66,7 +68,9 @@ class CardServerEntrancesTest {
 
     /**
      * Wiersz: V2 budynku, który zna serwer → tekst karty od razu z telefonu, a gdy serwer odpowie, wejścia z serwera
-     *   z dniem i źródłem zamiast wejść z pliku, US17.3, NFR-12.
+     *   z dniem i źródłem zamiast wejść z pliku.
+     *
+     * Wymagania: US17.3, NFR-12
      */
     @Test
     fun us17_3_server_after_phone() =
@@ -80,7 +84,9 @@ class CardServerEntrancesTest {
 
     /**
      * Wiersz: V2 bez sieci albo przy błędzie serwera → wejścia z pliku bez dnia i źródła, bez błędu i bez pustej
-     *   listy, NFR-10.
+     *   listy.
+     *
+     * Wymagania: NFR-10
      */
     @Test
     fun nfr10_failure_keeps_file() =
@@ -99,7 +105,7 @@ class CardServerEntrancesTest {
             }
         }
 
-    /** Wiersz: kolejne otwarcie V2 bez sieci → zostają wejścia pobrane wcześniej z serwera, NFR-10. */
+    /** Wiersz: kolejne otwarcie V2 bez sieci → zostają wejścia pobrane wcześniej z serwera. Wymagania: NFR-10 */
     @Test
     fun nfr10_reopen_keeps_server() =
         runTest {

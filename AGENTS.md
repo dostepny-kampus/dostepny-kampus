@@ -2,7 +2,8 @@
 
 Ten plik mówi, jak prowadzić zmianę w Dostępnym Kampusie. Reguły, które sprawdza CI, są w
 [CONTRIBUTING.md](CONTRIBUTING.md) razem z plikiem, który je egzekwuje; tu są wymienione tylko z nazwy.
-Szczegółowo opisane jest to, czego CI nie sprawdzi.
+Szczegółowo opisane jest to, czego CI nie sprawdzi. Plik czyta się w całości przy każdej zmianie, więc ma
+najwyżej 150 linii (`.github/scripts/dlugosc-pliku-test.sh`).
 
 ## 1. Mapa repozytorium
 
@@ -89,6 +90,7 @@ Opis nie zawiera:
 
 Identyfikatory wymagań stoją w jednej linii na końcu opisu: `Wymagania: US1.1, NFR-19`.
 Powód zmiany jest w opisie PR i w issue. Opis modułu zmienia się w tym samym PR co moduł.
+Przykład „przed” i „po” oraz kontrole każdego punktu: `docs/docs/architektura/opisy-w-kodzie.md`.
 Reguły i czyszczenie istniejących opisów: epik #1336.
 
 ## 8. Testy uruchamia CI

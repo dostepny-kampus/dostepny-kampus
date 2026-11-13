@@ -21,7 +21,7 @@ import java.io.File
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Zgłoszenie „Nie wysłano” po odmowie 4xx wraca do wysyłki dopiero po ponownym zapisie (BR-26, US9.5). */
+/** Zgłoszenie „Nie wysłano” po odmowie 4xx wraca do wysyłki dopiero po ponownym zapisie. Wymagania: BR-26, US9.5 */
 class RefusedResaveTest {
     @TempDir
     lateinit var tempDir: File

@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/** Kopia barier ze zgłoszeń przyjętych w bazie Room: jeden wiersz, nowy zapis zastępuje poprzedni (NFR-10). */
+/** Kopia barier ze zgłoszeń przyjętych w bazie Room: jeden wiersz, nowy zapis zastępuje poprzedni. Wymagania: NFR-10 */
 @RunWith(RobolectricTestRunner::class)
 class BarrierCacheDaoTest {
     private lateinit var database: DkDatabase

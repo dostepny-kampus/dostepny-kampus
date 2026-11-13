@@ -13,7 +13,7 @@ import tools.jackson.databind.JsonNode;
 
 /**
  * Operacja kontraktu {@code api/openapi.yaml}: nazwa "METODA ścieżka" i wymagania
- * {@code security} (#829).
+ * {@code security}.
  *
  * <p>Nazwa ma prefiks z {@code servers}, a każdą zmienną ścieżki zapisaną jako
  * {@code {}}, więc nazwy zmiennych, także z wyrażeniem regularnym Springa, nie mają

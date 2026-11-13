@@ -9,8 +9,10 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 /**
- * Baza lokalna aplikacji (Room): zgłoszenia czekające na wysłanie (NFR-5),
- * historia własnych zgłoszeń (US8) oraz kopie listy budynków i barier ze zgłoszeń przyjętych (NFR-10).
+ * Baza lokalna aplikacji (Room): zgłoszenia czekające na wysłanie,
+ * historia własnych zgłoszeń oraz kopie listy budynków i barier ze zgłoszeń przyjętych.
+ *
+ * Wymagania: NFR-5, US8, NFR-10
  */
 @Database(
     entities = [

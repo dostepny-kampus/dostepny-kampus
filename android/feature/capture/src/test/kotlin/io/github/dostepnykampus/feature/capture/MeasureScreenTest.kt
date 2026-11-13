@@ -31,7 +31,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
-/** Napisy C1 z makiety „zespół w terenie” dla każdego stanu pomiaru (US6.1, NFR-2, NFR-18, NFR-23). */
+/** Napisy C1 z makiety „zespół w terenie” dla każdego stanu pomiaru. Wymagania: US6.1, NFR-2, NFR-18, NFR-23 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class MeasureScreenTest {
@@ -51,7 +51,7 @@ class MeasureScreenTest {
         }
     }
 
-    /** Wiersz: C1, szukanie satelitów → komunikat i „Powtórz pomiar” jako czynność główna, NFR-1, PW-9. */
+    /** Wiersz: C1, szukanie satelitów → komunikat i „Powtórz pomiar” jako czynność główna, PW-9. Wymagania: NFR-1 */
     @Test
     fun us6_1_searching_message() {
         var repeats = 0
@@ -62,7 +62,9 @@ class MeasureScreenTest {
     }
 
     /**
-     * Wiersz: C1, pomiar trwa → „Pomiar: zostało 12 s”, „Dokładność: 0,8 m (szacunek)”, satelity tekstem, US6.1, NFR-2.
+     * Wiersz: C1, pomiar trwa → „Pomiar: zostało 12 s”, „Dokładność: 0,8 m (szacunek)”, satelity tekstem.
+     *
+     * Wymagania: US6.1, NFR-2
      */
     @Test
     fun us6_1_measuring_texts() {
@@ -75,7 +77,7 @@ class MeasureScreenTest {
         compose.onNodeWithText("Satelity: GPS 7, Galileo 5, GLONASS 4").assertIsDisplayed()
     }
 
-    /** Wiersz: C1, po pomiarze → „Pomiar zakończony” z dokładnością i satelitami z końca pomiaru, US6.1. */
+    /** Wiersz: C1, po pomiarze → „Pomiar zakończony” z dokładnością i satelitami z końca pomiaru. Wymagania: US6.1 */
     @Test
     fun us6_1_finished_texts() {
         show(MeasureUiState.Finished(average = average, satellites = satellites))
@@ -87,7 +89,11 @@ class MeasureScreenTest {
         compose.onNodeWithText("Powtórz pomiar").assertIsDisplayed()
     }
 
-    /** Wiersz: C1, „Dalej” → C2, US6: po decyzji „poza budynkiem” formularz dostaje punkt bez budynku (BR-G4). */
+    /**
+     * Wiersz: C1, „Dalej” → C2: po decyzji „poza budynkiem” formularz dostaje punkt bez budynku.
+     *
+     * Wymagania: BR-G4, US6
+     */
     @Test
     fun us6_next_after_place_decision() {
         show(MeasureUiState.Finished(average = average, satellites = satellites, place = PlaceChoice.Outside))
@@ -96,7 +102,7 @@ class MeasureScreenTest {
         assertEquals(listOf(route), next)
     }
 
-    /** Wiersz: C1, „Dalej” dopiero po decyzji o budynku, US6.2. */
+    /** Wiersz: C1, „Dalej” dopiero po decyzji o budynku. Wymagania: US6.2 */
     @Test
     fun us6_2_no_next_while_locating() {
         show(MeasureUiState.Finished(average = average, satellites = satellites))
@@ -109,7 +115,7 @@ class MeasureScreenTest {
         compose.onNodeWithText("Satelity: brak w pozycji").assertIsDisplayed()
     }
 
-    /** Wiersz: C1, błąd odbiornika → komunikat, co zrobić, i „Powtórz pomiar” bez „Dalej”, NFR-50. */
+    /** Wiersz: C1, błąd odbiornika → komunikat, co zrobić, i „Powtórz pomiar” bez „Dalej”. Wymagania: NFR-50 */
     @Test
     fun nfr50_source_error_message() {
         var repeats = 0
@@ -120,7 +126,7 @@ class MeasureScreenTest {
         assertEquals(1, repeats)
     }
 
-    /** Wiersz: C1, lokalizacja wyłączona → komunikat i „Otwórz ustawienia” lokalizacji, bez „Dalej”, UC7 4c. */
+    /** Wiersz: C1, lokalizacja wyłączona → komunikat i „Otwórz ustawienia” lokalizacji, bez „Dalej”. Wymagania: UC7 */
     @Test
     fun uc7_4c_location_off_settings() {
         show(MeasureUiState.LocationOff)
@@ -131,7 +137,7 @@ class MeasureScreenTest {
         assertEquals(Settings.ACTION_LOCATION_SOURCE_SETTINGS, opened.action)
     }
 
-    /** Wiersz: C1, TalkBack ogłasza szukanie i koniec pomiaru, a odliczanie zostaje ciche, NFR-18. */
+    /** Wiersz: C1, TalkBack ogłasza szukanie i koniec pomiaru, a odliczanie zostaje ciche. Wymagania: NFR-18 */
     @Test
     fun nfr18_state_changes_announced() {
         val polite = SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite)
@@ -148,7 +154,11 @@ class MeasureScreenTest {
         compose.onNodeWithText("Pomiar zakończony").assert(polite)
     }
 
-    /** Wiersz: C1, powrót po przerwie → „Pomiar był przerwany, więc zaczęliśmy go od nowa.” przy szukaniu, NFR-27. */
+    /**
+     * Wiersz: C1, powrót po przerwie → „Pomiar był przerwany, więc zaczęliśmy go od nowa.” przy szukaniu.
+     *
+     * Wymagania: NFR-27
+     */
     @Test
     fun nfr27_restart_message() {
         compose.setContent {

@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Profil zalogowanej osoby do ekranu profilu i wyboru ekranów roli
- * (US14.1, BR-1). Dane pochodzą z tokenu; serwer nie pyta Usługi logowania.
+ * Profil zalogowanej osoby do ekranu profilu i wyboru ekranów roli.
+ * Dane pochodzą z tokenu; serwer nie pyta Usługi logowania.
+ *
+ * <p>Wymagania: US14.1, BR-1</p>
  *
  * @since 0.1.0
  */

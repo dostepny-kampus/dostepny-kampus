@@ -42,7 +42,11 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Ekran C2: miejsce z C1, piętro liczbą, typ bariery z listy, uciążliwość i „Zapisz” (US7.1, US7.2, US7.4). */
+/**
+ * Ekran C2: miejsce z C1, piętro liczbą, typ bariery z listy, uciążliwość i „Zapisz”.
+ *
+ * Wymagania: US7.1, US7.2, US7.4
+ */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class ReportScreenTest {
@@ -191,7 +195,11 @@ class ReportScreenTest {
         assertEquals(0, compose.onAllNodes(hasText("Nie mamy planu", substring = true)).fetchSemanticsNodes().size)
     }
 
-    /** Budynek szczegółowy: piętra we wspólnym wyborze piętra, wybrane widać w stanie opcji (US7.2, NFR-18). */
+    /**
+     * Budynek szczegółowy: piętra we wspólnym wyborze piętra, wybrane widać w stanie opcji.
+     *
+     * Wymagania: US7.2, NFR-18
+     */
     @Test
     fun us7_2_shared_floor_picker() {
         val floors = listOf(PlanFloor(id = "A-1-p", label = "Piwnica"), PlanFloor(id = "A-1-3", label = "3 piętro"))
@@ -215,7 +223,7 @@ class ReportScreenTest {
         assertEquals(ReportEdit.Type(BarrierType.THRESHOLD), edits.last())
     }
 
-    /** Lista typów: „Zamknij” zamyka ją bez zmiany typu, a fokus wraca na pole (NFR-53). */
+    /** Lista typów: „Zamknij” zamyka ją bez zmiany typu, a fokus wraca na pole. Wymagania: NFR-53 */
     @Test
     fun nfr53_type_list_close() {
         show()
@@ -229,7 +237,7 @@ class ReportScreenTest {
         compose.onNode(hasText("Wybierz typ bariery") and isFocused(), useUnmergedTree = false).assertExists()
     }
 
-    /** Przy czcionce 200% „Zamknij” jest widoczne bez przewijania listy (NFR-18). */
+    /** Przy czcionce 200% „Zamknij” jest widoczne bez przewijania listy. Wymagania: NFR-18 */
     @Test
     @Config(fontScale = 2f)
     fun nfr18_type_close_large_font() {
@@ -256,8 +264,10 @@ class ReportScreenTest {
     }
 
     /**
-     * Brak opisu jest nazwany w podsumowaniu i przy polu, gdy wybrano TB-29 (PW-10, BR-7).
+     * Brak opisu jest nazwany w podsumowaniu i przy polu, gdy wybrano TB-29 (PW-10).
      * Scenariusz (częściowo): pomiar-precyzyjny.feature: Typ TB-29 „inna bariera” wymaga opisu
+     *
+     * Wymagania: BR-7
      */
     @Test
     fun br7_missing_description_shown() {

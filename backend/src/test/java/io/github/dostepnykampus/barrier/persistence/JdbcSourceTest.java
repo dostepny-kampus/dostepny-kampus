@@ -15,8 +15,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataAccessException;
 
 /**
- * Rodzaj, budynek, punkt i piętro zgłoszenia mają jedno źródło: treść JSON
- * (#837). Kolumn nie da się zapisać osobno, a zmiana treści zmienia je.
+ * Rodzaj, budynek, punkt i piętro zgłoszenia mają jedno źródło: treść JSON.
+ * Kolumn nie da się zapisać osobno, a zmiana treści zmienia je.
  *
  * @since 0.1.0
  */

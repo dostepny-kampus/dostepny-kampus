@@ -14,10 +14,12 @@ import kotlin.time.Duration.Companion.hours
 private val UNTOUCHED_FOR_MILLIS = 1.hours.inWholeMilliseconds
 
 /**
- * Usuwa z [dir] pliki zdjęć bez wiersza w `pending_photos` i spoza [kept], np. zdjęcia wysłane przed #857 albo
- * z porzuconych szkiców po zabiciu procesu (NFR-5, #927). Zdjęcia zgłoszeń czekających i odrzuconych zostają.
+ * Usuwa z [dir] pliki zdjęć bez wiersza w `pending_photos` i spoza [kept], np. zdjęcia wysłanych zgłoszeń albo
+ * z porzuconych szkiców po zabiciu procesu. Zdjęcia zgłoszeń czekających i odrzuconych zostają.
  * Plik zmieniony w ostatniej godzinie też zostaje: może go jeszcze zapisywać aparat albo przekodowanie przed
  * zapisem szkicu.
+ *
+ * Wymagania: NFR-5
  *
  * @param store kolejka zgłoszeń w bazie telefonu
  * @param dir katalog zdjęć zgłoszeń

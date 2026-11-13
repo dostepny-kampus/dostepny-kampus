@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Testy BR-14: budynek zgłoszenia szybkiego to budynek, w którego konturze
+ * Budynek zgłoszenia szybkiego to budynek, w którego konturze
  * leży punkt, a punkt tuż obok konturu jest „poza budynkiem”.
+ *
+ * <p>Wymagania: BR-14</p>
  *
  * @since 0.1.0
  */

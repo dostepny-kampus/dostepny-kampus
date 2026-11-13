@@ -28,38 +28,14 @@ import kotlin.coroutines.CoroutineContext
 const val BUILDINGS_ASSET = "pwr-buildings.geojson"
 
 /**
- * Katalog budynków dla mapy (US1, US1.2).
+ * Katalog budynków dla mapy. Z [listBuildings] kontury, nazwy i atrybucja są z serwera, a wejścia z pliku konturów,
+ * tylko dla budynków podanych przez serwer. Bez niego, przy błędzie albo pustej liście katalog jest z pliku, chyba że
+ * wcześniej pobrano katalog z serwera albo jego kopię w [buildingCache]. Budynki są sortowane naturalnie po symbolu
+ * (A-2 przed A-10), bez wejść `emergency`, `exit` i `garage`. Trwające pobranie jest wspólne dla [catalogUpdates],
+ * [catalog] i [refresh]; [catalogUpdates] oddaje najpierw katalog bez czekania, potem katalog z serwera. Anulowanie
+ * prowadzącego pobranie każe pozostałym pytać od nowa. [syncedAt] to chwila pobrania z serwera, którą widzi katalog.
  *
- * Gdy [listBuildings] jest podane, kontury i nazwy biorą się z serwera, a wejścia zostają z pliku konturów.
- * Lista z serwera (`GET /buildings`) nie ma wejść, więc katalog ma wejścia z pliku, ale tylko budynków, które
- * serwer podał: katalog opisuje wejścia swoich budynków. Wejścia z dniem i źródłem oznaczenia karta budynku
- * bierze osobno z [ServerEntrances] (US17.3). Atrybucja udanego odczytu jest z serwera, bo dotyczy konturów.
- * Budynki z serwera są sortowane jak te z pliku.
- *
- * Wynik inny niż [ApiResult.Success], czyli brak sieci, błąd serwera albo nieznany zasób, daje cały katalog
- * z pliku, z jego wejściami i atrybucją, gdy z serwera nic jeszcze nie pobrano. Tak samo pusta lista z serwera:
- * baza bez zaimportowanych budynków nie może dać pustej mapy. Bez [listBuildings] odczyt jest od razu
- * z pliku, jak dotychczas.
- *
- * - Budynki są posortowane naturalnie po symbolu: litera, potem numer jako liczba, np. A-2 przed A-10.
- * - Wejścia nie obejmują rodzajów `emergency`, `exit` i `garage`, bo to nie są wejścia dla odwiedzających
- *   (BR-25, decyzja 76).
- *
- * Serwer jest pytany jednym wspólnym zapytaniem: [catalogUpdates], [catalog] i [refresh] wywołane w trakcie trwającego
- * pobrania czekają na jego wynik, zamiast pytać drugi raz. Katalog pobrany z serwera jest widoczny dla wszystkich,
- * także dla mapy, która sama go nie zamawiała. [catalogUpdates] oddaje najpierw katalog z pliku (albo już pobrany
- * z serwera), bez czekania na pobranie (NFR-11), a potem katalog z serwera, gdy ten odpowie niepustą listą; plik nie
- * nadpisuje przyjętego katalogu z serwera. [catalog] czeka na wynik pobrania i zapamiętuje go; [refresh] czyta plik
- * od nowa i pyta serwer, chyba że pobranie już trwa. Bez odpowiedzi serwera katalog pobrany wcześniej z serwera
- * zostaje, a plik jest zapasem tylko wtedy, gdy z serwera nic jeszcze nie pobrano (NFR-10).
- *
- * Anulowanie przerywa pytanie serwera, o ile [listBuildings] jest anulowalne; odczyt pliku [readGeoJson] jest
- * blokujący, więc anulowanie działa dopiero po nim. Gdy anulowany zostanie ten, kto prowadził wspólne pobranie,
- * pozostali czekający pytają serwer od nowa.
- *
- * Pobranie listy z serwera zapisuje jej kopię w bazie [buildingCache] z chwilą pobrania ([BuildingListCopy]); bez
- * odpowiedzi serwera i bez katalogu pobranego w tym procesie katalog może wrócić z tej kopii (NFR-10). [syncedAt]
- * podaje moment ostatniego pobrania z serwera, które widzi katalog: katalog i chwila zmieniają się razem.
+ * Wymagania: US1, US1.2, US17.3, BR-25, NFR-11, NFR-10
  *
  * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
  * @param listBuildings lista z serwera; `null` zostawia katalog wyłącznie z pliku
@@ -108,8 +84,10 @@ class BuildingCatalogRepository(
 
     /**
      * Pyta serwer i czyta plik od nowa, zapamiętuje wynik i zwraca katalog dla „Spróbuj ponownie”, gdy budynku
-     * nie ma w telefonie (NFR-10). Gdy pobranie już trwa, czeka na jego wynik. Gdy serwer nie odpowie, zostaje
+     * nie ma w telefonie. Gdy pobranie już trwa, czeka na jego wynik. Gdy serwer nie odpowie, zostaje
      * ostatni katalog z serwera, a bez niego kopia z bazy [buildingCache], a bez kopii plik.
+     *
+     * Wymagania: NFR-10
      *
      * @throws IllegalArgumentException gdy plik konturów ma zły format
      */
@@ -117,7 +95,9 @@ class BuildingCatalogRepository(
 
     /**
      * Chwila ostatniego, udanego pobrania listy budynków z serwera, które widzi katalog; `null`, gdy katalog
-     * jest z pliku (NFR-10).
+     * jest z pliku.
+     *
+     * Wymagania: NFR-10
      */
     fun syncedAt(): Instant? = downloaded.value?.run { Instant.ofEpochMilli(syncedAtMillis) }
 

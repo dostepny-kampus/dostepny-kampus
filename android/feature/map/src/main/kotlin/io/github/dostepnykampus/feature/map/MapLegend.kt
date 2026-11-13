@@ -63,7 +63,9 @@ private val ENTRANCE_WORDS =
 
 /**
  * „Legenda” mapy V1 według makiety hi-fi: przycisk w lewym górnym rogu mapy, a pod nim, gdy [isOpen], panel ze
- * znakami mapy (US1.4). Przycisk ma cel dotyku 48 dp i słowo „Legenda”, które czyta TalkBack (NFR-17, NFR-18).
+ * znakami mapy. Przycisk ma cel dotyku 48 dp i słowo „Legenda”, które czyta TalkBack.
+ *
+ * Wymagania: US1.4, NFR-17, NFR-18
  *
  * @param isOpen czy panel legendy jest rozwinięty
  * @param onOpenChange dotknięcie przycisku albo „Zamknij” w panelu

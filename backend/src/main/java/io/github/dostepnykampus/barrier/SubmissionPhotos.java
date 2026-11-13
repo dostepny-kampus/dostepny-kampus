@@ -22,15 +22,17 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import software.amazon.awssdk.core.exception.SdkException;
 
 /**
- * Zdjęcia zgłoszeń: zapis zdjęcia z listy photoIds (BR-7, BR-8) i odczyt
- * zdjęcia zgłoszenia przyjętego (US2.2).
+ * Zdjęcia zgłoszeń: zapis zdjęcia z listy photoIds i odczyt
+ * zdjęcia zgłoszenia przyjętego.
  *
  * <p>Status jest sprawdzany przed zapisem do S3, bez wspólnej transakcji z bazą:
  * zgłoszenie może zostać przyjęte pomiędzy sprawdzeniem a zapisem i zdjęcie je
  * zastąpi. Wyścig przyjęty do sprintu 5 (weryfikator); S3 i SQL nie są atomowe.</p>
  *
  * <p>Po zatwierdzonej edycji zdjęcia spoza nowej listy photoIds znikają z
- * magazynu, więc nie zostają dane, których nikt nie może usunąć (#839).</p>
+ * magazynu, więc nie zostają dane, których nikt nie może usunąć.</p>
+ *
+ * <p>Wymagania: BR-7, BR-8, US2.2</p>
  *
  * @since 0.1.0
  */
@@ -53,7 +55,9 @@ final class SubmissionPhotos {
 
     /**
      * Odmawia kontu, które nie jest autorem zgłoszenia: zdjęcie dodaje tylko
-     * autor (BR-3). Brak zgłoszenia zostawia dalszej obsłudze.
+     * autor. Brak zgłoszenia zostawia dalszej obsłudze.
+     *
+     * <p>Wymagania: BR-3</p>
      *
      * @param submission Identyfikator zgłoszenia
      * @param account Identyfikator konta z tokenu
@@ -65,14 +69,16 @@ final class SubmissionPhotos {
     }
 
     /**
-     * Zapisuje zdjęcie bez metadanych (NFR-26); ponowne wysłanie tego samego
-     * zdjęcia je zastępuje (BR-9).
+     * Zapisuje zdjęcie bez metadanych; ponowne wysłanie tego samego
+     * zdjęcia je zastępuje.
+     *
+     * <p>Wymagania: NFR-26, BR-9</p>
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia z listy photoIds
      * @param upload Ciało żądania z JPEG
      * @throws IOException Gdy odczyt ciała się nie uda albo przekracza limit
-     *  NFR-34 (PhotoTooLargeException)
+     *  rozmiaru (PhotoTooLargeException)
      */
     void put(final UUID submission, final UUID photo, final PhotoUpload upload)
         throws IOException {
@@ -85,7 +91,9 @@ final class SubmissionPhotos {
 
     /**
      * Czyta zdjęcie zgłoszenia, które czytelnik może zobaczyć: przyjętego
-     * każdy (US2.2, BR-6), pozostałych autor i Weryfikator (BR-5).
+     * każdy, pozostałych autor i Weryfikator.
+     *
+     * <p>Wymagania: US2.2, BR-6, BR-5</p>
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia z listy photoIds
@@ -102,7 +110,7 @@ final class SubmissionPhotos {
     /**
      * Usuwa z magazynu zdjęcia spoza listy photoIds zapisanej edycji. Działa
      * po zatwierdzeniu transakcji; błąd magazynu nie cofa edycji, trafia do
-     * logu (#839).
+     * logu.
      *
      * @param saved Zapisana edycja zgłoszenia
      */

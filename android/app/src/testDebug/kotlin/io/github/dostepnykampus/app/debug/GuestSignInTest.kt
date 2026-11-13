@@ -32,7 +32,9 @@ import org.robolectric.annotation.Config
 
 /**
  * Gość na L1 po zmianie konta na zalogowane przechodzi dalej sam: z „Zgłoś barierę” do V4, krok 1, z wejściem
- * wybranym przed L1, a z „Konto” do L2 (US14.2, UC7 1a). Rola pochodzi z przełącznika, jak w aplikacji debug.
+ * wybranym przed L1, a z „Konto” do L2. Rola pochodzi z przełącznika, jak w aplikacji debug.
+ *
+ * Wymagania: US14.2, UC7
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")

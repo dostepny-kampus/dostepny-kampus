@@ -13,7 +13,9 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 /**
- * Lista budynków z serwera razem z chwilą jej pobrania (NFR-10).
+ * Lista budynków z serwera razem z chwilą jej pobrania.
+ *
+ * Wymagania: NFR-10
  *
  * @property list lista budynków
  * @property syncedAtMillis chwila pobrania z serwera w milisekundach epoki
@@ -21,7 +23,9 @@ import kotlin.coroutines.CoroutineContext
 internal data class SyncedBuildingList(val list: BuildingList, val syncedAtMillis: Long)
 
 /**
- * Kopia ostatniej listy budynków z serwera w jednym wierszu `building_cache` (NFR-10).
+ * Kopia ostatniej listy budynków z serwera w jednym wierszu `building_cache`.
+ *
+ * Wymagania: NFR-10
  *
  * @param dao wiersz kopii w bazie
  * @param ioContext kontekst zapisu i odczytu bazy

@@ -25,9 +25,11 @@ import java.io.IOException
 import java.util.Base64
 
 /**
- * Logowanie użytkownikiem testowym roli wybranej w przełączniku debug (US14.1, BR-1). Token z realmu
+ * Logowanie użytkownikiem testowym roli wybranej w przełączniku debug. Token z realmu
  * deweloperskiego trafia tylko do [AccessTokens] w pamięci procesu, a rola konta wynika z ról zapisanych w tokenie.
- * Ani token, ani hasło użytkownika testowego (`infra/keycloak/realm.json`) nie trafiają do logów (NFR-35).
+ * Ani token, ani hasło użytkownika testowego (`infra/keycloak/realm.json`) nie trafiają do logów.
+ *
+ * Wymagania: US14.1, BR-1, NFR-35
  *
  * @param roles konto pokazywane przez aplikację
  * @param tokens token dołączany do żądań do serwera

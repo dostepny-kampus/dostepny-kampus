@@ -13,7 +13,9 @@ import androidx.compose.ui.unit.sp
 
 /**
  * Rozmiar ikony obok napisu: [Ikony.rozmiar] liczony jak tekst w sp, więc ikona rośnie razem z napisem
- * przy większej czcionce telefonu, także przy nieliniowym skalowaniu (Android 14+, NFR-20).
+ * przy większej czcionce telefonu, także przy nieliniowym skalowaniu (Android 14+).
+ *
+ * Wymagania: NFR-20
  */
 @Composable
 @ReadOnlyComposable

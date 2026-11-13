@@ -24,7 +24,9 @@ class SheetSceneStrategyTest {
         with(SheetSceneStrategy) { SceneStrategyScope<NavKey>().calculateScene(routes.map(::entry)) }
 
     /**
-     * Wiersz: V2, „Sprawdź, którędy wejść” → V3 na cały ekran, US3; inne układy historii rysuje scena z jednym ekranem.
+     * Wiersz: V2, „Sprawdź, którędy wejść” → V3 na cały ekran; inne układy historii rysuje scena z jednym ekranem.
+     *
+     * Wymagania: US3
      */
     @Test
     fun us3_v3_single_screen() {

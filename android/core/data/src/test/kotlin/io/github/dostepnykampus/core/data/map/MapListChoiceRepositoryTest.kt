@@ -21,8 +21,10 @@ class MapListChoiceRepositoryTest {
     lateinit var directory: File
 
     /**
-     * NFR-19, NFR-20: bez wyboru nic nie jest zapisane, a wybór „Mapa”, np. przy dużej czcionce, przetrwa
+     * Bez wyboru nic nie jest zapisane, a wybór „Mapa”, np. przy dużej czcionce, przetrwa
      * zamknięcie aplikacji.
+     *
+     * Wymagania: NFR-19, NFR-20
      */
     @Test
     fun nfr19_choice_survives_restart() {

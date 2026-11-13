@@ -13,7 +13,7 @@ import androidx.room.Transaction
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
-/** Kolejka zgłoszeń zapisanych w telefonie (NFR-5, US9.1, US9.2). */
+/** Kolejka zgłoszeń zapisanych w telefonie. Wymagania: NFR-5, US9.1, US9.2 */
 @Dao
 interface PendingSubmissionDao : PendingSubmissionRows {
     /**
@@ -34,7 +34,7 @@ interface PendingSubmissionDao : PendingSubmissionRows {
 
     /**
      * [writes] jako jedna transakcja bazy, razem z zapisami historii [OwnSubmissionDao]: błąd albo zabicie procesu
-     * w środku cofa wszystkie, więc kolejka i historia nie zostają w sprzeczności (#859).
+     * w środku cofa wszystkie, więc kolejka i historia nie zostają w sprzeczności.
      */
     @Transaction
     suspend fun together(writes: suspend () -> Unit) {
@@ -60,7 +60,9 @@ interface PendingSubmissionDao : PendingSubmissionRows {
     suspend fun markCreated(id: String)
 
     /**
-     * Zaznacza odrzucenie zgłoszenia przez serwer: zostaje w telefonie, ale [all] go nie zwraca (BR-26).
+     * Zaznacza odrzucenie zgłoszenia przez serwer: zostaje w telefonie, ale [all] go nie zwraca.
+     *
+     * Wymagania: BR-26
      *
      * @param id identyfikator zgłoszenia
      */
@@ -87,7 +89,7 @@ interface PendingSubmissionDao : PendingSubmissionRows {
 
 /** Pojedyncze kroki zapisu w [PendingSubmissionDao.save]; poza nim nie są używane. */
 interface PendingSubmissionRows {
-    /** Ścieżki plików wszystkich zdjęć w kolejce, także zgłoszeń odrzuconych, do sprzątania przy starcie (#927). */
+    /** Ścieżki plików wszystkich zdjęć w kolejce, także zgłoszeń odrzuconych, do sprzątania przy starcie. */
     @Query("SELECT path FROM pending_photos")
     suspend fun allPhotoPaths(): List<String>
 

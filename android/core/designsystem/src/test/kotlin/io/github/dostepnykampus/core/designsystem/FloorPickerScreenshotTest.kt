@@ -20,7 +20,11 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** Zrzuty wspólnego wyboru piętra: chipy (C2) i lista (V4), jasny, ciemny i czcionka 200 % (NFR-16, NFR-20). */
+/**
+ * Zrzuty wspólnego wyboru piętra: chipy (C2) i lista (V4), jasny, ciemny i czcionka 200 %.
+ *
+ * Wymagania: NFR-16, NFR-20
+ */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h900dp-xhdpi")

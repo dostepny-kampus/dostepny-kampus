@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-/** Piętra z planu PWr w formularzu C2: pobranie po otwarciu i wpisanie piętra bez planu (US7.2, BR-G1). */
+/** Piętra z planu PWr w formularzu C2: pobranie po otwarciu i wpisanie piętra bez planu. Wymagania: US7.2, BR-G1 */
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReportFloorsTest {
     private val dispatcher = StandardTestDispatcher()

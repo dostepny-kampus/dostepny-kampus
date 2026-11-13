@@ -11,7 +11,9 @@ import org.maplibre.spatialk.turf.measurement.distance
 import org.maplibre.spatialk.units.International
 
 /**
- * Wejście z odległością od punktu pomiaru, do opisu miejsca słowami w C2 (US7.4, NFR-19).
+ * Wejście z odległością od punktu pomiaru, do opisu miejsca słowami w C2.
+ *
+ * Wymagania: US7.4, NFR-19
  *
  * @property entrance wejście z danych
  * @property meters odległość w metrach na ziemi od punktu do wejścia

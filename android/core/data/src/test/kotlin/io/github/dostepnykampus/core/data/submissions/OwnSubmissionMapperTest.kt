@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test
 import java.io.IOException
 import java.time.Instant
 
-/** Kod odmowy i wersja z odpowiedzi serwera dla historii C3 (US9.5, BR-10). */
+/** Kod odmowy i wersja z odpowiedzi serwera dla historii C3. Wymagania: US9.5, BR-10 */
 class OwnSubmissionMapperTest {
     @Test
     fun `us9_5 kod odmowy`() {
@@ -34,7 +34,7 @@ class OwnSubmissionMapperTest {
         assertEquals(listOf(422, 404, 409, null, null), codes)
     }
 
-    /** 403 to brak uprawnień, 409 konflikt wersji, inne kody to nieprzyjęte, brak kodu to nieodczytane (#861). */
+    /** 403 to brak uprawnień, 409 konflikt wersji, inne kody to nieprzyjęte, brak kodu to nieodczytane. */
     @Test
     fun `us9_5 powód z kodu`() {
         val reasons = listOf(403, 409, 400, 404, 413, 422, null).map { refusalReasonOf(OwnSubmissionState.REFUSED, it) }

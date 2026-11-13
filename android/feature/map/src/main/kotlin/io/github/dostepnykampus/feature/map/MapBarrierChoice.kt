@@ -11,9 +11,11 @@ import androidx.compose.ui.Modifier
 import io.github.dostepnykampus.core.model.BuildingCatalog
 
 /**
- * Arkusz bariery o identyfikatorze [id] po dotknięciu jej znaku na mapie V1 (US1.5). Budynek i nazwę wejścia
+ * Arkusz bariery o identyfikatorze [id] po dotknięciu jej znaku na mapie V1. Budynek i nazwę wejścia
  * bierze z [catalog]. Bez [id] i wtedy, gdy bariery nie ma już wśród [barriers], np. przestała być przyjęta,
  * arkusza nie ma. Systemowe „Wstecz” przy otwartym arkuszu zamyka go i zostawia V1, jak „Zamknij”.
+ *
+ * Wymagania: US1.5
  *
  * @param id identyfikator zgłoszenia dotkniętego znaku; `null` bez wybranej bariery
  * @param barriers bariery pokazane na mapie

@@ -55,8 +55,10 @@ import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.BarrierType
 
 /**
- * Piętro wpisane liczbą w budynku bez planu PWr, z polem „Półpiętro” (US7.2, BR-G1, PW-6).
+ * Piętro wpisane liczbą w budynku bez planu PWr, z polem „Półpiętro” (PW-6).
  * Wpisany tekst należy do budynku: po „Zmień miejsce” na inny budynek pole startuje od piętra ze stanu.
+ *
+ * Wymagania: US7.2, BR-G1
  */
 @Composable
 internal fun FloorSection(building: String, floor: ReportFloor?, onEdit: (ReportEdit) -> Unit) {
@@ -100,8 +102,10 @@ internal fun FloorSection(building: String, floor: ReportFloor?, onEdit: (Report
 }
 
 /**
- * Piętro z etykiet planu PWr w budynku szczegółowym, bez wpisywania liczby (US7.2, BR-G1). Wspólny wybór piętra
- * w układzie chipów, jak w makiecie C2 (decyzja z #903).
+ * Piętro z etykiet planu PWr w budynku szczegółowym, bez wpisywania liczby. Wspólny wybór piętra
+ * w układzie chipów, jak w makiecie C2.
+ *
+ * Wymagania: US7.2, BR-G1
  */
 @Composable
 internal fun PlanFloorSection(floors: PlanFloors, floor: ReportFloor?, onEdit: (ReportEdit) -> Unit) {
@@ -123,9 +127,11 @@ internal fun PlanFloorSection(floors: PlanFloors, floor: ReportFloor?, onEdit: (
 }
 
 /**
- * „Typ bariery” (US7.1): pole z wybranym typem otwiera panel z listą 29 typów w 6 grupach. Panel ma u góry
- * nagłówek i „Zamknij”, które nie przewijają się z listą (NFR-18, NFR-53). Po otwarciu fokus jest na nagłówku,
+ * „Typ bariery”: pole z wybranym typem otwiera panel z listą 29 typów w 6 grupach. Panel ma u góry
+ * nagłówek i „Zamknij”, które nie przewijają się z listą. Po otwarciu fokus jest na nagłówku,
  * po zamknięciu wraca na pole.
+ *
+ * Wymagania: US7.1, NFR-18, NFR-53
  *
  * @param type wybrany typ albo `null`
  * @param onEdit wybór typu

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-/** Zgłoszenie szybkie V4: pytanie o piętro według BR-14 i treść z bieżącą pozycją (US4.1, US4.3, US4.5). */
+/** Zgłoszenie szybkie V4: pytanie o piętro według BR-14 i treść z bieżącą pozycją. Wymagania: US4.1, US4.3, US4.5 */
 class QuickReportTest {
     private val point = GeoPoint(longitude = 17.06209, latitude = 51.10785)
     private val photo = PendingPhotoDraft(photoId = "zdjecie-1", path = "/zdjecia/zdjecie-1.jpg")
@@ -59,7 +59,11 @@ class QuickReportTest {
         assertNull(content.floor)
     }
 
-    /** Wiersz: V4 krok 2 w budynku szczegółowym, piętro z danych PWr → zgłoszenie z identyfikatorem piętra, US4.5. */
+    /**
+     * Wiersz: V4 krok 2 w budynku szczegółowym, piętro z danych PWr → zgłoszenie z identyfikatorem piętra.
+     *
+     * Wymagania: US4.5
+     */
     @Test
     fun us4_5_detailed_floor_id() {
         val report =

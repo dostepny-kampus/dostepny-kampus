@@ -6,8 +6,10 @@
 package io.github.dostepnykampus.barrier.domain;
 
 /**
- * Grupa barier (US4.3, BR-8): krótkie nazwy stałych, w liczbie i kolejności
+ * Grupa barier: krótkie nazwy stałych, w liczbie i kolejności
  * wartości schematu BarrierGroup w OpenAPI; wartość ze spec podaje opis stałej.
+ *
+ * <p>Wymagania: US4.3, BR-8</p>
  *
  * @since 0.1.0
  */

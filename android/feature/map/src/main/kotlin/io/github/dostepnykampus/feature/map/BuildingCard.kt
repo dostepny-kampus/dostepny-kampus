@@ -14,17 +14,21 @@ private val MARKING_ORDER = listOf(EntranceMarking.ACCESSIBLE, EntranceMarking.I
 /**
  * Wejście na liście karty budynku i na V3, w kolejności z [orderedEntrances].
  *
+ * Wymagania: BR-25
+ *
  * @property entrance wejście z katalogu, już bez rodzajów spoza odwiedzających
- * @property isRecommended czy to jedyne wejście zalecane budynku (BR-25); napis „Zalecane”
+ * @property isRecommended czy to jedyne wejście zalecane budynku; napis „Zalecane”
  */
 data class OrderedEntrance(val entrance: Entrance, val isRecommended: Boolean)
 
 /**
- * Wejścia odwiedzających w kolejności karty budynku (BR-25, decyzja 48).
+ * Wejścia odwiedzających w kolejności karty budynku.
  *
  * Zalecane jest jedyne: wejście „dostępne”, a gdy jest ich kilka — wejście główne, a gdy żadne dostępne nie jest
  * główne — pierwsze „dostępne” w kolejności z danych. Wejście „brak danych” nigdy nie jest zalecane. Bez wejścia
  * „dostępne” nie ma zalecanego, a lista zaczyna się od „niedostępne”.
+ *
+ * Wymagania: BR-25
  */
 fun orderedEntrances(entrances: List<Entrance>): List<OrderedEntrance> {
     val visitors = entrances.filter(Entrance::isForVisitors)
@@ -36,10 +40,12 @@ fun orderedEntrances(entrances: List<Entrance>): List<OrderedEntrance> {
 }
 
 /**
- * Odpowiedź V3 „Którędy wejść” (US3.1, BR-25).
+ * Odpowiedź V3 „Którędy wejść”.
+ *
+ * Wymagania: US3.1, BR-25
  */
 sealed interface VisitAnswer {
-    /** Brak wejść odwiedzających w danych nie potwierdza niedostępności budynku (US17.1). */
+    /** Brak wejść odwiedzających w danych nie potwierdza niedostępności budynku. Wymagania: US17.1 */
     data object NoData : VisitAnswer
 
     /** Jest wejście zalecane; [name] to jego nazwa, `null`, gdy danych nazwy nie ma. */
@@ -58,11 +64,13 @@ sealed interface VisitAnswer {
 }
 
 /**
- * Zdanie V3 z listy [entrances] ułożonej przez [orderedEntrances] (BR-25, US3.1).
+ * Zdanie V3 z listy [entrances] ułożonej przez [orderedEntrances].
  *
  * Wejście zalecane jest w zdaniu „ma wejście dostępne”. Bez niego, gdy choć jedno wejście ma „brak danych”,
  * zdanie podaje, o ilu z ilu wejść brak danych — także wtedy, gdy danych brak o wszystkich. Inaczej budynek
- * nie ma wejścia dostępnego. Pusta lista oznacza brak danych o wejściach (US17.1).
+ * nie ma wejścia dostępnego. Pusta lista oznacza brak danych o wejściach.
+ *
+ * Wymagania: BR-25, US3.1, US17.1
  */
 fun visitAnswer(entrances: List<OrderedEntrance>): VisitAnswer {
     if (entrances.isEmpty()) return VisitAnswer.NoData
@@ -75,7 +83,7 @@ private fun missingOrNone(entrances: List<OrderedEntrance>): VisitAnswer {
     return if (missing == 0) VisitAnswer.NoAccessible else VisitAnswer.Unknown(missing, entrances.size)
 }
 
-/** Wiersz o wejściach pod nagłówkiem karty budynku (US2.8, US2.1, US3.1). */
+/** Wiersz o wejściach pod nagłówkiem karty budynku. Wymagania: US2.8, US2.1, US3.1 */
 enum class EntranceSummary {
     /** „Wejście dostępne”: choć jedno wejście odwiedzających jest „dostępne”. */
     Accessible,
@@ -87,7 +95,7 @@ enum class EntranceSummary {
     NoData,
 }
 
-/** Wiersz o wejściach dla listy [entrances] ułożonej przez [orderedEntrances] (US2.8, US17.1). */
+/** Wiersz o wejściach dla listy [entrances] ułożonej przez [orderedEntrances]. Wymagania: US2.8, US17.1 */
 fun entranceSummary(entrances: List<OrderedEntrance>): EntranceSummary =
     when (visitAnswer(entrances)) {
         is VisitAnswer.Accessible -> EntranceSummary.Accessible
@@ -96,7 +104,9 @@ fun entranceSummary(entrances: List<OrderedEntrance>): EntranceSummary =
     }
 
 /**
- * Stan karty budynku [symbol] z katalogu (US2, US2.7). Brak symbolu w katalogu to „budynku nie ma w telefonie”.
+ * Stan karty budynku [symbol] z katalogu. Brak symbolu w katalogu to „budynku nie ma w telefonie”.
+ *
+ * Wymagania: US2, US2.7
  */
 fun buildingCard(catalog: BuildingCatalog, symbol: String): BuildingCardUiState {
     val building = catalog.buildings.find { it.symbol == symbol }

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 
-/** Oznaczenia wejścia odpowiadają wartościom `EntranceMarking` z kontraktu API (US2.1, US17.1, BR-24). */
+/** Oznaczenia wejścia odpowiadają wartościom `EntranceMarking` z kontraktu API. Wymagania: US2.1, US17.1, BR-24 */
 class EntranceMarkingTest {
     @Test
     fun us2_1_names_match_contract() {

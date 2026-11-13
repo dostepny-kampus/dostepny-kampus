@@ -42,7 +42,7 @@ class SubmissionCardTest {
         }
     }
 
-    /** Wiersz: C3 zgłoszenie → status, typ, budynek z piętrem i data, US8.1. */
+    /** Wiersz: C3 zgłoszenie → status, typ, budynek z piętrem i data. Wymagania: US8.1 */
     @Test
     fun us8_1_item_details() {
         show(item(id = "a", state = SendState.SENT))
@@ -51,7 +51,11 @@ class SubmissionCardTest {
         compose.onNodeWithText("9.11.2026").assertIsDisplayed()
     }
 
-    /** Wiersz: C3 po sprawdzeniu → status z serwera, przy odrzuconym powód; poprawka „W telefonie”, US8.2, BR-9. */
+    /**
+     * Wiersz: C3 po sprawdzeniu → status z serwera, przy odrzuconym powód; poprawka „W telefonie”.
+     *
+     * Wymagania: US8.2, BR-9
+     */
     @Test
     fun us8_2_server_statuses() {
         val words =
@@ -71,7 +75,7 @@ class SubmissionCardTest {
         compose.onNodeWithText("Powód odrzucenia: Zdjęcie nieostre").assertIsDisplayed()
     }
 
-    /** Wiersz: C3 „Nie wysłano” → powód odmowy, US9.5, BR-26. */
+    /** Wiersz: C3 „Nie wysłano” → powód odmowy. Wymagania: US9.5, BR-26 */
     @Test
     fun us9_5_refusal_reason() {
         show(item(id = "a", state = SendState.REFUSED, refusal = RefusalReason.NO_PERMISSION))
@@ -80,7 +84,7 @@ class SubmissionCardTest {
         compose.onNodeWithText(reason).assertIsDisplayed()
     }
 
-    /** Wiersz: C3 „Otwórz” → poprawka w C2, US8.3. */
+    /** Wiersz: C3 „Otwórz” → poprawka w C2. Wymagania: US8.3 */
     @Test
     fun us8_3_open_item() {
         show(item(id = "a", state = SendState.LOCAL))
@@ -88,14 +92,14 @@ class SubmissionCardTest {
         assertEquals(1, opened)
     }
 
-    /** Wiersz: C3 bez poprawki w C2 → pozycja bez „Otwórz”, US8.3. */
+    /** Wiersz: C3 bez poprawki w C2 → pozycja bez „Otwórz”. Wymagania: US8.3 */
     @Test
     fun us8_3_no_open_without_edit() {
         show(item(id = "a", state = SendState.LOCAL), onOpen = null)
         compose.onNodeWithText("Otwórz").assertDoesNotExist()
     }
 
-    /** Wiersz: C3 poza budynkiem, nieznany kod typu → „Poza budynkiem”, „Nieznany typ bariery”, US8.1. */
+    /** Wiersz: C3 poza budynkiem, nieznany kod typu → „Poza budynkiem”, „Nieznany typ bariery”. Wymagania: US8.1 */
     @Test
     fun us8_1_outside_unknown_type() {
         show(item(id = "a", state = SendState.SENT).copy(type = null, buildingSymbol = null, floorNumber = null))
@@ -103,14 +107,14 @@ class SubmissionCardTest {
         compose.onNodeWithText("Nieznany typ bariery").assertIsDisplayed()
     }
 
-    /** Wiersz: C3 budynek bez numeru piętra → sam budynek, US8.1. */
+    /** Wiersz: C3 budynek bez numeru piętra → sam budynek. Wymagania: US8.1 */
     @Test
     fun us8_1_building_without_floor() {
         show(item(id = "a", state = SendState.SENT).copy(floorNumber = null))
         compose.onNodeWithText("Budynek A-1").assertIsDisplayed()
     }
 
-    /** Wiersz: C3 → TalkBack czyta status przed typem bariery, NFR-18. */
+    /** Wiersz: C3 → TalkBack czyta status przed typem bariery. Wymagania: NFR-18 */
     @Test
     fun nfr18_status_before_type() {
         show(item(id = "a", state = SendState.LOCAL))

@@ -32,7 +32,9 @@ import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.Odstepy
 
 /**
- * C3 „Moje zgłoszenia” z listą z telefonu (US8.1, NFR-5).
+ * C3 „Moje zgłoszenia” z listą z telefonu.
+ *
+ * Wymagania: US8.1, NFR-5
  *
  * @param actions czynności ekranu
  * @param modifier wymiary nadane przez aplikację
@@ -49,13 +51,15 @@ fun MySubmissionsScreen(
 }
 
 /**
- * Widok C3 bez modelu widoku: lista od najnowszego albo stan pusty (US8.1, PW-12), nad listą sprawdzanie
- * statusów z serwera (US8.2).
+ * Widok C3 bez modelu widoku: lista od najnowszego albo stan pusty (PW-12), nad listą sprawdzanie
+ * statusów z serwera.
+ *
+ * Wymagania: US8.1, US8.2, NFR-50
  *
  * @param state stan ekranu
  * @param actions czynności ekranu
  * @param modifier wymiary nadane przez aplikację
- * @param onRetry „Spróbuj ponownie” po błędzie sprawdzania statusów (NFR-50)
+ * @param onRetry „Spróbuj ponownie” po błędzie sprawdzania statusów
  */
 @Composable
 fun MySubmissionsContent(

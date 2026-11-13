@@ -10,10 +10,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Przeliczenie WGS84 na PUWG 1992 (US13.2, NFR-43) względem PROJ.
+ * Przeliczenie WGS84 na PUWG 1992 względem PROJ.
  *
  * <p>Wartości oczekiwane pochodzą z {@code cs2cs EPSG:4326 EPSG:2180}
  * (PROJ, ta sama biblioteka co w PostGIS i QGIS).</p>
+ *
+ * <p>Wymagania: US13.2, NFR-43</p>
  *
  * @since 0.1.0
  */

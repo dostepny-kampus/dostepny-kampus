@@ -21,9 +21,11 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 
 /**
  * Krok 3 V4 przed „Wyślij”: miniatura zdjęcia, wybrana grupa, piętro albo „Nie wiem”, jeśli było pytanie,
- * i zdanie o dołączeniu bieżącego miejsca (US4.1, US4.5, NFR-27). Gdy pozycja jest jeszcze nieznana,
- * zamiast zdania „Ustalamy, gdzie jesteś…”; „Wyślij” wtedy czeka (NFR-23). Przy „Brak pozycji” komunikat mówi,
- * co zrobić; zdjęcie i grupa zostają (UC7 4c).
+ * i zdanie o dołączeniu bieżącego miejsca. Gdy pozycja jest jeszcze nieznana,
+ * zamiast zdania „Ustalamy, gdzie jesteś…”; „Wyślij” wtedy czeka. Przy „Brak pozycji” komunikat mówi,
+ * co zrobić; zdjęcie i grupa zostają.
+ *
+ * Wymagania: US4.1, US4.5, NFR-27, NFR-23, UC7
  *
  * @param report zgłoszenie po kroku 2
  * @param isFloorAsked czy krok 2 pytał o piętro
@@ -57,8 +59,10 @@ internal fun QuickSendSummary(report: QuickReport, isFloorAsked: Boolean, lookup
 }
 
 /**
- * Potwierdzenie po „Wyślij”: zgłoszenie trafi do weryfikacji, dalszego statusu Odwiedzający nie widzi (US4.4).
- * Bez internetu: zdjęcie czeka w telefonie i wyśle się samo po powrocie sieci (US4.2, NFR-5).
+ * Potwierdzenie po „Wyślij”: zgłoszenie trafi do weryfikacji, dalszego statusu Odwiedzający nie widzi.
+ * Bez internetu: zdjęcie czeka w telefonie i wyśle się samo po powrocie sieci.
+ *
+ * Wymagania: US4.4, US4.2, NFR-5
  *
  * @param isSavedOffline zapis w kolejce bez internetu
  */

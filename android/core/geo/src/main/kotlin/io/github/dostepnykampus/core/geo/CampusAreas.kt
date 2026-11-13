@@ -7,7 +7,7 @@ package io.github.dostepnykampus.core.geo
 
 import io.github.dostepnykampus.core.model.Building
 
-/** Największa odległość między budynkami jednego terenu w metrach na ziemi (BR-G5). */
+/** Największa odległość między budynkami jednego terenu w metrach na ziemi. Wymagania: BR-G5 */
 const val AREA_LINK_METERS = 600.0
 
 private val AREA_NAMES =
@@ -20,21 +20,25 @@ private val AREA_NAMES =
     )
 
 /**
- * Teren PWr: grupa budynków leżących blisko siebie (BR-G5, słownik: „teren”).
+ * Teren PWr: grupa budynków leżących blisko siebie (słownik: „teren”).
  *
- * @property name nazwa terenu, np. „Kampus główny”; teren bez nazwy w regule BR-G5 nazywa się symbolem swojego
+ * Wymagania: BR-G5
+ *
+ * @property name nazwa terenu, np. „Kampus główny”; teren bez nazwy nazywa się symbolem swojego
  *   pierwszego budynku
  * @property buildings budynki terenu w kolejności katalogu
  */
 data class CampusArea(val name: String, val buildings: List<Building>) {
-    /** Symbole budynków terenu, każdy raz; ich liczba to „liczba budynków” terenu na V1 (US1.7). */
+    /** Symbole budynków terenu, każdy raz; ich liczba to „liczba budynków” terenu na V1. Wymagania: US1.7 */
     val symbols: List<String> get() = buildings.map(Building::symbol).distinct()
 }
 
 /**
- * Tereny PWr z budynków katalogu, bez sieci (BR-G5, US1.6, NFR-4). Do jednego terenu należą budynki, z których
+ * Tereny PWr z budynków katalogu, bez sieci. Do jednego terenu należą budynki, z których
  * każdy leży najwyżej [AREA_LINK_METERS] od innego budynku tego terenu. Odległość liczymy od wierzchołków konturu
  * jednego budynku do krawędzi konturu drugiego.
+ *
+ * Wymagania: BR-G5, US1.6, NFR-4
  *
  * @param buildings budynki z konturami z katalogu w telefonie
  * @return tereny w kolejności pierwszego budynku w katalogu; każdy budynek należy do dokładnie jednego terenu

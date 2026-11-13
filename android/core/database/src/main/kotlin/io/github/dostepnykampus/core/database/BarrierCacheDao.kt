@@ -10,7 +10,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
-/** Odczyt i zapis kopii barier ze zgłoszeń przyjętych (NFR-10). */
+/** Odczyt i zapis kopii barier ze zgłoszeń przyjętych. Wymagania: NFR-10 */
 @Dao
 interface BarrierCacheDao {
     /** Kopia barier albo `null`, gdy serwer dotąd ich nie podał. */

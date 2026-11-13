@@ -26,7 +26,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 
-/** Odczyty z odbiornika GNSS telefonu w Robolectric (US6.1, NFR-2, NFR-27). */
+/** Odczyty z odbiornika GNSS telefonu w Robolectric. Wymagania: US6.1, NFR-2, NFR-27 */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class GnssPositionFixesTest {

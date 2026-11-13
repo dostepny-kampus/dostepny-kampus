@@ -17,13 +17,15 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Testy BR-14 dla nachodzących konturów: gdy punkt leży w kilku konturach,
+ * Gdy punkt leży w kilku konturach,
  * budynkiem zgłoszenia jest ten o najmniejszym symbolu, a podpowiedź REST
- * wskazuje ten sam budynek (#849).
+ * wskazuje ten sam budynek.
  *
  * <p>Kontury przy równiku nie zależą od danych kampusu. Budynek o większym
  * symbolu jest wstawiony jako pierwszy, więc wynik nie zależy od kolejności
  * wierszy w tabeli.</p>
+ *
+ * <p>Wymagania: BR-14</p>
  *
  * @since 0.1.0
  */

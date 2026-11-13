@@ -20,7 +20,7 @@ import javax.inject.Singleton
 object DatabaseModule {
     private const val NAME = "dostepny-kampus.db"
 
-    /** Baza w pliku [NAME] w pamięci aplikacji; przetrwa zamknięcie aplikacji i restart telefonu (NFR-5). */
+    /** Baza w pliku [NAME] w pamięci aplikacji; przetrwa zamknięcie aplikacji i restart telefonu. Wymagania: NFR-5 */
     @Provides
     @Singleton
     fun database(
@@ -35,19 +35,19 @@ object DatabaseModule {
     @Provides
     fun pendingSubmissions(database: DkDatabase): PendingSubmissionDao = database.pendingSubmissions()
 
-    /** Kopia listy budynków z [database] (NFR-10). */
+    /** Kopia listy budynków z [database]. Wymagania: NFR-10 */
     @Provides
     fun buildingCache(database: DkDatabase): BuildingCacheDao = database.buildingCache()
 
-    /** Historia własnych zgłoszeń z [database] (US8). */
+    /** Historia własnych zgłoszeń z [database]. Wymagania: US8 */
     @Provides
     fun ownSubmissions(database: DkDatabase): OwnSubmissionDao = database.ownSubmissions()
 
-    /** Odczyt zgłoszenia z kolejki do poprawki z [database] (US8.3). */
+    /** Odczyt zgłoszenia z kolejki do poprawki z [database]. Wymagania: US8.3 */
     @Provides
     fun pendingEdits(database: DkDatabase): PendingEditDao = database.pendingEdits()
 
-    /** Kopia barier ze zgłoszeń przyjętych z [database] (NFR-10). */
+    /** Kopia barier ze zgłoszeń przyjętych z [database]. Wymagania: NFR-10 */
     @Provides
     fun barrierCache(database: DkDatabase): BarrierCacheDao = database.barrierCache()
 }

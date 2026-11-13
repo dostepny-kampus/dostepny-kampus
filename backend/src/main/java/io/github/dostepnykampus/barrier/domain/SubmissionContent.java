@@ -11,14 +11,16 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Treść zgłoszenia, schemat SubmissionContent w OpenAPI (US4, US7, BR-7).
+ * Treść zgłoszenia, schemat SubmissionContent w OpenAPI.
+ *
+ * <p>Wymagania: US4, US7, BR-7, BR-24, BR-19</p>
  *
  * @param kind Rodzaj zgłoszenia
  * @param place Miejsce zgłoszenia
  * @param barrier Szczegóły bariery
  * @param entranceId Wejście, którego dotyczy zgłoszenie, albo null
- * @param entranceMarking Nowe oznaczenie wejścia albo null (BR-24)
- * @param replaces Zastępowane zgłoszenie albo null (BR-19)
+ * @param entranceMarking Nowe oznaczenie wejścia albo null
+ * @param replaces Zastępowane zgłoszenie albo null
  * @param photoIds Identyfikatory zdjęć, co najmniej jeden
  * @since 0.1.0
  */
@@ -35,10 +37,12 @@ public record SubmissionContent(
     /**
      * Treść z rodzajem, miejscem, szczegółami i co najmniej jednym zdjęciem;
      * lista zdjęć jest niemodyfikowalną kopią. Pusta lista zdjęć oraz
-     * naruszenie reguł rodzaju (BR-7, BR-8, BR-19, BR-24, US7.3) kończą się
+     * naruszenie reguł rodzaju kończą się
      * niekontrolowanym wyjątkiem {@link InvalidSubmission}; pola spoza rodzaju
      * nie są sprawdzane. Brak rodzaju, miejsca, szczegółów albo listy zdjęć
      * kończy się wyjątkiem NullPointerException.
+     *
+     * <p>Wymagania: BR-7, BR-8, BR-19, BR-24, US7.3</p>
      */
     public SubmissionContent {
         Objects.requireNonNull(kind, "kind");

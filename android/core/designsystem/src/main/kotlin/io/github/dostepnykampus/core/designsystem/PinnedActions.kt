@@ -28,8 +28,10 @@ import androidx.compose.ui.text.style.TextAlign
  *
  * Tokeny: tło `surface`, cień [Wysokosci.pasekCzynnosci], margines [Odstepy.m], odstęp między przyciskami
  * [CeleDotyku.odstep]. Szerokość przycisków [content] ustala wywołujący, np. `Modifier.weight` w wierszu albo
- * `fillMaxWidth()`; przyciski, które się nie mieszczą, np. przy dużej czcionce (NFR-20), przechodzą do następnego
+ * `fillMaxWidth()`; przyciski, które się nie mieszczą, np. przy dużej czcionce, przechodzą do następnego
  * wiersza.
+ *
+ * Wymagania: NFR-20
  */
 @Composable
 fun PinnedActionBar(modifier: Modifier = Modifier, content: @Composable FlowRowScope.() -> Unit) {
@@ -48,15 +50,12 @@ fun PinnedActionBar(modifier: Modifier = Modifier, content: @Composable FlowRowS
 }
 
 /**
- * Przycisk przypiętego paska czynności ([PinnedActionBar]) rodzaju [kind], z napisem [text]. Szerokość
- * nadaje [modifier].
+ * Przycisk przypiętego paska czynności ([PinnedActionBar]) rodzaju [kind] z napisem [text]; szerokość nadaje
+ * [modifier]. Wysokość co najmniej [CeleDotyku.przypiety], rośnie z tekstem. Kolory rodzajów opisuje
+ * [PinnedButtonKind]; w ciemnym motywie czynność główną od tonalnej odróżnia gruba ramka, bo jasne tło `primary`
+ * świeciłoby.
  *
- * Tokeny: wysokość co najmniej [CeleDotyku.przypiety] (rośnie z tekstem, NFR-17, NFR-20), zaokrąglenie
- * [Zaokraglenia.bardzoDuze], napis `labelLarge` z [Typografia.wyroznienieWaga]. Kolory rodzajów opisuje
- * [PinnedButtonKind].
- *
- * W ciemnym motywie jasne `primary` jako duże tło świeciłoby, a gruba ramka odróżnia czynność główną od tonalnej także
- * bez koloru (NFR-16, NFR-21).
+ * Wymagania: NFR-17, NFR-20, NFR-16, NFR-21
  */
 @Composable
 fun PinnedButton(

@@ -32,9 +32,11 @@ import io.github.dostepnykampus.feature.capture.ReportFormError.MISSING_SEVERITY
 /**
  * Czynności ekranu C2 przekazywane z ViewModelu.
  *
+ * Wymagania: US7.4, US7.1
+ *
  * @property onEdit zmiana pola
- * @property onChangePlace „Zmień miejsce”: powrót do C1 (US7.4)
- * @property camera „Zrób zdjęcie”: aparat i wynik ostatniej próby (US7.1)
+ * @property onChangePlace „Zmień miejsce”: powrót do C1
+ * @property camera „Zrób zdjęcie”: aparat i wynik ostatniej próby
  * @property onSave „Zapisz” i „Spróbuj ponownie”
  * @property onBack „Wstecz”
  * @property onConfirmExit „Wyjdź bez zapisu”
@@ -51,7 +53,9 @@ data class ReportActions(
 )
 
 /**
- * Treść C2 „Opisz barierę” dla stanu [state], bez ViewModelu (US7).
+ * Treść C2 „Opisz barierę” dla stanu [state], bez ViewModelu.
+ *
+ * Wymagania: US7
  *
  * @param state stan formularza
  * @param actions czynności ekranu

@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Zdjęcia zgłoszeń: dodanie zdjęcia z listy photoIds (BR-7, BR-8)
- * i odczyt zdjęcia zgłoszenia przyjętego (US2.2).
+ * Zdjęcia zgłoszeń: dodanie zdjęcia z listy photoIds
+ * i odczyt zdjęcia zgłoszenia przyjętego.
  * Do sprintu 5 zdjęcia zgłoszenia przyjętego nie zmienia nikt.
+ *
+ * <p>Wymagania: BR-7, BR-8, US2.2</p>
  *
  * @since 0.1.0
  */
@@ -39,12 +41,14 @@ public final class SubmissionPhotosController {
     }
 
     /**
-     * Zapisuje zdjęcie bez metadanych (NFR-26). Ponowne wysłanie tego samego
-     * zdjęcia je zastępuje (BR-9).
+     * Zapisuje zdjęcie bez metadanych. Ponowne wysłanie tego samego
+     * zdjęcia je zastępuje.
+     *
+     * <p>Wymagania: NFR-26, BR-9</p>
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia z listy photoIds
-     * @param request Wejściowe żądanie JPEG odczytywane z limitem NFR-34
+     * @param request Wejściowe żądanie JPEG odczytywane z limitem rozmiaru
      * @return Odpowiedź 204 bez treści
      * @throws IOException Gdy nie da się odczytać ciała żądania
      */
@@ -66,8 +70,10 @@ public final class SubmissionPhotosController {
     }
 
     /**
-     * Zwraca zdjęcie zgłoszenia przyjętego każdemu (US2.2, BR-6), a zdjęcie
-     * pozostałych zgłoszeń autorowi i Weryfikatorowi (BR-5).
+     * Zwraca zdjęcie zgłoszenia przyjętego każdemu, a zdjęcie
+     * pozostałych zgłoszeń autorowi i Weryfikatorowi.
+     *
+     * <p>Wymagania: US2.2, BR-6, BR-5</p>
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia z listy photoIds

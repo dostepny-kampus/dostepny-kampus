@@ -8,10 +8,10 @@ set -euo pipefail
 script="$(cd "$(dirname "$0")" && pwd)/naglowek-squasha.sh"
 failures=0
 
-# przypadek <nazwa> <oczekiwany kod> <fragment wyjścia> <tytuł> <numer>
+# przypadek <nazwa> <oczekiwany kod> <fragment wyjścia> <tytuł> <numer> [nagłówek jedynego commita]
 przypadek() {
   local name="$1" want="$2" text="$3" status=0 out
-  out="$(bash "$script" "$4" "$5" 2>&1)" || status=$?
+  out="$(bash "$script" "$4" "$5" "${6:-}" 2>&1)" || status=$?
   if ((status == want)) && [[ $out == *"$text"* ]]; then
     echo "OK: ${name}"
   else
@@ -28,5 +28,10 @@ przypadek "polskie znaki liczone jako jeden znak" 0 "ma 100 znaków" "$(powtorz 
 przypadek "polskie znaki: o znak za dużo daje błąd" 1 "ma 101 znaków" "$(powtorz ł 95)" 42
 przypadek "dłuższy numer PR skraca dopuszczalny tytuł" 1 "najwyżej 92 znaków" "$(powtorz a 94)" 1234
 przypadek "przykład z #669: 97 znaków i numer trzycyfrowy daje 104" 1 "ma 104 znaków" "$(powtorz a 97)" 669
+przypadek "jeden commit: za długi nagłówek commita daje błąd mimo krótkiego tytułu" 1 \
+  "nagłówek jedynego commita PR może mieć najwyżej 92 znaków (jest 95)" "ci: krótki tytuł" 1080 "$(powtorz a 95)"
+przypadek "jeden commit: nagłówek commita w limicie przechodzi mimo długiego tytułu" 0 "ma 100 znaków" \
+  "$(powtorz a 99)" 1080 "$(powtorz a 92)"
+przypadek "kilka commitów: liczy się tytuł" 1 "tytuł może mieć najwyżej 92 znaków (jest 95)" "$(powtorz a 95)" 1080 ""
 
 exit $((failures > 0))

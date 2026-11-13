@@ -32,10 +32,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Zgłoszenia barier: wysłanie nowego zgłoszenia (US4, US7, BR-9), edycja
- * z kontrolą wersji (US8.3, BR-10), odczyt zgłoszeń przyjętych (BR-6),
- * odczyt zgłoszenia nieprzyjętego przez autora i Weryfikatora (BR-5)
- * i podobne zgłoszenia dla Weryfikatora (US10.1, BR-13).
+ * Zgłoszenia barier: wysłanie nowego zgłoszenia, edycja
+ * z kontrolą wersji, odczyt zgłoszeń przyjętych,
+ * odczyt zgłoszenia nieprzyjętego przez autora i Weryfikatora
+ * i podobne zgłoszenia dla Weryfikatora.
+ *
+ * <p>Wymagania: US4, US7, BR-9, US8.3, BR-10, BR-6, BR-5, US10.1, BR-13</p>
  *
  * @since 0.1.0
  */
@@ -63,8 +65,10 @@ public final class SubmissionsController {
     }
 
     /**
-     * Zwraca zgłoszenia przyjęte według filtrów (US1.3, US2.2, BR-6), a z
-     * mine=true własne zgłoszenia zalogowanej osoby w każdym statusie (US8.1).
+     * Zwraca zgłoszenia przyjęte według filtrów, a z
+     * mine=true własne zgłoszenia zalogowanej osoby w każdym statusie.
+     *
+     * <p>Wymagania: US1.3, US2.2, BR-6, US8.1</p>
      *
      * @param filter Filtry z parametrów zapytania
      * @param account Zalogowane konto albo null bez logowania
@@ -86,8 +90,10 @@ public final class SubmissionsController {
 
     /**
      * Zwraca zgłoszenie przyjęte każdemu, a pozostałe po logowaniu autorowi
-     * i Weryfikatorowi (BR-5, BR-6). Kto zgłoszenia nie widzi, dostaje 404
+     * i Weryfikatorowi. Kto zgłoszenia nie widzi, dostaje 404
      * jak przy jego braku.
+     *
+     * <p>Wymagania: BR-5, BR-6</p>
      *
      * @param id Identyfikator zgłoszenia
      * @param request Wejściowe żądanie z kontem i rolą czytelnika
@@ -108,9 +114,11 @@ public final class SubmissionsController {
     }
 
     /**
-     * Zwraca zgłoszenia podobne do danego w promieniu 10 m, z każdego piętra
-     * (US10.1, BR-13). Sprawdzane zgłoszenie może mieć dowolny status.
+     * Zwraca zgłoszenia podobne do danego w promieniu 10 m, z każdego piętra.
+     * Sprawdzane zgłoszenie może mieć dowolny status.
      * Wymóg roli Weryfikatora dochodzi z logowaniem w sprincie 5.
+     *
+     * <p>Wymagania: US10.1, BR-13</p>
      *
      * @param id Identyfikator sprawdzanego zgłoszenia
      * @return Podobne zgłoszenia od najbliższego
@@ -127,14 +135,16 @@ public final class SubmissionsController {
 
     /**
      * Zapisuje nowe zgłoszenie. Ponowne wysłanie tego samego id zwraca
-     * zapisane zgłoszenie i nie tworzy drugiego (BR-9). Autorem zostaje konto
-     * z tokenu (BR-3). Zgłoszenie inne niż szybkie i zmianę zgłoszenia
-     * przyjętego składa tylko Zbierający (US7, US17.2, US8.4, BR-18, BR-19).
+     * zapisane zgłoszenie i nie tworzy drugiego. Autorem zostaje konto
+     * z tokenu. Zgłoszenie inne niż szybkie i zmianę zgłoszenia
+     * przyjętego składa tylko Zbierający.
      * Zmianę cudzego zgłoszenia innego niż szybkie składa tylko autor, chyba
-     * że zmiana ma oznaczenie „bariera usunięta” (BR-18, BR-19). Zmiana
+     * że zmiana ma oznaczenie „bariera usunięta”. Zmiana
      * zgłoszenia, którego nie ma albo którego składający nie widzi, daje 404,
      * a zmiana zgłoszenia widocznego, ale nieprzyjętego, 409 z tym
-     * zgłoszeniem (BR-3, BR-5, BR-18).
+     * zgłoszeniem.
+     *
+     * <p>Wymagania: BR-9, BR-3, US7, US17.2, US8.4, BR-18, BR-19, BR-5</p>
      *
      * @param body Zgłoszenie według schematu NewSubmission
      * @param account Zalogowane konto; jego nazwa to identyfikator z tokenu
@@ -168,8 +178,10 @@ public final class SubmissionsController {
 
     /**
      * Zapisuje edycję zgłoszenia, jeśli na serwerze jest ta sama wersja,
-     * od której zaczęto edycję (US8.3, US9.3, BR-10). Cudzego zgłoszenia
-     * nie zmienia nikt poza autorem (BR-3).
+     * od której zaczęto edycję. Cudzego zgłoszenia
+     * nie zmienia nikt poza autorem.
+     *
+     * <p>Wymagania: US8.3, US9.3, BR-10, BR-3</p>
      *
      * @param id Identyfikator zgłoszenia
      * @param body Edycja według schematu SubmissionUpdate

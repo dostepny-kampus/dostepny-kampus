@@ -24,22 +24,30 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
-/** Zapis zgłoszenia w kolejce telefonu; w aplikacji to `SubmissionQueue.save` albo `saveEdit` (NFR-5, US9.1). */
+/**
+ * Zapis zgłoszenia w kolejce telefonu; w aplikacji to `SubmissionQueue.save` albo `saveEdit`.
+ *
+ * Wymagania: NFR-5, US9.1
+ */
 fun interface ReportSaver {
     /**
-     * Zapisuje treść i zdjęcia; rzuca [IOException] albo [SQLiteException], gdy telefon nie może zapisać (NFR-7).
+     * Zapisuje treść i zdjęcia; rzuca [IOException] albo [SQLiteException], gdy telefon nie może zapisać.
+     *
+     * Wymagania: NFR-7, US8.3
      *
      * @param content treść zgłoszenia
      * @param photos zdjęcia zgłoszenia
-     * @param edited poprawiane zgłoszenie z C3 albo `null` dla nowego (US8.3)
+     * @param edited poprawiane zgłoszenie z C3 albo `null` dla nowego
      */
     suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>, edited: EditedSubmission?)
 }
 
 /**
- * Model widoku formularza C2 „Opisz barierę” (US7.1–US7.4). W czasie zapisu i po nim etap ustala tylko zapis, więc
- * nie ma dwóch zgłoszeń. Pełna pamięć przy zapisie w bazie Room kończy się etapem nieudanego zapisu (NFR-7).
- * Po otwarciu w budynku pobiera piętra z planu PWr (US7.2); bez nich zostaje wpisanie piętra (BR-G1).
+ * Model widoku formularza C2 „Opisz barierę”. W czasie zapisu i po nim etap ustala tylko zapis, więc
+ * nie ma dwóch zgłoszeń. Pełna pamięć przy zapisie w bazie Room kończy się etapem nieudanego zapisu.
+ * Po otwarciu w budynku pobiera piętra z planu PWr; bez nich zostaje wpisanie piętra.
+ *
+ * Wymagania: US7.1, US7.2, US7.3, US7.4, NFR-7, BR-G1
  *
  * @param floors piętra budynku z serwera; domyślnie brak, jak budynek podstawowy
  * @param saver zapis w kolejce telefonu
@@ -60,7 +68,9 @@ class ReportFormViewModel
 
         /**
          * Otwiera nowy formularz albo edycję; drugie wywołanie nie kasuje wpisanych pól. Po „Zmień miejsce” bierze
-         * odłożone pola z nowym miejscem z [form] (US7.4). Poprawka z C3 podaje zapisane [photos] (US8.3).
+         * odłożone pola z nowym miejscem z [form]. Poprawka z C3 podaje zapisane [photos].
+         *
+         * Wymagania: US7.4, US8.3
          */
         fun open(form: ReportForm, draft: ReportDraft = this.draft, photos: List<PendingPhotoDraft> = emptyList()) {
             val current = state.value
@@ -75,20 +85,20 @@ class ReportFormViewModel
             }
         }
 
-        /** „Zmień miejsce”: odkłada pola i wraca do C1 bez pytania, bo nic nie ginie (US7.4). */
+        /** „Zmień miejsce”: odkłada pola i wraca do C1 bez pytania, bo nic nie ginie. Wymagania: US7.4 */
         fun changePlace() {
             val current = state.value ?: return
             if (current.isSavingOrSaved) return
             state.value = current.copy(stage = ReportStage.PLACE_CHANGED)
         }
 
-        /** Zmiana jednego pola formularza (US7.1–US7.4). */
+        /** Zmiana jednego pola formularza. Wymagania: US7.1, US7.2, US7.3, US7.4 */
         fun edit(change: ReportEdit) {
             val current = state.value ?: return
             if (!current.isSavingOrSaved) keep(current.edited(change))
         }
 
-        /** „Zapisz”: przy brakach pokazuje je, inaczej zapisuje w kolejce (US7.1, NFR-5). */
+        /** „Zapisz”: przy brakach pokazuje je, inaczej zapisuje w kolejce. Wymagania: US7.1, NFR-5 */
         fun save() {
             val current = state.value ?: return
             if (current.isSavingOrSaved) return
@@ -98,7 +108,11 @@ class ReportFormViewModel
             }
         }
 
-        /** „Wstecz”: bez zmian wychodzi od razu, ze zmianami pyta (US7.4, NFR-23); w czasie zapisu nic nie robi. */
+        /**
+         * „Wstecz”: bez zmian wychodzi od razu, ze zmianami pyta; w czasie zapisu nic nie robi.
+         *
+         * Wymagania: US7.4, NFR-23
+         */
         fun back() {
             moveToWhileEditable { current -> if (current.form == initial) ReportStage.LEFT else ReportStage.EXIT_ASKED }
         }
@@ -159,7 +173,9 @@ class ReportFormViewModel
 
 /**
  * Formularz z piętrami z planu, gdy miejsce jest w budynku [symbol]. Piętro wpisane liczbą przed pobraniem planu
- * znika, bo w budynku szczegółowym piętro wybiera się z etykiet PWr (US7.2).
+ * znika, bo w budynku szczegółowym piętro wybiera się z etykiet PWr.
+ *
+ * Wymagania: US7.2
  */
 internal fun ReportForm.withPlan(symbol: String, plan: PlanFloors): ReportForm =
     if (place.buildingSymbol != symbol) {
@@ -168,11 +184,11 @@ internal fun ReportForm.withPlan(symbol: String, plan: PlanFloors): ReportForm =
         copy(place = place.copy(floors = plan), floor = floor as? ReportFloor.Planned)
     }
 
-/** Piętra z planu do formularza albo `null` dla budynku podstawowego z pustą listą (BR-G1). */
+/** Piętra z planu do formularza albo `null` dla budynku podstawowego z pustą listą. Wymagania: BR-G1 */
 internal fun FloorList.toPlanFloors(): PlanFloors? =
     if (floors.isEmpty()) null else PlanFloors(items = floors.map { PlanFloor(id = it.id, label = it.label) }, source)
 
-/** Etap formularza po odmowie zapisu: inny komunikat dla zdjęć, inny dla nieznanej wersji (NFR-50, BR-10). */
+/** Etap formularza po odmowie zapisu: inny komunikat dla zdjęć, inny dla nieznanej wersji. Wymagania: NFR-50, BR-10 */
 internal fun SaveRefusal.toStage(): ReportStage =
     when (this) {
         SaveRefusal.PHOTOS_MISMATCH -> ReportStage.SAVE_REJECTED

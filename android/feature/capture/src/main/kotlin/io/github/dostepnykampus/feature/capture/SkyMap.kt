@@ -63,7 +63,7 @@ private val RING_WIDTH = 1.dp
 @Immutable
 internal data class Sky(val satellites: List<Satellite>)
 
-/** Kształt znaku systemu GNSS w skali 24 jednostek; system rozróżnia kształt i podpis, nie kolor (NFR-21). */
+/** Kształt znaku systemu GNSS w skali 24 jednostek; system rozróżnia kształt i podpis, nie kolor. Wymagania: NFR-21 */
 internal enum class SkyMark(data: String) {
     /** Koło: GPS. */
     CIRCLE("M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18z"),
@@ -85,7 +85,7 @@ internal enum class SkyMark(data: String) {
     val path: Path by lazy { PathParser().parsePathString(data).toPath() }
 }
 
-/** Kształt znaku systemu na mapie nieba i w legendzie (US6.5). */
+/** Kształt znaku systemu na mapie nieba i w legendzie. Wymagania: US6.5 */
 internal fun GnssSystem.mark(): SkyMark =
     when (this) {
         GnssSystem.GPS -> SkyMark.CIRCLE
@@ -107,9 +107,11 @@ internal fun skyOffset(azimuthDegrees: Double, elevationDegrees: Double, radius:
 }
 
 /**
- * Mapa nieba C1 (US6.5): widoczne satelity na kołach wysokości co 30°, strony świata i legenda kształtów pod mapą.
- * Czytnik ekranu dostaje liczby satelitów według systemów (NFR-18).
- * Napisy na mapie nieba rosną z czcionką najwyżej 1,4 raza (wymagania ekranów, reguła 4; NFR-20).
+ * Mapa nieba C1: widoczne satelity na kołach wysokości co 30°, strony świata i legenda kształtów pod mapą.
+ * Czytnik ekranu dostaje liczby satelitów według systemów.
+ * Napisy na mapie nieba rosną z czcionką najwyżej 1,4 raza (wymagania ekranów, reguła 4).
+ *
+ * Wymagania: US6.5, NFR-18, NFR-20
  *
  * @param sky widoczne satelity
  * @param modifier wymiary nadane przez ekran

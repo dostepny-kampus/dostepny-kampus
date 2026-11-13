@@ -16,8 +16,10 @@ import org.jspecify.annotations.Nullable;
  * modułów) na 400 {@code application/problem+json} z komunikatem
  * w {@code detail}, więc komunikat nie zawiera szczegółów wewnętrznych.
  * Błąd, po którym aplikacja pokazuje osobny stan ekranu, ma też rodzaj
- * w {@code type} (RFC 9457), np. zgłoszenie spoza terenu PWr (BR-G5).
+ * w {@code type} (RFC 9457), np. zgłoszenie spoza terenu PWr.
  * Typ nie zależy od Spring Web ani Jacksona.</p>
+ *
+ * <p>Wymagania: BR-G5</p>
  *
  * @since 0.1.0
  */

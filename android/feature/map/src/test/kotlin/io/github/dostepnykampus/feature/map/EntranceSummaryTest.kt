@@ -14,7 +14,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-/** Wiersz o wejściach pod nagłówkiem karty budynku (US2.8, US2.1, US3.1, US17.1). */
+/** Wiersz o wejściach pod nagłówkiem karty budynku. Wymagania: US2.8, US2.1, US3.1, US17.1 */
 class EntranceSummaryTest {
     @Test
     fun us2_8_one_accessible_is_enough() {

@@ -74,8 +74,9 @@ class AppNavigatorTest {
     }
 
     /**
-     * Wiersz: V5 przy pierwszym uruchomieniu, wyjście z instrukcji dowolną drogą, tu paskiem „Konto” → L1,
-     * US5.1, decyzja 73.
+     * Wiersz: V5 przy pierwszym uruchomieniu, wyjście z instrukcji dowolną drogą, tu paskiem „Konto” → L1.
+     *
+     * Wymagania: US5.1
      */
     @Test
     fun us5_1_first_help_left_via_l1() {
@@ -88,7 +89,11 @@ class AppNavigatorTest {
         assertEquals(1, helpLeft)
     }
 
-    /** Wiersz: pasek dolny, „Pomoc” → V5, US5.1: zamknięcie V5 otwartego z paska nie zmienia pierwszego startu. */
+    /**
+     * Wiersz: pasek dolny, „Pomoc” → V5: zamknięcie V5 otwartego z paska nie zmienia pierwszego startu.
+     *
+     * Wymagania: US5.1
+     */
     @Test
     fun us5_1_bar_help_left_keeps_flag() {
         navigator().run {
@@ -109,7 +114,7 @@ class AppNavigatorTest {
         assertEquals(stackOf(), stack)
     }
 
-    /** Wiersz: pasek dolny (V1, V5, L2), „Mapa” → V1, US1. */
+    /** Wiersz: pasek dolny (V1, V5, L2), „Mapa” → V1. Wymagania: US1 */
     @Test
     fun us1_bar_map_returns_to_v1() {
         stack += listOf(HelpRoute(), AccountRoute)
@@ -117,7 +122,7 @@ class AppNavigatorTest {
         assertEquals(stackOf(), stack)
     }
 
-    /** Wiersz: pasek dolny, ponowne dotknięcie wybranej pozycji → pierwszy ekran sekcji, NFR-15, decyzja 72. */
+    /** Wiersz: pasek dolny, ponowne dotknięcie wybranej pozycji → pierwszy ekran sekcji. Wymagania: NFR-15 */
     @Test
     fun nfr15_reselect_restarts_v5() {
         navigator(visitor).run {
@@ -133,7 +138,7 @@ class AppNavigatorTest {
         assertEquals(stack.size, restarts.size)
     }
 
-    /** Wiersz: pasek dolny, ponowne dotknięcie „Mapa” → V1 bez arkusza i wyniku wyszukiwania, NFR-15, decyzja 72. */
+    /** Wiersz: pasek dolny, ponowne dotknięcie „Mapa” → V1 bez arkusza i wyniku wyszukiwania. Wymagania: NFR-15 */
     @Test
     fun nfr15_reselect_map_restarts_v1() {
         navigator().run {
@@ -148,7 +153,11 @@ class AppNavigatorTest {
         assertEquals(stackOf(), stack)
     }
 
-    /** Wiersz: każdy ekran poza V1, „Wstecz”, NFR-15: ten sam ekran dwa razy w historii ma dwa klucze treści. */
+    /**
+     * Wiersz: każdy ekran poza V1, „Wstecz”: ten sam ekran dwa razy w historii ma dwa klucze treści.
+     *
+     * Wymagania: NFR-15
+     */
     @Test
     fun nfr15_same_screen_twice_keys() {
         navigator(visitor).run {
@@ -161,7 +170,7 @@ class AppNavigatorTest {
         }
     }
 
-    /** Wiersz: pasek dolny, „Zgłoś barierę” → V4, zalogowani, US4. */
+    /** Wiersz: pasek dolny, „Zgłoś barierę” → V4, zalogowani. Wymagania: US4 */
     @Test
     fun us4_bar_report_signed_in_v4() {
         navigator(visitor).open(TopLevel.REPORT)
@@ -189,14 +198,14 @@ class AppNavigatorTest {
         assertEquals(stackOf(AccountRoute), stack)
     }
 
-    /** Wiersz: pasek dolny, „Konto” → L1, RO-GOS, US14. */
+    /** Wiersz: pasek dolny, „Konto” → L1. Wymagania: RO-GOS, US14 */
     @Test
     fun us14_bar_account_guest_l1() {
         navigator().open(TopLevel.ACCOUNT)
         assertEquals(stackOf(SignInRoute(isForReport = false)), stack)
     }
 
-    /** Wiersze: pasek dolny, „Konto” → L2, RO-ODW i „Konto i praca” → L2, role pracownicze, US14.1, P1. */
+    /** Wiersze: pasek dolny, „Konto” → L2, RO-ODW i „Konto i praca” → L2, role pracownicze, P1. Wymagania: US14.1 */
     @Test
     fun us14_1_bar_account_l2() {
         listOf(visitor, Account.SignedIn(setOf(StaffRole.VERIFIER))).forEach { account ->
@@ -208,7 +217,7 @@ class AppNavigatorTest {
         }
     }
 
-    /** Wiersz: każdy ekran poza V1, „Wstecz”, NFR-15: V1 jest na dole historii, wstecz zamyka aplikację. */
+    /** Wiersz: każdy ekran poza V1, „Wstecz”: V1 jest na dole historii, wstecz zamyka aplikację. Wymagania: NFR-15 */
     @Test
     fun nfr15_back_on_v1_closes_app() {
         assertFalse(navigator().back())
@@ -226,7 +235,7 @@ class AppNavigatorTest {
         noBar.forEach { assertFalse(hasNavigationBar(it)) }
     }
 
-    /** Wiersz: mała karta V2, „Wstecz” → V1 bez zaznaczenia budynku, US2.8, decyzja 116. */
+    /** Wiersz: mała karta V2, „Wstecz” → V1 bez zaznaczenia budynku. Wymagania: US2.8 */
     @Test
     fun us2_8_v2_back_v1_unselected() {
         navigator().run {
@@ -238,7 +247,9 @@ class AppNavigatorTest {
 
     /**
      * Wiersz: V1 z arkuszem V2, dotknięcie konturu innego budynku → V2 tego budynku zamiast poprzedniego,
-     * „Wstecz” → V1 bez zaznaczenia budynku, US2.8, decyzje 115, 116.
+     * „Wstecz” → V1 bez zaznaczenia budynku.
+     *
+     * Wymagania: US2.8
      */
     @Test
     fun us2_other_building_replaces_v2() {
@@ -252,8 +263,10 @@ class AppNavigatorTest {
     }
 
     /**
-     * Wiersz: mała karta V2 nad V1, dotknięcie pustej mapy → V1 bez zaznaczenia budynku, US2.8, NFR-17, decyzja 116;
+     * Wiersz: mała karta V2 nad V1, dotknięcie pustej mapy → V1 bez zaznaczenia budynku;
      * samo V1, także z budynkiem zaznaczonym przez „Pokaż na mapie”, i V3 nad V2 zostają.
+     *
+     * Wymagania: US2.8, NFR-17
      */
     @Test
     fun us2_8_empty_map_closes_v2() {
@@ -274,7 +287,9 @@ class AppNavigatorTest {
 
     /**
      * Wiersz: V3, „Wstecz” → pełny ekran V2, a pod nim V1 dalej z zaznaczonym budynkiem; zaznaczenie znika dopiero
-     * z zamknięciem karty, US2.8, decyzja 116.
+     * z zamknięciem karty.
+     *
+     * Wymagania: US2.8
      */
     @Test
     fun us2_8_v3_back_v1_selected() {
@@ -287,8 +302,10 @@ class AppNavigatorTest {
     }
 
     /**
-     * Wiersze: V3, „Wstecz” → V2 i „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem, US2.1, US3.
+     * Wiersze: V3, „Wstecz” → V2 i „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Wejście dostępne najwyżej 3 dotknięcia od mapy
+     *
+     * Wymagania: US2.1, US3
      */
     @Test
     fun us3_2_v1_v2_v3_back_v2() {
@@ -306,8 +323,9 @@ class AppNavigatorTest {
 
     /**
      * Wiersze: V1, dotknięcie budynku na liście przy zwykłej czcionce → V1 w widoku mapy z małą kartą V2; mała karta,
-     * „Wstecz” albo dotknięcie pustej mapy → V1 bez zaznaczenia, zapamiętany wybór „Lista budynków” bez zmian,
-     * US2.8, NFR-19, decyzja 118.
+     * „Wstecz” albo dotknięcie pustej mapy → V1 bez zaznaczenia, zapamiętany wybór „Lista budynków” bez zmian.
+     *
+     * Wymagania: US2.8, NFR-19
      */
     @Test
     fun nfr19_list_compact_keeps_list() {
@@ -324,8 +342,10 @@ class AppNavigatorTest {
     }
 
     /**
-     * Wiersze: V1, dotknięcie budynku na liście przy TalkBack → V2, pełny ekran od razu, US3.2, NFR-19, decyzja 115;
-     * V2 otwarte od razu, „Wstecz” → lista V1 jednym krokiem, wybór bez zmian, NFR-15, US2.9.
+     * Wiersze: V1, dotknięcie budynku na liście przy TalkBack → V2, pełny ekran od razu;
+     * V2 otwarte od razu, „Wstecz” → lista V1 jednym krokiem, wybór bez zmian.
+     *
+     * Wymagania: US3.2, NFR-19, NFR-15, US2.9
      */
     @Test
     fun nfr19_talkback_list_tap_direct() {
@@ -341,8 +361,10 @@ class AppNavigatorTest {
 
     /**
      * Wiersz: V2 otwarte od razu, „Pokaż budynek na mapie” → V1 w widoku mapy z zaznaczonym budynkiem, bez karty,
-     * zapamiętany wybór „Mapa”, US2.9, NFR-19, decyzja 116.
+     * zapamiętany wybór „Mapa”.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Z listy przy dużej czcionce opis budynku prowadzi do mapy
+     *
+     * Wymagania: US2.9, NFR-19
      */
     @Test
     fun us2_9_show_on_map_chooses_map() {
@@ -355,8 +377,10 @@ class AppNavigatorTest {
     }
 
     /**
-     * Wiersze: V3, „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem w widoku „Mapa”, US2.1, decyzja 135;
-     * pasek, ponowne „Mapa” → V1, NFR-15, nie zmienia wyboru drugi raz, decyzja 118.
+     * Wiersze: V3, „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem w widoku „Mapa”;
+     * pasek, ponowne „Mapa” → V1, nie zmienia wyboru drugi raz.
+     *
+     * Wymagania: US2.1, NFR-15
      */
     @Test
     fun us2_1_entrance_chooses_map() {
@@ -368,9 +392,11 @@ class AppNavigatorTest {
     }
 
     /**
-     * Wiersz: V4, „Tak, zrezygnuj” po „Wstecz” z kroku 1 → ekran sprzed V4, UC7 1b; poza V4 kroki nic nie robią.
+     * Wiersz: V4, „Tak, zrezygnuj” po „Wstecz” z kroku 1 → ekran sprzed V4; poza V4 kroki nic nie robią.
      * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu podpowiada wejście, a miejsce
      *   bierze z bieżącej pozycji
+     *
+     * Wymagania: UC7
      */
     @Test
     fun us4_6_report_at_entrance() {
@@ -403,7 +429,7 @@ class AppNavigatorTest {
         assertEquals(BuildingRoute("D-2"), stack.last())
     }
 
-    /** Wysłanie bez internetu: potwierdzenie mówi, że zdjęcie wyśle się samo (US4.2). */
+    /** Wysłanie bez internetu: potwierdzenie mówi, że zdjęcie wyśle się samo. Wymagania: US4.2 */
     @Test
     fun us4_2_sent_offline() {
         navigator(visitor).run {
@@ -425,7 +451,7 @@ class AppNavigatorTest {
         assertEquals(listOf(BuildingRoute("A-1"), ReportRoute(entranceId = "A-1-glowne")), stack.drop(1))
     }
 
-    /** Wiersz: strona logowania, wejście z „Konto”, zalogowanie → L2, UC6 krok 3, P3. */
+    /** Wiersz: strona logowania, wejście z „Konto”, zalogowanie → L2, P3. Wymagania: UC6 */
     @Test
     fun uc6_signed_in_from_account_l2() {
         navigator().open(TopLevel.ACCOUNT)
@@ -433,7 +459,7 @@ class AppNavigatorTest {
         assertEquals(stackOf(AccountRoute), stack)
     }
 
-    /** Wiersz: L2, „Zmierz i zgłoś barierę” → C1, potem C1 „Dalej” → C2, US6. */
+    /** Wiersz: L2, „Zmierz i zgłoś barierę” → C1, potem C1 „Dalej” → C2. Wymagania: US6 */
     @Test
     fun us6_l2_to_c1_to_c2() {
         val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
@@ -447,7 +473,11 @@ class AppNavigatorTest {
         assertEquals(stackOf(AccountRoute, MeasureRoute, form), stack)
     }
 
-    /** Wiersz: C2, „Zapisz” → C1 i C2 znikają z historii, otwiera się C3, „Wstecz” wraca do L2, NFR-54, P2. */
+    /**
+     * Wiersz: C2, „Zapisz” → C1 i C2 znikają z historii, otwiera się C3, „Wstecz” wraca do L2, P2.
+     *
+     * Wymagania: NFR-54
+     */
     @Test
     fun nfr54_saved_opens_c3() {
         val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = null)
@@ -456,7 +486,11 @@ class AppNavigatorTest {
         assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
     }
 
-    /** Wiersz: L2 „Moje zgłoszenia” → C3, C3 „Zmierz i zgłoś barierę” → C1, „Zapisz” → ten sam C3, US8.1, NFR-54. */
+    /**
+     * Wiersz: L2 „Moje zgłoszenia” → C3, C3 „Zmierz i zgłoś barierę” → C1, „Zapisz” → ten sam C3.
+     *
+     * Wymagania: US8.1, NFR-54
+     */
     @Test
     fun us8_1_c3_measure_same_c3() {
         val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
@@ -470,7 +504,7 @@ class AppNavigatorTest {
         assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
     }
 
-    /** Wiersz: C3 „Otwórz” → poprawka C2, „Zapisz” → to samo C3, US8.3, NFR-54. */
+    /** Wiersz: C3 „Otwórz” → poprawka C2, „Zapisz” → to samo C3. Wymagania: US8.3, NFR-54 */
     @Test
     fun us8_3_open_edit_saved_same_c3() {
         stack += listOf(AccountRoute, MySubmissionsRoute)
@@ -482,7 +516,7 @@ class AppNavigatorTest {
         assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
     }
 
-    /** Wiersz: poprawka C2 „Zmień miejsce” → C1, „Dalej” → C2, „Zapisz” → to samo C3, US7.4, US8.3. */
+    /** Wiersz: poprawka C2 „Zmień miejsce” → C1, „Dalej” → C2, „Zapisz” → to samo C3. Wymagania: US7.4, US8.3 */
     @Test
     fun us8_3_edit_change_place() {
         val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
@@ -496,7 +530,7 @@ class AppNavigatorTest {
         assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
     }
 
-    /** Wiersz: „Otwórz” i „Zmień miejsce” poza C3 i poprawką nic nie robią, US8.3. */
+    /** Wiersz: „Otwórz” i „Zmień miejsce” poza C3 i poprawką nic nie robią. Wymagania: US8.3 */
     @Test
     fun us8_3_edit_only_from_c3() {
         stack += AccountRoute
@@ -507,7 +541,7 @@ class AppNavigatorTest {
         assertEquals(stackOf(AccountRoute), stack)
     }
 
-    /** Wiersz: V4, „Wstecz” między krokami nie usuwa zdjęcia ani grupy, US4.8. */
+    /** Wiersz: V4, „Wstecz” między krokami nie usuwa zdjęcia ani grupy. Wymagania: US4.8 */
     @Test
     fun us4_8_steps_keep_photo() {
         navigator(visitor).run {

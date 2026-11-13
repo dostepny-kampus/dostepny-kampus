@@ -12,29 +12,7 @@ workdir="$(mktemp -d)"
 trap 'rm -rf "$workdir"' EXIT
 failures=0
 mkdir "$workdir/bin"
-cat >"$workdir/bin/gh" <<'SH'
-#!/usr/bin/env bash
-set -euo pipefail
-case "$1 $2" in
-  'pr view') cat "$FAKE_BODY_FILE" ;;
-  'issue view')
-    if [[ " ${FAKE_VIEW_FAIL:-} " == *" $3 "* ]]; then echo "gh: błąd odczytu #$3" >&2; exit 1; fi
-    if [[ " ${FAKE_PULLS:-} " == *" $3 "* ]]; then kind=pull; else kind=issues; fi
-    echo "https://github.com/o/r/$kind/$3"
-    ;;
-  'issue close')
-    if [[ " ${FAKE_FAIL:-} " == *" $3 "* ]]; then echo "gh: błąd zamykania #$3" >&2; exit 1; fi
-    printf '%s|%s\n' "$3" "$5" >>"$FAKE_LOG" ;;
-  'api graphql')
-    for arg in "$@"; do [[ $arg == number=* ]] && child="${arg#number=}"; done
-    if [[ " ${FAKE_PARENT_FAIL:-} " == *" $child "* ]]; then echo "gh: błąd odczytu nadrzędnego #$child" >&2; exit 1; fi
-    while read -r of parent state total completed; do
-      if [[ $of == "$child" ]]; then echo "$parent $state $total $completed"; fi
-    done <<<"${FAKE_PARENTS:-}"
-    ;;
-  *) echo "nieoczekiwane wywołanie gh: $*" >&2; exit 2 ;;
-esac
-SH
+cp "$(dirname "$script")/falszywe-gh-zamykanie" "$workdir/bin/gh"
 chmod +x "$workdir/bin/gh"
 
 # run_case <nazwa> <opis PR> <oczekiwany dziennik: wiersze numer|komentarz, rozdzielone \n>
@@ -73,19 +51,14 @@ FAKE_VIEW_FAIL=1 WANT_STATUS=1 run_case "błąd gh issue view: kolejne issue nad
 run_case "formy Fixed i resolve" 'Fixed #3\nresolve #4' "3|$done7\n4|$done7"
 run_case "wszystkie dziewięć form słów GitHuba" 'close #1\nCloses #2\nCLOSED #3\nfix #4\nfixes #5\nFixed #6\nresolve #7\nResolves #8\nresolved #9' "1|$done7\n2|$done7\n3|$done7\n4|$done7\n5|$done7\n6|$done7\n7|$done7\n8|$done7\n9|$done7"
 
+# Szczegółowe przypadki liczenia sub-issue są w zamknij-nadrzedne-test.sh; tu tylko połączenie obu skryptów.
 up='Wszystkie sub-issue zamknięte, ostatnie:'
-FAKE_PARENTS='12 20 OPEN 3 3' run_case "ostatnie sub-issue zamyka nadrzędne" 'Closes #12' "12|$done7
+FAKE_PARENTS='12 20 OPEN 11:CLOSED,12:OPEN' run_case "ostatnie sub-issue zamyka nadrzędne" 'Closes #12' "12|$done7
 20|$up #12."
-FAKE_PARENTS='12 20 OPEN 3 2' run_case "nadrzędne z otwartym sub-issue zostaje" 'Closes #12' "12|$done7"
-FAKE_PARENTS='12 20 CLOSED 3 3' run_case "zamknięte nadrzędne nie jest zamykane ponownie" 'Closes #12' "12|$done7"
-FAKE_PARENTS=$'12 20 OPEN 3 3
-20 30 OPEN 1 1' run_case "dwa poziomy w górę zamykają się kolejno" 'Closes #12'   "12|$done7
-20|$up #12.
-30|$up #20."
-FAKE_PARENTS=$'12 20 OPEN 3 3
-20 30 OPEN 2 1' run_case "drugi poziom z otwartym sub-issue zostaje" 'Closes #12'   "12|$done7
-20|$up #12."
-FAKE_PARENTS='12 20 OPEN 3 3' FAKE_FAIL=20 WANT_STATUS=1 run_case "błąd zamykania nadrzędnego kończy krok błędem"   'Closes #12' "12|$done7" '' 'niezamknięte: nadrzędne-nad-#12'
-FAKE_PARENT_FAIL=12 WANT_STATUS=1 run_case "błąd odczytu nadrzędnego kończy krok błędem" 'Closes #12' "12|$done7" ''   'niezamknięte: nadrzędne-nad-#12'
+FAKE_PARENTS='12 20 OPEN 11:OPEN,12:CLOSED' run_case "nadrzędne z otwartym sub-issue zostaje" 'Closes #12' "12|$done7"
+FAKE_PARENTS='12 20 OPEN 12:CLOSED' FAKE_FAIL=20 WANT_STATUS=1 run_case "błąd zamykania nadrzędnego kończy krok błędem" \
+  'Closes #12' "12|$done7" '' 'niezamknięte: nadrzędne-nad-#12'
+FAKE_PARENT_FAIL=12 WANT_STATUS=1 run_case "błąd odczytu nadrzędnego kończy krok błędem" 'Closes #12' "12|$done7" '' \
+  'niezamknięte: nadrzędne-nad-#12'
 
 exit "$((failures > 0 ? 1 : 0))"

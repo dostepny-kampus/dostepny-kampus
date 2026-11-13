@@ -24,7 +24,9 @@ import org.robolectric.annotation.Config
 
 /**
  * „Zapisz” na C2 z jednym brakującym polem: ekran z modelem widoku pokazuje komunikat o tym polu, a zapis nie
- * dostaje zgłoszenia (US7.1, US7.3, BR-7).
+ * dostaje zgłoszenia.
+ *
+ * Wymagania: US7.1, US7.3, BR-7
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")

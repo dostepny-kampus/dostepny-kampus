@@ -8,7 +8,9 @@ package io.github.dostepnykampus.barrier;
 import java.io.IOException;
 
 /**
- * Wejściowe zdjęcie przekracza limit NFR-34; nie wolno go przetwarzać ani zapisywać.
+ * Wejściowe zdjęcie przekracza limit rozmiaru; nie wolno go przetwarzać ani zapisywać.
+ *
+ * <p>Wymagania: NFR-34</p>
  *
  * @since 0.1.0
  */
