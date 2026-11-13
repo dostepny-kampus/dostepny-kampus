@@ -99,7 +99,7 @@ jobs:
         if: ${{ github.event_name != 'push' }}
         run: |
           ./mvnw -B -q -Dqulice.skip=true -Djacoco.skip=true test-compile
-          for cele in 'io.github.dostepnykampus.*.domain.*' 'io.github.dostepnykampus.barrier.[A-Z]*'             'io.github.dostepnykampus.barrier.json.*' 'io.github.dostepnykampus.barrier.web.*'             'io.github.dostepnykampus.barrier.persistence.*' 'io.github.dostepnykampus.building.[A-Z]*'             'io.github.dostepnykampus.building.locate.*' 'io.github.dostepnykampus.building.postgis.*'             'io.github.dostepnykampus.[A-Z]*' 'io.github.dostepnykampus.identity.*'; do
+          for cele in 'io.github.dostepnykampus.barrier.Submission*' 'io.github.dostepnykampus.barrier.Photo*' 'io.github.dostepnykampus.barrier.JpegCleaner*' 'io.github.dostepnykampus.building.Osm*' 'io.github.dostepnykampus.building.Building*' 'io.github.dostepnykampus.building.Outlines*' 'io.github.dostepnykampus.building.LocateResult*' 'io.github.dostepnykampus.building.CampusArea*' 'io.github.dostepnykampus.building.Entrance*' 'io.github.dostepnykampus.Strict*' 'io.github.dostepnykampus.NullRejecting*' 'io.github.dostepnykampus.Canonical*' 'io.github.dostepnykampus.Wgs84*' 'io.github.dostepnykampus.ProblemResponses*' 'io.github.dostepnykampus.InvalidInput*' 'io.github.dostepnykampus.ConflictingState*'; do
             rm -rf target/pit-reports
             start=$SECONDS
             ./mvnw -B -q -Dqulice.skip=true -Djacoco.skip=true "-Dpit.cele=$cele" test-compile org.pitest:pitest-maven:mutationCoverage || true
