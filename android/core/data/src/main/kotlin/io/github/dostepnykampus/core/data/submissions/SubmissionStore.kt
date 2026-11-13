@@ -18,7 +18,10 @@ import javax.inject.Inject
  * @property pending wiersze kolejki wysyłki
  * @property history historia zgłoszeń Zbierającego dla listy C3
  */
-class SubmissionStore @Inject internal constructor(
-    internal val pending: PendingSubmissionDao,
-    internal val history: OwnSubmissionDao,
-)
+@ConsistentCopyVisibility
+data class SubmissionStore
+    @Inject
+    internal constructor(
+        internal val pending: PendingSubmissionDao,
+        internal val history: OwnSubmissionDao,
+    )
