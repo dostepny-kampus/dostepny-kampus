@@ -47,7 +47,6 @@ import io.github.dostepnykampus.feature.map.MapControlIcons
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.data.AreaChoice
 import io.github.dostepnykampus.feature.map.mapControlBorder
-import io.github.dostepnykampus.feature.map.style.property
 
 private val AreaRowHeight = 56.dp
 private const val TEN = 10

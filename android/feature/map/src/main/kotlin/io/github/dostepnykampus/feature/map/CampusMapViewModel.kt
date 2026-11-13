@@ -21,7 +21,6 @@ import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import io.github.dostepnykampus.feature.map.data.withBarriers
-import io.github.dostepnykampus.feature.map.style.property
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

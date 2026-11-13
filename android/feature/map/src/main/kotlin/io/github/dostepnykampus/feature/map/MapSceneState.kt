@@ -21,7 +21,6 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
-import io.github.dostepnykampus.feature.map.style.property
 
 private const val CONTROLS_COLUMNS = 3
 private const val FIT_MARGIN_DP = 24.0

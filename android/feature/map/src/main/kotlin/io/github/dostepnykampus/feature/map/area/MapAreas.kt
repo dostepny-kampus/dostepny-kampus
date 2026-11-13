@@ -23,7 +23,6 @@ import io.github.dostepnykampus.feature.map.data.areaNeighbor
 import io.github.dostepnykampus.feature.map.data.areaOf
 import io.github.dostepnykampus.feature.map.data.center
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
-import io.github.dostepnykampus.feature.map.style.property
 
 /**
  * Tereny w kolejności nagłówków listy budynków: pokazany na mapie pierwszy, pozostałe od najbliższego.
