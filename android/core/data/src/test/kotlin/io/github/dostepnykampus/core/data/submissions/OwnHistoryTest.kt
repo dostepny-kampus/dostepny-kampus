@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
 import java.io.IOException
 import java.time.Instant
@@ -33,6 +35,7 @@ class OwnHistoryTest {
 
     private val store = FakeStore()
     private val history = FakeHistory()
+    private var photoAttempts = 0
 
     @Test
     fun `us8 zapis to W telefonie`() =
@@ -151,6 +154,38 @@ class OwnHistoryTest {
             assertEquals(422, row.refusalCode)
         }
 
+    /**
+     * Odmowa treści albo zdjęcia zostaje w historii z kodem i nie wraca do wysyłki przy kolejnych przebiegach.
+     * Scenariusz (częściowo): synchronizacja.feature: Odrzucona treść albo zdjęcie
+     *   zostawia zgłoszenie ze statusem „Nie wysłano”
+     */
+    @ParameterizedTest
+    @CsvSource("400, false", "404, true", "413, true")
+    fun `odmowa nie wraca do wysyłki`(code: Int, isPhoto: Boolean) =
+        runBlocking {
+            val target = queue()
+            val photos = photo()
+            target.save(precise(), photos)
+            val refusal = if (code == 404) ApiResult.NotFound else ApiResult.ServerError(code)
+            if (isPhoto) store.photoResults.addLast(refusal) else store.createResults.addLast(refusal)
+
+            assertTrue(target.sendAll())
+            val pending = store.rows.single().submission
+            assertTrue(pending.isRefused)
+            assertEquals(isPhoto, pending.isCreatedOnServer)
+            assertTrue(File(photos.single().path).exists())
+            val row = history.rows.getValue(ID)
+            assertEquals(OwnSubmissionState.REFUSED, row.state)
+            assertEquals(code, row.refusalCode)
+
+            assertTrue(target.sendAll())
+            assertTrue(target.sendAll())
+            assertEquals(if (isPhoto) 1 else 0, photoAttempts)
+            assertEquals(if (isPhoto) listOf(ID) else emptyList<String>(), store.created)
+            assertEquals(pending, store.rows.single().submission)
+            assertEquals(row, history.rows.getValue(ID))
+        }
+
     @Test
     fun `us8_3 poprawka znów lokalna`() =
         runBlocking {
@@ -204,7 +239,10 @@ class OwnHistoryTest {
             server =
                 SubmissionServer(
                     create = create,
-                    putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                    putPhoto = { _, _, _ ->
+                        photoAttempts++
+                        store.photoResults.removeFirstOrNull() ?: ApiResult.Success(Unit)
+                    },
                     update = { id, _, content -> ApiResult.Success(SubmissionEdit.Saved(server(id, content))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),

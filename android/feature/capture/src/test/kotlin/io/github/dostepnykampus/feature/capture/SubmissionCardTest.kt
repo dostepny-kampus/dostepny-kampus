@@ -80,6 +80,21 @@ class SubmissionCardTest {
         compose.onNodeWithText(reason).assertIsDisplayed()
     }
 
+    /**
+     * Odmowa treści albo zdjęcia pokazuje, jak poprawić zgłoszenie; „Otwórz” działa także przy odmowie.
+     * Scenariusz (częściowo): synchronizacja.feature: Odrzucona treść albo zdjęcie
+     *   zostawia zgłoszenie ze statusem „Nie wysłano”
+     */
+    @Test
+    fun us9_5_content_refused() {
+        show(item(id = "a", state = SendState.REFUSED, refusal = RefusalReason.NOT_ACCEPTED))
+        compose.onNodeWithText("Nie wysłano").assertIsDisplayed()
+        val reason = "Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie."
+        compose.onNodeWithText(reason).assertIsDisplayed()
+        compose.onNodeWithText("Otwórz").performClick()
+        assertEquals(1, opened)
+    }
+
     /** Wiersz: C3 „Otwórz” → poprawka w C2, US8.3. */
     @Test
     fun us8_3_open_item() {
