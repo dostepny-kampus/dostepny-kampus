@@ -2,6 +2,8 @@
 
 Ten dokument opisuje tylko reguły, które dziś sprawdzają skrypty i workflow w tym repozytorium. Przy każdej regule
 podany jest plik, który ją egzekwuje; gdy reguła się zmienia, zmienia się ten plik i ten dokument w tym samym PR.
+Jak prowadzić zmianę tam, gdzie skrypt niczego nie sprawdzi (kolejność pracy, podział na PR, gdzie kłaść kod,
+opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
 
 ## Przebieg zmiany
 
@@ -95,5 +97,5 @@ z odnośnikiem do jobu.
 ## Przed otwarciem PR
 
 - Uruchom lokalnie testy skryptów, które zmieniasz, np. `bash .github/scripts/pr-od-issue-test.sh`.
-- Pełną budowę aplikacji i serwera wykonuje CI; wynik bierz z zadań PR.
+- Testy, analizę i pełną budowę aplikacji i serwera wykonuje CI; wynik bierz z zadań PR ([AGENTS.md](AGENTS.md), punkt 8).
 - Wypchnij gałąź i otwórz PR do `sprint/N`; szablon opisu uzupełnia się sam.
