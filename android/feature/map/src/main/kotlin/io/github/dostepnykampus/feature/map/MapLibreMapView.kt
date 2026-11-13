@@ -40,9 +40,14 @@ import io.github.dostepnykampus.feature.map.data.symbolsAt
 import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
+import io.github.dostepnykampus.feature.map.style.MapStyleTarget
 import io.github.dostepnykampus.feature.map.style.MapTileHttpEntryPoint
+import io.github.dostepnykampus.feature.map.style.SelectionLook
+import io.github.dostepnykampus.feature.map.style.asStyleText
 import io.github.dostepnykampus.feature.map.style.campusMapStyle
 import io.github.dostepnykampus.feature.map.style.numbers
+import io.github.dostepnykampus.feature.map.style.selectionLook
+import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
