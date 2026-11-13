@@ -13,6 +13,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.ServerEntrances
@@ -35,6 +36,8 @@ import org.robolectric.annotation.Config
 import java.time.LocalDate
 import kotlin.coroutines.EmptyCoroutineContext
 
+private const val SOURCE_IMPORT = "Z map i opisów"
+
 private val DATE_TEXT = Regex("""\d{1,2}\.\d{1,2}\.\d{4}|\d{4}-\d{2}-\d{2}""")
 
 private val hasDate =
@@ -51,13 +54,15 @@ class EntranceAssessmentTextTest {
 
     /**
      * Wiersz: V2, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
-     *   nad grupą „Wejścia”, US17.3, BR-24, import.
+     *   nad grupą „Wejścia”, US17.3, BR-24, import. Przy wejściach nie ma osobnej daty ani źródła.
+     * Scenariusz: oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz nad listą wejść
      */
     @Test
     fun us17_3_v2_common_row_import() {
         showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, IMPORT_DAY)))
         compose.onNodeWithText(IMPORT_TEXT).assertExists()
         assertEquals(1, datedCount())
+        assertEquals(1, compose.onAllNodesWithText(SOURCE_IMPORT, substring = true).fetchSemanticsNodes().size)
         assertTrue(top(IMPORT_TEXT) < top(GROUP_V2))
     }
 
