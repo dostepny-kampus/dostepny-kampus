@@ -24,12 +24,6 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 public final class BasicBuildingSteps {
 
     /**
-     * Pola zgłoszenia szybkiego z grupą „wejście i drzwi”.
-     */
-    private static final String QUICK =
-        "\"kind\":\"QUICK\",\"barrierGroup\":\"ENTRANCE_AND_DOORS\"";
-
-    /**
      * Pola pomiaru precyzyjnego TB-13 z piętrem 0; brakuje symbolu budynku.
      */
     private static final String PRECISE = String.join(
@@ -91,7 +85,7 @@ public final class BasicBuildingSteps {
     @When("^złoży zgłoszenie (szybkie|TB-13) .+ z kompletem wymaganych danych$")
     public void submits(final String kind) throws Exception {
         if ("szybkie".equals(kind)) {
-            this.sender.send(BasicBuildingSteps.QUICK);
+            this.sender.send("\"kind\":\"QUICK\",\"barrierGroup\":\"ENTRANCE_AND_DOORS\"");
         } else {
             this.sender.send(String.format(BasicBuildingSteps.PRECISE, this.building));
         }
