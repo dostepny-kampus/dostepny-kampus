@@ -12,31 +12,7 @@ workdir="$(mktemp -d)"
 trap 'rm -rf "$workdir"' EXIT
 failures=0
 mkdir "$workdir/bin"
-cat >"$workdir/bin/gh" <<'SH'
-#!/usr/bin/env bash
-set -euo pipefail
-case "$1 $2" in
-  'pr view') cat "$FAKE_BODY_FILE" ;;
-  'issue view')
-    if [[ " ${FAKE_VIEW_FAIL:-} " == *" $3 "* ]]; then echo "gh: błąd odczytu #$3" >&2; exit 1; fi
-    if [[ " ${FAKE_PULLS:-} " == *" $3 "* ]]; then kind=pull; else kind=issues; fi
-    echo "https://github.com/o/r/$kind/$3"
-    ;;
-  'issue close')
-    if [[ " ${FAKE_FAIL:-} " == *" $3 "* ]]; then echo "gh: błąd zamykania #$3" >&2; exit 1; fi
-    printf '%s|%s\n' "$3" "$5" >>"$FAKE_LOG" ;;
-  'api graphql')
-    for arg in "$@"; do [[ $arg == number=* ]] && child="${arg#number=}"; done
-    if [[ " ${FAKE_PARENT_FAIL:-} " == *" $child "* ]]; then echo "gh: błąd odczytu nadrzędnego #$child" >&2; exit 1; fi
-    while read -r of parent state subs; do
-      [[ $of == "$child" ]] || continue
-      echo "$parent $state"
-      tr ',' '\n' <<<"$subs" | tr ':' ' '
-    done <<<"${FAKE_PARENTS:-}"
-    ;;
-  *) echo "nieoczekiwane wywołanie gh: $*" >&2; exit 2 ;;
-esac
-SH
+cp "$(dirname "$script")/falszywe-gh-zamykanie" "$workdir/bin/gh"
 chmod +x "$workdir/bin/gh"
 
 # run_case <nazwa> <opis PR> <oczekiwany dziennik: wiersze numer|komentarz, rozdzielone \n>
