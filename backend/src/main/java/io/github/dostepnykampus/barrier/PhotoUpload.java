@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Ograniczony odczyt zdjęcia przed czyszczeniem: NFR-34, 5 MB = 5 000 000 bajtów.
+ * Ograniczony odczyt zdjęcia przed czyszczeniem: najwyżej 5 MB = 5 000 000 bajtów.
  * Nie zamyka strumienia należącego do kontenera HTTP.
+ *
+ * <p>Wymagania: NFR-34</p>
  *
  * @param source Ciało żądania
  * @param declared Zadeklarowany rozmiar albo -1, gdy nieznany
@@ -19,7 +21,7 @@ import java.io.InputStream;
 record PhotoUpload(InputStream source, long declared) {
 
     /**
-     * Maksymalny rozmiar wejściowego JPEG z NFR-34.
+     * Maksymalny rozmiar wejściowego JPEG.
      */
     private static final int MAX_BYTES = 5_000_000;
 

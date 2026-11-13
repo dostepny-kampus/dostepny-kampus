@@ -6,7 +6,9 @@
 package io.github.dostepnykampus.barrier.domain;
 
 /**
- * Port zapisu zgłoszeń; z niego korzysta wyłącznie usługa zgłoszeń (BR-3, BR-9, BR-10).
+ * Port zapisu zgłoszeń; z niego korzysta wyłącznie usługa zgłoszeń.
+ *
+ * <p>Wymagania: BR-3, BR-9, BR-10</p>
  *
  * @since 0.1.0
  */
