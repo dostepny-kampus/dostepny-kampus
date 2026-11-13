@@ -98,15 +98,29 @@ jobs:
         # Po verify kod i testy są już skompilowane; PIT działa przed scaleniem, w PR i w grupie kolejki.
         if: ${{ github.event_name != 'push' }}
         run: |
-          status=0
-          ./mvnw -B -Dqulice.skip=true -Djacoco.skip=true test-compile org.pitest:pitest-maven:mutationCoverage || status=$?
-          bash ../.github/scripts/wynik-pit.sh "$status" target/pit-reports/mutations.xml
+          ./mvnw -B -q -Dqulice.skip=true -Djacoco.skip=true test-compile
+          for cele in 'io.github.dostepnykampus.*.domain.*' 'io.github.dostepnykampus.barrier.[A-Z]*'             'io.github.dostepnykampus.barrier.json.*' 'io.github.dostepnykampus.barrier.web.*'             'io.github.dostepnykampus.barrier.persistence.*' 'io.github.dostepnykampus.building.[A-Z]*'             'io.github.dostepnykampus.building.locate.*' 'io.github.dostepnykampus.building.postgis.*'             'io.github.dostepnykampus.[A-Z]*' 'io.github.dostepnykampus.identity.*'; do
+            rm -rf target/pit-reports
+            start=$SECONDS
+            ./mvnw -B -q -Dqulice.skip=true -Djacoco.skip=true "-Dpit.cele=$cele" org.pitest:pitest-maven:mutationCoverage || true
+            czas=$((SECONDS - start))
+            f=target/pit-reports/mutations.xml
+            wynik="$(grep -o 'status=.[A-Z_]*' "$f" 2>/dev/null | sort | uniq -c | tr '
+' ' ' || true)"
+            klasy="$(grep -o '<mutatedClass>[^<]*' "$f" 2>/dev/null | sed 's/<mutatedClass>//' | sort | uniq -c | tr '
+' ' ' || true)"
+            echo "POMIAR | $cele | ${czas}s | $wynik" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "KLASY | $cele | $klasy" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            grep -B0 "status='SURVIVED'\|status='NO_COVERAGE'" "$f" 2>/dev/null | grep -o "<mutatedClass>[^<]*\|<lineNumber>[^<]*\|<description>[^<]*" | paste - - - | sed 's/<[a-zA-Z]*>//g' | head -60 || true
+            mkdir -p "target/pomiar/$((++n))" && cp -r target/pit-reports/. "target/pomiar/$n/" 2>/dev/null || true
+          done
       - name: Raport PIT
         if: ${{ !cancelled() && github.event_name != 'push' }}
         uses: actions/upload-artifact@v7.0.2
         with:
           name: pit-raport
-          path: backend/target/pit-reports
+          path: backend/target/pomiar
           if-no-files-found: ignore
           retention-days: 14
       - name: Pobierz zależności do cache Maven

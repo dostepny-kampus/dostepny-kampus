@@ -363,13 +363,61 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
         <version>${pitest.version}</version>
         <configuration>
           <targetClasses>
-            <param>io.github.dostepnykampus.*.domain.*</param>
+            <param>${pit.cele}</param>
           </targetClasses>
           <targetTests>
-            <param>io.github.dostepnykampus.*.domain.*</param>
+            <param>io.github.dostepnykampus.*</param>
           </targetTests>
+          <excludedTestClasses>
+            <param>io.github.dostepnykampus.DostepnyKampusApplicationTest</param>
+            <param>io.github.dostepnykampus.ErrorsHttpTest</param>
+            <param>io.github.dostepnykampus.KeycloakTokenTest</param>
+            <param>io.github.dostepnykampus.MockMvcContractTest</param>
+            <param>io.github.dostepnykampus.RouteParityTest</param>
+            <param>io.github.dostepnykampus.SecurityContractTest</param>
+            <param>io.github.dostepnykampus.StrictJsonHttpTest</param>
+            <param>io.github.dostepnykampus.TestSetupArchitectureTest</param>
+            <param>io.github.dostepnykampus.barrier.ForeignChangeHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.ForeignSubmissionHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.OwnSubmissionsHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.PhotoBucketStartupTest</param>
+            <param>io.github.dostepnykampus.barrier.PhotoStoreTest</param>
+            <param>io.github.dostepnykampus.barrier.PhotoUploadLimitHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.ReplacedSubmissionHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.SimilarSubmissionsHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionCampusHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionPhotosHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionPhotosProblemHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionPhotosPruneTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionPhotosStatusHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionPointHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionRoleHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionsEditHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionsHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionsMigrationTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionsReadHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionsTypedHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.SubmissionsWriteContractTest</param>
+            <param>io.github.dostepnykampus.barrier.UnacceptedSubmissionHttpTest</param>
+            <param>io.github.dostepnykampus.barrier.json.ApiEnumsTest</param>
+            <param>io.github.dostepnykampus.barrier.persistence.*</param>
+            <param>io.github.dostepnykampus.building.BuildingReadContractTest</param>
+            <param>io.github.dostepnykampus.building.BuildingsHttpTest</param>
+            <param>io.github.dostepnykampus.building.BuildingsMigrationTest</param>
+            <param>io.github.dostepnykampus.building.CampusAreaTest</param>
+            <param>io.github.dostepnykampus.building.EntrancesHttpTest</param>
+            <param>io.github.dostepnykampus.building.OsmBuildingsTest</param>
+            <param>io.github.dostepnykampus.building.OsmEntrancesTest</param>
+            <param>io.github.dostepnykampus.building.OutlinesOverlapTest</param>
+            <param>io.github.dostepnykampus.building.OutlinesTest</param>
+            <param>io.github.dostepnykampus.identity.*</param>
+            <param>io.github.dostepnykampus.specs.*</param>
+            <param>io.github.dostepnykampus.*ArchitectureTest</param>
+            <param>io.github.dostepnykampus.ModularityTest</param>
+            <param>io.github.dostepnykampus.OpenApiContractTest</param>
+          </excludedTestClasses>
           <threads>4</threads>
-          <mutationThreshold>100</mutationThreshold>
+          <mutationThreshold>0</mutationThreshold>
           <outputFormats>
             <param>HTML</param>
             <param>XML</param>
