@@ -78,11 +78,11 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection, colors:
  * TODO(#816): widok mapy MapLibre jeszcze go nie używa.
  */
 internal interface MapStyleTarget {
-    /** Ustawia filtr [filter] (wyrażenie JSON) warstwy [layer]. */
-    fun filter(layer: String, filter: String)
+    /** Ustawia filtr [filter] warstwy [layer]: wyrażenie stylu albo stała `true` lub `false`. */
+    fun filter(layer: String, filter: JsonElement)
 
-    /** Ustawia pole [property] rysowania warstwy [layer] na wyrażenie JSON [value]. */
-    fun paint(layer: String, property: String, value: String)
+    /** Ustawia pole [property] rysowania warstwy [layer] na [value]: wyrażenie stylu albo stałą. */
+    fun paint(layer: String, property: String, value: JsonElement)
 
     /** Zastępuje dane źródła GeoJSON [source] tekstem [geoJson]. */
     fun data(source: String, geoJson: String)
@@ -97,11 +97,11 @@ internal interface MapStyleTarget {
  */
 internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<String, Bitmap> = emptyMap()) {
     images.forEach { (name, image) -> image(name, image) }
-    paint(BUILDINGS_LAYER, BUILDINGS_FILL, look.buildingsFill.toString())
-    paint(OUTLINES_LAYER, OUTLINES_COLOR, look.outlinesColor.toString())
-    filter(SELECTED_LAYER, look.selectedFilter.toString())
-    filter(ENTRANCES_LAYER, look.entrancesFilter.toString())
-    filter(CHOSEN_BARRIER_LAYER, look.chosenBarrierFilter.toString())
+    paint(BUILDINGS_LAYER, BUILDINGS_FILL, look.buildingsFill)
+    paint(OUTLINES_LAYER, OUTLINES_COLOR, look.outlinesColor)
+    filter(SELECTED_LAYER, look.selectedFilter)
+    filter(ENTRANCES_LAYER, look.entrancesFilter)
+    filter(CHOSEN_BARRIER_LAYER, look.chosenBarrierFilter)
     data(CHOSEN_SOURCE, look.chosenEntrance.toString())
 }
 
