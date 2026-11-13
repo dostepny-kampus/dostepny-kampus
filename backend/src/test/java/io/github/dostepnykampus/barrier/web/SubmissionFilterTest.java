@@ -5,9 +5,9 @@
  */
 package io.github.dostepnykampus.barrier.web;
 
-import io.github.dostepnykampus.InvalidInput;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
+import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;

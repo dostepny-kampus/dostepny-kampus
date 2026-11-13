@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus;
+package io.github.dostepnykampus.shared.error;
 
 import java.net.URI;
 import java.util.Optional;

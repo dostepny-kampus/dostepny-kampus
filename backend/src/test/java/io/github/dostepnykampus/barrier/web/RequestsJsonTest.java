@@ -5,10 +5,10 @@
  */
 package io.github.dostepnykampus.barrier.web;
 
-import io.github.dostepnykampus.InvalidInput;
 import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
+import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

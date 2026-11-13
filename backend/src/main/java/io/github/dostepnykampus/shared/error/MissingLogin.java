@@ -3,7 +3,8 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus;
+package io.github.dostepnykampus.shared.error;
+
 
 /**
  * Brak logowania przy żądaniu, które go wymaga, np. lista własnych zgłoszeń.

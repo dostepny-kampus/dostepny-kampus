@@ -3,7 +3,8 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.export.domain;
+package io.github.dostepnykampus.shared.geo;
+
 
 /**
  * Punkt w PUWG 1992 (EPSG:2180) w metrach.
