@@ -33,7 +33,7 @@ class RecommendedEntrancePathTest {
 
     /** Scenariusz: przegladanie-mapy.feature: Wejście zalecane stoi pierwsze na karcie budynku. */
     @Test
-    fun br25_recommended_other_than_main_first() {
+    fun br25_side_recommended_first() {
         openCard(
             symbol = "A-1",
             entrance(name = "Główne", type = "main", wheelchair = "no"),
@@ -52,7 +52,7 @@ class RecommendedEntrancePathTest {
 
     /** Scenariusz: przegladanie-mapy.feature: Przy kilku wejściach dostępnych zalecane jest wejście główne. */
     @Test
-    fun br25_main_recommended_among_accessible() {
+    fun br25_main_among_accessible() {
         openCard(
             symbol = "C-13",
             entrance(name = "Boczne", wheelchair = "yes"),
@@ -67,7 +67,7 @@ class RecommendedEntrancePathTest {
      *   pierwsze z danych.
      */
     @Test
-    fun br25_first_from_data_when_main_inaccessible() {
+    fun br25_data_order_without_main() {
         openCard(
             symbol = "C-13",
             entrance(name = "Boczne", wheelchair = "yes"),
@@ -80,7 +80,7 @@ class RecommendedEntrancePathTest {
 
     /** Scenariusz: przegladanie-mapy.feature: Budynek bez wejścia dostępnego nie ma wejścia zalecanego. */
     @Test
-    fun br25_no_recommended_without_accessible() {
+    fun br25_none_without_accessible() {
         openCard(
             symbol = "B-8",
             entrance(name = "Główne", type = "main", wheelchair = "no"),
@@ -102,7 +102,8 @@ class RecommendedEntrancePathTest {
                     """{"type":"Feature","properties":{"kind":"building","symbols":["$symbol"],""" +
                     """"display_name":"Budynek testowy","osm_id":"way/1"},""" +
                     """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
-                    features.joinToString(",") + "]}"
+                    features.joinToString(",") +
+                    "]}"
             }
         val viewModel =
             BuildingCardViewModel(symbol = symbol, repository = repository, networkStatus = { flowOf(true) })
@@ -121,15 +122,18 @@ class RecommendedEntrancePathTest {
         }
     }
 
-    /** Napisy z [wanted] w kolejności od góry ekranu; karta przewija się w całości, więc lista jest pełna. */
     private fun shown(wanted: Set<String>): List<String> =
         compose
             .onAllNodes(
                 SemanticsMatcher("napis z listy wejść") { node ->
-                    node.config.getOrNull(SemanticsProperties.Text).orEmpty().any { it.text in wanted }
+                    node.config
+                        .getOrNull(SemanticsProperties.Text)
+                        .orEmpty()
+                        .any { it.text in wanted }
                 },
                 useUnmergedTree = true,
-            ).fetchSemanticsNodes()
+            )
+            .fetchSemanticsNodes()
             .sortedBy { it.positionInRoot.y }
             .map { node -> node.config[SemanticsProperties.Text].first().text }
 
