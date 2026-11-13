@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Komenda edycji zgłoszenia (BR-10): wersja bazowa od klienta.
+ * Komenda edycji zgłoszenia: wersja bazowa od klienta.
+ *
+ * <p>Wymagania: BR-10</p>
  *
  * @since 0.1.0
  */

@@ -21,7 +21,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Punkt niezgodny z kontraktem zgłoszenia daje HTTP 400 niezależnie od
- * wewnętrznego typu błędu, przy wysłaniu i przy edycji (US4, US7, US8.3).
+ * wewnętrznego typu błędu, przy wysłaniu i przy edycji.
+ *
+ * <p>Wymagania: US4, US7, US8.3</p>
  *
  * @since 0.1.0
  */

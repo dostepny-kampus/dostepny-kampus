@@ -17,7 +17,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Wspólne {@code MockMvc} samo sprawdza zgodność odpowiedzi z kontraktem
- * {@code api/openapi.yaml} (NFR-33): test HTTP nie dopisuje tej kontroli.
+ * {@code api/openapi.yaml}: test HTTP nie dopisuje tej kontroli.
+ *
+ * <p>Wymagania: NFR-33</p>
  *
  * @since 0.1.0
  */

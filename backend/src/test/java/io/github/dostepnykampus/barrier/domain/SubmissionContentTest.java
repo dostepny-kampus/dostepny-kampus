@@ -12,8 +12,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Treść zgłoszenia (US4, US7): zdjęcia, pola obowiązkowe i kopie
+ * Treść zgłoszenia: zdjęcia, pola obowiązkowe i kopie
  * z innym budynkiem.
+ *
+ * <p>Wymagania: US4, US7</p>
  *
  * @since 0.1.0
  */

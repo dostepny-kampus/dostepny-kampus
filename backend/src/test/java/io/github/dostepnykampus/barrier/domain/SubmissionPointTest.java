@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Kontrakt punktu WGS84 zgłoszenia (US4, US7): zakres domknięty,
+ * Kontrakt punktu WGS84 zgłoszenia: zakres domknięty,
  * skończone współrzędne i długość przed szerokością.
+ *
+ * <p>Wymagania: US4, US7</p>
  *
  * @since 0.1.0
  */

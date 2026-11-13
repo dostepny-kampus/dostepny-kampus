@@ -20,7 +20,9 @@ import org.springframework.web.context.WebApplicationContext;
 /**
  * Zmiana zgłoszenia przyjętego wskazuje zgłoszenie, które istnieje i jest
  * przyjęte: brak zastępowanego zgłoszenia daje 404, zgłoszenie nieprzyjęte
- * 409, a w obu przypadkach nic się nie zapisuje (BR-3, BR-18).
+ * 409, a w obu przypadkach nic się nie zapisuje.
+ *
+ * <p>Wymagania: BR-3, BR-18</p>
  *
  * @since 0.1.0
  */

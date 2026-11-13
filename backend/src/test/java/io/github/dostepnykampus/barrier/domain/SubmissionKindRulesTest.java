@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
 /**
- * Reguły rodzaju zgłoszenia w treści (BR-7, BR-8, BR-19, BR-24, US7.3):
+ * Reguły rodzaju zgłoszenia w treści:
  * które pola są wymagane zależnie od rodzaju i jaki opis niesie odmowa.
+ *
+ * <p>Wymagania: BR-7, BR-8, BR-19, BR-24, US7.3</p>
  *
  * @since 0.1.0
  */

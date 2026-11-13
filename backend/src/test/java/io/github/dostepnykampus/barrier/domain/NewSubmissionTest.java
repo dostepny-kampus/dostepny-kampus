@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Komenda utworzenia zgłoszenia (BR-9): komplet pól.
+ * Komenda utworzenia zgłoszenia: komplet pól.
+ *
+ * <p>Wymagania: BR-9</p>
  *
  * @since 0.1.0
  */

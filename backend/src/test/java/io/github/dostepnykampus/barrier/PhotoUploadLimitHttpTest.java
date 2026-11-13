@@ -28,7 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * NFR-34: HTTP odrzuca nadmiar przed odczytaniem całego strumienia i zapisem zdjęcia.
+ * HTTP odrzuca nadmiar przed odczytaniem całego strumienia i zapisem zdjęcia.
+ *
+ * <p>Wymagania: NFR-34</p>
  *
  * @since 0.1.0
  */

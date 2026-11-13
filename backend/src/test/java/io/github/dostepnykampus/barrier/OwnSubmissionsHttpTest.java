@@ -23,8 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Testy US8.1: GET /submissions z mine=true zwraca Zbierającemu jego własne
+ * GET /submissions z mine=true zwraca Zbierającemu jego własne
  * zgłoszenia w każdym statusie, a osobie bez tej roli odmawia.
+ *
+ * <p>Wymagania: US8.1</p>
  *
  * @since 0.1.0
  */

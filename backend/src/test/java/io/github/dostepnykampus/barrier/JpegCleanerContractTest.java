@@ -22,7 +22,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
- * NFR-26: usuwanie metadanych nie zmienia skompresowanego obrazu ani profilu ICC.
+ * Usuwanie metadanych nie zmienia skompresowanego obrazu ani profilu ICC.
+ *
+ * <p>Wymagania: NFR-26</p>
  *
  * @since 0.1.0
  */

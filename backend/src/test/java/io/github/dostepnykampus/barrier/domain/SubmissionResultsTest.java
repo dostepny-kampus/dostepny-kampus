@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Wyniki utworzenia i edycji zgłoszenia (BR-9, BR-10): zamknięte warianty
+ * Wyniki utworzenia i edycji zgłoszenia: zamknięte warianty
  * z kompletem pól.
+ *
+ * <p>Wymagania: BR-9, BR-10</p>
  *
  * @since 0.1.0
  */

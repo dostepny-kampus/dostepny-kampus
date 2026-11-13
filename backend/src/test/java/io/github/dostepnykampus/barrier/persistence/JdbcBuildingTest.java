@@ -21,7 +21,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * Błędy bazy przy zapisie zgłoszenia: nieznany budynek oraz błędy integralności
- * niezwiązane z budynkiem (BR-14, B-07).
+ * niezwiązane z budynkiem (B-07).
+ *
+ * <p>Wymagania: BR-14</p>
  *
  * @since 0.1.0
  */
