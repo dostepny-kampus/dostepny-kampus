@@ -49,7 +49,7 @@ internal fun barrierWordImage(severity: Severity): String = "bariera_slowo_${sev
  * od uciążliwości, więc znaczenie niesie kształt, nie barwa. Słowo jest obrazem, bo napisy z czcionek
  * stylu wymagają sieci. Pojawia się od powiększenia [BARRIER_WORD_ZOOM], nie przy krawędzi mapy i tylko wtedy,
  * gdy mieści się bez nakładania. Warstwy stoją pod podpisami budynków, więc przy kolizji zostaje podpis budynku
- *  (wiersz o znakach barier w wymaganiach V1).
+ * (wiersz o znakach barier w wymaganiach V1).
  *
  * Wymagania: US1.3, NFR-21, NFR-20
  */

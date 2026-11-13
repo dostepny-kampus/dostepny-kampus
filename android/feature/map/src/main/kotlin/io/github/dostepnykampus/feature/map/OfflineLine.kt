@@ -45,10 +45,10 @@ private val NoInternetIcon =
 
 /**
  * Wskaźnik braku sieci na V1: jedna linia z ikoną i napisem „Bez internetu” na całą szerokość, pod górą ekranu
- *  (PW-4). Gdy na mapie są dane pobrane z serwera, linia ma dopisek „dane z …” z dniem
+ * (PW-4). Gdy na mapie są dane pobrane z serwera, linia ma dopisek „dane z …” z dniem
  * pobrania najstarszych z nich; przy samych danych z pakietu aplikacji daty nie ma. Linia
  * pojawia się sama, więc TalkBack czyta ją jako komunikat stanu
- *  (WCAG 4.1.3).
+ * (WCAG 4.1.3).
  * Ikona to fale Wi-Fi z ukośną kreską z Material Icons, siatka 24 × 24, jak lupa w polu symbolu.
  *
  * Wymagania: US9.1, NFR-10, NFR-21, NFR-15
