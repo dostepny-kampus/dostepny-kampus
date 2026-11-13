@@ -6,13 +6,9 @@
 package io.github.dostepnykampus.barrier.json;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import tools.jackson.databind.node.ObjectNode;
 
 /**
@@ -25,61 +21,77 @@ import tools.jackson.databind.node.ObjectNode;
  */
 final class CollectorContentJsonTest {
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("roles")
-    void tellsWhoSubmits(final String name, final Consumer<ObjectNode> change, final boolean collector) {
+    @Test
+    void quickIsForEveryone() {
+        Assertions.assertFalse(CollectorContentJsonTest.bound(node -> { }).forCollector());
+    }
+
+    @Test
+    void kindlessIsForEveryone() {
+        Assertions.assertFalse(
+            CollectorContentJsonTest.bound(node -> node.remove("kind")).forCollector()
+        );
+    }
+
+    @Test
+    void preciseIsForCollector() {
+        Assertions.assertTrue(
+            CollectorContentJsonTest.bound(node -> node.put("kind", "PRECISE")).forCollector()
+        );
+    }
+
+    @Test
+    void entranceMarkingIsForCollector() {
+        Assertions.assertTrue(
+            CollectorContentJsonTest.bound(node -> node.put("kind", "ENTRANCE_MARKING"))
+                .forCollector()
+        );
+    }
+
+    @Test
+    void quickReplacingIsForCollector() {
+        Assertions.assertTrue(
+            CollectorContentJsonTest.bound(CollectorContentJsonTest::replacing).forCollector()
+        );
+    }
+
+    @Test
+    void newSubmissionReplacesNothing() {
         Assertions.assertEquals(
-            collector, JsonBodies.bind(JsonBodies.with(change)).forCollector(),
-            String.format("Zła rola dla: %s", name)
+            Optional.empty(), CollectorContentJsonTest.bound(node -> { }).ordinaryChange()
         );
     }
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("changes")
-    void findsReplacedSubmission(
-        final String name, final Consumer<ObjectNode> change, final Optional<UUID> replaced
-    ) {
+    @Test
+    void changeReplacesSubmission() {
         Assertions.assertEquals(
-            replaced, JsonBodies.bind(JsonBodies.with(change)).ordinaryChange(),
-            String.format("Złe zastępowane zgłoszenie dla: %s", name)
+            Optional.of(JsonBodies.REPLACED),
+            CollectorContentJsonTest.bound(CollectorContentJsonTest::replacing).ordinaryChange()
         );
     }
 
-    private static Stream<Arguments> roles() {
-        return Stream.of(
-            Arguments.of("szybkie", (Consumer<ObjectNode>) CollectorContentJsonTest::same, false),
-            Arguments.of("bez rodzaju", (Consumer<ObjectNode>) node -> node.remove("kind"), false),
-            Arguments.of("precyzyjne", CollectorContentJsonTest.kind("PRECISE"), true),
-            Arguments.of("oznaczenie wejścia", CollectorContentJsonTest.kind("ENTRANCE_MARKING"), true),
-            Arguments.of("szybkie zastępujące", (Consumer<ObjectNode>) CollectorContentJsonTest::replacing, true)
+    @Test
+    void keptBarrierReplacesSubmission() {
+        Assertions.assertEquals(
+            Optional.of(JsonBodies.REPLACED),
+            CollectorContentJsonTest.bound(
+                node -> CollectorContentJsonTest.replacing(node).put("barrierRemoved", false)
+            ).ordinaryChange()
         );
     }
 
-    private static Stream<Arguments> changes() {
-        return Stream.of(
-            Arguments.of("bez pola replaces", (Consumer<ObjectNode>) CollectorContentJsonTest::same, Optional.empty()),
-            Arguments.of(
-                "zwykła zmiana", (Consumer<ObjectNode>) CollectorContentJsonTest::replacing, Optional.of(JsonBodies.REPLACED)
-            ),
-            Arguments.of(
-                "zmiana bez usunięcia",
-                (Consumer<ObjectNode>) node -> CollectorContentJsonTest.replacing(node).put("barrierRemoved", false),
-                Optional.of(JsonBodies.REPLACED)
-            ),
-            Arguments.of(
-                "bariera usunięta",
-                (Consumer<ObjectNode>) node -> CollectorContentJsonTest.replacing(node).put("barrierRemoved", true),
-                Optional.empty()
-            )
+    @Test
+    void removedBarrierIsNotOrdinaryChange() {
+        Assertions.assertEquals(
+            Optional.empty(),
+            CollectorContentJsonTest.bound(
+                node -> CollectorContentJsonTest.replacing(node).put("barrierRemoved", true)
+            ).ordinaryChange()
         );
     }
 
-    private static void same(final ObjectNode node) {
-        node.put("kind", "QUICK");
-    }
-
-    private static Consumer<ObjectNode> kind(final String kind) {
-        return node -> node.put("kind", kind);
+    private static SubmissionContentJson bound(final Consumer<ObjectNode> change) {
+        return JsonBodies.bind(JsonBodies.with(change));
     }
 
     private static ObjectNode replacing(final ObjectNode node) {
