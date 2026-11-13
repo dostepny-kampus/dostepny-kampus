@@ -58,7 +58,9 @@ private const val CATALOG =
 
 /**
  * „Pokaż wejście na mapie” przez prawdziwe `AppScreen` i graf Hilt: V2, V3, V1 z nazwą zaznaczonego wejścia dla
- * TalkBack (US3.3, NFR-18, decyzje 134, 135). Dane są w pamięci, bo katalog w zasobach nie ma wejść dostępnych.
+ * TalkBack. Dane są w pamięci, bo katalog w zasobach nie ma wejść dostępnych.
+ *
+ * Wymagania: US3.3, NFR-18
  */
 @HiltAndroidTest
 @UninstallModules(DataModule::class)

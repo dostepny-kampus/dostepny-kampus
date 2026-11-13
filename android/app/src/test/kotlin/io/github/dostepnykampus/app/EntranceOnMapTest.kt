@@ -72,11 +72,13 @@ private val OTHERS =
 
 /**
  * „Pokaż wejście na mapie” na V3 przez prawdziwy ekran V1 do tego, co dostaje widok mapy (podróbka): zaznaczone
- * wejście, pinezka z podpisem, kamera i nazwa dla TalkBack (US3.3, US2.1, NFR-18, decyzja 134). Katalog
+ * wejście, pinezka z podpisem, kamera i nazwa dla TalkBack. Katalog
  * „Budynek testowy” jest syntetyczny (nie dane PWr).
  *
  * `showEntranceOnMap`: Od dotknięcia budynku na V1 przez V2 i V3 do „Pokaż wejście na mapie”; zwraca to, co dostała
  * mapa po tym.
+ *
+ * Wymagania: US3.3, US2.1, NFR-18
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -177,7 +179,7 @@ class EntranceOnMapTest {
         assertEquals(expected, selections.last().entrance)
     }
 
-    /** Wiersz E2, E4: wejście bez nazwy w danych dostaje podpis zastępczy, także dla TalkBack (decyzja 135). */
+    /** Wiersz E2, E4: wejście bez nazwy w danych dostaje podpis zastępczy, także dla TalkBack. */
     @Test
     fun us3_3_unnamed_gets_fallback() {
         val json = catalog(entrance(10, NAMED_AT, """"entrance":"yes","wheelchair":"yes""""), *OTHERS)
