@@ -120,15 +120,11 @@ sealed interface PlaceChoice {
 }
 
 /**
- * Pomiar pozycji na ekranie C1. 30 s liczy się od pierwszego odczytu ze znaną dokładnością, więc czas
- * szukania satelitów nie skraca pomiaru. Odbiornik nasłuchuje, gdy ekran jest widoczny i jeszcze 5 s po zniknięciu
- * (obrót ekranu), a po końcu pomiaru przestaje. Wynik zostaje w ViewModelu, więc powrót na ekran go nie
- * kasuje; [repeat] zaczyna od nowa bez limitu. Po pomiarze podpowiada budynek z katalogu bez sieci,
- * a Zbierający go potwierdza, wybiera inny albo zostawia „poza budynkiem”.
- * Odliczanie „Pomiar: zostało 12 s” zmienia się co sekundę także bez nowych odczytów. Błąd odbiornika
- * kończy pomiar stanem [MeasureUiState.Failed] zamiast zamykać aplikację. Wyłączona lokalizacja daje
- * [MeasureUiState.LocationOff] bez nasłuchu odbiornika, a jej włączenie zaczyna pomiar od nowa. Przerwany
- * pomiar zaczyna się od nowa z [restarted], więc nie wygląda jak trwający.
+ * Pomiar pozycji na ekranie C1: 30 s od pierwszego odczytu ze znaną dokładnością, odliczanie co sekundę. Odbiornik
+ * nasłuchuje, gdy ekran jest widoczny i 5 s po zniknięciu, a po pomiarze przestaje; wynik zostaje w ViewModelu, a
+ * [repeat] zaczyna od nowa. Po pomiarze podpowiada budynek z katalogu bez sieci do potwierdzenia albo zmiany. Błąd
+ * odbiornika daje [MeasureUiState.Failed], wyłączona lokalizacja [MeasureUiState.LocationOff] bez nasłuchu, a jej
+ * włączenie i przerwany pomiar ([restarted]) zaczynają pomiar od nowa.
  *
  * Wymagania: US6.1, NFR-1, NFR-27, NFR-23, US6.2, NFR-2, NFR-50, UC7
  */
