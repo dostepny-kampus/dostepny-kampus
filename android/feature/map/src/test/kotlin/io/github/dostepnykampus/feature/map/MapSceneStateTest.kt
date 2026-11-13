@@ -11,7 +11,7 @@ import io.github.dostepnykampus.feature.map.data.CampusBounds
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-/** Stan sceny mapy V1 bez widoku mapy: dotknięcia konturów i zapis widoku kamery (decyzje 83 i 85, US2.8). */
+/** Stan sceny mapy V1 bez widoku mapy: dotknięcia konturów i zapis widoku kamery. Wymagania: US2.8 */
 class MapSceneStateTest {
     private val start = MapCamera(center = GeoPoint(longitude = 17.0, latitude = 51.0), zoom = 16.0)
     private val cameras = mutableListOf<MapCamera>()
@@ -35,7 +35,9 @@ class MapSceneStateTest {
 
     /**
      * Scenariusz „Przy niskiej mapie nad małą kartą nie ma przycisków mapy”: bez arkusza przyciski są zawsze,
-     * nad arkuszem tylko wtedy, gdy się mieszczą (US2.8, NFR-53, decyzja 151).
+     * nad arkuszem tylko wtedy, gdy się mieszczą.
+     *
+     * Wymagania: US2.8, NFR-53
      */
     @Test
     fun us2_8_cover_decides_buttons() {
@@ -48,7 +50,7 @@ class MapSceneStateTest {
         assertEquals(false to true, state().run { isCovered to hasControls })
     }
 
-    /** Wiersz: dotknięcie dwóch konturów → oba symbole czekają na wybór, żaden budynek się nie otwiera (decyzja 85). */
+    /** Wiersz: dotknięcie dwóch konturów → oba symbole czekają na wybór, żaden budynek się nie otwiera. */
     @Test
     fun us2_two_outlines_wait() {
         touch("C-3", "C-4")
@@ -56,7 +58,7 @@ class MapSceneStateTest {
         assertEquals(emptyList<String>(), opened)
     }
 
-    /** Wiersz: dotknięcie jednego konturu → budynek otwarty od razu, a wcześniejszy wybór zamknięty (decyzja 85). */
+    /** Wiersz: dotknięcie jednego konturu → budynek otwarty od razu, a wcześniejszy wybór zamknięty. */
     @Test
     fun us2_one_outline_opens_building() {
         touch("C-13")
@@ -64,7 +66,7 @@ class MapSceneStateTest {
         assertEquals(emptyList<String>(), choices.value)
     }
 
-    /** Wiersz: dotknięcie pustej mapy → zgłoszone aplikacji, wybór bez zmian (US2.8). */
+    /** Wiersz: dotknięcie pustej mapy → zgłoszone aplikacji, wybór bez zmian. Wymagania: US2.8 */
     @Test
     fun us2_8_empty_map_reported() {
         touch()
@@ -72,7 +74,7 @@ class MapSceneStateTest {
         assertEquals(listOf("stary wybór"), choices.value)
     }
 
-    /** Wiersz: budynek wybrany w arkuszu „Który budynek?” → otwarty, arkusz zamknięty (decyzja 85). */
+    /** Wiersz: budynek wybrany w arkuszu „Który budynek?” → otwarty, arkusz zamknięty. */
     @Test
     fun us2_choice_opens_building() {
         state().choose(symbol = "C-4", onBuilding = { opened += it })
@@ -82,7 +84,9 @@ class MapSceneStateTest {
 
     /**
      * Wiersz: V1 z małą kartą V2, osoba przesunęła mapę → jej widok jest widokiem karty i zostaje po zamknięciu
-     * karty, bez dopełnienia arkusza (decyzja 153 pkt 3, US2.8).
+     * karty, bez dopełnienia arkusza.
+     *
+     * Wymagania: US2.8
      */
     @Test
     fun us2_8_moved_view_stays() {
@@ -93,8 +97,8 @@ class MapSceneStateTest {
     }
 
     /**
-     * Wiersz: V1 z małą kartą V2, osoba nie ruszyła mapy → widok V1 bez zmian, więc wraca widok sprzed karty
-     * (decyzja 83); gest bez karty zapisuje tylko widok V1.
+     * Wiersz: V1 z małą kartą V2, osoba nie ruszyła mapy → widok V1 bez zmian, więc wraca widok sprzed karty;
+     * gest bez karty zapisuje tylko widok V1.
      */
     @Test
     fun d83_untouched_view_returns() {
@@ -107,7 +111,9 @@ class MapSceneStateTest {
 
     /**
      * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: przycisk nad małą kartą
-     * zmienia widok karty w granicach terenu i zostaje po zamknięciu karty (US2.8, NFR-53, decyzja 153).
+     * zmienia widok karty w granicach terenu i zostaje po zamknięciu karty.
+     *
+     * Wymagania: US2.8, NFR-53
      */
     @Test
     fun us2_8_button_moves_card_view() {
@@ -118,7 +124,11 @@ class MapSceneStateTest {
         assertEquals(cardCameras, cameras)
     }
 
-    /** Wiersz: przycisk przesuwa kamerę tylko w granicach terenu (NFR-53, BR-G5); bez granic nic nie zapisuje. */
+    /**
+     * Wiersz: przycisk przesuwa kamerę tylko w granicach terenu; bez granic nic nie zapisuje.
+     *
+     * Wymagania: NFR-53, BR-G5
+     */
     @Test
     fun brg5_move_stays_inside_area() {
         val far = start.copy(center = GeoPoint(longitude = 50.0, latitude = 51.0))

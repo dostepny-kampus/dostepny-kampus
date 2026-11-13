@@ -37,8 +37,10 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Napis o zmianie terenu na nakładce mapy V1 (US1.8, NFR-18, NFR-23) na prostokątach testowych (nie dane PWr):
+ * Napis o zmianie terenu na nakładce mapy V1 na prostokątach testowych (nie dane PWr):
  * zaznaczony budynek „T-15” leży na terenie „Wittigowo”, a mapa pokazywała „Kampus główny”.
+ *
+ * Wymagania: US1.8, NFR-18, NFR-23
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -68,7 +70,9 @@ class MapOverlayNoticeTest {
 
     /**
      * Wiersz: V1, po zmianie terenu przez zaznaczony budynek nad podpisem mapy stoi napis „Pokazuję teren:
-     * Wittigowo”, który TalkBack czyta sam (US1.8, NFR-18).
+     * Wittigowo”, który TalkBack czyta sam.
+     *
+     * Wymagania: US1.8, NFR-18
      */
     @Test
     fun us1_8_notice_above_attribution() {
@@ -79,7 +83,11 @@ class MapOverlayNoticeTest {
         assertTrue(notice.getUnclippedBoundsInRoot().bottom <= attribution.top)
     }
 
-    /** Wiersz: V1, napis o zmianie terenu znika, gdy osoba ruszy mapę przyciskiem, bez limitu czasu (US1.8, NFR-23). */
+    /**
+     * Wiersz: V1, napis o zmianie terenu znika, gdy osoba ruszy mapę przyciskiem, bez limitu czasu.
+     *
+     * Wymagania: US1.8, NFR-23
+     */
     @Test
     fun us1_8_notice_gone_after_move() {
         compose.setContent { Overlay() }
