@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import kotlin.math.sqrt
 
-/** Uśrednianie pozycji przez 30 s na odczytach testowych, nie z telefonu (US6.1, NFR-1, NFR-23). */
+/** Uśrednianie pozycji przez 30 s na odczytach testowych, nie z telefonu. Wymagania: US6.1, NFR-1, NFR-23 */
 class PositionAveragingTest {
     private val start = PositionAveraging(startMillis = START)
 

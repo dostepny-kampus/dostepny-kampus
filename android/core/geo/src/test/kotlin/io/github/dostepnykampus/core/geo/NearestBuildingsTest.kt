@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-/** Sekcja „Wybierz budynek” na C1: budynki najbliżej punktu, od najbliższego, z odległością (US6.2, NFR-4). */
+/** Sekcja „Wybierz budynek” na C1: budynki najbliżej punktu, od najbliższego, z odległością. Wymagania: US6.2, NFR-4 */
 class NearestBuildingsTest {
     private val near = square(symbol = "A-1", south = LAT)
     private val middle = square(symbol = "A-2", south = LAT + 2 * SIDE)

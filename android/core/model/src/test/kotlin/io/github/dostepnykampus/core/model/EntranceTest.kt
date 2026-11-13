@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 
-/** Wejście jako wartość: zmiana oznaczenia daje nowy stan tego samego wejścia (US17.1, US17.2, BR-24). */
+/** Wejście jako wartość: zmiana oznaczenia daje nowy stan tego samego wejścia. Wymagania: US17.1, US17.2, BR-24 */
 class EntranceTest {
     private val sideEntrance =
         Entrance(

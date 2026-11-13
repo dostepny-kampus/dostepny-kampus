@@ -14,7 +14,11 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import java.io.File
 
-/** Wyszukanie budynku po symbolu na budynkach testowych o podobnych symbolach i w prawdziwym pliku konturów (US1.1). */
+/**
+ * Wyszukanie budynku po symbolu na budynkach testowych o podobnych symbolach i w prawdziwym pliku konturów.
+ *
+ * Wymagania: US1.1
+ */
 class SearchBuildingsTest {
     private val outline = GeoPolygon(listOf(List(4) { GeoPoint(longitude = 0.0, latitude = 0.0) }))
     private val buildings =
