@@ -77,10 +77,7 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection, colors:
     )
 }
 
-/**
- * Styl wczytany na mapie, w którym zmienia się filtry, barwy, dane źródeł i obrazy bez wczytywania stylu.
- * TODO(#816): widok mapy MapLibre jeszcze go nie używa.
- */
+/** Styl wczytany na mapie, w którym zmienia się filtry, barwy, dane źródeł i obrazy bez wczytywania stylu. */
 internal interface MapStyleTarget {
     /** Ustawia filtr [filter] warstwy [layer]: wyrażenie stylu albo stała `true` lub `false`. */
     fun filter(layer: String, filter: JsonElement)
