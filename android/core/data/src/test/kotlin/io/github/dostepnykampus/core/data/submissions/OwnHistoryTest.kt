@@ -41,8 +41,9 @@ class OwnHistoryTest {
     fun `wynik zapisu wskazuje wiersz`() =
         runBlocking {
             val saved: SavedSubmission = queue().save(precise(), photo())
+            val pending = store.all().single()
             assertEquals(ID, saved.id)
-            assertEquals(saved.id, store.all().single().submission.id)
+            assertEquals(saved.id, pending.submission.id)
             assertEquals(saved.id, history.rows.getValue(saved.id).id)
         }
 
