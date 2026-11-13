@@ -54,6 +54,8 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.feature.map.area.AreaOrder
+import io.github.dostepnykampus.feature.map.area.otherAreaOf
 import java.time.Instant
 
 private val SearchIcon =

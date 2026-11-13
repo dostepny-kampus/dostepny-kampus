@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.feature.map.data.CampusBounds

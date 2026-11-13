@@ -10,6 +10,11 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.feature.map.style.BARRIER_SIGN_DP
+import io.github.dostepnykampus.feature.map.style.CHOSEN_BARRIER_DP
+import io.github.dostepnykampus.feature.map.style.barrierSignImage
+import io.github.dostepnykampus.feature.map.style.barrierWordImage
+import io.github.dostepnykampus.feature.map.style.chosenBarrierImage
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

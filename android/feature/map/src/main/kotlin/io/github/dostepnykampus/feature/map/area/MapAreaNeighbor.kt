@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.area
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,8 +36,14 @@ import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Wysokosci
+import io.github.dostepnykampus.feature.map.ControlCircleSize
+import io.github.dostepnykampus.feature.map.MapCamera
+import io.github.dostepnykampus.feature.map.MapControlIcons
+import io.github.dostepnykampus.feature.map.MapControlTouchSize
+import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.data.AreaNeighbor
 import io.github.dostepnykampus.feature.map.data.MapEdge
+import io.github.dostepnykampus.feature.map.mapControlBorder
 
 private const val QUARTER_TURN = 90f
 private const val EIGHTH_TURN = 45f

@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.style
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.SideEffect
@@ -15,11 +15,13 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.feature.map.MapCamera
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.campusMapData
+import io.github.dostepnykampus.feature.map.rememberMapStyle
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

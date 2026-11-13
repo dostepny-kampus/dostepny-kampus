@@ -3,13 +3,14 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.area
 
 import androidx.compose.runtime.mutableStateOf
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.feature.map.START_ZOOM
 import io.github.dostepnykampus.feature.map.data.AreaChoice
 import io.github.dostepnykampus.feature.map.data.START_BUILDING
 import io.github.dostepnykampus.feature.map.data.campusMapData

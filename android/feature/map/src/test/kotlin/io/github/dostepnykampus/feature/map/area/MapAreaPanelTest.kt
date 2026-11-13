@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.area
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
@@ -22,6 +22,7 @@ import androidx.compose.ui.test.performClick
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.data.AreaChoice
 import org.junit.Assert.assertEquals
 import org.junit.Rule

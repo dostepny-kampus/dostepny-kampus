@@ -363,7 +363,7 @@ class ArchitectureTest {
         /** Pliki modułów funkcji z importem HTTP, z powodem; lista może tylko maleć. */
         val OWN_HTTP =
             mapOf(
-                "$BASE.feature.map.MapTileHttp" to
+                "$BASE.feature.map.style.MapTileHttp" to
                     "#822: MapLibre przyjmuje tylko Call.Factory z okhttp; klient powstaje z klienta core:network",
             )
     }
