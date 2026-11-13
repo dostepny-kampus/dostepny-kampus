@@ -64,8 +64,10 @@ jobs:
 
   commity:
     # W kolejce scalania sprawdzamy commity grupy (base_sha..head_sha): komunikat commitu squash bierze tytuł PR,
-    # który można zmienić jeszcze w kolejce, więc sprawdzenie sprzed kolejki nie wystarcza.
-    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    # który można zmienić jeszcze w kolejce. Grupę z drzewem i tytułem równym w pełni zielonemu przebiegowi na PR
+    # (który sprawdził nagłówek squasha) job pomija, jak pozostałe kontrole (#726).
+    needs: porownanie
+    if: ${{ !cancelled() && github.event.pull_request.user.login != 'dependabot[bot]' && needs.porownanie.outputs.pomin != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
