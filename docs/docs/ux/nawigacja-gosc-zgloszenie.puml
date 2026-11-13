@@ -1,0 +1,32 @@
+@startuml
+!include _nawigacja.iuml
+
+start
+:„Zgłoś barierę” w pasku dolnym albo\n„Zgłoś barierę przy wejściu” na V2 i V3; <<stan>>
+if (osoba zalogowana?) then (nie)
+  :L1 Prośba o logowanie;
+  -> „Zaloguj się”,\n„Załóż konto”;
+  :Strona logowania\nw przeglądarce; <<poza>>
+  -> po zalogowaniu;
+else (tak)
+endif
+if (zgoda na lokalizację?) then (nie)
+  :Prośba o zgodę\nna lokalizację; <<stan>>
+  -> „Pozwól na\nlokalizację”;
+else (jest)
+endif
+:V4 Krok 1 z 3\nzdjęcie;
+-> „Zrób zdjęcie”,\npotem „Dalej”;
+:V4 Krok 2 z 3\ngrupa barier, w budynku piętro;
+-> wybór grupy;
+:V4 Krok 3 z 3\nwysłanie;
+while (telefon ustalił pozycję?) is (nie)
+  :Brak pozycji; <<stan>>
+  -> „Spróbuj\nponownie”;
+endwhile (tak)
+-> „Wyślij”;\nbez sieci zapis w telefonie;
+:V4 Potwierdzenie;
+-> „Wróć do mapy”;
+:V1 Mapa kampusu;
+stop
+@enduml

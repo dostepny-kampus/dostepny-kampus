@@ -1,0 +1,35 @@
+@startuml
+!include _nawigacja.iuml
+
+start
+:„Konto” w pasku dolnym; <<stan>>
+if (osoba zalogowana?) then (nie)
+  :L1 Prośba o logowanie;
+  -> „Zaloguj się”,\n„Załóż konto”;
+  :Strona logowania\nw przeglądarce; <<poza>>
+  -> po zalogowaniu;
+else (tak)
+endif
+:L2 Konto;
+split
+  -> „Informacja o danych\nosobowych”;
+  :Klauzula\ninformacyjna; <<stan>>
+  -> „Wstecz”;
+  :L2 Konto;
+  detach
+split again
+  -> „Wycofaj zgodę”;
+  :Wycofanie zgody:\npotwierdzenie; <<stan>>
+  if (decyzja) then („Wycofaj zgodę”)
+    :V1 Mapa kampusu\npo wylogowaniu;
+    detach
+  else („Zostaw zgodę”)
+    :L2 Konto;
+    detach
+  endif
+split again
+  -> „Wyloguj się”;
+  :V1 Mapa kampusu;
+  detach
+end split
+@enduml

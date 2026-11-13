@@ -1,0 +1,34 @@
+@startuml
+!include _nawigacja.iuml
+
+start
+if (pierwsze uruchomienie?) then (tak)
+  :V5 Pomoc;
+  -> „Zacznij” albo\n„Pomiń instrukcję”;
+else (nie)
+endif
+:V1 Mapa kampusu;
+-> budynek na mapie albo\nwynik wyszukiwania;
+:V2 Karta budynku;
+split
+  -> „Sprawdź,\nktórędy wejść”;
+  :V3 Którędy wejść;
+  -> „Pokaż wejście\nna mapie”;
+  :V1 Mapa kampusu\nz zaznaczonym wejściem;
+  detach
+split again
+  -> „Pokaż\nna planie”;
+  :Plan piętra\nze znalezioną salą; <<stan>>
+  -> „Pokaż opis\nbudynku”;
+  :V2 Karta budynku;
+  detach
+split again
+  -> „Zgłoś barierę\nprzy wejściu”;
+  :V4 Zgłoszenie szybkie\n(następny rysunek);
+  detach
+split again
+  -> „Wstecz”,\n„Zamknij”;
+  :V1 Mapa kampusu;
+  detach
+end split
+@enduml
