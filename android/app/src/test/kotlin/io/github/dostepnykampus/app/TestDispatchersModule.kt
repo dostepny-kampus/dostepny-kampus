@@ -16,8 +16,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * Testy Hilt liczą w wątku wywołującym, więc `waitForIdle` obejmuje całą pracę grafu bez czekania oknem zegara
- * (#623).
+ * Testy Hilt liczą w wątku wywołującym, więc `waitForIdle` obejmuje całą pracę grafu bez czekania oknem zegara.
  */
 @Module
 @TestInstallIn(components = [SingletonComponent::class], replaces = [DispatchersModule::class])
