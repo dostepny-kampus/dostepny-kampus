@@ -57,7 +57,7 @@ Nie budujemy gotowego systemu dla całego kampusu. Szczegółowe są budynki z p
 
 | Poziom | Gdzie | Co działa |
 | --- | --- | --- |
-| 1. Szczegółowy | A-1, B-1, C-13, D-1, D-2 | plan piętra z przełącznikiem pięter; windy, schody, toalety i wejścia z danych PWr; bariera jako punkt na planie; obchód i sprawdzenie na miejscu |
+| 1. Szczegółowy | 25 budynków z planami pięter PWr | plan piętra z przełącznikiem pięter; windy, schody, toalety i wejścia z danych PWr; bariera jako punkt na planie. Obchód i sprawdzenie na miejscu w pięciu z nich: A-1, B-1, C-13, D-1, D-2 (M-1) |
 | 2. Podstawowy | pozostałe budynki PWr | kontur budynku, wejścia z OpenStreetMap z oznaczeniem z importu albo „brak danych”, karta budynku z barierami; numer piętra wpisywany ręcznie |
 | 3. Poza budynkami | teren kampusu i okolica | bariera przypięta do punktu na ulicy, np. krawężnik, pochylnia, chodnik |
 
