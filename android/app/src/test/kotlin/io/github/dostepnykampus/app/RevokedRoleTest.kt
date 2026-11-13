@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.app
@@ -23,9 +23,9 @@ import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStamps
+import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.PendingEditDao
-import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent
@@ -64,7 +64,7 @@ class RevokedRoleTest {
     private val app = RuntimeEnvironment.getApplication()
 
     @Inject
-    lateinit var pending: PendingSubmissionDao
+    lateinit var store: SubmissionStore
 
     @Inject
     lateinit var history: OwnSubmissionDao
@@ -120,7 +120,7 @@ class RevokedRoleTest {
 
     private fun queue(): SubmissionQueue =
         SubmissionQueue(
-            store = pending,
+            store = store,
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
@@ -132,7 +132,6 @@ class RevokedRoleTest {
                     update = { _, _, _ -> ApiResult.NotFound },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
-            history = history,
         )
 
     private fun photo(): List<PendingPhotoDraft> {
