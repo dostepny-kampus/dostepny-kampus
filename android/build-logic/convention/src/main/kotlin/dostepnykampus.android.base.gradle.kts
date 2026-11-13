@@ -15,7 +15,7 @@ plugins {
 }
 
 extensions.configure<CommonExtension> {
-    namespace = "io.github.dostepnykampus" + path.replace(':', '.')
+    namespace = "io.github.dostepnykampus" + path.replace(':', '.').replace('-', '.')
     compileSdk = libs.versionInt("androidCompileSdk")
     defaultConfig.minSdk = libs.versionInt("androidMinSdk")
     compileOptions.sourceCompatibility = JavaVersion.toVersion(libs.versionInt("jvmTarget"))
