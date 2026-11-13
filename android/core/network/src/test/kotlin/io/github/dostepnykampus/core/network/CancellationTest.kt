@@ -40,6 +40,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.params.provider.ValueSource
 import java.lang.management.ManagementFactory
 import java.lang.management.ThreadMXBean
 import java.util.concurrent.CompletableFuture
@@ -103,10 +104,11 @@ class CancellationTest {
         assertCancelled(running)
     }
 
-    @Test
-    fun nfr55_cancel_photo_client() {
+    @ParameterizedTest
+    @ValueSource(strings = ["putPhoto", "photo"])
+    fun nfr55_cancel_photo_client(call: String) {
         server.dispatcher = holdHeaders()
-        val running = begin(PHOTO_CALL, client(PLAIN_TIMEOUT_MILLIS))
+        val running = begin(call, client(PLAIN_TIMEOUT_MILLIS))
         assertNotNull(server.takeRequest(START_WAIT_SECONDS, SECONDS), "żądanie nie dotarło do serwera")
         assertNull(running.outcome.within(PLAIN_TIMEOUT_MILLIS * 3), "zdjęcie poszło przez zwykłego klienta")
         assertCancelled(running)
@@ -215,6 +217,7 @@ class CancellationTest {
         const val PLAIN_TIMEOUT_MILLIS = 300L
         const val GUARD_WAIT_MILLIS = 5_000L
         const val PHOTO_CALL = "putPhoto"
+        const val PHOTO_READ_CALL = "photo"
         val THREADS: ThreadMXBean = ManagementFactory.getThreadMXBean()
         val BODY = "0".repeat(BODY_BYTES)
         val SLOW_BODY = "0".repeat(STEP_BYTES.toInt() * STEPS)
@@ -227,7 +230,7 @@ class CancellationTest {
                 "create" to call { it.submissions.create(ID, quick) },
                 "update" to call { it.submissions.update(ID, 1, quick) },
                 PHOTO_CALL to call { it.submissions.putPhoto(ID, photoId = PHOTO, jpeg = JPEG) },
-                "getPhoto" to call { it.submissions.getPhoto(ID, photoId = PHOTO) },
+                PHOTO_READ_CALL to call { it.submissions.photo(ID, photoId = PHOTO) },
                 "accepted" to call { it.submissions.accepted("C-13") },
             )
 
@@ -235,7 +238,7 @@ class CancellationTest {
         fun calls(): List<String> = CALLS.keys.toList()
 
         @JvmStatic
-        fun plainCalls(): List<String> = CALLS.keys.filter { it != PHOTO_CALL }
+        fun plainCalls(): List<String> = CALLS.keys.filter { it != PHOTO_CALL && it != PHOTO_READ_CALL }
 
         fun call(block: suspend (Apis) -> Any): suspend (Apis) -> Any = block
 

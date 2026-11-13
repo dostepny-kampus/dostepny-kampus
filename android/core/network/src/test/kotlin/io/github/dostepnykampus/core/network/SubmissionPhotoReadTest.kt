@@ -49,7 +49,7 @@ class SubmissionPhotoReadTest {
         val request = server.takeRequest()
         assertEquals("GET", request.method)
         assertEquals("/submissions/$ID/photos/$PHOTO", request.path)
-        assertEquals("image/jpeg", request.getHeader("Accept"))
+        assertEquals("image/jpeg, application/problem+json", request.getHeader("Accept"))
     }
 
     /** 404 nie zwraca treści błędu jako zdjęcia. */
@@ -76,6 +76,6 @@ class SubmissionPhotoReadTest {
 
     private fun read(): ApiResult<ByteArray> =
         runBlocking {
-            SubmissionsApi(http, NetworkModule.json(), server.url("/").toString()).getPhoto(ID, PHOTO)
+            SubmissionsApi(http, NetworkModule.json(), server.url("/").toString()).photo(ID, PHOTO)
         }
 }

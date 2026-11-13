@@ -27,25 +27,6 @@ import kotlin.coroutines.resume
  * @return wynik [read] albo [ApiResult.NetworkError], gdy połączenie nie doszło do skutku lub zostało zerwane
  */
 internal suspend fun <T> OkHttpClient.exchange(request: Request, read: (Int, String) -> ApiResult<T>): ApiResult<T> =
-    exchangeResponse(request) { read(it.code, it.body.string()) }
-
-/**
- * Odczytuje odpowiedź binarną bez zamiany na tekst; anulowanie i zamknięcie odpowiedzi jak w [exchange].
- *
- * @param T typ odczytanych danych
- * @param request żądanie pliku
- * @param read wynik z kodu HTTP i niezmienionych bajtów odpowiedzi
- */
-internal suspend fun <T> OkHttpClient.exchangeBytes(
-    request: Request,
-    read: (Int, ByteArray) -> ApiResult<T>,
-): ApiResult<T> =
-    exchangeResponse(request) { read(it.code, it.body.bytes()) }
-
-private suspend fun <T> OkHttpClient.exchangeResponse(
-    request: Request,
-    read: (Response) -> ApiResult<T>,
-): ApiResult<T> =
     suspendCancellableCoroutine { continuation ->
         val call = newCall(request)
         continuation.invokeOnCancellation { call.cancel() }
@@ -58,7 +39,7 @@ private suspend fun <T> OkHttpClient.exchangeResponse(
                 override fun onResponse(call: Call, response: Response) {
                     val result =
                         try {
-                            response.use(read)
+                            response.use { read(it.code, it.body.string()) }
                         } catch (error: IOException) {
                             ApiResult.NetworkError(error)
                         }

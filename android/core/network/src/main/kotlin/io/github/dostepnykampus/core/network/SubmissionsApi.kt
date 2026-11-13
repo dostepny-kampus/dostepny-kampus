@@ -81,19 +81,6 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
         }
 
     /**
-     * Czyta JPEG zgłoszenia bez zamiany bajtów na tekst. Zdjęcie zgłoszenia przyjętego jest publiczne (US2.2).
-     *
-     * @param submissionId identyfikator zgłoszenia
-     * @param photoId identyfikator zdjęcia z listy `photoIds`
-     */
-    suspend fun getPhoto(submissionId: String, photoId: String): ApiResult<ByteArray> =
-        http.exchangeBytes(
-            request(path(submissionId, PHOTOS, photoId), body = null, method = GET, accept = "image/jpeg"),
-        ) { code, body ->
-            if (code == HTTP_OK) ApiResult.Success(body) else other(code)
-        }
-
-    /**
      * Zgłoszenia przyjęte do mapy i karty budynku (`status=ACCEPTED`, US1.3, US2.2, BR-6).
      *
      * @param buildingSymbol tylko zgłoszenia z tego budynku; `null` dla wszystkich
@@ -121,8 +108,8 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
         }
     }
 
-    private fun request(target: HttpUrl, body: RequestBody?, method: String, accept: String = ACCEPTED_TYPES): Request {
-        val builder = Request.Builder().url(target).header(name = ACCEPT, value = accept)
+    private fun request(target: HttpUrl, body: RequestBody?, method: String): Request {
+        val builder = Request.Builder().url(target).header(name = ACCEPT, value = ACCEPTED_TYPES)
         return builder.method(method, body).build()
     }
 
