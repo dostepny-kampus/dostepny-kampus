@@ -69,6 +69,20 @@ class QuickReportScreenTest {
         assertEquals(listOf(expected), next)
     }
 
+    /**
+     * Wiersz: V4 krok 2, „Nie wiem” → krok 3 bez piętra, z odnotowanym pytaniem o piętro, US4.5. Budynek zgłoszenia
+     * ustala serwer z konturu, więc ten krok sprawdzają testy serwera.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Odpowiedź „Nie wiem” zostawia piętro puste i pozwala
+     *   wysłać zgłoszenie
+     */
+    @Test
+    fun us4_5_unknown_floor_to_step_3() {
+        show(atGroup)
+        compose.onNodeWithText("Schody i windy").performClick()
+        compose.onNodeWithText("Nie wiem").performClick()
+        assertEquals(listOf(atGroup.copy(group = BarrierGroup.VERTICAL_CIRCULATION, isFloorAsked = true)), next)
+    }
+
     /** Wiersz: V4 krok 2, pozycja poza konturem → bez pytania o piętro, zgłoszenie bez piętra, BR-14. */
     @Test
     fun us4_5_outside_no_floor() {
@@ -120,6 +134,18 @@ class QuickReportScreenTest {
         assertEquals(1, toMap)
     }
 
+    /**
+     * Wiersz: V4 potwierdzenie z siecią → zgłoszenie trafi do weryfikacji, bez listy zgłoszeń i statusów, US4.4.
+     * Scenariusz: zgloszenie-szybkie.feature: Potwierdzenie po wysłaniu bez dalszego statusu
+     */
+    @Test
+    fun us4_4_sent_no_status() {
+        show(ReportRoute(step = ReportStep.SENT))
+        compose.onNodeWithText("Sprawdzimy zdjęcie", substring = true).assertIsDisplayed()
+        val statuses = listOf("Moje zgłoszenia", "Wysłane", "W weryfikacji")
+        statuses.forEach { compose.onNodeWithText(it).assertDoesNotExist() }
+    }
+
     /** Wiersz: V4 krok 1 ze zdjęciem, „Wstecz” → potwierdzenie rezygnacji, US4.8. */
     @Test
     fun us4_8_leave_after_confirm() {
@@ -144,7 +170,10 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Zrób zdjęcie").assertIsDisplayed()
     }
 
-    /** Wiersz: V4 brak sieci → „Zapisaliśmy zdjęcie w telefonie…” i „Wróć do mapy”, US4.2. */
+    /**
+     * Wiersz: V4 brak sieci → „Zapisaliśmy zdjęcie w telefonie…” i „Wróć do mapy”, US4.2. Napis nie mówi o weryfikacji.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Potwierdzenie bez sieci mówi o późniejszej wysyłce
+     */
     @Test
     fun us4_2_sent_offline() {
         show(ReportRoute(step = ReportStep.SENT, isSavedOffline = true))
