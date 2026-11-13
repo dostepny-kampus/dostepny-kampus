@@ -12,12 +12,14 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
- * Zgłoszenie zapisane w telefonie, które czeka na wysłanie (status „lokalne”, NFR-5, US9.1).
+ * Zgłoszenie zapisane w telefonie, które czeka na wysłanie (status „lokalne”).
  *
  * Pola treści odpowiadają `SubmissionContent` z kontraktu API, a `null` to pole nieobecne.
  *
- * @property id identyfikator UUID nadany w telefonie; ten sam przy każdej próbie wysłania (BR-9)
- * @property baseVersion wersja z serwera, od której zaczęto edycję; `null` dla nowego zgłoszenia (BR-10)
+ * Wymagania: NFR-5, US9.1, BR-9, BR-10, BR-26
+ *
+ * @property id identyfikator UUID nadany w telefonie; ten sam przy każdej próbie wysłania
+ * @property baseVersion wersja z serwera, od której zaczęto edycję; `null` dla nowego zgłoszenia
  * @property savedAtMillis chwila zapisu w telefonie w milisekundach od epoki Unix
  * @property isCreatedOnServer czy serwer ma już zgłoszenie, a czekają tylko zdjęcia
  * @property kind rodzaj zgłoszenia: `PRECISE`, `QUICK` albo `ENTRANCE_MARKING`
@@ -38,7 +40,7 @@ import androidx.room.PrimaryKey
  * @property entranceId wejście w zmianie oznaczenia wejścia
  * @property entranceMarking nowe oznaczenie wejścia
  * @property isRefused czy serwer odrzucił zgłoszenie (4xx); takie zgłoszenie czeka w telefonie na decyzję osoby i nie
- *   wraca do wysyłki samo (BR-26)
+ *   wraca do wysyłki samo
  */
 @Entity(tableName = "pending_submissions")
 data class PendingSubmissionEntity(
@@ -67,7 +69,9 @@ data class PendingSubmissionEntity(
 )
 
 /**
- * Zdjęcie zgłoszenia czekające w telefonie; plik leży w pamięci aplikacji do wysłania całego zgłoszenia (NFR-5).
+ * Zdjęcie zgłoszenia czekające w telefonie; plik leży w pamięci aplikacji do wysłania całego zgłoszenia.
+ *
+ * Wymagania: NFR-5
  *
  * @property submissionId zgłoszenie, do którego należy zdjęcie
  * @property photoId identyfikator UUID zdjęcia nadany w telefonie

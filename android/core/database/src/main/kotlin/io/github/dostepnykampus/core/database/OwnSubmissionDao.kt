@@ -10,7 +10,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
-/** Historia własnych zgłoszeń w telefonie dla listy C3 (US8, NFR-5). */
+/** Historia własnych zgłoszeń w telefonie dla listy C3. Wymagania: US8, NFR-5 */
 @Dao
 interface OwnSubmissionDao {
     /** Własne zgłoszenia od najnowszego; zmienia się po każdym zapisie i zmianie stanu. */
@@ -34,7 +34,9 @@ interface OwnSubmissionDao {
     suspend fun find(id: String): OwnSubmissionEntity?
 
     /**
-     * Zapamiętuje wersję z serwera po przyjęciu treści; baza dla poprawki z C3 (BR-10).
+     * Zapamiętuje wersję z serwera po przyjęciu treści; baza dla poprawki z C3.
+     *
+     * Wymagania: BR-10
      *
      * @param id identyfikator zgłoszenia
      * @param version wersja z serwera
@@ -60,12 +62,14 @@ interface OwnSubmissionDao {
     suspend fun markRefused(id: String, code: Int?)
 
     /**
-     * Zapisuje status z serwera po odświeżeniu listy C3; stan wysyłki z telefonu zostaje (US8.2, BR-16).
+     * Zapisuje status z serwera po odświeżeniu listy C3; stan wysyłki z telefonu zostaje.
+     *
+     * Wymagania: US8.2, BR-16, BR-10
      *
      * @param id identyfikator zgłoszenia
      * @param status status z serwera
      * @param reason powód odrzucenia; `null` poza odrzuceniem
-     * @param version wersja z serwera; baza dla poprawki (BR-10)
+     * @param version wersja z serwera; baza dla poprawki
      */
     @Query(
         "UPDATE own_submissions SET server_status = :status, rejection_reason = :reason, server_version = :version " +

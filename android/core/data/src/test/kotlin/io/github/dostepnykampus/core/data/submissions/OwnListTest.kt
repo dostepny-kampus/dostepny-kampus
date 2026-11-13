@@ -22,7 +22,7 @@ import java.io.File
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Lista C3 czytana tak jak w aplikacji: z historii zapisanej przez kolejkę (US8.1, US4.4). */
+/** Lista C3 czytana tak jak w aplikacji: z historii zapisanej przez kolejkę. Wymagania: US8.1, US4.4 */
 class OwnListTest {
     @TempDir
     lateinit var tempDir: File

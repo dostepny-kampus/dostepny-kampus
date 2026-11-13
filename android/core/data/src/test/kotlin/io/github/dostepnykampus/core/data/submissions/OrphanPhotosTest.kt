@@ -18,7 +18,7 @@ import java.io.File
 import java.io.IOException
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Sprzątanie przy starcie usuwa tylko pliki zdjęć, których nie potrzebuje kolejka ani odtworzony szkic (#927). */
+/** Sprzątanie przy starcie usuwa tylko pliki zdjęć, których nie potrzebuje kolejka ani odtworzony szkic. */
 class OrphanPhotosTest {
     @TempDir
     lateinit var tempDir: File

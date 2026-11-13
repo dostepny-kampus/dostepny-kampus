@@ -28,7 +28,7 @@ import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Kolejka zapisuje stan wysyłki własnych zgłoszeń dla listy C3 (US8, NFR-5). */
+/** Kolejka zapisuje stan wysyłki własnych zgłoszeń dla listy C3. Wymagania: US8, NFR-5 */
 class OwnHistoryTest {
     @TempDir
     lateinit var tempDir: File

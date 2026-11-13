@@ -25,7 +25,7 @@ import java.io.File
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Błąd zapisu historii cofa zapis kolejki z tej samej pary, więc tabele nie zostają w sprzeczności (#859). */
+/** Błąd zapisu historii cofa zapis kolejki z tej samej pary, więc tabele nie zostają w sprzeczności. */
 class QueueTransactionTest {
     @TempDir
     lateinit var tempDir: File

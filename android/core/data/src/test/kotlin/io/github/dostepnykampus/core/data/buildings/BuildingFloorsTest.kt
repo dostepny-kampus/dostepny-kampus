@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import java.io.IOException
 
-/** Piętra budynku z serwera z pamięcią ostatniej udanej odpowiedzi (US7.2, BR-G1). */
+/** Piętra budynku z serwera z pamięcią ostatniej udanej odpowiedzi. Wymagania: US7.2, BR-G1 */
 class BuildingFloorsTest {
     @Test
     fun `us7_2 piętra z serwera`() =

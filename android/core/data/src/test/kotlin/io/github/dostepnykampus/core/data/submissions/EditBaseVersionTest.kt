@@ -24,7 +24,9 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Poprawka zgłoszenia, które serwer już ma, nie idzie jako drugie utworzenie z tym samym identyfikatorem: idzie
- * jako edycja z wersją z kolejki albo historii, a bez znanej wersji zapis jest odrzucony (US8.3, BR-9, BR-10).
+ * jako edycja z wersją z kolejki albo historii, a bez znanej wersji zapis jest odrzucony.
+ *
+ * Wymagania: US8.3, BR-9, BR-10
  */
 class EditBaseVersionTest {
     @TempDir
