@@ -8,7 +8,7 @@ package io.github.dostepnykampus.feature.capture
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-/** Zdjęcie z aparatu po przekodowaniu: wymiary do 2048 px i obrót według EXIF (US7.1, NFR-34). */
+/** Zdjęcie z aparatu po przekodowaniu: wymiary do 2048 px i obrót według EXIF. Wymagania: US7.1, NFR-34 */
 class PhotoFileTest {
     @Test
     fun `duże zdjęcie zmniejszone`() {

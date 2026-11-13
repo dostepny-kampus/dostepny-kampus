@@ -138,7 +138,7 @@ class MySubmissionsViewModelTest {
             assertEquals(reasons, list().items.map { it.refusal })
         }
 
-    /** „Czeka na wysłanie” nie liczy zgłoszeń, których serwer nie przyjął (US9.1, US9.5). */
+    /** „Czeka na wysłanie” nie liczy zgłoszeń, których serwer nie przyjął. Wymagania: US9.1, US9.5 */
     @Test
     fun `us9_5 odrzucone bez licznika`() =
         runTest(dispatcher) {
@@ -153,7 +153,7 @@ class MySubmissionsViewModelTest {
             assertEquals(1, list().waitingCount)
         }
 
-    /** Wiersz: C3 → „Sprawdzamy statusy…”, błąd z „Spróbuj ponownie”, potem statusy, US8.2, NFR-50, PW-10. */
+    /** Wiersz: C3 → „Sprawdzamy statusy…”, błąd z „Spróbuj ponownie”, potem statusy, PW-10. Wymagania: US8.2, NFR-50 */
     @Test
     fun `us8_2 sprawdzanie i ponowienie`() =
         runTest(dispatcher) {

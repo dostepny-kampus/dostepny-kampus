@@ -41,7 +41,11 @@ import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Ekran V4: krok 2 przekazuje grupę i piętro dalej, a potwierdzenie prowadzi do mapy (US4.1, US4.4, US4.5). */
+/**
+ * Ekran V4: krok 2 przekazuje grupę i piętro dalej, a potwierdzenie prowadzi do mapy.
+ *
+ * Wymagania: US4.1, US4.4, US4.5
+ */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class QuickReportScreenTest {
@@ -58,7 +62,7 @@ class QuickReportScreenTest {
         QuickReportActions(onNext = { next.add(it) }, onSent = {}, onBack = { backs++ }, onBackToMap = { toMap++ })
     private val atGroup = ReportRoute(step = ReportStep.GROUP, photoId = "zdjecie-1", photoPath = "/zdjecie-1.jpg")
 
-    /** Pozycja nieznana (odbiornik bez odczytu): pytanie o piętro jak w budynku podstawowym, BR-14. */
+    /** Pozycja nieznana (odbiornik bez odczytu): pytanie o piętro jak w budynku podstawowym. Wymagania: BR-14 */
     @Test
     fun `grupa z piętrem do kroku 3`() {
         show(atGroup)
@@ -70,10 +74,12 @@ class QuickReportScreenTest {
     }
 
     /**
-     * Wiersz: V4 krok 2, „Nie wiem” → krok 3 bez piętra, z odnotowanym pytaniem o piętro, US4.5. Budynek zgłoszenia
+     * Wiersz: V4 krok 2, „Nie wiem” → krok 3 bez piętra, z odnotowanym pytaniem o piętro. Budynek zgłoszenia
      * ustala serwer z konturu, więc ten krok sprawdzają testy serwera.
      * Scenariusz (częściowo): zgloszenie-szybkie.feature: Odpowiedź „Nie wiem” zostawia piętro puste i pozwala
      *   wysłać zgłoszenie
+     *
+     * Wymagania: US4.5
      */
     @Test
     fun us4_5_unknown_floor_to_step_3() {
@@ -83,7 +89,7 @@ class QuickReportScreenTest {
         assertEquals(listOf(atGroup.copy(group = BarrierGroup.VERTICAL_CIRCULATION, isFloorAsked = true)), next)
     }
 
-    /** Wiersz: V4 krok 2, pozycja poza konturem → bez pytania o piętro, zgłoszenie bez piętra, BR-14. */
+    /** Wiersz: V4 krok 2, pozycja poza konturem → bez pytania o piętro, zgłoszenie bez piętra. Wymagania: BR-14 */
     @Test
     fun us4_5_outside_no_floor() {
         show(atGroup, positions = PositionSource { flowOf(PositionFix(OUTSIDE, ACCURACY, 0L)) })
@@ -96,7 +102,7 @@ class QuickReportScreenTest {
         assertNull(report.content(position).floor)
     }
 
-    /** Wiersz: V4 krok 2, pozycja w konturze → pytanie o piętro, BR-14. */
+    /** Wiersz: V4 krok 2, pozycja w konturze → pytanie o piętro. Wymagania: BR-14 */
     @Test
     fun us4_5_inside_asks_floor() {
         show(atGroup, positions = PositionSource { flowOf(PositionFix(INSIDE, ACCURACY, 0L)) })
@@ -105,7 +111,7 @@ class QuickReportScreenTest {
         assertEquals(emptyList<ReportRoute>(), next)
     }
 
-    /** Wiersz: V4 krok 2 w budynku szczegółowym, piętro z danych PWr do kroku 3, US4.5. */
+    /** Wiersz: V4 krok 2 w budynku szczegółowym, piętro z danych PWr do kroku 3. Wymagania: US4.5 */
     @Test
     fun us4_5_detailed_to_step_3() {
         val plan = FloorList(source = "PWr", floors = listOf(Floor(id = "A-1/p-1", label = "Piwnica", order = -1)))
@@ -135,8 +141,10 @@ class QuickReportScreenTest {
     }
 
     /**
-     * Wiersz: V4 potwierdzenie z siecią → zgłoszenie trafi do weryfikacji, bez listy zgłoszeń i statusów, US4.4.
+     * Wiersz: V4 potwierdzenie z siecią → zgłoszenie trafi do weryfikacji, bez listy zgłoszeń i statusów.
      * Scenariusz: zgloszenie-szybkie.feature: Potwierdzenie po wysłaniu bez dalszego statusu
+     *
+     * Wymagania: US4.4
      */
     @Test
     fun us4_4_sent_no_status() {
@@ -146,7 +154,7 @@ class QuickReportScreenTest {
         statuses.forEach { compose.onNodeWithText(it).assertDoesNotExist() }
     }
 
-    /** Wiersz: V4 krok 1 ze zdjęciem, „Wstecz” → potwierdzenie rezygnacji, US4.8. */
+    /** Wiersz: V4 krok 1 ze zdjęciem, „Wstecz” → potwierdzenie rezygnacji. Wymagania: US4.8 */
     @Test
     fun us4_8_leave_after_confirm() {
         val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
@@ -162,7 +170,7 @@ class QuickReportScreenTest {
         assertFalse(photo.exists())
     }
 
-    /** Wiersz: V4 krok 1 po „Zgłoś barierę przy wejściu”, napis z wejściem, US4.6. */
+    /** Wiersz: V4 krok 1 po „Zgłoś barierę przy wejściu”, napis z wejściem. Wymagania: US4.6 */
     @Test
     fun us4_6_entrance_line() {
         show(ReportRoute(entranceId = "node/6"))
@@ -171,8 +179,10 @@ class QuickReportScreenTest {
     }
 
     /**
-     * Wiersz: V4 brak sieci → „Zapisaliśmy zdjęcie w telefonie…” i „Wróć do mapy”, US4.2. Napis nie mówi o weryfikacji.
+     * Wiersz: V4 brak sieci → „Zapisaliśmy zdjęcie w telefonie…” i „Wróć do mapy”. Napis nie mówi o weryfikacji.
      * Scenariusz (częściowo): zgloszenie-szybkie.feature: Potwierdzenie bez sieci mówi o późniejszej wysyłce
+     *
+     * Wymagania: US4.2
      */
     @Test
     fun us4_2_sent_offline() {
@@ -184,7 +194,11 @@ class QuickReportScreenTest {
         assertEquals(1, toMap)
     }
 
-    /** Wiersz: V4 brak pozycji → „Zrezygnuj” pyta o rezygnację, zdjęcie zostaje do decyzji, potem mapa, UC7 4c. */
+    /**
+     * Wiersz: V4 brak pozycji → „Zrezygnuj” pyta o rezygnację, zdjęcie zostaje do decyzji, potem mapa.
+     *
+     * Wymagania: UC7
+     */
     @Test
     fun uc7_4c_give_up_no_position() {
         val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }

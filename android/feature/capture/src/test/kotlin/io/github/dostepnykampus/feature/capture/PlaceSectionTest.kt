@@ -29,7 +29,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Podpowiedź budynku po pomiarze na C1 (US6.2, BR-G2, BR-G4). */
+/** Podpowiedź budynku po pomiarze na C1. Wymagania: US6.2, BR-G2, BR-G4 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class PlaceSectionTest {
@@ -91,7 +91,7 @@ class PlaceSectionTest {
         assertEquals(listOf("outside"), actions)
     }
 
-    /** Wiersz: C1 „Wybór innego budynku” → „Poza budynkiem” na końcu listy zamyka wybór, US6.2. */
+    /** Wiersz: C1 „Wybór innego budynku” → „Poza budynkiem” na końcu listy zamyka wybór. Wymagania: US6.2 */
     @Test
     fun us6_2_outside_from_list() {
         show(PlaceChoice.Outside)
@@ -120,7 +120,7 @@ class PlaceSectionTest {
         compose.onNodeWithText("Budynek: B-1 Budynek B-1").assertIsDisplayed()
     }
 
-    /** Daleko od budynków: „poza budynkiem” bez komunikatu o błędzie, a budynek można wybrać (BR-G4). */
+    /** Daleko od budynków: „poza budynkiem” bez komunikatu o błędzie, a budynek można wybrać. Wymagania: BR-G4 */
     @Test
     fun br_g4_outside_without_error() {
         show(PlaceChoice.Outside)

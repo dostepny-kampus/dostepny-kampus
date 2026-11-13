@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-/** „Dalej” z C1 do C2: miejsce z pomiaru i budynek po decyzji Zbierającego (US6, US6.2, BR-G4). */
+/** „Dalej” z C1 do C2: miejsce z pomiaru i budynek po decyzji Zbierającego. Wymagania: US6, US6.2, BR-G4 */
 class MeasuredPlaceTest {
     private val point = GeoPoint(longitude = 17.06209, latitude = 51.10785)
     private val average = PositionAverage(point, accuracyMeters = 0.8, fixCount = 30)
@@ -32,21 +32,21 @@ class MeasuredPlaceTest {
 
     private fun finished(place: PlaceChoice) = MeasureUiState.Finished(average, emptyMap(), place = place)
 
-    /** Wiersz: C1, „Dalej” → C2, US6: budynek potwierdzony z nazwą idzie do formularza. */
+    /** Wiersz: C1, „Dalej” → C2: budynek potwierdzony z nazwą idzie do formularza. Wymagania: US6 */
     @Test
     fun us6_chosen_building_to_c2() {
         val route = finished(PlaceChoice.Chosen(a1)).reportFormRoute()
         assertEquals(route(symbol = "A-1", name = "Gmach Główny"), route)
     }
 
-    /** Wiersz: C1, „Poza budynkiem” → C2 bez budynku i piętra, BR-G4. */
+    /** Wiersz: C1, „Poza budynkiem” → C2 bez budynku i piętra. Wymagania: BR-G4 */
     @Test
     fun brg4_outside_to_c2() {
         val route = finished(PlaceChoice.Outside).reportFormRoute()
         assertEquals(route(symbol = null, name = null), route)
     }
 
-    /** Wiersz: C1, „Czy to budynek A-1?” → „Dalej” czeka na decyzję, US6.2. */
+    /** Wiersz: C1, „Czy to budynek A-1?” → „Dalej” czeka na decyzję. Wymagania: US6.2 */
     @Test
     fun us6_2_no_next_before_decision() {
         assertNull(finished(PlaceChoice.Locating).reportFormRoute())
