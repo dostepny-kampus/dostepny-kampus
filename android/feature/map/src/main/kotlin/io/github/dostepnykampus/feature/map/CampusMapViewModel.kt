@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
+import java.time.Instant
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -56,6 +57,8 @@ private const val STOP_TIMEOUT_MS = 5_000L
  *   geometria nie jest gotowa, a po zmianie katalogu poprzednie dane, aż policzy się nowa (NFR-11). Dane mają
  *   bariery ze zgłoszeń przyjętych, gdy serwer je podał (US1.3)
  * @property barriers bariery pokazane na mapie, do nazw znaków dla TalkBack (NFR-18)
+ * @property syncedAt chwila pobrania najstarszych danych z serwera pokazanych na mapie: listy budynków albo barier,
+ *   do daty w linii „Bez internetu” (NFR-10, #1127); `null`, gdy na mapie są tylko dane z pakietu aplikacji
  * @property search wyniki wyszukiwania budynku dla ostatniego zapytania z [CampusMapViewModel.search], policzone
  *   poza wątkiem interfejsu (NFR-11, #1053)
  */
@@ -65,6 +68,7 @@ data class CampusMapUiState(
     val isListSaved: Boolean? = null,
     val mapData: CampusMapData? = null,
     val barriers: List<AcceptedBarrier> = emptyList(),
+    val syncedAt: Instant? = null,
     val search: BuildingSearch = BuildingSearch(),
 )
 
@@ -121,18 +125,19 @@ class CampusMapViewModel(
                     .map<BuildingCatalog, BuildingCatalog?> { it }
                     .onStart { emit(null) }
                     .withGeometry()
-                    .combine(networkStatus.isOnline().onNetworkChange(barriers)) { (catalog, data), shown ->
-                        Triple(catalog, data?.withBarriers(shown), shown)
+                    .combine(networkStatus.isOnline().onNetworkChange(barriers)) { (catalog, data), fetched ->
+                        Triple(catalog, data?.withBarriers(fetched.barriers), fetched)
                     },
             flow2 = networkStatus.isOnline(),
             flow3 = mapListChoice.savedChoice,
-        ) { (catalog, data, shown), isOnline, isListSaved ->
+        ) { (catalog, data, fetched), isOnline, isListSaved ->
             CampusMapUiState(
                 catalog = catalog,
                 isOnline = isOnline,
                 isListSaved = isListSaved,
                 mapData = data,
-                barriers = shown,
+                barriers = fetched.barriers,
+                syncedAt = listOfNotNull(repository.syncedAt(), fetched.syncedAt).minOrNull(),
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), CampusMapUiState())
 
@@ -154,10 +159,10 @@ class CampusMapViewModel(
     ) : this(repository, networkStatus, mapListChoice, computeContext, ::campusMapData, barriers)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun Flow<Boolean>.onNetworkChange(barriers: AcceptedBarriers): Flow<List<AcceptedBarrier>> =
+    private fun Flow<Boolean>.onNetworkChange(barriers: AcceptedBarriers): Flow<FetchedBarriers> =
         distinctUntilChanged()
-            .mapLatest { barriers.barriers() }
-            .onStart { emit(emptyList()) }
+            .mapLatest { FetchedBarriers(barriers.barriers(), barriers.syncedAt()) }
+            .onStart { emit(FetchedBarriers(emptyList(), null)) }
             .distinctUntilChanged()
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -191,6 +196,9 @@ class CampusMapViewModel(
             }
         return results.onStart { emit(BuildingSearch()) }
     }
+
+    /** Bariery z jednego pytania źródła razem z chwilą ich pobrania z serwera (#1127). */
+    private data class FetchedBarriers(val barriers: List<AcceptedBarrier>, val syncedAt: Instant?)
 
     /** Zapamiętuje wybór w przełączniku: „Lista budynków” przy [isList], inaczej „Mapa” (NFR-19). */
     fun chooseList(isList: Boolean) {
