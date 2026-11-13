@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-/** Zmiany pól C2: zdjęcia w kolejności, piętro przy zmianie miejsca, braki na bieżąco (US7.1, US7.4). */
+/** Zmiany pól C2: zdjęcia w kolejności, piętro przy zmianie miejsca, braki na bieżąco. Wymagania: US7.1, US7.4 */
 class ReportEditTest {
     private val start = ReportUiState(form = ReportForm(place = A1))
 
@@ -59,9 +59,11 @@ class ReportEditTest {
     }
 
     /**
-     * Zmiana miejsca do innego budynku albo na ulicę kasuje piętro, a wybrany typ zostaje (US7.4). Brak pola piętra na
+     * Zmiana miejsca do innego budynku albo na ulicę kasuje piętro, a wybrany typ zostaje. Brak pola piętra na
      * ulicy sprawdza `ReportScreenTest`.
      * Scenariusz (częściowo): pomiar-precyzyjny.feature: Piętro zostaje po zmianie miejsca tylko w tym samym budynku
+     *
+     * Wymagania: US7.4
      */
     @Test
     fun `inny budynek kasuje piętro`() {

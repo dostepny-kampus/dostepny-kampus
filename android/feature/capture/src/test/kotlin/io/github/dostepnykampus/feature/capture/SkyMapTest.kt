@@ -20,7 +20,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Mapa nieba C1: położenie satelitów i systemy rozróżnione kształtem i podpisem (US6.5, NFR-21). */
+/** Mapa nieba C1: położenie satelitów i systemy rozróżnione kształtem i podpisem. Wymagania: US6.5, NFR-21 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class SkyMapTest {
@@ -47,7 +47,7 @@ class SkyMapTest {
         compose.onNodeWithText("QZSS").assertIsDisplayed()
     }
 
-    /** Wszystkie widoczne satelity, także nieużyte do pozycji, tekstem dla czytnika ekranu (NFR-18). */
+    /** Wszystkie widoczne satelity, także nieużyte do pozycji, tekstem dla czytnika ekranu. Wymagania: NFR-18 */
     @Test
     fun us6_5_screen_reader_text() {
         show(satellite(GnssSystem.GPS), satellite(GnssSystem.GPS, isUsed = false), satellite(GnssSystem.GLONASS))

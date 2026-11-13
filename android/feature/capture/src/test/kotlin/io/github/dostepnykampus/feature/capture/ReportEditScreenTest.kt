@@ -27,7 +27,11 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** C2 w trybie poprawki z C3: pola z kolejki, zapis tego samego zgłoszenia i „Zmień miejsce” przez C1 (US8.3). */
+/**
+ * C2 w trybie poprawki z C3: pola z kolejki, zapis tego samego zgłoszenia i „Zmień miejsce” przez C1.
+ *
+ * Wymagania: US8.3
+ */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class ReportEditScreenTest {
@@ -67,7 +71,7 @@ class ReportEditScreenTest {
         compose.waitForIdle()
     }
 
-    /** Wiersz: C3 „Otwórz” → C2 z opisem zapisanego zgłoszenia, US8.3. */
+    /** Wiersz: C3 „Otwórz” → C2 z opisem zapisanego zgłoszenia. Wymagania: US8.3 */
     @Test
     fun us8_3_form_with_saved_fields() {
         show(edit())
@@ -76,7 +80,7 @@ class ReportEditScreenTest {
         assertEquals(1, loads)
     }
 
-    /** Wiersz: poprawka C2 „Zapisz” → to samo zgłoszenie w kolejce, powrót do C3, US8.3, BR-9. */
+    /** Wiersz: poprawka C2 „Zapisz” → to samo zgłoszenie w kolejce, powrót do C3. Wymagania: US8.3, BR-9 */
     @Test
     fun us8_3_save_replaces_same() {
         show(edit())
@@ -86,7 +90,7 @@ class ReportEditScreenTest {
         assertEquals(1, saved)
     }
 
-    /** Wiersz: poprawka C2 „Zmień miejsce” → C1 z polami w szkicu, US7.4, US8.3. */
+    /** Wiersz: poprawka C2 „Zmień miejsce” → C1 z polami w szkicu. Wymagania: US7.4, US8.3 */
     @Test
     fun us7_4_edit_change_place() {
         show(edit())
@@ -96,7 +100,7 @@ class ReportEditScreenTest {
         assertEquals(0, left)
     }
 
-    /** Wiersz: zgłoszenia nie ma już w telefonie → powrót do C3 bez formularza, US8.3. */
+    /** Wiersz: zgłoszenia nie ma już w telefonie → powrót do C3 bez formularza. Wymagania: US8.3 */
     @Test
     fun us8_3_missing_goes_back() {
         show(null)
