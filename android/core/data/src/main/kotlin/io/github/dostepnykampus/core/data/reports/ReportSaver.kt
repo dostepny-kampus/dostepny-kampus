@@ -26,9 +26,5 @@ fun interface ReportSaver {
      * @param photos zdjęcia zgłoszenia
      * @param edited poprawiane zgłoszenie z C3 albo `null` dla nowego
      */
-    suspend fun save(
-        content: SubmissionContent,
-        photos: List<PendingPhotoDraft>,
-        edited: EditedSubmission?,
-    )
+    suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>, edited: EditedSubmission?)
 }
