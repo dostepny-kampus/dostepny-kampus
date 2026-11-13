@@ -111,6 +111,9 @@ dependencies {
     debugImplementation(libs.okhttp)
     testDebugImplementation(libs.okhttp.mockwebserver)
     constraints {
+        implementation(libs.androidx.core.ktx) {
+            because("Core zawiera rozszerzenia Kotlin; starszy Core KTX dubluje klasy.")
+        }
         implementation(libs.androidx.lifecycle.runtime)
     }
 }
