@@ -47,20 +47,12 @@ private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
 
 /**
- * Ekran V1 „Mapa kampusu”: nagłówek z polem symbolu budynku i przełącznikiem „Mapa” i „Lista
- * budynków”, bez sieci linia „Bez internetu”. Pod nimi lista budynków albo mapa: kontury z pliku
- * w aplikacji, przyciski powiększania i przesuwania i podpis OSM. Przyciski i podpis są
- * w `WindowInsets.safeDrawing`. Budynek z listy otwiera V2 jako arkusz na mapie.
- * Widok kamery jest stanem zapisywanym, więc wraca po „Wstecz” z V2.
- * Kamera to widok zapisany albo startowy; pod arkuszem V2 budynek z [focus] stoi w części nad arkuszem, w punkcie
- * podpisu, który zawsze leży wewnątrz konturu. Jeden trafiony budynek otwiera V2 od razu, a kilka czeka na wybór
- * w arkuszu „Który budynek?”. Przyciski mapy są, gdy nie ma arkusza V2 ani klawiatury; stoją
- * w nim strzałki przesuwania w krzyżu, a pod nimi „Powiększ” i „Pomniejsz” (PW-8).
- * Każdy przycisk ma pole 48 dp ze znakiem, a TalkBack czyta tylko jego nazwę, np. „Przesuń mapę w górę”.
- * Podpis „© OpenStreetMap contributors” jest podkreślonym odnośnikiem na niskiej plakietce, jak w hi-fi V1; od
- * skali czcionki 1,5 skraca się do „© OpenStreetMap”. Pole dotyku ma 48 dp i wystaje poza plakietkę.
- * Gdy tło jest ciemne (jasność poniżej progu), element pływający dostaje obwódkę zamiast samego
- * cienia, bo cień słabo widać.
+ * Ekran V1 „Mapa kampusu”: nagłówek z polem symbolu i przełącznikiem „Mapa” i „Lista budynków”, bez sieci linia „Bez
+ * internetu”, a pod nimi lista albo mapa z konturami z pliku, przyciskami mapy i podpisem OSM. Widok kamery jest stanem
+ * zapisywanym; pod arkuszem V2 budynek z [focus] stoi nad arkuszem w punkcie podpisu. Jeden trafiony budynek otwiera
+ * V2, kilka czeka na wybór w arkuszu „Który budynek?”. Przyciski mapy są bez arkusza V2 i klawiatury, każdy z polem 48
+ * dp i nazwą dla TalkBack. Podpis „© OpenStreetMap contributors” jest odnośnikiem, od skali 1,5 krótszym; na ciemnym
+ * tle elementy pływające mają obwódkę.
  *
  * Wymagania: US1, US1.1, NFR-19, US9.1, NFR-53, NFR-37, NFR-17, NFR-18, US2, US2.9, US3.3, US2.8
  *

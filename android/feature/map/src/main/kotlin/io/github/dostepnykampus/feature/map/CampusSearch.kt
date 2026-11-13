@@ -66,22 +66,11 @@ private val ClearIcon =
     pathIcon("M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z")
 
 /**
- * Góra V1: nagłówek „Mapa kampusu”, pole symbolu budynku, przełącznik „Mapa” i „Lista budynków” i wynik
- * pod nimi. Pole przyjmuje zapis „c13” i szuka bez sieci w katalogu z aplikacji. Wynik to ten sam przycisk
- * co w arkuszu „Który budynek?”: symbol, nazwa z danych i „Budynek C-13”. Tekst, który nie jest symbolem budynku,
- * np. „A-1 329”, daje stan „brak wyniku” z przyciskiem „Lista budynków”. Komunikat stoi pod
- * polem, więc osoba widzi go tam, gdzie pisała (WCAG 3.3.1), a TalkBack czyta go sam. Przy liście pole zawęża listę
- * zamiast pokazywać wynik.
- * Przy liście wynik to sama lista, więc pod polem zostaje tylko karta „brak wyniku”.
- *
- * Nagłówek, pole i przełącznik stoją na tle powierzchni ekranu. Przełącznik „Mapa” i „Lista budynków” pokazuje
- * wybraną pozycję tłem i ptaszkiem, nie tylko kolorem; przy dużej czcionce widać „Lista”, a
- * TalkBack dalej czyta „Lista budynków”. Pole ma kształt kapsuły z lupą, a „×” z nazwą „Wyczyść pole”
- * pojawia się po wpisaniu tekstu. Wynik albo karta „brak wyniku” stoi pod przełącznikiem i linią
- * „Bez internetu”; karta mówi „Nie znaleźliśmy budynku »X«.”, daje radę i przycisk „Lista budynków” w białym
- * kontenerze pod polem (PW-9), a przy liście przycisku nie ma, bo lista już jest. Lista ma budynki
- * w kolejności katalogu, jak wynik pola, a wpisany symbol zawęża ją. Lupa i „×” to ikony
- * Material Icons na siatce 24 × 24, jak ikony paska dolnego.
+ * Góra V1: nagłówek „Mapa kampusu”, pole symbolu budynku, przełącznik „Mapa” i „Lista budynków” i wynik pod nimi. Pole
+ * przyjmuje zapis „c13” i szuka bez sieci; wynik to przycisk jak w arkuszu „Który budynek?”, a tekst, który nie jest
+ * symbolem, daje pod polem kartę „brak wyniku” z radą i przyciskiem „Lista budynków”, którą TalkBack czyta sam. Przy
+ * liście pole zawęża listę, a karta „brak wyniku” nie ma przycisku. Przełącznik pokazuje wybór tłem i ptaszkiem, przy
+ * dużej czcionce jako „Lista”. Pole ma kształt kapsuły z lupą, a po wpisaniu „×” z nazwą „Wyczyść pole”.
  *
  * Wymagania: NFR-19, US1.1, UC1, NFR-21, NFR-20, NFR-53, NFR-18, US2.5, NFR-11, US1.8, NFR-15
  *
