@@ -24,6 +24,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.first
@@ -33,6 +34,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -250,7 +252,7 @@ class MapGeometryFlowTest {
                 try {
                     block(compute)
                 } finally {
-                    viewModels.cancelAndJoin()
+                    withContext(NonCancellable) { viewModels.cancelAndJoin() }
                 }
             }
         } finally {
@@ -268,16 +270,15 @@ class MapGeometryFlowTest {
             calls.incrementAndGet()
             campusMapData(catalog)
         },
-    ) =
-        viewModels.keep(
-            CampusMapViewModel(
-                repository = repository,
-                networkStatus = { flowOf(true) },
-                mapListChoice = TestMapListChoice(),
-                computeContext = compute,
-                geometry = geometry,
-            ),
-        )
+    ) = viewModels.keep(
+        CampusMapViewModel(
+            repository = repository,
+            networkStatus = { flowOf(true) },
+            mapListChoice = TestMapListChoice(),
+            computeContext = compute,
+            geometry = geometry,
+        ),
+    )
 
     private fun factoryOf(repository: BuildingCatalogRepository, compute: CoroutineContext) =
         viewModelFactory { initializer { viewModelOf(repository, compute) } }
