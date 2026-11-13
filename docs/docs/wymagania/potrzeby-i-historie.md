@@ -182,7 +182,7 @@ Uprawnienia każdej roli podaje macierz na stronie [Role i uprawnienia](../bizne
 
 Kolumny idą w kolejności korzystania z aplikacji, od Gościa niezalogowanego do Koordynatora. Kroki TO-BE każdej aktywności podaje drugi wiersz. Wiersze nad linią MVP muszą działać na pokazie. Pozycje „Może być” bez numeru nie mają jeszcze historyjek; dostaną je, gdy wejdą do planu sprintu.
 
-**Nie tym razem:** nawigacja po trasie (także w budynkach), iOS, Google Play, sztuczna inteligencja, czat, powiadomienia push, szerokość korytarzy i wymiary wind, awarie bez sprawdzenia przez Weryfikatora, osobny proces usuwania bariery, lista własnych zgłoszeń Odwiedzającego.
+**Nie tym razem:** nawigacja po trasie (także w budynkach), iOS, Google Play, sztuczna inteligencja, czat, powiadomienia push. Poza zakresem są też szerokość korytarzy i wymiary wind, awarie bez sprawdzenia przez Weryfikatora, osobny proces usuwania bariery, lista własnych zgłoszeń Odwiedzającego.
 
 ## Źródła
 
