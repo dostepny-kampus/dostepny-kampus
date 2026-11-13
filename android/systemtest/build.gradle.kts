@@ -14,6 +14,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:model"))
     implementation(project(":core:network"))
     implementation(libs.androidx.test.ext.junit)
     implementation(libs.androidx.test.runner)
