@@ -19,6 +19,10 @@ android {
     }
 }
 
+kotlin {
+    explicitApi()
+}
+
 room {
     /* Katalog `generated` jest wyłączony z kontroli CI, bo migawka schematu powstaje w budowie. */
     schemaDirectory("$projectDir/generated/schemas")

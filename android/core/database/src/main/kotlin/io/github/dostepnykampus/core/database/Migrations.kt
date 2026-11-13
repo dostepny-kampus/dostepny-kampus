@@ -12,7 +12,7 @@ private const val LIST_COPY_COLUMNS =
     "(`id` INTEGER NOT NULL, `list_json` TEXT NOT NULL, `synced_at` INTEGER NOT NULL, PRIMARY KEY(`id`))"
 
 /** Migracja 1→2: tabela kopii listy budynków z serwera. Wymagania: NFR-10 */
-val MIGRATION_1_2: Migration =
+internal val MIGRATION_1_2: Migration =
     object : Migration(1, 2) {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL("CREATE TABLE IF NOT EXISTS `building_cache` $LIST_COPY_COLUMNS")
@@ -20,7 +20,7 @@ val MIGRATION_1_2: Migration =
     }
 
 /** Migracja 2→3: historia własnych zgłoszeń dla listy C3. Wymagania: US8, NFR-5 */
-val MIGRATION_2_3: Migration =
+internal val MIGRATION_2_3: Migration =
     object : Migration(2, 3) {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL(
@@ -34,7 +34,7 @@ val MIGRATION_2_3: Migration =
     }
 
 /** Migracja 3→4: znacznik odrzuconego zgłoszenia w kolejce, które nie wraca do wysyłki samo. Wymagania: BR-26 */
-val MIGRATION_3_4: Migration =
+internal val MIGRATION_3_4: Migration =
     object : Migration(3, 4) {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL("ALTER TABLE `pending_submissions` ADD COLUMN `refused` INTEGER NOT NULL DEFAULT 0")
@@ -42,7 +42,7 @@ val MIGRATION_3_4: Migration =
     }
 
 /** Migracja 4→5: status z serwera i powód odrzucenia w historii własnych zgłoszeń. Wymagania: US8.2, BR-16 */
-val MIGRATION_4_5: Migration =
+internal val MIGRATION_4_5: Migration =
     object : Migration(4, 5) {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL("ALTER TABLE `own_submissions` ADD COLUMN `server_status` TEXT")
@@ -51,7 +51,7 @@ val MIGRATION_4_5: Migration =
     }
 
 /** Migracja 5→6: tabela kopii barier ze zgłoszeń przyjętych. Wymagania: NFR-10 */
-val MIGRATION_5_6: Migration =
+internal val MIGRATION_5_6: Migration =
     object : Migration(5, 6) {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL("CREATE TABLE IF NOT EXISTS `barrier_cache` $LIST_COPY_COLUMNS")

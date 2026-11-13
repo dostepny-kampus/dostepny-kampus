@@ -11,7 +11,7 @@ import androidx.room.Transaction
 
 /** Odczyt jednego zgłoszenia z kolejki do poprawki w C2; zapis zostaje w [PendingSubmissionDao]. Wymagania: US8.3 */
 @Dao
-interface PendingEditDao {
+public interface PendingEditDao {
     /**
      * Zgłoszenie z kolejki razem ze zdjęciami, także odrzucone.
      *
@@ -22,5 +22,5 @@ interface PendingEditDao {
      */
     @Transaction
     @Query("SELECT * FROM pending_submissions WHERE id = :id")
-    suspend fun find(id: String): PendingSubmissionWithPhotos?
+    public suspend fun find(id: String): PendingSubmissionWithPhotos?
 }

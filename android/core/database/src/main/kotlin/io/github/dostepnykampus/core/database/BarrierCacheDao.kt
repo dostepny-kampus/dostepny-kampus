@@ -12,12 +12,12 @@ import androidx.room.Query
 
 /** Odczyt i zapis kopii barier ze zgłoszeń przyjętych. Wymagania: NFR-10 */
 @Dao
-interface BarrierCacheDao {
+public interface BarrierCacheDao {
     /** Kopia barier albo `null`, gdy serwer dotąd ich nie podał. */
     @Query("SELECT * FROM barrier_cache WHERE id = $BARRIER_CACHE_SINGLE_ROW")
-    suspend fun get(): BarrierCacheEntity?
+    public suspend fun get(): BarrierCacheEntity?
 
     /** Zapisuje kopię; nowy zapis zastępuje poprzedni, bo wiersz ma stały identyfikator. */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun save(entity: BarrierCacheEntity)
+    public suspend fun save(entity: BarrierCacheEntity)
 }

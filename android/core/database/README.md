@@ -6,7 +6,7 @@ Lokalna baza Room: kopie budynków i barier, zgłoszenia własne i oczekujące n
 
 ## API
 
-`DkDatabase`, DAO i encje oraz wiązania Hilt (`DatabaseModule`). Moduły funkcji nie używają bazy bezpośrednio, tylko przez `:core:data`.
+DAO i encje. `DkDatabase`, migracje i wiązania Hilt (`DatabaseModule`) są `internal`. Moduły funkcji nie używają bazy bezpośrednio, tylko przez `:core:data`.
 
 ## Zależności
 
