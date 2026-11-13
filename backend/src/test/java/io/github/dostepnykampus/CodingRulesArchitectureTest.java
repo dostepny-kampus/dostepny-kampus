@@ -132,7 +132,7 @@ final class CodingRulesArchitectureTest {
                 "com.networknt.schema..", "tools.jackson.dataformat.yaml..",
                 "com.fasterxml.jackson.dataformat.yaml..", "org.yaml.snakeyaml.."
             )
-            .because("testy pytają o kontrakt przez OpenApiContract (#895)");
+            .because("testy pytają o kontrakt przez OpenApiContract");
     }
 
     private static String source(final Path file) {

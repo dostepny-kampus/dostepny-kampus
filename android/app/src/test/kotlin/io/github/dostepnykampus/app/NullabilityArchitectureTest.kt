@@ -156,7 +156,7 @@ class NullabilityArchitectureTest {
         const val ABSENT_FLAG = "brak pola w odpowiedzi zachowany przy odesłaniu (decyzja K4 naprawy klienta)"
         const val BY_STATUS = "zależne od statusu"
 
-        /** Zamknięta lista nullable w modelu: para „klasa.właściwość” → powód (decyzje 122, 124, 127). */
+        /** Zamknięta lista nullable w modelu: para „klasa.właściwość” → powód. */
         val NULLABLE_IN_MODEL =
             mapOf(
                 "Building.name" to "budynek bez nazwy w danych, decyzja 124",
