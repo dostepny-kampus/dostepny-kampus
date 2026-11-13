@@ -8,6 +8,10 @@ plugins {
     id("dostepnykampus.jvm.library")
 }
 
+kotlin {
+    explicitApi()
+}
+
 dependencies {
     api(project(":core:model"))
     api(libs.kotlinx.serialization.core)

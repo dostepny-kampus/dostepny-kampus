@@ -18,7 +18,7 @@ import org.maplibre.spatialk.units.International
  * @property entrance wejście z danych
  * @property meters odległość w metrach na ziemi od punktu do wejścia
  */
-data class EntranceDistance(val entrance: Entrance, val meters: Double)
+public data class EntranceDistance(val entrance: Entrance, val meters: Double)
 
 /**
  * Najbliższe wejście do [point]; obliczenia wykonuje Turf.
@@ -27,7 +27,7 @@ data class EntranceDistance(val entrance: Entrance, val meters: Double)
  * @param entrances wejścia, spośród których szukamy, np. wejścia potwierdzonego budynku
  * @return najbliższe wejście albo `null`, gdy [entrances] jest puste
  */
-fun nearestEntrance(point: GeoPoint, entrances: List<Entrance>): EntranceDistance? =
+public fun nearestEntrance(point: GeoPoint, entrances: List<Entrance>): EntranceDistance? =
     entrances
         .map { entrance -> EntranceDistance(entrance, meters = point.metersTo(entrance.location)) }
         .minByOrNull { it.meters }

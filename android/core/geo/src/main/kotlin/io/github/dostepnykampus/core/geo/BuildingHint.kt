@@ -13,7 +13,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
  *
  * Wymagania: BR-G4
  */
-const val NEAR_METERS = 50.0
+internal const val NEAR_METERS = 50.0
 
 /**
  * Podpowiedź budynku po pomiarze na C1: „Czy to budynek C-13?” z nazwą i odległością.
@@ -26,7 +26,7 @@ const val NEAR_METERS = 50.0
  * @property isInside czy punkt leży ściśle w konturze budynku (wynik [locateBuilding]); punkt na krawędzi
  *   konturu jest poza budynkiem, mimo odległości 0
  */
-data class BuildingHint(val building: Building, val distanceMeters: Double, val isInside: Boolean)
+public data class BuildingHint(val building: Building, val distanceMeters: Double, val isInside: Boolean)
 
 /**
  * Wynik dopasowania budynków do punktu pomiaru.
@@ -34,10 +34,10 @@ data class BuildingHint(val building: Building, val distanceMeters: Double, val 
  * @property nearby budynki do wyboru w kolejności od najbliższego, także poza zasięgiem podpowiedzi
  * @property suggested budynek proponowany do potwierdzenia lub `null`, gdy żaden nie jest dostatecznie blisko
  */
-data class BuildingHints(val nearby: List<BuildingHint>, val suggested: BuildingHint?)
+public data class BuildingHints(val nearby: List<BuildingHint>, val suggested: BuildingHint?)
 
 /** Ile budynków pokazuje sekcja „Wybierz budynek” na C1; makieta ma trzy najbliższe. */
-const val NEAREST_COUNT = 3
+internal const val NEAREST_COUNT = 3
 
 /**
  * Oblicza odległość od konturu raz na budynek. Budynek zawierający punkt ma 0 m i stoi przed
@@ -50,7 +50,7 @@ const val NEAREST_COUNT = 3
  * @param limit najwięcej budynków na liście
  * @return lista od najbliższego, najwyżej [limit], i niezależna od limitu podpowiedź
  */
-fun buildingHints(point: GeoPoint, buildings: List<Building>, limit: Int = NEAREST_COUNT): BuildingHints {
+public fun buildingHints(point: GeoPoint, buildings: List<Building>, limit: Int = NEAREST_COUNT): BuildingHints {
     val ranked = buildings.map { building -> building.hintFor(point) }.sortedWith(nearestFirst)
     return BuildingHints(ranked.take(limit), ranked.firstOrNull()?.takeIf { it.distanceMeters <= NEAR_METERS })
 }
