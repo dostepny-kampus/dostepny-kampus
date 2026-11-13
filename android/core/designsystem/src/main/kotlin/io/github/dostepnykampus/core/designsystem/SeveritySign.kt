@@ -99,7 +99,7 @@ internal fun DrawScope.drawSeverity(paths: SeverityPaths, shapeColor: Color, mar
  *
  * Wymagania: US1.3, NFR-21
  */
-fun severityImage(severity: Severity, sizePx: Int, shapeColor: Color, markColor: Color): Bitmap {
+public fun severityImage(severity: Severity, sizePx: Int, shapeColor: Color, markColor: Color): Bitmap {
     val paths = SeverityPaths(severity.look())
     return signBitmap(sizePx) {
         drawSeverity(paths = paths, shapeColor = shapeColor, markColor = markColor, hasHalo = true)
@@ -119,7 +119,7 @@ fun severityImage(severity: Severity, sizePx: Int, shapeColor: Color, markColor:
  * @param modifier modyfikator zewnętrzny
  */
 @Composable
-fun SeverityIcon(severity: Severity, modifier: Modifier = Modifier) {
+public fun SeverityIcon(severity: Severity, modifier: Modifier = Modifier) {
     val paths = remember(severity) { SeverityPaths(severity.look()) }
     val shapeColor = MaterialTheme.colorScheme.onSurface
     val markColor = MaterialTheme.colorScheme.surface

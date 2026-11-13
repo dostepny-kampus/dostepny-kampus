@@ -19,7 +19,7 @@ private const val ICON_GRID = 24f
  * (strzałki kierunkowe). Jedyne miejsce w aplikacji, które buduje `ImageVector` ze ścieżki: ekrany i moduły
  * funkcji wołają tę funkcję i nie budują wektorów same.
  */
-fun pathIcon(path: String, name: String = "", autoMirror: Boolean = false): ImageVector {
+public fun pathIcon(path: String, name: String = "", autoMirror: Boolean = false): ImageVector {
     val builder =
         ImageVector.Builder(
             name = name,
