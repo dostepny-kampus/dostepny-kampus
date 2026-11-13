@@ -161,7 +161,7 @@ class OwnHistoryTest {
      */
     @ParameterizedTest
     @CsvSource("400, false", "404, true", "413, true")
-    fun `odmowa nie wraca do wysyłki`(code: Int, isPhoto: Boolean) =
+    fun `odmowa nie wraca do wysyłki`(code: Int, isPhoto: Boolean): Unit =
         runBlocking {
             val target = queue()
             val photos = photo()
