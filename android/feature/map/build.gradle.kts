@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     implementation(libs.androidx.core)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.hilt.core)
     api(libs.kotlinx.serialization.json)
     implementation(libs.maplibre.android)
