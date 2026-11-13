@@ -487,3 +487,42 @@ class NewScenarioTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def code_findings(source: str, name: str = "A.kt") -> list[str]:
+    """Zwraca komunikaty kontroli linii `Wymagania:` dla jednego pliku kodu przy zdefiniowanych US1.1 i NFR-19."""
+    corpus = check_ids.Corpus()
+    for ident in ("US1.1", "NFR-19"):
+        corpus.definitions[ident].append(check_ids.Location("docs/wymagania.md", 1))
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / name
+        path.write_text(source, encoding="utf-8")
+        check_ids.scan_code_requirements(path, corpus)
+    return [f"{f.location.rsplit(':', 1)[1]} {f.message}" for f in check_ids.code_requirement_findings(corpus)]
+
+
+class CodeRequirementsTest(unittest.TestCase):
+    def test_defined_ids_pass(self) -> None:
+        source = "/**\n * Opis.\n *\n * Wymagania: US1.1, NFR-19\n */\nfun a() = 1\n"
+        self.assertEqual([], code_findings(source))
+
+    def test_undefined_id_is_error(self) -> None:
+        source = "/**\n * Opis.\n *\n * Wymagania: US1.1, US9.9\n */\nfun a() = 1\n"
+        self.assertEqual(["4 linia Wymagania wskazuje niezdefiniowane ID: US9.9"], code_findings(source))
+
+    def test_single_line_kdoc_is_read(self) -> None:
+        self.assertEqual(
+            ["1 linia Wymagania wskazuje niezdefiniowane ID: NFR-99"],
+            code_findings("/** Opis. Wymagania: NFR-19, NFR-99 */\nfun a() = 1\n"),
+        )
+
+    def test_javadoc_paragraph_is_read(self) -> None:
+        source = "/**\n * Opis.\n *\n * <p>Wymagania: BR-77</p>\n */\nclass A {}\n"
+        self.assertEqual(["4 linia Wymagania wskazuje niezdefiniowane ID: BR-77"], code_findings(source, "A.java"))
+
+    def test_non_id_item_is_error(self) -> None:
+        source = "/**\n * Opis.\n *\n * Wymagania: US1.1, wymagania wspólne\n */\nfun a() = 1\n"
+        self.assertEqual(["4 „wymagania wspólne” w linii Wymagania nie jest identyfikatorem"], code_findings(source))
+
+    def test_prose_with_word_is_not_a_line(self) -> None:
+        self.assertEqual([], code_findings("/**\n * Wymagania wspólne mówią o tym.\n */\nfun a() = 1\n"))

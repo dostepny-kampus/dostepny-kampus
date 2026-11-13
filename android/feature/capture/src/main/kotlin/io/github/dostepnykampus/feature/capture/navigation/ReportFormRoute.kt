@@ -12,14 +12,14 @@ import kotlinx.serialization.Serializable
  * C2 Opisz barierę z miejscem z pomiaru C1. Trasa niesie tylko dane pomiaru, więc zapisana
  * historia „Wstecz” przetrwa zamknięcie aplikacji przez system.
  *
- * Wymagania: US7, US6.1, US6.2, NFR-2, BR-G4
+ * Wymagania: US7, US6.1, US6.2, US6.4, NFR-2, NFR-3, BR-G4
  *
  * @property longitude długość geograficzna uśrednionego punktu
  * @property latitude szerokość geograficzna uśrednionego punktu
  * @property accuracyMeters dokładność pomiaru w metrach
  * @property buildingSymbol budynek potwierdzony albo wybrany na C1; `null` to „poza budynkiem”
  * @property buildingName nazwa budynku obok symbolu albo `null`, gdy dane jej nie mają
- * @property isManualCorrection Zbierający przesunął punkt na mapie po pomiarze (US6.4, NFR-3)
+ * @property isManualCorrection Zbierający przesunął punkt na mapie po pomiarze
  */
 @Serializable
 data class ReportFormRoute(

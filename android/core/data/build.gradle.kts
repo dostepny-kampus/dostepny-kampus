@@ -42,7 +42,11 @@ dependencies {
     testImplementation(libs.kotlinx.serialization.json)
 }
 
-/** Kopiuje plik konturów z `data/buildings` do zasobów aplikacji przy budowie, bez kopii w repozytorium (US1). */
+/**
+ * Kopiuje plik konturów z `data/buildings` do zasobów aplikacji przy budowie, bez kopii w repozytorium.
+ *
+ * Wymagania: US1
+ */
 abstract class CopyBuildingsAsset : DefaultTask() {
     @get:InputFile
     @get:PathSensitive(PathSensitivity.NONE)

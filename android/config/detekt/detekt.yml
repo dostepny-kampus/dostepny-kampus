@@ -108,6 +108,9 @@ config:
 
 # Reguły projektu (moduł detekt-rules). Listy wyjątków mogą tylko maleć; czyszczenie: epik #1336.
 dostepnykampus:
+  RequirementIdOutsideLine:
+    excludes:
+      - '**/build/generated/**'
   NoHistoryNumberInKDoc:
     excludes:
       - '**/build/generated/**'

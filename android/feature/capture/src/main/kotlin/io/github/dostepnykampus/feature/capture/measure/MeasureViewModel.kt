@@ -78,13 +78,13 @@ sealed interface MeasureUiState {
     /**
      * „Pomiar zakończony”: wynik i satelity z końca pomiaru.
      *
-     * Wymagania: US6.5, US6.2
+     * Wymagania: US6.5, US6.2, US6.4, NFR-3
      *
      * @property average średnia z 30 s
      * @property satellites satelity użyte do pozycji według systemów na koniec pomiaru
      * @property sky widoczne satelity na koniec pomiaru
      * @property place budynek zgłoszenia: podpowiedź albo decyzja Zbierającego
-     * @property corrected punkt przesunięty przez Zbierającego po pomiarze albo `null` bez korekty (US6.4, NFR-3)
+     * @property corrected punkt przesunięty przez Zbierającego po pomiarze albo `null` bez korekty
      */
     data class Finished(
         val average: PositionAverage,

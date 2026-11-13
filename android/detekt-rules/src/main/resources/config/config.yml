@@ -6,3 +6,5 @@ dostepnykampus:
     active: true
   KDocDescriptionLength:
     active: true
+  RequirementIdOutsideLine:
+    active: true
