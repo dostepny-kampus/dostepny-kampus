@@ -21,6 +21,7 @@ import org.junit.platform.suite.api.Suite;
  */
 @Suite
 @IncludeEngines("cucumber")
+@SelectFile("../specs/przegladanie-mapy.feature")
 @SelectFile("../specs/uprawnienia.feature")
 @SelectFile("../specs/zgloszenie-szybkie.feature")
 @ConfigurationParameter(
