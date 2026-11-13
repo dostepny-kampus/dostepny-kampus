@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Warstwa | Pełny test | Tylko częściowo | Bez testu |
 | --- | --- | --- | --- |
-| Aplikacja | 19 | 14 | 100 |
+| Aplikacja | 20 | 14 | 99 |
 | Serwer | 0 | 0 | 62 |
 
 | Plik | Scenariusz | Kryteria i reguły | Warstwa | Test | Stan |
@@ -45,7 +45,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `oznaczenie-wejscia.feature` | Odrzucona zmiana nie zmienia oznaczenia wejścia | BR-16, BR-24, US17.2 | serwer | — | brak |
 | `oznaczenie-wejscia.feature` | Weryfikator nie sprawdza zmiany oznaczenia, którą sam złożył | BR-4, BR-24, US10.5, US17.2 | serwer | — | brak |
 | `oznaczenie-wejscia.feature` | Po przyjęciu jednej zmiany wejścia drugą czekającą odrzuca się jako „nieaktualne” | BR-23, BR-24, US17.2 | serwer | — | brak |
-| `pomiar-precyzyjny.feature` | Uśrednianie pozycji trwa 30 s i pokazuje dane o satelitach | US6.1 | aplikacja | — | brak |
+| `pomiar-precyzyjny.feature` | Uśrednianie pozycji trwa 30 s i pokazuje dane o satelitach | US6.1 | aplikacja | `feature/capture · MeasurePathTest.us6_1_averaging_30_s_shown` | pełny |
 | `pomiar-precyzyjny.feature` | Uśrednianie można przerwać i zacząć od nowa | US6.1 | aplikacja | — | brak |
 | `pomiar-precyzyjny.feature` | Zbierający decyduje o podpowiedzianym budynku | US6.2 | aplikacja | `feature/capture · MeasuredReportTest.br_g2_outside_no_building`<br>`feature/capture · MeasuredReportTest.us6_2_confirmed_building_saved`<br>`feature/capture · MeasuredReportTest.us6_2_other_building_saved` | pełny |
 | `pomiar-precyzyjny.feature` | Podpowiedź budynku działa bez sieci | US6.2 | aplikacja | — | brak |
