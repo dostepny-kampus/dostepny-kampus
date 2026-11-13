@@ -90,7 +90,6 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | moduły serwera nie mają listy zależności | #1322 |
 | korzenie `barrier`, `building`, `identity` zawierają wnętrze modułu | #1323, #1324, #1442 |
 | `barrier.domain` ma 22 pliki | #1439 |
-| Android ma moduły `:feature:auth`, `:feature:progress`, `:feature:review` bez kodu albo z jednym plikiem | #1327 |
 | `:core:data` udostępnia `:core:database` przez `api(...)`, testy funkcji zależą od bazy i sieci | #1328 |
 | `:feature:map` i `:feature:capture` mają po około 40 plików w jednym pakiecie | #1330, #1331 |
 
@@ -106,7 +105,7 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | `domain` bez frameworków, na `persistence` zależy tylko `persistence` | `BarrierArchitectureTest` (A-1…A-9), dziś tylko `barrier` |
 | kierunek i nazwy warstw w każdym module serwera | #1325 |
 | najwyżej 15 plików w pakiecie | #1326 (serwer), #1332 (Android) |
-| moduł Androida ma kod produkcyjny | #1327 |
+| moduł Androida ma kod produkcyjny | `ModuleContentArchitectureTest` |
 | moduł funkcji nie widzi bazy i sieci | Konsist `infra_a1_ui_no_network_or_db` (tylko kod produkcyjny); kompilator i testy: #1328 |
 | tylko `:core:data` i `:app` zależą od bazy i sieci | #1328 |
 | moduł funkcji nie importuje innego modułu funkcji | Konsist `infra_a1_feature_not_on_other` |
