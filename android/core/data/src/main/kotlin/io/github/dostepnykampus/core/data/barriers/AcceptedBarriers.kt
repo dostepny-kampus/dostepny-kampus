@@ -77,14 +77,14 @@ class ServerAcceptedBarriers internal constructor(
     private val copy: BarrierListCopy?,
     private val accepted: suspend () -> ApiResult<List<Submission>>,
 ) : AcceptedBarriers {
+    @Volatile private var synced: Instant? = null
+
     /**
      * Bariery bez kopii w bazie.
      *
      * @param accepted zgłoszenia przyjęte z serwera, np. `SubmissionsApi::accepted` bez budynku
      */
     constructor(accepted: suspend () -> ApiResult<List<Submission>>) : this(null, accepted)
-
-    @Volatile private var synced: Instant? = null
 
     override suspend fun barriers(): List<AcceptedBarrier> {
         val result = accepted()

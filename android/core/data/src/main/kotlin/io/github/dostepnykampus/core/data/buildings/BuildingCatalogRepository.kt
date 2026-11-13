@@ -37,9 +37,9 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
  *
  * Wymagania: US1, US1.2, US17.3, BR-25, NFR-11, NFR-10
  *
+ * @param buildingCache kopia listy budynków w bazie; `null` zostawia katalog bez kopii
  * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
  * @param listBuildings lista z serwera; `null` zostawia katalog wyłącznie z pliku
- * @param buildingCache kopia listy budynków w bazie; `null` zostawia katalog bez kopii
  * @param nowMillis zegar chwili pobrania listy z serwera
  * @param readGeoJson odczyt treści pliku konturów
  */
@@ -50,6 +50,15 @@ class BuildingCatalogRepository internal constructor(
     private val nowMillis: () -> Long = System::currentTimeMillis,
     private val readGeoJson: () -> String,
 ) {
+    private val lock = Any()
+    private var inflight: CompletableDeferred<BuildingCatalog>? = null
+    private val downloaded = MutableStateFlow<Downloaded?>(null)
+    private val copy = buildingCache?.let { dao -> BuildingListCopy(dao, ioContext) }
+
+    @Volatile private var cached: BuildingCatalog? = null
+
+    @Volatile private var bundled: BuildingCatalog? = null
+
     /**
      * Katalog bez kopii listy budynków w bazie.
      *
@@ -64,15 +73,6 @@ class BuildingCatalogRepository internal constructor(
         nowMillis: () -> Long = System::currentTimeMillis,
         readGeoJson: () -> String,
     ) : this(null, ioContext, listBuildings, nowMillis, readGeoJson)
-
-    private val lock = Any()
-    private var inflight: CompletableDeferred<BuildingCatalog>? = null
-    private val downloaded = MutableStateFlow<Downloaded?>(null)
-    private val copy = buildingCache?.let { dao -> BuildingListCopy(dao, ioContext) }
-
-    @Volatile private var cached: BuildingCatalog? = null
-
-    @Volatile private var bundled: BuildingCatalog? = null
 
     /**
      * Zwraca katalog budynków; gdy trwa pobranie z serwera, czeka na jego wynik.
