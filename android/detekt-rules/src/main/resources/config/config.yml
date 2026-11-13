@@ -2,3 +2,5 @@ dostepnykampus:
   active: true
   NoLineComment:
     active: true
+  NoHistoryNumberInKDoc:
+    active: true

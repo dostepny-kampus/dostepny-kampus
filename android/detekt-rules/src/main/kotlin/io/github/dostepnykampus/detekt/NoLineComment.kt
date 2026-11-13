@@ -13,10 +13,10 @@ import dev.detekt.api.Rule
 import org.jetbrains.kotlin.lexer.KtTokens
 
 /**
- * Zakaz komentarzy liniowych `//` w kodzie i skryptach Kotlina, na początku i na końcu linii z kodem (#873):
+ * Zakaz komentarzy liniowych `//` w kodzie i skryptach Kotlina, na początku i na końcu linii z kodem:
  * opis idzie do KDoc deklaracji, której dotyczy. Komentarz rozpoznaje parser kompilatora, więc `//` w napisie,
  * także surowym albo z wieloma `$`, nie jest komentarzem. Komentarze blokowe i KDoc przechodzą. Wyjątkiem jest
- * znacznik pracy odłożonej z numerem issue i opisem, `TODO(#12): opis`: stoi przy wierszu, którego dotyczy (#1062).
+ * znacznik pracy odłożonej z numerem issue i opisem, `TODO(#12): opis`: stoi przy wierszu, którego dotyczy.
  */
 class NoLineComment(config: Config) :
     Rule(config, "Komentarz liniowy `//`: opis idzie do KDoc deklaracji, której dotyczy.") {
