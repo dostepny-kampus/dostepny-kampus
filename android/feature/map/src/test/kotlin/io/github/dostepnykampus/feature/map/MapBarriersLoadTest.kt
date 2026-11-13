@@ -27,7 +27,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Bariery ze zgłoszeń przyjętych w danych mapy V1, na podróbkach źródeł (US1.3, NFR-10). */
+/** Bariery ze zgłoszeń przyjętych w danych mapy V1, na podróbkach źródeł. Wymagania: US1.3, NFR-10 */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapBarriersLoadTest {
     private val online = MutableStateFlow(true)
@@ -49,7 +49,7 @@ class MapBarriersLoadTest {
         Dispatchers.resetMain()
     }
 
-    /** Wiersz: V1, bariery ze zgłoszeń przyjętych jako znaki na mapie (US1.3, BR-6). */
+    /** Wiersz: V1, bariery ze zgłoszeń przyjętych jako znaki na mapie. Wymagania: US1.3, BR-6 */
     @Test
     fun us1_3_barriers_in_map_data() =
         runTest(UnconfinedTestDispatcher()) {
@@ -58,7 +58,7 @@ class MapBarriersLoadTest {
             assertEquals(Severity.entries.size, shownBarriers())
         }
 
-    /** Wiersz: brak sieci, bariery z telefonu; po powrocie sieci mapa pyta źródło ponownie (NFR-10). */
+    /** Wiersz: brak sieci, bariery z telefonu; po powrocie sieci mapa pyta źródło ponownie. Wymagania: NFR-10 */
     @Test
     fun nfr10_offline_then_online() =
         runTest(UnconfinedTestDispatcher()) {
@@ -72,7 +72,7 @@ class MapBarriersLoadTest {
             assertEquals(Severity.entries.size, viewModel.barrierCount())
         }
 
-    /** Wiersz: zgłoszenie, które przestało być przyjęte, znika z mapy po kolejnym pobraniu (US1.3). */
+    /** Wiersz: zgłoszenie, które przestało być przyjęte, znika z mapy po kolejnym pobraniu. Wymagania: US1.3 */
     @Test
     fun us1_3_no_longer_accepted_gone() =
         runTest(UnconfinedTestDispatcher()) {

@@ -38,8 +38,10 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Przycisk sąsiedniego terenu na nakładce mapy V1 (US1.7, NFR-17, NFR-18) na prostokątach testowych (nie dane
+ * Przycisk sąsiedniego terenu na nakładce mapy V1 na prostokątach testowych (nie dane
  * PWr): „Wittigowo” leży około 2 km na wschód od terenu „Kampus główny”.
+ *
+ * Wymagania: US1.7, NFR-17, NFR-18
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -72,7 +74,9 @@ class MapOverlayNeighborTest {
     /**
      * Wiersz: V1, na granicy terenu jest przycisk sąsiedniego terenu z nazwą dla TalkBack „Tu kończy się teren
      * Kampus główny. Obok: Wittigowo, 2 km” i celem dotyku 48 dp; stoi pod przyciskami mapy, więc ich nie
-     * zasłania (US1.7, NFR-17, NFR-18).
+     * zasłania.
+     *
+     * Wymagania: US1.7, NFR-17, NFR-18
      */
     @Test
     fun us1_7_button_at_edge() {
@@ -83,7 +87,11 @@ class MapOverlayNeighborTest {
         assertTrue(button.getUnclippedBoundsInRoot().top >= controls.bottom)
     }
 
-    /** Wiersz: V1, dotknięcie przycisku pokazuje sąsiedni teren: jego środek w powiększeniu startowym (US1.7). */
+    /**
+     * Wiersz: V1, dotknięcie przycisku pokazuje sąsiedni teren: jego środek w powiększeniu startowym.
+     *
+     * Wymagania: US1.7
+     */
     @Test
     fun us1_7_click_shows_neighbor() {
         compose.setContent { Overlay(atEdge) }
@@ -92,7 +100,7 @@ class MapOverlayNeighborTest {
         assertEquals(listOf(MapCamera(center = other.bounds.center, zoom = START_ZOOM)), shown)
     }
 
-    /** Wiersz: V1, z dala od granicy przycisku sąsiedniego terenu nie ma (US1.7). */
+    /** Wiersz: V1, z dala od granicy przycisku sąsiedniego terenu nie ma. Wymagania: US1.7 */
     @Test
     fun us1_7_no_button_inside() {
         compose.setContent { Overlay(main.bounds.center) }

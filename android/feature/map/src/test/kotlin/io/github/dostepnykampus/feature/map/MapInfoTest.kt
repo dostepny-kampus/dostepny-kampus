@@ -40,7 +40,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.time.LocalDate
 
-/** Przycisk „ⓘ” mapy V1 i panel „Źródła danych” (NFR-17, NFR-18, NFR-37, NFR-40). */
+/** Przycisk „ⓘ” mapy V1 i panel „Źródła danych”. Wymagania: NFR-17, NFR-18, NFR-37, NFR-40 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp-xhdpi")
@@ -48,7 +48,7 @@ class MapInfoTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** „ⓘ” jest przyciskiem o celu dotyku 48 dp z nazwą „Informacje o mapie” dla TalkBack (NFR-17, NFR-18). */
+    /** „ⓘ” jest przyciskiem o celu dotyku 48 dp z nazwą „Informacje o mapie” dla TalkBack. Wymagania: NFR-17, NFR-18 */
     @Test
     fun nfr17_nfr18_info_button() {
         compose.setContent { Info(isOpenAtStart = false) }
@@ -62,7 +62,7 @@ class MapInfoTest {
         compose.onNodeWithText("Źródła danych").assertDoesNotExist()
     }
 
-    /** Panel podaje źródła, licencję i dzień stanu danych, a „Zamknij” go zamyka (NFR-37, NFR-40, NFR-53). */
+    /** Panel podaje źródła, licencję i dzień stanu danych, a „Zamknij” go zamyka. Wymagania: NFR-37, NFR-40, NFR-53 */
     @Test
     fun nfr37_nfr40_sources_panel() {
         compose.setContent { Info(isOpenAtStart = false) }
@@ -76,7 +76,7 @@ class MapInfoTest {
         compose.onNodeWithText("Źródła danych").assertDoesNotExist()
     }
 
-    /** Bez dnia w danych panel podaje samo źródło (NFR-40). */
+    /** Bez dnia w danych panel podaje samo źródło. Wymagania: NFR-40 */
     @Test
     fun nfr40_sources_without_day() {
         compose.setContent { Info(isOpenAtStart = true, day = null) }

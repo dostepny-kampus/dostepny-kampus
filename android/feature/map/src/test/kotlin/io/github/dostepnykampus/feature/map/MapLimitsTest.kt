@@ -18,8 +18,9 @@ class MapLimitsTest {
 
     /**
      * Wiersz: V1, najmniejsze powiększenie pokazuje cały obszar kampusu także na telefonie, na którym dp to kilka
-     * pikseli; przy gęstości 3 widok 1200 × 2400 pikseli ma 400 × 800 dp, a 3072 × 2304 ma 1024 × 768 dp
-     * (NFR-39).
+     * pikseli; przy gęstości 3 widok 1200 × 2400 pikseli ma 400 × 800 dp, a 3072 × 2304 ma 1024 × 768 dp.
+     *
+     * Wymagania: NFR-39
      */
     @Test
     fun nfr39_min_zoom_in_dp() {
@@ -34,7 +35,9 @@ class MapLimitsTest {
 
     /**
      * Wiersz: V1, na 60° szerokości obszar w rzucie mapy jest dwa razy wyższy niż w stopniach, więc najmniejsze
-     * powiększenie obszaru ograniczonego wysokością jest o jeden poziom niższe niż na równiku (NFR-39).
+     * powiększenie obszaru ograniczonego wysokością jest o jeden poziom niższe niż na równiku.
+     *
+     * Wymagania: NFR-39
      */
     @Test
     fun nfr39_min_zoom_at_60_deg() {

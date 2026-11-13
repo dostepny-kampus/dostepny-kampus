@@ -29,7 +29,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** Przycisk terenu mapy V1 z panelem „Teren na mapie” (US1.6, US1.7, NFR-17, NFR-18, NFR-20). */
+/** Przycisk terenu mapy V1 z panelem „Teren na mapie”. Wymagania: US1.6, US1.7, NFR-17, NFR-18, NFR-20 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp-xhdpi")
@@ -47,8 +47,10 @@ class MapAreaSwitchTest {
     private val chosen = mutableListOf<String>()
 
     /**
-     * Wiersz: V1, przycisk terenu ma nazwę dla TalkBack „Teren: Kampus główny. Zmień teren” i cel dotyku 48 dp
-     * (US1.6, NFR-17, NFR-18); dotknięcie otwiera panel „Teren na mapie” (US1.7).
+     * Wiersz: V1, przycisk terenu ma nazwę dla TalkBack „Teren: Kampus główny. Zmień teren” i cel dotyku 48 dp;
+     * dotknięcie otwiera panel „Teren na mapie”.
+     *
+     * Wymagania: US1.6, NFR-17, NFR-18, US1.7
      */
     @Test
     fun us1_6_button_opens_panel() {
@@ -59,7 +61,7 @@ class MapAreaSwitchTest {
         compose.onNodeWithText("Teren na mapie").assertExists()
     }
 
-    /** Wiersz: V1, wybranie terenu z listy zgłasza jego nazwę (US1.7). */
+    /** Wiersz: V1, wybranie terenu z listy zgłasza jego nazwę. Wymagania: US1.7 */
     @Test
     fun us1_7_choice_reported() {
         compose.setContent { Switch(isOpenAtStart = true) }
@@ -67,7 +69,7 @@ class MapAreaSwitchTest {
         assertEquals(listOf("Wittigowo"), chosen)
     }
 
-    /** Wiersz: V1, „Zamknij” zamyka panel, a fokus wraca na przycisk terenu (NFR-20). */
+    /** Wiersz: V1, „Zamknij” zamyka panel, a fokus wraca na przycisk terenu. Wymagania: NFR-20 */
     @Test
     fun nfr20_focus_returns_to_button() {
         compose.setContent { Switch(isOpenAtStart = true) }

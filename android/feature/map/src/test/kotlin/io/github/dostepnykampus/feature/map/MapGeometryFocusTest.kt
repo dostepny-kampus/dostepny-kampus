@@ -39,7 +39,9 @@ private val OUTLINE_NOT_FROM_CATALOG = CampusBounds(west = 0.2, south = 0.6, eas
 
 /**
  * Ekran V1 z widokiem zastępczym: geometria mapy idzie z ViewModelu, a zmiana zaznaczenia jej nie liczy, także punktu
- * podpisu dla kamery (NFR-11, #818).
+ * podpisu dla kamery.
+ *
+ * Wymagania: NFR-11
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -80,7 +82,9 @@ class MapGeometryFocusTest {
 
     /**
      * Wiersz: W3, W4, O5, O6, mapa pokazana, potem zmiana zaznaczonego budynku → widok mapy dostaje geometrię
-     *   policzoną w ViewModelu z nowym zaznaczeniem, a funkcja licząca poszła raz, NFR-11, US1.1.
+     *   policzoną w ViewModelu z nowym zaznaczeniem, a funkcja licząca poszła raz.
+     *
+     * Wymagania: NFR-11, US1.1
      */
     @Test
     fun nfr11_focus_keeps_geometry() {
@@ -100,7 +104,9 @@ class MapGeometryFocusTest {
     /**
      * Wiersz: W3, W4, arkusz V2 zasłania dół mapy, budynek C-13 zaznaczony → środek kamery nad arkuszem to środek
      *   prostokąta C-13 z danych mapy policzonych w ViewModelu, inny niż kontur z katalogu, więc nie liczony na
-     *   ekranie (#818, NFR-11, decyzja 151).
+     *   ekranie.
+     *
+     * Wymagania: NFR-11
      */
     @Test
     fun nfr11_sheet_camera_from_data() {
