@@ -17,10 +17,10 @@ private const val HTTP_FORBIDDEN = 403
 private const val HTTP_NOT_FOUND = 404
 private const val HTTP_CONFLICT = 409
 
-/** Czy zgłoszenie trafia na listę C3; szybkie zgłoszenie Odwiedzającego nie trafia (US4.4, US8). */
+/** Czy zgłoszenie trafia na listę C3; szybkie zgłoszenie Odwiedzającego nie trafia. Wymagania: US4.4, US8 */
 internal fun PendingSubmissionEntity.isOwnHistory(): Boolean = kind != SubmissionKind.QUICK.name
 
-/** Wiersz listy C3 ze stanem „W telefonie” dla zgłoszenia zapisanego w kolejce (US8, NFR-5). */
+/** Wiersz listy C3 ze stanem „W telefonie” dla zgłoszenia zapisanego w kolejce. Wymagania: US8, NFR-5 */
 internal fun PendingSubmissionEntity.toOwnSubmissionEntity(): OwnSubmissionEntity =
     OwnSubmissionEntity(
         id = id,
@@ -33,7 +33,7 @@ internal fun PendingSubmissionEntity.toOwnSubmissionEntity(): OwnSubmissionEntit
         severity = severity,
     )
 
-/** Wersja z serwera po przyjęciu treści; `null`, gdy serwer nie przyjął treści (BR-10). */
+/** Wersja z serwera po przyjęciu treści; `null`, gdy serwer nie przyjął treści. Wymagania: BR-10 */
 internal fun versionOf(result: ApiResult<*>): Int? {
     val value = (result as? ApiResult.Success)?.value
     return when (value) {
@@ -43,7 +43,7 @@ internal fun versionOf(result: ApiResult<*>): Int? {
     }
 }
 
-/** Wersja z serwera z odpowiedzi 409 na edycję; `null` przy innym wyniku (US9.3, BR-10). */
+/** Wersja z serwera z odpowiedzi 409 na edycję; `null` przy innym wyniku. Wymagania: US9.3, BR-10 */
 internal fun conflictVersionOf(result: ApiResult<*>): Int? {
     val conflict = (result as? ApiResult.Success)?.value as? SubmissionEdit.Conflict
     return conflict?.run { server.version }
@@ -61,7 +61,9 @@ internal fun refusalCodeOf(result: ApiResult<*>): Int? =
 /**
  * Powód „Nie wysłano” z kodu odmowy zapisanego w historii obok [refusalCodeOf], jedyne miejsce, które zna znaczenie
  * kodów: 403 to brak uprawnień, 409 konflikt wersji, brak kodu to zgłoszenie, którego telefon nie odczytał, a inne
- * kody, także 404, to „Serwer nie przyjął zgłoszenia” (US9.5, BR-10, BR-26, #861).
+ * kody, także 404, to „Serwer nie przyjął zgłoszenia”.
+ *
+ * Wymagania: US9.5, BR-10, BR-26
  */
 internal fun refusalReasonOf(state: OwnSubmissionState, code: Int?): RefusalReason? =
     when {

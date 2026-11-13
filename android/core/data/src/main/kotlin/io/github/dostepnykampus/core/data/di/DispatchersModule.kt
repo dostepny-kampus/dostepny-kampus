@@ -25,7 +25,7 @@ annotation class ComputeContext
 
 /**
  * Konteksty pracy poza wątkiem interfejsu w grafie Hilt. Testy Hilt podmieniają ten moduł, żeby `waitForIdle`
- * obejmował pracę bez czekania oknem zegara (#623). Konteksty są parametrami domyślnymi, jak w klasach danych.
+ * obejmował pracę bez czekania oknem zegara. Konteksty są parametrami domyślnymi, jak w klasach danych.
  */
 @Module
 @InstallIn(SingletonComponent::class)

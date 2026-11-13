@@ -22,7 +22,11 @@ internal val Context.mapDataStore by preferencesDataStore(
     corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
 )
 
-/** Ostatni wybór w przełączniku „Mapa” i „Lista budynków” na V1; aplikacja pamięta go po zamknięciu (NFR-19). */
+/**
+ * Ostatni wybór w przełączniku „Mapa” i „Lista budynków” na V1; aplikacja pamięta go po zamknięciu.
+ *
+ * Wymagania: NFR-19
+ */
 interface MapListChoice {
     /** Prawda dla „Lista budynków”, fałsz dla „Mapa”, `null`, dopóki osoba nic nie wybrała. */
     val savedChoice: Flow<Boolean?>

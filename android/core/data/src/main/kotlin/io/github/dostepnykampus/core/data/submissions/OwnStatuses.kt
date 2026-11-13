@@ -12,19 +12,19 @@ import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.network.ApiResult
 
-/** Wynik odświeżenia statusów własnych zgłoszeń z serwera (US8.2, US9.1, NFR-50). */
+/** Wynik odświeżenia statusów własnych zgłoszeń z serwera. Wymagania: US8.2, US9.1, NFR-50 */
 enum class StatusRefresh {
     /** Statusy z serwera są w historii telefonu. */
     DONE,
 
-    /** Brak sieci: lista zostaje ze statusami z ostatniej synchronizacji (US9.1). */
+    /** Brak sieci: lista zostaje ze statusami z ostatniej synchronizacji. Wymagania: US9.1 */
     OFFLINE,
 
-    /** Serwer nie podał listy; zgłoszenia zostają bezpieczne w telefonie (NFR-5, PW-10). */
+    /** Serwer nie podał listy; zgłoszenia zostają bezpieczne w telefonie (PW-10). Wymagania: NFR-5 */
     FAILED,
 }
 
-/** Odświeżenie statusów listy C3 z serwera (US8.2). */
+/** Odświeżenie statusów listy C3 z serwera. Wymagania: US8.2 */
 fun interface OwnStatuses {
     /** Pobiera własne zgłoszenia z serwera i zapisuje ich status, powód odrzucenia i wersję w historii. */
     suspend fun refresh(): StatusRefresh
@@ -32,8 +32,10 @@ fun interface OwnStatuses {
 
 /**
  * Statusy z [mine] (`GET /submissions?mine=true`) w historii [history]. Zgłoszenie, którego telefon nie zna, np. po
- * ponownej instalacji, dochodzi do listy jako wysłane; szybkie zgłoszenia lista pomija (US4.4). Stan wysyłki z
- * telefonu zostaje, więc poprawka czekająca w kolejce nadal jest „W telefonie” (BR-9).
+ * ponownej instalacji, dochodzi do listy jako wysłane; szybkie zgłoszenia lista pomija. Stan wysyłki z
+ * telefonu zostaje, więc poprawka czekająca w kolejce nadal jest „W telefonie”.
+ *
+ * Wymagania: US4.4, BR-9
  */
 fun ownStatusesOf(mine: suspend () -> ApiResult<List<Submission>>, history: OwnSubmissionDao): OwnStatuses =
     OwnStatuses {
