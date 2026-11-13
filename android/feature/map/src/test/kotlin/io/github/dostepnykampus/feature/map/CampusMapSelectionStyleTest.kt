@@ -163,12 +163,11 @@ class CampusMapSelectionStyleTest {
 private class JsonStyle(style: String) : MapStyleTarget {
     var json: JsonObject = Json.parseToJsonElement(style).jsonObject
 
-    override fun filter(layer: String, filter: String) =
-        edit(layer) { it + ("filter" to Json.parseToJsonElement(filter)) }
+    override fun filter(layer: String, filter: JsonElement) = edit(layer) { it + ("filter" to filter) }
 
-    override fun paint(layer: String, property: String, value: String) =
+    override fun paint(layer: String, property: String, value: JsonElement) =
         edit(layer) {
-            val paint = it.getValue("paint").jsonObject + (property to Json.parseToJsonElement(value))
+            val paint = it.getValue("paint").jsonObject + (property to value)
             it + ("paint" to JsonObject(paint))
         }
 
