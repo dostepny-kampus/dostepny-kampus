@@ -82,14 +82,45 @@ jobs:
     if: ${{ !cancelled() && github.event_name != 'push' && needs.apk.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    # Test systemowy dopiero zbiera historię stabilności, więc jego porażka nie czerwieni `budowanie`.
+    continue-on-error: ${{ matrix.zestaw == 'system' }}
     strategy:
       fail-fast: false
       matrix:
-        # Wersja minimalna i docelowa z NFR-41.
-        api: [26, 36]
+        # Testy aplikacji na wersji minimalnej i docelowej z NFR-41; w grupie kolejki także test systemowy
+        # (moduł `systemtest`) z serwerem i bazą uruchomionymi na runnerze.
+        include: ${{ fromJSON(github.event_name == 'merge_group' && '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"},{"api":36,"zestaw":"system"}]' || '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"}]') }}
     env:
       IMAGE: system-images;android-${{ matrix.api }};default;x86_64
     steps:
+      - uses: actions/checkout@v7.0.1
+        if: matrix.zestaw == 'system'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6.2.0
+        if: matrix.zestaw == 'system'
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Uruchom bazę, magazyn zdjęć, logowanie i serwer
+        if: matrix.zestaw == 'system'
+        timeout-minutes: 15
+        run: |
+          cp infra/.env.example infra/.env
+          docker compose -f infra/docker-compose.yml up -d --wait
+          (cd backend && ./mvnw -B -q -DskipTests -Dqulice.skip=true -Djacoco.skip=true package)
+          set -a
+          . infra/.env
+          set +a
+          jar="$(find backend/target -maxdepth 1 -name '*.jar' ! -name '*-plain.jar' | head -n 1)"
+          nohup java -jar "$jar" > "$RUNNER_TEMP/serwer.log" 2>&1 &
+          if ! timeout 180 bash -c 'until curl -fs -o /dev/null http://127.0.0.1:8080/buildings; do sleep 3; done'; then
+            echo "::error title=Test systemowy::Serwer nie odpowiedział na /buildings w 3 minuty."
+            cat "$RUNNER_TEMP/serwer.log"
+            exit 1
+          fi
       - name: Pobierz APK aplikacji i testów
         uses: actions/download-artifact@v8.0.2
         with:
@@ -127,11 +158,17 @@ jobs:
           done
       - name: Zainstaluj APK aplikacji i testów
         timeout-minutes: 5
+        env:
+          ZESTAW: ${{ matrix.zestaw }}
         run: |
           # Artefakt zachowuje strukturę katalogów od najbliższego wspólnego przodka, więc pliki szukamy po nazwie.
           find "$RUNNER_TEMP/apk" -name '*.apk' -print
           adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug.apk | head -n 1)"
-          adb install -r -t "$(find "$RUNNER_TEMP/apk" -name app-debug-androidTest.apk | head -n 1)"
+          testy=app-debug-androidTest.apk
+          if [[ $ZESTAW == system ]]; then
+            testy=systemtest-debug.apk
+          fi
+          adb install -r -t "$(find "$RUNNER_TEMP/apk" -name "$testy" | head -n 1)"
       - name: Testy na emulatorze
         timeout-minutes: 15
         run: |
@@ -177,12 +214,13 @@ jobs:
           mkdir -p "$RUNNER_TEMP/raporty"
           timeout 60 adb logcat -d > "$RUNNER_TEMP/raporty/logcat.txt" || true
           cp "$RUNNER_TEMP/emulator.log" "$RUNNER_TEMP/raporty/" || true
+          cp "$RUNNER_TEMP/serwer.log" "$RUNNER_TEMP/raporty/" 2>/dev/null || true
           grep -E 'FATAL EXCEPTION|AndroidRuntime|TestRunner' "$RUNNER_TEMP/raporty/logcat.txt" | head -200 || true
       - name: Zapisz wynik testów na emulatorze
         if: always()
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: raporty-emulator-api-${{ matrix.api }}
+          name: raporty-emulator-api-${{ matrix.api }}-${{ matrix.zestaw }}
           path: |
             ${{ runner.temp }}/instrumentacja.txt
             ${{ runner.temp }}/raporty/
@@ -227,7 +265,9 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
       - name: Pokaż zbudowane pakiety
-        run: ls -l app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+        run: |
+          ls -l app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            systemtest/build/outputs/apk/debug/systemtest-debug.apk
       - name: Udostępnij APK aplikacji i testów
         uses: actions/upload-artifact@v7.0.2
         with:
@@ -235,6 +275,7 @@ jobs:
           path: |
             android/app/build/outputs/apk/debug/app-debug.apk
             android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+            android/systemtest/build/outputs/apk/debug/systemtest-debug.apk
           if-no-files-found: error
           retention-days: 7
 
