@@ -55,7 +55,7 @@ class ModuleReadmeArchitectureTest {
                 val body = if (section == DEPENDENCIES) described.joinToString("\n") { "- `$it`" } else "Treść."
                 "## $section\n\n$body"
             }
-        File(dir, "README.md").writeText("# :$path\n\n$text\n")
+        File(dir, "README.md").writeText(listOf("# :$path", text).joinToString(separator = "\n\n", postfix = "\n"))
     }
 
     private fun problems(root: File): Map<String, String> =
