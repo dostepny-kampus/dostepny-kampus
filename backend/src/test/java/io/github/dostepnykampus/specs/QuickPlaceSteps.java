@@ -46,6 +46,11 @@ public final class QuickPlaceSteps {
     );
 
     /**
+     * Pola zgłoszenia szybkiego z grupą „inne”.
+     */
+    private static final String OTHER = "\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\"";
+
+    /**
      * Zgłoszenie scenariusza.
      */
     private static final UUID SUBMISSION =
@@ -153,7 +158,7 @@ public final class QuickPlaceSteps {
      */
     @When("wyśle zgłoszenie szybkie z grupą barier „inne”")
     public void sendsQuick() throws Exception {
-        this.send();
+        this.send(QuickPlaceSteps.OTHER);
     }
 
     /**
@@ -173,7 +178,7 @@ public final class QuickPlaceSteps {
                 "ORDER BY ST_X(v) LIMIT 1) AS west"
             )
         ).param("meters", meters).query(String.class).single();
-        this.send();
+        this.send(QuickPlaceSteps.OTHER);
     }
 
     /**
@@ -246,21 +251,36 @@ public final class QuickPlaceSteps {
             .param("id", QuickPlaceSteps.SUBMISSION).update();
     }
 
-    private void send() throws Exception {
+    /**
+     * Wysyła zgłoszenie z miejsca osoby i zapamiętuje odpowiedź serwera.
+     *
+     * @param fields Pola zgłoszenia poza identyfikatorem, miejscem i zdjęciem
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    void send(final String fields) throws Exception {
         final MockHttpServletResponse response = this.http.perform(
             MockMvcRequestBuilders.post("/submissions").contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", this.token))
-                .content(this.body())
+                .content(this.body(fields))
         ).andReturn().getResponse();
         this.status = response.getStatus();
         this.answer = response.getContentAsString();
     }
 
-    private String body() {
+    /**
+     * Odpowiedź serwera na wysłane zgłoszenie.
+     *
+     * @return Status i treść odpowiedzi rozdzielone spacją
+     */
+    String outcome() {
+        return String.format("%d %s", this.status, this.answer);
+    }
+
+    private String body(final String fields) {
         return String.join(
             "",
             "{\"id\":\"", QuickPlaceSteps.SUBMISSION.toString(),
-            "\",\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\",",
+            "\",", fields, ",",
             "\"location\":{\"type\":\"Point\",\"coordinates\":", this.place, "},",
             "\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
         );
