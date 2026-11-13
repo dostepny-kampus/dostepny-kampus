@@ -18,23 +18,23 @@ import java.io.File
 class ModuleReadmeArchitectureTest {
     /** Moduły spoza listy wyjątków mają pełny opis zgodny z zależnościami. */
     @Test
-    fun infra_module_readme_matches_build() {
+    fun infra_readme_matches_build() {
         val found = problems(projectRoot())
         assertEquals(emptyMap<String, String>(), found - UNDESCRIBED.keys, HINT)
     }
 
     /** Wpis listy wyjątków dla modułu, który ma już pełny opis, czerwieni test. */
     @Test
-    fun infra_module_readme_list_shrinks() {
+    fun infra_readme_list_shrinks() {
         assertEquals(emptySet<String>(), UNDESCRIBED.keys - problems(projectRoot()).keys)
     }
 
     /** Brak części opisu i zależność spoza `build.gradle.kts` łamią regułę, pełny zgodny opis nie. */
     @Test
-    fun infra_module_readme_rule_rejects(
+    fun infra_readme_rule_rejects(
         @TempDir root: File,
     ) {
-        File(root, "settings.gradle.kts").writeText("include(\":core:ok\", \":core:partial\", \":core:wrong\")")
+        File(root, "settings.gradle.kts").writeText("""include(":core:ok", ":core:partial", ":core:wrong")""")
         module(root, "core/ok", listOf(":core:base"), listOf(":core:base"), SECTIONS)
         module(root, "core/partial", emptyList(), emptyList(), SECTIONS - "API")
         module(root, "core/wrong", listOf(":core:base"), listOf(":core:other"), SECTIONS)
@@ -49,7 +49,7 @@ class ModuleReadmeArchitectureTest {
         sections: List<String>,
     ) {
         val dir = File(root, path).apply { mkdirs() }
-        File(dir, "build.gradle.kts").writeText(built.joinToString("\n") { "    api(project(\"$it\"))" })
+        File(dir, "build.gradle.kts").writeText(built.joinToString("\n") { """    api(project("$it"))""" })
         val text =
             sections.joinToString("\n\n") { section ->
                 val body = if (section == DEPENDENCIES) described.joinToString("\n") { "- `$it`" } else "Treść."
