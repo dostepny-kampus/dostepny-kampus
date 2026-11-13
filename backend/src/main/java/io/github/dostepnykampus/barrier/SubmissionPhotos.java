@@ -12,16 +12,13 @@ import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
-import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.event.TransactionalEventListener;
-import org.springframework.transaction.support.TransactionTemplate;
 import software.amazon.awssdk.core.exception.SdkException;
 
 /**
@@ -51,19 +48,14 @@ final class SubmissionPhotos {
     private final PhotoStore photos;
 
     /** Blokada wiersza podczas kontroli statusu i zapisu zdjęcia. */
-    private final SubmissionRepository repository;
-
-    /** Transakcja obejmująca kontrolę statusu i zapis zdjęcia. */
-    private final TransactionTemplate transaction;
+    private final SubmissionService service;
 
     SubmissionPhotos(
-        final SubmissionFinder submissions, final PhotoStore photos,
-        final SubmissionRepository repository, final PlatformTransactionManager manager
+        final SubmissionFinder submissions, final PhotoStore photos, final SubmissionService service
     ) {
         this.submissions = submissions;
         this.photos = photos;
-        this.repository = repository;
-        this.transaction = new TransactionTemplate(manager);
+        this.service = service;
     }
 
     /**
@@ -97,11 +89,12 @@ final class SubmissionPhotos {
         throws IOException {
         this.editable(submission, photo);
         final byte[] jpeg = SubmissionPhotos.clean(upload.read());
-        this.transaction.executeWithoutResult(status -> {
-            this.repository.lock(submission);
-            this.editable(submission, photo);
-            this.photos.put(submission, photo, jpeg);
-        });
+        this.service.locked(
+            submission, () -> {
+                this.editable(submission, photo);
+                this.photos.put(submission, photo, jpeg);
+            }
+        );
     }
 
     /**

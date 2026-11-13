@@ -10,7 +10,6 @@ import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.OpenApiContract;
 import io.github.dostepnykampus.ProblemResponses;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
-import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
 import jakarta.servlet.Filter;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -24,7 +23,6 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -203,8 +201,7 @@ final class SubmissionPhotosHttpTest {
                             String.format("brak-%s", UUID.randomUUID()), "", ""
                         )
                     ),
-                    context.getBean(SubmissionRepository.class),
-                    context.getBean(PlatformTransactionManager.class)
+                    context.getBean(SubmissionService.class)
                 )
             )
         ).setControllerAdvice(context.getBean(ProblemResponses.class))

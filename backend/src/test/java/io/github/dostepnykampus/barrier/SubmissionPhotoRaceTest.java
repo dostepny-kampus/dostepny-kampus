@@ -8,7 +8,6 @@ package io.github.dostepnykampus.barrier;
 import io.github.dostepnykampus.ForbiddenChange;
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
-import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.transaction.PlatformTransactionManager;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -42,7 +40,11 @@ final class SubmissionPhotoRaceTest {
         final PhotoStore store = context.getBean(PhotoStore.class);
         final byte[] original = {1, 2, 3};
         store.put(id, photo, original);
-        try (ByteArrayInputStream input = new AcceptedBody(jdbc, id)) {
+        try (
+            ByteArrayInputStream input = new SubmissionPhotoRaceTest.AcceptedBody(
+                jdbc, id, JpegCleanerTest.photo()
+            )
+        ) {
             Assertions.assertThrows(
                 ForbiddenChange.class,
                 () -> context.getBean(SubmissionPhotos.class).put(
@@ -65,7 +67,7 @@ final class SubmissionPhotoRaceTest {
         final UUID id = new SampleSubmissions(context).add("SENT", SampleSubmissions.quick(photo));
         final byte[] jpeg = JpegCleanerTest.photo();
         try (
-            AcceptanceAttempt client = new AcceptanceAttempt(
+            S3Client client = new SubmissionPhotoRaceTest.AcceptanceAttempt(
                 PhotoStorage.photoClient(context.getBean(PhotoSettings.class)),
                 context.getBean(DataSource.class), id
             );
@@ -74,8 +76,7 @@ final class SubmissionPhotoRaceTest {
             final SubmissionPhotos service = new SubmissionPhotos(
                 context.getBean(SubmissionFinder.class),
                 new PhotoStore(client, context.getBean(PhotoSettings.class)),
-                context.getBean(SubmissionRepository.class),
-                context.getBean(PlatformTransactionManager.class)
+                context.getBean(SubmissionService.class)
             );
             service.put(id, photo, new PhotoUpload(input, jpeg.length));
             SubmissionPhotoRaceTest.accept(context.getBean(JdbcClient.class), id);
@@ -109,8 +110,8 @@ final class SubmissionPhotoRaceTest {
         /** Identyfikator zgłoszenia. */
         private final UUID id;
 
-        AcceptedBody(final JdbcClient jdbc, final UUID id) throws IOException {
-            super(JpegCleanerTest.photo());
+        AcceptedBody(final JdbcClient jdbc, final UUID id, final byte[] body) {
+            super(body);
             this.jdbc = jdbc;
             this.id = id;
         }
@@ -130,7 +131,9 @@ final class SubmissionPhotoRaceTest {
      * @param id Identyfikator zgłoszenia
      * @since 0.1.0
      */
-    private record AcceptanceAttempt(S3Client client, DataSource source, UUID id) implements S3Client {
+    private record AcceptanceAttempt(
+        S3Client client, DataSource source, UUID id
+    ) implements S3Client {
         @Override
         public String serviceName() {
             return S3Client.SERVICE_NAME;

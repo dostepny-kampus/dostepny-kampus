@@ -20,7 +20,6 @@ import io.github.dostepnykampus.barrier.domain.SubmissionKind;
 import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
 import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
-import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
@@ -31,7 +30,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.transaction.PlatformTransactionManager;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
@@ -99,8 +97,7 @@ final class SubmissionPhotosPruneTest {
                 new SubmissionPhotosPruneTest.NoBucket(),
                 new PhotoSettings(URI.create("http://magazyn"), "brak-kubelka", "", "")
             ),
-            context.getBean(SubmissionRepository.class),
-            context.getBean(PlatformTransactionManager.class)
+            context.getBean(SubmissionService.class)
         );
         final UUID submission = UUID.randomUUID();
         Assertions.assertDoesNotThrow(
