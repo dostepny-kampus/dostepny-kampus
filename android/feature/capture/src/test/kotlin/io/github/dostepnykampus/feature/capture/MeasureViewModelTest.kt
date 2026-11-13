@@ -329,6 +329,20 @@ class MeasureViewModelTest {
             assertEquals(PlaceChoice.Outside, place())
         }
 
+    /** Korekta ręczna po pomiarze zmienia punkt, a „Powtórz pomiar” ją kasuje. Wymagania: US6.4, NFR-3 */
+    @Test
+    fun us6_4_move_point_until_repeat() =
+        runTest(dispatcher) {
+            viewModel.movePoint(MOVED)
+            finish()
+            viewModel.movePoint(MOVED)
+            runCurrent()
+            val moved = (viewModel.uiState.value as MeasureUiState.Finished).point
+            viewModel.repeat()
+            finish()
+            assertEquals(MOVED to A1_POINT, moved to (viewModel.uiState.value as MeasureUiState.Finished).point)
+        }
+
     /** Dalej niż 50 m od konturu: bez podpowiedzi, od razu „poza budynkiem”. Wymagania: BR-G4 */
     @Test
     fun br_g4_far_point_outside() =
@@ -426,6 +440,7 @@ class MeasureViewModelTest {
         const val BOOT = 1_000_000L
         const val PRECISION = 1e-9
         val A1_POINT = GeoPoint(longitude = 17.0605, latitude = 51.1105)
+        val MOVED = GeoPoint(longitude = 17.0606, latitude = 51.1106)
         val A1_EDGE_POINT = GeoPoint(longitude = 17.06, latitude = 51.1105)
         const val A1_NORTH_EDGE = 51.111
         const val METERS_PER_DEGREE = 111_195.0

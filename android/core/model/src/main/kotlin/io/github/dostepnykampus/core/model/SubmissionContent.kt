@@ -28,7 +28,7 @@ package io.github.dostepnykampus.core.model
  * @property entranceId wejście w zmianie oznaczenia wejścia albo w zgłoszeniu szybkim przy wejściu
  * @property entranceMarking nowe oznaczenie wejścia: tylko dostępne albo niedostępne
  */
-data class SubmissionContent(
+public data class SubmissionContent(
     val kind: SubmissionKind,
     val location: GeoPoint,
     val photoIds: List<String>,
@@ -66,10 +66,14 @@ data class SubmissionContent(
  * @property isMezzanine dopisek „półpiętro” w budynku podstawowym; `null` to pole nieobecne,
  *   które kontrakt API traktuje jak `false`
  */
-data class SubmissionFloor(val floorId: String? = null, val number: Int? = null, val isMezzanine: Boolean? = null)
+public data class SubmissionFloor(
+    val floorId: String? = null,
+    val number: Int? = null,
+    val isMezzanine: Boolean? = null,
+)
 
 /** Rodzaj zgłoszenia (`kind` w `SubmissionContent`). */
-enum class SubmissionKind {
+public enum class SubmissionKind {
     /** Pomiar precyzyjny Zbierającego. Wymagania: US7, BR-7 */
     PRECISE,
 
@@ -81,7 +85,7 @@ enum class SubmissionKind {
 }
 
 /** Grupa barier (`BarrierGroup`) w zgłoszeniu szybkim. Wymagania: US4.3 */
-enum class BarrierGroup {
+public enum class BarrierGroup {
     /** Wejście i drzwi. */
     ENTRANCE_AND_DOORS,
 

@@ -16,7 +16,9 @@
  *
  * @since 0.1.0
  */
+@ApplicationModule(allowedDependencies = "building")
 @NullMarked
 package io.github.dostepnykampus.barrier;
 
 import org.jspecify.annotations.NullMarked;
+import org.springframework.modulith.ApplicationModule;

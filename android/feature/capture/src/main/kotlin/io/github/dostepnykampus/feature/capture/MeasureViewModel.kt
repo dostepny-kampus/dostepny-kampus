@@ -83,13 +83,18 @@ sealed interface MeasureUiState {
      * @property satellites satelity użyte do pozycji według systemów na koniec pomiaru
      * @property sky widoczne satelity na koniec pomiaru
      * @property place budynek zgłoszenia: podpowiedź albo decyzja Zbierającego
+     * @property corrected punkt przesunięty przez Zbierającego po pomiarze albo `null` bez korekty (US6.4, NFR-3)
      */
     data class Finished(
         val average: PositionAverage,
         val satellites: Map<GnssSystem, Int>,
         val sky: List<Satellite> = emptyList(),
         val place: PlaceChoice = PlaceChoice.Locating,
-    ) : MeasureUiState
+        val corrected: GeoPoint? = null,
+    ) : MeasureUiState {
+        /** Punkt bariery: po korekcie przesunięty, bez niej średnia z pomiaru. Wymagania: US6.4 */
+        val point: GeoPoint get() = corrected ?: average.point
+    }
 }
 
 /** Budynek zgłoszenia po pomiarze. Wymagania: US6.2, BR-G2, BR-G4 */
@@ -194,6 +199,18 @@ class MeasureViewModel
             choose { PlaceChoice.Outside }
         }
 
+        /**
+         * Korekta ręczna: punkt bariery przesunięty na mapie po pomiarze. Przed końcem pomiaru nic nie zmienia,
+         * a „Powtórz pomiar” ją kasuje.
+         *
+         * Wymagania: US6.4, NFR-3, BR-G2
+         *
+         * @param point nowe położenie punktu bariery
+         */
+        fun movePoint(point: GeoPoint) {
+            result.update { run -> run.copy(finished = run.finished?.copy(corrected = point)) }
+        }
+
         private fun choose(change: (PlaceChoice) -> PlaceChoice?) {
             result.update { run ->
                 val finished = run.finished
@@ -243,7 +260,7 @@ class MeasureViewModel
                 var averaging: PositionAveraging? = null
                 var sky = emptyList<Satellite>()
 
-                suspend fun publish() = send(stateOf(averaging, sky))
+                suspend fun publish() = send(stateOf(averaging, sky, clock.nowMillis()))
 
                 publish()
                 val others =
@@ -293,20 +310,20 @@ class MeasureViewModel
             }
         }
 
-        private fun stateOf(averaging: PositionAveraging?, sky: List<Satellite>): MeasureUiState {
-            val average = averaging?.average() ?: return MeasureUiState.Searching
-            val now = clock.nowMillis()
-            return if (averaging.isFinished(now)) {
-                MeasureUiState.Finished(average, sky.countsInFix(), sky)
-            } else {
-                MeasureUiState.Measuring(
-                    remainingSeconds = averaging.remainingSeconds(now),
-                    average = average,
-                    satellites = sky.countsInFix(),
-                    sky = sky,
-                )
-            }
-        }
-
         private data class Run(val attempt: Int, val finished: MeasureUiState.Finished?)
     }
+
+/** Stan C1 z uśredniania [averaging] i nieba [sky] w chwili [now]. Wymagania: US6.1, US6.5 */
+internal fun stateOf(averaging: PositionAveraging?, sky: List<Satellite>, now: Long): MeasureUiState {
+    val average = averaging?.average() ?: return MeasureUiState.Searching
+    return if (averaging.isFinished(now)) {
+        MeasureUiState.Finished(average, sky.countsInFix(), sky)
+    } else {
+        MeasureUiState.Measuring(
+            remainingSeconds = averaging.remainingSeconds(now),
+            average = average,
+            satellites = sky.countsInFix(),
+            sky = sky,
+        )
+    }
+}

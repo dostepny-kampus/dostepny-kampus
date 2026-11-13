@@ -11,4 +11,7 @@
  *
  * @since 0.1.0
  */
+@ApplicationModule(allowedDependencies = {})
 package io.github.dostepnykampus.identity;
+
+import org.springframework.modulith.ApplicationModule;

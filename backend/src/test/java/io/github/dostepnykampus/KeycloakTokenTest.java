@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -36,6 +37,7 @@ import tools.jackson.databind.json.JsonMapper;
  *
  * @since 0.1.0
  */
+@Tag("kontekst-springa")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import(
     {

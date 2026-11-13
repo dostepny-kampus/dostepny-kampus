@@ -6,14 +6,10 @@
 package io.github.dostepnykampus;
 
 /**
- * Konflikt z bieżącym stanem zasobu na serwerze, np. nieaktualna wersja
- * zgłoszenia.
- *
- * <p>Obsługa błędów HTTP zamienia ten typ na 409
- * {@code application/problem+json} z komunikatem w {@code detail}
- * i bieżącym stanem we właściwości o nazwie {@link #property()} na
- * najwyższym poziomie odpowiedzi. Typ nie zależy od Spring Web ani
- * Jacksona.</p>
+ * Konflikt z bieżącym stanem zasobu na serwerze, np. nieaktualna wersja zgłoszenia.
+ * Obsługa błędów HTTP zamienia ten typ na 409 {@code application/problem+json}
+ * z komunikatem w {@code detail} i bieżącym stanem we właściwości {@link #property()}
+ * na najwyższym poziomie odpowiedzi. Typ nie zależy od Spring Web ani Jacksona.
  *
  * @since 0.1.0
  */
