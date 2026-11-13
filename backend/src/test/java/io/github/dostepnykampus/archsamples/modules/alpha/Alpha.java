@@ -12,6 +12,7 @@ import io.github.dostepnykampus.archsamples.modules.beta.Beta;
  *
  * @since 0.1.0
  */
+@FunctionalInterface
 public interface Alpha {
 
     /**
