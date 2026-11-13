@@ -20,8 +20,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.AnnotatedString
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -105,12 +103,12 @@ class CampusPathDeviceTest {
             DeviceEvidence.shell("settings put secure show_ime_with_hard_keyboard 1")
             compose.onNode(hasSetTextAction()).performClick().performTextInput("A-1")
             compose.onNode(hasSetTextAction()).assertIsFocused()
-            compose.waitUntil(timeoutMillis = WAIT_MS) { isKeyboardVisible() }
+            compose.waitUntil(timeoutMillis = WAIT_MS) { DeviceEvidence.isKeyboardVisible() }
             waitFor(BuildingA1InCatalog)
             DeviceEvidence.record("v1-keyboard")
             compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
             waitFor(hasText(CHECK))
-            compose.waitUntil(timeoutMillis = WAIT_MS) { !isKeyboardVisible() }
+            compose.waitUntil(timeoutMillis = WAIT_MS) { !DeviceEvidence.isKeyboardVisible() }
             compose.onAllNodes(hasSetTextAction() and isFocused()).assertCountEquals(0)
             DeviceEvidence.record("v2-no-keyboard")
             Espresso.pressBack()
@@ -119,7 +117,7 @@ class CampusPathDeviceTest {
             }
             waitFor(hasSetTextAction())
             compose.onNode(hasSetTextAction()).assertIsNotFocused()
-            compose.waitUntil(timeoutMillis = WAIT_MS) { !isKeyboardVisible() }
+            compose.waitUntil(timeoutMillis = WAIT_MS) { !DeviceEvidence.isKeyboardVisible() }
             DeviceEvidence.record("v1-after-back")
         } finally {
             val command =
@@ -132,10 +130,4 @@ class CampusPathDeviceTest {
         }
     }
 
-    private fun isKeyboardVisible(): Boolean =
-        compose.runOnIdle {
-            ViewCompat
-                .getRootWindowInsets(compose.activity.window.decorView)
-                ?.isVisible(WindowInsetsCompat.Type.ime()) == true
-        }
 }
