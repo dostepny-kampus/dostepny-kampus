@@ -24,7 +24,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Przełącznik ról wersji debug: wybór roli zmienia pasek dolny bez ponownego uruchomienia (US14.1, BR-1). */
+/** Przełącznik ról wersji debug: wybór roli zmienia pasek dolny bez ponownego uruchomienia. Wymagania: US14.1, BR-1 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class DebugRolesTest {
@@ -34,7 +34,7 @@ class DebugRolesTest {
 
     private val roles = DebugRoles()
 
-    /** Pasek dolny: rola pracownicza daje „Konto i praca”, Gość „Konto” (US14.1). */
+    /** Pasek dolny: rola pracownicza daje „Konto i praca”, Gość „Konto”. Wymagania: US14.1 */
     @Test
     fun debugRoleChangesBar() {
         compose.setContent {

@@ -20,7 +20,7 @@ import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.MapLibreMapView
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
-/** V1 ze stanem [viewModel] z grafu Hilt i zaznaczeniem [focus] z trasy (US1, US3.3, NFR-19). */
+/** V1 ze stanem [viewModel] z grafu Hilt i zaznaczeniem [focus] z trasy. Wymagania: US1, US3.3, NFR-19 */
 @Composable
 internal fun AppNavigator.HiltMapScreen(focus: MapFocus?, viewModel: CampusMapViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -33,11 +33,13 @@ internal fun AppNavigator.HiltMapScreen(focus: MapFocus?, viewModel: CampusMapVi
 }
 
 /**
- * V1 ze stanem [state] i zaznaczeniem [focus] z trasy, np. po „Wstecz” z V2 albo „Pokaż na mapie” (US1.1, US2.1),
- * z czynnościami podpiętymi do nawigatora; [onListChange] zapisuje wybór w przełączniku „Mapa” i „Lista budynków”
- * (NFR-19), a [onSearch] liczy wyszukiwanie w modelu widoku (#1053). Budynek z listy przy TalkBack otwiera V2
- * od razu na pełnym ekranie (NFR-19, decyzja 115). Przyciski i podpis OSM stoją nad arkuszem V2 (decyzja 87).
+ * V1 ze stanem [state] i zaznaczeniem [focus] z trasy, np. po „Wstecz” z V2 albo „Pokaż na mapie”,
+ * z czynnościami podpiętymi do nawigatora; [onListChange] zapisuje wybór w przełączniku „Mapa” i „Lista budynków”,
+ * a [onSearch] liczy wyszukiwanie w modelu widoku. Budynek z listy przy TalkBack otwiera V2
+ * od razu na pełnym ekranie. Przyciski i podpis OSM stoją nad arkuszem V2.
  * [mapView] w aplikacji to MapLibre, testy podają podróbkę.
+ *
+ * Wymagania: US1.1, US2.1, NFR-19
  */
 @Composable
 internal fun AppNavigator.MapScreen(

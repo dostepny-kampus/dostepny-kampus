@@ -48,7 +48,9 @@ import kotlinx.coroutines.launch
 
 /**
  * Przełącznik ról wersji debug, z osobną ikoną w launcherze: wybór roli loguje jej użytkownika testowego i zamyka
- * ekran, a błąd logowania zostawia rolę z komunikatem (US14.1). Wersja release go nie zawiera.
+ * ekran, a błąd logowania zostawia rolę z komunikatem. Wersja release go nie zawiera.
+ *
+ * Wymagania: US14.1
  */
 @AndroidEntryPoint
 class DebugRoleActivity : ComponentActivity() {

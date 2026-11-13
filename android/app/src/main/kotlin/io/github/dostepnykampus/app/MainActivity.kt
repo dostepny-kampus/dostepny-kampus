@@ -27,9 +27,11 @@ import io.github.dostepnykampus.feature.help.FirstLaunchViewModel
 import kotlinx.coroutines.launch
 
 /**
- * Jedyna aktywność aplikacji, rysowana od krawędzi do krawędzi. Po odczycie, czy to pierwsze uruchomienie (US5.1,
- * [FirstLaunchViewModel]), pokazuje oboczkę [AppShell] i zapamiętuje, że instrukcja została zamknięta. Konto i role
+ * Jedyna aktywność aplikacji, rysowana od krawędzi do krawędzi. Po odczycie, czy to pierwsze uruchomienie
+ * ([FirstLaunchViewModel]), pokazuje oboczkę [AppShell] i zapamiętuje, że instrukcja została zamknięta. Konto i role
  * bierze z grafu Hilt ([MainActivityEntryPoint]).
+ *
+ * Wymagania: US5.1
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -72,12 +74,12 @@ internal suspend fun MainActivity.deleteOrphanPhotos(queue: SubmissionQueue, kep
 @EntryPoint
 @InstallIn(ActivityComponent::class)
 interface MainActivityEntryPoint {
-    /** Konto i role osoby (US14.1). */
+    /** Konto i role osoby. Wymagania: US14.1 */
     fun roles(): RoleProvider
 
-    /** Wybór „Mapa” albo „Lista budynków” w V1 (NFR-19, decyzja 116). */
+    /** Wybór „Mapa” albo „Lista budynków” w V1. Wymagania: NFR-19 */
     fun mapListChoice(): MapListChoice
 
-    /** Kolejka zgłoszeń: prośba o logowanie po 401 i wznowienie po zalogowaniu (BR-26). */
+    /** Kolejka zgłoszeń: prośba o logowanie po 401 i wznowienie po zalogowaniu. Wymagania: BR-26 */
     fun submissionQueue(): SubmissionQueue
 }

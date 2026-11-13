@@ -32,7 +32,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.Base64
 
-/** Przełącznik debug loguje użytkownika testowego roli i bierze rolę konta z tokenu (BR-1, NFR-35). */
+/** Przełącznik debug loguje użytkownika testowego roli i bierze rolę konta z tokenu. Wymagania: BR-1, NFR-35 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class DebugSignInTest {
