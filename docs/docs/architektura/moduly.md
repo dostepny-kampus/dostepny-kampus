@@ -87,7 +87,6 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | --- | --- |
 | serwer ma puste moduły `review`, `sync`, a `ModularityTest` wymaga sześciu nazw | #1320 |
 | `shared` nie istnieje: błędy, JSON i `Wgs84` leżą w pakiecie głównym, geometria PUWG w `export` | #1321 |
-| moduły serwera nie mają listy zależności | #1322 |
 | korzenie `barrier`, `building`, `identity` zawierają wnętrze modułu | #1323, #1324, #1442 |
 | `barrier.domain` ma 22 pliki | #1439 |
 | Android ma moduły `:feature:auth`, `:feature:progress`, `:feature:review` bez kodu albo z jednym plikiem | #1327 |
@@ -101,7 +100,7 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | brak cykli i dostępu do wnętrza cudzego modułu serwera | `ModularityTest.infraVerifiesModuleBoundaries` |
 | moduł serwera ma kod i opis, bez stałej listy nazw | #1320 |
 | pakiet główny i lista podpakietów `shared` | #1321 |
-| jawna lista zależności modułu serwera | #1322 |
+| jawna lista zależności modułu serwera | `ModularityTest` (`modulesDeclareAllowedDependencies`, `infraVerifiesModuleBoundaries`) |
 | korzeń modułu serwera zawiera tylko API | #1443 |
 | `domain` bez frameworków, na `persistence` zależy tylko `persistence` | `BarrierArchitectureTest` (A-1…A-9), dziś tylko `barrier` |
 | kierunek i nazwy warstw w każdym module serwera | #1325 |

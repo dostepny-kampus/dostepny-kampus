@@ -14,7 +14,9 @@
  *
  * @since 0.1.0
  */
+@ApplicationModule(allowedDependencies = {})
 @NullMarked
 package io.github.dostepnykampus.sync;
 
 import org.jspecify.annotations.NullMarked;
+import org.springframework.modulith.ApplicationModule;
