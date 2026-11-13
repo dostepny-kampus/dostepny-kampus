@@ -173,6 +173,18 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     }
 
     @Override
+    public boolean authorOnly(final UUID id, final String account) {
+        return this.jdbc.sql(
+            """
+            SELECT EXISTS (
+                SELECT 1 FROM submissions
+                WHERE id = :id AND kind <> 'QUICK' AND author IS DISTINCT FROM :account
+            )
+            """
+        ).param("id", id).param("account", account).query(Boolean.class).single();
+    }
+
+    @Override
     public List<Submission> list(final SubmissionQuery query) {
         return this.select(query, null);
     }

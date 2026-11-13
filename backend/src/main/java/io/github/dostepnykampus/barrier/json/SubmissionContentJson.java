@@ -13,6 +13,7 @@ import io.github.dostepnykampus.barrier.domain.NewEntranceMarking;
 import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionKind;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
@@ -65,6 +66,23 @@ public record SubmissionContentJson(
     public boolean forCollector() {
         return this.replaces != null
             || !(this.kind == null || this.kind == SubmissionKind.QUICK);
+    }
+
+    /**
+     * Zastępowane zgłoszenie, gdy zmiana nie ma oznaczenia „bariera usunięta”
+     * (BR-18, BR-19).
+     *
+     * @return Identyfikator z pola replacesSubmissionId albo puste dla zgłoszenia
+     *  bez tego pola i dla zmiany „bariera usunięta”
+     */
+    public Optional<UUID> ordinaryChange() {
+        final Optional<UUID> change;
+        if (Boolean.TRUE.equals(this.barrier.barrierRemoved())) {
+            change = Optional.empty();
+        } else {
+            change = Optional.ofNullable(this.replaces);
+        }
+        return change;
     }
 
     /**

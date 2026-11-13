@@ -37,11 +37,6 @@ final class ForeignChangeHttpTest {
         "\"barrierGroup\":\"HORIZONTAL_CIRCULATION\",\"barrierType\":\"TB-13\",\"severity\":2"
     );
 
-    /**
-     * Pola zgłoszenia szybkiego.
-     */
-    private static final String QUICK = "\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\"";
-
     @Test
     void brEighteenRefusesOrdinaryChangeOfForeignPrecise(final WebApplicationContext context)
         throws Exception {
@@ -87,7 +82,7 @@ final class ForeignChangeHttpTest {
     void brEighteenAcceptsChangeOfForeignQuick(final WebApplicationContext context)
         throws Exception {
         final UUID quick = UUID.randomUUID();
-        ForeignChangeHttpTest.send(context, quick, ForeignChangeHttpTest.QUICK);
+        ForeignChangeHttpTest.send(context, quick, "\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\"");
         context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET author = 'inne-konto' WHERE id = :id")
             .param("id", quick).update();
@@ -129,14 +124,16 @@ final class ForeignChangeHttpTest {
         return context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.post("/submissions")
                 .contentType(MediaType.APPLICATION_JSON).with(new AsCollector())
-                .content(
-                    String.join(
-                        "",
-                        "{\"id\":\"", id.toString(), "\",", fields,
-                        ",\"location\":{\"type\":\"Point\",\"coordinates\":[17.06209,51.10785]},",
-                        "\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
-                    )
-                )
+                .content(ForeignChangeHttpTest.body(id, fields))
         ).andReturn().getResponse().getStatus();
+    }
+
+    private static String body(final UUID id, final String fields) {
+        return String.join(
+            "",
+            "{\"id\":\"", id.toString(), "\",", fields,
+            ",\"location\":{\"type\":\"Point\",\"coordinates\":[17.06209,51.10785]},",
+            "\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
+        );
     }
 }

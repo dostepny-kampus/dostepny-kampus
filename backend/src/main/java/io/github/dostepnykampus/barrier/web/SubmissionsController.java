@@ -12,12 +12,9 @@ import io.github.dostepnykampus.MissingResource;
 import io.github.dostepnykampus.barrier.SubmissionService;
 import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
-import io.github.dostepnykampus.barrier.domain.NewSubmission;
 import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.Submission;
-import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
-import io.github.dostepnykampus.barrier.domain.SubmissionKind;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -149,11 +146,11 @@ public final class SubmissionsController {
         if (body.content().forCollector() && !request.isUserInRole("COLLECTOR")) {
             throw new ForbiddenChange("To zgłoszenie składa tylko Zbierający");
         }
-        final NewSubmission command = body.toCommand(account.getName());
-        if (this.foreignChange(command)) {
+        if (body.content().ordinaryChange()
+            .filter(replaced -> this.finder.authorOnly(replaced, account.getName())).isPresent()) {
             throw new ForbiddenChange("Zwykłą zmianę tego zgłoszenia składa tylko jego autor");
         }
-        final CreateResult result = this.service.create(command);
+        final CreateResult result = this.service.create(body.toCommand(account.getName()));
         final HttpStatus status;
         if (result instanceof CreateResult.Created) {
             status = HttpStatus.CREATED;
@@ -191,15 +188,6 @@ public final class SubmissionsController {
             case EditResult.Missing _ -> throw new MissingResource(SubmissionsController.MISSING);
             case null -> throw new IllegalStateException("Brak wyniku edycji zgłoszenia");
         };
-    }
-
-    private boolean foreignChange(final NewSubmission command) {
-        final SubmissionContent content = command.content();
-        return content.replaces() != null && !content.barrier().removed()
-            && this.finder.foreign(content.replaces(), command.author())
-            && this.finder.find(content.replaces())
-                .filter(replaced -> replaced.content().kind() != SubmissionKind.QUICK)
-                .isPresent();
     }
 
     private static String name(@Nullable final Principal account) {
