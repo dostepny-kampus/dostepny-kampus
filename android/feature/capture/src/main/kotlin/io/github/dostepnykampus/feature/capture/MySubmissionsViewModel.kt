@@ -9,6 +9,7 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.submissions.OwnStatuses
 import io.github.dostepnykampus.core.data.submissions.OwnSubmission
 import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
@@ -86,8 +87,13 @@ sealed interface MySubmissionsUiState {
      *
      * @property list zgłoszenia
      * @property check sprawdzanie statusów z serwera
+     * @property isOnline czy telefon ma połączenie z internetem
      */
-    data class Ready(val list: MySubmissions, val check: StatusCheck = StatusCheck.DONE) : MySubmissionsUiState
+    data class Ready(
+        val list: MySubmissions,
+        val check: StatusCheck = StatusCheck.DONE,
+        val isOnline: Boolean = true,
+    ) : MySubmissionsUiState
 }
 
 /**
@@ -97,14 +103,17 @@ sealed interface MySubmissionsUiState {
 @HiltViewModel
 class MySubmissionsViewModel
     @Inject
-    constructor(history: OwnSubmissions, private val statuses: OwnStatuses) :
-    ViewModel() {
+    constructor(
+        history: OwnSubmissions,
+        private val statuses: OwnStatuses,
+        networkStatus: NetworkStatus,
+    ) : ViewModel() {
         private val check = MutableStateFlow(StatusCheck.CHECKING)
 
         /** Lista od najnowszego; zmienia się po każdym zapisie, wysyłce z kolejki i sprawdzeniu statusów. */
         val state: StateFlow<MySubmissionsUiState> =
-            combine(history.observe(), check) { rows, current ->
-                MySubmissionsUiState.Ready(MySubmissions(rows.map { it.toItem() }), current)
+            combine(history.observe(), check, networkStatus.isOnline()) { rows, current, online ->
+                MySubmissionsUiState.Ready(MySubmissions(rows.map { it.toItem() }), current, isOnline = online)
             }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), MySubmissionsUiState.Loading)
 
         init {

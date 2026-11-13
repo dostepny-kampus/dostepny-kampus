@@ -32,11 +32,13 @@ import java.time.Instant
 class MySubmissionsViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val rows = MutableStateFlow<List<OwnSubmission>>(emptyList())
+    private val online = MutableStateFlow(true)
     private val refreshes = mutableListOf<CompletableDeferred<StatusRefresh>>()
     private val viewModel by lazy {
         MySubmissionsViewModel(
             history = { rows },
             statuses = { CompletableDeferred<StatusRefresh>().also(refreshes::add).await() },
+            networkStatus = { online },
         )
     }
 
@@ -57,6 +59,36 @@ class MySubmissionsViewModelTest {
             collect()
 
             assertEquals(MySubmissions(emptyList()), list())
+        }
+
+    /**
+     * Utrata i powrót sieci zmieniają wskaźnik, zachowując lokalne zgłoszenie.
+     * Scenariusz (częściowo): synchronizacja.feature: Bez sieci widać wskaźnik,
+     *   a zgłoszenie czeka ze statusem „lokalne”
+     */
+    @Test
+    fun `sieć nie zmienia zgłoszeń`() =
+        runTest(dispatcher) {
+            rows.value =
+                listOf(
+                    row(id = "a", state = SendState.LOCAL),
+                    row(id = "b", state = SendState.SENT),
+                    row(id = "c", state = SendState.REFUSED, refusal = RefusalReason.NOT_ACCEPTED),
+                )
+            collect()
+            val shown = list()
+            assertEquals(true, (viewModel.state.value as MySubmissionsUiState.Ready).isOnline)
+
+            online.value = false
+            runCurrent()
+            assertEquals(false, (viewModel.state.value as MySubmissionsUiState.Ready).isOnline)
+            assertEquals(shown, list())
+            assertEquals(listOf(SendState.LOCAL, SendState.SENT, SendState.REFUSED), list().items.map { it.state })
+
+            online.value = true
+            runCurrent()
+            assertEquals(true, (viewModel.state.value as MySubmissionsUiState.Ready).isOnline)
+            assertEquals(shown, list())
         }
 
     @Test

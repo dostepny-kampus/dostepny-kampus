@@ -9,7 +9,12 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -54,6 +59,33 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.").assertIsDisplayed()
         compose.onNodeWithText("Zmierz i zgłoś barierę").performClick()
         assertEquals(1, measured)
+    }
+
+    /**
+     * Wskaźnik sieci znika po połączeniu, a zgłoszenie nadal jest w telefonie; zmianę odczytuje TalkBack.
+     * Scenariusz (częściowo): synchronizacja.feature: Bez sieci widać wskaźnik,
+     *   a zgłoszenie czeka ze statusem „lokalne”
+     */
+    @Test
+    fun us9_1_offline_indicator() {
+        var isOnline by mutableStateOf(false)
+        val list = MySubmissions(listOf(item(id = "a", state = SendState.LOCAL)))
+        compose.setContent {
+            DostepnyKampusTheme {
+                MySubmissionsContent(
+                    state = MySubmissionsUiState.Ready(list, isOnline = isOnline),
+                    actions = MySubmissionsActions(onBack = {}, onMeasure = {}),
+                )
+            }
+        }
+        compose.onNodeWithText("Bez internetu").assertIsDisplayed()
+        compose.onNodeWithText("W telefonie").assertIsDisplayed()
+        val polite = SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite)
+        compose.onNode(polite and hasAnyDescendant(hasText("Bez internetu"))).assertExists()
+
+        isOnline = true
+        compose.onNodeWithText("Bez internetu").assertDoesNotExist()
+        compose.onNodeWithText("W telefonie").assertIsDisplayed()
     }
 
     /**
