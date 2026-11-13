@@ -120,6 +120,18 @@ class QuickReportScreenTest {
         assertEquals(1, toMap)
     }
 
+    /**
+     * Wiersz: V4 potwierdzenie z siecią → zgłoszenie trafi do weryfikacji, bez listy zgłoszeń i statusów, US4.4.
+     * Scenariusz: zgloszenie-szybkie.feature: Potwierdzenie po wysłaniu bez dalszego statusu
+     */
+    @Test
+    fun us4_4_sent_no_status() {
+        show(ReportRoute(step = ReportStep.SENT))
+        compose.onNodeWithText("Sprawdzimy zdjęcie", substring = true).assertIsDisplayed()
+        val statuses = listOf("Moje zgłoszenia", "Wysłane", "W weryfikacji")
+        statuses.forEach { compose.onNodeWithText(it).assertDoesNotExist() }
+    }
+
     /** Wiersz: V4 krok 1 ze zdjęciem, „Wstecz” → potwierdzenie rezygnacji, US4.8. */
     @Test
     fun us4_8_leave_after_confirm() {
@@ -144,7 +156,10 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Zrób zdjęcie").assertIsDisplayed()
     }
 
-    /** Wiersz: V4 brak sieci → „Zapisaliśmy zdjęcie w telefonie…” i „Wróć do mapy”, US4.2. */
+    /**
+     * Wiersz: V4 brak sieci → „Zapisaliśmy zdjęcie w telefonie…” i „Wróć do mapy”, US4.2. Napis nie mówi o weryfikacji.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Potwierdzenie bez sieci mówi o późniejszej wysyłce
+     */
     @Test
     fun us4_2_sent_offline() {
         show(ReportRoute(step = ReportStep.SENT, isSavedOffline = true))
