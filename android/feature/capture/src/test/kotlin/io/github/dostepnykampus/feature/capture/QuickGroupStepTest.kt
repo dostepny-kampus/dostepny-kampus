@@ -19,6 +19,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.assertWidthIsAtLeast
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -41,14 +42,31 @@ class QuickGroupStepTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** Wiersz: V4 krok 2, wybór grupy → krok 3 albo pytanie o piętro, US4.3. */
+    /**
+     * Wiersz: V4 krok 2, 6 grup dużymi przyciskami co najmniej 48 × 48 dp, bez pytań o typ i uciążliwość; wybór
+     * grupy → krok 3 albo pytanie o piętro, US4.3, NFR-17. Napisy to prostsze nazwy grup z V4 (PW-7).
+     * Scenariusz: zgloszenie-szybkie.feature: Wybór jednej z 6 grup barier dużymi przyciskami
+     */
     @Test
     fun us4_3_six_groups() {
         val chosen = mutableListOf<BarrierGroup>()
         compose.setContent { DostepnyKampusTheme { QuickGroupQuestion(onGroup = { chosen.add(it) }) } }
         compose.onNodeWithText("Czego dotyczy bariera?").assertIsDisplayed()
-        listOf("Wejście i drzwi", "Schody i windy", "Przejścia i chodniki", "Toalety", "Napisy i oznaczenia")
-            .forEach { compose.onNodeWithText(it).assertIsDisplayed() }
+        val groups =
+            listOf(
+                "Wejście i drzwi",
+                "Schody i windy",
+                "Przejścia i chodniki",
+                "Toalety",
+                "Napisy i oznaczenia",
+                "Coś innego",
+            )
+        groups.forEach { label ->
+            val button = compose.onNodeWithText(label).assertIsDisplayed()
+            button.assertHeightIsAtLeast(48.dp).assertWidthIsAtLeast(48.dp)
+        }
+        val notAsked = listOf("Typ bariery", "Uciążliwość")
+        notAsked.forEach { compose.onNodeWithText(it, substring = true).assertDoesNotExist() }
         compose.onNodeWithText("Coś innego").performClick()
         assertEquals(listOf(BarrierGroup.OTHER), chosen)
     }
