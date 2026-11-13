@@ -105,10 +105,8 @@ jobs:
             ./mvnw -B -q -Dqulice.skip=true -Djacoco.skip=true "-Dpit.cele=$cele" org.pitest:pitest-maven:mutationCoverage || true
             czas=$((SECONDS - start))
             f=target/pit-reports/mutations.xml
-            wynik="$(grep -o 'status=.[A-Z_]*' "$f" 2>/dev/null | sort | uniq -c | tr '
-' ' ' || true)"
-            klasy="$(grep -o '<mutatedClass>[^<]*' "$f" 2>/dev/null | sed 's/<mutatedClass>//' | sort | uniq -c | tr '
-' ' ' || true)"
+            wynik="$(grep -o 'status=.[A-Z_]*' "$f" 2>/dev/null | sort | uniq -c | tr '\n' ' ' || true)"
+            klasy="$(grep -o '<mutatedClass>[^<]*' "$f" 2>/dev/null | sed 's/<mutatedClass>//' | sort | uniq -c | tr '\n' ' ' || true)"
             echo "POMIAR | $cele | ${czas}s | $wynik" | tee -a "$GITHUB_STEP_SUMMARY"
             echo "KLASY | $cele | $klasy" | tee -a "$GITHUB_STEP_SUMMARY"
             echo "" >> "$GITHUB_STEP_SUMMARY"
