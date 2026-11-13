@@ -54,6 +54,29 @@ class MeasuredPlaceTest {
         assertNull(MeasureUiState.Searching.reportFormRoute())
     }
 
+    /**
+     * Wiersz: C1 po pomiarze, punkt przesunięty w B-8, w A-1 i przed wejściem A-1 poza budynkiem → miejsce zgłoszenia
+     *   ma nowe położenie i oznaczenie „korekta ręczna”. Gest na mapie C1 dochodzi w #1273.
+     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Korekta punktu na mapie w każdym budynku i poza budynkiem
+     */
+    @Test
+    fun us6_4_corrected_point() {
+        val b8 = a1.copy(symbol = "B-8", name = null)
+        val moved = GeoPoint(longitude = 17.06215, latitude = 51.10790)
+        val places =
+            listOf(PlaceChoice.Chosen(b8), PlaceChoice.Chosen(a1), PlaceChoice.Outside).map { choice ->
+                finished(choice).copy(corrected = moved).reportFormRoute()?.place()
+            }
+        assertEquals(List(3) { moved to true }, places.map { it?.location to it?.isManualCorrection })
+    }
+
+    /** Wiersz: C1 bez korekty → miejsce ze średnią z pomiaru, bez oznaczenia „korekta ręczna”. Wymagania: US6.4 */
+    @Test
+    fun us6_4_no_correction() {
+        val place = finished(PlaceChoice.Outside).reportFormRoute()?.place()
+        assertEquals(point to false, place?.location to place?.isManualCorrection)
+    }
+
     @Test
     fun us7_4_place_from_route() {
         val place = route(symbol = "A-1", name = "Gmach Główny").place()
