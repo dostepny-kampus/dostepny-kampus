@@ -132,6 +132,29 @@ class MeasureViewModelTest {
             assertEquals(MeasureUiState.Finished::class, viewModel.uiState.value::class)
         }
 
+    /**
+     * „Powtórz pomiar” po 10 s uśredniania zaczyna je od nowa: 29 s po nowym odczycie pomiar trwa, po 31 s jest
+     * zakończony (US6.1).
+     * Scenariusz: pomiar-precyzyjny.feature: Uśrednianie można przerwać i zacząć od nowa
+     */
+    @Test
+    fun us6_1_repeat_while_averaging() =
+        runTest(dispatcher) {
+            watch()
+            fix(accuracy = 6.0)
+            advanceTimeBy(10_000)
+            assertEquals(MeasureUiState.Measuring::class, viewModel.uiState.value::class)
+
+            viewModel.repeat()
+            runCurrent()
+            assertEquals(MeasureUiState.Searching, viewModel.uiState.value)
+            fix(accuracy = 6.0)
+            advanceTimeBy(29_000)
+            assertEquals(MeasureUiState.Measuring::class, viewModel.uiState.value::class)
+            advanceTimeBy(2_000)
+            assertEquals(MeasureUiState.Finished::class, viewModel.uiState.value::class)
+        }
+
     /** „Powtórz pomiar” zaczyna od szukania satelitów, bez limitu powtórzeń. */
     @Test
     fun nfr23_repeat_starts_over() =
