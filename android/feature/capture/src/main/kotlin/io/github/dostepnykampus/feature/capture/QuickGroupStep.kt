@@ -6,20 +6,26 @@
 package io.github.dostepnykampus.feature.capture
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.FloorOption
 import io.github.dostepnykampus.core.designsystem.FloorOptions
 import io.github.dostepnykampus.core.designsystem.FloorPicker
 import io.github.dostepnykampus.core.designsystem.FloorPickerLayout
+import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.Floor
@@ -55,15 +61,22 @@ internal fun BarrierGroup.quickLabel(): Int =
 
 /**
  * Krok 2 V4: „Czego dotyczy bariera?” i 6 dużych przycisków grup na całą szerokość, bez ikon (US4.3, NFR-17).
+ * Grupa wybrana wcześniej, np. po powrocie z kroku 3, jest zaznaczona obwódką, tłem i znakiem „✓”, a TalkBack czyta
+ * ją jako wybraną (US4.8, NFR-21).
  *
+ * @param selected grupa wybrana wcześniej; `null` przy pierwszym wejściu do kroku
  * @param onGroup wybrana grupa
  */
 @Composable
-internal fun QuickGroupQuestion(onGroup: (BarrierGroup) -> Unit) {
+internal fun QuickGroupQuestion(selected: BarrierGroup? = null, onGroup: (BarrierGroup) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(stringResource(R.string.szybkie_pytanie_grupa))
         BarrierGroup.entries.forEach { group ->
-            BigChoice(text = stringResource(group.quickLabel()), onClick = { onGroup(group) })
+            BigChoice(
+                text = stringResource(group.quickLabel()),
+                isSelected = group == selected,
+                onClick = { onGroup(group) },
+            )
         }
     }
 }
@@ -117,10 +130,25 @@ internal fun quickFloorAnswers(
 }
 
 private const val UNKNOWN_KEY = "?"
+private const val SELECTED_MARK = "✓"
 
 @Composable
-private fun BigChoice(text: String, onClick: () -> Unit) {
-    OutlinedButton(onClick = onClick, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)) {
-        Text(text)
+private fun BigChoice(text: String, onClick: () -> Unit, isSelected: Boolean = false) {
+    val colors = MaterialTheme.colorScheme
+    OutlinedButton(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk).semantics { selected = isSelected },
+        border = if (isSelected) BorderStroke(Obramowania.wybrane, colors.onPrimaryContainer) else null,
+        colors =
+            if (isSelected) {
+                ButtonDefaults.outlinedButtonColors(
+                    containerColor = colors.primaryContainer,
+                    contentColor = colors.onPrimaryContainer,
+                )
+            } else {
+                ButtonDefaults.outlinedButtonColors()
+            },
+    ) {
+        Text(if (isSelected) "$SELECTED_MARK $text" else text)
     }
 }

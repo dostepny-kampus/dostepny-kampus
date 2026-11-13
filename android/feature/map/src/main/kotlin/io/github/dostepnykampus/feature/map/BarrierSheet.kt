@@ -38,7 +38,7 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.Severity
 import java.time.ZoneId
 
-private val CampusZone = ZoneId.of("Europe/Warsaw")
+internal val CampusZone: ZoneId = ZoneId.of("Europe/Warsaw")
 
 /**
  * Arkusz bariery na dole mapy V1 po dotknięciu znaku (US1.5): plakietka uciążliwości ze znakiem i słowem (NFR-21),

@@ -156,6 +156,7 @@ fun CampusMapScreen(
                     search = state.search,
                     onSearch = onSearch,
                     isOnline = state.isOnline,
+                    syncedAt = state.syncedAt,
                     isList = isList,
                     areas = areas.order,
                     onListChange = onListChange,

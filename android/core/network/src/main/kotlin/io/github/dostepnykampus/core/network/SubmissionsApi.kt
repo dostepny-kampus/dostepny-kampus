@@ -81,6 +81,21 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
         }
 
     /**
+     * Zdjęcie zgłoszenia przyjętego jako JPEG do arkusza bariery i karty budynku (US1.5, US2.2, BR-6). Zdjęcie,
+     * którego serwer nie pokazuje, daje [ApiResult.NotFound].
+     *
+     * @param submissionId identyfikator zgłoszenia
+     * @param photoId identyfikator zdjęcia z listy `photoIds`
+     */
+    suspend fun photo(submissionId: String, photoId: String): ApiResult<ByteArray> {
+        val photoRequest =
+            request(target = path(submissionId, PHOTOS, photoId), body = null, method = GET, accept = PHOTO_TYPES)
+        return photoHttp.exchangeBody(photoRequest) { code, body ->
+            if (code == HTTP_OK) ApiResult.Success(body.bytes()) else other(code)
+        }
+    }
+
+    /**
      * Zgłoszenia przyjęte do mapy i karty budynku (`status=ACCEPTED`, US1.3, US2.2, BR-6).
      *
      * @param buildingSymbol tylko zgłoszenia z tego budynku; `null` dla wszystkich
@@ -108,8 +123,13 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
         }
     }
 
-    private fun request(target: HttpUrl, body: RequestBody?, method: String): Request {
-        val builder = Request.Builder().url(target).header(name = ACCEPT, value = ACCEPTED_TYPES)
+    private fun request(
+        target: HttpUrl,
+        body: RequestBody?,
+        method: String,
+        accept: String = ACCEPTED_TYPES,
+    ): Request {
+        val builder = Request.Builder().url(target).header(name = ACCEPT, value = accept)
         return builder.method(method, body).build()
     }
 
@@ -123,6 +143,7 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
         const val PHOTO_TIMEOUT_SECONDS = 60L
         const val ACCEPT = "Accept"
         const val ACCEPTED_TYPES = "application/json, application/problem+json"
+        const val PHOTO_TYPES = "image/jpeg, application/problem+json"
         const val SUBMISSIONS = "submissions"
         const val PHOTOS = "photos"
         const val GET = "GET"

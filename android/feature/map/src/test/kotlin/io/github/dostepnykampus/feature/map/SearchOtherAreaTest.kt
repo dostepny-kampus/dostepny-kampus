@@ -85,6 +85,7 @@ class SearchOtherAreaTest {
                 search = search,
                 onSearch = { query -> search = BuildingSearch(query, searchBuildings(query, catalog.buildings)) },
                 isOnline = true,
+                syncedAt = null,
                 isList = false,
                 areas = areas,
                 onListChange = {},

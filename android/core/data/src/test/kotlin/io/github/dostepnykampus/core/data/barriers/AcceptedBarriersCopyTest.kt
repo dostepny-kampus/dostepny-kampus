@@ -42,6 +42,19 @@ class AcceptedBarriersCopyTest {
             assertEquals(SYNCED, dao.entity?.syncedAt)
         }
 
+    /** Wiersz: źródło podaje chwilę pobrania barier z odpowiedzi i z kopii; bez obu jej nie ma (NFR-10, #1127). */
+    @Test
+    fun nfr10_synced_at() =
+        runBlocking {
+            val none = source { OFFLINE }.apply { barriers() }.syncedAt()
+            val one = listOf(submission(id = "z1", content = precise(type = null, symbol = null)))
+            val online = source { ApiResult.Success(one) }.apply { barriers() }.syncedAt()
+            val offline = source { OFFLINE }.apply { barriers() }.syncedAt()
+
+            val synced = Instant.ofEpochMilli(SYNCED)
+            assertEquals(listOf(null, synced, synced), listOf(none, online, offline))
+        }
+
     /** Wiersz: arkusz bariery, miejsce i zdjęcie także z kopii; starsza kopia bez tych pól dalej się czyta (US1.5). */
     @Test
     fun us1_5_place_and_photos() =

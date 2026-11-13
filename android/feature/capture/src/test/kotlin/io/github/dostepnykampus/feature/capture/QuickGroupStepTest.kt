@@ -16,7 +16,10 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.assertWidthIsAtLeast
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -39,16 +42,45 @@ class QuickGroupStepTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** Wiersz: V4 krok 2, wybór grupy → krok 3 albo pytanie o piętro, US4.3. */
+    /**
+     * Wiersz: V4 krok 2, 6 grup dużymi przyciskami co najmniej 48 × 48 dp, bez pytań o typ i uciążliwość; wybór
+     * grupy → krok 3 albo pytanie o piętro, US4.3, NFR-17. Napisy to prostsze nazwy grup z V4 (PW-7).
+     * Scenariusz: zgloszenie-szybkie.feature: Wybór jednej z 6 grup barier dużymi przyciskami
+     */
     @Test
     fun us4_3_six_groups() {
         val chosen = mutableListOf<BarrierGroup>()
         compose.setContent { DostepnyKampusTheme { QuickGroupQuestion(onGroup = { chosen.add(it) }) } }
         compose.onNodeWithText("Czego dotyczy bariera?").assertIsDisplayed()
-        listOf("Wejście i drzwi", "Schody i windy", "Przejścia i chodniki", "Toalety", "Napisy i oznaczenia")
-            .forEach { compose.onNodeWithText(it).assertIsDisplayed() }
+        val groups =
+            listOf(
+                "Wejście i drzwi",
+                "Schody i windy",
+                "Przejścia i chodniki",
+                "Toalety",
+                "Napisy i oznaczenia",
+                "Coś innego",
+            )
+        groups.forEach { label ->
+            val button = compose.onNodeWithText(label).assertIsDisplayed()
+            button.assertHeightIsAtLeast(48.dp).assertWidthIsAtLeast(48.dp)
+        }
+        val notAsked = listOf("Typ bariery", "Uciążliwość")
+        notAsked.forEach { compose.onNodeWithText(it, substring = true).assertDoesNotExist() }
         compose.onNodeWithText("Coś innego").performClick()
         assertEquals(listOf(BarrierGroup.OTHER), chosen)
+    }
+
+    /**
+     * Wiersz: V4 krok 2 po powrocie, grupa wybrana wcześniej jest zaznaczona dla oka i dla TalkBack, US4.8, NFR-21.
+     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Powrót między krokami nie usuwa zdjęcia ani grupy
+     *   barier
+     */
+    @Test
+    fun us4_8_group_stays_selected() {
+        compose.setContent { DostepnyKampusTheme { QuickGroupQuestion(selected = BarrierGroup.TOILETS, onGroup = {}) } }
+        compose.onNodeWithText("✓ Toalety").assertIsSelected()
+        compose.onNodeWithText("Coś innego").assertIsNotSelected()
     }
 
     /** Wiersz: V4 krok 2, pytanie o piętro → „Nie wiem” zostawia piętro puste, US4.5. */

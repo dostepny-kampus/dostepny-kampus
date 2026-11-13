@@ -58,15 +58,22 @@ class ReportEditTest {
         assertEquals(0.5, state.form.place.accuracyMeters)
     }
 
+    /**
+     * Zmiana miejsca do innego budynku albo na ulicę kasuje piętro, a wybrany typ zostaje (US7.4). Brak pola piętra na
+     * ulicy sprawdza `ReportScreenTest`.
+     * Scenariusz (częściowo): pomiar-precyzyjny.feature: Piętro zostaje po zmianie miejsca tylko w tym samym budynku
+     */
     @Test
     fun `inny budynek kasuje piętro`() {
         val state =
             start
                 .edited(ReportEdit.Floor(ReportFloor.Planned("A-1-0")))
+                .edited(ReportEdit.Type(BarrierType.STAIRS_AT_ENTRANCE))
                 .edited(ReportEdit.Place(A1.copy(buildingSymbol = "C-13")))
 
         assertNull(state.form.floor)
         assertEquals("C-13", state.form.place.buildingSymbol)
+        assertEquals(BarrierType.STAIRS_AT_ENTRANCE, state.form.barrierType)
     }
 
     @Test
@@ -74,9 +81,11 @@ class ReportEditTest {
         val state =
             start
                 .edited(ReportEdit.Floor(ReportFloor.Planned("A-1-0")))
+                .edited(ReportEdit.Type(BarrierType.STAIRS_AT_ENTRANCE))
                 .edited(ReportEdit.Place(A1.copy(buildingSymbol = null)))
 
         assertNull(state.form.floor)
+        assertEquals(BarrierType.STAIRS_AT_ENTRANCE, state.form.barrierType)
     }
 
     @Test

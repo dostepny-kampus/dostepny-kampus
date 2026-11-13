@@ -17,6 +17,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.SocketPolicy
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -98,6 +99,28 @@ class SubmissionsApiTest {
         val recorded = server.takeRequest()
         assertEquals("/submissions/$ID/photos/$PHOTO", recorded.path)
         assertEquals("image/jpeg", recorded.getHeader("Content-Type"))
+    }
+
+    /** Wiersz: arkusz bariery, zdjęcie zgłoszenia przyjętego jako JPEG, US1.5, US2.2. */
+    @Test
+    fun us1_5_photo_download() {
+        val content = "zdjecie-jpeg"
+        val response = MockResponse().setResponseCode(200).setHeader(name = "Content-Type", value = "image/jpeg")
+        server.enqueue(response.setBody(content))
+        val jpeg = content.toByteArray()
+        val result = blocking { photo(submissionId = ID, photoId = PHOTO) }
+        assertArrayEquals(jpeg, (result as ApiResult.Success).value)
+        val recorded = server.takeRequest()
+        assertEquals("GET", recorded.method)
+        assertEquals("/submissions/$ID/photos/$PHOTO", recorded.path)
+        assertTrue(recorded.getHeader("Accept").orEmpty().startsWith("image/jpeg"))
+    }
+
+    /** Wiersz: arkusz bariery, zdjęcia nie ma na serwerze → brak zdjęcia, nie błąd, US1.5. */
+    @Test
+    fun us1_5_photo_missing() {
+        enqueue(code = 404, body = """{"status":404}""")
+        assertEquals(ApiResult.NotFound, blocking { photo(submissionId = ID, photoId = PHOTO) })
     }
 
     @Test

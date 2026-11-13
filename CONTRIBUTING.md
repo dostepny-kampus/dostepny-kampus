@@ -75,6 +75,23 @@ PR do `sprint/N` dostaje kamień milowy „Sprint N” i, jeśli nikt nie jest p
 ([`sprint-pr.yml`](.github/workflows/sprint-pr.yml), [`sprint-pr.sh`](.github/scripts/sprint-pr.sh)).
 Ręcznie ustawione pola zostają bez zmian.
 
+## Kontrola zawieszona w stanie „in_progress”
+
+Zdarza się, że job kończy wszystkie kroki, przebieg ma `completed`, a check run tego jobu zostaje w stanie `in_progress`
+(z ustawionym `completed_at` i `conclusion`). PR czeka wtedy na wymaganą kontrolę bez końca, a kolejka scalania go nie
+przyjmuje (#1006). Przyczyna leży po stronie GitHub Actions.
+
+Rozpoznanie: check run w toku, który ma już datę zakończenia.
+
+```sh
+sha="$(gh pr view <numer> --json headRefOid --jq .headRefOid)"
+gh api "repos/{owner}/{repo}/commits/${sha}/check-runs" --paginate   --jq '.check_runs[] | select(.status == "in_progress" and .completed_at != null) | "\(.name) \(.html_url)"'
+```
+
+Naprawa: ponów przebieg z tym jobem, np. `gh run rerun <id przebiegu> --failed` albo przyciskiem „Re-run all jobs”;
+nowa próba tworzy nowe check runy, a wynik z poprzedniej przestaje się liczyć. Każde wystąpienie dopisz w #1006
+z odnośnikiem do jobu.
+
 ## Przed otwarciem PR
 
 - Uruchom lokalnie testy skryptów, które zmieniasz, np. `bash .github/scripts/pr-od-issue-test.sh`.
