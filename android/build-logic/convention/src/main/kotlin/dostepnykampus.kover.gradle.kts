@@ -13,8 +13,9 @@ plugins {
 /**
  * Moduły poza progiem pokrycia: kod `core:designsystem` uruchamiają tylko testy Robolectric (zrzuty Roborazzi),
  * a ich wykonania Kover nie rejestruje, więc moduł sprawdzają zrzuty.
+ * Moduł `systemtest` to sam APK testów aplikacji uruchamiany z serwerem; nie ma kodu do pokrycia.
  */
-val coverageExcludedProjects = setOf(":core:designsystem")
+val coverageExcludedProjects = setOf(":core:designsystem", ":systemtest")
 
 /**
  * Klasy poza progiem pokrycia: widok MapLibre (`feature:map`) uruchamia natywną bibliotekę mapy na ARM,

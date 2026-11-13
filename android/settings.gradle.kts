@@ -39,4 +39,5 @@ include(
     ":feature:progress",
     ":feature:help",
     ":detekt-rules",
+    ":systemtest",
 )
