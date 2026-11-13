@@ -34,8 +34,10 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Lista budynków V1 z nagłówkami terenów (US1.8, NFR-18, NFR-19) na budynkach testowych „Budynek testowy” (nie dane
+ * Lista budynków V1 z nagłówkami terenów na budynkach testowych „Budynek testowy” (nie dane
  * PWr): mapa pokazuje teren „Wittigowo”, więc stoi on na liście pierwszy.
+ *
+ * Wymagania: US1.8, NFR-18, NFR-19
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -56,7 +58,9 @@ class BuildingListTest {
 
     /**
      * Wiersz: V1, lista budynków ma nagłówki terenów z liczbą budynków, teren pokazany na mapie pierwszy; nagłówek
-     * jest nagłówkiem dla TalkBack (US1.8, NFR-18, NFR-19).
+     * jest nagłówkiem dla TalkBack.
+     *
+     * Wymagania: US1.8, NFR-18, NFR-19
      */
     @Test
     fun us1_8_area_headings_in_order() {
@@ -70,7 +74,11 @@ class BuildingListTest {
         assertTrue(building.bottom <= second.getUnclippedBoundsInRoot().top)
     }
 
-    /** Wiersz: V1, wpisany symbol zawęża listę, a teren bez pasującego budynku nie ma nagłówka (US1.8, NFR-19). */
+    /**
+     * Wiersz: V1, wpisany symbol zawęża listę, a teren bez pasującego budynku nie ma nagłówka.
+     *
+     * Wymagania: US1.8, NFR-19
+     */
     @Test
     fun us1_8_query_drops_empty_area() {
         compose.setContent { List(query = "c13") }
@@ -79,7 +87,7 @@ class BuildingListTest {
         compose.onNodeWithContentDescription("T-15, Budynek testowy").assertDoesNotExist()
     }
 
-    /** Wiersz: V1, budynek z innego terenu na liście zgłasza swój symbol (US1.8). */
+    /** Wiersz: V1, budynek z innego terenu na liście zgłasza swój symbol. Wymagania: US1.8 */
     @Test
     fun us1_8_building_click_reported() {
         compose.setContent { List(query = "") }

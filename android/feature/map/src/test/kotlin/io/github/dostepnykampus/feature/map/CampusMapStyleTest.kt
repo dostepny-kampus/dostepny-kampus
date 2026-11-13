@@ -59,7 +59,9 @@ class CampusMapStyleTest {
 
     /**
      * Podkład jest przygaszony i prześwituje przez niego tło lądu, więc budynki PWr są najwyraźniejsze; zieleń, woda
-     * i ulice zostają rozpoznawalne, bo barwy nie znikają całkiem (makieta hi-fi V1, NFR-16).
+     * i ulice zostają rozpoznawalne, bo barwy nie znikają całkiem (makieta hi-fi V1).
+     *
+     * Wymagania: NFR-16
      */
     @Test
     fun nfr16_basemap_muted_not_grey() {
@@ -79,8 +81,10 @@ class CampusMapStyleTest {
     }
 
     /**
-     * Wiersz: V1, obszar poza terenem jest przyciemniony, a granicę pokazuje linia (US1.7, BR-G5): wielokąt
+     * Wiersz: V1, obszar poza terenem jest przyciemniony, a granicę pokazuje linia: wielokąt
      * przyciemnienia ma otwór o brzegach terenu, a linia biegnie po tych samych brzegach.
+     *
+     * Wymagania: US1.7, BR-G5
      */
     @Test
     fun us1_7_outside_dimmed_edge_line() {
@@ -102,7 +106,11 @@ class CampusMapStyleTest {
         assertEquals("#111111", layers.single { it.text("id") == EDGE_LAYER }.obj("paint").text("line-color"))
     }
 
-    /** Wiersz: V1, mapa zostaje na obszarze kampusu; podkładu spoza tego prostokąta aplikacja nie pobiera (NFR-39). */
+    /**
+     * Wiersz: V1, mapa zostaje na obszarze kampusu; podkładu spoza tego prostokąta aplikacja nie pobiera.
+     *
+     * Wymagania: NFR-39
+     */
     @Test
     fun nfr39_basemap_only_campus_area() {
         val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
@@ -132,7 +140,7 @@ class CampusMapStyleTest {
         assertEquals(null, style.array("layers").find { it.jsonObject.text("id") == SELECTED_LAYER })
     }
 
-    /** Warstwy warunkowe stoją w stałej kolejności; bez granic i zaznaczeń ich nie ma (US1.7, US3.3). */
+    /** Warstwy warunkowe stoją w stałej kolejności; bez granic i zaznaczeń ich nie ma. Wymagania: US1.7, US3.3 */
     @Test
     fun us1_7_optional_layer_order() {
         val bare = Json.parseToJsonElement(styled(MapSelection()))

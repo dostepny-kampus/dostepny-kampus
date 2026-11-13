@@ -39,9 +39,11 @@ private const val COMPUTE_THREAD = "map-geometry-test"
 private const val OUTLINES = 5
 
 /**
- * Gdzie i ile razy ViewModel V1 liczy geometrię mapy: na podróbce funkcji liczącej, bez pomiaru czasu (NFR-11).
+ * Gdzie i ile razy ViewModel V1 liczy geometrię mapy: na podróbce funkcji liczącej, bez pomiaru czasu.
  * Test czeka na zdarzenie (policzona geometria w stanie), nie na upływ czasu; liczenie zapisuje wątek, zanim zwróci
  * dane do stanu. Zawieszenie przy błędzie w kodzie kończy limit `runTest`.
+ *
+ * Wymagania: NFR-11
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class CampusMapGeometryTest {
@@ -93,8 +95,10 @@ class CampusMapGeometryTest {
 
     /**
      * Wiersz: W3, O5, katalog z pliku → geometria liczona w kontekście obliczeń, nie w wątku wywołującym, a stan niesie
-     *   gotowe dane mapy, NFR-11. Wątek liczący kończy pracę przed `resetMain`, więc jego wznowienie nie trafi do
+     *   gotowe dane mapy. Wątek liczący kończy pracę przed `resetMain`, więc jego wznowienie nie trafi do
      *   następnego testu.
+     *
+     * Wymagania: NFR-11
      */
     @Test
     fun nfr11_geometry_in_compute() =
@@ -116,7 +120,9 @@ class CampusMapGeometryTest {
 
     /**
      * Wiersz: W3, jeden katalog, potem zmiana internetu i wyboru „Lista” → ta sama geometria i jedno wywołanie
-     *   funkcji liczącej, nie przeliczenie przy każdej zmianie stanu, NFR-11.
+     *   funkcji liczącej, nie przeliczenie przy każdej zmianie stanu.
+     *
+     * Wymagania: NFR-11
      */
     @Test
     fun nfr11_geometry_once_catalog() =
@@ -134,7 +140,9 @@ class CampusMapGeometryTest {
 
     /**
      * Wiersz: W3, anulowanie, przerwany wątek liczący katalog z kilkoma konturami → liczenie rzuca przerwanie, nie
-     *   zwraca wyniku (zamknięcie ekranu przerywa pracę CPU), NFR-11.
+     *   zwraca wyniku (zamknięcie ekranu przerywa pracę CPU).
+     *
+     * Wymagania: NFR-11
      */
     @Test
     fun nfr11_interrupt_stops_compute() {

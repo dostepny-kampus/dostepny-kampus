@@ -20,13 +20,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-/** Miejsce bariery słowami do arkusza bariery na V1 (US1.5). */
+/** Miejsce bariery słowami do arkusza bariery na V1. Wymagania: US1.5 */
 @RunWith(RobolectricTestRunner::class)
 class BarrierPlaceTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** Wiersz: arkusz bariery, miejsce to budynek i wejście albo piętro (US1.5). */
+    /** Wiersz: arkusz bariery, miejsce to budynek i wejście albo piętro. Wymagania: US1.5 */
     @Test
     fun us1_5_building_entrance_floor() {
         val barrier = barrier(symbol = "A-1", floor = SubmissionFloor(number = 0))
@@ -36,7 +36,7 @@ class BarrierPlaceTest {
         compose.onNodeWithText("A-1 Gmach Główny · Wejście Cesarskie, parter").assertExists()
     }
 
-    /** Wiersz: budynek bez nazwy to „Budynek C-13”, piętro z dopiskiem „półpiętro” (US1.5). */
+    /** Wiersz: budynek bez nazwy to „Budynek C-13”, piętro z dopiskiem „półpiętro”. Wymagania: US1.5 */
     @Test
     fun us1_5_no_name_mezzanine() {
         val barrier = barrier(symbol = "C-13", floor = SubmissionFloor(number = 2, isMezzanine = true))
@@ -45,7 +45,7 @@ class BarrierPlaceTest {
         compose.onNodeWithText("Budynek C-13 · piętro 2, półpiętro").assertExists()
     }
 
-    /** Wiersz: bariera poza budynkiem ma „Poza budynkiem” (US1.5, BR-G2). */
+    /** Wiersz: bariera poza budynkiem ma „Poza budynkiem”. Wymagania: US1.5, BR-G2 */
     @Test
     fun us1_5_outside_building() {
         show(ChosenBarrier(barrier = barrier(symbol = null, floor = null), building = null, entrance = null))

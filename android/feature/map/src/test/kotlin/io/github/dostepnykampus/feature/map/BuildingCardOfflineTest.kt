@@ -21,7 +21,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** V2 Karta budynku bez internetu (NFR-10, US2.8). */
+/** V2 Karta budynku bez internetu. Wymagania: NFR-10, US2.8 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class BuildingCardOfflineTest {
@@ -30,7 +30,9 @@ class BuildingCardOfflineTest {
 
     /**
      * Wiersz: V2 bez internetu → linia „Bez internetu” bez daty jak na V1, ze stanu sieci telefonu; po powrocie
-     *   sieci linia znika, NFR-10, US2.8, decyzje 84, 115.
+     *   sieci linia znika.
+     *
+     * Wymagania: NFR-10, US2.8
      */
     @Test
     fun nfr10_offline_line_on_card() {
@@ -64,7 +66,11 @@ class BuildingCardOfflineTest {
         compose.onNodeWithText("Bez internetu").assertDoesNotExist()
     }
 
-    /** Wiersz: V2, stan sieci jeszcze nie przyszedł → brak linii „Bez internetu”, żeby nie mignęła, NFR-10, US2.8. */
+    /**
+     * Wiersz: V2, stan sieci jeszcze nie przyszedł → brak linii „Bez internetu”, żeby nie mignęła.
+     *
+     * Wymagania: NFR-10, US2.8
+     */
     @Test
     fun nfr10_no_line_before_state() {
         val repository =

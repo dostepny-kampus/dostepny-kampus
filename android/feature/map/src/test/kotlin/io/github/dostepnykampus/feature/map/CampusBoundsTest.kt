@@ -26,8 +26,10 @@ class CampusBoundsTest {
 
     /**
      * Wiersz: V1, mapa zostaje na wybranym terenie: w prostokącie z konturami budynków tego terenu, powiększonym
-     * o 500 m z każdej strony (US1.7, BR-G5, NFR-39), nie tylko przy budynku startowym. Na 60° szerokości 500 m
+     * o 500 m z każdej strony, nie tylko przy budynku startowym. Na 60° szerokości 500 m
      * na wschód to dwa razy więcej stopni niż 500 m na północ.
+     *
+     * Wymagania: US1.7, BR-G5, NFR-39
      */
     @Test
     fun nfr39_area_plus_500_m() {
@@ -39,7 +41,9 @@ class CampusBoundsTest {
 
     /**
      * Wiersz: V1, budynek innego terenu, dalej niż 600 m od budynków terenu z budynkiem startowym, nie powiększa
-     * prostokąta mapy, a mapa pokazana na tym budynku ma prostokąt jego terenu (US1.8, BR-G5, NFR-39).
+     * prostokąta mapy, a mapa pokazana na tym budynku ma prostokąt jego terenu.
+     *
+     * Wymagania: US1.8, BR-G5, NFR-39
      */
     @Test
     fun br_g5_other_area_left_out() {
@@ -54,8 +58,9 @@ class CampusBoundsTest {
     }
 
     /**
-     * Wiersz: V1, prostokąt obszaru kampusu wynika z konturów w danych aplikacji, inne kontury dają inny prostokąt
-     * (NFR-39).
+     * Wiersz: V1, prostokąt obszaru kampusu wynika z konturów w danych aplikacji, inne kontury dają inny prostokąt.
+     *
+     * Wymagania: NFR-39
      */
     @Test
     fun nfr39_bounds_from_data() {
@@ -66,7 +71,9 @@ class CampusBoundsTest {
 
     /**
      * Wiersz: V1, strzałki przesuwania zatrzymują się na granicy obszaru kampusu bez komunikatu; środek widoku nie
-     * wychodzi poza prostokąt (NFR-53, NFR-39).
+     * wychodzi poza prostokąt.
+     *
+     * Wymagania: NFR-53, NFR-39
      */
     @Test
     fun nfr53_arrows_stop_at_edge() {
@@ -86,7 +93,9 @@ class CampusBoundsTest {
 
     /**
      * Wiersz: V1, najmniejsze powiększenie to takie, przy którym cały prostokąt mieści się w widoku; bardziej
-     * oddalić mapy się nie da (NFR-39). Na równiku pas 360/2^14 stopnia ma przy powiększeniu 14 dokładnie 512 dp.
+     * oddalić mapy się nie da. Na równiku pas 360/2^14 stopnia ma przy powiększeniu 14 dokładnie 512 dp.
+     *
+     * Wymagania: NFR-39
      */
     @Test
     fun nfr39_min_zoom_whole_campus() {

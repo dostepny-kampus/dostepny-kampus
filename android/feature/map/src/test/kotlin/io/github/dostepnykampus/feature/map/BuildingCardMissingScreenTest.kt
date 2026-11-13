@@ -32,7 +32,7 @@ private const val NEW_BUILDING =
         """"display_name":"Nowy budynek","osm_id":"way/2"},""" +
         """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}"""
 
-/** V2 Karta budynku, gdy budynku nie ma w katalogu zapisanym w telefonie (US2.7, NFR-10). */
+/** V2 Karta budynku, gdy budynku nie ma w katalogu zapisanym w telefonie. Wymagania: US2.7, NFR-10 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class BuildingCardMissingScreenTest {
@@ -63,8 +63,9 @@ class BuildingCardMissingScreenTest {
     }
 
     /**
-     * Wiersz: V2, symbolu nie ma w katalogu → napis „Tego budynku nie ma jeszcze w telefonie” i „Spróbuj ponownie”,
-     *   NFR-10, US2.7.
+     * Wiersz: V2, symbolu nie ma w katalogu → napis „Tego budynku nie ma jeszcze w telefonie” i „Spróbuj ponownie”.
+     *
+     * Wymagania: NFR-10, US2.7
      */
     @Test
     fun nfr10_unknown_shows_missing() {
@@ -73,7 +74,11 @@ class BuildingCardMissingScreenTest {
         compose.onNodeWithText(RETRY_TEXT).assertIsDisplayed()
     }
 
-    /** Wiersz: V2, symbol jest w katalogu → brak napisu „Tego budynku nie ma jeszcze w telefonie”, NFR-10, US2.7. */
+    /**
+     * Wiersz: V2, symbol jest w katalogu → brak napisu „Tego budynku nie ma jeszcze w telefonie”.
+     *
+     * Wymagania: NFR-10, US2.7
+     */
     @Test
     fun nfr10_known_hides_missing() {
         showCard("A-1")
@@ -84,7 +89,9 @@ class BuildingCardMissingScreenTest {
 
     /**
      * Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” → katalog czytany od nowa, a gdy budynek już w nim
-     *   jest, karta budynku zamiast napisu, NFR-10.
+     *   jest, karta budynku zamiast napisu.
+     *
+     * Wymagania: NFR-10
      */
     @Test
     fun nfr10_retry_click_reads_again() {
