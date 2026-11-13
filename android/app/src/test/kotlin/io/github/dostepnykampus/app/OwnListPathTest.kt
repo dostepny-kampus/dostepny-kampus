@@ -143,6 +143,7 @@ class OwnListPathTest {
             MySubmissionsViewModel(
                 history = OwnSubmissions { flowOf(list) },
                 statuses = OwnStatuses { StatusRefresh.OFFLINE },
+                networkStatus = { flowOf(false) },
             )
         compose.setContent {
             val state by viewModel.state.collectAsState()

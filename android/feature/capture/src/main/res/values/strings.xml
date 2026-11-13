@@ -117,6 +117,7 @@
     <string name="szybkie_wejscie_glowne">Wejście: główne</string>
     <string name="szybkie_wejscie_bez_nazwy">Wejście: bez nazwy</string>
     <string name="moje_naglowek">Moje zgłoszenia</string>
+    <string name="moje_bez_internetu">Bez internetu</string>
     <string name="moje_czeka">Czeka na wysłanie: %1$d</string>
     <string name="moje_pusty">Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.</string>
     <string name="moje_w_telefonie">W telefonie</string>

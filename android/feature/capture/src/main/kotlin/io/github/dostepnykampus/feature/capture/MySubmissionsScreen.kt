@@ -82,7 +82,7 @@ private fun SubmissionList(state: MySubmissionsUiState.Ready, actions: MySubmiss
             ListTop(list = state.list, onMeasure = actions.onMeasure)
         }
         item {
-            StatusCheckLine(check = state.check, onRetry = onRetry)
+            StatusCheckLine(check = state.check, isOnline = state.isOnline, onRetry = onRetry)
         }
         items(state.list.items, key = { it.id }) { item ->
             val open = actions.onOpen.takeIf { item.state != SendState.SENT }
@@ -107,11 +107,14 @@ private fun ListTop(list: MySubmissions, onMeasure: () -> Unit) {
 }
 
 @Composable
-private fun StatusCheckLine(check: StatusCheck, onRetry: () -> Unit) {
+private fun StatusCheckLine(check: StatusCheck, isOnline: Boolean, onRetry: () -> Unit) {
     Column(
         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
         verticalArrangement = Arrangement.spacedBy(Odstepy.s),
     ) {
+        if (!isOnline) {
+            Text(stringResource(R.string.moje_bez_internetu), style = MaterialTheme.typography.bodyMedium)
+        }
         when (check) {
             StatusCheck.CHECKING -> {
                 Text(stringResource(R.string.moje_sprawdzamy), style = MaterialTheme.typography.bodyMedium)
