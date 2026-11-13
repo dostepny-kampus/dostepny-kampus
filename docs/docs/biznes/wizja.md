@@ -67,8 +67,7 @@ Zachowanie na poziomach 2 i 3 opisują reguły BR-G1…BR-G4 na stronie [Reguły
 
 - nawigacja piesza po trasie, także wewnątrz budynków;
 - wersja na iOS i publikacja w Google Play;
-- funkcje oparte na sztucznej inteligencji i uczeniu maszynowym;
-- czat i powiadomienia push.
+- czat między użytkownikami i powiadomienia push.
 
 ## Źródła
 
