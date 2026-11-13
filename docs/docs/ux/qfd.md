@@ -129,7 +129,7 @@ Udział to ważność podzielona przez 720, zaokrąglona do 0,1 punktu procentow
 5. **US14, US1, US7 i US8 mają niski wynik, bo QFD liczy tylko wkład bezpośredni.** Każda jest warunkiem historyjki „Musi być”, którą wskazuje tabela, więc sama też musi być.
 6. **US8 może mieć niedoszacowany związek z N2.** Zbierający zaczyna zmianę „bariera usunięta” w US8.4, a po jej przyjęciu bariera znika z mapy (US10.6), co tekst pod kryteriami wiąże z N2. Macierz liczy N2 tylko po stronie Weryfikatora (US10), bo tabela historyjek nie wiąże US8 z N2.
 7. **N4 ma wagę 5, a w macierzy tylko jeden silny związek (US4).** Potrzebę N4 realizują głównie wymagania przekrojowe NFR-15…NFR-24, NFR-51, obecne na każdym ekranie. Dlatego wymagania ekranów i makiety sprawdzają dostępność na każdym ekranie, a nie tylko w historyjkach z N4.
-7. **Wynik zależy od wag pod kurs UX.** US6, US11 i US13 są w środku rankingu, bo potrzeby zespołu N5–N9 mają wagę 3. Dla kursu Mobilne, gdzie pomiar GNSS i eksport są rdzeniem, te wagi byłyby wyższe.
+8. **Wynik zależy od wag pod kurs UX.** US6, US11 i US13 są w środku rankingu, bo potrzeby zespołu N5–N9 mają wagę 3. Dla kursu Mobilne, gdzie pomiar GNSS i eksport są rdzeniem, te wagi byłyby wyższe.
 
 ## Źródła
 
