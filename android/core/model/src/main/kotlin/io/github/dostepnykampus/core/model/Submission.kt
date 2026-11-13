@@ -10,13 +10,15 @@ import java.time.Instant
 /**
  * Zgłoszenie zapisane na serwerze (`Submission` z kontraktu API).
  *
+ * Wymagania: BR-3, BR-10, BR-16, BR-17
+ *
  * @property id identyfikator UUID nadany w telefonie
- * @property version wersja zgłoszenia, od 1; rośnie po każdej zapisanej edycji (BR-3, BR-10)
+ * @property version wersja zgłoszenia, od 1; rośnie po każdej zapisanej edycji
  * @property status status na serwerze
  * @property createdAt chwila odbioru zgłoszenia przez serwer
  * @property content treść ustalona przez składającego
- * @property rejectionReason powód odrzucenia widoczny dla autora (BR-16); `null` poza odrzuceniem
- * @property verifiedAt chwila przyjęcia (BR-17); `null` przed przyjęciem
+ * @property rejectionReason powód odrzucenia widoczny dla autora; `null` poza odrzuceniem
+ * @property verifiedAt chwila przyjęcia; `null` przed przyjęciem
  */
 data class Submission(
     val id: String,
@@ -32,7 +34,7 @@ data class Submission(
     }
 }
 
-/** Status zgłoszenia na serwerze (`SubmissionStatus`, US8.1). Status „lokalne” istnieje tylko w telefonie. */
+/** Status zgłoszenia na serwerze (`SubmissionStatus`). Status „lokalne” istnieje tylko w telefonie. Wymagania: US8.1 */
 enum class SubmissionStatus {
     /** Wysłane: serwer ma zgłoszenie, Weryfikator go jeszcze nie wziął. */
     SENT,
@@ -40,12 +42,12 @@ enum class SubmissionStatus {
     /** W weryfikacji: Weryfikator wziął zgłoszenie. */
     IN_REVIEW,
 
-    /** Przyjęte: zgłoszenie jest na mapie i na karcie budynku (BR-6). */
+    /** Przyjęte: zgłoszenie jest na mapie i na karcie budynku. Wymagania: BR-6 */
     ACCEPTED,
 
-    /** Odrzucone z powodem (BR-16); autor może je poprawić. */
+    /** Odrzucone z powodem; autor może je poprawić. Wymagania: BR-16 */
     REJECTED,
 
-    /** Archiwalne: zastąpione przyjętą zmianą (BR-18). */
+    /** Archiwalne: zastąpione przyjętą zmianą. Wymagania: BR-18 */
     ARCHIVED,
 }

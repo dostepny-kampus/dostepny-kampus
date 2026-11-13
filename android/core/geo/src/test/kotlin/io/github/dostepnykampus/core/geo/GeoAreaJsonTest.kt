@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-/** Kontur budynku jako pole JSON (#828): odczyt, zapis i zła geometria, na kształtach testowych. */
+/** Kontur budynku jako pole JSON: odczyt, zapis i zła geometria, na kształtach testowych. */
 class GeoAreaJsonTest {
     private val json = Json
 

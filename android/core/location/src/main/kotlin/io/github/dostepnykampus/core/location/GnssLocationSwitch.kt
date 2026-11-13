@@ -17,8 +17,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
  * Włącznik lokalizacji z systemowego [LocationManager]: stan dostawcy GPS od razu, a potem po każdym systemowym
- * zdarzeniu zmiany dostawców. Stan wynika ze zdarzenia, nie z upływu czasu (NFR-23). Nasłuch trwa, dopóki ktoś
- * zbiera przepływ (NFR-27).
+ * zdarzeniu zmiany dostawców. Stan wynika ze zdarzenia, nie z upływu czasu. Nasłuch trwa, dopóki ktoś
+ * zbiera przepływ.
+ *
+ * Wymagania: NFR-23, NFR-27
  */
 class GnssLocationSwitch(private val context: Context) : LocationSwitch {
     /** Stan włącznika od teraz, bez powtórzeń tej samej wartości. */
