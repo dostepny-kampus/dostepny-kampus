@@ -43,7 +43,7 @@ QGIS nie jest aktorem. Koordynator otwiera w nim plik eksportu poza systemem, a 
 | UC13 | Oznaczenie piętra obejrzanego | Zbierający | US15 | V2, C5 | Musi być |
 | UC14 | Weryfikacja zgłoszenia | Weryfikator | US10 | R1, R2 | Musi być |
 | UC15 | Przegląd postępu inwentaryzacji | Koordynator | US11 | K1 | Musi być |
-| UC16 | Zaproszenie osoby z rolą | Koordynator | US12 | K2 | Powinno być |
+| UC16 | Zaproszenie osoby z rolą | Koordynator | US12 | K2 | Może być |
 | UC17 | Eksport do QGIS | Koordynator | US13 | K3 | Musi być |
 | UC18 | Zmiana oznaczenia wejścia | Zbierający | US17.2, US17.3 | V2, C6 | Musi być |
 | UC19 | Wyszukanie sali | Gość niezalogowany | US18 | V1 | Powinno być |
