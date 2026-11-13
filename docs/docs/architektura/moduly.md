@@ -89,7 +89,7 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | Odstępstwo | Issue |
 | --- | --- |
 | `shared` nie istnieje: błędy, JSON i `Wgs84` leżą w pakiecie głównym, geometria PUWG w `export` | #1321 |
-| korzenie `barrier`, `building`, `identity` zawierają wnętrze modułu | #1323, #1324, #1442 |
+| korzenie `barrier` i `building` zawierają wnętrze modułu | #1323, #1324 |
 | `barrier.domain` ma 22 pliki | #1439 |
 | `:core:data` udostępnia `:core:database` przez `api(...)`, testy funkcji zależą od bazy i sieci | #1328 |
 | `:feature:map` i `:feature:capture` mają po około 40 plików w jednym pakiecie | #1330, #1331 |
