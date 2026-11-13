@@ -103,7 +103,11 @@ class MySubmissionsScreenTest {
         assertEquals(listOf("a"), opened)
     }
 
-    /** Wiersz: C3 „Nie wysłano” → powód i „Otwórz” do poprawki w C2, bez liczenia w „Czeka na wysłanie”, US9.5. */
+    /**
+     * Wiersz: C3 „Nie wysłano” → powód i „Otwórz” do poprawki w C2, bez liczenia w „Czeka na wysłanie”, US9.5.
+     * Scenariusz (częściowo): synchronizacja.feature: Odrzucona treść albo zdjęcie
+     *   zostawia zgłoszenie ze statusem „Nie wysłano”
+     */
     @Test
     fun us9_5_refused_open() {
         val refused = item(id = "a", state = SendState.REFUSED).copy(refusal = RefusalReason.NOT_ACCEPTED)
