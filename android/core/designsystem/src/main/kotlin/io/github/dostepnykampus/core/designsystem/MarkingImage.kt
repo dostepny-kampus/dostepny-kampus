@@ -79,8 +79,10 @@ internal fun DrawScope.drawMarking(shape: Path, mark: Path, shapeColor: Color, m
 }
 
 /**
- * Znak oznaczenia jako obraz [sizePx] × [sizePx] dla warstw mapy (US2.1, NFR-21), z tych samych kształtów co
+ * Znak oznaczenia jako obraz [sizePx] × [sizePx] dla warstw mapy, z tych samych kształtów co
  * [MarkingChip]: [shapeColor] to kształt, [markColor] znak w nim.
+ *
+ * Wymagania: US2.1, NFR-21
  */
 fun markingImage(marking: EntranceMarking, sizePx: Int, shapeColor: Color, markColor: Color): Bitmap {
     val look = marking.look()

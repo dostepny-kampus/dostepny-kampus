@@ -8,6 +8,8 @@ package io.github.dostepnykampus.core.model
 /**
  * Wejście do budynku z oznaczeniem wejścia (`Entrance` z kontraktu API).
  *
+ * Wymagania: US17.3
+ *
  * @property id identyfikator wejścia
  * @property buildingSymbol symbol budynku, do którego prowadzi wejście
  * @property name opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”; `null`, gdy dane go nie podają
@@ -16,7 +18,7 @@ package io.github.dostepnykampus.core.model
  *   poza danymi OSM
  * @property location położenie wejścia
  * @property marking oznaczenie wejścia z danych
- * @property assessment dzień i źródło oznaczenia z serwera (US17.3); `null` dla wejścia z pliku konturów,
+ * @property assessment dzień i źródło oznaczenia z serwera; `null` dla wejścia z pliku konturów,
  *   który ich nie podaje
  */
 data class Entrance(
@@ -29,7 +31,7 @@ data class Entrance(
     val marking: EntranceMarking,
     val assessment: EntranceAssessment? = null,
 ) {
-    /** Czy rodzaj wejścia kwalifikuje je do pokazania odwiedzającym (BR-25). */
+    /** Czy rodzaj wejścia kwalifikuje je do pokazania odwiedzającym. Wymagania: BR-25 */
     val isForVisitors: Boolean
         get() =
             when (type) {

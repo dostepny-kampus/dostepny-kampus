@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-/** Pola C2 z treści zapisanej w kolejce telefonu (US8.3, BR-G4). */
+/** Pola C2 z treści zapisanej w kolejce telefonu. Wymagania: US8.3, BR-G4 */
 class PendingEditMappingTest {
     private val photo = PendingPhotoDraft(photoId = "p1", path = "/data/p1.jpg")
 

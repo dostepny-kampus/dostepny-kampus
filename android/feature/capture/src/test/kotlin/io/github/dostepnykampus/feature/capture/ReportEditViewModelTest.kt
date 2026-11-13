@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-/** Poprawka z C3 wczytuje zgłoszenie z kolejki raz na ekran (US8.3). */
+/** Poprawka z C3 wczytuje zgłoszenie z kolejki raz na ekran. Wymagania: US8.3 */
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReportEditViewModelTest {
     private val dispatcher = StandardTestDispatcher()

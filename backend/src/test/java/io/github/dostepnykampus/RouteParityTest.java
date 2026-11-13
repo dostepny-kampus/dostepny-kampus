@@ -21,7 +21,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
- * Parytet tras serwera i kontraktu {@code api/openapi.yaml} (decyzja 122).
+ * Parytet tras serwera i kontraktu {@code api/openapi.yaml}.
  *
  * <p>Operacja to para "METODA ścieżka" z {@link ContractOperation}; nazwy
  * zmiennych w ścieżce nie mają znaczenia, a prefiks z {@code servers} jest doliczany.

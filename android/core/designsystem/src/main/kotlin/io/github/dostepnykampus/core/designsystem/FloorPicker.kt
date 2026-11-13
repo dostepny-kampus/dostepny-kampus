@@ -38,7 +38,7 @@ data class FloorOption(val key: String, val label: String)
  */
 data class FloorOptions(val items: List<FloorOption>)
 
-/** Układ wyboru piętra (wymagania wspólne, decyzja z #903). */
+/** Układ wyboru piętra (wymagania wspólne). */
 enum class FloorPickerLayout {
     /** Lista przycisków na całą szerokość: pytanie o piętro jest jedyną treścią kroku (V4). */
     LIST,
@@ -48,10 +48,12 @@ enum class FloorPickerLayout {
 }
 
 /**
- * Wspólny wybór piętra na V4 i C2 (US4.5, US7.2). TalkBack czyta grupę jako wybór jednej opcji, a każdą opcję
- * z rolą przycisku opcji i stanem „wybrane” (NFR-18). Wybraną opcję widać po obwódce [Obramowania.wybrane]
- * i znaku ✓, nie po samym kolorze (NFR-21). Cel dotyku ma co najmniej [CeleDotyku.minimum], a w liście
- * [CeleDotyku.przycisk] (NFR-17); napis rośnie z czcionką (NFR-20).
+ * Wspólny wybór piętra na V4 i C2. TalkBack czyta grupę jako wybór jednej opcji, a każdą opcję
+ * z rolą przycisku opcji i stanem „wybrane”. Wybraną opcję widać po obwódce [Obramowania.wybrane]
+ * i znaku ✓, nie po samym kolorze. Cel dotyku ma co najmniej [CeleDotyku.minimum], a w liście
+ * [CeleDotyku.przycisk]; napis rośnie z czcionką.
+ *
+ * Wymagania: US4.5, US7.2, NFR-18, NFR-21, NFR-17, NFR-20
  *
  * @param options opcje do wyboru
  * @param selectedKey klucz wybranej opcji albo `null`, gdy nic nie wybrano

@@ -6,8 +6,10 @@
 package io.github.dostepnykampus.core.model
 
 /**
- * Typ bariery z klasyfikacji TB-1…TB-29 w słowniku projektu, przypisany do jednej z sześciu grup barier (BR-7).
+ * Typ bariery z klasyfikacji TB-1…TB-29 w słowniku projektu, przypisany do jednej z sześciu grup barier.
  * Nazwy dla ludzi są w zasobach ekranów; tu jest tylko kod kontraktu i grupa.
+ *
+ * Wymagania: BR-7
  *
  * @property code kod typu wysyłany w polu `barrierType` zgłoszenia, np. `TB-13`
  * @property group grupa barier, w której formularz C2 pokazuje typ
@@ -101,7 +103,7 @@ enum class BarrierType(val code: String, val group: BarrierGroup) {
     OTHER_BARRIER("TB-29", BarrierGroup.OTHER),
     ;
 
-    /** Opis jest obowiązkowy tylko przy TB-29 „inna bariera” (US7.3). */
+    /** Opis jest obowiązkowy tylko przy TB-29 „inna bariera”. Wymagania: US7.3 */
     val isDescriptionRequired: Boolean
         get() = this == OTHER_BARRIER
 
@@ -113,7 +115,9 @@ enum class BarrierType(val code: String, val group: BarrierGroup) {
 }
 
 /**
- * Uciążliwość bariery 1–3 oceniana dla osoby, dla której bariera jest najtrudniejsza (US7.1, PW-13).
+ * Uciążliwość bariery 1–3 oceniana dla osoby, dla której bariera jest najtrudniejsza (PW-13).
+ *
+ * Wymagania: US7.1
  *
  * @property value wartość pola `severity` w kontrakcie
  */

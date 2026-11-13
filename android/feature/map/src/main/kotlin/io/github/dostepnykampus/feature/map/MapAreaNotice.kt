@@ -20,8 +20,10 @@ import io.github.dostepnykampus.core.designsystem.Wysokosci
 
 /**
  * Napis „Pokazuję teren: Wittigowo” nad podpisem mapy według makiety hi-fi: mapa zmieniła teren, bo zaznaczony
- * budynek leży na terenie [area] (US1.8). TalkBack czyta go sam, raz (NFR-18). Zostaje bez limitu czasu, dopóki
- * osoba nie ruszy mapy przyciskiem albo nie wybierze terenu (NFR-23).
+ * budynek leży na terenie [area]. TalkBack czyta go sam, raz. Zostaje bez limitu czasu, dopóki
+ * osoba nie ruszy mapy przyciskiem albo nie wybierze terenu.
+ *
+ * Wymagania: US1.8, NFR-18, NFR-23
  */
 @Composable
 internal fun AreaNotice(area: String, modifier: Modifier = Modifier) {

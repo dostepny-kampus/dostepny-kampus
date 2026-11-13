@@ -44,7 +44,7 @@ private const val SHOW_ENTRANCE = "Pokaż wejście na mapie"
 
 private val ShowButton = hasClickAction() and hasContentDescription("$SHOW_ENTRANCE: »Boczne«")
 
-/** „Pokaż wejście na mapie” na V2 od dotknięcia do V1 z zaznaczonym wejściem (US3.3, US2.1, BR-25). */
+/** „Pokaż wejście na mapie” na V2 od dotknięcia do V1 z zaznaczonym wejściem. Wymagania: US3.3, US2.1, BR-25 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class ShowEntranceTest {
@@ -55,7 +55,9 @@ class ShowEntranceTest {
 
     /**
      * Wiersz: V2 pełny ekran, wejście zalecane nie jest pierwsze w danych ani główne → „Pokaż wejście na mapie” przy
-     *   nim prowadzi do V1 z zaznaczonym tym wejściem i budynkiem karty, US3.3, US2.1, BR-25.
+     *   nim prowadzi do V1 z zaznaczonym tym wejściem i budynkiem karty.
+     *
+     * Wymagania: US3.3, US2.1, BR-25
      */
     @Test
     fun us3_3_show_opens_v1_entrance() {

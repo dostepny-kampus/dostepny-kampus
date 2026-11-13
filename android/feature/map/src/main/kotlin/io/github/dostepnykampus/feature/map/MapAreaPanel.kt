@@ -52,7 +52,9 @@ private val FEW = 2..4
 private val TEENS = 12..14
 
 /**
- * Lista terenów do panelu „Teren na mapie”: pokazany pierwszy, pozostałe od najbliższego (US1.7).
+ * Lista terenów do panelu „Teren na mapie”: pokazany pierwszy, pozostałe od najbliższego.
+ *
+ * Wymagania: US1.7
  *
  * @property choices tereny w kolejności listy
  */
@@ -61,8 +63,10 @@ internal data class AreaList(val choices: List<AreaChoice>)
 
 /**
  * Panel „Teren na mapie” mapy V1 według makiety hi-fi: nagłówek z „Zamknij”, który się nie przewija, i lista
- * terenów. Wiersz terenu ma nazwę, pod nią np. „9 budynków · 2 km”, a pokazany teren „· wybrany” i znak „✓”
- * (US1.7). Po otwarciu fokus stoi na nagłówku (NFR-20).
+ * terenów. Wiersz terenu ma nazwę, pod nią np. „9 budynków · 2 km”, a pokazany teren „· wybrany” i znak „✓”.
+ * Po otwarciu fokus stoi na nagłówku.
+ *
+ * Wymagania: US1.7, NFR-20
  *
  * @param areas lista terenów
  * @param onClose dotknięcie „Zamknij”

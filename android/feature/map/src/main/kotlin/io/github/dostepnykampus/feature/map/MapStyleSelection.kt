@@ -20,12 +20,14 @@ private const val SYMBOLS = "symbols"
 
 /**
  * Barwa konturów przy zaznaczonym konturze budynków [outline]: [own] dla niego, [other] dla pozostałych, więc
- * sąsiednie budynki są przygaszone (US2.8, decyzja 153). Bez zaznaczenia wszystkie kontury mają barwę [own].
+ * sąsiednie budynki są przygaszone. Bez zaznaczenia wszystkie kontury mają barwę [own].
+ *
+ * Wymagania: US2.8
  */
 internal fun tone(outline: List<String>?, own: String, other: String): JsonElement =
     outline?.let { expression("case", anyOf(it), JsonPrimitive(own), JsonPrimitive(other)) } ?: JsonPrimitive(own)
 
-/** Warstwa grubszego obrysu `pwr_wybrany` z filtrem [filter] z [SelectionLook.selectedFilter] (US1.1). */
+/** Warstwa grubszego obrysu `pwr_wybrany` z filtrem [filter] z [SelectionLook.selectedFilter]. Wymagania: US1.1 */
 internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObject =
     lineLayer(
         id = SELECTED_LAYER,
@@ -57,8 +59,10 @@ internal data class SelectionLook(
 /**
  * Pola stylu dla zaznaczenia [selection] na mapie z danymi [data] i barwami [colors]. Kontur budynku
  * [MapSelection.building] ma obrys, a przy zaznaczonym budynku bez wejścia pozostałe budynki są przygaszone
- * i znaki wejść ma tylko on (US1.1, US1.4, US2.8). Bez zaznaczenia filtry obrysu i bariery niczego nie
- * przepuszczają, filtr wejść przepuszcza wszystkie, a źródło wejścia jest puste (US2.1, NFR-15).
+ * i znaki wejść ma tylko on. Bez zaznaczenia filtry obrysu i bariery niczego nie przepuszczają, filtr wejść
+ * przepuszcza wszystkie, a źródło wejścia jest puste.
+ *
+ * Wymagania: US1.1, US1.4, US2.8, US2.1, NFR-15
  */
 internal fun selectionLook(data: CampusMapData, selection: MapSelection, colors: MapStyleColors): SelectionLook {
     val chosen = data.outlineOf(selection.building)
@@ -107,9 +111,11 @@ internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<Strin
 
 /**
  * Filtr obiektów budynków [symbols] po liście `symbols` obiektu, nie po podpisie. Z konturów zostaje kontur
- * tych budynków, a ze znaków wejść ich wejścia, także wejście wspólne z innym budynkiem (US1.4, US2.1, decyzja
- * 153). Kontur wspólny „C-3/C-4” zostawia wejścia obu budynków. Warunek stoi w wyrażeniu `case`, bo sam
+ * tych budynków, a ze znaków wejść ich wejścia, także wejście wspólne z innym budynkiem.
+ * Kontur wspólny „C-3/C-4” zostawia wejścia obu budynków. Warunek stoi w wyrażeniu `case`, bo sam
  * operator `any` albo `in` MapLibre czyta jako filtr w dawnym zapisie.
+ *
+ * Wymagania: US1.4, US2.1
  */
 internal fun ofBuildings(symbols: List<String>): JsonElement =
     expression("case", anyOf(symbols), JsonPrimitive(true), JsonPrimitive(false))

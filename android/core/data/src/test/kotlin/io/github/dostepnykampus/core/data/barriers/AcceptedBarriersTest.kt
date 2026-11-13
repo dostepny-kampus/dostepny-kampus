@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test
 import java.io.IOException
 import java.time.Instant
 
-/** Bariery mapy ze zgłoszeń przyjętych z serwera (US1.3, BR-6, NFR-11). */
+/** Bariery mapy ze zgłoszeń przyjętych z serwera. Wymagania: US1.3, BR-6, NFR-11 */
 class AcceptedBarriersTest {
     @Test
     fun `us1_3 trzy bariery`() =

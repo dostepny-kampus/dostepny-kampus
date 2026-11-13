@@ -19,7 +19,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** V2 Karta budynku, gdy aplikacja nie ma żadnych danych o barierach (US2.7, NFR-10). */
+/** V2 Karta budynku, gdy aplikacja nie ma żadnych danych o barierach. Wymagania: US2.7, NFR-10 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class BuildingCardScreenTest {

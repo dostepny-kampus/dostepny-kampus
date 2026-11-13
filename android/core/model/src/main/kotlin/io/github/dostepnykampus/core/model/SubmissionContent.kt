@@ -8,23 +8,25 @@ package io.github.dostepnykampus.core.model
 /**
  * Treść zgłoszenia ustalana przez składającego (`SubmissionContent` z kontraktu API).
  *
+ * Wymagania: BR-7, BR-8, US6.1, US6.3, US6.4, BR-G2, BR-14, US4.3, US7.3, BR-18, US8.4, BR-19, BR-24, US4.6, US17.2
+ *
  * @property kind rodzaj zgłoszenia
  * @property location miejsce bariery po pomiarze precyzyjnym albo bieżąca pozycja
- * @property photoIds identyfikatory zdjęć nadane w telefonie; co najmniej jedno (BR-7, BR-8)
- * @property accuracyMeters dokładność pozycji w metrach (US6.1)
- * @property isManualCorrection oznaczenie „korekta ręczna” (US6.3, US6.4); `null` to pole nieobecne,
+ * @property photoIds identyfikatory zdjęć nadane w telefonie; co najmniej jedno
+ * @property accuracyMeters dokładność pozycji w metrach
+ * @property isManualCorrection oznaczenie „korekta ręczna”; `null` to pole nieobecne,
  *   które kontrakt API traktuje jak `false`
- * @property buildingSymbol budynek; `null` to „poza budynkiem” (BR-G2). W zgłoszeniu szybkim ustala go serwer (BR-14)
+ * @property buildingSymbol budynek; `null` to „poza budynkiem”. W zgłoszeniu szybkim ustala go serwer
  * @property floor piętro zgłoszenia
- * @property barrierGroup grupa barier w zgłoszeniu szybkim (US4.3)
- * @property barrierType typ bariery TB-1…TB-29 (BR-7)
+ * @property barrierGroup grupa barier w zgłoszeniu szybkim
+ * @property barrierType typ bariery TB-1…TB-29
  * @property severity uciążliwość 1–3; 3 to blokada
- * @property description opis; obowiązkowy przy TB-29 „inna bariera” (US7.3)
- * @property replacesSubmissionId zgłoszenie przyjęte, które ta zmiana zastąpi (BR-18)
- * @property isBarrierRemoved oznaczenie „bariera usunięta” (US8.4, BR-19); `null` to pole nieobecne,
+ * @property description opis; obowiązkowy przy TB-29 „inna bariera”
+ * @property replacesSubmissionId zgłoszenie przyjęte, które ta zmiana zastąpi
+ * @property isBarrierRemoved oznaczenie „bariera usunięta”; `null` to pole nieobecne,
  *   które kontrakt API traktuje jak `false`
- * @property entranceId wejście w zmianie oznaczenia wejścia (BR-24) albo w zgłoszeniu szybkim przy wejściu (US4.6)
- * @property entranceMarking nowe oznaczenie wejścia: tylko dostępne albo niedostępne (US17.2)
+ * @property entranceId wejście w zmianie oznaczenia wejścia albo w zgłoszeniu szybkim przy wejściu
+ * @property entranceMarking nowe oznaczenie wejścia: tylko dostępne albo niedostępne
  */
 data class SubmissionContent(
     val kind: SubmissionKind,
@@ -55,7 +57,9 @@ data class SubmissionContent(
 }
 
 /**
- * Piętro zgłoszenia (`SubmissionFloor`, US7.2, BR-G1).
+ * Piętro zgłoszenia (`SubmissionFloor`).
+ *
+ * Wymagania: US7.2, BR-G1
  *
  * @property floorId piętro z listy pięter budynku szczegółowego
  * @property number numer piętra w budynku podstawowym; 0 to parter
@@ -66,17 +70,17 @@ data class SubmissionFloor(val floorId: String? = null, val number: Int? = null,
 
 /** Rodzaj zgłoszenia (`kind` w `SubmissionContent`). */
 enum class SubmissionKind {
-    /** Pomiar precyzyjny Zbierającego (US7, BR-7). */
+    /** Pomiar precyzyjny Zbierającego. Wymagania: US7, BR-7 */
     PRECISE,
 
-    /** Zgłoszenie szybkie zdjęciem i bieżącą pozycją (US4, BR-8). */
+    /** Zgłoszenie szybkie zdjęciem i bieżącą pozycją. Wymagania: US4, BR-8 */
     QUICK,
 
-    /** Zmiana oznaczenia wejścia (US17.2, BR-24). */
+    /** Zmiana oznaczenia wejścia. Wymagania: US17.2, BR-24 */
     ENTRANCE_MARKING,
 }
 
-/** Grupa barier (`BarrierGroup`) w zgłoszeniu szybkim (US4.3). */
+/** Grupa barier (`BarrierGroup`) w zgłoszeniu szybkim. Wymagania: US4.3 */
 enum class BarrierGroup {
     /** Wejście i drzwi. */
     ENTRANCE_AND_DOORS,

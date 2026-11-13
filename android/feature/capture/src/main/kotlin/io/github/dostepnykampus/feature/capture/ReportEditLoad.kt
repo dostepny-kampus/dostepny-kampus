@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/** Wczytanie poprawki z kolejki telefonu dla C2 (US8.3). */
+/** Wczytanie poprawki z kolejki telefonu dla C2. Wymagania: US8.3 */
 sealed interface ReportEditLoad {
     /** Odczyt z bazy trwa. */
     data object Loading : ReportEditLoad
@@ -35,7 +35,7 @@ sealed interface ReportEditLoad {
     data object Missing : ReportEditLoad
 }
 
-/** Model widoku wczytujący zgłoszenie z kolejki raz na ekran (US8.3). */
+/** Model widoku wczytujący zgłoszenie z kolejki raz na ekran. Wymagania: US8.3 */
 @HiltViewModel
 class ReportEditViewModel
     @Inject
@@ -57,7 +57,7 @@ class ReportEditViewModel
         }
     }
 
-/** Stan formularza z zapisanej treści; piętro poza budynkiem i nieznane kody pomija (BR-G4, US8.3). */
+/** Stan formularza z zapisanej treści; piętro poza budynkiem i nieznane kody pomija. Wymagania: BR-G4, US8.3 */
 internal fun PendingEdit.toReportUiState(): ReportUiState {
     val place =
         ReportPlace(

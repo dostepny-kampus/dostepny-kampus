@@ -15,6 +15,11 @@ on:
       - "api/openapi.yaml"
       - "docs/docs/ux/tokeny.yml"
       - ".github/workflows/android.yml"
+      - ".github/actions/android-gradle/**"
+      - ".github/scripts/cache-budowania-sprintu.sh"
+      - ".github/scripts/cache-z-kolejki.sh"
+      - ".github/scripts/czysc-cache.sh"
+      - ".github/scripts/wyniki-androida.sh"
   merge_group:
     types:
       - checks_requested
@@ -51,7 +56,7 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
-      - name: Sprawdź, czy PR albo grupa w kolejce zmienia aplikację Android, jej dane albo tokeny
+      - name: Sprawdź, czy PR albo grupa w kolejce zmienia aplikację Android, jej dane, tokeny albo własne kroki CI
         id: diff
         env:
           EVENT: ${{ github.event_name }}
@@ -65,7 +70,8 @@ jobs:
             from=$GROUP_BASE_SHA
             to=$GROUP_HEAD_SHA
           fi
-          if git diff --quiet "$from" "$to" -- android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/workflows/android.yml; then
+          if git diff --quiet "$from" "$to" -- android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/workflows/android.yml \
+            .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/wyniki-androida.sh; then
             echo "android=false" >> "$GITHUB_OUTPUT"
           else
             echo "android=true" >> "$GITHUB_OUTPUT"
@@ -236,7 +242,7 @@ jobs:
     needs: [porownanie, zmiany]
     if: ${{ !cancelled() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
     permissions:
       actions: read
       contents: read
@@ -345,26 +351,28 @@ jobs:
         uses: ./.github/actions/android-gradle
         with:
           tylko-klucze: 'true'
-      - name: Pobierz cache budowania z grupy kolejki tego commita
+      - name: Pobierz cache budowania z grupy kolejki commitów tego pusha
         id: budowanie
         if: ${{ steps.gradle.outputs.trafienie-budowania != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: bash .github/scripts/cache-z-kolejki.sh "$GITHUB_SHA" gradle-build-cache "$HOME/.gradle/caches/build-cache-1"
+          PRZED: ${{ github.event.before }}
+        run: bash .github/scripts/cache-z-kolejki.sh "$GITHUB_SHA" gradle-build-cache "$HOME/.gradle/caches/build-cache-1" "$PRZED"
       - name: Zapisz cache budowania Gradle
         if: ${{ steps.budowanie.outputs.jest == 'true' }}
         uses: actions/cache/save@v6.1.0
         with:
           path: ~/.gradle/caches/build-cache-1
           key: ${{ steps.gradle.outputs.klucz-budowania }}
-      - name: Pobierz zależności z grupy kolejki tego commita
+      - name: Pobierz zależności z grupy kolejki commitów tego pusha
         id: zaleznosci
         if: ${{ steps.gradle.outputs.trafienie-zaleznosci != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: bash .github/scripts/cache-z-kolejki.sh "$GITHUB_SHA" gradle-zaleznosci "$RUNNER_TEMP/zaleznosci"
+          PRZED: ${{ github.event.before }}
+        run: bash .github/scripts/cache-z-kolejki.sh "$GITHUB_SHA" gradle-zaleznosci "$RUNNER_TEMP/zaleznosci" "$PRZED"
       - name: Rozpakuj zależności
         if: ${{ steps.zaleznosci.outputs.jest == 'true' }}
         run: mkdir -p "$HOME/.gradle" && tar -C "$HOME/.gradle" -xf "$RUNNER_TEMP/zaleznosci/zaleznosci.tar"

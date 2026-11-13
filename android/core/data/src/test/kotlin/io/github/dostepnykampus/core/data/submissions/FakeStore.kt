@@ -22,7 +22,7 @@ internal class FakeStore : PendingSubmissionDao {
     val createResults = ArrayDeque<ApiResult<Submission>>()
     val photoResults = ArrayDeque<ApiResult<Unit>>()
 
-    /** Historia cofana razem z kolejką w [together], jak w jednej transakcji Room (#859). */
+    /** Historia cofana razem z kolejką w [together], jak w jednej transakcji Room. */
     var history: FakeHistory? = null
 
     override fun observe(): Flow<List<PendingSubmissionWithPhotos>> = flow { emit(all()) }

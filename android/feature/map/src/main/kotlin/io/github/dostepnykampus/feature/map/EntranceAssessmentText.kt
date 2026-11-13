@@ -17,14 +17,16 @@ import java.util.Locale
 internal val DAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.ROOT)
 
 /**
- * Wspólne oznaczenie wejść [entrances] (US17.3, BR-24): dzień i źródło, gdy każde wejście ma te same.
+ * Wspólne oznaczenie wejść [entrances]: dzień i źródło, gdy każde wejście ma te same.
  * `null`, gdy lista jest pusta, któreś wejście nie ma oznaczenia (z pliku) albo oznaczenia się różnią — wtedy
  * napis stoi przy każdym wejściu.
+ *
+ * Wymagania: US17.3, BR-24
  */
 internal fun commonAssessment(entrances: List<OrderedEntrance>): EntranceAssessment? =
     entrances.map { it.entrance.assessment }.distinct().singleOrNull()
 
-/** Napis o dniu i źródle oznaczenia (US17.3, BR-24, PW-3). */
+/** Napis o dniu i źródle oznaczenia (PW-3). Wymagania: US17.3, BR-24 */
 @Composable
 internal fun AssessmentLine(assessment: EntranceAssessment) {
     val day = DAY_FORMAT.format(assessment.date)

@@ -43,12 +43,14 @@ import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.model.Building
 
 /**
- * Arkusz „Który budynek?” na dole mapy po dotknięciu konturu wspólnego albo dwóch konturów w zasięgu 24 dp
- * (US2, decyzja 85). Każdy budynek to jeden przycisk na pełną szerokość, jak wynik pod polem wyszukiwania:
+ * Arkusz „Który budynek?” na dole mapy po dotknięciu konturu wspólnego albo dwóch konturów w zasięgu 24 dp.
+ * Każdy budynek to jeden przycisk na pełną szerokość, jak wynik pod polem wyszukiwania:
  * symbol, nazwa z danych, gdy jest, i „Budynek C-3”. TalkBack czyta symbol i nazwę, a czynność przycisku to
- * „otwiera opis budynku” (NFR-17, NFR-18). Przy dużej czcionce arkusz się przewija (NFR-20).
- * Nagłówek „Który budynek?” ma obok obrysowany przycisk „Zamknij” (NFR-53, NFR-17). Przy każdym budynku stoi
+ * „otwiera opis budynku”. Przy dużej czcionce arkusz się przewija.
+ * Nagłówek „Który budynek?” ma obok obrysowany przycisk „Zamknij”. Przy każdym budynku stoi
  * symbol na plakietce w kolorze wybranej pozycji przełącznika, jak w hi-fi listy budynków.
+ *
+ * Wymagania: US2, NFR-17, NFR-18, NFR-20, NFR-53
  *
  * @param onClose „Zamknij” zostawia samą mapę
  * @param modifier położenie arkusza na mapie
@@ -86,11 +88,13 @@ private fun SheetHeader(onClose: () -> Unit) {
 }
 
 /**
- * Karta budynku [building] w arkuszu „Który budynek?”, pod polem symbolu i na liście budynków (US2, US1.1, NFR-19):
+ * Karta budynku [building] w arkuszu „Który budynek?”, pod polem symbolu i na liście budynków:
  * symbol na plakietce, nazwa z danych, a gdy nazwa jest, pod nią „Budynek C-3”; bez nazwy samo „Budynek C-3”.
  * Cała karta to jeden cel dotyku, a TalkBack czyta „C-3, nazwa” i czynność „otwiera opis budynku”. Wynik
  * wyszukiwania z innego terenu niż pokazany na mapie ma pod spodem dopisek „Wittigowo · inny teren”, a TalkBack
- * dodaje „teren Wittigowo, inny teren” (US1.8, NFR-18, NFR-21).
+ * dodaje „teren Wittigowo, inny teren”.
+ *
+ * Wymagania: US2, US1.1, NFR-19, US1.8, NFR-18, NFR-21
  *
  * @param building budynek z katalogu: symbol i nazwa z danych, gdy jest
  * @param otherArea nazwa terenu budynku, gdy to inny teren niż pokazany na mapie

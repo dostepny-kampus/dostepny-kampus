@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Wejście zalecane i kolejność listy (BR-25) oraz stan karty z katalogu. */
+/** Wejście zalecane i kolejność listy oraz stan karty z katalogu. Wymagania: BR-25 */
 @OptIn(ExperimentalCoroutinesApi::class)
 class BuildingCardTest {
     @BeforeEach
@@ -119,7 +119,7 @@ class BuildingCardTest {
         assertEquals(VisitAnswer.NoData, visitAnswer(emptyList()))
     }
 
-    /** US3.1, US17.1: istniejący budynek bez wejść odwiedzających ma osobną odpowiedź o braku danych. */
+    /** Istniejący budynek bez wejść odwiedzających ma osobną odpowiedź o braku danych. Wymagania: US3.1, US17.1 */
     @Test
     fun us3_1_service_only_is_no_data() {
         val service =
@@ -202,7 +202,9 @@ class BuildingCardTest {
 
     /**
      * Wiersz: V2, budynku nie ma w telefonie, „Spróbuj ponownie” → katalog czytany od nowa i karta budynku;
-     *   zwykłe otwarcie karty nie czyta katalogu drugi raz, NFR-10.
+     *   zwykłe otwarcie karty nie czyta katalogu drugi raz.
+     *
+     * Wymagania: NFR-10
      */
     @Test
     fun nfr10_retry_shows_new_building() =

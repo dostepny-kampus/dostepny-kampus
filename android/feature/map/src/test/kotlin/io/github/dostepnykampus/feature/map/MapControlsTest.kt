@@ -37,7 +37,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** Przyciski mapy V1: wygląd z makiety hi-fi, cel dotyku i nazwy dla TalkBack (NFR-53, NFR-17, NFR-18). */
+/** Przyciski mapy V1: wygląd z makiety hi-fi, cel dotyku i nazwy dla TalkBack. Wymagania: NFR-53, NFR-17, NFR-18 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp-xhdpi")
@@ -57,7 +57,11 @@ class MapControlsTest {
             "Pomniejsz",
         )
 
-    /** Każdy przycisk mapy jest przyciskiem o celu dotyku co najmniej 48 dp z własną nazwą (NFR-17, NFR-18). */
+    /**
+     * Każdy przycisk mapy jest przyciskiem o celu dotyku co najmniej 48 dp z własną nazwą.
+     *
+     * Wymagania: NFR-17, NFR-18
+     */
     @Test
     fun nfr17_nfr18_named_48dp_buttons() {
         compose.setContent { Controls {} }
@@ -71,7 +75,11 @@ class MapControlsTest {
         }
     }
 
-    /** Przyciski zmieniają widok bez gestu: „Powiększ” przybliża, strzałka w górę przesuwa na północ (NFR-53). */
+    /**
+     * Przyciski zmieniają widok bez gestu: „Powiększ” przybliża, strzałka w górę przesuwa na północ.
+     *
+     * Wymagania: NFR-53
+     */
     @Test
     fun nfr53_buttons_change_camera() {
         val seen = mutableListOf<MapCamera>()

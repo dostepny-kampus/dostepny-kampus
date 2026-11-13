@@ -27,6 +27,11 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
 
 Aktualizacje zależności otwiera Dependabot do gałęzi sprintu ([`dependabot.yml`](.github/dependabot.yml)); PR Dependabota
 jest zwolniony z kontroli „PR od issue”.
+Przepływ strażnika jakości ([`straznik-jakosci.yml`](.github/workflows/straznik-jakosci.yml)) uruchamia się zdarzeniem
+`pull_request_target`, więc GitHub bierze go z gałęzi domyślnej (`main`), a skrypt
+[`straznik-jakosci.sh`](.github/scripts/straznik-jakosci.sh) z bazy PR (`sprint/N`). Dzięki temu PR nie podmieni ani
+jednego, ani drugiego. Zmiana przepływu scalona do `sprint/N` działa dla kolejnych PR dopiero po przeniesieniu pliku do
+`main`, a skrypt ze sprintu musi działać z przepływem z `main`; strażnik ostrzega o tym przy zmianie przepływu (#1173).
 Strażnik jakości przepuszcza zmianę wersji istniejących pakietów npm przez Dependabota w `.github/commitlint/` i `api/`,
 gdy manifest i odpowiadający mu plik lock są aktualizowane razem.
 

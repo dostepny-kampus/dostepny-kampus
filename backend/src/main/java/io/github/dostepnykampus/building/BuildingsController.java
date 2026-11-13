@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Publiczny odczyt budynków: lista, karta i podpowiedź dla punktu. Błędy
  * idą wspólnymi typami z opisem w {@code detail}, a zakres współrzędnych
- * sprawdza {@link Wgs84} (#851).
+ * sprawdza {@link Wgs84}.
  *
  * @since 0.1.0
  */

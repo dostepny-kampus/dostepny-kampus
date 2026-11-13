@@ -313,6 +313,17 @@ gate_case() {
 line='Zmiana reguł jakości: próg pokrycia po nowym module'
 needs_other='zatwierdza osoba inna niż autor PR'
 run_case "bramka: zmiana reguł bez linii w opisie" "$config" pom_nullaway_warn
+mismatch='przepływ z main i skrypt z bazy PR są z różnych wersji'
+status=0
+out="$(cd "$repo" && env -u PR_APPROVED_BY PR_BODY='Zmiana reguł jakości: powód' PR_AUTHOR=autorka \
+  bash "$script" HEAD~1 HEAD 2>&1)" || status=$?
+if [[ $status -eq 1 && $out == *"$mismatch"* ]]; then
+  echo "OK: bramka: przepływ bez PR_APPROVED_BY daje komunikat o różnych wersjach"
+else
+  echo "BŁĄD: bramka: przepływ bez PR_APPROVED_BY: kod wyjścia ${status}, oczekiwano 1 i „${mismatch}”"
+  printf '%s\n' "$out" | sed 's/^/    /'
+  failures=$((failures + 1))
+fi
 gate_case "bramka: linia w opisie bez zatwierdzenia nie przechodzi" 1 "$needs_other" "$line" ''
 gate_case "bramka: zatwierdzenie przez autora PR nie przechodzi" 1 "$needs_other" "$line" Autorka
 gate_case "bramka: linia i zatwierdzenie drugiej osoby przechodzą" 0 'zatwierdził(a) recenzent' "$line" recenzent
@@ -332,5 +343,12 @@ run_case "npm: sam plik lock nadal zmienia reguły" "$changed" npm_bump_lock_onl
 run_case "npm: niespójne wersje manifestu i pliku lock" "$changed" npm_bump_with_mismatched_lock npm_fixture "$bot"
 run_case "npm: zmiana źródła pakietu nadal zmienia reguły" "$changed" npm_change_source npm_fixture "$bot"
 run_case "npm: autor inny niż Dependabot podaje powód" "$changed" npm_bump_commitlint npm_fixture vlladevk
+
+guard_workflow_base() { mkdir -p .github/workflows && echo 'name: straznik-jakosci' >.github/workflows/straznik-jakosci.yml; }
+guard_workflow_edit() { echo 'on: pull_request_target' >>.github/workflows/straznik-jakosci.yml; }
+export BASE_REF=sprint/4
+run_case "przepływ strażnika: zmiana w sprincie działa dopiero z main" "dopiero po przeniesieniu pliku do main" \
+  guard_workflow_edit guard_workflow_base
+unset BASE_REF
 
 exit "$((failures > 0 ? 1 : 0))"

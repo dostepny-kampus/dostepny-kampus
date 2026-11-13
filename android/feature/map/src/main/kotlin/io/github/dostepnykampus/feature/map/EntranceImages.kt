@@ -32,8 +32,10 @@ private const val PIN_BODY = "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-
 private const val PIN_DOT = "M12 11.5a2.5 2.5 0 1 1 0-5a2.5 2.5 0 0 1 0 5z"
 
 /**
- * Obrazy wejść: znaki wszystkich oznaczeń, a dla [selected] także pinezka i podpis z nazwą (US2.1, US3.3).
+ * Obrazy wejść: znaki wszystkich oznaczeń, a dla [selected] także pinezka i podpis z nazwą.
  * Pinezka ma jednostki 2 dp (14 × 20), a jej czubek stoi na dole obrazu, gdzie jest kotwica.
+ *
+ * Wymagania: US2.1, US3.3
  */
 internal fun entranceImages(
     selected: SelectedEntrance?,

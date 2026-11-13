@@ -8,7 +8,7 @@ package io.github.dostepnykampus.feature.capture
 import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.dostepnykampus.core.designsystem.pathIcon
 
-/** Ikony statusów C3; tylko wzmacniają słowo statusu (NFR-21). */
+/** Ikony statusów C3; tylko wzmacniają słowo statusu. Wymagania: NFR-21 */
 internal object StatusIcons {
     /** „W telefonie”: telefon. */
     val Phone: ImageVector =

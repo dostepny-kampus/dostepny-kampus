@@ -34,8 +34,10 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Wynik wyszukiwania V1 z innego terenu (US1.8, NFR-18) na budynkach testowych „Budynek testowy” (nie dane PWr):
+ * Wynik wyszukiwania V1 z innego terenu na budynkach testowych „Budynek testowy” (nie dane PWr):
  * mapa pokazuje teren „Kampus główny”, a „T-15” leży na terenie „Wittigowo”.
+ *
+ * Wymagania: US1.8, NFR-18
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -51,7 +53,9 @@ class SearchOtherAreaTest {
 
     /**
      * Wiersz: V1, wynik budynku z innego terenu ma dopisek „Wittigowo · inny teren”, a TalkBack czyta go razem
-     * z wynikiem (US1.8, NFR-18).
+     * z wynikiem.
+     *
+     * Wymagania: US1.8, NFR-18
      */
     @Test
     fun us1_8_result_other_area_note() {
@@ -61,7 +65,7 @@ class SearchOtherAreaTest {
         compose.onNodeWithText("Wittigowo · inny teren", useUnmergedTree = true).assertExists()
     }
 
-    /** Wiersz: V1, wynik budynku z terenu pokazanego na mapie nie ma dopisku o terenie (US1.8). */
+    /** Wiersz: V1, wynik budynku z terenu pokazanego na mapie nie ma dopisku o terenie. Wymagania: US1.8 */
     @Test
     fun us1_8_result_shown_area_plain() {
         compose.setContent { Search() }

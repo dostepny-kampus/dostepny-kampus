@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-/** Warstwy barier w stylu mapy V1 na konturze „Budynek testowy” (nie dane PWr; US1.3, NFR-20, NFR-21). */
+/** Warstwy barier w stylu mapy V1 na konturze „Budynek testowy” (nie dane PWr). Wymagania: US1.3, NFR-20, NFR-21 */
 class CampusMapBarriersStyleTest {
     private val a = GeoPoint(longitude = 0.0, latitude = 0.0)
     private val outline = GeoPolygon(listOf(listOf(a, a.copy(longitude = 1.0), a.copy(latitude = 1.0), a)))
@@ -39,7 +39,11 @@ class CampusMapBarriersStyleTest {
         MapStyleColors(land = "#E8EDEE", building = "#BFE0EC", buildingOutline = "#004E5E", selectedOutline = "#001F27")
     private val barriers = Severity.entries.map(::barrier)
 
-    /** Wiersz: V1, bariery ze zgłoszeń przyjętych jako znak uciążliwości: kształt, nie kolor (US1.3, NFR-21). */
+    /**
+     * Wiersz: V1, bariery ze zgłoszeń przyjętych jako znak uciążliwości: kształt, nie kolor.
+     *
+     * Wymagania: US1.3, NFR-21
+     */
     @Test
     fun us1_3_sign_per_severity() {
         val style = style(campusMapData(catalog).withBarriers(barriers))
@@ -52,7 +56,7 @@ class CampusMapBarriersStyleTest {
         assertEquals("true", signs.getValue("icon-allow-overlap").toString())
     }
 
-    /** Wiersz: V1, słowo obok znaku od powiększenia 17, bez nakładania; symbole budynków pierwsze (NFR-20). */
+    /** Wiersz: V1, słowo obok znaku od powiększenia 17, bez nakładania; symbole budynków pierwsze. Wymagania: NFR-20 */
     @Test
     fun nfr20_word_from_zoom_17() {
         val style = style(campusMapData(catalog).withBarriers(barriers))
@@ -65,7 +69,7 @@ class CampusMapBarriersStyleTest {
         assertEquals(true, order.indexOf(BARRIERS_LAYER) < order.indexOf("podpisy"))
     }
 
-    /** Wiersz: V1, wybrana bariera ma osobną warstwę z większym znakiem nad pozostałymi (US1.5, NFR-21). */
+    /** Wiersz: V1, wybrana bariera ma osobną warstwę z większym znakiem nad pozostałymi. Wymagania: US1.5, NFR-21 */
     @Test
     fun us1_5_chosen_barrier_layer() {
         val data = campusMapData(catalog).withBarriers(barriers)
@@ -84,7 +88,7 @@ class CampusMapBarriersStyleTest {
         assertEquals(true, images.containsAll(expected))
     }
 
-    /** Wiersz: V1 bez pobranych barier działa bez znaków barier (NFR-11). */
+    /** Wiersz: V1 bez pobranych barier działa bez znaków barier. Wymagania: NFR-11 */
     @Test
     fun nfr11_no_barriers_empty_layer() {
         val shown = campusMapData(catalog).withBarriers(barriers).withBarriers(emptyList())

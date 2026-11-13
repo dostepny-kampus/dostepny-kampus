@@ -46,13 +46,15 @@ import java.util.Locale
 private val POLISH = Locale.forLanguageTag("pl-PL")
 
 /**
- * C1 Pomiar pozycji (US6.1): szukanie satelitów, pomiar 30 s i „Pomiar zakończony”. Dokładność i satelity są
- * tekstem, nie tylko na mapie nieba (NFR-18, US6.5), a dokładność ma dopisek „szacunek” (NFR-2). „Powtórz pomiar”
- * działa w każdym stanie, bez limitu (NFR-23). Bez zgody na lokalizację pokazuje prośbę o nią (NFR-27), a przy
- * wyłączonej lokalizacji w telefonie „Otwórz ustawienia” lokalizacji (UC7 4c).
- * Po pomiarze podpowiada budynek (US6.2), a po decyzji o budynku „Dalej” otwiera C2 (US6).
+ * C1 Pomiar pozycji: szukanie satelitów, pomiar 30 s i „Pomiar zakończony”. Dokładność i satelity są
+ * tekstem, nie tylko na mapie nieba, a dokładność ma dopisek „szacunek”. „Powtórz pomiar”
+ * działa w każdym stanie, bez limitu. Bez zgody na lokalizację pokazuje prośbę o nią, a przy
+ * wyłączonej lokalizacji w telefonie „Otwórz ustawienia” lokalizacji.
+ * Po pomiarze podpowiada budynek, a po decyzji o budynku „Dalej” otwiera C2.
  *
- * @param onBack „Wstecz” do ekranu, z którego otwarto C1 (NFR-15)
+ * Wymagania: US6.1, NFR-18, US6.5, NFR-2, NFR-23, NFR-27, UC7, US6.2, US6, NFR-15
+ *
+ * @param onBack „Wstecz” do ekranu, z którego otwarto C1
  * @param onNext „Dalej” z trasą C2 i miejscem z pomiaru
  * @param modifier wymiary nadane przez aplikację
  * @param viewModel pomiar; w aplikacji z grafu Hilt, w testach ze źródłami testowymi
@@ -84,14 +86,16 @@ fun MeasureScreen(
 /**
  * Treść C1 dla stanu [state], bez ViewModelu.
  *
+ * Wymagania: US6.2, NFR-23, NFR-27
+ *
  * @param state stan pomiaru
  * @param onRepeat „Powtórz pomiar”
  * @param onBack „Wstecz”
  * @param modifier wymiary nadane przez aplikację
- * @param onNext „Dalej”, widoczne po pomiarze i decyzji o budynku (US6.2)
+ * @param onNext „Dalej”, widoczne po pomiarze i decyzji o budynku
  * @param buildings budynki do „Wybierz inny”
- * @param placeActions czynności wyboru budynku po pomiarze (US6.2)
- * @param isRestarted pomiar przerwano i zaczął się od nowa (NFR-23, NFR-27)
+ * @param placeActions czynności wyboru budynku po pomiarze
+ * @param isRestarted pomiar przerwano i zaczął się od nowa
  */
 @Composable
 fun MeasureContent(
@@ -221,7 +225,7 @@ private fun Result(average: PositionAverage, satellitesLine: String) {
     }
 }
 
-/** „Satelity: GPS 7, Galileo 5, GLONASS 4” w kolejności systemów (US6.1). */
+/** „Satelity: GPS 7, Galileo 5, GLONASS 4” w kolejności systemów. Wymagania: US6.1 */
 internal fun Resources.satellitesLine(satellites: Map<GnssSystem, Int>): String {
     if (satellites.isEmpty()) return getString(R.string.pomiar_satelity_brak)
     return getString(R.string.pomiar_satelity, systemCounts(satellites))

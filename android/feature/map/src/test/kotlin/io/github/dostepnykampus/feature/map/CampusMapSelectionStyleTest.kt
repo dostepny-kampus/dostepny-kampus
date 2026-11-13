@@ -30,7 +30,9 @@ import org.junit.jupiter.api.Test
 
 /**
  * Styl mapy przy zaznaczonym budynku: syntetyczny katalog „Budynek testowy” i „Budynek obok” (nie dane PWr)
- * z wejściem każdego budynku i jednym wejściem wspólnym (US1.4, US2.1, US2.8, decyzja 153).
+ * z wejściem każdego budynku i jednym wejściem wspólnym.
+ *
+ * Wymagania: US1.4, US2.1, US2.8
  */
 class CampusMapSelectionStyleTest {
     private val at = GeoPoint(longitude = 0.25, latitude = 0.5)
@@ -93,7 +95,7 @@ class CampusMapSelectionStyleTest {
         assertEquals(JsonPrimitive(true), style.layer(ENTRANCES_LAYER)["filter"])
     }
 
-    /** Wiersz: V1, zaznaczone wejście: pozostałe wejścia i budynki zostają jak bez zaznaczenia (decyzja 134). */
+    /** Wiersz: V1, zaznaczone wejście: pozostałe wejścia i budynki zostają jak bez zaznaczenia. */
     @Test
     fun us3_3_chosen_keeps_all_marks() {
         val pin = SelectedEntrance(id = "w1", location = at, label = "Wejście dostosowane", buildingSymbol = "A-1")
@@ -104,7 +106,7 @@ class CampusMapSelectionStyleTest {
 
     /**
      * Zaznaczenie pokazane w gotowym stylu daje ten sam styl co styl zbudowany z zaznaczeniem, więc zmiana
-     * budynku, wejścia albo bariery nie wymaga nowego stylu, a mapa wygląda tak samo (US1.1, US1.5, US3.3).
+     * budynku, wejścia albo bariery nie wymaga nowego stylu, a mapa wygląda tak samo. Wymagania: US1.1, US1.5, US3.3
      */
     @Test
     fun us1_1_selection_on_ready() {

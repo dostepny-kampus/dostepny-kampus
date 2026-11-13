@@ -42,8 +42,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * Osiągalność C2 z roli z przełącznika (US14.1, RO-ZBI): pasek, L2 i przejścia są prawdziwe. Mapa, pomiar i formularz
+ * Osiągalność C2 z roli z przełącznika: pasek, L2 i przejścia są prawdziwe. Mapa, pomiar i formularz
  * mają lekkie zastępniki, bo potrzebują GNSS i grafu Hilt; „Dalej” na C1 woła to samo przejście co ekran pomiaru.
+ *
+ * Wymagania: US14.1, RO-ZBI
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -54,7 +56,11 @@ class CollectorReachTest {
 
     private val roles = DebugRoles()
 
-    /** Zbierający wraca z C1 do C2 po odtworzeniu stanu i zaczyna od zera po opuszczeniu pomiaru (US7.4, NFR-7). */
+    /**
+     * Zbierający wraca z C1 do C2 po odtworzeniu stanu i zaczyna od zera po opuszczeniu pomiaru.
+     *
+     * Wymagania: US7.4, NFR-7
+     */
     @Test
     fun draftSurvivesStateRestore() {
         roles.switchTo(DebugRole.COLLECTOR.account)
@@ -76,7 +82,7 @@ class CollectorReachTest {
         compose.onNodeWithText(DRAFT_TEXT).assertDoesNotExist()
     }
 
-    /** Gość nie widzi wejścia do pomiaru (US14.1). */
+    /** Gość nie widzi wejścia do pomiaru. Wymagania: US14.1 */
     @Test
     fun guestHasNoMeasure() {
         show()

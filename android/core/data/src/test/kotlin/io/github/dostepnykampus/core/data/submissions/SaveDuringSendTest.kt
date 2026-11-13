@@ -21,7 +21,7 @@ import java.io.File
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Zgłoszenie zapisane w trakcie wysyłki kolejki idzie w tym samym przebiegu, bez kolejnego zapisu (NFR-6, #854). */
+/** Zgłoszenie zapisane w trakcie wysyłki kolejki idzie w tym samym przebiegu, bez kolejnego zapisu. Wymagania: NFR-6 */
 class SaveDuringSendTest {
     @TempDir
     lateinit var tempDir: File

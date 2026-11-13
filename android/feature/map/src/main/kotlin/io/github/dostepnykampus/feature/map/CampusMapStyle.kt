@@ -25,25 +25,25 @@ internal const val BUILDINGS_LAYER = "budynki"
 /** Warstwa obrysu zaznaczonego budynku. */
 internal const val SELECTED_LAYER = "zaznaczenie"
 
-/** Warstwa znaków wszystkich wejść: kształt według oznaczenia (US2.1, NFR-21). */
+/** Warstwa znaków wszystkich wejść: kształt według oznaczenia. Wymagania: US2.1, NFR-21 */
 internal const val ENTRANCES_LAYER = "wejscia"
 
-/** Warstwa pinezki zaznaczonego wejścia, czubkiem w punkcie wejścia (US3.3). */
+/** Warstwa pinezki zaznaczonego wejścia, czubkiem w punkcie wejścia. Wymagania: US3.3 */
 internal const val ENTRANCE_PIN_LAYER = "wejscie_pinezka"
 
-/** Warstwa podpisu zaznaczonego wejścia: nazwa pod znakiem wejścia (US3.3). */
+/** Warstwa podpisu zaznaczonego wejścia: nazwa pod znakiem wejścia. Wymagania: US3.3 */
 internal const val ENTRANCE_CAPTION_LAYER = "wejscie_podpis"
 
-/** Obraz pinezki zaznaczonego wejścia, której czubek stoi w punkcie wejścia (US3.3). */
+/** Obraz pinezki zaznaczonego wejścia, której czubek stoi w punkcie wejścia. Wymagania: US3.3 */
 internal const val ENTRANCE_PIN_IMAGE = "wejscie_pinezka"
 
-/** Wysokość i szerokość znaku wejścia w dp (US2.1, NFR-21). */
+/** Wysokość i szerokość znaku wejścia w dp. Wymagania: US2.1, NFR-21 */
 internal const val ENTRANCE_MARK_DP = 28
 
-/** Warstwa przyciemnienia obszaru poza terenem (US1.7, BR-G5). */
+/** Warstwa przyciemnienia obszaru poza terenem. Wymagania: US1.7, BR-G5 */
 internal const val OUTSIDE_LAYER = "teren-poza"
 
-/** Warstwa linii granicy terenu (US1.7, BR-G5). */
+/** Warstwa linii granicy terenu. Wymagania: US1.7, BR-G5 */
 internal const val EDGE_LAYER = "teren-granica"
 
 /** Warstwa konturów wszystkich budynków. */
@@ -93,28 +93,30 @@ data class MapStyleColors(
 
 /**
  * Styl mapy V1 (ADR-0005). Kontury i podpisy ze źródła w aplikacji są zawsze, a podkład kafelków OSM tylko
- * online. Bez sieci warstwa podkładu jest pusta i dalej widać kontury na tle lądu (NFR-10, NFR-39). Podpis konturu
+ * online. Bez sieci warstwa podkładu jest pusta i dalej widać kontury na tle lądu. Podpis konturu
  * to obraz o nazwie z właściwości `label`, który dodaje widok mapy, bo napisy z czcionek stylu wymagają sieci.
  * Obraz stoi w jednym punkcie wewnątrz konturu, więc każdy kontur ma jeden podpis przy każdym przybliżeniu.
  * Podpisy się nie nakładają (reguła 4 wymagań wspólnych). Kontur budynku [MapSelection.building] ma grubszy obrys
- * `pwr_wybrany` (US1.1). Pozostałe budynki są wtedy przygaszone, ale zachowują podpisy, a znaki wejść ma tylko
- * zaznaczony budynek (US1.4, US2.8, decyzja 153). Bez zaznaczonego budynku każde wejście
+ * `pwr_wybrany`. Pozostałe budynki są wtedy przygaszone, ale zachowują podpisy, a znaki wejść ma tylko
+ * zaznaczony budynek. Bez zaznaczonego budynku każde wejście
  * z [CampusMapData.entrances] ma znak o kształcie według oznaczenia, bez filtra, więc zaznaczenie wejścia nie
- * chowa pozostałych (US2.1, NFR-21). Wejście [MapSelection.entrance] ma ponadto pinezkę czubkiem w swoim
- * punkcie i pod znakiem podpis z nazwą (US3.3, decyzja 134).
- * Podkład OSM obejmuje tylko obszar kampusu, więc kafelków spoza niego mapa nie pobiera (NFR-39). Obrys
+ * chowa pozostałych. Wejście [MapSelection.entrance] ma ponadto pinezkę czubkiem w swoim
+ * punkcie i pod znakiem podpis z nazwą.
+ * Podkład OSM obejmuje tylko obszar kampusu, więc kafelków spoza niego mapa nie pobiera. Obrys
  * zaznaczonego budynku obejmuje także kontur wspólny „C-3/C-4”; bez zaznaczenia ta warstwa nic nie rysuje.
- * Obraz znaku zależy od oznaczenia, więc kształt niesie znaczenie, nie barwa (NFR-21); brak filtra i nakładanie są
- * dozwolone, bo znaki zostają przy zaznaczonym wejściu (decyzja 134 pkt 2). Zaznaczone wejście to źródło z jednym
+ * Obraz znaku zależy od oznaczenia, więc kształt niesie znaczenie, nie barwa; brak filtra i nakładanie są
+ * dozwolone, bo znaki zostają przy zaznaczonym wejściu. Zaznaczone wejście to źródło z jednym
  * punktem o właściwościach `label` (nazwa) i `image` (obraz podpisu). Pinezka stoi czubkiem (dół obrazu)
- * w punkcie wejścia, a podpis z nazwą pod znakiem, w odsunięciu `CAPTION_OFFSET_DP` w dp (US3.3): tuż pod
+ * w punkcie wejścia, a podpis z nazwą pod znakiem, w odsunięciu `CAPTION_OFFSET_DP` w dp: tuż pod
  * znakiem, którego środek stoi w tym punkcie; obie warstwy rysują się zawsze. Podkład ma przygaszone barwy
  * i prześwituje przez niego tło lądu, więc budynki PWr i znaki są na mapie najwyraźniejsze, a zieleń, woda i ulice
- * zostają rozpoznawalne (makieta hi-fi V1, NFR-16). W motywie ciemnym jasność kafelków jest odwrócona.
- * Obszar poza terenem [MapSelection.bounds] jest przyciemniony, a granicę terenu pokazuje linia (US1.7, BR-G5).
- * Bariery z [CampusMapData.barriers] mają znak uciążliwości i od powiększenia 17 słowo obok niego (US1.3).
+ * zostają rozpoznawalne (makieta hi-fi V1). W motywie ciemnym jasność kafelków jest odwrócona.
+ * Obszar poza terenem [MapSelection.bounds] jest przyciemniony, a granicę terenu pokazuje linia.
+ * Bariery z [CampusMapData.barriers] mają znak uciążliwości i od powiększenia 17 słowo obok niego.
  * Warstwy i źródła zaznaczenia są w stylu przy każdym zaznaczeniu, a ich filtry, barwy i dane to [selectionLook],
  * więc styl dla innego budynku, wejścia albo bariery różni się tylko polami z [SelectionLook].
+ *
+ * Wymagania: NFR-10, NFR-39, US1.1, US1.4, US2.8, US2.1, NFR-21, US3.3, NFR-16, US1.7, BR-G5, US1.3
  */
 fun campusMapStyle(data: CampusMapData, selection: MapSelection, colors: MapStyleColors): String {
     val look = selectionLook(data, selection, colors)
@@ -130,7 +132,7 @@ fun campusMapStyle(data: CampusMapData, selection: MapSelection, colors: MapStyl
 /** Budowniczy stylu MapLibre z tekstu [style] z [campusMapStyle]; MapLibre przyjmuje styl tylko jako tekst. */
 internal fun styleBuilder(style: String): Style.Builder = Style.Builder().fromJson(style)
 
-/** Nazwa obrazu znaku wejścia o oznaczeniu [marking] (US2.1, NFR-21). */
+/** Nazwa obrazu znaku wejścia o oznaczeniu [marking]. Wymagania: US2.1, NFR-21 */
 internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${marking.name}"
 
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */

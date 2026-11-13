@@ -52,7 +52,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 private const val CAMERA_QUALITY = 90
 
-/** „Zrób zdjęcie” na C2: aparat zapisuje plik aplikacji, a zdjęcie wraca do formularza (US7.1). */
+/** „Zrób zdjęcie” na C2: aparat zapisuje plik aplikacji, a zdjęcie wraca do formularza. Wymagania: US7.1 */
 @RunWith(RobolectricTestRunner::class)
 @Config(
     qualifiers = "w360dp-h800dp",
@@ -145,8 +145,10 @@ class PhotoCameraTest {
     }
 
     /**
-     * C2 wraca z aparatu bez zdjęcia po anulowaniu i ze zdjęciem po zatwierdzeniu (US7.1).
+     * C2 wraca z aparatu bez zdjęcia po anulowaniu i ze zdjęciem po zatwierdzeniu.
      * Obie próby używają jednej aktywności, bo FileProvider zapamiętuje katalog plików.
+     *
+     * Wymagania: US7.1
      */
     @Test
     fun us7_1_cancel_then_photo() {
@@ -188,7 +190,11 @@ class PhotoCameraTest {
         assertNotEquals(file, next)
     }
 
-    /** Kompozycja odtworzona w trakcie przekodowania, jak po obrocie: zdjęcie dociera, bez plików-sierot (NFR-22). */
+    /**
+     * Kompozycja odtworzona w trakcie przekodowania, jak po obrocie: zdjęcie dociera, bez plików-sierot.
+     *
+     * Wymagania: NFR-22
+     */
     @Test
     fun nfr22_photo_kept_on_rotation() {
         val work = StandardTestDispatcher()

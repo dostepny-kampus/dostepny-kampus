@@ -76,8 +76,10 @@ class MainActivityTest {
 
     /**
      * Wiersze: V1 z TalkBack, „Lista budynków”, dotknięcie budynku → V2, pełny ekran od razu, także po odtworzeniu
-     * aktywności, US3.2, NFR-19, NFR-22; „Pokaż budynek na mapie” → zapamiętany wybór „Mapa”, US2.9, decyzja 116.
+     * aktywności; „Pokaż budynek na mapie” → zapamiętany wybór „Mapa”.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Z listy przy dużej czcionce opis budynku prowadzi do mapy
+     *
+     * Wymagania: US3.2, NFR-19, NFR-22, US2.9
      */
     @Test
     fun us2_9_talkback_list_restore() {

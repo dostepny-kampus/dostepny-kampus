@@ -18,7 +18,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import java.io.IOException
 
-/** Historia własnych zgłoszeń w bazie Room: od najnowszego, bez duplikatów, ze stanem wysyłki (US8, NFR-5). */
+/** Historia własnych zgłoszeń w bazie Room: od najnowszego, bez duplikatów, ze stanem wysyłki. Wymagania: US8, NFR-5 */
 @RunWith(RobolectricTestRunner::class)
 class OwnSubmissionDaoTest {
     private lateinit var database: DkDatabase
@@ -39,7 +39,7 @@ class OwnSubmissionDaoTest {
         database.close()
     }
 
-    /** Wiersz: C3 po odświeżeniu → status, powód i wersja z serwera, stan wysyłki zostaje, US8.2, BR-16. */
+    /** Wiersz: C3 po odświeżeniu → status, powód i wersja z serwera, stan wysyłki zostaje. Wymagania: US8.2, BR-16 */
     @Test
     fun us8_2_server_status_saved() =
         runTest {
@@ -55,7 +55,7 @@ class OwnSubmissionDaoTest {
             assertEquals(3, row.serverVersion)
         }
 
-    /** Zapis historii w [PendingSubmissionDao.together] jest cofany razem z transakcją kolejki (#859). */
+    /** Zapis historii w [PendingSubmissionDao.together] jest cofany razem z transakcją kolejki. */
     @Test
     fun nfr5_together_rolls_back() =
         runTest {

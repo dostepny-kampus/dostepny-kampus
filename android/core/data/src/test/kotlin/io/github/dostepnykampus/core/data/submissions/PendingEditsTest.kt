@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 import java.io.IOException
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Poprawka z C3 wczytuje z kolejki to, co zapisano, z wersją bazową; wysłanego już nie ma (US8.3, BR-26). */
+/** Poprawka z C3 wczytuje z kolejki to, co zapisano, z wersją bazową; wysłanego już nie ma. Wymagania: US8.3, BR-26 */
 class PendingEditsTest {
     private val store = FakeStore()
     private val edits =

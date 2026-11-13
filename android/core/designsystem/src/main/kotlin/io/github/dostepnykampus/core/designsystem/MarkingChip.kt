@@ -27,14 +27,16 @@ import io.github.dostepnykampus.core.model.EntranceMarking
 private val MinHeight = 36.dp
 
 /**
- * Oznaczenie wejścia: kształt ikony, słowo ze słownika użytkownika i spokojny kontener (NFR-21, decyzja
- * projektu nr 48 pkt 3). Znaczenie niesie kształt i słowo, nie barwa: koło ze znakiem ✓ i „Dostępne”,
+ * Oznaczenie wejścia: kształt ikony, słowo ze słownika użytkownika i spokojny kontener.
+ * Znaczenie niesie kształt i słowo, nie barwa: koło ze znakiem ✓ i „Dostępne”,
  * ośmiokąt ze znakiem ✕ i „Niedostępne”, romb ze znakiem ? i „Brak danych”.
  *
  * Tokeny: kontener `status…Container` bez ramki, bo oznaczenie nie jest przyciskiem, kształt i słowo
  * `onStatus…Container`, zaokrąglenie [Zaokraglenia.standard], napis `labelLarge` z [Typografia.wyroznienieWaga],
- * ikona [Ikony.rozmiar] skalowana jak tekst w sp (NFR-20). Wysokość co najmniej 36 dp jak w makietach V2 i V3;
+ * ikona [Ikony.rozmiar] skalowana jak tekst w sp. Wysokość co najmniej 36 dp jak w makietach V2 i V3;
  * oznaczenie nie jest celem dotyku. Ikona jest ozdobna: TalkBack czyta słowo.
+ *
+ * Wymagania: NFR-21, NFR-20
  *
  * @param marking oznaczenie, które wyznacza kształt ikony i barwy
  * @param modifier modyfikator zewnętrzny

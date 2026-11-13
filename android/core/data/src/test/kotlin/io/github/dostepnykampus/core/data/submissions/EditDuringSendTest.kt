@@ -23,7 +23,7 @@ import java.io.File
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Zapis poprawki nie czeka na wywołania serwera, a poprawka z czasu wysyłki idzie jako edycja (US8.3, #855). */
+/** Zapis poprawki nie czeka na wywołania serwera, a poprawka z czasu wysyłki idzie jako edycja. Wymagania: US8.3 */
 class EditDuringSendTest {
     @TempDir
     lateinit var tempDir: File

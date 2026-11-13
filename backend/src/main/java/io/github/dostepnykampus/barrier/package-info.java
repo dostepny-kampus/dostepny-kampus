@@ -9,7 +9,7 @@
  *
  * <p>Obsługuje zgłoszenie bariery przez Odwiedzającego (US4), formularz
  * zgłoszenia Zbierającego (US7), status zgłoszeń autora (US8) i podgląd
- * podobnych zgłoszeń dla Weryfikatora (US10.1, BR-13, #847).</p>
+ * podobnych zgłoszeń dla Weryfikatora (US10.1, BR-13).</p>
  *
  * @since 0.1.0
  */

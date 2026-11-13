@@ -44,14 +44,16 @@ import kotlinx.coroutines.flow.filter
 import java.io.File
 
 /**
- * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (US4.1).
+ * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie.
  * „Wstecz” w kroku 1 ze zdjęciem najpierw pyta o rezygnację; wstecz w pytaniu to „Wróć do zdjęcia”. Po wysłaniu
  * ekran pokazuje tylko potwierdzenie (`SENT`); z kroków końcowych zostaje krok 3, wysłanie.
- * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację (NFR-27, BR-8).
+ * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację.
  * Krok 1: „Zrób zdjęcie” otwiera aparat, a zdjęcie od razu prowadzi do kroku 2; po powrocie z kroku 2 jest „Dalej”.
  * Krok 2: grupa, a w konturze albo przy nieznanej pozycji pytanie o piętro; „Wstecz” z pytania wraca do grup.
- * Pozycja jest ustalana od kroku 1, więc krok 2 zwykle wie już, czy osoba stoi w budynku (BR-14, BR-G2).
- * „Tak, zrezygnuj”: zdjęcie znika z telefonu, a zgłoszenie nie powstaje (UC7 1b).
+ * Pozycja jest ustalana od kroku 1, więc krok 2 zwykle wie już, czy osoba stoi w budynku.
+ * „Tak, zrezygnuj”: zdjęcie znika z telefonu, a zgłoszenie nie powstaje.
+ *
+ * Wymagania: US4.1, NFR-27, BR-8, BR-14, BR-G2, UC7
  *
  * @param route krok z danymi wcześniejszych kroków
  * @param actions czynności nawigatora

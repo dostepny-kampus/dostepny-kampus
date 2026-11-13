@@ -32,9 +32,9 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Zgodność wymiany HTTP z kontraktem {@code api/openapi.yaml} (decyzja 122).
+ * Zgodność wymiany HTTP z kontraktem {@code api/openapi.yaml}.
  *
- * <p>Wymianę sprawdza biblioteka {@code openapi-request-validator} (#830):
+ * <p>Wymianę sprawdza biblioteka {@code openapi-request-validator}:
  * operację, parametry ścieżki, zapytania i nagłówków, treść żądania, status,
  * typ treści i treść odpowiedzi. Operacja, status albo typ treści spoza
  * kontraktu jest naruszeniem. Żądanie niezgodne z kontraktem jest dopuszczone,
@@ -83,7 +83,7 @@ public final class OpenApiContract implements ResultMatcher {
     private final Supplier<JsonNode> tree;
 
     /**
-     * Walidator wymiany HTTP z biblioteki (#830).
+     * Walidator wymiany HTTP z biblioteki.
      */
     private final Supplier<OpenApiInteractionValidator> validator;
 
@@ -169,7 +169,7 @@ public final class OpenApiContract implements ResultMatcher {
     }
 
     /**
-     * Tekst kontraktu z repozytorium; jedyne miejsce testów, które czyta plik (#895).
+     * Tekst kontraktu z repozytorium; jedyne miejsce testów, które czyta plik.
      *
      * @return Tekst YAML kontraktu, ścieżka względna od modułu serwera
      * @throws IOException Gdy pliku nie da się przeczytać

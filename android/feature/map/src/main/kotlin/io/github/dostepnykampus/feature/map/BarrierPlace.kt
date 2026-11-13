@@ -16,7 +16,9 @@ import io.github.dostepnykampus.core.model.SubmissionFloor
 private const val PLACE_SEPARATOR = " · "
 
 /**
- * Bariera wybrana na mapie razem z tym, czego arkusz bariery nie ma w samym zgłoszeniu (US1.5).
+ * Bariera wybrana na mapie razem z tym, czego arkusz bariery nie ma w samym zgłoszeniu.
+ *
+ * Wymagania: US1.5
  *
  * @property barrier bariera ze zgłoszenia przyjętego
  * @property building budynek bariery z katalogu; `null` to bariera poza budynkiem albo budynek spoza katalogu
@@ -26,9 +28,11 @@ private const val PLACE_SEPARATOR = " · "
 internal data class ChosenBarrier(val barrier: AcceptedBarrier, val building: Building?, val entrance: String?)
 
 /**
- * Miejsce bariery [chosen] słowami do arkusza bariery (US1.5): „A-1 Gmach Główny · Wejście Cesarskie, parter”.
- * Budynek bez nazwy to „Budynek C-13”, a bariera poza budynkiem ma „Poza budynkiem” (BR-G2). Piętro budynku
+ * Miejsce bariery [chosen] słowami do arkusza bariery: „A-1 Gmach Główny · Wejście Cesarskie, parter”.
+ * Budynek bez nazwy to „Budynek C-13”, a bariera poza budynkiem ma „Poza budynkiem”. Piętro budynku
  * podstawowego to „parter” albo „piętro 2”, z dopiskiem „półpiętro”.
+ *
+ * Wymagania: US1.5, BR-G2
  */
 @Composable
 @ReadOnlyComposable

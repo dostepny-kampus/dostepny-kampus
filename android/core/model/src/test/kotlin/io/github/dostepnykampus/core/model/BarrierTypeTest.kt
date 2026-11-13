@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-/** Klasyfikacja barier zgadza się ze słownikiem projektu: TB-1…TB-29 w sześciu grupach (BR-7, US7.3). */
+/** Klasyfikacja barier zgadza się ze słownikiem projektu: TB-1…TB-29 w sześciu grupach. Wymagania: BR-7, US7.3 */
 class BarrierTypeTest {
     @Test
     fun `kody TB-1 do TB-29 po kolei`() {

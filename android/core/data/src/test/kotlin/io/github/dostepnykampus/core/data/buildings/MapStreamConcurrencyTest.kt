@@ -25,14 +25,18 @@ import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Strumień katalogu dla mapy równolegle z `catalog()` i `refresh()` na wstrzymanym serwerze (NFR-10, NFR-11, W2). */
+/**
+ * Strumień katalogu dla mapy równolegle z `catalog()` i `refresh()` na wstrzymanym serwerze (W2).
+ *
+ * Wymagania: NFR-10, NFR-11
+ */
 class MapStreamConcurrencyTest {
     private val calls = AtomicInteger()
     private val gate = CompletableDeferred<Unit>()
     private var isFirstCallFailing = false
     private val repository = BuildingCatalogRepository(EmptyCoroutineContext, ::server) { FILE_JSON }
 
-    /** Wiersz: mapa zbiera katalog, a inny odbiorca woła catalog() → jedno zapytanie do serwera, NFR-10. */
+    /** Wiersz: mapa zbiera katalog, a inny odbiorca woła catalog() → jedno zapytanie do serwera. Wymagania: NFR-10 */
     @Test
     fun nfr10_map_shares_request() {
         inRun {
@@ -91,7 +95,11 @@ class MapStreamConcurrencyTest {
         }
     }
 
-    /** Wiersz: refresh() w toku na wstrzymanym serwerze → pierwsza emisja mapy to plik w ≤ 1 s, W1, NFR-11. */
+    /**
+     * Wiersz: refresh() w toku na wstrzymanym serwerze → pierwsza emisja mapy to plik w ≤ 1 s, W1.
+     *
+     * Wymagania: NFR-11
+     */
     @Test
     fun nfr11_file_while_retry_runs() {
         inRun {

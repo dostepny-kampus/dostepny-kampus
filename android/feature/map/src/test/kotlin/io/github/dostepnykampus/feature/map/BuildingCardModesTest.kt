@@ -50,7 +50,7 @@ private val ENTRANCES = listOf("Główne" to "node/1", "Schody" to "node/2", UNN
 
 private val inScroll = hasAnyAncestor(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
 
-/** Treść V2 Karta budynku: mała karta, pełny ekran rozwinięty i pełny ekran od razu (US2.8, US2.9). */
+/** Treść V2 Karta budynku: mała karta, pełny ekran rozwinięty i pełny ekran od razu. Wymagania: US2.8, US2.9 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class BuildingCardModesTest {
@@ -64,8 +64,10 @@ class BuildingCardModesTest {
 
     /**
      * Wiersz: V2, mała karta: nagłówek, potem „Sprawdź, którędy wejść” jako pierwsza czynność i „Zamknij”; bez
-     *   „Wejścia”, „Wstecz” i „Pokaż budynek na mapie”, US2.8, US3.2, decyzja 115.
+     *   „Wejścia”, „Wstecz” i „Pokaż budynek na mapie”.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Mała karta nad mapą mówi słowami o wejściach
+     *
+     * Wymagania: US2.8, US3.2
      */
     @Test
     fun us2_8_compact_card() {
@@ -80,7 +82,9 @@ class BuildingCardModesTest {
 
     /**
      * Wiersz: V2 bez internetu: plakietka „Bez internetu” nad nagłówkiem, w tym samym miejscu na małej karcie
-     *   i na pełnym ekranie, węższa niż karta, NFR-10, US2.8, decyzje 115, 153.
+     *   i na pełnym ekranie, węższa niż karta.
+     *
+     * Wymagania: NFR-10, US2.8
      */
     @Test
     fun nfr10_offline_pill_above_name() {
@@ -98,7 +102,9 @@ class BuildingCardModesTest {
 
     /**
      * Wiersz: V2, pełny ekran: „Sprawdź, którędy wejść” w treści pod nagłówkiem, pierwsza czynność, bez
-     *   przypiętego pasa, potem grupa „Wejścia” jak dziś; „Pokaż budynek na mapie” tylko od razu, US3.2, US2.9.
+     *   przypiętego pasa, potem grupa „Wejścia” jak dziś; „Pokaż budynek na mapie” tylko od razu.
+     *
+     * Wymagania: US3.2, US2.9
      */
     @Test
     fun us3_2_check_first_in_content() {
@@ -117,7 +123,9 @@ class BuildingCardModesTest {
 
     /**
      * Wiersz: V2, „Zamknij” → onClose, „Wstecz” → onBack, „Sprawdź…” → onCheckEntrances, „Pokaż budynek na
-     *   mapie” → onShowOnMap, NFR-15, US2.8.
+     *   mapie” → onShowOnMap.
+     *
+     * Wymagania: NFR-15, US2.8
      */
     @Test
     fun nfr15_each_action_its_callback() {
@@ -131,8 +139,10 @@ class BuildingCardModesTest {
     }
 
     /**
-     * Wiersz: V2 od razu przy czcionce 200 %: treść i czynności w przewijanej treści, nic przypiętego, NFR-20.
+     * Wiersz: V2 od razu przy czcionce 200 %: treść i czynności w przewijanej treści, nic przypiętego.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Z listy przy dużej czcionce opis budynku prowadzi do mapy
+     *
+     * Wymagania: NFR-20
      */
     @Test
     @Config(fontScale = 2f)
@@ -149,7 +159,9 @@ class BuildingCardModesTest {
     /**
      * Wiersz: V2, pełny ekran (rozwinięty i od razu): przy każdym wejściu, nie tylko zalecanym, „Zgłoś barierę
      *   przy wejściu” pod opisem wejścia, w przewijanej treści; TalkBack czyta „Zgłoś barierę przy wejściu:
-     *   »nazwa wejścia«”, także dla wejścia bez nazwy, US4.6, NFR-18, WCAG 2.5.3.
+     *   »nazwa wejścia«”, także dla wejścia bez nazwy, WCAG 2.5.3.
+     *
+     * Wymagania: US4.6, NFR-18
      */
     @Test
     fun us4_6_report_at_each_entrance() {
@@ -169,7 +181,9 @@ class BuildingCardModesTest {
 
     /**
      * Wiersz: V2, dotknięcie „Zgłoś barierę przy wejściu” przy wejściu → onReportEntrance z identyfikatorem
-     *   dokładnie tego wejścia, US4.6.
+     *   dokładnie tego wejścia.
+     *
+     * Wymagania: US4.6
      */
     @Test
     fun us4_6_report_passes_entrance() {
@@ -179,8 +193,9 @@ class BuildingCardModesTest {
     }
 
     /**
-     * Wiersz: V2, mała karta nie ma listy wejść, więc nie ma „Zgłoś barierę przy wejściu”; pełny ekran ma, US4.6,
-     *   decyzja 115.
+     * Wiersz: V2, mała karta nie ma listy wejść, więc nie ma „Zgłoś barierę przy wejściu”; pełny ekran ma.
+     *
+     * Wymagania: US4.6
      */
     @Test
     fun us4_6_compact_has_no_report() {
@@ -194,7 +209,9 @@ class BuildingCardModesTest {
     /**
      * Wiersz: V2 pełny ekran: „Pokaż wejście na mapie” tylko przy wejściu zalecanym, pod jego opisem, w przewijanej
      *   treści; TalkBack czyta „Pokaż wejście na mapie: »nazwa wejścia«”; dotknięcie → onShowEntrance z id tego
-     *   wejścia, US3.3, US2.1, BR-25, NFR-18.
+     *   wejścia.
+     *
+     * Wymagania: US3.3, US2.1, BR-25, NFR-18
      */
     @Test
     fun us3_3_show_recommended_only() {
@@ -213,8 +230,9 @@ class BuildingCardModesTest {
     }
 
     /**
-     * Wiersz: V2 pełny ekran budynku bez wejścia zalecanego (każde „Niedostępne”) → bez „Pokaż wejście na mapie”,
-     *   US3.3, BR-25.
+     * Wiersz: V2 pełny ekran budynku bez wejścia zalecanego (każde „Niedostępne”) → bez „Pokaż wejście na mapie”.
+     *
+     * Wymagania: US3.3, BR-25
      */
     @Test
     fun us3_3_no_show_no_recommended() {
@@ -226,8 +244,9 @@ class BuildingCardModesTest {
     }
 
     /**
-     * Wiersz: V2, mała karta nie ma listy wejść, więc nie ma „Pokaż wejście na mapie”; pełny ekran ma, US3.3,
-     *   decyzja 115.
+     * Wiersz: V2, mała karta nie ma listy wejść, więc nie ma „Pokaż wejście na mapie”; pełny ekran ma.
+     *
+     * Wymagania: US3.3
      */
     @Test
     fun us3_3_compact_has_no_show() {

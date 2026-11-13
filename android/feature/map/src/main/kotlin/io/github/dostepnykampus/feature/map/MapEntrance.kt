@@ -23,7 +23,9 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 /**
  * Wejście [entrance] z [catalog] jako zaznaczenie na mapie; `null` bez katalogu, bez wejścia albo gdy katalog go
- * nie zna. Wejście bez nazwy dostaje podpis „Wejście bez nazwy w danych” (US3.3, decyzja 134).
+ * nie zna. Wejście bez nazwy dostaje podpis „Wejście bez nazwy w danych”.
+ *
+ * Wymagania: US3.3
  */
 @Composable
 internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocus.Entrance?): SelectedEntrance? {
@@ -46,9 +48,11 @@ internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocu
 internal data class MapScene(val data: CampusMapData, val selection: MapSelection)
 
 /**
- * Scena mapy z danych [layers], zaznaczenia [focus] z trasy i nazwy terenu [area] wybranego przez osobę (US1.7);
+ * Scena mapy z danych [layers], zaznaczenia [focus] z trasy i nazwy terenu [area] wybranego przez osobę;
  * wejście bierze nazwę i punkt z [catalog]. `null`, dopóki nie ma danych mapy. Zmiana zaznaczenia nie kopiuje
  * danych katalogu.
+ *
+ * Wymagania: US1.7
  */
 @Composable
 internal fun rememberMapScene(
@@ -66,7 +70,9 @@ internal fun rememberMapScene(
 
 /**
  * Węzeł dla TalkBack: natywna mapa nie opisuje pinezki, więc czytany jest tekst „Zaznaczone wejście: »nazwa«,
- * budynek X” dla [chosen], z budynkiem ekranu (NFR-18, decyzja 135).
+ * budynek X” dla [chosen], z budynkiem ekranu.
+ *
+ * Wymagania: NFR-18
  */
 @Composable
 internal fun EntranceDescription(chosen: SelectedEntrance) {

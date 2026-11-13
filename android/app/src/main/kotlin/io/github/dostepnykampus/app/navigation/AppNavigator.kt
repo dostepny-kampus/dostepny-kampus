@@ -39,7 +39,9 @@ enum class TopLevel {
 
 /**
  * Historia „Wstecz” przy starcie (mapa nawigacji, tabela „start, pasek dolny i »Wstecz«”): przy pierwszym
- * uruchomieniu V5 nad V1 (US5.1), przy kolejnym samo V1. Na dole jest zawsze V1, ekran bez „Wstecz”.
+ * uruchomieniu V5 nad V1, przy kolejnym samo V1. Na dole jest zawsze V1, ekran bez „Wstecz”.
+ *
+ * Wymagania: US5.1
  */
 fun startBackStack(firstLaunch: Boolean): List<NavKey> =
     if (firstLaunch) listOf(MapRoute(), HelpRoute(isFirstLaunch = true)) else listOf(MapRoute())
@@ -62,9 +64,11 @@ fun selectedItem(route: NavKey): TopLevel? =
 /**
  * Historia „Wstecz” [backStack], na dole zawsze V1. [onFirstHelpLeft] dostaje znać, gdy instrukcja z pierwszego
  * uruchomienia przestanie być na wierzchu historii dowolną drogą, także paskiem, żeby przy kolejnym starcie
- * otworzyło się V1 (US5.1, decyzja 73); powtórne wywołanie nie szkodzi. [restarts] liczy powroty do pierwszego
+ * otworzyło się V1; powtórne wywołanie nie szkodzi. [restarts] liczy powroty do pierwszego
  * ekranu sekcji na każdej pozycji historii; trzeba go zapisywać razem z historią. Każda zmiana historii idzie
  * przez [leaving], dostępne tylko dla przejść nawigatora w module `app`.
+ *
+ * Wymagania: US5.1
  */
 sealed class NavigationHistory(
     private val backStack: MutableList<NavKey>,
@@ -78,7 +82,7 @@ sealed class NavigationHistory(
     /**
      * Klucz treści wpisu na pozycji [index] historii: pozycja, liczba powrotów na niej i trasa. Ten sam ekran dwa
      * razy w historii ma dwa klucze, a powrót do pierwszego ekranu sekcji daje nowy klucz, czyli świeży stan ekranu.
-     * Zaznaczenie V1 nie wchodzi do klucza: V1 żyje pod arkuszem V2 i po „Wstecz” wraca w swoim stanie (decyzja 83).
+     * Zaznaczenie V1 nie wchodzi do klucza: V1 żyje pod arkuszem V2 i po „Wstecz” wraca w swoim stanie.
      */
     fun contentKey(index: Int): String {
         val route = backStack[index].let { if (it is MapRoute) MapRoute() else it }
@@ -86,8 +90,10 @@ sealed class NavigationHistory(
     }
 
     /**
-     * „Wstecz” w nagłówku i wstecz telefonu: poprzedni ekran (NFR-15). Zamknięcie V2 zdejmuje z V1 zaznaczenie
-     * budynku, a resztę stanu V1 zostawia (decyzje 83, 116). Na V1 fałsz, wtedy aplikacja się zamyka.
+     * „Wstecz” w nagłówku i wstecz telefonu: poprzedni ekran. Zamknięcie V2 zdejmuje z V1 zaznaczenie
+     * budynku, a resztę stanu V1 zostawia. Na V1 fałsz, wtedy aplikacja się zamyka.
+     *
+     * Wymagania: NFR-15
      */
     fun back(): Boolean {
         if (backStack.size == 1) return false
@@ -100,14 +106,14 @@ sealed class NavigationHistory(
         leaving { backStack.subList(fromIndex = 1, toIndex = backStack.size).clear() }
     }
 
-    /** Powrót do pierwszego ekranu sekcji na wierzchu: nowy klucz treści, czyli świeży stan (decyzja 72). */
+    /** Powrót do pierwszego ekranu sekcji na wierzchu: nowy klucz treści, czyli świeży stan. */
     protected fun restartTop() {
         while (restarts.size < backStack.size) restarts += 0
         restarts[backStack.lastIndex]++
     }
 
     /**
-     * Jedyna droga zmiany historii: pilnuje wyjścia z instrukcji i liczników powrotów (decyzje 72 i 73). Widoczna
+     * Jedyna droga zmiany historii: pilnuje wyjścia z instrukcji i liczników powrotów. Widoczna
      * w module `app` dla przejść nawigatora rozbitych na pliki, np. pomiaru i formularza w `CaptureTransitions.kt`.
      */
     internal fun leaving(change: MutableList<NavKey>.() -> Unit) {
@@ -125,15 +131,19 @@ sealed class NavigationHistory(
 /**
  * Dotknięcie budynku o symbolu na liście „Lista budynków”; drugi argument mówi, czy działa TalkBack. Przy zwykłej
  * czcionce V1 w widoku mapy z małą kartą V2, przy TalkBack od razu pełny ekran V2; zapamiętany wybór „Lista budynków”
- * się nie zmienia (US2.8, US3.2, NFR-19, decyzje 115, 118).
+ * się nie zmienia.
+ *
+ * Wymagania: US2.8, US3.2, NFR-19
  */
 internal val openBuildingFromList: AppNavigator.(String, Boolean) -> Unit = AppNavigator::openBuilding
 
 /**
  * Przejścia między ekranami (mapa nawigacji: tabele „start, pasek dolny i »Wstecz«”, „Gość i Odwiedzający” oraz
- * „logowanie i konto”). Konto z [roles] wybiera cel: Gość trafia do L1 zamiast V4 i L2 (US14, US14.2).
- * [onChooseMap] zapisuje wybór „Mapa” w przełączniku V1 po „Pokaż budynek na mapie” (US2.9, decyzja 116) i po
- * „Pokaż wejście na mapie” (US2.1, decyzja 135).
+ * „logowanie i konto”). Konto z [roles] wybiera cel: Gość trafia do L1 zamiast V4 i L2.
+ * [onChooseMap] zapisuje wybór „Mapa” w przełączniku V1 po „Pokaż budynek na mapie” i po
+ * „Pokaż wejście na mapie”.
+ *
+ * Wymagania: US14, US14.2, US2.9, US2.1
  */
 class AppNavigator(
     backStack: MutableList<NavKey>,
@@ -155,7 +165,9 @@ class AppNavigator(
 
     /**
      * Pozycja [item] paska: „Mapa” wraca do V1, inna otwiera swój ekran nad bieżącym. Ponowne dotknięcie wybranej
-     * pozycji wraca do pierwszego ekranu sekcji w postaci jak po wejściu (NFR-15, decyzja 72).
+     * pozycji wraca do pierwszego ekranu sekcji w postaci jak po wejściu.
+     *
+     * Wymagania: NFR-15
      */
     fun open(item: TopLevel) {
         if (selectedItem(current) == item) {
@@ -176,9 +188,11 @@ class AppNavigator(
     }
 
     /**
-     * V1 → V2 budynku [symbol]; „Wstecz” z V2 wraca do V1 bez zaznaczenia budynku (US2.8, decyzja 116). Dotknięcie
-     * innego budynku przy otwartym arkuszu V2 zastępuje V2, więc „Wstecz” dalej wraca prosto do V1 (decyzja 48).
-     * [isDirect] otwiera V2 od razu na pełnym ekranie, bez małej karty (NFR-19, decyzja 115).
+     * V1 → V2 budynku [symbol]; „Wstecz” z V2 wraca do V1 bez zaznaczenia budynku. Dotknięcie
+     * innego budynku przy otwartym arkuszu V2 zastępuje V2, więc „Wstecz” dalej wraca prosto do V1.
+     * [isDirect] otwiera V2 od razu na pełnym ekranie, bez małej karty.
+     *
+     * Wymagania: US2.8, NFR-19
      */
     fun openBuilding(symbol: String, isDirect: Boolean = false) {
         leaving {
@@ -188,14 +202,16 @@ class AppNavigator(
         }
     }
 
-    /** V2 → V3 budynku [symbol]: „Sprawdź, którędy wejść” (US3, US3.2). */
+    /** V2 → V3 budynku [symbol]: „Sprawdź, którędy wejść”. Wymagania: US3, US3.2 */
     fun openEntrances(symbol: String) {
         leaving { add(EntrancesRoute(symbol)) }
     }
 
     /**
-     * V1 z zaznaczonym [focus] i wyczyszczoną historią: „Pokaż na mapie”, „Pokaż wejście na mapie” (US2.1, BR-25).
-     * Budynek i wejście wybierają też widok „Mapa” w przełączniku V1 (decyzje 116, 135).
+     * V1 z zaznaczonym [focus] i wyczyszczoną historią: „Pokaż na mapie”, „Pokaż wejście na mapie”.
+     * Budynek i wejście wybierają też widok „Mapa” w przełączniku V1.
+     *
+     * Wymagania: US2.1, BR-25
      */
     fun showOnMap(focus: MapFocus?) {
         if (focus != null) onChooseMap()
@@ -205,7 +221,11 @@ class AppNavigator(
         }
     }
 
-    /** „Zgłoś barierę”, także przy wejściu [entranceId]: V4 krok 1, a Gość najpierw L1 (US4, US4.6, US14.2). */
+    /**
+     * „Zgłoś barierę”, także przy wejściu [entranceId]: V4 krok 1, a Gość najpierw L1.
+     *
+     * Wymagania: US4, US4.6, US14.2
+     */
     fun report(entranceId: String? = null) {
         val route =
             if (isSignedIn) {
@@ -217,8 +237,10 @@ class AppNavigator(
     }
 
     /**
-     * Następny krok V4: „Dalej” po zdjęciu, wybór grupy albo piętra (US4.1, US4.3, US4.5). [filled] to bieżący krok
-     * z jego danymi; zostaje w historii, więc „Wstecz” wraca do kroku ze zdjęciem i grupą (US4.8).
+     * Następny krok V4: „Dalej” po zdjęciu, wybór grupy albo piętra. [filled] to bieżący krok
+     * z jego danymi; zostaje w historii, więc „Wstecz” wraca do kroku ze zdjęciem i grupą.
+     *
+     * Wymagania: US4.1, US4.3, US4.5, US4.8
      */
     fun nextReportStep(filled: ReportRoute? = null) {
         val route = (current as? ReportRoute)?.takeIf { it.step < ReportStep.SEND } ?: return
@@ -230,8 +252,10 @@ class AppNavigator(
     }
 
     /**
-     * „Wyślij”: potwierdzenie zamiast kroków V4, więc „Wstecz” prowadzi na ekran sprzed V4 (US4.4, P2).
-     * [isSavedOffline]: zapis bez internetu, potwierdzenie mówi, że zdjęcie wyśle się samo (US4.2).
+     * „Wyślij”: potwierdzenie zamiast kroków V4, więc „Wstecz” prowadzi na ekran sprzed V4 (P2).
+     * [isSavedOffline]: zapis bez internetu, potwierdzenie mówi, że zdjęcie wyśle się samo.
+     *
+     * Wymagania: US4.4, US4.2
      */
     fun reportSent(isSavedOffline: Boolean = false) {
         if (current !is ReportRoute) return
@@ -241,12 +265,12 @@ class AppNavigator(
         }
     }
 
-    /** „Tak, zrezygnuj” po „Wstecz” z kroku 1: ekran sprzed V4, zgłoszenie nie powstaje (UC7 1b). */
+    /** „Tak, zrezygnuj” po „Wstecz” z kroku 1: ekran sprzed V4, zgłoszenie nie powstaje. Wymagania: UC7 */
     fun leaveReport() {
         leaving { dropReport() }
     }
 
-    /** Po zalogowaniu na L1: V4 krok 1 z wejściem wybranym przed L1 albo L2 (US14.2, UC7 1a, P3). */
+    /** Po zalogowaniu na L1: V4 krok 1 z wejściem wybranym przed L1 albo L2 (P3). Wymagania: US14.2, UC7 */
     fun signedIn() {
         val route = current as? SignInRoute ?: return
         leaving {

@@ -31,13 +31,17 @@ import kotlin.coroutines.CoroutineContext
 /**
  * Zdjęcie do wysłania po treści zgłoszenia.
  *
- * @property photoId identyfikator UUID zdjęcia nadany w telefonie (BR-7)
+ * Wymagania: BR-7
+ *
+ * @property photoId identyfikator UUID zdjęcia nadany w telefonie
  * @property path ścieżka pliku JPEG w pamięci aplikacji
  */
 data class PendingPhotoDraft(val photoId: String, val path: String)
 
 /**
- * Zgłoszenie Zbierającego poprawiane z listy „Moje zgłoszenia” (US8.3).
+ * Zgłoszenie Zbierającego poprawiane z listy „Moje zgłoszenia”.
+ *
+ * Wymagania: US8.3
  *
  * @property id identyfikator poprawianego zgłoszenia; zapis go nie zmienia, więc nie powstaje duplikat
  * @property baseVersion wersja z serwera, od której zaczęto poprawkę; `null`, gdy zgłoszenie jest tylko w telefonie
@@ -54,9 +58,11 @@ internal fun PendingPhotoDraft.toPendingPhotoEntity(submissionId: String): Pendi
     )
 
 /**
- * SENT: wysłane; LATER: brak sieci albo awaria serwera (5xx), spróbować później (BR-9);
- * LOGIN_EXPIRED: 401, czekać na ponowne zalogowanie (BR-26); REFUSED: inna odmowa serwera;
- * REPLACED: w trakcie wysyłki zapisano poprawkę, więc wynik dotyczy starej treści i wiersz idzie od nowa (#855).
+ * SENT: wysłane; LATER: brak sieci albo awaria serwera (5xx), spróbować później;
+ * LOGIN_EXPIRED: 401, czekać na ponowne zalogowanie; REFUSED: inna odmowa serwera;
+ * REPLACED: w trakcie wysyłki zapisano poprawkę, więc wynik dotyczy starej treści i wiersz idzie od nowa.
+ *
+ * Wymagania: BR-9, BR-26
  */
 internal enum class Outcome { SENT, LATER, LOGIN_EXPIRED, REFUSED, REPLACED }
 
@@ -66,9 +72,11 @@ private const val FIRST_SERVER_FAULT_CODE = 500
 /**
  * Wywołania serwera zgłoszeń, z których korzysta kolejka (`SubmissionsApi`).
  *
+ * Wymagania: BR-10
+ *
  * @property create nowe zgłoszenie (`POST /submissions`)
  * @property putPhoto zdjęcie zgłoszenia (`PUT /submissions/{id}/photos/{photoId}`)
- * @property update edycja z wersją bazową (`PUT /submissions/{id}`, BR-10)
+ * @property update edycja z wersją bazową (`PUT /submissions/{id}`)
  */
 data class SubmissionServer(
     val create: suspend (id: String, content: SubmissionContent) -> ApiResult<Submission>,
@@ -77,7 +85,9 @@ data class SubmissionServer(
 )
 
 /**
- * Identyfikator i chwila zapisu nowego zgłoszenia w kolejce; testy podają własne (BR-9).
+ * Identyfikator i chwila zapisu nowego zgłoszenia w kolejce; testy podają własne.
+ *
+ * Wymagania: BR-9
  *
  * @property newId identyfikator zgłoszenia w telefonie, raz na zgłoszenie
  * @property nowMillis zegar chwili zapisu
@@ -88,20 +98,22 @@ data class SubmissionStamps(
 )
 
 /**
- * Kolejka zgłoszeń: zapis w telefonie i wysyłanie od najstarszego (NFR-5, US9.1, US9.2, BR-9).
+ * Kolejka zgłoszeń: zapis w telefonie i wysyłanie od najstarszego.
  *
  * Bez sieci albo po błędzie serwera zgłoszenie zostaje w kolejce: zapis w bazie mówi, co serwer
- * już ma, więc kolejna próba wysyła treść raz i tylko brakujące zdjęcia (NFR-8).
- * Identyfikator powstaje raz, więc serwer nie dostanie drugiego zgłoszenia (BR-9).
- * Po zapisie [onSaved] planuje wysyłkę po powrocie sieci (NFR-6); zapis działa także bez niego.
+ * już ma, więc kolejna próba wysyła treść raz i tylko brakujące zdjęcia.
+ * Identyfikator powstaje raz, więc serwer nie dostanie drugiego zgłoszenia.
+ * Po zapisie [onSaved] planuje wysyłkę po powrocie sieci; zapis działa także bez niego.
  * Poprawka z C3 ([saveEdit]) zastępuje wiersz tego samego zgłoszenia, a do serwera idzie jako edycja
- * [SubmissionServer.update] z wersją bazową (US8.3, BR-10).
- * Po 401 wysyłka czeka na ponowne zalogowanie: [loginExpired] i [onLoggedIn] (BR-26, US14.4).
- * Zgłoszenia Zbierającego trafiają też do [history] ze stanem wysyłki dla listy C3 (US8); bez niej kolejka
+ * [SubmissionServer.update] z wersją bazową.
+ * Po 401 wysyłka czeka na ponowne zalogowanie: [loginExpired] i [onLoggedIn].
+ * Zgłoszenia Zbierającego trafiają też do [history] ze stanem wysyłki dla listy C3; bez niej kolejka
  * działa jak dotąd.
  * Chwilę zapisu daje [SubmissionStamps.nowMillis]; kolejne zapisy mają rosnące chwile także w tej samej
- * milisekundzie, więc kolejka wysyła je w kolejności zapisu (US9.2, BR-9).
- * Wywołania serwera idą poza blokadą wierszy ([SentResults]), więc zapis poprawki nie czeka na sieć (#855).
+ * milisekundzie, więc kolejka wysyła je w kolejności zapisu.
+ * Wywołania serwera idą poza blokadą wierszy ([SentResults]), więc zapis poprawki nie czeka na sieć.
+ *
+ * Wymagania: NFR-5, US9.1, US9.2, BR-9, NFR-8, NFR-6, US8.3, BR-10, BR-26, US14.4, US8
  */
 class SubmissionQueue(
     private val store: PendingSubmissionDao,
@@ -116,7 +128,7 @@ class SubmissionQueue(
     private val lastSavedAt = AtomicLong(Long.MIN_VALUE)
     private val expired = MutableStateFlow(false)
 
-    /** `true` po odpowiedzi 401 aż do [onLoggedIn]: aplikacja prosi o ponowne zalogowanie (BR-26). */
+    /** `true` po odpowiedzi 401 aż do [onLoggedIn]: aplikacja prosi o ponowne zalogowanie. Wymagania: BR-26 */
     val loginExpired: StateFlow<Boolean> = expired.asStateFlow()
 
     /** Kolejka bez edycji na serwerze: poprawka z wersją bazową zostaje w telefonie jak odmowa (404). */
@@ -136,11 +148,13 @@ class SubmissionQueue(
     )
 
     /**
-     * Zapisuje zgłoszenie w kolejce z nowym identyfikatorem w telefonie (BR-9).
-     * Awaria planowania wysyłki nie może zgubić zapisanego zgłoszenia (NFR-5).
+     * Zapisuje zgłoszenie w kolejce z nowym identyfikatorem w telefonie.
+     * Awaria planowania wysyłki nie może zgubić zapisanego zgłoszenia.
+     *
+     * Wymagania: BR-9, NFR-5, BR-7, BR-8
      *
      * @param content treść zgłoszenia
-     * @param photos zdjęcia do wysłania; identyfikatory wracają w [content] (BR-7, BR-8)
+     * @param photos zdjęcia do wysłania; identyfikatory wracają w [content]
      * @throws SaveRefusedException zdjęcia nie odpowiadają treści
      */
     suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>): PendingSubmissionEntity {
@@ -157,7 +171,9 @@ class SubmissionQueue(
     }
 
     /**
-     * Sprzątanie przy starcie: usuwa z [dir] pliki zdjęć, których nie ma w kolejce ani w [kept] (NFR-5, #927).
+     * Sprzątanie przy starcie: usuwa z [dir] pliki zdjęć, których nie ma w kolejce ani w [kept].
+     *
+     * Wymagania: NFR-5
      *
      * @param dir katalog zdjęć zgłoszeń
      * @param kept pliki zdjęć odtworzonych szkiców
@@ -167,13 +183,15 @@ class SubmissionQueue(
     }
 
     /**
-     * Zapisuje poprawkę zgłoszenia z C3 pod jego identyfikatorem, więc kolejka nie ma dwóch wersji (US8.3, BR-9).
+     * Zapisuje poprawkę zgłoszenia z C3 pod jego identyfikatorem, więc kolejka nie ma dwóch wersji.
+     *
+     * Wymagania: US8.3, BR-9, BR-7, BR-8, BR-10
      *
      * @param edited poprawiane zgłoszenie
      * @param content nowa treść zgłoszenia
-     * @param photos zdjęcia do wysłania; identyfikatory wracają w [content] (BR-7, BR-8)
+     * @param photos zdjęcia do wysłania; identyfikatory wracają w [content]
      * @throws SaveRefusedException zdjęcia nie odpowiadają treści albo serwer ma już zgłoszenie, a telefon nie zna
-     *   jego wersji (BR-10)
+     *   jego wersji
      */
     suspend fun saveEdit(edited: EditedSubmission, content: SubmissionContent, photos: List<PendingPhotoDraft>) {
         requireMatchingPhotos(content, photos)
@@ -196,14 +214,16 @@ class SubmissionQueue(
 
     /**
      * Wysyła zgłoszenia z kolejki od najstarszych: treść raz, potem tylko nie wysłane zdjęcia.
-     * Bez sieci albo przy awarii serwera (5xx) wysyłanie się kończy do kolejnej próby (BR-9). Po 401 kończy się
-     * do ponownego zalogowania, bo bez niego serwer odrzuci każde zgłoszenie (BR-26). Inna odmowa serwera (4xx)
+     * Bez sieci albo przy awarii serwera (5xx) wysyłanie się kończy do kolejnej próby. Po 401 kończy się
+     * do ponownego zalogowania, bo bez niego serwer odrzuci każde zgłoszenie. Inna odmowa serwera (4xx)
      * zostawia zgłoszenie w telefonie jako odrzucone, nie wysyła go ponownie i przechodzi do następnego; wraca do
-     * wysyłki dopiero po ponownym zapisie przez osobę ([saveEdit], BR-26, NFR-5, US9.2). Tak samo kończy się
+     * wysyłki dopiero po ponownym zapisie przez osobę ([saveEdit]). Tak samo kończy się
      * zgłoszenie, którego telefon nie odczyta (brak pliku zdjęcia, nieznana wartość w bazie), ale bez kodu odmowy,
      * więc jeden zły wiersz nie zatrzymuje kolejki. Kolejka jest czytana po każdym zgłoszeniu, więc zgłoszenie
-     * zapisane w trakcie wysyłki idzie w tym samym przebiegu; każde jest próbowane raz na przebieg (#854), a poprawka
-     * zapisana w trakcie wysyłki tego samego zgłoszenia idzie od razu po niej (#855).
+     * zapisane w trakcie wysyłki idzie w tym samym przebiegu; każde jest próbowane raz na przebieg, a poprawka
+     * zapisana w trakcie wysyłki tego samego zgłoszenia idzie od razu po niej.
+     *
+     * Wymagania: BR-9, BR-26, NFR-5, US9.2
      *
      * @return `false`, gdy trzeba spróbować później; `true`, gdy wysyłka doszła do końca kolejki albo czeka
      *   na zalogowanie, a nie na czas
@@ -215,7 +235,7 @@ class SubmissionQueue(
             stop != Outcome.LATER
         }
 
-    /** Po ponownym zalogowaniu wysyłka rusza sama, bez działania Zbierającego (BR-26, US14.4). */
+    /** Po ponownym zalogowaniu wysyłka rusza sama, bez działania Zbierającego. Wymagania: BR-26, US14.4 */
     fun onLoggedIn() {
         expired.value = false
         runCatching(onSaved)
@@ -273,7 +293,7 @@ class SubmissionQueue(
     }
 }
 
-/** Plik zdjęcia do wysłania; `null`, gdy telefon go nie odczyta (#856). */
+/** Plik zdjęcia do wysłania; `null`, gdy telefon go nie odczyta. */
 internal suspend fun jpeg(path: String, ioContext: CoroutineContext): ByteArray? =
     withContext(ioContext) {
         try {
@@ -285,7 +305,7 @@ internal suspend fun jpeg(path: String, ioContext: CoroutineContext): ByteArray?
 
 /**
  * Usuwa pliki zdjęć, których kolejka już nie potrzebuje: po wysłaniu całego zgłoszenia albo po zastąpieniu zdjęcia
- * poprawką (#857). Pliki zgłoszenia czekającego zostają, bo poprawka z C3 może je jeszcze pokazać i wysłać.
+ * poprawką. Pliki zgłoszenia czekającego zostają, bo poprawka z C3 może je jeszcze pokazać i wysłać.
  */
 internal suspend fun deletePhotoFiles(paths: List<String>, ioContext: CoroutineContext) {
     if (paths.isNotEmpty()) withContext(ioContext) { paths.forEach { File(it).delete() } }
@@ -294,7 +314,9 @@ internal suspend fun deletePhotoFiles(paths: List<String>, ioContext: CoroutineC
 /**
  * Wersja bazowa poprawki [edited]: z C3, z poprzedniej poprawki w kolejce albo z historii po utworzeniu. Gdy serwer
  * ma już zgłoszenie, a wersja nie jest znana, zapis jest odrzucony, bo utworzenie z tym samym identyfikatorem
- * byłoby duplikatem (BR-9, BR-10); zgłoszenie tylko w telefonie zostaje bez wersji i idzie jako utworzenie.
+ * byłoby duplikatem; zgłoszenie tylko w telefonie zostaje bez wersji i idzie jako utworzenie.
+ *
+ * Wymagania: BR-9, BR-10
  */
 internal suspend fun baseVersionOf(
     edited: EditedSubmission,
@@ -333,7 +355,9 @@ internal fun outcomeOf(result: ApiResult<*>): Outcome =
 
 /**
  * Wynik edycji [result]: konflikt wersji (409) zostaje w telefonie jako „Nie wysłano”, bez ponawiania w kółko.
- * Wersja z serwera trafia do wiersza kolejki i historii, więc ponowny zapis poprawki idzie od niej (US9.3, BR-10).
+ * Wersja z serwera trafia do wiersza kolejki i historii, więc ponowny zapis poprawki idzie od niej.
+ *
+ * Wymagania: US9.3, BR-10
  */
 internal fun editOutcome(result: ApiResult<SubmissionEdit>): Outcome =
     if (result is ApiResult.Success && result.value is SubmissionEdit.Conflict) {

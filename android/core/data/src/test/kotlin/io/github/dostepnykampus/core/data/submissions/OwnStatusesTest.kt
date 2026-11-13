@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test
 import java.io.IOException
 import java.time.Instant
 
-/** Statusy listy C3 z serwera w historii telefonu (US8.2, US9.1, BR-16). */
+/** Statusy listy C3 z serwera w historii telefonu. Wymagania: US8.2, US9.1, BR-16 */
 class OwnStatusesTest {
     private val history = FakeHistory()
 

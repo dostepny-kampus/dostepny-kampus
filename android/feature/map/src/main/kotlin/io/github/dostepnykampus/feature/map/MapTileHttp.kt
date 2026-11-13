@@ -17,16 +17,18 @@ import javax.inject.Singleton
 
 private val TILE_CONNECT_TIMEOUT: Duration = Duration.ofSeconds(10)
 
-/** Nagłówek User-Agent kafelków mapy OSM (NFR-39), dostarczany przez aplikację do grafu Hilt (#822). */
+/** Nagłówek User-Agent kafelków mapy OSM, dostarczany przez aplikację do grafu Hilt. Wymagania: NFR-39 */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class MapUserAgent
 
 /**
- * Klient HTTP kafelków mapy z grafu Hilt, więc nagłówek nie zależy od kolejności startu (#822). Powstaje z klienta
- * aplikacji [http] przez `newBuilder()` i dzieli z nim pulę połączeń. Każde żądanie ma nagłówek [userAgent]
- * (NFR-39). Kafelki nie mają limitu całego wywołania klienta aplikacji, tylko domyślne 10 s na połączenie, jak
+ * Klient HTTP kafelków mapy z grafu Hilt, więc nagłówek nie zależy od kolejności startu. Powstaje z klienta
+ * aplikacji [http] przez `newBuilder()` i dzieli z nim pulę połączeń. Każde żądanie ma nagłówek [userAgent].
+ * Kafelki nie mają limitu całego wywołania klienta aplikacji, tylko domyślne 10 s na połączenie, jak
  * wcześniej. Token konta idzie tylko do serwera aplikacji, nie do serwera kafelków.
+ *
+ * Wymagania: NFR-39
  *
  * @param http klient aplikacji
  * @param userAgent nagłówek User-Agent aplikacji
@@ -46,7 +48,11 @@ class MapTileHttp
                 .callTimeout(Duration.ZERO)
                 .build()
 
-        /** Wywołania dla MapLibre z nagłówkiem User-Agent; bez regionów offline, kafelki na bieżący widok (NFR-39). */
+        /**
+         * Wywołania dla MapLibre z nagłówkiem User-Agent; bez regionów offline, kafelki na bieżący widok.
+         *
+         * Wymagania: NFR-39
+         */
         val calls: Call.Factory =
             Call.Factory { request ->
                 client.newCall(request.newBuilder().header(name = "User-Agent", value = userAgent).build())

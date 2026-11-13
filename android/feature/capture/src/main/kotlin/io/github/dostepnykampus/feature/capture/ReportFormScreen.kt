@@ -13,17 +13,19 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 
 /**
- * C2 Opisz barierę (US7) z miejscem z [route]. „Wstecz” w nagłówku i wstecz telefonu bez zmian wychodzą od razu,
- * ze zmianami pytają „Wyjść bez zapisu?” (US7.4). „Zmień miejsce” wraca do C1 bez pytania, a wpisane pola
+ * C2 Opisz barierę z miejscem z [route]. „Wstecz” w nagłówku i wstecz telefonu bez zmian wychodzą od razu,
+ * ze zmianami pytają „Wyjść bez zapisu?”. „Zmień miejsce” wraca do C1 bez pytania, a wpisane pola
  * czekają na nowe miejsce.
+ *
+ * Wymagania: US7, US7.4, NFR-5, NFR-22
  *
  * @param route miejsce z pomiaru C1
  * @param onLeave wyjście bez zapisu
- * @param onSave zgłoszenie zapisane w kolejce (NFR-5); dalej C3
+ * @param onSave zgłoszenie zapisane w kolejce; dalej C3
  * @param modifier wymiary nadane przez aplikację
  * @param viewModel formularz; w aplikacji z grafu Hilt, w testach z zapisem testowym
  * @param draft szkic współdzielony z C1 przez nawigację
- * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu (NFR-22)
+ * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu
  */
 @Composable
 fun ReportFormScreen(

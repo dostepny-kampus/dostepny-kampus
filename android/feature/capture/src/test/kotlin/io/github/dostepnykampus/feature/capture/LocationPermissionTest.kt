@@ -23,7 +23,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
-/** Prośba o zgodę na lokalizację przed pomiarem C1 (US6.1, NFR-27). */
+/** Prośba o zgodę na lokalizację przed pomiarem C1. Wymagania: US6.1, NFR-27 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class LocationPermissionTest {

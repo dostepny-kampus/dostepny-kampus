@@ -23,7 +23,11 @@ import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Kolejka wysyła treść raz i tylko brakujące zdjęcia, a błędy zostawiają zgłoszenie w kolejce (NFR-5, US9.2). */
+/**
+ * Kolejka wysyła treść raz i tylko brakujące zdjęcia, a błędy zostawiają zgłoszenie w kolejce.
+ *
+ * Wymagania: NFR-5, US9.2
+ */
 class SubmissionQueueTest {
     @TempDir
     lateinit var tempDir: File
@@ -75,7 +79,11 @@ class SubmissionQueueTest {
             assertTrue(left.submission.isRefused)
         }
 
-    /** Odmowa serwera (4xx) nie wraca do wysyłki przy kolejnych próbach; ponowna tylko z decyzji osoby (BR-26). */
+    /**
+     * Odmowa serwera (4xx) nie wraca do wysyłki przy kolejnych próbach; ponowna tylko z decyzji osoby.
+     *
+     * Wymagania: BR-26
+     */
     @Test
     fun `odrzucone nie jest ponawiane`() =
         runBlocking {
@@ -138,7 +146,11 @@ class SubmissionQueueTest {
             assertEquals(emptyList<Pair<String, String>>(), store.photos)
         }
 
-    /** Dwa zapisy w tej samej chwili zegara idą na serwer w kolejności zapisu, nie identyfikatorów (US9.2, BR-9). */
+    /**
+     * Dwa zapisy w tej samej chwili zegara idą na serwer w kolejności zapisu, nie identyfikatorów.
+     *
+     * Wymagania: US9.2, BR-9
+     */
     @Test
     fun `kolejność jak przy zapisie`() =
         runBlocking {

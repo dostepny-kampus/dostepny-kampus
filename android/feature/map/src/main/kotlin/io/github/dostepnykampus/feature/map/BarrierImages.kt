@@ -15,10 +15,12 @@ import io.github.dostepnykampus.core.model.Severity
 import kotlin.math.ceil
 
 /**
- * Obrazy barier: znak każdej uciążliwości i jej słowo z [MapImages.words] (US1.3, NFR-21). Znak ma kształt
+ * Obrazy barier: znak każdej uciążliwości i jej słowo z [MapImages.words]. Znak ma kształt
  * według uciążliwości w barwach `tusz` i `papier`, jak znaki wejść; słowo wygląda jak podpis budynku. Bez słów
  * są same znaki. Każda uciążliwość ma też znak wybranej bariery: większy znak na kole `papier` w obwódce
- * `tusz` (US1.5, NFR-21).
+ * `tusz`.
+ *
+ * Wymagania: US1.3, NFR-21, US1.5
  */
 internal fun barrierImages(images: MapImages): Map<String, Bitmap> {
     val size = ceil(BARRIER_SIGN_DP * images.density).toInt()

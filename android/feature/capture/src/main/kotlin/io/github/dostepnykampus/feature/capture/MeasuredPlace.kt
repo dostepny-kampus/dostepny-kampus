@@ -10,7 +10,9 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 
 /**
  * Trasa do C2 po „Dalej” na C1 albo `null`, gdy „Dalej” jeszcze nie działa: pomiar trwa albo budynek czeka na decyzję
- * Zbierającego (US6.2). Budynek potwierdzony albo wybrany idzie z nazwą, „poza budynkiem” bez budynku (BR-G4).
+ * Zbierającego. Budynek potwierdzony albo wybrany idzie z nazwą, „poza budynkiem” bez budynku.
+ *
+ * Wymagania: US6.2, BR-G4
  */
 fun MeasureUiState.reportFormRoute(): ReportFormRoute? {
     val finished = this as? MeasureUiState.Finished ?: return null
@@ -42,7 +44,7 @@ fun MeasureUiState.reportFormRoute(): ReportFormRoute? {
     }
 }
 
-/** Miejsce na górze formularza C2 z trasy po pomiarze; punkt nie jest jeszcze poprawiany ręcznie (US6.3). */
+/** Miejsce na górze formularza C2 z trasy po pomiarze; punkt nie jest jeszcze poprawiany ręcznie. Wymagania: US6.3 */
 fun ReportFormRoute.place(): ReportPlace =
     ReportPlace(
         location = GeoPoint(longitude = longitude, latitude = latitude),

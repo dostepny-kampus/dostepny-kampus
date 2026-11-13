@@ -35,7 +35,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Krok 2 V4: 6 grup barier dużymi przyciskami i pytanie o piętro z „Nie wiem” (US4.3, US4.5, BR-14). */
+/** Krok 2 V4: 6 grup barier dużymi przyciskami i pytanie o piętro z „Nie wiem”. Wymagania: US4.3, US4.5, BR-14 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class QuickGroupStepTest {
@@ -44,8 +44,10 @@ class QuickGroupStepTest {
 
     /**
      * Wiersz: V4 krok 2, 6 grup dużymi przyciskami co najmniej 48 × 48 dp, bez pytań o typ i uciążliwość; wybór
-     * grupy → krok 3 albo pytanie o piętro, US4.3, NFR-17. Napisy to prostsze nazwy grup z V4 (PW-7).
+     * grupy → krok 3 albo pytanie o piętro. Napisy to prostsze nazwy grup z V4 (PW-7).
      * Scenariusz: zgloszenie-szybkie.feature: Wybór jednej z 6 grup barier dużymi przyciskami
+     *
+     * Wymagania: US4.3, NFR-17
      */
     @Test
     fun us4_3_six_groups() {
@@ -72,9 +74,11 @@ class QuickGroupStepTest {
     }
 
     /**
-     * Wiersz: V4 krok 2 po powrocie, grupa wybrana wcześniej jest zaznaczona dla oka i dla TalkBack, US4.8, NFR-21.
+     * Wiersz: V4 krok 2 po powrocie, grupa wybrana wcześniej jest zaznaczona dla oka i dla TalkBack.
      * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Powrót między krokami nie usuwa zdjęcia ani grupy
      *   barier
+     *
+     * Wymagania: US4.8, NFR-21
      */
     @Test
     fun us4_8_group_stays_selected() {
@@ -83,7 +87,7 @@ class QuickGroupStepTest {
         compose.onNodeWithText("Coś innego").assertIsNotSelected()
     }
 
-    /** Wiersz: V4 krok 2, pytanie o piętro → „Nie wiem” zostawia piętro puste, US4.5. */
+    /** Wiersz: V4 krok 2, pytanie o piętro → „Nie wiem” zostawia piętro puste. Wymagania: US4.5 */
     @Test
     fun us4_5_floor_or_unknown() {
         val answers = mutableListOf<QuickFloor>()
@@ -95,7 +99,7 @@ class QuickGroupStepTest {
         assertEquals(listOf(QuickFloor(), QuickFloor(number = 0), QuickFloor(number = 2)), answers)
     }
 
-    /** Wiersz: V4 krok 2 w budynku podstawowym, piętra pod parterem i wyższe niż 4, US4.5. */
+    /** Wiersz: V4 krok 2 w budynku podstawowym, piętra pod parterem i wyższe niż 4. Wymagania: US4.5 */
     @Test
     fun us4_5_basic_range() {
         show(floors = emptyList(), answers = mutableListOf())
@@ -104,7 +108,7 @@ class QuickGroupStepTest {
         compose.onNodeWithText("11").assertDoesNotExist()
     }
 
-    /** Wiersz: V4 krok 2 w budynku szczegółowym, etykiety pięter z danych PWr od najniższego, US4.5. */
+    /** Wiersz: V4 krok 2 w budynku szczegółowym, etykiety pięter z danych PWr od najniższego. Wymagania: US4.5 */
     @Test
     fun us4_5_detailed_labels() {
         val answers = mutableListOf<QuickFloor>()
@@ -125,7 +129,11 @@ class QuickGroupStepTest {
         compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.SelectableGroup)).assertExists()
     }
 
-    /** Wiersz: V4 krok 2 przy czcionce 200%: każde piętro ma cel co najmniej 48 dp i pełny napis, NFR-17, NFR-20. */
+    /**
+     * Wiersz: V4 krok 2 przy czcionce 200%: każde piętro ma cel co najmniej 48 dp i pełny napis.
+     *
+     * Wymagania: NFR-17, NFR-20
+     */
     @Test
     @Config(qualifiers = "w360dp-h800dp", fontScale = 2f)
     fun nfr20_floor_targets() {

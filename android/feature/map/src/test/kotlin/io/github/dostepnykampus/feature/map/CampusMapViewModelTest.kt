@@ -76,7 +76,7 @@ class CampusMapViewModelTest {
         barriers = barriers,
     )
 
-    /** Wiersz: bariery pobrane przed listą budynków → linia „Bez internetu” z dniem pobrania barier (#1127). */
+    /** Wiersz: bariery pobrane przed listą budynków → linia „Bez internetu” z dniem pobrania barier. */
     @Test
     fun nfr10_older_barriers_date() =
         runTest(UnconfinedTestDispatcher()) {
@@ -111,7 +111,7 @@ class CampusMapViewModelTest {
             assertEquals(Instant.ofEpochMilli(BARRIERS_SYNCED), viewModel.uiState.value.syncedAt)
         }
 
-    /** Wiersz: dane tylko z pakietu aplikacji → linia „Bez internetu” bez daty (decyzja 84). */
+    /** Wiersz: dane tylko z pakietu aplikacji → linia „Bez internetu” bez daty. */
     @Test
     fun nfr10_no_date_for_bundled_data() =
         runTest(UnconfinedTestDispatcher()) {

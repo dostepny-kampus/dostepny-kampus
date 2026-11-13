@@ -16,7 +16,7 @@ private val NATURAL_ORDER =
         { it.symbol },
     )
 
-/** Katalog dla odwiedzających z budynkami w kolejności naturalnej i wejściami zgodnymi z BR-25. */
+/** Katalog dla odwiedzających z budynkami w kolejności naturalnej i wejściami dla odwiedzających. Wymagania: BR-25 */
 internal fun BuildingCatalog.forVisitors(): BuildingCatalog =
     copy(
         buildings = buildings.sortedWith(NATURAL_ORDER),
@@ -24,8 +24,10 @@ internal fun BuildingCatalog.forVisitors(): BuildingCatalog =
     )
 
 /**
- * Katalog z listy serwera na tle katalogu z pliku (US1.2): kontury, nazwy i atrybucja z serwera, wejścia z pliku,
+ * Katalog z listy serwera na tle katalogu z pliku: kontury, nazwy i atrybucja z serwera, wejścia z pliku,
  * ale tylko budynków, które serwer podał; wynik w kolejności i z wejściami dla odwiedzających.
+ *
+ * Wymagania: US1.2
  */
 internal fun BuildingCatalog.withServerList(server: BuildingList): BuildingCatalog {
     val symbols = server.buildings.map { item -> item.building.symbol }.toSet()

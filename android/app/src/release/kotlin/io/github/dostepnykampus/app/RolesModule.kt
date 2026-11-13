@@ -14,7 +14,7 @@ import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import javax.inject.Singleton
 
-/** Role w wersji release: bez logowania w aplikacji każda osoba jest Gościem (RO-GOS, US1.2). */
+/** Role w wersji release: bez logowania w aplikacji każda osoba jest Gościem. Wymagania: RO-GOS, US1.2 */
 @Module
 @InstallIn(SingletonComponent::class)
 object RolesModule {

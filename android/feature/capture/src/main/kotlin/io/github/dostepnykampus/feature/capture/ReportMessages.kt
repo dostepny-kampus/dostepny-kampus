@@ -32,7 +32,9 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 
 /**
  * „Zdjęcie”: ostrzeżenie „Ważne” jak w kroku 1 V4, podgląd zdjęć, „Zrób zdjęcie” i komunikat, gdy zdjęcia nie dało
- * się zapisać (US7.1, NFR-25, NFR-50, PW-8).
+ * się zapisać (PW-8).
+ *
+ * Wymagania: US7.1, NFR-25, NFR-50
  */
 @Composable
 internal fun PhotoSection(photos: PhotoPaths, camera: PhotoCamera) {
@@ -72,7 +74,7 @@ internal fun PhotoSection(photos: PhotoPaths, camera: PhotoCamera) {
     }
 }
 
-/** „Opis”, obowiązkowy przy TB-29 „inna bariera” (US7.3). */
+/** „Opis”, obowiązkowy przy TB-29 „inna bariera”. Wymagania: US7.3 */
 @Composable
 internal fun DescriptionSection(text: String, onEdit: (ReportEdit) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
@@ -101,7 +103,9 @@ internal fun FieldError(error: ReportFormError, isShown: Boolean) {
 
 /**
  * Nad formularzem: pierwszy brak, „Za mało miejsca w telefonie” ze „Spróbuj ponownie” albo odrzucony zapis
- * (PW-10, NFR-7, NFR-50).
+ *  (PW-10).
+ *
+ * Wymagania: NFR-7, NFR-50
  */
 @Composable
 internal fun ReportBanner(state: ReportUiState, onRetry: () -> Unit) {
@@ -136,7 +140,7 @@ internal fun ReportBanner(state: ReportUiState, onRetry: () -> Unit) {
     }
 }
 
-/** „Wyjść bez zapisu?” po „Wstecz” z niezapisanymi zmianami (US7.4, NFR-23). */
+/** „Wyjść bez zapisu?” po „Wstecz” z niezapisanymi zmianami. Wymagania: US7.4, NFR-23 */
 @Composable
 internal fun ExitDialog(onConfirmExit: () -> Unit, onStay: () -> Unit) {
     AlertDialog(

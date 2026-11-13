@@ -23,7 +23,7 @@ import java.io.File
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Po 409 telefon pamięta wersję z serwera, a ponowna poprawka idzie od niej (US9.3, BR-10, #858). */
+/** Po 409 telefon pamięta wersję z serwera, a ponowna poprawka idzie od niej. Wymagania: US9.3, BR-10 */
 class ConflictEditTest {
     @TempDir
     lateinit var tempDir: File

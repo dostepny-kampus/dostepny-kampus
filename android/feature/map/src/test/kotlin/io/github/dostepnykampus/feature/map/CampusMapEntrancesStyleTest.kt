@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-/** Styl mapy V1 z wejściami z syntetycznego katalogu „Budynek testowy” (nie dane PWr): US2.1, US3.3, decyzja 134. */
+/** Styl mapy V1 z wejściami z syntetycznego katalogu „Budynek testowy” (nie dane PWr): US2.1. Wymagania: US3.3 */
 class CampusMapEntrancesStyleTest {
     private val at = GeoPoint(longitude = 0.25, latitude = 0.5)
     private val ring =

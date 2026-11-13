@@ -27,9 +27,11 @@ internal data class ShownBarriers(val barriers: List<AcceptedBarrier>)
 
 /**
  * Węzły dla TalkBack: natywna mapa nie opisuje znaków barier, więc każda bariera z [barriers] ma tu nazwę, np.
- * „Blokada: schody przy wejściu, budynek A-1” (NFR-18). Węzły nie leżą w punktach znaków i nic nie rysują;
- * TalkBack dochodzi do nich przesuwaniem po kolei, tak jak do zaznaczonego wejścia (decyzja 135), a pełną treść
- * bariery ma lista budynków (NFR-19).
+ * „Blokada: schody przy wejściu, budynek A-1”. Węzły nie leżą w punktach znaków i nic nie rysują;
+ * TalkBack dochodzi do nich przesuwaniem po kolei, tak jak do zaznaczonego wejścia, a pełną treść
+ * bariery ma lista budynków.
+ *
+ * Wymagania: NFR-18, NFR-19
  */
 @Composable
 internal fun BarrierDescriptions(barriers: ShownBarriers, modifier: Modifier = Modifier) {

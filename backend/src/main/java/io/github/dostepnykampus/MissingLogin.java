@@ -10,7 +10,7 @@ package io.github.dostepnykampus;
  *
  * <p>Obsługa błędów HTTP zamienia ten typ na 401
  * {@code application/problem+json} z komunikatem w {@code detail}, jak
- * pozostałe wspólne typy błędów (#851). Typ nie zależy od Spring Web ani
+ * pozostałe wspólne typy błędów. Typ nie zależy od Spring Web ani
  * Jacksona.</p>
  *
  * @since 0.1.0

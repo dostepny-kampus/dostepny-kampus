@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-/** Krok 3 V4 bierze zgłoszenie z wpisu historii tylko wtedy, gdy kroki 1 i 2 są wypełnione (US4.8). */
+/** Krok 3 V4 bierze zgłoszenie z wpisu historii tylko wtedy, gdy kroki 1 i 2 są wypełnione. Wymagania: US4.8 */
 class QuickReportRouteTest {
     private val filled =
         ReportRoute(

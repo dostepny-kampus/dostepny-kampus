@@ -9,7 +9,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
  * Ikony pozycji paska dolnego ([BottomBarItem]) według słownika użytkownika (sekcja „Metafory i ikony”): ścieżki
- * obrysowane z Material Icons, siatka 24 × 24. Ikona stoi zawsze nad napisem, który sam niesie znaczenie (NFR-21).
+ * obrysowane z Material Icons, siatka 24 × 24. Ikona stoi zawsze nad napisem, który sam niesie znaczenie.
+ *
+ * Wymagania: NFR-21
  */
 object NavigationIcons {
     /** „Mapa”: złożony plan, jak w aplikacjach map. */
@@ -20,7 +22,7 @@ object NavigationIcons {
                 ".99l3-1.01v11.7l-3 1.16V6.46zm14 11.08l-3 1.01V6.86l3-1.16v11.84z",
         )
 
-    /** „Zgłoś barierę”: aparat, bo zgłoszenie zaczyna się od zdjęcia (US4.1). */
+    /** „Zgłoś barierę”: aparat, bo zgłoszenie zaczyna się od zdjęcia. Wymagania: US4.1 */
     val Camera: ImageVector =
         pathIcon(
             "M14.12 4l1.83 2H20v12H4V6h4.05l1.83-2h4.24M15 2H9L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16" +

@@ -18,7 +18,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowLooper
 
-/** Włącznik lokalizacji telefonu ze zdarzeń systemowych, bez zegara (NFR-23, NFR-27). */
+/** Włącznik lokalizacji telefonu ze zdarzeń systemowych, bez zegara. Wymagania: NFR-23, NFR-27 */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class GnssLocationSwitchTest {

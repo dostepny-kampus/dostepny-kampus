@@ -12,7 +12,7 @@ import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-/** Odtworzona historia podaje sprzątaniu pliki zdjęć zgłoszenia szybkiego, których nie wolno usunąć (#927). */
+/** Odtworzona historia podaje sprzątaniu pliki zdjęć zgłoszenia szybkiego, których nie wolno usunąć. */
 class KeptPhotosTest {
     @Test
     fun nfr5_quick_report_photo_kept() {
