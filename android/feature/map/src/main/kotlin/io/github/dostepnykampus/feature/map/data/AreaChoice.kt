@@ -12,7 +12,9 @@ import org.maplibre.spatialk.units.extensions.inKilometers
 import kotlin.math.roundToInt
 
 /**
- * Teren na liście terenów mapy V1 (US1.7).
+ * Teren na liście terenów mapy V1.
+ *
+ * Wymagania: US1.7
  *
  * @property name nazwa terenu, np. „Wittigowo”
  * @property buildings liczba symboli budynków terenu
@@ -25,15 +27,19 @@ val CampusBounds.center: GeoPoint
     get() = GeoPoint(longitude = (west + east) / 2, latitude = (south + north) / 2)
 
 /**
- * Teren pokazany na mapie: teren o nazwie [chosen] wybrany przez osobę (US1.7), bez wyboru teren budynku [symbol],
- * np. z wyszukiwania (US1.8), a bez niego teren startowy (US1.6). `null` bez budynków w katalogu.
+ * Teren pokazany na mapie: teren o nazwie [chosen] wybrany przez osobę, bez wyboru teren budynku [symbol],
+ * np. z wyszukiwania, a bez niego teren startowy. `null` bez budynków w katalogu.
+ *
+ * Wymagania: US1.7, US1.8, US1.6
  */
 fun CampusMapData.areaOf(chosen: String?, symbol: String?): MapArea? =
     areas.firstOrNull { it.name == chosen } ?: areas.firstOrNull { it.bounds == boundsOf(symbol) }
 
 /**
  * Lista terenów dla wybranego terenu [current]: wybrany stoi pierwszy, pozostałe od najbliższego. Odległość liczy
- * się między środkami prostokątów terenów (US1.7).
+ * się między środkami prostokątów terenów.
+ *
+ * Wymagania: US1.7
  */
 fun CampusMapData.areaChoices(current: MapArea): List<AreaChoice> {
     val away = (areas - current).associateWith { current.bounds.kilometersTo(it.bounds) }
@@ -45,9 +51,13 @@ fun CampusMapData.areaChoices(current: MapArea): List<AreaChoice> {
 private fun MapArea.choice(kilometers: Double) =
     AreaChoice(name = name, buildings = symbols.size, kilometers = fullKilometers(kilometers))
 
-/** Odległość w kilometrach między środkami prostokątów terenów (US1.7). */
+/** Odległość w kilometrach między środkami prostokątów terenów. Wymagania: US1.7 */
 internal fun CampusBounds.kilometersTo(other: CampusBounds): Double =
     distance(from = center.toPosition(), to = other.center.toPosition()).inKilometers
 
-/** Odległość [kilometers] w pełnych kilometrach, co najmniej 1: tak czyta ją osoba na liście i przycisku (US1.7). */
+/**
+ * Odległość [kilometers] w pełnych kilometrach, co najmniej 1: tak czyta ją osoba na liście i przycisku.
+ *
+ * Wymagania: US1.7
+ */
 internal fun fullKilometers(kilometers: Double): Int = kilometers.roundToInt().coerceAtLeast(1)
