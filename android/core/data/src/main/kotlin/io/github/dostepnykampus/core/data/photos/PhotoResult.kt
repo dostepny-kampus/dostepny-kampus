@@ -28,7 +28,11 @@ sealed interface PhotoResult {
     /** Rezygnacja osoby robiącej zdjęcie; nie przekazuje pliku. */
     data class Cancelled(override val request: PhotoRequest) : PhotoResult
 
-    /** Nieudana próba bez pliku do zachowania. */
+    /**
+     * Nieudana próba bez pliku do zachowania.
+     *
+     * @property reason powód błędu aparatu lub przetwarzania zdjęcia
+     */
     data class Failed(override val request: PhotoRequest, val reason: PhotoFailure) : PhotoResult
 }
 
