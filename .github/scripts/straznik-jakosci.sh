@@ -32,6 +32,7 @@ gradle_words='kover|detekt|\blint\b|baseline|ignoreFailures|abortOnError|[wW]arn
 gradle_words+='|checkAllWarnings|suppressWarnings|nowarn|Xsuppress|Xwarning-level|failOnSeverity'
 gradle_words+='|verifyRoborazzi|enabled\s*=\s*false|[iI]sEnabled|setEnabled|onlyIf|excludedTaskNames'
 gradle_words+='|setDependsOn|tasks\.(named|getByName)\("check"\)'
+gradle_words+='|dependencyAnalysis'
 
 hard=()
 soft=()
@@ -71,13 +72,13 @@ pom_context() {
     }'
 }
 
-# Numery linii wewnątrz bloków kover, detekt, lint i opcji kompilatora skryptu Gradle.
+# Numery linii wewnątrz bloków kover, detekt, lint, analizy zależności i opcji kompilatora skryptu Gradle.
 gradle_context() {
   awk '
     {
       line = $0; sub(/\/\/.*/, "", line)
       for (i = 1; i <= depth; i++) {
-        if (stack[i] ~ /(^|\.)(kover|detekt|lint|compilerOptions|kotlinOptions)$/) { print NR; break }
+        if (stack[i] ~ /(^|\.)(kover|detekt|lint|compilerOptions|kotlinOptions|dependencyAnalysis)$/) { print NR; break }
       }
       while (match(line, /[A-Za-z_][A-Za-z0-9_.]*[ \t]*(\([^)]*\))?[ \t]*\{|\{|\}/)) {
         tok = substr(line, RSTART, RLENGTH); line = substr(line, RSTART + RLENGTH)

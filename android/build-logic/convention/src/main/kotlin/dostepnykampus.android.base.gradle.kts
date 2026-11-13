@@ -8,6 +8,7 @@ import com.android.build.api.dsl.CommonExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
+    id("com.autonomousapps.dependency-analysis")
     id("dostepnykampus.detekt")
     id("dostepnykampus.junit")
     id("dostepnykampus.kover")
