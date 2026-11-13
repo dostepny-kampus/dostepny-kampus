@@ -40,9 +40,10 @@ class CampusMapStyleTest {
     @Test
     fun nfr39_outlines_over_basemap() {
         val layers = style.array("layers").map { it.jsonObject }
-        val below = listOf("lad", "osm", BUILDINGS_LAYER, "kontury", ENTRANCES_LAYER)
+        val below = listOf("lad", "osm", BUILDINGS_LAYER, "kontury", SELECTED_LAYER, ENTRANCES_LAYER)
         val barriers = listOf(BARRIER_WORDS_LAYER, BARRIERS_LAYER)
-        val expected = below + barriers + listOf("podpisy", OUTSIDE_LAYER, EDGE_LAYER)
+        val above = listOf("podpisy", CHOSEN_BARRIER_LAYER, OUTSIDE_LAYER, EDGE_LAYER)
+        val expected = below + barriers + above + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
         assertEquals(expected, layers.map { it.text("id") })
         assertEquals("#E8EDEE", layers.first().obj("paint").text("background-color"))
     }
@@ -137,21 +138,27 @@ class CampusMapStyleTest {
         val own = """["case",["any",["in","C-13",["get","symbols"]]],true,false]"""
         assertEquals(own, selected.array("filter").toString())
         assertEquals("#001F27", selected.obj("paint").text("line-color"))
-        assertEquals(null, style.array("layers").find { it.jsonObject.text("id") == SELECTED_LAYER })
+        val plain = style.array("layers").map { it.jsonObject }.single { it.text("id") == SELECTED_LAYER }
+        assertEquals("false", plain.getValue("filter").toString())
     }
 
-    /** Warstwy warunkowe stoją w stałej kolejności; bez granic i zaznaczeń ich nie ma. Wymagania: US1.7, US3.3 */
+    /**
+     * Warstwy stoją w stałej kolejności. Warstwy zaznaczenia są zawsze, a warstw terenu nie ma bez granic.
+     * Wymagania: US1.7, US3.3
+     */
     @Test
     fun us1_7_optional_layer_order() {
         val bare = Json.parseToJsonElement(styled(MapSelection()))
         val base = listOf("lad", "osm", BUILDINGS_LAYER, "kontury")
-        val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy")
-        assertEquals(base + marks, bare.jsonObject.array("layers").map { it.jsonObject.text("id") })
-        assertEquals(setOf("osm", "budynki", "podpisy", "wejscia", "bariery"), bare.jsonObject.obj("sources").keys)
+        val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
+        val pin = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
+        val bareIds = bare.jsonObject.array("layers").map { it.jsonObject.text("id") }
+        assertEquals(base + SELECTED_LAYER + marks + pin, bareIds)
+        val sources = setOf("osm", "budynki", "podpisy", "wejscia", "bariery", CHOSEN_SOURCE)
+        assertEquals(sources, bare.jsonObject.obj("sources").keys)
         val entrance = SelectedEntrance(id = "w1", location = a, label = "Główne", buildingSymbol = "C-13")
         val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
-        val area = listOf(OUTSIDE_LAYER, EDGE_LAYER, ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
-        val expected = base + SELECTED_LAYER + marks + area
+        val expected = base + SELECTED_LAYER + marks + listOf(OUTSIDE_LAYER, EDGE_LAYER) + pin
         assertEquals(expected, full.jsonObject.array("layers").map { it.jsonObject.text("id") })
     }
 

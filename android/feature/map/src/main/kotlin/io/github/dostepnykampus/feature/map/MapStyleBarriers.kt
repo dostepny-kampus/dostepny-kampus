@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.feature.map.data.BARRIER_ID
 import io.github.dostepnykampus.feature.map.data.BARRIER_SEVERITY
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -69,12 +70,13 @@ internal fun barrierLayers(): List<JsonObject> {
 }
 
 /**
- * Warstwa wybranej bariery [id]: jej znak jest większy i w obwódce, więc wyróżnia go rozmiar i kształt, a nie sama
- * barwa. Warstwa stoi nad pozostałymi znakami i rysuje się zawsze.
+ * Warstwa wybranej bariery z filtrem [filter] z [SelectionLook.chosenBarrierFilter]: jej znak jest większy
+ * i w obwódce, więc wyróżnia go rozmiar i kształt, a nie sama barwa. Warstwa stoi nad pozostałymi znakami
+ * i rysuje się zawsze.
  *
  * Wymagania: US1.5, NFR-21
  */
-internal fun chosenBarrierLayer(id: String): JsonObject {
+internal fun chosenBarrierLayer(filter: JsonElement): JsonObject {
     val sign =
         symbolLayer(
             id = CHOSEN_BARRIER_LAYER,
@@ -82,8 +84,11 @@ internal fun chosenBarrierLayer(id: String): JsonObject {
             image = bySeverity(::chosenBarrierImage),
             OVERLAP,
         )
-    return JsonObject(sign + ("filter" to expression("==", property(BARRIER_ID), JsonPrimitive(id))))
+    return JsonObject(sign + ("filter" to filter))
 }
+
+/** Filtr warstwy [CHOSEN_BARRIER_LAYER]: tylko bariera [id]. */
+internal fun ofBarrier(id: String): JsonElement = expression("==", property(BARRIER_ID), JsonPrimitive(id))
 
 private fun bySeverity(image: (Severity) -> String): JsonArray {
     val named = Severity.entries.dropLast(n = 1).flatMap { listOf(JsonPrimitive(it.name), JsonPrimitive(image(it))) }
