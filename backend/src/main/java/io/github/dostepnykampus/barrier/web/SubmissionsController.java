@@ -149,8 +149,8 @@ public final class SubmissionsController {
         if (body.content().forCollector() && !request.isUserInRole("COLLECTOR")) {
             throw new ForbiddenChange("To zgłoszenie składa tylko Zbierający");
         }
-        this.checkReplaced(
-            body, new Reader(account.getName(), request.isUserInRole("VERIFIER"))
+        body.checkReplaced(
+            this.finder, new Reader(account.getName(), request.isUserInRole("VERIFIER"))
         );
         if (body.content().ordinaryChange()
             .filter(replaced -> this.finder.authorOnly(replaced, account.getName())).isPresent()) {
@@ -194,22 +194,6 @@ public final class SubmissionsController {
             case EditResult.Missing _ -> throw new MissingResource(SubmissionsController.MISSING);
             case null -> throw new IllegalStateException("Brak wyniku edycji zgłoszenia");
         };
-    }
-
-    private void checkReplaced(final NewSubmissionRequest body, final Reader reader) {
-        final UUID replaced = body.content().replaces();
-        final UUID id = body.id();
-        if (replaced != null && (id == null || this.finder.find(id).isEmpty())) {
-            final Submission current = this.finder.visible(replaced, reader)
-                .orElseThrow(() -> new MissingResource("Nie ma zastępowanego zgłoszenia"));
-            if (!current.accepted()) {
-                throw new ConflictingState(
-                    "Zmienić można tylko zgłoszenie przyjęte; nieprzyjęte edytuje autor",
-                    "serverSubmission",
-                    new SubmissionResponse(current)
-                );
-            }
-        }
     }
 
     private static String name(@Nullable final Principal account) {

@@ -97,15 +97,19 @@ final class ReplacedSubmissionHttpTest {
     private static int send(
         final WebApplicationContext context, final UUID id, final String fields
     ) throws Exception {
-        final String body = String.join(
+        return context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.post("/submissions")
+                .contentType(MediaType.APPLICATION_JSON).with(new AsCollector())
+                .content(ReplacedSubmissionHttpTest.body(id, fields))
+        ).andReturn().getResponse().getStatus();
+    }
+
+    private static String body(final UUID id, final String fields) {
+        return String.join(
             "",
             "{\"id\":\"", id.toString(), "\",", fields,
             ",\"location\":{\"type\":\"Point\",\"coordinates\":[17.06209,51.10785]},",
             "\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
         );
-        return context.getBean(MockMvc.class).perform(
-            MockMvcRequestBuilders.post("/submissions")
-                .contentType(MediaType.APPLICATION_JSON).with(new AsCollector()).content(body)
-        ).andReturn().getResponse().getStatus();
     }
 }
