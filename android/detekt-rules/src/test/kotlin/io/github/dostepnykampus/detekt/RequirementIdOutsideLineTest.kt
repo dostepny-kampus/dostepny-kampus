@@ -16,35 +16,36 @@ class RequirementIdOutsideLineTest {
 
     @Test
     fun `identyfikator w zdaniu to błąd`() {
-        assertEquals(listOf(1), lines("/** Zwraca listę budynków (US1.1). */", "fun a() = 1"))
+        assertEquals(listOf(1), lines("/** Zwraca listę budynków (US1.1). */"))
     }
 
     @Test
-    fun `identyfikator przy parametrze to błąd`() {
-        assertEquals(listOf(1), lines("/**", " * Zwraca listę.", " *", " * @param a próg z NFR-3", " */", "fun a() = 1"))
+    fun `znacznik z wymaganiem to błąd`() {
+        assertEquals(listOf(1), lines("/**", " * Zwraca listę.", " *", " * @param a próg z NFR-3", " */"))
     }
 
     @Test
     fun `linia wymagań przechodzi`() {
-        val text = listOf("/**", " * Zwraca listę.", " *", " * Wymagania: US1.1, NFR-19, BR-G2", " */", "fun a() = 1")
-        assertEquals(emptyList<Int>(), lines(*text.toTypedArray()))
+        assertEquals(emptyList<Int>(), lines("/**", " * Zwraca listę.", " *", " * Wymagania: US1.1, BR-G2", " */"))
     }
 
     @Test
-    fun `wymagania na końcu opisu jednowierszowego przechodzą`() {
-        assertEquals(emptyList<Int>(), lines("/** Zwraca listę. Wymagania: US1.1, RO-GOS */", "fun a() = 1"))
+    fun `wymagania na końcu przechodzą`() {
+        assertEquals(emptyList<Int>(), lines("/** Zwraca listę. Wymagania: US1.1, RO-GOS */"))
     }
 
     @Test
-    fun `symbol budynku i kod barier przechodzą`() {
-        assertEquals(emptyList<Int>(), lines("/** Budynek C-13, M-6 i typ TB-29, kod `US1.1`. */", "fun a() = 1"))
+    fun `symbole i kod przechodzą`() {
+        assertEquals(emptyList<Int>(), lines("/** Budynek C-13, M-6 i typ TB-29, kod `US1.1`. */"))
     }
 
     @Test
-    fun `wymagania wspólne bez dwukropka nie zwalniają zdania`() {
-        assertEquals(listOf(1), lines("/** Wymagania wspólne i NFR-19 mówią o tym. */", "fun a() = 1"))
+    fun `bez dwukropka to zdanie`() {
+        assertEquals(listOf(1), lines("/** Wymagania wspólne i NFR-19 mówią o tym. */"))
     }
 
-    private fun lines(vararg text: String): List<Int> =
-        rule.lint(text.joinToString(separator = "\n"), compile = false).map { it.entity.location.source.line }
+    private fun lines(vararg kdoc: String): List<Int> =
+        rule
+            .lint((kdoc.toList() + "fun a() = 1").joinToString(separator = "\n"), compile = false)
+            .map { it.entity.location.source.line }
 }

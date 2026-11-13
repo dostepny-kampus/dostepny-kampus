@@ -20,7 +20,13 @@ class DostepnyKampusRuleSetProviderTest {
                 .single()
                 .instance()
         assertEquals(
-            "dostepnykampus" to listOf("NoLineComment", "NoHistoryNumberInKDoc", "KDocDescriptionLength", "RequirementIdOutsideLine"),
+            "dostepnykampus" to
+                listOf(
+                    "NoLineComment",
+                    "NoHistoryNumberInKDoc",
+                    "KDocDescriptionLength",
+                    "RequirementIdOutsideLine",
+                ),
             rules.id.value to rules.rules.keys.map { it.value },
         )
     }
