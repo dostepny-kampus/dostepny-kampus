@@ -11,16 +11,10 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import org.maplibre.spatialk.turf.booleans.contains
 
 /**
- * Podpowiedź budynku dla punktu, bez sieci (to-be T3 i T4). Obliczenia wykonuje Turf.
- *
- * - Punkt ściśle w konturze budynku daje [LocateResult.InsideOutline]. Kontur może być wielokątem złożonym:
- *   wystarczy, że punkt leży w jednej z części.
- * - Punkt w otworze konturu, np. na dziedzińcu A-1, nie leży w konturze.
- * - Punkt dokładnie na krawędzi konturu, także na krawędzi otworu i w dowolnej części wielokąta złożonego,
- *   leży poza budynkiem, jak w `ST_Contains` na serwerze. Propozycją jest ten budynek, 0 m od punktu.
- * - Gdy punkt leży w konturach kilku budynków, wynikiem jest pierwszy z nich w kolejności [buildings].
- * - Punkt poza konturem każdego budynku daje stan „Poza budynkiem” ([LocateResult.OutsideBuilding]) bez
- *   wyjątku, z propozycją budynku o najmniejszej odległości od punktu do krawędzi konturu.
+ * Podpowiedź budynku dla punktu, bez sieci; obliczenia wykonuje Turf. Punkt ściśle w konturze (w dowolnej części
+ * wielokąta złożonego, poza otworami) daje [LocateResult.InsideOutline], przy kilku konturach z pierwszym budynkiem z
+ * [buildings]. Punkt na krawędzi, także otworu, leży poza budynkiem jak w `ST_Contains` na serwerze, z propozycją tego
+ * budynku. Punkt poza każdym konturem daje [LocateResult.OutsideBuilding] z budynkiem najbliższym krawędzią.
  *
  * Wymagania: US6.2, BR-G2
  *

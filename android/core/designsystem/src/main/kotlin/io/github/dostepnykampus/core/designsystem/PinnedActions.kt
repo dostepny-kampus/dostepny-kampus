@@ -50,15 +50,10 @@ fun PinnedActionBar(modifier: Modifier = Modifier, content: @Composable FlowRowS
 }
 
 /**
- * Przycisk przypiętego paska czynności ([PinnedActionBar]) rodzaju [kind], z napisem [text]. Szerokość
- * nadaje [modifier].
- *
- * Tokeny: wysokość co najmniej [CeleDotyku.przypiety] (rośnie z tekstem), zaokrąglenie
- * [Zaokraglenia.bardzoDuze], napis `labelLarge` z [Typografia.wyroznienieWaga]. Kolory rodzajów opisuje
- * [PinnedButtonKind].
- *
- * W ciemnym motywie jasne `primary` jako duże tło świeciłoby, a gruba ramka odróżnia czynność główną od tonalnej także
- * bez koloru.
+ * Przycisk przypiętego paska czynności ([PinnedActionBar]) rodzaju [kind] z napisem [text]; szerokość nadaje
+ * [modifier]. Wysokość co najmniej [CeleDotyku.przypiety], rośnie z tekstem. Kolory rodzajów opisuje
+ * [PinnedButtonKind]; w ciemnym motywie czynność główną od tonalnej odróżnia gruba ramka, bo jasne tło `primary`
+ * świeciłoby.
  *
  * Wymagania: NFR-17, NFR-20, NFR-16, NFR-21
  */
