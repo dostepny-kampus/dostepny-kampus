@@ -10,7 +10,9 @@ import io.github.dostepnykampus.core.database.PendingSubmissionWithPhotos
 import io.github.dostepnykampus.core.model.SubmissionContent
 
 /**
- * Własne zgłoszenie z kolejki telefonu otwarte do poprawki w C2 (US8.3).
+ * Własne zgłoszenie z kolejki telefonu otwarte do poprawki w C2.
+ *
+ * Wymagania: US8.3
  *
  * @property edited identyfikator i wersja bazowa; zapis przez `SubmissionQueue.saveEdit` zastępuje to zgłoszenie
  * @property content zapisana treść
@@ -22,7 +24,7 @@ data class PendingEdit(
     val photos: List<PendingPhotoDraft>,
 )
 
-/** Zgłoszenia „W telefonie” i „Nie wysłano” do poprawki; wysłanych telefon już nie ma (US8.3, BR-26). */
+/** Zgłoszenia „W telefonie” i „Nie wysłano” do poprawki; wysłanych telefon już nie ma. Wymagania: US8.3, BR-26 */
 fun interface PendingEdits {
     /**
      * Wczytuje zgłoszenie z kolejki.

@@ -17,11 +17,11 @@ import io.github.dostepnykampus.core.network.SubmissionsApi
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
-/** Źródła barier `core:data` w grafie Hilt aplikacji (decyzja 97); osobno od [DataModule], żeby ten nie rósł. */
+/** Źródła barier `core:data` w grafie Hilt aplikacji; osobno od [DataModule], żeby ten nie rósł. */
 @Module
 @InstallIn(SingletonComponent::class)
 object BarrierDataModule {
-    /** Bariery ze zgłoszeń przyjętych dla mapy, z kopią w bazie na czas bez sieci (US1.3, BR-6, NFR-10). */
+    /** Bariery ze zgłoszeń przyjętych dla mapy, z kopią w bazie na czas bez sieci. Wymagania: US1.3, BR-6, NFR-10 */
     @Provides
     @Singleton
     fun acceptedBarriers(
