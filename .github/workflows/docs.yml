@@ -136,6 +136,7 @@ jobs:
         env:
           VALE_BIN: ${{ runner.temp }}/narzedzia/vale
           PLANTUML_JAR: ${{ runner.temp }}/narzedzia/plantuml.jar
+          BAZA_POKRYCIA: HEAD^1
         run: |
           mapfile -t changed < <(git diff --name-only --relative --diff-filter=d HEAD^1 HEAD -- 'docs/*.md')
           python -X utf8 scripts/verify.py "${changed[@]}"
