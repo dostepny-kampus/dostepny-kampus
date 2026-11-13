@@ -7,10 +7,13 @@ package io.github.dostepnykampus.app
 
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performClick
@@ -101,19 +104,22 @@ class CampusPathDeviceTest {
         try {
             DeviceEvidence.shell("settings put secure show_ime_with_hard_keyboard 1")
             compose.onNode(hasSetTextAction()).performClick().performTextInput("A-1")
+            compose.onNode(hasSetTextAction()).assertIsFocused()
             compose.waitUntil(timeoutMillis = WAIT_MS) { isKeyboardVisible() }
             waitFor(BuildingA1InCatalog)
             DeviceEvidence.record("v1-keyboard")
             compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
             waitFor(hasText(CHECK))
             compose.waitUntil(timeoutMillis = WAIT_MS) { !isKeyboardVisible() }
-            compose.onNode(hasSetTextAction()).assertIsNotFocused()
+            compose.onAllNodes(hasSetTextAction() and isFocused()).assertCountEquals(0)
             DeviceEvidence.record("v2-no-keyboard")
             Espresso.pressBack()
             compose.waitUntil(timeoutMillis = WAIT_MS) {
                 compose.onAllNodes(hasText(CHECK)).fetchSemanticsNodes().isEmpty()
             }
             waitFor(hasSetTextAction())
+            compose.onNode(hasSetTextAction()).assertIsNotFocused()
+            compose.waitUntil(timeoutMillis = WAIT_MS) { !isKeyboardVisible() }
             DeviceEvidence.record("v1-after-back")
         } finally {
             val command =

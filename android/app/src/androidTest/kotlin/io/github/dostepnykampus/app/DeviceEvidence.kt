@@ -17,13 +17,13 @@ private const val CHUNK_SIZE = 32_000
 
 /** Zrzuty całego ekranu z IME trafiają do istniejącego artefaktu instrumentacja.txt, w numerowanych częściach PNG. */
 internal object DeviceEvidence {
-    fun shell(command: String): String =
-        ParcelFileDescriptor
-            .AutoCloseInputStream(
-                InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(command),
-            )
+    fun shell(command: String): String {
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+        return ParcelFileDescriptor
+            .AutoCloseInputStream(automation.executeShellCommand(command))
             .bufferedReader()
             .use { it.readText() }
+    }
 
     fun record(label: String) {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
