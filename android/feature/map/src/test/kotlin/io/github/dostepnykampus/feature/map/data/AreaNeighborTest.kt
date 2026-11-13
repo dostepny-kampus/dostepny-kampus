@@ -34,7 +34,7 @@ class AreaNeighborTest {
                 ),
         )
 
-    /** Wiersz: V1, widok na wschodniej granicy: teren w tę stronę z odległością i krawędzią (US1.7). */
+    /** Wiersz: V1, widok na wschodniej granicy: teren w tę stronę z odległością i krawędzią. Wymagania: US1.7 */
     @Test
     fun us1_7_neighbor_beyond_edge() {
         val expected = AreaNeighbor(name = "Wschód", kilometers = 2, edge = MapEdge.EAST)
@@ -42,20 +42,20 @@ class AreaNeighborTest {
         assertEquals(expected, data.areaNeighbor(middle, view(longitude = middle.bounds.east - AFTER_GESTURE)))
     }
 
-    /** Wiersz: V1, widok w środku terenu: bez przycisku sąsiedniego terenu (US1.7). */
+    /** Wiersz: V1, widok w środku terenu: bez przycisku sąsiedniego terenu. Wymagania: US1.7 */
     @Test
     fun us1_7_no_neighbor_inside() {
         assertNull(data.areaNeighbor(middle, view()))
     }
 
-    /** Wiersz: V1, widok na granicy, za którą nie ma terenu: bez przycisku sąsiedniego terenu (US1.7). */
+    /** Wiersz: V1, widok na granicy, za którą nie ma terenu: bez przycisku sąsiedniego terenu. Wymagania: US1.7 */
     @Test
     fun us1_7_no_neighbor_that_way() {
         assertNull(data.areaNeighbor(middle, view(longitude = middle.bounds.west)))
         assertNull(data.areaNeighbor(middle, view(latitude = middle.bounds.south)))
     }
 
-    /** Wiersz: V1, dwa tereny w tę samą stronę: przycisk prowadzi do bliższego (US1.7). */
+    /** Wiersz: V1, dwa tereny w tę samą stronę: przycisk prowadzi do bliższego. Wymagania: US1.7 */
     @Test
     fun us1_7_nearest_neighbor_wins() {
         val corner = GeoPoint(longitude = middle.bounds.east, latitude = middle.bounds.north)

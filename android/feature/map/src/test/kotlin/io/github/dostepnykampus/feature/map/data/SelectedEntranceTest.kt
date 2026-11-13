@@ -21,7 +21,7 @@ import org.maplibre.spatialk.geojson.Geometry
 
 private const val UNNAMED = "Wejście bez nazwy w danych"
 
-/** Dane wejść dla mapy V1 z syntetycznego katalogu „Budynek testowy” (nie dane PWr): US2.1, US3.3, decyzje 134, 135. */
+/** Dane wejść dla mapy V1 z syntetycznego katalogu „Budynek testowy” (nie dane PWr): US2.1. Wymagania: US3.3 */
 class SelectedEntranceTest {
     private val at = GeoPoint(longitude = 0.25, latitude = 0.5)
     private val ring =
@@ -64,7 +64,7 @@ class SelectedEntranceTest {
         assertEquals(expected, chosen("node/1"))
     }
 
-    /** Wiersz E4: wejście wspólne kilku budynków podaje budynek ekranu, z którego użyto przycisku (decyzja 135). */
+    /** Wiersz E4: wejście wspólne kilku budynków podaje budynek ekranu, z którego użyto przycisku. */
     @Test
     fun us3_3_shared_screen_building() {
         assertEquals("A-2", chosen("node/1", building = "A-2")?.buildingSymbol)
