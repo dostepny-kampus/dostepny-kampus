@@ -29,6 +29,13 @@ import tools.jackson.databind.type.LogicalType;
 @Configuration(proxyBeanMethods = false)
 public final class StrictJsonConfiguration implements JsonMapperBuilderCustomizer {
 
+    /**
+     * Tworzy konfigurację bez stanu.
+     */
+    public StrictJsonConfiguration() {
+        // Bez stanu: reguły wiązania są stałe.
+    }
+
     @Override
     public void customize(final JsonMapper.Builder builder) {
         builder.disable(

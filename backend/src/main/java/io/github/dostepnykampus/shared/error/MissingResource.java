@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.shared.error;
 
-
 /**
  * Brak zasobu, o który pyta żądanie, np. budynku albo zgłoszenia.
  *

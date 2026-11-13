@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.shared.error;
 
-
 /**
  * Konflikt z bieżącym stanem zasobu na serwerze, np. nieaktualna wersja zgłoszenia.
  * Obsługa błędów HTTP zamienia ten typ na 409 {@code application/problem+json}

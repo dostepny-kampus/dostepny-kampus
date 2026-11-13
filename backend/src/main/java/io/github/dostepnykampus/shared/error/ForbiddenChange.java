@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.shared.error;
 
-
 /**
  * Zmiana zasobu niedozwolona w jego stanie, np. zdjęcie zgłoszenia przyjętego.
  *

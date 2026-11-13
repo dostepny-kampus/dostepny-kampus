@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.shared.geo;
 
-
 /**
  * Punkt w PUWG 1992 (EPSG:2180) w metrach.
  *

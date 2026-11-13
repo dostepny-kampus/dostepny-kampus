@@ -5,7 +5,7 @@
  */
 
 /**
- * Ścisłe wiązanie JSON: odrzucenie null, nieznanych pól i niekanonicznych UUID.
+ * Wiązanie JSON bez null, nieznanych pól i niekanonicznych UUID.
  *
  * @since 0.1.0
  */

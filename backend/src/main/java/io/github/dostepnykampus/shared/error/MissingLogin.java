@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.shared.error;
 
-
 /**
  * Brak logowania przy żądaniu, które go wymaga, np. lista własnych zgłoszeń.
  *
