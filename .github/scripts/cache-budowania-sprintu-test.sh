@@ -4,7 +4,7 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
-# Test pobierania cache budowania z przebiegu sprintu (cache-budowania-sprintu.sh). Podstawione `gh`: lista przebiegów
+# Test pobierania cache budowania z grupy kolejki sprintu (cache-budowania-sprintu.sh). Podstawione `gh`: lista przebiegów
 # z pliku `lista`, pobranie działa tylko dla przebiegów z plikiem `artefakt-<id>`; wywołania zapisuje do `wywolania`.
 script="$(cd "$(dirname "$0")" && pwd)/cache-budowania-sprintu.sh"
 workdir="$(mktemp -d)"
@@ -47,9 +47,10 @@ przypadek "pomija przebieg bez artefaktu (wygasł)" wpis-8 "przebiegu 8" "9 8" "
 przypadek "pomija własny przebieg" wpis-8 "przebiegu 8" "3 8" "3 8"
 przypadek "brak artefaktów: zimny cache, kod 0" BRAK "Brak artefaktu cache" "9 8" ""
 przypadek "błąd listy przebiegów: zimny cache, kod 0" BRAK "Nie udało się odczytać" BRAK ""
-przypadek "lista tylko udanych przebiegów push na gałęzi sprintu" wpis-9 "przebiegu 9" "9" "9"
-grep -q -- '--event push' "$workdir/f/wywolania" && grep -q -- '--status success' "$workdir/f/wywolania" && grep -q -- '--branch sprint/4' "$workdir/f/wywolania" &&
-  echo "OK: zapytanie ogranicza gałąź, zdarzenie push i status success" ||
+przypadek "lista tylko udanych grup kolejki tego sprintu" wpis-9 "przebiegu 9" "9" "9"
+grep -q -- '--event merge_group' "$workdir/f/wywolania" && grep -q -- '--status success' "$workdir/f/wywolania" &&
+  grep -q -- 'startswith("gh-readonly-queue/sprint/4/")' "$workdir/f/wywolania" &&
+  echo "OK: zapytanie ogranicza zdarzenie merge_group, status success i gałęzie kolejki sprintu" ||
   { echo "BŁĄD: zapytanie o przebiegi: $(cat "$workdir/f/wywolania")"; failures=$((failures + 1)); }
 
 exit $((failures > 0))
