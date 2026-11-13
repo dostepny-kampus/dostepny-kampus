@@ -10,7 +10,7 @@ import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
 
-/** Nazwa typu bariery ze słownika projektu, np. „Próg” dla TB-13 (BR-7). */
+/** Nazwa typu bariery ze słownika projektu, np. „Próg” dla TB-13. Wymagania: BR-7 */
 @StringRes
 fun BarrierType.nameRes(): Int = TYPE_NAMES.getValue(this)
 
@@ -26,7 +26,7 @@ fun BarrierGroup.nameRes(): Int =
         BarrierGroup.OTHER -> R.string.grupa_barier_inne
     }
 
-/** Nazwa uciążliwości: „Utrudnienie”, „Tylko z pomocą” albo „Blokada” (US7.1). */
+/** Nazwa uciążliwości: „Utrudnienie”, „Tylko z pomocą” albo „Blokada”. Wymagania: US7.1 */
 @StringRes
 fun Severity.nameRes(): Int =
     when (this) {

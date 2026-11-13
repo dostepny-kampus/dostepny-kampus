@@ -31,13 +31,15 @@ private val AtkinsonHyperlegibleNext =
 private val AppTypography = typography(AtkinsonHyperlegibleNext)
 
 /**
- * Motyw aplikacji z tokenów wizualnych (`docs/docs/ux/tokeny.yml`, decyzje projektu nr 48 i 50).
+ * Motyw aplikacji z tokenów wizualnych (`docs/docs/ux/tokeny.yml`).
  *
  * Schemat kolorów jasny albo ciemny według [darkTheme], domyślnie według ustawienia systemu. Paleta jest
- * stała: bez kolorów dynamicznych z tapety, bo kontrast par z tokenów (NFR-16) jest sprawdzony tylko dla
+ * stała: bez kolorów dynamicznych z tapety, bo kontrast par z tokenów jest sprawdzony tylko dla
  * tej palety. Typografia w krój Atkinson Hyperlegible Next wbudowany w aplikację, rozmiary w sp: tekst
- * rośnie z ustawieniem czcionki telefonu (NFR-20). Kolory oznaczeń wejścia i mapy daje
+ * rośnie z ustawieniem czcionki telefonu. Kolory oznaczeń wejścia i mapy daje
  * [DostepnyKampusTheme.statusColors] i [DostepnyKampusTheme.mapColors].
+ *
+ * Wymagania: NFR-16, NFR-20
  */
 @Composable
 fun DostepnyKampusTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
@@ -56,7 +58,7 @@ fun DostepnyKampusTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Co
 
 /** Role tokenów spoza Material 3 dla bieżącego motywu; poza [DostepnyKampusTheme] wartości motywu jasnego. */
 object DostepnyKampusTheme {
-    /** Kontenery oznaczeń wejścia i kolor ich kształtu i słowa (tokeny `status…Container`, NFR-21). */
+    /** Kontenery oznaczeń wejścia i kolor ich kształtu i słowa (tokeny `status…Container`). Wymagania: NFR-21 */
     val statusColors: StatusColors
         @Composable @ReadOnlyComposable
         get() = LocalStatusColors.current

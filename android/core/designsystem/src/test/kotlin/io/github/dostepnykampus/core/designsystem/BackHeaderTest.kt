@@ -20,7 +20,7 @@ import org.robolectric.annotation.Config
 
 private const val TITLE = "Jak korzystać z aplikacji"
 
-/** Układ nagłówka „Wstecz” przy zwykłej czcionce i przy 200 % (reguły dużej czcionki, NFR-20). */
+/** Układ nagłówka „Wstecz” przy zwykłej czcionce i przy 200 % (reguły dużej czcionki). Wymagania: NFR-20 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class BackHeaderTest {
@@ -41,7 +41,11 @@ class BackHeaderTest {
         assertTrue(title.left > back.right && title.top < back.bottom)
     }
 
-    /** Czcionka 200 %: w wierszu tylko „Wstecz”, tytuł pod nim na całą szerokość bez marginesów 16 dp, NFR-20. */
+    /**
+     * Czcionka 200 %: w wierszu tylko „Wstecz”, tytuł pod nim na całą szerokość bez marginesów 16 dp.
+     *
+     * Wymagania: NFR-20
+     */
     @Test
     @Config(fontScale = 2f)
     fun nfr20_title_below_back() {

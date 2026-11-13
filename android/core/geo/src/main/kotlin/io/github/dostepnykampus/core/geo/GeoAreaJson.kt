@@ -14,7 +14,7 @@ import org.maplibre.spatialk.geojson.Geometry
 
 /**
  * Kontur budynku jako pole JSON: geometria GeoJSON (`Polygon` albo `MultiPolygon`) i [GeoArea]
- * bez zapisu tekstowego po drodze (#828). Zła geometria daje [IllegalArgumentException]
+ * bez zapisu tekstowego po drodze. Zła geometria daje [IllegalArgumentException]
  * w miejscu odczytu odpowiedzi albo kopii.
  */
 object GeoAreaJson : KSerializer<GeoArea> {

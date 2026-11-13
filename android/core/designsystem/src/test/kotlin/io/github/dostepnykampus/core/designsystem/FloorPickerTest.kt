@@ -24,7 +24,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Wspólny wybór piętra: rola wyboru jednej opcji, stan „wybrane” i cel dotyku (NFR-17, NFR-18, NFR-20). */
+/** Wspólny wybór piętra: rola wyboru jednej opcji, stan „wybrane” i cel dotyku. Wymagania: NFR-17, NFR-18, NFR-20 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class FloorPickerTest {
@@ -43,7 +43,7 @@ class FloorPickerTest {
         }
     }
 
-    /** Chipy: każda opcja to przycisk opcji, wybrana ma stan „wybrane”, cel co najmniej 48 dp, NFR-18. */
+    /** Chipy: każda opcja to przycisk opcji, wybrana ma stan „wybrane”, cel co najmniej 48 dp. Wymagania: NFR-18 */
     @Test
     fun nfr18_chips_radio_selected() {
         show(FloorPickerLayout.CHIPS)
@@ -58,7 +58,7 @@ class FloorPickerTest {
         assertTrue(bounds.bottom - bounds.top >= 48.dp)
     }
 
-    /** Lista: opcje na całą szerokość, każda co najmniej 56 dp, NFR-17. */
+    /** Lista: opcje na całą szerokość, każda co najmniej 56 dp. Wymagania: NFR-17 */
     @Test
     fun nfr17_list_full_width() {
         show(FloorPickerLayout.LIST)
@@ -67,7 +67,7 @@ class FloorPickerTest {
         assertTrue(bounds.bottom - bounds.top >= 56.dp)
     }
 
-    /** Czcionka 200 %: napisy rosną, a cel dotyku zostaje co najmniej 48 dp, NFR-20. */
+    /** Czcionka 200 %: napisy rosną, a cel dotyku zostaje co najmniej 48 dp. Wymagania: NFR-20 */
     @Test
     @Config(fontScale = 2f)
     fun nfr20_chips_large_font() {

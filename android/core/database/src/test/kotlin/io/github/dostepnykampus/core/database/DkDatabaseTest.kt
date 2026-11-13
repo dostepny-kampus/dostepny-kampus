@@ -12,7 +12,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/** Schemat bazy lokalnej: tabele kolejki zgłoszeń i ich zdjęć (NFR-5). */
+/** Schemat bazy lokalnej: tabele kolejki zgłoszeń i ich zdjęć. Wymagania: NFR-5 */
 @RunWith(RobolectricTestRunner::class)
 class DkDatabaseTest {
     @Test

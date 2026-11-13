@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/** Kopia listy budynków w bazie Room: jeden wiersz, nowy zapis zastępuje poprzedni (NFR-10). */
+/** Kopia listy budynków w bazie Room: jeden wiersz, nowy zapis zastępuje poprzedni. Wymagania: NFR-10 */
 @RunWith(RobolectricTestRunner::class)
 class BuildingCacheDaoTest {
     private lateinit var database: DkDatabase

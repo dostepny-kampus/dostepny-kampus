@@ -41,17 +41,19 @@ private fun arrowBack(): ImageVector =
     )
 
 /**
- * Nagłówek ekranu: przycisk „Wstecz” (strzałka ← i słowo, zawsze w tym samym miejscu, NFR-15) i tytuł ekranu
+ * Nagłówek ekranu: przycisk „Wstecz” (strzałka ← i słowo, zawsze w tym samym miejscu) i tytuł ekranu
  * [title], oznaczony dla TalkBack jako nagłówek. Dotknięcie „Wstecz” wywołuje [onBack]. Strzałka jest ozdobna
  * (TalkBack czyta tylko słowo), to ścieżka `arrow_back` z Material Symbols i odwraca się w układzie od
  * prawej do lewej.
  *
- * Tokeny: tło `surface`, margines [Odstepy.m], strzałka [Ikony.rozmiar] skalowana jak tekst w sp (NFR-20),
+ * Tokeny: tło `surface`, margines [Odstepy.m], strzałka [Ikony.rozmiar] skalowana jak tekst w sp,
  * przycisk obrysowany z napisem `primary` i ramką
  * [Obramowania.ramka] w kolorze `outline`, zaokrąglenie [Zaokraglenia.kapsula], wysokość co najmniej
- * [CeleDotyku.minimum] (NFR-17), tytuł `titleLarge`. Przy zwykłej czcionce tytuł stoi obok przycisku i zawija
- * się w swojej kolumnie. Przy skali czcionki co najmniej 1,5 (reguły dużej czcionki, NFR-20) w wierszu zostaje
+ * [CeleDotyku.minimum], tytuł `titleLarge`. Przy zwykłej czcionce tytuł stoi obok przycisku i zawija
+ * się w swojej kolumnie. Przy skali czcionki co najmniej 1,5 (reguły dużej czcionki) w wierszu zostaje
  * tylko „Wstecz”, a tytuł stoi pod nim na całą szerokość, na tle ekranu, jak w makietach hi-fi przy 200 %.
+ *
+ * Wymagania: NFR-15, NFR-20, NFR-17
  */
 @Composable
 fun BackHeader(title: String, onBack: () -> Unit, modifier: Modifier = Modifier) {

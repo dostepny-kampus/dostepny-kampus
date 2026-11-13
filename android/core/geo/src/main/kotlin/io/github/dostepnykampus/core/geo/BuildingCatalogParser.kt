@@ -23,20 +23,21 @@ import org.maplibre.spatialk.geojson.Point
 
 /**
  * Czyta katalog budynków z GeoJSON w formacie pliku `data/buildings/pwr-buildings.geojson` (opis formatu
- * w `data/README.md`), bez sieci (US1, US17.1).
+ * w `data/README.md`), bez sieci.
  *
  * - Kontury z tym samym symbolem, np. dwa obiekty OSM `H-14`, tworzą jeden budynek z wielokątem złożonym.
  *   Nazwą budynku jest pierwsza nazwa do pokazania podana w danych.
  * - Nazwa budynku to pole `display_name`: nazwa gotowa do pokazania obok symbolu, bez powtórzonego symbolu. Regułę
- *   stosuje skrypt danych, a aplikacja nazwy nie przerabia; pola `name`, dokładnej nazwy z OSM, nie czyta
- *   (US2, NFR-18, decyzja 75).
+ *   stosuje skrypt danych, a aplikacja nazwy nie przerabia; pola `name`, dokładnej nazwy z OSM, nie czyta.
  * - Kontur z kilkoma symbolami, np. `["C-3", "C-4"]`, daje osobny budynek dla każdego symbolu z tym samym konturem.
  * - Wejście z kilkoma symbolami daje wejście w każdym z tych budynków, z tym samym identyfikatorem `osm_id`.
  * - Rodzaj wejścia to tag `entrance`, a wejście główne ma `entrance` = `main`. Opis wejścia to tag `ref`, np. `W-1`.
- * - Oznaczenie wejścia pochodzi z tagu `wheelchair` (BR-24, decyzja 74): `yes` i `designated` dają „dostępne”,
+ * - Oznaczenie wejścia pochodzi z tagu `wheelchair`: `yes` i `designated` dają „dostępne”,
  *   `no` daje „niedostępne”, a `limited`, każda inna wartość i brak tagu — „brak danych”.
  *
  * Budynki i wejścia mają kolejność z pliku.
+ *
+ * Wymagania: US1, US17.1, US2, NFR-18, BR-24
  *
  * @param geoJson treść pliku GeoJSON
  * @return katalog budynków
