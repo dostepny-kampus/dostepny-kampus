@@ -46,10 +46,10 @@ class AcceptedBarriersCopyTest {
     @Test
     fun nfr10_synced_at() =
         runBlocking {
-            val none = source { OFFLINE }.also { it.barriers() }.syncedAt()
+            val none = source { OFFLINE }.apply { barriers() }.syncedAt()
             val one = listOf(submission(id = "z1", content = precise(type = null, symbol = null)))
-            val online = source { ApiResult.Success(one) }.also { it.barriers() }.syncedAt()
-            val offline = source { OFFLINE }.also { it.barriers() }.syncedAt()
+            val online = source { ApiResult.Success(one) }.apply { barriers() }.syncedAt()
+            val offline = source { OFFLINE }.apply { barriers() }.syncedAt()
 
             val synced = Instant.ofEpochMilli(SYNCED)
             assertEquals(listOf(null, synced, synced), listOf(none, online, offline))
