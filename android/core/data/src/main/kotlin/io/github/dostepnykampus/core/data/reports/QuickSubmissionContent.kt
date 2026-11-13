@@ -18,16 +18,14 @@ import io.github.dostepnykampus.core.model.SubmissionKind
  * @param group grupa barier
  * @param photoIds identyfikatory zdjęć w telefonie
  * @param position pozycja z dokładnością i informacją o konturze
- * @param floorNumber numer piętra; `null`, gdy nie podano
- * @param floorId identyfikator piętra z planu; ma pierwszeństwo przed [floorNumber]
+ * @param floor piętro; identyfikator z planu ma pierwszeństwo przed numerem, `null` oznacza brak wyboru
  * @param entranceId wejście, przy którym zgłoszono barierę; `null`, gdy nie podano
  */
 fun quickSubmissionContent(
     group: BarrierGroup,
     photoIds: List<String>,
     position: QuickReportLocation,
-    floorNumber: Int? = null,
-    floorId: String? = null,
+    floor: SubmissionFloor? = null,
     entranceId: String? = null,
 ): SubmissionContent =
     SubmissionContent(
@@ -35,14 +33,14 @@ fun quickSubmissionContent(
         location = position.point,
         photoIds = photoIds,
         accuracyMeters = position.accuracyMeters,
-        floor = quickFloor(floorNumber = floorNumber, floorId = floorId).takeIf { position.isInBuilding },
+        floor = quickFloor(floor).takeIf { position.isInBuilding },
         barrierGroup = group,
         entranceId = entranceId,
     )
 
-private fun quickFloor(floorNumber: Int?, floorId: String?): SubmissionFloor? =
+private fun quickFloor(chosen: SubmissionFloor?): SubmissionFloor? =
     when {
-        floorId != null -> SubmissionFloor(floorId = floorId)
-        floorNumber != null -> SubmissionFloor(number = floorNumber)
+        chosen?.floorId != null -> SubmissionFloor(floorId = chosen.floorId)
+        chosen?.number != null -> chosen
         else -> null
     }

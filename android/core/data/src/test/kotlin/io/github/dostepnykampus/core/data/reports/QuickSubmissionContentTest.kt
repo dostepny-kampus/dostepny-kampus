@@ -32,7 +32,7 @@ class QuickSubmissionContentTest {
                 group = group,
                 photoIds = listOf("zdjecie"),
                 position = position,
-                floorNumber = 2,
+                floor = SubmissionFloor(number = 2),
                 entranceId = "A-1-w1",
             )
         assertEquals(
@@ -50,14 +50,13 @@ class QuickSubmissionContentTest {
     }
 
     @Test
-    fun `piętro z planu ma pierwszeństwo`() {
+    fun `piętro z planu wygrywa`() {
         val content =
             quickSubmissionContent(
                 group = BarrierGroup.TOILETS,
                 photoIds = listOf("zdjecie"),
                 position = position,
-                floorNumber = 2,
-                floorId = "A-1/p-1",
+                floor = SubmissionFloor(floorId = "A-1/p-1", number = 2),
             )
         assertEquals(SubmissionFloor(floorId = "A-1/p-1"), content.floor)
     }
@@ -69,8 +68,7 @@ class QuickSubmissionContentTest {
                 group = BarrierGroup.TOILETS,
                 photoIds = listOf("zdjecie"),
                 position = position.copy(isInBuilding = false),
-                floorNumber = 2,
-                floorId = "A-1/p-1",
+                floor = SubmissionFloor(floorId = "A-1/p-1", number = 2),
             )
         assertNull(content.floor)
         assertNull(content.buildingSymbol)

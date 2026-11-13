@@ -11,6 +11,7 @@ import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent
+import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 
 /**
@@ -74,8 +75,7 @@ fun QuickReport.content(position: QuickPosition): SubmissionContent =
                 accuracyMeters = position.accuracyMeters,
                 isInBuilding = position.isInBuilding,
             ),
-        floorNumber = floorNumber,
-        floorId = floorId,
+        floor = SubmissionFloor(floorId = floorId, number = floorNumber),
         entranceId = entranceId,
     )
 
