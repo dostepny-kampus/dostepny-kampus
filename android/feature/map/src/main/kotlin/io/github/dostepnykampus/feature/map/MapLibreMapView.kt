@@ -30,6 +30,8 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.nameRes
 import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.feature.map.barrier.barrierImages
+import io.github.dostepnykampus.feature.map.building.entranceImages
 import io.github.dostepnykampus.feature.map.data.BARRIER_ID
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData

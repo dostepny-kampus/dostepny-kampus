@@ -10,7 +10,7 @@ import io.github.dostepnykampus.app.BackGesture.Cancelled
 import io.github.dostepnykampus.app.BackGesture.Completed
 import io.github.dostepnykampus.app.BackGesture.Progressed
 import io.github.dostepnykampus.app.BackGesture.Started
-import io.github.dostepnykampus.feature.map.CardMode
+import io.github.dostepnykampus.feature.map.building.CardMode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

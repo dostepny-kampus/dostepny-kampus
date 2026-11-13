@@ -29,8 +29,8 @@ import io.github.dostepnykampus.core.data.buildings.BUILDINGS_ASSET
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
-import io.github.dostepnykampus.feature.map.BuildingCardUiState
-import io.github.dostepnykampus.feature.map.buildingCard
+import io.github.dostepnykampus.feature.map.building.BuildingCardUiState
+import io.github.dostepnykampus.feature.map.building.buildingCard
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.runBlocking

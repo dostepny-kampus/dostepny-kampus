@@ -47,11 +47,11 @@ import io.github.dostepnykampus.feature.capture.quick.QuickReportScreen
 import io.github.dostepnykampus.feature.capture.report.ReportFormScreen
 import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
-import io.github.dostepnykampus.feature.map.BuildingCardContent
-import io.github.dostepnykampus.feature.map.BuildingCardUiState
-import io.github.dostepnykampus.feature.map.BuildingCardViewModel
-import io.github.dostepnykampus.feature.map.CardMode
-import io.github.dostepnykampus.feature.map.EntrancesScreen
+import io.github.dostepnykampus.feature.map.building.BuildingCardContent
+import io.github.dostepnykampus.feature.map.building.BuildingCardUiState
+import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
+import io.github.dostepnykampus.feature.map.building.CardMode
+import io.github.dostepnykampus.feature.map.building.EntrancesScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus

@@ -59,9 +59,6 @@ class PackageSizeArchitectureTest {
 
         const val HINT = "Pakiet ma więcej niż $LIMIT plików; podziel go według ścieżki użytkownika albo tematu"
 
-        val OVERSIZED =
-            mapOf(
-                "$BASE.feature.map" to 1330,
-            )
+        val OVERSIZED = emptyMap<String, Int>()
     }
 }
