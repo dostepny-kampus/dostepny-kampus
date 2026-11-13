@@ -10,6 +10,7 @@ import argparse
 import re
 import subprocess
 import sys
+import tempfile
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -52,6 +53,7 @@ COVERAGE_HEADER = ["Plik", "Scenariusz", "Kryteria i reguły", "Warstwa", "Test"
 LAYERS = (("aplikacja", "Aplikacja"), ("serwer", "Serwer"))
 LAYER_NAMES = dict(LAYERS)
 STATE_RANK = {"brak": 0, "częściowo": 1, "pełny": 2}
+PLANNED_TAG = "do-zrobienia"
 COVERAGE_COUNTS = (("Pełny test", "pełny"), ("Tylko częściowo", "częściowo"), ("Bez testu", "brak"))
 COVERAGE_INTRO = """# Pokrycie scenariuszy testami
 
@@ -125,7 +127,9 @@ class Marker:
 @dataclass
 class Corpus:
     """Zebrane definicje, odwołania, powiązania (nieskierowane), scenariusze i wiersze przykładów szablonów
-    (`examples`: klucz to plik i nazwa scenariusza, wartość to komórki kolejnych wierszy bez nagłówków tabel)."""
+    (`examples`: klucz to plik i nazwa scenariusza, wartość to komórki kolejnych wierszy bez nagłówków tabel).
+    `bodies` to treść scenariusza: jego kroki i tabele bez tagów, komentarzy i odstępów na brzegach; `planned` to
+    scenariusze z tagiem PLANNED_TAG."""
 
     definitions: dict[str, list[Location]] = field(default_factory=lambda: defaultdict(list))
     references: list[tuple[str, Location]] = field(default_factory=list)
@@ -137,6 +141,8 @@ class Corpus:
     features: set[str] = field(default_factory=set)
     markers: list[Marker] = field(default_factory=list)
     examples: dict[tuple[str, str], list[tuple[str, ...]]] = field(default_factory=lambda: defaultdict(list))
+    bodies: dict[tuple[str, str], list[str]] = field(default_factory=lambda: defaultdict(list))
+    planned: set[tuple[str, str]] = field(default_factory=set)
     bad_markers: list[Location] = field(default_factory=list)
 
     def link(self, owner: str, other: str) -> None:
@@ -323,7 +329,8 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
 
     `feature` to ścieżka pliku względna do katalogu scenariuszy, jak w znaczniku testu (domyślnie nazwa pliku).
     Wiersze tabel pod „Przykłady:” (bez nagłówka każdej tabeli) trafiają do `corpus.examples` scenariusza;
-    tabela danych przy kroku nie jest tabelą przykładów.
+    tabela danych przy kroku nie jest tabelą przykładów. Kroki i tabele scenariusza trafiają do `corpus.bodies`,
+    a scenariusz z tagiem PLANNED_TAG (własnym, funkcji albo reguły) do `corpus.planned`.
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
     rel = relative(path)
@@ -336,15 +343,17 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
     layers: dict[str, set[str]] = {"feature": set(), "rule": set(), "pending": set()}
     rows: list[tuple[str, ...]] = []
     header: bool | None = None
+    body: list[str] = []
     for number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         line = raw.strip()
         if line.startswith("@"):
             pending += [(t, Location(rel, number)) for t in TAG_RE.findall(line) if ID_FULL.fullmatch(t)]
-            layers["pending"] |= {t for t in TAG_RE.findall(line) if t in LAYER_NAMES}
+            layers["pending"] |= {t for t in TAG_RE.findall(line) if t in LAYER_NAMES or t == PLANNED_TAG}
             continue
         if line.startswith("#") or not line:
             continue
         if line.startswith("|"):
+            body.append(" ".join(line.split()))
             if header:
                 rows.append(tuple(cell.strip() for cell in line.strip("|").split("|")))
             header = header if header is None else True
@@ -354,18 +363,23 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
         corpus.references.extend(pending)
         pending, layers["pending"] = [], set()
         if keyword_of(line, FEATURE_KEYWORDS) is not None:
-            feature_tags, rule_tags = tags, []
+            feature_tags, rule_tags, body = tags, [], []
             layers["feature"], layers["rule"] = own, set()
         elif keyword_of(line, RULE_KEYWORDS) is not None:
-            rule_tags, layers["rule"] = tags, own
+            rule_tags, layers["rule"], body = tags, own, []
         elif (name := keyword_of(line, SCENARIO_KEYWORDS)) is not None:
             found = layers["feature"] | layers["rule"] | own
             ordered = tuple(layer for layer, _ in LAYERS if layer in found)
             scenario = Scenario(name or "(bez nazwy)", Location(rel, number), feature, ordered)
             corpus.all_scenarios.append(scenario)
             rows = corpus.examples[(feature, scenario.name)]
+            body = corpus.bodies[(feature, scenario.name)]
+            if PLANNED_TAG in found:
+                corpus.planned.add((feature, scenario.name))
             for tag in dict.fromkeys(feature_tags + rule_tags + tags):
                 corpus.scenarios[tag].append(scenario)
+        else:
+            body.append(" ".join(line.split()))
 
 
 def collect(docs: Path, specs: Path, android: Path | None = None) -> Corpus:
@@ -793,6 +807,43 @@ def coverage_drops(corpus: Corpus, baseline: dict[tuple[str, str], str]) -> list
     return findings
 
 
+def unplanned_scenarios(corpus: Corpus, baseline: Corpus) -> list[Finding]:
+    """Zwraca „BŁĄD” dla każdego scenariusza, którego nie ma w `baseline` albo który ma tam inną treść (kroki, tabele),
+    a który nie ma pełnego testu ani tagu PLANNED_TAG.
+
+    Gwarantuje: scenariusz o treści takiej jak w `baseline` nie daje wyniku; zmiana samych tagów nie jest zmianą treści.
+    """
+    findings = []
+    for scenario, (_, state) in coverage_states(corpus).items():
+        key = (scenario.feature, scenario.name)
+        same = key in baseline.bodies and baseline.bodies[key] == corpus.bodies[key]
+        if not same and state != "pełny" and key not in corpus.planned:
+            message = f"nowy albo zmieniony scenariusz bez pełnego testu i bez tagu @{PLANNED_TAG} z numerem zadania: {scenario.name}"
+            findings.append(Finding("BŁĄD", str(scenario.location), message))
+    return findings
+
+
+def baseline_specs(revision: str, specs: str) -> Corpus | None:
+    """Zwraca korpus scenariuszy z katalogu `specs` (względem korzenia repozytorium) w rewizji `revision` albo None,
+    gdy rewizji nie da się odczytać.
+
+    Wyjątki: OSError, gdy nie ma programu git albo nie da się zapisać pliku tymczasowego.
+    """
+    listing = subprocess.run(
+        ["git", "ls-tree", "-r", "--name-only", "-z", revision, "--", specs],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=False,
+    )
+    if listing.returncode != 0:
+        return None
+    corpus = Corpus()
+    with tempfile.TemporaryDirectory() as directory:
+        for number, path in enumerate(p for p in listing.stdout.split("\0") if p.endswith(".feature")):
+            copy = Path(directory) / f"{number}.feature"
+            copy.write_text(git_show(revision, path) or "", encoding="utf-8", newline="\n")
+            scan_feature(copy, corpus, Path(path).relative_to(specs).as_posix())
+    return corpus
+
+
 def git_show(revision: str, path: str) -> str | None:
     """Zwraca treść pliku `path` (względem korzenia repozytorium) w rewizji `revision` albo None, gdy go tam nie ma.
 
@@ -1074,7 +1125,10 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--strict", action="store_true", help="kod wyjścia 1, gdy są błędy")
     parser.add_argument("--partial", action="store_true", help="błędy klas ID bez żadnej definicji jako uwagi")
     parser.add_argument("--release", action="store_true", help="na wydanie: scenariusz bez pełnego testu jest błędem")
-    parser.add_argument("--baseline-rev", help="rewizja git gałęzi docelowej: spadek pokrycia względem niej jest błędem")
+    parser.add_argument(
+        "--baseline-rev",
+        help="rewizja git gałęzi docelowej: błędem jest spadek pokrycia i nowy scenariusz bez testu ani zadania",
+    )
     return parser.parse_args(argv)
 
 
@@ -1084,8 +1138,9 @@ def main(argv: list[str] | None = None) -> int:
     Gwarantuje: --matrix zapisuje też stronę pokrycia testami (COVERAGE_PAGE w katalogu dokumentacji). Z --check-matrix
     tylko porównuje macierz i stronę pokrycia z wygenerowanymi z bieżących plików, bez raportu kontroli ID; zwraca 0,
     gdy obie są aktualne, 1, gdy któraś jest nieaktualna albo jej brak, 2 przy błędzie odczytu. Z --baseline-rev
-    porównuje stan każdego scenariusza ze stroną pokrycia z podanej rewizji (coverage_drops); gdy rewizja nie ma
-    strony pokrycia, porównania nie ma.
+    porównuje stan każdego scenariusza ze stroną pokrycia z podanej rewizji (coverage_drops) i wymaga testu albo
+    tagu zadania dla scenariuszy nowych i zmienionych względem niej (unplanned_scenarios); gdy rewizja nie ma
+    strony pokrycia albo nie da się jej odczytać, danego porównania nie ma.
     """
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
@@ -1108,6 +1163,8 @@ def main(argv: list[str] | None = None) -> int:
         if args.baseline_rev:
             page = git_show(args.baseline_rev, coverage.resolve().relative_to(ROOT).as_posix())
             findings += coverage_drops(corpus, baseline_states(page or ""))
+            before = baseline_specs(args.baseline_rev, args.specs.resolve().relative_to(ROOT).as_posix())
+            findings += unplanned_scenarios(corpus, before) if before else []
     except (OSError, UnicodeDecodeError) as exc:
         print(f"check_ids: BŁĄD: {exc}", file=sys.stderr)
         return 2
