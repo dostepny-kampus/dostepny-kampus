@@ -26,3 +26,9 @@ extensions.configure<CommonExtension> {
 tasks.withType<KotlinCompilationTask<*>>().configureEach {
     compilerOptions.allWarningsAsErrors = true
 }
+
+dependencies {
+    constraints {
+        "implementation"(libs.findLibrary("androidx-core-ktx").get())
+    }
+}
