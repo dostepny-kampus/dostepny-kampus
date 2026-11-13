@@ -8,6 +8,6 @@ package io.github.dostepnykampus.feature.capture.navigation
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-/** C1 Pomiar pozycji (US6.1), bez paska nawigacji. Wejście doda ekran pracy Zbierającego. */
+/** C1 Pomiar pozycji, bez paska nawigacji. Wejście doda ekran pracy Zbierającego. Wymagania: US6.1 */
 @Serializable
 data object MeasureRoute : NavKey
