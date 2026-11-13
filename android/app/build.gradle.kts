@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.core)
     runtimeOnly(libs.kotlinx.coroutines.android)
     testImplementation(libs.konsist)
+    testImplementation(project(":core:location"))
     testImplementation(project(":core:network"))
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit4)

@@ -11,7 +11,7 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 
 | Warstwa | Pełny test | Tylko częściowo | Bez testu |
 | --- | --- | --- | --- |
-| Aplikacja | 24 | 13 | 96 |
+| Aplikacja | 27 | 13 | 93 |
 | Serwer | 0 | 0 | 62 |
 
 | Plik | Scenariusz | Kryteria i reguły | Warstwa | Test | Stan |
@@ -190,14 +190,14 @@ Stronę tworzy skrypt, nie edytuj jej ręcznie. Odśwież ją razem z macierzą 
 | `zgloszenie-szybkie.feature` | Budynek zgłoszenia szybkiego przypisuje system, a przy grupie „inne” piętro zostaje puste | BR-8, BR-14 | aplikacja, serwer | — | brak |
 | `zgloszenie-szybkie.feature` | Pytanie o piętro tylko w budynku i przy grupie, która go wymaga | BR-8, BR-14, US4.5 | aplikacja | — | brak |
 | `zgloszenie-szybkie.feature` | Odpowiedź „Nie wiem” zostawia piętro puste i pozwala wysłać zgłoszenie | BR-8, US4.5 | aplikacja | — | brak |
-| `zgloszenie-szybkie.feature` | Wybrane piętro trafia do zgłoszenia | BR-8, US4.5 | aplikacja | — | brak |
-| `zgloszenie-szybkie.feature` | Pozycja poza konturem przy wysłaniu zostawia piętro puste | BR-8, BR-14, US4.5 | aplikacja | — | brak |
-| `zgloszenie-szybkie.feature` | Zgłoszenie szybkie bez sieci zapisuje się w telefonie | BR-8, BR-9, US4.2 | aplikacja | — | brak |
+| `zgloszenie-szybkie.feature` | Wybrane piętro trafia do zgłoszenia | BR-8, US4.5 | aplikacja | `feature/capture · QuickSendViewModelTest.brg2_floor_inside_contour` | częściowo |
+| `zgloszenie-szybkie.feature` | Pozycja poza konturem przy wysłaniu zostawia piętro puste | BR-8, BR-14, US4.5 | aplikacja | `feature/capture · QuickSendViewModelTest.br14_no_floor_outside` | pełny |
+| `zgloszenie-szybkie.feature` | Zgłoszenie szybkie bez sieci zapisuje się w telefonie | BR-8, BR-9, US4.2 | aplikacja | `app · QuickOfflineTest.us4_2_offline_saved_in_phone` | pełny |
 | `zgloszenie-szybkie.feature` | Zgłoszenie szybkie zapisane bez sieci wysyła się samo po powrocie sieci | BR-8, BR-9, US4.2 | aplikacja | — | brak |
 | `zgloszenie-szybkie.feature` | Potwierdzenie po wysłaniu bez dalszego statusu | BR-8, US4.4 | aplikacja | — | brak |
 | `zgloszenie-szybkie.feature` | Potwierdzenie bez sieci mówi o późniejszej wysyłce | BR-8, US4.2, US4.4 | aplikacja | — | brak |
 | `zgloszenie-szybkie.feature` | Gość niezalogowany jest proszony o logowanie przed zdjęciem | BR-8, US14.2 | aplikacja | `app · AppNavigatorTest.us14_2_bar_report_guest_l1` | częściowo |
 | `zgloszenie-szybkie.feature` | Gość po zalogowaniu wraca do zgłoszenia szybkiego | BR-8, US14.2 | aplikacja | `app · AppNavigatorTest.us14_2_guest_signed_in_v4` | częściowo |
-| `zgloszenie-szybkie.feature` | Gość rezygnuje z logowania | BR-8, US14.2 | aplikacja | `app · AppNavigatorTest.uc7_1b_guest_not_now_v1` | częściowo |
+| `zgloszenie-szybkie.feature` | Gość rezygnuje z logowania | BR-8, US14.2 | aplikacja | `app · AppNavigatorTest.uc7_1b_guest_not_now_v1`<br>`app · AppShellTest.us14_2_guest_not_now_to_map` | pełny |
 | `zgloszenie-szybkie.feature` | Zgłoszenie szybkie tylko na terenie PWr | BR-8, BR-G5, US4.9 | aplikacja | — | brak |
 | `zgloszenie-szybkie.feature` | Serwer odrzuca zgłoszenie spoza terenu PWr | BR-8, BR-G5, US4.9 | aplikacja, serwer | — | brak |
