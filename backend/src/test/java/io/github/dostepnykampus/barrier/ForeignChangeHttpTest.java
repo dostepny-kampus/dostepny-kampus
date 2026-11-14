@@ -5,15 +5,11 @@
  */
 package io.github.dostepnykampus.barrier;
 
-import io.github.dostepnykampus.AsCollector;
 import io.github.dostepnykampus.IntegrationTest;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -82,7 +78,9 @@ final class ForeignChangeHttpTest {
     void brEighteenAcceptsChangeOfForeignQuick(final WebApplicationContext context)
         throws Exception {
         final UUID quick = UUID.randomUUID();
-        ForeignChangeHttpTest.send(context, quick, "\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\"");
+        new SubmissionRequests(context).create(
+            quick, "\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\""
+        );
         context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET author = 'inne-konto', status = 'ACCEPTED' WHERE id = :id")
             .param("id", quick).update();
@@ -96,7 +94,7 @@ final class ForeignChangeHttpTest {
     private static UUID accepted(final WebApplicationContext context, final String author)
         throws Exception {
         final UUID id = UUID.randomUUID();
-        ForeignChangeHttpTest.send(context, id, ForeignChangeHttpTest.PRECISE);
+        new SubmissionRequests(context).create(id, ForeignChangeHttpTest.PRECISE);
         context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET author = :author, status = 'ACCEPTED' WHERE id = :id")
             .param("author", author).param("id", id).update();
@@ -109,31 +107,12 @@ final class ForeignChangeHttpTest {
         final UUID id = UUID.randomUUID();
         return String.format(
             "%d, zapisanych %d",
-            ForeignChangeHttpTest.send(
-                context, id, String.format("%s,\"replacesSubmissionId\":\"%s\"", fields, replaced)
+            new SubmissionRequests(context).create(
+                id, String.format("%s,\"replacesSubmissionId\":\"%s\"", fields, replaced)
             ),
             context.getBean(JdbcClient.class)
                 .sql("SELECT count(*) FROM submissions WHERE id = :id").param("id", id)
                 .query(Integer.class).single()
-        );
-    }
-
-    private static int send(
-        final WebApplicationContext context, final UUID id, final String fields
-    ) throws Exception {
-        return context.getBean(MockMvc.class).perform(
-            MockMvcRequestBuilders.post("/submissions")
-                .contentType(MediaType.APPLICATION_JSON).with(new AsCollector())
-                .content(ForeignChangeHttpTest.body(id, fields))
-        ).andReturn().getResponse().getStatus();
-    }
-
-    private static String body(final UUID id, final String fields) {
-        return String.join(
-            "",
-            "{\"id\":\"", id.toString(), "\",", fields,
-            ",\"location\":{\"type\":\"Point\",\"coordinates\":[17.06209,51.10785]},",
-            "\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
         );
     }
 }

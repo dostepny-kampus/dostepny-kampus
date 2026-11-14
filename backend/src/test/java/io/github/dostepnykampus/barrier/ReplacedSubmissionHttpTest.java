@@ -5,15 +5,11 @@
  */
 package io.github.dostepnykampus.barrier;
 
-import io.github.dostepnykampus.AsCollector;
 import io.github.dostepnykampus.IntegrationTest;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -49,7 +45,7 @@ final class ReplacedSubmissionHttpTest {
     void brEighteenRefusesChangeOfUnacceptedSubmission(final WebApplicationContext context)
         throws Exception {
         final UUID sent = UUID.randomUUID();
-        ReplacedSubmissionHttpTest.send(context, sent, ReplacedSubmissionHttpTest.QUICK);
+        new SubmissionRequests(context).create(sent, ReplacedSubmissionHttpTest.QUICK);
         Assertions.assertEquals(
             "409, zapisanych 0",
             ReplacedSubmissionHttpTest.change(context, sent),
@@ -60,18 +56,18 @@ final class ReplacedSubmissionHttpTest {
     @Test
     void brNineReturnsSavedChangeAgain(final WebApplicationContext context) throws Exception {
         final UUID replaced = UUID.randomUUID();
-        ReplacedSubmissionHttpTest.send(context, replaced, ReplacedSubmissionHttpTest.QUICK);
+        new SubmissionRequests(context).create(replaced, ReplacedSubmissionHttpTest.QUICK);
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         jdbc.sql("UPDATE submissions SET status = 'ACCEPTED' WHERE id = :id")
             .param("id", replaced).update();
         final UUID id = UUID.randomUUID();
         final String fields = ReplacedSubmissionHttpTest.replacing(replaced);
-        ReplacedSubmissionHttpTest.send(context, id, fields);
+        new SubmissionRequests(context).create(id, fields);
         jdbc.sql("UPDATE submissions SET status = 'ARCHIVED' WHERE id = :id")
             .param("id", replaced).update();
         Assertions.assertEquals(
             200,
-            ReplacedSubmissionHttpTest.send(context, id, fields),
+            new SubmissionRequests(context).create(id, fields),
             "Ponowne wysłanie zapisanej zmiany nie zwróciło zapisanego zgłoszenia"
         );
     }
@@ -81,8 +77,8 @@ final class ReplacedSubmissionHttpTest {
         final UUID id = UUID.randomUUID();
         return String.format(
             "%d, zapisanych %d",
-            ReplacedSubmissionHttpTest.send(
-                context, id, ReplacedSubmissionHttpTest.replacing(replaced)
+            new SubmissionRequests(context).create(
+                id, ReplacedSubmissionHttpTest.replacing(replaced)
             ),
             context.getBean(JdbcClient.class)
                 .sql("SELECT count(*) FROM submissions WHERE id = :id").param("id", id)
@@ -93,25 +89,6 @@ final class ReplacedSubmissionHttpTest {
     private static String replacing(final UUID replaced) {
         return String.format(
             "%s,\"replacesSubmissionId\":\"%s\"", ReplacedSubmissionHttpTest.QUICK, replaced
-        );
-    }
-
-    private static int send(
-        final WebApplicationContext context, final UUID id, final String fields
-    ) throws Exception {
-        return context.getBean(MockMvc.class).perform(
-            MockMvcRequestBuilders.post("/submissions")
-                .contentType(MediaType.APPLICATION_JSON).with(new AsCollector())
-                .content(ReplacedSubmissionHttpTest.body(id, fields))
-        ).andReturn().getResponse().getStatus();
-    }
-
-    private static String body(final UUID id, final String fields) {
-        return String.join(
-            "",
-            "{\"id\":\"", id.toString(), "\",", fields,
-            ",\"location\":{\"type\":\"Point\",\"coordinates\":[17.06209,51.10785]},",
-            "\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
         );
     }
 }

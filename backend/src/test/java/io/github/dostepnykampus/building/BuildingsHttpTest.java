@@ -12,6 +12,8 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
@@ -199,82 +201,26 @@ final class BuildingsHttpTest {
         );
     }
 
-    @Test
-    void usSixTwoRejectsLatitudeAboveRange(final WebApplicationContext context)
-        throws Exception {
+    @ParameterizedTest(name = "{0}")
+    @CsvSource(
+        delimiter = ';',
+        value = {
+            "Szerokość powyżej 90 stopni nie jest błędem 400; /buildings/locate?lat=91&lon=17",
+            "Szerokość poniżej -90 stopni nie jest błędem 400; /buildings/locate?lat=-91&lon=17",
+            "Długość powyżej 180 stopni nie jest błędem 400; /buildings/locate?lat=51&lon=181",
+            "Długość poniżej -180 stopni nie jest błędem 400; /buildings/locate?lat=51&lon=-181",
+            "Szerokość NaN nie jest błędem 400; /buildings/locate?lat=NaN&lon=17",
+            "Długość NaN nie jest błędem 400; /buildings/locate?lat=51&lon=NaN",
+            "Tekst zamiast szerokości nie jest błędem 400; /buildings/locate?lat=abc&lon=17",
+            "Brak długości nie jest błędem 400; /buildings/locate?lat=51"
+        }
+    )
+    void usSixTwoRejectsInvalidCoordinates(
+        final String message, final String url, final WebApplicationContext context
+    ) throws Exception {
         MatcherAssert.assertThat(
-            "Szerokość powyżej 90 stopni nie jest błędem 400",
-            BuildingsHttpTest.failure(context, "/buildings/locate?lat=91&lon=17"),
-            Matchers.startsWith("400 application/problem+json")
-        );
-    }
-
-    @Test
-    void usSixTwoRejectsLatitudeBelowRange(final WebApplicationContext context)
-        throws Exception {
-        MatcherAssert.assertThat(
-            "Szerokość poniżej -90 stopni nie jest błędem 400",
-            BuildingsHttpTest.failure(context, "/buildings/locate?lat=-91&lon=17"),
-            Matchers.startsWith("400 application/problem+json")
-        );
-    }
-
-    @Test
-    void usSixTwoRejectsLongitudeAboveRange(final WebApplicationContext context)
-        throws Exception {
-        MatcherAssert.assertThat(
-            "Długość powyżej 180 stopni nie jest błędem 400",
-            BuildingsHttpTest.failure(context, "/buildings/locate?lat=51&lon=181"),
-            Matchers.startsWith("400 application/problem+json")
-        );
-    }
-
-    @Test
-    void usSixTwoRejectsLongitudeBelowRange(final WebApplicationContext context)
-        throws Exception {
-        MatcherAssert.assertThat(
-            "Długość poniżej -180 stopni nie jest błędem 400",
-            BuildingsHttpTest.failure(context, "/buildings/locate?lat=51&lon=-181"),
-            Matchers.startsWith("400 application/problem+json")
-        );
-    }
-
-    @Test
-    void usSixTwoRejectsNonFiniteLatitude(final WebApplicationContext context)
-        throws Exception {
-        MatcherAssert.assertThat(
-            "Szerokość NaN nie jest błędem 400",
-            BuildingsHttpTest.failure(context, "/buildings/locate?lat=NaN&lon=17"),
-            Matchers.startsWith("400 application/problem+json")
-        );
-    }
-
-    @Test
-    void usSixTwoRejectsNonFiniteLongitude(final WebApplicationContext context)
-        throws Exception {
-        MatcherAssert.assertThat(
-            "Długość NaN nie jest błędem 400",
-            BuildingsHttpTest.failure(context, "/buildings/locate?lat=51&lon=NaN"),
-            Matchers.startsWith("400 application/problem+json")
-        );
-    }
-
-    @Test
-    void usSixTwoRejectsTextInsteadOfLatitude(final WebApplicationContext context)
-        throws Exception {
-        MatcherAssert.assertThat(
-            "Tekst zamiast szerokości nie jest błędem 400",
-            BuildingsHttpTest.failure(context, "/buildings/locate?lat=abc&lon=17"),
-            Matchers.startsWith("400 application/problem+json")
-        );
-    }
-
-    @Test
-    void usSixTwoRejectsMissingLongitude(final WebApplicationContext context)
-        throws Exception {
-        MatcherAssert.assertThat(
-            "Brak długości nie jest błędem 400",
-            BuildingsHttpTest.failure(context, "/buildings/locate?lat=51"),
+            message,
+            BuildingsHttpTest.failure(context, url),
             Matchers.startsWith("400 application/problem+json")
         );
     }
