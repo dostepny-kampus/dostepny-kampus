@@ -76,7 +76,7 @@ class ReportEditScreenTest {
 
     /** Wiersz: C3 „Otwórz” → C2 z opisem zapisanego zgłoszenia. Wymagania: US8.3 */
     @Test
-    fun us8_3_form_with_saved_fields() {
+    fun fillsFormWithSavedFields() {
         show(edit())
         compose.onNodeWithText("Popraw zgłoszenie").assertIsDisplayed()
         compose.onNodeWithText(DESCRIPTION).performScrollTo().assertIsDisplayed()
@@ -85,7 +85,7 @@ class ReportEditScreenTest {
 
     /** Wiersz: poprawka C2 „Zapisz” → to samo zgłoszenie w kolejce, powrót do C3. Wymagania: US8.3, BR-9 */
     @Test
-    fun us8_3_save_replaces_same() {
+    fun replacesSameOnSave() {
         show(edit())
         compose.onNodeWithText("Zapisz").performClick()
         compose.waitForIdle()
@@ -95,7 +95,7 @@ class ReportEditScreenTest {
 
     /** Wiersz: poprawka C2 „Zmień miejsce” → C1 z polami w szkicu. Wymagania: US7.4, US8.3 */
     @Test
-    fun us7_4_edit_change_place() {
+    fun changesPlaceOnEdit() {
         show(edit())
         compose.onNodeWithText("Zmień miejsce").performScrollTo().performClick()
         compose.waitForIdle()
@@ -105,7 +105,7 @@ class ReportEditScreenTest {
 
     /** Wiersz: zgłoszenia nie ma już w telefonie → powrót do C3 bez formularza. Wymagania: US8.3 */
     @Test
-    fun us8_3_missing_goes_back() {
+    fun goesBackWhenMissing() {
         show(null)
         assertEquals(1, left)
         compose.onNodeWithText("Popraw zgłoszenie").assertDoesNotExist()

@@ -85,7 +85,7 @@ class QuickSendViewModelTest {
 
     /** „Wyślij” czeka na pozycję i nie przerywa zgłoszenia upływem czasu. Wymagania: NFR-23 */
     @Test
-    fun nfr23_send_waits_for_position() =
+    fun waitsForPositionToSend() =
         runTest(dispatcher) {
             watch()
             viewModel.send(report)
@@ -101,7 +101,7 @@ class QuickSendViewModelTest {
      * Wymagania: BR-G2
      */
     @Test
-    fun brg2_floor_inside_contour() =
+    fun keepsFloorInsideOutline() =
         runTest(dispatcher) {
             watch()
             fix(INSIDE_A1)
@@ -113,7 +113,7 @@ class QuickSendViewModelTest {
 
     /** Następny odczyt nie zmienia budynku używanego w zgłoszeniu V4. Wymagania: US4.1 */
     @Test
-    fun us4_1_keeps_first_position() =
+    fun keepsFirstPosition() =
         runTest(dispatcher) {
             watch()
             fix(INSIDE_A1)
@@ -129,7 +129,7 @@ class QuickSendViewModelTest {
      * Wymagania: BR-14, BR-G2
      */
     @Test
-    fun br14_no_floor_outside() =
+    fun skipsFloorOutside() =
         runTest(dispatcher) {
             watch()
             fix(OUTSIDE)
@@ -143,7 +143,7 @@ class QuickSendViewModelTest {
 
     /** Zgłoszenie z „Zgłoś barierę przy wejściu” trafia do kolejki z wejściem. Wymagania: US4.6 */
     @Test
-    fun us4_6_entrance_in_queue() =
+    fun queuesEntrance() =
         runTest(dispatcher) {
             val route =
                 ReportRoute(
@@ -166,7 +166,7 @@ class QuickSendViewModelTest {
      * Wymagania: UC7, NFR-23
      */
     @Test
-    fun uc7_4c_source_error_then_retry() =
+    fun retriesAfterSourceError() =
         runTest(dispatcher) {
             source = flow { throw SecurityException("brak zgody") }
             watch()
@@ -186,7 +186,7 @@ class QuickSendViewModelTest {
 
     /** Wyłączona lokalizacja → „Brak pozycji”; po włączeniu ustalanie wraca samo. Wymagania: UC7 */
     @Test
-    fun uc7_4c_location_off_then_on() =
+    fun resumesWhenLocationBackOn() =
         runTest(dispatcher) {
             locationOn.value = false
             watch()
@@ -202,7 +202,7 @@ class QuickSendViewModelTest {
      * Wymagania: US4.2, NFR-5
      */
     @Test
-    fun us4_2_saved_offline() =
+    fun savesOffline() =
         runTest(dispatcher) {
             online.value = false
             watch()
@@ -215,7 +215,7 @@ class QuickSendViewModelTest {
 
     /** Drugie „Wyślij” nie wysyła zdjęcia drugi raz. Wymagania: US4.7 */
     @Test
-    fun us4_7_sent_once() =
+    fun sendsOnce() =
         runTest(dispatcher) {
             watch()
             fix(INSIDE_A1)
@@ -229,7 +229,7 @@ class QuickSendViewModelTest {
 
     /** Pełna pamięć: „Spróbuj ponownie” zostaje. Wymagania: NFR-7 */
     @Test
-    fun nfr7_failed_save() =
+    fun reportsFailedSave() =
         runTest(dispatcher) {
             failure = IOException("pełna pamięć")
             watch()

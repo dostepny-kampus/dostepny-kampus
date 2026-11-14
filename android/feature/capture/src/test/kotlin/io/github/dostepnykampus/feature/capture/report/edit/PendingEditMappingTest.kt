@@ -20,12 +20,16 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-/** Pola C2 z treści zapisanej w kolejce telefonu. Wymagania: US8.3, BR-G4 */
+/**
+ * Pola C2 z treści zapisanej w kolejce telefonu.
+ *
+ * Wymagania: US8.3, BR-G4, US7.2
+ */
 class PendingEditMappingTest {
     private val photo = PendingPhotoDraft(photoId = "p1", path = "/data/p1.jpg")
 
     @Test
-    fun `us8_3 pola z treści`() {
+    fun takesFieldsFromContent() {
         val state = edit(floor = SubmissionFloor(number = -1, isMezzanine = true)).toReportUiState()
 
         assertEquals("A-1", state.form.place.buildingSymbol)
@@ -37,14 +41,14 @@ class PendingEditMappingTest {
     }
 
     @Test
-    fun `us7_2 piętro z planu`() {
+    fun takesFloorFromPlan() {
         val state = edit(floor = SubmissionFloor(floorId = "A-1-0")).toReportUiState()
 
         assertEquals(ReportFloor.Planned("A-1-0"), state.form.floor)
     }
 
     @Test
-    fun `brg4 poza budynkiem bez piętra`() {
+    fun skipsFloorOutside() {
         val state = edit(floor = SubmissionFloor(number = 1), building = null).toReportUiState()
 
         assertNull(state.form.floor)
@@ -52,7 +56,7 @@ class PendingEditMappingTest {
     }
 
     @Test
-    fun `nieznane kody puste`() {
+    fun leavesUnknownCodesEmpty() {
         val state = edit(floor = SubmissionFloor(), type = "TB-99", severity = null).toReportUiState()
 
         assertNull(state.form.floor)

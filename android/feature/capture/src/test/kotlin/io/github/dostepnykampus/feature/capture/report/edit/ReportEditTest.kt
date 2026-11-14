@@ -23,7 +23,7 @@ class ReportEditTest {
     private val start = ReportUiState(form = ReportForm(place = A1))
 
     @Test
-    fun `każde pole w formularzu`() {
+    fun fillsEveryField() {
         val state =
             start
                 .edited(ReportEdit.Floor(ReportFloor.Numbered(number = 2, isMezzanine = false)))
@@ -44,7 +44,7 @@ class ReportEditTest {
     }
 
     @Test
-    fun `zdjęcia w kolejności`() {
+    fun keepsPhotoOrder() {
         val state = start.edited(ReportEdit.Photo(photo("p1"))).edited(ReportEdit.Photo(photo("p2")))
 
         assertEquals(listOf("p1", "p2"), state.form.photoIds)
@@ -52,7 +52,7 @@ class ReportEditTest {
     }
 
     @Test
-    fun `ten sam budynek, to piętro`() {
+    fun keepsFloorInSameBuilding() {
         val state =
             start
                 .edited(ReportEdit.Floor(ReportFloor.Planned("A-1-0")))
@@ -72,7 +72,7 @@ class ReportEditTest {
      * Wymagania: US7.4
      */
     @Test
-    fun `inny budynek kasuje piętro`() {
+    fun clearsFloorForOtherBuilding() {
         val state =
             start
                 .edited(ReportEdit.Floor(ReportFloor.Planned("A-1-0")))
@@ -85,7 +85,7 @@ class ReportEditTest {
     }
 
     @Test
-    fun `poza budynkiem bez piętra`() {
+    fun skipsFloorOutside() {
         val state =
             start
                 .edited(ReportEdit.Floor(ReportFloor.Planned("A-1-0")))
@@ -97,12 +97,12 @@ class ReportEditTest {
     }
 
     @Test
-    fun `bez zapisz braków nie ma`() {
+    fun hidesMissingBeforeSave() {
         assertEquals(emptyList<ReportFormError>(), start.edited(ReportEdit.Description("x")).errors)
     }
 
     @Test
-    fun `brak znika po uzupełnieniu`() {
+    fun clearsMissingWhenFilled() {
         val shown = start.copy(errors = start.form.errors(), isSaveAttempted = true)
         val state =
             shown
@@ -118,7 +118,7 @@ class ReportEditTest {
     }
 
     @Test
-    fun `po zapisz nowy brak od razu`() {
+    fun showsNewMissingAfterSave() {
         val complete =
             start
                 .copy(errors = start.form.errors(), isSaveAttempted = true)
@@ -134,7 +134,7 @@ class ReportEditTest {
     }
 
     @Test
-    fun `bez budynku piętro pominięte`() {
+    fun skipsFloorWithoutBuilding() {
         val outside = ReportUiState(form = ReportForm(place = A1.copy(buildingSymbol = null)))
 
         assertNull(outside.edited(ReportEdit.Floor(ReportFloor.Planned("A-1-0"))).form.floor)

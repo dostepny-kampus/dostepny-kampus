@@ -14,7 +14,11 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-/** Krok 3 V4 bierze zgłoszenie z wpisu historii tylko wtedy, gdy kroki 1 i 2 są wypełnione. Wymagania: US4.8 */
+/**
+ * Krok 3 V4 bierze zgłoszenie z wpisu historii tylko wtedy, gdy kroki 1 i 2 są wypełnione.
+ *
+ * Wymagania: US4.8, US4.6
+ */
 class QuickReportRouteTest {
     private val filled =
         ReportRoute(
@@ -27,7 +31,7 @@ class QuickReportRouteTest {
         )
 
     @Test
-    fun `pełne kroki dają zgłoszenie`() {
+    fun buildsReportFromAllSteps() {
         val expected =
             QuickReport(
                 photo = PendingPhotoDraft(photoId = "zdjecie-1", path = "/zdjecia/zdjecie-1.jpg"),
@@ -38,7 +42,7 @@ class QuickReportRouteTest {
     }
 
     @Test
-    fun `us4_6 wejście z trasy w treści`() {
+    fun putsRouteEntranceInContent() {
         val point = GeoPoint(longitude = 17.06, latitude = 51.1)
         val position = QuickPosition(point = point, accuracyMeters = 6.0, isInBuilding = true)
         val atEntrance = requireNotNull(filled.copy(entranceId = "A-1-w1").quickReport())
@@ -47,7 +51,7 @@ class QuickReportRouteTest {
     }
 
     @Test
-    fun `bez zdjęcia albo grupy null`() {
+    fun givesNullWithoutPhotoOrGroup() {
         assertNull(filled.copy(photoId = null).quickReport())
         assertNull(filled.copy(photoPath = null).quickReport())
         assertNull(filled.copy(group = null).quickReport())

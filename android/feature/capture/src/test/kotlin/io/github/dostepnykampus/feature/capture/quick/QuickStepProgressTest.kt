@@ -37,7 +37,7 @@ class QuickStepProgressTest {
 
     /** Wiersz: V4 „Krok N z 3” i pod nim pasek z 3 odcinków; wykonane odcinki są wypełnione. Wymagania: NFR-21 */
     @Test
-    fun us4_1_progress_segments() {
+    fun drawsProgressSegments() {
         var step by mutableIntStateOf(1)
         compose.setContent { DostepnyKampusTheme { QuickStepProgress(step = step) } }
         (1..QUICK_STEPS).forEach { current ->
@@ -49,7 +49,7 @@ class QuickStepProgressTest {
 
     /** Wiersz: V4 pasek kroków ma dla TalkBack opis „Krok N z 3” i postęp, nie sam kolor. Wymagania: NFR-18 */
     @Test
-    fun nfr18_progress_semantics() {
+    fun describesProgress() {
         compose.setContent { DostepnyKampusTheme { QuickStepProgress(step = 2) } }
         val progress = ProgressBarRangeInfo(current = 2f, range = 0f..3f, steps = 2)
         compose

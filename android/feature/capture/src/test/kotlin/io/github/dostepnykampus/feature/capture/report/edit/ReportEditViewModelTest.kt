@@ -57,7 +57,7 @@ class ReportEditViewModelTest {
     }
 
     @Test
-    fun `us8_3 wczytuje raz`() =
+    fun loadsOnce() =
         runTest(dispatcher) {
             assertEquals(ReportEditLoad.Loading, viewModel.load.value)
             viewModel.open("s1")
@@ -69,7 +69,7 @@ class ReportEditViewModelTest {
         }
 
     @Test
-    fun `us8_3 brak w telefonie`() =
+    fun reportsMissingOnPhone() =
         runTest(dispatcher) {
             viewModel.open("s2")
             runCurrent()

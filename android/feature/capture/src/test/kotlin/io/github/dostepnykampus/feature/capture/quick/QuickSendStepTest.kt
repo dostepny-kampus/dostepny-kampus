@@ -39,7 +39,7 @@ class QuickSendStepTest {
 
     /** Wiersz: V4 krok 3 → grupa, piętro i „Dołączymy miejsce, w którym teraz stoisz.”. Wymagania: US4.1, US4.5 */
     @Test
-    fun us4_1_summary_with_floor() {
+    fun showsSummaryWithFloor() {
         val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS, floorNumber = 2)
         show(report = report, isFloorAsked = true, lookup = here)
         compose.onNodeWithText("Toalety").assertIsDisplayed()
@@ -49,14 +49,14 @@ class QuickSendStepTest {
 
     /** Wiersz: V4 krok 3, „Nie wiem” → podsumowanie z „Nie wiem”. Wymagania: US4.5 */
     @Test
-    fun us4_5_unknown_floor() {
+    fun showsUnknownFloor() {
         show(QuickReport(photo = photo, group = BarrierGroup.TOILETS), isFloorAsked = true, lookup = here)
         compose.onNodeWithText("Nie wiem").assertIsDisplayed()
     }
 
     /** Wiersz: V4 krok 3, pozycja jeszcze nieznana → „Ustalamy, gdzie jesteś…”. Wymagania: NFR-23 */
     @Test
-    fun nfr23_position_pending() {
+    fun showsPositionPending() {
         val report = QuickReport(photo = photo, group = BarrierGroup.OTHER)
         show(report = report, isFloorAsked = false, lookup = QuickLookup.Locating)
         compose.onNodeWithText("Ustalamy, gdzie jesteś…").assertIsDisplayed()
@@ -65,7 +65,7 @@ class QuickSendStepTest {
 
     /** Wiersz: V4 brak pozycji → komunikat, co zrobić, zamiast „Ustalamy…”; grupa zostaje. Wymagania: UC7 */
     @Test
-    fun uc7_4c_position_lost() {
+    fun showsPositionLost() {
         show(QuickReport(photo = photo, group = BarrierGroup.TOILETS), isFloorAsked = false, lookup = QuickLookup.Lost)
         compose.onNodeWithText("Telefon nie ustalił, gdzie jesteś.", substring = true).assertIsDisplayed()
         compose.onNodeWithText("Toalety").assertIsDisplayed()
@@ -74,7 +74,7 @@ class QuickSendStepTest {
 
     /** Wiersz: V4 potwierdzenie → zgłoszenie trafi do weryfikacji. Wymagania: US4.4 */
     @Test
-    fun us4_4_thank_you() {
+    fun showsThankYou() {
         compose.setContent { DostepnyKampusTheme { QuickSentMessage() } }
         compose.onNodeWithText("Dziękujemy", substring = true).assertIsDisplayed()
     }
