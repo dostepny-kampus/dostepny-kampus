@@ -24,9 +24,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.springframework.modulith.core.ApplicationModule;
-import org.springframework.modulith.core.ApplicationModules;
-import org.springframework.modulith.core.JavaPackage;
 
 /**
  * Strażnik kierunku warstw w każdym zamkniętym module serwera, w obu układach modułu: warstwy pod
@@ -38,18 +35,6 @@ import org.springframework.modulith.core.JavaPackage;
  * @since 0.1.0
  */
 final class LayerDirectionArchitectureTest {
-
-    /**
-     * Warstwa klas bez segmentu warstwy.
-     */
-    private static final String DOMAIN = "domain";
-
-    /**
-     * Nazwy warstw rozpoznawane w pakiecie.
-     */
-    private static final List<String> LAYERS = List.of(
-        "api", "application", "web", "persistence", "json", "storage"
-    );
 
     /**
      * Pakiety, od których dziedzina nie zależy.
@@ -78,14 +63,14 @@ final class LayerDirectionArchitectureTest {
 
     @Test
     void modulesKeepLayerDirection() {
-        LayerDirectionArchitectureTest.direction(LayerDirectionArchitectureTest.modules())
+        LayerDirectionArchitectureTest.direction(ModuleLayers.modules())
             .check(LayerDirectionArchitectureTest.production());
     }
 
     @Test
     void domainSkipsFrameworksOutsideExceptionList() {
         LayerDirectionArchitectureTest.frameworks(
-            LayerDirectionArchitectureTest.modules(),
+            ModuleLayers.modules(),
             LayerDirectionArchitectureTest.KNOWN.keySet()
         ).check(LayerDirectionArchitectureTest.production());
     }
@@ -157,7 +142,7 @@ final class LayerDirectionArchitectureTest {
 
     private static ArchRule direction(final Collection<String> roots) {
         final Function<String, DescribedPredicate<JavaClass>> layer =
-            name -> LayerDirectionArchitectureTest.in(roots, name);
+            name -> ModuleLayers.in(roots, name);
         return Architectures.layeredArchitecture()
             .consideringOnlyDependenciesInLayers()
             .withOptionalLayers(true)
@@ -177,7 +162,7 @@ final class LayerDirectionArchitectureTest {
 
     private static ArchRule frameworks(final Collection<String> roots, final Set<String> skipped) {
         return ArchRuleDefinition.noClasses()
-            .that(LayerDirectionArchitectureTest.in(roots, LayerDirectionArchitectureTest.DOMAIN))
+            .that(ModuleLayers.in(roots, "domain"))
             .and(DescribedPredicate.not(LayerDirectionArchitectureTest.inside(skipped)))
             .should().dependOnClassesThat()
             .resideInAnyPackage(LayerDirectionArchitectureTest.frameworkPackages())
@@ -200,40 +185,6 @@ final class LayerDirectionArchitectureTest {
                     .startsWith(String.format("%s.", pack))
             )
         );
-    }
-
-    private static DescribedPredicate<JavaClass> in(
-        final Collection<String> roots, final String layer
-    ) {
-        return DescribedPredicate.describe(
-            String.format("warstwa %s", layer),
-            (JavaClass type) -> roots.stream().anyMatch(
-                root -> layer.equals(
-                    LayerDirectionArchitectureTest.layerOf(type.getPackageName(), root)
-                )
-            )
-        );
-    }
-
-    private static String layerOf(final String pack, final String root) {
-        String result = "";
-        if (pack.equals(root)) {
-            result = "api";
-        } else if (pack.startsWith(String.format("%s.", root))) {
-            result = Stream.of(pack.substring(root.length() + 1).split("\\."))
-                .filter(LayerDirectionArchitectureTest.LAYERS::contains)
-                .findFirst()
-                .orElse(LayerDirectionArchitectureTest.DOMAIN);
-        }
-        return result;
-    }
-
-    private static List<String> modules() {
-        return ApplicationModules.of(DostepnyKampusApplication.class).stream()
-            .filter(module -> !module.isOpen())
-            .map(ApplicationModule::getBasePackage)
-            .map(JavaPackage::getName)
-            .toList();
     }
 
     private static JavaClasses production() {
