@@ -81,8 +81,7 @@ style:
       - '**/src/testDebug/**'
       - '**/src/androidTest/**'
       # Klient sieci: treść żądań i odpowiedzi HTTP.
-      - '**/core/network/src/main/kotlin/io/github/dostepnykampus/core/network/building/BuildingsApi.kt'
-      - '**/core/network/src/main/kotlin/io/github/dostepnykampus/core/network/submission/SubmissionJson.kt'
+      - '**/core/network/src/main/kotlin/io/github/dostepnykampus/core/network/ContractJson.kt'
       # Kodek pamięci podręcznej: dokument JSON w wierszu building_cache.
       - '**/core/data/src/main/kotlin/io/github/dostepnykampus/core/data/building/BuildingCacheCodec.kt'
       # Styl mapy: MapLibre przyjmuje styl tylko jako tekst (#806, #809, #828).

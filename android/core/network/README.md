@@ -10,6 +10,8 @@ Interfejsy API (`BuildingsApi`, `SubmissionsApi`), modele JSON i wiązania Hilt 
 
 Modele JSON z pakietu `json` generuje przy budowie openapi-generator z `api/openapi.yaml`; zmiana kontraktu
 zmienia je bez edycji kodu.
+Tekst JSON treści HTTP powstaje i jest czytany tylko w `ContractJson.kt` (`encodeContract`, `decodeContract`);
+klienci HTTP pracują na modelach.
 
 ## Zależności
 

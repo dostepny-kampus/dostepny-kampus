@@ -10,6 +10,8 @@ import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.network.building.toJson
 import io.github.dostepnykampus.core.network.building.toModel
+import io.github.dostepnykampus.core.network.decodeContract
+import io.github.dostepnykampus.core.network.encodeContract
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -40,7 +42,7 @@ internal fun Json.encodeSubmissionUpdate(version: Int, content: SubmissionConten
  * @param body tekst odpowiedzi
  */
 internal fun Json.decodeSubmission(body: String): Submission =
-    withoutNulls.decodeFromString(SubmissionDto.serializer(), body).toModel()
+    withoutNulls.decodeContract(SubmissionDto.serializer(), body).toModel()
 
 /**
  * Lista zgłoszeń z odpowiedzi serwera; zła treść jak w [decodeSubmission].
@@ -48,7 +50,7 @@ internal fun Json.decodeSubmission(body: String): Submission =
  * @param body tekst odpowiedzi z tablicą `Submission`
  */
 internal fun Json.decodeSubmissions(body: String): List<Submission> =
-    withoutNulls.decodeFromString(ListSerializer(SubmissionDto.serializer()), body).map(SubmissionDto::toModel)
+    withoutNulls.decodeContract(ListSerializer(SubmissionDto.serializer()), body).map(SubmissionDto::toModel)
 
 /**
  * Zgłoszenie z serwera z odpowiedzi 409 (`VersionConflictProblem`). Brak `serverSubmission`
@@ -57,14 +59,17 @@ internal fun Json.decodeSubmissions(body: String): List<Submission> =
  * @param body tekst odpowiedzi
  */
 internal fun Json.decodeConflict(body: String): Submission =
-    withoutNulls.decodeFromString(VersionConflictDto.serializer(), body).serverSubmission.toModel()
+    withoutNulls.decodeContract(VersionConflictDto.serializer(), body).serverSubmission.toModel()
 
 private val Json.withoutNulls: Json get() = Json(from = this) { explicitNulls = false }
 
 private fun Json.encodeWith(content: SubmissionContent, extra: Pair<String, JsonPrimitive>): String =
-    JsonObject(
-        withoutNulls.encodeToJsonElement(SubmissionContentJson.serializer(), content.toJson()).jsonObject + extra,
-    ).toString()
+    encodeContract(
+        JsonObject.serializer(),
+        JsonObject(
+            withoutNulls.encodeToJsonElement(SubmissionContentJson.serializer(), content.toJson()).jsonObject + extra,
+        ),
+    )
 
 private fun SubmissionContent.toJson(): SubmissionContentJson =
     SubmissionContentJson(
