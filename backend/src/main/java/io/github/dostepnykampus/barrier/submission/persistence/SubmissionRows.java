@@ -52,7 +52,9 @@ final class SubmissionRows implements RowMapper<Submission> {
                 Optional.ofNullable(
                     this.mapper.readValue(rows.getString("content"), SubmissionContentJson.class)
                 ).orElseThrow(() -> new InvalidSubmission("Brak zapisanej treści zgłoszenia"))
-                    .toContent()
+                    .toContent(),
+                Optional.ofNullable(rows.getObject("verified_at", OffsetDateTime.class))
+                    .map(OffsetDateTime::toInstant).orElse(null)
             );
         } catch (final JacksonException | InvalidSubmission ex) {
             throw new UnreadableSubmission(

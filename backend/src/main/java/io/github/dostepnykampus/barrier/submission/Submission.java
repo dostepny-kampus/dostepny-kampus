@@ -9,6 +9,7 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Zgłoszenie zapisane na serwerze, schemat Submission w OpenAPI.
@@ -20,10 +21,12 @@ import java.util.UUID;
  * @param status Status zgłoszenia
  * @param createdAt Chwila utworzenia zgłoszenia
  * @param content Treść zgłoszenia
+ * @param verifiedAt Chwila przyjęcia albo null, gdy jest nieznana
  * @since 0.1.0
  */
 public record Submission(
-    UUID id, int version, SubmissionStatus status, Instant createdAt, SubmissionContent content
+    UUID id, int version, SubmissionStatus status, Instant createdAt,
+    SubmissionContent content, @Nullable Instant verifiedAt
 ) {
 
     /**
@@ -42,6 +45,22 @@ public record Submission(
                 String.format("Wersja zgłoszenia %d jest mniejsza niż 1", version)
             );
         }
+    }
+
+    /**
+     * Zgłoszenie bez zapisanej daty przyjęcia.
+     *
+     * @param id Identyfikator
+     * @param version Wersja
+     * @param status Status
+     * @param createdAt Chwila utworzenia
+     * @param content Treść
+     */
+    public Submission(
+        final UUID id, final int version, final SubmissionStatus status,
+        final Instant createdAt, final SubmissionContent content
+    ) {
+        this(id, version, status, createdAt, content, null);
     }
 
     /**

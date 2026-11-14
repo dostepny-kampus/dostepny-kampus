@@ -10,8 +10,11 @@ import io.github.dostepnykampus.barrier.submission.SimilarSubmission;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
+import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -95,6 +98,16 @@ public final class SubmissionReading {
      */
     public List<Submission> list(final SubmissionQuery query) {
         return this.finder.list(query);
+    }
+
+    /**
+     * @return Przyjęte zgłoszenia istniejących barier w kolejności utworzenia
+     */
+    public List<Submission> exportable() {
+        return this.finder.list(new SubmissionQuery(Set.of(SubmissionStatus.ACCEPTED), null, null))
+            .stream().filter(item -> !item.content().barrier().removed())
+            .filter(item -> item.content().kind() != SubmissionKind.ENTRANCE_MARKING)
+            .toList();
     }
 
     /**

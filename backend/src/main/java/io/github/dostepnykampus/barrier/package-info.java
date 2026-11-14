@@ -7,9 +7,9 @@
 /**
  * Moduł barrier: zgłoszenia barier i ich zdjęcia.
  *
- * <p>Zadanie: przyjęcie, edycja i status zgłoszenia ze zdjęciami, podgląd podobnych.</p>
+ * <p>Zadanie: przyjęcie, edycja i status zgłoszenia ze zdjęciami, podgląd podobnych i eksport przyjętych.</p>
  *
- * <p>API: brak typów dla innych modułów; operacje HTTP {@code /submissions}.</p>
+ * <p>API: brak typów dla innych modułów; operacje HTTP {@code /submissions} i {@code /export.csv}.</p>
  *
  * <p>Zależności: {@code building :: api}, {@code shared}.</p>
  *

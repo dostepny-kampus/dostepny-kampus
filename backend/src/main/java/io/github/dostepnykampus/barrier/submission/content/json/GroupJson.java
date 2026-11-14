@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.barrier.submission.content.json;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
 import java.util.Arrays;
 
@@ -14,25 +13,19 @@ import java.util.Arrays;
  *
  * @since 0.1.0
  */
-enum GroupJson {
+public enum GroupJson {
 
     /** Wejście i drzwi. */
-    @JsonProperty("ENTRANCE_AND_DOORS")
-    ENTRANCE(BarrierGroup.ENTRANCE),
+    ENTRANCE_AND_DOORS(BarrierGroup.ENTRANCE),
     /** Komunikacja pionowa. */
-    @JsonProperty("VERTICAL_CIRCULATION")
-    VERTICAL(BarrierGroup.VERTICAL),
+    VERTICAL_CIRCULATION(BarrierGroup.VERTICAL),
     /** Komunikacja pozioma. */
-    @JsonProperty("HORIZONTAL_CIRCULATION")
-    HORIZONTAL(BarrierGroup.HORIZONTAL),
+    HORIZONTAL_CIRCULATION(BarrierGroup.HORIZONTAL),
     /** Toalety. */
-    @JsonProperty("TOILETS")
     TOILETS(BarrierGroup.TOILETS),
     /** Orientacja i informacja. */
-    @JsonProperty("ORIENTATION_AND_INFORMATION")
-    ORIENTATION(BarrierGroup.ORIENTATION),
+    ORIENTATION_AND_INFORMATION(BarrierGroup.ORIENTATION),
     /** Inne. */
-    @JsonProperty("OTHER")
     OTHER(BarrierGroup.OTHER);
     /** Stała domeny tej wartości. */
     private final BarrierGroup domain;
@@ -47,10 +40,11 @@ enum GroupJson {
      * @param group Grupa barier w domenie
      * @return Wartość z tabeli
      */
-    static GroupJson of(final BarrierGroup group) {
+    public static GroupJson of(final BarrierGroup group) {
         return Arrays.stream(GroupJson.values()).filter(json -> json.domain == group)
             .findFirst().orElseThrow();
     }
+
 
     /**
      * Stała domeny.

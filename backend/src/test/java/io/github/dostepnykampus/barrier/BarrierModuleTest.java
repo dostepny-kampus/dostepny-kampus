@@ -10,6 +10,7 @@ import io.github.dostepnykampus.ModuleTest;
 import io.github.dostepnykampus.RustfsTestConfiguration;
 import io.github.dostepnykampus.barrier.submission.web.SubmissionsController;
 import io.github.dostepnykampus.building.api.CampusArea;
+import io.github.dostepnykampus.building.api.FloorLabels;
 import io.github.dostepnykampus.building.api.KnownBuildings;
 import io.github.dostepnykampus.building.api.Outlines;
 import org.hamcrest.MatcherAssert;
@@ -46,6 +47,10 @@ final class BarrierModuleTest {
      */
     @MockitoBean
     private KnownBuildings buildings;
+
+    /** Etykiety pięter z API modułu budynków. */
+    @MockitoBean
+    private FloorLabels labels;
 
     @Test
     void barrierUsesOnlyApiOfOtherModules(final ApplicationContext context) {
