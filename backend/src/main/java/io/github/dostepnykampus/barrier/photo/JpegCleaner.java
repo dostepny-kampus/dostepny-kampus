@@ -26,12 +26,6 @@ import org.apache.commons.imaging.formats.jpeg.xmp.JpegRewriter;
 public final class JpegCleaner extends JpegRewriter {
 
     /**
-     * Tworzy czyściciela bez stanu.
-     */
-    public JpegCleaner() {
-    }
-
-    /**
      * Usuwa prywatne segmenty nagłówka JPEG, zachowując dane obrazu.
      *
      * @param jpeg Plik JPEG z telefonu

@@ -72,13 +72,15 @@ final class SubmissionPhotoRaceTest {
         final UUID photo = UUID.randomUUID();
         final UUID id = new SampleSubmissions(context).add("SENT", SampleSubmissions.quick(photo));
         final byte[] jpeg = JpegCleanerTest.photo();
-        final S3Client client = new SubmissionPhotoRaceTest.AcceptanceAttempt(
-            context.getBean(S3Client.class), context.getBean(DataSource.class), id
-        );
         try (ByteArrayInputStream input = new ByteArrayInputStream(jpeg)) {
             final SubmissionPhotos service = new SubmissionPhotos(
                 context.getBean(SubmissionFinder.class),
-                new PhotoStore(client, context.getBean(PhotoSettings.class)),
+                new PhotoStore(
+                    new SubmissionPhotoRaceTest.AcceptanceAttempt(
+                        context.getBean(S3Client.class), context.getBean(DataSource.class), id
+                    ),
+                    context.getBean(PhotoSettings.class)
+                ),
                 context.getBean(SubmissionService.class)
             );
             service.put(id, photo, new PhotoUpload(input, jpeg.length));
