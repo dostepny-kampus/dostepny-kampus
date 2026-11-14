@@ -21,11 +21,11 @@ import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.markingImage
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
-import io.github.dostepnykampus.feature.map.labelImage
 import io.github.dostepnykampus.feature.map.style.ENTRANCE_MARK_DP
 import io.github.dostepnykampus.feature.map.style.ENTRANCE_PIN_IMAGE
 import io.github.dostepnykampus.feature.map.style.entranceCaptionImage
 import io.github.dostepnykampus.feature.map.style.entranceMarkImage
+import io.github.dostepnykampus.feature.map.style.labelImage
 import kotlin.math.ceil
 
 private const val PIN_UNIT_DP = 2f
