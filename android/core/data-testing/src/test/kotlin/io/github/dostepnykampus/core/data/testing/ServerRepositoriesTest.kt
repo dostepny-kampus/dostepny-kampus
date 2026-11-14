@@ -52,6 +52,11 @@ class ServerRepositoriesTest {
     }
 
     @Test
+    fun nfr10_missing_is_not_found() {
+        assertEquals(direct(ApiResult.NotFound), fixture(ServerReply.Missing))
+    }
+
+    @Test
     fun nfr10_card_keeps_entrances() {
         val replies = ArrayDeque(listOf(ServerReply.Ok(ServerCard(SERVER, listOf(ENTRANCE))), ServerReply.Offline))
         val fixture = serverEntrances { replies.removeFirst() }
