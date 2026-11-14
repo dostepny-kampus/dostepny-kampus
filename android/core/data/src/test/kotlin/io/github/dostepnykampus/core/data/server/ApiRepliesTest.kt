@@ -40,7 +40,7 @@ class ApiRepliesTest {
     }
 
     @Test
-    fun us9_3_edit_keeps_saved_and_conflict() {
+    fun us9_3_edit_keeps_variant() {
         assertEquals(
             listOf(ServerEdit.Saved(SUBMISSION), ServerEdit.Conflict(SUBMISSION)),
             listOf(SubmissionEdit.Saved(SUBMISSION), SubmissionEdit.Conflict(SUBMISSION)).map { it.toServerEdit() },
