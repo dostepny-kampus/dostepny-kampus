@@ -40,7 +40,7 @@ final class ReplacedSubmissionCheckTest {
     private static final Reader READER = new Reader("konto", false);
 
     @Test
-    void submissionWithoutReplacesSkipsCheck() {
+    void skipsCheckForSubmissionWithoutReplaces() {
         Assertions.assertDoesNotThrow(
             () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, null).checkReplaced(
                 ReplacedSubmissionCheckTest.reading(null, null),
@@ -51,7 +51,7 @@ final class ReplacedSubmissionCheckTest {
     }
 
     @Test
-    void savedChangeSkipsCheck() {
+    void skipsCheckForSavedChange() {
         Assertions.assertDoesNotThrow(
             () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
                 ReplacedSubmissionCheckTest.reading(
@@ -65,7 +65,7 @@ final class ReplacedSubmissionCheckTest {
     }
 
     @Test
-    void changeOfAcceptedPasses() {
+    void passesChangeOfAccepted() {
         Assertions.assertDoesNotThrow(
             () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
                 ReplacedSubmissionCheckTest.reading(
@@ -79,7 +79,7 @@ final class ReplacedSubmissionCheckTest {
     }
 
     @Test
-    void changeWithoutIdChecksReplaced() {
+    void checksReplacedForChangeWithoutId() {
         Assertions.assertThrows(
             ConflictingState.class,
             () -> ReplacedSubmissionCheckTest.request(null, WebBodies.PATH).checkReplaced(
@@ -94,7 +94,7 @@ final class ReplacedSubmissionCheckTest {
     }
 
     @Test
-    void changeOfMissingGivesNotFound() {
+    void givesNotFoundForChangeOfMissing() {
         final NewSubmissionRequest request =
             ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH);
         Assertions.assertEquals(
@@ -112,7 +112,7 @@ final class ReplacedSubmissionCheckTest {
     }
 
     @Test
-    void changeOfUnacceptedGivesConflict() {
+    void givesConflictForChangeOfUnaccepted() {
         Assertions.assertThrows(
             ConflictingState.class,
             () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(

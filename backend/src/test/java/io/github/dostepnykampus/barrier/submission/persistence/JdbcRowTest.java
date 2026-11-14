@@ -32,7 +32,7 @@ final class JdbcRowTest {
     }
 
     @Test
-    void brTenStaleVersionConflictsAndMissingIsReported(final ApplicationContext context) {
+    void reportsStaleVersionConflictAndMissingRow(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = data.seed(SubmissionStatus.SENT);
         Assertions.assertEquals(
@@ -55,7 +55,7 @@ final class JdbcRowTest {
     }
 
     @Test
-    void unreadableRowFailsWithItsId(final ApplicationContext context) {
+    void failsWithIdOfUnreadableRow(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = SubmissionData.id(1);
         data.jdbc().sql(

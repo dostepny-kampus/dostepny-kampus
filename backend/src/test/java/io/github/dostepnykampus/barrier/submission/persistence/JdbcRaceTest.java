@@ -38,7 +38,7 @@ import org.springframework.context.ApplicationContext;
 final class JdbcRaceTest {
 
     @Test
-    void brTenSameVersionRaceConflicts(final ApplicationContext context) throws Exception {
+    void conflictsOnSameVersionRace(final ApplicationContext context) throws Exception {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = data.seed(SubmissionStatus.SENT);
         final List<EditResult> results = new ArrayList<>(2);

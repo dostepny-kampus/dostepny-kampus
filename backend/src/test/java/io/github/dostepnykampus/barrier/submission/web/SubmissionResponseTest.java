@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 final class SubmissionResponseTest {
 
     @Test
-    void wfourFourResponseIsFlatJsonWithoutEmptyFields() {
+    void writesFlatJsonWithoutEmptyFields() {
         Assertions.assertEquals(
             WebBodies.MAPPER.readTree(
                 String.join(

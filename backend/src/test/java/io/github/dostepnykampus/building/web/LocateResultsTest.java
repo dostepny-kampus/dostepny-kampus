@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 final class LocateResultsTest {
 
     @Test
-    void brGTwoMarksPointInsideOutline() {
+    void marksPointInsideOutline() {
         MatcherAssert.assertThat(
             "Punkt w konturze musi mieć insideOutline=true",
             new LocateResults(new Placement.Inside("A-1")).result(),
@@ -30,7 +30,7 @@ final class LocateResultsTest {
     }
 
     @Test
-    void brGTwoMarksNearPointOutsideOutline() {
+    void marksNearPointOutsideOutline() {
         MatcherAssert.assertThat(
             "Punkt blisko konturu musi mieć symbol i insideOutline=false",
             new LocateResults(new Placement.Near("A-1")).result(),
@@ -39,7 +39,7 @@ final class LocateResultsTest {
     }
 
     @Test
-    void brGFourLeavesFarPointWithoutSymbol() {
+    void leavesFarPointWithoutSymbol() {
         MatcherAssert.assertThat(
             "Punkt poza budynkami nie ma symbolu i insideOutline=false",
             new LocateResults(new Placement.None()).result(),

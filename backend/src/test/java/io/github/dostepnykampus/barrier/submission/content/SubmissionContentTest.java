@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  * Treść zgłoszenia: zdjęcia, pola obowiązkowe i kopie
  * z innym budynkiem.
  *
- * <p>Wymagania: US4, US7</p>
+ * <p>Wymagania: US4, US7, BR-G2</p>
  *
  * @since 0.1.0
  */
@@ -96,7 +96,7 @@ final class SubmissionContentTest {
     }
 
     @Test
-    void brGTwoWithBuildingChangesOnlyPlaceOfContent() {
+    void changesOnlyPlaceOfContentWhenBuildingGiven() {
         final SubmissionContent origin = SubmissionContentTest.content(
             List.of(SubmissionContentTest.PHOTO)
         );
@@ -114,7 +114,7 @@ final class SubmissionContentTest {
     }
 
     @Test
-    void brGTwoOutsideBuildingsChangesOnlyPlaceOfContent() {
+    void changesOnlyPlaceOfContentOutsideBuildings() {
         final SubmissionContent origin = SubmissionContentTest.content(
             List.of(SubmissionContentTest.PHOTO)
         );

@@ -15,14 +15,14 @@ import org.junit.jupiter.params.provider.EnumSource;
 /**
  * Zgłoszenie z serwera (V3): wersja co najmniej 1 i komplet pól.
  *
- * <p>Wymagania: US8</p>
+ * <p>Wymagania: US8, BR-18</p>
  *
  * @since 0.1.0
  */
 final class SubmissionTest {
 
     @Test
-    void brEighteenRecognizesAcceptedSubmission() {
+    void recognizesAcceptedSubmission() {
         Assertions.assertTrue(
             SubmissionSamples.submission(1, SubmissionStatus.ACCEPTED).accepted(),
             "Przyjęte zgłoszenie nie zostało rozpoznane"
@@ -31,7 +31,7 @@ final class SubmissionTest {
 
     @ParameterizedTest
     @EnumSource(value = SubmissionStatus.class, names = "ACCEPTED", mode = EnumSource.Mode.EXCLUDE)
-    void brEighteenDoesNotTreatOtherStatusesAsAccepted(final SubmissionStatus status) {
+    void doesNotTreatOtherStatusesAsAccepted(final SubmissionStatus status) {
         Assertions.assertFalse(
             SubmissionSamples.submission(1, status).accepted(),
             String.format("Zgłoszenie w statusie %s uznano za przyjęte", status)
@@ -39,7 +39,7 @@ final class SubmissionTest {
     }
 
     @Test
-    void mthreeOneRejectsVersionBelowOneAsServerData() {
+    void rejectsVersionBelowOneAsServerData() {
         Assertions.assertAll(
             Stream.of(0, -1, Integer.MIN_VALUE).map(
                 version -> () -> Assertions.assertEquals(
@@ -56,7 +56,7 @@ final class SubmissionTest {
     }
 
     @Test
-    void mthreeOneKeepsComponentsOfVersionOne() {
+    void keepsComponentsOfVersionOne() {
         final Submission submission = SubmissionSamples.submission(
             1, SubmissionStatus.ACCEPTED
         );
@@ -79,7 +79,7 @@ final class SubmissionTest {
     }
 
     @Test
-    void mthreeOneRejectsMissingReferences() {
+    void rejectsMissingReferences() {
         final SubmissionContent content = SubmissionSamples.content();
         Assertions.assertAll(
             () -> Assertions.assertThrows(

@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 final class OutlinesOverlapIT {
 
     @Test
-    void brFourteenPicksSmallestSymbolOfOverlappingOutlines(
+    void picksSmallestSymbolOfOverlappingOutlines(
         final ApplicationContext context
     ) {
         OutlinesOverlapIT.overlapping(context);
@@ -48,7 +48,7 @@ final class OutlinesOverlapIT {
     }
 
     @Test
-    void brFourteenHintsSavedBuildingOfOverlappingOutlines(
+    void hintsSavedBuildingOfOverlappingOutlines(
         final ApplicationContext context
     ) {
         OutlinesOverlapIT.overlapping(context);

@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 final class SubmissionKindTest {
 
     @Test
-    void brFourteenTakesBuildingFromOutlineOnlyForQuick() {
+    void takesBuildingFromOutlineOnlyForQuick() {
         final Set<SubmissionKind> outlined = EnumSet.of(SubmissionKind.QUICK);
         Assertions.assertAll(
             Stream.of(SubmissionKind.values()).map(

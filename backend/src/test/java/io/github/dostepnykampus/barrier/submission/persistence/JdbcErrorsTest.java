@@ -33,7 +33,7 @@ final class JdbcErrorsTest {
     }
 
     @Test
-    void brTenSavedIsOwnWriteNotLaterRead(final ApplicationContext context) {
+    void returnsOwnWriteNotLaterRead(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = data.seed(SubmissionStatus.SENT);
         data.jdbc().sql(

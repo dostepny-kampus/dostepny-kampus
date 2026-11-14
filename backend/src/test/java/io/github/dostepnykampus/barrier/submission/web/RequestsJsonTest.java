@@ -24,7 +24,7 @@ import tools.jackson.databind.exc.MismatchedInputException;
 final class RequestsJsonTest {
 
     @Test
-    void wfourOneNewRequestGivesCommandWithIdAndContent() {
+    void givesCommandWithIdAndContentForNewRequest() {
         Assertions.assertEquals(
             new NewSubmission(WebBodies.ID, WebBodies.content(), "konto"),
             WebBodies.MAPPER.readValue(
@@ -35,7 +35,7 @@ final class RequestsJsonTest {
     }
 
     @Test
-    void wfourOneNewRequestWithoutIdIsClientError() {
+    void rejectsNewRequestWithoutId() {
         Assertions.assertEquals(
             "Brak identyfikatora zgłoszenia w polu id",
             Assertions.assertThrows(
@@ -50,7 +50,7 @@ final class RequestsJsonTest {
     }
 
     @Test
-    void wfourTwoUpdateRequestTakesPathIdAndIgnoresBodyId() {
+    void takesPathIdAndIgnoresBodyIdInUpdateRequest() {
         Assertions.assertEquals(
             new SubmissionEdit(WebBodies.PATH, 3, WebBodies.content()),
             WebBodies.MAPPER.readValue(
@@ -62,7 +62,7 @@ final class RequestsJsonTest {
     }
 
     @Test
-    void wfourTwoUpdateWithoutVersionIsClientError() {
+    void rejectsUpdateWithoutVersion() {
         Assertions.assertThrows(
             InvalidInput.class,
             () -> WebBodies.MAPPER.readValue(
@@ -73,7 +73,7 @@ final class RequestsJsonTest {
     }
 
     @Test
-    void wfourThreeUnknownFieldsAreIgnored() {
+    void ignoresUnknownFields() {
         final String extra = "'extra':'x'";
         Assertions.assertAll(
             () -> Assertions.assertEquals(
@@ -96,7 +96,7 @@ final class RequestsJsonTest {
     }
 
     @Test
-    void wfourThreeNewRequestRejectsNullAndCoercion() {
+    void rejectsNullAndCoercionInNewRequest() {
         Assertions.assertAll(
             Stream.concat(
                 Stream.of(WebBodies.body("'id':null")),
@@ -115,7 +115,7 @@ final class RequestsJsonTest {
     }
 
     @Test
-    void wfourThreeUpdateRequestRejectsNullAndCoercion() {
+    void rejectsNullAndCoercionInUpdateRequest() {
         Assertions.assertAll(
             Stream.of(
                 "'version':null", "'version':'1'", "'version':2.0",
