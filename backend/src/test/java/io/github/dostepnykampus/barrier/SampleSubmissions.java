@@ -5,14 +5,14 @@
  */
 package io.github.dostepnykampus.barrier;
 
-import io.github.dostepnykampus.barrier.domain.BarrierDetails;
-import io.github.dostepnykampus.barrier.domain.BarrierGroup;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
-import io.github.dostepnykampus.barrier.domain.SubmissionContent;
-import io.github.dostepnykampus.barrier.domain.SubmissionKind;
-import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
-import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import io.github.dostepnykampus.barrier.persistence.JdbcSubmissions;
+import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
+import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import java.util.List;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;

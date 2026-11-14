@@ -38,7 +38,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * Strażnik: null tylko na granicy serwera. Pakiety dla NullAway wskazuje {@code pom.xml};
  * przykłady negatywne są kompilowane do katalogu tymczasowego, a pusty import jest błędem.
- * {@code Optional} jest tylko wynikiem metody. W {@code ..domain..} {@code @Nullable} stoi
+ * {@code Optional} jest tylko wynikiem metody. W dziedzinie ({@code ..domain..},
+ * {@code barrier.submission.content}) {@code @Nullable} stoi
  * wyłącznie na komponentach rekordów z zamkniętej listy par klasa i komponent; para z klasą,
  * której jeszcze nie ma w kodzie, jest dozwolona.
  *
@@ -229,7 +230,9 @@ final class NullabilityArchitectureTest {
     }
 
     private static ArchRule nullables(final Map<String, Set<String>> listed) {
-        return ArchRuleDefinition.classes().that().resideInAPackage("..domain..").should(
+        return ArchRuleDefinition.classes().that().resideInAnyPackage(
+            "..domain..", "..barrier.submission.content"
+        ).should(
             NullabilityArchitectureTest.problems(
                 "use @Nullable only on listed components",
                 type -> NullabilityScan.misplaced(type, listed)

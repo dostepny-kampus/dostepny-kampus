@@ -167,7 +167,10 @@ final class BarrierArchitectureTest {
         final String adapter = "..barrier.persistence..";
         return Map.of(
             "A-1", ArchRuleDefinition.noClasses()
-                .that().resideInAPackage(String.format("%s.domain..", root))
+                .that().resideInAnyPackage(
+                    String.format("%s.domain..", root),
+                    String.format("%s.submission.content", root)
+                )
                 .should().dependOnClassesThat().resideInAnyPackage(
                     "org.springframework..", "tools.jackson..", "java.sql..",
                     "io.github.dostepnykampus.building.."

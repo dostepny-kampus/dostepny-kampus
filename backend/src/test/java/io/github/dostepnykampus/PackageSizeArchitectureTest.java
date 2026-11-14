@@ -45,9 +45,7 @@ final class PackageSizeArchitectureTest {
     /**
      * Pakiety ponad limitem i issue, które je dzieli.
      */
-    private static final Map<String, Integer> OVERSIZED = Map.of(
-        "io.github.dostepnykampus.barrier.domain", 1439
-    );
+    private static final Map<String, Integer> OVERSIZED = Map.of();
 
     /**
      * Pakiet przykładów kompilowanych przez test.

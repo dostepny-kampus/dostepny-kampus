@@ -5,10 +5,10 @@
  */
 package io.github.dostepnykampus.barrier.persistence;
 
-import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import io.github.dostepnykampus.barrier.json.SubmissionContentJson;
+import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;

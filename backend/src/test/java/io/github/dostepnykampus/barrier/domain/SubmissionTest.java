@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
+import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

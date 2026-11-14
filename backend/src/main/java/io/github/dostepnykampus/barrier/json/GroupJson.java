@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.barrier.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.github.dostepnykampus.barrier.domain.BarrierGroup;
+import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
 import java.util.Arrays;
 
 /**

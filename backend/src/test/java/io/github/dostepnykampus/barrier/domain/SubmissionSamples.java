@@ -5,6 +5,13 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
+import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
+import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

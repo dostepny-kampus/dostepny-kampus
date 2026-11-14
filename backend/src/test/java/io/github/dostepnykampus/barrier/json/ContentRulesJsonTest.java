@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.json;
 
-import io.github.dostepnykampus.barrier.domain.NewEntranceMarking;
+import io.github.dostepnykampus.barrier.submission.content.NewEntranceMarking;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.function.Consumer;
 import java.util.stream.Stream;

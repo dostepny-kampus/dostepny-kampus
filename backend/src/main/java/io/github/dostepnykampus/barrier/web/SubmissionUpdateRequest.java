@@ -6,9 +6,9 @@
 package io.github.dostepnykampus.barrier.web;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
 import io.github.dostepnykampus.barrier.json.SubmissionContentJson;
+import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 

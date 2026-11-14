@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
-import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
