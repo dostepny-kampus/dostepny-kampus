@@ -75,20 +75,15 @@ internal fun floorMarkersOf(
 
         override suspend fun mark(buildingSymbol: String, floorId: String?): String {
             val markerId = newId()
-            queue.save(change(PendingMarkerChangeType.SET, markerId, buildingSymbol, floorId))
+            queue.save(Marker(markerId, buildingSymbol, floorId).change(PendingMarkerChangeType.SET))
             return markerId
         }
 
         override suspend fun revoke(markerId: String, buildingSymbol: String, floorId: String?) {
-            queue.saveRevoke(change(PendingMarkerChangeType.REVOKE, markerId, buildingSymbol, floorId))
+            queue.saveRevoke(Marker(markerId, buildingSymbol, floorId).change(PendingMarkerChangeType.REVOKE))
         }
 
-        private fun change(
-            type: PendingMarkerChangeType,
-            markerId: String,
-            buildingSymbol: String,
-            floorId: String?,
-        ): PendingMarkerChangeEntity =
+        private fun Marker.change(type: PendingMarkerChangeType): PendingMarkerChangeEntity =
             PendingMarkerChangeEntity(
                 operationId = newId(),
                 type = type,
@@ -106,3 +101,5 @@ private fun PendingMarkerChangeEntity.toPendingMarkerChange(): PendingMarkerChan
         floorId = floorId,
         isRevoke = type == PendingMarkerChangeType.REVOKE,
     )
+
+private data class Marker(val markerId: String, val buildingSymbol: String, val floorId: String?)

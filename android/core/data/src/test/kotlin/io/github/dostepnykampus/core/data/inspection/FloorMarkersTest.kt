@@ -32,7 +32,7 @@ class FloorMarkersTest {
      * Scenariusz: postep-inwentaryzacji.feature: Znacznik i jego cofnięcie bez sieci czekają w telefonie
      */
     @Test
-    fun `us153 nowy znacznik czeka w telefonie`() =
+    fun `us153 nowy znacznik czeka`() =
         runBlocking {
             val markerId = markers.mark(buildingSymbol = "A-1", floorId = "p4")
             val waiting =
@@ -46,7 +46,7 @@ class FloorMarkersTest {
      * Scenariusz: postep-inwentaryzacji.feature: Znacznik i jego cofnięcie bez sieci czekają w telefonie
      */
     @Test
-    fun `us153 cofniecie znacznika czeka w telefonie`() =
+    fun `us153 cofniecie czeka`() =
         runBlocking {
             markers.revoke(markerId = "na-serwerze", buildingSymbol = "A-1", floorId = "p2")
             val waiting =
@@ -55,7 +55,7 @@ class FloorMarkersTest {
         }
 
     @Test
-    fun `us153 cofniecie czekajacego znacznika oproznia kolejke`() =
+    fun `us153 cofniecie czekajacego`() =
         runBlocking {
             val markerId = markers.mark(buildingSymbol = "B-8", floorId = null)
             markers.revoke(markerId = markerId, buildingSymbol = "B-8", floorId = null)
@@ -63,7 +63,7 @@ class FloorMarkersTest {
         }
 
     @Test
-    fun `br9 kazda zmiana ma wlasna operacje`() =
+    fun `br9 zmiana ma wlasna operacje`() =
         runBlocking {
             markers.mark(buildingSymbol = "A-1", floorId = "p4")
             markers.revoke(markerId = "na-serwerze", buildingSymbol = "A-1", floorId = "p2")
