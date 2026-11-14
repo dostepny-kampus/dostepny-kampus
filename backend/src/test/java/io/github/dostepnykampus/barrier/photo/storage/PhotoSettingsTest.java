@@ -203,6 +203,28 @@ final class PhotoSettingsTest {
         );
     }
 
+    @Test
+    void rejectsMissingEndpointOrEndpointWithoutScheme() {
+        Assertions.assertAll(
+            () -> PhotoSettingsTest.rejected(null, "zdjecia", "dk.photos.endpoint"),
+            () -> PhotoSettingsTest.rejected(
+                URI.create("//magazyn:9000"), "zdjecia", "dk.photos.endpoint"
+            )
+        );
+    }
+
+    @Test
+    void rejectsMissingOrBlankBucket() {
+        Assertions.assertAll(
+            () -> PhotoSettingsTest.rejected(
+                URI.create("http://magazyn:9000"), null, "dk.photos.bucket"
+            ),
+            () -> PhotoSettingsTest.rejected(
+                URI.create("http://magazyn:9000"), "  ", "dk.photos.bucket"
+            )
+        );
+    }
+
     private static ApplicationContextRunner runner() {
         return new ApplicationContextRunner()
             .withInitializer(PhotoSettingsTest::detachSystemEnvironment)
@@ -236,6 +258,18 @@ final class PhotoSettingsTest {
         return new ClassFileImporter()
             .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
             .importPackagesOf(PhotoSettings.class);
+    }
+
+    private static void rejected(final URI endpoint, final String bucket, final String setting) {
+        MatcherAssert.assertThat(
+            String.format("Adres %s i kubełek '%s' nie zatrzymały startu", endpoint, bucket),
+            Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> new PhotoSettings(endpoint, bucket, "", ""),
+                "Ustawienia zdjęć z błędnym adresem albo kubełkiem są odrzucane"
+            ).getMessage(),
+            Matchers.containsString(setting)
+        );
     }
 
     /**

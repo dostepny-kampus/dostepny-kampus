@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.photo.storage;
 
+import io.github.dostepnykampus.barrier.photo.PhotoStorageException;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import java.net.URI;
 import java.util.ArrayList;
@@ -14,21 +15,25 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 /**
  * Zdjęcie leży w magazynie pod kluczem {@code <zgłoszenie>/<zdjęcie>.jpg}, a lista
- * zdjęć zgłoszenia odczytuje identyfikatory z tych kluczy.
+ * zdjęć zgłoszenia odczytuje identyfikatory z tych kluczy. Zapis do nieistniejącego kubełka
+ * kończy się błędem magazynu, a nie cichym utworzeniem kubełka w żądaniu (ADR-0009).
  *
  * <p>Wymagania: BR-7, BR-8, US2.2</p>
  *
  * @since 0.1.0
  */
-final class PhotoStoreKeysTest {
+final class S3PhotoStoreTest {
 
     /**
      * Zgłoszenie ze zdjęciami.
@@ -43,13 +48,13 @@ final class PhotoStoreKeysTest {
 
     @Test
     void putsPhotoUnderSubmissionKey() {
-        final PhotoStoreKeysTest.Bucket client = new PhotoStoreKeysTest.Bucket();
-        PhotoStoreKeysTest.store(client).put(
-            PhotoStoreKeysTest.SUBMISSION, PhotoStoreKeysTest.PHOTO, new byte[] {1}
+        final S3PhotoStoreTest.Bucket client = new S3PhotoStoreTest.Bucket();
+        S3PhotoStoreTest.store(client).put(
+            S3PhotoStoreTest.SUBMISSION, S3PhotoStoreTest.PHOTO, new byte[] {1}
         );
         Assertions.assertEquals(
             List.of(
-                String.format("%s/%s.jpg", PhotoStoreKeysTest.SUBMISSION, PhotoStoreKeysTest.PHOTO)
+                String.format("%s/%s.jpg", S3PhotoStoreTest.SUBMISSION, S3PhotoStoreTest.PHOTO)
             ),
             client.keys,
             "Zdjęcie trafia do kubełka pod kluczem zgłoszenia"
@@ -58,14 +63,38 @@ final class PhotoStoreKeysTest {
 
     @Test
     void listsPhotosFromKeys() {
-        final PhotoStoreKeysTest.Bucket client = new PhotoStoreKeysTest.Bucket();
+        final S3PhotoStoreTest.Bucket client = new S3PhotoStoreTest.Bucket();
         client.keys.add(
-            String.format("%s/%s.jpg", PhotoStoreKeysTest.SUBMISSION, PhotoStoreKeysTest.PHOTO)
+            String.format("%s/%s.jpg", S3PhotoStoreTest.SUBMISSION, S3PhotoStoreTest.PHOTO)
         );
         Assertions.assertEquals(
-            List.of(PhotoStoreKeysTest.PHOTO),
-            PhotoStoreKeysTest.store(client).stored(PhotoStoreKeysTest.SUBMISSION),
+            List.of(S3PhotoStoreTest.PHOTO),
+            S3PhotoStoreTest.store(client).stored(S3PhotoStoreTest.SUBMISSION),
             "Lista zdjęć zgłoszenia wynika z kluczy w kubełku"
+        );
+    }
+
+    @Test
+    void doesNotCreateBucketOnPut() {
+        final S3PhotoStoreTest.NoBucket client =
+            new S3PhotoStoreTest.NoBucket();
+        final PhotoStore store = new S3PhotoStore(
+            client, new PhotoSettings(URI.create("http://magazyn"), "brak-kubelka", "", "")
+        );
+        final UUID photo = UUID.randomUUID();
+        Assertions.assertAll(
+            () -> Assertions.assertInstanceOf(
+                NoSuchBucketException.class,
+                Assertions.assertThrows(
+                    PhotoStorageException.class,
+                    () -> store.put(photo, photo, new byte[] {1}),
+                    "Zapis do nieistniejącego kubełka nie rzuca błędu magazynu zdjęć"
+                ).getCause(),
+                "Błąd magazynu zdjęć nie wskazuje błędu S3 jako przyczyny"
+            ),
+            () -> Assertions.assertEquals(
+                List.of(), client.created, "Zapis zdjęcia utworzył kubełek w żądaniu"
+            )
         );
     }
 
@@ -114,6 +143,40 @@ final class PhotoStoreKeysTest {
                 .filter(key -> key.startsWith(prefix))
                 .map(key -> S3Object.builder().key(key).build())
                 .toList();
+        }
+    }
+
+    /**
+     * Klient S3 bez kubełka; zapamiętuje próby jego utworzenia.
+     *
+     * @since 0.1.0
+     */
+    private static final class NoBucket implements S3Client {
+
+        /**
+         * Kubełki kolejnych utworzeń.
+         */
+        private final List<String> created = new ArrayList<>(1);
+
+        @Override
+        public String serviceName() {
+            return S3Client.SERVICE_NAME;
+        }
+
+        @Override
+        public void close() {
+            this.created.clear();
+        }
+
+        @Override
+        public PutObjectResponse putObject(final PutObjectRequest request, final RequestBody body) {
+            throw NoSuchBucketException.builder().message(request.bucket()).build();
+        }
+
+        @Override
+        public CreateBucketResponse createBucket(final CreateBucketRequest request) {
+            this.created.add(request.bucket());
+            return CreateBucketResponse.builder().build();
         }
     }
 }
