@@ -112,6 +112,7 @@ nav:
           - ADR-0008 Import budynków: architektura/decyzje/0008-import-budynkow.md
           - ADR-0009 Magazyn zdjęć: architektura/decyzje/0009-magazyn-zdjec.md
           - ADR-0010 Testy mutacyjne: architektura/decyzje/0010-testy-mutacyjne.md
+          - ADR-0011 Modularny monolit: architektura/decyzje/0011-modularny-monolit.md
   - Raporty:
       - Tydzień 2: raporty/tydzien-2.md
       - Sprint 1: raporty/sprint-1.md

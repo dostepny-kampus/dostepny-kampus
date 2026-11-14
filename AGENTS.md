@@ -17,8 +17,8 @@ najwyżej 150 linii (`.github/scripts/dlugosc-pliku-test.sh`).
 | `data/` | dane budynków i skrypty, które je przygotowują |
 | `.github/` | workflow CI, skrypty kontroli i ich testy |
 
-Opis modułu leży przy kodzie: w `package-info.java` modułu serwera i w `README.md` modułu Androida
-(wprowadzane w #1333 i #1334). Zanim zmienisz moduł, przeczytaj jego opis.
+Opis modułu i jego pakietów leży przy kodzie: w `package-info.java` na serwerze i w `README.md` modułu
+Androida. Zanim zmienisz moduł, przeczytaj jego opis.
 
 ## 2. Kolejność pracy
 
@@ -62,23 +62,27 @@ Decyzja zapisana w rozmowie albo w dokumencie od razu staje się issue; numery w
 
 ## 6. Gdzie kłaść kod i kiedy zakładać moduł
 
-Moduł działa jak mała usługa: jedno zadanie, jawne API, jawne zależności. Moduły dzielimy według
-dziedziny, warstwy są wewnątrz modułu. Pełny standard z kontrolami: `docs/docs/architektura/moduly.md`.
+Moduł działa jak mała usługa: jedno zadanie, jawne API, jawne zależności, własne dane. Moduły dzielimy
+według dziedziny, wnętrze modułu według tematów, warstwy leżą w temacie. Pełny standard z kontrolami:
+`docs/docs/architektura/moduly.md` (dziesięć zasad pakietów), uzasadnienie: ADR-0011.
 
-- Serwer: moduły `identity`, `building`, `barrier`, `shared`. Korzeń pakietu modułu zawiera tylko typy
-  wołane przez inne moduły. Reszta leży w warstwach `domain`, `application`, `web`, `persistence`, `json`
-  albo w podpakiecie tematycznym, gdy temat ma co najmniej pięć plików. Zależności modułu są w
+- Jeden temat na pakiet; nazwa tematu ze słownika, taka sama w każdym module, w liczbie pojedynczej.
+  Pakietów `util`, `common`, `helper`, `misc`, `base`, `impl` nie ma.
+- Serwer: moduły `identity`, `building`, `barrier`, `shared`. Inne moduły widzą tylko pakiet `api`
+  modułu. Moduł z jednym tematem ma warstwy pod korzeniem, moduł z kilkoma tematami ma tematy, a w nich
+  warstwy `application`, `web`, `persistence`, `json`, `storage`. Zależności modułu są w
   `@ApplicationModule(allowedDependencies = …)`; `shared` ma tylko `error`, `json`, `geo`.
 - Android: granicę modułu wyznacza Gradle. Moduł funkcji nie zależy od innego modułu funkcji ani od
   `core:database` i `core:network`, także w testach; dane bierze z `core:data`. W `core` działa
-  `explicitApi()`. Pakiety funkcji dzielimy według ścieżki użytkownika albo tematu.
+  `explicitApi()`. Pakiety funkcji dzielimy według ścieżki użytkownika, pakiety `core` według tematów.
 - Nowa zależność między modułami to świadoma decyzja, widoczna w PR, nie skutek uboczny importu.
 
 Nowy moduł zakładasz, gdy naraz: ma kod już teraz; jego zadanie da się opisać jednym zdaniem bez „i”;
-ma własne dane albo własną ścieżkę użytkownika; jego API to kilka typów. Pakiet powyżej 15 plików dziel.
-Moduł poniżej trzech plików z jednym odbiorcą połącz z odbiorcą. Pustych modułów „na przyszłość” nie ma.
+ma własne dane albo własną ścieżkę użytkownika; jego API to kilka typów. Pakiet powyżej 15 plików to
+sygnał mieszania tematów: dziel według tematów, nie według liczby. Moduł poniżej trzech plików z jednym
+odbiorcą połącz z odbiorcą. Pustych modułów „na przyszłość” nie ma.
 
-Stan docelowy i kolejność prac: epik #1335.
+Stan docelowy i kolejność prac: epiki #1335 i #1660.
 
 ## 7. Opisy w kodzie
 
