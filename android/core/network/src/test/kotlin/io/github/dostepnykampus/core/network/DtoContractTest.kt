@@ -161,4 +161,4 @@ class DtoContractTest {
 }
 
 @Serializable
-private class HandWrittenDto(val value: Int)
+private data class HandWrittenDto(val value: Int)
