@@ -66,7 +66,7 @@ class QuickReportScreenTest {
 
     /** Pozycja nieznana (odbiornik bez odczytu): pytanie o piętro jak w budynku podstawowym. Wymagania: BR-14 */
     @Test
-    fun `grupa z piętrem do kroku 3`() {
+    fun goesToStepThreeWithFloor() {
         show(atGroup)
         compose.onNodeWithText("Krok 2 z 3").assertIsDisplayed()
         compose.onNodeWithText("Toalety").performClick()
@@ -84,7 +84,7 @@ class QuickReportScreenTest {
      * Wymagania: US4.5
      */
     @Test
-    fun us4_5_unknown_floor_to_step_3() {
+    fun goesToStepThreeUnknownFloor() {
         show(atGroup)
         compose.onNodeWithText("Schody i windy").performClick()
         compose.onNodeWithText("Nie wiem").performClick()
@@ -93,7 +93,7 @@ class QuickReportScreenTest {
 
     /** Wiersz: V4 krok 2, pozycja poza konturem → bez pytania o piętro, zgłoszenie bez piętra. Wymagania: BR-14 */
     @Test
-    fun us4_5_outside_no_floor() {
+    fun skipsFloorOutside() {
         show(atGroup, positions = PositionSource { flowOf(PositionFix(OUTSIDE, ACCURACY, 0L)) })
         compose.onNodeWithText("Toalety").performClick()
         compose.onNodeWithText("Na którym piętrze?").assertDoesNotExist()
@@ -106,7 +106,7 @@ class QuickReportScreenTest {
 
     /** Wiersz: V4 krok 2, pozycja w konturze → pytanie o piętro. Wymagania: BR-14 */
     @Test
-    fun us4_5_inside_asks_floor() {
+    fun asksFloorInside() {
         show(atGroup, positions = PositionSource { flowOf(PositionFix(INSIDE, ACCURACY, 0L)) })
         compose.onNodeWithText("Toalety").performClick()
         compose.onNodeWithText("Na którym piętrze?").assertIsDisplayed()
@@ -115,7 +115,7 @@ class QuickReportScreenTest {
 
     /** Wiersz: V4 krok 2 w budynku szczegółowym, piętro z danych PWr do kroku 3. Wymagania: US4.5 */
     @Test
-    fun us4_5_detailed_to_step_3() {
+    fun passesDetailedFloor() {
         val plan = FloorList(source = "PWr", floors = listOf(Floor(id = "A-1/p-1", label = "Piwnica", order = -1)))
         show(
             atGroup,
@@ -129,14 +129,14 @@ class QuickReportScreenTest {
     }
 
     @Test
-    fun `grupa bez piętra do kroku 3`() {
+    fun goesToStepThreeWithoutFloor() {
         show(atGroup)
         compose.onNodeWithText("Coś innego").performClick()
         assertEquals(listOf(atGroup.copy(group = BarrierGroup.OTHER)), next)
     }
 
     @Test
-    fun `potwierdzenie wraca do mapy`() {
+    fun returnsToMapAfterConfirm() {
         show(ReportRoute(step = ReportStep.SENT))
         compose.onNodeWithText("Wróć do mapy").performClick()
         assertEquals(1, toMap)
@@ -149,7 +149,7 @@ class QuickReportScreenTest {
      * Wymagania: US4.4
      */
     @Test
-    fun us4_4_sent_no_status() {
+    fun confirmsSentWithoutStatus() {
         show(ReportRoute(step = ReportStep.SENT))
         compose.onNodeWithText("Sprawdzimy zdjęcie", substring = true).assertIsDisplayed()
         val statuses = listOf("Moje zgłoszenia", "Wysłane", "W weryfikacji")
@@ -158,7 +158,7 @@ class QuickReportScreenTest {
 
     /** Wiersz: V4 krok 1 ze zdjęciem, „Wstecz” → potwierdzenie rezygnacji. Wymagania: US4.8 */
     @Test
-    fun us4_8_leave_after_confirm() {
+    fun leavesAfterConfirm() {
         val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
         show(ReportRoute(step = ReportStep.PHOTO, photoId = "zdjecie-1", photoPath = photo.path))
         compose.onNodeWithText("Wstecz").performClick()
@@ -174,7 +174,7 @@ class QuickReportScreenTest {
 
     /** Wiersz: V4 krok 1 po „Zgłoś barierę przy wejściu”, napis z wejściem. Wymagania: US4.6 */
     @Test
-    fun us4_6_entrance_line() {
+    fun showsEntranceLine() {
         show(ReportRoute(entranceId = "node/6"))
         compose.onNodeWithText("Wejście: „G”").assertIsDisplayed()
         compose.onNodeWithText("Zrób zdjęcie").assertIsDisplayed()
@@ -187,7 +187,7 @@ class QuickReportScreenTest {
      * Wymagania: US4.2
      */
     @Test
-    fun us4_2_sent_offline() {
+    fun confirmsSavedOffline() {
         show(ReportRoute(step = ReportStep.SENT, isSavedOffline = true))
         val saved = "Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet."
         compose.onNodeWithText(saved).assertIsDisplayed()
@@ -202,7 +202,7 @@ class QuickReportScreenTest {
      * Wymagania: UC7
      */
     @Test
-    fun uc7_4c_give_up_no_position() {
+    fun givesUpWithoutPosition() {
         val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
         show(atSend(photo.path))
         compose.onNodeWithText("Telefon nie ustalił", substring = true).assertIsDisplayed()
@@ -217,7 +217,7 @@ class QuickReportScreenTest {
     }
 
     @Test
-    fun `krok 1 z mapy bez wejścia`() {
+    fun opensStepOneWithoutEntrance() {
         show(ReportRoute())
         compose.onNodeWithText("Wejście", substring = true).assertDoesNotExist()
     }

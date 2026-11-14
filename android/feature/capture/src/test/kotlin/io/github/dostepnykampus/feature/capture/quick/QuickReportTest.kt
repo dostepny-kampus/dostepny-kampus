@@ -22,25 +22,25 @@ class QuickReportTest {
     private val photo = PendingPhotoDraft(photoId = "zdjecie-1", path = "/zdjecia/zdjecie-1.jpg")
 
     @Test
-    fun `w budynku pytanie o piętro`() {
+    fun asksFloorInBuilding() {
         val withFloor = BarrierGroup.entries - BarrierGroup.OTHER
         withFloor.forEach { assertTrue(it.asksFloor(isInBuilding = true)) }
         assertFalse(BarrierGroup.OTHER.asksFloor(isInBuilding = true))
     }
 
     @Test
-    fun `poza budynkiem bez pytania`() {
+    fun skipsFloorOutsideBuilding() {
         assertFalse(BarrierGroup.TOILETS.asksFloor(isInBuilding = false))
     }
 
     @Test
-    fun `nieznana pozycja z pytaniem`() {
+    fun asksFloorAtUnknownPosition() {
         assertTrue(BarrierGroup.VERTICAL_CIRCULATION.asksFloor(isInBuilding = null))
         assertFalse(BarrierGroup.OTHER.asksFloor(isInBuilding = null))
     }
 
     @Test
-    fun `treść z grupą i piętrem`() {
+    fun buildsBodyWithGroupAndFloor() {
         val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS, floorNumber = 2)
         val content = report.content(QuickPosition(point = point, accuracyMeters = 6.0, isInBuilding = true))
         assertEquals(SubmissionKind.QUICK, content.kind)
@@ -53,7 +53,7 @@ class QuickReportTest {
     }
 
     @Test
-    fun `poza konturem bez piętra`() {
+    fun dropsFloorOutsideContour() {
         val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS, floorNumber = 2)
         val content = report.content(QuickPosition(point = point, accuracyMeters = 6.0, isInBuilding = false))
         assertNull(content.floor)
@@ -65,7 +65,7 @@ class QuickReportTest {
      * Wymagania: US4.5
      */
     @Test
-    fun us4_5_detailed_floor_id() {
+    fun usesDetailedFloorId() {
         val report =
             QuickReport(photo = photo, group = BarrierGroup.TOILETS, floorId = "A-1/p-1", floorLabel = "Piwnica")
         val content = report.content(QuickPosition(point = point, accuracyMeters = 6.0, isInBuilding = true))
@@ -73,7 +73,7 @@ class QuickReportTest {
     }
 
     @Test
-    fun `nie wiem zostawia piętro puste`() {
+    fun leavesFloorEmptyOnUnknown() {
         val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS)
         val content = report.content(QuickPosition(point = point, accuracyMeters = 6.0, isInBuilding = true))
         assertNull(content.floor)
