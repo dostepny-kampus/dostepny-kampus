@@ -52,12 +52,13 @@ class StorageDependencyArchitectureTest {
         MODULE
             .findAll(File(root, "settings.gradle.kts").readText())
             .map { it.groupValues[1] }
-            .flatMap { name ->
-                dependencies(root, name)
-                    .filter { (config, target) -> isForbidden(module = name, config = config, target = target) }
-                    .map { (config, target) -> "$name $config $target" }
-            }
+            .flatMap { name -> forbidden(root, name) }
             .toSet()
+
+    private fun forbidden(root: File, module: String): Sequence<String> =
+        dependencies(root, module)
+            .filter { (config, target) -> isForbidden(module = module, config = config, target = target) }
+            .map { (config, target) -> "$module $config $target" }
 
     private fun isForbidden(module: String, config: String, target: String): Boolean =
         target in ALLOWED && (config == API || module !in ALLOWED.getValue(target))
