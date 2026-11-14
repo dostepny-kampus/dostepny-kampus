@@ -27,6 +27,7 @@ class DostepnyKampusRuleSetProviderTest {
                     "KDocDescriptionLength",
                     "RequirementIdOutsideLine",
                     "AssertionMessage",
+                    "JsonTextCall",
                 ),
             rules.id.value to rules.rules.keys.map { it.value },
         )

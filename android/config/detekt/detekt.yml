@@ -74,7 +74,7 @@ style:
   # łapie je tylko dla typów JsonObject, JsonArray i JsonPrimitive.
   ForbiddenMethodCall/tekst-json:
     active: true
-    excludes:
+    excludes: &granice-tekstu-json
       - '**/build/generated/**'
       # Testy porównują tekst JSON z oczekiwanym i czytają odpowiedzi atrap serwera.
       - '**/src/test/**'
@@ -124,3 +124,6 @@ dostepnykampus:
   # TODO(#2009): włączyć z listą wyjątków
   AssertionMessage:
     active: false
+  # Uzupełnienie ForbiddenMethodCall/tekst-json dla wywołań bez wyznaczonego typu; te same pliki graniczne.
+  JsonTextCall:
+    excludes: *granice-tekstu-json

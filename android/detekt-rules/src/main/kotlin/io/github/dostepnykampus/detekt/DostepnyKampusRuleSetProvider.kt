@@ -22,6 +22,7 @@ class DostepnyKampusRuleSetProvider : RuleSetProvider {
                 ::KDocDescriptionLength,
                 ::RequirementIdOutsideLine,
                 ::AssertionMessage,
+                ::JsonTextCall,
             ),
         )
 }
