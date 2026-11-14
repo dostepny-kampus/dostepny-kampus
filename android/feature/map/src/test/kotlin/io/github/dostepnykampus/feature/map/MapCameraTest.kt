@@ -26,7 +26,7 @@ class MapCameraTest {
     private val camera = MapCamera(center = GeoPoint(longitude = 17.0, latitude = 60.0), zoom = START_ZOOM)
 
     @Test
-    fun nfr53_zoom_one_level() {
+    fun zoomsOneLevel() {
         assertEquals(START_ZOOM + 1, camera.zoomedIn().zoom)
         assertEquals(START_ZOOM - 1, camera.zoomedOut().zoom)
         assertEquals(camera.center, camera.zoomedIn().center)
@@ -39,7 +39,7 @@ class MapCameraTest {
      * Wymagania: NFR-39, NFR-53
      */
     @Test
-    fun nfr53_zoom_stays_in_range() {
+    fun keepsZoomInRange() {
         val campus = CampusBounds(west = 16.9, south = 59.95, east = 17.1, north = 60.05)
         val limits = MapLimits(campus, widthDp = 411.0, heightDp = 800.0)
         val closest = generateSequence(camera) { it.zoomedIn() }.elementAt(index = 10)
@@ -55,7 +55,7 @@ class MapCameraTest {
      * Wymagania: US2.8, US1.4
      */
     @Test
-    fun us2_8_building_fits_free_map() {
+    fun fitsBuildingInFreeMap() {
         val outline = CampusBounds(west = 17.0, south = 60.0, east = 17.004, north = 60.001)
         val free = FreeMap(widthDp = 411.0, heightDp = 400.0, endDp = 160.0, marginDp = 24.0)
         val fit = fitted(outline, free)
@@ -71,7 +71,7 @@ class MapCameraTest {
 
     /** Wiersz: mały budynek nie jest powiększany ponad poziom 18, więc sąsiednie budynki zostają widoczne. */
     @Test
-    fun us2_8_small_keeps_context() {
+    fun keepsContextForSmall() {
         val outline = CampusBounds(west = 17.0, south = 60.0, east = 17.0001, north = 60.0001)
         val free = FreeMap(widthDp = 411.0, heightDp = 400.0, endDp = 0.0, marginDp = 24.0)
         val fit = fitted(outline, free)
@@ -80,7 +80,7 @@ class MapCameraTest {
     }
 
     @Test
-    fun nfr53_arrows_move_center() {
+    fun movesCenterWithArrows() {
         val step = 70.0 / 131_072.0
         assertEquals(17.0 + step, camera.moved(PanDirection.RIGHT).center.longitude, DELTA)
         assertEquals(17.0 - step, camera.moved(PanDirection.LEFT).center.longitude, DELTA)
@@ -90,7 +90,7 @@ class MapCameraTest {
     }
 
     @Test
-    fun nfr53_closer_view_moves_less() {
+    fun movesLessWhenCloser() {
         val far = camera.moved(PanDirection.RIGHT).center.longitude - 17.0
         val closer = camera.zoomedIn()
         val near = closer.moved(PanDirection.RIGHT).center.longitude - 17.0

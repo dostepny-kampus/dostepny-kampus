@@ -78,7 +78,6 @@ class TestNameArchitectureTest {
             mapOf(
                 "core/network" to "#2089",
                 "feature/capture" to "#2031",
-                "feature/map" to "#2032",
             )
     }
 }

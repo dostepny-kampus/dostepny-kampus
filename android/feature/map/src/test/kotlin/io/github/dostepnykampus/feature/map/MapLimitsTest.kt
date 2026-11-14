@@ -25,7 +25,7 @@ class MapLimitsTest {
      * Wymagania: NFR-39
      */
     @Test
-    fun nfr39_min_zoom_in_dp() {
+    fun computesMinZoomInDp() {
         val density = Density(density = 3f)
         val wide = CampusBounds(west = 0.0, south = -span / 8, east = span, north = span / 8)
         val tall = CampusBounds(west = 0.0, south = -span / 2, east = span / 8, north = span / 2)
@@ -42,7 +42,7 @@ class MapLimitsTest {
      * Wymagania: NFR-39
      */
     @Test
-    fun nfr39_min_zoom_at_60_deg() {
+    fun computesMinZoomAt60Degrees() {
         val tall = CampusBounds(west = 17.0, south = 60.0 - span / 4, east = 17.0 + span / 8, north = 60.0 + span / 4)
         assertEquals(14.0 + log2(1.5), MapLimits(tall, widthDp = 1024.0, heightDp = 768.0).minZoom, ZOOM_DELTA)
     }

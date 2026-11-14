@@ -14,7 +14,7 @@ import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-/** Stan sceny mapy V1 bez widoku mapy: dotknięcia konturów i zapis widoku kamery. Wymagania: US2.8 */
+/** Stan sceny mapy V1 bez widoku mapy: dotknięcia konturów i zapis widoku kamery. Wymagania: US2, US2.8 */
 class MapSceneStateTest {
     private val start = MapCamera(center = GeoPoint(longitude = 17.0, latitude = 51.0), zoom = 16.0)
     private val cameras = mutableListOf<MapCamera>()
@@ -43,7 +43,7 @@ class MapSceneStateTest {
      * Wymagania: US2.8, NFR-53
      */
     @Test
-    fun us2_8_cover_decides_buttons() {
+    fun decidesButtonsByCover() {
         val covers =
             listOf(true to true, true to false, false to false).map { (isCovered, hasRoom) ->
                 mapCover(isCovered, hasControls = hasRoom)
@@ -55,7 +55,7 @@ class MapSceneStateTest {
 
     /** Wiersz: dotknięcie dwóch konturów → oba symbole czekają na wybór, żaden budynek się nie otwiera. */
     @Test
-    fun us2_two_outlines_wait() {
+    fun waitsOnTwoOutlines() {
         touch("C-3", "C-4")
         assertEquals(listOf("C-3", "C-4"), choices.value)
         assertEquals(emptyList<String>(), opened)
@@ -63,7 +63,7 @@ class MapSceneStateTest {
 
     /** Wiersz: dotknięcie jednego konturu → budynek otwarty od razu, a wcześniejszy wybór zamknięty. */
     @Test
-    fun us2_one_outline_opens_building() {
+    fun opensBuildingOnOneOutline() {
         touch("C-13")
         assertEquals(listOf("C-13"), opened)
         assertEquals(emptyList<String>(), choices.value)
@@ -71,7 +71,7 @@ class MapSceneStateTest {
 
     /** Wiersz: dotknięcie pustej mapy → zgłoszone aplikacji, wybór bez zmian. Wymagania: US2.8 */
     @Test
-    fun us2_8_empty_map_reported() {
+    fun reportsEmptyMapTouch() {
         touch()
         assertEquals(1, emptyTaps)
         assertEquals(listOf("stary wybór"), choices.value)
@@ -79,7 +79,7 @@ class MapSceneStateTest {
 
     /** Wiersz: budynek wybrany w arkuszu „Który budynek?” → otwarty, arkusz zamknięty. */
     @Test
-    fun us2_choice_opens_building() {
+    fun opensChosenBuilding() {
         state().choose(symbol = "C-4", onBuilding = { opened += it })
         assertEquals(listOf("C-4"), opened)
         assertEquals(emptyList<String>(), choices.value)
@@ -92,7 +92,7 @@ class MapSceneStateTest {
      * Wymagania: US2.8
      */
     @Test
-    fun us2_8_moved_view_stays() {
+    fun keepsMovedView() {
         val moved = start.copy(zoom = start.zoom + 1)
         state(isCovered = true).keep(moved)
         assertEquals(listOf(moved), cardCameras)
@@ -104,7 +104,7 @@ class MapSceneStateTest {
      * gest bez karty zapisuje tylko widok V1.
      */
     @Test
-    fun d83_untouched_view_returns() {
+    fun returnsUntouchedView() {
         state(isCovered = true).touch(symbols = listOf("C-13"), onBuilding = {}, onEmpty = {})
         assertEquals(emptyList<MapCamera>(), cameras + cardCameras)
         state().keep(start)
@@ -119,7 +119,7 @@ class MapSceneStateTest {
      * Wymagania: US2.8, NFR-53
      */
     @Test
-    fun us2_8_button_moves_card_view() {
+    fun movesCardViewWithButton() {
         val bounds = CampusBounds(west = 16.9, south = 50.9, east = 17.1, north = 51.1)
         val limits = MapLimits(bounds = bounds, widthDp = 360.0, heightDp = 640.0)
         state(isCovered = true, limits = limits).move(start.zoomedOut())
@@ -133,7 +133,7 @@ class MapSceneStateTest {
      * Wymagania: NFR-53, BR-G5
      */
     @Test
-    fun brg5_move_stays_inside_area() {
+    fun keepsMoveInsideArea() {
         val far = start.copy(center = GeoPoint(longitude = 50.0, latitude = 51.0))
         state().move(far)
         assertEquals(emptyList<MapCamera>(), cameras)

@@ -105,7 +105,7 @@ class CampusMapGeometryTest {
      * Wymagania: NFR-11
      */
     @Test
-    fun nfr11_geometry_in_compute() =
+    fun computesGeometryOffMain() =
         runTest {
             val pool = Executors.newSingleThreadExecutor { Thread(it, COMPUTE_THREAD) }
             try {
@@ -137,7 +137,7 @@ class CampusMapGeometryTest {
      * Wymagania: NFR-11
      */
     @Test
-    fun nfr11_geometry_once_catalog() =
+    fun computesGeometryOnce() =
         runTest(UnconfinedTestDispatcher()) {
             val viewModel = viewModelOf(UnconfinedTestDispatcher())
             backgroundScope.launch { viewModel.uiState.collect {} }
@@ -157,7 +157,7 @@ class CampusMapGeometryTest {
      * Wymagania: NFR-11
      */
     @Test
-    fun nfr11_interrupt_stops_compute() {
+    fun stopsComputeOnInterrupt() {
         val features =
             (1..OUTLINES).joinToString(separator = ",") { i ->
                 """{"type":"Feature","properties":{"kind":"building","symbols":["M-$i"],"osm_id":"way/$i"},""" +

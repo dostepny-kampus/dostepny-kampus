@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test
 /**
  * Tereny mapy V1 na konturach testowych „Budynek testowy” (nie dane PWr): teren startowy z dwoma budynkami,
  * „T-15” około 2,2 km na północ i „P-14” około 6,7 km na północ.
+ *
+ * Wymagania: US1.6, US1.7, US1.8, BR-G5
  */
 class MapAreasTest {
     private val data =
@@ -143,7 +145,7 @@ class MapAreasTest {
      * Wymagania: US1.8, BR-G5
      */
     @Test
-    fun us1_8_area_kept_no_selection() {
+    fun keepsAreaWithoutSelection() {
         areas(symbol = "T-15").followSelection()
         assertEquals("Wittigowo", chosen.value)
         areas().followSelection()
@@ -160,7 +162,7 @@ class MapAreasTest {
      * Wymagania: US1.8, BR-G5
      */
     @Test
-    fun us1_8_own_choice_kept() {
+    fun keepsOwnChoice() {
         areas(symbol = "T-15").followSelection()
         areas(symbol = "T-15").show("Kampus główny")
         areas(symbol = "T-15").followSelection()
@@ -172,7 +174,7 @@ class MapAreasTest {
 
     /** Wiersz: V1, nowy budynek z innego terenu po wyborze osoby znów ustawia teren raz. Wymagania: US1.8 */
     @Test
-    fun us1_8_new_building_sets_area() {
+    fun setsAreaForNewBuilding() {
         areas(symbol = "T-15").followSelection()
         areas(symbol = "T-15").show("Kampus główny")
         areas(symbol = "P-14").followSelection()

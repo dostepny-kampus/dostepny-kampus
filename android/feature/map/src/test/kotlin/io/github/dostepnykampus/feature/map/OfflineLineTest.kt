@@ -27,7 +27,7 @@ class OfflineLineTest {
 
     /** Wiersz: dane pobrane 27.10.2026 przed północą czasu Wrocławia → „dane z 27.10.2026”. Wymagania: NFR-10 */
     @Test
-    fun nfr10_line_has_download_day() {
+    fun showsDownloadDay() {
         compose.setContent {
             DostepnyKampusTheme { OfflineLine(syncedAt = Instant.parse("2026-10-27T22:30:00Z")) }
         }
