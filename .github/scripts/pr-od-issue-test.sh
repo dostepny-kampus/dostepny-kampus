@@ -25,7 +25,7 @@ no_closes='brak Closes'
 closed='issue zamknięte'
 unassigned='issue nieprzypisane autorowi'
 is_pull='to PR, nie issue'
-no_number='nazwa gałęzi nie zaczyna się od numeru issue'
+bad_format='nazwa gałęzi nie ma formatu N-krotki-opis'
 wrong_number='nie jest wśród zamykanych issue'
 no_area='PR nie ma etykiety obszaru'
 area_mismatch='etykiety obszaru issue'
@@ -113,6 +113,9 @@ case_other_assignee() { pr_json autor-pr 'Closes #12'; issue_json 12 OPEN inna-o
 case_author_among_assignees() { pr_json autor-pr 'Closes #12'; issue_json 12 OPEN inna-osoba autor-pr; }
 case_dependabot() { pr_json 'dependabot[bot]' 'Notatki wydania' dependabot/npm_and_yarn/docs/x-1.2.3; }
 case_branch_no_number() { pr_json autor-pr 'Closes #12' poprawki-testow; issue_json 12 OPEN autor-pr; }
+case_branch_with_uppercase() { pr_json autor-pr 'Closes #12' 12-Opis; issue_json 12 OPEN autor-pr; }
+case_branch_with_slash() { pr_json autor-pr 'Closes #12' 12-krotki/opis; issue_json 12 OPEN autor-pr; }
+case_branch_without_description() { pr_json autor-pr 'Closes #12' 12-; issue_json 12 OPEN autor-pr; }
 case_branch_wrong_number() { pr_json autor-pr 'Closes #12' 99-inne; issue_json 12 OPEN autor-pr; }
 case_branch_second_issue() {
   pr_json autor-pr 'Closes #12\nCloses #13' 13-drugie
@@ -235,7 +238,10 @@ run_case "tryb ostrzegawczy: issue zamknięte" 0 '::warning' case_warn_closed
 run_case "tryb ostrzegawczy: brak Closes" 0 '::warning' case_warn_no_closes
 run_case "tryb ostrzegawczy: numer jest PR" 0 "$is_pull" case_warn_pull_number
 run_case "gałąź z numerem zamykanego issue" 0 '' case_ok
-run_case "gałąź bez numeru" 1 "$no_number" case_branch_no_number
+run_case "gałąź bez numeru" 1 "$bad_format" case_branch_no_number
+run_case "gałąź z wielką literą" 1 "$bad_format" case_branch_with_uppercase
+run_case "gałąź z ukośnikiem w opisie" 1 "$bad_format" case_branch_with_slash
+run_case "gałąź bez opisu" 1 "$bad_format" case_branch_without_description
 run_case "numer gałęzi różny od zamykanego issue" 1 "$wrong_number" case_branch_wrong_number
 run_case "numer gałęzi to jedno z kilku zamykanych issue" 0 '' case_branch_second_issue
 run_case "numer gałęzi tylko zaczyna się jak numer issue" 1 "$wrong_number" case_branch_number_only_prefix
