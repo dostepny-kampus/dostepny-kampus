@@ -41,7 +41,7 @@ class MeasuredPlaceTest {
      * Wymagania: US6
      */
     @Test
-    fun us6_chosen_building_to_c2() {
+    fun passesChosenBuilding() {
         val route = finished(PlaceChoice.Chosen(a1)).reportFormRoute()
         assertEquals(route(symbol = "A-1", name = "Gmach Główny"), route)
     }
@@ -54,14 +54,14 @@ class MeasuredPlaceTest {
      * Wymagania: BR-G4
      */
     @Test
-    fun brg4_outside_to_c2() {
+    fun passesOutsidePlace() {
         val route = finished(PlaceChoice.Outside).reportFormRoute()
         assertEquals(route(symbol = null, name = null), route)
     }
 
     /** Wiersz: C1, „Czy to budynek A-1?” → „Dalej” czeka na decyzję. Wymagania: US6.2 */
     @Test
-    fun us6_2_no_next_before_decision() {
+    fun hidesNextBeforeDecision() {
         assertNull(finished(PlaceChoice.Locating).reportFormRoute())
         assertNull(finished(PlaceChoice.Suggested(BuildingHint(a1, 3.0, isInside = false))).reportFormRoute())
         assertNull(MeasureUiState.Searching.reportFormRoute())
@@ -74,7 +74,7 @@ class MeasuredPlaceTest {
      * Wymagania: US6.4
      */
     @Test
-    fun us6_4_corrected_point() {
+    fun passesCorrectedPoint() {
         val b8 = a1.copy(symbol = "B-8", name = null)
         val moved = GeoPoint(longitude = 17.06215, latitude = 51.10790)
         val places =
@@ -86,13 +86,14 @@ class MeasuredPlaceTest {
 
     /** Wiersz: C1 bez korekty → miejsce ze średnią z pomiaru, bez oznaczenia „korekta ręczna”. Wymagania: US6.4 */
     @Test
-    fun us6_4_no_correction() {
+    fun passesAverageWithoutCorrection() {
         val place = finished(PlaceChoice.Outside).reportFormRoute()?.place()
         assertEquals(point to false, place?.location to place?.isManualCorrection)
     }
 
+    /** Miejsce z trasy do C2 ma budynek z nazwą. Wymagania: US7.4 */
     @Test
-    fun us7_4_place_from_route() {
+    fun readsPlaceFromRoute() {
         val place = route(symbol = "A-1", name = "Gmach Główny").place()
         assertEquals(A1.copy(buildingName = "Gmach Główny"), place)
     }

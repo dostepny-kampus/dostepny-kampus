@@ -87,7 +87,7 @@ class MeasurePathTest {
      * Scenariusz: pomiar-precyzyjny.feature: Uśrednianie pozycji trwa 30 s i pokazuje dane o satelitach
      */
     @Test
-    fun us6_1_averaging_30_s_shown() {
+    fun showsThirtySecondAveraging() {
         compose.setContent {
             DostepnyKampusTheme { MeasureScreen(onBack = {}, onNext = {}, viewModel = viewModel) }
         }

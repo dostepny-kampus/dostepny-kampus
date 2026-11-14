@@ -53,7 +53,7 @@ class MeasureScreenTest {
 
     /** Wiersz: C1, szukanie satelitów → komunikat i „Powtórz pomiar” jako czynność główna, PW-9. Wymagania: NFR-1 */
     @Test
-    fun us6_1_searching_message() {
+    fun showsSearchingMessage() {
         var repeats = 0
         show(MeasureUiState.Searching, onRepeat = { repeats++ })
         compose.onNodeWithText("Szukamy satelitów", substring = true).assertIsDisplayed()
@@ -67,7 +67,7 @@ class MeasureScreenTest {
      * Wymagania: US6.1, NFR-2
      */
     @Test
-    fun us6_1_measuring_texts() {
+    fun showsMeasuringTexts() {
         show(MeasureUiState.Measuring(remainingSeconds = 12, average = average, satellites = satellites))
         compose
             .onNodeWithText("Pomiar: zostało 12 s")
@@ -79,7 +79,7 @@ class MeasureScreenTest {
 
     /** Wiersz: C1, po pomiarze → „Pomiar zakończony” z dokładnością i satelitami z końca pomiaru. Wymagania: US6.1 */
     @Test
-    fun us6_1_finished_texts() {
+    fun showsFinishedTexts() {
         show(MeasureUiState.Finished(average = average, satellites = satellites))
         compose
             .onNodeWithText("Pomiar zakończony")
@@ -95,7 +95,7 @@ class MeasureScreenTest {
      * Wymagania: BR-G4, US6
      */
     @Test
-    fun us6_next_after_place_decision() {
+    fun goesNextAfterPlaceDecision() {
         show(MeasureUiState.Finished(average = average, satellites = satellites, place = PlaceChoice.Outside))
         compose.onNodeWithText("Dalej").performClick()
         val route = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = null)
@@ -104,20 +104,20 @@ class MeasureScreenTest {
 
     /** Wiersz: C1, „Dalej” dopiero po decyzji o budynku. Wymagania: US6.2 */
     @Test
-    fun us6_2_no_next_while_locating() {
+    fun hidesNextWhileLocating() {
         show(MeasureUiState.Finished(average = average, satellites = satellites))
         compose.onNodeWithText("Dalej").assertDoesNotExist()
     }
 
     @Test
-    fun us6_1_no_satellites_in_fix() {
+    fun showsFixWithoutSatellites() {
         show(MeasureUiState.Measuring(remainingSeconds = 30, average = average, satellites = emptyMap()))
         compose.onNodeWithText("Satelity: brak w pozycji").assertIsDisplayed()
     }
 
     /** Wiersz: C1, błąd odbiornika → komunikat, co zrobić, i „Powtórz pomiar” bez „Dalej”. Wymagania: NFR-50 */
     @Test
-    fun nfr50_source_error_message() {
+    fun showsSourceErrorMessage() {
         var repeats = 0
         show(MeasureUiState.Failed, onRepeat = { repeats++ })
         compose.onNodeWithText("Nie odczytaliśmy pozycji", substring = true).assertIsDisplayed()
@@ -128,7 +128,7 @@ class MeasureScreenTest {
 
     /** Wiersz: C1, lokalizacja wyłączona → komunikat i „Otwórz ustawienia” lokalizacji, bez „Dalej”. Wymagania: UC7 */
     @Test
-    fun uc7_4c_location_off_settings() {
+    fun opensLocationSettingsWhenOff() {
         show(MeasureUiState.LocationOff)
         compose.onNodeWithText("Lokalizacja w telefonie jest wyłączona", substring = true).assertIsDisplayed()
         compose.onNodeWithText("Dalej").assertDoesNotExist()
@@ -139,7 +139,7 @@ class MeasureScreenTest {
 
     /** Wiersz: C1, TalkBack ogłasza szukanie i koniec pomiaru, a odliczanie zostaje ciche. Wymagania: NFR-18 */
     @Test
-    fun nfr18_state_changes_announced() {
+    fun announcesStateChanges() {
         val polite = SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite)
         var state by mutableStateOf<MeasureUiState>(MeasureUiState.Searching)
         compose.setContent {
@@ -160,7 +160,7 @@ class MeasureScreenTest {
      * Wymagania: NFR-27
      */
     @Test
-    fun nfr27_restart_message() {
+    fun showsRestartMessage() {
         compose.setContent {
             DostepnyKampusTheme {
                 MeasureContent(state = MeasureUiState.Searching, onRepeat = {}, onBack = {}, isRestarted = true)
