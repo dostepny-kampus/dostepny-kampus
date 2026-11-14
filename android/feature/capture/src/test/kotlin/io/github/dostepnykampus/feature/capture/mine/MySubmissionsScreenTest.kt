@@ -22,6 +22,7 @@ import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierType
+import io.github.dostepnykampus.core.model.SubmissionStatus
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -181,12 +182,22 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Spróbuj ponownie").assertDoesNotExist()
     }
 
-    /** Wiersz: C3 „Wysłane” → bez „Otwórz”, bo treść jest tylko na serwerze. Wymagania: US8.3 */
+    /**
+     * Wiersz: C3 „Przyjęte” i „Archiwalne” → bez „Otwórz”; „Wysłane” z „Otwórz”.
+     *
+     * Wymagania: US8.1, US8.3
+     */
     @Test
-    fun us8_3_sent_without_open() {
-        show(item(id = "a", state = SendState.SENT), item(id = "b", state = SendState.REFUSED))
+    fun us8_1_only_editable_open() {
+        show(
+            item(id = "a", state = SendState.SENT).copy(serverStatus = SubmissionStatus.ACCEPTED),
+            item(id = "b", state = SendState.SENT).copy(serverStatus = SubmissionStatus.ARCHIVED),
+            item(id = "c", state = SendState.SENT).copy(serverStatus = SubmissionStatus.SENT),
+        )
+        compose.onNodeWithText("Przyjęte").assertIsDisplayed()
+        compose.onNodeWithText("Archiwalne").assertIsDisplayed()
         compose.onNodeWithText("Otwórz").performClick()
-        assertEquals(listOf("b"), opened)
+        assertEquals(listOf("c"), opened)
     }
 }
 

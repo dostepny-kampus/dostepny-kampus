@@ -27,7 +27,6 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.feature.capture.R
@@ -90,7 +89,7 @@ private fun SubmissionList(state: MySubmissionsUiState.Ready, actions: MySubmiss
             StatusCheckLine(check = state.check, isOnline = state.isOnline, onRetry = onRetry)
         }
         items(state.list.items, key = { it.id }) { item ->
-            val open = actions.onOpen.takeIf { item.state != SendState.SENT }
+            val open = actions.onOpen.takeIf { canOpen(item.shownStatus()) }
             SubmissionCard(item = item, onOpen = open?.let { { it(item.id) } })
         }
     }

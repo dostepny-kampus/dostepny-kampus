@@ -41,28 +41,29 @@ private val DAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.ROOT)
  * Wymagania: US8.1, NFR-18, NFR-21, US9.5, US8.3
  *
  * @param item zgłoszenie
- * @param onOpen „Otwórz”: poprawka w C2; `null` bez przycisku
+ * @param onOpen „Otwórz”: poprawka w C2 dla zgłoszeń, które można poprawić; `null` bez przycisku
  * @param modifier wymiary nadane przez listę
  */
 @Composable
 internal fun SubmissionCard(item: OwnSubmissionItem, onOpen: (() -> Unit)?, modifier: Modifier = Modifier) {
+    val status = item.shownStatus()
     OutlinedCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
             Column(
                 modifier = Modifier.semantics(mergeDescendants = true) {},
                 verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
             ) {
-                StatusLine(item.shownStatus())
+                StatusLine(status)
                 if (item.isChangeWaiting) Text(stringResource(R.string.moje_zmiana_czeka))
                 Text(text = typeText(item), style = MaterialTheme.typography.titleMedium)
                 Text(placeText(item))
                 Text(DAY_FORMAT.format(item.savedAt.atZone(ZoneId.systemDefault())))
                 item.refusal?.let { reason -> Text(stringResource(reason.textRes())) }
-                item.rejectionReason?.takeIf { item.shownStatus() == ShownStatus.REJECTED }?.let { reason ->
+                item.rejectionReason?.takeIf { status == ShownStatus.REJECTED }?.let { reason ->
                     Text(stringResource(R.string.moje_powod_odrzucenia, reason))
                 }
             }
-            if (onOpen != null) {
+            if (onOpen != null && canOpen(status)) {
                 OutlinedButton(onClick = onOpen) {
                     Text(stringResource(R.string.moje_otworz))
                     Icon(
@@ -145,6 +146,28 @@ internal fun OwnSubmissionItem.shownStatus(): ShownStatus =
         SendState.LOCAL -> ShownStatus.LOCAL
         SendState.REFUSED -> ShownStatus.REFUSED
         SendState.SENT -> serverStatus?.let { ShownStatus.valueOf(it.name) } ?: ShownStatus.SENT
+    }
+
+/**
+ * Czy zgłoszenie można otworzyć do poprawki w C2: z telefonu oraz wysłane przed przyjęciem albo archiwizacją,
+ * zgodnie z regułą edycji na serwerze.
+ *
+ * Wymagania: US8.1, US8.3
+ *
+ * @param status status widoczny na karcie
+ */
+internal fun canOpen(status: ShownStatus): Boolean =
+    when (status) {
+        ShownStatus.LOCAL,
+        ShownStatus.REFUSED,
+        ShownStatus.SENT,
+        ShownStatus.IN_REVIEW,
+        ShownStatus.REJECTED,
+        -> true
+
+        ShownStatus.ACCEPTED,
+        ShownStatus.ARCHIVED,
+        -> false
     }
 
 private fun RefusalReason.textRes(): Int =
