@@ -302,7 +302,7 @@ jobs:
 
   testy:
     needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    if: &warunek-testy ${{ !cancelled() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -482,7 +482,7 @@ jobs:
   analiza-zaleznosci:
     # Ten sam warunek co `testy`: błąd analizy zatrzymuje PR i grupę kolejki przez check `budowanie`, zanim trafi na gałąź.
     needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    if: *warunek-testy
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
