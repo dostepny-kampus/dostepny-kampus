@@ -45,6 +45,32 @@ run_case "warunek z gałęzią dla błędu joba zmiany" 0 '' '[porownanie, zmian
 run_case "always() z gałęzią dla błędu" 0 '' '[zmiany]' "\${{ always() && (needs.zmiany.result != 'success' || needs.zmiany.outputs.api == 'true') }}"
 run_case "job bez needs" 0 '' '' "github.event_name == 'pull_request'"
 
+# run_raw <nazwa> <oczekiwany kod> <oczekiwany tekst lub pusty> <treść joba `raport` (wcięcie 4 spacje)>
+run_raw() {
+  local name="$1" expected="$2" text="$3" body="$4" status=0 out
+  rm -rf "$workdir/wf"
+  mkdir -p "$workdir/wf"
+  printf 'name: proba\non: pull_request\njobs:\n  raport:\n    runs-on: ubuntu-latest\n%s\n' "$body" >"$workdir/wf/proba.yml"
+  out="$(bash "$script" "$workdir/wf" "$workdir/lista.txt" 2>&1)" || status=$?
+  if ((status == expected)) && [[ $out == *"$text"* ]]; then
+    echo "OK: ${name}"
+  else
+    echo "BŁĄD: ${name}: kod wyjścia ${status}, oczekiwano ${expected}${text:+ z tekstem „$text”}"
+    printf '%s\n' "$out" | sed 's/^/    /'
+    failures=$((failures + 1))
+  fi
+}
+
+run_raw "continue-on-error joba: błąd" 1 'raport: `continue-on-error` na poziomie joba' \
+  $'    continue-on-error: true\n    steps: [{run: "true"}]'
+run_raw "continue-on-error joba z wyrażeniem: błąd" 1 'raport: `continue-on-error` na poziomie joba' \
+  $'    continue-on-error: ${{ matrix.zestaw == \'system\' }}\n    steps: [{run: "true"}]'
+run_raw "continue-on-error kroku poza zapisem raportu: błąd" 1 'raport: krok „licz” ma `continue-on-error`' \
+  $'    steps:\n      - name: licz\n        run: "false"\n        continue-on-error: true'
+run_raw "continue-on-error przy zapisie raportu diagnostycznego" 0 '' \
+  $'    steps:\n      - uses: actions/upload-artifact@v7.0.2\n        continue-on-error: true\n        with: {name: r, path: r}'
+run_raw "continue-on-error: false" 0 '' $'    continue-on-error: false\n    steps: [{run: "true"}]'
+
 status=0
 out="$(cd "$dir/../.." && bash "$script" 2>&1)" || status=$?
 if ((status == 0)); then
