@@ -29,7 +29,7 @@ import org.springframework.modulith.core.ApplicationModules;
  * i ma własną historię Flyway; {@code db/migration/__root} zawiera tylko migracje sprzed
  * podziału na moduły. Tabela należy do modułu, w którego katalogu powstała; tabele z
  * {@code __root} mają właściciela na stałej liście. Klucze obce w schemacie po migracjach
- * sprawdza {@link ModuleForeignKeyTest}.
+ * sprawdza {@link ModuleForeignKeyIT}.
  *
  * @since 0.1.0
  */

@@ -30,7 +30,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @since 0.1.0
  */
 @IntegrationTest
-final class RouteParityTest {
+final class RouteParityIT {
 
     /**
      * Operacje kontraktu bez handlera i powód każdej; lista tylko się kurczy.
@@ -53,10 +53,10 @@ final class RouteParityTest {
     ) throws Exception {
         MatcherAssert.assertThat(
             "Trasy serwera i kontrakt openapi.yaml rozjechały się",
-            RouteParityTest.problems(
-                RouteParityTest.operations(),
-                RouteParityTest.handlers(context),
-                RouteParityTest.PENDING
+            RouteParityIT.problems(
+                RouteParityIT.operations(),
+                RouteParityIT.handlers(context),
+                RouteParityIT.PENDING
             ),
             Matchers.empty()
         );
@@ -66,7 +66,7 @@ final class RouteParityTest {
     void reportsNewRouteWithoutOperation() {
         MatcherAssert.assertThat(
             "Nowa trasa bez operacji w kontrakcie przeszła",
-            RouteParityTest.problems(
+            RouteParityIT.problems(
                 Set.of("GET /a"), Set.of("GET /a", "GET /b/{}"), Map.of()
             ),
             Matchers.contains("handler bez operacji w kontrakcie: GET /b/{}")
@@ -77,7 +77,7 @@ final class RouteParityTest {
     void reportsOperationWithoutHandlerOutsideList() {
         MatcherAssert.assertThat(
             "Operacja kontraktu bez handlera i spoza listy przeszła",
-            RouteParityTest.problems(
+            RouteParityIT.problems(
                 Set.of("GET /a", "GET /b"), Set.of("GET /a"), Map.of()
             ),
             Matchers.contains("operacja kontraktu bez handlera i spoza listy: GET /b")
@@ -88,7 +88,7 @@ final class RouteParityTest {
     void reportsStaleListEntry() {
         MatcherAssert.assertThat(
             "Wpis listy dla operacji, która ma już handler, przeszedł",
-            RouteParityTest.problems(
+            RouteParityIT.problems(
                 Set.of("GET /a"), Set.of("GET /a"), Map.of("GET /a", "powód")
             ),
             Matchers.contains("wpis listy ma już handler, usuń go z listy: GET /a")
@@ -99,7 +99,7 @@ final class RouteParityTest {
     void reportsListEntryWithoutOperation() {
         MatcherAssert.assertThat(
             "Wpis listy dla operacji, której nie ma w kontrakcie, przeszedł",
-            RouteParityTest.problems(
+            RouteParityIT.problems(
                 Set.of("GET /a"), Set.of("GET /a"), Map.of("GET /gone", "powód")
             ),
             Matchers.contains("wpis listy bez operacji w kontrakcie: GET /gone")
@@ -110,7 +110,7 @@ final class RouteParityTest {
     void reportsDifferentVerbOnSamePathOnBothSides() {
         MatcherAssert.assertThat(
             "Ta sama ścieżka z inną metodą HTTP uznana za parytet",
-            RouteParityTest.problems(
+            RouteParityIT.problems(
                 Set.of("POST /a"), Set.of("GET /a"), Map.of()
             ),
             Matchers.contains(
@@ -124,7 +124,7 @@ final class RouteParityTest {
     void coversOnlyOwnPairWithListEntry() {
         MatcherAssert.assertThat(
             "Wpis listy objął inną operację tego samego prefiksu",
-            RouteParityTest.problems(
+            RouteParityIT.problems(
                 Set.of("GET /a", "GET /sync/pull", "POST /sync/push"),
                 Set.of("GET /a"),
                 Map.of("POST /sync", "cały prefiks", "GET /sync/pull", "powód")
@@ -140,7 +140,7 @@ final class RouteParityTest {
     void reportsEmptyHandlers() {
         MatcherAssert.assertThat(
             "Pusty zbiór handlerów przeszedł",
-            RouteParityTest.problems(Set.of(), Set.of(), Map.of()),
+            RouteParityIT.problems(Set.of(), Set.of(), Map.of()),
             Matchers.hasItems("brak handlerów aplikacji", "brak operacji w kontrakcie")
         );
     }
@@ -178,8 +178,8 @@ final class RouteParityTest {
     private static Set<String> handlers(final WebApplicationContext context) {
         return context.getBean("requestMappingHandlerMapping", RequestMappingHandlerMapping.class)
             .getHandlerMethods().entrySet().stream()
-            .filter(entry -> RouteParityTest.ours(entry.getValue()))
-            .flatMap(entry -> RouteParityTest.routes(entry.getKey()).stream())
+            .filter(entry -> RouteParityIT.ours(entry.getValue()))
+            .flatMap(entry -> RouteParityIT.routes(entry.getKey()).stream())
             .collect(Collectors.toCollection(TreeSet::new));
     }
 
