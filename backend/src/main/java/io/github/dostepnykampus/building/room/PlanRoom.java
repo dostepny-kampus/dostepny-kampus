@@ -10,11 +10,14 @@ package io.github.dostepnykampus.building.room;
  *
  * <p>Wymagania: US16, US18, NFR-40</p>
  *
+ * @param id Identyfikator obiektu pomieszczenia w warstwie PWr (OBJECTID albo FID)
  * @param floorId Identyfikator piętra z pomieszczeniem
  * @param number Numer pomieszczenia albo pusty tekst, gdy dane go nie podają
  * @param function Funkcja pomieszczenia z danych PWr; brak funkcji daje „Inne”
  * @param outline Kontur jako tekst GeoJSON typu MultiPolygon w układzie WGS 84
  * @since 0.1.0
  */
-public record PlanRoom(String floorId, String number, String function, String outline) {
+public record PlanRoom(
+    String id, String floorId, String number, String function, String outline
+) {
 }

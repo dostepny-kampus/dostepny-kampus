@@ -5,7 +5,7 @@
  */
 
 /**
- * Zapis pięter i pomieszczeń budynku w bazie PostgreSQL.
+ * Zapis planów pięter PWr w PostGIS.
  *
  * @since 0.1.0
  */

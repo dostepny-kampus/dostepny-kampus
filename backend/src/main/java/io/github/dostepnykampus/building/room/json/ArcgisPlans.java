@@ -28,7 +28,7 @@ import tools.jackson.databind.ObjectMapper;
  * Numer z samych spacji jest pusty, a brak funkcji daje „Inne”. Błąd lub przekroczenie
  * czasu daje IllegalStateException.
  *
- * <p>TODO(#1824): podłączyć klienta do zapisu importu.</p>
+ * <p>TODO(#1824): wywołać odczyt z polecenia importu.</p>
  *
  * <p>Wymagania: US16, US18, NFR-40</p>
  *
@@ -96,6 +96,7 @@ final class ArcgisPlans {
         return this.features(service, layer, "Pietro,NUMER,FUNKCJA", true).stream().flatMap(
             feature -> this.outline(feature.path("geometry")).map(
                 outline -> new PlanRoom(
+                    feature.path("id").asString(""),
                     feature.path("properties").path("Pietro").asString(""),
                     feature.path("properties").path("NUMER").asString("").strip(),
                     Optional.of(feature.path("properties").path("FUNKCJA").asString("").strip())
