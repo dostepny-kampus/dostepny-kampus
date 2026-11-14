@@ -18,10 +18,10 @@ import io.github.dostepnykampus.feature.map.barrier.SeverityBadge
 
 /**
  * Grupa „Bariery w budynku” na karcie: każde zgłoszenie przyjęte budynku z uciążliwością, typem, miejscem i dniem
- * sprawdzenia, w tych samych słowach co arkusz bariery na mapie. Karta bez zgłoszeń przyjętych nie ma grupy, więc
- * nie sugeruje braku barier.
+ * sprawdzenia, w tych samych słowach co arkusz bariery na mapie. Karta bez zgłoszeń przyjętych nie ma grupy.
+ * TODO(#2014): stan pusty grupy, gdy dane są, a zgłoszeń przyjętych brak.
  *
- * Wymagania: US2.2, US2.3, US2.4, US2.5, BR-17, NFR-21
+ * Wymagania: US2.2, US2.3, US2.5, BR-17, NFR-21
  *
  * @param card karta budynku; grupa pojawia się, gdy [BuildingCardUiState.Ready.barriers] nie jest pusta
  */
