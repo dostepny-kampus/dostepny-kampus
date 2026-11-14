@@ -3,14 +3,9 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.app
+package io.github.dostepnykampus.app.navigation
 
 import androidx.compose.runtime.Composable
-import io.github.dostepnykampus.app.navigation.AppNavigator
-import io.github.dostepnykampus.app.navigation.changeEditPlace
-import io.github.dostepnykampus.app.navigation.measure
-import io.github.dostepnykampus.app.navigation.openEdit
-import io.github.dostepnykampus.app.navigation.reportSaved
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute

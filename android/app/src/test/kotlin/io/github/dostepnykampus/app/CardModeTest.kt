@@ -5,6 +5,9 @@
  */
 package io.github.dostepnykampus.app
 
+import io.github.dostepnykampus.app.navigation.CardWindow
+import io.github.dostepnykampus.app.navigation.cardMode
+import io.github.dostepnykampus.app.navigation.cardModeFor
 import io.github.dostepnykampus.feature.map.building.CardMode
 import org.junit.Assert.assertEquals
 import org.junit.Test
