@@ -63,7 +63,8 @@ jobs:
             from=$GROUP_BASE_SHA
             to=$GROUP_HEAD_SHA
           fi
-          if git diff --quiet "$from" "$to" -- backend data api/openapi.yaml specs infra .github/workflows/backend.yml; then
+          if git diff --quiet "$from" "$to" -- backend data api/openapi.yaml specs infra .github/workflows/backend.yml \
+            .github/scripts/wynik-pit.sh; then
             echo "serwer=false" >> "$GITHUB_OUTPUT"
           else
             echo "serwer=true" >> "$GITHUB_OUTPUT"
