@@ -37,7 +37,7 @@ final class PhotoStoreBucketTest {
             final PhotoSettings settings = new PhotoSettings(
                 URI.create("http://magazyn"), "zdjecia-testowe", "k", "k"
             );
-            final PhotoStore store = new PhotoStore(probe, settings);
+            final PhotoStore store = new S3PhotoStore(probe, settings);
             new PhotoBucket(probe, settings).run(null);
             store.put(photo, photo, new byte[] {1});
             store.get(photo, photo);

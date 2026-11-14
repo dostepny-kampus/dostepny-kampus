@@ -13,6 +13,7 @@ import io.github.dostepnykampus.barrier.photo.JpegCleaner;
 import io.github.dostepnykampus.barrier.photo.PhotoSettings;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import io.github.dostepnykampus.barrier.photo.PhotoUpload;
+import io.github.dostepnykampus.barrier.photo.S3PhotoStore;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -75,7 +76,7 @@ final class SubmissionPhotoRaceTest {
         try (ByteArrayInputStream input = new ByteArrayInputStream(jpeg)) {
             final SubmissionPhotos service = new SubmissionPhotos(
                 context.getBean(SubmissionFinder.class),
-                new PhotoStore(
+                new S3PhotoStore(
                     new SubmissionPhotoRaceTest.AcceptanceAttempt(
                         context.getBean(S3Client.class), context.getBean(DataSource.class), id
                     ),

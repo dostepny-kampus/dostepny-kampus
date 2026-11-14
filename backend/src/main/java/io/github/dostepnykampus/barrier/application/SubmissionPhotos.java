@@ -10,6 +10,7 @@ import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import io.github.dostepnykampus.barrier.photo.JpegCleaner;
+import io.github.dostepnykampus.barrier.photo.PhotoStorageException;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import io.github.dostepnykampus.barrier.photo.PhotoUpload;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
@@ -22,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionalEventListener;
-import software.amazon.awssdk.core.exception.SdkException;
 
 /**
  * Zdjęcia zgłoszeń: zapis zdjęcia z listy photoIds i odczyt
@@ -140,7 +140,7 @@ public final class SubmissionPhotos {
             this.photos.stored(submission.id()).stream()
                 .filter(photo -> !kept.contains(photo))
                 .forEach(photo -> this.photos.delete(submission.id(), photo));
-        } catch (final SdkException ex) {
+        } catch (final PhotoStorageException ex) {
             SubmissionPhotos.LOG.warn(
                 String.format("Nie usunięto starych zdjęć zgłoszenia %s", submission.id()), ex
             );
