@@ -55,6 +55,7 @@ class MapAreaPanelTest {
     /**
      * Wiersz: V1, panel podaje przy każdym terenie nazwę, liczbę budynków i odległość, a pokazany teren jest
      * „wybrany”. Po otwarciu fokus stoi na nagłówku.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Lista terenów podaje nazwę, liczbę budynków i odległość
      *
      * Wymagania: US1.7, NFR-20
      */
@@ -68,7 +69,12 @@ class MapAreaPanelTest {
         compose.onNodeWithText("1 budynek · 4 km").assertExists()
     }
 
-    /** Wiersz: V1, wybranie terenu z listy zgłasza jego nazwę, a „Zamknij” zamknięcie panelu. Wymagania: US1.7 */
+    /**
+     * Wiersz: V1, wybranie terenu z listy zgłasza jego nazwę, a „Zamknij” zamknięcie panelu.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wybór terenu z listy pokazuje jego mapę
+     *
+     * Wymagania: US1.7
+     */
     @Test
     fun us1_7_choice_close_reported() {
         compose.setContent { Panel() }

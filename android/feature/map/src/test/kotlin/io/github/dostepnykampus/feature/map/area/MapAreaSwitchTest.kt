@@ -49,6 +49,7 @@ class MapAreaSwitchTest {
     /**
      * Wiersz: V1, przycisk terenu ma nazwę dla TalkBack „Teren: Kampus główny. Zmień teren” i cel dotyku 48 dp;
      * dotknięcie otwiera panel „Teren na mapie”.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Mapa otwiera się na terenie „Kampus główny”
      *
      * Wymagania: US1.6, NFR-17, NFR-18, US1.7
      */

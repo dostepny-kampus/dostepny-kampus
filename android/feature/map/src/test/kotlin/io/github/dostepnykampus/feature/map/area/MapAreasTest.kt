@@ -47,6 +47,7 @@ class MapAreasTest {
     /**
      * Wiersz: V1, budynek z innego terenu zmienia teren i daje napis „Pokazuję teren: Wittigowo”; napis znika,
      * gdy osoba ruszy mapę, i nie wraca dla tego terenu.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wyszukanie budynku z innego terenu zmienia teren
      *
      * Wymagania: US1.8
      */
@@ -72,6 +73,7 @@ class MapAreasTest {
 
     /**
      * Wiersz: V1, lista terenów: wybrany pierwszy, pozostałe od najbliższego, z liczbą budynków i km.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Lista terenów podaje nazwę, liczbę budynków i odległość
      *
      * Wymagania: US1.7
      */
@@ -96,6 +98,7 @@ class MapAreasTest {
 
     /**
      * Wiersz: V1, wybranie terenu przenosi granicę mapy na ten teren i daje jego widok startowy.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wybór terenu z listy pokazuje jego mapę
      *
      * Wymagania: US1.7, BR-G5
      */
@@ -118,6 +121,7 @@ class MapAreasTest {
 
     /**
      * Wiersz: V1, bez wyboru terenem jest teren zaznaczonego budynku, a bez zaznaczenia startowy.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Mapa otwiera się na terenie „Kampus główny”
      *
      * Wymagania: US1.6, US1.8
      */

@@ -79,6 +79,7 @@ class MapOverlayNeighborTest {
      * Wiersz: V1, na granicy terenu jest przycisk sąsiedniego terenu z nazwą dla TalkBack „Tu kończy się teren
      * Kampus główny. Obok: Wittigowo, 2 km” i celem dotyku 48 dp; stoi pod przyciskami mapy, więc ich nie
      * zasłania.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
      *
      * Wymagania: US1.7, NFR-17, NFR-18
      */
@@ -93,6 +94,7 @@ class MapOverlayNeighborTest {
 
     /**
      * Wiersz: V1, dotknięcie przycisku pokazuje sąsiedni teren: jego środek w powiększeniu startowym.
+     * Scenariusz: przegladanie-mapy.feature: Przycisk przy krawędzi mapy przechodzi do sąsiedniego terenu
      *
      * Wymagania: US1.7
      */

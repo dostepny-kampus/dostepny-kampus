@@ -60,6 +60,7 @@ class BuildingListTest {
     /**
      * Wiersz: V1, lista budynków ma nagłówki terenów z liczbą budynków, teren pokazany na mapie pierwszy; nagłówek
      * jest nagłówkiem dla TalkBack.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Lista budynków jest podzielona na tereny
      *
      * Wymagania: US1.8, NFR-18, NFR-19
      */

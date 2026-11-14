@@ -76,6 +76,7 @@ class CampusBoundsTest {
     /**
      * Wiersz: V1, strzałki przesuwania zatrzymują się na granicy obszaru kampusu bez komunikatu; środek widoku nie
      * wychodzi poza prostokąt.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
      *
      * Wymagania: NFR-53, NFR-39
      */
