@@ -23,20 +23,25 @@ final class CollectorContentJsonTest {
 
     @Test
     void quickIsForEveryone() {
-        Assertions.assertFalse(CollectorContentJsonTest.bound(node -> { }).forCollector());
+        Assertions.assertFalse(
+            CollectorContentJsonTest.bound(node -> { }).forCollector(),
+            "Szybkie zgłoszenie jest dla każdego"
+        );
     }
 
     @Test
     void kindlessIsForEveryone() {
         Assertions.assertFalse(
-            CollectorContentJsonTest.bound(node -> node.remove("kind")).forCollector()
+            CollectorContentJsonTest.bound(node -> node.remove("kind")).forCollector(),
+            "Treść bez rodzaju jest dla każdego"
         );
     }
 
     @Test
     void preciseIsForCollector() {
         Assertions.assertTrue(
-            CollectorContentJsonTest.bound(node -> node.put("kind", "PRECISE")).forCollector()
+            CollectorContentJsonTest.bound(node -> node.put("kind", "PRECISE")).forCollector(),
+            "Zgłoszenie precyzyjne jest dla zbierającego"
         );
     }
 
@@ -44,21 +49,24 @@ final class CollectorContentJsonTest {
     void entranceMarkingIsForCollector() {
         Assertions.assertTrue(
             CollectorContentJsonTest.bound(node -> node.put("kind", "ENTRANCE_MARKING"))
-                .forCollector()
+                .forCollector(),
+            "Oznaczenie wejścia jest dla zbierającego"
         );
     }
 
     @Test
     void quickReplacingIsForCollector() {
         Assertions.assertTrue(
-            CollectorContentJsonTest.bound(CollectorContentJsonTest::replacing).forCollector()
+            CollectorContentJsonTest.bound(CollectorContentJsonTest::replacing).forCollector(),
+            "Szybkie zgłoszenie zastępujące inne jest dla zbierającego"
         );
     }
 
     @Test
     void newSubmissionReplacesNothing() {
         Assertions.assertEquals(
-            Optional.empty(), CollectorContentJsonTest.bound(node -> { }).ordinaryChange()
+            Optional.empty(), CollectorContentJsonTest.bound(node -> { }).ordinaryChange(),
+            "Nowe zgłoszenie niczego nie zastępuje"
         );
     }
 
@@ -66,7 +74,8 @@ final class CollectorContentJsonTest {
     void changeReplacesSubmission() {
         Assertions.assertEquals(
             Optional.of(JsonBodies.REPLACED),
-            CollectorContentJsonTest.bound(CollectorContentJsonTest::replacing).ordinaryChange()
+            CollectorContentJsonTest.bound(CollectorContentJsonTest::replacing).ordinaryChange(),
+            "Zmiana zastępuje wskazane zgłoszenie"
         );
     }
 
@@ -76,7 +85,8 @@ final class CollectorContentJsonTest {
             Optional.of(JsonBodies.REPLACED),
             CollectorContentJsonTest.bound(
                 node -> CollectorContentJsonTest.replacing(node).put("barrierRemoved", false)
-            ).ordinaryChange()
+            ).ordinaryChange(),
+            "Zachowana bariera zastępuje zgłoszenie"
         );
     }
 
@@ -86,7 +96,8 @@ final class CollectorContentJsonTest {
             Optional.empty(),
             CollectorContentJsonTest.bound(
                 node -> CollectorContentJsonTest.replacing(node).put("barrierRemoved", true)
-            ).ordinaryChange()
+            ).ordinaryChange(),
+            "Usunięta bariera nie jest zwykłą zmianą"
         );
     }
 

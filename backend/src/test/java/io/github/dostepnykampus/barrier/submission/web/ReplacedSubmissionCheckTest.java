@@ -45,7 +45,8 @@ final class ReplacedSubmissionCheckTest {
             () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, null).checkReplaced(
                 ReplacedSubmissionCheckTest.reading(null, null),
                 ReplacedSubmissionCheckTest.READER
-            )
+            ),
+            "Zgłoszenie bez wskazania zastępowanego pomija sprawdzenie"
         );
     }
 
@@ -58,7 +59,8 @@ final class ReplacedSubmissionCheckTest {
                     null
                 ),
                 ReplacedSubmissionCheckTest.READER
-            )
+            ),
+            "Zmiana ze zgłoszeniem już zapisanym pomija sprawdzenie"
         );
     }
 
@@ -71,7 +73,8 @@ final class ReplacedSubmissionCheckTest {
                     ReplacedSubmissionCheckTest.stored(SubmissionStatus.ACCEPTED)
                 ),
                 ReplacedSubmissionCheckTest.READER
-            )
+            ),
+            "Zmiana przyjętego zgłoszenia przechodzi sprawdzenie"
         );
     }
 
@@ -85,7 +88,8 @@ final class ReplacedSubmissionCheckTest {
                     ReplacedSubmissionCheckTest.stored(SubmissionStatus.SENT)
                 ),
                 ReplacedSubmissionCheckTest.READER
-            )
+            ),
+            "Zmiana bez identyfikatora sprawdza zastępowane zgłoszenie i daje konflikt"
         );
     }
 
@@ -100,8 +104,10 @@ final class ReplacedSubmissionCheckTest {
                 () -> request.checkReplaced(
                     ReplacedSubmissionCheckTest.reading(null, null),
                     ReplacedSubmissionCheckTest.READER
-                )
-            ).getMessage()
+                ),
+                "Zmiana brakującego zgłoszenia kończy się brakiem zasobu"
+            ).getMessage(),
+            "Brak zastępowanego zgłoszenia jest opisany w komunikacie"
         );
     }
 
@@ -115,7 +121,8 @@ final class ReplacedSubmissionCheckTest {
                     ReplacedSubmissionCheckTest.stored(SubmissionStatus.IN_REVIEW)
                 ),
                 ReplacedSubmissionCheckTest.READER
-            )
+            ),
+            "Zmiana nieprzyjętego zgłoszenia daje konflikt"
         );
     }
 

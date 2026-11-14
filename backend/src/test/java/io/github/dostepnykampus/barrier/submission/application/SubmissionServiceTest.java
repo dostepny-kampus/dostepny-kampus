@@ -129,11 +129,13 @@ final class SubmissionServiceTest {
                 InvalidSubmission.class,
                 () -> service.create(
                     new NewSubmission(SubmissionServiceTest.ID, unknown, "konto")
-                )
+                ),
+                "Utworzenie zgłoszenia z nieznanym budynkiem jest odrzucane"
             ),
             () -> Assertions.assertThrows(
                 InvalidSubmission.class,
-                () -> service.update(new SubmissionEdit(SubmissionServiceTest.ID, 1, unknown))
+                () -> service.update(new SubmissionEdit(SubmissionServiceTest.ID, 1, unknown)),
+                "Edycja zgłoszenia z nieznanym budynkiem jest odrzucana"
             ),
             () -> Assertions.assertEquals(
                 List.of(List.of("Z9", "Z9"), 0), List.of(asked, fake.seen().size()),
@@ -271,7 +273,10 @@ final class SubmissionServiceTest {
             SubmissionServiceTest.ID,
             SubmissionServiceTest.content(SubmissionKind.QUICK, null), "konto"
         );
-        Assertions.assertThrows(OutsideCampus.class, () -> service.create(command));
+        Assertions.assertThrows(
+            OutsideCampus.class, () -> service.create(command),
+            "Zgłoszenie spoza terenu PWr jest odrzucane"
+        );
         final SubmissionPoint point = command.content().place().point();
         Assertions.assertEquals(
             List.of(point.latitude(), point.longitude(), 0),

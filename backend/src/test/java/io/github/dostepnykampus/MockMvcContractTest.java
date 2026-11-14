@@ -57,7 +57,8 @@ final class MockMvcContractTest {
             String.valueOf(
                 Assertions.assertThrows(
                     AssertionError.class,
-                    () -> mvc.perform(MockMvcRequestBuilders.get("/proba-bledow/poza-kontraktem"))
+                    () -> mvc.perform(MockMvcRequestBuilders.get("/proba-bledow/poza-kontraktem")),
+                    "Odpowiedź spoza kontraktu kończy się błędem asercji"
                 ).getMessage()
             ),
             Matchers.containsString("validation.request.path.missing")

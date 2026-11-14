@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -39,27 +38,7 @@ final class AssertionMessageArchitectureTest {
      * Klasy testów z asercją bez komunikatu i issue, które to usuwa; nazwy bez wspólnego
      * początku pakietu.
      */
-    private static final Map<String, Integer> KNOWN = Stream.of(
-        "AbsentValueJsonTest",
-        "MockMvcContractTest",
-        "OpenApiContractTest",
-        "barrier.SubmissionsWriteContractTest",
-        "barrier.photo.PhotoUploadTest",
-        "barrier.photo.storage.PhotoSettingsRulesTest",
-        "barrier.photo.storage.PhotoSettingsTest",
-        "barrier.photo.storage.PhotoStoreKeysTest",
-        "barrier.submission.application.SubmissionServiceTest",
-        "barrier.submission.content.json.ApiEnumsTest",
-        "barrier.submission.content.json.CollectorContentJsonTest",
-        "barrier.submission.persistence.JdbcErrorsTest",
-        "barrier.submission.persistence.JdbcReadTest",
-        "barrier.submission.persistence.JdbcRowTest",
-        "barrier.submission.web.ReplacedSubmissionCheckTest"
-    ).collect(
-        Collectors.toMap(
-            name -> String.format("io.github.dostepnykampus.%s", name), name -> 1961
-        )
-    );
+    private static final Map<String, Integer> KNOWN = Map.of();
 
     /**
      * Pakiet przykładów kompilowanych przez test.

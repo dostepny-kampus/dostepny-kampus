@@ -72,7 +72,8 @@ final class ApiEnumsTest {
                 () -> ApiEnumsTest.assertMatches(
                     new OpenApiContract(changed::toString), context, "SubmissionStatus",
                     Stream.of(SubmissionStatus.values())
-                )
+                ),
+                "Dodatkowa wartość w kontrakcie kończy się błędem asercji"
             ).getMessage().contains("TEST_ONLY"),
             "Dodatkowa wartość w kontrakcie musi złamać zgodność enumu"
         );

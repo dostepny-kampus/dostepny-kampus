@@ -51,7 +51,8 @@ final class PhotoStoreKeysTest {
             List.of(
                 String.format("%s/%s.jpg", PhotoStoreKeysTest.SUBMISSION, PhotoStoreKeysTest.PHOTO)
             ),
-            client.keys
+            client.keys,
+            "Zdjęcie trafia do kubełka pod kluczem zgłoszenia"
         );
     }
 
@@ -63,7 +64,8 @@ final class PhotoStoreKeysTest {
         );
         Assertions.assertEquals(
             List.of(PhotoStoreKeysTest.PHOTO),
-            PhotoStoreKeysTest.store(client).stored(PhotoStoreKeysTest.SUBMISSION)
+            PhotoStoreKeysTest.store(client).stored(PhotoStoreKeysTest.SUBMISSION),
+            "Lista zdjęć zgłoszenia wynika z kluczy w kubełku"
         );
     }
 
