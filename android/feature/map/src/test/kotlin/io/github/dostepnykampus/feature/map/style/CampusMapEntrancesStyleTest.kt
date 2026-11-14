@@ -92,7 +92,7 @@ class CampusMapEntrancesStyleTest {
         val marks = style(pin).layer(ENTRANCES_LAYER)
         assertNotNull(marks, "brak warstwy znaków wejść")
         assertEquals(markings.size, style(pin).points(checkNotNull(marks)).size)
-        assertEquals(JsonPrimitive(true), marks["filter"])
+        assertEquals("""["!",false]""", marks.getValue("filter").toString())
     }
 
     /** Wiersz E5 (O6): bez zaznaczonego wejścia pinezka nie ma punktu, więc jej nie widać. */

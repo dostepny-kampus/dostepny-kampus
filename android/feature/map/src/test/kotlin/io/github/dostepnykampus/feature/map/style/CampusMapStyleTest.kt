@@ -139,7 +139,7 @@ class CampusMapStyleTest {
         assertEquals(own, selected.array("filter").toString())
         assertEquals("#001F27", selected.obj("paint").text("line-color"))
         val plain = style.array("layers").map { it.jsonObject }.single { it.text("id") == SELECTED_LAYER }
-        assertEquals("false", plain.getValue("filter").toString())
+        assertEquals("""["!",true]""", plain.getValue("filter").toString())
     }
 
     /**

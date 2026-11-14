@@ -92,7 +92,7 @@ class CampusMapSelectionStyleTest {
         val style = style()
         assertEquals(JsonPrimitive("#BFE0EC").toString(), style.layer(BUILDINGS_LAYER).paint("fill-color"))
         assertEquals(JsonPrimitive("#004E5E").toString(), style.layer("kontury").paint("line-color"))
-        assertEquals(JsonPrimitive(true), style.layer(ENTRANCES_LAYER)["filter"])
+        assertEquals("""["!",false]""", style.layer(ENTRANCES_LAYER).getValue("filter").toString())
     }
 
     /** Wiersz: V1, zaznaczone wejście: pozostałe wejścia i budynki zostają jak bez zaznaczenia. */
@@ -100,7 +100,7 @@ class CampusMapSelectionStyleTest {
     fun us3_3_chosen_keeps_all_marks() {
         val pin = SelectedEntrance(id = "w1", location = at, label = "Wejście dostosowane", buildingSymbol = "A-1")
         val style = style(building = "A-1", entrance = pin)
-        assertEquals(JsonPrimitive(true), style.layer(ENTRANCES_LAYER)["filter"])
+        assertEquals("""["!",false]""", style.layer(ENTRANCES_LAYER).getValue("filter").toString())
         assertEquals(JsonPrimitive("#BFE0EC").toString(), style.layer(BUILDINGS_LAYER).paint("fill-color"))
     }
 
