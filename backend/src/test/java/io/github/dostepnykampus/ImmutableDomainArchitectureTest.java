@@ -39,11 +39,16 @@ final class ImmutableDomainArchitectureTest {
     private Path dir;
 
     @Test
-    void domainAndApiFieldsAreFinal() {
-        ImmutableDomainArchitectureTest.rule(ModuleLayers.modules()).check(
-            new ClassFileImporter()
-                .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
-                .importPackagesOf(DostepnyKampusApplication.class)
+    void keepsDomainAndApiFieldsFinal() {
+        Assertions.assertEquals(
+            "",
+            ArchViolations.of(
+                new ClassFileImporter()
+                    .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
+                    .importPackagesOf(DostepnyKampusApplication.class),
+                ImmutableDomainArchitectureTest.rule(ModuleLayers.modules())
+            ),
+            "Pola klas dziedziny i API nie są final"
         );
     }
 

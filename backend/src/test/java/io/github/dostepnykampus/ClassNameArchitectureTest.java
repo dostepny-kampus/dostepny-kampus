@@ -37,11 +37,16 @@ final class ClassNameArchitectureTest {
     private Path dir;
 
     @Test
-    void productionClassesAvoidCatchAllNames() {
-        ClassNameArchitectureTest.names().check(
-            new ClassFileImporter()
-                .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
-                .importPackagesOf(DostepnyKampusApplication.class)
+    void avoidsCatchAllNamesInProductionClasses() {
+        Assertions.assertEquals(
+            "",
+            ArchViolations.of(
+                new ClassFileImporter()
+                    .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
+                    .importPackagesOf(DostepnyKampusApplication.class),
+                ClassNameArchitectureTest.names()
+            ),
+            "Klasy produkcyjne mają nazwy-worki"
         );
     }
 

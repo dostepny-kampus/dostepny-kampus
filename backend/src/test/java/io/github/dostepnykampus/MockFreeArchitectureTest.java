@@ -38,16 +38,21 @@ final class MockFreeArchitectureTest {
     private Path dir;
 
     @Test
-    void testsSkipMockitoApi() {
-        MockFreeArchitectureTest.rule().check(
-            new ClassFileImporter()
-                .withImportOption(ImportOption.Predefined.ONLY_INCLUDE_TESTS)
-                .importPackages("io.github.dostepnykampus")
+    void forbidsMockitoApi() {
+        Assertions.assertEquals(
+            "",
+            ArchViolations.of(
+                new ClassFileImporter()
+                    .withImportOption(ImportOption.Predefined.ONLY_INCLUDE_TESTS)
+                    .importPackages("io.github.dostepnykampus"),
+                MockFreeArchitectureTest.rule()
+            ),
+            "Testy używają API Mockito"
         );
     }
 
     @Test
-    void rejectsMockCreatedInTest() throws IOException {
+    void rejectsMockCreatedByMockito() throws IOException {
         Assertions.assertTrue(
             MockFreeArchitectureTest.rule().evaluate(
                 this.compiled("Object field = org.mockito.Mockito.mock(Object.class);")

@@ -10,6 +10,7 @@ import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.suite.api.Suite;
@@ -36,12 +37,18 @@ final class SpringTestTagArchitectureTest {
         .importPackagesOf(IntegrationTest.class);
 
     @Test
-    void springAndSuiteTestsCarryTag() {
-        ArchRuleDefinition.classes()
-            .that().areMetaAnnotatedWith(SpringBootTest.class)
-            .or().areAnnotatedWith(Suite.class)
-            .should().beMetaAnnotatedWith(SpringTestTagArchitectureTest.tag())
-            .check(SpringTestTagArchitectureTest.TESTS);
+    void tagsSpringAndSuiteClasses() {
+        Assertions.assertEquals(
+            "",
+            ArchViolations.of(
+                SpringTestTagArchitectureTest.TESTS,
+                ArchRuleDefinition.classes()
+                    .that().areMetaAnnotatedWith(SpringBootTest.class)
+                    .or().areAnnotatedWith(Suite.class)
+                    .should().beMetaAnnotatedWith(SpringTestTagArchitectureTest.tag())
+            ),
+            "Klasa z kontekstem Springa albo zestaw bez znacznika kontekst-springa"
+        );
     }
 
     private static DescribedPredicate<JavaAnnotation<?>> tag() {

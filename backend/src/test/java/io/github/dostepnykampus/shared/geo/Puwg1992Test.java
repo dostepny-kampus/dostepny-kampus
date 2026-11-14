@@ -28,7 +28,12 @@ final class Puwg1992Test {
 
     @Test
     void usThirteenTwoMatchesProjOnCampus() {
-        Puwg1992Test.assertPoint(17.059_89, 51.109_16, 364_229.179_6, 362_054.214_1);
+        Assertions.assertArrayEquals(
+            new double[] {364_229.179_6, 362_054.214_1},
+            Puwg1992Test.point(17.059_89, 51.109_16),
+            Puwg1992Test.MILLIMETRE,
+            "Zły punkt PUWG 1992 na kampusie"
+        );
     }
 
     @Test
@@ -40,30 +45,28 @@ final class Puwg1992Test {
                 new double[] {19.95, 49.30, 569_045.92, 159_601.314_9},
                 new double[] {18.80, 54.61, 487_086.386_1, 749_596.242_2}
             ).map(
-                row -> () -> Puwg1992Test.assertPoint(row[0], row[1], row[2], row[3])
+                row -> () -> Assertions.assertArrayEquals(
+                    new double[] {row[2], row[3]},
+                    Puwg1992Test.point(row[0], row[1]),
+                    Puwg1992Test.MILLIMETRE,
+                    String.format("Zły punkt PUWG 1992 dla %s, %s", row[0], row[1])
+                )
             )
         );
     }
 
     @Test
     void usThirteenTwoCentralMeridianHasFalseEasting() {
-        Puwg1992Test.assertPoint(19.0, 52.0, 500_000.0, 459_309.209_4);
+        Assertions.assertArrayEquals(
+            new double[] {500_000.0, 459_309.209_4},
+            Puwg1992Test.point(19.0, 52.0),
+            Puwg1992Test.MILLIMETRE,
+            "Zły punkt PUWG 1992 na południku osiowym"
+        );
     }
 
-    private static void assertPoint(
-        final double longitude, final double latitude,
-        final double easting, final double northing
-    ) {
+    private static double[] point(final double longitude, final double latitude) {
         final Puwg1992Point point = new Puwg1992(longitude, latitude).point();
-        Assertions.assertAll(
-            () -> Assertions.assertEquals(
-                easting, point.easting(), Puwg1992Test.MILLIMETRE,
-                String.format("Zła współrzędna wschodnia dla %s, %s", longitude, latitude)
-            ),
-            () -> Assertions.assertEquals(
-                northing, point.northing(), Puwg1992Test.MILLIMETRE,
-                String.format("Zła współrzędna północna dla %s, %s", longitude, latitude)
-            )
-        );
+        return new double[] {point.easting(), point.northing()};
     }
 }
