@@ -792,18 +792,29 @@ components:
     Room:
       type: object
       description: Pomieszczenie z planu piętra.
-      required: [id, function, geometry]
+      required: [id, function, category, geometry, labelPoint, labelled]
       properties:
         id: {type: string, description: "Identyfikator pomieszczenia."}
         number: {type: string, description: "Numer pomieszczenia z danych PWr; brak, gdy dane go nie podają."}
         function: {type: string, description: "Funkcja pomieszczenia z danych PWr, np. „Winda”, „Klatka schodowa”, „Toaleta dla OzN”."}
+        category: {$ref: '#/components/schemas/RoomCategory'}
         geometry: {$ref: '#/components/schemas/GeoArea', description: "Kształt pomieszczenia na planie piętra."}
+        labelPoint: {$ref: '#/components/schemas/GeoPoint', description: "Punkt wewnątrz pomieszczenia na podpis numeru i znacznik wyniku."}
+        labelled: {type: boolean, description: "Czy numer pomieszczenia jest podpisany na planie: jeden numer na grupę pomieszczeń piętra z tym samym numerem, bez pomieszczeń mniejszych niż 20 m² i bez numeru (US16.1)."}
+    RoomCategory:
+      type: string
+      description: >-
+        Grupa funkcji pomieszczenia wyznaczona z funkcji PWr: `CLASSROOM` — sala, `LECTURE_HALL` — aula,
+        `CORRIDOR` — korytarz, `STAIRCASE` — klatka schodowa, `ELEVATOR` — winda, `ACCESSIBLE_TOILET` — toaleta
+        dostosowana, `TOILET` — toaleta, `OFFICE` — dziekanat i biuro, `OTHER` — inne (US16.1, US18.1).
+      enum: [CLASSROOM, LECTURE_HALL, CORRIDOR, STAIRCASE, ELEVATOR, ACCESSIBLE_TOILET, TOILET, OFFICE, OTHER]
     RoomList:
       type: object
       description: Pomieszczenia piętra ze źródłem danych.
-      required: [source, rooms]
+      required: [source, floorOutline, rooms]
       properties:
         source: {$ref: '#/components/schemas/PwrSource'}
+        floorOutline: {$ref: '#/components/schemas/GeoArea', description: "Obrys piętra: suma pomieszczeń piętra, rysowana jako ściana zewnętrzna planu."}
         rooms:
           type: array
           description: Pomieszczenia piętra.
