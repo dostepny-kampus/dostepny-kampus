@@ -7,12 +7,15 @@ package io.github.dostepnykampus.building.room.json;
 
 import io.github.dostepnykampus.building.room.PlanRoom;
 import java.net.URI;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -21,7 +24,7 @@ import tools.jackson.databind.ObjectMapper;
  * Odczyt pomieszczeń z warstwy usługi ArcGIS PWr (FeatureServer) w formacie GeoJSON w układzie
  * WGS 84; kolejne strony wyników są pobierane do ostatniej. Wielokąt pomieszczenia staje się
  * konturem MultiPolygon, pomieszczenie bez wielokąta jest pomijane. Numer z samych spacji jest
- * pusty, a brak funkcji daje „Inne”. Błąd usługi kończy się wyjątkiem IllegalStateException.
+ * pusty, a brak funkcji daje „Inne”. Błąd lub przekroczenie czasu daje IllegalStateException.
  *
  * <p>TODO(#1880): dodać odczyt pięter. TODO(#1823): podłączyć klienta do zapisu importu.</p>
  *
@@ -31,6 +34,11 @@ import tools.jackson.databind.ObjectMapper;
  */
 @Component
 final class ArcgisPlans {
+
+    /**
+     * Domyślny limit czasu połączenia i odczytu odpowiedzi usługi.
+     */
+    private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
     /**
      * Klient HTTP.
@@ -44,7 +52,11 @@ final class ArcgisPlans {
 
     @Autowired
     ArcgisPlans(final ObjectMapper mapper) {
-        this(RestClient.create(), mapper);
+        this(ArcgisPlans.TIMEOUT, mapper);
+    }
+
+    ArcgisPlans(final Duration timeout, final ObjectMapper mapper) {
+        this(ArcgisPlans.http(timeout), mapper);
     }
 
     ArcgisPlans(final RestClient client, final ObjectMapper mapper) {
@@ -95,9 +107,20 @@ final class ArcgisPlans {
     }
 
     private JsonNode page(final URI uri) {
-        final JsonNode root = this.mapper.readTree(
-            this.client.get().uri(uri).retrieve().body(String.class)
-        );
+        final JsonNode root;
+        try {
+            root = this.mapper.readTree(
+                this.client.get().uri(uri).retrieve().requiredBody(String.class)
+            );
+        } catch (final RestClientException ex) {
+            throw new IllegalStateException(
+                String.format(
+                    "Przekroczono limit czasu albo błąd usługi ArcGIS: %s",
+                    uri.getPath()
+                ),
+                ex
+            );
+        }
         if (root.has("error") || !root.path("features").isArray()) {
             throw new IllegalStateException(uri.getPath());
         }
@@ -119,5 +142,12 @@ final class ArcgisPlans {
             result = Optional.empty();
         }
         return result;
+    }
+
+    private static RestClient http(final Duration timeout) {
+        final SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(timeout);
+        factory.setReadTimeout(timeout);
+        return RestClient.builder().requestFactory(factory).build();
     }
 }
