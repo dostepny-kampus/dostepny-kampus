@@ -1112,6 +1112,16 @@ components:
             revoked: {type: boolean, description: "Czy znacznik cofnięto (US11.3, US15.2)."}
             mine: {type: boolean, description: "Czy znacznik postawiła osoba z tokenu: „Twój znacznik” albo „Znacznik innej osoby” (US15.2)."}
 
+    ProgressMarker:
+      description: Znacznik w postępie inwentaryzacji widziany przez Koordynatora.
+      allOf:
+        - $ref: '#/components/schemas/InspectionMarker'
+        - type: object
+          description: Autor znacznika bez danych osobowych; znaczniki stawia tylko Zbierający (BR-5, BR-20).
+          required: [authorPseudonym]
+          properties:
+            authorPseudonym: {type: string, description: "Pseudonim autora znacznika, np. „Autor 14” (US11.3, BR-5)."}
+
     BuildingProgress:
       type: object
       description: Postęp inwentaryzacji jednego budynku (BR-21).
@@ -1126,7 +1136,7 @@ components:
         acceptedSubmissions: {type: integer, minimum: 0, description: "Zgłoszenia przyjęte, bez archiwalnych."}
         entrancesTotal: {type: integer, minimum: 0, description: "Wszystkie wejścia budynku (US11.4)."}
         entrancesCheckedOnSite: {type: integer, minimum: 0, description: "Wejścia ze źródłem oznaczenia „obchód” (US11.4)."}
-        markers: {type: array, description: "Aktywne znaczniki do cofnięcia przez Koordynatora (US11.3).", items: {$ref: '#/components/schemas/InspectionMarker'}}
+        markers: {type: array, description: "Aktywne znaczniki do cofnięcia przez Koordynatora (US11.3).", items: {$ref: '#/components/schemas/ProgressMarker'}}
     ExportFeatureCollection:
       type: object
       description: Kolekcja GeoJSON (RFC 7946) bieżących zgłoszeń przyjętych.
