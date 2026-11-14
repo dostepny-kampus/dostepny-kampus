@@ -112,5 +112,5 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | moduł `core` nie importuje modułu funkcji | Konsist `infra_a1_core_not_on_feature` |
 | jawna widoczność w modułach `core` | #1329 |
 | zadeklarowane zależności Gradle są używane i mają właściwy zakres | `buildHealth` (#894), poprawki: #1398 |
-| opis modułu przy kodzie | #1333 (serwer); Android: `ModuleReadmeArchitectureTest` (`README.md` modułu) |
+| opis modułu przy kodzie | #1333 (serwer); Android: `ModuleReadmeArchitectureTest` (`README.md` modułu, zebrane na stronie [Moduły aplikacji Android](moduly-android.md)) |
 | kryteria nowego modułu, łączenie małych modułów, próg pięciu plików podpakietu, podział pakietów funkcji według ścieżki | przegląd PR |
