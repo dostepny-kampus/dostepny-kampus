@@ -9,7 +9,9 @@ import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.container.KoScope
 import com.lemonappdev.konsist.api.declaration.KoClassDeclaration
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
 
@@ -45,8 +47,11 @@ class SharedFixtureArchitectureTest {
         )
     }
 
-    @org.junit.jupiter.api.TestFactory
-    fun dbg() = violations(testScope()).map { n -> org.junit.jupiter.api.DynamicTest.dynamicTest("SFV " + n) { error(n) } }
+    @TestFactory
+    fun dbg(): List<DynamicTest> =
+        violations(testScope()).map { n ->
+            DynamicTest.dynamicTest("SFV $n") { error(n) }
+        }
 
     private fun testScope(): KoScope = Konsist.scopeFromProject()
 
