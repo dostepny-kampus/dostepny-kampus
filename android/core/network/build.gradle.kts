@@ -4,10 +4,13 @@
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     id("dostepnykampus.android.library")
     id("dostepnykampus.android.hilt")
     id("org.jetbrains.kotlin.plugin.serialization")
+    alias(libs.plugins.openapi.generator)
 }
 
 android {
@@ -21,6 +24,40 @@ android {
 }
 
 val openApiFile = rootProject.layout.projectDirectory.file("../api/openapi.yaml")
+
+/*
+ * Modele JSON klienta z kontraktu: schematy, które moduł czyta i wysyła, razem z zależnymi. Stała bez typu (`const`)
+ * jest tekstem, a kontur GeoJSON zostaje obiektem JSON dla czytnika geometrii z `:core:geo`.
+ */
+val generateContractModels =
+    tasks.named<GenerateTask>("openApiGenerate") {
+        generatorName = "kotlin"
+        inputSpec = openApiFile
+        outputDir = layout.buildDirectory.dir("generated/source/openapi")
+        modelPackage = "io.github.dostepnykampus.core.network.json"
+        cleanupOutput = true
+        modelFilesConstrainedTo =
+            listOf(
+                "BuildingList", "BuildingDetails", "LocateResult", "FloorList",
+                "NewSubmission", "SubmissionUpdate", "Submission", "VersionConflictProblem",
+            )
+        generateRecursiveDependentModels = true
+        generateModelDocumentation = false
+        generateModelTests = false
+        configOptions =
+            mapOf(
+                "serializationLibrary" to "kotlinx_serialization",
+                "dateLibrary" to "string",
+                "nonPublicApi" to "true",
+                "enumPropertyNaming" to "UPPERCASE",
+            )
+        typeMappings = mapOf("UUID" to "kotlin.String", "URI" to "kotlin.String", "AnyType" to "kotlin.String")
+        schemaMappings = mapOf("GeoArea" to "kotlinx.serialization.json.JsonObject")
+    }
+
+androidComponents.onVariants { variant ->
+    variant.sources.kotlin?.addGeneratedSourceDirectory(generateContractModels, GenerateTask::outputDir)
+}
 
 tasks.withType<Test>().configureEach {
     inputs.file(openApiFile).withPathSensitivity(PathSensitivity.NONE).withPropertyName("openApiFile")

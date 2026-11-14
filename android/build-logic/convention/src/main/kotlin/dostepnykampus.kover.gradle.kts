@@ -38,6 +38,9 @@ val generatedDiClasses =
         "*_ComponentTreeDeps", "hilt_aggregated_deps.*", "dagger.hilt.internal.*",
     )
 
+/** Modele JSON generowane przy budowie z `api/openapi.yaml`; zgodność z kontraktem daje generator. */
+val generatedContractClasses = arrayOf("io.github.dostepnykampus.core.network.json.*")
+
 kover {
     reports {
         filters {
@@ -45,6 +48,7 @@ kover {
                 classes("*ComposableSingletons*", "*.BuildConfig", "*.R", "*.R$*")
                 classes(*coverageExcludedClasses)
                 classes(*generatedDiClasses)
+                classes(*generatedContractClasses)
             }
         }
     }
