@@ -10,23 +10,40 @@ set -euo pipefail
 # na sprint/* i raz dziennie.
 # Zestawy reguł: `gh api repos/$GH_REPO/rulesets` (lista) i jedno wywołanie na zestaw; w teście zamiast sieci
 # RULESET_JSON_DIR z plikami <zestaw>.json (odpowiedź `gh api repos/.../rulesets/<id>`).
+# Odczyt z API, który skończył się błędem serwera (HTTP 5xx), jest ponawiany do trzech prób co REGULY_ODSTEP sekund
+# (domyślnie 10); inny błąd i trzecia nieudana próba to błąd narzędzia.
 # Użycie: reguly-galezi.sh [katalog workflow] [plik listy]. Kod wyjścia: 0 = zgodne, 1 = niezgodność, 2 = błąd narzędzia.
 workflows="${1:-.github/workflows}"
 lista="${2:-$(dirname "${BASH_SOURCE[0]}")/wymagane-kontrole.txt}"
 dane="${RULESET_JSON_DIR:-}"
 
+# api <plik wyniku> <argumenty gh api...>: wynik do pliku, komunikat błędu do $dane/blad.txt; kod gh ostatniej próby.
+api() {
+  local wynik="$1" proba status
+  shift
+  for proba in 1 2 3; do
+    status=0
+    gh api "$@" >"$wynik" 2>"$dane/blad.txt" || status=$?
+    if ((status == 0)) || ! grep -q 'HTTP 5[0-9][0-9]' "$dane/blad.txt" || ((proba == 3)); then
+      return "$status"
+    fi
+    sleep "${REGULY_ODSTEP:-10}"
+  done
+}
+
 if [[ -z $dane ]]; then
   dane="$(mktemp -d)"
   trap 'rm -rf "$dane"' EXIT
   zestawy="$(awk '!/^#/ { for (i = 2; i <= NF; i++) print $i }' "$lista" | sort -u)"
-  if ! spis="$(gh api "repos/${GH_REPO}/rulesets" --jq '.[] | "\(.name) \(.id)"' 2>&1)"; then
-    echo "::error title=Błąd narzędzia::gh api rulesets: $(head -n 1 <<<"$spis")"
+  if ! api "$dane/spis.txt" "repos/${GH_REPO}/rulesets" --jq '.[] | "\(.name) \(.id)"'; then
+    echo "::error title=Błąd narzędzia::gh api rulesets: $(head -n 1 "$dane/blad.txt")"
     exit 2
   fi
+  spis="$(cat "$dane/spis.txt")"
   for zestaw in $zestawy; do
     id="$(awk -v z="$zestaw" '$1 == z { print $2 }' <<<"$spis")"
     [[ -n $id ]] || continue
-    if ! gh api "repos/${GH_REPO}/rulesets/${id}" >"$dane/$zestaw.json" 2>"$dane/blad.txt"; then
+    if ! api "$dane/$zestaw.json" "repos/${GH_REPO}/rulesets/${id}"; then
       echo "::error title=Błąd narzędzia::gh api rulesets/${id}: $(head -n 1 "$dane/blad.txt")"
       exit 2
     fi

@@ -49,4 +49,36 @@ run_case "job z listy bez workflow: błąd" 1 'job `sekrety` z listy wymaganych 
 rm "$workdir/api/sprint.json"
 run_case "brak zestawu reguł: błąd" 1 'zestaw reguł `sprint` nie istnieje' 'rozmiar main sprint'
 
+# Odczyt z API przez podstawione gh. api_case <nazwa> <oczekiwany kod> <oczekiwany tekst> <błąd odczytu zestawu> <ile razy>:
+# odczyt zestawu `sprint` kończy się podanym błędem tyle razy, ile podano, a potem zwraca zestaw z jobem `rozmiar`.
+api_case() {
+  local name="$1" expected="$2" text="$3" error="$4" times="$5" status=0 out
+  rm -rf "$workdir/bin" && mkdir -p "$workdir/bin"
+  echo 0 >"$workdir/licznik"
+  cat >"$workdir/bin/gh" <<EOF
+#!/usr/bin/env bash
+if [[ \$2 == repos/o/r/rulesets ]]; then echo 'sprint 7'; exit 0; fi
+n=\$((\$(cat "$workdir/licznik") + 1)); echo "\$n" >"$workdir/licznik"
+if ((n <= $times)); then echo "gh: $error" >&2; exit 1; fi
+echo '{"name":"sprint","rules":[{"type":"required_status_checks","parameters":{"required_status_checks":[{"context":"rozmiar"}]}}]}'
+EOF
+  chmod +x "$workdir/bin/gh"
+  printf 'rozmiar sprint\n' >"$workdir/lista.txt"
+  out="$(PATH="$workdir/bin:$PATH" GH_REPO=o/r REGULY_ODSTEP=0 bash "$script" "$workdir/wf" "$workdir/lista.txt" 2>&1)" ||
+    status=$?
+  if ((status == expected)) && [[ $out == *"$text"* ]]; then
+    echo "OK: ${name}"
+  else
+    echo "BŁĄD: ${name}: kod wyjścia ${status}, oczekiwano ${expected}${text:+ z tekstem „$text”}"
+    printf '%s\n' "$out" | sed 's/^/    /'
+    failures=$((failures + 1))
+  fi
+}
+
+api_case "API bez błędów" 0 '' 'Server Error (HTTP 502)' 0
+api_case "jedno chwilowe 502 ponowione" 0 '' 'Server Error (HTTP 502)' 1
+api_case "dwa chwilowe 503 ponowione" 0 '' 'Service Unavailable (HTTP 503)' 2
+api_case "trwałe 502 po trzech próbach: błąd narzędzia" 2 'HTTP 502' 'Server Error (HTTP 502)' 3
+api_case "404 bez ponawiania: błąd narzędzia" 2 'HTTP 404' 'Not Found (HTTP 404)' 1
+
 exit "$((failures > 0))"
