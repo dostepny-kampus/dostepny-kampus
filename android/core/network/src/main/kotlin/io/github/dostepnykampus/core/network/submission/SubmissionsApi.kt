@@ -108,6 +108,18 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
     }
 
     /**
+     * Adres zdjęcia zgłoszenia przyjętego, z którego pobiera je biblioteka obrazów. Serwer oddaje zdjęcie
+     * przyjęte bez tokenu, a segmenty ścieżki są kodowane, więc identyfikator nie wychodzi poza `/photos`.
+     *
+     * Wymagania: US1.5, US2.2, BR-17
+     *
+     * @param submissionId identyfikator zgłoszenia
+     * @param photoId identyfikator zdjęcia z listy `photoIds`
+     */
+    public fun photoUrl(submissionId: String, photoId: String): String =
+        path(submissionId, PHOTOS, photoId).toString()
+
+    /**
      * Zgłoszenia przyjęte do mapy i karty budynku (`status=ACCEPTED`).
      *
      * Wymagania: US1.3, US2.2, BR-6
