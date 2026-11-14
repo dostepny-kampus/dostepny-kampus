@@ -36,7 +36,7 @@ public final class PhotoStorage {
      * @return Klient S3 z adresami w ścieżce, bez nazw kubełków w domenie
      */
     @Bean
-    public static S3Client photoClient(final PhotoSettings settings) {
+    static S3Client photoClient(final PhotoSettings settings) {
         return S3Client.builder()
             .endpointOverride(settings.endpoint())
             .region(Region.US_EAST_1)

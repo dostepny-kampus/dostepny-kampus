@@ -39,6 +39,11 @@ public final class SubmissionPhotosController {
     /** Zdjęcia zgłoszeń. */
     private final SubmissionPhotos photos;
 
+    /**
+     * Tworzy kontroler zdjęć zgłoszeń.
+     *
+     * @param photos Zdjęcia zgłoszeń
+     */
     public SubmissionPhotosController(final SubmissionPhotos photos) {
         this.photos = photos;
     }

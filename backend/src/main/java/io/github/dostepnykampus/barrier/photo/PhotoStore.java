@@ -40,6 +40,12 @@ public final class PhotoStore {
      */
     private final PhotoSettings settings;
 
+    /**
+     * Tworzy magazyn zdjęć.
+     *
+     * @param client Klient S3
+     * @param settings Ustawienia magazynu z kubełkiem ze zdjęciami
+     */
     public PhotoStore(final S3Client client, final PhotoSettings settings) {
         this.client = client;
         this.settings = settings;

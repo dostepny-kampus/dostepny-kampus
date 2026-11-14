@@ -25,7 +25,10 @@ import org.apache.commons.imaging.formats.jpeg.xmp.JpegRewriter;
  */
 public final class JpegCleaner extends JpegRewriter {
 
-    private JpegCleaner() {
+    /**
+     * Tworzy czyściciela bez stanu.
+     */
+    public JpegCleaner() {
     }
 
     /**
@@ -35,9 +38,9 @@ public final class JpegCleaner extends JpegRewriter {
      * @return Plik JPEG bez EXIF, XMP, IPTC i komentarzy
      * @throws IOException Gdy nagłówek nie jest poprawnym JPEG
      */
-    public static byte[] strip(final byte[] jpeg) throws IOException {
+    public byte[] strip(final byte[] jpeg) throws IOException {
         try {
-            return new JpegCleaner().rewrite(jpeg);
+            return this.rewrite(jpeg);
         } catch (final ImagingException ex) {
             throw new IOException("Uszkodzony nagłówek JPEG", ex);
         }

@@ -53,6 +53,13 @@ public final class SubmissionPhotos {
     /** Blokada wiersza podczas kontroli statusu i zapisu zdjęcia. */
     private final SubmissionService service;
 
+    /**
+     * Tworzy usługę zdjęć zgłoszeń.
+     *
+     * @param submissions Odczyt zgłoszeń
+     * @param photos Magazyn zdjęć
+     * @param service Blokada wiersza podczas kontroli statusu i zapisu zdjęcia
+     */
     public SubmissionPhotos(
         final SubmissionFinder submissions, final PhotoStore photos, final SubmissionService service
     ) {
@@ -142,7 +149,7 @@ public final class SubmissionPhotos {
 
     private static byte[] clean(final byte[] raw) {
         try {
-            return JpegCleaner.strip(raw);
+            return new JpegCleaner().strip(raw);
         } catch (final IOException ex) {
             throw new InvalidInput("Uszkodzony plik JPEG", ex);
         }
