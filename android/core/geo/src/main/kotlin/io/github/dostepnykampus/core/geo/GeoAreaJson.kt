@@ -17,7 +17,7 @@ import org.maplibre.spatialk.geojson.Geometry
  * bez zapisu tekstowego po drodze. Zła geometria daje [IllegalArgumentException]
  * w miejscu odczytu odpowiedzi albo kopii.
  */
-object GeoAreaJson : KSerializer<GeoArea> {
+public object GeoAreaJson : KSerializer<GeoArea> {
     private val geometry = Geometry.serializer()
 
     override val descriptor: SerialDescriptor = geometry.descriptor

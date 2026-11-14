@@ -24,7 +24,7 @@ import org.maplibre.spatialk.turf.booleans.contains
  * @return podpowiedź budynku
  * @throws IllegalArgumentException gdy kontur ma pierścień niezamknięty albo krótszy niż 4 punkty
  */
-fun locateBuilding(point: GeoPoint, buildings: List<Building>): LocateResult {
+internal fun locateBuilding(point: GeoPoint, buildings: List<Building>): LocateResult {
     val inside = containingBuilding(point, buildings)
     return if (inside != null) {
         LocateResult.InsideOutline(inside)
@@ -34,7 +34,7 @@ fun locateBuilding(point: GeoPoint, buildings: List<Building>): LocateResult {
 }
 
 /** Pierwszy budynek, którego kontur zawiera punkt ściśle, bez punktów na krawędzi. */
-fun containingBuilding(point: GeoPoint, buildings: List<Building>): Building? =
+public fun containingBuilding(point: GeoPoint, buildings: List<Building>): Building? =
     buildings.firstOrNull { building -> building.outline.containsStrictly(point) }
 
 /** Odległość w metrach na ziemi od [point] do najbliższej krawędzi konturu, także krawędzi otworu. */

@@ -6,7 +6,7 @@ Geometria kampusu: obszary, odległości, wyszukiwanie i dopasowanie budynku do 
 
 ## API
 
-Funkcje i typy w pakiecie `core.geo`, m.in. `LocateBuilding`, `SearchBuildings`, `CampusAreas`, parser katalogu budynków.
+Funkcje i typy w pakiecie `core.geo`, m.in. `LocateResult`, `SearchBuildings`, `CampusAreas`, parser katalogu budynków.
 
 ## Zależności
 

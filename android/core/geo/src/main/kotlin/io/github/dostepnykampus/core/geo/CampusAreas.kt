@@ -8,7 +8,7 @@ package io.github.dostepnykampus.core.geo
 import io.github.dostepnykampus.core.model.Building
 
 /** Największa odległość między budynkami jednego terenu w metrach na ziemi. Wymagania: BR-G5 */
-const val AREA_LINK_METERS = 600.0
+internal const val AREA_LINK_METERS = 600.0
 
 private val AREA_NAMES =
     mapOf(
@@ -28,7 +28,7 @@ private val AREA_NAMES =
  *   pierwszego budynku
  * @property buildings budynki terenu w kolejności katalogu
  */
-data class CampusArea(val name: String, val buildings: List<Building>) {
+public data class CampusArea(val name: String, val buildings: List<Building>) {
     /** Symbole budynków terenu, każdy raz; ich liczba to „liczba budynków” terenu na V1. Wymagania: US1.7 */
     val symbols: List<String> get() = buildings.map(Building::symbol).distinct()
 }
@@ -43,7 +43,7 @@ data class CampusArea(val name: String, val buildings: List<Building>) {
  * @param buildings budynki z konturami z katalogu w telefonie
  * @return tereny w kolejności pierwszego budynku w katalogu; każdy budynek należy do dokładnie jednego terenu
  */
-fun campusAreas(buildings: List<Building>): List<CampusArea> {
+public fun campusAreas(buildings: List<Building>): List<CampusArea> {
     val left = buildings.toMutableList()
     val areas = mutableListOf<CampusArea>()
     while (left.isNotEmpty()) {
