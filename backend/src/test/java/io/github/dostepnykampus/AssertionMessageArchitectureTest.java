@@ -48,7 +48,7 @@ final class AssertionMessageArchitectureTest {
     );
 
     @Test
-    void assertionsCarryMessages() {
+    void requiresAssertionMessages() {
         Assertions.assertEquals(
             List.of(),
             AssertionMessageArchitectureTest.RULE.fresh(),
