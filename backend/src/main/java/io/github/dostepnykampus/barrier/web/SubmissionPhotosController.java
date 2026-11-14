@@ -6,9 +6,9 @@
 package io.github.dostepnykampus.barrier.web;
 
 import io.github.dostepnykampus.barrier.application.SubmissionPhotos;
-import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.photo.PhotoTooLargeException;
 import io.github.dostepnykampus.barrier.photo.PhotoUpload;
+import io.github.dostepnykampus.barrier.submission.Reader;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;

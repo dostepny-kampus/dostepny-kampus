@@ -5,12 +5,12 @@
  */
 package io.github.dostepnykampus.barrier.application;
 
-import io.github.dostepnykampus.barrier.domain.CreateResult;
-import io.github.dostepnykampus.barrier.domain.EditResult;
-import io.github.dostepnykampus.barrier.domain.NewSubmission;
-import io.github.dostepnykampus.barrier.domain.OutsideCampus;
-import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
-import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
+import io.github.dostepnykampus.barrier.submission.CreateResult;
+import io.github.dostepnykampus.barrier.submission.EditResult;
+import io.github.dostepnykampus.barrier.submission.NewSubmission;
+import io.github.dostepnykampus.barrier.submission.OutsideCampus;
+import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
+import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import io.github.dostepnykampus.building.CampusArea;
