@@ -11,6 +11,7 @@ import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
+import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
 import io.github.dostepnykampus.shared.error.ConflictingState;
@@ -42,7 +43,7 @@ final class ReplacedSubmissionCheckTest {
     void submissionWithoutReplacesSkipsCheck() {
         Assertions.assertDoesNotThrow(
             () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, null)
-                .checkReplaced(new Finder(null, null), ReplacedSubmissionCheckTest.READER)
+                .checkReplaced(ReplacedSubmissionCheckTest.reading(null, null), ReplacedSubmissionCheckTest.READER)
         );
     }
 
@@ -50,7 +51,7 @@ final class ReplacedSubmissionCheckTest {
     void savedChangeSkipsCheck() {
         Assertions.assertDoesNotThrow(
             () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
-                new Finder(ReplacedSubmissionCheckTest.stored(SubmissionStatus.SENT), null),
+                ReplacedSubmissionCheckTest.reading(ReplacedSubmissionCheckTest.stored(SubmissionStatus.SENT), null),
                 ReplacedSubmissionCheckTest.READER
             )
         );
@@ -60,7 +61,7 @@ final class ReplacedSubmissionCheckTest {
     void changeOfAcceptedPasses() {
         Assertions.assertDoesNotThrow(
             () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
-                new Finder(null, ReplacedSubmissionCheckTest.stored(SubmissionStatus.ACCEPTED)),
+                ReplacedSubmissionCheckTest.reading(null, ReplacedSubmissionCheckTest.stored(SubmissionStatus.ACCEPTED)),
                 ReplacedSubmissionCheckTest.READER
             )
         );
@@ -71,7 +72,7 @@ final class ReplacedSubmissionCheckTest {
         Assertions.assertThrows(
             ConflictingState.class,
             () -> ReplacedSubmissionCheckTest.request(null, WebBodies.PATH).checkReplaced(
-                new Finder(null, ReplacedSubmissionCheckTest.stored(SubmissionStatus.SENT)),
+                ReplacedSubmissionCheckTest.reading(null, ReplacedSubmissionCheckTest.stored(SubmissionStatus.SENT)),
                 ReplacedSubmissionCheckTest.READER
             )
         );
@@ -84,7 +85,7 @@ final class ReplacedSubmissionCheckTest {
             Assertions.assertThrows(
                 MissingResource.class,
                 () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH)
-                    .checkReplaced(new Finder(null, null), ReplacedSubmissionCheckTest.READER)
+                    .checkReplaced(ReplacedSubmissionCheckTest.reading(null, null), ReplacedSubmissionCheckTest.READER)
             ).getMessage()
         );
     }
@@ -94,7 +95,7 @@ final class ReplacedSubmissionCheckTest {
         Assertions.assertThrows(
             ConflictingState.class,
             () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
-                new Finder(null, ReplacedSubmissionCheckTest.stored(SubmissionStatus.IN_REVIEW)),
+                ReplacedSubmissionCheckTest.reading(null, ReplacedSubmissionCheckTest.stored(SubmissionStatus.IN_REVIEW)),
                 ReplacedSubmissionCheckTest.READER
             )
         );
@@ -113,6 +114,12 @@ final class ReplacedSubmissionCheckTest {
                 )
             )
         );
+    }
+
+    private static SubmissionReading reading(
+        final @Nullable Submission saved, final @Nullable Submission visible
+    ) {
+        return new SubmissionReading(new Finder(saved, visible));
     }
 
     private static Submission stored(final SubmissionStatus status) {
