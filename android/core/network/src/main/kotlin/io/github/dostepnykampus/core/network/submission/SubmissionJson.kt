@@ -5,37 +5,37 @@
  */
 package io.github.dostepnykampus.core.network.submission
 
-import io.github.dostepnykampus.core.model.BarrierGroup
-import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
-import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.model.SubmissionStatus
 import io.github.dostepnykampus.core.network.building.toJson
 import io.github.dostepnykampus.core.network.building.toModel
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonObject
 import java.time.Instant
 import java.time.format.DateTimeParseException
-import io.github.dostepnykampus.core.network.json.GeoPoint as GeoPointJson
+import io.github.dostepnykampus.core.network.json.Submission as SubmissionDto
+import io.github.dostepnykampus.core.network.json.SubmissionContent as SubmissionContentJson
+import io.github.dostepnykampus.core.network.json.SubmissionFloor as SubmissionFloorJson
+import io.github.dostepnykampus.core.network.json.VersionConflictProblem as VersionConflictDto
 
 /**
  * Treść `NewSubmission` dla `POST /submissions`: pola [content] i identyfikator [id] z telefonu.
- * Puste pola nieobowiązkowe nie trafiają do JSON, bo serwer odrzuca `null` w miejscu tekstu.
+ * Puste pola nieobowiązkowe i flagi równe `false` (wartość domyślna z kontraktu) nie trafiają do JSON.
  */
 internal fun Json.encodeNewSubmission(id: String, content: SubmissionContent): String =
-    withoutNulls().encodeToString(SubmissionRequest.serializer(), content.toRequest(id = id))
+    encodeWith(content, "id" to JsonPrimitive(id))
 
 /** Treść `SubmissionUpdate` dla `PUT /submissions/{id}`: pola [content] i wersja bazowa [version]. Wymagania: BR-10 */
 internal fun Json.encodeSubmissionUpdate(version: Int, content: SubmissionContent): String =
-    withoutNulls().encodeToString(SubmissionRequest.serializer(), content.toRequest(version = version))
+    encodeWith(content, "version" to JsonPrimitive(version))
 
 /**
- * Zgłoszenie z odpowiedzi serwera (`Submission`). Zła treść, także wartość wyliczenia spoza kontraktu,
- * daje [IllegalArgumentException].
+ * Zgłoszenie z odpowiedzi serwera (`Submission`). Flaga nieobecna i `false` (wartość domyślna z kontraktu) dają
+ * w modelu `null`. Zła treść, także wartość wyliczenia spoza kontraktu, daje [IllegalArgumentException].
  *
  * @param body tekst odpowiedzi
  */
@@ -59,108 +59,64 @@ internal fun Json.decodeSubmissions(body: String): List<Submission> =
 internal fun Json.decodeConflict(body: String): Submission =
     withoutNulls().decodeFromString(VersionConflictDto.serializer(), body).serverSubmission.toModel()
 
-@Serializable
-private data class SubmissionRequest(
-    val id: String?,
-    val version: Int?,
-    val kind: SubmissionKind,
-    val location: GeoPointJson,
-    val photoIds: List<String>,
-    val accuracyMeters: Double?,
-    @SerialName("manualCorrection") val isManualCorrection: Boolean?,
-    val buildingSymbol: String?,
-    val floor: SubmissionFloorDto?,
-    val barrierGroup: BarrierGroup?,
-    val barrierType: String?,
-    val severity: Int?,
-    val description: String?,
-    val replacesSubmissionId: String?,
-    @SerialName("barrierRemoved") val isBarrierRemoved: Boolean?,
-    val entranceId: String?,
-    val entranceMarking: EntranceMarking?,
-)
-
-@Serializable
-private data class SubmissionDto(
-    val id: String,
-    val version: Int,
-    val status: SubmissionStatus,
-    val createdAt: String,
-    val verifiedAt: String?,
-    val rejectionReason: String?,
-    val kind: SubmissionKind,
-    val location: GeoPointJson,
-    val photoIds: List<String>,
-    val accuracyMeters: Double?,
-    @SerialName("manualCorrection") val isManualCorrection: Boolean?,
-    val buildingSymbol: String?,
-    val floor: SubmissionFloorDto?,
-    val barrierGroup: BarrierGroup?,
-    val barrierType: String?,
-    val severity: Int?,
-    val description: String?,
-    val replacesSubmissionId: String?,
-    @SerialName("barrierRemoved") val isBarrierRemoved: Boolean?,
-    val entranceId: String?,
-    val entranceMarking: EntranceMarking?,
-)
-
-@Serializable
-private data class VersionConflictDto(val serverSubmission: SubmissionDto)
-
-@Serializable
-private data class SubmissionFloorDto(
-    val floorId: String?,
-    val number: Int?,
-    @SerialName("mezzanine") val isMezzanine: Boolean?,
-)
-
 private fun Json.withoutNulls(): Json = Json(from = this) { explicitNulls = false }
 
-private fun SubmissionContent.toRequest(id: String? = null, version: Int? = null): SubmissionRequest =
-    SubmissionRequest(
-        id = id,
-        version = version,
-        kind = kind,
+/** `SubmissionContent` z jednym polem nadanym poza treścią, jak `allOf` schematów żądań w kontrakcie. */
+private fun Json.encodeWith(content: SubmissionContent, extra: Pair<String, JsonPrimitive>): String =
+    JsonObject(
+        withoutNulls().encodeToJsonElement(SubmissionContentJson.serializer(), content.toJson()).jsonObject + extra,
+    ).toString()
+
+private fun SubmissionContent.toJson(): SubmissionContentJson =
+    SubmissionContentJson(
+        kind = kind.into(),
         location = location.toJson(),
         photoIds = photoIds,
         accuracyMeters = accuracyMeters,
-        isManualCorrection = isManualCorrection,
+        manualCorrection = isManualCorrection,
         buildingSymbol = buildingSymbol,
-        floor = floor?.let { SubmissionFloorDto(it.floorId, it.number, it.isMezzanine) },
-        barrierGroup = barrierGroup,
+        floor = floor?.toJson(),
+        barrierGroup = barrierGroup?.into(),
         barrierType = barrierType,
         severity = severity,
         description = description,
         replacesSubmissionId = replacesSubmissionId,
-        isBarrierRemoved = isBarrierRemoved,
+        barrierRemoved = isBarrierRemoved,
         entranceId = entranceId,
-        entranceMarking = entranceMarking,
+        entranceMarking = entranceMarking?.into(),
     )
+
+/** Flaga z kontraktu w modelu: `true` albo `null`, bo `false` to wartość domyślna pola nieobecnego. */
+private fun Boolean?.flag(): Boolean? = takeIf { it == true }
+
+private inline fun <reified T : Enum<T>> Enum<*>.into(): T = enumValueOf<T>(name)
+
+private fun SubmissionFloor.toJson(): SubmissionFloorJson =
+    SubmissionFloorJson(floorId = floorId, number = number, mezzanine = isMezzanine)
 
 private fun SubmissionDto.toModel(): Submission =
     Submission(
         id = id,
         version = version,
-        status = status,
+        status = status.into(),
         createdAt = instant(createdAt),
         content =
             SubmissionContent(
-                kind = kind,
+                kind = kind.into(),
                 location = location.toModel(),
                 photoIds = photoIds,
                 accuracyMeters = accuracyMeters,
-                isManualCorrection = isManualCorrection,
+                isManualCorrection = manualCorrection.flag(),
                 buildingSymbol = buildingSymbol,
-                floor = floor?.let { SubmissionFloor(it.floorId, it.number, it.isMezzanine) },
-                barrierGroup = barrierGroup,
+                floor = floor?.let { SubmissionFloor(it.floorId, it.number, it.mezzanine.flag()) },
+                barrierGroup = barrierGroup?.into(),
                 barrierType = barrierType,
                 severity = severity,
                 description = description,
                 replacesSubmissionId = replacesSubmissionId,
-                isBarrierRemoved = isBarrierRemoved,
+                isBarrierRemoved = barrierRemoved.flag(),
                 entranceId = entranceId,
-                entranceMarking = entranceMarking,
+                entranceMarking = entranceMarking?.into(),
             ),
         rejectionReason = rejectionReason,
         verifiedAt = verifiedAt?.let(::instant),
