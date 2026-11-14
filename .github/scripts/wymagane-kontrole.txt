@@ -13,6 +13,7 @@ zmiany-lamiace main sprint
 budowanie main sprint
 pr-od-issue sprint
 testy-skryptow main sprint
+kopie main sprint
 baza-sprintu main sprint
 straznik-jakosci main sprint
 naglowki main sprint
