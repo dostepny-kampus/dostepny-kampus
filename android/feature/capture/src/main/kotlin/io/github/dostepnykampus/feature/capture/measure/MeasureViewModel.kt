@@ -21,7 +21,7 @@ import io.github.dostepnykampus.core.location.SatelliteSource
 import io.github.dostepnykampus.core.location.countsInFix
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.capture.BuildingLookup
+import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

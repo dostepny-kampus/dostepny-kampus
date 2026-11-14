@@ -15,6 +15,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.feature.capture.location.LocationPermissionContent
+import io.github.dostepnykampus.feature.capture.location.WithLocationPermission
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
