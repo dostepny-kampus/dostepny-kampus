@@ -226,7 +226,7 @@ dostepnykampus:
       - '**/core/location/src/test/kotlin/io/github/dostepnykampus/core/location/LocationModuleTest.kt'
       - '**/core/location/src/test/kotlin/io/github/dostepnykampus/core/location/PositionAveragingTest.kt'
       - '**/core/model/src/test/kotlin/io/github/dostepnykampus/core/model/AccountTest.kt'
-      - '**/core/model/src/test/kotlin/io/github/dostepnykampus/core/model/BarrierTypeTest.kt'
+      - '**/core/model/src/test/kotlin/io/github/dostepnykampus/core/model/submission/BarrierTypeTest.kt'
       - '**/core/model/src/test/kotlin/io/github/dostepnykampus/core/model/SubmissionTest.kt'
       - '**/core/model/src/test/kotlin/io/github/dostepnykampus/core/model/building/EntranceMarkingTest.kt'
       - '**/core/model/src/test/kotlin/io/github/dostepnykampus/core/model/building/EntranceTest.kt'
