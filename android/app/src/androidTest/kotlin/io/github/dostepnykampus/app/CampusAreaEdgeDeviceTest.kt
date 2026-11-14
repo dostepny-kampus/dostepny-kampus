@@ -74,7 +74,7 @@ class CampusAreaEdgeDeviceTest {
      * Wymagania: US1.7, BR-G5, NFR-39, NFR-41
      */
     @Test
-    fun us1_7_gesture_stays_inside_area() {
+    fun us1_7_gesture_stops_at_edge() {
         val areas = runBlocking { campusMapData(catalog.catalog()).areas }
         val mainBounds = areas.first { it.name == MAIN_AREA_NAME }.bounds
         dismissHelpIfShown()
@@ -88,10 +88,15 @@ class CampusAreaEdgeDeviceTest {
             }
             composeRule.waitForIdle()
             val swipeLine = eastSwipeLine(mapView)
-            panEastUntilNeighbor(swipeLine, tracker)
+            val swipes = panEastUntilNeighbor(swipeLine, tracker)
             val edgeMatcher = neighborButtonMatcher()
-            composeRule.onNode(edgeMatcher).assertIsDisplayed()
             val edgeTarget = composeRule.runOnUiThread { requireNotNull(map.cameraPosition.target) }
+            assertTrue(
+                "Brak przycisku sąsiedniego terenu po $swipes gestach: target=$edgeTarget, " +
+                    "east=${mainBounds.east}, ruchy=${tracker.moveCount.get()}, postoje=${tracker.idleCount.get()}",
+                nodeExists(edgeMatcher),
+            )
+            composeRule.onNode(edgeMatcher).assertIsDisplayed()
             assertAtEastEdgeWithinBounds(edgeTarget, mainBounds)
             repeat(EXTRA_SWIPES_AT_EDGE) {
                 performEastSwipe(swipeLine, tracker)
@@ -163,7 +168,7 @@ class CampusAreaEdgeDeviceTest {
             Offset(left + size.first * SWIPE_END_X_FRACTION, y)
     }
 
-    private fun panEastUntilNeighbor(swipeLine: Pair<Offset, Offset>, tracker: MotionTracker) {
+    private fun panEastUntilNeighbor(swipeLine: Pair<Offset, Offset>, tracker: MotionTracker): Int {
         val edgeMatcher = neighborButtonMatcher()
         var swipes = 0
         while (swipes < MAX_PAN_SWIPES && !nodeExists(edgeMatcher)) {
@@ -171,6 +176,7 @@ class CampusAreaEdgeDeviceTest {
             composeRule.waitForIdle()
             swipes++
         }
+        return swipes
     }
 
     private fun performEastSwipe(swipeLine: Pair<Offset, Offset>, tracker: MotionTracker) {
@@ -202,17 +208,17 @@ class CampusAreaEdgeDeviceTest {
                 val style = map.style
                 val outside = style?.getLayer(OUTSIDE_LAYER) as? FillLayer
                 val edge = style?.getLayer(EDGE_LAYER) as? LineLayer
-                val layersVisible =
+                val areLayersVisible =
                     outside != null &&
                         edge != null &&
                         outside.visibility.value != Property.NONE &&
-                        (outside.fillOpacity.value ?: 0f) > 0f &&
+                        outside.fillOpacity.value?.takeIf { it > 0f } != null &&
                         edge.visibility.value != Property.NONE
                 val y = mapView.height * CENTER_FRACTION
                 val inside = map.queryRenderedFeatures(PointF(mapView.width * INSIDE_X_FRACTION, y), OUTSIDE_LAYER)
                 val outsideHits =
                     map.queryRenderedFeatures(PointF(mapView.width * OUTSIDE_X_FRACTION, y), OUTSIDE_LAYER)
-                layersVisible && inside.isEmpty() && outsideHits.isNotEmpty()
+                areLayersVisible && inside.isEmpty() && outsideHits.isNotEmpty()
             }
         }
     }
@@ -231,14 +237,19 @@ class CampusAreaEdgeDeviceTest {
             hasContentDescription(KILOMETER_SUFFIX, substring = true)
 
     private fun isInsideBounds(point: LatLng, bounds: CampusBounds): Boolean =
-        point.longitude in (bounds.west - EDGE_TOLERANCE_DEGREES)..(bounds.east + EDGE_TOLERANCE_DEGREES) &&
-            point.latitude in (bounds.south - EDGE_TOLERANCE_DEGREES)..(bounds.north + EDGE_TOLERANCE_DEGREES)
+        point.longitude in bounds.west - EDGE_TOLERANCE_DEGREES..bounds.east + EDGE_TOLERANCE_DEGREES &&
+            point.latitude in bounds.south - EDGE_TOLERANCE_DEGREES..bounds.north + EDGE_TOLERANCE_DEGREES
 
     private fun findAttachedMapView(root: View): MapView? {
-        if (root is MapView && root.isAttachedToWindow && root.width > 0 && root.height > 0) return root
-        val group = root as? ViewGroup ?: return null
-        return (0 until group.childCount).firstNotNullOfOrNull { findAttachedMapView(group.getChildAt(it)) }
+        val group = root as? ViewGroup
+        return when {
+            root is MapView && hasVisibleSize(root) -> root
+            group == null -> null
+            else -> (0 until group.childCount).firstNotNullOfOrNull { findAttachedMapView(group.getChildAt(it)) }
+        }
     }
+
+    private fun hasVisibleSize(view: View): Boolean = view.isAttachedToWindow && view.width > 0 && view.height > 0
 
     private class MotionTracker {
         val isMoving = AtomicBoolean(false)
