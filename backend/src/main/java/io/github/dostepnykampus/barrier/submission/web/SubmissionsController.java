@@ -9,8 +9,8 @@ import io.github.dostepnykampus.barrier.submission.CreateResult;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import io.github.dostepnykampus.barrier.submission.Submission;
-import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
+import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
@@ -57,9 +57,9 @@ public final class SubmissionsController {
     /**
      * Odczyt zgłoszeń.
      */
-    private final SubmissionFinder finder;
+    private final SubmissionReading finder;
 
-    SubmissionsController(final SubmissionService service, final SubmissionFinder finder) {
+    SubmissionsController(final SubmissionService service, final SubmissionReading finder) {
         this.service = service;
         this.finder = finder;
     }
