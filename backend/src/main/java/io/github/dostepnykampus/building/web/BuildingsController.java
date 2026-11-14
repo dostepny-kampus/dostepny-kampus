@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.building.web;
 
-import io.github.dostepnykampus.building.domain.Buildings;
+import io.github.dostepnykampus.building.application.BuildingReading;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import io.github.dostepnykampus.shared.geo.Wgs84;
@@ -28,14 +28,14 @@ public final class BuildingsController {
     /**
      * Odczyt budynków z bazy.
      */
-    private final Buildings query;
+    private final BuildingReading query;
 
     /**
      * Parser konturów i położeń GeoJSON do odpowiedzi.
      */
     private final ObjectMapper mapper;
 
-    BuildingsController(final Buildings query, final ObjectMapper mapper) {
+    BuildingsController(final BuildingReading query, final ObjectMapper mapper) {
         this.query = query;
         this.mapper = mapper;
     }
