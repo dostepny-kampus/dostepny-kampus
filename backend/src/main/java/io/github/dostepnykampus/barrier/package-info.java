@@ -11,7 +11,7 @@
  *
  * <p>API: brak typów dla innych modułów; operacje HTTP {@code /submissions}.</p>
  *
- * <p>Zależności: {@code building}, {@code shared}.</p>
+ * <p>Zależności: {@code building :: api}, {@code shared}.</p>
  *
  * <p>Nie robi: nie przechowuje budynków i nie podejmuje decyzji Weryfikatora.</p>
  *
@@ -21,7 +21,7 @@
  *
  * @since 0.1.0
  */
-@ApplicationModule(allowedDependencies = {"building", "shared"})
+@ApplicationModule(allowedDependencies = {"building :: api", "shared"})
 @NullMarked
 package io.github.dostepnykampus.barrier;
 

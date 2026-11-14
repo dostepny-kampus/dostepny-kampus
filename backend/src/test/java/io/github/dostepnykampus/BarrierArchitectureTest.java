@@ -60,7 +60,7 @@ final class BarrierArchitectureTest {
     /**
      * Wejście do kodu budynków.
      */
-    private static final String OUTLINES = "io.github.dostepnykampus.building.Outlines";
+    private static final String OUTLINES = "io.github.dostepnykampus.building.api.Outlines";
 
     /**
      * Adapter bazy, zawsze pod modułem zgłoszeń.

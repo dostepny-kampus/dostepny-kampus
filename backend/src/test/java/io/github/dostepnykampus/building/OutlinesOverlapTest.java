@@ -7,6 +7,7 @@ package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.SampleBuilding;
+import io.github.dostepnykampus.building.api.Outlines;
 import io.github.dostepnykampus.building.domain.Buildings;
 import io.github.dostepnykampus.building.domain.Placement;
 import java.util.Optional;
