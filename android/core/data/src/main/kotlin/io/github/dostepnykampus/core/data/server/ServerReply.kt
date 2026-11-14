@@ -7,6 +7,7 @@ package io.github.dostepnykampus.core.data.server
 
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.Entrance
+import io.github.dostepnykampus.core.model.Submission
 
 /**
  * Odpowiedź serwera bez typów klienta HTTP.
@@ -51,3 +52,20 @@ data class ServerBuildings(val source: String, val buildings: List<Building>)
  * @property entrances wejścia budynku
  */
 data class ServerCard(val building: Building, val entrances: List<Entrance>)
+
+/** Wynik edycji zgłoszenia z wersją bazową na serwerze. Wymagania: US9.3, BR-10 */
+sealed interface ServerEdit {
+    /**
+     * Serwer zapisał edycję jako kolejną wersję.
+     *
+     * @property submission zgłoszenie po edycji
+     */
+    data class Saved(val submission: Submission) : ServerEdit
+
+    /**
+     * Serwer ma inną wersję albo zgłoszenie nie pozwala na zmianę (409).
+     *
+     * @property server zgłoszenie w wersji z serwera
+     */
+    data class Conflict(val server: Submission) : ServerEdit
+}

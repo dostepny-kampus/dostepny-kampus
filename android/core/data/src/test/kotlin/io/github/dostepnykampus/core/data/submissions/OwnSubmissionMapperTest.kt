@@ -5,17 +5,16 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerEdit
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.SubmissionEdit
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.io.IOException
 import java.time.Instant
 
 /** Kod odmowy i wersja z odpowiedzi serwera dla historii C3. Wymagania: US9.5, BR-10 */
@@ -24,11 +23,11 @@ class OwnSubmissionMapperTest {
     fun `us9_5 kod odmowy`() {
         val codes =
             listOf(
-                ApiResult.ServerError(code = 422),
-                ApiResult.NotFound,
-                ApiResult.Success(SubmissionEdit.Conflict(submission)),
-                ApiResult.Success(SubmissionEdit.Saved(submission)),
-                ApiResult.NetworkError(IOException("sieć")),
+                ServerReply.Fault(code = 422),
+                ServerReply.Missing,
+                ServerReply.Ok(ServerEdit.Conflict(submission)),
+                ServerReply.Ok(ServerEdit.Saved(submission)),
+                ServerReply.Offline,
             ).map { refusalCodeOf(it) }
 
         assertEquals(listOf(422, 404, 409, null, null), codes)
@@ -49,10 +48,10 @@ class OwnSubmissionMapperTest {
     fun `br10 wersja z odpowiedzi`() {
         val versions =
             listOf(
-                ApiResult.Success(submission),
-                ApiResult.Success(SubmissionEdit.Saved(submission)),
-                ApiResult.Success(SubmissionEdit.Conflict(submission)),
-                ApiResult.NotFound,
+                ServerReply.Ok(submission),
+                ServerReply.Ok(ServerEdit.Saved(submission)),
+                ServerReply.Ok(ServerEdit.Conflict(submission)),
+                ServerReply.Missing,
             ).map { versionOf(it) }
 
         assertEquals(listOf(7, 7, null, null), versions)

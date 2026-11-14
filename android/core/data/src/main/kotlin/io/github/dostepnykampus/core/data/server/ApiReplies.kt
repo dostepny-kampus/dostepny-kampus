@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.data.server
 
 import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.SubmissionEdit
 
 /**
  * Odpowiedź serwera z wyniku klienta HTTP: treść przez [content], brak zasobu jako [ServerReply.Missing], brak
@@ -19,6 +20,13 @@ internal fun <T, R> ApiResult<T>.toReply(content: (T) -> R): ServerReply<R> =
         ApiResult.NotFound -> ServerReply.Missing
         is ApiResult.NetworkError -> ServerReply.Offline
         is ApiResult.ServerError -> ServerReply.Fault(code)
+    }
+
+/** Wynik edycji zgłoszenia bez typów klienta HTTP. Wymagania: US9.3, BR-10 */
+internal fun SubmissionEdit.toServerEdit(): ServerEdit =
+    when (this) {
+        is SubmissionEdit.Saved -> ServerEdit.Saved(submission)
+        is SubmissionEdit.Conflict -> ServerEdit.Conflict(server)
     }
 
 /**

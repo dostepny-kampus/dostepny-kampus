@@ -5,11 +5,11 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.database.PendingSubmissionEntity
 import io.github.dostepnykampus.core.database.PendingSubmissionWithPhotos
-import io.github.dostepnykampus.core.network.ApiResult
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.CoroutineContext
@@ -38,7 +38,7 @@ internal class SentResults(
      *
      * Wymagania: BR-9, BR-10
      */
-    suspend fun content(item: PendingSubmissionWithPhotos, result: ApiResult<*>, outcome: Outcome): Outcome =
+    suspend fun content(item: PendingSubmissionWithPhotos, result: ServerReply<*>, outcome: Outcome): Outcome =
         lock.withLock {
             inTransaction {
                 val replacement = store.replacementOf(item)
@@ -47,9 +47,9 @@ internal class SentResults(
         }
 
     /** Wynik wysłania zdjęcia [photoId]; `null`, gdy telefon nie odczytał pliku. */
-    suspend fun photo(item: PendingSubmissionWithPhotos, photoId: String, result: ApiResult<Unit>?): Outcome =
+    suspend fun photo(item: PendingSubmissionWithPhotos, photoId: String, result: ServerReply<Unit>?): Outcome =
         ifCurrent(item) {
-            if (result is ApiResult.Success) {
+            if (result is ServerReply.Ok) {
                 store.markUploaded(submissionId = item.submission.id, photoId = photoId)
                 Outcome.SENT
             } else {
@@ -84,7 +84,7 @@ internal class SentResults(
         return outcome
     }
 
-    private suspend fun contentOf(item: PendingSubmissionWithPhotos, result: ApiResult<*>, outcome: Outcome): Outcome {
+    private suspend fun contentOf(item: PendingSubmissionWithPhotos, result: ServerReply<*>, outcome: Outcome): Outcome {
         if (outcome == Outcome.SENT) {
             store.markCreated(id = item.submission.id)
             versionOf(result)?.let { history?.saveVersion(id = item.submission.id, version = it) }
@@ -97,7 +97,7 @@ internal class SentResults(
         return outcome
     }
 
-    private suspend fun keepVersion(replacement: PendingSubmissionEntity, result: ApiResult<*>): Outcome {
+    private suspend fun keepVersion(replacement: PendingSubmissionEntity, result: ServerReply<*>): Outcome {
         versionOf(result)?.let { version ->
             store.upsertSubmission(replacement.copy(baseVersion = version))
             history?.saveVersion(id = replacement.id, version = version)

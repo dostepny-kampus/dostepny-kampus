@@ -5,13 +5,13 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerEdit
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.database.PendingSubmissionEntity
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.SubmissionEdit
 
 private const val HTTP_FORBIDDEN = 403
 private const val HTTP_NOT_FOUND = 404
@@ -34,28 +34,28 @@ internal fun PendingSubmissionEntity.toOwnSubmissionEntity(): OwnSubmissionEntit
     )
 
 /** Wersja z serwera po przyjęciu treści; `null`, gdy serwer nie przyjął treści. Wymagania: BR-10 */
-internal fun versionOf(result: ApiResult<*>): Int? {
-    val value = (result as? ApiResult.Success)?.value
+internal fun versionOf(result: ServerReply<*>): Int? {
+    val value = (result as? ServerReply.Ok)?.value
     return when (value) {
         is Submission -> value.version
-        is SubmissionEdit.Saved -> value.submission.version
+        is ServerEdit.Saved -> value.submission.version
         else -> null
     }
 }
 
 /** Wersja z serwera z odpowiedzi 409 na edycję; `null` przy innym wyniku. Wymagania: US9.3, BR-10 */
-internal fun conflictVersionOf(result: ApiResult<*>): Int? {
-    val conflict = (result as? ApiResult.Success)?.value as? SubmissionEdit.Conflict
+internal fun conflictVersionOf(result: ServerReply<*>): Int? {
+    val conflict = (result as? ServerReply.Ok)?.value as? ServerEdit.Conflict
     return conflict?.run { server.version }
 }
 
 /** Kod odpowiedzi HTTP odmowy do pokazania przy „Nie wysłano”; `null`, gdy serwer nie odmówił. */
-internal fun refusalCodeOf(result: ApiResult<*>): Int? =
+internal fun refusalCodeOf(result: ServerReply<*>): Int? =
     when (result) {
-        is ApiResult.ServerError -> result.code
-        ApiResult.NotFound -> HTTP_NOT_FOUND
-        is ApiResult.Success -> HTTP_CONFLICT.takeIf { result.value is SubmissionEdit.Conflict }
-        is ApiResult.NetworkError -> null
+        is ServerReply.Fault -> result.code
+        ServerReply.Missing -> HTTP_NOT_FOUND
+        is ServerReply.Ok -> HTTP_CONFLICT.takeIf { result.value is ServerEdit.Conflict }
+        ServerReply.Offline -> null
     }
 
 /**
