@@ -43,6 +43,7 @@ gdy manifest i odpowiadający mu plik lock są aktualizowane razem.
 | Wskazane issue jest otwarte, jest issue (nie PR), jest przypisane autorowi PR. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh) |
 | Nazwa gałęzi zaczyna się od `N-`, gdzie `#N` jest wśród zamykanych issue. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh) |
 | PR ma etykietę obszaru, a jeśli zamykane issue ma etykiety obszaru, PR ma co najmniej jedną z nich. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh), obszary z [`labeler.yml`](.github/labeler.yml) |
+| PR do `sprint/N` zamyka tylko issue z kamieniem milowym `Sprint N`. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh) |
 | Jeden PR to jedna logiczna zmiana, najwyżej 300 zmienionych linii (bez danych, plików lock i kodu generowanego). | [`rozmiar-pr.sh`](.github/scripts/rozmiar-pr.sh), zadanie `rozmiar` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Tytuł PR i każdy commit mają postać Conventional Commits po polsku: `typ(zakres): opis`, typ jeden z `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test`; opis małą literą, nagłówek do 100 znaków. | [`commitlint.config.mjs`](commitlint.config.mjs), zadanie `commity` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Commit scalający sprint do gałęzi robocznej ma domyślny komunikat („Merge remote-tracking branch …”) — commitlint go pomija; własny komunikat z typem spoza listy jest odrzucany. | [`commitlint.config.mjs`](commitlint.config.mjs) |
