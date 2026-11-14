@@ -19,6 +19,4 @@ import javax.inject.Inject
 @ConsistentCopyVisibility
 data class BuildingListStore
     @Inject
-    internal constructor(
-        internal val cache: BuildingCacheDao,
-    )
+    internal constructor(internal val cache: BuildingCacheDao)
