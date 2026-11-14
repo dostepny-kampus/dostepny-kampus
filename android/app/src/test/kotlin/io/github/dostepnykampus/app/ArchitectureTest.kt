@@ -345,8 +345,8 @@ class ArchitectureTest {
         /** Pliki z obliczeniami `core.geo` poza modelem widoku i pakietem `data`; lista może tylko maleć. */
         val GEOMETRY_OUTSIDE_VM =
             mapOf(
-                "$BASE.feature.capture.BuildingLookup" to
-                    "#892: liczy w computeContext dla modeli widoku, poza wątkiem głównym; do pakietu data",
+                "$BASE.feature.capture.location.BuildingLookup" to
+                    "#1646: liczy w computeContext dla modeli widoku, poza wątkiem głównym; do pakietu data",
             )
 
         const val ICON_HINT = "Ikona budowana poza wzornictwem: dodaj ikonę w core:designsystem wspólną funkcją"

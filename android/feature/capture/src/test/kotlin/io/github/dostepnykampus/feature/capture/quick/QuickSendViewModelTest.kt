@@ -16,7 +16,7 @@ import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
-import io.github.dostepnykampus.feature.capture.BuildingLookup
+import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import kotlinx.coroutines.Dispatchers

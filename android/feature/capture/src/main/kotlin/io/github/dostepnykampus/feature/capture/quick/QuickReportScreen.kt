@@ -39,7 +39,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.feature.capture.R
-import io.github.dostepnykampus.feature.capture.WithLocationPermission
+import io.github.dostepnykampus.feature.capture.location.WithLocationPermission
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths

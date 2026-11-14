@@ -30,7 +30,7 @@ import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.feature.capture.BuildingLookup
+import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import io.github.dostepnykampus.feature.capture.quick.QuickLookup
 import io.github.dostepnykampus.feature.capture.quick.QuickReport
 import io.github.dostepnykampus.feature.capture.quick.QuickSendStage

@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture
+package io.github.dostepnykampus.feature.capture.location
 
 import android.Manifest
 import android.content.Context
@@ -37,6 +37,7 @@ import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.PinnedButton
+import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.quick.content
 
 private val LOCATION = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)

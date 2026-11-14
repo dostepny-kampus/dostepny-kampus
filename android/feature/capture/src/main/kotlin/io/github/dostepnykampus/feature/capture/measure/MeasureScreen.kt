@@ -41,7 +41,7 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.location.GnssSystem
 import io.github.dostepnykampus.core.location.PositionAverage
 import io.github.dostepnykampus.feature.capture.R
-import io.github.dostepnykampus.feature.capture.WithLocationPermission
+import io.github.dostepnykampus.feature.capture.location.WithLocationPermission
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.report.Buildings
 import io.github.dostepnykampus.feature.capture.report.PlaceActions

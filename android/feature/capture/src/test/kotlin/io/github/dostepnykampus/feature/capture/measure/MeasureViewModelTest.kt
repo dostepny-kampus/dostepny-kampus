@@ -14,7 +14,7 @@ import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.location.Satellite
 import io.github.dostepnykampus.core.location.SatelliteSource
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.capture.BuildingLookup
+import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

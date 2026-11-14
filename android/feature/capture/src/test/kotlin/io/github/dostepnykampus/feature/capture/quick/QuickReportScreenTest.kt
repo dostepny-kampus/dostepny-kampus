@@ -24,7 +24,7 @@ import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.Floor
 import io.github.dostepnykampus.core.model.FloorList
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.capture.BuildingLookup
+import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
