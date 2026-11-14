@@ -43,6 +43,7 @@ gdy manifest i odpowiadający mu plik lock są aktualizowane razem.
 | Opis zawiera `Closes #N` albo inną z form GitHuba: `close`, `closes`, `closed`, `fix`, `fixes`, `fixed`, `resolve`, `resolves`, `resolved` (wielkość liter bez znaczenia). Samo `#N` się nie liczy. | [`slowa-zamykajace.sh`](.github/scripts/slowa-zamykajace.sh) |
 | Wskazane issue jest otwarte, jest issue (nie PR), jest przypisane autorowi PR. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh) |
 | Nazwa gałęzi zaczyna się od `N-`, gdzie `#N` jest wśród zamykanych issue. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh) |
+| Nazwa gałęzi PR ma format `N-krotki-opis`: numer zamykanego issue, łącznik i opis z małych liter ASCII, cyfr i łączników. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh) |
 | PR ma etykietę obszaru, a jeśli zamykane issue ma etykiety obszaru, PR ma co najmniej jedną z nich. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh), obszary z [`labeler.yml`](.github/labeler.yml) |
 | PR do `sprint/N` zamyka tylko issue z kamieniem milowym `Sprint N`. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh) |
 | Jeden PR to jedna logiczna zmiana, najwyżej 300 zmienionych linii (bez danych, plików lock i kodu generowanego). | [`rozmiar-pr.sh`](.github/scripts/rozmiar-pr.sh), zadanie `rozmiar` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |

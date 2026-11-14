@@ -114,8 +114,8 @@ if [[ -z $issues ]]; then
   exit 1
 fi
 
-if [[ ! $branch =~ ^([0-9]+)- ]]; then
-  report "gałąź ${branch:-<brak>}: nazwa gałęzi nie zaczyna się od numeru issue (N-krotki-opis)."
+if [[ ! $branch =~ ^([0-9]+)-[a-z0-9-]+$ ]]; then
+  report "gałąź ${branch:-<brak>}: nazwa gałęzi nie ma formatu N-krotki-opis (cyfry, małe litery i łączniki)."
 elif ! grep -qx "${BASH_REMATCH[1]}" <<<"$issues"; then
   report "gałąź ${branch}: numer #${BASH_REMATCH[1]} nie jest wśród zamykanych issue ($(printf '#%s ' $issues))."
 fi
