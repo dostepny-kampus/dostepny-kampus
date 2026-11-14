@@ -91,8 +91,13 @@ private fun SheetTop(severity: Severity, onClose: () -> Unit) {
     }
 }
 
+/**
+ * Plakietka uciążliwości: znak i słowo.
+ *
+ * Wymagania: NFR-21
+ */
 @Composable
-private fun SeverityBadge(severity: Severity) {
+internal fun SeverityBadge(severity: Severity) {
     Surface(
         shape = RoundedCornerShape(Zaokraglenia.srednie),
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
@@ -113,8 +118,13 @@ private fun SeverityBadge(severity: Severity) {
     }
 }
 
+/**
+ * Typ bariery jako nagłówek, miejsce z [barrierPlace] i „Sprawdzone 14.10.2026”.
+ *
+ * Wymagania: US1.5, US2.2
+ */
 @Composable
-private fun BarrierFacts(chosen: ChosenBarrier) {
+internal fun BarrierFacts(chosen: ChosenBarrier) {
     val barrier = chosen.barrier
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
