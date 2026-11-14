@@ -44,9 +44,9 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.controls.MapControlIcons
-import io.github.dostepnykampus.feature.map.controls.mapControlBorder
 import io.github.dostepnykampus.feature.map.data.AreaChoice
+import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
+import io.github.dostepnykampus.feature.map.overlay.mapControlBorder
 
 private val AreaRowHeight = 56.dp
 private const val TEN = 10

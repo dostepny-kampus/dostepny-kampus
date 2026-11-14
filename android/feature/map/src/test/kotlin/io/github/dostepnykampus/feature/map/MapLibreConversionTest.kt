@@ -7,8 +7,11 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.compose.ui.graphics.Color
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.data.MapCamera
-import io.github.dostepnykampus.feature.map.data.START_ZOOM
+import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.START_ZOOM
+import io.github.dostepnykampus.feature.map.camera.hex
+import io.github.dostepnykampus.feature.map.camera.toCamera
+import io.github.dostepnykampus.feature.map.camera.toPosition
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

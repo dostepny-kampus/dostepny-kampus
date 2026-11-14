@@ -39,7 +39,6 @@ import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
-import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.area.rememberMapAreas
 import io.github.dostepnykampus.feature.map.barrier.BarrierDescriptions
@@ -47,10 +46,12 @@ import io.github.dostepnykampus.feature.map.barrier.ChosenBarrierSheet
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingChoiceSheet
-import io.github.dostepnykampus.feature.map.controls.MapStatusBar
-import io.github.dostepnykampus.feature.map.controls.dataDay
+import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.overlay.MapOverlay
+import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
+import io.github.dostepnykampus.feature.map.overlay.dataDay
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -278,9 +279,6 @@ private fun BuildingChoices(
         }
     }
 }
-
-/** Punkt podpisu budynku o symbolu [symbol] z gotowych danych mapy; `null`, gdy dane go nie znają. */
-internal fun CampusMapData.pointOf(symbol: String?): GeoPoint? = symbol?.let(labelPointsBySymbol::get)
 
 private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
     symbols.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }

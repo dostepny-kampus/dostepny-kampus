@@ -6,16 +6,16 @@
 package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.camera.FreeMap
+import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapLimits
+import io.github.dostepnykampus.feature.map.camera.PanDirection
+import io.github.dostepnykampus.feature.map.camera.START_ZOOM
+import io.github.dostepnykampus.feature.map.camera.fitted
+import io.github.dostepnykampus.feature.map.camera.moved
+import io.github.dostepnykampus.feature.map.camera.zoomedIn
+import io.github.dostepnykampus.feature.map.camera.zoomedOut
 import io.github.dostepnykampus.feature.map.data.CampusBounds
-import io.github.dostepnykampus.feature.map.data.FreeMap
-import io.github.dostepnykampus.feature.map.data.MapCamera
-import io.github.dostepnykampus.feature.map.data.MapLimits
-import io.github.dostepnykampus.feature.map.data.PanDirection
-import io.github.dostepnykampus.feature.map.data.START_ZOOM
-import io.github.dostepnykampus.feature.map.data.fitted
-import io.github.dostepnykampus.feature.map.data.moved
-import io.github.dostepnykampus.feature.map.data.zoomedIn
-import io.github.dostepnykampus.feature.map.data.zoomedOut
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.math.cos

@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.camera
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,10 +16,7 @@ import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
-import io.github.dostepnykampus.feature.map.data.MapCamera
-import io.github.dostepnykampus.feature.map.data.MapLimits
 import io.github.dostepnykampus.feature.map.data.MapSelection
-import io.github.dostepnykampus.feature.map.data.center
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng

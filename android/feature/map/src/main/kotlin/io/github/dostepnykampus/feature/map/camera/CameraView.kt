@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.camera
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,9 +14,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusMapData
-import io.github.dostepnykampus.feature.map.data.MapCamera
-import io.github.dostepnykampus.feature.map.data.START_ZOOM
-import io.github.dostepnykampus.feature.map.data.center
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 internal val CameraSaver =
@@ -59,3 +56,6 @@ internal fun rememberCameraView(focus: MapFocus?, layers: CampusMapData?): Camer
         },
     )
 }
+
+/** Punkt podpisu budynku o symbolu [symbol] z gotowych danych mapy; `null`, gdy dane go nie znają. */
+internal fun CampusMapData.pointOf(symbol: String?): GeoPoint? = symbol?.let(labelPointsBySymbol::get)
