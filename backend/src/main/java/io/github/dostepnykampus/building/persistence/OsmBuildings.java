@@ -19,9 +19,7 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.migration.Context;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.jspecify.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
@@ -38,7 +36,6 @@ import tools.jackson.databind.node.ArrayNode;
  *
  * @since 0.1.0
  */
-@Component
 final class OsmBuildings implements JavaMigration {
 
     /**
@@ -70,7 +67,7 @@ final class OsmBuildings implements JavaMigration {
 
     OsmBuildings(
         final ObjectMapper mapper,
-        @Value("classpath:data/pwr-buildings.geojson") final Resource file
+        final Resource file
     ) {
         this.mapper = mapper;
         this.file = file;

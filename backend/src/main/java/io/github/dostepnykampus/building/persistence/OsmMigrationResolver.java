@@ -1,0 +1,57 @@
+/*
+ * Dostępny Kampus
+ * Author: Vladyslav Yevkov
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+package io.github.dostepnykampus.building.persistence;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.flywaydb.core.api.migration.JavaMigration;
+import org.flywaydb.core.api.resolver.MigrationResolver;
+import org.flywaydb.core.api.resolver.ResolvedMigration;
+import org.springframework.boot.flyway.autoconfigure.FlywayConfigurationCustomizer;
+
+/**
+ * Udostępnia migrację OSM tylko lokalizacji wspólnych migracji aplikacji.
+ *
+ * @since 0.1.0
+ */
+final class OsmMigrationResolver implements FlywayConfigurationCustomizer, MigrationResolver {
+
+    /**
+     * Powtarzalna migracja budynków i wejść.
+     */
+    private final OsmBuildings migration;
+
+    OsmMigrationResolver(final OsmBuildings migration) {
+        this.migration = migration;
+    }
+
+    @Override
+    public void customize(final FluentConfiguration configuration) {
+        configuration.javaMigrations(
+            Arrays.stream(configuration.getJavaMigrations())
+                .filter(existing -> existing != this.migration)
+                .toArray(JavaMigration[]::new)
+        );
+        final MigrationResolver[] resolvers = configuration.getResolvers();
+        final MigrationResolver[] registered = Arrays.copyOf(resolvers, resolvers.length + 1);
+        registered[resolvers.length] = this;
+        configuration.resolvers(registered);
+    }
+
+    @Override
+    public Collection<ResolvedMigration> resolveMigrations(
+        final MigrationResolver.Context context
+    ) {
+        return Arrays.stream(context.configuration.getLocations())
+            .anyMatch(location -> location.getPath().equals("db/migration/__root"))
+            ? List.of(this.migration.getResolvedMigration(
+                context.configuration, context.statementInterceptor
+            ))
+            : List.of();
+    }
+}
