@@ -7,7 +7,7 @@ package io.github.dostepnykampus.app
 
 import androidx.compose.ui.unit.Dp
 import io.github.dostepnykampus.app.navigation.AppNavigator
-import io.github.dostepnykampus.feature.map.CardMode
+import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 
 /**

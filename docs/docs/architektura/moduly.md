@@ -90,7 +90,6 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | korzeń `barrier` zawiera wnętrze modułu | #1323 |
 | `barrier.domain` ma 22 pliki | #1439 |
 | `:core:data` udostępnia `:core:database` przez `api(...)`, testy funkcji zależą od bazy i sieci | #1328 |
-| pakiet główny `:feature:map` (30 plików) przekracza limit 15 | #1570 |
 
 ## Co pilnuje zasady
 

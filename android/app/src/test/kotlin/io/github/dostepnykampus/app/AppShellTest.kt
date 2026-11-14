@@ -84,12 +84,12 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
-import io.github.dostepnykampus.feature.map.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.CampusMapView
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
-import io.github.dostepnykampus.feature.map.CardMode
-import io.github.dostepnykampus.feature.map.EntrancesScreen
 import io.github.dostepnykampus.feature.map.MapLibreMapView
+import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
+import io.github.dostepnykampus.feature.map.building.CardMode
+import io.github.dostepnykampus.feature.map.building.EntrancesScreen
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
