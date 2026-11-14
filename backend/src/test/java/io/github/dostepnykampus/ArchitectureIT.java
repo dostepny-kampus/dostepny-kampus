@@ -35,12 +35,12 @@ import org.springframework.web.server.ResponseStatusException;
     packagesOf = DostepnyKampusApplication.class,
     importOptions = ImportOption.DoNotIncludeTests.class
 )
-final class ArchitectureTest {
+final class ArchitectureIT {
 
     @ArchTest
     void controllersStayOutsidePersistence(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
-            () -> ArchitectureTest.controllerBoundary().check(classes),
+            () -> ArchitectureIT.controllerBoundary().check(classes),
             "Kontroler sięga bezpośrednio do warstwy dostępu do danych"
         );
     }
@@ -48,7 +48,7 @@ final class ArchitectureTest {
     @ArchTest
     void jdbcStaysInPersistencePackages(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
-            () -> ArchitectureTest.jdbcPlacement().check(classes),
+            () -> ArchitectureIT.jdbcPlacement().check(classes),
             "Spring JDBC jest używane poza warstwą dostępu do danych"
         );
     }
@@ -56,7 +56,7 @@ final class ArchitectureTest {
     @Test
     void rejectsControllerUsingJdbc() {
         Assertions.assertTrue(
-            ArchitectureTest.controllerBoundary()
+            ArchitectureIT.controllerBoundary()
                 .evaluate(new ClassFileImporter().importClasses(JdbcControllerSample.class))
                 .getFailureReport().getDetails().stream()
                 .anyMatch(detail -> detail.contains("JdbcClient")),
@@ -68,7 +68,7 @@ final class ArchitectureTest {
     void rejectsEmptySelectionAtControllerBoundary() {
         Assertions.assertThrows(
             AssertionError.class,
-            () -> ArchitectureTest.controllerBoundary().check(
+            () -> ArchitectureIT.controllerBoundary().check(
                 new ClassFileImporter().importClasses(InvalidInput.class)
             ),
             "Reguła bez żadnego kontrolera powinna zawieść"
@@ -88,7 +88,7 @@ final class ArchitectureTest {
     @ArchTest
     void errorFiveKeepsErrorTypesFreeOfWebAndJson(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
-            () -> ArchitectureTest.errorTypes().check(classes),
+            () -> ArchitectureIT.errorTypes().check(classes),
             "Typ błędu zależy od Spring Web albo Jacksona"
         );
     }

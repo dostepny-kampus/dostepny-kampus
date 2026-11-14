@@ -31,8 +31,8 @@ import org.junit.jupiter.params.provider.MethodSource;
  * A-2 JDBC tylko w persistence, A-3 web bez {@code JsonNode}, A-4 port dziedziny z implementacją
  * w adapterze tylko w application i adapterach, A-6 API innego modułu tylko w application, A-7
  * wyjątki HTTP tylko w web. A-9 (typy błędów bez HTTP i Jacksona) sprawdza na kodzie
- * {@link ArchitectureTest}, a tu są jej przykłady negatywne. Dziedzinę bez frameworków i adapter
- * bez adaptera pilnuje {@link LayerDirectionArchitectureTest}. Lista wyjątków tylko maleje.
+ * {@link ArchitectureIT}, a tu są jej przykłady negatywne. Dziedzinę bez frameworków i adapter
+ * bez adaptera pilnuje {@link LayerDirectionArchitectureIT}. Lista wyjątków tylko maleje.
  *
  * @since 0.1.0
  */
@@ -131,7 +131,7 @@ final class TechnologyArchitectureIT {
             full, "Sample", String.format("package %s;%nfinal class Sample %s%n", full, body)
         );
         Assertions.assertTrue(
-            ArchitectureTest.errorTypes().evaluate(samples.compiled(full)).hasViolation(),
+            ArchitectureIT.errorTypes().evaluate(samples.compiled(full)).hasViolation(),
             "Reguła A-9 przepuściła typ błędu zależny od HTTP albo Jacksona"
         );
     }
