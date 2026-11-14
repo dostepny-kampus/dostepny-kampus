@@ -12,6 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.network.auth.AccessTokenInterceptor
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -21,7 +22,7 @@ import javax.inject.Singleton
 /**
  * Klient HTTP `core:network` w grafie Hilt aplikacji.
  *
- * Jedna instancja klienta, parsera, [BuildingsApi] i [SubmissionsApi] na proces.
+ * Jedna instancja klienta, parsera, [BuildingsApi], [SubmissionsApi] i [MarkerChangesApi] na proces.
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -67,4 +68,10 @@ public object NetworkModule {
     @Singleton
     public fun submissionsApi(http: OkHttpClient, json: Json): SubmissionsApi =
         SubmissionsApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
+
+    /** Wysyłka zmian znaczników piętra obejrzanego; ten sam adres co [buildingsApi]. */
+    @Provides
+    @Singleton
+    public fun markerChangesApi(http: OkHttpClient, json: Json): MarkerChangesApi =
+        MarkerChangesApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
 }
