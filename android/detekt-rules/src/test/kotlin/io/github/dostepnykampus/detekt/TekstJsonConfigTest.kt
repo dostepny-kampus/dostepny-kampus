@@ -19,15 +19,6 @@ import java.nio.file.Path
  * tekstu JSON z jawnym i z niejawnym odbiorcą.
  */
 class TekstJsonConfigTest {
-    private val rule =
-        ForbiddenMethodCall(
-            Files
-                .newBufferedReader(Path.of("..", "config", "detekt", "detekt.yml"))
-                .use(YamlConfig::load)
-                .subConfig("style")
-                .subConfig("ForbiddenMethodCall/tekst-json"),
-        )
-
     @Test
     fun `jawny odbiorca to błąd`() {
         assertEquals(
@@ -36,6 +27,7 @@ class TekstJsonConfigTest {
                 "fun y(json: Json, body: String): String =",
                 "    json.decodeFromString(String.serializer(), body)",
             ),
+            "Wywołanie z jawnym odbiorcą Json jest zgłaszane",
         )
     }
 
@@ -47,6 +39,7 @@ class TekstJsonConfigTest {
                 "fun Json.x(body: String): String =",
                 "    decodeFromString(String.serializer(), body)",
             ),
+            "Wywołanie w rozszerzeniu Json bez jawnego odbiorcy jest zgłaszane",
         )
     }
 
@@ -59,6 +52,7 @@ class TekstJsonConfigTest {
                 "fun Json.x(body: String): B =",
                 "    decodeFromString(B.serializer(), body)",
             ),
+            "Serializer wtyczki z niejawnym odbiorcą jest zgłaszany",
         )
     }
 
@@ -71,12 +65,18 @@ class TekstJsonConfigTest {
                 "fun y(json: Json, body: String): B =",
                 "    json.decodeFromString(B.serializer(), body)",
             ),
+            "Serializer wtyczki z jawnym odbiorcą jest zgłaszany",
         )
     }
 
     private fun lines(vararg body: String): List<Int> =
-        rule
-            .lintWithContext(createEnvironment(), (HEADER + body).joinToString(separator = "\n"))
+        ForbiddenMethodCall(
+            Files
+                .newBufferedReader(Path.of("..", "config", "detekt", "detekt.yml"))
+                .use(YamlConfig::load)
+                .subConfig("style")
+                .subConfig("ForbiddenMethodCall/tekst-json"),
+        ).lintWithContext(createEnvironment(), (HEADER + body).joinToString(separator = "\n"))
             .map { it.entity.location.source.line }
             .distinct()
 
