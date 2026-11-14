@@ -75,7 +75,6 @@ class MapOverlayNeighborTest {
 
     /**
      * Wiersz: V1, dotknięcie przycisku pokazuje sąsiedni teren: jego środek w powiększeniu startowym.
-     * Scenariusz: przegladanie-mapy.feature: Przycisk przy krawędzi mapy przechodzi do sąsiedniego terenu
      *
      * Wymagania: US1.7
      */

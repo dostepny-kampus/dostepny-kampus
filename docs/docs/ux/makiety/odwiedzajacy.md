@@ -162,15 +162,14 @@ Czynność główna: wybranie terenu z listy, które pokazuje mapę tego terenu.
 
 ### V1: granica terenu
 
-![Makieta V1 przy granicy terenu Kampus główny: obszar poza terenem przyciemniony, linia granicy i przycisk sąsiedniego terenu Wittigowo, 2 km, ze strzałką](../../_generated/m-v1-mapa-teren-granica.svg)
+![Makieta V1 przy granicy terenu Kampus główny: poza terenem wyblakły podkład, granicę pokazuje linia z obwódką, u góry przycisk terenu](../../_generated/m-v1-mapa-teren-granica.svg)
 
-Czynność główna: przycisk sąsiedniego terenu, który pokazuje mapę tego terenu.
+Czynność główna: przycisk terenu, który otwiera listę terenów.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Mapa nie wychodzi poza wybrany teren; obszar poza nim jest przyciemniony, a granicę pokazuje linia | US1.7, BR-G5, NFR-39 |
-| Przycisk sąsiedniego terenu z nazwą, odległością i strzałką pojawia się, gdy widok stoi na granicy, a w tę stronę leży inny teren | US1.7, NFR-53 |
-| TalkBack ogłasza raz: „Tu kończy się teren Kampus główny. Obok: Wittigowo, 2 km” | US1.7, NFR-18 |
+| Mapa nie wychodzi poza wybrany teren; poza jego granicą podkład jest wyblakły, a granicę pokazuje linia z obwódką | US1.7, BR-G5, NFR-16, NFR-39 |
+| Przy dojściu do granicy TalkBack ogłasza raz: „Tu kończy się teren Kampus główny. Inne tereny wybierzesz przyciskiem terenu.” | US1.7, NFR-18 |
 
 ### V1: wynik z innego terenu
 

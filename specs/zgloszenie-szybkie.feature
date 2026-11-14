@@ -190,17 +190,18 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie nie powstaje
     Oraz aplikacja wraca do mapy kampusu
 
-  @US4.9 @BR-G5 @aplikacja
+  # granica terenu w aplikacji: #2087
+  @US4.9 @BR-G5 @aplikacja @do-zrobienia
   Szablon scenariusza: Zgłoszenie szybkie tylko na terenie PWr
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz zrobił zdjęcie bariery i wybrał grupę barier „komunikacja pozioma”
-    Jeżeli telefon ustali pozycję <odległość> od konturu najbliższego budynku PWr
+    Jeżeli telefon ustali pozycję <miejsce>
     Wtedy <wynik>
 
     Przykłady:
-      | odległość | wynik                                                              |
-      | 500 m     | może wysłać zgłoszenie, które jest „poza budynkiem”                |
-      | 510 m     | widzi napis „Jesteś poza terenem PWr” i nie może wysłać zgłoszenia |
+      | miejsce                                          | wynik                                                              |
+      | na ulicy między budynkami terenu „Kampus główny” | może wysłać zgłoszenie, które jest „poza budynkiem”                |
+      | 20 m za granicą terenu PWr                       | widzi napis „Jesteś poza terenem PWr” i nie może wysłać zgłoszenia |
 
   @US4.9 @BR-G5 @aplikacja @serwer
   Scenariusz: Serwer odrzuca zgłoszenie spoza terenu PWr
