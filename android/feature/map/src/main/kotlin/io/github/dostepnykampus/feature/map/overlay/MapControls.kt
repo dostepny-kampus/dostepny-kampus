@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.controls
+package io.github.dostepnykampus.feature.map.overlay
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -34,11 +34,11 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.data.MapCamera
-import io.github.dostepnykampus.feature.map.data.PanDirection
-import io.github.dostepnykampus.feature.map.data.moved
-import io.github.dostepnykampus.feature.map.data.zoomedIn
-import io.github.dostepnykampus.feature.map.data.zoomedOut
+import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.PanDirection
+import io.github.dostepnykampus.feature.map.camera.moved
+import io.github.dostepnykampus.feature.map.camera.zoomedIn
+import io.github.dostepnykampus.feature.map.camera.zoomedOut
 
 private const val DARK_SURFACE_LUMINANCE = 0.5f
 

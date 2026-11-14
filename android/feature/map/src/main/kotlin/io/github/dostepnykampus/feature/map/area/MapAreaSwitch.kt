@@ -38,9 +38,9 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.controls.MapControlIcons
-import io.github.dostepnykampus.feature.map.controls.MapControlTouchSize
-import io.github.dostepnykampus.feature.map.controls.mapControlBorder
+import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
+import io.github.dostepnykampus.feature.map.overlay.MapControlTouchSize
+import io.github.dostepnykampus.feature.map.overlay.mapControlBorder
 
 /**
  * Przycisk terenu mapy V1 według makiety hi-fi: znak „⊙”, nazwa pokazanego terenu i znak rozwinięcia, a pod nim,

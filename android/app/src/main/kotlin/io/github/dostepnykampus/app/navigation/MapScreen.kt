@@ -15,9 +15,9 @@ import io.github.dostepnykampus.app.LocalSheetPadding
 import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
-import io.github.dostepnykampus.feature.map.CampusMapView
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.MapLibreMapView
+import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 /** V1 ze stanem [viewModel] z grafu Hilt i zaznaczeniem [focus] z trasy. Wymagania: US1, US3.3, NFR-19 */

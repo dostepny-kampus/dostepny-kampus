@@ -19,15 +19,19 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.BuildingCatalog
-import io.github.dostepnykampus.feature.map.controls.MapControlTouchSize
+import io.github.dostepnykampus.feature.map.camera.CameraSaver
+import io.github.dostepnykampus.feature.map.camera.CameraView
+import io.github.dostepnykampus.feature.map.camera.ENTRANCE_ZOOM
+import io.github.dostepnykampus.feature.map.camera.FreeMap
+import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapLimits
+import io.github.dostepnykampus.feature.map.camera.START_ZOOM
+import io.github.dostepnykampus.feature.map.camera.fitted
+import io.github.dostepnykampus.feature.map.camera.mapLimits
+import io.github.dostepnykampus.feature.map.camera.rememberCameraView
 import io.github.dostepnykampus.feature.map.data.CampusMapData
-import io.github.dostepnykampus.feature.map.data.ENTRANCE_ZOOM
-import io.github.dostepnykampus.feature.map.data.FreeMap
-import io.github.dostepnykampus.feature.map.data.MapCamera
-import io.github.dostepnykampus.feature.map.data.MapLimits
-import io.github.dostepnykampus.feature.map.data.START_ZOOM
-import io.github.dostepnykampus.feature.map.data.fitted
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.overlay.MapControlTouchSize
 
 private const val CONTROLS_COLUMNS = 3
 private const val FIT_MARGIN_DP = 24.0

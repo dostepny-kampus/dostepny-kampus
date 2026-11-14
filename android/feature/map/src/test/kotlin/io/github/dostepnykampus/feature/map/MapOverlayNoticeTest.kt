@@ -24,12 +24,13 @@ import androidx.compose.ui.test.performClick
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.area.MapAreas
+import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapArea
-import io.github.dostepnykampus.feature.map.data.MapCamera
-import io.github.dostepnykampus.feature.map.data.START_ZOOM
 import io.github.dostepnykampus.feature.map.data.center
+import io.github.dostepnykampus.feature.map.overlay.MapOverlay
 import kotlinx.serialization.json.JsonObject
 import org.junit.Assert.assertTrue
 import org.junit.Rule

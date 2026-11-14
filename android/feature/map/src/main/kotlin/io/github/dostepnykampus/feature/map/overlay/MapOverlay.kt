@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.overlay
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -29,18 +29,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
+import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.area.AreaList
 import io.github.dostepnykampus.feature.map.area.AreaNotice
 import io.github.dostepnykampus.feature.map.area.MapAreaNeighbor
 import io.github.dostepnykampus.feature.map.area.MapAreaSwitch
 import io.github.dostepnykampus.feature.map.area.MapAreas
-import io.github.dostepnykampus.feature.map.controls.MapControlTouchSize
-import io.github.dostepnykampus.feature.map.controls.MapControls
-import io.github.dostepnykampus.feature.map.controls.MapInfo
-import io.github.dostepnykampus.feature.map.controls.MapLegend
-import io.github.dostepnykampus.feature.map.controls.OSM_COPYRIGHT
-import io.github.dostepnykampus.feature.map.controls.mapControlBorder
-import io.github.dostepnykampus.feature.map.data.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapCamera
 import java.time.LocalDate
 
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
