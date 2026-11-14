@@ -23,9 +23,11 @@ Pasek dolny jest na ekranach V1, V2, V3, V5 i L2. Prowadzi do mapy, zgłoszenia 
 
 ### Od mapy do wejścia
 
-![Diagram: od uruchomienia przez V1 i V2 do V3, planu piętra i zgłoszenia szybkiego](../_generated/nawigacja-gosc-mapa.svg)
+![Diagram: od uruchomienia przez V1 do V2, V3, planu piętra jako stanu V1, arkusza windy i zgłoszenia szybkiego](../_generated/nawigacja-gosc-mapa.svg)
 
-Główna droga to V1, V2, V3 i z powrotem na mapę z zaznaczonym wejściem. Z V2 osoba otwiera też plan piętra albo zgłasza barierę przy wejściu. Mapa ma jeszcze listę terenów i wynik wyszukiwania z salą, który otwiera plan piętra od razu.
+Główna droga to V1, V2, V3 i z powrotem na mapę z zaznaczonym wejściem. Z V2 osoba otwiera też plan piętra na V1 albo zgłasza barierę przy wejściu. Mapa ma jeszcze listę terenów oraz przybliżenie budynku szczegółowego na plan piętra.
+
+Wynik wyszukiwania z salą, na przykład „A-1 329”, otwiera plan piętra od razu bez V2. Na planie piętra można dotknąć windy, otwierając arkusz windy, albo oddalić mapę. Plan piętra i arkusz windy to stany V1, a nie osobne ekrany.
 
 ### Zgłoszenie szybkie
 
@@ -112,8 +114,12 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, panel „Teren na mapie” | teren z listy; „Zamknij” | V1 z wybranym terenem; V1 | wszystkie | US1.7 |
 | V1, widok przy granicy terenu | przycisk sąsiedniego terenu, np. „Wittigowo 2 km” | V1 z tym terenem | wszystkie | US1.7 |
 | V1 | wybór wyniku albo budynku z listy, który leży na innym terenie | V1 z terenem tego budynku; dalej jak przy każdym wyniku | wszystkie | US1.8 |
+| V1 | przybliżenie budynku szczegółowego (≥ 17) | V1, stan „plan piętra” | wszystkie | R2, US16.1 |
 | V1 | wybór sali w wynikach pola, np. „A-1 329” | V1, stan „znaleziona sala”: plan piętra i kroki | wszystkie | BR-25, decyzja 44 |
+| V1, stan „plan piętra” | oddalenie (< 16,5), wyjście z zasięgu budynku albo zmiana terenu | V1 | wszystkie | R3, R4, US16.1, US1.6 |
 | V1, stan „plan piętra” albo „znaleziona sala” | przełącznik pięter | V1, plan innego piętra | wszystkie | US16.1 |
+| V1, stan „plan piętra” albo „znaleziona sala” | dotknięcie windy | V1, stan „arkusz windy” | wszystkie | R14, US16.1 |
+| V1, stan „arkusz windy” | „Zamknij” | V1, stan „plan piętra” | wszystkie | NFR-53 |
 | V1, stan „znaleziona sala”, „sala bez drogi” albo „brak sali” | „Pokaż opis budynku” | V2 | wszystkie | US2 |
 | V1, stan „znaleziona sala” | „Zamknij” | V1 | wszystkie | decyzja 48 |
 | V2 | „Pokaż na planie” przy piętrze | V1, plan tego piętra | wszystkie | US16.1, decyzja 44 |
