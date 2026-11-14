@@ -5,7 +5,7 @@
  */
 
 /**
- * Zdjęcia zgłoszeń: magazyn S3, jego ustawienia i usuwanie metadanych JPEG.
+ * Zdjęcia zgłoszeń: port magazynu, przyjmowany plik i usuwanie metadanych JPEG.
  *
  * @since 0.1.0
  */

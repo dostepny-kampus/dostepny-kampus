@@ -5,7 +5,7 @@
  */
 
 /**
- * Testy magazynu zdjęć i jego ustawień.
+ * Testy przyjmowanego pliku i usuwania metadanych JPEG.
  *
  * @since 0.1.0
  */

@@ -3,12 +3,13 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.application;
+package io.github.dostepnykampus.barrier.photo.application;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.barrier.photo.PhotoSettings;
+import io.github.dostepnykampus.barrier.application.SubmissionService;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
-import io.github.dostepnykampus.barrier.photo.S3PhotoStore;
+import io.github.dostepnykampus.barrier.photo.storage.PhotoSettings;
+import io.github.dostepnykampus.barrier.photo.storage.S3PhotoStore;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.Submission;

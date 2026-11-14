@@ -3,9 +3,10 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.photo;
+package io.github.dostepnykampus.barrier.photo.storage;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;

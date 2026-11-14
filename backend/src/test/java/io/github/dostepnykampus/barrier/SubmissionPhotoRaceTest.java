@@ -6,13 +6,13 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.barrier.application.SubmissionPhotos;
 import io.github.dostepnykampus.barrier.application.SubmissionService;
 import io.github.dostepnykampus.barrier.photo.JpegCleaner;
-import io.github.dostepnykampus.barrier.photo.PhotoSettings;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import io.github.dostepnykampus.barrier.photo.PhotoUpload;
-import io.github.dostepnykampus.barrier.photo.S3PhotoStore;
+import io.github.dostepnykampus.barrier.photo.application.SubmissionPhotos;
+import io.github.dostepnykampus.barrier.photo.storage.PhotoSettings;
+import io.github.dostepnykampus.barrier.photo.storage.S3PhotoStore;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import java.io.ByteArrayInputStream;

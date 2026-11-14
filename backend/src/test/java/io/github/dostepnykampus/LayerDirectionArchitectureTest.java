@@ -61,9 +61,7 @@ final class LayerDirectionArchitectureTest {
     /**
      * Pakiety dziedziny, które dziś zależą od frameworka, i issue, które to usuwa.
      */
-    private static final Map<String, Integer> KNOWN = Map.of(
-        "io.github.dostepnykampus.barrier.photo", 1678
-    );
+    private static final Map<String, Integer> KNOWN = Map.of();
 
     /**
      * Pakiet przykładów kompilowanych przez test.
