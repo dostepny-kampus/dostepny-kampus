@@ -5,24 +5,24 @@
  */
 package io.github.dostepnykampus.core.data.barrier
 
+import io.github.dostepnykampus.core.data.cache.decodeCache
+import io.github.dostepnykampus.core.data.cache.encodeCache
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
 import java.time.Instant
 
-private val cacheJson = Json { ignoreUnknownKeys = true }
 private val cachedList = ListSerializer(CachedBarrier.serializer())
 
 /** Bariery jako dokument JSON do wiersza `barrier_cache`. Wymagania: NFR-10 */
-internal fun List<AcceptedBarrier>.toCacheJson(): String = cacheJson.encodeToString(cachedList, map(::cached))
+internal fun List<AcceptedBarrier>.toCacheJson(): String = encodeCache(cachedList, map(::cached))
 
 /** Bariery z dokumentu kopii; `null` dla zepsutego dokumentu albo nieznanej uciążliwości. Wymagania: NFR-10 */
 internal fun String.toCachedBarriers(): List<AcceptedBarrier>? =
-    runCatching { cacheJson.decodeFromString(cachedList, this).map(CachedBarrier::toBarrier) }.getOrNull()
+    runCatching { decodeCache(cachedList, this).map(CachedBarrier::toBarrier) }.getOrNull()
 
 @Serializable
 private data class CachedBarrier(

@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.core.data.building
 
+import io.github.dostepnykampus.core.data.cache.decodeCache
+import io.github.dostepnykampus.core.data.cache.encodeCache
 import io.github.dostepnykampus.core.geo.GeoAreaJson
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.building.Building
@@ -12,13 +14,10 @@ import io.github.dostepnykampus.core.network.building.ApiBuilding
 import io.github.dostepnykampus.core.network.building.BuildingList
 import io.github.dostepnykampus.core.network.building.DetailLevel
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-
-private val cacheJson = Json { ignoreUnknownKeys = true }
 
 /** Lista budynków z serwera jako dokument JSON do wiersza `building_cache`. Wymagania: NFR-10 */
 internal fun BuildingList.toCacheJson(): String =
-    cacheJson.encodeToString(
+    encodeCache(
         CachedList.serializer(),
         CachedList(
             source = source,
@@ -37,7 +36,7 @@ internal fun BuildingList.toCacheJson(): String =
 /** Lista budynków z dokumentu kopii; `null` dla zepsutego dokumentu albo złych konturów. Wymagania: NFR-10 */
 internal fun String.toCachedBuildingList(): BuildingList? =
     runCatching {
-        cacheJson.decodeFromString(CachedList.serializer(), this).let { cached ->
+        decodeCache(CachedList.serializer(), this).let { cached ->
             BuildingList(
                 source = cached.source,
                 buildings = cached.buildings.map(CachedBuilding::toApi),
