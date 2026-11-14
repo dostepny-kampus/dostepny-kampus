@@ -6,11 +6,10 @@
 package io.github.dostepnykampus.building.web;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import io.github.dostepnykampus.building.domain.BuildingCard;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 
 /**
  * Karta budynku w odpowiedzi HTTP, zgodna ze schematem BuildingDetails.
@@ -20,7 +19,7 @@ import tools.jackson.databind.ObjectMapper;
  * @param symbol Symbol budynku, np. C-13
  * @param name Nazwa budynku albo null, gdy budynek jej nie ma
  * @param detailLevel Poziom szczegółowości: DETAILED albo BASIC
- * @param outline Kontur budynku jako GeoJSON
+ * @param outline Kontur budynku jako GeoJSON z bazy, wstawiany do odpowiedzi bez zmian
  * @param entrances Wejścia budynku; pusta lista, gdy dane nie mają wejść
  * @since 0.1.0
  */
@@ -29,7 +28,7 @@ public record BuildingCardResponse(
     String symbol,
     @Nullable String name,
     String detailLevel,
-    JsonNode outline,
+    @JsonRawValue String outline,
     List<EntranceResponse> entrances
 ) {
 
@@ -37,12 +36,11 @@ public record BuildingCardResponse(
      * Odpowiedź z karty budynku.
      *
      * @param card Karta budynku
-     * @param mapper Parser konturu i położeń GeoJSON
      */
-    public BuildingCardResponse(final BuildingCard card, final ObjectMapper mapper) {
+    public BuildingCardResponse(final BuildingCard card) {
         this(
-            card.symbol(), card.name(), card.detailLevel(), mapper.readTree(card.outline()),
-            card.entrances().stream().map(item -> new EntranceResponse(item, mapper)).toList()
+            card.symbol(), card.name(), card.detailLevel(), card.outline(),
+            card.entrances().stream().map(EntranceResponse::new).toList()
         );
     }
 }
