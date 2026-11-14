@@ -39,7 +39,7 @@ class AssertionMessage(config: Config) :
 
     private fun lacksMessage(call: KtCallExpression): Boolean =
         analyze(call) {
-            val symbol = call.resolveToCall()?.successfulFunctionCallOrNull()?.symbol
+            val symbol = call.resolveToCall()?.successfulFunctionCallOrNull()?.signature?.symbol
             val types = symbol?.valueParameters?.map { it.returnType }.orEmpty()
             when (symbol?.callableId?.classId) {
                 JUPITER -> !hasJupiterMessage(symbol.callableId?.callableName?.asString(), types)
