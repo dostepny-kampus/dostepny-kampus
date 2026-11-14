@@ -7,6 +7,7 @@ barrier	temat	bariera	Bariera zaakceptowana i pokazywana na mapie.
 building	temat	budynek	Budynek, jego wejścia i piętra.
 cache	temat	kopia danych	Kopia danych serwera na urządzeniu do pracy bez sieci.
 camera	temat	kamera mapy	Położenie i ruch widoku mapy.
+campus	temat	kampus na mapie	Wspólne dane mapy kampusu: budynki, tereny, zaznaczenie i dzień danych.
 content	temat	treść zgłoszenia	Typ, grupa, miejsce i piętro bariery w zgłoszeniu.
 edit	ścieżka	edycja zgłoszenia	Zmiana wysłanego zgłoszenia.
 error	temat	błąd	Błędy wspólne dla modułów i ich odpowiedź HTTP.
