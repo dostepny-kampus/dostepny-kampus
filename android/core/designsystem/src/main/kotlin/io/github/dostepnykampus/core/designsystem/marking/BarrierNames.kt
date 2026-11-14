@@ -7,7 +7,7 @@ package io.github.dostepnykampus.core.designsystem.marking
 
 import androidx.annotation.StringRes
 import io.github.dostepnykampus.core.designsystem.R
-import io.github.dostepnykampus.core.model.BarrierGroup
+import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 

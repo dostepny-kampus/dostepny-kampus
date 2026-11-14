@@ -9,8 +9,8 @@ import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.TestRoles
 import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.core.model.Account
-import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.StaffRole
+import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute

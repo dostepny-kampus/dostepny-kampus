@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.feature.capture.quick
 
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
-import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import org.junit.jupiter.api.Assertions.assertEquals

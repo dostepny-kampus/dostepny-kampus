@@ -14,10 +14,10 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.ser
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
-import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.model.SubmissionKind
+import io.github.dostepnykampus.core.model.submission.BarrierGroup
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals

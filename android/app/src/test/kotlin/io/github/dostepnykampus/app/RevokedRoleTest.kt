@@ -28,8 +28,8 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
 import io.github.dostepnykampus.core.database.submission.PendingEditDao
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.model.SubmissionKind
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsContent
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsViewModel

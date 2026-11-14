@@ -8,9 +8,9 @@ package io.github.dostepnykampus.core.data.barrier
 import io.github.dostepnykampus.core.data.cache.decodeCache
 import io.github.dostepnykampus.core.data.cache.encodeCache
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import java.time.Instant

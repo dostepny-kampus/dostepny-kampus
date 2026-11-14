@@ -9,7 +9,7 @@ import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionKind
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.network.ApiResult
 
 /** Wynik odświeżenia statusów własnych zgłoszeń z serwera. Wymagania: US8.2, US9.1, NFR-50 */

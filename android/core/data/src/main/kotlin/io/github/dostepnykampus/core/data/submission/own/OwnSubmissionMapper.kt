@@ -11,7 +11,7 @@ import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
 import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionKind
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 
 private const val HTTP_FORBIDDEN = 403
 private const val HTTP_NOT_FOUND = 404

@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.model
 
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import java.time.Instant
 
 /**

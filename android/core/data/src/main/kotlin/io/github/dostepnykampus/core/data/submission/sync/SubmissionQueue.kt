@@ -19,7 +19,7 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
 import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
