@@ -29,20 +29,20 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class SubmissionPointHttpTest {
+final class SubmissionPointHttpIT {
 
     @Test
     void usFourRejectsInvalidPointAtHttpBoundary(final WebApplicationContext context) {
         Assertions.assertAll(
             Stream.of(
-                SubmissionPointHttpTest.point("[181,0]"),
-                SubmissionPointHttpTest.point("[0,91]"),
-                SubmissionPointHttpTest.point("[\"bad\",0]"),
-                SubmissionPointHttpTest.point("[0]"),
+                SubmissionPointHttpIT.point("[181,0]"),
+                SubmissionPointHttpIT.point("[0,91]"),
+                SubmissionPointHttpIT.point("[\"bad\",0]"),
+                SubmissionPointHttpIT.point("[0]"),
                 "{\"type\":\"LineString\",\"coordinates\":[0,0]}"
             ).map(
                 location -> () -> Assertions.assertEquals(
-                    400, SubmissionPointHttpTest.post(context, UUID.randomUUID(), location),
+                    400, SubmissionPointHttpIT.post(context, UUID.randomUUID(), location),
                     "Niepoprawny punkt nie został odrzucony jako HTTP 400"
                 )
             )
@@ -55,8 +55,8 @@ final class SubmissionPointHttpTest {
         Assertions.assertAll(
             () -> Assertions.assertEquals(
                 400,
-                SubmissionPointHttpTest.post(
-                    context, id, SubmissionPointHttpTest.point("[0,\"bad\"]")
+                SubmissionPointHttpIT.post(
+                    context, id, SubmissionPointHttpIT.point("[0,\"bad\"]")
                 ),
                 "Szerokość niebędąca liczbą nie została odrzucona jako HTTP 400"
             ),
@@ -74,13 +74,13 @@ final class SubmissionPointHttpTest {
     void usEightRejectsInvalidPointOnEdit(final WebApplicationContext context)
         throws Exception {
         final UUID id = UUID.randomUUID();
-        SubmissionPointHttpTest.post(context, id, SubmissionPointHttpTest.point("[17.05,51.108]"));
+        SubmissionPointHttpIT.post(context, id, SubmissionPointHttpIT.point("[17.05,51.108]"));
         Assertions.assertAll(
             () -> Assertions.assertEquals(
-                400, SubmissionPointHttpTest.put(context, id, "[181,0]"), "PUT [181,0] bez 400"
+                400, SubmissionPointHttpIT.put(context, id, "[181,0]"), "PUT [181,0] bez 400"
             ),
             () -> Assertions.assertEquals(
-                400, SubmissionPointHttpTest.put(context, id, "[0,91]"), "PUT [0,91] bez 400"
+                400, SubmissionPointHttpIT.put(context, id, "[0,91]"), "PUT [0,91] bez 400"
             ),
             () -> Assertions.assertEquals(
                 1,
@@ -99,7 +99,7 @@ final class SubmissionPointHttpTest {
     private static int post(
         final WebApplicationContext context, final UUID id, final String location
     ) throws Exception {
-        return SubmissionPointHttpTest.status(
+        return SubmissionPointHttpIT.status(
             context, MockMvcRequestBuilders.post("/submissions"),
             String.format("\"id\":\"%s\",\"location\":%s", id, location)
         );
@@ -107,9 +107,9 @@ final class SubmissionPointHttpTest {
 
     private static int put(final WebApplicationContext context, final UUID id, final String place)
         throws Exception {
-        return SubmissionPointHttpTest.status(
+        return SubmissionPointHttpIT.status(
             context, MockMvcRequestBuilders.put("/submissions/{id}", id),
-            String.format("\"version\":1,\"location\":%s", SubmissionPointHttpTest.point(place))
+            String.format("\"version\":1,\"location\":%s", SubmissionPointHttpIT.point(place))
         );
     }
 

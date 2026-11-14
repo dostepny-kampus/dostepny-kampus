@@ -112,7 +112,7 @@ final class TestSetupArchitectureTest {
             "sprawdza samą kontrolę kontraktu na kontrolerze z gotową odpowiedzią,",
             "bez kontekstu aplikacji"
         ),
-        "io.github.dostepnykampus.barrier.SubmissionPhotosHttpTest",
+        "io.github.dostepnykampus.barrier.SubmissionPhotosHttpIT",
         String.join(
             " ",
             "buduje kontroler zdjęć z kubełkiem, którego nie ma,",
