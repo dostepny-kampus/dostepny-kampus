@@ -6,7 +6,7 @@ Pozycja telefonu z GNSS: źródła położenia, satelity i uśrednianie pomiaru.
 
 ## API
 
-Interfejsy źródeł położenia i ich wiązania Hilt (`LocationModule`).
+Interfejsy źródeł położenia i uśrednianie pozycji. Implementacje GNSS i wiązania Hilt (`LocationModule`) są `internal`.
 
 ## Zależności
 
