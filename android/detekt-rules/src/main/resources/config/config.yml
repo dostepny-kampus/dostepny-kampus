@@ -10,3 +10,5 @@ dostepnykampus:
     active: true
   AssertionMessage:
     active: true
+  JsonTextCall:
+    active: true
