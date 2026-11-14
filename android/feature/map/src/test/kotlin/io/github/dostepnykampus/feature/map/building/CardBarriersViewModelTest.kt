@@ -30,7 +30,7 @@ class CardBarriersViewModelTest {
     /** Wiersz: bariery z serwera → stan karty ma tylko zgłoszenia budynku karty, bez barier innych i poza budynkiem. */
     @Test
     fun us2_2_only_own_building() =
-        onMain {
+        runTest {
             val all =
                 listOf(
                     barrier(id = "z1", symbol = "A-1"),
@@ -43,7 +43,7 @@ class CardBarriersViewModelTest {
     /** Wiersz: brak zgłoszeń przyjętych → karta ma pustą listę barier. Wymagania: US2.4 */
     @Test
     fun us2_4_none_is_empty() =
-        onMain {
+        runTest {
             assertEquals(
                 emptyList<String>(),
                 cardBarriers(emptyList()),
@@ -51,17 +51,16 @@ class CardBarriersViewModelTest {
             )
         }
 
-    private fun onMain(block: suspend TestScope.() -> Unit) {
-        val main = StandardTestDispatcher()
-        Dispatchers.setMain(main)
+    private fun TestScope.cardBarriers(all: List<AcceptedBarrier>): List<String> {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         try {
-            runTest(main) { block() }
+            return readyBarriers(all)
         } finally {
             Dispatchers.resetMain()
         }
     }
 
-    private fun TestScope.cardBarriers(all: List<AcceptedBarrier>): List<String> {
+    private fun TestScope.readyBarriers(all: List<AcceptedBarrier>): List<String> {
         val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON }
         val card =
             BuildingCardViewModel(

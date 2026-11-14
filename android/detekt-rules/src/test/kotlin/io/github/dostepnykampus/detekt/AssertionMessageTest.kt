@@ -15,8 +15,6 @@ import java.nio.file.Path
 
 /** Reguła [AssertionMessage] na krótkich źródłach z prawdziwymi sygnaturami JUnit 4 i JUnit 5. */
 class AssertionMessageTest {
-    private val rule = AssertionMessage(Config.empty)
-
     @Test
     fun `JUnit 5 bez komunikatu`() {
         val calls =
@@ -65,7 +63,8 @@ class AssertionMessageTest {
     @Test
     fun `wywołanie spoza JUnit`() {
         val source = listOf("fun assertEquals(a: Int, b: Int) = Unit", "fun test() {", "    assertEquals(1, 2)", "}")
-        val findings = rule.lintWithContext(environment, source.joinToString(separator = "\n"))
+        val findings =
+            AssertionMessage(Config.empty).lintWithContext(environment, source.joinToString(separator = "\n"))
         assertEquals(emptyList<Int>(), findings.map { it.entity.location.source.line })
     }
 
@@ -78,7 +77,9 @@ class AssertionMessageTest {
                 calls.forEach { appendLine("    $it") }
                 appendLine("}")
             }
-        return rule.lintWithContext(environment, source).map { it.entity.location.source.line - HEADER }
+        return AssertionMessage(Config.empty)
+            .lintWithContext(environment, source)
+            .map { it.entity.location.source.line - HEADER }
     }
 
     private companion object {
