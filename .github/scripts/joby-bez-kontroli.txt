@@ -1,0 +1,14 @@
+# Joby workflow uruchamianych przez PR albo kolejkę, które nie muszą blokować kolejki (wymagane-joby.sh, reguła 5).
+# Format: <plik workflow>/<job> <powód>. Plik reguł jakości: lista może tylko maleć, nowy wpis wymaga issue.
+android.yml/cache tylko po scaleniu: zapis cache budowania gałęzi
+android.yml/czyszczenie-cache tylko po scaleniu: usuwa stare wpisy cache
+backend.yml/jakosc szybszy sygnał qulice; tę samą kontrolę wykonuje wymagane zadanie serwer (mvnw verify)
+docs.yml/pamiec tylko po scaleniu: zapis pamięci podręcznej dokumentacji
+docs.yml/strona tylko po scaleniu: budowa strony dokumentacji
+docs.yml/publikacja tylko po scaleniu: publikacja strony dokumentacji
+etykiety.yml/obszar automatyzacja: nadaje etykiety obszaru
+etykiety.yml/typ automatyzacja: nadaje etykietę typu
+sprint-pr.yml/kamien-milowy automatyzacja: ustawia kamień milowy PR
+zamykanie-issue.yml/zamknij automatyzacja: zamyka issue po scaleniu PR
+dependabot-sprint.yml/baza-i-kamien automatyzacja: przestawia bazę PR Dependabota
+zamykanie-issue.yml/nadrzedne automatyzacja: zamyka nadrzędne issue po zamknięciu ostatniego podrzędnego
