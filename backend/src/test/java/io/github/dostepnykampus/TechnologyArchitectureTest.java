@@ -82,7 +82,7 @@ final class TechnologyArchitectureTest {
     }
 
     @Test
-    void exceptionListHoldsOnlyExistingViolations() {
+    void holdsOnlyExistingViolationsInExceptionList() {
         final JavaClasses classes = TechnologyArchitectureTest.production();
         Assertions.assertEquals(
             List.of(),

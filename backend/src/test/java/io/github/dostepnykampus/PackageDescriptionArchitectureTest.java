@@ -38,7 +38,7 @@ final class PackageDescriptionArchitectureTest {
     private Path dir;
 
     @Test
-    void everyProductionPackageHasDescription() throws IOException {
+    void describesEveryProductionPackage() throws IOException {
         Assertions.assertEquals(
             List.of(),
             PackageDescriptionArchitectureTest.undescribed(Path.of("src", "main", "java")),

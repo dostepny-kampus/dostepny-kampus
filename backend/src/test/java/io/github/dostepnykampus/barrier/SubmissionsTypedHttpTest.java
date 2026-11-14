@@ -77,7 +77,7 @@ final class SubmissionsTypedHttpTest {
     }
 
     @Test
-    void brNineRejectsNewSubmissionWithoutId(final WebApplicationContext context)
+    void rejectsNewSubmissionWithoutId(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "POST bez id nie daje 400 z opisem braku identyfikatora",
@@ -95,7 +95,7 @@ final class SubmissionsTypedHttpTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"\"1\"", "null", "0", "-1"})
-    void brTenRejectsBadVersion(final String version, final WebApplicationContext context)
+    void rejectsBadVersion(final String version, final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Wersja bazowa edycji ".concat(version).concat(" nie daje 400 problem+json"),
@@ -109,7 +109,7 @@ final class SubmissionsTypedHttpTest {
     }
 
     @Test
-    void brTenGivesConflictWithServerSubmissionAsObject(final WebApplicationContext context)
+    void givesConflictWithServerSubmissionAsObject(final WebApplicationContext context)
         throws Exception {
         SubmissionsTypedHttpTest.add(context, "ACCEPTED", 2);
         final MockHttpServletResponse response = new SubmissionRequests(context).put(
@@ -189,7 +189,7 @@ final class SubmissionsTypedHttpTest {
     }
 
     @Test
-    void brSixOmitsEmptyFieldsInRead(final WebApplicationContext context) throws Exception {
+    void omitsEmptyFieldsInRead(final WebApplicationContext context) throws Exception {
         SubmissionsTypedHttpTest.add(context, "ACCEPTED", 1);
         MatcherAssert.assertThat(
             "Odpowiedź GET ma pola null albo flagi false",

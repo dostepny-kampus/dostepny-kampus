@@ -26,7 +26,7 @@ import tools.jackson.databind.ObjectMapper;
  * z wersji, którą ma serwer; inaczej daje 409 z wersją z serwera.
  * Bez transakcji testowej, jak na produkcji; wiersze usuwane po teście.
  *
- * <p>Wymagania: US8.3, US9.3, BR-10</p>
+ * <p>Wymagania: US8.3, US9.3, BR-10, BR-18</p>
  *
  * @since 0.1.0
  */
@@ -65,7 +65,7 @@ final class SubmissionsEditHttpTest {
     }
 
     @Test
-    void brTenGivesServerVersionOnConflict(final WebApplicationContext context)
+    void givesServerVersionOnConflict(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Konflikt wersji nie zwraca wersji 2 z serwera",
@@ -75,7 +75,7 @@ final class SubmissionsEditHttpTest {
     }
 
     @Test
-    void brTenRejectsStaleVersion(final WebApplicationContext context) throws Exception {
+    void rejectsStaleVersion(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Edycja starej wersji nie daje 409",
             SubmissionsEditHttpTest.edit(context, "SENT", 2, "1").getStatus(),
@@ -84,7 +84,7 @@ final class SubmissionsEditHttpTest {
     }
 
     @Test
-    void brEighteenLocksAcceptedSubmission(final WebApplicationContext context)
+    void locksAcceptedSubmission(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Edycja zgłoszenia przyjętego nie daje 409",

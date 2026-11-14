@@ -23,7 +23,7 @@ import tools.jackson.databind.module.SimpleModule;
 final class AbsentValueJsonTest {
 
     @Test
-    void absentFieldTakesValueFromTypeDeserializer() {
+    void takesAbsentFieldValueFromTypeDeserializer() {
         final JsonMapper.Builder builder = JsonMapper.builder().addModule(
             new SimpleModule().addDeserializer(Mark.class, new AbsentValueJsonTest.Marks())
         );

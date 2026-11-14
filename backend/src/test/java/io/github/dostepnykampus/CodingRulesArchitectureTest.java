@@ -72,7 +72,7 @@ final class CodingRulesArchitectureTest {
     }
 
     @Test
-    void contractIsParsedOnlyByOpenApiContract() {
+    void parsesContractOnlyInOpenApiContract() {
         final DescribedPredicate<JavaClass> real = DescribedPredicate.not(
             JavaClass.Predicates.belongToAnyOf(SchemaReaderSample.class)
         );
@@ -87,7 +87,7 @@ final class CodingRulesArchitectureTest {
     }
 
     @Test
-    void contractRuleRejectsOwnSchemaReader() {
+    void rejectsOwnSchemaReader() {
         Assertions.assertTrue(
             CodingRulesArchitectureTest.contractReaders()
                 .evaluate(new ClassFileImporter().importClasses(SchemaReaderSample.class))
@@ -97,7 +97,7 @@ final class CodingRulesArchitectureTest {
     }
 
     @Test
-    void contractFileIsNamedOnlyInOpenApiContract() throws IOException {
+    void namesContractFileOnlyInOpenApiContract() throws IOException {
         final Pattern name = Pattern.compile("\"(?:[^\"\\s]*/)?openapi\\.yaml\"");
         try (Stream<Path> files = Files.walk(Path.of("src", "test", "java"))) {
             MatcherAssert.assertThat(
@@ -111,7 +111,7 @@ final class CodingRulesArchitectureTest {
     }
 
     @Test
-    void codingLoggingRuleCatchesCallWithoutField() {
+    void catchesLoggingCallWithoutField() {
         Assertions.assertTrue(
             CodingRulesArchitectureTest.logging()
                 .evaluate(new ClassFileImporter().importClasses(JulCallSample.class))

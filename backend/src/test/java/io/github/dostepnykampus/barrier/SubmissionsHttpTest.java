@@ -24,7 +24,7 @@ import tools.jackson.databind.ObjectMapper;
  * „wysłane”, a budynek zgłoszenia szybkiego ustala z konturu.
  * Bez transakcji testowej, jak na produkcji; wiersze usuwane po teście.
  *
- * <p>Wymagania: BR-14, US4, US7, BR-9</p>
+ * <p>Wymagania: BR-14, US4, US7, BR-9, BR-3</p>
  *
  * @since 0.1.0
  */
@@ -58,7 +58,7 @@ final class SubmissionsHttpTest {
     }
 
     @Test
-    void brFourteenTakesBuildingFromOutline(final WebApplicationContext context)
+    void takesBuildingFromOutline(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Zgłoszenie szybkie w konturze A-1 ma budynek z telefonu",
@@ -68,7 +68,7 @@ final class SubmissionsHttpTest {
     }
 
     @Test
-    void brThreeSavesAccountAsAuthor(final WebApplicationContext context)
+    void savesAccountAsAuthor(final WebApplicationContext context)
         throws Exception {
         SubmissionsHttpTest.quick(context);
         MatcherAssert.assertThat(
@@ -91,7 +91,7 @@ final class SubmissionsHttpTest {
      * @throws Exception Gdy nie uda się wykonać żądania HTTP
      */
     @Test
-    void brNineReturnsSavedSubmissionOnRetry(final WebApplicationContext context)
+    void returnsSavedSubmissionOnRetry(final WebApplicationContext context)
         throws Exception {
         final String body = SubmissionsHttpTest.body("QUICK", SubmissionsHttpTest.IN_A1);
         final SubmissionRequests requests = new SubmissionRequests(context);

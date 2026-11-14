@@ -39,7 +39,7 @@ final class SimilarSubmissionsHttpTest {
 
     @ParameterizedTest(name = "{0} m, {1}")
     @CsvSource({"5, ACCEPTED", "10, ACCEPTED", "9, SENT", "9, IN_REVIEW"})
-    void brThirteenShowsCloseOpenSubmission(
+    void showsCloseOpenSubmission(
         final int meters, final String status, final WebApplicationContext context
     ) throws Exception {
         MatcherAssert.assertThat(
@@ -51,7 +51,7 @@ final class SimilarSubmissionsHttpTest {
 
     @ParameterizedTest(name = "{0} m, {1}")
     @CsvSource({"11, ACCEPTED", "5, REJECTED", "5, ARCHIVED"})
-    void brThirteenHidesFarOrClosedSubmission(
+    void hidesFarOrClosedSubmission(
         final int meters, final String status, final WebApplicationContext context
     ) throws Exception {
         MatcherAssert.assertThat(

@@ -50,7 +50,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 final class PhotoSettingsTest {
 
     @Test
-    void cfgFourStartsWithDefaultsWithoutPhotoKeys() {
+    void startsWithDefaultsWithoutPhotoKeys() {
         PhotoSettingsTest.runner().run(
             context -> Assertions.assertAll(
                 () -> Assertions.assertEquals(
@@ -70,7 +70,7 @@ final class PhotoSettingsTest {
     }
 
     @Test
-    void cfgOneReadsPhotoEnvironmentVariables() {
+    void readsPhotoEnvironmentVariables() {
         PhotoSettingsTest.runner().withPropertyValues(
             "DK_PHOTOS_HOST=magazyn", "DK_PHOTOS_PORT=9100", "DK_PHOTOS_BUCKET=zdjecia-testowe",
             "DK_PHOTOS_ACCESS_KEY=klucz-testowy", "DK_PHOTOS_SECRET_KEY=sekret-testowy"
@@ -99,7 +99,7 @@ final class PhotoSettingsTest {
     }
 
     @Test
-    void cfgTwoWritesPhotoToBucketFromSettings() {
+    void writesPhotoToBucketFromSettings() {
         final PhotoSettingsTest.BucketProbe probe = new PhotoSettingsTest.BucketProbe();
         final UUID photo = UUID.randomUUID();
         final ApplicationContextRunner runner = PhotoSettingsTest.runner()
@@ -117,7 +117,7 @@ final class PhotoSettingsTest {
     }
 
     @Test
-    void cfgOneReadsDatabaseEnvironmentVariables() {
+    void readsDatabaseEnvironmentVariables() {
         PhotoSettingsTest.runner().withPropertyValues(
             "DK_DB_HOST=baza", "DK_DB_PORT=5433", "DK_DB_NAME=kampus",
             "DK_DB_USER=uzytkownik", "DK_DB_PASSWORD=haslo"
@@ -134,7 +134,7 @@ final class PhotoSettingsTest {
     }
 
     @Test
-    void cfgOneKeepsSettingsOnlyInYaml() {
+    void keepsSettingsOnlyInYaml() {
         Assertions.assertEquals(
             List.of(true, false),
             Stream.of("application.yaml", "application.properties")
@@ -144,7 +144,7 @@ final class PhotoSettingsTest {
     }
 
     @Test
-    void cfgTwoReadsPhotoSettingsWithoutValueAnnotation() {
+    void readsPhotoSettingsWithoutValueAnnotation() {
         Assertions.assertDoesNotThrow(
             () -> ArchRuleDefinition.noClasses()
                 .should().dependOnClassesThat()
@@ -155,7 +155,7 @@ final class PhotoSettingsTest {
     }
 
     @Test
-    void cfgThreeStopsStartupOnEmptyBucket() {
+    void stopsStartupOnEmptyBucket() {
         PhotoSettingsTest.runner().withPropertyValues("DK_PHOTOS_BUCKET=").run(
             context -> MatcherAssert.assertThat(
                 "Pusty kubełek nie zatrzymał startu z nazwą ustawienia",
@@ -166,7 +166,7 @@ final class PhotoSettingsTest {
     }
 
     @Test
-    void cfgThreeStopsStartupOnEndpointWithoutSchemeOrHost() {
+    void stopsStartupOnEndpointWithoutSchemeOrHost() {
         Assertions.assertAll(
             Stream.of(
                 "DK_PHOTOS_HOST=", "dk.photos.endpoint=magazyn.local/zdjecia",
@@ -184,7 +184,7 @@ final class PhotoSettingsTest {
     }
 
     @Test
-    void cfgFiveNamesEndpointAndBucketInSettingsText() {
+    void namesEndpointAndBucketInSettingsText() {
         Assertions.assertEquals(
             "PhotoSettings[endpoint=http://magazyn, bucket=zdjecia]",
             new PhotoSettings(URI.create("http://magazyn"), "zdjecia", "klucz-1", "sekret-1")
@@ -194,7 +194,7 @@ final class PhotoSettingsTest {
     }
 
     @Test
-    void cfgFiveHidesKeysInSettingsText() {
+    void hidesKeysInSettingsText() {
         MatcherAssert.assertThat(
             "Tekst ustawień zawiera klucz dostępu albo sekret magazynu",
             new PhotoSettings(URI.create("http://magazyn"), "zdjecia", "klucz-1", "sekret-1")

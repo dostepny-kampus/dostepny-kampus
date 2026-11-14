@@ -40,7 +40,7 @@ final class PhotoUploadLimitHttpTest {
 
     @ParameterizedTest
     @ValueSource(longs = {-1, 1, 5_000_001})
-    void nfrThirtyFourBoundsReadBeforeRejecting(
+    void boundsReadBeforeRejecting(
         final long declared, final WebApplicationContext context
     ) throws Exception {
         final UUID id = PhotoUploadLimitHttpTest.add(context);
@@ -64,7 +64,7 @@ final class PhotoUploadLimitHttpTest {
 
     @ParameterizedTest
     @ValueSource(ints = {4_999_999, 5_000_000})
-    void nfrThirtyFourAcceptsUpToFiveMegabytes(
+    void acceptsUpToFiveMegabytes(
         final int size, final WebApplicationContext context
     ) throws Exception {
         MatcherAssert.assertThat(

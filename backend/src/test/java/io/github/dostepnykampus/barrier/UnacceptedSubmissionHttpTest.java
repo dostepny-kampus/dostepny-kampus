@@ -45,7 +45,7 @@ final class UnacceptedSubmissionHttpTest {
     private static final List<Integer> CODES = List.of(200, 200, 404, 404);
 
     @Test
-    void brFiveShowsUnacceptedToAuthorAndVerifier(final WebApplicationContext context)
+    void showsUnacceptedToAuthorAndVerifier(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Zgłoszenie nieprzyjęte widzi nie tylko autor i Weryfikator",
@@ -55,7 +55,7 @@ final class UnacceptedSubmissionHttpTest {
     }
 
     @Test
-    void brFiveShowsUnacceptedPhotoToAuthorAndVerifier(final WebApplicationContext context)
+    void showsUnacceptedPhotoToAuthorAndVerifier(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Zdjęcie zgłoszenia nieprzyjętego widzi nie tylko autor i Weryfikator",

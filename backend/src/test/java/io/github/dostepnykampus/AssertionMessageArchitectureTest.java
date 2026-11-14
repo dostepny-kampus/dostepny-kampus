@@ -57,7 +57,7 @@ final class AssertionMessageArchitectureTest {
     }
 
     @Test
-    void exceptionListHoldsOnlyExistingViolations() {
+    void holdsOnlyExistingViolationsInExceptionList() {
         Assertions.assertEquals(
             List.of(),
             AssertionMessageArchitectureTest.RULE.stale(),

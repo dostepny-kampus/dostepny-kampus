@@ -18,7 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
  * przyjęte: brak zastępowanego zgłoszenia daje 404, zgłoszenie nieprzyjęte
  * 409, a w obu przypadkach nic się nie zapisuje.
  *
- * <p>Wymagania: BR-3, BR-18</p>
+ * <p>Wymagania: BR-3, BR-18, BR-9</p>
  *
  * @since 0.1.0
  */
@@ -32,7 +32,7 @@ final class ReplacedSubmissionHttpTest {
     private static final String QUICK = "\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\"";
 
     @Test
-    void brEighteenRefusesChangeOfMissingSubmission(final WebApplicationContext context)
+    void refusesChangeOfMissingSubmission(final WebApplicationContext context)
         throws Exception {
         Assertions.assertEquals(
             "404, zapisanych 0",
@@ -42,7 +42,7 @@ final class ReplacedSubmissionHttpTest {
     }
 
     @Test
-    void brEighteenRefusesChangeOfUnacceptedSubmission(final WebApplicationContext context)
+    void refusesChangeOfUnacceptedSubmission(final WebApplicationContext context)
         throws Exception {
         final UUID sent = UUID.randomUUID();
         new SubmissionRequests(context).create(sent, ReplacedSubmissionHttpTest.QUICK);
@@ -54,7 +54,7 @@ final class ReplacedSubmissionHttpTest {
     }
 
     @Test
-    void brNineReturnsSavedChangeAgain(final WebApplicationContext context) throws Exception {
+    void returnsSavedChangeAgain(final WebApplicationContext context) throws Exception {
         final UUID replaced = UUID.randomUUID();
         new SubmissionRequests(context).create(replaced, ReplacedSubmissionHttpTest.QUICK);
         final JdbcClient jdbc = context.getBean(JdbcClient.class);

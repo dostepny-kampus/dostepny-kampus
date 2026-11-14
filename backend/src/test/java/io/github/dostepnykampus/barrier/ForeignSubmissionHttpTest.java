@@ -36,7 +36,7 @@ final class ForeignSubmissionHttpTest {
     private static final UUID PHOTO = UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
 
     @Test
-    void brThreeRefusesEditOfForeignSubmission(final WebApplicationContext context)
+    void refusesEditOfForeignSubmission(final WebApplicationContext context)
         throws Exception {
         final UUID id = ForeignSubmissionHttpTest.foreign(context);
         MatcherAssert.assertThat(
@@ -57,7 +57,7 @@ final class ForeignSubmissionHttpTest {
     }
 
     @Test
-    void brThreeRefusesPhotoForForeignSubmission(final WebApplicationContext context)
+    void refusesPhotoForForeignSubmission(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Zdjęcie do cudzego zgłoszenia nie dało 403",

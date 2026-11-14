@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 final class JpegCleanerTest {
 
     @Test
-    void nfrTwentySixRemovesExifLocation() throws IOException {
+    void removesExifLocation() throws IOException {
         MatcherAssert.assertThat(
             "Zdjęcie po czyszczeniu ma EXIF z miejscem",
             JpegCleanerTest.text(new JpegCleaner().strip(JpegCleanerTest.photo())),
@@ -38,7 +38,7 @@ final class JpegCleanerTest {
     }
 
     @Test
-    void nfrTwentySixRemovesComment() throws IOException {
+    void removesComment() throws IOException {
         MatcherAssert.assertThat(
             "Zdjęcie po czyszczeniu ma komentarz",
             JpegCleanerTest.text(new JpegCleaner().strip(JpegCleanerTest.photo())),
@@ -47,7 +47,7 @@ final class JpegCleanerTest {
     }
 
     @Test
-    void nfrTwentySixKeepsColorProfile() throws IOException {
+    void keepsColorProfile() throws IOException {
         MatcherAssert.assertThat(
             "Zdjęcie po czyszczeniu nie ma profilu kolorów ICC",
             JpegCleanerTest.text(new JpegCleaner().strip(JpegCleanerTest.photo())),
@@ -56,7 +56,7 @@ final class JpegCleanerTest {
     }
 
     @Test
-    void nfrTwentySixKeepsImage() throws IOException {
+    void keepsImage() throws IOException {
         MatcherAssert.assertThat(
             "Obraz po czyszczeniu nie ma szerokości 8 px",
             ImageIO.read(
@@ -67,7 +67,7 @@ final class JpegCleanerTest {
     }
 
     @Test
-    void nfrTwentySixRejectsOtherFormat() {
+    void rejectsOtherFormat() {
         Assertions.assertThrows(
             IOException.class,
             () -> new JpegCleaner().strip("GIF89a".getBytes(StandardCharsets.US_ASCII)),
@@ -76,7 +76,7 @@ final class JpegCleanerTest {
     }
 
     @Test
-    void nfrTwentySixRejectsCutFile() throws IOException {
+    void rejectsCutFile() throws IOException {
         final byte[] photo = JpegCleanerTest.photo();
         Assertions.assertThrows(
             IOException.class,

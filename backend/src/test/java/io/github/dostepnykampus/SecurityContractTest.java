@@ -65,7 +65,7 @@ final class SecurityContractTest {
         """;
 
     @Test
-    void nfrThirtyThreeEveryOperationFollowsContractSecurity(
+    void followsContractSecurityInEveryOperation(
         final WebApplicationContext context
     ) throws Exception {
         final String base = "http://localhost:%s".formatted(
@@ -84,7 +84,7 @@ final class SecurityContractTest {
     }
 
     @Test
-    void nfrThirtyThreeRejectionIsContractProblem(
+    void returnsContractProblemOnRejection(
         final WebApplicationContext context
     ) throws Exception {
         final String base = "http://localhost:%s".formatted(
@@ -119,7 +119,7 @@ final class SecurityContractTest {
     }
 
     @Test
-    void nfrThirtyThreeOpenServerIsReportedForEveryClosedOperation() throws Exception {
+    void reportsOpenServerForEveryClosedOperation() throws Exception {
         MatcherAssert.assertThat(
             "Serwer otwarty dla każdego przeszedł kontrolę zabezpieczeń",
             SecurityContractTest.problems(
@@ -142,7 +142,7 @@ final class SecurityContractTest {
     }
 
     @Test
-    void nfrThirtyThreeServerMatchingContractPasses() throws Exception {
+    void passesServerMatchingContract() throws Exception {
         final Map<String, Set<String>> allowed = Map.of(
             "GET /api/role", Set.of("VERIFIER"),
             "DELETE /api/two/{}", Set.of("COLLECTOR", "COORDINATOR"),
@@ -170,7 +170,7 @@ final class SecurityContractTest {
     }
 
     @Test
-    void nfrThirtyThreeClosedPublicOperationIsReported() throws Exception {
+    void reportsClosedPublicOperation() throws Exception {
         MatcherAssert.assertThat(
             "Operacja publiczna zamknięta przez serwer przeszła kontrolę",
             SecurityContractTest.problems(
