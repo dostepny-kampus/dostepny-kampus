@@ -31,7 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
 final class OsmEntrancesTest {
 
     @Test
-    void brTwentyFourMarksInaccessible(final WebApplicationContext context) {
+    void marksInaccessible(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Wejście B-8 z wheelchair=no nie jest niedostępne z importu",
             context.getBean(JdbcClient.class).sql(

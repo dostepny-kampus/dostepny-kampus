@@ -30,7 +30,7 @@ import tools.jackson.databind.ObjectMapper;
  * <p>Każdy test zaczyna od pustej tabeli, bez budynków z pliku konturów;
  * transakcja testu przywraca je po teście.</p>
  *
- * <p>Wymagania: US1</p>
+ * <p>Wymagania: US1, NFR-40</p>
  *
  * @since 0.1.0
  */
@@ -98,7 +98,7 @@ final class BuildingsHttpTest {
     }
 
     @Test
-    void nfrFortyAttributesEverySourceOfList(final WebApplicationContext context)
+    void attributesEverySourceOfList(final WebApplicationContext context)
         throws Exception {
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         BuildingsHttpTest.insert(jdbc, "A-1", "BASIC", BuildingsHttpTest.west());

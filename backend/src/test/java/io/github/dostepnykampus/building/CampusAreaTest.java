@@ -30,7 +30,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 final class CampusAreaTest {
 
     @Test
-    void brGFiveCoversPointFourHundredMetresFromBuilding(final ApplicationContext context) {
+    void coversPointFourHundredMetresFromBuilding(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Punkt 400 m od H-4 leży poza terenem PWr",
             List.of(
@@ -42,7 +42,7 @@ final class CampusAreaTest {
     }
 
     @Test
-    void brGFiveLeavesPointSixHundredMetresFromEveryBuilding(final ApplicationContext context) {
+    void leavesPointSixHundredMetresFromEveryBuilding(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Punkt 600 m od każdego budynku leży na terenie PWr",
             List.of(

@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationContext;
 final class BuildingModuleTest {
 
     @Test
-    void buildingStartsWithoutOtherModules(final ApplicationContext context) {
+    void startsWithoutOtherModules(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Kontekst modułu budynków ma beany innego modułu",
             new ModuleBeans(context).in("barrier", "identity"),
@@ -35,7 +35,7 @@ final class BuildingModuleTest {
     }
 
     @Test
-    void brGTwoFindsBuildingInModuleContext(final ApplicationContext context) {
+    void findsBuildingInModuleContext(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Moduł budynków bez innych modułów nie znajduje A-1 w jego konturze",
             context.getBean(Outlines.class).containing(51.107_85, 17.062_09),

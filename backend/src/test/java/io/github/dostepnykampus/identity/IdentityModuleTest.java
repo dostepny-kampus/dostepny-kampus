@@ -27,7 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 final class IdentityModuleTest {
 
     @Test
-    void identityStartsWithoutOtherModules(final WebApplicationContext context) {
+    void startsWithoutOtherModules(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Kontekst modułu tożsamości ma beany innego modułu",
             new ModuleBeans(context).in("barrier", "building"),

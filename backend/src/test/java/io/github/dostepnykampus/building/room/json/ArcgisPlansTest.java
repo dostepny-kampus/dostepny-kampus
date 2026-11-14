@@ -112,7 +112,7 @@ final class ArcgisPlansTest {
     }
 
     @Test
-    void nfrFortyRejectsErrorOfService() {
+    void rejectsErrorOfService() {
         Assertions.assertThrows(
             IllegalStateException.class,
             () -> ArcgisPlansTest.read("{\"error\":{}}"),
@@ -122,7 +122,7 @@ final class ArcgisPlansTest {
 
     @Test
     @Timeout(3)
-    void nfrFortyFailsWhenServiceTimesOut() {
+    void failsWhenServiceTimesOut() {
         MatcherAssert.assertThat(
             "Komunikat przekroczenia czasu nie wskazuje limitu czasu i ścieżki usługi",
             ArcgisPlansTest.timeoutMessage(),
@@ -134,7 +134,7 @@ final class ArcgisPlansTest {
     }
 
     @Test
-    void nfrFortyRejectsHttpErrorStatus() {
+    void rejectsHttpErrorStatus() {
         MatcherAssert.assertThat(
             "Błąd HTTP usługi nie wskazał ścieżki usługi",
             Assertions.assertThrows(
