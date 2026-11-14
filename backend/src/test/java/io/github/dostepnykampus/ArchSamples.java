@@ -55,6 +55,24 @@ final class ArchSamples {
     }
 
     /**
+     * Zapisuje publiczną klasę finalną, pustą albo z jednym polem.
+     *
+     * @param pack Pakiet klasy
+     * @param name Nazwa klasy
+     * @param field Pełna nazwa typu pola; pusta, gdy klasa nie ma pola
+     * @throws IOException Gdy zapis się nie udał
+     */
+    void type(final String pack, final String name, final String field) throws IOException {
+        final String body;
+        if (field.isEmpty()) {
+            body = String.format("public final class %s { }", name);
+        } else {
+            body = String.format("public final class %s { %s field; }", name, field);
+        }
+        this.write(pack, name, String.format("package %s;%n%s%n", pack, body));
+    }
+
+    /**
      * Kompiluje wszystkie zapisane źródła.
      *
      * @param options Dodatkowe opcje javac, np. ścieżka klas
