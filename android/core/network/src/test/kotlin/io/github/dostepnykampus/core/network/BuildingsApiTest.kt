@@ -47,8 +47,8 @@ class BuildingsApiTest {
 
     @Test
     fun us1_list() {
-        enqueue(HTTP_OK, LIST)
-        val list = json.decodeBuildingList(LIST)
+        enqueue(HTTP_OK, BUILDING_LIST_JSON)
+        val list = json.decodeBuildingList(BUILDING_LIST_JSON)
         assertEquals(ApiResult.Success(list), blocking { listBuildings() })
         val recorded = server.takeRequest()
         assertEquals("GET", recorded.method)
@@ -58,8 +58,8 @@ class BuildingsApiTest {
 
     @Test
     fun us2_building() {
-        enqueue(HTTP_OK, DETAILS)
-        val card = json.decodeBuildingDetails(DETAILS)
+        enqueue(HTTP_OK, BUILDING_DETAILS_JSON)
+        val card = json.decodeBuildingDetails(BUILDING_DETAILS_JSON)
         assertEquals(ApiResult.Success(card), blocking { building("C-13") })
         assertEquals("/buildings/C-13", server.takeRequest().path)
     }
@@ -110,7 +110,7 @@ class BuildingsApiTest {
     @Test
     fun us1_outline_not_polygon() {
         val line = """{"type":"LineString","coordinates":[[17,51],[18,51]]}"""
-        enqueue(HTTP_OK, LIST.replace(oldValue = OUTLINE, newValue = line))
+        enqueue(HTTP_OK, BUILDING_LIST_JSON.replace(oldValue = BUILDING_OUTLINE_JSON, newValue = line))
         val error = assertInstanceOf(ApiResult.ServerError::class.java, blocking { listBuildings() })
         assertEquals(HTTP_OK, error.code)
         assertInstanceOf(IllegalArgumentException::class.java, error.cause)
@@ -148,18 +148,8 @@ class BuildingsApiTest {
     private companion object {
         const val JSON = "application/json"
         const val PROBLEM = "application/problem+json"
-        const val OUTLINE =
-            """{"type":"Polygon","coordinates":[[[17,51],[18,51],[18,52],[17,52],[17,51]]]}"""
-        const val LIST =
-            """{"source":"© OpenStreetMap contributors","buildings":[""" +
-                """{"symbol":"C-13","name":"Budynek C-13","detailLevel":"DETAILED","outline":$OUTLINE}]}"""
         const val FLOORS =
             """{"source":"Politechnika Wrocławska","floors":[{"id":"c13-1","label":"1 piętro","order":1},""" +
                 """{"id":"c13-p","label":"Piwnica","order":-1},{"id":"c13-0","label":"Parter","order":0}]}"""
-        const val DETAILS =
-            """{"symbol":"C-13","name":"Budynek C-13","detailLevel":"BASIC","outline":$OUTLINE,""" +
-                """"entrances":[{"id":"c13-main","buildingSymbol":"C-13","name":"Wejście główne","main":true,""" +
-                """"location":{"type":"Point","coordinates":[17,51]},"marking":"ACCESSIBLE",""" +
-                """"markingDate":"2026-10-01","markingSource":"IMPORT"}]}"""
     }
 }

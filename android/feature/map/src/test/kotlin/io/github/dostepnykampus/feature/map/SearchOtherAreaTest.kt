@@ -20,9 +20,6 @@ import androidx.compose.ui.test.performTextInput
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.geo.building.searchBuildings
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
@@ -49,7 +46,7 @@ class SearchOtherAreaTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val catalog =
-        BuildingCatalog(buildings = listOf("A-1", "T-15").map(::building), entrances = emptyList(), attribution = "")
+        BuildingCatalog(buildings = listOf("A-1", "T-15").map(::unitSquareBuilding), entrances = emptyList(), attribution = "")
     private val shown = area(name = "Kampus główny", symbol = "A-1")
     private val areas = AreaOrder(listOf(shown, area(name = "Wittigowo", symbol = "T-15")))
 
@@ -102,10 +99,4 @@ class SearchOtherAreaTest {
 
     private fun area(name: String, symbol: String) =
         MapArea(name, listOf(symbol), CampusBounds(west = 0.0, south = 0.0, east = 1.0, north = 1.0))
-
-    private fun building(symbol: String): Building {
-        val corners = listOf(0.0 to 0.0, 1.0 to 0.0, 1.0 to 1.0, 0.0 to 0.0)
-        val outline = GeoPolygon(listOf(corners.map { (lon, lat) -> GeoPoint(longitude = lon, latitude = lat) }))
-        return Building(symbol = symbol, name = "Budynek testowy", outline = outline)
-    }
 }
