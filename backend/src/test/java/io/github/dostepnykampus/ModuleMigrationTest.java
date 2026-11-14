@@ -28,8 +28,8 @@ import org.springframework.modulith.core.ApplicationModules;
  * Strażnik migracji modułów serwera. Migracja modułu leży w {@code db/migration/<moduł>}
  * i ma własną historię Flyway; {@code db/migration/__root} zawiera tylko migracje sprzed
  * podziału na moduły. Tabela należy do modułu, w którego katalogu powstała; tabele z
- * {@code __root} mają właściciela na stałej liście. Klucz obcy nie wskazuje tabeli innego
- * modułu; wyjątki mają numer issue, a ich lista tylko maleje.
+ * {@code __root} mają właściciela na stałej liście. Klucze obce w schemacie po migracjach
+ * sprawdza {@link ModuleForeignKeyTest}.
  *
  * @since 0.1.0
  */
@@ -62,29 +62,10 @@ final class ModuleMigrationTest {
     );
 
     /**
-     * Klucze obce między modułami, które dziś istnieją, i issue, które je usuwa.
-     */
-    private static final Map<String, Integer> KNOWN = Map.of("submissions -> buildings", 1662);
-
-    /**
-     * Tabela tworzona albo zmieniana w instrukcji.
-     */
-    private static final Pattern TABLE = Pattern.compile(
-        "(?:CREATE|ALTER)\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(\\w+)", Pattern.CASE_INSENSITIVE
-    );
-
-    /**
      * Tabela tworzona w instrukcji.
      */
     private static final Pattern CREATED = Pattern.compile(
         "CREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(\\w+)", Pattern.CASE_INSENSITIVE
-    );
-
-    /**
-     * Tabela wskazana kluczem obcym.
-     */
-    private static final Pattern REFERENCE = Pattern.compile(
-        "REFERENCES\\s+(\\w+)", Pattern.CASE_INSENSITIVE
     );
 
     @Test
@@ -116,53 +97,61 @@ final class ModuleMigrationTest {
     }
 
     @Test
-    void foreignKeysStayInsideModuleOutsideExceptionList() throws IOException {
-        final Set<String> found = ModuleMigrationTest.production();
-        found.removeAll(ModuleMigrationTest.KNOWN.keySet());
-        Assertions.assertEquals(
-            Set.of(), found, "Klucz obcy wskazuje tabelę innego modułu albo tabelę bez właściciela"
-        );
-    }
-
-    @Test
-    void exceptionListHoldsOnlyExistingForeignKeys() throws IOException {
-        final Set<String> stale = new TreeSet<>(ModuleMigrationTest.KNOWN.keySet());
-        stale.removeAll(ModuleMigrationTest.production());
-        Assertions.assertEquals(
-            Set.of(), stale, "Klucza obcego z listy wyjątków już nie ma; usuń wpis"
-        );
-    }
-
-    @Test
     void rejectsForeignKeyToOtherModuleAndAcceptsOwnTable() {
         Assertions.assertEquals(
             Set.of("notes -> areas", "points -> missing"),
             ModuleMigrationTest.crossings(
                 Map.of("areas", "geo", "points", "geo", "notes", "note"),
                 List.of(
-                    "CREATE TABLE points (id INT, area INT REFERENCES areas (id));",
-                    "ALTER TABLE notes ADD COLUMN area INT REFERENCES areas (id);",
-                    "ALTER TABLE points ADD COLUMN x INT REFERENCES missing (id);"
+                    List.of("points", "areas"), List.of("notes", "areas"),
+                    List.of("points", "missing")
                 )
             ),
             "Reguła przepuściła klucz obcy do innego modułu albo odrzuciła klucz własny"
         );
     }
 
-    private static Set<String> production() throws IOException {
+    /**
+     * Właściciele tabel: moduł z katalogu migracji, w której tabela powstała, a dla tabel
+     * z {@code __root} stała lista.
+     *
+     * @return Moduł po nazwie tabeli
+     * @throws IOException Gdy nie da się przeczytać migracji
+     */
+    static Map<String, String> owners() throws IOException {
         final Map<String, String> owners = new HashMap<>(ModuleMigrationTest.ROOT_OWNERS);
-        final List<String> scripts = new ArrayList<>(16);
         try (Stream<Path> files = Files.walk(ModuleMigrationTest.MIGRATIONS)) {
             for (final Path file : files.filter(Files::isRegularFile).toList()) {
-                final String sql = Files.readString(file);
                 final String folder = file.getParent().getFileName().toString();
                 if (!ModuleMigrationTest.ROOT.equals(folder)) {
-                    ModuleMigrationTest.created(sql).forEach(table -> owners.put(table, folder));
+                    ModuleMigrationTest.created(Files.readString(file))
+                        .forEach(table -> owners.put(table, folder));
                 }
-                scripts.add(sql);
             }
         }
-        return ModuleMigrationTest.crossings(owners, scripts);
+        return owners;
+    }
+
+    /**
+     * Klucze obce, które wychodzą poza moduł tabeli albo wskazują tabelę bez właściciela.
+     *
+     * @param owners Moduł po nazwie tabeli
+     * @param keys Klucze obce jako pary: tabela, tabela wskazana
+     * @return Opisy {@code tabela -> wskazana} kluczy łamiących regułę
+     */
+    static Set<String> crossings(
+        final Map<String, String> owners, final List<List<String>> keys
+    ) {
+        return keys.stream()
+            .filter(key -> !ModuleMigrationTest.inside(owners, key.get(0), key.get(1)))
+            .map(key -> String.format("%s -> %s", key.get(0), key.get(1)))
+            .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    private static boolean inside(
+        final Map<String, String> owners, final String source, final String target
+    ) {
+        return owners.containsKey(target) && owners.get(target).equals(owners.get(source));
     }
 
     private static List<String> created(final String sql) {
@@ -172,35 +161,6 @@ final class ModuleMigrationTest {
             tables.add(matcher.group(1).toLowerCase(Locale.ROOT));
         }
         return tables;
-    }
-
-    private static Set<String> crossings(
-        final Map<String, String> owners, final List<String> scripts
-    ) {
-        final Set<String> found = new TreeSet<>();
-        for (final String script : scripts) {
-            for (final String statement : script.split(";", -1)) {
-                found.addAll(ModuleMigrationTest.foreign(owners, statement));
-            }
-        }
-        return found;
-    }
-
-    private static List<String> foreign(final Map<String, String> owners, final String statement) {
-        final List<String> found = new ArrayList<>(1);
-        final Matcher table = ModuleMigrationTest.TABLE.matcher(statement);
-        if (table.find()) {
-            final String source = table.group(1).toLowerCase(Locale.ROOT);
-            final Matcher target = ModuleMigrationTest.REFERENCE.matcher(statement);
-            while (target.find()) {
-                final String name = target.group(1).toLowerCase(Locale.ROOT);
-                final String owner = owners.get(name);
-                if (owner == null || !owner.equals(owners.get(source))) {
-                    found.add(String.format("%s -> %s", source, name));
-                }
-            }
-        }
-        return found;
     }
 
     private static List<String> names(final Path folder) throws IOException {
