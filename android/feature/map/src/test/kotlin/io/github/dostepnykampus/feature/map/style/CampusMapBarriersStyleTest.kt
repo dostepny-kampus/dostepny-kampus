@@ -6,11 +6,11 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
-import io.github.dostepnykampus.core.model.Building
-import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.core.model.building.Building
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.BARRIER_ID
 import io.github.dostepnykampus.feature.map.data.BARRIER_SEVERITY
 import io.github.dostepnykampus.feature.map.data.CampusMapData

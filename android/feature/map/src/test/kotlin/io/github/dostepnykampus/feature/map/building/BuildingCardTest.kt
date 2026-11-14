@@ -7,12 +7,12 @@ package io.github.dostepnykampus.feature.map.building
 
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.network.NetworkStatus
-import io.github.dostepnykampus.core.model.Building
-import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.Entrance
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.model.building.Building
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf

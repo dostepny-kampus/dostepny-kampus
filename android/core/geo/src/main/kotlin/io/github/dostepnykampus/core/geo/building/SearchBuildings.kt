@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.core.geo.building
 
-import io.github.dostepnykampus.core.model.Building
+import io.github.dostepnykampus.core.model.building.Building
 
 /**
  * Wyszukanie budynku po symbolu w różnym zapisie, bez sieci.

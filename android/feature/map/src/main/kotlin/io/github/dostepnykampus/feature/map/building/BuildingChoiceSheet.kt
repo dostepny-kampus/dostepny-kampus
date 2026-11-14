@@ -40,7 +40,7 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
-import io.github.dostepnykampus.core.model.Building
+import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.map.R
 
 /**

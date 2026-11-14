@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.core.network.building
 
-import io.github.dostepnykampus.core.model.FloorList
+import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.exchange
 import kotlinx.serialization.json.Json

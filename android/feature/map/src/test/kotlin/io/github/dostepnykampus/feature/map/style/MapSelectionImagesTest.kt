@@ -10,10 +10,10 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
-import io.github.dostepnykampus.core.model.Building
-import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.model.building.Building
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import io.github.dostepnykampus.feature.map.data.selection

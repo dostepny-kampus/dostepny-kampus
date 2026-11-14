@@ -37,8 +37,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.model.Building
-import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.core.model.building.Building
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.area.rememberMapAreas
 import io.github.dostepnykampus.feature.map.barrier.BarrierDescriptions

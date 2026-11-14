@@ -27,7 +27,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierGroup
-import io.github.dostepnykampus.core.model.Floor
+import io.github.dostepnykampus.core.model.building.Floor
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

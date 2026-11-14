@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.camera.CameraSaver
 import io.github.dostepnykampus.feature.map.camera.CameraView
 import io.github.dostepnykampus.feature.map.camera.ENTRANCE_ZOOM

@@ -5,10 +5,10 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
-import io.github.dostepnykampus.core.model.Building
-import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.model.building.Building
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance

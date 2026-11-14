@@ -34,8 +34,8 @@ import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
-import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.data.CampusZone
 import io.github.dostepnykampus.feature.map.data.DAY_FORMAT

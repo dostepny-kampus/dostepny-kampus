@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.core.data.building
 
-import io.github.dostepnykampus.core.model.Building
-import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.core.model.building.Building
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.network.building.BuildingList
 
 private val NATURAL_ORDER =

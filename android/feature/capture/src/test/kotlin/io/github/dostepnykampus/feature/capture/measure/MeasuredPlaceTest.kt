@@ -7,9 +7,9 @@ package io.github.dostepnykampus.feature.capture.measure
 
 import io.github.dostepnykampus.core.geo.building.BuildingHint
 import io.github.dostepnykampus.core.location.PositionAverage
-import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.report.A1
 import org.junit.jupiter.api.Assertions.assertEquals

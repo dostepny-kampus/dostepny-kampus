@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.core.data.building
 
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.model.FloorList
+import io.github.dostepnykampus.core.model.building.FloorList
 import java.util.concurrent.ConcurrentHashMap
 
 /** Piętra budynku z serwera dla formularza C2. Wymagania: US7.2, US16.1 */

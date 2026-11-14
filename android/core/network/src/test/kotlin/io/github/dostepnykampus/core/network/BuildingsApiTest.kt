@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.core.network
 
-import io.github.dostepnykampus.core.model.Floor
-import io.github.dostepnykampus.core.model.FloorList
+import io.github.dostepnykampus.core.model.building.Floor
+import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.network.building.BuildingsApi
 import io.github.dostepnykampus.core.network.building.decodeBuildingDetails
 import io.github.dostepnykampus.core.network.building.decodeBuildingList

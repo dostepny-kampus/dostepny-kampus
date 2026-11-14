@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.core.data.building
 
 import io.github.dostepnykampus.core.geo.GeoAreaJson
-import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoArea
+import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.network.building.ApiBuilding
 import io.github.dostepnykampus.core.network.building.BuildingList
 import io.github.dostepnykampus.core.network.building.DetailLevel

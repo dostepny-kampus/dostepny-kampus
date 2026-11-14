@@ -3,7 +3,9 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.model
+package io.github.dostepnykampus.core.model.building
+
+import io.github.dostepnykampus.core.model.Entrance
 
 /**
  * Budynki z konturami i ich wejścia z jednego zbioru danych, np. z konturów OpenStreetMap w aplikacji.

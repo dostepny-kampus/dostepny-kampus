@@ -28,7 +28,7 @@ import io.github.dostepnykampus.core.designsystem.FloorPickerLayout
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.BarrierGroup
-import io.github.dostepnykampus.core.model.Floor
+import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.feature.capture.R
 
 private val BASIC_FLOORS = -1..10

@@ -9,9 +9,9 @@ import io.github.dostepnykampus.core.geo.allRings
 import io.github.dostepnykampus.core.geo.edgeDistanceMeters
 import io.github.dostepnykampus.core.geo.toGeometry
 import io.github.dostepnykampus.core.geo.toPosition
-import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.building.Building
 import org.maplibre.spatialk.turf.booleans.contains
 
 /**
