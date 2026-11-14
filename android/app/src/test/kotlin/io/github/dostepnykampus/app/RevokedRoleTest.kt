@@ -24,7 +24,6 @@ import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStamps
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
-import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.PendingEditDao
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -67,9 +66,6 @@ class RevokedRoleTest {
     lateinit var store: SubmissionStore
 
     @Inject
-    lateinit var history: OwnSubmissionDao
-
-    @Inject
     lateinit var edits: PendingEditDao
     private var creates = 0
     private val opened = mutableListOf<String>()
@@ -95,7 +91,7 @@ class RevokedRoleTest {
         assertEquals(1, creates)
         assertNotNull(runBlocking { edits.find(ID) })
 
-        val list = runBlocking { DataModule.ownSubmissions(history).observe().first() }
+        val list = runBlocking { DataModule.ownSubmissions(store).observe().first() }
         val viewModel =
             MySubmissionsViewModel(
                 history = OwnSubmissions { flowOf(list) },

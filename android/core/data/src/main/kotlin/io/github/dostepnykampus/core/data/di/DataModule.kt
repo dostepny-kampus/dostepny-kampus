@@ -13,6 +13,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.BuildingFloors
+import io.github.dostepnykampus.core.data.buildings.BuildingListStore
 import io.github.dostepnykampus.core.data.buildings.ServerEntrances
 import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
 import io.github.dostepnykampus.core.data.buildings.ServerFloorsRepository
@@ -35,14 +36,10 @@ import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
 import io.github.dostepnykampus.core.data.submissions.ownStatusesOf
+import io.github.dostepnykampus.core.data.submissions.ownSubmissionsOf
 import io.github.dostepnykampus.core.data.submissions.pendingEditsOf
-import io.github.dostepnykampus.core.data.submissions.toOwnSubmission
-import io.github.dostepnykampus.core.database.BuildingCacheDao
-import io.github.dostepnykampus.core.database.OwnSubmissionDao
-import io.github.dostepnykampus.core.database.PendingEditDao
 import io.github.dostepnykampus.core.network.BuildingsApi
 import io.github.dostepnykampus.core.network.SubmissionsApi
-import kotlinx.coroutines.flow.map
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
@@ -59,14 +56,14 @@ object DataModule {
     fun buildingCatalog(
         app: Application,
         api: BuildingsApi,
-        buildingCache: BuildingCacheDao,
+        buildingList: BuildingListStore,
         @IoContext ioContext: CoroutineContext,
     ): BuildingCatalogRepository =
         assetRepository(
             assets = app.assets,
             ioContext = ioContext,
             listBuildings = api::listBuildings,
-            buildingCache = buildingCache,
+            buildingCache = buildingList.cache,
         )
 
     /** Wejścia karty budynku z serwera z dniem i źródłem oznaczenia. Wymagania: US17.3 */
@@ -122,14 +119,13 @@ object DataModule {
 
     /** Własne zgłoszenia dla listy C3 z historii w telefonie. Wymagania: US8.1, NFR-5 */
     @Provides
-    fun ownSubmissions(history: OwnSubmissionDao): OwnSubmissions =
-        OwnSubmissions { history.observe().map { rows -> rows.map { it.toOwnSubmission() } } }
+    fun ownSubmissions(store: SubmissionStore): OwnSubmissions = ownSubmissionsOf(store.history)
 
     /** Zgłoszenia z kolejki telefonu do poprawki w C2. Wymagania: US8.3 */
     @Provides
-    fun pendingEdits(store: PendingEditDao): PendingEdits = pendingEditsOf(store)
+    fun pendingEdits(store: SubmissionStore): PendingEdits = pendingEditsOf(store.edits)
 
     /** Odświeżenie statusów listy C3 z serwera. Wymagania: US8.2 */
     @Provides
-    fun ownStatuses(api: SubmissionsApi, history: OwnSubmissionDao): OwnStatuses = ownStatusesOf(api::mine, history)
+    fun ownStatuses(api: SubmissionsApi, store: SubmissionStore): OwnStatuses = ownStatusesOf(api::mine, store.history)
 }

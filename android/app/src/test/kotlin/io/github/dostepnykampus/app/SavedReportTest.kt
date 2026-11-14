@@ -23,7 +23,6 @@ import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
-import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierType
@@ -81,8 +80,6 @@ class SavedReportTest {
     @Inject
     lateinit var pending: PendingSubmissionDao
 
-    @Inject
-    lateinit var history: OwnSubmissionDao
     private var sent = 0
 
     @Before
@@ -138,7 +135,7 @@ class SavedReportTest {
     private fun stored() = runBlocking { pending.all() }.single().submission
 
     private fun showMine() {
-        val list = runBlocking { DataModule.ownSubmissions(history).observe().first() }
+        val list = runBlocking { DataModule.ownSubmissions(store).observe().first() }
         val viewModel =
             MySubmissionsViewModel(
                 history = OwnSubmissions { flowOf(list) },

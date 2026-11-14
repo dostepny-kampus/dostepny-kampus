@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
-import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
@@ -43,7 +42,7 @@ class OwnListTest {
             queue.sendAll()
             queue.save(precise(), photo("p2"))
 
-            val list = DataModule.ownSubmissions(history).observe().first()
+            val list = ownSubmissionsOf(history).observe().first()
 
             val item = list.single()
             assertEquals(PRECISE_ID, item.id)
