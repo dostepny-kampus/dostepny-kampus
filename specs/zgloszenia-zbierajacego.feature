@@ -106,7 +106,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
     Wtedy zgłoszenie ma status „wysłane”
     Oraz trafia z powrotem do kolejki weryfikacji
 
-  @BR-3 @BR-18 @aplikacja
+  @BR-3 @BR-18 @aplikacja @serwer
   Scenariusz: Zmiana zgłoszenia przyjętego tworzy nowe zgłoszenie
     Zakładając, że zgłoszenie Zbierającego TB-13 „próg” w C-13 z uciążliwością 2 jest przyjęte
     Jeżeli Zbierający zmieni uciążliwość na 3

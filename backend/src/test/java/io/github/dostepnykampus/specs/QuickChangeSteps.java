@@ -11,6 +11,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -116,7 +117,8 @@ public final class QuickChangeSteps {
     }
 
     /**
-     * Serwer zapisał zmianę jako nowe zgłoszenie wysłane, powiązane z poprzednim.
+     * Serwer zapisał zmianę jako nowe zgłoszenie wysłane, a kolumna powiązania wskazuje
+     * poprzednie.
      */
     @Then("powstaje nowe zgłoszenie powiązane z poprzednim, ze statusem „wysłane”")
     public void linkedSubmission() {
@@ -125,11 +127,32 @@ public final class QuickChangeSteps {
             this.jdbc.sql(
                 String.join(
                     " ",
-                    "SELECT status || ' ' || (content ->> 'replacesSubmissionId')",
+                    "SELECT status || ' ' || replaces_submission_id",
                     "FROM submissions WHERE id = :id"
                 )
             ).param("id", QuickChangeSteps.CHANGE).query(String.class).list(),
             Matchers.contains(String.format("SENT %s", QuickChangeSteps.QUICK))
+        );
+    }
+
+    /**
+     * Część serwera scenariusza „Zmiana zgłoszenia przyjętego tworzy nowe zgłoszenie”: status
+     * „lokalne” zmiana ma w telefonie do potwierdzenia odbioru, a serwer po wysyłce ma ją jako
+     * zgłoszenie wysłane, z kolumną powiązania wskazującą istniejące zgłoszenie.
+     */
+    @Then("powstaje nowe zgłoszenie powiązane z poprzednim, ze statusem „lokalne”")
+    public void linkedAfterSending() {
+        MatcherAssert.assertThat(
+            "Serwer nie zapisał wysłanej zmiany powiązanej z poprzednim zgłoszeniem",
+            this.jdbc.sql(
+                String.join(
+                    " ",
+                    "SELECT changed.status FROM submissions AS changed",
+                    "JOIN submissions AS previous ON changed.replaces_submission_id = previous.id",
+                    "ORDER BY changed.created_at DESC LIMIT 1"
+                )
+            ).query(String.class).list(),
+            Matchers.contains("SENT")
         );
     }
 
@@ -147,18 +170,35 @@ public final class QuickChangeSteps {
     }
 
     /**
-     * Poprzednie zgłoszenie serwer nadal oddaje mapie.
+     * Zgłoszenie wskazane przez ostatnią zmianę jest nadal przyjęte, a serwer oddaje je mapie
+     * budynku. Poprzednie zgłoszenie krok bierze z kolumny powiązania, więc służy też
+     * scenariuszowi „Zmiana zgłoszenia przyjętego tworzy nowe zgłoszenie”.
      *
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
     @Then("poprzednie zgłoszenie nadal jest przyjęte i widoczne na mapie")
     public void previousStays() throws Exception {
+        final Map<String, Object> previous = this.jdbc.sql(
+            String.join(
+                " ",
+                "SELECT CAST(previous.id AS TEXT) AS id, previous.status,",
+                "previous.building_symbol FROM submissions AS previous",
+                "JOIN submissions AS changed ON changed.replaces_submission_id = previous.id",
+                "ORDER BY changed.created_at DESC LIMIT 1"
+            )
+        ).query().singleRow();
+        MatcherAssert.assertThat(
+            "Poprzednie zgłoszenie przestało być przyjęte",
+            previous.get("status"),
+            Matchers.equalTo("ACCEPTED")
+        );
         MatcherAssert.assertThat(
             "Mapa budynku nie pokazuje poprzedniego zgłoszenia",
             this.http.perform(
-                MockMvcRequestBuilders.get("/submissions").param("buildingSymbol", this.building)
+                MockMvcRequestBuilders.get("/submissions")
+                    .param("buildingSymbol", String.valueOf(previous.get("building_symbol")))
             ).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
-            Matchers.containsString(QuickChangeSteps.QUICK.toString())
+            Matchers.containsString(String.valueOf(previous.get("id")))
         );
     }
 

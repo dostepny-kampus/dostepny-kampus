@@ -21,9 +21,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 /**
- * Kroki scenariuszy „Zbierający nie edytuje cudzego zgłoszenia”
- * i „Zwykłą zmianę przyjętego zgłoszenia z pomiaru precyzyjnego składa tylko
- * autor”.
+ * Kroki scenariuszy „Zbierający nie edytuje cudzego zgłoszenia”,
+ * „Zwykłą zmianę przyjętego zgłoszenia z pomiaru precyzyjnego składa tylko
+ * autor” i części serwera scenariusza „Zmiana zgłoszenia przyjętego tworzy
+ * nowe zgłoszenie”.
  *
  * <p>Token testowy ma zawsze to samo konto, więc autorem zgłoszenia zostaje
  * inne konto w bazie, a próbę zmiany wykonuje konto z tokenu.</p>
@@ -125,12 +126,36 @@ public final class ForeignEditSteps {
      */
     @When("Zbierający spróbuje zmienić jego uciążliwość z pominięciem aplikacji")
     public void collectorReplaces() throws Exception {
-        this.refused = this.send(
-            MockMvcRequestBuilders.post("/submissions"),
-            String.format(
-                "\"id\":\"%s\",\"replacesSubmissionId\":\"%%s\"", ForeignEditSteps.CHANGE
-            ),
-            3
+        this.refused = this.change();
+    }
+
+    /**
+     * Weryfikator przyjął zgłoszenie, którego autorem jest konto z tokenu.
+     *
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @Given("zgłoszenie Zbierającego TB-13 „próg” w C-13 z uciążliwością 2 jest przyjęte")
+    public void ownAccepted() throws Exception {
+        MatcherAssert.assertThat(
+            "Serwer nie przyjął zgłoszenia Zbierającego",
+            this.send(MockMvcRequestBuilders.post("/submissions"), "\"id\":\"%s\"", 2),
+            Matchers.equalTo(201)
+        );
+        this.jdbc.sql("UPDATE submissions SET status = 'ACCEPTED' WHERE id = :id")
+            .param("id", ForeignEditSteps.SUBMISSION).update();
+    }
+
+    /**
+     * Aplikacja autora wysyła zmianę jego przyjętego zgłoszenia jako nowe zgłoszenie.
+     *
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @When("Zbierający zmieni uciążliwość na 3")
+    public void authorChanges() throws Exception {
+        MatcherAssert.assertThat(
+            "Serwer nie przyjął zmiany przyjętego zgłoszenia od jego autora",
+            this.change(),
+            Matchers.equalTo(201)
         );
     }
 
@@ -178,6 +203,16 @@ public final class ForeignEditSteps {
         this.jdbc.sql("DELETE FROM submissions WHERE id IN (:ids)")
             .param("ids", List.of(ForeignEditSteps.SUBMISSION, ForeignEditSteps.CHANGE))
             .update();
+    }
+
+    private int change() throws Exception {
+        return this.send(
+            MockMvcRequestBuilders.post("/submissions"),
+            String.format(
+                "\"id\":\"%s\",\"replacesSubmissionId\":\"%%s\"", ForeignEditSteps.CHANGE
+            ),
+            3
+        );
     }
 
     private int send(
