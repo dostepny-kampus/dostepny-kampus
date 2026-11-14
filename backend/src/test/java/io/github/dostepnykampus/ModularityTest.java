@@ -32,7 +32,8 @@ import org.springframework.modulith.docs.Documenter;
  * i opisem w Javadoc {@code package-info.java}. Bez cykli, bez dostępu do wnętrza cudzego modułu
  * i bez zależności spoza listy {@code allowedDependencies}, którą każdy moduł zapisuje
  * w {@code @ApplicationModule}, także pustą. Spring Modulith czyta {@code package-info}
- * z katalogu testów, więc ta wersja powtarza listę z kodu produkcyjnego.
+ * z katalogu testów, więc ta wersja powtarza listę z kodu produkcyjnego. Schemat modułów
+ * na stronie dokumentacji jest równy schematowi wygenerowanemu z kodu.
  *
  * @since 0.1.0
  */
@@ -47,6 +48,11 @@ final class ModularityTest {
      * Jedyne podpakiety otwartego modułu shared.
      */
     private static final Set<String> SHARED = Set.of("error", "json", "geo");
+
+    /**
+     * Schemat modułów na stronie dokumentacji, wygenerowany z kodu.
+     */
+    private static final Path DIAGRAM = Path.of("../docs/docs/architektura/moduly-serwera.puml");
 
     /**
      * Katalog na przykładowe źródła, nowy w każdym teście.
@@ -180,17 +186,30 @@ final class ModularityTest {
     }
 
     @Test
-    void infraWritesModuleDocumentation() {
-        final String folder = "target/spring-modulith-docs";
+    void infraModuleDiagramMatchesDocumentation() throws IOException {
+        final Path folder = Path.of("target/spring-modulith-docs");
         new Documenter(
             ApplicationModules.of(DostepnyKampusApplication.class),
-            Documenter.Options.defaults().withOutputFolder(folder)
+            Documenter.Options.defaults().withOutputFolder(folder.toString())
         ).writeDocumentation();
         MatcherAssert.assertThat(
-            "Documenter nie zapisał diagramu modułów",
-            Files.exists(Path.of(folder, "components.puml")),
-            Matchers.is(true)
+            String.format(
+                "Schemat modułów na stronie dokumentacji jest nieaktualny; skopiuj %s do %s",
+                folder.resolve("components.puml"), ModularityTest.DIAGRAM
+            ),
+            ModularityTest.text(ModularityTest.DIAGRAM),
+            Matchers.equalTo(ModularityTest.text(folder.resolve("components.puml")))
         );
+    }
+
+    private static String text(final Path file) throws IOException {
+        final String found;
+        if (Files.exists(file)) {
+            found = Files.readString(file).replace("\r\n", "\n");
+        } else {
+            found = "";
+        }
+        return found;
     }
 
     private static List<String> incomplete(
