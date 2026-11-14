@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.capture.report
 
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
 
 /** Miejsce z pomiaru C1 przy Gmachu Głównym A-1, wspólne dla testów formularza C2. */
 internal val A1 =

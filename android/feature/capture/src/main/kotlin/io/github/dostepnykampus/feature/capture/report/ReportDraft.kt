@@ -9,6 +9,10 @@ import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.feature.capture.report.edit.ReportUiState
+import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
+import io.github.dostepnykampus.feature.capture.report.form.ReportForm
+import io.github.dostepnykampus.feature.capture.report.form.errors
 import kotlinx.serialization.Serializable
 
 /** Pola C2 wspólne dla formularza i powrotu przez C1. Stan zapisuje właściciel nawigacji. Wymagania: US7.4 */

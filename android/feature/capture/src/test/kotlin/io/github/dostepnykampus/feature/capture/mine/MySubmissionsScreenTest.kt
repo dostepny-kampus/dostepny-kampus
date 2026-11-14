@@ -22,7 +22,6 @@ import io.github.dostepnykampus.core.data.submissions.RefusalReason
 import io.github.dostepnykampus.core.data.submissions.SendState
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierType
-import io.github.dostepnykampus.feature.capture.report.check
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

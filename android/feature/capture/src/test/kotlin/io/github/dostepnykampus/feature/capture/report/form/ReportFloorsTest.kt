@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report
+package io.github.dostepnykampus.feature.capture.report.form
 
 import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
@@ -15,6 +15,10 @@ import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.quick.content
+import io.github.dostepnykampus.feature.capture.report.A1
+import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
+import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
+import io.github.dostepnykampus.feature.capture.report.edit.ReportUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

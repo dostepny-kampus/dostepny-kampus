@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report
+package io.github.dostepnykampus.feature.capture.report.edit
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +17,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
 import io.github.dostepnykampus.feature.capture.photo.rememberPhotoCamera
+import io.github.dostepnykampus.feature.capture.report.ReportDraft
+import io.github.dostepnykampus.feature.capture.report.form.ReportFormHost
+import io.github.dostepnykampus.feature.capture.report.form.ReportFormViewModel
+import io.github.dostepnykampus.feature.capture.report.form.controls
 import kotlinx.coroutines.flow.first
 
 /**

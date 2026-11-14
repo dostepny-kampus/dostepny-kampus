@@ -41,7 +41,7 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.quick.QuickReportActions
 import io.github.dostepnykampus.feature.capture.quick.QuickReportScreen
-import io.github.dostepnykampus.feature.capture.report.ReportFormScreen
+import io.github.dostepnykampus.feature.capture.report.form.ReportFormScreen
 import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.building.BuildingCardContent

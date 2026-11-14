@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report
+package io.github.dostepnykampus.feature.capture.report.form
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -16,6 +16,8 @@ import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
+import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
+import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

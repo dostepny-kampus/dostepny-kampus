@@ -43,9 +43,9 @@ import io.github.dostepnykampus.core.location.PositionAverage
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.location.WithLocationPermission
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
-import io.github.dostepnykampus.feature.capture.report.Buildings
-import io.github.dostepnykampus.feature.capture.report.PlaceActions
-import io.github.dostepnykampus.feature.capture.report.PlaceSection
+import io.github.dostepnykampus.feature.capture.report.form.Buildings
+import io.github.dostepnykampus.feature.capture.report.form.PlaceActions
+import io.github.dostepnykampus.feature.capture.report.form.PlaceSection
 import java.util.Locale
 
 private val POLISH = Locale.forLanguageTag("pl-PL")

@@ -18,11 +18,11 @@ import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import io.github.dostepnykampus.feature.capture.quick.content
-import io.github.dostepnykampus.feature.capture.report.ReportEdit
-import io.github.dostepnykampus.feature.capture.report.ReportFloor
-import io.github.dostepnykampus.feature.capture.report.ReportForm
-import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
-import io.github.dostepnykampus.feature.capture.report.ReportStage
+import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
+import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
+import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
+import io.github.dostepnykampus.feature.capture.report.form.ReportForm
+import io.github.dostepnykampus.feature.capture.report.form.ReportFormViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow

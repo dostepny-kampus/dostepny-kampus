@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report
+package io.github.dostepnykampus.feature.capture.report.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,6 +15,9 @@ import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.quick.content
+import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
+import io.github.dostepnykampus.feature.capture.report.form.ReportForm
+import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

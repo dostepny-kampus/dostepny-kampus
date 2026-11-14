@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report
+package io.github.dostepnykampus.feature.capture.report.edit
 
 import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.data.submissions.PendingEdit

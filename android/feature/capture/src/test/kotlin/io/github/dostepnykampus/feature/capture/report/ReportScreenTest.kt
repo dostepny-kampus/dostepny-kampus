@@ -36,6 +36,15 @@ import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.photo.LocalPhotoDecodeContext
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
+import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
+import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
+import io.github.dostepnykampus.feature.capture.report.edit.ReportUiState
+import io.github.dostepnykampus.feature.capture.report.form.PlanFloor
+import io.github.dostepnykampus.feature.capture.report.form.PlanFloors
+import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
+import io.github.dostepnykampus.feature.capture.report.form.ReportForm
+import io.github.dostepnykampus.feature.capture.report.form.ReportFormError
+import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

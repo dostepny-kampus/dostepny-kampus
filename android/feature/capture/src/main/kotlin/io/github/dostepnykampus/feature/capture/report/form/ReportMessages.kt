@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report
+package io.github.dostepnykampus.feature.capture.report.form
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
@@ -33,6 +33,9 @@ import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.photo.PhotoPreviews
+import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
+import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
+import io.github.dostepnykampus.feature.capture.report.edit.ReportUiState
 
 /**
  * „Zdjęcie”: ostrzeżenie „Ważne” jak w kroku 1 V4, podgląd zdjęć, „Zrób zdjęcie” i komunikat, gdy zdjęcia nie dało

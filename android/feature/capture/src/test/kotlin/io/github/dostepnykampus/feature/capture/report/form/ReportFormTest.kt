@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report
+package io.github.dostepnykampus.feature.capture.report.form
 
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.BarrierType
@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.feature.capture.measure.place
+import io.github.dostepnykampus.feature.capture.report.A1
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
