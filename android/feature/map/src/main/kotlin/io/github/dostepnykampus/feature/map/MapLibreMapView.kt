@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
@@ -27,9 +26,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.core.designsystem.MapColors
-import io.github.dostepnykampus.core.designsystem.nameRes
-import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
 import io.github.dostepnykampus.feature.map.building.entranceCaption
 import io.github.dostepnykampus.feature.map.building.entranceImages
@@ -42,13 +38,16 @@ import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.symbolsAt
 import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
+import io.github.dostepnykampus.feature.map.style.MapImages
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
 import io.github.dostepnykampus.feature.map.style.MapStyleTarget
 import io.github.dostepnykampus.feature.map.style.MapTileHttpEntryPoint
 import io.github.dostepnykampus.feature.map.style.SelectionLook
 import io.github.dostepnykampus.feature.map.style.asStyleText
 import io.github.dostepnykampus.feature.map.style.campusMapStyle
+import io.github.dostepnykampus.feature.map.style.labelImage
 import io.github.dostepnykampus.feature.map.style.numbers
+import io.github.dostepnykampus.feature.map.style.rememberMapImages
 import io.github.dostepnykampus.feature.map.style.selectionLook
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
@@ -328,26 +327,3 @@ internal fun Style.addMapImages(labels: List<String>, images: MapImages) {
 /** Obrazy zależne od zaznaczonego wejścia [selected]: tylko podpis z jego nazwą. Wymagania: US3.3 */
 internal fun selectionImages(selected: SelectedEntrance?, images: MapImages): Map<String, Bitmap> =
     entranceCaption(selected = selected, colors = images.colors, labelSize = images.labelSize)
-
-/**
- * Wygląd obrazów mapy w barwach [colors], gęstości ekranu [density] i wysokości podpisu [labelSize] w pikselach,
- * ze słowami uciążliwości w języku ekranu; nowy tylko po zmianie któregoś z nich.
- */
-@Composable
-internal fun rememberMapImages(colors: MapColors, density: Float, labelSize: Float): MapImages {
-    val words = Severity.entries.map { stringResource(it.nameRes()) }
-    return remember(colors, density, labelSize, words) {
-        MapImages(colors = colors, density = density, labelSize = labelSize, words = words)
-    }
-}
-
-/**
- * Wygląd obrazów mapy: barwy [colors], gęstość ekranu [density], wysokość podpisu [labelSize] w pikselach i słowa
- * uciążliwości [words] w kolejności [Severity]; bez słów bariery mają same znaki.
- */
-internal data class MapImages(
-    val colors: MapColors,
-    val density: Float,
-    val labelSize: Float,
-    val words: List<String> = emptyList(),
-)

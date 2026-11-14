@@ -28,12 +28,10 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
-import io.github.dostepnykampus.feature.map.BuildingSearch
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.area.buildingsWord
 import io.github.dostepnykampus.feature.map.data.MapArea
-import io.github.dostepnykampus.feature.map.foundFor
 
 /**
  * Lista budynków V1 podzielona nagłówkami terenów z liczbą budynków, np. „Wittigowo · 9”. W terenie

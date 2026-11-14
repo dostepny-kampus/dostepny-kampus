@@ -58,6 +58,8 @@ import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.area.otherAreaOf
 import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingList
+import io.github.dostepnykampus.feature.map.building.BuildingSearch
+import io.github.dostepnykampus.feature.map.building.foundFor
 import java.time.Instant
 
 private val SearchIcon =

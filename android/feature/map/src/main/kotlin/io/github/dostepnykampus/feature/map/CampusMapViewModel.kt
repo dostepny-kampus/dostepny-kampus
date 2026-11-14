@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.feature.map
 
-import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,8 +15,8 @@ import io.github.dostepnykampus.core.data.di.ComputeContext
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.geo.searchBuildings
-import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import io.github.dostepnykampus.feature.map.data.withBarriers
@@ -73,20 +72,6 @@ data class CampusMapUiState(
     val syncedAt: Instant? = null,
     val search: BuildingSearch = BuildingSearch(),
 )
-
-/**
- * Wynik wyszukiwania budynku po symbolu.
- *
- * Wymagania: US1.3
- *
- * @property query zapytanie, dla którego policzono wynik; ekran pokazuje wynik tylko dla zapytania z pola
- * @property buildings budynki o tym symbolu w kolejności katalogu; `null`, dopóki katalog się wczytuje
- */
-@Immutable
-data class BuildingSearch(val query: String = "", val buildings: List<Building>? = null)
-
-/** Wynik dla zapytania [shown] z pola; `null`, gdy wynik jest dla innego zapytania albo katalog się wczytuje. */
-fun BuildingSearch.foundFor(shown: String): List<Building>? = buildings.takeIf { query == shown }
 
 /**
  * Stan V1 z katalogu budynków (najpierw plik, potem serwer), stanu internetu, barier i zapamiętanego wyboru „Mapa” albo
