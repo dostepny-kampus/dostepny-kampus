@@ -52,8 +52,7 @@ class TekstJsonConfigTest {
 
     private fun lines(vararg body: String): List<Int> =
         rule
-            .lintWithContext(createEnvironment(), (HEADER + body).joinToString(separator = "
-"))
+            .lintWithContext(createEnvironment(), (HEADER + body).joinToString(separator = "\n"))
             .map { it.entity.location.source.line }
             .distinct()
 
