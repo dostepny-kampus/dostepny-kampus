@@ -51,11 +51,11 @@ class FeatureRootImportArchitectureTest {
 
     private fun violations(files: List<KoFileDeclaration>): List<String> =
         files
-            .flatMap { file -> rootImports(file).map { "${file.packagee?.name}.${file.name} → $it" } }
+            .flatMap { file -> rootImports(file).map { "${file.packagee?.name.orEmpty()}.${file.name} → $it" } }
             .sorted()
 
     private fun rootImports(file: KoFileDeclaration): List<String> {
-        val root = SUBPACKAGE.matchEntire(file.packagee?.name.orEmpty())?.groupValues?.get(1)
+        val root = SUBPACKAGE.matchEntire(file.packagee?.name.orEmpty())?.run { groupValues[1] }
         return file.imports
             .map { it.name }
             .filter { root != null && it.substringBeforeLast('.') == root && it.substringAfterLast('.') != RESOURCES }
