@@ -94,7 +94,7 @@ jobs:
             to=$GROUP_HEAD_SHA
           fi
           system=true
-          if [[ $ANDROID != true ]] && git diff --quiet "$from" "$to" -- backend infra; then
+          if [[ $ANDROID != true ]] && git diff --quiet "$from" "$to" -- backend infra .github/scripts/pakuj-serwer-systemowy.sh; then
             system=false
           fi
           echo "system=${system}" >> "$GITHUB_OUTPUT"
@@ -125,13 +125,17 @@ jobs:
           java-version: 25
           cache: maven
           cache-dependency-path: backend/pom.xml
+      - name: Zbuduj serwer (jedno ponowienie po błędzie pobierania z Maven Central)
+        if: matrix.zestaw == 'system'
+        timeout-minutes: 10
+        working-directory: backend
+        run: bash ../.github/scripts/pakuj-serwer-systemowy.sh
       - name: Uruchom bazę, magazyn zdjęć, logowanie i serwer
         if: matrix.zestaw == 'system'
         timeout-minutes: 15
         run: |
           cp infra/.env.example infra/.env
           docker compose -f infra/docker-compose.yml up -d --wait
-          (cd backend && ./mvnw -B -q -DskipTests -Dqulice.skip=true -Djacoco.skip=true package)
           set -a
           . infra/.env
           set +a
