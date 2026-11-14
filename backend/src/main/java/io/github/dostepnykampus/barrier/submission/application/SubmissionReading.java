@@ -101,7 +101,9 @@ public final class SubmissionReading {
     }
 
     /**
-     * @return Przyjęte zgłoszenia istniejących barier w kolejności utworzenia
+     * Przyjęte zgłoszenia istniejących barier.
+     *
+     * @return Zgłoszenia w kolejności utworzenia
      */
     public List<Submission> exportable() {
         return this.finder.list(new SubmissionQuery(Set.of(SubmissionStatus.ACCEPTED), null, null))

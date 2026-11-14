@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.StringJoiner;
 import org.apache.commons.csv.CSVFormat;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,7 +54,6 @@ final class ExportCsvController {
         this.submissions.exportable().stream().map(this::row).forEach(csv::add);
         return ResponseEntity.ok()
             .contentType(MediaType.parseMediaType("text/csv;charset=UTF-8"))
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=export.csv")
             .body(csv.toString());
     }
 

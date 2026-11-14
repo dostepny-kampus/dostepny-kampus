@@ -10,7 +10,6 @@ BEGIN
     RETURN NEW;
 END;
 $$;
-
 CREATE TRIGGER submissions_verification
     BEFORE UPDATE OF status ON submissions
     FOR EACH ROW
