@@ -132,6 +132,7 @@
     <string name="moje_przyjete">Przyjęte</string>
     <string name="moje_odrzucone">Odrzucone</string>
     <string name="moje_archiwalne">Archiwalne</string>
+    <string name="moje_zmiana_czeka">Zmiana czeka na wysłanie</string>
     <string name="moje_powod_odrzucenia">Powód odrzucenia: %1$s</string>
     <string name="moje_sprawdzamy">Sprawdzamy statusy…</string>
     <string name="moje_blad_statusow">Nie udało się sprawdzić statusów, ale zgłoszenia są bezpieczne w telefonie. Spróbuj ponownie za chwilę.</string>

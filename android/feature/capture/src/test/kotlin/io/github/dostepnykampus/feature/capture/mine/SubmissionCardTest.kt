@@ -84,6 +84,23 @@ class SubmissionCardTest {
         compose.onNodeWithText("Powód odrzucenia: Zdjęcie nieostre").assertIsDisplayed()
     }
 
+    /**
+     * Scenariusz: zgloszenia-zbierajacego.feature: Zgłoszenie ze zmianą czekającą w telefonie ma napis
+     *   przy statusie.
+     */
+    @Test
+    fun us8_1_change_waiting() {
+        show(item(id = "a", state = SendState.SENT).copy(isChangeWaiting = true))
+        compose.onNodeWithText("Wysłane").assertIsDisplayed()
+        compose.onNodeWithText("Zmiana czeka na wysłanie").assertIsDisplayed()
+    }
+
+    @Test
+    fun us8_1_no_change_waiting() {
+        show(item(id = "a", state = SendState.SENT))
+        compose.onNodeWithText("Zmiana czeka na wysłanie").assertDoesNotExist()
+    }
+
     /** Wiersz: C3 „Nie wysłano” → powód odmowy. Wymagania: US9.5, BR-26 */
     @Test
     fun us9_5_refusal_reason() {
