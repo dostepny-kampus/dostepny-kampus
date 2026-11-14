@@ -61,7 +61,11 @@ class PlaceSectionTest {
         }
     }
 
-    /** Wiersz: „Czy to budynek A-1?”, pod pytaniem nazwa z danych i odległość od punktu. */
+    /**
+     * Wiersz: „Czy to budynek A-1?”, pod pytaniem nazwa z danych i odległość od punktu.
+     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Poza konturem aplikacja pokazuje stan „Poza budynkiem” i
+     *   proponuje najbliższy budynek
+     */
     @Test
     fun us6_2_hint_name_and_distance() {
         show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 12.4, isInside = false)))

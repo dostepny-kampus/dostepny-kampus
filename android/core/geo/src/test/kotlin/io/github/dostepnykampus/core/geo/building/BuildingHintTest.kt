@@ -87,7 +87,11 @@ class BuildingHintTest {
         assertTrue(hint.isInside)
     }
 
-    /** Wiersze: 30 m i 50 m od konturu → budynek do potwierdzenia. */
+    /**
+     * Wiersze: 30 m i 50 m od konturu → budynek do potwierdzenia.
+     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Poza konturem aplikacja pokazuje stan „Poza budynkiem” i
+     *   proponuje najbliższy budynek
+     */
     @Test
     fun br_g4_hint_within_50_m() {
         listOf(30.0, 49.0).forEach { meters ->
