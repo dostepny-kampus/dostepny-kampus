@@ -41,7 +41,7 @@ class AssertionMessage(config: Config) :
     private fun lacksMessage(call: KtCallExpression): Boolean =
         analyze(call) {
             val function = call.resolveToCall()?.successfulFunctionCallOrNull()
-            function?.let { isMissing(it.signature.symbol) } ?: false
+            function?.let { isMissing(it.signature.symbol) } == true
         }
 
     private fun isMissing(symbol: KaFunctionSymbol): Boolean {
