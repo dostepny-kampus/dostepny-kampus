@@ -36,13 +36,16 @@ class StorageDependencyArchitectureTest {
         )
     }
 
-    private fun module(
-        root: File,
-        path: String,
-        line: String,
-    ) {
+    private fun module(root: File, path: String, line: String) {
         val dir = File(root, path).apply { mkdirs() }
-        File(dir, "build.gradle.kts").writeText("dependencies {\n    $line\n}\n")
+        File(dir, "build.gradle.kts").writeText(
+            """
+            |dependencies {
+            |    $line
+            |}
+            |
+            """.trimMargin(),
+        )
     }
 
     private fun violations(root: File): Set<String> =
@@ -54,16 +57,10 @@ class StorageDependencyArchitectureTest {
             .map { (name, config, target) -> "$name $config $target" }
             .toSet()
 
-    private fun isForbidden(
-        module: String,
-        config: String,
-        target: String,
-    ): Boolean = target in ALLOWED && (config == API || module !in ALLOWED.getValue(target))
+    private fun isForbidden(module: String, config: String, target: String): Boolean =
+        target in ALLOWED && (config == API || module !in ALLOWED.getValue(target))
 
-    private fun dependencies(
-        root: File,
-        module: String,
-    ): Sequence<Pair<String, String>> {
+    private fun dependencies(root: File, module: String): Sequence<Pair<String, String>> {
         val build = File(root, module.removePrefix(":").replace(oldChar = ':', newChar = '/') + "/build.gradle.kts")
         return if (build.isFile) {
             PROJECT.findAll(build.readText()).map { it.groupValues[1] to it.groupValues[2] }
