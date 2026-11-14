@@ -71,6 +71,27 @@ final class ArcgisPlansTest {
     }
 
     @Test
+    void readsNumberAndFunctionUnderEveryFieldName() throws IOException {
+        MatcherAssert.assertThat(
+            "Wariant nazwy pola numeru albo funkcji warstwy PWr nie dał numeru i funkcji",
+            ArcgisPlansTest.read(
+                String.format(
+                    "{\"features\":[%s]}",
+                    String.join(
+                        ",",
+                        ArcgisPlansTest.named("Numer", "Funkcja"),
+                        ArcgisPlansTest.named("numer", "d_funkcja"),
+                        ArcgisPlansTest.named("Numer", "d_Funkcja"),
+                        ArcgisPlansTest.named("Numer", "Funkcje")
+                    )
+                )
+            ).stream().map(room -> String.join("/", room.floorId(), room.number(), room.function()))
+                .toList(),
+            Matchers.everyItem(Matchers.equalTo("T.X.P1/12/Aula"))
+        );
+    }
+
+    @Test
     void usSixteenReadsFloorsWithIdLabelAndOrder() throws IOException {
         final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
         server.createContext(
@@ -171,6 +192,17 @@ final class ArcgisPlansTest {
             ArcgisPlansTest.SQUARE,
             "},\"properties\":{\"Pietro\":\"", floor, "\",\"NUMER\":", number,
             ",\"FUNKCJA\":", function, "}}"
+        );
+    }
+
+    private static String named(final String number, final String function) {
+        return String.format(
+            String.join(
+                "",
+                "{\"id\":3,\"geometry\":{\"type\":\"Polygon\",\"coordinates\":%s},",
+                "\"properties\":{\"PIETRO\":\"T.X.P1\",\"%s\":\"12\",\"%s\":\"Aula\"}}"
+            ),
+            ArcgisPlansTest.SQUARE, number, function
         );
     }
 
