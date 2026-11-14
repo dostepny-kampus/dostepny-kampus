@@ -29,7 +29,7 @@ import java.time.Instant
  * @property floor piętro bariery; `null`, gdy zgłoszenie go nie wskazuje
  * @property photoIds zdjęcia zgłoszenia do arkusza bariery
  */
-data class AcceptedBarrier(
+public data class AcceptedBarrier(
     val id: String,
     val location: GeoPoint,
     val severity: Severity,
@@ -42,14 +42,14 @@ data class AcceptedBarrier(
 )
 
 /** Bariery ze zgłoszeń przyjętych dla mapy. Wymagania: US1.3, BR-6 */
-fun interface AcceptedBarriers {
+public fun interface AcceptedBarriers {
     /**
      * Bariery z ostatniej odpowiedzi serwera, a gdy serwer ich nie podał (brak sieci, błąd serwera), z ostatniej
      * kopii. Pusta lista, gdy nie ma ani odpowiedzi, ani kopii, więc mapa działa dalej bez znaków barier.
      *
      * Wymagania: NFR-10, NFR-11
      */
-    suspend fun barriers(): List<AcceptedBarrier>
+    public suspend fun barriers(): List<AcceptedBarrier>
 
     /**
      * Chwila pobrania z serwera barier z ostatniego wywołania [barriers]: odpowiedzi albo kopii;
@@ -57,7 +57,7 @@ fun interface AcceptedBarriers {
      *
      * Wymagania: NFR-10
      */
-    fun syncedAt(): Instant? = null
+    public fun syncedAt(): Instant? = null
 }
 
 /**
@@ -73,7 +73,7 @@ fun interface AcceptedBarriers {
  * @param copy kopia ostatnich barier w bazie; `null` zostawia źródło bez kopii
  * @param accepted zgłoszenia przyjęte z serwera
  */
-class ServerAcceptedBarriers internal constructor(
+internal class ServerAcceptedBarriers internal constructor(
     private val copy: BarrierListCopy?,
     private val accepted: suspend () -> ServerReply<List<Submission>>,
 ) : AcceptedBarriers {
@@ -84,7 +84,7 @@ class ServerAcceptedBarriers internal constructor(
      *
      * @param accepted zgłoszenia przyjęte z serwera
      */
-    constructor(accepted: suspend () -> ServerReply<List<Submission>>) : this(null, accepted)
+    public constructor(accepted: suspend () -> ServerReply<List<Submission>>) : this(null, accepted)
 
     override suspend fun barriers(): List<AcceptedBarrier> {
         val result = accepted()

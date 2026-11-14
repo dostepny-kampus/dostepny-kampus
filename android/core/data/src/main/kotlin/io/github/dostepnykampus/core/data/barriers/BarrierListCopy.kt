@@ -21,7 +21,7 @@ import kotlin.coroutines.CoroutineContext
  * @property barriers bariery z kopii
  * @property syncedAt chwila pobrania z serwera
  */
-data class SyncedBarriers(val barriers: List<AcceptedBarrier>, val syncedAt: Instant)
+internal data class SyncedBarriers(val barriers: List<AcceptedBarrier>, val syncedAt: Instant)
 
 /**
  * Kopia ostatnich barier z serwera w jednym wierszu `barrier_cache`.

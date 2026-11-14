@@ -21,6 +21,10 @@ android {
     }
 }
 
+kotlin {
+    explicitApi()
+}
+
 dependencies {
     api(project(":core:model"))
     implementation(project(":core:database"))

@@ -25,23 +25,23 @@ internal val Context.startDataStore by preferencesDataStore(
 )
 
 /** Czy to pierwsze uruchomienie aplikacji: wtedy instrukcja V5 otwiera się sama, a potem już nie. Wymagania: US5.1 */
-interface FirstLaunch {
+public interface FirstLaunch {
     /**
      * Prawda, dopóki nie wywołano [markHelpSeen]. Sam odczyt niczego nie zapisuje, więc obrót telefonu
      * i odtworzenie procesu przed zamknięciem instrukcji dają ten sam wynik. Gdy pliku nie da się odczytać,
      * zwraca fałsz: aplikacja startuje tak, jakby instrukcja była już pokazana.
      */
-    suspend fun isFirstLaunch(): Boolean
+    public suspend fun isFirstLaunch(): Boolean
 
     /**
      * Zapisuje, że osoba zamknęła instrukcję otwartą przy pierwszym uruchomieniu albo ją pominęła.
      * Błąd zapisu nie wychodzi z tej metody.
      */
-    suspend fun markHelpSeen()
+    public suspend fun markHelpSeen()
 }
 
 /** [FirstLaunch] zapisany w [dataStore], więc przetrwa zamknięcie aplikacji i restart telefonu. */
-class FirstLaunchRepository(private val dataStore: DataStore<Preferences>) : FirstLaunch {
+internal class FirstLaunchRepository(private val dataStore: DataStore<Preferences>) : FirstLaunch {
     override suspend fun isFirstLaunch(): Boolean {
         val readings =
             dataStore.data

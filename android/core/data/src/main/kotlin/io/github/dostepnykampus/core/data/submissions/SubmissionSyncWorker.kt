@@ -28,7 +28,7 @@ internal interface SubmissionSyncEntryPoint {
  *
  * Wymagania: NFR-6
  */
-class SubmissionSyncWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
+internal class SubmissionSyncWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
         val entryPoint =
             EntryPointAccessors.fromApplication(applicationContext, SubmissionSyncEntryPoint::class.java)

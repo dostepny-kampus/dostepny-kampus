@@ -50,11 +50,11 @@ import kotlin.coroutines.CoroutineContext
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object DataModule {
+public object DataModule {
     /** Katalog: kontury z serwera, a przy innej odpowiedzi z kopii w bazie albo z pliku. Wymagania: US1, NFR-10 */
     @Provides
     @Singleton
-    fun buildingCatalog(
+    public fun buildingCatalog(
         app: Application,
         api: BuildingsApi,
         buildingList: BuildingListStore,
@@ -70,7 +70,7 @@ object DataModule {
     /** Wejścia karty budynku z serwera z dniem i źródłem oznaczenia. Wymagania: US17.3 */
     @Provides
     @Singleton
-    fun cardEntrances(api: BuildingsApi): ServerEntrances =
+    public fun cardEntrances(api: BuildingsApi): ServerEntrances =
         ServerEntrancesRepository { symbol ->
             api.building(symbol).toReply { ServerCard(it.building, it.entrances) }
         }
@@ -78,34 +78,34 @@ object DataModule {
     /** Piętra budynku szczegółowego z serwera do formularza C2. Wymagania: US7.2 */
     @Provides
     @Singleton
-    fun buildingFloors(api: BuildingsApi): BuildingFloors =
+    public fun buildingFloors(api: BuildingsApi): BuildingFloors =
         ServerFloorsRepository { symbol -> api.floors(symbol).toReply { it } }
 
     /** Wybór „Mapa” albo „Lista budynków” w pliku ustawień mapy. Wymagania: NFR-19 */
     @Provides
     @Singleton
-    fun mapListChoice(app: Application): MapListChoice = MapListChoiceRepository(app.mapDataStore)
+    public fun mapListChoice(app: Application): MapListChoice = MapListChoiceRepository(app.mapDataStore)
 
     /** Stan internetu z usługi systemowej telefonu. Wymagania: US9.1 */
     @Provides
     @Singleton
-    fun networkStatus(app: Application): NetworkStatus =
+    public fun networkStatus(app: Application): NetworkStatus =
         ConnectivityNetworkStatus(app.getSystemService(ConnectivityManager::class.java))
 
     /** Pierwsze uruchomienie w pliku ustawień startu. Wymagania: US5.1 */
     @Provides
     @Singleton
-    fun firstLaunch(app: Application): FirstLaunch = FirstLaunchRepository(app.startDataStore)
+    public fun firstLaunch(app: Application): FirstLaunch = FirstLaunchRepository(app.startDataStore)
 
     /** Planowanie wysyłki kolejki po powrocie sieci; start aplikacji zwołuje je osobno. Wymagania: NFR-6 */
     @Provides
     @Singleton
-    fun submissionSync(app: Application): SubmissionSyncScheduler = SubmissionSyncScheduler(app)
+    public fun submissionSync(app: Application): SubmissionSyncScheduler = SubmissionSyncScheduler(app)
 
     /** Kolejka zgłoszeń: zapis w bazie Room, wysyłka klientem zgłoszeń. Wymagania: NFR-5, US9.2 */
     @Provides
     @Singleton
-    fun submissionQueue(
+    public fun submissionQueue(
         api: SubmissionsApi,
         store: SubmissionStore,
         sync: SubmissionSyncScheduler,
@@ -129,13 +129,13 @@ object DataModule {
 
     /** Własne zgłoszenia dla listy C3 z historii w telefonie. Wymagania: US8.1, NFR-5 */
     @Provides
-    fun ownSubmissions(store: SubmissionStore): OwnSubmissions = ownSubmissionsOf(store.history)
+    public fun ownSubmissions(store: SubmissionStore): OwnSubmissions = ownSubmissionsOf(store.history)
 
     /** Zgłoszenia z kolejki telefonu do poprawki w C2. Wymagania: US8.3 */
     @Provides
-    fun pendingEdits(store: SubmissionStore): PendingEdits = pendingEditsOf(store.edits)
+    public fun pendingEdits(store: SubmissionStore): PendingEdits = pendingEditsOf(store.edits)
 
     /** Odświeżenie statusów listy C3 z serwera. Wymagania: US8.2 */
     @Provides
-    fun ownStatuses(api: SubmissionsApi, store: SubmissionStore): OwnStatuses = ownStatusesOf(api::mine, store.history)
+    public fun ownStatuses(api: SubmissionsApi, store: SubmissionStore): OwnStatuses = ownStatusesOf(api::mine, store.history)
 }
