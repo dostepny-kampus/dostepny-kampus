@@ -91,10 +91,13 @@ public final class JdbcFloorPlans implements FloorPlans {
             final String id = "%d:%s:%d:%s".formatted(num.length(), num, ord, room.function());
             this.jdbc.sql(
                 """
-                INSERT INTO rooms (building_symbol, floor_id, id, number, function, outline)
-                VALUES (?, ?, ?, ?, ?, ST_Multi(ST_SetSRID(ST_GeomFromGeoJSON(?), 4326)))
+                INSERT INTO rooms
+                    (building_symbol, floor_id, id, number, function, outline, label_point)
+                SELECT ?, ?, ?, ?, ?, shape, ST_PointOnSurface(shape)
+                FROM (SELECT ST_Multi(ST_SetSRID(ST_GeomFromGeoJSON(?), 4326)) AS shape) AS room
                 ON CONFLICT (building_symbol, floor_id, id) DO UPDATE
-                SET number=EXCLUDED.number, function=EXCLUDED.function, outline=EXCLUDED.outline
+                SET number=EXCLUDED.number, function=EXCLUDED.function, outline=EXCLUDED.outline,
+                    label_point=EXCLUDED.label_point
                 """
             ).params(building, room.floorId(), id, sqlnum, room.function(), room.outline())
                 .update();
