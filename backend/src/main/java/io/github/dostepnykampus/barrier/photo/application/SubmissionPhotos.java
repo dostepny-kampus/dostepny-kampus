@@ -3,8 +3,9 @@
  * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.application;
+package io.github.dostepnykampus.barrier.photo.application;
 
+import io.github.dostepnykampus.barrier.application.SubmissionService;
 import io.github.dostepnykampus.barrier.photo.JpegCleaner;
 import io.github.dostepnykampus.barrier.photo.PhotoStorageException;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;

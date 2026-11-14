@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.photo;
+package io.github.dostepnykampus.barrier.photo.storage;
 
 import io.github.dostepnykampus.IntegrationTest;
 import org.hamcrest.MatcherAssert;

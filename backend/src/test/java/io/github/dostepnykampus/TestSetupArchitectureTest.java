@@ -66,7 +66,7 @@ final class TestSetupArchitectureTest {
      * Klasy z własnym kontekstem, z powodem.
      */
     private static final Map<String, String> OWN_CONTEXT = Map.of(
-        "io.github.dostepnykampus.barrier.photo.PhotoBucketStartupTest",
+        "io.github.dostepnykampus.barrier.photo.storage.PhotoBucketStartupTest",
         String.join(
             " ",
             "sprawdza utworzenie kubełka przy starcie kontekstu,",

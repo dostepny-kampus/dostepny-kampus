@@ -5,7 +5,7 @@
  */
 
 /**
- * Usługi zgłoszeń: zapis i edycja w transakcji oraz zdjęcia zgłoszenia.
+ * Usługi zgłoszeń: zapis i edycja w transakcji.
  *
  * @since 0.1.0
  */

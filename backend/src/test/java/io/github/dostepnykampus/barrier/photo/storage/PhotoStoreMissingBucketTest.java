@@ -3,8 +3,10 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.photo;
+package io.github.dostepnykampus.barrier.photo.storage;
 
+import io.github.dostepnykampus.barrier.photo.PhotoStorageException;
+import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;

@@ -3,11 +3,11 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.web;
+package io.github.dostepnykampus.barrier.photo.web;
 
-import io.github.dostepnykampus.barrier.application.SubmissionPhotos;
 import io.github.dostepnykampus.barrier.photo.PhotoTooLargeException;
 import io.github.dostepnykampus.barrier.photo.PhotoUpload;
+import io.github.dostepnykampus.barrier.photo.application.SubmissionPhotos;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
