@@ -18,7 +18,7 @@ import org.springframework.context.ApplicationContext;
  * @since 0.1.0
  */
 @IntegrationTest
-final class DostepnyKampusApplicationTest {
+final class DostepnyKampusApplicationIT {
 
     @Test
     void infraStartsApplicationContext(final ApplicationContext context) {

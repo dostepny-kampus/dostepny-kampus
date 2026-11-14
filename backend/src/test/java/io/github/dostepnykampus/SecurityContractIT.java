@@ -36,7 +36,7 @@ import tools.jackson.databind.JsonNode;
  * @since 0.1.0
  */
 @IntegrationTest
-final class SecurityContractTest {
+final class SecurityContractIT {
 
     /**
      * Role z kontraktu.
@@ -74,9 +74,9 @@ final class SecurityContractTest {
         try (HttpClient client = HttpClient.newHttpClient()) {
             MatcherAssert.assertThat(
                 "Serwer wpuszcza albo odrzuca wywołania inaczej, niż opisuje kontrakt",
-                SecurityContractTest.problems(
-                    SecurityContractTest.rules(new OpenApiContract(), Set.of()),
-                    (operation, who) -> SecurityContractTest.status(client, base, operation, who)
+                SecurityContractIT.problems(
+                    SecurityContractIT.rules(new OpenApiContract(), Set.of()),
+                    (operation, who) -> SecurityContractIT.status(client, base, operation, who)
                 ),
                 Matchers.empty()
             );
@@ -93,10 +93,10 @@ final class SecurityContractTest {
         try (HttpClient client = HttpClient.newHttpClient()) {
             final List<String> found = new ArrayList<>(0);
             final List<String> callers = List.of(
-                SecurityContractTest.ANONYMOUS, "zly-token", "VISITOR"
+                SecurityContractIT.ANONYMOUS, "zly-token", "VISITOR"
             );
             for (final String who : callers) {
-                final HttpResponse<String> reply = SecurityContractTest.reply(
+                final HttpResponse<String> reply = SecurityContractIT.reply(
                     client, base, "GET /review/queue", who
                 );
                 found.add(
@@ -122,9 +122,9 @@ final class SecurityContractTest {
     void nfrThirtyThreeOpenServerIsReportedForEveryClosedOperation() throws Exception {
         MatcherAssert.assertThat(
             "Serwer otwarty dla każdego przeszedł kontrolę zabezpieczeń",
-            SecurityContractTest.problems(
-                SecurityContractTest.rules(
-                    new OpenApiContract(() -> SecurityContractTest.DRAFT), Set.of()
+            SecurityContractIT.problems(
+                SecurityContractIT.rules(
+                    new OpenApiContract(() -> SecurityContractIT.DRAFT), Set.of()
                 ),
                 (operation, who) -> 200
             ),
@@ -146,19 +146,19 @@ final class SecurityContractTest {
         final Map<String, Set<String>> allowed = Map.of(
             "GET /api/role", Set.of("VERIFIER"),
             "DELETE /api/two/{}", Set.of("COLLECTOR", "COORDINATOR"),
-            "POST /api/global", Set.copyOf(SecurityContractTest.ROLES)
+            "POST /api/global", Set.copyOf(SecurityContractIT.ROLES)
         );
         MatcherAssert.assertThat(
             "Serwer zgodny z kontraktem nie przeszedł kontroli zabezpieczeń",
-            SecurityContractTest.problems(
-                SecurityContractTest.rules(
-                    new OpenApiContract(() -> SecurityContractTest.DRAFT), Set.of()
+            SecurityContractIT.problems(
+                SecurityContractIT.rules(
+                    new OpenApiContract(() -> SecurityContractIT.DRAFT), Set.of()
                 ),
                 (operation, who) -> {
                     int status = 404;
                     if (allowed.containsKey(operation) && !allowed.get(operation).contains(who)) {
                         status = 403;
-                        if (SecurityContractTest.ANONYMOUS.equals(who)) {
+                        if (SecurityContractIT.ANONYMOUS.equals(who)) {
                             status = 401;
                         }
                     }
@@ -173,14 +173,14 @@ final class SecurityContractTest {
     void nfrThirtyThreeClosedPublicOperationIsReported() throws Exception {
         MatcherAssert.assertThat(
             "Operacja publiczna zamknięta przez serwer przeszła kontrolę",
-            SecurityContractTest.problems(
-                SecurityContractTest.rules(
-                    new OpenApiContract(() -> SecurityContractTest.DRAFT),
+            SecurityContractIT.problems(
+                SecurityContractIT.rules(
+                    new OpenApiContract(() -> SecurityContractIT.DRAFT),
                     Set.of("GET /api/role", "DELETE /api/two/{}", "POST /api/global")
                 ),
                 (operation, who) -> {
                     int status = 200;
-                    if (SecurityContractTest.ANONYMOUS.equals(who)) {
+                    if (SecurityContractIT.ANONYMOUS.equals(who)) {
                         status = 401;
                     }
                     return status;
@@ -196,12 +196,12 @@ final class SecurityContractTest {
     private static List<String> problems(
         final Map<String, JsonNode> rules, final Probe probe
     ) throws Exception {
-        final List<String> callers = new ArrayList<>(List.of(SecurityContractTest.ANONYMOUS));
-        callers.addAll(SecurityContractTest.ROLES);
+        final List<String> callers = new ArrayList<>(List.of(SecurityContractIT.ANONYMOUS));
+        callers.addAll(SecurityContractIT.ROLES);
         final List<String> found = new ArrayList<>(0);
         for (final Map.Entry<String, JsonNode> rule : rules.entrySet()) {
             for (final String who : callers) {
-                final int wanted = SecurityContractTest.wanted(rule.getValue(), who);
+                final int wanted = SecurityContractIT.wanted(rule.getValue(), who);
                 final int status = probe.status(rule.getKey(), who);
                 String label = "innego niż 401 i 403";
                 boolean fine = status != 401 && status != 403;
@@ -228,7 +228,7 @@ final class SecurityContractTest {
             variant.path("keycloak").forEach(role -> roles.add(role.asString()));
         }
         int status = 0;
-        if (!open && SecurityContractTest.ANONYMOUS.equals(who)) {
+        if (!open && SecurityContractIT.ANONYMOUS.equals(who)) {
             status = 401;
         } else if (!open && !roles.isEmpty() && !roles.contains(who)) {
             status = 403;
@@ -251,7 +251,7 @@ final class SecurityContractTest {
     private static int status(
         final HttpClient client, final String base, final String operation, final String who
     ) throws Exception {
-        return SecurityContractTest.reply(client, base, operation, who).statusCode();
+        return SecurityContractIT.reply(client, base, operation, who).statusCode();
     }
 
     private static HttpResponse<String> reply(
@@ -265,7 +265,7 @@ final class SecurityContractTest {
         final HttpRequest.Builder request = HttpRequest.newBuilder(
             URI.create(base.concat(parts[1].replace("{}", "00000000-0000-0000-0000-000000000000")))
         ).method(parts[0], body).header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        if (!SecurityContractTest.ANONYMOUS.equals(who)) {
+        if (!SecurityContractIT.ANONYMOUS.equals(who)) {
             request.header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(who));
         }
         return client.send(request.build(), HttpResponse.BodyHandlers.ofString());

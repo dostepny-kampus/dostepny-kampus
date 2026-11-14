@@ -46,7 +46,7 @@ import tools.jackson.databind.json.JsonMapper;
         KeycloakTestConfiguration.class
     }
 )
-final class KeycloakTokenTest {
+final class KeycloakTokenIT {
 
     /**
      * Aplikacja mobilna jako klient realmu.
@@ -67,20 +67,20 @@ final class KeycloakTokenTest {
         );
         try (HttpClient client = HttpClient.newHttpClient()) {
             final List<String> tokens = List.of(
-                KeycloakTokenTest.token(
-                    client, mapper, realm, KeycloakTokenTest.APP, "zbierajacy.test"
+                KeycloakTokenIT.token(
+                    client, mapper, realm, KeycloakTokenIT.APP, "zbierajacy.test"
                 ),
-                KeycloakTokenTest.token(
-                    client, mapper, realm, KeycloakTokenTest.APP, "odwiedzajacy.test"
+                KeycloakTokenIT.token(
+                    client, mapper, realm, KeycloakTokenIT.APP, "odwiedzajacy.test"
                 ),
-                KeycloakTokenTest.token(
+                KeycloakTokenIT.token(
                     client, mapper, realm.replace("dostepny-kampus", "master"), "admin-cli",
                     KeycloakTestConfiguration.ADMIN
                 )
             );
             final List<Integer> statuses = new ArrayList<>(tokens.size());
             for (final String token : tokens) {
-                statuses.add(KeycloakTokenTest.edit(client, operation, token));
+                statuses.add(KeycloakTokenIT.edit(client, operation, token));
             }
             MatcherAssert.assertThat(
                 "Token Zbierającego nie przechodzi, inna rola nie daje 403 albo obcy realm 401",
@@ -116,7 +116,7 @@ final class KeycloakTokenTest {
         request.POST(
             HttpRequest.BodyPublishers.ofString(
                 "grant_type=password&client_id=%s&username=%s&password=%s".formatted(
-                    app, user, KeycloakTokenTest.password(mapper, user)
+                    app, user, KeycloakTokenIT.password(mapper, user)
                 )
             )
         );

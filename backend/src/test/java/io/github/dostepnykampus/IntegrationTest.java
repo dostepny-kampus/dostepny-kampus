@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Import;
 /**
  * Test na pełnym kontekście aplikacji: serwer na losowym porcie, PostGIS i magazyn RustFS
  * w kontenerach oraz punkty HTTP tylko dla testów ({@code FailingController},
- * {@code StrictJsonHttpTest.Binding}). Wszystkie testy z tą adnotacją dzielą jeden kontekst
+ * {@code StrictJsonHttpIT.Binding}). Wszystkie testy z tą adnotacją dzielą jeden kontekst
  * i kontenery; nie dodawaj {@code @SpringBootTest}, {@code @DirtiesContext} ani
  * {@code @MockitoBean}, bo każdy zakłada osobny kontekst.
  *
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Import;
         IdentityTestConfiguration.class,
         MockMvcTestConfiguration.class,
         FailingController.class,
-        StrictJsonHttpTest.Binding.class
+        StrictJsonHttpIT.Binding.class
     }
 )
 public @interface IntegrationTest {

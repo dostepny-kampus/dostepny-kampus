@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 0.1.0
  */
 @IntegrationTest
-final class StrictJsonHttpTest {
+final class StrictJsonHttpIT {
 
     /**
      * Status i typ treści odpowiedzi 400 RFC 9457.
@@ -40,8 +40,8 @@ final class StrictJsonHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Wartość niepasująca do typu pola nie daje 400 application/problem+json",
-            StrictJsonHttpTest.reply(port, "{\"version\":\"jeden\"}"),
-            Matchers.equalTo(StrictJsonHttpTest.BAD_REQUEST)
+            StrictJsonHttpIT.reply(port, "{\"version\":\"jeden\"}"),
+            Matchers.equalTo(StrictJsonHttpIT.BAD_REQUEST)
         );
     }
 
@@ -50,8 +50,8 @@ final class StrictJsonHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Napis w polu liczbowym nie daje 400 application/problem+json",
-            StrictJsonHttpTest.reply(port, "{\"accuracyMeters\":\"5\"}"),
-            Matchers.equalTo(StrictJsonHttpTest.BAD_REQUEST)
+            StrictJsonHttpIT.reply(port, "{\"accuracyMeters\":\"5\"}"),
+            Matchers.equalTo(StrictJsonHttpIT.BAD_REQUEST)
         );
     }
 

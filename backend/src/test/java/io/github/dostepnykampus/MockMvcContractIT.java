@@ -24,7 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @since 0.1.0
  */
 @IntegrationTest
-final class MockMvcContractTest {
+final class MockMvcContractIT {
 
     @Test
     void nfrThirtyThreeSharedMockMvcRunsSecurityFilters(
