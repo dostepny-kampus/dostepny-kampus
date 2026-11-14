@@ -5,5 +5,6 @@
   "mode": "weak",
   "format": ["kotlin", "java", "yaml", "bash"],
   "reporters": ["consoleFull"],
-  "gitignore": true
+  "gitignore": true,
+  "ignorePattern": ["import [\\w.*]+( as \\w+)?;?", "package [\\w.]+;?"]
 }

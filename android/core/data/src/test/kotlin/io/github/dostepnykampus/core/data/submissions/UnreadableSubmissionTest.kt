@@ -1,20 +1,18 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.database.PendingEditDao
 import io.github.dostepnykampus.core.database.PendingSubmissionWithPhotos
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.model.SubmissionStatus
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -22,7 +20,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
@@ -59,9 +56,9 @@ class UnreadableSubmissionTest {
     @Test
     fun `br26 brak pliku zdjęcia`() =
         runBlocking {
-            val lost = photo("p1")
+            val lost = photo(tempDir, "p1")
             queue.save(precise("p1"), lost)
-            queue.save(precise("p2"), photo("p2"))
+            queue.save(precise("p2"), photo(tempDir, "p2"))
             File(lost.single().path).delete()
 
             assertTrue(queue.sendAll())
@@ -73,8 +70,8 @@ class UnreadableSubmissionTest {
     @Test
     fun `br26 nieznana wartość w bazie`() =
         runBlocking {
-            queue.save(precise("p1"), photo("p1"))
-            queue.save(precise("p2"), photo("p2"))
+            queue.save(precise("p1"), photo(tempDir, "p1"))
+            queue.save(precise("p2"), photo(tempDir, "p2"))
             val old = store.rows.first { it.submission.id == FIRST }
             store.rows[store.rows.indexOf(old)] = old.copy(submission = old.submission.copy(barrierGroup = "STARA"))
 
@@ -98,30 +95,6 @@ class UnreadableSubmissionTest {
         val left = store.rows.single()
         assertTrue(left.submission.isRefused)
     }
-
-    private fun server(id: String, content: SubmissionContent): Submission =
-        Submission(
-            id = id,
-            version = 1,
-            status = SubmissionStatus.SENT,
-            createdAt = Instant.parse("2026-01-01T00:00:00Z"),
-            content = content,
-        )
-
-    private fun photo(id: String): List<PendingPhotoDraft> {
-        val file = tempDir.resolve("$id.jpg")
-        file.writeBytes(byteArrayOf(1, 2, 3))
-        return listOf(PendingPhotoDraft(photoId = id, path = file.path))
-    }
-
-    private fun precise(photoId: String): SubmissionContent =
-        SubmissionContent(
-            kind = SubmissionKind.PRECISE,
-            location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
-            photoIds = listOf(photoId),
-            barrierType = "TB-5",
-            severity = 2,
-        )
 
     private companion object {
         const val FIRST = "s-stare"
