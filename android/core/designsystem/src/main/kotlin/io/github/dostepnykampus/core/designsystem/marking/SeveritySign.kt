@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.PathParser
 import io.github.dostepnykampus.core.designsystem.iconSizeLikeText
-import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.core.model.submission.Severity
 
 private const val SIGN_VIEWPORT = 24f
 private const val HALO = 1f

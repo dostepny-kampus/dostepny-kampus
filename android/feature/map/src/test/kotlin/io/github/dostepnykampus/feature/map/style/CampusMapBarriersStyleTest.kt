@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
-import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.data.BARRIER_ID
 import io.github.dostepnykampus.feature.map.data.BARRIER_SEVERITY
 import io.github.dostepnykampus.feature.map.data.CampusMapData
