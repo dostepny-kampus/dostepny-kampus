@@ -66,6 +66,7 @@
     <string name="karta_wiersz_niedostepne">Brak wejścia dostępnego</string>
     <string name="karta_wiersz_brak_danych">Brak danych o wejściach</string>
     <string name="karta_wejscia">Wejścia</string>
+    <string name="karta_bariery">Bariery w budynku</string>
     <string name="karta_zalecane">Zalecane</string>
     <string name="karta_ocena_import">Z map i opisów, stan z %1$s</string>
     <string name="karta_ocena_obchod">Sprawdzone na miejscu %1$s</string>

@@ -11,6 +11,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.network.NetworkStatus
@@ -42,8 +44,14 @@ sealed interface BuildingCardUiState {
      * @property symbol symbol budynku, np. `A-1`
      * @property name nazwa z danych; `null`, gdy danych nazwy nie ma
      * @property entrances wejścia odwiedzających, zalecane pierwsze
+     * @property barriers zgłoszenia przyjęte tego budynku; pusta lista, gdy nie ma ich albo nie pobrano
      */
-    data class Ready(val symbol: String, val name: String?, val entrances: List<OrderedEntrance>) : BuildingCardUiState
+    data class Ready(
+        val symbol: String,
+        val name: String?,
+        val entrances: List<OrderedEntrance>,
+        val barriers: List<AcceptedBarrier> = emptyList(),
+    ) : BuildingCardUiState
 }
 
 /**
@@ -53,9 +61,10 @@ sealed interface BuildingCardUiState {
  * Tekst karty i wejścia z pliku pokazują się od razu, bez czekania na sieć. Równolegle, w zasięgu
  * ViewModelu, karta pyta `serverEntrances` o wejścia z dniem i źródłem oznaczenia; niepusta lista
  * zastępuje wejścia z pliku. Pusta lista (brak sieci, błąd serwera, nic pobranego wcześniej) zostawia wejścia
- * z pliku bez komunikatu błędu. Zamknięcie karty przerywa pobieranie.
+ * z pliku bez komunikatu błędu. Tak samo karta pyta `acceptedBarriers` i zostawia zgłoszenia przyjęte tego budynku.
+ * Zamknięcie karty przerywa pobieranie.
  *
- * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10
+ * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2
  */
 @HiltViewModel(assistedFactory = BuildingCardViewModel.Factory::class)
 class BuildingCardViewModel
@@ -65,16 +74,20 @@ class BuildingCardViewModel
         repository: BuildingCatalogRepository,
         networkStatus: NetworkStatus,
         serverEntrances: ServerEntrances = ServerEntrances { emptyList() },
+        acceptedBarriers: AcceptedBarriers = AcceptedBarriers { emptyList() },
     ) : ViewModel() {
         private val attempts = MutableStateFlow(0)
 
         private val fromServer = MutableStateFlow(emptyList<Entrance>())
+
+        private val barriers = MutableStateFlow(emptyList<AcceptedBarrier>())
 
         /** Bieżący stan karty. */
         val uiState: StateFlow<BuildingCardUiState> =
             attempts
                 .map { attempt -> buildingCard(catalogFor(repository, attempt), symbol) }
                 .combine(fromServer, ::withServerEntrances)
+                .combine(barriers, ::withBarriers)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), BuildingCardUiState.Loading)
 
         /** Czy jest internet; na start prawda, żeby linia „Bez internetu” nie mignęła. Wymagania: NFR-10, US2.8 */
@@ -85,6 +98,7 @@ class BuildingCardViewModel
 
         init {
             viewModelScope.launch { fromServer.value = serverEntrances.entrances(symbol) }
+            viewModelScope.launch { barriers.value = acceptedBarriers.barriers().filter { it.buildingSymbol == symbol } }
         }
 
         /** „Spróbuj ponownie”, gdy budynku nie ma w telefonie. Wymagania: NFR-10 */
@@ -98,6 +112,9 @@ class BuildingCardViewModel
             } else {
                 card
             }
+
+        private fun withBarriers(card: BuildingCardUiState, accepted: List<AcceptedBarrier>): BuildingCardUiState =
+            if (card is BuildingCardUiState.Ready) card.copy(barriers = accepted) else card
 
         private suspend fun catalogFor(repository: BuildingCatalogRepository, attempt: Int): BuildingCatalog =
             if (attempt == 0) repository.catalog() else repository.refresh()
