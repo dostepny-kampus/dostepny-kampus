@@ -118,7 +118,7 @@ public final class JdbcFloorPlans implements FloorPlans {
         }
         final List<String> existing = this.jdbc
             .sql("SELECT id FROM floors WHERE building_symbol = ?").param(building)
-            .query(String.class).list();
+            .query((rows, idx) -> rows.getString(1)).list();
         for (final String floor : existing) {
             if (!floors.contains(floor)) {
                 this.jdbc.sql("DELETE FROM floors WHERE building_symbol = ? AND id = ?")
