@@ -31,36 +31,36 @@ class BuildingListTest {
 
     @Test
     fun us1_list() {
-        val list = json.decodeBuildingList(LIST)
+        val list = json.decodeBuildingList(BUILDING_LIST_JSON)
         assertEquals("© OpenStreetMap contributors", list.source)
         assertEquals(listOf(c13(DetailLevel.DETAILED)), list.buildings)
     }
 
     @Test
     fun us1_server_without_name() {
-        val listed = json.decodeBuildingList(LIST.replace(oldValue = NAME_FIELD, newValue = ""))
+        val listed = json.decodeBuildingList(BUILDING_LIST_JSON.replace(oldValue = NAME_FIELD, newValue = ""))
         val listedAll = listed.buildings
         val listedBuilding = listedAll.single().building
         assertEquals(null, listedBuilding.name)
-        val card = json.decodeBuildingDetails(DETAILS.replace(oldValue = NAME_FIELD, newValue = ""))
+        val card = json.decodeBuildingDetails(BUILDING_DETAILS_JSON.replace(oldValue = NAME_FIELD, newValue = ""))
         val cardBuilding = card.building
         assertEquals(null, cardBuilding.name)
     }
 
     @Test
     fun us1_server_symbol_name_kept() {
-        val listed = json.decodeBuildingList(LIST.replace(oldValue = NAME, newValue = "C-13"))
+        val listed = json.decodeBuildingList(BUILDING_LIST_JSON.replace(oldValue = NAME, newValue = "C-13"))
         val listedAll = listed.buildings
         val listedBuilding = listedAll.single().building
         assertEquals("C-13", listedBuilding.name)
-        val card = json.decodeBuildingDetails(DETAILS.replace(oldValue = NAME, newValue = "C-3/C-4"))
+        val card = json.decodeBuildingDetails(BUILDING_DETAILS_JSON.replace(oldValue = NAME, newValue = "C-3/C-4"))
         val cardBuilding = card.building
         assertEquals("C-3/C-4", cardBuilding.name)
     }
 
     @Test
     fun us2_building_with_entrance() {
-        val card = json.decodeBuildingDetails(DETAILS)
+        val card = json.decodeBuildingDetails(BUILDING_DETAILS_JSON)
         assertEquals(c13(DetailLevel.BASIC).building, card.building)
         assertEquals(DetailLevel.BASIC, card.detailLevel)
         assertEquals(
@@ -113,7 +113,7 @@ class BuildingListTest {
 
     private fun card(entrance: String): BuildingDetails =
         json.decodeBuildingDetails(
-            """{"symbol":"C-13","detailLevel":"BASIC","outline":$OUTLINE,"entrances":[$entrance]}""",
+            """{"symbol":"C-13","detailLevel":"BASIC","outline":$BUILDING_OUTLINE_JSON,"entrances":[$entrance]}""",
         )
 
     private fun entrance(
@@ -139,15 +139,5 @@ class BuildingListTest {
     private companion object {
         const val NAME = "Budynek C-13"
         const val NAME_FIELD = """"name":"Budynek C-13","""
-        const val OUTLINE =
-            """{"type":"Polygon","coordinates":[[[17,51],[18,51],[18,52],[17,52],[17,51]]]}"""
-        const val LIST =
-            """{"source":"© OpenStreetMap contributors","buildings":[""" +
-                """{"symbol":"C-13","name":"Budynek C-13","detailLevel":"DETAILED","outline":$OUTLINE}]}"""
-        const val DETAILS =
-            """{"symbol":"C-13","name":"Budynek C-13","detailLevel":"BASIC","outline":$OUTLINE,""" +
-                """"entrances":[{"id":"c13-main","buildingSymbol":"C-13","name":"Wejście główne","main":true,""" +
-                """"location":{"type":"Point","coordinates":[17,51]},"marking":"ACCESSIBLE",""" +
-                """"markingDate":"2026-10-01","markingSource":"IMPORT"}]}"""
     }
 }

@@ -5,10 +5,6 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.model.building.Building
-import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
@@ -28,12 +24,8 @@ import org.junit.jupiter.api.Test
 
 /** Styl mapy V1 z jednym konturem „Budynek testowy” (nie dane PWr). */
 class CampusMapStyleTest {
-    private val a = GeoPoint(longitude = 0.0, latitude = 0.0)
-    private val outline = GeoPolygon(listOf(listOf(a, a.copy(longitude = 1.0), a.copy(latitude = 1.0), a)))
-    private val building = Building(symbol = "C-13", name = "Budynek testowy", outline = outline)
-    private val catalog = BuildingCatalog(buildings = listOf(building), entrances = emptyList(), attribution = "")
-    private val colors =
-        MapStyleColors(land = "#E8EDEE", building = "#BFE0EC", buildingOutline = "#004E5E", selectedOutline = "#001F27")
+    private val catalog = styleCatalog()
+    private val colors = styleColors()
     private val data = campusMapData(catalog)
     private val style = Json.parseToJsonElement(styled()).jsonObject
 
@@ -157,7 +149,7 @@ class CampusMapStyleTest {
         assertEquals(base + SELECTED_LAYER + marks + pin, bareIds)
         val sources = setOf("osm", "budynki", "podpisy", "wejscia", "bariery", CHOSEN_SOURCE)
         assertEquals(sources, bare.jsonObject.obj("sources").keys)
-        val entrance = SelectedEntrance(id = "w1", location = a, label = "Główne", buildingSymbol = "C-13")
+        val entrance = SelectedEntrance(id = "w1", location = STYLE_ORIGIN, label = "Główne", buildingSymbol = "C-13")
         val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
         val expected = base + SELECTED_LAYER + marks + listOf(OUTSIDE_LAYER, EDGE_LAYER) + pin
         assertEquals(expected, full.jsonObject.array("layers").map { it.jsonObject.text("id") })

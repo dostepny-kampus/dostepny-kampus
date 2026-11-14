@@ -6,11 +6,7 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.Severity
-import io.github.dostepnykampus.core.model.building.Building
-import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.data.BARRIER_ID
 import io.github.dostepnykampus.feature.map.data.BARRIER_SEVERITY
 import io.github.dostepnykampus.feature.map.data.CampusMapData
@@ -31,12 +27,8 @@ import org.junit.jupiter.api.Test
 
 /** Warstwy barier w stylu mapy V1 na konturze „Budynek testowy” (nie dane PWr). Wymagania: US1.3, NFR-20, NFR-21 */
 class CampusMapBarriersStyleTest {
-    private val a = GeoPoint(longitude = 0.0, latitude = 0.0)
-    private val outline = GeoPolygon(listOf(listOf(a, a.copy(longitude = 1.0), a.copy(latitude = 1.0), a)))
-    private val building = Building(symbol = "C-13", name = "Budynek testowy", outline = outline)
-    private val catalog = BuildingCatalog(buildings = listOf(building), entrances = emptyList(), attribution = "")
-    private val colors =
-        MapStyleColors(land = "#E8EDEE", building = "#BFE0EC", buildingOutline = "#004E5E", selectedOutline = "#001F27")
+    private val catalog = styleCatalog()
+    private val colors = styleColors()
     private val barriers = Severity.entries.map(::barrier)
 
     /**
@@ -101,7 +93,7 @@ class CampusMapBarriersStyleTest {
     private fun barrier(severity: Severity) =
         AcceptedBarrier(
             id = severity.name,
-            location = a,
+            location = STYLE_ORIGIN,
             severity = severity,
             type = null,
             buildingSymbol = "C-13",

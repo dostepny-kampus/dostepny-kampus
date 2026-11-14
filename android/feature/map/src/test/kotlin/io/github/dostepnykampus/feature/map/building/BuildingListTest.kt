@@ -18,13 +18,11 @@ import androidx.compose.ui.test.performClick
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.geo.building.searchBuildings
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.MapArea
+import io.github.dostepnykampus.feature.map.unitSquareBuilding
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -49,7 +47,7 @@ class BuildingListTest {
 
     private val catalog =
         BuildingCatalog(
-            buildings = listOf("A-1", "T-15", "C-13", "T-16").map(::building),
+            buildings = listOf("A-1", "T-15", "C-13", "T-16").map(::unitSquareBuilding),
             entrances = emptyList(),
             attribution = "",
         )
@@ -118,10 +116,4 @@ class BuildingListTest {
 
     private fun area(name: String, vararg symbols: String) =
         MapArea(name, symbols.toList(), CampusBounds(west = 0.0, south = 0.0, east = 1.0, north = 1.0))
-
-    private fun building(symbol: String): Building {
-        val corners = listOf(0.0 to 0.0, 1.0 to 0.0, 1.0 to 1.0, 0.0 to 0.0)
-        val outline = GeoPolygon(listOf(corners.map { (lon, lat) -> GeoPoint(longitude = lon, latitude = lat) }))
-        return Building(symbol = symbol, name = "Budynek testowy", outline = outline)
-    }
 }
