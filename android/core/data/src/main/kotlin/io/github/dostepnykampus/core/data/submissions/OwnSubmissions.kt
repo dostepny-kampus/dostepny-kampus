@@ -5,9 +5,11 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.OwnSubmissionEntity
 import io.github.dostepnykampus.core.model.SubmissionStatus
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.time.Instant
 
 /** Stan wysyłki własnego zgłoszenia, te same nazwy co w bazie. Wymagania: US8.1, NFR-5 */
@@ -69,6 +71,10 @@ fun interface OwnSubmissions {
     /** Lista od najnowszego; zmienia się po każdym zapisie i wysyłce z kolejki. */
     fun observe(): Flow<List<OwnSubmission>>
 }
+
+/** Własne zgłoszenia z historii [history] w bazie Room. */
+internal fun ownSubmissionsOf(history: OwnSubmissionDao): OwnSubmissions =
+    OwnSubmissions { history.observe().map { rows -> rows.map { it.toOwnSubmission() } } }
 
 internal fun OwnSubmissionEntity.toOwnSubmission(): OwnSubmission =
     OwnSubmission(

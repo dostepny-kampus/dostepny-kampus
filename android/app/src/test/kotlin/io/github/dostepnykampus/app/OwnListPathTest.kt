@@ -23,7 +23,6 @@ import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStamps
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
-import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
@@ -74,8 +73,6 @@ class OwnListPathTest {
     @Inject
     lateinit var store: SubmissionStore
 
-    @Inject
-    lateinit var history: OwnSubmissionDao
     private var isServerReachable = false
     private var today = LocalDate.of(YEAR, OCTOBER, FIRST_DAY)
     private var saved = 0
@@ -140,7 +137,7 @@ class OwnListPathTest {
     }
 
     private fun showMine() {
-        val list = runBlocking { DataModule.ownSubmissions(history).observe().first() }
+        val list = runBlocking { DataModule.ownSubmissions(store).observe().first() }
         val viewModel =
             MySubmissionsViewModel(
                 history = OwnSubmissions { flowOf(list) },
