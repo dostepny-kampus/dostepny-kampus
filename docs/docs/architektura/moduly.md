@@ -68,6 +68,9 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 `core:data.photos` udostępnia kontrakt `PhotoCapture`: żądanie zdjęcia oraz wynik z plikiem,
 rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy składającej ścieżkę użytkownika.
 
+Fabryka `core:data.submissions.quickSubmissionContent` buduje treść zgłoszenia szybkiego ze zdjęć, grupy i pozycji.
+`feature:capture` przechowuje dane trasy w `QuickReport` i przekazuje je do tej fabryki.
+
 - Moduł funkcji nie zależy od innego modułu funkcji ani od `:core:database` i `:core:network`, także
   pośrednio przez `api(...)` i w testach. Testy dostają repozytoria z `testFixtures` modułu `:core:data`.
 - Tylko `:core:data` i `:app` zależą od `:core:database` i `:core:network`.
