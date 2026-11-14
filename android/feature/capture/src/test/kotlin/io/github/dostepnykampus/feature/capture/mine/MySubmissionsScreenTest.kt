@@ -21,7 +21,7 @@ import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.core.model.BarrierType
+import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.SubmissionStatus
 import org.junit.Assert.assertEquals
 import org.junit.Rule

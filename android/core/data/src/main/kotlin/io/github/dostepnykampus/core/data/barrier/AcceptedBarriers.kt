@@ -6,12 +6,12 @@
 package io.github.dostepnykampus.core.data.barrier
 
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.model.SubmissionKind
+import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.Severity
 import java.time.Instant
 
 /**

@@ -23,12 +23,12 @@ import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.model.building.Building
+import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.Severity
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

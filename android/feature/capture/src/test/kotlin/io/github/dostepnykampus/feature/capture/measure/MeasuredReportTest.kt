@@ -12,10 +12,10 @@ import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.location.SatelliteSource
-import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import io.github.dostepnykampus.feature.capture.quick.content
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
