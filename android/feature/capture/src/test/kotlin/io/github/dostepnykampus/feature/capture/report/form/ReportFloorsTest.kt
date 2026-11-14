@@ -32,7 +32,11 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-/** Piętra z planu PWr w formularzu C2: pobranie po otwarciu i wpisanie piętra bez planu. Wymagania: US7.2, BR-G1 */
+/**
+ * Piętra z planu PWr w formularzu C2: pobranie po otwarciu i wpisanie piętra bez planu.
+ *
+ * Wymagania: US7.2, BR-G1, BR-G4
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReportFloorsTest {
     private val dispatcher = StandardTestDispatcher()
@@ -50,7 +54,7 @@ class ReportFloorsTest {
     }
 
     @Test
-    fun `us7_2 piętra z planu`() =
+    fun listsFloorsFromPlan() =
         runTest(dispatcher) {
             val viewModel = opened(PLAN)
             runCurrent()
@@ -65,7 +69,7 @@ class ReportFloorsTest {
         }
 
     @Test
-    fun `us7_2 zapis z piętrem z planu`() =
+    fun savesFloorFromPlan() =
         runTest(dispatcher) {
             val viewModel = opened(PLAN)
             runCurrent()
@@ -81,7 +85,7 @@ class ReportFloorsTest {
         }
 
     @Test
-    fun `us7_2 wpisane piętro znika`() =
+    fun dropsTypedFloor() =
         runTest(dispatcher) {
             val viewModel = opened(PLAN)
             viewModel.edit(ReportEdit.Floor(ReportFloor.Numbered(number = 2, isMezzanine = false)))
@@ -91,7 +95,7 @@ class ReportFloorsTest {
         }
 
     @Test
-    fun `br_g1 budynek podstawowy`() =
+    fun usesBasicBuilding() =
         runTest(dispatcher) {
             val basic = opened(FloorList(source = "Politechnika Wrocławska", floors = emptyList()))
             val offline = opened(null)
@@ -102,7 +106,7 @@ class ReportFloorsTest {
         }
 
     @Test
-    fun `br_g4 poza budynkiem`() =
+    fun handlesOutside() =
         runTest(dispatcher) {
             opened(PLAN, place = A1.copy(buildingSymbol = null))
             runCurrent()

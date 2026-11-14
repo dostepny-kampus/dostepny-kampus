@@ -57,7 +57,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 /**
  * Ekran C2: miejsce z C1, piętro liczbą, typ bariery z listy, uciążliwość i „Zapisz”.
  *
- * Wymagania: US7.1, US7.2, US7.4
+ * Wymagania: US7.1, US7.2, US7.3, US7.4, US8.3, BR-7, BR-10, BR-18, BR-G4, NFR-7, NFR-50
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -98,7 +98,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us7_4_place_no_coordinates() {
+    fun showsPlaceWithoutCoordinates() {
         show()
 
         compose.onNodeWithText("Opisz barierę").assertIsDisplayed()
@@ -107,7 +107,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us7_4_place_in_words() {
+    fun describesPlaceInWords() {
         show(A1.copy(buildingName = "Gmach Główny", nearestEntrance = near(name = null, isMain = true, meters = 3.2)))
 
         compose.onNodeWithText("Budynek A-1 Gmach Główny").assertIsDisplayed()
@@ -115,21 +115,21 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us7_4_named_entrance() {
+    fun namesEntrance() {
         show(A1.copy(nearestEntrance = near(name = "Wejście Cesarskie", isMain = false, meters = 0.3)))
 
         compose.onNodeWithText("ok. 1 m od wejścia „Wejście Cesarskie”, dokładność 0,8 m").assertIsDisplayed()
     }
 
     @Test
-    fun brg18_edit_header() {
+    fun showsEditHeader() {
         show(replaces = "s-old")
 
         compose.onNodeWithText("Popraw zgłoszenie").assertIsDisplayed()
     }
 
     @Test
-    fun us8_3_edit_header() {
+    fun showsCorrectionHeader() {
         val edited = EditedSubmission(id = "s1", baseVersion = 2)
         show(ReportUiState(form = ReportForm(place = A1, editedSubmission = edited)))
 
@@ -137,7 +137,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun brg4_no_floor_outside() {
+    fun hidesFloorOutside() {
         show(place = A1.copy(buildingSymbol = null))
 
         compose.onNodeWithText("Poza budynkiem").assertIsDisplayed()
@@ -145,7 +145,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us7_1_severity_and_save() {
+    fun savesWithSeverity() {
         show()
         compose.onNodeWithText("Blokada").performScrollTo().performClick()
         compose.onNodeWithText("Zapisz").performClick()
@@ -155,7 +155,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us7_2_floor_number() {
+    fun acceptsFloorNumber() {
         show()
         compose.onNodeWithText("Numer piętra").performTextInput("-1")
 
@@ -163,7 +163,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us7_2_floor_not_integer() {
+    fun rejectsNonIntegerFloor() {
         show()
         compose.onNodeWithText("Numer piętra").performTextInput("1,5")
 
@@ -172,7 +172,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us7_4_new_building_empty_floor() {
+    fun clearsFloorForNewBuilding() {
         val state = mutableStateOf(ReportUiState(form = ReportForm(place = A1)))
         val actions =
             ReportActions(
@@ -195,7 +195,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us7_2_floor_from_plan() {
+    fun takesFloorFromPlan() {
         val floors = listOf(PlanFloor(id = "A-1-p", label = "Piwnica"), PlanFloor(id = "A-1-3", label = "3 piętro"))
         show(A1.copy(floors = PlanFloors(floors, source = "Politechnika Wrocławska")))
 
@@ -213,7 +213,7 @@ class ReportScreenTest {
      * Wymagania: US7.2, NFR-18
      */
     @Test
-    fun us7_2_shared_floor_picker() {
+    fun usesSharedFloorPicker() {
         val floors = listOf(PlanFloor(id = "A-1-p", label = "Piwnica"), PlanFloor(id = "A-1-3", label = "3 piętro"))
         val place = A1.copy(floors = PlanFloors(floors, source = "Politechnika Wrocławska"))
         show(ReportUiState(form = ReportForm(place = place, floor = ReportFloor.Planned("A-1-3"))))
@@ -227,7 +227,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us7_1_type_from_list() {
+    fun choosesTypeFromList() {
         show()
         compose.onNodeWithText("Wybierz typ bariery").performClick()
         compose.onNodeWithText("Próg").performScrollTo().performClick()
@@ -237,7 +237,7 @@ class ReportScreenTest {
 
     /** Lista typów: „Zamknij” zamyka ją bez zmiany typu, a fokus wraca na pole. Wymagania: NFR-53 */
     @Test
-    fun nfr53_type_list_close() {
+    fun closesTypeList() {
         show()
         compose.onNodeWithText("Wybierz typ bariery").performClick()
         compose.onNode(hasText("Typ bariery") and isFocused()).assertExists()
@@ -252,14 +252,14 @@ class ReportScreenTest {
     /** Przy czcionce 200% „Zamknij” jest widoczne bez przewijania listy. Wymagania: NFR-18 */
     @Test
     @Config(fontScale = 2f)
-    fun nfr18_type_close_large_font() {
+    fun showsCloseAtLargeFont() {
         show()
         compose.onNodeWithText("Wybierz typ bariery").performScrollTo().performClick()
         compose.onNodeWithText("Zamknij").assertIsDisplayed()
     }
 
     @Test
-    fun pw10_error_above_and_at_field() {
+    fun showsErrorAboveAndAtField() {
         val form = ReportForm(place = A1)
         show(ReportUiState(form = form, errors = listOf(ReportFormError.MISSING_BARRIER_TYPE)))
 
@@ -268,7 +268,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun brg7_missing_floor_shown() {
+    fun showsMissingFloor() {
         show(ReportUiState(form = ReportForm(place = A1), errors = listOf(ReportFormError.MISSING_FLOOR)))
 
         val text = "Brakuje piętra. Uzupełnij to pole, aby zapisać."
@@ -282,7 +282,7 @@ class ReportScreenTest {
      * Wymagania: BR-7
      */
     @Test
-    fun br7_missing_description_shown() {
+    fun showsMissingDescription() {
         show(
             ReportUiState(
                 form = ReportForm(place = A1, barrierType = BarrierType.OTHER_BARRIER),
@@ -295,7 +295,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun nfr7_save_failed_retry() {
+    fun offersRetryAfterFailedSave() {
         show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.SAVE_FAILED))
         compose.onNodeWithText("Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.").assertIsDisplayed()
         compose.onNodeWithText("Spróbuj ponownie").performClick()
@@ -304,7 +304,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun nfr50_save_rejected_message() {
+    fun showsRejectedSaveMessage() {
         show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.SAVE_REJECTED))
         val message = "Nie zapisaliśmy zgłoszenia. Zrób zdjęcie jeszcze raz i zapisz ponownie."
         compose.onNodeWithText(message).assertIsDisplayed()
@@ -312,14 +312,14 @@ class ReportScreenTest {
     }
 
     @Test
-    fun br10_version_unknown_message() {
+    fun showsUnknownVersionMessage() {
         show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.VERSION_UNKNOWN))
         compose.onNodeWithText("Nie zapisaliśmy poprawki", substring = true).assertIsDisplayed()
         compose.onNodeWithText("Zrób zdjęcie jeszcze raz", substring = true).assertDoesNotExist()
     }
 
     @Test
-    fun us7_4_exit_dialog() {
+    fun asksBeforeExit() {
         show(ReportUiState(form = ReportForm(place = A1), stage = ReportStage.EXIT_ASKED))
         compose.onNodeWithText("Wyjść bez zapisu?").assertIsDisplayed()
         compose.onNodeWithText("Wyjdź bez zapisu").performClick()
@@ -328,7 +328,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us7_3_description_max_2000() {
+    fun limitsDescriptionLength() {
         show(place = A1.copy(buildingSymbol = null))
         compose.onNode(hasSetTextAction()).performScrollTo().performTextInput("a".repeat(2001))
 
@@ -336,7 +336,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us7_3_description_and_photo() {
+    fun showsDescriptionAndPhoto() {
         show()
         compose.onNodeWithText("Nie fotografuj twarzy ani tablic rejestracyjnych.").performScrollTo()
         compose.onNodeWithText("Zrób zdjęcie").performScrollTo().assertIsDisplayed()
@@ -346,7 +346,7 @@ class ReportScreenTest {
     }
 
     @Test
-    fun us7_1_photo_preview() {
+    fun showsPhotoPreview() {
         val file = folder.newFile("p1.jpg")
         val image = Bitmap.createBitmap(4, 3, Bitmap.Config.ARGB_8888)
         file.outputStream().use { out -> image.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, out) }
