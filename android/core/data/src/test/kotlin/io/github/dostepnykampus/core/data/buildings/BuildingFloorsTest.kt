@@ -5,21 +5,20 @@
  */
 package io.github.dostepnykampus.core.data.buildings
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.Floor
 import io.github.dostepnykampus.core.model.FloorList
-import io.github.dostepnykampus.core.network.ApiResult
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-import java.io.IOException
 
 /** Piętra budynku z serwera z pamięcią ostatniej udanej odpowiedzi. Wymagania: US7.2, BR-G1 */
 class BuildingFloorsTest {
     @Test
     fun `us7_2 piętra z serwera`() =
         runBlocking {
-            val floors = ServerFloorsRepository { ApiResult.Success(LIST) }
+            val floors = ServerFloorsRepository { ServerReply.Ok(LIST) }
 
             assertEquals(LIST, floors.floors("C-13"))
         }
@@ -27,7 +26,8 @@ class BuildingFloorsTest {
     @Test
     fun `br_g1 bez sieci ostatnie`() =
         runBlocking {
-            val answers = ArrayDeque(listOf(ApiResult.Success(LIST), OFFLINE, OFFLINE, ApiResult.NotFound))
+            val answers =
+                ArrayDeque(listOf(ServerReply.Ok(LIST), ServerReply.Offline, ServerReply.Offline, ServerReply.Missing))
             val asked = mutableListOf<String>()
             val floors =
                 ServerFloorsRepository { symbol ->
@@ -45,6 +45,5 @@ class BuildingFloorsTest {
     private companion object {
         val PARTER = Floor(id = "c13-0", label = "Parter", order = 0)
         val LIST = FloorList(source = "Politechnika Wrocławska", floors = listOf(PARTER))
-        val OFFLINE = ApiResult.NetworkError(IOException("brak sieci"))
     }
 }

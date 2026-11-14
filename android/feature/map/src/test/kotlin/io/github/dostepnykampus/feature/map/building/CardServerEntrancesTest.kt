@@ -11,9 +11,9 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.ServerEntrances
+import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
 import io.github.dostepnykampus.core.data.server.ServerCard
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.testing.serverEntrances
 import io.github.dostepnykampus.core.model.AssessmentSource
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.Entrance
@@ -109,7 +109,7 @@ class CardServerEntrancesTest {
         runTest {
             val answers =
                 ArrayDeque(listOf(ServerReply.Ok(DETAILS), ServerReply.Offline))
-            val source = serverEntrances { answers.removeFirst() }
+            val source = ServerEntrancesRepository { answers.removeFirst() }
             datedEntrances(cardOf(source))
             assertEquals(listOf(SERVER_ENTRANCE), datedEntrances(cardOf(source)))
         }
@@ -137,7 +137,7 @@ class CardServerEntrancesTest {
         }
 
     private fun TestScope.openCard(details: suspend (String) -> ServerReply<ServerCard>): BuildingCardViewModel =
-        cardOf(serverEntrances(details))
+        cardOf(ServerEntrancesRepository(details))
 
     private fun TestScope.cardOf(source: ServerEntrances): BuildingCardViewModel =
         BuildingCardViewModel(

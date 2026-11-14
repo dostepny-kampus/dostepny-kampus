@@ -22,6 +22,8 @@ import io.github.dostepnykampus.core.data.map.MapListChoiceRepository
 import io.github.dostepnykampus.core.data.map.mapDataStore
 import io.github.dostepnykampus.core.data.network.ConnectivityNetworkStatus
 import io.github.dostepnykampus.core.data.network.NetworkStatus
+import io.github.dostepnykampus.core.data.server.ServerCard
+import io.github.dostepnykampus.core.data.server.toReply
 import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.start.FirstLaunchRepository
 import io.github.dostepnykampus.core.data.start.startDataStore
@@ -70,12 +72,16 @@ object DataModule {
     /** Wejścia karty budynku z serwera z dniem i źródłem oznaczenia. Wymagania: US17.3 */
     @Provides
     @Singleton
-    fun cardEntrances(api: BuildingsApi): ServerEntrances = ServerEntrancesRepository(api::building)
+    fun cardEntrances(api: BuildingsApi): ServerEntrances =
+        ServerEntrancesRepository { symbol ->
+            api.building(symbol).toReply { ServerCard(it.building, it.entrances) }
+        }
 
     /** Piętra budynku szczegółowego z serwera do formularza C2. Wymagania: US7.2 */
     @Provides
     @Singleton
-    fun buildingFloors(api: BuildingsApi): BuildingFloors = ServerFloorsRepository(api::floors)
+    fun buildingFloors(api: BuildingsApi): BuildingFloors =
+        ServerFloorsRepository { symbol -> api.floors(symbol).toReply { it } }
 
     /** Wybór „Mapa” albo „Lista budynków” w pliku ustawień mapy. Wymagania: NFR-19 */
     @Provides

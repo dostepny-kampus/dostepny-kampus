@@ -6,9 +6,7 @@
 package io.github.dostepnykampus.core.data.testing
 
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
-import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
 import io.github.dostepnykampus.core.data.server.ServerBuildings
-import io.github.dostepnykampus.core.data.server.ServerCard
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
@@ -18,7 +16,6 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.network.ApiBuilding
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.BuildingDetails
 import io.github.dostepnykampus.core.network.BuildingList
 import io.github.dostepnykampus.core.network.DetailLevel
 import kotlinx.coroutines.runBlocking
@@ -54,22 +51,6 @@ class ServerRepositoriesTest {
     @Test
     fun nfr10_missing_is_not_found() {
         assertEquals(direct(ApiResult.NotFound), fixture(ServerReply.Missing))
-    }
-
-    @Test
-    fun nfr10_card_keeps_entrances() {
-        val replies = ArrayDeque(listOf(ServerReply.Ok(ServerCard(SERVER, listOf(ENTRANCE))), ServerReply.Offline))
-        val fixture = serverEntrances { replies.removeFirst() }
-        val answers =
-            ArrayDeque(
-                listOf(
-                    ApiResult.Success(BuildingDetails(SERVER, DetailLevel.BASIC, listOf(ENTRANCE))),
-                    ApiResult.NetworkError(IOException("brak sieci")),
-                ),
-            )
-        val direct = ServerEntrancesRepository { answers.removeFirst() }
-        val expected = runBlocking { List(2) { direct.entrances(SYMBOL) } }
-        assertEquals(expected, runBlocking { List(2) { fixture.entrances(SYMBOL) } })
     }
 
     private fun direct(result: ApiResult<BuildingList>): BuildingCatalog =

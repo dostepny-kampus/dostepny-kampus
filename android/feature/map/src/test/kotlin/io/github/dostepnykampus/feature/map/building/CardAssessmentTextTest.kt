@@ -10,9 +10,9 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
 import io.github.dostepnykampus.core.data.server.ServerCard
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.testing.serverEntrances
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.AssessmentSource
 import io.github.dostepnykampus.core.model.Building
@@ -50,7 +50,7 @@ class CardAssessmentTextTest {
                 symbol = "A-1",
                 repository = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON },
                 networkStatus = { flowOf(true) },
-                serverEntrances = serverEntrances { ServerReply.Ok(DETAILS) },
+                serverEntrances = ServerEntrancesRepository { ServerReply.Ok(DETAILS) },
             )
         compose.setContent {
             DostepnyKampusTheme {
