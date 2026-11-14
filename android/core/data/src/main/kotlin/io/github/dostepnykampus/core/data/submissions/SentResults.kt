@@ -84,7 +84,11 @@ internal class SentResults(
         return outcome
     }
 
-    private suspend fun contentOf(item: PendingSubmissionWithPhotos, result: ServerReply<*>, outcome: Outcome): Outcome {
+    private suspend fun contentOf(
+        item: PendingSubmissionWithPhotos,
+        result: ServerReply<*>,
+        outcome: Outcome,
+    ): Outcome {
         if (outcome == Outcome.SENT) {
             store.markCreated(id = item.submission.id)
             versionOf(result)?.let { history?.saveVersion(id = item.submission.id, version = it) }
