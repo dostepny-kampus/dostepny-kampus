@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.core.network
 
-import io.github.dostepnykampus.core.model.SubmissionStatus
+import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.ACCEPTED
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.ID
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.PRECISE

@@ -5,9 +5,9 @@
  */
 package io.github.dostepnykampus.core.data.server
 
-import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.submission.Submission
 
 /**
  * Odpowiedź serwera bez typów klienta HTTP.
