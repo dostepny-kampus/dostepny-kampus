@@ -33,6 +33,24 @@ internal fun PendingSubmissionEntity.toOwnSubmissionEntity(): OwnSubmissionEntit
         severity = severity,
     )
 
+/**
+ * Wiersz C3 po ponownym zapisie zgłoszenia: gdy serwer ma już zgłoszenie [known], nowa treść zachowuje jego stan
+ * wysyłki, wersję i status z serwera; w innym razie zostaje wiersz „W telefonie”.
+ *
+ * Wymagania: US8.3, BR-3
+ */
+internal fun OwnSubmissionEntity.keepingServerState(known: OwnSubmissionEntity?): OwnSubmissionEntity =
+    if (known?.state == OwnSubmissionState.SENT) {
+        copy(
+            state = known.state,
+            serverVersion = known.serverVersion,
+            serverStatus = known.serverStatus,
+            rejectionReason = known.rejectionReason,
+        )
+    } else {
+        this
+    }
+
 /** Wersja z serwera po przyjęciu treści; `null`, gdy serwer nie przyjął treści. Wymagania: BR-10 */
 internal fun versionOf(result: ServerReply<*>): Int? {
     val value = (result as? ServerReply.Ok)?.value

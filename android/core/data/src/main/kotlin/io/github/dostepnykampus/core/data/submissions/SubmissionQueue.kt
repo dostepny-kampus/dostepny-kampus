@@ -8,6 +8,7 @@ package io.github.dostepnykampus.core.data.submissions
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submission.own.isOwnHistory
+import io.github.dostepnykampus.core.data.submission.own.keepingServerState
 import io.github.dostepnykampus.core.data.submission.own.toOwnSubmissionEntity
 import io.github.dostepnykampus.core.data.submission.pending.toPendingSubmissionEntity
 import io.github.dostepnykampus.core.data.submission.pending.toSubmissionContentOrNull
@@ -280,7 +281,8 @@ public class SubmissionQueue internal constructor(
     }
 
     private suspend fun remember(entity: PendingSubmissionEntity) {
-        if (entity.isOwnHistory()) history?.save(entity.toOwnSubmissionEntity())
+        val own = history ?: return
+        if (entity.isOwnHistory()) own.save(entity.toOwnSubmissionEntity().keepingServerState(own.find(entity.id)))
     }
 
     private suspend fun sendUntilStop(): Outcome? {

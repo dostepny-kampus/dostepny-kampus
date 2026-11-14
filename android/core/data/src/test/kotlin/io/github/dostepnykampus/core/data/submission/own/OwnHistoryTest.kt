@@ -203,14 +203,37 @@ class OwnHistoryTest {
             assertEquals(row, history.rows.getValue(ID))
         }
 
+    /** Scenariusz: zgloszenia-zbierajacego.feature: Edycja zgłoszenia przed decyzją Weryfikatora. */
+    @ParameterizedTest
+    @CsvSource("SENT", "IN_REVIEW")
+    fun `us8_3 edycja zachowuje status`(status: SubmissionStatus) {
+        runBlocking {
+            val target = queue()
+            target.save(precise(PHOTO, severity = 1), photo(tempDir, PHOTO))
+            target.sendAll()
+            history.saveServerStatus(id = ID, status = status.name, reason = null, version = 3)
+
+            target.saveEdit(
+                EditedSubmission(id = ID, baseVersion = 3),
+                precise(PHOTO, severity = 2),
+                photo(tempDir, PHOTO),
+            )
+
+            val row = history.rows.getValue(ID)
+            assertEquals(2, row.severity)
+            assertEquals(OwnSubmissionState.SENT, row.state)
+            assertEquals(status.name, row.serverStatus)
+            assertEquals(3, row.serverVersion)
+        }
+    }
+
     @Test
-    fun `us8_3 poprawka znów lokalna`() =
+    fun `us8_3 edycja niewysłanego`() =
         runBlocking {
             val target = queue()
             target.save(precise(PHOTO), photo(tempDir, PHOTO))
-            target.sendAll()
             target.saveEdit(
-                EditedSubmission(id = ID, baseVersion = 3),
+                EditedSubmission(id = ID, baseVersion = null),
                 precise(PHOTO, severity = 1),
                 photo(tempDir, PHOTO),
             )
@@ -218,7 +241,6 @@ class OwnHistoryTest {
             val row = history.rows.getValue(ID)
             assertEquals(OwnSubmissionState.LOCAL, row.state)
             assertEquals(1, row.severity)
-            assertNull(row.serverVersion)
         }
 
     /**
