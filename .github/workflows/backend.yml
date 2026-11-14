@@ -16,6 +16,7 @@ on:
       - "specs/**"
       - "infra/**"
       - ".github/workflows/backend.yml"
+      - ".github/scripts/wynik-pit.sh"
   merge_group:
     types:
       - checks_requested
