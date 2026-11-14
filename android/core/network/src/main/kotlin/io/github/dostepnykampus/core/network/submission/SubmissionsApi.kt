@@ -3,10 +3,13 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.network
+package io.github.dostepnykampus.core.network.submission
 
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
+import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.exchange
+import io.github.dostepnykampus.core.network.exchangeBody
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl

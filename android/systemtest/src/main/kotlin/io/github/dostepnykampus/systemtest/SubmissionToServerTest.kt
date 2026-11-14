@@ -12,9 +12,9 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.network.AccessTokens
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.NetworkModule
+import io.github.dostepnykampus.core.network.auth.AccessTokens
 import kotlinx.coroutines.runBlocking
 import okhttp3.FormBody
 import okhttp3.OkHttpClient

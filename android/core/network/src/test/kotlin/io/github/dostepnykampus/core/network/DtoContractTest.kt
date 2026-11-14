@@ -8,6 +8,11 @@ package io.github.dostepnykampus.core.network
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.ID
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.precise
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.quick
+import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.submission.decodeConflict
+import io.github.dostepnykampus.core.network.submission.decodeSubmission
+import io.github.dostepnykampus.core.network.submission.encodeNewSubmission
+import io.github.dostepnykampus.core.network.submission.encodeSubmissionUpdate
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind

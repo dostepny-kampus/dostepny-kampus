@@ -11,7 +11,7 @@ import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.SubmissionEdit
+import io.github.dostepnykampus.core.network.submission.SubmissionEdit
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.IOException

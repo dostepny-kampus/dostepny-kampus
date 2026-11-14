@@ -10,9 +10,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import io.github.dostepnykampus.core.network.BuildingsApi
 import io.github.dostepnykampus.core.network.NetworkModule
-import io.github.dostepnykampus.core.network.SubmissionsApi
+import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType

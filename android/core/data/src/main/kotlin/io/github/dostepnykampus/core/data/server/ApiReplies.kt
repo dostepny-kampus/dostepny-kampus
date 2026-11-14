@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.core.data.server
 
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.SubmissionEdit
+import io.github.dostepnykampus.core.network.submission.SubmissionEdit
 
 /**
  * Odpowiedź serwera z wyniku klienta HTTP: treść przez [content], brak zasobu jako [ServerReply.Missing], brak

@@ -8,9 +8,9 @@ package io.github.dostepnykampus.core.data.buildings
 import io.github.dostepnykampus.core.geo.GeoAreaJson
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoArea
-import io.github.dostepnykampus.core.network.ApiBuilding
-import io.github.dostepnykampus.core.network.BuildingList
-import io.github.dostepnykampus.core.network.DetailLevel
+import io.github.dostepnykampus.core.network.building.ApiBuilding
+import io.github.dostepnykampus.core.network.building.BuildingList
+import io.github.dostepnykampus.core.network.building.DetailLevel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 

@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.network
+package io.github.dostepnykampus.core.network.auth
 
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl

@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.network
+package io.github.dostepnykampus.core.network.submission
 
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.EntranceMarking
@@ -12,6 +12,9 @@ import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
+import io.github.dostepnykampus.core.network.building.GeoPointDto
+import io.github.dostepnykampus.core.network.building.toDto
+import io.github.dostepnykampus.core.network.building.toModel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer

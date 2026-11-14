@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.network
+package io.github.dostepnykampus.core.network.building
 
 import io.github.dostepnykampus.core.geo.GeoAreaJson
 import io.github.dostepnykampus.core.model.AssessmentSource

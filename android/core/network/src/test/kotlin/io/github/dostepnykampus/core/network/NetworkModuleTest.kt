@@ -5,6 +5,11 @@
  */
 package io.github.dostepnykampus.core.network
 
+import io.github.dostepnykampus.core.network.auth.AccessTokenInterceptor
+import io.github.dostepnykampus.core.network.auth.AccessTokens
+import io.github.dostepnykampus.core.network.building.BuildingDto
+import io.github.dostepnykampus.core.network.building.BuildingListDto
+import io.github.dostepnykampus.core.network.building.BuildingsApi
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Test

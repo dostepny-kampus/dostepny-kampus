@@ -7,6 +7,11 @@ package io.github.dostepnykampus.core.network
 
 import io.github.dostepnykampus.core.model.Floor
 import io.github.dostepnykampus.core.model.FloorList
+import io.github.dostepnykampus.core.network.building.BuildingDetailsDto
+import io.github.dostepnykampus.core.network.building.BuildingListDto
+import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.building.LocateResultDto
+import io.github.dostepnykampus.core.network.building.toModel
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
