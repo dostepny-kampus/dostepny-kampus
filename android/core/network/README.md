@@ -2,11 +2,11 @@
 
 ## Zadanie
 
-Klient HTTP serwera: budynki, zgłoszenia i tokeny dostępu.
+Klient HTTP serwera: budynki, zgłoszenia, zmiany znaczników piętra obejrzanego i tokeny dostępu.
 
 ## API
 
-Interfejsy API (`BuildingsApi`, `SubmissionsApi`), modele JSON i wiązania Hilt (`NetworkModule`). Moduły funkcji nie używają sieci bezpośrednio, tylko przez `:core:data`.
+Interfejsy API (`BuildingsApi`, `SubmissionsApi`, `MarkerChangesApi`), modele JSON i wiązania Hilt (`NetworkModule`). Moduły funkcji nie używają sieci bezpośrednio, tylko przez `:core:data`.
 
 Modele JSON z pakietu `json` generuje przy budowie openapi-generator z `api/openapi.yaml`; zmiana kontraktu
 zmienia je bez edycji kodu.

@@ -8,8 +8,6 @@ package io.github.dostepnykampus.core.network.inspection
 /**
  * Zmiana znacznika piętra obejrzanego czekająca w telefonie na wysyłkę.
  *
- * TODO(#1971): podłącz klienta wysyłki zmian.
- *
  * Wymagania: US15.3, BR-9
  */
 public sealed interface MarkerChange {
