@@ -15,6 +15,10 @@ android {
 
 dependencies {
     implementation(project(":core:network"))
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui.test)
+    implementation(libs.androidx.compose.ui.test.junit4)
+    implementation(libs.androidx.test.espresso.core)
     implementation(libs.androidx.test.ext.junit)
     implementation(libs.androidx.test.runner)
     implementation(libs.junit4)
