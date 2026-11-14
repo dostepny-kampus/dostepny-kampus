@@ -118,9 +118,17 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | Pole symbolu budynku z podpowiedzią „Wpisz symbol budynku, np. C-13”; przyjmuje też zapis „c13” i symbol z numerem sali, np. „A-1 329” | czynność główna | US1.1, US18.1, PW-8 | V2; sala: stan „znaleziona sala” |
 | „×” w polu po wpisaniu tekstu; nazwa dla TalkBack „Wyczyść pole” | czynność | US1.1, NFR-53, NFR-17, NFR-18 | pole puste, mapa |
 | Wynik pod polem: symbol, nazwa budynku według wymagań wspólnych i „Budynek C-13”; cała karta jest jednym przyciskiem | czynność główna | US1.1, NFR-17, NFR-18 | V2 |
-| „Legenda”: rozwijana lista znaków mapy i planu, każdy z napisem; na końcu „Źródło: Politechnika Wrocławska”. Gdy treść się nie mieści, na dole stoi „Przewiń w dół ↓” | czynność | US1.4, NFR-21, NFR-40 | legenda na tym ekranie |
-| Plan piętra budynku szczegółowego na mapie: pomieszczenia z podpisami najwyżej 2 słowa („Winda”, „Toaleta”, „Sala 329”), wejścia, zgłoszenia przyjęte | dane | US16.1, decyzja 44 | — |
-| Przełącznik pięter nad planem: napis „Piętro:” i etykiety pięter z danych PWr skrócone do numeru, np. „2”; TalkBack czyta pełną etykietę „2 piętro”. Wybrane piętro widać po obwódce, nie po kolorze | czynność | US16.1, NFR-17, NFR-21 | plan innego piętra |
+| „Legenda”: rozwijana lista znaków mapy i planu, każdy z napisem. Gdy widać plan, ma też pozycje planu: sala, korytarz, klatka schodowa, winda, toaleta dostosowana i zgłoszenie bez piętra („?”). Na końcu „Źródło: Politechnika Wrocławska”. Gdy treść się nie mieści, na dole stoi „Przewiń w dół ↓” | czynność | US1.4, NFR-21, NFR-40 | legenda na tym ekranie |
+| Plan piętra pojawia się sam przy powiększeniu co najmniej 17. Dostaje go budynek szczegółowy na środku mapy albo najbliżej środka, nie dalej niż 60 m. Plan ma naraz jeden budynek; inne budynki zostają zalane i przygaszone jak przy zaznaczeniu budynku. Plan przechodzi na inny budynek, gdy ten jest bliżej środka o więcej niż 10 m | dane | US16.1, NFR-11 | plan piętra na tym ekranie |
+| Plan i kolumna pięter znikają przy powiększeniu poniżej 16,5, gdy na środku nie ma budynku szczegółowego, i po zmianie terenu. Różnica między 17 a 16,5 chroni plan przed miganiem | czynność | US16.1, US1.6, NFR-23 | V1 bez planu |
+| Na start plan pokazuje piętro wejścia zalecanego z warstwy wejść PWr; gdy dane go nie podają, parter. Ostatnio wybrane piętro budynku aplikacja pamięta do zamknięcia: powrót do tego budynku pokazuje to piętro. Znaleziona sala i „Pokaż na planie” z V2 pokazują swoje piętro i zapisują je jako ostatnio wybrane | dane | US16.1, US18.1, US18.2, BR-25 | — |
+| Plan piętra: pomieszczenia w kolorach według funkcji (sala, korytarz, klatka schodowa w kreski, toaleta dostosowana w kropki, winda). Podpisy mają najwyżej 2 słowa („Winda”, „Toaleta”, „Sala 329”). Wejścia stoją tylko na swoim piętrze, obok zgłoszenia przyjęte. Ściana zewnętrzna to obrys wszystkich pomieszczeń piętra, nie kontur OpenStreetMap | dane | US16.1, NFR-21, NFR-40; decyzja 44 | — |
+| Numery sal od powiększenia 19, poziomo, z kontrastem co najmniej 4,5:1 w obu motywach. Kilka pomieszczeń z tym samym numerem ma jeden numer, na największym; pomieszczenia mniejsze niż 20 m² i bez numeru nie mają numeru | dane | US16.1, US18.1, NFR-21 | — |
+| Zgłoszenie przyjęte z piętrem stoi tylko na swoim piętrze. Zgłoszenie bez piętra stoi na każdym piętrze ze znakiem „?” i słowem „piętro nieznane” dla TalkBack | dane | US16.1, BR-14, NFR-18 | arkusz bariery na tym ekranie |
+| Kolumna pięter przy prawej krawędzi mapy, jak przyciski w windzie: napis „Piętro”, nad nim najwyższe piętro, wybrane w kółku, nie samym kolorem. Etykiety z danych PWr skrócone do numeru, np. „2”; TalkBack czyta pełną etykietę „2 piętro”. Kolumna stoi pod przyciskami mapy, a przy otwartym arkuszu na górze mapy. Gdy się nie mieści, przewija się, a napis „Piętro” i wybrane piętro są zawsze widoczne. Zmiana piętra nie przesuwa mapy | czynność | US16.1, NFR-17, NFR-18, NFR-20, NFR-21 | plan innego piętra |
+| Budynek podstawowy przy powiększeniu co najmniej 17: nad mapą zdanie „Nie mamy planu pięter tego budynku.”, bez kolumny pięter | dane | US16.2, BR-G1 | — |
+| Dotknięcie windy na planie otwiera arkusz: „Winda”, przy których klatkach stoi, i „Jedzie na: …” z piętrami windy, przy bieżącym piętrze „(tutaj jesteś)”. Przy dużej czcionce arkusz zajmuje cały ekran, jak kroki do sali | czynność | US16.1, US18.2, NFR-20 | arkusz windy na tym ekranie |
+| Po pojawieniu się planu i po zmianie piętra TalkBack mówi raz, np. „Plan budynku A-1, parter. Piętra: piwnica, parter, 1, 2, 3” | dane | NFR-18, NFR-19 | — |
 | Podpis „Źródło: Politechnika Wrocławska” obok podpisu OpenStreetMap, gdy widać plan | dane | NFR-40 | — |
 | Przełącznik „Mapa” i „Lista budynków”. Domyślnie „Mapa”, a przy skali czcionki co najmniej 1,5 „Lista budynków”. Aplikacja pamięta ostatni wybór także po zamknięciu. Przy tej skali widoczny napis to „Lista”, a nazwa dla TalkBack „Lista budynków” | czynność | NFR-19, NFR-20 | lista na tym ekranie |
 | Lista budynków pod przełącznikiem: wszystkie budynki w kolejności katalogu, naturalnej po symbolu, np. A-1, A-2 … A-10. Pole symbolu zawęża listę tym samym wyszukiwaniem co nad mapą, po pełnym symbolu. Wpisane C-13 zostawia na liście tylko C-13, a samo „C” daje stan „brak wyniku” | dane | NFR-19, US1.1, decyzja 90 | — |
@@ -141,7 +149,9 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | „ⓘ” w rogu mapy, nazwa dla TalkBack „Informacje o mapie”. Panel ma nagłówek „Źródła danych”. Pod nim „Mapa ulic i kontury budynków: © OpenStreetMap contributors” z odnośnikiem i nazwą licencji ODbL. Dalej „Wejścia i plany pięter: Źródło: Politechnika Wrocławska” z datą stanu danych | czynność | NFR-18, NFR-37, NFR-40 | V1, panel „ⓘ” |
 | Pasek dolny | czynność | wymagania wspólne | V4, V5, L1 / L2 |
 
-Wybór wyniku wyszukiwania zaznacza budynek na mapie i otwiera małą kartę V2, a przy skali czcionki co najmniej 1,5 od razu pełny ekran V2. „Wstecz” albo „Zamknij” na małej karcie zamyka ją i zdejmuje zaznaczenie. Tryb, tekst wyszukiwania i widok mapy zostają jak przed kartą (decyzje 83, 116). Plan piętra pojawia się po „Pokaż na planie” na V2 albo po znalezieniu sali.
+Wybór wyniku wyszukiwania zaznacza budynek na mapie i otwiera małą kartę V2, a przy skali czcionki co najmniej 1,5 od razu pełny ekran V2. „Wstecz” albo „Zamknij” na małej karcie zamyka ją i zdejmuje zaznaczenie. Tryb, tekst wyszukiwania i widok mapy zostają jak przed kartą (decyzje 83, 116).
+
+Plan piętra pojawia się sam po przybliżeniu budynku szczegółowego, po „Pokaż na planie” na V2 albo po znalezieniu sali. Plan to stan V1, nie osobny ekran: „Wstecz” telefonu go nie zmienia.
 
 Arkusz budynku na V1 to ten sam wzorzec co V2, z tym samym układem i kodem. Zmiana V2 zmienia więc też arkusz na V1 (decyzja 53).
 
@@ -173,8 +183,10 @@ Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na piętrze 
 | Stan | Co widać |
 | --- | --- |
 | Zwykły | mapa z podkładem OpenStreetMap, konturami i barierami. Podkład ma przygaszone barwy, więc budynki PWr i znaki są najwyraźniejsze, a zieleń, woda i ulice zostają rozpoznawalne; w motywie ciemnym podkład jest ciemny (NFR-16) |
-| Plan piętra | plan wybranego piętra, przełącznik pięter, „Legenda” i podpis źródła (US16.1, NFR-40) |
-| Znaleziona sala | plan piętra sali z wyróżnioną salą i arkusz z krokami. Nagłówek i przełącznik „Mapa” i „Lista budynków” się chowają, a na górze zostaje samo pole z numerem sali (US18.1, US18.2) |
+| Plan piętra | plan jednego budynku przy powiększeniu co najmniej 17, kolumna pięter po prawej, przygaszone inne budynki, „Legenda” i podpis źródła (US16.1, NFR-40) |
+| Budynek bez planu | budynek podstawowy przybliżony: zdanie „Nie mamy planu pięter tego budynku.” nad mapą (US16.2) |
+| Winda na planie | arkusz z piętrami, na które jedzie winda (US16.1, US18.2) |
+| Znaleziona sala | plan piętra sali z wyróżnioną salą, numery kroków na planie bez linii trasy i arkusz z krokami. Nagłówek i przełącznik „Mapa” i „Lista budynków” się chowają, a na górze zostaje samo pole z numerem sali (US18.1, US18.2) |
 | Bariera na mapie | wybrany znak bariery i arkusz z typem, uciążliwością, miejscem i zdjęciem (US1.5) |
 | Wybór terenu | panel „Teren na mapie” z listą terenów (US1.7) |
 | Granica terenu | obszar poza terenem przyciemniony; przy krawędzi przycisk sąsiedniego terenu, gdy w tę stronę leży inny teren (US1.7, BR-G5) |
