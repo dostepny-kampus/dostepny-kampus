@@ -17,9 +17,9 @@ import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
-import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.capture.report.ReportSaverModule
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
 import io.github.dostepnykampus.feature.capture.report.edit.ReportStage

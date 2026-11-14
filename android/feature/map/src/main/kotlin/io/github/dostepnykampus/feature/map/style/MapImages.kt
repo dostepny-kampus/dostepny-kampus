@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.graphics.createBitmap
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
-import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.core.model.submission.Severity
 import kotlin.math.ceil
 
 private const val LABEL_HALO_PER_TEXT = 0.25f

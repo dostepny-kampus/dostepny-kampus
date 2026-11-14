@@ -52,7 +52,7 @@ import io.github.dostepnykampus.core.designsystem.FloorPickerLayout
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.BarrierGroup
-import io.github.dostepnykampus.core.model.BarrierType
+import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
 

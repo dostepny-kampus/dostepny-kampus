@@ -23,7 +23,7 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.designsystem.marking.severityImage
-import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.core.model.submission.Severity
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

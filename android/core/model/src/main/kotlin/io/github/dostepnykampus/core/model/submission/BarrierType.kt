@@ -3,7 +3,9 @@
  * Author: Myroslav Hryniuka
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.model
+package io.github.dostepnykampus.core.model.submission
+
+import io.github.dostepnykampus.core.model.BarrierGroup
 
 /**
  * Typ bariery z klasyfikacji TB-1…TB-29 w słowniku projektu, przypisany do jednej z sześciu grup barier.

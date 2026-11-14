@@ -8,8 +8,8 @@ package io.github.dostepnykampus.core.designsystem.marking
 import androidx.annotation.StringRes
 import io.github.dostepnykampus.core.designsystem.R
 import io.github.dostepnykampus.core.model.BarrierGroup
-import io.github.dostepnykampus.core.model.BarrierType
-import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.Severity
 
 /** Nazwa typu bariery ze słownika projektu, np. „Próg” dla TB-13. Wymagania: BR-7 */
 @StringRes
