@@ -217,7 +217,7 @@ class CampusAreasPwrTest {
      * Wymagania: US1.8, BR-G5
      */
     @Test
-    fun us1_8_area_stays_after_back_pwr() {
+    fun us1_8_area_kept_on_back_pwr() {
         showApp()
         searchT15AndGoBack()
         assertEquals(null, selection.building)
@@ -232,7 +232,7 @@ class CampusAreasPwrTest {
      * Wymagania: US1.7, US1.8, BR-G5
      */
     @Test
-    fun us1_8_own_area_stays_after_back_pwr() {
+    fun us1_8_own_area_kept_pwr() {
         showApp()
         searchT15AndGoBack()
         compose.onNodeWithContentDescription("Teren: Wittigowo. Zmień teren").performClick()
