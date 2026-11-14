@@ -9,9 +9,9 @@ import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SaveRefusal
 import io.github.dostepnykampus.core.data.submission.sync.SaveRefusedException
+import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.quick.content
 import io.github.dostepnykampus.feature.capture.report.A1
