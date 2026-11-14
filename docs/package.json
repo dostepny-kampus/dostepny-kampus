@@ -12,6 +12,7 @@
     "markdownlint-cli2": "^0.24.0"
   },
   "overrides": {
+    "basic-ftp": "6.2.4",
     "re2js": "2.8.7"
   }
 }
