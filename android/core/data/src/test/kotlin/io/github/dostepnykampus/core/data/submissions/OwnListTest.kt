@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
@@ -57,8 +58,8 @@ class OwnListTest {
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { id, content -> ApiResult.Success(server(id, content)) },
-                    putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                    create = { id, content -> ServerReply.Ok(server(id, content)) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { _, _, _ -> ApiResult.NotFound },
                 ),
             stamps = SubmissionStamps(newId = { ids.removeFirst() }),

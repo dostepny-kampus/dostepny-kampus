@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
@@ -19,7 +20,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -51,7 +51,7 @@ class SubmissionQueueTest {
     fun `po zerwaniu kontynuuje zdjęcia`() =
         runBlocking {
             saveTwoPhotos()
-            store.photoResults.addLast(ApiResult.NetworkError(IOException("sieć")))
+            store.photoResults.addLast(ServerReply.Offline)
             assertFalse(queue().sendAll())
 
             assertEquals(SENT_ID, store.created.single())
@@ -69,7 +69,7 @@ class SubmissionQueueTest {
     fun `odmowa zostawia w kolejce`() =
         runBlocking {
             saveTwoPhotos()
-            store.createResults.addLast(ApiResult.ServerError(code = 400))
+            store.createResults.addLast(ServerReply.Fault(code = 400))
             queue().sendAll()
 
             assertTrue(store.created.isEmpty())
@@ -88,7 +88,7 @@ class SubmissionQueueTest {
     fun `odrzucone nie jest ponawiane`() =
         runBlocking {
             saveTwoPhotos()
-            store.createResults.addLast(ApiResult.ServerError(code = 400))
+            store.createResults.addLast(ServerReply.Fault(code = 400))
 
             queue().sendAll()
             assertTrue(queue().sendAll())
@@ -137,7 +137,7 @@ class SubmissionQueueTest {
         runBlocking {
             val target = queue()
             target.saveEdit(EditedSubmission(id = "s1", baseVersion = 4), fullContent(), drafts())
-            val server = (serverSubmission(fullContent()) as ApiResult.Success).value
+            val server = (serverSubmission(fullContent()) as ServerReply.Ok).value
             editResults.addLast(ApiResult.Success(SubmissionEdit.Conflict(server)))
 
             target.sendAll()
@@ -166,7 +166,7 @@ class SubmissionQueueTest {
                                 sent.add(id)
                                 serverSubmission(content)
                             },
-                            putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                            putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                             update = { _, _, _ -> ApiResult.NotFound },
                         ),
                     stamps = SubmissionStamps(newId = { ids.removeFirst() }, nowMillis = { SAME_MILLIS }),
@@ -188,7 +188,7 @@ class SubmissionQueueTest {
                         creates++
                         store.createResults.removeFirstOrNull() ?: serverSubmission(content)
                     },
-                    putPhoto = { _, _, _ -> store.photoResults.removeFirstOrNull() ?: ApiResult.Success(Unit) },
+                    putPhoto = { _, _, _ -> store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit) },
                     update = { id, version, content ->
                         edits.add(id to version)
                         editResults.removeFirstOrNull() ?: ApiResult.Success(SubmissionEdit.Saved(edited(id, content)))
@@ -199,7 +199,7 @@ class SubmissionQueueTest {
         )
 
     private fun edited(id: String, content: SubmissionContent): Submission =
-        (serverSubmission(content) as ApiResult.Success).value.copy(id = id, version = 5)
+        (serverSubmission(content) as ServerReply.Ok).value.copy(id = id, version = 5)
 
     private fun saveTwoPhotos(target: SubmissionQueue = queue()) {
         runBlocking { target.save(fullContent(), drafts()) }
@@ -213,8 +213,8 @@ class SubmissionQueueTest {
 
     private fun pathOf(photo: String): String = tempDir.resolve("$photo.jpg").path
 
-    private fun serverSubmission(content: SubmissionContent): ApiResult<Submission> =
-        ApiResult.Success(
+    private fun serverSubmission(content: SubmissionContent): ServerReply<Submission> =
+        ServerReply.Ok(
             Submission(
                 id = "s1",
                 version = 1,

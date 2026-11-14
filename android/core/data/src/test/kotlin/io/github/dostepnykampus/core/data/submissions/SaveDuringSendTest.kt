@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
@@ -41,9 +42,9 @@ class SaveDuringSendTest {
                         val pending = saveDuringSend
                         saveDuringSend = null
                         pending?.invoke()
-                        ApiResult.Success(server(id, content))
+                        ServerReply.Ok(server(id, content))
                     },
-                    putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { id, _, content -> ApiResult.Success(SubmissionEdit.Saved(server(id, content))) },
                 ),
             stamps = SubmissionStamps(newId = { ids.removeFirst() }),

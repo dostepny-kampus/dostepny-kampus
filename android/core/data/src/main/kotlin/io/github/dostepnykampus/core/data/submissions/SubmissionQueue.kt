@@ -83,8 +83,8 @@ private const val FIRST_SERVER_FAULT_CODE = 500
  * @property update edycja z wersją bazową (`PUT /submissions/{id}`)
  */
 data class SubmissionServer(
-    val create: suspend (id: String, content: SubmissionContent) -> ApiResult<Submission>,
-    val putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ApiResult<Unit>,
+    val create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
+    val putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ServerReply<Unit>,
     val update: suspend (id: String, version: Int, content: SubmissionContent) -> ApiResult<SubmissionEdit>,
 )
 
@@ -162,8 +162,8 @@ class SubmissionQueue internal constructor(
     constructor(
         store: SubmissionStore,
         ioContext: CoroutineContext = Dispatchers.IO,
-        create: suspend (id: String, content: SubmissionContent) -> ApiResult<Submission>,
-        putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ApiResult<Unit>,
+        create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
+        putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ServerReply<Unit>,
         onSaved: () -> Unit = {},
     ) : this(
         store = store.pending,
@@ -177,8 +177,8 @@ class SubmissionQueue internal constructor(
     internal constructor(
         store: PendingSubmissionDao,
         ioContext: CoroutineContext = Dispatchers.IO,
-        create: suspend (id: String, content: SubmissionContent) -> ApiResult<Submission>,
-        putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ApiResult<Unit>,
+        create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
+        putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ServerReply<Unit>,
         newId: () -> String = { UUID.randomUUID().toString() },
         onSaved: () -> Unit = {},
     ) : this(
@@ -310,7 +310,7 @@ class SubmissionQueue internal constructor(
         val result: ServerReply<*>
         val outcome =
             if (version == null) {
-                result = server.create(item.submission.id, content).toReply { it }
+                result = server.create(item.submission.id, content)
                 outcomeOf(result)
             } else {
                 val edit = server.update(item.submission.id, version, content).toReply { it.toServerEdit() }
@@ -323,7 +323,7 @@ class SubmissionQueue internal constructor(
     private suspend fun sendRemaining(item: PendingSubmissionWithPhotos): Outcome {
         for (photo in item.photos.filterNot { it.isUploaded }) {
             val jpeg = jpeg(photo.path, ioContext)
-            val result = jpeg?.let { server.putPhoto(item.submission.id, photo.photoId, it).toReply {} }
+            val result = jpeg?.let { server.putPhoto(item.submission.id, photo.photoId, it) }
             val outcome = results.photo(item, photo.photoId, result)
             if (outcome != Outcome.SENT) return outcome
         }

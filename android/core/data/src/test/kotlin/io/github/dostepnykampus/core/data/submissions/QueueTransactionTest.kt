@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.OwnSubmissionState
@@ -75,8 +76,8 @@ class QueueTransactionTest {
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { id, content -> ApiResult.Success(server(id, content)) },
-                    putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                    create = { id, content -> ServerReply.Ok(server(id, content)) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { id, _, content -> ApiResult.Success(SubmissionEdit.Saved(server(id, content))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),

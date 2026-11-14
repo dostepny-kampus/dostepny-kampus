@@ -17,6 +17,7 @@ import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.network.NetworkStatus
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
@@ -48,7 +49,6 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import java.io.File
-import java.io.IOException
 import javax.inject.Inject
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -132,9 +132,9 @@ class QuickOfflineTest {
                 SubmissionServer(
                     create = { _, _ ->
                         sent++
-                        ApiResult.NetworkError(IOException("bez sieci"))
+                        ServerReply.Offline
                     },
-                    putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { _, _, _ -> ApiResult.NotFound },
                 ),
         )

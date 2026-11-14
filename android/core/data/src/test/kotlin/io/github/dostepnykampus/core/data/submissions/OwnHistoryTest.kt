@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -24,7 +25,6 @@ import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
-import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -82,7 +82,7 @@ class OwnHistoryTest {
         runBlocking {
             val target = queue()
             target.save(precise(), photo())
-            store.createResults.addLast(ApiResult.NetworkError(IOException("sieć")))
+            store.createResults.addLast(ServerReply.Offline)
             target.sendAll()
 
             assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state)
@@ -103,9 +103,9 @@ class OwnHistoryTest {
                     sent.add(id to content)
                     val saved = remote.getOrPut(id) { server(id, content) }
                     if (sent.size == 1) {
-                        ApiResult.NetworkError(IOException("Odpowiedź zginęła po zapisie treści"))
+                        ServerReply.Offline
                     } else {
-                        ApiResult.Success(saved)
+                        ServerReply.Ok(saved)
                     }
                 }
             val photos = photo()
@@ -139,7 +139,7 @@ class OwnHistoryTest {
         runBlocking {
             val target = queue()
             target.save(precise(), photo())
-            store.createResults.addLast(ApiResult.ServerError(code = SERVICE_UNAVAILABLE))
+            store.createResults.addLast(ServerReply.Fault(code = SERVICE_UNAVAILABLE))
 
             assertFalse(target.sendAll())
             val row = history.rows.getValue(ID)
@@ -156,7 +156,7 @@ class OwnHistoryTest {
         runBlocking {
             val target = queue()
             target.save(precise(), photo())
-            store.createResults.addLast(ApiResult.ServerError(code = 422))
+            store.createResults.addLast(ServerReply.Fault(code = 422))
             target.sendAll()
 
             val row = history.rows.getValue(ID)
@@ -176,7 +176,7 @@ class OwnHistoryTest {
             val target = queue()
             val photos = photo()
             target.save(precise(), photos)
-            val refusal = if (code == 404) ApiResult.NotFound else ApiResult.ServerError(code)
+            val refusal = if (code == 404) ServerReply.Missing else ServerReply.Fault(code)
             if (isPhoto) store.photoResults.addLast(refusal) else store.createResults.addLast(refusal)
 
             assertTrue(target.sendAll())
@@ -239,7 +239,7 @@ class OwnHistoryTest {
         }
 
     private fun queue(
-        create: suspend (String, SubmissionContent) -> ApiResult<Submission> = { id, content ->
+        create: suspend (String, SubmissionContent) -> ServerReply<Submission> = { id, content ->
             store.createResults.removeFirstOrNull() ?: accepted(id, content)
         },
     ): SubmissionQueue =
@@ -251,7 +251,7 @@ class OwnHistoryTest {
                     create = create,
                     putPhoto = { _, _, _ ->
                         photoAttempts++
-                        store.photoResults.removeFirstOrNull() ?: ApiResult.Success(Unit)
+                        store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit)
                     },
                     update = { id, _, content -> ApiResult.Success(SubmissionEdit.Saved(server(id, content))) },
                 ),
@@ -259,8 +259,8 @@ class OwnHistoryTest {
             history = history,
         )
 
-    private fun accepted(id: String, content: SubmissionContent): ApiResult<Submission> =
-        ApiResult.Success(server(id, content))
+    private fun accepted(id: String, content: SubmissionContent): ServerReply<Submission> =
+        ServerReply.Ok(server(id, content))
 
     private fun server(id: String, content: SubmissionContent): Submission =
         Submission(

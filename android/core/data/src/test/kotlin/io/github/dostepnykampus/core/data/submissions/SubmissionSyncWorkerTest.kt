@@ -6,12 +6,12 @@
 package io.github.dostepnykampus.core.data.submissions
 
 import androidx.work.ListenableWorker
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
-import io.github.dostepnykampus.core.network.ApiResult
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -21,7 +21,6 @@ import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import java.io.File
-import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -45,7 +44,7 @@ class SubmissionSyncWorkerTest {
         runBlocking {
             val target = queue()
             target.save(content(), photos())
-            store.createResults.addLast(ApiResult.NetworkError(IOException("sieć")))
+            store.createResults.addLast(ServerReply.Offline)
 
             assertEquals(ListenableWorker.Result.retry(), target.syncResult())
             assertEquals(listOf(SENT_ID), store.rows.map { it.submission.id })
@@ -57,7 +56,7 @@ class SubmissionSyncWorkerTest {
         runBlocking {
             val target = queue()
             target.save(content(), photos())
-            store.createResults.addLast(ApiResult.ServerError(code = code))
+            store.createResults.addLast(ServerReply.Fault(code = code))
 
             assertEquals(ListenableWorker.Result.retry(), target.syncResult())
             assertEquals(listOf(SENT_ID), store.rows.map { it.submission.id })
@@ -69,7 +68,7 @@ class SubmissionSyncWorkerTest {
         runBlocking {
             val target = queue()
             target.save(content(), photos())
-            store.createResults.addLast(ApiResult.ServerError(code = 401))
+            store.createResults.addLast(ServerReply.Fault(code = 401))
 
             assertEquals(ListenableWorker.Result.success(), target.syncResult())
             assertTrue(target.loginExpired.value)
@@ -83,7 +82,7 @@ class SubmissionSyncWorkerTest {
         runBlocking {
             val target = queue()
             target.save(content(), photos())
-            store.createResults.addLast(ApiResult.ServerError(code = 401))
+            store.createResults.addLast(ServerReply.Fault(code = 401))
             target.syncResult()
             val scheduledBefore = schedules
 
@@ -101,7 +100,7 @@ class SubmissionSyncWorkerTest {
         runBlocking {
             val target = queue()
             target.save(content(), photos())
-            store.createResults.addLast(if (code == 404) ApiResult.NotFound else ApiResult.ServerError(code = code))
+            store.createResults.addLast(if (code == 404) ServerReply.Missing else ServerReply.Fault(code = code))
 
             assertEquals(ListenableWorker.Result.success(), target.syncResult())
             assertEquals(listOf(SENT_ID), store.rows.map { it.submission.id })
@@ -128,7 +127,7 @@ class SubmissionSyncWorkerTest {
                 sends++
                 store.createResults.removeFirstOrNull() ?: accepted(id, content)
             },
-            putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+            putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
             newId = { SENT_ID },
             onSaved = { schedules++ },
         )
@@ -138,8 +137,8 @@ class SubmissionSyncWorkerTest {
         return listOf(PendingPhotoDraft(photoId = "p1", path = file.path))
     }
 
-    private fun accepted(id: String, content: SubmissionContent): ApiResult<Submission> =
-        ApiResult.Success(
+    private fun accepted(id: String, content: SubmissionContent): ServerReply<Submission> =
+        ServerReply.Ok(
             Submission(
                 id = id,
                 version = 1,

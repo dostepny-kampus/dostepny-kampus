@@ -113,7 +113,14 @@ object DataModule {
         SubmissionQueue(
             store = store,
             ioContext = ioContext,
-            server = SubmissionServer(create = api::create, putPhoto = api::putPhoto, update = api::update),
+            server =
+                SubmissionServer(
+                    create = { id, content -> api.create(id, content).toReply { it } },
+                    putPhoto = { id, photo, jpeg ->
+                        api.putPhoto(submissionId = id, photoId = photo, jpeg = jpeg).toReply {}
+                    },
+                    update = api::update,
+                ),
             onSaved = sync::scheduleAfterSave,
         )
 

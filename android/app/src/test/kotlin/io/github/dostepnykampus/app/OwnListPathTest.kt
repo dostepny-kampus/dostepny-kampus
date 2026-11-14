@@ -15,6 +15,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.core.data.di.DataModule
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submissions.OwnStatuses
 import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
@@ -45,7 +46,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import java.io.File
-import java.io.IOException
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -164,7 +164,7 @@ class OwnListPathTest {
             server =
                 SubmissionServer(
                     create = { id, content -> if (isServerReachable) accepted(id, content) else noAnswer() },
-                    putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { _, _, _ -> ApiResult.NotFound },
                 ),
             stamps =
@@ -181,10 +181,10 @@ class OwnListPathTest {
             .toInstant()
             .toEpochMilli()
 
-    private fun noAnswer(): ApiResult<Submission> = ApiResult.NetworkError(IOException("brak odpowiedzi"))
+    private fun noAnswer(): ServerReply<Submission> = ServerReply.Offline
 
-    private fun accepted(id: String, content: SubmissionContent): ApiResult<Submission> =
-        ApiResult.Success(
+    private fun accepted(id: String, content: SubmissionContent): ServerReply<Submission> =
+        ServerReply.Ok(
             Submission(
                 id = id,
                 version = 1,

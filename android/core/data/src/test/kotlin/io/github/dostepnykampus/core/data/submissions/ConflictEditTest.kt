@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.database.PendingEditDao
 import io.github.dostepnykampus.core.database.PendingSubmissionWithPhotos
@@ -38,8 +39,8 @@ class ConflictEditTest {
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { id, content -> ApiResult.Success(server(id, content, version = 1)) },
-                    putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                    create = { id, content -> ServerReply.Ok(server(id, content, version = 1)) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { id, version, content ->
                         versions += version
                         ApiResult.Success(edits.removeFirstOrNull() ?: SubmissionEdit.Saved(server(id, content, 8)))

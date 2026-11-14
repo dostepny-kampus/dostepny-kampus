@@ -16,6 +16,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.core.data.di.DataModule
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submissions.OwnStatuses
 import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
@@ -122,9 +123,9 @@ class RevokedRoleTest {
                 SubmissionServer(
                     create = { _, _ ->
                         creates++
-                        ApiResult.ServerError(code = FORBIDDEN)
+                        ServerReply.Fault(code = FORBIDDEN)
                     },
-                    putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { _, _, _ -> ApiResult.NotFound },
                 ),
             stamps = SubmissionStamps(newId = { ID }),

@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
@@ -30,8 +31,8 @@ class OrphanPhotosTest {
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { _, _ -> ApiResult.NetworkError(IOException()) },
-                    putPhoto = { _, _, _ -> ApiResult.NetworkError(IOException()) },
+                    create = { _, _ -> ServerReply.Offline },
+                    putPhoto = { _, _, _ -> ServerReply.Offline },
                     update = { _, _, _ -> ApiResult.NetworkError(IOException()) },
                 ),
             stamps = SubmissionStamps(newId = { "s-sprzatanie" }, nowMillis = { NOW }),
