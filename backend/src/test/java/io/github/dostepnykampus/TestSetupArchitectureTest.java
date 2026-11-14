@@ -72,6 +72,12 @@ final class TestSetupArchitectureTest {
             "sprawdza utworzenie kubełka przy starcie kontekstu,",
             "więc potrzebuje świeżego kontekstu z własną nazwą kubełka"
         ),
+        "io.github.dostepnykampus.barrier.BarrierModuleTest",
+        String.join(
+            " ",
+            "kontekst modułu zgłoszeń potrzebuje magazynu zdjęć,",
+            "którego konteksty modułów budynków i tożsamości nie mają"
+        ),
         "io.github.dostepnykampus.KeycloakTokenTest",
         String.join(
             " ",
@@ -91,7 +97,10 @@ final class TestSetupArchitectureTest {
     /**
      * Klasy z {@code @MockitoBean} lub {@code @MockitoSpyBean}, z powodem.
      */
-    private static final Map<String, String> MOCKED = Map.of();
+    private static final Map<String, String> MOCKED = Map.of(
+        "io.github.dostepnykampus.barrier.BarrierModuleTest",
+        "zastępuje typy API modułu budynków, którego kontekst modułu zgłoszeń nie ładuje"
+    );
 
     /**
      * Klasy, które budują klienta HTTP same, z powodem; lista może tylko maleć.
