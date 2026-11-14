@@ -7,6 +7,7 @@ sekrety main sprint
 zaleznosci main sprint
 kontrola main sprint
 serwer main sprint
+spojnosc main sprint
 kontrakt main sprint
 zmiany-lamiace main sprint
 budowanie main sprint
