@@ -3,9 +3,9 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.building.json;
+package io.github.dostepnykampus.building.room.json;
 
-import io.github.dostepnykampus.building.domain.PlanRoom;
+import io.github.dostepnykampus.building.room.PlanRoom;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;

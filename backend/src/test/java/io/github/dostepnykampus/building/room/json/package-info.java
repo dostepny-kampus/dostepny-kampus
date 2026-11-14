@@ -10,6 +10,6 @@
  * @since 0.1.0
  */
 @NullMarked
-package io.github.dostepnykampus.building.json;
+package io.github.dostepnykampus.building.room.json;
 
 import org.jspecify.annotations.NullMarked;
