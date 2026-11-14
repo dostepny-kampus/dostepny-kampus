@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import tools.jackson.databind.ObjectMapper;
 
 /**
  * Publiczny odczyt budynków: lista, karta i podpowiedź dla punktu. Błędy
@@ -30,14 +29,8 @@ public final class BuildingsController {
      */
     private final BuildingReading query;
 
-    /**
-     * Parser konturów i położeń GeoJSON do odpowiedzi.
-     */
-    private final ObjectMapper mapper;
-
-    BuildingsController(final BuildingReading query, final ObjectMapper mapper) {
+    BuildingsController(final BuildingReading query) {
         this.query = query;
-        this.mapper = mapper;
     }
 
     /**
@@ -47,7 +40,7 @@ public final class BuildingsController {
      */
     @GetMapping("/buildings")
     BuildingListResponse listBuildings() {
-        return new BuildingListResponse(this.query.listBuildings(), this.mapper);
+        return new BuildingListResponse(this.query.listBuildings());
     }
 
     /**
@@ -79,9 +72,7 @@ public final class BuildingsController {
      */
     @GetMapping("/buildings/{symbol}")
     BuildingCardResponse getBuilding(@PathVariable("symbol") final String symbol) {
-        return this.query.building(symbol).map(
-            card -> new BuildingCardResponse(card, this.mapper)
-        ).orElseThrow(
+        return this.query.building(symbol).map(BuildingCardResponse::new).orElseThrow(
             () -> new MissingResource(String.format("Nie ma budynku %s", symbol))
         );
     }

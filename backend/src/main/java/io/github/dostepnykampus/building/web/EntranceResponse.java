@@ -6,11 +6,10 @@
 package io.github.dostepnykampus.building.web;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.github.dostepnykampus.building.domain.Entrance;
 import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 
 /**
  * Wejście budynku w odpowiedzi HTTP, zgodne ze schematem Entrance.
@@ -22,7 +21,7 @@ import tools.jackson.databind.ObjectMapper;
  * @param name Opis wejścia albo null, gdy dane go nie podają
  * @param type Rodzaj wejścia z OpenStreetMap albo null
  * @param main Czy to wejście główne
- * @param location Położenie wejścia jako punkt GeoJSON
+ * @param location Położenie wejścia jako punkt GeoJSON z bazy, wstawiany do odpowiedzi bez zmian
  * @param marking Oznaczenie wejścia, w JSON pola obok pozostałych
  * @since 0.1.0
  */
@@ -33,7 +32,7 @@ public record EntranceResponse(
     @Nullable String name,
     @Nullable String type,
     boolean main,
-    JsonNode location,
+    @JsonRawValue String location,
     @JsonUnwrapped Entrance.Marking marking
 ) {
 
@@ -41,12 +40,11 @@ public record EntranceResponse(
      * Odpowiedź z wejścia.
      *
      * @param entrance Wejście
-     * @param mapper Parser położenia GeoJSON
      */
-    public EntranceResponse(final Entrance entrance, final ObjectMapper mapper) {
+    public EntranceResponse(final Entrance entrance) {
         this(
             entrance.id(), entrance.buildingSymbol(), entrance.name(), entrance.type(),
-            entrance.main(), mapper.readTree(entrance.location()), entrance.marking()
+            entrance.main(), entrance.location(), entrance.marking()
         );
     }
 }

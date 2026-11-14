@@ -46,9 +46,7 @@ final class TechnologyArchitectureTest {
     /**
      * Pakiety, które dziś łamią regułę, i issue, które to usuwa; klucz to reguła i pakiet.
      */
-    private static final Map<String, Integer> KNOWN = Map.of(
-        "A-3 io.github.dostepnykampus.building.web", 1785
-    );
+    private static final Map<String, Integer> KNOWN = Map.of();
 
     /**
      * Pakiet przykładów kompilowanych przez test.
