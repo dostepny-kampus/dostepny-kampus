@@ -92,14 +92,11 @@ data class MapStyleColors(
 )
 
 /**
- * Styl mapy V1 (ADR-0005): kontury i podpisy ze źródła w aplikacji zawsze, a podkład OSM tylko online i tylko w
- * obszarze kampusu, przygaszony. Podpis konturu to obraz z właściwości `label` w jednym punkcie wewnątrz konturu;
- * podpisy się nie nakładają. Zaznaczony budynek [MapSelection.building] ma grubszy obrys `pwr_wybrany` i jako jedyny
- * znaki wejść, pozostałe są przygaszone; bez zaznaczenia każde wejście ma znak o kształcie według oznaczenia. Wejście
- * [MapSelection.entrance] ma pinezkę czubkiem w punkcie i podpis z nazwą pod znakiem. Obszar poza [MapSelection.bounds]
- * jest przyciemniony z linią granicy; bariery mają znak uciążliwości, od powiększenia 17 ze słowem.
- * Warstwy i źródła zaznaczenia są w stylu przy każdym zaznaczeniu, a ich filtry, barwy i dane to [selectionLook],
- * więc styl dla innego budynku, wejścia albo bariery różni się tylko polami z [SelectionLook].
+ * Styl mapy V1 (ADR-0005) jako tekst JSON: kontury i podpisy ze źródła w aplikacji zawsze, podkład OSM tylko online,
+ * tylko w obszarze kampusu i przygaszony. Zaznaczony budynek [MapSelection.building] ma grubszy obrys i jako jedyny
+ * znaki wejść; wejście [MapSelection.entrance] ma pinezkę z podpisem. Obszar poza [MapSelection.bounds] jest
+ * przyciemniony, a bariery mają znak uciążliwości. Warstwy zaznaczenia są w stylu zawsze, więc style dla różnych
+ * zaznaczeń różnią się tylko polami [SelectionLook] z [selectionLook].
  *
  * Wymagania: NFR-10, NFR-39, US1.1, US1.4, US2.8, US2.1, NFR-21, US3.3, NFR-16, US1.7, BR-G5, US1.3
  */
