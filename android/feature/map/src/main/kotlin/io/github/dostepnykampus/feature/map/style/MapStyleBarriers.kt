@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.feature.map.campus.BARRIER_ID
-import io.github.dostepnykampus.feature.map.campus.BARRIER_SEVERITY
+import io.github.dostepnykampus.feature.map.barrier.BARRIER_ID
+import io.github.dostepnykampus.feature.map.barrier.BARRIER_SEVERITY
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
