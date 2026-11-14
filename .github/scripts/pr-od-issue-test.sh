@@ -16,6 +16,7 @@ set -euo pipefail
 # Obszar: PR ma mieć etykietę obszaru (android, backend, api, ci, test, documentation); jeśli zamykane issue ma
 # etykiety obszaru, PR ma mieć przynajmniej jedną z nich.
 # Sprint: PR do gałęzi sprint/N zamyka tylko issue z kamieniem milowym „Sprint N”.
+# Złożoność: zamykane issue (poza epikiem) ma dokładnie jedną etykietę poziomu 1–4.
 # Kod wyjścia 0 = PR spełnia zasady, 1 = naruszenie, 2 = błąd narzędzia gh lub jq (tekst w wyjściu).
 script="$(cd "$(dirname "$0")" && pwd)/pr-od-issue.sh"
 workdir="$(mktemp -d)"
@@ -30,6 +31,9 @@ wrong_number='nie jest wśród zamykanych issue'
 no_area='PR nie ma etykiety obszaru'
 area_mismatch='etykiety obszaru issue'
 wrong_sprint='kamień milowy issue'
+no_level='etykiet złożoności zamiast jednej'
+to_split='złożoność: do podziału'
+level_label='złożoność: 2 według wzorca'
 pr_labels=ci
 issue_labels=''
 base='sprint/4'
@@ -67,7 +71,7 @@ issue_json() {
     stone="{\"title\":\"$milestone\"}"
   fi
   printf '{"state":"%s","assignees":[%s],"url":"https://github.com/o/r/%s/%s","labels":[%s],"milestone":%s}\n' \
-    "$state" "$people" "$kind" "$number" "$(labels_json "$issue_labels")" "$stone" >"$workdir/issues/$number.json"
+    "$state" "$people" "$kind" "$number" "$(labels_json "${issue_labels}${level_label:+,$level_label}")" "$stone" >"$workdir/issues/$number.json"
 }
 
 # run_case <nazwa> <oczekiwany kod> <oczekiwany tekst lub pusty> <polecenie przygotowujące dane...>
@@ -78,6 +82,7 @@ run_case() {
   kind=issues
   pr_labels=ci
   issue_labels=''
+  level_label='złożoność: 2 według wzorca'
   base='sprint/4'
   milestone='Sprint 4'
   extra_path=''
@@ -133,6 +138,13 @@ case_issue_no_area() { pr_labels='backend'; issue_labels='bug'; case_ok; }
 case_issue_two_areas() { pr_labels='api'; issue_labels='android,api'; case_ok; }
 case_warn_no_area() { warn=1; case_no_pr_area; }
 case_warn_mismatch() { warn=1; case_area_mismatch; }
+
+case_no_level() { level_label=''; case_ok; }
+case_two_levels() { issue_labels='złożoność: 1 mechaniczna'; case_ok; }
+case_level_split() { level_label='złożoność: do podziału'; case_ok; }
+case_epic_no_level() { level_label=''; issue_labels='epik'; case_ok; }
+case_level_4() { level_label='złożoność: 4 projektowa'; case_ok; }
+case_warn_no_level() { warn=1; case_no_level; }
 
 case_next_sprint() { milestone='Sprint 5'; case_ok; }
 case_no_milestone() { milestone=''; case_ok; }
@@ -246,6 +258,12 @@ run_case "numer gałęzi różny od zamykanego issue" 1 "$wrong_number" case_bra
 run_case "numer gałęzi to jedno z kilku zamykanych issue" 0 '' case_branch_second_issue
 run_case "numer gałęzi tylko zaczyna się jak numer issue" 1 "$wrong_number" case_branch_number_only_prefix
 run_case "tryb ostrzegawczy: numer gałęzi różny od issue" 0 '::warning' case_warn_branch
+run_case "złożoność: issue bez etykiety poziomu" 1 "$no_level" case_no_level
+run_case "złożoność: dwie etykiety poziomu" 1 "$no_level" case_two_levels
+run_case "złożoność: do podziału" 1 "$to_split" case_level_split
+run_case "złożoność: epik bez oceny" 0 '' case_epic_no_level
+run_case "złożoność: poziom 4" 0 '' case_level_4
+run_case "tryb ostrzegawczy: issue bez etykiety poziomu" 0 '::warning' case_warn_no_level
 run_case "obszar: zgodna etykieta PR i issue" 0 '' case_area_match
 run_case "obszar: PR bez etykiety obszaru (tylko bug)" 1 "$no_area" case_no_pr_area
 run_case "obszar: PR bez żadnych etykiet" 1 "$no_area" case_no_pr_labels
