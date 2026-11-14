@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 @file:OptIn(TymczasoweRole::class)
@@ -199,6 +199,47 @@ class CampusAreasPwrTest {
         compose.waitForIdle()
         assertEquals("T-15", selection.building)
         assertShowsArea(name = "Wittigowo", symbol = "T-15", hasSwitch = false)
+    }
+
+    private fun searchT15AndGoBack() {
+        compose.onNode(hasSetTextAction()).performTextInput("T-15")
+        compose.onNodeWithContentDescription("T-15, ", substring = true).performClick()
+        compose.waitForIdle()
+        compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        compose.waitForIdle()
+    }
+
+    /**
+     * Wiersz: V1, wyszukanie „T-15”, wybór wyniku i „Wstecz” zdejmują zaznaczenie, a mapa zostaje na terenie
+     * „Wittigowo”.
+     * Scenariusz: przegladanie-mapy.feature: Zamknięcie karty budynku z innego terenu zostawia ten teren
+     *
+     * Wymagania: US1.8, BR-G5
+     */
+    @Test
+    fun us1_8_area_stays_after_back_pwr() {
+        showApp()
+        searchT15AndGoBack()
+        assertEquals(null, selection.building)
+        assertEquals(area("Wittigowo").bounds, selection.bounds)
+        compose.onNodeWithContentDescription("Teren: Wittigowo. Zmień teren").assertExists()
+    }
+
+    /**
+     * Wiersz: V1, po „Wstecz” z karty „T-15” wybranie terenu „Kampus główny” pokazuje ten teren.
+     * Scenariusz: przegladanie-mapy.feature: Teren wybrany przez osobę zostaje po zamknięciu karty
+     *
+     * Wymagania: US1.7, US1.8, BR-G5
+     */
+    @Test
+    fun us1_8_own_area_stays_after_back_pwr() {
+        showApp()
+        searchT15AndGoBack()
+        compose.onNodeWithContentDescription("Teren: Wittigowo. Zmień teren").performClick()
+        compose.onNode(hasText("Kampus główny") and isSelectable()).performClick()
+        compose.waitForIdle()
+        assertEquals(area("Kampus główny").bounds, selection.bounds)
+        compose.onNodeWithContentDescription("Teren: Kampus główny. Zmień teren").assertExists()
     }
 
     /**
