@@ -80,6 +80,26 @@ nadpisana przy kolejnej edycji PR).
 | `dependencies`, `python`, `java`, `github_actions` | PR aktualizujący zależności danego ekosystemu | Dependabot |
 | `accessibility`, `epik`, `good first issue` | bariera dostępności; zbiorcze zadanie fali; zadanie dla nowych osób | człowiek |
 | `help wanted`, `question`, `duplicate`, `invalid`, `wontfix` | etykiety standardowe GitHuba do triażu issue | człowiek |
+| `złożoność: 1 mechaniczna` … `złożoność: 4 projektowa`, `złożoność: do podziału` | poziom złożoności issue według sekcji oceny (niżej) | automat: [`zlozonosc.sh`](.github/scripts/zlozonosc.sh), [`zlozonosc.yml`](.github/workflows/zlozonosc.yml) |
+
+### Ocena złożoności
+
+Issue zadania i błędu (poza epikiem) ma sekcje oceny z formularza; issue zakładane bez formularza ma te same
+nagłówki `### …`. Poziom to najwyższy z trzech czynników; każde ryzyko inne niż „brak” podnosi go o 1.
+
+| Czynnik | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|
+| Rozwiązanie | opisane w issue | jest wzorzec w kodzie | do wyboru spośród znanych | do zaprojektowania |
+| Zasięg | jedno miejsce | jeden moduł | kilka modułów | cała aplikacja albo kontrakt między modułami |
+| Weryfikacja | CI sprawdza w pełni | CI i krótki przegląd | częściowo ręcznie | tylko ręcznie |
+
+Ryzyko: `brak` albo dowolne z `reguły albo CI`, `bezpieczeństwo`, `migracja danych`, `publiczne API`.
+Odniesienia (gdzie wzorzec, które moduły, jakie ryzyko) są zawsze wymagane, „Warianty i otwarte pytania”
+od poziomu 3. Poziomy: 1 mechaniczna — wiadomo co i jak, CI sprawdzi; 2 według wzorca — podobne rozwiązanie
+już jest w kodzie; 3 wymaga analizy — trzeba zrozumieć istniejący projekt; 4 projektowa — potrzebna decyzja
+projektowa albo nowa abstrakcja; powyżej 4 „do podziału” — rozbij issue na podzadania. Ocenę wystawia autor
+issue; wykonawca poprawia ją tylko przy oczywistym błędzie. Przy błędnym opisie automat nie nadaje etykiety
+i zostawia jeden komentarz z listą braków, usuwany po poprawie. Zdarzenia issue działają z gałęzi `main`.
 
 PR do `sprint/N` dostaje kamień milowy „Sprint N” i, jeśli nikt nie jest przypisany, swojego autora
 ([`sprint-pr.yml`](.github/workflows/sprint-pr.yml), [`sprint-pr.sh`](.github/scripts/sprint-pr.sh)).
