@@ -90,7 +90,6 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | Odstępstwo | Issue |
 | --- | --- |
 | `barrier.domain` ma 22 pliki | #1439 |
-| podpakiety `feature.capture` importują korzeń modułu; brak reguły dla `feature/*` | #1634, #1635 |
 
 ## Co pilnuje zasady
 
@@ -108,6 +107,7 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | moduł funkcji nie widzi bazy i sieci | kompilator: moduł funkcji nie ma ich w zależnościach, także w testach; Konsist `infra_a1_ui_no_network_or_db` |
 | tylko `:core:data`, `:core:data-testing` i `:app` zależą od bazy i sieci (sieci także `:systemtest`), nigdy przez `api` | `StorageDependencyArchitectureTest` |
 | moduł funkcji nie importuje innego modułu funkcji | Konsist `infra_a1_feature_not_on_other` |
+| podpakiet modułu funkcji nie importuje korzenia modułu (poza `R`) | Konsist `infra_feature_part_skips_root` |
 | moduł `core` nie importuje modułu funkcji | Konsist `infra_a1_core_not_on_feature` |
 | jawna widoczność w modułach `core` | #1329 |
 | zadeklarowane zależności Gradle są używane i mają właściwy zakres | `buildHealth` (#894), poprawki: #1398 |
