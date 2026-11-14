@@ -238,6 +238,17 @@ package_qualified() {
   sed -i 's/^@NullMarked$/@org.jspecify.annotations.NullMarked/; /^import/d' "$main_dir/package-info.java"
 }
 package_rename() { git mv "$main_dir/package-info.java" "$main_dir/package-info.txt"; }
+package_move_info() {
+  mkdir -p backend/src/main/java/kampus/place
+  git mv "$main_dir/package-info.java" backend/src/main/java/kampus/place/package-info.java
+}
+package_move_whole() {
+  mkdir -p backend/src/main/java/kampus/place
+  git mv "$main_dir/package-info.java" backend/src/main/java/kampus/place/package-info.java
+  git mv "$main_dir/Building.java" backend/src/main/java/kampus/place/Building.java
+  sed -i 's/^package kampus.building;/package kampus.place;/' backend/src/main/java/kampus/place/*.java
+}
+package_delete_whole() { git rm --quiet -r "$main_dir"; }
 package_new() {
   mkdir -p backend/src/main/java/kampus/review
   printf '@NullMarked\npackage kampus.review;\n\nimport org.jspecify.annotations.NullMarked;\n' \
@@ -318,6 +329,9 @@ run_case "S5, O6: usunięte @NullMarked" "$unmarked" package_drop_marked
 run_case "S5: usunięty package-info.java z @NullMarked" "$unmarked" package_delete
 run_case "S5: @NullMarked zamienione na @NullUnmarked" "$unmarked" package_unmark
 run_case "S5: package-info.java przemianowany na .txt" "$unmarked" package_rename
+run_case "S5: package-info.java przeniesiony bez kodu pakietu" "$unmarked" package_move_info
+run_case "S5, S6: przeniesiony cały pakiet z @NullMarked" "" package_move_whole
+run_case "S5, S6: usunięty cały pakiet z @NullMarked" "" package_delete_whole
 run_case "S5: klasa traci @NullMarked" "$unmarked" code_drop_marked code_marked_base
 run_case "S5, S6: przemianowana klasa z @NullMarked" "" code_rename_class code_marked_base
 run_case "S5, S6: zmieniony opis pakietu" "" package_javadoc
