@@ -20,6 +20,7 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
   <properties>
     <java.version>25</java.version>
     <qulice.version>0.36.1</qulice.version>
+    <jtcop.version>1.4.4</jtcop.version>
     <spring-modulith.version>2.1.2</spring-modulith.version>
     <archunit.version>1.5.1</archunit.version>
     <cucumber.version>8.0.4</cucumber.version>
@@ -615,6 +616,24 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
         <groupId>com.qulice</groupId>
         <artifactId>qulice-maven-plugin</artifactId>
         <version>${qulice.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.github.volodya-lombrozo</groupId>
+        <artifactId>jtcop-maven-plugin</artifactId>
+        <version>${jtcop.version}</version>
+        <configuration>
+          <!-- Stałe static w klasie testów są dozwolone (decyzja w #1836). -->
+          <exclusions>
+            <exclusion>RuleProhibitStaticFields</exclusion>
+          </exclusions>
+        </configuration>
         <executions>
           <execution>
             <goals>
