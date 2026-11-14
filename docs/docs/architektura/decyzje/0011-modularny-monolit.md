@@ -58,8 +58,8 @@ Zasady szczegółowe, układy katalogów i kontrole są w [Struktura modułów](
 - Gorzej: około 30 PR przeniesień i konflikty z równoległą pracą; zmiana nazw pakietów Androida dotyka
   importów i modułów Hilt.
 - Gorzej: test na moduł to osobny kontekst Springa z kontenerami, więc CI trwa dłużej.
-- Gorzej: klucz obcy zgłoszenia do budynku zostaje wyjątkiem, dopóki import budynków nie publikuje
-  zdarzenia.
+- Gorzej: symbol budynku w zgłoszeniu to zwykła wartość bez klucza obcego; istnienie budynku sprawdza
+  moduł zgłoszeń przez API modułu budynków tylko przy zapisie (#1662).
 
 ## Źródła
 

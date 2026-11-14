@@ -11,7 +11,6 @@ import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Wynik edycji jako własny zapis oraz strażnik kluczy obcych (B-07).
+ * Wynik edycji jako własny zapis (B-07).
  *
  * <p>Wymagania: BR-10</p>
  *
@@ -74,20 +73,5 @@ final class JdbcErrorsTest {
             data.jdbc().sql("DROP TRIGGER j_foreign_bump ON submissions").update();
             data.jdbc().sql("DROP FUNCTION j_foreign_bump()").update();
         }
-    }
-
-    @Test
-    void foreignKeyGuardAllowsOnlyBuildingSymbol(final ApplicationContext context) {
-        Assertions.assertEquals(
-            Set.of("submissions_building_symbol_fkey"),
-            Set.copyOf(
-                SubmissionData.of(context).jdbc().sql(
-                    """
-                    SELECT constraint_name FROM information_schema.table_constraints
-                    WHERE table_name = 'submissions' AND constraint_type = 'FOREIGN KEY'
-                    """
-                ).query(String.class).list()
-            )
-        );
     }
 }
