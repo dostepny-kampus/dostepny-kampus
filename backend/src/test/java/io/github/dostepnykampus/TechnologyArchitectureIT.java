@@ -36,7 +36,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * @since 0.1.0
  */
-final class TechnologyArchitectureTest {
+final class TechnologyArchitectureIT {
 
     /**
      * Reguły sprawdzane w modułach.
@@ -66,12 +66,12 @@ final class TechnologyArchitectureTest {
 
     @Test
     void modulesKeepTechnologyRules() {
-        final JavaClasses classes = TechnologyArchitectureTest.production();
+        final JavaClasses classes = TechnologyArchitectureIT.production();
         Assertions.assertAll(
-            TechnologyArchitectureTest.RULES.stream().map(
+            TechnologyArchitectureIT.RULES.stream().map(
                 name -> () -> Assertions.assertDoesNotThrow(
-                    () -> TechnologyArchitectureTest.rule(
-                        name, ModuleLayers.modules(), TechnologyArchitectureTest.skipped(name)
+                    () -> TechnologyArchitectureIT.rule(
+                        name, ModuleLayers.modules(), TechnologyArchitectureIT.skipped(name)
                     ).check(classes),
                     String.format("Reguła %s jest złamana w kodzie produkcyjnym", name)
                 )
@@ -81,14 +81,14 @@ final class TechnologyArchitectureTest {
 
     @Test
     void exceptionListHoldsOnlyExistingViolations() {
-        final JavaClasses classes = TechnologyArchitectureTest.production();
+        final JavaClasses classes = TechnologyArchitectureIT.production();
         Assertions.assertEquals(
             List.of(),
-            TechnologyArchitectureTest.KNOWN.keySet().stream().filter(
-                key -> !TechnologyArchitectureTest.rule(
+            TechnologyArchitectureIT.KNOWN.keySet().stream().filter(
+                key -> !TechnologyArchitectureIT.rule(
                     key.split(" ", 2)[0], ModuleLayers.modules(), List.of()
                 ).evaluate(
-                    classes.that(TechnologyArchitectureTest.within(List.of(key.split(" ", 2)[1])))
+                    classes.that(TechnologyArchitectureIT.within(List.of(key.split(" ", 2)[1])))
                 ).hasViolation()
             ).toList(),
             "Wyjątek z listy już nie jest naruszeniem; usuń wpis"
@@ -100,9 +100,9 @@ final class TechnologyArchitectureTest {
         this.sample("own.application", "own.submission.Port", "other.api.Outlines");
         final JavaClasses classes = this.compiled();
         Assertions.assertAll(
-            TechnologyArchitectureTest.RULES.stream().map(
+            TechnologyArchitectureIT.RULES.stream().map(
                 name -> () -> Assertions.assertFalse(
-                    TechnologyArchitectureTest.rule(name, this.roots(), List.of())
+                    TechnologyArchitectureIT.rule(name, this.roots(), List.of())
                         .evaluate(classes).hasViolation(),
                     String.format("Reguła %s odrzuciła zależność dozwoloną", name)
                 )
@@ -116,7 +116,7 @@ final class TechnologyArchitectureTest {
         throws IOException {
         this.sample(pack, type);
         Assertions.assertTrue(
-            TechnologyArchitectureTest.rule(name, this.roots(), List.of())
+            TechnologyArchitectureIT.rule(name, this.roots(), List.of())
                 .evaluate(this.compiled()).hasViolation(),
             String.format("Reguła %s przepuściła przykład negatywny", name)
         );
@@ -125,7 +125,7 @@ final class TechnologyArchitectureTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("errors")
     void rejectsErrorTypeWithHttpOrJackson(final String body) throws IOException {
-        final String full = String.format("%s.errors", TechnologyArchitectureTest.SAMPLES);
+        final String full = String.format("%s.errors", TechnologyArchitectureIT.SAMPLES);
         final ArchSamples samples = new ArchSamples(this.dir);
         samples.write(
             full, "Sample", String.format("package %s;%nfinal class Sample %s%n", full, body)
@@ -164,7 +164,7 @@ final class TechnologyArchitectureTest {
             Arguments.of("A-4", "own.photo", port),
             Arguments.of("A-6", "own.web", api),
             Arguments.of("A-6", "own.submission", api),
-            Arguments.of("A-7", "own.submission", TechnologyArchitectureTest.HTTP),
+            Arguments.of("A-7", "own.submission", TechnologyArchitectureIT.HTTP),
             Arguments.of(
                 "A-7", "own.application", "org.springframework.web.server.ServerWebInputException"
             )
@@ -174,30 +174,30 @@ final class TechnologyArchitectureTest {
     private static ArchRule rule(
         final String name, final Collection<String> roots, final Collection<String> skipped
     ) {
-        final DescribedPredicate<JavaClass> checked = TechnologyArchitectureTest.within(roots)
-            .and(DescribedPredicate.not(TechnologyArchitectureTest.within(skipped)));
+        final DescribedPredicate<JavaClass> checked = TechnologyArchitectureIT.within(roots)
+            .and(DescribedPredicate.not(TechnologyArchitectureIT.within(skipped)));
         return switch (name) {
-            case "A-2" -> TechnologyArchitectureTest.local(
-                checked, TechnologyArchitectureTest.except(roots, "persistence"),
+            case "A-2" -> TechnologyArchitectureIT.local(
+                checked, TechnologyArchitectureIT.except(roots, "persistence"),
                 JavaClass.Predicates.resideInAnyPackage("java.sql..", "org.springframework.jdbc..")
             );
-            case "A-3" -> TechnologyArchitectureTest.local(
+            case "A-3" -> TechnologyArchitectureIT.local(
                 checked, ModuleLayers.in(roots, "web"),
                 JavaClass.Predicates.assignableTo("tools.jackson.databind.JsonNode")
             );
-            case "A-4" -> TechnologyArchitectureTest.local(
+            case "A-4" -> TechnologyArchitectureIT.local(
                 checked,
-                TechnologyArchitectureTest.except(roots, "application", "persistence", "storage"),
-                TechnologyArchitectureTest.port(roots)
+                TechnologyArchitectureIT.except(roots, "application", "persistence", "storage"),
+                TechnologyArchitectureIT.port(roots)
             );
             case "A-6" -> CompositeArchRule.of(
                 roots.stream().map(
-                    root -> TechnologyArchitectureTest.foreign(root, roots, checked)
+                    root -> TechnologyArchitectureIT.foreign(root, roots, checked)
                 ).toList()
             ).allowEmptyShould(true);
-            case null, default -> TechnologyArchitectureTest.local(
-                checked, TechnologyArchitectureTest.except(roots, "web"),
-                JavaClass.Predicates.assignableTo(TechnologyArchitectureTest.HTTP)
+            case null, default -> TechnologyArchitectureIT.local(
+                checked, TechnologyArchitectureIT.except(roots, "web"),
+                JavaClass.Predicates.assignableTo(TechnologyArchitectureIT.HTTP)
             );
         };
     }
@@ -215,9 +215,9 @@ final class TechnologyArchitectureTest {
         final String root, final Collection<String> roots,
         final DescribedPredicate<JavaClass> checked
     ) {
-        return TechnologyArchitectureTest.local(
-            checked.and(TechnologyArchitectureTest.within(List.of(root))),
-            TechnologyArchitectureTest.except(List.of(root), "application"),
+        return TechnologyArchitectureIT.local(
+            checked.and(TechnologyArchitectureIT.within(List.of(root))),
+            TechnologyArchitectureIT.except(List.of(root), "application"),
             ModuleLayers.in(roots.stream().filter(other -> !other.equals(root)).toList(), "api")
         );
     }
@@ -254,7 +254,7 @@ final class TechnologyArchitectureTest {
     }
 
     private static List<String> skipped(final String name) {
-        return TechnologyArchitectureTest.KNOWN.keySet().stream()
+        return TechnologyArchitectureIT.KNOWN.keySet().stream()
             .filter(key -> key.startsWith(String.format("%s ", name)))
             .map(key -> key.split(" ", 2)[1])
             .toList();
@@ -268,7 +268,7 @@ final class TechnologyArchitectureTest {
 
     private List<String> roots() {
         return Stream.of("own", "other")
-            .map(root -> String.format("%s.%s", TechnologyArchitectureTest.SAMPLES, root))
+            .map(root -> String.format("%s.%s", TechnologyArchitectureIT.SAMPLES, root))
             .toList();
     }
 
@@ -278,7 +278,7 @@ final class TechnologyArchitectureTest {
             "own.persistence", "JdbcPort",
             String.format(
                 "public final class JdbcPort implements %s.own.submission.Port { }",
-                TechnologyArchitectureTest.SAMPLES
+                TechnologyArchitectureIT.SAMPLES
             )
         );
         this.type("other.api", "Outlines", "public interface Outlines { }");
@@ -286,7 +286,7 @@ final class TechnologyArchitectureTest {
         for (final String type : types) {
             String full = type;
             if (type.startsWith("own.") || type.startsWith("other.")) {
-                full = String.format("%s.%s", TechnologyArchitectureTest.SAMPLES, type);
+                full = String.format("%s.%s", TechnologyArchitectureIT.SAMPLES, type);
             }
             fields.append(String.format("%s f%d; ", full, fields.length()));
         }
@@ -295,11 +295,11 @@ final class TechnologyArchitectureTest {
 
     private void type(final String pack, final String name, final String body)
         throws IOException {
-        final String full = String.format("%s.%s", TechnologyArchitectureTest.SAMPLES, pack);
+        final String full = String.format("%s.%s", TechnologyArchitectureIT.SAMPLES, pack);
         new ArchSamples(this.dir).write(full, name, String.format("package %s;%n%s%n", full, body));
     }
 
     private JavaClasses compiled() throws IOException {
-        return new ArchSamples(this.dir).compiled(TechnologyArchitectureTest.SAMPLES);
+        return new ArchSamples(this.dir).compiled(TechnologyArchitectureIT.SAMPLES);
     }
 }

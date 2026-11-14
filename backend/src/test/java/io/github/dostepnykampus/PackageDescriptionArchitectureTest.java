@@ -18,7 +18,7 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * Strażnik opisu pakietów serwera: każdy katalog kodu produkcyjnego z klasami ma
  * {@code package-info.java}, a jego Javadoc zaczyna się zdaniem opisu pakietu. Treść opisu
- * (tylko kontrakt) sprawdza {@link JavadocArchitectureTest}.
+ * (tylko kontrakt) sprawdza {@link JavadocArchitectureIT}.
  *
  * @since 0.1.0
  */

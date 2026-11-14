@@ -89,10 +89,10 @@ public final class Building {
     }
 }
 JAVA
-  cat >"$test_dir/ArchitectureTest.java" <<'JAVA'
+  cat >"$test_dir/ArchitectureIT.java" <<'JAVA'
 package kampus;
 
-final class ArchitectureTest {
+final class ArchitectureIT {
     @ArchTest
     static final ArchRule DOMAIN = noClasses().should().dependOnClassesThat().resideInAPackage("..web..");
 
@@ -191,9 +191,9 @@ jvm_config_edit() { sed -i '/--add-opens/d' backend/.mvn/jvm.config; }
 jvm_config_absent() { rm backend/.mvn/jvm.config; }
 jvm_config_add() { echo '--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED' >backend/.mvn/jvm.config; }
 
-architecture_drop_rule() { sed -i '6,8d' "$test_dir/ArchitectureTest.java"; }
+architecture_drop_rule() { sed -i '6,8d' "$test_dir/ArchitectureIT.java"; }
 modularity_delete() { git rm --quiet "$test_dir/ModularityTest.java"; }
-architecture_rename() { git mv "$test_dir/ArchitectureTest.java" "$test_dir/Layers.java"; }
+architecture_rename() { git mv "$test_dir/ArchitectureIT.java" "$test_dir/Layers.java"; }
 konsist_edit() { sed -i 's/"..ui.."/"..ui..", "..map.."/' "$android_test/ArchitectureTest.kt"; }
 architecture_new_backend() {
   printf 'package kampus.building;\n\nfinal class BuildingArchitectureTest {\n}\n' \
@@ -304,9 +304,9 @@ run_case "S2, O2: usunięty jvm.config" "$removed" jvm_config_delete
 run_case "S2: edytowany jvm.config" "$changed" jvm_config_edit
 run_case "S2: dodany jvm.config" "$changed" jvm_config_add jvm_config_absent
 
-run_case "S3, O3: usunięta reguła z ArchitectureTest.java" "$changed" architecture_drop_rule
+run_case "S3, O3: usunięta reguła z ArchitectureIT.java" "$changed" architecture_drop_rule
 run_case "S3: usunięty ModularityTest.java" "$removed" modularity_delete
-run_case "S3: przeniesiony ArchitectureTest.java" "$changed" architecture_rename
+run_case "S3: przeniesiony ArchitectureIT.java" "$changed" architecture_rename
 run_case "S3: zmieniony ArchitectureTest.kt w Androidzie" "$changed" konsist_edit
 run_case "S3: nowy plik reguł w backendzie" "$changed" architecture_new_backend
 run_case "S3: nowy plik reguł w module Androida" "$changed" architecture_new_android

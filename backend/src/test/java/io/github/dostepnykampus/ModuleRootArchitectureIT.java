@@ -35,7 +35,7 @@ import org.springframework.modulith.core.JavaPackage;
  *
  * @since 0.1.0
  */
-final class ModuleRootArchitectureTest {
+final class ModuleRootArchitectureIT {
 
     /**
      * Pakiet bazowy aplikacji.
@@ -62,8 +62,8 @@ final class ModuleRootArchitectureTest {
     void holdsOnlyPackageInfoInModuleRoots() {
         Assertions.assertEquals(
             Set.of(),
-            ModuleRootArchitectureTest.rooted(
-                ModuleRootArchitectureTest.production(), ModuleRootArchitectureTest.closed()
+            ModuleRootArchitectureIT.rooted(
+                ModuleRootArchitectureIT.production(), ModuleRootArchitectureIT.closed()
             ),
             "Klasa leży w korzeniu modułu; przenieś ją do api, tematu albo warstwy"
         );
@@ -74,8 +74,8 @@ final class ModuleRootArchitectureTest {
         Assertions.assertEquals(
             "",
             ArchViolations.of(
-                ModuleRootArchitectureTest.production(),
-                ModuleRootArchitectureTest.api(ModuleRootArchitectureTest.BASE)
+                ModuleRootArchitectureIT.production(),
+                ModuleRootArchitectureIT.api(ModuleRootArchitectureIT.BASE)
             ),
             "Typy API modułu zależą od czegoś poza API, shared i JDK"
         );
@@ -85,13 +85,13 @@ final class ModuleRootArchitectureTest {
     void dependenciesOnModulesWithApiNameTheApi() {
         Assertions.assertEquals(
             List.of(),
-            ModuleRootArchitectureTest.unnamed(
-                ModuleRootArchitectureTest.closed().stream().collect(
+            ModuleRootArchitectureIT.unnamed(
+                ModuleRootArchitectureIT.closed().stream().collect(
                     Collectors.toMap(
-                        ModuleRootArchitectureTest::name, ModuleRootArchitectureTest::declared
+                        ModuleRootArchitectureIT::name, ModuleRootArchitectureIT::declared
                     )
                 ),
-                ModuleRootArchitectureTest.withApi(ModuleRootArchitectureTest.production())
+                ModuleRootArchitectureIT.withApi(ModuleRootArchitectureIT.production())
             ),
             "Zależność od modułu z pakietem api ma postać \"moduł :: api\""
         );
@@ -99,20 +99,20 @@ final class ModuleRootArchitectureTest {
 
     @Test
     void rejectsClassInModuleRoot() throws IOException {
-        final String alpha = ModuleRootArchitectureTest.sample("alpha");
+        final String alpha = ModuleRootArchitectureIT.sample("alpha");
         this.source(alpha, "Hidden", "public final class Hidden { }");
         this.source(String.format("%s.api", alpha), "Event", "public record Event(String id) { }");
         Assertions.assertEquals(
             Set.of(String.format("%s.Hidden", alpha)),
-            ModuleRootArchitectureTest.rooted(this.compiled(), List.of(alpha)),
+            ModuleRootArchitectureIT.rooted(this.compiled(), List.of(alpha)),
             "Reguła przepuściła klasę w korzeniu modułu"
         );
     }
 
     @Test
     void rejectsApiTypeUsingModuleInterior() throws IOException {
-        final String alpha = ModuleRootArchitectureTest.sample("alpha");
-        final String beta = ModuleRootArchitectureTest.sample("beta");
+        final String alpha = ModuleRootArchitectureIT.sample("alpha");
+        final String beta = ModuleRootArchitectureIT.sample("beta");
         this.source(String.format("%s.domain", alpha), "Model", "public final class Model { }");
         this.source(String.format("%s.api", beta), "Area", "public record Area(String id) { }");
         this.source(
@@ -123,8 +123,8 @@ final class ModuleRootArchitectureTest {
             String.format("%s.api", alpha), "Bad",
             String.format("public record Bad(%s.domain.Model model) { }", alpha)
         );
-        final List<String> details = ModuleRootArchitectureTest.api(
-            ModuleRootArchitectureTest.SAMPLES
+        final List<String> details = ModuleRootArchitectureIT.api(
+            ModuleRootArchitectureIT.SAMPLES
         ).evaluate(this.compiled()).getFailureReport().getDetails();
         Assertions.assertTrue(
             !details.isEmpty() && details.stream().allMatch(line -> line.contains("api.Bad")),
@@ -136,7 +136,7 @@ final class ModuleRootArchitectureTest {
     void rejectsDependencyWithoutApiName() {
         Assertions.assertEquals(
             List.of("barrier -> building"),
-            ModuleRootArchitectureTest.unnamed(
+            ModuleRootArchitectureIT.unnamed(
                 Map.of(
                     "barrier", List.of("building", "identity :: api", "shared"),
                     "identity", List.of()
@@ -149,7 +149,7 @@ final class ModuleRootArchitectureTest {
 
     private static Set<String> rooted(final JavaClasses classes, final Collection<String> roots) {
         return classes.stream()
-            .filter(type -> !ModuleRootArchitectureTest.INFO.equals(type.getSimpleName()))
+            .filter(type -> !ModuleRootArchitectureIT.INFO.equals(type.getSimpleName()))
             .filter(type -> roots.contains(type.getPackageName()))
             .map(JavaClass::getName)
             .collect(Collectors.toCollection(TreeSet::new));
@@ -158,10 +158,10 @@ final class ModuleRootArchitectureTest {
     private static ArchRule api(final String base) {
         return ArchRuleDefinition.classes()
             .that().resideInAPackage(String.format("%s.*.api..", base))
-            .and().doNotHaveSimpleName(ModuleRootArchitectureTest.INFO)
+            .and().doNotHaveSimpleName(ModuleRootArchitectureIT.INFO)
             .should().onlyDependOnClassesThat().resideInAnyPackage(
                 String.format("%s.*.api..", base),
-                String.format("%s.shared..", ModuleRootArchitectureTest.BASE),
+                String.format("%s.shared..", ModuleRootArchitectureIT.BASE),
                 "java..", "org.jspecify.."
             )
             .because("API modułu nie wydaje typów jego wnętrza ani frameworków");
@@ -180,7 +180,7 @@ final class ModuleRootArchitectureTest {
     private static List<String> declared(final String root) {
         try {
             return Arrays.asList(
-                Class.forName(String.format("%s.%s", root, ModuleRootArchitectureTest.INFO))
+                Class.forName(String.format("%s.%s", root, ModuleRootArchitectureIT.INFO))
                     .getAnnotation(org.springframework.modulith.ApplicationModule.class)
                     .allowedDependencies()
             );
@@ -190,15 +190,15 @@ final class ModuleRootArchitectureTest {
     }
 
     private static Set<String> withApi(final JavaClasses classes) {
-        return ModuleRootArchitectureTest.closed().stream().filter(
+        return ModuleRootArchitectureIT.closed().stream().filter(
             root -> classes.stream().anyMatch(
                 type -> type.getPackageName().startsWith(String.format("%s.api", root))
             )
-        ).map(ModuleRootArchitectureTest::name).collect(Collectors.toSet());
+        ).map(ModuleRootArchitectureIT::name).collect(Collectors.toSet());
     }
 
     private static String name(final String root) {
-        return root.substring(ModuleRootArchitectureTest.BASE.length() + 1);
+        return root.substring(ModuleRootArchitectureIT.BASE.length() + 1);
     }
 
     private static List<String> closed() {
@@ -216,11 +216,11 @@ final class ModuleRootArchitectureTest {
     }
 
     private static String sample(final String name) {
-        return String.format("%s.%s", ModuleRootArchitectureTest.SAMPLES, name);
+        return String.format("%s.%s", ModuleRootArchitectureIT.SAMPLES, name);
     }
 
     private JavaClasses compiled() throws IOException {
-        return new ArchSamples(this.dir).compiled(ModuleRootArchitectureTest.SAMPLES);
+        return new ArchSamples(this.dir).compiled(ModuleRootArchitectureIT.SAMPLES);
     }
 
     private void source(final String pack, final String name, final String body)
