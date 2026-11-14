@@ -36,9 +36,8 @@ public fun interface ServerEntrances {
  *
  * @param details karta budynku z serwera dla symbolu
  */
-public class ServerEntrancesRepository(
-    private val details: suspend (String) -> ServerReply<ServerCard>,
-) : ServerEntrances {
+public class ServerEntrancesRepository(private val details: suspend (String) -> ServerReply<ServerCard>) :
+    ServerEntrances {
     private val downloaded = ConcurrentHashMap<String, List<Entrance>>()
 
     override suspend fun entrances(symbol: String): List<Entrance> {
