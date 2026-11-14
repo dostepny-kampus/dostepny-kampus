@@ -10,9 +10,9 @@ import io.github.dostepnykampus.core.database.cache.BUILDING_CACHE_SINGLE_ROW
 import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
 import io.github.dostepnykampus.core.database.cache.BuildingCacheEntity
 import io.github.dostepnykampus.core.geo.parseGeoArea
-import io.github.dostepnykampus.core.model.Building
-import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.model.building.Building
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.network.building.ApiBuilding
 import io.github.dostepnykampus.core.network.building.BuildingList
 import io.github.dostepnykampus.core.network.building.DetailLevel

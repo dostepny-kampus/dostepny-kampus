@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.core.data.building
 
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.model.Floor
-import io.github.dostepnykampus.core.model.FloorList
+import io.github.dostepnykampus.core.model.building.Floor
+import io.github.dostepnykampus.core.model.building.FloorList
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull

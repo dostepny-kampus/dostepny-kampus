@@ -8,7 +8,7 @@ package io.github.dostepnykampus.feature.map.barrier
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 
 /**
  * Arkusz bariery o identyfikatorze [id] po dotknięciu jej znaku na mapie V1. Budynek i nazwę wejścia

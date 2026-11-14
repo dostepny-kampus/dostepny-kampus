@@ -12,7 +12,7 @@ import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.server.ServerBuildings
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.geo.parseGeoArea
-import io.github.dostepnykampus.core.model.Building
+import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

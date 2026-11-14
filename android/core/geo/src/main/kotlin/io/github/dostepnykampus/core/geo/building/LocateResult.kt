@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.core.geo.building
 
-import io.github.dostepnykampus.core.model.Building
+import io.github.dostepnykampus.core.model.building.Building
 
 /** Podpowiedź budynku dla punktu, odpowiednik `LocateResult` z kontraktu API. Wymagania: US6.2, BR-G2 */
 public sealed interface LocateResult {

@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.feature.map.building
 
 import androidx.compose.runtime.Immutable
-import io.github.dostepnykampus.core.model.Building
+import io.github.dostepnykampus.core.model.building.Building
 
 /**
  * Wynik wyszukiwania budynku po symbolu.

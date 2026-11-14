@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.core.geo
 
 import io.github.dostepnykampus.core.geo.building.edgeDistanceMeters
-import io.github.dostepnykampus.core.model.Building
+import io.github.dostepnykampus.core.model.building.Building
 
 /** Największa odległość między budynkami jednego terenu w metrach na ziemi. Wymagania: BR-G5 */
 internal const val AREA_LINK_METERS = 600.0

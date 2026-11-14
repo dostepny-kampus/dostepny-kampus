@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.model
+package io.github.dostepnykampus.core.model.building
 
 /**
  * Piętro budynku szczegółowego z danych PWr (`Floor` z kontraktu API).

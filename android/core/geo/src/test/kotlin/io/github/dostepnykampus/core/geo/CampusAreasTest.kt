@@ -6,9 +6,9 @@
 package io.github.dostepnykampus.core.geo
 
 import io.github.dostepnykampus.core.geo.building.parseBuildingCatalog
-import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.model.building.Building
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.File

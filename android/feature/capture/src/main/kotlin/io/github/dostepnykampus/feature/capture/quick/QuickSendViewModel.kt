@@ -15,7 +15,7 @@ import io.github.dostepnykampus.core.geo.building.containingBuilding
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
-import io.github.dostepnykampus.core.model.Floor
+import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import io.github.dostepnykampus.feature.capture.report.form.ReportSaver
 import kotlinx.coroutines.ExperimentalCoroutinesApi

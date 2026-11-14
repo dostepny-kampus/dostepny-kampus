@@ -10,11 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
-import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionFloor
+import io.github.dostepnykampus.core.model.building.Building
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

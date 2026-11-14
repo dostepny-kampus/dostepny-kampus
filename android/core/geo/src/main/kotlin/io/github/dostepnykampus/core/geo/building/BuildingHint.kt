@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.core.geo.building
 
-import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.building.Building
 
 /**
  * Najdalsza odległość od konturu, z której aplikacja proponuje budynek; ten sam próg co na serwerze.

@@ -18,9 +18,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.geo.building.BuildingHint
-import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.capture.measure.PlaceChoice
 import io.github.dostepnykampus.feature.capture.measure.place
 import org.junit.Assert.assertEquals
