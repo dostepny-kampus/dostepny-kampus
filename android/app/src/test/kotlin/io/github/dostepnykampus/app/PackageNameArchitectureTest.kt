@@ -119,7 +119,6 @@ class PackageNameArchitectureTest {
                 "$BASE.core.data.network" to "#1878",
                 "$BASE.core.data.server" to "#1878",
                 "$BASE.core.data.start" to "#1878",
-                "$BASE.feature.map.controls" to "#1688",
                 "$BASE.feature.map.data" to "#1689",
             )
     }
