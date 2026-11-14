@@ -9,7 +9,6 @@ import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.server.ServerBuildings
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.testing.serverBuildingCatalog
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -130,9 +129,9 @@ class MapCatalogFromFileTest {
 
     private fun openScreen(listBuildings: suspend () -> ServerReply<ServerBuildings>): Screen {
         val repository =
-            serverBuildingCatalog(
+            BuildingCatalogRepository(
                 ioContext = background,
-                list = listBuildings,
+                listBuildings = listBuildings,
                 readGeoJson = { ASSET_JSON },
             )
         val choice =

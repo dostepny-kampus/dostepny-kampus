@@ -11,7 +11,6 @@ import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.server.ServerBuildings
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.testing.serverBuildingCatalog
 import io.github.dostepnykampus.core.geo.parseGeoArea
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.feature.map.data.campusMapData
@@ -86,9 +85,9 @@ class CampusMapViewModelTest {
                     buildings = listOf(Building(symbol = "C-13", name = "Serwer C-13", outline = outline)),
                 )
             val catalog =
-                serverBuildingCatalog(
+                BuildingCatalogRepository(
                     ioContext = EmptyCoroutineContext,
-                    list = { ServerReply.Ok(server) },
+                    listBuildings = { ServerReply.Ok(server) },
                     nowMillis = { BUILDINGS_SYNCED },
                     readGeoJson = { geoJson },
                 )

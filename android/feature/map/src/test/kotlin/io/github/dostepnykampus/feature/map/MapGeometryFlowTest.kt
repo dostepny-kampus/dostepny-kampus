@@ -12,7 +12,6 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.server.ServerBuildings
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.testing.serverBuildingCatalog
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -260,8 +259,7 @@ class MapGeometryFlowTest {
     }
 
     private fun repository(json: String = ASSET_JSON, list: (suspend () -> ServerReply<ServerBuildings>)? = null) =
-        list?.let { serverBuildingCatalog(EmptyCoroutineContext, it) { json } }
-            ?: BuildingCatalogRepository(EmptyCoroutineContext) { json }
+        BuildingCatalogRepository(EmptyCoroutineContext, list) { json }
 
     private fun viewModelOf(
         repository: BuildingCatalogRepository,

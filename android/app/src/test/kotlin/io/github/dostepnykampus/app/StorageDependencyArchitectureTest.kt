@@ -21,17 +21,17 @@ class StorageDependencyArchitectureTest {
         assertEquals(emptySet<String>(), violations(projectRoot()), HINT)
     }
 
-    /** Zależność testowa modułu funkcji od sieci i `api` bazy łamią regułę, `implementation` w danych nie. */
+    /** Zależność testowa modułu funkcji od sieci i `api` bazy łamią regułę, `implementation` w aplikacji nie. */
     @Test
     fun infra_storage_rule_rejects(
         @TempDir root: File,
     ) {
-        File(root, "settings.gradle.kts").writeText("""include(":core:data", ":core:data-testing", ":feature:x")""")
-        module(root = root, path = "core/data", line = """implementation(project(":core:database"))""")
-        module(root = root, path = "core/data-testing", line = """api(project(":core:database"))""")
+        File(root, "settings.gradle.kts").writeText("""include(":app", ":core:data", ":feature:x")""")
+        module(root = root, path = "app", line = """implementation(project(":core:database"))""")
+        module(root = root, path = "core/data", line = """api(project(":core:database"))""")
         module(root = root, path = "feature/x", line = """testImplementation(project(":core:network"))""")
         assertEquals(
-            setOf(":core:data-testing api :core:database", ":feature:x testImplementation :core:network"),
+            setOf(":core:data api :core:database", ":feature:x testImplementation :core:network"),
             violations(root),
         )
     }
@@ -87,8 +87,8 @@ class StorageDependencyArchitectureTest {
 
         val ALLOWED =
             mapOf(
-                ":core:database" to setOf(":app", ":core:data", ":core:data-testing"),
-                ":core:network" to setOf(":app", ":core:data", ":core:data-testing", ":systemtest"),
+                ":core:database" to setOf(":app", ":core:data"),
+                ":core:network" to setOf(":app", ":core:data", ":systemtest"),
             )
     }
 }
