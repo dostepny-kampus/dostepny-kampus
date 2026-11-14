@@ -33,17 +33,29 @@ import org.springframework.web.context.WebApplicationContext;
 final class ExportCsvHttpTest {
 
     @Test
-    void exportsOnlyAcceptedRowWithPolishText(final WebApplicationContext context)
-        throws Exception {
+    void exportsAcceptedRowInPuwg1992(final WebApplicationContext context) throws Exception {
         final SampleSubmissions samples = new SampleSubmissions(context);
-        final UUID accepted = samples.add("ACCEPTED", ExportCsvHttpTest.content());
-        samples.add("ARCHIVED", ExportCsvHttpTest.content());
-        samples.add("IN_REVIEW", ExportCsvHttpTest.content());
-        final String[] lines = ExportCsvHttpTest.lines(context);
-        final String[] point = lines[1].split(",", 4);
+        final SubmissionContent content = SampleSubmissions.quick(
+            new SubmissionPlace(
+                new SubmissionPoint(17.059_89, 51.109_16), null, false, "A-1",
+                new SubmissionFloor(null, 0, true)
+            ),
+            "Schody, \"próg\" i żółta poręcz", UUID.randomUUID()
+        );
+        final UUID accepted = samples.add("ACCEPTED", content);
+        samples.add("ARCHIVED", content);
+        samples.add("IN_REVIEW", content);
+        final String[] lines = context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.get("/export.csv")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR")
+        ).andReturn().getResponse().getContentAsString().lines().toArray(String[]::new);
+        final String[] row = lines[1].split(",", 4);
         MatcherAssert.assertThat(
-            "Nagłówek i jedyny wiersz CSV",
-            List.of(lines[0], point[0], point[3], Integer.toString(lines.length)),
+            "Nagłówek, jedyny wiersz CSV i punkt według PROJ w milimetrach",
+            List.of(
+                lines[0], row[0], ExportCsvHttpTest.millimetres(row[1]),
+                ExportCsvHttpTest.millimetres(row[2]), row[3], Integer.toString(lines.length)
+            ),
             Matchers.contains(
                 Matchers.is(
                     String.join(
@@ -52,6 +64,7 @@ final class ExportCsvHttpTest {
                     )
                 ),
                 Matchers.is(accepted.toString()),
+                Matchers.is("364229180"), Matchers.is("362054214"),
                 Matchers.matchesPattern(
                     ",OTHER,,A-1,0 półpiętro,\"Schody, \"\"próg\"\" i żółta poręcz\",.+Z"
                 ),
@@ -60,33 +73,7 @@ final class ExportCsvHttpTest {
         );
     }
 
-    @Test
-    void exportsPointInPuwg1992(final WebApplicationContext context) throws Exception {
-        new SampleSubmissions(context).add("ACCEPTED", ExportCsvHttpTest.content());
-        final String[] point = ExportCsvHttpTest.lines(context)[1].split(",", 4);
-        MatcherAssert.assertThat(
-            "Punkt według PROJ",
-            List.of(Double.parseDouble(point[1]), Double.parseDouble(point[2])),
-            Matchers.contains(
-                Matchers.closeTo(364_229.179_6, 0.001), Matchers.closeTo(362_054.214_1, 0.001)
-            )
-        );
-    }
-
-    private static SubmissionContent content() {
-        return SampleSubmissions.quick(
-            new SubmissionPlace(
-                new SubmissionPoint(17.059_89, 51.109_16), null, false, "A-1",
-                new SubmissionFloor(null, 0, true)
-            ),
-            "Schody, \"próg\" i żółta poręcz", UUID.randomUUID()
-        );
-    }
-
-    private static String[] lines(final WebApplicationContext context) throws Exception {
-        return context.getBean(MockMvc.class).perform(
-            MockMvcRequestBuilders.get("/export.csv")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR")
-        ).andReturn().getResponse().getContentAsString().lines().toArray(String[]::new);
+    private static String millimetres(final String metres) {
+        return Long.toString(Math.round(Double.parseDouble(metres) * 1000));
     }
 }
