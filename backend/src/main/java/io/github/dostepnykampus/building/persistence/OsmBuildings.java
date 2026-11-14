@@ -65,10 +65,7 @@ final class OsmBuildings implements JavaMigration {
      */
     private final Resource file;
 
-    OsmBuildings(
-        final ObjectMapper mapper,
-        final Resource file
-    ) {
+    OsmBuildings(final ObjectMapper mapper, final Resource file) {
         this.mapper = mapper;
         this.file = file;
     }
