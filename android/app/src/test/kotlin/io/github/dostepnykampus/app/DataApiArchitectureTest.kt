@@ -65,11 +65,13 @@ class DataApiArchitectureTest {
 
     private fun violations(files: List<KoFileDeclaration>): List<String> =
         files
-            .filter { it.packagee?.name.orEmpty().startsWith(BASE) && !isBinding(it) }
+            .filter { packageOf(it).startsWith(BASE) && !isBinding(it) }
             .flatMap { file -> fileViolations(file) }
             .sorted()
 
-    private fun isBinding(file: KoFileDeclaration): Boolean = file.packagee?.name.orEmpty().startsWith("$BASE.di")
+    private fun isBinding(file: KoFileDeclaration): Boolean = packageOf(file).startsWith("$BASE.di")
+
+    private fun packageOf(file: KoFileDeclaration): String = file.packagee?.name.orEmpty()
 
     private fun fileViolations(file: KoFileDeclaration): List<String> {
         val network =
@@ -77,7 +79,7 @@ class DataApiArchitectureTest {
                 .map { it.name }
                 .filter { it.startsWith("$NETWORK.") }
                 .map { it.substringAfterLast('.') }
-        val pack = file.packagee?.name.orEmpty()
+        val pack = packageOf(file)
         return file
             .declarations(includeNested = true, includeLocal = false)
             .filter { isPublic(it) }
