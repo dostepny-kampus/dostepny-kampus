@@ -27,9 +27,9 @@ class StorageDependencyArchitectureTest {
         @TempDir root: File,
     ) {
         File(root, "settings.gradle.kts").writeText("""include(":core:data", ":core:data-testing", ":feature:x")""")
-        module(root, "core/data", """implementation(project(":core:database"))""")
-        module(root, "core/data-testing", """api(project(":core:database"))""")
-        module(root, "feature/x", """testImplementation(project(":core:network"))""")
+        module(root = root, path = "core/data", line = """implementation(project(":core:database"))""")
+        module(root = root, path = "core/data-testing", line = """api(project(":core:database"))""")
+        module(root = root, path = "feature/x", line = """testImplementation(project(":core:network"))""")
         assertEquals(
             setOf(":core:data-testing api :core:database", ":feature:x testImplementation :core:network"),
             violations(root),
@@ -52,10 +52,11 @@ class StorageDependencyArchitectureTest {
         MODULE
             .findAll(File(root, "settings.gradle.kts").readText())
             .map { it.groupValues[1] }
-            .flatMap { name -> dependencies(root, name).map { (config, target) -> Triple(name, config, target) } }
-            .filter { (name, config, target) -> isForbidden(name, config, target) }
-            .map { (name, config, target) -> "$name $config $target" }
-            .toSet()
+            .flatMap { name ->
+                dependencies(root, name)
+                    .filter { (config, target) -> isForbidden(module = name, config = config, target = target) }
+                    .map { (config, target) -> "$name $config $target" }
+            }.toSet()
 
     private fun isForbidden(module: String, config: String, target: String): Boolean =
         target in ALLOWED && (config == API || module !in ALLOWED.getValue(target))
