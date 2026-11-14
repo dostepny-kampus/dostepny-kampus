@@ -30,6 +30,8 @@ Androida. Zanim zmienisz moduł, przeczytaj jego opis.
 
 Zadanie należące do epiku jest jego sub-issue, a opis issue i PR zaczyna się od `Część #N`.
 Jedno issue ma najwyżej 100 sub-issue; pełny epik dostaje następcę.
+Issue zakładane bez formularza (`gh issue create`) ma te same nagłówki `### …` i wartości pól co formularz
+Zadanie albo Błąd, łącznie z oceną złożoności.
 
 ## 3. Zmiana nie mieści się w jednym PR
 

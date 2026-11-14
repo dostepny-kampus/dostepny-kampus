@@ -36,3 +36,68 @@ body:
       placeholder: "- [ ] ..."
     validations:
       required: true
+  - type: dropdown
+    id: rozwiazanie
+    attributes:
+      label: Rozwiązanie
+      description: Na ile znana jest droga do celu.
+      options:
+        - opisane w issue
+        - jest wzorzec w kodzie
+        - do wyboru spośród znanych
+        - do zaprojektowania
+    validations:
+      required: true
+  - type: dropdown
+    id: zasieg
+    attributes:
+      label: Zasięg
+      description: Ile kodu trzeba zrozumieć i zmienić.
+      options:
+        - jedno miejsce
+        - jeden moduł
+        - kilka modułów
+        - cała aplikacja albo kontrakt między modułami
+    validations:
+      required: true
+  - type: dropdown
+    id: weryfikacja
+    attributes:
+      label: Weryfikacja
+      description: Jak sprawdzić, że zmiana jest poprawna.
+      options:
+        - CI sprawdza w pełni
+        - CI i krótki przegląd
+        - częściowo ręcznie
+        - tylko ręcznie
+    validations:
+      required: true
+  - type: dropdown
+    id: ryzyko
+    attributes:
+      label: Ryzyko
+      description: Co zmiana może zepsuć poza sobą; każda wartość inna niż „brak” podnosi poziom złożoności o 1.
+      multiple: true
+      options:
+        - brak
+        - reguły albo CI
+        - bezpieczeństwo
+        - migracja danych
+        - publiczne API
+    validations:
+      required: true
+  - type: textarea
+    id: odniesienia
+    attributes:
+      label: Odniesienia
+      description: Gdzie jest wzorzec (plik, klasa, PR), które moduły zmiana dotyka, na czym polega ryzyko.
+      placeholder: "Wzorzec: ...; moduły: ..."
+    validations:
+      required: true
+  - type: textarea
+    id: warianty
+    attributes:
+      label: Warianty i otwarte pytania
+      description: Wymagane od poziomu 3 („do wyboru”, „kilka modułów”, „częściowo ręcznie” i wyżej) — znane warianty rozwiązania albo to, co trzeba ustalić przed kodem.
+    validations:
+      required: false
