@@ -6,9 +6,9 @@
 package io.github.dostepnykampus.barrier.persistence;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.barrier.domain.Submission;
-import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
-import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
+import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
+import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import java.time.OffsetDateTime;
 import java.util.List;

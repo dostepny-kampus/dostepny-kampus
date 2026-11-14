@@ -376,7 +376,7 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
           <targetClasses>
             <param>io.github.dostepnykampus.*.domain.*</param>
             <param>io.github.dostepnykampus.barrier.json.*</param>
-            <param>io.github.dostepnykampus.barrier.submission.content.*</param>
+            <param>io.github.dostepnykampus.barrier.submission.*</param>
             <param>io.github.dostepnykampus.barrier.photo.Photo*</param>
             <param>io.github.dostepnykampus.barrier.web.NewSubmissionRequest*</param>
             <param>io.github.dostepnykampus.barrier.web.SubmissionFilter*</param>

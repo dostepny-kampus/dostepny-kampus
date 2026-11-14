@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
+import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;

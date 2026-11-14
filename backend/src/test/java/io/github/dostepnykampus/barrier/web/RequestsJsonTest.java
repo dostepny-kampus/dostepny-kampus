@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.barrier.web;
 
-import io.github.dostepnykampus.barrier.domain.NewSubmission;
-import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
+import io.github.dostepnykampus.barrier.submission.NewSubmission;
+import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.stream.Stream;
