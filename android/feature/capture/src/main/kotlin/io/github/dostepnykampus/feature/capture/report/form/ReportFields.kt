@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report
+package io.github.dostepnykampus.feature.capture.report.form
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +34,7 @@ import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.measure.place
+import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
 import java.util.Locale
 import kotlin.math.roundToInt
 

@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
-import io.github.dostepnykampus.feature.capture.report.ReportEditExits
-import io.github.dostepnykampus.feature.capture.report.ReportEditScreen
+import io.github.dostepnykampus.feature.capture.report.edit.ReportEditExits
+import io.github.dostepnykampus.feature.capture.report.edit.ReportEditScreen
 
 /** C3 „Moje zgłoszenia”: „Otwórz” prowadzi do poprawki w C2, „Zmierz i zgłoś barierę” do C1. Wymagania: US8.1, US8.3 */
 @Composable

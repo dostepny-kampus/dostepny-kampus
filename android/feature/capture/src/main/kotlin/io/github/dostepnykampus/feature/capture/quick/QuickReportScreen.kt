@@ -45,7 +45,7 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
 import io.github.dostepnykampus.feature.capture.photo.rememberPhotoCamera
-import io.github.dostepnykampus.feature.capture.report.PhotoSection
+import io.github.dostepnykampus.feature.capture.report.form.PhotoSection
 import kotlinx.coroutines.flow.filter
 import java.io.File
 

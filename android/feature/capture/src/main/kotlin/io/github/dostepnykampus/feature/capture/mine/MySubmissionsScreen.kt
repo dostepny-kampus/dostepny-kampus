@@ -31,7 +31,6 @@ import io.github.dostepnykampus.core.data.submissions.SendState
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.feature.capture.R
-import io.github.dostepnykampus.feature.capture.report.check
 
 /**
  * C3 „Moje zgłoszenia” z listą z telefonu.

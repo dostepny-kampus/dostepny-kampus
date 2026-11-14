@@ -11,6 +11,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.feature.capture.quick.content
+import io.github.dostepnykampus.feature.capture.report.form.ReportSaver
 
 /** Formularz C2 zapisuje do kolejki zgłoszeń z `core:data`. Wymagania: NFR-5 */
 @Module
