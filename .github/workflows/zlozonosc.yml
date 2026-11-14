@@ -1,0 +1,67 @@
+name: zlozonosc
+
+# Etykieta złożoności według sekcji oceny w treści issue (zlozonosc.sh). Zdarzenia issue GitHub uruchamia
+# z gałęzi domyślnej, więc workflow i skrypt działają od scalenia sprintu do main.
+# Błędny opis: jeden komentarz z listą braków, odświeżany przy edycji i usuwany po poprawie.
+on:
+  issues:
+    types:
+      - opened
+      - edited
+      - reopened
+
+permissions:
+  contents: read
+
+concurrency:
+  group: zlozonosc-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  etykieta:
+    if: github.event.issue.pull_request == null
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Ustaw etykietę złożoności według treści issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          mark='<!-- ocena-zlozonosci -->'
+          labels="$(gh issue view "$ISSUE" --json labels --jq '.labels[].name')"
+          result="$(gh issue view "$ISSUE" --json body --jq '.body // ""' | bash .github/scripts/zlozonosc.sh "$labels")"
+          gaps=''
+          while IFS=: read -r action rest; do
+            case "$action" in
+              dodaj) gh issue edit "$ISSUE" --add-label "$rest" >/dev/null; echo "Dodano etykietę ${rest}." ;;
+              zdejmij) gh issue edit "$ISSUE" --remove-label "$rest" >/dev/null; echo "Zdjęto etykietę ${rest}." ;;
+              brak) gaps+="- ${rest}"$'\n' ;;
+            esac
+          done <<<"$result"
+          old="$(gh api "repos/${GH_REPO}/issues/${ISSUE}/comments" --paginate \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"${mark}\"))) | .id" | head -n 1)"
+          if [[ -z $gaps ]]; then
+            if [[ -n $old ]]; then
+              gh api -X DELETE "repos/${GH_REPO}/issues/comments/${old}"
+              echo "Opis poprawny: usunięto komentarz o brakach."
+            fi
+            exit 0
+          fi
+          text="${mark}
+          Oceny złożoności nie da się wyliczyć. Popraw sekcje issue (skala: CONTRIBUTING.md, „Ocena złożoności”):
+
+          ${gaps}"
+          if [[ -n $old ]]; then
+            gh api -X PATCH "repos/${GH_REPO}/issues/comments/${old}" -f body="$text" >/dev/null
+          else
+            gh issue comment "$ISSUE" --body "$text" >/dev/null
+          fi
+          echo "::warning title=Ocena złożoności::${gaps//$'\n'/ }"
