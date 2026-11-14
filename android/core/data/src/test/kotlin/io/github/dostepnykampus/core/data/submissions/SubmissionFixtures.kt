@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerEdit
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
@@ -23,6 +25,16 @@ internal object SubmissionFixtures {
             status = SubmissionStatus.SENT,
             createdAt = Instant.parse("2026-01-01T00:00:00Z"),
             content = content,
+        )
+
+    /** Serwer, który tworzy zgłoszenie przez [create], a zdjęcia i edycje przyjmuje bez błędu. */
+    fun acceptingServer(
+        create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
+    ): SubmissionServer =
+        SubmissionServer(
+            create = create,
+            putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
+            update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
         )
 
     /** Jedno zdjęcie [id] zapisane jako plik w katalogu [dir]. */

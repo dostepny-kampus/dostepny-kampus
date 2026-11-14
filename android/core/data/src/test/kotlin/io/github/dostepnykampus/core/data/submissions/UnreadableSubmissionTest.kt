@@ -5,9 +5,9 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
-import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submission.pending.pendingEditsOf
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.acceptingServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
@@ -41,14 +41,10 @@ class UnreadableSubmissionTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
-                    create = { id, content ->
-                        created += id
-                        ServerReply.Ok(server(id, content))
-                    },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
-                ),
+                acceptingServer { id, content ->
+                    created += id
+                    ServerReply.Ok(server(id, content))
+                },
             stamps = SubmissionStamps(newId = { ids.removeFirst() }),
             history = history,
         )
