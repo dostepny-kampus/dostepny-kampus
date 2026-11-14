@@ -13,7 +13,7 @@ import java.io.IOException
 /** Wynik klienta HTTP staje się odpowiedzią serwera bez typów sieci. Wymagania: NFR-10 */
 class ApiRepliesTest {
     @Test
-    fun nfr10_success_is_ok_with_content() {
+    fun nfr10_success_is_ok() {
         assertEquals(ServerReply.Ok(TEXT.length), reply(ApiResult.Success(TEXT)))
     }
 
@@ -28,7 +28,7 @@ class ApiRepliesTest {
     }
 
     @Test
-    fun nfr10_server_error_is_fault_with_code() {
+    fun nfr10_server_error_is_fault() {
         assertEquals(ServerReply.Fault(SERVER_ERROR), reply(ApiResult.ServerError(SERVER_ERROR)))
     }
 

@@ -36,7 +36,7 @@ class ServerEntrancesTest {
         }
 
     @Test
-    fun nfr10_missing_without_earlier_is_empty() =
+    fun nfr10_missing_first_is_empty() =
         runBlocking {
             assertEquals(emptyList<Entrance>(), ServerEntrancesRepository { ServerReply.Missing }.entrances(SYMBOL))
         }
