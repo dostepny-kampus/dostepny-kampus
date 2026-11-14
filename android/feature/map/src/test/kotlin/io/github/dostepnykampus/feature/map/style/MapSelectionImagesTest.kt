@@ -18,7 +18,6 @@ import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import io.github.dostepnykampus.feature.map.data.selection
 import io.github.dostepnykampus.feature.map.selectionImages
-import io.github.dostepnykampus.feature.map.style.MapImages
 import kotlinx.serialization.json.JsonElement
 import org.junit.Assert.assertEquals
 import org.junit.Rule
