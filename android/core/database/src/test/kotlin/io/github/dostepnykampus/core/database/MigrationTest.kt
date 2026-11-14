@@ -123,6 +123,25 @@ class MigrationTest {
                 assertEquals(listOf(1, 1, 0), listOf(history, buildings, barriers))
             }
     }
+
+    @Test
+    fun migrate_6_to_7_keeps_queue() {
+        helper.createDatabase(DB_NAME, 6).use { sixth ->
+            sixth.execSQL(
+                "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
+                    " VALUES ('a', 7, 0, 'PRECISE', 17.0, 51.0)",
+            )
+        }
+
+        helper
+            .runMigrationsAndValidate(DB_NAME, 7, true, MIGRATION_6_7)
+            .use { seventh ->
+                val queued = seventh.query("SELECT COUNT(*) FROM pending_submissions").use { row -> readCount(row) }
+                val markers = seventh.query("SELECT COUNT(*) FROM pending_marker_changes").use { row -> readCount(row) }
+
+                assertEquals(listOf(1, 0), listOf(queued, markers))
+            }
+    }
 }
 
 private fun readCount(cursor: Cursor): Int {

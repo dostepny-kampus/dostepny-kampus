@@ -14,6 +14,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
 import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
+import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.PendingEditDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
@@ -33,7 +34,7 @@ internal object DatabaseModule {
     ): DkDatabase =
         Room
             .databaseBuilder(context, DkDatabase::class.java, NAME)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
             .build()
 
     /** Kolejka zgłoszeń z [database]. */
@@ -55,4 +56,8 @@ internal object DatabaseModule {
     /** Kopia barier ze zgłoszeń przyjętych z [database]. Wymagania: NFR-10 */
     @Provides
     fun barrierCache(database: DkDatabase): BarrierCacheDao = database.barrierCache()
+
+    /** Kolejka zmian znaczników piętra obejrzanego z [database]. Wymagania: US15.3 */
+    @Provides
+    fun pendingMarkerChanges(database: DkDatabase): PendingMarkerChangeDao = database.pendingMarkerChanges()
 }
