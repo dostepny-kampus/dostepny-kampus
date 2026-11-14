@@ -5,10 +5,8 @@
  */
 package io.github.dostepnykampus.identity;
 
+import io.github.dostepnykampus.ModuleBeans;
 import io.github.dostepnykampus.ModuleTest;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -32,12 +30,7 @@ final class IdentityModuleTest {
     void identityStartsWithoutOtherModules(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Kontekst modułu tożsamości ma beany innego modułu",
-            Arrays.stream(context.getBeanDefinitionNames())
-                .map(context::getType)
-                .filter(Objects::nonNull)
-                .map(Class::getPackageName)
-                .filter(IdentityModuleTest::foreign)
-                .toList(),
+            new ModuleBeans(context).in("barrier", "building"),
             Matchers.empty()
         );
     }
@@ -52,12 +45,6 @@ final class IdentityModuleTest {
                     .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR")
             ).andReturn().getResponse().getStatus(),
             Matchers.equalTo(200)
-        );
-    }
-
-    private static boolean foreign(final String pack) {
-        return List.of("barrier", "building").stream().anyMatch(
-            module -> pack.startsWith(String.format("io.github.dostepnykampus.%s", module))
         );
     }
 }
