@@ -22,11 +22,11 @@ import androidx.work.WorkManager
  *
  * Wymagania: NFR-6
  */
-class SubmissionSyncScheduler(context: Context) {
+public class SubmissionSyncScheduler(context: Context) {
     private val workManager: WorkManager by lazy { WorkManager.getInstance(context.applicationContext) }
 
     /** Planuje wysyłkę przy starcie aplikacji; powtórne wywołanie nie dubluje zadania. */
-    fun schedule() {
+    public fun schedule() {
         enqueue(ExistingWorkPolicy.KEEP)
     }
 
@@ -34,7 +34,7 @@ class SubmissionSyncScheduler(context: Context) {
      * Planuje wysyłkę po zapisie zgłoszenia. Zadanie, które już działa, mogło przeczytać kolejkę przed zapisem, więc
      * nowe zadanie dochodzi po nim zamiast przepaść; dwa zadania nigdy nie działają naraz.
      */
-    fun scheduleAfterSave() {
+    public fun scheduleAfterSave() {
         enqueue(ExistingWorkPolicy.APPEND_OR_REPLACE)
     }
 

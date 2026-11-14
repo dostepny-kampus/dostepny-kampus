@@ -11,7 +11,7 @@ import io.github.dostepnykampus.core.model.Entrance
 import java.util.concurrent.ConcurrentHashMap
 
 /** Wejścia budynku z serwera dla karty V2 i V3, z dniem i źródłem oznaczenia. Wymagania: US17.3 */
-fun interface ServerEntrances {
+public fun interface ServerEntrances {
     /**
      * Wejścia budynku [symbol] z serwera, każde z [Entrance.assessment]. Pusta lista, gdy serwer ich nie podał
      * (brak sieci, błąd serwera, nieznany budynek) i nic nie pobrano wcześniej; karta zostaje wtedy przy wejściach
@@ -21,7 +21,7 @@ fun interface ServerEntrances {
      *
      * @param symbol symbol budynku
      */
-    suspend fun entrances(symbol: String): List<Entrance>
+    public suspend fun entrances(symbol: String): List<Entrance>
 }
 
 /**
@@ -36,7 +36,7 @@ fun interface ServerEntrances {
  *
  * @param details karta budynku z serwera dla symbolu
  */
-class ServerEntrancesRepository(private val details: suspend (String) -> ServerReply<ServerCard>) : ServerEntrances {
+public class ServerEntrancesRepository(private val details: suspend (String) -> ServerReply<ServerCard>) : ServerEntrances {
     private val downloaded = ConcurrentHashMap<String, List<Entrance>>()
 
     override suspend fun entrances(symbol: String): List<Entrance> {

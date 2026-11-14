@@ -16,13 +16,13 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * Wymagania: US14.1
  */
-interface RoleProvider {
+public interface RoleProvider {
     /** Bieżące konto osoby i każda jego zmiana. */
-    val account: StateFlow<Account>
+    public val account: StateFlow<Account>
 }
 
 /** Dostawca na czas bez logowania w aplikacji: każda osoba jest Gościem niezalogowanym. Wymagania: RO-GOS, US1.2 */
 @TymczasoweRole
-object GuestRoleProvider : RoleProvider {
+public object GuestRoleProvider : RoleProvider {
     override val account: StateFlow<Account> = MutableStateFlow<Account>(Account.Guest).asStateFlow()
 }

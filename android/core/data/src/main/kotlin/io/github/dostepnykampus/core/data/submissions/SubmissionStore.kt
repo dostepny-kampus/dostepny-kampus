@@ -21,7 +21,7 @@ import javax.inject.Inject
  * @property edits zgłoszenia z kolejki czytane do poprawki w C2
  */
 @ConsistentCopyVisibility
-data class SubmissionStore
+public data class SubmissionStore
     @Inject
     internal constructor(
         internal val pending: PendingSubmissionDao,

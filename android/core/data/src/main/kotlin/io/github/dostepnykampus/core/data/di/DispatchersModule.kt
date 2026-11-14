@@ -16,12 +16,12 @@ import kotlin.coroutines.CoroutineContext
 /** Kontekst pracy na plikach, bazie i sieci, poza wątkiem interfejsu. */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class IoContext
+public annotation class IoContext
 
 /** Kontekst obliczeń, np. geometrii konturów, poza wątkiem interfejsu. */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class ComputeContext
+public annotation class ComputeContext
 
 /**
  * Konteksty pracy poza wątkiem interfejsu w grafie Hilt. Testy Hilt podmieniają ten moduł, żeby `waitForIdle`
@@ -29,16 +29,16 @@ annotation class ComputeContext
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object DispatchersModule {
+public object DispatchersModule {
     /** [Dispatchers.IO] w aplikacji. */
     @Provides
     @IoContext
-    fun ioWork(): CoroutineContext = ioDefault()
+    public fun ioWork(): CoroutineContext = ioDefault()
 
     /** [Dispatchers.Default] w aplikacji. */
     @Provides
     @ComputeContext
-    fun computeWork(): CoroutineContext = computeDefault()
+    public fun computeWork(): CoroutineContext = computeDefault()
 
     private fun ioDefault(context: CoroutineContext = Dispatchers.IO): CoroutineContext = context
 
