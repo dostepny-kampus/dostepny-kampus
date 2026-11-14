@@ -57,15 +57,15 @@ final class BuildingReadContractIT {
         context.getBean(JdbcClient.class).sql(
             """
             INSERT INTO entrances (id, building_symbol, name, type, main, location,
-                marking, marking_date, marking_source)
+                floor_id, marking, marking_date, marking_source)
             VALUES ('node/1', 'G-900', NULL, NULL, false,
-                ST_SetSRID(ST_MakePoint(0, 0.0005), 4326),
+                ST_SetSRID(ST_MakePoint(0, 0.0005), 4326), NULL,
                 'NO_DATA', DATE '2026-10-01', 'IMPORT'),
                 ('node/2', 'G-900', 'Wejście główne', 'main', true,
-                ST_SetSRID(ST_MakePoint(0.0005, 0), 4326),
+                ST_SetSRID(ST_MakePoint(0.0005, 0), 4326), 'K1.G900.P0',
                 'ACCESSIBLE', DATE '2026-10-02', 'WALKTHROUGH'),
                 ('node/3', 'G-900', 'Wejście boczne', 'service', false,
-                ST_SetSRID(ST_MakePoint(0.001, 0.0005), 4326),
+                ST_SetSRID(ST_MakePoint(0.001, 0.0005), 4326), NULL,
                 'INACCESSIBLE', DATE '2026-10-03', 'WALKTHROUGH')
             """
         ).update();
@@ -210,7 +210,7 @@ final class BuildingReadContractIT {
         return """
             [{"id":"node/2","buildingSymbol":"G-900","name":"Wejście główne",
             "type":"main","main":true,
-            "location":{"type":"Point","coordinates":[0.0005,0]},
+            "location":{"type":"Point","coordinates":[0.0005,0]},"floorId":"K1.G900.P0",
             "marking":"ACCESSIBLE","markingDate":"2026-10-02",
             "markingSource":"WALKTHROUGH"},
             {"id":"node/1","buildingSymbol":"G-900","main":false,

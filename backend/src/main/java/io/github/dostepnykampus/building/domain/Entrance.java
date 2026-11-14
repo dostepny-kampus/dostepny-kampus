@@ -10,7 +10,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Wejście budynku.
  *
- * <p>Wymagania: US2, US17, BR-24</p>
+ * <p>Wymagania: US2, US17, BR-24, US18.2</p>
  *
  * @param id Identyfikator wejścia, np. node/1167953448
  * @param buildingSymbol Budynek, do którego prowadzi wejście
@@ -18,6 +18,7 @@ import org.jspecify.annotations.Nullable;
  * @param type Rodzaj wejścia z OpenStreetMap albo null
  * @param main Czy to wejście główne
  * @param location Położenie wejścia jako tekst punktu GeoJSON
+ * @param floorId Piętro wejścia z listy pięter budynku albo null, gdy dane go nie podają
  * @param marking Oznaczenie wejścia
  * @since 0.1.0
  */
@@ -28,6 +29,7 @@ public record Entrance(
     @Nullable String type,
     boolean main,
     String location,
+    @Nullable String floorId,
     Marking marking
 ) {
 
