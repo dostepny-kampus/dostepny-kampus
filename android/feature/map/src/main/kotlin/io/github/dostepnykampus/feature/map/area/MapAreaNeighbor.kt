@@ -36,14 +36,14 @@ import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Wysokosci
-import io.github.dostepnykampus.feature.map.ControlCircleSize
-import io.github.dostepnykampus.feature.map.MapCamera
-import io.github.dostepnykampus.feature.map.MapControlIcons
-import io.github.dostepnykampus.feature.map.MapControlTouchSize
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.controls.ControlCircleSize
+import io.github.dostepnykampus.feature.map.controls.MapControlIcons
+import io.github.dostepnykampus.feature.map.controls.MapControlTouchSize
+import io.github.dostepnykampus.feature.map.controls.mapControlBorder
 import io.github.dostepnykampus.feature.map.data.AreaNeighbor
+import io.github.dostepnykampus.feature.map.data.MapCamera
 import io.github.dostepnykampus.feature.map.data.MapEdge
-import io.github.dostepnykampus.feature.map.mapControlBorder
 
 private const val QUARTER_TURN = 90f
 private const val EIGHTH_TURN = 45f

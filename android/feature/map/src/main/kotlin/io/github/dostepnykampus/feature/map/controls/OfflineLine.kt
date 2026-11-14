@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.controls
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -33,8 +33,9 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.pathIcon
-import io.github.dostepnykampus.feature.map.barrier.CampusZone
-import io.github.dostepnykampus.feature.map.building.DAY_FORMAT
+import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.data.CampusZone
+import io.github.dostepnykampus.feature.map.data.DAY_FORMAT
 import java.time.Instant
 
 private val NoInternetIcon =

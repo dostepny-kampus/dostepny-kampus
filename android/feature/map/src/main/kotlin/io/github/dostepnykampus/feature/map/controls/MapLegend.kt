@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.controls
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -48,6 +48,7 @@ import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.markingImage
 import io.github.dostepnykampus.core.model.EntranceMarking
+import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.style.ENTRANCE_MARK_DP
 
 private val SampleWidth = 34.dp

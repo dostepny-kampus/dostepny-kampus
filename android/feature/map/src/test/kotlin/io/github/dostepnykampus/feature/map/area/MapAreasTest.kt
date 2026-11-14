@@ -10,9 +10,9 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.feature.map.START_ZOOM
 import io.github.dostepnykampus.feature.map.data.AreaChoice
 import io.github.dostepnykampus.feature.map.data.START_BUILDING
+import io.github.dostepnykampus.feature.map.data.START_ZOOM
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import io.github.dostepnykampus.feature.map.data.selection
 import org.junit.jupiter.api.Assertions.assertEquals

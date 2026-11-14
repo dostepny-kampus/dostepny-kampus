@@ -12,10 +12,7 @@ import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.core.model.AssessmentSource
 import io.github.dostepnykampus.core.model.EntranceAssessment
 import io.github.dostepnykampus.feature.map.R
-import java.time.format.DateTimeFormatter
-import java.util.Locale
-
-internal val DAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.ROOT)
+import io.github.dostepnykampus.feature.map.data.DAY_FORMAT
 
 /**
  * Wspólne oznaczenie wejść [entrances]: dzień i źródło, gdy każde wejście ma te same.

@@ -12,9 +12,13 @@ import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.feature.map.data.CampusBounds
+import io.github.dostepnykampus.feature.map.data.MapCamera
+import io.github.dostepnykampus.feature.map.data.MapLimits
+import io.github.dostepnykampus.feature.map.data.PanDirection
 import io.github.dostepnykampus.feature.map.data.START_BUILDING
 import io.github.dostepnykampus.feature.map.data.boundsOf
 import io.github.dostepnykampus.feature.map.data.campusMapData
+import io.github.dostepnykampus.feature.map.data.moved
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.math.log2

@@ -34,6 +34,13 @@ import io.github.dostepnykampus.feature.map.area.AreaNotice
 import io.github.dostepnykampus.feature.map.area.MapAreaNeighbor
 import io.github.dostepnykampus.feature.map.area.MapAreaSwitch
 import io.github.dostepnykampus.feature.map.area.MapAreas
+import io.github.dostepnykampus.feature.map.controls.MapControlTouchSize
+import io.github.dostepnykampus.feature.map.controls.MapControls
+import io.github.dostepnykampus.feature.map.controls.MapInfo
+import io.github.dostepnykampus.feature.map.controls.MapLegend
+import io.github.dostepnykampus.feature.map.controls.OSM_COPYRIGHT
+import io.github.dostepnykampus.feature.map.controls.mapControlBorder
+import io.github.dostepnykampus.feature.map.data.MapCamera
 import java.time.LocalDate
 
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f

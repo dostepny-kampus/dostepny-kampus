@@ -32,6 +32,8 @@ import io.github.dostepnykampus.feature.map.building.entranceImages
 import io.github.dostepnykampus.feature.map.data.BARRIER_ID
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.data.MapCamera
+import io.github.dostepnykampus.feature.map.data.MapLimits
 import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance

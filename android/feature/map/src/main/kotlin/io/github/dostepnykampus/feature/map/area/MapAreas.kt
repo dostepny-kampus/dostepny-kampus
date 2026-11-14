@@ -12,12 +12,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.MapCamera
-import io.github.dostepnykampus.feature.map.START_ZOOM
 import io.github.dostepnykampus.feature.map.data.AreaChoice
 import io.github.dostepnykampus.feature.map.data.AreaNeighbor
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapArea
+import io.github.dostepnykampus.feature.map.data.MapCamera
+import io.github.dostepnykampus.feature.map.data.START_ZOOM
 import io.github.dostepnykampus.feature.map.data.areaChoices
 import io.github.dostepnykampus.feature.map.data.areaNeighbor
 import io.github.dostepnykampus.feature.map.data.areaOf
