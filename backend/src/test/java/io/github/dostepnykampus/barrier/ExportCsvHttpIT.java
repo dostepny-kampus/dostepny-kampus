@@ -30,7 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class ExportCsvHttpTest {
+final class ExportCsvHttpIT {
 
     @Test
     void exportsAcceptedRowInPolishGrid(final WebApplicationContext context) throws Exception {
@@ -53,8 +53,8 @@ final class ExportCsvHttpTest {
         MatcherAssert.assertThat(
             "Nagłówek, jedyny wiersz CSV i punkt według PROJ w milimetrach",
             List.of(
-                lines[0], row[0], ExportCsvHttpTest.millimetres(row[1]),
-                ExportCsvHttpTest.millimetres(row[2]), row[3], Integer.toString(lines.length)
+                lines[0], row[0], ExportCsvHttpIT.millimetres(row[1]),
+                ExportCsvHttpIT.millimetres(row[2]), row[3], Integer.toString(lines.length)
             ),
             Matchers.contains(
                 Matchers.is(
