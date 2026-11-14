@@ -20,44 +20,46 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Zgłoszenia przyjęte na stanie karty V2: tylko te z budynku karty. Wymagania: US2.2, US2.4 */
 @OptIn(ExperimentalCoroutinesApi::class)
 class CardBarriersViewModelTest {
-    @BeforeEach
-    fun main() {
-        Dispatchers.setMain(StandardTestDispatcher())
-    }
-
-    @AfterEach
-    fun reset() {
-        Dispatchers.resetMain()
-    }
-
     /** Wiersz: bariery z serwera → stan karty ma tylko zgłoszenia budynku karty, bez barier innych i poza budynkiem. */
     @Test
     fun us2_2_only_own_building() =
-        runTest {
+        onMain {
             val all =
                 listOf(
                     barrier(id = "z1", symbol = "A-1"),
                     barrier(id = "z2", symbol = "B-4"),
                     barrier(id = "z3", symbol = null),
                 )
-            assertEquals(listOf("z1"), cardBarriers(all))
+            assertEquals(listOf("z1"), cardBarriers(all), "Karta ma tylko zgłoszenia swojego budynku")
         }
 
     /** Wiersz: brak zgłoszeń przyjętych → karta ma pustą listę barier. Wymagania: US2.4 */
     @Test
     fun us2_4_none_is_empty() =
-        runTest {
-            assertEquals(emptyList<String>(), cardBarriers(emptyList()))
+        onMain {
+            assertEquals(
+                emptyList<String>(),
+                cardBarriers(emptyList()),
+                "Bez zgłoszeń przyjętych lista barier karty jest pusta",
+            )
         }
+
+    private fun onMain(block: suspend TestScope.() -> Unit) {
+        val main = StandardTestDispatcher()
+        Dispatchers.setMain(main)
+        try {
+            runTest(main) { block() }
+        } finally {
+            Dispatchers.resetMain()
+        }
+    }
 
     private fun TestScope.cardBarriers(all: List<AcceptedBarrier>): List<String> {
         val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON }
