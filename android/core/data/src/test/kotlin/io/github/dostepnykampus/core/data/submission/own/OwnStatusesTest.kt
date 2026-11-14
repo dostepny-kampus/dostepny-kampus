@@ -3,8 +3,9 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.data.submissions
+package io.github.dostepnykampus.core.data.submission.own
 
+import io.github.dostepnykampus.core.data.submissions.FakeHistory
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.model.BarrierGroup

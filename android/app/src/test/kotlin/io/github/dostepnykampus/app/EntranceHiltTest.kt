@@ -30,10 +30,10 @@ import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.start.FirstLaunch
-import io.github.dostepnykampus.core.data.submissions.OwnStatuses
-import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
-import io.github.dostepnykampus.core.data.submissions.PendingEdits
-import io.github.dostepnykampus.core.data.submissions.StatusRefresh
+import io.github.dostepnykampus.core.data.submission.own.OwnStatuses
+import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
+import io.github.dostepnykampus.core.data.submission.own.StatusRefresh
+import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler

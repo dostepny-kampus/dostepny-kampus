@@ -5,10 +5,10 @@
  */
 package io.github.dostepnykampus.feature.capture.mine
 
-import io.github.dostepnykampus.core.data.submissions.OwnSubmission
-import io.github.dostepnykampus.core.data.submissions.RefusalReason
-import io.github.dostepnykampus.core.data.submissions.SendState
-import io.github.dostepnykampus.core.data.submissions.StatusRefresh
+import io.github.dostepnykampus.core.data.submission.own.OwnSubmission
+import io.github.dostepnykampus.core.data.submission.own.RefusalReason
+import io.github.dostepnykampus.core.data.submission.own.SendState
+import io.github.dostepnykampus.core.data.submission.own.StatusRefresh
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.SubmissionStatus
 import kotlinx.coroutines.CompletableDeferred
