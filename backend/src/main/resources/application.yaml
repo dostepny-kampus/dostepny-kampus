@@ -11,6 +11,10 @@ spring:
     password: ${DK_DB_PASSWORD:}
     url: jdbc:postgresql://${DK_DB_HOST:127.0.0.1}:${DK_DB_PORT:5432}/${DK_DB_NAME:dostepny_kampus}
     username: ${DK_DB_USER:dostepny_kampus}
+  modulith:
+    runtime:
+      # TODO(#1719) migracje Java budynków trafiają też do historii modułów z własnymi migracjami
+      flyway-enabled: true
   mvc:
     problemdetails:
       enabled: true
