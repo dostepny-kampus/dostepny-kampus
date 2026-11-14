@@ -51,7 +51,7 @@ final class ArcgisPlansTest {
             ArcgisPlansTest.rooms().get(0),
             Matchers.equalTo(
                 new PlanRoom(
-                    "T.X.P0", "101", "Sala",
+                    "7", "T.X.P0", "101", "Sala",
                     String.format(
                         "{\"type\":\"MultiPolygon\",\"coordinates\":[%s]}", ArcgisPlansTest.SQUARE
                     )
@@ -167,7 +167,8 @@ final class ArcgisPlansTest {
     private static String room(final String floor, final String number, final String function) {
         return String.join(
             "",
-            "{\"geometry\":{\"type\":\"Polygon\",\"coordinates\":", ArcgisPlansTest.SQUARE,
+            "{\"id\":7,\"geometry\":{\"type\":\"Polygon\",\"coordinates\":",
+            ArcgisPlansTest.SQUARE,
             "},\"properties\":{\"Pietro\":\"", floor, "\",\"NUMER\":", number,
             ",\"FUNKCJA\":", function, "}}"
         );
