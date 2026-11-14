@@ -62,7 +62,7 @@ public final class ExportCsvController {
         return CSVFormat.RFC4180.format(
             submission.id(), point.easting(), point.northing(),
             Optional.ofNullable(barrier.type()).map(BarrierType::code).orElse(""),
-            Optional.ofNullable(barrier.group()).map(BarrierGroup::code).orElse(""),
+            Optional.ofNullable(barrier.group()).map(ExportCsvController::group).orElse(""),
             Optional.ofNullable(barrier.severity()).map(String::valueOf).orElse(""),
             Optional.ofNullable(place.buildingSymbol()).orElse(""),
             Optional.ofNullable(place.floor())
@@ -71,6 +71,16 @@ public final class ExportCsvController {
             Optional.of(submission.verification()).filter(time -> !Instant.MIN.equals(time))
                 .map(Instant::toString).orElse("")
         );
+    }
+
+    private static String group(final BarrierGroup group) {
+        return switch (group) {
+            case ENTRANCE -> "ENTRANCE_AND_DOORS";
+            case VERTICAL -> "VERTICAL_CIRCULATION";
+            case HORIZONTAL -> "HORIZONTAL_CIRCULATION";
+            case ORIENTATION -> "ORIENTATION_AND_INFORMATION";
+            default -> group.name();
+        };
     }
 
     private String floor(final @Nullable String symbol, final SubmissionFloor floor) {

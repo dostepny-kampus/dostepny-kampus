@@ -31,20 +31,5 @@ public enum BarrierGroup {
     ORIENTATION,
 
     /** Inne, w OpenAPI OTHER. */
-    OTHER;
-
-    /**
-     * Kod grupy w kontrakcie HTTP.
-     *
-     * @return Kod grupy
-     */
-    public String code() {
-        return switch (this) {
-            case ENTRANCE -> "ENTRANCE_AND_DOORS";
-            case VERTICAL -> "VERTICAL_CIRCULATION";
-            case HORIZONTAL -> "HORIZONTAL_CIRCULATION";
-            case ORIENTATION -> "ORIENTATION_AND_INFORMATION";
-            default -> this.name();
-        };
-    }
+    OTHER
 }

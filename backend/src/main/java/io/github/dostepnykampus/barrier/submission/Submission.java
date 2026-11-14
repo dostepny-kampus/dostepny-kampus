@@ -39,7 +39,6 @@ public record Submission(
         Objects.requireNonNull(status, "status");
         Objects.requireNonNull(createdAt, "createdAt");
         Objects.requireNonNull(content, "content");
-        Objects.requireNonNull(verification, "verification");
         if (version < 1) {
             throw new IllegalArgumentException(
                 String.format("Wersja zgłoszenia %d jest mniejsza niż 1", version)
