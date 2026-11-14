@@ -12,6 +12,7 @@ import dev.detekt.api.RequiresAnalysisApi
 import dev.detekt.api.Rule
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.resolution.successfulFunctionCallOrNull
+import org.jetbrains.kotlin.analysis.api.symbols.KaFunctionSymbol
 import org.jetbrains.kotlin.analysis.api.types.KaClassType
 import org.jetbrains.kotlin.analysis.api.types.KaFlexibleType
 import org.jetbrains.kotlin.analysis.api.types.KaType
@@ -39,17 +40,19 @@ class AssertionMessage(config: Config) :
 
     private fun lacksMessage(call: KtCallExpression): Boolean =
         analyze(call) {
-            val info = call.resolveToCall() ?: return@analyze false
-            val function = info.successfulFunctionCallOrNull() ?: return@analyze false
-            val symbol = function.signature.symbol
-            val id = symbol.callableId ?: return@analyze false
-            val types = symbol.valueParameters.map { it.returnType }
-            when (id.classId) {
-                JUPITER -> !hasJupiterMessage(id.callableName.asString(), types)
-                JUNIT4 -> !isMessage(types.firstOrNull())
-                else -> false
-            }
+            val function = call.resolveToCall()?.successfulFunctionCallOrNull()
+            function?.let { isMissing(it.signature.symbol) } ?: false
         }
+
+    private fun isMissing(symbol: KaFunctionSymbol): Boolean {
+        val id = symbol.callableId ?: return false
+        val types = symbol.valueParameters.map { it.returnType }
+        return when (id.classId) {
+            JUPITER -> !hasJupiterMessage(id.callableName.asString(), types)
+            JUNIT4 -> !isMessage(types.firstOrNull())
+            else -> false
+        }
+    }
 
     private fun hasJupiterMessage(name: String, types: List<KaType>): Boolean =
         if (name == "fail") types.any(::isMessage) else isMessage(types.lastOrNull())

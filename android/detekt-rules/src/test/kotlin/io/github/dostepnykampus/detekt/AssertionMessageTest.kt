@@ -69,10 +69,7 @@ class AssertionMessageTest {
         assertEquals(emptyList<Int>(), findings.map { it.entity.location.source.line })
     }
 
-    private fun lines(
-        import: String,
-        calls: List<String>,
-    ): List<Int> {
+    private fun lines(import: String, calls: List<String>): List<Int> {
         val source =
             buildString {
                 appendLine("import $import")
