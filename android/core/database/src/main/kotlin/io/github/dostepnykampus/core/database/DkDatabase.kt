@@ -25,7 +25,7 @@ import androidx.room.RoomDatabase
     version = 6,
     exportSchema = true,
 )
-abstract class DkDatabase : RoomDatabase() {
+internal abstract class DkDatabase : RoomDatabase() {
     /** Kolejka zgłoszeń. */
     abstract fun pendingSubmissions(): PendingSubmissionDao
 

@@ -10,7 +10,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /** Stan wysyłki własnego zgłoszenia na liście C3. Wymagania: US8, NFR-5 */
-enum class OwnSubmissionState {
+public enum class OwnSubmissionState {
     /** Zapisane w telefonie, czeka na wysłanie („W telefonie”). */
     LOCAL,
 
@@ -43,7 +43,7 @@ enum class OwnSubmissionState {
  * @property rejectionReason powód odrzucenia od Weryfikatora; `null` poza odrzuceniem
  */
 @Entity(tableName = "own_submissions")
-data class OwnSubmissionEntity(
+public data class OwnSubmissionEntity(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "saved_at") val savedAtMillis: Long,
     @ColumnInfo(name = "kind") val kind: String,

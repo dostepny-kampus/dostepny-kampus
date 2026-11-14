@@ -43,7 +43,7 @@ import androidx.room.PrimaryKey
  *   wraca do wysyłki samo
  */
 @Entity(tableName = "pending_submissions")
-data class PendingSubmissionEntity(
+public data class PendingSubmissionEntity(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "base_version") val baseVersion: Int?,
     @ColumnInfo(name = "saved_at") val savedAtMillis: Long,
@@ -91,7 +91,7 @@ data class PendingSubmissionEntity(
     ],
     indices = [Index("submission_id")],
 )
-data class PendingPhotoEntity(
+public data class PendingPhotoEntity(
     @ColumnInfo(name = "submission_id") val submissionId: String,
     @ColumnInfo(name = "photo_id") val photoId: String,
     val path: String,

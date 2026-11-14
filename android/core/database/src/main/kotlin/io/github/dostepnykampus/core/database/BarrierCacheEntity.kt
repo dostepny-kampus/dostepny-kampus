@@ -22,11 +22,11 @@ import androidx.room.PrimaryKey
  * @property syncedAt chwila pobrania listy w milisekundach epochy
  */
 @Entity(tableName = "barrier_cache")
-data class BarrierCacheEntity(
+public data class BarrierCacheEntity(
     @PrimaryKey val id: Int,
     @ColumnInfo(name = "list_json") val listJson: String,
     @ColumnInfo(name = "synced_at") val syncedAt: Long,
 )
 
 /** Identyfikator jedynego wiersza kopii barier. */
-const val BARRIER_CACHE_SINGLE_ROW = 1
+public const val BARRIER_CACHE_SINGLE_ROW: Int = 1
