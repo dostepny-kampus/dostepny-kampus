@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.building.api.Outlines;
 import java.util.Optional;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;

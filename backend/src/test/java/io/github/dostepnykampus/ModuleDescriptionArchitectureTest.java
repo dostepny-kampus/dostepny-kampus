@@ -27,8 +27,8 @@ import org.springframework.modulith.core.JavaPackage;
  *
  * <p>Opis ma akapity w stałej kolejności: zadanie, API, zależności, czego
  * moduł nie robi i kiedy dodawać do niego kod. Akapit zależności wymienia
- * te same moduły co {@code allowedDependencies}, a „brak.” oznacza listę
- * pustą.</p>
+ * te same moduły co {@code allowedDependencies}, także w postaci
+ * {@code moduł :: interfejs}, a „brak.” oznacza listę pustą.</p>
  *
  * @since 0.1.0
  */
@@ -58,7 +58,7 @@ final class ModuleDescriptionArchitectureTest {
     /**
      * Nazwa modułu w akapicie zależności.
      */
-    private static final Pattern MODULE = Pattern.compile("\\{@code (\\w+)\\}");
+    private static final Pattern MODULE = Pattern.compile("\\{@code (\\w+(?: :: \\w+)?)\\}");
 
     @Test
     void modulesDescribeAllPartsAndDependencies() throws IOException {
@@ -96,9 +96,13 @@ final class ModuleDescriptionArchitectureTest {
             <p>Kiedy dodawać tutaj: d.</p>
             """;
         Assertions.assertEquals(
-            List.of("", "akapity", "zależności"),
+            List.of("", "", "akapity", "zależności"),
             List.of(
                 ModuleDescriptionArchitectureTest.problem(full, Set.of("shared")),
+                ModuleDescriptionArchitectureTest.problem(
+                    full.replace("{@code shared}", "{@code building :: api}"),
+                    Set.of("building :: api")
+                ),
                 ModuleDescriptionArchitectureTest.problem(
                     full.replace("<p>API: b.</p>", ""), Set.of("shared")
                 ),

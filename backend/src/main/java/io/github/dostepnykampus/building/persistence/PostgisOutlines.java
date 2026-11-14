@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.building.persistence;
 
-import io.github.dostepnykampus.building.Outlines;
+import io.github.dostepnykampus.building.api.Outlines;
 import java.util.Optional;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;

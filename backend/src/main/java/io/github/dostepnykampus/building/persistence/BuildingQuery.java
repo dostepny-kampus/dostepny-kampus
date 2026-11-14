@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.building.persistence;
 
-import io.github.dostepnykampus.building.Outlines;
+import io.github.dostepnykampus.building.api.Outlines;
 import io.github.dostepnykampus.building.domain.Building;
 import io.github.dostepnykampus.building.domain.BuildingCard;
 import io.github.dostepnykampus.building.domain.BuildingList;

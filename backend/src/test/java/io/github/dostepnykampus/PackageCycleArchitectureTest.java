@@ -45,9 +45,7 @@ final class PackageCycleArchitectureTest {
     /**
      * Korzenie modułów, których typy są dziś używane w podpakietach, i issue, które to usuwa.
      */
-    private static final Map<String, Integer> KNOWN = Map.of(
-        "io.github.dostepnykampus.building", 1679
-    );
+    private static final Map<String, Integer> KNOWN = Map.of();
 
     /**
      * Pakiet przykładów kompilowanych przez test.
