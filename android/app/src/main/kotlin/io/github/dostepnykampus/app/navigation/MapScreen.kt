@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.app.LocalSheetPadding
+import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
 import io.github.dostepnykampus.feature.map.CampusMapView
