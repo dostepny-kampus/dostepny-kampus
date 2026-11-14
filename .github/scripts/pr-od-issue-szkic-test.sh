@@ -25,7 +25,7 @@ case "$1 $2" in
 esac
 SH
 chmod +x "$workdir/bin/gh"
-printf '{"state":"OPEN","assignees":[{"login":"ala"}],"url":"https://x/issues/5"}\n' >"$workdir/issues/5.json"
+printf '{"state":"OPEN","assignees":[{"login":"ala"}],"url":"https://x/issues/5","labels":[{"name":"złożoność: 2 według wzorca"}]}\n' >"$workdir/issues/5.json"
 
 # run_case <nazwa> <tryb wymagany 0/1> <opis PR> <autor> <czy szkic> <id komentarza> <oczekiwany kod> <oczekiwany dziennik> [<tekst w wyjściu> [<tekst w komentarzu> [<tekst, którego w komentarzu nie ma>]]]
 run_case() {
