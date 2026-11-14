@@ -57,7 +57,7 @@ class BarrierSheetTest {
      * Wymagania: US1.5
      */
     @Test
-    fun us1_5_barrier_in_building() {
+    fun showsBarrierInBuilding() {
         compose.setContent { Sheet(inBuilding()) }
 
         val place = "A-1 Gmach Główny · Wejście Cesarskie, parter"
@@ -70,7 +70,7 @@ class BarrierSheetTest {
 
     /** Wiersz: bariera poza budynkiem ma „Poza budynkiem” i nie ma „Pokaż opis budynku”. Wymagania: US1.5, BR-G2 */
     @Test
-    fun us1_5_barrier_outside() {
+    fun showsBarrierOutside() {
         val barrier = barrier(type = null, symbol = null, floor = null).copy(verifiedAt = null)
         compose.setContent { Sheet(ChosenBarrier(barrier = barrier, building = null, entrance = null)) }
 
@@ -82,7 +82,7 @@ class BarrierSheetTest {
     /** Wiersz: przy czcionce 200% arkusz się przewija, a przycisk budynku jest osiągalny. Wymagania: NFR-20 */
     @Test
     @Config(fontScale = 2f)
-    fun nfr20_hifi_czcionka_200() {
+    fun matchesLargeFontMockup() {
         compose.setContent { Sheet(inBuilding()) }
 
         compose.onNodeWithText("Pokaż opis budynku").performScrollTo().assertExists()
@@ -91,14 +91,14 @@ class BarrierSheetTest {
 
     /** Zrzut do porównania z makietą hi-fi „m-v1-mapa-bariera”, motyw jasny. */
     @Test
-    fun us1_5_hifi_motyw_jasny() {
+    fun matchesLightMockup() {
         compose.setContent { Sheet(inBuilding()) }
         compose.onRoot().captureRoboImage()
     }
 
     /** Zrzut do porównania z makietą hi-fi „m-v1-mapa-bariera”, motyw ciemny. */
     @Test
-    fun us1_5_hifi_motyw_ciemny() {
+    fun matchesDarkMockup() {
         RuntimeEnvironment.setQualifiers("+night")
         compose.setContent { Sheet(inBuilding()) }
         compose.onRoot().captureRoboImage()

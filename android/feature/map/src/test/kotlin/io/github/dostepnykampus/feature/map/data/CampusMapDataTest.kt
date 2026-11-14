@@ -27,7 +27,11 @@ import org.maplibre.spatialk.geojson.MultiPolygon
 import org.maplibre.spatialk.geojson.Point
 import org.maplibre.spatialk.geojson.Polygon
 
-/** Warstwy mapy V1 z syntetycznego katalogu „Budynek testowy” (nie dane PWr). */
+/**
+ * Warstwy mapy V1 z syntetycznego katalogu „Budynek testowy” (nie dane PWr).
+ *
+ * Wymagania: US1, US1.1, US1.2, US1.4, US2
+ */
 class CampusMapDataTest {
     private val c3 = Building(symbol = "C-3", name = null, outline = square(x = 0.0))
     private val c4 = c3.copy(symbol = "C-4")
@@ -53,7 +57,7 @@ class CampusMapDataTest {
         )
 
     @Test
-    fun us1_outline_with_symbol() {
+    fun keepsSymbolOnOutline() {
         val buildings = parse(data.buildings)
         assertEquals(listOf("C-3/C-4", "C-13"), buildings.map { it.properties.text("label") })
         assertEquals(listOf("C-3/C-4", "C-13"), data.labels)
@@ -62,7 +66,7 @@ class CampusMapDataTest {
     }
 
     @Test
-    fun us1_one_label_point_each() {
+    fun placesOneLabelEach() {
         val points = parse(data.labelPoints)
         assertEquals(listOf("C-3/C-4", "C-13"), points.map { it.properties.text("label") })
         val position = (points.last().geometry as? Point)?.coordinates
@@ -70,38 +74,38 @@ class CampusMapDataTest {
     }
 
     @Test
-    fun us1_shared_outline_symbols() {
+    fun joinsSharedOutlineSymbols() {
         val symbols = parse(data.buildings).first().properties?.run { getValue("symbols").jsonArray }
         assertEquals(listOf("C-3", "C-4"), symbols?.map { it.jsonPrimitive.content })
     }
 
     @Test
-    fun us1_4_shared_entrance_once() {
+    fun listsSharedEntranceOnce() {
         val entrances = parse(data.entrances)
         assertEquals(listOf("NO_DATA", "ACCESSIBLE", "INACCESSIBLE"), entrances.map { it.properties.text("marking") })
         assertEquals(listOf("true", "false", "true"), entrances.map { it.properties.text("main") })
     }
 
     @Test
-    fun us1_2_start_at_main_campus() {
+    fun startsAtMainCampus() {
         val a1 = c13.copy(symbol = START_BUILDING)
         val catalog = BuildingCatalog(buildings = listOf(c3, a1), entrances = emptyList(), attribution = "")
         assertEquals(GeoPoint(longitude = 3.5, latitude = 0.5), campusMapData(catalog).start)
     }
 
     @Test
-    fun us1_2_start_without_a1() {
+    fun startsWithoutA1() {
         assertEquals(GeoPoint(longitude = 2.5, latitude = 0.5), data.start)
     }
 
     @Test
-    fun us2_touched_symbols_once() {
+    fun readsTouchedSymbolsOnce() {
         assertEquals(listOf("C-3", "C-4", "C-13"), data.symbolsAt(listOf(0, 1, 0)))
     }
 
     /** Dotknięcie konturu wspólnego czyta jego numer z obiektu i daje oba symbole, bez dzielenia podpisu. */
     @Test
-    fun us2_shared_outline_both() {
+    fun givesBothForSharedOutline() {
         val numbers = parse(data.buildings).mapNotNull { it.properties.text(OUTLINE_NUMBER)?.toInt() }
         assertEquals(listOf(0, 1), numbers)
         assertEquals(listOf("C-3", "C-4"), data.symbolsAt(numbers.take(n = 1)))
@@ -109,14 +113,14 @@ class CampusMapDataTest {
     }
 
     @Test
-    fun us1_1_outline_of_building() {
+    fun findsBuildingOutline() {
         assertEquals(listOf("C-3", "C-4"), data.outlineOf("C-4"))
         assertEquals(null, data.outlineOf("X-1"))
         assertEquals(null, data.outlineOf(building = null))
     }
 
     @Test
-    fun us1_empty_catalog_no_start() {
+    fun skipsStartForEmptyCatalog() {
         val empty = campusMapData(BuildingCatalog(buildings = emptyList(), entrances = emptyList(), attribution = ""))
         assertEquals(null, empty.start)
         assertEquals(0, parse(empty.buildings).size)

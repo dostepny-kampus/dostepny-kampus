@@ -34,7 +34,7 @@ class BarrierImagesTest {
 
     /** Wiersz: V1, bariery jako znak uciążliwości i słowo obok znaku. Wymagania: US1.3, NFR-21 */
     @Test
-    fun us1_3_sign_and_word() {
+    fun drawsSignAndWord() {
         val images = barrierImages(images(words = listOf("Utrudnienie", "Tylko z pomocą", "Blokada")))
 
         val names =
@@ -46,7 +46,7 @@ class BarrierImagesTest {
     }
 
     @Test
-    fun us1_3_signs_without_words() {
+    fun drawsSignsWithoutWords() {
         val images = barrierImages(images(words = emptyList()))
 
         val names = Severity.entries.flatMap { listOf(barrierSignImage(it), chosenBarrierImage(it)) }
@@ -59,7 +59,7 @@ class BarrierImagesTest {
      * Wymagania: US1.5, NFR-21
      */
     @Test
-    fun us1_5_chosen_sign_is_bigger() {
+    fun enlargesChosenSign() {
         val images = barrierImages(images(words = emptyList()))
 
         val chosen = Severity.entries.map { images.getValue(chosenBarrierImage(it)) }
