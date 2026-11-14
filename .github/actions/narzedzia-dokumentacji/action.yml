@@ -1,0 +1,32 @@
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+
+name: Narzędzia dokumentacji
+description: Python, Node bez cache menedżera pakietów i JDK temurin do budowy i sprawdzania dokumentacji.
+
+inputs:
+  python:
+    description: Wersja Pythona.
+    required: true
+  node:
+    description: Wersja Node.
+    required: true
+  java:
+    description: Wersja JDK.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v7.1.0
+      with:
+        python-version: ${{ inputs.python }}
+    - uses: actions/setup-node@v7.1.0
+      with:
+        node-version: ${{ inputs.node }}
+        package-manager-cache: false
+    - uses: actions/setup-java@v6.2.0
+      with:
+        distribution: temurin
+        java-version: ${{ inputs.java }}
