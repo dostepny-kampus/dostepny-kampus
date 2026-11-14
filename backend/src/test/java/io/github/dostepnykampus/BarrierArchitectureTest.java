@@ -66,7 +66,7 @@ final class BarrierArchitectureTest {
      * Adapter bazy, zawsze pod modułem zgłoszeń.
      */
     private static final String JDBC =
-        "io.github.dostepnykampus.barrier.persistence.JdbcSubmissions";
+        "io.github.dostepnykampus.barrier.submission.persistence.JdbcSubmissions";
 
     /**
      * Wyjątek HTTP Springa.
@@ -159,12 +159,13 @@ final class BarrierArchitectureTest {
 
     private static Map<String, ArchRule> all(final String root) {
         final String pkg = String.format("%s..", root);
-        final String out = String.format("%s.persistence..", root);
-        final String service = String.format("%s.application..", root);
+        final String out = String.format("%s..persistence..", root);
+        final String service = String.format("%s..application..", root);
         final String controller = String.format(
-            "%s\\.web\\.SubmissionsController(\\$.*)?", Pattern.quote(BarrierArchitectureTest.MODULE)
+            "%s\\.(\\w+\\.)*web\\.SubmissionsController(\\$.*)?",
+            Pattern.quote(BarrierArchitectureTest.MODULE)
         );
-        final String adapter = "..barrier.persistence..";
+        final String adapter = "..barrier..persistence..";
         return Map.of(
             "A-1", ArchRuleDefinition.noClasses()
                 .that().resideInAnyPackage(
@@ -183,7 +184,7 @@ final class BarrierArchitectureTest {
             "A-3", ArchRuleDefinition.noClasses().that().resideInAPackage(pkg)
                 .should().dependOnClassesThat().areAssignableTo("tools.jackson.databind.JsonNode"),
             "A-4", ArchRuleDefinition.noClasses()
-                .that().resideInAPackage(String.format("%s.web..", root))
+                .that().resideInAPackage(String.format("%s..web..", root))
                 .should().dependOnClassesThat().resideInAPackage(adapter)
                 .orShould().dependOnClassesThat()
                 .haveFullyQualifiedName(BarrierArchitectureTest.REPO),

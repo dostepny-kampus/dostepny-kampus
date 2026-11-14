@@ -1,0 +1,16 @@
+/*
+ * Dostępny Kampus
+ * Author: Vladyslav Yevkov
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+
+/**
+ * Adapter zapisu i odczytu zgłoszeń w bazie PostGIS.
+ * Blokada wiersza chroni zapis zdjęcia przed równoczesną zmianą zgłoszenia.
+ *
+ * @since 0.1.0
+ */
+@NullMarked
+package io.github.dostepnykampus.barrier.submission.persistence;
+
+import org.jspecify.annotations.NullMarked;
