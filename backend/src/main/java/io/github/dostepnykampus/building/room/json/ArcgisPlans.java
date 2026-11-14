@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building.room.json;
 
+import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
 import java.net.URI;
 import java.time.Duration;
@@ -21,12 +22,13 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Odczyt pomieszczeń z warstwy usługi ArcGIS PWr (FeatureServer) w formacie GeoJSON w układzie
- * WGS 84; kolejne strony wyników są pobierane do ostatniej. Wielokąt pomieszczenia staje się
- * konturem MultiPolygon, pomieszczenie bez wielokąta jest pomijane. Numer z samych spacji jest
- * pusty, a brak funkcji daje „Inne”. Błąd lub przekroczenie czasu daje IllegalStateException.
+ * Odczyt pięter i pomieszczeń z warstw usługi ArcGIS PWr (FeatureServer) w formacie
+ * GeoJSON w układzie WGS 84; kolejne strony wyników są pobierane do ostatniej. Wielokąt
+ * pomieszczenia staje się konturem MultiPolygon, pomieszczenie bez wielokąta jest pomijane.
+ * Numer z samych spacji jest pusty, a brak funkcji daje „Inne”. Błąd lub przekroczenie
+ * czasu daje IllegalStateException.
  *
- * <p>TODO(#1880): dodać odczyt pięter. TODO(#1823): podłączyć klienta do zapisu importu.</p>
+ * <p>TODO(#1823): podłączyć klienta do zapisu importu.</p>
  *
  * <p>Wymagania: US16, US18, NFR-40</p>
  *
@@ -62,6 +64,25 @@ final class ArcgisPlans {
     ArcgisPlans(final RestClient client, final ObjectMapper mapper) {
         this.client = client;
         this.mapper = mapper;
+    }
+
+    /**
+     * Piętra z warstwy pięter; piętro bez identyfikatora jest pomijane.
+     *
+     * @param service Adres usługi FeatureServer bez końcowego ukośnika
+     * @param layer Numer warstwy pięter: LEVEL_ID, NAME, LEVEL_NUMBER
+     * @return Piętra w kolejności usługi
+     */
+    List<PlanFloor> floors(final String service, final int layer) {
+        return this.features(service, layer, "LEVEL_ID,NAME,LEVEL_NUMBER", false).stream()
+            .map(feature -> feature.path("properties"))
+            .filter(floor -> !floor.path("LEVEL_ID").asString("").isBlank()).map(
+                floor -> new PlanFloor(
+                    floor.path("LEVEL_ID").asString("").strip(),
+                    floor.path("NAME").asString("").strip(),
+                    floor.path("LEVEL_NUMBER").asInt(0)
+                )
+            ).toList();
     }
 
     /**
