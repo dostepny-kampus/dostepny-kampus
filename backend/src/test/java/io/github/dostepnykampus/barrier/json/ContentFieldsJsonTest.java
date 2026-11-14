@@ -6,10 +6,10 @@
 package io.github.dostepnykampus.barrier.json;
 
 import io.github.dostepnykampus.OpenApiContract;
-import io.github.dostepnykampus.barrier.domain.BarrierGroup;
-import io.github.dostepnykampus.barrier.domain.BarrierType;
-import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
-import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
+import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
+import io.github.dostepnykampus.barrier.submission.content.BarrierType;
+import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;

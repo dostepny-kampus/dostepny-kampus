@@ -6,15 +6,15 @@
 package io.github.dostepnykampus.barrier.json;
 
 import io.github.dostepnykampus.OpenApiContract;
-import io.github.dostepnykampus.barrier.domain.BarrierDetails;
-import io.github.dostepnykampus.barrier.domain.BarrierGroup;
-import io.github.dostepnykampus.barrier.domain.BarrierType;
-import io.github.dostepnykampus.barrier.domain.NewEntranceMarking;
-import io.github.dostepnykampus.barrier.domain.SubmissionContent;
-import io.github.dostepnykampus.barrier.domain.SubmissionFloor;
-import io.github.dostepnykampus.barrier.domain.SubmissionKind;
-import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
-import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
+import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
+import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
+import io.github.dostepnykampus.barrier.submission.content.BarrierType;
+import io.github.dostepnykampus.barrier.submission.content.NewEntranceMarking;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -5,23 +5,23 @@
  */
 package io.github.dostepnykampus.barrier.application;
 
-import io.github.dostepnykampus.barrier.domain.BarrierDetails;
-import io.github.dostepnykampus.barrier.domain.BarrierGroup;
-import io.github.dostepnykampus.barrier.domain.BarrierType;
 import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
-import io.github.dostepnykampus.barrier.domain.NewEntranceMarking;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
 import io.github.dostepnykampus.barrier.domain.OutsideCampus;
 import io.github.dostepnykampus.barrier.domain.Submission;
-import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
-import io.github.dostepnykampus.barrier.domain.SubmissionFloor;
-import io.github.dostepnykampus.barrier.domain.SubmissionKind;
-import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
-import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
+import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
+import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
+import io.github.dostepnykampus.barrier.submission.content.BarrierType;
+import io.github.dostepnykampus.barrier.submission.content.NewEntranceMarking;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import io.github.dostepnykampus.building.Outlines;
 import java.time.Instant;
 import java.util.ArrayList;

@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
+import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;

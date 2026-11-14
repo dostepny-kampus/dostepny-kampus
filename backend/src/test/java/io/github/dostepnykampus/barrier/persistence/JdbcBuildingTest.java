@@ -6,11 +6,11 @@
 package io.github.dostepnykampus.barrier.persistence;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
-import io.github.dostepnykampus.barrier.domain.SubmissionContent;
 import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
+import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;

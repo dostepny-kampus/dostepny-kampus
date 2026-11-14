@@ -7,10 +7,10 @@ package io.github.dostepnykampus.barrier.json;
 
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.OpenApiContract;
-import io.github.dostepnykampus.barrier.domain.BarrierGroup;
-import io.github.dostepnykampus.barrier.domain.NewEntranceMarking;
-import io.github.dostepnykampus.barrier.domain.SubmissionKind;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
+import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
+import io.github.dostepnykampus.barrier.submission.content.NewEntranceMarking;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
