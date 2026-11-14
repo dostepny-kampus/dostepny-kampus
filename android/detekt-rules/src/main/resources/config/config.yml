@@ -8,3 +8,5 @@ dostepnykampus:
     active: true
   RequirementIdOutsideLine:
     active: true
+  AssertionMessage:
+    active: true
