@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.building.persistence;
@@ -10,12 +10,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import tools.jackson.databind.JsonNode;
 
 /**
- * Wejścia z pliku konturów OpenStreetMap w tabeli entrances. Oznaczenie z tagu wheelchair:
- * yes i designated dają ACCESSIBLE, no daje INACCESSIBLE, inna wartość i brak tagu NO_DATA.
- * Wejście z kilkoma symbolami ma wiersz dla każdego budynku. Ponowny import zmienia
+ * Wejścia z pliku konturów OpenStreetMap w tabeli entrances, odczytane przez
+ * {@link OsmFile}. Ponowny import zmienia
  * położenie, opis i rodzaj, nie rusza oznaczeń z obchodu (WALKTHROUGH) i usuwa nieaktualne
  * powiązania wejść z oznaczeniem IMPORT.
  *
@@ -43,36 +41,29 @@ final class OsmEntrances {
         """;
 
     /**
-     * Wejścia z pliku, czyli obiekty z kind = entrance.
+     * Wejścia z pliku, po jednym na parę wejście i budynek.
      */
-    private final Iterable<JsonNode> features;
+    private final Iterable<ImportedEntrance> entrances;
 
-    OsmEntrances(final Iterable<JsonNode> features) {
-        this.features = features;
+    OsmEntrances(final Iterable<ImportedEntrance> entrances) {
+        this.entrances = entrances;
     }
 
     void save(final Connection connection) throws SQLException {
         final List<String> ids = new ArrayList<>(64);
         final List<String> buildings = new ArrayList<>(64);
         try (PreparedStatement insert = connection.prepareStatement(OsmEntrances.UPSERT)) {
-            for (final JsonNode feature : this.features) {
-                final JsonNode props = feature.required("properties");
-                final String id = props.required("osm_id").asString();
-                for (final JsonNode symbol : props.required("symbols")) {
-                    final String building = symbol.asString();
-                    ids.add(id);
-                    buildings.add(building);
-                    insert.setString(1, id);
-                    insert.setString(2, building);
-                    insert.setString(3, props.path("ref").asString(null));
-                    insert.setString(4, props.path("entrance").asString(null));
-                    insert.setBoolean(5, "main".equals(props.path("entrance").asString(null)));
-                    insert.setString(6, feature.required("geometry").toString());
-                    insert.setString(
-                        7, OsmEntrances.marking(props.path("wheelchair").asString(""))
-                    );
-                    insert.addBatch();
-                }
+            for (final ImportedEntrance entrance : this.entrances) {
+                ids.add(entrance.id());
+                buildings.add(entrance.building());
+                insert.setString(1, entrance.id());
+                insert.setString(2, entrance.building());
+                insert.setString(3, entrance.name());
+                insert.setString(4, entrance.type());
+                insert.setBoolean(5, entrance.main());
+                insert.setString(6, entrance.location());
+                insert.setString(7, entrance.marking());
+                insert.addBatch();
             }
             insert.executeBatch();
         }
@@ -94,17 +85,5 @@ final class OsmEntrances {
             delete.setObject(2, buildings.toArray(String[]::new));
             delete.executeUpdate();
         }
-    }
-
-    private static String marking(final String wheelchair) {
-        final String result;
-        if ("yes".equals(wheelchair) || "designated".equals(wheelchair)) {
-            result = "ACCESSIBLE";
-        } else if ("no".equals(wheelchair)) {
-            result = "INACCESSIBLE";
-        } else {
-            result = "NO_DATA";
-        }
-        return result;
     }
 }

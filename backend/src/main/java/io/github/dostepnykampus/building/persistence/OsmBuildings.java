@@ -10,9 +10,7 @@ import java.io.UncheckedIOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.zip.CRC32;
 import org.flywaydb.core.api.MigrationVersion;
@@ -102,12 +100,8 @@ final class OsmBuildings implements JavaMigration {
         final String source = root.required("attribution").asString();
         final Map<String, ArrayNode> outlines = new LinkedHashMap<>(128);
         final Map<String, @Nullable String> names = new LinkedHashMap<>(128);
-        final List<JsonNode> entrances = new ArrayList<>(128);
         for (final JsonNode feature : root.required("features")) {
             final JsonNode props = feature.required("properties");
-            if ("entrance".equals(props.required("kind").asString())) {
-                entrances.add(feature);
-            }
             if ("building".equals(props.required("kind").asString())) {
                 for (final JsonNode symbol : props.required("symbols")) {
                     this.add(outlines, symbol.asString(), feature.required("geometry"));
@@ -116,7 +110,7 @@ final class OsmBuildings implements JavaMigration {
             }
         }
         this.save(context.getConnection(), outlines, names, source);
-        new OsmEntrances(entrances).save(context.getConnection());
+        new OsmEntrances(new OsmFile(root).entrances()).save(context.getConnection());
     }
 
     static int checksum(final byte[] content, final int format) {
