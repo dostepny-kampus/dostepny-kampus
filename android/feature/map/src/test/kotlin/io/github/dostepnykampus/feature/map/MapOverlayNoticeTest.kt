@@ -9,7 +9,6 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -23,15 +22,12 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.feature.map.area.MapAreas
+import io.github.dostepnykampus.feature.map.MapAreaFixtures.area
+import io.github.dostepnykampus.feature.map.MapAreaFixtures.twoAreas
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
-import io.github.dostepnykampus.feature.map.data.CampusBounds
-import io.github.dostepnykampus.feature.map.data.CampusMapData
-import io.github.dostepnykampus.feature.map.data.MapArea
 import io.github.dostepnykampus.feature.map.data.center
 import io.github.dostepnykampus.feature.map.overlay.MapOverlay
-import kotlinx.serialization.json.JsonObject
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -55,22 +51,7 @@ class MapOverlayNoticeTest {
 
     private val main = area(name = "Kampus główny", symbol = "A-1", west = 17.0)
     private val other = area(name = "Wittigowo", symbol = "T-15", west = 17.03)
-    private val areas =
-        MapAreas(
-            data =
-                CampusMapData(
-                    buildings = JsonObject(emptyMap()),
-                    labels = emptyList(),
-                    labelPoints = JsonObject(emptyMap()),
-                    entrances = JsonObject(emptyMap()),
-                    start = null,
-                    bounds = main.bounds,
-                    areas = listOf(main, other),
-                ),
-            symbol = "T-15",
-            chosen = mutableStateOf(null),
-            seen = mutableStateOf(null),
-        )
+    private val areas = twoAreas(main, other, symbol = "T-15")
 
     /**
      * Wiersz: V1, po zmianie terenu przez zaznaczony budynek nad podpisem mapy stoi napis „Pokazuję teren:
@@ -120,16 +101,5 @@ class MapOverlayNoticeTest {
                 content = {},
             )
         }
-    }
-
-    private fun area(name: String, symbol: String, west: Double) =
-        MapArea(
-            name = name,
-            symbols = listOf(symbol),
-            bounds = CampusBounds(west = west, south = 51.0, east = west + SIDE, north = 51.0 + SIDE),
-        )
-
-    private companion object {
-        const val SIDE = 0.01
     }
 }

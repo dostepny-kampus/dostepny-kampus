@@ -9,7 +9,6 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.assertHasClickAction
@@ -23,15 +22,12 @@ import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.area.MapAreas
+import io.github.dostepnykampus.feature.map.MapAreaFixtures.area
+import io.github.dostepnykampus.feature.map.MapAreaFixtures.twoAreas
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
-import io.github.dostepnykampus.feature.map.data.CampusBounds
-import io.github.dostepnykampus.feature.map.data.CampusMapData
-import io.github.dostepnykampus.feature.map.data.MapArea
 import io.github.dostepnykampus.feature.map.data.center
 import io.github.dostepnykampus.feature.map.overlay.MapOverlay
-import kotlinx.serialization.json.JsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -56,22 +52,7 @@ class MapOverlayNeighborTest {
 
     private val main = area("Kampus główny", west = 17.0)
     private val other = area("Wittigowo", west = 17.03)
-    private val areas =
-        MapAreas(
-            data =
-                CampusMapData(
-                    buildings = JsonObject(emptyMap()),
-                    labels = emptyList(),
-                    labelPoints = JsonObject(emptyMap()),
-                    entrances = JsonObject(emptyMap()),
-                    start = null,
-                    bounds = main.bounds,
-                    areas = listOf(main, other),
-                ),
-            symbol = null,
-            chosen = mutableStateOf(null),
-            seen = mutableStateOf(null),
-        )
+    private val areas = twoAreas(main, other)
     private val atEdge = GeoPoint(longitude = main.bounds.east, latitude = main.bounds.center.latitude)
     private val shown = mutableListOf<MapCamera>()
 
@@ -135,15 +116,7 @@ class MapOverlayNeighborTest {
         }
     }
 
-    private fun area(name: String, west: Double) =
-        MapArea(
-            name = name,
-            symbols = listOf(name),
-            bounds = CampusBounds(west = west, south = 51.0, east = west + SIDE, north = 51.0 + SIDE),
-        )
-
     private companion object {
-        const val SIDE = 0.01
         const val SPOKEN = "Tu kończy się teren Kampus główny. Obok: Wittigowo, 2 km"
     }
 }
