@@ -15,11 +15,11 @@ import java.time.Instant
 
 /** Zgłoszenia, treści i zdjęcia wspólne dla testów kolejki wysyłki. */
 internal object SubmissionFixtures {
-    /** Odpowiedź serwera: zgłoszenie [id] przyjęte z treścią [content]. */
-    fun server(id: String, content: SubmissionContent): Submission =
+    /** Odpowiedź serwera: zgłoszenie [id] w wersji [version] z treścią [content]. */
+    fun server(id: String, content: SubmissionContent, version: Int = 1): Submission =
         Submission(
             id = id,
-            version = 1,
+            version = version,
             status = SubmissionStatus.SENT,
             createdAt = Instant.parse("2026-01-01T00:00:00Z"),
             content = content,
@@ -32,13 +32,13 @@ internal object SubmissionFixtures {
         return listOf(PendingPhotoDraft(photoId = id, path = file.path))
     }
 
-    /** Dokładne zgłoszenie bariery ze zdjęciem [photoId]. */
-    fun precise(photoId: String): SubmissionContent =
+    /** Dokładne zgłoszenie bariery ze zdjęciem [photoId] i stopniem utrudnienia [severity]. */
+    fun precise(photoId: String, severity: Int = 2): SubmissionContent =
         SubmissionContent(
             kind = SubmissionKind.PRECISE,
             location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
             photoIds = listOf(photoId),
             barrierType = "TB-5",
-            severity = 2,
+            severity = severity,
         )
 }

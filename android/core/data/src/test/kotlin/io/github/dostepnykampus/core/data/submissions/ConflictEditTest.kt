@@ -1,26 +1,23 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.database.PendingEditDao
 import io.github.dostepnykampus.core.database.PendingSubmissionWithPhotos
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.model.SubmissionStatus
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Po 409 telefon pamięta wersję z serwera, a ponowna poprawka idzie od niej. Wymagania: US9.3, BR-10 */
@@ -52,8 +49,12 @@ class ConflictEditTest {
     @Test
     fun `us9_3 ponowna poprawka po 409`() =
         runBlocking {
-            queue.saveEdit(EditedSubmission(id = ID, baseVersion = 4), precise(severity = 2), photo())
-            edits.addLast(ServerEdit.Conflict(server(ID, precise(severity = 3), version = 7)))
+            queue.saveEdit(
+                EditedSubmission(id = ID, baseVersion = 4),
+                precise(PHOTO, severity = 2),
+                photo(tempDir, PHOTO),
+            )
+            edits.addLast(ServerEdit.Conflict(server(ID, precise(PHOTO, severity = 3), version = 7)))
 
             queue.sendAll()
 
@@ -75,30 +76,6 @@ class ConflictEditTest {
             assertEquals(listOf(4, 7), versions)
             assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state)
         }
-
-    private fun server(id: String, content: SubmissionContent, version: Int): Submission =
-        Submission(
-            id = id,
-            version = version,
-            status = SubmissionStatus.SENT,
-            createdAt = Instant.parse("2026-01-01T00:00:00Z"),
-            content = content,
-        )
-
-    private fun photo(): List<PendingPhotoDraft> {
-        val file = tempDir.resolve("$PHOTO.jpg")
-        file.writeBytes(byteArrayOf(1, 2, 3))
-        return listOf(PendingPhotoDraft(photoId = PHOTO, path = file.path))
-    }
-
-    private fun precise(severity: Int): SubmissionContent =
-        SubmissionContent(
-            kind = SubmissionKind.PRECISE,
-            location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
-            photoIds = listOf(PHOTO),
-            barrierType = "TB-5",
-            severity = severity,
-        )
 
     private companion object {
         const val ID = "s-konflikt"

@@ -1,15 +1,17 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
 import io.github.dostepnykampus.core.database.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.OwnSubmissionState
-import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
@@ -24,7 +26,6 @@ import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
-import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Kolejka zapisuje stan wysyłki własnych zgłoszeń dla listy C3. Wymagania: US8, NFR-5 */
@@ -39,7 +40,7 @@ class OwnHistoryTest {
     @Test
     fun `wynik zapisu wskazuje wiersz`() =
         runBlocking {
-            val saved: SavedSubmission = queue().save(precise(), photo())
+            val saved: SavedSubmission = queue().save(precise(PHOTO), photo(tempDir, PHOTO))
             val pending = store.all().single()
             assertEquals(ID, saved.id)
             assertEquals(saved.id, pending.submission.id)
@@ -49,7 +50,7 @@ class OwnHistoryTest {
     @Test
     fun `us8 zapis to W telefonie`() =
         runBlocking {
-            queue().save(precise(), photo())
+            queue().save(precise(PHOTO), photo(tempDir, PHOTO))
 
             val row = history.rows.getValue(ID)
             assertEquals(OwnSubmissionState.LOCAL, row.state)
@@ -59,7 +60,7 @@ class OwnHistoryTest {
     @Test
     fun `us4_4 szybkie poza listą`() =
         runBlocking {
-            queue().save(precise().copy(kind = SubmissionKind.QUICK), photo())
+            queue().save(precise(PHOTO).copy(kind = SubmissionKind.QUICK), photo(tempDir, PHOTO))
 
             assertTrue(history.rows.isEmpty())
         }
@@ -68,7 +69,7 @@ class OwnHistoryTest {
     fun `nfr5 wysłane z wersją`() =
         runBlocking {
             val target = queue()
-            target.save(precise(), photo())
+            target.save(precise(PHOTO), photo(tempDir, PHOTO))
             target.sendAll()
 
             val row = history.rows.getValue(ID)
@@ -80,7 +81,7 @@ class OwnHistoryTest {
     fun `nfr5 bez sieci zostaje lokalne`() =
         runBlocking {
             val target = queue()
-            target.save(precise(), photo())
+            target.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Offline)
             target.sendAll()
 
@@ -100,15 +101,15 @@ class OwnHistoryTest {
             val target =
                 queue { id, content ->
                     sent.add(id to content)
-                    val saved = remote.getOrPut(id) { server(id, content) }
+                    val saved = remote.getOrPut(id) { server(id, content, version = 3) }
                     if (sent.size == 1) {
                         ServerReply.Offline
                     } else {
                         ServerReply.Ok(saved)
                     }
                 }
-            val photos = photo()
-            target.save(precise(), photos)
+            val photos = photo(tempDir, PHOTO)
+            target.save(precise(PHOTO), photos)
 
             assertFalse(target.sendAll())
             assertEquals(setOf(ID), remote.keys)
@@ -137,7 +138,7 @@ class OwnHistoryTest {
     fun `nfr50 awaria serwera lokalne`() =
         runBlocking {
             val target = queue()
-            target.save(precise(), photo())
+            target.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Fault(code = SERVICE_UNAVAILABLE))
 
             assertFalse(target.sendAll())
@@ -154,7 +155,7 @@ class OwnHistoryTest {
     fun `nfr5 odmowa z kodem`() =
         runBlocking {
             val target = queue()
-            target.save(precise(), photo())
+            target.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Fault(code = 422))
             target.sendAll()
 
@@ -173,8 +174,8 @@ class OwnHistoryTest {
     fun `odmowa nie wraca do wysyłki`(code: Int, isPhoto: Boolean): Unit =
         runBlocking {
             val target = queue()
-            val photos = photo()
-            target.save(precise(), photos)
+            val photos = photo(tempDir, PHOTO)
+            target.save(precise(PHOTO), photos)
             val refusal = if (code == 404) ServerReply.Missing else ServerReply.Fault(code)
             if (isPhoto) store.photoResults.addLast(refusal) else store.createResults.addLast(refusal)
 
@@ -199,9 +200,13 @@ class OwnHistoryTest {
     fun `us8_3 poprawka znów lokalna`() =
         runBlocking {
             val target = queue()
-            target.save(precise(), photo())
+            target.save(precise(PHOTO), photo(tempDir, PHOTO))
             target.sendAll()
-            target.saveEdit(EditedSubmission(id = ID, baseVersion = 3), precise().copy(severity = 1), photo())
+            target.saveEdit(
+                EditedSubmission(id = ID, baseVersion = 3),
+                precise(PHOTO, severity = 1),
+                photo(tempDir, PHOTO),
+            )
 
             val row = history.rows.getValue(ID)
             assertEquals(OwnSubmissionState.LOCAL, row.state)
@@ -226,7 +231,7 @@ class OwnHistoryTest {
                 version = 2,
             )
 
-            queue().save(precise().copy(barrierType = "TB-9", buildingSymbol = "D-2"), photo())
+            queue().save(precise(PHOTO).copy(barrierType = "TB-9", buildingSymbol = "D-2"), photo(tempDir, PHOTO))
 
             val row = history.rows.getValue(ID)
             assertEquals(OwnSubmissionState.LOCAL, row.state)
@@ -252,38 +257,14 @@ class OwnHistoryTest {
                         photoAttempts++
                         store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit)
                     },
-                    update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
+                    update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 3))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
             history = history,
         )
 
     private fun accepted(id: String, content: SubmissionContent): ServerReply<Submission> =
-        ServerReply.Ok(server(id, content))
-
-    private fun server(id: String, content: SubmissionContent): Submission =
-        Submission(
-            id = id,
-            version = 3,
-            status = SubmissionStatus.SENT,
-            createdAt = Instant.parse("2026-01-01T00:00:00Z"),
-            content = content,
-        )
-
-    private fun photo(): List<PendingPhotoDraft> {
-        val file = tempDir.resolve("$PHOTO.jpg")
-        file.writeBytes(byteArrayOf(1, 2, 3))
-        return listOf(PendingPhotoDraft(photoId = PHOTO, path = file.path))
-    }
-
-    private fun precise(): SubmissionContent =
-        SubmissionContent(
-            kind = SubmissionKind.PRECISE,
-            location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
-            photoIds = listOf(PHOTO),
-            barrierType = "TB-5",
-            severity = 2,
-        )
+        ServerReply.Ok(server(id, content, version = 3))
 }
 
 private const val ID = "s1"

@@ -1,24 +1,21 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.model.SubmissionStatus
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
@@ -40,11 +37,15 @@ class EditBaseVersionTest {
     fun `us8_3 treść na serwerze`() =
         runBlocking {
             val target = queue(history)
-            target.save(precise(), photo())
+            target.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.photoResults.addLast(ServerReply.Offline)
             target.sendAll()
 
-            target.saveEdit(EditedSubmission(id = ID, baseVersion = null), precise().copy(severity = 1), photo())
+            target.saveEdit(
+                EditedSubmission(id = ID, baseVersion = null),
+                precise(PHOTO, severity = 1),
+                photo(tempDir, PHOTO),
+            )
             target.sendAll()
 
             assertEquals(listOf(ID), creates)
@@ -55,10 +56,14 @@ class EditBaseVersionTest {
     fun `us8_3 wysłane to edycja`() =
         runBlocking {
             val target = queue(history)
-            target.save(precise(), photo())
+            target.save(precise(PHOTO), photo(tempDir, PHOTO))
             target.sendAll()
 
-            target.saveEdit(EditedSubmission(id = ID, baseVersion = null), precise().copy(severity = 1), photo())
+            target.saveEdit(
+                EditedSubmission(id = ID, baseVersion = null),
+                precise(PHOTO, severity = 1),
+                photo(tempDir, PHOTO),
+            )
             target.sendAll()
 
             assertEquals(listOf(ID), creates)
@@ -69,13 +74,15 @@ class EditBaseVersionTest {
     fun `br10 bez wersji odrzucone`() =
         runBlocking {
             val target = queue(history = null)
-            target.save(precise(), photo())
+            target.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.photoResults.addLast(ServerReply.Offline)
             target.sendAll()
 
             val refused =
                 assertThrows<SaveRefusedException> {
-                    runBlocking { target.saveEdit(EditedSubmission(ID, baseVersion = null), precise(), photo()) }
+                    runBlocking {
+                        target.saveEdit(EditedSubmission(ID, baseVersion = null), precise(PHOTO), photo(tempDir, PHOTO))
+                    }
                 }
             assertEquals(SaveRefusal.UNKNOWN_VERSION, refused.reason)
             target.sendAll()
@@ -88,8 +95,12 @@ class EditBaseVersionTest {
     fun `br9 tylko w telefonie`() =
         runBlocking {
             val target = queue(history)
-            target.save(precise(), photo())
-            target.saveEdit(EditedSubmission(id = ID, baseVersion = null), precise().copy(severity = 1), photo())
+            target.save(precise(PHOTO), photo(tempDir, PHOTO))
+            target.saveEdit(
+                EditedSubmission(id = ID, baseVersion = null),
+                precise(PHOTO, severity = 1),
+                photo(tempDir, PHOTO),
+            )
 
             target.sendAll()
 
@@ -105,40 +116,16 @@ class EditBaseVersionTest {
                 SubmissionServer(
                     create = { id, content ->
                         creates.add(id)
-                        ServerReply.Ok(server(id, content))
+                        ServerReply.Ok(server(id, content, SERVER_VERSION))
                     },
                     putPhoto = { _, _, _ -> store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit) },
                     update = { id, version, content ->
                         edits.add(id to version)
-                        ServerReply.Ok(ServerEdit.Saved(server(id, content)))
+                        ServerReply.Ok(ServerEdit.Saved(server(id, content, SERVER_VERSION)))
                     },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
             history = history,
-        )
-
-    private fun server(id: String, content: SubmissionContent): Submission =
-        Submission(
-            id = id,
-            version = SERVER_VERSION,
-            status = SubmissionStatus.SENT,
-            createdAt = Instant.parse("2026-01-01T00:00:00Z"),
-            content = content,
-        )
-
-    private fun photo(): List<PendingPhotoDraft> {
-        val file = tempDir.resolve("$PHOTO.jpg")
-        file.writeBytes(byteArrayOf(1, 2, 3))
-        return listOf(PendingPhotoDraft(photoId = PHOTO, path = file.path))
-    }
-
-    private fun precise(): SubmissionContent =
-        SubmissionContent(
-            kind = SubmissionKind.PRECISE,
-            location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
-            photoIds = listOf(PHOTO),
-            barrierType = "TB-5",
-            severity = 2,
         )
 
     private companion object {
