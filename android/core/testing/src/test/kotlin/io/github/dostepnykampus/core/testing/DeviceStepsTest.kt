@@ -66,7 +66,10 @@ class DeviceStepsTest {
             if (query == "A-1") {
                 BasicText(
                     text = "A-1",
-                    modifier = Modifier.semantics { contentDescription = "A-1, Budynek główny" }.clickable { isCard = true },
+                    modifier =
+                        Modifier
+                            .semantics { contentDescription = "A-1, Budynek główny" }
+                            .clickable { isCard = true },
                 )
             }
             if (isCard) BasicText(CHECK_ENTRANCES)
