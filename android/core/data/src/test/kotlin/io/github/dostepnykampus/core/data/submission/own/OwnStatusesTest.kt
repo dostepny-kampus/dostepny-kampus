@@ -26,6 +26,7 @@ import java.time.Instant
 class OwnStatusesTest {
     private val history = FakeHistory()
 
+    /** Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zgłoszenie odrzucone pokazuje powód odrzucenia. */
     @Test
     fun `us8_2 status i powód z serwera`() =
         runBlocking {

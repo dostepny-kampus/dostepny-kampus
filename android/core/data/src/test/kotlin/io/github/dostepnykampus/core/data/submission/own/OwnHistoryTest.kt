@@ -72,6 +72,10 @@ class OwnHistoryTest {
             assertTrue(history.rows.isEmpty())
         }
 
+    /**
+     * Scenariusz (częściowo, przykład: potwierdzi odbiór zgłoszenia): zgloszenia-zbierajacego.feature:
+     *   Status „wysłane” dopiero po potwierdzeniu odbioru przez serwer.
+     */
     @Test
     fun `nfr5 wysłane z wersją`() =
         runBlocking {
@@ -84,6 +88,10 @@ class OwnHistoryTest {
             assertEquals(3, row.serverVersion)
         }
 
+    /**
+     * Scenariusz (częściowo, przykład: nie potwierdzi odbioru zgłoszenia): zgloszenia-zbierajacego.feature:
+     *   Status „wysłane” dopiero po potwierdzeniu odbioru przez serwer.
+     */
     @Test
     fun `nfr5 bez sieci zostaje lokalne`() =
         runBlocking {

@@ -42,7 +42,13 @@ class SubmissionCardTest {
         }
     }
 
-    /** Wiersz: C3 zgłoszenie → status, typ, budynek z piętrem i data. Wymagania: US8.1 */
+    /**
+     * Wiersz: C3 zgłoszenie → status, typ, budynek z piętrem i data.
+     * Scenariusz (częściowo, przykład: wysłane): zgloszenia-zbierajacego.feature:
+     *   Każde własne zgłoszenie ma jeden status tekstem i ikoną
+     *
+     * Wymagania: US8.1
+     */
     @Test
     fun us8_1_item_details() {
         show(item(id = "a", state = SendState.SENT))
@@ -53,6 +59,9 @@ class SubmissionCardTest {
 
     /**
      * Wiersz: C3 po sprawdzeniu → status z serwera, przy odrzuconym powód; poprawka „W telefonie”.
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Każde własne zgłoszenie ma jeden status
+     *   tekstem i ikoną
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zgłoszenie odrzucone pokazuje powód odrzucenia
      *
      * Wymagania: US8.2, BR-9
      */
