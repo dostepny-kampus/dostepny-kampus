@@ -9,7 +9,8 @@ set -euo pipefail
 # PR ma mieć etykietę obszaru (android, backend, api, ci, test, documentation), a jeśli zamykane issue ma etykiety
 # obszaru, PR ma mieć co najmniej jedną z nich; każde wskazane issue ma być otwarte i przypisane autorowi PR. Opisu szukamy sami, bo dla PR do gałęzi
 # niedomyślnej GitHub nie wypełnia closingIssuesReferences. PR do gałęzi sprint/N zamyka tylko issue z kamieniem
-# milowym „Sprint N”, żeby zadania następnego sprintu nie trafiały do bieżącego.
+# milowym „Sprint N”, żeby zadania następnego sprintu nie trafiały do bieżącego. Zamykane issue (poza epikiem)
+# ma dokładnie jedną etykietę `złożoność: 1 …` – `złożoność: 4 …`; `złożoność: do podziału` to naruszenie.
 # Kod wyjścia: 0 = poprawnie, 1 = naruszenie, 2 = błąd narzędzia gh lub jq (nie wiadomo, czy PR jest w porządku).
 # Tryb ostrzegawczy: PR_OD_ISSUE_OSTRZEGAJ=1 zgłasza te same uwagi jako ::warning i kończy kodem 0.
 # Dane z gh; w teście zamiast sieci: PR_JSON_FILE (gh pr view --json author,baseRefName,body,headRefName,isCrossRepository,labels)
@@ -158,6 +159,17 @@ for issue in $issues; do
     stone="$(jq -r '.milestone.title // ""' <<<"$data")" || tool_error jq "nie odczytano kamienia milowego issue #${issue}"
     if [[ $stone != "$sprint" ]]; then
       report "#${issue}: kamień milowy issue (${stone:-brak}) różni się od gałęzi ${base} (${sprint})."
+    fi
+  fi
+  names="$(jq -r '(.labels // [])[].name' <<<"$data")" || tool_error jq "nie odczytano etykiet issue #${issue}"
+  if ! grep -qxF epik <<<"$names"; then
+    if grep -qxF 'złożoność: do podziału' <<<"$names"; then
+      report "#${issue}: issue ma etykietę „złożoność: do podziału” — rozbij je na podzadania."
+    else
+      count="$(grep -c '^złożoność: [1-4] ' <<<"$names" || true)"
+      if ((count != 1)); then
+        report "#${issue}: issue ma ${count} etykiet złożoności zamiast jednej (CONTRIBUTING.md, „Ocena złożoności”)."
+      fi
     fi
   fi
   area_labels "$data"
