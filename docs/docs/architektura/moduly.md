@@ -116,7 +116,6 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | Odstępstwo | Issue |
 | --- | --- |
 | `barrier` ma układ „najpierw warstwa”: zgłoszenie i jego warstwy poza tematem `submission`, usługa i kontroler zdjęć poza tematem `photo` | #1714, #1715, #1677, #1678 |
-| API `building` leży w korzeniu modułu, nie w `api` | #1679 |
 | klucz obcy `submissions` → `buildings` między modułami | #1662 |
 | pakiety Androida w liczbie mnogiej i z kilkoma tematami | #1680–#1691 |
 
@@ -128,7 +127,7 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | moduł serwera ma kod i opis, bez stałej listy nazw | `ModularityTest.modulesHaveClassesAndDescription` |
 | pakiet główny i lista podpakietów `shared` | `ModularityTest` (`basePackageHoldsOnlyApplication`, `sharedHasOnlyErrorJsonAndGeo`) |
 | jawna lista zależności modułu serwera | `ModularityTest` (`modulesDeclareAllowedDependencies`, `infraVerifiesModuleBoundaries`) |
-| korzeń modułu: `package-info.java`, `api`, tematy albo warstwy; typy `api` bez typów wnętrza | `ModuleRootArchitectureTest`; nowa zasada: #1669 |
+| korzeń modułu: `package-info.java`, `api`, tematy albo warstwy; typy `api` bez typów wnętrza; zależność od `api` zapisana jako `moduł :: api` | `ModuleRootArchitectureTest` |
 | kierunek warstw w obu układach modułu | `LayerDirectionArchitectureTest` (#1668) |
 | dziedzina bez frameworków, adapter nie woła adaptera | `BarrierArchitectureTest` (A-1…A-9), dziś tylko `barrier`: #1704 |
 | nazwy pakietów ze słownika, zakazane nazwy, głębokość | serwer #1665, Android #1672 |
