@@ -42,6 +42,7 @@ class SharedFixtureArchitectureTest {
         assertEquals(
             listOf("BeforeAllTest", "BeforeClassTest", "BeforeEachTest", "BeforeTest", "FieldTest", "LateTest"),
             violations(Konsist.scopeFromExternalDirectory(fixtures.absolutePath)),
+            "Reguła łapie pole, lateinit i metody przygotowania, a przepuszcza reguły i stałe",
         )
     }
 
