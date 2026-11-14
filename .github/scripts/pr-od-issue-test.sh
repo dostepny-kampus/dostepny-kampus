@@ -5,15 +5,17 @@
 set -euo pipefail
 
 # Test kontroli „PR od issue” (pr-od-issue.sh). Skrypt czyta dane z gh; w teście zamiast sieci dostaje pliki:
-#   PR_JSON_FILE   - odpowiedź `gh pr view --json author,body,headRefName,labels`; issue skrypt wyszukuje w opisie
-#                    (Closes|Fixes|Resolves #N, wielkość liter bez znaczenia), bo dla PR do gałęzi
+#   PR_JSON_FILE   - odpowiedź `gh pr view --json author,baseRefName,body,headRefName,labels`; issue skrypt
+#                    wyszukuje w opisie (Closes|Fixes|Resolves #N, wielkość liter bez znaczenia), bo dla PR do gałęzi
 #                    niedomyślnej GitHub nie wypełnia closingIssuesReferences,
-#   ISSUE_JSON_DIR - katalog z plikami <numer>.json, każdy to odpowiedź `gh issue view --json state,assignees,url,labels`.
+#   ISSUE_JSON_DIR - katalog z plikami <numer>.json, każdy to odpowiedź
+#                    `gh issue view --json state,assignees,url,labels,milestone`.
 #   PR_OD_ISSUE_OSTRZEGAJ=1 - tryb ostrzegawczy: te same uwagi jako ::warning, ale kod 0.
 # Nazwa gałęzi PR ma mieć postać N-krotki-opis, a #N ma być wśród zamykanych issue.
 # PR autora dependabot[bot] jest pomijany (kod 0) niezależnie od gałęzi i opisu.
 # Obszar: PR ma mieć etykietę obszaru (android, backend, api, ci, test, documentation); jeśli zamykane issue ma
 # etykiety obszaru, PR ma mieć przynajmniej jedną z nich.
+# Sprint: PR do gałęzi sprint/N zamyka tylko issue z kamieniem milowym „Sprint N”.
 # Kod wyjścia 0 = PR spełnia zasady, 1 = naruszenie, 2 = błąd narzędzia gh lub jq (tekst w wyjściu).
 script="$(cd "$(dirname "$0")" && pwd)/pr-od-issue.sh"
 workdir="$(mktemp -d)"
@@ -27,8 +29,11 @@ no_number='nazwa gałęzi nie zaczyna się od numeru issue'
 wrong_number='nie jest wśród zamykanych issue'
 no_area='PR nie ma etykiety obszaru'
 area_mismatch='etykiety obszaru issue'
+wrong_sprint='kamień milowy issue'
 pr_labels=ci
 issue_labels=''
+base='sprint/4'
+milestone='Sprint 4'
 extra_path=''
 labeler="$(cd "$(dirname "$0")/.." && pwd)/labeler.yml"
 warn=0
@@ -42,12 +47,14 @@ labels_json() {
   printf '%s' "$out"
 }
 
-# pr_json <autor> <opis PR (w JSON, nowy wiersz jako \n)> [gałąź PR, domyślnie 12-zadanie]
+# pr_json <autor> <opis PR (w JSON, nowy wiersz jako \n)> [gałąź PR, domyślnie 12-zadanie]; gałąź docelowa w $base
 pr_json() {
-  printf '{"author":{"login":"%s"},"body":"%s","headRefName":"%s","labels":[%s]}\n'     "$1" "$2" "${3:-12-zadanie}" "$(labels_json "$pr_labels")" >"$workdir/pr.json"
+  printf '{"author":{"login":"%s"},"baseRefName":"%s","body":"%s","headRefName":"%s","labels":[%s]}\n' \
+    "$1" "$base" "$2" "${3:-12-zadanie}" "$(labels_json "$pr_labels")" >"$workdir/pr.json"
 }
 
-# issue_json <numer> <OPEN|CLOSED> [osoba przypisana ...]; kind (issues|pull) mówi, czym jest numer
+# issue_json <numer> <OPEN|CLOSED> [osoba przypisana ...]; kind (issues|pull) mówi, czym jest numer,
+# milestone to tytuł kamienia milowego (pusty = issue bez kamienia)
 kind=issues
 issue_json() {
   local number="$1" state="$2" people='' person
@@ -55,8 +62,12 @@ issue_json() {
   for person in "$@"; do
     people="${people:+$people,}{\"login\":\"$person\"}"
   done
-  printf '{"state":"%s","assignees":[%s],"url":"https://github.com/o/r/%s/%s","labels":[%s]}\n' \
-    "$state" "$people" "$kind" "$number" "$(labels_json "$issue_labels")" >"$workdir/issues/$number.json"
+  local stone=null
+  if [[ -n $milestone ]]; then
+    stone="{\"title\":\"$milestone\"}"
+  fi
+  printf '{"state":"%s","assignees":[%s],"url":"https://github.com/o/r/%s/%s","labels":[%s],"milestone":%s}\n' \
+    "$state" "$people" "$kind" "$number" "$(labels_json "$issue_labels")" "$stone" >"$workdir/issues/$number.json"
 }
 
 # run_case <nazwa> <oczekiwany kod> <oczekiwany tekst lub pusty> <polecenie przygotowujące dane...>
@@ -67,6 +78,8 @@ run_case() {
   kind=issues
   pr_labels=ci
   issue_labels=''
+  base='sprint/4'
+  milestone='Sprint 4'
   extra_path=''
   gh_mode=files
   rm -rf "$workdir/issues" "$workdir/pr.json" "$workdir/bin"
@@ -116,6 +129,19 @@ case_issue_no_area() { pr_labels='backend'; issue_labels='bug'; case_ok; }
 case_issue_two_areas() { pr_labels='api'; issue_labels='android,api'; case_ok; }
 case_warn_no_area() { warn=1; case_no_pr_area; }
 case_warn_mismatch() { warn=1; case_area_mismatch; }
+
+case_next_sprint() { milestone='Sprint 5'; case_ok; }
+case_no_milestone() { milestone=''; case_ok; }
+case_other_name() { milestone='Backlog'; case_ok; }
+case_sprint_10() { base='sprint/10'; milestone='Sprint 1'; case_ok; }
+case_sprint_10_ok() { base='sprint/10'; milestone='Sprint 10'; case_ok; }
+case_main_any_milestone() { base='main'; milestone=''; case_ok; }
+case_second_issue_next_sprint() {
+  case_two_issues_ok
+  milestone='Sprint 5'
+  issue_json 13 OPEN autor-pr
+}
+case_warn_next_sprint() { warn=1; case_next_sprint; }
 
 # Zawodzący jq tylko przy odczycie etykiet (reszta działa przez prawdziwy jq).
 case_jq_labels_fail() {
@@ -217,6 +243,14 @@ run_case "obszar: issue bez etykiet obszaru" 0 '' case_issue_no_area
 run_case "obszar: PR ma jedną z dwóch etykiet obszaru issue" 0 '' case_issue_two_areas
 run_case "obszar, tryb ostrzegawczy: PR bez etykiety obszaru" 0 '::warning' case_warn_no_area
 run_case "obszar, tryb ostrzegawczy: niezgodny obszar" 0 '::warning' case_warn_mismatch
+run_case "sprint: issue z kamienia następnego sprintu" 1 "$wrong_sprint" case_next_sprint
+run_case "sprint: issue bez kamienia milowego" 1 "$wrong_sprint" case_no_milestone
+run_case "sprint: kamień milowy spoza sprintów" 1 "$wrong_sprint" case_other_name
+run_case "sprint: sprint/10 nie przyjmuje Sprint 1" 1 "$wrong_sprint" case_sprint_10
+run_case "sprint: sprint/10 przyjmuje Sprint 10" 0 '' case_sprint_10_ok
+run_case "sprint: PR do main bez sprawdzania kamienia" 0 '' case_main_any_milestone
+run_case "sprint: drugie z zamykanych issue z następnego sprintu" 1 "$wrong_sprint" case_second_issue_next_sprint
+run_case "sprint, tryb ostrzegawczy: issue z następnego sprintu" 0 '::warning' case_warn_next_sprint
 run_case "błąd jq przy etykietach: błąd narzędzia, nie brak etykiety obszaru" 2 'błąd narzędzia jq' case_jq_labels_fail
 
 # Etykiety obszaru pochodzą z .github/labeler.yml; każda ścieżka w repozytorium ma dostawać etykietę obszaru.
