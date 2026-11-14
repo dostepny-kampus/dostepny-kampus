@@ -15,6 +15,7 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
 3. **PR do `sprint/N`** z opisem według [szablonu](.github/pull_request_template.md) i linią `Closes #N`.
 4. **Kontrole** (poniżej) muszą być zielone.
 5. **Kolejka scalania** scala PR przez squash do gałęzi sprintu. Do `main` trafiają tylko całe sprinty.
+   PR z `sprint/N` tego repozytorium do `main` nie musi zamykać pojedynczego issue.
    Kolejka uruchamia kontrole także na wyniku scalenia (zdarzenie `merge_group`, np. w [`android.yml`](.github/workflows/android.yml)
    i [`api.yml`](.github/workflows/api.yml)); squash i kolejka to ustawienia repozytorium, nie plik.
    Aby dodać PR do kolejki, użyj przycisku „Merge when ready” lub polecenia `gh pr merge N` po zalogowaniu
