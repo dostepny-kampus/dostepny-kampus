@@ -51,7 +51,7 @@ class MapStyleRememberTest {
 
     /** Sam ruch kamery rekomponuje widok, ale stylu nie buduje drugi raz. */
     @Test
-    fun camera_move_keeps_style() {
+    fun keepsStyleOnCameraMove() {
         show()
         compose.runOnIdle { camera = camera.copy(zoom = 17.0) }
         compose.runOnIdle {
@@ -63,7 +63,7 @@ class MapStyleRememberTest {
 
     /** Zmiana zaznaczonego budynku, wejścia i bariery nie buduje stylu drugi raz. Wymagania: US1.1, US1.5, US3.3 */
     @Test
-    fun selection_keeps_style() {
+    fun keepsStyleOnSelection() {
         show()
         val entrance = SelectedEntrance(id = "w1", location = a, label = "Główne", buildingSymbol = "C-13")
         compose.runOnIdle { selection = selection.copy(building = "C-13") }
@@ -77,7 +77,7 @@ class MapStyleRememberTest {
 
     /** Zmiana danych, terenu i motywu daje za każdym razem nowy styl. */
     @Test
-    fun change_rebuilds_style() {
+    fun rebuildsStyleOnChange() {
         show()
         val area = CampusBounds(west = 0.0, south = 0.0, east = 1.0, north = 1.0)
         compose.runOnIdle { data = dataOf(building, other) }

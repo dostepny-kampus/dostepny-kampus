@@ -58,7 +58,7 @@ class CampusMapSelectionStyleTest {
 
     /** Wiersz: V2, „Mapa nad małą kartą”: zaznaczony budynek ma barwę PWr, sąsiednie są przygaszone. */
     @Test
-    fun us2_8_neighbours_dimmed() {
+    fun dimsNeighbours() {
         val style = style(building = "A-1")
         val own = """["any",["in","A-1",["get","symbols"]]]"""
         val fill = style.layer(BUILDINGS_LAYER).paint("fill-color")
@@ -69,7 +69,7 @@ class CampusMapSelectionStyleTest {
 
     /** Wiersz: V2, „Mapa nad małą kartą”: sąsiednie budynki zachowują podpisy symboli, więc da się je wybrać. */
     @Test
-    fun us2_8_neighbours_keep_labels() {
+    fun keepsNeighbourLabels() {
         val labels = style(building = "A-1").layer("podpisy")
         assertNull(labels["filter"])
         assertEquals(listOf("A-1", "A-2"), data.labels)
@@ -77,7 +77,7 @@ class CampusMapSelectionStyleTest {
 
     /** Wiersz: V2, „Mapa nad małą kartą”: znaki wejść ma tylko zaznaczony budynek, także wejście wspólne. */
     @Test
-    fun us1_4_marks_of_selected_only() {
+    fun marksSelectedOnly() {
         val style = style(building = "A-1")
         val filter = style.layer(ENTRANCES_LAYER).getValue("filter")
         assertEquals("""["case",["any",["in","A-1",["get","symbols"]]],true,false]""", filter.toString())
@@ -88,7 +88,7 @@ class CampusMapSelectionStyleTest {
 
     /** Wiersz: V1, bez zaznaczonego budynku wszystkie budynki mają barwę PWr i wszystkie wejścia mają znak. */
     @Test
-    fun us2_1_no_selection_all_marks() {
+    fun marksAllWithoutSelection() {
         val style = style()
         assertEquals(JsonPrimitive("#BFE0EC").toString(), style.layer(BUILDINGS_LAYER).paint("fill-color"))
         assertEquals(JsonPrimitive("#004E5E").toString(), style.layer("kontury").paint("line-color"))
@@ -97,14 +97,14 @@ class CampusMapSelectionStyleTest {
 
     /** Wiersz: V1, bez zaznaczonego budynku znaki wejść od powiększenia 17, a zaznaczony budynek ma je zawsze. */
     @Test
-    fun us2_1_marks_from_zoom_17() {
+    fun showsMarksFromZoom17() {
         assertEquals("17.0", style().layer(ENTRANCES_LAYER).getValue("minzoom").toString())
         assertEquals("0.0", style(building = "A-1").layer(ENTRANCES_LAYER).getValue("minzoom").toString())
     }
 
     /** Wiersz: V1, zaznaczone wejście: pozostałe wejścia i budynki zostają jak bez zaznaczenia. */
     @Test
-    fun us3_3_chosen_keeps_all_marks() {
+    fun keepsAllMarksWhenChosen() {
         val pin = SelectedEntrance(id = "w1", location = at, label = "Wejście dostosowane", buildingSymbol = "A-1")
         val style = style(building = "A-1", entrance = pin)
         assertEquals("""["!",false]""", style.layer(ENTRANCES_LAYER).getValue("filter").toString())
@@ -116,7 +116,7 @@ class CampusMapSelectionStyleTest {
      * budynku, wejścia albo bariery nie wymaga nowego stylu, a mapa wygląda tak samo. Wymagania: US1.1, US1.5, US3.3
      */
     @Test
-    fun us1_1_selection_on_ready() {
+    fun selectsOnReadyStyle() {
         val chosen = SelectedEntrance(id = "w1", location = at, label = "Główne", buildingSymbol = "A-1")
         val selections =
             listOf(

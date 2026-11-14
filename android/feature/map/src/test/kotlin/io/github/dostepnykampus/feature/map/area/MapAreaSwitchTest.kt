@@ -54,7 +54,7 @@ class MapAreaSwitchTest {
      * Wymagania: US1.6, NFR-17, NFR-18, US1.7
      */
     @Test
-    fun us1_6_button_opens_panel() {
+    fun opensPanelFromButton() {
         compose.setContent { Switch(isOpenAtStart = false) }
         compose.onNodeWithText("Teren na mapie").assertDoesNotExist()
         val button = compose.onNodeWithContentDescription("Teren: Kampus główny. Zmień teren")
@@ -64,7 +64,7 @@ class MapAreaSwitchTest {
 
     /** Wiersz: V1, wybranie terenu z listy zgłasza jego nazwę. Wymagania: US1.7 */
     @Test
-    fun us1_7_choice_reported() {
+    fun reportsChoice() {
         compose.setContent { Switch(isOpenAtStart = true) }
         compose.onNodeWithText("Wittigowo").performClick()
         assertEquals(listOf("Wittigowo"), chosen)
@@ -72,7 +72,7 @@ class MapAreaSwitchTest {
 
     /** Wiersz: V1, „Zamknij” zamyka panel, a fokus wraca na przycisk terenu. Wymagania: NFR-20 */
     @Test
-    fun nfr20_focus_returns_to_button() {
+    fun returnsFocusToButton() {
         compose.setContent { Switch(isOpenAtStart = true) }
         compose.onNodeWithText("Zamknij").performClick()
         compose.onNodeWithText("Teren na mapie").assertDoesNotExist()

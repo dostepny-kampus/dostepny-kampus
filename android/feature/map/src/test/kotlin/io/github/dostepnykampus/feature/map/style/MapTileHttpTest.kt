@@ -34,7 +34,7 @@ class MapTileHttpTest {
      * Wymagania: NFR-39
      */
     @Test
-    fun nfr39_tile_has_app_user_agent() {
+    fun sendsAppUserAgent() {
         server.enqueue(MockResponse().setBody("kafelek"))
         val tiles = MapTileHttp(http = app, userAgent = AGENT).calls
         tiles.newCall(Request.Builder().url(server.url("/0/0/0.png")).build()).execute().close()
@@ -43,7 +43,7 @@ class MapTileHttpTest {
 
     /** klient mapy dzieli pulę połączeń z klientem aplikacji, a kafelki nie mają jego limitu 3 s. */
     @Test
-    fun nfr39_tiles_share_app_pool() {
+    fun sharesAppPool() {
         val tiles = MapTileHttp(http = app, userAgent = AGENT).client
         assertSame(app.connectionPool, tiles.connectionPool)
         assertEquals(OkHttpClient().callTimeoutMillis, tiles.callTimeoutMillis)

@@ -50,7 +50,7 @@ class SelectedEntranceTest {
 
     /** Wiersz E1: każdy znak na mapie ma identyfikator wejścia, więc da się go wskazać. */
     @Test
-    fun us2_1_feature_has_id() {
+    fun givesFeatureAnId() {
         val json = campusMapData(catalog).entrances.toString()
         val ids = FeatureCollection.fromJson<Geometry?, JsonObject?>(json).features.map { it.properties?.get("id") }
         assertEquals(listOf("node/1", "node/2"), ids.map { it?.run { jsonPrimitive.content } })
@@ -58,7 +58,7 @@ class SelectedEntranceTest {
 
     /** Wiersz E2: pinezka stoi w punkcie wejścia, a podpis to nazwa wejścia. */
     @Test
-    fun us3_3_selected_has_point_name() {
+    fun keepsPointAndName() {
         val expected =
             SelectedEntrance(id = "node/1", location = at, label = "Wejście dostosowane", buildingSymbol = "A-1")
         assertEquals(expected, chosen("node/1"))
@@ -66,19 +66,19 @@ class SelectedEntranceTest {
 
     /** Wiersz E4: wejście wspólne kilku budynków podaje budynek ekranu, z którego użyto przycisku. */
     @Test
-    fun us3_3_shared_screen_building() {
+    fun usesScreenBuilding() {
         assertEquals("A-2", chosen("node/1", building = "A-2")?.buildingSymbol)
     }
 
     /** Wiersz E2: wejście bez nazwy w danych dostaje podpis zastępczy. */
     @Test
-    fun us3_3_unnamed_label() {
+    fun labelsUnnamedEntrance() {
         assertEquals(UNNAMED, chosen("node/2")?.label)
     }
 
     /** Brzeg E2: identyfikator spoza katalogu niczego nie zaznacza. */
     @Test
-    fun us3_3_unknown_id_nothing() {
+    fun ignoresUnknownId() {
         assertNull(chosen("node/99"))
     }
 

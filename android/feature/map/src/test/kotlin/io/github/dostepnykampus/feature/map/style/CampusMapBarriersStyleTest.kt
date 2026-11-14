@@ -37,7 +37,7 @@ class CampusMapBarriersStyleTest {
      * Wymagania: US1.3, NFR-21
      */
     @Test
-    fun us1_3_sign_per_severity() {
+    fun drawsSignPerSeverity() {
         val style = style(campusMapData(catalog).withBarriers(barriers))
         val points = style.points()
         val severities = points.map { it.jsonObject.obj("properties").text(BARRIER_SEVERITY) }
@@ -50,7 +50,7 @@ class CampusMapBarriersStyleTest {
 
     /** Wiersz: V1, słowo obok znaku od powiększenia 17, bez nakładania; symbole budynków pierwsze. Wymagania: NFR-20 */
     @Test
-    fun nfr20_word_from_zoom_17() {
+    fun showsWordFromZoom17() {
         val style = style(campusMapData(catalog).withBarriers(barriers))
         val words = style.layer(BARRIER_WORDS_LAYER)
         assertEquals(BARRIER_WORD_ZOOM, words.getValue("minzoom").jsonPrimitive.int)
@@ -63,7 +63,7 @@ class CampusMapBarriersStyleTest {
 
     /** Wiersz: V1, wybrana bariera ma osobną warstwę z większym znakiem nad pozostałymi. Wymagania: US1.5, NFR-21 */
     @Test
-    fun us1_5_chosen_barrier_layer() {
+    fun layersChosenBarrier() {
         val data = campusMapData(catalog).withBarriers(barriers)
         val chosen = barriers.first().id
         val plain = Json.parseToJsonElement(campusMapStyle(data, data.selection(), colors)).jsonObject
@@ -82,7 +82,7 @@ class CampusMapBarriersStyleTest {
 
     /** Wiersz: V1 bez pobranych barier działa bez znaków barier. Wymagania: NFR-11 */
     @Test
-    fun nfr11_no_barriers_empty_layer() {
+    fun leavesLayerEmptyWithoutData() {
         val shown = campusMapData(catalog).withBarriers(barriers).withBarriers(emptyList())
         assertEquals(0, style(shown).points().size)
     }

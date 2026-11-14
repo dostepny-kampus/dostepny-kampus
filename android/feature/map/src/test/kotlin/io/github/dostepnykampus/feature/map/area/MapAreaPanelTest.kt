@@ -60,7 +60,7 @@ class MapAreaPanelTest {
      * Wymagania: US1.7, NFR-20
      */
     @Test
-    fun us1_7_panel_lists_areas() {
+    fun listsAreas() {
         compose.setContent { Panel() }
         compose.onNodeWithText("Teren na mapie").assertIsFocused()
         compose.onNodeWithText("72 budynki · wybrany").assertExists()
@@ -76,7 +76,7 @@ class MapAreaPanelTest {
      * Wymagania: US1.7
      */
     @Test
-    fun us1_7_choice_close_reported() {
+    fun reportsChoiceAndClose() {
         compose.setContent { Panel() }
         compose.onNodeWithText("Wittigowo").performClick()
         compose.onNodeWithText("Zamknij").performClick()
@@ -86,7 +86,7 @@ class MapAreaPanelTest {
 
     /** Wiersz: V1, forma słowa „budynek” przy liczbie budynków terenu. Wymagania: US1.7 */
     @Test
-    fun us1_7_buildings_word() {
+    fun inflectsBuildingsWord() {
         val few = listOf(2, 3, 4, 22, 72, 104).map(::buildingsWord).distinct()
         val many = listOf(0, 5, 9, 11, 12, 14, 20, 25, 112).map(::buildingsWord).distinct()
         assertEquals(listOf(R.string.mapa_teren_budynki), few)
@@ -95,13 +95,13 @@ class MapAreaPanelTest {
     }
 
     @Test
-    fun us1_7_hifi_motyw_jasny() {
+    fun matchesLightMockup() {
         compose.setContent { Panel() }
         compose.onRoot().captureRoboImage()
     }
 
     @Test
-    fun us1_7_hifi_motyw_ciemny() {
+    fun matchesDarkMockup() {
         RuntimeEnvironment.setQualifiers("+night")
         compose.setContent { Panel() }
         compose.onRoot().captureRoboImage()

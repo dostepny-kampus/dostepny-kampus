@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-/** Styl mapy V1 z jednym konturem „Budynek testowy” (nie dane PWr). */
+/** Styl mapy V1 z jednym konturem „Budynek testowy” (nie dane PWr). Wymagania: US1, US1.1, NFR-10 */
 class CampusMapStyleTest {
     private val catalog = styleCatalog()
     private val colors = styleColors()
@@ -30,7 +30,7 @@ class CampusMapStyleTest {
     private val style = Json.parseToJsonElement(styled()).jsonObject
 
     @Test
-    fun nfr39_outlines_over_basemap() {
+    fun drawsOutlinesOverBasemap() {
         val layers = style.array("layers").map { it.jsonObject }
         val below = listOf("lad", "osm", BUILDINGS_LAYER, "kontury", SELECTED_LAYER, ENTRANCES_LAYER)
         val barriers = listOf(BARRIER_WORDS_LAYER, BARRIERS_LAYER)
@@ -41,7 +41,7 @@ class CampusMapStyleTest {
     }
 
     @Test
-    fun nfr10_outlines_offline_source() {
+    fun readsOutlinesOffline() {
         val sources = style.obj("sources")
         val tiles = sources.obj("osm").array("tiles")
         assertEquals(OSM_TILES, tiles.single().jsonPrimitive.content)
@@ -57,7 +57,7 @@ class CampusMapStyleTest {
      * Wymagania: NFR-16
      */
     @Test
-    fun nfr16_basemap_muted_not_grey() {
+    fun mutesBasemapWithoutGrey() {
         val paint = style.array("layers")[1].jsonObject.obj("paint")
         assertEquals(-0.4, paint.number("raster-saturation"))
         assertEquals(0.72, paint.number("raster-opacity"))
@@ -66,7 +66,7 @@ class CampusMapStyleTest {
 
     /** W motywie ciemnym jasność kafelków jest odwrócona: najjaśniejsze miejsca kafelka wychodzą najciemniej. */
     @Test
-    fun nfr16_night_basemap_inverted() {
+    fun invertsNightBasemap() {
         val night = styled(colors = colors.copy(isNight = true))
         val layers = Json.parseToJsonElement(night).jsonObject.array("layers")
         val paint = layers[1].jsonObject.obj("paint")
@@ -81,7 +81,7 @@ class CampusMapStyleTest {
      * Wymagania: US1.7, BR-G5
      */
     @Test
-    fun us1_7_outside_dimmed_edge_line() {
+    fun dimsOutsideWithEdgeLine() {
         val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
         val json = styled(MapSelection(bounds = bounds), colors.copy(ink = "#111111"))
         val styled = Json.parseToJsonElement(json).jsonObject
@@ -106,7 +106,7 @@ class CampusMapStyleTest {
      * Wymagania: NFR-39
      */
     @Test
-    fun nfr39_basemap_only_campus_area() {
+    fun limitsBasemapToCampus() {
         val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
         val bounded = Json.parseToJsonElement(styled(MapSelection(bounds = bounds))).jsonObject
         val osm = bounded.obj("sources").obj("osm")
@@ -114,7 +114,7 @@ class CampusMapStyleTest {
     }
 
     @Test
-    fun us1_labels_from_point_source() {
+    fun labelsFromPointSource() {
         val layers = style.array("layers").map { it.jsonObject }
         assertEquals("podpisy", layers.single { it.text("id") == "podpisy" }.text("source"))
         val source = style.obj("sources").obj("podpisy")
@@ -124,7 +124,7 @@ class CampusMapStyleTest {
     }
 
     @Test
-    fun us1_1_focused_outline() {
+    fun drawsFocusedOutline() {
         val focused = Json.parseToJsonElement(styled(data.selection(building = "C-13"))).jsonObject
         val layers = focused.array("layers")
         val selected = layers.map { it.jsonObject }.single { it.text("id") == SELECTED_LAYER }
@@ -140,7 +140,7 @@ class CampusMapStyleTest {
      * Wymagania: US1.7, US3.3
      */
     @Test
-    fun us1_7_optional_layer_order() {
+    fun ordersOptionalLayers() {
         val bare = Json.parseToJsonElement(styled(MapSelection()))
         val base = listOf("lad", "osm", BUILDINGS_LAYER, "kontury")
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)

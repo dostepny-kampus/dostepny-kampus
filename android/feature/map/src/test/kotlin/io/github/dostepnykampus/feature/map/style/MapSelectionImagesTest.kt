@@ -48,7 +48,7 @@ class MapSelectionImagesTest {
 
     /** Zmiana zaznaczonego wejścia dodaje tylko podpis tego wejścia, bez obrazów podpisów konturów. */
     @Test
-    fun us3_3_caption_only() {
+    fun addsCaptionOnly() {
         val entrance = SelectedEntrance(id = "w1", location = a, label = "Główne", buildingSymbol = "C-13")
         val images = images()
         val target = Recorded()
@@ -61,7 +61,7 @@ class MapSelectionImagesTest {
 
     /** Zmiana zaznaczonego budynku nie dodaje żadnego obrazu. */
     @Test
-    fun us1_1_building_adds_no_images() {
+    fun addsNoImagesForBuilding() {
         val images = images()
         val target = Recorded()
 

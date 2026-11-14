@@ -23,7 +23,7 @@ import org.maplibre.spatialk.geojson.Position
 class MapStyleJsonTest {
     /** Warstwa ma nazwę, rodzaj i źródło, a warstwa bez źródła nie ma pola `source`. */
     @Test
-    fun adr5_layer_fields() {
+    fun writesLayerFields() {
         val layer = styleLayer(id = "a", type = "fill", source = "s") { paint("fill-color" to JsonPrimitive("#fff")) }
         assertEquals("""{"id":"a","type":"fill","source":"s","paint":{"fill-color":"#fff"}}""", layer.toString())
         assertEquals("""{"id":"b","type":"background"}""", styleLayer(id = "b", type = "background") {}.toString())
@@ -31,7 +31,7 @@ class MapStyleJsonTest {
 
     /** Warstwa linii niesie barwę i grubość, a filtr tylko wtedy, gdy jest podany. */
     @Test
-    fun adr5_line_layer() {
+    fun writesLineLayer() {
         val filter = expression("==", property("label"), JsonPrimitive("C-13"))
         val line = lineLayer(id = "l", source = "s", color = "#111", width = 2.0, filter = filter)
         assertEquals("""["==",["get","label"],"C-13"]""", line.getValue("filter").toString())
@@ -41,7 +41,7 @@ class MapStyleJsonTest {
 
     /** Warstwa znaków ma obraz i pozostałe pola układu w podanej kolejności. */
     @Test
-    fun adr5_symbol_layer() {
+    fun writesSymbolLayer() {
         val layer = symbolLayer(id = "z", source = "s", image = property("image"), OVERLAP)
         assertEquals("symbol", layer.getValue("type").jsonPrimitive.content)
         val layout = layer.getValue("layout")
@@ -51,7 +51,7 @@ class MapStyleJsonTest {
 
     /** Źródło GeoJSON niesie kolekcję obiektów z ich właściwościami. */
     @Test
-    fun adr5_geojson_source() {
+    fun writesGeoJsonSource() {
         val properties = buildJsonObject { put(key = "label", value = "Główne") }
         val point = Point(Position(longitude = 17.0, latitude = 51.0))
         val source = geoJsonSource(featureCollection(listOf(Feature(point, properties))))

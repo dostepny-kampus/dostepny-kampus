@@ -40,7 +40,7 @@ class MapBarrierNamesTest {
      * Wymagania: NFR-18
      */
     @Test
-    fun nfr18_sign_names() {
+    fun namesSigns() {
         compose.setContent { Screen() }
 
         compose.onNodeWithContentDescription("Blokada: schody przy wejściu, budynek A-1").assertExists()
@@ -50,7 +50,7 @@ class MapBarrierNamesTest {
 
     /** Wiersz: mapa nad małą kartą, TalkBack nie czyta mapy pod kartą. Wymagania: NFR-19 */
     @Test
-    fun nfr19_no_names_under_card() {
+    fun hidesNamesUnderCard() {
         compose.setContent { Screen(sheet = 300.dp) }
 
         compose.onNodeWithContentDescription("Blokada: schody przy wejściu, budynek A-1").assertDoesNotExist()
