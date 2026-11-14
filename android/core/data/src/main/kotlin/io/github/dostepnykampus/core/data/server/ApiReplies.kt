@@ -20,3 +20,14 @@ internal fun <T, R> ApiResult<T>.toReply(content: (T) -> R): ServerReply<R> =
         is ApiResult.NetworkError -> ServerReply.Offline
         is ApiResult.ServerError -> ServerReply.Fault(code)
     }
+
+/**
+ * Ta sama odpowiedź z treścią zamienioną przez [content]; brak zasobu, brak połączenia i błąd serwera bez zmian.
+ */
+internal fun <T, R> ServerReply<T>.map(content: (T) -> R): ServerReply<R> =
+    when (this) {
+        is ServerReply.Ok -> ServerReply.Ok(content(value))
+        ServerReply.Missing -> ServerReply.Missing
+        ServerReply.Offline -> ServerReply.Offline
+        is ServerReply.Fault -> this
+    }

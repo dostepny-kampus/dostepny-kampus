@@ -62,7 +62,7 @@ object DataModule {
         assetRepository(
             assets = app.assets,
             ioContext = ioContext,
-            listBuildings = api::listBuildings,
+            listBuildings = { api.listBuildings().toReply { it } },
             buildingCache = buildingList.cache,
         )
 

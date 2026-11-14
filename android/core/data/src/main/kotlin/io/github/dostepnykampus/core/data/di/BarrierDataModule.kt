@@ -12,6 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.barriers.AcceptedBarriers
 import io.github.dostepnykampus.core.data.barriers.BarrierListCopy
 import io.github.dostepnykampus.core.data.barriers.ServerAcceptedBarriers
+import io.github.dostepnykampus.core.data.server.toReply
 import io.github.dostepnykampus.core.database.BarrierCacheDao
 import io.github.dostepnykampus.core.network.SubmissionsApi
 import javax.inject.Singleton
@@ -28,5 +29,5 @@ internal object BarrierDataModule {
         api: SubmissionsApi,
         cache: BarrierCacheDao,
         @IoContext ioContext: CoroutineContext,
-    ): AcceptedBarriers = ServerAcceptedBarriers(BarrierListCopy(cache, ioContext)) { api.accepted() }
+    ): AcceptedBarriers = ServerAcceptedBarriers(BarrierListCopy(cache, ioContext)) { api.accepted().toReply { it } }
 }
