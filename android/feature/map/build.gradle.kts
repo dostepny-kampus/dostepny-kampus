@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)
     implementation(libs.spatialk.units)
+    testImplementation(project(":core:data-testing"))
     testImplementation(project(":core:database"))
     testImplementation(project(":core:network"))
     testImplementation(libs.okhttp.mockwebserver)
