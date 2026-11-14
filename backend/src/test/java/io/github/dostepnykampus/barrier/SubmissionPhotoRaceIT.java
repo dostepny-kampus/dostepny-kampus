@@ -37,7 +37,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
  * @since 0.1.0
  */
 @IntegrationTest
-final class SubmissionPhotoRaceTest {
+final class SubmissionPhotoRaceIT {
 
     @Test
     void keepsPhotoAcceptedDuringBodyRead(final ApplicationContext context) throws Exception {
@@ -48,7 +48,7 @@ final class SubmissionPhotoRaceTest {
         final byte[] original = {1, 2, 3};
         store.put(id, photo, original);
         try (
-            ByteArrayInputStream input = new SubmissionPhotoRaceTest.AcceptedBody(
+            ByteArrayInputStream input = new SubmissionPhotoRaceIT.AcceptedBody(
                 jdbc, id, JpegCleanerTest.photo()
             )
         ) {
@@ -64,7 +64,7 @@ final class SubmissionPhotoRaceTest {
                 "Zdjęcie przyjętego zgłoszenia zmieniło się"
             );
         } finally {
-            SubmissionPhotoRaceTest.clean(context, id, photo);
+            SubmissionPhotoRaceIT.clean(context, id, photo);
         }
     }
 
@@ -77,7 +77,7 @@ final class SubmissionPhotoRaceTest {
             final SubmissionPhotos service = new SubmissionPhotos(
                 context.getBean(SubmissionFinder.class),
                 new S3PhotoStore(
-                    new SubmissionPhotoRaceTest.AcceptanceAttempt(
+                    new SubmissionPhotoRaceIT.AcceptanceAttempt(
                         context.getBean(S3Client.class), context.getBean(DataSource.class), id
                     ),
                     context.getBean(PhotoSettings.class)
@@ -85,14 +85,14 @@ final class SubmissionPhotoRaceTest {
                 context.getBean(SubmissionService.class)
             );
             service.put(id, photo, new PhotoUpload(input, jpeg.length));
-            SubmissionPhotoRaceTest.accept(context.getBean(JdbcClient.class), id);
+            SubmissionPhotoRaceIT.accept(context.getBean(JdbcClient.class), id);
             Assertions.assertArrayEquals(
                 new JpegCleaner().strip(jpeg),
                 context.getBean(PhotoStore.class).get(id, photo).orElseThrow(),
                 "Przyjęte zgłoszenie nie zachowało zdjęcia zapisanego przed przyjęciem"
             );
         } finally {
-            SubmissionPhotoRaceTest.clean(context, id, photo);
+            SubmissionPhotoRaceIT.clean(context, id, photo);
         }
     }
 
@@ -124,7 +124,7 @@ final class SubmissionPhotoRaceTest {
 
         @Override
         public byte[] readNBytes(final int length) throws IOException {
-            SubmissionPhotoRaceTest.accept(this.jdbc, this.id);
+            SubmissionPhotoRaceIT.accept(this.jdbc, this.id);
             return super.readNBytes(length);
         }
     }

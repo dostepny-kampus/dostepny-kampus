@@ -46,7 +46,7 @@ final class SharedFixtureArchitectureTest {
         "PackageDescriptionArchitectureTest",
         "PackageSizeArchitectureTest",
         "TechnologyArchitectureIT",
-        "barrier.BarrierModuleTest",
+        "barrier.BarrierModuleIT",
         "building.BuildingReadContractIT",
         "building.BuildingsHttpIT"
     ).collect(

@@ -29,7 +29,7 @@ import org.springframework.context.ApplicationContext;
  * @since 0.1.0
  */
 @IntegrationTest
-final class JdbcReadTest {
+final class JdbcReadIT {
 
     @AfterEach
     void clean(final ApplicationContext context) {
@@ -53,17 +53,17 @@ final class JdbcReadTest {
         final String home = SubmissionData.BUILDING;
         final SubmissionStatus sent = SubmissionStatus.SENT;
         final SubmissionContent ground = SubmissionData.content(home, "p1", "o");
-        final UUID upper = JdbcReadTest.created(
+        final UUID upper = JdbcReadIT.created(
             data, data.seed(1, SubmissionData.content(home, "p2", "o"), sent), 2
         );
-        final UUID accepted = JdbcReadTest.created(
+        final UUID accepted = JdbcReadIT.created(
             data, data.seed(5, ground, SubmissionStatus.ACCEPTED), 3
         );
-        final UUID other = JdbcReadTest.created(
+        final UUID other = JdbcReadIT.created(
             data, data.seed(4, SubmissionData.content(SubmissionData.OTHER, "p1", "o"), sent), 4
         );
-        final UUID first = JdbcReadTest.created(data, data.seed(3, ground, sent), 0);
-        final UUID rejected = JdbcReadTest.created(
+        final UUID first = JdbcReadIT.created(data, data.seed(3, ground, sent), 0);
+        final UUID rejected = JdbcReadIT.created(
             data, data.seed(2, ground, SubmissionStatus.REJECTED), 1
         );
         Assertions.assertEquals(
@@ -73,13 +73,13 @@ final class JdbcReadTest {
                 List.of(other)
             ),
             List.of(
-                JdbcReadTest.ids(
+                JdbcReadIT.ids(
                     data, new SubmissionQuery(Set.of(sent, SubmissionStatus.REJECTED), home, null)
                 ),
-                JdbcReadTest.ids(
+                JdbcReadIT.ids(
                     data, new SubmissionQuery(Set.of(SubmissionStatus.values()), home, "p1")
                 ),
-                JdbcReadTest.ids(
+                JdbcReadIT.ids(
                     data, new SubmissionQuery(Set.of(sent), SubmissionData.OTHER, null)
                 )
             ),
@@ -92,16 +92,16 @@ final class JdbcReadTest {
         final SubmissionData data = SubmissionData.of(context);
         final SubmissionContent content = SubmissionData.content("o");
         final SubmissionStatus sent = SubmissionStatus.SENT;
-        JdbcReadTest.created(data, data.seed(3, content, sent), 2);
-        JdbcReadTest.created(data, data.seed(1, content, sent), 3);
-        JdbcReadTest.created(data, data.seed(2, content, sent), 2);
-        JdbcReadTest.created(data, data.seed(4, content, sent), 0);
+        JdbcReadIT.created(data, data.seed(3, content, sent), 2);
+        JdbcReadIT.created(data, data.seed(1, content, sent), 3);
+        JdbcReadIT.created(data, data.seed(2, content, sent), 2);
+        JdbcReadIT.created(data, data.seed(4, content, sent), 0);
         Assertions.assertEquals(
             List.of(
                 SubmissionData.id(4), SubmissionData.id(2), SubmissionData.id(3),
                 SubmissionData.id(1)
             ),
-            JdbcReadTest.ids(
+            JdbcReadIT.ids(
                 data, new SubmissionQuery(Set.of(sent), SubmissionData.BUILDING, null)
             ),
             "Lista nie jest posortowana po chwili utworzenia, a przy równych chwilach po id"

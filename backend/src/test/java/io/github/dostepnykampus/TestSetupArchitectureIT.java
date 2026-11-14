@@ -66,13 +66,13 @@ final class TestSetupArchitectureIT {
      * Klasy z własnym kontekstem, z powodem.
      */
     private static final Map<String, String> OWN_CONTEXT = Map.of(
-        "io.github.dostepnykampus.barrier.photo.storage.PhotoBucketStartupTest",
+        "io.github.dostepnykampus.barrier.photo.storage.PhotoBucketStartupIT",
         String.join(
             " ",
             "sprawdza utworzenie kubełka przy starcie kontekstu,",
             "więc potrzebuje świeżego kontekstu z własną nazwą kubełka"
         ),
-        "io.github.dostepnykampus.barrier.BarrierModuleTest",
+        "io.github.dostepnykampus.barrier.BarrierModuleIT",
         String.join(
             " ",
             "kontekst modułu zgłoszeń potrzebuje magazynu zdjęć,",
@@ -98,7 +98,7 @@ final class TestSetupArchitectureIT {
      * Klasy z {@code @MockitoBean} lub {@code @MockitoSpyBean}, z powodem.
      */
     private static final Map<String, String> MOCKED = Map.of(
-        "io.github.dostepnykampus.barrier.BarrierModuleTest",
+        "io.github.dostepnykampus.barrier.BarrierModuleIT",
         "zastępuje typy API modułu budynków, którego kontekst modułu zgłoszeń nie ładuje"
     );
 

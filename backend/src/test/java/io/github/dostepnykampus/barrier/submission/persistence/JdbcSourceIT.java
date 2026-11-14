@@ -21,7 +21,7 @@ import org.springframework.dao.DataAccessException;
  * @since 0.1.0
  */
 @IntegrationTest
-final class JdbcSourceTest {
+final class JdbcSourceIT {
 
     @AfterEach
     void clean(final ApplicationContext context) {

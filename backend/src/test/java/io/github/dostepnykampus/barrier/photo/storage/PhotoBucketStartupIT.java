@@ -23,7 +23,7 @@ import software.amazon.awssdk.services.s3.model.Bucket;
  */
 @IntegrationTest
 @TestPropertySource(properties = "dk.photos.bucket=zdjecia-po-starcie")
-final class PhotoBucketStartupTest {
+final class PhotoBucketStartupIT {
 
     @Test
     void createsBucketAtStartup(final ApplicationContext context) {

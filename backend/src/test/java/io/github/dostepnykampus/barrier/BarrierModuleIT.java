@@ -27,7 +27,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
  */
 @ModuleTest
 @Import(RustfsTestConfiguration.class)
-final class BarrierModuleTest {
+final class BarrierModuleIT {
 
     /**
      * Kontury budynków z API modułu budynków.
