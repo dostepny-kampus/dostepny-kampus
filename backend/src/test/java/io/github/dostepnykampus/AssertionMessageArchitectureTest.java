@@ -1,23 +1,18 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus;
 
 import com.tngtech.archunit.core.domain.JavaClass;
-import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.JavaMethodCall;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.core.importer.ImportOption;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -45,29 +40,27 @@ final class AssertionMessageArchitectureTest {
      */
     private static final String SAMPLES = "io.github.dostepnykampus.archsamples.asserts";
 
+    /**
+     * Reguła: klasa nie woła asercji bez komunikatu.
+     */
+    private static final ExceptionListRule RULE = new ExceptionListRule(
+        AssertionMessageArchitectureTest::quiet, AssertionMessageArchitectureTest.KNOWN
+    );
+
     @Test
     void assertionsCarryMessages() {
         Assertions.assertEquals(
             List.of(),
-            AssertionMessageArchitectureTest.violators(AssertionMessageArchitectureTest.tests())
-                .stream()
-                .filter(name -> !AssertionMessageArchitectureTest.KNOWN.containsKey(name))
-                .toList(),
+            AssertionMessageArchitectureTest.RULE.fresh(),
             "Klasa testu ma asercję bez komunikatu; dodaj komunikat z opisem oczekiwania"
         );
     }
 
     @Test
     void exceptionListHoldsOnlyExistingViolations() {
-        final Set<String> found = AssertionMessageArchitectureTest.violators(
-            AssertionMessageArchitectureTest.tests()
-        );
         Assertions.assertEquals(
             List.of(),
-            AssertionMessageArchitectureTest.KNOWN.keySet().stream()
-                .filter(name -> !found.contains(name))
-                .sorted()
-                .toList(),
+            AssertionMessageArchitectureTest.RULE.stale(),
             "Wyjątek z listy już nie jest naruszeniem; usuń wpis"
         );
     }
@@ -86,9 +79,7 @@ final class AssertionMessageArchitectureTest {
         throws IOException {
         Assertions.assertEquals(
             Set.of(String.format("%s.Sample", AssertionMessageArchitectureTest.SAMPLES)),
-            AssertionMessageArchitectureTest.violators(
-                AssertionMessageArchitectureTest.compiled(dir, statement)
-            ),
+            AssertionMessageArchitectureTest.sample(dir, statement),
             "Reguła przepuściła asercję bez komunikatu"
         );
     }
@@ -108,18 +99,9 @@ final class AssertionMessageArchitectureTest {
         throws IOException {
         Assertions.assertEquals(
             Set.of(),
-            AssertionMessageArchitectureTest.violators(
-                AssertionMessageArchitectureTest.compiled(dir, statement)
-            ),
+            AssertionMessageArchitectureTest.sample(dir, statement),
             "Reguła odrzuciła asercję z komunikatem albo grupowanie assertAll"
         );
-    }
-
-    private static Set<String> violators(final JavaClasses classes) {
-        return classes.stream()
-            .filter(AssertionMessageArchitectureTest::quiet)
-            .map(type -> type.getName().replaceAll("\\$.*", ""))
-            .collect(Collectors.toCollection(TreeSet::new));
     }
 
     private static boolean quiet(final JavaClass type) {
@@ -146,22 +128,14 @@ final class AssertionMessageArchitectureTest {
         return result;
     }
 
-    private static JavaClasses tests() {
-        return new ClassFileImporter()
-            .withImportOption(ImportOption.Predefined.ONLY_INCLUDE_TESTS)
-            .importPackages("io.github.dostepnykampus");
-    }
-
-    private static JavaClasses compiled(final Path dir, final String statement)
+    private static Set<String> sample(final Path dir, final String statement)
         throws IOException {
-        final ArchSamples samples = new ArchSamples(dir);
-        samples.write(
-            AssertionMessageArchitectureTest.SAMPLES, "Sample",
+        return AssertionMessageArchitectureTest.RULE.sample(
+            dir, AssertionMessageArchitectureTest.SAMPLES,
             String.format(
                 "package %s;%nfinal class Sample { void check() { %s } }%n",
                 AssertionMessageArchitectureTest.SAMPLES, statement
             )
         );
-        return samples.compiled(AssertionMessageArchitectureTest.SAMPLES);
     }
 }
