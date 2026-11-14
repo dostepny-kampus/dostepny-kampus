@@ -184,14 +184,14 @@ Czynność główna: wybranie wyniku, które zmienia teren mapy i otwiera V2.
 
 ### V1: po zmianie terenu
 
-![Makieta V1 po wybraniu budynku T-15: przycisk terenu Wittigowo, mapa terenu Wittigowo z zaznaczonym budynkiem i napis Pokazuję teren: Wittigowo](../../_generated/m-v1-mapa-teren-zmiana.svg)
+![Makieta V1 po wybraniu budynku T-15: przycisk terenu Wittigowo, mapa terenu Wittigowo z zaznaczonym budynkiem i napis Pokazuję teren: Wittigowo, 2 km na północny wschód](../../_generated/m-v1-mapa-teren-zmiana.svg)
 
 Czynność główna: jak w stanie zwykłym, na nowym terenie.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Przycisk terenu pokazuje nową nazwę: „Wittigowo” | US1.6, US1.8 |
-| Napis „Pokazuję teren: Wittigowo” nad mapą mówi o zmianie terenu | US1.8, NFR-18 |
+| Napis „Pokazuję teren: Wittigowo · 2 km na północny wschód” nad mapą mówi o zmianie terenu, odległości i kierunku | US1.8, NFR-18, NFR-56 |
 | Zamknięcie karty zostawia teren „Wittigowo” | US1.8, BR-G5 |
 
 ## V2 Karta budynku
