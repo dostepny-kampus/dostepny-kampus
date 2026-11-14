@@ -121,3 +121,6 @@ dostepnykampus:
   KDocDescriptionLength:
     excludes:
       - '**/build/generated/**'
+  # TODO(#2009): włączyć z listą wyjątków
+  AssertionMessage:
+    active: false

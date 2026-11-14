@@ -2,7 +2,7 @@
 
 ## Zadanie
 
-Własne reguły detekt projektu: opisy KDoc tylko z kontraktem, bez numerów historii, wymagania w jednej linii, bez komentarzy liniowych.
+Własne reguły detekt projektu: opisy KDoc tylko z kontraktem, bez numerów historii, wymagania w jednej linii, bez komentarzy liniowych, asercje testów z komunikatem.
 
 ## API
 

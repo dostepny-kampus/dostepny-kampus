@@ -26,6 +26,7 @@ class DostepnyKampusRuleSetProviderTest {
                     "NoHistoryNumberInKDoc",
                     "KDocDescriptionLength",
                     "RequirementIdOutsideLine",
+                    "AssertionMessage",
                 ),
             rules.id.value to rules.rules.keys.map { it.value },
         )

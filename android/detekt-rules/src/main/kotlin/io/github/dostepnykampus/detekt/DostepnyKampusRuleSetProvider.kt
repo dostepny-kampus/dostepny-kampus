@@ -16,6 +16,12 @@ class DostepnyKampusRuleSetProvider : RuleSetProvider {
     override fun instance(): RuleSet =
         RuleSet(
             ruleSetId,
-            listOf(::NoLineComment, ::NoHistoryNumberInKDoc, ::KDocDescriptionLength, ::RequirementIdOutsideLine),
+            listOf(
+                ::NoLineComment,
+                ::NoHistoryNumberInKDoc,
+                ::KDocDescriptionLength,
+                ::RequirementIdOutsideLine,
+                ::AssertionMessage,
+            ),
         )
 }
