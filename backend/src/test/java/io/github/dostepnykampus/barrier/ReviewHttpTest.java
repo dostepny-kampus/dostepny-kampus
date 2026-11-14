@@ -1,0 +1,107 @@
+/*
+ * Dostępny Kampus
+ * Author: Vladyslav Yevkov
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+package io.github.dostepnykampus.barrier;
+
+import io.github.dostepnykampus.AsVerifier;
+import io.github.dostepnykampus.IntegrationTest;
+import java.util.List;
+import java.util.UUID;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
+
+/**
+ * Weryfikator bierze cudze zgłoszenie do weryfikacji, ale nie własne.
+ *
+ * <p>Wymagania: BR-4, BR-11</p>
+ *
+ * @since 0.1.0
+ */
+@IntegrationTest
+@Transactional
+final class ReviewHttpTest {
+
+    /**
+     * Zdjęcie zgłoszenia próbnego.
+     */
+    private static final UUID PHOTO = UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
+
+    @Test
+    void refusesClaimOfOwnSubmission(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpTest.sent(context, "konto-testowe");
+        MatcherAssert.assertThat(
+            "Wzięcie własnego zgłoszenia nie dało 403 albo zmieniło jego status",
+            List.of(ReviewHttpTest.claim(context, id), ReviewHttpTest.status(context, id)),
+            Matchers.contains(403, "SENT")
+        );
+    }
+
+    @Test
+    void claimsForeignSubmissionOnceAndAgain(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
+        MatcherAssert.assertThat(
+            "Wzięcie cudzego zgłoszenia nie dało 200 i statusu „w weryfikacji”",
+            List.of(ReviewHttpTest.claim(context, id), ReviewHttpTest.status(context, id)),
+            Matchers.contains(200, "IN_REVIEW")
+        );
+        MatcherAssert.assertThat(
+            "Ponowne wzięcie przez tego samego Weryfikatora nie dało 200",
+            ReviewHttpTest.claim(context, id), Matchers.equalTo(200)
+        );
+    }
+
+    @Test
+    void conflictsOnSubmissionClaimedByAnotherReviewer(
+        final WebApplicationContext context
+    ) throws Exception {
+        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
+        context.getBean(JdbcClient.class)
+            .sql("UPDATE submissions SET status = 'IN_REVIEW', reviewer = 'inny' WHERE id = :id")
+            .param("id", id).update();
+        MatcherAssert.assertThat(
+            "Wzięcie zgłoszenia wziętego przez innego Weryfikatora nie dało 409",
+            ReviewHttpTest.claim(context, id), Matchers.equalTo(409)
+        );
+    }
+
+    @Test
+    void reportsMissingSubmissionOnClaim(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Wzięcie nieistniejącego zgłoszenia nie dało 404",
+            ReviewHttpTest.claim(context, UUID.randomUUID()), Matchers.equalTo(404)
+        );
+    }
+
+    private static UUID sent(final WebApplicationContext context, final String author) {
+        final UUID id = new SampleSubmissions(context)
+            .add("SENT", SampleSubmissions.quick(ReviewHttpTest.PHOTO));
+        context.getBean(JdbcClient.class)
+            .sql("UPDATE submissions SET author = :author WHERE id = :id")
+            .param("author", author).param("id", id).update();
+        return id;
+    }
+
+    private static String status(final WebApplicationContext context, final UUID id) {
+        return context.getBean(JdbcClient.class)
+            .sql("SELECT status FROM submissions WHERE id = :id")
+            .param("id", id).query(String.class).single();
+    }
+
+    private static int claim(final WebApplicationContext context, final UUID id)
+        throws Exception {
+        return context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.post("/submissions/{id}/claim", id).with(new AsVerifier())
+        ).andReturn().getResponse().getStatus();
+    }
+}
