@@ -15,6 +15,9 @@ dependencies {
     testImplementation(libs.detekt.api)
     testImplementation(libs.detekt.test)
     testImplementation(libs.detekt.test.utils)
+    testImplementation(libs.detekt.core)
+    testImplementation(libs.detekt.rules.style)
+    testImplementation(libs.kotlinx.serialization.json)
 }
 
 /**
