@@ -95,8 +95,7 @@ class CampusAreaEdgeDeviceTest {
             assertTrue(
                 "Brak przycisku sąsiedniego terenu po $swipes gestach: target=$edgeTarget, " +
                     "east=${mainBounds.east}, ruchy=${tracker.moveCount.get()}, postoje=${tracker.idleCount.get()}, " +
-                    "mapa=${composeRule.runOnUiThread { mapState(mapView, map) }}
-" +
+                    "mapa=${composeRule.runOnUiThread { mapState(mapView, map) }}\n" +
                     composeRule.onAllNodes(isRoot()).printToString(),
                 nodeExists(edgeMatcher),
             )
