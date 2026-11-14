@@ -30,7 +30,8 @@ final class AbsentValueJsonTest {
         new StrictJsonConfiguration().customize(builder);
         Assertions.assertEquals(
             new Holder(new Mark("brak")),
-            builder.build().readValue("{}", Holder.class)
+            builder.build().readValue("{}", Holder.class),
+            "Brakujące pole przyjmuje wartość z deserializatora swojego typu"
         );
     }
 

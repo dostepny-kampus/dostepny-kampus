@@ -73,7 +73,8 @@ final class OpenApiContractTest {
                 Assertions.assertThrows(
                     AssertionError.class,
                     () -> OpenApiContractTest.answer(request, reply)
-                        .andExpect(new OpenApiContract())
+                        .andExpect(new OpenApiContract()),
+                    "Niezgodna wymiana kończy się błędem asercji"
                 ).getMessage()
             ),
             Matchers.containsString(message)

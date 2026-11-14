@@ -47,7 +47,8 @@ final class PhotoSettingsRulesTest {
             String.format("Adres %s i kubełek '%s' nie zatrzymały startu", endpoint, bucket),
             Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> new PhotoSettings(endpoint, bucket, "", "")
+                () -> new PhotoSettings(endpoint, bucket, "", ""),
+                "Ustawienia zdjęć z błędnym adresem albo kubełkiem są odrzucane"
             ).getMessage(),
             Matchers.containsString(setting)
         );

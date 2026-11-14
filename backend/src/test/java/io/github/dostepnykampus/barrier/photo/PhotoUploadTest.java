@@ -29,7 +29,8 @@ final class PhotoUploadTest {
         jpeg[PhotoUploadTest.LIMIT - 1] = 7;
         Assertions.assertArrayEquals(
             jpeg,
-            new PhotoUpload(new ByteArrayInputStream(jpeg), PhotoUploadTest.LIMIT).read()
+            new PhotoUpload(new ByteArrayInputStream(jpeg), PhotoUploadTest.LIMIT).read(),
+            "Zdjęcie o rozmiarze równym limitowi zostaje wczytane w całości"
         );
     }
 
@@ -39,7 +40,8 @@ final class PhotoUploadTest {
             PhotoTooLargeException.class,
             () -> new PhotoUpload(
                 new ByteArrayInputStream(new byte[] {1}), PhotoUploadTest.LIMIT + 1
-            ).read()
+            ).read(),
+            "Zdjęcie zadeklarowane ponad limit jest odrzucane"
         );
     }
 
@@ -49,7 +51,8 @@ final class PhotoUploadTest {
             PhotoTooLargeException.class,
             () -> new PhotoUpload(
                 new ByteArrayInputStream(new byte[PhotoUploadTest.LIMIT + 1]), -1
-            ).read()
+            ).read(),
+            "Zdjęcie ponad limit bez nagłówka rozmiaru jest odrzucane"
         );
     }
 }

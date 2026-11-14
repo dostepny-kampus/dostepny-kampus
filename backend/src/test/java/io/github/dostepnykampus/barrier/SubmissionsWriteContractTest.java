@@ -44,7 +44,8 @@ final class SubmissionsWriteContractTest {
         final UUID id = this.create(context);
         Assertions.assertEquals(
             List.of(200, "original", 1, "SENT", "original", 1),
-            this.observed(context, id, this.post(context, id, "changed"))
+            this.observed(context, id, this.post(context, id, "changed")),
+            "Ponowienie zapisu zostawia treść i wersję bez zmian"
         );
     }
 
@@ -60,7 +61,8 @@ final class SubmissionsWriteContractTest {
                 List.of(200, "edited", 2, "SENT", "edited", 2),
                 List.of(409, "edited", 2, "SENT", "edited", 2), "application/problem+json"
             ),
-            List.of(saved, this.observed(context, id, conflict), conflict.getContentType())
+            List.of(saved, this.observed(context, id, conflict), conflict.getContentType()),
+            "Edycja podnosi wersję, a przestarzała edycja daje konflikt z problemem"
         );
     }
 
@@ -79,7 +81,7 @@ final class SubmissionsWriteContractTest {
                 List.of(200, "edited", 2, "SENT", "edited", 2),
                 List.of(200, "edited", 2, "IN_REVIEW", "edited", 2),
                 List.of(200, "edited", 2, "SENT", "edited", 2)
-            ), actual
+            ), actual, "Edycja zachowuje reguły statusu zgłoszenia"
         );
     }
 
@@ -99,7 +101,7 @@ final class SubmissionsWriteContractTest {
             List.of(
                 List.of(409, "original", 1, "ACCEPTED", "original", 1),
                 List.of(409, "original", 1, "ARCHIVED", "original", 1)
-            ), actual
+            ), actual, "Zgłoszenie przyjęte albo zarchiwizowane jest zablokowane do edycji"
         );
     }
 
@@ -122,14 +124,15 @@ final class SubmissionsWriteContractTest {
             List.of(
                 List.of(400, "original", 1), List.of(400, "original", 1),
                 List.of(400, "original", 1), List.of(400, "original", 1)
-            ), actual
+            ), actual, "Niepoprawna wersja jest odrzucana bez zmiany zgłoszenia"
         );
     }
 
     private UUID create(final WebApplicationContext context) throws Exception {
         this.clean(context);
         Assertions.assertEquals(
-            201, this.post(context, SubmissionsWriteContractTest.ID, "original").getStatus()
+            201, this.post(context, SubmissionsWriteContractTest.ID, "original").getStatus(),
+            "Zgłoszenie wyjściowe zostaje utworzone"
         );
         return SubmissionsWriteContractTest.ID;
     }

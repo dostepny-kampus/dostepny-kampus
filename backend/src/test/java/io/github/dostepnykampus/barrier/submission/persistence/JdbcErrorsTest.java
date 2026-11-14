@@ -67,7 +67,8 @@ final class JdbcErrorsTest {
                         new SubmissionEdit(id, 1, SubmissionData.content("własna"))
                     ),
                     data.row(id).get("version")
-                )
+                ),
+                "Edycja zwraca własną wersję, mimo że wyzwalacz podniósł ją dodatkowo"
             );
         } finally {
             data.jdbc().sql("DROP TRIGGER j_foreign_bump ON submissions").update();

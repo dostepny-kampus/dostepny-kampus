@@ -49,7 +49,8 @@ final class JdbcRowTest {
                 data.repo().update(
                     new SubmissionEdit(SubmissionData.id(7), 1, SubmissionData.content("c"))
                 )
-            )
+            ),
+            "Przestarzała wersja daje konflikt, a brakujące zgłoszenie jest zgłaszane"
         );
     }
 
@@ -67,8 +68,10 @@ final class JdbcRowTest {
             """
         ).param("id", id).update();
         Assertions.assertTrue(
-            Assertions.assertThrows(IllegalStateException.class, () -> data.repo().find(id))
-                .getMessage().contains(id.toString()),
+            Assertions.assertThrows(
+                IllegalStateException.class, () -> data.repo().find(id),
+                "Nieczytelny wiersz kończy się błędem"
+            ).getMessage().contains(id.toString()),
             "Błąd odczytu wiersza nie wskazuje identyfikatora"
         );
     }

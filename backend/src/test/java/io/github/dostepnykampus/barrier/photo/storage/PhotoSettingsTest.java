@@ -188,7 +188,8 @@ final class PhotoSettingsTest {
         Assertions.assertEquals(
             "PhotoSettings[endpoint=http://magazyn, bucket=zdjecia]",
             new PhotoSettings(URI.create("http://magazyn"), "zdjecia", "klucz-1", "sekret-1")
-                .toString()
+                .toString(),
+            "Tekst ustawień wskazuje adres i kubełek"
         );
     }
 

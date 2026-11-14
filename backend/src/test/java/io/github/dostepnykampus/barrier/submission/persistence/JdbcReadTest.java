@@ -41,7 +41,8 @@ final class JdbcReadTest {
         final SubmissionData data = SubmissionData.of(context);
         for (final SubmissionStatus status : SubmissionStatus.values()) {
             Assertions.assertEquals(
-                Optional.of(status), data.repo().find(data.seed(status)).map(Submission::status)
+                Optional.of(status), data.repo().find(data.seed(status)).map(Submission::status),
+                "Zgłoszenie w każdym statusie daje się odczytać"
             );
         }
     }
