@@ -13,12 +13,11 @@ i zniknie w #1445.
 Moduł to pakiet najwyższego poziomu pod `io.github.dostepnykampus`. Wszystkie działają w jednym procesie,
 granice sprawdza Spring Modulith.
 
-| Moduł | Zadanie | Zależy od |
-| --- | --- | --- |
-| `identity` | konto zalogowanej osoby i zabezpieczenie API | `shared` |
-| `building` | budynki, wejścia i obszar kampusu | `shared` |
-| `barrier` | zgłoszenia barier ze zdjęciami | `building`, `shared` |
-| `shared` | błędy, ścisły JSON i układy współrzędnych | — |
+Schemat zależności modułów powstaje z kodu (`ModularityTest` porównuje go z plikiem `moduly-serwera.iuml`).
+Moduł bez zależności, dziś `identity`, nie ma na nim strzałek i generator go pomija. Zadanie, API i
+zależności każdego modułu opisuje jego `package-info.java`.
+
+![Diagram zależności modułów serwera: barrier zależy od building i shared, building zależy od shared](../_generated/moduly-serwera.svg)
 
 Układ modułu na przykładzie `barrier`:
 
