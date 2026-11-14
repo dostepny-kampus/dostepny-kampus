@@ -42,8 +42,10 @@ final class ReplacedSubmissionCheckTest {
     @Test
     void submissionWithoutReplacesSkipsCheck() {
         Assertions.assertDoesNotThrow(
-            () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, null)
-                .checkReplaced(ReplacedSubmissionCheckTest.reading(null, null), ReplacedSubmissionCheckTest.READER)
+            () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, null).checkReplaced(
+                ReplacedSubmissionCheckTest.reading(null, null),
+                ReplacedSubmissionCheckTest.READER
+            )
         );
     }
 
@@ -51,7 +53,10 @@ final class ReplacedSubmissionCheckTest {
     void savedChangeSkipsCheck() {
         Assertions.assertDoesNotThrow(
             () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
-                ReplacedSubmissionCheckTest.reading(ReplacedSubmissionCheckTest.stored(SubmissionStatus.SENT), null),
+                ReplacedSubmissionCheckTest.reading(
+                    ReplacedSubmissionCheckTest.stored(SubmissionStatus.SENT),
+                    null
+                ),
                 ReplacedSubmissionCheckTest.READER
             )
         );
@@ -61,7 +66,10 @@ final class ReplacedSubmissionCheckTest {
     void changeOfAcceptedPasses() {
         Assertions.assertDoesNotThrow(
             () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
-                ReplacedSubmissionCheckTest.reading(null, ReplacedSubmissionCheckTest.stored(SubmissionStatus.ACCEPTED)),
+                ReplacedSubmissionCheckTest.reading(
+                    null,
+                    ReplacedSubmissionCheckTest.stored(SubmissionStatus.ACCEPTED)
+                ),
                 ReplacedSubmissionCheckTest.READER
             )
         );
@@ -72,7 +80,10 @@ final class ReplacedSubmissionCheckTest {
         Assertions.assertThrows(
             ConflictingState.class,
             () -> ReplacedSubmissionCheckTest.request(null, WebBodies.PATH).checkReplaced(
-                ReplacedSubmissionCheckTest.reading(null, ReplacedSubmissionCheckTest.stored(SubmissionStatus.SENT)),
+                ReplacedSubmissionCheckTest.reading(
+                    null,
+                    ReplacedSubmissionCheckTest.stored(SubmissionStatus.SENT)
+                ),
                 ReplacedSubmissionCheckTest.READER
             )
         );
@@ -80,12 +91,16 @@ final class ReplacedSubmissionCheckTest {
 
     @Test
     void changeOfMissingGivesNotFound() {
+        final NewSubmissionRequest request =
+            ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH);
         Assertions.assertEquals(
             "Nie ma zastępowanego zgłoszenia",
             Assertions.assertThrows(
                 MissingResource.class,
-                () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH)
-                    .checkReplaced(ReplacedSubmissionCheckTest.reading(null, null), ReplacedSubmissionCheckTest.READER)
+                () -> request.checkReplaced(
+                    ReplacedSubmissionCheckTest.reading(null, null),
+                    ReplacedSubmissionCheckTest.READER
+                )
             ).getMessage()
         );
     }
@@ -95,7 +110,10 @@ final class ReplacedSubmissionCheckTest {
         Assertions.assertThrows(
             ConflictingState.class,
             () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
-                ReplacedSubmissionCheckTest.reading(null, ReplacedSubmissionCheckTest.stored(SubmissionStatus.IN_REVIEW)),
+                ReplacedSubmissionCheckTest.reading(
+                    null,
+                    ReplacedSubmissionCheckTest.stored(SubmissionStatus.IN_REVIEW)
+                ),
                 ReplacedSubmissionCheckTest.READER
             )
         );
