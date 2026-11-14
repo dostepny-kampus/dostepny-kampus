@@ -18,12 +18,14 @@ import kotlinx.serialization.json.jsonObject
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
-import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-/** Pola logiczne zgłoszenia z serwera: brak pola to nie `false`, a ponowna wysyłka zachowuje tę różnicę. */
+/**
+ * Pola logiczne zgłoszenia z serwera: brak pola to `false`, jak w kontrakcie (`default: false`), więc oba dają ten
+ * sam model; `false` nie trafia do wysyłki, `true` wraca jako `true`.
+ */
 class SubmissionFlagsTest {
     private val server = SubmissionServer()
 
@@ -39,31 +41,32 @@ class SubmissionFlagsTest {
 
     @Test
     fun us6_3_correction_absent_false() {
-        assertAbsentDiffersFromFalse(name = "manualCorrection", explicit = bare(flag = """"manualCorrection":false,"""))
+        assertAbsentMeansFalse(name = "manualCorrection") { bare(flag = """"manualCorrection":$it,""") }
     }
 
     @Test
     fun us8_4_removed_absent_false() {
-        assertAbsentDiffersFromFalse(name = "barrierRemoved", explicit = bare(flag = """"barrierRemoved":false,"""))
+        assertAbsentMeansFalse(name = "barrierRemoved") { bare(flag = """"barrierRemoved":$it,""") }
     }
 
     @Test
     fun us7_2_mezzanine_absent_false() {
-        assertAbsentDiffersFromFalse(name = "mezzanine", explicit = bare(floor = ""","mezzanine":false""")) {
-            it.getValue("floor").jsonObject
+        assertAbsentMeansFalse(name = "mezzanine", scope = { it.getValue("floor").jsonObject }) {
+            bare(floor = ""","mezzanine":$it""")
         }
     }
 
-    private fun assertAbsentDiffersFromFalse(
+    private fun assertAbsentMeansFalse(
         name: String,
-        explicit: String,
         scope: (JsonObject) -> JsonObject = { it },
+        explicit: (Boolean) -> String,
     ) {
         val (absentContent, absentSent) = resend(bare())
-        val (falseContent, falseSent) = resend(explicit)
-        assertNotEquals(absentContent, falseContent, "Brak pola $name i jawne false dają ten sam model")
-        assertNull(scope(absentSent)[name], "Pole $name nieobecne w odpowiedzi trafiło do wysyłki")
-        assertEquals(JsonPrimitive(false), scope(falseSent)[name], "Jawne false w $name zginęło przy wysyłce")
+        val (falseContent, _) = resend(explicit(false))
+        val (_, trueSent) = resend(explicit(true))
+        assertEquals(falseContent, absentContent, "Brak pola $name i jawne false dają różne modele")
+        assertNull(scope(absentSent)[name], "Pole $name równe false trafiło do wysyłki")
+        assertEquals(JsonPrimitive(true), scope(trueSent)[name], "Jawne true w $name zginęło przy wysyłce")
     }
 
     private fun resend(body: String): Pair<SubmissionContent, JsonObject> {
