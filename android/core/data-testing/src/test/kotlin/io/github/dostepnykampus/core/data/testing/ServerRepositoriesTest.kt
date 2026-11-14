@@ -7,6 +7,9 @@ package io.github.dostepnykampus.core.data.testing
 
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
+import io.github.dostepnykampus.core.data.server.ServerBuildings
+import io.github.dostepnykampus.core.data.server.ServerCard
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.Entrance

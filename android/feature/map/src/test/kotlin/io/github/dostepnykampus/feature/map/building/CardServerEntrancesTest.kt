@@ -11,8 +11,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.ServerEntrances
-import io.github.dostepnykampus.core.data.testing.ServerCard
-import io.github.dostepnykampus.core.data.testing.ServerReply
+import io.github.dostepnykampus.core.data.server.ServerCard
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.testing.serverEntrances
 import io.github.dostepnykampus.core.model.AssessmentSource
 import io.github.dostepnykampus.core.model.Building

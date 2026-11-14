@@ -6,7 +6,7 @@ Repozytoria `:core:data` dla testów modułów funkcji: odpowiedzi serwera bez t
 
 ## API
 
-`ServerReply` (wynik, brak sieci, błąd serwera), `ServerBuildings`, `ServerCard` i fabryki `serverBuildingCatalog`, `serverEntrances`.
+Fabryki `serverBuildingCatalog` i `serverEntrances`, które przyjmują `ServerReply` z pakietu `core.data.server`.
 
 ## Zależności
 

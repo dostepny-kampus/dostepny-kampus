@@ -9,8 +9,8 @@ import io.github.dostepnykampus.core.data.barriers.AcceptedBarrier
 import io.github.dostepnykampus.core.data.barriers.AcceptedBarriers
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
-import io.github.dostepnykampus.core.data.testing.ServerBuildings
-import io.github.dostepnykampus.core.data.testing.ServerReply
+import io.github.dostepnykampus.core.data.server.ServerBuildings
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.testing.serverBuildingCatalog
 import io.github.dostepnykampus.core.geo.parseGeoArea
 import io.github.dostepnykampus.core.model.Building
