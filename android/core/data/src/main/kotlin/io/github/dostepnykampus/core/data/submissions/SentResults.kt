@@ -6,6 +6,9 @@
 package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.submission.own.conflictVersionOf
+import io.github.dostepnykampus.core.data.submission.own.refusalCodeOf
+import io.github.dostepnykampus.core.data.submission.own.versionOf
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity

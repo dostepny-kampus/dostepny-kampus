@@ -16,10 +16,10 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.submissions.OwnStatuses
-import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
+import io.github.dostepnykampus.core.data.submission.own.OwnStatuses
+import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
+import io.github.dostepnykampus.core.data.submission.own.StatusRefresh
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
-import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStamps

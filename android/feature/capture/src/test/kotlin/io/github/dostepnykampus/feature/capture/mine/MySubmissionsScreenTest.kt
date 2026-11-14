@@ -18,8 +18,8 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import io.github.dostepnykampus.core.data.submissions.RefusalReason
-import io.github.dostepnykampus.core.data.submissions.SendState
+import io.github.dostepnykampus.core.data.submission.own.RefusalReason
+import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierType
 import org.junit.Assert.assertEquals

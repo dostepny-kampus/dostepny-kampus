@@ -8,8 +8,8 @@ package io.github.dostepnykampus.feature.capture.report.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.dostepnykampus.core.data.submissions.PendingEdit
-import io.github.dostepnykampus.core.data.submissions.PendingEdits
+import io.github.dostepnykampus.core.data.submission.pending.PendingEdit
+import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.SubmissionFloor

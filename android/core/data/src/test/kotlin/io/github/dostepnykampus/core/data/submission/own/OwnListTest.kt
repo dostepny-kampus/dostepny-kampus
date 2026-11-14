@@ -3,11 +3,16 @@
  * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.data.submissions
+package io.github.dostepnykampus.core.data.submission.own
 
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.submissions.FakeHistory
+import io.github.dostepnykampus.core.data.submissions.FakeStore
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
+import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
+import io.github.dostepnykampus.core.data.submissions.SubmissionServer
+import io.github.dostepnykampus.core.data.submissions.SubmissionStamps
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent

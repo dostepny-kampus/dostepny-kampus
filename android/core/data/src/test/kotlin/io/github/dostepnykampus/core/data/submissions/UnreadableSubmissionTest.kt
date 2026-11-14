@@ -7,6 +7,7 @@ package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.submission.pending.pendingEditsOf
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server

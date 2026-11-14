@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.feature.capture.report.edit
 
+import io.github.dostepnykampus.core.data.submission.pending.PendingEdit
 import io.github.dostepnykampus.core.data.submissions.EditedSubmission
-import io.github.dostepnykampus.core.data.submissions.PendingEdit
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint

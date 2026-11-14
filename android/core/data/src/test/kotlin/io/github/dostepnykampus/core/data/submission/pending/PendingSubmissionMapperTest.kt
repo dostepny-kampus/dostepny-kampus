@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.data.submissions
+package io.github.dostepnykampus.core.data.submission.pending
 
 import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
