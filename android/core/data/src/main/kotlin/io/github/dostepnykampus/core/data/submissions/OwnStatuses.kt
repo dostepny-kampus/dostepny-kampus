@@ -13,7 +13,7 @@ import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.network.ApiResult
 
 /** Wynik odświeżenia statusów własnych zgłoszeń z serwera. Wymagania: US8.2, US9.1, NFR-50 */
-enum class StatusRefresh {
+public enum class StatusRefresh {
     /** Statusy z serwera są w historii telefonu. */
     DONE,
 
@@ -25,9 +25,9 @@ enum class StatusRefresh {
 }
 
 /** Odświeżenie statusów listy C3 z serwera. Wymagania: US8.2 */
-fun interface OwnStatuses {
+public fun interface OwnStatuses {
     /** Pobiera własne zgłoszenia z serwera i zapisuje ich status, powód odrzucenia i wersję w historii. */
-    suspend fun refresh(): StatusRefresh
+    public suspend fun refresh(): StatusRefresh
 }
 
 /**

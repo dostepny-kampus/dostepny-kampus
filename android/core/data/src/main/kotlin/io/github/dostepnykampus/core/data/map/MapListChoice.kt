@@ -27,16 +27,16 @@ internal val Context.mapDataStore by preferencesDataStore(
  *
  * Wymagania: NFR-19
  */
-interface MapListChoice {
+public interface MapListChoice {
     /** Prawda dla „Lista budynków”, fałsz dla „Mapa”, `null`, dopóki osoba nic nie wybrała. */
-    val savedChoice: Flow<Boolean?>
+    public val savedChoice: Flow<Boolean?>
 
     /** Zapisuje wybór osoby w przełączniku. */
-    suspend fun choose(isList: Boolean)
+    public suspend fun choose(isList: Boolean)
 }
 
 /** [MapListChoice] zapisany w [dataStore], więc przetrwa zamknięcie aplikacji i restart telefonu. */
-class MapListChoiceRepository(private val dataStore: DataStore<Preferences>) : MapListChoice {
+internal class MapListChoiceRepository(private val dataStore: DataStore<Preferences>) : MapListChoice {
     override val savedChoice: Flow<Boolean?> = dataStore.data.map { it[IS_LIST] }
 
     override suspend fun choose(isList: Boolean) {

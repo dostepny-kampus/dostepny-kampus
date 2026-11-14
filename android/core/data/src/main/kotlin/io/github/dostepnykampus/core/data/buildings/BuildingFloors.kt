@@ -10,7 +10,7 @@ import io.github.dostepnykampus.core.model.FloorList
 import java.util.concurrent.ConcurrentHashMap
 
 /** Piętra budynku z serwera dla formularza C2. Wymagania: US7.2, US16.1 */
-fun interface BuildingFloors {
+public fun interface BuildingFloors {
     /**
      * Piętra budynku [symbol] od najniższego; pusta lista dla budynku podstawowego. `null`, gdy serwer ich
      * nie podał (brak sieci, błąd serwera, nieznany budynek) i nic nie pobrano wcześniej; formularz zostaje wtedy przy
@@ -20,7 +20,7 @@ fun interface BuildingFloors {
      *
      * @param symbol symbol budynku
      */
-    suspend fun floors(symbol: String): FloorList?
+    public suspend fun floors(symbol: String): FloorList?
 }
 
 /**
@@ -29,7 +29,7 @@ fun interface BuildingFloors {
  *
  * @param fetch piętra budynku z serwera dla symbolu
  */
-class ServerFloorsRepository(private val fetch: suspend (String) -> ServerReply<FloorList>) : BuildingFloors {
+internal class ServerFloorsRepository(private val fetch: suspend (String) -> ServerReply<FloorList>) : BuildingFloors {
     private val downloaded = ConcurrentHashMap<String, FloorList>()
 
     override suspend fun floors(symbol: String): FloorList? {

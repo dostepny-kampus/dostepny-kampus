@@ -8,9 +8,9 @@ package io.github.dostepnykampus.core.data.photos
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 
 /** Wynik próby zrobienia zdjęcia, przypisany do jej żądania. */
-sealed interface PhotoResult {
+public sealed interface PhotoResult {
     /** Żądanie, którego dotyczy wynik, także przy rezygnacji lub błędzie. */
-    val request: PhotoRequest
+    public val request: PhotoRequest
 
     /**
      * Gotowy JPEG bez metadanych w pamięci aplikacji; plik przechodzi pod opiekę wywołującego.
@@ -19,14 +19,14 @@ sealed interface PhotoResult {
      * @property photo plik zdjęcia o identyfikatorze z [request]
      * @throws IllegalArgumentException wynik zawiera zdjęcie z innego żądania
      */
-    data class Ready(override val request: PhotoRequest, val photo: PendingPhotoDraft) : PhotoResult {
+    public data class Ready(override val request: PhotoRequest, val photo: PendingPhotoDraft) : PhotoResult {
         init {
             require(photo.photoId == request.photoId) { "Zdjęcie nie odpowiada żądaniu" }
         }
     }
 
     /** Rezygnacja osoby robiącej zdjęcie; nie przekazuje pliku. */
-    data class Cancelled(override val request: PhotoRequest) : PhotoResult
+    public data class Cancelled(override val request: PhotoRequest) : PhotoResult
 
     /**
      * Nieudana próba bez pliku do zachowania.
@@ -34,11 +34,11 @@ sealed interface PhotoResult {
      * @property request żądanie zdjęcia, którego dotyczy błąd
      * @property reason powód błędu aparatu lub przetwarzania zdjęcia
      */
-    data class Failed(override val request: PhotoRequest, val reason: PhotoFailure) : PhotoResult
+    public data class Failed(override val request: PhotoRequest, val reason: PhotoFailure) : PhotoResult
 }
 
 /** Powód nieudanej próby, bez tekstu przeznaczonego dla interfejsu. */
-enum class PhotoFailure {
+public enum class PhotoFailure {
     /** Telefon nie ma dostępnej aplikacji aparatu. */
     UNAVAILABLE,
 

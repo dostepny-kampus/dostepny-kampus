@@ -18,21 +18,21 @@ import io.github.dostepnykampus.core.model.SubmissionContent
  * @property content zapisana treść
  * @property photos zdjęcia w kolejności [SubmissionContent.photoIds]
  */
-data class PendingEdit(
+public data class PendingEdit(
     val edited: EditedSubmission,
     val content: SubmissionContent,
     val photos: List<PendingPhotoDraft>,
 )
 
 /** Zgłoszenia „W telefonie” i „Nie wysłano” do poprawki; wysłanych telefon już nie ma. Wymagania: US8.3, BR-26 */
-fun interface PendingEdits {
+public fun interface PendingEdits {
     /**
      * Wczytuje zgłoszenie z kolejki.
      *
      * @param id identyfikator zgłoszenia z listy C3
      * @return poprawka albo `null`, gdy zgłoszenia nie ma już w telefonie
      */
-    suspend fun load(id: String): PendingEdit?
+    public suspend fun load(id: String): PendingEdit?
 }
 
 /** Poprawki z kolejki w bazie Room [store]. */

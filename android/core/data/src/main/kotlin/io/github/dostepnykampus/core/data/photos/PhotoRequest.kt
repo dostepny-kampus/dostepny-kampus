@@ -11,7 +11,7 @@ package io.github.dostepnykampus.core.data.photos
  * @property photoId niepusty identyfikator zdjęcia do zapisania w zgłoszeniu
  * @throws IllegalArgumentException identyfikator jest pusty lub składa się z białych znaków
  */
-data class PhotoRequest(val photoId: String) {
+public data class PhotoRequest(val photoId: String) {
     init {
         require(photoId.isNotBlank()) { "Brak identyfikatora zdjęcia" }
     }

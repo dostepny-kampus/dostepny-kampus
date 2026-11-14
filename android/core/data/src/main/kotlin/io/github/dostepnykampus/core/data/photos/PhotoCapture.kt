@@ -9,7 +9,7 @@ package io.github.dostepnykampus.core.data.photos
  * Port zrobienia pojedynczego zdjęcia, bez zależności od modułu funkcji lub sposobu uruchomienia aparatu.
  * TODO(#1450): podłącz port do obsługi zdjęcia w dialogu.
  */
-fun interface PhotoCapture {
+public fun interface PhotoCapture {
     /**
      * Zwraca wynik dla [request]. Rezygnacja osoby daje [PhotoResult.Cancelled], błąd aparatu [PhotoResult.Failed].
      * Anulowanie korutyny jest propagowane; nie jest rezygnacją osoby. Bez wyniku [PhotoResult.Ready] adapter
@@ -18,5 +18,5 @@ fun interface PhotoCapture {
      * @param request żądanie zdjęcia
      * @return wynik tej próby
      */
-    suspend fun capture(request: PhotoRequest): PhotoResult
+    public suspend fun capture(request: PhotoRequest): PhotoResult
 }

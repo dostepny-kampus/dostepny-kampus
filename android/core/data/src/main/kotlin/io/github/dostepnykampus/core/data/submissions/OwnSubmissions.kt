@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.map
 import java.time.Instant
 
 /** Stan wysyłki własnego zgłoszenia, te same nazwy co w bazie. Wymagania: US8.1, NFR-5 */
-enum class SendState {
+public enum class SendState {
     /** „W telefonie”: czeka na wysłanie. */
     LOCAL,
 
@@ -25,7 +25,7 @@ enum class SendState {
 }
 
 /** Powód „Nie wysłano” na C3; ekran zna tylko powód, nie kody HTTP. Wymagania: US9.5, BR-26 */
-enum class RefusalReason {
+public enum class RefusalReason {
     /** Serwer odebrał rolę (403): „Nie masz już uprawnień do tej czynności…”. */
     NO_PERMISSION,
 
@@ -54,7 +54,7 @@ enum class RefusalReason {
  * @property serverStatus status z serwera po odświeżeniu; `null`, gdy telefon go jeszcze nie zna
  * @property rejectionReason powód odrzucenia od Weryfikatora; `null` poza odrzuceniem
  */
-data class OwnSubmission(
+public data class OwnSubmission(
     val id: String,
     val savedAt: Instant,
     val barrierType: String?,
@@ -67,9 +67,9 @@ data class OwnSubmission(
 )
 
 /** Własne zgłoszenia od najnowszego; w aplikacji z historii Room. Wymagania: US8.1, NFR-5 */
-fun interface OwnSubmissions {
+public fun interface OwnSubmissions {
     /** Lista od najnowszego; zmienia się po każdym zapisie i wysyłce z kolejki. */
-    fun observe(): Flow<List<OwnSubmission>>
+    public fun observe(): Flow<List<OwnSubmission>>
 }
 
 /** Własne zgłoszenia z historii [history] w bazie Room. */

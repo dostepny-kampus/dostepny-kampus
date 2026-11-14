@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.core.data.submissions
 
 /** Powód, dla którego kolejka nie zapisała zgłoszenia. */
-enum class SaveRefusal {
+public enum class SaveRefusal {
     /** Zdjęcia nie odpowiadają identyfikatorom w treści. Wymagania: BR-7, BR-8 */
     PHOTOS_MISMATCH,
 
@@ -22,4 +22,4 @@ enum class SaveRefusal {
  * @property reason powód odmowy
  * @param message opis dla programisty, bez danych osoby
  */
-class SaveRefusedException(val reason: SaveRefusal, message: String) : Exception(message)
+public class SaveRefusedException(public val reason: SaveRefusal, message: String) : Exception(message)
