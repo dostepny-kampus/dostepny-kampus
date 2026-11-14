@@ -121,7 +121,7 @@ class CampusAreasPwrTest {
      * Wymagania: US1.6, BR-G5
      */
     @Test
-    fun us1_6_start_area_pwr() {
+    fun startsInPwrArea() {
         showApp(isFirstLaunch = true)
         assertShowsArea(name = "Kampus główny", symbol = "A-1")
     }
@@ -134,7 +134,7 @@ class CampusAreasPwrTest {
      * Wymagania: US1.7, BR-G5
      */
     @Test
-    fun us1_7_area_list_pwr() {
+    fun listsPwrAreas() {
         showApp()
         openAreaList()
         compose.onNode(hasText("Kampus główny") and isSelectable()).assertIsSelected()
@@ -152,7 +152,7 @@ class CampusAreasPwrTest {
      * Wymagania: US1.7
      */
     @Test
-    fun us1_7_choose_area_pwr() {
+    fun choosesPwrArea() {
         showApp()
         openAreaList()
         compose.onNode(hasText("Wittigowo") and isSelectable()).performClick()
@@ -168,7 +168,7 @@ class CampusAreasPwrTest {
      * Wymagania: US1.7, BR-G5, NFR-39
      */
     @Test
-    fun us1_7_edge_button_pwr() {
+    fun showsPwrEdgeButton() {
         showApp()
         val main = area("Kampus główny").bounds
         val target = area("Wittigowo").bounds.center
@@ -192,7 +192,7 @@ class CampusAreasPwrTest {
      * Wymagania: US1.8, BR-G5
      */
     @Test
-    fun us1_8_search_other_area_pwr() {
+    fun searchesOtherPwrArea() {
         showApp()
         compose.onNode(hasSetTextAction()).performTextInput("T-15")
         compose.onNodeWithContentDescription("T-15, ", substring = true).performClick()
@@ -250,7 +250,7 @@ class CampusAreasPwrTest {
      * Wymagania: US1.8, NFR-19
      */
     @Test
-    fun us1_8_list_headings_pwr() {
+    fun showsPwrListHeadings() {
         choice.savedChoice.value = true
         showApp(waitForMap = false)
         val wittigowo = hasContentDescription("Wittigowo, ", substring = true) and AreaHeading

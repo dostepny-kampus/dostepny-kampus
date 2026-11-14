@@ -19,13 +19,13 @@ import java.io.File
 class FeatureRootImportArchitectureTest {
     /** Podpakiety modułów funkcji nie importują korzenia swojego modułu. */
     @Test
-    fun infra_feature_part_skips_root() {
+    fun keepsPartsOffRoot() {
         assertEquals(emptyList<String>(), violations(Konsist.scopeFromProduction().files), HINT)
     }
 
     /** Import korzenia z podpakietu łamie regułę; import `R`, innego podpakietu i podpakietu z korzenia nie. */
     @Test
-    fun infra_feature_root_rejects(
+    fun rejectsRootImport(
         @TempDir fixtures: File,
     ) {
         source(fixtures = fixtures, name = "Root", pack = "feature.x", import = "feature.x.part.Part")

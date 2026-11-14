@@ -217,7 +217,11 @@ private class TapsModel : ViewModel() {
     var taps by mutableIntStateOf(0)
 }
 
-/** Oboczka w Robolectric: historia, pasek dolny w wąskim oknie, pasek z boku w szerokim i role. */
+/**
+ * Oboczka w Robolectric: historia, pasek dolny w wąskim oknie, pasek z boku w szerokim i role.
+ *
+ * Wymagania: US5.1, US4.1
+ */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class AppShellTest {
@@ -297,7 +301,7 @@ class AppShellTest {
 
     /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */
     @Test
-    fun us5_1_first_launch_v5_back_v1() {
+    fun goesBackToMapFromFirstHelp() {
         show(firstLaunch = true)
         compose.onNodeWithText("Pomoc").assertIsSelected()
         pressBack()
@@ -307,7 +311,7 @@ class AppShellTest {
 
     /** Wiersz: pasek dolny, „Zgłoś barierę” → L1 bez paska dolnego. Wymagania: RO-GOS, US14.2 */
     @Test
-    fun us14_2_guest_report_l1_no_bar() {
+    fun hidesBarOnGuestSignIn() {
         show()
         compose.onNodeWithText("Zgłoś barierę").performClick()
         compose.onAllNodesWithText("Mapa").assertCountEquals(0)
@@ -322,7 +326,7 @@ class AppShellTest {
      * Wymagania: RO-GOS, US14.2
      */
     @Test
-    fun us14_2_guest_not_now_to_map() {
+    fun returnsGuestToMap() {
         show()
         compose.onNodeWithText("Zgłoś barierę").performClick()
         compose.onNodeWithText("Nie teraz").performClick()
@@ -336,7 +340,7 @@ class AppShellTest {
      * Wymagania: US14.1
      */
     @Test
-    fun us14_1_bar_after_sign_in() {
+    fun showsBarAfterSignIn() {
         val roles = TestRoles()
         show(roles = roles)
         compose.onNode(hasText("Konto") and tabRole).assertExists()
@@ -354,7 +358,7 @@ class AppShellTest {
      * Wymagania: NFR-51, US14.1
      */
     @Test
-    fun us14_1_staff_konto_i_praca_l2() {
+    fun showsStaffAccountAndWork() {
         show(roles = staff)
         compose.onNodeWithText("Konto i\u00A0praca").assertIsNotSelected().performClick()
         compose.onNodeWithText("Konto i\u00A0praca").assertIsSelected()
@@ -410,7 +414,7 @@ class AppShellTest {
      * Wymagania: US1.1
      */
     @Test
-    fun us1_1_v2_back_keeps_v1_state() {
+    fun keepsMapStateOnCardBack() {
         compose.setContent {
             AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
@@ -439,7 +443,7 @@ class AppShellTest {
      * Wymagania: US1.1
      */
     @Test
-    fun us1_1_v3_back_keeps_v1_model() {
+    fun keepsMapModelOnEntranceBack() {
         compose.setContent {
             AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
@@ -477,7 +481,7 @@ class AppShellTest {
      * Wymagania: US2.8, NFR-53
      */
     @Test
-    fun us2_8_compact_then_expands() {
+    fun expandsAfterCompact() {
         var cover = 1.dp
         compose.setContent {
             AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
@@ -518,7 +522,7 @@ class AppShellTest {
 
     /** Wiersz: V2 rozwinięte, „Wstecz” → V1, dotknięcie konturu → nowe V2 znów jako mała karta. Wymagania: US2.8 */
     @Test
-    fun us2_8_new_v2_starts_compact() {
+    fun startsNewCardCompact() {
         compose.setContent {
             AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
@@ -542,7 +546,7 @@ class AppShellTest {
      * Wymagania: NFR-53, NFR-15, US2.8
      */
     @Test
-    fun us2_8_card_back_then_close() {
+    fun closesCardAfterBack() {
         compose.setContent { CardShell() }
         compose.onNodeWithText("V1").performClick()
         val compact = compose.onNodeWithContentDescription(EXPAND_HANDLE).getUnclippedBoundsInRoot().top
@@ -561,7 +565,7 @@ class AppShellTest {
      * Wymagania: US2, US1.1
      */
     @Test
-    fun us2_other_v2_sheet_over_v1() {
+    fun showsOtherCardOverMap() {
         compose.setContent {
             AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
@@ -581,7 +585,7 @@ class AppShellTest {
 
     /** Wiersz: każdy ekran poza V1, „Wstecz”: historia przetrwa odtworzenie aktywności. Wymagania: NFR-15, NFR-22 */
     @Test
-    fun nfr22_history_survives_restore() {
+    fun keepsHistoryAfterRestore() {
         val restoration = StateRestorationTester(compose)
         restoration.setContent { Shell(firstLaunch = false, roles = GuestRoleProvider) }
         compose.onNodeWithText("Pomoc").performClick()
@@ -596,7 +600,7 @@ class AppShellTest {
      *   automatycznie.
      */
     @Test
-    fun us4_1_report_opens_step_one() {
+    fun opensReportStepOne() {
         show(roles = visitor)
         compose.onNodeWithText("Zgłoś barierę").performClick()
         compose.onNodeWithText("Krok 1 z 3").assertExists()
@@ -611,7 +615,7 @@ class AppShellTest {
      * Wymagania: US3, US1.1, NFR-22
      */
     @Test
-    fun nfr22_params_survive_restore() {
+    fun keepsParamsAfterRestore() {
         val restoration = StateRestorationTester(compose)
         restoration.setContent {
             CardShell { route ->
@@ -638,7 +642,7 @@ class AppShellTest {
 
     /** Wiersz: wymagania wspólne, pasek dolny na V1, bez niego na L1: treść nie wchodzi pod paski. Wymagania: NFR-52 */
     @Test
-    fun nfr52_content_insets_after_bar() {
+    fun insetsContentAfterBar() {
         compose.setContent {
             AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) {
                 var consumed by remember { mutableStateOf(WindowInsets(0)) }

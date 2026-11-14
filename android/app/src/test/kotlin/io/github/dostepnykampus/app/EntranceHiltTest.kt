@@ -142,7 +142,7 @@ class EntranceHiltTest {
 
     /** Wiersz: V1 lista, budynek → V2 → V3 → „Pokaż wejście na mapie” → V1, TalkBack czyta wejście i budynek. */
     @Test
-    fun us3_3_hilt_entrance_selected() {
+    fun selectsEntranceThroughHilt() {
         waitFor(ListedA1)
         compose.onNode(ListedA1).performClick()
         waitFor(hasText("Sprawdź, którędy wejść"))

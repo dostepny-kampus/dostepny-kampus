@@ -17,13 +17,13 @@ import java.io.File
 class MockFreeArchitectureTest {
     /** Moduły funkcji projektu nie mają mocków w testach ani w zależnościach. */
     @Test
-    fun test_feature_without_mocks() {
+    fun forbidsMocksInFeature() {
         assertEquals(emptySet<String>(), violations(projectRoot()), HINT)
     }
 
     /** Import MockK w teście i zależność od Mockito łamią regułę w module funkcji, a w `core` nie. */
     @Test
-    fun test_mock_rule_rejects(
+    fun rejectsMock(
         @TempDir root: File,
     ) {
         listOf(

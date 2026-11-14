@@ -22,14 +22,14 @@ import java.io.File
 class DataContractArchitectureTest {
     /** Publiczne interfejsy `:core:data` i ich publiczne składowe mają KDoc. */
     @Test
-    fun infra_data_contract_documented() {
+    fun documentsDataContract() {
         val interfaces = Konsist.scopeFromProduction(moduleName = MODULE).interfaces(includeNested = true)
         assertEquals(emptyList<String>(), violations(interfaces), HINT)
     }
 
     /** Brak KDoc lub pusty opis interfejsu albo składowej łamie regułę; `internal` i `private` nie. */
     @Test
-    fun infra_data_contract_rejects(
+    fun rejectsUndocumentedContract(
         @TempDir fixtures: File,
     ) {
         source(fixtures = fixtures, name = "Bare", body = "interface Bare { /** Czyta. */ fun read() }")

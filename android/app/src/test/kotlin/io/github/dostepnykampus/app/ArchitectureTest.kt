@@ -20,6 +20,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
 
+/**
+ * Granice warstw i modułów aplikacji sprawdzane na kodzie źródłowym.
+ *
+ * Wymagania: NFR-11, NFR-16
+ */
 class ArchitectureTest {
     private val files = Konsist.scopeFromProject().files
 
@@ -33,14 +38,14 @@ class ArchitectureTest {
             }
 
     @Test
-    fun infra_a1_core_not_on_feature() {
+    fun keepsCoreOffFeature() {
         files
             .filter { it.inPackage("core") }
             .assertFalse { file -> file.imports.any { it.name.startsWith("$BASE.feature.") } }
     }
 
     @Test
-    fun infra_a1_feature_not_on_other() {
+    fun keepsFeatureOffOther() {
         files
             .filter { it.inPackage("feature") }
             .assertFalse { file ->
@@ -51,7 +56,7 @@ class ArchitectureTest {
 
     /** Kod ekranów bez sieci i bazy; testy modułu feature mogą budować repozytorium z wynikami sieci. */
     @Test
-    fun infra_a1_ui_no_network_or_db() {
+    fun keepsUiOffNetworkAndDb() {
         Konsist
             .scopeFromProduction()
             .files
@@ -65,19 +70,19 @@ class ArchitectureTest {
     }
 
     @Test
-    fun infra_a1_viewmodel_in_feature() {
+    fun keepsViewModelInFeature() {
         viewModels
             .assertFalse { !it.containingFile.inPackage("feature") }
     }
 
     @Test
-    fun adr7_viewmodel_from_hilt() {
+    fun takesViewModelFromHilt() {
         viewModels
             .assertTrue(strict = true) { it.hasAnnotationWithName("HiltViewModel") }
     }
 
     @Test
-    fun infra_a1_repository_in_data() {
+    fun keepsRepositoryInData() {
         files
             .flatMap { it.classes() + it.interfaces() }
             .filter { it.name.endsWith("Repository") }
@@ -86,19 +91,19 @@ class ArchitectureTest {
 
     /** Moduły funkcji biorą klienta HTTP z `core:network` przez Hilt, bez własnych importów HTTP. */
     @Test
-    fun infra_a1_feature_no_own_http() {
+    fun forbidsOwnHttpInFeature() {
         assertEquals(emptySet<String>(), httpFiles(featureFiles()) - OWN_HTTP.keys, HTTP_HINT)
     }
 
     /** wpis listy wyjątków bez importu HTTP trzeba usunąć, więc lista może tylko maleć. */
     @Test
-    fun infra_a1_http_list_shrinks() {
+    fun shrinksHttpList() {
         assertEquals(emptySet<String>(), OWN_HTTP.keys - httpFiles(featureFiles()))
     }
 
     /** pełna nazwa bez importu też wymaga biblioteki HTTP w zależnościach modułu funkcji. */
     @Test
-    fun infra_a1_build_without_http() {
+    fun buildsWithoutHttp() {
         val allowed = OWN_HTTP.keys.map { it.removePrefix("$BASE.feature.").substringBefore('.') }.toSet()
         val modules =
             File("../feature")
@@ -116,7 +121,7 @@ class ArchitectureTest {
      * bez niej, z `isWildcard`, więc reguła dokleja ją z powrotem.
      */
     @Test
-    fun infra_a1_own_http_rule_rejects(
+    fun rejectsOwnHttp(
         @TempDir fixtures: File,
     ) {
         val directory = File(fixtures, "map").apply { mkdirs() }
@@ -130,7 +135,7 @@ class ArchitectureTest {
 
     /** Stan zmienny tylko w klasach z grafu Hilt, nie na poziomie pliku ani w `object`. */
     @Test
-    fun infra_a1_no_global_state() {
+    fun forbidsGlobalState() {
         val production = Konsist.scopeFromProduction().files
         assertEquals(emptySet<String>(), globalState(production) - GLOBAL_STATE.keys, STATE_HINT)
         assertEquals(emptySet<String>(), GLOBAL_STATE.keys - globalState(production))
@@ -138,7 +143,7 @@ class ArchitectureTest {
 
     /** `var` na poziomie pliku i w `object`, `MutableStateFlow` w `companion object` łamią regułę. */
     @Test
-    fun infra_a1_global_state_rejects(
+    fun rejectsGlobalState(
         @TempDir fixtures: File,
     ) {
         val directory = File(fixtures, "state").apply { mkdirs() }
@@ -160,7 +165,7 @@ class ArchitectureTest {
 
     /** Pliki z `@Composable` nie liczą geometrii `core.geo`; wynik przychodzi w stanie z modelu widoku. */
     @Test
-    fun nfr11_composable_no_geometry() {
+    fun keepsGeometryOffComposable() {
         val found = composableGeometry(Konsist.scopeFromProduction().files)
         assertEquals(emptySet<String>(), found - GEOMETRY_OUTSIDE_VM.keys, GEOMETRY_HINT)
         assertEquals(emptySet<String>(), GEOMETRY_OUTSIDE_VM.keys - found)
@@ -168,7 +173,7 @@ class ArchitectureTest {
 
     /** `@Composable` z importem obliczeń geometrii łamie regułę, a model widoku nie. */
     @Test
-    fun nfr11_geometry_rule_rejects(
+    fun rejectsGeometryInComposable(
         @TempDir fixtures: File,
     ) {
         val directory = File(fixtures, "geo").apply { mkdirs() }
@@ -190,7 +195,7 @@ class ArchitectureTest {
 
     /** Ikony ze ścieżki buduje tylko `core:designsystem` jedną wspólną funkcją. */
     @Test
-    fun nfr16_icons_in_design_system() {
+    fun keepsIconsInDesignSystem() {
         val found = iconBuilders(Konsist.scopeFromProduction().files)
         assertEquals(emptySet<String>(), found - OWN_ICONS.keys, ICON_HINT)
         assertEquals(emptySet<String>(), OWN_ICONS.keys - found)
@@ -198,7 +203,7 @@ class ArchitectureTest {
 
     /** `ImageVector.Builder` w module funkcji łamie regułę, także pełną nazwą bez importu; sam typ nie. */
     @Test
-    fun nfr16_icon_rule_rejects(
+    fun rejectsIconOutside(
         @TempDir fixtures: File,
     ) {
         val directory = File(fixtures, "icons").apply { mkdirs() }

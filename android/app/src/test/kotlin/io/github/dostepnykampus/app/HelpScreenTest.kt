@@ -58,7 +58,7 @@ class HelpScreenTest {
 
     /** Scenariusz: przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */
     @Test
-    fun us5_1_first_launch_skip_v1() {
+    fun skipsToMapOnFirstLaunch() {
         shell(firstLaunch = true)
         compose.onNodeWithText("Jak korzystać z\u00A0aplikacji").assertExists()
         compose.onNodeWithText("Krok 1 z 3").assertExists()
@@ -69,7 +69,7 @@ class HelpScreenTest {
 
     /** Scenariusz: przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy. */
     @Test
-    fun us5_1_help_opens_again() {
+    fun opensHelpAgain() {
         shell(firstLaunch = false)
         compose.onNode(MapTab).assertIsSelected()
         compose.onAllNodesWithText("Jak korzystać z aplikacji").assertCountEquals(0)
@@ -82,7 +82,7 @@ class HelpScreenTest {
 
     /** Wiersz: „Wstecz”: poprzedni krok; w pierwszym kroku przy pierwszym uruchomieniu jak „Pomiń”. Wymagania: US5.1 */
     @Test
-    fun us5_1_first_launch_wstecz() {
+    fun goesBackOnFirstLaunch() {
         show(isFirstLaunch = true)
         compose.onNodeWithText("Dalej").performClick()
         compose.onNodeWithText("Wstecz").performClick()
@@ -99,7 +99,7 @@ class HelpScreenTest {
      * Wymagania: US5.1, NFR-21, NFR-15
      */
     @Test
-    fun us5_1_bar_dalej_back_zacznij() {
+    fun walksNextBackAndStart() {
         show()
         compose.onNodeWithText("Dalej").performClick()
         compose.onNodeWithText("Co znaczy „Dostępne”").assertExists()
@@ -117,7 +117,7 @@ class HelpScreenTest {
 
     /** Wiersz: obraz pokazuje prawdziwy element aplikacji i ma opis dla TalkBack. Wymagania: US5.1, NFR-18 */
     @Test
-    fun nfr18_example_talkback() {
+    fun readsExampleAloud() {
         show()
         compose.onNodeWithContentDescription("Przykład z mapy kampusu", substring = true).assertExists()
         compose.onAllNodesWithText("Wpisz symbol budynku, np. C-13").assertCountEquals(0)
@@ -128,7 +128,7 @@ class HelpScreenTest {
 
     /** Wiersz: reguła 10 dużej czcionki, czynności V5 na końcu treści, po tekście kroku. Wymagania: NFR-20, NFR-52 */
     @Test
-    fun nfr20_actions_after_text() {
+    fun putsActionsAfterText() {
         RuntimeEnvironment.setFontScale(2f)
         show()
         val text = compose.onNodeWithText("Wpisz symbol budynku", substring = true).getUnclippedBoundsInRoot()

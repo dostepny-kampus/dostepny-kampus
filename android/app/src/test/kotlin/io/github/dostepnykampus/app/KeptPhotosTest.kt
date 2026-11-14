@@ -12,17 +12,21 @@ import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-/** Odtworzona historia podaje sprzątaniu pliki zdjęć zgłoszenia szybkiego, których nie wolno usunąć. */
+/**
+ * Odtworzona historia podaje sprzątaniu pliki zdjęć zgłoszenia szybkiego, których nie wolno usunąć.
+ *
+ * Wymagania: NFR-5
+ */
 class KeptPhotosTest {
     @Test
-    fun nfr5_quick_report_photo_kept() {
+    fun keepsQuickReportPhoto() {
         val routes = listOf(MapRoute(), ReportRoute(step = ReportStep.GROUP, photoId = "z-1", photoPath = "/z/z-1.jpg"))
 
         assertEquals(setOf("/z/z-1.jpg"), keptPhotos(routes = routes, draft = ReportDraft()))
     }
 
     @Test
-    fun nfr5_no_draft_keeps_nothing() {
+    fun keepsNothingWithoutDraft() {
         assertEquals(emptySet<String>(), keptPhotos(routes = listOf(MapRoute(), ReportRoute()), draft = ReportDraft()))
     }
 }

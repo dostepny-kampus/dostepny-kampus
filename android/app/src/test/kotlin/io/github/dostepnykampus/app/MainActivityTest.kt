@@ -31,6 +31,8 @@ import javax.inject.Inject
 /**
  * Aktywność z oboczką w Robolectric na grafie Hilt aplikacji: pierwsze uruchomienie, odtworzenie aktywności i zapis
  * instrukcji.
+ *
+ * Wymagania: US5.1
  */
 @HiltAndroidTest
 @RunWith(RobolectricTestRunner::class)
@@ -61,7 +63,7 @@ class MainActivityTest {
 
     /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */
     @Test
-    fun us5_1_first_launch_recreate() {
+    fun keepsFirstLaunchOnRecreate() {
         compose.waitUntil { compose.onAllNodesWithText("Pomoc").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Pomoc").assertIsSelected()
         pressBack()
@@ -82,7 +84,7 @@ class MainActivityTest {
      * Wymagania: US3.2, NFR-19, NFR-22, US2.9
      */
     @Test
-    fun us2_9_talkback_list_restore() {
+    fun restoresListForTalkBack() {
         shadowOf(compose.activity.getSystemService(AccessibilityManager::class.java)).setTouchExplorationEnabled(true)
         runBlocking { mapListChoice.choose(isList = true) }
         compose.waitUntil { compose.onAllNodesWithText("Pomoc").fetchSemanticsNodes().isNotEmpty() }

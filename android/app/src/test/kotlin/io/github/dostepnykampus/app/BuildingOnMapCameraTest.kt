@@ -91,7 +91,7 @@ private fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latit
  * `shows` sprawdza, czy punkt podpisu (`labelPointOf`) leży w niezasłoniętej części mapy (Merkator), a `showOnMap`
  * idzie od listy V1 przez V2 otwarte od razu (TalkBack).
  *
- * Wymagania: US2.9, NFR-22, NFR-53
+ * Wymagania: US2.9, NFR-22, NFR-53, US2.8
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -191,7 +191,7 @@ class BuildingOnMapCameraTest {
      * Wymagania: US2.9, NFR-19, NFR-20
      */
     @Test
-    fun us2_9_far_building_in_view() {
+    fun bringsFarBuildingIntoView() {
         showOnMap("T-9")
         assertShown("T-9")
     }
@@ -202,7 +202,7 @@ class BuildingOnMapCameraTest {
      * Wymagania: US2.9, NFR-53
      */
     @Test
-    fun us2_9_a1_after_arrows() {
+    fun showsA1AfterArrows() {
         pan("prawo", times = 4)
         showOnMap("A-1")
         assertShown("A-1")
@@ -210,14 +210,14 @@ class BuildingOnMapCameraTest {
 
     /** Wiersz: K1, budynek w kształcie litery U → kamera widzi punkt podpisu, nie środek obrysu. Wymagania: US2.9 */
     @Test
-    fun us2_9_u_shape_label_point() {
+    fun usesUShapeLabelPoint() {
         showOnMap("U-1")
         assertShown("U-1")
     }
 
     /** Wiersz: K3 (strażnik), mała karta V2 i „Wstecz” → kamera sprzed karty. */
     @Test
-    fun us2_8_back_keeps_view() {
+    fun keepsViewOnBack() {
         pan("prawo", times = 2)
         val before = shown.last().second
         compose.runOnUiThread { touch(listOf("A-1")) }
@@ -229,7 +229,7 @@ class BuildingOnMapCameraTest {
 
     /** Wiersz: K4, po „Pokaż budynek na mapie” strzałka przesuwa mapę i fokus jej nie cofa. Wymagania: US2.9, NFR-53 */
     @Test
-    fun us2_9_pan_after_show() {
+    fun pansAfterShow() {
         showOnMap("T-9")
         val before = shown.last().second
         pan("prawo", times = 1)
@@ -240,7 +240,7 @@ class BuildingOnMapCameraTest {
 
     /** Wiersz: K5, po „Pokaż budynek na mapie” obrót ekranu → ten sam obszar, nie start. Wymagania: NFR-22 */
     @Test
-    fun nfr22_show_survives_rotation() {
+    fun keepsShowOnRotation() {
         showOnMap("T-9")
         val before = shown.last().second
         restoration.emulateSavedInstanceStateRestore()
@@ -251,7 +251,7 @@ class BuildingOnMapCameraTest {
 
     /** Wiersz: K6, drugie „Pokaż budynek na mapie” po przesunięciu mapy → kamera na drugim budynku. Wymagania: US2.9 */
     @Test
-    fun us2_9_second_show_moves() {
+    fun movesOnSecondShow() {
         showOnMap("T-9")
         pan("prawo", times = 1)
         showOnMap("C-13")
@@ -264,7 +264,7 @@ class BuildingOnMapCameraTest {
      * Wymagania: US2.9
      */
     @Test
-    fun us2_9_same_show_again() {
+    fun showsSameAgain() {
         showOnMap("T-9")
         pan("prawo", times = 4)
         showOnMap("T-9")
@@ -277,7 +277,7 @@ class BuildingOnMapCameraTest {
      * otwartej karcie atrapa nic nie zgłasza.
      */
     @Test
-    fun us2_8_back_after_show() {
+    fun goesBackAfterShow() {
         isIdleReported = true
         showOnMap("T-9")
         compose.waitForIdle()

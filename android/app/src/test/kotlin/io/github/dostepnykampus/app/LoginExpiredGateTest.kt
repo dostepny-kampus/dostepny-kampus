@@ -39,7 +39,7 @@ class LoginExpiredGateTest {
 
     /** Scenariusz (częściowo): synchronizacja.feature: Wygasłe zalogowanie czeka na ponowne zalogowanie. */
     @Test
-    fun br26_expired_then_resumed() {
+    fun resumesAfterExpiry() {
         show()
         compose.onNodeWithText(EXPIRED).assertDoesNotExist()
 
@@ -56,7 +56,7 @@ class LoginExpiredGateTest {
     }
 
     @Test
-    fun `bez zmiany konta czeka`() {
+    fun waitsWithoutAccountChange() {
         roles.account.value = Account.SignedIn()
         isExpired = true
         show()
