@@ -5,34 +5,31 @@
  */
 package io.github.dostepnykampus.app
 
-import androidx.compose.ui.semantics.SemanticsActions
-import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotFocused
-import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performSemanticsAction
-import androidx.compose.ui.text.AnnotatedString
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.github.dostepnykampus.core.testing.CHECK_ENTRANCES
+import io.github.dostepnykampus.core.testing.DeviceSteps
+import io.github.dostepnykampus.core.testing.inCatalog
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 private const val WAIT_MS = 20_000L
-private const val CHECK = "Sprawdź, którędy wejść"
 
-private val BuildingA1InCatalog = hasContentDescription("A-1, ", substring = true)
+private val BuildingA1InCatalog = inCatalog("A-1")
 
 /**
  * Ścieżka od wyszukania budynku do wejścia na emulatorze, na prawdziwej aktywności i grafie Hilt aplikacji:
@@ -50,9 +47,7 @@ class CampusPathDeviceTest {
     @get:Rule(order = 1)
     val compose = createAndroidComposeRule<MainActivity>()
 
-    private fun waitFor(matcher: SemanticsMatcher) {
-        compose.waitUntil(timeoutMillis = WAIT_MS) { compose.onAllNodes(matcher).fetchSemanticsNodes().isNotEmpty() }
-    }
+    private val steps = DeviceSteps(compose, WAIT_MS)
 
     /**
      * Każdy test zaczyna od czystych danych aplikacji (job emulatora robi `pm clear` przed każdym testem), więc
@@ -63,9 +58,7 @@ class CampusPathDeviceTest {
      */
     @Before
     fun leaveHelp() {
-        waitFor(hasText("Pomoc"))
-        Espresso.pressBack()
-        waitFor(hasSetTextAction())
+        steps.leaveHelp()
     }
 
     /**
@@ -79,16 +72,11 @@ class CampusPathDeviceTest {
      */
     @Test
     fun us3_search_card_entrances() {
-        compose
-            .onNode(hasSetTextAction())
-            .performSemanticsAction(SemanticsActions.SetText) { it(AnnotatedString("A-1")) }
-        waitFor(BuildingA1InCatalog)
-        compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
-        waitFor(hasText(CHECK))
-        compose.onNode(hasText(CHECK)).performClick()
-        waitFor(hasText("Którędy wejść do A-1"))
+        steps.openCard("A-1")
+        compose.onNode(hasText(CHECK_ENTRANCES)).performClick()
+        steps.waitFor(hasText("Którędy wejść do A-1"))
         Espresso.pressBack()
-        waitFor(hasText(CHECK))
+        steps.waitFor(hasText(CHECK_ENTRANCES))
     }
 
     /**
@@ -99,9 +87,9 @@ class CampusPathDeviceTest {
     @Test
     fun us2_list_card() {
         compose.onAllNodes(hasText("Lista budynków") or hasText("Lista")).onFirst().performClick()
-        waitFor(BuildingA1InCatalog)
+        steps.waitFor(BuildingA1InCatalog)
         compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
-        waitFor(hasText(CHECK))
+        steps.waitFor(hasText(CHECK_ENTRANCES))
     }
 
     /**
@@ -118,19 +106,19 @@ class CampusPathDeviceTest {
             compose.onNode(hasSetTextAction()).performClick()
             compose.waitUntil(timeoutMillis = WAIT_MS) { DeviceEvidence.isKeyboardVisible() }
             InstrumentationRegistry.getInstrumentation().sendStringSync("A-1")
-            waitFor(BuildingA1InCatalog)
+            steps.waitFor(BuildingA1InCatalog)
             compose.onNode(hasSetTextAction()).assertIsFocused()
             DeviceEvidence.record("v1-keyboard")
             compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
-            waitFor(hasText(CHECK))
+            steps.waitFor(hasText(CHECK_ENTRANCES))
             compose.waitUntil(timeoutMillis = WAIT_MS) { !DeviceEvidence.isKeyboardVisible() }
             compose.onAllNodes(hasSetTextAction() and isFocused()).assertCountEquals(0)
             DeviceEvidence.record("v2-no-keyboard")
             Espresso.pressBack()
             compose.waitUntil(timeoutMillis = WAIT_MS) {
-                compose.onAllNodes(hasText(CHECK)).fetchSemanticsNodes().isEmpty()
+                compose.onAllNodes(hasText(CHECK_ENTRANCES)).fetchSemanticsNodes().isEmpty()
             }
-            waitFor(hasSetTextAction())
+            steps.waitFor(hasSetTextAction())
             compose.waitUntil(timeoutMillis = WAIT_MS) {
                 compose.onAllNodes(hasSetTextAction() and isFocused()).fetchSemanticsNodes().isEmpty()
             }

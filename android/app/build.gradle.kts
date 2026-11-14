@@ -100,6 +100,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.monitor)
     androidTestImplementation(libs.junit4)
     androidTestImplementation(project(":core:network"))
+    androidTestImplementation(project(":core:testing"))
     androidTestImplementation(libs.okhttp)
     androidTestImplementation(libs.maplibre.android)
     androidTestImplementation(libs.kotlinx.serialization.json)
