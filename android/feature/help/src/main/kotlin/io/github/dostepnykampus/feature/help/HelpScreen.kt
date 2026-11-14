@@ -51,7 +51,7 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind.Outlined
 import io.github.dostepnykampus.core.designsystem.marking.MarkingChip
-import io.github.dostepnykampus.core.model.EntranceMarking
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 
 /**
  * Ekran V5 „Pomoc”: instrukcja krok po kroku, przejście przyciskiem „Dalej”, bez automatycznego przewijania. Krok jest

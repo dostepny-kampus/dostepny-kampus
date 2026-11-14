@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.core.model.building
 
-import io.github.dostepnykampus.core.model.Entrance
+import io.github.dostepnykampus.core.model.building.Entrance
 
 /**
  * Budynki z konturami i ich wejścia z jednego zbioru danych, np. z konturów OpenStreetMap w aplikacji.

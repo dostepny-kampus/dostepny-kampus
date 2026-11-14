@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import io.github.dostepnykampus.core.designsystem.R
 import io.github.dostepnykampus.core.designsystem.StatusColors
-import io.github.dostepnykampus.core.model.EntranceMarking
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 
 private const val ICON_VIEWPORT = 24f
 

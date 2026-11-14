@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.core.model
 
+import io.github.dostepnykampus.core.model.building.EntranceMarking
+
 /**
  * Treść zgłoszenia ustalana przez składającego (`SubmissionContent` z kontraktu API).
  *

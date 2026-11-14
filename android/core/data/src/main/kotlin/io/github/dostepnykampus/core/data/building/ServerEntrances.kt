@@ -7,7 +7,7 @@ package io.github.dostepnykampus.core.data.building
 
 import io.github.dostepnykampus.core.data.server.ServerCard
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.model.Entrance
+import io.github.dostepnykampus.core.model.building.Entrance
 import java.util.concurrent.ConcurrentHashMap
 
 /** Wejścia budynku z serwera dla karty V2 i V3, z dniem i źródłem oznaczenia. Wymagania: US17.3 */

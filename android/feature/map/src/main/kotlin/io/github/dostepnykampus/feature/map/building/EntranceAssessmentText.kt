@@ -9,8 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import io.github.dostepnykampus.core.model.AssessmentSource
-import io.github.dostepnykampus.core.model.EntranceAssessment
+import io.github.dostepnykampus.core.model.building.AssessmentSource
+import io.github.dostepnykampus.core.model.building.EntranceAssessment
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.data.DAY_FORMAT
 

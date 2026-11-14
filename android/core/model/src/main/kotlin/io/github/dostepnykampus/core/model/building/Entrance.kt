@@ -3,7 +3,9 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.model
+package io.github.dostepnykampus.core.model.building
+
+import io.github.dostepnykampus.core.model.GeoPoint
 
 /**
  * Wejście do budynku z oznaczeniem wejścia (`Entrance` z kontraktu API).

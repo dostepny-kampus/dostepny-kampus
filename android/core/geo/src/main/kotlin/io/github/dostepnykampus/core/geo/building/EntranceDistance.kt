@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.core.geo.building
 
 import io.github.dostepnykampus.core.geo.toPosition
-import io.github.dostepnykampus.core.model.Entrance
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.building.Entrance
 import org.maplibre.spatialk.turf.measurement.distance
 import org.maplibre.spatialk.units.International
 

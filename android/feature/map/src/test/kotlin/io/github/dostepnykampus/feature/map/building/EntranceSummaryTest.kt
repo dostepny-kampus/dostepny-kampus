@@ -5,12 +5,12 @@
  */
 package io.github.dostepnykampus.feature.map.building
 
-import io.github.dostepnykampus.core.model.Entrance
-import io.github.dostepnykampus.core.model.EntranceMarking
-import io.github.dostepnykampus.core.model.EntranceMarking.ACCESSIBLE
-import io.github.dostepnykampus.core.model.EntranceMarking.INACCESSIBLE
-import io.github.dostepnykampus.core.model.EntranceMarking.NO_DATA
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.building.EntranceMarking.ACCESSIBLE
+import io.github.dostepnykampus.core.model.building.EntranceMarking.INACCESSIBLE
+import io.github.dostepnykampus.core.model.building.EntranceMarking.NO_DATA
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
