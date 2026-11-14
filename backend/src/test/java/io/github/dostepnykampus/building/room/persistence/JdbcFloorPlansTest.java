@@ -38,16 +38,16 @@ final class JdbcFloorPlansTest {
     void savesUpdatesAndDeletesWithoutDuplicates(final ApplicationContext context) {
         final FloorPlans plans = context.getBean(FloorPlans.class);
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
-        final String target = "T-1";
-        final String other = "T-2";
+        final String target = "G-910";
+        final String other = "G-911";
         final String zero = "0";
         final String hall = "Korytarz";
         final String func = "Sala";
         final String small = JdbcFloorPlansTest.poly("17.001");
         final String large = JdbcFloorPlansTest.poly("17.002");
         final String wkt = "MULTIPOLYGON(((17 51, 17 51.001, 17.001 51.001, 17.001 51, 17 51)))";
-        new SampleBuilding(target, target, "A").wkt(jdbc, wkt);
-        new SampleBuilding(other, other, "A").wkt(jdbc, wkt);
+        new SampleBuilding(target, target, "DETAILED").wkt(jdbc, wkt);
+        new SampleBuilding(other, other, "DETAILED").wkt(jdbc, wkt);
         plans.save(
             other,
             List.of(new PlanFloor(zero, "P", 0)),
