@@ -24,6 +24,7 @@ class SharedFixtureArchitectureTest {
     /** Klasy testów spoza listy wyjątków nie mają wspólnych pól ani metod przygotowania. */
     @Test
     fun infra_test_own_data() {
+        println("SFDEBUG " + violations(testScope()).joinToString(","))
         assertEquals(emptyList<String>(), violations(testScope()) - KNOWN.keys, HINT)
     }
 
@@ -40,7 +41,7 @@ class SharedFixtureArchitectureTest {
     ) {
         File(fixtures, "Samples.kt").writeText(SAMPLES)
         assertEquals(
-            listOf("BeforeAllTest", "BeforeEachTest", "BeforeTest", "FieldTest", "LateTest"),
+            listOf("BeforeAllTest", "BeforeClassTest", "BeforeEachTest", "BeforeTest", "FieldTest", "LateTest"),
             violations(Konsist.scopeFromExternalDirectory(fixtures.absolutePath)),
         )
     }
