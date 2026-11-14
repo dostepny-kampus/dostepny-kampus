@@ -40,7 +40,7 @@ class TekstJsonConfigTest {
     }
 
     @Test
-    fun `niejawny odbiorca w rozszerzeniu Json to błąd`() {
+    fun `niejawny odbiorca to błąd`() {
         assertEquals(
             listOf(6),
             lines(
@@ -51,7 +51,7 @@ class TekstJsonConfigTest {
     }
 
     @Test
-    fun `serializer wygenerowany wtyczką w rozszerzeniu Json to błąd`() {
+    fun `serializer wtyczki niejawny`() {
         assertEquals(
             listOf(7),
             lines(
@@ -63,7 +63,7 @@ class TekstJsonConfigTest {
     }
 
     @Test
-    fun `serializer wygenerowany wtyczką z jawnym odbiorcą to błąd`() {
+    fun `serializer wtyczki jawny`() {
         assertEquals(
             listOf(7),
             lines(
