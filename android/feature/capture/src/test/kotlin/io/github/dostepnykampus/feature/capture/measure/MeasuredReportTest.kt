@@ -79,7 +79,7 @@ class MeasuredReportTest {
      *   budynku
      */
     @Test
-    fun us6_2_confirmed_building_saved() =
+    fun savesConfirmedBuilding() =
         runTest(dispatcher) {
             suggestA1()
             measure.confirm()
@@ -92,7 +92,7 @@ class MeasuredReportTest {
      *   budynku
      */
     @Test
-    fun us6_2_other_building_saved() =
+    fun savesOtherBuilding() =
         runTest(dispatcher) {
             suggestA1()
             measure.choose("B-1")
@@ -105,7 +105,7 @@ class MeasuredReportTest {
      *   budynku
      */
     @Test
-    fun br_g2_outside_no_building() =
+    fun savesOutsideWithoutBuilding() =
         runTest(dispatcher) {
             suggestA1()
             measure.outside()

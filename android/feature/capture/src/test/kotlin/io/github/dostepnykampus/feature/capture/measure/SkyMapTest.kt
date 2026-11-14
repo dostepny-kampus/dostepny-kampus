@@ -33,13 +33,13 @@ class SkyMapTest {
 
     /** Wiersz: GPS, Galileo i GLONASS da się odróżnić w odcieniach szarości. */
     @Test
-    fun us6_5_systems_differ_by_shape() {
+    fun differsSystemsByShape() {
         val marks = listOf(GnssSystem.GPS, GnssSystem.GALILEO, GnssSystem.GLONASS, GnssSystem.BEIDOU).map { it.mark() }
         assertEquals(marks.size, marks.toSet().size)
     }
 
     @Test
-    fun us6_5_legend_names_shapes() {
+    fun namesShapesInLegend() {
         show(satellite(GnssSystem.GPS), satellite(GnssSystem.GALILEO), satellite(GnssSystem.QZSS))
         compose.onNodeWithText("Mapa nieba").assertIsDisplayed()
         compose.onNodeWithText("GPS").assertIsDisplayed()
@@ -49,19 +49,19 @@ class SkyMapTest {
 
     /** Wszystkie widoczne satelity, także nieużyte do pozycji, tekstem dla czytnika ekranu. Wymagania: NFR-18 */
     @Test
-    fun us6_5_screen_reader_text() {
+    fun describesSkyForScreenReader() {
         show(satellite(GnssSystem.GPS), satellite(GnssSystem.GPS, isUsed = false), satellite(GnssSystem.GLONASS))
         compose.onNodeWithContentDescription("Mapa nieba, widoczne satelity: GPS 2, GLONASS 1").assertIsDisplayed()
     }
 
     @Test
-    fun us6_5_empty_sky() {
+    fun drawsEmptySky() {
         show()
         compose.onNodeWithContentDescription("Mapa nieba: nie widać jeszcze satelitów").assertIsDisplayed()
     }
 
     @Test
-    fun us6_5_zenith_center_north_up() {
+    fun putsZenithCenterNorthUp() {
         assertEquals(0f, skyOffset(azimuthDegrees = 0.0, elevationDegrees = 90.0, radius = 100f).getDistance(), DELTA)
         assertEquals(-100f, skyOffset(azimuthDegrees = 0.0, elevationDegrees = 0.0, radius = 100f).y, DELTA)
         assertEquals(50f, skyOffset(azimuthDegrees = 90.0, elevationDegrees = 45.0, radius = 100f).x, DELTA)

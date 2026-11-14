@@ -154,7 +154,7 @@ class PhotoCameraTest {
      * Wymagania: US7.1
      */
     @Test
-    fun us7_1_cancel_then_photo() {
+    fun returnsPhotoAfterCancel() {
         val strategy = Class.forName("androidx.core.content.FileProvider\$SimplePathStrategy")
         val method = strategy.getDeclaredMethod("belongsToRoot", String::class.java, String::class.java)
         assertEquals(Boolean::class.javaPrimitiveType, method.returnType)
@@ -173,9 +173,13 @@ class PhotoCameraTest {
         compose.onNodeWithText("Zrób nowe zdjęcie").performScrollTo()
     }
 
-    /** Błąd przekodowania: komunikat, plik usunięty, aplikacja działa, a „Zrób zdjęcie” otwiera aparat ponownie. */
+    /**
+     * Błąd przekodowania: komunikat, plik usunięty, aplikacja działa, a „Zrób zdjęcie” otwiera aparat ponownie.
+     *
+     * Wymagania: NFR-50
+     */
     @Test
-    fun nfr50_photo_error_retry() {
+    fun retriesAfterPhotoError() {
         val broken = PhotoTranscoder(EmptyCoroutineContext) { throw IOException(BROKEN) }
         showCamera(broken)
         val (request, file) = openCamera()
@@ -199,7 +203,7 @@ class PhotoCameraTest {
      * Wymagania: NFR-22
      */
     @Test
-    fun nfr22_photo_kept_on_rotation() {
+    fun keepsPhotoOnRotation() {
         val work = StandardTestDispatcher()
         showCamera(PhotoTranscoder(work))
         val (request, file) = openCamera()

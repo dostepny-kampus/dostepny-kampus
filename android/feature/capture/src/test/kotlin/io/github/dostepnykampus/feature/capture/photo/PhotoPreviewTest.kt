@@ -11,12 +11,12 @@ import org.junit.jupiter.api.Test
 /** Podgląd zdjęcia w C2 czyta zmniejszony obraz, a nie pełny JPEG z aparatu. Wymagania: US7.1 */
 class PhotoPreviewTest {
     @Test
-    fun `małe zdjęcie bez zmniejszania`() {
+    fun keepsSmallPreview() {
         assertEquals(1, decodeSample(longerSide = 1439, limit = 720))
     }
 
     @Test
-    fun `duże zdjęcie zmniejszone`() {
+    fun shrinksLargePreview() {
         assertEquals(2, decodeSample(longerSide = 1440, limit = 720))
         assertEquals(4, decodeSample(longerSide = 4000, limit = 720))
     }
