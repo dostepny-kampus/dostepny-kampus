@@ -14,6 +14,8 @@ istnieją, są w części „Stan dziś” razem z issue, które je usuwa.
    jedno zdanie bez „i”; klasy zmieniane razem leżą razem.
 2. **Moduł z jednym tematem** ma warstwy pod korzeniem (`building/domain`, `identity/web`).
    **Moduł z kilkoma tematami** ma tematy, a w nich warstwy (`barrier/submission/web`).
+   Temat, od którego moduł ma nazwę, zostaje w warstwach pod korzeniem; każdy kolejny temat ma
+   podpakiet z warstwami (`building/domain`, `building/room/json`).
 3. **Stałe nazwy warstw.** Serwer: `api`, `application`, `web`, `persistence`, `json`, `storage`.
    Android: `navigation` (trasy), `di`. Warstwa powstaje od jednego pliku.
 4. **Słownik tematów.** Nazwy tematów i ścieżek użytkownika pochodzą z
@@ -55,6 +57,14 @@ barrier/
 ```
 
 Moduł z jednym tematem, na przykładzie `building`: `api/`, `domain/`, `web/`, `persistence/` pod korzeniem.
+Gdy dochodzi drugi temat, budynek zostaje pod korzeniem, a nowy temat dostaje podpakiet:
+
+```text
+building/
+  api/  domain/  web/  persistence/   budynek, temat od nazwy modułu
+  room/                               pomieszczenie piętra
+    json/  persistence/  web/
+```
 
 - **API modułu** leży w pakiecie `api` z `@NamedInterface("api")`: interfejsy, rekordy danych,
   identyfikatory, wyjątki kontraktu, zdarzenia. Typy `api` zależą tylko od `api`, `shared` i `java`.
