@@ -3,9 +3,15 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.building;
+package io.github.dostepnykampus.building.persistence;
 
-import io.github.dostepnykampus.building.locate.Placement;
+import io.github.dostepnykampus.building.Outlines;
+import io.github.dostepnykampus.building.domain.Building;
+import io.github.dostepnykampus.building.domain.BuildingCard;
+import io.github.dostepnykampus.building.domain.BuildingList;
+import io.github.dostepnykampus.building.domain.Buildings;
+import io.github.dostepnykampus.building.domain.Entrance;
+import io.github.dostepnykampus.building.domain.Placement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,7 +33,7 @@ import org.springframework.stereotype.Service;
  * @since 0.1.0
  */
 @Service
-final class BuildingQuery {
+public final class BuildingQuery implements Buildings {
 
     /**
      * Promień podpowiedzi budynku w metrach, większy niż błąd GNSS 15 m.
@@ -51,7 +57,8 @@ final class BuildingQuery {
         this.outlines = outlines;
     }
 
-    BuildingList listBuildings() {
+    @Override
+    public BuildingList listBuildings() {
         return this.jdbc.sql(
             """
             SELECT symbol, name, detail_level, source,
@@ -62,13 +69,15 @@ final class BuildingQuery {
         ).query(BuildingQuery::rows);
     }
 
-    Placement locate(final double lat, final double lon) {
+    @Override
+    public Placement locate(final double lat, final double lon) {
         return this.outlines.containing(lat, lon)
             .<Placement>map(Placement.Inside::new)
             .orElseGet(() -> this.near(lat, lon));
     }
 
-    Optional<BuildingCard> building(final String symbol) {
+    @Override
+    public Optional<BuildingCard> building(final String symbol) {
         return this.jdbc.sql(
             """
             SELECT symbol, name, detail_level,

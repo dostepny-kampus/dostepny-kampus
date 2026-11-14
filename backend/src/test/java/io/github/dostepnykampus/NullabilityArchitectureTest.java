@@ -67,7 +67,10 @@ final class NullabilityArchitectureTest {
         "BarrierDetails", Set.of("group", "type", "severity", "description"),
         "SubmissionContent",
         Set.of("entranceId", "entranceMarking", "replaces"),
-        "SubmissionQuery", Set.of("buildingSymbol", "floorId")
+        "SubmissionQuery", Set.of("buildingSymbol", "floorId"),
+        "Building", Set.of("name"),
+        "BuildingCard", Set.of("name"),
+        "Entrance", Set.of("name", "type")
     );
 
     /**

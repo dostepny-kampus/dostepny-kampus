@@ -54,11 +54,6 @@ final class ModuleRootArchitectureTest {
             1323, "barrier", "JpegCleaner", "PhotoBucket", "PhotoSettings", "PhotoStorage",
             "PhotoStore", "PhotoTooLargeException", "PhotoUpload", "SubmissionPhotos",
             "SubmissionPhotosController", "SubmissionService"
-        ),
-        ModuleRootArchitectureTest.listed(
-            1324, "building", "Building", "BuildingCard", "BuildingList", "BuildingQuery",
-            "BuildingsController", "Entrance", "LocateResult", "LocateResults", "OsmBuildings",
-            "OsmEntrances"
         )
     ).flatMap(map -> map.entrySet().stream()).collect(
         Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue)

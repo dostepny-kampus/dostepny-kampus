@@ -5,11 +5,11 @@
  */
 
 /**
- * Adapter konturów budynków w bazie PostGIS.
+ * Model budynków kampusu i port ich odczytu, bez frameworków.
  *
  * @since 0.1.0
  */
 @NullMarked
-package io.github.dostepnykampus.building.postgis;
+package io.github.dostepnykampus.building.domain;
 
 import org.jspecify.annotations.NullMarked;

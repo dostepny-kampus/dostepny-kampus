@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.building.locate;
+package io.github.dostepnykampus.building.domain;
 
 import java.util.Objects;
 import java.util.Optional;

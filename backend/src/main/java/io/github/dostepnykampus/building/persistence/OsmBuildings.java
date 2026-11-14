@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.building;
+package io.github.dostepnykampus.building.persistence;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

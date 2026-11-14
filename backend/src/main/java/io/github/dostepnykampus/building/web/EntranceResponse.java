@@ -7,7 +7,7 @@ package io.github.dostepnykampus.building.web;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import io.github.dostepnykampus.building.Entrance;
+import io.github.dostepnykampus.building.domain.Entrance;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;

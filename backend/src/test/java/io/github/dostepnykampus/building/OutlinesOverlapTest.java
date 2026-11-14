@@ -7,7 +7,8 @@ package io.github.dostepnykampus.building;
 
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.SampleBuilding;
-import io.github.dostepnykampus.building.locate.Placement;
+import io.github.dostepnykampus.building.domain.Buildings;
+import io.github.dostepnykampus.building.domain.Placement;
 import java.util.Optional;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -52,7 +53,7 @@ final class OutlinesOverlapTest {
         OutlinesOverlapTest.overlapping(context);
         MatcherAssert.assertThat(
             "Podpowiedź wskazuje inny budynek niż zapisany przy zgłoszeniu",
-            context.getBean(BuildingQuery.class).locate(0.0005, 0.0015),
+            context.getBean(Buildings.class).locate(0.0005, 0.0015),
             Matchers.equalTo(
                 new Placement.Inside(
                     context.getBean(Outlines.class)

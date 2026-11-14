@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.building.web;
 
-import io.github.dostepnykampus.building.BuildingList;
+import io.github.dostepnykampus.building.domain.BuildingList;
 import java.util.List;
 import tools.jackson.databind.ObjectMapper;
 
