@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.database
+package io.github.dostepnykampus.core.database.cache
 
 import androidx.room.Dao
 import androidx.room.Insert

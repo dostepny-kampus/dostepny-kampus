@@ -7,12 +7,12 @@ package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.database.OwnSubmissionDao
-import io.github.dostepnykampus.core.database.OwnSubmissionState
-import io.github.dostepnykampus.core.database.PendingPhotoEntity
-import io.github.dostepnykampus.core.database.PendingSubmissionDao
-import io.github.dostepnykampus.core.database.PendingSubmissionEntity
-import io.github.dostepnykampus.core.database.PendingSubmissionWithPhotos
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
+import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import kotlinx.coroutines.Dispatchers

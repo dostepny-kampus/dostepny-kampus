@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
-import io.github.dostepnykampus.core.database.OwnSubmissionDao
-import io.github.dostepnykampus.core.database.OwnSubmissionEntity
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.model.SubmissionStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

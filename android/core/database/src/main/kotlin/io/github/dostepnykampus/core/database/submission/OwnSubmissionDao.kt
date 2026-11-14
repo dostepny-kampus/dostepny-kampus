@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.database
+package io.github.dostepnykampus.core.database.submission
 
 import androidx.room.Dao
 import androidx.room.Query

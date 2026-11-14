@@ -25,7 +25,7 @@ import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStamps
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
-import io.github.dostepnykampus.core.database.PendingEditDao
+import io.github.dostepnykampus.core.database.submission.PendingEditDao
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent

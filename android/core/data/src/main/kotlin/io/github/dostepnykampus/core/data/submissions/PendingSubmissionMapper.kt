@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
-import io.github.dostepnykampus.core.database.PendingSubmissionEntity
-import io.github.dostepnykampus.core.database.PendingSubmissionWithPhotos
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor

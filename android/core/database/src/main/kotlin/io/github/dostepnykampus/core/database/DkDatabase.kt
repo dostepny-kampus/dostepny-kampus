@@ -7,6 +7,16 @@ package io.github.dostepnykampus.core.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
+import io.github.dostepnykampus.core.database.cache.BarrierCacheEntity
+import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
+import io.github.dostepnykampus.core.database.cache.BuildingCacheEntity
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
+import io.github.dostepnykampus.core.database.submission.PendingEditDao
+import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
 
 /**
  * Baza lokalna aplikacji (Room): zgłoszenia czekające na wysłanie,

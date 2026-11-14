@@ -5,6 +5,10 @@
  */
 package io.github.dostepnykampus.core.database
 
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
+import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals

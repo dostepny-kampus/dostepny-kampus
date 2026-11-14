@@ -6,9 +6,9 @@
 package io.github.dostepnykampus.core.data.barriers
 
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.database.BARRIER_CACHE_SINGLE_ROW
-import io.github.dostepnykampus.core.database.BarrierCacheDao
-import io.github.dostepnykampus.core.database.BarrierCacheEntity
+import io.github.dostepnykampus.core.database.cache.BARRIER_CACHE_SINGLE_ROW
+import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
+import io.github.dostepnykampus.core.database.cache.BarrierCacheEntity
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Severity

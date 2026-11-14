@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
-import io.github.dostepnykampus.core.database.PendingSubmissionDao
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext

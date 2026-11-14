@@ -6,10 +6,10 @@
 package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.database.PendingPhotoEntity
-import io.github.dostepnykampus.core.database.PendingSubmissionDao
-import io.github.dostepnykampus.core.database.PendingSubmissionEntity
-import io.github.dostepnykampus.core.database.PendingSubmissionWithPhotos
+import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
 import io.github.dostepnykampus.core.model.Submission
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

@@ -7,9 +7,9 @@ package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.database.OwnSubmissionEntity
-import io.github.dostepnykampus.core.database.OwnSubmissionState
-import io.github.dostepnykampus.core.database.PendingSubmissionEntity
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionKind
 

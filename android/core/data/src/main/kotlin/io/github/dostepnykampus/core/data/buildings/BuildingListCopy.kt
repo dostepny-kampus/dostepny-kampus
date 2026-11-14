@@ -5,9 +5,9 @@
  */
 package io.github.dostepnykampus.core.data.buildings
 
-import io.github.dostepnykampus.core.database.BUILDING_CACHE_SINGLE_ROW
-import io.github.dostepnykampus.core.database.BuildingCacheDao
-import io.github.dostepnykampus.core.database.BuildingCacheEntity
+import io.github.dostepnykampus.core.database.cache.BUILDING_CACHE_SINGLE_ROW
+import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
+import io.github.dostepnykampus.core.database.cache.BuildingCacheEntity
 import io.github.dostepnykampus.core.network.building.BuildingList
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
