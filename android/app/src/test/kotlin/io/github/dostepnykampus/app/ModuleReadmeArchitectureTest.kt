@@ -120,14 +120,6 @@ class ModuleReadmeArchitectureTest {
 
         val DEPENDENCY = Regex("^- `(:[^`]+)`", RegexOption.MULTILINE)
 
-        val UNDESCRIBED =
-            mapOf(
-                ":app" to 1580,
-                ":feature:map" to 1580,
-                ":feature:capture" to 1580,
-                ":feature:help" to 1580,
-                ":detekt-rules" to 1580,
-                ":systemtest" to 1580,
-            )
+        val UNDESCRIBED = emptyMap<String, Int>()
     }
 }
