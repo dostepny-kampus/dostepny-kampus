@@ -22,6 +22,7 @@ pending	temat	oczekujące zmiany	Zmiany zgłoszeń czekające na wysłanie.
 photo	temat	zdjęcie	Zdjęcie zgłoszenia: wykonanie, zapis, wysłanie.
 quick	ścieżka	szybkie zgłoszenie	Zgłoszenie wejścia w kilku krokach.
 report	ścieżka	pełne zgłoszenie	Formularz i edycja pełnego zgłoszenia.
+room	temat	pomieszczenie	Pomieszczenie piętra: numer sali, funkcja, kontur.
 style	temat	styl mapy	Warstwy, kolory i obrazy mapy.
 submission	temat	zgłoszenie	Zgłoszenie bariery i jego cykl życia.
 sync	temat	synchronizacja	Wysyłanie zgłoszeń i pobieranie wyników w tle.
