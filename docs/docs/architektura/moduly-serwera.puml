@@ -1,0 +1,4 @@
+@startuml
+!pragma layout smetana
+!include moduly-serwera.iuml
+@enduml
