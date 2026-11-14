@@ -7,9 +7,13 @@ package io.github.dostepnykampus.app
 
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performClick
@@ -17,6 +21,7 @@ import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.text.AnnotatedString
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
@@ -97,5 +102,49 @@ class CampusPathDeviceTest {
         waitFor(BuildingA1InCatalog)
         compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
         waitFor(hasText(CHECK))
+    }
+
+    /**
+     * Wiersz: prawdziwa klawiatura → wybór A-1 → V2 bez fokusu i klawiatury → jedno Wstecz zamyka V2.
+     *
+     * Wymagania: US1.1
+     */
+    @Test
+    fun us1_1_keyboard_then_back() {
+        val previous = DeviceEvidence.shell("settings get secure show_ime_with_hard_keyboard").trim()
+        check(previous in setOf("0", "1", "null")) { "Nieznane ustawienie klawiatury: $previous" }
+        try {
+            DeviceEvidence.shell("settings put secure show_ime_with_hard_keyboard 1")
+            compose.onNode(hasSetTextAction()).performClick()
+            compose.waitUntil(timeoutMillis = WAIT_MS) { DeviceEvidence.isKeyboardVisible() }
+            InstrumentationRegistry.getInstrumentation().sendStringSync("A-1")
+            waitFor(BuildingA1InCatalog)
+            compose.onNode(hasSetTextAction()).assertIsFocused()
+            DeviceEvidence.record("v1-keyboard")
+            compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
+            waitFor(hasText(CHECK))
+            compose.waitUntil(timeoutMillis = WAIT_MS) { !DeviceEvidence.isKeyboardVisible() }
+            compose.onAllNodes(hasSetTextAction() and isFocused()).assertCountEquals(0)
+            DeviceEvidence.record("v2-no-keyboard")
+            Espresso.pressBack()
+            compose.waitUntil(timeoutMillis = WAIT_MS) {
+                compose.onAllNodes(hasText(CHECK)).fetchSemanticsNodes().isEmpty()
+            }
+            waitFor(hasSetTextAction())
+            compose.waitUntil(timeoutMillis = WAIT_MS) {
+                compose.onAllNodes(hasSetTextAction() and isFocused()).fetchSemanticsNodes().isEmpty()
+            }
+            compose.onNode(hasSetTextAction()).assertIsNotFocused()
+            compose.waitUntil(timeoutMillis = WAIT_MS) { !DeviceEvidence.isKeyboardVisible() }
+            DeviceEvidence.record("v1-after-back")
+        } finally {
+            val command =
+                if (previous == "null") {
+                    "settings delete secure show_ime_with_hard_keyboard"
+                } else {
+                    "settings put secure show_ime_with_hard_keyboard $previous"
+                }
+            DeviceEvidence.shell(command)
+        }
     }
 }
