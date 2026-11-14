@@ -116,8 +116,7 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
      * @param submissionId identyfikator zgłoszenia
      * @param photoId identyfikator zdjęcia z listy `photoIds`
      */
-    public fun photoUrl(submissionId: String, photoId: String): String =
-        path(submissionId, PHOTOS, photoId).toString()
+    public fun photoUrl(submissionId: String, photoId: String): String = path(submissionId, PHOTOS, photoId).toString()
 
     /**
      * Zgłoszenia przyjęte do mapy i karty budynku (`status=ACCEPTED`).
