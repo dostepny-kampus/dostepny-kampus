@@ -84,6 +84,7 @@ class CampusMapStyleTest {
     /**
      * Wiersz: V1, obszar poza terenem jest przyciemniony, a granicę pokazuje linia: wielokąt
      * przyciemnienia ma otwór o brzegach terenu, a linia biegnie po tych samych brzegach.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
      *
      * Wymagania: US1.7, BR-G5
      */

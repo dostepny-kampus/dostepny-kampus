@@ -75,6 +75,7 @@ class MapOverlayNoticeTest {
     /**
      * Wiersz: V1, po zmianie terenu przez zaznaczony budynek nad podpisem mapy stoi napis „Pokazuję teren:
      * Wittigowo”, który TalkBack czyta sam.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wyszukanie budynku z innego terenu zmienia teren
      *
      * Wymagania: US1.8, NFR-18
      */
