@@ -67,7 +67,12 @@ public class BottomBarItems(items: List<BottomBarItem>) {
  * Wymagania: NFR-52, NFR-18, NFR-20
  */
 @Composable
-public fun BottomBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
+public fun BottomBar(
+    items: BottomBarItems,
+    selectedIndex: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = MaterialTheme.colorScheme
     val iconSize = Modifier.size(Ikony.rozmiar)
     Column(modifier = modifier) {
