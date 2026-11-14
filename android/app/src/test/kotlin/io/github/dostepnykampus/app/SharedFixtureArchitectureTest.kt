@@ -139,7 +139,7 @@ class SharedFixtureArchitectureTest {
             .toList()
 
     private fun isTestPath(path: String): Boolean {
-        val normalized = path.replace(oldChar = '\', newChar = '/')
+        val normalized = path.replace(oldChar = '\\',newChar = '/')
         return TEST_SOURCE.containsMatchIn(normalized) || !normalized.contains("/src/")
     }
 
