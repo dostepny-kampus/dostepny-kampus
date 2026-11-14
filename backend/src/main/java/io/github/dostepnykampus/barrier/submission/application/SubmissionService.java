@@ -11,9 +11,11 @@ import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.OutsideCampus;
 import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
+import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import io.github.dostepnykampus.building.api.CampusArea;
+import io.github.dostepnykampus.building.api.KnownBuildings;
 import io.github.dostepnykampus.building.api.Outlines;
 import java.util.UUID;
 import org.springframework.context.ApplicationEventPublisher;
@@ -37,6 +39,9 @@ public class SubmissionService {
     /** Kontury budynków do budynku zgłoszenia szybkiego. Wymagania: BR-14 */
     private final Outlines outlines;
 
+    /** Budynki znane serwerowi do kontroli budynku podanego przez klienta. Wymagania: BR-14 */
+    private final KnownBuildings buildings;
+
     /** Teren PWr, poza którym nowe zgłoszenie jest odrzucane. Wymagania: BR-G5 */
     private final CampusArea area;
 
@@ -45,10 +50,12 @@ public class SubmissionService {
 
     SubmissionService(
         final SubmissionRepository repository, final Outlines outlines,
-        final CampusArea area, final ApplicationEventPublisher events
+        final KnownBuildings buildings, final CampusArea area,
+        final ApplicationEventPublisher events
     ) {
         this.repository = repository;
         this.outlines = outlines;
+        this.buildings = buildings;
         this.area = area;
         this.events = events;
     }
@@ -69,9 +76,10 @@ public class SubmissionService {
     /**
      * Zapisuje nowe zgłoszenie albo zwraca zapisane wcześniej.
      * Miejsce dalej niż 500 m od każdego budynku PWr daje {@link OutsideCampus};
-     * odległość od budynków liczy baza.
+     * odległość od budynków liczy baza. Nieznany budynek podany przez klienta daje
+     * {@link InvalidSubmission} bez zapisu.
      *
-     * <p>Wymagania: BR-9, BR-G5</p>
+     * <p>Wymagania: BR-9, BR-14, BR-G5</p>
      *
      * @param command Komenda utworzenia
      * @return Wynik zapisu
@@ -90,9 +98,9 @@ public class SubmissionService {
     /**
      * Zapisuje edycję zgłoszenia. Zapisana edycja idzie jako
      * zdarzenie, więc po zatwierdzeniu zdjęcia spoza nowej listy znikają z
-     * magazynu.
+     * magazynu. Budynek sprawdza się jak przy utworzeniu.
      *
-     * <p>Wymagania: BR-3, BR-10</p>
+     * <p>Wymagania: BR-3, BR-10, BR-14</p>
      *
      * @param command Komenda edycji
      * @return Wynik edycji
@@ -118,6 +126,10 @@ public class SubmissionService {
                 .map(content::withBuilding)
                 .orElseGet(content::outsideBuildings);
         } else {
+            final String symbol = content.place().buildingSymbol();
+            if (symbol != null && !this.buildings.known(symbol)) {
+                throw new InvalidSubmission("Nieznany budynek zgłoszenia");
+            }
             result = content;
         }
         return result;

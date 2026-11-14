@@ -16,6 +16,7 @@ import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
 import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
 import io.github.dostepnykampus.barrier.submission.content.BarrierType;
+import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.NewEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
@@ -109,6 +110,39 @@ final class SubmissionServiceTest {
     }
 
     @Test
+    void brFourteenRejectsUnknownClientBuildingWithoutSaving() {
+        final SubmissionServiceTest.RecordingSubmissions fake =
+            new SubmissionServiceTest.RecordingSubmissions(null, null);
+        final List<String> asked = new ArrayList<>(2);
+        final SubmissionService service = new SubmissionService(
+            fake, SubmissionServiceTest.FORBIDDEN,
+            symbol -> {
+                asked.add(symbol);
+                return false;
+            },
+            (lat, lon) -> true, event -> { }
+        );
+        final SubmissionContent unknown =
+            SubmissionServiceTest.content(SubmissionKind.PRECISE, "Z9");
+        Assertions.assertAll(
+            () -> Assertions.assertThrows(
+                InvalidSubmission.class,
+                () -> service.create(
+                    new NewSubmission(SubmissionServiceTest.ID, unknown, "konto")
+                )
+            ),
+            () -> Assertions.assertThrows(
+                InvalidSubmission.class,
+                () -> service.update(new SubmissionEdit(SubmissionServiceTest.ID, 1, unknown))
+            ),
+            () -> Assertions.assertEquals(
+                List.of(List.of("Z9", "Z9"), 0), List.of(asked, fake.seen().size()),
+                "Budynek nie sprawdzony po symbolu albo zgłoszenie zapisane mimo odmowy"
+            )
+        );
+    }
+
+    @Test
     void ioneFourCreateReturnsRepositoryResult() {
         final NewSubmission command = new NewSubmission(
             SubmissionServiceTest.ID,
@@ -192,7 +226,7 @@ final class SubmissionServiceTest {
         ).forEach(
             result -> new SubmissionService(
                 new SubmissionServiceTest.RecordingSubmissions(null, result),
-                SubmissionServiceTest.FORBIDDEN, (lat, lon) -> true,
+                SubmissionServiceTest.FORBIDDEN, symbol -> true, (lat, lon) -> true,
                 published::add
             ).update(
                 new SubmissionEdit(
@@ -225,7 +259,7 @@ final class SubmissionServiceTest {
             new SubmissionServiceTest.RecordingSubmissions(null, null);
         final List<Double> asked = new ArrayList<>(2);
         final SubmissionService service = new SubmissionService(
-            fake, SubmissionServiceTest.EMPTY,
+            fake, SubmissionServiceTest.EMPTY, symbol -> true,
             (lat, lon) -> {
                 asked.add(lat);
                 asked.add(lon);
@@ -249,7 +283,9 @@ final class SubmissionServiceTest {
     private static SubmissionService service(
         final SubmissionRepository repository, final Outlines outlines
     ) {
-        return new SubmissionService(repository, outlines, (lat, lon) -> true, event -> { });
+        return new SubmissionService(
+            repository, outlines, symbol -> true, (lat, lon) -> true, event -> { }
+        );
     }
 
     private static SubmissionContent created(

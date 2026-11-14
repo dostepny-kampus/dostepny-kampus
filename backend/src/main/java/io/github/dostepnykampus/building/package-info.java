@@ -9,7 +9,8 @@
  *
  * <p>Zadanie: lista i karta budynku z wejściami oraz dopasowanie punktu do budynku.</p>
  *
- * <p>API: pakiet {@code api} ({@code CampusArea}, {@code Outlines}); HTTP {@code /buildings}.</p>
+ * <p>API: pakiet {@code api} ({@code CampusArea}, {@code KnownBuildings},
+ * {@code Outlines}); HTTP {@code /buildings}.</p>
  *
  * <p>Zależności: {@code shared}.</p>
  *
