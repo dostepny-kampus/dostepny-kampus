@@ -60,6 +60,7 @@ import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingList
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.building.foundFor
+import io.github.dostepnykampus.feature.map.controls.OfflineLine
 import java.time.Instant
 
 private val SearchIcon =

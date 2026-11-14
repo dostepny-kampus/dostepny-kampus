@@ -27,6 +27,8 @@ import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapArea
+import io.github.dostepnykampus.feature.map.data.MapCamera
+import io.github.dostepnykampus.feature.map.data.START_ZOOM
 import io.github.dostepnykampus.feature.map.data.center
 import kotlinx.serialization.json.JsonObject
 import org.junit.Assert.assertTrue

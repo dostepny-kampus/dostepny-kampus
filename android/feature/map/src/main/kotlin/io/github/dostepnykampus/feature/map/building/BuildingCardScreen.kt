@@ -36,8 +36,8 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.PinnedButton
 import io.github.dostepnykampus.core.designsystem.PinnedButtonKind
 import io.github.dostepnykampus.core.model.EntranceMarking
-import io.github.dostepnykampus.feature.map.OfflinePill
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.controls.OfflinePill
 
 /**
  * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako

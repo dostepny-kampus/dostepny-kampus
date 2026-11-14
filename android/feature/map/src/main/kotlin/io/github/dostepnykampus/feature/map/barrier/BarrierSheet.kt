@@ -37,10 +37,8 @@ import io.github.dostepnykampus.core.designsystem.nameRes
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.building.DAY_FORMAT
-import java.time.ZoneId
-
-internal val CampusZone: ZoneId = ZoneId.of("Europe/Warsaw")
+import io.github.dostepnykampus.feature.map.data.CampusZone
+import io.github.dostepnykampus.feature.map.data.DAY_FORMAT
 
 /**
  * Arkusz bariery na dole mapy V1 po dotknięciu znaku: plakietka uciążliwości ze znakiem i słowem,

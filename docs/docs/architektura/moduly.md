@@ -73,7 +73,9 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 - Tylko `:core:data` i `:app` zależą od `:core:database` i `:core:network`.
 - W modułach `core` działa `explicitApi()`; deklaracja nieużywana poza modułem jest `internal`.
 - Pakiety modułu funkcji dzielimy według ścieżki użytkownika albo tematu, np. `capture.quick`,
-  `capture.report`, `map.style`, `map.area`. W korzeniu zostaje to, co wspólne kilku ścieżkom.
+  `capture.report`, `map.style`, `map.area`. W korzeniu zostaje ekran wejścia do funkcji; podpakiety
+  nie importują korzenia. To, co wspólne kilku podpakietom, leży w podpakiecie, od którego zależą
+  pozostałe (np. `map.data`, `map.controls`).
 
 ## Wspólne
 
@@ -88,6 +90,7 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | Odstępstwo | Issue |
 | --- | --- |
 | `barrier.domain` ma 22 pliki | #1439 |
+| podpakiety `feature.capture` importują korzeń modułu; brak reguły dla `feature/*` | #1634, #1635 |
 | `:core:data` udostępnia `:core:database` przez `api(...)`, testy funkcji zależą od bazy i sieci | #1328 |
 
 ## Co pilnuje zasady
