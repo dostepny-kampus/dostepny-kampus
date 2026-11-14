@@ -56,7 +56,8 @@ final class ModuleForeignKeyTest {
                 String.join(
                     " ",
                     "SELECT conrelid::regclass::text AS source, confrelid::regclass::text AS target",
-                    "FROM pg_constraint WHERE contype = 'f'"
+                    "FROM pg_constraint WHERE contype = 'f'",
+                    "AND connamespace = current_schema()::regnamespace"
                 )
             ).query((row, index) -> List.of(row.getString("source"), row.getString("target")))
                 .list()
