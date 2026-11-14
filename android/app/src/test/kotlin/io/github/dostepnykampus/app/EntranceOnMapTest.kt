@@ -18,8 +18,6 @@ import androidx.compose.ui.test.performClick
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
-import io.github.dostepnykampus.app.navigation.BuildingCard
-import io.github.dostepnykampus.app.navigation.MapScreen
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
@@ -100,19 +98,15 @@ class EntranceOnMapTest {
     private fun AppNavigator.Screen(route: NavKey, json: String) {
         val repository = remember { BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { json } }
         MapOrBuildingScreen(route, repository, choice, fakeMap) { other ->
-            when (other) {
-                is EntrancesRoute -> {
-                    EntrancesScreen(
-                        symbol = other.symbol,
-                        onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = other.symbol)) },
-                        onBack = { back() },
-                        viewModel = remember { BuildingCardViewModel(other.symbol, repository, { flowOf(true) }) },
-                    )
-                }
-
-                else -> {
-                    AppScreen(other)
-                }
+            if (other is EntrancesRoute) {
+                EntrancesScreen(
+                    symbol = other.symbol,
+                    onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = other.symbol)) },
+                    onBack = { back() },
+                    viewModel = remember { BuildingCardViewModel(other.symbol, repository, { flowOf(true) }) },
+                )
+            } else {
+                AppScreen(other)
             }
         }
     }
