@@ -7,14 +7,7 @@
 plugins {
     id("dostepnykampus.android.library")
     id("dostepnykampus.android.compose")
-}
-
-android {
-    testOptions.unitTests.isIncludeAndroidResources = true
-}
-
-tasks.withType<Test>().configureEach {
-    jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED", "--enable-native-access=ALL-UNNAMED")
+    id("dostepnykampus.android.robolectric")
 }
 
 kotlin {
@@ -28,7 +21,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.text)
     implementation(libs.androidx.test.espresso.core)
     testImplementation(libs.junit4)
-    testImplementation(libs.robolectric)
     testImplementation(libs.androidx.activity)
     testImplementation(libs.androidx.activity.compose)
     testImplementation(libs.androidx.compose.foundation)
