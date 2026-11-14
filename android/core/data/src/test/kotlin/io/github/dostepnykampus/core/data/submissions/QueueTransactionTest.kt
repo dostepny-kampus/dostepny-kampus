@@ -1,20 +1,18 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
 import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.OwnSubmissionState
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.model.SubmissionStatus
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -22,7 +20,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Błąd zapisu historii cofa zapis kolejki z tej samej pary, więc tabele nie zostają w sprzeczności. */
@@ -39,7 +36,7 @@ class QueueTransactionTest {
         runBlocking {
             failing = "save"
 
-            assertThrows<IllegalStateException> { runBlocking { queue().save(precise(), photo()) } }
+            assertThrows<IllegalStateException> { runBlocking { queue().save(precise(PHOTO), photo(tempDir, PHOTO)) } }
 
             assertEquals(emptyList<Any>(), store.rows)
         }
@@ -47,7 +44,7 @@ class QueueTransactionTest {
     @Test
     fun `br10 utworzenie bez wersji`() =
         runBlocking {
-            queue().save(precise(), photo())
+            queue().save(precise(PHOTO), photo(tempDir, PHOTO))
             failing = "saveVersion"
 
             assertThrows<IllegalStateException> { runBlocking { queue().sendAll() } }
@@ -59,7 +56,7 @@ class QueueTransactionTest {
     @Test
     fun `us8_1 usunięcie bez wysłania`() =
         runBlocking {
-            queue().save(precise(), photo())
+            queue().save(precise(PHOTO), photo(tempDir, PHOTO))
             failing = "markSent"
 
             assertThrows<IllegalStateException> { runBlocking { queue().sendAll() } }
@@ -100,30 +97,6 @@ class QueueTransactionTest {
             history.markSent(id)
         }
     }
-
-    private fun server(id: String, content: SubmissionContent): Submission =
-        Submission(
-            id = id,
-            version = 1,
-            status = SubmissionStatus.SENT,
-            createdAt = Instant.parse("2026-01-01T00:00:00Z"),
-            content = content,
-        )
-
-    private fun photo(): List<PendingPhotoDraft> {
-        val file = tempDir.resolve("$PHOTO.jpg")
-        file.writeBytes(byteArrayOf(1, 2, 3))
-        return listOf(PendingPhotoDraft(photoId = PHOTO, path = file.path))
-    }
-
-    private fun precise(): SubmissionContent =
-        SubmissionContent(
-            kind = SubmissionKind.PRECISE,
-            location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
-            photoIds = listOf(PHOTO),
-            barrierType = "TB-5",
-            severity = 2,
-        )
 
     private companion object {
         const val ID = "s-transakcja"

@@ -1,18 +1,17 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
 import io.github.dostepnykampus.core.database.OwnSubmissionState
-import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.model.SubmissionStatus
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
@@ -44,10 +42,10 @@ class RefusedSubmissionTest {
                 SubmissionServer(
                     create = { id, content ->
                         creates++
-                        store.createResults.removeFirstOrNull() ?: ServerReply.Ok(server(id, content))
+                        store.createResults.removeFirstOrNull() ?: ServerReply.Ok(server(id, content, version = 2))
                     },
                     putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
+                    update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 2))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
             history = history,
@@ -69,7 +67,7 @@ class RefusedSubmissionTest {
     @Test
     fun `br26 awaria serwera ponawia`() =
         runBlocking {
-            queue.save(precise(), photo())
+            queue.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Fault(code = 500))
 
             assertFalse(queue.sendAll())
@@ -82,7 +80,7 @@ class RefusedSubmissionTest {
     @Test
     fun `br26 brak sieci ponawia`() =
         runBlocking {
-            queue.save(precise(), photo())
+            queue.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Offline)
 
             assertFalse(queue.sendAll())
@@ -95,7 +93,7 @@ class RefusedSubmissionTest {
     @Test
     fun `br26 401 czeka na zalogowanie`() =
         runBlocking {
-            queue.save(precise(), photo())
+            queue.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Fault(code = 401))
 
             queue.sendAll()
@@ -112,11 +110,15 @@ class RefusedSubmissionTest {
     @Test
     fun `us9_5 ponowny zapis wysyła`() =
         runBlocking {
-            queue.save(precise(), photo())
+            queue.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Fault(code = 400))
             queue.sendAll()
 
-            queue.saveEdit(EditedSubmission(id = ID, baseVersion = null), precise().copy(severity = 1), photo())
+            queue.saveEdit(
+                EditedSubmission(id = ID, baseVersion = null),
+                precise(PHOTO, severity = 1),
+                photo(tempDir, PHOTO),
+            )
             assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state)
             queue.sendAll()
 
@@ -126,7 +128,7 @@ class RefusedSubmissionTest {
 
     private fun refusedOnce(result: ServerReply<Submission>, code: Int) =
         runBlocking {
-            queue.save(precise(), photo())
+            queue.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(result)
 
             queue.sendAll()
@@ -139,30 +141,6 @@ class RefusedSubmissionTest {
             val left = store.rows.single()
             assertTrue(left.submission.isRefused)
         }
-
-    private fun server(id: String, content: SubmissionContent): Submission =
-        Submission(
-            id = id,
-            version = 2,
-            status = SubmissionStatus.SENT,
-            createdAt = Instant.parse("2026-01-01T00:00:00Z"),
-            content = content,
-        )
-
-    private fun photo(): List<PendingPhotoDraft> {
-        val file = tempDir.resolve("$PHOTO.jpg")
-        file.writeBytes(byteArrayOf(1, 2, 3))
-        return listOf(PendingPhotoDraft(photoId = PHOTO, path = file.path))
-    }
-
-    private fun precise(): SubmissionContent =
-        SubmissionContent(
-            kind = SubmissionKind.PRECISE,
-            location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
-            photoIds = listOf(PHOTO),
-            barrierType = "TB-5",
-            severity = 2,
-        )
 
     private companion object {
         const val ID = "s-odmowa"

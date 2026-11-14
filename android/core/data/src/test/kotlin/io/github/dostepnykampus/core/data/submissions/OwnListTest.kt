@@ -1,24 +1,23 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.model.SubmissionStatus
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Lista C3 czytana tak jak w aplikacji: z historii zapisanej przez kolejkę. Wymagania: US8.1, US4.4 */
@@ -38,9 +37,9 @@ class OwnListTest {
     fun `us4_4 lista bez szybkich`() =
         runBlocking {
             val queue = queue()
-            queue.save(quick(), photo("p1"))
+            queue.save(quick(), photo(tempDir, "p1"))
             queue.sendAll()
-            queue.save(precise(), photo("p2"))
+            queue.save(precise(), photo(tempDir, "p2"))
 
             val list = ownSubmissionsOf(history).observe().first()
 
@@ -64,21 +63,6 @@ class OwnListTest {
             stamps = SubmissionStamps(newId = { ids.removeFirst() }),
             history = history,
         )
-
-    private fun server(id: String, content: SubmissionContent): Submission =
-        Submission(
-            id = id,
-            version = 1,
-            status = SubmissionStatus.SENT,
-            createdAt = Instant.parse("2026-01-01T00:00:00Z"),
-            content = content,
-        )
-
-    private fun photo(id: String): List<PendingPhotoDraft> {
-        val file = tempDir.resolve("$id.jpg")
-        file.writeBytes(byteArrayOf(1, 2, 3))
-        return listOf(PendingPhotoDraft(photoId = id, path = file.path))
-    }
 
     private fun quick(): SubmissionContent =
         SubmissionContent(
