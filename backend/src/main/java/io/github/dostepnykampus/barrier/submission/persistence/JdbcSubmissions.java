@@ -16,17 +16,14 @@ import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
-import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
@@ -259,32 +256,15 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     private Optional<Submission> write(
         final JdbcClient.StatementSpec statement, final UUID id, final SubmissionContent content
     ) {
-        try {
-            return statement
-                .param("id", id)
-                .param("content", this.json(content))
-                .query(this.rows)
-                .optional();
-        } catch (final DataIntegrityViolationException ex) {
-            throw JdbcSubmissions.translated(ex);
-        }
+        return statement
+            .param("id", id)
+            .param("content", this.json(content))
+            .query(this.rows)
+            .optional();
     }
 
     private String json(final SubmissionContent content) {
         return this.mapper.writeValueAsString(new SubmissionContentJson(content));
-    }
-
-    private static RuntimeException translated(final DataIntegrityViolationException error) {
-        final RuntimeException result;
-        if (
-            error.getMostSpecificCause() instanceof SQLException cause
-                && "23503".equals(cause.getSQLState())
-        ) {
-            result = new InvalidSubmission("Nieznany budynek zgłoszenia");
-        } else {
-            result = error;
-        }
-        return result;
     }
 
     private static String[] editable(final Function<SubmissionStatus, SubmissionStatus> after) {

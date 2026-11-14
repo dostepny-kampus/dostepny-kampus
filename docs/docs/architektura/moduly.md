@@ -126,7 +126,6 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 
 | Odstępstwo | Issue |
 | --- | --- |
-| klucz obcy `submissions` → `buildings` między modułami | #1662 |
 | pakiety Androida w liczbie mnogiej i z kilkoma tematami | #1680–#1691 |
 
 ## Co pilnuje zasady
