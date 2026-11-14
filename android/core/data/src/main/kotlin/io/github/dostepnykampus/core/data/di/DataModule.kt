@@ -39,8 +39,8 @@ import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
 import io.github.dostepnykampus.core.data.submissions.ownStatusesOf
 import io.github.dostepnykampus.core.data.submissions.ownSubmissionsOf
 import io.github.dostepnykampus.core.data.submissions.pendingEditsOf
-import io.github.dostepnykampus.core.network.BuildingsApi
-import io.github.dostepnykampus.core.network.SubmissionsApi
+import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 

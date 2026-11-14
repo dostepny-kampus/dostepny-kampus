@@ -12,9 +12,9 @@ import io.github.dostepnykampus.core.data.server.map
 import io.github.dostepnykampus.core.database.BuildingCacheDao
 import io.github.dostepnykampus.core.geo.parseBuildingCatalog
 import io.github.dostepnykampus.core.model.BuildingCatalog
-import io.github.dostepnykampus.core.network.ApiBuilding
-import io.github.dostepnykampus.core.network.BuildingList
-import io.github.dostepnykampus.core.network.DetailLevel
+import io.github.dostepnykampus.core.network.building.ApiBuilding
+import io.github.dostepnykampus.core.network.building.BuildingList
+import io.github.dostepnykampus.core.network.building.DetailLevel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

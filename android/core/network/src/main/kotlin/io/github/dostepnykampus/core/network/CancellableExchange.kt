@@ -65,3 +65,32 @@ internal suspend fun <T> OkHttpClient.exchangeBody(
             },
         )
     }
+
+/** Wynik odczytu API. Wywołujący nie dostaje wyjątku sieci ani parsowania. */
+public sealed interface ApiResult<out T> {
+    /**
+     * Odpowiedź 200 zgodna z kontraktem.
+     *
+     * @param T typ odczytanych danych
+     * @property value odczytane dane
+     */
+    public data class Success<T>(val value: T) : ApiResult<T>
+
+    /** Odpowiedź 404 w postaci `application/problem+json`. */
+    public data object NotFound : ApiResult<Nothing>
+
+    /**
+     * Połączenie nie doszło do skutku albo zostało przerwane.
+     *
+     * @property cause błąd wejścia-wyjścia
+     */
+    public data class NetworkError(val cause: IOException) : ApiResult<Nothing>
+
+    /**
+     * Kod inny niż 200 i 404 albo treść, której nie da się odczytać jako kontrakt.
+     *
+     * @property code kod HTTP; przy złej treści udanej odpowiedzi to 200
+     * @property cause błąd odczytu treści; `null`, gdy serwer zwrócił kod błędu
+     */
+    public data class ServerError(val code: Int, val cause: IllegalArgumentException? = null) : ApiResult<Nothing>
+}

@@ -7,7 +7,7 @@ package io.github.dostepnykampus.core.data.buildings
 
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
-import io.github.dostepnykampus.core.network.BuildingList
+import io.github.dostepnykampus.core.network.building.BuildingList
 
 private val NATURAL_ORDER =
     compareBy<Building>(

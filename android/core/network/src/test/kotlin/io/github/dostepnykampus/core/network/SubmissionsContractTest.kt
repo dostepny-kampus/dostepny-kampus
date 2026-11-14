@@ -15,6 +15,7 @@ import io.github.dostepnykampus.core.network.SubmissionServer.Companion.precise
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.quick
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.rejected
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.submission
+import io.github.dostepnykampus.core.network.submission.SubmissionEdit
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf

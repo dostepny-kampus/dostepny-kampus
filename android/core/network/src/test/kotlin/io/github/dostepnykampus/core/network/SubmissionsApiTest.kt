@@ -9,6 +9,9 @@ import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
+import io.github.dostepnykampus.core.network.submission.SubmissionEdit
+import io.github.dostepnykampus.core.network.submission.SubmissionsApi
+import io.github.dostepnykampus.core.network.submission.encodeNewSubmission
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject

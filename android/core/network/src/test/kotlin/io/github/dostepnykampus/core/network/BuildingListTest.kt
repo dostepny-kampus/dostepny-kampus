@@ -12,6 +12,16 @@ import io.github.dostepnykampus.core.model.EntranceAssessment
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.network.building.ApiBuilding
+import io.github.dostepnykampus.core.network.building.BuildingAtPoint
+import io.github.dostepnykampus.core.network.building.BuildingDetailsDto
+import io.github.dostepnykampus.core.network.building.BuildingListDto
+import io.github.dostepnykampus.core.network.building.DetailLevel
+import io.github.dostepnykampus.core.network.building.EntranceDto
+import io.github.dostepnykampus.core.network.building.GeoPointDto
+import io.github.dostepnykampus.core.network.building.LocateResultDto
+import io.github.dostepnykampus.core.network.building.MarkingSource
+import io.github.dostepnykampus.core.network.building.toModel
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

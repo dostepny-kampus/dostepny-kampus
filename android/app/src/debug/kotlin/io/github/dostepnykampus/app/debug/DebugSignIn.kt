@@ -12,7 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
-import io.github.dostepnykampus.core.network.AccessTokens
+import io.github.dostepnykampus.core.network.auth.AccessTokens
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
