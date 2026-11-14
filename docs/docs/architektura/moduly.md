@@ -115,7 +115,6 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 
 | Odstępstwo | Issue |
 | --- | --- |
-| `barrier` ma układ „najpierw warstwa”: zgłoszenie i jego warstwy poza tematem `submission`, usługa i kontroler zdjęć poza tematem `photo` | #1714, #1715, #1677, #1678 |
 | klucz obcy `submissions` → `buildings` między modułami | #1662 |
 | pakiety Androida w liczbie mnogiej i z kilkoma tematami | #1680–#1691 |
 

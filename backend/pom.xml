@@ -375,15 +375,21 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
                mają znacznik kontekst-springa (pilnuje go SpringTestTagArchitectureTest) i nie biorą udziału. -->
           <targetClasses>
             <param>io.github.dostepnykampus.*.domain.*</param>
-            <param>io.github.dostepnykampus.barrier.json.*</param>
-            <param>io.github.dostepnykampus.barrier.submission.*</param>
+            <param>io.github.dostepnykampus.barrier.submission.CreateResult*</param>
+            <param>io.github.dostepnykampus.barrier.submission.EditResult*</param>
+            <param>io.github.dostepnykampus.barrier.submission.NewSubmission*</param>
+            <param>io.github.dostepnykampus.barrier.submission.OutsideCampus*</param>
+            <param>io.github.dostepnykampus.barrier.submission.Reader*</param>
+            <param>io.github.dostepnykampus.barrier.submission.SimilarSubmission*</param>
+            <param>io.github.dostepnykampus.barrier.submission.Submission*</param>
+            <param>io.github.dostepnykampus.barrier.submission.content.*</param>
             <param>io.github.dostepnykampus.barrier.photo.Photo*</param>
             <param>io.github.dostepnykampus.barrier.photo.storage.Photo*</param>
-            <param>io.github.dostepnykampus.barrier.web.NewSubmissionRequest*</param>
-            <param>io.github.dostepnykampus.barrier.web.SubmissionFilter*</param>
-            <param>io.github.dostepnykampus.barrier.web.SubmissionUpdateRequest*</param>
+            <param>io.github.dostepnykampus.barrier.submission.web.NewSubmissionRequest*</param>
+            <param>io.github.dostepnykampus.barrier.submission.web.SubmissionFilter*</param>
+            <param>io.github.dostepnykampus.barrier.submission.web.SubmissionUpdateRequest*</param>
             <param>io.github.dostepnykampus.barrier.photo.JpegCleaner*</param>
-            <param>io.github.dostepnykampus.barrier.application.SubmissionService*</param>
+            <param>io.github.dostepnykampus.barrier.submission.application.SubmissionService*</param>
             <param>io.github.dostepnykampus.shared.json.StrictJsonConfiguration*</param>
             <param>io.github.dostepnykampus.shared.json.CanonicalUuidDeserializer*</param>
             <param>io.github.dostepnykampus.shared.json.NullRejectingDeserializer*</param>

@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.barrier.photo.application;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.barrier.application.SubmissionService;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import io.github.dostepnykampus.barrier.photo.storage.PhotoSettings;
 import io.github.dostepnykampus.barrier.photo.storage.S3PhotoStore;
@@ -16,6 +15,7 @@ import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
+import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
 import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
 import io.github.dostepnykampus.barrier.submission.content.BarrierType;
