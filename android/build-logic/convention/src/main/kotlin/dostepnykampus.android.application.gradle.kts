@@ -20,6 +20,7 @@ android {
 }
 
 moduleGraphAssert {
+    maxHeight = 5
     allowed = arrayOf(
         ":app -> :(core|feature):.*",
         ":feature:.* -> :core:.*",
@@ -27,5 +28,6 @@ moduleGraphAssert {
     )
     restricted = arrayOf(
         ":core:model -X> .*",
+        ":feature:.* -X> :core:(database|network)",
     )
 }
