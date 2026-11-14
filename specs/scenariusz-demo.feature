@@ -5,6 +5,16 @@ Funkcja: Scenariusz demo w budynku A-1
   przez weryfikację, do karty budynku, postępu inwentaryzacji i eksportu do QGIS.
   Według stanu PWr na 01.01.2025 w A-1 dostosowane jest tylko inne wejście niż wejście główne.
 
+  Scenariusz nie ma jednego testu automatycznego: na pokazie sprawdza się go ręcznie (tag @demo) według listy:
+  1. Bez sieci Zbierający zapisuje TB-1 ze zdjęciem z aparatu; zgłoszenie ma status „lokalne”.
+  2. Po włączeniu sieci zgłoszenie wysyła się samo, bez dotykania ekranu.
+  3. Weryfikator widzi TB-13 jako podobne zgłoszenie 5 m dalej i przyjmuje TB-1.
+  4. Odwiedzający widzi na karcie A-1 wejście główne „niedostępne” ze schodami i inne wejście „dostępne”.
+  5. Koordynator widzi przy A-1 4 z 5 pięter obejrzanych, czyli 80 procent.
+  6. Eksport GeoJSON otwiera się w QGIS bez ustawiania układu współrzędnych, a TB-1 leży przy wejściu głównym.
+  Odcinki tej drogi mają własne scenariusze z testami w plikach pomiar-precyzyjny, synchronizacja, weryfikacja,
+  przegladanie-mapy, postep-inwentaryzacji i eksport.
+
   Założenia:
     Zakładając, że Zbierający, Weryfikator, Odwiedzający i Koordynator są zalogowani ze swoimi rolami
     Oraz Zbierający oznaczył wcześniej 4 z 5 pięter budynku A-1 jako obejrzane
