@@ -63,9 +63,9 @@ gdy manifest i odpowiadający mu plik lock są aktualizowane razem.
 Kontrola działa w [`pr-od-issue.yml`](.github/workflows/pr-od-issue.yml) przez [`pr-od-issue-szkic.sh`](.github/scripts/pr-od-issue-szkic.sh)
 i uruchamia się przy otwarciu, edycji, ponownym otwarciu PR oraz zmianie etykiet.
 
-- **Ostrzegawczy** (domyślnie): uwagi tylko w logu jako ostrzeżenia, PR bez zmian.
-- **Wymagany** (zmienna repozytorium `PR_OD_ISSUE_WYMAGANE=1`): PR z naruszeniem zamienia się w szkic, a komentarz
-  z listą braków jest dodawany lub odświeżany. Po poprawie opisu oznacz PR jako gotowy.
+- **Wymagany** (zawsze w CI): PR z naruszeniem dostaje komentarz z listą braków (dodawany lub odświeżany),
+  a check jest czerwony. PR nie zmienia się w szkic. Po poprawie opisu check przechodzi przy edycji PR.
+- **Ostrzegawczy** (`PR_OD_ISSUE_WYMAGANE=0` przy ręcznym uruchomieniu skryptu): uwagi tylko w logu, PR bez zmian.
 - Błąd narzędzia (`gh`, `jq`) to osobny kod wyjścia 2: PR zostaje bez zmian i bez fałszywej listy braków.
 
 ## Etykiety, kamień milowy, przypisanie
