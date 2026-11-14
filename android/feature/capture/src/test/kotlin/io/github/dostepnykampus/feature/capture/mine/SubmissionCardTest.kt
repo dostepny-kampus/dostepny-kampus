@@ -6,6 +6,9 @@
 package io.github.dostepnykampus.feature.capture.mine
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -125,6 +128,45 @@ class SubmissionCardTest {
         compose.onNodeWithText("Otwórz").assertDoesNotExist()
     }
 
+    /**
+     * Wiersz: C3 „Otwórz” tylko przy zgłoszeniach, które można poprawić; przyjęte i archiwalne bez „Otwórz”.
+     * Scenariusz: zgloszenia-zbierajacego.feature: „Otwórz” mają tylko zgłoszenia, które można poprawić
+     *
+     * Wymagania: US8.1, US8.3
+     */
+    @Test
+    fun us8_1_open_only_editable() {
+        val cases =
+            listOf(
+                Triple(item("a", SendState.LOCAL), "W telefonie", true),
+                Triple(item("b", SendState.REFUSED, RefusalReason.NOT_ACCEPTED), "Nie wysłano", true),
+                Triple(item("c", SendState.SENT, serverStatus = SubmissionStatus.SENT), "Wysłane", true),
+                Triple(item("d", SendState.SENT, serverStatus = SubmissionStatus.IN_REVIEW), "W weryfikacji", true),
+                Triple(item("e", SendState.SENT, serverStatus = SubmissionStatus.REJECTED), "Odrzucone", true),
+                Triple(item("f", SendState.SENT, serverStatus = SubmissionStatus.ACCEPTED), "Przyjęte", false),
+                Triple(item("g", SendState.SENT, serverStatus = SubmissionStatus.ARCHIVED), "Archiwalne", false),
+            )
+        var shown by mutableStateOf(cases.first().first)
+        compose.setContent {
+            DostepnyKampusTheme {
+                SubmissionCard(item = shown, onOpen = { opened++ })
+            }
+        }
+        var expectedClicks = 0
+        cases.forEach { (candidate, statusText, expectsOpen) ->
+            shown = candidate
+            compose.onNodeWithText(statusText).assertIsDisplayed()
+            if (expectsOpen) {
+                compose.onNodeWithText("Otwórz").assertIsDisplayed()
+                compose.onNodeWithText("Otwórz").performClick()
+                expectedClicks++
+            } else {
+                compose.onNodeWithText("Otwórz").assertDoesNotExist()
+            }
+            assertEquals(expectedClicks, opened)
+        }
+    }
+
     /** Wiersz: C3 poza budynkiem, nieznany kod typu → „Poza budynkiem”, „Nieznany typ bariery”. Wymagania: US8.1 */
     @Test
     fun us8_1_outside_unknown_type() {
@@ -149,13 +191,18 @@ class SubmissionCardTest {
     }
 }
 
-private fun item(id: String, state: SendState, refusal: RefusalReason? = null) =
-    OwnSubmissionItem(
-        id = id,
-        savedAt = Instant.parse("2026-11-09T12:00:00Z"),
-        type = BarrierType.STAIRS_AT_ENTRANCE,
-        buildingSymbol = "A-1",
-        floorNumber = 2,
-        state = state,
-        refusal = refusal,
-    )
+private fun item(
+    id: String,
+    state: SendState,
+    refusal: RefusalReason? = null,
+    serverStatus: SubmissionStatus? = null,
+) = OwnSubmissionItem(
+    id = id,
+    savedAt = Instant.parse("2026-11-09T12:00:00Z"),
+    type = BarrierType.STAIRS_AT_ENTRANCE,
+    buildingSymbol = "A-1",
+    floorNumber = 2,
+    state = state,
+    refusal = refusal,
+    serverStatus = serverStatus,
+)
