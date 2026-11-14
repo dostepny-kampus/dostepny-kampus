@@ -10,16 +10,18 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.swipe
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.ViewAction
+import androidx.test.espresso.action.GeneralSwipeAction
+import androidx.test.espresso.action.Press
+import androidx.test.espresso.action.Swipe
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -83,12 +85,9 @@ class CampusAreaEdgeDeviceTest {
         composeRule.runOnUiThread { tracker.attach(map) }
         try {
             awaitUiPause(INITIAL_SETTLE_PAUSE_MS)
-            if (tracker.isMoving.get()) {
-                composeRule.waitUntil(SWIPE_SETTLE_TIMEOUT_MS) { !tracker.isMoving.get() }
-            }
+            composeRule.waitUntil(SWIPE_SETTLE_TIMEOUT_MS) { !tracker.isMoving.get() }
             composeRule.waitForIdle()
-            val swipeLine = eastSwipeLine(mapView)
-            val swipes = panEastUntilNeighbor(swipeLine, tracker)
+            val swipes = panEastUntilNeighbor(tracker)
             val edgeMatcher = neighborButtonMatcher()
             val edgeTarget = composeRule.runOnUiThread { requireNotNull(map.cameraPosition.target) }
             assertTrue(
@@ -99,7 +98,7 @@ class CampusAreaEdgeDeviceTest {
             composeRule.onNode(edgeMatcher).assertIsDisplayed()
             assertAtEastEdgeWithinBounds(edgeTarget, mainBounds)
             repeat(EXTRA_SWIPES_AT_EDGE) {
-                performEastSwipe(swipeLine, tracker)
+                performEastSwipe(tracker)
                 awaitUiPause(EXTRA_SETTLE_PAUSE_MS)
                 composeRule.waitForIdle()
             }
@@ -153,38 +152,20 @@ class CampusAreaEdgeDeviceTest {
         return hasLayers && position.zoom >= MIN_READY_ZOOM && target != null && isInsideBounds(target, bounds)
     }
 
-    private fun eastSwipeLine(mapView: MapView): Pair<Offset, Offset> {
-        val rootBounds = composeRule.onRoot().fetchSemanticsNode().boundsInWindow
-        val location = IntArray(WINDOW_COORDINATES_SIZE)
-        val size =
-            composeRule.runOnUiThread {
-                mapView.getLocationInWindow(location)
-                mapView.width to mapView.height
-            }
-        val left = location[0] - rootBounds.left
-        val top = location[1] - rootBounds.top
-        val y = top + size.second * SWIPE_Y_FRACTION
-        return Offset(left + size.first * SWIPE_START_X_FRACTION, y) to
-            Offset(left + size.first * SWIPE_END_X_FRACTION, y)
-    }
-
-    private fun panEastUntilNeighbor(swipeLine: Pair<Offset, Offset>, tracker: MotionTracker): Int {
-        val edgeMatcher = neighborButtonMatcher()
+    private fun panEastUntilNeighbor(tracker: MotionTracker): Int {
         var swipes = 0
-        while (swipes < MAX_PAN_SWIPES && !nodeExists(edgeMatcher)) {
-            performEastSwipe(swipeLine, tracker)
+        while (swipes < MAX_PAN_SWIPES && !nodeExists(neighborButtonMatcher())) {
+            performEastSwipe(tracker)
             composeRule.waitForIdle()
             swipes++
         }
         return swipes
     }
 
-    private fun performEastSwipe(swipeLine: Pair<Offset, Offset>, tracker: MotionTracker) {
+    private fun performEastSwipe(tracker: MotionTracker) {
         val idleBefore = tracker.idleCount.get()
         val moveBefore = tracker.moveCount.get()
-        composeRule.onRoot().performTouchInput {
-            swipe(start = swipeLine.first, end = swipeLine.second, durationMillis = SWIPE_DURATION_MS)
-        }
+        Espresso.onView(ViewMatchers.isAssignableFrom(MapView::class.java)).perform(swipeEast())
         if (tracker.moveCount.get() > moveBefore) {
             composeRule.waitUntil(SWIPE_SETTLE_TIMEOUT_MS) {
                 tracker.idleCount.get() > idleBefore && !tracker.isMoving.get()
@@ -193,6 +174,19 @@ class CampusAreaEdgeDeviceTest {
             awaitUiPause(EDGE_BOUNCE_PAUSE_MS)
         }
     }
+
+    private fun swipeEast(): ViewAction =
+        GeneralSwipeAction(
+            Swipe.FAST,
+            { view -> screenPoint(view, SWIPE_START_X_FRACTION) },
+            { view -> screenPoint(view, SWIPE_END_X_FRACTION) },
+            Press.FINGER,
+        )
+
+    private fun screenPoint(view: View, xFraction: Float): FloatArray =
+        IntArray(WINDOW_COORDINATES_SIZE).also(view::getLocationOnScreen).let { location ->
+            floatArrayOf(location[0] + view.width * xFraction, location[1] + view.height * SWIPE_Y_FRACTION)
+        }
 
     private fun assertAtEastEdgeWithinBounds(target: LatLng, bounds: CampusBounds) {
         assertTrue("Środek mapy wyszedł poza teren: target=$target, bounds=$bounds", isInsideBounds(target, bounds))
@@ -293,7 +287,6 @@ class CampusAreaEdgeDeviceTest {
         const val EDGE_BOUNCE_PAUSE_MS = 150L
         const val EXTRA_SETTLE_PAUSE_MS = 250L
         const val LATCH_MARGIN_MS = 500L
-        const val SWIPE_DURATION_MS = 280L
         const val MAX_PAN_SWIPES = 40
         const val EXTRA_SWIPES_AT_EDGE = 2
         const val WINDOW_COORDINATES_SIZE = 2
