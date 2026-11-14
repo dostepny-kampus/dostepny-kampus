@@ -18,14 +18,17 @@ import tools.jackson.databind.ObjectMapper;
  * @since 0.1.0
  */
 @Configuration(proxyBeanMethods = false)
-public class OsmMigrationConfiguration {
+public final class OsmMigrationConfiguration {
+
+    private OsmMigrationConfiguration() {
+    }
 
     /**
      * Import konturów i wejść z pliku OSM dostarczonego z serwerem.
      *
-     * @param mapper Odczyt GeoJSON.
-     * @param file Plik konturów i wejść.
-     * @return Powtarzalna migracja.
+     * @param mapper Odczyt GeoJSON
+     * @param file Plik konturów i wejść
+     * @return Powtarzalna migracja
      */
     @Bean
     static OsmBuildings osmBuildings(
@@ -38,8 +41,8 @@ public class OsmMigrationConfiguration {
     /**
      * Przypisuje import OSM do głównej historii migracji.
      *
-     * @param migration Import budynków i wejść.
-     * @return Konfiguracja rejestracji migracji.
+     * @param migration Import budynków i wejść
+     * @return Konfiguracja rejestracji migracji
      */
     @Bean
     static FlywayConfigurationCustomizer osmMigration(final OsmBuildings migration) {

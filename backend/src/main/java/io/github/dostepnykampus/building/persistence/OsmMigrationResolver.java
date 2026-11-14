@@ -7,7 +7,6 @@ package io.github.dostepnykampus.building.persistence;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.flywaydb.core.api.resolver.MigrationResolver;
@@ -47,14 +46,13 @@ final class OsmMigrationResolver implements FlywayConfigurationCustomizer, Migra
     public Collection<ResolvedMigration> resolveMigrations(
         final MigrationResolver.Context context
     ) {
-        if (Arrays.stream(context.configuration.getLocations())
-            .anyMatch(location -> "db/migration/__root".equals(location.getPath()))) {
-            return List.of(
-                this.migration.getResolvedMigration(
-                    context.configuration, context.statementInterceptor
-                )
-            );
-        }
-        return List.of();
+        return Arrays.stream(context.configuration.getLocations())
+            .filter(location -> "db/migration/__root".equals(location.getPath()))
+            .findFirst()
+            .map(location -> this.migration.getResolvedMigration(
+                context.configuration, context.statementInterceptor
+            ))
+            .stream()
+            .toList();
     }
 }
