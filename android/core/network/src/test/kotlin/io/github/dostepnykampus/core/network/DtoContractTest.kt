@@ -9,6 +9,10 @@ import io.github.dostepnykampus.core.network.SubmissionServer.Companion.ID
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.precise
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.quick
 import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.building.decodeBuildingDetails
+import io.github.dostepnykampus.core.network.building.decodeBuildingList
+import io.github.dostepnykampus.core.network.building.decodeFloorList
+import io.github.dostepnykampus.core.network.building.decodeLocateResult
 import io.github.dostepnykampus.core.network.submission.decodeConflict
 import io.github.dostepnykampus.core.network.submission.decodeSubmission
 import io.github.dostepnykampus.core.network.submission.encodeNewSubmission
@@ -70,6 +74,23 @@ class DtoContractTest {
                 val allowed = spec.properties(spec.node(pointer)).keys
                 val outside = json.parseToJsonElement(body).jsonObject.keys - allowed
                 spec.violations(pointer, body) + outside.map { "pole żądania '$it' poza schematem" }
+            }
+        assertEquals(emptyList<String>(), problems)
+    }
+
+    @Test
+    fun d5_building_responses_decode() {
+        val decoders: Map<String, (String) -> Any> =
+            mapOf(
+                "BuildingList" to json::decodeBuildingList,
+                "BuildingDetails" to json::decodeBuildingDetails,
+                "FloorList" to json::decodeFloorList,
+                "LocateResult" to json::decodeLocateResult,
+            )
+        val problems =
+            decoders.mapNotNull { (schema, decode) ->
+                val body = spec.sample(spec.node("/components/schemas/$schema")).toString()
+                runCatching { decode(body) }.exceptionOrNull()?.let { "$schema: ${it.message.orEmpty()}" }
             }
         assertEquals(emptyList<String>(), problems)
     }
@@ -170,16 +191,6 @@ class DtoContractTest {
         /** DTO `core:network` ↔ schemat z `components/schemas`; nazwa klasy bez pakietu. */
         val TABLE =
             mapOf(
-                "BuildingListDto" to Row("BuildingList"),
-                "BuildingDto" to Row("Building"),
-                "BuildingDetailsDto" to Row("BuildingDetails"),
-                "EntranceDto" to Row("Entrance"),
-                "GeoPointDto" to Row("GeoPoint"),
-                "LocateResultDto" to Row("LocateResult"),
-                "FloorListDto" to Row("FloorList"),
-                "FloorDto" to Row("Floor"),
-                "DetailLevel" to Row("DetailLevel"),
-                "MarkingSource" to Row("Entrance/properties/markingSource"),
                 "SubmissionFloorDto" to Row("SubmissionFloor"),
                 "SubmissionRequest" to
                     Row(

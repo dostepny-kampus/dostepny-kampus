@@ -7,9 +7,9 @@ package io.github.dostepnykampus.core.network
 
 import io.github.dostepnykampus.core.network.auth.AccessTokenInterceptor
 import io.github.dostepnykampus.core.network.auth.AccessTokens
-import io.github.dostepnykampus.core.network.building.BuildingDto
-import io.github.dostepnykampus.core.network.building.BuildingListDto
+import io.github.dostepnykampus.core.network.building.ApiBuilding
 import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.building.decodeBuildingList
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Test
@@ -26,9 +26,9 @@ class NetworkModuleTest {
         assertEquals(BASE_URL, BuildConfig.API_BASE_URL)
         assertInstanceOf(BuildingsApi::class.java, api)
         assertInstanceOf(AccessTokenInterceptor::class.java, http.interceptors.single())
-        val parsed = json.decodeFromString<BuildingListDto>("""{"source":"x","extra":1,"buildings":[]}""")
+        val parsed = json.decodeBuildingList("""{"source":"x","extra":1,"buildings":[]}""")
         assertEquals("x", parsed.source)
-        assertEquals(emptyList<BuildingDto>(), parsed.buildings)
+        assertEquals(emptyList<ApiBuilding>(), parsed.buildings)
     }
 
     private companion object {

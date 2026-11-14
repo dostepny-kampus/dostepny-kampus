@@ -13,12 +13,17 @@ import io.github.dostepnykampus.core.model.EntranceAssessment
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.Floor
 import io.github.dostepnykampus.core.model.FloorList
-import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoPoint
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
+import io.github.dostepnykampus.core.network.json.Building as BuildingJson
+import io.github.dostepnykampus.core.network.json.BuildingDetails as BuildingDetailsJson
+import io.github.dostepnykampus.core.network.json.BuildingList as BuildingListJson
+import io.github.dostepnykampus.core.network.json.Entrance as EntranceJson
+import io.github.dostepnykampus.core.network.json.FloorList as FloorListJson
+import io.github.dostepnykampus.core.network.json.GeoPoint as GeoPointJson
+import io.github.dostepnykampus.core.network.json.LocateResult as LocateResultJson
 
 /**
  * Lista budynków z atrybucją konturów (`BuildingList`).
@@ -62,7 +67,6 @@ public data class BuildingDetails(val building: Building, val detailLevel: Detai
 public data class BuildingAtPoint(val buildingSymbol: String?, val isInsideOutline: Boolean)
 
 /** Poziom szczegółowości budynku (`DetailLevel`). */
-@Serializable
 public enum class DetailLevel {
     /** Budynek szczegółowy z planami pięter. */
     DETAILED,
@@ -71,90 +75,54 @@ public enum class DetailLevel {
     BASIC,
 }
 
-@Serializable
-internal data class BuildingListDto(val source: String, val buildings: List<BuildingDto>)
+/** Lista budynków z tekstu odpowiedzi [body] (`BuildingList`); zła treść daje [IllegalArgumentException]. */
+internal fun Json.decodeBuildingList(body: String): BuildingList {
+    val list = decodeFromString(BuildingListJson.serializer(), body)
+    return BuildingList(source = list.source, buildings = list.buildings.map { it.toModel(json = this) })
+}
 
-@Serializable
-internal data class BuildingDto(
-    val symbol: String,
-    val name: String? = null,
-    val detailLevel: DetailLevel,
-    @Serializable(with = GeoAreaJson::class) val outline: GeoArea,
-)
-
-@Serializable
-internal data class BuildingDetailsDto(
-    val symbol: String,
-    val name: String? = null,
-    val detailLevel: DetailLevel,
-    @Serializable(with = GeoAreaJson::class) val outline: GeoArea,
-    val entrances: List<EntranceDto>,
-)
-
-@Serializable
-internal data class EntranceDto(
-    val id: String,
-    val buildingSymbol: String,
-    val name: String? = null,
-    val type: String? = null,
-    @SerialName("main") val isMain: Boolean,
-    val location: GeoPointDto,
-    val marking: String,
-    val markingDate: String,
-    val markingSource: MarkingSource,
-)
-
-@Serializable
-internal data class FloorListDto(val source: String, val floors: List<FloorDto>)
-
-@Serializable
-internal data class FloorDto(val id: String, val label: String, val order: Int)
-
-@Serializable
-internal data class GeoPointDto(val type: String, val coordinates: List<Double>)
-
-@Serializable
-internal data class LocateResultDto(
-    val buildingSymbol: String? = null,
-    @SerialName("insideOutline") val isInsideOutline: Boolean,
-)
-
-@Serializable
-internal enum class MarkingSource { IMPORT, WALKTHROUGH }
-
-internal fun BuildingListDto.toModel(): BuildingList =
-    BuildingList(source = source, buildings = buildings.map(BuildingDto::toModel))
-
-internal fun BuildingDto.toModel(): ApiBuilding =
-    ApiBuilding(
-        building = Building(symbol = symbol, name = name, outline = outline),
-        detailLevel = detailLevel,
+/** Karta budynku z tekstu odpowiedzi [body] (`BuildingDetails`); zła treść jak w [decodeBuildingList]. */
+internal fun Json.decodeBuildingDetails(body: String): BuildingDetails {
+    val card = decodeFromString(BuildingDetailsJson.serializer(), body)
+    val outline = decodeFromJsonElement(GeoAreaJson, card.outline)
+    return BuildingDetails(
+        building = Building(symbol = card.symbol, name = card.name, outline = outline),
+        detailLevel = DetailLevel.valueOf(card.detailLevel.name),
+        entrances = card.entrances.map(EntranceJson::toModel),
     )
+}
 
-internal fun BuildingDetailsDto.toModel(): BuildingDetails =
-    BuildingDetails(
-        building = Building(symbol = symbol, name = name, outline = outline),
-        detailLevel = detailLevel,
-        entrances = entrances.map(EntranceDto::toModel),
+/** Piętra z [body] (`FloorList`) od najniższego, także w innej kolejności z serwera. Wymagania: US16.1 */
+internal fun Json.decodeFloorList(body: String): FloorList {
+    val list = decodeFromString(FloorListJson.serializer(), body)
+    return FloorList(
+        source = list.source.value,
+        floors = list.floors.map { Floor(id = it.id, label = it.label, order = it.order) }.sortedBy(Floor::order),
     )
+}
 
-/** Piętra od najniższego, także gdy serwer poda je w innej kolejności. Wymagania: US16.1 */
-internal fun FloorListDto.toModel(): FloorList =
-    FloorList(
-        source = source,
-        floors = floors.map { Floor(id = it.id, label = it.label, order = it.order) }.sortedBy(Floor::order),
-    )
+/** Podpowiedź budynku z tekstu odpowiedzi [body] (`LocateResult`); zła treść jak w [decodeBuildingList]. */
+internal fun Json.decodeLocateResult(body: String): BuildingAtPoint {
+    val result = decodeFromString(LocateResultJson.serializer(), body)
+    return BuildingAtPoint(buildingSymbol = result.buildingSymbol, isInsideOutline = result.insideOutline)
+}
 
-internal fun EntranceDto.toModel(): Entrance =
+private fun EntranceJson.toModel(): Entrance =
     Entrance(
         id = id,
         buildingSymbol = buildingSymbol,
         name = name,
-        isMain = isMain,
+        isMain = main,
         type = type,
         location = location.toModel(),
-        marking = EntranceMarking.valueOf(marking),
+        marking = EntranceMarking.valueOf(marking.name),
         assessment = EntranceAssessment(date = markingDay(markingDate), source = markingSource.toModel()),
+    )
+
+private fun BuildingJson.toModel(json: Json): ApiBuilding =
+    ApiBuilding(
+        building = Building(symbol = symbol, name = name, outline = json.decodeFromJsonElement(GeoAreaJson, outline)),
+        detailLevel = DetailLevel.valueOf(detailLevel.name),
     )
 
 private fun markingDay(text: String): LocalDate =
@@ -164,21 +132,18 @@ private fun markingDay(text: String): LocalDate =
         throw IllegalArgumentException("Zła data oznaczenia wejścia", error)
     }
 
-private fun MarkingSource.toModel(): AssessmentSource =
+private fun EntranceJson.MarkingSource.toModel(): AssessmentSource =
     when (this) {
-        MarkingSource.IMPORT -> AssessmentSource.IMPORT
-        MarkingSource.WALKTHROUGH -> AssessmentSource.WALKTHROUGH
+        EntranceJson.MarkingSource.IMPORT -> AssessmentSource.IMPORT
+        EntranceJson.MarkingSource.WALKTHROUGH -> AssessmentSource.WALKTHROUGH
     }
 
-internal fun LocateResultDto.toModel(): BuildingAtPoint =
-    BuildingAtPoint(buildingSymbol = buildingSymbol, isInsideOutline = isInsideOutline)
-
-internal fun GeoPointDto.toModel(): GeoPoint {
+internal fun GeoPointJson.toModel(): GeoPoint {
     require(type == "Point" && coordinates.size >= MIN_COORDINATES) { "Zły punkt GeoJSON" }
     return GeoPoint(longitude = coordinates[LONGITUDE], latitude = coordinates[LATITUDE])
 }
 
-internal fun GeoPoint.toDto(): GeoPointDto = GeoPointDto(type = "Point", coordinates = listOf(longitude, latitude))
+internal fun GeoPoint.toJson(): GeoPointJson = GeoPointJson(type = "Point", coordinates = listOf(longitude, latitude))
 
 private const val MIN_COORDINATES = 2
 private const val LONGITUDE = 0
