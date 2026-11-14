@@ -33,7 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
 final class ExportCsvHttpTest {
 
     @Test
-    void exportsAcceptedRowInPuwg1992(final WebApplicationContext context) throws Exception {
+    void exportsAcceptedRowInPolishGrid(final WebApplicationContext context) throws Exception {
         final SampleSubmissions samples = new SampleSubmissions(context);
         final SubmissionContent content = SampleSubmissions.quick(
             new SubmissionPlace(
