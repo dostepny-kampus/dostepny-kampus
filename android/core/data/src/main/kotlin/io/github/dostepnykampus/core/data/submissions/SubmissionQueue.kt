@@ -5,6 +5,10 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerEdit
+import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.server.toReply
+import io.github.dostepnykampus.core.data.server.toServerEdit
 import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.database.PendingPhotoEntity
@@ -303,13 +307,13 @@ class SubmissionQueue internal constructor(
     private suspend fun sendContent(item: PendingSubmissionWithPhotos): Outcome {
         val version = item.submission.baseVersion
         val content = item.toSubmissionContentOrNull() ?: return results.unreadable(item)
-        val result: ApiResult<*>
+        val result: ServerReply<*>
         val outcome =
             if (version == null) {
-                result = server.create(item.submission.id, content)
+                result = server.create(item.submission.id, content).toReply { it }
                 outcomeOf(result)
             } else {
-                val edit = server.update(item.submission.id, version, content)
+                val edit = server.update(item.submission.id, version, content).toReply { it.toServerEdit() }
                 result = edit
                 editOutcome(edit)
             }
@@ -319,7 +323,7 @@ class SubmissionQueue internal constructor(
     private suspend fun sendRemaining(item: PendingSubmissionWithPhotos): Outcome {
         for (photo in item.photos.filterNot { it.isUploaded }) {
             val jpeg = jpeg(photo.path, ioContext)
-            val result = jpeg?.let { server.putPhoto(item.submission.id, photo.photoId, it) }
+            val result = jpeg?.let { server.putPhoto(item.submission.id, photo.photoId, it).toReply {} }
             val outcome = results.photo(item, photo.photoId, result)
             if (outcome != Outcome.SENT) return outcome
         }
@@ -379,12 +383,12 @@ internal fun requireMatchingPhotos(content: SubmissionContent, photos: List<Pend
     }
 }
 
-internal fun outcomeOf(result: ApiResult<*>): Outcome =
+internal fun outcomeOf(result: ServerReply<*>): Outcome =
     when (result) {
-        is ApiResult.NetworkError -> Outcome.LATER
-        is ApiResult.ServerError -> serverOutcome(result.code)
-        ApiResult.NotFound -> Outcome.REFUSED
-        is ApiResult.Success -> Outcome.SENT
+        ServerReply.Offline -> Outcome.LATER
+        is ServerReply.Fault -> serverOutcome(result.code)
+        ServerReply.Missing -> Outcome.REFUSED
+        is ServerReply.Ok -> Outcome.SENT
     }
 
 /**
@@ -393,8 +397,8 @@ internal fun outcomeOf(result: ApiResult<*>): Outcome =
  *
  * Wymagania: US9.3, BR-10
  */
-internal fun editOutcome(result: ApiResult<SubmissionEdit>): Outcome =
-    if (result is ApiResult.Success && result.value is SubmissionEdit.Conflict) {
+internal fun editOutcome(result: ServerReply<ServerEdit>): Outcome =
+    if (result is ServerReply.Ok && result.value is ServerEdit.Conflict) {
         Outcome.REFUSED
     } else {
         outcomeOf(result)
