@@ -6,9 +6,9 @@
 package io.github.dostepnykampus.feature.map.area
 
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.CampusBounds
-import io.github.dostepnykampus.feature.map.CampusMapData
-import io.github.dostepnykampus.feature.map.MapArea
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.MapArea
 import kotlinx.serialization.json.JsonObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull

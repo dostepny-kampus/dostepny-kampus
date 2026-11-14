@@ -6,10 +6,10 @@
 package io.github.dostepnykampus.feature.map.style
 
 import android.graphics.Bitmap
-import io.github.dostepnykampus.feature.map.CampusMapData
-import io.github.dostepnykampus.feature.map.MapSelection
-import io.github.dostepnykampus.feature.map.featureCollection
-import io.github.dostepnykampus.feature.map.outlineOf
+import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.MapSelection
+import io.github.dostepnykampus.feature.map.campus.featureCollection
+import io.github.dostepnykampus.feature.map.campus.outlineOf
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject

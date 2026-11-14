@@ -15,6 +15,10 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.PanDirection
 import io.github.dostepnykampus.feature.map.camera.moved
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.feature.map.campus.START_BUILDING
+import io.github.dostepnykampus.feature.map.campus.boundsOf
+import io.github.dostepnykampus.feature.map.campus.campusMapData
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.math.log2

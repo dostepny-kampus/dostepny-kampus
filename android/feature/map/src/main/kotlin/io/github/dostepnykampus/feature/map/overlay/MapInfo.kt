@@ -36,8 +36,8 @@ import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.model.building.AssessmentSource
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
-import io.github.dostepnykampus.feature.map.DAY_FORMAT
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.campus.DAY_FORMAT
 import java.time.LocalDate
 
 /** Strona praw autorskich OpenStreetMap, cel odnośnika w podpisie mapy i w panelu „Źródła danych”. Wymagania: NFR-37 */

@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
-import io.github.dostepnykampus.feature.map.featureCollection
+import io.github.dostepnykampus.feature.map.campus.featureCollection
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray

@@ -15,6 +15,7 @@ import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.moved
 import io.github.dostepnykampus.feature.map.camera.zoomedIn
 import io.github.dostepnykampus.feature.map.camera.zoomedOut
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.math.cos

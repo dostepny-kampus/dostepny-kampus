@@ -14,9 +14,9 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
-import io.github.dostepnykampus.feature.map.SelectedEntrance
-import io.github.dostepnykampus.feature.map.campusMapData
-import io.github.dostepnykampus.feature.map.selection
+import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
+import io.github.dostepnykampus.feature.map.campus.campusMapData
+import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.selectionImages
 import kotlinx.serialization.json.JsonElement
 import org.junit.Assert.assertEquals

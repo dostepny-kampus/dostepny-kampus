@@ -7,10 +7,10 @@ package io.github.dostepnykampus.feature.map.area
 
 import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.CampusBounds
-import io.github.dostepnykampus.feature.map.CampusMapData
-import io.github.dostepnykampus.feature.map.MapArea
-import io.github.dostepnykampus.feature.map.boundsOf
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.MapArea
+import io.github.dostepnykampus.feature.map.campus.boundsOf
 import org.maplibre.spatialk.turf.measurement.distance
 import org.maplibre.spatialk.units.extensions.inKilometers
 import kotlin.math.roundToInt

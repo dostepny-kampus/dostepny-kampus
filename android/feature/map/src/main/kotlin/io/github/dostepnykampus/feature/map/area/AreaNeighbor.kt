@@ -6,9 +6,9 @@
 package io.github.dostepnykampus.feature.map.area
 
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.CampusBounds
-import io.github.dostepnykampus.feature.map.CampusMapData
-import io.github.dostepnykampus.feature.map.MapArea
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.MapArea
 
 private const val EDGE_SLACK_DEGREES = 1e-5
 
