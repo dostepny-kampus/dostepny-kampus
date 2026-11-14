@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.core.model.building.AssessmentSource
 import io.github.dostepnykampus.core.model.building.EntranceAssessment
+import io.github.dostepnykampus.feature.map.DAY_FORMAT
 import io.github.dostepnykampus.feature.map.R
 
 /**
