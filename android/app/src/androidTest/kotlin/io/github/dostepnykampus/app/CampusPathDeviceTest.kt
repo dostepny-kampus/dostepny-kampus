@@ -104,7 +104,11 @@ class CampusPathDeviceTest {
         waitFor(hasText(CHECK))
     }
 
-    /** Wiersz US1.1: prawdziwa klawiatura → wybór A-1 → V2 bez fokusu i klawiatury → jedno Wstecz zamyka V2. */
+    /**
+     * Wiersz: prawdziwa klawiatura → wybór A-1 → V2 bez fokusu i klawiatury → jedno Wstecz zamyka V2.
+     *
+     * Wymagania: US1.1
+     */
     @Test
     fun us1_1_keyboard_then_back() {
         val previous = DeviceEvidence.shell("settings get secure show_ime_with_hard_keyboard").trim()
