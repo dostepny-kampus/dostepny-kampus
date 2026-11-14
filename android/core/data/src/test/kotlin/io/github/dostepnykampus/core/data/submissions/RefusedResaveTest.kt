@@ -1,24 +1,22 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
+import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
 import io.github.dostepnykampus.core.database.OwnSubmissionState
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.model.SubmissionStatus
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Zgłoszenie „Nie wysłano” po odmowie 4xx wraca do wysyłki dopiero po ponownym zapisie. Wymagania: BR-26, US9.5 */
@@ -39,7 +37,7 @@ class RefusedResaveTest {
     fun `br26 ponowny zapis wysyła`() =
         runBlocking {
             val queue = queue()
-            queue.save(precise(severity = 2, photo = FIRST), photo(FIRST))
+            queue.save(precise(FIRST, severity = 2), photo(tempDir, FIRST))
             store.createResults.addLast(ServerReply.Fault(code = BAD_REQUEST))
             queue.sendAll()
             assertEquals(OwnSubmissionState.REFUSED, history.rows.getValue(ID).state)
@@ -49,8 +47,8 @@ class RefusedResaveTest {
             val before = scheduled
             queue.saveEdit(
                 edited = EditedSubmission(id = ID, baseVersion = null),
-                content = precise(severity = 1, photo = SECOND),
-                photos = photo(SECOND),
+                content = precise(SECOND, severity = 1),
+                photos = photo(tempDir, SECOND),
             )
 
             val local = history.rows.getValue(ID)
@@ -81,30 +79,6 @@ class RefusedResaveTest {
             stamps = SubmissionStamps(newId = { ID }),
             onSaved = { scheduled++ },
             history = history,
-        )
-
-    private fun server(id: String, content: SubmissionContent): Submission =
-        Submission(
-            id = id,
-            version = 1,
-            status = SubmissionStatus.SENT,
-            createdAt = Instant.parse("2026-01-01T00:00:00Z"),
-            content = content,
-        )
-
-    private fun photo(id: String): List<PendingPhotoDraft> {
-        val file = tempDir.resolve("$id.jpg")
-        file.writeBytes(byteArrayOf(1, 2, 3))
-        return listOf(PendingPhotoDraft(photoId = id, path = file.path))
-    }
-
-    private fun precise(severity: Int, photo: String): SubmissionContent =
-        SubmissionContent(
-            kind = SubmissionKind.PRECISE,
-            location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
-            photoIds = listOf(photo),
-            barrierType = "TB-5",
-            severity = severity,
         )
 }
 
