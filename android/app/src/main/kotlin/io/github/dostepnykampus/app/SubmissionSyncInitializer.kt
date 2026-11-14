@@ -8,7 +8,7 @@ package io.github.dostepnykampus.app
 import android.content.Context
 import androidx.startup.Initializer
 import androidx.work.WorkManagerInitializer
-import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionSyncScheduler
 
 /**
  * Planuje wysyłkę kolejki zgłoszeń przy starcie procesu, więc zgłoszenia zapisane przed zamknięciem aplikacji

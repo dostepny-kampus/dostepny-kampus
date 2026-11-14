@@ -3,13 +3,13 @@
  * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.data.submissions
+package io.github.dostepnykampus.core.data.submission.sync
 
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.acceptingServer
-import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
-import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
-import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.acceptingServer
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.photo
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.precise
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.server
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

@@ -10,10 +10,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.building.BuildingFloors
-import io.github.dostepnykampus.core.data.submissions.EditedSubmission
-import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
-import io.github.dostepnykampus.core.data.submissions.SaveRefusal
-import io.github.dostepnykampus.core.data.submissions.SaveRefusedException
+import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
+import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
+import io.github.dostepnykampus.core.data.submission.sync.SaveRefusal
+import io.github.dostepnykampus.core.data.submission.sync.SaveRefusedException
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.feature.capture.measure.place

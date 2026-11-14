@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submission.own
 
-import io.github.dostepnykampus.core.data.submissions.FakeHistory
+import io.github.dostepnykampus.core.data.submission.sync.FakeHistory
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.model.BarrierGroup

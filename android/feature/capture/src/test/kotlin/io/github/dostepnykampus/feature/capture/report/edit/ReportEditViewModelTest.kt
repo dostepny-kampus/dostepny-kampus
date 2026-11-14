@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.feature.capture.report.edit
 
 import io.github.dostepnykampus.core.data.submission.pending.PendingEdit
-import io.github.dostepnykampus.core.data.submissions.EditedSubmission
-import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
+import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
+import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind

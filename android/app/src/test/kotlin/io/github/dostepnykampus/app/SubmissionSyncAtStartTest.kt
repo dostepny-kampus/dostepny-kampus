@@ -12,7 +12,7 @@ import androidx.work.NetworkType
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
-import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionSyncScheduler
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
