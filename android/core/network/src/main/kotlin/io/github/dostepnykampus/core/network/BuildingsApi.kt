@@ -28,11 +28,11 @@ import java.net.HttpURLConnection.HTTP_OK
  * @param json parser JSON kontraktu; nieznane pole jest pomijane, serwer może je dodać później
  * @param baseUrl adres serwera, np. `http://10.0.2.2:8080/` z emulatora
  */
-class BuildingsApi(private val http: OkHttpClient, private val json: Json, baseUrl: String) {
+public class BuildingsApi(private val http: OkHttpClient, private val json: Json, baseUrl: String) {
     private val base = baseUrl.toHttpUrl()
 
     /** Lista budynków z konturami i atrybucją źródła. */
-    suspend fun listBuildings(): ApiResult<BuildingList> =
+    public suspend fun listBuildings(): ApiResult<BuildingList> =
         fetch(endpoint(listOf(BUILDINGS))) { json.decodeFromString<BuildingListDto>(it).toModel() }
 
     /**
@@ -40,7 +40,7 @@ class BuildingsApi(private val http: OkHttpClient, private val json: Json, baseU
      *
      * @param symbol symbol budynku
      */
-    suspend fun building(symbol: String): ApiResult<BuildingDetails> =
+    public suspend fun building(symbol: String): ApiResult<BuildingDetails> =
         fetch(endpoint(listOf(BUILDINGS, symbol))) { json.decodeFromString<BuildingDetailsDto>(it).toModel() }
 
     /**
@@ -51,7 +51,7 @@ class BuildingsApi(private val http: OkHttpClient, private val json: Json, baseU
      *
      * @param symbol symbol budynku
      */
-    suspend fun floors(symbol: String): ApiResult<FloorList> =
+    public suspend fun floors(symbol: String): ApiResult<FloorList> =
         fetch(endpoint(listOf(BUILDINGS, symbol, FLOORS))) { json.decodeFromString<FloorListDto>(it).toModel() }
 
     /**
@@ -60,7 +60,7 @@ class BuildingsApi(private val http: OkHttpClient, private val json: Json, baseU
      * @param latitude szerokość geograficzna w stopniach
      * @param longitude długość geograficzna w stopniach
      */
-    suspend fun locate(latitude: Double, longitude: Double): ApiResult<BuildingAtPoint> =
+    public suspend fun locate(latitude: Double, longitude: Double): ApiResult<BuildingAtPoint> =
         fetch(
             endpoint(
                 segments = listOf(BUILDINGS, LOCATE),
@@ -106,24 +106,24 @@ class BuildingsApi(private val http: OkHttpClient, private val json: Json, baseU
 }
 
 /** Wynik odczytu API. Wywołujący nie dostaje wyjątku sieci ani parsowania. */
-sealed interface ApiResult<out T> {
+public sealed interface ApiResult<out T> {
     /**
      * Odpowiedź 200 zgodna z kontraktem.
      *
      * @param T typ odczytanych danych
      * @property value odczytane dane
      */
-    data class Success<T>(val value: T) : ApiResult<T>
+    public data class Success<T>(val value: T) : ApiResult<T>
 
     /** Odpowiedź 404 w postaci `application/problem+json`. */
-    data object NotFound : ApiResult<Nothing>
+    public data object NotFound : ApiResult<Nothing>
 
     /**
      * Połączenie nie doszło do skutku albo zostało przerwane.
      *
      * @property cause błąd wejścia-wyjścia
      */
-    data class NetworkError(val cause: IOException) : ApiResult<Nothing>
+    public data class NetworkError(val cause: IOException) : ApiResult<Nothing>
 
     /**
      * Kod inny niż 200 i 404 albo treść, której nie da się odczytać jako kontrakt.
@@ -131,5 +131,5 @@ sealed interface ApiResult<out T> {
      * @property code kod HTTP; przy złej treści udanej odpowiedzi to 200
      * @property cause błąd odczytu treści; `null`, gdy serwer zwrócił kod błędu
      */
-    data class ServerError(val code: Int, val cause: IllegalArgumentException? = null) : ApiResult<Nothing>
+    public data class ServerError(val code: Int, val cause: IllegalArgumentException? = null) : ApiResult<Nothing>
 }

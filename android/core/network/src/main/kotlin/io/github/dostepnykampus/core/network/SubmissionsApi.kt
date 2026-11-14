@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit
  * @param json parser JSON kontraktu
  * @param baseUrl adres serwera, np. `http://10.0.2.2:8080/` z emulatora
  */
-class SubmissionsApi(private val http: OkHttpClient, private val json: Json, baseUrl: String) {
+public class SubmissionsApi(private val http: OkHttpClient, private val json: Json, baseUrl: String) {
     private val base = baseUrl.toHttpUrl()
     private val photoHttp by lazy { http.newBuilder().callTimeout(PHOTO_TIMEOUT_SECONDS, TimeUnit.SECONDS).build() }
 
@@ -49,7 +49,7 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
      * @param id identyfikator UUID nadany w telefonie
      * @param content treść zgłoszenia
      */
-    suspend fun create(id: String, content: SubmissionContent): ApiResult<Submission> =
+    public suspend fun create(id: String, content: SubmissionContent): ApiResult<Submission> =
         http.exchange(request(path(), JSON.body(json.encodeNewSubmission(id, content)), POST)) { code, body ->
             if (code == HTTP_OK || code == HTTP_CREATED) success(code) { json.decodeSubmission(body) } else other(code)
         }
@@ -64,7 +64,7 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
      * @param version wersja, od której zaczęto edycję w telefonie
      * @param content treść po edycji
      */
-    suspend fun update(id: String, version: Int, content: SubmissionContent): ApiResult<SubmissionEdit> =
+    public suspend fun update(id: String, version: Int, content: SubmissionContent): ApiResult<SubmissionEdit> =
         http.exchange(request(path(id), JSON.body(json.encodeSubmissionUpdate(version, content)), PUT)) { code, body ->
             when (code) {
                 HTTP_OK -> success(code) { SubmissionEdit.Saved(json.decodeSubmission(body)) }
@@ -82,7 +82,7 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
      * @param photoId identyfikator zdjęcia nadany w telefonie
      * @param jpeg plik JPEG już obrócony, bo serwer usuwa EXIF z orientacją
      */
-    suspend fun putPhoto(submissionId: String, photoId: String, jpeg: ByteArray): ApiResult<Unit> =
+    public suspend fun putPhoto(submissionId: String, photoId: String, jpeg: ByteArray): ApiResult<Unit> =
         photoHttp.exchange(request(path(submissionId, PHOTOS, photoId), JPEG.body(jpeg), PUT)) { code, _ ->
             if (code == HTTP_NO_CONTENT) ApiResult.Success(Unit) else other(code)
         }
@@ -96,7 +96,7 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
      * @param submissionId identyfikator zgłoszenia
      * @param photoId identyfikator zdjęcia z listy `photoIds`
      */
-    suspend fun photo(submissionId: String, photoId: String): ApiResult<ByteArray> {
+    public suspend fun photo(submissionId: String, photoId: String): ApiResult<ByteArray> {
         val photoRequest =
             request(target = path(submissionId, PHOTOS, photoId), body = null, method = GET, accept = PHOTO_TYPES)
         return photoHttp.exchangeBody(photoRequest) { code, body ->
@@ -111,7 +111,7 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
      *
      * @param buildingSymbol tylko zgłoszenia z tego budynku; `null` dla wszystkich
      */
-    suspend fun accepted(buildingSymbol: String? = null): ApiResult<List<Submission>> {
+    public suspend fun accepted(buildingSymbol: String? = null): ApiResult<List<Submission>> {
         val builder = path().newBuilder().addQueryParameter(name = "status", value = "ACCEPTED")
         buildingSymbol?.let { builder.addQueryParameter(name = "buildingSymbol", value = it) }
         return http.exchange(request(builder.build(), body = null, method = GET)) { code, body ->
@@ -129,7 +129,7 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
      *
      * Wymagania: US8.1, US8.2
      */
-    suspend fun mine(): ApiResult<List<Submission>> {
+    public suspend fun mine(): ApiResult<List<Submission>> {
         val target = path().newBuilder().addQueryParameter(name = "mine", value = "true").build()
         return http.exchange(request(target, body = null, method = GET)) { code, body ->
             if (code == HTTP_OK) success(code) { json.decodeSubmissions(body) } else other(code)
@@ -182,13 +182,13 @@ class SubmissionsApi(private val http: OkHttpClient, private val json: Json, bas
 }
 
 /** Wynik edycji zgłoszenia, które serwer przyjął do sprawdzenia wersji. Wymagania: NFR-9 */
-sealed interface SubmissionEdit {
+public sealed interface SubmissionEdit {
     /**
      * Serwer zapisał edycję jako kolejną wersję.
      *
      * @property submission zgłoszenie po edycji
      */
-    data class Saved(val submission: Submission) : SubmissionEdit
+    public data class Saved(val submission: Submission) : SubmissionEdit
 
     /**
      * Serwer ma inną wersję albo zgłoszenie nie pozwala na zmianę; edycja czeka w telefonie na wybór.
@@ -197,5 +197,5 @@ sealed interface SubmissionEdit {
      *
      * @property server zgłoszenie w wersji z serwera
      */
-    data class Conflict(val server: Submission) : SubmissionEdit
+    public data class Conflict(val server: Submission) : SubmissionEdit
 }

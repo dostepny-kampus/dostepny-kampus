@@ -26,7 +26,7 @@ import java.time.format.DateTimeParseException
  * @property source atrybucja, np. „© OpenStreetMap contributors”
  * @property buildings budynki z poziomem szczegółowości
  */
-data class BuildingList(val source: String, val buildings: List<ApiBuilding>)
+public data class BuildingList(val source: String, val buildings: List<ApiBuilding>)
 
 /**
  * Budynek z serwera: model mapy i poziom szczegółowości.
@@ -34,7 +34,7 @@ data class BuildingList(val source: String, val buildings: List<ApiBuilding>)
  * @property building symbol, nazwa i kontur
  * @property detailLevel poziom szczegółowości z kontraktu
  */
-data class ApiBuilding(val building: Building, val detailLevel: DetailLevel)
+public data class ApiBuilding(val building: Building, val detailLevel: DetailLevel)
 
 /**
  * Karta budynku (`BuildingDetails`).
@@ -49,7 +49,7 @@ data class ApiBuilding(val building: Building, val detailLevel: DetailLevel)
  * @property detailLevel poziom szczegółowości
  * @property entrances wejścia; pusta lista, dopóki serwer nie ma danych wejść
  */
-data class BuildingDetails(val building: Building, val detailLevel: DetailLevel, val entrances: List<Entrance>)
+public data class BuildingDetails(val building: Building, val detailLevel: DetailLevel, val entrances: List<Entrance>)
 
 /**
  * Podpowiedź budynku dla punktu (`LocateResult`).
@@ -59,11 +59,11 @@ data class BuildingDetails(val building: Building, val detailLevel: DetailLevel,
  * @property buildingSymbol budynek w konturze albo najbliższy; `null` poza budynkiem
  * @property isInsideOutline czy punkt leży w konturze tego budynku (pole `insideOutline`)
  */
-data class BuildingAtPoint(val buildingSymbol: String?, val isInsideOutline: Boolean)
+public data class BuildingAtPoint(val buildingSymbol: String?, val isInsideOutline: Boolean)
 
 /** Poziom szczegółowości budynku (`DetailLevel`). */
 @Serializable
-enum class DetailLevel {
+public enum class DetailLevel {
     /** Budynek szczegółowy z planami pięter. */
     DETAILED,
 
