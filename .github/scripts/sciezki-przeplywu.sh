@@ -8,7 +8,8 @@ set -euo pipefail
 # Workflow ma dwie listy ścieżek, które decydują, czy zmiana go dotyczy: filtr `on.push.paths` i polecenie
 # `zmiany-obszaru.sh <klucz> <ścieżki>` w zadaniu `zmiany` (PR i grupa kolejki). Skrypt sprawdza, że obie listy są
 # takie same i że zawierają każdą wymaganą ścieżkę, czyli każdy katalog albo plik, który czytają testy tego
-# workflow. `katalog/**` z filtra push i `katalog` z polecenia diff znaczą to samo.
+# workflow. `katalog/**` z filtra push i `katalog` z polecenia diff znaczą to samo; wzorzec git `':(glob)wzorzec'`
+# znaczy to samo co `wzorzec` w filtrze push.
 workflow="${1:?Podaj plik workflow}"
 shift
 
@@ -25,7 +26,8 @@ diff_paths="$(awk '
   block && text ~ /zmiany-obszaru\.sh/ { print text; done = 1; exit }
   { block = 0 }
   END { if (!done && block && text ~ /zmiany-obszaru\.sh/) print text }
-' "$workflow" | sed -E 's/^ *[^ ]*zmiany-obszaru\.sh +[^ ]+ +//' | tr -s ' ' '\n' | sed '/^$/d' | sort -u)"
+' "$workflow" | sed -E 's/^ *[^ ]*zmiany-obszaru\.sh +[^ ]+ +//' | tr -s ' ' '\n' | sed '/^$/d' \
+  | tr -d "'" | sed -E 's/^:\(glob\)//; s/\/\*\*$//' | sort -u)"
 
 failed=0
 if [[ -z $push_paths || -z $diff_paths ]]; then
