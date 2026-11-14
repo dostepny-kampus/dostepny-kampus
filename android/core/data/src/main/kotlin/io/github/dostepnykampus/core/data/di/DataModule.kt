@@ -30,6 +30,7 @@ import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
 import io.github.dostepnykampus.core.data.submissions.PendingEdits
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
+import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
 import io.github.dostepnykampus.core.data.submissions.ownStatusesOf
 import io.github.dostepnykampus.core.data.submissions.pendingEditsOf
@@ -37,7 +38,6 @@ import io.github.dostepnykampus.core.data.submissions.toOwnSubmission
 import io.github.dostepnykampus.core.database.BuildingCacheDao
 import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.PendingEditDao
-import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.network.BuildingsApi
 import io.github.dostepnykampus.core.network.SubmissionsApi
 import kotlinx.coroutines.flow.map
@@ -103,9 +103,8 @@ object DataModule {
     @Singleton
     fun submissionQueue(
         api: SubmissionsApi,
-        store: PendingSubmissionDao,
+        store: SubmissionStore,
         sync: SubmissionSyncScheduler,
-        history: OwnSubmissionDao,
         @IoContext ioContext: CoroutineContext,
     ): SubmissionQueue =
         SubmissionQueue(
@@ -113,7 +112,6 @@ object DataModule {
             ioContext = ioContext,
             server = SubmissionServer(create = api::create, putPhoto = api::putPhoto, update = api::update),
             onSaved = sync::scheduleAfterSave,
-            history = history,
         )
 
     /** Własne zgłoszenia dla listy C3 z historii w telefonie. Wymagania: US8.1, NFR-5 */

@@ -1,0 +1,33 @@
+@startuml
+title <size:24>DostepnyKampusApplication</size>
+
+set separator none
+top to bottom direction
+
+<style>
+  root {
+    BackgroundColor: #ffffff
+    FontColor: #444444
+  }
+</style>
+
+!include <C4/C4>
+!include <C4/C4_Context>
+!include <C4/C4_Component>
+
+System_Boundary("DostepnyKampusApplication_boundary", "DostepnyKampusApplication", $tags="") {
+  Container_Boundary("DostepnyKampusApplication.DostepnyKampusApplication_boundary", "DostepnyKampusApplication", $tags="") {
+    Component(DostepnyKampusApplication.DostepnyKampusApplication.Shared, "Shared", $techn="Module", $descr="", $tags="", $link="")
+    Component(DostepnyKampusApplication.DostepnyKampusApplication.Building, "Building", $techn="Module", $descr="", $tags="", $link="")
+    Component(DostepnyKampusApplication.DostepnyKampusApplication.Barrier, "Barrier", $techn="Module", $descr="", $tags="", $link="")
+  }
+
+}
+
+Rel(DostepnyKampusApplication.DostepnyKampusApplication.Building, DostepnyKampusApplication.DostepnyKampusApplication.Shared, "depends on", $techn="", $tags="", $link="")
+Rel(DostepnyKampusApplication.DostepnyKampusApplication.Barrier, DostepnyKampusApplication.DostepnyKampusApplication.Shared, "depends on", $techn="", $tags="", $link="")
+Rel(DostepnyKampusApplication.DostepnyKampusApplication.Barrier, DostepnyKampusApplication.DostepnyKampusApplication.Building, "uses", $techn="", $tags="", $link="")
+
+SHOW_LEGEND(true)
+hide stereotypes
+@enduml

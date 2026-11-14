@@ -12,4 +12,4 @@ package io.github.dostepnykampus.core.designsystem
  *
  * Wymagania: NFR-19, NFR-20
  */
-const val LARGE_FONT_SCALE = 1.5f
+public const val LARGE_FONT_SCALE: Float = 1.5f

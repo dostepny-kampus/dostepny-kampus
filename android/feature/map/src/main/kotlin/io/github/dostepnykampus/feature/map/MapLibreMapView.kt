@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.RectF
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -29,12 +30,32 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.nameRes
 import io.github.dostepnykampus.core.model.Severity
+import io.github.dostepnykampus.feature.map.barrier.barrierImages
+import io.github.dostepnykampus.feature.map.building.entranceCaption
+import io.github.dostepnykampus.feature.map.building.entranceImages
 import io.github.dostepnykampus.feature.map.data.BARRIER_ID
+import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.data.symbolsAt
+import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
+import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
+import io.github.dostepnykampus.feature.map.style.MapStyleColors
+import io.github.dostepnykampus.feature.map.style.MapStyleTarget
+import io.github.dostepnykampus.feature.map.style.MapTileHttpEntryPoint
+import io.github.dostepnykampus.feature.map.style.SelectionLook
+import io.github.dostepnykampus.feature.map.style.asStyleText
+import io.github.dostepnykampus.feature.map.style.campusMapStyle
+import io.github.dostepnykampus.feature.map.style.numbers
+import io.github.dostepnykampus.feature.map.style.selectionLook
+import io.github.dostepnykampus.feature.map.style.showSelection
+import io.github.dostepnykampus.feature.map.style.styleBuilder
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.jsonPrimitive
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLngBounds
@@ -44,6 +65,12 @@ import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import org.maplibre.android.module.http.HttpRequestUtil
+import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.layers.FillLayer
+import org.maplibre.android.style.layers.LineLayer
+import org.maplibre.android.style.layers.PaintPropertyValue
+import org.maplibre.android.style.layers.SymbolLayer
+import org.maplibre.android.style.sources.GeoJsonSource
 
 private const val LABEL_TEXT_SP = 14f
 private const val LABEL_MAX_FONT_SCALE = 1.4f
@@ -73,10 +100,12 @@ object MapLibreMapView : CampusMapView {
         val context = LocalContext.current
         val density = LocalDensity.current
         val colors = DostepnyKampusTheme.mapColors
-        val style = rememberMapStyle(data = data, selection = selection, colors = colors.styleColors())
+        val styleColors = colors.styleColors()
+        val style = rememberMapStyle(data = data, bounds = selection.bounds, colors = styleColors)
+        val look = remember(data, selection, styleColors) { selectionLook(data, selection, styleColors) }
         val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
         val tolerance = TOUCH_TOLERANCE_DP * density.density
-        val words = Severity.entries.map { stringResource(it.nameRes()) }
+        val images = rememberMapImages(colors = colors, density = density.density, labelSize = labelSize)
         val mapView =
             remember {
                 MapLibre.getInstance(context)
@@ -105,14 +134,13 @@ object MapLibreMapView : CampusMapView {
             }
             onDispose { map = null }
         }
-        DisposableEffect(map, style, labelSize) {
-            map?.setStyle(styleBuilder(style)) { loaded ->
-                val images =
-                    MapImages(colors = colors, density = density.density, labelSize = labelSize, words = words)
-                loaded.addMapImages(labels = data.labels, selected = selection.entrance, images = images)
-            }
-            onDispose {}
-        }
+        map.FollowStyle(
+            style = style,
+            data = data,
+            look = look,
+            entrance = selection.entrance,
+            images = images,
+        )
         DisposableEffect(map, limits) {
             if (size != IntSize.Zero) limits?.let { map?.limitTo(it) }
             onDispose {}
@@ -125,6 +153,34 @@ object MapLibreMapView : CampusMapView {
             onDispose {}
         }
         AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
+    }
+
+    @Composable
+    private fun MapLibreMap?.FollowStyle(
+        style: String,
+        data: CampusMapData,
+        look: SelectionLook,
+        entrance: SelectedEntrance?,
+        images: MapImages,
+    ) {
+        val map = this
+        var loaded by remember { mutableStateOf<Style?>(null) }
+        val currentData by rememberUpdatedState(data)
+        val currentLook by rememberUpdatedState(look)
+        val currentEntrance by rememberUpdatedState(entrance)
+        DisposableEffect(map, style, images) {
+            loaded = null
+            map?.setStyle(styleBuilder(style)) { ready ->
+                ready.addMapImages(labels = currentData.labels, images = images)
+                StyleTarget(ready).showSelection(currentLook, selectionImages(currentEntrance, images))
+                loaded = ready
+            }
+            onDispose {}
+        }
+        DisposableEffect(loaded, look) {
+            loaded?.let { StyleTarget(it).showSelection(look, selectionImages(currentEntrance, images)) }
+            onDispose {}
+        }
     }
 
     @Composable
@@ -197,6 +253,37 @@ object MapLibreMapView : CampusMapView {
     }
 
     private fun isNativeMapAvailable(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess
+
+    /** Wczytany styl MapLibre [style]; zmiany warstw, źródeł i obrazów nie wczytują stylu od nowa. */
+    private class StyleTarget(private val style: Style) : MapStyleTarget {
+        override fun filter(layer: String, filter: JsonElement) {
+            val expression = expressionOf(filter)
+            when (val found = style.getLayer(layer)) {
+                is FillLayer -> found.setFilter(expression)
+                is LineLayer -> found.setFilter(expression)
+                is SymbolLayer -> found.setFilter(expression)
+                else -> Unit
+            }
+        }
+
+        override fun paint(layer: String, property: String, value: JsonElement) {
+            val styled: Any = if (value is JsonArray) expressionOf(value) else value.jsonPrimitive.content
+            style.getLayer(layer)?.setProperties(PaintPropertyValue(property, styled))
+        }
+
+        override fun data(source: String, geoJson: String) {
+            style.getSourceAs<GeoJsonSource>(source)?.setGeoJson(geoJson)
+        }
+
+        override fun image(name: String, image: Bitmap) = style.addImage(name, image)
+
+        private fun expressionOf(value: JsonElement): Expression =
+            if (value is JsonArray) {
+                Expression.Converter.convert(value.asStyleText())
+            } else {
+                Expression.literal(value.jsonPrimitive.boolean)
+            }
+    }
 }
 
 /**
@@ -214,30 +301,44 @@ internal fun northUpOptions(context: Context): MapLibreMapOptions =
         .tiltGesturesEnabled(false)
 
 /**
- * Styl mapy jako napis JSON. Powstaje od nowa tylko po zmianie danych [data], zaznaczenia [selection] albo barw
- * [colors]; ruch kamery rekomponuje widok mapy, ale stylu nie buduje. Funkcja [build] składa styl.
+ * Styl mapy jako napis JSON bez zaznaczenia budynku, wejścia i bariery. Powstaje od nowa tylko po zmianie danych
+ * [data], granic terenu [bounds] albo barw [colors]; zaznaczenie i ruch kamery rekomponują widok mapy, ale stylu
+ * nie budują. Funkcja [build] składa styl.
  */
 @Composable
 internal fun rememberMapStyle(
     data: CampusMapData,
-    selection: MapSelection,
+    bounds: CampusBounds?,
     colors: MapStyleColors,
-    build: (CampusMapData, MapSelection, MapStyleColors) -> String = ::campusMapStyle,
-): String = remember(data, selection, colors) { build(data, selection, colors) }
+    build: (CampusMapData, CampusBounds?, MapStyleColors) -> String = { mapData, area, palette ->
+        campusMapStyle(data = mapData, selection = MapSelection(bounds = area), colors = palette)
+    },
+): String = remember(data, bounds, colors) { build(data, bounds, colors) }
 
 /**
- * Dodaje do stylu podpisy konturów, znaki wejść, pinezkę i podpis zaznaczonego wejścia oraz znaki i słowa
- * uciążliwości barier jako obrazy, bo napisy ze stylu wymagają sieci.
+ * Dodaje do stylu obrazy niezależne od zaznaczenia: podpisy konturów [labels], znaki wejść, pinezkę oraz znaki
+ * i słowa uciążliwości barier, bo napisy ze stylu wymagają sieci.
  */
-internal fun Style.addMapImages(labels: List<String>, selected: SelectedEntrance?, images: MapImages) {
+internal fun Style.addMapImages(labels: List<String>, images: MapImages) {
     labels.forEach { label -> addImage(label, labelImage(label, images.colors, images.labelSize)) }
-    entranceImages(
-        selected = selected,
-        colors = images.colors,
-        density = images.density,
-        labelSize = images.labelSize,
-    ).forEach { (name, image) -> addImage(name, image) }
+    entranceImages(colors = images.colors, density = images.density).forEach { (name, image) -> addImage(name, image) }
     barrierImages(images).forEach { (name, image) -> addImage(name, image) }
+}
+
+/** Obrazy zależne od zaznaczonego wejścia [selected]: tylko podpis z jego nazwą. Wymagania: US3.3 */
+internal fun selectionImages(selected: SelectedEntrance?, images: MapImages): Map<String, Bitmap> =
+    entranceCaption(selected = selected, colors = images.colors, labelSize = images.labelSize)
+
+/**
+ * Wygląd obrazów mapy w barwach [colors], gęstości ekranu [density] i wysokości podpisu [labelSize] w pikselach,
+ * ze słowami uciążliwości w języku ekranu; nowy tylko po zmianie któregoś z nich.
+ */
+@Composable
+internal fun rememberMapImages(colors: MapColors, density: Float, labelSize: Float): MapImages {
+    val words = Severity.entries.map { stringResource(it.nameRes()) }
+    return remember(colors, density, labelSize, words) {
+        MapImages(colors = colors, density = density, labelSize = labelSize, words = words)
+    }
 }
 
 /**

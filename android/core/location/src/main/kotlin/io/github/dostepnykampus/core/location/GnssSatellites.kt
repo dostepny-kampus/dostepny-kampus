@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.callbackFlow
  *
  * Wymagania: US6.1
  */
-enum class GnssSystem {
+public enum class GnssSystem {
     /** Amerykański GPS. */
     GPS,
 
@@ -58,7 +58,7 @@ enum class GnssSystem {
  * @property elevationDegrees wysokość nad horyzontem w stopniach, do mapy nieba
  * @property isUsedInFix czy odbiornik użył satelity do ostatniej pozycji
  */
-data class Satellite(
+public data class Satellite(
     val system: GnssSystem,
     val id: Int,
     val azimuthDegrees: Double,
@@ -74,7 +74,7 @@ data class Satellite(
  *
  * Wymagania: US6.1, US6.5, NFR-2, NFR-27
  */
-class GnssSatellites(private val context: Context) : SatelliteSource {
+internal class GnssSatellites(private val context: Context) : SatelliteSource {
     /** Wszystkie widoczne satelity po każdej zmianie stanu odbiornika. */
     override fun satellites(): Flow<List<Satellite>> =
         callbackFlow {
@@ -98,7 +98,7 @@ class GnssSatellites(private val context: Context) : SatelliteSource {
 /**
  * Liczba satelitów użytych do pozycji według systemów: tylko systemy z co najmniej jednym, w kolejności [GnssSystem].
  */
-fun List<Satellite>.countsInFix(): Map<GnssSystem, Int> {
+public fun List<Satellite>.countsInFix(): Map<GnssSystem, Int> {
     val counts = filter { it.isUsedInFix }.groupingBy { it.system }.eachCount()
     return GnssSystem.entries.filter { it in counts }.associateWith { counts.getValue(it) }
 }

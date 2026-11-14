@@ -13,12 +13,11 @@ i zniknie w #1445.
 Moduł to pakiet najwyższego poziomu pod `io.github.dostepnykampus`. Wszystkie działają w jednym procesie,
 granice sprawdza Spring Modulith.
 
-| Moduł | Zadanie | Zależy od |
-| --- | --- | --- |
-| `identity` | konto zalogowanej osoby i zabezpieczenie API | `shared` |
-| `building` | budynki, wejścia i obszar kampusu | `shared` |
-| `barrier` | zgłoszenia barier ze zdjęciami | `building`, `shared` |
-| `shared` | błędy, ścisły JSON i układy współrzędnych | — |
+Schemat zależności modułów powstaje z kodu (`ModularityTest` porównuje go z plikiem `moduly-serwera.iuml`).
+Moduł bez zależności, dziś `identity`, nie ma na nim strzałek i generator go pomija. Zadanie, API i
+zależności każdego modułu opisuje jego `package-info.java`.
+
+![Diagram zależności modułów serwera: barrier zależy od building i shared, building zależy od shared](../_generated/moduly-serwera.svg)
 
 Układ modułu na przykładzie `barrier`:
 
@@ -66,6 +65,9 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | `:core:geo`, `:core:location`, `:core:designsystem` | geometria, pozycja GNSS, wygląd | `:core:model` |
 | `:core:model` | typy dziedziny wspólne dla modułów | — |
 
+`core:data.photos` udostępnia kontrakt `PhotoCapture`: żądanie zdjęcia oraz wynik z plikiem,
+rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy składającej ścieżkę użytkownika.
+
 - Moduł funkcji nie zależy od innego modułu funkcji ani od `:core:database` i `:core:network`, także
   pośrednio przez `api(...)` i w testach. Testy dostają repozytoria z `testFixtures` modułu `:core:data`.
 - Tylko `:core:data` i `:app` zależą od `:core:database` i `:core:network`.
@@ -85,32 +87,28 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 
 | Odstępstwo | Issue |
 | --- | --- |
-| serwer ma puste moduły `review`, `sync`, a `ModularityTest` wymaga sześciu nazw | #1320 |
-| `shared` nie istnieje: błędy, JSON i `Wgs84` leżą w pakiecie głównym, geometria PUWG w `export` | #1321 |
-| korzenie `barrier`, `building`, `identity` zawierają wnętrze modułu | #1323, #1324, #1442 |
+| korzeń `barrier` zawiera wnętrze modułu | #1323 |
 | `barrier.domain` ma 22 pliki | #1439 |
-| Android ma moduły `:feature:auth`, `:feature:progress`, `:feature:review` bez kodu albo z jednym plikiem | #1327 |
 | `:core:data` udostępnia `:core:database` przez `api(...)`, testy funkcji zależą od bazy i sieci | #1328 |
-| `:feature:map` i `:feature:capture` mają po około 40 plików w jednym pakiecie | #1330, #1331 |
 
 ## Co pilnuje zasady
 
 | Punkt zasady | Kontrola |
 | --- | --- |
 | brak cykli i dostępu do wnętrza cudzego modułu serwera | `ModularityTest.infraVerifiesModuleBoundaries` |
-| moduł serwera ma kod i opis, bez stałej listy nazw | #1320 |
-| pakiet główny i lista podpakietów `shared` | #1321 |
+| moduł serwera ma kod i opis, bez stałej listy nazw | `ModularityTest.modulesHaveClassesAndDescription` |
+| pakiet główny i lista podpakietów `shared` | `ModularityTest` (`basePackageHoldsOnlyApplication`, `sharedHasOnlyErrorJsonAndGeo`) |
 | jawna lista zależności modułu serwera | `ModularityTest` (`modulesDeclareAllowedDependencies`, `infraVerifiesModuleBoundaries`) |
 | korzeń modułu serwera zawiera tylko API | #1443 |
 | `domain` bez frameworków, na `persistence` zależy tylko `persistence` | `BarrierArchitectureTest` (A-1…A-9), dziś tylko `barrier` |
 | kierunek i nazwy warstw w każdym module serwera | #1325 |
 | najwyżej 15 plików w pakiecie | #1326 (serwer), #1332 (Android) |
-| moduł Androida ma kod produkcyjny | #1327 |
+| moduł Androida ma kod produkcyjny | `ModuleContentArchitectureTest` |
 | moduł funkcji nie widzi bazy i sieci | Konsist `infra_a1_ui_no_network_or_db` (tylko kod produkcyjny); kompilator i testy: #1328 |
 | tylko `:core:data` i `:app` zależą od bazy i sieci | #1328 |
 | moduł funkcji nie importuje innego modułu funkcji | Konsist `infra_a1_feature_not_on_other` |
 | moduł `core` nie importuje modułu funkcji | Konsist `infra_a1_core_not_on_feature` |
 | jawna widoczność w modułach `core` | #1329 |
 | zadeklarowane zależności Gradle są używane i mają właściwy zakres | `buildHealth` (#894), poprawki: #1398 |
-| opis modułu przy kodzie | #1333 (serwer), #1334 (Android) |
+| opis modułu przy kodzie | #1333 (serwer); Android: `ModuleReadmeArchitectureTest` (`README.md` modułu, zebrane na stronie [Moduły aplikacji Android](moduly-android.md)) |
 | kryteria nowego modułu, łączenie małych modułów, próg pięciu plików podpakietu, podział pakietów funkcji według ścieżki | przegląd PR |

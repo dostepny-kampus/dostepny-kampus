@@ -21,7 +21,7 @@ import io.github.dostepnykampus.core.model.Building
  * @param buildings budynki, wśród których szukamy
  * @return budynki o tym symbolu w kolejności [buildings]; pusta lista, gdy brak wyniku
  */
-fun searchBuildings(query: String, buildings: List<Building>): List<Building> {
+public fun searchBuildings(query: String, buildings: List<Building>): List<Building> {
     val key = symbolKey(query) ?: return emptyList()
     return buildings.filter { symbolKey(it.symbol) == key }
 }

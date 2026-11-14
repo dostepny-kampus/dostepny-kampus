@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.barrier.json;
 
-import io.github.dostepnykampus.InvalidInput;
 import io.github.dostepnykampus.barrier.domain.NewEntranceMarking;
+import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;

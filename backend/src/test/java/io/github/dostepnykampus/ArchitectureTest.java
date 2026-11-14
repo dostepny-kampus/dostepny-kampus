@@ -13,6 +13,11 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import com.tngtech.archunit.library.GeneralCodingRules;
+import io.github.dostepnykampus.shared.error.ConflictingState;
+import io.github.dostepnykampus.shared.error.ForbiddenChange;
+import io.github.dostepnykampus.shared.error.InvalidInput;
+import io.github.dostepnykampus.shared.error.MissingLogin;
+import io.github.dostepnykampus.shared.error.MissingResource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Controller;
@@ -129,9 +134,7 @@ final class ArchitectureTest {
     private static ArchRule jdbcPlacement() {
         return ArchRuleDefinition.noClasses()
             .that().resideOutsideOfPackages("..persistence..", "..postgis..")
-            .and().doNotHaveFullyQualifiedName("io.github.dostepnykampus.building.BuildingQuery")
             .should().dependOnClassesThat().resideInAnyPackage("org.springframework.jdbc..")
-            .because("BuildingQuery pozostaje wyjątkiem do uporządkowania zapytań w #849")
             .allowEmptyShould(false);
     }
 }

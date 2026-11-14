@@ -5,10 +5,6 @@
  */
 package io.github.dostepnykampus.barrier.web;
 
-import io.github.dostepnykampus.ConflictingState;
-import io.github.dostepnykampus.ForbiddenChange;
-import io.github.dostepnykampus.MissingLogin;
-import io.github.dostepnykampus.MissingResource;
 import io.github.dostepnykampus.barrier.SubmissionService;
 import io.github.dostepnykampus.barrier.domain.CreateResult;
 import io.github.dostepnykampus.barrier.domain.EditResult;
@@ -16,6 +12,10 @@ import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
+import io.github.dostepnykampus.shared.error.ConflictingState;
+import io.github.dostepnykampus.shared.error.ForbiddenChange;
+import io.github.dostepnykampus.shared.error.MissingLogin;
+import io.github.dostepnykampus.shared.error.MissingResource;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;

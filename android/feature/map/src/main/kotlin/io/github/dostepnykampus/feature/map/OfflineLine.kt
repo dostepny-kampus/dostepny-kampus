@@ -33,6 +33,8 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.pathIcon
+import io.github.dostepnykampus.feature.map.barrier.CampusZone
+import io.github.dostepnykampus.feature.map.building.DAY_FORMAT
 import java.time.Instant
 
 private val NoInternetIcon =

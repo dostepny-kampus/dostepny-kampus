@@ -49,11 +49,11 @@ private val SideBarItemWidth = 80.dp
 private val ShortWordBeforeSpace = Regex("""(?<=(^|\s)[aiouwzAIOUWZ]) """)
 
 /** Pozycja paska dolnego: napis [label] pod ikoną [icon]. */
-data class BottomBarItem(val label: String, val icon: ImageVector)
+public data class BottomBarItem(val label: String, val icon: ImageVector)
 
 /** Pozycje paska dolnego od lewej; w napisach po jednoliterowych słowach stoi twarda spacja. */
 @Immutable
-class BottomBarItems(items: List<BottomBarItem>) {
+public class BottomBarItems(items: List<BottomBarItem>) {
     internal val entries = items.map { it.copy(label = keepShortWordsWithNext(it.label)) }
 }
 
@@ -67,7 +67,12 @@ class BottomBarItems(items: List<BottomBarItem>) {
  * Wymagania: NFR-52, NFR-18, NFR-20
  */
 @Composable
-fun BottomBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
+public fun BottomBar(
+    items: BottomBarItems,
+    selectedIndex: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = MaterialTheme.colorScheme
     val iconSize = Modifier.size(Ikony.rozmiar)
     Column(modifier = modifier) {
@@ -108,7 +113,7 @@ fun BottomBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit
  * Wymagania: NFR-52, NFR-18
  */
 @Composable
-fun SideBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
+public fun SideBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     val iconSize = Modifier.size(Ikony.rozmiar)
     Row(modifier = modifier.background(colors.surfaceContainerLow)) {

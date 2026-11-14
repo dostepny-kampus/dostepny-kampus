@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
  *
  * Wymagania: NFR-23, NFR-27
  */
-class GnssLocationSwitch(private val context: Context) : LocationSwitch {
+internal class GnssLocationSwitch(private val context: Context) : LocationSwitch {
     /** Stan włącznika od teraz, bez powtórzeń tej samej wartości. */
     override fun isEnabled(): Flow<Boolean> =
         callbackFlow {

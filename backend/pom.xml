@@ -370,12 +370,17 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
                mają znacznik kontekst-springa (pilnuje go SpringTestTagArchitectureTest) i nie biorą udziału. -->
           <targetClasses>
             <param>io.github.dostepnykampus.*.domain.*</param>
-            <param>io.github.dostepnykampus.building.locate.*</param>
+            <param>io.github.dostepnykampus.barrier.json.*</param>
+            <param>io.github.dostepnykampus.barrier.Photo*</param>
+            <param>io.github.dostepnykampus.barrier.web.NewSubmissionRequest*</param>
+            <param>io.github.dostepnykampus.barrier.web.SubmissionFilter*</param>
+            <param>io.github.dostepnykampus.barrier.web.SubmissionUpdateRequest*</param>
             <param>io.github.dostepnykampus.barrier.JpegCleaner*</param>
             <param>io.github.dostepnykampus.barrier.SubmissionService*</param>
-            <param>io.github.dostepnykampus.StrictJsonConfiguration*</param>
-            <param>io.github.dostepnykampus.CanonicalUuidDeserializer*</param>
-            <param>io.github.dostepnykampus.Wgs84*</param>
+            <param>io.github.dostepnykampus.shared.json.StrictJsonConfiguration*</param>
+            <param>io.github.dostepnykampus.shared.json.CanonicalUuidDeserializer*</param>
+            <param>io.github.dostepnykampus.shared.json.NullRejectingDeserializer*</param>
+            <param>io.github.dostepnykampus.shared.geo.Wgs84*</param>
           </targetClasses>
           <targetTests>
             <param>io.github.dostepnykampus.*</param>

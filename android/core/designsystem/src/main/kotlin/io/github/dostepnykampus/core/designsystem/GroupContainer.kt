@@ -26,7 +26,7 @@ import androidx.compose.ui.semantics.semantics
  * zaokrąglenie [Zaokraglenia.duze], wcięcie treści [Odstepy.m]. Treść [content] układa się w kolumnie.
  */
 @Composable
-fun GroupContainer(title: String, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+public fun GroupContainer(title: String, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Column(modifier = modifier.padding(top = Odstepy.l)) {
         Text(
             text = title,

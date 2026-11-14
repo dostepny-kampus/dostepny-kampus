@@ -183,6 +183,15 @@ final class PhotoSettingsTest {
     }
 
     @Test
+    void cfgFiveNamesEndpointAndBucketInSettingsText() {
+        Assertions.assertEquals(
+            "PhotoSettings[endpoint=http://magazyn, bucket=zdjecia]",
+            new PhotoSettings(URI.create("http://magazyn"), "zdjecia", "klucz-1", "sekret-1")
+                .toString()
+        );
+    }
+
+    @Test
     void cfgFiveHidesKeysInSettingsText() {
         MatcherAssert.assertThat(
             "Tekst ustawień zawiera klucz dostępu albo sekret magazynu",

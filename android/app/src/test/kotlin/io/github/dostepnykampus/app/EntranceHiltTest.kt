@@ -34,8 +34,8 @@ import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
 import io.github.dostepnykampus.core.data.submissions.PendingEdits
 import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
+import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
-import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.network.SubmissionsApi
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
@@ -114,7 +114,7 @@ class EntranceHiltTest {
 
         @Provides
         @Singleton
-        fun queue(api: SubmissionsApi, store: PendingSubmissionDao, sync: SubmissionSyncScheduler): SubmissionQueue =
+        fun queue(api: SubmissionsApi, store: SubmissionStore, sync: SubmissionSyncScheduler): SubmissionQueue =
             SubmissionQueue(store = store, create = api::create, putPhoto = api::putPhoto, onSaved = sync::schedule)
     }
 

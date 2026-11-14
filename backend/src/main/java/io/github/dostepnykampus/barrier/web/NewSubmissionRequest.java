@@ -6,14 +6,14 @@
 package io.github.dostepnykampus.barrier.web;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import io.github.dostepnykampus.ConflictingState;
-import io.github.dostepnykampus.MissingResource;
 import io.github.dostepnykampus.barrier.domain.InvalidSubmission;
 import io.github.dostepnykampus.barrier.domain.NewSubmission;
 import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import io.github.dostepnykampus.barrier.json.SubmissionContentJson;
+import io.github.dostepnykampus.shared.error.ConflictingState;
+import io.github.dostepnykampus.shared.error.MissingResource;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 

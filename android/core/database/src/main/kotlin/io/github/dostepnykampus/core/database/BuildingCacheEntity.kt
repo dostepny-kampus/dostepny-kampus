@@ -21,11 +21,11 @@ import androidx.room.PrimaryKey
  * @property syncedAt chwila pobrania listy w milisekundach epochy
  */
 @Entity(tableName = "building_cache")
-data class BuildingCacheEntity(
+public data class BuildingCacheEntity(
     @PrimaryKey val id: Int,
     @ColumnInfo(name = "list_json") val listJson: String,
     @ColumnInfo(name = "synced_at") val syncedAt: Long,
 )
 
 /** Identyfikator jedynego wiersza kopii listy budynków. */
-const val BUILDING_CACHE_SINGLE_ROW = 1
+public const val BUILDING_CACHE_SINGLE_ROW: Int = 1

@@ -32,7 +32,7 @@ private const val NANOS_IN_MILLI = 1_000_000L
  *
  * Wymagania: US6.1, NFR-27, NFR-2
  */
-class GnssPositionFixes(private val context: Context) : PositionSource {
+internal class GnssPositionFixes(private val context: Context) : PositionSource {
     /** Odczyty od teraz, aż do przerwania zbierania; czas odczytu z zegara monotonicznego telefonu. */
     override fun fixes(): Flow<PositionFix> =
         callbackFlow {

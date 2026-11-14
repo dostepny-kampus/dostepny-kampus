@@ -36,7 +36,8 @@ fun interface PendingEdits {
 }
 
 /** Poprawki z kolejki w bazie Room [store]. */
-fun pendingEditsOf(store: PendingEditDao): PendingEdits = PendingEdits { id -> store.find(id)?.toPendingEdit() }
+internal fun pendingEditsOf(store: PendingEditDao): PendingEdits =
+    PendingEdits { id -> store.find(id)?.toPendingEdit() }
 
 /** Poprawka z wiersza albo `null`, gdy telefon nie odczyta treści; C2 wraca wtedy do listy jak bez zgłoszenia. */
 internal fun PendingSubmissionWithPhotos.toPendingEdit(): PendingEdit? =

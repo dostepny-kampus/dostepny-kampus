@@ -10,7 +10,7 @@ import android.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.github.dostepnykampus.feature.map.MapTileHttp
+import io.github.dostepnykampus.feature.map.style.MapTileHttp
 import okhttp3.Request
 import org.junit.Assert.assertEquals
 import org.junit.Before

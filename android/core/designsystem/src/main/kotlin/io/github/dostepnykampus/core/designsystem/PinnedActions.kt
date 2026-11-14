@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
  * Wymagania: NFR-20
  */
 @Composable
-fun PinnedActionBar(modifier: Modifier = Modifier, content: @Composable FlowRowScope.() -> Unit) {
+public fun PinnedActionBar(modifier: Modifier = Modifier, content: @Composable FlowRowScope.() -> Unit) {
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.surface,
@@ -58,7 +58,7 @@ fun PinnedActionBar(modifier: Modifier = Modifier, content: @Composable FlowRowS
  * Wymagania: NFR-17, NFR-20, NFR-16, NFR-21
  */
 @Composable
-fun PinnedButton(
+public fun PinnedButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

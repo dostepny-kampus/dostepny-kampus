@@ -42,7 +42,7 @@ private val AppTypography = typography(AtkinsonHyperlegibleNext)
  * Wymagania: NFR-16, NFR-20
  */
 @Composable
-fun DostepnyKampusTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+public fun DostepnyKampusTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     CompositionLocalProvider(
         LocalStatusColors provides if (darkTheme) DarkStatusColors else LightStatusColors,
         LocalMapColors provides if (darkTheme) DarkMapColors else LightMapColors,
@@ -57,14 +57,14 @@ fun DostepnyKampusTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Co
 }
 
 /** Role tokenów spoza Material 3 dla bieżącego motywu; poza [DostepnyKampusTheme] wartości motywu jasnego. */
-object DostepnyKampusTheme {
+public object DostepnyKampusTheme {
     /** Kontenery oznaczeń wejścia i kolor ich kształtu i słowa (tokeny `status…Container`). Wymagania: NFR-21 */
-    val statusColors: StatusColors
+    public val statusColors: StatusColors
         @Composable @ReadOnlyComposable
         get() = LocalStatusColors.current
 
     /** Paleta mapy i planu piętra (sekcja `mapa.kolory`) do stylu mapy. */
-    val mapColors: MapColors
+    public val mapColors: MapColors
         @Composable @ReadOnlyComposable
         get() = LocalMapColors.current
 

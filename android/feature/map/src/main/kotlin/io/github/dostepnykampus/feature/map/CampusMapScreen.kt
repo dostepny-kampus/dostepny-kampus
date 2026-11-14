@@ -40,6 +40,13 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.area.MapAreas
+import io.github.dostepnykampus.feature.map.area.rememberMapAreas
+import io.github.dostepnykampus.feature.map.barrier.BarrierDescriptions
+import io.github.dostepnykampus.feature.map.barrier.ChosenBarrierSheet
+import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
+import io.github.dostepnykampus.feature.map.building.BuildingChoice
+import io.github.dostepnykampus.feature.map.building.BuildingChoiceSheet
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 

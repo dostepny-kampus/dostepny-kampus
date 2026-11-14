@@ -12,11 +12,11 @@ import io.github.dostepnykampus.core.model.Severity
 
 /** Nazwa typu bariery ze słownika projektu, np. „Próg” dla TB-13. Wymagania: BR-7 */
 @StringRes
-fun BarrierType.nameRes(): Int = TYPE_NAMES.getValue(this)
+public fun BarrierType.nameRes(): Int = TYPE_NAMES.getValue(this)
 
 /** Nazwa grupy barier, w której formularz C2 pokazuje typy. */
 @StringRes
-fun BarrierGroup.nameRes(): Int =
+public fun BarrierGroup.nameRes(): Int =
     when (this) {
         BarrierGroup.ENTRANCE_AND_DOORS -> R.string.grupa_barier_wejscie
         BarrierGroup.VERTICAL_CIRCULATION -> R.string.grupa_barier_pionowa
@@ -28,7 +28,7 @@ fun BarrierGroup.nameRes(): Int =
 
 /** Nazwa uciążliwości: „Utrudnienie”, „Tylko z pomocą” albo „Blokada”. Wymagania: US7.1 */
 @StringRes
-fun Severity.nameRes(): Int =
+public fun Severity.nameRes(): Int =
     when (this) {
         Severity.HINDRANCE -> R.string.uciazliwosc_utrudnienie
         Severity.ONLY_WITH_HELP -> R.string.uciazliwosc_pomoc
@@ -37,7 +37,7 @@ fun Severity.nameRes(): Int =
 
 /** Opis uciążliwości pod nazwą na C2, oceniany dla osoby, dla której bariera jest najtrudniejsza (PW-13). */
 @StringRes
-fun Severity.descriptionRes(): Int =
+public fun Severity.descriptionRes(): Int =
     when (this) {
         Severity.HINDRANCE -> R.string.uciazliwosc_utrudnienie_opis
         Severity.ONLY_WITH_HELP -> R.string.uciazliwosc_pomoc_opis

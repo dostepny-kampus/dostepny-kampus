@@ -87,6 +87,8 @@ KDOC_FILLER = "/**/"
 KDOC_MARKER_TEXT = re.compile(r"(?i:Scenariusz)|\s{2,}\S")
 SUITE_FILE = re.compile(r'@SelectFile\(\s*"(?:[^"]*/)?specs/([^"]+\.feature)"\s*\)')
 SUITE_SOURCE = "src/test/java"
+CODE_REQUIREMENTS = re.compile(r"^\s*(?:/\*\*.*?\s|\*\s*(?:<p>)?)Wymagania:\s*(.*?)\s*(?:</p>)?\s*(?:\*/)?\s*$")
+BUILD_DIR = re.compile(r"(?:^|/)(?:build|target|\.gradle)/")
 TEST_SOURCE = re.compile(r"^(?!(?:.*/)?(?:build|\.gradle)/)(?:.*/)?src/(?:test|\w*Test)\w*/")
 
 
@@ -143,6 +145,7 @@ class Corpus:
     all_scenarios: list[Scenario] = field(default_factory=list)
     feature_files: int = 0
     features: set[str] = field(default_factory=set)
+    code_requirements: list[tuple[str, Location]] = field(default_factory=list)
     markers: list[Marker] = field(default_factory=list)
     examples: dict[tuple[str, str], list[tuple[str, ...]]] = field(default_factory=lambda: defaultdict(list))
     bodies: dict[tuple[str, str], list[str]] = field(default_factory=lambda: defaultdict(list))
@@ -405,7 +408,36 @@ def collect(docs: Path, specs: Path, android: Path | None = None, backend: Path 
             scan_kotlin(path, corpus, "/".join(parts[: parts.index("src")]))
     for path in files_in(backend / SUITE_SOURCE if backend else None, "*.java"):
         scan_suite(path, corpus)
+    for root, pattern in ((android, "*.kt"), (backend, "*.java")):
+        for path in files_in(root, pattern):
+            if not BUILD_DIR.search(path.relative_to(root).as_posix()):
+                scan_code_requirements(path, corpus)
     return corpus
+
+
+def scan_code_requirements(path: Path, corpus: Corpus) -> None:
+    """Dodaje do `corpus.code_requirements` pozycje linii `Wymagania: …` z opisów KDoc i Javadoc w pliku kodu.
+
+    Gwarantuje: pozycja to tekst między przecinkami, bez spacji na brzegach; linia wielowierszowego opisu
+    (` * Wymagania: …`, w Javadoc także z `<p>`) i koniec opisu jednowierszowego (`/** … Wymagania: … */`) dają
+    pozycje z numerem swojej linii. Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
+    """
+    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        match = CODE_REQUIREMENTS.match(line)
+        if match:
+            location = Location(relative(path), number)
+            corpus.code_requirements.extend((item.strip(), location) for item in match.group(1).split(","))
+
+
+def code_requirement_findings(corpus: Corpus) -> list[Finding]:
+    """Zwraca błędy dla pozycji linii `Wymagania:` w kodzie, które nie są identyfikatorem albo nie mają definicji."""
+    findings: list[Finding] = []
+    for item, location in corpus.code_requirements:
+        if not ID_FULL.fullmatch(item):
+            findings.append(Finding("BŁĄD", str(location), f"„{item}” w linii Wymagania nie jest identyfikatorem"))
+        elif item not in corpus.definitions:
+            findings.append(Finding("BŁĄD", str(location), f"linia Wymagania wskazuje niezdefiniowane ID: {item}"))
+    return findings
 
 
 def scan_suite(path: Path, corpus: Corpus) -> None:
@@ -613,6 +645,7 @@ def check(corpus: Corpus, partial: bool = False) -> list[Finding]:
     Każda dziura z trace_gaps daje tu wynik, więc strona śledzenia z dziurami nie przejdzie kontroli `--strict`.
     """
     findings = undefined_references(corpus, partial) + legacy_criteria(corpus) + untraced(corpus, partial)
+    findings += code_requirement_findings(corpus)
     defined = sorted(corpus.definitions, key=natural_key)
     first = {i: str(corpus.definitions[i][0]) for i in defined}
     ac_level = "BŁĄD" if corpus.feature_files else "UWAGA"

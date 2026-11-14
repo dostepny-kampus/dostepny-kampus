@@ -20,6 +20,7 @@ import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
+import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.location.LocationSwitch
@@ -30,11 +31,11 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.feature.capture.BuildingLookup
-import io.github.dostepnykampus.feature.capture.QuickLookup
-import io.github.dostepnykampus.feature.capture.QuickReport
-import io.github.dostepnykampus.feature.capture.QuickSendStage
-import io.github.dostepnykampus.feature.capture.QuickSendViewModel
-import io.github.dostepnykampus.feature.capture.ReportSaverModule
+import io.github.dostepnykampus.feature.capture.quick.QuickLookup
+import io.github.dostepnykampus.feature.capture.quick.QuickReport
+import io.github.dostepnykampus.feature.capture.quick.QuickSendStage
+import io.github.dostepnykampus.feature.capture.quick.QuickSendViewModel
+import io.github.dostepnykampus.feature.capture.report.ReportSaverModule
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -67,6 +68,9 @@ class QuickOfflineTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val app = RuntimeEnvironment.getApplication()
+
+    @Inject
+    lateinit var store: SubmissionStore
 
     @Inject
     lateinit var pending: PendingSubmissionDao
@@ -122,7 +126,7 @@ class QuickOfflineTest {
 
     private fun queue(): SubmissionQueue =
         SubmissionQueue(
-            store = pending,
+            store = store,
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
@@ -133,7 +137,6 @@ class QuickOfflineTest {
                     putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
                     update = { _, _, _ -> ApiResult.NotFound },
                 ),
-            history = history,
         )
 
     private fun photo(): PendingPhotoDraft {
