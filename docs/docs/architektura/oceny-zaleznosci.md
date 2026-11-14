@@ -70,7 +70,7 @@ Data sprawdzenia: 15 listopada 2026. Decyzja: wersja `3.6.3` dla `coil-compose` 
 | Zgodność z OkHttp | `coil-network-okhttp` przyjmuje `okhttp3.Call.Factory`, więc korzysta z klienta aplikacji z `core:network` i jego puli połączeń. Wydanie deklaruje OkHttp `4.12.0`; Gradle zostawia wersję `5.5.1` z katalogu, a użyty interfejs `Call.Factory` jest w obu wersjach ten sam. Zgodność sprawdza CI przy pierwszym użyciu. |
 | Użycie | Ten wpis dodaje tylko wersję i biblioteki do katalogu. `coil-compose` i `coil-network-okhttp` trafiają do modułu, który ich używa, razem z interfejsem w #2015. |
 
-### Znane podatności
+### Znane podatności Coil
 
 Zapytania do [OSV](https://google.github.io/osv.dev/post-v1-query/) wykonano 15.11.2026.
 Dla każdego pakietu podano ekosystem `Maven` i dokładną wersję `3.6.3`.
