@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture.measure
 
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
 import io.github.dostepnykampus.core.location.LocationSwitch

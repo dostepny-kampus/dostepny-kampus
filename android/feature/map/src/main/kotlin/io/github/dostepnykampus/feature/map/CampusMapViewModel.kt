@@ -8,9 +8,9 @@ package io.github.dostepnykampus.feature.map
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.dostepnykampus.core.data.barriers.AcceptedBarrier
-import io.github.dostepnykampus.core.data.barriers.AcceptedBarriers
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.di.ComputeContext
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus

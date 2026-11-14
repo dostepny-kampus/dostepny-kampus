@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map
 
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.server.ServerBuildings
 import io.github.dostepnykampus.core.data.server.ServerReply

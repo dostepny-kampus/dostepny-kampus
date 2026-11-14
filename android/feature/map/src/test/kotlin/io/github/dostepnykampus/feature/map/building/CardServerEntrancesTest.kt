@@ -9,9 +9,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
-import io.github.dostepnykampus.core.data.buildings.ServerEntrances
-import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.ServerEntrances
+import io.github.dostepnykampus.core.data.building.ServerEntrancesRepository
 import io.github.dostepnykampus.core.data.server.ServerCard
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.AssessmentSource

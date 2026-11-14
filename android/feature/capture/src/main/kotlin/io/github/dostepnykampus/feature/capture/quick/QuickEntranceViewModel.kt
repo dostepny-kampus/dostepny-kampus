@@ -7,7 +7,7 @@ package io.github.dostepnykampus.feature.capture.quick
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.model.Entrance
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

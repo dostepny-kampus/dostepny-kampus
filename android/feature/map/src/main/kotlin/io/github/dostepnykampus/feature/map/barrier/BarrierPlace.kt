@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.res.stringResource
-import io.github.dostepnykampus.core.data.barriers.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.feature.map.R

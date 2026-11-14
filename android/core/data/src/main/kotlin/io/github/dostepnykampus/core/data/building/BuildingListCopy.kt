@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.data.buildings
+package io.github.dostepnykampus.core.data.building
 
 import io.github.dostepnykampus.core.database.cache.BUILDING_CACHE_SINGLE_ROW
 import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
