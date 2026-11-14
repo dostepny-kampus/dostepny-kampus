@@ -41,7 +41,7 @@ class CardBarriersViewModelTest {
 
     /** Wiersz: bariery z serwera → stan karty ma tylko zgłoszenia budynku karty, bez barier innych i poza budynkiem. */
     @Test
-    fun us2_2_only_own_building() =
+    fun keepsOwnBuildingOnly() =
         runTest {
             val all =
                 listOf(
@@ -54,7 +54,7 @@ class CardBarriersViewModelTest {
 
     /** Wiersz: brak zgłoszeń przyjętych → karta ma pustą listę barier. Wymagania: US2.4 */
     @Test
-    fun us2_4_none_is_empty() =
+    fun givesEmptyForNone() =
         runTest {
             assertEquals(emptyList<String>(), cardBarriers(emptyList()))
         }

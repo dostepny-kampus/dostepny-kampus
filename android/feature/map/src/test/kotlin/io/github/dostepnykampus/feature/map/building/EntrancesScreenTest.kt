@@ -27,7 +27,7 @@ class EntrancesScreenTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     @Test
-    fun us3_1_empty_shows_no_data() {
+    fun showsNoDataWhenEmpty() {
         val viewModel = viewModel()
         compose.setContent {
             DostepnyKampusTheme {
@@ -48,7 +48,7 @@ class EntrancesScreenTest {
      * Wymagania: US17.3
      */
     @Test
-    fun us17_3_unknown_no_date_promise() {
+    fun promisesNoDateForUnknown() {
         val viewModel = viewModel(ENTRANCE)
         compose.setContent {
             DostepnyKampusTheme {

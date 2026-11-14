@@ -41,7 +41,7 @@ class EntranceRowTest {
      * Wymagania: US2.8, US2.1, US3.1, NFR-21
      */
     @Test
-    fun us2_8_row_says_entrance_state() {
+    fun statesEntranceState() {
         val shown = mutableStateOf("A-1")
         compose.setContent {
             val symbol = shown.value

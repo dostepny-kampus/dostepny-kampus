@@ -28,7 +28,7 @@ class BarrierPlaceTest {
 
     /** Wiersz: arkusz bariery, miejsce to budynek i wejście albo piętro. Wymagania: US1.5 */
     @Test
-    fun us1_5_building_entrance_floor() {
+    fun namesBuildingEntranceFloor() {
         val barrier = barrier(symbol = "A-1", floor = SubmissionFloor(number = 0))
         val main = building(symbol = "A-1", name = "Gmach Główny")
         show(ChosenBarrier(barrier = barrier, building = main, entrance = ENTRANCE))
@@ -38,7 +38,7 @@ class BarrierPlaceTest {
 
     /** Wiersz: budynek bez nazwy to „Budynek C-13”, piętro z dopiskiem „półpiętro”. Wymagania: US1.5 */
     @Test
-    fun us1_5_no_name_mezzanine() {
+    fun namesUnnamedMezzanine() {
         val barrier = barrier(symbol = "C-13", floor = SubmissionFloor(number = 2, isMezzanine = true))
         show(ChosenBarrier(barrier = barrier, building = building(symbol = "C-13", name = null), entrance = null))
 
@@ -47,7 +47,7 @@ class BarrierPlaceTest {
 
     /** Wiersz: bariera poza budynkiem ma „Poza budynkiem”. Wymagania: US1.5, BR-G2 */
     @Test
-    fun us1_5_outside_building() {
+    fun namesOutside() {
         show(ChosenBarrier(barrier = barrier(symbol = null, floor = null), building = null, entrance = null))
 
         compose.onNodeWithText("Poza budynkiem").assertExists()

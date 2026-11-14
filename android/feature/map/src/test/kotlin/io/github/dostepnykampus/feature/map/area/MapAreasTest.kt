@@ -52,7 +52,7 @@ class MapAreasTest {
      * Wymagania: US1.8
      */
     @Test
-    fun us1_8_notice_after_building() {
+    fun noticesAfterBuilding() {
         assertNull(areas().notice)
         assertNull(areas(symbol = START_BUILDING).notice)
         assertEquals("Wittigowo", areas(symbol = "T-15").notice)
@@ -63,7 +63,7 @@ class MapAreasTest {
 
     /** Wiersz: V1, teren wybrany przez osobę w panelu nie daje napisu o zmianie terenu. Wymagania: US1.7, US1.8 */
     @Test
-    fun us1_8_no_notice_for_own_choice() {
+    fun skipsNoticeForOwnChoice() {
         areas().show("Wittigowo")
         assertNull(areas().notice)
         chosen.value = null
@@ -78,7 +78,7 @@ class MapAreasTest {
      * Wymagania: US1.7
      */
     @Test
-    fun us1_7_choices_nearest_first() {
+    fun listsNearestFirst() {
         val expected =
             listOf(
                 AreaChoice(name = "Kampus główny", buildings = 2, kilometers = null),
@@ -90,7 +90,7 @@ class MapAreasTest {
 
     /** Wiersz: V1, odległość na liście liczy się od wybranego terenu, nie od startowego. Wymagania: US1.7 */
     @Test
-    fun us1_7_distance_from_chosen() {
+    fun measuresFromChosen() {
         chosen.value = "Wittigowo"
         assertEquals(listOf("Wittigowo", "Kampus główny", "Bartoszowice"), areas().choices.map(AreaChoice::name))
         assertEquals(listOf(null, 2, 4), areas().choices.map(AreaChoice::kilometers))
@@ -103,7 +103,7 @@ class MapAreasTest {
      * Wymagania: US1.7, BR-G5
      */
     @Test
-    fun us1_7_show_moves_to_area() {
+    fun movesToArea() {
         val camera = requireNotNull(areas().show("Wittigowo"))
         val area = data.areas.single { it.name == "Wittigowo" }
         assertEquals("Wittigowo", areas().current?.name)
@@ -114,7 +114,7 @@ class MapAreasTest {
 
     /** Wiersz: V1, teren spoza danych nie zmienia wyboru. Wymagania: US1.7 */
     @Test
-    fun us1_7_unknown_area_ignored() {
+    fun ignoresUnknownArea() {
         assertNull(areas().show("Nieznany"))
         assertNull(areas().chosenName)
     }
@@ -126,7 +126,7 @@ class MapAreasTest {
      * Wymagania: US1.6, US1.8
      */
     @Test
-    fun us1_8_area_follows_building() {
+    fun followsBuilding() {
         assertEquals("Kampus główny", areas().current?.name)
         assertEquals("Bartoszowice", areas(symbol = "P-14").current?.name)
         chosen.value = "Wittigowo"

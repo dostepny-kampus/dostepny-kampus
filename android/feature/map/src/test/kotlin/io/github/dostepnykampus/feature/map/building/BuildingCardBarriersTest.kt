@@ -41,7 +41,7 @@ class BuildingCardBarriersTest {
      * Wymagania: US2.2, BR-17
      */
     @Test
-    fun us2_2_accepted_report_on_card() {
+    fun showsAcceptedReport() {
         show(listOf(BARRIER))
 
         compose.onNodeWithText("Bariery w budynku").performScrollTo().assertIsDisplayed()
@@ -57,7 +57,7 @@ class BuildingCardBarriersTest {
      * Wymagania: US2.4
      */
     @Test
-    fun us2_4_no_reports_no_group() {
+    fun hidesGroupWithoutReports() {
         show(emptyList())
 
         compose.onNodeWithText("Wejścia").assertIsDisplayed()

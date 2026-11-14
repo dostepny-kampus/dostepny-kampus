@@ -30,7 +30,11 @@ import org.junit.jupiter.api.Test
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Wejście zalecane i kolejność listy oraz stan karty z katalogu. Wymagania: BR-25 */
+/**
+ * Wejście zalecane i kolejność listy oraz stan karty z katalogu.
+ *
+ * Wymagania: BR-25, US3, US2
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class BuildingCardTest {
     @BeforeEach
@@ -44,7 +48,7 @@ class BuildingCardTest {
     }
 
     @Test
-    fun br25_main_is_recommended() {
+    fun recommendsMain() {
         val ordered =
             orderedEntrances(
                 listOf(
@@ -57,7 +61,7 @@ class BuildingCardTest {
     }
 
     @Test
-    fun br25_first_when_main_is_not() {
+    fun recommendsFirstWhenMainIsNot() {
         val ordered =
             orderedEntrances(
                 listOf(
@@ -71,7 +75,7 @@ class BuildingCardTest {
     }
 
     @Test
-    fun br25_inaccessible_come_first() {
+    fun putsInaccessibleFirst() {
         val ordered =
             orderedEntrances(
                 listOf(
@@ -86,7 +90,7 @@ class BuildingCardTest {
     }
 
     @Test
-    fun br25_hides_service_entrances() {
+    fun hidesServiceEntrances() {
         val ordered =
             orderedEntrances(
                 listOf(
@@ -101,7 +105,7 @@ class BuildingCardTest {
     }
 
     @Test
-    fun us3_answer_names_recommended() {
+    fun namesRecommended() {
         val ordered =
             orderedEntrances(
                 listOf(
@@ -113,7 +117,7 @@ class BuildingCardTest {
     }
 
     @Test
-    fun us3_answer_when_none() {
+    fun answersWhenNone() {
         val stairs = orderedEntrances(listOf(entrance(id = "schody", marking = EntranceMarking.INACCESSIBLE)))
         assertEquals(VisitAnswer.NoAccessible, visitAnswer(stairs))
         assertEquals(VisitAnswer.NoData, visitAnswer(emptyList()))
@@ -121,7 +125,7 @@ class BuildingCardTest {
 
     /** Istniejący budynek bez wejść odwiedzających ma osobną odpowiedź o braku danych. Wymagania: US3.1, US17.1 */
     @Test
-    fun us3_1_service_only_is_no_data() {
+    fun treatsServiceOnlyAsNoData() {
         val service =
             listOf(
                 entrance(id = "awaryjne", marking = EntranceMarking.ACCESSIBLE, type = "emergency"),
@@ -140,7 +144,7 @@ class BuildingCardTest {
     }
 
     @Test
-    fun us3_answer_counts_missing() {
+    fun countsMissing() {
         val ordered =
             orderedEntrances(
                 listOf(
@@ -153,7 +157,7 @@ class BuildingCardTest {
     }
 
     @Test
-    fun us3_unnamed_and_service() {
+    fun handlesUnnamedAndService() {
         val unnamed = entrance(id = "boczne", marking = EntranceMarking.ACCESSIBLE).copy(name = null)
         assertEquals(VisitAnswer.Accessible(null), visitAnswer(orderedEntrances(listOf(unnamed))))
         val service =
@@ -167,7 +171,7 @@ class BuildingCardTest {
     }
 
     @Test
-    fun us2_ready_and_missing() {
+    fun givesReadyAndMissing() {
         val catalog =
             BuildingCatalog(
                 buildings = listOf(Building(symbol = "A-1", name = "Gmach", outline = GeoPolygon(emptyList()))),
@@ -183,7 +187,7 @@ class BuildingCardTest {
     }
 
     @Test
-    fun us2_view_model_loads_catalog() =
+    fun loadsCatalog() =
         runTest(UnconfinedTestDispatcher()) {
             val viewModel = BuildingCardViewModel(symbol = "A-1", repository = repository, networkStatus = online)
             backgroundScope.launch { viewModel.uiState.collect {} }
@@ -191,7 +195,7 @@ class BuildingCardTest {
         }
 
     @Test
-    fun us2_view_model_missing_retries() =
+    fun retriesWhenMissing() =
         runTest(UnconfinedTestDispatcher()) {
             val viewModel = BuildingCardViewModel(symbol = "Z-9", repository = repository, networkStatus = online)
             backgroundScope.launch { viewModel.uiState.collect {} }
@@ -207,7 +211,7 @@ class BuildingCardTest {
      * Wymagania: NFR-10
      */
     @Test
-    fun nfr10_retry_shows_new_building() =
+    fun showsNewBuildingOnRetry() =
         runTest(UnconfinedTestDispatcher()) {
             val reads = AtomicInteger()
             val server =
@@ -226,7 +230,7 @@ class BuildingCardTest {
         }
 
     @Test
-    fun us2_view_model_loading() =
+    fun startsLoading() =
         runTest(UnconfinedTestDispatcher()) {
             val stopped = StandardTestDispatcher(TestCoroutineScheduler())
             val viewModel =

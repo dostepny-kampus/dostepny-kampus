@@ -33,7 +33,11 @@ import org.junit.jupiter.api.Test
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Stan V1 w ViewModel na podróbkach źródeł: katalog z pliku testowego, internet i wybór „Mapa” albo „Lista”. */
+/**
+ * Stan V1 w ViewModel na podróbkach źródeł: katalog z pliku testowego, internet i wybór „Mapa” albo „Lista”.
+ *
+ * Wymagania: NFR-10, US1, US9.1, NFR-19
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class CampusMapViewModelTest {
     private val online = MutableStateFlow(true)
@@ -76,7 +80,7 @@ class CampusMapViewModelTest {
 
     /** Wiersz: bariery pobrane przed listą budynków → linia „Bez internetu” z dniem pobrania barier. */
     @Test
-    fun nfr10_older_barriers_date() =
+    fun showsOlderBarriersDate() =
         runTest(UnconfinedTestDispatcher()) {
             val outline = parseGeoArea("""{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}""")
             val server =
@@ -105,7 +109,7 @@ class CampusMapViewModelTest {
 
     /** Wiersz: dane tylko z pakietu aplikacji → linia „Bez internetu” bez daty. */
     @Test
-    fun nfr10_no_date_for_bundled_data() =
+    fun skipsDateForBundledData() =
         runTest(UnconfinedTestDispatcher()) {
             val viewModel = viewModel()
             backgroundScope.launch { viewModel.uiState.collect {} }
@@ -114,7 +118,7 @@ class CampusMapViewModelTest {
         }
 
     @Test
-    fun us1_catalog_loaded() =
+    fun loadsCatalog() =
         runTest(UnconfinedTestDispatcher()) {
             val viewModel = viewModel()
             backgroundScope.launch { viewModel.uiState.collect {} }
@@ -123,7 +127,7 @@ class CampusMapViewModelTest {
         }
 
     @Test
-    fun us9_1_offline_line() =
+    fun showsOfflineLine() =
         runTest(UnconfinedTestDispatcher()) {
             val viewModel = viewModel()
             backgroundScope.launch { viewModel.uiState.collect {} }
@@ -132,7 +136,7 @@ class CampusMapViewModelTest {
         }
 
     @Test
-    fun us9_1_offline_while_loading() =
+    fun showsOfflineWhileLoading() =
         runTest(UnconfinedTestDispatcher()) {
             val stopped = StandardTestDispatcher(TestCoroutineScheduler())
             val viewModel = viewModel(BuildingCatalogRepository(stopped) { error("plik nie jest czytany") })
@@ -143,7 +147,7 @@ class CampusMapViewModelTest {
         }
 
     @Test
-    fun nfr19_choice_saved() =
+    fun savesChoice() =
         runTest(UnconfinedTestDispatcher()) {
             val viewModel = viewModel()
             backgroundScope.launch { viewModel.uiState.collect {} }

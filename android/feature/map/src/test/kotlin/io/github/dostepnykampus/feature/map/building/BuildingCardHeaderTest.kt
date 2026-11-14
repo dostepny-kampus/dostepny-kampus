@@ -27,7 +27,7 @@ class BuildingCardHeaderTest {
 
     /** Wiersz wymagań V2 „Nagłówek”: symbol, pod nim nazwa, a TalkBack czyta „Budynek A-1, Gmach Główny”. */
     @Test
-    fun us2_named_symbol_and_name() {
+    fun showsSymbolAndName() {
         show(symbol = "A-1", name = "Gmach Główny")
         compose.onNodeWithText("A-1", useUnmergedTree = true).assertIsDisplayed()
         compose.onNodeWithText("Gmach Główny", useUnmergedTree = true).assertIsDisplayed()
@@ -36,7 +36,7 @@ class BuildingCardHeaderTest {
 
     /** Wiersz wymagań V2 „Nagłówek”: bez nazwy sam symbol, a TalkBack czyta „Budynek A-4”. */
     @Test
-    fun us2_nameless_symbol_only() {
+    fun showsSymbolOnly() {
         show(symbol = "A-4", name = null)
         compose.onNodeWithText("A-4", useUnmergedTree = true).assertIsDisplayed()
         compose.onNodeWithText("Budynek A-4", useUnmergedTree = true).assertDoesNotExist()

@@ -51,7 +51,7 @@ class MapAreaNeighborTest {
      * Wymagania: US1.7, NFR-17, NFR-18
      */
     @Test
-    fun us1_7_button_named_clickable() {
+    fun namesClickableButton() {
         compose.setContent { Button() }
         val button = compose.onNodeWithContentDescription("Tu kończy się teren Kampus główny. Obok: Wittigowo, 2 km")
         button.assertHasClickAction().assertHeightIsAtLeast(48.dp).performClick()
@@ -59,13 +59,13 @@ class MapAreaNeighborTest {
     }
 
     @Test
-    fun us1_7_hifi_motyw_jasny() {
+    fun drawsLightHifi() {
         compose.setContent { Button() }
         compose.onRoot().captureRoboImage()
     }
 
     @Test
-    fun us1_7_hifi_motyw_ciemny() {
+    fun drawsDarkHifi() {
         RuntimeEnvironment.setQualifiers("+night")
         compose.setContent { Button() }
         compose.onRoot().captureRoboImage()

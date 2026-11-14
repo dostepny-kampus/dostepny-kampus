@@ -63,7 +63,7 @@ class BuildingListTest {
      * Wymagania: US1.8, NFR-18, NFR-19
      */
     @Test
-    fun us1_8_area_headings_in_order() {
+    fun ordersAreaHeadings() {
         compose.setContent { List(query = "") }
         val first = compose.onNodeWithContentDescription("Wittigowo, 2 budynki")
         val second = compose.onNodeWithContentDescription("Kampus główny, 2 budynki")
@@ -80,7 +80,7 @@ class BuildingListTest {
      * Wymagania: US1.8, NFR-19
      */
     @Test
-    fun us1_8_query_drops_empty_area() {
+    fun dropsEmptyAreaOnQuery() {
         compose.setContent { List(query = "c13") }
         compose.onNodeWithContentDescription("Kampus główny, 2 budynki").assertExists()
         compose.onNodeWithContentDescription("Wittigowo, 2 budynki").assertDoesNotExist()
@@ -89,14 +89,14 @@ class BuildingListTest {
 
     /** Wiersz: V1, budynek z innego terenu na liście zgłasza swój symbol. Wymagania: US1.8 */
     @Test
-    fun us1_8_building_click_reported() {
+    fun reportsBuildingClick() {
         compose.setContent { List(query = "") }
         compose.onNodeWithContentDescription("A-1, Budynek testowy").performClick()
         assertEquals(listOf("A-1"), chosen)
     }
 
     @Test
-    fun us1_8_hifi_motyw_jasny() {
+    fun drawsLightHifi() {
         compose.setContent { List(query = "") }
         compose.onRoot().captureRoboImage()
     }

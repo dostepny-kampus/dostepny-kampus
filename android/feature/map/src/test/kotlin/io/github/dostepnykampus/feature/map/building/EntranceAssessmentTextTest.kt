@@ -60,7 +60,7 @@ class EntranceAssessmentTextTest {
      * Wymagania: US17.3, BR-24
      */
     @Test
-    fun us17_3_v2_common_row_import() {
+    fun importsCommonRowV2() {
         showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, IMPORT_DAY)))
         compose.onNodeWithText(IMPORT_TEXT).assertExists()
         assertEquals(1, datedCount())
@@ -75,7 +75,7 @@ class EntranceAssessmentTextTest {
      * Wymagania: US17.3, BR-24
      */
     @Test
-    fun us17_3_v2_row_walkthrough() {
+    fun walksThroughRowV2() {
         showCard(listOf(entrance(MAIN, WALKTHROUGH, WALK_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
         compose.onNodeWithText(WALK_TEXT).assertExists()
         assertEquals(1, datedCount())
@@ -90,7 +90,7 @@ class EntranceAssessmentTextTest {
      * Wymagania: US17.3, BR-24
      */
     @Test
-    fun us17_3_v2_per_entrance() {
+    fun describesPerEntranceV2() {
         showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
         assertPerEntrance(first = IMPORT_TEXT, second = WALK_TEXT, group = GROUP_V2)
     }
@@ -101,7 +101,7 @@ class EntranceAssessmentTextTest {
      * Wymagania: US17.3, BR-24
      */
     @Test
-    fun us17_3_v2_per_day() {
+    fun describesPerDayV2() {
         showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, NEXT_DAY)))
         assertPerEntrance(first = IMPORT_TEXT, second = NEXT_TEXT, group = GROUP_V2)
     }
@@ -113,7 +113,7 @@ class EntranceAssessmentTextTest {
      * Wymagania: US17.3, BR-24
      */
     @Test
-    fun us17_3_v3_common_row() {
+    fun describesCommonRowV3() {
         showVisit(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, IMPORT_DAY)))
         compose.onNodeWithText(IMPORT_TEXT).assertExists()
         assertEquals(1, datedCount())
@@ -126,7 +126,7 @@ class EntranceAssessmentTextTest {
      * Wymagania: US17.3, BR-24
      */
     @Test
-    fun us17_3_v3_per_entrance() {
+    fun describesPerEntranceV3() {
         showVisit(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
         assertPerEntrance(first = IMPORT_TEXT, second = WALK_TEXT, group = GROUP_V3)
     }
@@ -137,7 +137,7 @@ class EntranceAssessmentTextTest {
      * Wymagania: US17.3, BR-24
      */
     @Test
-    fun us17_3_v2_file_has_no_date() {
+    fun skipsDateForFileV2() {
         showCard(emptyList())
         assertEquals(0, datedCount())
         listOf("stan z", "Sprawdzone").forEach { compose.onNodeWithText(it, substring = true).assertDoesNotExist() }
@@ -149,7 +149,7 @@ class EntranceAssessmentTextTest {
      * Wymagania: US17.3
      */
     @Test
-    fun us17_3_v3_file_has_no_date() {
+    fun skipsDateForFileV3() {
         showVisit(emptyList())
         compose.onNodeWithText("zobaczyć każde wejście.", substring = true).assertExists()
         assertEquals(0, datedCount())
