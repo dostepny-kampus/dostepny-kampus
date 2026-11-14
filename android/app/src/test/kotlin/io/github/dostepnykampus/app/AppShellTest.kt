@@ -262,6 +262,19 @@ class AppShellTest {
         }
     }
 
+    @Composable
+    private fun CardShell(other: @Composable AppNavigator.(NavKey) -> Unit = {}) {
+        AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            if (route is MapRoute) {
+                Text(route.focus?.toString() ?: "V1", Modifier.clickable { openBuilding(symbol = "A-1") })
+            } else if (route is BuildingRoute) {
+                TestBuildingCard(route.symbol)
+            } else {
+                other(route)
+            }
+        }
+    }
+
     private fun checkSideBar(windowHeight: Dp = 360.dp) {
         val heights = mutableMapOf<String, Dp>()
         listOf("Mapa", "Zgłoś barierę", "Pomoc", "Konto").forEach { label ->
@@ -530,15 +543,7 @@ class AppShellTest {
      */
     @Test
     fun us2_8_card_back_then_close() {
-        compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
-                if (route is MapRoute) {
-                    Text(route.focus?.toString() ?: "V1", Modifier.clickable { openBuilding(symbol = "A-1") })
-                } else if (route is BuildingRoute) {
-                    TestBuildingCard(route.symbol)
-                }
-            }
-        }
+        compose.setContent { CardShell() }
         compose.onNodeWithText("V1").performClick()
         val compact = compose.onNodeWithContentDescription(EXPAND_HANDLE).getUnclippedBoundsInRoot().top
         assertTrue("nad małą kartą zostaje mapa z miejscem na przyciski mapy: uchwyt $compact", compact >= 300.dp)
@@ -609,12 +614,8 @@ class AppShellTest {
     fun nfr22_params_survive_restore() {
         val restoration = StateRestorationTester(compose)
         restoration.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
-                if (route is MapRoute) {
-                    Text(route.focus?.toString() ?: "V1", Modifier.clickable { openBuilding(symbol = "A-1") })
-                } else if (route is BuildingRoute) {
-                    TestBuildingCard(route.symbol)
-                } else if (route is EntrancesRoute) {
+            CardShell { route ->
+                if (route is EntrancesRoute) {
                     TestEntrances(route.symbol)
                 } else {
                     AppScreen(route)
