@@ -24,6 +24,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.app.navigation.AppNavigator
+import io.github.dostepnykampus.app.navigation.BuildingCard
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository

@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.app
+package io.github.dostepnykampus.app.navigation
 
 import android.view.accessibility.AccessibilityManager
 import androidx.compose.runtime.Composable
@@ -11,8 +11,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.dostepnykampus.app.navigation.AppNavigator
-import io.github.dostepnykampus.app.navigation.openBuildingFromList
+import io.github.dostepnykampus.app.LocalSheetPadding
+import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
 import io.github.dostepnykampus.feature.map.CampusMapView

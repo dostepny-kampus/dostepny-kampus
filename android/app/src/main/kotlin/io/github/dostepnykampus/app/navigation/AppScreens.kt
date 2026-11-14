@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.app
+package io.github.dostepnykampus.app.navigation
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Column
@@ -25,13 +25,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
-import io.github.dostepnykampus.app.navigation.AccountRoute
-import io.github.dostepnykampus.app.navigation.AppNavigator
-import io.github.dostepnykampus.app.navigation.SignInRoute
-import io.github.dostepnykampus.app.navigation.measure
-import io.github.dostepnykampus.app.navigation.mySubmissions
-import io.github.dostepnykampus.app.navigation.openReportForm
-import io.github.dostepnykampus.app.navigation.reportSaved
+import io.github.dostepnykampus.app.LocalSheetPadding
+import io.github.dostepnykampus.app.R
+import io.github.dostepnykampus.app.SheetState
+import io.github.dostepnykampus.app.cardMode
 import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.model.hasStaffRole

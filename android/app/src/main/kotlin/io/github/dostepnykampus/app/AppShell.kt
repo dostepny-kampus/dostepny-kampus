@@ -38,7 +38,10 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import io.github.dostepnykampus.app.navigation.AppNavigator
+import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.app.navigation.TopLevel
+import io.github.dostepnykampus.app.navigation.WIDE_WINDOW_DP
+import io.github.dostepnykampus.app.navigation.currentCardWindow
 import io.github.dostepnykampus.app.navigation.isCaptureRoute
 import io.github.dostepnykampus.app.navigation.selectedItem
 import io.github.dostepnykampus.app.navigation.startBackStack

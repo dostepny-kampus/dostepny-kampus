@@ -72,6 +72,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.app.navigation.AppNavigator
+import io.github.dostepnykampus.app.navigation.AppScreen
+import io.github.dostepnykampus.app.navigation.BuildingCard
+import io.github.dostepnykampus.app.navigation.MapScreen
+import io.github.dostepnykampus.app.navigation.sheetCard
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole

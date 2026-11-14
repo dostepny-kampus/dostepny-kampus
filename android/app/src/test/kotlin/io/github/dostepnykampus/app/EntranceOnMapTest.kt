@@ -19,6 +19,9 @@ import androidx.compose.ui.test.performClick
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
+import io.github.dostepnykampus.app.navigation.AppScreen
+import io.github.dostepnykampus.app.navigation.BuildingCard
+import io.github.dostepnykampus.app.navigation.MapScreen
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
