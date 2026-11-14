@@ -204,7 +204,7 @@ final class OsmBuildingsTest {
 
     private static Flyway flyway(final WebApplicationContext context, final Path file) {
         return Flyway.configure().dataSource(context.getBean(DataSource.class))
-            .schemas("osm_reimport").javaMigrations(
+            .schemas("osm_reimport").locations("classpath:db/migration/__root").javaMigrations(
                 new OsmBuildings(context.getBean(ObjectMapper.class), new FileSystemResource(file))
             ).load();
     }
