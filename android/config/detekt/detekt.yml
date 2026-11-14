@@ -23,6 +23,11 @@ ktlint:
     # Dubluje naming>FunctionNaming, a w detekt nie ma opcji pominięcia @Composable,
     # którą wymaga dokumentacja compose-rules. Nazwy funkcji sprawdza FunctionNaming.
     active: false
+  StringTemplateIndent:
+    # Przeczy style>MultilineRawStringIndentation: chce treści surowego napisu na poziomie cudzysłowów,
+    # a tamta o 4 spacje głębiej, więc napis przypisany do właściwości nie przechodzi żadnej formy.
+    # Wcięcie surowych napisów sprawdza MultilineRawStringIndentation.
+    active: false
 
 naming:
   excludes: ['**/build/generated/**']
