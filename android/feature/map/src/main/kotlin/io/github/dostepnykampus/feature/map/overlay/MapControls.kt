@@ -8,10 +8,13 @@ package io.github.dostepnykampus.feature.map.overlay
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -55,6 +58,39 @@ internal val ControlCircleSize = 44.dp
 internal fun mapControlBorder(): BorderStroke? {
     val isDark = MaterialTheme.colorScheme.surface.luminance() < DARK_SURFACE_LUMINANCE
     return BorderStroke(Obramowania.ramka, Wysokosci.kontrolkiMapyObwodkaCiemny).takeIf { isDark }
+}
+
+/**
+ * Przycisk kontrolki mapy otwierający panel: pigułka o wysokości celu dotyku, wypełniona, gdy panel jest
+ * otwarty ([isOpen]), z cieniem i obwódką kontrolki; [content] w wierszu z odstępami.
+ *
+ * @param isOpen czy panel przycisku jest otwarty
+ * @param modifier zachowanie i opis przycisku
+ * @param rowModifier wcięcia i semantyka wiersza treści
+ * @param content ikona i napis przycisku
+ */
+@Composable
+internal fun MapTogglePill(
+    isOpen: Boolean,
+    modifier: Modifier = Modifier,
+    rowModifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
+) {
+    val scheme = MaterialTheme.colorScheme
+    Surface(
+        modifier = Modifier.heightIn(min = MapControlTouchSize).then(modifier),
+        shape = CircleShape,
+        color = if (isOpen) scheme.primaryContainer else scheme.surfaceContainerLowest,
+        shadowElevation = Wysokosci.kontrolkiMapy,
+        border = mapControlBorder(),
+    ) {
+        Row(
+            modifier = Modifier.heightIn(min = MapControlTouchSize).then(rowModifier),
+            horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
+            verticalAlignment = Alignment.CenterVertically,
+            content = content,
+        )
+    }
 }
 
 /**
