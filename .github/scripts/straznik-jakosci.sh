@@ -163,12 +163,16 @@ npm_version_bump() {
 }
 
 # Plik w bazie miał @NullMarked, a w PR go nie ma: usunięta adnotacja albo plik,
-# albo package-info.java przeniesiony pod inną ścieżkę (pakiet traci adnotację).
+# albo package-info.java przeniesiony lub usunięty, gdy w starym katalogu zostaje kod (pakiet traci
+# adnotację). Przeniesiony albo usunięty cały pakiet przechodzi.
 null_marked_removed() {
   local path="$1" old="$2" marked='^\s*@\s*([\w.]+\.)?NullMarked\b'
   grep -qP -- "$marked" <<<"$(git show "$merge_base:$old" 2>/dev/null || true)" || return 1
-  [[ ${old##*/} == package-info.java && $path != "$old" ]] ||
-    ! grep -qP -- "$marked" <<<"$(git show "$head:$path" 2>/dev/null || true)"
+  if [[ ${old##*/} == package-info.java ]] && ! git cat-file -e "$head:$old" 2>/dev/null; then
+    git ls-tree --name-only "$head" -- "${old%/*}/" | grep -q '\.java$'
+    return
+  fi
+  ! grep -qP -- "$marked" <<<"$(git show "$head:$path" 2>/dev/null || true)"
 }
 
 check_file() {
