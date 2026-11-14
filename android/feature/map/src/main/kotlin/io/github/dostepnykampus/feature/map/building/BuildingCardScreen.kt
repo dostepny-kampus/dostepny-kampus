@@ -43,7 +43,8 @@ import io.github.dostepnykampus.feature.map.overlay.OfflinePill
  * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako
  * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu. Pod nim wiersz o wejściach i wejścia z oznaczeniem
  * tekstem i ikoną, zalecane pierwsze. Czynności stoją w przewijanej treści: „Sprawdź, którędy wejść” zawsze, „Zamknij”
- * w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]; pasek „Wstecz” i grupę „Wejścia” ma pełny ekran.
+ * w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]; pasek „Wstecz” oraz grupy „Wejścia”
+ * i „Bariery w budynku” ma pełny ekran.
  * Nieznany symbol: „budynku nie ma w telefonie”. Bez internetu nad nagłówkiem stoi [OfflinePill] bez daty.
  *
  * Wymagania: US2, BR-25, US2.8, NFR-18, US2.7, NFR-10
@@ -203,6 +204,7 @@ private fun BuildingFacts(
             )
         }
     }
+    BarriersGroup(card)
 }
 
 @Composable
