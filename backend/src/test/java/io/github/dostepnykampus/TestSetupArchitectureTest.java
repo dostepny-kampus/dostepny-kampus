@@ -52,11 +52,9 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Strażnik: testy na pełnym kontekście dzielą jeden kontekst Springa. {@code @SpringBootTest}
- * tylko w {@code IntegrationTest} i klasach z listy, {@code @ApplicationModuleTest} tylko
- * w {@code ModuleTest} i klasach z listy; na liście musi być też klasa dokładająca
- * konfigurację kontekstu ({@code @TestPropertySource}, {@code @ActiveProfiles},
- * {@code @ContextConfiguration}, {@code @Import}, {@code @DynamicPropertySource}).
+ * Strażnik: testy dzielą wspólne konteksty Springa. {@code @SpringBootTest} tylko w
+ * {@code IntegrationTest}, {@code @ApplicationModuleTest} tylko w {@code ModuleTest}; klasa
+ * z własną konfiguracją kontekstu ({@code @Import}, profile, właściwości) tylko z listy.
  * {@code @DirtiesContext} jest zakazany, mocki Mockito tylko z listy. Klienta HTTP buduje tylko
  * {@link MockMvcTestConfiguration}; wyjątki są na liście z powodem, a lista tylko maleje.
  *
