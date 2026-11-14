@@ -63,8 +63,8 @@ class PlaceSectionTest {
 
     /**
      * Wiersz: „Czy to budynek A-1?”, pod pytaniem nazwa z danych i odległość od punktu.
-     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Poza konturem aplikacja pokazuje stan „Poza budynkiem” i
-     *   proponuje najbliższy budynek
+     * Scenariusz: budynki-bez-szczegolow.feature: Poza konturem aplikacja pokazuje podpowiedź najbliższego budynku i
+     *   przycisk „Poza budynkiem”
      */
     @Test
     fun us6_2_hint_name_and_distance() {
@@ -76,6 +76,7 @@ class PlaceSectionTest {
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
         compose.onNodeWithText("Gmach Główny").assertIsDisplayed()
         compose.onNodeWithText("12 m od punktu").assertIsDisplayed()
+        compose.onNodeWithText("Poza budynkiem").assertIsDisplayed()
         compose.onNodeWithText("Potwierdź").performClick()
         assertEquals(listOf("confirm"), actions)
     }

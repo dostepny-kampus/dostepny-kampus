@@ -89,8 +89,8 @@ class BuildingHintTest {
 
     /**
      * Wiersze: 30 m i 50 m od konturu → budynek do potwierdzenia.
-     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Poza konturem aplikacja pokazuje stan „Poza budynkiem” i
-     *   proponuje najbliższy budynek
+     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Poza konturem aplikacja pokazuje podpowiedź
+     *   najbliższego budynku i przycisk „Poza budynkiem”
      */
     @Test
     fun br_g4_hint_within_50_m() {
