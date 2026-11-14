@@ -571,7 +571,7 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
         </configuration>
       </plugin>
       <plugin>
-        <!-- Testy z kontekstem Springa (…IT) w fazie integration-test, z tym samym agentem JaCoCo co surefire. -->
+        <!-- Testy z kontekstem Springa i testy architektury (…IT) w fazie integration-test, z tym samym agentem JaCoCo co surefire. -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>

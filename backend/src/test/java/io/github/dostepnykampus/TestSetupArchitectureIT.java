@@ -60,7 +60,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @since 0.1.0
  */
-final class TestSetupArchitectureTest {
+final class TestSetupArchitectureIT {
 
     /**
      * Klasy z własnym kontekstem, z powodem.
@@ -139,23 +139,23 @@ final class TestSetupArchitectureTest {
     /**
      * Przykłady, każdy w pakiecie {@code fixture.s<numer>}, i ich skompilowane klasy.
      */
-    private static final List<Sample> SAMPLES = TestSetupArchitectureTest.samples();
+    private static final List<Sample> SAMPLES = TestSetupArchitectureIT.samples();
 
     /** Klasy przykładów, skompilowane raz. */
-    private static final JavaClasses COMPILED = TestSetupArchitectureTest.compile(
-        TestSetupArchitectureTest.SAMPLES
+    private static final JavaClasses COMPILED = TestSetupArchitectureIT.compile(
+        TestSetupArchitectureIT.SAMPLES
     );
 
     @Test
     void limitsOwnSpringContextToListedClasses() {
-        final Set<String> all = TestSetupArchitectureTest.OWN_CONTEXT.keySet();
+        final Set<String> all = TestSetupArchitectureIT.OWN_CONTEXT.keySet();
         Assertions.assertEquals(
             "",
             ArchViolations.of(
-                TestSetupArchitectureTest.TESTS,
-                TestSetupArchitectureTest.bare(all),
-                TestSetupArchitectureTest.listed(all),
-                TestSetupArchitectureTest.unlisted(all)
+                TestSetupArchitectureIT.TESTS,
+                TestSetupArchitectureIT.bare(all),
+                TestSetupArchitectureIT.listed(all),
+                TestSetupArchitectureIT.unlisted(all)
             ),
             "Kontekst Springa poza wspólnymi adnotacjami i listą klas z własnym kontekstem"
         );
@@ -166,8 +166,8 @@ final class TestSetupArchitectureTest {
         Assertions.assertEquals(
             "",
             ArchViolations.of(
-                TestSetupArchitectureTest.TESTS,
-                TestSetupArchitectureTest.forbidden(Set.of(), List.of(DirtiesContext.class))
+                TestSetupArchitectureIT.TESTS,
+                TestSetupArchitectureIT.forbidden(Set.of(), List.of(DirtiesContext.class))
             ),
             "Test używa @DirtiesContext"
         );
@@ -178,9 +178,9 @@ final class TestSetupArchitectureTest {
         Assertions.assertEquals(
             "",
             ArchViolations.of(
-                TestSetupArchitectureTest.TESTS,
-                TestSetupArchitectureTest.forbidden(
-                    TestSetupArchitectureTest.MOCKED.keySet(),
+                TestSetupArchitectureIT.TESTS,
+                TestSetupArchitectureIT.forbidden(
+                    TestSetupArchitectureIT.MOCKED.keySet(),
                     List.of(MockitoBean.class, MockitoSpyBean.class)
                 )
             ),
@@ -190,13 +190,13 @@ final class TestSetupArchitectureTest {
 
     @Test
     void buildsHttpClientsOnlyInConfiguration() {
-        final Set<String> all = TestSetupArchitectureTest.OWN_CLIENT.keySet();
+        final Set<String> all = TestSetupArchitectureIT.OWN_CLIENT.keySet();
         Assertions.assertEquals(
             "",
             ArchViolations.of(
-                TestSetupArchitectureTest.TESTS,
-                TestSetupArchitectureTest.clients(all),
-                TestSetupArchitectureTest.ownClients(all)
+                TestSetupArchitectureIT.TESTS,
+                TestSetupArchitectureIT.clients(all),
+                TestSetupArchitectureIT.ownClients(all)
             ),
             "Klient HTTP zbudowany poza wspólną konfiguracją i listą"
         );
@@ -205,12 +205,12 @@ final class TestSetupArchitectureTest {
     @ParameterizedTest
     @MethodSource("indexes")
     void judgesFixtureClasses(final int index) {
-        final Sample sample = TestSetupArchitectureTest.SAMPLES.get(index);
+        final Sample sample = TestSetupArchitectureIT.SAMPLES.get(index);
         final String pack = String.format("fixture.s%d", index);
         boolean failed = false;
         try {
             sample.rule().apply(Set.of(pack.concat(".Kept"))).check(
-                TestSetupArchitectureTest.COMPILED.that(
+                TestSetupArchitectureIT.COMPILED.that(
                     DescribedPredicate.describe(pack, item -> pack.equals(item.getPackageName()))
                 )
             );
@@ -227,26 +227,26 @@ final class TestSetupArchitectureTest {
     void failsOnEmptyImport(final int index) {
         Assertions.assertThrows(
             AssertionError.class,
-            () -> TestSetupArchitectureTest.SAMPLES.get(index).rule().apply(Set.of())
+            () -> TestSetupArchitectureIT.SAMPLES.get(index).rule().apply(Set.of())
                 .check(new ClassFileImporter().importClasses()),
             "Reguła przechodzi, choć nie sprawdziła żadnej klasy"
         );
     }
 
     private static IntStream indexes() {
-        return IntStream.range(0, TestSetupArchitectureTest.SAMPLES.size());
+        return IntStream.range(0, TestSetupArchitectureIT.SAMPLES.size());
     }
 
     private static List<Sample> samples() {
-        final Function<Set<String>, ArchRule> bare = TestSetupArchitectureTest::bare;
-        final Function<Set<String>, ArchRule> listed = TestSetupArchitectureTest::listed;
-        final Function<Set<String>, ArchRule> unlisted = TestSetupArchitectureTest::unlisted;
-        final Function<Set<String>, ArchRule> dirty = kept -> TestSetupArchitectureTest
+        final Function<Set<String>, ArchRule> bare = TestSetupArchitectureIT::bare;
+        final Function<Set<String>, ArchRule> listed = TestSetupArchitectureIT::listed;
+        final Function<Set<String>, ArchRule> unlisted = TestSetupArchitectureIT::unlisted;
+        final Function<Set<String>, ArchRule> dirty = kept -> TestSetupArchitectureIT
             .forbidden(Set.of(), List.of(DirtiesContext.class));
-        final Function<Set<String>, ArchRule> mock = kept -> TestSetupArchitectureTest
+        final Function<Set<String>, ArchRule> mock = kept -> TestSetupArchitectureIT
             .forbidden(kept, List.of(MockitoBean.class, MockitoSpyBean.class));
-        final Function<Set<String>, ArchRule> client = TestSetupArchitectureTest::clients;
-        final Function<Set<String>, ArchRule> owned = TestSetupArchitectureTest::ownClients;
+        final Function<Set<String>, ArchRule> client = TestSetupArchitectureIT::clients;
+        final Function<Set<String>, ArchRule> owned = TestSetupArchitectureIT::ownClients;
         final String context = String.join(
             " ", "Object f(WebApplicationContext c) {",
             "return MockMvcBuilders.webAppContextSetup(c); } }"
@@ -303,14 +303,14 @@ final class TestSetupArchitectureTest {
     }
 
     private static ArchRule bare(final Set<String> allowed) {
-        return TestSetupArchitectureTest.rule(
+        return TestSetupArchitectureIT.rule(
             "have @SpringBootTest or @ApplicationModuleTest only when listed",
             item -> !allowed.contains(item.getName())
                 && (
-                    TestSetupArchitectureTest.bare(
+                    TestSetupArchitectureIT.bare(
                         item, SpringBootTest.class, IntegrationTest.class
                     )
-                    || TestSetupArchitectureTest.bare(
+                    || TestSetupArchitectureIT.bare(
                         item, ApplicationModuleTest.class, ModuleTest.class
                     )
                 ),
@@ -351,31 +351,31 @@ final class TestSetupArchitectureTest {
     }
 
     private static ArchRule listed(final Set<String> names) {
-        return TestSetupArchitectureTest.rule(
+        return TestSetupArchitectureIT.rule(
             "be listed only while it has its own context",
             item -> names.contains(item.getName())
                 && !item.isAnnotatedWith(SpringBootTest.class)
-                && !TestSetupArchitectureTest.own(item),
+                && !TestSetupArchitectureIT.own(item),
             names
         );
     }
 
     private static ArchRule unlisted(final Set<String> allowed) {
-        return TestSetupArchitectureTest.rule(
+        return TestSetupArchitectureIT.rule(
             "have its own context settings only when listed",
-            item -> TestSetupArchitectureTest.own(item) && !allowed.contains(item.getName()),
+            item -> TestSetupArchitectureIT.own(item) && !allowed.contains(item.getName()),
             Set.of()
         );
     }
 
     private static ArchRule clients(final Set<String> allowed) {
-        return TestSetupArchitectureTest.rule(
+        return TestSetupArchitectureIT.rule(
             String.join(
                 " ",
                 "build HTTP test clients only in MockMvcTestConfiguration:",
                 "wstrzyknij wspólne MockMvc, które samo sprawdza kontrakt"
             ),
-            item -> TestSetupArchitectureTest.builds(item)
+            item -> TestSetupArchitectureIT.builds(item)
                 && !allowed.contains(item.getName())
                 && !MockMvcTestConfiguration.class.getName().equals(item.getName()),
             Set.of()
@@ -383,26 +383,26 @@ final class TestSetupArchitectureTest {
     }
 
     private static ArchRule ownClients(final Set<String> names) {
-        return TestSetupArchitectureTest.rule(
+        return TestSetupArchitectureIT.rule(
             "be listed only while it builds its own HTTP test client",
-            item -> names.contains(item.getName()) && !TestSetupArchitectureTest.builds(item),
+            item -> names.contains(item.getName()) && !TestSetupArchitectureIT.builds(item),
             names
         );
     }
 
     private static boolean builds(final JavaClass item) {
-        return item.getMethodCallsFromSelf().stream().anyMatch(TestSetupArchitectureTest::builds);
+        return item.getMethodCallsFromSelf().stream().anyMatch(TestSetupArchitectureIT::builds);
     }
 
     private static boolean builds(final JavaMethodCall call) {
-        return TestSetupArchitectureTest.BUILDERS
+        return TestSetupArchitectureIT.BUILDERS
             .getOrDefault(call.getTargetOwner().getName(), name -> false)
             .test(call.getName());
     }
 
     private static boolean own(final JavaClass item) {
-        return TestSetupArchitectureTest.shared(item)
-            && (TestSetupArchitectureTest.marked(item) || TestSetupArchitectureTest.dynamic(item));
+        return TestSetupArchitectureIT.shared(item)
+            && (TestSetupArchitectureIT.marked(item) || TestSetupArchitectureIT.dynamic(item));
     }
 
     private static boolean shared(final JavaClass item) {
@@ -411,11 +411,11 @@ final class TestSetupArchitectureTest {
     }
 
     private static boolean marked(final JavaClass item) {
-        return TestSetupArchitectureTest.CONTEXT_MARKS.stream().anyMatch(item::isAnnotatedWith);
+        return TestSetupArchitectureIT.CONTEXT_MARKS.stream().anyMatch(item::isAnnotatedWith);
     }
 
     private static boolean dynamic(final JavaClass item) {
-        return item.getMethods().stream().anyMatch(TestSetupArchitectureTest::dynamic);
+        return item.getMethods().stream().anyMatch(TestSetupArchitectureIT::dynamic);
     }
 
     private static boolean dynamic(final JavaMethod method) {
@@ -425,7 +425,7 @@ final class TestSetupArchitectureTest {
     private static ArchRule forbidden(
         final Set<String> allowed, final List<Class<? extends Annotation>> marks
     ) {
-        return TestSetupArchitectureTest.rule(
+        return TestSetupArchitectureIT.rule(
             "not use the annotations outside the listed classes",
             item -> {
                 final List<HasAnnotations<?>> places = new ArrayList<>(List.of(item));
@@ -467,7 +467,7 @@ final class TestSetupArchitectureTest {
                 );
             }
             return fixtures.compiled(
-                "fixture", "-classpath", TestSetupArchitectureTest.classpath()
+                "fixture", "-classpath", TestSetupArchitectureIT.classpath()
             );
         } catch (final IOException | URISyntaxException ex) {
             throw new IllegalStateException(ex);

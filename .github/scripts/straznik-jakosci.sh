@@ -22,7 +22,7 @@ suppression+='|-XepExcludedPaths|-XepDisableAllChecks'
 rule_files='^android/config/|^android/build-logic/|^android/buildSrc/|(^|/)gradle\.properties$'
 rule_files+='|^\.github/(workflows|scripts|commitlint|jscpd)/|^\.github/dependabot\.ya?ml$|^commitlint\.config\.'
 rule_files+='|^\.commitlintrc|(^|/)\.gitleaks|(^|/)\.editorconfig$|(^|/)\.gitattributes$|(^|/)lint\.xml$'
-rule_files+='|(^|/)\.mvn/(jvm|maven)\.config$|^backend/src/test/(.*/)?([^/]*ArchitectureTest|ModularityTest)\.java$'
+rule_files+='|(^|/)\.mvn/(jvm|maven)\.config$|^backend/src/test/(.*/)?([^/]*Architecture(Test|IT)|ModularityTest)\.java$'
 rule_files+='|^android/(.*/)?src/test/(.*/)?[^/]*ArchitectureTest\.kt$'
 rule_files+='|^api/(redocly\.yaml|package(-lock)?\.json)$|^docs/(\.vale\.ini$|\.markdownlint|styles/|scripts/verify\.py$|scripts/check_ids\.py$)'
 
