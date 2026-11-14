@@ -52,7 +52,7 @@ final class ModularityTest {
     /**
      * Schemat modułów na stronie dokumentacji, wygenerowany z kodu.
      */
-    private static final Path DIAGRAM = Path.of("../docs/docs/architektura/moduly-serwera.puml");
+    private static final Path DIAGRAM = Path.of("../docs/docs/architektura/moduly-serwera.iuml");
 
     /**
      * Katalog na przykładowe źródła, nowy w każdym teście.
