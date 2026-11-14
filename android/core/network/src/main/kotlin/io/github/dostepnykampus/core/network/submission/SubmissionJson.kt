@@ -12,8 +12,7 @@ import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
-import io.github.dostepnykampus.core.network.building.GeoPointDto
-import io.github.dostepnykampus.core.network.building.toDto
+import io.github.dostepnykampus.core.network.building.toJson
 import io.github.dostepnykampus.core.network.building.toModel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -21,6 +20,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import java.time.Instant
 import java.time.format.DateTimeParseException
+import io.github.dostepnykampus.core.network.json.GeoPoint as GeoPointJson
 
 /**
  * Treść `NewSubmission` dla `POST /submissions`: pola [content] i identyfikator [id] z telefonu.
@@ -64,7 +64,7 @@ private data class SubmissionRequest(
     val id: String?,
     val version: Int?,
     val kind: SubmissionKind,
-    val location: GeoPointDto,
+    val location: GeoPointJson,
     val photoIds: List<String>,
     val accuracyMeters: Double?,
     @SerialName("manualCorrection") val isManualCorrection: Boolean?,
@@ -89,7 +89,7 @@ private data class SubmissionDto(
     val verifiedAt: String?,
     val rejectionReason: String?,
     val kind: SubmissionKind,
-    val location: GeoPointDto,
+    val location: GeoPointJson,
     val photoIds: List<String>,
     val accuracyMeters: Double?,
     @SerialName("manualCorrection") val isManualCorrection: Boolean?,
@@ -122,7 +122,7 @@ private fun SubmissionContent.toRequest(id: String? = null, version: Int? = null
         id = id,
         version = version,
         kind = kind,
-        location = location.toDto(),
+        location = location.toJson(),
         photoIds = photoIds,
         accuracyMeters = accuracyMeters,
         isManualCorrection = isManualCorrection,

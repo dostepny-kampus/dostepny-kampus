@@ -34,7 +34,7 @@ public class BuildingsApi(private val http: OkHttpClient, private val json: Json
 
     /** Lista budynków z konturami i atrybucją źródła. */
     public suspend fun listBuildings(): ApiResult<BuildingList> =
-        fetch(endpoint(listOf(BUILDINGS))) { json.decodeFromString<BuildingListDto>(it).toModel() }
+        fetch(endpoint(listOf(BUILDINGS))) { json.decodeBuildingList(it) }
 
     /**
      * Karta budynku [symbol]. Nieznany symbol daje [ApiResult.NotFound].
@@ -42,7 +42,7 @@ public class BuildingsApi(private val http: OkHttpClient, private val json: Json
      * @param symbol symbol budynku
      */
     public suspend fun building(symbol: String): ApiResult<BuildingDetails> =
-        fetch(endpoint(listOf(BUILDINGS, symbol))) { json.decodeFromString<BuildingDetailsDto>(it).toModel() }
+        fetch(endpoint(listOf(BUILDINGS, symbol))) { json.decodeBuildingDetails(it) }
 
     /**
      * Piętra budynku [symbol] od najniższego; budynek podstawowy ma pustą listę.
@@ -53,7 +53,7 @@ public class BuildingsApi(private val http: OkHttpClient, private val json: Json
      * @param symbol symbol budynku
      */
     public suspend fun floors(symbol: String): ApiResult<FloorList> =
-        fetch(endpoint(listOf(BUILDINGS, symbol, FLOORS))) { json.decodeFromString<FloorListDto>(it).toModel() }
+        fetch(endpoint(listOf(BUILDINGS, symbol, FLOORS))) { json.decodeFloorList(it) }
 
     /**
      * Podpowiedź budynku dla punktu WGS84.
@@ -68,7 +68,7 @@ public class BuildingsApi(private val http: OkHttpClient, private val json: Json
                 query = mapOf("lat" to latitude.toString(), "lon" to longitude.toString()),
             ),
         ) {
-            json.decodeFromString<LocateResultDto>(it).toModel()
+            json.decodeLocateResult(it)
         }
 
     private suspend fun <T> fetch(target: HttpUrl, decode: (String) -> T): ApiResult<T> {

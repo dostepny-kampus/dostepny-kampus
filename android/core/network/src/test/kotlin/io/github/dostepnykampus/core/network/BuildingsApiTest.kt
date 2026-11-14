@@ -7,11 +7,10 @@ package io.github.dostepnykampus.core.network
 
 import io.github.dostepnykampus.core.model.Floor
 import io.github.dostepnykampus.core.model.FloorList
-import io.github.dostepnykampus.core.network.building.BuildingDetailsDto
-import io.github.dostepnykampus.core.network.building.BuildingListDto
 import io.github.dostepnykampus.core.network.building.BuildingsApi
-import io.github.dostepnykampus.core.network.building.LocateResultDto
-import io.github.dostepnykampus.core.network.building.toModel
+import io.github.dostepnykampus.core.network.building.decodeBuildingDetails
+import io.github.dostepnykampus.core.network.building.decodeBuildingList
+import io.github.dostepnykampus.core.network.building.decodeLocateResult
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -49,7 +48,7 @@ class BuildingsApiTest {
     @Test
     fun us1_list() {
         enqueue(HTTP_OK, LIST)
-        val list = json.decodeFromString<BuildingListDto>(LIST).toModel()
+        val list = json.decodeBuildingList(LIST)
         assertEquals(ApiResult.Success(list), blocking { listBuildings() })
         val recorded = server.takeRequest()
         assertEquals("GET", recorded.method)
@@ -60,7 +59,7 @@ class BuildingsApiTest {
     @Test
     fun us2_building() {
         enqueue(HTTP_OK, DETAILS)
-        val card = json.decodeFromString<BuildingDetailsDto>(DETAILS).toModel()
+        val card = json.decodeBuildingDetails(DETAILS)
         assertEquals(ApiResult.Success(card), blocking { building("C-13") })
         assertEquals("/buildings/C-13", server.takeRequest().path)
     }
@@ -69,11 +68,11 @@ class BuildingsApiTest {
     fun us6_2_locate() {
         enqueue(HTTP_OK, """{"buildingSymbol":"C-13","insideOutline":true}""")
         val inside = blocking { locate(latitude = 51.0, longitude = 17.0) }
-        val expected = json.decodeFromString<LocateResultDto>("""{"buildingSymbol":"C-13","insideOutline":true}""")
-        assertEquals(ApiResult.Success(expected.toModel()), inside)
+        val expected = json.decodeLocateResult("""{"buildingSymbol":"C-13","insideOutline":true}""")
+        assertEquals(ApiResult.Success(expected), inside)
         assertEquals("/buildings/locate?lat=51.0&lon=17.0", server.takeRequest().path)
         enqueue(HTTP_OK, """{"insideOutline":false}""")
-        val outside = json.decodeFromString<LocateResultDto>("""{"insideOutline":false}""").toModel()
+        val outside = json.decodeLocateResult("""{"insideOutline":false}""")
         assertEquals(ApiResult.Success(outside), blocking { locate(latitude = 51.0, longitude = 17.0) })
     }
 
