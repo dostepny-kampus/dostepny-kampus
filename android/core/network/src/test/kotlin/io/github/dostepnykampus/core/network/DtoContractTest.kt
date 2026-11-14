@@ -53,6 +53,12 @@ class DtoContractTest {
     }
 
     @Test
+    fun d1_detects_hand_written_dto() {
+        val checked = listOf(HandWrittenDto::class.java, Submission::class.java, BuildingsApi::class.java)
+        assertEquals(listOf(true, false, false), checked.map(::isHandWrittenDto))
+    }
+
+    @Test
     fun d4_requests_match_schema() {
         val bodies =
             listOf(precise, quick).flatMap { content ->
@@ -126,6 +132,9 @@ class DtoContractTest {
         assertEquals(emptyList<String>(), problems)
     }
 
+    private fun isHandWrittenDto(type: Class<*>): Boolean =
+        !type.name.startsWith(GENERATED_PACKAGE) && type.isAnnotationPresent(Serializable::class.java)
+
     private fun serializableClasses(): List<String> {
         val location = requireNotNull(BuildingsApi::class.java.protectionDomain?.codeSource).location
         return JarFile(File(location.toURI())).use { jar ->
@@ -135,9 +144,8 @@ class DtoContractTest {
                 .map { entry -> entry.name }
                 .filter { it.endsWith(".class") && '$' !in it }
                 .map { it.removeSuffix(".class").replace(oldChar = '/', newChar = '.') }
-                .filterNot { it.startsWith(GENERATED_PACKAGE) }
                 .map { name -> Class.forName(name, false, javaClass.classLoader) }
-                .filter { type -> type.isAnnotationPresent(Serializable::class.java) }
+                .filter(::isHandWrittenDto)
                 .map { type -> type.name }
                 .toList()
         }
@@ -151,3 +159,6 @@ class DtoContractTest {
         const val GENERATED_PACKAGE = "io.github.dostepnykampus.core.network.json."
     }
 }
+
+@Serializable
+private class HandWrittenDto(val value: Int)
