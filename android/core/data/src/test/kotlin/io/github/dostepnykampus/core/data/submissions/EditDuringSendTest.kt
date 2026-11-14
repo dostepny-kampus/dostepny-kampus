@@ -11,6 +11,7 @@ import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -52,24 +53,19 @@ class EditDuringSendTest {
     }
 
     @Test
-    fun `us8_3 zapis nie czeka`() =
-        runBlocking {
-            val photos = photo(tempDir, PHOTO)
-            queue.save(precise(PHOTO, severity = 2), photos)
-            val send = launch { queue.sendAll() }
-            entered.await()
-
-            withTimeout(TIMEOUT_MILLIS) {
-                queue.saveEdit(EditedSubmission(id = ID, baseVersion = null), precise(PHOTO, severity = 3), photos)
-            }
-
-            reply.complete(Unit)
-            send.join()
-        }
+    fun `us8_3 zapis nie czeka`() = runBlocking { editWhileSendWaitsForServer() }
 
     @Test
     fun `us8_3 poprawka jako edycja`() =
         runBlocking {
+            editWhileSendWaitsForServer()
+
+            assertEquals(listOf("create 2", "update 1 3"), calls)
+            assertEquals(emptyList<Any>(), store.rows)
+        }
+
+    private suspend fun editWhileSendWaitsForServer() =
+        coroutineScope {
             val photos = photo(tempDir, PHOTO)
             queue.save(precise(PHOTO, severity = 2), photos)
             val send = launch { queue.sendAll() }
@@ -77,12 +73,8 @@ class EditDuringSendTest {
             withTimeout(TIMEOUT_MILLIS) {
                 queue.saveEdit(EditedSubmission(id = ID, baseVersion = null), precise(PHOTO, severity = 3), photos)
             }
-
             reply.complete(Unit)
             send.join()
-
-            assertEquals(listOf("create 2", "update 1 3"), calls)
-            assertEquals(emptyList<Any>(), store.rows)
         }
 
     private companion object {
