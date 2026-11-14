@@ -4,8 +4,8 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
-# Test zgodności ścieżek workflow (sciezki-przeplywu.sh): przykładowe workflow oraz prawdziwe backend.yml
-# i android.yml z listą ścieżek, od których zależą ich zadania.
+# Test zgodności ścieżek workflow (sciezki-przeplywu.sh): przykładowe workflow oraz prawdziwe backend.yml,
+# android.yml i docs.yml z listą ścieżek, od których zależą ich zadania.
 here="$(cd "$(dirname "$0")" && pwd)"
 script="$here/sciezki-przeplywu.sh"
 work="$(mktemp -d)"
@@ -61,6 +61,7 @@ run_case "brak wymaganej ścieżki" 1 "brak ścieżki specs" \
   "$(workflow bez-wymaganej 'backend/**' 'backend')" backend specs
 run_case "wymagana ścieżka obecna" 0 "ścieżki zgodne" \
   "$(workflow z-wymagana 'backend/** specs/**' 'backend specs')" backend specs
+run_case "wzorzec glob w zadaniu zmiany" 0 "ścieżki zgodne"   "$(workflow glob 'android/**/src/test*/** docs/**' "':(glob)android/**/src/test*/**' docs")"
 echo 'on: {}' >"$work/pusty.yml"
 run_case "workflow bez filtra i bez zadania zmiany" 1 "nie znaleziono filtra" "$work/pusty.yml"
 
@@ -73,5 +74,8 @@ run_case "android.yml repozytorium" 0 "ścieżki zgodne" "$here/../workflows/and
   android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/workflows/android.yml \
   .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh .github/scripts/cache-z-kolejki.sh \
   .github/scripts/czysc-cache.sh .github/scripts/wyniki-androida.sh .github/scripts/zmiany-obszaru.sh
+
+# Strona dokumentacji liczy pokrycie ze scenariuszy i testów obu aplikacji; ich zmiana po scaleniu ją przebudowuje.
+run_case "docs.yml repozytorium" 0 "ścieżki zgodne" "$here/../workflows/docs.yml"   docs specs backend/src/test/java .github/workflows/docs.yml .github/actions/narzedzia-dokumentacji   .github/scripts/zmiany-obszaru.sh
 
 exit "$((failures > 0 ? 1 : 0))"

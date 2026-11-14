@@ -11,8 +11,13 @@ on:
       - "sprint/**"
     paths:
       - "docs/**"
+      - "specs/**"
+      - "backend/src/test/java/**"
+      - "android/**/src/test*/**"
+      - "android/**/src/*Test*/**"
       - ".github/workflows/docs.yml"
       - ".github/actions/narzedzia-dokumentacji/**"
+      - ".github/scripts/zmiany-obszaru.sh"
   merge_group:
     types:
       - checks_requested
