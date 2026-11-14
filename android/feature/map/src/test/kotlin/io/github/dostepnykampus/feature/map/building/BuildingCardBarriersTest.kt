@@ -83,7 +83,13 @@ class BuildingCardBarriersTest {
                 BuildingCardContent(
                     symbol = "A-1",
                     mode = CardMode.Expanded,
-                    card = BuildingCardUiState.Ready("A-1", "Gmach Główny", entrances, barriers),
+                    card =
+                        BuildingCardUiState.Ready(
+                            symbol = "A-1",
+                            name = "Gmach Główny",
+                            entrances = entrances,
+                            barriers = barriers,
+                        ),
                     isOnline = true,
                     onCheckEntrances = {},
                     onShowOnMap = {},

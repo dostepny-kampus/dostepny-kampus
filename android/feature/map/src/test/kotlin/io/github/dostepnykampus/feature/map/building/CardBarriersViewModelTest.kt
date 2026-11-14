@@ -43,7 +43,12 @@ class CardBarriersViewModelTest {
     @Test
     fun us2_2_only_own_building() =
         runTest {
-            val all = listOf(barrier("z1", "A-1"), barrier("z2", "B-4"), barrier("z3", null))
+            val all =
+                listOf(
+                    barrier(id = "z1", symbol = "A-1"),
+                    barrier(id = "z2", symbol = "B-4"),
+                    barrier(id = "z3", symbol = null),
+                )
             assertEquals(listOf("z1"), cardBarriers(all))
         }
 
