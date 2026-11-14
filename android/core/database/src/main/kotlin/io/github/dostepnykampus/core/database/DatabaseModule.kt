@@ -12,6 +12,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
+import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
+import io.github.dostepnykampus.core.database.submission.PendingEditDao
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import javax.inject.Singleton
 
 /** Baza lokalna w grafie Hilt: jedna instancja na proces. */

@@ -6,6 +6,9 @@
 package io.github.dostepnykampus.core.database
 
 import androidx.room.Room
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -55,7 +58,10 @@ class OwnSubmissionDaoTest {
             assertEquals(3, row.serverVersion)
         }
 
-    /** Zapis historii w [PendingSubmissionDao.together] jest cofany razem z transakcją kolejki. */
+    /**
+     * Zapis historii w [io.github.dostepnykampus.core.database.submission.PendingSubmissionDao.together]
+     * jest cofany razem z transakcją kolejki.
+     */
     @Test
     fun nfr5_together_rolls_back() =
         runTest {

@@ -5,9 +5,9 @@
  */
 package io.github.dostepnykampus.core.data.barriers
 
-import io.github.dostepnykampus.core.database.BARRIER_CACHE_SINGLE_ROW
-import io.github.dostepnykampus.core.database.BarrierCacheDao
-import io.github.dostepnykampus.core.database.BarrierCacheEntity
+import io.github.dostepnykampus.core.database.cache.BARRIER_CACHE_SINGLE_ROW
+import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
+import io.github.dostepnykampus.core.database.cache.BarrierCacheEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.Instant

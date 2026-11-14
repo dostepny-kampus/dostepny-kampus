@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.buildings
 
-import io.github.dostepnykampus.core.database.BuildingCacheDao
+import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
 import javax.inject.Inject
 
 /**

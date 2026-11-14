@@ -5,9 +5,9 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
-import io.github.dostepnykampus.core.database.OwnSubmissionDao
-import io.github.dostepnykampus.core.database.PendingEditDao
-import io.github.dostepnykampus.core.database.PendingSubmissionDao
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
+import io.github.dostepnykampus.core.database.submission.PendingEditDao
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import javax.inject.Inject
 
 /**

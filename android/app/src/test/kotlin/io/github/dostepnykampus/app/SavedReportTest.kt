@@ -24,7 +24,7 @@ import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
-import io.github.dostepnykampus.core.database.PendingSubmissionDao
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint

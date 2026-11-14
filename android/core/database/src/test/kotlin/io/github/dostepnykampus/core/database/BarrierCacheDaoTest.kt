@@ -6,6 +6,9 @@
 package io.github.dostepnykampus.core.database
 
 import androidx.room.Room
+import io.github.dostepnykampus.core.database.cache.BARRIER_CACHE_SINGLE_ROW
+import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
+import io.github.dostepnykampus.core.database.cache.BarrierCacheEntity
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals

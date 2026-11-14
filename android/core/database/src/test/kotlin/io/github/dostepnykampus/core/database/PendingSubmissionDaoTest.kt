@@ -6,6 +6,10 @@
 package io.github.dostepnykampus.core.database
 
 import androidx.room.Room
+import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After

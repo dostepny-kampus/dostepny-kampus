@@ -10,9 +10,9 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
-import io.github.dostepnykampus.core.database.OwnSubmissionDao
-import io.github.dostepnykampus.core.database.OwnSubmissionEntity
-import io.github.dostepnykampus.core.database.OwnSubmissionState
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse

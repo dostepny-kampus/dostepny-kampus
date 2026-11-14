@@ -13,7 +13,7 @@ import io.github.dostepnykampus.core.data.barriers.AcceptedBarriers
 import io.github.dostepnykampus.core.data.barriers.BarrierListCopy
 import io.github.dostepnykampus.core.data.barriers.ServerAcceptedBarriers
 import io.github.dostepnykampus.core.data.server.toReply
-import io.github.dostepnykampus.core.database.BarrierCacheDao
+import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
