@@ -243,7 +243,7 @@ final class PhotoSettingsTest {
      */
     @Configuration(proxyBeanMethods = false)
     @EnableConfigurationProperties(PhotoSettings.class)
-    @Import({PhotoStorage.class, PhotoStore.class})
+    @Import({PhotoStorage.class, S3PhotoStore.class})
     static final class Photos {
     }
 

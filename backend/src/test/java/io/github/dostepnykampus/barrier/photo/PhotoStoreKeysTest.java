@@ -67,7 +67,7 @@ final class PhotoStoreKeysTest {
     }
 
     private static PhotoStore store(final S3Client client) {
-        return new PhotoStore(
+        return new S3PhotoStore(
             client, new PhotoSettings(URI.create("http://magazyn"), "zdjecia", "", "")
         );
     }

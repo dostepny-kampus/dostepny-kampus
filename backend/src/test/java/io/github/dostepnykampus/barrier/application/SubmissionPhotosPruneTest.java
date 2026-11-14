@@ -22,6 +22,7 @@ import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import io.github.dostepnykampus.barrier.photo.PhotoSettings;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
+import io.github.dostepnykampus.barrier.photo.S3PhotoStore;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
@@ -95,7 +96,7 @@ final class SubmissionPhotosPruneTest {
     void brEightKeepsEditWhenStoreFails(final ApplicationContext context) {
         final SubmissionPhotos photos = new SubmissionPhotos(
             context.getBean(SubmissionFinder.class),
-            new PhotoStore(
+            new S3PhotoStore(
                 new SubmissionPhotosPruneTest.NoBucket(),
                 new PhotoSettings(URI.create("http://magazyn"), "brak-kubelka", "", "")
             ),

@@ -12,7 +12,7 @@ import io.github.dostepnykampus.barrier.application.SubmissionPhotos;
 import io.github.dostepnykampus.barrier.application.SubmissionService;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
 import io.github.dostepnykampus.barrier.photo.PhotoSettings;
-import io.github.dostepnykampus.barrier.photo.PhotoStore;
+import io.github.dostepnykampus.barrier.photo.S3PhotoStore;
 import io.github.dostepnykampus.barrier.web.SubmissionPhotosController;
 import io.github.dostepnykampus.shared.error.ProblemResponses;
 import jakarta.servlet.Filter;
@@ -201,7 +201,7 @@ final class SubmissionPhotosHttpTest {
             new SubmissionPhotosController(
                 new SubmissionPhotos(
                     context.getBean(SubmissionFinder.class),
-                    new PhotoStore(
+                    new S3PhotoStore(
                         context.getBean(S3Client.class),
                         new PhotoSettings(
                             context.getBean(PhotoSettings.class).endpoint(),

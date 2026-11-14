@@ -31,15 +31,19 @@ final class PhotoStoreMissingBucketTest {
     void acTwoBFourDoesNotCreateBucketOnPut() {
         final PhotoStoreMissingBucketTest.NoBucket client =
             new PhotoStoreMissingBucketTest.NoBucket();
-        final PhotoStore store = new PhotoStore(
+        final PhotoStore store = new S3PhotoStore(
             client, new PhotoSettings(URI.create("http://magazyn"), "brak-kubelka", "", "")
         );
         final UUID photo = UUID.randomUUID();
         Assertions.assertAll(
-            () -> Assertions.assertThrows(
+            () -> Assertions.assertInstanceOf(
                 NoSuchBucketException.class,
-                () -> store.put(photo, photo, new byte[] {1}),
-                "Zapis do nieistniejącego kubełka nie rzuca błędu magazynu"
+                Assertions.assertThrows(
+                    PhotoStorageException.class,
+                    () -> store.put(photo, photo, new byte[] {1}),
+                    "Zapis do nieistniejącego kubełka nie rzuca błędu magazynu zdjęć"
+                ).getCause(),
+                "Błąd magazynu zdjęć nie wskazuje błędu S3 jako przyczyny"
             ),
             () -> Assertions.assertEquals(
                 List.of(), client.created, "Zapis zdjęcia utworzył kubełek w żądaniu"
