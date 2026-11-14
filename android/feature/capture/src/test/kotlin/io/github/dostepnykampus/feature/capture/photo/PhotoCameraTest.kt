@@ -55,7 +55,11 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 private const val CAMERA_QUALITY = 90
 
-/** „Zrób zdjęcie” na C2: aparat zapisuje plik aplikacji, a zdjęcie wraca do formularza. Wymagania: US7.1 */
+/**
+ * „Zrób zdjęcie” na C2: aparat zapisuje plik aplikacji, a zdjęcie wraca do formularza.
+ *
+ * Wymagania: US7.1, NFR-50
+ */
 @RunWith(RobolectricTestRunner::class)
 @Config(
     qualifiers = "w360dp-h800dp",
@@ -154,7 +158,7 @@ class PhotoCameraTest {
      * Wymagania: US7.1
      */
     @Test
-    fun us7_1_cancel_then_photo() {
+    fun takesPhotoAfterCancel() {
         val strategy = Class.forName("androidx.core.content.FileProvider\$SimplePathStrategy")
         val method = strategy.getDeclaredMethod("belongsToRoot", String::class.java, String::class.java)
         assertEquals(Boolean::class.javaPrimitiveType, method.returnType)
@@ -175,7 +179,7 @@ class PhotoCameraTest {
 
     /** Błąd przekodowania: komunikat, plik usunięty, aplikacja działa, a „Zrób zdjęcie” otwiera aparat ponownie. */
     @Test
-    fun nfr50_photo_error_retry() {
+    fun retriesAfterPhotoError() {
         val broken = PhotoTranscoder(EmptyCoroutineContext) { throw IOException(BROKEN) }
         showCamera(broken)
         val (request, file) = openCamera()
@@ -199,7 +203,7 @@ class PhotoCameraTest {
      * Wymagania: NFR-22
      */
     @Test
-    fun nfr22_photo_kept_on_rotation() {
+    fun keepsPhotoOnRotation() {
         val work = StandardTestDispatcher()
         showCamera(PhotoTranscoder(work))
         val (request, file) = openCamera()

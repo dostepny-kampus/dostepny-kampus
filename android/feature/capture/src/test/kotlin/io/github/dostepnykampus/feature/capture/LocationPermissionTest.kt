@@ -41,7 +41,7 @@ class LocationPermissionTest {
     }
 
     @Test
-    fun nfr27_asks_without_permission() {
+    fun asksWithoutPermission() {
         shadowOf(app).denyPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
         gate()
         compose.onNodeWithText("Zezwól na lokalizację").assertIsDisplayed()
@@ -49,7 +49,7 @@ class LocationPermissionTest {
     }
 
     @Test
-    fun us6_1_measures_with_permission() {
+    fun measuresWithPermission() {
         shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
         gate()
         compose.onNodeWithText("Pomiar").assertIsDisplayed()
@@ -57,7 +57,7 @@ class LocationPermissionTest {
 
     /** Po odmowie „Otwórz ustawienia” zamiast ponownego pytania. */
     @Test
-    fun nfr27_denied_opens_settings() {
+    fun opensSettingsWhenDenied() {
         var opened = 0
         compose.setContent {
             DostepnyKampusTheme {

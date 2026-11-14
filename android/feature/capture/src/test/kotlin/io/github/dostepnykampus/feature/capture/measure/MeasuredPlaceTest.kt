@@ -16,7 +16,11 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-/** „Dalej” z C1 do C2: miejsce z pomiaru i budynek po decyzji Zbierającego. Wymagania: US6, US6.2, BR-G4 */
+/**
+ * „Dalej” z C1 do C2: miejsce z pomiaru i budynek po decyzji Zbierającego.
+ *
+ * Wymagania: US6, US6.2, BR-G4, US7.4
+ */
 class MeasuredPlaceTest {
     private val point = GeoPoint(longitude = 17.06209, latitude = 51.10785)
     private val average = PositionAverage(point, accuracyMeters = 0.8, fixCount = 30)
@@ -41,7 +45,7 @@ class MeasuredPlaceTest {
      * Wymagania: US6
      */
     @Test
-    fun us6_chosen_building_to_c2() {
+    fun passesChosenBuildingToC2() {
         val route = finished(PlaceChoice.Chosen(a1)).reportFormRoute()
         assertEquals(route(symbol = "A-1", name = "Gmach Główny"), route)
     }
@@ -54,14 +58,14 @@ class MeasuredPlaceTest {
      * Wymagania: BR-G4
      */
     @Test
-    fun brg4_outside_to_c2() {
+    fun passesOutsideToC2() {
         val route = finished(PlaceChoice.Outside).reportFormRoute()
         assertEquals(route(symbol = null, name = null), route)
     }
 
     /** Wiersz: C1, „Czy to budynek A-1?” → „Dalej” czeka na decyzję. Wymagania: US6.2 */
     @Test
-    fun us6_2_no_next_before_decision() {
+    fun blocksNextBeforeDecision() {
         assertNull(finished(PlaceChoice.Locating).reportFormRoute())
         assertNull(finished(PlaceChoice.Suggested(BuildingHint(a1, 3.0, isInside = false))).reportFormRoute())
         assertNull(MeasureUiState.Searching.reportFormRoute())
@@ -74,7 +78,7 @@ class MeasuredPlaceTest {
      * Wymagania: US6.4
      */
     @Test
-    fun us6_4_corrected_point() {
+    fun usesCorrectedPoint() {
         val b8 = a1.copy(symbol = "B-8", name = null)
         val moved = GeoPoint(longitude = 17.06215, latitude = 51.10790)
         val places =
@@ -86,13 +90,13 @@ class MeasuredPlaceTest {
 
     /** Wiersz: C1 bez korekty → miejsce ze średnią z pomiaru, bez oznaczenia „korekta ręczna”. Wymagania: US6.4 */
     @Test
-    fun us6_4_no_correction() {
+    fun keepsPointWithoutCorrection() {
         val place = finished(PlaceChoice.Outside).reportFormRoute()?.place()
         assertEquals(point to false, place?.location to place?.isManualCorrection)
     }
 
     @Test
-    fun us7_4_place_from_route() {
+    fun takesPlaceFromRoute() {
         val place = route(symbol = "A-1", name = "Gmach Główny").place()
         assertEquals(A1.copy(buildingName = "Gmach Główny"), place)
     }

@@ -40,7 +40,7 @@ import kotlin.coroutines.CoroutineContext
 /**
  * Pomiar na ekranie C1 na odczytach testowych w czasie wirtualnym, bez odbiornika GNSS.
  *
- * Wymagania: US6.1, NFR-23, NFR-27
+ * Wymagania: US6.1, NFR-23, NFR-27, BR-G2
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MeasureViewModelTest {
@@ -89,7 +89,7 @@ class MeasureViewModelTest {
 
     /** „Szukamy satelitów”, dopóki nie ma odczytu ze znaną dokładnością. */
     @Test
-    fun us6_1_searching_without_fix() =
+    fun searchesWithoutFix() =
         runTest(dispatcher) {
             watch()
             fix(accuracy = Double.NaN)
@@ -97,7 +97,7 @@ class MeasureViewModelTest {
         }
 
     @Test
-    fun us6_1_countdown_from_first_fix() =
+    fun countsDownFromFirstFix() =
         runTest(dispatcher) {
             watch()
             advanceTimeBy(5_000)
@@ -112,7 +112,7 @@ class MeasureViewModelTest {
 
     /** Po 30 s wynik zostaje, a odbiornik przestaje nasłuchiwać. Wymagania: NFR-27 */
     @Test
-    fun us6_1_finished_stops_location() =
+    fun stopsLocationWhenFinished() =
         runTest(dispatcher) {
             watch()
             fix(accuracy = 6.0)
@@ -126,7 +126,7 @@ class MeasureViewModelTest {
 
     /** Wynik pomiaru zostaje po powrocie na ekran, np. z C2. Wymagania: US6.1 */
     @Test
-    fun us6_1_result_kept_after_leave() =
+    fun keepsResultAfterLeave() =
         runTest(dispatcher) {
             val watching = watch()
             fix(accuracy = 6.0)
@@ -145,7 +145,7 @@ class MeasureViewModelTest {
      * Wymagania: US6.1
      */
     @Test
-    fun us6_1_repeat_while_averaging() =
+    fun repeatsWhileAveraging() =
         runTest(dispatcher) {
             watch()
             fix(accuracy = 6.0)
@@ -164,7 +164,7 @@ class MeasureViewModelTest {
 
     /** „Powtórz pomiar” zaczyna od szukania satelitów, bez limitu powtórzeń. */
     @Test
-    fun nfr23_repeat_starts_over() =
+    fun startsOverOnRepeat() =
         runTest(dispatcher) {
             watch()
             fix(accuracy = 6.0)
@@ -181,7 +181,7 @@ class MeasureViewModelTest {
 
     /** Błąd odbiornika: stan błędu bez awarii, a „Powtórz pomiar” zaczyna nowy pomiar. Wymagania: NFR-50, NFR-23 */
     @Test
-    fun nfr50_source_error_repeat() =
+    fun repeatsAfterSourceError() =
         runTest(dispatcher) {
             failure = SecurityException("Brak zgody")
             watch()
@@ -208,7 +208,7 @@ class MeasureViewModelTest {
      * Wymagania: UC7
      */
     @Test
-    fun uc7_4c_location_off_then_on() =
+    fun resumesWhenLocationBackOn() =
         runTest(dispatcher) {
             locationOn.value = false
             watch()
@@ -229,7 +229,7 @@ class MeasureViewModelTest {
      * Wymagania: NFR-23, NFR-27
      */
     @Test
-    fun nfr27_restart_after_leave() =
+    fun restartsAfterLeave() =
         runTest(dispatcher) {
             val watching = watch()
             fix(accuracy = 6.0)
@@ -247,7 +247,7 @@ class MeasureViewModelTest {
 
     /** Krótka nieobecność (obrót ekranu) nie przerywa pomiaru. */
     @Test
-    fun nfr27_short_leave_continues() =
+    fun continuesAfterShortLeave() =
         runTest(dispatcher) {
             val watching = watch()
             fix(accuracy = 6.0)
@@ -261,14 +261,14 @@ class MeasureViewModelTest {
 
     /** Punkt pomiaru leży w konturze A-1, więc aplikacja podpowiada A-1. Wymagania: US6.2 */
     @Test
-    fun us6_2_hint_after_measurement() =
+    fun hintsAfterMeasurement() =
         runTest(dispatcher) {
             finish()
             assertEquals("A-1", (place() as PlaceChoice.Suggested).hint.building.symbol)
         }
 
     @Test
-    fun us6_2_finish_once_at_deadline() =
+    fun finishesOnceAtDeadline() =
         runTest(dispatcher) {
             watch()
             fix(accuracy = 6.0)
@@ -289,7 +289,7 @@ class MeasureViewModelTest {
         }
 
     @Test
-    fun us6_2_confirm_hint() =
+    fun confirmsHint() =
         runTest(dispatcher) {
             finish()
             viewModel.confirm()
@@ -298,7 +298,7 @@ class MeasureViewModelTest {
         }
 
     @Test
-    fun us6_2_choose_other_building() =
+    fun choosesOtherBuilding() =
         runTest(dispatcher) {
             finish()
             viewModel.choose("B-1")
@@ -312,7 +312,7 @@ class MeasureViewModelTest {
      * Wymagania: US6.2
      */
     @Test
-    fun us6_2_nearest_for_section() =
+    fun givesNearestForSection() =
         runTest(dispatcher) {
             finish()
             val nearest = viewModel.buildings.value
@@ -322,7 +322,7 @@ class MeasureViewModelTest {
         }
 
     @Test
-    fun br_g2_leave_outside() =
+    fun leavesOutside() =
         runTest(dispatcher) {
             finish()
             viewModel.outside()
@@ -332,7 +332,7 @@ class MeasureViewModelTest {
 
     /** Korekta ręczna po pomiarze zmienia punkt, a „Powtórz pomiar” ją kasuje. Wymagania: US6.4, NFR-3 */
     @Test
-    fun us6_4_move_point_until_repeat() =
+    fun movesPointUntilRepeat() =
         runTest(dispatcher) {
             viewModel.movePoint(MOVED)
             finish()
@@ -346,7 +346,7 @@ class MeasureViewModelTest {
 
     /** Dalej niż 50 m od konturu: bez podpowiedzi, od razu „poza budynkiem”. Wymagania: BR-G4 */
     @Test
-    fun br_g4_far_point_outside() =
+    fun leavesFarPointOutside() =
         runTest(dispatcher) {
             finish(GeoPoint(longitude = 17.2, latitude = 51.2))
             assertEquals(PlaceChoice.Outside, place())
@@ -360,7 +360,7 @@ class MeasureViewModelTest {
      * Wymagania: US6.2
      */
     @Test
-    fun us6_2_edge_suggests_not_inside() =
+    fun suggestsEdgeNotInside() =
         runTest(dispatcher) {
             finish(A1_EDGE_POINT)
             val suggested = place() as PlaceChoice.Suggested
@@ -376,7 +376,7 @@ class MeasureViewModelTest {
      * Wymagania: BR-G4
      */
     @Test
-    fun br_g4_30_m_suggests_a1() =
+    fun suggestsA1At30M() =
         runTest(dispatcher) {
             finish(northOfA1(meters = 30.0))
             val suggested = place() as PlaceChoice.Suggested
@@ -392,7 +392,7 @@ class MeasureViewModelTest {
      * Wymagania: BR-G4
      */
     @Test
-    fun br_g4_49_m_suggests_a1() =
+    fun suggestsA1At49M() =
         runTest(dispatcher) {
             finish(northOfA1(meters = 49.0))
             val suggested = place() as PlaceChoice.Suggested
@@ -408,7 +408,7 @@ class MeasureViewModelTest {
      * Wymagania: BR-G4
      */
     @Test
-    fun br_g4_60_m_outside() =
+    fun leavesOutsideAt60M() =
         runTest(dispatcher) {
             finish(northOfA1(meters = 60.0))
             assertEquals(PlaceChoice.Outside, place())

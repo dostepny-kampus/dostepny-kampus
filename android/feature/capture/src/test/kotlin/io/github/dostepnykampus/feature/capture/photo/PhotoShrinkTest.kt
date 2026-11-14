@@ -38,7 +38,7 @@ class PhotoShrinkTest {
     val folder = TemporaryFolder()
 
     @Test
-    fun us7_1_camera_photo_shrunk() {
+    fun shrinksCameraPhoto() {
         val file = folder.newFile("aparat.jpg")
         val image = Bitmap.createBitmap(4000, 3000, Bitmap.Config.ARGB_8888)
         file.outputStream().use { image.compress(Bitmap.CompressFormat.JPEG, CAMERA_QUALITY, it) }
@@ -53,7 +53,7 @@ class PhotoShrinkTest {
     }
 
     @Test
-    fun us7_1_failed_write_kept() {
+    fun keepsOnFailedWrite() {
         val file = folder.newFile("aparat.jpg").apply { writeText("oryginał") }
 
         val isReplaced =
@@ -69,7 +69,7 @@ class PhotoShrinkTest {
     }
 
     @Test
-    fun us7_1_write_error_kept() {
+    fun keepsOnWriteError() {
         val file = folder.newFile("aparat.jpg").apply { writeText("oryginał") }
 
         assertFalse(replaceFile(file) { throw IOException("brak miejsca") })
@@ -80,7 +80,7 @@ class PhotoShrinkTest {
 
     /** Orientacje EXIF z odbiciem i bez: po przekodowaniu ćwiartki leżą tak, jak widział je aparat. */
     @Test
-    fun us7_1_exif_orientation() {
+    fun appliesExifOrientation() {
         val expected =
             mapOf(
                 ExifInterface.ORIENTATION_NORMAL to listOf(RED, GREEN, BLUE, WHITE),
@@ -102,7 +102,7 @@ class PhotoShrinkTest {
     }
 
     @Test
-    fun us7_1_empty_file_not_photo() {
+    fun rejectsEmptyFile() {
         assertFalse(shrinkPhoto(folder.newFile("pusty.jpg")))
     }
 

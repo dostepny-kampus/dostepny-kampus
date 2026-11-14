@@ -55,7 +55,7 @@ class MySubmissionsScreenTest {
 
     /** Wiersz: C3 pusty → „Nie masz jeszcze zgłoszeń…” i „Zmierz i zgłoś barierę” do C1, PW-12. */
     @Test
-    fun pw12_empty_list() {
+    fun showsEmptyList() {
         show()
         compose.onNodeWithText("Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.").assertIsDisplayed()
         compose.onNodeWithText("Zmierz i zgłoś barierę").performClick()
@@ -68,7 +68,7 @@ class MySubmissionsScreenTest {
      *   a zgłoszenie czeka ze statusem „lokalne”
      */
     @Test
-    fun us9_1_offline_indicator() {
+    fun showsOfflineIndicator() {
         var isOnline by mutableStateOf(false)
         val list = MySubmissions(listOf(item(id = "a", state = SendState.LOCAL)))
         compose.setContent {
@@ -96,7 +96,7 @@ class MySubmissionsScreenTest {
      * Wymagania: US9.1, BR-26
      */
     @Test
-    fun us9_1_waiting_count() {
+    fun showsWaitingCount() {
         show(
             item(id = "a", state = SendState.LOCAL),
             item(id = "b", state = SendState.LOCAL),
@@ -107,7 +107,7 @@ class MySubmissionsScreenTest {
 
     /** Wiersz: C3 ładowanie → nagłówek bez listy i bez stanu pustego. */
     @Test
-    fun us8_1_loading() {
+    fun showsLoading() {
         showState(MySubmissionsUiState.Loading)
         compose.onNodeWithText("Moje zgłoszenia").assertIsDisplayed()
         compose.onNodeWithText("Zmierz i zgłoś barierę").assertDoesNotExist()
@@ -115,7 +115,7 @@ class MySubmissionsScreenTest {
 
     /** Wiersz: C3 same wysłane → bez „Czeka na wysłanie”. Wymagania: US9.1 */
     @Test
-    fun us9_1_nothing_waiting() {
+    fun showsNothingWaiting() {
         show(item(id = "a", state = SendState.SENT))
         compose.onNodeWithText("Wysłane").assertIsDisplayed()
         compose.onNodeWithText("Czeka na wysłanie", substring = true).assertDoesNotExist()
@@ -123,7 +123,7 @@ class MySubmissionsScreenTest {
 
     /** Wiersz: C3, poprawka w C2 jeszcze niedostępna → pozycje bez „Otwórz”. Wymagania: US8.3 */
     @Test
-    fun us8_3_list_without_open() {
+    fun listsWithoutOpen() {
         val list = MySubmissions(listOf(item(id = "a", state = SendState.LOCAL)))
         showState(MySubmissionsUiState.Ready(list), onOpen = null)
         compose.onNodeWithText("W telefonie").assertIsDisplayed()
@@ -132,7 +132,7 @@ class MySubmissionsScreenTest {
 
     /** Wiersz: C3 „Otwórz” w pozycji → poprawka w C2 z identyfikatorem zgłoszenia. Wymagania: US8.3 */
     @Test
-    fun us8_3_open_item() {
+    fun opensItem() {
         show(item(id = "a", state = SendState.LOCAL))
         compose.onNodeWithText("Otwórz").performClick()
         assertEquals(listOf("a"), opened)
@@ -146,7 +146,7 @@ class MySubmissionsScreenTest {
      * Wymagania: US9.5
      */
     @Test
-    fun us9_5_refused_open() {
+    fun opensRefused() {
         val refused = item(id = "a", state = SendState.REFUSED).copy(refusal = RefusalReason.NOT_ACCEPTED)
         show(refused)
         compose.onNodeWithText("Nie wysłano").assertIsDisplayed()
@@ -163,7 +163,7 @@ class MySubmissionsScreenTest {
      * Wymagania: US8.2, NFR-50
      */
     @Test
-    fun us8_2_checking_and_retry() {
+    fun showsCheckingAndRetry() {
         var retried = 0
         var check by mutableStateOf(StatusCheck.CHECKING)
         compose.setContent {
@@ -188,7 +188,7 @@ class MySubmissionsScreenTest {
      * Wymagania: US8.1, US8.3
      */
     @Test
-    fun us8_1_only_editable_open() {
+    fun opensOnlyEditable() {
         show(
             item(id = "a", state = SendState.SENT).copy(serverStatus = SubmissionStatus.ACCEPTED),
             item(id = "b", state = SendState.SENT).copy(serverStatus = SubmissionStatus.ARCHIVED),
