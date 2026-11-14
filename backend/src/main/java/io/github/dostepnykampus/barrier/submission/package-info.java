@@ -5,11 +5,11 @@
  */
 
 /**
- * Typy i inwarianty zgłoszenia niezależne od transportu i zapisu.
+ * Zgłoszenie bariery: stany, wyniki zapisu i port repozytorium, bez frameworków.
  *
  * @since 0.1.0
  */
 @NullMarked
-package io.github.dostepnykampus.barrier.domain;
+package io.github.dostepnykampus.barrier.submission;
 
 import org.jspecify.annotations.NullMarked;

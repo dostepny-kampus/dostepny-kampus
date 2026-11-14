@@ -5,18 +5,18 @@
  */
 package io.github.dostepnykampus.barrier.persistence;
 
-import io.github.dostepnykampus.barrier.domain.CreateResult;
-import io.github.dostepnykampus.barrier.domain.EditResult;
-import io.github.dostepnykampus.barrier.domain.NewSubmission;
-import io.github.dostepnykampus.barrier.domain.Reader;
-import io.github.dostepnykampus.barrier.domain.SimilarSubmission;
-import io.github.dostepnykampus.barrier.domain.Submission;
-import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
-import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
-import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
-import io.github.dostepnykampus.barrier.domain.SubmissionRepository;
-import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
 import io.github.dostepnykampus.barrier.json.SubmissionContentJson;
+import io.github.dostepnykampus.barrier.submission.CreateResult;
+import io.github.dostepnykampus.barrier.submission.EditResult;
+import io.github.dostepnykampus.barrier.submission.NewSubmission;
+import io.github.dostepnykampus.barrier.submission.Reader;
+import io.github.dostepnykampus.barrier.submission.SimilarSubmission;
+import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
+import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
+import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
+import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
+import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import java.sql.SQLException;

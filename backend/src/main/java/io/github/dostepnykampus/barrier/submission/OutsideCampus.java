@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.domain;
+package io.github.dostepnykampus.barrier.submission;
 
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.net.URI;

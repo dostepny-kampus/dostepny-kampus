@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.barrier.web;
 
-import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
-import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
+import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
+import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.List;
 import java.util.Set;

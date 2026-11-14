@@ -6,12 +6,12 @@
 package io.github.dostepnykampus.barrier.persistence;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.barrier.domain.CreateResult;
-import io.github.dostepnykampus.barrier.domain.EditResult;
-import io.github.dostepnykampus.barrier.domain.NewSubmission;
-import io.github.dostepnykampus.barrier.domain.Submission;
-import io.github.dostepnykampus.barrier.domain.SubmissionEdit;
-import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
+import io.github.dostepnykampus.barrier.submission.CreateResult;
+import io.github.dostepnykampus.barrier.submission.EditResult;
+import io.github.dostepnykampus.barrier.submission.NewSubmission;
+import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
+import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import java.time.Instant;
 import java.util.ArrayList;

@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
-import io.github.dostepnykampus.barrier.domain.OutsideCampus;
+import io.github.dostepnykampus.barrier.submission.OutsideCampus;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;

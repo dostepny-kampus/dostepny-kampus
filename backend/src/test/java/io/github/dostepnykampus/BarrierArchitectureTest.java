@@ -55,7 +55,7 @@ final class BarrierArchitectureTest {
      * Port repozytorium zgłoszeń.
      */
     private static final String REPO =
-        "io.github.dostepnykampus.barrier.domain.SubmissionRepository";
+        "io.github.dostepnykampus.barrier.submission.SubmissionRepository";
 
     /**
      * Wejście do kodu budynków.
@@ -111,10 +111,10 @@ final class BarrierArchitectureTest {
         final String subtype =
             "extends io.github.dostepnykampus.%s { %s s; Sample() { super(%s); } }";
         return Stream.of(
-            BarrierArchitectureTest.sample("A-1", "domain", BarrierArchitectureTest.HTTP),
-            BarrierArchitectureTest.sample("A-1", "domain", jackson),
-            BarrierArchitectureTest.sample("A-1", "domain", sql),
-            BarrierArchitectureTest.sample("A-1", "domain", BarrierArchitectureTest.OUTLINES),
+            BarrierArchitectureTest.sample("A-1", "submission", BarrierArchitectureTest.HTTP),
+            BarrierArchitectureTest.sample("A-1", "submission", jackson),
+            BarrierArchitectureTest.sample("A-1", "submission", sql),
+            BarrierArchitectureTest.sample("A-1", "submission", BarrierArchitectureTest.OUTLINES),
             BarrierArchitectureTest.sample(
                 "A-2", "web", "org.springframework.jdbc.core.simple.JdbcClient"
             ),
@@ -127,7 +127,7 @@ final class BarrierArchitectureTest {
             BarrierArchitectureTest.sample("A-5", "photo", BarrierArchitectureTest.REPO),
             BarrierArchitectureTest.sample("A-6", "web", BarrierArchitectureTest.OUTLINES),
             BarrierArchitectureTest.sample("A-6", "photo", BarrierArchitectureTest.OUTLINES),
-            BarrierArchitectureTest.sample("A-7", "domain", BarrierArchitectureTest.HTTP),
+            BarrierArchitectureTest.sample("A-7", "submission", BarrierArchitectureTest.HTTP),
             BarrierArchitectureTest.sample(
                 "A-7", "web", "org.springframework.web.server.ServerWebInputException"
             ),
@@ -168,7 +168,7 @@ final class BarrierArchitectureTest {
         return Map.of(
             "A-1", ArchRuleDefinition.noClasses()
                 .that().resideInAnyPackage(
-                    String.format("%s.domain..", root),
+                    String.format("%s.submission", root),
                     String.format("%s.submission.content", root)
                 )
                 .should().dependOnClassesThat().resideInAnyPackage(

@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.barrier;
 
-import io.github.dostepnykampus.barrier.domain.NewSubmission;
 import io.github.dostepnykampus.barrier.persistence.JdbcSubmissions;
+import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
 import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;

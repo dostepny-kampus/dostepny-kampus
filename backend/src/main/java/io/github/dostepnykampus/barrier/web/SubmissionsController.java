@@ -6,12 +6,12 @@
 package io.github.dostepnykampus.barrier.web;
 
 import io.github.dostepnykampus.barrier.application.SubmissionService;
-import io.github.dostepnykampus.barrier.domain.CreateResult;
-import io.github.dostepnykampus.barrier.domain.EditResult;
-import io.github.dostepnykampus.barrier.domain.Reader;
-import io.github.dostepnykampus.barrier.domain.Submission;
-import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
-import io.github.dostepnykampus.barrier.domain.SubmissionQuery;
+import io.github.dostepnykampus.barrier.submission.CreateResult;
+import io.github.dostepnykampus.barrier.submission.EditResult;
+import io.github.dostepnykampus.barrier.submission.Reader;
+import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
+import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingLogin;
