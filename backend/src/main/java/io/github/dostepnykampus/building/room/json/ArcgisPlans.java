@@ -7,6 +7,7 @@ package io.github.dostepnykampus.building.room.json;
 
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
+import io.github.dostepnykampus.building.room.PlanSource;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -26,17 +27,16 @@ import tools.jackson.databind.ObjectMapper;
  * Odczyt pięter i pomieszczeń z warstw usługi ArcGIS PWr (FeatureServer) w formacie
  * GeoJSON w układzie WGS 84; kolejne strony wyników są pobierane do ostatniej. Wielokąt
  * pomieszczenia staje się konturem MultiPolygon, pomieszczenie bez wielokąta jest pomijane.
- * Numer z samych spacji jest pusty, a brak funkcji daje „Inne”. Błąd lub przekroczenie
- * czasu daje IllegalStateException.
- *
- * <p>TODO(#1824): wywołać odczyt z polecenia importu.</p>
+ * Piętro bez identyfikatora LEVEL_ID jest pomijane. Wielkość liter nazw pól pomieszczenia jest
+ * dowolna, a funkcja nazywa się Funkcja, Funkcje albo d_funkcja. Numer z samych spacji jest
+ * pusty, a brak funkcji daje „Inne”. Błąd lub przekroczenie czasu daje IllegalStateException.
  *
  * <p>Wymagania: US16, US18, NFR-40</p>
  *
  * @since 0.1.0
  */
 @Component
-final class ArcgisPlans {
+final class ArcgisPlans implements PlanSource {
 
     /**
      * Domyślny limit czasu połączenia i odczytu odpowiedzi usługi.
@@ -67,14 +67,8 @@ final class ArcgisPlans {
         this.mapper = mapper;
     }
 
-    /**
-     * Piętra z warstwy pięter; piętro bez identyfikatora jest pomijane.
-     *
-     * @param service Adres usługi FeatureServer bez końcowego ukośnika
-     * @param layer Numer warstwy pięter: LEVEL_ID, NAME, LEVEL_NUMBER
-     * @return Piętra w kolejności usługi
-     */
-    List<PlanFloor> floors(final String service, final int layer) {
+    @Override
+    public List<PlanFloor> floors(final String service, final int layer) {
         return this.features(service, layer, "LEVEL_ID,NAME,LEVEL_NUMBER", false).stream()
             .map(feature -> feature.path("properties"))
             .filter(floor -> !floor.path("LEVEL_ID").asString("").isBlank()).map(
@@ -86,15 +80,8 @@ final class ArcgisPlans {
             ).toList();
     }
 
-    /**
-     * Pomieszczenia z warstwy pomieszczeń.
-     *
-     * @param service Adres usługi FeatureServer bez końcowego ukośnika
-     * @param layer Numer warstwy pomieszczeń z polami piętra, numeru i funkcji; wielkość liter
-     *  nazw pól jest dowolna, a funkcja nazywa się Funkcja, Funkcje albo d_funkcja
-     * @return Pomieszczenia z konturem w kolejności usługi
-     */
-    List<PlanRoom> rooms(final String service, final int layer) {
+    @Override
+    public List<PlanRoom> rooms(final String service, final int layer) {
         return this.features(service, layer, "*", true).stream().flatMap(
             feature -> this.outline(feature.path("geometry")).map(
                 outline -> new PlanRoom(

@@ -21,8 +21,6 @@ import org.springframework.transaction.support.TransactionOperations;
  * Piętro spoza nowego planu znika razem z pomieszczeniami. Pomieszczenie z piętra spoza planu
  * jest pomijane, a pusty numer zapisuje się jako NULL. Punkt podpisu leży wewnątrz konturu.
  *
- * <p>TODO(#1824): wywołać zapis z polecenia importu.</p>
- *
  * <p>Wymagania: US16, US18, NFR-40</p>
  *
  * @since 0.1.0
