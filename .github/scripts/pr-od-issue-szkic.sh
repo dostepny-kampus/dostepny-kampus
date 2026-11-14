@@ -4,13 +4,13 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
-# Użycie: pr-od-issue-szkic.sh <numer PR>. Środowisko: PR_OD_ISSUE_WYMAGANE (1 = tryb wymagany), GITHUB_REPOSITORY.
-# Uruchamia kontrolę „PR od issue” (pr-od-issue.sh, ten sam katalog). Domyślnie (tryb ostrzegawczy) tylko loguje
-# uwagi jako ostrzeżenia. W trybie wymaganym przy naruszeniu dodaje (albo odświeża) komentarz
+# Użycie: pr-od-issue-szkic.sh <numer PR>. Środowisko: PR_OD_ISSUE_WYMAGANE (0 = tryb ostrzegawczy, domyślnie
+# wymagany), GITHUB_REPOSITORY. Uruchamia kontrolę „PR od issue” (pr-od-issue.sh, ten sam katalog). Tryb ostrzegawczy
+# tylko loguje uwagi jako ostrzeżenia. W trybie wymaganym przy naruszeniu dodaje (albo odświeża) komentarz
 # z listą braków, a skrypt kończy się kodem 1; PR nie jest zamieniany w szkic (token workflow nie ma do tego prawa).
 # PR Dependabota kontrola pomija.
 pr="${1:?Podaj numer PR}"
-wymagane="${PR_OD_ISSUE_WYMAGANE:-0}"
+wymagane="${PR_OD_ISSUE_WYMAGANE:-1}"
 repo="${GITHUB_REPOSITORY:?Brak GITHUB_REPOSITORY}"
 dir="$(cd "$(dirname "$0")" && pwd)"
 znacznik='<!-- pr-od-issue -->'
