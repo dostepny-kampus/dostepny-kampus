@@ -8,8 +8,9 @@ package io.github.dostepnykampus;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import com.tngtech.archunit.library.Architectures;
@@ -34,6 +35,10 @@ import org.junit.jupiter.api.io.TempDir;
  *
  * @since 0.1.0
  */
+@AnalyzeClasses(
+    packagesOf = DostepnyKampusApplication.class,
+    importOptions = ImportOption.DoNotIncludeTests.class
+)
 final class LayerDirectionArchitectureTest {
 
     /**
@@ -59,29 +64,17 @@ final class LayerDirectionArchitectureTest {
     @TempDir
     private Path dir;
 
-    @Test
-    void modulesKeepLayerDirection() {
-        LayerDirectionArchitectureTest.direction(ModuleLayers.modules())
-            .check(LayerDirectionArchitectureTest.production());
+    @ArchTest
+    void modulesKeepLayerDirection(final JavaClasses classes) {
+        LayerDirectionArchitectureTest.direction(ModuleLayers.modules()).check(classes);
     }
 
-    @Test
-    void domainSkipsFrameworksOutsideExceptionList() {
-        LayerDirectionArchitectureTest.frameworks(
-            ModuleLayers.modules(),
-            LayerDirectionArchitectureTest.KNOWN.keySet()
-        ).check(LayerDirectionArchitectureTest.production());
-    }
-
-    @Test
-    void exceptionListHoldsOnlyExistingViolations() {
-        final JavaClasses classes = LayerDirectionArchitectureTest.production();
-        Assertions.assertEquals(
-            List.of(),
-            LayerDirectionArchitectureTest.KNOWN.keySet().stream()
-                .filter(pack -> !LayerDirectionArchitectureTest.violates(classes, pack))
-                .toList(),
-            "Wyjątek z listy już nie jest naruszeniem; usuń wpis"
+    @ArchTest
+    void domainSkipsFrameworksOutsideExceptionList(final JavaClasses classes) {
+        KnownViolations.check(
+            classes,
+            LayerDirectionArchitectureTest.KNOWN,
+            known -> LayerDirectionArchitectureTest.frameworks(ModuleLayers.modules(), known)
         );
     }
 
@@ -167,14 +160,6 @@ final class LayerDirectionArchitectureTest {
             .allowEmptyShould(true);
     }
 
-    private static boolean violates(final JavaClasses classes, final String pack) {
-        return ArchRuleDefinition.noClasses()
-            .that().resideInAPackage(String.format("%s..", pack))
-            .should().dependOnClassesThat()
-            .resideInAnyPackage(LayerDirectionArchitectureTest.frameworkPackages())
-            .evaluate(classes).hasViolation();
-    }
-
     private static DescribedPredicate<JavaClass> inside(final Set<String> packs) {
         return DescribedPredicate.describe(
             "w pakiecie z listy wyjątków",
@@ -183,12 +168,6 @@ final class LayerDirectionArchitectureTest {
                     .startsWith(String.format("%s.", pack))
             )
         );
-    }
-
-    private static JavaClasses production() {
-        return new ClassFileImporter()
-            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
-            .importPackages("io.github.dostepnykampus");
     }
 
     private static String[] frameworkPackages() {
@@ -205,18 +184,12 @@ final class LayerDirectionArchitectureTest {
 
     private void type(final String pack, final String name, final String field)
         throws IOException {
-        final String full = LayerDirectionArchitectureTest.at(pack);
-        final String body;
-        if (field.isEmpty()) {
-            body = String.format("public final class %s { }", name);
-        } else if (field.startsWith("java.")) {
-            body = String.format("public final class %s { %s field; }", name, field);
+        final String type;
+        if (field.isEmpty() || field.startsWith("java.")) {
+            type = field;
         } else {
-            body = String.format(
-                "public final class %s { %s field; }",
-                name, LayerDirectionArchitectureTest.at(field)
-            );
+            type = LayerDirectionArchitectureTest.at(field);
         }
-        new ArchSamples(this.dir).write(full, name, String.format("package %s;%n%s%n", full, body));
+        new ArchSamples(this.dir).type(LayerDirectionArchitectureTest.at(pack), name, type);
     }
 }

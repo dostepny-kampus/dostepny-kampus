@@ -8,8 +8,9 @@ package io.github.dostepnykampus;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.Dependency;
 import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.conditions.ArchConditions;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
@@ -35,12 +36,11 @@ import org.springframework.modulith.core.JavaPackage;
  *
  * @since 0.1.0
  */
+@AnalyzeClasses(
+    packagesOf = DostepnyKampusApplication.class,
+    importOptions = ImportOption.DoNotIncludeTests.class
+)
 final class PackageCycleArchitectureTest {
-
-    /**
-     * Pakiet aplikacji; jego podpakiety są wycinkami.
-     */
-    private static final String BASE = "io.github.dostepnykampus";
 
     /**
      * Korzenie modułów, których typy są dziś używane w podpakietach, i issue, które to usuwa.
@@ -58,28 +58,19 @@ final class PackageCycleArchitectureTest {
     @TempDir
     private Path dir;
 
-    @Test
-    void packagesHaveNoCycles() {
-        PackageCycleArchitectureTest.cycles(PackageCycleArchitectureTest.BASE)
-            .check(PackageCycleArchitectureTest.production());
+    @ArchTest
+    void packagesHaveNoCycles(final JavaClasses classes) {
+        PackageCycleArchitectureTest.cycles("io.github.dostepnykampus").check(classes);
     }
 
-    @Test
-    void subpackagesSkipModuleRootOutsideExceptionList() {
-        PackageCycleArchitectureTest.root(
-            PackageCycleArchitectureTest.modules(), PackageCycleArchitectureTest.KNOWN.keySet()
-        ).check(PackageCycleArchitectureTest.production());
-    }
-
-    @Test
-    void exceptionListHoldsOnlyExistingViolations() {
-        final JavaClasses classes = PackageCycleArchitectureTest.production();
-        Assertions.assertEquals(
-            List.of(),
-            PackageCycleArchitectureTest.KNOWN.keySet().stream()
-                .filter(pack -> !PackageCycleArchitectureTest.usedInside(classes, pack))
-                .toList(),
-            "Wyjątek z listy już nie jest naruszeniem; usuń wpis"
+    @ArchTest
+    void subpackagesSkipModuleRootOutsideExceptionList(final JavaClasses classes) {
+        KnownViolations.check(
+            classes,
+            PackageCycleArchitectureTest.KNOWN,
+            known -> PackageCycleArchitectureTest.root(
+                PackageCycleArchitectureTest.modules(), known
+            )
         );
     }
 
@@ -154,11 +145,6 @@ final class PackageCycleArchitectureTest {
         );
     }
 
-    private static boolean usedInside(final JavaClasses classes, final String root) {
-        return PackageCycleArchitectureTest.root(List.of(root), Set.of())
-            .evaluate(classes).hasViolation();
-    }
-
     private static boolean usesRoot(final Dependency dependency, final String root) {
         return root.equals(dependency.getTargetClass().getPackageName())
             && dependency.getOriginClass().getPackageName()
@@ -172,12 +158,6 @@ final class PackageCycleArchitectureTest {
             .toList();
     }
 
-    private static JavaClasses production() {
-        return new ClassFileImporter()
-            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
-            .importPackages(PackageCycleArchitectureTest.BASE);
-    }
-
     private static String at(final String pack) {
         return String.format("%s.%s", PackageCycleArchitectureTest.SAMPLES, pack);
     }
@@ -188,16 +168,12 @@ final class PackageCycleArchitectureTest {
 
     private void type(final String pack, final String name, final String field)
         throws IOException {
-        final String full = PackageCycleArchitectureTest.at(pack);
-        final String body;
+        final String type;
         if (field.isEmpty()) {
-            body = String.format("public final class %s { }", name);
+            type = field;
         } else {
-            body = String.format(
-                "public final class %s { %s field; }",
-                name, PackageCycleArchitectureTest.at(field)
-            );
+            type = PackageCycleArchitectureTest.at(field);
         }
-        new ArchSamples(this.dir).write(full, name, String.format("package %s;%n%s%n", full, body));
+        new ArchSamples(this.dir).type(PackageCycleArchitectureTest.at(pack), name, type);
     }
 }
