@@ -32,7 +32,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 final class PhotoStoreBucketTest {
 
     @Test
-    void cfgTwoCreatesAndReadsBucketFromSettings() {
+    void createsAndReadsBucketFromSettings() {
         final UUID photo = UUID.randomUUID();
         try (PhotoStoreBucketTest.BucketProbe probe = new PhotoStoreBucketTest.BucketProbe()) {
             final PhotoSettings settings = new PhotoSettings(

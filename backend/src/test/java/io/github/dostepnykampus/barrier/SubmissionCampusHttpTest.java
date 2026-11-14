@@ -44,7 +44,7 @@ final class SubmissionCampusHttpTest {
     private static final double[] FAR = {17.045_3, 51.108};
 
     @Test
-    void brGFiveAcceptsPointFourHundredMetresFromBuilding(final WebApplicationContext context)
+    void acceptsPointFourHundredMetresFromBuilding(final WebApplicationContext context)
         throws Exception {
         final UUID id = UUID.randomUUID();
         MatcherAssert.assertThat(
@@ -59,7 +59,7 @@ final class SubmissionCampusHttpTest {
     }
 
     @Test
-    void brGFiveRejectsPointSixHundredMetresFromEveryBuilding(
+    void rejectsPointSixHundredMetresFromEveryBuilding(
         final WebApplicationContext context
     ) throws Exception {
         final UUID id = UUID.randomUUID();

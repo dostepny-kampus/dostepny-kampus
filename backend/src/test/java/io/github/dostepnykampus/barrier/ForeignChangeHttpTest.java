@@ -36,7 +36,7 @@ final class ForeignChangeHttpTest {
     );
 
     @Test
-    void brEighteenRefusesOrdinaryChangeOfForeignPrecise(final WebApplicationContext context)
+    void refusesOrdinaryChangeOfForeignPrecise(final WebApplicationContext context)
         throws Exception {
         Assertions.assertEquals(
             "403, zapisanych 0",
@@ -49,7 +49,7 @@ final class ForeignChangeHttpTest {
     }
 
     @Test
-    void brNineteenAcceptsRemovalOfForeignPrecise(final WebApplicationContext context)
+    void acceptsRemovalOfForeignPrecise(final WebApplicationContext context)
         throws Exception {
         Assertions.assertEquals(
             "201, zapisanych 1",
@@ -62,7 +62,7 @@ final class ForeignChangeHttpTest {
     }
 
     @Test
-    void brEighteenAcceptsOrdinaryChangeFromAuthor(final WebApplicationContext context)
+    void acceptsOrdinaryChangeFromAuthor(final WebApplicationContext context)
         throws Exception {
         Assertions.assertEquals(
             "201, zapisanych 1",
@@ -75,7 +75,7 @@ final class ForeignChangeHttpTest {
     }
 
     @Test
-    void brEighteenAcceptsChangeOfForeignQuick(final WebApplicationContext context)
+    void acceptsChangeOfForeignQuick(final WebApplicationContext context)
         throws Exception {
         final UUID quick = UUID.randomUUID();
         new SubmissionRequests(context).create(

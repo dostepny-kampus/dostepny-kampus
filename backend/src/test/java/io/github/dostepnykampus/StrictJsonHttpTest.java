@@ -36,7 +36,7 @@ final class StrictJsonHttpTest {
     private static final String BAD_REQUEST = "400 application/problem+json";
 
     @Test
-    void strictJsonSevenGivesBadRequestForMismatchedValue(@LocalServerPort final int port)
+    void givesBadRequestForMismatchedValue(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Wartość niepasująca do typu pola nie daje 400 application/problem+json",
@@ -46,7 +46,7 @@ final class StrictJsonHttpTest {
     }
 
     @Test
-    void strictJsonSevenGivesBadRequestForCoercedValue(@LocalServerPort final int port)
+    void givesBadRequestForCoercedValue(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Napis w polu liczbowym nie daje 400 application/problem+json",

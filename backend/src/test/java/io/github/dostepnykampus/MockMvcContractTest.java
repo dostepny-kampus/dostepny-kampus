@@ -27,7 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 final class MockMvcContractTest {
 
     @Test
-    void nfrThirtyThreeSharedMockMvcRunsSecurityFilters(
+    void runsSecurityFiltersInSharedMockMvc(
         final WebApplicationContext context
     ) throws Exception {
         final MockMvc mvc = context.getBean(MockMvc.class);
@@ -50,7 +50,7 @@ final class MockMvcContractTest {
     }
 
     @Test
-    void sharedMockMvcRejectsReplyOutsideContract(final WebApplicationContext context) {
+    void rejectsReplyOutsideContractInSharedMockMvc(final WebApplicationContext context) {
         final MockMvc mvc = context.getBean(MockMvc.class);
         MatcherAssert.assertThat(
             "Wspólne MockMvc przepuszcza odpowiedź operacji spoza kontraktu",

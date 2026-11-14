@@ -48,7 +48,7 @@ final class BarrierModuleTest {
     private KnownBuildings buildings;
 
     @Test
-    void barrierUsesOnlyApiOfOtherModules(final ApplicationContext context) {
+    void usesOnlyApiOfOtherModules(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Kontekst modułu zgłoszeń ma beany innego modułu spoza jego API",
             new ModuleBeans(context).in("building", "identity").stream()
@@ -59,7 +59,7 @@ final class BarrierModuleTest {
     }
 
     @Test
-    void barrierServesSubmissionsInModuleContext(final ApplicationContext context) {
+    void servesSubmissionsInModuleContext(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Moduł zgłoszeń bez innych modułów nie ma kontrolera zgłoszeń",
             context.getBeanNamesForType(SubmissionsController.class),

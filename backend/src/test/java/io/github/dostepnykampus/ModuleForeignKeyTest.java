@@ -23,7 +23,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 final class ModuleForeignKeyTest {
 
     @Test
-    void foreignKeysStayInsideModule(final ApplicationContext context) throws IOException {
+    void keepsForeignKeysInsideModule(final ApplicationContext context) throws IOException {
         Assertions.assertEquals(
             Set.of(), ModuleForeignKeyTest.crossings(context),
             "Klucz obcy wskazuje tabelę innego modułu albo tabelę bez właściciela"

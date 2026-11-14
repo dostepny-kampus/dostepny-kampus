@@ -54,7 +54,7 @@ final class ArchitectureTest {
     }
 
     @Test
-    void controllerUsingJdbcIsRejected() {
+    void rejectsControllerUsingJdbc() {
         Assertions.assertTrue(
             ArchitectureTest.controllerBoundary()
                 .evaluate(new ClassFileImporter().importClasses(JdbcControllerSample.class))
@@ -65,7 +65,7 @@ final class ArchitectureTest {
     }
 
     @Test
-    void controllerBoundaryRejectsEmptySelection() {
+    void rejectsEmptySelectionAtControllerBoundary() {
         Assertions.assertThrows(
             AssertionError.class,
             () -> ArchitectureTest.controllerBoundary().check(

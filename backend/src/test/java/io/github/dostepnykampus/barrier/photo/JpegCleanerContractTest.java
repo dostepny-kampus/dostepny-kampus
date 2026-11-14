@@ -37,7 +37,7 @@ final class JpegCleanerContractTest {
             0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF, 0xFE
         }
     )
-    void nfrTwentySixRemovesEveryPrivateSegment(final int marker) throws Exception {
+    void removesEveryPrivateSegment(final int marker) throws Exception {
         final byte[] plain = JpegCleanerContractTest.image(false);
         Assertions.assertArrayEquals(
             plain,
@@ -52,7 +52,7 @@ final class JpegCleanerContractTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
-    void nfrTwentySixKeepsExactImageAndIcc(final boolean progressive) throws Exception {
+    void keepsExactImageAndIcc(final boolean progressive) throws Exception {
         final ByteArrayOutputStream profile = new ByteArrayOutputStream();
         profile.write("ICC_PROFILE\0".getBytes(StandardCharsets.US_ASCII));
         profile.write(1);
@@ -82,7 +82,7 @@ final class JpegCleanerContractTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
-    void nfrTwentySixKeepsCleanJpeg(final boolean progressive) throws IOException {
+    void keepsCleanJpeg(final boolean progressive) throws IOException {
         final byte[] plain = JpegCleanerContractTest.image(progressive);
         Assertions.assertArrayEquals(
             plain, new JpegCleaner().strip(plain), "Czysty JPEG został zmieniony"
@@ -91,7 +91,7 @@ final class JpegCleanerContractTest {
 
     @ParameterizedTest
     @ValueSource(ints = {2, 20})
-    void nfrTwentySixRejectsJunkBetweenSegments(final int offset) throws IOException {
+    void rejectsJunkBetweenSegments(final int offset) throws IOException {
         final byte[] plain = JpegCleanerContractTest.image(false);
         final ByteArrayOutputStream corrupt = new ByteArrayOutputStream();
         corrupt.write(plain, 0, offset);

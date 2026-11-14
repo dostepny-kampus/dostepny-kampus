@@ -27,7 +27,7 @@ import org.springframework.context.ApplicationContext;
 final class PhotoStoreTest {
 
     @Test
-    void brSevenReadsSavedPhoto(final ApplicationContext context) {
+    void readsSavedPhoto(final ApplicationContext context) {
         final PhotoStore store = context.getBean(PhotoStore.class);
         final UUID submission = UUID.randomUUID();
         store.put(submission, submission, PhotoStoreTest.bytes("zdjęcie"));
@@ -39,7 +39,7 @@ final class PhotoStoreTest {
     }
 
     @Test
-    void brNineReplacesPhotoSentAgain(final ApplicationContext context) {
+    void replacesPhotoSentAgain(final ApplicationContext context) {
         final PhotoStore store = context.getBean(PhotoStore.class);
         final UUID submission = UUID.randomUUID();
         store.put(submission, submission, PhotoStoreTest.bytes("pierwsze"));
@@ -52,7 +52,7 @@ final class PhotoStoreTest {
     }
 
     @Test
-    void brSevenFindsNoMissingPhoto(final ApplicationContext context) {
+    void findsNoMissingPhoto(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Magazyn zwrócił zdjęcie, którego nikt nie zapisał",
             context.getBean(PhotoStore.class).get(UUID.randomUUID(), UUID.randomUUID()),

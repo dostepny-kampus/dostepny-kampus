@@ -81,7 +81,7 @@ final class JavadocArchitectureTest {
     private static final Pattern CODE = Pattern.compile("\\{@code [^}]*}|`[^`]*`");
 
     @Test
-    void serverJavadocDescribesOnlyContract() {
+    void describesOnlyContractInServerJavadoc() {
         MatcherAssert.assertThat(
             "Javadoc serwera ma historię, za długi opis albo wymagania poza linią Wymagania",
             Stream.of("src/main/java", "src/test/java")
@@ -93,7 +93,7 @@ final class JavadocArchitectureTest {
     }
 
     @Test
-    void issueAndDecisionNumbersAreReported() {
+    void reportsIssueAndDecisionNumbers() {
         MatcherAssert.assertThat(
             "Numer issue albo decyzji w Javadoc nie jest zgłaszany",
             JavadocArchitectureTest.problems(
@@ -106,7 +106,7 @@ final class JavadocArchitectureTest {
     }
 
     @Test
-    void deferredWorkMarkerPasses() {
+    void passesDeferredWorkMarker() {
         MatcherAssert.assertThat(
             "Znacznik pracy odłożonej jest zgłaszany jak historia",
             JavadocArchitectureTest.problems(
@@ -117,7 +117,7 @@ final class JavadocArchitectureTest {
     }
 
     @Test
-    void longDescriptionIsReportedWithoutTags() {
+    void reportsLongDescriptionWithoutTags() {
         MatcherAssert.assertThat(
             "Długość opisu liczy znaczniki albo nie zgłasza siedmiu linii",
             JavadocArchitectureTest.problems(
@@ -149,7 +149,7 @@ final class JavadocArchitectureTest {
     }
 
     @Test
-    void requirementIdsOnlyInRequirementsLine() {
+    void keepsRequirementIdsInRequirementsLine() {
         MatcherAssert.assertThat(
             "Identyfikator wymagania poza linią Wymagania nie jest zgłaszany",
             JavadocArchitectureTest.problems(

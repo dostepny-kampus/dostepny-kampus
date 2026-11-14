@@ -43,13 +43,15 @@ import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
  * Po zapisanej edycji zdjęcia spoza nowej listy photoIds znikają
  * z magazynu RustFS, a błąd magazynu nie zmienia wyniku edycji.
  *
+ * <p>Wymagania: BR-8</p>
+ *
  * @since 0.1.0
  */
 @IntegrationTest
 final class SubmissionPhotosPruneTest {
 
     @Test
-    void brEightRemovesPhotoDroppedByEdit(final ApplicationContext context) {
+    void removesPhotoDroppedByEdit(final ApplicationContext context) {
         final PhotoStore store = context.getBean(PhotoStore.class);
         final UUID submission = UUID.randomUUID();
         final UUID kept = UUID.randomUUID();
@@ -65,7 +67,7 @@ final class SubmissionPhotosPruneTest {
     }
 
     @Test
-    void brEightRemovesPhotoAfterCommittedEdit(final ApplicationContext context) {
+    void removesPhotoAfterCommittedEdit(final ApplicationContext context) {
         final SubmissionService service = context.getBean(SubmissionService.class);
         final PhotoStore store = context.getBean(PhotoStore.class);
         final UUID submission = UUID.randomUUID();
@@ -94,7 +96,7 @@ final class SubmissionPhotosPruneTest {
     }
 
     @Test
-    void brEightKeepsEditWhenStoreFails(final ApplicationContext context) {
+    void keepsEditWhenStoreFails(final ApplicationContext context) {
         final SubmissionPhotos photos = new SubmissionPhotos(
             context.getBean(SubmissionFinder.class),
             new S3PhotoStore(

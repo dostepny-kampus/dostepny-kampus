@@ -69,7 +69,7 @@ final class ModuleMigrationTest {
     );
 
     @Test
-    void rootHoldsOnlyMigrationsBeforeModules() throws IOException {
+    void holdsOnlyMigrationsBeforeModulesInRoot() throws IOException {
         Assertions.assertEquals(
             ModuleMigrationTest.BEFORE_MODULES,
             ModuleMigrationTest.names(
@@ -80,7 +80,7 @@ final class ModuleMigrationTest {
     }
 
     @Test
-    void migrationFoldersAreModules() throws IOException {
+    void matchesMigrationFoldersToModules() throws IOException {
         final Set<String> allowed = ApplicationModules.of(DostepnyKampusApplication.class)
             .stream()
             .map(ApplicationModule::getIdentifier)

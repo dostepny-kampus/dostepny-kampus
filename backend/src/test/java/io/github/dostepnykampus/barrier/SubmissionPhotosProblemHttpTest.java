@@ -48,7 +48,7 @@ final class SubmissionPhotosProblemHttpTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"locked", "broken", "large"})
-    void acTwoBTwoGivesProblemWithDetail(final String scenario, final WebApplicationContext context)
+    void givesProblemWithDetail(final String scenario, final WebApplicationContext context)
         throws Exception {
         final PhotoRequests requests = new PhotoRequests(context);
         final String photo = SubmissionPhotosProblemHttpTest.PHOTO.toString();
@@ -70,7 +70,7 @@ final class SubmissionPhotosProblemHttpTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void acTwoBTwoExplainsMissingPhotoWithoutInternals(
+    void explainsMissingPhotoWithoutInternals(
         final boolean exists, final WebApplicationContext context
     ) throws Exception {
         final PhotoRequests requests = new PhotoRequests(context);

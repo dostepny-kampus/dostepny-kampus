@@ -30,7 +30,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 final class PhotoStoreMissingBucketTest {
 
     @Test
-    void acTwoBFourDoesNotCreateBucketOnPut() {
+    void doesNotCreateBucketOnPut() {
         final PhotoStoreMissingBucketTest.NoBucket client =
             new PhotoStoreMissingBucketTest.NoBucket();
         final PhotoStore store = new S3PhotoStore(

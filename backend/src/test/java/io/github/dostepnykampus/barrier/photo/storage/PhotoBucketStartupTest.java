@@ -26,7 +26,7 @@ import software.amazon.awssdk.services.s3.model.Bucket;
 final class PhotoBucketStartupTest {
 
     @Test
-    void acTwoBFourCreatesBucketAtStartup(final ApplicationContext context) {
+    void createsBucketAtStartup(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Po starcie kontekstu nie ma kubełka zdjęć",
             context.getBean(S3Client.class).listBuckets().buckets().stream()

@@ -21,7 +21,7 @@ import org.springframework.context.ApplicationContext;
 final class DostepnyKampusApplicationTest {
 
     @Test
-    void infraStartsApplicationContext(final ApplicationContext context) {
+    void startsApplicationContext(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Kontekst aplikacji nie zarejestrował klasy startowej",
             context.getBeanNamesForType(DostepnyKampusApplication.class),

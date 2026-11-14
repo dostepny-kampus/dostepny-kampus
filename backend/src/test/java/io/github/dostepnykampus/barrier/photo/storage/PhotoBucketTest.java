@@ -29,7 +29,7 @@ import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
 final class PhotoBucketTest {
 
     @Test
-    void acTwoBFourTreatsExistingBucketAsSuccess() {
+    void treatsExistingBucketAsSuccess() {
         final PhotoBucketTest.Storage client = new PhotoBucketTest.Storage(
             BucketAlreadyOwnedByYouException.builder().message("jest").build()
         );
@@ -40,7 +40,7 @@ final class PhotoBucketTest {
     }
 
     @Test
-    void acTwoBFourStopsStartupWhenStorageFailsWithKeys() {
+    void stopsStartupWhenStorageFailsWithKeys() {
         MatcherAssert.assertThat(
             "Komunikat nie wskazuje ustawienia dk.photos i kubełka",
             Assertions.assertThrows(
@@ -57,7 +57,7 @@ final class PhotoBucketTest {
     }
 
     @Test
-    void acTwoBFourStartsWithoutKeysAndCreatesNothing() {
+    void startsWithoutKeysAndCreatesNothing() {
         final PhotoBucketTest.Storage client = new PhotoBucketTest.Storage(null);
         new PhotoBucket(client, PhotoBucketTest.settings("")).run(null);
         Assertions.assertEquals(

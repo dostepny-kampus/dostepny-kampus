@@ -54,7 +54,7 @@ final class KeycloakTokenTest {
     private static final String APP = "dostepny-kampus-android";
 
     @Test
-    void nfrThirtyThreeRealTokenIsJudgedBySignatureAndRole(
+    void judgesRealTokenBySignatureAndRole(
         final WebApplicationContext context
     ) throws Exception {
         final JsonMapper mapper = context.getBean(JsonMapper.class);

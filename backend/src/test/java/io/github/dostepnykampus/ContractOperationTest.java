@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 final class ContractOperationTest {
 
     @Test
-    void contractOperationsHavePrefixAnonymousVariablesAndOnlyVerbs() {
+    void keepsPrefixAnonymousVariablesAndVerbsInOperations() {
         MatcherAssert.assertThat(
             "Lista operacji zależy od nazw zmiennych albo bierze klucze, które nie są metodami",
             new OpenApiContract(
@@ -41,7 +41,7 @@ final class ContractOperationTest {
     }
 
     @Test
-    void contractOperationNameIgnoresVariableNamesAndTrailingSlash() {
+    void ignoresVariableNamesAndTrailingSlashInOperationName() {
         MatcherAssert.assertThat(
             "Nazwy zmiennych albo prefiks serwera wpływają na nazwę operacji",
             ContractOperation.name("get", "/api/", "/buildings/{id:[A-Z]+}/floors"),

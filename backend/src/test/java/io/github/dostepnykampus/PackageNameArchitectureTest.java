@@ -41,7 +41,7 @@ final class PackageNameArchitectureTest {
     );
 
     @Test
-    void productionPackagesUseDictionaryNames() throws IOException {
+    void usesDictionaryNamesInProductionPackages() throws IOException {
         Assertions.assertEquals(
             List.of(),
             PackageNameArchitectureTest.problems(

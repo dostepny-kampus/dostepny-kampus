@@ -40,7 +40,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 final class SubmissionPhotoRaceTest {
 
     @Test
-    void acceptedDuringBodyReadKeepsPhoto(final ApplicationContext context) throws Exception {
+    void keepsPhotoAcceptedDuringBodyRead(final ApplicationContext context) throws Exception {
         final UUID photo = UUID.randomUUID();
         final UUID id = new SampleSubmissions(context).add("SENT", SampleSubmissions.quick(photo));
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
@@ -69,7 +69,7 @@ final class SubmissionPhotoRaceTest {
     }
 
     @Test
-    void acceptanceWaitsForObjectWrite(final ApplicationContext context) throws Exception {
+    void waitsForObjectWriteBeforeAcceptance(final ApplicationContext context) throws Exception {
         final UUID photo = UUID.randomUUID();
         final UUID id = new SampleSubmissions(context).add("SENT", SampleSubmissions.quick(photo));
         final byte[] jpeg = JpegCleanerTest.photo();

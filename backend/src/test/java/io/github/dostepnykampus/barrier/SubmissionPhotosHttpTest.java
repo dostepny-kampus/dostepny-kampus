@@ -37,7 +37,7 @@ import software.amazon.awssdk.services.s3.S3Client;
  * Zdjęcie z listy photoIds trafia do magazynu
  * bez metadanych, a odczyt zdjęcia działa dla zgłoszenia przyjętego.
  *
- * <p>Wymagania: BR-7, US2.2, NFR-26</p>
+ * <p>Wymagania: BR-7, US2.2, NFR-26, BR-15, BR-6</p>
  *
  * @since 0.1.0
  */
@@ -53,7 +53,7 @@ final class SubmissionPhotosHttpTest {
     );
 
     @Test
-    void brSevenSavesListedPhoto(final WebApplicationContext context) throws Exception {
+    void savesListedPhoto(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Zdjęcie z listy photoIds nie daje 204",
             SubmissionPhotosHttpTest.put(
@@ -66,7 +66,7 @@ final class SubmissionPhotosHttpTest {
     }
 
     @Test
-    void brSevenRejectsUnlistedPhoto(final WebApplicationContext context) throws Exception {
+    void rejectsUnlistedPhoto(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Zdjęcie spoza listy photoIds nie daje 404",
             SubmissionPhotosHttpTest.put(
@@ -77,7 +77,7 @@ final class SubmissionPhotosHttpTest {
     }
 
     @Test
-    void brFifteenLocksAcceptedPhoto(final WebApplicationContext context) throws Exception {
+    void locksAcceptedPhoto(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Zmiana zdjęcia zgłoszenia przyjętego bez logowania nie daje 403",
             SubmissionPhotosHttpTest.put(
@@ -90,7 +90,7 @@ final class SubmissionPhotosHttpTest {
     }
 
     @Test
-    void nfrTwentySixServesPhotoWithoutExif(final WebApplicationContext context)
+    void servesPhotoWithoutExif(final WebApplicationContext context)
         throws Exception {
         final UUID id = SubmissionPhotosHttpTest.add(context, "SENT");
         SubmissionPhotosHttpTest.put(context, id, SubmissionPhotosHttpTest.PHOTO);
@@ -109,7 +109,7 @@ final class SubmissionPhotosHttpTest {
     }
 
     @Test
-    void brSevenReturnsNotFoundForMissingObject(final WebApplicationContext context)
+    void returnsNotFoundForMissingObject(final WebApplicationContext context)
         throws Exception {
         final PhotoRequests photos = new PhotoRequests(context);
         final String photo = UUID.randomUUID().toString();
@@ -121,7 +121,7 @@ final class SubmissionPhotosHttpTest {
     }
 
     @Test
-    void missingBucketReturnsServerError(final WebApplicationContext context) throws Exception {
+    void returnsServerErrorForMissingBucket(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Brak zasobnika nie daje 500",
             SubmissionPhotosHttpTest.get(
@@ -133,7 +133,7 @@ final class SubmissionPhotosHttpTest {
     }
 
     @Test
-    void brSixHidesPhotoOfSentSubmission(final WebApplicationContext context) throws Exception {
+    void hidesPhotoOfSentSubmission(final WebApplicationContext context) throws Exception {
         final UUID id = SubmissionPhotosHttpTest.add(context, "SENT");
         SubmissionPhotosHttpTest.put(context, id, SubmissionPhotosHttpTest.PHOTO);
         MatcherAssert.assertThat(
@@ -145,7 +145,7 @@ final class SubmissionPhotosHttpTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"GIF89a", "ÿØÿá", "ÿØxÿÙ"})
-    void nfrTwentySixRejectsInvalidJpeg(
+    void rejectsInvalidJpeg(
         final String content, final WebApplicationContext context
     ) throws Exception {
         MatcherAssert.assertThat(

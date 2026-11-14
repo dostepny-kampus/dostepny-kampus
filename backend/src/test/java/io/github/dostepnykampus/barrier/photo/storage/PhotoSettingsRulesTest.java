@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 final class PhotoSettingsRulesTest {
 
     @Test
-    void cfgThreeRejectsMissingEndpointOrEndpointWithoutScheme() {
+    void rejectsMissingEndpointOrEndpointWithoutScheme() {
         Assertions.assertAll(
             () -> PhotoSettingsRulesTest.rejected(null, "zdjecia", "dk.photos.endpoint"),
             () -> PhotoSettingsRulesTest.rejected(
@@ -31,7 +31,7 @@ final class PhotoSettingsRulesTest {
     }
 
     @Test
-    void cfgThreeRejectsMissingOrBlankBucket() {
+    void rejectsMissingOrBlankBucket() {
         Assertions.assertAll(
             () -> PhotoSettingsRulesTest.rejected(
                 URI.create("http://magazyn:9000"), null, "dk.photos.bucket"

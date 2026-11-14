@@ -53,7 +53,7 @@ final class OpenApiContractTest {
 
     @ParameterizedTest(name = "{2}")
     @MethodSource("conforming")
-    void contractAcceptsConformingExchange(
+    void acceptsConformingExchange(
         final RequestBuilder request, final ResponseEntity<String> reply, final String name
     ) {
         Assertions.assertDoesNotThrow(
@@ -64,7 +64,7 @@ final class OpenApiContractTest {
 
     @ParameterizedTest(name = "{2}")
     @MethodSource("violating")
-    void contractRejectsViolatingExchange(
+    void rejectsViolatingExchange(
         final RequestBuilder request, final ResponseEntity<String> reply, final String message
     ) {
         MatcherAssert.assertThat(
@@ -82,7 +82,7 @@ final class OpenApiContractTest {
     }
 
     @Test
-    void contractFindsProblemWithoutTitle() {
+    void findsProblemWithoutTitle() {
         MatcherAssert.assertThat(
             "Błąd bez title przechodzi sprawdzenie schematem Problem",
             new OpenApiContract().violations("Problem", "{\"status\":400}"),
@@ -91,7 +91,7 @@ final class OpenApiContractTest {
     }
 
     @Test
-    void contractReadsSpecificationOnce() throws Exception {
+    void readsSpecificationOnce() throws Exception {
         final AtomicInteger reads = new AtomicInteger();
         final OpenApiContract contract = new OpenApiContract(
             () -> {

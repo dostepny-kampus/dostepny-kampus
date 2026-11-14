@@ -23,7 +23,7 @@ import tools.jackson.databind.ObjectMapper;
  * Zapis przez HTTP bez transakcji testowej: retry i konflikty zachowują
  * treść, a poprawna edycja zapisuje treść i wersję.
  *
- * <p>Wymagania: BR-3, BR-9, BR-10</p>
+ * <p>Wymagania: BR-3, BR-9, BR-10, BR-18</p>
  *
  * @since 0.1.0
  */
@@ -40,7 +40,7 @@ final class SubmissionsWriteContractTest {
     }
 
     @Test
-    void brNineRetryKeepsContentAndVersion(final WebApplicationContext context) throws Exception {
+    void keepsContentAndVersionOnRetry(final WebApplicationContext context) throws Exception {
         final UUID id = this.create(context);
         Assertions.assertEquals(
             List.of(200, "original", 1, "SENT", "original", 1),
@@ -86,7 +86,7 @@ final class SubmissionsWriteContractTest {
     }
 
     @Test
-    void brEighteenLocksAcceptedAndArchived(final WebApplicationContext context) throws Exception {
+    void locksAcceptedAndArchived(final WebApplicationContext context) throws Exception {
         final List<List<Object>> actual = new ArrayList<>(2);
         for (final String status : List.of("ACCEPTED", "ARCHIVED")) {
             final UUID id = this.create(context);

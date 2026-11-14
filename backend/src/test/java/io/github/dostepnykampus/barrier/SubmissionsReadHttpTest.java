@@ -52,7 +52,7 @@ final class SubmissionsReadHttpTest {
     private static final String FLOOR = "A-1-0";
 
     @Test
-    void brSixShowsAcceptedSubmission(final WebApplicationContext context) throws Exception {
+    void showsAcceptedSubmission(final WebApplicationContext context) throws Exception {
         final Row row = SubmissionsReadHttpTest.add(
             context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
         );
@@ -67,7 +67,7 @@ final class SubmissionsReadHttpTest {
     }
 
     @Test
-    void brSixHidesSentSubmission(final WebApplicationContext context) throws Exception {
+    void hidesSentSubmission(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Zgłoszenie wysłane jest widoczne bez logowania",
             SubmissionsReadHttpTest.read(context, "SENT"),
