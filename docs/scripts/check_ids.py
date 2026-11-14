@@ -54,16 +54,20 @@ COVERAGE_PAGE = Path("_generated") / "pokrycie-testami.md"
 COVERAGE_HEADER = ["Plik", "Scenariusz", "Kryteria i reguły", "Warstwa", "Test", "Stan"]
 LAYERS = (("aplikacja", "Aplikacja"), ("serwer", "Serwer"))
 LAYER_NAMES = dict(LAYERS)
-STATE_RANK = {"brak": 0, "częściowo": 1, "pełny": 2}
+STATE_RANK = {"brak": 0, "ręcznie": 0, "częściowo": 1, "pełny": 2}
 PLANNED_TAG = "do-zrobienia"
-COVERAGE_COUNTS = (("Pełny test", "pełny"), ("Tylko częściowo", "częściowo"), ("Bez testu", "brak"))
+MANUAL_TAG = "demo"
+COVERAGE_COUNTS = (
+    ("Pełny test", "pełny"), ("Tylko częściowo", "częściowo"), ("Bez testu", "brak"), ("Ręcznie", "ręcznie")
+)
 COVERAGE_INTRO = """# Pokrycie scenariuszy testami
 
 Jeden wiersz to jeden scenariusz z katalogu `specs/`. Kolumna „Warstwa” mówi, gdzie scenariusz jest sprawdzany
 (tag `@aplikacja` albo `@serwer`). Kolumna „Test” wskazuje testy Androida ze znacznikiem `Scenariusz:` w KDoc
 (moduł, klasa i funkcja testu) oraz zestaw Cucumber serwera, który wykonuje scenariusz wprost z pliku. Stan „pełny” znaczy, że test sprawdza wszystkie kroki „Wtedy” w każdej warstwie
 scenariusza, „częściowo” — tylko część z nich albo tylko jedną z dwóch warstw, a „brak” — że scenariusz nie ma
-testu. Pierwsza tabela liczy scenariusze osobno w każdej warstwie; scenariusz z dwiema warstwami jest w obu wierszach.
+testu. Stan „ręcznie” ma scenariusz bez testu z tagiem `@demo`: sprawdza go ręczna lista kontrolna z opisu
+funkcji. Pierwsza tabela liczy scenariusze osobno w każdej warstwie; scenariusz z dwiema warstwami jest w obu wierszach.
 
 Stronę tworzy budowa dokumentacji z bieżących scenariuszy i testów; nie ma jej w repozytorium. Lokalnie zapisuje ją
 też `python scripts/check_ids.py --matrix docs/wymagania/sledzenie.md`.
@@ -150,6 +154,7 @@ class Corpus:
     examples: dict[tuple[str, str], list[tuple[str, ...]]] = field(default_factory=lambda: defaultdict(list))
     bodies: dict[tuple[str, str], list[str]] = field(default_factory=lambda: defaultdict(list))
     planned: set[tuple[str, str]] = field(default_factory=set)
+    manual: set[tuple[str, str]] = field(default_factory=set)
     suites: dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
     bad_markers: list[Location] = field(default_factory=list)
 
@@ -338,7 +343,8 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
     `feature` to ścieżka pliku względna do katalogu scenariuszy, jak w znaczniku testu (domyślnie nazwa pliku).
     Wiersze tabel pod „Przykłady:” (bez nagłówka każdej tabeli) trafiają do `corpus.examples` scenariusza;
     tabela danych przy kroku nie jest tabelą przykładów. Kroki i tabele scenariusza trafiają do `corpus.bodies`,
-    a scenariusz z tagiem PLANNED_TAG (własnym, funkcji albo reguły) do `corpus.planned`.
+    a scenariusz z tagiem PLANNED_TAG albo MANUAL_TAG (własnym, funkcji albo reguły) do `corpus.planned` albo
+    `corpus.manual`.
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
     rel = relative(path)
@@ -356,7 +362,7 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
         line = raw.strip()
         if line.startswith("@"):
             pending += [(t, Location(rel, number)) for t in TAG_RE.findall(line) if ID_FULL.fullmatch(t)]
-            layers["pending"] |= {t for t in TAG_RE.findall(line) if t in LAYER_NAMES or t == PLANNED_TAG}
+            layers["pending"] |= {t for t in TAG_RE.findall(line) if t in LAYER_NAMES or t in (PLANNED_TAG, MANUAL_TAG)}
             continue
         if line.startswith("#") or not line:
             continue
@@ -384,6 +390,8 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
             body = corpus.bodies[(feature, scenario.name)]
             if PLANNED_TAG in found:
                 corpus.planned.add((feature, scenario.name))
+            if MANUAL_TAG in found:
+                corpus.manual.add((feature, scenario.name))
             for tag in dict.fromkeys(feature_tags + rule_tags + tags):
                 corpus.scenarios[tag].append(scenario)
         else:
@@ -800,7 +808,8 @@ def coverage_states(corpus: Corpus) -> dict[Scenario, tuple[list[Marker], str]]:
     """Zwraca dla każdego scenariusza znaczniki, które go pokrywają, i stan: „pełny”, „częściowo” albo „brak”.
 
     Gwarantuje: pokrywa tylko znacznik nad aktywnym testem; stan „pełny”, gdy każda warstwa scenariusza jest „pełna”
-    (layer_states), „brak”, gdy żadna nie ma testu, w pozostałych razach „częściowo”.
+    (layer_states), „brak”, gdy żadna nie ma testu, w pozostałych razach „częściowo”. Scenariusz z tagiem MANUAL_TAG
+    bez żadnego testu ma stan „ręcznie”.
     """
     covering = defaultdict(list)
     for marker in corpus.markers:
@@ -810,7 +819,9 @@ def coverage_states(corpus: Corpus) -> dict[Scenario, tuple[list[Marker], str]]:
     for scenario in corpus.all_scenarios:
         markers = covering.get((scenario.feature, scenario.name), [])
         found = set(layer_states(corpus, scenario, markers).values())
-        states[scenario] = (markers, found.pop() if len(found) == 1 else "częściowo")
+        state = found.pop() if len(found) == 1 else "częściowo"
+        manual = state == "brak" and (scenario.feature, scenario.name) in corpus.manual
+        states[scenario] = (markers, "ręcznie" if manual else state)
     return states
 
 
@@ -839,7 +850,7 @@ def render_coverage(corpus: Corpus) -> str:
     per_layer: dict[str, list[str]] = defaultdict(list)
     for scenario, (markers, state) in coverage_states(corpus).items():
         for layer, layer_state in layer_states(corpus, scenario, markers).items():
-            per_layer[layer].append(layer_state)
+            per_layer[layer].append("ręcznie" if state == "ręcznie" else layer_state)
         layers = join([LAYER_NAMES[layer].lower() for layer in scenario.layers])
         ids = sorted(dict.fromkeys(m.test_id for m in markers)) + server_suites(corpus, scenario)
         tests = [f"`{test_id}`".replace("|", "\\|") for test_id in ids]
@@ -869,7 +880,7 @@ def coverage_drops(corpus: Corpus, baseline: Corpus) -> list[Finding]:
 
 def unplanned_scenarios(corpus: Corpus, baseline: Corpus) -> list[Finding]:
     """Zwraca „BŁĄD” dla każdego scenariusza, którego nie ma w `baseline` albo który ma tam inną treść (kroki, tabele),
-    a który nie ma pełnego testu ani tagu PLANNED_TAG.
+    a który nie ma pełnego testu ani tagu PLANNED_TAG albo MANUAL_TAG.
 
     Gwarantuje: scenariusz o treści takiej jak w `baseline` nie daje wyniku; zmiana samych tagów nie jest zmianą treści.
     """
@@ -877,7 +888,7 @@ def unplanned_scenarios(corpus: Corpus, baseline: Corpus) -> list[Finding]:
     for scenario, (_, state) in coverage_states(corpus).items():
         key = (scenario.feature, scenario.name)
         same = key in baseline.bodies and baseline.bodies[key] == corpus.bodies[key]
-        if not same and state != "pełny" and key not in corpus.planned:
+        if not same and state != "pełny" and key not in corpus.planned | corpus.manual:
             message = f"nowy albo zmieniony scenariusz bez pełnego testu i bez tagu @{PLANNED_TAG} z numerem zadania: {scenario.name}"
             findings.append(Finding("BŁĄD", str(scenario.location), message))
     return findings
