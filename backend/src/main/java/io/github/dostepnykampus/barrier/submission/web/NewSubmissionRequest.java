@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import io.github.dostepnykampus.barrier.submission.Submission;
-import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
+import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
 import io.github.dostepnykampus.shared.error.ConflictingState;
@@ -52,7 +52,7 @@ record NewSubmissionRequest(
      * @param finder Odczyt zgłoszeń
      * @param reader Osoba, która składa zmianę
      */
-    void checkReplaced(final SubmissionFinder finder, final Reader reader) {
+    void checkReplaced(final SubmissionReading finder, final Reader reader) {
         final @Nullable UUID replaced = this.content.replaces();
         final @Nullable UUID saved = this.id;
         if (replaced != null && (saved == null || finder.find(saved).isEmpty())) {

@@ -47,8 +47,7 @@ final class TechnologyArchitectureTest {
      * Pakiety, które dziś łamią regułę, i issue, które to usuwa; klucz to reguła i pakiet.
      */
     private static final Map<String, Integer> KNOWN = Map.of(
-        "A-3 io.github.dostepnykampus.building.web", 1785,
-        "A-4 io.github.dostepnykampus.barrier.submission.web", 1786
+        "A-3 io.github.dostepnykampus.building.web", 1785
     );
 
     /**
