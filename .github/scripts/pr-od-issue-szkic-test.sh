@@ -51,6 +51,7 @@ run_case() {
   fi
 }
 
+run_case "bez zmiennej trybu: tryb wymagany" '' 'Opis.' ala false '' 1 'komentarz' '::error title=PR od issue::brak Closes'
 run_case "tryb ostrzegawczy: brak Closes tylko loguje" 0 'Opis.' ala false '' 0 '' '::warning title=PR od issue::brak Closes'
 run_case "tryb wymagany: brak Closes → sam komentarz, bez szkicu" 1 'Opis.' ala false '' 1 'komentarz' '::error title=PR od issue::brak Closes' 'Ten PR nie spełnia zasady' 'szkic'
 run_case "tryb wymagany: PR będący szkicem dostaje ten sam komentarz" 1 'Opis.' ala true '' 1 'komentarz'
