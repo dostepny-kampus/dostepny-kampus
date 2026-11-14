@@ -3,63 +3,57 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.data.testing
+package io.github.dostepnykampus.core.data.buildings
 
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.server.ServerBuildings
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
-import io.github.dostepnykampus.core.model.Entrance
-import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.network.ApiBuilding
-import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingList
 import io.github.dostepnykampus.core.network.DetailLevel
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.io.IOException
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * Odpowiedź z testu modułu funkcji daje to samo repozytorium co odpowiadający jej wynik klienta HTTP.
+ * Lista budynków podstawowych z publicznego konstruktora daje ten sam katalog co lista klienta HTTP
+ * z budynkami na poziomie [DetailLevel.BASIC].
  *
  * Wymagania: NFR-10
  */
-class ServerRepositoriesTest {
+class BasicServerListTest {
     @Test
-    fun nfr10_ok_is_success() {
+    fun nfr10_ok_is_basic_list() {
         assertEquals(
-            direct(ApiResult.Success(BuildingList(SOURCE, listOf(ApiBuilding(SERVER, DetailLevel.BASIC))))),
+            direct(ServerReply.Ok(BuildingList(SOURCE, listOf(ApiBuilding(SERVER, DetailLevel.BASIC))))),
             fixture(ServerReply.Ok(ServerBuildings(SOURCE, listOf(SERVER)))),
         )
     }
 
     @Test
-    fun nfr10_offline_is_network_error() {
-        assertEquals(direct(ApiResult.NetworkError(IOException("brak sieci"))), fixture(ServerReply.Offline))
+    fun nfr10_offline_is_offline() {
+        assertEquals(direct(ServerReply.Offline), fixture(ServerReply.Offline))
     }
 
     @Test
-    fun nfr10_fault_is_server_error() {
-        assertEquals(direct(ApiResult.ServerError(SERVER_ERROR)), fixture(ServerReply.Fault(SERVER_ERROR)))
+    fun nfr10_fault_is_fault() {
+        assertEquals(direct(ServerReply.Fault(SERVER_ERROR)), fixture(ServerReply.Fault(SERVER_ERROR)))
     }
 
     @Test
-    fun nfr10_missing_is_not_found() {
-        assertEquals(direct(ApiResult.NotFound), fixture(ServerReply.Missing))
+    fun nfr10_missing_is_missing() {
+        assertEquals(direct(ServerReply.Missing), fixture(ServerReply.Missing))
     }
 
-    private fun direct(result: ApiResult<BuildingList>): BuildingCatalog =
-        runBlocking {
-            BuildingCatalogRepository(EmptyCoroutineContext, listBuildings = { result }) { ASSET }.catalog()
-        }
+    private fun direct(result: ServerReply<BuildingList>): BuildingCatalog =
+        runBlocking { BuildingCatalogRepository(null, EmptyCoroutineContext, { result }) { ASSET }.catalog() }
 
     private fun fixture(reply: ServerReply<ServerBuildings>): BuildingCatalog =
-        runBlocking { serverBuildingCatalog(EmptyCoroutineContext, list = { reply }) { ASSET }.catalog() }
+        runBlocking { BuildingCatalogRepository(EmptyCoroutineContext, { reply }) { ASSET }.catalog() }
 
     private companion object {
         val ORIGIN = GeoPoint(longitude = 0.0, latitude = 0.0)
@@ -86,16 +80,6 @@ class ServerRepositoriesTest {
                             ),
                         ),
                     ),
-            )
-        val ENTRANCE =
-            Entrance(
-                id = "node/1",
-                buildingSymbol = SYMBOL,
-                name = null,
-                isMain = true,
-                type = null,
-                location = ORIGIN,
-                marking = EntranceMarking.NO_DATA,
             )
     }
 }

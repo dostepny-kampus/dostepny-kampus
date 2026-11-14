@@ -5,11 +5,11 @@
  */
 package io.github.dostepnykampus.core.data.buildings
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.network.ApiBuilding
-import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingList
 import io.github.dostepnykampus.core.network.DetailLevel
 import kotlinx.coroutines.CompletableDeferred
@@ -21,7 +21,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.yield
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -34,7 +33,7 @@ class MapStreamConcurrencyTest {
     private val calls = AtomicInteger()
     private val gate = CompletableDeferred<Unit>()
     private var isFirstCallFailing = false
-    private val repository = BuildingCatalogRepository(EmptyCoroutineContext, ::server) { FILE_JSON }
+    private val repository = BuildingCatalogRepository(null, EmptyCoroutineContext, ::server) { FILE_JSON }
 
     /** Wiersz: mapa zbiera katalog, a inny odbiorca woła catalog() → jedno zapytanie do serwera. Wymagania: NFR-10 */
     @Test
@@ -76,13 +75,13 @@ class MapStreamConcurrencyTest {
      */
     @Test
     fun nfr10_map_sees_late_refresh() {
-        val offline = ApiResult.NetworkError(IOException("brak"))
-        val answers = ArrayDeque<ApiResult<BuildingList>>(listOf(offline, LIST))
-        val ask: suspend () -> ApiResult<BuildingList> = {
+        val offline = ServerReply.Offline
+        val answers = ArrayDeque<ServerReply<BuildingList>>(listOf(offline, LIST))
+        val ask: suspend () -> ServerReply<BuildingList> = {
             calls.incrementAndGet()
             answers.removeFirst()
         }
-        val late = BuildingCatalogRepository(EmptyCoroutineContext, ask) { FILE_JSON }
+        val late = BuildingCatalogRepository(null, EmptyCoroutineContext, ask) { FILE_JSON }
         inRun {
             val seen = mutableListOf<BuildingCatalog>()
             val map = launch { late.catalogUpdates().collect { seen += it } }
@@ -115,11 +114,11 @@ class MapStreamConcurrencyTest {
         }
     }
 
-    private suspend fun server(): ApiResult<BuildingList> {
+    private suspend fun server(): ServerReply<BuildingList> {
         val mine = calls.incrementAndGet()
         gate.await()
         val isFailing = isFirstCallFailing && mine == 1 && calls.get() > 1
-        return if (isFailing) ApiResult.NetworkError(IOException("brak")) else LIST
+        return if (isFailing) ServerReply.Offline else LIST
     }
 
     private suspend fun settle() = repeat(YIELDS) { yield() }
@@ -134,7 +133,7 @@ class MapStreamConcurrencyTest {
                 """{"type":"Feature","properties":{"kind":"building","symbols":["C-1"],"osm_id":"way/1"},""" +
                 """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
         val LIST =
-            ApiResult.Success(
+            ServerReply.Ok(
                 BuildingList(
                     source = "© serwer",
                     buildings =

@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.buildings
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.BUILDING_CACHE_SINGLE_ROW
 import io.github.dostepnykampus.core.database.BuildingCacheDao
 import io.github.dostepnykampus.core.database.BuildingCacheEntity
@@ -13,7 +14,6 @@ import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.network.ApiBuilding
-import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingList
 import io.github.dostepnykampus.core.network.DetailLevel
 import kotlinx.coroutines.runBlocking
@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -83,7 +82,7 @@ class BuildingCatalogCacheTest {
     private fun catalog(): BuildingCatalog =
         runBlocking { BuildingCatalogRepository(EmptyCoroutineContext) { assetJson() }.catalog() }
 
-    private fun repository(remote: (suspend () -> ApiResult<BuildingList>)?): BuildingCatalogRepository =
+    private fun repository(remote: (suspend () -> ServerReply<BuildingList>)?): BuildingCatalogRepository =
         BuildingCatalogRepository(
             ioContext = EmptyCoroutineContext,
             listBuildings = remote,
@@ -92,9 +91,9 @@ class BuildingCatalogCacheTest {
             nowMillis = { 42L },
         )
 
-    private fun listed(vararg symbols: String): ApiResult<BuildingList> {
+    private fun listed(vararg symbols: String): ServerReply<BuildingList> {
         val buildings = symbols.map { symbol -> apiBuilding(symbol) }
-        return ApiResult.Success(BuildingList(source = SERVER_SOURCE, buildings = buildings))
+        return ServerReply.Ok(BuildingList(source = SERVER_SOURCE, buildings = buildings))
     }
 
     private fun apiBuilding(symbol: String): ApiBuilding =
@@ -112,7 +111,7 @@ class BuildingCatalogCacheTest {
     private companion object {
         const val SERVER_SOURCE = "© serwer"
         const val ASSET_SOURCE = "© OpenStreetMap contributors"
-        val OFFLINE = ApiResult.NetworkError(IOException("brak sieci"))
+        val OFFLINE = ServerReply.Offline
 
         const val BUILDING_FEATURE =
             """{"type":"Feature","properties":{"kind":"building","symbols":["A-2"],"display_name":"Stary A-2",""" +

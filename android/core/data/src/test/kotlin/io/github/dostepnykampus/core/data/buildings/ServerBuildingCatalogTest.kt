@@ -5,12 +5,12 @@
  */
 package io.github.dostepnykampus.core.data.buildings
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.network.ApiBuilding
-import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.BuildingList
 import io.github.dostepnykampus.core.network.DetailLevel
 import kotlinx.coroutines.CompletableDeferred
@@ -38,7 +38,7 @@ class ServerBuildingCatalogTest {
         val outline = square(SERVER_SPAN)
         val merged =
             catalog {
-                ApiResult.Success(
+                ServerReply.Ok(
                     BuildingList(
                         source = SERVER_SOURCE,
                         buildings =
@@ -59,19 +59,19 @@ class ServerBuildingCatalogTest {
 
     @Test
     fun us1_network_error_uses_asset() {
-        val failed = catalog { ApiResult.NetworkError(IOException("brak sieci")) }
+        val failed = catalog { ServerReply.Offline }
         assertEquals(catalog(), failed)
     }
 
     @Test
     fun us1_server_error_uses_asset() {
-        val failed = catalog { ApiResult.ServerError(SERVER_ERROR) }
+        val failed = catalog { ServerReply.Fault(SERVER_ERROR) }
         assertEquals(catalog(), failed)
     }
 
     @Test
     fun us1_empty_list_uses_asset() {
-        val empty = catalog { ApiResult.Success(BuildingList(source = SERVER_SOURCE, buildings = emptyList())) }
+        val empty = catalog { ServerReply.Ok(BuildingList(source = SERVER_SOURCE, buildings = emptyList())) }
         assertEquals(catalog(), empty)
     }
 
@@ -146,12 +146,12 @@ class ServerBuildingCatalogTest {
     @Test
     fun nfr10_retry_waits_for_read() {
         val gate = CompletableDeferred<Unit>()
-        val server: suspend () -> ApiResult<BuildingList> = {
+        val server: suspend () -> ServerReply<BuildingList> = {
             serverCalls.incrementAndGet()
             gate.await()
             listed("A-2", "N-1")
         }
-        val repository = BuildingCatalogRepository(EmptyCoroutineContext, server) { assetJson() }
+        val repository = BuildingCatalogRepository(null, EmptyCoroutineContext, server) { assetJson() }
         runBlocking {
             val opened = launch { repository.catalog() }
             val retried = launch { repository.refresh() }
@@ -164,17 +164,17 @@ class ServerBuildingCatalogTest {
         }
     }
 
-    private fun catalog(remote: (suspend () -> ApiResult<BuildingList>)? = null): BuildingCatalog =
-        runBlocking { BuildingCatalogRepository(EmptyCoroutineContext, remote) { assetJson() }.catalog() }
+    private fun catalog(remote: (suspend () -> ServerReply<BuildingList>)? = null): BuildingCatalog =
+        runBlocking { BuildingCatalogRepository(null, EmptyCoroutineContext, remote) { assetJson() }.catalog() }
 
-    private fun repository(vararg answers: () -> ApiResult<BuildingList>): BuildingCatalogRepository {
+    private fun repository(vararg answers: () -> ServerReply<BuildingList>): BuildingCatalogRepository {
         val next = answers.iterator()
-        val server: suspend () -> ApiResult<BuildingList> = { next.next()().also { serverCalls.incrementAndGet() } }
-        return BuildingCatalogRepository(EmptyCoroutineContext, server) { assetJson() }
+        val server: suspend () -> ServerReply<BuildingList> = { next.next()().also { serverCalls.incrementAndGet() } }
+        return BuildingCatalogRepository(null, EmptyCoroutineContext, server) { assetJson() }
     }
 
-    private fun listed(vararg symbols: String): ApiResult<BuildingList> =
-        ApiResult.Success(
+    private fun listed(vararg symbols: String): ServerReply<BuildingList> =
+        ServerReply.Ok(
             BuildingList(
                 source = SERVER_SOURCE,
                 buildings =
@@ -229,6 +229,6 @@ class ServerBuildingCatalogTest {
         const val PENDING_YIELDS = 5
         const val POLYGON = """{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}"""
         const val POINT = """{"type":"Point","coordinates":[0,0]}"""
-        val OFFLINE = ApiResult.NetworkError(IOException("brak sieci"))
+        val OFFLINE = ServerReply.Offline
     }
 }
