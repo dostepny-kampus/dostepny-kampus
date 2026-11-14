@@ -50,6 +50,10 @@ class SubmissionSyncWorkerTest {
             assertEquals(listOf(SENT_ID), store.rows.map { it.submission.id })
         }
 
+    /**
+     * Scenariusz (częściowo, przykład: nie potwierdzi odbioru zgłoszenia): zgloszenia-zbierajacego.feature:
+     *   Status „wysłane” dopiero po potwierdzeniu odbioru przez serwer.
+     */
     @ParameterizedTest
     @ValueSource(ints = [500, 503])
     fun `awaria 5xx ponawia zadanie`(code: Int): Unit =

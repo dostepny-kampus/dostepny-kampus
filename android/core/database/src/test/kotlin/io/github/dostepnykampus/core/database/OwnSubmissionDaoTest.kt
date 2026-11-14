@@ -42,7 +42,12 @@ class OwnSubmissionDaoTest {
         database.close()
     }
 
-    /** Wiersz: C3 po odświeżeniu → status, powód i wersja z serwera, stan wysyłki zostaje. Wymagania: US8.2, BR-16 */
+    /**
+     * Wiersz: C3 po odświeżeniu → status, powód i wersja z serwera, stan wysyłki zostaje.
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zgłoszenie odrzucone pokazuje powód odrzucenia
+     *
+     * Wymagania: US8.2, BR-16
+     */
     @Test
     fun us8_2_server_status_saved() =
         runTest {
@@ -83,6 +88,7 @@ class OwnSubmissionDaoTest {
             assertEquals(OwnSubmissionState.LOCAL, row.state)
         }
 
+    /** Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Najnowsze zgłoszenia są na górze listy. */
     @Test
     fun us8_newest_first() =
         runTest {

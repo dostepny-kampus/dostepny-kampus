@@ -174,6 +174,7 @@ class MySubmissionsViewModelTest {
             assertEquals(2, refreshes.size)
         }
 
+    /** Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zgłoszenie odrzucone pokazuje powód odrzucenia. */
     @Test
     fun `us8_2 status z serwera`() =
         runTest(dispatcher) {
