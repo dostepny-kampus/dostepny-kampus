@@ -9,14 +9,12 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.network.ApiResult
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.io.IOException
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Sprzątanie przy starcie usuwa tylko pliki zdjęć, których nie potrzebuje kolejka ani odtworzony szkic. */
@@ -33,7 +31,7 @@ class OrphanPhotosTest {
                 SubmissionServer(
                     create = { _, _ -> ServerReply.Offline },
                     putPhoto = { _, _, _ -> ServerReply.Offline },
-                    update = { _, _, _ -> ApiResult.NetworkError(IOException()) },
+                    update = { _, _, _ -> ServerReply.Offline },
                 ),
             stamps = SubmissionStamps(newId = { "s-sprzatanie" }, nowMillis = { NOW }),
         )

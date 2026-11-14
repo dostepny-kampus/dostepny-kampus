@@ -5,14 +5,13 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.SubmissionEdit
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -111,7 +110,7 @@ class EditBaseVersionTest {
                     putPhoto = { _, _, _ -> store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit) },
                     update = { id, version, content ->
                         edits.add(id to version)
-                        ApiResult.Success(SubmissionEdit.Saved(server(id, content)))
+                        ServerReply.Ok(ServerEdit.Saved(server(id, content)))
                     },
                 ),
             stamps = SubmissionStamps(newId = { ID }),

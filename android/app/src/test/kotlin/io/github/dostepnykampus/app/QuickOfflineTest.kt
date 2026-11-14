@@ -30,7 +30,6 @@ import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import io.github.dostepnykampus.feature.capture.quick.QuickLookup
 import io.github.dostepnykampus.feature.capture.quick.QuickReport
@@ -135,7 +134,7 @@ class QuickOfflineTest {
                         ServerReply.Offline
                     },
                     putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, _, _ -> ApiResult.NotFound },
+                    update = { _, _, _ -> ServerReply.Missing },
                 ),
         )
 

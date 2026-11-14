@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.OwnSubmissionState
@@ -13,8 +14,6 @@ import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.SubmissionEdit
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -253,7 +252,7 @@ class OwnHistoryTest {
                         photoAttempts++
                         store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit)
                     },
-                    update = { id, _, content -> ApiResult.Success(SubmissionEdit.Saved(server(id, content))) },
+                    update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
             history = history,

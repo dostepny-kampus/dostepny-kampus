@@ -12,7 +12,6 @@ import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
-import io.github.dostepnykampus.core.network.ApiResult
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -60,7 +59,7 @@ class OwnListTest {
                 SubmissionServer(
                     create = { id, content -> ServerReply.Ok(server(id, content)) },
                     putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, _, _ -> ApiResult.NotFound },
+                    update = { _, _, _ -> ServerReply.Missing },
                 ),
             stamps = SubmissionStamps(newId = { ids.removeFirst() }),
             history = history,
