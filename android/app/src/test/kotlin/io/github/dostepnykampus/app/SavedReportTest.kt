@@ -13,10 +13,8 @@ import androidx.compose.ui.test.onNodeWithText
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
-import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
-import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import io.github.dostepnykampus.core.model.BarrierType
@@ -39,9 +37,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
-import java.io.File
 import javax.inject.Inject
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * „Zapisz” na C2 aż do karty na C3: formularz, zapis przez kolejkę w bazie z grafu Hilt, historia i lista
@@ -126,26 +122,9 @@ class SavedReportTest {
         compose.setContent { OwnListScreen(viewModel) }
     }
 
-    private fun queue(): SubmissionQueue =
-        SubmissionQueue(
-            store = store,
-            ioContext = EmptyCoroutineContext,
-            server =
-                SubmissionServer(
-                    create = { _, _ ->
-                        sent++
-                        ServerReply.Offline
-                    },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, _, _ -> ServerReply.Missing },
-                ),
-        )
+    private fun queue(): SubmissionQueue = offlineQueue(store) { sent++ }
 
-    private fun photo(): PendingPhotoDraft {
-        val file = File(app.cacheDir, "p-lokalne.jpg")
-        file.writeBytes(byteArrayOf(1, 2, 3))
-        return PendingPhotoDraft(photoId = "p-lokalne", path = file.path)
-    }
+    private fun photo(): PendingPhotoDraft = photoDraft(app.cacheDir, "p-lokalne")
 }
 
 private const val WAIT_MS = 5_000L

@@ -17,10 +17,8 @@ import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.BuildingFloors
 import io.github.dostepnykampus.core.data.network.NetworkStatus
-import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
-import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
@@ -47,7 +45,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
-import java.io.File
 import javax.inject.Inject
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -123,26 +120,9 @@ class QuickOfflineTest {
             buildingLookup = BuildingLookup(catalog, EmptyCoroutineContext),
         )
 
-    private fun queue(): SubmissionQueue =
-        SubmissionQueue(
-            store = store,
-            ioContext = EmptyCoroutineContext,
-            server =
-                SubmissionServer(
-                    create = { _, _ ->
-                        sent++
-                        ServerReply.Offline
-                    },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, _, _ -> ServerReply.Missing },
-                ),
-        )
+    private fun queue(): SubmissionQueue = offlineQueue(store) { sent++ }
 
-    private fun photo(): PendingPhotoDraft {
-        val file = File(app.cacheDir, "p-szybkie.jpg")
-        file.writeBytes(byteArrayOf(1, 2, 3))
-        return PendingPhotoDraft(photoId = "p-szybkie", path = file.path)
-    }
+    private fun photo(): PendingPhotoDraft = photoDraft(app.cacheDir, "p-szybkie")
 }
 
 private const val WAIT_MS = 5_000L
