@@ -79,6 +79,7 @@ internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
  * @property ink linia granicy terenu (`tusz`)
  * @property dimmed wypełnienie budynków obok zaznaczonego (`budynek`)
  * @property dimmedOutline kontur budynków obok zaznaczonego (`budynek_kontur`)
+ * @property plan kolory planu piętra; bez nich plan ma barwy budynków
  */
 data class MapStyleColors(
     val land: String,
@@ -89,6 +90,15 @@ data class MapStyleColors(
     val ink: String = buildingOutline,
     val dimmed: String = building,
     val dimmedOutline: String = buildingOutline,
+    val plan: PlanColors =
+        PlanColors(
+            classroom = building,
+            corridor = land,
+            other = dimmed,
+            elevator = building,
+            toilet = land,
+            wall = buildingOutline,
+        ),
 )
 
 /**
@@ -132,6 +142,7 @@ private fun sources(data: CampusMapData, bounds: CampusBounds?, look: SelectionL
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
         bounds?.let { put(key = AREA_SOURCE, element = geoJsonSource(featureCollection(areaFeatures(it)))) }
         put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
+        put(key = PLAN_SOURCE, element = geoJsonSource(featureCollection(emptyList())))
     }
 
 private fun layers(look: SelectionLook, isBounded: Boolean, colors: MapStyleColors): JsonArray =
@@ -152,6 +163,7 @@ private fun layers(look: SelectionLook, isBounded: Boolean, colors: MapStyleColo
                 paint(OUTLINES_COLOR to look.outlinesColor, "line-width" to JsonPrimitive(OUTLINE_WIDTH))
             },
         )
+        planLayers(colors.plan).forEach { add(it) }
         add(selectedLayer(look.selectedFilter, colors))
         add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
         barrierLayers().forEach { add(it) }

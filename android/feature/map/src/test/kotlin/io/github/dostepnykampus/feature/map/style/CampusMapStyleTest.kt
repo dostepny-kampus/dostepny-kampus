@@ -32,7 +32,7 @@ class CampusMapStyleTest {
     @Test
     fun drawsOutlinesOverBasemap() {
         val layers = style.array("layers").map { it.jsonObject }
-        val below = listOf("lad", "osm", BUILDINGS_LAYER, "kontury", SELECTED_LAYER, ENTRANCES_LAYER)
+        val below = listOf("lad", "osm", BUILDINGS_LAYER, "kontury") + PLAN + listOf(SELECTED_LAYER, ENTRANCES_LAYER)
         val barriers = listOf(BARRIER_WORDS_LAYER, BARRIERS_LAYER)
         val above = listOf("podpisy", CHOSEN_BARRIER_LAYER, OUTSIDE_LAYER, EDGE_LAYER)
         val expected = below + barriers + above + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
@@ -142,12 +142,12 @@ class CampusMapStyleTest {
     @Test
     fun ordersOptionalLayers() {
         val bare = Json.parseToJsonElement(styled(MapSelection()))
-        val base = listOf("lad", "osm", BUILDINGS_LAYER, "kontury")
+        val base = listOf("lad", "osm", BUILDINGS_LAYER, "kontury") + PLAN
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
         val pin = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
         val bareIds = bare.jsonObject.array("layers").map { it.jsonObject.text("id") }
         assertEquals(base + SELECTED_LAYER + marks + pin, bareIds)
-        val sources = setOf("osm", "budynki", "podpisy", "wejscia", "bariery", CHOSEN_SOURCE)
+        val sources = setOf("osm", "budynki", "podpisy", "wejscia", "bariery", CHOSEN_SOURCE, PLAN_SOURCE)
         assertEquals(sources, bare.jsonObject.obj("sources").keys)
         val entrance = SelectedEntrance(id = "w1", location = STYLE_ORIGIN, label = "Główne", buildingSymbol = "C-13")
         val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
@@ -166,3 +166,5 @@ class CampusMapStyleTest {
 
     private fun JsonObject.text(key: String): String = getValue(key).jsonPrimitive.content
 }
+
+private val PLAN = listOf(PLAN_ROOMS_LAYER, PLAN_WALLS_LAYER, PLAN_OUTLINE_LAYER)
