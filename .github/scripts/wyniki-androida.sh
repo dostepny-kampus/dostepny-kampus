@@ -5,7 +5,7 @@
 set -euo pipefail
 
 # Wymagany check `budowanie`: zielony tylko, gdy testy, APK, emulatory i analiza zależności zakończyły się sukcesem.
-# Wejście ze zmiennych środowiskowych: ZMIANY, WYNIKI (testy apk emulator analiza-zaleznosci). Po scaleniu (push) check nie działa:
+# Wejście ze zmiennych środowiskowych: ZMIANY, WYNIKI (apk, emulator, przy zmianie aplikacji także testy i analiza-zaleznosci). Po scaleniu (push) check nie działa:
 # commit sprawdziła grupa kolejki, a zadanie po scaleniu tylko przekłada cache.
 echo "zmiany: ${ZMIANY}; testy, apk, emulator, analiza zależności: ${WYNIKI}"
 if [[ $ZMIANY != success && $ZMIANY != skipped ]]; then
