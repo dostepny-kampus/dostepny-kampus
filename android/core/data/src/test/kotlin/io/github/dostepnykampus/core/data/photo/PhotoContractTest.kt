@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.data.photos
+package io.github.dostepnykampus.core.data.photo
 
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import org.junit.jupiter.api.Assertions.assertThrows

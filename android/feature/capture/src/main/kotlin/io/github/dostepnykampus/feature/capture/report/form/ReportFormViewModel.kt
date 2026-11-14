@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.dostepnykampus.core.data.buildings.BuildingFloors
+import io.github.dostepnykampus.core.data.building.BuildingFloors
 import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submissions.SaveRefusal

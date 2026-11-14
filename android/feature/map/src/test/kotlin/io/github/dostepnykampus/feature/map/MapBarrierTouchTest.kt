@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import io.github.dostepnykampus.core.data.barriers.AcceptedBarrier
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint

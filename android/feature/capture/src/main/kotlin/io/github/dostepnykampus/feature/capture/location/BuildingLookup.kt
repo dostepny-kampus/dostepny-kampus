@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture.location
 
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.di.ComputeContext
 import io.github.dostepnykampus.core.model.Building
 import kotlinx.coroutines.flow.first

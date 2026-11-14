@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.data.barriers
+package io.github.dostepnykampus.core.data.barrier
 
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.cache.BARRIER_CACHE_SINGLE_ROW

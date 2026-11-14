@@ -21,7 +21,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
-import io.github.dostepnykampus.core.data.barriers.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Building

@@ -5,9 +5,9 @@
  */
 package io.github.dostepnykampus.feature.map
 
-import io.github.dostepnykampus.core.data.barriers.AcceptedBarrier
-import io.github.dostepnykampus.core.data.barriers.AcceptedBarriers
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.server.ServerBuildings
 import io.github.dostepnykampus.core.data.server.ServerReply

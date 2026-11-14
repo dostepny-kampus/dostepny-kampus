@@ -28,7 +28,7 @@ import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.app.navigation.sheetCard
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapView

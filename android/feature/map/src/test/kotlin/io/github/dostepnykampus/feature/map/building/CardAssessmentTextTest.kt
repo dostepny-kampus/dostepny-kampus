@@ -9,8 +9,8 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
-import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.ServerEntrancesRepository
 import io.github.dostepnykampus.core.data.server.ServerCard
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme

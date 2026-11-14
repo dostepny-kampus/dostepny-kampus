@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture.report.form
 
-import io.github.dostepnykampus.core.data.buildings.BuildingFloors
+import io.github.dostepnykampus.core.data.building.BuildingFloors
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Floor

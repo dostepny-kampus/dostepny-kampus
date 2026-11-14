@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.data
 
-import io.github.dostepnykampus.core.data.barriers.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.geo.toPosition
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put

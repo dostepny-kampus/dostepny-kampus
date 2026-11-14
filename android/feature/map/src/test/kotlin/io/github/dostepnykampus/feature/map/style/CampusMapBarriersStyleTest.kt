@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
-import io.github.dostepnykampus.core.data.barriers.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint

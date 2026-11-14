@@ -11,8 +11,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
-import io.github.dostepnykampus.core.data.buildings.ServerEntrances
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.Entrance

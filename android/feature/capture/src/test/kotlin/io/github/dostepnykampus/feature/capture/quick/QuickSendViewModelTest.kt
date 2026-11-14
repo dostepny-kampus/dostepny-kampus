@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.feature.capture.quick
 
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
-import io.github.dostepnykampus.core.data.buildings.BuildingFloors
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.BuildingFloors
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.location.LocationSwitch

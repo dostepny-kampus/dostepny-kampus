@@ -9,9 +9,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.dostepnykampus.core.data.barriers.AcceptedBarriers
-import io.github.dostepnykampus.core.data.barriers.BarrierListCopy
-import io.github.dostepnykampus.core.data.barriers.ServerAcceptedBarriers
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
+import io.github.dostepnykampus.core.data.barrier.BarrierListCopy
+import io.github.dostepnykampus.core.data.barrier.ServerAcceptedBarriers
 import io.github.dostepnykampus.core.data.server.toReply
 import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi

@@ -79,8 +79,8 @@ import io.github.dostepnykampus.app.navigation.sheetCard
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
-import io.github.dostepnykampus.core.data.buildings.BUILDINGS_ASSET
-import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.BUILDINGS_ASSET
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.ConnectivityNetworkStatus
 import io.github.dostepnykampus.core.data.network.NetworkStatus
