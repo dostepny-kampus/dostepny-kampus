@@ -40,7 +40,7 @@ internal fun Json.encodeSubmissionUpdate(version: Int, content: SubmissionConten
  * @param body tekst odpowiedzi
  */
 internal fun Json.decodeSubmission(body: String): Submission =
-    withoutNulls().decodeFromString(SubmissionDto.serializer(), body).toModel()
+    withoutNulls.decodeFromString(SubmissionDto.serializer(), body).toModel()
 
 /**
  * Lista zgłoszeń z odpowiedzi serwera; zła treść jak w [decodeSubmission].
@@ -48,7 +48,7 @@ internal fun Json.decodeSubmission(body: String): Submission =
  * @param body tekst odpowiedzi z tablicą `Submission`
  */
 internal fun Json.decodeSubmissions(body: String): List<Submission> =
-    withoutNulls().decodeFromString(ListSerializer(SubmissionDto.serializer()), body).map(SubmissionDto::toModel)
+    withoutNulls.decodeFromString(ListSerializer(SubmissionDto.serializer()), body).map(SubmissionDto::toModel)
 
 /**
  * Zgłoszenie z serwera z odpowiedzi 409 (`VersionConflictProblem`). Brak `serverSubmission`
@@ -57,14 +57,13 @@ internal fun Json.decodeSubmissions(body: String): List<Submission> =
  * @param body tekst odpowiedzi
  */
 internal fun Json.decodeConflict(body: String): Submission =
-    withoutNulls().decodeFromString(VersionConflictDto.serializer(), body).serverSubmission.toModel()
+    withoutNulls.decodeFromString(VersionConflictDto.serializer(), body).serverSubmission.toModel()
 
-private fun Json.withoutNulls(): Json = Json(from = this) { explicitNulls = false }
+private val Json.withoutNulls: Json get() = Json(from = this) { explicitNulls = false }
 
-/** `SubmissionContent` z jednym polem nadanym poza treścią, jak `allOf` schematów żądań w kontrakcie. */
 private fun Json.encodeWith(content: SubmissionContent, extra: Pair<String, JsonPrimitive>): String =
     JsonObject(
-        withoutNulls().encodeToJsonElement(SubmissionContentJson.serializer(), content.toJson()).jsonObject + extra,
+        withoutNulls.encodeToJsonElement(SubmissionContentJson.serializer(), content.toJson()).jsonObject + extra,
     ).toString()
 
 private fun SubmissionContent.toJson(): SubmissionContentJson =
@@ -75,7 +74,7 @@ private fun SubmissionContent.toJson(): SubmissionContentJson =
         accuracyMeters = accuracyMeters,
         manualCorrection = isManualCorrection,
         buildingSymbol = buildingSymbol,
-        floor = floor?.toJson(),
+        floor = floor?.let { SubmissionFloorJson(it.floorId, it.number, it.isMezzanine) },
         barrierGroup = barrierGroup?.into(),
         barrierType = barrierType,
         severity = severity,
@@ -86,13 +85,9 @@ private fun SubmissionContent.toJson(): SubmissionContentJson =
         entranceMarking = entranceMarking?.into(),
     )
 
-/** Flaga z kontraktu w modelu: `true` albo `null`, bo `false` to wartość domyślna pola nieobecnego. */
-private fun Boolean?.flag(): Boolean? = takeIf { it == true }
+private fun Boolean?.trueOrNull(): Boolean? = takeIf { it == true }
 
 private inline fun <reified T : Enum<T>> Enum<*>.into(): T = enumValueOf<T>(name)
-
-private fun SubmissionFloor.toJson(): SubmissionFloorJson =
-    SubmissionFloorJson(floorId = floorId, number = number, mezzanine = isMezzanine)
 
 private fun SubmissionDto.toModel(): Submission =
     Submission(
@@ -106,15 +101,15 @@ private fun SubmissionDto.toModel(): Submission =
                 location = location.toModel(),
                 photoIds = photoIds,
                 accuracyMeters = accuracyMeters,
-                isManualCorrection = manualCorrection.flag(),
+                isManualCorrection = manualCorrection.trueOrNull(),
                 buildingSymbol = buildingSymbol,
-                floor = floor?.let { SubmissionFloor(it.floorId, it.number, it.mezzanine.flag()) },
+                floor = floor?.let { SubmissionFloor(it.floorId, it.number, it.mezzanine.trueOrNull()) },
                 barrierGroup = barrierGroup?.into(),
                 barrierType = barrierType,
                 severity = severity,
                 description = description,
                 replacesSubmissionId = replacesSubmissionId,
-                isBarrierRemoved = barrierRemoved.flag(),
+                isBarrierRemoved = barrierRemoved.trueOrNull(),
                 entranceId = entranceId,
                 entranceMarking = entranceMarking?.into(),
             ),

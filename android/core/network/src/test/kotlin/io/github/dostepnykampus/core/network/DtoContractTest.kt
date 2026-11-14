@@ -47,8 +47,9 @@ class DtoContractTest {
     private val json = NetworkModule.json()
 
     @Test
-    fun d1_no_hand_written_serializable_classes() {
-        assertEquals(emptyList<String>(), serializableClasses(), "ręczna klasa @Serializable zamiast modelu z kontraktu")
+    fun d1_no_hand_written_dtos() {
+        val found = serializableClasses()
+        assertEquals(emptyList<String>(), found, "ręczna klasa @Serializable zamiast modelu z kontraktu")
     }
 
     @Test
@@ -135,7 +136,9 @@ class DtoContractTest {
                 .filter { it.endsWith(".class") && '$' !in it }
                 .map { it.removeSuffix(".class").replace(oldChar = '/', newChar = '.') }
                 .filterNot { it.startsWith(GENERATED_PACKAGE) }
-                .filter { Class.forName(it, false, javaClass.classLoader).isAnnotationPresent(Serializable::class.java) }
+                .map { name -> Class.forName(name, false, javaClass.classLoader) }
+                .filter { type -> type.isAnnotationPresent(Serializable::class.java) }
+                .map { type -> type.name }
                 .toList()
         }
     }

@@ -40,17 +40,17 @@ class SubmissionFlagsTest {
     }
 
     @Test
-    fun us6_3_correction_absent_is_false() {
+    fun us6_3_correction_absent_false() {
         assertAbsentMeansFalse(name = "manualCorrection") { bare(flag = """"manualCorrection":$it,""") }
     }
 
     @Test
-    fun us8_4_removed_absent_is_false() {
+    fun us8_4_removed_absent_false() {
         assertAbsentMeansFalse(name = "barrierRemoved") { bare(flag = """"barrierRemoved":$it,""") }
     }
 
     @Test
-    fun us7_2_mezzanine_absent_is_false() {
+    fun us7_2_mezzanine_absent_false() {
         assertAbsentMeansFalse(name = "mezzanine", scope = { it.getValue("floor").jsonObject }) {
             bare(floor = ""","mezzanine":$it""")
         }
