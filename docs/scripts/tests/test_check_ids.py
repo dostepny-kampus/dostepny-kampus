@@ -202,7 +202,7 @@ class CoverageTest(unittest.TestCase):
     def test_coverage_page_lists_counts_and_tests_of_each_scenario(self) -> None:
         corpus = check_ids.collect(DATA / "brak", DATA / "scenariusze", DATA / "android-poprawne")
         rows = table_rows(check_ids.render_coverage(corpus))
-        self.assertEqual(rows[:2], [["Aplikacja", "5", "1", "1"], ["Serwer", "0", "0", "0"]])
+        self.assertEqual(rows[:2], [["Aplikacja", "5", "1", "1", "0"], ["Serwer", "0", "0", "0", "0"]])
         by_name = {r[1]: (r[0], r[4], r[5]) for r in rows[2:]}
         self.assertEqual(len(by_name), 7)
         both = "`PoprawneTest.calosc`<br>`PoprawneTest.wyszukanie`"
@@ -303,17 +303,17 @@ class LayersTest(unittest.TestCase):
 
     def test_summary_counts_each_layer_separately(self) -> None:
         rows = table_rows(check_ids.render_coverage(layered(layer_marker("W aplikacji", "a"))))
-        self.assertEqual(rows[:2], [["Aplikacja", "1", "0", "2"], ["Serwer", "0", "0", "2"]])
+        self.assertEqual(rows[:2], [["Aplikacja", "1", "0", "2", "0"], ["Serwer", "0", "0", "2", "0"]])
         self.assertEqual([r[3] for r in rows[2:]], ["aplikacja", "serwer", "aplikacja, serwer", "—"])
 
     def test_two_layer_scenario_with_app_test_only_is_partial(self) -> None:
         rows = table_rows(check_ids.render_coverage(layered(layer_marker("W obu", "o"))))
         self.assertEqual({r[1]: r[5] for r in rows[2:]}["W obu"], "częściowo")
-        self.assertEqual(rows[:2], [["Aplikacja", "1", "0", "2"], ["Serwer", "0", "0", "2"]])
+        self.assertEqual(rows[:2], [["Aplikacja", "1", "0", "2", "0"], ["Serwer", "0", "0", "2", "0"]])
 
     def test_scenario_run_by_server_suite_is_full_on_server(self) -> None:
         rows = table_rows(check_ids.render_coverage(layered("", SUITE)))
-        self.assertEqual(rows[:2], [["Aplikacja", "0", "0", "3"], ["Serwer", "2", "0", "0"]])
+        self.assertEqual(rows[:2], [["Aplikacja", "0", "0", "3", "0"], ["Serwer", "2", "0", "0", "0"]])
         self.assertEqual({r[1]: (r[4], r[5]) for r in rows[2:]}["Na serwerze"], ("`backend · ServerSpecs`", "pełny"))
 
     def test_two_layer_scenario_needs_app_test_and_server_suite(self) -> None:
@@ -333,9 +333,31 @@ class LayersTest(unittest.TestCase):
         rows = table_rows(check_ids.render_coverage(corpus))
         self.assertEqual({r[1]: r[5] for r in rows[2:]}["Na serwerze"], "brak")
 
+    def test_demo_scenario_without_test_is_manual_not_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as root:
+            (Path(root) / "specs").mkdir()
+            (Path(root) / "specs" / "warstwy.feature").write_text("@demo\n" + LAYERED, encoding="utf-8")
+            corpus = check_ids.collect(DATA / "brak", Path(root) / "specs", DATA / "brak", DATA / "brak")
+        rows = table_rows(check_ids.render_coverage(corpus))
+        self.assertEqual(rows[:2], [["Aplikacja", "0", "0", "0", "3"], ["Serwer", "0", "0", "0", "2"]])
+        self.assertEqual({r[1]: r[5] for r in rows[2:]}["W obu"], "ręcznie")
+        self.assertFalse([f for f in check_ids.check_tests(corpus) if "bez testu" in f.message])
+
+    def test_demo_scenario_with_test_keeps_its_coverage(self) -> None:
+        with tempfile.TemporaryDirectory() as root:
+            (Path(root) / "specs").mkdir()
+            (Path(root) / "specs" / "warstwy.feature").write_text("@demo\n" + LAYERED, encoding="utf-8")
+            (Path(root) / "android" / "src" / "test").mkdir(parents=True)
+            (Path(root) / "android" / "src" / "test" / "WarstwyTest.kt").write_text(
+                layer_marker("W aplikacji", "a"), encoding="utf-8"
+            )
+            corpus = check_ids.collect(DATA / "brak", Path(root) / "specs", Path(root) / "android", DATA / "brak")
+        rows = table_rows(check_ids.render_coverage(corpus))
+        self.assertEqual({r[1]: r[5] for r in rows[2:]}["W aplikacji"], "pełny")
+
     def test_suite_of_another_file_does_not_cover(self) -> None:
         rows = table_rows(check_ids.render_coverage(layered("", SUITE.replace("warstwy", "inne"))))
-        self.assertEqual(rows[1], ["Serwer", "0", "0", "2"])
+        self.assertEqual(rows[1], ["Serwer", "0", "0", "2", "0"])
 
     def test_android_marker_on_server_only_scenario_is_an_error(self) -> None:
         findings = check_ids.check_tests(layered(layer_marker("Na serwerze", "s")))
