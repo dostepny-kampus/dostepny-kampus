@@ -5,7 +5,7 @@
  */
 
 /**
- * Testy zapisu pięter i pomieszczeń budynku.
+ * Testy zapisu planów pięter PWr.
  *
  * @since 0.1.0
  */
