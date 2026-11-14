@@ -14,6 +14,7 @@ import io.github.dostepnykampus.core.model.building.EntranceAssessment
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
+import io.github.dostepnykampus.core.network.decodeContract
 import kotlinx.serialization.json.Json
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
@@ -77,13 +78,13 @@ public enum class DetailLevel {
 
 /** Lista budynków z tekstu odpowiedzi [body] (`BuildingList`); zła treść daje [IllegalArgumentException]. */
 internal fun Json.decodeBuildingList(body: String): BuildingList {
-    val list = decodeFromString(BuildingListJson.serializer(), body)
+    val list = decodeContract(BuildingListJson.serializer(), body)
     return BuildingList(source = list.source, buildings = list.buildings.map { it.toModel(json = this) })
 }
 
 /** Karta budynku z tekstu odpowiedzi [body] (`BuildingDetails`); zła treść jak w [decodeBuildingList]. */
 internal fun Json.decodeBuildingDetails(body: String): BuildingDetails {
-    val card = decodeFromString(BuildingDetailsJson.serializer(), body)
+    val card = decodeContract(BuildingDetailsJson.serializer(), body)
     val outline = decodeFromJsonElement(GeoAreaJson, card.outline)
     return BuildingDetails(
         building = Building(symbol = card.symbol, name = card.name, outline = outline),
@@ -94,7 +95,7 @@ internal fun Json.decodeBuildingDetails(body: String): BuildingDetails {
 
 /** Piętra z [body] (`FloorList`) od najniższego, także w innej kolejności z serwera. Wymagania: US16.1 */
 internal fun Json.decodeFloorList(body: String): FloorList {
-    val list = decodeFromString(FloorListJson.serializer(), body)
+    val list = decodeContract(FloorListJson.serializer(), body)
     return FloorList(
         source = list.source.value,
         floors = list.floors.map { Floor(id = it.id, label = it.label, order = it.order) }.sortedBy(Floor::order),
@@ -103,7 +104,7 @@ internal fun Json.decodeFloorList(body: String): FloorList {
 
 /** Podpowiedź budynku z tekstu odpowiedzi [body] (`LocateResult`); zła treść jak w [decodeBuildingList]. */
 internal fun Json.decodeLocateResult(body: String): BuildingAtPoint {
-    val result = decodeFromString(LocateResultJson.serializer(), body)
+    val result = decodeContract(LocateResultJson.serializer(), body)
     return BuildingAtPoint(buildingSymbol = result.buildingSymbol, isInsideOutline = result.insideOutline)
 }
 
