@@ -36,7 +36,7 @@ class DataApiArchitectureTest {
         assertEquals(emptyList<String>(), violations(files), HINT)
     }
 
-    /** Typ sieci w publicznej sygnaturze łamie regułę; w wewnętrznej, w konstruktorze `internal` i w `di` nie. */
+    /** Typ sieci w publicznej sygnaturze lub właściwości łamie regułę; w `internal` i w `di` nie. */
     @Test
     fun infra_data_api_rule_rejects(
         @TempDir fixtures: File,
@@ -47,7 +47,8 @@ class DataApiArchitectureTest {
         source(fixtures = fixtures, name = "In", pack = "x", body = "class In internal constructor(r: ApiResult<*>)")
         source(fixtures = fixtures, name = "Provide", pack = "di", body = "fun provide(r: ApiResult<Int>): Int = 1")
         val files = Konsist.scopeFromExternalDirectory(fixtures.absolutePath).files
-        assertEquals(listOf("$BASE.x.Open: ApiResult", "$BASE.x.read: ApiResult"), violations(files))
+        val expected = listOf("$BASE.x.Open: ApiResult", "$BASE.x.read: ApiResult", "$BASE.x.reply: ApiResult")
+        assertEquals(expected, violations(files))
     }
 
     private fun source(fixtures: File, name: String, pack: String, body: String) {
@@ -65,9 +66,11 @@ class DataApiArchitectureTest {
 
     private fun violations(files: List<KoFileDeclaration>): List<String> =
         files
+            .asSequence()
             .filter { packageOf(it).startsWith(BASE) && !isBinding(it) }
             .flatMap { file -> fileViolations(file) }
             .sorted()
+            .toList()
 
     private fun isBinding(file: KoFileDeclaration): Boolean = packageOf(file).startsWith("$BASE.di")
 
@@ -75,10 +78,9 @@ class DataApiArchitectureTest {
 
     private fun fileViolations(file: KoFileDeclaration): List<String> {
         val network =
-            file.imports
-                .map { it.name }
-                .filter { it.startsWith("$NETWORK.") }
-                .map { it.substringAfterLast('.') }
+            file.imports.mapNotNull { import ->
+                import.name.takeIf { it.startsWith("$NETWORK.") }?.substringAfterLast('.')
+            }
         val pack = packageOf(file)
         return file
             .declarations(includeNested = true, includeLocal = false)
@@ -92,9 +94,9 @@ class DataApiArchitectureTest {
     }
 
     private fun isPublic(declaration: KoBaseDeclaration): Boolean {
-        val own = (declaration as? KoVisibilityModifierProvider)?.hasPublicOrDefaultModifier ?: true
+        val isOwnPublic = (declaration as? KoVisibilityModifierProvider)?.hasPublicOrDefaultModifier != false
         val parent = (declaration as? KoContainingDeclarationProvider)?.containingDeclaration
-        return own && (parent == null || parent is KoFileDeclaration || isPublic(parent))
+        return isOwnPublic && (parent == null || parent is KoFileDeclaration || isPublic(parent))
     }
 
     private fun signatureTypes(declaration: KoBaseDeclaration): List<String> =
