@@ -122,3 +122,7 @@ dostepnykampus:
   KDocDescriptionLength:
     excludes:
       - '**/build/generated/**'
+  # Lista tylko maleje; poprawki w issue #1997.
+  AssertionMessage:
+    excludes:
+      - '**/build/generated/**'
