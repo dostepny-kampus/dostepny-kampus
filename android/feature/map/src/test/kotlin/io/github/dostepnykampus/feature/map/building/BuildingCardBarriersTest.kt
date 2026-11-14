@@ -6,9 +6,8 @@
 package io.github.dostepnykampus.feature.map.building
 
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
@@ -45,7 +44,7 @@ class BuildingCardBarriersTest {
      */
     @Test
     fun us2_2_accepted_report_on_card() {
-        compose.setContent { Card(listOf(BARRIER)) }
+        show(listOf(BARRIER))
 
         compose.onNodeWithText("Bariery w budynku").performScrollTo().assertIsDisplayed()
         val texts = listOf("Blokada", "Schody przy wejściu", "Budynek A-1 · Główne, parter", "Sprawdzone 12.11.2026")
@@ -56,7 +55,7 @@ class BuildingCardBarriersTest {
     @Test
     fun us2_3_two_reports() {
         val second = BARRIER.copy(id = "z2", type = BarrierType.STAIRS_AT_ENTRANCE, entranceId = null, floor = null)
-        compose.setContent { Card(listOf(BARRIER, second)) }
+        show(listOf(BARRIER, second))
 
         compose.onNodeWithText("Bariery w budynku").assertExists()
         compose.onAllNodesWithText("Sprawdzone 12.11.2026").assertCountEquals(2)
@@ -71,28 +70,29 @@ class BuildingCardBarriersTest {
      */
     @Test
     fun us2_4_no_reports_no_group() {
-        compose.setContent { Card(emptyList()) }
+        show(emptyList())
 
         compose.onNodeWithText("Wejścia").assertIsDisplayed()
         compose.onNodeWithText("Bariery w budynku").assertDoesNotExist()
     }
 
-    @Composable
-    private fun Card(barriers: List<AcceptedBarrier>) {
+    private fun show(barriers: List<AcceptedBarrier>) {
         val entrances = orderedEntrances(listOf(ENTRANCE))
-        DostepnyKampusTheme {
-            BuildingCardContent(
-                symbol = "A-1",
-                mode = CardMode.Expanded,
-                card = BuildingCardUiState.Ready("A-1", "Gmach Główny", entrances, barriers),
-                isOnline = true,
-                onCheckEntrances = {},
-                onShowOnMap = {},
-                onBack = {},
-                onClose = {},
-                onReportEntrance = {},
-                onRetry = {},
-            )
+        compose.setContent {
+            DostepnyKampusTheme {
+                BuildingCardContent(
+                    symbol = "A-1",
+                    mode = CardMode.Expanded,
+                    card = BuildingCardUiState.Ready("A-1", "Gmach Główny", entrances, barriers),
+                    isOnline = true,
+                    onCheckEntrances = {},
+                    onShowOnMap = {},
+                    onBack = {},
+                    onClose = {},
+                    onReportEntrance = {},
+                    onRetry = {},
+                )
+            }
         }
     }
 

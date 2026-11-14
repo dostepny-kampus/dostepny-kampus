@@ -61,8 +61,7 @@ sealed interface BuildingCardUiState {
  * Tekst karty i wejścia z pliku pokazują się od razu, bez czekania na sieć. Równolegle, w zasięgu
  * ViewModelu, karta pyta `serverEntrances` o wejścia z dniem i źródłem oznaczenia; niepusta lista
  * zastępuje wejścia z pliku. Pusta lista (brak sieci, błąd serwera, nic pobranego wcześniej) zostawia wejścia
- * z pliku bez komunikatu błędu. Tak samo karta pyta `acceptedBarriers` i zostawia zgłoszenia przyjęte tego budynku.
- * Zamknięcie karty przerywa pobieranie.
+ * z pliku bez komunikatu błędu. Zgłoszenia przyjęte budynku pobiera tak samo. Zamknięcie karty przerywa pobieranie.
  *
  * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2
  */
@@ -98,7 +97,9 @@ class BuildingCardViewModel
 
         init {
             viewModelScope.launch { fromServer.value = serverEntrances.entrances(symbol) }
-            viewModelScope.launch { barriers.value = acceptedBarriers.barriers().filter { it.buildingSymbol == symbol } }
+            viewModelScope.launch {
+                barriers.value = acceptedBarriers.barriers().filter { it.buildingSymbol == symbol }
+            }
         }
 
         /** „Spróbuj ponownie”, gdy budynku nie ma w telefonie. Wymagania: NFR-10 */
