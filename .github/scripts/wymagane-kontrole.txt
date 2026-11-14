@@ -3,6 +3,7 @@
 rozmiar main sprint
 commity main sprint
 zakazane-slowa main sprint
+literowki main sprint
 sekrety main sprint
 zaleznosci main sprint
 kontrola main sprint
