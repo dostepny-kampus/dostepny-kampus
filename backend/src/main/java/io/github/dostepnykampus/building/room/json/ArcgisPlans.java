@@ -28,7 +28,7 @@ import tools.jackson.databind.ObjectMapper;
  * Numer z samych spacji jest pusty, a brak funkcji daje „Inne”. Błąd lub przekroczenie
  * czasu daje IllegalStateException.
  *
- * <p>TODO(#1823): podłączyć klienta do zapisu importu.</p>
+ * <p>TODO(#1824): podłączyć klienta do zapisu importu.</p>
  *
  * <p>Wymagania: US16, US18, NFR-40</p>
  *
