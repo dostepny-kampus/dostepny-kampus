@@ -13,11 +13,17 @@ set -euo pipefail
 #   3. brak `continue-on-error` na poziomie joba: zamienia porażkę w sukces dla `needs` i dla całego przebiegu,
 #      więc kolejka scala zmianę z czerwonym jobem;
 #   4. `continue-on-error` kroku tylko przy zapisie raportu diagnostycznego (`actions/upload-artifact`).
-# Użycie: wymagane-joby.sh [katalog workflow] [plik listy]. Kod wyjścia: 0 = czysto, 1 = naruszenie, 2 = błąd narzędzia.
+# Dla każdego joba workflow uruchamianego przez pull_request, pull_request_target albo merge_group:
+#   5. job jest wymaganą kontrolą albo stoi w `needs` wymaganego joba; inaczej jego porażka nie zatrzymuje kolejki.
+#      Wyjątki (automatyzacja, joby tylko po scaleniu, powtórzony sygnał wymaganej kontroli) są w pliku wyjątków:
+#      `<plik workflow>/<job> <powód>`; wpis bez powodu albo dla joba, którego nie ma, to błąd.
+# Użycie: wymagane-joby.sh [katalog workflow] [plik listy] [plik wyjątków].
+# Kod wyjścia: 0 = czysto, 1 = naruszenie, 2 = błąd narzędzia.
 workflows="${1:-.github/workflows}"
 lista="${2:-$(dirname "${BASH_SOURCE[0]}")/wymagane-kontrole.txt}"
+wyjatki="${3:-$(dirname "${BASH_SOURCE[0]}")/joby-bez-kontroli.txt}"
 
-"${PYTHON:-python3}" - "$workflows" "$lista" <<'PY'
+"${PYTHON:-python3}" - "$workflows" "$lista" "$wyjatki" <<'PY'
 import pathlib
 import re
 import sys
@@ -36,6 +42,13 @@ required = {
     if line.strip() and not line.startswith("#")
 }
 found = 0
+exceptions = {}
+for line in pathlib.Path(sys.argv[3]).read_text(encoding="utf-8").splitlines():
+    if line.strip() and not line.startswith("#"):
+        entry, _, reason = line.strip().partition(" ")
+        exceptions[entry] = reason.strip()
+PR_EVENTS = {"pull_request", "pull_request_target", "merge_group"}
+seen = set()
 
 
 def report(path, job, message, condition):
@@ -46,6 +59,24 @@ def report(path, job, message, condition):
 
 for path in sorted(list(workflows.glob("*.yml")) + list(workflows.glob("*.yaml"))):
     document = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    events = document.get(True, document.get("on")) or {}
+    events = {events} if isinstance(events, str) else set(events)
+    jobs = document.get("jobs") or {}
+    consumed = set()
+    for other_key, other in jobs.items():
+        if isinstance(other, dict) and {other_key, other.get("name")} & required:
+            other_needs = other.get("needs") or []
+            consumed.update([other_needs] if isinstance(other_needs, str) else other_needs)
+    for key, job in jobs.items():
+        entry = f"{path.name}/{key}"
+        seen.add(entry)
+        if not isinstance(job, dict) or not events & PR_EVENTS or entry in exceptions:
+            continue
+        if not ({key, job.get("name")} & required) and key not in consumed:
+            found = 1
+            print(f"::error file={path},title=Job bez wymaganego odbiorcy::{key}: job sprawdza PR, ale nie jest wymagany "
+                  "i nie stoi w `needs` wymaganego joba, więc jego porażka nie zatrzymuje kolejki. Dodaj go do "
+                  "wymaganych kontroli albo do `needs` wymaganego joba; automatyzacja trafia do pliku wyjątków z powodem.")
     for key, job in (document.get("jobs") or {}).items():
         if not isinstance(job, dict):
             continue
@@ -83,7 +114,15 @@ for path in sorted(list(workflows.glob("*.yml")) + list(workflows.glob("*.yaml")
                        "wyjście jest puste i job zostanie pominięty.",
                        f"!cancelled() && (needs.{need}.result != 'success' || {own})")
 
+for entry, reason in exceptions.items():
+    if not reason:
+        found = 1
+        print(f"::error title=Wyjątek joba::{entry}: wyjątek bez powodu.")
+    if entry not in seen:
+        found = 1
+        print(f"::error title=Wyjątek joba::{entry}: wyjątek dla joba, którego nie ma; usuń wpis.")
+
 if not found:
-    print("Żaden wymagany job nie zostanie pominięty po błędzie joba, od którego zależy.")
+    print("Każdy job sprawdzający PR blokuje kolejkę, a żaden wymagany job nie zostanie pominięty po błędzie.")
 sys.exit(found)
 PY
