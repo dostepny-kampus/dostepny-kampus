@@ -26,7 +26,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.geo.BuildingHint
+import io.github.dostepnykampus.core.geo.building.BuildingHint
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.measure.PlaceChoice

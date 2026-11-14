@@ -20,8 +20,8 @@ private const val CELL_CENTER = 0.5
  * A-1, może wypaść poza kontur, a ten punkt nie. Jeden punkt na kontur daje jeden podpis także przy wielokącie
  * złożonym (reguła 4 wymagań wspólnych).
  *
- * Pole części, test „wewnątrz” i odległość do krawędzi liczy Turf, jak w [locateBuilding]. Własne jest tylko
- * przeszukanie siatki, bo spatialk 0.8.0 nie ma `pointOnFeature` ani „polylabel”.
+ * Pole, test „wewnątrz” i odległość liczy Turf jak w [io.github.dostepnykampus.core.geo.building.locateBuilding].
+ * Własne jest tylko przeszukanie siatki, bo spatialk 0.8.0 nie ma `pointOnFeature` ani „polylabel”.
  *
  * Wymagania: US1
  */

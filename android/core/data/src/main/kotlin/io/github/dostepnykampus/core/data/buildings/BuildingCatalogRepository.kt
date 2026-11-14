@@ -10,7 +10,7 @@ import io.github.dostepnykampus.core.data.server.ServerBuildings
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.server.map
 import io.github.dostepnykampus.core.database.BuildingCacheDao
-import io.github.dostepnykampus.core.geo.parseBuildingCatalog
+import io.github.dostepnykampus.core.geo.building.parseBuildingCatalog
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.network.ApiBuilding
 import io.github.dostepnykampus.core.network.BuildingList

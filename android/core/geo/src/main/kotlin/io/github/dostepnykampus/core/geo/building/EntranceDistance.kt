@@ -3,8 +3,9 @@
  * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.geo
+package io.github.dostepnykampus.core.geo.building
 
+import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.core.model.Entrance
 import io.github.dostepnykampus.core.model.GeoPoint
 import org.maplibre.spatialk.turf.measurement.distance

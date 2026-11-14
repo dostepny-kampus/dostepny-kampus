@@ -14,7 +14,7 @@ import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.di.ComputeContext
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
-import io.github.dostepnykampus.core.geo.searchBuildings
+import io.github.dostepnykampus.core.geo.building.searchBuildings
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.data.CampusMapData
