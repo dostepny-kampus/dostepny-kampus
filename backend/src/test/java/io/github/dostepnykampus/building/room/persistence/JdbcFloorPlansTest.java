@@ -14,10 +14,11 @@ import io.github.dostepnykampus.building.room.PlanRoom;
 import java.util.List;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Testy zapisu pięter i pomieszczeń bez duplikatów.
@@ -25,28 +26,18 @@ import org.springframework.jdbc.core.simple.JdbcClient;
  * @since 0.1.0
  */
 @IntegrationTest
+@Transactional
 final class JdbcFloorPlansTest {
-
-    /**
-     * Czyści dane testowe po każdym teście.
-     *
-     * @param jdbc Klient JDBC
-     */
-    @AfterEach
-    void clean(final JdbcClient jdbc) {
-        jdbc.sql("DELETE FROM rooms WHERE building_symbol LIKE 'T-%'").update();
-        jdbc.sql("DELETE FROM floors WHERE building_symbol LIKE 'T-%'").update();
-        jdbc.sql("DELETE FROM buildings WHERE symbol LIKE 'T-%'").update();
-    }
 
     /**
      * Sprawdza idempotentny zapis, aktualizację, usuwanie i wartości NULL.
      *
-     * @param plans Repozytorium planów pięter
-     * @param jdbc Klient JDBC
+     * @param context Kontekst aplikacji
      */
     @Test
-    void savesUpdatesAndDeletesWithoutDuplicates(final FloorPlans plans, final JdbcClient jdbc) {
+    void savesUpdatesAndDeletesWithoutDuplicates(final ApplicationContext context) {
+        final FloorPlans plans = context.getBean(FloorPlans.class);
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
         final String target = "T-1";
         final String other = "T-2";
         final String zero = "0";
