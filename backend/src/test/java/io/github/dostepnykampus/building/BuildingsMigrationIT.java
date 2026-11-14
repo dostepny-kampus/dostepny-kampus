@@ -22,7 +22,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
  * @since 0.1.0
  */
 @IntegrationTest
-final class BuildingsMigrationTest {
+final class BuildingsMigrationIT {
 
     @Test
     void usOneAppliesBuildingsMigration(final ApplicationContext context) {

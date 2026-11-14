@@ -20,7 +20,7 @@ import org.springframework.context.ApplicationContext;
  * @since 0.1.0
  */
 @IntegrationTest
-final class KnownBuildingsTest {
+final class KnownBuildingsIT {
 
     @Test
     void brFourteenKnowsOnlyExistingBuilding(final ApplicationContext context) {

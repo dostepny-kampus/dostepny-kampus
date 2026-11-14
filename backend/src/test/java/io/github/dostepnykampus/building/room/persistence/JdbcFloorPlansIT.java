@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @IntegrationTest
 @Transactional
-final class JdbcFloorPlansTest {
+final class JdbcFloorPlansIT {
 
     /**
      * Sprawdza idempotentny zapis, aktualizację, usuwanie i wartości NULL.
@@ -43,8 +43,8 @@ final class JdbcFloorPlansTest {
         final String zero = "0";
         final String hall = "Korytarz";
         final String func = "Sala";
-        final String small = JdbcFloorPlansTest.poly("17.001");
-        final String large = JdbcFloorPlansTest.poly("17.002");
+        final String small = JdbcFloorPlansIT.poly("17.001");
+        final String large = JdbcFloorPlansIT.poly("17.002");
         final String wkt = "MULTIPOLYGON(((17 51, 17 51.001, 17.001 51.001, 17.001 51, 17 51)))";
         new SampleBuilding(target, target, "DETAILED").wkt(jdbc, wkt);
         new SampleBuilding(other, other, "DETAILED").wkt(jdbc, wkt);

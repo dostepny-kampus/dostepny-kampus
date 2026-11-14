@@ -25,7 +25,7 @@ import tools.jackson.databind.json.JsonMapper;
  * @since 0.1.0
  */
 @IntegrationTest
-final class CurrentUserHttpTest {
+final class CurrentUserHttpIT {
 
     @Test
     void usFourteenOneReturnsAccountWithEveryRoleFromToken(final WebApplicationContext context)

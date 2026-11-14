@@ -23,7 +23,7 @@ import org.springframework.context.ApplicationContext;
  * @since 0.1.0
  */
 @ModuleTest
-final class BuildingModuleTest {
+final class BuildingModuleIT {
 
     @Test
     void buildingStartsWithoutOtherModules(final ApplicationContext context) {

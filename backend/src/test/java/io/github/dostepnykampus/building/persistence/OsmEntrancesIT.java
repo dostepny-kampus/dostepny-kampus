@@ -28,7 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class OsmEntrancesTest {
+final class OsmEntrancesIT {
 
     @Test
     void brTwentyFourMarksInaccessible(final WebApplicationContext context) {

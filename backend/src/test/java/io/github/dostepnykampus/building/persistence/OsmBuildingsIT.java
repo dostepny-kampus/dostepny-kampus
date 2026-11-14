@@ -34,7 +34,7 @@ import tools.jackson.databind.ObjectMapper;
  * @since 0.1.0
  */
 @IntegrationTest
-final class OsmBuildingsTest {
+final class OsmBuildingsIT {
 
     @Test
     void usOneMergesOutlinesOfOneSymbol(final WebApplicationContext context) {
@@ -65,7 +65,7 @@ final class OsmBuildingsTest {
     void usOneLeavesBuildingWithoutNameWhenDataHasNone(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Budynek bez nazwy w danych dostał nazwę",
-            OsmBuildingsTest.names(context, "L-1"),
+            OsmBuildingsIT.names(context, "L-1"),
             Matchers.contains(Matchers.nullValue())
         );
     }
@@ -74,7 +74,7 @@ final class OsmBuildingsTest {
     void usOneDropsNameThatIsOwnSymbol(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Nazwa równa własnemu symbolowi C-13 została zapisana",
-            OsmBuildingsTest.names(context, "C-13"),
+            OsmBuildingsIT.names(context, "C-13"),
             Matchers.contains(Matchers.nullValue())
         );
     }
@@ -83,7 +83,7 @@ final class OsmBuildingsTest {
     void usOneDropsNameThatIsOtherSymbol(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Nazwa T-22 cudzego symbolu została zapisana dla T-18 i T-22",
-            OsmBuildingsTest.names(context, "T-18", "T-22"),
+            OsmBuildingsIT.names(context, "T-18", "T-22"),
             Matchers.contains(Matchers.nullValue(), Matchers.nullValue())
         );
     }
@@ -92,7 +92,7 @@ final class OsmBuildingsTest {
     void usOneDropsNameThatListsSymbols(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Nazwa C-3/C-4 złożona z samych symboli została zapisana",
-            OsmBuildingsTest.names(context, "C-3", "C-4"),
+            OsmBuildingsIT.names(context, "C-3", "C-4"),
             Matchers.contains(Matchers.nullValue(), Matchers.nullValue())
         );
     }
@@ -101,7 +101,7 @@ final class OsmBuildingsTest {
     void usTwoSavesNameWithoutOwnSymbol(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Nazwa budynku na serwerze powtarza symbol albo różni się od nazwy w aplikacji",
-            OsmBuildingsTest.names(context, "A-1", "M-6", "T-6"),
+            OsmBuildingsIT.names(context, "A-1", "M-6", "T-6"),
             Matchers.contains("Budynek główny", "M-6 bis", "Dom Studencki \"Alcatraz\"")
         );
     }
@@ -124,14 +124,14 @@ final class OsmBuildingsTest {
         final WebApplicationContext context, @TempDir final Path directory
     ) throws IOException {
         final Path file = directory.resolve("buildings.geojson");
-        OsmBuildingsTest.writeBuilding(file, "Pierwsza nazwa");
+        OsmBuildingsIT.writeBuilding(file, "Pierwsza nazwa");
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         try {
-            final Flyway flyway = OsmBuildingsTest.flyway(context, file);
+            final Flyway flyway = OsmBuildingsIT.flyway(context, file);
             flyway.migrate();
-            final String original = OsmBuildingsTest.importedName(jdbc);
+            final String original = OsmBuildingsIT.importedName(jdbc);
             final int repeated = flyway.migrate().migrationsExecuted;
-            OsmBuildingsTest.writeBuilding(file, "Druga nazwa");
+            OsmBuildingsIT.writeBuilding(file, "Druga nazwa");
             flyway.migrate();
             Assertions.assertAll(
                 () -> Assertions.assertEquals(
@@ -141,7 +141,7 @@ final class OsmBuildingsTest {
                     0, repeated, "Flyway ponowił import pliku o tej samej treści"
                 ),
                 () -> Assertions.assertEquals(
-                    "Druga nazwa", OsmBuildingsTest.importedName(jdbc),
+                    "Druga nazwa", OsmBuildingsIT.importedName(jdbc),
                     "Flyway nie wczytał nowej nazwy po zmianie treści pliku"
                 )
             );
@@ -155,10 +155,10 @@ final class OsmBuildingsTest {
         final WebApplicationContext context, @TempDir final Path directory
     ) throws IOException {
         final Path file = directory.resolve("buildings.geojson");
-        OsmBuildingsTest.writeBuilding(file, "Pierwsza nazwa");
+        OsmBuildingsIT.writeBuilding(file, "Pierwsza nazwa");
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         try {
-            final Flyway flyway = OsmBuildingsTest.flyway(context, file);
+            final Flyway flyway = OsmBuildingsIT.flyway(context, file);
             flyway.migrate();
             jdbc.sql(
                 """
@@ -173,7 +173,7 @@ final class OsmBuildingsTest {
                 ) AS stale(id, symbol, marking, source)
                 """
             ).update();
-            OsmBuildingsTest.writeBuilding(file, "Druga nazwa");
+            OsmBuildingsIT.writeBuilding(file, "Druga nazwa");
             flyway.migrate();
             MatcherAssert.assertThat(
                 "Import nie uzgodnił par wejście–budynek albo zmienił oznaczenie z obchodu",
