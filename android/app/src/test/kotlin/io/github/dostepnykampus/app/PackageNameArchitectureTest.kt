@@ -114,9 +114,6 @@ class PackageNameArchitectureTest {
 
         val EXCEPTIONS =
             mapOf(
-                "$BASE.core.data.barriers" to "#1680",
-                "$BASE.core.data.buildings" to "#1680",
-                "$BASE.core.data.photos" to "#1680",
                 "$BASE.core.data.submissions" to "#1680",
                 "$BASE.core.data.map" to "#1878",
                 "$BASE.core.data.network" to "#1878",
