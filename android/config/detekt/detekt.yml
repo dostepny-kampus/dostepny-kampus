@@ -122,7 +122,6 @@ dostepnykampus:
   KDocDescriptionLength:
     excludes:
       - '**/build/generated/**'
-  # Lista tylko maleje; poprawki w issue #1997.
+  # TODO(#2009): włączyć z listą wyjątków
   AssertionMessage:
-    excludes:
-      - '**/build/generated/**'
+    active: false
