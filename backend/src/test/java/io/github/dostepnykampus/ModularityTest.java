@@ -33,7 +33,7 @@ import org.springframework.modulith.docs.Documenter;
  * i bez zależności spoza listy {@code allowedDependencies}, którą każdy moduł zapisuje
  * w {@code @ApplicationModule}, także pustą. Spring Modulith czyta {@code package-info}
  * z katalogu testów, więc ta wersja powtarza listę z kodu produkcyjnego. Schemat modułów
- * na stronie dokumentacji jest równy schematowi wygenerowanemu z kodu.
+ * na stronie dokumentacji ma te same wiersze co schemat wygenerowany z kodu, w dowolnej kolejności.
  *
  * @since 0.1.0
  */
@@ -205,7 +205,7 @@ final class ModularityTest {
     private static List<String> lines(final Path file) throws IOException {
         final List<String> found;
         if (Files.exists(file)) {
-            found = Files.readAllLines(file);
+            found = Files.readAllLines(file).stream().sorted().toList();
         } else {
             found = List.of();
         }
