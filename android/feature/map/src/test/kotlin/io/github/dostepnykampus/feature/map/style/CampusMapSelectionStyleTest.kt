@@ -180,6 +180,8 @@ private class JsonStyle(style: String) : MapStyleTarget {
             found + ("paint" to JsonObject(paint))
         }
 
+    override fun minZoom(layer: String, zoom: Double) = edit(layer) { it + ("minzoom" to JsonPrimitive(zoom)) }
+
     override fun data(source: String, geoJson: String) {
         val sources = json.getValue("sources").jsonObject
         val changed = sources.getValue(source).jsonObject + ("data" to Json.parseToJsonElement(geoJson))

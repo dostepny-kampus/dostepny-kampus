@@ -85,6 +85,8 @@ class MapSelectionImagesTest {
 
         override fun paint(layer: String, property: String, value: JsonElement) = Unit
 
+        override fun minZoom(layer: String, zoom: Double) = Unit
+
         override fun data(source: String, geoJson: String) = Unit
 
         override fun image(name: String, image: Bitmap) {
