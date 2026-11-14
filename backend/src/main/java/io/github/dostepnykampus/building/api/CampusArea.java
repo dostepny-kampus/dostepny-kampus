@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.building;
+package io.github.dostepnykampus.building.api;
 
 /**
  * Teren PWr dla innych modułów: wszystko do 500 m od konturu któregokolwiek

@@ -22,7 +22,7 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
-import io.github.dostepnykampus.building.Outlines;
+import io.github.dostepnykampus.building.api.Outlines;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
