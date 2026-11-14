@@ -56,7 +56,8 @@ class StorageDependencyArchitectureTest {
                 dependencies(root, name)
                     .filter { (config, target) -> isForbidden(module = name, config = config, target = target) }
                     .map { (config, target) -> "$name $config $target" }
-            }.toSet()
+            }
+            .toSet()
 
     private fun isForbidden(module: String, config: String, target: String): Boolean =
         target in ALLOWED && (config == API || module !in ALLOWED.getValue(target))
