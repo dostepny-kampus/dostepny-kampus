@@ -5,6 +5,9 @@
  */
 package io.github.dostepnykampus.core.geo
 
+import io.github.dostepnykampus.core.geo.building.LocateResult
+import io.github.dostepnykampus.core.geo.building.locateBuilding
+import io.github.dostepnykampus.core.geo.building.parseBuildingCatalog
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint

@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture.measure
 
-import io.github.dostepnykampus.core.geo.BuildingHint
+import io.github.dostepnykampus.core.geo.building.BuildingHint
 import io.github.dostepnykampus.core.location.PositionAverage
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.GeoPoint

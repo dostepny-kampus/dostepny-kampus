@@ -28,7 +28,7 @@ import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.core.geo.EntranceDistance
+import io.github.dostepnykampus.core.geo.building.EntranceDistance
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Entrance
 import io.github.dostepnykampus.core.model.EntranceMarking

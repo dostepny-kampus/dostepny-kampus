@@ -8,9 +8,9 @@ package io.github.dostepnykampus.feature.capture.measure
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.dostepnykampus.core.geo.BuildingHint
-import io.github.dostepnykampus.core.geo.BuildingHints
-import io.github.dostepnykampus.core.geo.buildingHints
+import io.github.dostepnykampus.core.geo.building.BuildingHint
+import io.github.dostepnykampus.core.geo.building.BuildingHints
+import io.github.dostepnykampus.core.geo.building.buildingHints
 import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
 import io.github.dostepnykampus.core.location.LocationSwitch
