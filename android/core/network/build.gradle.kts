@@ -32,7 +32,9 @@ val openApiFile = rootProject.layout.projectDirectory.file("../api/openapi.yaml"
 val generateContractModels =
     tasks.named<GenerateTask>("openApiGenerate") {
         generatorName = "kotlin"
-        inputSpec = openApiFile
+        /* Ścieżka jako URI pliku: generator nie czyta zwykłej ścieżki ze spacją. */
+        remoteInputSpec = openApiFile.asFile.toURI().toString()
+        inputs.file(openApiFile).withPathSensitivity(PathSensitivity.NONE).withPropertyName("openApiFile")
         outputDir = layout.buildDirectory.dir("generated/source/openapi")
         modelPackage = "io.github.dostepnykampus.core.network.json"
         cleanupOutput = true
