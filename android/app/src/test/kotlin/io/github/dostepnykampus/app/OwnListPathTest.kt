@@ -74,7 +74,7 @@ class OwnListPathTest {
      * Scenariusz: zgloszenia-zbierajacego.feature: Najnowsze zgłoszenia są na górze listy
      */
     @Test
-    fun us8_1_newest_first_on_list() {
+    fun listsNewestFirst() {
         val queue = queue()
         listOf(FIRST_DAY, MIDDLE_DAY, LAST_DAY).forEach { day ->
             today = LocalDate.of(YEAR, OCTOBER, day)
@@ -93,7 +93,7 @@ class OwnListPathTest {
      *   dopiero po potwierdzeniu odbioru przez serwer
      */
     @Test
-    fun us8_2_unconfirmed_stays_local() {
+    fun keepsUnconfirmedLocal() {
         sendOne()
 
         compose.onNodeWithText("W telefonie").assertExists()
@@ -106,7 +106,7 @@ class OwnListPathTest {
      *   dopiero po potwierdzeniu odbioru przez serwer
      */
     @Test
-    fun us8_2_confirmed_is_sent() {
+    fun marksConfirmedAsSent() {
         isServerReachable = true
         sendOne()
 

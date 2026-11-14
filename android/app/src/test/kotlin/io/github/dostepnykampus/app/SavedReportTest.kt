@@ -75,7 +75,7 @@ class SavedReportTest {
      * Scenariusz: pomiar-precyzyjny.feature: Kompletne zgłoszenie zapisuje się ze statusem „lokalne”
      */
     @Test
-    fun us7_1_complete_saved_local() {
+    fun savesCompleteLocally() {
         save(ReportEdit.Type(BarrierType.STAIRS_AT_ENTRANCE), ReportEdit.Rating(Severity.BLOCKING))
 
         assertEquals("TB-1", stored().barrierType)
@@ -88,7 +88,7 @@ class SavedReportTest {
      * Scenariusz: pomiar-precyzyjny.feature: Typ TB-29 „inna bariera” z opisem zapisuje się
      */
     @Test
-    fun us7_3_other_described_saved() {
+    fun savesDescribedOther() {
         save(
             ReportEdit.Type(BarrierType.OTHER_BARRIER),
             ReportEdit.Rating(Severity.ONLY_WITH_HELP),

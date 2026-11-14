@@ -17,13 +17,13 @@ import java.io.File
 class StorageDependencyArchitectureTest {
     /** Moduły projektu zależą od bazy i sieci tylko według [ALLOWED]. */
     @Test
-    fun infra_storage_only_in_data() {
+    fun keepsStorageInData() {
         assertEquals(emptySet<String>(), violations(projectRoot()), HINT)
     }
 
     /** Zależność testowa modułu funkcji od sieci i `api` bazy łamią regułę, `implementation` w aplikacji nie. */
     @Test
-    fun infra_storage_rule_rejects(
+    fun rejectsStorageOutside(
         @TempDir root: File,
     ) {
         File(root, "settings.gradle.kts").writeText("""include(":app", ":core:data", ":feature:x")""")

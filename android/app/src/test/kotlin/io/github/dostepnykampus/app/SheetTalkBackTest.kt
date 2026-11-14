@@ -70,7 +70,7 @@ class SheetTalkBackTest {
      * Wymagania: US2.8, NFR-18
      */
     @Test
-    fun nfr18_handle_button_with_state() {
+    fun namesHandleWithState() {
         open()
         compose.onNode(sheetHandle(isExpanded = false) and Button).performClick()
         compose.onNode(sheetHandle(isExpanded = true) and Button).assertExists("uchwyt pełnego ekranu")
@@ -78,7 +78,7 @@ class SheetTalkBackTest {
 
     /** Wiersz: V1, dotknięcie konturu → mała karta, fokus TalkBack na nagłówku „Budynek A-1, …”. Wymagania: NFR-18 */
     @Test
-    fun nfr18_focus_on_header() {
+    fun focusesHeader() {
         open(isCard = true)
         compose.onNode(hasContentDescription("Budynek A-1, ", substring = true)).assertIsFocused()
     }
@@ -90,7 +90,7 @@ class SheetTalkBackTest {
      * Wymagania: NFR-19
      */
     @Test
-    fun nfr19_map_under_card_silent() {
+    fun silencesMapUnderCard() {
         compose.setContent { Shell(isCard = false) }
         compose.onAllNodes(readable(hasText("mapa"))).assertCountEquals(1)
         compose.onNodeWithText("mapa").performClick()

@@ -62,7 +62,7 @@ class ReportAtEntranceTest {
      * Wymagania: US4.6
      */
     @Test
-    fun us4_6_each_entrance_opens_v4() {
+    fun opensReportAtEachEntrance() {
         val ids = entranceIds()
         show(TestRoles(Account.SignedIn()))
         ids.forEachIndexed { index, id ->
@@ -80,7 +80,7 @@ class ReportAtEntranceTest {
      * Wymagania: US14.2
      */
     @Test
-    fun us14_2_guest_goes_to_l1() {
+    fun sendsGuestToSignIn() {
         val ids = entranceIds()
         show(GuestRoleProvider)
         ids.forEachIndexed { index, id ->

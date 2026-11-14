@@ -7,7 +7,7 @@ Sprawdzenie US1.1 na emulatorach z ekranową klawiaturą, 13 listopada 2026 r.
 | Android SDK built for x86_64 | 8.0.0 | 26 |
 | Android SDK built for x86_64 | 16 | 36 |
 
-Test `CampusPathDeviceTest.us1_1_keyboard_then_back` otwiera pole wyszukiwania i wpisuje `A-1`.
+Test `CampusPathDeviceTest.goesBackAfterKeyboard` otwiera pole wyszukiwania i wpisuje `A-1`.
 Po wyborze wyniku sprawdza brak systemowego okna klawiatury i pola edycji z fokusem na V2.
 Jedno systemowe Wstecz zamyka V2. Po powrocie test sprawdza fokus pola i brak okna klawiatury.
 

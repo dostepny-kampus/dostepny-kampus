@@ -17,14 +17,14 @@ import java.io.File
 class ModuleContentArchitectureTest {
     /** Moduły projektu mają kod produkcyjny. */
     @Test
-    fun infra_module_has_code() {
+    fun requiresCodeInModule() {
         val root = projectRoot()
         assertEquals(emptyList<String>(), empty(root, modules(File(root, "settings.gradle.kts").readText())), HINT)
     }
 
     /** Moduł z samym plikiem budowania łamie regułę, moduł z plikiem Kotlin w `src/main` nie. */
     @Test
-    fun infra_module_rule_rejects(
+    fun rejectsEmptyModule(
         @TempDir root: File,
     ) {
         File(root, "feature/empty").mkdirs()

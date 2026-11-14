@@ -61,7 +61,7 @@ class ShowEntranceTest {
      * Wymagania: US3.3, US2.1, BR-25
      */
     @Test
-    fun us3_3_show_opens_v1_entrance() {
+    fun opensMapAtEntrance() {
         compose.setContent {
             AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
                 navigator = this

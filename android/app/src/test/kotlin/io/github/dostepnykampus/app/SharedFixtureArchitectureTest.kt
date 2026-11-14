@@ -23,19 +23,19 @@ import java.io.File
 class SharedFixtureArchitectureTest {
     /** Klasy testów spoza listy wyjątków nie mają wspólnych pól ani metod przygotowania. */
     @Test
-    fun infra_test_own_data() {
+    fun testsPrepareOwnData() {
         assertEquals(emptyList<String>(), violations(testScope()) - KNOWN.keys, HINT)
     }
 
     /** Każdy wpis listy wyjątków nadal jest naruszeniem. */
     @Test
-    fun infra_stale_exceptions() {
+    fun keepsOnlyLiveExceptions() {
         assertEquals(emptyList<String>(), KNOWN.keys.sorted() - violations(testScope()).toSet(), STALE)
     }
 
     /** Pole, `lateinit` i metody przygotowania łamią regułę; reguły, stałe i klasa bez testów nie. */
     @Test
-    fun infra_rejects_shared_state(
+    fun rejectsSharedState(
         @TempDir fixtures: File,
     ) {
         File(fixtures, "Samples.kt").writeText(SAMPLES)

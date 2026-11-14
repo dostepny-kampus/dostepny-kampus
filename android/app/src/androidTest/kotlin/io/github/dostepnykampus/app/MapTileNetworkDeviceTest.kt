@@ -37,7 +37,7 @@ class MapTileNetworkDeviceTest {
 
     /** Żądanie do prawdziwego adresu OSM przechodzi z blokadą DNS i zwraca przezroczysty lokalny PNG. */
     @Test
-    fun tiles_work_without_network() {
+    fun drawsTilesWithoutNetwork() {
         val request = Request.Builder().url("https://tile.openstreetmap.org/0/0/0.png").build()
         tiles.calls.newCall(request).execute().use { response ->
             assertEquals(200, response.code)
@@ -55,7 +55,7 @@ class MapTileNetworkDeviceTest {
 
     /** Pozostałe adresy nie mogą wykorzystać lokalnej odpowiedzi kafelków ani otworzyć połączenia. */
     @Test(expected = ConnectException::class)
-    fun other_hosts_are_blocked() {
+    fun blocksOtherHosts() {
         val request = Request.Builder().url("https://example.org/0/0/0.png").build()
         tiles.calls
             .newCall(request)

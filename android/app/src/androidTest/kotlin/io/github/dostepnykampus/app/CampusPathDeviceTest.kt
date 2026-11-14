@@ -71,7 +71,7 @@ class CampusPathDeviceTest {
      * Wymagania: US1.1, US2, US3
      */
     @Test
-    fun us3_search_card_entrances() {
+    fun goesFromSearchToEntrances() {
         steps.openCard("A-1")
         compose.onNode(hasText(CHECK_ENTRANCES)).performClick()
         steps.waitFor(hasText("Którędy wejść do A-1"))
@@ -85,7 +85,7 @@ class CampusPathDeviceTest {
      * Wymagania: US2.8, NFR-11, NFR-19
      */
     @Test
-    fun us2_list_card() {
+    fun opensCardFromList() {
         compose.onAllNodes(hasText("Lista budynków") or hasText("Lista")).onFirst().performClick()
         steps.waitFor(BuildingA1InCatalog)
         compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
@@ -98,7 +98,7 @@ class CampusPathDeviceTest {
      * Wymagania: US1.1
      */
     @Test
-    fun us1_1_keyboard_then_back() {
+    fun goesBackAfterKeyboard() {
         val previous = DeviceEvidence.shell("settings get secure show_ime_with_hard_keyboard").trim()
         check(previous in setOf("0", "1", "null")) { "Nieznane ustawienie klawiatury: $previous" }
         try {

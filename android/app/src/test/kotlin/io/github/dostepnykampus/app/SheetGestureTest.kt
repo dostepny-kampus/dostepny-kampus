@@ -25,7 +25,7 @@ class SheetGestureTest {
      * Wymagania: US2
      */
     @Test
-    fun us2_gesture_moves_sheet() {
+    fun movesSheetOnGesture() {
         listOf(360.dp, 720.dp).forEach { height ->
             val first = sheetBackOffset(progress = 0.2f, height = height)
             val second = sheetBackOffset(progress = 0.6f, height = height)
@@ -42,7 +42,7 @@ class SheetGestureTest {
      * Wymagania: US2
      */
     @Test
-    fun us2_gesture_cancel_keeps_sheet() {
+    fun keepsSheetOnCancel() {
         listOf(false, true).forEach { isExpanded ->
             val before = SheetState(isExpanded = isExpanded)
             val moving = before.after(Started).after(Progressed(0.6f))
@@ -58,7 +58,7 @@ class SheetGestureTest {
      * Wymagania: US1.1, NFR-15, US2.8
      */
     @Test
-    fun nfr15_back_collapses_closes() {
+    fun collapsesThenCloses() {
         assertEquals(SheetState(isExpanded = false, progress = 1f), SheetState().after(Completed))
         assertEquals(SheetState(isExpanded = false), SheetState(isExpanded = true).after(Completed))
     }
@@ -69,7 +69,7 @@ class SheetGestureTest {
      * Wymagania: US2.8, NFR-53
      */
     @Test
-    fun us2_8_sheet_gives_card_mode() {
+    fun givesCardMode() {
         assertEquals(CardMode.Compact, SheetState().cardMode(fontScale = 1f))
         assertEquals(CardMode.Expanded, SheetState(isExpanded = true).cardMode(fontScale = 1f))
     }
@@ -80,7 +80,7 @@ class SheetGestureTest {
      * Wymagania: US2.9, NFR-20
      */
     @Test
-    fun nfr20_large_font_sheet_direct() {
+    fun opensDirectForLargeFont() {
         assertEquals(CardMode.Direct, SheetState().cardMode(fontScale = 2f))
         assertEquals(CardMode.Direct, SheetState(isExpanded = true).cardMode(fontScale = 2f))
     }
@@ -92,7 +92,7 @@ class SheetGestureTest {
      * Wymagania: US1.1, US2
      */
     @Test
-    fun us2_slides_only_after_gesture() {
+    fun slidesOnlyAfterGesture() {
         assertTrue("dojazd w dół po zakończeniu", Completed.isSlide)
         assertTrue("powrót po anulowaniu", Cancelled.isSlide)
         assertFalse("za palcem przy postępie", Progressed(0.6f).isSlide)

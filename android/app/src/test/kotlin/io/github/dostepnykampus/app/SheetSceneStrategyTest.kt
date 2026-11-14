@@ -29,7 +29,7 @@ class SheetSceneStrategyTest {
      * Wymagania: US3
      */
     @Test
-    fun us3_v3_single_screen() {
+    fun showsEntranceAlone() {
         assertNull(scene(MapRoute(), BuildingRoute("A-1"), EntrancesRoute("A-1")))
         assertNull(scene(BuildingRoute("A-1")))
     }

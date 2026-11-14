@@ -14,7 +14,11 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/** Uprawnienia ze scalonego manifestu aplikacji, razem z tymi, które dokładają biblioteki. */
+/**
+ * Uprawnienia ze scalonego manifestu aplikacji, razem z tymi, które dokładają biblioteki.
+ *
+ * Wymagania: NFR-39, NFR-27
+ */
 @RunWith(RobolectricTestRunner::class)
 class PermissionsTest {
     private val requested: List<String> =
@@ -26,12 +30,12 @@ class PermissionsTest {
             .toList()
 
     @Test
-    fun nfr39_internet_for_osm_tiles() {
+    fun asksInternetForTiles() {
         assertTrue(Manifest.permission.INTERNET in requested)
     }
 
     @Test
-    fun nfr27_foreground_location() {
+    fun asksForegroundLocation() {
         assertTrue(Manifest.permission.ACCESS_FINE_LOCATION in requested)
         assertTrue(Manifest.permission.ACCESS_COARSE_LOCATION in requested)
         assertFalse(Manifest.permission.ACCESS_BACKGROUND_LOCATION in requested)

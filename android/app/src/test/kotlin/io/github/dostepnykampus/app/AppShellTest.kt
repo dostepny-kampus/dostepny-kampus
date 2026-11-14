@@ -373,7 +373,7 @@ class AppShellTest {
     @Test
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(qualifiers = "w640dp-h360dp-xhdpi")
-    fun nfr51_side_bar_font_100() {
+    fun showsSideBarAtNormalFont() {
         show()
         checkSideBar()
     }
@@ -389,7 +389,7 @@ class AppShellTest {
     @Test
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(qualifiers = "w640dp-h360dp-xhdpi", fontScale = 2f)
-    fun nfr20_side_bar_font_200() {
+    fun showsSideBarAtLargeFont() {
         show()
         val a1 = hasContentDescription("A-1, ", substring = true)
         compose.waitUntil { compose.onAllNodes(a1).fetchSemanticsNodes().any() }
@@ -401,7 +401,7 @@ class AppShellTest {
     @Test
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     @Config(qualifiers = "w640dp-h240dp", fontScale = 2f)
-    fun nfr20_side_bar_scrolls() {
+    fun scrollsSideBar() {
         show()
         assertTrue(compose.onNodeWithText("Konto").getUnclippedBoundsInRoot().bottom > 240.dp)
         checkSideBar(windowHeight = 240.dp)

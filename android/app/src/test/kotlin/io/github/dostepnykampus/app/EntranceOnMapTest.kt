@@ -75,7 +75,7 @@ private val OTHERS =
  * `showEntranceOnMap`: Od dotknięcia budynku na V1 przez V2 i V3 do „Pokaż wejście na mapie”; zwraca to, co dostała
  * mapa po tym.
  *
- * Wymagania: US3.3, US2.1, NFR-18
+ * Wymagania: US3.3, US2.1, NFR-18, NFR-15
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -199,7 +199,7 @@ class EntranceOnMapTest {
      */
     @Test
     @Config(fontScale = 2f)
-    fun nfr15_building_has_no_pin() {
+    fun drawsNoPinForBuilding() {
         show(namedCatalog())
         compose.waitUntil { compose.onAllNodes(ListedA1).fetchSemanticsNodes().isNotEmpty() }
         compose.onNode(ListedA1).performClick()

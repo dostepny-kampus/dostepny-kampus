@@ -73,7 +73,7 @@ class CampusAreaEdgeDeviceTest {
      * Wymagania: US1.7, BR-G5, NFR-39, NFR-41
      */
     @Test
-    fun us1_7_gesture_stops_at_edge() {
+    fun stopsGestureAtEdge() {
         val areas = runBlocking { campusMapData(catalog.catalog()).areas }
         val mainBounds = areas.first { it.name == MAIN_AREA_NAME }.bounds
         dismissHelpIfShown()

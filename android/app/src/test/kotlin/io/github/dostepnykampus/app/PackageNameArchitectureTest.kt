@@ -21,21 +21,21 @@ import java.io.File
 class PackageNameArchitectureTest {
     /** Pakiety spoza listy wyjątków mają nazwy ze słownika i mieszczą się w trzech segmentach. */
     @Test
-    fun infra_package_names_in_dict() {
+    fun takesPackageNamesFromDict() {
         val found = problems(Konsist.scopeFromProduction().files, dictionary())
         assertEquals(emptyMap<String, String>(), found - EXCEPTIONS.keys, HINT)
     }
 
     /** Wpis listy wyjątków dla pakietu, który spełnia regułę albo już nie istnieje, czerwieni test. */
     @Test
-    fun infra_package_names_shrink() {
+    fun shrinksPackageNameList() {
         val found = problems(Konsist.scopeFromProduction().files, dictionary())
         assertEquals(emptySet<String>(), EXCEPTIONS.keys - found.keys)
     }
 
     /** Nazwa spoza słownika, zbyt głęboki pakiet i powtórzony temat modułu łamią regułę; warstwa i temat nie. */
     @Test
-    fun infra_package_names_reject(
+    fun rejectsPackageName(
         @TempDir fixtures: File,
     ) {
         listOf(
