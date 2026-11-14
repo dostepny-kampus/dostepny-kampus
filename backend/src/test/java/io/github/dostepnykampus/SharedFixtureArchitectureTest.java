@@ -47,8 +47,8 @@ final class SharedFixtureArchitectureTest {
         "PackageSizeArchitectureTest",
         "TechnologyArchitectureTest",
         "barrier.BarrierModuleTest",
-        "building.BuildingReadContractTest",
-        "building.BuildingsHttpTest"
+        "building.BuildingReadContractIT",
+        "building.BuildingsHttpIT"
     ).collect(
         Collectors.toMap(
             name -> String.format("io.github.dostepnykampus.%s", name), name -> 1963
