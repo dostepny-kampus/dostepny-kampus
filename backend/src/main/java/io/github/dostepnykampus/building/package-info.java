@@ -9,7 +9,7 @@
  *
  * <p>Zadanie: lista i karta budynku z wejściami, dopasowanie punktu, plany PWr.</p>
  *
- * <p>API: pakiet {@code api} ({@code CampusArea}, {@code Outlines}); HTTP {@code /buildings}.</p>
+ * <p>API: pakiet {@code api}; HTTP {@code /buildings}.</p>
  *
  * <p>Zależności: {@code shared}.</p>
  *
