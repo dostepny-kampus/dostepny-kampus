@@ -40,6 +40,7 @@ private val BuildingA1InCatalog = hasContentDescription("A-1, ", substring = tru
  */
 @RunWith(AndroidJUnit4::class)
 class BuildingCardFromServerTest {
+    /** Prawdziwa aktywność aplikacji, uruchamiana od nowa dla każdego testu. */
     @get:Rule
     val compose = createAndroidComposeRule<MainActivity>()
 
@@ -61,7 +62,7 @@ class BuildingCardFromServerTest {
      * Wymagania: US17.3, US1.1, US2.8
      */
     @Test
-    fun us17_3_card_a1_from_server() {
+    fun cardA1FromServer() {
         compose
             .onNode(hasSetTextAction())
             .performSemanticsAction(SemanticsActions.SetText) { it(AnnotatedString("A-1")) }
