@@ -5,31 +5,22 @@
  */
 package io.github.dostepnykampus.systemtest
 
-import androidx.compose.ui.semantics.SemanticsActions
-import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasContentDescription
-import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performSemanticsAction
-import androidx.compose.ui.text.AnnotatedString
-import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.dostepnykampus.app.MainActivity
+import io.github.dostepnykampus.core.testing.DeviceSteps
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 private const val WAIT_MS = 30_000L
-private const val CHECK = "Sprawdź, którędy wejść"
 private const val EXPAND = "Rozwiń opis budynku"
 private const val SERVER_ASSESSMENT = "Z map i opisów, stan z "
-
-private val BuildingA1InCatalog = hasContentDescription("A-1, ", substring = true)
 
 /**
  * Aplikacja z własnym grafem Hilt i siecią na emulatorze, serwer z bazą na komputerze gospodarza: katalog budynków
@@ -44,16 +35,12 @@ class BuildingCardFromServerTest {
     @get:Rule
     val compose = createAndroidComposeRule<MainActivity>()
 
-    private fun waitFor(matcher: SemanticsMatcher) {
-        compose.waitUntil(timeoutMillis = WAIT_MS) { compose.onAllNodes(matcher).fetchSemanticsNodes().isNotEmpty() }
-    }
+    private val steps = DeviceSteps(compose, WAIT_MS)
 
     /** Zamyka instrukcję pierwszego uruchomienia, która jest na czystych danych aplikacji. Wymagania: US5.1 */
     @Before
     fun leaveHelp() {
-        waitFor(hasText("Pomoc"))
-        Espresso.pressBack()
-        waitFor(hasSetTextAction())
+        steps.leaveHelp()
     }
 
     /**
@@ -63,15 +50,10 @@ class BuildingCardFromServerTest {
      */
     @Test
     fun cardA1FromServer() {
-        compose
-            .onNode(hasSetTextAction())
-            .performSemanticsAction(SemanticsActions.SetText) { it(AnnotatedString("A-1")) }
-        waitFor(BuildingA1InCatalog)
-        compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
-        waitFor(hasText(CHECK))
+        steps.openCard("A-1")
         compose.onNode(hasContentDescription(EXPAND)).performClick()
         val assessment = hasText(SERVER_ASSESSMENT, substring = true)
-        waitFor(assessment)
+        steps.waitFor(assessment)
         compose.onAllNodes(assessment).assertCountEquals(1)
     }
 }

@@ -12,6 +12,7 @@ Brak API; moduł zawiera tylko testy.
 ## Zależności
 
 - `:core:network`
+- `:core:testing`
 
 ## Czego moduł nie robi
 
