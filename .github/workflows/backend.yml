@@ -151,6 +151,9 @@ jobs:
     env:
       JPEEK_VERSION: 0.32.3
       JPEEK_SHA256: 34e138f402c99386c36477300e8c9e2df90014ffb544855b47b03caa975c8598
+      # jpeek ma w środku ASM bez obsługi klas Javy 25; nowszy ASM stoi w ścieżce klas przed nim.
+      ASM_VERSION: 9.10.1
+      ASM_SHA256: ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb
     defaults:
       run:
         working-directory: backend
@@ -167,15 +170,21 @@ jobs:
           cache-read-only: true
       - name: Skompiluj kod serwera
         run: ./mvnw -B -DskipTests -Dqulice.skip=true compile
-      - name: Pobierz jpeek
+      - name: Pobierz jpeek i ASM
         working-directory: ${{ runner.temp }}
         run: |
           jar="jpeek-${JPEEK_VERSION}-jar-with-dependencies.jar"
           curl -sSfLO "https://repo1.maven.org/maven2/org/jpeek/jpeek/${JPEEK_VERSION}/${jar}"
           echo "${JPEEK_SHA256}  ${jar}" | sha256sum --check --strict
           mv "${jar}" jpeek.jar
+          asm="asm-${ASM_VERSION}.jar"
+          curl -sSfLO "https://repo1.maven.org/maven2/org/ow2/asm/asm/${ASM_VERSION}/${asm}"
+          echo "${ASM_SHA256}  ${asm}" | sha256sum --check --strict
+          mv "${asm}" asm.jar
       - name: Policz spójność klas
-        run: java -jar "${RUNNER_TEMP}/jpeek.jar" --sources target/classes --target target/jpeek --overwrite
+        run: >-
+          java -cp "${RUNNER_TEMP}/asm.jar:${RUNNER_TEMP}/jpeek.jar" org.jpeek.Main
+          --sources target/classes --target target/jpeek --overwrite
       - name: Raport jpeek
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7.0.2
