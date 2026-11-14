@@ -4,6 +4,12 @@
 
 Typy domeny wspólne dla całej aplikacji: budynek, wejście, bariera, zgłoszenie, konto, punkt, obszar i postęp inwentaryzacji.
 
+## Pakiety
+
+- `core.model` — konto, punkt i obszar geograficzny oraz zgłoszenie z treścią.
+- `core.model.building` — budynek, katalog budynków, piętra, wejście i jego ocena.
+- `core.model.submission` — typ bariery w zgłoszeniu.
+
 ## API
 
 Klasy danych i wyliczenia w pakiecie `core.model`; moduł jest w trybie jawnego API, więc każdy typ publiczny ma `public`.
