@@ -39,4 +39,15 @@ public interface SubmissionRepository {
      * @return Zgłoszenie zapisane, bieżący stan przy konflikcie albo brak zgłoszenia
      */
     EditResult update(SubmissionEdit edit);
+
+    /**
+     * Daje zgłoszenie „wysłane” Weryfikatorowi, a wzięte już przez niego zostawia bez zmiany.
+     *
+     * <p>Wymagania: BR-11, US10.4</p>
+     *
+     * @param id Identyfikator zgłoszenia
+     * @param reviewer Identyfikator konta Weryfikatora
+     * @return Zgłoszenie w weryfikacji, bieżący stan przy konflikcie albo brak zgłoszenia
+     */
+    EditResult claim(UUID id, String reviewer);
 }

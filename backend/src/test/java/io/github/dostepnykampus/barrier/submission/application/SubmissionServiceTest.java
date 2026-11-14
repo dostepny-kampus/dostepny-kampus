@@ -202,6 +202,24 @@ final class SubmissionServiceTest {
     }
 
     @Test
+    void brElevenClaimReturnsRepositoryResultAndPassesReviewer() {
+        final EditResult result = new EditResult.Saved(SubmissionServiceTest.STORED);
+        final SubmissionServiceTest.RecordingSubmissions fake =
+            new SubmissionServiceTest.RecordingSubmissions(null, result);
+        final SubmissionService service =
+            SubmissionServiceTest.service(fake, SubmissionServiceTest.FORBIDDEN);
+        Assertions.assertAll(
+            () -> Assertions.assertSame(
+                result, service.claim(SubmissionServiceTest.ID, "weryfikator"),
+                "Wynik wzięcia nie wrócił tym samym obiektem"
+            ),
+            () -> Assertions.assertEquals(
+                List.of("weryfikator"), fake.seen(), "Konto Weryfikatora zmienione po drodze"
+            )
+        );
+    }
+
+    @Test
     void ioneFiveUpdateAppliesSameBuildingRulesAsCreate() {
         final SubmissionServiceTest.RecordingSubmissions fake =
             new SubmissionServiceTest.RecordingSubmissions(null, null);
@@ -355,6 +373,12 @@ final class SubmissionServiceTest {
         @Override
         public EditResult update(final SubmissionEdit edit) {
             this.seen.add(edit);
+            return this.edited;
+        }
+
+        @Override
+        public EditResult claim(final UUID id, final String reviewer) {
+            this.seen.add(reviewer);
             return this.edited;
         }
 
