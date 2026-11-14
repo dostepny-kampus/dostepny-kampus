@@ -14,16 +14,13 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import com.tngtech.archunit.library.Architectures;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import javax.tools.ToolProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -254,22 +251,7 @@ final class LayerDirectionArchitectureTest {
     }
 
     private JavaClasses compiled() throws IOException {
-        final List<String> args = new ArrayList<>(List.of("-d", this.dir.toString()));
-        try (Stream<Path> files = Files.walk(this.dir)) {
-            files.filter(file -> file.toString().endsWith(".java"))
-                .map(Path::toString)
-                .forEach(args::add);
-        }
-        Assertions.assertEquals(
-            0,
-            ToolProvider.getSystemJavaCompiler().run(
-                null, null, null, args.toArray(String[]::new)
-            ),
-            "Przykład się nie skompilował"
-        );
-        return new ClassFileImporter().importPath(
-            this.dir.resolve(LayerDirectionArchitectureTest.SAMPLES.replace('.', '/'))
-        );
+        return new ArchSamples(this.dir).compiled(LayerDirectionArchitectureTest.SAMPLES);
     }
 
     private void type(final String pack, final String name, final String field)
@@ -286,11 +268,6 @@ final class LayerDirectionArchitectureTest {
                 name, LayerDirectionArchitectureTest.at(field)
             );
         }
-        final Path folder = this.dir.resolve("src").resolve(full.replace('.', '/'));
-        Files.createDirectories(folder);
-        Files.writeString(
-            folder.resolve(String.format("%s.java", name)),
-            String.format("package %s;%n%s%n", full, body)
-        );
+        new ArchSamples(this.dir).write(full, name, String.format("package %s;%n%s%n", full, body));
     }
 }

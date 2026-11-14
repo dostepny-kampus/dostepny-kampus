@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
-import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -385,15 +384,10 @@ final class TestSetupArchitectureTest {
 
     private static JavaClasses compile(final List<Sample> samples) {
         try {
-            final Path root = Files.createTempDirectory("fixtures");
-            final Path out = root.resolve("out");
-            final List<String> args = new ArrayList<>(
-                List.of("-d", out.toString(), "-classpath", TestSetupArchitectureTest.classpath())
-            );
+            final ArchSamples fixtures = new ArchSamples(Files.createTempDirectory("fixtures"));
             for (int idx = 0; idx < samples.size(); ++idx) {
-                final Path source = root.resolve(String.format("S%d.java", idx));
-                Files.writeString(
-                    source,
+                fixtures.write(
+                    String.format("fixture.s%d", idx), String.format("S%d", idx),
                     String.format(
                         "package fixture.s%d;%n%s%n%s%n", idx,
                         String.join(
@@ -410,14 +404,10 @@ final class TestSetupArchitectureTest {
                         ), samples.get(idx).code()
                     )
                 );
-                args.add(source.toString());
             }
-            if (ToolProvider.getSystemJavaCompiler().run(
-                null, null, null, args.toArray(new String[0])
-            ) != 0) {
-                throw new IllegalStateException("Przykłady się nie skompilowały");
-            }
-            return new ClassFileImporter().importPath(out);
+            return fixtures.compiled(
+                "fixture", "-classpath", TestSetupArchitectureTest.classpath()
+            );
         } catch (final IOException | URISyntaxException ex) {
             throw new IllegalStateException(ex);
         }
