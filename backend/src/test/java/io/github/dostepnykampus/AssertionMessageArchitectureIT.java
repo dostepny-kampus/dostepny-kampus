@@ -27,7 +27,7 @@ import org.junit.jupiter.params.provider.ValueSource;
  *
  * @since 0.1.0
  */
-final class AssertionMessageArchitectureTest {
+final class AssertionMessageArchitectureIT {
 
     /**
      * Klasy testów z asercją bez komunikatu i issue, które to usuwa; nazwy bez wspólnego
@@ -44,14 +44,14 @@ final class AssertionMessageArchitectureTest {
      * Reguła: klasa nie woła asercji bez komunikatu.
      */
     private static final ExceptionListRule RULE = new ExceptionListRule(
-        AssertionMessageArchitectureTest::quiet, AssertionMessageArchitectureTest.KNOWN
+        AssertionMessageArchitectureIT::quiet, AssertionMessageArchitectureIT.KNOWN
     );
 
     @Test
     void assertionsCarryMessages() {
         Assertions.assertEquals(
             List.of(),
-            AssertionMessageArchitectureTest.RULE.fresh(),
+            AssertionMessageArchitectureIT.RULE.fresh(),
             "Klasa testu ma asercję bez komunikatu; dodaj komunikat z opisem oczekiwania"
         );
     }
@@ -60,7 +60,7 @@ final class AssertionMessageArchitectureTest {
     void exceptionListHoldsOnlyExistingViolations() {
         Assertions.assertEquals(
             List.of(),
-            AssertionMessageArchitectureTest.RULE.stale(),
+            AssertionMessageArchitectureIT.RULE.stale(),
             "Wyjątek z listy już nie jest naruszeniem; usuń wpis"
         );
     }
@@ -78,8 +78,8 @@ final class AssertionMessageArchitectureTest {
     void rejectsAssertionWithoutMessage(final String statement, @TempDir final Path dir)
         throws IOException {
         Assertions.assertEquals(
-            Set.of(String.format("%s.Sample", AssertionMessageArchitectureTest.SAMPLES)),
-            AssertionMessageArchitectureTest.sample(dir, statement),
+            Set.of(String.format("%s.Sample", AssertionMessageArchitectureIT.SAMPLES)),
+            AssertionMessageArchitectureIT.sample(dir, statement),
             "Reguła przepuściła asercję bez komunikatu"
         );
     }
@@ -99,14 +99,14 @@ final class AssertionMessageArchitectureTest {
         throws IOException {
         Assertions.assertEquals(
             Set.of(),
-            AssertionMessageArchitectureTest.sample(dir, statement),
+            AssertionMessageArchitectureIT.sample(dir, statement),
             "Reguła odrzuciła asercję z komunikatem albo grupowanie assertAll"
         );
     }
 
     private static boolean quiet(final JavaClass type) {
         return type.getMethodCallsFromSelf().stream()
-            .anyMatch(AssertionMessageArchitectureTest::silent);
+            .anyMatch(AssertionMessageArchitectureIT::silent);
     }
 
     private static boolean silent(final JavaMethodCall call) {
@@ -130,11 +130,11 @@ final class AssertionMessageArchitectureTest {
 
     private static Set<String> sample(final Path dir, final String statement)
         throws IOException {
-        return AssertionMessageArchitectureTest.RULE.sample(
-            dir, AssertionMessageArchitectureTest.SAMPLES,
+        return AssertionMessageArchitectureIT.RULE.sample(
+            dir, AssertionMessageArchitectureIT.SAMPLES,
             String.format(
                 "package %s;%nfinal class Sample { void check() { %s } }%n",
-                AssertionMessageArchitectureTest.SAMPLES, statement
+                AssertionMessageArchitectureIT.SAMPLES, statement
             )
         );
     }

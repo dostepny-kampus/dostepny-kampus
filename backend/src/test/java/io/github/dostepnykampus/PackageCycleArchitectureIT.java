@@ -40,7 +40,7 @@ import org.springframework.modulith.core.JavaPackage;
     packagesOf = DostepnyKampusApplication.class,
     importOptions = ImportOption.DoNotIncludeTests.class
 )
-final class PackageCycleArchitectureTest {
+final class PackageCycleArchitectureIT {
 
     /**
      * Korzenie modułów, których typy są dziś używane w podpakietach, i issue, które to usuwa.
@@ -60,16 +60,16 @@ final class PackageCycleArchitectureTest {
 
     @ArchTest
     void packagesHaveNoCycles(final JavaClasses classes) {
-        PackageCycleArchitectureTest.cycles("io.github.dostepnykampus").check(classes);
+        PackageCycleArchitectureIT.cycles("io.github.dostepnykampus").check(classes);
     }
 
     @ArchTest
     void subpackagesSkipModuleRootOutsideExceptionList(final JavaClasses classes) {
         KnownViolations.check(
             classes,
-            PackageCycleArchitectureTest.KNOWN,
-            known -> PackageCycleArchitectureTest.root(
-                PackageCycleArchitectureTest.modules(), known
+            PackageCycleArchitectureIT.KNOWN,
+            known -> PackageCycleArchitectureIT.root(
+                PackageCycleArchitectureIT.modules(), known
             )
         );
     }
@@ -82,10 +82,10 @@ final class PackageCycleArchitectureTest {
         this.type("way.photo", "Model", "way.submission.Model");
         final JavaClasses classes = this.compiled();
         Assertions.assertFalse(
-            PackageCycleArchitectureTest.cycles(PackageCycleArchitectureTest.SAMPLES)
+            PackageCycleArchitectureIT.cycles(PackageCycleArchitectureIT.SAMPLES)
                 .evaluate(classes).hasViolation()
-                || PackageCycleArchitectureTest.root(
-                    List.of(PackageCycleArchitectureTest.at("way")), Set.of()
+                || PackageCycleArchitectureIT.root(
+                    List.of(PackageCycleArchitectureIT.at("way")), Set.of()
                 ).evaluate(classes).hasViolation(),
             "Reguła odrzuciła zależności bez cyklu i bez korzenia modułu"
         );
@@ -96,7 +96,7 @@ final class PackageCycleArchitectureTest {
         this.type("loop.photo", "Model", "loop.submission.Model");
         this.type("loop.submission", "Model", "loop.photo.Model");
         Assertions.assertTrue(
-            PackageCycleArchitectureTest.cycles(PackageCycleArchitectureTest.SAMPLES)
+            PackageCycleArchitectureIT.cycles(PackageCycleArchitectureIT.SAMPLES)
                 .evaluate(this.compiled()).hasViolation(),
             "Reguła przepuściła cykl między tematami"
         );
@@ -108,7 +108,7 @@ final class PackageCycleArchitectureTest {
         this.type("nest.submission", "Model", "nest.submission.web.Controller");
         this.type("nest.submission.web", "Request", "nest.submission.Model");
         Assertions.assertTrue(
-            PackageCycleArchitectureTest.cycles(PackageCycleArchitectureTest.SAMPLES)
+            PackageCycleArchitectureIT.cycles(PackageCycleArchitectureIT.SAMPLES)
                 .evaluate(this.compiled()).hasViolation(),
             "Reguła przepuściła cykl między tematem a jego warstwą"
         );
@@ -119,8 +119,8 @@ final class PackageCycleArchitectureTest {
         this.type("top", "Area", "");
         this.type("top.persistence", "Rows", "top.Area");
         Assertions.assertTrue(
-            PackageCycleArchitectureTest.root(
-                List.of(PackageCycleArchitectureTest.at("top")), Set.of()
+            PackageCycleArchitectureIT.root(
+                List.of(PackageCycleArchitectureIT.at("top")), Set.of()
             ).evaluate(this.compiled()).hasViolation(),
             "Reguła przepuściła podpakiet zależny od korzenia modułu"
         );
@@ -139,7 +139,7 @@ final class PackageCycleArchitectureTest {
                     "klasa z podpakietu nie zależy od korzenia własnego modułu",
                     (Dependency dependency) -> roots.stream()
                         .filter(pack -> !skipped.contains(pack))
-                        .noneMatch(pack -> PackageCycleArchitectureTest.usesRoot(dependency, pack))
+                        .noneMatch(pack -> PackageCycleArchitectureIT.usesRoot(dependency, pack))
                 )
             )
         );
@@ -159,11 +159,11 @@ final class PackageCycleArchitectureTest {
     }
 
     private static String at(final String pack) {
-        return String.format("%s.%s", PackageCycleArchitectureTest.SAMPLES, pack);
+        return String.format("%s.%s", PackageCycleArchitectureIT.SAMPLES, pack);
     }
 
     private JavaClasses compiled() throws IOException {
-        return new ArchSamples(this.dir).compiled(PackageCycleArchitectureTest.SAMPLES);
+        return new ArchSamples(this.dir).compiled(PackageCycleArchitectureIT.SAMPLES);
     }
 
     private void type(final String pack, final String name, final String field)
@@ -172,8 +172,8 @@ final class PackageCycleArchitectureTest {
         if (field.isEmpty()) {
             type = field;
         } else {
-            type = PackageCycleArchitectureTest.at(field);
+            type = PackageCycleArchitectureIT.at(field);
         }
-        new ArchSamples(this.dir).type(PackageCycleArchitectureTest.at(pack), name, type);
+        new ArchSamples(this.dir).type(PackageCycleArchitectureIT.at(pack), name, type);
     }
 }

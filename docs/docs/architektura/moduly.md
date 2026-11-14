@@ -137,14 +137,14 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | pakiet główny i lista podpakietów `shared` | `ModularityTest` (`basePackageHoldsOnlyApplication`, `sharedHasOnlyErrorJsonAndGeo`) |
 | jawna lista zależności modułu serwera | `ModularityTest` (`modulesDeclareAllowedDependencies`, `infraVerifiesModuleBoundaries`) |
 | korzeń modułu: `package-info.java`, `api`, tematy albo warstwy; typy `api` bez typów wnętrza; zależność od `api` zapisana jako `moduł :: api` | `ModuleRootArchitectureTest` |
-| kierunek warstw w obu układach modułu | `LayerDirectionArchitectureTest` (#1668) |
+| kierunek warstw w obu układach modułu | `LayerDirectionArchitectureIT` (#1668) |
 | dziedzina bez frameworków, adapter nie woła adaptera | `BarrierArchitectureTest` (A-1…A-9), dziś tylko `barrier`: #1704 |
 | nazwy pakietów ze słownika, zakazane nazwy, głębokość | serwer #1665, Android #1672 |
 | opis każdego pakietu | serwer `PackageDescriptionArchitectureTest`, Android #1673 |
 | brak cykli między pakietami modułu | serwer #1667; Android: podpakiet nie importuje korzenia (poza `R`), Konsist `infra_feature_part_skips_root` |
 | moduł serwera uruchamia się sam | #1670 |
 | migracje modułu w jego katalogu, brak kluczy obcych między modułami | #1671 |
-| najwyżej 15 plików w pakiecie | `PackageSizeArchitectureTest` (serwer i Android) |
+| najwyżej 15 plików w pakiecie | serwer `PackageSizeArchitectureIT`, Android `PackageSizeArchitectureTest` |
 | moduł Androida ma kod produkcyjny | `ModuleContentArchitectureTest` |
 | moduł funkcji nie widzi bazy i sieci | kompilator: moduł funkcji nie ma ich w zależnościach, także w testach; Konsist `infra_a1_ui_no_network_or_db`; Module Graph Assert: #1674 |
 | tylko `:core:data` i `:app` zależą od bazy i sieci (sieci także `:systemtest`), nigdy przez `api` | `StorageDependencyArchitectureTest` |
@@ -154,5 +154,5 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | jawna widoczność w modułach `core` | `explicitApi()`; `:core:data`: #1625 |
 | kontrakt publicznych interfejsów `:core:data` | #1675 |
 | zadeklarowane zależności Gradle są używane i mają właściwy zakres | `buildHealth` |
-| opis modułu przy kodzie | `ModuleDescriptionArchitectureTest` (serwer); `ModuleReadmeArchitectureTest` (Android, zebrane na stronie [Moduły aplikacji Android](moduly-android.md)) |
+| opis modułu przy kodzie | `ModuleDescriptionArchitectureIT` (serwer); `ModuleReadmeArchitectureTest` (Android, zebrane na stronie [Moduły aplikacji Android](moduly-android.md)) |
 | jeden temat na pakiet, kryteria nowego modułu, łączenie małych modułów | przegląd PR |

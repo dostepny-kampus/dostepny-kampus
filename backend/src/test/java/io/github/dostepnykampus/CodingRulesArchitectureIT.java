@@ -42,12 +42,12 @@ import org.junit.jupiter.api.Test;
     packagesOf = DostepnyKampusApplication.class,
     importOptions = ImportOption.DoNotIncludeTests.class
 )
-final class CodingRulesArchitectureTest {
+final class CodingRulesArchitectureIT {
 
     @ArchTest
     void codingForbidsJavaUtilLogging(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
-            () -> CodingRulesArchitectureTest.logging()
+            () -> CodingRulesArchitectureIT.logging()
                 .check(classes),
             "Kod produkcyjny używa java.util.logging"
         );
@@ -56,7 +56,7 @@ final class CodingRulesArchitectureTest {
     @ArchTest
     void codingForbidsStandardStreams(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
-            () -> CodingRulesArchitectureTest.streams()
+            () -> CodingRulesArchitectureIT.streams()
                 .check(classes),
             "Kod produkcyjny pisze do System.out, System.err albo woła printStackTrace"
         );
@@ -65,7 +65,7 @@ final class CodingRulesArchitectureTest {
     @ArchTest
     void codingForbidsGenericExceptions(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
-            () -> CodingRulesArchitectureTest.exceptions()
+            () -> CodingRulesArchitectureIT.exceptions()
                 .check(classes),
             "Kod produkcyjny rzuca Throwable, Exception albo RuntimeException"
         );
@@ -77,7 +77,7 @@ final class CodingRulesArchitectureTest {
             JavaClass.Predicates.belongToAnyOf(SchemaReaderSample.class)
         );
         Assertions.assertDoesNotThrow(
-            () -> CodingRulesArchitectureTest.contractReaders().check(
+            () -> CodingRulesArchitectureIT.contractReaders().check(
                 new ClassFileImporter()
                     .withImportOption(ImportOption.Predefined.ONLY_INCLUDE_TESTS)
                     .importPackagesOf(DostepnyKampusApplication.class).that(real)
@@ -89,7 +89,7 @@ final class CodingRulesArchitectureTest {
     @Test
     void contractRuleRejectsOwnSchemaReader() {
         Assertions.assertTrue(
-            CodingRulesArchitectureTest.contractReaders()
+            CodingRulesArchitectureIT.contractReaders()
                 .evaluate(new ClassFileImporter().importClasses(SchemaReaderSample.class))
                 .hasViolation(),
             "Reguła kontraktu nie wykryła własnego odczytu schematu"
@@ -103,7 +103,7 @@ final class CodingRulesArchitectureTest {
             MatcherAssert.assertThat(
                 "Plik kontraktu czyta inna klasa niż OpenApiContract; użyj OpenApiContract.text()",
                 files.filter(file -> file.toString().endsWith(".java")).filter(
-                    file -> name.matcher(CodingRulesArchitectureTest.source(file)).find()
+                    file -> name.matcher(CodingRulesArchitectureIT.source(file)).find()
                 ).map(file -> file.getFileName().toString()).toList(),
                 Matchers.contains("OpenApiContract.java")
             );
@@ -113,7 +113,7 @@ final class CodingRulesArchitectureTest {
     @Test
     void codingLoggingRuleCatchesCallWithoutField() {
         Assertions.assertTrue(
-            CodingRulesArchitectureTest.logging()
+            CodingRulesArchitectureIT.logging()
                 .evaluate(new ClassFileImporter().importClasses(JulCallSample.class))
                 .hasViolation(),
             "Reguła loggingu nie wykryła wywołania java.util.logging bez pola"

@@ -35,7 +35,7 @@ import org.junit.jupiter.api.io.TempDir;
     packagesOf = DostepnyKampusApplication.class,
     importOptions = ImportOption.DoNotIncludeTests.class
 )
-final class PackageSizeArchitectureTest {
+final class PackageSizeArchitectureIT {
 
     /**
      * Największa dozwolona liczba klas najwyższego poziomu w pakiecie.
@@ -60,13 +60,13 @@ final class PackageSizeArchitectureTest {
 
     @ArchTest
     void packagesFitLimitOutsideExceptionList(final JavaClasses classes) {
-        final Map<String, Long> found = PackageSizeArchitectureTest.oversized(classes);
-        found.keySet().removeAll(PackageSizeArchitectureTest.OVERSIZED.keySet());
+        final Map<String, Long> found = PackageSizeArchitectureIT.oversized(classes);
+        found.keySet().removeAll(PackageSizeArchitectureIT.OVERSIZED.keySet());
         Assertions.assertEquals(
             Map.of(), found,
             String.format(
                 "Pakiet ma więcej niż %d klas; podziel go według tematu",
-                PackageSizeArchitectureTest.LIMIT
+                PackageSizeArchitectureIT.LIMIT
             )
         );
     }
@@ -74,9 +74,9 @@ final class PackageSizeArchitectureTest {
     @ArchTest
     void exceptionListHoldsOnlyOversizedPackages(final JavaClasses classes) {
         final List<String> stale = new ArrayList<>(
-            PackageSizeArchitectureTest.OVERSIZED.keySet()
+            PackageSizeArchitectureIT.OVERSIZED.keySet()
         );
-        stale.removeAll(PackageSizeArchitectureTest.oversized(classes).keySet());
+        stale.removeAll(PackageSizeArchitectureIT.oversized(classes).keySet());
         Assertions.assertEquals(
             List.of(), stale,
             "Pakiet z listy wyjątków mieści się w limicie; usuń wpis"
@@ -86,8 +86,8 @@ final class PackageSizeArchitectureTest {
     @Test
     void rejectsPackageWithSixteenClasses() throws IOException {
         Assertions.assertEquals(
-            Map.of(PackageSizeArchitectureTest.SAMPLES, 16L),
-            PackageSizeArchitectureTest.oversized(this.compiled(16)),
+            Map.of(PackageSizeArchitectureIT.SAMPLES, 16L),
+            PackageSizeArchitectureIT.oversized(this.compiled(16)),
             "Reguła przepuściła pakiet z szesnastoma klasami"
         );
     }
@@ -96,7 +96,7 @@ final class PackageSizeArchitectureTest {
     void acceptsFifteenClassesWithNestedClassesAndDescription() throws IOException {
         Assertions.assertEquals(
             Map.of(),
-            PackageSizeArchitectureTest.oversized(this.compiled(15)),
+            PackageSizeArchitectureIT.oversized(this.compiled(15)),
             "Reguła policzyła klasy zagnieżdżone albo package-info"
         );
     }
@@ -107,13 +107,13 @@ final class PackageSizeArchitectureTest {
             .filter(type -> !"package-info".equals(type.getSimpleName()))
             .collect(Collectors.groupingBy(JavaClass::getPackageName, Collectors.counting()))
             .entrySet().stream()
-            .filter(entry -> entry.getValue() > PackageSizeArchitectureTest.LIMIT)
+            .filter(entry -> entry.getValue() > PackageSizeArchitectureIT.LIMIT)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private JavaClasses compiled(final int count) throws IOException {
         final ArchSamples samples = new ArchSamples(this.dir);
-        final String pack = PackageSizeArchitectureTest.SAMPLES;
+        final String pack = PackageSizeArchitectureIT.SAMPLES;
         samples.write(pack, "package-info", String.format("package %s;%n", pack));
         for (final int index : IntStream.rangeClosed(1, count).toArray()) {
             final String name = String.format("Sample%d", index);

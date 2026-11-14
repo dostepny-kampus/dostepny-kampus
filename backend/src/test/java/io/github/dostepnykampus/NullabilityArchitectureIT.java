@@ -49,7 +49,7 @@ import org.junit.jupiter.params.provider.MethodSource;
     packagesOf = DostepnyKampusApplication.class,
     importOptions = ImportOption.DoNotIncludeTests.class
 )
-final class NullabilityArchitectureTest {
+final class NullabilityArchitectureIT {
 
     /**
      * Komponenty rekordów domeny dopuszczone jako {@code @Nullable}. Klasy z
@@ -80,7 +80,7 @@ final class NullabilityArchitectureTest {
     @ArchTest
     void productionHasNoNullUnmarked(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
-            () -> NullabilityArchitectureTest.unmarked()
+            () -> NullabilityArchitectureIT.unmarked()
                 .check(classes),
             "Kod produkcyjny wyłącza NullAway przez @NullUnmarked"
         );
@@ -89,7 +89,7 @@ final class NullabilityArchitectureTest {
     @ArchTest
     void optionalOnlyAsMethodResult(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
-            () -> NullabilityArchitectureTest.optionals()
+            () -> NullabilityArchitectureIT.optionals()
                 .check(classes),
             "Optional jest polem, parametrem albo komponentem rekordu"
         );
@@ -98,8 +98,8 @@ final class NullabilityArchitectureTest {
     @ArchTest
     void nullableInDomainOnlyOnListedComponents(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
-            () -> NullabilityArchitectureTest.nullables(
-                NullabilityArchitectureTest.LISTED
+            () -> NullabilityArchitectureIT.nullables(
+                NullabilityArchitectureIT.LISTED
             ).check(classes),
             "W domenie @Nullable stoi poza listą par klasa i komponent"
         );
@@ -111,7 +111,7 @@ final class NullabilityArchitectureTest {
         throws IOException, URISyntaxException {
         MatcherAssert.assertThat(
             String.format("Reguła źle oceniła przykład %s", sample.label()),
-            NullabilityArchitectureTest.violated(this.dir, sample),
+            NullabilityArchitectureIT.violated(this.dir, sample),
             Matchers.is(sample.violating())
         );
     }
@@ -128,16 +128,16 @@ final class NullabilityArchitectureTest {
 
     private static Stream<ArchRule> emptyScopeRules() {
         return Stream.of(
-            NullabilityArchitectureTest.unmarked(),
-            NullabilityArchitectureTest.optionals(),
-            NullabilityArchitectureTest.nullables(NullabilityArchitectureTest.LISTED)
+            NullabilityArchitectureIT.unmarked(),
+            NullabilityArchitectureIT.optionals(),
+            NullabilityArchitectureIT.nullables(NullabilityArchitectureIT.LISTED)
         );
     }
 
     private static Stream<Sample> samples() {
-        final ArchRule unmarked = NullabilityArchitectureTest.unmarked();
-        final ArchRule optional = NullabilityArchitectureTest.optionals();
-        final ArchRule nullable = NullabilityArchitectureTest.nullables(
+        final ArchRule unmarked = NullabilityArchitectureIT.unmarked();
+        final ArchRule optional = NullabilityArchitectureIT.optionals();
+        final ArchRule nullable = NullabilityArchitectureIT.nullables(
             Map.of("Listed", Set.of("kept"))
         );
         return Stream.of(
@@ -150,19 +150,19 @@ final class NullabilityArchitectureTest {
                     Map.of("v/package-info", "NullUnmarked", "v/Plain", "final class Plain { }"),
                     true
                 )
-            ), NullabilityArchitectureTest.rejected(
+            ), NullabilityArchitectureIT.rejected(
                 unmarked, "u/A",
                 "@NullUnmarked class A { }",
                 "class A { @NullUnmarked void f() { } }",
                 "class A { @NullUnmarked A() { } }"
-            ), NullabilityArchitectureTest.rejected(
+            ), NullabilityArchitectureIT.rejected(
                 optional, "a/A",
                 "class A { Optional<String> v; }",
                 "class A { void f(Optional<String> v) { } }",
                 "class A { A(Optional<String> v) { } }",
                 "record A(Optional<String> v) { }",
                 "class A { List<Optional<String>> v; }"
-            ), NullabilityArchitectureTest.rejected(
+            ), NullabilityArchitectureIT.rejected(
                 nullable, "domain/A",
                 "class A { @Nullable String v; }",
                 "class A { @Nullable String f() { return null; } }",
@@ -221,7 +221,7 @@ final class NullabilityArchitectureTest {
             new ArchCondition<JavaClass>("not switch off NullAway with @NullUnmarked") {
                 @Override
                 public void check(final JavaClass item, final ConditionEvents events) {
-                    if (NullabilityArchitectureTest.switchedOff(item)) {
+                    if (NullabilityArchitectureIT.switchedOff(item)) {
                         events.add(SimpleConditionEvent.violated(item, item.getName()));
                     }
                 }
@@ -239,7 +239,7 @@ final class NullabilityArchitectureTest {
 
     private static ArchRule optionals() {
         return ArchRuleDefinition.classes().should(
-            NullabilityArchitectureTest.problems(
+            NullabilityArchitectureIT.problems(
                 "use Optional only as a result", NullabilityScan::optionalSites
             )
         );
@@ -249,7 +249,7 @@ final class NullabilityArchitectureTest {
         return ArchRuleDefinition.classes().that().resideInAnyPackage(
             "..domain..", "..barrier.submission", "..barrier.submission.content"
         ).should(
-            NullabilityArchitectureTest.problems(
+            NullabilityArchitectureIT.problems(
                 "use @Nullable only on listed components",
                 type -> NullabilityScan.misplaced(type, listed)
             )

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.io.TempDir;
  *
  * @since 0.1.0
  */
-final class ClassNameArchitectureTest {
+final class ClassNameArchitectureIT {
 
     /**
      * Pakiet przykładów kompilowanych przez test.
@@ -44,7 +44,7 @@ final class ClassNameArchitectureTest {
                 new ClassFileImporter()
                     .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
                     .importPackagesOf(DostepnyKampusApplication.class),
-                ClassNameArchitectureTest.names()
+                ClassNameArchitectureIT.names()
             ),
             "Klasy produkcyjne mają nazwy-worki"
         );
@@ -55,22 +55,22 @@ final class ClassNameArchitectureTest {
         final ArchSamples samples = new ArchSamples(this.dir);
         for (final String name : new String[] {"DateUtils", "JsonHelper", "PhotoManager"}) {
             samples.write(
-                ClassNameArchitectureTest.SAMPLES, name,
+                ClassNameArchitectureIT.SAMPLES, name,
                 String.format(
-                    "package %s;%nfinal class %s { }%n", ClassNameArchitectureTest.SAMPLES, name
+                    "package %s;%nfinal class %s { }%n", ClassNameArchitectureIT.SAMPLES, name
                 )
             );
         }
         samples.write(
-            ClassNameArchitectureTest.SAMPLES, "PhotoController",
+            ClassNameArchitectureIT.SAMPLES, "PhotoController",
             String.format(
-                "package %s;%nfinal class PhotoController { }%n", ClassNameArchitectureTest.SAMPLES
+                "package %s;%nfinal class PhotoController { }%n", ClassNameArchitectureIT.SAMPLES
             )
         );
         Assertions.assertEquals(
             3,
-            ClassNameArchitectureTest.names()
-                .evaluate(samples.compiled(ClassNameArchitectureTest.SAMPLES))
+            ClassNameArchitectureIT.names()
+                .evaluate(samples.compiled(ClassNameArchitectureIT.SAMPLES))
                 .getFailureReport().getDetails().size(),
             "Reguła przepuściła nazwę Utils, Helper albo Manager albo odrzuciła rolę frameworka"
         );

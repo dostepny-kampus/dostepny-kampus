@@ -32,7 +32,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * w adapterze tylko w application i adapterach, A-6 API innego modułu tylko w application, A-7
  * wyjątki HTTP tylko w web. A-9 (typy błędów bez HTTP i Jacksona) sprawdza na kodzie
  * {@link ArchitectureTest}, a tu są jej przykłady negatywne. Dziedzinę bez frameworków i adapter
- * bez adaptera pilnuje {@link LayerDirectionArchitectureTest}. Lista wyjątków tylko maleje.
+ * bez adaptera pilnuje {@link LayerDirectionArchitectureIT}. Lista wyjątków tylko maleje.
  *
  * @since 0.1.0
  */
