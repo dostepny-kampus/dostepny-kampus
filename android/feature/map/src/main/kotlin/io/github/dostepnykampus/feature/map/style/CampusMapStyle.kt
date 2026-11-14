@@ -6,10 +6,10 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.model.building.EntranceMarking
-import io.github.dostepnykampus.feature.map.data.CampusBounds
-import io.github.dostepnykampus.feature.map.data.CampusMapData
-import io.github.dostepnykampus.feature.map.data.MapSelection
-import io.github.dostepnykampus.feature.map.data.featureCollection
+import io.github.dostepnykampus.feature.map.CampusBounds
+import io.github.dostepnykampus.feature.map.CampusMapData
+import io.github.dostepnykampus.feature.map.MapSelection
+import io.github.dostepnykampus.feature.map.featureCollection
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject

@@ -15,12 +15,12 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.feature.map.CampusBounds
+import io.github.dostepnykampus.feature.map.CampusMapData
+import io.github.dostepnykampus.feature.map.MapSelection
+import io.github.dostepnykampus.feature.map.SelectedEntrance
 import io.github.dostepnykampus.feature.map.camera.MapCamera
-import io.github.dostepnykampus.feature.map.data.CampusBounds
-import io.github.dostepnykampus.feature.map.data.CampusMapData
-import io.github.dostepnykampus.feature.map.data.MapSelection
-import io.github.dostepnykampus.feature.map.data.SelectedEntrance
-import io.github.dostepnykampus.feature.map.data.campusMapData
+import io.github.dostepnykampus.feature.map.campusMapData
 import io.github.dostepnykampus.feature.map.rememberMapStyle
 import org.junit.Assert.assertEquals
 import org.junit.Rule

@@ -14,9 +14,9 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.data.CampusBounds
-import io.github.dostepnykampus.feature.map.data.CampusMapData
-import io.github.dostepnykampus.feature.map.data.MapSelection
+import io.github.dostepnykampus.feature.map.CampusBounds
+import io.github.dostepnykampus.feature.map.CampusMapData
+import io.github.dostepnykampus.feature.map.MapSelection
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng

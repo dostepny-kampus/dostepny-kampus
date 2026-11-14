@@ -37,8 +37,6 @@ import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.data.CampusZone
-import io.github.dostepnykampus.feature.map.data.DAY_FORMAT
 
 /**
  * Arkusz bariery na dole mapy V1 po dotknięciu znaku: plakietka uciążliwości ze znakiem i słowem,

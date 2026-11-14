@@ -7,12 +7,12 @@ package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.feature.map.data.BARRIER_ID
-import io.github.dostepnykampus.feature.map.data.BARRIER_SEVERITY
-import io.github.dostepnykampus.feature.map.data.CampusMapData
-import io.github.dostepnykampus.feature.map.data.campusMapData
-import io.github.dostepnykampus.feature.map.data.selection
-import io.github.dostepnykampus.feature.map.data.withBarriers
+import io.github.dostepnykampus.feature.map.campus.BARRIER_ID
+import io.github.dostepnykampus.feature.map.campus.BARRIER_SEVERITY
+import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.campusMapData
+import io.github.dostepnykampus.feature.map.campus.selection
+import io.github.dostepnykampus.feature.map.campus.withBarriers
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject

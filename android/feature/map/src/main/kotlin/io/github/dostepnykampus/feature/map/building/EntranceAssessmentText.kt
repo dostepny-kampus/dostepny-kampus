@@ -12,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.core.model.building.AssessmentSource
 import io.github.dostepnykampus.core.model.building.EntranceAssessment
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.data.DAY_FORMAT
 
 /**
  * Wspólne oznaczenie wejść [entrances]: dzień i źródło, gdy każde wejście ma te same.

@@ -23,7 +23,6 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.data.AreaChoice
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

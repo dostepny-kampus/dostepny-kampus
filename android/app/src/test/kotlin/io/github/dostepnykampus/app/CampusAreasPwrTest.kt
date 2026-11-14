@@ -32,10 +32,10 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
-import io.github.dostepnykampus.feature.map.data.CampusBounds
-import io.github.dostepnykampus.feature.map.data.MapArea
-import io.github.dostepnykampus.feature.map.data.MapSelection
-import io.github.dostepnykampus.feature.map.data.center
+import io.github.dostepnykampus.feature.map.CampusBounds
+import io.github.dostepnykampus.feature.map.MapArea
+import io.github.dostepnykampus.feature.map.MapSelection
+import io.github.dostepnykampus.feature.map.center
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
