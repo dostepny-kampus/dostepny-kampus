@@ -8,6 +8,7 @@ package io.github.dostepnykampus.building.room.json;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -67,6 +68,47 @@ final class ArcgisPlansTest {
                 .map(room -> String.join("/", room.number(), room.function())).toList(),
             Matchers.contains("101/Sala", "/Inne", "/Inne")
         );
+    }
+
+    @Test
+    void usSixteenReadsFloorsWithIdLabelAndOrder() throws IOException {
+        final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        server.createContext(
+            "/FeatureServer/1/query",
+            exchange -> ArcgisPlansTest.send(
+                exchange,
+                String.join(
+                    "",
+                    "{\"features\":[",
+                    "{\"geometry\":null,\"properties\":",
+                    "{\"LEVEL_ID\":\"T.X.P0\",\"NAME\":\"Bud. X parter\",",
+                    "\"LEVEL_NUMBER\":0}},",
+                    "{\"geometry\":null,\"properties\":",
+                    "{\"LEVEL_ID\":\"T.X.P00\",\"NAME\":\" Bud. X piwnica \",",
+                    "\"LEVEL_NUMBER\":-1}},",
+                    "{\"geometry\":null,\"properties\":{\"LEVEL_ID\":\" \",\"LEVEL_NUMBER\":2}}",
+                    "]}"
+                )
+            )
+        );
+        server.start();
+        try {
+            MatcherAssert.assertThat(
+                "Piętra nie mają identyfikatora, nazwy i numeru albo zostało piętro bez id",
+                new ArcgisPlans(JsonMapper.builder().build()).floors(
+                    String.format(
+                        "http://localhost:%d/FeatureServer", server.getAddress().getPort()
+                    ),
+                    1
+                ),
+                Matchers.contains(
+                    new PlanFloor("T.X.P0", "Bud. X parter", 0),
+                    new PlanFloor("T.X.P00", "Bud. X piwnica", -1)
+                )
+            );
+        } finally {
+            server.stop(0);
+        }
     }
 
     @Test
