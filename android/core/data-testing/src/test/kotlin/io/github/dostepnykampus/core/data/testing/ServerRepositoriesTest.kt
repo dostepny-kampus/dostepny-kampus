@@ -7,6 +7,9 @@ package io.github.dostepnykampus.core.data.testing
 
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
+import io.github.dostepnykampus.core.data.server.ServerBuildings
+import io.github.dostepnykampus.core.data.server.ServerCard
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.Entrance
@@ -46,6 +49,11 @@ class ServerRepositoriesTest {
     @Test
     fun nfr10_fault_is_server_error() {
         assertEquals(direct(ApiResult.ServerError(SERVER_ERROR)), fixture(ServerReply.Fault(SERVER_ERROR)))
+    }
+
+    @Test
+    fun nfr10_missing_is_not_found() {
+        assertEquals(direct(ApiResult.NotFound), fixture(ServerReply.Missing))
     }
 
     @Test

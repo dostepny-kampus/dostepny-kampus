@@ -6,7 +6,7 @@ Repozytoria: łączą sieć i bazę w dane dla ekranów, prowadzą kolejkę wysy
 
 ## API
 
-Repozytoria i przypadki użycia w podpakietach `account`, `barriers`, `buildings`, `submissions`, `map`, `network`, `start`; wiązania Hilt w `di`. `SubmissionQueue.save` zwraca `SavedSubmission` z identyfikatorem zgłoszenia, bez encji Room.
+Repozytoria i przypadki użycia w podpakietach `account`, `barriers`, `buildings`, `submissions`, `map`, `network`, `start`; odpowiedź serwera bez typów klienta HTTP (`ServerReply`, `ServerBuildings`, `ServerCard`) w `server`; wiązania Hilt w `di`. `SubmissionQueue.save` zwraca `SavedSubmission` z identyfikatorem zgłoszenia, bez encji Room.
 
 ## Zależności
 
