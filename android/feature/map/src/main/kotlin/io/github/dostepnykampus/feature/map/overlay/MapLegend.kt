@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -76,27 +75,15 @@ private val ENTRANCE_WORDS =
 @Composable
 internal fun MapLegend(isOpen: Boolean, onOpenChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
     Column(modifier.padding(Odstepy.s), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        val scheme = MaterialTheme.colorScheme
         val toggle = Modifier.clickable(role = Role.Button) { onOpenChange(!isOpen) }
-        Surface(
-            modifier = Modifier.heightIn(min = MapControlTouchSize).then(toggle),
-            shape = CircleShape,
-            color = if (isOpen) scheme.primaryContainer else scheme.surfaceContainerLowest,
-            shadowElevation = Wysokosci.kontrolkiMapy,
-            border = mapControlBorder(),
-        ) {
-            Row(
-                modifier = Modifier.heightIn(min = MapControlTouchSize).padding(start = Odstepy.m, end = Odstepy.l),
-                horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(imageVector = MapControlIcons.Legend, contentDescription = null)
-                Text(
-                    text = stringResource(R.string.mapa_legenda),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = Typografia.wyroznienieWaga,
-                )
-            }
+        val row = Modifier.padding(start = Odstepy.m, end = Odstepy.l)
+        MapTogglePill(isOpen = isOpen, modifier = toggle, rowModifier = row) {
+            Icon(imageVector = MapControlIcons.Legend, contentDescription = null)
+            Text(
+                text = stringResource(R.string.mapa_legenda),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = Typografia.wyroznienieWaga,
+            )
         }
         val panel = Modifier.weight(weight = 1f, fill = false)
         if (isOpen) LegendPanel(onClose = { onOpenChange(false) }, modifier = panel)
