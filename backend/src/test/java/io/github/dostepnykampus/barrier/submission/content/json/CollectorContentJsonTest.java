@@ -22,7 +22,7 @@ import tools.jackson.databind.node.ObjectNode;
 final class CollectorContentJsonTest {
 
     @Test
-    void quickIsForEveryone() {
+    void allowsQuickForEveryone() {
         Assertions.assertFalse(
             CollectorContentJsonTest.bound(node -> { }).forCollector(),
             "Szybkie zgłoszenie jest dla każdego"
@@ -38,7 +38,7 @@ final class CollectorContentJsonTest {
     }
 
     @Test
-    void preciseIsForCollector() {
+    void reservesPreciseForCollector() {
         Assertions.assertTrue(
             CollectorContentJsonTest.bound(node -> node.put("kind", "PRECISE")).forCollector(),
             "Zgłoszenie precyzyjne jest dla zbierającego"
@@ -46,7 +46,7 @@ final class CollectorContentJsonTest {
     }
 
     @Test
-    void entranceMarkingIsForCollector() {
+    void reservesEntranceMarkingForCollector() {
         Assertions.assertTrue(
             CollectorContentJsonTest.bound(node -> node.put("kind", "ENTRANCE_MARKING"))
                 .forCollector(),
@@ -55,7 +55,7 @@ final class CollectorContentJsonTest {
     }
 
     @Test
-    void quickReplacingIsForCollector() {
+    void reservesQuickReplacingForCollector() {
         Assertions.assertTrue(
             CollectorContentJsonTest.bound(CollectorContentJsonTest::replacing).forCollector(),
             "Szybkie zgłoszenie zastępujące inne jest dla zbierającego"
@@ -63,7 +63,7 @@ final class CollectorContentJsonTest {
     }
 
     @Test
-    void newSubmissionReplacesNothing() {
+    void replacesNothingWithNewSubmission() {
         Assertions.assertEquals(
             Optional.empty(), CollectorContentJsonTest.bound(node -> { }).ordinaryChange(),
             "Nowe zgłoszenie niczego nie zastępuje"
@@ -71,7 +71,7 @@ final class CollectorContentJsonTest {
     }
 
     @Test
-    void changeReplacesSubmission() {
+    void replacesSubmissionOnChange() {
         Assertions.assertEquals(
             Optional.of(JsonBodies.REPLACED),
             CollectorContentJsonTest.bound(CollectorContentJsonTest::replacing).ordinaryChange(),
@@ -80,7 +80,7 @@ final class CollectorContentJsonTest {
     }
 
     @Test
-    void keptBarrierReplacesSubmission() {
+    void replacesSubmissionWithKeptBarrier() {
         Assertions.assertEquals(
             Optional.of(JsonBodies.REPLACED),
             CollectorContentJsonTest.bound(
@@ -91,7 +91,7 @@ final class CollectorContentJsonTest {
     }
 
     @Test
-    void removedBarrierIsNotOrdinaryChange() {
+    void distinguishesRemovedBarrierFromOrdinaryChange() {
         Assertions.assertEquals(
             Optional.empty(),
             CollectorContentJsonTest.bound(

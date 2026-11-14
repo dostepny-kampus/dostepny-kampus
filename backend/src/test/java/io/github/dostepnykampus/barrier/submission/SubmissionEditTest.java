@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 final class SubmissionEditTest {
 
     @Test
-    void mthreeThreeRejectsExpectedVersionBelowOne() {
+    void rejectsExpectedVersionBelowOne() {
         Assertions.assertAll(
             Stream.of(0, -1, Integer.MIN_VALUE).map(
                 version -> () -> Assertions.assertEquals(
@@ -39,7 +39,7 @@ final class SubmissionEditTest {
     }
 
     @Test
-    void mthreeThreeKeepsComponentsOfVersionOne() {
+    void keepsComponentsOfVersionOne() {
         final SubmissionEdit edit = new SubmissionEdit(
             SubmissionSamples.ID, 1, SubmissionSamples.content()
         );
@@ -55,7 +55,7 @@ final class SubmissionEditTest {
     }
 
     @Test
-    void mthreeThreeRejectsMissingIdOrContent() {
+    void rejectsMissingIdOrContent() {
         Assertions.assertAll(
             () -> Assertions.assertThrows(
                 NullPointerException.class,

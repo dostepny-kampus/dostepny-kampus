@@ -78,7 +78,7 @@ final class SubmissionPlaceTest {
     }
 
     @Test
-    void brGTwoWithBuildingChangesOnlyBuilding() {
+    void changesOnlyBuildingWhenBuildingGiven() {
         final SubmissionPlace origin = SubmissionPlaceTest.place(4.5, "B1");
         final SubmissionPlace copy = origin.withBuilding("C3");
         Assertions.assertAll(
@@ -94,7 +94,7 @@ final class SubmissionPlaceTest {
     }
 
     @Test
-    void brGTwoOutsideBuildingsClearsOnlyBuilding() {
+    void clearsOnlyBuildingOutsideBuildings() {
         final SubmissionPlace origin = SubmissionPlaceTest.place(4.5, "B1");
         final SubmissionPlace copy = origin.outsideBuildings();
         Assertions.assertAll(

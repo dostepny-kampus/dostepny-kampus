@@ -29,7 +29,7 @@ import tools.jackson.databind.JsonNode;
 final class SubmissionContentJsonTest {
 
     @Test
-    void wthreeOneFullContentBindsToDomain() {
+    void bindsFullContentToDomain() {
         Assertions.assertEquals(
             new SubmissionContent(
                 SubmissionKind.PRECISE,
@@ -47,7 +47,7 @@ final class SubmissionContentJsonTest {
     }
 
     @Test
-    void wthreeOneContentWritesBackSameJson() {
+    void writesBackSameJsonForContent() {
         final JsonNode full = JsonBodies.json(JsonBodies.FULL);
         Assertions.assertAll(
             () -> Assertions.assertEquals(

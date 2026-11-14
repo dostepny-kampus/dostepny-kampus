@@ -39,7 +39,7 @@ final class JdbcWriteTest {
     }
 
     @Test
-    void brNineCreatesOnceAndKeepsFirstContent(final ApplicationContext context) {
+    void createsOnceAndKeepsFirstContent(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = SubmissionData.id(1);
         final CreateResult created = data.repo().create(
@@ -62,7 +62,7 @@ final class JdbcWriteTest {
     }
 
     @Test
-    void brEighteenEditsOnlyEditableStatuses(final ApplicationContext context) {
+    void editsOnlyEditableStatuses(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final int size = SubmissionStatus.values().length;
         final List<EditResult> actual = new ArrayList<>(size);

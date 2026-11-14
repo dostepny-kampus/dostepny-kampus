@@ -41,7 +41,7 @@ final class StrictJsonTest {
     private static final String REJECTED = "odrzucone";
 
     @Test
-    void strictJsonOneRejectsTextForNumberOrBoolean() {
+    void rejectsTextForNumberOrBoolean() {
         MatcherAssert.assertThat(
             "Napis w polu liczbowym albo logicznym przeszedł",
             StrictJsonTest.outcomes(
@@ -53,7 +53,7 @@ final class StrictJsonTest {
     }
 
     @Test
-    void strictJsonTwoRejectsNumberForText() {
+    void rejectsNumberForText() {
         MatcherAssert.assertThat(
             "Liczba w polu tekstowym przeszła",
             StrictJsonTest.outcomes("{\"floorId\":42}"),
@@ -62,7 +62,7 @@ final class StrictJsonTest {
     }
 
     @Test
-    void strictJsonThreeRejectsFractionForInteger() {
+    void rejectsFractionForInteger() {
         MatcherAssert.assertThat(
             "Liczba z ułamkiem w polu całkowitym przeszła",
             StrictJsonTest.outcomes("{\"version\":2.0}", "{\"severity\":1.5}"),
@@ -71,7 +71,7 @@ final class StrictJsonTest {
     }
 
     @Test
-    void strictJsonFourRejectsExplicitNull() {
+    void rejectsExplicitNull() {
         MatcherAssert.assertThat(
             "Jawny null w polu przeszedł",
             StrictJsonTest.outcomes(
@@ -83,7 +83,7 @@ final class StrictJsonTest {
     }
 
     @Test
-    void strictJsonFiveRejectsNonCanonicalUuid() {
+    void rejectsNonCanonicalUuid() {
         MatcherAssert.assertThat(
             "Identyfikator spoza postaci 8-4-4-4-12 przeszedł",
             StrictJsonTest.outcomes(
@@ -96,7 +96,7 @@ final class StrictJsonTest {
     }
 
     @Test
-    void strictJsonSixKeepsCorrectBodiesWithUuidInBothCases() {
+    void keepsCorrectBodiesWithUuidInBothCases() {
         final UUID id = UUID.fromString(StrictJsonTest.CANONICAL);
         MatcherAssert.assertThat(
             "Poprawne ciało z polem spoza schematu albo bez pól nieobowiązkowych nie przeszło",

@@ -45,7 +45,7 @@ final class OsmFileTest {
     }
 
     @Test
-    void brTwentyFourMarksEntrancesFromWheelchairTag() {
+    void marksEntrancesFromWheelchairTag() {
         MatcherAssert.assertThat(
             "Wejścia z pliku mają złe budynki, opisy, rodzaje albo oznaczenia",
             OsmFileTest.file().entrances(),

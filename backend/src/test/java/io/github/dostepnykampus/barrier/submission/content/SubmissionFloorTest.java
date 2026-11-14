@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 final class SubmissionFloorTest {
 
     @Test
-    void brGOneAcceptsEveryCombinationOfFields() {
+    void acceptsEveryCombinationOfFields() {
         Assertions.assertAll(
             Stream.of("p1", null).flatMap(
                 id -> Stream.of(2, null).flatMap(
@@ -36,7 +36,7 @@ final class SubmissionFloorTest {
     }
 
     @Test
-    void brGOneIdentifiesFloorByIdOrNumber() {
+    void identifiesFloorByIdOrNumber() {
         Assertions.assertAll(
             () -> Assertions.assertTrue(
                 new SubmissionFloor("p1", null, false).identified(),
@@ -54,7 +54,7 @@ final class SubmissionFloorTest {
     }
 
     @Test
-    void brGOneDoesNotIdentifyEmptyFloor() {
+    void doesNotIdentifyEmptyFloor() {
         Assertions.assertAll(
             () -> Assertions.assertFalse(
                 new SubmissionFloor(null, null, false).identified(),

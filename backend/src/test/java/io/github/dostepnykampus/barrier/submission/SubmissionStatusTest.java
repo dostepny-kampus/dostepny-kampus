@@ -33,7 +33,7 @@ final class SubmissionStatusTest {
     );
 
     @Test
-    void brThreeEditsOnlyBeforeDecisionOrAfterRejection() {
+    void editsOnlyBeforeDecisionOrAfterRejection() {
         Assertions.assertAll(
             Stream.of(SubmissionStatus.values()).map(
                 status -> () -> Assertions.assertEquals(
@@ -46,7 +46,7 @@ final class SubmissionStatusTest {
     }
 
     @Test
-    void brThreeSendsRejectedAgainAfterEdit() {
+    void sendsRejectedAgainAfterEdit() {
         Assertions.assertAll(
             SubmissionStatusTest.AFTER_EDIT.entrySet().stream().map(
                 entry -> () -> Assertions.assertEquals(
@@ -59,7 +59,7 @@ final class SubmissionStatusTest {
     }
 
     @Test
-    void brEighteenRefusesEditAfterAcceptance() {
+    void refusesEditAfterAcceptance() {
         Assertions.assertAll(
             EnumSet.complementOf(
                 EnumSet.copyOf(SubmissionStatusTest.AFTER_EDIT.keySet())
@@ -74,7 +74,7 @@ final class SubmissionStatusTest {
     }
 
     @Test
-    void brSixShowsOnlyAcceptedPublicly() {
+    void showsOnlyAcceptedPublicly() {
         final Set<SubmissionStatus> visible = EnumSet.of(SubmissionStatus.ACCEPTED);
         Assertions.assertAll(
             Stream.of(SubmissionStatus.values()).map(

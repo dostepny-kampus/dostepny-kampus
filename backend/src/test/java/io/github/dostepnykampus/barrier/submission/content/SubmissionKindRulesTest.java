@@ -42,7 +42,7 @@ final class SubmissionKindRulesTest {
     );
 
     @Test
-    void brNineteenNeedsReplacedSubmissionForEveryKind() {
+    void needsReplacedSubmissionForEveryKind() {
         Assertions.assertAll(
             Stream.of(SubmissionKind.values()).map(
                 kind -> () -> SubmissionKindRulesTest.rejected(
@@ -55,7 +55,7 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    void brNineteenAcceptsRemovalWithReplacedSubmission() {
+    void acceptsRemovalWithReplacedSubmission() {
         Assertions.assertAll(
             Stream.of(SubmissionKind.values()).map(
                 kind -> () -> Assertions.assertDoesNotThrow(
@@ -67,7 +67,7 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    void brEightNeedsBarrierGroup() {
+    void needsBarrierGroup() {
         Assertions.assertEquals(
             "Zgłoszenie szybkie wymaga grupy barier (BR-8)",
             SubmissionKindRulesTest.message(
@@ -81,7 +81,7 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    void brSevenNeedsBarrierType() {
+    void needsBarrierType() {
         Assertions.assertEquals(
             "Pomiar precyzyjny wymaga typu bariery (BR-7)",
             SubmissionKindRulesTest.message(
@@ -95,7 +95,7 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    void brSevenNeedsSeverityUnlessBarrierRemoved() {
+    void needsSeverityUnlessBarrierRemoved() {
         Assertions.assertEquals(
             "Pomiar precyzyjny wymaga uciążliwości (BR-7)",
             SubmissionKindRulesTest.message(
@@ -110,7 +110,7 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    void brSevenNeedsIdentifiedFloorInBuilding() {
+    void needsIdentifiedFloorInBuilding() {
         Assertions.assertAll(
             Stream.of(null, new SubmissionFloor(null, null, false)).map(
                 floor -> () -> SubmissionKindRulesTest.rejected(
@@ -126,7 +126,7 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    void brSevenAcceptsFloorByIdOrNumberAndNoFloorOutsideBuildings() {
+    void acceptsFloorByIdOrNumberAndNoFloorOutsideBuildings() {
         Assertions.assertAll(
             Stream.of(
                 SubmissionKindRulesTest.place("C-13", new SubmissionFloor("p1", null, false)),
@@ -181,7 +181,7 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    void brTwentyFourNeedsEntranceIdAndMarking() {
+    void needsEntranceIdAndMarking() {
         Assertions.assertAll(
             () -> SubmissionKindRulesTest.entranceRejected(null, NewEntranceMarking.ACCESSIBLE),
             () -> SubmissionKindRulesTest.entranceRejected("node/1", null),
@@ -190,7 +190,7 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    void brSevenAcceptsValidContentAndIgnoresFieldsOutsideOfKind() {
+    void acceptsValidContentAndIgnoresFieldsOutsideOfKind() {
         Assertions.assertAll(
             () -> Assertions.assertAll(
                 Stream.of(SubmissionKind.values()).map(
@@ -226,7 +226,7 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    void brSevenRejectsTypeOutsideOfClassificationAndSeverityAboveThree() {
+    void rejectsTypeOutsideOfClassificationAndSeverityAboveThree() {
         Assertions.assertAll(
             () -> SubmissionKindRulesTest.rejected(
                 "Typ bariery spoza TB-1…TB-29", "Typ TB-30 przeszedł",

@@ -80,7 +80,7 @@ final class BuildingReadContractIT {
     }
 
     @Test
-    void brGFourSuggestsBuildingFortyNineMetersFromOutline(
+    void suggestsBuildingFortyNineMetersFromOutline(
         final WebApplicationContext context
     ) throws Exception {
         MatcherAssert.assertThat(
@@ -95,7 +95,7 @@ final class BuildingReadContractIT {
     }
 
     @Test
-    void brGFourLeavesPointFiftyOneMetersFromOutlineWithoutSuggestion(
+    void leavesPointFiftyOneMetersFromOutlineWithoutSuggestion(
         final WebApplicationContext context
     ) throws Exception {
         MatcherAssert.assertThat(

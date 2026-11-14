@@ -29,7 +29,7 @@ final class JdbcSourceTest {
     }
 
     @Test
-    void columnPointDifferentFromContentCannotBeSaved(final ApplicationContext context) {
+    void refusesColumnPointDifferentFromContent(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = data.seed(SubmissionStatus.SENT);
         Assertions.assertThrows(
@@ -70,7 +70,7 @@ final class JdbcSourceTest {
     }
 
     @Test
-    void linkFollowsContent(final ApplicationContext context) {
+    void followsContentInLink(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = data.seed(SubmissionStatus.SENT);
         final UUID replaced = UUID.fromString("4a5a0000-0000-4000-8000-00000000aaaa");

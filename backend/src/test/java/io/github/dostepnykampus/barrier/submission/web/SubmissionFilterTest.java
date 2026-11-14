@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 final class SubmissionFilterTest {
 
     @Test
-    void wfiveWithoutStatusAsksForPublicOnlyWithBuildingAndFloor() {
+    void asksForPublicWithBuildingAndFloorWithoutStatus() {
         Assertions.assertEquals(
             new SubmissionQuery(Set.of(SubmissionStatus.ACCEPTED), "B1", "p2"),
             new SubmissionFilter("B1", "p2", null, false).toQuery(),
@@ -33,7 +33,7 @@ final class SubmissionFilterTest {
     }
 
     @Test
-    void wfiveNonPublicStatusWithoutMineIsRejected() {
+    void rejectsNonPublicStatusWithoutMine() {
         Assertions.assertAll(
             List.of(
                 List.of(SubmissionStatus.IN_REVIEW),
@@ -53,7 +53,7 @@ final class SubmissionFilterTest {
     }
 
     @Test
-    void wfiveMineAllowsAnyStatusAndAcceptedIsAlwaysAllowed() {
+    void allowsAnyStatusForMineAndAcceptedAlways() {
         Assertions.assertAll(
             () -> Assertions.assertEquals(
                 new SubmissionQuery(Set.of(SubmissionStatus.IN_REVIEW), null, null),

@@ -19,12 +19,14 @@ import tools.jackson.databind.node.ObjectNode;
  * w polu enum i NO_DATA kończą wiązanie błędem, a brak pól wymaganych daje
  * błąd 400, nie NPE.
  *
+ * <p>Wymagania: BR-24</p>
+ *
  * @since 0.1.0
  */
 final class ContentRulesJsonTest {
 
     @Test
-    void wthreeFiveOmitsFalseFlagsAndMissingFields() {
+    void omitsFalseFlagsAndMissingFields() {
         final ObjectNode input = JsonBodies.with(
             node -> {
                 node.put("manualCorrection", false);
@@ -47,7 +49,7 @@ final class ContentRulesJsonTest {
     }
 
     @Test
-    void wthreeSixRejectsExplicitNull() {
+    void rejectsExplicitNull() {
         Assertions.assertAll(
             Stream.of(
                 "kind", "location", "accuracyMeters", "manualCorrection", "floor",
@@ -72,7 +74,7 @@ final class ContentRulesJsonTest {
     }
 
     @Test
-    void wthreeSixRejectsEmptyTextInEnumFields() {
+    void rejectsEmptyTextInEnumFields() {
         Assertions.assertAll(
             Stream.of("kind", "barrierGroup", "entranceMarking").map(
                 field -> () -> JsonBodies.failsBinding(
@@ -84,7 +86,7 @@ final class ContentRulesJsonTest {
     }
 
     @Test
-    void brTwentyFourRejectsNoDataMarking() {
+    void rejectsNoDataMarking() {
         final Consumer<ObjectNode> marking = node -> {
             node.put("kind", "ENTRANCE_MARKING");
             node.put("entranceId", "node/7");
@@ -107,7 +109,7 @@ final class ContentRulesJsonTest {
     }
 
     @Test
-    void wthreeSevenMissingRequiredFieldsGiveInvalidInput() {
+    void givesInvalidInputForMissingRequiredFields() {
         Assertions.assertAll(
             Stream.of("kind", "location", "photoIds").map(
                 field -> () -> Assertions.assertThrows(

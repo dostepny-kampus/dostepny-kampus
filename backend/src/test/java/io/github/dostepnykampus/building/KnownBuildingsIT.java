@@ -23,7 +23,7 @@ import org.springframework.context.ApplicationContext;
 final class KnownBuildingsIT {
 
     @Test
-    void brFourteenKnowsOnlyExistingBuilding(final ApplicationContext context) {
+    void knowsOnlyExistingBuilding(final ApplicationContext context) {
         final KnownBuildings buildings = context.getBean(KnownBuildings.class);
         Assertions.assertEquals(
             List.of(true, false),

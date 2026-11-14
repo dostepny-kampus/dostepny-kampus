@@ -33,7 +33,7 @@ import tools.jackson.databind.json.JsonMapper;
 final class ErrorsHttpTest {
 
     @Test
-    void errorOneGivesBadRequestProblemWithDetail(@LocalServerPort final int port)
+    void givesBadRequestProblemWithDetail(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Niepoprawne dane nie dają 400 application/problem+json z opisem w detail",
@@ -45,7 +45,7 @@ final class ErrorsHttpTest {
     }
 
     @Test
-    void errorTwoGivesNotFoundProblemWithDetail(@LocalServerPort final int port)
+    void givesNotFoundProblemWithDetail(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Brak zasobu nie daje 404 application/problem+json z opisem w detail",
@@ -55,7 +55,7 @@ final class ErrorsHttpTest {
     }
 
     @Test
-    void errorThreeGivesServerErrorProblem(@LocalServerPort final int port)
+    void givesServerErrorProblem(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Nieoczekiwany wyjątek nie daje 500 application/problem+json",
@@ -65,7 +65,7 @@ final class ErrorsHttpTest {
     }
 
     @Test
-    void errorThreeHidesExceptionClassAndMessage(@LocalServerPort final int port)
+    void hidesExceptionClassAndMessage(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Odpowiedź 500 ujawnia klasę albo komunikat wyjątku",
@@ -81,7 +81,7 @@ final class ErrorsHttpTest {
     }
 
     @Test
-    void conflictOneGivesConflictProblemWithDetail(@LocalServerPort final int port)
+    void givesConflictProblemWithDetail(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Konflikt z bieżącym stanem nie daje 409 application/problem+json z opisem w detail",
@@ -91,7 +91,7 @@ final class ErrorsHttpTest {
     }
 
     @Test
-    void conflictTwoGivesCurrentStateAsTopLevelJsonObject(@LocalServerPort final int port)
+    void givesCurrentStateAsTopLevelJsonObject(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Odpowiedź 409 nie ma na najwyższym poziomie obiektu currentState z polami rekordu",

@@ -50,7 +50,7 @@ final class RouteParityTest {
     );
 
     @Test
-    void routeParityEveryOperationHasHandlerAndEveryHandlerHasOperation(
+    void pairsEveryOperationWithHandler(
         final WebApplicationContext context
     ) throws Exception {
         MatcherAssert.assertThat(
@@ -65,7 +65,7 @@ final class RouteParityTest {
     }
 
     @Test
-    void routeParityNewRouteWithoutOperationIsReported() {
+    void reportsNewRouteWithoutOperation() {
         MatcherAssert.assertThat(
             "Nowa trasa bez operacji w kontrakcie przeszła",
             RouteParityTest.problems(
@@ -76,7 +76,7 @@ final class RouteParityTest {
     }
 
     @Test
-    void routeParityOperationWithoutHandlerOutsideListIsReported() {
+    void reportsOperationWithoutHandlerOutsideList() {
         MatcherAssert.assertThat(
             "Operacja kontraktu bez handlera i spoza listy przeszła",
             RouteParityTest.problems(
@@ -87,7 +87,7 @@ final class RouteParityTest {
     }
 
     @Test
-    void routeParityStaleListEntryIsReported() {
+    void reportsStaleListEntry() {
         MatcherAssert.assertThat(
             "Wpis listy dla operacji, która ma już handler, przeszedł",
             RouteParityTest.problems(
@@ -98,7 +98,7 @@ final class RouteParityTest {
     }
 
     @Test
-    void routeParityListEntryWithoutOperationIsReported() {
+    void reportsListEntryWithoutOperation() {
         MatcherAssert.assertThat(
             "Wpis listy dla operacji, której nie ma w kontrakcie, przeszedł",
             RouteParityTest.problems(
@@ -109,7 +109,7 @@ final class RouteParityTest {
     }
 
     @Test
-    void routeParityDifferentVerbOnSamePathIsReportedOnBothSides() {
+    void reportsDifferentVerbOnSamePathOnBothSides() {
         MatcherAssert.assertThat(
             "Ta sama ścieżka z inną metodą HTTP uznana za parytet",
             RouteParityTest.problems(
@@ -123,7 +123,7 @@ final class RouteParityTest {
     }
 
     @Test
-    void routeParityListEntryCoversOnlyItsOwnPair() {
+    void coversOnlyOwnPairWithListEntry() {
         MatcherAssert.assertThat(
             "Wpis listy objął inną operację tego samego prefiksu",
             RouteParityTest.problems(
@@ -139,7 +139,7 @@ final class RouteParityTest {
     }
 
     @Test
-    void routeParityEmptyHandlersAreReported() {
+    void reportsEmptyHandlers() {
         MatcherAssert.assertThat(
             "Pusty zbiór handlerów przeszedł",
             RouteParityTest.problems(Set.of(), Set.of(), Map.of()),

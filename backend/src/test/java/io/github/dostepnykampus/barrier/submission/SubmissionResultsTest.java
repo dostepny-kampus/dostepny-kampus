@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 final class SubmissionResultsTest {
 
     @Test
-    void mthreeSixCreateResultsExposeGivenSubmission() {
+    void exposesGivenSubmissionInCreateResults() {
         final Submission submission = SubmissionSamples.submission(1, SubmissionStatus.SENT);
         final CreateResult created = new CreateResult.Created(submission);
         final CreateResult existing = new CreateResult.Existing(submission);
@@ -39,7 +39,7 @@ final class SubmissionResultsTest {
     }
 
     @Test
-    void mthreeSixResultsAreSealedWithTheirVariantsOnly() {
+    void resultsAreSealedWithTheirVariantsOnly() {
         Assertions.assertAll(
             () -> Assertions.assertTrue(CreateResult.class.isSealed(), "CreateResult otwarty"),
             () -> Assertions.assertTrue(EditResult.class.isSealed(), "EditResult otwarty"),
@@ -61,7 +61,7 @@ final class SubmissionResultsTest {
     }
 
     @Test
-    void mthreeSixEditResultsKeepTheirComponents() {
+    void keepsComponentsInEditResults() {
         final Submission submission = SubmissionSamples.submission(
             3, SubmissionStatus.IN_REVIEW
         );
@@ -80,7 +80,7 @@ final class SubmissionResultsTest {
     }
 
     @Test
-    void mthreeSixRejectsMissingComponents() {
+    void rejectsMissingComponents() {
         Assertions.assertAll(
             () -> Assertions.assertThrows(
                 NullPointerException.class,

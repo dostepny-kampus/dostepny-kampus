@@ -41,7 +41,7 @@ final class ContentFieldsJsonTest {
     );
 
     @Test
-    void wthreeTwoTableCoversEveryGroup() {
+    void coversEveryGroupInTable() {
         Assertions.assertEquals(
             EnumSet.allOf(BarrierGroup.class), ContentFieldsJsonTest.GROUPS.keySet(),
             "Tabela grup nie ma pary dla każdej stałej domeny"
@@ -49,7 +49,7 @@ final class ContentFieldsJsonTest {
     }
 
     @Test
-    void wthreeTwoEveryGroupHasPairBothWays() {
+    void pairsEveryGroupBothWays() {
         Assertions.assertAll(
             ContentFieldsJsonTest.GROUPS.entrySet().stream().map(
                 pair -> () -> {
@@ -75,7 +75,7 @@ final class ContentFieldsJsonTest {
     }
 
     @Test
-    void wthreeTwoUnknownGroupFailsBinding() {
+    void failsBindingForUnknownGroup() {
         Assertions.assertAll(
             Stream.of("ENTRANCE", "NOPE", "vertical_circulation").map(
                 group -> () -> JsonBodies.failsBinding(
@@ -86,7 +86,7 @@ final class ContentFieldsJsonTest {
     }
 
     @Test
-    void wthreeThreeCodeMapsBothWays() {
+    void mapsCodeBothWays() {
         Assertions.assertAll(
             Stream.of(1, 17, 29).map(
                 number -> () -> {
@@ -107,7 +107,7 @@ final class ContentFieldsJsonTest {
     }
 
     @Test
-    void wthreeThreeCodeOutsideRangeIsInvalidSubmission() {
+    void rejectsCodeOutsideRange() {
         Assertions.assertAll(
             Stream.of("TB-30", "TB-0", "TB-01", "3").map(
                 code -> () -> Assertions.assertThrows(
@@ -122,7 +122,7 @@ final class ContentFieldsJsonTest {
     }
 
     @Test
-    void wthreeFourPointIsLongitudeThenLatitude() {
+    void ordersPointAsLongitudeThenLatitude() {
         final ObjectNode body = JsonBodies.with(
             node -> node.set(
                 "location", JsonBodies.json("{'type':'Point','coordinates':[21.0,52.2]}")
@@ -141,7 +141,7 @@ final class ContentFieldsJsonTest {
     }
 
     @Test
-    void wthreeFourRejectsOtherTypeAndWrongCoordinateCount() {
+    void rejectsOtherTypeAndWrongCoordinateCount() {
         Assertions.assertAll(
             Stream.of(
                 "{'type':'LineString','coordinates':[1.0,2.0]}",

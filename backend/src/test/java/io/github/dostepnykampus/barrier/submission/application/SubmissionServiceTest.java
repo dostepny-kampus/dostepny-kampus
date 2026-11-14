@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * Usługa zapisu zgłoszeń: budynek zgłoszenia
  * szybkiego ustala serwer z konturu, wyniki portu zapisu wracają bez zmian.
  *
- * <p>Wymagania: BR-14, BR-G2, BR-9, BR-10</p>
+ * <p>Wymagania: BR-14, BR-G2, BR-9, BR-10, BR-8, BR-G5</p>
  *
  * @since 0.1.0
  */
@@ -66,7 +66,7 @@ final class SubmissionServiceTest {
     };
 
     @Test
-    void ioneOneQuickTakesBuildingFromOutlineAskedWithLatitudeFirst() {
+    void takesQuickBuildingFromOutlineAskedWithLatitudeFirst() {
         Assertions.assertEquals(
             SubmissionServiceTest.quick("A1"),
             SubmissionServiceTest.created(
@@ -77,7 +77,7 @@ final class SubmissionServiceTest {
     }
 
     @Test
-    void ioneTwoQuickIgnoresClientBuildingInsideAndDropsItOutsideOutline() {
+    void ignoresQuickClientBuildingInsideAndDropsItOutsideOutline() {
         Assertions.assertAll(
             () -> Assertions.assertEquals(
                 SubmissionServiceTest.quick("A1"),
@@ -97,7 +97,7 @@ final class SubmissionServiceTest {
     }
 
     @Test
-    void ioneThreeOtherKindsSkipOutlineAndKeepContent() {
+    void skipsOutlineAndKeepsContentForOtherKinds() {
         Assertions.assertAll(
             Stream.of(SubmissionKind.PRECISE, SubmissionKind.ENTRANCE_MARKING).map(
                 kind -> () -> Assertions.assertEquals(
@@ -110,7 +110,7 @@ final class SubmissionServiceTest {
     }
 
     @Test
-    void brFourteenRejectsUnknownClientBuildingWithoutSaving() {
+    void rejectsUnknownClientBuildingWithoutSaving() {
         final SubmissionServiceTest.RecordingSubmissions fake =
             new SubmissionServiceTest.RecordingSubmissions(null, null);
         final List<String> asked = new ArrayList<>(2);
@@ -145,7 +145,7 @@ final class SubmissionServiceTest {
     }
 
     @Test
-    void ioneFourCreateReturnsRepositoryResult() {
+    void returnsRepositoryResultOnCreate() {
         final NewSubmission command = new NewSubmission(
             SubmissionServiceTest.ID,
             SubmissionServiceTest.content(SubmissionKind.PRECISE, "Z9"), "konto"
@@ -173,7 +173,7 @@ final class SubmissionServiceTest {
     }
 
     @Test
-    void ioneFourUpdateReturnsRepositoryResultAndPassesCommand() {
+    void returnsRepositoryResultAndPassesCommandOnUpdate() {
         final SubmissionEdit command = new SubmissionEdit(
             SubmissionServiceTest.ID, 3,
             SubmissionServiceTest.content(SubmissionKind.PRECISE, "Z9")
@@ -202,7 +202,7 @@ final class SubmissionServiceTest {
     }
 
     @Test
-    void ioneFiveUpdateAppliesSameBuildingRulesAsCreate() {
+    void appliesSameBuildingRulesOnUpdateAsOnCreate() {
         final SubmissionServiceTest.RecordingSubmissions fake =
             new SubmissionServiceTest.RecordingSubmissions(null, null);
         SubmissionServiceTest.service(fake, SubmissionServiceTest.CONTOUR).update(
@@ -218,7 +218,7 @@ final class SubmissionServiceTest {
     }
 
     @Test
-    void brEightPublishesOnlySavedEditForPhotoCleanup() {
+    void publishesOnlySavedEditForPhotoCleanup() {
         final List<Object> published = new ArrayList<>(1);
         final EditResult saved = new EditResult.Saved(SubmissionServiceTest.STORED);
         Stream.of(
@@ -243,7 +243,7 @@ final class SubmissionServiceTest {
     }
 
     @Test
-    void lockedTakesLockBeforeWrite() {
+    void takesLockBeforeWrite() {
         final SubmissionServiceTest.RecordingSubmissions repository =
             new SubmissionServiceTest.RecordingSubmissions(null, null);
         final List<Object> order = new ArrayList<>(2);
@@ -256,7 +256,7 @@ final class SubmissionServiceTest {
     }
 
     @Test
-    void brGFiveRejectsSubmissionOutsideCampusWithoutSaving() {
+    void rejectsSubmissionOutsideCampusWithoutSaving() {
         final SubmissionServiceTest.RecordingSubmissions fake =
             new SubmissionServiceTest.RecordingSubmissions(null, null);
         final List<Double> asked = new ArrayList<>(2);

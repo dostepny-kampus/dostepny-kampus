@@ -36,7 +36,7 @@ final class BuildingsMigrationIT {
     }
 
     @Test
-    void osmImportHasOnlyOneFlywayHistory(final ApplicationContext context) {
+    void keepsOneFlywayHistoryForOsmImport(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Import OSM ma wpis w historii głównej zamiast w historii modułu",
             context.getBean(JdbcClient.class).sql(

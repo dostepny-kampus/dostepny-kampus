@@ -25,7 +25,7 @@ import org.springframework.context.ApplicationContext;
 final class OutlinesIT {
 
     @Test
-    void brFourteenFindsBuildingOfPoint(final ApplicationContext context) {
+    void findsBuildingOfPoint(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Punkt w konturze A-1 nie należy do A-1",
             context.getBean(Outlines.class).containing(51.107_85, 17.062_09),
@@ -34,7 +34,7 @@ final class OutlinesIT {
     }
 
     @Test
-    void brFourteenLeavesPointNearOutlineOutside(final ApplicationContext context) {
+    void leavesPointNearOutlineOutside(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Punkt 11 m na północ od konturu A-1 należy do budynku",
             context.getBean(Outlines.class).containing(51.108_268, 17.061_498),
