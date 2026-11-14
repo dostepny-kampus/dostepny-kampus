@@ -7,31 +7,21 @@ package io.github.dostepnykampus.app
 
 import android.os.Looper
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
-import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.submission.own.OwnStatuses
-import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
-import io.github.dostepnykampus.core.data.submission.own.StatusRefresh
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Severity
-import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
-import io.github.dostepnykampus.feature.capture.mine.MySubmissionsContent
-import io.github.dostepnykampus.feature.capture.mine.MySubmissionsViewModel
 import io.github.dostepnykampus.feature.capture.report.ReportSaverModule
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
 import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
@@ -39,8 +29,6 @@ import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormViewModel
 import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -134,22 +122,8 @@ class SavedReportTest {
     private fun stored() = runBlocking { pending.all() }.single().submission
 
     private fun showMine() {
-        val list = runBlocking { DataModule.ownSubmissions(store).observe().first() }
-        val viewModel =
-            MySubmissionsViewModel(
-                history = OwnSubmissions { flowOf(list) },
-                statuses = OwnStatuses { StatusRefresh.OFFLINE },
-                networkStatus = { flowOf(false) },
-            )
-        compose.setContent {
-            val state by viewModel.state.collectAsState()
-            DostepnyKampusTheme {
-                MySubmissionsContent(
-                    state = state,
-                    actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onOpen = {}),
-                )
-            }
-        }
+        val viewModel = offlineOwnList(store)
+        compose.setContent { OwnListScreen(viewModel) }
     }
 
     private fun queue(): SubmissionQueue =

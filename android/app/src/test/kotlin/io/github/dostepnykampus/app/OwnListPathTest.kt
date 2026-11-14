@@ -6,35 +6,23 @@
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
-import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.submission.own.OwnStatuses
-import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
-import io.github.dostepnykampus.core.data.submission.own.StatusRefresh
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStamps
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
-import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
-import io.github.dostepnykampus.feature.capture.mine.MySubmissionsContent
-import io.github.dostepnykampus.feature.capture.mine.MySubmissionsViewModel
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -136,22 +124,8 @@ class OwnListPathTest {
     }
 
     private fun showMine() {
-        val list = runBlocking { DataModule.ownSubmissions(store).observe().first() }
-        val viewModel =
-            MySubmissionsViewModel(
-                history = OwnSubmissions { flowOf(list) },
-                statuses = OwnStatuses { StatusRefresh.OFFLINE },
-                networkStatus = { flowOf(false) },
-            )
-        compose.setContent {
-            val state by viewModel.state.collectAsState()
-            DostepnyKampusTheme {
-                MySubmissionsContent(
-                    state = state,
-                    actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onOpen = {}),
-                )
-            }
-        }
+        val viewModel = offlineOwnList(store)
+        compose.setContent { OwnListScreen(viewModel) }
     }
 
     private fun top(day: String) = compose.onNodeWithText(day, substring = true).getUnclippedBoundsInRoot().top

@@ -9,19 +9,15 @@ package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
-import io.github.dostepnykampus.app.navigation.BuildingCard
-import io.github.dostepnykampus.app.navigation.MapScreen
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
@@ -34,10 +30,8 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
-import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
-import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -103,36 +97,21 @@ class EntranceOnMapTest {
     @Composable
     private fun AppNavigator.Screen(route: NavKey, json: String) {
         val repository = remember { BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { json } }
-        when (route) {
-            is MapRoute -> {
-                val model = remember { inlineMapViewModel(repository, { flowOf(true) }, choice) }
-                val state by model.uiState.collectAsStateWithLifecycle()
-                MapScreen(
-                    focus = route.focus,
-                    state = state,
-                    onListChange = model::chooseList,
-                    onSearch = model::search,
-                    mapView = fakeMap,
-                )
-            }
-
-            is BuildingRoute -> {
-                val card = remember { BuildingCardViewModel(route.symbol, repository, { flowOf(true) }) }
-                val state by card.uiState.collectAsStateWithLifecycle()
-                BuildingCard(symbol = route.symbol, state = state, isOnline = true, onRetry = card::retry)
-            }
-
-            is EntrancesRoute -> {
+        MapOrBuildingScreen(
+            route = route,
+            repository = repository,
+            choice = choice,
+            mapView = fakeMap,
+        ) { other ->
+            if (other is EntrancesRoute) {
                 EntrancesScreen(
-                    symbol = route.symbol,
-                    onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = route.symbol)) },
+                    symbol = other.symbol,
+                    onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = other.symbol)) },
                     onBack = { back() },
-                    viewModel = remember { BuildingCardViewModel(route.symbol, repository, { flowOf(true) }) },
+                    viewModel = remember { BuildingCardViewModel(other.symbol, repository, { flowOf(true) }) },
                 )
-            }
-
-            else -> {
-                AppScreen(route)
+            } else {
+                AppScreen(other)
             }
         }
     }
