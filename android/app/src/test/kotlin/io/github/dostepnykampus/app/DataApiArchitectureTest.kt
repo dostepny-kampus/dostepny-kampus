@@ -44,7 +44,7 @@ class DataApiArchitectureTest {
         source(fixtures = fixtures, name = "Open", pack = "x", body = "class Open(val reply: ApiResult<Int>)")
         source(fixtures = fixtures, name = "Read", pack = "x", body = "fun read(): ApiResult<Int>? = null")
         source(fixtures = fixtures, name = "Hidden", pack = "x", body = "internal class Hidden(val r: ApiResult<Int>)")
-        source(fixtures = fixtures, name = "Inner", pack = "x", body = "class Inner internal constructor(r: ApiResult<*>)")
+        source(fixtures = fixtures, name = "In", pack = "x", body = "class In internal constructor(r: ApiResult<*>)")
         source(fixtures = fixtures, name = "Provide", pack = "di", body = "fun provide(r: ApiResult<Int>): Int = 1")
         val files = Konsist.scopeFromExternalDirectory(fixtures.absolutePath).files
         assertEquals(listOf("$BASE.x.Open: ApiResult", "$BASE.x.read: ApiResult"), violations(files))
