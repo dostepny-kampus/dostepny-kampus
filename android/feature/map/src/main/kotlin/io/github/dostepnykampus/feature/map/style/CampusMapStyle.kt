@@ -153,7 +153,7 @@ private fun layers(look: SelectionLook, isBounded: Boolean, colors: MapStyleColo
             },
         )
         add(selectedLayer(look.selectedFilter, colors))
-        add(marksLayer(look.entrancesFilter))
+        add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
         barrierLayers().forEach { add(it) }
         add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
         add(chosenBarrierLayer(look.chosenBarrierFilter))
@@ -184,7 +184,7 @@ private fun basemapPaint(colors: MapStyleColors): JsonObject =
         }
     }
 
-private fun marksLayer(filter: JsonElement): JsonObject {
+private fun marksLayer(filter: JsonElement, minZoom: Double): JsonObject {
     val (accessible, inaccessible, noData) = EntranceMarking.entries.map { JsonPrimitive(entranceMarkImage(it)) }
     val image =
         expression(
@@ -197,5 +197,5 @@ private fun marksLayer(filter: JsonElement): JsonObject {
             noData,
         )
     val marks = symbolLayer(id = ENTRANCES_LAYER, source = ENTRANCES_SOURCE, image = image, OVERLAP)
-    return JsonObject(marks + ("filter" to filter))
+    return JsonObject(marks + ("filter" to filter) + ("minzoom" to JsonPrimitive(minZoom)))
 }

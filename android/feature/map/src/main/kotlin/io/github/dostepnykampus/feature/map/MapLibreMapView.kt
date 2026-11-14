@@ -276,6 +276,10 @@ object MapLibreMapView : CampusMapView {
             style.getLayer(layer)?.setProperties(PaintPropertyValue(property, styled))
         }
 
+        override fun minZoom(layer: String, zoom: Double) {
+            style.getLayer(layer)?.minZoom = zoom.toFloat()
+        }
+
         override fun data(source: String, geoJson: String) {
             style.getSourceAs<GeoJsonSource>(source)?.setGeoJson(geoJson)
         }

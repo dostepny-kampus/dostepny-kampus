@@ -95,6 +95,13 @@ class CampusMapSelectionStyleTest {
         assertEquals("""["!",false]""", style.layer(ENTRANCES_LAYER).getValue("filter").toString())
     }
 
+    /** Wiersz: V1, bez zaznaczonego budynku znaki wejść od powiększenia 17, a zaznaczony budynek ma je zawsze. */
+    @Test
+    fun us2_1_marks_from_zoom_17() {
+        assertEquals("17.0", style().layer(ENTRANCES_LAYER).getValue("minzoom").toString())
+        assertEquals("0.0", style(building = "A-1").layer(ENTRANCES_LAYER).getValue("minzoom").toString())
+    }
+
     /** Wiersz: V1, zaznaczone wejście: pozostałe wejścia i budynki zostają jak bez zaznaczenia. */
     @Test
     fun us3_3_chosen_keeps_all_marks() {
@@ -172,6 +179,8 @@ private class JsonStyle(style: String) : MapStyleTarget {
             val paint = found.getValue("paint").jsonObject + (property to value)
             found + ("paint" to JsonObject(paint))
         }
+
+    override fun minZoom(layer: String, zoom: Double) = edit(layer) { it + ("minzoom" to JsonPrimitive(zoom)) }
 
     override fun data(source: String, geoJson: String) {
         val sources = json.getValue("sources").jsonObject

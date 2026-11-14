@@ -18,6 +18,9 @@ import kotlinx.serialization.json.JsonPrimitive
 private const val SELECTED_WIDTH = 4.0
 private const val SYMBOLS = "symbols"
 
+private const val MARKS_MIN_ZOOM = 17.0
+private const val ANY_ZOOM = 0.0
+
 private val ALL_FEATURES = expression("!", JsonPrimitive(false))
 private val NO_FEATURES = expression("!", JsonPrimitive(true))
 
@@ -47,6 +50,7 @@ internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObj
  * @property outlinesColor barwa linii warstwy [OUTLINES_LAYER]
  * @property selectedFilter filtr warstwy [SELECTED_LAYER]
  * @property entrancesFilter filtr warstwy [ENTRANCES_LAYER]
+ * @property entrancesMinZoom najmniejsze powiększenie, przy którym rysuje się warstwa [ENTRANCES_LAYER]
  * @property chosenBarrierFilter filtr warstwy [CHOSEN_BARRIER_LAYER]
  * @property chosenEntrance dane GeoJSON źródła [CHOSEN_SOURCE]
  */
@@ -55,6 +59,7 @@ internal data class SelectionLook(
     val outlinesColor: JsonElement,
     val selectedFilter: JsonElement,
     val entrancesFilter: JsonElement,
+    val entrancesMinZoom: Double,
     val chosenBarrierFilter: JsonElement,
     val chosenEntrance: JsonElement,
 )
@@ -62,8 +67,8 @@ internal data class SelectionLook(
 /**
  * Pola stylu dla zaznaczenia [selection] na mapie z danymi [data] i barwami [colors]. Kontur budynku
  * [MapSelection.building] ma obrys, a przy zaznaczonym budynku bez wejścia pozostałe budynki są przygaszone
- * i znaki wejść ma tylko on. Bez zaznaczenia filtry obrysu i bariery niczego nie przepuszczają, filtr wejść
- * przepuszcza wszystkie, a źródło wejścia jest puste.
+ * i znaki wejść ma tylko on, przy każdym powiększeniu. Bez zaznaczenia filtry obrysu i bariery niczego nie
+ * przepuszczają, filtr wejść przepuszcza wszystkie od powiększenia 17, a źródło wejścia jest puste.
  *
  * Wymagania: US1.1, US1.4, US2.8, US2.1, NFR-15
  */
@@ -75,6 +80,7 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection, colors:
         outlinesColor = tone(alone, own = colors.buildingOutline, other = colors.dimmedOutline),
         selectedFilter = chosen?.let(::ofBuildings) ?: NO_FEATURES,
         entrancesFilter = alone?.let(::ofBuildings) ?: ALL_FEATURES,
+        entrancesMinZoom = if (alone == null) MARKS_MIN_ZOOM else ANY_ZOOM,
         chosenBarrierFilter = selection.barrier?.let(::ofBarrier) ?: NO_FEATURES,
         chosenEntrance = featureCollection(selection.entrance?.let(::chosenFeatures).orEmpty()),
     )
@@ -87,6 +93,9 @@ internal interface MapStyleTarget {
 
     /** Ustawia pole [property] rysowania warstwy [layer] na [value]: wyrażenie stylu albo stałą. */
     fun paint(layer: String, property: String, value: JsonElement)
+
+    /** Ustawia najmniejsze powiększenie [zoom], przy którym rysuje się warstwa [layer]. */
+    fun minZoom(layer: String, zoom: Double)
 
     /** Zastępuje dane źródła GeoJSON [source] tekstem [geoJson]. */
     fun data(source: String, geoJson: String)
@@ -105,6 +114,7 @@ internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<Strin
     paint(layer = OUTLINES_LAYER, property = OUTLINES_COLOR, value = look.outlinesColor)
     filter(layer = SELECTED_LAYER, filter = look.selectedFilter)
     filter(layer = ENTRANCES_LAYER, filter = look.entrancesFilter)
+    minZoom(layer = ENTRANCES_LAYER, zoom = look.entrancesMinZoom)
     filter(layer = CHOSEN_BARRIER_LAYER, filter = look.chosenBarrierFilter)
     data(source = CHOSEN_SOURCE, geoJson = look.chosenEntrance.asStyleText())
 }
