@@ -141,63 +141,79 @@ final class NullabilityArchitectureTest {
             Map.of("Listed", Set.of("kept"))
         );
         return Stream.of(
-            new Sample(
-                unmarked, "bez NullUnmarked", Map.of("u/Plain", "final class Plain { }"), false
-            ),
-            new Sample(
-                unmarked, "pakiet z NullUnmarked",
-                Map.of("v/package-info", "NullUnmarked", "v/Plain", "final class Plain { }"),
-                true
-            ),
-            new Sample(unmarked, "u/A", "@NullUnmarked class A { }", true),
-            new Sample(unmarked, "u/A", "class A { @NullUnmarked void f() { } }", true),
-            new Sample(unmarked, "u/A", "class A { @NullUnmarked A() { } }", true),
-            new Sample(optional, "a/A", "class A { Optional<String> v; }", true),
-            new Sample(optional, "a/A", "class A { void f(Optional<String> v) { } }", true),
-            new Sample(optional, "a/A", "class A { A(Optional<String> v) { } }", true),
-            new Sample(optional, "a/A", "record A(Optional<String> v) { }", true),
-            new Sample(optional, "a/A", "class A { List<Optional<String>> v; }", true),
-            new Sample(optional, "a/A", "class A { Optional<String> f() { return null; } }", false),
-            new Sample(nullable, "domain/A", "class A { @Nullable String v; }", true),
-            new Sample(
+            Stream.of(
+                new Sample(
+                    unmarked, "bez NullUnmarked", Map.of("u/Plain", "final class Plain { }"), false
+                ),
+                new Sample(
+                    unmarked, "pakiet z NullUnmarked",
+                    Map.of("v/package-info", "NullUnmarked", "v/Plain", "final class Plain { }"),
+                    true
+                )
+            ), NullabilityArchitectureTest.rejected(
+                unmarked, "u/A",
+                "@NullUnmarked class A { }",
+                "class A { @NullUnmarked void f() { } }",
+                "class A { @NullUnmarked A() { } }"
+            ), NullabilityArchitectureTest.rejected(
+                optional, "a/A",
+                "class A { Optional<String> v; }",
+                "class A { void f(Optional<String> v) { } }",
+                "class A { A(Optional<String> v) { } }",
+                "record A(Optional<String> v) { }",
+                "class A { List<Optional<String>> v; }"
+            ), NullabilityArchitectureTest.rejected(
                 nullable, "domain/A",
-                "class A { @Nullable String f() { return null; } }", true
-            ),
-            new Sample(nullable, "domain/A", "class A { void f(@Nullable String v) { } }", true),
-            new Sample(nullable, "domain/A", "class A { A(@Nullable String v) { } }", true),
-            new Sample(nullable, "domain/A", "record A(@Nullable String v) { }", true),
-            new Sample(
-                nullable, "domain/Listed",
-                "record Listed(@Nullable String kept, @Nullable String x) { }", true
-            ),
-            new Sample(nullable, "domain/Listed", "class Listed { @Nullable String kept; }", true),
-            new Sample(nullable, "domain/A", "class A { List<@Nullable String> v; }", true),
-            new Sample(
-                nullable, "domain/A",
-                "class A { private void f(@Nullable String v) { } }", true
-            ),
-            new Sample(
-                nullable, "domain/Listed",
-                "class Listed { void f(@Nullable String v) { } }", true
-            ),
-            new Sample(
-                nullable, "domain/Listed",
-                "record Listed(@Nullable String kept) { private void f(@Nullable String v) { } }",
-                false
-            ),
-            new Sample(
-                nullable, "domain/Listed",
-                "record Listed(@Nullable String kept) { void f(@Nullable String v) { } }", true
-            ),
-            new Sample(nullable, "a/A", "class A { }", true),
-            new Sample(
-                nullable, "komponent z listy i null poza domeną",
-                Map.of(
-                    "domain/Listed", "record Listed(@Nullable String kept, String x) { }",
-                    "a/A", "class A { @Nullable String v; }"
-                ), false
+                "class A { @Nullable String v; }",
+                "class A { @Nullable String f() { return null; } }",
+                "class A { void f(@Nullable String v) { } }",
+                "class A { A(@Nullable String v) { } }",
+                "record A(@Nullable String v) { }",
+                "class A { List<@Nullable String> v; }",
+                "class A { private void f(@Nullable String v) { } }"
+            ), Stream.of(
+                new Sample(
+                    optional, "a/A", "class A { Optional<String> f() { return null; } }", false
+                ),
+                new Sample(
+                    nullable, "domain/Listed",
+                    "record Listed(@Nullable String kept, @Nullable String x) { }", true
+                ),
+                new Sample(
+                    nullable, "domain/Listed", "class Listed { @Nullable String kept; }", true
+                ),
+                new Sample(
+                    nullable, "domain/Listed",
+                    "class Listed { void f(@Nullable String v) { } }", true
+                ),
+                new Sample(
+                    nullable, "domain/Listed",
+                    String.join(
+                        " ", "record Listed(@Nullable String kept)",
+                        "{ private void f(@Nullable String v) { } }"
+                    ),
+                    false
+                ),
+                new Sample(
+                    nullable, "domain/Listed",
+                    "record Listed(@Nullable String kept) { void f(@Nullable String v) { } }", true
+                ),
+                new Sample(nullable, "a/A", "class A { }", true),
+                new Sample(
+                    nullable, "komponent z listy i null poza domeną",
+                    Map.of(
+                        "domain/Listed", "record Listed(@Nullable String kept, String x) { }",
+                        "a/A", "class A { @Nullable String v; }"
+                    ), false
+                )
             )
-        );
+        ).flatMap(Function.identity());
+    }
+
+    private static Stream<Sample> rejected(
+        final ArchRule rule, final String key, final String... codes
+    ) {
+        return Stream.of(codes).map(code -> new Sample(rule, key, code, true));
     }
 
     private static ArchRule unmarked() {
