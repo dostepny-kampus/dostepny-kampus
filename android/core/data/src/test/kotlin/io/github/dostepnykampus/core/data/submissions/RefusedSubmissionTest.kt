@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
@@ -20,7 +21,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -45,9 +45,9 @@ class RefusedSubmissionTest {
                 SubmissionServer(
                     create = { id, content ->
                         creates++
-                        store.createResults.removeFirstOrNull() ?: ApiResult.Success(server(id, content))
+                        store.createResults.removeFirstOrNull() ?: ServerReply.Ok(server(id, content))
                     },
-                    putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { id, _, content -> ApiResult.Success(SubmissionEdit.Saved(server(id, content))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
@@ -56,22 +56,22 @@ class RefusedSubmissionTest {
     }
 
     @Test
-    fun `br26 odmowa 400`() = refusedOnce(ApiResult.ServerError(code = 400), code = 400)
+    fun `br26 odmowa 400`() = refusedOnce(ServerReply.Fault(code = 400), code = 400)
 
     @Test
-    fun `br26 odmowa 403`() = refusedOnce(ApiResult.ServerError(code = 403), code = 403)
+    fun `br26 odmowa 403`() = refusedOnce(ServerReply.Fault(code = 403), code = 403)
 
     @Test
-    fun `br26 odmowa 404`() = refusedOnce(ApiResult.NotFound, code = 404)
+    fun `br26 odmowa 404`() = refusedOnce(ServerReply.Missing, code = 404)
 
     @Test
-    fun `br26 odmowa 413`() = refusedOnce(ApiResult.ServerError(code = 413), code = 413)
+    fun `br26 odmowa 413`() = refusedOnce(ServerReply.Fault(code = 413), code = 413)
 
     @Test
     fun `br26 awaria serwera ponawia`() =
         runBlocking {
             queue.save(precise(), photo())
-            store.createResults.addLast(ApiResult.ServerError(code = 500))
+            store.createResults.addLast(ServerReply.Fault(code = 500))
 
             assertFalse(queue.sendAll())
             assertTrue(queue.sendAll())
@@ -84,7 +84,7 @@ class RefusedSubmissionTest {
     fun `br26 brak sieci ponawia`() =
         runBlocking {
             queue.save(precise(), photo())
-            store.createResults.addLast(ApiResult.NetworkError(IOException("sieć")))
+            store.createResults.addLast(ServerReply.Offline)
 
             assertFalse(queue.sendAll())
             assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state)
@@ -97,7 +97,7 @@ class RefusedSubmissionTest {
     fun `br26 401 czeka na zalogowanie`() =
         runBlocking {
             queue.save(precise(), photo())
-            store.createResults.addLast(ApiResult.ServerError(code = 401))
+            store.createResults.addLast(ServerReply.Fault(code = 401))
 
             queue.sendAll()
             queue.sendAll()
@@ -114,7 +114,7 @@ class RefusedSubmissionTest {
     fun `us9_5 ponowny zapis wysyła`() =
         runBlocking {
             queue.save(precise(), photo())
-            store.createResults.addLast(ApiResult.ServerError(code = 400))
+            store.createResults.addLast(ServerReply.Fault(code = 400))
             queue.sendAll()
 
             queue.saveEdit(EditedSubmission(id = ID, baseVersion = null), precise().copy(severity = 1), photo())
@@ -125,7 +125,7 @@ class RefusedSubmissionTest {
             assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state)
         }
 
-    private fun refusedOnce(result: ApiResult<Submission>, code: Int) =
+    private fun refusedOnce(result: ServerReply<Submission>, code: Int) =
         runBlocking {
             queue.save(precise(), photo())
             store.createResults.addLast(result)

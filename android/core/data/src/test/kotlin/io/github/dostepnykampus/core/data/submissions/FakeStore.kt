@@ -5,12 +5,12 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.PendingPhotoEntity
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.database.PendingSubmissionEntity
 import io.github.dostepnykampus.core.database.PendingSubmissionWithPhotos
 import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.network.ApiResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -19,8 +19,8 @@ internal class FakeStore : PendingSubmissionDao {
     val rows = mutableListOf<PendingSubmissionWithPhotos>()
     val created = mutableListOf<String>()
     val photos = mutableListOf<Pair<String, String>>()
-    val createResults = ArrayDeque<ApiResult<Submission>>()
-    val photoResults = ArrayDeque<ApiResult<Unit>>()
+    val createResults = ArrayDeque<ServerReply<Submission>>()
+    val photoResults = ArrayDeque<ServerReply<Unit>>()
 
     /** Historia cofana razem z kolejką w [together], jak w jednej transakcji Room. */
     var history: FakeHistory? = null

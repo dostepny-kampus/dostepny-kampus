@@ -16,6 +16,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.core.data.di.DataModule
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submissions.OwnStatuses
 import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
 import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
@@ -52,7 +53,6 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import java.io.File
-import java.io.IOException
 import javax.inject.Inject
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -161,9 +161,9 @@ class SavedReportTest {
                 SubmissionServer(
                     create = { _, _ ->
                         sent++
-                        ApiResult.NetworkError(IOException("bez sieci"))
+                        ServerReply.Offline
                     },
-                    putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { _, _, _ -> ApiResult.NotFound },
                 ),
         )

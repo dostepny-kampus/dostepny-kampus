@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.database.PendingEditDao
 import io.github.dostepnykampus.core.database.PendingSubmissionWithPhotos
@@ -46,9 +47,9 @@ class UnreadableSubmissionTest {
                 SubmissionServer(
                     create = { id, content ->
                         created += id
-                        ApiResult.Success(server(id, content))
+                        ServerReply.Ok(server(id, content))
                     },
-                    putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { id, _, content -> ApiResult.Success(SubmissionEdit.Saved(server(id, content))) },
                 ),
             stamps = SubmissionStamps(newId = { ids.removeFirst() }),

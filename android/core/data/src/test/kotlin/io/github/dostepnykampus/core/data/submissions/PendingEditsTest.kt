@@ -5,18 +5,17 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.PendingEditDao
 import io.github.dostepnykampus.core.database.PendingSubmissionWithPhotos
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.network.ApiResult
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-import java.io.IOException
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Poprawka z C3 wczytuje z kolejki to, co zapisano, z wersją bazową; wysłanego już nie ma. Wymagania: US8.3, BR-26 */
@@ -33,8 +32,8 @@ class PendingEditsTest {
         SubmissionQueue(
             store = store,
             ioContext = EmptyCoroutineContext,
-            create = { _, _ -> ApiResult.NetworkError(IOException()) },
-            putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+            create = { _, _ -> ServerReply.Offline },
+            putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
             newId = { ID },
         )
 

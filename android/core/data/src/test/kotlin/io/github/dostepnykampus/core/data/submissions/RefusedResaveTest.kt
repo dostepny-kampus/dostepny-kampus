@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
@@ -40,7 +41,7 @@ class RefusedResaveTest {
         runBlocking {
             val queue = queue()
             queue.save(precise(severity = 2, photo = FIRST), photo(FIRST))
-            store.createResults.addLast(ApiResult.ServerError(code = BAD_REQUEST))
+            store.createResults.addLast(ServerReply.Fault(code = BAD_REQUEST))
             queue.sendAll()
             assertEquals(OwnSubmissionState.REFUSED, history.rows.getValue(ID).state)
             queue.sendAll()
@@ -73,9 +74,9 @@ class RefusedResaveTest {
                 SubmissionServer(
                     create = { id, content ->
                         sent += content
-                        store.createResults.removeFirstOrNull() ?: ApiResult.Success(server(id, content))
+                        store.createResults.removeFirstOrNull() ?: ServerReply.Ok(server(id, content))
                     },
-                    putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { _, _, _ -> ApiResult.NotFound },
                 ),
             stamps = SubmissionStamps(newId = { ID }),

@@ -28,6 +28,7 @@ import io.github.dostepnykampus.core.data.buildings.ServerEntrances
 import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.submissions.OwnStatuses
 import io.github.dostepnykampus.core.data.submissions.OwnSubmissions
@@ -36,7 +37,6 @@ import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
-import io.github.dostepnykampus.core.network.SubmissionsApi
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
 import org.junit.Rule
@@ -114,8 +114,13 @@ class EntranceHiltTest {
 
         @Provides
         @Singleton
-        fun queue(api: SubmissionsApi, store: SubmissionStore, sync: SubmissionSyncScheduler): SubmissionQueue =
-            SubmissionQueue(store = store, create = api::create, putPhoto = api::putPhoto, onSaved = sync::schedule)
+        fun queue(store: SubmissionStore, sync: SubmissionSyncScheduler): SubmissionQueue =
+            SubmissionQueue(
+                store = store,
+                create = { _, _ -> ServerReply.Offline },
+                putPhoto = { _, _, _ -> ServerReply.Offline },
+                onSaved = sync::schedule,
+            )
     }
 
     @get:Rule(order = 0)

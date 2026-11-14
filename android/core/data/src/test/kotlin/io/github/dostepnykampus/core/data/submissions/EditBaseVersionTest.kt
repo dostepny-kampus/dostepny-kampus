@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -42,7 +42,7 @@ class EditBaseVersionTest {
         runBlocking {
             val target = queue(history)
             target.save(precise(), photo())
-            store.photoResults.addLast(ApiResult.NetworkError(IOException("sieć")))
+            store.photoResults.addLast(ServerReply.Offline)
             target.sendAll()
 
             target.saveEdit(EditedSubmission(id = ID, baseVersion = null), precise().copy(severity = 1), photo())
@@ -71,7 +71,7 @@ class EditBaseVersionTest {
         runBlocking {
             val target = queue(history = null)
             target.save(precise(), photo())
-            store.photoResults.addLast(ApiResult.NetworkError(IOException("sieć")))
+            store.photoResults.addLast(ServerReply.Offline)
             target.sendAll()
 
             val refused =
@@ -106,9 +106,9 @@ class EditBaseVersionTest {
                 SubmissionServer(
                     create = { id, content ->
                         creates.add(id)
-                        ApiResult.Success(server(id, content))
+                        ServerReply.Ok(server(id, content))
                     },
-                    putPhoto = { _, _, _ -> store.photoResults.removeFirstOrNull() ?: ApiResult.Success(Unit) },
+                    putPhoto = { _, _, _ -> store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit) },
                     update = { id, version, content ->
                         edits.add(id to version)
                         ApiResult.Success(SubmissionEdit.Saved(server(id, content)))
