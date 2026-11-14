@@ -1,0 +1,18 @@
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+
+name: Java serwera
+description: JDK 25 i cache zależności Maven serwera; cache zapisuje tylko push do gałęzi.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v6.2.0
+      with:
+        distribution: temurin
+        java-version: 25
+        cache: maven
+        cache-dependency-path: backend/pom.xml
+        # Zapis tylko z pusha do sprintu: kopie PR i kolejki wypierały jego wpis.
+        cache-read-only: ${{ github.event_name != 'push' }}

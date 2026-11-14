@@ -18,6 +18,7 @@ on:
       - ".github/workflows/backend.yml"
       - ".github/scripts/wynik-pit.sh"
       - ".github/scripts/zmiany-obszaru.sh"
+      - ".github/actions/java-serwera/**"
   merge_group:
     types:
       - checks_requested
@@ -60,6 +61,7 @@ jobs:
         run: >-
           .github/scripts/zmiany-obszaru.sh serwer backend data api/openapi.yaml specs infra
           .github/workflows/backend.yml .github/scripts/wynik-pit.sh .github/scripts/zmiany-obszaru.sh
+          .github/actions/java-serwera
 
   serwer:
     needs: [porownanie, zmiany]
@@ -73,14 +75,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-java@v6.2.0
-        with:
-          distribution: temurin
-          java-version: 25
-          cache: maven
-          cache-dependency-path: backend/pom.xml
-          # Zapis tylko z pusha do sprintu: kopie PR i kolejki wypierały jego wpis.
-          cache-read-only: ${{ github.event_name != 'push' }}
+      - uses: ./.github/actions/java-serwera
       - name: Testy skryptów danych
         if: ${{ github.event_name != 'push' }}
         working-directory: data/scripts
@@ -122,14 +117,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-java@v6.2.0
-        with:
-          distribution: temurin
-          java-version: 25
-          cache: maven
-          cache-dependency-path: backend/pom.xml
-          # Zapis tylko z pusha do sprintu: kopie PR i kolejki wypierały jego wpis.
-          cache-read-only: ${{ github.event_name != 'push' }}
+      - uses: ./.github/actions/java-serwera
       - name: Sprawdź qulice niezależnie od wyniku testów
         run: ./mvnw -B -DskipTests test-compile qulice:check
 
@@ -153,13 +141,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-java@v6.2.0
-        with:
-          distribution: temurin
-          java-version: 25
-          cache: maven
-          cache-dependency-path: backend/pom.xml
-          cache-read-only: true
+      - uses: ./.github/actions/java-serwera
       - name: Skompiluj kod serwera
         run: ./mvnw -B -DskipTests -Dqulice.skip=true compile
       - name: Pobierz jpeek i ASM
