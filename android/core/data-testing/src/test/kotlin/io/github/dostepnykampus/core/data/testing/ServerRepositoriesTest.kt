@@ -56,22 +56,6 @@ class ServerRepositoriesTest {
         assertEquals(direct(ApiResult.NotFound), fixture(ServerReply.Missing))
     }
 
-    @Test
-    fun nfr10_card_keeps_entrances() {
-        val replies = ArrayDeque(listOf(ServerReply.Ok(ServerCard(SERVER, listOf(ENTRANCE))), ServerReply.Offline))
-        val fixture = serverEntrances { replies.removeFirst() }
-        val answers =
-            ArrayDeque(
-                listOf(
-                    ApiResult.Success(BuildingDetails(SERVER, DetailLevel.BASIC, listOf(ENTRANCE))),
-                    ApiResult.NetworkError(IOException("brak sieci")),
-                ),
-            )
-        val direct = ServerEntrancesRepository { answers.removeFirst() }
-        val expected = runBlocking { List(2) { direct.entrances(SYMBOL) } }
-        assertEquals(expected, runBlocking { List(2) { fixture.entrances(SYMBOL) } })
-    }
-
     private fun direct(result: ApiResult<BuildingList>): BuildingCatalog =
         runBlocking {
             BuildingCatalogRepository(EmptyCoroutineContext, listBuildings = { result }) { ASSET }.catalog()
