@@ -23,7 +23,7 @@ import java.nio.file.Path
 import java.util.jar.JarFile
 
 /**
- * Klasy `@Serializable` z `core:network` zgodne ze schematami `api/openapi.yaml`. Spec ma niewiele
+ * Ręczne klasy `@Serializable` z `core:network` zgodne ze schematami `api/openapi.yaml`. Spec ma niewiele
  * przykładów, więc strażnik porównuje pola i nullowalność DTO ze schematami oraz waliduje ciała żądań.
  * Kontrakt jest czytany raz na klasę testu.
  */
@@ -137,6 +137,7 @@ class DtoContractTest {
                 .map { entry -> entry.name }
                 .filter { it.endsWith(".class") && '$' !in it }
                 .map { it.removeSuffix(".class").replace(oldChar = '/', newChar = '.') }
+                .filterNot { it.startsWith(GENERATED_PACKAGE) }
                 .map { className -> Class.forName(className, false, javaClass.classLoader) }
                 .filter { it.isAnnotationPresent(Serializable::class.java) }
                 .toList()
@@ -155,6 +156,10 @@ class DtoContractTest {
     private companion object {
         const val NEW = "/paths/~1submissions/post/requestBody/content/application~1json/schema"
         const val UPDATE = "/paths/~1submissions~1{submissionId}/put/requestBody/content/application~1json/schema"
+
+        /** Pakiet modeli generowanych z kontraktu; ich pola pochodzą wprost ze schematów. */
+        const val GENERATED_PACKAGE = "io.github.dostepnykampus.core.network.json."
+
         const val NOT_SHOWN = "model zgłoszenia w aplikacji nie ma tego pola, żaden ekran go nie pokazuje"
 
         /** DTO `core:network` ↔ schemat z `components/schemas`; nazwa klasy bez pakietu. */
