@@ -19,4 +19,4 @@ package io.github.dostepnykampus.core.data.account
 )
 @Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
-annotation class TymczasoweRole
+public annotation class TymczasoweRole

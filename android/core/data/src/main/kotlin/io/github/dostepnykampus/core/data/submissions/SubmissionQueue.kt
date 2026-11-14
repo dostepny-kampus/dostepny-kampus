@@ -36,7 +36,7 @@ import kotlin.coroutines.CoroutineContext
  * @property photoId identyfikator UUID zdjęcia nadany w telefonie
  * @property path ścieżka pliku JPEG w pamięci aplikacji
  */
-data class PendingPhotoDraft(val photoId: String, val path: String)
+public data class PendingPhotoDraft(val photoId: String, val path: String)
 
 /**
  * Zgłoszenie Zbierającego poprawiane z listy „Moje zgłoszenia”.
@@ -46,7 +46,7 @@ data class PendingPhotoDraft(val photoId: String, val path: String)
  * @property id identyfikator poprawianego zgłoszenia; zapis go nie zmienia, więc nie powstaje duplikat
  * @property baseVersion wersja z serwera, od której zaczęto poprawkę; `null`, gdy zgłoszenie jest tylko w telefonie
  */
-data class EditedSubmission(val id: String, val baseVersion: Int?)
+public data class EditedSubmission(val id: String, val baseVersion: Int?)
 
 /** Wiersz zdjęcia z projektu do zapisania w bazie. */
 internal fun PendingPhotoDraft.toPendingPhotoEntity(submissionId: String): PendingPhotoEntity =
@@ -78,7 +78,7 @@ private const val FIRST_SERVER_FAULT_CODE = 500
  * @property putPhoto zdjęcie zgłoszenia (`PUT /submissions/{id}/photos/{photoId}`)
  * @property update edycja z wersją bazową (`PUT /submissions/{id}`)
  */
-data class SubmissionServer(
+public data class SubmissionServer(
     val create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
     val putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ServerReply<Unit>,
     val update: suspend (id: String, version: Int, content: SubmissionContent) -> ServerReply<ServerEdit>,
@@ -92,7 +92,7 @@ data class SubmissionServer(
  * @property newId identyfikator zgłoszenia w telefonie, raz na zgłoszenie
  * @property nowMillis zegar chwili zapisu
  */
-data class SubmissionStamps(
+public data class SubmissionStamps(
     val newId: () -> String = { UUID.randomUUID().toString() },
     val nowMillis: () -> Long = System::currentTimeMillis,
 )
@@ -106,7 +106,7 @@ data class SubmissionStamps(
  *
  * Wymagania: NFR-5, US9.1, US9.2, BR-9, NFR-8, NFR-6, US8.3, BR-10, BR-26, US14.4, US8
  */
-class SubmissionQueue internal constructor(
+public class SubmissionQueue internal constructor(
     private val store: PendingSubmissionDao,
     private val ioContext: CoroutineContext = Dispatchers.IO,
     private val server: SubmissionServer,
@@ -120,7 +120,7 @@ class SubmissionQueue internal constructor(
     private val expired = MutableStateFlow(false)
 
     /** `true` po odpowiedzi 401 aż do [onLoggedIn]: aplikacja prosi o ponowne zalogowanie. Wymagania: BR-26 */
-    val loginExpired: StateFlow<Boolean> = expired.asStateFlow()
+    public val loginExpired: StateFlow<Boolean> = expired.asStateFlow()
 
     /**
      * Kolejka na zgłoszeniach z [store], z historią Zbierającego.
@@ -131,7 +131,7 @@ class SubmissionQueue internal constructor(
      * @param stamps identyfikator i chwila zapisu nowego zgłoszenia
      * @param onSaved planowanie wysyłki po zapisie
      */
-    constructor(
+    public constructor(
         store: SubmissionStore,
         ioContext: CoroutineContext = Dispatchers.IO,
         server: SubmissionServer,
@@ -155,7 +155,7 @@ class SubmissionQueue internal constructor(
      * @param putPhoto wysłanie zdjęcia zgłoszenia
      * @param onSaved planowanie wysyłki po zapisie
      */
-    constructor(
+    public constructor(
         store: SubmissionStore,
         ioContext: CoroutineContext = Dispatchers.IO,
         create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
@@ -195,7 +195,7 @@ class SubmissionQueue internal constructor(
      * @param photos zdjęcia do wysłania; identyfikatory wracają w [content]
      * @throws SaveRefusedException zdjęcia nie odpowiadają treści
      */
-    suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>): SavedSubmission {
+    public suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>): SavedSubmission {
         requireMatchingPhotos(content, photos)
         val id = stamps.newId()
         val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
@@ -216,7 +216,7 @@ class SubmissionQueue internal constructor(
      * @param dir katalog zdjęć zgłoszeń
      * @param kept pliki zdjęć odtworzonych szkiców
      */
-    suspend fun deleteOrphanPhotos(dir: File, kept: Set<String>) {
+    public suspend fun deleteOrphanPhotos(dir: File, kept: Set<String>) {
         deleteOrphanPhotos(store = store, dir = dir, kept = kept, nowMillis = stamps.nowMillis(), ioContext = ioContext)
     }
 
@@ -231,7 +231,7 @@ class SubmissionQueue internal constructor(
      * @throws SaveRefusedException zdjęcia nie odpowiadają treści albo serwer ma już zgłoszenie, a telefon nie zna
      *   jego wersji
      */
-    suspend fun saveEdit(edited: EditedSubmission, content: SubmissionContent, photos: List<PendingPhotoDraft>) {
+    public suspend fun saveEdit(edited: EditedSubmission, content: SubmissionContent, photos: List<PendingPhotoDraft>) {
         requireMatchingPhotos(content, photos)
         val replaced =
             results.locked {
@@ -262,7 +262,7 @@ class SubmissionQueue internal constructor(
      * @return `false`, gdy trzeba spróbować później; `true`, gdy wysyłka doszła do końca kolejki albo czeka
      *   na zalogowanie, a nie na czas
      */
-    suspend fun sendAll(): Boolean =
+    public suspend fun sendAll(): Boolean =
         sending.withLock {
             val stop = if (expired.value) Outcome.LOGIN_EXPIRED else sendUntilStop()
             if (stop == Outcome.LOGIN_EXPIRED) expired.value = true
@@ -270,7 +270,7 @@ class SubmissionQueue internal constructor(
         }
 
     /** Po ponownym zalogowaniu wysyłka rusza sama, bez działania Zbierającego. Wymagania: BR-26, US14.4 */
-    fun onLoggedIn() {
+    public fun onLoggedIn() {
         expired.value = false
         runCatching(onSaved)
     }

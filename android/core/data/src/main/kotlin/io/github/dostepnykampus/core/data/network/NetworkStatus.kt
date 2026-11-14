@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 /** Czy telefon ma teraz internet; bez niego ekrany pokazują linię „Bez internetu” (PW-4). Wymagania: US9.1, NFR-10 */
-fun interface NetworkStatus {
+public fun interface NetworkStatus {
     /** Prawda, gdy jest internet. Pierwsza wartość to stan bieżący, kolejne przychodzą tylko przy zmianie. */
-    fun isOnline(): Flow<Boolean>
+    public fun isOnline(): Flow<Boolean>
 }
 
 /**
@@ -33,7 +33,7 @@ internal fun hasInternet(hasCapability: (Int) -> Boolean): Boolean =
  * [NetworkStatus] z domyślnej sieci telefonu; obserwacja kończy się razem z odbiorcą przepływu. Bez domyślnej sieci
  * system nie wywoła żadnej metody, więc stan bieżący idzie od razu.
  */
-class ConnectivityNetworkStatus(private val connectivity: ConnectivityManager) : NetworkStatus {
+public class ConnectivityNetworkStatus(private val connectivity: ConnectivityManager) : NetworkStatus {
     override fun isOnline(): Flow<Boolean> =
         callbackFlow {
             val callback =

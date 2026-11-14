@@ -17,6 +17,6 @@ import javax.inject.Inject
  * @property cache ostatnia lista budynków z serwera
  */
 @ConsistentCopyVisibility
-data class BuildingListStore
+public data class BuildingListStore
     @Inject
     internal constructor(internal val cache: BuildingCacheDao)

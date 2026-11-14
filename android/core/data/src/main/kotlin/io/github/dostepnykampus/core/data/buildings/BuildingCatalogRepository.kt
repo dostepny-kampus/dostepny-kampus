@@ -29,7 +29,7 @@ import java.time.Instant
 import kotlin.coroutines.CoroutineContext
 
 /** Plik konturów OSM w zasobach aplikacji; przy budowie kopiuje go z `data/buildings` zadanie `copyBuildingsAsset`. */
-const val BUILDINGS_ASSET = "pwr-buildings.geojson"
+public const val BUILDINGS_ASSET: String = "pwr-buildings.geojson"
 
 /**
  * Katalog budynków dla mapy. Z [listBuildings] kontury, nazwy i atrybucja są z serwera, a wejścia z pliku konturów,
@@ -47,7 +47,7 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
  * @param nowMillis zegar chwili pobrania listy z serwera
  * @param readGeoJson odczyt treści pliku konturów
  */
-class BuildingCatalogRepository internal constructor(
+public class BuildingCatalogRepository internal constructor(
     private val buildingCache: BuildingCacheDao?,
     private val ioContext: CoroutineContext,
     private val listBuildings: (suspend () -> ServerReply<BuildingList>)? = null,
@@ -71,7 +71,7 @@ class BuildingCatalogRepository internal constructor(
      * @param nowMillis zegar chwili pobrania listy z serwera
      * @param readGeoJson odczyt treści pliku konturów
      */
-    constructor(
+    public constructor(
         ioContext: CoroutineContext,
         listBuildings: (suspend () -> ServerReply<ServerBuildings>)? = null,
         nowMillis: () -> Long = System::currentTimeMillis,
@@ -83,7 +83,7 @@ class BuildingCatalogRepository internal constructor(
      *
      * @throws IllegalArgumentException gdy plik konturów ma zły format
      */
-    suspend fun catalog(): BuildingCatalog = fetched(isFresh = false)
+    public suspend fun catalog(): BuildingCatalog = fetched(isFresh = false)
 
     /**
      * Strumień katalogu dla mapy: najpierw katalog z pliku (albo już pobrany z serwera), bez czekania na pobranie,
@@ -93,7 +93,7 @@ class BuildingCatalogRepository internal constructor(
      *
      * @throws IllegalArgumentException gdy plik konturów ma zły format
      */
-    fun catalogUpdates(): Flow<BuildingCatalog> =
+    public fun catalogUpdates(): Flow<BuildingCatalog> =
         channelFlow {
             val first = downloaded.value?.catalog ?: readBundled(isFresh = false)
             send(first)
@@ -110,7 +110,7 @@ class BuildingCatalogRepository internal constructor(
      *
      * @throws IllegalArgumentException gdy plik konturów ma zły format
      */
-    suspend fun refresh(): BuildingCatalog = fetched(isFresh = true)
+    public suspend fun refresh(): BuildingCatalog = fetched(isFresh = true)
 
     /**
      * Chwila ostatniego, udanego pobrania listy budynków z serwera, które widzi katalog; `null`, gdy katalog
@@ -118,7 +118,7 @@ class BuildingCatalogRepository internal constructor(
      *
      * Wymagania: NFR-10
      */
-    fun syncedAt(): Instant? = downloaded.value?.run { Instant.ofEpochMilli(syncedAtMillis) }
+    public fun syncedAt(): Instant? = downloaded.value?.run { Instant.ofEpochMilli(syncedAtMillis) }
 
     private suspend fun fetched(isFresh: Boolean): BuildingCatalog {
         val ready = if (isFresh) null else cached

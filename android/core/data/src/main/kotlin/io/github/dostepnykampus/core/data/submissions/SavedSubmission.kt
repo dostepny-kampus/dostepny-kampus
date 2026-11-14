@@ -10,4 +10,4 @@ package io.github.dostepnykampus.core.data.submissions
  *
  * @property id identyfikator zapisanego zgłoszenia, zachowywany przy ponowieniu wysyłki
  */
-data class SavedSubmission(val id: String)
+public data class SavedSubmission(val id: String)
