@@ -137,5 +137,6 @@ public object DataModule {
 
     /** Odświeżenie statusów listy C3 z serwera. Wymagania: US8.2 */
     @Provides
-    public fun ownStatuses(api: SubmissionsApi, store: SubmissionStore): OwnStatuses = ownStatusesOf(api::mine, store.history)
+    public fun ownStatuses(api: SubmissionsApi, store: SubmissionStore): OwnStatuses =
+        ownStatusesOf(api::mine, store.history)
 }
