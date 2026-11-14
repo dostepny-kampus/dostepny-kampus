@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
  * @since 0.1.0
  */
 @Service
-final class BuildingQuery implements Buildings {
+public final class BuildingQuery implements Buildings {
 
     /**
      * Promień podpowiedzi budynku w metrach, większy niż błąd GNSS 15 m.
