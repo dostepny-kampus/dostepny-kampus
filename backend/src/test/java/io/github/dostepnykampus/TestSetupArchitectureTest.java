@@ -147,32 +147,59 @@ final class TestSetupArchitectureTest {
     );
 
     @Test
-    void springBootTestOnlyInIntegrationTestAndListedClasses() {
+    void limitsOwnSpringContextToListedClasses() {
         final Set<String> all = TestSetupArchitectureTest.OWN_CONTEXT.keySet();
-        TestSetupArchitectureTest.bare(all).check(TestSetupArchitectureTest.TESTS);
-        TestSetupArchitectureTest.listed(all).check(TestSetupArchitectureTest.TESTS);
-        TestSetupArchitectureTest.unlisted(all).check(TestSetupArchitectureTest.TESTS);
+        Assertions.assertEquals(
+            "",
+            ArchViolations.of(
+                TestSetupArchitectureTest.TESTS,
+                TestSetupArchitectureTest.bare(all),
+                TestSetupArchitectureTest.listed(all),
+                TestSetupArchitectureTest.unlisted(all)
+            ),
+            "Kontekst Springa poza wspólnymi adnotacjami i listą klas z własnym kontekstem"
+        );
     }
 
     @Test
-    void noDirtiesContext() {
-        TestSetupArchitectureTest.forbidden(Set.of(), List.of(DirtiesContext.class))
-            .check(TestSetupArchitectureTest.TESTS);
+    void forbidsDirtiesContext() {
+        Assertions.assertEquals(
+            "",
+            ArchViolations.of(
+                TestSetupArchitectureTest.TESTS,
+                TestSetupArchitectureTest.forbidden(Set.of(), List.of(DirtiesContext.class))
+            ),
+            "Test używa @DirtiesContext"
+        );
     }
 
     @Test
-    void mockitoBeansOnlyInListedClasses() {
-        TestSetupArchitectureTest.forbidden(
-            TestSetupArchitectureTest.MOCKED.keySet(),
-            List.of(MockitoBean.class, MockitoSpyBean.class)
-        ).check(TestSetupArchitectureTest.TESTS);
+    void allowsMockitoBeansOnlyInListedClasses() {
+        Assertions.assertEquals(
+            "",
+            ArchViolations.of(
+                TestSetupArchitectureTest.TESTS,
+                TestSetupArchitectureTest.forbidden(
+                    TestSetupArchitectureTest.MOCKED.keySet(),
+                    List.of(MockitoBean.class, MockitoSpyBean.class)
+                )
+            ),
+            "Mock Springa w klasie spoza listy"
+        );
     }
 
     @Test
-    void httpClientsOnlyInConfiguration() {
+    void buildsHttpClientsOnlyInConfiguration() {
         final Set<String> all = TestSetupArchitectureTest.OWN_CLIENT.keySet();
-        TestSetupArchitectureTest.clients(all).check(TestSetupArchitectureTest.TESTS);
-        TestSetupArchitectureTest.ownClients(all).check(TestSetupArchitectureTest.TESTS);
+        Assertions.assertEquals(
+            "",
+            ArchViolations.of(
+                TestSetupArchitectureTest.TESTS,
+                TestSetupArchitectureTest.clients(all),
+                TestSetupArchitectureTest.ownClients(all)
+            ),
+            "Klient HTTP zbudowany poza wspólną konfiguracją i listą"
+        );
     }
 
     @ParameterizedTest

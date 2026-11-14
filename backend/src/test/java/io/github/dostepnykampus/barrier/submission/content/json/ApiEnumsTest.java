@@ -11,6 +11,7 @@ import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
 import io.github.dostepnykampus.barrier.submission.content.NewEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
+import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,8 @@ import tools.jackson.databind.node.ObjectNode;
 /**
  * Wartości enumów serializowanych przez serwer odpowiadają schematom OpenAPI.
  *
+ * <p>Wymagania: BR-7, BR-24</p>
+ *
  * @since 0.1.0
  */
 @IntegrationTest
@@ -29,33 +32,37 @@ final class ApiEnumsTest {
 
     @Test
     void usEightStatusesMatchSpec(final ApplicationContext context) {
-        ApiEnumsTest.assertMatches(
-            new OpenApiContract(), context, "SubmissionStatus",
-            Stream.of(SubmissionStatus.values())
+        Assertions.assertEquals(
+            new OpenApiContract().enumValues("SubmissionStatus"),
+            ApiEnumsTest.json(context, Stream.of(SubmissionStatus.values())),
+            "Wartości JSON różnią się od OpenAPI dla ".concat("SubmissionStatus")
         );
     }
 
     @Test
-    void brSevenKindsMatchSpec(final ApplicationContext context) {
-        ApiEnumsTest.assertMatches(
-            new OpenApiContract(), context, "SubmissionContent/properties/kind",
-            Stream.of(SubmissionKind.values())
+    void kindsMatchSpec(final ApplicationContext context) {
+        Assertions.assertEquals(
+            new OpenApiContract().enumValues("SubmissionContent/properties/kind"),
+            ApiEnumsTest.json(context, Stream.of(SubmissionKind.values())),
+            "Wartości JSON różnią się od OpenAPI dla ".concat("SubmissionContent/properties/kind")
         );
     }
 
     @Test
     void usFourGroupsMatchSpec(final ApplicationContext context) {
-        ApiEnumsTest.assertMatches(
-            new OpenApiContract(), context, "SubmissionContent/properties/barrierGroup",
-            Stream.of(BarrierGroup.values()).map(GroupJson::of)
+        Assertions.assertEquals(
+            new OpenApiContract().enumValues("SubmissionContent/properties/barrierGroup"),
+            ApiEnumsTest.json(context, Stream.of(BarrierGroup.values()).map(GroupJson::of)),
+            "Wartości JSON różnią się od OpenAPI dla ".concat("SubmissionContent/properties/barrierGroup")
         );
     }
 
     @Test
-    void brTwentyFourMarkingsMatchSpec(final ApplicationContext context) {
-        ApiEnumsTest.assertMatches(
-            new OpenApiContract(), context, "SubmissionContent/properties/entranceMarking",
-            Stream.of(NewEntranceMarking.values())
+    void markingsMatchSpec(final ApplicationContext context) {
+        Assertions.assertEquals(
+            new OpenApiContract().enumValues("SubmissionContent/properties/entranceMarking"),
+            ApiEnumsTest.json(context, Stream.of(NewEntranceMarking.values())),
+            "Wartości JSON różnią się od OpenAPI dla ".concat("SubmissionContent/properties/entranceMarking")
         );
     }
 
@@ -66,28 +73,17 @@ final class ApiEnumsTest {
         changed.putObject("components").putObject("schemas").putObject("SubmissionStatus")
             .putArray("enum").addAll(new OpenApiContract().enumValues("SubmissionStatus"))
             .add("TEST_ONLY");
-        Assertions.assertTrue(
-            Assertions.assertThrows(
-                AssertionError.class,
-                () -> ApiEnumsTest.assertMatches(
-                    new OpenApiContract(changed::toString), context, "SubmissionStatus",
-                    Stream.of(SubmissionStatus.values())
-                ),
-                "Dodatkowa wartość w kontrakcie kończy się błędem asercji"
-            ).getMessage().contains("TEST_ONLY"),
+        Assertions.assertNotEquals(
+            new OpenApiContract(changed::toString).enumValues("SubmissionStatus"),
+            ApiEnumsTest.json(context, Stream.of(SubmissionStatus.values())),
             "Dodatkowa wartość w kontrakcie musi złamać zgodność enumu"
         );
     }
 
-    private static void assertMatches(
-        final OpenApiContract contract, final ApplicationContext context,
-        final String pointer, final Stream<? extends Enum<?>> values
+    private static List<JsonNode> json(
+        final ApplicationContext context, final Stream<? extends Enum<?>> values
     ) {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
-        Assertions.assertEquals(
-            contract.enumValues(pointer),
-            values.map(value -> mapper.<JsonNode>valueToTree(value)).toList(),
-            "Wartości JSON różnią się od OpenAPI dla ".concat(pointer)
-        );
+        return values.map(value -> mapper.<JsonNode>valueToTree(value)).toList();
     }
 }

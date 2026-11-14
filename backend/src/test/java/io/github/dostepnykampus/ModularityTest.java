@@ -95,7 +95,7 @@ final class ModularityTest {
     }
 
     @Test
-    void sharedHasOnlyErrorJsonAndGeo() {
+    void limitsSharedToErrorJsonAndGeo() {
         Assertions.assertEquals(
             List.of(),
             ModularityTest.foreign(
@@ -106,7 +106,7 @@ final class ModularityTest {
     }
 
     @Test
-    void basePackageHoldsOnlyApplication() {
+    void holdsOnlyApplicationInBasePackage() {
         Assertions.assertEquals(
             List.of(DostepnyKampusApplication.class.getName()),
             ModularityTest.production().stream()
@@ -131,7 +131,7 @@ final class ModularityTest {
     }
 
     @Test
-    void infraVerifiesModuleBoundaries() {
+    void verifiesModuleBoundaries() {
         Assertions.assertDoesNotThrow(
             (Executable) ApplicationModules.of(DostepnyKampusApplication.class)
                 ::verify,
@@ -172,7 +172,7 @@ final class ModularityTest {
     }
 
     @Test
-    void packageInfoOfTestsRepeatsDeclaredDependencies() {
+    void repeatsDeclaredDependenciesInVerificationPackageInfo() {
         final JavaClasses main = ModularityTest.production();
         Assertions.assertEquals(
             List.of(),
@@ -186,7 +186,7 @@ final class ModularityTest {
     }
 
     @Test
-    void infraModuleDiagramMatchesDocumentation() throws IOException {
+    void matchesModuleDiagramInDocumentation() throws IOException {
         final Path folder = Path.of("target/spring-modulith-docs");
         new Documenter(
             ApplicationModules.of(DostepnyKampusApplication.class),

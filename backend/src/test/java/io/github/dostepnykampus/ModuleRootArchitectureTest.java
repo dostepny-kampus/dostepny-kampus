@@ -59,7 +59,7 @@ final class ModuleRootArchitectureTest {
     private Path dir;
 
     @Test
-    void moduleRootsHoldOnlyPackageInfo() {
+    void holdsOnlyPackageInfoInModuleRoots() {
         Assertions.assertEquals(
             Set.of(),
             ModuleRootArchitectureTest.rooted(
@@ -70,9 +70,15 @@ final class ModuleRootArchitectureTest {
     }
 
     @Test
-    void apiTypesDependOnlyOnApiSharedAndJdk() {
-        ModuleRootArchitectureTest.api(ModuleRootArchitectureTest.BASE)
-            .check(ModuleRootArchitectureTest.production());
+    void limitsApiTypesToApiSharedAndJdk() {
+        Assertions.assertEquals(
+            "",
+            ArchViolations.of(
+                ModuleRootArchitectureTest.production(),
+                ModuleRootArchitectureTest.api(ModuleRootArchitectureTest.BASE)
+            ),
+            "Typy API modułu zależą od czegoś poza API, shared i JDK"
+        );
     }
 
     @Test
