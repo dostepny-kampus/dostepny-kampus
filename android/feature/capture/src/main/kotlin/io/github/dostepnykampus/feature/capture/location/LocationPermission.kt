@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.location
@@ -14,6 +14,7 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -100,12 +101,10 @@ fun LocationPermissionContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.pomiar_naglowek), onBack = onBack)
-            Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m)) {
-                Text(stringResource(if (isDenied) R.string.pomiar_zgoda_odmowa else R.string.pomiar_zgoda_tekst))
-            }
+    MeasureFrame(
+        onBack = onBack,
+        modifier = modifier,
+        actions = {
             PinnedActionBar {
                 if (isDenied) {
                     PinnedButton(text = stringResource(R.string.pomiar_otworz_ustawienia), onClick = onOpenSettings)
@@ -113,6 +112,35 @@ fun LocationPermissionContent(
                     PinnedButton(text = stringResource(R.string.pomiar_zgoda_przycisk), onClick = onAllow)
                 }
             }
+        },
+    ) {
+        Text(stringResource(if (isDenied) R.string.pomiar_zgoda_odmowa else R.string.pomiar_zgoda_tekst))
+    }
+}
+
+/**
+ * Układ ekranów pomiaru: tło, nagłówek „Wstecz” z tytułem pomiaru, przewijana [content] i przypięte [actions].
+ *
+ * @param onBack „Wstecz”
+ * @param actions pasek akcji przypięty pod treścią
+ * @param modifier wymiary nadane przez aplikację
+ * @param content treść ekranu
+ */
+@Composable
+internal fun MeasureFrame(
+    onBack: () -> Unit,
+    actions: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
+        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
+            BackHeader(title = stringResource(R.string.pomiar_naglowek), onBack = onBack)
+            Column(
+                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+                content = content,
+            )
+            actions()
         }
     }
 }
