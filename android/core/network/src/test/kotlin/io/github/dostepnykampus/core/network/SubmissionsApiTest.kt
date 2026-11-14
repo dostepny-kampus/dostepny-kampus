@@ -73,7 +73,8 @@ class SubmissionsApiTest {
 
     @Test
     fun br10_update_conflict() {
-        enqueue(code = 409, body = """{"status":409,"serverSubmission":${submission(version = 3)}}""")
+        val problem = """{"title":"Konflikt wersji","status":409"""
+        enqueue(code = 409, body = """$problem,"serverSubmission":${submission(version = 3)}}""")
         val result = blocking { update(id = ID, version = 1, content = quick) }
         val edit = assertInstanceOf(ApiResult.Success::class.java, result).value
         assertEquals(3, assertInstanceOf(SubmissionEdit.Conflict::class.java, edit).server.version)
