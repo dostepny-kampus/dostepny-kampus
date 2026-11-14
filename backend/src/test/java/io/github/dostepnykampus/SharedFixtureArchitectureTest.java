@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  * Test serwera przygotowuje swoje dane sam: klasa z metodami testów nie ma pól obiektu ani metod
@@ -103,35 +103,25 @@ final class SharedFixtureArchitectureTest {
     }
 
     @ParameterizedTest
-    @ValueSource(
-        strings = {
-            "private int count; @org.junit.jupiter.api.Test void check() { }",
-            "@org.junit.jupiter.api.BeforeEach void prepare() { } @Test void check() { }",
-            "@org.junit.jupiter.api.BeforeAll static void prepare() { } @Test void check() { }"
-        }
+    @CsvSource(
+        delimiter = '|',
+        textBlock = """
+            private int count; @org.junit.jupiter.api.Test void check() { } | true
+            @org.junit.jupiter.api.BeforeEach void prepare() { } @Test void check() { } | true
+            @org.junit.jupiter.api.BeforeAll static void prepare() { } @Test void check() { } | true
+            private static final int LIMIT = 1; @Test void check() { } | false
+            @org.junit.jupiter.api.AfterEach void clean() { } @Test void check() { } | false
+            private int count; void helper() { } | false
+            """
     )
-    void rejectsSharedFixture(final String members, @TempDir final Path dir) throws IOException {
-        Assertions.assertEquals(
-            Set.of(String.format("%s.Sample", SharedFixtureArchitectureTest.SAMPLES)),
-            SharedFixtureArchitectureTest.sample(dir, members),
-            "Reguła przepuściła wspólne pole albo metodę przygotowania"
-        );
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-        strings = {
-            "private static final int LIMIT = 1; @Test void check() { }",
-            "@org.junit.jupiter.api.AfterEach void clean() { } @Test void check() { }",
-            "private int count; void helper() { }"
-        }
-    )
-    void acceptsOwnDataAndHelpers(final String members, @TempDir final Path dir)
+    void judgesSampleClass(final String members, final boolean rejected, @TempDir final Path dir)
         throws IOException {
         Assertions.assertEquals(
-            Set.of(),
-            SharedFixtureArchitectureTest.sample(dir, members),
-            "Reguła odrzuciła stałą, sprzątanie albo klasę pomocniczą bez testów"
+            rejected,
+            SharedFixtureArchitectureTest.sample(dir, members).contains(
+                String.format("%s.Sample", SharedFixtureArchitectureTest.SAMPLES)
+            ),
+            String.format("Reguła źle oceniła klasę z elementami: %s", members)
         );
     }
 
