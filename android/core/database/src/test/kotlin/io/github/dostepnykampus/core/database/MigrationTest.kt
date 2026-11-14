@@ -142,6 +142,26 @@ class MigrationTest {
                 assertEquals(listOf(1, 0), listOf(queued, markers))
             }
     }
+
+    @Test
+    fun migrate_7_to_8_keeps_queue() {
+        helper.createDatabase(DB_NAME, 7).use { seventh ->
+            seventh.execSQL(
+                "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
+                    " VALUES ('a', 7, 0, 'PRECISE', 17.0, 51.0)",
+            )
+        }
+
+        helper
+            .runMigrationsAndValidate(DB_NAME, 8, true, MIGRATION_7_8)
+            .use { eighth ->
+                val queued = eighth.query("SELECT COUNT(*) FROM pending_submissions").use { row -> readCount(row) }
+                val plans = eighth.query("SELECT COUNT(*) FROM floor_plans").use { row -> readCount(row) }
+                val rooms = eighth.query("SELECT COUNT(*) FROM floor_rooms").use { row -> readCount(row) }
+
+                assertEquals(listOf(1, 0, 0), listOf(queued, plans, rooms))
+            }
+    }
 }
 
 private fun readCount(cursor: Cursor): Int {

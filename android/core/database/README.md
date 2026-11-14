@@ -2,7 +2,7 @@
 
 ## Zadanie
 
-Lokalna baza Room: kopie budynków i barier, zgłoszenia własne i oczekujące na wysłanie.
+Lokalna baza Room: kopie budynków, barier i planów pięter, zgłoszenia własne i oczekujące na wysłanie.
 
 ## API
 
