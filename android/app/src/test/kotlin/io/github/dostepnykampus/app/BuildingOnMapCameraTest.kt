@@ -29,6 +29,7 @@ import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
+import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -135,7 +136,12 @@ class BuildingOnMapCameraTest {
 
     @Composable
     private fun AppNavigator.Screen(route: NavKey) {
-        MapOrBuildingScreen(route, repository, choice, fakeMap) { AppScreen(it) }
+        MapOrBuildingScreen(
+            route = route,
+            repository = repository,
+            choice = choice,
+            mapView = fakeMap,
+        ) { AppScreen(it) }
     }
 
     private fun click(matcher: SemanticsMatcher) {

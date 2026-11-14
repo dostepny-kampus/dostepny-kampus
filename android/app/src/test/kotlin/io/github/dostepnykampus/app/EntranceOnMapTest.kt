@@ -97,7 +97,12 @@ class EntranceOnMapTest {
     @Composable
     private fun AppNavigator.Screen(route: NavKey, json: String) {
         val repository = remember { BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { json } }
-        MapOrBuildingScreen(route, repository, choice, fakeMap) { other ->
+        MapOrBuildingScreen(
+            route = route,
+            repository = repository,
+            choice = choice,
+            mapView = fakeMap,
+        ) { other ->
             if (other is EntrancesRoute) {
                 EntrancesScreen(
                     symbol = other.symbol,
