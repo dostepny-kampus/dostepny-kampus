@@ -18,6 +18,9 @@ import kotlinx.serialization.json.JsonPrimitive
 private const val SELECTED_WIDTH = 4.0
 private const val SYMBOLS = "symbols"
 
+private val ALL_FEATURES = expression("!", JsonPrimitive(false))
+private val NO_FEATURES = expression("!", JsonPrimitive(true))
+
 /**
  * Barwa konturów przy zaznaczonym konturze budynków [outline]: [own] dla niego, [other] dla pozostałych, więc
  * sąsiednie budynki są przygaszone. Bez zaznaczenia wszystkie kontury mają barwę [own].
@@ -70,16 +73,16 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection, colors:
     return SelectionLook(
         buildingsFill = tone(alone, own = colors.building, other = colors.dimmed),
         outlinesColor = tone(alone, own = colors.buildingOutline, other = colors.dimmedOutline),
-        selectedFilter = chosen?.let(::ofBuildings) ?: JsonPrimitive(false),
-        entrancesFilter = alone?.let(::ofBuildings) ?: JsonPrimitive(true),
-        chosenBarrierFilter = selection.barrier?.let(::ofBarrier) ?: JsonPrimitive(false),
+        selectedFilter = chosen?.let(::ofBuildings) ?: NO_FEATURES,
+        entrancesFilter = alone?.let(::ofBuildings) ?: ALL_FEATURES,
+        chosenBarrierFilter = selection.barrier?.let(::ofBarrier) ?: NO_FEATURES,
         chosenEntrance = featureCollection(selection.entrance?.let(::chosenFeatures).orEmpty()),
     )
 }
 
 /** Styl wczytany na mapie, w którym zmienia się filtry, barwy, dane źródeł i obrazy bez wczytywania stylu. */
 internal interface MapStyleTarget {
-    /** Ustawia filtr [filter] warstwy [layer]: wyrażenie stylu albo stała `true` lub `false`. */
+    /** Ustawia filtr [filter] warstwy [layer]: wyrażenie stylu, także dla stałych (`["!", true]`, `["!", false]`). */
     fun filter(layer: String, filter: JsonElement)
 
     /** Ustawia pole [property] rysowania warstwy [layer] na [value]: wyrażenie stylu albo stałą. */

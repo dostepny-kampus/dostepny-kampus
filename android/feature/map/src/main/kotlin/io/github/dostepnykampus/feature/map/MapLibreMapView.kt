@@ -55,7 +55,6 @@ import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.jsonPrimitive
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraUpdateFactory
@@ -278,12 +277,7 @@ object MapLibreMapView : CampusMapView {
 
         override fun image(name: String, image: Bitmap) = style.addImage(name, image)
 
-        private fun expressionOf(value: JsonElement): Expression =
-            if (value is JsonArray) {
-                Expression.Converter.convert(value.asStyleText())
-            } else {
-                Expression.literal(value.jsonPrimitive.boolean)
-            }
+        private fun expressionOf(value: JsonElement): Expression = Expression.Converter.convert(value.asStyleText())
     }
 }
 
