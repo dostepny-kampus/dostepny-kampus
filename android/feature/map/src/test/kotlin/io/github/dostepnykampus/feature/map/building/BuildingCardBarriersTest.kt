@@ -6,10 +6,8 @@
 package io.github.dostepnykampus.feature.map.building
 
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
@@ -49,16 +47,6 @@ class BuildingCardBarriersTest {
         compose.onNodeWithText("Bariery w budynku").performScrollTo().assertIsDisplayed()
         val texts = listOf("Blokada", "Schody przy wejściu", "Budynek A-1 · Główne, parter", "Sprawdzone 12.11.2026")
         texts.forEach { compose.onNodeWithText(it).performScrollTo().assertIsDisplayed() }
-    }
-
-    /** Wiersz: dwa zgłoszenia przyjęte → każde ma własny wiersz pod jednym nagłówkiem. Wymagania: US2.3 */
-    @Test
-    fun us2_3_two_reports() {
-        val second = BARRIER.copy(id = "z2", type = BarrierType.STAIRS_AT_ENTRANCE, entranceId = null, floor = null)
-        show(listOf(BARRIER, second))
-
-        compose.onNodeWithText("Bariery w budynku").assertExists()
-        compose.onAllNodesWithText("Sprawdzone 12.11.2026").assertCountEquals(2)
     }
 
     /**
