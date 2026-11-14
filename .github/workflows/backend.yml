@@ -112,7 +112,7 @@ jobs:
 
   jakosc:
     needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && github.event_name != 'push' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
+    if: &warunek-jakosc ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && github.event_name != 'push' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -137,7 +137,7 @@ jobs:
     # Raport spójności klas (jpeek) jako artefakt; próg dla klas ustalimy po sprincie (#1698).
     # Gdy raport nie powstał, zadanie jest czerwone.
     needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && github.event_name != 'push' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
+    if: *warunek-jakosc
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
