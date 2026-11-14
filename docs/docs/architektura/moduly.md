@@ -141,6 +141,7 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | moduł funkcji nie widzi bazy i sieci | kompilator: moduł funkcji nie ma ich w zależnościach, także w testach; Konsist `infra_a1_ui_no_network_or_db`; Module Graph Assert: #1674 |
 | tylko `:core:data` i `:app` zależą od bazy i sieci (sieci także `:systemtest`), nigdy przez `api` | `StorageDependencyArchitectureTest` |
 | moduł funkcji nie importuje innego modułu funkcji | Konsist `infra_a1_feature_not_on_other` |
+| publiczne API `:core:data` (poza `di`) bez typów `:core:network` | Konsist `infra_data_api_skips_network` |
 | moduł `core` nie importuje modułu funkcji | Konsist `infra_a1_core_not_on_feature` |
 | jawna widoczność w modułach `core` | `explicitApi()`; `:core:data`: #1625 |
 | kontrakt publicznych interfejsów `:core:data` | #1675 |
