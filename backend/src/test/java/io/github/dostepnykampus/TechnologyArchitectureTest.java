@@ -30,7 +30,9 @@ import org.junit.jupiter.params.provider.MethodSource;
  * Reguły technologii w każdym zamkniętym module serwera, wyrażone warstwami z {@link ModuleLayers}:
  * A-2 JDBC tylko w persistence, A-3 web bez {@code JsonNode}, A-4 port dziedziny z implementacją
  * w adapterze tylko w application i adapterach, A-6 API innego modułu tylko w application, A-7
- * wyjątki HTTP tylko w web. Lista wyjątków tylko maleje.
+ * wyjątki HTTP tylko w web. A-9 (typy błędów bez HTTP i Jacksona) sprawdza na kodzie
+ * {@link ArchitectureTest}, a tu są jej przykłady negatywne. Dziedzinę bez frameworków i adapter
+ * bez adaptera pilnuje {@link LayerDirectionArchitectureTest}. Lista wyjątków tylko maleje.
  *
  * @since 0.1.0
  */
@@ -121,6 +123,35 @@ final class TechnologyArchitectureTest {
             TechnologyArchitectureTest.rule(name, this.roots(), List.of())
                 .evaluate(this.compiled()).hasViolation(),
             String.format("Reguła %s przepuściła przykład negatywny", name)
+        );
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("errors")
+    void rejectsErrorTypeWithHttpOrJackson(final String body) throws IOException {
+        final String full = String.format("%s.errors", TechnologyArchitectureTest.SAMPLES);
+        final ArchSamples samples = new ArchSamples(this.dir);
+        samples.write(
+            full, "Sample", String.format("package %s;%nfinal class Sample %s%n", full, body)
+        );
+        Assertions.assertTrue(
+            ArchitectureTest.errorTypes().evaluate(samples.compiled(full)).hasViolation(),
+            "Reguła A-9 przepuściła typ błędu zależny od HTTP albo Jacksona"
+        );
+    }
+
+    private static Stream<String> errors() {
+        final String subtype =
+            "extends io.github.dostepnykampus.%s { %s s; Sample() { super(%s); } }";
+        return Stream.of(
+            String.format(
+                subtype, "shared.error.ForbiddenChange", "org.springframework.http.HttpStatus",
+                "\"x\""
+            ),
+            String.format(
+                subtype, "shared.error.ConflictingState", "tools.jackson.databind.JsonNode",
+                "\"x\", \"y\", null"
+            )
         );
     }
 
