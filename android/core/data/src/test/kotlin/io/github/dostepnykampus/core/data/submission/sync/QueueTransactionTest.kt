@@ -22,7 +22,11 @@ import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Błąd zapisu historii cofa zapis kolejki z tej samej pary, więc tabele nie zostają w sprzeczności. */
+/**
+ * Błąd zapisu historii cofa zapis kolejki z tej samej pary, więc tabele nie zostają w sprzeczności.
+ *
+ * Wymagania: NFR-5, BR-10, US8.1
+ */
 class QueueTransactionTest {
     @TempDir
     lateinit var tempDir: File
@@ -32,7 +36,7 @@ class QueueTransactionTest {
     private var failing = ""
 
     @Test
-    fun `nfr5 zapis bez historii`() =
+    fun rollsBackWithoutHistory() =
         runBlocking {
             failing = "save"
 
@@ -42,7 +46,7 @@ class QueueTransactionTest {
         }
 
     @Test
-    fun `br10 utworzenie bez wersji`() =
+    fun createsWithoutVersion() =
         runBlocking {
             queue().save(precise(PHOTO), photo(tempDir, PHOTO))
             failing = "saveVersion"
@@ -54,7 +58,7 @@ class QueueTransactionTest {
         }
 
     @Test
-    fun `us8_1 usunięcie bez wysłania`() =
+    fun removesWithoutSending() =
         runBlocking {
             queue().save(precise(PHOTO), photo(tempDir, PHOTO))
             failing = "markSent"

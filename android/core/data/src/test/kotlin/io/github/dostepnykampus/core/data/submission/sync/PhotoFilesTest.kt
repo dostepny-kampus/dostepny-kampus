@@ -21,7 +21,11 @@ import java.io.File
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Pliki zdjęć znikają z pamięci aplikacji po wysłaniu zgłoszenia i po zastąpieniu poprawką. Wymagania: NFR-5 */
+/**
+ * Pliki zdjęć znikają z pamięci aplikacji po wysłaniu zgłoszenia i po zastąpieniu poprawką.
+ *
+ * Wymagania: NFR-5, US8.3
+ */
 class PhotoFilesTest {
     @TempDir
     lateinit var tempDir: File
@@ -45,7 +49,7 @@ class PhotoFilesTest {
     }
 
     @Test
-    fun `nfr5 wysłane bez pliku`() =
+    fun dropsFileWhenSent() =
         runBlocking {
             val photos = photos("p1", "p2")
             queue.save(precise("p1", "p2"), photos)
@@ -56,7 +60,7 @@ class PhotoFilesTest {
         }
 
     @Test
-    fun `nfr5 czekające z plikiem`() =
+    fun keepsFileWhileWaiting() =
         runBlocking {
             isOnline = false
             val photos = photos("p1")
@@ -68,7 +72,7 @@ class PhotoFilesTest {
         }
 
     @Test
-    fun `us8_3 poprawka usuwa stare`() =
+    fun removesOldOnFix() =
         runBlocking {
             isOnline = false
             val first = photos("p1", "p2")

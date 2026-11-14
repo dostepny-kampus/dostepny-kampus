@@ -35,7 +35,11 @@ import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Kolejka zapisuje stan wysyłki własnych zgłoszeń dla listy C3. Wymagania: US8, NFR-5 */
+/**
+ * Kolejka zapisuje stan wysyłki własnych zgłoszeń dla listy C3.
+ *
+ * Wymagania: US8, NFR-5, US4.4, BR-9, NFR-50, US8.3, BR-23
+ */
 class OwnHistoryTest {
     @TempDir
     lateinit var tempDir: File
@@ -45,7 +49,7 @@ class OwnHistoryTest {
     private var photoAttempts = 0
 
     @Test
-    fun `wynik zapisu wskazuje wiersz`() =
+    fun pointsResultToRow() =
         runBlocking {
             val saved: SavedSubmission = queue().save(precise(PHOTO), photo(tempDir, PHOTO))
             val pending = store.all().single()
@@ -55,7 +59,7 @@ class OwnHistoryTest {
         }
 
     @Test
-    fun `us8 zapis to W telefonie`() =
+    fun savesAsOnPhone() =
         runBlocking {
             queue().save(precise(PHOTO), photo(tempDir, PHOTO))
 
@@ -65,7 +69,7 @@ class OwnHistoryTest {
         }
 
     @Test
-    fun `us4_4 szybkie poza listą`() =
+    fun keepsQuickOffList() =
         runBlocking {
             queue().save(precise(PHOTO).copy(kind = SubmissionKind.QUICK), photo(tempDir, PHOTO))
 
@@ -77,7 +81,7 @@ class OwnHistoryTest {
      *   Status „wysłane” dopiero po potwierdzeniu odbioru przez serwer.
      */
     @Test
-    fun `nfr5 wysłane z wersją`() =
+    fun keepsVersionWhenSent() =
         runBlocking {
             val target = queue()
             target.save(precise(PHOTO), photo(tempDir, PHOTO))
@@ -93,7 +97,7 @@ class OwnHistoryTest {
      *   Status „wysłane” dopiero po potwierdzeniu odbioru przez serwer.
      */
     @Test
-    fun `nfr5 bez sieci zostaje lokalne`() =
+    fun staysLocalOffline() =
         runBlocking {
             val target = queue()
             target.save(precise(PHOTO), photo(tempDir, PHOTO))
@@ -109,7 +113,7 @@ class OwnHistoryTest {
      *   nie gubi zgłoszenia i nie tworzy drugiego
      */
     @Test
-    fun `br9 zgubiona odpowiedź`() =
+    fun handlesLostReply() =
         runBlocking {
             val sent = mutableListOf<Pair<String, SubmissionContent>>()
             val remote = mutableMapOf<String, Submission>()
@@ -150,7 +154,7 @@ class OwnHistoryTest {
      * Scenariusz: synchronizacja.feature: Awaria serwera działa jak brak sieci
      */
     @Test
-    fun `nfr50 awaria serwera lokalne`() =
+    fun staysLocalOnServerFault() =
         runBlocking {
             val target = queue()
             target.save(precise(PHOTO), photo(tempDir, PHOTO))
@@ -167,7 +171,7 @@ class OwnHistoryTest {
         }
 
     @Test
-    fun `nfr5 odmowa z kodem`() =
+    fun keepsRefusalCode() =
         runBlocking {
             val target = queue()
             target.save(precise(PHOTO), photo(tempDir, PHOTO))
@@ -236,7 +240,7 @@ class OwnHistoryTest {
     }
 
     @Test
-    fun `us8_3 edycja niewysłanego`() =
+    fun editsUnsent() =
         runBlocking {
             val target = queue()
             target.save(precise(PHOTO), photo(tempDir, PHOTO))
@@ -257,7 +261,7 @@ class OwnHistoryTest {
      *   zgłasza się od nowa
      */
     @Test
-    fun `br23 nowe po nieaktualnej`() =
+    fun createsNewAfterOutdated() =
         runBlocking {
             history.rows[OLD] =
                 OwnSubmissionEntity(id = OLD, savedAtMillis = 1, kind = "PRECISE", barrierType = "TB-9")

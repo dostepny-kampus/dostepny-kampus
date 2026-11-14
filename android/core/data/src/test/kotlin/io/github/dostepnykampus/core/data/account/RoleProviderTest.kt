@@ -18,7 +18,7 @@ class RoleProviderTest {
      * Wymagania: RO-GOS, US1.2
      */
     @Test
-    fun ro_gos_everyone_is_guest() {
+    fun treatsEveryoneAsGuest() {
         assertEquals(Account.Guest, GuestRoleProvider.account.value)
     }
 }

@@ -34,7 +34,7 @@ class BuildingCatalogCacheTest {
 
     /** Wiersz: pobranie listy z serwera zapisuje kopię z momentem pobrania. Wymagania: NFR-10 */
     @Test
-    fun nfr10_downloaded_saves_copy() {
+    fun savesDownloadedCopy() {
         val repository = repository(remote = { listed("A-2") })
         runBlocking {
             repository.catalog()
@@ -50,7 +50,7 @@ class BuildingCatalogCacheTest {
      * Wymagania: NFR-10
      */
     @Test
-    fun nfr10_offline_uses_copy() {
+    fun usesCopyOffline() {
         val online = repository(remote = { listed("A-2", "N-1") })
         val offline = repository(remote = { OFFLINE })
         runBlocking {
@@ -70,7 +70,7 @@ class BuildingCatalogCacheTest {
      * Wymagania: NFR-10
      */
     @Test
-    fun nfr10_corrupt_copy_uses_asset() {
+    fun usesAssetForCorruptCopy() {
         fake.entity = BuildingCacheEntity(id = BUILDING_CACHE_SINGLE_ROW, listJson = "{", syncedAt = 7L)
         val repository = repository(remote = { OFFLINE })
         runBlocking {

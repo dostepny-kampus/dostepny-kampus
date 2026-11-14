@@ -34,7 +34,7 @@ class EditBaseVersionTest {
     private val edits = mutableListOf<Pair<String, Int>>()
 
     @Test
-    fun `us8_3 treść na serwerze`() =
+    fun keepsServerContent() =
         runBlocking {
             val target = queue(history)
             target.save(precise(PHOTO), photo(tempDir, PHOTO))
@@ -53,7 +53,7 @@ class EditBaseVersionTest {
         }
 
     @Test
-    fun `us8_3 wysłane to edycja`() =
+    fun editsSent() =
         runBlocking {
             val target = queue(history)
             target.save(precise(PHOTO), photo(tempDir, PHOTO))
@@ -71,7 +71,7 @@ class EditBaseVersionTest {
         }
 
     @Test
-    fun `br10 bez wersji odrzucone`() =
+    fun rejectsWithoutVersion() =
         runBlocking {
             val target = queue(history = null)
             target.save(precise(PHOTO), photo(tempDir, PHOTO))
@@ -92,7 +92,7 @@ class EditBaseVersionTest {
         }
 
     @Test
-    fun `br9 tylko w telefonie`() =
+    fun keepsPhoneOnly() =
         runBlocking {
             val target = queue(history)
             target.save(precise(PHOTO), photo(tempDir, PHOTO))

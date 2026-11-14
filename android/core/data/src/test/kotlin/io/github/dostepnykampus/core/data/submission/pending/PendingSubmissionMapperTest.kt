@@ -21,28 +21,28 @@ import org.junit.jupiter.api.Test
 /** Kolejka w bazie Room nie jest kontraktem: złe wartości enuma mają się głośno zepsuć. */
 class PendingSubmissionMapperTest {
     @Test
-    fun `round-trip daje tę samą treść`() {
+    fun roundTripsContent() {
         val content = fullContent()
 
         assertEquals(content, pending(content).toSubmissionContent())
     }
 
     @Test
-    fun `nieznany rodzaj daje błąd`() {
+    fun rejectsUnknownKind() {
         val saved = withRow { it.copy(kind = "SPEED") }
 
         assertThrows(IllegalArgumentException::class.java) { saved.toSubmissionContent() }
     }
 
     @Test
-    fun `nieznana grupa daje błąd`() {
+    fun rejectsUnknownGroup() {
         val saved = withRow { it.copy(barrierGroup = "STAIRS") }
 
         assertThrows(IllegalArgumentException::class.java) { saved.toSubmissionContent() }
     }
 
     @Test
-    fun `nieznane oznaczenie daje błąd`() {
+    fun rejectsUnknownMarking() {
         val saved = withRow { it.copy(entranceMarking = "CLOSED") }
 
         assertThrows(IllegalArgumentException::class.java) { saved.toSubmissionContent() }

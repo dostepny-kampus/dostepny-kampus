@@ -27,7 +27,11 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Katalog budynków na syntetycznym pliku `data/buildings` (nie dane PWr) i wejścia karty z serwera. */
+/**
+ * Katalog budynków na syntetycznym pliku `data/buildings` (nie dane PWr) i wejścia karty z serwera.
+ *
+ * Wymagania: BR-25
+ */
 class BuildingCatalogRepositoryTest {
     private val reads = AtomicInteger()
     private val json =
@@ -38,19 +42,19 @@ class BuildingCatalogRepositoryTest {
     private val repository = BuildingCatalogRepository(EmptyCoroutineContext) { json.also { reads.incrementAndGet() } }
 
     @Test
-    fun us1_natural_symbol_order() {
+    fun ordersSymbolsNaturally() {
         val symbols = runBlocking { repository.catalog() }.buildings.map { it.symbol }
         assertEquals(listOf("A-1", "A-2", "A-10", "B-1", "D-8a"), symbols)
     }
 
     @Test
-    fun br_25_visitor_entrances_only() {
+    fun keepsVisitorEntrancesOnly() {
         val types = runBlocking { repository.catalog() }.entrances.map { it.type }
         assertEquals(listOf("main", "service", "staircase", "yes"), types)
     }
 
     @Test
-    fun us1_file_read_once() {
+    fun readsFileOnce() {
         val first = runBlocking { repository.catalog() }
         assertSame(first, runBlocking { repository.catalog() })
         assertEquals(1, reads.get())
@@ -63,7 +67,7 @@ class BuildingCatalogRepositoryTest {
      * Wymagania: US1
      */
     @Test
-    fun us1_parallel_calls_read_once() {
+    fun readsOnceForParallelCalls() {
         val held = ArrayDeque<Runnable>()
         val io =
             object : CoroutineDispatcher() {
@@ -85,7 +89,7 @@ class BuildingCatalogRepositoryTest {
     }
 
     @Test
-    fun us1_real_file_for_visitors() {
+    fun readsRealFileForVisitors() {
         val file = File(requireNotNull(System.getProperty("dostepnykampus.buildings")) { "Test uruchamia Gradle" })
         val real = BuildingCatalogRepository(EmptyCoroutineContext) { file.readText() }
         val catalog = runBlocking { real.catalog() }
@@ -101,7 +105,7 @@ class BuildingCatalogRepositoryTest {
      * Wymagania: US17.3
      */
     @Test
-    fun us17_3_app_asks_server() {
+    fun asksServer() {
         val found =
             MockWebServer().use { server ->
                 server.enqueue(MockResponse().setBody(CARD))

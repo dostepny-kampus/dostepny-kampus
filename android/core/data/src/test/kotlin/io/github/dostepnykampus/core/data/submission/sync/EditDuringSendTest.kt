@@ -53,10 +53,10 @@ class EditDuringSendTest {
     }
 
     @Test
-    fun `us8_3 zapis nie czeka`() = runBlocking { editWhileSendWaitsForServer() }
+    fun savesWithoutWaiting() = runBlocking { editWhileSendWaitsForServer() }
 
     @Test
-    fun `us8_3 poprawka jako edycja`() =
+    fun sendsFixAsEdit() =
         runBlocking {
             editWhileSendWaitsForServer()
 

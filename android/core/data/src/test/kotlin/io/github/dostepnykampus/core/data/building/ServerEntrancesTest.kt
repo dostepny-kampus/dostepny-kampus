@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 /** Wejścia karty budynku z serwera z pamięcią ostatniej udanej odpowiedzi. Wymagania: NFR-10 */
 class ServerEntrancesTest {
     @Test
-    fun nfr10_entrances_from_card() =
+    fun takesEntrancesFromCard() =
         runBlocking {
             val entrances = ServerEntrancesRepository { ServerReply.Ok(CARD) }
 
@@ -27,7 +27,7 @@ class ServerEntrancesTest {
         }
 
     @Test
-    fun nfr10_offline_keeps_last() =
+    fun keepsLastOffline() =
         runBlocking {
             val answers = ArrayDeque(listOf(ServerReply.Ok(CARD), ServerReply.Offline, ServerReply.Fault(SERVER_ERROR)))
             val entrances = ServerEntrancesRepository { answers.removeFirst() }
@@ -36,7 +36,7 @@ class ServerEntrancesTest {
         }
 
     @Test
-    fun nfr10_missing_first_is_empty() =
+    fun givesEmptyForMissingFirst() =
         runBlocking {
             assertEquals(emptyList<Entrance>(), ServerEntrancesRepository { ServerReply.Missing }.entrances(SYMBOL))
         }

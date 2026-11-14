@@ -53,19 +53,19 @@ class RefusedSubmissionTest {
     }
 
     @Test
-    fun `br26 odmowa 400`() = refusedOnce(ServerReply.Fault(code = 400), code = 400)
+    fun refusesOn400() = refusedOnce(ServerReply.Fault(code = 400), code = 400)
 
     @Test
-    fun `br26 odmowa 403`() = refusedOnce(ServerReply.Fault(code = 403), code = 403)
+    fun refusesOn403() = refusedOnce(ServerReply.Fault(code = 403), code = 403)
 
     @Test
-    fun `br26 odmowa 404`() = refusedOnce(ServerReply.Missing, code = 404)
+    fun refusesOn404() = refusedOnce(ServerReply.Missing, code = 404)
 
     @Test
-    fun `br26 odmowa 413`() = refusedOnce(ServerReply.Fault(code = 413), code = 413)
+    fun refusesOn413() = refusedOnce(ServerReply.Fault(code = 413), code = 413)
 
     @Test
-    fun `br26 awaria serwera ponawia`() =
+    fun retriesOnServerFault() =
         runBlocking {
             queue.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Fault(code = 500))
@@ -78,7 +78,7 @@ class RefusedSubmissionTest {
         }
 
     @Test
-    fun `br26 brak sieci ponawia`() =
+    fun retriesOffline() =
         runBlocking {
             queue.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Offline)
@@ -91,7 +91,7 @@ class RefusedSubmissionTest {
         }
 
     @Test
-    fun `br26 401 czeka na zalogowanie`() =
+    fun waitsForSignInOn401() =
         runBlocking {
             queue.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Fault(code = 401))
@@ -108,7 +108,7 @@ class RefusedSubmissionTest {
         }
 
     @Test
-    fun `us9_5 ponowny zapis wysyła`() =
+    fun sendsAgainOnResave() =
         runBlocking {
             queue.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Fault(code = 400))

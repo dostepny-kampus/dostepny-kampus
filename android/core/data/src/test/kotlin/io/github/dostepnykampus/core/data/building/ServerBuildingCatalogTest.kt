@@ -34,7 +34,7 @@ class ServerBuildingCatalogTest {
     private val serverCalls = AtomicInteger()
 
     @Test
-    fun us1_server_outlines_entrances() {
+    fun takesOutlinesFromServer() {
         val outline = square(SERVER_SPAN)
         val merged =
             catalog {
@@ -58,19 +58,19 @@ class ServerBuildingCatalogTest {
     }
 
     @Test
-    fun us1_network_error_uses_asset() {
+    fun usesAssetOnNetworkError() {
         val failed = catalog { ServerReply.Offline }
         assertEquals(catalog(), failed)
     }
 
     @Test
-    fun us1_server_error_uses_asset() {
+    fun usesAssetOnServerError() {
         val failed = catalog { ServerReply.Fault(SERVER_ERROR) }
         assertEquals(catalog(), failed)
     }
 
     @Test
-    fun us1_empty_list_uses_asset() {
+    fun usesAssetForEmptyList() {
         val empty = catalog { ServerReply.Ok(BuildingList(source = SERVER_SOURCE, buildings = emptyList())) }
         assertEquals(catalog(), empty)
     }
@@ -81,7 +81,7 @@ class ServerBuildingCatalogTest {
      * Wymagania: US1, NFR-10
      */
     @Test
-    fun us1_catalog_asks_server_once() {
+    fun asksServerOnce() {
         val repository = repository({ listed("A-2") }, { listed("A-2", "N-1") })
         runBlocking { repeat(2) { repository.catalog() } }
         assertEquals(1, serverCalls.get())
@@ -94,7 +94,7 @@ class ServerBuildingCatalogTest {
      * Wymagania: NFR-10
      */
     @Test
-    fun nfr10_retry_after_offline() {
+    fun retriesAfterOffline() {
         val repository = repository({ OFFLINE }, { listed("A-2", "N-1") })
         runBlocking {
             assertEquals(catalog(), repository.catalog())
@@ -105,7 +105,7 @@ class ServerBuildingCatalogTest {
 
     /** Wiersz: V2, „Spróbuj ponownie” → widać budynek, który serwer dodał po pierwszym czytaniu. Wymagania: NFR-10 */
     @Test
-    fun nfr10_retry_sees_new_building() {
+    fun seesNewBuildingOnRetry() {
         val repository = repository({ listed("A-2") }, { listed("A-2", "N-1") })
         runBlocking {
             assertEquals(listOf("A-2"), repository.catalog().buildings.map { it.symbol })
@@ -121,7 +121,7 @@ class ServerBuildingCatalogTest {
      * Wymagania: NFR-10
      */
     @Test
-    fun nfr10_failed_retry_keeps_data() {
+    fun keepsDataOnFailedRetry() {
         val repository =
             repository({ listed("A-2", "N-1") }, { OFFLINE }, { throw IOException("zerwane połączenie") })
         runBlocking {
@@ -144,7 +144,7 @@ class ServerBuildingCatalogTest {
      * Wymagania: NFR-10
      */
     @Test
-    fun nfr10_retry_waits_for_read() {
+    fun waitsForReadOnRetry() {
         val gate = CompletableDeferred<Unit>()
         val server: suspend () -> ServerReply<BuildingList> = {
             serverCalls.incrementAndGet()
