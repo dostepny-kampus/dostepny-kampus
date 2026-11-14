@@ -49,7 +49,7 @@ private fun arrowBack(): ImageVector =
  * Wymagania: NFR-15, NFR-20, NFR-17
  */
 @Composable
-fun BackHeader(title: String, onBack: () -> Unit, modifier: Modifier = Modifier) {
+public fun BackHeader(title: String, onBack: () -> Unit, modifier: Modifier = Modifier) {
     val isTitleBelow = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val titleText = @Composable { titleModifier: Modifier ->
         val asHeading = titleModifier.semantics { heading() }

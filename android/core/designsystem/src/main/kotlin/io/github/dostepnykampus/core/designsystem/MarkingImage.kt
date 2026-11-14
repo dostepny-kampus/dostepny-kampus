@@ -84,7 +84,7 @@ internal fun DrawScope.drawMarking(shape: Path, mark: Path, shapeColor: Color, m
  *
  * Wymagania: US2.1, NFR-21
  */
-fun markingImage(marking: EntranceMarking, sizePx: Int, shapeColor: Color, markColor: Color): Bitmap {
+public fun markingImage(marking: EntranceMarking, sizePx: Int, shapeColor: Color, markColor: Color): Bitmap {
     val look = marking.look()
     val shape = PathParser().parsePathString(look.shape).toPath()
     val mark = PathParser().parsePathString(look.mark).toPath()

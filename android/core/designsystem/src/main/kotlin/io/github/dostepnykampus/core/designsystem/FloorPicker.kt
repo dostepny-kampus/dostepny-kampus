@@ -29,17 +29,17 @@ import androidx.compose.ui.semantics.Role
  * @property key identyfikator opcji, np. id piętra z danych PWr albo numer piętra
  * @property label napis opcji, np. „Parter”, „1 piętro”, „Nie wiem”
  */
-data class FloorOption(val key: String, val label: String)
+public data class FloorOption(val key: String, val label: String)
 
 /**
  * Opcje wyboru piętra od góry listy albo od początku wiersza.
  *
  * @property items opcje w kolejności pokazania
  */
-data class FloorOptions(val items: List<FloorOption>)
+public data class FloorOptions(val items: List<FloorOption>)
 
 /** Układ wyboru piętra (wymagania wspólne). */
-enum class FloorPickerLayout {
+public enum class FloorPickerLayout {
     /** Lista przycisków na całą szerokość: pytanie o piętro jest jedyną treścią kroku (V4). */
     LIST,
 
@@ -62,7 +62,7 @@ enum class FloorPickerLayout {
  * @param modifier modyfikator zewnętrzny
  */
 @Composable
-fun FloorPicker(
+public fun FloorPicker(
     options: FloorOptions,
     selectedKey: String?,
     onSelect: (FloorOption) -> Unit,

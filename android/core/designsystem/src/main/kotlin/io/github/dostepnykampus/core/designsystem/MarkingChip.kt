@@ -38,7 +38,7 @@ private val MinHeight = 36.dp
  * @param label własne słowo obok ikony; `null` daje słowo ze słownika oznaczenia
  */
 @Composable
-fun MarkingChip(marking: EntranceMarking, modifier: Modifier = Modifier, label: String? = null) {
+public fun MarkingChip(marking: EntranceMarking, modifier: Modifier = Modifier, label: String? = null) {
     val look = marking.look()
     val container = look.container(DostepnyKampusTheme.statusColors)
     val content = look.content(DostepnyKampusTheme.statusColors)

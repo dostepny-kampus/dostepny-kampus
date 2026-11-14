@@ -27,6 +27,10 @@ tasks.withType<Test>().configureEach {
     systemProperty("tokens.file", tokenFile.asFile.relativeTo(projectDir).invariantSeparatorsPath)
 }
 
+kotlin {
+    explicitApi()
+}
+
 dependencies {
     api(project(":core:model"))
     api(libs.androidx.compose.foundation.layout)
