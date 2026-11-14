@@ -7,7 +7,7 @@
 /**
  * Moduł building: budynki kampusu z konturami i wejściami.
  *
- * <p>Zadanie: lista i karta budynku z wejściami oraz dopasowanie punktu do budynku.</p>
+ * <p>Zadanie: lista i karta budynku z wejściami, dopasowanie punktu, plany PWr.</p>
  *
  * <p>API: pakiet {@code api} ({@code CampusArea}, {@code Outlines}); HTTP {@code /buildings}.</p>
  *
@@ -17,7 +17,7 @@
  *
  * <p>Kiedy dodawać tutaj: dane budynku, wejść i geometrii kampusu, nie ich odczyt dla zgłoszeń.</p>
  *
- * <p>Wymagania: US1, US2, US17, US3, US16, US15</p>
+ * <p>Wymagania: US1, US2, US17, US3, US16, US15, US18, NFR-40</p>
  *
  * @since 0.1.0
  */
