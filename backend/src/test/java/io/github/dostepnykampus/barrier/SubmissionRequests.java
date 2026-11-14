@@ -43,6 +43,25 @@ final class SubmissionRequests {
     }
 
     /**
+     * Tworzy zgłoszenie o podanym identyfikatorze w punkcie kampusu, z jednym nowym zdjęciem.
+     *
+     * @param id Identyfikator zgłoszenia
+     * @param fields Pola treści w JSON, bez nawiasów, położenia i zdjęć
+     * @return Kod odpowiedzi POST /submissions
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    int create(final UUID id, final String fields) throws Exception {
+        return this.post(
+            String.join(
+                "",
+                "{\"id\":\"", id.toString(), "\",", fields,
+                ",\"location\":{\"type\":\"Point\",\"coordinates\":[17.06209,51.10785]},",
+                "\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
+            )
+        ).getStatus();
+    }
+
+    /**
      * Edytuje zgłoszenie.
      *
      * @param id Identyfikator zgłoszenia
