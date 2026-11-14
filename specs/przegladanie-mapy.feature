@@ -299,7 +299,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   Scenariusz: Przy granicy terenu TalkBack mówi, jak zmienić teren
     Zakładając, że Gość niezalogowany z włączonym TalkBack ma otwartą mapę kampusu na terenie „Kampus główny”
     Jeżeli przesunie mapę przyciskami do granicy terenu
-    Wtedy TalkBack raz mówi „Tu kończy się teren Kampus główny. Inne tereny wybierzesz przyciskiem terenu.”
+    Wtedy TalkBack raz mówi „Tu kończy się teren Kampus główny. Inny teren wybierzesz przyciskiem «Zmień teren» u góry mapy.”
 
   @US1.8 @BR-G5 @aplikacja
   Scenariusz: Wyszukanie budynku z innego terenu zmienia teren

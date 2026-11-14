@@ -199,9 +199,10 @@ Funkcja: Zgłoszenie szybkie
     Wtedy <wynik>
 
     Przykłady:
-      | miejsce                                          | wynik                                                              |
-      | na ulicy między budynkami terenu „Kampus główny” | może wysłać zgłoszenie, które jest „poza budynkiem”                |
-      | 20 m za granicą terenu PWr                       | widzi napis „Jesteś poza terenem PWr” i nie może wysłać zgłoszenia |
+      | miejsce                                                   | wynik                                                              |
+      | w przerwie 60 m między dwoma budynkami tego samego terenu | może wysłać zgłoszenie, które jest „poza budynkiem”                |
+      | 20 m za obszarem uczelni, w zapasie terenu                | może wysłać zgłoszenie, które jest „poza budynkiem”                |
+      | 20 m za granicą terenu PWr                                | widzi napis „Jesteś poza terenem PWr” i nie może wysłać zgłoszenia |
 
   @US4.9 @BR-G5 @aplikacja @serwer
   Scenariusz: Serwer odrzuca zgłoszenie spoza terenu PWr

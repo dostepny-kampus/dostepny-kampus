@@ -168,8 +168,8 @@ Czynność główna: przycisk terenu, który otwiera listę terenów.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Mapa nie wychodzi poza wybrany teren; poza jego granicą podkład jest wyblakły, a granicę pokazuje linia z obwódką | US1.7, BR-G5, NFR-16, NFR-39 |
-| Przy dojściu do granicy TalkBack ogłasza raz: „Tu kończy się teren Kampus główny. Inne tereny wybierzesz przyciskiem terenu.” | US1.7, NFR-18 |
+| Mapa nie wychodzi poza prostokąt wokół wybranego terenu; poza granicą terenu podkład jest wyblakły, a granicę pokazuje linia z obwódką | US1.7, BR-G5, NFR-16, NFR-39 |
+| Przy dojściu do granicy TalkBack ogłasza raz: „Tu kończy się teren Kampus główny. Inny teren wybierzesz przyciskiem «Zmień teren» u góry mapy.” | US1.7, NFR-18 |
 
 ### V1: wynik z innego terenu
 
