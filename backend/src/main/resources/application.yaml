@@ -13,7 +13,6 @@ spring:
     username: ${DK_DB_USER:dostepny_kampus}
   modulith:
     runtime:
-      # TODO(#1719) migracje Java budynków trafiają też do historii modułów z własnymi migracjami
       flyway-enabled: true
   mvc:
     problemdetails:

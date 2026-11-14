@@ -69,7 +69,8 @@ Moduł z jednym tematem, na przykładzie `building`: `api/`, `domain/`, `web/`, 
   Modulith, odbiorcą odpornym na powtórzenie i testem scenariusza. Zdarzenie w `api` zmienia się tylko
   zgodnie wstecz.
 - **Dane:** moduł jest właścicielem swoich tabel. Nowe migracje leżą w `db/migration/<moduł>/`,
-  migracje sprzed podziału w `db/migration/__root`. Nowych kluczy obcych i złączeń między tabelami
+  migracje sprzed podziału w `db/migration/__root`. Powtarzalny import budynków i wejść z OSM
+  jest wykonywany wyłącznie w głównej historii Flyway. Nowych kluczy obcych i złączeń między tabelami
   różnych modułów nie ma; odwołanie przez identyfikator.
 - **Moduł działa sam:** test uruchamia tylko jego kontekst, a `api` sąsiadów zastępuje.
 - `shared` jest modułem otwartym (`Type.OPEN`): inne moduły widzą wszystkie jego typy. Ma tylko
