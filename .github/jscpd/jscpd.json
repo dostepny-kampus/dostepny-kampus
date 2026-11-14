@@ -1,6 +1,6 @@
 {
-  "minTokens": 150,
-  "minLines": 10,
+  "minTokens": 100,
+  "minLines": 8,
   "threshold": 0,
   "mode": "weak",
   "format": ["kotlin", "java", "yaml", "bash"],
