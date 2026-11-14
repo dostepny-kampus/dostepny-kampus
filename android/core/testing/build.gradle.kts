@@ -13,6 +13,10 @@ android {
     testOptions.unitTests.isIncludeAndroidResources = true
 }
 
+tasks.withType<Test>().configureEach {
+    jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED", "--enable-native-access=ALL-UNNAMED")
+}
+
 kotlin {
     explicitApi()
 }
@@ -30,5 +34,7 @@ dependencies {
     testImplementation(libs.androidx.compose.foundation)
     testImplementation(libs.androidx.compose.foundation.layout)
     testImplementation(libs.androidx.compose.runtime)
-    testImplementation(libs.androidx.compose.ui.test.manifest)
+    testImplementation(libs.androidx.compose.ui.graphics)
+    testImplementation(libs.androidx.test.ext.junit)
+    testRuntimeOnly(libs.androidx.compose.ui.test.manifest)
 }
