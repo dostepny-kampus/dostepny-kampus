@@ -39,19 +39,20 @@ class AssertionMessage(config: Config) :
 
     private fun lacksMessage(call: KtCallExpression): Boolean =
         analyze(call) {
-            val symbol = call.resolveToCall()?.successfulFunctionCallOrNull()?.signature?.symbol
-            val types = symbol?.valueParameters?.map { it.returnType }.orEmpty()
-            when (symbol?.callableId?.classId) {
-                JUPITER -> !hasJupiterMessage(symbol.callableId?.callableName?.asString(), types)
+            val info = call.resolveToCall() ?: return@analyze false
+            val function = info.successfulFunctionCallOrNull() ?: return@analyze false
+            val symbol = function.signature.symbol
+            val id = symbol.callableId ?: return@analyze false
+            val types = symbol.valueParameters.map { it.returnType }
+            when (id.classId) {
+                JUPITER -> !hasJupiterMessage(id.callableName.asString(), types)
                 JUNIT4 -> !isMessage(types.firstOrNull())
                 else -> false
             }
         }
 
-    private fun hasJupiterMessage(
-        name: String?,
-        types: List<KaType>,
-    ): Boolean = if (name == "fail") types.any(::isMessage) else isMessage(types.lastOrNull())
+    private fun hasJupiterMessage(name: String, types: List<KaType>): Boolean =
+        if (name == "fail") types.any(::isMessage) else isMessage(types.lastOrNull())
 
     private fun isMessage(type: KaType?): Boolean {
         val bound = if (type is KaFlexibleType) type.lowerBound else type
