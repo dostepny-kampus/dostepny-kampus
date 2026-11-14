@@ -36,6 +36,23 @@ final class BuildingsMigrationTest {
     }
 
     @Test
+    void osmImportHasOnlyOneFlywayHistory(final ApplicationContext context) {
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        MatcherAssert.assertThat(
+            "Import OSM ma wpis w historii głównej zamiast w historii modułu",
+            jdbc.sql(
+                """
+                SELECT 'główna' FROM flyway_schema_history WHERE description = 'budynki z OpenStreetMap'
+                UNION ALL
+                SELECT 'modułu' FROM flyway_schema_history_building
+                WHERE description = 'budynki z OpenStreetMap'
+                """
+            ).query(String.class).list(),
+            Matchers.contains("główna")
+        );
+    }
+
+    @Test
     void usOneStoresOutlineAsGeographicMultiPolygon(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Kontur budynku nie jest wielokątem złożonym w EPSG:4326",
