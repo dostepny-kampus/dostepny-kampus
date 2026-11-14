@@ -161,20 +161,12 @@ class ArchitectureTest {
     /** Pliki z `@Composable` nie liczą geometrii `core.geo`; wynik przychodzi w stanie z modelu widoku. */
     @Test
     fun nfr11_composable_no_geometry() {
-        val production = Konsist.scopeFromProduction().files
-        assertEquals(emptySet<String>(), composableGeometry(production) - GEOMETRY_OUTSIDE_VM.keys, GEOMETRY_HINT)
-    }
-
-    /** obliczenia `core.geo` importują tylko modele widoku i pakiety `data`, więc nie ma pliku pośredniego. */
-    @Test
-    fun nfr11_geometry_only_in_vm() {
-        val production = Konsist.scopeFromProduction().files
-        val found = geometryOutsideViewModels(production)
+        val found = composableGeometry(Konsist.scopeFromProduction().files)
         assertEquals(emptySet<String>(), found - GEOMETRY_OUTSIDE_VM.keys, GEOMETRY_HINT)
         assertEquals(emptySet<String>(), GEOMETRY_OUTSIDE_VM.keys - found)
     }
 
-    /** `@Composable` z importem obliczeń geometrii łamie obie reguły, a model widoku żadnej. */
+    /** `@Composable` z importem obliczeń geometrii łamie regułę, a model widoku nie. */
     @Test
     fun nfr11_geometry_rule_rejects(
         @TempDir fixtures: File,
@@ -194,7 +186,6 @@ class ArchitectureTest {
         File(directory, "PinViewModel.kt").writeText(model)
         val files = Konsist.scopeFromExternalDirectory(directory.absolutePath).files
         assertEquals(setOf("$BASE.feature.map.Pin"), composableGeometry(files))
-        assertEquals(setOf("$BASE.feature.map.Pin"), geometryOutsideViewModels(files))
     }
 
     /** Ikony ze ścieżki buduje tylko `core:designsystem` jedną wspólną funkcją. */
@@ -250,12 +241,6 @@ class ArchitectureTest {
     private fun composableGeometry(files: List<KoFileDeclaration>): Set<String> =
         geometryImporters(files)
             .filter { file -> file.functions(includeNested = true).any { it.hasAnnotationWithName("Composable") } }
-            .map { "${it.packagePath()}.${it.name}" }
-            .toSet()
-
-    private fun geometryOutsideViewModels(files: List<KoFileDeclaration>): Set<String> =
-        geometryImporters(files)
-            .filterNot { it.name.endsWith("ViewModel") || it.packagePath().split('.').contains("data") }
             .map { "${it.packagePath()}.${it.name}" }
             .toSet()
 
@@ -337,12 +322,12 @@ class ArchitectureTest {
             ).joinToString(separator = "|", prefix = """\b(""", postfix = """)\b""").toRegex()
 
         const val GEOMETRY_HINT =
-            "Geometria poza modelem widoku: policz w modelu widoku poza wątkiem głównym i podaj wynik w stanie ekranu"
+            "Geometria w pliku z @Composable: policz ją poza ekranem, poza wątkiem głównym, i podaj wynik w stanie ekranu"
 
         /** Zamiany modelu na typy spatialk, bez obliczeń geometrii. */
         val GEOMETRY_CONVERSIONS = setOf("SpatialkGeometry")
 
-        /** Pliki z obliczeniami `core.geo` poza modelem widoku i pakietem `data`; lista może tylko maleć. */
+        /** Pliki z `@Composable` i obliczeniami `core.geo`; lista może tylko maleć. */
         val GEOMETRY_OUTSIDE_VM = emptyMap<String, String>()
 
         const val ICON_HINT = "Ikona budowana poza wzornictwem: dodaj ikonę w core:designsystem wspólną funkcją"
