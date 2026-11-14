@@ -33,13 +33,13 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @IntegrationTest
 @Transactional
-final class OutlinesOverlapTest {
+final class OutlinesOverlapIT {
 
     @Test
     void brFourteenPicksSmallestSymbolOfOverlappingOutlines(
         final ApplicationContext context
     ) {
-        OutlinesOverlapTest.overlapping(context);
+        OutlinesOverlapIT.overlapping(context);
         MatcherAssert.assertThat(
             "Punkt w dwóch konturach nie należy do budynku o najmniejszym symbolu",
             context.getBean(Outlines.class).containing(0.0005, 0.0015),
@@ -51,7 +51,7 @@ final class OutlinesOverlapTest {
     void brFourteenHintsSavedBuildingOfOverlappingOutlines(
         final ApplicationContext context
     ) {
-        OutlinesOverlapTest.overlapping(context);
+        OutlinesOverlapIT.overlapping(context);
         MatcherAssert.assertThat(
             "Podpowiedź wskazuje inny budynek niż zapisany przy zgłoszeniu",
             context.getBean(Buildings.class).locate(0.0005, 0.0015),

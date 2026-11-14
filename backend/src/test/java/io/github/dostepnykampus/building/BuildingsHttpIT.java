@@ -36,7 +36,7 @@ import tools.jackson.databind.ObjectMapper;
  */
 @IntegrationTest
 @Transactional
-final class BuildingsHttpTest {
+final class BuildingsHttpIT {
 
     @BeforeEach
     void clearBuildings(final WebApplicationContext context) {
@@ -49,12 +49,12 @@ final class BuildingsHttpTest {
         throws Exception {
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
-        BuildingsHttpTest.insert(jdbc, "C-13", "DETAILED", BuildingsHttpTest.east());
-        BuildingsHttpTest.insert(jdbc, "A-1", "BASIC", BuildingsHttpTest.west());
+        BuildingsHttpIT.insert(jdbc, "C-13", "DETAILED", BuildingsHttpIT.east());
+        BuildingsHttpIT.insert(jdbc, "A-1", "BASIC", BuildingsHttpIT.west());
         MatcherAssert.assertThat(
             "Lista budynków nie jest posortowana według symbolu albo kontur nie jest GeoJSON",
-            mapper.readTree(BuildingsHttpTest.body(context)),
-            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.listed()))
+            mapper.readTree(BuildingsHttpIT.body(context)),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpIT.listed()))
         );
     }
 
@@ -63,12 +63,12 @@ final class BuildingsHttpTest {
         throws Exception {
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
-        BuildingsHttpTest.insert(jdbc, "A-1", "BASIC", BuildingsHttpTest.west());
-        BuildingsHttpTest.insertUnnamed(jdbc, "C-13", "DETAILED", BuildingsHttpTest.east());
+        BuildingsHttpIT.insert(jdbc, "A-1", "BASIC", BuildingsHttpIT.west());
+        BuildingsHttpIT.insertUnnamed(jdbc, "C-13", "DETAILED", BuildingsHttpIT.east());
         MatcherAssert.assertThat(
             "Budynek bez nazwy ma w liście pole name, a budynek z nazwą go nie ma",
-            mapper.readTree(BuildingsHttpTest.body(context)),
-            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.listedUnnamed()))
+            mapper.readTree(BuildingsHttpIT.body(context)),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpIT.listedUnnamed()))
         );
     }
 
@@ -76,13 +76,13 @@ final class BuildingsHttpTest {
     void usTwoOmitsNameOfUnnamedBuildingInCard(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
-        BuildingsHttpTest.insertUnnamed(
-            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpTest.west()
+        BuildingsHttpIT.insertUnnamed(
+            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpIT.west()
         );
         MatcherAssert.assertThat(
             "Karta budynku bez nazwy ma pole name",
-            mapper.readTree(BuildingsHttpTest.card(context, "A-1")),
-            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.cardUnnamed()))
+            mapper.readTree(BuildingsHttpIT.card(context, "A-1")),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpIT.cardUnnamed()))
         );
     }
 
@@ -92,8 +92,8 @@ final class BuildingsHttpTest {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
         MatcherAssert.assertThat(
             "Pusta tabela budynków nie daje pustej listy z pustą atrybucją",
-            mapper.readTree(BuildingsHttpTest.body(context)),
-            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.empty()))
+            mapper.readTree(BuildingsHttpIT.body(context)),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpIT.empty()))
         );
     }
 
@@ -101,15 +101,15 @@ final class BuildingsHttpTest {
     void nfrFortyAttributesEverySourceOfList(final WebApplicationContext context)
         throws Exception {
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
-        BuildingsHttpTest.insert(jdbc, "A-1", "BASIC", BuildingsHttpTest.west());
-        BuildingsHttpTest.insert(jdbc, "C-13", "DETAILED", BuildingsHttpTest.east());
-        BuildingsHttpTest.insert(jdbc, "C-14", "BASIC", BuildingsHttpTest.west());
+        BuildingsHttpIT.insert(jdbc, "A-1", "BASIC", BuildingsHttpIT.west());
+        BuildingsHttpIT.insert(jdbc, "C-13", "DETAILED", BuildingsHttpIT.east());
+        BuildingsHttpIT.insert(jdbc, "C-14", "BASIC", BuildingsHttpIT.west());
         jdbc.sql("UPDATE buildings SET source = '© Politechnika Wrocławska' WHERE symbol = 'A-1'")
             .update();
         MatcherAssert.assertThat(
             "Atrybucja listy pomija któreś źródło konturów albo je powtarza",
             context.getBean(ObjectMapper.class)
-                .readTree(BuildingsHttpTest.body(context))
+                .readTree(BuildingsHttpIT.body(context))
                 .get("source").asString(),
             Matchers.equalTo("© OpenStreetMap contributors; © Politechnika Wrocławska")
         );
@@ -119,13 +119,13 @@ final class BuildingsHttpTest {
     void usTwoReturnsBuildingCardWithoutEntrances(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
-        BuildingsHttpTest.insert(
-            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpTest.west()
+        BuildingsHttpIT.insert(
+            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpIT.west()
         );
         MatcherAssert.assertThat(
             "Karta budynku nie ma konturu albo nie ma pustej listy wejść",
-            mapper.readTree(BuildingsHttpTest.card(context, "A-1")),
-            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.cardBody()))
+            mapper.readTree(BuildingsHttpIT.card(context, "A-1")),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpIT.cardBody()))
         );
     }
 
@@ -134,7 +134,7 @@ final class BuildingsHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Nieznany symbol budynku nie jest błędem 404",
-            BuildingsHttpTest.failure(context, "/buildings/C-13"),
+            BuildingsHttpIT.failure(context, "/buildings/C-13"),
             Matchers.startsWith("404 application/problem+json")
         );
     }
@@ -143,13 +143,13 @@ final class BuildingsHttpTest {
     void usSixTwoLocatesPointInsideOutline(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
-        BuildingsHttpTest.insert(
-            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpTest.yard()
+        BuildingsHttpIT.insert(
+            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpIT.yard()
         );
         MatcherAssert.assertThat(
             "Punkt w konturze nie wskazuje tego budynku",
-            mapper.readTree(BuildingsHttpTest.locate(context, "51.1105", "17.0605")),
-            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.inside()))
+            mapper.readTree(BuildingsHttpIT.locate(context, "51.1105", "17.0605")),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpIT.inside()))
         );
     }
 
@@ -157,13 +157,13 @@ final class BuildingsHttpTest {
     void usSixTwoSuggestsNearestBuilding(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
-        BuildingsHttpTest.insert(
-            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpTest.yard()
+        BuildingsHttpIT.insert(
+            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpIT.yard()
         );
         MatcherAssert.assertThat(
             "Punkt tuż poza konturem nie podpowiada najbliższego budynku",
-            mapper.readTree(BuildingsHttpTest.locate(context, "51.1113", "17.0605")),
-            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.nearby()))
+            mapper.readTree(BuildingsHttpIT.locate(context, "51.1113", "17.0605")),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpIT.nearby()))
         );
     }
 
@@ -171,13 +171,13 @@ final class BuildingsHttpTest {
     void usSixTwoLeavesFarPointWithoutBuilding(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
-        BuildingsHttpTest.insert(
-            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpTest.yard()
+        BuildingsHttpIT.insert(
+            context.getBean(JdbcClient.class), "A-1", "BASIC", BuildingsHttpIT.yard()
         );
         MatcherAssert.assertThat(
             "Punkt daleko od budynków dostał podpowiedź budynku",
-            mapper.readTree(BuildingsHttpTest.locate(context, "51.113", "17.0605")),
-            Matchers.equalTo(mapper.readTree(BuildingsHttpTest.away()))
+            mapper.readTree(BuildingsHttpIT.locate(context, "51.113", "17.0605")),
+            Matchers.equalTo(mapper.readTree(BuildingsHttpIT.away()))
         );
     }
 
@@ -186,7 +186,7 @@ final class BuildingsHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Odpowiedź 400 podpowiedzi budynku nie ma opisu w detail",
-            BuildingsHttpTest.detail(context, "/buildings/locate?lat=91&lon=17"),
+            BuildingsHttpIT.detail(context, "/buildings/locate?lat=91&lon=17"),
             Matchers.not(Matchers.emptyOrNullString())
         );
     }
@@ -196,7 +196,7 @@ final class BuildingsHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Odpowiedź 404 karty budynku nie ma opisu w detail",
-            BuildingsHttpTest.detail(context, "/buildings/Z-404"),
+            BuildingsHttpIT.detail(context, "/buildings/Z-404"),
             Matchers.containsString("Z-404")
         );
     }
@@ -220,7 +220,7 @@ final class BuildingsHttpTest {
     ) throws Exception {
         MatcherAssert.assertThat(
             message,
-            BuildingsHttpTest.failure(context, url),
+            BuildingsHttpIT.failure(context, url),
             Matchers.startsWith("400 application/problem+json")
         );
     }
@@ -257,7 +257,7 @@ final class BuildingsHttpTest {
             {"symbol":"A-1","name":"Budynek A-1","detailLevel":"BASIC","outline":%s},
             {"symbol":"C-13","detailLevel":"DETAILED","outline":%s}
             ]}
-            """.formatted(BuildingsHttpTest.west(), BuildingsHttpTest.east());
+            """.formatted(BuildingsHttpIT.west(), BuildingsHttpIT.east());
     }
 
     private static String cardUnnamed() {
@@ -265,7 +265,7 @@ final class BuildingsHttpTest {
             "",
             "{\"symbol\":\"A-1\",\"detailLevel\":\"BASIC\",",
             "\"outline\":%s,\"entrances\":[]}"
-        ).formatted(BuildingsHttpTest.west());
+        ).formatted(BuildingsHttpIT.west());
     }
 
     private static String listed() {
@@ -274,7 +274,7 @@ final class BuildingsHttpTest {
             {"symbol":"A-1","name":"Budynek A-1","detailLevel":"BASIC","outline":%s},
             {"symbol":"C-13","name":"Budynek C-13","detailLevel":"DETAILED","outline":%s}
             ]}
-            """.formatted(BuildingsHttpTest.west(), BuildingsHttpTest.east());
+            """.formatted(BuildingsHttpIT.west(), BuildingsHttpIT.east());
     }
 
     private static String empty() {
@@ -358,7 +358,7 @@ final class BuildingsHttpTest {
             "",
             "{\"symbol\":\"A-1\",\"name\":\"Budynek A-1\",",
             "\"detailLevel\":\"BASIC\",\"outline\":%s,\"entrances\":[]}"
-        ).formatted(BuildingsHttpTest.west());
+        ).formatted(BuildingsHttpIT.west());
     }
 
     private static String inside() {

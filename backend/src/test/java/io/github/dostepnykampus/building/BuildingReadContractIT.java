@@ -36,7 +36,7 @@ import tools.jackson.databind.ObjectMapper;
  */
 @IntegrationTest
 @Transactional
-final class BuildingReadContractTest {
+final class BuildingReadContractIT {
 
     /**
      * Przykładowy kontur budynku przy równiku w WKT.
@@ -46,7 +46,7 @@ final class BuildingReadContractTest {
     @BeforeEach
     void insertBuilding(final WebApplicationContext context) {
         new SampleBuilding("G-900", "Budynek próbny", "BASIC").wkt(
-            context.getBean(JdbcClient.class), BuildingReadContractTest.OUTLINE
+            context.getBean(JdbcClient.class), BuildingReadContractIT.OUTLINE
         );
     }
 
@@ -71,10 +71,10 @@ final class BuildingReadContractTest {
         ).update();
         MatcherAssert.assertThat(
             "Metadane wejść albo kolejność wejścia głównego nie zgadzają się z kontraktem",
-            BuildingReadContractTest.get(context, "/buildings/G-900").required("entrances"),
+            BuildingReadContractIT.get(context, "/buildings/G-900").required("entrances"),
             Matchers.equalTo(
                 context.getBean(ObjectMapper.class)
-                    .readTree(BuildingReadContractTest.entrances())
+                    .readTree(BuildingReadContractIT.entrances())
             )
         );
     }
@@ -85,7 +85,7 @@ final class BuildingReadContractTest {
     ) throws Exception {
         MatcherAssert.assertThat(
             "Punkt 49 m od konturu nie dostał podpowiedzi bez przypisania do wnętrza",
-            BuildingReadContractTest.locate(context, 49),
+            BuildingReadContractIT.locate(context, 49),
             Matchers.equalTo(
                 context.getBean(ObjectMapper.class).readTree(
                     "{\"buildingSymbol\":\"G-900\",\"insideOutline\":false}"
@@ -100,7 +100,7 @@ final class BuildingReadContractTest {
     ) throws Exception {
         MatcherAssert.assertThat(
             "Punkt 51 m od konturu dostał podpowiedź spoza promienia 50 m",
-            BuildingReadContractTest.locate(context, 51),
+            BuildingReadContractIT.locate(context, 51),
             Matchers.equalTo(
                 context.getBean(ObjectMapper.class).readTree("{\"insideOutline\":false}")
             )
@@ -113,9 +113,9 @@ final class BuildingReadContractTest {
     ) throws Exception {
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         new SampleBuilding("G-901", "Budynek szczegółowy", "DETAILED")
-            .wkt(jdbc, BuildingReadContractTest.OUTLINE);
+            .wkt(jdbc, BuildingReadContractIT.OUTLINE);
         new SampleBuilding("G-902", "Sąsiedni budynek", "DETAILED")
-            .wkt(jdbc, BuildingReadContractTest.OUTLINE);
+            .wkt(jdbc, BuildingReadContractIT.OUTLINE);
         jdbc.sql(
             """
             INSERT INTO floors (building_symbol, id, label, sort_order)
@@ -129,10 +129,10 @@ final class BuildingReadContractTest {
         ).update();
         MatcherAssert.assertThat(
             "Lista pięter, ich kolejność albo źródło nie zgadzają się z kontraktem",
-            BuildingReadContractTest.get(context, "/buildings/G-901/floors"),
+            BuildingReadContractIT.get(context, "/buildings/G-901/floors"),
             Matchers.equalTo(
                 context.getBean(ObjectMapper.class)
-                    .readTree(BuildingReadContractTest.floors())
+                    .readTree(BuildingReadContractIT.floors())
             )
         );
     }
@@ -143,7 +143,7 @@ final class BuildingReadContractTest {
     ) throws Exception {
         MatcherAssert.assertThat(
             "Budynek bez pięter nie zwraca pustej listy pięter ze źródłem PWr",
-            BuildingReadContractTest.get(context, "/buildings/G-900/floors"),
+            BuildingReadContractIT.get(context, "/buildings/G-900/floors"),
             Matchers.equalTo(
                 context.getBean(ObjectMapper.class).readTree(
                     "{\"source\":\"Politechnika Wrocławska\",\"floors\":[]}"
@@ -178,9 +178,9 @@ final class BuildingReadContractTest {
 
     private static JsonNode locate(final WebApplicationContext context, final int meters)
         throws Exception {
-        return BuildingReadContractTest.get(
+        return BuildingReadContractIT.get(
             context, "/buildings/locate?lat=%s&lon=0.0005"
-                .formatted(BuildingReadContractTest.latitude(context, meters))
+                .formatted(BuildingReadContractIT.latitude(context, meters))
         );
     }
 

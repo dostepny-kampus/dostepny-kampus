@@ -24,7 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @since 0.1.0
  */
 @ModuleTest
-final class IdentityModuleTest {
+final class IdentityModuleIT {
 
     @Test
     void identityStartsWithoutOtherModules(final WebApplicationContext context) {

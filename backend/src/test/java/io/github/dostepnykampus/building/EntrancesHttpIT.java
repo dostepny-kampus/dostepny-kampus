@@ -24,7 +24,7 @@ import tools.jackson.databind.ObjectMapper;
  * @since 0.1.0
  */
 @IntegrationTest
-final class EntrancesHttpTest {
+final class EntrancesHttpIT {
 
     @Test
     void usTwoShowsEntranceMarking(final WebApplicationContext context)
@@ -32,7 +32,7 @@ final class EntrancesHttpTest {
         MatcherAssert.assertThat(
             "Oznaczenie wejścia B-8 nie jest polem wejścia na karcie",
             context.getBean(ObjectMapper.class)
-                .readTree(EntrancesHttpTest.card(context, "B-8"))
+                .readTree(EntrancesHttpIT.card(context, "B-8"))
                 .at("/entrances/0/marking").asString(),
             Matchers.equalTo("INACCESSIBLE")
         );
@@ -44,7 +44,7 @@ final class EntrancesHttpTest {
         MatcherAssert.assertThat(
             "Wejście bez opisu w danych ma pole name na karcie",
             context.getBean(ObjectMapper.class)
-                .readTree(EntrancesHttpTest.card(context, "B-8"))
+                .readTree(EntrancesHttpIT.card(context, "B-8"))
                 .at("/entrances/0").has("name"),
             Matchers.is(false)
         );
@@ -56,7 +56,7 @@ final class EntrancesHttpTest {
         MatcherAssert.assertThat(
             "Karta P-23 nie ma 12 wejść z pliku konturów",
             context.getBean(ObjectMapper.class)
-                .readTree(EntrancesHttpTest.card(context, "P-23"))
+                .readTree(EntrancesHttpIT.card(context, "P-23"))
                 .required("entrances").size(),
             Matchers.equalTo(12)
         );

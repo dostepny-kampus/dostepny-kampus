@@ -27,14 +27,14 @@ import org.springframework.jdbc.core.simple.JdbcClient;
  * @since 0.1.0
  */
 @IntegrationTest
-final class CampusAreaTest {
+final class CampusAreaIT {
 
     @Test
     void brGFiveCoversPointFourHundredMetresFromBuilding(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Punkt 400 m od H-4 leży poza terenem PWr",
             List.of(
-                CampusAreaTest.metres(context, 51.108, 17.048_7),
+                CampusAreaIT.metres(context, 51.108, 17.048_7),
                 context.getBean(CampusArea.class).covers(51.108, 17.048_7)
             ),
             Matchers.equalTo(List.of(400L, true))
@@ -46,7 +46,7 @@ final class CampusAreaTest {
         MatcherAssert.assertThat(
             "Punkt 600 m od każdego budynku leży na terenie PWr",
             List.of(
-                CampusAreaTest.metres(context, 51.108, 17.045_3),
+                CampusAreaIT.metres(context, 51.108, 17.045_3),
                 context.getBean(CampusArea.class).covers(51.108, 17.045_3)
             ),
             Matchers.equalTo(List.of(600L, false))

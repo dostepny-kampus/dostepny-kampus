@@ -20,7 +20,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
  * @since 0.1.0
  */
 @IntegrationTest
-final class FloorPlanMigrationTest {
+final class FloorPlanMigrationIT {
 
     @Test
     void createsTablesInBuildingHistory(final ApplicationContext context) {
