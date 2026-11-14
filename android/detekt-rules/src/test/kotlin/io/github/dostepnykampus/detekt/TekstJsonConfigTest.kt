@@ -76,7 +76,8 @@ class TekstJsonConfigTest {
                 .use(YamlConfig::load)
                 .subConfig("style")
                 .subConfig("ForbiddenMethodCall/tekst-json"),
-        ).lintWithContext(createEnvironment(), (HEADER + body).joinToString(separator = "\n"))
+        )
+            .lintWithContext(createEnvironment(), (HEADER + body).joinToString(separator = "\n"))
             .map { it.entity.location.source.line }
             .distinct()
 
