@@ -1,0 +1,39 @@
+# Warstwy planów pięter PWr: jedna warstwa na budynek szczegółowy.
+# Budynek bez wpisu jest podstawowy (BR-G1). Tylko adresy warstw, bez danych PWr (NFR-40).
+# rooms to warstwa wielokątów „Budynek X”, nie punktów „Pomieszczenia (symbol)”.
+# Wybór wersji warstw sprawdzony w usłudze PWr 14.11.2026.
+dk:
+  plans:
+    service: https://services3.arcgis.com/rrLByHvJ7zuJQDVw/arcgis/rest/services
+    buildings:
+      # A-1: v3 zamiast v2: nowsza edycja (10.01.2024) i 34 pomieszczenia zamiast 32
+      - {symbol: A-1, name: Planbudynku_A1_v3_WFL1_widok2, facility: K1.A1, levels: 2, rooms: 4, entrances: 1}
+      - {symbol: B-1, name: Planbudynku_B1_WFL1_widok, facility: K1.B1, levels: 2, rooms: 4, entrances: 1}
+      # B-4: v2 zamiast Planbudynku_B4B5: nowsza edycja (10.01.2024)
+      - {symbol: B-4, name: Planbudynku_B4_B5_v2_WFL1_widok2, facility: K1.B4, levels: 1, rooms: 4, entrances: 0}
+      - {symbol: B-5, name: Planbudynku_B4_B5_v2_WFL1_widok2, facility: K1.B5, levels: 1, rooms: 6, entrances: 0}
+      - {symbol: C-1, name: Planbudynku_C1C2_WFL1_widok, facility: K1.C1, levels: 1, rooms: 4, entrances: 0}
+      - {symbol: C-2, name: Planbudynku_C1C2_WFL1_widok, facility: K1.C2, levels: 1, rooms: 6, entrances: 0}
+      - {symbol: C-3, name: Planbudynku_C3C4_WFL1_widok, facility: K1.C3, levels: 1, rooms: 4, entrances: 0}
+      - {symbol: C-4, name: Planbudynku_C3C4_WFL1_widok, facility: K1.C4, levels: 1, rooms: 6, entrances: 0}
+      - {symbol: C-5, name: Planbudynku_C5_C16_WFL1_widok, facility: K1.C5, levels: 5, rooms: 2, entrances: 0}
+      - {symbol: C-6, name: Planbudynku_C6_WFL1_widok, facility: K1.C6, levels: 3, rooms: 2, entrances: 0}
+      # C-13: v2 zamiast PlanbudynkuC13: nowsza edycja (10.01.2024)
+      - {symbol: C-13, name: Planbudynku_C13_v2_WFL1_widok12, facility: K1.C13, levels: 3, rooms: 2, entrances: 0}
+      - {symbol: C-16, name: Planbudynku_C5_C16_WFL1_widok, facility: K1.C16, levels: 5, rooms: 4, entrances: 0}
+      # C-18: C18_plan zamiast Planbudynku_C18: nowsze dane (20.12.2023)
+      - {symbol: C-18, name: C18_plan_WFL1_widok, facility: K1.C18, levels: 3, rooms: 2, entrances: 0}
+      # C-19: warstwa C-19, C-20 ma piętra tylko C-19, więc C-20 zostaje podstawowy
+      - {symbol: C-19, name: Planbudynku_C19_C20_WFL1_widok, facility: K1.C19, levels: 3, rooms: 2, entrances: 0}
+      # D-1: D1D2_plan zamiast Planbudynku_D1_D2: nowsze dane (20.12.2023)
+      - {symbol: D-1, name: D1D2_plan_WFL1_widok, facility: K1.D1, levels: 5, rooms: 2, entrances: 0}
+      - {symbol: D-2, name: D1D2_plan_WFL1_widok, facility: K1.D2, levels: 5, rooms: 4, entrances: 0}
+      - {symbol: D-20, name: Planbudynku_D20_WFL1_widok, facility: K1.D20, levels: 3, rooms: 2, entrances: 0}
+      - {symbol: D-21, name: PlanbudynkuD21_WFL1_widok, facility: K1.D21, levels: 3, rooms: 2, entrances: 0}
+      - {symbol: E-1, name: Planbudynku_E1_v3_WFL1_widok, facility: K6.E1, levels: 2, rooms: 4, entrances: 1}
+      - {symbol: H-4, name: Planbudynku_H4_WFL1_widok, facility: K1.H4, levels: 3, rooms: 2, entrances: 0}
+      # H-14: warstwy pięter 3 i 4 są takie same
+      - {symbol: H-14, name: Planbudynku_H14_WFL1_widok, facility: K1.H14, levels: 3, rooms: 2, entrances: 0}
+      - {symbol: L-1, name: Planbudynku_L1_WFL1_widok, facility: K2.L1, levels: 1, rooms: 2, entrances: 3}
+      - {symbol: P-22, name: Planbudynk_P22_P23_WFL1_widok, facility: K4.P22, levels: 5, rooms: 2, entrances: 0}
+      - {symbol: P-23, name: Planbudynk_P22_P23_WFL1_widok, facility: K4.P23, levels: 5, rooms: 4, entrances: 0}
