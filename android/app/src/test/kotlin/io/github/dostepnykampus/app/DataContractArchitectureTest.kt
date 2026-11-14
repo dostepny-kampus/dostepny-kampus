@@ -32,11 +32,58 @@ class DataContractArchitectureTest {
     fun infra_data_contract_rejects(
         @TempDir fixtures: File,
     ) {
-        source(fixtures = fixtures, name = "Bare", body = BARE)
-        source(fixtures = fixtures, name = "Blank", body = BLANK)
-        source(fixtures = fixtures, name = "Repo", body = REPO)
-        source(fixtures = fixtures, name = "Ok", body = OK)
-        source(fixtures = fixtures, name = "Hidden", body = HIDDEN)
+        source(
+            fixtures,
+            "Bare",
+            """
+                |interface Bare {
+                |    /** Czyta. */
+                |    fun read()
+                |}
+            """.trimMargin(),
+        )
+        source(
+            fixtures,
+            "Blank",
+            """
+                |/** */
+                |interface Blank
+            """.trimMargin(),
+        )
+        source(
+            fixtures,
+            "Repo",
+            """
+                |/** Repo. */
+                |interface Repo {
+                |    fun read(): Int
+                |
+                |    val size: Int
+                |
+                |    private fun hidden(): Int = 1
+                |}
+            """.trimMargin(),
+        )
+        source(
+            fixtures,
+            "Ok",
+            """
+                |/** Ok. */
+                |fun interface Ok {
+                |    /** Robi. */
+                |    fun run()
+                |}
+            """.trimMargin(),
+        )
+        source(
+            fixtures,
+            "Hidden",
+            """
+                |internal interface Hidden {
+                |    fun hidden()
+                |}
+            """.trimMargin(),
+        )
         val interfaces = Konsist.scopeFromExternalDirectory(fixtures.absolutePath).interfaces(includeNested = true)
         val expected = listOf("$BASE.Bare", "$BASE.Blank", "$BASE.Repo.read", "$BASE.Repo.size")
         assertEquals(expected, violations(interfaces))
@@ -45,10 +92,10 @@ class DataContractArchitectureTest {
     private fun source(fixtures: File, name: String, body: String) {
         File(fixtures, "$name.kt").writeText(
             """
-            |package $BASE
-            |
-            |$body
-            |
+                |package $BASE
+                |
+                |$body
+                |
             """.trimMargin(),
         )
     }
@@ -84,48 +131,6 @@ class DataContractArchitectureTest {
         const val MODULE = "core/data"
 
         const val BASE = "io.github.dostepnykampus.core.data"
-
-        val BARE =
-            """
-            |interface Bare {
-            |    /** Czyta. */
-            |    fun read()
-            |}
-            """.trimMargin()
-
-        val BLANK =
-            """
-            |/** */
-            |interface Blank
-            """.trimMargin()
-
-        val REPO =
-            """
-            |/** Repo. */
-            |interface Repo {
-            |    fun read(): Int
-            |
-            |    val size: Int
-            |
-            |    private fun hidden(): Int = 1
-            |}
-            """.trimMargin()
-
-        val OK =
-            """
-            |/** Ok. */
-            |fun interface Ok {
-            |    /** Robi. */
-            |    fun run()
-            |}
-            """.trimMargin()
-
-        val HIDDEN =
-            """
-            |internal interface Hidden {
-            |    fun hidden()
-            |}
-            """.trimMargin()
 
         const val HINT = "Publiczny interfejs core:data albo jego składowa bez KDoc; opisz kontrakt"
     }
