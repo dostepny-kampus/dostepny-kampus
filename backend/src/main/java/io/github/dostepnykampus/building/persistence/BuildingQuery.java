@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.building.persistence;
 
-import io.github.dostepnykampus.building.api.FloorLabels;
 import io.github.dostepnykampus.building.api.Outlines;
 import io.github.dostepnykampus.building.domain.Building;
 import io.github.dostepnykampus.building.domain.BuildingCard;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +35,7 @@ import org.springframework.stereotype.Service;
  * @since 0.1.0
  */
 @Service
-public final class BuildingQuery implements Buildings, FloorLabels {
+public final class BuildingQuery implements Buildings {
 
     /**
      * Promień podpowiedzi budynku w metrach, większy niż błąd GNSS 15 m.
@@ -106,12 +104,6 @@ public final class BuildingQuery implements Buildings, FloorLabels {
         ).param(symbol).query(String.class).optional().map(
             found -> new FloorList("Politechnika Wrocławska", this.buildingFloors(found))
         );
-    }
-
-    @Override
-    public Optional<String> label(final @Nullable String symbol, final @Nullable String id) {
-        return this.jdbc.sql("SELECT label FROM floors WHERE building_symbol = :symbol AND id = :id")
-            .param("symbol", symbol).param("id", id).query(String.class).optional();
     }
 
     private Placement near(final double lat, final double lon) {

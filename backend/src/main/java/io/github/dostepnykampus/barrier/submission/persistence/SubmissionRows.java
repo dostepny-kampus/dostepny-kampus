@@ -11,6 +11,7 @@ import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ final class SubmissionRows implements RowMapper<Submission> {
                 ).orElseThrow(() -> new InvalidSubmission("Brak zapisanej treści zgłoszenia"))
                     .toContent(),
                 Optional.ofNullable(rows.getObject("verified_at", OffsetDateTime.class))
-                    .map(OffsetDateTime::toInstant).orElse(null)
+                    .map(OffsetDateTime::toInstant).orElse(Instant.MIN)
             );
         } catch (final JacksonException | InvalidSubmission ex) {
             throw new UnreadableSubmission(

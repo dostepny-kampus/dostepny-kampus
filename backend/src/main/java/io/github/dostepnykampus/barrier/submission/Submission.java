@@ -9,7 +9,6 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Zgłoszenie zapisane na serwerze, schemat Submission w OpenAPI.
@@ -21,12 +20,12 @@ import org.jspecify.annotations.Nullable;
  * @param status Status zgłoszenia
  * @param createdAt Chwila utworzenia zgłoszenia
  * @param content Treść zgłoszenia
- * @param verifiedAt Chwila przyjęcia albo null, gdy jest nieznana
+ * @param verification Chwila przyjęcia albo Instant.MIN, gdy jest nieznana
  * @since 0.1.0
  */
 public record Submission(
     UUID id, int version, SubmissionStatus status, Instant createdAt,
-    SubmissionContent content, @Nullable Instant verifiedAt
+    SubmissionContent content, Instant verification
 ) {
 
     /**
@@ -40,6 +39,7 @@ public record Submission(
         Objects.requireNonNull(status, "status");
         Objects.requireNonNull(createdAt, "createdAt");
         Objects.requireNonNull(content, "content");
+        Objects.requireNonNull(verification, "verification");
         if (version < 1) {
             throw new IllegalArgumentException(
                 String.format("Wersja zgłoszenia %d jest mniejsza niż 1", version)
@@ -53,14 +53,14 @@ public record Submission(
      * @param id Identyfikator
      * @param version Wersja
      * @param status Status
-     * @param createdAt Chwila utworzenia
+     * @param created Chwila utworzenia
      * @param content Treść
      */
     public Submission(
         final UUID id, final int version, final SubmissionStatus status,
-        final Instant createdAt, final SubmissionContent content
+        final Instant created, final SubmissionContent content
     ) {
-        this(id, version, status, createdAt, content, null);
+        this(id, version, status, created, content, Instant.MIN);
     }
 
     /**

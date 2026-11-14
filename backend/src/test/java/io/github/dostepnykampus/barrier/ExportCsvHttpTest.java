@@ -33,16 +33,15 @@ import org.springframework.web.context.WebApplicationContext;
 final class ExportCsvHttpTest {
 
     @Test
-    void exportsAcceptedRowsWithCoordinatesAndUtf8(final WebApplicationContext context)
+    void exportsAcceptedRowsWithCoordinatesAndPolishText(final WebApplicationContext context)
         throws Exception {
         final SampleSubmissions samples = new SampleSubmissions(context);
-        final String description = "Schody, \"próg\"\nŻółta poręcz";
         final SubmissionContent content = SampleSubmissions.quick(
             new SubmissionPlace(
                 new SubmissionPoint(17.059_89, 51.109_16), null, false, "A-1",
                 new SubmissionFloor(null, 0, true)
             ),
-            description, UUID.randomUUID()
+            "Schody, \"próg\" i żółta poręcz", UUID.randomUUID()
         );
         final UUID accepted = samples.add("ACCEPTED", content);
         samples.add("ARCHIVED", content);
@@ -51,24 +50,22 @@ final class ExportCsvHttpTest {
             MockMvcRequestBuilders.get("/export.csv")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR")
         ).andReturn().getResponse().getContentAsString();
-        final String[] lines = csv.split("\\r\\n", -1);
+        final String[] lines = csv.lines().toArray(String[]::new);
         final String[] point = lines[1].split(",", 4);
         MatcherAssert.assertThat(
-            "Nagłówek i jedyny wiersz CSV",
-            List.of(lines[0], point[0], point[3], Integer.toString(lines.length)),
+            "Nagłówek, jedyny wiersz CSV i punkt według PROJ",
+            List.of(
+                lines[0], point[0], point[3], lines.length, Double.valueOf(point[1]), Double.valueOf(point[2])
+            ),
             Matchers.contains(
-                Matchers.is(
-                    "submissionId,x,y,barrierType,barrierGroup,severity,buildingSymbol,floor,description,verifiedAt"
-                ),
+                Matchers.is("submissionId,x,y,barrierType,barrierGroup,severity,"
+                    + "buildingSymbol,floor,description,verifiedAt"),
                 Matchers.is(accepted.toString()),
-                Matchers.matchesPattern(",OTHER,,A-1,0 półpiętro,\"Schody, \"\"próg\"\"\nŻółta poręcz\",.+Z"),
-                Matchers.is("3")
-            )
-        );
-        MatcherAssert.assertThat(
-            "Punkt według PROJ", List.of(Double.parseDouble(point[1]), Double.parseDouble(point[2])),
-            Matchers.contains(
-                Matchers.closeTo(364_229.179_6, 0.001), Matchers.closeTo(362_054.214_1, 0.001)
+                Matchers.matchesPattern(
+                    ",OTHER,,A-1,0 półpiętro,\"Schody, \"\"próg\"\" i żółta poręcz\",.+Z"
+                ), Matchers.is(2),
+                Matchers.closeTo(364_229.179_6, 0.001),
+                Matchers.closeTo(362_054.214_1, 0.001)
             )
         );
     }

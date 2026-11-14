@@ -6,6 +6,8 @@
 package io.github.dostepnykampus.building.persistence;
 
 import io.github.dostepnykampus.building.api.KnownBuildings;
+import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
@@ -39,5 +41,12 @@ public final class JdbcKnownBuildings implements KnownBuildings {
             .param("symbol", symbol)
             .query(Boolean.class)
             .single();
+    }
+
+    @Override
+    public Optional<String> floorLabel(final @Nullable String symbol, final @Nullable String id) {
+        return this.jdbc.sql(
+            "SELECT label FROM floors WHERE building_symbol = :symbol AND id = :id"
+        ).param("symbol", symbol).param("id", id).query(String.class).optional();
     }
 }

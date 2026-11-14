@@ -12,10 +12,12 @@ import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
+import io.github.dostepnykampus.building.api.KnownBuildings;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,13 +34,18 @@ public final class SubmissionReading {
     /** Port odczytu zgłoszeń. */
     private final SubmissionFinder finder;
 
+    /** Etykiety pięter. */
+    private final KnownBuildings floors;
+
     /**
      * Ctor.
      *
      * @param finder Port odczytu zgłoszeń
+     * @param floors Etykiety pięter
      */
-    public SubmissionReading(final SubmissionFinder finder) {
+    public SubmissionReading(final SubmissionFinder finder, final KnownBuildings floors) {
         this.finder = finder;
+        this.floors = floors;
     }
 
     /**
@@ -110,6 +117,17 @@ public final class SubmissionReading {
             .stream().filter(item -> !item.content().barrier().removed())
             .filter(item -> item.content().kind() != SubmissionKind.ENTRANCE_MARKING)
             .toList();
+    }
+
+    /**
+     * Szuka etykiety piętra na planie.
+     *
+     * @param symbol Budynek albo null
+     * @param id Piętro albo null
+     * @return Etykieta albo puste, gdy brak danych
+     */
+    public Optional<String> floorLabel(final @Nullable String symbol, final @Nullable String id) {
+        return this.floors.floorLabel(symbol, id);
     }
 
     /**

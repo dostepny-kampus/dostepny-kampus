@@ -8,18 +8,18 @@ package io.github.dostepnykampus.barrier.submission.web;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
+import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
 import io.github.dostepnykampus.barrier.submission.content.BarrierType;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
-import io.github.dostepnykampus.barrier.submission.content.json.GroupJson;
-import io.github.dostepnykampus.building.api.FloorLabels;
 import io.github.dostepnykampus.shared.geo.Puwg1992;
 import io.github.dostepnykampus.shared.geo.Puwg1992Point;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.StringJoiner;
 import org.apache.commons.csv.CSVFormat;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,22 +33,19 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 0.1.0
  */
 @RestController
-final class ExportCsvController {
+public final class ExportCsvController {
 
     /** Przyjęte zgłoszenia. */
     private final SubmissionReading submissions;
 
-    /** Etykiety pięter identyfikowanych przez plan. */
-    private final FloorLabels floors;
-
-    ExportCsvController(final SubmissionReading submissions, final FloorLabels floors) {
+    ExportCsvController(final SubmissionReading submissions) {
         this.submissions = submissions;
-        this.floors = floors;
     }
 
     @GetMapping(value = "/export.csv", produces = "text/csv;charset=UTF-8")
     ResponseEntity<String> csv() {
-        final StringJoiner csv = new StringJoiner("\r\n", "", "\r\n").add(
+        final String separator = CSVFormat.RFC4180.getRecordSeparator();
+        final StringJoiner csv = new StringJoiner(separator, "", separator).add(
             "submissionId,x,y,barrierType,barrierGroup,severity,buildingSymbol,floor,description,verifiedAt"
         );
         this.submissions.exportable().stream().map(this::row).forEach(csv::add);
@@ -65,22 +62,26 @@ final class ExportCsvController {
         return CSVFormat.RFC4180.format(
             submission.id(), point.easting(), point.northing(),
             Optional.ofNullable(barrier.type()).map(BarrierType::code).orElse(""),
-            Optional.ofNullable(barrier.group()).map(GroupJson::of).map(GroupJson::name).orElse(""),
+            Optional.ofNullable(barrier.group()).map(BarrierGroup::code).orElse(""),
             Optional.ofNullable(barrier.severity()).map(String::valueOf).orElse(""),
-            Optional.ofNullable(place.buildingSymbol()).orElse(""), this.floor(place),
+            Optional.ofNullable(place.buildingSymbol()).orElse(""),
+            Optional.ofNullable(place.floor())
+                .map(floor -> this.floor(place.buildingSymbol(), floor)).orElse(""),
             Optional.ofNullable(barrier.description()).orElse(""),
-            Optional.ofNullable(submission.verifiedAt()).map(Instant::toString).orElse("")
+            Optional.of(submission.verification()).filter(time -> !Instant.MIN.equals(time))
+                .map(Instant::toString).orElse("")
         );
     }
 
-    private String floor(final SubmissionPlace place) {
-        final SubmissionFloor floor = place.floor();
-        if (floor == null) {
-            return "";
+    private String floor(final @Nullable String symbol, final SubmissionFloor floor) {
+        final String suffix;
+        if (floor.mezzanine()) {
+            suffix = " półpiętro";
+        } else {
+            suffix = "";
         }
-        return this.floors.label(place.buildingSymbol(), floor.floorId()).orElseGet(
-            () -> Optional.ofNullable(floor.number())
-                .map(number -> String.format("%d%s", number, floor.mezzanine() ? " półpiętro" : ""))
+        return this.submissions.floorLabel(symbol, floor.floorId()).orElseGet(
+            () -> Optional.ofNullable(floor.number()).map(number -> number + suffix)
                 .orElseGet(() -> Optional.ofNullable(floor.floorId()).orElse(""))
         );
     }
