@@ -23,22 +23,60 @@ import java.io.File
 class SharedFixtureArchitectureTest {
     /** Klasy testów spoza listy wyjątków nie mają wspólnych pól ani metod przygotowania. */
     @Test
-    fun infra_test_prepares_own_data() {
+    fun infra_test_own_data() {
         assertEquals(emptyList<String>(), violations(testScope()) - KNOWN.keys, HINT)
     }
 
     /** Każdy wpis listy wyjątków nadal jest naruszeniem. */
     @Test
-    fun infra_exception_list_holds_only_violations() {
+    fun infra_stale_exceptions() {
         assertEquals(emptyList<String>(), KNOWN.keys.sorted() - violations(testScope()).toSet(), STALE)
     }
 
     /** Pole, `lateinit` i metody przygotowania łamią regułę; reguły, stałe i klasa bez testów nie. */
     @Test
-    fun infra_rule_rejects_shared_fixture(
+    fun infra_rejects_shared_state(
         @TempDir fixtures: File,
     ) {
-        File(fixtures, "Samples.kt").writeText(
+        File(fixtures, "Samples.kt").writeText(SAMPLES)
+        assertEquals(
+            listOf("BeforeAllTest", "BeforeEachTest", "BeforeTest", "FieldTest", "LateTest"),
+            violations(Konsist.scopeFromExternalDirectory(fixtures.absolutePath)),
+        )
+    }
+
+    private fun testScope(): KoScope = Konsist.scopeFromProject()
+
+    private fun violations(scope: KoScope): List<String> =
+        scope
+            .classes()
+            .asSequence()
+            .filter { isTestPath(it.path) && hasTests(it) && (hasFixtureProperty(it) || hasSetup(it)) }
+            .map { it.name }
+            .distinct()
+            .sorted()
+            .toList()
+
+    private fun isTestPath(path: String): Boolean {
+        val normalized = path.replace(oldChar = '\\', newChar = '/')
+        return TEST_SOURCE.containsMatchIn(normalized) || !normalized.contains("/src/")
+    }
+
+    private fun hasTests(type: KoClassDeclaration): Boolean =
+        type.functions(includeNested = false).any { fn -> fn.annotations.any { it.name in TESTS } }
+
+    private fun hasFixtureProperty(type: KoClassDeclaration): Boolean =
+        type.properties(includeNested = false).any { property -> property.annotations.none { it.name in RULES } }
+
+    private fun hasSetup(type: KoClassDeclaration): Boolean =
+        (type.functions(includeNested = false) + type.objects(includeNested = false).flatMap { it.functions() })
+            .any { fn -> fn.annotations.any { it.name in SETUPS } }
+
+    private companion object {
+        const val HINT = "Klasa testu ma wspólne pole albo metodę przygotowania; dane przygotuj w teście"
+        const val STALE = "Wyjątek z listy już nie jest naruszeniem; usuń wpis"
+
+        val SAMPLES =
             """
                 |package sample
                 |
@@ -118,44 +156,7 @@ class SharedFixtureArchitectureTest {
                 |    private val name = "a"
                 |}
                 |
-            """.trimMargin(),
-        )
-        assertEquals(
-            listOf("BeforeAllTest", "BeforeEachTest", "BeforeTest", "FieldTest", "LateTest"),
-            violations(Konsist.scopeFromExternalDirectory(fixtures.absolutePath)),
-        )
-    }
-
-    private fun testScope(): KoScope = Konsist.scopeFromProject()
-
-    private fun violations(scope: KoScope): List<String> =
-        scope
-            .classes()
-            .asSequence()
-            .filter { isTestPath(it.path) && hasTests(it) && (hasFixtureProperty(it) || hasSetup(it)) }
-            .map { it.name }
-            .distinct()
-            .sorted()
-            .toList()
-
-    private fun isTestPath(path: String): Boolean {
-        val normalized = path.replace(oldChar = '\\', newChar = '/')
-        return TEST_SOURCE.containsMatchIn(normalized) || !normalized.contains("/src/")
-    }
-
-    private fun hasTests(type: KoClassDeclaration): Boolean =
-        type.functions(includeNested = false).any { fn -> fn.annotations.any { it.name in TESTS } }
-
-    private fun hasFixtureProperty(type: KoClassDeclaration): Boolean =
-        type.properties(includeNested = false).any { property -> property.annotations.none { it.name in RULES } }
-
-    private fun hasSetup(type: KoClassDeclaration): Boolean =
-        (type.functions(includeNested = false) + type.objects(includeNested = false).flatMap { it.functions() })
-            .any { fn -> fn.annotations.any { it.name in SETUPS } }
-
-    private companion object {
-        const val HINT = "Klasa testu ma wspólne pole albo metodę przygotowania; dane przygotuj w teście"
-        const val STALE = "Wyjątek z listy już nie jest naruszeniem; usuń wpis"
+            """.trimMargin()
 
         val TEST_SOURCE = Regex("""/src/(test\w*|androidTest\w*)/""")
         val TESTS = setOf("Test", "ParameterizedTest", "RepeatedTest", "TestFactory")
