@@ -37,12 +37,12 @@ final class BuildingsMigrationTest {
 
     @Test
     void osmImportHasOnlyOneFlywayHistory(final ApplicationContext context) {
-        final JdbcClient jdbc = context.getBean(JdbcClient.class);
         MatcherAssert.assertThat(
             "Import OSM ma wpis w historii głównej zamiast w historii modułu",
-            jdbc.sql(
+            context.getBean(JdbcClient.class).sql(
                 """
-                SELECT 'główna' FROM flyway_schema_history WHERE description = 'budynki z OpenStreetMap'
+                SELECT 'główna' FROM flyway_schema_history
+                WHERE description = 'budynki z OpenStreetMap'
                 UNION ALL
                 SELECT 'modułu' FROM flyway_schema_history_building
                 WHERE description = 'budynki z OpenStreetMap'

@@ -47,11 +47,14 @@ final class OsmMigrationResolver implements FlywayConfigurationCustomizer, Migra
     public Collection<ResolvedMigration> resolveMigrations(
         final MigrationResolver.Context context
     ) {
-        return Arrays.stream(context.configuration.getLocations())
-            .anyMatch(location -> location.getPath().equals("db/migration/__root"))
-            ? List.of(this.migration.getResolvedMigration(
-                context.configuration, context.statementInterceptor
-            ))
-            : List.of();
+        if (Arrays.stream(context.configuration.getLocations())
+            .anyMatch(location -> "db/migration/__root".equals(location.getPath()))) {
+            return List.of(
+                this.migration.getResolvedMigration(
+                    context.configuration, context.statementInterceptor
+                )
+            );
+        }
+        return List.of();
     }
 }
