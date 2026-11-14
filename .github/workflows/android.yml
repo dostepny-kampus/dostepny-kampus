@@ -77,17 +77,24 @@ jobs:
           else
             echo "android=true" >> "$GITHUB_OUTPUT"
           fi
-      - name: Sprawdź, czy grupa w kolejce zmienia serwer albo jego otoczenie (test systemowy)
+      - name: Sprawdź, czy PR albo grupa w kolejce zmienia serwer albo jego otoczenie (test systemowy)
         id: serwer
-        if: github.event_name == 'merge_group'
         env:
           ANDROID: ${{ steps.diff.outputs.android }}
+          EVENT: ${{ github.event_name }}
           GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: |
           # Test systemowy łączy aplikację z serwerem, więc rusza też po zmianie samego serwera albo infra/.
+          # Działa już w PR: autor widzi porażkę przed kolejką, a grupa z drzewem sprawdzonym na PR (pomin) go nie gubi.
+          from=HEAD^1
+          to=HEAD
+          if [[ $EVENT == merge_group ]]; then
+            from=$GROUP_BASE_SHA
+            to=$GROUP_HEAD_SHA
+          fi
           system=true
-          if [[ $ANDROID != true ]] && git diff --quiet "$GROUP_BASE_SHA" "$GROUP_HEAD_SHA" -- backend infra; then
+          if [[ $ANDROID != true ]] && git diff --quiet "$from" "$to" -- backend infra; then
             system=false
           fi
           echo "system=${system}" >> "$GITHUB_OUTPUT"
@@ -97,15 +104,13 @@ jobs:
     if: ${{ !cancelled() && github.event_name != 'push' && needs.apk.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    # Test systemowy dopiero zbiera historię stabilności, więc jego porażka nie czerwieni `budowanie`.
-    continue-on-error: ${{ matrix.zestaw == 'system' }}
     strategy:
       fail-fast: false
       matrix:
-        # Testy aplikacji na wersji minimalnej i docelowej z NFR-41; w grupie kolejki także test systemowy
-        # (moduł `systemtest`) z serwerem i bazą uruchomionymi na runnerze.
-        # Grupa ze zmianą samego serwera albo infra/ uruchamia tylko test systemowy.
-        include: ${{ fromJSON(github.event_name == 'merge_group' && needs.zmiany.outputs.android == 'false' && '[{"api":36,"zestaw":"system"}]' || github.event_name == 'merge_group' && '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"},{"api":36,"zestaw":"system"}]' || '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"}]') }}
+        # Testy aplikacji na wersji minimalnej i docelowej z NFR-41 oraz test systemowy (moduł `systemtest`)
+        # z serwerem i bazą uruchomionymi na runnerze; porażka każdego wariantu czerwieni `budowanie`.
+        # PR albo grupa ze zmianą samego serwera albo infra/ uruchamia tylko test systemowy.
+        include: ${{ fromJSON(needs.zmiany.outputs.android == 'false' && '[{"api":36,"zestaw":"system"}]' || '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"},{"api":36,"zestaw":"system"}]') }}
     env:
       IMAGE: system-images;android-${{ matrix.api }};default;x86_64
     steps:
@@ -509,7 +514,8 @@ jobs:
     needs: [porownanie, zmiany, testy, apk, emulator, analiza-zaleznosci]
     # always(): także po anulowaniu poprzednich zadań, żeby anulowana część dawała czerwony check, a nie pominięty.
     # Gdy grupa kolejki ma drzewo sprawdzone na PR, wszystkie zadania są pominięte, więc i ten check (pominięty = zaliczony).
-    if: ${{ always() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    # Działa też wtedy, gdy zmiana samego serwera albo infra/ uruchamia tylko test systemowy.
+    if: ${{ always() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true' || needs.zmiany.outputs.system == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -520,5 +526,8 @@ jobs:
       - name: Sprawdź wyniki wszystkich zadań Androida
         env:
           ZMIANY: ${{ needs.zmiany.result }}
-          WYNIKI: ${{ needs.testy.result }} ${{ needs.apk.result }} ${{ needs.emulator.result }} ${{ needs.analiza-zaleznosci.result }}
+          # Bez zmiany aplikacji testy i analiza zależności są pominięte; liczą się APK i test systemowy.
+          WYNIKI: >-
+            ${{ needs.apk.result }} ${{ needs.emulator.result }}
+            ${{ needs.zmiany.outputs.android != 'false' && format('{0} {1}', needs.testy.result, needs.analiza-zaleznosci.result) || '' }}
         run: bash .github/scripts/wyniki-androida.sh
