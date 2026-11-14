@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus.barrier.photo;
 
 import io.github.dostepnykampus.IntegrationTest;
 import java.nio.charset.StandardCharsets;

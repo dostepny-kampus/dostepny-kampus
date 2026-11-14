@@ -3,9 +3,12 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus.barrier.web;
 
+import io.github.dostepnykampus.barrier.application.SubmissionPhotos;
 import io.github.dostepnykampus.barrier.domain.Reader;
+import io.github.dostepnykampus.barrier.photo.PhotoTooLargeException;
+import io.github.dostepnykampus.barrier.photo.PhotoUpload;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;
@@ -36,7 +39,12 @@ public final class SubmissionPhotosController {
     /** Zdjęcia zgłoszeń. */
     private final SubmissionPhotos photos;
 
-    SubmissionPhotosController(final SubmissionPhotos photos) {
+    /**
+     * Tworzy kontroler zdjęć zgłoszeń.
+     *
+     * @param photos Zdjęcia zgłoszeń
+     */
+    public SubmissionPhotosController(final SubmissionPhotos photos) {
         this.photos = photos;
     }
 

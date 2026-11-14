@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus.barrier.photo;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +23,7 @@ import software.amazon.awssdk.services.s3.model.S3Object;
  * @since 0.1.0
  */
 @Service
-final class PhotoStore {
+public final class PhotoStore {
 
     /**
      * Rozszerzenie klucza zdjęcia w magazynie.
@@ -40,7 +40,13 @@ final class PhotoStore {
      */
     private final PhotoSettings settings;
 
-    PhotoStore(final S3Client client, final PhotoSettings settings) {
+    /**
+     * Tworzy magazyn zdjęć.
+     *
+     * @param client Klient S3
+     * @param settings Ustawienia magazynu z kubełkiem ze zdjęciami
+     */
+    public PhotoStore(final S3Client client, final PhotoSettings settings) {
         this.client = client;
         this.settings = settings;
     }
@@ -52,7 +58,7 @@ final class PhotoStore {
      * @param photo Identyfikator zdjęcia
      * @param jpeg Plik JPEG
      */
-    void put(final UUID submission, final UUID photo, final byte[] jpeg) {
+    public void put(final UUID submission, final UUID photo, final byte[] jpeg) {
         this.client.putObject(
             request -> request.bucket(this.settings.bucket())
                 .key(PhotoStore.key(submission, photo))
@@ -68,7 +74,7 @@ final class PhotoStore {
      * @param photo Identyfikator zdjęcia
      * @return Plik JPEG; brak, gdy magazyn nie ma zdjęcia
      */
-    Optional<byte[]> get(final UUID submission, final UUID photo) {
+    public Optional<byte[]> get(final UUID submission, final UUID photo) {
         Optional<byte[]> found;
         try {
             found = Optional.of(
@@ -90,7 +96,7 @@ final class PhotoStore {
      * @param submission Identyfikator zgłoszenia
      * @return Identyfikatory zdjęć pod kluczami zgłoszenia
      */
-    List<UUID> stored(final UUID submission) {
+    public List<UUID> stored(final UUID submission) {
         return this.client.listObjectsV2Paginator(
             request -> request.bucket(this.settings.bucket())
                 .prefix(String.format("%s/", submission))
@@ -106,7 +112,7 @@ final class PhotoStore {
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia
      */
-    void delete(final UUID submission, final UUID photo) {
+    public void delete(final UUID submission, final UUID photo) {
         this.client.deleteObject(
             request -> request.bucket(this.settings.bucket())
                 .key(PhotoStore.key(submission, photo))

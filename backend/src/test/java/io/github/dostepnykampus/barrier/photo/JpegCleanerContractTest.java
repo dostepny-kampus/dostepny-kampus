@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus.barrier.photo;
 
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_Profile;
@@ -41,7 +41,7 @@ final class JpegCleanerContractTest {
         final byte[] plain = JpegCleanerContractTest.image(false);
         Assertions.assertArrayEquals(
             plain,
-            JpegCleaner.strip(
+            new JpegCleaner().strip(
                 JpegCleanerContractTest.insert(
                     plain, marker, "private location".getBytes(StandardCharsets.US_ASCII)
                 )
@@ -76,7 +76,7 @@ final class JpegCleanerContractTest {
             marked, 0xFE, "private comment".getBytes(StandardCharsets.US_ASCII)
         );
         Assertions.assertArrayEquals(
-            expected, JpegCleaner.strip(marked), "Zmienił się obraz, JFIF lub profil ICC"
+            expected, new JpegCleaner().strip(marked), "Zmienił się obraz, JFIF lub profil ICC"
         );
     }
 
@@ -85,7 +85,7 @@ final class JpegCleanerContractTest {
     void nfrTwentySixKeepsCleanJpeg(final boolean progressive) throws IOException {
         final byte[] plain = JpegCleanerContractTest.image(progressive);
         Assertions.assertArrayEquals(
-            plain, JpegCleaner.strip(plain), "Czysty JPEG został zmieniony"
+            plain, new JpegCleaner().strip(plain), "Czysty JPEG został zmieniony"
         );
     }
 
@@ -98,7 +98,7 @@ final class JpegCleanerContractTest {
         corrupt.write(0);
         corrupt.write(plain, offset, plain.length - offset);
         Assertions.assertThrows(
-            IOException.class, () -> JpegCleaner.strip(corrupt.toByteArray()),
+            IOException.class, () -> new JpegCleaner().strip(corrupt.toByteArray()),
             "Pominięto obcy bajt pomiędzy segmentami JPEG"
         );
     }

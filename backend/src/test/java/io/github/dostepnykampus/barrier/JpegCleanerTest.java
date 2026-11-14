@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.barrier.photo.JpegCleaner;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,7 +32,7 @@ final class JpegCleanerTest {
     void nfrTwentySixRemovesExifLocation() throws IOException {
         MatcherAssert.assertThat(
             "Zdjęcie po czyszczeniu ma EXIF z miejscem",
-            JpegCleanerTest.text(JpegCleaner.strip(JpegCleanerTest.photo())),
+            JpegCleanerTest.text(new JpegCleaner().strip(JpegCleanerTest.photo())),
             Matchers.not(Matchers.containsString("GPS 51.1"))
         );
     }
@@ -40,7 +41,7 @@ final class JpegCleanerTest {
     void nfrTwentySixRemovesComment() throws IOException {
         MatcherAssert.assertThat(
             "Zdjęcie po czyszczeniu ma komentarz",
-            JpegCleanerTest.text(JpegCleaner.strip(JpegCleanerTest.photo())),
+            JpegCleanerTest.text(new JpegCleaner().strip(JpegCleanerTest.photo())),
             Matchers.not(Matchers.containsString("Pixel 9"))
         );
     }
@@ -49,7 +50,7 @@ final class JpegCleanerTest {
     void nfrTwentySixKeepsColorProfile() throws IOException {
         MatcherAssert.assertThat(
             "Zdjęcie po czyszczeniu nie ma profilu kolorów ICC",
-            JpegCleanerTest.text(JpegCleaner.strip(JpegCleanerTest.photo())),
+            JpegCleanerTest.text(new JpegCleaner().strip(JpegCleanerTest.photo())),
             Matchers.containsString("ICC_PROFILE")
         );
     }
@@ -59,7 +60,7 @@ final class JpegCleanerTest {
         MatcherAssert.assertThat(
             "Obraz po czyszczeniu nie ma szerokości 8 px",
             ImageIO.read(
-                new ByteArrayInputStream(JpegCleaner.strip(JpegCleanerTest.photo()))
+                new ByteArrayInputStream(new JpegCleaner().strip(JpegCleanerTest.photo()))
             ).getWidth(),
             Matchers.equalTo(8)
         );
@@ -69,7 +70,7 @@ final class JpegCleanerTest {
     void nfrTwentySixRejectsOtherFormat() {
         Assertions.assertThrows(
             IOException.class,
-            () -> JpegCleaner.strip("GIF89a".getBytes(StandardCharsets.US_ASCII)),
+            () -> new JpegCleaner().strip("GIF89a".getBytes(StandardCharsets.US_ASCII)),
             "Plik GIF przeszedł jako JPEG"
         );
     }
@@ -79,7 +80,7 @@ final class JpegCleanerTest {
         final byte[] photo = JpegCleanerTest.photo();
         Assertions.assertThrows(
             IOException.class,
-            () -> JpegCleaner.strip(Arrays.copyOf(photo, 30)),
+            () -> new JpegCleaner().strip(Arrays.copyOf(photo, 30)),
             "Ucięty plik JPEG przeszedł"
         );
     }

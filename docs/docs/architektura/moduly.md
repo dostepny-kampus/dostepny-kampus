@@ -87,7 +87,6 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 
 | Odstępstwo | Issue |
 | --- | --- |
-| korzeń `barrier` zawiera wnętrze modułu | #1323 |
 | `barrier.domain` ma 22 pliki | #1439 |
 | `:core:data` udostępnia `:core:database` przez `api(...)`, testy funkcji zależą od bazy i sieci | #1328 |
 

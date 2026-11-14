@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus.barrier.photo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,9 +23,13 @@ import org.apache.commons.imaging.formats.jpeg.xmp.JpegRewriter;
  *
  * @since 0.1.0
  */
-final class JpegCleaner extends JpegRewriter {
+public final class JpegCleaner extends JpegRewriter {
 
-    private JpegCleaner() {
+    /**
+     * Tworzy czyściciela bez stanu.
+     */
+    public JpegCleaner() {
+        super();
     }
 
     /**
@@ -35,9 +39,9 @@ final class JpegCleaner extends JpegRewriter {
      * @return Plik JPEG bez EXIF, XMP, IPTC i komentarzy
      * @throws IOException Gdy nagłówek nie jest poprawnym JPEG
      */
-    static byte[] strip(final byte[] jpeg) throws IOException {
+    public byte[] strip(final byte[] jpeg) throws IOException {
         try {
-            return new JpegCleaner().rewrite(jpeg);
+            return this.rewrite(jpeg);
         } catch (final ImagingException ex) {
             throw new IOException("Uszkodzony nagłówek JPEG", ex);
         }

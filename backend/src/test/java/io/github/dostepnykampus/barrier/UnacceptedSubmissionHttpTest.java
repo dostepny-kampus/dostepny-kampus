@@ -8,6 +8,7 @@ package io.github.dostepnykampus.barrier;
 import io.github.dostepnykampus.AsCollector;
 import io.github.dostepnykampus.AsVerifier;
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;

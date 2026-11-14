@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus.barrier.photo;
 
 import java.net.URI;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 0.1.0
  */
 @ConfigurationProperties("dk.photos")
-record PhotoSettings(URI endpoint, String bucket, String accessKey, String secretKey) {
+public record PhotoSettings(URI endpoint, String bucket, String accessKey, String secretKey) {
 
     /**
      * Sprawdza adres i kubełek magazynu.
@@ -30,7 +30,7 @@ record PhotoSettings(URI endpoint, String bucket, String accessKey, String secre
      * @throws IllegalArgumentException Gdy adres nie ma schematu albo hosta
      *  lub kubełek jest pusty; komunikat zaczyna się od nazwy ustawienia
      */
-    PhotoSettings {
+    public PhotoSettings {
         if (endpoint == null || endpoint.getScheme() == null || endpoint.getHost() == null) {
             throw new IllegalArgumentException(
                 String.format("dk.photos.endpoint: adres bez schematu lub hosta: %s", endpoint)

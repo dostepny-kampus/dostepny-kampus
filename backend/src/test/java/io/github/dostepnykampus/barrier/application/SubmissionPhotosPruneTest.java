@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus.barrier.application;
 
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.barrier.domain.BarrierDetails;
@@ -20,6 +20,8 @@ import io.github.dostepnykampus.barrier.domain.SubmissionKind;
 import io.github.dostepnykampus.barrier.domain.SubmissionPlace;
 import io.github.dostepnykampus.barrier.domain.SubmissionPoint;
 import io.github.dostepnykampus.barrier.domain.SubmissionStatus;
+import io.github.dostepnykampus.barrier.photo.PhotoSettings;
+import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;

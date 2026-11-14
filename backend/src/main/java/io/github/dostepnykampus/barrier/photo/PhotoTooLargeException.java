@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier;
+package io.github.dostepnykampus.barrier.photo;
 
 import java.io.IOException;
 
@@ -14,7 +14,7 @@ import java.io.IOException;
  *
  * @since 0.1.0
  */
-final class PhotoTooLargeException extends IOException {
+public final class PhotoTooLargeException extends IOException {
 
     /**
      * Wersja serializacji wyjątku.

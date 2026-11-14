@@ -42,22 +42,9 @@ import org.springframework.modulith.core.JavaPackage;
 final class ModuleRootArchitectureTest {
 
     /**
-     * Pakiet bazowy serwera.
-     */
-    private static final String BASE = "io.github.dostepnykampus";
-
-    /**
      * Klasy w korzeniu modułu, których nie woła inny moduł, i issue, które je przenosi.
      */
-    private static final Map<String, Integer> INTERNAL = Stream.of(
-        ModuleRootArchitectureTest.listed(
-            1323, "barrier", "JpegCleaner", "PhotoBucket", "PhotoSettings", "PhotoStorage",
-            "PhotoStore", "PhotoTooLargeException", "PhotoUpload", "SubmissionPhotos",
-            "SubmissionPhotosController", "SubmissionService"
-        )
-    ).flatMap(map -> map.entrySet().stream()).collect(
-        Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue)
-    );
+    private static final Map<String, Integer> INTERNAL = Map.of();
 
     /**
      * Pakiet przykładów kompilowanych przez test.
@@ -108,24 +95,11 @@ final class ModuleRootArchitectureTest {
         );
     }
 
-    private static Map<String, Integer> listed(
-        final int issue, final String module, final String... names
-    ) {
-        return Stream.of(names).collect(
-            Collectors.toMap(
-                name -> String.format(
-                    "%s.%s.%s", ModuleRootArchitectureTest.BASE, module, name
-                ),
-                name -> issue
-            )
-        );
-    }
-
     private static Set<String> production() {
         return ModuleRootArchitectureTest.internal(
             new ClassFileImporter()
                 .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
-                .importPackages(ModuleRootArchitectureTest.BASE),
+                .importPackagesOf(DostepnyKampusApplication.class),
             ApplicationModules.of(DostepnyKampusApplication.class).stream()
                 .filter(module -> !module.isOpen())
                 .map(ApplicationModule::getBasePackage)

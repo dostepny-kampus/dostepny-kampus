@@ -6,7 +6,13 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.barrier.application.SubmissionPhotos;
+import io.github.dostepnykampus.barrier.application.SubmissionService;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
+import io.github.dostepnykampus.barrier.photo.JpegCleaner;
+import io.github.dostepnykampus.barrier.photo.PhotoSettings;
+import io.github.dostepnykampus.barrier.photo.PhotoStore;
+import io.github.dostepnykampus.barrier.photo.PhotoUpload;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -66,22 +72,21 @@ final class SubmissionPhotoRaceTest {
         final UUID photo = UUID.randomUUID();
         final UUID id = new SampleSubmissions(context).add("SENT", SampleSubmissions.quick(photo));
         final byte[] jpeg = JpegCleanerTest.photo();
-        try (
-            S3Client client = new SubmissionPhotoRaceTest.AcceptanceAttempt(
-                PhotoStorage.photoClient(context.getBean(PhotoSettings.class)),
-                context.getBean(DataSource.class), id
-            );
-            ByteArrayInputStream input = new ByteArrayInputStream(jpeg)
-        ) {
+        try (ByteArrayInputStream input = new ByteArrayInputStream(jpeg)) {
             final SubmissionPhotos service = new SubmissionPhotos(
                 context.getBean(SubmissionFinder.class),
-                new PhotoStore(client, context.getBean(PhotoSettings.class)),
+                new PhotoStore(
+                    new SubmissionPhotoRaceTest.AcceptanceAttempt(
+                        context.getBean(S3Client.class), context.getBean(DataSource.class), id
+                    ),
+                    context.getBean(PhotoSettings.class)
+                ),
                 context.getBean(SubmissionService.class)
             );
             service.put(id, photo, new PhotoUpload(input, jpeg.length));
             SubmissionPhotoRaceTest.accept(context.getBean(JdbcClient.class), id);
             Assertions.assertArrayEquals(
-                JpegCleaner.strip(jpeg),
+                new JpegCleaner().strip(jpeg),
                 context.getBean(PhotoStore.class).get(id, photo).orElseThrow(),
                 "Przyjęte zgłoszenie nie zachowało zdjęcia zapisanego przed przyjęciem"
             );
