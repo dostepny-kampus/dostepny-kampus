@@ -1,0 +1,27 @@
+nazwa	rodzaj	termin	opis
+account	temat	konto	Rola i uprawnienia zalogowanej osoby.
+area	temat	teren kampusu	Teren kampusu, jego granice i sąsiednie tereny.
+auth	temat	uwierzytelnianie	Token dostępu dołączany do żądań serwera.
+bar	temat	pasek	Nagłówek, dolny pasek i przypięte przyciski ekranu.
+barrier	temat	bariera	Bariera zaakceptowana i pokazywana na mapie.
+building	temat	budynek	Budynek, jego wejścia i piętra.
+cache	temat	kopia danych	Kopia danych serwera na urządzeniu do pracy bez sieci.
+camera	temat	kamera mapy	Położenie i ruch widoku mapy.
+content	temat	treść zgłoszenia	Typ, grupa, miejsce i piętro bariery w zgłoszeniu.
+edit	ścieżka	edycja zgłoszenia	Zmiana wysłanego zgłoszenia.
+error	temat	błąd	Błędy wspólne dla modułów i ich odpowiedź HTTP.
+form	ścieżka	formularz zgłoszenia	Pełny formularz nowego zgłoszenia.
+geo	temat	geometria	Punkty, obszary i układy współrzędnych.
+location	temat	położenie	Położenie osoby i dopasowanie go do budynku.
+marking	temat	oznaczenie	Oznaczenie wejścia i bariery: kolor, znak, nazwa.
+measure	ścieżka	pomiar położenia	Dokładny pomiar położenia przed zgłoszeniem.
+mine	ścieżka	moje zgłoszenia	Lista zgłoszeń osoby i ich statusy.
+overlay	temat	nakładka mapy	Elementy nad mapą: sterowanie, legenda, informacja, stan sieci.
+own	temat	własne zgłoszenia	Zgłoszenia osoby zapisane na urządzeniu i ich statusy.
+pending	temat	oczekujące zmiany	Zmiany zgłoszeń czekające na wysłanie.
+photo	temat	zdjęcie	Zdjęcie zgłoszenia: wykonanie, zapis, wysłanie.
+quick	ścieżka	szybkie zgłoszenie	Zgłoszenie wejścia w kilku krokach.
+report	ścieżka	pełne zgłoszenie	Formularz i edycja pełnego zgłoszenia.
+style	temat	styl mapy	Warstwy, kolory i obrazy mapy.
+submission	temat	zgłoszenie	Zgłoszenie bariery i jego cykl życia.
+sync	temat	synchronizacja	Wysyłanie zgłoszeń i pobieranie wyników w tle.

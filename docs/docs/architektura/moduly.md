@@ -16,9 +16,10 @@ istnieją, są w części „Stan dziś” razem z issue, które je usuwa.
    **Moduł z kilkoma tematami** ma tematy, a w nich warstwy (`barrier/submission/web`).
 3. **Stałe nazwy warstw.** Serwer: `api`, `application`, `web`, `persistence`, `json`, `storage`.
    Android: `navigation` (trasy), `di`. Warstwa powstaje od jednego pliku.
-4. **Słownik tematów.** Nazwy tematów i ścieżek użytkownika pochodzą z jednego słownika, są takie same
-   w każdym module i stoją w liczbie pojedynczej (`submission`, nie `submissions`). Moduł nazwany od
-   tematu nie powtarza go w pakiecie.
+4. **Słownik tematów.** Nazwy tematów i ścieżek użytkownika pochodzą z
+   [jednego słownika](../_generated/slownik-tematow.md) (źródło `tematy.tsv`), są takie same w każdym
+   module i stoją w liczbie pojedynczej (`submission`, nie `submissions`). Moduł nazwany od tematu nie
+   powtarza go w pakiecie.
 5. **Zakazane nazwy pakietów:** `util`, `utils`, `common`, `helper`, `misc`, `base`, `impl`.
 6. **Podpakiet tematu** powstaje od trzech plików albo wtedy, gdy temat o tej nazwie istnieje w innym
    module. Mniejszy temat zostaje w pakiecie nadrzędnym.

@@ -59,6 +59,7 @@ exclude_docs: |
 
 hooks:
   - scripts/mkdocs_pokrycie.py
+  - scripts/mkdocs_tematy.py
 
 nav:
   - Start: index.md
@@ -99,6 +100,7 @@ nav:
       - Kontenery: architektura/kontenery.md
       - Struktura modułów: architektura/moduly.md
       - Moduły aplikacji Android: architektura/moduly-android.md
+      - Słownik tematów: _generated/slownik-tematow.md
       - Oceny zależności: architektura/oceny-zaleznosci.md
       - Opisy w kodzie: architektura/opisy-w-kodzie.md
       - Decyzje:
