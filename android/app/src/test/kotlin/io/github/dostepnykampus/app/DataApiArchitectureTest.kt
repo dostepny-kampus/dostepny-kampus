@@ -44,7 +44,7 @@ class DataApiArchitectureTest {
         source(fixtures = fixtures, name = "Open", pack = "x", body = "class Open(val reply: ApiResult<Int>)")
         source(fixtures = fixtures, name = "Read", pack = "x", body = "fun read(): ApiResult<Int>? = null")
         source(fixtures = fixtures, name = "Hidden", pack = "x", body = "internal class Hidden(val r: ApiResult<Int>)")
-        source(fixtures = fixtures, name = "Inner", pack = "x", body = "class Inner internal constructor(r: ApiResult<Int>)")
+        source(fixtures = fixtures, name = "Inner", pack = "x", body = "class Inner internal constructor(r: ApiResult<*>)")
         source(fixtures = fixtures, name = "Provide", pack = "di", body = "fun provide(r: ApiResult<Int>): Int = 1")
         val files = Konsist.scopeFromExternalDirectory(fixtures.absolutePath).files
         assertEquals(listOf("$BASE.x.Open: ApiResult", "$BASE.x.read: ApiResult"), violations(files))
@@ -72,7 +72,11 @@ class DataApiArchitectureTest {
     private fun isBinding(file: KoFileDeclaration): Boolean = file.packagee?.name.orEmpty().startsWith("$BASE.di")
 
     private fun fileViolations(file: KoFileDeclaration): List<String> {
-        val network = file.imports.map { it.name }.filter { it.startsWith("$NETWORK.") }.map { it.substringAfterLast('.') }
+        val network =
+            file.imports
+                .map { it.name }
+                .filter { it.startsWith("$NETWORK.") }
+                .map { it.substringAfterLast('.') }
         val pack = file.packagee?.name.orEmpty()
         return file
             .declarations(includeNested = true, includeLocal = false)
@@ -81,7 +85,7 @@ class DataApiArchitectureTest {
                 val types = signatureTypes(declaration)
                 network
                     .filter { name -> types.any { Regex("""\b$name\b""").containsMatchIn(it) } }
-                    .map { name -> "$pack.${(declaration as? KoNameProvider)?.name}: $name" }
+                    .map { name -> "$pack.${(declaration as? KoNameProvider)?.name.orEmpty()}: $name" }
             }
     }
 
@@ -93,19 +97,16 @@ class DataApiArchitectureTest {
 
     private fun signatureTypes(declaration: KoBaseDeclaration): List<String> =
         buildList {
-            (declaration as? KoParametersProvider)?.parameters?.forEach { add(it.type.text) }
+            (declaration as? KoParametersProvider)?.run { addAll(parameters.map { it.type.text }) }
             (declaration as? KoReturnProvider)?.returnType?.let { add(it.text) }
             (declaration as? KoReceiverTypeProvider)?.receiverType?.let { add(it.text) }
             (declaration as? KoNullableTypeProvider)?.type?.let { add(it.text) }
-            (declaration as? KoPrimaryConstructorProvider)
-                ?.primaryConstructor
-                ?.takeIf { it.hasPublicOrDefaultModifier }
-                ?.parameters
-                ?.forEach { add(it.type.text) }
+            val primary = (declaration as? KoPrimaryConstructorProvider)?.primaryConstructor
+            if (primary != null && primary.hasPublicOrDefaultModifier) addAll(primary.parameters.map { it.type.text })
             (declaration as? KoSecondaryConstructorsProvider)
-                ?.secondaryConstructors
-                ?.filter { it.hasPublicOrDefaultModifier }
-                ?.forEach { constructor -> constructor.parameters.forEach { add(it.type.text) } }
+                ?.run { secondaryConstructors.filter { it.hasPublicOrDefaultModifier } }
+                .orEmpty()
+                .forEach { constructor -> addAll(constructor.parameters.map { it.type.text }) }
         }
 
     private companion object {
