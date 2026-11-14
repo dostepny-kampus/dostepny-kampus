@@ -4,7 +4,4 @@
 **/target/**	wynik budowania
 **/generated/**	kod generowany
 **/package-lock.json	plik blokady
-**/src/test/**	testy i dane testowe: poza pierwszym wdrożeniem (#893)
-**/src/testDebug/**	testy i dane testowe: poza pierwszym wdrożeniem (#893)
-**/src/androidTest/**	testy i dane testowe: poza pierwszym wdrożeniem (#893)
 **/build.gradle.kts	każdy moduł deklaruje swoje zależności bezpośrednie (#938)
