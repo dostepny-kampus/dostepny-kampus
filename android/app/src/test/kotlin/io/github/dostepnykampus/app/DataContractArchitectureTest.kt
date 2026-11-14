@@ -32,58 +32,12 @@ class DataContractArchitectureTest {
     fun infra_data_contract_rejects(
         @TempDir fixtures: File,
     ) {
-        source(
-            fixtures,
-            "Bare",
-            """
-                |interface Bare {
-                |    /** Czyta. */
-                |    fun read()
-                |}
-            """.trimMargin(),
-        )
-        source(
-            fixtures,
-            "Blank",
-            """
-                |/** */
-                |interface Blank
-            """.trimMargin(),
-        )
-        source(
-            fixtures,
-            "Repo",
-            """
-                |/** Repo. */
-                |interface Repo {
-                |    fun read(): Int
-                |
-                |    val size: Int
-                |
-                |    private fun hidden(): Int = 1
-                |}
-            """.trimMargin(),
-        )
-        source(
-            fixtures,
-            "Ok",
-            """
-                |/** Ok. */
-                |fun interface Ok {
-                |    /** Robi. */
-                |    fun run()
-                |}
-            """.trimMargin(),
-        )
-        source(
-            fixtures,
-            "Hidden",
-            """
-                |internal interface Hidden {
-                |    fun hidden()
-                |}
-            """.trimMargin(),
-        )
+        source(fixtures = fixtures, name = "Bare", body = "interface Bare { /** Czyta. */ fun read() }")
+        source(fixtures = fixtures, name = "Blank", body = "/** */ interface Blank")
+        source(fixtures = fixtures, name = "Repo", body = "/** R. */ interface Repo { fun read(): Int; val size: Int }")
+        source(fixtures = fixtures, name = "Inner", body = "/** I. */ interface Inner { private fun x(): Int = 1 }")
+        source(fixtures = fixtures, name = "Ok", body = "/** Ok. */ fun interface Ok { /** Robi. */ fun run() }")
+        source(fixtures = fixtures, name = "Hidden", body = "internal interface Hidden { fun hidden() }")
         val interfaces = Konsist.scopeFromExternalDirectory(fixtures.absolutePath).interfaces(includeNested = true)
         val expected = listOf("$BASE.Bare", "$BASE.Blank", "$BASE.Repo.read", "$BASE.Repo.size")
         assertEquals(expected, violations(interfaces))
@@ -125,7 +79,7 @@ class DataContractArchitectureTest {
 
     private fun packageOf(declared: KoInterfaceDeclaration): String = declared.packagee?.name.orEmpty()
 
-    private fun documented(declaration: KoKDocProvider): Boolean = declaration.kDoc?.description?.isNotBlank() == true
+    private fun documented(declaration: KoKDocProvider): Boolean = !declaration.kDoc?.description.isNullOrBlank()
 
     private companion object {
         const val MODULE = "core/data"
