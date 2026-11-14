@@ -1,0 +1,10 @@
+# Kontrola literówek (typos) w kodzie, skryptach, konfiguracji i Markdown poza docs/.
+# Markdown w docs/ sprawdza LanguageTool (docs/scripts/lang.py). Dane z OSM w data/ to nazwy
+# własne. Każdy wyjątek niżej ma powód w komentarzu.
+# Plik reguł jakości: zmiana wymaga linii „Zmiana reguł jakości” w opisie PR.
+
+[files]
+extend-exclude = [
+  "docs/",
+  "data/buildings/",
+]
