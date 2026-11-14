@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.geo.BuildingHint
+import io.github.dostepnykampus.core.geo.BuildingHints
+import io.github.dostepnykampus.core.geo.buildingHints
 import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
 import io.github.dostepnykampus.core.location.LocationSwitch
@@ -222,7 +224,8 @@ class MeasureViewModel
 
         private fun locate(attempt: Int, point: GeoPoint) {
             viewModelScope.launch {
-                val (buildings, hints) = buildingLookup.measure(point)
+                val (buildings, hints) =
+                    buildingLookup.withBuildings { MeasuredBuildings(it, buildingHints(point, it)) }
                 if (result.value.attempt == attempt) {
                     catalogBuildings.value = buildings
                     nearby.value = hints.nearby
@@ -328,3 +331,11 @@ internal fun stateOf(averaging: PositionAveraging?, sky: List<Satellite>, now: L
         )
     }
 }
+
+/**
+ * Dane ekranu po zakończeniu pomiaru.
+ *
+ * @property catalog budynki dostępne przy ręcznym wyborze
+ * @property hints dopasowanie obliczone z tego katalogu
+ */
+internal data class MeasuredBuildings(val catalog: List<Building>, val hints: BuildingHints)

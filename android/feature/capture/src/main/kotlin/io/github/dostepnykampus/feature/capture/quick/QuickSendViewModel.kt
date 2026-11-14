@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.buildings.BuildingFloors
 import io.github.dostepnykampus.core.data.network.NetworkStatus
+import io.github.dostepnykampus.core.geo.containingBuilding
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
@@ -166,7 +167,7 @@ class QuickSendViewModel
             if (symbol == null) emptyList() else buildingFloors.floors(symbol)?.floors.orEmpty()
 
         private suspend fun located(fix: PositionFix): QuickPosition {
-            val inside = buildingLookup.containing(fix.point)
+            val inside = buildingLookup.withBuildings { containingBuilding(fix.point, it) }
             return QuickPosition(
                 point = fix.point,
                 accuracyMeters = fix.accuracyMeters,
