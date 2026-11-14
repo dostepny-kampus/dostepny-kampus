@@ -31,14 +31,6 @@ final class JdbcInspectionMarkersIT {
      */
     private static final String AUTHOR = "konto-zbierajacego";
 
-    /**
-     * Zapytanie o aktywne znaczniki budynku.
-     */
-    private static final String ACTIVE = """
-        SELECT COALESCE(floor_id, 'budynek') || ':' || author FROM inspection_markers
-        WHERE building_symbol = ? AND revoked_at IS NULL
-        """;
-
     @Test
     void keepsFirstMarkerWhenSameIdentifierComesAgain(final ApplicationContext context) {
         final InspectionMarkers markers = context.getBean(InspectionMarkers.class);
@@ -57,7 +49,11 @@ final class JdbcInspectionMarkersIT {
     }
 
     private static List<String> active(final ApplicationContext context, final String building) {
-        return context.getBean(JdbcClient.class).sql(JdbcInspectionMarkersIT.ACTIVE)
-            .param(building).query(String.class).list();
+        return context.getBean(JdbcClient.class).sql(
+            """
+            SELECT COALESCE(floor_id, 'budynek') || ':' || author FROM inspection_markers
+            WHERE building_symbol = ? AND revoked_at IS NULL
+            """
+        ).param(building).query(String.class).list();
     }
 }

@@ -5,8 +5,6 @@
  */
 package io.github.dostepnykampus.building.inspection;
 
-import java.util.UUID;
-
 /**
  * Zapis znaczników pięter obejrzanych.
  *
