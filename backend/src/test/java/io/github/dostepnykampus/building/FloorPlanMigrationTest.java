@@ -51,6 +51,46 @@ final class FloorPlanMigrationTest {
     }
 
     @Test
+    void usSixteenStoresRoomCategoryLabelAndFloorOutline(final ApplicationContext context) {
+        MatcherAssert.assertThat(
+            "Brak kategorii, punktu podpisu, znacznika podpisu albo obrysu piętra w schemacie",
+            context.getBean(JdbcClient.class).sql(
+                """
+                SELECT table_name || '.' || column_name || ' ' || is_nullable
+                FROM information_schema.columns
+                WHERE (table_name = 'rooms'
+                    AND column_name IN ('category', 'label_point', 'labelled'))
+                    OR (table_name = 'floors' AND column_name = 'outline')
+                ORDER BY 1
+                """
+            ).query(String.class).list(),
+            Matchers.contains(
+                "floors.outline YES",
+                "rooms.category NO",
+                "rooms.label_point NO",
+                "rooms.labelled NO"
+            )
+        );
+    }
+
+    @Test
+    void usSixteenStoresLabelPointAndFloorOutlineInWgs(final ApplicationContext context) {
+        MatcherAssert.assertThat(
+            "Punkt podpisu albo obrys piętra nie ma typu i układu EPSG:4326",
+            context.getBean(JdbcClient.class).sql(
+                """
+                SELECT f_table_name || '.' || f_geometry_column || ' ' || type || ' ' || srid
+                FROM geometry_columns
+                WHERE (f_table_name = 'rooms' AND f_geometry_column = 'label_point')
+                    OR (f_table_name = 'floors' AND f_geometry_column = 'outline')
+                ORDER BY 1
+                """
+            ).query(String.class).list(),
+            Matchers.contains("floors.outline MULTIPOLYGON 4326", "rooms.label_point POINT 4326")
+        );
+    }
+
+    @Test
     void allowsMissingRoomNumber(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Brak numeru pomieszczenia jest niedopuszczalny",
