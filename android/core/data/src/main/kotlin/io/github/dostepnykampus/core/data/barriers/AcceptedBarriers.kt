@@ -5,13 +5,13 @@
  */
 package io.github.dostepnykampus.core.data.barriers
 
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.model.SubmissionKind
-import io.github.dostepnykampus.core.network.ApiResult
 import java.time.Instant
 
 /**
@@ -71,24 +71,24 @@ fun interface AcceptedBarriers {
  * Wymagania: NFR-10
  *
  * @param copy kopia ostatnich barier w bazie; `null` zostawia źródło bez kopii
- * @param accepted zgłoszenia przyjęte z serwera, np. `SubmissionsApi::accepted` bez budynku
+ * @param accepted zgłoszenia przyjęte z serwera
  */
 class ServerAcceptedBarriers internal constructor(
     private val copy: BarrierListCopy?,
-    private val accepted: suspend () -> ApiResult<List<Submission>>,
+    private val accepted: suspend () -> ServerReply<List<Submission>>,
 ) : AcceptedBarriers {
     @Volatile private var synced: Instant? = null
 
     /**
      * Bariery bez kopii w bazie.
      *
-     * @param accepted zgłoszenia przyjęte z serwera, np. `SubmissionsApi::accepted` bez budynku
+     * @param accepted zgłoszenia przyjęte z serwera
      */
-    constructor(accepted: suspend () -> ApiResult<List<Submission>>) : this(null, accepted)
+    constructor(accepted: suspend () -> ServerReply<List<Submission>>) : this(null, accepted)
 
     override suspend fun barriers(): List<AcceptedBarrier> {
         val result = accepted()
-        return if (result is ApiResult.Success) {
+        return if (result is ServerReply.Ok) {
             val shown = result.value.mapNotNull { it.toBarrier() }
             synced = copy?.save(shown) ?: Instant.now()
             shown

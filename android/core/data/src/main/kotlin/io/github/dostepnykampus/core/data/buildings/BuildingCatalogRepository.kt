@@ -6,11 +6,15 @@
 package io.github.dostepnykampus.core.data.buildings
 
 import android.content.res.AssetManager
+import io.github.dostepnykampus.core.data.server.ServerBuildings
+import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.server.map
 import io.github.dostepnykampus.core.database.BuildingCacheDao
 import io.github.dostepnykampus.core.geo.parseBuildingCatalog
 import io.github.dostepnykampus.core.model.BuildingCatalog
-import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.ApiBuilding
 import io.github.dostepnykampus.core.network.BuildingList
+import io.github.dostepnykampus.core.network.DetailLevel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -46,7 +50,7 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
 class BuildingCatalogRepository internal constructor(
     private val buildingCache: BuildingCacheDao?,
     private val ioContext: CoroutineContext,
-    private val listBuildings: (suspend () -> ApiResult<BuildingList>)? = null,
+    private val listBuildings: (suspend () -> ServerReply<BuildingList>)? = null,
     private val nowMillis: () -> Long = System::currentTimeMillis,
     private val readGeoJson: () -> String,
 ) {
@@ -63,16 +67,16 @@ class BuildingCatalogRepository internal constructor(
      * Katalog bez kopii listy budynków w bazie.
      *
      * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
-     * @param listBuildings lista z serwera; `null` zostawia katalog wyłącznie z pliku
+     * @param listBuildings lista budynków podstawowych z serwera; `null` zostawia katalog wyłącznie z pliku
      * @param nowMillis zegar chwili pobrania listy z serwera
      * @param readGeoJson odczyt treści pliku konturów
      */
     constructor(
         ioContext: CoroutineContext,
-        listBuildings: (suspend () -> ApiResult<BuildingList>)? = null,
+        listBuildings: (suspend () -> ServerReply<ServerBuildings>)? = null,
         nowMillis: () -> Long = System::currentTimeMillis,
         readGeoJson: () -> String,
-    ) : this(null, ioContext, listBuildings, nowMillis, readGeoJson)
+    ) : this(null, ioContext, listBuildings?.let(::basicList), nowMillis, readGeoJson)
 
     /**
      * Zwraca katalog budynków; gdy trwa pobranie z serwera, czeka na jego wynik.
@@ -162,7 +166,7 @@ class BuildingCatalogRepository internal constructor(
 
     private suspend fun nonEmptyServerList(): BuildingList? {
         val result = listBuildings?.invoke()
-        return if (result is ApiResult.Success && result.value.buildings.isNotEmpty()) result.value else null
+        return if (result is ServerReply.Ok && result.value.buildings.isNotEmpty()) result.value else null
     }
 
     /** Katalog z serwera (albo z jego kopii w bazie) razem z chwilą pobrania listy: jedna wartość stanu. */
@@ -173,7 +177,7 @@ class BuildingCatalogRepository internal constructor(
 internal fun assetRepository(
     assets: AssetManager,
     ioContext: CoroutineContext = Dispatchers.IO,
-    listBuildings: (suspend () -> ApiResult<BuildingList>)? = null,
+    listBuildings: (suspend () -> ServerReply<BuildingList>)? = null,
     buildingCache: BuildingCacheDao? = null,
 ): BuildingCatalogRepository =
     BuildingCatalogRepository(
@@ -182,3 +186,6 @@ internal fun assetRepository(
         readGeoJson = { assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() } },
         buildingCache = buildingCache,
     )
+
+private fun basicList(list: suspend () -> ServerReply<ServerBuildings>): suspend () -> ServerReply<BuildingList> =
+    { list().map { found -> BuildingList(found.source, found.buildings.map { ApiBuilding(it, DetailLevel.BASIC) }) } }
