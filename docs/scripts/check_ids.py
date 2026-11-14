@@ -93,7 +93,7 @@ SUITE_FILE = re.compile(r'@SelectFile\(\s*"(?:[^"]*/)?specs/([^"]+\.feature)"\s*
 SUITE_SOURCE = "src/test/java"
 CODE_REQUIREMENTS = re.compile(r"^\s*(?:/\*\*.*?\s|\*\s*(?:<p>)?)Wymagania:\s*(.*?)\s*(?:</p>)?\s*(?:\*/)?\s*$")
 BUILD_DIR = re.compile(r"(?:^|/)(?:build|target|\.gradle)/")
-TEST_SOURCE = re.compile(r"^(?!(?:.*/)?(?:build|\.gradle)/)(?:.*/)?src/(?:test|\w*Test)\w*/")
+TEST_SOURCE = re.compile(r"^(?!(?:.*/)?(?:build|\.gradle)/)(?:(?:.*/)?src/(?:test|\w*Test)\w*/|systemtest/src/main/)")
 
 
 @dataclass(frozen=True)
@@ -468,7 +468,8 @@ def files_in(root: Path | None, pattern: str) -> list[Path]:
 
 
 def scan_kotlin(path: Path, corpus: Corpus, module: str = "") -> None:
-    """Dodaje do `corpus` znaczniki scenariuszy z pliku testów Kotlin (`src/test*`, `src/*Test*`, bez build i .gradle).
+    """Dodaje do `corpus` znaczniki scenariuszy z pliku testów Kotlin (`src/test*`, `src/*Test*`,
+    `systemtest/src/main`, bez build i .gradle).
     Linię podobną do znacznika, ale niezgodną ze wzorem, albo znacznik bez nazwy zapisuje jako zły znacznik.
     Identyfikator testu to `module` (katalog przed `src/`), łańcuch klas i obiektów z ciałem `{`, które obejmują
     znacznik (według wcięcia; bez nich — nazwa pliku), i nazwa funkcji testu.
