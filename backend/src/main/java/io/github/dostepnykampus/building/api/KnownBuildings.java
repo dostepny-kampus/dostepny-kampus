@@ -29,6 +29,7 @@ public interface KnownBuildings {
 
     /**
      * Szuka etykiety piętra na planie.
+     *
      * @param symbol Budynek albo null
      * @param id Piętro albo null
      * @return Etykieta albo puste
