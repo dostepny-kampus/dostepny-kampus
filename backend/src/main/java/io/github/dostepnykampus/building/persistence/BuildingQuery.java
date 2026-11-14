@@ -11,6 +11,8 @@ import io.github.dostepnykampus.building.domain.BuildingCard;
 import io.github.dostepnykampus.building.domain.BuildingList;
 import io.github.dostepnykampus.building.domain.Buildings;
 import io.github.dostepnykampus.building.domain.Entrance;
+import io.github.dostepnykampus.building.domain.Floor;
+import io.github.dostepnykampus.building.domain.FloorList;
 import io.github.dostepnykampus.building.domain.Placement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +30,7 @@ import org.springframework.stereotype.Service;
  * zapisany przy zgłoszeniu szybkim są zawsze równe. Atrybucja listy to źródła konturów
  * bez powtórzeń, alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą atrybucję.
  *
- * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40</p>
+ * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40, US16</p>
  *
  * @since 0.1.0
  */
@@ -91,6 +93,19 @@ public final class BuildingQuery implements Buildings {
             .map(this::card);
     }
 
+    @Override
+    public Optional<FloorList> floors(final String symbol) {
+        return this.jdbc.sql(
+            """
+            SELECT symbol
+            FROM buildings
+            WHERE symbol = ?
+            """
+        ).param(symbol).query(String.class).optional().map(
+            found -> new FloorList("Politechnika Wrocławska", this.buildingFloors(found))
+        );
+    }
+
     private Placement near(final double lat, final double lon) {
         return this.jdbc.sql(
             """
@@ -148,6 +163,23 @@ public final class BuildingQuery implements Buildings {
                     BuildingQuery.text(rows, "marking_date"),
                     BuildingQuery.text(rows, "marking_source")
                 )
+            )
+        ).list();
+    }
+
+    private List<Floor> buildingFloors(final String symbol) {
+        return this.jdbc.sql(
+            """
+            SELECT id, label, sort_order
+            FROM floors
+            WHERE building_symbol = ?
+            ORDER BY sort_order, id
+            """
+        ).param(symbol).query(
+            (rows, num) -> new Floor(
+                BuildingQuery.text(rows, "id"),
+                BuildingQuery.text(rows, "label"),
+                rows.getInt("sort_order")
             )
         ).list();
     }

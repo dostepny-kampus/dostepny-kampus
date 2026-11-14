@@ -36,7 +36,6 @@ final class RouteParityTest {
      * Operacje kontraktu bez handlera i powód każdej; lista tylko się kurczy.
      */
     static final Map<String, String> PENDING = Map.ofEntries(
-        Map.entry("GET /buildings/{}/floors", "piętra budynku: moduł budynków"),
         Map.entry("GET /buildings/{}/floors/{}/rooms", "sale piętra: moduł budynków"),
         Map.entry("GET /rooms", "wyszukiwanie sal: moduł budynków"),
         Map.entry("GET /review/queue", "kolejka Weryfikatora: moduł weryfikacji"),

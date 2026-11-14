@@ -8,6 +8,7 @@ package io.github.dostepnykampus.building.application;
 import io.github.dostepnykampus.building.domain.BuildingCard;
 import io.github.dostepnykampus.building.domain.BuildingList;
 import io.github.dostepnykampus.building.domain.Buildings;
+import io.github.dostepnykampus.building.domain.FloorList;
 import io.github.dostepnykampus.building.domain.Placement;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
  * Odczyt budynków dla warstwy web: kontroler nie sięga do portu
  * {@link Buildings}, tylko do tej usługi.
  *
- * <p>Wymagania: US1, US2, US17</p>
+ * <p>Wymagania: US1, US2, US17, US16</p>
  *
  * @since 0.1.0
  */
@@ -63,5 +64,15 @@ public final class BuildingReading {
      */
     public Optional<BuildingCard> building(final String symbol) {
         return this.buildings.building(symbol);
+    }
+
+    /**
+     * Szuka pięter budynku.
+     *
+     * @param symbol Symbol budynku
+     * @return Piętra budynku ze źródłem danych albo puste dla nieznanego symbolu
+     */
+    public Optional<FloorList> floors(final String symbol) {
+        return this.buildings.floors(symbol);
     }
 }
