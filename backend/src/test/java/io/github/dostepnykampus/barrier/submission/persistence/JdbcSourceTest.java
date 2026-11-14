@@ -68,4 +68,24 @@ final class JdbcSourceTest {
             "Kolumny zgłoszenia nie wynikają z treści"
         );
     }
+
+    @Test
+    void linkFollowsContent(final ApplicationContext context) {
+        final SubmissionData data = SubmissionData.of(context);
+        final UUID id = data.seed(SubmissionStatus.SENT);
+        final UUID replaced = UUID.fromString("4a5a0000-0000-4000-8000-00000000aaaa");
+        data.jdbc().sql(
+            """
+            UPDATE submissions
+            SET content = content || jsonb_build_object('replacesSubmissionId', :replaced)
+            WHERE id = :id
+            """
+        ).param("replaced", replaced.toString()).param("id", id).update();
+        Assertions.assertEquals(
+            replaced,
+            data.jdbc().sql("SELECT replaces_submission_id FROM submissions WHERE id = :id")
+                .param("id", id).query(UUID.class).single(),
+            "Kolumna powiązania nie wynika z pola replacesSubmissionId w treści"
+        );
+    }
 }
