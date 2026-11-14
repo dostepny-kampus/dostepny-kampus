@@ -71,7 +71,7 @@ class CardServerEntrancesTest {
      * Wymagania: US17.3, NFR-12
      */
     @Test
-    fun us17_3_server_after_phone() =
+    fun showsServerAfterPhone() =
         runTest {
             val answer = CompletableDeferred<ServerReply<ServerCard>>()
             val card = openCard { answer.await() }
@@ -87,7 +87,7 @@ class CardServerEntrancesTest {
      * Wymagania: NFR-10
      */
     @Test
-    fun nfr10_failure_keeps_file() =
+    fun keepsFileOnFailure() =
         runTest {
             val failures =
                 listOf(ServerReply.Offline, ServerReply.Fault(SERVER_ERROR))
@@ -105,7 +105,7 @@ class CardServerEntrancesTest {
 
     /** Wiersz: kolejne otwarcie V2 bez sieci → zostają wejścia pobrane wcześniej z serwera. Wymagania: NFR-10 */
     @Test
-    fun nfr10_reopen_keeps_server() =
+    fun keepsServerOnReopen() =
         runTest {
             val answers =
                 ArrayDeque(listOf(ServerReply.Ok(DETAILS), ServerReply.Offline))
@@ -116,7 +116,7 @@ class CardServerEntrancesTest {
 
     /** Wiersz: zamknięcie karty w trakcie pobierania → wywołanie serwera przerwane, bez działającego zapytania. */
     @Test
-    fun closing_card_cancels_call() =
+    fun cancelsCallOnClose() =
         runTest {
             val started = CompletableDeferred<Unit>()
             val cancelled = CompletableDeferred<Unit>()

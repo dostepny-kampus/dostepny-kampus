@@ -35,7 +35,7 @@ class RecommendedEntrancePathTest {
 
     /** Scenariusz: przegladanie-mapy.feature: Wejście zalecane stoi pierwsze na karcie budynku. */
     @Test
-    fun br25_side_recommended_first() {
+    fun putsRecommendedSideFirst() {
         openCard(
             symbol = "A-1",
             entrance(name = "Główne", type = "main", wheelchair = "no"),
@@ -54,7 +54,7 @@ class RecommendedEntrancePathTest {
 
     /** Scenariusz: przegladanie-mapy.feature: Przy kilku wejściach dostępnych zalecane jest wejście główne. */
     @Test
-    fun br25_main_among_accessible() {
+    fun recommendsMainAmongAccessible() {
         openCard(
             symbol = "C-13",
             entrance(name = "Boczne", wheelchair = "yes"),
@@ -69,7 +69,7 @@ class RecommendedEntrancePathTest {
      *   pierwsze z danych.
      */
     @Test
-    fun br25_data_order_without_main() {
+    fun keepsDataOrderWithoutMain() {
         openCard(
             symbol = "C-13",
             entrance(name = "Boczne", wheelchair = "yes"),
@@ -82,7 +82,7 @@ class RecommendedEntrancePathTest {
 
     /** Scenariusz: przegladanie-mapy.feature: Budynek bez wejścia dostępnego nie ma wejścia zalecanego. */
     @Test
-    fun br25_none_without_accessible() {
+    fun recommendsNoneIfInaccessible() {
         openCard(
             symbol = "B-8",
             entrance(name = "Główne", type = "main", wheelchair = "no"),

@@ -31,7 +31,7 @@ class BuildingCardScreenTest {
      *   nic o barierach nie mówią.
      */
     @Test
-    fun us2_7_no_data_says_nothing() {
+    fun saysNothingWithoutData() {
         val repository =
             BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
                 """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +

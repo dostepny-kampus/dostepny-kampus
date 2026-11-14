@@ -43,7 +43,7 @@ class BuildingCardOfflineTest {
      * Wymagania: NFR-10, US2.8
      */
     @Test
-    fun nfr10_offline_line_on_card() {
+    fun showsOfflineLineOnCard() {
         val online = MutableStateFlow(false)
         val viewModel = BuildingCardViewModel(symbol = "A-1", repository = repository, networkStatus = { online })
         compose.setContent {
@@ -73,7 +73,7 @@ class BuildingCardOfflineTest {
      * Wymagania: NFR-10, US2.8
      */
     @Test
-    fun nfr10_no_line_before_state() {
+    fun hidesLineBeforeState() {
         val viewModel =
             BuildingCardViewModel(
                 symbol = "A-1",
