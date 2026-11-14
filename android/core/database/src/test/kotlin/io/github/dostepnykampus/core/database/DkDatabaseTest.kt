@@ -27,6 +27,6 @@ class DkDatabaseTest {
                 .query("SELECT name FROM sqlite_master WHERE type = 'table' AND name LIKE 'pending_%' ORDER BY name")
                 .use { cursor -> generateSequence { if (cursor.moveToNext()) cursor.getString(0) else null }.toList() }
         database.close()
-        assertEquals(listOf("pending_photos", "pending_submissions"), tables)
+        assertEquals(listOf("pending_marker_changes", "pending_photos", "pending_submissions"), tables)
     }
 }

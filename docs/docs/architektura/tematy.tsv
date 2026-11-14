@@ -12,6 +12,7 @@ edit	ścieżka	edycja zgłoszenia	Zmiana wysłanego zgłoszenia.
 error	temat	błąd	Błędy wspólne dla modułów i ich odpowiedź HTTP.
 form	ścieżka	formularz zgłoszenia	Pełny formularz nowego zgłoszenia.
 geo	temat	geometria	Punkty, obszary i układy współrzędnych.
+inspection	temat	obejrzenie piętra	Znacznik piętra obejrzanego i zmiany znaczników czekające na wysłanie.
 location	temat	położenie	Położenie osoby i dopasowanie go do budynku.
 marking	temat	oznaczenie	Oznaczenie wejścia i bariery: kolor, znak, nazwa.
 measure	ścieżka	pomiar położenia	Dokładny pomiar położenia przed zgłoszeniem.

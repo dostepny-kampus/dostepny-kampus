@@ -11,6 +11,8 @@ import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
 import io.github.dostepnykampus.core.database.cache.BarrierCacheEntity
 import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
 import io.github.dostepnykampus.core.database.cache.BuildingCacheEntity
+import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeDao
+import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.PendingEditDao
@@ -31,8 +33,9 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
         BuildingCacheEntity::class,
         OwnSubmissionEntity::class,
         BarrierCacheEntity::class,
+        PendingMarkerChangeEntity::class,
     ],
-    version = 6,
+    version = 7,
     exportSchema = true,
 )
 internal abstract class DkDatabase : RoomDatabase() {
@@ -50,4 +53,7 @@ internal abstract class DkDatabase : RoomDatabase() {
 
     /** Kopia barier ze zgłoszeń przyjętych. */
     abstract fun barrierCache(): BarrierCacheDao
+
+    /** Kolejka zmian znaczników piętra obejrzanego. */
+    abstract fun pendingMarkerChanges(): PendingMarkerChangeDao
 }

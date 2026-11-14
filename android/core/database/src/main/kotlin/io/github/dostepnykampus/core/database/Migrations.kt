@@ -57,3 +57,16 @@ internal val MIGRATION_5_6: Migration =
             db.execSQL("CREATE TABLE IF NOT EXISTS `barrier_cache` $LIST_COPY_COLUMNS")
         }
     }
+
+/** Migracja 6→7: kolejka zmian znaczników piętra obejrzanego. Wymagania: US15.3 */
+internal val MIGRATION_6_7: Migration =
+    object : Migration(6, 7) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `pending_marker_changes` (" +
+                    "`operation_id` TEXT NOT NULL, `type` TEXT NOT NULL, `marker_id` TEXT NOT NULL, " +
+                    "`building_symbol` TEXT NOT NULL, `floor_id` TEXT, `saved_at` INTEGER NOT NULL, " +
+                    "PRIMARY KEY(`operation_id`))",
+            )
+        }
+    }
