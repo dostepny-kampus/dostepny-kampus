@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.Instant
 
+/** Lista „Moje zgłoszenia” z kolejki w telefonie i statusów z serwera. Wymagania: US8.1, US8.2, US9.1, US9.5 */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MySubmissionsViewModelTest {
     private val dispatcher = StandardTestDispatcher()
@@ -53,7 +54,7 @@ class MySubmissionsViewModelTest {
     }
 
     @Test
-    fun `pw12 ładowanie i pusta lista`() =
+    fun loadsThenShowsEmptyList() =
         runTest(dispatcher) {
             assertEquals(MySubmissionsUiState.Loading, viewModel.state.value)
             collect()
@@ -67,7 +68,7 @@ class MySubmissionsViewModelTest {
      *   a zgłoszenie czeka ze statusem „lokalne”
      */
     @Test
-    fun `sieć nie zmienia zgłoszeń`() =
+    fun keepsItemsOnNetworkChange() =
         runTest(dispatcher) {
             rows.value =
                 listOf(
@@ -92,7 +93,7 @@ class MySubmissionsViewModelTest {
         }
 
     @Test
-    fun `us8_1 typ budynek i piętro`() =
+    fun mapsTypeBuildingAndFloor() =
         runTest(dispatcher) {
             rows.value = listOf(row(id = "a", state = SendState.LOCAL))
             collect()
@@ -105,7 +106,7 @@ class MySubmissionsViewModelTest {
         }
 
     @Test
-    fun `us8_1 bez kodu typu`() =
+    fun mapsMissingTypeCode() =
         runTest(dispatcher) {
             rows.value = listOf(row(id = "a", state = SendState.SENT).copy(barrierType = null))
             collect()
@@ -114,7 +115,7 @@ class MySubmissionsViewModelTest {
         }
 
     @Test
-    fun `us9_1 liczba w telefonie`() =
+    fun countsLocalSubmissions() =
         runTest(dispatcher) {
             rows.value =
                 listOf(
@@ -129,7 +130,7 @@ class MySubmissionsViewModelTest {
         }
 
     @Test
-    fun `us9_5 powód odmowy`() =
+    fun showsRefusalReason() =
         runTest(dispatcher) {
             val reasons = RefusalReason.entries
             rows.value = reasons.map { row(id = it.name, state = SendState.REFUSED, refusal = it) }
@@ -140,7 +141,7 @@ class MySubmissionsViewModelTest {
 
     /** „Czeka na wysłanie” nie liczy zgłoszeń, których serwer nie przyjął. Wymagania: US9.1, US9.5 */
     @Test
-    fun `us9_5 odrzucone bez licznika`() =
+    fun skipsRefusedInCount() =
         runTest(dispatcher) {
             rows.value =
                 listOf(
@@ -155,7 +156,7 @@ class MySubmissionsViewModelTest {
 
     /** Wiersz: C3 → „Sprawdzamy statusy…”, błąd z „Spróbuj ponownie”, potem statusy, PW-10. Wymagania: US8.2, NFR-50 */
     @Test
-    fun `us8_2 sprawdzanie i ponowienie`() =
+    fun checksAndRetries() =
         runTest(dispatcher) {
             collect()
             assertEquals(StatusCheck.CHECKING, check())
@@ -176,7 +177,7 @@ class MySubmissionsViewModelTest {
 
     /** Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zgłoszenie odrzucone pokazuje powód odrzucenia. */
     @Test
-    fun `us8_2 status z serwera`() =
+    fun takesStatusFromServer() =
         runTest(dispatcher) {
             val rejected = row(id = "a", state = SendState.SENT).copy(serverStatus = SubmissionStatus.REJECTED)
             rows.value = listOf(rejected.copy(rejectionReason = "Nieostre"))

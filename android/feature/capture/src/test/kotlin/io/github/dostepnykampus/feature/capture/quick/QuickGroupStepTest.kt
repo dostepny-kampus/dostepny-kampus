@@ -50,7 +50,7 @@ class QuickGroupStepTest {
      * Wymagania: US4.3, NFR-17
      */
     @Test
-    fun us4_3_six_groups() {
+    fun showsSixGroups() {
         val chosen = mutableListOf<BarrierGroup>()
         compose.setContent { DostepnyKampusTheme { QuickGroupQuestion(onGroup = { chosen.add(it) }) } }
         compose.onNodeWithText("Czego dotyczy bariera?").assertIsDisplayed()
@@ -81,7 +81,7 @@ class QuickGroupStepTest {
      * Wymagania: US4.8, NFR-21
      */
     @Test
-    fun us4_8_group_stays_selected() {
+    fun keepsGroupSelected() {
         compose.setContent { DostepnyKampusTheme { QuickGroupQuestion(selected = BarrierGroup.TOILETS, onGroup = {}) } }
         compose.onNodeWithText("✓ Toalety").assertIsSelected()
         compose.onNodeWithText("Coś innego").assertIsNotSelected()
@@ -89,7 +89,7 @@ class QuickGroupStepTest {
 
     /** Wiersz: V4 krok 2, pytanie o piętro → „Nie wiem” zostawia piętro puste. Wymagania: US4.5 */
     @Test
-    fun us4_5_floor_or_unknown() {
+    fun offersFloorOrUnknown() {
         val answers = mutableListOf<QuickFloor>()
         show(floors = emptyList(), answers = answers)
         compose.onNodeWithText("Na którym piętrze?").assertIsDisplayed()
@@ -101,7 +101,7 @@ class QuickGroupStepTest {
 
     /** Wiersz: V4 krok 2 w budynku podstawowym, piętra pod parterem i wyższe niż 4. Wymagania: US4.5 */
     @Test
-    fun us4_5_basic_range() {
+    fun offersBasicFloorRange() {
         show(floors = emptyList(), answers = mutableListOf())
         listOf("-1", "Parter", "5", "10").forEach { compose.onNodeWithText(it).assertExists() }
         compose.onNodeWithText("-2").assertDoesNotExist()
@@ -110,7 +110,7 @@ class QuickGroupStepTest {
 
     /** Wiersz: V4 krok 2 w budynku szczegółowym, etykiety pięter z danych PWr od najniższego. Wymagania: US4.5 */
     @Test
-    fun us4_5_detailed_labels() {
+    fun showsDetailedFloorLabels() {
         val answers = mutableListOf<QuickFloor>()
         val basement = Floor(id = "A-1/p-1", label = "Piwnica", order = -1)
         show(floors = listOf(basement, Floor(id = "A-1/p0", label = "Parter", order = 0)), answers = answers)
@@ -122,7 +122,7 @@ class QuickGroupStepTest {
 
     /** Wiersz: V4 krok 2 to wspólny wybór piętra: grupa jednej opcji, a każda opcja jest przyciskiem radiowym. */
     @Test
-    fun us4_5_shared_picker() {
+    fun usesSharedFloorPicker() {
         show(floors = emptyList(), answers = mutableListOf())
         val radios = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
         compose.onAllNodes(radios).assertCountEquals(BASIC_FLOOR_COUNT + 1)
@@ -136,7 +136,7 @@ class QuickGroupStepTest {
      */
     @Test
     @Config(qualifiers = "w360dp-h800dp", fontScale = 2f)
-    fun nfr20_floor_targets() {
+    fun keepsLargeFloorTargets() {
         show(floors = emptyList(), answers = mutableListOf())
         listOf("Nie wiem", "-1", "Parter", "10").forEach { label ->
             compose

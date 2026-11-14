@@ -53,7 +53,7 @@ class SubmissionCardTest {
      * Wymagania: US8.1
      */
     @Test
-    fun us8_1_item_details() {
+    fun showsItemDetails() {
         show(item(id = "a", state = SendState.SENT))
         compose.onNodeWithText("Wysłane").assertIsDisplayed()
         compose.onNodeWithText("Budynek A-1, Piętro 2").assertIsDisplayed()
@@ -69,7 +69,7 @@ class SubmissionCardTest {
      * Wymagania: US8.2, BR-9
      */
     @Test
-    fun us8_2_server_statuses() {
+    fun showsServerStatuses() {
         val words =
             mapOf(
                 SubmissionStatus.SENT to "Wysłane",
@@ -92,21 +92,21 @@ class SubmissionCardTest {
      *   przy statusie.
      */
     @Test
-    fun us8_1_change_waiting() {
+    fun marksWaitingChange() {
         show(item(id = "a", state = SendState.SENT).copy(isChangeWaiting = true))
         compose.onNodeWithText("Wysłane").assertIsDisplayed()
         compose.onNodeWithText("Zmiana czeka na wysłanie").assertIsDisplayed()
     }
 
     @Test
-    fun us8_1_no_change_waiting() {
+    fun skipsMarkWithoutChange() {
         show(item(id = "a", state = SendState.SENT))
         compose.onNodeWithText("Zmiana czeka na wysłanie").assertDoesNotExist()
     }
 
     /** Wiersz: C3 „Nie wysłano” → powód odmowy. Wymagania: US9.5, BR-26 */
     @Test
-    fun us9_5_refusal_reason() {
+    fun showsRefusalReason() {
         show(item(id = "a", state = SendState.REFUSED, refusal = RefusalReason.NO_PERMISSION))
         compose.onNodeWithText("Nie wysłano").assertIsDisplayed()
         val reason = "Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie."
@@ -115,7 +115,7 @@ class SubmissionCardTest {
 
     /** Wiersz: C3 „Otwórz” → poprawka w C2. Wymagania: US8.3 */
     @Test
-    fun us8_3_open_item() {
+    fun opensItem() {
         show(item(id = "a", state = SendState.LOCAL))
         compose.onNodeWithText("Otwórz").performClick()
         assertEquals(1, opened)
@@ -123,7 +123,7 @@ class SubmissionCardTest {
 
     /** Wiersz: C3 bez poprawki w C2 → pozycja bez „Otwórz”. Wymagania: US8.3 */
     @Test
-    fun us8_3_no_open_without_edit() {
+    fun hidesOpenWithoutEdit() {
         show(item(id = "a", state = SendState.LOCAL), onOpen = null)
         compose.onNodeWithText("Otwórz").assertDoesNotExist()
     }
@@ -135,7 +135,7 @@ class SubmissionCardTest {
      * Wymagania: US8.1, US8.3
      */
     @Test
-    fun us8_1_open_only_editable() {
+    fun opensOnlyEditable() {
         val cases =
             listOf(
                 Triple(item("a", SendState.LOCAL), "W telefonie", true),
@@ -169,7 +169,7 @@ class SubmissionCardTest {
 
     /** Wiersz: C3 poza budynkiem, nieznany kod typu → „Poza budynkiem”, „Nieznany typ bariery”. Wymagania: US8.1 */
     @Test
-    fun us8_1_outside_unknown_type() {
+    fun showsOutsideUnknownType() {
         show(item(id = "a", state = SendState.SENT).copy(type = null, buildingSymbol = null, floorNumber = null))
         compose.onNodeWithText("Poza budynkiem").assertIsDisplayed()
         compose.onNodeWithText("Nieznany typ bariery").assertIsDisplayed()
@@ -177,14 +177,14 @@ class SubmissionCardTest {
 
     /** Wiersz: C3 budynek bez numeru piętra → sam budynek. Wymagania: US8.1 */
     @Test
-    fun us8_1_building_without_floor() {
+    fun showsBuildingWithoutFloor() {
         show(item(id = "a", state = SendState.SENT).copy(floorNumber = null))
         compose.onNodeWithText("Budynek A-1").assertIsDisplayed()
     }
 
     /** Wiersz: C3 → TalkBack czyta status przed typem bariery. Wymagania: NFR-18 */
     @Test
-    fun nfr18_status_before_type() {
+    fun readsStatusBeforeType() {
         show(item(id = "a", state = SendState.LOCAL))
         val tree = compose.onRoot(useUnmergedTree = false).printToString()
         assertTrue(tree.indexOf("W telefonie") in 0 until tree.indexOf("Schody przy wejściu"))
