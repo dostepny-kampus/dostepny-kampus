@@ -9,6 +9,10 @@ set -euo pipefail
 #   1. warunek `if` istnieje i zawiera `!cancelled()` albo `always()`; bez tego GitHub pomija job po błędzie w `needs`;
 #   2. jeśli warunek wymaga wyjścia joba z `needs` (`needs.<job>.outputs.<x> == ...`), ma też gałąź
 #      `needs.<job>.result != 'success'`, bo po błędzie wyjścia są puste.
+# Dla każdego joba każdego workflow:
+#   3. brak `continue-on-error` na poziomie joba: zamienia porażkę w sukces dla `needs` i dla całego przebiegu,
+#      więc kolejka scala zmianę z czerwonym jobem;
+#   4. `continue-on-error` kroku tylko przy zapisie raportu diagnostycznego (`actions/upload-artifact`).
 # Użycie: wymagane-joby.sh [katalog workflow] [plik listy]. Kod wyjścia: 0 = czysto, 1 = naruszenie, 2 = błąd narzędzia.
 workflows="${1:-.github/workflows}"
 lista="${2:-$(dirname "${BASH_SOURCE[0]}")/wymagane-kontrole.txt}"
@@ -43,7 +47,23 @@ def report(path, job, message, condition):
 for path in sorted(list(workflows.glob("*.yml")) + list(workflows.glob("*.yaml"))):
     document = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     for key, job in (document.get("jobs") or {}).items():
-        if not isinstance(job, dict) or not ({key, job.get("name")} & required):
+        if not isinstance(job, dict):
+            continue
+        if job.get("continue-on-error", False) is not False:
+            found = 1
+            print(f"::error file={path},title=Job z continue-on-error::{key}: `continue-on-error` na poziomie joba "
+                  "zamienia jego porażkę w sukces, więc kolejka scala zmianę z czerwonym jobem. Usuń klucz; "
+                  "raport, który nie może blokować, nie może też padać.")
+        for step in job.get("steps") or []:
+            if not isinstance(step, dict) or step.get("continue-on-error", False) is False:
+                continue
+            if str(step.get("uses") or "").startswith("actions/upload-artifact@"):
+                continue
+            found = 1
+            label = step.get("name") or step.get("uses") or step.get("run", "")[:40]
+            print(f"::error file={path},title=Krok z continue-on-error::{key}: krok „{label}” ma `continue-on-error`; "
+                  "dozwolone tylko przy zapisie raportu diagnostycznego (actions/upload-artifact).")
+        if not ({key, job.get("name")} & required):
             continue
         needs = job.get("needs") or []
         needs = [needs] if isinstance(needs, str) else needs
