@@ -33,10 +33,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LifecycleResumeEffect
-import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.PinnedActionBar
-import io.github.dostepnykampus.core.designsystem.PinnedButton
+import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
+import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.quick.content
 

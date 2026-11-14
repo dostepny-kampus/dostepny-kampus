@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import io.github.dostepnykampus.core.designsystem.MapColors
-import io.github.dostepnykampus.core.designsystem.markingImage
+import io.github.dostepnykampus.core.designsystem.marking.markingImage
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.feature.map.data.SelectedEntrance
 import io.github.dostepnykampus.feature.map.style.ENTRANCE_MARK_DP

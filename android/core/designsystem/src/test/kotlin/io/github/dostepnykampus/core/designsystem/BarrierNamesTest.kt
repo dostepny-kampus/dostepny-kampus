@@ -7,6 +7,8 @@ package io.github.dostepnykampus.core.designsystem
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import io.github.dostepnykampus.core.designsystem.marking.descriptionRes
+import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.Severity

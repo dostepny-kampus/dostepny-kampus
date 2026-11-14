@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.designsystem
+package io.github.dostepnykampus.core.designsystem.marking
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.PathParser
+import io.github.dostepnykampus.core.designsystem.iconSizeLikeText
 import io.github.dostepnykampus.core.model.Severity
 
 private const val SIGN_VIEWPORT = 24f
@@ -110,8 +111,9 @@ public fun severityImage(severity: Severity, sizePx: Int, shapeColor: Color, mar
  * Znak uciążliwości obok napisu: trójkąt ze znakiem „!” dla „Utrudnienie”, tarcza z dwiema osobami dla „Tylko
  * z pomocą”, prostokąt z ukośnymi pasami dla „Blokada”. Znaczenie niesie kształt, nie barwa.
  *
- * Kształt ma kolor `onSurface`, znak w nim `surface`; rozmiar [Ikony.rozmiar] skalowany jak tekst w sp.
- * Ikona jest ozdobna: TalkBack czyta nazwę uciążliwości z napisu obok.
+ * Kształt ma kolor `onSurface`, znak w nim `surface`; rozmiar
+ * [io.github.dostepnykampus.core.designsystem.Ikony.rozmiar] skalowany jak tekst w sp. Ikona jest ozdobna:
+ * TalkBack czyta nazwę uciążliwości z napisu obok.
  *
  * Wymagania: NFR-21, NFR-20
  *

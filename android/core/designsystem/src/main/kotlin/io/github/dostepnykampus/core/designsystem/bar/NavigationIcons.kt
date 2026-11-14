@@ -3,9 +3,10 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.designsystem
+package io.github.dostepnykampus.core.designsystem.bar
 
 import androidx.compose.ui.graphics.vector.ImageVector
+import io.github.dostepnykampus.core.designsystem.pathIcon
 
 /**
  * Ikony pozycji paska dolnego ([BottomBarItem]) według słownika użytkownika (sekcja „Metafory i ikony”): ścieżki

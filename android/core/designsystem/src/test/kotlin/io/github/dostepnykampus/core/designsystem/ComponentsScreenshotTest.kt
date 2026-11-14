@@ -18,6 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
+import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
+import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
+import io.github.dostepnykampus.core.designsystem.marking.MarkingChip
 import io.github.dostepnykampus.core.model.EntranceMarking
 import org.junit.Test
 import org.junit.runner.RunWith

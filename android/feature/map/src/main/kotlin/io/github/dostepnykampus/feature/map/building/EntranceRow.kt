@@ -16,11 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import io.github.dostepnykampus.core.designsystem.MarkingChip
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.PinnedButton
-import io.github.dostepnykampus.core.designsystem.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
+import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
+import io.github.dostepnykampus.core.designsystem.marking.MarkingChip
 import io.github.dostepnykampus.feature.map.R
 
 /**

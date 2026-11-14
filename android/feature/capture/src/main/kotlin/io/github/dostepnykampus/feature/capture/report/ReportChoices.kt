@@ -50,7 +50,7 @@ import io.github.dostepnykampus.core.designsystem.FloorOptions
 import io.github.dostepnykampus.core.designsystem.FloorPicker
 import io.github.dostepnykampus.core.designsystem.FloorPickerLayout
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.nameRes
+import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.feature.capture.R

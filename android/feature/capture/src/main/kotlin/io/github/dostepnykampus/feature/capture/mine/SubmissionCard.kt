@@ -26,7 +26,7 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.data.submissions.RefusalReason
 import io.github.dostepnykampus.core.data.submissions.SendState
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.nameRes
+import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.feature.capture.R
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
