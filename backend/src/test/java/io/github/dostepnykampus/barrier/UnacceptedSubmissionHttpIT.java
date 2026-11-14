@@ -32,7 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class UnacceptedSubmissionHttpTest {
+final class UnacceptedSubmissionHttpIT {
 
     /**
      * Zdjęcie z listy photoIds zgłoszenia próbnego.
@@ -49,8 +49,8 @@ final class UnacceptedSubmissionHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Zgłoszenie nieprzyjęte widzi nie tylko autor i Weryfikator",
-            UnacceptedSubmissionHttpTest.codes(context, "/submissions/{id}"),
-            Matchers.equalTo(UnacceptedSubmissionHttpTest.CODES)
+            UnacceptedSubmissionHttpIT.codes(context, "/submissions/{id}"),
+            Matchers.equalTo(UnacceptedSubmissionHttpIT.CODES)
         );
     }
 
@@ -59,40 +59,40 @@ final class UnacceptedSubmissionHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Zdjęcie zgłoszenia nieprzyjętego widzi nie tylko autor i Weryfikator",
-            UnacceptedSubmissionHttpTest.codes(
+            UnacceptedSubmissionHttpIT.codes(
                 context,
-                "/submissions/{id}/photos/".concat(UnacceptedSubmissionHttpTest.PHOTO.toString())
+                "/submissions/{id}/photos/".concat(UnacceptedSubmissionHttpIT.PHOTO.toString())
             ),
-            Matchers.equalTo(UnacceptedSubmissionHttpTest.CODES)
+            Matchers.equalTo(UnacceptedSubmissionHttpIT.CODES)
         );
     }
 
     private static List<Integer> codes(final WebApplicationContext context, final String path)
         throws Exception {
-        final UUID own = UnacceptedSubmissionHttpTest.sent(context);
-        final UUID foreign = UnacceptedSubmissionHttpTest.sent(context);
+        final UUID own = UnacceptedSubmissionHttpIT.sent(context);
+        final UUID foreign = UnacceptedSubmissionHttpIT.sent(context);
         context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET author = 'inne-konto' WHERE id = :id")
             .param("id", foreign).update();
         return List.of(
-            UnacceptedSubmissionHttpTest.code(
+            UnacceptedSubmissionHttpIT.code(
                 context, MockMvcRequestBuilders.get(path, own).with(new AsCollector())
             ),
-            UnacceptedSubmissionHttpTest.code(
+            UnacceptedSubmissionHttpIT.code(
                 context, MockMvcRequestBuilders.get(path, foreign).with(new AsVerifier())
             ),
-            UnacceptedSubmissionHttpTest.code(
+            UnacceptedSubmissionHttpIT.code(
                 context, MockMvcRequestBuilders.get(path, foreign).with(new AsCollector())
             ),
-            UnacceptedSubmissionHttpTest.code(context, MockMvcRequestBuilders.get(path, own))
+            UnacceptedSubmissionHttpIT.code(context, MockMvcRequestBuilders.get(path, own))
         );
     }
 
     private static UUID sent(final WebApplicationContext context) throws IOException {
         final UUID id = new SampleSubmissions(context)
-            .add("SENT", SampleSubmissions.quick(UnacceptedSubmissionHttpTest.PHOTO));
+            .add("SENT", SampleSubmissions.quick(UnacceptedSubmissionHttpIT.PHOTO));
         context.getBean(PhotoStore.class)
-            .put(id, UnacceptedSubmissionHttpTest.PHOTO, JpegCleanerTest.photo());
+            .put(id, UnacceptedSubmissionHttpIT.PHOTO, JpegCleanerTest.photo());
         return id;
     }
 

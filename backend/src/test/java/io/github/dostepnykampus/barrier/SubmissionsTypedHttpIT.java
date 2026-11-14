@@ -35,7 +35,7 @@ import tools.jackson.databind.ObjectMapper;
  */
 @IntegrationTest
 @Transactional
-final class SubmissionsTypedHttpTest {
+final class SubmissionsTypedHttpIT {
 
     /**
      * Zgłoszenie zapisywane w testach.
@@ -58,7 +58,7 @@ final class SubmissionsTypedHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Pusty filtr status nie daje 400 application/problem+json",
-            SubmissionsTypedHttpTest.summary(
+            SubmissionsTypedHttpIT.summary(
                 new SubmissionRequests(context).get("/submissions?".concat(query))
             ),
             Matchers.equalTo("400 application/problem+json")
@@ -81,9 +81,9 @@ final class SubmissionsTypedHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "POST bez id nie daje 400 z opisem braku identyfikatora",
-            SubmissionsTypedHttpTest.detail(
+            SubmissionsTypedHttpIT.detail(
                 new SubmissionRequests(context).post(
-                    "{".concat(SubmissionsTypedHttpTest.CONTENT).concat("}")
+                    "{".concat(SubmissionsTypedHttpIT.CONTENT).concat("}")
                 ),
                 context
             ),
@@ -99,9 +99,9 @@ final class SubmissionsTypedHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Wersja bazowa edycji ".concat(version).concat(" nie daje 400 problem+json"),
-            SubmissionsTypedHttpTest.summary(
+            SubmissionsTypedHttpIT.summary(
                 new SubmissionRequests(context).put(
-                    SubmissionsTypedHttpTest.ID, SubmissionsTypedHttpTest.edit(version)
+                    SubmissionsTypedHttpIT.ID, SubmissionsTypedHttpIT.edit(version)
                 )
             ),
             Matchers.equalTo("400 application/problem+json")
@@ -111,15 +111,15 @@ final class SubmissionsTypedHttpTest {
     @Test
     void brTenGivesConflictWithServerSubmissionAsObject(final WebApplicationContext context)
         throws Exception {
-        SubmissionsTypedHttpTest.add(context, "ACCEPTED", 2);
+        SubmissionsTypedHttpIT.add(context, "ACCEPTED", 2);
         final MockHttpServletResponse response = new SubmissionRequests(context).put(
-            SubmissionsTypedHttpTest.ID, SubmissionsTypedHttpTest.edit("1")
+            SubmissionsTypedHttpIT.ID, SubmissionsTypedHttpIT.edit("1")
         );
         MatcherAssert.assertThat(
             "Konflikt wersji nie daje 409 z opisem i pełnym zgłoszeniem z serwera",
             List.of(
-                SubmissionsTypedHttpTest.detail(response, context),
-                SubmissionsTypedHttpTest.json(response, context).path("serverSubmission")
+                SubmissionsTypedHttpIT.detail(response, context),
+                SubmissionsTypedHttpIT.json(response, context).path("serverSubmission")
             ),
             Matchers.equalTo(
                 List.of(
@@ -128,9 +128,9 @@ final class SubmissionsTypedHttpTest {
                         "Na serwerze jest inna wersja zgłoszenia albo jego status",
                         "nie pozwala na zmianę"
                     ),
-                    SubmissionsTypedHttpTest.json(
+                    SubmissionsTypedHttpIT.json(
                         new SubmissionRequests(context).get(
-                            "/submissions/%s".formatted(SubmissionsTypedHttpTest.ID)
+                            "/submissions/%s".formatted(SubmissionsTypedHttpIT.ID)
                         ),
                         context
                     )
@@ -144,9 +144,9 @@ final class SubmissionsTypedHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Edycja nieistniejącego zgłoszenia nie daje 404 z opisem",
-            SubmissionsTypedHttpTest.detail(
+            SubmissionsTypedHttpIT.detail(
                 new SubmissionRequests(context).put(
-                    SubmissionsTypedHttpTest.ID, SubmissionsTypedHttpTest.edit("1")
+                    SubmissionsTypedHttpIT.ID, SubmissionsTypedHttpIT.edit("1")
                 ),
                 context
             ),
@@ -159,11 +159,11 @@ final class SubmissionsTypedHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Odpowiedź POST ma pola null albo flagi false",
-            SubmissionsTypedHttpTest.empty(
+            SubmissionsTypedHttpIT.empty(
                 new SubmissionRequests(context).post(
                     String.format(
                         "{\"id\":\"%s\",%s}",
-                        SubmissionsTypedHttpTest.ID, SubmissionsTypedHttpTest.CONTENT
+                        SubmissionsTypedHttpIT.ID, SubmissionsTypedHttpIT.CONTENT
                     )
                 ),
                 context
@@ -175,12 +175,12 @@ final class SubmissionsTypedHttpTest {
     @Test
     void usEightOmitsEmptyFieldsInEdited(final WebApplicationContext context)
         throws Exception {
-        SubmissionsTypedHttpTest.add(context, "SENT", 1);
+        SubmissionsTypedHttpIT.add(context, "SENT", 1);
         MatcherAssert.assertThat(
             "Odpowiedź PUT ma pola null albo flagi false",
-            SubmissionsTypedHttpTest.empty(
+            SubmissionsTypedHttpIT.empty(
                 new SubmissionRequests(context).put(
-                    SubmissionsTypedHttpTest.ID, SubmissionsTypedHttpTest.edit("1")
+                    SubmissionsTypedHttpIT.ID, SubmissionsTypedHttpIT.edit("1")
                 ),
                 context
             ),
@@ -190,12 +190,12 @@ final class SubmissionsTypedHttpTest {
 
     @Test
     void brSixOmitsEmptyFieldsInRead(final WebApplicationContext context) throws Exception {
-        SubmissionsTypedHttpTest.add(context, "ACCEPTED", 1);
+        SubmissionsTypedHttpIT.add(context, "ACCEPTED", 1);
         MatcherAssert.assertThat(
             "Odpowiedź GET ma pola null albo flagi false",
-            SubmissionsTypedHttpTest.empty(
+            SubmissionsTypedHttpIT.empty(
                 new SubmissionRequests(context).get(
-                    "/submissions/%s".formatted(SubmissionsTypedHttpTest.ID)
+                    "/submissions/%s".formatted(SubmissionsTypedHttpIT.ID)
                 ),
                 context
             ),
@@ -208,7 +208,7 @@ final class SubmissionsTypedHttpTest {
     ) throws Exception {
         final List<String> names = new ArrayList<>(0);
         for (final Map.Entry<String, JsonNode> field
-            : SubmissionsTypedHttpTest.json(response, context).properties()) {
+            : SubmissionsTypedHttpIT.json(response, context).properties()) {
             final JsonNode value = field.getValue();
             final boolean falsy = value.isBoolean() && !value.booleanValue();
             if (value.isNull() || falsy) {
@@ -222,8 +222,8 @@ final class SubmissionsTypedHttpTest {
         final MockHttpServletResponse response, final WebApplicationContext context
     ) throws Exception {
         return "%s %s".formatted(
-            SubmissionsTypedHttpTest.summary(response),
-            SubmissionsTypedHttpTest.json(response, context).path("detail").asString()
+            SubmissionsTypedHttpIT.summary(response),
+            SubmissionsTypedHttpIT.json(response, context).path("detail").asString()
         );
     }
 
@@ -241,7 +241,7 @@ final class SubmissionsTypedHttpTest {
 
     private static String edit(final String version) {
         return "{\"version\":%s,%s}"
-            .formatted(version, SubmissionsTypedHttpTest.CONTENT);
+            .formatted(version, SubmissionsTypedHttpIT.CONTENT);
     }
 
     private static void add(
@@ -249,7 +249,7 @@ final class SubmissionsTypedHttpTest {
     ) {
         final SampleSubmissions samples = new SampleSubmissions(context);
         samples.add(
-            SubmissionsTypedHttpTest.ID, status,
+            SubmissionsTypedHttpIT.ID, status,
             SampleSubmissions.quick(
                 new SubmissionPlace(
                     new SubmissionPoint(17.062_09, 51.107_85), null, false, null, null
@@ -257,6 +257,6 @@ final class SubmissionsTypedHttpTest {
                 null, UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d")
             )
         );
-        samples.version(SubmissionsTypedHttpTest.ID, version);
+        samples.version(SubmissionsTypedHttpIT.ID, version);
     }
 }

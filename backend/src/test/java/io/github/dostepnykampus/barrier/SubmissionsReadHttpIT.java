@@ -39,7 +39,7 @@ import tools.jackson.databind.ObjectMapper;
  */
 @IntegrationTest
 @Transactional
-final class SubmissionsReadHttpTest {
+final class SubmissionsReadHttpIT {
 
     /**
      * Chwila odbioru zgłoszeń z tej klasy.
@@ -53,15 +53,15 @@ final class SubmissionsReadHttpTest {
 
     @Test
     void brSixShowsAcceptedSubmission(final WebApplicationContext context) throws Exception {
-        final Row row = SubmissionsReadHttpTest.add(
-            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        final Row row = SubmissionsReadHttpIT.add(
+            context, "ACCEPTED", SubmissionsReadHttpIT.FLOOR
         );
-        final MockHttpServletResponse response = SubmissionsReadHttpTest.get(
+        final MockHttpServletResponse response = SubmissionsReadHttpIT.get(
             context, "/submissions/%s".formatted(row.id())
         );
         MatcherAssert.assertThat(
             "Zgłoszenie przyjęte nie jest widoczne bez logowania w kształcie Submission",
-            List.of(response.getStatus(), SubmissionsReadHttpTest.json(context, response)),
+            List.of(response.getStatus(), SubmissionsReadHttpIT.json(context, response)),
             Matchers.equalTo(List.of(200, row.expected(context)))
         );
     }
@@ -70,7 +70,7 @@ final class SubmissionsReadHttpTest {
     void brSixHidesSentSubmission(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Zgłoszenie wysłane jest widoczne bez logowania",
-            SubmissionsReadHttpTest.read(context, "SENT"),
+            SubmissionsReadHttpIT.read(context, "SENT"),
             Matchers.equalTo(404)
         );
     }
@@ -78,16 +78,16 @@ final class SubmissionsReadHttpTest {
     @Test
     void usTwoListsOnlyAcceptedOfBuilding(final WebApplicationContext context)
         throws Exception {
-        final Row accepted = SubmissionsReadHttpTest.add(
-            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        final Row accepted = SubmissionsReadHttpIT.add(
+            context, "ACCEPTED", SubmissionsReadHttpIT.FLOOR
         );
         MatcherAssert.assertThat(
             "Lista zgłoszeń A-1 nie ma samego zgłoszenia przyjętego z A-1",
-            SubmissionsReadHttpTest.listed(
+            SubmissionsReadHttpIT.listed(
                 context, "buildingSymbol=A-1",
                 List.of(
                     accepted,
-                    SubmissionsReadHttpTest.add(context, "SENT", SubmissionsReadHttpTest.FLOOR)
+                    SubmissionsReadHttpIT.add(context, "SENT", SubmissionsReadHttpIT.FLOOR)
                 )
             ),
             Matchers.equalTo(List.of(accepted.expected(context)))
@@ -99,23 +99,23 @@ final class SubmissionsReadHttpTest {
     void listsReadableSubmissionsAndLogsCorruptRow(
         final WebApplicationContext context, final CapturedOutput output
     ) throws Exception {
-        final Row valid = SubmissionsReadHttpTest.add(
-            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        final Row valid = SubmissionsReadHttpIT.add(
+            context, "ACCEPTED", SubmissionsReadHttpIT.FLOOR
         );
-        final Row corrupt = SubmissionsReadHttpTest.add(
-            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        final Row corrupt = SubmissionsReadHttpIT.add(
+            context, "ACCEPTED", SubmissionsReadHttpIT.FLOOR
         );
         context.getBean(JdbcClient.class).sql(
             "UPDATE submissions SET content = content || '{\"photoIds\": \"zepsute\"}' WHERE id = :id"
         ).param("id", corrupt.id()).update();
-        final MockHttpServletResponse response = SubmissionsReadHttpTest.get(
+        final MockHttpServletResponse response = SubmissionsReadHttpIT.get(
             context, "/submissions?buildingSymbol=A-1"
         );
         MatcherAssert.assertThat(
             "Lista zgłoszeń albo diagnostyka uszkodzonego wiersza jest niepoprawna",
             List.of(
-                response.getStatus(), SubmissionsReadHttpTest.json(context, response).size(),
-                SubmissionsReadHttpTest.json(context, response).path(0),
+                response.getStatus(), SubmissionsReadHttpIT.json(context, response).size(),
+                SubmissionsReadHttpIT.json(context, response).path(0),
                 output.getOut().contains(
                     "Pominięto nieczytelne zgłoszenie %s".formatted(corrupt.id())
                 )
@@ -126,14 +126,14 @@ final class SubmissionsReadHttpTest {
 
     @Test
     void usTwoListsOnlyRequestedFloor(final WebApplicationContext context) throws Exception {
-        final Row floor = SubmissionsReadHttpTest.add(
-            context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+        final Row floor = SubmissionsReadHttpIT.add(
+            context, "ACCEPTED", SubmissionsReadHttpIT.FLOOR
         );
         MatcherAssert.assertThat(
             "Lista zgłoszeń piętra ma zgłoszenie z innego piętra albo nie ma swojego",
-            SubmissionsReadHttpTest.listed(
-                context, "buildingSymbol=A-1&floorId=".concat(SubmissionsReadHttpTest.FLOOR),
-                List.of(floor, SubmissionsReadHttpTest.add(context, "ACCEPTED", "A-1-1"))
+            SubmissionsReadHttpIT.listed(
+                context, "buildingSymbol=A-1&floorId=".concat(SubmissionsReadHttpIT.FLOOR),
+                List.of(floor, SubmissionsReadHttpIT.add(context, "ACCEPTED", "A-1-1"))
             ),
             Matchers.equalTo(List.of(floor.expected(context)))
         );
@@ -143,11 +143,11 @@ final class SubmissionsReadHttpTest {
     void usTwoSkipsOtherBuilding(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Lista zgłoszeń C-13 ma zgłoszenie z A-1",
-            SubmissionsReadHttpTest.listed(
+            SubmissionsReadHttpIT.listed(
                 context, "buildingSymbol=C-13",
                 List.of(
-                    SubmissionsReadHttpTest.add(
-                        context, "ACCEPTED", SubmissionsReadHttpTest.FLOOR
+                    SubmissionsReadHttpIT.add(
+                        context, "ACCEPTED", SubmissionsReadHttpIT.FLOOR
                     )
                 )
             ),
@@ -160,7 +160,7 @@ final class SubmissionsReadHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Status SENT bez logowania nie daje 400",
-            SubmissionsReadHttpTest.get(context, "/submissions?status=SENT").getStatus(),
+            SubmissionsReadHttpIT.get(context, "/submissions?status=SENT").getStatus(),
             Matchers.equalTo(400)
         );
     }
@@ -169,16 +169,16 @@ final class SubmissionsReadHttpTest {
     void usEightNeedsLoginForOwn(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Własne zgłoszenia bez logowania nie dają 401",
-            SubmissionsReadHttpTest.get(context, "/submissions?mine=true").getStatus(),
+            SubmissionsReadHttpIT.get(context, "/submissions?mine=true").getStatus(),
             Matchers.equalTo(401)
         );
     }
 
     private static int read(final WebApplicationContext context, final String status)
         throws Exception {
-        return SubmissionsReadHttpTest.get(
+        return SubmissionsReadHttpIT.get(
             context, "/submissions/%s".formatted(
-                SubmissionsReadHttpTest.add(context, status, SubmissionsReadHttpTest.FLOOR).id()
+                SubmissionsReadHttpIT.add(context, status, SubmissionsReadHttpIT.FLOOR).id()
             )
         ).getStatus();
     }
@@ -188,8 +188,8 @@ final class SubmissionsReadHttpTest {
     ) throws Exception {
         final List<String> ids = rows.stream().map(row -> row.id().toString()).toList();
         final List<JsonNode> own = new ArrayList<>(rows.size());
-        for (final JsonNode item : SubmissionsReadHttpTest.json(
-            context, SubmissionsReadHttpTest.get(context, "/submissions?".concat(query))
+        for (final JsonNode item : SubmissionsReadHttpIT.json(
+            context, SubmissionsReadHttpIT.get(context, "/submissions?".concat(query))
         )) {
             if (ids.contains(item.path("id").asString())) {
                 own.add(item);
@@ -214,7 +214,7 @@ final class SubmissionsReadHttpTest {
         );
         context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET created_at = CAST(:created AS TIMESTAMPTZ) WHERE id = :id")
-            .param("created", SubmissionsReadHttpTest.CREATED).param("id", row.id()).update();
+            .param("created", SubmissionsReadHttpIT.CREATED).param("id", row.id()).update();
         return row;
     }
 
@@ -277,7 +277,7 @@ final class SubmissionsReadHttpTest {
             return context.getBean(ObjectMapper.class).readTree(
                 String.format(
                     "%s,\"id\":\"%s\",\"version\":1,\"status\":\"%s\",\"createdAt\":\"%s\"}",
-                    this.content(), this.id, this.status, SubmissionsReadHttpTest.CREATED
+                    this.content(), this.id, this.status, SubmissionsReadHttpIT.CREATED
                 )
             );
         }

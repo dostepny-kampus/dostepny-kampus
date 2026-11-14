@@ -29,7 +29,7 @@ import tools.jackson.databind.ObjectMapper;
  * @since 0.1.0
  */
 @IntegrationTest
-final class SubmissionsHttpTest {
+final class SubmissionsHttpIT {
 
     /**
      * Współrzędne GeoJSON punktu w konturze A-1: długość, szerokość.
@@ -44,7 +44,7 @@ final class SubmissionsHttpTest {
     @AfterEach
     void clean(final WebApplicationContext context) {
         context.getBean(JdbcClient.class).sql("DELETE FROM submissions WHERE id = :id")
-            .param("id", SubmissionsHttpTest.ID).update();
+            .param("id", SubmissionsHttpIT.ID).update();
     }
 
     @Test
@@ -52,7 +52,7 @@ final class SubmissionsHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Nowe zgłoszenie nie ma statusu „wysłane”",
-            SubmissionsHttpTest.quick(context).path("status").asString(),
+            SubmissionsHttpIT.quick(context).path("status").asString(),
             Matchers.equalTo("SENT")
         );
     }
@@ -62,7 +62,7 @@ final class SubmissionsHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Zgłoszenie szybkie w konturze A-1 ma budynek z telefonu",
-            SubmissionsHttpTest.quick(context).path("buildingSymbol").asString(),
+            SubmissionsHttpIT.quick(context).path("buildingSymbol").asString(),
             Matchers.equalTo("A-1")
         );
     }
@@ -70,12 +70,12 @@ final class SubmissionsHttpTest {
     @Test
     void brThreeSavesAccountAsAuthor(final WebApplicationContext context)
         throws Exception {
-        SubmissionsHttpTest.quick(context);
+        SubmissionsHttpIT.quick(context);
         MatcherAssert.assertThat(
             "Zgłoszenie nie ma autora z tokenu",
             context.getBean(JdbcClient.class)
                 .sql("SELECT author FROM submissions WHERE id = :id")
-                .param("id", SubmissionsHttpTest.ID).query(String.class).single(),
+                .param("id", SubmissionsHttpIT.ID).query(String.class).single(),
             Matchers.equalTo("konto-testowe")
         );
     }
@@ -93,7 +93,7 @@ final class SubmissionsHttpTest {
     @Test
     void brNineReturnsSavedSubmissionOnRetry(final WebApplicationContext context)
         throws Exception {
-        final String body = SubmissionsHttpTest.body("QUICK", SubmissionsHttpTest.IN_A1);
+        final String body = SubmissionsHttpIT.body("QUICK", SubmissionsHttpIT.IN_A1);
         final SubmissionRequests requests = new SubmissionRequests(context);
         final MockHttpServletResponse first = requests.post(body);
         final MockHttpServletResponse retry = requests.post(body);
@@ -104,7 +104,7 @@ final class SubmissionsHttpTest {
                 retry.getContentAsString(StandardCharsets.UTF_8),
                 context.getBean(JdbcClient.class)
                     .sql("SELECT count(*) FROM submissions WHERE id = :id")
-                    .param("id", SubmissionsHttpTest.ID).query(Integer.class).single()
+                    .param("id", SubmissionsHttpIT.ID).query(Integer.class).single()
             ),
             Matchers.equalTo(
                 List.of(201, 200, first.getContentAsString(StandardCharsets.UTF_8), 1)
@@ -119,11 +119,11 @@ final class SubmissionsHttpTest {
             "Pomiar precyzyjny w nieznanym budynku nie daje 400 albo zostaje zapisany",
             List.of(
                 new SubmissionRequests(context).post(
-                    SubmissionsHttpTest.body("PRECISE", "17.05,51.108")
+                    SubmissionsHttpIT.body("PRECISE", "17.05,51.108")
                 ).getStatus(),
                 context.getBean(JdbcClient.class)
                     .sql("SELECT count(*) FROM submissions WHERE id = :id")
-                    .param("id", SubmissionsHttpTest.ID).query(Integer.class).single()
+                    .param("id", SubmissionsHttpIT.ID).query(Integer.class).single()
             ),
             Matchers.equalTo(List.of(400, 0))
         );
@@ -132,7 +132,7 @@ final class SubmissionsHttpTest {
     private static JsonNode quick(final WebApplicationContext context) throws Exception {
         return context.getBean(ObjectMapper.class).readTree(
             new SubmissionRequests(context).post(
-                SubmissionsHttpTest.body("QUICK", SubmissionsHttpTest.IN_A1)
+                SubmissionsHttpIT.body("QUICK", SubmissionsHttpIT.IN_A1)
             ).getContentAsString(StandardCharsets.UTF_8)
         );
     }
@@ -147,7 +147,7 @@ final class SubmissionsHttpTest {
                 "\"barrierType\":\"TB-1\",\"severity\":2,\"floor\":{\"number\":0},",
                 "\"photoIds\":[\"%s\"]}"
             ),
-            SubmissionsHttpTest.ID, kind, point, UUID.randomUUID()
+            SubmissionsHttpIT.ID, kind, point, UUID.randomUUID()
         );
     }
 }

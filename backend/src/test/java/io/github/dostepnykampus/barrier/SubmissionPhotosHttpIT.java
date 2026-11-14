@@ -43,7 +43,7 @@ import software.amazon.awssdk.services.s3.S3Client;
  */
 @IntegrationTest
 @Transactional
-final class SubmissionPhotosHttpTest {
+final class SubmissionPhotosHttpIT {
 
     /**
      * Zdjęcie z listy photoIds zgłoszenia testowego.
@@ -56,10 +56,10 @@ final class SubmissionPhotosHttpTest {
     void brSevenSavesListedPhoto(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Zdjęcie z listy photoIds nie daje 204",
-            SubmissionPhotosHttpTest.put(
+            SubmissionPhotosHttpIT.put(
                 context,
-                SubmissionPhotosHttpTest.add(context, "SENT"),
-                SubmissionPhotosHttpTest.PHOTO
+                SubmissionPhotosHttpIT.add(context, "SENT"),
+                SubmissionPhotosHttpIT.PHOTO
             ).getStatus(),
             Matchers.equalTo(204)
         );
@@ -69,8 +69,8 @@ final class SubmissionPhotosHttpTest {
     void brSevenRejectsUnlistedPhoto(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Zdjęcie spoza listy photoIds nie daje 404",
-            SubmissionPhotosHttpTest.put(
-                context, SubmissionPhotosHttpTest.add(context, "SENT"), UUID.randomUUID()
+            SubmissionPhotosHttpIT.put(
+                context, SubmissionPhotosHttpIT.add(context, "SENT"), UUID.randomUUID()
             ).getStatus(),
             Matchers.equalTo(404)
         );
@@ -80,10 +80,10 @@ final class SubmissionPhotosHttpTest {
     void brFifteenLocksAcceptedPhoto(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Zmiana zdjęcia zgłoszenia przyjętego bez logowania nie daje 403",
-            SubmissionPhotosHttpTest.put(
+            SubmissionPhotosHttpIT.put(
                 context,
-                SubmissionPhotosHttpTest.add(context, "ACCEPTED"),
-                SubmissionPhotosHttpTest.PHOTO
+                SubmissionPhotosHttpIT.add(context, "ACCEPTED"),
+                SubmissionPhotosHttpIT.PHOTO
             ).getStatus(),
             Matchers.equalTo(403)
         );
@@ -92,15 +92,15 @@ final class SubmissionPhotosHttpTest {
     @Test
     void nfrTwentySixServesPhotoWithoutExif(final WebApplicationContext context)
         throws Exception {
-        final UUID id = SubmissionPhotosHttpTest.add(context, "SENT");
-        SubmissionPhotosHttpTest.put(context, id, SubmissionPhotosHttpTest.PHOTO);
+        final UUID id = SubmissionPhotosHttpIT.add(context, "SENT");
+        SubmissionPhotosHttpIT.put(context, id, SubmissionPhotosHttpIT.PHOTO);
         context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET status = 'ACCEPTED' WHERE id = :id")
             .param("id", id)
             .update();
         MatcherAssert.assertThat(
             "Zdjęcie zgłoszenia przyjętego ma EXIF z miejscem",
-            SubmissionPhotosHttpTest.get(context, id)
+            SubmissionPhotosHttpIT.get(context, id)
                 .getContentAsString(StandardCharsets.ISO_8859_1),
             Matchers.allOf(
                 Matchers.startsWith("ÿØ"), Matchers.not(Matchers.containsString("GPS"))
@@ -124,9 +124,9 @@ final class SubmissionPhotosHttpTest {
     void missingBucketReturnsServerError(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Brak zasobnika nie daje 500",
-            SubmissionPhotosHttpTest.get(
-                SubmissionPhotosHttpTest.missingBucketMvc(context),
-                SubmissionPhotosHttpTest.add(context, "ACCEPTED")
+            SubmissionPhotosHttpIT.get(
+                SubmissionPhotosHttpIT.missingBucketMvc(context),
+                SubmissionPhotosHttpIT.add(context, "ACCEPTED")
             ).getStatus(),
             Matchers.equalTo(500)
         );
@@ -134,11 +134,11 @@ final class SubmissionPhotosHttpTest {
 
     @Test
     void brSixHidesPhotoOfSentSubmission(final WebApplicationContext context) throws Exception {
-        final UUID id = SubmissionPhotosHttpTest.add(context, "SENT");
-        SubmissionPhotosHttpTest.put(context, id, SubmissionPhotosHttpTest.PHOTO);
+        final UUID id = SubmissionPhotosHttpIT.add(context, "SENT");
+        SubmissionPhotosHttpIT.put(context, id, SubmissionPhotosHttpIT.PHOTO);
         MatcherAssert.assertThat(
             "Zdjęcie zgłoszenia wysłanego jest widoczne bez logowania",
-            SubmissionPhotosHttpTest.get(context, id).getStatus(),
+            SubmissionPhotosHttpIT.get(context, id).getStatus(),
             Matchers.equalTo(404)
         );
     }
@@ -150,10 +150,10 @@ final class SubmissionPhotosHttpTest {
     ) throws Exception {
         MatcherAssert.assertThat(
             "Niepoprawny nagłówek JPEG nie daje 400",
-            SubmissionPhotosHttpTest.mvc(context).perform(
+            SubmissionPhotosHttpIT.mvc(context).perform(
                 MockMvcRequestBuilders.put(
                     "/submissions/{id}/photos/{photo}",
-                    SubmissionPhotosHttpTest.add(context, "SENT"), SubmissionPhotosHttpTest.PHOTO
+                    SubmissionPhotosHttpIT.add(context, "SENT"), SubmissionPhotosHttpIT.PHOTO
                 ).contentType(MediaType.IMAGE_JPEG)
                     .content(content.getBytes(StandardCharsets.ISO_8859_1))
                     .with(new AsCollector())
@@ -164,13 +164,13 @@ final class SubmissionPhotosHttpTest {
 
     private static UUID add(final WebApplicationContext context, final String status) {
         return new SampleSubmissions(context)
-            .add(status, SampleSubmissions.quick(SubmissionPhotosHttpTest.PHOTO));
+            .add(status, SampleSubmissions.quick(SubmissionPhotosHttpIT.PHOTO));
     }
 
     private static MockHttpServletResponse put(
         final WebApplicationContext context, final UUID id, final UUID photo
     ) throws Exception {
-        return SubmissionPhotosHttpTest.mvc(context).perform(
+        return SubmissionPhotosHttpIT.mvc(context).perform(
             MockMvcRequestBuilders.put("/submissions/{id}/photos/{photo}", id, photo)
                 .contentType(MediaType.IMAGE_JPEG)
                 .content(JpegCleanerTest.photo())
@@ -181,13 +181,13 @@ final class SubmissionPhotosHttpTest {
     private static MockHttpServletResponse get(
         final WebApplicationContext context, final UUID id
     ) throws Exception {
-        return SubmissionPhotosHttpTest.get(SubmissionPhotosHttpTest.mvc(context), id);
+        return SubmissionPhotosHttpIT.get(SubmissionPhotosHttpIT.mvc(context), id);
     }
 
     private static MockHttpServletResponse get(final MockMvc mvc, final UUID id) throws Exception {
         return mvc.perform(
             MockMvcRequestBuilders.get(
-                "/submissions/{id}/photos/{photo}", id, SubmissionPhotosHttpTest.PHOTO
+                "/submissions/{id}/photos/{photo}", id, SubmissionPhotosHttpIT.PHOTO
             )
         ).andReturn().getResponse();
     }
