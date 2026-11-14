@@ -11,7 +11,6 @@ import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,8 +19,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.tools.ToolProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -128,31 +125,11 @@ final class ModuleRootArchitectureTest {
     }
 
     private JavaClasses compiled() throws IOException {
-        final List<String> args = new ArrayList<>(List.of("-d", this.dir.toString()));
-        try (Stream<Path> files = Files.walk(this.dir)) {
-            files.filter(file -> file.toString().endsWith(".java"))
-                .map(Path::toString)
-                .forEach(args::add);
-        }
-        Assertions.assertEquals(
-            0,
-            ToolProvider.getSystemJavaCompiler().run(
-                null, null, null, args.toArray(String[]::new)
-            ),
-            "Przykład się nie skompilował"
-        );
-        return new ClassFileImporter().importPath(
-            this.dir.resolve(ModuleRootArchitectureTest.SAMPLES.replace('.', '/'))
-        );
+        return new ArchSamples(this.dir).compiled(ModuleRootArchitectureTest.SAMPLES);
     }
 
     private void source(final String pack, final String name, final String body)
         throws IOException {
-        final Path folder = this.dir.resolve("src").resolve(pack.replace('.', '/'));
-        Files.createDirectories(folder);
-        Files.writeString(
-            folder.resolve(String.format("%s.java", name)),
-            String.format("package %s;%n%s%n", pack, body)
-        );
+        new ArchSamples(this.dir).write(pack, name, String.format("package %s;%n%s%n", pack, body));
     }
 }

@@ -20,15 +20,12 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jspecify.annotations.NullUnmarked;
@@ -255,18 +252,8 @@ final class NullabilityArchitectureTest {
 
     private static boolean violated(final Path dir, final Sample sample)
         throws IOException, URISyntaxException {
-        final Path out = Files.createDirectories(dir.resolve("out"));
-        final List<String> args = new ArrayList<>(
-            List.of(
-                "-d", out.toString(), "-classpath",
-                Path.of(
-                    Nullable.class.getProtectionDomain().getCodeSource()
-                        .getLocation().toURI()
-                ).toString()
-            )
-        );
+        final ArchSamples samples = new ArchSamples(dir);
         for (final Map.Entry<String, String> file : sample.files().entrySet()) {
-            final Path source = dir.resolve(String.format("%s.java", file.getKey()));
             final String pack = String.format(
                 "io.github.dostepnykampus.fixture.%s",
                 file.getKey().replaceFirst("/[^/]+$", "").replace('/', '.')
@@ -282,14 +269,13 @@ final class NullabilityArchitectureTest {
                     pack, file.getValue()
                 );
             }
-            Files.createDirectories(source.getParent());
-            Files.writeString(source, code);
-            args.add(source.toString());
+            samples.write(pack, file.getKey().replaceFirst("^.*/", ""), code);
         }
-        if (ToolProvider.getSystemJavaCompiler()
-            .run(null, null, null, args.toArray(new String[0])) != 0) {
-            throw new IllegalStateException("Przykład się nie skompilował");
-        }
+        final Path out = samples.compile(
+            "-classpath",
+            Path.of(Nullable.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+                .toString()
+        );
         final Thread thread = Thread.currentThread();
         final ClassLoader before = thread.getContextClassLoader();
         boolean failed = false;

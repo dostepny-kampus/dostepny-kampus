@@ -7,19 +7,16 @@ package io.github.dostepnykampus;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.tools.ToolProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -117,41 +114,18 @@ final class PackageSizeArchitectureTest {
     }
 
     private JavaClasses compiled(final int count) throws IOException {
-        final List<String> args = new ArrayList<>(
-            List.of("-Xpkginfo:always", "-d", this.dir.toString())
-        );
-        args.add(
-            this.source(
-                "package-info", String.format("package %s;%n", PackageSizeArchitectureTest.SAMPLES)
-            )
-        );
+        final ArchSamples samples = new ArchSamples(this.dir);
+        final String pack = PackageSizeArchitectureTest.SAMPLES;
+        samples.write(pack, "package-info", String.format("package %s;%n", pack));
         for (final int index : IntStream.rangeClosed(1, count).toArray()) {
             final String name = String.format("Sample%d", index);
-            args.add(
-                this.source(
-                    name,
-                    String.format(
-                        "package %s;%nfinal class %s { static final class Inner { } }%n",
-                        PackageSizeArchitectureTest.SAMPLES, name
-                    )
+            samples.write(
+                pack, name,
+                String.format(
+                    "package %s;%nfinal class %s { static final class Inner { } }%n", pack, name
                 )
             );
         }
-        Assertions.assertEquals(
-            0,
-            ToolProvider.getSystemJavaCompiler().run(
-                null, null, null, args.toArray(String[]::new)
-            ),
-            "Przykład się nie skompilował"
-        );
-        return new ClassFileImporter().importPath(
-            this.dir.resolve(PackageSizeArchitectureTest.SAMPLES.replace('.', '/'))
-        );
-    }
-
-    private String source(final String name, final String code) throws IOException {
-        final Path file = this.dir.resolve(String.format("%s.java", name));
-        Files.writeString(file, code);
-        return file.toString();
+        return samples.compiled(pack, "-Xpkginfo:always");
     }
 }

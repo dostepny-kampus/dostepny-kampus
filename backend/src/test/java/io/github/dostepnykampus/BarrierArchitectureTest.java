@@ -6,20 +6,17 @@
 package io.github.dostepnykampus;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import javax.tools.ToolProvider;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -209,17 +206,10 @@ final class BarrierArchitectureTest {
 
     private JavaClasses compiled(final String pack, final String body) throws IOException {
         final String full = String.format("%s.%s", BarrierArchitectureTest.SAMPLES, pack);
-        final Path source = this.dir.resolve("Sample.java");
-        Files.writeString(
-            source, String.format("package %s;%nfinal class Sample %s%n", full, body)
+        final ArchSamples samples = new ArchSamples(this.dir);
+        samples.write(
+            full, "Sample", String.format("package %s;%nfinal class Sample %s%n", full, body)
         );
-        Assertions.assertEquals(
-            0,
-            ToolProvider.getSystemJavaCompiler().run(
-                null, null, null, "-d", this.dir.toString(), source.toString()
-            ),
-            "Przykład negatywny się nie skompilował"
-        );
-        return new ClassFileImporter().importPath(this.dir.resolve(full.replace('.', '/')));
+        return samples.compiled(full);
     }
 }
