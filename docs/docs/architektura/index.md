@@ -24,6 +24,7 @@ Ta część pokazuje, z czego składa się system i dlaczego wybraliśmy takie r
 | [ADR-0009](decyzje/0009-magazyn-zdjec.md) | zdjęcia zgłoszeń w RustFS przez S3 zamiast MinIO bez obrazów | — |
 | [ADR-0010](decyzje/0010-testy-mutacyjne.md) | testy mutacyjne dziedziny serwera w PIT przed scaleniem, wyjątek od ADR-0004 dla wtyczki JUnit | — |
 | [ADR-0011](decyzje/0011-modularny-monolit.md) | modularny monolit: pakiety według tematów, wejście do modułu przez pakiet `api`, słownik tematów | — |
+| [ADR-0012](decyzje/0012-import-planow-pieter.md) | plany pięter PWr importowane ręcznie poleceniem serwera, budynki z pliku automatycznie przy starcie | nr 17 |
 
 ADR nie zmieniamy po przyjęciu. Nową decyzję zapisujemy kolejnym numerem ze statusem „zastępuje ADR-…”.
 
