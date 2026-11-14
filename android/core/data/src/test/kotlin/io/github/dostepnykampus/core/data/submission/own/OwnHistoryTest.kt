@@ -7,16 +7,16 @@ package io.github.dostepnykampus.core.data.submission.own
 
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.submissions.EditedSubmission
-import io.github.dostepnykampus.core.data.submissions.FakeHistory
-import io.github.dostepnykampus.core.data.submissions.FakeStore
-import io.github.dostepnykampus.core.data.submissions.SavedSubmission
-import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
-import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
-import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
-import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
-import io.github.dostepnykampus.core.data.submissions.SubmissionServer
-import io.github.dostepnykampus.core.data.submissions.SubmissionStamps
+import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
+import io.github.dostepnykampus.core.data.submission.sync.FakeHistory
+import io.github.dostepnykampus.core.data.submission.sync.FakeStore
+import io.github.dostepnykampus.core.data.submission.sync.SavedSubmission
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.photo
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.precise
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.server
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.model.Submission

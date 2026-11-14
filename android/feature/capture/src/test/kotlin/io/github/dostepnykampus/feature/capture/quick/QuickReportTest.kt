@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture.quick
 
-import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
+import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionFloor

@@ -6,10 +6,10 @@
 package io.github.dostepnykampus.core.data.submission.pending
 
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.submissions.EditedSubmission
-import io.github.dostepnykampus.core.data.submissions.FakeStore
-import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
-import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
+import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
+import io.github.dostepnykampus.core.data.submission.sync.FakeStore
+import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.database.submission.PendingEditDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
 import io.github.dostepnykampus.core.model.GeoPoint

@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.data.submissions
+package io.github.dostepnykampus.core.data.submission.sync
 
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity

@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.photo
 
-import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
+import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 
 /** Wynik próby zrobienia zdjęcia, przypisany do jej żądania. */
 public sealed interface PhotoResult {

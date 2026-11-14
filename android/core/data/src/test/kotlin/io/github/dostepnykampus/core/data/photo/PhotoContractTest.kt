@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.photo
 
-import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
+import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest

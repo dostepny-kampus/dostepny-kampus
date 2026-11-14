@@ -6,10 +6,10 @@
 package io.github.dostepnykampus.app
 
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
-import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
-import io.github.dostepnykampus.core.data.submissions.SubmissionServer
-import io.github.dostepnykampus.core.data.submissions.SubmissionStore
+import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
 import java.io.File
 import kotlin.coroutines.EmptyCoroutineContext
 

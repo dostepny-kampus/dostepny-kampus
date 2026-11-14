@@ -34,9 +34,9 @@ import io.github.dostepnykampus.core.data.submission.own.OwnStatuses
 import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
 import io.github.dostepnykampus.core.data.submission.own.StatusRefresh
 import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
-import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
-import io.github.dostepnykampus.core.data.submissions.SubmissionStore
-import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionSyncScheduler
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
 import org.junit.Rule

@@ -12,7 +12,7 @@ import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.data.submission.own.OwnStatuses
 import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
 import io.github.dostepnykampus.core.data.submission.own.StatusRefresh
-import io.github.dostepnykampus.core.data.submissions.SubmissionStore
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsContent

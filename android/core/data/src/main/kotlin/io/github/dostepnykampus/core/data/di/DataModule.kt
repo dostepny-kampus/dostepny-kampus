@@ -35,10 +35,10 @@ import io.github.dostepnykampus.core.data.submission.own.ownStatusesOf
 import io.github.dostepnykampus.core.data.submission.own.ownSubmissionsOf
 import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
 import io.github.dostepnykampus.core.data.submission.pending.pendingEditsOf
-import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
-import io.github.dostepnykampus.core.data.submissions.SubmissionServer
-import io.github.dostepnykampus.core.data.submissions.SubmissionStore
-import io.github.dostepnykampus.core.data.submissions.SubmissionSyncScheduler
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionSyncScheduler
 import io.github.dostepnykampus.core.network.building.BuildingsApi
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import javax.inject.Singleton

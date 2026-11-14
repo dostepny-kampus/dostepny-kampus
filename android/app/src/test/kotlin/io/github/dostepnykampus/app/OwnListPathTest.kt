@@ -13,11 +13,11 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
-import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
-import io.github.dostepnykampus.core.data.submissions.SubmissionServer
-import io.github.dostepnykampus.core.data.submissions.SubmissionStamps
-import io.github.dostepnykampus.core.data.submissions.SubmissionStore
+import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
