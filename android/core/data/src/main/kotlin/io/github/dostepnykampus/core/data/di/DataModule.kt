@@ -25,6 +25,7 @@ import io.github.dostepnykampus.core.data.network.ConnectivityNetworkStatus
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.server.ServerCard
 import io.github.dostepnykampus.core.data.server.toReply
+import io.github.dostepnykampus.core.data.server.toServerEdit
 import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.start.FirstLaunchRepository
 import io.github.dostepnykampus.core.data.start.startDataStore
@@ -119,7 +120,9 @@ object DataModule {
                     putPhoto = { id, photo, jpeg ->
                         api.putPhoto(submissionId = id, photoId = photo, jpeg = jpeg).toReply {}
                     },
-                    update = api::update,
+                    update = { id, version, content ->
+                        api.update(id = id, version = version, content = content).toReply { it.toServerEdit() }
+                    },
                 ),
             onSaved = sync::scheduleAfterSave,
         )

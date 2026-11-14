@@ -5,14 +5,13 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.SubmissionEdit
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -35,7 +34,7 @@ class SubmissionQueueTest {
     private val store = FakeStore()
     private val edits = mutableListOf<Pair<String, Int>>()
     private var creates = 0
-    private val editResults = ArrayDeque<ApiResult<SubmissionEdit>>()
+    private val editResults = ArrayDeque<ServerReply<ServerEdit>>()
 
     @Test
     fun `wysyła treść i czyści kolejkę`() =
@@ -138,7 +137,7 @@ class SubmissionQueueTest {
             val target = queue()
             target.saveEdit(EditedSubmission(id = "s1", baseVersion = 4), fullContent(), drafts())
             val server = (serverSubmission(fullContent()) as ServerReply.Ok).value
-            editResults.addLast(ApiResult.Success(SubmissionEdit.Conflict(server)))
+            editResults.addLast(ServerReply.Ok(ServerEdit.Conflict(server)))
 
             target.sendAll()
 
@@ -167,7 +166,7 @@ class SubmissionQueueTest {
                                 serverSubmission(content)
                             },
                             putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                            update = { _, _, _ -> ApiResult.NotFound },
+                            update = { _, _, _ -> ServerReply.Missing },
                         ),
                     stamps = SubmissionStamps(newId = { ids.removeFirst() }, nowMillis = { SAME_MILLIS }),
                 )
@@ -191,7 +190,7 @@ class SubmissionQueueTest {
                     putPhoto = { _, _, _ -> store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit) },
                     update = { id, version, content ->
                         edits.add(id to version)
-                        editResults.removeFirstOrNull() ?: ApiResult.Success(SubmissionEdit.Saved(edited(id, content)))
+                        editResults.removeFirstOrNull() ?: ServerReply.Ok(ServerEdit.Saved(edited(id, content)))
                     },
                 ),
             stamps = SubmissionStamps(newId = { SENT_ID }),

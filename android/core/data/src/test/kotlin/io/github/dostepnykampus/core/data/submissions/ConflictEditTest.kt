@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submissions
 
+import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.database.PendingEditDao
@@ -14,8 +15,6 @@ import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.SubmissionEdit
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -32,7 +31,7 @@ class ConflictEditTest {
     private val store = FakeStore()
     private val history = FakeHistory()
     private val versions = mutableListOf<Int>()
-    private val edits = ArrayDeque<SubmissionEdit>()
+    private val edits = ArrayDeque<ServerEdit>()
     private val queue by lazy {
         SubmissionQueue(
             store = store,
@@ -43,7 +42,7 @@ class ConflictEditTest {
                     putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { id, version, content ->
                         versions += version
-                        ApiResult.Success(edits.removeFirstOrNull() ?: SubmissionEdit.Saved(server(id, content, 8)))
+                        ServerReply.Ok(edits.removeFirstOrNull() ?: ServerEdit.Saved(server(id, content, 8)))
                     },
                 ),
             history = history,
@@ -54,7 +53,7 @@ class ConflictEditTest {
     fun `us9_3 ponowna poprawka po 409`() =
         runBlocking {
             queue.saveEdit(EditedSubmission(id = ID, baseVersion = 4), precise(severity = 2), photo())
-            edits.addLast(SubmissionEdit.Conflict(server(ID, precise(severity = 3), version = 7)))
+            edits.addLast(ServerEdit.Conflict(server(ID, precise(severity = 3), version = 7)))
 
             queue.sendAll()
 

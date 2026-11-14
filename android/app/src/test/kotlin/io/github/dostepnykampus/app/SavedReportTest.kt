@@ -29,7 +29,6 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Severity
-import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsContent
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsViewModel
@@ -164,7 +163,7 @@ class SavedReportTest {
                         ServerReply.Offline
                     },
                     putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, _, _ -> ApiResult.NotFound },
+                    update = { _, _, _ -> ServerReply.Missing },
                 ),
         )
 

@@ -7,8 +7,6 @@ package io.github.dostepnykampus.core.data.submissions
 
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.server.toReply
-import io.github.dostepnykampus.core.data.server.toServerEdit
 import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.OwnSubmissionState
 import io.github.dostepnykampus.core.database.PendingPhotoEntity
@@ -17,8 +15,6 @@ import io.github.dostepnykampus.core.database.PendingSubmissionEntity
 import io.github.dostepnykampus.core.database.PendingSubmissionWithPhotos
 import io.github.dostepnykampus.core.model.Submission
 import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.SubmissionEdit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -85,7 +81,7 @@ private const val FIRST_SERVER_FAULT_CODE = 500
 data class SubmissionServer(
     val create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
     val putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ServerReply<Unit>,
-    val update: suspend (id: String, version: Int, content: SubmissionContent) -> ApiResult<SubmissionEdit>,
+    val update: suspend (id: String, version: Int, content: SubmissionContent) -> ServerReply<ServerEdit>,
 )
 
 /**
@@ -184,7 +180,7 @@ class SubmissionQueue internal constructor(
     ) : this(
         store = store,
         ioContext = ioContext,
-        server = SubmissionServer(create = create, putPhoto = putPhoto, update = { _, _, _ -> ApiResult.NotFound }),
+        server = SubmissionServer(create = create, putPhoto = putPhoto, update = { _, _, _ -> ServerReply.Missing }),
         stamps = SubmissionStamps(newId = newId),
         onSaved = onSaved,
     )
@@ -313,7 +309,7 @@ class SubmissionQueue internal constructor(
                 result = server.create(item.submission.id, content)
                 outcomeOf(result)
             } else {
-                val edit = server.update(item.submission.id, version, content).toReply { it.toServerEdit() }
+                val edit = server.update(item.submission.id, version, content)
                 result = edit
                 editOutcome(edit)
             }
