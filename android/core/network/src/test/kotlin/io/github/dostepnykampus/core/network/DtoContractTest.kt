@@ -5,6 +5,10 @@
  */
 package io.github.dostepnykampus.core.network
 
+import io.github.dostepnykampus.core.model.BarrierGroup
+import io.github.dostepnykampus.core.model.EntranceMarking
+import io.github.dostepnykampus.core.model.SubmissionKind
+import io.github.dostepnykampus.core.model.SubmissionStatus
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.ID
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.precise
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.quick
@@ -13,6 +17,7 @@ import io.github.dostepnykampus.core.network.building.decodeBuildingDetails
 import io.github.dostepnykampus.core.network.building.decodeBuildingList
 import io.github.dostepnykampus.core.network.building.decodeFloorList
 import io.github.dostepnykampus.core.network.building.decodeLocateResult
+import io.github.dostepnykampus.core.network.json.Submission
 import io.github.dostepnykampus.core.network.submission.decodeConflict
 import io.github.dostepnykampus.core.network.submission.decodeSubmission
 import io.github.dostepnykampus.core.network.submission.encodeNewSubmission
@@ -30,6 +35,10 @@ import org.junit.jupiter.api.TestInstance
 import java.io.File
 import java.nio.file.Path
 import java.util.jar.JarFile
+import io.github.dostepnykampus.core.network.json.BarrierGroup as BarrierGroupJson
+import io.github.dostepnykampus.core.network.json.EntranceMarking as EntranceMarkingJson
+import io.github.dostepnykampus.core.network.json.SubmissionContent as SubmissionContentJson
+import io.github.dostepnykampus.core.network.json.SubmissionStatus as SubmissionStatusJson
 
 /**
  * Ręczne klasy `@Serializable` z `core:network` zgodne ze schematami `api/openapi.yaml`. Spec ma niewiele
@@ -91,6 +100,44 @@ class DtoContractTest {
             decoders.mapNotNull { (schema, decode) ->
                 val body = spec.sample(spec.node("/components/schemas/$schema")).toString()
                 runCatching { decode(body) }.exceptionOrNull()?.let { "$schema: ${it.message.orEmpty()}" }
+            }
+        assertEquals(emptyList<String>(), problems)
+    }
+
+    @Test
+    fun d6_model_enums_equal_contract() {
+        val pairs: Map<String, Pair<List<Enum<*>>, List<Enum<*>>>> =
+            mapOf(
+                "SubmissionStatus" to (SubmissionStatus.entries to SubmissionStatusJson.entries),
+                "BarrierGroup" to (BarrierGroup.entries to BarrierGroupJson.entries),
+                "EntranceMarking" to (EntranceMarking.entries to EntranceMarkingJson.entries),
+                "Submission.kind" to (SubmissionKind.entries to Submission.Kind.entries),
+                "SubmissionContent.kind" to (SubmissionKind.entries to SubmissionContentJson.Kind.entries),
+            )
+        val problems =
+            pairs.mapNotNull { (name, values) ->
+                val (model, contract) = values
+                "$name: model ${model.map { it.name }}, kontrakt ${contract.map { it.name }}"
+                    .takeIf { model.map { it.name }.toSet() != contract.map { it.name }.toSet() }
+            }
+        assertEquals(emptyList<String>(), problems)
+    }
+
+    @Test
+    fun d7_submission_responses_decode() {
+        val submission = spec.sample(spec.node("/components/schemas/Submission")).jsonObject
+        val floor = spec.sample(spec.node("/components/schemas/SubmissionFloor"))
+        val bodies: Map<String, () -> Any> =
+            mapOf(
+                "Submission" to { json.decodeSubmission(submission.toString()) },
+                "SubmissionFloor" to { json.decodeSubmission(JsonObject(submission + ("floor" to floor)).toString()) },
+                "VersionConflictProblem" to {
+                    json.decodeConflict(spec.sample(spec.node("/components/schemas/VersionConflictProblem")).toString())
+                },
+            )
+        val problems =
+            bodies.mapNotNull { (schema, decode) ->
+                runCatching { decode() }.exceptionOrNull()?.let { "$schema: ${it.message.orEmpty()}" }
             }
         assertEquals(emptyList<String>(), problems)
     }
