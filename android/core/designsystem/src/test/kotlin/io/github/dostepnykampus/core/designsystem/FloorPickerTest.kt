@@ -45,7 +45,7 @@ class FloorPickerTest {
 
     /** Chipy: każda opcja to przycisk opcji, wybrana ma stan „wybrane”, cel co najmniej 48 dp. Wymagania: NFR-18 */
     @Test
-    fun nfr18_chips_radio_selected() {
+    fun selectsChipAsRadio() {
         show(FloorPickerLayout.CHIPS)
         val radio = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
         compose.onNodeWithText("1 piętro").assert(radio).assertIsSelected()
@@ -60,7 +60,7 @@ class FloorPickerTest {
 
     /** Lista: opcje na całą szerokość, każda co najmniej 56 dp. Wymagania: NFR-17 */
     @Test
-    fun nfr17_list_full_width() {
+    fun fillsListWidth() {
         show(FloorPickerLayout.LIST)
         val bounds = compose.onNodeWithText("Parter").getUnclippedBoundsInRoot()
         assertEquals(360.dp, bounds.right - bounds.left)
@@ -70,7 +70,7 @@ class FloorPickerTest {
     /** Czcionka 200 %: napisy rosną, a cel dotyku zostaje co najmniej 48 dp. Wymagania: NFR-20 */
     @Test
     @Config(fontScale = 2f)
-    fun nfr20_chips_large_font() {
+    fun fitsChipsInLargeFont() {
         show(FloorPickerLayout.CHIPS)
         val bounds = compose.onNodeWithText("1 piętro").getUnclippedBoundsInRoot()
         assertTrue(bounds.bottom - bounds.top >= 48.dp)

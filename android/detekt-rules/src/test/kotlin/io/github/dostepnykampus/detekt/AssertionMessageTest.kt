@@ -18,7 +18,7 @@ class AssertionMessageTest {
     private val rule = AssertionMessage(Config.empty)
 
     @Test
-    fun `JUnit 5 bez komunikatu`() {
+    fun rejectsJunit5WithoutMessage() {
         val calls =
             listOf(
                 "assertEquals(1, 2)",
@@ -30,7 +30,7 @@ class AssertionMessageTest {
     }
 
     @Test
-    fun `JUnit 5 z komunikatem`() {
+    fun acceptsJunit5WithMessage() {
         val calls =
             listOf(
                 "assertEquals(1, 2, \"opis\")",
@@ -41,29 +41,29 @@ class AssertionMessageTest {
     }
 
     @Test
-    fun `fail z komunikatem i bez`() {
+    fun checksFailWithAndWithout() {
         assertEquals(listOf(2), lines(JUPITER, listOf("fail<Unit>(\"opis\")", "fail<Unit>()")))
     }
 
     @Test
-    fun `assertAll bez komunikatu`() {
+    fun acceptsAssertAllWithoutMessage() {
         assertEquals(emptyList<Int>(), lines(JUPITER, listOf("assertAll({ }, { })")))
     }
 
     @Test
-    fun `JUnit 4 bez komunikatu`() {
+    fun rejectsJunit4WithoutMessage() {
         val calls = listOf("assertEquals(1, 2)", "assertTrue(true)", "assertNull(null)")
         assertEquals(listOf(1, 2, 3), lines(JUNIT4, calls))
     }
 
     @Test
-    fun `JUnit 4 z komunikatem`() {
+    fun acceptsJunit4WithMessage() {
         val calls = listOf("assertEquals(\"opis\", 1, 2)", "assertTrue(\"opis\", true)", "fail(\"opis\")")
         assertEquals(emptyList<Int>(), lines(JUNIT4, calls))
     }
 
     @Test
-    fun `wywołanie spoza JUnit`() {
+    fun skipsNonJunitCall() {
         val source = listOf("fun assertEquals(a: Int, b: Int) = Unit", "fun test() {", "    assertEquals(1, 2)", "}")
         val findings = rule.lintWithContext(environment, source.joinToString(separator = "\n"))
         assertEquals(emptyList<Int>(), findings.map { it.entity.location.source.line })

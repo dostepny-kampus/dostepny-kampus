@@ -16,7 +16,7 @@ class JsonTextCallTest {
     private val rule = JsonTextCall(Config.empty)
 
     @Test
-    fun `odczyt do zmiennej bez typu`() {
+    fun rejectsUntypedRead() {
         assertEquals(
             listOf(2),
             lines(
@@ -30,7 +30,7 @@ class JsonTextCallTest {
     }
 
     @Test
-    fun `zapis i parsowanie`() {
+    fun rejectsWriteAndParse() {
         assertEquals(
             listOf(1, 2),
             lines(
@@ -42,7 +42,7 @@ class JsonTextCallTest {
     }
 
     @Test
-    fun `inne wywołania przechodzą`() {
+    fun acceptsOtherCalls() {
         assertEquals(
             emptyList<Int>(),
             lines(

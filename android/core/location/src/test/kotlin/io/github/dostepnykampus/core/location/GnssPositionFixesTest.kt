@@ -40,7 +40,7 @@ class GnssPositionFixesTest {
     }
 
     @Test
-    fun us6_1_gps_location_to_fix() =
+    fun mapsGpsLocationToFix() =
         runTest {
             val fixes = mutableListOf<PositionFix>()
             val collecting =
@@ -55,7 +55,7 @@ class GnssPositionFixesTest {
 
     /** Odczyt bez promienia ufności dostaje NaN, więc uśrednianie go pomija. */
     @Test
-    fun us6_1_no_accuracy_is_nan() =
+    fun givesNanWithoutAccuracy() =
         runTest {
             val fixes = mutableListOf<PositionFix>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -67,7 +67,7 @@ class GnssPositionFixesTest {
 
     /** Lokalizacja tylko przy otwartym ekranie: koniec zbierania zdejmuje nasłuch odbiornika. */
     @Test
-    fun nfr27_stop_removes_listener() =
+    fun removesListenerOnStop() =
         runTest {
             val collecting =
                 backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -83,7 +83,7 @@ class GnssPositionFixesTest {
 
     /** Bez zgody na lokalizację odbiornik nie rusza, a ekran dostaje błąd, żeby poprosić o zgodę. */
     @Test
-    fun nfr27_no_permission_fails() {
+    fun failsWithoutPermission() {
         shadowOf(app).denyPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
         assertThrows(SecurityException::class.java) { runBlocking { GnssPositionFixes(app).fixes().first() } }
         assertTrue(shadowOf(manager).getLocationRequests(LocationManager.GPS_PROVIDER).isEmpty())

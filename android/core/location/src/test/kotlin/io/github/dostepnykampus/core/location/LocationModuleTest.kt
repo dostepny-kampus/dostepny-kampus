@@ -21,7 +21,7 @@ class LocationModuleTest {
     private val app = RuntimeEnvironment.getApplication()
 
     @Test
-    fun us6_1_sources_from_gnss() {
+    fun takesSourcesFromGnss() {
         assertTrue(LocationModule.positions(app) is GnssPositionFixes)
         assertTrue(LocationModule.satellites(app) is GnssSatellites)
         assertTrue(LocationModule.locationSwitch(app) is GnssLocationSwitch)
@@ -29,7 +29,7 @@ class LocationModuleTest {
 
     /** Zegar pomiaru to czas od startu telefonu, jak `elapsedRealtimeNanos` w odczytach. */
     @Test
-    fun us6_1_clock_elapsed() {
+    fun usesElapsedClock() {
         ShadowSystemClock.advanceBy(Duration.ofSeconds(42))
         assertEquals(SystemClock.elapsedRealtime(), LocationModule.clock().nowMillis())
     }

@@ -9,21 +9,26 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
+/**
+ * Konto i role: gość, odwiedzający, pracownik.
+ *
+ * Wymagania: US14.2, US14.1, BR-1
+ */
 class AccountTest {
     @Test
-    fun us14_2_guest_not_signed_in() {
+    fun keepsGuestSignedOut() {
         assertFalse(Account.Guest.isSignedIn)
         assertFalse(Account.Guest.hasStaffRole)
     }
 
     @Test
-    fun us14_1_visitor_no_staff_role() {
+    fun givesVisitorNoStaffRole() {
         assertTrue(Account.SignedIn().isSignedIn)
         assertFalse(Account.SignedIn().hasStaffRole)
     }
 
     @Test
-    fun br1_any_staff_role_counts() {
+    fun countsAnyStaffRole() {
         StaffRole.entries.forEach { assertTrue(Account.SignedIn(setOf(it)).hasStaffRole) }
     }
 }

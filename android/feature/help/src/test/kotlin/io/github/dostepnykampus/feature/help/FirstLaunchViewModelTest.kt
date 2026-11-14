@@ -24,7 +24,11 @@ import java.io.IOException
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
-/** Pierwsze uruchomienie w ViewModel na zapisie pierwszego uruchomienia w pamięci testu. */
+/**
+ * Pierwsze uruchomienie w ViewModel na zapisie pierwszego uruchomienia w pamięci testu.
+ *
+ * Wymagania: US5.1
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class FirstLaunchViewModelTest {
     private var reads = 0
@@ -52,7 +56,7 @@ class FirstLaunchViewModelTest {
     }
 
     @Test
-    fun us5_1_first_launch_read_once() {
+    fun readsFirstLaunchOnce() {
         val start = FirstLaunchViewModel(firstLaunch)
         assertEquals(true, start.firstLaunchState.value)
         assertEquals(true, start.firstLaunchState.value)
@@ -60,7 +64,7 @@ class FirstLaunchViewModelTest {
     }
 
     @Test
-    fun us5_1_help_seen_saved() {
+    fun savesHelpSeen() {
         val start = FirstLaunchViewModel(firstLaunch)
         start.markHelpSeen()
         assertEquals(true, isHelpSeen)
@@ -68,7 +72,7 @@ class FirstLaunchViewModelTest {
     }
 
     @Test
-    fun us5_1_read_error_skips_help() {
+    fun skipsHelpOnReadError() {
         val broken =
             object : FirstLaunch {
                 override suspend fun isFirstLaunch(): Boolean = throw IOException("odczyt")
@@ -80,7 +84,7 @@ class FirstLaunchViewModelTest {
     }
 
     @Test
-    fun us5_1_write_error_is_kept() {
+    fun keepsWriteError() {
         val broken =
             object : FirstLaunch {
                 override suspend fun isFirstLaunch(): Boolean = false
@@ -92,7 +96,7 @@ class FirstLaunchViewModelTest {
     }
 
     @Test
-    fun us5_1_saved_after_cleared() {
+    fun savesAfterClear() {
         val saving = CompletableDeferred<Unit>()
         val slow =
             object : FirstLaunch by firstLaunch {

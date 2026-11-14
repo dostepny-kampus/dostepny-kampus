@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 class HelpStepsTest {
     /** Wiersz: instrukcja w najwyżej 4 krokach: 3 kroki, ostatni o koncie. Wymagania: US5.1, US14.2 */
     @Test
-    fun us5_1_three_steps_last_account() {
+    fun endsThirdStepOnAccount() {
         assertTrue(HelpSteps.size <= 4)
         assertEquals(3, HelpSteps.size)
         assertEquals(R.string.pomoc_konto_tytul to R.string.pomoc_konto_tekst, HelpSteps.last().run { title to text })
@@ -21,7 +21,7 @@ class HelpStepsTest {
 
     /** Wiersz: obraz tylko z prawdziwym elementem aplikacji i opisem dla TalkBack. Wymagania: US5.1, NFR-18 */
     @Test
-    fun nfr18_images_have_description() {
+    fun describesImages() {
         assertEquals(listOf(HelpExample.SEARCH_FIELD, HelpExample.ENTRANCE, null), HelpSteps.map { it.example })
         assertEquals(R.string.pomoc_budynek_opis, HelpExample.SEARCH_FIELD.description)
         assertEquals(R.string.pomoc_dostepne_opis, HelpExample.ENTRANCE.description)
@@ -34,7 +34,7 @@ class HelpStepsTest {
      * Wymagania: US5.1, NFR-15
      */
     @Test
-    fun us5_1_wstecz_effect() {
+    fun goesBackOnBackButton() {
         assertEquals(HelpBack.PREVIOUS_STEP, helpBack(step = 1, isFirstLaunch = true))
         assertEquals(HelpBack.PREVIOUS_STEP, helpBack(step = 2, isFirstLaunch = false))
         assertEquals(HelpBack.SKIP, helpBack(step = 0, isFirstLaunch = true))

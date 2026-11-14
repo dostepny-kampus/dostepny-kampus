@@ -31,29 +31,34 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
+/**
+ * Wygląd komponentów w obu motywach, dużej czcionce i układzie od prawej do lewej.
+ *
+ * Wymagania: NFR-16, NFR-21, NFR-17, NFR-20, NFR-15
+ */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h900dp-xhdpi")
 class ComponentsScreenshotTest {
     @Test
-    fun nfr16_nfr21_motyw_jasny() {
+    fun drawsLightTheme() {
         captureComponents()
     }
 
     @Test
-    fun nfr16_nfr21_motyw_ciemny() {
+    fun drawsDarkTheme() {
         RuntimeEnvironment.setQualifiers("+night")
         captureComponents()
     }
 
     @Test
-    fun nfr17_nfr20_czcionka_200() {
+    fun drawsFont200() {
         RuntimeEnvironment.setFontScale(2f)
         captureComponents()
     }
 
     @Test
-    fun nfr15_wstecz_rtl() {
+    fun drawsBackInRtl() {
         captureComponents(LayoutDirection.Rtl)
     }
 

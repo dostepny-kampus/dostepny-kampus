@@ -39,6 +39,11 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
+/**
+ * Dolny pasek kart: nazwy, zaznaczenie i wygląd w obu motywach i dużej czcionce.
+ *
+ * Wymagania: NFR-18, NFR-16, NFR-20
+ */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w390dp-h400dp-xhdpi")
@@ -50,7 +55,7 @@ class BottomBarTest {
     private val chosen = mutableListOf<Int>()
 
     @Test
-    fun nfr18_tabs_names_and_selection() {
+    fun namesTabsAndSelection() {
         compose.setContent { DostepnyKampusTheme { Bar(selected = 2, account = "Konto") } }
         labels.forEach { label ->
             val item = compose.onNodeWithText(label)
@@ -64,25 +69,25 @@ class BottomBarTest {
     }
 
     @Test
-    fun nfr16_pasek_dolny_jasny() {
+    fun drawsLightBar() {
         capture()
     }
 
     @Test
     @Config(qualifiers = "+night")
-    fun nfr16_pasek_dolny_ciemny() {
+    fun drawsDarkBar() {
         capture()
     }
 
     @Test
     @Config(fontScale = 2f)
-    fun nfr20_pasek_dolny_czcionka_200() {
+    fun drawsBarAtFont200() {
         capture()
     }
 
     @Test
     @Config(qualifiers = "w360dp-h400dp-xhdpi", fontScale = 2f)
-    fun nfr20_pasek_dolny_360_200() {
+    fun drawsBarAt360Font200() {
         capture()
         val sizes = listOf("Mapa", "Zgłoś barierę", "Pomoc", "Konto", "Konto i\u00A0praca").map(::fontSizeOf)
         assertEquals(1, sizes.distinct().size)

@@ -39,7 +39,7 @@ import org.robolectric.annotation.GraphicsMode
 class SeveritySignTest {
     /** Wiersz: V1, bariery jako znak uciążliwości, kształt, nie kolor. Wymagania: NFR-21 */
     @Test
-    fun nfr21_three_shapes_same_colors() {
+    fun drawsThreeShapesSameColors() {
         val images =
             Severity.entries.map {
                 severityImage(severity = it, sizePx = SIZE, shapeColor = INK, markColor = PAPER)
@@ -53,12 +53,12 @@ class SeveritySignTest {
     }
 
     @Test
-    fun nfr21_hifi_motyw_jasny() {
+    fun drawsLightHifi() {
         captureRoboImage { Signs() }
     }
 
     @Test
-    fun nfr21_hifi_motyw_ciemny() {
+    fun drawsDarkHifi() {
         RuntimeEnvironment.setQualifiers("+night")
         captureRoboImage { Signs() }
     }

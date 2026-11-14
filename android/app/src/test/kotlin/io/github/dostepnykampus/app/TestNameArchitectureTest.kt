@@ -79,15 +79,10 @@ class TestNameArchitectureTest {
                 "app" to "#2028",
                 "core/data" to "#2029",
                 "core/database" to "#2030",
-                "core/designsystem" to "#2030",
                 "core/geo" to "#2030",
-                "core/location" to "#2030",
-                "core/model" to "#2030",
                 "core/network" to "#2030",
                 "feature/capture" to "#2031",
                 "feature/map" to "#2032",
-                "feature/help" to "#2033",
-                "detekt-rules" to "#2033",
             )
     }
 }

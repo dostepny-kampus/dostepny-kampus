@@ -43,7 +43,7 @@ class GnssSatellitesTest {
     }
 
     @Test
-    fun us6_1_status_to_satellites() =
+    fun mapsStatusToSatellites() =
         runTest {
             val updates = mutableListOf<List<Satellite>>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -63,7 +63,7 @@ class GnssSatellitesTest {
 
     /** Napis „Satelity: GPS 7, Galileo 5, GLONASS 4”: tylko satelity w pozycji, systemy w stałej kolejności. */
     @Test
-    fun us6_1_counts_used_in_fix() {
+    fun countsUsedInFix() {
         val satellites =
             listOf(
                 satellite(GnssSystem.GLONASS, used = true),
@@ -79,7 +79,7 @@ class GnssSatellitesTest {
     }
 
     @Test
-    fun us6_1_constellations_mapped() {
+    fun mapsConstellations() {
         assertEquals(
             GnssSystem.entries,
             listOf(
@@ -97,7 +97,7 @@ class GnssSatellitesTest {
 
     /** Lokalizacja tylko przy otwartym ekranie: po końcu zbierania stan satelitów już nie przychodzi. */
     @Test
-    fun nfr27_stop_ends_updates() =
+    fun endsUpdatesOnStop() =
         runTest {
             val updates = mutableListOf<List<Satellite>>()
             val collecting =
@@ -111,7 +111,7 @@ class GnssSatellitesTest {
         }
 
     @Test
-    fun nfr27_no_permission_fails() {
+    fun failsWithoutPermission() {
         shadowOf(app).denyPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
         assertThrows(SecurityException::class.java) { runBlocking { GnssSatellites(app).satellites().first() } }
     }

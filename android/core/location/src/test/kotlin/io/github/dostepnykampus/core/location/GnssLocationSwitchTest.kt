@@ -27,7 +27,7 @@ class GnssLocationSwitchTest {
 
     /** Wyłączona lokalizacja, potem włączona i znów wyłączona: każda zmiana raz, w kolejności zdarzeń. */
     @Test
-    fun nfr23_switch_follows_events() =
+    fun followsSwitchEvents() =
         runTest {
             shadowOf(manager).setProviderEnabled(LocationManager.GPS_PROVIDER, false)
             val states = mutableListOf<Boolean>()

@@ -10,7 +10,11 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 
-/** Wejście jako wartość: zmiana oznaczenia daje nowy stan tego samego wejścia. Wymagania: US17.1, US17.2, BR-24 */
+/**
+ * Wejście jako wartość: zmiana oznaczenia daje nowy stan tego samego wejścia.
+ *
+ * Wymagania: US17.1, US17.2, BR-24, US2.1, BR-25
+ */
 class EntranceTest {
     private val sideEntrance =
         Entrance(
@@ -24,31 +28,31 @@ class EntranceTest {
         )
 
     @Test
-    fun us17_1_same_data_same_entrance() {
+    fun keepsEntranceForSameData() {
         val reloaded = sideEntrance.copy()
         assertEquals(sideEntrance, reloaded)
         assertEquals(sideEntrance.hashCode(), reloaded.hashCode())
     }
 
     @Test
-    fun us17_2_change_keeps_entrance() {
+    fun keepsEntranceOnChange() {
         val changed = sideEntrance.copy(marking = EntranceMarking.INACCESSIBLE)
         assertEquals(EntranceMarking.INACCESSIBLE, changed.marking)
         assertEquals(sideEntrance, changed.copy(marking = sideEntrance.marking))
     }
 
     @Test
-    fun us17_2_change_is_new_state() {
+    fun makesNewStateOnChange() {
         assertNotEquals(sideEntrance, sideEntrance.copy(marking = EntranceMarking.ACCESSIBLE))
     }
 
     @Test
-    fun us2_1_main_flag_distinguishes() {
+    fun distinguishesByMainFlag() {
         assertNotEquals(sideEntrance, sideEntrance.copy(isMain = true))
     }
 
     @Test
-    fun br25_filters_entrance_types() {
+    fun filtersEntranceTypes() {
         val types = listOf("main", "emergency", "service", "exit", "staircase", "garage", "yes", null)
         val visitors = types.map { sideEntrance.copy(type = it) }.filter(Entrance::isForVisitors)
 
