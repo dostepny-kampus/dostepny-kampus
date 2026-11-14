@@ -26,6 +26,8 @@ env:
   HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
   GITLEAKS_VERSION: 8.30.1
   GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+  TYPOS_VERSION: 1.51.1
+  TYPOS_SHA256: 93c301fd4120ff076e2cc2a6d6a61cab4a4bdb81899287c0938b452e56d1f454
 
 jobs:
   porownanie:
@@ -187,6 +189,30 @@ jobs:
           persist-credentials: false
       - name: Sprawdź nagłówek autorski w plikach z kodem
         run: bash .github/scripts/naglowki.sh
+
+  literowki:
+    needs: porownanie
+    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Pobierz typos
+        working-directory: ${{ runner.temp }}
+        run: |
+          archive="typos-v${TYPOS_VERSION}-x86_64-unknown-linux-musl.tar.gz"
+          url="https://github.com/crate-ci/typos/releases/download/v${TYPOS_VERSION}"
+          curl -sSfLO "${url}/${archive}"
+          echo "${TYPOS_SHA256}  ${archive}" | sha256sum --check --strict
+          tar -xzf "${archive}"
+      - name: Szukaj literówek w kodzie, skryptach, konfiguracji i Markdown poza docs/
+        run: |
+          if ! "${RUNNER_TEMP}/typos" --config .github/typos.toml --format brief; then
+            echo "::error::Literówka wyżej: popraw ją albo dodaj wyjątek z powodem w .github/typos.toml."
+            exit 1
+          fi
 
   testy-skryptow:
     needs: porownanie

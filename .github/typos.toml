@@ -1,0 +1,39 @@
+# Kontrola literówek (typos) w kodzie, skryptach, konfiguracji i Markdown poza docs/.
+# Markdown w docs/ sprawdza LanguageTool (docs/scripts/lang.py). Dane z OSM w data/ to nazwy
+# własne. Każdy wyjątek niżej ma powód w komentarzu.
+# Plik reguł jakości: zmiana wymaga linii „Zmiana reguł jakości” w opisie PR.
+
+[files]
+extend-exclude = [
+  "docs/",
+  "data/buildings/",
+]
+
+[default.extend-words]
+# Słowa polskie w komentarzach i tekstach, które typos bierze za angielskie literówki.
+adres = "adres"
+autor = "autor"
+blok = "blok"
+daty = "daty"
+dokument = "dokument"
+elementy = "elementy"
+fale = "fale"
+foto = "foto"
+geometrie = "geometrie"
+grup = "grup"
+margines = "margines"
+metod = "metod"
+nowe = "nowe"
+numer = "numer"
+parametr = "parametr"
+pary = "pary"
+pn = "pn"
+proces = "proces"
+procesor = "procesor"
+serwer = "serwer"
+styl = "styl"
+symbole = "symbole"
+tabel = "tabel"
+tabele = "tabele"
+tak = "tak"
+tekst = "tekst"
