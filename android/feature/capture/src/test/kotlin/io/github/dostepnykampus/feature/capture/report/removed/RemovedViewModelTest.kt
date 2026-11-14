@@ -64,7 +64,7 @@ class RemovedViewModelTest {
 
     private fun open() {
         viewModel.open("tb9")
-        runCurrent()
+        dispatcher.scheduler.runCurrent()
     }
 
     /**
