@@ -37,7 +37,7 @@ class SubmissionQueueTest {
     private val editResults = ArrayDeque<ServerReply<ServerEdit>>()
 
     @Test
-    fun `wysyła treść i czyści kolejkę`() =
+    fun sendsAndClearsQueue() =
         runBlocking {
             saveTwoPhotos()
             assertTrue(queue().sendAll())
@@ -47,7 +47,7 @@ class SubmissionQueueTest {
         }
 
     @Test
-    fun `po zerwaniu kontynuuje zdjęcia`() =
+    fun resumesPhotosAfterDrop() =
         runBlocking {
             saveTwoPhotos()
             store.photoResults.addLast(ServerReply.Offline)
@@ -65,7 +65,7 @@ class SubmissionQueueTest {
         }
 
     @Test
-    fun `odmowa zostawia w kolejce`() =
+    fun keepsRefusedInQueue() =
         runBlocking {
             saveTwoPhotos()
             store.createResults.addLast(ServerReply.Fault(code = 400))
@@ -84,7 +84,7 @@ class SubmissionQueueTest {
      * Wymagania: BR-26
      */
     @Test
-    fun `odrzucone nie jest ponawiane`() =
+    fun skipsRetryOfRejected() =
         runBlocking {
             saveTwoPhotos()
             store.createResults.addLast(ServerReply.Fault(code = 400))
@@ -97,7 +97,7 @@ class SubmissionQueueTest {
         }
 
     @Test
-    fun `zapis planuje wysyłkę`() =
+    fun schedulesSendOnSave() =
         runBlocking {
             var scheduled = 0
             saveTwoPhotos(queue(onSaved = { scheduled++ }))
@@ -106,7 +106,7 @@ class SubmissionQueueTest {
         }
 
     @Test
-    fun `poprawka zastępuje wiersz`() =
+    fun replacesRowOnFix() =
         runBlocking {
             val target = queue()
             saveTwoPhotos(target)
@@ -119,7 +119,7 @@ class SubmissionQueueTest {
         }
 
     @Test
-    fun `poprawka z wersją to edycja`() =
+    fun sendsVersionedFixAsEdit() =
         runBlocking {
             val target = queue()
             target.saveEdit(EditedSubmission(id = "s1", baseVersion = 4), fullContent(), drafts())
@@ -132,7 +132,7 @@ class SubmissionQueueTest {
         }
 
     @Test
-    fun `konflikt wersji zostaje`() =
+    fun keepsVersionConflict() =
         runBlocking {
             val target = queue()
             target.saveEdit(EditedSubmission(id = "s1", baseVersion = 4), fullContent(), drafts())
@@ -151,7 +151,7 @@ class SubmissionQueueTest {
      * Wymagania: US9.2, BR-9
      */
     @Test
-    fun `kolejność jak przy zapisie`() =
+    fun keepsSaveOrder() =
         runBlocking {
             val ids = ArrayDeque(listOf("z-pierwsze", "a-drugie"))
             val sent = mutableListOf<String>()

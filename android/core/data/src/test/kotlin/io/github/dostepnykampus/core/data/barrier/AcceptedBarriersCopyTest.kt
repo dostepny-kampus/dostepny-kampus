@@ -29,7 +29,7 @@ class AcceptedBarriersCopyTest {
 
     /** Wiersz: bez sieci bariery przychodzą z kopii ze wszystkimi polami. Wymagania: NFR-10 */
     @Test
-    fun nfr10_offline_uses_copy() =
+    fun usesCopyOffline() =
         runBlocking {
             val typed = submission(id = "z1", content = precise(type = BarrierType.THRESHOLD.code, symbol = "A-1"))
             val bare = submission(id = "z2", content = precise(type = null, symbol = null)).copy(verifiedAt = null)
@@ -43,7 +43,7 @@ class AcceptedBarriersCopyTest {
 
     /** Wiersz: źródło podaje chwilę pobrania barier z odpowiedzi i z kopii; bez obu jej nie ma. Wymagania: NFR-10 */
     @Test
-    fun nfr10_synced_at() =
+    fun keepsSyncTime() =
         runBlocking {
             val none = source { OFFLINE }.apply { barriers() }.syncedAt()
             val one = listOf(submission(id = "z1", content = precise(type = null, symbol = null)))
@@ -60,7 +60,7 @@ class AcceptedBarriersCopyTest {
      * Wymagania: US1.5
      */
     @Test
-    fun us1_5_place_and_photos() =
+    fun keepsPlaceAndPhotos() =
         runBlocking {
             val floor = SubmissionFloor(floorId = "p0", number = 0, isMezzanine = true)
             val placed = precise(type = null, symbol = "A-1").copy(entranceId = "w1", floor = floor)
@@ -75,7 +75,7 @@ class AcceptedBarriersCopyTest {
 
     /** Wiersz: bez kopii i przy zepsutej kopii brak odpowiedzi serwera daje pustą listę. Wymagania: NFR-11 */
     @Test
-    fun nfr11_no_copy_is_empty() =
+    fun givesEmptyWithoutCopy() =
         runBlocking {
             val without = source { OFFLINE }.barriers()
             dao.entity = BarrierCacheEntity(id = BARRIER_CACHE_SINGLE_ROW, listJson = "[{\"id\":", syncedAt = SYNCED)
@@ -88,7 +88,7 @@ class AcceptedBarriersCopyTest {
 
     /** Wiersz: udana pusta odpowiedź zastępuje kopię, więc nieprzyjęta bariera nie wraca z kopii. Wymagania: US1.3 */
     @Test
-    fun us1_3_empty_replaces_copy() =
+    fun replacesCopyWithEmpty() =
         runBlocking {
             val one = listOf(submission(id = "z1", content = precise(type = null, symbol = null)))
             source { ServerReply.Ok(one) }.barriers()

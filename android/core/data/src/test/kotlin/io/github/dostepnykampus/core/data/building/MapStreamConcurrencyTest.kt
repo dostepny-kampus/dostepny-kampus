@@ -42,7 +42,7 @@ class MapStreamConcurrencyTest {
 
     /** Wiersz: mapa zbiera katalog, a inny odbiorca woła catalog() → jedno zapytanie do serwera. Wymagania: NFR-10 */
     @Test
-    fun nfr10_map_shares_request() {
+    fun sharesRequest() {
         inRun {
             val map = launch { repository.catalogUpdates().collect {} }
             val card = launch { repository.catalog() }
@@ -58,7 +58,7 @@ class MapStreamConcurrencyTest {
      * Wiersz: niepustą listę przyjmuje refresh(), a zapytanie mapy pada → ostatni stan mapy to katalog z serwera, W2.
      */
     @Test
-    fun nfr10_map_sees_other_answer() {
+    fun seesOtherAnswer() {
         inRun {
             isFirstCallFailing = true
             val seen = mutableListOf<BuildingCatalog>()
@@ -79,7 +79,7 @@ class MapStreamConcurrencyTest {
      *   listę → ostatni stan mapy to katalog z serwera, dwa zapytania, W2.
      */
     @Test
-    fun nfr10_map_sees_late_refresh() {
+    fun seesLateRefresh() {
         val offline = ServerReply.Offline
         val answers = ArrayDeque<ServerReply<BuildingList>>(listOf(offline, LIST))
         val ask: suspend () -> ServerReply<BuildingList> = {
@@ -110,7 +110,7 @@ class MapStreamConcurrencyTest {
      * Wymagania: NFR-11
      */
     @Test
-    fun nfr11_file_while_retry_runs() {
+    fun givesFileWhileRetryRuns() {
         inRun {
             launch { repository.refresh() }
             settle()

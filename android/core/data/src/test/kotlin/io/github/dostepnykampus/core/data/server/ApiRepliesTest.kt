@@ -20,27 +20,27 @@ import java.time.Instant
 /** Wynik klienta HTTP staje się odpowiedzią serwera bez typów sieci. Wymagania: NFR-10, US9.3 */
 class ApiRepliesTest {
     @Test
-    fun nfr10_success_is_ok() {
+    fun mapsSuccessToOk() {
         assertEquals(ServerReply.Ok(TEXT.length), reply(ApiResult.Success(TEXT)))
     }
 
     @Test
-    fun nfr10_not_found_is_missing() {
+    fun mapsNotFoundToMissing() {
         assertEquals(ServerReply.Missing, reply(ApiResult.NotFound))
     }
 
     @Test
-    fun nfr10_network_error_is_offline() {
+    fun mapsNetworkErrorToOffline() {
         assertEquals(ServerReply.Offline, reply(ApiResult.NetworkError(IOException("brak sieci"))))
     }
 
     @Test
-    fun nfr10_server_error_is_fault() {
+    fun mapsServerErrorToFault() {
         assertEquals(ServerReply.Fault(SERVER_ERROR), reply(ApiResult.ServerError(SERVER_ERROR)))
     }
 
     @Test
-    fun us9_3_edit_keeps_variant() {
+    fun keepsVariantOnEdit() {
         assertEquals(
             listOf(ServerEdit.Saved(SUBMISSION), ServerEdit.Conflict(SUBMISSION)),
             listOf(SubmissionEdit.Saved(SUBMISSION), SubmissionEdit.Conflict(SUBMISSION)).map { it.toServerEdit() },

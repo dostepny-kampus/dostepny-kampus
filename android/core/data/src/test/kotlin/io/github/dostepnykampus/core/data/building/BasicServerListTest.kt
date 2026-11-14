@@ -27,7 +27,7 @@ import kotlin.coroutines.EmptyCoroutineContext
  */
 class BasicServerListTest {
     @Test
-    fun nfr10_ok_is_basic_list() {
+    fun mapsOkToBasicList() {
         assertEquals(
             direct(ServerReply.Ok(BuildingList(SOURCE, listOf(ApiBuilding(SERVER, DetailLevel.BASIC))))),
             fixture(ServerReply.Ok(ServerBuildings(SOURCE, listOf(SERVER)))),
@@ -35,17 +35,17 @@ class BasicServerListTest {
     }
 
     @Test
-    fun nfr10_offline_is_offline() {
+    fun mapsOfflineToOffline() {
         assertEquals(direct(ServerReply.Offline), fixture(ServerReply.Offline))
     }
 
     @Test
-    fun nfr10_fault_is_fault() {
+    fun mapsFaultToFault() {
         assertEquals(direct(ServerReply.Fault(SERVER_ERROR)), fixture(ServerReply.Fault(SERVER_ERROR)))
     }
 
     @Test
-    fun nfr10_missing_is_missing() {
+    fun mapsMissingToMissing() {
         assertEquals(direct(ServerReply.Missing), fixture(ServerReply.Missing))
     }
 

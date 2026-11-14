@@ -22,13 +22,17 @@ import org.junit.jupiter.api.Test
 import java.io.IOException
 import java.time.Instant
 
-/** Statusy listy C3 z serwera w historii telefonu. Wymagania: US8.2, US9.1, BR-16 */
+/**
+ * Statusy listy C3 z serwera w historii telefonu.
+ *
+ * Wymagania: US8.2, US9.1, BR-16, US8.1, US4.4
+ */
 class OwnStatusesTest {
     private val history = FakeHistory()
 
     /** Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zgłoszenie odrzucone pokazuje powód odrzucenia. */
     @Test
-    fun `us8_2 status i powód z serwera`() =
+    fun takesStatusFromServer() =
         runBlocking {
             history.save(OwnSubmissionEntity(id = "a", savedAtMillis = 1, kind = "PRECISE"))
             history.markSent("a")
@@ -44,7 +48,7 @@ class OwnStatusesTest {
         }
 
     @Test
-    fun `us8_1 nowe z serwera`() =
+    fun addsNewFromServer() =
         runBlocking {
             refresh(ApiResult.Success(listOf(server("b"))))
 
@@ -56,7 +60,7 @@ class OwnStatusesTest {
         }
 
     @Test
-    fun `us4_4 szybkie pominięte`() =
+    fun skipsQuick() =
         runBlocking {
             val quick = content().copy(kind = SubmissionKind.QUICK, barrierGroup = BarrierGroup.OTHER)
 
@@ -66,7 +70,7 @@ class OwnStatusesTest {
         }
 
     @Test
-    fun `us9_1 brak sieci i błąd`() =
+    fun handlesOfflineAndError() =
         runBlocking {
             assertEquals(StatusRefresh.OFFLINE, refresh(ApiResult.NetworkError(IOException())))
             assertEquals(StatusRefresh.FAILED, refresh(ApiResult.ServerError(code = 403)))
@@ -74,7 +78,7 @@ class OwnStatusesTest {
         }
 
     @Test
-    fun `us8_2 model ze statusem`() {
+    fun givesModelWithStatus() {
         val row = OwnSubmissionEntity(id = "a", savedAtMillis = 1, kind = "PRECISE", serverStatus = "IN_REVIEW")
 
         assertEquals(SubmissionStatus.IN_REVIEW, row.toOwnSubmission().serverStatus)

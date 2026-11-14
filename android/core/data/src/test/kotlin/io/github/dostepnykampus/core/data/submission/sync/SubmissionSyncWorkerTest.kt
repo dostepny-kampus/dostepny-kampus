@@ -34,13 +34,13 @@ class SubmissionSyncWorkerTest {
     private var schedules = 0
 
     @Test
-    fun `pusta kolejka kończy zadanie`() =
+    fun finishesOnEmptyQueue() =
         runBlocking {
             assertEquals(ListenableWorker.Result.success(), queue().syncResult())
         }
 
     @Test
-    fun `brak sieci ponawia zadanie`() =
+    fun retriesOffline() =
         runBlocking {
             val target = queue()
             target.save(content(), photos())
@@ -68,7 +68,7 @@ class SubmissionSyncWorkerTest {
         }
 
     @Test
-    fun `401 czeka na zalogowanie`() =
+    fun waitsForSignInOn401() =
         runBlocking {
             val target = queue()
             target.save(content(), photos())
@@ -82,7 +82,7 @@ class SubmissionSyncWorkerTest {
         }
 
     @Test
-    fun `po zalogowaniu wysyła sama`() =
+    fun sendsAfterSignIn() =
         runBlocking {
             val target = queue()
             target.save(content(), photos())
@@ -112,7 +112,7 @@ class SubmissionSyncWorkerTest {
         }
 
     @Test
-    fun `wysłane znika z kolejki`() =
+    fun removesSentFromQueue() =
         runBlocking {
             val target = queue()
             target.save(content(), photos())

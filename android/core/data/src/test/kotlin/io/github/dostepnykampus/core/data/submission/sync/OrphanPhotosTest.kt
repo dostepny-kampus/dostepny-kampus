@@ -17,7 +17,11 @@ import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Sprzątanie przy starcie usuwa tylko pliki zdjęć, których nie potrzebuje kolejka ani odtworzony szkic. */
+/**
+ * Sprzątanie przy starcie usuwa tylko pliki zdjęć, których nie potrzebuje kolejka ani odtworzony szkic.
+ *
+ * Wymagania: NFR-5
+ */
 class OrphanPhotosTest {
     @TempDir
     lateinit var tempDir: File
@@ -37,7 +41,7 @@ class OrphanPhotosTest {
         )
 
     @Test
-    fun `nfr5 czekające zostaje`() =
+    fun keepsWaitingPhoto() =
         runBlocking {
             val file = oldPhoto("p1")
             queue.save(precise("p1"), listOf(PendingPhotoDraft(photoId = "p1", path = file.path)))
@@ -48,7 +52,7 @@ class OrphanPhotosTest {
         }
 
     @Test
-    fun `nfr5 szkic zostaje`() =
+    fun keepsDraftPhoto() =
         runBlocking {
             val file = oldPhoto("p2")
 
@@ -58,7 +62,7 @@ class OrphanPhotosTest {
         }
 
     @Test
-    fun `nfr5 osierocone znika`() =
+    fun removesOrphanPhoto() =
         runBlocking {
             val file = oldPhoto("p3")
 
@@ -68,7 +72,7 @@ class OrphanPhotosTest {
         }
 
     @Test
-    fun `nfr5 świeże zostaje`() =
+    fun keepsFreshPhoto() =
         runBlocking {
             val file = tempDir.resolve("p4.jpg").apply { writeBytes(byteArrayOf(1)) }
             file.setLastModified(NOW - FRESH_AGE_MILLIS)

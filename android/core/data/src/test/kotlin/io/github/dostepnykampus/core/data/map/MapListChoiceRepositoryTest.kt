@@ -27,7 +27,7 @@ class MapListChoiceRepositoryTest {
      * Wymagania: NFR-19, NFR-20
      */
     @Test
-    fun nfr19_choice_survives_restart() {
+    fun keepsChoiceAfterRestart() {
         val isListBefore =
             withRepository { repository -> repository.savedChoice.first().also { repository.choose(false) } }
 

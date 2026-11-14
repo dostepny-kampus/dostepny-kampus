@@ -51,7 +51,7 @@ class UnreadableSubmissionTest {
     }
 
     @Test
-    fun `br26 brak pliku zdjęcia`() =
+    fun reportsMissingPhotoFile() =
         runBlocking {
             val lost = photo(tempDir, "p1")
             queue.save(precise("p1"), lost)
@@ -65,7 +65,7 @@ class UnreadableSubmissionTest {
         }
 
     @Test
-    fun `br26 nieznana wartość w bazie`() =
+    fun reportsUnknownStoredValue() =
         runBlocking {
             queue.save(precise("p1"), photo(tempDir, "p1"))
             queue.save(precise("p2"), photo(tempDir, "p2"))

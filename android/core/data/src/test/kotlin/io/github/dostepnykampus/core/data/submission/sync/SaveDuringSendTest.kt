@@ -44,7 +44,7 @@ class SaveDuringSendTest {
     }
 
     @Test
-    fun `nfr6 zapis w trakcie wysyłki`() =
+    fun savesDuringSend() =
         runBlocking {
             queue.save(precise("p1"), photo(tempDir, "p1"))
             saveDuringSend = { queue.save(precise("p2"), photo(tempDir, "p2")) }

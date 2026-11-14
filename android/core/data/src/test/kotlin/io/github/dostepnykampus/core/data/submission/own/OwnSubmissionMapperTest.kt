@@ -20,7 +20,7 @@ import java.time.Instant
 /** Kod odmowy i wersja z odpowiedzi serwera dla historii C3. Wymagania: US9.5, BR-10 */
 class OwnSubmissionMapperTest {
     @Test
-    fun `us9_5 kod odmowy`() {
+    fun mapsRefusalCode() {
         val codes =
             listOf(
                 ServerReply.Fault(code = 422),
@@ -35,7 +35,7 @@ class OwnSubmissionMapperTest {
 
     /** 403 to brak uprawnień, 409 konflikt wersji, inne kody to nieprzyjęte, brak kodu to nieodczytane. */
     @Test
-    fun `us9_5 powód z kodu`() {
+    fun mapsReasonFromCode() {
         val reasons = listOf(403, 409, 400, 404, 413, 422, null).map { refusalReasonOf(OwnSubmissionState.REFUSED, it) }
 
         val others = List(4) { RefusalReason.NOT_ACCEPTED }
@@ -45,7 +45,7 @@ class OwnSubmissionMapperTest {
     }
 
     @Test
-    fun `br10 wersja z odpowiedzi`() {
+    fun takesVersionFromReply() {
         val versions =
             listOf(
                 ServerReply.Ok(submission),

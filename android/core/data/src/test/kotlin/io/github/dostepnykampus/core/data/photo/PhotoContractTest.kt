@@ -19,7 +19,7 @@ class PhotoContractTest {
     }
 
     @Test
-    fun `wynik nie zamienia żądań`() {
+    fun keepsRequestOrder() {
         val request = PhotoRequest(photoId = "pierwsze")
         val other = PendingPhotoDraft(photoId = "drugie", path = "/zdjecia/drugie.jpg")
         assertThrows(IllegalArgumentException::class.java) { PhotoResult.Ready(request = request, photo = other) }

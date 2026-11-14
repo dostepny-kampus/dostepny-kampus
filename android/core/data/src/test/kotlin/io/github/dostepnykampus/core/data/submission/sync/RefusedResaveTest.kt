@@ -34,7 +34,7 @@ class RefusedResaveTest {
      * Scenariusz: synchronizacja.feature: Ponowny zapis wysyła zgłoszenie „Nie wysłano” znów
      */
     @Test
-    fun `br26 ponowny zapis wysyła`() =
+    fun sendsOnResave() =
         runBlocking {
             val queue = queue()
             queue.save(precise(FIRST, severity = 2), photo(tempDir, FIRST))

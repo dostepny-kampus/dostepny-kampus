@@ -22,7 +22,7 @@ import java.time.Instant
 /** Bariery mapy ze zgłoszeń przyjętych z serwera. Wymagania: US1.3, BR-6, NFR-11 */
 class AcceptedBarriersTest {
     @Test
-    fun `us1_3 trzy bariery`() =
+    fun readsThreeBarriers() =
         runBlocking {
             val submissions = Severity.entries.map { submission(id = it.name, content = precise(it.value)) }
             val barriers = ServerAcceptedBarriers { ServerReply.Ok(submissions) }.barriers()
@@ -42,7 +42,7 @@ class AcceptedBarriersTest {
         }
 
     @Test
-    fun `br_6 nie każde to bariera`() =
+    fun skipsNonBarriers() =
         runBlocking {
             val marking =
                 precise(severity = null).copy(
@@ -58,7 +58,7 @@ class AcceptedBarriersTest {
         }
 
     @Test
-    fun `nfr_11 bez odpowiedzi pusto`() =
+    fun givesEmptyWithoutReply() =
         runBlocking {
             val answers = listOf(ServerReply.Offline, ServerReply.Fault(code = 500))
             val lists = answers.map { answer -> ServerAcceptedBarriers { answer }.barriers() }
@@ -67,7 +67,7 @@ class AcceptedBarriersTest {
         }
 
     @Test
-    fun `us1_3 nieprzyjęte znika`() =
+    fun dropsNotAccepted() =
         runBlocking {
             val one = listOf(submission(id = "z1", content = precise(severity = 1)))
             val answers = ArrayDeque(listOf(ServerReply.Ok(one), ServerReply.Ok(emptyList())))

@@ -42,7 +42,7 @@ class OwnListTest {
      * Scenariusz: zgloszenia-zbierajacego.feature: Lista nie pokazuje własnych zgłoszeń szybkich
      */
     @Test
-    fun `us4_4 lista bez szybkich`() =
+    fun listsWithoutQuick() =
         runBlocking {
             val queue = queue()
             queue.save(quick(), photo(tempDir, "p1"))
@@ -64,7 +64,7 @@ class OwnListTest {
      *   napis przy statusie
      */
     @Test
-    fun `us8_1 zmiana czeka`() =
+    fun marksChangeWaiting() =
         runBlocking {
             val queue = queue()
             val saved = queue.save(precise(), photo(tempDir, "p2"))
@@ -78,7 +78,7 @@ class OwnListTest {
         }
 
     @Test
-    fun `us8_1 bez zmiany nie czeka`() =
+    fun skipsWaitingWithoutChange() =
         runBlocking {
             val queue = queue()
             queue.save(precise(), photo(tempDir, "p2"))

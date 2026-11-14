@@ -16,7 +16,7 @@ class NetworkStatusTest {
 
     /** Internet jest tylko wtedy, gdy sieć go ma i system go sprawdził. Wymagania: US9.1, NFR-10 */
     @Test
-    fun us9_1_validated_internet() {
+    fun reportsValidatedInternet() {
         val cases =
             listOf(
                 internet(NET_CAPABILITY_INTERNET, NET_CAPABILITY_VALIDATED),

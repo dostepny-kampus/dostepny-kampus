@@ -29,7 +29,7 @@ class FirstLaunchRepositoryTest {
 
     /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */
     @Test
-    fun us5_1_help_until_marked_seen() {
+    fun showsHelpUntilSeen() {
         val launches =
             withRepository { repository ->
                 val beforeMark = List(2) { repository.isFirstLaunch() }
@@ -46,7 +46,7 @@ class FirstLaunchRepositoryTest {
      * Wymagania: US5.1
      */
     @Test
-    fun us5_1_unmarked_after_restart() {
+    fun keepsUnmarkedAfterRestart() {
         withRepository { it.isFirstLaunch() }
 
         assertTrue(withRepository { it.isFirstLaunch() })
@@ -54,19 +54,19 @@ class FirstLaunchRepositoryTest {
 
     /** Błąd odczytu pliku ustawień nie zamyka aplikacji i nie otwiera instrukcji od nowa. */
     @Test
-    fun us5_1_read_error_skips_help() {
+    fun skipsHelpOnReadError() {
         assertFalse(runBlocking { FirstLaunchRepository(UnreadableSettings()).isFirstLaunch() })
     }
 
     /** Błąd zapisu pliku ustawień zostaje w repozytorium. */
     @Test
-    fun us5_1_write_error_is_kept() {
+    fun keepsWriteError() {
         runBlocking { FirstLaunchRepository(UnreadableSettings()).markHelpSeen() }
     }
 
     /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy. */
     @Test
-    fun us5_1_second_launch_no_help() {
+    fun skipsHelpOnSecondLaunch() {
         withRepository { it.markHelpSeen() }
 
         assertFalse(withRepository { it.isFirstLaunch() })

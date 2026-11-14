@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test
 /** Piętra budynku z serwera z pamięcią ostatniej udanej odpowiedzi. Wymagania: US7.2, BR-G1 */
 class BuildingFloorsTest {
     @Test
-    fun `us7_2 piętra z serwera`() =
+    fun takesFloorsFromServer() =
         runBlocking {
             val floors = ServerFloorsRepository { ServerReply.Ok(LIST) }
 
@@ -24,7 +24,7 @@ class BuildingFloorsTest {
         }
 
     @Test
-    fun `br_g1 bez sieci ostatnie`() =
+    fun keepsLastFloorsOffline() =
         runBlocking {
             val answers =
                 ArrayDeque(listOf(ServerReply.Ok(LIST), ServerReply.Offline, ServerReply.Offline, ServerReply.Missing))

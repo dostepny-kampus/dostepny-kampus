@@ -48,7 +48,7 @@ class ConflictEditTest {
     }
 
     @Test
-    fun `us9_3 ponowna poprawka po 409`() =
+    fun editsAgainAfter409() =
         runBlocking {
             queue.saveEdit(
                 EditedSubmission(id = ID, baseVersion = 4),

@@ -42,7 +42,7 @@ class PendingEditsTest {
         )
 
     @Test
-    fun `us8_3 zapis wraca do C2`() =
+    fun returnsToC2OnSave() =
         runBlocking {
             queue.save(precise(), photos())
 
@@ -52,7 +52,7 @@ class PendingEditsTest {
         }
 
     @Test
-    fun `us8_3 z wersją bazową`() =
+    fun keepsBaseVersion() =
         runBlocking {
             queue.saveEdit(EditedSubmission(ID, baseVersion = 4), precise(), photos())
 
@@ -60,7 +60,7 @@ class PendingEditsTest {
         }
 
     @Test
-    fun `br26 odrzucone też do poprawki`() =
+    fun editsRejectedToo() =
         runBlocking {
             queue.save(precise(), photos())
             store.markRefused(ID)
@@ -69,7 +69,7 @@ class PendingEditsTest {
         }
 
     @Test
-    fun `us8_3 brak w telefonie to null`() =
+    fun givesNullWhenNotOnPhone() =
         runBlocking {
             assertNull(edits.load(ID))
         }
