@@ -23,7 +23,7 @@ android {
 
 dependencies {
     api(project(":core:model"))
-    api(project(":core:database"))
+    implementation(project(":core:database"))
     implementation(project(":core:geo"))
     implementation(project(":core:network"))
     api(libs.androidx.datastore.core)

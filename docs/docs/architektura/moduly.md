@@ -91,7 +91,6 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | --- | --- |
 | `barrier.domain` ma 22 pliki | #1439 |
 | podpakiety `feature.capture` importują korzeń modułu; brak reguły dla `feature/*` | #1634, #1635 |
-| `:core:data` udostępnia `:core:database` przez `api(...)`, testy funkcji zależą od bazy i sieci | #1328 |
 
 ## Co pilnuje zasady
 
@@ -106,8 +105,8 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | kierunek i nazwy warstw w każdym module serwera | #1325 |
 | najwyżej 15 plików w pakiecie | #1326 (serwer), #1332 (Android) |
 | moduł Androida ma kod produkcyjny | `ModuleContentArchitectureTest` |
-| moduł funkcji nie widzi bazy i sieci | Konsist `infra_a1_ui_no_network_or_db` (tylko kod produkcyjny); kompilator i testy: #1328 |
-| tylko `:core:data` i `:app` zależą od bazy i sieci | #1328 |
+| moduł funkcji nie widzi bazy i sieci | kompilator: moduł funkcji nie ma ich w zależnościach, także w testach; Konsist `infra_a1_ui_no_network_or_db` |
+| tylko `:core:data`, `:core:data-testing` i `:app` zależą od bazy i sieci (sieci także `:systemtest`), nigdy przez `api` | `StorageDependencyArchitectureTest` |
 | moduł funkcji nie importuje innego modułu funkcji | Konsist `infra_a1_feature_not_on_other` |
 | moduł `core` nie importuje modułu funkcji | Konsist `infra_a1_core_not_on_feature` |
 | jawna widoczność w modułach `core` | #1329 |
