@@ -3,11 +3,11 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.building.json;
+package io.github.dostepnykampus.building.room.json;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import io.github.dostepnykampus.building.domain.PlanRoom;
+import io.github.dostepnykampus.building.room.PlanRoom;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;

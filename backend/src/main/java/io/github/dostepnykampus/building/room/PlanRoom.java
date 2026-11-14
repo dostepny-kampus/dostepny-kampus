@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.building.domain;
+package io.github.dostepnykampus.building.room;
 
 /**
  * Pomieszczenie z planu piętra odczytane z usługi ArcGIS PWr.

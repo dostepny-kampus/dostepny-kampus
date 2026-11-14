@@ -5,11 +5,11 @@
  */
 
 /**
- * Klient usługi ArcGIS PWr: odpowiedź GeoJSON jako plan budynku.
+ * Pomieszczenia pięter z planów PWr: numer sali, funkcja, kontur.
  *
  * @since 0.1.0
  */
 @NullMarked
-package io.github.dostepnykampus.building.json;
+package io.github.dostepnykampus.building.room;
 
 import org.jspecify.annotations.NullMarked;
