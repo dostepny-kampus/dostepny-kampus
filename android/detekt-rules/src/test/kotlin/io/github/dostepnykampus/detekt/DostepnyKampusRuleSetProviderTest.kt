@@ -17,6 +17,7 @@ class DostepnyKampusRuleSetProviderTest {
         val rules =
             ServiceLoader
                 .load(RuleSetProvider::class.java)
+                .filterIsInstance<DostepnyKampusRuleSetProvider>()
                 .single()
                 .instance()
         assertEquals(
