@@ -60,11 +60,11 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   Reguła: Punkt poza konturem budynku to stan „Poza budynkiem”, a nie błąd
 
     @US6.2 @aplikacja
-    Scenariusz: Poza konturem aplikacja pokazuje stan „Poza budynkiem” i proponuje najbliższy budynek
+    Scenariusz: Poza konturem aplikacja pokazuje podpowiedź najbliższego budynku i przycisk „Poza budynkiem”
       Zakładając, że Zbierający stoi na chodniku przed wejściem głównym A-1, poza konturem budynku
       Jeżeli skończy uśrednianie pozycji
-      Wtedy widzi stan „Poza budynkiem” bez komunikatu o błędzie
-      Oraz aplikacja podpowiada budynek A-1
+      Wtedy aplikacja podpowiada budynek A-1 z nazwą i odległością od punktu bez komunikatu o błędzie
+      Oraz widzi przycisk „Poza budynkiem”
 
     @US6.2 @aplikacja
     Szablon scenariusza: Propozycję najbliższego budynku można wybrać albo odrzucić
