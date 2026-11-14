@@ -197,17 +197,17 @@ final class ModularityTest {
                 "Schemat modułów na stronie dokumentacji jest nieaktualny; skopiuj %s do %s",
                 folder.resolve("components.puml"), ModularityTest.DIAGRAM
             ),
-            ModularityTest.text(ModularityTest.DIAGRAM),
-            Matchers.equalTo(ModularityTest.text(folder.resolve("components.puml")))
+            ModularityTest.lines(ModularityTest.DIAGRAM),
+            Matchers.equalTo(ModularityTest.lines(folder.resolve("components.puml")))
         );
     }
 
-    private static String text(final Path file) throws IOException {
-        final String found;
+    private static List<String> lines(final Path file) throws IOException {
+        final List<String> found;
         if (Files.exists(file)) {
-            found = Files.readString(file).replace("\r\n", "\n");
+            found = Files.readAllLines(file);
         } else {
-            found = "";
+            found = List.of();
         }
         return found;
     }
