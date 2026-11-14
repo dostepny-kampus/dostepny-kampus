@@ -142,12 +142,12 @@ jobs:
         run: ./mvnw -B -DskipTests test-compile qulice:check
 
   spojnosc:
-    # Raport spójności klas (jpeek) jako artefakt; nie blokuje scalenia, próg ustalimy po sprincie (#1698).
+    # Raport spójności klas (jpeek) jako artefakt; próg dla klas ustalimy po sprincie (#1698).
+    # Gdy raport nie powstał, zadanie jest czerwone.
     needs: [porownanie, zmiany]
     if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && github.event_name != 'push' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    continue-on-error: true
     env:
       JPEEK_VERSION: 0.32.3
       JPEEK_SHA256: 34e138f402c99386c36477300e8c9e2df90014ffb544855b47b03caa975c8598
