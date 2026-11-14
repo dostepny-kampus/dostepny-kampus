@@ -8,10 +8,10 @@ package io.github.dostepnykampus.building.domain;
 import java.util.Optional;
 
 /**
- * Odczyt budynków kampusu: lista na mapie, podpowiedź budynku dla punktu
- * i karta budynku z wejściami.
+ * Odczyt budynków kampusu: lista na mapie, podpowiedź budynku dla punktu,
+ * karta budynku z wejściami oraz piętra budynku.
  *
- * <p>Wymagania: US1, BR-G2, US2</p>
+ * <p>Wymagania: US1, BR-G2, US2, US16</p>
  *
  * @since 0.1.0
  */
@@ -41,4 +41,12 @@ public interface Buildings {
      * @return Karta z wejściami albo pusty wynik, gdy budynku nie ma
      */
     Optional<BuildingCard> building(String symbol);
+
+    /**
+     * Piętra budynku ze źródłem danych.
+     *
+     * @param symbol Symbol budynku, np. C-13
+     * @return Piętra rosnąco według kolejności albo pusty wynik, gdy budynku nie ma
+     */
+    Optional<FloorList> floors(String symbol);
 }

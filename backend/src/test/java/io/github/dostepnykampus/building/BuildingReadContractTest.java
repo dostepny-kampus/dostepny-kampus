@@ -13,6 +13,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -23,13 +24,13 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Kontrakt odczytu budynku: pełne metadane wejść, wejście główne
- * przed pozostałymi i próg podpowiedzi 50 m.
+ * przed pozostałymi, próg podpowiedzi 50 m i piętra budynku.
  *
  * <p>Geometria przy równiku jest niezależna od danych kampusu. Punkty
  * oddalone o 49 i 51 m od północnej krawędzi powstają przez ST_Project;
  * margines jednego metra nie zależy od zaokrąglenia na granicy 50 m.</p>
  *
- * <p>Wymagania: US17.3, US2.1, BR-G4</p>
+ * <p>Wymagania: US17.3, US2.1, BR-G4, US16.1, US16.2, NFR-40</p>
  *
  * @since 0.1.0
  */
@@ -37,10 +38,15 @@ import tools.jackson.databind.ObjectMapper;
 @Transactional
 final class BuildingReadContractTest {
 
+    /**
+     * Przykładowy kontur budynku przy równiku w WKT.
+     */
+    private static final String OUTLINE = "POLYGON((0 0,0.001 0,0.001 0.001,0 0.001,0 0))";
+
     @BeforeEach
     void insertBuilding(final WebApplicationContext context) {
         new SampleBuilding("G-900", "Budynek próbny", "BASIC").wkt(
-            context.getBean(JdbcClient.class), "POLYGON((0 0,0.001 0,0.001 0.001,0 0.001,0 0))"
+            context.getBean(JdbcClient.class), BuildingReadContractTest.OUTLINE
         );
     }
 
@@ -101,6 +107,75 @@ final class BuildingReadContractTest {
         );
     }
 
+    @Test
+    void usSixteenOneListsBuildingFloorsOrderedWithPwrSource(
+        final WebApplicationContext context
+    ) throws Exception {
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        new SampleBuilding("G-901", "Budynek szczegółowy", "DETAILED")
+            .wkt(jdbc, BuildingReadContractTest.OUTLINE);
+        new SampleBuilding("G-902", "Sąsiedni budynek", "DETAILED")
+            .wkt(jdbc, BuildingReadContractTest.OUTLINE);
+        jdbc.sql(
+            """
+            INSERT INTO floors (building_symbol, id, label, sort_order)
+            VALUES ('G-901', 'f2', '2 piętro', 2),
+                ('G-901', 'f-1', 'Poziom -1', -1),
+                ('G-901', 'f1b', '1 piętro B', 1),
+                ('G-901', 'f0', 'Parter', 0),
+                ('G-901', 'f1a', '1 piętro A', 1),
+                ('G-902', 'other', 'Parter G-902', 0)
+            """
+        ).update();
+        MatcherAssert.assertThat(
+            "Lista pięter, ich kolejność albo źródło nie zgadzają się z kontraktem",
+            BuildingReadContractTest.get(context, "/buildings/G-901/floors"),
+            Matchers.equalTo(
+                context.getBean(ObjectMapper.class)
+                    .readTree(BuildingReadContractTest.floors())
+            )
+        );
+    }
+
+    @Test
+    void usSixteenTwoReturnsEmptyFloorsForBuildingWithoutFloors(
+        final WebApplicationContext context
+    ) throws Exception {
+        MatcherAssert.assertThat(
+            "Budynek bez pięter nie zwraca pustej listy pięter ze źródłem PWr",
+            BuildingReadContractTest.get(context, "/buildings/G-900/floors"),
+            Matchers.equalTo(
+                context.getBean(ObjectMapper.class).readTree(
+                    "{\"source\":\"Politechnika Wrocławska\",\"floors\":[]}"
+                )
+            )
+        );
+    }
+
+    @Test
+    void usSixteenReturnsNotFoundForUnknownBuildingFloors(
+        final WebApplicationContext context
+    ) throws Exception {
+        final MockHttpServletResponse reply = context.getBean(MockMvc.class)
+            .perform(MockMvcRequestBuilders.get("/buildings/Z-404/floors"))
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+            .andReturn()
+            .getResponse();
+        MatcherAssert.assertThat(
+            "Nieznany symbol budynku nie daje 404 application/problem+json z symbolem w detail",
+            "%s %s".formatted(
+                reply.getContentType(),
+                context.getBean(ObjectMapper.class)
+                    .readTree(reply.getContentAsString(StandardCharsets.UTF_8))
+                    .path("detail").asString("")
+            ),
+            Matchers.allOf(
+                Matchers.startsWith("application/problem+json"),
+                Matchers.containsString("Z-404")
+            )
+        );
+    }
+
     private static JsonNode locate(final WebApplicationContext context, final int meters)
         throws Exception {
         return BuildingReadContractTest.get(
@@ -117,6 +192,18 @@ final class BuildingReadContractTest {
                 :meters, 0)::geometry)
             """
         ).param("meters", meters).query(Double.class).single();
+    }
+
+    private static String floors() {
+        return """
+            {"source":"Politechnika Wrocławska","floors":[
+            {"id":"f-1","label":"Poziom -1","order":-1},
+            {"id":"f0","label":"Parter","order":0},
+            {"id":"f1a","label":"1 piętro A","order":1},
+            {"id":"f1b","label":"1 piętro B","order":1},
+            {"id":"f2","label":"2 piętro","order":2}
+            ]}
+            """;
     }
 
     private static String entrances() {

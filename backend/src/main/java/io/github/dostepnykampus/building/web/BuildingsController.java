@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Publiczny odczyt budynków: lista, karta i podpowiedź dla punktu. Błędy
- * idą wspólnymi typami z opisem w {@code detail}, a zakres współrzędnych
+ * Publiczny odczyt budynków: lista, karta, podpowiedź dla punktu i piętra.
+ * Błędy idą wspólnymi typami z opisem w {@code detail}, a zakres współrzędnych
  * sprawdza {@link Wgs84}.
  *
  * @since 0.1.0
@@ -81,8 +81,23 @@ public final class BuildingsController {
     BuildingCardResponse getBuilding(@PathVariable("symbol") final String symbol) {
         return this.query.building(symbol).map(
             card -> new BuildingCardResponse(card, this.mapper)
-        ).orElseThrow(
-            () -> new MissingResource(String.format("Nie ma budynku %s", symbol))
-        );
+        ).orElseThrow(() -> BuildingsController.missing(symbol));
+    }
+
+    /**
+     * Zwraca piętra budynku posortowane rosnąco według kolejności, ze źródłem
+     * danych. Budynek bez pięter ma pustą listę, nieznany symbol daje 404.
+     *
+     * @param symbol Symbol budynku
+     * @return Piętra budynku ze źródłem danych
+     */
+    @GetMapping("/buildings/{symbol}/floors")
+    FloorListResponse listFloors(@PathVariable("symbol") final String symbol) {
+        return this.query.floors(symbol).map(FloorListResponse::new)
+            .orElseThrow(() -> BuildingsController.missing(symbol));
+    }
+
+    private static MissingResource missing(final String symbol) {
+        return new MissingResource(String.format("Nie ma budynku %s", symbol));
     }
 }
