@@ -12,7 +12,7 @@ set -euo pipefail
 # milowym „Sprint N”, żeby zadania następnego sprintu nie trafiały do bieżącego.
 # Kod wyjścia: 0 = poprawnie, 1 = naruszenie, 2 = błąd narzędzia gh lub jq (nie wiadomo, czy PR jest w porządku).
 # Tryb ostrzegawczy: PR_OD_ISSUE_OSTRZEGAJ=1 zgłasza te same uwagi jako ::warning i kończy kodem 0.
-# Dane z gh; w teście zamiast sieci: PR_JSON_FILE (gh pr view --json author,baseRefName,body,headRefName,labels)
+# Dane z gh; w teście zamiast sieci: PR_JSON_FILE (gh pr view --json author,baseRefName,body,headRefName,isCrossRepository,labels)
 # i ISSUE_JSON_DIR (pliki <numer>.json z gh issue view --json state,assignees,url,labels,milestone).
 pr="${1:?Podaj numer PR}"
 
@@ -28,7 +28,7 @@ load_pr() {
   if [[ -n ${PR_JSON_FILE:-} ]]; then
     pr_data="$(cat "$PR_JSON_FILE")"
   else
-    pr_data="$(gh pr view "$pr" --json author,baseRefName,body,headRefName,labels)" || tool_error gh "gh pr view ${pr}"
+    pr_data="$(gh pr view "$pr" --json author,baseRefName,body,headRefName,isCrossRepository,labels)" || tool_error gh "gh pr view ${pr}"
   fi
 }
 
@@ -92,6 +92,16 @@ if [[ $author == 'dependabot[bot]' ]]; then
   exit 0
 fi
 
+base="$(jq -r '.baseRefName // ""' <<<"$pr_data")" || tool_error jq "nie odczytano gałęzi docelowej PR"
+branch="$(jq -r '.headRefName // ""' <<<"$pr_data")" || tool_error jq "nie odczytano gałęzi PR"
+if [[ $base == main && $branch =~ ^sprint/[0-9]+$ ]]; then
+  cross_repository="$(jq -r '.isCrossRepository' <<<"$pr_data")" || tool_error jq "nie odczytano źródła PR"
+  if [[ $cross_repository == false ]]; then
+    echo "Scalenie sprintu do main: kontrolę powiązania z issue wykonano w PR do gałęzi sprintu."
+    exit 0
+  fi
+fi
+
 # shellcheck source=slowa-zamykajace.sh
 source "$(dirname "${BASH_SOURCE[0]}")/slowa-zamykajace.sh"
 body="$(jq -r '.body // ""' <<<"$pr_data")" || tool_error jq "nie odczytano opisu PR"
@@ -104,14 +114,12 @@ if [[ -z $issues ]]; then
   exit 1
 fi
 
-branch="$(jq -r '.headRefName // ""' <<<"$pr_data")" || tool_error jq "nie odczytano gałęzi PR"
 if [[ ! $branch =~ ^([0-9]+)- ]]; then
   report "gałąź ${branch:-<brak>}: nazwa gałęzi nie zaczyna się od numeru issue (N-krotki-opis)."
 elif ! grep -qx "${BASH_REMATCH[1]}" <<<"$issues"; then
   report "gałąź ${branch}: numer #${BASH_REMATCH[1]} nie jest wśród zamykanych issue ($(printf '#%s ' $issues))."
 fi
 
-base="$(jq -r '.baseRefName // ""' <<<"$pr_data")" || tool_error jq "nie odczytano gałęzi docelowej PR"
 sprint=''
 if [[ $base =~ ^sprint/([0-9]+)$ ]]; then
   sprint="Sprint ${BASH_REMATCH[1]}"

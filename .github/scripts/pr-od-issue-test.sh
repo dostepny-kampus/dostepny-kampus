@@ -49,8 +49,8 @@ labels_json() {
 
 # pr_json <autor> <opis PR (w JSON, nowy wiersz jako \n)> [gałąź PR, domyślnie 12-zadanie]; gałąź docelowa w $base
 pr_json() {
-  printf '{"author":{"login":"%s"},"baseRefName":"%s","body":"%s","headRefName":"%s","labels":[%s]}\n' \
-    "$1" "$base" "$2" "${3:-12-zadanie}" "$(labels_json "$pr_labels")" >"$workdir/pr.json"
+  printf '{"author":{"login":"%s"},"baseRefName":"%s","body":"%s","headRefName":"%s","isCrossRepository":%s,"labels":[%s]}\n' \
+    "$1" "$base" "$2" "${3:-12-zadanie}" "$cross_repository" "$(labels_json "$pr_labels")" >"$workdir/pr.json"
 }
 
 # issue_json <numer> <OPEN|CLOSED> [osoba przypisana ...]; kind (issues|pull) mówi, czym jest numer,
@@ -82,6 +82,7 @@ run_case() {
   milestone='Sprint 4'
   extra_path=''
   gh_mode=files
+  cross_repository=false
   rm -rf "$workdir/issues" "$workdir/pr.json" "$workdir/bin"
   mkdir "$workdir/issues"
   "$@"
@@ -135,6 +136,10 @@ case_no_milestone() { milestone=''; case_ok; }
 case_other_name() { milestone='Backlog'; case_ok; }
 case_sprint_10() { base='sprint/10'; milestone='Sprint 1'; case_ok; }
 case_sprint_10_ok() { base='sprint/10'; milestone='Sprint 10'; case_ok; }
+case_sprint_release() { base='main'; pr_json autor-pr 'Wydanie sprintu' sprint/4; }
+case_foreign_sprint_release() { cross_repository=true; case_sprint_release; }
+case_invalid_sprint_release() { base='main'; pr_json autor-pr 'Inna zmiana' sprint/4-fix; }
+case_sprint_to_sprint() { pr_json autor-pr 'Inna zmiana' sprint/3; }
 case_main_any_milestone() { base='main'; milestone=''; case_ok; }
 case_second_issue_next_sprint() {
   case_two_issues_ok
@@ -248,6 +253,10 @@ run_case "sprint: issue bez kamienia milowego" 1 "$wrong_sprint" case_no_milesto
 run_case "sprint: kamień milowy spoza sprintów" 1 "$wrong_sprint" case_other_name
 run_case "sprint: sprint/10 nie przyjmuje Sprint 1" 1 "$wrong_sprint" case_sprint_10
 run_case "sprint: sprint/10 przyjmuje Sprint 10" 0 '' case_sprint_10_ok
+run_case "sprint: wydanie do main z tego repozytorium" 0 'Scalenie sprintu do main' case_sprint_release
+run_case "sprint: ta sama nazwa gałęzi z innego repozytorium" 1 "$no_closes" case_foreign_sprint_release
+run_case "sprint: gałąź o nazwie podobnej do sprintu" 1 "$no_closes" case_invalid_sprint_release
+run_case "sprint: inna gałąź docelowa" 1 "$no_closes" case_sprint_to_sprint
 run_case "sprint: PR do main bez sprawdzania kamienia" 0 '' case_main_any_milestone
 run_case "sprint: drugie z zamykanych issue z następnego sprintu" 1 "$wrong_sprint" case_second_issue_next_sprint
 run_case "sprint, tryb ostrzegawczy: issue z następnego sprintu" 0 '::warning' case_warn_next_sprint
