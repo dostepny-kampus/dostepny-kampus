@@ -49,19 +49,8 @@ jobs:
           EVENT: ${{ github.event_name }}
           GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
-        run: |
-          from=HEAD^1
-          to=HEAD
-          if [[ $EVENT == merge_group ]]; then
-            git fetch --no-tags --depth=1 origin "$GROUP_BASE_SHA"
-            from=$GROUP_BASE_SHA
-            to=$GROUP_HEAD_SHA
-          fi
-          if git diff --quiet "$from" "$to" -- api .github/workflows/api.yml; then
-            echo "api=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "api=true" >> "$GITHUB_OUTPUT"
-          fi
+        run: >-
+          .github/scripts/zmiany-obszaru.sh api api .github/workflows/api.yml .github/scripts/zmiany-obszaru.sh
 
   kontrakt:
     needs: [porownanie, zmiany]

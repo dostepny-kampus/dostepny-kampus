@@ -30,10 +30,8 @@ workflow() {
     echo 'jobs:'
     echo '  zmiany:'
     echo '    steps:'
-    echo '      - run: |'
-    echo "          if git diff --quiet \"\$from\" \"\$to\" -- $3; then"
-    echo '            echo "serwer=false"'
-    echo '          fi'
+    echo '      - run: >-'
+    echo "          .github/scripts/zmiany-obszaru.sh serwer $3"
   } >"$file"
   set +f
   echo "$file"
@@ -68,12 +66,12 @@ run_case "workflow bez filtra i bez zadania zmiany" 1 "nie znaleziono filtra" "$
 
 # Testy serwera czytają: kontrakt (OpenApiContract), scenariusze (ServerSpecs), obrazy i realm z infra/ (konfiguracje testów).
 run_case "backend.yml repozytorium" 0 "ścieżki zgodne" "$here/../workflows/backend.yml" \
-  backend data api/openapi.yaml specs infra .github/workflows/backend.yml
+  backend data api/openapi.yaml specs infra .github/workflows/backend.yml .github/scripts/zmiany-obszaru.sh
 
 # Zadania Androida wykonują wspólną akcję Gradle i cztery skrypty; ich zmiana ma uruchomić budowanie.
 run_case "android.yml repozytorium" 0 "ścieżki zgodne" "$here/../workflows/android.yml" \
   android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/workflows/android.yml \
   .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh .github/scripts/cache-z-kolejki.sh \
-  .github/scripts/czysc-cache.sh .github/scripts/wyniki-androida.sh
+  .github/scripts/czysc-cache.sh .github/scripts/wyniki-androida.sh .github/scripts/zmiany-obszaru.sh
 
 exit "$((failures > 0 ? 1 : 0))"

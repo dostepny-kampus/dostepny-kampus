@@ -6,7 +6,7 @@ set -euo pipefail
 
 # Użycie: sciezki-przeplywu.sh <plik workflow> [wymagana ścieżka]...
 # Workflow ma dwie listy ścieżek, które decydują, czy zmiana go dotyczy: filtr `on.push.paths` i polecenie
-# `git diff --quiet … -- <ścieżki>` w zadaniu `zmiany` (PR i grupa kolejki). Skrypt sprawdza, że obie listy są
+# `zmiany-obszaru.sh <klucz> <ścieżki>` w zadaniu `zmiany` (PR i grupa kolejki). Skrypt sprawdza, że obie listy są
 # takie same i że zawierają każdą wymaganą ścieżkę, czyli każdy katalog albo plik, który czytają testy tego
 # workflow. `katalog/**` z filtra push i `katalog` z polecenia diff znaczą to samo.
 workflow="${1:?Podaj plik workflow}"
@@ -19,13 +19,17 @@ push_paths="$(awk '
   push && paths && /^      - / { sub(/^      - /, ""); gsub(/["\047]/, ""); sub(/\/\*\*$/, ""); print; next }
   push && paths { paths = 0 }
 ' "$workflow" | sort -u)"
-diff_paths="$({ sed -e ':a' -e '/\\$/N; s/\\\n[[:space:]]*//; ta' "$workflow" |
-  grep -oE 'git diff --quiet [^;]* -- [^;]+; then' || true; } | head -n 1 |
-  sed -E 's/.* -- //; s/; then$//' | tr ' ' '\n' | sed '/^$/d' | sort -u)"
+diff_paths="$(awk '
+  /^ +(- )?run: >-$/ { block = 1; text = ""; next }
+  block && /^          / { text = text " " $0; next }
+  block && text ~ /zmiany-obszaru\.sh/ { print text; done = 1; exit }
+  { block = 0 }
+  END { if (!done && block && text ~ /zmiany-obszaru\.sh/) print text }
+' "$workflow" | sed -E 's/^ *[^ ]*zmiany-obszaru\.sh +[^ ]+ +//' | tr -s ' ' '\n' | sed '/^$/d' | sort -u)"
 
 failed=0
 if [[ -z $push_paths || -z $diff_paths ]]; then
-  echo "::error title=Ścieżki workflow::${workflow}: nie znaleziono filtra on.push.paths albo polecenia git diff w zadaniu zmiany."
+  echo "::error title=Ścieżki workflow::${workflow}: nie znaleziono filtra on.push.paths albo wywołania zmiany-obszaru.sh w zadaniu zmiany."
   exit 1
 fi
 if [[ $push_paths != "$diff_paths" ]]; then

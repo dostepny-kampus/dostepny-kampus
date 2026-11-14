@@ -20,6 +20,7 @@ on:
       - ".github/scripts/cache-z-kolejki.sh"
       - ".github/scripts/czysc-cache.sh"
       - ".github/scripts/wyniki-androida.sh"
+      - ".github/scripts/zmiany-obszaru.sh"
   merge_group:
     types:
       - checks_requested
@@ -63,20 +64,11 @@ jobs:
           EVENT: ${{ github.event_name }}
           GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
-        run: |
-          from=HEAD^1
-          to=HEAD
-          if [[ $EVENT == merge_group ]]; then
-            git fetch --no-tags --depth=1 origin "$GROUP_BASE_SHA"
-            from=$GROUP_BASE_SHA
-            to=$GROUP_HEAD_SHA
-          fi
-          if git diff --quiet "$from" "$to" -- android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/workflows/android.yml \
-            .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/wyniki-androida.sh; then
-            echo "android=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "android=true" >> "$GITHUB_OUTPUT"
-          fi
+        run: >-
+          .github/scripts/zmiany-obszaru.sh android android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml
+          .github/workflows/android.yml .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh
+          .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/wyniki-androida.sh
+          .github/scripts/zmiany-obszaru.sh
       - name: Sprawdź, czy PR albo grupa w kolejce zmienia serwer albo jego otoczenie (test systemowy)
         id: serwer
         env:
