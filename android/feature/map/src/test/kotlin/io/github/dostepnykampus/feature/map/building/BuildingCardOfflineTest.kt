@@ -28,6 +28,14 @@ class BuildingCardOfflineTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
+    private val repository =
+        BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
+            """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],""" +
+                """"display_name":"Gmach Główny","osm_id":"way/1"},""" +
+                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
+        }
+
     /**
      * Wiersz: V2 bez internetu → linia „Bez internetu” bez daty jak na V1, ze stanu sieci telefonu; po powrocie
      *   sieci linia znika.
@@ -37,13 +45,6 @@ class BuildingCardOfflineTest {
     @Test
     fun nfr10_offline_line_on_card() {
         val online = MutableStateFlow(false)
-        val repository =
-            BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
-                """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
-                    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],""" +
-                    """"display_name":"Gmach Główny","osm_id":"way/1"},""" +
-                    """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
-            }
         val viewModel = BuildingCardViewModel(symbol = "A-1", repository = repository, networkStatus = { online })
         compose.setContent {
             DostepnyKampusTheme {
@@ -73,13 +74,6 @@ class BuildingCardOfflineTest {
      */
     @Test
     fun nfr10_no_line_before_state() {
-        val repository =
-            BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
-                """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
-                    """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],""" +
-                    """"display_name":"Gmach Główny","osm_id":"way/1"},""" +
-                    """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
-            }
         val viewModel =
             BuildingCardViewModel(
                 symbol = "A-1",
