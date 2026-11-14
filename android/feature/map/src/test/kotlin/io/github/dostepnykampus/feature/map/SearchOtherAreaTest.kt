@@ -46,7 +46,11 @@ class SearchOtherAreaTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val catalog =
-        BuildingCatalog(buildings = listOf("A-1", "T-15").map(::unitSquareBuilding), entrances = emptyList(), attribution = "")
+        BuildingCatalog(
+            buildings = listOf("A-1", "T-15").map(::unitSquareBuilding),
+            entrances = emptyList(),
+            attribution = "",
+        )
     private val shown = area(name = "Kampus główny", symbol = "A-1")
     private val areas = AreaOrder(listOf(shown, area(name = "Wittigowo", symbol = "T-15")))
 
