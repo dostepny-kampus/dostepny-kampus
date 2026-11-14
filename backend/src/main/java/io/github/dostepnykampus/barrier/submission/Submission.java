@@ -20,10 +20,12 @@ import java.util.UUID;
  * @param status Status zgłoszenia
  * @param createdAt Chwila utworzenia zgłoszenia
  * @param content Treść zgłoszenia
+ * @param verification Chwila przyjęcia albo Instant.MIN, gdy jest nieznana
  * @since 0.1.0
  */
 public record Submission(
-    UUID id, int version, SubmissionStatus status, Instant createdAt, SubmissionContent content
+    UUID id, int version, SubmissionStatus status, Instant createdAt,
+    SubmissionContent content, Instant verification
 ) {
 
     /**
@@ -42,6 +44,22 @@ public record Submission(
                 String.format("Wersja zgłoszenia %d jest mniejsza niż 1", version)
             );
         }
+    }
+
+    /**
+     * Zgłoszenie bez zapisanej daty przyjęcia.
+     *
+     * @param id Identyfikator
+     * @param version Wersja
+     * @param status Status
+     * @param created Chwila utworzenia
+     * @param content Treść
+     */
+    public Submission(
+        final UUID id, final int version, final SubmissionStatus status,
+        final Instant created, final SubmissionContent content
+    ) {
+        this(id, version, status, created, content, Instant.MIN);
     }
 
     /**

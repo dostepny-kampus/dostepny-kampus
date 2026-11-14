@@ -46,7 +46,6 @@ final class RouteParityTest {
         Map.entry("DELETE /inspection-markers/{}", "znaczniki inspekcji: moduł inspekcji"),
         Map.entry("GET /progress", "postęp inspekcji: moduł inspekcji"),
         Map.entry("GET /export.geojson", "eksport GeoJSON: moduł eksportu"),
-        Map.entry("GET /export.csv", "eksport CSV: moduł eksportu"),
         Map.entry("POST /invitations", "zaproszenia: moduł tożsamości")
     );
 

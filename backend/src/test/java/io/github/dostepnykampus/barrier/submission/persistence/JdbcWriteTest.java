@@ -68,17 +68,17 @@ final class JdbcWriteTest {
         final List<EditResult> actual = new ArrayList<>(size);
         final List<EditResult> expected = new ArrayList<>(size);
         final SubmissionContent edited = SubmissionData.content("n");
-        final SubmissionContent old = SubmissionData.content("opis");
         for (final SubmissionStatus status : SubmissionStatus.values()) {
             final UUID id = data.seed(status);
             final Instant early = data.created(id);
+            final Submission before = data.repo().find(id).orElseThrow();
             actual.add(data.repo().update(new SubmissionEdit(id, 1, edited)));
             if (status.editable()) {
                 expected.add(
                     new EditResult.Saved(new Submission(id, 2, status.afterEdit(), early, edited))
                 );
             } else {
-                expected.add(new EditResult.Conflict(new Submission(id, 1, status, early, old)));
+                expected.add(new EditResult.Conflict(before));
             }
         }
         Assertions.assertEquals(expected, actual, "Wynik edycji nie zgadza się z BR-18");

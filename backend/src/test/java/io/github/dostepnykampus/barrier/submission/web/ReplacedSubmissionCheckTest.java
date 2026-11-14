@@ -144,7 +144,7 @@ final class ReplacedSubmissionCheckTest {
     private static SubmissionReading reading(
         final @Nullable Submission saved, final @Nullable Submission visible
     ) {
-        return new SubmissionReading(new Finder(saved, visible));
+        return new SubmissionReading(new Finder(saved, visible), symbol -> false);
     }
 
     private static Submission stored(final SubmissionStatus status) {
