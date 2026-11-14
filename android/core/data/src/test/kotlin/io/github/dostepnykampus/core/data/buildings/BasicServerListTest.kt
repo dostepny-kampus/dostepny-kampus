@@ -50,10 +50,16 @@ class BasicServerListTest {
     }
 
     private fun direct(result: ServerReply<BuildingList>): BuildingCatalog =
-        runBlocking { BuildingCatalogRepository(null, EmptyCoroutineContext, { result }) { ASSET }.catalog() }
+        runBlocking {
+            BuildingCatalogRepository(
+                buildingCache = null,
+                ioContext = EmptyCoroutineContext,
+                listBuildings = { result },
+            ) { ASSET }.catalog()
+        }
 
     private fun fixture(reply: ServerReply<ServerBuildings>): BuildingCatalog =
-        runBlocking { BuildingCatalogRepository(EmptyCoroutineContext, { reply }) { ASSET }.catalog() }
+        runBlocking { BuildingCatalogRepository(EmptyCoroutineContext, listBuildings = { reply }) { ASSET }.catalog() }
 
     private companion object {
         val ORIGIN = GeoPoint(longitude = 0.0, latitude = 0.0)

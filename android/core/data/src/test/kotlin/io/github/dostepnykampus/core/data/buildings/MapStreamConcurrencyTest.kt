@@ -33,7 +33,12 @@ class MapStreamConcurrencyTest {
     private val calls = AtomicInteger()
     private val gate = CompletableDeferred<Unit>()
     private var isFirstCallFailing = false
-    private val repository = BuildingCatalogRepository(null, EmptyCoroutineContext, ::server) { FILE_JSON }
+    private val repository =
+        BuildingCatalogRepository(
+            buildingCache = null,
+            ioContext = EmptyCoroutineContext,
+            listBuildings = ::server,
+        ) { FILE_JSON }
 
     /** Wiersz: mapa zbiera katalog, a inny odbiorca woła catalog() → jedno zapytanie do serwera. Wymagania: NFR-10 */
     @Test
@@ -81,7 +86,12 @@ class MapStreamConcurrencyTest {
             calls.incrementAndGet()
             answers.removeFirst()
         }
-        val late = BuildingCatalogRepository(null, EmptyCoroutineContext, ask) { FILE_JSON }
+        val late =
+            BuildingCatalogRepository(
+                buildingCache = null,
+                ioContext = EmptyCoroutineContext,
+                listBuildings = ask,
+            ) { FILE_JSON }
         inRun {
             val seen = mutableListOf<BuildingCatalog>()
             val map = launch { late.catalogUpdates().collect { seen += it } }

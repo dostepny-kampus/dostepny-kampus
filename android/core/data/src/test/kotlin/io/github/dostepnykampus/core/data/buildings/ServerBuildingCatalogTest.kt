@@ -151,7 +151,12 @@ class ServerBuildingCatalogTest {
             gate.await()
             listed("A-2", "N-1")
         }
-        val repository = BuildingCatalogRepository(null, EmptyCoroutineContext, server) { assetJson() }
+        val repository =
+            BuildingCatalogRepository(
+                buildingCache = null,
+                ioContext = EmptyCoroutineContext,
+                listBuildings = server,
+            ) { assetJson() }
         runBlocking {
             val opened = launch { repository.catalog() }
             val retried = launch { repository.refresh() }
@@ -165,12 +170,22 @@ class ServerBuildingCatalogTest {
     }
 
     private fun catalog(remote: (suspend () -> ServerReply<BuildingList>)? = null): BuildingCatalog =
-        runBlocking { BuildingCatalogRepository(null, EmptyCoroutineContext, remote) { assetJson() }.catalog() }
+        runBlocking {
+            BuildingCatalogRepository(
+                buildingCache = null,
+                ioContext = EmptyCoroutineContext,
+                listBuildings = remote,
+            ) { assetJson() }.catalog()
+        }
 
     private fun repository(vararg answers: () -> ServerReply<BuildingList>): BuildingCatalogRepository {
         val next = answers.iterator()
         val server: suspend () -> ServerReply<BuildingList> = { next.next()().also { serverCalls.incrementAndGet() } }
-        return BuildingCatalogRepository(null, EmptyCoroutineContext, server) { assetJson() }
+        return BuildingCatalogRepository(
+            buildingCache = null,
+            ioContext = EmptyCoroutineContext,
+            listBuildings = server,
+        ) { assetJson() }
     }
 
     private fun listed(vararg symbols: String): ServerReply<BuildingList> =

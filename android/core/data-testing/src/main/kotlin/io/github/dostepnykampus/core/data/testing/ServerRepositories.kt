@@ -26,4 +26,10 @@ fun serverBuildingCatalog(
     list: suspend () -> ServerReply<ServerBuildings>,
     nowMillis: () -> Long = System::currentTimeMillis,
     readGeoJson: () -> String,
-): BuildingCatalogRepository = BuildingCatalogRepository(ioContext, list, nowMillis, readGeoJson)
+): BuildingCatalogRepository =
+    BuildingCatalogRepository(
+        ioContext = ioContext,
+        listBuildings = list,
+        nowMillis = nowMillis,
+        readGeoJson = readGeoJson,
+    )
