@@ -51,7 +51,7 @@ final class ExportCsvHttpTest {
             MockMvcRequestBuilders.get("/export.csv")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR")
         ).andReturn().getResponse().getContentAsString();
-        final String[] lines = csv.split("\\r\\n");
+        final String[] lines = csv.split("\\r\\n", -1);
         final String[] point = lines[1].split(",", 4);
         MatcherAssert.assertThat(
             "Nagłówek i jedyny wiersz CSV",
@@ -62,7 +62,7 @@ final class ExportCsvHttpTest {
                 ),
                 Matchers.is(accepted.toString()),
                 Matchers.matchesPattern(",OTHER,,A-1,0 półpiętro,\"Schody, \"\"próg\"\"\nŻółta poręcz\",.+Z"),
-                Matchers.is("2")
+                Matchers.is("3")
             )
         );
         MatcherAssert.assertThat(
