@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.barrier.json;
 
-import io.github.dostepnykampus.InvalidInput;
 import io.github.dostepnykampus.StrictMapper;
+import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Assertions;

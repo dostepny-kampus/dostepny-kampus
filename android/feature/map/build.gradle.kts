@@ -46,8 +46,8 @@ dependencies {
     implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)
     implementation(libs.spatialk.units)
+    testImplementation(project(":core:data-testing"))
     testImplementation(project(":core:database"))
-    testImplementation(project(":core:network"))
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit4)
@@ -59,4 +59,9 @@ dependencies {
     testImplementation(libs.robolectric.annotations)
     testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.androidx.compose.ui.test.manifest)
+    constraints {
+        implementation(libs.androidx.core.ktx) {
+            because("Core zawiera rozszerzenia Kotlin; starszy Core KTX dubluje klasy.")
+        }
+    }
 }

@@ -14,4 +14,4 @@ package io.github.dostepnykampus.core.model
  * @property entrances wejścia budynków z [buildings]
  * @property attribution atrybucja źródła danych do podpisu na mapie, np. „© OpenStreetMap contributors”
  */
-data class BuildingCatalog(val buildings: List<Building>, val entrances: List<Entrance>, val attribution: String)
+public data class BuildingCatalog(val buildings: List<Building>, val entrances: List<Entrance>, val attribution: String)

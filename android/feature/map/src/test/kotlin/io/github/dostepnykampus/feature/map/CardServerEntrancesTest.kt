@@ -11,7 +11,9 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.buildings.ServerEntrances
-import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
+import io.github.dostepnykampus.core.data.testing.ServerCard
+import io.github.dostepnykampus.core.data.testing.ServerReply
+import io.github.dostepnykampus.core.data.testing.serverEntrances
 import io.github.dostepnykampus.core.model.AssessmentSource
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.Entrance
@@ -19,9 +21,6 @@ import io.github.dostepnykampus.core.model.EntranceAssessment
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.BuildingDetails
-import io.github.dostepnykampus.core.network.DetailLevel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,7 +39,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.io.IOException
 import java.time.LocalDate
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -75,10 +73,10 @@ class CardServerEntrancesTest {
     @Test
     fun us17_3_server_after_phone() =
         runTest {
-            val answer = CompletableDeferred<ApiResult<BuildingDetails>>()
+            val answer = CompletableDeferred<ServerReply<ServerCard>>()
             val card = openCard { answer.await() }
             assertEquals(fileCard, settled(card), "karta czeka na serwer")
-            answer.complete(ApiResult.Success(DETAILS))
+            answer.complete(ServerReply.Ok(DETAILS))
             assertEquals(listOf(SERVER_ENTRANCE), datedEntrances(card))
         }
 
@@ -92,7 +90,7 @@ class CardServerEntrancesTest {
     fun nfr10_failure_keeps_file() =
         runTest {
             val failures =
-                listOf(ApiResult.NetworkError(IOException("brak sieci")), ApiResult.ServerError(SERVER_ERROR))
+                listOf(ServerReply.Offline, ServerReply.Fault(SERVER_ERROR))
             failures.forEach { failure ->
                 val asked = CompletableDeferred<Unit>()
                 val card =
@@ -110,8 +108,8 @@ class CardServerEntrancesTest {
     fun nfr10_reopen_keeps_server() =
         runTest {
             val answers =
-                ArrayDeque(listOf(ApiResult.Success(DETAILS), ApiResult.NetworkError(IOException("brak sieci"))))
-            val source = ServerEntrancesRepository { answers.removeFirst() }
+                ArrayDeque(listOf(ServerReply.Ok(DETAILS), ServerReply.Offline))
+            val source = serverEntrances { answers.removeFirst() }
             datedEntrances(cardOf(source))
             assertEquals(listOf(SERVER_ENTRANCE), datedEntrances(cardOf(source)))
         }
@@ -138,8 +136,8 @@ class CardServerEntrancesTest {
             assertTrue(started.isCompleted && cancelled.isCompleted, "pobranie nie zaczęło się albo trwa po zamknięciu")
         }
 
-    private fun TestScope.openCard(details: suspend (String) -> ApiResult<BuildingDetails>): BuildingCardViewModel =
-        cardOf(ServerEntrancesRepository(details))
+    private fun TestScope.openCard(details: suspend (String) -> ServerReply<ServerCard>): BuildingCardViewModel =
+        cardOf(serverEntrances(details))
 
     private fun TestScope.cardOf(source: ServerEntrances): BuildingCardViewModel =
         BuildingCardViewModel(
@@ -186,9 +184,8 @@ class CardServerEntrancesTest {
             )
 
         val DETAILS =
-            BuildingDetails(
+            ServerCard(
                 building = Building(symbol = "A-1", name = "Gmach", outline = GeoPolygon(emptyList())),
-                detailLevel = DetailLevel.BASIC,
                 entrances = listOf(SERVER_ENTRANCE),
             )
 

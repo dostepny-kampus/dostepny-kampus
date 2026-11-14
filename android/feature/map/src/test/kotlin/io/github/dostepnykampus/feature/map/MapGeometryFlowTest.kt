@@ -10,20 +10,20 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.testing.ServerBuildings
+import io.github.dostepnykampus.core.data.testing.ServerReply
+import io.github.dostepnykampus.core.data.testing.serverBuildingCatalog
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.network.ApiBuilding
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.BuildingList
-import io.github.dostepnykampus.core.network.DetailLevel
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.first
@@ -31,9 +31,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -62,6 +62,7 @@ private val SERVER_LABELS = listOf("A-1")
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapGeometryFlowTest {
     private val calls = AtomicInteger()
+    private val viewModels = TestViewModels()
 
     @BeforeEach
     fun main() {
@@ -70,7 +71,7 @@ class MapGeometryFlowTest {
 
     @AfterEach
     fun reset() {
-        Dispatchers.resetMain()
+        viewModels.resetMain()
     }
 
     /**
@@ -82,7 +83,7 @@ class MapGeometryFlowTest {
     @Test
     fun nfr11_geometry_per_catalog() =
         runTest {
-            val answer = CompletableDeferred<ApiResult<BuildingList>>()
+            val answer = CompletableDeferred<ServerReply<ServerBuildings>>()
             val fileRunning = CompletableDeferred<Unit>()
             val fileHeld = CountDownLatch(1)
             val fileFinished = CompletableDeferred<Boolean>()
@@ -98,7 +99,7 @@ class MapGeometryFlowTest {
                     val viewModel = viewModelOf(repository { answer.await() }, compute, geometry)
                     show(viewModel)
                     fileRunning.await()
-                    answer.complete(ApiResult.Success(SERVER_LIST))
+                    answer.complete(ServerReply.Ok(SERVER_LIST))
                     val state =
                         viewModel.uiState.first { it.catalog?.run { buildings.size } == 1 && it.mapData != null }
                     assertEquals(SERVER_LABELS, state.mapData?.labels, "geometria nie z serwera")
@@ -202,7 +203,7 @@ class MapGeometryFlowTest {
     @Test
     fun server_compute_starts_early() =
         runTest {
-            val answer = CompletableDeferred<ApiResult<BuildingList>>()
+            val answer = CompletableDeferred<ServerReply<ServerBuildings>>()
             val fileRunning = CompletableDeferred<Unit>()
             val serverStarted = CompletableDeferred<Unit>()
             val hold = CountDownLatch(1)
@@ -219,7 +220,7 @@ class MapGeometryFlowTest {
                     }
                     show(viewModelOf(repository { answer.await() }, compute, geometry))
                     fileRunning.await()
-                    answer.complete(ApiResult.Success(SERVER_LIST))
+                    answer.complete(ServerReply.Ok(SERVER_LIST))
                     serverStarted.await()
                     assertFalse(fileFinished.await(), "serwer czekał na koniec liczenia pliku")
                 } finally {
@@ -243,17 +244,24 @@ class MapGeometryFlowTest {
         }
     }
 
-    private inline fun withPool(threads: Int, block: (CoroutineDispatcher) -> Unit) {
+    private suspend inline fun withPool(threads: Int, block: (CoroutineDispatcher) -> Unit) {
         val pool = Executors.newFixedThreadPool(threads)
         try {
-            pool.asCoroutineDispatcher().use(block)
+            pool.asCoroutineDispatcher().use { compute ->
+                try {
+                    block(compute)
+                } finally {
+                    withContext(NonCancellable) { viewModels.cancelAndJoin() }
+                }
+            }
         } finally {
             pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
         }
     }
 
-    private fun repository(json: String = ASSET_JSON, list: (suspend () -> ApiResult<BuildingList>)? = null) =
-        BuildingCatalogRepository(ioContext = EmptyCoroutineContext, listBuildings = list) { json }
+    private fun repository(json: String = ASSET_JSON, list: (suspend () -> ServerReply<ServerBuildings>)? = null) =
+        list?.let { serverBuildingCatalog(EmptyCoroutineContext, it) { json } }
+            ?: BuildingCatalogRepository(EmptyCoroutineContext) { json }
 
     private fun viewModelOf(
         repository: BuildingCatalogRepository,
@@ -262,12 +270,14 @@ class MapGeometryFlowTest {
             calls.incrementAndGet()
             campusMapData(catalog)
         },
-    ) = CampusMapViewModel(
-        repository = repository,
-        networkStatus = { flowOf(true) },
-        mapListChoice = TestMapListChoice(),
-        computeContext = compute,
-        geometry = geometry,
+    ) = viewModels.keep(
+        CampusMapViewModel(
+            repository = repository,
+            networkStatus = { flowOf(true) },
+            mapListChoice = TestMapListChoice(),
+            computeContext = compute,
+            geometry = geometry,
+        ),
     )
 
     private fun factoryOf(repository: BuildingCatalogRepository, compute: CoroutineContext) =
@@ -293,7 +303,7 @@ class MapGeometryFlowTest {
         val SERVER_BUILDING = Building(symbol = "A-1", name = "Z serwera", outline = SERVER_OUTLINE)
 
         val SERVER_LIST =
-            BuildingList(source = "Serwer", buildings = listOf(ApiBuilding(SERVER_BUILDING, DetailLevel.BASIC)))
+            ServerBuildings(source = "Serwer", buildings = listOf(SERVER_BUILDING))
 
         val MANY_FEATURES =
             (1..MANY_OUTLINES).joinToString(separator = ",") { i ->

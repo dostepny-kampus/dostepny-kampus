@@ -22,6 +22,8 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.data.CampusBounds
 import io.github.dostepnykampus.feature.map.data.CampusMapData
 import io.github.dostepnykampus.feature.map.data.MapSelection
+import io.github.dostepnykampus.feature.map.style.MapStyleColors
+import io.github.dostepnykampus.feature.map.style.paint
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
 import java.util.Locale

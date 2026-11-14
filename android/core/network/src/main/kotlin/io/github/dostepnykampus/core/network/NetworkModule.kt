@@ -21,7 +21,7 @@ import javax.inject.Singleton
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+public object NetworkModule {
     private const val CALL_TIMEOUT_SECONDS = 3L
 
     /**
@@ -34,7 +34,7 @@ object NetworkModule {
      */
     @Provides
     @Singleton
-    fun okHttp(tokens: AccessTokens): OkHttpClient =
+    public fun okHttp(tokens: AccessTokens): OkHttpClient =
         OkHttpClient
             .Builder()
             .connectTimeout(CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -45,7 +45,7 @@ object NetworkModule {
     /** Parser kontraktu. Nieznane pole odpowiedzi jest pomijane, bo serwer może dodać pola później. */
     @Provides
     @Singleton
-    fun json(): Json = Json { ignoreUnknownKeys = true }
+    public fun json(): Json = Json { ignoreUnknownKeys = true }
 
     /**
      * Lista budynków, karta i podpowiedź punktu.
@@ -55,12 +55,12 @@ object NetworkModule {
      */
     @Provides
     @Singleton
-    fun buildingsApi(http: OkHttpClient, json: Json): BuildingsApi =
+    public fun buildingsApi(http: OkHttpClient, json: Json): BuildingsApi =
         BuildingsApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
 
     /** Wysłanie i edycja zgłoszeń, zdjęcia i zgłoszenia przyjęte; ten sam adres co [buildingsApi]. */
     @Provides
     @Singleton
-    fun submissionsApi(http: OkHttpClient, json: Json): SubmissionsApi =
+    public fun submissionsApi(http: OkHttpClient, json: Json): SubmissionsApi =
         SubmissionsApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
 }

@@ -91,23 +91,11 @@ private val CATALOG =
 private fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latitude)))
 
 /**
- * „Pokaż budynek na mapie” na V2 przez prawdziwe ekrany aplikacji do kamery, którą dostaje widok mapy (podróbka):
- * budynek jest widoczny, a dalsze przesuwanie i obrót zostają przy osobie. Katalog
- * „Budynek testowy” jest syntetyczny (nie dane PWr).
- *
- * `U_SHAPE`: Litera U o szerokości 400 m: grube ramiona i cienka podstawa, więc środek obrysu leży poza obszarem
- * podpisu.
- *
- * `BUILDINGS`: A-1 w środku pierwszego widoku, T-9 i C-13 po ponad kilometrze od niego, U-1 w kształcie litery U.
- *
- * Jak natywna mapa po ruchu: bezczynność z otrzymaną kamerą, gdy test o to prosi.
- *
- * `labelPointOf`: Punkt podpisu budynku z danych, które dostała mapa (jeden `labelPoint` na kontur).
- *
- * `shows`: Czy [point] leży w widocznej części mapy: środek kamery stoi w środku części niezasłoniętej (Merkator).
- *
- * `showOnMap`: Od listy V1 przez V2 otwarte od razu (TalkBack) do „Pokaż budynek na mapie”; przed poleceniem budynku
- * nie widać.
+ * „Pokaż budynek na mapie” z V2 przez prawdziwe ekrany aplikacji do kamery podróbki widoku mapy: budynek jest widoczny,
+ * a dalsze przesuwanie i obrót zostają przy osobie. Katalog jest syntetyczny: A-1 w środku pierwszego widoku, T-9 i
+ * C-13 ponad kilometr od niego, U-1 w kształcie litery U (`U_SHAPE`), którego środek obrysu leży poza obszarem podpisu.
+ * `shows` sprawdza, czy punkt podpisu (`labelPointOf`) leży w niezasłoniętej części mapy (Merkator), a `showOnMap`
+ * idzie od listy V1 przez V2 otwarte od razu (TalkBack).
  *
  * Wymagania: US2.9, NFR-22, NFR-53
  */

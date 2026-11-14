@@ -7,14 +7,13 @@ package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
+import io.github.dostepnykampus.core.data.testing.ServerBuildings
+import io.github.dostepnykampus.core.data.testing.ServerReply
+import io.github.dostepnykampus.core.data.testing.serverBuildingCatalog
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.network.ApiBuilding
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.BuildingList
-import io.github.dostepnykampus.core.network.DetailLevel
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +33,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.io.IOException
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
@@ -65,7 +63,7 @@ class MapCatalogFromFileTest {
     /** Wiersz: W1, serwer jeszcze nie odpowiedział → stan mapy ma kontury z pliku. Wymagania: NFR-11 */
     @Test
     fun nfr11_file_without_server() {
-        val screen = openScreen { CompletableDeferred<ApiResult<BuildingList>>().await() }
+        val screen = openScreen { CompletableDeferred<ServerReply<ServerBuildings>>().await() }
         assertEquals(fileCatalog, screen.settled(), "mapa czeka na serwer")
     }
 
@@ -76,10 +74,10 @@ class MapCatalogFromFileTest {
      */
     @Test
     fun nfr10_server_replaces_file() {
-        val answer = CompletableDeferred<ApiResult<BuildingList>>()
+        val answer = CompletableDeferred<ServerReply<ServerBuildings>>()
         val screen = openScreen { answer.await() }
         assertEquals(fileCatalog, screen.settled(), "mapa czeka na serwer")
-        answer.complete(ApiResult.Success(SERVER_LIST))
+        answer.complete(ServerReply.Ok(SERVER_LIST))
         val shown = screen.settled()
         assertEquals(listOf(SERVER_BUILDING), shown?.buildings, "kontury z serwera nie zastąpiły pliku")
         assertEquals(SERVER_LIST.source, shown?.attribution, "atrybucja nie jest z serwera")
@@ -92,18 +90,18 @@ class MapCatalogFromFileTest {
      */
     @Test
     fun nfr10_failure_keeps_file() {
-        listOf(ApiResult.NetworkError(IOException("brak sieci")), ApiResult.ServerError(code = SERVER_ERROR))
+        listOf(ServerReply.Offline, ServerReply.Fault(SERVER_ERROR))
             .forEach { failure -> assertKeepsFile(failure) }
     }
 
     /** Wiersz: W2, serwer odpowiada pustą listą → zostają kontury z pliku, bez pustego katalogu. Wymagania: NFR-10 */
     @Test
     fun nfr10_empty_list_keeps_file() {
-        assertKeepsFile(ApiResult.Success(BuildingList(source = "Serwer", buildings = emptyList())))
+        assertKeepsFile(ServerReply.Ok(ServerBuildings(source = "Serwer", buildings = emptyList())))
     }
 
-    private fun assertKeepsFile(result: ApiResult<BuildingList>) {
-        val answer = CompletableDeferred<ApiResult<BuildingList>>()
+    private fun assertKeepsFile(result: ServerReply<ServerBuildings>) {
+        val answer = CompletableDeferred<ServerReply<ServerBuildings>>()
         val screen = openScreen { answer.await() }
         assertEquals(fileCatalog, screen.settled(), "mapa czeka na serwer: $result")
         answer.complete(result)
@@ -120,7 +118,7 @@ class MapCatalogFromFileTest {
      */
     @Test
     fun nfr10_late_file_keeps_server() {
-        val screen = openScreen { ApiResult.Success(SERVER_LIST) }
+        val screen = openScreen { ServerReply.Ok(SERVER_LIST) }
         assertTrue(screen.seen.all { it == null }, "plik wczytany, zanim odczyt ruszył")
         screen.settled()
         val fromServer = screen.seen.dropWhile { it?.buildings != listOf(SERVER_BUILDING) }
@@ -130,11 +128,11 @@ class MapCatalogFromFileTest {
         )
     }
 
-    private fun openScreen(listBuildings: suspend () -> ApiResult<BuildingList>): Screen {
+    private fun openScreen(listBuildings: suspend () -> ServerReply<ServerBuildings>): Screen {
         val repository =
-            BuildingCatalogRepository(
+            serverBuildingCatalog(
                 ioContext = background,
-                listBuildings = listBuildings,
+                list = listBuildings,
                 readGeoJson = { ASSET_JSON },
             )
         val choice =
@@ -190,7 +188,7 @@ class MapCatalogFromFileTest {
         val SERVER_BUILDING = Building(symbol = "A-1", name = "Z serwera", outline = SERVER_OUTLINE)
 
         val SERVER_LIST =
-            BuildingList(source = "Serwer", buildings = listOf(ApiBuilding(SERVER_BUILDING, DetailLevel.BASIC)))
+            ServerBuildings(source = "Serwer", buildings = listOf(SERVER_BUILDING))
 
         const val ASSET_JSON =
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +

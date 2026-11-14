@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submissions
@@ -106,7 +106,7 @@ data class SubmissionStamps(
  *
  * Wymagania: NFR-5, US9.1, US9.2, BR-9, NFR-8, NFR-6, US8.3, BR-10, BR-26, US14.4, US8
  */
-class SubmissionQueue(
+class SubmissionQueue internal constructor(
     private val store: PendingSubmissionDao,
     private val ioContext: CoroutineContext = Dispatchers.IO,
     private val server: SubmissionServer,
@@ -122,8 +122,55 @@ class SubmissionQueue(
     /** `true` po odpowiedzi 401 aż do [onLoggedIn]: aplikacja prosi o ponowne zalogowanie. Wymagania: BR-26 */
     val loginExpired: StateFlow<Boolean> = expired.asStateFlow()
 
-    /** Kolejka bez edycji na serwerze: poprawka z wersją bazową zostaje w telefonie jak odmowa (404). */
+    /**
+     * Kolejka na zgłoszeniach z [store], z historią Zbierającego.
+     *
+     * @param store zgłoszenia zapisane w telefonie
+     * @param ioContext kontekst zapisu i odczytu bazy
+     * @param server wywołania serwera zgłoszeń
+     * @param stamps identyfikator i chwila zapisu nowego zgłoszenia
+     * @param onSaved planowanie wysyłki po zapisie
+     */
     constructor(
+        store: SubmissionStore,
+        ioContext: CoroutineContext = Dispatchers.IO,
+        server: SubmissionServer,
+        stamps: SubmissionStamps = SubmissionStamps(),
+        onSaved: () -> Unit = {},
+    ) : this(
+        store = store.pending,
+        ioContext = ioContext,
+        server = server,
+        stamps = stamps,
+        onSaved = onSaved,
+        history = store.history,
+    )
+
+    /**
+     * Kolejka bez historii i bez edycji na serwerze: poprawka z wersją bazową zostaje w telefonie jak odmowa (404).
+     *
+     * @param store zgłoszenia zapisane w telefonie; historia Zbierającego zostaje nieużyta
+     * @param ioContext kontekst zapisu i odczytu bazy
+     * @param create utworzenie zgłoszenia na serwerze
+     * @param putPhoto wysłanie zdjęcia zgłoszenia
+     * @param onSaved planowanie wysyłki po zapisie
+     */
+    constructor(
+        store: SubmissionStore,
+        ioContext: CoroutineContext = Dispatchers.IO,
+        create: suspend (id: String, content: SubmissionContent) -> ApiResult<Submission>,
+        putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ApiResult<Unit>,
+        onSaved: () -> Unit = {},
+    ) : this(
+        store = store.pending,
+        ioContext = ioContext,
+        create = create,
+        putPhoto = putPhoto,
+        onSaved = onSaved,
+    )
+
+    /** Kolejka bez edycji na serwerze: poprawka z wersją bazową zostaje w telefonie jak odmowa (404). */
+    internal constructor(
         store: PendingSubmissionDao,
         ioContext: CoroutineContext = Dispatchers.IO,
         create: suspend (id: String, content: SubmissionContent) -> ApiResult<Submission>,
@@ -148,7 +195,7 @@ class SubmissionQueue(
      * @param photos zdjęcia do wysłania; identyfikatory wracają w [content]
      * @throws SaveRefusedException zdjęcia nie odpowiadają treści
      */
-    suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>): PendingSubmissionEntity {
+    suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>): SavedSubmission {
         requireMatchingPhotos(content, photos)
         val id = stamps.newId()
         val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
@@ -158,7 +205,7 @@ class SubmissionQueue(
             remember(entity)
         }
         runCatching(onSaved)
-        return entity
+        return SavedSubmission(id = id)
     }
 
     /**

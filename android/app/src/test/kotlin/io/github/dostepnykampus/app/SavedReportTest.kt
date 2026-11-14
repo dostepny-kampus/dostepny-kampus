@@ -22,6 +22,7 @@ import io.github.dostepnykampus.core.data.submissions.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
+import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.database.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -29,16 +30,16 @@ import io.github.dostepnykampus.core.model.BarrierType
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.feature.capture.MySubmissionsActions
-import io.github.dostepnykampus.feature.capture.MySubmissionsContent
-import io.github.dostepnykampus.feature.capture.MySubmissionsViewModel
-import io.github.dostepnykampus.feature.capture.ReportEdit
-import io.github.dostepnykampus.feature.capture.ReportFloor
-import io.github.dostepnykampus.feature.capture.ReportForm
-import io.github.dostepnykampus.feature.capture.ReportFormViewModel
-import io.github.dostepnykampus.feature.capture.ReportPlace
-import io.github.dostepnykampus.feature.capture.ReportSaverModule
-import io.github.dostepnykampus.feature.capture.ReportStage
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsContent
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsViewModel
+import io.github.dostepnykampus.feature.capture.report.ReportEdit
+import io.github.dostepnykampus.feature.capture.report.ReportFloor
+import io.github.dostepnykampus.feature.capture.report.ReportForm
+import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
+import io.github.dostepnykampus.feature.capture.report.ReportPlace
+import io.github.dostepnykampus.feature.capture.report.ReportSaverModule
+import io.github.dostepnykampus.feature.capture.report.ReportStage
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -73,6 +74,9 @@ class SavedReportTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val app = RuntimeEnvironment.getApplication()
+
+    @Inject
+    lateinit var store: SubmissionStore
 
     @Inject
     lateinit var pending: PendingSubmissionDao
@@ -154,7 +158,7 @@ class SavedReportTest {
 
     private fun queue(): SubmissionQueue =
         SubmissionQueue(
-            store = pending,
+            store = store,
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
@@ -165,7 +169,6 @@ class SavedReportTest {
                     putPhoto = { _, _, _ -> ApiResult.Success(Unit) },
                     update = { _, _, _ -> ApiResult.NotFound },
                 ),
-            history = history,
         )
 
     private fun photo(): PendingPhotoDraft {

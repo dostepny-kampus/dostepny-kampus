@@ -19,7 +19,7 @@ import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
  * @param serverUrl adres serwera aplikacji, np. `http://10.0.2.2:8080/`
  * @param tokens token konta
  */
-class AccessTokenInterceptor(serverUrl: String, private val tokens: AccessTokens) : Interceptor {
+internal class AccessTokenInterceptor(serverUrl: String, private val tokens: AccessTokens) : Interceptor {
     private val server = serverUrl.toHttpUrl()
 
     override fun intercept(chain: Interceptor.Chain): Response {

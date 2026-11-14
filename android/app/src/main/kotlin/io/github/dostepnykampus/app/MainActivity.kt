@@ -22,7 +22,7 @@ import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.feature.capture.photoDir
+import io.github.dostepnykampus.feature.capture.photo.photoDir
 import io.github.dostepnykampus.feature.help.FirstLaunchViewModel
 import kotlinx.coroutines.launch
 

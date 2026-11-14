@@ -5,13 +5,13 @@
  */
 package io.github.dostepnykampus.barrier;
 
-import io.github.dostepnykampus.ForbiddenChange;
-import io.github.dostepnykampus.InvalidInput;
-import io.github.dostepnykampus.MissingResource;
 import io.github.dostepnykampus.barrier.domain.EditResult;
 import io.github.dostepnykampus.barrier.domain.Reader;
 import io.github.dostepnykampus.barrier.domain.Submission;
 import io.github.dostepnykampus.barrier.domain.SubmissionFinder;
+import io.github.dostepnykampus.shared.error.ForbiddenChange;
+import io.github.dostepnykampus.shared.error.InvalidInput;
+import io.github.dostepnykampus.shared.error.MissingResource;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;

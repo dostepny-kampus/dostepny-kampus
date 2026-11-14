@@ -28,6 +28,8 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.Building
 import io.github.dostepnykampus.core.model.BuildingCatalog
+import io.github.dostepnykampus.feature.map.area.AreaOrder
+import io.github.dostepnykampus.feature.map.area.buildingsWord
 import io.github.dostepnykampus.feature.map.data.MapArea
 
 /**

@@ -18,7 +18,7 @@ import javax.inject.Singleton
  * Wymagania: NFR-35
  */
 @Singleton
-class AccessTokens
+public class AccessTokens
     @Inject
     constructor() {
         @Volatile
@@ -27,19 +27,19 @@ class AccessTokens
         private val rejected = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
         /** Bieżący token albo `null`, gdy konto nie jest zalogowane. */
-        val token: String?
+        public val token: String?
             get() = current
 
         /** Odpowiedzi 401 serwera aplikacji: logowanie wygasło albo żądanie go wymaga. */
-        val rejections: SharedFlow<Unit> = rejected.asSharedFlow()
+        public val rejections: SharedFlow<Unit> = rejected.asSharedFlow()
 
         /** Zapisuje token po zalogowaniu. */
-        fun signIn(token: String) {
+        public fun signIn(token: String) {
             current = token
         }
 
         /** Usuwa token przy wylogowaniu. */
-        fun signOut() {
+        public fun signOut() {
             current = null
         }
 

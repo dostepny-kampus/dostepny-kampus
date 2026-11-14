@@ -35,7 +35,7 @@ import org.maplibre.spatialk.geojson.Point
  * @return katalog budynków
  * @throws IllegalArgumentException gdy treść nie jest kolekcją obiektów GeoJSON w tym formacie
  */
-fun parseBuildingCatalog(geoJson: String): BuildingCatalog {
+public fun parseBuildingCatalog(geoJson: String): BuildingCatalog {
     val collection = FeatureCollection.fromJson<Geometry?, JsonObject?>(geoJson)
     val attribution = collection.foreignMembers["attribution"]?.text()
     requireNotNull(attribution) { "Brak atrybucji źródła danych (pole attribution)" }

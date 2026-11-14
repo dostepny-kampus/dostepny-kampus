@@ -31,15 +31,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Ogólne reguły kodu serwera z gotowego zestawu ArchUnit.
- *
- * <p>Kod produkcyjny nie zależy od {@code java.util.logging}, nie pisze do
- * strumieni standardowych i nie rzuca ogólnych wyjątków. Reguły pochodzą z
- * gotowego zestawu ArchUnit, który sam zgłasza błąd na pustym imporcie.</p>
- *
- * <p>Gotowa reguła ArchUnit o {@code java.util.logging} łapie tylko pole
- * typu loggera, więc reguła loggingu dokłada zakaz każdej zależności od
- * tego pakietu, także wywołania bez pola.</p>
+ * Ogólne reguły kodu serwera z gotowego zestawu ArchUnit: kod produkcyjny nie zależy od
+ * {@code java.util.logging}, nie pisze do strumieni standardowych i nie rzuca ogólnych
+ * wyjątków. Gotowa reguła o {@code java.util.logging} łapie tylko pole typu loggera, więc
+ * reguła dokłada zakaz każdej zależności od tego pakietu.
  *
  * @since 0.1.0
  */

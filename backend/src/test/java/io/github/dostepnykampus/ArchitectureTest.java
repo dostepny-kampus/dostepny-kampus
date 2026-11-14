@@ -13,21 +13,21 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import com.tngtech.archunit.library.GeneralCodingRules;
+import io.github.dostepnykampus.shared.error.ConflictingState;
+import io.github.dostepnykampus.shared.error.ForbiddenChange;
+import io.github.dostepnykampus.shared.error.InvalidInput;
+import io.github.dostepnykampus.shared.error.MissingLogin;
+import io.github.dostepnykampus.shared.error.MissingResource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Testy zadania INFRA: reguły architektury, których Spring Modulith
- * nie sprawdza.
- *
- * <p>Kontrolery korzystają z usług i portów. Implementacje JDBC należą
- * do pakietów persistence lub postgis. ArchUnit zabrania też wstrzykiwania pól.</p>
- *
- * <p>E5: wspólne typy błędów nie zależą od Spring Web ani Jacksona, żeby
- * wyjątki domenowe nie wciągały warstwy HTTP. Żaden moduł nie rzuca
- * {@code ResponseStatusException}, więc każdy błąd ma opis w {@code detail}.</p>
+ * Reguły architektury, których Spring Modulith nie sprawdza: kontrolery korzystają z usług
+ * i portów, implementacje JDBC należą do pakietów persistence lub postgis, bez wstrzykiwania
+ * pól. Wspólne typy błędów nie zależą od Spring Web ani Jacksona, a żaden moduł nie rzuca
+ * {@code ResponseStatusException}, więc każdy błąd ma opis w {@code detail}.
  *
  * @since 0.1.0
  */
@@ -134,9 +134,7 @@ final class ArchitectureTest {
     private static ArchRule jdbcPlacement() {
         return ArchRuleDefinition.noClasses()
             .that().resideOutsideOfPackages("..persistence..", "..postgis..")
-            .and().doNotHaveFullyQualifiedName("io.github.dostepnykampus.building.BuildingQuery")
             .should().dependOnClassesThat().resideInAnyPackage("org.springframework.jdbc..")
-            .because("BuildingQuery pozostaje wyjątkiem do uporządkowania zapytań w #849")
             .allowEmptyShould(false);
     }
 }

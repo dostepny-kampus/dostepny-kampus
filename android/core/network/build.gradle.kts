@@ -27,6 +27,10 @@ tasks.withType<Test>().configureEach {
     systemProperty("openapi.file", openApiFile.asFile.relativeTo(projectDir).invariantSeparatorsPath)
 }
 
+kotlin {
+    explicitApi()
+}
+
 dependencies {
     api(project(":core:model"))
     api(libs.dagger)

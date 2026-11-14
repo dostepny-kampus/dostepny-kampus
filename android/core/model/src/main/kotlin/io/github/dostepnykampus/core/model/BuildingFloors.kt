@@ -14,7 +14,7 @@ package io.github.dostepnykampus.core.model
  * @property label etykieta z danych PWr, np. „Piwnica” albo „3 piętro”
  * @property order kolejność w budynku; większa liczba to wyższe piętro
  */
-data class Floor(val id: String, val label: String, val order: Int)
+public data class Floor(val id: String, val label: String, val order: Int)
 
 /**
  * Piętra budynku ze źródłem danych (`FloorList`). Budynek podstawowy ma pustą listę.
@@ -24,4 +24,4 @@ data class Floor(val id: String, val label: String, val order: Int)
  * @property source źródło do podpisu przy liście, „Politechnika Wrocławska”
  * @property floors piętra od najniższego
  */
-data class FloorList(val source: String, val floors: List<Floor>)
+public data class FloorList(val source: String, val floors: List<Floor>)

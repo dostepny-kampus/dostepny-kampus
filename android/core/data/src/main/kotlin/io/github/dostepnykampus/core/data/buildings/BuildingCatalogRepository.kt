@@ -37,16 +37,16 @@ const val BUILDINGS_ASSET = "pwr-buildings.geojson"
  *
  * Wymagania: US1, US1.2, US17.3, BR-25, NFR-11, NFR-10
  *
+ * @param buildingCache kopia listy budynków w bazie; `null` zostawia katalog bez kopii
  * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
  * @param listBuildings lista z serwera; `null` zostawia katalog wyłącznie z pliku
- * @param buildingCache kopia listy budynków w bazie; `null` zostawia katalog bez kopii
  * @param nowMillis zegar chwili pobrania listy z serwera
  * @param readGeoJson odczyt treści pliku konturów
  */
-class BuildingCatalogRepository(
+class BuildingCatalogRepository internal constructor(
+    private val buildingCache: BuildingCacheDao?,
     private val ioContext: CoroutineContext,
     private val listBuildings: (suspend () -> ApiResult<BuildingList>)? = null,
-    private val buildingCache: BuildingCacheDao? = null,
     private val nowMillis: () -> Long = System::currentTimeMillis,
     private val readGeoJson: () -> String,
 ) {
@@ -58,6 +58,21 @@ class BuildingCatalogRepository(
     @Volatile private var cached: BuildingCatalog? = null
 
     @Volatile private var bundled: BuildingCatalog? = null
+
+    /**
+     * Katalog bez kopii listy budynków w bazie.
+     *
+     * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
+     * @param listBuildings lista z serwera; `null` zostawia katalog wyłącznie z pliku
+     * @param nowMillis zegar chwili pobrania listy z serwera
+     * @param readGeoJson odczyt treści pliku konturów
+     */
+    constructor(
+        ioContext: CoroutineContext,
+        listBuildings: (suspend () -> ApiResult<BuildingList>)? = null,
+        nowMillis: () -> Long = System::currentTimeMillis,
+        readGeoJson: () -> String,
+    ) : this(null, ioContext, listBuildings, nowMillis, readGeoJson)
 
     /**
      * Zwraca katalog budynków; gdy trwa pobranie z serwera, czeka na jego wynik.

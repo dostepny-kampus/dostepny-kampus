@@ -32,7 +32,7 @@ data class SyncedBarriers(val barriers: List<AcceptedBarrier>, val syncedAt: Ins
  * @param ioContext kontekst zapisu i odczytu bazy
  * @param now chwila pobrania w milisekundach epoki
  */
-class BarrierListCopy(
+internal class BarrierListCopy(
     private val dao: BarrierCacheDao,
     private val ioContext: CoroutineContext = Dispatchers.IO,
     private val now: () -> Long = System::currentTimeMillis,

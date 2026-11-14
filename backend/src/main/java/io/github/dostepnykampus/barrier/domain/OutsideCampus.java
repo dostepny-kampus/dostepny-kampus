@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.domain;
 
-import io.github.dostepnykampus.InvalidInput;
+import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.net.URI;
 
 /**

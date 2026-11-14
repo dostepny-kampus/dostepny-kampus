@@ -17,7 +17,7 @@ import javax.inject.Singleton
 /** Baza lokalna w grafie Hilt: jedna instancja na proces. */
 @Module
 @InstallIn(SingletonComponent::class)
-object DatabaseModule {
+internal object DatabaseModule {
     private const val NAME = "dostepny-kampus.db"
 
     /** Baza w pliku [NAME] w pamięci aplikacji; przetrwa zamknięcie aplikacji i restart telefonu. Wymagania: NFR-5 */

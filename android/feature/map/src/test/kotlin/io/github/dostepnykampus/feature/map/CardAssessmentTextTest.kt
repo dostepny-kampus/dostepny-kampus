@@ -10,7 +10,9 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
-import io.github.dostepnykampus.core.data.buildings.ServerEntrancesRepository
+import io.github.dostepnykampus.core.data.testing.ServerCard
+import io.github.dostepnykampus.core.data.testing.ServerReply
+import io.github.dostepnykampus.core.data.testing.serverEntrances
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.AssessmentSource
 import io.github.dostepnykampus.core.model.Building
@@ -19,9 +21,6 @@ import io.github.dostepnykampus.core.model.EntranceAssessment
 import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.BuildingDetails
-import io.github.dostepnykampus.core.network.DetailLevel
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
@@ -51,7 +50,7 @@ class CardAssessmentTextTest {
                 symbol = "A-1",
                 repository = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON },
                 networkStatus = { flowOf(true) },
-                serverEntrances = ServerEntrancesRepository { ApiResult.Success(DETAILS) },
+                serverEntrances = serverEntrances { ServerReply.Ok(DETAILS) },
             )
         compose.setContent {
             DostepnyKampusTheme {
@@ -84,9 +83,8 @@ class CardAssessmentTextTest {
             )
 
         val DETAILS =
-            BuildingDetails(
+            ServerCard(
                 building = Building(symbol = "A-1", name = "Gmach", outline = GeoPolygon(emptyList())),
-                detailLevel = DetailLevel.BASIC,
                 entrances = listOf(SERVER_ENTRANCE),
             )
 

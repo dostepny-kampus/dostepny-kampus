@@ -5,6 +5,9 @@
  */
 package io.github.dostepnykampus;
 
+import io.github.dostepnykampus.shared.error.ConflictingState;
+import io.github.dostepnykampus.shared.error.InvalidInput;
+import io.github.dostepnykampus.shared.error.MissingResource;
 import java.util.Map;
 import java.util.function.Supplier;
 import org.springframework.boot.test.context.TestComponent;

@@ -22,8 +22,8 @@ import io.github.dostepnykampus.core.data.submissions.StatusRefresh
 import io.github.dostepnykampus.core.data.submissions.SubmissionQueue
 import io.github.dostepnykampus.core.data.submissions.SubmissionServer
 import io.github.dostepnykampus.core.data.submissions.SubmissionStamps
+import io.github.dostepnykampus.core.data.submissions.SubmissionStore
 import io.github.dostepnykampus.core.database.OwnSubmissionDao
-import io.github.dostepnykampus.core.database.PendingSubmissionDao
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.Submission
@@ -31,9 +31,9 @@ import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.feature.capture.MySubmissionsActions
-import io.github.dostepnykampus.feature.capture.MySubmissionsContent
-import io.github.dostepnykampus.feature.capture.MySubmissionsViewModel
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsContent
+import io.github.dostepnykampus.feature.capture.mine.MySubmissionsViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -72,7 +72,7 @@ class OwnListPathTest {
     private val app = RuntimeEnvironment.getApplication()
 
     @Inject
-    lateinit var pending: PendingSubmissionDao
+    lateinit var store: SubmissionStore
 
     @Inject
     lateinit var history: OwnSubmissionDao
@@ -162,7 +162,7 @@ class OwnListPathTest {
 
     private fun queue(): SubmissionQueue =
         SubmissionQueue(
-            store = pending,
+            store = store,
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
@@ -175,7 +175,6 @@ class OwnListPathTest {
                     newId = { "s-${saved++}" },
                     nowMillis = { noon(today) },
                 ),
-            history = history,
         )
 
     private fun noon(day: LocalDate): Long =

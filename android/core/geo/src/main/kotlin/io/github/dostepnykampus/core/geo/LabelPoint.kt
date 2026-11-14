@@ -25,7 +25,7 @@ private const val CELL_CENTER = 0.5
  *
  * Wymagania: US1
  */
-fun labelPoint(area: GeoArea): GeoPoint {
+public fun labelPoint(area: GeoArea): GeoPoint {
     val polygon = area.parts().maxBy { part -> part.toGeometry().area().toDouble(International.SquareMeters) }
     val geometry = polygon.toGeometry()
     val outer = polygon.rings.first()

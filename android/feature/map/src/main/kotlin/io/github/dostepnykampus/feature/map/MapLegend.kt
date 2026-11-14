@@ -48,6 +48,7 @@ import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.markingImage
 import io.github.dostepnykampus.core.model.EntranceMarking
+import io.github.dostepnykampus.feature.map.style.ENTRANCE_MARK_DP
 
 private val SampleWidth = 34.dp
 private val SampleHeight = 26.dp

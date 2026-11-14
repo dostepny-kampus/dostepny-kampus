@@ -10,11 +10,9 @@ import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.core.model.isSignedIn
-import io.github.dostepnykampus.feature.auth.navigation.AccountRoute
-import io.github.dostepnykampus.feature.auth.navigation.SignInRoute
-import io.github.dostepnykampus.feature.capture.ReportDraft
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
+import io.github.dostepnykampus.feature.capture.report.ReportDraft
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute

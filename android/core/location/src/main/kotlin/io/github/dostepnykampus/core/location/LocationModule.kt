@@ -16,7 +16,7 @@ import dagger.hilt.components.SingletonComponent
 /** Źródła pomiaru ekranu C1 w grafie Hilt: odbiornik GNSS telefonu i jego zegar monotoniczny. Wymagania: US6.1 */
 @Module
 @InstallIn(SingletonComponent::class)
-object LocationModule {
+internal object LocationModule {
     /** Odczyty z dostawcy GPS telefonu. */
     @Provides
     fun positions(

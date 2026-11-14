@@ -20,7 +20,7 @@ import java.time.Instant
  * @property rejectionReason powód odrzucenia widoczny dla autora; `null` poza odrzuceniem
  * @property verifiedAt chwila przyjęcia; `null` przed przyjęciem
  */
-data class Submission(
+public data class Submission(
     val id: String,
     val version: Int,
     val status: SubmissionStatus,
@@ -35,7 +35,7 @@ data class Submission(
 }
 
 /** Status zgłoszenia na serwerze (`SubmissionStatus`). Status „lokalne” istnieje tylko w telefonie. Wymagania: US8.1 */
-enum class SubmissionStatus {
+public enum class SubmissionStatus {
     /** Wysłane: serwer ma zgłoszenie, Weryfikator go jeszcze nie wziął. */
     SENT,
 

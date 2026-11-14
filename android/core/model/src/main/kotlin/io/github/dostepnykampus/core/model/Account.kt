@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.core.model
 
 /** Rola pracownicza osoby zalogowanej; osoba może mieć kilka. Wymagania: BR-1 */
-enum class StaffRole {
+public enum class StaffRole {
     /** Zbierający. Wymagania: RO-ZBI */
     COLLECTOR,
 
@@ -18,16 +18,16 @@ enum class StaffRole {
 }
 
 /** Kim jest osoba w aplikacji: od tego zależą ekrany, które widzi. Wymagania: US14.1 */
-sealed interface Account {
+public sealed interface Account {
     /** Gość niezalogowany: mapa i opisy budynków bez konta. Wymagania: RO-GOS, US1.2 */
-    data object Guest : Account
+    public data object Guest : Account
 
     /** Osoba zalogowana: Odwiedzający, a z [staffRoles] także role pracownicze. Wymagania: RO-ODW, BR-1 */
-    data class SignedIn(val staffRoles: Set<StaffRole> = emptySet()) : Account
+    public data class SignedIn(val staffRoles: Set<StaffRole> = emptySet()) : Account
 }
 
 /** Czy osoba jest zalogowana, czyli może zgłosić barierę i otworzyć konto L2. Wymagania: US14.2 */
-val Account.isSignedIn: Boolean
+public val Account.isSignedIn: Boolean
     get() = this is Account.SignedIn
 
 /**
@@ -35,5 +35,5 @@ val Account.isSignedIn: Boolean
  *
  * Wymagania: US14.1
  */
-val Account.hasStaffRole: Boolean
+public val Account.hasStaffRole: Boolean
     get() = this is Account.SignedIn && staffRoles.isNotEmpty()

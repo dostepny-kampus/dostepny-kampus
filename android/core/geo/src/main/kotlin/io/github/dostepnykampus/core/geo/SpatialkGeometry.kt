@@ -18,17 +18,17 @@ import org.maplibre.spatialk.turf.measurement.distance
 import org.maplibre.spatialk.units.International
 
 /** Punkt modelu jako pozycja GeoJSON spatialk: długość, potem szerokość. */
-fun GeoPoint.toPosition(): Position = Position(longitude = longitude, latitude = latitude)
+public fun GeoPoint.toPosition(): Position = Position(longitude = longitude, latitude = latitude)
 
 /** Kontur modelu jako geometria spatialk: `Polygon` albo `MultiPolygon`. */
-fun GeoArea.toGeometry(): PolygonGeometry =
+public fun GeoArea.toGeometry(): PolygonGeometry =
     when (this) {
         is GeoPolygon -> Polygon(positions(this))
         is GeoMultiPolygon -> MultiPolygon(polygons.map(::positions))
     }
 
 /** Wszystkie pierścienie konturu, także otwory i pierścienie części wielokąta złożonego. */
-fun GeoArea.allRings(): List<List<GeoPoint>> =
+public fun GeoArea.allRings(): List<List<GeoPoint>> =
     when (this) {
         is GeoPolygon -> rings
         is GeoMultiPolygon -> polygons.flatMap(GeoPolygon::rings)

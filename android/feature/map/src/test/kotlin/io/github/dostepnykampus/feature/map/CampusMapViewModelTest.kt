@@ -9,12 +9,11 @@ import io.github.dostepnykampus.core.data.barriers.AcceptedBarrier
 import io.github.dostepnykampus.core.data.barriers.AcceptedBarriers
 import io.github.dostepnykampus.core.data.buildings.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
+import io.github.dostepnykampus.core.data.testing.ServerBuildings
+import io.github.dostepnykampus.core.data.testing.ServerReply
+import io.github.dostepnykampus.core.data.testing.serverBuildingCatalog
 import io.github.dostepnykampus.core.geo.parseGeoArea
 import io.github.dostepnykampus.core.model.Building
-import io.github.dostepnykampus.core.network.ApiBuilding
-import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.BuildingList
-import io.github.dostepnykampus.core.network.DetailLevel
 import io.github.dostepnykampus.feature.map.data.campusMapData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -82,20 +81,14 @@ class CampusMapViewModelTest {
         runTest(UnconfinedTestDispatcher()) {
             val outline = parseGeoArea("""{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}""")
             val server =
-                BuildingList(
+                ServerBuildings(
                     source = "serwer",
-                    buildings =
-                        listOf(
-                            ApiBuilding(
-                                building = Building(symbol = "C-13", name = "Serwer C-13", outline = outline),
-                                detailLevel = DetailLevel.BASIC,
-                            ),
-                        ),
+                    buildings = listOf(Building(symbol = "C-13", name = "Serwer C-13", outline = outline)),
                 )
             val catalog =
-                BuildingCatalogRepository(
+                serverBuildingCatalog(
                     ioContext = EmptyCoroutineContext,
-                    listBuildings = { ApiResult.Success(server) },
+                    list = { ServerReply.Ok(server) },
                     nowMillis = { BUILDINGS_SYNCED },
                     readGeoJson = { geoJson },
                 )
