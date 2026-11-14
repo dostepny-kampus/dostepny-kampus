@@ -17,7 +17,7 @@ import java.io.File
 /**
  * Wyszukanie budynku po symbolu na budynkach testowych o podobnych symbolach i w prawdziwym pliku konturów.
  *
- * Wymagania: US1.1
+ * Wymagania: US1.1, US1.2
  */
 class SearchBuildingsTest {
     private val outline = GeoPolygon(listOf(List(4) { GeoPoint(longitude = 0.0, latitude = 0.0) }))
@@ -57,7 +57,7 @@ class SearchBuildingsTest {
 
     /** Scenariusz (częściowo): przegladanie-mapy.feature: Mapa i wyszukiwanie działają bez logowania. */
     @Test
-    fun us1_2_real_file_finds_a1() {
+    fun findsA1InRealFile() {
         val real = parseBuildingCatalog(File(System.getProperty("dostepnykampus.buildings")).readText())
         assertEquals(listOf("A-1"), searchBuildings("A-1", real.buildings).map { it.symbol })
     }

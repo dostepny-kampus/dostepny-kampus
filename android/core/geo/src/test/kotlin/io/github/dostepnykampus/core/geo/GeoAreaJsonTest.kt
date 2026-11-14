@@ -14,25 +14,29 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-/** Kontur budynku jako pole JSON: odczyt, zapis i zła geometria, na kształtach testowych. */
+/**
+ * Kontur budynku jako pole JSON: odczyt, zapis i zła geometria, na kształtach testowych.
+ *
+ * Wymagania: US1
+ */
 class GeoAreaJsonTest {
     private val json = Json
 
     @Test
-    fun us1_polygon_from_field() {
+    fun readsPolygonFromField() {
         val area = json.decodeFromString(GeoAreaJson, """{"type":"Polygon","coordinates":[$SQUARE]}""")
         assertEquals(GeoPolygon(listOf(square())), area)
     }
 
     @Test
-    fun us1_multipolygon_round_trip() {
+    fun roundTripsMultipolygon() {
         val area: GeoArea = GeoMultiPolygon(listOf(GeoPolygon(listOf(square())), GeoPolygon(listOf(square()))))
         val text = json.encodeToString(GeoAreaJson, area)
         assertEquals(area, json.decodeFromString(GeoAreaJson, text))
     }
 
     @Test
-    fun us1_point_is_not_outline() {
+    fun rejectsPointAsOutline() {
         assertThrows<IllegalArgumentException> {
             json.decodeFromString(GeoAreaJson, """{"type":"Point","coordinates":[17.0,51.0]}""")
         }

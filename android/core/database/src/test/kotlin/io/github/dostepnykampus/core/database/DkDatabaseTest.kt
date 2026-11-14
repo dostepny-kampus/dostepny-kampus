@@ -16,7 +16,7 @@ import org.robolectric.RuntimeEnvironment
 @RunWith(RobolectricTestRunner::class)
 class DkDatabaseTest {
     @Test
-    fun nfr5_queue_tables() {
+    fun createsQueueTables() {
         val database =
             Room
                 .inMemoryDatabaseBuilder(RuntimeEnvironment.getApplication(), DkDatabase::class.java)

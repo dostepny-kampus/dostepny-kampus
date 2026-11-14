@@ -42,7 +42,7 @@ class PendingMarkerChangeDaoTest {
 
     /** Zmiany wracają w kolejności zapisu, a ponowny zapis operacji nie dodaje drugiego wiersza. */
     @Test
-    fun us153_changes_wait_in_order() =
+    fun keepsChangesInOrder() =
         runTest {
             dao.save(change(operation = "o2", marker = "m2", savedAt = 9))
             dao.save(change(operation = "o1", marker = "m1", savedAt = 5))
@@ -52,7 +52,7 @@ class PendingMarkerChangeDaoTest {
 
     /** Cofnięcie znacznika, który serwer już ma, czeka w kolejce obok innych zmian. */
     @Test
-    fun us153_revoke_of_sent_waits() =
+    fun queuesRevokeOfSent() =
         runTest {
             dao.save(change(operation = "o1", marker = "m1", savedAt = 5))
             dao.saveRevoke(revoke(operation = "o2", marker = "m0", savedAt = 7))
@@ -64,7 +64,7 @@ class PendingMarkerChangeDaoTest {
 
     /** Cofnięcie znacznika, którego postawienie jeszcze czeka, usuwa to postawienie i nic nie dodaje. */
     @Test
-    fun us153_revoke_of_waiting_drops() =
+    fun dropsRevokeOfWaiting() =
         runTest {
             dao.save(change(operation = "o1", marker = "m1", savedAt = 5))
             dao.saveRevoke(revoke(operation = "o2", marker = "m1", savedAt = 7))
@@ -73,7 +73,7 @@ class PendingMarkerChangeDaoTest {
 
     /** Zmiana odebrana przez serwer znika z kolejki, pozostałe zostają. */
     @Test
-    fun us153_sent_change_leaves() =
+    fun removesSentChange() =
         runTest {
             dao.save(change(operation = "o1", marker = "m1", savedAt = 5))
             dao.save(change(operation = "o2", marker = "m2", savedAt = 9))

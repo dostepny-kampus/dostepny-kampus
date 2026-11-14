@@ -22,7 +22,7 @@ class CampusAreasTest {
      * Wymagania: BR-G5
      */
     @Test
-    fun br_g5_five_areas_real_data() {
+    fun makesFiveAreasFromRealData() {
         val real = parseBuildingCatalog(File(System.getProperty("dostepnykampus.buildings")).readText())
         val areas = campusAreas(real.buildings)
         val sizes = areas.associate { it.name to it.symbols.size }
@@ -40,7 +40,7 @@ class CampusAreasTest {
      * Wymagania: BR-G5
      */
     @Test
-    fun br_g5_chain_within_600_m() {
+    fun chainsWithin600M() {
         val first = square(symbol = "A-1", south = LAT)
         val second = square(symbol = "T-1", south = LAT + SIDE + meters(value = 590.0))
         val third = square(symbol = "T-2", south = LAT + 2 * SIDE + meters(value = 1_180.0))
@@ -52,7 +52,7 @@ class CampusAreasTest {
 
     /** Liczba budynków terenu to liczba symboli; dwa kontury jednego symbolu liczą się raz. Wymagania: US1.7 */
     @Test
-    fun us1_7_symbols_counted_once() {
+    fun countsSymbolsOnce() {
         val outlines = listOf(square(symbol = "H-14", south = LAT), square(symbol = "H-14", south = LAT + 2 * SIDE))
         assertEquals(listOf(listOf("H-14")), campusAreas(outlines).map(CampusArea::symbols))
     }

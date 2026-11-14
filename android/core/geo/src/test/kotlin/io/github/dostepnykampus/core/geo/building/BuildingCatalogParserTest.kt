@@ -20,6 +20,8 @@ import java.io.File
 /**
  * Katalog budynków z małego syntetycznego GeoJSON w formacie `data/buildings` („Budynek testowy”, nie dane PWr)
  * i z prawdziwego pliku konturów OSM z `data/`.
+ *
+ * Wymagania: US1, US17.1, BR-24, US2
  */
 class BuildingCatalogParserTest {
     private val catalog =
@@ -39,28 +41,28 @@ class BuildingCatalogParserTest {
     private val real by lazy { parseBuildingCatalog(File(System.getProperty("dostepnykampus.buildings")).readText()) }
 
     @Test
-    fun us1_outline_from_text() {
+    fun readsOutlineFromText() {
         assertEquals(polygon(x = 0), parseGeoArea(square(x = 0)))
         val multi = """{"type":"MultiPolygon","coordinates":[[[[0,0],[1,0],[1,1],[0,1],[0,0]]]]}"""
         assertEquals(GeoMultiPolygon(listOf(polygon(x = 0))), parseGeoArea(multi))
     }
 
     @Test
-    fun us1_building_per_symbol() {
+    fun makesBuildingPerSymbol() {
         assertEquals(listOf("C-13", "H-14", "C-3", "C-4"), catalog.buildings.map { it.symbol })
         assertEquals("Budynek testowy", catalog.buildings.first().name)
         assertEquals("© OpenStreetMap contributors", catalog.attribution)
     }
 
     @Test
-    fun us1_same_symbol_merges() {
+    fun mergesSameSymbol() {
         val h14 = catalog.buildings.single { it.symbol == "H-14" }
         assertEquals(GeoMultiPolygon(listOf(polygon(x = 2), polygon(x = 4))), h14.outline)
         assertEquals("Budynek drugi", h14.name)
     }
 
     @Test
-    fun us1_shared_outline() {
+    fun sharesOutline() {
         val (c3, c4) = catalog.buildings.filter { it.symbol in setOf("C-3", "C-4") }
         assertEquals(polygon(x = 6), c3.outline)
         assertEquals(c3.outline, c4.outline)
@@ -68,7 +70,7 @@ class BuildingCatalogParserTest {
     }
 
     @Test
-    fun us17_1_br_24_marking() {
+    fun readsEntranceMarking() {
         val c13 = catalog.entrances.filter { it.buildingSymbol == "C-13" }
         assertEquals(
             listOf(EntranceMarking.ACCESSIBLE, EntranceMarking.INACCESSIBLE, EntranceMarking.NO_DATA),
@@ -81,7 +83,7 @@ class BuildingCatalogParserTest {
     }
 
     @Test
-    fun us17_1_shared_entrance() {
+    fun sharesEntrance() {
         val shared = catalog.entrances.filter { it.id == "node/8" }
         assertEquals(listOf("C-3", "C-4"), shared.map { it.buildingSymbol })
         assertEquals(listOf(EntranceMarking.NO_DATA, EntranceMarking.NO_DATA), shared.map { it.marking })
@@ -108,7 +110,7 @@ class BuildingCatalogParserTest {
 
     /** Wiersz: w prawdziwych danych nazwa nie powtarza symbolu swojego budynku; wyjątkiem jest „M-6 bis”. */
     @Test
-    fun us2_real_names_without_symbol() {
+    fun keepsRealNamesWithoutSymbol() {
         val names = real.buildings.associate { it.symbol to it.name }
         val repeated = names.filter { (symbol, name) -> name?.contains(symbol) == true }
         assertEquals(mapOf("M-6" to "M-6 bis"), repeated)
@@ -118,7 +120,7 @@ class BuildingCatalogParserTest {
     }
 
     @Test
-    fun us1_bad_format_rejected() {
+    fun rejectsBadFormat() {
         listOf(
             """{"type":"FeatureCollection","features":[]}""",
             collection(feature(properties = """{"kind":"droga","symbols":$C13,"osm_id":"way/1"}""", geometry = POINT)),
@@ -130,7 +132,7 @@ class BuildingCatalogParserTest {
     }
 
     @Test
-    fun us1_real_file_as_readme() {
+    fun readsRealFileAsReadme() {
         val entrances = real.entrances.distinctBy { it.id }
         assertEquals(95, real.buildings.size)
         assertEquals(72, entrances.size)

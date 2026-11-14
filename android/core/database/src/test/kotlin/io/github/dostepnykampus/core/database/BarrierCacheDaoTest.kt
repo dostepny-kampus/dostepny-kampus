@@ -41,13 +41,13 @@ class BarrierCacheDaoTest {
     }
 
     @Test
-    fun nfr10_empty_before_first_save() =
+    fun staysEmptyBeforeFirstSave() =
         runTest {
             assertNull(dao.get())
         }
 
     @Test
-    fun nfr10_saved_list_comes_back() =
+    fun returnsSavedList() =
         runTest {
             val entity = BarrierCacheEntity(id = BARRIER_CACHE_SINGLE_ROW, listJson = LIST_JSON, syncedAt = 42)
             dao.save(entity)
@@ -56,7 +56,7 @@ class BarrierCacheDaoTest {
         }
 
     @Test
-    fun nfr10_new_save_replaces_old() =
+    fun replacesOldOnNewSave() =
         runTest {
             dao.save(BarrierCacheEntity(id = BARRIER_CACHE_SINGLE_ROW, listJson = LIST_JSON, syncedAt = 1))
             val newer = BarrierCacheEntity(id = BARRIER_CACHE_SINGLE_ROW, listJson = "{}", syncedAt = 9)

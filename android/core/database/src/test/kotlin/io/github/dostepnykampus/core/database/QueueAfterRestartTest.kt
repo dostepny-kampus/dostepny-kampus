@@ -19,7 +19,11 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import java.io.File
 
-/** Kolejka i historia w pliku bazy z [DatabaseModule] po zamknięciu i ponownym otwarciu. Wymagania: NFR-5, BR-9 */
+/**
+ * Kolejka i historia w pliku bazy z [DatabaseModule] po zamknięciu i ponownym otwarciu.
+ *
+ * Wymagania: NFR-5, BR-9, US9.1
+ */
 @RunWith(RobolectricTestRunner::class)
 class QueueAfterRestartTest {
     private val app = RuntimeEnvironment.getApplication()
@@ -29,7 +33,7 @@ class QueueAfterRestartTest {
      * Scenariusz: synchronizacja.feature: Zgłoszenia zapisane bez sieci przetrwają restart telefonu
      */
     @Test
-    fun us9_1_local_after_restart() =
+    fun keepsLocalAfterRestart() =
         runTest {
             val before = DatabaseModule.database(app)
             IDS.forEachIndexed { index, id ->
