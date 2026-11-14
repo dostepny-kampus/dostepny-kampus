@@ -23,7 +23,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.Instant
 
-/** JSON zgłoszeń według kontraktu: `NewSubmission`, `SubmissionUpdate` i `Submission`, bez sieci. */
+/**
+ * JSON zgłoszeń według kontraktu: `NewSubmission`, `SubmissionUpdate` i `Submission`, bez sieci.
+ *
+ * Wymagania: BR-9, BR-10, US7, US8.1
+ */
 class SubmissionJsonTest {
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -36,7 +40,7 @@ class SubmissionJsonTest {
         )
 
     @Test
-    fun br9_new_has_phone_id() {
+    fun writesPhoneIdForNew() {
         val sent = json.parseToJsonElement(json.encodeNewSubmission(id = ID, content = quick)).jsonObject
         assertEquals("\"$ID\"", sent.getValue("id").toString(), "identyfikator telefonu w nowym zgłoszeniu")
         val location = sent.getValue("location").jsonObject
@@ -48,20 +52,20 @@ class SubmissionJsonTest {
     }
 
     @Test
-    fun br9_new_omits_empty_fields() {
+    fun omitsEmptyFieldsForNew() {
         val sent = json.parseToJsonElement(json.encodeNewSubmission(id = ID, content = quick)).jsonObject
         assertFalse("severity" in sent, "brak ważności w wysyłce")
         assertFalse("buildingSymbol" in sent, "brak budynku w wysyłce")
     }
 
     @Test
-    fun br10_update_has_base_version() {
+    fun writesBaseVersionForUpdate() {
         val sent = json.parseToJsonElement(json.encodeSubmissionUpdate(version = 2, content = quick)).jsonObject
         assertEquals("2", sent.getValue("version").toString(), "wersja bazowa aktualizacji")
     }
 
     @Test
-    fun us7_full_round_trip() {
+    fun roundTripsFullSubmission() {
         val precise =
             quick.copy(
                 kind = SubmissionKind.PRECISE,
@@ -85,7 +89,7 @@ class SubmissionJsonTest {
     }
 
     @Test
-    fun us8_1_server_submission() {
+    fun readsServerSubmission() {
         val submission = json.decodeSubmission(SERVER)
         assertEquals(SubmissionStatus.SENT, submission.status, "status zgłoszenia z serwera")
         assertEquals(Instant.parse("2026-11-03T18:00:00Z"), submission.createdAt, "data utworzenia z serwera")
@@ -93,7 +97,7 @@ class SubmissionJsonTest {
     }
 
     @Test
-    fun us8_1_bad_server_submission() {
+    fun rejectsBadServerSubmission() {
         assertThrows<IllegalArgumentException> { decode(SERVER.replace(oldValue = "SENT", newValue = "LOST")) }
         assertThrows<IllegalArgumentException> { decode(SERVER.replace(oldValue = "18:00:00Z", newValue = "wczoraj")) }
         assertThrows<IllegalArgumentException> { decode(SERVER.replace(oldValue = "\"$PHOTO\"", newValue = "")) }

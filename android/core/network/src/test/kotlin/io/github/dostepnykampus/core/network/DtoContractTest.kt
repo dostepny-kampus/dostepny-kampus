@@ -47,19 +47,19 @@ class DtoContractTest {
     private val json = NetworkModule.json()
 
     @Test
-    fun d1_no_hand_written_dtos() {
+    fun findsNoHandWrittenDtos() {
         val found = serializableClasses()
         assertEquals(emptyList<String>(), found, "ręczna klasa @Serializable zamiast modelu z kontraktu")
     }
 
     @Test
-    fun d1_detects_hand_written_dto() {
+    fun detectsHandWrittenDto() {
         val checked = listOf(HandWrittenDto::class.java, Submission::class.java, BuildingsApi::class.java)
         assertEquals(listOf(true, false, false), checked.map(::isHandWrittenDto), "rozpoznanie ręcznych klas DTO")
     }
 
     @Test
-    fun d4_requests_match_schema() {
+    fun matchesRequestsToSchema() {
         val bodies =
             listOf(precise, quick).flatMap { content ->
                 listOf(
@@ -77,7 +77,7 @@ class DtoContractTest {
     }
 
     @Test
-    fun d5_building_responses_decode() {
+    fun decodesBuildingResponses() {
         val decoders: Map<String, (String) -> Any> =
             mapOf(
                 "BuildingList" to json::decodeBuildingList,
@@ -94,7 +94,7 @@ class DtoContractTest {
     }
 
     @Test
-    fun d6_model_enums_equal_contract() {
+    fun matchesModelEnumsToContract() {
         val pairs: Map<String, Pair<List<Enum<*>>, List<Enum<*>>>> =
             mapOf(
                 "SubmissionStatus" to (SubmissionStatus.entries to SubmissionStatusJson.entries),
@@ -114,7 +114,7 @@ class DtoContractTest {
     }
 
     @Test
-    fun d7_submission_responses_decode() {
+    fun decodesSubmissionResponses() {
         val submission = spec.sample(spec.node("/components/schemas/Submission")).jsonObject
         val floor = spec.sample(spec.node("/components/schemas/SubmissionFloor"))
         val bodies: Map<String, () -> Any> =

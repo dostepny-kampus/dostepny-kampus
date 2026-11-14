@@ -30,6 +30,8 @@ import java.net.HttpURLConnection.HTTP_OK
 /**
  * Odczyty budynków i pięter na MockWebServer: sukces, 404, zły JSON, kontur niebędący wielokątem,
  * zerwane połączenie i błąd serwera.
+ *
+ * Wymagania: US1, US2, US6.2, US7.2
  */
 class BuildingsApiTest {
     private val server = MockWebServer()
@@ -46,7 +48,7 @@ class BuildingsApiTest {
     }
 
     @Test
-    fun us1_list() {
+    fun fetchesList() {
         enqueue(HTTP_OK, BUILDING_LIST_JSON)
         val list = json.decodeBuildingList(BUILDING_LIST_JSON)
         assertEquals(ApiResult.Success(list), blocking { listBuildings() }, "lista budynków z serwera")
@@ -57,7 +59,7 @@ class BuildingsApiTest {
     }
 
     @Test
-    fun us2_building() {
+    fun fetchesBuilding() {
         enqueue(HTTP_OK, BUILDING_DETAILS_JSON)
         val card = json.decodeBuildingDetails(BUILDING_DETAILS_JSON)
         assertEquals(ApiResult.Success(card), blocking { building("C-13") }, "karta budynku z serwera")
@@ -65,7 +67,7 @@ class BuildingsApiTest {
     }
 
     @Test
-    fun us6_2_locate() {
+    fun fetchesLocateResult() {
         enqueue(HTTP_OK, """{"buildingSymbol":"C-13","insideOutline":true}""")
         val inside = blocking { locate(latitude = 51.0, longitude = 17.0) }
         val expected = json.decodeLocateResult("""{"buildingSymbol":"C-13","insideOutline":true}""")
@@ -81,7 +83,7 @@ class BuildingsApiTest {
     }
 
     @Test
-    fun us7_2_floors() {
+    fun fetchesFloors() {
         enqueue(HTTP_OK, FLOORS)
         val floors = blocking { floors("C-13") }
         val lowest =
@@ -98,7 +100,7 @@ class BuildingsApiTest {
     }
 
     @Test
-    fun not_found() {
+    fun reportsNotFound() {
         enqueue(
             code = HTTP_NOT_FOUND,
             body = """{"type":"about:blank","title":"Not Found","status":404}""",
@@ -108,7 +110,7 @@ class BuildingsApiTest {
     }
 
     @Test
-    fun malformed_json() {
+    fun reportsMalformedJson() {
         enqueue(HTTP_OK, "{")
         val failed = blocking { listBuildings() }
         val error = assertInstanceOf(ApiResult.ServerError::class.java, failed, "błąd serwera dla złego JSON")
@@ -117,7 +119,7 @@ class BuildingsApiTest {
     }
 
     @Test
-    fun us1_outline_not_polygon() {
+    fun rejectsOutlineNotPolygon() {
         val line = """{"type":"LineString","coordinates":[[17,51],[18,51]]}"""
         enqueue(HTTP_OK, BUILDING_LIST_JSON.replace(oldValue = BUILDING_OUTLINE_JSON, newValue = line))
         val failed = blocking { listBuildings() }
@@ -127,7 +129,7 @@ class BuildingsApiTest {
     }
 
     @Test
-    fun connection_dropped() {
+    fun reportsDroppedConnection() {
         server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
         assertInstanceOf(
             ApiResult.NetworkError::class.java,
@@ -137,7 +139,7 @@ class BuildingsApiTest {
     }
 
     @Test
-    fun server_error() {
+    fun reportsServerError() {
         enqueue(HTTP_INTERNAL_ERROR, """{"status":500}""")
         val failed = blocking { locate(latitude = 51.0, longitude = 17.0) }
         val error = assertInstanceOf(ApiResult.ServerError::class.java, failed, "błąd serwera dla kodu 500")

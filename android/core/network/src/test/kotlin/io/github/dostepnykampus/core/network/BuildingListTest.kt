@@ -25,19 +25,23 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
 
-/** Mapowanie JSON kontraktu budynków na modele, bez sieci. */
+/**
+ * Mapowanie JSON kontraktu budynków na modele, bez sieci.
+ *
+ * Wymagania: US1, US2, US17.1, US6.2
+ */
 class BuildingListTest {
     private val json = Json
 
     @Test
-    fun us1_list() {
+    fun readsList() {
         val list = json.decodeBuildingList(BUILDING_LIST_JSON)
         assertEquals("© OpenStreetMap contributors", list.source, "źródło danych listy")
         assertEquals(listOf(c13(DetailLevel.DETAILED)), list.buildings, "budynki z listy")
     }
 
     @Test
-    fun us1_server_without_name() {
+    fun readsServerWithoutName() {
         val listed = json.decodeBuildingList(BUILDING_LIST_JSON.replace(oldValue = NAME_FIELD, newValue = ""))
         val listedAll = listed.buildings
         val listedBuilding = listedAll.single().building
@@ -48,7 +52,7 @@ class BuildingListTest {
     }
 
     @Test
-    fun us1_server_symbol_name_kept() {
+    fun keepsServerSymbolName() {
         val listed = json.decodeBuildingList(BUILDING_LIST_JSON.replace(oldValue = NAME, newValue = "C-13"))
         val listedAll = listed.buildings
         val listedBuilding = listedAll.single().building
@@ -59,7 +63,7 @@ class BuildingListTest {
     }
 
     @Test
-    fun us2_building_with_entrance() {
+    fun readsBuildingWithEntrance() {
         val card = json.decodeBuildingDetails(BUILDING_DETAILS_JSON)
         assertEquals(c13(DetailLevel.BASIC).building, card.building, "budynek z karty")
         assertEquals(DetailLevel.BASIC, card.detailLevel, "poziom szczegółowości karty")
@@ -80,7 +84,7 @@ class BuildingListTest {
     }
 
     @Test
-    fun us17_1_entrance_without_name() {
+    fun readsEntranceWithoutName() {
         val entrance =
             card(
                 """{"id":"node/1","buildingSymbol":"C-13","type":"emergency","main":false,""" +
@@ -92,7 +96,7 @@ class BuildingListTest {
     }
 
     @Test
-    fun us6_2_locate() {
+    fun readsLocateResult() {
         val inside = json.decodeLocateResult("""{"buildingSymbol":"C-13","insideOutline":true}""")
         assertEquals(
             BuildingAtPoint(buildingSymbol = "C-13", isInsideOutline = true),
@@ -108,7 +112,7 @@ class BuildingListTest {
     }
 
     @Test
-    fun bad_entrance_rejected() {
+    fun rejectsBadEntrance() {
         assertThrows<IllegalArgumentException> { card(entrance(date = "wczoraj")) }
         assertThrows<IllegalArgumentException> { card(entrance(marking = "MAYBE")) }
         assertThrows<IllegalArgumentException> { card(entrance(pointType = "Line", coordinates = "[1.0]")) }

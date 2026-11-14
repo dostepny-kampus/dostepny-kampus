@@ -22,10 +22,14 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import java.nio.file.Path
 
-/** Wysyłka zmian znaczników przez `POST /sync/push`: ciało według `SyncOperation` z kontraktu i odczyt wyników. */
+/**
+ * Wysyłka zmian znaczników przez `POST /sync/push`: ciało według `SyncOperation` z kontraktu i odczyt wyników.
+ *
+ * Wymagania: US15.3
+ */
 class MarkerChangesApiTest {
     @Test
-    fun us15_3_contract_operations() {
+    fun sendsContractOperations() {
         val sent = served(code = 200, body = """{"results":[]}""") { api -> api.push(CHANGES) }.second
         val spec = OpenApiSpec(Path.of(requireNotNull(System.getProperty("openapi.file"))))
         val expected =
@@ -52,7 +56,7 @@ class MarkerChangesApiTest {
     }
 
     @Test
-    fun us15_3_result_per_operation() {
+    fun readsResultPerOperation() {
         val body =
             """
                 |{"results":[
@@ -71,7 +75,7 @@ class MarkerChangesApiTest {
     }
 
     @Test
-    fun empty_list_sends_nothing() {
+    fun sendsNothingForEmptyList() {
         val (result, requests) =
             MockWebServer().use { server ->
                 server.start()

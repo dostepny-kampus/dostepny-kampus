@@ -37,7 +37,7 @@ class EntranceAssessmentTest {
      * Wymagania: US17.3, BR-24
      */
     @Test
-    fun us17_3_assessment_kept() {
+    fun keepsAssessment() {
         val details =
             success(card(date = "2026-10-01", source = "IMPORT", second = "2026-11-03", secondSource = "WALKTHROUGH"))
         assertEquals(
@@ -56,7 +56,7 @@ class EntranceAssessmentTest {
      * Wymagania: US17.3
      */
     @Test
-    fun us17_3_bad_assessment() {
+    fun rejectsBadAssessment() {
         val bodies = mapOf("dzień 2026-02-30" to card(date = "2026-02-30"), "źródło SURVEY" to card(source = "SURVEY"))
         bodies.forEach { (input, body) -> assertInstanceOf(ApiResult.ServerError::class.java, fetch(body), input) }
     }
