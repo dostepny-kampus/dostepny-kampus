@@ -116,9 +116,10 @@ class DtoContractTest {
             )
         val problems =
             pairs.mapNotNull { (name, values) ->
-                val (model, contract) = values
-                "$name: model ${model.map { it.name }}, kontrakt ${contract.map { it.name }}"
-                    .takeIf { model.map { it.name }.toSet() != contract.map { it.name }.toSet() }
+                val model = values.first.map(Enum<*>::name)
+                val contract = values.second.map(Enum<*>::name)
+                "$name: model $model, kontrakt $contract"
+                    .takeIf { model.toSet() != contract.toSet() }
             }
         assertEquals(emptyList<String>(), problems)
     }
