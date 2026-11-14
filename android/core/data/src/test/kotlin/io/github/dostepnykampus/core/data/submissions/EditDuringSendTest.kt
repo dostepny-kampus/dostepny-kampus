@@ -11,7 +11,7 @@ import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.precise
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.server
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -64,17 +64,18 @@ class EditDuringSendTest {
             assertEquals(emptyList<Any>(), store.rows)
         }
 
-    private suspend fun CoroutineScope.editWhileSendWaitsForServer() {
-        val photos = photo(tempDir, PHOTO)
-        queue.save(precise(PHOTO, severity = 2), photos)
-        val send = launch { queue.sendAll() }
-        entered.await()
-        withTimeout(TIMEOUT_MILLIS) {
-            queue.saveEdit(EditedSubmission(id = ID, baseVersion = null), precise(PHOTO, severity = 3), photos)
+    private suspend fun editWhileSendWaitsForServer() =
+        coroutineScope {
+            val photos = photo(tempDir, PHOTO)
+            queue.save(precise(PHOTO, severity = 2), photos)
+            val send = launch { queue.sendAll() }
+            entered.await()
+            withTimeout(TIMEOUT_MILLIS) {
+                queue.saveEdit(EditedSubmission(id = ID, baseVersion = null), precise(PHOTO, severity = 3), photos)
+            }
+            reply.complete(Unit)
+            send.join()
         }
-        reply.complete(Unit)
-        send.join()
-    }
 
     private companion object {
         const val ID = "s-w-trakcie"
