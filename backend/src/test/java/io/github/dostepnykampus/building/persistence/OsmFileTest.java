@@ -5,21 +5,44 @@
  */
 package io.github.dostepnykampus.building.persistence;
 
+import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Plik konturów OpenStreetMap daje wejścia z wierszem na budynek i oznaczeniem z tagu
- * wheelchair; obiekty budynków nie są wejściami (ADR-0008).
+ * Plik konturów OpenStreetMap daje budynki z połączonymi konturami i pierwszą nazwą
+ * symbolu, wejścia z wierszem na budynek i oznaczeniem z tagu wheelchair, a suma kontrolna
+ * zależy od treści pliku i wersji importu (ADR-0008).
  *
- * <p>Wymagania: US17.1, BR-24</p>
+ * <p>Wymagania: US1, US2, US17.1, BR-24</p>
  *
  * @since 0.1.0
  */
 final class OsmFileTest {
+
+    @Test
+    void usOneMergesOutlinesAndKeepsFirstName() {
+        MatcherAssert.assertThat(
+            "Budynki z pliku mają złe kontury, nazwy albo kolejność",
+            OsmFileTest.file().buildings(),
+            Matchers.contains(
+                new ImportedBuilding(
+                    "A", "Pierwsza",
+                    "{\"type\":\"MultiPolygon\",\"coordinates\":[[[[1,1]]],[[[2,2]]],[[[3,3]]]]}"
+                ),
+                new ImportedBuilding(
+                    "B", "Pierwsza", "{\"type\":\"MultiPolygon\",\"coordinates\":[[[[1,1]]]]}"
+                ),
+                new ImportedBuilding(
+                    "C", null, "{\"type\":\"MultiPolygon\",\"coordinates\":[[[[4,4]]]]}"
+                )
+            )
+        );
+    }
 
     @Test
     void brTwentyFourMarksEntrancesFromWheelchairTag() {
@@ -37,9 +60,41 @@ final class OsmFileTest {
         );
     }
 
+    @Test
+    void usOneReadsAttribution() {
+        MatcherAssert.assertThat(
+            "Atrybucja nie pochodzi z pliku",
+            OsmFileTest.file().attribution(),
+            Matchers.equalTo("Dane testowe")
+        );
+    }
+
+    @Test
+    void usOneChangesChecksumWhenImportFormatChanges() {
+        final byte[] content = "{}".getBytes(StandardCharsets.UTF_8);
+        MatcherAssert.assertThat(
+            "Zmiana wersji importu nie zmienia sumy kontrolnej",
+            OsmFile.checksum(content, OsmBuildings.FORMAT),
+            Matchers.not(OsmFile.checksum(content, OsmBuildings.FORMAT + 1))
+        );
+    }
+
+    @Test
+    void usOneChangesChecksumWhenFileChanges() {
+        MatcherAssert.assertThat(
+            "Zmiana treści pliku nie zmienia sumy kontrolnej",
+            OsmFile.checksum("{}".getBytes(StandardCharsets.UTF_8), OsmBuildings.FORMAT),
+            Matchers.not(
+                OsmFile.checksum("[]".getBytes(StandardCharsets.UTF_8), OsmBuildings.FORMAT)
+            )
+        );
+    }
+
     private static OsmFile file() {
+        final ObjectMapper mapper = JsonMapper.builder().build();
         return new OsmFile(
-            JsonMapper.builder().build().readTree(
+            mapper,
+            mapper.readTree(
             """
             {"attribution": "Dane testowe", "features": [
                 {"properties": {"kind": "building", "symbols": ["A", "B"],

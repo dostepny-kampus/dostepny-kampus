@@ -192,16 +192,6 @@ final class OsmBuildingsTest {
         }
     }
 
-    @Test
-    void usOneChangesChecksumWhenImportFormatChanges() {
-        final byte[] content = "{}".getBytes(StandardCharsets.UTF_8);
-        MatcherAssert.assertThat(
-            "Zmiana wersji importu nie zmienia sumy kontrolnej",
-            OsmBuildings.checksum(content, OsmBuildings.FORMAT),
-            Matchers.not(OsmBuildings.checksum(content, OsmBuildings.FORMAT + 1))
-        );
-    }
-
     private static Flyway flyway(final WebApplicationContext context, final Path file) {
         return Flyway.configure().dataSource(context.getBean(DataSource.class))
             .schemas("osm_reimport").locations("classpath:db/migration/__root").javaMigrations(

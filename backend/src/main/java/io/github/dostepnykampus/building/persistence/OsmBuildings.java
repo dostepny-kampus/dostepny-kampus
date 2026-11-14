@@ -10,25 +10,18 @@ import java.io.UncheckedIOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.zip.CRC32;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.migration.Context;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.Resource;
-import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.node.ArrayNode;
 
 /**
  * Budynki i wejścia z pliku konturów OpenStreetMap w tabelach buildings i entrances
  * (ADR-0008). Migracja powtarzalna: działa przy pierwszym starcie i po zmianie pliku albo
- * wersji importu. Kontury z tym samym symbolem tworzą jeden wielokąt złożony, a kontur
- * z kilkoma symbolami daje budynek dla każdego symbolu. Nazwą jest pole display_name z pliku;
- * budynek bez niego nie ma nazwy. Istniejący budynek dostaje nowy kontur, nazwę i atrybucję,
- * a poziom szczegółowości zostaje.
+ * wersji importu. Treść pliku czyta {@link OsmFile}. Istniejący budynek dostaje nowy kontur,
+ * nazwę i atrybucję, a poziom szczegółowości zostaje.
  *
  * <p>Wymagania: US1, US17.1, US2</p>
  *
@@ -80,7 +73,7 @@ final class OsmBuildings implements JavaMigration {
 
     @Override
     public Integer getChecksum() {
-        return OsmBuildings.checksum(this.content(), OsmBuildings.FORMAT);
+        return OsmFile.checksum(this.content(), OsmBuildings.FORMAT);
     }
 
     @Override
@@ -90,67 +83,26 @@ final class OsmBuildings implements JavaMigration {
 
     @Override
     public void migrate(final Context context) throws SQLException {
-        final JsonNode root = this.mapper.readTree(this.content());
-        final String source = root.required("attribution").asString();
-        final Map<String, ArrayNode> outlines = new LinkedHashMap<>(128);
-        final Map<String, @Nullable String> names = new LinkedHashMap<>(128);
-        for (final JsonNode feature : root.required("features")) {
-            final JsonNode props = feature.required("properties");
-            if ("building".equals(props.required("kind").asString())) {
-                for (final JsonNode symbol : props.required("symbols")) {
-                    this.add(outlines, symbol.asString(), feature.required("geometry"));
-                    names.putIfAbsent(symbol.asString(), props.path("display_name").asString(null));
-                }
-            }
-        }
-        this.save(context.getConnection(), outlines, names, source);
-        new OsmEntrances(new OsmFile(root).entrances()).save(context.getConnection());
+        final OsmFile osm = new OsmFile(this.mapper, this.mapper.readTree(this.content()));
+        OsmBuildings.save(context.getConnection(), osm.buildings(), osm.attribution());
+        new OsmEntrances(osm.entrances()).save(context.getConnection());
     }
 
-    static int checksum(final byte[] content, final int format) {
-        final CRC32 crc = new CRC32();
-        crc.update(content);
-        crc.update(format);
-        return (int) crc.getValue();
-    }
-
-    private void save(
+    private static void save(
         final Connection connection,
-        final Map<String, ArrayNode> outlines,
-        final Map<String, @Nullable String> names,
+        final Iterable<ImportedBuilding> buildings,
         final String source
     ) throws SQLException {
         try (PreparedStatement insert = connection.prepareStatement(OsmBuildings.UPSERT)) {
-            for (final Map.Entry<String, ArrayNode> entry : outlines.entrySet()) {
-                insert.setString(1, entry.getKey());
-                insert.setString(2, names.get(entry.getKey()));
-                insert.setString(3, this.multi(entry.getValue()));
+            for (final ImportedBuilding building : buildings) {
+                insert.setString(1, building.symbol());
+                insert.setString(2, building.name());
+                insert.setString(3, building.outline());
                 insert.setString(4, source);
                 insert.addBatch();
             }
             insert.executeBatch();
         }
-    }
-
-    private void add(final Map<String, ArrayNode> outlines, final String symbol,
-        final JsonNode geometry) {
-        final ArrayNode polygons = outlines.computeIfAbsent(
-            symbol, key -> this.mapper.createArrayNode()
-        );
-        final JsonNode coordinates = geometry.required("coordinates");
-        if ("MultiPolygon".equals(geometry.required("type").asString())) {
-            coordinates.forEach(polygons::add);
-        } else {
-            polygons.add(coordinates);
-        }
-    }
-
-    private String multi(final ArrayNode polygons) {
-        return this.mapper.writeValueAsString(
-            this.mapper.createObjectNode()
-                .put("type", "MultiPolygon")
-                .set("coordinates", polygons)
-        );
     }
 
     private byte[] content() {

@@ -6,21 +6,33 @@
 package io.github.dostepnykampus.building.persistence;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.CRC32;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
 
 /**
- * Treść pliku konturów OpenStreetMap (ADR-0008) jako wejścia do zapisu, bez bazy.
- * Wejście z kilkoma symbolami daje wiersz dla każdego budynku; oznaczenie z tagu
- * wheelchair: yes i designated dają ACCESSIBLE, no daje INACCESSIBLE, inna wartość i brak
- * tagu NO_DATA. Kolejność wyników jest kolejnością obiektów w pliku. Brak wymaganego pola
- * kończy się wyjątkiem Jacksona.
+ * Treść pliku konturów OpenStreetMap (ADR-0008) jako budynki i wejścia do zapisu, bez bazy.
+ * Kontury jednego symbolu tworzą jeden wielokąt złożony, kontur z kilkoma symbolami daje
+ * budynek dla każdego, a nazwą jest pierwsze pole display_name symbolu. Wejście ma wiersz dla
+ * każdego budynku; wheelchair: yes i designated dają ACCESSIBLE, no daje INACCESSIBLE, inna
+ * wartość i brak tagu NO_DATA. Wyniki idą w kolejności pliku; brak wymaganego pola kończy się
+ * wyjątkiem Jacksona.
  *
- * <p>Wymagania: US17.1, BR-24</p>
+ * <p>Wymagania: US1, US2, US17.1, BR-24</p>
  *
  * @since 0.1.0
  */
 final class OsmFile {
+
+    /**
+     * Tworzy węzły wielokątów złożonych i zapisuje je jako tekst.
+     */
+    private final ObjectMapper mapper;
 
     /**
      * Korzeń pliku GeoJSON.
@@ -30,10 +42,61 @@ final class OsmFile {
     /**
      * Plik już wczytany przez parser.
      *
-     * @param root Korzeń pliku GeoJSON z polem features
+     * @param mapper Parser JSON
+     * @param root Korzeń pliku GeoJSON z polami attribution i features
      */
-    OsmFile(final JsonNode root) {
+    OsmFile(final ObjectMapper mapper, final JsonNode root) {
+        this.mapper = mapper;
         this.root = root;
+    }
+
+    /**
+     * Suma kontrolna importu: zmienia się ze zmianą treści pliku albo wersji importu.
+     *
+     * @param content Bajty pliku
+     * @param format Wersja importu
+     * @return Suma CRC32 obu wartości
+     */
+    static int checksum(final byte[] content, final int format) {
+        final CRC32 crc = new CRC32();
+        crc.update(content);
+        crc.update(format);
+        return (int) crc.getValue();
+    }
+
+    /**
+     * Atrybucja źródła danych.
+     *
+     * @return Wartość pola attribution
+     */
+    String attribution() {
+        return this.root.required("attribution").asString();
+    }
+
+    /**
+     * Budynki z obiektów kind = building, po jednym na symbol.
+     *
+     * @return Budynki w kolejności pierwszego wystąpienia symbolu
+     */
+    List<ImportedBuilding> buildings() {
+        final Map<String, ArrayNode> outlines = new LinkedHashMap<>(128);
+        final Map<String, @Nullable String> names = new LinkedHashMap<>(128);
+        for (final JsonNode feature : this.features("building")) {
+            final JsonNode props = feature.required("properties");
+            for (final JsonNode symbol : props.required("symbols")) {
+                this.add(outlines, symbol.asString(), feature.required("geometry"));
+                names.putIfAbsent(symbol.asString(), props.path("display_name").asString(null));
+            }
+        }
+        final List<ImportedBuilding> result = new ArrayList<>(outlines.size());
+        for (final Map.Entry<String, ArrayNode> entry : outlines.entrySet()) {
+            result.add(
+                new ImportedBuilding(
+                    entry.getKey(), names.get(entry.getKey()), this.multi(entry.getValue())
+                )
+            );
+        }
+        return result;
     }
 
     /**
@@ -71,6 +134,27 @@ final class OsmFile {
             }
         }
         return result;
+    }
+
+    private void add(final Map<String, ArrayNode> outlines, final String symbol,
+        final JsonNode geometry) {
+        final ArrayNode polygons = outlines.computeIfAbsent(
+            symbol, key -> this.mapper.createArrayNode()
+        );
+        final JsonNode coordinates = geometry.required("coordinates");
+        if ("MultiPolygon".equals(geometry.required("type").asString())) {
+            coordinates.forEach(polygons::add);
+        } else {
+            polygons.add(coordinates);
+        }
+    }
+
+    private String multi(final ArrayNode polygons) {
+        return this.mapper.writeValueAsString(
+            this.mapper.createObjectNode()
+                .put("type", "MultiPolygon")
+                .set("coordinates", polygons)
+        );
     }
 
     private static String marking(final String wheelchair) {
