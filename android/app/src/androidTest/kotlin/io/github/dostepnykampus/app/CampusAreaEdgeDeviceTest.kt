@@ -14,8 +14,10 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.printToString
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.GeneralSwipeAction
@@ -92,7 +94,10 @@ class CampusAreaEdgeDeviceTest {
             val edgeTarget = composeRule.runOnUiThread { requireNotNull(map.cameraPosition.target) }
             assertTrue(
                 "Brak przycisku sąsiedniego terenu po $swipes gestach: target=$edgeTarget, " +
-                    "east=${mainBounds.east}, ruchy=${tracker.moveCount.get()}, postoje=${tracker.idleCount.get()}",
+                    "east=${mainBounds.east}, ruchy=${tracker.moveCount.get()}, postoje=${tracker.idleCount.get()}, " +
+                    "mapa=${composeRule.runOnUiThread { mapState(mapView, map) }}
+" +
+                    composeRule.onAllNodes(isRoot()).printToString(),
                 nodeExists(edgeMatcher),
             )
             composeRule.onNode(edgeMatcher).assertIsDisplayed()
@@ -187,6 +192,13 @@ class CampusAreaEdgeDeviceTest {
         IntArray(WINDOW_COORDINATES_SIZE).also(view::getLocationOnScreen).let { location ->
             floatArrayOf(location[0] + view.width * xFraction, location[1] + view.height * SWIPE_Y_FRACTION)
         }
+
+    private fun mapState(mapView: MapView, map: MapLibreMap): String {
+        val location = IntArray(WINDOW_COORDINATES_SIZE)
+        mapView.getLocationOnScreen(location)
+        return "ekran=${location.toList()} ${mapView.width}x${mapView.height}, " +
+            "przewijanie=${map.uiSettings.isScrollGesturesEnabled}, widoczna=${mapView.isShown}"
+    }
 
     private fun assertAtEastEdgeWithinBounds(target: LatLng, bounds: CampusBounds) {
         assertTrue("Środek mapy wyszedł poza teren: target=$target, bounds=$bounds", isInsideBounds(target, bounds))
