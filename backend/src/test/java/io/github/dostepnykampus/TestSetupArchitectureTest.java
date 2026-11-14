@@ -40,6 +40,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.modulith.test.ApplicationModuleTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -51,10 +52,9 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Strażnik: testy na pełnym kontekście dzielą jeden kontekst Springa. {@code @SpringBootTest}
- * tylko w {@code IntegrationTest} i klasach z listy; na liście musi być też klasa dokładająca
- * konfigurację kontekstu ({@code @TestPropertySource}, {@code @ActiveProfiles},
- * {@code @ContextConfiguration}, {@code @Import}, {@code @DynamicPropertySource}).
+ * Strażnik: testy dzielą wspólne konteksty Springa. {@code @SpringBootTest} tylko w
+ * {@code IntegrationTest}, {@code @ApplicationModuleTest} tylko w {@code ModuleTest}; klasa
+ * z własną konfiguracją kontekstu ({@code @Import}, profile, właściwości) tylko z listy.
  * {@code @DirtiesContext} jest zakazany, mocki Mockito tylko z listy. Klienta HTTP buduje tylko
  * {@link MockMvcTestConfiguration}; wyjątki są na liście z powodem, a lista tylko maleje.
  *
@@ -219,6 +219,9 @@ final class TestSetupArchitectureTest {
             new Sample(bare, "@SpringBootTest class A { }", true),
             new Sample(bare, "@SpringBootTest class Kept { }", false),
             new Sample(bare, "@IntegrationTest class A { }", false),
+            new Sample(bare, "@ApplicationModuleTest class A { }", true),
+            new Sample(bare, "@ApplicationModuleTest class Kept { }", false),
+            new Sample(bare, "@ModuleTest class A { }", false),
             new Sample(listed, "@SpringBootTest class Kept { }", false),
             new Sample(listed, "@IntegrationTest class Kept { }", true),
             new Sample(listed, "class Other { }", true),
@@ -237,6 +240,8 @@ final class TestSetupArchitectureTest {
             new Sample(unlisted, "@IntegrationTest @Import(Object.class) class A { }", true),
             new Sample(unlisted, "@IntegrationTest @ActiveProfiles(\"x\") class Kept { }", false),
             new Sample(unlisted, "@IntegrationTest class A { }", false),
+            new Sample(unlisted, "@ModuleTest @Import(Object.class) class A { }", true),
+            new Sample(unlisted, "@ModuleTest class A { }", false),
             new Sample(dirty, "@DirtiesContext class A { }", true),
             new Sample(dirty, "class A { @DirtiesContext void f() { } }", true),
             new Sample(dirty, "class A { void f() { } }", false),
@@ -263,12 +268,25 @@ final class TestSetupArchitectureTest {
 
     private static ArchRule bare(final Set<String> allowed) {
         return TestSetupArchitectureTest.rule(
-            "have @SpringBootTest only when listed",
-            item -> item.isAnnotatedWith(SpringBootTest.class)
-                && !allowed.contains(item.getName())
-                && !IntegrationTest.class.getName().equals(item.getName()),
+            "have @SpringBootTest or @ApplicationModuleTest only when listed",
+            item -> !allowed.contains(item.getName())
+                && (
+                    TestSetupArchitectureTest.bare(
+                        item, SpringBootTest.class, IntegrationTest.class
+                    )
+                    || TestSetupArchitectureTest.bare(
+                        item, ApplicationModuleTest.class, ModuleTest.class
+                    )
+                ),
             Set.of()
         );
+    }
+
+    private static boolean bare(
+        final JavaClass item, final Class<? extends Annotation> context,
+        final Class<? extends Annotation> shared
+    ) {
+        return item.isAnnotatedWith(context) && !shared.getName().equals(item.getName());
     }
 
     private static ArchRule rule(
@@ -347,8 +365,13 @@ final class TestSetupArchitectureTest {
     }
 
     private static boolean own(final JavaClass item) {
-        return item.isAnnotatedWith(IntegrationTest.class)
+        return TestSetupArchitectureTest.shared(item)
             && (TestSetupArchitectureTest.marked(item) || TestSetupArchitectureTest.dynamic(item));
+    }
+
+    private static boolean shared(final JavaClass item) {
+        return item.isAnnotatedWith(IntegrationTest.class)
+            || item.isAnnotatedWith(ModuleTest.class);
     }
 
     private static boolean marked(final JavaClass item) {
@@ -392,6 +415,8 @@ final class TestSetupArchitectureTest {
                         "package fixture.s%d;%n%s%n%s%n", idx,
                         String.join(
                             " ", "import io.github.dostepnykampus.IntegrationTest;",
+                            "import io.github.dostepnykampus.ModuleTest;",
+                            "import org.springframework.modulith.test.*;",
                             "import org.springframework.context.annotation.Import;",
                             "import org.springframework.test.context.*;",
                             "import org.springframework.boot.test.context.*;",
@@ -414,10 +439,11 @@ final class TestSetupArchitectureTest {
     }
 
     private static String classpath() throws URISyntaxException {
-        final List<String> parts = new ArrayList<>(8);
+        final List<String> parts = new ArrayList<>(9);
         for (final Class<?> type : List.of(
             SpringBootTest.class, Import.class, MockitoBean.class, IntegrationTest.class,
-            WebApplicationContext.class, Filter.class, MockMvcTester.class
+            WebApplicationContext.class, Filter.class, MockMvcTester.class,
+            ApplicationModuleTest.class
         )) {
             parts.add(
                 Path.of(type.getProtectionDomain().getCodeSource().getLocation().toURI())
