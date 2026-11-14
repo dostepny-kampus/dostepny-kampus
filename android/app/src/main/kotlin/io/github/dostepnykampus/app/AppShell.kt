@@ -46,11 +46,11 @@ import io.github.dostepnykampus.app.navigation.isCaptureRoute
 import io.github.dostepnykampus.app.navigation.selectedItem
 import io.github.dostepnykampus.app.navigation.startBackStack
 import io.github.dostepnykampus.core.data.account.RoleProvider
-import io.github.dostepnykampus.core.designsystem.BottomBar
-import io.github.dostepnykampus.core.designsystem.BottomBarItem
-import io.github.dostepnykampus.core.designsystem.BottomBarItems
-import io.github.dostepnykampus.core.designsystem.NavigationIcons
-import io.github.dostepnykampus.core.designsystem.SideBar
+import io.github.dostepnykampus.core.designsystem.bar.BottomBar
+import io.github.dostepnykampus.core.designsystem.bar.BottomBarItem
+import io.github.dostepnykampus.core.designsystem.bar.BottomBarItems
+import io.github.dostepnykampus.core.designsystem.bar.NavigationIcons
+import io.github.dostepnykampus.core.designsystem.bar.SideBar
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.report.ReportDraft

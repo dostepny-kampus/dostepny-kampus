@@ -20,6 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
+import io.github.dostepnykampus.core.designsystem.marking.nameRes
+import io.github.dostepnykampus.core.designsystem.marking.severityImage
 import io.github.dostepnykampus.core.model.Severity
 import org.junit.Assert.assertEquals
 import org.junit.Test

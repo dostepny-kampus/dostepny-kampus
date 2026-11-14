@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.designsystem
+package io.github.dostepnykampus.core.designsystem.marking
 
 import android.graphics.Bitmap
 import androidx.annotation.StringRes
@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
+import io.github.dostepnykampus.core.designsystem.R
+import io.github.dostepnykampus.core.designsystem.StatusColors
 import io.github.dostepnykampus.core.model.EntranceMarking
 
 private const val ICON_VIEWPORT = 24f

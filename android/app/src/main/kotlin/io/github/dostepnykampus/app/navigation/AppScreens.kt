@@ -29,8 +29,8 @@ import io.github.dostepnykampus.app.LocalSheetPadding
 import io.github.dostepnykampus.app.R
 import io.github.dostepnykampus.app.SheetState
 import io.github.dostepnykampus.app.cardMode
-import io.github.dostepnykampus.core.designsystem.BackHeader
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
+import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.core.model.isSignedIn
 import io.github.dostepnykampus.feature.capture.measure.MeasureScreen

@@ -10,7 +10,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.createBitmap
-import io.github.dostepnykampus.core.designsystem.severityImage
+import io.github.dostepnykampus.core.designsystem.marking.severityImage
 import io.github.dostepnykampus.core.model.Severity
 import io.github.dostepnykampus.feature.map.style.BARRIER_SIGN_DP
 import io.github.dostepnykampus.feature.map.style.CHOSEN_BARRIER_DP

@@ -27,6 +27,10 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.TextUnit
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.dostepnykampus.core.designsystem.bar.BottomBar
+import io.github.dostepnykampus.core.designsystem.bar.BottomBarItem
+import io.github.dostepnykampus.core.designsystem.bar.BottomBarItems
+import io.github.dostepnykampus.core.designsystem.bar.NavigationIcons
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
