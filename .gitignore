@@ -26,6 +26,7 @@ __pycache__/
 docs/site/
 # Strona pokrycia powstaje przy budowie dokumentacji (scripts/mkdocs_pokrycie.py).
 docs/docs/_generated/pokrycie-testami.md
+docs/docs/_generated/slownik-tematow.md
 
 # System
 .DS_Store
