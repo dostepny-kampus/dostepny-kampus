@@ -8,12 +8,12 @@ package io.github.dostepnykampus.core.geo.building
 import io.github.dostepnykampus.core.geo.parts
 import io.github.dostepnykampus.core.geo.toArea
 import io.github.dostepnykampus.core.geo.toModel
-import io.github.dostepnykampus.core.model.Entrance
-import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull

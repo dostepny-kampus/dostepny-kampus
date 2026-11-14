@@ -26,7 +26,7 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.iconSizeLikeText
-import io.github.dostepnykampus.core.model.EntranceMarking
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 
 private val MinHeight = 36.dp
 

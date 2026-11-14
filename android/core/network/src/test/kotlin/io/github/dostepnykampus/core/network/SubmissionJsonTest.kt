@@ -6,12 +6,12 @@
 package io.github.dostepnykampus.core.network
 
 import io.github.dostepnykampus.core.model.BarrierGroup
-import io.github.dostepnykampus.core.model.EntranceMarking
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.SubmissionContent
 import io.github.dostepnykampus.core.model.SubmissionFloor
 import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.network.submission.decodeSubmission
 import io.github.dostepnykampus.core.network.submission.encodeNewSubmission
 import io.github.dostepnykampus.core.network.submission.encodeSubmissionUpdate

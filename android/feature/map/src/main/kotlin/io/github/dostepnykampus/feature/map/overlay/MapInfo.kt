@@ -34,7 +34,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
-import io.github.dostepnykampus.core.model.AssessmentSource
+import io.github.dostepnykampus.core.model.building.AssessmentSource
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.data.DAY_FORMAT

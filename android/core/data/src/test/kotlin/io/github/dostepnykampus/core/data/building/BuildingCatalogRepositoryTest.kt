@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.core.data.building
 
 import io.github.dostepnykampus.core.data.di.DataModule
-import io.github.dostepnykampus.core.model.AssessmentSource.WALKTHROUGH
-import io.github.dostepnykampus.core.model.EntranceAssessment
+import io.github.dostepnykampus.core.model.building.AssessmentSource.WALKTHROUGH
+import io.github.dostepnykampus.core.model.building.EntranceAssessment
 import io.github.dostepnykampus.core.network.NetworkModule
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.building.BuildingsApi

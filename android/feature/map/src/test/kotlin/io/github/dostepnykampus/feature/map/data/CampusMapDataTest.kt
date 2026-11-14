@@ -5,16 +5,16 @@
  */
 package io.github.dostepnykampus.feature.map.data
 
-import io.github.dostepnykampus.core.model.Entrance
-import io.github.dostepnykampus.core.model.EntranceMarking
-import io.github.dostepnykampus.core.model.EntranceMarking.ACCESSIBLE
-import io.github.dostepnykampus.core.model.EntranceMarking.INACCESSIBLE
-import io.github.dostepnykampus.core.model.EntranceMarking.NO_DATA
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.building.EntranceMarking.ACCESSIBLE
+import io.github.dostepnykampus.core.model.building.EntranceMarking.INACCESSIBLE
+import io.github.dostepnykampus.core.model.building.EntranceMarking.NO_DATA
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray

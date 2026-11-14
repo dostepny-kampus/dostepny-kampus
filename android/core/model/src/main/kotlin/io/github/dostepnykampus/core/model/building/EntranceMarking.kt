@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.model
+package io.github.dostepnykampus.core.model.building
 
 /** Oznaczenie wejścia (`EntranceMarking` z kontraktu API). Wymagania: BR-24 */
 public enum class EntranceMarking {

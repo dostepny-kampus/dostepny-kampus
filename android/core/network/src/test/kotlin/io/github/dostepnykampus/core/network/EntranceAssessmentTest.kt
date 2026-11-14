@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.core.network
 
-import io.github.dostepnykampus.core.model.AssessmentSource
-import io.github.dostepnykampus.core.model.EntranceAssessment
+import io.github.dostepnykampus.core.model.building.AssessmentSource
+import io.github.dostepnykampus.core.model.building.EntranceAssessment
 import io.github.dostepnykampus.core.network.building.BuildingDetails
 import io.github.dostepnykampus.core.network.building.BuildingsApi
 import kotlinx.coroutines.runBlocking

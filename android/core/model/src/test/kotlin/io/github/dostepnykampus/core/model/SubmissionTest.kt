@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.model
 
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
