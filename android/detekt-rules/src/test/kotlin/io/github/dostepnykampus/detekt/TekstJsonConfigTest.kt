@@ -31,7 +31,7 @@ class TekstJsonConfigTest {
     @Test
     fun `jawny odbiorca to błąd`() {
         assertEquals(
-            listOf(5),
+            listOf(6),
             lines(
                 "fun y(json: Json, body: String): String =",
                 "    json.decodeFromString(String.serializer(), body)",
@@ -42,10 +42,34 @@ class TekstJsonConfigTest {
     @Test
     fun `niejawny odbiorca w rozszerzeniu Json to błąd`() {
         assertEquals(
-            listOf(5),
+            listOf(6),
             lines(
                 "fun Json.x(body: String): String =",
                 "    decodeFromString(String.serializer(), body)",
+            ),
+        )
+    }
+
+    @Test
+    fun `serializer wygenerowany wtyczką w rozszerzeniu Json to błąd`() {
+        assertEquals(
+            listOf(7),
+            lines(
+                "@Serializable class B(val a: Int)",
+                "fun Json.x(body: String): B =",
+                "    decodeFromString(B.serializer(), body)",
+            ),
+        )
+    }
+
+    @Test
+    fun `serializer wygenerowany wtyczką z jawnym odbiorcą to błąd`() {
+        assertEquals(
+            listOf(7),
+            lines(
+                "@Serializable class B(val a: Int)",
+                "fun y(json: Json, body: String): B =",
+                "    json.decodeFromString(B.serializer(), body)",
             ),
         )
     }
@@ -60,6 +84,7 @@ class TekstJsonConfigTest {
         val HEADER =
             listOf(
                 "package a",
+                "import kotlinx.serialization.Serializable",
                 "import kotlinx.serialization.builtins.serializer",
                 "import kotlinx.serialization.json.Json",
             )
