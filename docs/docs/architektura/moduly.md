@@ -139,7 +139,7 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | najwyżej 15 plików w pakiecie | `PackageSizeArchitectureTest` (serwer i Android) |
 | moduł Androida ma kod produkcyjny | `ModuleContentArchitectureTest` |
 | moduł funkcji nie widzi bazy i sieci | kompilator: moduł funkcji nie ma ich w zależnościach, także w testach; Konsist `infra_a1_ui_no_network_or_db`; Module Graph Assert: #1674 |
-| tylko `:core:data`, `:core:data-testing` i `:app` zależą od bazy i sieci (sieci także `:systemtest`), nigdy przez `api` | `StorageDependencyArchitectureTest` |
+| tylko `:core:data` i `:app` zależą od bazy i sieci (sieci także `:systemtest`), nigdy przez `api` | `StorageDependencyArchitectureTest` |
 | moduł funkcji nie importuje innego modułu funkcji | Konsist `infra_a1_feature_not_on_other` |
 | moduł `core` nie importuje modułu funkcji | Konsist `infra_a1_core_not_on_feature` |
 | jawna widoczność w modułach `core` | `explicitApi()`; `:core:data`: #1625 |

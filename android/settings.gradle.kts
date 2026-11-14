@@ -31,7 +31,6 @@ include(
     ":core:database",
     ":core:network",
     ":core:data",
-    ":core:data-testing",
     ":core:designsystem",
     ":feature:map",
     ":feature:capture",
