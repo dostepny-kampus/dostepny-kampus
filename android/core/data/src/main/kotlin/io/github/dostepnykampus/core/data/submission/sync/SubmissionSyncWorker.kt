@@ -13,27 +13,33 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import io.github.dostepnykampus.core.data.inspection.MarkerSync
+import io.github.dostepnykampus.core.data.inspection.syncResult
 
-/** Kolejka zgłoszeń w grafie Hilt, sięgnięta z wątku WorkManagera. Wymagania: NFR-6 */
+/** Kolejki zgłoszeń i znaczników w grafie Hilt, sięgnięte z wątku WorkManagera. Wymagania: NFR-6 */
 @EntryPoint
 @InstallIn(SingletonComponent::class)
 internal interface SubmissionSyncEntryPoint {
     fun submissionQueue(): SubmissionQueue
+
+    fun markerSync(): MarkerSync
 }
 
 /**
- * Wysyła kolejkę, gdy telefon wróci do sieci: zadanie czeka na warunek sieci, więc system trzyma je
- * do zasięgu. Gdy wysyłka przerwie się na braku sieci albo awarii serwera, [CoroutineWorker.Result.retry]
- * prosi o kolejną próbę.
+ * Wysyła kolejkę zgłoszeń i kolejkę znaczników piętra obejrzanego, gdy telefon wróci do sieci: zadanie czeka
+ * na warunek sieci, więc system trzyma je do zasięgu. Gdy któraś wysyłka przerwie się na braku sieci albo awarii
+ * serwera, [CoroutineWorker.Result.retry] prosi o kolejną próbę.
  *
- * Wymagania: NFR-6
+ * Wymagania: NFR-6, US15.3
  */
 internal class SubmissionSyncWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
         val entryPoint =
             EntryPointAccessors.fromApplication(applicationContext, SubmissionSyncEntryPoint::class.java)
-        return entryPoint.submissionQueue().syncResult()
+        val submissions = entryPoint.submissionQueue().syncResult()
+        val markers = entryPoint.markerSync().syncResult()
+        return if (Result.retry() in listOf(submissions, markers)) Result.retry() else Result.success()
     }
 }
 
