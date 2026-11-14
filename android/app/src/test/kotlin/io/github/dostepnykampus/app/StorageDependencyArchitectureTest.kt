@@ -40,10 +40,10 @@ class StorageDependencyArchitectureTest {
         val dir = File(root, path).apply { mkdirs() }
         File(dir, "build.gradle.kts").writeText(
             """
-            |dependencies {
-            |    $line
-            |}
-            |
+                |dependencies {
+                |    $line
+                |}
+                |
             """.trimMargin(),
         )
     }
