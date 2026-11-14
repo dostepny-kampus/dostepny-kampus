@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.data.submission.own
 
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.data.submissions.EditedSubmission
 import io.github.dostepnykampus.core.data.submissions.FakeHistory
 import io.github.dostepnykampus.core.data.submissions.FakeStore
 import io.github.dostepnykampus.core.data.submissions.SubmissionFixtures.photo
@@ -20,6 +21,8 @@ import io.github.dostepnykampus.core.model.SubmissionKind
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -46,13 +49,43 @@ class OwnListTest {
             queue.sendAll()
             queue.save(precise(), photo(tempDir, "p2"))
 
-            val list = ownSubmissionsOf(history).observe().first()
+            val list = ownSubmissionsOf(history, store).observe().first()
 
             val item = list.single()
             assertEquals(PRECISE_ID, item.id)
             assertEquals("TB-13", item.barrierType)
             assertEquals("C-13", item.buildingSymbol)
             assertEquals(listOf(QUICK_ID), store.created)
+        }
+
+    /**
+     * Zgłoszenie wysłane, potem jego poprawka bez sieci: lista pokazuje stan „Wysłane” i czekającą zmianę.
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zgłoszenie ze zmianą czekającą w telefonie ma
+     *   napis przy statusie
+     */
+    @Test
+    fun `us8_1 zmiana czeka`() =
+        runBlocking {
+            val queue = queue()
+            val saved = queue.save(precise(), photo(tempDir, "p2"))
+            queue.sendAll()
+            queue.saveEdit(EditedSubmission(id = saved.id, baseVersion = 1), precise(), photo(tempDir, "p2"))
+
+            val item = ownSubmissionsOf(history, store).observe().first().single()
+
+            assertEquals(SendState.SENT, item.state)
+            assertTrue(item.isChangeWaiting)
+        }
+
+    @Test
+    fun `us8_1 bez zmiany nie czeka`() =
+        runBlocking {
+            val queue = queue()
+            queue.save(precise(), photo(tempDir, "p2"))
+            queue.sendAll()
+
+            val listed = ownSubmissionsOf(history, store).observe().first()
+            assertFalse(listed.single().isChangeWaiting)
         }
 
     private fun queue(): SubmissionQueue =

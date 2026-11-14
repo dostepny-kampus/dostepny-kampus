@@ -53,6 +53,7 @@ internal fun SubmissionCard(item: OwnSubmissionItem, onOpen: (() -> Unit)?, modi
                 verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
             ) {
                 StatusLine(item.shownStatus())
+                if (item.isChangeWaiting) Text(stringResource(R.string.moje_zmiana_czeka))
                 Text(text = typeText(item), style = MaterialTheme.typography.titleMedium)
                 Text(placeText(item))
                 Text(DAY_FORMAT.format(item.savedAt.atZone(ZoneId.systemDefault())))

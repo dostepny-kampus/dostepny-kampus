@@ -43,6 +43,7 @@ private const val STOP_TIMEOUT_MS = 5_000L
  * @property refusal powód przy „Nie wysłano”; `null` w pozostałych stanach
  * @property serverStatus status z serwera po odświeżeniu; `null`, gdy telefon go nie zna
  * @property rejectionReason powód odrzucenia od Weryfikatora
+ * @property isChangeWaiting zmiana wysłanego zgłoszenia czeka w telefonie na wysłanie
  */
 data class OwnSubmissionItem(
     val id: String,
@@ -54,6 +55,7 @@ data class OwnSubmissionItem(
     val refusal: RefusalReason?,
     val serverStatus: SubmissionStatus? = null,
     val rejectionReason: String? = null,
+    val isChangeWaiting: Boolean = false,
 )
 
 /**
@@ -150,4 +152,5 @@ internal fun OwnSubmission.toItem(): OwnSubmissionItem =
         refusal = refusal,
         serverStatus = serverStatus,
         rejectionReason = rejectionReason,
+        isChangeWaiting = isChangeWaiting,
     )

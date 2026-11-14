@@ -7,9 +7,11 @@ package io.github.dostepnykampus.core.data.submission.own
 
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import io.github.dostepnykampus.core.model.SubmissionStatus
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import java.time.Instant
 
 /** Stan wysyłki własnego zgłoszenia, te same nazwy co w bazie. Wymagania: US8.1, NFR-5 */
@@ -53,6 +55,7 @@ public enum class RefusalReason {
  * @property refusal powód „Nie wysłano”; `null` bez odmowy
  * @property serverStatus status z serwera po odświeżeniu; `null`, gdy telefon go jeszcze nie zna
  * @property rejectionReason powód odrzucenia od Weryfikatora; `null` poza odrzuceniem
+ * @property isChangeWaiting serwer ma zgłoszenie, a jego zmiana czeka w kolejce telefonu na wysłanie
  */
 public data class OwnSubmission(
     val id: String,
@@ -64,6 +67,7 @@ public data class OwnSubmission(
     val refusal: RefusalReason?,
     val serverStatus: SubmissionStatus? = null,
     val rejectionReason: String? = null,
+    val isChangeWaiting: Boolean = false,
 )
 
 /** Własne zgłoszenia od najnowszego; w aplikacji z historii Room. Wymagania: US8.1, NFR-5 */
@@ -72,11 +76,16 @@ public fun interface OwnSubmissions {
     public fun observe(): Flow<List<OwnSubmission>>
 }
 
-/** Własne zgłoszenia z historii [history] w bazie Room. */
-internal fun ownSubmissionsOf(history: OwnSubmissionDao): OwnSubmissions =
-    OwnSubmissions { history.observe().map { rows -> rows.map { it.toOwnSubmission() } } }
+/** Własne zgłoszenia z historii [history] w bazie Room, ze zmianami czekającymi w kolejce [pending]. */
+internal fun ownSubmissionsOf(history: OwnSubmissionDao, pending: PendingSubmissionDao): OwnSubmissions =
+    OwnSubmissions {
+        combine(history.observe(), pending.observe()) { rows, queued ->
+            val waiting = queued.map { it.submission.id }.toSet()
+            rows.map { it.toOwnSubmission(isQueued = it.id in waiting) }
+        }
+    }
 
-internal fun OwnSubmissionEntity.toOwnSubmission(): OwnSubmission =
+internal fun OwnSubmissionEntity.toOwnSubmission(isQueued: Boolean = false): OwnSubmission =
     OwnSubmission(
         id = id,
         savedAt = Instant.ofEpochMilli(savedAtMillis),
@@ -87,4 +96,5 @@ internal fun OwnSubmissionEntity.toOwnSubmission(): OwnSubmission =
         refusal = refusalReasonOf(state, refusalCode),
         serverStatus = SubmissionStatus.entries.find { it.name == serverStatus },
         rejectionReason = rejectionReason,
+        isChangeWaiting = isQueued && state == OwnSubmissionState.SENT,
     )
