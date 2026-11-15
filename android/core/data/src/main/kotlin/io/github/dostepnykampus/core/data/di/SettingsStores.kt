@@ -24,10 +24,15 @@ import kotlin.coroutines.CoroutineContext
  *
  * @param name nazwa pliku ustawień bez rozszerzenia
  * @param ioContext kontekst pracy na plikach z grafu Hilt
+ * @param callerContext praca w wątku wywołującym, gdy [ioContext] nie ma dyspozytora
  */
-internal fun Context.settingsStore(name: String, ioContext: CoroutineContext): DataStore<Preferences> =
+internal fun Context.settingsStore(
+    name: String,
+    ioContext: CoroutineContext,
+    callerContext: CoroutineContext = Dispatchers.Unconfined,
+): DataStore<Preferences> =
     PreferenceDataStoreFactory.create(
         corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
-        scope = CoroutineScope(Dispatchers.Unconfined + ioContext + SupervisorJob()),
+        scope = CoroutineScope(callerContext + ioContext + SupervisorJob()),
         produceFile = { preferencesDataStoreFile(name) },
     )
