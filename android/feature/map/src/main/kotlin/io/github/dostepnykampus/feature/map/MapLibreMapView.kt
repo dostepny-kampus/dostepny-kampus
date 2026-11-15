@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
@@ -43,6 +44,7 @@ import io.github.dostepnykampus.feature.map.camera.padding
 import io.github.dostepnykampus.feature.map.camera.styleColors
 import io.github.dostepnykampus.feature.map.camera.toCamera
 import io.github.dostepnykampus.feature.map.camera.toPosition
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
@@ -135,10 +137,7 @@ object MapLibreMapView : CampusMapView {
             remember(selection.bounds, size, density, inset.top) {
                 density.mapLimits(selection.bounds, size.belowTop(inset.top)).takeIf { size != IntSize.Zero }
             }
-        val basemap =
-            remember(selection.bounds, size, density) {
-                density.mapLimits(selection.bounds, size).takeIf { size != IntSize.Zero }?.basemap
-            }
+        val basemap = remember(selection.bounds, size, density) { density.basemapOf(selection.bounds, size) }
         val style = rememberMapStyle(data = data, selection = selection, colors = styleColors, basemap = basemap)
         val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
@@ -433,3 +432,6 @@ internal fun selectionImages(selection: MapSelection, images: MapImages): Map<St
     val caption = entranceCaption(selected = selection.entrance, colors = images.colors, labelSize = images.labelSize)
     return caption + numbers.associate { roomNumberImage(it) to roomNumberBitmap(it, images.colors, images.labelSize) }
 }
+
+private fun Density.basemapOf(bounds: CampusBounds?, size: IntSize): Basemap? =
+    mapLimits(bounds, size).takeIf { size != IntSize.Zero }?.basemap
