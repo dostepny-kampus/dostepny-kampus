@@ -22,7 +22,7 @@ Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V1 są [makiety hi-fi](../e
 
 ### V1: stan zwykły
 
-![Makieta V1: nagłówek Mapa kampusu, pole symbolu budynku, przełącznik Mapa i Lista budynków, zastępnik mapy z oznaczeniami barier, na mapie Powiększ, Pomniejsz i cztery strzałki w krzyżu, przycisk informacji przy podpisie OpenStreetMap i pasek dolny](../../_generated/m-v1-mapa.svg)
+![Makieta V1: nagłówek Mapa kampusu z przyciskiem Pokaż listę, pole symbolu budynku, przycisk terenu, zastępnik mapy z oznaczeniami barier, na mapie Powiększ, Pomniejsz i cztery strzałki w krzyżu, przycisk informacji przy podpisie OpenStreetMap i pasek dolny](../../_generated/m-v1-mapa.svg)
 
 Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 
@@ -101,7 +101,7 @@ Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
 ### V1: pierwsze otwarcie bez internetu
 
-![Makieta V1 przy pierwszym otwarciu bez internetu: pole symbolu, przełącznik Mapa i Lista budynków, wskaźnik Brak internetu bez daty, mapa bez mapy ulic z konturami budynków i wejściami z danych aplikacji](../../_generated/m-v1-mapa-pierwsze-otwarcie.svg)
+![Makieta V1 przy pierwszym otwarciu bez internetu: nagłówek z przyciskiem Pokaż listę, pole symbolu, wskaźnik Brak internetu bez daty, mapa bez mapy ulic z konturami budynków i wejściami z danych aplikacji](../../_generated/m-v1-mapa-pierwsze-otwarcie.svg)
 
 Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
@@ -114,7 +114,7 @@ Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
 ### V1: znaleziona sala
 
-![Makieta V1 po wyszukaniu A-1 329: wybór piętra z zaznaczonym piętrem, legenda, plan piętra z podpisem źródła, przyciski mapy i arkusz sali z czterema krokami, Pokaż opis budynku i Zamknij](../../_generated/m-v1-mapa-sala.svg)
+![Makieta V1 po wyszukaniu A-1 329: pole z numerem sali, przycisk terenu, plan piętra z kolumną pięter po lewej z podpisem źródła, przyciski mapy i arkusz sali z czterema krokami, Pokaż opis budynku i Zamknij](../../_generated/m-v1-mapa-sala.svg)
 
 Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 
@@ -136,7 +136,7 @@ Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 
 ### V1: plan piętra
 
-![Makieta V1 po przybliżeniu budynku szczegółowego: plan parteru A-1 w kolorach grup z numerami sal, przygaszone sąsiednie budynki, przyciski mapy, kolumna pięter z napisem Piętro i wybranym parterem w kółku, podpis źródła](../../_generated/m-v1-mapa-plan.svg)
+![Makieta V1 po przybliżeniu budynku szczegółowego: plan parteru A-1 w kolorach grup z numerami sal, przygaszone sąsiednie budynki, przyciski mapy, kolumna pięter po lewej z napisem Piętro i wybranym parterem w kółku, podpis źródła](../../_generated/m-v1-mapa-plan.svg)
 
 Czynność główna: wybór piętra w kolumnie pięter.
 
@@ -172,7 +172,7 @@ Czynność główna: przeczytanie, na które piętra jedzie winda.
 
 ### V1: legenda przy planie
 
-![Makieta V1 z otwartą legendą nad planem: nagłówek Legenda z Zamknij, znaki wejść i bariery, kolory sali, korytarza i klatki schodowej, znaki windy i toalety dostosowanej, znak zgłoszenia bez piętra, podpis źródła i Przewiń w dół](../../_generated/m-v1-mapa-plan-legenda.svg)
+![Makieta V1 z arkuszem Legenda otwartym przyciskiem informacji pod planem: nagłówek Legenda z Zamknij, znaki wejść i bariery, kolory sali, korytarza i klatki schodowej, znaki windy i toalety dostosowanej, znak zgłoszenia bez piętra, na końcu Źródła danych i Przewiń w dół](../../_generated/m-v1-mapa-plan-legenda.svg)
 
 Czynność główna: odczytanie znaków planu.
 

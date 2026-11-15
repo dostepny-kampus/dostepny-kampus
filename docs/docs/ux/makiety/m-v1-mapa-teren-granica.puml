@@ -3,11 +3,9 @@
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek_startowy("Mapa kampusu")
+$naglowek_mapy("Pokaż listę")
 $pole_tekstowe("Wpisz symbol budynku, np. C-13")
-$przelacznik("Mapa", "Lista budynków", 1)
 $przycisk("Kampus główny ▾")
-$przycisk("Legenda")
 $mapa("mapa przy wschodniej granicy terenu Kampus główny: poza terenem wyblakły podkład, granicę pokazuje linia z obwódką", "", "info")
 $pasek_dolny_konto()
 $ekran_koniec()

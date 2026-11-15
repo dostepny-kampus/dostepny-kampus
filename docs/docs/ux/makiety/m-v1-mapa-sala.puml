@@ -3,11 +3,9 @@
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek_startowy("Mapa kampusu")
 $pole_tekstowe("A-1 329")
 $przycisk("Kampus główny ▾")
-$przycisk("Legenda")
-$mapa("plan 2 piętra A-1 z wyróżnioną salą; krótkie podpisy: Winda, Toaleta, Sala 329; kolumna pięter po prawej na górze mapy, wybrane 2", "", "info")
+$mapa("plan 2 piętra A-1 z wyróżnioną salą; krótkie podpisy: Winda, Toaleta, Sala 329; kolumna pięter po lewej pod przyciskiem terenu, wybrane 2", "", "info")
 Źródło: Politechnika Wrocławska
 $ramka()
 <b>A-1: Sala 329</b>
