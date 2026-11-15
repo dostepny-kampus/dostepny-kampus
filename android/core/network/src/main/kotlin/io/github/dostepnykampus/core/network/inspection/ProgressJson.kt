@@ -29,9 +29,9 @@ import io.github.dostepnykampus.core.network.json.InspectionMarker as Inspection
  * @throws IllegalArgumentException gdy treść nie pasuje do kontraktu
  */
 internal fun Json.decodeProgress(body: String): List<BuildingProgress> =
-    decodeContract(ListSerializer(BuildingProgressJson.serializer()), body).map { it.toModel() }
+    decodeContract(ListSerializer(BuildingProgressJson.serializer()), body).map { it.toBuilding() }
 
-private fun BuildingProgressJson.toModel(): BuildingProgress =
+private fun BuildingProgressJson.toBuilding(): BuildingProgress =
     BuildingProgress(
         buildingSymbol = buildingSymbol,
         coverage = coverage(),
@@ -39,22 +39,24 @@ private fun BuildingProgressJson.toModel(): BuildingProgress =
         acceptedSubmissions = acceptedSubmissions,
         entrancesTotal = entrancesTotal,
         entrancesCheckedOnSite = entrancesCheckedOnSite,
-        markers = markers.map { it.toModel() },
+        markers = markers.map { it.toMarker() },
     )
 
 private fun BuildingProgressJson.coverage(): InspectionCoverage =
     when (detailLevel) {
-        DetailLevelJson.DETAILED ->
+        DetailLevelJson.DETAILED -> {
             InspectionCoverage.Floors(
                 floorsTotal = requireNotNull(floorsTotal) { "brak floorsTotal w budynku szczegółowym" },
                 floorsInspected = requireNotNull(floorsInspected) { "brak floorsInspected w budynku szczegółowym" },
             )
+        }
 
-        DetailLevelJson.BASIC ->
+        DetailLevelJson.BASIC -> {
             InspectionCoverage.Whole(isInspected = requireNotNull(inspected) { "brak inspected w budynku podstawowym" })
+        }
     }
 
-private fun InspectionMarkerJson.toModel(): InspectionMarker =
+private fun InspectionMarkerJson.toMarker(): InspectionMarker =
     InspectionMarker(
         id = id,
         buildingSymbol = buildingSymbol,

@@ -27,7 +27,7 @@ class ProgressJsonTest {
     private val json = NetworkModule.json()
 
     @Test
-    fun us11_1_detailed_and_basic_building() {
+    fun us11_1_both_detail_levels() {
         val marker =
             InspectionMarker(
                 id = MARKER,
@@ -47,7 +47,16 @@ class ProgressJsonTest {
                 entrancesCheckedOnSite = 1,
                 markers = listOf(marker),
             )
-        val basic = BuildingProgress("B-4", InspectionCoverage.Whole(isInspected = true), 0, 1, 2, 2, emptyList())
+        val basic =
+            BuildingProgress(
+                buildingSymbol = "B-4",
+                coverage = InspectionCoverage.Whole(isInspected = true),
+                pendingSubmissions = 0,
+                acceptedSubmissions = 1,
+                entrancesTotal = 2,
+                entrancesCheckedOnSite = 2,
+                markers = emptyList(),
+            )
         assertEquals(listOf(detailed, basic), json.decodeProgress(PROGRESS), "postęp dwóch budynków")
     }
 
@@ -61,13 +70,9 @@ class ProgressJsonTest {
         strings = [
             "to nie JSON",
             """[{"buildingSymbol":"A-1","detailLevel":"DETAILED"}]""",
-            """[{"buildingSymbol":"A-1","detailLevel":"DETAILED","pendingSubmissions":0,"acceptedSubmissions":0,
-                "entrancesTotal":0,"entrancesCheckedOnSite":0,"markers":[]}]""",
-            """[{"buildingSymbol":"B-4","detailLevel":"BASIC","pendingSubmissions":0,"acceptedSubmissions":0,
-                "entrancesTotal":0,"entrancesCheckedOnSite":0,"markers":[]}]""",
-            """[{"buildingSymbol":"B-4","detailLevel":"BASIC","inspected":true,"pendingSubmissions":0,
-                "acceptedSubmissions":0,"entrancesTotal":0,"entrancesCheckedOnSite":0,"markers":[
-                {"id":"$MARKER","buildingSymbol":"B-4","createdAt":"wczoraj","revoked":false,"mine":true}]}]""",
+            NO_FLOORS,
+            NO_INSPECTED,
+            BAD_DATE,
         ],
     )
     fun bad_body_is_illegal_argument(body: String) {
@@ -76,6 +81,16 @@ class ProgressJsonTest {
 
     private companion object {
         const val MARKER = "3c2b1a09-8f7e-4d6c-b5a4-918273645546"
+        const val NO_FLOORS =
+            """[{"buildingSymbol":"A-1","detailLevel":"DETAILED","pendingSubmissions":0,"acceptedSubmissions":0,
+                "entrancesTotal":0,"entrancesCheckedOnSite":0,"markers":[]}]"""
+        const val NO_INSPECTED =
+            """[{"buildingSymbol":"B-4","detailLevel":"BASIC","pendingSubmissions":0,"acceptedSubmissions":0,
+                "entrancesTotal":0,"entrancesCheckedOnSite":0,"markers":[]}]"""
+        const val BAD_DATE =
+            """[{"buildingSymbol":"B-4","detailLevel":"BASIC","inspected":true,"pendingSubmissions":0,
+                "acceptedSubmissions":0,"entrancesTotal":0,"entrancesCheckedOnSite":0,"markers":[
+                {"id":"$MARKER","buildingSymbol":"B-4","createdAt":"wczoraj","revoked":false,"mine":true}]}]"""
         const val PROGRESS =
             """[
                 {"buildingSymbol":"A-1","detailLevel":"DETAILED","floorsTotal":5,"floorsInspected":3,
