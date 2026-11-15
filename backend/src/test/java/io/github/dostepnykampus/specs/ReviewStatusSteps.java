@@ -35,11 +35,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 public final class ReviewStatusSteps {
 
     /**
-     * Konto, które w bazie jest autorem zgłoszenia z tokenem Zbierającego.
-     */
-    private static final String TOKEN_ACCOUNT = "konto-testowe";
-
-    /**
      * Zgłoszenie scenariusza.
      */
     private static final UUID SUBMISSION =
@@ -111,7 +106,7 @@ public final class ReviewStatusSteps {
      */
     @Then("na liście Zbierającego zgłoszenie ma status „w weryfikacji”")
     public void listedInReview() throws Exception {
-        this.author(ReviewStatusSteps.TOKEN_ACCOUNT);
+        this.author("konto-testowe");
         MatcherAssert.assertThat(
             "Lista Zbierającego nie pokazuje zgłoszenia ze statusem IN_REVIEW",
             this.http.perform(
