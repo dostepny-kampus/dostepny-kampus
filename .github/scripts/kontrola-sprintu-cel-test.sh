@@ -4,8 +4,8 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
-# Test kontrola-sprintu-cel.sh na repozytorium: main = A; sprint/3 = A (już w main); sprint/4 = A, B (android),
-# C (docs); sprint/10 = C, D (android). Własne `gh` czyta i dopisuje statusy w pliku „sha stan czas”.
+# Test kontrola-sprintu-cel.sh na repozytorium: main = A; sprint/2 = A, stary commit (poza main); sprint/3 = A
+# (w main); sprint/10 = A, B (android), C (docs). Własne `gh` czyta i dopisuje statusy w pliku „sha stan czas”.
 script="$(cd "$(dirname "$0")" && pwd)/kontrola-sprintu-cel.sh"
 workdir="$(mktemp -d)"
 trap 'rm -rf "$workdir"' EXIT
@@ -44,11 +44,12 @@ commit() {
 }
 a="$(commit README.md)"
 git -C "$origin" branch sprint/3
-git -C "$origin" checkout -q -b sprint/4
+git -C "$origin" checkout -q -b sprint/2
+commit android/stary.kt >/dev/null
+git -C "$origin" checkout -q main
+git -C "$origin" checkout -q -b sprint/10
 b="$(commit android/a.kt)"
 c="$(commit docs/x.md)"
-git -C "$origin" checkout -q -b sprint/10
-d="$(commit android/b.kt)"
 clone="$workdir/klon"
 git clone -q "file://$origin" "$clone"
 
@@ -71,25 +72,24 @@ przypadek() {
   fi
 }
 
-przypadek "zmiana Androida od ostatniego statusu: sprawdzenie najniższego sprintu" \
-  "$a success 2026-11-15T10:00:00Z" "jest=true\ngalaz=sprint/4\nsha=$c\nod=$a" "$c pending"
-przypadek "tylko dokumentacja: success bez budowy i następna gałąź" \
-  "$b success 2026-11-15T10:00:00Z" "jest=true\ngalaz=sprint/10\nsha=$d\nod=$c" "$c success\n$d pending"
-przypadek "głowy ze statusem są pomijane" \
-  "$c success 2026-11-15T10:00:00Z\n$d failure 2026-11-15T10:00:00Z" "jest=false" ""
+przypadek "zmiana Androida od ostatniego statusu: sprawdzenie najwyższego sprintu" \
+  "$a success 2026-11-15T10:00:00Z" "jest=true\ngalaz=sprint/10\nsha=$c\nod=$a" "$c pending"
+przypadek "tylko dokumentacja: success bez budowy" \
+  "$b success 2026-11-15T10:00:00Z" "jest=false" "$c success"
+przypadek "głowa ze statusem pominięta, starszy sprint spoza main nie jest sprawdzany" \
+  "$c success 2026-11-15T10:00:00Z" "jest=false" ""
 przypadek "świeży pending to przebieg w toku" \
-  "$c pending 2026-11-15T11:00:00Z\n$d success 2026-11-15T10:00:00Z" "jest=false" ""
+  "$c pending 2026-11-15T11:00:00Z" "jest=false" ""
 przypadek "pending sprzed ponad 3 godzin to przerwany przebieg" \
-  "$c pending 2026-11-15T08:00:00Z\n$d success 2026-11-15T10:00:00Z" "jest=true\ngalaz=sprint/4\nsha=$c\nod=" \
-  "$c pending"
+  "$c pending 2026-11-15T08:00:00Z" "jest=true\ngalaz=sprint/10\nsha=$c\nod=" "$c pending"
 przypadek "error na głowie: ponowne sprawdzenie mimo braku zmian" \
-  "$b success 2026-11-15T10:00:00Z\n$c error 2026-11-15T11:00:00Z" "jest=true\ngalaz=sprint/4\nsha=$c\nod=$b" \
+  "$b success 2026-11-15T10:00:00Z\n$c error 2026-11-15T11:00:00Z" "jest=true\ngalaz=sprint/10\nsha=$c\nod=$b" \
   "$c pending"
 przypadek "brak statusów w historii: sprawdzenie bez punktu odniesienia" "" \
-  "jest=true\ngalaz=sprint/4\nsha=$c\nod=" "$c pending"
+  "jest=true\ngalaz=sprint/10\nsha=$c\nod=" "$c pending"
 przypadek "GALAZ wymusza sprawdzenie mimo statusu i braku zmian" \
-  "$b success 2026-11-15T10:00:00Z\n$d success 2026-11-15T10:00:00Z" "jest=true\ngalaz=sprint/10\nsha=$d\nod=$b" \
-  "$d pending" sprint/10
+  "$b success 2026-11-15T10:00:00Z\n$c success 2026-11-15T10:00:00Z" "jest=true\ngalaz=sprint/10\nsha=$c\nod=$b" \
+  "$c pending" sprint/10
 
 status=0
 (cd "$clone" && GITHUB_REPOSITORY=org/repo GITHUB_OUTPUT="$workdir/output" GALAZ=sprint/99 PATH="$workdir/bin:$PATH" \
