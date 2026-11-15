@@ -10,8 +10,6 @@ import java.util.List;
 /**
  * Plany pięter z warstw pięter, pomieszczeń i wejść usługi FeatureServer.
  *
- * <p>TODO(#1472): wejścia czytać w imporcie planów i dopasować piętro wejść budynku.</p>
- *
  * <p>Wymagania: US16, US18.2, NFR-40</p>
  *
  * @since 0.1.0

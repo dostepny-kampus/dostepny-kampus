@@ -7,6 +7,7 @@ package io.github.dostepnykampus.building.room.persistence;
 
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.SampleBuilding;
+import io.github.dostepnykampus.building.room.BuildingPlan;
 import io.github.dostepnykampus.building.room.FloorPlans;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import java.util.List;
@@ -35,8 +36,11 @@ final class PostgisPlansDetailIT {
             new SampleBuilding(symbol, "Budynek podstawowy", "BASIC")
                 .wkt(jdbc, "POLYGON((17 51,17.001 51,17.001 51.001,17 51.001,17 51))");
         }
-        context.getBean(FloorPlans.class)
-            .save("G-971", List.of(new PlanFloor("P0", "Parter", 0)), List.of());
+        context.getBean(FloorPlans.class).save(
+            new BuildingPlan(
+                "G-971", List.of(new PlanFloor("P0", "Parter", 0)), List.of(), List.of()
+            )
+        );
         MatcherAssert.assertThat(
             "Budynek z zapisanym planem nie jest szczegółowy albo zmienił się inny budynek",
             jdbc.sql(

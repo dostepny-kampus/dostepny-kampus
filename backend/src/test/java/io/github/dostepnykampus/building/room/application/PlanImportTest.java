@@ -36,7 +36,7 @@ final class PlanImportTest {
         URI.create("https://plany.test/services"),
         List.of(
             new PlanSettings.Layer("D-1", "D1D2", "K1.D1", 5, 1, 0),
-            new PlanSettings.Layer("D-2", "D1D2", "K1.D2", 5, 3, 0)
+            new PlanSettings.Layer("D-2", "D1D2", "K1.D2", 5, 3, 2)
         )
     );
 
@@ -53,19 +53,23 @@ final class PlanImportTest {
         final List<String> saved = new ArrayList<>(2);
         new PlanImport(
             PlanImportTest.SETTINGS, PlanImportTest.source(),
-            (building, floors, rooms) -> saved.add(
+            plan -> saved.add(
                 String.format(
-                    "%s %s %s", building, floors.stream().map(PlanFloor::id).toList(),
-                    rooms.stream().map(PlanRoom::id).toList()
+                    "%s %s %s %s", plan.building(),
+                    plan.floors().stream().map(PlanFloor::id).toList(),
+                    plan.rooms().stream().map(PlanRoom::id).toList(),
+                    plan.entrances().stream().map(PlanEntrance::floorId).toList()
                 )
             )
         ).onApplicationEvent(PlanImportTest.ready());
         MatcherAssert.assertThat(
-            "Import zapisał piętra innego budynku albo pomieszczenia z cudzej warstwy",
+            "Import zapisał piętra innego budynku albo pomieszczenia lub wejścia z cudzej warstwy",
             saved,
             Matchers.contains(
-                "D-1 [K1.D1.P0] [https://plany.test/services/D1D2/FeatureServer/1]",
-                "D-2 [K1.D2.P0] [https://plany.test/services/D1D2/FeatureServer/3]"
+                "D-1 [K1.D1.P0] [https://plany.test/services/D1D2/FeatureServer/1] [%s/0]"
+                    .formatted("https://plany.test/services/D1D2/FeatureServer"),
+                "D-2 [K1.D2.P0] [https://plany.test/services/D1D2/FeatureServer/3] [%s/2]"
+                    .formatted("https://plany.test/services/D1D2/FeatureServer")
             )
         );
     }
@@ -75,7 +79,7 @@ final class PlanImportTest {
         final List<String> saved = new ArrayList<>(2);
         new PlanImport(
             PlanImportTest.SETTINGS, PlanImportTest.source(),
-            (building, floors, rooms) -> saved.add(building)
+            plan -> saved.add(plan.building())
         ).onApplicationEvent(PlanImportTest.ready("--budynek=D-2"));
         MatcherAssert.assertThat(
             "Import z opcją --budynek zapisał inny budynek",
@@ -108,7 +112,7 @@ final class PlanImportTest {
 
             @Override
             public List<PlanEntrance> entrances(final String service, final int layer) {
-                return List.of();
+                return List.of(new PlanEntrance(String.format("%s/%d", service, layer), "{}"));
             }
         };
     }
