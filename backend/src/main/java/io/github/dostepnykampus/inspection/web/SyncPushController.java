@@ -104,7 +104,9 @@ public final class SyncPushController {
             id, HttpStatus.NOT_IMPLEMENTED, "Serwer nie przyjmuje jeszcze tej zmiany"
         );
         if (operation.placesMarker() && unknown.contains(operation.toMarker(author).id())) {
-            result = SyncResultResponse.rejected(id, HttpStatus.BAD_REQUEST, "Nieznany budynek");
+            result = SyncResultResponse.rejected(
+                id, HttpStatus.BAD_REQUEST, "Nieznany budynek albo piętro"
+            );
         } else if (operation.placesMarker()) {
             result = SyncResultResponse.applied(id);
         } else if (operation.revokesMarker() && missing.contains(operation.revoked())) {
