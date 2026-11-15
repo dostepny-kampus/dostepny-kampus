@@ -25,6 +25,7 @@ own	temat	własne zgłoszenia	Zgłoszenia osoby zapisane na urządzeniu i ich st
 pending	temat	oczekujące zmiany	Zmiany zgłoszeń czekające na wysłanie.
 photo	temat	zdjęcie	Zdjęcie zgłoszenia: wykonanie, zapis, wysłanie.
 quick	ścieżka	szybkie zgłoszenie	Zgłoszenie wejścia w kilku krokach.
+removed	ścieżka	bariera usunięta	Zgłoszenie, że bariery ze zgłoszenia przyjętego już nie ma (C7).
 report	ścieżka	pełne zgłoszenie	Formularz i edycja pełnego zgłoszenia.
 room	temat	pomieszczenie	Pomieszczenie piętra: numer sali, funkcja, kontur.
 server	temat	odpowiedź serwera	Wynik żądania do serwera bez typów klienta HTTP.

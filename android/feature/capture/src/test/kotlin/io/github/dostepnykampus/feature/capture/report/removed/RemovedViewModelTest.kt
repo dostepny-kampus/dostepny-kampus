@@ -79,8 +79,8 @@ class RemovedViewModelTest {
             open()
             viewModel.send()
             runCurrent()
-
-            assertEquals(RemovedUiState(lift, null, true, RemovedStage.EDITING), viewModel.uiState.value)
+            val expected = RemovedUiState(previous = lift, isPhotoMissing = true, stage = RemovedStage.EDITING)
+            assertEquals(expected, viewModel.uiState.value)
             assertEquals(emptyList<Any>(), saved)
         }
 
@@ -97,7 +97,6 @@ class RemovedViewModelTest {
             viewModel.takePhoto(photo)
             viewModel.send()
             runCurrent()
-
             val expected =
                 SubmissionContent(
                     kind = SubmissionKind.PRECISE,
@@ -126,7 +125,6 @@ class RemovedViewModelTest {
 
             assertEquals(RemovedStage.SAVE_FAILED, viewModel.uiState.value.stage)
             assertEquals(emptyList<Any>(), saved)
-
             failure = null
             viewModel.send()
             runCurrent()
