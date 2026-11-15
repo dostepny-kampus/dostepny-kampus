@@ -158,7 +158,7 @@ internal class MapAreas(
  * @property announced zapisywana nazwa terenu, którego napis był już pokazany; `null` przed pierwszym napisem
  * @property onScreen czy napis o zmianie terenu jest teraz na ekranie
  */
-internal class NoticeMemory(
+internal data class NoticeMemory(
     val announced: MutableState<String?> = mutableStateOf(null),
     val onScreen: MutableState<Boolean> = mutableStateOf(false),
 )
