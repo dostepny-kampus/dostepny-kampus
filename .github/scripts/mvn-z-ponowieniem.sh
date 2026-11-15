@@ -5,11 +5,13 @@
 set -euo pipefail
 
 # Użycie: mvn-z-ponowieniem.sh <argumenty mvnw…>, z katalogu z ./mvnw (backend/). Ponawia raz, z -U, tylko błąd
-# rozwiązywania artefaktu z Maven Central; błąd kompilacji, testu albo qulice nie jest ponawiany. Gdy ponowienie
-# też zawiedzie na Central, błąd mówi o sieci (`::error title=Maven Central::`), a nie o budowie.
+# pobrania z Maven Central: artefaktu albo samej dystrybucji Mavena przez wrapper. Błąd kompilacji, testu albo qulice
+# nie jest ponawiany. Gdy ponowienie też zawiedzie na Central, błąd mówi o sieci (`::error title=Maven Central::`),
+# a nie o budowie.
 log="$(mktemp)"
 trap 'rm -f "$log"' EXIT
 central_error='^\[(ERROR|FATAL)\].*(Could not (find|transfer) artifact|cached in the local repository).*(central \(|repo\.maven\.apache\.org)'
+central_error+='|^(wget|curl):.*repo\.maven\.apache\.org'
 
 run() {
   ./mvnw "$@" 2>&1 | tee "$log"
