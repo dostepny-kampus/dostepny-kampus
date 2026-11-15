@@ -77,9 +77,7 @@ class TestNameArchitectureTest {
         val EXCEPTIONS =
             mapOf(
                 "app" to "#2028",
-                "core/database" to "#2030",
-                "core/geo" to "#2030",
-                "core/network" to "#2030",
+                "core/network" to "#2089",
                 "feature/capture" to "#2031",
                 "feature/map" to "#2032",
             )

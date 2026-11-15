@@ -49,7 +49,7 @@ class OwnSubmissionDaoTest {
      * Wymagania: US8.2, BR-16
      */
     @Test
-    fun us8_2_server_status_saved() =
+    fun savesServerStatus() =
         runTest {
             dao.save(own(id = "a", savedAt = 1))
             dao.markSent(id = "a")
@@ -68,7 +68,7 @@ class OwnSubmissionDaoTest {
      * jest cofany razem z transakcją kolejki.
      */
     @Test
-    fun nfr5_together_rolls_back() =
+    fun rollsBackTogether() =
         runTest {
             dao.save(own(id = "a", savedAt = 1))
 
@@ -90,7 +90,7 @@ class OwnSubmissionDaoTest {
 
     /** Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Najnowsze zgłoszenia są na górze listy. */
     @Test
-    fun us8_newest_first() =
+    fun listsNewestFirst() =
         runTest {
             dao.save(own(id = "a", savedAt = 1))
             dao.save(own(id = "b", savedAt = 2))
@@ -99,7 +99,7 @@ class OwnSubmissionDaoTest {
         }
 
     @Test
-    fun us8_edit_replaces_row() =
+    fun replacesRowOnEdit() =
         runTest {
             dao.save(own(id = "a", savedAt = 1))
             dao.save(own(id = "a", savedAt = 5).copy(severity = 3))
@@ -111,7 +111,7 @@ class OwnSubmissionDaoTest {
         }
 
     @Test
-    fun nfr5_sent_keeps_server_version() =
+    fun keepsServerVersionWhenSent() =
         runTest {
             dao.save(own(id = "a", savedAt = 1))
             dao.markRefused(id = "a", code = 422)
@@ -126,7 +126,7 @@ class OwnSubmissionDaoTest {
         }
 
     @Test
-    fun nfr5_refusal_keeps_code() =
+    fun keepsRefusalCode() =
         runTest {
             dao.save(own(id = "a", savedAt = 1))
             dao.markRefused(id = "a", code = 422)

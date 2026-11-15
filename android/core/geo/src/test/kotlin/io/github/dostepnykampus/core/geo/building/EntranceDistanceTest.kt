@@ -17,7 +17,7 @@ class EntranceDistanceTest {
     private val point = GeoPoint(longitude = LON, latitude = LAT)
 
     @Test
-    fun `bliższe z dwóch wejść`() {
+    fun picksNearerOfTwoEntrances() {
         val far = entrance(id = "far", latitudeMeters = 30.0)
         val near = entrance(id = "near", latitudeMeters = 3.0)
 
@@ -28,7 +28,7 @@ class EntranceDistanceTest {
     }
 
     @Test
-    fun `bez wejść nie ma wyniku`() {
+    fun givesNothingWithoutEntrances() {
         assertNull(nearestEntrance(point, emptyList()))
     }
 

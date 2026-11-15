@@ -22,7 +22,7 @@ class NearestBuildingsTest {
 
     /** Punkt na południe od budynków: trzy najbliższe, od najbliższego, z odległością od krawędzi w metrach. */
     @Test
-    fun us6_2_nearest_sorted() {
+    fun sortsByDistance() {
         val point = GeoPoint(longitude = LON + SIDE / 2, latitude = LAT - SIDE / 10)
         val hints = buildingHints(point, listOf(farthest, far, near, middle)).nearby
 
@@ -34,7 +34,7 @@ class NearestBuildingsTest {
 
     /** Punkt w konturze: ten budynek pierwszy, 0 m i w konturze; pozostałe dalej z odległością. */
     @Test
-    fun us6_2_nearest_inside_first() {
+    fun putsInsideFirst() {
         val point = GeoPoint(longitude = LON + SIDE / 2, latitude = LAT + 2.4 * SIDE)
         val hints = buildingHints(point, listOf(near, middle, far), limit = 2).nearby
 

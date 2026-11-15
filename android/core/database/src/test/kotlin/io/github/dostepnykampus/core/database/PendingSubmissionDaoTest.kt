@@ -22,7 +22,11 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/** Kolejka zgłoszeń w bazie Room w pamięci: zapis, ponowny zapis, postęp wysyłki i usunięcie. Wymagania: NFR-5, BR-9 */
+/**
+ * Kolejka zgłoszeń w bazie Room w pamięci: zapis, ponowny zapis, postęp wysyłki i usunięcie.
+ *
+ * Wymagania: NFR-5, BR-9, US9.2
+ */
 @RunWith(RobolectricTestRunner::class)
 class PendingSubmissionDaoTest {
     private lateinit var database: DkDatabase
@@ -44,7 +48,7 @@ class PendingSubmissionDaoTest {
     }
 
     @Test
-    fun nfr5_saved_with_photos() =
+    fun savesWithPhotos() =
         runTest {
             dao.save(submission(id = ID, savedAt = 2), photos("p1", "p2", of = ID))
             val saved = dao.observe().first().single()
@@ -53,7 +57,7 @@ class PendingSubmissionDaoTest {
         }
 
     @Test
-    fun nfr5_oldest_first() =
+    fun listsOldestFirst() =
         runTest {
             dao.save(submission(id = "b", savedAt = 5), photos("p", of = "b"))
             dao.save(submission(id = "a", savedAt = 9), photos("p", of = "a"))
@@ -61,7 +65,7 @@ class PendingSubmissionDaoTest {
         }
 
     @Test
-    fun br9_resave_replaces() =
+    fun replacesOnResave() =
         runTest {
             dao.save(submission(id = ID, savedAt = 1), photos("p1", "p2", of = ID))
             val replaced = dao.save(submission(id = ID, savedAt = 1).copy(severity = 3), photos("p2", "p3", of = ID))
@@ -72,7 +76,7 @@ class PendingSubmissionDaoTest {
         }
 
     @Test
-    fun us9_2_progress_kept() =
+    fun keepsProgress() =
         runTest {
             dao.save(submission(id = ID, savedAt = 1), photos("p1", "p2", of = ID))
             dao.markCreated(ID)
@@ -83,7 +87,7 @@ class PendingSubmissionDaoTest {
         }
 
     @Test
-    fun us9_2_sent_removed() =
+    fun removesSent() =
         runTest {
             dao.save(submission(id = ID, savedAt = 1), photos("p1", of = ID))
             dao.delete(ID)
@@ -92,7 +96,7 @@ class PendingSubmissionDaoTest {
 
     /** Odrzucone zgłoszenie zostaje w telefonie, ale kolejka go nie oddaje do wysyłki. Wymagania: BR-26 */
     @Test
-    fun br26_refused_not_queued() =
+    fun skipsRefusedInQueue() =
         runTest {
             dao.save(submission(id = "a", savedAt = 1), photos("p1", of = "a"))
             dao.save(submission(id = "b", savedAt = 2), photos("p2", of = "b"))
@@ -109,7 +113,7 @@ class PendingSubmissionDaoTest {
      * Wymagania: US8.3, BR-26
      */
     @Test
-    fun us8_3_found_also_refused() =
+    fun findsRefusedToo() =
         runTest {
             dao.save(submission(id = ID, savedAt = 1), photos("p1", "p2", of = ID))
             dao.markRefused(ID)

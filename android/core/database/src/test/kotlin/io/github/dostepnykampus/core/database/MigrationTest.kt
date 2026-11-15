@@ -25,7 +25,7 @@ class MigrationTest {
     private val helper = MigrationTestHelper(InstrumentationRegistry.getInstrumentation(), DkDatabase::class.java)
 
     @Test
-    fun migrate_1_to_2_keeps_queue() {
+    fun keepsQueueFrom1To2() {
         helper.createDatabase(DB_NAME, 1).use { first ->
             first.execSQL(
                 "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
@@ -48,7 +48,7 @@ class MigrationTest {
     }
 
     @Test
-    fun migrate_2_to_3_keeps_queue() {
+    fun keepsQueueFrom2To3() {
         helper.createDatabase(DB_NAME, 2).use { second ->
             second.execSQL(
                 "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
@@ -68,7 +68,7 @@ class MigrationTest {
     }
 
     @Test
-    fun migrate_3_to_4_keeps_queue() {
+    fun keepsQueueFrom3To4() {
         helper.createDatabase(DB_NAME, 3).use { third ->
             third.execSQL(
                 "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
@@ -89,7 +89,7 @@ class MigrationTest {
     }
 
     @Test
-    fun migrate_4_to_5_keeps_history() {
+    fun keepsHistoryFrom4To5() {
         helper.createDatabase(DB_NAME, 4).use { fourth ->
             fourth.execSQL("INSERT INTO own_submissions (id, saved_at, kind, state) VALUES ('a', 7, 'PRECISE', 'SENT')")
         }
@@ -107,7 +107,7 @@ class MigrationTest {
     }
 
     @Test
-    fun migrate_5_to_6_keeps_history() {
+    fun keepsHistoryFrom5To6() {
         helper.createDatabase(DB_NAME, 5).use { fifth ->
             fifth.execSQL("INSERT INTO own_submissions (id, saved_at, kind, state) VALUES ('a', 7, 'PRECISE', 'SENT')")
             fifth.execSQL("INSERT INTO building_cache (id, list_json, synced_at) VALUES (1, '{}', 7)")
@@ -125,7 +125,7 @@ class MigrationTest {
     }
 
     @Test
-    fun migrate_6_to_7_keeps_queue() {
+    fun keepsQueueFrom6To7() {
         helper.createDatabase(DB_NAME, 6).use { sixth ->
             sixth.execSQL(
                 "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
@@ -144,7 +144,7 @@ class MigrationTest {
     }
 
     @Test
-    fun migrate_7_to_8_keeps_queue() {
+    fun keepsQueueFrom7To8() {
         helper.createDatabase(DB_NAME, 7).use { seventh ->
             seventh.execSQL(
                 "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
