@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import io.github.dostepnykampus.core.geo.allRings
+import io.github.dostepnykampus.core.geo.parseAreaBoundaries
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -15,12 +17,14 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.PanDirection
 import io.github.dostepnykampus.feature.map.camera.moved
+import io.github.dostepnykampus.feature.map.campus.AREAS_GEOJSON
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.START_BUILDING
 import io.github.dostepnykampus.feature.map.campus.boundsOf
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.math.cos
 import kotlin.math.log2
 
 /** Teren mapy V1 i granice widoku na konturach testowych „Budynek testowy” (nie dane PWr). */
@@ -29,18 +33,53 @@ class CampusBoundsTest {
     private val limits = MapLimits(bounds, widthDp = 400.0, heightDp = 800.0)
 
     /**
-     * Wiersz: V1, mapa zostaje na wybranym terenie: w prostokącie z konturami budynków tego terenu, powiększonym
-     * o 500 m z każdej strony, nie tylko przy budynku startowym. Na 60° szerokości 500 m
-     * na wschód to dwa razy więcej stopni niż 500 m na północ.
+     * Wiersz: V1, mapa zostaje na wybranym terenie: teren spoza pliku granic ma za granicę kontury budynków, więc
+     * prostokąt z konturami budynków tego terenu, powiększony o 50 m z każdej strony, nie tylko przy budynku
+     * startowym. Na 60° szerokości 50 m na wschód to dwa razy więcej stopni niż 50 m na północ.
      *
      * Wymagania: US1.7, BR-G5, NFR-39
      */
     @Test
-    fun nfr39_area_plus_500_m() {
+    fun nfr39_area_plus_50_m() {
         val start = rectangle(west = 17.0, south = 60.0, east = 17.01, north = 60.004)
         val near = GeoMultiPolygon(listOf(rectangle(west = 17.012, south = 60.006, east = 17.02, north = 60.01)))
-        val expected = listOf(17.0 - 2 * LAT_500_M, 60.0 - LAT_500_M, 17.02 + 2 * LAT_500_M, 60.01 + LAT_500_M)
+        val expected = listOf(17.0 - 2 * LAT_50_M, 60.0 - LAT_50_M, 17.02 + 2 * LAT_50_M, 60.01 + LAT_50_M)
         assertBounds(expected, campusMapData(catalog(START_BUILDING to start, "T-1" to near)).bounds)
+    }
+
+    /**
+     * Wiersz: V1, prostokąt terenu z jego granicy z pliku, większej niż kontury, powiększonej o 50 m; granica, której
+     * prostokąt nie obejmuje budynków terenu (np. budynek dodany na serwerze), zostaje pominięta i liczą się kontury.
+     *
+     * Wymagania: BR-G5, NFR-39
+     */
+    @Test
+    fun br_g5_bounds_from_boundary() {
+        val start = rectangle(west = 17.0, south = 60.0, east = 17.01, north = 60.004)
+        val boundary = rectangle(west = 16.99, south = 59.99, east = 17.02, north = 60.01)
+        val wider = listOf(16.99 - 2 * LAT_50_M, 59.99 - LAT_50_M, 17.02 + 2 * LAT_50_M, 60.01 + LAT_50_M)
+        val catalog = catalog(START_BUILDING to start)
+        assertBounds(wider, campusMapData(catalog, mapOf("Kampus główny" to boundary)).bounds)
+        val aside = rectangle(west = 17.005, south = 60.0, east = 17.02, north = 60.004)
+        val outlines = listOf(17.0 - 2 * LAT_50_M, 60.0 - LAT_50_M, 17.01 + 2 * LAT_50_M, 60.004 + LAT_50_M)
+        assertBounds(outlines, campusMapData(catalog, mapOf("Kampus główny" to aside)).bounds)
+    }
+
+    /**
+     * Wiersz: V1, teren „T-9 Atol” z danymi PWr: prostokąt opisany na granicy z pliku granic terenów, powiększony
+     * o 50 m z każdej strony.
+     *
+     * Wymagania: BR-G5, NFR-39
+     */
+    @Test
+    fun nfr39_atol_from_pwr_boundary() {
+        val points = parseAreaBoundaries(AREAS_GEOJSON).getValue("T-9 Atol").allRings().flatten()
+        val (west, east) = points.minOf { it.longitude } to points.maxOf { it.longitude }
+        val (south, north) = points.minOf { it.latitude } to points.maxOf { it.latitude }
+        val inside = rectangle(west = west, south = south, east = west + 1e-5, north = south + 1e-5)
+        val eastward = LAT_50_M / cos(Math.toRadians((south + north) / 2))
+        val expected = listOf(west - eastward, south - LAT_50_M, east + eastward, north + LAT_50_M)
+        assertBounds(expected, campusMapData(catalog("T-9" to inside)).bounds)
     }
 
     /**
@@ -53,10 +92,10 @@ class CampusBoundsTest {
     fun br_g5_other_area_left_out() {
         val start = rectangle(west = 17.0, south = 60.0, east = 17.01, north = 60.004)
         val far = rectangle(west = 17.05, south = 60.03, east = 17.06, north = 60.04)
-        val expected = listOf(17.0 - 2 * LAT_500_M, 60.0 - LAT_500_M, 17.01 + 2 * LAT_500_M, 60.004 + LAT_500_M)
+        val expected = listOf(17.0 - 2 * LAT_50_M, 60.0 - LAT_50_M, 17.01 + 2 * LAT_50_M, 60.004 + LAT_50_M)
         val data = campusMapData(catalog("T-1" to far, START_BUILDING to start))
         assertBounds(expected, data.bounds)
-        val other = listOf(17.05 - 2 * LAT_500_M, 60.03 - LAT_500_M, 17.06 + 2 * LAT_500_M, 60.04 + LAT_500_M)
+        val other = listOf(17.05 - 2 * LAT_50_M, 60.03 - LAT_50_M, 17.06 + 2 * LAT_50_M, 60.04 + LAT_50_M)
         assertBounds(other, data.boundsOf(symbol = "T-1"))
         assertBounds(expected, data.boundsOf(symbol = null))
     }
@@ -69,7 +108,7 @@ class CampusBoundsTest {
     @Test
     fun nfr39_bounds_from_data() {
         val outline = rectangle(west = -0.01, south = -0.02, east = 0.0, north = 0.0)
-        val expected = listOf(-0.01 - LAT_500_M, -0.02 - LAT_500_M, LAT_500_M, LAT_500_M)
+        val expected = listOf(-0.01 - LAT_50_M, -0.02 - LAT_50_M, LAT_50_M, LAT_50_M)
         assertBounds(expected, campusMapData(catalog("T-0" to outline)).bounds)
     }
 
@@ -135,7 +174,7 @@ class CampusBoundsTest {
     }
 
     private companion object {
-        const val LAT_500_M = 500.0 / 111_195.0
+        const val LAT_50_M = 50.0 / 111_195.0
         const val DEGREE_DELTA = 5e-5
         const val ZOOM_DELTA = 1e-3
     }

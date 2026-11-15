@@ -24,10 +24,16 @@ dependencies {
 }
 
 tasks.test {
-    /* Test na prawdziwym pliku konturów z katalogu data/ w repozytorium. */
+    /* Testy na prawdziwych plikach konturów i granic terenów z katalogu data/ w repozytorium. */
     jvmArgumentProviders.add(
         objects.newInstance<BuildingsFile>().apply {
             file.set(layout.projectDirectory.file("../../../data/buildings/pwr-buildings.geojson"))
+        },
+    )
+    jvmArgumentProviders.add(
+        objects.newInstance<BuildingsFile>().apply {
+            file.set(layout.projectDirectory.file("../../../data/areas/pwr-areas.geojson"))
+            property.set("dostepnykampus.areas")
         },
     )
 }

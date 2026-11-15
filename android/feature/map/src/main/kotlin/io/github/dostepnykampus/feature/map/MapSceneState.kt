@@ -130,10 +130,11 @@ internal fun rememberMapSceneState(
     val isCovered = cover > 0.dp
     val density = LocalDensity.current
     val own = view.camera ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
-    val uncovered = own ?: layers?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
+    val limits = density.mapLimits(selection?.bounds, size)
+    val start = layers?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
+    val uncovered = (own ?: start)?.let { limits?.clamp(it) ?: it }
     val inset = with(density) { cover.toPx() }.toDouble()
     val free = density.freeMap(size, cover)
-    val limits = density.mapLimits(selection?.bounds, size)
     val outline = layers?.run { outlinesBySymbol[selection?.building] }.takeIf { isCovered }
     val fit = outline?.run { fitted(this, free) }
     val card = rememberCardCamera(building = selection?.building, fit = fit?.run { limits?.clamp(this) ?: this })
