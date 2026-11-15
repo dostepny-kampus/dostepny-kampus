@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.shared.json;
 
-import java.beans.PropertyEditorSupport;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -28,29 +27,8 @@ public final class TextParameterBinding {
         // Bez stanu: reguła napisów jest stała.
     }
 
-    /**
-     * Rejestruje regułę napisów w wiązaniu żądania.
-     *
-     * @param binder Wiązanie parametrów jednego żądania
-     */
     @InitBinder
-    public void register(final WebDataBinder binder) {
+    static void register(final WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new NulRejectingEditor());
-    }
-
-    /**
-     * Edytor napisu, który odrzuca znak NUL.
-     *
-     * @since 0.1.0
-     */
-    private static final class NulRejectingEditor extends PropertyEditorSupport {
-
-        @Override
-        public void setAsText(final String text) {
-            if (text.indexOf(0) >= 0) {
-                throw new IllegalArgumentException("Znak NUL w parametrze jest niedozwolony");
-            }
-            this.setValue(text);
-        }
     }
 }

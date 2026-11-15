@@ -26,6 +26,22 @@ import org.springframework.web.context.WebApplicationContext;
 @IntegrationTest
 final class NulCharacterHttpIT {
 
+    /**
+     * Znak NUL.
+     */
+    private static final String NUL = Character.toString(0);
+
+    /**
+     * Poprawne zgłoszenie szybkie z sekwencją NUL w napisie JSON opisu.
+     */
+    private static final String BODY = String.join(
+        "",
+        "{\"id\":\"3f2504e0-4f89-11d3-9a0c-0305e82c3301\",\"kind\":\"QUICK\",",
+        "\"barrierGroup\":\"OTHER\",\"description\":\"a\\u0000b\",",
+        "\"location\":{\"type\":\"Point\",\"coordinates\":[17.06209,51.10785]},",
+        "\"photoIds\":[\"5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d\"]}"
+    );
+
     @Test
     void rejectsNulInQueryParameters(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
@@ -33,13 +49,18 @@ final class NulCharacterHttpIT {
             List.of(
                 NulCharacterHttpIT.status(
                     context,
-                    MockMvcRequestBuilders.get("/submissions").param("buildingSymbol", "\u0000")
+                    MockMvcRequestBuilders.get("/submissions")
+                        .param("buildingSymbol", NulCharacterHttpIT.NUL)
                 ),
                 NulCharacterHttpIT.status(
-                    context, MockMvcRequestBuilders.get("/submissions").param("floorId", "\u0000")
+                    context,
+                    MockMvcRequestBuilders.get("/submissions")
+                        .param("floorId", NulCharacterHttpIT.NUL)
                 ),
                 NulCharacterHttpIT.status(
-                    context, MockMvcRequestBuilders.get("/rooms").param("q", "A\u0000")
+                    context,
+                    MockMvcRequestBuilders.get("/rooms")
+                        .param("q", "A".concat(NulCharacterHttpIT.NUL))
                 )
             ),
             Matchers.everyItem(Matchers.equalTo(400))
@@ -55,15 +76,7 @@ final class NulCharacterHttpIT {
                 MockMvcRequestBuilders.post("/submissions")
                     .with(new AsCollector())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(
-                        String.join(
-                            "",
-                            "{\"id\":\"3f2504e0-4f89-11d3-9a0c-0305e82c3301\",\"kind\":\"QUICK\",",
-                            "\"barrierGroup\":\"OTHER\",\"description\":\"a\\u0000b\",",
-                            "\"location\":{\"type\":\"Point\",\"coordinates\":[17.06209,51.10785]},",
-                            "\"photoIds\":[\"5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d\"]}"
-                        )
-                    )
+                    .content(NulCharacterHttpIT.BODY)
             ),
             Matchers.equalTo(400)
         );
