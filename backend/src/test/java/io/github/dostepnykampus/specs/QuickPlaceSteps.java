@@ -164,26 +164,6 @@ public final class QuickPlaceSteps {
     }
 
     /**
-     * Zgłoszenie przychodzi z miejsca oddalonego od każdego budynku PWr.
-     *
-     * @param meters Odległość od najbliższego konturu w metrach
-     * @throws Exception Gdy MockMvc nie wykona żądania
-     */
-    @When("^aplikacja wyśle zgłoszenie z miejscem (\\d+) m od konturu najbliższego budynku PWr$")
-    public void sendsFromAfar(final int meters) throws Exception {
-        this.place = this.jdbc.sql(
-            String.join(
-                " ",
-                "SELECT '[' || ST_X(p) || ',' || ST_Y(p) || ']' FROM (",
-                "SELECT ST_Project(v::geography, :meters, radians(270))::geometry AS p FROM (",
-                "SELECT (ST_DumpPoints(outline)).geom AS v FROM buildings) AS vertices",
-                "ORDER BY ST_X(v) LIMIT 1) AS west"
-            )
-        ).param("meters", meters).query(String.class).single();
-        this.send(QuickPlaceSteps.OTHER);
-    }
-
-    /**
      * Serwer zapisał zgłoszenie z budynkiem z konturu.
      *
      * @param symbol Symbol budynku
@@ -205,7 +185,9 @@ public final class QuickPlaceSteps {
      *
      * @param lack Czego zgłoszenie nie ma, słowami scenariusza
      */
-    @Then("^zgłoszenie (jest „poza budynkiem”|nie ma piętra)$")
+    @Then(
+        "^(?:zgłoszenie|może wysłać zgłoszenie, które) (jest „poza budynkiem”|nie ma piętra)$"
+    )
     public void lacks(final String lack) {
         MatcherAssert.assertThat(
             String.format("Serwer zapisał zgłoszenie inaczej, niż „%s”", lack),
@@ -221,6 +203,7 @@ public final class QuickPlaceSteps {
      * Serwer odmawia zapisu poza terenem PWr.
      */
     @Then("serwer odrzuca zgłoszenie")
+    @Then("widzi napis „Jesteś poza terenem PWr” i nie może wysłać zgłoszenia")
     public void refused() {
         MatcherAssert.assertThat(
             "Serwer przyjął zgłoszenie spoza terenu PWr",
@@ -267,6 +250,26 @@ public final class QuickPlaceSteps {
         ).andReturn().getResponse();
         this.status = response.getStatus();
         this.answer = response.getContentAsString();
+    }
+
+    /**
+     * Wysyła zgłoszenie szybkie z grupą „inne” z podanego miejsca.
+     *
+     * @param point Miejsce osoby
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    void sendFrom(final String point) throws Exception {
+        this.place = point;
+        this.send(QuickPlaceSteps.OTHER);
+    }
+
+    /**
+     * Mówi, czy osoba ma rolę.
+     *
+     * @return Prawda po kroku o zalogowaniu z rolą
+     */
+    boolean loggedIn() {
+        return !this.token.isEmpty();
     }
 
     /**
