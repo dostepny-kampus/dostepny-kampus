@@ -60,13 +60,23 @@ final class SubmissionContentTest {
         final SubmissionContent valid = SubmissionContentTest.content(
             List.of(SubmissionContentTest.PHOTO)
         );
-        Assertions.assertThrows(
-            InvalidSubmission.class,
-            () -> new SubmissionContent(
-                valid.kind(), valid.place(), valid.barrier(), "n".repeat(65),
-                valid.entranceMarking(), valid.replaces(), valid.photoIds()
+        Assertions.assertAll(
+            () -> Assertions.assertEquals(
+                "n".repeat(64),
+                new SubmissionContent(
+                    valid.kind(), valid.place(), valid.barrier(), "n".repeat(64),
+                    valid.entranceMarking(), valid.replaces(), valid.photoIds()
+                ).entranceId(),
+                "Wejście o 64 znakach zostało odrzucone"
             ),
-            "Wejście o 65 znakach przeszło"
+            () -> Assertions.assertThrows(
+                InvalidSubmission.class,
+                () -> new SubmissionContent(
+                    valid.kind(), valid.place(), valid.barrier(), "n".repeat(65),
+                    valid.entranceMarking(), valid.replaces(), valid.photoIds()
+                ),
+                "Wejście o 65 znakach przeszło"
+            )
         );
     }
 
