@@ -20,10 +20,11 @@ import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * Plan budynku w tabelach floors i rooms, zastępowany w jednej transakcji; piętro spoza planu
- * znika z pomieszczeniami, pusty numer to NULL, punkt podpisu leży w konturze. Podpis ma tylko
- * największe od 20 m² z pomieszczeń piętra o tym samym numerze. Obrys piętra to suma pomieszczeń
- * poszerzonych i zwężonych o 0,5 m. Budynek z planem jest szczegółowy (DETAILED). Wejście bierze
- * piętro najbliższego wejścia PWr z piętrem planu do 15 m. Windy nad sobą łączy w szyb (lift_id).
+ * znika z pomieszczeniami, pusty numer to NULL, kontur jest poprawny, punkt podpisu leży w nim.
+ * Podpis ma tylko największe od 20 m² z pomieszczeń piętra o tym samym numerze. Obrys piętra to
+ * suma pomieszczeń poszerzonych i zwężonych o 0,5 m. Budynek z planem jest szczegółowy (DETAILED).
+ * Wejście bierze piętro najbliższego wejścia PWr z piętrem planu do 15 m. Windy nad sobą łączy
+ * w szyb (lift_id).
  *
  * <p>Wymagania: US16, US18, US18.2, BR-G1, NFR-40</p>
  *
@@ -104,7 +105,13 @@ public final class PostgisPlans implements FloorPlans {
             )
             SELECT :building, :floor, :id, NULLIF(BTRIM(:number), ''), :function, :category, shape,
                 ST_PointOnSurface(shape)
-            FROM (SELECT ST_Multi(ST_SetSRID(ST_GeomFromGeoJSON(:outline), 4326)) AS shape) AS room
+            FROM (
+                SELECT ST_Multi(
+                    ST_CollectionExtract(
+                        ST_MakeValid(ST_SetSRID(ST_GeomFromGeoJSON(:outline), 4326)), 3
+                    )
+                ) AS shape
+            ) AS room
             """
         ).param("building", building).param("floor", room.floorId()).param("id", room.id())
             .param("number", room.number()).param("function", room.function())
