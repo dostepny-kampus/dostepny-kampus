@@ -7,6 +7,7 @@ package io.github.dostepnykampus.inspection;
 
 import io.github.dostepnykampus.IntegrationTest;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +39,25 @@ final class SyncPushHttpIT {
             "200 APPLIED, zapisanych 1",
             SyncPushHttpIT.pushed(context, UUID.randomUUID(), "C-13"),
             "Zbierający nie zapisał znacznika piętra"
+        );
+    }
+
+    @Test
+    void rejectsMarkerWithoutCollectorRole(final WebApplicationContext context) {
+        Assertions.assertAll(
+            Stream.of("VISITOR", "VERIFIER", "COORDINATOR", "VERIFIER+COORDINATOR").map(
+                role -> () -> {
+                    final UUID id = UUID.randomUUID();
+                    final String reply = SyncPushHttpIT.push(context, role, id, "C-13");
+                    Assertions.assertEquals(
+                        "200 REJECTED 403, zapisanych 0",
+                        String.format(
+                            "%s, zapisanych %d", reply, SyncPushHttpIT.saved(context, id)
+                        ),
+                        String.format("Rola %s postawiła znacznik piętra", role)
+                    );
+                }
+            )
         );
     }
 
@@ -145,6 +165,8 @@ final class SyncPushHttpIT {
         String outcome = "";
         if (response.getContentAsString().contains("\"APPLIED\"")) {
             outcome = " APPLIED";
+        } else if (response.getContentAsString().contains("\"status\":403")) {
+            outcome = " REJECTED 403";
         } else if (response.getContentAsString().contains("\"REJECTED\"")) {
             outcome = " REJECTED";
         }
