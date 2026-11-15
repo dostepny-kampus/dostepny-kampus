@@ -387,7 +387,7 @@ Ikonami jest 7 z 15 metafor (47%). Pozostałe to słowa, układ ekranu i sposób
 
 Ikony pochodzą z zestawu OpenIconic dostępnego w PlantUML Salt [3], [4]. Każda ikona stoi obok tekstu, a tekst niesie znaczenie sam. Wyjątkiem są przyciski na samej mapie i znak zgłoszenia do sprawdzenia: zamiast napisu mają nazwę dla TalkBack. Kolor nie niesie znaczenia (NFR-21) [5].
 
-Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości własnymi kształtami, tymi samymi na mapie i w treści. Tabela podaje je po słowie „hi-fi”.
+Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości własnymi kształtami, tymi samymi na mapie i w treści. Wyjątkiem jest „Brak danych” na mapie V1: ten sam romb, ale mniejszy i pusty w środku. Tabela podaje je po słowie „hi-fi”.
 
 | Element | Ikona (nazwa z OpenIconic) | Tekst obok | Metafora / dlaczego zrozumiała |
 | --- | --- | --- | --- |
@@ -398,7 +398,7 @@ Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości w
 | wskaźnik braku sieci | `wifi` | „Bez internetu” | znak internetu znany z telefonu i kawiarni (hipoteza) |
 | oznaczenie „dostępne” | `check`; hi-fi: koło z ptaszkiem | „Dostępne” | ptaszek, czyli „tak, da się” |
 | oznaczenie „niedostępne” | `x`; hi-fi: ośmiokąt z krzyżykiem | „Niedostępne” | krzyżyk, czyli „nie”; ośmiokąt jak znak „stop” |
-| oznaczenie „brak danych” | `minus`; hi-fi: romb ze znakiem ? | „Brak danych” | znak zapytania, czyli „nie wiadomo”; inny niż ptaszek i krzyżyk, jak w [tokenach](tokeny.md) (US17.1) |
+| oznaczenie „brak danych” | `minus`; hi-fi: romb ze znakiem ?, na mapie V1 mniejszy i pusty w środku | „Brak danych” | znak zapytania, czyli „nie wiadomo”; inny niż ptaszek i krzyżyk, jak w [tokenach](tokeny.md) (US17.1) |
 | uciążliwość 1 | `warning`; hi-fi: trójkąt z „!” | „Utrudnienie” | trójkąt jak drogowy znak ostrzegawczy: uważaj |
 | uciążliwość 2 | `people`; hi-fi: tarcza z dwiema osobami | „Tylko z pomocą” | dwie osoby: przejdziesz z drugą osobą |
 | uciążliwość 3 | `ban`; hi-fi: zapora z ukośnymi pasami | „Blokada” | znak zakazu albo zapora drogowa: tędy nie |
