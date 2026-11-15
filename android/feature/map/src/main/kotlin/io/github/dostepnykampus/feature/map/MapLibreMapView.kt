@@ -37,6 +37,7 @@ import io.github.dostepnykampus.feature.map.camera.FlightLimits
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
+import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.padding
 import io.github.dostepnykampus.feature.map.camera.styleColors
@@ -131,11 +132,14 @@ object MapLibreMapView : CampusMapView {
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
         var size by remember { mutableStateOf(IntSize.Zero) }
         val limits =
-            remember(selection.bounds, size, density) {
-                density.mapLimits(selection.bounds, size).takeIf { size != IntSize.Zero }
+            remember(selection.bounds, size, density, inset.top) {
+                density.mapLimits(selection.bounds, size.belowTop(inset.top)).takeIf { size != IntSize.Zero }
             }
-        val style =
-            rememberMapStyle(data = data, selection = selection, colors = styleColors, basemap = limits?.basemap)
+        val basemap =
+            remember(selection.bounds, size, density) {
+                density.mapLimits(selection.bounds, size).takeIf { size != IntSize.Zero }?.basemap
+            }
+        val style = rememberMapStyle(data = data, selection = selection, colors = styleColors, basemap = basemap)
         val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
         val currentData by rememberUpdatedState(data)

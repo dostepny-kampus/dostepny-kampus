@@ -111,6 +111,9 @@ data class MapInset(val top: Double = 0.0, val bottom: Double = 0.0)
 /** Dopełnienie kamery MapLibre: lewo, góra, prawo, dół. */
 internal fun MapInset.padding(): DoubleArray = doubleArrayOf(0.0, top, 0.0, bottom)
 
+/** Rozmiar części mapy pod zasłoniętą górą [top] w pikselach. */
+internal fun IntSize.belowTop(top: Double): IntSize = IntSize(width, (height - top).toInt().coerceAtLeast(0))
+
 internal fun MapCamera.toPosition(inset: MapInset = MapInset()): CameraPosition =
     CameraPosition
         .Builder()
