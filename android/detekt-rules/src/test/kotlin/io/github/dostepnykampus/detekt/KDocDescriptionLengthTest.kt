@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test
 
 /** Reguła [KDocDescriptionLength] na krótkich źródłach: zgłasza blok KDoc z opisem dłuższym niż sześć linii. */
 class KDocDescriptionLengthTest {
-    private val rule = KDocDescriptionLength(Config.empty)
-
     @Test
     fun rejectsSevenDescriptionLines() {
         assertEquals(listOf(1), lines(kdoc(description = 7)))
@@ -47,6 +45,8 @@ class KDocDescriptionLengthTest {
         assertEquals(listOf(1), lines(text))
     }
 
+    private fun rule() = KDocDescriptionLength(Config.empty)
+
     private fun kdoc(description: Int, tags: Int = 0): List<String> =
         listOf("/**") +
             List(description) { " * linia $it" } +
@@ -54,5 +54,5 @@ class KDocDescriptionLengthTest {
             listOf(" */", "fun a() = 1")
 
     private fun lines(text: List<String>): List<Int> =
-        rule.lint(text.joinToString(separator = "\n"), compile = false).map { it.entity.location.source.line }
+        rule().lint(text.joinToString(separator = "\n"), compile = false).map { it.entity.location.source.line }
 }

@@ -17,7 +17,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -34,20 +33,13 @@ import org.robolectric.Shadows.shadowOf
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class GnssSatellitesTest {
-    private val app = RuntimeEnvironment.getApplication()
-    private val manager = app.getSystemService(LocationManager::class.java)
-
-    @Before
-    fun grantLocation() {
-        shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
-
     @Test
     fun mapsStatusToSatellites() =
         runTest {
+            grantLocation()
             val updates = mutableListOf<List<Satellite>>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                GnssSatellites(app).satellites().collect { updates += it }
+                GnssSatellites(app()).satellites().collect { updates += it }
             }
             simulate(galileoInFix())
             val expected =
@@ -99,10 +91,11 @@ class GnssSatellitesTest {
     @Test
     fun endsUpdatesOnStop() =
         runTest {
+            grantLocation()
             val updates = mutableListOf<List<Satellite>>()
             val collecting =
                 backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                    GnssSatellites(app).satellites().collect { updates += it }
+                    GnssSatellites(app()).satellites().collect { updates += it }
                 }
             simulate(GnssStatus.Builder().build())
             collecting.cancel()
@@ -112,12 +105,13 @@ class GnssSatellitesTest {
 
     @Test
     fun failsWithoutPermission() {
-        shadowOf(app).denyPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-        assertThrows(SecurityException::class.java) { runBlocking { GnssSatellites(app).satellites().first() } }
+        grantLocation()
+        shadowOf(app()).denyPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+        assertThrows(SecurityException::class.java) { runBlocking { GnssSatellites(app()).satellites().first() } }
     }
 
     private fun simulate(status: GnssStatus) {
-        shadowOf(manager).simulateGnssStatus(status)
+        shadowOf(manager()).simulateGnssStatus(status)
         shadowOf(Looper.getMainLooper()).idle()
     }
 
@@ -141,5 +135,13 @@ class GnssSatellitesTest {
             0f,
         )
         return builder.build()
+    }
+
+    private fun app() = RuntimeEnvironment.getApplication()
+
+    private fun manager(): LocationManager = app().getSystemService(LocationManager::class.java)
+
+    private fun grantLocation() {
+        shadowOf(app()).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 }

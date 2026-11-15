@@ -14,8 +14,6 @@ import org.junit.jupiter.api.Test
 
 /** Reguła [NoLineComment] na krótkich źródłach: zgłasza komentarze `//`, a pomija `//` w napisach. */
 class NoLineCommentTest {
-    private val rule = NoLineComment(Config.empty)
-
     @Test
     fun rejectsLineComment() {
         assertEquals(listOf(4), lines("package a", "", "class Bad {", "    // opis", "}"))
@@ -33,7 +31,7 @@ class NoLineCommentTest {
                 content = listOf("plugins {", "    // opis", "}").joinToString(separator = "\n"),
                 filename = "a.gradle.kts",
             )
-        assertEquals(listOf(2), rule.lint(script).map(::line))
+        assertEquals(listOf(2), rule().lint(script).map(::line))
     }
 
     @Test
@@ -74,8 +72,10 @@ class NoLineCommentTest {
         assertEquals(listOf(1, 2, 3, 4), lines(*loose.toTypedArray()))
     }
 
+    private fun rule() = NoLineComment(Config.empty)
+
     private fun lines(vararg text: String): List<Int> =
-        rule.lint(text.joinToString(separator = "\n"), compile = false).map(::line)
+        rule().lint(text.joinToString(separator = "\n"), compile = false).map(::line)
 
     private fun line(finding: Finding): Int = finding.entity.location.source.line
 

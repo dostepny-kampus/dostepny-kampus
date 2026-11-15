@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test
 
 /** Reguła [NoHistoryNumberInKDoc] na krótkich źródłach: zgłasza blok KDoc z numerem issue albo decyzji. */
 class NoHistoryNumberInKDocTest {
-    private val rule = NoHistoryNumberInKDoc(Config.empty)
-
     @Test
     fun rejectsIssueNumber() {
         assertEquals(listOf(1), lines("/** Zwraca listę (#123). */", "fun a() = 1"))
@@ -59,8 +57,10 @@ class NoHistoryNumberInKDocTest {
         assertEquals(emptyList<Int>(), lines("/* Nagłówek (#123). */", "fun a() = 1"))
     }
 
+    private fun rule() = NoHistoryNumberInKDoc(Config.empty)
+
     private fun lines(vararg text: String): List<Int> =
-        rule.lint(text.joinToString(separator = "\n"), compile = false).map { it.entity.location.source.line }
+        rule().lint(text.joinToString(separator = "\n"), compile = false).map { it.entity.location.source.line }
 
     private companion object {
         const val MARKER = "T" + "ODO(#12): "

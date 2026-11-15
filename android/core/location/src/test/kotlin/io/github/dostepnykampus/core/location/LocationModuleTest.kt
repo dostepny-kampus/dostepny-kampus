@@ -18,13 +18,11 @@ import java.time.Duration
 /** Źródła pomiaru C1 w grafie Hilt to odbiornik GNSS i zegar telefonu. Wymagania: US6.1 */
 @RunWith(RobolectricTestRunner::class)
 class LocationModuleTest {
-    private val app = RuntimeEnvironment.getApplication()
-
     @Test
     fun takesSourcesFromGnss() {
-        assertTrue(LocationModule.positions(app) is GnssPositionFixes)
-        assertTrue(LocationModule.satellites(app) is GnssSatellites)
-        assertTrue(LocationModule.locationSwitch(app) is GnssLocationSwitch)
+        assertTrue(LocationModule.positions(app()) is GnssPositionFixes)
+        assertTrue(LocationModule.satellites(app()) is GnssSatellites)
+        assertTrue(LocationModule.locationSwitch(app()) is GnssLocationSwitch)
     }
 
     /** Zegar pomiaru to czas od startu telefonu, jak `elapsedRealtimeNanos` w odczytach. */
@@ -33,4 +31,6 @@ class LocationModuleTest {
         ShadowSystemClock.advanceBy(Duration.ofSeconds(42))
         assertEquals(SystemClock.elapsedRealtime(), LocationModule.clock().nowMillis())
     }
+
+    private fun app() = RuntimeEnvironment.getApplication()
 }

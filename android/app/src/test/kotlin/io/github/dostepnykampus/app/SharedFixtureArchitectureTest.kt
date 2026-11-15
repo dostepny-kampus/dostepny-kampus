@@ -180,9 +180,9 @@ class SharedFixtureArchitectureTest {
                 |CardServerEntrancesTest CollectorReachTest ConflictEditTest DebugRolesTest DebugSignInTest
                 |DeviceStepsTest DtoContractTest EditBaseVersionTest EditDuringSendTest EntranceAssessmentTest
                 |EntranceHiltTest EntranceOnMapTest FirstLaunchRepositoryTest
-                |FirstLaunchViewModelTest FloorMarkersTest FloorPickerTest GnssLocationSwitchTest
-                |GnssPositionFixesTest GnssSatellitesTest GuestSignInTest HelpScreenTest JsonTextCallTest
-                |KDocDescriptionLengthTest ListEntryTest LocationModuleTest
+                |FirstLaunchViewModelTest FloorMarkersTest FloorPickerTest
+                |GuestSignInTest HelpScreenTest
+                |ListEntryTest
                 |LocationPermissionTest LoginExpiredGateTest MainActivityTest MapAreaPanelTest
                 |MapAreaSwitchTest MapAreasTest MapBarrierNamesTest MapBarrierTouchTest MapBarriersLoadTest
                 |MapCameraTest MapCatalogFromFileTest MapControlsTest MapGeometryFlowTest MapGeometryFocusTest
@@ -190,15 +190,15 @@ class SharedFixtureArchitectureTest {
                 |MapSceneStateTest MapSelectionImagesTest MapStreamConcurrencyTest MapStyleRememberTest MapTileHttpTest
                 |MapTileNetworkDeviceTest MeasurePathTest MeasureScreenTest MeasureViewModelTest MeasuredPlaceTest
                 |MeasuredReportTest MigrationTest MySubmissionsScreenTest MySubmissionsViewModelTest
-                |NoHistoryNumberInKDocTest NoLineCommentTest NullabilityArchitectureTest
+                |NullabilityArchitectureTest
                 |OrphanPhotosTest OwnHistoryTest OwnListPathTest OwnListTest OwnStatusesTest OwnSubmissionDaoTest
                 |PendingEditMappingTest PendingEditsTest PendingMarkerChangeDaoTest PendingSubmissionDaoTest
-                |PermissionsTest PhotoCameraTest PhotoFilesTest PlaceSectionTest PositionAveragingTest
+                |PermissionsTest PhotoCameraTest PhotoFilesTest PlaceSectionTest
                 |QueueAfterRestartTest QueueTransactionTest QuickOfflineTest QuickReportRouteTest QuickReportScreenTest
                 |QuickReportTest QuickSendStepTest QuickSendViewModelTest RefusedResaveTest RefusedSubmissionTest
                 |RemovedViewModelTest ReportAtEntranceTest ReportDraftTest ReportEditScreenTest ReportEditTest
                 |ReportEditViewModelTest ReportFloorsTest ReportFormScreenTest ReportFormViewModelTest
-                |ReportMissingFieldTest ReportScreenTest RequirementIdOutsideLineTest RevokedRoleTest SaveDuringSendTest
+                |ReportMissingFieldTest ReportScreenTest RevokedRoleTest SaveDuringSendTest
                 |SavedReportTest SearchOtherAreaTest SelectedEntranceTest ServerBuildingCatalogTest
                 |SheetBackGestureTest ShowEntranceTest SubmissionCardTest SubmissionFlagsTest SubmissionJsonTest
                 |SubmissionPhotoReadTest SubmissionQueueTest SubmissionSyncAtStartTest SubmissionSyncWorkerTest

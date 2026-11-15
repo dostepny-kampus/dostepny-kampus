@@ -15,12 +15,10 @@ import kotlin.math.sqrt
 
 /** Uśrednianie pozycji przez 30 s na odczytach testowych, nie z telefonu. Wymagania: US6.1, NFR-1, NFR-23 */
 class PositionAveragingTest {
-    private val start = PositionAveraging(startMillis = START)
-
     @Test
     fun averagesEqualFixesToMidpoint() {
         val average =
-            start
+            start()
                 .withFix(fix(longitude = 17.0, latitude = 51.0, accuracy = 6.0, at = 1_000))
                 .withFix(fix(longitude = 17.002, latitude = 51.002, accuracy = 6.0, at = 2_000))
                 .averaged()
@@ -34,7 +32,7 @@ class PositionAveragingTest {
     @Test
     fun weightsByAccuracy() {
         val average =
-            start
+            start()
                 .withFix(fix(longitude = 17.0, latitude = 51.0, accuracy = 1.0, at = 1_000))
                 .withFix(fix(longitude = 17.005, latitude = 51.005, accuracy = 2.0, at = 2_000))
                 .averaged()
@@ -47,7 +45,7 @@ class PositionAveragingTest {
     @Test
     fun usesOnlyFixesInWindow() {
         val average =
-            start
+            start()
                 .withFix(fix(longitude = 10.0, latitude = 50.0, accuracy = 1.0, at = -1))
                 .withFix(fix(longitude = 17.0, latitude = 51.0, accuracy = 6.0, at = 0))
                 .withFix(fix(longitude = 10.0, latitude = 50.0, accuracy = 1.0, at = AVERAGING_MILLIS))
@@ -60,7 +58,7 @@ class PositionAveragingTest {
     @Test
     fun skipsUnknownAccuracy() {
         val averaging =
-            listOf(Double.NaN, Double.POSITIVE_INFINITY, 0.0, -3.0).fold(start) { state, accuracy ->
+            listOf(Double.NaN, Double.POSITIVE_INFINITY, 0.0, -3.0).fold(start()) { state, accuracy ->
                 state.withFix(fix(longitude = 17.0, latitude = 51.0, accuracy = accuracy, at = 1_000))
             }
         assertNull(averaging.average())
@@ -78,7 +76,7 @@ class PositionAveragingTest {
 
     @Test
     fun givesNoAverageWithoutFix() {
-        assertNull(start.average())
+        assertNull(start().average())
     }
 
     /** Napis „Pomiar: zostało 12 s” zaokrągla w górę, więc 0 s pojawia się dopiero na końcu. */
@@ -86,24 +84,26 @@ class PositionAveragingTest {
     fun countsDownSeconds() {
         assertEquals(
             listOf(30, 30, 13, 1, 0, 0),
-            listOf(0L, 1L, 17_500L, 29_999L, 30_000L, 45_000L).map { start.remainingSeconds(START + it) },
+            listOf(0L, 1L, 17_500L, 29_999L, 30_000L, 45_000L).map { start().remainingSeconds(START + it) },
         )
     }
 
     @Test
     fun finishesAfterWindow() {
-        assertFalse(start.isFinished(START + AVERAGING_MILLIS - 1))
-        assertTrue(start.isFinished(START + AVERAGING_MILLIS))
+        assertFalse(start().isFinished(START + AVERAGING_MILLIS - 1))
+        assertTrue(start().isFinished(START + AVERAGING_MILLIS))
     }
 
     /** „Powtórz pomiar” zaczyna nowe pełne 30 s bez odczytów poprzedniego pomiaru. */
     @Test
     fun startsOverOnRepeat() {
-        val first = start.withFix(fix(longitude = 17.0, latitude = 51.0, accuracy = 6.0, at = 1_000))
+        val first = start().withFix(fix(longitude = 17.0, latitude = 51.0, accuracy = 6.0, at = 1_000))
         val repeated = first.restart(startMillis = START + 40_000)
         assertNull(repeated.average())
         assertEquals(30, repeated.remainingSeconds(START + 40_000))
     }
+
+    private fun start() = PositionAveraging(startMillis = START)
 
     private fun PositionAveraging.averaged(): PositionAverage = checkNotNull(average()) { "Brak średniej" }
 

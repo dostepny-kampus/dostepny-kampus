@@ -19,7 +19,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -30,22 +29,14 @@ import org.robolectric.Shadows.shadowOf
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class GnssPositionFixesTest {
-    private val app = RuntimeEnvironment.getApplication()
-    private val manager = app.getSystemService(LocationManager::class.java)
-
-    @Before
-    fun grantLocation() {
-        shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-        shadowOf(manager).setProviderEnabled(LocationManager.GPS_PROVIDER, true)
-    }
-
     @Test
     fun mapsGpsLocationToFix() =
         runTest {
+            grantLocation()
             val fixes = mutableListOf<PositionFix>()
             val collecting =
                 backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                    GnssPositionFixes(app).fixes().collect { fixes += it }
+                    GnssPositionFixes(app()).fixes().collect { fixes += it }
                 }
             simulate(location(accuracy = 4.5f))
             collecting.cancel()
@@ -57,9 +48,10 @@ class GnssPositionFixesTest {
     @Test
     fun givesNanWithoutAccuracy() =
         runTest {
+            grantLocation()
             val fixes = mutableListOf<PositionFix>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                GnssPositionFixes(app).fixes().collect { fixes += it }
+                GnssPositionFixes(app()).fixes().collect { fixes += it }
             }
             simulate(location(accuracy = null))
             assertTrue(fixes.single().accuracyMeters.isNaN())
@@ -69,28 +61,30 @@ class GnssPositionFixesTest {
     @Test
     fun removesListenerOnStop() =
         runTest {
+            grantLocation()
             val collecting =
                 backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                    GnssPositionFixes(app).fixes().collect {}
+                    GnssPositionFixes(app()).fixes().collect {}
                 }
-            val requests = shadowOf(manager).getLocationRequests(LocationManager.GPS_PROVIDER).size
+            val requests = shadowOf(manager()).getLocationRequests(LocationManager.GPS_PROVIDER).size
             collecting.cancel()
             assertEquals(
                 listOf(1, 0),
-                listOf(requests, shadowOf(manager).getLocationRequests(LocationManager.GPS_PROVIDER).size),
+                listOf(requests, shadowOf(manager()).getLocationRequests(LocationManager.GPS_PROVIDER).size),
             )
         }
 
     /** Bez zgody na lokalizację odbiornik nie rusza, a ekran dostaje błąd, żeby poprosić o zgodę. */
     @Test
     fun failsWithoutPermission() {
-        shadowOf(app).denyPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-        assertThrows(SecurityException::class.java) { runBlocking { GnssPositionFixes(app).fixes().first() } }
-        assertTrue(shadowOf(manager).getLocationRequests(LocationManager.GPS_PROVIDER).isEmpty())
+        grantLocation()
+        shadowOf(app()).denyPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+        assertThrows(SecurityException::class.java) { runBlocking { GnssPositionFixes(app()).fixes().first() } }
+        assertTrue(shadowOf(manager()).getLocationRequests(LocationManager.GPS_PROVIDER).isEmpty())
     }
 
     private fun simulate(location: Location) {
-        shadowOf(manager).simulateLocation(LocationManager.GPS_PROVIDER, location)
+        shadowOf(manager()).simulateLocation(LocationManager.GPS_PROVIDER, location)
         shadowOf(Looper.getMainLooper()).idle()
     }
 
@@ -102,5 +96,14 @@ class GnssPositionFixesTest {
         location.time = System.currentTimeMillis()
         if (accuracy != null) location.accuracy = accuracy
         return location
+    }
+
+    private fun app() = RuntimeEnvironment.getApplication()
+
+    private fun manager(): LocationManager = app().getSystemService(LocationManager::class.java)
+
+    private fun grantLocation() {
+        shadowOf(app()).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+        shadowOf(manager()).setProviderEnabled(LocationManager.GPS_PROVIDER, true)
     }
 }

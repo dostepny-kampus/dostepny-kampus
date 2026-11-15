@@ -22,18 +22,15 @@ import org.robolectric.shadows.ShadowLooper
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class GnssLocationSwitchTest {
-    private val app = RuntimeEnvironment.getApplication()
-    private val manager = app.getSystemService(LocationManager::class.java)
-
     /** Wyłączona lokalizacja, potem włączona i znów wyłączona: każda zmiana raz, w kolejności zdarzeń. */
     @Test
     fun followsSwitchEvents() =
         runTest {
-            shadowOf(manager).setProviderEnabled(LocationManager.GPS_PROVIDER, false)
+            shadowOf(manager()).setProviderEnabled(LocationManager.GPS_PROVIDER, false)
             val states = mutableListOf<Boolean>()
             val collecting =
                 backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                    GnssLocationSwitch(app).isEnabled().collect { states += it }
+                    GnssLocationSwitch(app()).isEnabled().collect { states += it }
                 }
             toggle(isEnabled = true)
             toggle(isEnabled = true)
@@ -43,7 +40,11 @@ class GnssLocationSwitchTest {
         }
 
     private fun toggle(isEnabled: Boolean) {
-        shadowOf(manager).setProviderEnabled(LocationManager.GPS_PROVIDER, isEnabled)
+        shadowOf(manager()).setProviderEnabled(LocationManager.GPS_PROVIDER, isEnabled)
         ShadowLooper.idleMainLooper()
     }
+
+    private fun app() = RuntimeEnvironment.getApplication()
+
+    private fun manager(): LocationManager = app().getSystemService(LocationManager::class.java)
 }

@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test
 
 /** Reguła [RequirementIdOutsideLine] na krótkich źródłach: identyfikator wymagania tylko w linii `Wymagania:`. */
 class RequirementIdOutsideLineTest {
-    private val rule = RequirementIdOutsideLine(Config.empty)
-
     @Test
     fun rejectsIdInSentence() {
         assertEquals(listOf(1), lines("/** Zwraca listę budynków (US1.1). */"))
@@ -44,8 +42,10 @@ class RequirementIdOutsideLineTest {
         assertEquals(listOf(1), lines("/** Wymagania wspólne i NFR-19 mówią o tym. */"))
     }
 
+    private fun rule() = RequirementIdOutsideLine(Config.empty)
+
     private fun lines(vararg kdoc: String): List<Int> =
-        rule
+        rule()
             .lint((kdoc.toList() + "fun a() = 1").joinToString(separator = "\n"), compile = false)
             .map { it.entity.location.source.line }
 }

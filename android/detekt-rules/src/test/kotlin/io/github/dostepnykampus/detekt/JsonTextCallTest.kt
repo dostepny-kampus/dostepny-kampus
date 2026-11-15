@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test
 
 /** Reguła [JsonTextCall] na krótkich źródłach: zgłasza zamianę tekstu JSON bez względu na typy. */
 class JsonTextCallTest {
-    private val rule = JsonTextCall(Config.empty)
-
     @Test
     fun rejectsUntypedRead() {
         assertEquals(
@@ -53,8 +51,10 @@ class JsonTextCallTest {
         )
     }
 
+    private fun rule() = JsonTextCall(Config.empty)
+
     private fun lines(vararg source: String): List<Int> =
-        rule.lint(source.joinToString(separator = "\n"), compile = false).map(::line)
+        rule().lint(source.joinToString(separator = "\n"), compile = false).map(::line)
 
     private fun line(finding: Finding): Int = finding.entity.location.source.line
 }
