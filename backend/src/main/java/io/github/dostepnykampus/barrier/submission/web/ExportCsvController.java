@@ -26,7 +26,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Nagłówek i wiersze eksportu ze współrzędnymi w EPSG:2180.
+ * Nagłówek i wiersze eksportu ze współrzędnymi w EPSG:2180. Opis zaczynający się od
+ * {@code =}, {@code +}, {@code -}, {@code @}, tabulatora albo powrotu karetki dostaje na
+ * początku apostrof, więc arkusz kalkulacyjny pokazuje go jako tekst, nie formułę.
  *
  * <p>Wymagania: US13.2, US13.3</p>
  *
@@ -67,10 +69,18 @@ public final class ExportCsvController {
             Optional.ofNullable(place.buildingSymbol()).orElse(""),
             Optional.ofNullable(place.floor())
                 .map(floor -> this.floor(place.buildingSymbol(), floor)).orElse(""),
-            Optional.ofNullable(barrier.description()).orElse(""),
+            Optional.ofNullable(barrier.description()).map(ExportCsvController::text).orElse(""),
             Optional.of(submission.verification()).filter(time -> !Instant.MIN.equals(time))
                 .map(Instant::toString).orElse("")
         );
+    }
+
+    private static String text(final String value) {
+        String result = value;
+        if (!value.isEmpty() && "=+-@\t\r".indexOf(value.charAt(0)) >= 0) {
+            result = "'".concat(value);
+        }
+        return result;
     }
 
     private static String group(final BarrierGroup group) {
