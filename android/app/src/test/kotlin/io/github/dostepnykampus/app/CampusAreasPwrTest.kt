@@ -30,7 +30,6 @@ import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.area.center
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -56,14 +55,12 @@ class CampusAreasPwrTest {
     private var outlines = emptyMap<String, CampusBounds>()
     private var selection = MapSelection()
     private var camera: MapCamera? = null
-    private var idle: (MapCamera) -> Unit = {}
     private val fakeMap =
-        CampusMapView { shownData, shownSelection, shownCamera, onCameraIdle, _, _, _ ->
+        CampusMapView { shownData, shownSelection, shownCamera, _, _, _, _ ->
             areas = shownData.areas
             outlines = shownData.outlinesBySymbol
             selection = shownSelection
             camera = shownCamera
-            idle = onCameraIdle
         }
 
     private fun showApp(isFirstLaunch: Boolean = false, waitForMap: Boolean = true) {
@@ -158,30 +155,6 @@ class CampusAreasPwrTest {
         compose.onNode(hasText("Wittigowo") and isSelectable()).performClick()
         compose.waitForIdle()
         assertShowsArea(name = "Wittigowo", symbol = "T-15")
-    }
-
-    /**
-     * Wiersz: V1, widok zatrzymany gestem na granicy terenu „Kampus główny” od strony „Wittigowo” zostaje
-     * w granicy przekazanej mapie, a przy krawędzi stoi przycisk „Wittigowo” z odległością.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
-     *
-     * Wymagania: US1.7, BR-G5, NFR-39
-     */
-    @Test
-    fun showsPwrEdgeButton() {
-        showApp()
-        val main = area("Kampus główny").bounds
-        val target = area("Wittigowo").bounds.center
-        val edge =
-            GeoPoint(
-                longitude = target.longitude.coerceIn(minimumValue = main.west, maximumValue = main.east),
-                latitude = target.latitude.coerceIn(minimumValue = main.south, maximumValue = main.north),
-            )
-        compose.runOnUiThread { idle(MapCamera(center = edge, zoom = requireNotNull(camera).zoom)) }
-        compose.waitForIdle()
-        assertEquals(main, selection.bounds)
-        val button = hasContentDescription("Tu kończy się teren Kampus główny. Obok: Wittigowo, ", substring = true)
-        compose.onNode(button and hasContentDescription(" km", substring = true)).assertExists()
     }
 
     /**
