@@ -11,7 +11,10 @@ import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
+import io.github.dostepnykampus.feature.map.campus.featureCollection
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -54,6 +57,10 @@ internal fun areaFeatures(boundary: GeoArea?, bounds: CampusBounds): List<Featur
     val lines = parts.flatten().map { Feature(LineString(it), null) }
     return listOf(Feature(outside, null)) + holes + lines
 }
+
+/** Dane źródła [AREA_SOURCE] dla terenu z [selection]; bez prostokąta terenu źródło jest puste. */
+internal fun areaOf(selection: MapSelection): JsonElement =
+    featureCollection(selection.bounds?.let { areaFeatures(boundary = selection.boundary, bounds = it) }.orEmpty())
 
 /**
  * Warstwy terenu: kolor [MapStyleColors.outside] poza granicą, a na granicy linia z obwódką pod spodem.

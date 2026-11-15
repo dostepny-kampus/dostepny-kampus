@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.style
 
 import android.graphics.Bitmap
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.featureCollection
@@ -109,6 +110,9 @@ internal interface MapStyleTarget {
 
     /** Dodaje albo zastępuje obraz [name]. */
     fun image(name: String, image: Bitmap)
+
+    /** Zastępuje źródło podkładu [BASEMAP] źródłem z kafelkami tylko w prostokącie [bounds]; `null`: cały świat. */
+    fun basemapBounds(bounds: CampusBounds?)
 }
 
 /**
@@ -125,6 +129,19 @@ internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<Strin
     filter(layer = CHOSEN_BARRIER_LAYER, filter = look.chosenBarrierFilter)
     data(source = CHOSEN_SOURCE, geoJson = look.chosenEntrance.asStyleText())
     showPlan(floor = look.planFloor, features = look.plan)
+}
+
+/**
+ * Pokazuje teren z [area] (prostokąt i granica, bez zaznaczenia) i podkład [basemap] w stylu z [campusMapStyle]. Po
+ * wywołaniu styl rysuje to samo co styl z [campusMapStyle] dla tego terenu i podkładu, więc zmiana terenu nie
+ * wymaga nowego stylu.
+ *
+ * Wymagania: US1.7, BR-G5, NFR-39
+ */
+internal fun MapStyleTarget.showArea(area: MapSelection, basemap: Basemap?) {
+    data(source = AREA_SOURCE, geoJson = areaOf(area).asStyleText())
+    basemapBounds(bounds = basemap?.bounds)
+    minZoom(layer = BASEMAP, zoom = basemap?.minZoom ?: 0.0)
 }
 
 /**

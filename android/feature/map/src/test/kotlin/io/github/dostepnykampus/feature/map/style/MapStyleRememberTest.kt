@@ -76,26 +76,35 @@ class MapStyleRememberTest {
         }
     }
 
-    /**
-     * Zmiana danych, prostokąta i granicy terenu, motywu oraz podkładu daje za każdym razem nowy styl.
-     * Wymagania: BR-G5, NFR-39
-     */
+    /** Zmiana danych i motywu daje za każdym razem nowy styl. Wymagania: NFR-10 */
     @Test
     fun rebuildsStyleOnChange() {
         show()
-        val area = CampusBounds(west = 0.0, south = 0.0, east = 1.0, north = 1.0)
         compose.runOnIdle { data = dataOf(building, other) }
-        compose.runOnIdle {
-            selection = MapSelection(bounds = area)
-            basemap = Basemap(bounds = area)
-        }
-        compose.runOnIdle { selection = selection.copy(boundary = outline) }
         compose.runOnIdle { colors = day.copy(isNight = true) }
-        compose.runOnIdle { basemap = Basemap(bounds = area, minZoom = 12.0) }
         compose.runOnIdle {
-            assertEquals(6, builds.size)
-            assertEquals(6, builds.toSet().size)
+            assertEquals(3, builds.size)
+            assertEquals(3, builds.toSet().size)
             assertEquals(builds.last(), styles.last())
+        }
+    }
+
+    /**
+     * Zmiana prostokąta i granicy terenu oraz podkładu nie buduje stylu drugi raz: idzie do wczytanego stylu.
+     * Wymagania: BR-G5, NFR-39
+     */
+    @Test
+    fun keepsStyleOnAreaChange() {
+        val area = CampusBounds(west = 0.0, south = 0.0, east = 1.0, north = 1.0)
+        selection = MapSelection(bounds = area)
+        basemap = Basemap(bounds = area)
+        show()
+        compose.runOnIdle { selection = selection.copy(boundary = outline) }
+        compose.runOnIdle { basemap = Basemap(bounds = area, minZoom = 12.0) }
+        compose.runOnIdle { selection = MapSelection(bounds = area.copy(west = 2.0, east = 3.0)) }
+        compose.runOnIdle {
+            assertEquals(1, builds.size)
+            assertEquals(styles.first(), styles.last())
         }
     }
 

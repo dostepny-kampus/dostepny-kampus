@@ -13,6 +13,7 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.room.RoomList
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.campusMapData
@@ -135,6 +136,31 @@ class CampusMapSelectionStyleTest {
         }
     }
 
+    /**
+     * Teren i podkład pokazane w gotowym stylu dają ten sam styl co styl zbudowany z nimi, więc zmiana terenu
+     * nie wczytuje stylu od nowa, a mapa wygląda tak samo. Wymagania: US1.7, BR-G5, NFR-39
+     */
+    @Test
+    fun showsAreaOnReadyStyle() {
+        val main = CampusBounds(west = 0.0, south = 0.0, east = 1.0, north = 1.0)
+        val other = CampusBounds(west = 2.0, south = 0.0, east = 3.0, north = 1.0)
+        val areas =
+            listOf(
+                MapSelection() to null,
+                MapSelection(bounds = main) to Basemap(bounds = main),
+                MapSelection(bounds = other, boundary = building("A-1", name = "").outline) to
+                    Basemap(bounds = other, minZoom = 12.0),
+            )
+        val ready = JsonStyle(styleOf(area = MapSelection(bounds = main), basemap = Basemap(bounds = main)))
+        areas.forEach { (area, basemap) ->
+            ready.showArea(area = area, basemap = basemap)
+            assertEquals(Json.parseToJsonElement(styleOf(area = area, basemap = basemap)), ready.json, "$area")
+        }
+    }
+
+    private fun styleOf(area: MapSelection, basemap: Basemap?): String =
+        campusMapStyle(data = data, selection = area, colors = colors, basemap = basemap)
+
     private fun style(building: String? = null, entrance: SelectedEntrance? = null): JsonObject =
         Json.parseToJsonElement(campusMapStyle(data, data.selection(building, entrance), colors)).jsonObject
 
@@ -197,6 +223,11 @@ private class JsonStyle(style: String) : MapStyleTarget {
     }
 
     override fun image(name: String, image: Bitmap) = Unit
+
+    override fun basemapBounds(bounds: CampusBounds?) {
+        val sources = json.getValue("sources").jsonObject + (BASEMAP to basemapSource(bounds))
+        json = JsonObject(json + ("sources" to JsonObject(sources)))
+    }
 
     private fun edit(layer: String, change: (JsonObject) -> Map<String, JsonElement>) {
         val layers =
