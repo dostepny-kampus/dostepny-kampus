@@ -16,8 +16,6 @@ import org.springframework.stereotype.Component;
  * Pomieszczenia piętra z tabel floors i rooms, z obrysem piętra policzonym przy imporcie.
  * Winda podaje piętra pomieszczeń z tym samym lift_id od najniższego.
  *
- * <p>TODO(#2187): import planów zapisuje lift_id po połączeniu pomieszczeń windy w szyb.</p>
- *
  * <p>Wymagania: US16.1, NFR-40</p>
  *
  * @since 0.1.0

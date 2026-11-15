@@ -23,7 +23,7 @@ import org.springframework.transaction.support.TransactionOperations;
  * znika z pomieszczeniami, pusty numer to NULL, punkt podpisu leży w konturze. Podpis ma tylko
  * największe od 20 m² z pomieszczeń piętra o tym samym numerze. Obrys piętra to suma pomieszczeń
  * poszerzonych i zwężonych o 0,5 m. Budynek z planem jest szczegółowy (DETAILED). Wejście bierze
- * piętro najbliższego wejścia PWr z piętrem planu do 15 m, a bez takiego wejścia ma NULL.
+ * piętro najbliższego wejścia PWr z piętrem planu do 15 m. Windy nad sobą łączy w szyb (lift_id).
  *
  * <p>Wymagania: US16, US18, US18.2, BR-G1, NFR-40</p>
  *
@@ -79,6 +79,7 @@ public final class PostgisPlans implements FloorPlans {
                     "UPDATE buildings SET detail_level = 'DETAILED' WHERE symbol = :building"
                 ).param("building", building).update();
                 this.entrances(building, known, entrances);
+                new PostgisShafts(this.jdbc).link(building);
             }
         );
     }
