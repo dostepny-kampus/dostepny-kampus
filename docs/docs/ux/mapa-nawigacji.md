@@ -107,9 +107,8 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, arkusz bariery | „Pokaż opis budynku”; „Zamknij” | V2 budynku bariery; V1 | wszystkie | US2 |
 | V1 | napis „© OpenStreetMap contributors” | strona praw autorskich OSM | wszystkie | NFR-37 |
 | V1 | „Powiększ”, „Pomniejsz” i strzałki „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | V1, mapa powiększona albo przesunięta | wszystkie | NFR-15, PW-8, PW-11 |
-| V1 | „ⓘ” („Informacje o mapie”) | V1, panel ze źródłami mapy | wszystkie | NFR-37, NFR-40 |
+| V1 | „ⓘ” („Legenda i źródła mapy”) | V1, arkusz „Legenda” ze źródłami mapy na końcu | wszystkie | US1.4, NFR-21, NFR-37, NFR-40 |
 | V1, stan „brak wyniku” | „Lista budynków” | V1, lista | wszystkie | UC1 3a |
-| V1 | „Legenda” | V1, legenda rozwinięta | wszystkie | NFR-21 |
 | V1 | przycisk terenu, np. „Kampus główny” | V1, panel „Teren na mapie” | wszystkie | US1.6, US1.7 |
 | V1, panel „Teren na mapie” | teren z listy; „Zamknij” | V1 z wybranym terenem; V1 | wszystkie | US1.7 |
 | V1 | wybór wyniku albo budynku z listy, który leży na innym terenie | V1 z terenem tego budynku; dalej jak przy każdym wyniku. „Wstecz” z V2 zostawia ten teren, nie wraca na startowy | wszystkie | US1.8 |
@@ -205,7 +204,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | C1, lista budynków | budynek z listy, np. „Budynek A-2”; „Poza budynkiem” | C1 z wybranym budynkiem albo bez budynku | RO-ZBI | US6.2, BR-G2, BR-G4 |
 | C1, budynek szczegółowy | przełącznik „Plan piętra” i „Mapa” (domyślnie „Plan piętra”) | C1, ten sam ekran: plan wybranego piętra albo mapa z tym samym punktem | RO-ZBI | US6.3, US6.4 |
 | C1 | „Powiększ”, „Pomniejsz” i strzałki „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | C1, mapa albo plan przesunięte, punkt na środku w nowym miejscu, napis „Korekta ręczna” | RO-ZBI | US6.3, US6.4, NFR-15 |
-| C1 | „ⓘ” („Informacje o mapie”) | C1, panel ze źródłami mapy | RO-ZBI | NFR-37, NFR-40 |
+| C1 | „ⓘ” („Legenda i źródła mapy”) | C1, arkusz „Legenda” ze źródłami mapy na końcu | RO-ZBI | US1.4, NFR-37, NFR-40 |
 | C1, stany „brak zgody” i „zgoda tylko przybliżona” | „Pozwól na lokalizację”, „Pozwól na dokładną lokalizację” | C1, pomiar | RO-ZBI | NFR-27, BR-8 |
 | C1, stany zgody na lokalizację | jak w V4; po odmowie „Otwórz ustawienia” | ustawienia telefonu | RO-ZBI | NFR-27 |
 | C1, stany zgody na lokalizację | „Wstecz” zamiast „Wróć do mapy” | ekran, z którego otwarto C1: L2, C2 albo C3 | RO-ZBI | NFR-15 |
@@ -242,7 +241,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | --- | --- | --- | --- | --- |
 | R1 | przełącznik „Mapa” i „Lista” (domyślnie „Lista”) | R1 | RO-WER | NFR-19 |
 | R1, widok mapy | „Powiększ”, „Pomniejsz” i strzałki „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | R1, mapa powiększona albo przesunięta | RO-WER | NFR-15, PW-8 |
-| R1, widok mapy | „ⓘ” („Informacje o mapie”) | R1, panel ze źródłami mapy | RO-WER | NFR-37, NFR-40 |
+| R1, widok mapy | „ⓘ” („Legenda i źródła mapy”) | R1, arkusz „Legenda” ze źródłami mapy na końcu | RO-WER | US1.4, NFR-37, NFR-40 |
 | R1 | „Weź do sprawdzenia” | R2 | RO-WER | US10.4, BR-11 |
 | R1 | „Weź do sprawdzenia”, zgłoszenie już zajęte | R1, komunikat, zgłoszenie znika | RO-WER | UC14 2a, BR-11 |
 | R1 | „Otwórz” przy zgłoszeniu z sekcji „Wzięte przeze mnie” | R2 | RO-WER | BR-11, UC14 2b |
