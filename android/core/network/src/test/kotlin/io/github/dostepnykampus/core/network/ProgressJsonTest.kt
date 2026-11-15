@@ -25,8 +25,6 @@ import java.time.Instant
  * Wymagania: US11.1, US11.3, BR-21
  */
 class ProgressJsonTest {
-    private val json = NetworkModule.json()
-
     @Test
     fun us11_1_both_detail_levels() {
         val marker =
@@ -58,12 +56,12 @@ class ProgressJsonTest {
                 entrancesCheckedOnSite = 2,
                 markers = emptyList(),
             )
-        assertEquals(listOf(detailed, basic), json.decodeProgress(PROGRESS), "postęp dwóch budynków")
+        assertEquals(listOf(detailed, basic), NetworkModule.json().decodeProgress(PROGRESS), "postęp dwóch budynków")
     }
 
     @Test
     fun us11_1_empty_list() {
-        assertEquals(emptyList<BuildingProgress>(), json.decodeProgress("[]"), "brak budynków")
+        assertEquals(emptyList<BuildingProgress>(), NetworkModule.json().decodeProgress("[]"), "brak budynków")
     }
 
     @ParameterizedTest
@@ -77,7 +75,7 @@ class ProgressJsonTest {
         ],
     )
     fun bad_body_is_illegal_argument(body: String) {
-        assertThrows(IllegalArgumentException::class.java) { json.decodeProgress(body) }
+        assertThrows(IllegalArgumentException::class.java) { NetworkModule.json().decodeProgress(body) }
     }
 
     private companion object {
