@@ -122,7 +122,7 @@ class CancellationTest {
     fun nfr55_broken_body_no_cancel(call: String) {
         server.enqueue(MockResponse().setBody(BODY).setSocketPolicy(SocketPolicy.DISCONNECT_DURING_RESPONSE_BODY))
         val outcome = begin(call, client()).outcome.within(GUARD_WAIT_MILLIS)
-        assertInstanceOf(ApiResult.NetworkError::class.java, outcome?.value)
+        assertInstanceOf(ApiResult.NetworkError::class.java, outcome?.value, "błąd sieci po zerwaniu ciała")
     }
 
     @ParameterizedTest
@@ -130,7 +130,7 @@ class CancellationTest {
     fun nfr55_timeout_no_cancel(call: String) {
         server.dispatcher = holdHeaders()
         val outcome = begin(call, client(PLAIN_TIMEOUT_MILLIS)).outcome.within(GUARD_WAIT_MILLIS)
-        assertInstanceOf(ApiResult.NetworkError::class.java, outcome?.value)
+        assertInstanceOf(ApiResult.NetworkError::class.java, outcome?.value, "błąd sieci po przekroczeniu czasu")
     }
 
     private fun assertCancelled(running: Running) {

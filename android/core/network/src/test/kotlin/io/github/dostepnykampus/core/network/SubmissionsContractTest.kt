@@ -47,14 +47,14 @@ class SubmissionsContractTest {
     fun br9_post_contract_fields() {
         server.enqueue(code = 201, body = submission(REJECTED))
         server.blocking { create(ID, precise) }
-        assertEquals(server.parse("""{"id":"$ID",$PRECISE}"""), server.sentBody())
+        assertEquals(server.parse("""{"id":"$ID",$PRECISE}"""), server.sentBody(), "ciało żądania tworzenia")
     }
 
     @Test
     fun br10_put_contract_fields() {
         server.enqueue(code = 200, body = submission(REJECTED))
         server.blocking { update(id = ID, version = 2, content = precise) }
-        assertEquals(server.parse("""{"version":2,$PRECISE}"""), server.sentBody())
+        assertEquals(server.parse("""{"version":2,$PRECISE}"""), server.sentBody(), "ciało żądania aktualizacji")
     }
 
     @Test
@@ -63,14 +63,18 @@ class SubmissionsContractTest {
         server.enqueue(code = 200, body = submission(REJECTED))
         server.blocking { create(ID, quick) }
         server.blocking { update(id = ID, version = 1, content = quick) }
-        assertEquals(QUICK_FIELDS + "id", server.sentBody().keys - FLAGS)
-        assertEquals(QUICK_FIELDS + "version", server.sentBody().keys - FLAGS)
+        assertEquals(QUICK_FIELDS + "id", server.sentBody().keys - FLAGS, "pola wysłane przy tworzeniu")
+        assertEquals(QUICK_FIELDS + "version", server.sentBody().keys - FLAGS, "pola wysłane przy aktualizacji")
     }
 
     @Test
     fun us8_1_rejected_read() {
         server.enqueue(code = 200, body = submission(REJECTED))
-        assertEquals(ApiResult.Success(rejected), server.blocking { create(ID, precise) })
+        assertEquals(
+            ApiResult.Success(rejected),
+            server.blocking { create(ID, precise) },
+            "odrzucone zgłoszenie z serwera",
+        )
     }
 
     @Test
@@ -78,14 +82,18 @@ class SubmissionsContractTest {
         server.enqueue(code = 200, body = "[${submission(ACCEPTED)}]")
         val verified = Instant.parse("2026-11-04T09:30:00Z")
         val accepted = rejected.copy(status = SubmissionStatus.ACCEPTED, rejectionReason = null, verifiedAt = verified)
-        assertEquals(ApiResult.Success(listOf(accepted)), server.blocking { accepted("C-13") })
+        assertEquals(
+            ApiResult.Success(listOf(accepted)),
+            server.blocking { accepted("C-13") },
+            "przyjęte zgłoszenie z serwera",
+        )
     }
 
     @Test
     fun us9_3_conflict_server() {
         server.enqueue(code = 409, body = """{$PROBLEM,"serverSubmission":${submission(REJECTED)}}""")
         val result = server.blocking { update(id = ID, version = 1, content = precise) }
-        assertEquals(ApiResult.Success(SubmissionEdit.Conflict(rejected)), result)
+        assertEquals(ApiResult.Success(SubmissionEdit.Conflict(rejected)), result, "konflikt z wersją serwera")
     }
 
     @Test
@@ -118,8 +126,8 @@ class SubmissionsContractTest {
     }
 
     private fun assertContentError(code: Int, result: ApiResult<*>) {
-        val error = assertInstanceOf(ApiResult.ServerError::class.java, result)
-        assertEquals(code, error.code)
+        val error = assertInstanceOf(ApiResult.ServerError::class.java, result, "błąd serwera dla błędnej treści")
+        assertEquals(code, error.code, "kod odpowiedzi błędnej treści")
         assertNotNull(error.cause, "Błąd treści bez przyczyny")
     }
 

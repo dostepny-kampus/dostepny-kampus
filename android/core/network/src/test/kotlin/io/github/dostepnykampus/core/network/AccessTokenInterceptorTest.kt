@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
@@ -53,7 +53,7 @@ class AccessTokenInterceptorTest {
         tokens.signIn(TOKEN)
         server.enqueue(MockResponse().setResponseCode(CREATED))
         runBlocking { SubmissionsApi(http, json, base).create(ID, QUICK) }
-        assertEquals("Bearer $TOKEN", server.takeRequest().getHeader(AUTHORIZATION))
+        assertEquals("Bearer $TOKEN", server.takeRequest().getHeader(AUTHORIZATION), "nagłówek z tokenem konta")
     }
 
     @Test
@@ -62,8 +62,8 @@ class AccessTokenInterceptorTest {
         server.enqueue(MockResponse().setBody("""{"source":"x","buildings":[]}"""))
         runBlocking { BuildingsApi(http, json, base).listBuildings() }
         val recorded = server.takeRequest()
-        assertEquals("/api/buildings", recorded.path)
-        assertNull(recorded.getHeader(AUTHORIZATION))
+        assertEquals("/api/buildings", recorded.path, "adres listy budynków")
+        assertNull(recorded.getHeader(AUTHORIZATION), "brak tokenu w operacji publicznej")
     }
 
     @Test
@@ -71,7 +71,7 @@ class AccessTokenInterceptorTest {
         tokens.signIn(TOKEN)
         server.enqueue(MockResponse())
         http.newCall(Request.Builder().url(server.url("/kafelki/1/2/3.png")).build()).execute().close()
-        assertNull(server.takeRequest().getHeader(AUTHORIZATION))
+        assertNull(server.takeRequest().getHeader(AUTHORIZATION), "brak tokenu dla innego adresu")
     }
 
     @Test
@@ -82,16 +82,16 @@ class AccessTokenInterceptorTest {
         runBlocking {
             val rejection = async(start = CoroutineStart.UNDISPATCHED) { tokens.rejections.first() }
             val result = SubmissionsApi(http, json, base).create(ID, QUICK)
-            assertEquals(Unit, rejection.await())
-            assertInstanceOf(ApiResult.ServerError::class.java, result)
+            assertEquals(Unit, rejection.await(), "odrzucenie zgłoszone po 401")
+            assertInstanceOf(ApiResult.ServerError::class.java, result, "błąd serwera po 401")
         }
-        assertNull(server.takeRequest().getHeader(AUTHORIZATION))
+        assertNull(server.takeRequest().getHeader(AUTHORIZATION), "brak tokenu po wylogowaniu")
     }
 
     @Test
     fun token_not_in_to_string() {
         tokens.signIn(TOKEN)
-        assertEquals("AccessTokens(signedIn=true)", tokens.toString())
+        assertEquals("AccessTokens(signedIn=true)", tokens.toString(), "tekst bez tokenu")
     }
 
     private companion object {

@@ -46,6 +46,7 @@ class EntranceAssessmentTest {
                 EntranceAssessment(date = LocalDate.of(2026, 11, 3), source = AssessmentSource.WALKTHROUGH),
             ),
             details.entrances.map { it.assessment },
+            "oznaczenia wejść z dniem i źródłem",
         )
     }
 

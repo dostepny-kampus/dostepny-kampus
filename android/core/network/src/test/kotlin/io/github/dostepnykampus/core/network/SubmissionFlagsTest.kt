@@ -72,8 +72,9 @@ class SubmissionFlagsTest {
     private fun resend(body: String): Pair<SubmissionContent, JsonObject> {
         server.enqueue(code = 200, body = body)
         server.enqueue(code = 200, body = body)
-        val read = assertInstanceOf(ApiResult.Success::class.java, server.blocking { create(ID, quick) }).value
-        val content = assertInstanceOf(Submission::class.java, read).content
+        val created = server.blocking { create(ID, quick) }
+        val read = assertInstanceOf(ApiResult.Success::class.java, created, "odczyt po utworzeniu zgłoszenia").value
+        val content = assertInstanceOf(Submission::class.java, read, "zgłoszenie w odpowiedzi").content
         server.blocking { update(id = ID, version = 1, content = content) }
         server.skipRequest()
         return content to server.sentBody()

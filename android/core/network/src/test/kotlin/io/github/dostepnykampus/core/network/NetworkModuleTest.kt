@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
@@ -22,15 +22,19 @@ class NetworkModuleTest {
         val http = NetworkModule.okHttp(AccessTokens())
         val json = NetworkModule.json()
         val api = NetworkModule.buildingsApi(http = http, json = json)
-        assertEquals(CALL_MS, http.connectTimeoutMillis)
-        assertEquals(CALL_MS, http.callTimeoutMillis)
-        assertEquals(BASE_URL, BuildConfig.API_BASE_URL)
-        assertInstanceOf(BuildingsApi::class.java, api)
-        assertInstanceOf(MarkerChangesApi::class.java, NetworkModule.markerChangesApi(http = http, json = json))
-        assertInstanceOf(AccessTokenInterceptor::class.java, http.interceptors.single())
+        assertEquals(CALL_MS, http.connectTimeoutMillis, "limit połączenia klienta")
+        assertEquals(CALL_MS, http.callTimeoutMillis, "limit wywołania klienta")
+        assertEquals(BASE_URL, BuildConfig.API_BASE_URL, "adres serwera z konfiguracji")
+        assertInstanceOf(BuildingsApi::class.java, api, "klient budynków z modułu")
+        assertInstanceOf(
+            MarkerChangesApi::class.java,
+            NetworkModule.markerChangesApi(http = http, json = json),
+            "klient zmian znaczników z modułu",
+        )
+        assertInstanceOf(AccessTokenInterceptor::class.java, http.interceptors.single(), "przechwytywacz tokenu konta")
         val parsed = json.decodeBuildingList("""{"source":"x","extra":1,"buildings":[]}""")
-        assertEquals("x", parsed.source)
-        assertEquals(emptyList<ApiBuilding>(), parsed.buildings)
+        assertEquals("x", parsed.source, "źródło odczytane mimo nieznanego pola")
+        assertEquals(emptyList<ApiBuilding>(), parsed.buildings, "pusta lista budynków")
     }
 
     private companion object {

@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
@@ -50,18 +50,18 @@ class SubmissionPhotoReadTest {
             )
         }
         val result = read()
-        assertArrayEquals(jpeg, (result as ApiResult.Success).value)
+        assertArrayEquals(jpeg, (result as ApiResult.Success).value, "bajty zdjęcia bez zmian")
         val request = server.takeRequest()
-        assertEquals("GET", request.method)
-        assertEquals("/submissions/$ID/photos/$PHOTO", request.path)
-        assertEquals("image/jpeg, application/problem+json", request.getHeader("Accept"))
+        assertEquals("GET", request.method, "metoda żądania zdjęcia")
+        assertEquals("/submissions/$ID/photos/$PHOTO", request.path, "adres zdjęcia")
+        assertEquals("image/jpeg, application/problem+json", request.getHeader("Accept"), "nagłówek Accept zdjęcia")
     }
 
     /** 404 nie zwraca treści błędu jako zdjęcia. */
     @Test
     fun us2_2_photo_not_found() {
         server.enqueue(MockResponse().setResponseCode(404).setBody("nie ma zdjęcia"))
-        assertEquals(ApiResult.NotFound, read())
+        assertEquals(ApiResult.NotFound, read(), "brak zdjęcia na serwerze")
     }
 
     /** Odmowa dostępu i awaria magazynu zachowują kod HTTP. */
@@ -69,14 +69,14 @@ class SubmissionPhotoReadTest {
     @ValueSource(ints = [401, 403, 500])
     fun us2_2_photo_server_error(code: Int) {
         server.enqueue(MockResponse().setResponseCode(code).setBody("błąd"))
-        assertEquals(ApiResult.ServerError(code), read())
+        assertEquals(ApiResult.ServerError(code), read(), "kod błędu odczytu zdjęcia")
     }
 
     /** Zerwane połączenie zostawia decyzję o ponowieniu wywołującemu. */
     @Test
     fun us2_2_photo_network_error() {
         server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
-        assertInstanceOf(ApiResult.NetworkError::class.java, read())
+        assertInstanceOf(ApiResult.NetworkError::class.java, read(), "błąd sieci po zerwaniu połączenia")
     }
 
     private fun read(): ApiResult<ByteArray> =
