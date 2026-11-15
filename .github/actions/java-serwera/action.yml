@@ -3,7 +3,7 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 
 name: Java serwera
-description: JDK 25 i cache zależności Maven serwera; cache zapisuje tylko push do gałęzi.
+description: JDK 25 i cache zależności Maven serwera; cache zapisuje tylko push do gałęzi, a zależności spoza cache w PR i kolejce pochodzą z Maven Central z ponowieniami przy 429 i 503 według backend/.mvn/maven.config.
 
 runs:
   using: composite
