@@ -165,6 +165,7 @@ class NullabilityArchitectureTest {
                 "Entrance.assessment" to "wejście z pliku konturów nie ma dnia i źródła oznaczenia, US17.3",
                 "Entrance.floorId" to "dane PWr nie podają piętra każdego wejścia, US16.1",
                 "Room.number" to "$OPTIONAL, plan PWr nie podaje numeru korytarza ani klatki, US16.1",
+                "Room.liftId" to "$OPTIONAL, szyb windy ma tylko pomieszczenie windy, US16.1",
                 "Submission.rejectionReason" to "$BY_STATUS, BR-16",
                 "Submission.verifiedAt" to "$BY_STATUS, BR-17",
                 "SubmissionContent.accuracyMeters" to OPTIONAL,
