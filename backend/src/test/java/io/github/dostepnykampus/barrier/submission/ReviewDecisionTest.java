@@ -71,4 +71,34 @@ final class ReviewDecisionTest {
             )
         );
     }
+
+    @Test
+    void refusesSeverityOutsideOneToThree() {
+        Assertions.assertAll(
+            Stream.of(0, 4).map(
+                severity -> () -> Assertions.assertThrows(
+                    InvalidSubmission.class,
+                    () -> new ReviewDecision.Classified(
+                        SubmissionSamples.ID, 1, "konto", new BarrierType(3), severity
+                    ),
+                    String.format("Uciążliwość %d spoza zakresu 1–3 została przyjęta", severity)
+                )
+            )
+        );
+    }
+
+    @Test
+    void acceptsSeverityAtBoundsOfRange() {
+        Assertions.assertAll(
+            Stream.of(1, 3).map(
+                severity -> () -> Assertions.assertEquals(
+                    SubmissionStatus.ACCEPTED,
+                    new ReviewDecision.Classified(
+                        SubmissionSamples.ID, 1, "konto", new BarrierType(3), severity
+                    ).outcome(),
+                    String.format("Uciążliwość %d z zakresu 1–3 nie została przyjęta", severity)
+                )
+            )
+        );
+    }
 }

@@ -104,6 +104,24 @@ final class ReviewHttpIT {
     }
 
     @Test
+    void refusesSeverityOutsideRange(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
+        ReviewHttpTest.claim(context, id);
+        MatcherAssert.assertThat(
+            "Uciążliwość 4 przy przyjęciu nie dała 400 i statusu IN_REVIEW",
+            List.of(
+                ReviewHttpTest.review(
+                    context, id,
+                    "{\"decision\":\"ACCEPT\",\"version\":1,\"barrierType\":\"TB-3\",\"severity\":4}"
+                ),
+                ReviewHttpTest.status(context, id)
+            ),
+            Matchers.contains(400, "IN_REVIEW")
+        );
+    }
+
+    @Test
     void reportsMissingSubmissionOnClaim(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
