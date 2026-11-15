@@ -102,7 +102,7 @@ public final class BuildingQuery implements Buildings {
             WHERE symbol = ?
             """
         ).param(symbol).query(String.class).optional().map(
-            found -> new FloorList("Politechnika Wrocławska", this.buildingFloors(found))
+            found -> new FloorList(FloorList.PWR_SOURCE, this.buildingFloors(found))
         );
     }
 
