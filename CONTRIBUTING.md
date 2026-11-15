@@ -20,7 +20,7 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
    Kolejka uruchamia kontrole także na wyniku scalenia (zdarzenie `merge_group`, np. w [`android.yml`](.github/workflows/android.yml)
    i [`api.yml`](.github/workflows/api.yml)); squash i kolejka to ustawienia repozytorium, nie plik.
    Android w grupie kolejki uruchamia tylko `testy` (kompilacja, lint, detekt, testy jednostkowe i architektury, Roborazzi);
-   APK i `buildHealth` biegną na PR i w kontroli sprintu (punkt 7), emulatory tylko w kontroli sprintu albo po ręcznym
+   `buildHealth` biegnie na PR i w kontroli sprintu (punkt 7), APK i emulatory tylko w kontroli sprintu albo po ręcznym
    uruchomieniu `android.yml` z commitem (`gh workflow run android.yml -f sha=<commit>`); push po scaleniu tylko przekłada cache.
    Aby dodać PR do kolejki, użyj przycisku „Merge when ready” lub polecenia `gh pr merge N` po zalogowaniu
    na konto z prawem scalania w repozytorium.

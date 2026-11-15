@@ -246,10 +246,9 @@ jobs:
           if-no-files-found: ignore
 
   apk:
-    needs: [porownanie, zmiany]
-    # APK i analiza zależności: PR i przebieg na wskazanym commicie (inputs.sha), nie grupa kolejki ani push; w kolejce
-    # nie padały, a kontrola sprintu sprawdza głowę sprintu po scaleniu.
-    if: &warunek-apk ${{ !cancelled() && (inputs.sha || github.event_name == 'pull_request' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true')) }}
+    # Tylko przebieg na wskazanym commicie (inputs.sha): kontrola sprintu albo ręczne uruchomienie. Na PR i w kolejce
+    # budowa APK padała rzadko; jej błąd wychodzi w kontroli sprintu po scaleniu.
+    if: ${{ !cancelled() && inputs.sha }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -489,9 +488,10 @@ jobs:
             "${prefiks[1]}${RUNNER_OS}-${RUNNER_ARCH}-"
 
   analiza-zaleznosci:
-    # Jak `apk`: PR i kontrola sprintu, bez grupy kolejki; błąd analizy zatrzymuje PR przez check `budowanie`.
+    # PR ze zmianą Androida i przebieg na wskazanym commicie, bez grupy kolejki; błąd analizy zatrzymuje PR przez
+    # check `budowanie`.
     needs: [porownanie, zmiany]
-    if: *warunek-apk
+    if: ${{ !cancelled() && (inputs.sha || github.event_name == 'pull_request' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -532,10 +532,10 @@ jobs:
       - name: Sprawdź wyniki wszystkich zadań Androida
         env:
           ZMIANY: ${{ needs.zmiany.result }}
-          # Grupa kolejki: testy. Przebieg na wskazanym commicie: APK, emulatory, analiza zależności. PR: testy, APK,
+          # Grupa kolejki: testy. Przebieg na wskazanym commicie: APK, emulatory, analiza zależności. PR: testy,
           # analiza zależności.
           WYNIKI: >-
             ${{ github.event_name == 'merge_group' && needs.testy.result
             || inputs.sha && format('{0} {1} {2}', needs.apk.result, needs.emulator.result, needs.analiza-zaleznosci.result)
-            || format('{0} {1} {2}', needs.testy.result, needs.apk.result, needs.analiza-zaleznosci.result) }}
+            || format('{0} {1}', needs.testy.result, needs.analiza-zaleznosci.result) }}
         run: bash .github/scripts/wyniki-androida.sh
