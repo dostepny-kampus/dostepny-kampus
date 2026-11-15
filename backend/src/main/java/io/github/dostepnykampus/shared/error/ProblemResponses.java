@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * {@link InvalidInput} 400, {@link MissingLogin} 401, {@link ForbiddenChange} 403
  * i {@link MissingResource} 404, {@link TooLargeBody} 413 z opisem wyjątku w {@code detail};
  * {@link ConflictingState} 409 też z bieżącym stanem we właściwości
- * {@link ConflictingState#property()}. Inny wyjątek daje 500 bez nazwy klasy i komunikatu. {@code ResponseStatusException}
- * i {@code ErrorResponseException} obsługuje wcześniej Spring Boot.
+ * {@link ConflictingState#property()}. Inny wyjątek daje 500 bez nazwy klasy i komunikatu.
+ * {@code ResponseStatusException} i {@code ErrorResponseException} obsługuje wcześniej
+ * Spring Boot.
  *
  * @since 0.1.0
  */
