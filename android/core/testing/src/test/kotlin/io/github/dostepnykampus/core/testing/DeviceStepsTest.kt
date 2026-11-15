@@ -51,7 +51,9 @@ class DeviceStepsTest {
     @Test
     fun missingNodeTimesOut() {
         compose.setContent { BasicText("Mapa") }
-        assertThrows(ComposeTimeoutException::class.java) { steps.waitFor(hasText(CHECK_ENTRANCES)) }
+        assertThrows("Brak węzła po czasie", ComposeTimeoutException::class.java) {
+            steps.waitFor(hasText(CHECK_ENTRANCES))
+        }
     }
 
     @Composable
