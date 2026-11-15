@@ -891,7 +891,7 @@ components:
       type: object
       description: Piętro zgłoszenia. W budynku szczegółowym `floorId`, w budynku podstawowym `number` i `mezzanine` (US7.2, BR-G1).
       properties:
-        floorId: {type: string, description: "Piętro z listy pięter budynku szczegółowego."}
+        floorId: {type: string, maxLength: 64, description: "Piętro z listy pięter budynku szczegółowego."}
         number: {type: integer, description: "Numer piętra w budynku podstawowym; 0 to parter."}
         mezzanine: {type: boolean, default: false, description: "Dopisek „półpiętro” w budynku podstawowym."}
     SubmissionContent:
@@ -906,7 +906,7 @@ components:
         location: {$ref: '#/components/schemas/GeoPoint', description: "Miejsce bariery po pomiarze precyzyjnym albo bieżąca pozycja."}
         accuracyMeters: {type: number, format: double, minimum: 0, maximum: 10000, description: "Dokładność pozycji w metrach (US6.1)."}
         manualCorrection: {type: boolean, default: false, description: "Oznaczenie „korekta ręczna” (US6.3, US6.4)."}
-        buildingSymbol: {type: string, description: "Budynek; brak to „poza budynkiem” (BR-G2). W zgłoszeniu szybkim ustala go serwer z konturu (BR-14)."}
+        buildingSymbol: {type: string, maxLength: 16, description: "Budynek; brak to „poza budynkiem” (BR-G2). W zgłoszeniu szybkim ustala go serwer z konturu (BR-14)."}
         floor: {$ref: '#/components/schemas/SubmissionFloor', description: "Piętro; w budynku wymagane przy pomiarze precyzyjnym (BR-7), w zgłoszeniu szybkim może być puste (BR-14)."}
         barrierGroup: {$ref: '#/components/schemas/BarrierGroup', description: "Grupa barier; w zgłoszeniu szybkim zamiast typu bariery (US4.3)."}
         barrierType: {$ref: '#/components/schemas/BarrierType', description: "Typ bariery; wymagany przy pomiarze precyzyjnym (BR-7)."}
@@ -914,12 +914,13 @@ components:
         description: {type: string, maxLength: 2000, description: "Opis; obowiązkowy przy TB-29 „inna bariera” (US7.3)."}
         replacesSubmissionId: {type: string, format: uuid, description: "Zgłoszenie przyjęte, które ta zmiana zastąpi po przyjęciu (BR-18)."}
         barrierRemoved: {type: boolean, default: false, description: "Oznaczenie „bariera usunięta”; wymaga `replacesSubmissionId` (US8.4, BR-19)."}
-        entranceId: {type: string, description: "Wejście w zmianie oznaczenia wejścia (BR-24) albo w zgłoszeniu szybkim z „Zgłoś barierę przy wejściu” (US4.6)."}
+        entranceId: {type: string, maxLength: 64, description: "Wejście w zmianie oznaczenia wejścia (BR-24) albo w zgłoszeniu szybkim z „Zgłoś barierę przy wejściu” (US4.6)."}
         entranceMarking: {type: string, enum: [ACCESSIBLE, INACCESSIBLE], description: "Nowe oznaczenie wejścia w zmianie oznaczenia wejścia (US17.2)."}
         photoIds:
           type: array
-          description: Zdjęcia zgłoszenia, identyfikatory nadane w telefonie; każde zgłoszenie ma co najmniej jedno (BR-7, BR-8, BR-19, BR-24).
+          description: Zdjęcia zgłoszenia, identyfikatory nadane w telefonie; każde zgłoszenie ma od jednego do dziesięciu (BR-7, BR-8, BR-19, BR-24, NFR-34).
           minItems: 1
+          maxItems: 10
           items: {type: string, format: uuid, description: "Identyfikator zdjęcia."}
     NewSubmission:
       description: Nowe zgłoszenie z identyfikatorem nadanym w telefonie.

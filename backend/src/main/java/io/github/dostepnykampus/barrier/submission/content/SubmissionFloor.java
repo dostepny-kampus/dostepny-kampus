@@ -22,6 +22,16 @@ public record SubmissionFloor(
 ) {
 
     /**
+     * Piętro z identyfikatorem najwyżej 64 znaków; dłuższy kończy się wyjątkiem
+     * {@link InvalidSubmission}.
+     */
+    public SubmissionFloor {
+        if (floorId != null && floorId.length() > 64) {
+            throw new InvalidSubmission("Identyfikator piętra ma najwyżej 64 znaki");
+        }
+    }
+
+    /**
      * Czy piętro da się wskazać identyfikatorem albo numerem.
      *
      * @return Prawda, gdy podano identyfikator albo numer

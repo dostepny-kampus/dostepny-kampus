@@ -36,6 +36,21 @@ final class SubmissionFloorTest {
     }
 
     @Test
+    void rejectsFloorIdLongerThanSixtyFourCharacters() {
+        Assertions.assertAll(
+            () -> Assertions.assertDoesNotThrow(
+                () -> new SubmissionFloor("p".repeat(64), null, false),
+                "Piętro o 64 znakach zostało odrzucone"
+            ),
+            () -> Assertions.assertThrows(
+                InvalidSubmission.class,
+                () -> new SubmissionFloor("p".repeat(65), null, false),
+                "Piętro o 65 znakach przeszło"
+            )
+        );
+    }
+
+    @Test
     void identifiesFloorByIdOrNumber() {
         Assertions.assertAll(
             () -> Assertions.assertTrue(

@@ -31,12 +31,15 @@ public record SubmissionPlace(
 ) {
 
     /**
-     * Miejsce z punktem i dokładnością od 0 do 10000 m; brak dokładności jest
-     * dozwolony. Dokładność spoza tego zakresu, nieskończona albo NaN kończy się
-     * wyjątkiem InvalidSubmission.
+     * Miejsce z punktem, dokładnością od 0 do 10000 m i symbolem budynku najwyżej 16 znaków;
+     * brak dokładności jest dozwolony. Dokładność spoza tego zakresu, nieskończona albo NaN
+     * i dłuższy symbol budynku kończą się wyjątkiem InvalidSubmission.
      */
     public SubmissionPlace {
         Objects.requireNonNull(point, "point");
+        if (buildingSymbol != null && buildingSymbol.length() > 16) {
+            throw new InvalidSubmission("Symbol budynku ma najwyżej 16 znaków");
+        }
         if (accuracyMeters != null && !(accuracyMeters >= 0 && accuracyMeters <= 10_000)) {
             throw new InvalidSubmission("Dokładność pozycji spoza zakresu 0–10000 m");
         }
