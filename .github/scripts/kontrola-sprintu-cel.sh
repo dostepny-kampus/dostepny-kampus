@@ -4,11 +4,13 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
-# Wybiera commit dla kontroli sprintu. Bez GALAZ bierze gałęzie `origin/sprint/N`, których głowy nie ma w
-# `origin/main`, od najniższego N. Głowę ze statusem `kontrola-sprintu` success, failure albo świeżym `pending`
-# pomija; `pending` starszy niż 3 godziny (przerwany przebieg) i `error` (pierwsza porażka) sprawdza znowu. Gdy od ostatniego commita ze statusem success albo failure
-# nic się nie zmieniło w obszarze Androida i serwera, stawia success bez budowy i idzie dalej. Pierwszą głowę
-# do sprawdzenia oznacza `pending` i zapisuje do $GITHUB_OUTPUT: jest=true, galaz, sha, od; inaczej jest=false.
+# Wybiera commit dla kontroli sprintu. Bez GALAZ bierze tylko gałąź `origin/sprint/N` z najwyższym N: nowy sprint
+# powstaje z `main` dopiero po scaleniu poprzedniego, więc starsze gałęzie spoza `main` to historia sprzed tego
+# porządku. Głowę, która jest już w `origin/main`, pomija. Głowę ze statusem `kontrola-sprintu` success, failure albo
+# świeżym `pending` pomija; `pending` starszy niż 3 godziny (przerwany przebieg) i `error` (pierwsza porażka) sprawdza
+# znowu. Gdy od ostatniego commita ze statusem success albo failure nic się nie zmieniło w obszarze Androida
+# i serwera, stawia success bez budowy. Głowę do sprawdzenia oznacza `pending` i zapisuje do $GITHUB_OUTPUT:
+# jest=true, galaz, sha, od; inaczej jest=false.
 # GALAZ wymusza sprawdzenie tej gałęzi bez względu na status i zmiany. Środowisko: GITHUB_REPOSITORY,
 # GITHUB_OUTPUT, opcjonalnie GALAZ, ADRES (link do przebiegu), TERAZ (sekundy epoki, do testu).
 kontekst=kontrola-sprintu
@@ -35,7 +37,7 @@ if [[ -n ${GALAZ:-} ]]; then
   galezie=("$GALAZ")
 else
   mapfile -t galezie < <(git for-each-ref --format='%(refname:lstrip=3)' refs/remotes/origin/sprint/ |
-    grep -E '^sprint/[0-9]+$' | sort -t/ -k2 -n || true)
+    grep -E '^sprint/[0-9]+$' | sort -t/ -k2 -n | tail -n 1 || true)
 fi
 
 for galaz in "${galezie[@]}"; do
