@@ -117,7 +117,7 @@ final class ArcgisPlansTest {
         server.start();
         try {
             MatcherAssert.assertThat(
-                "Piętra nie mają identyfikatora, nazwy i numeru albo zostało piętro bez id",
+                "Piętra nie mają identyfikatora, etykiety i numeru albo zostało piętro bez id",
                 new ArcgisPlans(JsonMapper.builder().build()).floors(
                     String.format(
                         "http://localhost:%d/FeatureServer", server.getAddress().getPort()
@@ -125,8 +125,8 @@ final class ArcgisPlansTest {
                     1
                 ),
                 Matchers.contains(
-                    new PlanFloor("T.X.P0", "Bud. X parter", 0),
-                    new PlanFloor("T.X.P00", "Bud. X piwnica", -1)
+                    new PlanFloor("T.X.P0", "Parter", 0),
+                    new PlanFloor("T.X.P00", "Piwnica", -1)
                 )
             );
         } finally {
