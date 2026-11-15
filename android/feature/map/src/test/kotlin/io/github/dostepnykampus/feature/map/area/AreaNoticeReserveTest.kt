@@ -56,7 +56,7 @@ class AreaNoticeReserveTest {
         compose.waitForIdle()
         assertTrue("napis $wide", wide > 0.dp)
         assertTrue("wąska mapa $narrow, szeroka $wide", narrow > wide)
-        assertEquals(0.dp, none)
+        assertEquals("bez napisu", 0.dp, none)
     }
 
     /**
@@ -73,10 +73,10 @@ class AreaNoticeReserveTest {
         compose.setContent { reserve = rememberNoticeReserve(building = building, notice = notice) }
         notice = 0.dp
         compose.waitForIdle()
-        assertEquals(RESERVE, reserve)
+        assertEquals("po zgaszeniu napisu", RESERVE, reserve)
         building = "A-1"
         compose.waitForIdle()
-        assertEquals(0.dp, reserve)
+        assertEquals("inny budynek", 0.dp, reserve)
     }
 
     private companion object {
